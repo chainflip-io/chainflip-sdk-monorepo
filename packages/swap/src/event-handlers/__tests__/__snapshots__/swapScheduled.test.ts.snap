@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`swapScheduled deposit channel origin stores a new swap from a deposit channel 1`] = `
+{
+  "createdAt": Any<Date>,
+  "depositAmount": "222222222222222222",
+  "depositReceivedAt": 2022-12-06T14:31:33.000Z,
+  "depositReceivedBlockIndex": "100-0",
+  "destAddress": "0x6AA69332b63BB5B1d7CA5355387edd5624e181f3",
+  "destAsset": "Flip",
+  "egressCompletedAt": null,
+  "egressCompletedBlockIndex": null,
+  "id": Any<BigInt>,
+  "nativeId": 9876545n,
+  "srcAsset": "Eth",
+  "swapDepositChannelId": Any<BigInt>,
+  "swapExecutedAt": null,
+  "swapExecutedBlockIndex": null,
+  "updatedAt": Any<Date>,
+}
+`;
+
+exports[`swapScheduled smart contract origin stores a new swap from a contract deposit 1`] = `
+{
+  "createdAt": Any<Date>,
+  "depositAmount": "222222222222222222",
+  "depositReceivedAt": 2022-12-06T14:31:33.000Z,
+  "depositReceivedBlockIndex": "100-0",
+  "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+  "destAsset": "FLIP",
+  "egressCompletedAt": null,
+  "egressCompletedBlockIndex": null,
+  "id": Any<BigInt>,
+  "nativeId": 9876545n,
+  "srcAsset": "ETH",
+  "swapDepositChannelId": null,
+  "swapExecutedAt": null,
+  "swapExecutedBlockIndex": null,
+  "updatedAt": Any<Date>,
+}
+`;

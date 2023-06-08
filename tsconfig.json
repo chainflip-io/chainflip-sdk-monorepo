@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/cli/*": ["./packages/cli/src/*"],
+      "@/shared/*": ["./packages/shared/src/*"],
+      "@/sdk/*": ["./packages/sdk/src/*"]
+    }
+  }
+}
