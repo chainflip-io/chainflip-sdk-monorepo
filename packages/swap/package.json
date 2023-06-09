@@ -54,7 +54,7 @@
     "bignumber.js": "^9.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "ethers": "5.7.2",
+    "ethers": "6.5.1",
     "express": "^4.18.2",
     "graphql-request": "^6.0.0",
     "pg": "^8.10.0",
