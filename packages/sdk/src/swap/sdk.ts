@@ -1,6 +1,6 @@
-import assert from 'assert';
 import { ContractReceipt, Signer } from 'ethers';
 import { ChainflipNetwork } from '@/shared/enums';
+import { assert } from '@/shared/guards';
 import { BACKEND_SERVICE_URL, ChainId } from './consts';
 import ApiService, { RequestOptions } from './services/ApiService';
 import type {

@@ -11,3 +11,6 @@ export type SupportedAsset = (typeof supportedAssets)[number];
 const chainflipNetworks = ['sisyphos', 'perseverance', 'mainnet'] as const;
 export const chainflipNetwork = z.enum(chainflipNetworks);
 export type ChainflipNetwork = (typeof chainflipNetworks)[number];
+
+export const isTestnet = (cfNetwork: ChainflipNetwork): boolean =>
+  cfNetwork === 'perseverance' || cfNetwork === 'sisyphos';

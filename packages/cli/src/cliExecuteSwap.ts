@@ -1,15 +1,11 @@
 import { getDefaultProvider, providers, Wallet } from 'ethers';
-import { createInterface } from 'node:readline/promises';
 import { z } from 'zod';
 import { ChainId } from '@/sdk/swap/consts';
 import { executeSwap, ExecuteSwapParams } from '@/sdk/swap/vault';
 import { ExecuteSwapOptions } from '@/sdk/swap/vault/executeSwap';
-import {
-  chainflipNetwork,
-  SupportedAsset,
-  supportedAsset,
-} from '@/shared/enums';
+import { SupportedAsset, supportedAsset } from '@/shared/enums';
 import { numericString, hexString } from '@/shared/parsers';
+import { askForPrivateKey, signerSchema } from './utils';
 
 const assetToNetworkMap: Record<SupportedAsset, ChainId> = {
   ETH: ChainId.Ethereum,
@@ -20,18 +16,18 @@ const assetToNetworkMap: Record<SupportedAsset, ChainId> = {
 };
 
 const argsSchema = z
-  .object({
-    srcToken: supportedAsset.optional(),
-    destToken: supportedAsset,
-    amount: z.union([numericString, hexString]),
-    destAddress: z.string(),
-    walletPrivateKey: z.string().optional(),
-    srcTokenContractAddress: z.string().optional(),
-    vaultContractAddress: z.string().optional(),
-    chainflipNetwork: z.union([chainflipNetwork, z.literal('localnet')]),
-    _: z.tuple([z.literal('swap')]),
-  })
-  .transform(({ destToken, srcToken, _, ...rest }) => {
+  .intersection(
+    signerSchema,
+    z.object({
+      srcToken: supportedAsset.optional(),
+      destToken: supportedAsset,
+      amount: z.union([numericString, hexString]),
+      destAddress: z.string(),
+      srcTokenContractAddress: z.string().optional(),
+      vaultContractAddress: z.string().optional(),
+    }),
+  )
+  .transform(({ destToken, srcToken, ...rest }) => {
     const destChainId = assetToNetworkMap[destToken];
 
     return {
@@ -42,19 +38,9 @@ const argsSchema = z
     };
   });
 
-const askForPrivateKey = async () => {
-  const rl = createInterface({ input: process.stdin, output: process.stdout });
-
-  try {
-    return await rl.question("Please enter your wallet's private key: ");
-  } finally {
-    rl.close();
-  }
-};
-
 export default async function cliExecuteSwap(args: unknown) {
   const {
-    chainflipNetwork: cfNetwork,
+    chainflipNetwork,
     walletPrivateKey,
     vaultContractAddress,
     srcTokenContractAddress,
@@ -63,7 +49,10 @@ export default async function cliExecuteSwap(args: unknown) {
 
   const privateKey = walletPrivateKey ?? (await askForPrivateKey());
 
-  const ethNetwork = cfNetwork === 'mainnet' ? 'mainnet' : 'goerli';
+  const ethNetwork =
+    validatedArgs.ethNetwork ?? chainflipNetwork === 'mainnet'
+      ? 'mainnet'
+      : 'goerli';
 
   const wallet = new Wallet(privateKey).connect(
     process.env.ALCHEMY_KEY
@@ -74,7 +63,7 @@ export default async function cliExecuteSwap(args: unknown) {
   const txHash = await executeSwap(
     validatedArgs as ExecuteSwapParams,
     {
-      cfNetwork,
+      cfNetwork: chainflipNetwork,
       signer: wallet,
       vaultContractAddress,
       srcTokenContractAddress,

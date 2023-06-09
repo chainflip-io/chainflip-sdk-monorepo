@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { ChainflipNetwork } from '@/shared/enums';
+import { type ChainflipNetwork, isTestnet } from '@/shared/enums';
 import type {
   QuoteQueryParams,
   QuoteResponse,
@@ -26,7 +26,6 @@ import {
   SwapStatusResponse,
   Token,
 } from '../types';
-import { isTestnet } from '../utils';
 
 const getChains = async (network: ChainflipNetwork): Promise<Chain[]> => {
   if (isTestnet(network)) {

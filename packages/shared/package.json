@@ -37,6 +37,7 @@
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "build": "tsc -p tsconfig.cjs.json && tsc -p tsconfig.mjs.json",
+    "build:abis": "typechain --target=ethers-v5 --out-dir=./src/contracts ./abis/**",
     "lint": "pnpm eslint --max-warnings 0 './**/*.ts'",
     "test": "jest"
   },
@@ -52,6 +53,8 @@
     "ethers": "5.7.2"
   },
   "devDependencies": {
+    "@typechain/ethers-v5": "^11.0.0",
+    "typechain": "^8.1.1",
     "zod": "^3.21.4"
   }
 }
