@@ -1,20 +1,20 @@
 import { ContractReceipt, Signer } from 'ethers';
 import { z } from 'zod';
-import { Vault, Vault__factory } from '@/shared/contracts';
-import {
-  ChainflipNetwork,
-  SupportedAsset,
-  chainflipNetwork,
-  isTestnet,
-} from '@/shared/enums';
+import { Vault, Vault__factory } from '../abis';
 import {
   SISYPHOS_FLIP_CONTRACT_ADDRESS,
   GOERLI_USDC_CONTRACT_ADDRESS,
   SISYPHOS_VAULT_CONTRACT_ADDRESS,
   requestApproval,
-} from '@/shared/erc20';
-import { assert } from '@/shared/guards';
-import { ChainId } from '../sdk';
+} from '../contracts';
+import {
+  ChainflipNetwork,
+  SupportedAsset,
+  chainflipNetwork,
+  isTestnet,
+  ChainId,
+} from '../enums';
+import { assert } from '../guards';
 import {
   ExecuteSwapParams,
   NativeSwapParams,

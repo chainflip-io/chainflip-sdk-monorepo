@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { segwitAddress } from '@/sdk/swap/validation/segwitAddr';
+import { segwitAddress } from '@/shared/validation/segwitAddr';
 import { SupportedAsset, Network, network } from '@/shared/enums';
 import { isString } from '@/shared/guards';
 import {

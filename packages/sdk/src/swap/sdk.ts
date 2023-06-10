@@ -1,6 +1,7 @@
 import { ContractReceipt, Signer } from 'ethers';
 import { ChainflipNetwork } from '@/shared/enums';
 import { assert } from '@/shared/guards';
+import { ExecuteSwapParams, executeSwap } from '@/shared/vault';
 import { BACKEND_SERVICE_URL, ChainId } from './consts';
 import ApiService, { RequestOptions } from './services/ApiService';
 import type {
@@ -13,7 +14,6 @@ import type {
   SwapStatusResponse,
   SwapRequest,
 } from './types';
-import { ExecuteSwapParams, executeSwap } from './vault';
 
 export { ChainId };
 export * from './types';

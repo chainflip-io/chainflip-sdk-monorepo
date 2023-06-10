@@ -1,3 +1,3 @@
-export { default as executeSwap } from '@/sdk/swap/vault/executeSwap';
-export { fundStateChainAccount } from '@/sdk/funding/stateChainGateway';
+export { default as executeSwap } from '@/shared/vault/executeSwap';
+export { fundStateChainAccount } from '@/shared/vault/stateChainGateway';
 export { ChainId } from '@/sdk/swap/consts';

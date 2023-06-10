@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 /* eslint-disable max-classes-per-file */
 import { BigNumber, VoidSigner } from 'ethers';
-import { ChainId } from '../../consts';
+import { ChainId } from '../../enums';
 import executeSwap from '../executeSwap';
 import { ExecuteSwapParams } from '../validators';
 
@@ -23,25 +23,19 @@ class MockERC20 {
   }
 }
 
-jest.mock(
-  '../../../../types/ethers-contracts/factories/Vault__factory',
-  () => ({
-    Vault__factory: class {
-      static connect: (address: string) => MockVault = jest.fn(
-        (address: string) => new MockVault(address),
-      );
-    },
-  }),
-);
+jest.mock('../../abis/factories/Vault__factory', () => ({
+  Vault__factory: class {
+    static connect: (address: string) => MockVault = jest.fn(
+      (address: string) => new MockVault(address),
+    );
+  },
+}));
 
-jest.mock(
-  '../../../../types/ethers-contracts/factories/ERC20__factory',
-  () => ({
-    ERC20__factory: class {
-      static connect: () => MockERC20 = jest.fn(() => new MockERC20());
-    },
-  }),
-);
+jest.mock('../../abis/factories/ERC20__factory', () => ({
+  ERC20__factory: class {
+    static connect: () => MockERC20 = jest.fn(() => new MockERC20());
+  },
+}));
 
 describe(executeSwap, () => {
   it.each(['perseverance', 'mainnet'] as const)(

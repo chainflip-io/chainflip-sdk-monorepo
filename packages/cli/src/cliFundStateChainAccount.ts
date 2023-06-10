@@ -1,6 +1,6 @@
 import { ContractReceipt, Wallet, getDefaultProvider, providers } from 'ethers';
 import { z } from 'zod';
-import { FundStateChainAccountOptions } from '@/sdk/funding/stateChainGateway';
+import { FundStateChainAccountOptions } from '@/shared/stateChainGateway';
 import { fundStateChainAccount } from './lib';
 import { askForPrivateKey, signerSchema } from './utils';
 

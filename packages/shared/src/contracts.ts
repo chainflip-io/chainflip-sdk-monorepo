@@ -1,5 +1,5 @@
 import type { Signer } from 'ethers';
-import { ERC20__factory } from './contracts';
+import { ERC20__factory } from './abis';
 import { type ChainflipNetwork, type SupportedAsset, isTestnet } from './enums';
 import { assert } from './guards';
 

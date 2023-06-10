@@ -1,9 +1,8 @@
 import { isHex, hexToU8a } from '@polkadot/util';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 import * as ethers from 'ethers';
-import { SupportedAsset } from '@/shared/enums';
-import { ChainId } from '../consts';
-import { assert } from '../utils';
+import { SupportedAsset, ChainId } from '../enums';
+import { assert } from '../guards';
 import { isValidSegwitAddress } from './segwitAddr';
 
 export type AddressValidator = (address: string) => boolean;

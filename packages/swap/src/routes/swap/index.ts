@@ -1,6 +1,6 @@
 import assert from 'assert';
 import express from 'express';
-import { validateAddress } from '@/sdk/swap/validation/addressValidation';
+import { validateAddress } from '@/shared/validation/addressValidation';
 import { postSwapSchema } from '@/shared/schemas';
 import prisma from '../../client';
 import { submitSwapToBroker } from '../../utils/broker';

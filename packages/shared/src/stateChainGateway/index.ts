@@ -1,12 +1,12 @@
 import type { ContractReceipt, Signer } from 'ethers';
-import { StateChainGateway__factory } from '@/shared/contracts';
-import { ChainflipNetwork } from '@/shared/enums';
+import { StateChainGateway__factory } from '../abis';
 import {
   getStateChainManagerContractAddress,
   getTokenContractAddress,
   requestApproval,
-} from '@/shared/erc20';
-import { assert } from '@/shared/guards';
+} from '../contracts';
+import { ChainflipNetwork } from '../enums';
+import { assert } from '../guards';
 
 export type FundStateChainAccountOptions =
   | { network: ChainflipNetwork; signer: Signer }

@@ -1,7 +1,7 @@
 import type { ContractReceipt, Signer } from 'ethers';
 import { ChainflipNetwork } from '@/shared/enums';
 import { assert } from '@/shared/guards';
-import { fundStateChainAccount } from './stateChainGateway';
+import { fundStateChainAccount } from '@/shared/stateChainGateway';
 
 type SDKOptions = {
   network?: ChainflipNetwork;

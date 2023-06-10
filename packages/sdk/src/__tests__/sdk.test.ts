@@ -1,5 +1,6 @@
 import { VoidSigner } from 'ethers';
-import { ChainId } from '../src/swap/consts';
+import { executeSwap } from '@/shared/vault';
+import { ChainId } from '../swap/consts';
 import {
   bitcoin,
   polkadot,
@@ -9,11 +10,10 @@ import {
   ethereumTokens,
   testnetChains,
   testnetTokens,
-} from '../src/swap/mocks';
-import { SwapSDK } from '../src/swap/sdk';
-import { executeSwap } from '../src/swap/vault';
+} from '../swap/mocks';
+import { SwapSDK } from '../swap/sdk';
 
-jest.mock('../src/swap/vault', () => ({ executeSwap: jest.fn() }));
+jest.mock('@/shared/vault', () => ({ executeSwap: jest.fn() }));
 
 describe(SwapSDK, () => {
   const sdk = new SwapSDK({ network: 'mainnet' });
@@ -116,13 +116,13 @@ describe(SwapSDK, () => {
 
   describe(SwapSDK.prototype.executeSwap, () => {
     it('throws when no signer is provided', () => {
-      expect(() => sdk.executeSwap({})).toThrow();
+      expect(() => sdk.executeSwap({} as any)).toThrow();
     });
 
     it('calls executeSwap', () => {
       const signer = new VoidSigner('0x0');
       const swap = {};
-      sdk.executeSwap(swap, signer);
+      sdk.executeSwap(swap as any, signer);
       expect(executeSwap).toHaveBeenCalledWith(swap, {
         cfNetwork: 'sisyphos',
         signer,

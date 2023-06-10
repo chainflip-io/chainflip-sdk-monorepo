@@ -14,3 +14,9 @@ export type ChainflipNetwork = (typeof chainflipNetworks)[number];
 
 export const isTestnet = (cfNetwork: ChainflipNetwork): boolean =>
   cfNetwork === 'perseverance' || cfNetwork === 'sisyphos';
+
+export enum ChainId {
+  Ethereum = 1,
+  Polkadot,
+  Bitcoin,
+}

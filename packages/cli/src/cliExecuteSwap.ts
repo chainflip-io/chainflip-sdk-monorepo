@@ -1,10 +1,10 @@
 import { getDefaultProvider, providers, Wallet } from 'ethers';
 import { z } from 'zod';
 import { ChainId } from '@/sdk/swap/consts';
-import { executeSwap, ExecuteSwapParams } from '@/sdk/swap/vault';
-import { ExecuteSwapOptions } from '@/sdk/swap/vault/executeSwap';
 import { SupportedAsset, supportedAsset } from '@/shared/enums';
 import { numericString, hexString } from '@/shared/parsers';
+import { executeSwap, ExecuteSwapParams } from '@/shared/vault';
+import { ExecuteSwapOptions } from '@/shared/vault/executeSwap';
 import { askForPrivateKey, signerSchema } from './utils';
 
 const assetToNetworkMap: Record<SupportedAsset, ChainId> = {
