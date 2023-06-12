@@ -87,6 +87,11 @@ const {
         type: 'string',
         describe:
           'The contract address for the FLIP token when `chainflip-network` is `localnet`',
+      })
+      .option('eth-network', {
+        type: 'string',
+        describe:
+          'The eth network URL to use when `chainflip-network` is `localnet`',
       });
   })
   .help()
