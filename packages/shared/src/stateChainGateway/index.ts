@@ -55,3 +55,34 @@ export const fundStateChainAccount = async (
 
   return receipt;
 };
+
+type ExecuteRedpemptionOptions =
+  | { network: ChainflipNetwork; signer: Signer }
+  | {
+      network: 'localnet';
+      signer: Signer;
+      stateChainManagerContractAddress: string;
+    };
+
+export const executeRedemption = async (
+  accountId: `0x${string}`,
+  options: ExecuteRedpemptionOptions,
+) => {
+  const stateChainManagerContractAddress =
+    options.network === 'localnet'
+      ? options.stateChainManagerContractAddress
+      : getStateChainManagerContractAddress(options.network);
+
+  const stateChainManager = StateChainGateway__factory.connect(
+    stateChainManagerContractAddress,
+    options.signer,
+  );
+
+  const transaction = await stateChainManager.executeRedemption(accountId);
+
+  const receipt = await transaction.wait(1);
+
+  assert(receipt.status !== 0, 'Redemption failed');
+
+  return receipt;
+};
