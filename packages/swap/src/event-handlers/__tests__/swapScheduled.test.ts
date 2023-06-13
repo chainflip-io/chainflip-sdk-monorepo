@@ -2,7 +2,8 @@ import prisma, { SwapDepositChannel } from '../../client';
 import swapScheduled from '../swapScheduled';
 import {
   createDepositChannel,
-  swapScheduledDepositChannelMock,
+  swapScheduledBtcDepositChannelMock,
+  swapScheduledDotDepositChannelMock,
   swapScheduledVaultMock,
 } from './utils';
 
@@ -12,40 +13,66 @@ describe(swapScheduled, () => {
   });
 
   describe('deposit channel origin', () => {
-    let swapDepositChannel: SwapDepositChannel;
+    let dotSwapDepositChannel: SwapDepositChannel;
+    let btcSwapDepositChannel: SwapDepositChannel;
 
     beforeEach(async () => {
-      swapDepositChannel = await createDepositChannel({
-        srcAsset:
-          swapScheduledDepositChannelMock.eventContext.event.args.sourceAsset
-            .__kind,
-        destAsset:
-          swapScheduledDepositChannelMock.eventContext.event.args
-            .destinationAsset.__kind,
+      dotSwapDepositChannel = await createDepositChannel({
+        srcAsset: 'DOT',
+        destAsset: 'BTC',
+        depositAddress: '5CGLqaFMheyVcsXz6QEtjtSAi6RcXFaEDJKvovgCdPiZhw11',
+        destAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
+      });
+      btcSwapDepositChannel = await createDepositChannel({
+        srcAsset: 'BTC',
+        destAsset: 'ETH',
         depositAddress:
-          swapScheduledDepositChannelMock.eventContext.event.args.origin
-            .depositAddress.value,
-        destAddress:
-          swapScheduledDepositChannelMock.eventContext.event.args
-            .destinationAddress.value,
+          'bcrt1pg03ca9ervkylq76ezng0umnqlul9ty8693k3zrav07u3hu4dlkrswxxdzf',
+        destAddress: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
       });
     });
 
-    it('stores a new swap from a deposit channel', async () => {
+    it('stores a new swap from a dot deposit channel', async () => {
       await prisma.$transaction(async (client) => {
         await swapScheduled({
           prisma: client,
-          block: swapScheduledDepositChannelMock.block as any,
-          event: swapScheduledDepositChannelMock.eventContext.event as any,
+          block: swapScheduledDotDepositChannelMock.block as any,
+          event: swapScheduledDotDepositChannelMock.eventContext.event as any,
         });
       });
 
       const swap = await prisma.swap.findFirstOrThrow({
-        where: { swapDepositChannelId: swapDepositChannel.id },
+        where: { swapDepositChannelId: dotSwapDepositChannel.id },
       });
 
       expect(swap.depositAmount.toString()).toEqual(
-        swapScheduledDepositChannelMock.eventContext.event.args.depositAmount,
+        swapScheduledDotDepositChannelMock.eventContext.event.args
+          .depositAmount,
+      );
+      expect(swap).toMatchSnapshot({
+        id: expect.any(BigInt),
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        swapDepositChannelId: expect.any(BigInt),
+      });
+    });
+
+    it('stores a new swap from a btc deposit channel', async () => {
+      await prisma.$transaction(async (client) => {
+        await swapScheduled({
+          prisma: client,
+          block: swapScheduledBtcDepositChannelMock.block as any,
+          event: swapScheduledBtcDepositChannelMock.eventContext.event as any,
+        });
+      });
+
+      const swap = await prisma.swap.findFirstOrThrow({
+        where: { swapDepositChannelId: btcSwapDepositChannel.id },
+      });
+
+      expect(swap.depositAmount.toString()).toEqual(
+        swapScheduledBtcDepositChannelMock.eventContext.event.args
+          .depositAmount,
       );
       expect(swap).toMatchSnapshot({
         id: expect.any(BigInt),
@@ -57,15 +84,15 @@ describe(swapScheduled, () => {
 
     it('does not store a new swap if the deposit channel is expired', async () => {
       await prisma.swapDepositChannel.update({
-        where: { id: swapDepositChannel.id },
+        where: { id: dotSwapDepositChannel.id },
         data: { expiryBlock: -1 },
       });
 
       await prisma.$transaction(async (client) => {
         await swapScheduled({
           prisma: client,
-          block: swapScheduledDepositChannelMock.block,
-          event: swapScheduledDepositChannelMock.eventContext.event as any,
+          block: swapScheduledDotDepositChannelMock.block,
+          event: swapScheduledDotDepositChannelMock.eventContext.event as any,
         });
       });
 
@@ -74,15 +101,15 @@ describe(swapScheduled, () => {
 
     it('does not store a new swap if the deposit channel is not found', async () => {
       await prisma.swapDepositChannel.update({
-        where: { id: swapDepositChannel.id },
+        where: { id: dotSwapDepositChannel.id },
         data: { depositAddress: '0x0' },
       });
 
       await prisma.$transaction(async (client) => {
         await swapScheduled({
           prisma: client,
-          block: swapScheduledDepositChannelMock.block,
-          event: swapScheduledDepositChannelMock.eventContext.event as any,
+          block: swapScheduledDotDepositChannelMock.block,
+          event: swapScheduledDotDepositChannelMock.eventContext.event as any,
         });
       });
 
@@ -90,7 +117,7 @@ describe(swapScheduled, () => {
     });
 
     it('does not store a new swap if the deposit channel is not unique', async () => {
-      const { id, uuid, ...rest } = swapDepositChannel;
+      const { id, uuid, ...rest } = dotSwapDepositChannel;
 
       await prisma.swapDepositChannel.create({ data: rest });
 
@@ -98,8 +125,8 @@ describe(swapScheduled, () => {
         prisma.$transaction(async (client) => {
           await swapScheduled({
             prisma: client,
-            block: swapScheduledDepositChannelMock.block,
-            event: swapScheduledDepositChannelMock.eventContext.event as any,
+            block: swapScheduledDotDepositChannelMock.block,
+            event: swapScheduledDotDepositChannelMock.eventContext.event as any,
           });
         }),
       ).rejects.toThrowError();

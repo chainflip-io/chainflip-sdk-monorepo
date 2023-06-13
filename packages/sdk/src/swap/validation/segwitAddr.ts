@@ -69,7 +69,7 @@ const bech32 = {
   createChecksum(hrp: string, data: number[], enc: Encoding) {
     const values = this.hrpExpand(hrp).concat(data).concat([0, 0, 0, 0, 0, 0]);
     // @ts-expect-error can be null
-    const mod = polymod(values) ^ getEncodingConst(enc);
+    const mod = this.polymod(values) ^ this.getEncodingConst(enc);
     const ret = [];
     for (let p = 0; p < 6; p += 1) {
       ret.push((mod >> (5 * (5 - p))) & 31);
@@ -122,7 +122,7 @@ const bech32 = {
   },
 };
 
-const segwitAddress = {
+export const segwitAddress = {
   convertbits(data: number[], frombits: number, tobits: number, pad: boolean) {
     let acc = 0;
     let bits = 0;
@@ -189,7 +189,7 @@ const segwitAddress = {
     const ret = bech32.encode(
       hrp,
       // @ts-expect-error can be null
-      [version].concat(convertbits(program, 8, 5, true)),
+      [version].concat(this.convertbits(program, 8, 5, true)),
       enc,
     );
     if (this.decode(hrp, ret) === null) {

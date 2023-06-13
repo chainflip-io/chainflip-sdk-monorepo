@@ -1,6 +1,6 @@
 import { GraphQLClient } from 'graphql-request';
 import prisma from '../client';
-import { swapScheduledDepositChannelMock } from '../event-handlers/__tests__/utils';
+import { swapScheduledDotDepositChannelMock } from '../event-handlers/__tests__/utils';
 import { GetBatchQuery } from '../gql/generated/graphql';
 import processBlocks from '../processBlocks';
 
@@ -10,18 +10,14 @@ describe(processBlocks, () => {
   });
 
   it('dispatches a SwapScheduled event', async () => {
-    const depositAddress =
-      swapScheduledDepositChannelMock.eventContext.event.args.origin
-        .depositAddress.value;
-
     await prisma.swapDepositChannel.create({
       data: {
-        depositAddress,
+        depositAddress: '5CGLqaFMheyVcsXz6QEtjtSAi6RcXFaEDJKvovgCdPiZhw11',
         issuedBlock: 100,
         expiryBlock: 200,
-        srcAsset: 'ETH',
-        destAsset: 'USDC',
-        destAddress: '0xdeadbeef',
+        srcAsset: 'DOT',
+        destAsset: 'BTC',
+        destAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
         expectedDepositAmount: '1000000000000000000',
       },
     });
@@ -35,7 +31,7 @@ describe(processBlocks, () => {
               height: 1,
               timestamp: 1681989543437,
               events: {
-                nodes: [swapScheduledDepositChannelMock.eventContext.event],
+                nodes: [swapScheduledDotDepositChannelMock.eventContext.event],
               },
             },
           ],
@@ -58,16 +54,16 @@ describe(processBlocks, () => {
       `
       {
         "createdAt": Any<Date>,
-        "depositAmount": "222222222222222222",
+        "depositAmount": "125000000000",
         "depositReceivedAt": 2023-04-20T11:19:03.437Z,
         "depositReceivedBlockIndex": "1-0",
-        "destAddress": "0xdeadbeef",
-        "destAsset": "USDC",
+        "destAddress": "bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa",
+        "destAsset": "BTC",
         "egressCompletedAt": null,
         "egressCompletedBlockIndex": null,
         "id": Any<BigInt>,
-        "nativeId": 9876545n,
-        "srcAsset": "ETH",
+        "nativeId": 1n,
+        "srcAsset": "DOT",
         "swapDepositChannelId": Any<BigInt>,
         "swapExecutedAt": null,
         "swapExecutedBlockIndex": null,

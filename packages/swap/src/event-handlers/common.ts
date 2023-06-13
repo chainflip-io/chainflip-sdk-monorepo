@@ -1,9 +1,12 @@
 import { z } from 'zod';
+import { segwitAddress } from '@/sdk/swap/validation/segwitAddr';
 import { SupportedAsset, Network, network } from '@/shared/enums';
+import { isString } from '@/shared/guards';
 import {
   btcAddress,
   dotAddress,
   hexString,
+  string,
   unsignedInteger,
 } from '@/shared/parsers';
 
@@ -35,12 +38,37 @@ const btcChainAddress = z.object({
     .pipe(btcAddress),
 });
 
+const btcTaprootScriptPubkeyAddress = z.object({
+  __kind: z.literal('Btc'),
+  value: z
+    .object({
+      data: string.regex(/^0x5120/), // taproot script pubkey prefix
+    })
+    .transform((val) =>
+      // TODO 0.9: read BITCOIN_ADDRESS_HRP from rpc: https://github.com/chainflip-io/chainflip-backend/pull/3394
+      segwitAddress.encode(process.env.BITCOIN_ADDRESS_HRP as string, 1, [
+        ...Buffer.from(val.data.slice(6), 'hex'),
+      ]),
+    )
+    .refine(isString),
+});
+
 export const encodedAddress = z
   .union([ethChainAddress, dotChainAddress, btcChainAddress])
   .transform(
     ({ __kind, value }) =>
       ({
-        chain: __kind.toUpperCase() as Uppercase<typeof __kind>,
+        chain: assetToNetwork[__kind.toUpperCase() as Uppercase<typeof __kind>],
+        address: value,
+      } as const),
+  );
+
+export const foreignChainAddress = z
+  .union([ethChainAddress, dotChainAddress, btcTaprootScriptPubkeyAddress])
+  .transform(
+    ({ __kind, value }) =>
+      ({
+        chain: assetToNetwork[__kind.toUpperCase() as Uppercase<typeof __kind>],
         address: value,
       } as const),
   );
