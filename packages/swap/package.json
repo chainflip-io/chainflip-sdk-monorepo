@@ -7,7 +7,7 @@
     "build": "pnpm clean && prisma generate && tsc && tsc-alias",
     "clean": "rm -rf dist",
     "dev": "tsx watch src/index.ts",
-    "dev:process": "tsx src/process.ts",
+    "dev:process": "tsx watch src/process.ts",
     "preinstall": "npx only-allow pnpm",
     "lint": "pnpm eslint --max-warnings 0 './**/*.ts'",
     "postinstall": "prisma generate",

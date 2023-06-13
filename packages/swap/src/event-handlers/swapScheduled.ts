@@ -3,7 +3,7 @@ import assert from 'assert';
 import { z } from 'zod';
 import { stateChainAssetEnum, unsignedInteger } from '@/shared/parsers';
 import logger from '../utils/logger';
-import { encodedAddress } from './common';
+import { encodedAddress, foreignChainAddress } from './common';
 import type { EventHandlerArgs } from '.';
 
 const baseArgsWithoutSource = z.object({
@@ -31,14 +31,13 @@ const baseArgs = z.union([
 
 const depositChannelOrigin = z.object({
   __kind: z.literal('DepositChannel'),
-  depositAddress: encodedAddress,
+  // TODO 0.9: depositAddress is a "EncodedAddress" in 0.9: https://github.com/chainflip-io/chainflip-backend/pull/3394
+  depositAddress: z.union([foreignChainAddress, encodedAddress]),
 });
 
 const vaultOrigin = z.object({
   __kind: z.literal('Vault'),
-  value: z.object({
-    txHash: z.string(),
-  }),
+  txHash: z.string(),
 });
 
 const eventArgs = z.intersection(
