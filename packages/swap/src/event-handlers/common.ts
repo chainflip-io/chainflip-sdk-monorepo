@@ -45,6 +45,7 @@ const btcTaprootScriptPubkeyAddress = z.object({
       data: string.regex(/^0x5120/), // taproot script pubkey prefix
     })
     .transform((val) =>
+      // TODO 0.9: read BITCOIN_ADDRESS_HRP from rpc: https://github.com/chainflip-io/chainflip-backend/pull/3394
       segwitAddress.encode(process.env.BITCOIN_ADDRESS_HRP as string, 1, [
         ...Buffer.from(val.data.slice(6), 'hex'),
       ]),
