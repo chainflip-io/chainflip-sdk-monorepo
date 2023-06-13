@@ -72,33 +72,61 @@ const buildSwapScheduledEvent = <T extends SwapScheduledEvent>(args: T) => ({
   },
 });
 
-export const swapScheduledDepositChannelMock = buildSwapScheduledEvent({
-  sourceAsset: { __kind: 'Eth' },
-  destinationAsset: { __kind: 'Flip' },
-  swapId: '9876545',
-  depositAmount: '222222222222222222',
-  destinationAddress: {
-    __kind: 'Eth',
-    value: ETH_ADDRESS_2,
-  },
+export const swapScheduledDotDepositChannelMock = buildSwapScheduledEvent({
   origin: {
     __kind: 'DepositChannel',
-    depositAddress: { __kind: 'Eth', value: ETH_ADDRESS },
+    channelId: '2',
+    depositAddress: {
+      value:
+        '0x08e03063439bf8a21add4a0648439d2095a6e5d88f5ee7ab8fa715b39ef68126',
+      __kind: 'Dot',
+    },
+  },
+  swapId: '1',
+  sourceAsset: { __kind: 'Dot' },
+  depositAmount: '125000000000',
+  destinationAsset: { __kind: 'Btc' },
+  destinationAddress: {
+    value:
+      '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
+    __kind: 'Btc',
+  },
+} as const);
+
+export const swapScheduledBtcDepositChannelMock = buildSwapScheduledEvent({
+  origin: {
+    __kind: 'DepositChannel',
+    channelId: '2',
+    depositAddress: {
+      value: {
+        data: '0x512043e38e97236589f07b5914d0fe6e60ff3e5590fa2c6d110fac7fb91bf2adfd87',
+      },
+      __kind: 'Btc',
+    },
+  },
+  swapId: '3',
+  depositAsset: { __kind: 'Btc' },
+  depositAmount: '75000000',
+  destinationAsset: { __kind: 'Eth' },
+  destinationAddress: {
+    value: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
+    __kind: 'Eth',
   },
 } as const);
 
 export const swapScheduledVaultMock = buildSwapScheduledEvent({
-  sourceAsset: { __kind: 'Eth' },
-  destinationAsset: { __kind: 'Flip' },
-  swapId: '9876545',
-  depositAmount: '222222222222222222',
-  destinationAddress: { __kind: 'Eth', value: ETH_ADDRESS },
   origin: {
     __kind: 'Vault',
-    value: {
-      txHash:
-        '0x414833b2fc5d31e2b967d2badd3fe658e5badc2b36543d579de00aed17ccc230',
-    },
+    txHash:
+      '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
+  },
+  swapId: '2',
+  depositAsset: { __kind: 'Eth' },
+  depositAmount: '175000000000000000',
+  destinationAsset: { __kind: 'Dot' },
+  destinationAddress: {
+    value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
+    __kind: 'Dot',
   },
 } as const);
 
