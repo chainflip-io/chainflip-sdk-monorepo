@@ -33,7 +33,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ethers": "5.7.2",
+    "ethers": "6.6.0",
     "yargs": "^17.5.1",
     "zod": "^3.21.4"
   },
