@@ -31,7 +31,7 @@ export const getTokenContractAddress = (
 const SISYPHOS_STATE_CHAIN_MANAGER_CONTRACT_ADDRESS =
   '0x501E4D376001Dd74ca37f99b744Ab2889f7b4650';
 
-export const getStateChainManagerContractAddress = (
+export const getStateChainGatewayContractAddress = (
   cfNetwork: ChainflipNetwork,
 ): string => {
   if (cfNetwork === 'sisyphos') {

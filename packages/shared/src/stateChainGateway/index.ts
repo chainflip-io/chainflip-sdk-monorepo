@@ -1,7 +1,7 @@
-import type { ContractReceipt, Signer } from 'ethers';
+import type { BigNumber, ContractReceipt, Signer } from 'ethers';
 import { StateChainGateway__factory } from '../abis';
 import {
-  getStateChainManagerContractAddress,
+  getStateChainGatewayContractAddress,
   getTokenContractAddress,
   requestApproval,
 } from '../contracts';
@@ -13,9 +13,21 @@ export type FundStateChainAccountOptions =
   | {
       network: 'localnet';
       signer: Signer;
-      stateChainManagerContractAddress: string;
+      stateChainGatewayContractAddress: string;
       flipContractAddress: string;
     };
+
+export const getStateChainGateway = (options: ExecuteRedpemptionOptions) => {
+  const stateChainGatewayContractAddress =
+    options.network === 'localnet'
+      ? options.stateChainGatewayContractAddress
+      : getStateChainGatewayContractAddress(options.network);
+
+  return StateChainGateway__factory.connect(
+    stateChainGatewayContractAddress,
+    options.signer,
+  );
+};
 
 export const fundStateChainAccount = async (
   accountId: `0x${string}`,
@@ -27,24 +39,16 @@ export const fundStateChainAccount = async (
       ? options.flipContractAddress
       : getTokenContractAddress('FLIP', options.network);
 
-  const stateChainManagerContractAddress =
-    options.network === 'localnet'
-      ? options.stateChainManagerContractAddress
-      : getStateChainManagerContractAddress(options.network);
+  const stateChainGateway = getStateChainGateway(options);
 
   await requestApproval(
     flipContractAddress,
-    stateChainManagerContractAddress,
+    stateChainGateway.address,
     amount,
     options.signer,
   );
 
-  const stateChainManager = StateChainGateway__factory.connect(
-    stateChainManagerContractAddress,
-    options.signer,
-  );
-
-  const transaction = await stateChainManager.fundStateChainAccount(
+  const transaction = await stateChainGateway.fundStateChainAccount(
     accountId,
     amount,
   );
@@ -61,28 +65,36 @@ type ExecuteRedpemptionOptions =
   | {
       network: 'localnet';
       signer: Signer;
-      stateChainManagerContractAddress: string;
+      stateChainGatewayContractAddress: string;
     };
 
 export const executeRedemption = async (
   accountId: `0x${string}`,
   options: ExecuteRedpemptionOptions,
-) => {
-  const stateChainManagerContractAddress =
-    options.network === 'localnet'
-      ? options.stateChainManagerContractAddress
-      : getStateChainManagerContractAddress(options.network);
+): Promise<ContractReceipt> => {
+  const stateChainGateway = getStateChainGateway(options);
 
-  const stateChainManager = StateChainGateway__factory.connect(
-    stateChainManagerContractAddress,
-    options.signer,
-  );
-
-  const transaction = await stateChainManager.executeRedemption(accountId);
+  const transaction = await stateChainGateway.executeRedemption(accountId);
 
   const receipt = await transaction.wait(1);
 
   assert(receipt.status !== 0, 'Redemption failed');
 
   return receipt;
+};
+
+export const getMinimumFunding = (
+  options: ExecuteRedpemptionOptions,
+): Promise<BigNumber> => {
+  const stateChainGateway = getStateChainGateway(options);
+
+  return stateChainGateway.getMinimumFunding();
+};
+
+export const getRedemptionDelay = (
+  options: ExecuteRedpemptionOptions,
+): Promise<number> => {
+  const stateChainGateway = getStateChainGateway(options);
+
+  return stateChainGateway.REDEMPTION_DELAY();
 };

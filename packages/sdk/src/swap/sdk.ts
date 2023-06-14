@@ -71,12 +71,11 @@ export class SwapSDK {
     return ApiService.getStatus(this.baseUrl, swapStatusRequest, options);
   }
 
-  executeSwap(
-    params: ExecuteSwapParams,
-    signer?: Signer,
-  ): Promise<ContractReceipt> {
-    const s = signer ?? this.signer;
-    assert(s, 'No signer provided');
-    return executeSwap(params, { cfNetwork: this.network, signer: s });
+  executeSwap(params: ExecuteSwapParams): Promise<ContractReceipt> {
+    assert(this.signer, 'No signer provided');
+    return executeSwap(params, {
+      cfNetwork: this.network,
+      signer: this.signer,
+    });
   }
 }
