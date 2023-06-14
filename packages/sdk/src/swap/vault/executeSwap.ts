@@ -137,7 +137,7 @@ const executeSwap = async (
   params: ExecuteSwapParams,
   options: ExecuteSwapOptions,
 ): Promise<ContractReceipt> => {
-  executeSwapParamsSchema.parse(params);
+  const parsedParams = executeSwapParamsSchema.parse(params);
   const opts = executeSwapOptionsSchema.parse(options);
 
   let vaultContractAddress: string | undefined;
@@ -154,8 +154,8 @@ const executeSwap = async (
 
   const vault = Vault__factory.connect(vaultContractAddress, opts.signer);
 
-  if (isTokenSwap(params)) return swapToken(vault, params, opts);
-  return swapNative(vault, params);
+  if (isTokenSwap(parsedParams)) return swapToken(vault, parsedParams, opts);
+  return swapNative(vault, parsedParams);
 };
 
 export default executeSwap;
