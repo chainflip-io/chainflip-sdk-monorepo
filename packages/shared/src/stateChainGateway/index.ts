@@ -8,16 +8,24 @@ import {
 import { ChainflipNetwork } from '../enums';
 import { assert } from '../guards';
 
-export type FundStateChainAccountOptions =
+type SignerOptions =
   | { network: ChainflipNetwork; signer: Signer }
   | {
       network: 'localnet';
       signer: Signer;
       stateChainGatewayContractAddress: string;
-      flipContractAddress: string;
     };
 
-export const getStateChainGateway = (options: ExecuteRedpemptionOptions) => {
+type ExtendLocalnetOptions<T, U> = T extends { network: 'localnet' }
+  ? T & U
+  : T;
+
+export type FundStateChainAccountOptions = ExtendLocalnetOptions<
+  SignerOptions,
+  { flipContractAddress: string }
+>;
+
+export const getStateChainGateway = (options: SignerOptions) => {
   const stateChainGatewayContractAddress =
     options.network === 'localnet'
       ? options.stateChainGatewayContractAddress
@@ -60,17 +68,9 @@ export const fundStateChainAccount = async (
   return receipt;
 };
 
-type ExecuteRedpemptionOptions =
-  | { network: ChainflipNetwork; signer: Signer }
-  | {
-      network: 'localnet';
-      signer: Signer;
-      stateChainGatewayContractAddress: string;
-    };
-
 export const executeRedemption = async (
   accountId: `0x${string}`,
-  options: ExecuteRedpemptionOptions,
+  options: SignerOptions,
 ): Promise<ContractReceipt> => {
   const stateChainGateway = getStateChainGateway(options);
 
@@ -84,16 +84,14 @@ export const executeRedemption = async (
 };
 
 export const getMinimumFunding = (
-  options: ExecuteRedpemptionOptions,
+  options: SignerOptions,
 ): Promise<BigNumber> => {
   const stateChainGateway = getStateChainGateway(options);
 
   return stateChainGateway.getMinimumFunding();
 };
 
-export const getRedemptionDelay = (
-  options: ExecuteRedpemptionOptions,
-): Promise<number> => {
+export const getRedemptionDelay = (options: SignerOptions): Promise<number> => {
   const stateChainGateway = getStateChainGateway(options);
 
   return stateChainGateway.REDEMPTION_DELAY();
