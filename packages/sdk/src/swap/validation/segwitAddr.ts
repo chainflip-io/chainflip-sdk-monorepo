@@ -199,15 +199,8 @@ export const segwitAddress = {
   },
 };
 
-export const segwitRegex = /^(bc|tb|bcrt)1/;
-
-export const decodeSegwitAddress = (address: string): number[] | null => {
-  const hrp = segwitRegex.exec(address)?.[1];
-  if (!hrp) return null;
-  const decoded = segwitAddress.decode(hrp, address);
-  if (!decoded) return null;
-  return decoded.program;
+export const isValidSegwitAddress = (address: string) => {
+  const hrp = /^(bc|tb|bcrt)1/.exec(address)?.[1];
+  if (!hrp) return false;
+  return segwitAddress.decode(hrp, address) !== null;
 };
-
-export const isValidSegwitAddress = (address: string) =>
-  decodeSegwitAddress(address) !== null;

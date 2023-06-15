@@ -1,8 +1,6 @@
 import { decodeAddress } from '@polkadot/util-crypto';
-import { ethers } from 'ethers';
 import { z } from 'zod';
 import { supportedAsset } from '@/shared/enums';
-import { isNotNull } from '@/shared/guards';
 import {
   btcAddress,
   dotAddress,
@@ -10,10 +8,11 @@ import {
   numericString,
 } from '@/shared/parsers';
 import { ChainId } from '../sdk';
-import { decodeSegwitAddress, segwitRegex } from '../validation/segwitAddr';
 
 const bytesToHex = (arr: Uint8Array | number[]) =>
   `0x${[...arr].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+
+const utf8ToHex = (str: string) => Buffer.from(str).toString('hex');
 
 const base = z.object({ amount: numericString });
 
@@ -29,14 +28,7 @@ const polkadotBase = base.extend({
 
 const bitcoinBase = base.extend({
   destChainId: z.literal(ChainId.Bitcoin),
-  destAddress: btcAddress
-    .transform((addr) =>
-      segwitRegex.test(addr)
-        ? decodeSegwitAddress(addr)
-        : ethers.utils.base58.decode(addr),
-    )
-    .refine(isNotNull)
-    .transform(bytesToHex),
+  destAddress: btcAddress.transform(utf8ToHex),
 });
 
 const erc20 = z.union([
