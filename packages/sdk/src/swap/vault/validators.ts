@@ -12,7 +12,7 @@ import { ChainId } from '../sdk';
 const bytesToHex = (arr: Uint8Array | number[]) =>
   `0x${[...arr].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
 
-const utf8ToHex = (str: string) => Buffer.from(str).toString('hex');
+const utf8ToHex = (str: string) => `0x${Buffer.from(str).toString('hex')}`;
 
 const base = z.object({ amount: numericString });
 
