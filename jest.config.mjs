@@ -49,7 +49,10 @@ export default {
   collectCoverage: true,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
-  collectCoverageFrom: ['src/**/*.{js,jsx,ts,tsx}', '!src/**/*.test.ts'],
+  collectCoverageFrom: [
+    'packages/src/**/*.{js,jsx,ts,tsx}',
+    '!packages/src/**/*.test.ts',
+  ],
 
   // The directory where Jest should output its coverage files
   coverageDirectory: 'coverage',
