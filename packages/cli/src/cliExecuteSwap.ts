@@ -68,9 +68,9 @@ export default async function cliExecuteSwap(unvalidatedArgs: unknown) {
           vaultContractAddress: args.vaultContractAddress,
           srcTokenContractAddress: args.srcTokenContractAddress,
           signer: wallet,
-          cfNetwork: 'localnet',
+          network: 'localnet',
         }
-      : { cfNetwork: args.chainflipNetwork, signer: wallet };
+      : { network: args.chainflipNetwork, signer: wallet };
 
   const txHash = await executeSwap(args as ExecuteSwapParams, opts);
 

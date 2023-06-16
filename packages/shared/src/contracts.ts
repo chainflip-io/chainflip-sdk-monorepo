@@ -15,9 +15,9 @@ export const GOERLI_USDC_CONTRACT_ADDRESS =
 
 export const getTokenContractAddress = (
   asset: SupportedAsset,
-  cfNetwork: ChainflipNetwork,
+  network: ChainflipNetwork,
 ): string => {
-  assert(cfNetwork === 'sisyphos', 'Only sisyphos is supported for now');
+  assert(network === 'sisyphos', 'Only sisyphos is supported for now');
 
   if (asset === 'FLIP') return SISYPHOS_FLIP_CONTRACT_ADDRESS;
 
@@ -30,13 +30,13 @@ export const SISYPHOS_STATE_CHAIN_MANAGER_CONTRACT_ADDRESS =
   '0x501E4D376001Dd74ca37f99b744Ab2889f7b4650';
 
 export const getStateChainGatewayContractAddress = (
-  cfNetwork: ChainflipNetwork,
+  network: ChainflipNetwork,
 ): string => {
-  switch (cfNetwork) {
+  switch (network) {
     case 'sisyphos':
       return SISYPHOS_STATE_CHAIN_MANAGER_CONTRACT_ADDRESS;
     default:
-      throw new Error(`Unsupported network: ${cfNetwork}`);
+      throw new Error(`Unsupported network: ${network}`);
   }
 };
 
@@ -56,12 +56,12 @@ export const requestApproval = async (
 };
 
 export const getVaultManagerContractAddress = (
-  cfNetwork: ChainflipNetwork,
+  network: ChainflipNetwork,
 ): string => {
-  switch (cfNetwork) {
+  switch (network) {
     case 'sisyphos':
       return SISYPHOS_VAULT_CONTRACT_ADDRESS;
     default:
-      throw new Error(`Unsupported network: ${cfNetwork}`);
+      throw new Error(`Unsupported network: ${network}`);
   }
 };

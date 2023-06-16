@@ -8,14 +8,14 @@ import {
 import { ChainflipNetwork } from '../enums';
 
 type SignerOptions =
-  | { cfNetwork: ChainflipNetwork; signer: Signer }
+  | { network: ChainflipNetwork; signer: Signer }
   | {
-      cfNetwork: 'localnet';
+      network: 'localnet';
       signer: Signer;
       stateChainGatewayContractAddress: string;
     };
 
-type ExtendLocalnetOptions<T, U> = T extends { cfNetwork: 'localnet' }
+type ExtendLocalnetOptions<T, U> = T extends { network: 'localnet' }
   ? T & U
   : T;
 
@@ -26,9 +26,9 @@ export type FundStateChainAccountOptions = ExtendLocalnetOptions<
 
 export const getStateChainGateway = (options: SignerOptions) => {
   const stateChainGatewayContractAddress =
-    options.cfNetwork === 'localnet'
+    options.network === 'localnet'
       ? options.stateChainGatewayContractAddress
-      : getStateChainGatewayContractAddress(options.cfNetwork);
+      : getStateChainGatewayContractAddress(options.network);
 
   return StateChainGateway__factory.connect(
     stateChainGatewayContractAddress,
@@ -42,9 +42,9 @@ export const fundStateChainAccount = async (
   options: FundStateChainAccountOptions,
 ): Promise<ContractReceipt> => {
   const flipContractAddress =
-    options.cfNetwork === 'localnet'
+    options.network === 'localnet'
       ? options.flipContractAddress
-      : getTokenContractAddress('FLIP', options.cfNetwork);
+      : getTokenContractAddress('FLIP', options.network);
 
   const stateChainGateway = getStateChainGateway(options);
 

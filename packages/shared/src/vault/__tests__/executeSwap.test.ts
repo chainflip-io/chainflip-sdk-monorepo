@@ -40,10 +40,10 @@ jest.mock('../../abis/factories/ERC20__factory', () => ({
 describe(executeSwap, () => {
   it.each(['perseverance', 'mainnet'] as const)(
     'only works on sisyphos for now',
-    async (cfNetwork) => {
+    async (network) => {
       await expect(
         executeSwap({} as any, {
-          cfNetwork,
+          network,
           signer: new VoidSigner('MY ADDRESS'),
         }),
       ).rejects.toThrowError();
@@ -83,7 +83,7 @@ describe(executeSwap, () => {
 
       expect(
         await executeSwap({ amount: '1', ...params } as ExecuteSwapParams, {
-          cfNetwork: 'sisyphos',
+          network: 'sisyphos',
           signer: new VoidSigner('MY ADDRESS'),
         }),
       ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
@@ -104,7 +104,7 @@ describe(executeSwap, () => {
           destAddress: DOT_ADDRESS,
           amount: '1',
         },
-        { cfNetwork: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
+        { network: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
       ),
     ).rejects.toThrowError();
   });
@@ -146,7 +146,7 @@ describe(executeSwap, () => {
 
       expect(
         await executeSwap({ amount: '1', ...params } as ExecuteSwapParams, {
-          cfNetwork: 'sisyphos',
+          network: 'sisyphos',
           signer: new VoidSigner('MY ADDRESS'),
         }),
       ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
@@ -180,7 +180,7 @@ describe(executeSwap, () => {
           srcTokenSymbol: 'FLIP',
           amount: '1',
         } as ExecuteSwapParams,
-        { cfNetwork: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
+        { network: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
       ),
     ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
     expect(wait).toHaveBeenCalledWith(1);
@@ -205,7 +205,7 @@ describe(executeSwap, () => {
           srcTokenSymbol: 'FLIP',
           amount: '1',
         },
-        { cfNetwork: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
+        { network: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
       ),
     ).rejects.toThrowError();
   });
@@ -224,7 +224,7 @@ describe(executeSwap, () => {
           srcTokenSymbol: 'FLIP',
           amount: '1',
         },
-        { cfNetwork: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
+        { network: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
       ),
     ).rejects.toThrowError();
   });
@@ -253,7 +253,7 @@ describe(executeSwap, () => {
           amount: '1',
         } as ExecuteSwapParams,
         {
-          cfNetwork: 'localnet',
+          network: 'localnet',
           signer: new VoidSigner('MY ADDRESS'),
           vaultContractAddress: '0x123',
           srcTokenContractAddress: '0x456',

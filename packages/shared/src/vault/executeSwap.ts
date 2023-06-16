@@ -56,9 +56,9 @@ const swapToken = async (
   { signer, ...opts }: ExecuteSwapOptions,
 ): Promise<ContractReceipt> => {
   const erc20Address =
-    opts.cfNetwork === 'localnet'
+    opts.network === 'localnet'
       ? opts.srcTokenContractAddress
-      : getTokenContractAddress(params.srcTokenSymbol, opts.cfNetwork);
+      : getTokenContractAddress(params.srcTokenSymbol, opts.network);
 
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
@@ -82,9 +82,9 @@ const isTokenSwap = (params: ExecuteSwapParams): params is TokenSwapParams =>
 const executeSwapOptionsSchema = z.intersection(
   z.object({ signer: z.instanceof(Signer) }),
   z.union([
-    z.object({ cfNetwork: chainflipNetwork }),
+    z.object({ network: chainflipNetwork }),
     z.object({
-      cfNetwork: z.literal('localnet'),
+      network: z.literal('localnet'),
       vaultContractAddress: z.string(),
       srcTokenContractAddress: z.string().optional(),
     }),
@@ -101,9 +101,9 @@ const executeSwap = async (
   const opts = executeSwapOptionsSchema.parse(options);
 
   const vaultContractAddress =
-    opts.cfNetwork === 'localnet'
+    opts.network === 'localnet'
       ? opts.vaultContractAddress
-      : getVaultManagerContractAddress(opts.cfNetwork);
+      : getVaultManagerContractAddress(opts.network);
 
   assert(
     vaultContractAddress !== undefined,

@@ -59,11 +59,11 @@ export default async function cliFundStateChainAccount(
     args.chainflipNetwork === 'localnet'
       ? {
           signer: wallet,
-          cfNetwork: 'localnet',
+          network: 'localnet',
           stateChainGatewayContractAddress,
           flipContractAddress,
         }
-      : { cfNetwork: args.chainflipNetwork, signer: wallet };
+      : { network: args.chainflipNetwork, signer: wallet };
 
   return fundStateChainAccount(accountId, amount, opts);
 }

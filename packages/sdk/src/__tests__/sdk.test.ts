@@ -120,7 +120,7 @@ describe(SwapSDK, () => {
       const swap = {};
       sdk.executeSwap(swap as any);
       expect(executeSwap).toHaveBeenCalledWith(swap, {
-        cfNetwork: 'sisyphos',
+        network: 'sisyphos',
         signer,
       });
     });

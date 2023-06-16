@@ -43,10 +43,10 @@ const signerOptions = {
 describe(getStateChainGateway, () => {
   it.each(['sisyphos'] as const)(
     'returns the correct gateway for %s',
-    (cfNetwork) => {
+    (network) => {
       expect(
         getStateChainGateway({
-          cfNetwork,
+          network,
           signer: new VoidSigner('0x0'),
         }),
       ).toMatchObject({
@@ -59,7 +59,7 @@ describe(getStateChainGateway, () => {
     const address = '0x1234';
     expect(
       getStateChainGateway({
-        cfNetwork: 'localnet',
+        network: 'localnet',
         signer: new VoidSigner('0x0').connect(
           ethers.providers.getDefaultProvider('goerli'),
         ),

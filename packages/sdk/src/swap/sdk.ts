@@ -74,7 +74,7 @@ export class SwapSDK {
   executeSwap(params: ExecuteSwapParams): Promise<ContractReceipt> {
     assert(this.signer, 'No signer provided');
     return executeSwap(params, {
-      cfNetwork: this.network,
+      network: this.network,
       signer: this.signer,
     });
   }
