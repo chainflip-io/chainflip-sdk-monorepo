@@ -44,12 +44,12 @@ export class FundingSDK {
     return executeRedemption(accountId, this.options);
   }
 
-  async getMinimumFunding() {
+  async getMinimumFunding(): Promise<string> {
     const amount = await getMinimumFunding(this.options);
     return amount.toString();
   }
 
-  async getRedemptionDelay() {
+  async getRedemptionDelay(): Promise<number> {
     return getRedemptionDelay(this.options);
   }
 }
