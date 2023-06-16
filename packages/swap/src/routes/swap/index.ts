@@ -1,7 +1,7 @@
 import assert from 'assert';
 import express from 'express';
-import { validateAddress } from '@/shared/validation/addressValidation';
 import { postSwapSchema } from '@/shared/schemas';
+import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../../client';
 import { submitSwapToBroker } from '../../utils/broker';
 import { isProduction } from '../../utils/consts';
