@@ -27,6 +27,7 @@
   ],
   "scripts": {
     "build": "rm -rf dist && tsup",
+    "test": "jest",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [],

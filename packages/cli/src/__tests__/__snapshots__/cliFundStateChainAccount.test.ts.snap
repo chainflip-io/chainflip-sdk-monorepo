@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`schema properly parses the arguments 1`] = `
+{
+  "accountId": "0x1",
+  "amount": "1000000",
+  "chainflipNetwork": "localnet",
+  "ethNetwork": "test",
+  "flipTokenContractAddress": "0x4",
+  "stateChainManagerContractAddress": "0x3",
+  "walletPrivateKey": "0x2",
+}
+`;
+
+exports[`schema properly parses the arguments 2`] = `
+{
+  "accountId": "0x1",
+  "amount": "1000000",
+  "chainflipNetwork": "sisyphos",
+  "walletPrivateKey": "0x2",
+}
+`;

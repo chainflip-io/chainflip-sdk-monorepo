@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`schema properly parses the arguments 1`] = `
+{
+  "amount": "1000000000",
+  "chainflipNetwork": "localnet",
+  "destAddress": "0x0",
+  "destChainId": 1,
+  "destTokenSymbol": "USDC",
+  "ethNetwork": "test",
+  "srcTokenContractAddress": "0x0",
+  "vaultContractAddress": "0x0",
+  "walletPrivateKey": "0x2",
+}
+`;
+
+exports[`schema properly parses the arguments 2`] = `
+{
+  "amount": "1000000000",
+  "chainflipNetwork": "sisyphos",
+  "destAddress": "0x0",
+  "destChainId": 1,
+  "destTokenSymbol": "USDC",
+  "walletPrivateKey": "0x2",
+}
+`;

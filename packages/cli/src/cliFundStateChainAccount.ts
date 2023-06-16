@@ -9,7 +9,7 @@ import { FundStateChainAccountOptions } from '@/shared/stateChainGateway';
 import { fundStateChainAccount } from './lib';
 import { askForPrivateKey, getEthNetwork } from './utils';
 
-const schema = z.intersection(
+export const schema = z.intersection(
   z.union([
     z.object({
       chainflipNetwork: z.literal('localnet'),

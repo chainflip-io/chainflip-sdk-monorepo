@@ -19,7 +19,7 @@ const assetToNetworkMap: Record<SupportedAsset, ChainId> = {
   DOT: ChainId.Polkadot,
 };
 
-const argsSchema = z
+export const schema = z
   .intersection(
     z.union([
       z.object({
@@ -50,7 +50,7 @@ const argsSchema = z
   });
 
 export default async function cliExecuteSwap(unvalidatedArgs: unknown) {
-  const { walletPrivateKey, ...args } = argsSchema.parse(unvalidatedArgs);
+  const { walletPrivateKey, ...args } = schema.parse(unvalidatedArgs);
 
   const privateKey = walletPrivateKey ?? (await askForPrivateKey());
 
