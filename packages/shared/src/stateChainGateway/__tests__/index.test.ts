@@ -46,7 +46,7 @@ describe(getStateChainGateway, () => {
     (cfNetwork) => {
       expect(
         getStateChainGateway({
-          cfNetwork: cfNetwork,
+          cfNetwork,
           signer: new VoidSigner('0x0'),
         }),
       ).toMatchObject({
