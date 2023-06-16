@@ -39,7 +39,8 @@
     "build": "tsc -p tsconfig.cjs.json && tsc -p tsconfig.mjs.json",
     "build:abis": "typechain --target=ethers-v5 --out-dir=./src/abis ./abis/**",
     "lint": "pnpm eslint --max-warnings 0 './**/*.ts'",
-    "test": "jest"
+    "test": "jest",
+    "test:ci": "CI=1 pnpm test"
   },
   "keywords": [],
   "author": "",
