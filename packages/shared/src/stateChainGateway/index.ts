@@ -6,17 +6,16 @@ import {
   requestApproval,
 } from '../contracts';
 import { ChainflipNetwork } from '../enums';
-import { assert } from '../guards';
 
 type SignerOptions =
-  | { network: ChainflipNetwork; signer: Signer }
+  | { cfNetwork: ChainflipNetwork; signer: Signer }
   | {
-      network: 'localnet';
+      cfNetwork: 'localnet';
       signer: Signer;
       stateChainGatewayContractAddress: string;
     };
 
-type ExtendLocalnetOptions<T, U> = T extends { network: 'localnet' }
+type ExtendLocalnetOptions<T, U> = T extends { cfNetwork: 'localnet' }
   ? T & U
   : T;
 
@@ -27,9 +26,9 @@ export type FundStateChainAccountOptions = ExtendLocalnetOptions<
 
 export const getStateChainGateway = (options: SignerOptions) => {
   const stateChainGatewayContractAddress =
-    options.network === 'localnet'
+    options.cfNetwork === 'localnet'
       ? options.stateChainGatewayContractAddress
-      : getStateChainGatewayContractAddress(options.network);
+      : getStateChainGatewayContractAddress(options.cfNetwork);
 
   return StateChainGateway__factory.connect(
     stateChainGatewayContractAddress,
@@ -43,9 +42,9 @@ export const fundStateChainAccount = async (
   options: FundStateChainAccountOptions,
 ): Promise<ContractReceipt> => {
   const flipContractAddress =
-    options.network === 'localnet'
+    options.cfNetwork === 'localnet'
       ? options.flipContractAddress
-      : getTokenContractAddress('FLIP', options.network);
+      : getTokenContractAddress('FLIP', options.cfNetwork);
 
   const stateChainGateway = getStateChainGateway(options);
 
@@ -61,11 +60,7 @@ export const fundStateChainAccount = async (
     amount,
   );
 
-  const receipt = await transaction.wait(1);
-
-  assert(receipt.status !== 0, 'Transaction failed');
-
-  return receipt;
+  return transaction.wait(1);
 };
 
 export const executeRedemption = async (
@@ -76,11 +71,7 @@ export const executeRedemption = async (
 
   const transaction = await stateChainGateway.executeRedemption(accountId);
 
-  const receipt = await transaction.wait(1);
-
-  assert(receipt.status !== 0, 'Redemption failed');
-
-  return receipt;
+  return transaction.wait(1);
 };
 
 export const getMinimumFunding = (

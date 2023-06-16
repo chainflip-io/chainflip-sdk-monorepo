@@ -1,6 +1,6 @@
 import type { Signer } from 'ethers';
 import { ERC20__factory } from './abis';
-import { type ChainflipNetwork, type SupportedAsset, isTestnet } from './enums';
+import { type ChainflipNetwork, type SupportedAsset } from './enums';
 import { assert } from './guards';
 
 // https://github.com/chainflip-io/chainflip-testnet-tools/actions/runs/5077994260#summary-13750268632
@@ -17,11 +17,9 @@ export const getTokenContractAddress = (
   asset: SupportedAsset,
   cfNetwork: ChainflipNetwork,
 ): string => {
-  assert(isTestnet(cfNetwork), 'Only testnets are supported for now');
+  assert(cfNetwork === 'sisyphos', 'Only sisyphos is supported for now');
 
-  if (asset === 'FLIP' && cfNetwork === 'sisyphos') {
-    return SISYPHOS_FLIP_CONTRACT_ADDRESS;
-  }
+  if (asset === 'FLIP') return SISYPHOS_FLIP_CONTRACT_ADDRESS;
 
   assert(asset === 'USDC', 'Only FLIP and USDC are supported for now');
 
@@ -34,11 +32,12 @@ export const SISYPHOS_STATE_CHAIN_MANAGER_CONTRACT_ADDRESS =
 export const getStateChainGatewayContractAddress = (
   cfNetwork: ChainflipNetwork,
 ): string => {
-  if (cfNetwork === 'sisyphos') {
-    return SISYPHOS_STATE_CHAIN_MANAGER_CONTRACT_ADDRESS;
+  switch (cfNetwork) {
+    case 'sisyphos':
+      return SISYPHOS_STATE_CHAIN_MANAGER_CONTRACT_ADDRESS;
+    default:
+      throw new Error(`Unsupported network: ${cfNetwork}`);
   }
-
-  throw new Error('Only Sisyphos is supported for now');
 };
 
 export const requestApproval = async (
@@ -52,8 +51,17 @@ export const requestApproval = async (
   const allowance = await erc20.allowance(signerAddress, approvalAddress);
 
   if (allowance.lt(amount)) {
-    const approval = await erc20.approve(approvalAddress, amount);
-    const approvalReceipt = await approval.wait(1);
-    assert(approvalReceipt.status !== 0, 'Approval failed');
+    await erc20.approve(approvalAddress, amount);
+  }
+};
+
+export const getVaultManagerContractAddress = (
+  cfNetwork: ChainflipNetwork,
+): string => {
+  switch (cfNetwork) {
+    case 'sisyphos':
+      return SISYPHOS_VAULT_CONTRACT_ADDRESS;
+    default:
+      throw new Error(`Unsupported network: ${cfNetwork}`);
   }
 };

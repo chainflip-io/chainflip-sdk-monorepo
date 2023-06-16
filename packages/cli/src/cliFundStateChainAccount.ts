@@ -1,39 +1,43 @@
 import { ContractReceipt, Wallet, getDefaultProvider, providers } from 'ethers';
 import { z } from 'zod';
+import {
+  getStateChainGatewayContractAddress,
+  getTokenContractAddress,
+} from '@/shared/contracts';
+import { chainflipNetwork } from '@/shared/enums';
 import { FundStateChainAccountOptions } from '@/shared/stateChainGateway';
 import { fundStateChainAccount } from './lib';
-import { askForPrivateKey, signerSchema } from './utils';
+import { askForPrivateKey, getEthNetwork } from './utils';
 
 const schema = z.intersection(
-  signerSchema,
+  z.union([
+    z.object({
+      chainflipNetwork: z.literal('localnet'),
+      ethNetwork: z.string(),
+      stateChainManagerContractAddress: z.string(),
+      flipTokenContractAddress: z.string(),
+    }),
+    z.object({ chainflipNetwork }),
+  ]),
   z.object({
+    walletPrivateKey: z.string().optional(),
     accountId: z
       .string()
       .regex(/^0x[\da-f]+/i)
       .transform((x) => x as `0x${string}`),
     amount: z.string().regex(/^\d+$/),
-    ethNetwork: z.string().optional(),
-    stateChainManagerContractAddress: z.string().optional(),
   }),
 );
 
 export default async function cliFundStateChainAccount(
-  args: unknown,
+  unvalidatedArgs: unknown,
 ): Promise<ContractReceipt> {
-  const {
-    accountId,
-    walletPrivateKey,
-    chainflipNetwork,
-    amount,
-    ...validatedArgs
-  } = schema.parse(args);
+  const { accountId, walletPrivateKey, amount, ...args } =
+    schema.parse(unvalidatedArgs);
 
   const privateKey = walletPrivateKey ?? (await askForPrivateKey());
 
-  const ethNetwork =
-    validatedArgs.ethNetwork ?? chainflipNetwork === 'mainnet'
-      ? 'mainnet'
-      : 'goerli';
+  const ethNetwork = getEthNetwork(args);
 
   const wallet = new Wallet(privateKey).connect(
     process.env.ALCHEMY_KEY
@@ -41,9 +45,25 @@ export default async function cliFundStateChainAccount(
       : getDefaultProvider(ethNetwork),
   );
 
-  return fundStateChainAccount(accountId, amount, {
-    signer: wallet,
-    network: chainflipNetwork,
-    ...validatedArgs,
-  } as FundStateChainAccountOptions);
+  const flipContractAddress =
+    args.chainflipNetwork === 'localnet'
+      ? args.flipTokenContractAddress
+      : getTokenContractAddress('FLIP', args.chainflipNetwork);
+
+  const stateChainGatewayContractAddress =
+    args.chainflipNetwork === 'localnet'
+      ? args.stateChainManagerContractAddress
+      : getStateChainGatewayContractAddress(args.chainflipNetwork);
+
+  const opts: FundStateChainAccountOptions =
+    args.chainflipNetwork === 'localnet'
+      ? {
+          signer: wallet,
+          cfNetwork: 'localnet',
+          stateChainGatewayContractAddress,
+          flipContractAddress,
+        }
+      : { cfNetwork: args.chainflipNetwork, signer: wallet };
+
+  return fundStateChainAccount(accountId, amount, opts);
 }

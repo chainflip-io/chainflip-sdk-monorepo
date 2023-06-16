@@ -1,6 +1,5 @@
 import { createInterface } from 'node:readline/promises';
-import { z } from 'zod';
-import { chainflipNetwork } from '@/shared/enums';
+import { ChainflipNetwork } from './enums';
 
 export const askForPrivateKey = async () => {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
@@ -12,8 +11,12 @@ export const askForPrivateKey = async () => {
   }
 };
 
-export const signerSchema = z.object({
-  walletPrivateKey: z.string().optional(),
-  chainflipNetwork: z.union([chainflipNetwork, z.literal('localnet')]),
-  ethNetwork: z.string().optional(),
-});
+type GetEthNetworkOptions =
+  | { chainflipNetwork: 'localnet'; ethNetwork: string }
+  | { chainflipNetwork: ChainflipNetwork };
+
+export function getEthNetwork(opts: GetEthNetworkOptions) {
+  if (opts.chainflipNetwork === 'localnet') return opts.ethNetwork;
+  if (opts.chainflipNetwork === 'mainnet') return 'mainnet';
+  return 'goerli';
+}

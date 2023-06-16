@@ -46,7 +46,7 @@ describe(getStateChainGateway, () => {
     (cfNetwork) => {
       expect(
         getStateChainGateway({
-          network: cfNetwork,
+          cfNetwork: cfNetwork,
           signer: new VoidSigner('0x0'),
         }),
       ).toMatchObject({
@@ -59,7 +59,7 @@ describe(getStateChainGateway, () => {
     const address = '0x1234';
     expect(
       getStateChainGateway({
-        network: 'localnet',
+        cfNetwork: 'localnet',
         signer: new VoidSigner('0x0').connect(
           ethers.providers.getDefaultProvider('goerli'),
         ),

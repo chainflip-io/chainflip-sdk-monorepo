@@ -2,18 +2,11 @@ import { ContractReceipt, Signer } from 'ethers';
 import { z } from 'zod';
 import { Vault, Vault__factory } from '../abis';
 import {
-  SISYPHOS_FLIP_CONTRACT_ADDRESS,
-  GOERLI_USDC_CONTRACT_ADDRESS,
-  SISYPHOS_VAULT_CONTRACT_ADDRESS,
   requestApproval,
+  getVaultManagerContractAddress,
+  getTokenContractAddress,
 } from '../contracts';
-import {
-  ChainflipNetwork,
-  SupportedAsset,
-  chainflipNetwork,
-  isTestnet,
-  ChainId,
-} from '../enums';
+import { SupportedAsset, chainflipNetwork, ChainId } from '../enums';
 import { assert } from '../guards';
 import {
   ExecuteSwapParams,
@@ -54,26 +47,7 @@ const swapNative = async (
     { value: amount },
   );
 
-  const receipt = await transaction.wait(1);
-
-  assert(receipt.status !== 0, 'Transaction failed');
-
-  return receipt;
-};
-
-const getTokenContractAddress = (
-  asset: SupportedAsset,
-  cfNetwork: ChainflipNetwork,
-): string => {
-  assert(isTestnet(cfNetwork), 'Only testnets are supported for now');
-
-  if (asset === 'FLIP' && cfNetwork === 'sisyphos') {
-    return SISYPHOS_FLIP_CONTRACT_ADDRESS;
-  }
-
-  assert(asset === 'USDC', 'Only FLIP and USDC are supported for now');
-
-  return GOERLI_USDC_CONTRACT_ADDRESS;
+  return transaction.wait(1);
 };
 
 const swapToken = async (
@@ -99,11 +73,7 @@ const swapToken = async (
     [],
   );
 
-  const receipt = await transaction.wait(1);
-
-  assert(receipt.status !== 0, 'Transaction failed');
-
-  return receipt;
+  return transaction.wait(1);
 };
 
 const isTokenSwap = (params: ExecuteSwapParams): params is TokenSwapParams =>
@@ -130,12 +100,10 @@ const executeSwap = async (
   const parsedParams = executeSwapParamsSchema.parse(params);
   const opts = executeSwapOptionsSchema.parse(options);
 
-  let vaultContractAddress: string | undefined;
-  if (opts.cfNetwork === 'localnet') {
-    vaultContractAddress = opts.vaultContractAddress;
-  } else if (opts.cfNetwork === 'sisyphos') {
-    vaultContractAddress = SISYPHOS_VAULT_CONTRACT_ADDRESS;
-  }
+  const vaultContractAddress =
+    opts.cfNetwork === 'localnet'
+      ? opts.vaultContractAddress
+      : getVaultManagerContractAddress(opts.cfNetwork);
 
   assert(
     vaultContractAddress !== undefined,
