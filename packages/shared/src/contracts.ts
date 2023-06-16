@@ -28,7 +28,7 @@ export const getTokenContractAddress = (
   return GOERLI_USDC_CONTRACT_ADDRESS;
 };
 
-const SISYPHOS_STATE_CHAIN_MANAGER_CONTRACT_ADDRESS =
+export const SISYPHOS_STATE_CHAIN_MANAGER_CONTRACT_ADDRESS =
   '0x501E4D376001Dd74ca37f99b744Ab2889f7b4650';
 
 export const getStateChainGatewayContractAddress = (
