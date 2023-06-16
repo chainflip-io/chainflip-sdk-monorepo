@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { network as networkSchema } from '@/shared/enums';
+import { supportedChain } from '@/shared/enums';
 import { unsignedInteger } from '@/shared/parsers';
 import { Prisma } from '../client';
 import logger from '../utils/logger';
@@ -8,7 +8,7 @@ import type { EventHandlerArgs } from '.';
 const eventArgs = z.object({
   swapId: unsignedInteger,
   egressId: z.tuple([
-    z.object({ __kind: networkSchema }).transform(({ __kind }) => __kind),
+    z.object({ __kind: supportedChain }).transform(({ __kind }) => __kind),
     unsignedInteger,
   ]),
 });
@@ -24,13 +24,13 @@ export default async function swapEgressScheduled({
   try {
     const {
       swapId,
-      egressId: [network, nativeId],
+      egressId: [chain, nativeId],
     } = eventArgs.parse(event.args);
 
     await prisma.swap.update({
       where: { nativeId: swapId },
       data: {
-        egress: { connect: { nativeId_network: { network, nativeId } } },
+        egress: { connect: { nativeId_chain: { chain, nativeId } } },
       },
     });
   } catch (error) {

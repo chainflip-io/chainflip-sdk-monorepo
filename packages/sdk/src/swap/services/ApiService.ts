@@ -1,11 +1,14 @@
 import axios from 'axios';
-import { type ChainflipNetwork, isTestnet } from '@/shared/enums';
+import {
+  type ChainflipNetwork,
+  isTestnet,
+  SupportedChain,
+} from '@/shared/enums';
 import type {
   QuoteQueryParams,
   QuoteResponse,
   SwapRequestBody,
 } from '@/shared/schemas';
-import { ChainId } from '../consts';
 import {
   bitcoin,
   polkadot,
@@ -35,37 +38,37 @@ const getChains = async (network: ChainflipNetwork): Promise<Chain[]> => {
 };
 
 const getPossibleDestinationChains = async (
-  chainId: ChainId,
+  sourceChain: SupportedChain,
   network: ChainflipNetwork,
 ): Promise<Chain[]> => {
   if (isTestnet(network)) {
-    if (chainId === ChainId.Ethereum) return testnetChains([polkadot, bitcoin]);
-    if (chainId === ChainId.Polkadot) return testnetChains([ethereum, bitcoin]);
-    if (chainId === ChainId.Bitcoin) return testnetChains([ethereum, polkadot]);
-    throw new Error('received testnet flag but mainnet chainId');
+    if (sourceChain === 'Ethereum') return testnetChains([polkadot, bitcoin]);
+    if (sourceChain === 'Polkadot') return testnetChains([ethereum, bitcoin]);
+    if (sourceChain === 'Bitcoin') return testnetChains([ethereum, polkadot]);
+    throw new Error('received testnet flag but mainnet chain');
   }
 
-  if (chainId === ChainId.Ethereum) return [bitcoin, polkadot];
-  if (chainId === ChainId.Polkadot) return [ethereum, bitcoin];
-  if (chainId === ChainId.Bitcoin) return [ethereum, polkadot];
-  throw new Error('received unknown chainId');
+  if (sourceChain === 'Ethereum') return [bitcoin, polkadot];
+  if (sourceChain === 'Polkadot') return [ethereum, bitcoin];
+  if (sourceChain === 'Bitcoin') return [ethereum, polkadot];
+  throw new Error('received unknown chain');
 };
 
 const getTokens = async (
-  chainId: ChainId,
+  chain: SupportedChain,
   network: ChainflipNetwork,
 ): Promise<Token[]> => {
   if (isTestnet(network)) {
-    if (chainId === ChainId.Ethereum) return testnetTokens(ethereumTokens);
-    if (chainId === ChainId.Polkadot) return testnetTokens([dot$]);
-    if (chainId === ChainId.Bitcoin) return testnetTokens([btc$]);
-    throw new Error('received testnet flag but mainnet chainId');
+    if (chain === 'Ethereum') return testnetTokens(ethereumTokens);
+    if (chain === 'Polkadot') return testnetTokens([dot$]);
+    if (chain === 'Bitcoin') return testnetTokens([btc$]);
+    throw new Error('received testnet flag but mainnet chain');
   }
 
-  if (chainId === ChainId.Ethereum) return ethereumTokens;
-  if (chainId === ChainId.Polkadot) return [dot$];
-  if (chainId === ChainId.Bitcoin) return [btc$];
-  throw new Error('received unknown chainId');
+  if (chain === 'Ethereum') return ethereumTokens;
+  if (chain === 'Polkadot') return [dot$];
+  if (chain === 'Bitcoin') return [btc$];
+  throw new Error('received unknown chain');
 };
 
 export type RequestOptions = {

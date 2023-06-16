@@ -10,7 +10,7 @@ exports[`swapEgressScheduled updates an existing swap with the scheduled timesta
   "destAsset": "DOT",
   "egress": {
     "amount": "1234567890",
-    "network": "Ethereum",
+    "chain": "Ethereum",
     "timestamp": 2022-12-06T14:31:45.000Z,
   },
   "egressCompletedAt": null,

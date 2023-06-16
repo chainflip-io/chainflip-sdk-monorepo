@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ChainId } from '../../consts';
+import { chainflipNetwork, supportedChain } from '@/shared/enums';
 import { RouteRequest } from '../../types';
 import ApiService from '../ApiService';
 
@@ -12,9 +12,9 @@ describe('ApiService', () => {
   const mockRoute = {
     amount: '10000',
     destAddress: '',
-    srcChainId: ChainId.Bitcoin,
+    srcChain: 'Bitcoin',
     srcTokenSymbol: 'BTC',
-    destChainId: ChainId.Ethereum,
+    destChain: 'Ethereum',
     destTokenSymbol: 'ETH',
   } satisfies RouteRequest;
 
@@ -31,27 +31,23 @@ describe('ApiService', () => {
     });
   });
 
-  describe.each(['sisyphos', 'perseverance'] as const)(
+  describe.each(chainflipNetwork.options)(
     `${ApiService.getTokens.name} (%s)`,
     (network) => {
-      it.each([ChainId.Ethereum, ChainId.Bitcoin, ChainId.Polkadot])(
-        'gets the correct tokens for testnets (%d)',
-        async (chainId) => {
-          expect(
-            await ApiService.getTokens(chainId, network),
-          ).toMatchSnapshot();
+      it.each(supportedChain.options)(
+        'gets the correct tokens for testnets (%s)',
+        async (chain) => {
+          expect(await ApiService.getTokens(chain, network)).toMatchSnapshot();
         },
       );
     },
   );
 
   describe(ApiService.getTokens, () => {
-    it.each([ChainId.Ethereum, ChainId.Bitcoin, ChainId.Polkadot])(
-      'gets the correct tokens for mainnets (%d)',
-      async (chainId) => {
-        expect(
-          await ApiService.getTokens(chainId, 'mainnet'),
-        ).toMatchSnapshot();
+    it.each(supportedChain.options)(
+      'gets the correct tokens for mainnets (%s)',
+      async (chain) => {
+        expect(await ApiService.getTokens(chain, 'mainnet')).toMatchSnapshot();
       },
     );
   });
@@ -72,9 +68,9 @@ describe('ApiService', () => {
         {
           amount: '10000',
           destAddress: '',
-          srcChainId: ChainId.Bitcoin,
+          srcChain: 'Bitcoin',
           srcTokenSymbol: 'BTC',
-          destChainId: ChainId.Ethereum,
+          destChain: 'Ethereum',
           destTokenSymbol: 'ETH',
         },
         {},

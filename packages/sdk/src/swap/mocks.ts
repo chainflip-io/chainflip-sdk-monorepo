@@ -1,27 +1,26 @@
-import { ChainId } from './consts';
 import type { Chain, Token } from './types';
 
 export const ethereum: Chain = {
-  id: ChainId.Ethereum,
+  id: 'Ethereum',
   name: 'Ethereum',
   isMainnet: true,
 };
 
 export const polkadot: Chain = {
-  id: ChainId.Polkadot,
+  id: 'Polkadot',
   name: 'Polkadot',
   isMainnet: true,
 };
 
 export const bitcoin: Chain = {
-  id: ChainId.Bitcoin,
+  id: 'Bitcoin',
   name: 'Bitcoin',
   isMainnet: true,
 };
 
 export const ethereumTokens: Token[] = [
   {
-    chainId: ChainId.Ethereum,
+    chain: 'Ethereum',
     contractAddress: '0xeth',
     decimals: 18,
     name: 'ether',
@@ -29,7 +28,7 @@ export const ethereumTokens: Token[] = [
     isMainnet: true,
   },
   {
-    chainId: ChainId.Ethereum,
+    chain: 'Ethereum',
     contractAddress: '0xusdc',
     decimals: 6,
     name: 'usdc',
@@ -37,7 +36,7 @@ export const ethereumTokens: Token[] = [
     isMainnet: true,
   },
   {
-    chainId: ChainId.Ethereum,
+    chain: 'Ethereum',
     contractAddress: '0xflip',
     decimals: 18,
     name: 'flip',
@@ -47,7 +46,7 @@ export const ethereumTokens: Token[] = [
 ];
 
 export const dot$: Token = {
-  chainId: ChainId.Polkadot,
+  chain: 'Polkadot',
   contractAddress: '0xdot',
   decimals: 10,
   name: 'dot',
@@ -56,7 +55,7 @@ export const dot$: Token = {
 };
 
 export const btc$: Token = {
-  chainId: ChainId.Bitcoin,
+  chain: 'Bitcoin',
   contractAddress: '0xbitcoin',
   decimals: 8,
   name: 'bitcoin',
