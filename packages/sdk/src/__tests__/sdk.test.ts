@@ -67,7 +67,8 @@ describe(SwapSDK, () => {
 });
 
 describe(SwapSDK, () => {
-  const sdk = new SwapSDK({ network: 'sisyphos' });
+  const signer = new VoidSigner('0x0');
+  const sdk = new SwapSDK({ network: 'sisyphos', signer });
 
   describe(SwapSDK.prototype.getChains, () => {
     it('returns the available chains', async () => {
@@ -115,14 +116,9 @@ describe(SwapSDK, () => {
   });
 
   describe(SwapSDK.prototype.executeSwap, () => {
-    it('throws when no signer is provided', () => {
-      expect(() => sdk.executeSwap({} as any)).toThrow();
-    });
-
     it('calls executeSwap', () => {
-      const signer = new VoidSigner('0x0');
       const swap = {};
-      sdk.executeSwap(swap as any, signer);
+      sdk.executeSwap(swap as any);
       expect(executeSwap).toHaveBeenCalledWith(swap, {
         cfNetwork: 'sisyphos',
         signer,
