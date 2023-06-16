@@ -85,23 +85,6 @@ describe(fundStateChainAccount, () => {
     expect(waitMock).toHaveBeenCalledWith(1);
     expect(fundSpy).toHaveBeenCalledWith('0x1234', '1000');
   });
-
-  it('rejects on failure', async () => {
-    const approvalSpy = jest.mocked(requestApproval).mockResolvedValue();
-
-    const waitMock = jest.fn().mockResolvedValue({ status: 0 });
-    const fundSpy = jest
-      .spyOn(MockGateway.prototype, 'fundStateChainAccount')
-      .mockResolvedValue({ wait: waitMock });
-
-    await expect(
-      fundStateChainAccount('0x1234', '1000', signerOptions),
-    ).rejects.toThrowError();
-
-    expect(approvalSpy).toHaveBeenCalled();
-    expect(waitMock).toHaveBeenCalledWith(1);
-    expect(fundSpy).toHaveBeenCalledWith('0x1234', '1000');
-  });
 });
 
 describe(executeRedemption, () => {

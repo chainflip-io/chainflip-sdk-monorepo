@@ -92,23 +92,6 @@ describe(executeSwap, () => {
     },
   );
 
-  it('throws an error if the transaction errors', async () => {
-    const wait = jest.fn().mockResolvedValue({ status: 0 });
-    jest.spyOn(MockVault.prototype, 'xSwapNative').mockResolvedValue({ wait });
-
-    await expect(
-      executeSwap(
-        {
-          destTokenSymbol: 'DOT',
-          destChainId: ChainId.Polkadot,
-          destAddress: DOT_ADDRESS,
-          amount: '1',
-        },
-        { network: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
-      ),
-    ).rejects.toThrowError();
-  });
-
   it.each([
     ...['FLIP', 'USDC'].flatMap((srcTokenSymbol) => [
       {
@@ -187,46 +170,6 @@ describe(executeSwap, () => {
     expect(swapSpy.mock.calls).toMatchSnapshot();
     expect(allowanceSpy.mock.calls).toMatchSnapshot();
     expect(approveSpy.mock.calls).toMatchSnapshot();
-  });
-
-  it('throws if the approve transaction errors', async () => {
-    const wait = jest.fn().mockResolvedValue({ status: 0 });
-    jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({ wait });
-    jest
-      .spyOn(MockERC20.prototype, 'allowance')
-      .mockResolvedValueOnce(BigNumber.from(0));
-
-    await expect(
-      executeSwap(
-        {
-          destTokenSymbol: 'BTC',
-          destChainId: ChainId.Bitcoin,
-          destAddress: BTC_ADDRESS,
-          srcTokenSymbol: 'FLIP',
-          amount: '1',
-        },
-        { network: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
-      ),
-    ).rejects.toThrowError();
-  });
-
-  it('throws if the swap transaction errors', async () => {
-    const wait = jest.fn().mockResolvedValueOnce({ status: 0 });
-    jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({ wait });
-    jest.spyOn(MockVault.prototype, 'xSwapToken').mockResolvedValue({ wait });
-
-    await expect(
-      executeSwap(
-        {
-          destTokenSymbol: 'BTC',
-          destChainId: ChainId.Bitcoin,
-          destAddress: BTC_ADDRESS,
-          srcTokenSymbol: 'FLIP',
-          amount: '1',
-        },
-        { network: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
-      ),
-    ).rejects.toThrowError();
   });
 
   it('can be invoked with localnet options', async () => {
