@@ -1,6 +1,5 @@
 import { z } from 'zod';
-import { supportedChain } from '@/shared/enums';
-import { unsignedInteger } from '@/shared/parsers';
+import { chainflipChain, unsignedInteger } from '@/shared/parsers';
 import { Prisma } from '../client';
 import logger from '../utils/logger';
 import type { EventHandlerArgs } from '.';
@@ -8,7 +7,7 @@ import type { EventHandlerArgs } from '.';
 const eventArgs = z.object({
   swapId: unsignedInteger,
   egressId: z.tuple([
-    z.object({ __kind: supportedChain }).transform(({ __kind }) => __kind),
+    z.object({ __kind: chainflipChain }).transform(({ __kind }) => __kind),
     unsignedInteger,
   ]),
 });

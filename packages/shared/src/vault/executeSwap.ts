@@ -6,7 +6,7 @@ import {
   getVaultManagerContractAddress,
   getTokenContractAddress,
 } from '../contracts';
-import { SupportedAsset, chainflipNetwork, SupportedChain } from '../enums';
+import { SupportedAsset, chainflipNetwork, Chain } from '../enums';
 import { assert } from '../guards';
 import {
   ExecuteSwapParams,
@@ -17,7 +17,7 @@ import {
 
 // !!!!! IMPORTANT !!!!!
 // Do not change these indices.
-const chainMap: Record<SupportedChain, number> = {
+const chainMap: Record<Chain, number> = {
   Ethereum: 1,
   Polkadot: 2,
   Bitcoin: 3,

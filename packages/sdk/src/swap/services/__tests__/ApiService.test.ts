@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { chainflipNetwork, supportedChain } from '@/shared/enums';
+import { chainflipNetwork, Chains } from '@/shared/enums';
 import { RouteRequest } from '../../types';
 import ApiService from '../ApiService';
 
@@ -12,9 +12,9 @@ describe('ApiService', () => {
   const mockRoute = {
     amount: '10000',
     destAddress: '',
-    srcChain: 'Bitcoin',
+    srcChain: Chains.Bitcoin,
     srcTokenSymbol: 'BTC',
-    destChain: 'Ethereum',
+    destChain: Chains.Ethereum,
     destTokenSymbol: 'ETH',
   } satisfies RouteRequest;
 
@@ -34,7 +34,7 @@ describe('ApiService', () => {
   describe.each(chainflipNetwork.options)(
     `${ApiService.getTokens.name} (%s)`,
     (network) => {
-      it.each(supportedChain.options)(
+      it.each(Object.values(Chains))(
         'gets the correct tokens for testnets (%s)',
         async (chain) => {
           expect(await ApiService.getTokens(chain, network)).toMatchSnapshot();
@@ -44,7 +44,7 @@ describe('ApiService', () => {
   );
 
   describe(ApiService.getTokens, () => {
-    it.each(supportedChain.options)(
+    it.each(Object.values(Chains))(
       'gets the correct tokens for mainnets (%s)',
       async (chain) => {
         expect(await ApiService.getTokens(chain, 'mainnet')).toMatchSnapshot();
@@ -68,9 +68,9 @@ describe('ApiService', () => {
         {
           amount: '10000',
           destAddress: '',
-          srcChain: 'Bitcoin',
+          srcChain: Chains.Bitcoin,
           srcTokenSymbol: 'BTC',
-          destChain: 'Ethereum',
+          destChain: Chains.Ethereum,
           destTokenSymbol: 'ETH',
         },
         {},

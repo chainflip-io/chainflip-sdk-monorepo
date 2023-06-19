@@ -1,11 +1,11 @@
 import { ContractReceipt, Signer } from 'ethers';
-import { ChainflipNetwork, SupportedChain } from '@/shared/enums';
+import { ChainflipNetwork, Chain } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { ExecuteSwapParams, executeSwap } from '@/shared/vault';
 import { BACKEND_SERVICE_URL } from './consts';
 import ApiService, { RequestOptions } from './services/ApiService';
 import type {
-  Chain,
+  ChainData,
   Token,
   RouteRequest,
   SwapResponse,
@@ -36,16 +36,16 @@ export class SwapSDK {
     this.signer = options.signer;
   }
 
-  getChains(): Promise<Chain[]>;
-  getChains(sourceChain: SupportedChain): Promise<Chain[] | undefined>;
-  getChains(sourceChain?: SupportedChain): Promise<Chain[] | undefined> {
+  getChains(): Promise<ChainData[]>;
+  getChains(sourceChain: Chain): Promise<ChainData[] | undefined>;
+  getChains(sourceChain?: Chain): Promise<ChainData[] | undefined> {
     if (sourceChain !== undefined) {
       return ApiService.getPossibleDestinationChains(sourceChain, this.network);
     }
     return ApiService.getChains(this.network);
   }
 
-  getTokens(chain: SupportedChain): Promise<Token[] | undefined> {
+  getTokens(chain: Chain): Promise<Token[] | undefined> {
     return ApiService.getTokens(chain, this.network);
   }
 

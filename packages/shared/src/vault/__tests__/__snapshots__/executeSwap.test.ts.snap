@@ -87,6 +87,20 @@ exports[`executeSwap submits a native swap ({"destAddress": "bc1qar0srrr7xfkvy5l
 ]
 `;
 
+exports[`executeSwap submits a native swap ({"destAddress": "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq", "destChain": "Bitcoin", "destTokenSymbol": "BTC"}) 2`] = `
+[
+  [
+    3,
+    "0x62633171617230737272723778666b7679356c3634336c79646e77397265353967747a7a7766356d6471",
+    5,
+    [],
+    {
+      "value": "1",
+    },
+  ],
+]
+`;
+
 exports[`executeSwap submits a token swap ({"destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destChain": "Ethereum", "destTokenSymbol": "ETH", "srcTokenSymbol": "FLIP"}) 1`] = `
 [
   [
@@ -197,6 +211,28 @@ exports[`executeSwap submits a token swap ({"destAddress": "bc1qar0srrr7xfkvy5l6
 ]
 `;
 
+exports[`executeSwap submits a token swap ({"destAddress": "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq", "destChain": "Bitcoin", "destTokenSymbol": "BTC", "srcTokenSymbol": "FLIP"}) 3`] = `
+[
+  [
+    3,
+    "0x62633171617230737272723778666b7679356c3634336c79646e77397265353967747a7a7766356d6471",
+    5,
+    "0x8e3D3250470314f2e8C1eC6062Df43B5d67B5b7d",
+    "1",
+    [],
+  ],
+]
+`;
+
+exports[`executeSwap submits a token swap ({"destAddress": "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq", "destChain": "Bitcoin", "destTokenSymbol": "BTC", "srcTokenSymbol": "FLIP"}) 4`] = `
+[
+  [
+    "MY ADDRESS",
+    "0xBFF0d5051bC984ee6fF052b26ADBaFB5F1cDF9d4",
+  ],
+]
+`;
+
 exports[`executeSwap submits a token swap ({"destAddress": "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq", "destChain": "Bitcoin", "destTokenSymbol": "BTC", "srcTokenSymbol": "USDC"}) 1`] = `
 [
   [
@@ -211,6 +247,28 @@ exports[`executeSwap submits a token swap ({"destAddress": "bc1qar0srrr7xfkvy5l6
 `;
 
 exports[`executeSwap submits a token swap ({"destAddress": "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq", "destChain": "Bitcoin", "destTokenSymbol": "BTC", "srcTokenSymbol": "USDC"}) 2`] = `
+[
+  [
+    "MY ADDRESS",
+    "0xBFF0d5051bC984ee6fF052b26ADBaFB5F1cDF9d4",
+  ],
+]
+`;
+
+exports[`executeSwap submits a token swap ({"destAddress": "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq", "destChain": "Bitcoin", "destTokenSymbol": "BTC", "srcTokenSymbol": "USDC"}) 3`] = `
+[
+  [
+    3,
+    "0x62633171617230737272723778666b7679356c3634336c79646e77397265353967747a7a7766356d6471",
+    5,
+    "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
+    "1",
+    [],
+  ],
+]
+`;
+
+exports[`executeSwap submits a token swap ({"destAddress": "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq", "destChain": "Bitcoin", "destTokenSymbol": "BTC", "srcTokenSymbol": "USDC"}) 4`] = `
 [
   [
     "MY ADDRESS",

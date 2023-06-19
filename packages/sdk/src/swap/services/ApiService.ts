@@ -2,7 +2,8 @@ import axios from 'axios';
 import {
   type ChainflipNetwork,
   isTestnet,
-  SupportedChain,
+  Chain,
+  Chains,
 } from '@/shared/enums';
 import type {
   QuoteQueryParams,
@@ -20,7 +21,7 @@ import {
   testnetTokens,
 } from '../mocks';
 import {
-  Chain,
+  ChainData,
   RouteRequest,
   RouteResponse,
   SwapRequest,
@@ -30,7 +31,7 @@ import {
   Token,
 } from '../types';
 
-const getChains = async (network: ChainflipNetwork): Promise<Chain[]> => {
+const getChains = async (network: ChainflipNetwork): Promise<ChainData[]> => {
   if (isTestnet(network)) {
     return testnetChains([ethereum, polkadot, bitcoin]);
   }
@@ -38,36 +39,39 @@ const getChains = async (network: ChainflipNetwork): Promise<Chain[]> => {
 };
 
 const getPossibleDestinationChains = async (
-  sourceChain: SupportedChain,
+  sourceChain: Chain,
   network: ChainflipNetwork,
-): Promise<Chain[]> => {
+): Promise<ChainData[]> => {
   if (isTestnet(network)) {
-    if (sourceChain === 'Ethereum') return testnetChains([polkadot, bitcoin]);
-    if (sourceChain === 'Polkadot') return testnetChains([ethereum, bitcoin]);
-    if (sourceChain === 'Bitcoin') return testnetChains([ethereum, polkadot]);
+    if (sourceChain === Chains.Ethereum)
+      return testnetChains([polkadot, bitcoin]);
+    if (sourceChain === Chains.Polkadot)
+      return testnetChains([ethereum, bitcoin]);
+    if (sourceChain === Chains.Bitcoin)
+      return testnetChains([ethereum, polkadot]);
     throw new Error('received testnet flag but mainnet chain');
   }
 
-  if (sourceChain === 'Ethereum') return [bitcoin, polkadot];
-  if (sourceChain === 'Polkadot') return [ethereum, bitcoin];
-  if (sourceChain === 'Bitcoin') return [ethereum, polkadot];
+  if (sourceChain === Chains.Ethereum) return [bitcoin, polkadot];
+  if (sourceChain === Chains.Polkadot) return [ethereum, bitcoin];
+  if (sourceChain === Chains.Bitcoin) return [ethereum, polkadot];
   throw new Error('received unknown chain');
 };
 
 const getTokens = async (
-  chain: SupportedChain,
+  chain: Chain,
   network: ChainflipNetwork,
 ): Promise<Token[]> => {
   if (isTestnet(network)) {
-    if (chain === 'Ethereum') return testnetTokens(ethereumTokens);
-    if (chain === 'Polkadot') return testnetTokens([dot$]);
-    if (chain === 'Bitcoin') return testnetTokens([btc$]);
+    if (chain === Chains.Ethereum) return testnetTokens(ethereumTokens);
+    if (chain === Chains.Polkadot) return testnetTokens([dot$]);
+    if (chain === Chains.Bitcoin) return testnetTokens([btc$]);
     throw new Error('received testnet flag but mainnet chain');
   }
 
-  if (chain === 'Ethereum') return ethereumTokens;
-  if (chain === 'Polkadot') return [dot$];
-  if (chain === 'Bitcoin') return [btc$];
+  if (chain === Chains.Ethereum) return ethereumTokens;
+  if (chain === Chains.Polkadot) return [dot$];
+  if (chain === Chains.Bitcoin) return [btc$];
   throw new Error('received unknown chain');
 };
 

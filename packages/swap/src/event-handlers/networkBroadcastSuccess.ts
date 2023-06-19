@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SupportedChain } from '@/shared/enums';
+import { Chain } from '@/shared/enums';
 import { unsignedInteger } from '@/shared/parsers';
 import logger from '../utils/logger';
 import type { EventHandlerArgs } from './index';
@@ -9,7 +9,7 @@ const eventArgs = z.object({
 });
 
 export async function handleEvent(
-  chain: SupportedChain,
+  chain: Chain,
   { prisma, block, event }: EventHandlerArgs,
 ): Promise<void> {
   try {
@@ -57,7 +57,7 @@ export async function handleEvent(
  * contained by the broadcast id can be marked as successful
  */
 export default function networkBroadcastSuccess(
-  chain: SupportedChain,
+  chain: Chain,
 ): (args: EventHandlerArgs) => Promise<void> {
   return (args: EventHandlerArgs) => handleEvent(chain, args);
 }

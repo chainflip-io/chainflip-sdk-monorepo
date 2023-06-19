@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 /* eslint-disable max-classes-per-file */
 import { BigNumber, VoidSigner } from 'ethers';
+import { Chains } from '@/shared/enums';
 import executeSwap from '../executeSwap';
 import { ExecuteSwapParams } from '../validators';
 
@@ -52,22 +53,27 @@ describe(executeSwap, () => {
   it.each([
     {
       destTokenSymbol: 'BTC',
+      destChain: Chains.Bitcoin,
+      destAddress: BTC_ADDRESS,
+    },
+    {
+      destTokenSymbol: 'BTC',
       destChain: 'Bitcoin',
       destAddress: BTC_ADDRESS,
     },
     {
       destTokenSymbol: 'FLIP',
-      destChain: 'Ethereum',
+      destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
     },
     {
       destTokenSymbol: 'USDC',
-      destChain: 'Ethereum',
+      destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
     },
     {
       destTokenSymbol: 'DOT',
-      destChain: 'Polkadot',
+      destChain: Chains.Polkadot,
       destAddress: DOT_ADDRESS,
     },
   ] as Omit<ExecuteSwapParams, 'amount'>[])(
@@ -95,19 +101,25 @@ describe(executeSwap, () => {
     ...['FLIP', 'USDC'].flatMap((srcTokenSymbol) => [
       {
         destTokenSymbol: 'BTC',
+        destChain: Chains.Bitcoin,
+        destAddress: BTC_ADDRESS,
+        srcTokenSymbol,
+      },
+      {
+        destTokenSymbol: 'BTC',
         destChain: 'Bitcoin',
         destAddress: BTC_ADDRESS,
         srcTokenSymbol,
       },
       {
         destTokenSymbol: 'ETH',
-        destChain: 'Ethereum',
+        destChain: Chains.Ethereum,
         destAddress: ETH_ADDRESS,
         srcTokenSymbol,
       },
       {
         destTokenSymbol: 'DOT',
-        destChain: 'Polkadot',
+        destChain: Chains.Polkadot,
         destAddress: DOT_ADDRESS,
         srcTokenSymbol,
       },
@@ -157,7 +169,7 @@ describe(executeSwap, () => {
       await executeSwap(
         {
           destTokenSymbol: 'BTC',
-          destChain: 'Bitcoin',
+          destChain: Chains.Bitcoin,
           destAddress: BTC_ADDRESS,
           srcTokenSymbol: 'FLIP',
           amount: '1',
@@ -189,7 +201,7 @@ describe(executeSwap, () => {
       await executeSwap(
         {
           destTokenSymbol: 'BTC',
-          destChain: 'Bitcoin',
+          destChain: Chains.Bitcoin,
           destAddress: BTC_ADDRESS,
           srcTokenSymbol: 'FLIP',
           amount: '1',

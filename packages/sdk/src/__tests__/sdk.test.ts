@@ -1,5 +1,5 @@
 import { VoidSigner } from 'ethers';
-import { SupportedChain } from '@/shared/enums';
+import { Chain, Chains } from '@/shared/enums';
 import { executeSwap } from '@/shared/vault';
 import {
   bitcoin,
@@ -28,9 +28,10 @@ describe(SwapSDK, () => {
     });
 
     it.each([
+      [Chains.Ethereum, [bitcoin, polkadot]],
       ['Ethereum' as const, [bitcoin, polkadot]],
-      ['Polkadot' as const, [ethereum, bitcoin]],
-      ['Bitcoin' as const, [ethereum, polkadot]],
+      [Chains.Polkadot, [ethereum, bitcoin]],
+      [Chains.Bitcoin, [ethereum, polkadot]],
     ])(
       `returns the possible destination chains for %s`,
       async (chain, chains) => {
@@ -39,25 +40,22 @@ describe(SwapSDK, () => {
     );
 
     it('throws when requesting an unsupported chain', async () => {
-      await expect(
-        sdk.getChains('Dogecoin' as SupportedChain),
-      ).rejects.toThrow();
+      await expect(sdk.getChains('Dogecoin' as Chain)).rejects.toThrow();
     });
   });
 
   describe(SwapSDK.prototype.getTokens, () => {
     it.each([
+      [Chains.Ethereum, ethereumTokens],
       ['Ethereum' as const, ethereumTokens],
-      ['Polkadot' as const, [dot$]],
-      ['Bitcoin' as const, [btc$]],
+      [Chains.Polkadot, [dot$]],
+      [Chains.Bitcoin, [btc$]],
     ])('returns the available tokens for %s', async (chain, tokens) => {
       expect(await sdk.getTokens(chain)).toStrictEqual(tokens);
     });
 
     it('throws when requesting an unsupported chain', async () => {
-      await expect(
-        sdk.getChains('Dogecoin' as SupportedChain),
-      ).rejects.toThrow();
+      await expect(sdk.getChains('Dogecoin' as Chain)).rejects.toThrow();
     });
   });
 });
@@ -74,9 +72,10 @@ describe(SwapSDK, () => {
     });
 
     it.each([
+      [Chains.Ethereum, testnetChains([polkadot, bitcoin])],
       ['Ethereum' as const, testnetChains([polkadot, bitcoin])],
-      ['Polkadot' as const, testnetChains([ethereum, bitcoin])],
-      ['Bitcoin' as const, testnetChains([ethereum, polkadot])],
+      [Chains.Polkadot, testnetChains([ethereum, bitcoin])],
+      [Chains.Bitcoin, testnetChains([ethereum, polkadot])],
     ])(
       `returns the possible destination chains for %s`,
       async (chain, chains) => {
@@ -85,25 +84,22 @@ describe(SwapSDK, () => {
     );
 
     it('throws when requesting an unsupported chain', async () => {
-      await expect(
-        sdk.getChains('Dogecoin' as SupportedChain),
-      ).rejects.toThrow();
+      await expect(sdk.getChains('Dogecoin' as Chain)).rejects.toThrow();
     });
   });
 
   describe(SwapSDK.prototype.getTokens, () => {
     it.each([
+      [Chains.Ethereum, testnetTokens(ethereumTokens)],
       ['Ethereum' as const, testnetTokens(ethereumTokens)],
-      ['Polkadot' as const, testnetTokens([dot$])],
-      ['Bitcoin' as const, testnetTokens([btc$])],
+      [Chains.Polkadot, testnetTokens([dot$])],
+      [Chains.Bitcoin, testnetTokens([btc$])],
     ])('returns the available tokens for %s', async (chain, tokens) => {
       expect(await sdk.getTokens(chain)).toStrictEqual(tokens);
     });
 
     it('throws when requesting an unsupported chain', async () => {
-      await expect(
-        sdk.getTokens('Dogecoin' as SupportedChain),
-      ).rejects.toThrow();
+      await expect(sdk.getTokens('Dogecoin' as Chain)).rejects.toThrow();
     });
   });
 

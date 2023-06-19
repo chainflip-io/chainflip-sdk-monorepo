@@ -1,8 +1,9 @@
 import { z } from 'zod';
-import { assetToChain, supportedChain } from '@/shared/enums';
+import { assetToChain } from '@/shared/enums';
 import { isString } from '@/shared/guards';
 import {
   btcAddress,
+  chainflipChain,
   dotAddress,
   hexString,
   string,
@@ -11,7 +12,7 @@ import {
 import { segwitAddress } from '@/shared/validation/segwitAddr';
 
 export const egressId = z.tuple([
-  z.object({ __kind: supportedChain }).transform(({ __kind }) => __kind),
+  z.object({ __kind: chainflipChain }).transform(({ __kind }) => __kind),
   unsignedInteger,
 ]);
 

@@ -1,8 +1,11 @@
 import { z } from 'zod';
 
-const supportedChains = ['Bitcoin', 'Ethereum', 'Polkadot'] as const;
-export const supportedChain = z.enum(supportedChains);
-export type SupportedChain = (typeof supportedChains)[number];
+export enum Chains {
+  Bitcoin = 'Bitcoin',
+  Ethereum = 'Ethereum',
+  Polkadot = 'Polkadot',
+}
+export type Chain = `${Chains}`;
 
 const supportedAssets = ['FLIP', 'USDC', 'DOT', 'ETH', 'BTC'] as const;
 export const supportedAsset = z.enum(supportedAssets);
@@ -15,16 +18,16 @@ export type ChainflipNetwork = (typeof chainflipNetworks)[number];
 export const isTestnet = (network: ChainflipNetwork): boolean =>
   network === 'perseverance' || network === 'sisyphos';
 
-export const assetToChain: Record<SupportedAsset, SupportedChain> = {
-  ETH: 'Ethereum',
-  FLIP: 'Ethereum',
-  USDC: 'Ethereum',
-  BTC: 'Bitcoin',
-  DOT: 'Polkadot',
+export const assetToChain: Record<SupportedAsset, Chain> = {
+  ETH: Chains.Ethereum,
+  FLIP: Chains.Ethereum,
+  USDC: Chains.Ethereum,
+  BTC: Chains.Bitcoin,
+  DOT: Chains.Polkadot,
 };
 
-export const chainToAsset: Record<SupportedChain, SupportedAsset[]> = {
-  Ethereum: ['ETH', 'USDC', 'FLIP'],
-  Bitcoin: ['BTC'],
-  Polkadot: ['DOT'],
+export const chainToAsset: Record<Chain, SupportedAsset[]> = {
+  [Chains.Ethereum]: ['ETH', 'USDC', 'FLIP'],
+  [Chains.Bitcoin]: ['BTC'],
+  [Chains.Polkadot]: ['DOT'],
 };

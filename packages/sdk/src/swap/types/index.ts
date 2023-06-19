@@ -1,18 +1,18 @@
-import { SupportedChain, SupportedAsset } from '@/shared/enums';
+import { Chain, Chains, SupportedAsset } from '@/shared/enums';
 import { QuoteResponse } from '@/shared/schemas';
 import { TokenSymbol } from '../consts';
 
 export type { SDKOptions } from '../sdk';
 
-export interface Chain {
-  id: SupportedChain;
-  name: SupportedChain;
+export interface ChainData {
+  id: Chain;
+  name: string;
   isMainnet: boolean;
 }
 interface ChainToAssetMap {
-  Ethereum: 'ETH' | 'USDC' | 'FLIP';
-  Bitcoin: 'BTC';
-  Polkadot: 'DOT';
+  [Chains.Ethereum]: 'ETH' | 'USDC' | 'FLIP';
+  [Chains.Bitcoin]: 'BTC';
+  [Chains.Polkadot]: 'DOT';
 }
 
 export type Token = {
@@ -27,8 +27,8 @@ export type Token = {
 }[keyof ChainToAssetMap];
 
 interface Route {
-  srcChain: SupportedChain;
-  destChain: SupportedChain;
+  srcChain: Chain;
+  destChain: Chain;
   srcTokenSymbol: TokenSymbol;
   destTokenSymbol: TokenSymbol;
   destAddress: string;
