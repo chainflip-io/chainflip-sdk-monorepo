@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { SupportedAsset, supportedAsset } from '@/shared/enums';
-import { numericString } from '@/shared/parsers';
+import { hexStringFromNumber } from '@/shared/parsers';
 import { QuoteResponse, QuoteQueryParams } from '../schemas';
 import { memoize } from './function';
 import RpcClient from './RpcClient';
@@ -10,7 +10,7 @@ const requestValidators = {
   swap_rate: z.tuple([
     supportedAsset.transform(transformAsset),
     supportedAsset.transform(transformAsset),
-    numericString,
+    hexStringFromNumber,
   ]),
 };
 

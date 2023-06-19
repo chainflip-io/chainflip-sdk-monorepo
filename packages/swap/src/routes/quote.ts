@@ -38,12 +38,16 @@ const quote = (io: Server) => {
           collectQuotes(quoteRequest.id, io.sockets.sockets.size, quotes$),
           getBrokerQuote(result.data, quoteRequest.id),
         ]);
+
         res.json(findBestQuote(marketMakerQuotes, brokerQuote));
       } catch (err) {
         const message =
           err instanceof Error
             ? err.message
             : 'unknown error (possibly no liquidity)';
+
+        logger.error('error while collecting quotes:', err);
+
         res.status(500).json({ error: message });
       }
     }),
