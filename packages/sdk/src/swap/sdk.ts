@@ -6,7 +6,7 @@ import { BACKEND_SERVICE_URL } from './consts';
 import ApiService, { RequestOptions } from './services/ApiService';
 import type {
   ChainData,
-  Token,
+  AssetData,
   RouteRequest,
   SwapResponse,
   RouteResponse,
@@ -45,8 +45,8 @@ export class SwapSDK {
     return ApiService.getChains(this.network);
   }
 
-  getTokens(chain: Chain): Promise<Token[] | undefined> {
-    return ApiService.getTokens(chain, this.network);
+  getAssets(chain: Chain): Promise<AssetData[] | undefined> {
+    return ApiService.getAssets(chain, this.network);
   }
 
   getRoute(

@@ -3,7 +3,7 @@ import EventEmitter, { once } from 'events';
 import { filter, firstValueFrom, Subject, timeout } from 'rxjs';
 import WebSocket from 'ws';
 import { z } from 'zod';
-import { SupportedAsset } from '@/shared/enums';
+import { Asset } from '@/shared/enums';
 import { handleExit, waitWithTimeout } from './function';
 import logger from './logger';
 
@@ -11,8 +11,8 @@ const READY = 'READY';
 const DISCONNECT = 'DISCONNECT';
 
 export type RpcAsset = {
-  [K in SupportedAsset]: Capitalize<Lowercase<K>>;
-}[SupportedAsset];
+  [K in Asset]: Capitalize<Lowercase<K>>;
+}[Asset];
 
 type RpcResponse =
   | { id: number; result: unknown }

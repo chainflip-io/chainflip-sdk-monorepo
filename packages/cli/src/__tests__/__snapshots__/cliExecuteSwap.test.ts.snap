@@ -6,7 +6,7 @@ exports[`schema properly parses the arguments 1`] = `
   "chainflipNetwork": "localnet",
   "destAddress": "0x0",
   "destChain": "Ethereum",
-  "destTokenSymbol": "USDC",
+  "destAsset": "USDC",
   "ethNetwork": "test",
   "srcTokenContractAddress": "0x0",
   "vaultContractAddress": "0x0",
@@ -20,7 +20,7 @@ exports[`schema properly parses the arguments 2`] = `
   "chainflipNetwork": "sisyphos",
   "destAddress": "0x0",
   "destChain": "Ethereum",
-  "destTokenSymbol": "USDC",
+  "destAsset": "USDC",
   "walletPrivateKey": "0x2",
 }
 `;

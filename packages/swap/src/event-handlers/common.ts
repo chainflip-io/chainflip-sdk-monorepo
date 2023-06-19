@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { assetToChain } from '@/shared/enums';
+import { assetChains } from '@/shared/enums';
 import { isString } from '@/shared/guards';
 import {
   btcAddress,
@@ -51,7 +51,7 @@ export const encodedAddress = z
   .transform(
     ({ __kind, value }) =>
       ({
-        chain: assetToChain[__kind.toUpperCase() as Uppercase<typeof __kind>],
+        chain: assetChains[__kind.toUpperCase() as Uppercase<typeof __kind>],
         address: value,
       } as const),
   );
@@ -61,7 +61,7 @@ export const foreignChainAddress = z
   .transform(
     ({ __kind, value }) =>
       ({
-        chain: assetToChain[__kind.toUpperCase() as Uppercase<typeof __kind>],
+        chain: assetChains[__kind.toUpperCase() as Uppercase<typeof __kind>],
         address: value,
       } as const),
   );

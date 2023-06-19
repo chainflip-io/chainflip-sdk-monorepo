@@ -1,20 +1,11 @@
-import { SupportedAsset, supportedAsset } from '@/shared/enums';
+import { Asset } from '@/shared/enums';
+import { chainflipAsset } from '@/shared/parsers';
 
-export const isSupportedAsset = (value: string): value is SupportedAsset =>
-  supportedAsset.safeParse(value).success;
+export const isSupportedAsset = (value: string): value is Asset =>
+  chainflipAsset.safeParse(value).success;
 
-export function assertSupportedAsset(
-  value: string,
-): asserts value is SupportedAsset {
+export function assertSupportedAsset(value: string): asserts value is Asset {
   if (!isSupportedAsset(value)) {
     throw new Error(`received invalid asset "${value}"`);
   }
 }
-
-export const decimalPlaces: Record<SupportedAsset, number> = {
-  DOT: 10,
-  ETH: 18,
-  FLIP: 18,
-  USDC: 6,
-  BTC: 8,
-};

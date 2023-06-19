@@ -7,9 +7,9 @@ import {
   dot$,
   btc$,
   ethereum,
-  ethereumTokens,
+  ethereumAssets,
   testnetChains,
-  testnetTokens,
+  testnetAssets,
 } from '../swap/mocks';
 import { SwapSDK } from '../swap/sdk';
 
@@ -44,14 +44,14 @@ describe(SwapSDK, () => {
     });
   });
 
-  describe(SwapSDK.prototype.getTokens, () => {
+  describe(SwapSDK.prototype.getAssets, () => {
     it.each([
-      [Chains.Ethereum, ethereumTokens],
-      ['Ethereum' as const, ethereumTokens],
+      [Chains.Ethereum, ethereumAssets],
+      ['Ethereum' as const, ethereumAssets],
       [Chains.Polkadot, [dot$]],
       [Chains.Bitcoin, [btc$]],
-    ])('returns the available tokens for %s', async (chain, tokens) => {
-      expect(await sdk.getTokens(chain)).toStrictEqual(tokens);
+    ])('returns the available assets for %s', async (chain, assets) => {
+      expect(await sdk.getAssets(chain)).toStrictEqual(assets);
     });
 
     it('throws when requesting an unsupported chain', async () => {
@@ -88,18 +88,18 @@ describe(SwapSDK, () => {
     });
   });
 
-  describe(SwapSDK.prototype.getTokens, () => {
+  describe(SwapSDK.prototype.getAssets, () => {
     it.each([
-      [Chains.Ethereum, testnetTokens(ethereumTokens)],
-      ['Ethereum' as const, testnetTokens(ethereumTokens)],
-      [Chains.Polkadot, testnetTokens([dot$])],
-      [Chains.Bitcoin, testnetTokens([btc$])],
-    ])('returns the available tokens for %s', async (chain, tokens) => {
-      expect(await sdk.getTokens(chain)).toStrictEqual(tokens);
+      [Chains.Ethereum, testnetAssets(ethereumAssets)],
+      ['Ethereum' as const, testnetAssets(ethereumAssets)],
+      [Chains.Polkadot, testnetAssets([dot$])],
+      [Chains.Bitcoin, testnetAssets([btc$])],
+    ])('returns the available assets for %s', async (chain, assets) => {
+      expect(await sdk.getAssets(chain)).toStrictEqual(assets);
     });
 
     it('throws when requesting an unsupported chain', async () => {
-      await expect(sdk.getTokens('Dogecoin' as Chain)).rejects.toThrow();
+      await expect(sdk.getAssets('Dogecoin' as Chain)).rejects.toThrow();
     });
   });
 

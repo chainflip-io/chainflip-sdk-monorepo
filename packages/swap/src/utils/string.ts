@@ -1,10 +1,8 @@
-import type { SupportedAsset } from '@/shared/enums';
+import type { Asset } from '@/shared/enums';
 import type { RpcAsset } from './RpcClient';
 
-export const transformAsset = (asset: SupportedAsset): RpcAsset =>
-  (asset[0] + asset.slice(1).toLowerCase()) as Capitalize<
-    Lowercase<SupportedAsset>
-  >;
+export const transformAsset = (asset: Asset): RpcAsset =>
+  (asset[0] + asset.slice(1).toLowerCase()) as Capitalize<Lowercase<Asset>>;
 
 export enum Comparison {
   Less = -1,

@@ -1,4 +1,4 @@
-import { Chains } from '@/shared/enums';
+import { Assets, Chains } from '@/shared/enums';
 import { NativeSwapParams, executeSwapParamsSchema } from '../validators';
 
 const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
@@ -13,17 +13,17 @@ describe('executeSwapParamsSchema', () => {
     {
       destChain: Chains.Bitcoin,
       destAddress: BTC_ADDRESS,
-      destTokenSymbol: 'BTC',
+      destAsset: Assets.BTC,
     },
     {
       destChain: Chains.Polkadot,
       destAddress: DOT_ADDRESS,
-      destTokenSymbol: 'DOT',
+      destAsset: Assets.DOT,
     },
-    ...['FLIP', 'USDC'].map((destTokenSymbol) => ({
+    ...['FLIP', 'USDC'].map((destAsset) => ({
       destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
-      destTokenSymbol,
+      destAsset,
     })),
   ] as Omit<NativeSwapParams, 'amount'>[])(
     'accepts valid native swaps (%p)',
@@ -36,17 +36,17 @@ describe('executeSwapParamsSchema', () => {
     {
       destChain: Chains.Bitcoin,
       destAddress: '0xOoOoOo',
-      destTokenSymbol: 'BTC',
+      destAsset: Assets.BTC,
     },
     {
       destChain: Chains.Polkadot,
       destAddress: '0xOoOoOo',
-      destTokenSymbol: 'DOT',
+      destAsset: Assets.DOT,
     },
-    ...['FLIP', 'USDC', 'ETH'].map((destTokenSymbol) => ({
+    ...[Assets.FLIP, Assets.USDC, Assets.ETH].map((destAsset) => ({
       destChain: Chains.Ethereum,
       destAddress: '0xOoOoOo',
-      destTokenSymbol,
+      destAsset,
     })),
   ] as Omit<NativeSwapParams, 'amount'>[])(
     'rejects native swaps without an amount (%p)',
@@ -56,20 +56,20 @@ describe('executeSwapParamsSchema', () => {
   );
 
   it.each([
-    ...['FLIP', 'USDC', 'ETH', 'DOT'].map((destTokenSymbol) => ({
+    ...[Assets.FLIP, Assets.USDC, Assets.ETH, Assets.DOT].map((destAsset) => ({
       destChain: Chains.Bitcoin,
       destAddress: BTC_ADDRESS,
-      destTokenSymbol,
+      destAsset,
     })),
-    ...['FLIP', 'USDC', 'ETH', 'BTC'].map((destTokenSymbol) => ({
+    ...[Assets.FLIP, Assets.USDC, Assets.ETH, Assets.BTC].map((destAsset) => ({
       destChain: Chains.Polkadot,
       destAddress: BTC_ADDRESS,
-      destTokenSymbol,
+      destAsset,
     })),
-    ...['DOT', 'BTC', 'ETH'].map((destTokenSymbol) => ({
+    ...[Assets.DOT, Assets.BTC, Assets.ETH].map((destAsset) => ({
       destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
-      destTokenSymbol,
+      destAsset,
     })),
   ] as Omit<NativeSwapParams, 'amount'>[])(
     'rejects native swaps with mismatching chains and assets (%p)',
@@ -79,37 +79,37 @@ describe('executeSwapParamsSchema', () => {
   );
 
   it.each([
-    ...['FLIP', 'USDC'].flatMap((srcTokenSymbol) => [
+    ...[Assets.FLIP, Assets.USDC].flatMap((srcAsset) => [
       {
         destChain: Chains.Bitcoin,
         destAddress: BTC_ADDRESS,
-        destTokenSymbol: 'BTC',
-        srcTokenSymbol,
+        destAsset: Assets.BTC,
+        srcAsset,
       },
       {
         destChain: Chains.Polkadot,
         destAddress: DOT_ADDRESS,
-        destTokenSymbol: 'DOT',
-        srcTokenSymbol,
+        destAsset: Assets.DOT,
+        srcAsset,
       },
       {
         destChain: Chains.Ethereum,
         destAddress: ETH_ADDRESS,
-        destTokenSymbol: 'ETH',
-        srcTokenSymbol,
+        destAsset: Assets.ETH,
+        srcAsset,
       },
     ]),
     {
       destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
-      destTokenSymbol: 'USDC',
-      srcTokenSymbol: 'FLIP',
+      destAsset: Assets.USDC,
+      srcAsset: Assets.FLIP,
     },
     {
       destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
-      destTokenSymbol: 'FLIP',
-      srcTokenSymbol: 'USDC',
+      destAsset: Assets.FLIP,
+      srcAsset: Assets.USDC,
     },
   ] as Omit<NativeSwapParams, 'amount'>[])(
     'accepts valid token swaps (%p)',
@@ -119,28 +119,28 @@ describe('executeSwapParamsSchema', () => {
   );
 
   it.each([
-    ...['ETH', 'DOT', 'BTC'].flatMap((srcTokenSymbol) => [
+    ...[Assets.ETH, Assets.DOT, Assets.BTC].flatMap((srcAsset) => [
       {
         destChain: Chains.Bitcoin,
         destAddress: BTC_ADDRESS,
-        destTokenSymbol: 'BTC',
-        srcTokenSymbol,
+        destAsset: Assets.BTC,
+        srcAsset,
       },
       {
         destChain: Chains.Polkadot,
         destAddress: DOT_ADDRESS,
-        destTokenSymbol: 'DOT',
-        srcTokenSymbol,
+        destAsset: Assets.DOT,
+        srcAsset,
       },
       {
         destChain: Chains.Ethereum,
         destAddress: ETH_ADDRESS,
-        destTokenSymbol: 'ETH',
-        srcTokenSymbol,
+        destAsset: Assets.ETH,
+        srcAsset,
       },
     ]),
   ] as Omit<NativeSwapParams, 'amount'>[])(
-    'rejects tokens swaps with invalid srcTokenSymbols (%p)',
+    'rejects tokens swaps with invalid srcAssets (%p)',
     (params) => {
       expect(parse({ amount: '1', ...params })).toBe(false);
     },

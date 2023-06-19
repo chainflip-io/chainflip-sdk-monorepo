@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { chainflipNetwork, Chains } from '@/shared/enums';
+import { Assets, chainflipNetwork, Chains } from '@/shared/enums';
 import { RouteRequest } from '../../types';
 import ApiService from '../ApiService';
 
@@ -13,9 +13,9 @@ describe('ApiService', () => {
     amount: '10000',
     destAddress: '',
     srcChain: Chains.Bitcoin,
-    srcTokenSymbol: 'BTC',
+    srcAsset: Assets.BTC,
     destChain: Chains.Ethereum,
-    destTokenSymbol: 'ETH',
+    destAsset: Assets.ETH,
   } satisfies RouteRequest;
 
   describe(ApiService.getChains, () => {
@@ -32,22 +32,22 @@ describe('ApiService', () => {
   });
 
   describe.each(chainflipNetwork.options)(
-    `${ApiService.getTokens.name} (%s)`,
+    `${ApiService.getAssets.name} (%s)`,
     (network) => {
       it.each(Object.values(Chains))(
-        'gets the correct tokens for testnets (%s)',
+        'gets the correct assets for testnets (%s)',
         async (chain) => {
-          expect(await ApiService.getTokens(chain, network)).toMatchSnapshot();
+          expect(await ApiService.getAssets(chain, network)).toMatchSnapshot();
         },
       );
     },
   );
 
-  describe(ApiService.getTokens, () => {
+  describe(ApiService.getAssets, () => {
     it.each(Object.values(Chains))(
-      'gets the correct tokens for mainnets (%s)',
+      'gets the correct assets for mainnets (%s)',
       async (chain) => {
-        expect(await ApiService.getTokens(chain, 'mainnet')).toMatchSnapshot();
+        expect(await ApiService.getAssets(chain, 'mainnet')).toMatchSnapshot();
       },
     );
   });
@@ -69,9 +69,9 @@ describe('ApiService', () => {
           amount: '10000',
           destAddress: '',
           srcChain: Chains.Bitcoin,
-          srcTokenSymbol: 'BTC',
+          srcAsset: Assets.BTC,
           destChain: Chains.Ethereum,
-          destTokenSymbol: 'ETH',
+          destAsset: Assets.ETH,
         },
         {},
       );

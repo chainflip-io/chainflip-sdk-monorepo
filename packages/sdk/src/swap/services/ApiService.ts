@@ -16,9 +16,9 @@ import {
   dot$,
   ethereum,
   btc$,
-  ethereumTokens,
+  ethereumAssets,
   testnetChains,
-  testnetTokens,
+  testnetAssets,
 } from '../mocks';
 import {
   ChainData,
@@ -28,7 +28,7 @@ import {
   SwapResponse,
   SwapStatusRequest,
   SwapStatusResponse,
-  Token,
+  AssetData,
 } from '../types';
 
 const getChains = async (network: ChainflipNetwork): Promise<ChainData[]> => {
@@ -58,18 +58,18 @@ const getPossibleDestinationChains = async (
   throw new Error('received unknown chain');
 };
 
-const getTokens = async (
+const getAssets = async (
   chain: Chain,
   network: ChainflipNetwork,
-): Promise<Token[]> => {
+): Promise<AssetData[]> => {
   if (isTestnet(network)) {
-    if (chain === Chains.Ethereum) return testnetTokens(ethereumTokens);
-    if (chain === Chains.Polkadot) return testnetTokens([dot$]);
-    if (chain === Chains.Bitcoin) return testnetTokens([btc$]);
+    if (chain === Chains.Ethereum) return testnetAssets(ethereumAssets);
+    if (chain === Chains.Polkadot) return testnetAssets([dot$]);
+    if (chain === Chains.Bitcoin) return testnetAssets([btc$]);
     throw new Error('received testnet flag but mainnet chain');
   }
 
-  if (chain === Chains.Ethereum) return ethereumTokens;
+  if (chain === Chains.Ethereum) return ethereumAssets;
   if (chain === Chains.Polkadot) return [dot$];
   if (chain === Chains.Bitcoin) return [btc$];
   throw new Error('received unknown chain');
@@ -92,8 +92,8 @@ const getRoute: BackendQuery<RouteRequest, RouteResponse> = async (
 ) => {
   const params: QuoteQueryParams = {
     amount,
-    srcAsset: routeRequest.srcTokenSymbol,
-    destAsset: routeRequest.destTokenSymbol,
+    srcAsset: routeRequest.srcAsset,
+    destAsset: routeRequest.destAsset,
   };
 
   const queryParams = new URLSearchParams(params);
@@ -112,8 +112,8 @@ const requestDepositAddress: BackendQuery<SwapRequest, SwapResponse> = async (
 ) => {
   const body: SwapRequestBody = {
     destAddress: route.destAddress,
-    srcAsset: route.srcTokenSymbol,
-    destAsset: route.destTokenSymbol,
+    srcAsset: route.srcAsset,
+    destAsset: route.destAsset,
     expectedDepositAmount: route.expectedDepositAmount,
   };
 
@@ -140,7 +140,7 @@ export default {
   getChains,
   getPossibleDestinationChains,
   getRoute,
-  getTokens,
+  getAssets,
   getStatus,
   requestDepositAddress,
 };

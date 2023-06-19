@@ -1,28 +1,29 @@
 import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import { z } from 'zod';
-import { supportedAsset, SupportedAsset } from '@/shared/enums';
+import { Asset } from '@/shared/enums';
 import {
   hexString,
   numericString,
   btcAddress,
   dotAddress,
+  chainflipAsset,
 } from '@/shared/parsers';
 import { memoize } from './function';
 import RpcClient from './RpcClient';
 import { transformAsset } from './string';
 
 type NewSwapRequest = {
-  srcAsset: SupportedAsset;
-  destAsset: SupportedAsset;
+  srcAsset: Asset;
+  destAsset: Asset;
   destAddress: string;
 };
 
 const requestValidators = {
   requestSwapDepositAddress: z
     .tuple([
-      supportedAsset.transform(transformAsset),
-      supportedAsset.transform(transformAsset),
+      chainflipAsset.transform(transformAsset),
+      chainflipAsset.transform(transformAsset),
       z.union([numericString, hexString, btcAddress]),
       z.number(),
     ])

@@ -1,7 +1,7 @@
 import { isHex, hexToU8a } from '@polkadot/util';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 import * as ethers from 'ethers';
-import { SupportedAsset, Chain, Chains } from '../enums';
+import { Asset, Assets, Chain, Chains } from '../enums';
 import { assert } from '../guards';
 import { isValidSegwitAddress } from './segwitAddr';
 
@@ -123,15 +123,15 @@ export const validateBitcoinRegtestAddress: AddressValidator = (
 export const validateChainAddress = (
   address: string,
   isMainnet = true,
-): Record<Chain | SupportedAsset, boolean> => ({
-  ETH: validateEvmAddress(address),
-  BTC: isMainnet
+): Record<Chain | Asset, boolean> => ({
+  [Assets.ETH]: validateEvmAddress(address),
+  [Assets.BTC]: isMainnet
     ? validateBitcoinMainnetAddress(address)
     : validateBitcoinTestnetAddress(address) ||
       validateBitcoinRegtestAddress(address),
-  DOT: validatePolkadotAddress(address),
-  FLIP: validateEvmAddress(address),
-  USDC: validateEvmAddress(address),
+  [Assets.DOT]: validatePolkadotAddress(address),
+  [Assets.FLIP]: validateEvmAddress(address),
+  [Assets.USDC]: validateEvmAddress(address),
   [Chains.Ethereum]: validateEvmAddress(address),
   [Chains.Bitcoin]: isMainnet
     ? validateBitcoinMainnetAddress(address)
@@ -141,7 +141,7 @@ export const validateChainAddress = (
 });
 
 export const validateAddress = (
-  assetOrChain: Chain | SupportedAsset | undefined,
+  assetOrChain: Chain | Asset | undefined,
   address: string,
   isMainnet = true,
 ): boolean => {

@@ -6,7 +6,7 @@ import {
   getVaultManagerContractAddress,
   getTokenContractAddress,
 } from '../contracts';
-import { SupportedAsset, chainflipNetwork, Chain } from '../enums';
+import { Asset, chainflipNetwork, Chain, Chains, Assets } from '../enums';
 import { assert } from '../guards';
 import {
   ExecuteSwapParams,
@@ -18,31 +18,31 @@ import {
 // !!!!! IMPORTANT !!!!!
 // Do not change these indices.
 const chainMap: Record<Chain, number> = {
-  Ethereum: 1,
-  Polkadot: 2,
-  Bitcoin: 3,
+  [Chains.Ethereum]: 1,
+  [Chains.Polkadot]: 2,
+  [Chains.Bitcoin]: 3,
 };
 
 // !!!!!! IMPORTANT !!!!!!
 // Do not change these indices.
-const assetMap: Record<SupportedAsset, number> = {
+const assetMap: Record<Asset, number> = {
   // 0 is reservered for particular cross chain messaging scenarios where we want to pass
   // through a message without making a swap.
-  ETH: 1,
-  FLIP: 2,
-  USDC: 3,
-  DOT: 4,
-  BTC: 5,
+  [Assets.ETH]: 1,
+  [Assets.FLIP]: 2,
+  [Assets.USDC]: 3,
+  [Assets.DOT]: 4,
+  [Assets.BTC]: 5,
 };
 
 const swapNative = async (
   vault: Vault,
-  { destChain, destTokenSymbol, destAddress, amount }: NativeSwapParams,
+  { destChain, destAsset, destAddress, amount }: NativeSwapParams,
 ): Promise<ContractReceipt> => {
   const transaction = await vault.xSwapNative(
     chainMap[destChain],
     destAddress,
-    assetMap[destTokenSymbol],
+    assetMap[destAsset],
     [],
     { value: amount },
   );
@@ -58,7 +58,7 @@ const swapToken = async (
   const erc20Address =
     opts.network === 'localnet'
       ? opts.srcTokenContractAddress
-      : getTokenContractAddress(params.srcTokenSymbol, opts.network);
+      : getTokenContractAddress(params.srcAsset, opts.network);
 
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
@@ -67,7 +67,7 @@ const swapToken = async (
   const transaction = await vault.xSwapToken(
     chainMap[params.destChain],
     params.destAddress,
-    assetMap[params.destTokenSymbol],
+    assetMap[params.destAsset],
     erc20Address,
     params.amount,
     [],
@@ -77,7 +77,7 @@ const swapToken = async (
 };
 
 const isTokenSwap = (params: ExecuteSwapParams): params is TokenSwapParams =>
-  'srcTokenSymbol' in params;
+  'srcAsset' in params;
 
 const executeSwapOptionsSchema = z.intersection(
   z.object({ signer: z.instanceof(Signer) }),
