@@ -1,11 +1,11 @@
 import { ContractReceipt, Signer } from 'ethers';
-import { ChainflipNetwork } from '@/shared/enums';
+import { ChainflipNetwork, Chain } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { ExecuteSwapParams, executeSwap } from '@/shared/vault';
-import { BACKEND_SERVICE_URL, ChainId } from './consts';
+import { BACKEND_SERVICE_URL } from './consts';
 import ApiService, { RequestOptions } from './services/ApiService';
 import type {
-  Chain,
+  ChainData,
   Token,
   RouteRequest,
   SwapResponse,
@@ -15,7 +15,6 @@ import type {
   SwapRequest,
 } from './types';
 
-export { ChainId };
 export * from './types';
 
 export type SDKOptions = {
@@ -37,17 +36,17 @@ export class SwapSDK {
     this.signer = options.signer;
   }
 
-  getChains(): Promise<Chain[]>;
-  getChains(chainId: ChainId): Promise<Chain[] | undefined>;
-  getChains(chainId?: ChainId): Promise<Chain[] | undefined> {
-    if (chainId !== undefined) {
-      return ApiService.getPossibleDestinationChains(chainId, this.network);
+  getChains(): Promise<ChainData[]>;
+  getChains(sourceChain: Chain): Promise<ChainData[] | undefined>;
+  getChains(sourceChain?: Chain): Promise<ChainData[] | undefined> {
+    if (sourceChain !== undefined) {
+      return ApiService.getPossibleDestinationChains(sourceChain, this.network);
     }
     return ApiService.getChains(this.network);
   }
 
-  getTokens(chainId: ChainId): Promise<Token[] | undefined> {
-    return ApiService.getTokens(chainId, this.network);
+  getTokens(chain: Chain): Promise<Token[] | undefined> {
+    return ApiService.getTokens(chain, this.network);
   }
 
   getRoute(

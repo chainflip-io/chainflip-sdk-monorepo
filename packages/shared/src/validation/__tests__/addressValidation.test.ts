@@ -1,3 +1,4 @@
+import { Chains } from '@/shared/enums';
 import {
   validateBitcoinMainnetAddress,
   validateBitcoinTestnetAddress,
@@ -98,16 +99,19 @@ describe(validateAddress, () => {
   });
 
   it.each([
-    [2, '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
-    [1, '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
-    [1, '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
-    [1, '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
+    [Chains.Polkadot, '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
+    ['Polkadot', '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
+    [Chains.Ethereum, '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
+    ['Ethereum', '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
+    [Chains.Ethereum, '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
+    [Chains.Ethereum, '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
   ] as const)('returns true for valid supportedAssets %s', (asset, address) => {
     expect(validateAddress(asset, address)).toBeTruthy();
   });
 
   it.each([
-    [3, '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
+    [Chains.Bitcoin, '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
+    ['Bitcoin', '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
     ['BTC', '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
   ] as const)(
     'returns false for invalid bitcoin addresses %s',
@@ -117,7 +121,7 @@ describe(validateAddress, () => {
   );
 
   it.each([
-    [3, 'mkPuLFihuytSjmdqLztCXXESD7vrjnTiTP'],
+    [Chains.Bitcoin, 'mkPuLFihuytSjmdqLztCXXESD7vrjnTiTP'],
     ['BTC', 'miEfvT7iYiEJxS69uq9MMeBfcLpKjDMpWS'],
   ] as const)(
     'returns true for valid testnet bitcoin addresses %s',

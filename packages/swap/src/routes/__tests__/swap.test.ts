@@ -167,7 +167,7 @@ describe('server', () => {
               create: {
                 timestamp: new Date(RECEIVED_TIMESTAMP + 12000),
                 amount: (10n ** 18n).toString(),
-                network: 'Ethereum',
+                chain: 'Ethereum',
                 nativeId: 1n,
               },
             },
@@ -219,7 +219,7 @@ describe('server', () => {
               create: {
                 timestamp: new Date(RECEIVED_TIMESTAMP + 12000),
                 amount: (10n ** 18n).toString(),
-                network: 'Ethereum',
+                chain: 'Ethereum',
                 nativeId: 1n,
               },
             },

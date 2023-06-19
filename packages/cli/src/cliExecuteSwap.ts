@@ -1,23 +1,10 @@
 import { getDefaultProvider, providers, Wallet } from 'ethers';
 import { z } from 'zod';
-import { ChainId } from '@/sdk/swap/consts';
-import {
-  chainflipNetwork,
-  SupportedAsset,
-  supportedAsset,
-} from '@/shared/enums';
+import { assetToChain, chainflipNetwork, supportedAsset } from '@/shared/enums';
 import { numericString, hexString } from '@/shared/parsers';
 import { executeSwap, ExecuteSwapParams } from '@/shared/vault';
 import { ExecuteSwapOptions } from '@/shared/vault/executeSwap';
 import { askForPrivateKey, getEthNetwork } from './utils';
-
-const assetToNetworkMap: Record<SupportedAsset, ChainId> = {
-  ETH: ChainId.Ethereum,
-  FLIP: ChainId.Ethereum,
-  USDC: ChainId.Ethereum,
-  BTC: ChainId.Bitcoin,
-  DOT: ChainId.Polkadot,
-};
 
 export const schema = z
   .intersection(
@@ -39,11 +26,9 @@ export const schema = z
     }),
   )
   .transform(({ destToken, srcToken, ...rest }) => {
-    const destChainId = assetToNetworkMap[destToken];
-
     return {
       ...rest,
-      destChainId,
+      destChain: assetToChain[destToken],
       destTokenSymbol: destToken,
       ...(srcToken && { srcTokenSymbol: srcToken }),
     };

@@ -57,7 +57,7 @@ model Swap {
   @@schema("public")
 }
 
-enum Network {
+enum Chain {
   Polkadot
   Ethereum
   Bitcoin
@@ -70,7 +70,7 @@ model Egress {
   /// the egress id on the state chain
   nativeId    BigInt
   /// the swap id on the state chain
-  network     Network
+  chain       Chain
   amount      Decimal    @db.Decimal(30, 0)
   timestamp   DateTime
   swap        Swap?      @relation(fields: [swapId], references: [id])
@@ -79,7 +79,7 @@ model Egress {
   broadcastId BigInt?
   createdAt   DateTime   @default(now())
 
-  @@unique([nativeId, network])
+  @@unique([nativeId, chain])
   @@schema("public")
 }
 
@@ -87,10 +87,10 @@ model Broadcast {
   id       BigInt   @id @default(autoincrement())
   /// the broadcast id on the state chain
   nativeId BigInt
-  network  Network
+  chain    Chain
   egresses Egress[]
 
-  @@unique([nativeId, network])
+  @@unique([nativeId, chain])
   @@schema("public")
 }
 

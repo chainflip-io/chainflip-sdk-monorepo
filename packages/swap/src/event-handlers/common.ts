@@ -1,8 +1,9 @@
 import { z } from 'zod';
-import { SupportedAsset, Network, network } from '@/shared/enums';
+import { assetToChain } from '@/shared/enums';
 import { isString } from '@/shared/guards';
 import {
   btcAddress,
+  chainflipChain,
   dotAddress,
   hexString,
   string,
@@ -10,16 +11,8 @@ import {
 } from '@/shared/parsers';
 import { segwitAddress } from '@/shared/validation/segwitAddr';
 
-export const assetToNetwork: Record<SupportedAsset, Network> = {
-  DOT: 'Polkadot',
-  ETH: 'Ethereum',
-  FLIP: 'Ethereum',
-  USDC: 'Ethereum',
-  BTC: 'Bitcoin',
-};
-
 export const egressId = z.tuple([
-  z.object({ __kind: network }).transform(({ __kind }) => __kind),
+  z.object({ __kind: chainflipChain }).transform(({ __kind }) => __kind),
   unsignedInteger,
 ]);
 
@@ -58,7 +51,7 @@ export const encodedAddress = z
   .transform(
     ({ __kind, value }) =>
       ({
-        chain: assetToNetwork[__kind.toUpperCase() as Uppercase<typeof __kind>],
+        chain: assetToChain[__kind.toUpperCase() as Uppercase<typeof __kind>],
         address: value,
       } as const),
   );
@@ -68,7 +61,7 @@ export const foreignChainAddress = z
   .transform(
     ({ __kind, value }) =>
       ({
-        chain: assetToNetwork[__kind.toUpperCase() as Uppercase<typeof __kind>],
+        chain: assetToChain[__kind.toUpperCase() as Uppercase<typeof __kind>],
         address: value,
       } as const),
   );

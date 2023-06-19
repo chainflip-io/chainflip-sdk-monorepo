@@ -26,11 +26,11 @@ export default async function networkBatchBroadcastRequested({
       return;
     }
 
-    const [[network]] = egressIds;
+    const [[chain]] = egressIds;
 
     const depositChannels = await prisma.egress.findMany({
       where: {
-        network,
+        chain,
         nativeId: { in: egressIds.map(([, id]) => id) },
       },
     });
@@ -41,7 +41,7 @@ export default async function networkBatchBroadcastRequested({
     }
 
     const broadcast = await prisma.broadcast.create({
-      data: { network, nativeId: broadcastId },
+      data: { chain, nativeId: broadcastId },
     });
 
     await prisma.egress.updateMany({

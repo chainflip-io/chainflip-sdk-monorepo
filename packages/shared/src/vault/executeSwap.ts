@@ -6,7 +6,7 @@ import {
   getVaultManagerContractAddress,
   getTokenContractAddress,
 } from '../contracts';
-import { SupportedAsset, chainflipNetwork, ChainId } from '../enums';
+import { SupportedAsset, chainflipNetwork, Chain } from '../enums';
 import { assert } from '../guards';
 import {
   ExecuteSwapParams,
@@ -17,10 +17,10 @@ import {
 
 // !!!!! IMPORTANT !!!!!
 // Do not change these indices.
-const chainMap: Record<ChainId, number> = {
-  [ChainId.Ethereum]: 1,
-  [ChainId.Polkadot]: 2,
-  [ChainId.Bitcoin]: 3,
+const chainMap: Record<Chain, number> = {
+  Ethereum: 1,
+  Polkadot: 2,
+  Bitcoin: 3,
 };
 
 // !!!!!! IMPORTANT !!!!!!
@@ -37,10 +37,10 @@ const assetMap: Record<SupportedAsset, number> = {
 
 const swapNative = async (
   vault: Vault,
-  { destChainId, destTokenSymbol, destAddress, amount }: NativeSwapParams,
+  { destChain, destTokenSymbol, destAddress, amount }: NativeSwapParams,
 ): Promise<ContractReceipt> => {
   const transaction = await vault.xSwapNative(
-    chainMap[destChainId],
+    chainMap[destChain],
     destAddress,
     assetMap[destTokenSymbol],
     [],
@@ -65,7 +65,7 @@ const swapToken = async (
   await requestApproval(erc20Address, vault.address, params.amount, signer);
 
   const transaction = await vault.xSwapToken(
-    chainMap[params.destChainId],
+    chainMap[params.destChain],
     params.destAddress,
     assetMap[params.destTokenSymbol],
     erc20Address,
