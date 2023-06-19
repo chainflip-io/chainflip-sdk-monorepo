@@ -10,14 +10,9 @@ import logger from './utils/logger';
 
 const { INGEST_GATEWAY_URL } = process.env;
 
-const createGraphQLClient = () => {
+export default async function processBlocks() {
   assert(INGEST_GATEWAY_URL, 'INGEST_GATEWAY_URL is not defined');
   const client = new GraphQLClient(INGEST_GATEWAY_URL);
-  return client;
-};
-
-export default async function processBlocks() {
-  const client = createGraphQLClient();
 
   logger.info('processing blocks');
   let run = true;
