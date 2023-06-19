@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { Assets, Chains } from '@/shared/enums';
-import { chainflipNetwork } from '@/shared/parsers';
+import { Assets, ChainflipNetworks, Chains } from '@/shared/enums';
 import { RouteRequest } from '../../types';
 import ApiService from '../ApiService';
 
@@ -20,19 +19,21 @@ describe('ApiService', () => {
   } satisfies RouteRequest;
 
   describe(ApiService.getChains, () => {
-    it.each(['sisyphos', 'perseverance'] as const)(
-      'gets testnet chains (%s)',
-      async (network) => {
-        expect(await ApiService.getChains(network)).toMatchSnapshot();
-      },
-    );
+    it.each([
+      ChainflipNetworks.sisyphos,
+      ChainflipNetworks.perseverance,
+    ] as const)('gets testnet chains (%s)', async (network) => {
+      expect(await ApiService.getChains(network)).toMatchSnapshot();
+    });
 
     it('gets mainnet chains', async () => {
-      expect(await ApiService.getChains('mainnet')).toMatchSnapshot();
+      expect(
+        await ApiService.getChains(ChainflipNetworks.mainnet),
+      ).toMatchSnapshot();
     });
   });
 
-  describe.each(chainflipNetwork.options)(
+  describe.each(Object.values(ChainflipNetworks))(
     `${ApiService.getAssets.name} (%s)`,
     (network) => {
       it.each(Object.values(Chains))(
@@ -48,7 +49,9 @@ describe('ApiService', () => {
     it.each(Object.values(Chains))(
       'gets the correct assets for mainnets (%s)',
       async (chain) => {
-        expect(await ApiService.getAssets(chain, 'mainnet')).toMatchSnapshot();
+        expect(
+          await ApiService.getAssets(chain, ChainflipNetworks.mainnet),
+        ).toMatchSnapshot();
       },
     );
   });

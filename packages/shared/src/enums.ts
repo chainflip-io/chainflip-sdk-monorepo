@@ -23,7 +23,8 @@ export type ChainflipNetwork =
   (typeof ChainflipNetworks)[keyof typeof ChainflipNetworks];
 
 export const isTestnet = (network: ChainflipNetwork): boolean =>
-  network === 'perseverance' || network === 'sisyphos';
+  network === ChainflipNetworks.perseverance ||
+  network === ChainflipNetworks.sisyphos;
 
 export const assetChains = {
   [Assets.ETH]: Chains.Ethereum,

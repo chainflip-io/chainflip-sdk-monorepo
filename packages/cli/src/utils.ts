@@ -1,6 +1,6 @@
 import { createInterface } from 'node:readline/promises';
 import yargs from 'yargs/yargs';
-import { Assets } from '@/shared/enums';
+import { Assets, ChainflipNetworks } from '@/shared/enums';
 import { chainflipNetwork } from '@/shared/parsers';
 import { ChainflipNetwork } from './enums';
 
@@ -20,7 +20,7 @@ type GetEthNetworkOptions =
 
 export function getEthNetwork(opts: GetEthNetworkOptions) {
   if (opts.chainflipNetwork === 'localnet') return opts.ethNetwork;
-  if (opts.chainflipNetwork === 'mainnet') return 'mainnet';
+  if (opts.chainflipNetwork === ChainflipNetworks.mainnet) return 'mainnet';
   return 'goerli';
 }
 const networks = [...Object.values(chainflipNetwork.enum), 'localnet'];
@@ -42,7 +42,7 @@ export const parseArgs = (args: string[]) =>
         .option('chainflip-network', {
           choices: networks,
           describe: 'The Chainflip network to execute the swap on',
-          default: 'sisyphos',
+          default: ChainflipNetworks.sisyphos,
         })
         .option('amount', {
           type: 'string',
@@ -83,7 +83,7 @@ export const parseArgs = (args: string[]) =>
         .option('chainflip-network', {
           choices: networks,
           describe: 'The Chainflip network to execute the swap on',
-          default: 'sisyphos',
+          default: ChainflipNetworks.sisyphos,
         })
         .option('amount', {
           type: 'string',

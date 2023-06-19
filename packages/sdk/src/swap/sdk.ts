@@ -1,5 +1,5 @@
 import { ContractReceipt, Signer } from 'ethers';
-import { ChainflipNetwork, Chain } from '@/shared/enums';
+import { ChainflipNetwork, Chain, ChainflipNetworks } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { ExecuteSwapParams, executeSwap } from '@/shared/vault';
 import { BACKEND_SERVICE_URL } from './consts';
@@ -32,7 +32,7 @@ export class SwapSDK {
 
   constructor(options: SDKOptions = {}) {
     this.baseUrl = options.backendServiceUrl ?? BACKEND_SERVICE_URL;
-    this.network = options.network ?? 'sisyphos';
+    this.network = options.network ?? ChainflipNetworks.sisyphos;
     this.signer = options.signer;
   }
 

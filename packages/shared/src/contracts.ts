@@ -1,6 +1,11 @@
 import type { Signer } from 'ethers';
 import { ERC20__factory } from './abis';
-import { type ChainflipNetwork, type Asset, Assets } from './enums';
+import {
+  type ChainflipNetwork,
+  type Asset,
+  Assets,
+  ChainflipNetworks,
+} from './enums';
 import { assert } from './guards';
 
 // https://github.com/chainflip-io/chainflip-testnet-tools/actions/runs/5077994260#summary-13750268632
@@ -17,7 +22,10 @@ export const getTokenContractAddress = (
   asset: Asset,
   network: ChainflipNetwork,
 ): string => {
-  assert(network === 'sisyphos', 'Only sisyphos is supported for now');
+  assert(
+    network === ChainflipNetworks.sisyphos,
+    'Only sisyphos is supported for now',
+  );
 
   if (asset === Assets.FLIP) return SISYPHOS_FLIP_CONTRACT_ADDRESS;
 
@@ -33,7 +41,7 @@ export const getStateChainGatewayContractAddress = (
   network: ChainflipNetwork,
 ): string => {
   switch (network) {
-    case 'sisyphos':
+    case ChainflipNetworks.sisyphos:
       return SISYPHOS_STATE_CHAIN_MANAGER_CONTRACT_ADDRESS;
     default:
       throw new Error(`Unsupported network: ${network}`);
@@ -59,7 +67,7 @@ export const getVaultManagerContractAddress = (
   network: ChainflipNetwork,
 ): string => {
   switch (network) {
-    case 'sisyphos':
+    case ChainflipNetworks.sisyphos:
       return SISYPHOS_VAULT_CONTRACT_ADDRESS;
     default:
       throw new Error(`Unsupported network: ${network}`);

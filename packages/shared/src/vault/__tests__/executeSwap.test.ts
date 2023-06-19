@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 /* eslint-disable max-classes-per-file */
 import { BigNumber, VoidSigner } from 'ethers';
-import { Assets, Chains } from '@/shared/enums';
+import { Assets, ChainflipNetworks, Chains } from '@/shared/enums';
 import executeSwap from '../executeSwap';
 import { ExecuteSwapParams } from '../validators';
 
@@ -38,7 +38,7 @@ jest.mock('../../abis/factories/ERC20__factory', () => ({
 }));
 
 describe(executeSwap, () => {
-  it.each(['perseverance', 'mainnet'] as const)(
+  it.each([ChainflipNetworks.perseverance, ChainflipNetworks.mainnet] as const)(
     'only works on sisyphos for now',
     async (network) => {
       await expect(
@@ -88,7 +88,7 @@ describe(executeSwap, () => {
 
       expect(
         await executeSwap({ amount: '1', ...params } as ExecuteSwapParams, {
-          network: 'sisyphos',
+          network: ChainflipNetworks.sisyphos,
           signer: new VoidSigner('MY ADDRESS'),
         }),
       ).toStrictEqual({ status: 1, transactionHash: 'hello world' });

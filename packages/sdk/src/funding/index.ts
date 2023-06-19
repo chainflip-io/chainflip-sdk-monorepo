@@ -1,5 +1,5 @@
 import type { ContractReceipt, Signer } from 'ethers';
-import { ChainflipNetwork } from '@/shared/enums';
+import { ChainflipNetwork, ChainflipNetworks } from '@/shared/enums';
 import {
   executeRedemption,
   fundStateChainAccount,
@@ -18,7 +18,7 @@ export class FundingSDK {
   constructor(options: SDKOptions) {
     this.options = {
       signer: options.signer,
-      network: options.network ?? 'sisyphos',
+      network: options.network ?? ChainflipNetworks.sisyphos,
     };
   }
 

@@ -1,5 +1,5 @@
 import { VoidSigner } from 'ethers';
-import { Chain, Chains } from '@/shared/enums';
+import { Chain, ChainflipNetworks, Chains } from '@/shared/enums';
 import { executeSwap } from '@/shared/vault';
 import {
   bitcoin,
@@ -16,7 +16,7 @@ import { SwapSDK } from '../swap/sdk';
 jest.mock('@/shared/vault', () => ({ executeSwap: jest.fn() }));
 
 describe(SwapSDK, () => {
-  const sdk = new SwapSDK({ network: 'mainnet' });
+  const sdk = new SwapSDK({ network: ChainflipNetworks.mainnet });
 
   describe(SwapSDK.prototype.getChains, () => {
     it('returns the available chains', async () => {
@@ -62,7 +62,7 @@ describe(SwapSDK, () => {
 
 describe(SwapSDK, () => {
   const signer = new VoidSigner('0x0');
-  const sdk = new SwapSDK({ network: 'sisyphos', signer });
+  const sdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
 
   describe(SwapSDK.prototype.getChains, () => {
     it('returns the available chains', async () => {
