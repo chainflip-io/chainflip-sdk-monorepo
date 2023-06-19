@@ -8,26 +8,13 @@ import { GET_BATCH } from './gql/query';
 import { handleExit } from './utils/function';
 import logger from './utils/logger';
 
-const { INGEST_GATEWAY_USERNAME, INGEST_GATEWAY_PASSWORD, INGEST_GATEWAY_URL } =
-  process.env;
-
-const createGraphQLClient = () => {
-  assert(INGEST_GATEWAY_URL, 'INGEST_GATEWAY_URL is not defined');
-  const client = new GraphQLClient(INGEST_GATEWAY_URL);
-  if (INGEST_GATEWAY_USERNAME && INGEST_GATEWAY_PASSWORD) {
-    client.requestConfig.headers = {
-      Authorization: `Basic ${Buffer.from(
-        `${INGEST_GATEWAY_USERNAME}:${INGEST_GATEWAY_PASSWORD}`,
-      ).toString('base64')}`,
-    };
-  }
-  return client;
-};
+const { INGEST_GATEWAY_URL } = process.env;
 
 export default async function processBlocks() {
-  const client = createGraphQLClient();
-  logger.info('processing blocks');
+  assert(INGEST_GATEWAY_URL, 'INGEST_GATEWAY_URL is not defined');
+  const client = new GraphQLClient(INGEST_GATEWAY_URL);
 
+  logger.info('processing blocks');
   let run = true;
 
   handleExit(() => {
