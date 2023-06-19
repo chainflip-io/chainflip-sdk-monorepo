@@ -14,6 +14,9 @@ export const string = z.string({ errorMap });
 export const number = z.number({ errorMap });
 export const numericString = string.regex(/^[0-9]+$/);
 export const hexString = string.regex(/^0x[0-9a-f]+$/i);
+export const hexStringFromNumber = numericString
+  .transform((arg) => ethers.BigNumber.from(arg).toHexString())
+  .refine((arg) => arg.startsWith('0x'));
 export const bareHexString = string.regex(/^[0-9a-f]+$/);
 export const btcAddress = string
   .regex(/^(bc1|tb1|bcrt1|m)/)
