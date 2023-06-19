@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Network } from '@/shared/enums';
+import { Chain } from '@/shared/enums';
 import { unsignedInteger } from '@/shared/parsers';
 import logger from '../utils/logger';
 import type { EventHandlerArgs } from './index';
@@ -9,14 +9,14 @@ const eventArgs = z.object({
 });
 
 export async function handleEvent(
-  network: Network,
+  chain: Chain,
   { prisma, block, event }: EventHandlerArgs,
 ): Promise<void> {
   try {
     const { broadcastId } = eventArgs.parse(event.args);
 
     const broadcast = await prisma.broadcast.findUnique({
-      where: { nativeId_network: { network, nativeId: broadcastId } },
+      where: { nativeId_chain: { chain, nativeId: broadcastId } },
       include: { egresses: { include: { swap: true } } },
     });
 
@@ -24,7 +24,7 @@ export async function handleEvent(
       logger.customInfo(
         'no broadcast found, skipping',
         {},
-        { broadcastId, network },
+        { broadcastId, chain },
       );
       return;
     }
@@ -46,7 +46,7 @@ export async function handleEvent(
     logger.customError(
       'error in "chainBroadcastSuccess" handler',
       { alertCode: 'EventHandlerError' },
-      { error, handler: 'chainBroadcastSuccess', network },
+      { error, handler: 'chainBroadcastSuccess', chain },
     );
     throw error;
   }
@@ -57,7 +57,7 @@ export async function handleEvent(
  * contained by the broadcast id can be marked as successful
  */
 export default function networkBroadcastSuccess(
-  network: Network,
+  chain: Chain,
 ): (args: EventHandlerArgs) => Promise<void> {
-  return (args: EventHandlerArgs) => handleEvent(network, args);
+  return (args: EventHandlerArgs) => handleEvent(chain, args);
 }

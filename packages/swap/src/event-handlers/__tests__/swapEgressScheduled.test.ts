@@ -21,7 +21,7 @@ describe(swapEgressScheduled, () => {
 
     await prisma.egress.create({
       data: {
-        network: event.args.egressId[0].__kind,
+        chain: event.args.egressId[0].__kind,
         nativeId: BigInt(event.args.egressId[1]),
         amount: '1234567890',
         timestamp: new Date(block.timestamp),
@@ -62,7 +62,7 @@ describe(swapEgressScheduled, () => {
           select: {
             amount: true,
             timestamp: true,
-            network: true,
+            chain: true,
           },
         },
       },

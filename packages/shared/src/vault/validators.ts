@@ -1,13 +1,12 @@
 import { decodeAddress } from '@polkadot/util-crypto';
 import { z } from 'zod';
-import { supportedAsset } from '@/shared/enums';
+import { Chains, supportedAsset } from '../enums';
 import {
   btcAddress,
   dotAddress,
   ethereumAddress,
   numericString,
-} from '@/shared/parsers';
-import { ChainId } from '../sdk';
+} from '../parsers';
 
 const bytesToHex = (arr: Uint8Array | number[]) =>
   `0x${[...arr].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
@@ -17,17 +16,17 @@ const utf8ToHex = (str: string) => `0x${Buffer.from(str).toString('hex')}`;
 const base = z.object({ amount: numericString });
 
 const ethereumBase = base.extend({
-  destChainId: z.literal(ChainId.Ethereum),
+  destChain: z.literal(Chains.Ethereum),
   destAddress: ethereumAddress,
 });
 
 const polkadotBase = base.extend({
-  destChainId: z.literal(ChainId.Polkadot),
+  destChain: z.literal(Chains.Polkadot),
   destAddress: dotAddress.transform((addr) => bytesToHex(decodeAddress(addr))),
 });
 
 const bitcoinBase = base.extend({
-  destChainId: z.literal(ChainId.Bitcoin),
+  destChain: z.literal(Chains.Bitcoin),
   destAddress: btcAddress.transform(utf8ToHex),
 });
 

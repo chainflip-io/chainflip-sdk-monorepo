@@ -9,6 +9,7 @@ export default defineConfig({
   format: ['cjs', 'esm'],
   entry: {
     swap: 'src/swap/index.ts',
+    funding: 'src/funding/index.ts',
     types: 'src/swap/types/index.ts',
   },
 });

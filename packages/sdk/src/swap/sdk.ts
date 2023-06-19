@@ -1,10 +1,11 @@
-import assert from 'assert';
 import { ContractReceipt, Signer } from 'ethers';
-import { ChainflipNetwork } from '@/shared/enums';
-import { BACKEND_SERVICE_URL, ChainId } from './consts';
+import { ChainflipNetwork, Chain } from '@/shared/enums';
+import { assert } from '@/shared/guards';
+import { ExecuteSwapParams, executeSwap } from '@/shared/vault';
+import { BACKEND_SERVICE_URL } from './consts';
 import ApiService, { RequestOptions } from './services/ApiService';
 import type {
-  Chain,
+  ChainData,
   Token,
   RouteRequest,
   SwapResponse,
@@ -13,9 +14,7 @@ import type {
   SwapStatusResponse,
   SwapRequest,
 } from './types';
-import { ExecuteSwapParams, executeSwap } from './vault';
 
-export { ChainId };
 export * from './types';
 
 export type SDKOptions = {
@@ -37,17 +36,17 @@ export class SwapSDK {
     this.signer = options.signer;
   }
 
-  getChains(): Promise<Chain[]>;
-  getChains(chainId: ChainId): Promise<Chain[] | undefined>;
-  getChains(chainId?: ChainId): Promise<Chain[] | undefined> {
-    if (chainId !== undefined) {
-      return ApiService.getPossibleDestinationChains(chainId, this.network);
+  getChains(): Promise<ChainData[]>;
+  getChains(sourceChain: Chain): Promise<ChainData[] | undefined>;
+  getChains(sourceChain?: Chain): Promise<ChainData[] | undefined> {
+    if (sourceChain !== undefined) {
+      return ApiService.getPossibleDestinationChains(sourceChain, this.network);
     }
     return ApiService.getChains(this.network);
   }
 
-  getTokens(chainId: ChainId): Promise<Token[] | undefined> {
-    return ApiService.getTokens(chainId, this.network);
+  getTokens(chain: Chain): Promise<Token[] | undefined> {
+    return ApiService.getTokens(chain, this.network);
   }
 
   getRoute(
@@ -71,12 +70,11 @@ export class SwapSDK {
     return ApiService.getStatus(this.baseUrl, swapStatusRequest, options);
   }
 
-  executeSwap(
-    params: ExecuteSwapParams,
-    signer?: Signer,
-  ): Promise<ContractReceipt> {
-    const s = signer ?? this.signer;
-    assert(s, 'No signer provided');
-    return executeSwap(params, { cfNetwork: this.network, signer: s });
+  executeSwap(params: ExecuteSwapParams): Promise<ContractReceipt> {
+    assert(this.signer, 'No signer provided');
+    return executeSwap(params, {
+      network: this.network,
+      signer: this.signer,
+    });
   }
 }

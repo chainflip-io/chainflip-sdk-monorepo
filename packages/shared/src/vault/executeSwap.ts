@@ -1,23 +1,13 @@
-import assert from 'assert';
 import { ContractReceipt, Signer } from 'ethers';
 import { z } from 'zod';
+import { Vault, Vault__factory } from '../abis';
 import {
-  SISYPHOS_FLIP_CONTRACT_ADDRESS,
-  GOERLI_USDC_CONTRACT_ADDRESS,
-  SISYPHOS_VAULT_CONTRACT_ADDRESS,
-} from '@/shared/addresses';
-import {
-  ChainflipNetwork,
-  SupportedAsset,
-  chainflipNetwork,
-} from '@/shared/enums';
-import {
-  Vault,
-  Vault__factory,
-  ERC20__factory,
-} from '../../../types/ethers-contracts';
-import { ChainId } from '../sdk';
-import { isTestnet } from '../utils';
+  requestApproval,
+  getVaultManagerContractAddress,
+  getTokenContractAddress,
+} from '../contracts';
+import { SupportedAsset, chainflipNetwork, Chain } from '../enums';
+import { assert } from '../guards';
 import {
   ExecuteSwapParams,
   NativeSwapParams,
@@ -27,10 +17,10 @@ import {
 
 // !!!!! IMPORTANT !!!!!
 // Do not change these indices.
-const chainMap: Record<ChainId, number> = {
-  [ChainId.Ethereum]: 1,
-  [ChainId.Polkadot]: 2,
-  [ChainId.Bitcoin]: 3,
+const chainMap: Record<Chain, number> = {
+  Ethereum: 1,
+  Polkadot: 2,
+  Bitcoin: 3,
 };
 
 // !!!!!! IMPORTANT !!!!!!
@@ -47,36 +37,17 @@ const assetMap: Record<SupportedAsset, number> = {
 
 const swapNative = async (
   vault: Vault,
-  { destChainId, destTokenSymbol, destAddress, amount }: NativeSwapParams,
+  { destChain, destTokenSymbol, destAddress, amount }: NativeSwapParams,
 ): Promise<ContractReceipt> => {
   const transaction = await vault.xSwapNative(
-    chainMap[destChainId],
+    chainMap[destChain],
     destAddress,
     assetMap[destTokenSymbol],
     [],
     { value: amount },
   );
 
-  const receipt = await transaction.wait(1);
-
-  assert(receipt.status !== 0, 'Transaction failed');
-
-  return receipt;
-};
-
-const getTokenContractAddress = (
-  asset: SupportedAsset,
-  cfNetwork: ChainflipNetwork,
-): string => {
-  assert(isTestnet(cfNetwork), 'Only testnets are supported for now');
-
-  if (asset === 'FLIP' && cfNetwork === 'sisyphos') {
-    return SISYPHOS_FLIP_CONTRACT_ADDRESS;
-  }
-
-  assert(asset === 'USDC');
-
-  return GOERLI_USDC_CONTRACT_ADDRESS;
+  return transaction.wait(1);
 };
 
 const swapToken = async (
@@ -85,23 +56,16 @@ const swapToken = async (
   { signer, ...opts }: ExecuteSwapOptions,
 ): Promise<ContractReceipt> => {
   const erc20Address =
-    opts.cfNetwork === 'localnet'
+    opts.network === 'localnet'
       ? opts.srcTokenContractAddress
-      : getTokenContractAddress(params.srcTokenSymbol, opts.cfNetwork);
+      : getTokenContractAddress(params.srcTokenSymbol, opts.network);
 
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
-  const erc20 = ERC20__factory.connect(erc20Address, signer);
-  const signerAddress = await signer.getAddress();
-  const allowance = await erc20.allowance(signerAddress, vault.address);
 
-  if (allowance.lt(params.amount)) {
-    const approval = await erc20.approve(vault.address, params.amount);
-    const approvalReceipt = await approval.wait(1);
-    assert(approvalReceipt.status !== 0, 'Approval failed');
-  }
+  await requestApproval(erc20Address, vault.address, params.amount, signer);
 
   const transaction = await vault.xSwapToken(
-    chainMap[params.destChainId],
+    chainMap[params.destChain],
     params.destAddress,
     assetMap[params.destTokenSymbol],
     erc20Address,
@@ -109,11 +73,7 @@ const swapToken = async (
     [],
   );
 
-  const receipt = await transaction.wait(1);
-
-  assert(receipt.status !== 0, 'Transaction failed');
-
-  return receipt;
+  return transaction.wait(1);
 };
 
 const isTokenSwap = (params: ExecuteSwapParams): params is TokenSwapParams =>
@@ -122,9 +82,9 @@ const isTokenSwap = (params: ExecuteSwapParams): params is TokenSwapParams =>
 const executeSwapOptionsSchema = z.intersection(
   z.object({ signer: z.instanceof(Signer) }),
   z.union([
-    z.object({ cfNetwork: chainflipNetwork }),
+    z.object({ network: chainflipNetwork }),
     z.object({
-      cfNetwork: z.literal('localnet'),
+      network: z.literal('localnet'),
       vaultContractAddress: z.string(),
       srcTokenContractAddress: z.string().optional(),
     }),
@@ -140,12 +100,10 @@ const executeSwap = async (
   const parsedParams = executeSwapParamsSchema.parse(params);
   const opts = executeSwapOptionsSchema.parse(options);
 
-  let vaultContractAddress: string | undefined;
-  if (opts.cfNetwork === 'localnet') {
-    vaultContractAddress = opts.vaultContractAddress;
-  } else if (opts.cfNetwork === 'sisyphos') {
-    vaultContractAddress = SISYPHOS_VAULT_CONTRACT_ADDRESS;
-  }
+  const vaultContractAddress =
+    opts.network === 'localnet'
+      ? opts.vaultContractAddress
+      : getVaultManagerContractAddress(opts.network);
 
   assert(
     vaultContractAddress !== undefined,

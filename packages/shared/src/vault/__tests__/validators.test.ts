@@ -1,4 +1,4 @@
-import { ChainId } from '../../consts';
+import { Chains } from '@/shared/enums';
 import { NativeSwapParams, executeSwapParamsSchema } from '../validators';
 
 const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
@@ -11,17 +11,17 @@ const parse = (params: unknown): boolean =>
 describe('executeSwapParamsSchema', () => {
   it.each([
     {
-      destChainId: ChainId.Bitcoin,
+      destChain: Chains.Bitcoin,
       destAddress: BTC_ADDRESS,
       destTokenSymbol: 'BTC',
     },
     {
-      destChainId: ChainId.Polkadot,
+      destChain: Chains.Polkadot,
       destAddress: DOT_ADDRESS,
       destTokenSymbol: 'DOT',
     },
     ...['FLIP', 'USDC'].map((destTokenSymbol) => ({
-      destChainId: ChainId.Ethereum,
+      destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
       destTokenSymbol,
     })),
@@ -34,17 +34,17 @@ describe('executeSwapParamsSchema', () => {
 
   it.each([
     {
-      destChainId: ChainId.Bitcoin,
+      destChain: Chains.Bitcoin,
       destAddress: '0xOoOoOo',
       destTokenSymbol: 'BTC',
     },
     {
-      destChainId: ChainId.Polkadot,
+      destChain: Chains.Polkadot,
       destAddress: '0xOoOoOo',
       destTokenSymbol: 'DOT',
     },
     ...['FLIP', 'USDC', 'ETH'].map((destTokenSymbol) => ({
-      destChainId: ChainId.Ethereum,
+      destChain: Chains.Ethereum,
       destAddress: '0xOoOoOo',
       destTokenSymbol,
     })),
@@ -57,17 +57,17 @@ describe('executeSwapParamsSchema', () => {
 
   it.each([
     ...['FLIP', 'USDC', 'ETH', 'DOT'].map((destTokenSymbol) => ({
-      destChainId: ChainId.Bitcoin,
+      destChain: Chains.Bitcoin,
       destAddress: BTC_ADDRESS,
       destTokenSymbol,
     })),
     ...['FLIP', 'USDC', 'ETH', 'BTC'].map((destTokenSymbol) => ({
-      destChainId: ChainId.Polkadot,
+      destChain: Chains.Polkadot,
       destAddress: BTC_ADDRESS,
       destTokenSymbol,
     })),
     ...['DOT', 'BTC', 'ETH'].map((destTokenSymbol) => ({
-      destChainId: ChainId.Ethereum,
+      destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
       destTokenSymbol,
     })),
@@ -81,32 +81,32 @@ describe('executeSwapParamsSchema', () => {
   it.each([
     ...['FLIP', 'USDC'].flatMap((srcTokenSymbol) => [
       {
-        destChainId: ChainId.Bitcoin,
+        destChain: Chains.Bitcoin,
         destAddress: BTC_ADDRESS,
         destTokenSymbol: 'BTC',
         srcTokenSymbol,
       },
       {
-        destChainId: ChainId.Polkadot,
+        destChain: Chains.Polkadot,
         destAddress: DOT_ADDRESS,
         destTokenSymbol: 'DOT',
         srcTokenSymbol,
       },
       {
-        destChainId: ChainId.Ethereum,
+        destChain: Chains.Ethereum,
         destAddress: ETH_ADDRESS,
         destTokenSymbol: 'ETH',
         srcTokenSymbol,
       },
     ]),
     {
-      destChainId: ChainId.Ethereum,
+      destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
       destTokenSymbol: 'USDC',
       srcTokenSymbol: 'FLIP',
     },
     {
-      destChainId: ChainId.Ethereum,
+      destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
       destTokenSymbol: 'FLIP',
       srcTokenSymbol: 'USDC',
@@ -121,19 +121,19 @@ describe('executeSwapParamsSchema', () => {
   it.each([
     ...['ETH', 'DOT', 'BTC'].flatMap((srcTokenSymbol) => [
       {
-        destChainId: ChainId.Bitcoin,
+        destChain: Chains.Bitcoin,
         destAddress: BTC_ADDRESS,
         destTokenSymbol: 'BTC',
         srcTokenSymbol,
       },
       {
-        destChainId: ChainId.Polkadot,
+        destChain: Chains.Polkadot,
         destAddress: DOT_ADDRESS,
         destTokenSymbol: 'DOT',
         srcTokenSymbol,
       },
       {
-        destChainId: ChainId.Ethereum,
+        destChain: Chains.Ethereum,
         destAddress: ETH_ADDRESS,
         destTokenSymbol: 'ETH',
         srcTokenSymbol,

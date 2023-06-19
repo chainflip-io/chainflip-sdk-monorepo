@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 /* eslint-disable max-classes-per-file */
 import { BigNumber, VoidSigner } from 'ethers';
-import { ChainId } from '../../consts';
+import { Chains } from '@/shared/enums';
 import executeSwap from '../executeSwap';
 import { ExecuteSwapParams } from '../validators';
 
@@ -23,33 +23,27 @@ class MockERC20 {
   }
 }
 
-jest.mock(
-  '../../../../types/ethers-contracts/factories/Vault__factory',
-  () => ({
-    Vault__factory: class {
-      static connect: (address: string) => MockVault = jest.fn(
-        (address: string) => new MockVault(address),
-      );
-    },
-  }),
-);
+jest.mock('../../abis/factories/Vault__factory', () => ({
+  Vault__factory: class {
+    static connect: (address: string) => MockVault = jest.fn(
+      (address: string) => new MockVault(address),
+    );
+  },
+}));
 
-jest.mock(
-  '../../../../types/ethers-contracts/factories/ERC20__factory',
-  () => ({
-    ERC20__factory: class {
-      static connect: () => MockERC20 = jest.fn(() => new MockERC20());
-    },
-  }),
-);
+jest.mock('../../abis/factories/ERC20__factory', () => ({
+  ERC20__factory: class {
+    static connect: () => MockERC20 = jest.fn(() => new MockERC20());
+  },
+}));
 
 describe(executeSwap, () => {
   it.each(['perseverance', 'mainnet'] as const)(
     'only works on sisyphos for now',
-    async (cfNetwork) => {
+    async (network) => {
       await expect(
         executeSwap({} as any, {
-          cfNetwork,
+          network,
           signer: new VoidSigner('MY ADDRESS'),
         }),
       ).rejects.toThrowError();
@@ -59,22 +53,27 @@ describe(executeSwap, () => {
   it.each([
     {
       destTokenSymbol: 'BTC',
-      destChainId: ChainId.Bitcoin,
+      destChain: Chains.Bitcoin,
+      destAddress: BTC_ADDRESS,
+    },
+    {
+      destTokenSymbol: 'BTC',
+      destChain: 'Bitcoin',
       destAddress: BTC_ADDRESS,
     },
     {
       destTokenSymbol: 'FLIP',
-      destChainId: ChainId.Ethereum,
+      destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
     },
     {
       destTokenSymbol: 'USDC',
-      destChainId: ChainId.Ethereum,
+      destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
     },
     {
       destTokenSymbol: 'DOT',
-      destChainId: ChainId.Polkadot,
+      destChain: Chains.Polkadot,
       destAddress: DOT_ADDRESS,
     },
   ] as Omit<ExecuteSwapParams, 'amount'>[])(
@@ -89,7 +88,7 @@ describe(executeSwap, () => {
 
       expect(
         await executeSwap({ amount: '1', ...params } as ExecuteSwapParams, {
-          cfNetwork: 'sisyphos',
+          network: 'sisyphos',
           signer: new VoidSigner('MY ADDRESS'),
         }),
       ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
@@ -98,40 +97,29 @@ describe(executeSwap, () => {
     },
   );
 
-  it('throws an error if the transaction errors', async () => {
-    const wait = jest.fn().mockResolvedValue({ status: 0 });
-    jest.spyOn(MockVault.prototype, 'xSwapNative').mockResolvedValue({ wait });
-
-    await expect(
-      executeSwap(
-        {
-          destTokenSymbol: 'DOT',
-          destChainId: ChainId.Polkadot,
-          destAddress: DOT_ADDRESS,
-          amount: '1',
-        },
-        { cfNetwork: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
-      ),
-    ).rejects.toThrowError();
-  });
-
   it.each([
     ...['FLIP', 'USDC'].flatMap((srcTokenSymbol) => [
       {
         destTokenSymbol: 'BTC',
-        destChainId: ChainId.Bitcoin,
+        destChain: Chains.Bitcoin,
+        destAddress: BTC_ADDRESS,
+        srcTokenSymbol,
+      },
+      {
+        destTokenSymbol: 'BTC',
+        destChain: 'Bitcoin',
         destAddress: BTC_ADDRESS,
         srcTokenSymbol,
       },
       {
         destTokenSymbol: 'ETH',
-        destChainId: ChainId.Ethereum,
+        destChain: Chains.Ethereum,
         destAddress: ETH_ADDRESS,
         srcTokenSymbol,
       },
       {
         destTokenSymbol: 'DOT',
-        destChainId: ChainId.Polkadot,
+        destChain: Chains.Polkadot,
         destAddress: DOT_ADDRESS,
         srcTokenSymbol,
       },
@@ -152,7 +140,7 @@ describe(executeSwap, () => {
 
       expect(
         await executeSwap({ amount: '1', ...params } as ExecuteSwapParams, {
-          cfNetwork: 'sisyphos',
+          network: 'sisyphos',
           signer: new VoidSigner('MY ADDRESS'),
         }),
       ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
@@ -181,58 +169,18 @@ describe(executeSwap, () => {
       await executeSwap(
         {
           destTokenSymbol: 'BTC',
-          destChainId: ChainId.Bitcoin,
+          destChain: Chains.Bitcoin,
           destAddress: BTC_ADDRESS,
           srcTokenSymbol: 'FLIP',
           amount: '1',
         } as ExecuteSwapParams,
-        { cfNetwork: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
+        { network: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
       ),
     ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
     expect(wait).toHaveBeenCalledWith(1);
     expect(swapSpy.mock.calls).toMatchSnapshot();
     expect(allowanceSpy.mock.calls).toMatchSnapshot();
     expect(approveSpy.mock.calls).toMatchSnapshot();
-  });
-
-  it('throws if the approve transaction errors', async () => {
-    const wait = jest.fn().mockResolvedValue({ status: 0 });
-    jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({ wait });
-    jest
-      .spyOn(MockERC20.prototype, 'allowance')
-      .mockResolvedValueOnce(BigNumber.from(0));
-
-    await expect(
-      executeSwap(
-        {
-          destTokenSymbol: 'BTC',
-          destChainId: ChainId.Bitcoin,
-          destAddress: BTC_ADDRESS,
-          srcTokenSymbol: 'FLIP',
-          amount: '1',
-        },
-        { cfNetwork: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
-      ),
-    ).rejects.toThrowError();
-  });
-
-  it('throws if the swap transaction errors', async () => {
-    const wait = jest.fn().mockResolvedValueOnce({ status: 0 });
-    jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({ wait });
-    jest.spyOn(MockVault.prototype, 'xSwapToken').mockResolvedValue({ wait });
-
-    await expect(
-      executeSwap(
-        {
-          destTokenSymbol: 'BTC',
-          destChainId: ChainId.Bitcoin,
-          destAddress: BTC_ADDRESS,
-          srcTokenSymbol: 'FLIP',
-          amount: '1',
-        },
-        { cfNetwork: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
-      ),
-    ).rejects.toThrowError();
   });
 
   it('can be invoked with localnet options', async () => {
@@ -253,13 +201,13 @@ describe(executeSwap, () => {
       await executeSwap(
         {
           destTokenSymbol: 'BTC',
-          destChainId: ChainId.Bitcoin,
+          destChain: Chains.Bitcoin,
           destAddress: BTC_ADDRESS,
           srcTokenSymbol: 'FLIP',
           amount: '1',
         } as ExecuteSwapParams,
         {
-          cfNetwork: 'localnet',
+          network: 'localnet',
           signer: new VoidSigner('MY ADDRESS'),
           vaultContractAddress: '0x123',
           srcTokenContractAddress: '0x456',

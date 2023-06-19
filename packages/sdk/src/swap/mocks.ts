@@ -1,27 +1,27 @@
-import { ChainId } from './consts';
-import type { Chain, Token } from './types';
+import { Chains } from '@/shared/enums';
+import type { ChainData, Token } from './types';
 
-export const ethereum: Chain = {
-  id: ChainId.Ethereum,
+export const ethereum: ChainData = {
+  id: Chains.Ethereum,
   name: 'Ethereum',
   isMainnet: true,
 };
 
-export const polkadot: Chain = {
-  id: ChainId.Polkadot,
+export const polkadot: ChainData = {
+  id: Chains.Polkadot,
   name: 'Polkadot',
   isMainnet: true,
 };
 
-export const bitcoin: Chain = {
-  id: ChainId.Bitcoin,
+export const bitcoin: ChainData = {
+  id: Chains.Bitcoin,
   name: 'Bitcoin',
   isMainnet: true,
 };
 
 export const ethereumTokens: Token[] = [
   {
-    chainId: ChainId.Ethereum,
+    chain: Chains.Ethereum,
     contractAddress: '0xeth',
     decimals: 18,
     name: 'ether',
@@ -29,7 +29,7 @@ export const ethereumTokens: Token[] = [
     isMainnet: true,
   },
   {
-    chainId: ChainId.Ethereum,
+    chain: Chains.Ethereum,
     contractAddress: '0xusdc',
     decimals: 6,
     name: 'usdc',
@@ -37,7 +37,7 @@ export const ethereumTokens: Token[] = [
     isMainnet: true,
   },
   {
-    chainId: ChainId.Ethereum,
+    chain: Chains.Ethereum,
     contractAddress: '0xflip',
     decimals: 18,
     name: 'flip',
@@ -47,7 +47,7 @@ export const ethereumTokens: Token[] = [
 ];
 
 export const dot$: Token = {
-  chainId: ChainId.Polkadot,
+  chain: Chains.Polkadot,
   contractAddress: '0xdot',
   decimals: 10,
   name: 'dot',
@@ -56,7 +56,7 @@ export const dot$: Token = {
 };
 
 export const btc$: Token = {
-  chainId: ChainId.Bitcoin,
+  chain: Chains.Bitcoin,
   contractAddress: '0xbitcoin',
   decimals: 8,
   name: 'bitcoin',
@@ -64,7 +64,7 @@ export const btc$: Token = {
   isMainnet: true,
 };
 
-export const testnetChains = (chains: Chain[]): Chain[] =>
+export const testnetChains = (chains: ChainData[]): ChainData[] =>
   chains.map((chain) => ({ ...chain, isMainnet: false }));
 
 export const testnetTokens = (tokens: Token[]): Token[] =>
