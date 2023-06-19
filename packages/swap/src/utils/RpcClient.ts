@@ -33,8 +33,6 @@ export default class RpcClient<
 
   private connectionFailures = 0;
 
-  private concurrentCalls = 0;
-
   constructor(
     private readonly url: string,
     private readonly requestMap: Req,
@@ -87,7 +85,6 @@ export default class RpcClient<
           this.connectionFailures += 1;
         });
       }, backoff);
-      this.concurrentCalls -= 1;
     });
 
     this.socket.on('error', (error) => {
