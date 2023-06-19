@@ -1,6 +1,6 @@
 import type { Signer } from 'ethers';
 import { ERC20__factory } from './abis';
-import { type ChainflipNetwork, type Asset } from './enums';
+import { type ChainflipNetwork, type Asset, Assets } from './enums';
 import { assert } from './guards';
 
 // https://github.com/chainflip-io/chainflip-testnet-tools/actions/runs/5077994260#summary-13750268632
@@ -19,9 +19,9 @@ export const getTokenContractAddress = (
 ): string => {
   assert(network === 'sisyphos', 'Only sisyphos is supported for now');
 
-  if (asset === 'FLIP') return SISYPHOS_FLIP_CONTRACT_ADDRESS;
+  if (asset === Assets.FLIP) return SISYPHOS_FLIP_CONTRACT_ADDRESS;
 
-  assert(asset === 'USDC', 'Only FLIP and USDC are supported for now');
+  assert(asset === Assets.USDC, 'Only FLIP and USDC are supported for now');
 
   return GOERLI_USDC_CONTRACT_ADDRESS;
 };

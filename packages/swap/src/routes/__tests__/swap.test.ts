@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
 import { Server } from 'http';
 import request from 'supertest';
+import { Assets } from '@/shared/enums';
 import prisma from '../../client';
 import {
   DOT_ADDRESS,
@@ -84,8 +85,8 @@ describe('server', () => {
             depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
             nativeId: randomId(),
             depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
-            srcAsset: 'ETH',
-            destAsset: 'DOT',
+            srcAsset: Assets.ETH,
+            destAsset: Assets.DOT,
             destAddress: DOT_ADDRESS,
           },
         },
@@ -123,8 +124,8 @@ describe('server', () => {
             depositAmount: '10',
             swapExecutedAt: new Date(RECEIVED_TIMESTAMP + 6000),
             swapExecutedBlockIndex: `200-3`,
-            srcAsset: 'ETH',
-            destAsset: 'DOT',
+            srcAsset: Assets.ETH,
+            destAsset: Assets.DOT,
             destAddress: DOT_ADDRESS,
           },
         },
@@ -171,8 +172,8 @@ describe('server', () => {
                 nativeId: 1n,
               },
             },
-            srcAsset: 'ETH',
-            destAsset: 'DOT',
+            srcAsset: Assets.ETH,
+            destAsset: Assets.DOT,
             destAddress: DOT_ADDRESS,
           },
         },
@@ -223,8 +224,8 @@ describe('server', () => {
                 nativeId: 1n,
               },
             },
-            srcAsset: 'ETH',
-            destAsset: 'DOT',
+            srcAsset: Assets.ETH,
+            destAsset: Assets.DOT,
             destAddress: DOT_ADDRESS,
           },
         },
@@ -261,24 +262,24 @@ describe('server', () => {
     it.each([
       [
         {
-          srcAsset: 'ETH',
-          destAsset: 'DOT',
+          srcAsset: Assets.ETH,
+          destAsset: Assets.DOT,
           destAddress: HEX_DOT_ADDRESS,
           expectedDepositAmount: '1000000000',
         },
       ],
       [
         {
-          srcAsset: 'ETH',
-          destAsset: 'DOT',
+          srcAsset: Assets.ETH,
+          destAsset: Assets.DOT,
           destAddress: DOT_ADDRESS,
           expectedDepositAmount: '1000000000',
         },
       ],
       [
         {
-          srcAsset: 'DOT',
-          destAsset: 'ETH',
+          srcAsset: Assets.DOT,
+          destAsset: Assets.ETH,
           destAddress: ETH_ADDRESS,
           expectedDepositAmount: '1000000000',
         },
@@ -326,8 +327,8 @@ describe('server', () => {
       ['destAsset', 'SHIB'],
     ])('rejects an invalid %s', async (key, value) => {
       const requestBody = {
-        srcAsset: 'ETH',
-        destAsset: 'DOT',
+        srcAsset: Assets.ETH,
+        destAsset: Assets.DOT,
         destAddress: HEX_DOT_ADDRESS,
         expectedDepositAmount: '1000000000',
         [key]: value,
@@ -345,8 +346,8 @@ describe('server', () => {
       [
         'ETH',
         {
-          srcAsset: 'DOT',
-          destAsset: 'ETH',
+          srcAsset: Assets.DOT,
+          destAsset: Assets.ETH,
           destAddress: '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181f2',
           expectedDepositAmount: '1000000000',
         },
@@ -354,8 +355,8 @@ describe('server', () => {
       [
         'DOT',
         {
-          srcAsset: 'ETH',
-          destAsset: 'DOT',
+          srcAsset: Assets.ETH,
+          destAsset: Assets.DOT,
           destAddress: '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181f2',
           expectedDepositAmount: '1000000000',
         },

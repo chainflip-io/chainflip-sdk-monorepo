@@ -3,7 +3,7 @@ import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 import * as ethers from 'ethers';
 import { z, ZodErrorMap } from 'zod';
 import type { Asset } from './enums';
-import { Assets, Chains } from './enums';
+import { Assets, ChainflipNetworks, Chains } from './enums';
 import { isString } from './guards';
 
 const errorMap: ZodErrorMap = (issue, context) => ({
@@ -57,3 +57,4 @@ export const chainflipAssetEnum = z
 
 export const chainflipChain = z.nativeEnum(Chains);
 export const chainflipAsset = z.nativeEnum(Assets);
+export const chainflipNetwork = z.nativeEnum(ChainflipNetworks);

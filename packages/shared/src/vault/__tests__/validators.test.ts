@@ -20,7 +20,7 @@ describe('executeSwapParamsSchema', () => {
       destAddress: DOT_ADDRESS,
       destAsset: Assets.DOT,
     },
-    ...['FLIP', 'USDC'].map((destAsset) => ({
+    ...[Assets.FLIP, Assets.USDC].map((destAsset) => ({
       destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
       destAsset,

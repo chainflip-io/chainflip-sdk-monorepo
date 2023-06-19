@@ -1,6 +1,7 @@
 import { createInterface } from 'node:readline/promises';
 import yargs from 'yargs/yargs';
-import { Assets, chainflipNetwork } from '@/shared/enums';
+import { Assets } from '@/shared/enums';
+import { chainflipNetwork } from '@/shared/parsers';
 import { ChainflipNetwork } from './enums';
 
 export const askForPrivateKey = async () => {

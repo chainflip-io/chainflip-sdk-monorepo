@@ -1,4 +1,4 @@
-import { Chain, Chains, Asset } from '@/shared/enums';
+import { Chain, Asset, chainAssets } from '@/shared/enums';
 import { QuoteResponse } from '@/shared/schemas';
 
 export type { SDKOptions } from '../sdk';
@@ -8,15 +8,10 @@ export interface ChainData {
   name: string;
   isMainnet: boolean;
 }
-interface ChainToAssetMap {
-  [Chains.Ethereum]: 'ETH' | 'USDC' | 'FLIP';
-  [Chains.Bitcoin]: 'BTC';
-  [Chains.Polkadot]: 'DOT';
-}
 
 export type AssetData = {
-  [K in keyof ChainToAssetMap]: {
-    id: ChainToAssetMap[K];
+  [K in keyof typeof chainAssets]: {
+    id: (typeof chainAssets)[K][number];
     chain: K;
     contractAddress: string;
     decimals: number;
@@ -24,7 +19,7 @@ export type AssetData = {
     symbol: string;
     isMainnet: boolean;
   };
-}[keyof ChainToAssetMap];
+}[keyof typeof chainAssets];
 
 interface Route {
   srcChain: Chain;

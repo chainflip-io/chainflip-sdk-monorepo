@@ -1,7 +1,12 @@
 import { getDefaultProvider, providers, Wallet } from 'ethers';
 import { z } from 'zod';
-import { assetChains, chainflipNetwork } from '@/shared/enums';
-import { numericString, hexString, chainflipAsset } from '@/shared/parsers';
+import { assetChains } from '@/shared/enums';
+import {
+  numericString,
+  hexString,
+  chainflipAsset,
+  chainflipNetwork,
+} from '@/shared/parsers';
 import { executeSwap, ExecuteSwapParams } from '@/shared/vault';
 import { ExecuteSwapOptions } from '@/shared/vault/executeSwap';
 import { askForPrivateKey, getEthNetwork } from './utils';

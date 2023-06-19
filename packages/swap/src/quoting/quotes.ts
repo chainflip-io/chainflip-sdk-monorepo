@@ -1,6 +1,7 @@
 import assert from 'assert';
 import * as crypto from 'crypto';
 import { Observable, Subscription, filter } from 'rxjs';
+import { Assets } from '@/shared/enums';
 import {
   QuoteRequest,
   QuoteResponse,
@@ -53,8 +54,8 @@ export const findBestQuote = (
 export const buildQuoteRequest = (query: QuoteQueryParams): QuoteRequest => {
   const { srcAsset, destAsset, amount } = query;
 
-  if (srcAsset === 'USDC') {
-    assert(destAsset !== 'USDC');
+  if (srcAsset === Assets.USDC) {
+    assert(destAsset !== Assets.USDC);
     return {
       id: crypto.randomUUID(),
       source_asset: srcAsset,
@@ -64,7 +65,7 @@ export const buildQuoteRequest = (query: QuoteQueryParams): QuoteRequest => {
     };
   }
 
-  if (destAsset === 'USDC') {
+  if (destAsset === Assets.USDC) {
     return {
       id: crypto.randomUUID(),
       source_asset: srcAsset,
@@ -77,7 +78,7 @@ export const buildQuoteRequest = (query: QuoteQueryParams): QuoteRequest => {
   return {
     id: crypto.randomUUID(),
     source_asset: srcAsset,
-    intermediate_asset: 'USDC',
+    intermediate_asset: Assets.USDC,
     destination_asset: destAsset,
     deposit_amount: amount,
   };

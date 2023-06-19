@@ -1,7 +1,7 @@
 import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import { z } from 'zod';
-import { Asset } from '@/shared/enums';
+import { Asset, Assets } from '@/shared/enums';
 import {
   hexString,
   numericString,
@@ -68,7 +68,9 @@ export const submitSwapToBroker = async (
     'requestSwapDepositAddress',
     srcAsset,
     destAsset,
-    destAsset === 'DOT' ? u8aToHex(decodeAddress(destAddress)) : destAddress,
+    destAsset === Assets.DOT
+      ? u8aToHex(decodeAddress(destAddress))
+      : destAddress,
     0,
   );
 

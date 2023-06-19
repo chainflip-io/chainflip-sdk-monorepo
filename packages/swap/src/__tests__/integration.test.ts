@@ -13,6 +13,7 @@ import {
   timeout,
 } from 'rxjs';
 import { promisify } from 'util';
+import { Assets } from '@/shared/enums';
 import { QuoteQueryParams } from '@/shared/schemas';
 import prisma from '../client';
 import app from '../server';
@@ -84,8 +85,8 @@ describe('python integration test', () => {
     ).resolves.toBe('connected');
 
     const params = new URLSearchParams({
-      srcAsset: 'FLIP',
-      destAsset: 'ETH',
+      srcAsset: Assets.FLIP,
+      destAsset: Assets.ETH,
       amount: '1000000000000000000',
     } as QuoteQueryParams);
 

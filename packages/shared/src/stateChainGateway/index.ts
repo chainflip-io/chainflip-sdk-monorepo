@@ -5,7 +5,7 @@ import {
   getTokenContractAddress,
   requestApproval,
 } from '../contracts';
-import { ChainflipNetwork } from '../enums';
+import { Assets, ChainflipNetwork } from '../enums';
 
 type SignerOptions =
   | { network: ChainflipNetwork; signer: Signer }
@@ -44,7 +44,7 @@ export const fundStateChainAccount = async (
   const flipContractAddress =
     options.network === 'localnet'
       ? options.flipContractAddress
-      : getTokenContractAddress('FLIP', options.network);
+      : getTokenContractAddress(Assets.FLIP, options.network);
 
   const stateChainGateway = getStateChainGateway(options);
 

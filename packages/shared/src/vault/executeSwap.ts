@@ -6,8 +6,9 @@ import {
   getVaultManagerContractAddress,
   getTokenContractAddress,
 } from '../contracts';
-import { Asset, chainflipNetwork, Chain, Chains, Assets } from '../enums';
+import { Asset, Chain, Chains, Assets } from '../enums';
 import { assert } from '../guards';
+import { chainflipNetwork } from '../parsers';
 import {
   ExecuteSwapParams,
   NativeSwapParams,

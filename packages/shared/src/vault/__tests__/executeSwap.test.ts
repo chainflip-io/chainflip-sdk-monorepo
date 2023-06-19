@@ -98,7 +98,7 @@ describe(executeSwap, () => {
   );
 
   it.each([
-    ...['FLIP', 'USDC'].flatMap((srcAsset) => [
+    ...[Assets.FLIP, Assets.USDC].flatMap((srcAsset) => [
       {
         destAsset: Assets.BTC,
         destChain: Chains.Bitcoin,

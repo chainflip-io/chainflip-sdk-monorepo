@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { Assets, chainflipNetwork, Chains } from '@/shared/enums';
+import { Assets, Chains } from '@/shared/enums';
+import { chainflipNetwork } from '@/shared/parsers';
 import { RouteRequest } from '../../types';
 import ApiService from '../ApiService';
 

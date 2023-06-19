@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { setTimeout as sleep } from 'timers/promises';
 import WebSocket, { OPEN } from 'ws';
+import { Assets } from '@/shared/enums';
 import { submitSwapToBroker } from '../broker';
 
 jest.mock(
@@ -22,8 +23,8 @@ describe(submitSwapToBroker, () => {
     const sendSpy = jest.spyOn(WebSocket.prototype, 'send');
 
     const resultPromise = submitSwapToBroker({
-      srcAsset: 'FLIP',
-      destAsset: 'USDC',
+      srcAsset: Assets.FLIP,
+      destAsset: Assets.USDC,
       destAddress: '0xcafebabe',
     });
 
