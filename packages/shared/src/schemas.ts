@@ -1,18 +1,18 @@
 import { z } from 'zod';
-import { SupportedAsset, supportedAsset } from './enums';
-import { numericString } from './parsers';
+import { Asset } from './enums';
+import { chainflipAsset, numericString } from './parsers';
 
 export const quoteQuerySchema = z.object({
-  srcAsset: supportedAsset,
-  destAsset: supportedAsset,
+  srcAsset: chainflipAsset,
+  destAsset: chainflipAsset,
   amount: numericString,
 });
 
 export type QuoteQueryParams = z.infer<typeof quoteQuerySchema>;
 
 export const postSwapSchema = z.object({
-  srcAsset: supportedAsset,
-  destAsset: supportedAsset,
+  srcAsset: chainflipAsset,
+  destAsset: chainflipAsset,
   destAddress: z.string(),
   expectedDepositAmount: numericString,
 });
@@ -51,19 +51,19 @@ interface BaseRequest {
 }
 
 interface Intermediate extends BaseRequest {
-  source_asset: Exclude<SupportedAsset, 'USDC'>;
+  source_asset: Exclude<Asset, 'USDC'>;
   intermediate_asset: 'USDC';
-  destination_asset: Exclude<SupportedAsset, 'USDC'>;
+  destination_asset: Exclude<Asset, 'USDC'>;
 }
 
 interface USDCDeposit extends BaseRequest {
   source_asset: 'USDC';
   intermediate_asset: null;
-  destination_asset: Exclude<SupportedAsset, 'USDC'>;
+  destination_asset: Exclude<Asset, 'USDC'>;
 }
 
 interface USDCEgress extends BaseRequest {
-  source_asset: Exclude<SupportedAsset, 'USDC'>;
+  source_asset: Exclude<Asset, 'USDC'>;
   intermediate_asset: null;
   destination_asset: 'USDC';
 }

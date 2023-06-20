@@ -1,4 +1,4 @@
-import { type TokenSymbol } from './consts';
+import { type Asset } from './consts';
 import { SwapSDK } from './sdk';
 
-export { SwapSDK, type TokenSymbol };
+export { SwapSDK, type Asset };

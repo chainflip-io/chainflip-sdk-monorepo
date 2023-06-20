@@ -4,7 +4,8 @@ import {
   getStateChainGatewayContractAddress,
   getTokenContractAddress,
 } from '@/shared/contracts';
-import { chainflipNetwork } from '@/shared/enums';
+import { Assets } from '@/shared/enums';
+import { chainflipNetwork } from '@/shared/parsers';
 import { FundStateChainAccountOptions } from '@/shared/stateChainGateway';
 import { fundStateChainAccount } from './lib';
 import { askForPrivateKey, getEthNetwork } from './utils';
@@ -48,7 +49,7 @@ export default async function cliFundStateChainAccount(
   const flipContractAddress =
     args.chainflipNetwork === 'localnet'
       ? args.flipTokenContractAddress
-      : getTokenContractAddress('FLIP', args.chainflipNetwork);
+      : getTokenContractAddress(Assets.FLIP, args.chainflipNetwork);
 
   const stateChainGatewayContractAddress =
     args.chainflipNetwork === 'localnet'

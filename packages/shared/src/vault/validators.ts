@@ -1,6 +1,6 @@
 import { decodeAddress } from '@polkadot/util-crypto';
 import { z } from 'zod';
-import { Chains, supportedAsset } from '../enums';
+import { Assets, Chains } from '../enums';
 import {
   btcAddress,
   dotAddress,
@@ -30,19 +30,16 @@ const bitcoinBase = base.extend({
   destAddress: btcAddress.transform(utf8ToHex),
 });
 
-const erc20 = z.union([
-  z.literal(supportedAsset.enum.FLIP),
-  z.literal(supportedAsset.enum.USDC),
-]);
+const erc20 = z.union([z.literal(Assets.FLIP), z.literal(Assets.USDC)]);
 
-const ethereumNative = ethereumBase.extend({ destTokenSymbol: erc20 }).strict();
+const ethereumNative = ethereumBase.extend({ destAsset: erc20 }).strict();
 
 const polkadotNative = polkadotBase
-  .extend({ destTokenSymbol: z.literal(supportedAsset.enum.DOT) })
+  .extend({ destAsset: z.literal(Assets.DOT) })
   .strict();
 
 const bitcoinNative = bitcoinBase
-  .extend({ destTokenSymbol: z.literal(supportedAsset.enum.BTC) })
+  .extend({ destAsset: z.literal(Assets.BTC) })
   .strict();
 
 const nativeSwapParamsSchema = z.union([
@@ -55,21 +52,15 @@ export type NativeSwapParams = z.infer<typeof nativeSwapParamsSchema>;
 
 const tokenSwapParamsSchema = z.union([
   ethereumBase.extend({
-    srcTokenSymbol: z.literal(supportedAsset.enum.FLIP),
-    destTokenSymbol: z.union([
-      z.literal(supportedAsset.enum.USDC),
-      z.literal(supportedAsset.enum.ETH),
-    ]),
+    srcAsset: z.literal(Assets.FLIP),
+    destAsset: z.union([z.literal(Assets.USDC), z.literal(Assets.ETH)]),
   }),
   ethereumBase.extend({
-    srcTokenSymbol: z.literal(supportedAsset.enum.USDC),
-    destTokenSymbol: z.union([
-      z.literal(supportedAsset.enum.FLIP),
-      z.literal(supportedAsset.enum.ETH),
-    ]),
+    srcAsset: z.literal(Assets.USDC),
+    destAsset: z.union([z.literal(Assets.FLIP), z.literal(Assets.ETH)]),
   }),
-  polkadotNative.extend({ srcTokenSymbol: erc20 }),
-  bitcoinNative.extend({ srcTokenSymbol: erc20 }),
+  polkadotNative.extend({ srcAsset: erc20 }),
+  bitcoinNative.extend({ srcAsset: erc20 }),
 ]);
 
 export type TokenSwapParams = z.infer<typeof tokenSwapParamsSchema>;

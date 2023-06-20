@@ -1,13 +1,13 @@
 import { z } from 'zod';
-import { assetToChain } from '@/shared/enums';
-import { unsignedInteger, stateChainAssetEnum } from '@/shared/parsers';
+import { assetChains } from '@/shared/enums';
+import { unsignedInteger, chainflipAssetEnum } from '@/shared/parsers';
 import logger from '../utils/logger';
 import { egressId } from './common';
 import type { EventHandlerArgs } from '.';
 
 const eventArgs = z.object({
   id: egressId,
-  asset: stateChainAssetEnum,
+  asset: chainflipAssetEnum,
   amount: unsignedInteger,
 });
 
@@ -27,7 +27,7 @@ export default async function networkEgressScheduled({
     await prisma.egress.create({
       data: {
         nativeId: id[1],
-        chain: assetToChain[asset],
+        chain: assetChains[asset],
         amount: amount.toString(),
         timestamp: new Date(block.timestamp),
       },

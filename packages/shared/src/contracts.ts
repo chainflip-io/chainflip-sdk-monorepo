@@ -1,6 +1,11 @@
 import type { Signer } from 'ethers';
 import { ERC20__factory } from './abis';
-import { type ChainflipNetwork, type SupportedAsset } from './enums';
+import {
+  type ChainflipNetwork,
+  type Asset,
+  Assets,
+  ChainflipNetworks,
+} from './enums';
 import { assert } from './guards';
 
 // https://github.com/chainflip-io/chainflip-testnet-tools/actions/runs/5077994260#summary-13750268632
@@ -14,14 +19,17 @@ export const GOERLI_USDC_CONTRACT_ADDRESS =
   '0x07865c6E87B9F70255377e024ace6630C1Eaa37F';
 
 export const getTokenContractAddress = (
-  asset: SupportedAsset,
+  asset: Asset,
   network: ChainflipNetwork,
 ): string => {
-  assert(network === 'sisyphos', 'Only sisyphos is supported for now');
+  assert(
+    network === ChainflipNetworks.sisyphos,
+    'Only sisyphos is supported for now',
+  );
 
-  if (asset === 'FLIP') return SISYPHOS_FLIP_CONTRACT_ADDRESS;
+  if (asset === Assets.FLIP) return SISYPHOS_FLIP_CONTRACT_ADDRESS;
 
-  assert(asset === 'USDC', 'Only FLIP and USDC are supported for now');
+  assert(asset === Assets.USDC, 'Only FLIP and USDC are supported for now');
 
   return GOERLI_USDC_CONTRACT_ADDRESS;
 };
@@ -33,7 +41,7 @@ export const getStateChainGatewayContractAddress = (
   network: ChainflipNetwork,
 ): string => {
   switch (network) {
-    case 'sisyphos':
+    case ChainflipNetworks.sisyphos:
       return SISYPHOS_STATE_CHAIN_MANAGER_CONTRACT_ADDRESS;
     default:
       throw new Error(`Unsupported network: ${network}`);
@@ -59,7 +67,7 @@ export const getVaultManagerContractAddress = (
   network: ChainflipNetwork,
 ): string => {
   switch (network) {
-    case 'sisyphos':
+    case ChainflipNetworks.sisyphos:
       return SISYPHOS_VAULT_CONTRACT_ADDRESS;
     default:
       throw new Error(`Unsupported network: ${network}`);

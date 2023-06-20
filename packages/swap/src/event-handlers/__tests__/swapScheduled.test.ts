@@ -1,3 +1,4 @@
+import { Assets } from '@/shared/enums';
 import prisma, { SwapDepositChannel } from '../../client';
 import swapScheduled from '../swapScheduled';
 import {
@@ -18,14 +19,14 @@ describe(swapScheduled, () => {
 
     beforeEach(async () => {
       dotSwapDepositChannel = await createDepositChannel({
-        srcAsset: 'DOT',
-        destAsset: 'BTC',
+        srcAsset: Assets.DOT,
+        destAsset: Assets.BTC,
         depositAddress: '5CGLqaFMheyVcsXz6QEtjtSAi6RcXFaEDJKvovgCdPiZhw11',
         destAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
       });
       btcSwapDepositChannel = await createDepositChannel({
-        srcAsset: 'BTC',
-        destAsset: 'ETH',
+        srcAsset: Assets.BTC,
+        destAsset: Assets.ETH,
         depositAddress:
           'bcrt1pg03ca9ervkylq76ezng0umnqlul9ty8693k3zrav07u3hu4dlkrswxxdzf',
         destAddress: '0x41ad2bc63a2059f9b623533d87fe99887d794847',

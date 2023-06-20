@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { SupportedAsset, supportedAsset } from '@/shared/enums';
-import { hexStringFromNumber } from '@/shared/parsers';
+import { Asset } from '@/shared/enums';
+import { chainflipAsset, hexStringFromNumber } from '@/shared/parsers';
 import { QuoteResponse, QuoteQueryParams } from '../schemas';
 import { memoize } from './function';
 import RpcClient from './RpcClient';
@@ -8,8 +8,8 @@ import { transformAsset } from './string';
 
 const requestValidators = {
   swap_rate: z.tuple([
-    supportedAsset.transform(transformAsset),
-    supportedAsset.transform(transformAsset),
+    chainflipAsset.transform(transformAsset),
+    chainflipAsset.transform(transformAsset),
     hexStringFromNumber,
   ]),
 };
@@ -37,8 +37,8 @@ const initializeClient = memoize(async () => {
 });
 
 const getSwapAmount = async (
-  srcAsset: SupportedAsset,
-  destAsset: SupportedAsset,
+  srcAsset: Asset,
+  destAsset: Asset,
   amount: string,
 ): Promise<z.infer<(typeof responseValidators)['swap_rate']>> => {
   const client = await initializeClient();

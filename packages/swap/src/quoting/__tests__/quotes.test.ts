@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import { Subject } from 'rxjs';
+import { Assets } from '@/shared/enums';
 
 describe('quotes', () => {
   let oldEnv: NodeJS.ProcessEnv;
@@ -117,8 +118,8 @@ describe('quotes', () => {
     it('returns a QuoteRequest', () => {
       expect(
         buildQuoteRequest({
-          srcAsset: 'FLIP',
-          destAsset: 'ETH',
+          srcAsset: Assets.FLIP,
+          destAsset: Assets.ETH,
           amount: '1000000000000000000',
         }),
       ).toEqual({
@@ -133,8 +134,8 @@ describe('quotes', () => {
     it('returns a QuoteRequest with a null intermediate_asset if srcAsset is USDC', () => {
       expect(
         buildQuoteRequest({
-          srcAsset: 'USDC',
-          destAsset: 'ETH',
+          srcAsset: Assets.USDC,
+          destAsset: Assets.ETH,
           amount: '100000000',
         }),
       ).toEqual({
@@ -149,8 +150,8 @@ describe('quotes', () => {
     it('returns a QuoteRequest with a null intermediate_asset if destAsset is USDC', () => {
       expect(
         buildQuoteRequest({
-          srcAsset: 'ETH',
-          destAsset: 'USDC',
+          srcAsset: Assets.ETH,
+          destAsset: Assets.USDC,
           amount: '100000000',
         }),
       ).toEqual({

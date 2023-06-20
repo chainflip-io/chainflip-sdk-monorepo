@@ -1,3 +1,4 @@
+import { Assets } from '@/shared/enums';
 import prisma from '../../client';
 import swapEgressScheduled from '../swapEgressScheduled';
 import {
@@ -40,8 +41,8 @@ describe(swapEgressScheduled, () => {
           }`,
           swapExecutedAt: new Date(block.timestamp - 6000),
           swapExecutedBlockIndex: `${block.height}-${event.indexInBlock}`,
-          srcAsset: 'ETH',
-          destAsset: 'DOT',
+          srcAsset: Assets.ETH,
+          destAsset: Assets.DOT,
           destAddress: DOT_ADDRESS,
         },
       },

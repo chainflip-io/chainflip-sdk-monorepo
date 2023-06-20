@@ -17,13 +17,31 @@ datasource db {
   schemas  = ["public", "private"]
 }
 
+enum Chain {
+  Polkadot
+  Ethereum
+  Bitcoin
+
+  @@schema("public")
+}
+
+enum Asset {
+  FLIP
+  USDC
+  DOT
+  ETH
+  BTC
+
+  @@schema("public")
+}
+
 model SwapDepositChannel {
   id                    BigInt   @id @default(autoincrement())
   uuid                  String   @unique @default(uuid())
-  srcAsset              String
+  srcAsset              Asset
   depositAddress        String
   expectedDepositAmount Decimal  @db.Decimal(30, 0)
-  destAsset             String
+  destAsset             Asset
   destAddress           String
   expiryBlock           Int
   issuedBlock           Int
@@ -38,9 +56,9 @@ model Swap {
   id                        BigInt              @id @default(autoincrement())
   /// the swap id on the state chain
   nativeId                  BigInt              @unique
-  srcAsset                  String
+  srcAsset                  Asset
   depositAmount             Decimal             @db.Decimal(30, 0)
-  destAsset                 String
+  destAsset                 Asset
   destAddress               String
   depositReceivedAt         DateTime
   depositReceivedBlockIndex String
@@ -53,14 +71,6 @@ model Swap {
   egress                    Egress?
   createdAt                 DateTime            @default(now())
   updatedAt                 DateTime            @default(now()) @updatedAt
-
-  @@schema("public")
-}
-
-enum Chain {
-  Polkadot
-  Ethereum
-  Bitcoin
 
   @@schema("public")
 }

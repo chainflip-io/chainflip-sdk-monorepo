@@ -1,6 +1,5 @@
-import { Chain, Chains, SupportedAsset } from '@/shared/enums';
+import { Chain, Asset, chainAssets } from '@/shared/enums';
 import { QuoteResponse } from '@/shared/schemas';
-import { TokenSymbol } from '../consts';
 
 export type { SDKOptions } from '../sdk';
 
@@ -9,28 +8,24 @@ export interface ChainData {
   name: string;
   isMainnet: boolean;
 }
-interface ChainToAssetMap {
-  [Chains.Ethereum]: 'ETH' | 'USDC' | 'FLIP';
-  [Chains.Bitcoin]: 'BTC';
-  [Chains.Polkadot]: 'DOT';
-}
 
-export type Token = {
-  [K in keyof ChainToAssetMap]: {
+export type AssetData = {
+  [K in keyof typeof chainAssets]: {
+    id: (typeof chainAssets)[K][number];
     chain: K;
     contractAddress: string;
     decimals: number;
     name: string;
-    symbol: ChainToAssetMap[K];
+    symbol: string;
     isMainnet: boolean;
   };
-}[keyof ChainToAssetMap];
+}[keyof typeof chainAssets];
 
 interface Route {
   srcChain: Chain;
   destChain: Chain;
-  srcTokenSymbol: TokenSymbol;
-  destTokenSymbol: TokenSymbol;
+  srcAsset: Asset;
+  destAsset: Asset;
   destAddress: string;
 }
 
@@ -58,8 +53,8 @@ export interface SwapStatusRequest {
 type CommonStatusFields = {
   depositAddress: string;
   destAddress: string;
-  srcAsset: SupportedAsset;
-  destAsset: SupportedAsset;
+  srcAsset: Asset;
+  destAsset: Asset;
   expectedDepositAmount: string;
 };
 

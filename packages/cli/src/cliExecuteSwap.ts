@@ -1,7 +1,12 @@
 import { getDefaultProvider, providers, Wallet } from 'ethers';
 import { z } from 'zod';
-import { assetToChain, chainflipNetwork, supportedAsset } from '@/shared/enums';
-import { numericString, hexString } from '@/shared/parsers';
+import { assetChains } from '@/shared/enums';
+import {
+  numericString,
+  hexString,
+  chainflipAsset,
+  chainflipNetwork,
+} from '@/shared/parsers';
 import { executeSwap, ExecuteSwapParams } from '@/shared/vault';
 import { ExecuteSwapOptions } from '@/shared/vault/executeSwap';
 import { askForPrivateKey, getEthNetwork } from './utils';
@@ -19,20 +24,18 @@ export const schema = z
     ]),
     z.object({
       walletPrivateKey: z.string().optional(),
-      srcToken: supportedAsset.optional(),
-      destToken: supportedAsset,
+      srcAsset: chainflipAsset.optional(),
+      destAsset: chainflipAsset,
       amount: z.union([numericString, hexString]),
       destAddress: z.string(),
     }),
   )
-  .transform(({ destToken, srcToken, ...rest }) => {
-    return {
-      ...rest,
-      destChain: assetToChain[destToken],
-      destTokenSymbol: destToken,
-      ...(srcToken && { srcTokenSymbol: srcToken }),
-    };
-  });
+  .transform(({ destAsset, srcAsset, ...rest }) => ({
+    ...rest,
+    destChain: assetChains[destAsset],
+    destAsset,
+    ...(srcAsset && { srcAsset }),
+  }));
 
 export default async function cliExecuteSwap(unvalidatedArgs: unknown) {
   const { walletPrivateKey, ...args } = schema.parse(unvalidatedArgs);

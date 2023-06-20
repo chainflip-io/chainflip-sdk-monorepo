@@ -1,3 +1,4 @@
+import { Assets } from '@/shared/enums';
 import prisma from '../../client';
 import swapExecuted from '../swapExecuted';
 import { DOT_ADDRESS, createDepositChannel, swapExecutedMock } from './utils';
@@ -23,8 +24,8 @@ describe(swapExecuted, () => {
           depositAmount: '10000000000',
           depositReceivedAt: new Date(block.timestamp - 6000),
           depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
-          srcAsset: 'ETH',
-          destAsset: 'DOT',
+          srcAsset: Assets.ETH,
+          destAsset: Assets.DOT,
           destAddress: DOT_ADDRESS,
         },
       },

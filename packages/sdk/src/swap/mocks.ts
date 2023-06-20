@@ -1,5 +1,5 @@
-import { Chains } from '@/shared/enums';
-import type { ChainData, Token } from './types';
+import { Assets, assetDecimals, Chains } from '@/shared/enums';
+import type { ChainData, AssetData } from './types';
 
 export const ethereum: ChainData = {
   id: Chains.Ethereum,
@@ -19,46 +19,51 @@ export const bitcoin: ChainData = {
   isMainnet: true,
 };
 
-export const ethereumTokens: Token[] = [
+export const ethereumAssets: AssetData[] = [
   {
+    id: Assets.ETH,
     chain: Chains.Ethereum,
     contractAddress: '0xeth',
-    decimals: 18,
+    decimals: assetDecimals[Assets.ETH],
     name: 'ether',
     symbol: 'ETH',
     isMainnet: true,
   },
   {
+    id: Assets.USDC,
     chain: Chains.Ethereum,
     contractAddress: '0xusdc',
-    decimals: 6,
+    decimals: assetDecimals[Assets.USDC],
     name: 'usdc',
     symbol: 'USDC',
     isMainnet: true,
   },
   {
+    id: Assets.FLIP,
     chain: Chains.Ethereum,
     contractAddress: '0xflip',
-    decimals: 18,
+    decimals: assetDecimals[Assets.FLIP],
     name: 'flip',
     symbol: 'FLIP',
     isMainnet: true,
   },
 ];
 
-export const dot$: Token = {
+export const dot$: AssetData = {
+  id: Assets.DOT,
   chain: Chains.Polkadot,
   contractAddress: '0xdot',
-  decimals: 10,
+  decimals: assetDecimals[Assets.DOT],
   name: 'dot',
   symbol: 'DOT',
   isMainnet: true,
 };
 
-export const btc$: Token = {
+export const btc$: AssetData = {
+  id: Assets.BTC,
   chain: Chains.Bitcoin,
   contractAddress: '0xbitcoin',
-  decimals: 8,
+  decimals: assetDecimals[Assets.BTC],
   name: 'bitcoin',
   symbol: 'BTC',
   isMainnet: true,
@@ -67,5 +72,5 @@ export const btc$: Token = {
 export const testnetChains = (chains: ChainData[]): ChainData[] =>
   chains.map((chain) => ({ ...chain, isMainnet: false }));
 
-export const testnetTokens = (tokens: Token[]): Token[] =>
-  tokens.map((token) => ({ ...token, isMainnet: false }));
+export const testnetAssets = (assets: AssetData[]): AssetData[] =>
+  assets.map((asset) => ({ ...asset, isMainnet: false }));

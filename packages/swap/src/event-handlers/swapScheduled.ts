@@ -1,7 +1,7 @@
 // Set the column in the DB to the block timestamp and the deposit amount.
 import assert from 'assert';
 import { z } from 'zod';
-import { stateChainAssetEnum, unsignedInteger } from '@/shared/parsers';
+import { chainflipAssetEnum, unsignedInteger } from '@/shared/parsers';
 import logger from '../utils/logger';
 import { encodedAddress, foreignChainAddress } from './common';
 import type { EventHandlerArgs } from '.';
@@ -9,19 +9,19 @@ import type { EventHandlerArgs } from '.';
 const baseArgsWithoutSource = z.object({
   swapId: unsignedInteger,
   depositAmount: unsignedInteger,
-  destinationAsset: stateChainAssetEnum,
+  destinationAsset: chainflipAssetEnum,
   destinationAddress: encodedAddress,
 });
 
 // TODO:0.9 remove this
 const depositAssetArg = z
   .object({
-    depositAsset: stateChainAssetEnum,
+    depositAsset: chainflipAssetEnum,
   })
   .transform(({ depositAsset }) => ({ sourceAsset: depositAsset }));
 
 const sourceAssetArg = z.object({
-  sourceAsset: stateChainAssetEnum,
+  sourceAsset: chainflipAssetEnum,
 });
 
 const baseArgs = z.union([
