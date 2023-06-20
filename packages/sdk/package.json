@@ -14,6 +14,16 @@
       "types": "./dist/funding.d.ts"
     }
   },
+  "typesVersions": {
+    "*": {
+      "swap": [
+        "dist/swap.d.ts"
+      ],
+      "funding": [
+        "dist/funding.d.ts"
+      ]
+    }
+  },
   "files": [
     "dist",
     "README.md"
