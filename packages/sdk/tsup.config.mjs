@@ -10,6 +10,5 @@ export default defineConfig({
   entry: {
     swap: 'src/swap/index.ts',
     funding: 'src/funding/index.ts',
-    types: 'src/swap/types/index.ts',
   },
 });

@@ -2,35 +2,21 @@
   "name": "@chainflip-io/sdk-shared",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "exports": {
     "./assets": {
       "import": "./dist/mjs/assets.js",
       "require": "./dist/cjs/assets.js",
-      "type": "./dist/cjs/assets.d.ts"
+      "types": "./dist/cjs/assets.d.ts"
     },
     "./parsers": {
       "import": "./dist/mjs/parsers.js",
       "require": "./dist/cjs/parsers.js",
-      "type": "./dist/cjs/parsers.d.ts"
+      "types": "./dist/cjs/parsers.d.ts"
     },
     "./schemas": {
       "import": "./dist/mjs/schemas.js",
       "require": "./dist/cjs/schemas.js",
-      "type": "./dist/cjs/schemas.d.ts"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "assets": [
-        "dist/mjs/assets.d.ts"
-      ],
-      "parsers": [
-        "dist/mjs/parsers.d.ts"
-      ],
-      "schemas": [
-        "dist/mjs/schemas.d.ts"
-      ]
+      "types": "./dist/cjs/schemas.d.ts"
     }
   },
   "scripts": {
