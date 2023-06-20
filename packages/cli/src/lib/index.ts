@@ -1,5 +1,12 @@
-export { default as executeSwap } from '@/shared/vault/executeSwap';
-export { fundStateChainAccount } from '@/shared/stateChainGateway';
+export {
+  executeSwap,
+  type ExecuteSwapOptions,
+  type ExecuteSwapParams,
+} from '@/shared/vault';
+export {
+  fundStateChainAccount,
+  type FundStateChainAccountOptions,
+} from '@/shared/stateChainGateway';
 export {
   type Chain,
   type Asset,

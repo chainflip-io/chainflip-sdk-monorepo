@@ -1,2 +1,2 @@
-export { default as executeSwap } from './executeSwap';
+export { default as executeSwap, type ExecuteSwapOptions } from './executeSwap';
 export type { ExecuteSwapParams } from './validators';
