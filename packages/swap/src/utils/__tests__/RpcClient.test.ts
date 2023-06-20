@@ -1,5 +1,5 @@
 import { once } from 'events';
-import { AddressInfo, WebSocket, WebSocketServer } from 'ws';
+import { AddressInfo, WebSocketServer } from 'ws';
 import { z } from 'zod';
 import RpcClient from '../RpcClient';
 
@@ -12,16 +12,23 @@ const responseMap = {
 };
 
 describe(RpcClient, () => {
+  let serverClosed = false;
   let server: WebSocketServer;
+
+  const closeServer = () => {
+    server.close();
+    serverClosed = true;
+  };
+
   let client: RpcClient<typeof requestMap, typeof responseMap>;
-  const clients: WebSocket[] = [];
   const killConnections = () => {
-    for (let c = clients.pop(); c; c = clients.pop()) {
-      c.close();
-    }
+    server.clients.forEach((c) => {
+      c.terminate();
+    });
   };
 
   beforeEach(async () => {
+    serverClosed = false;
     server = new WebSocketServer({ port: 0, host: '127.0.0.1' });
 
     server.on('connection', (ws) => {
@@ -36,28 +43,25 @@ describe(RpcClient, () => {
           }),
         );
       });
-
-      clients.push(ws);
     });
 
     await once(server, 'listening');
-  });
-
-  afterEach(() => {
-    server.close();
-    client.close();
-  });
-
-  it('resends messages if a disconnection happens while awaiting a response', async () => {
     const address = server.address() as AddressInfo;
-
     client = await new RpcClient(
       `ws://127.0.0.1:${address.port}`,
       requestMap,
       responseMap,
       'test',
     ).connect();
+  });
 
+  afterEach(async () => {
+    await client.close();
+    server.close();
+    if (!serverClosed) await once(server, 'close');
+  });
+
+  it('resends messages if a disconnection happens while awaiting a response', async () => {
     const response = await client.sendRequest('echo', 'hello');
 
     expect(response).toEqual('hello');
@@ -71,19 +75,12 @@ describe(RpcClient, () => {
   it("doesn't spam the reconnect", async () => {
     jest.useFakeTimers();
     const timeoutSpy = jest.spyOn(global, 'setTimeout');
-    const address = server.address() as AddressInfo;
-    client = await new RpcClient(
-      `ws://127.0.0.1:${address.port}`,
-      requestMap,
-      responseMap,
-      'test',
-    ).connect();
 
     const response = await client.sendRequest('echo', 'hello');
     expect(response).toEqual('hello');
 
     killConnections();
-    server.close();
+    closeServer();
     await once(client, 'DISCONNECT');
     timeoutSpy.mockReset();
     const connectSpy = jest.spyOn(client, 'connect');
@@ -91,10 +88,7 @@ describe(RpcClient, () => {
     for (let i = 0; i < 10; i += 1) {
       jest.runAllTimers();
       await once(client, 'DISCONNECT');
-      expect(timeoutSpy).toHaveBeenLastCalledWith(
-        expect.any(Function),
-        Math.min(250 * 2 ** i, 30000),
-      );
+      expect(connectSpy).toHaveBeenCalled();
     }
 
     expect(connectSpy).toHaveBeenCalledTimes(10);

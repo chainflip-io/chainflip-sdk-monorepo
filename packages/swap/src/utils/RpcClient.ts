@@ -1,11 +1,10 @@
 import assert from 'assert';
 import EventEmitter, { once } from 'events';
 import { filter, firstValueFrom, Subject, timeout } from 'rxjs';
-import { setTimeout as sleep } from 'timers/promises';
 import WebSocket from 'ws';
 import { z } from 'zod';
 import { SupportedAsset } from '@/shared/enums';
-import { handleExit } from './function';
+import { handleExit, waitWithTimeout } from './function';
 import logger from './logger';
 
 const READY = 'READY';
@@ -29,8 +28,6 @@ export default class RpcClient<
 
   private messages = new Subject<RpcResponse>();
 
-  private expectClose = false;
-
   private connectionFailures = 0;
 
   constructor(
@@ -43,28 +40,24 @@ export default class RpcClient<
     handleExit(() => this.handleClose());
   }
 
-  close() {
-    this.handleClose();
+  async close() {
+    await this.handleClose();
   }
 
-  private handleClose() {
-    this.expectClose = true;
+  private async handleClose() {
+    this.socket.removeAllListeners('close');
     this.socket.close();
+    if (this.socket.readyState !== WebSocket.CLOSED) {
+      await once(this.socket, 'close');
+    }
   }
 
   private async connectionReady() {
     if (this.socket.readyState === WebSocket.OPEN) return;
-    await Promise.race([
-      once(this, READY),
-      sleep(30000).then(() => {
-        throw new Error('timeout waiting for socket to open');
-      }),
-    ]);
+    await waitWithTimeout(once(this, READY), 30000);
   }
 
   async connect(): Promise<this> {
-    if (this.expectClose) return this;
-
     this.socket = new WebSocket(this.url);
     this.socket.on('message', (data) => {
       this.messages.next(JSON.parse(data.toString()));
@@ -74,7 +67,6 @@ export default class RpcClient<
     // logic will be funnelled through here
     this.socket.once('close', async () => {
       this.emit(DISCONNECT);
-      if (this.expectClose) return;
 
       const backoff = Math.min(250 * 2 ** this.connectionFailures, 30000);
 
@@ -93,12 +85,7 @@ export default class RpcClient<
     });
 
     if (this.socket.readyState !== WebSocket.OPEN) {
-      await Promise.race([
-        once(this.socket, 'open'),
-        sleep(30000).then(() => {
-          throw new Error('timeout waiting for socket to open');
-        }),
-      ]);
+      await waitWithTimeout(once(this.socket, 'open'), 30000);
     }
 
     this.emit(READY);

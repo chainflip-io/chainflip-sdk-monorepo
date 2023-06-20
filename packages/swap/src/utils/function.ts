@@ -31,3 +31,24 @@ export const handleExit = (cb: AnyFunction) => {
     exitHandlers.delete(cb);
   };
 };
+
+export const waitWithTimeout = async <T>(
+  value: Promise<T>,
+  timeout: number,
+): Promise<T> => {
+  const controller = new AbortController();
+
+  const result = await Promise.race([
+    value,
+    new Promise<never>((resolve, reject) => {
+      const timer = setTimeout(reject, timeout, new Error('timeout'));
+      controller.signal.addEventListener('abort', () => {
+        reject(new Error('aborted'));
+        clearTimeout(timer);
+      });
+    }),
+  ]);
+
+  controller.abort();
+  return result;
+};
