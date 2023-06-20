@@ -1,5 +1,5 @@
 import { Chain, Asset, chainAssets } from '@/shared/enums';
-import { QuoteResponse } from '@/shared/schemas';
+import { QuoteQueryResponse } from '@/shared/schemas';
 
 export interface ChainData {
   id: Chain;
@@ -27,15 +27,15 @@ interface Route {
   destAddress: string;
 }
 
-export interface RouteRequest extends Route {
+export interface QuoteRequest extends Route {
   amount: string;
 }
 
-export interface RouteResponse extends Route {
-  quote: QuoteResponse;
+export interface QuoteResponse extends Route {
+  quote: QuoteQueryResponse;
 }
 
-export interface SwapRequest extends Omit<RouteResponse, 'quote'> {
+export interface SwapRequest extends Omit<QuoteResponse, 'quote'> {
   expectedDepositAmount: string;
 }
 

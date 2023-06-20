@@ -4,7 +4,7 @@ import { Observable, Subscription, filter } from 'rxjs';
 import { Assets } from '@/shared/enums';
 import {
   QuoteRequest,
-  QuoteResponse,
+  QuoteQueryResponse,
   QuoteQueryParams,
 } from '@/shared/schemas';
 import { Comparison, compareNumericStrings } from '../utils/string';
@@ -14,12 +14,12 @@ const QUOTE_TIMEOUT = Number.parseInt(process.env.QUOTE_TIMEOUT ?? '1000', 10);
 export const collectQuotes = (
   requestId: string,
   expectedQuotes: number,
-  quotes$: Observable<{ client: string; quote: QuoteResponse }>,
-): Promise<QuoteResponse[]> => {
+  quotes$: Observable<{ client: string; quote: QuoteQueryResponse }>,
+): Promise<QuoteQueryResponse[]> => {
   if (expectedQuotes === 0) return Promise.resolve([]);
 
   const clientsReceivedQuotes = new Set<string>();
-  const quotes: QuoteResponse[] = [];
+  const quotes: QuoteQueryResponse[] = [];
 
   return new Promise((resolve) => {
     let sub: Subscription;
@@ -43,9 +43,9 @@ export const collectQuotes = (
 };
 
 export const findBestQuote = (
-  quotes: QuoteResponse[],
-  brokerQuote: QuoteResponse,
-): QuoteResponse =>
+  quotes: QuoteQueryResponse[],
+  brokerQuote: QuoteQueryResponse,
+): QuoteQueryResponse =>
   quotes.reduce((a, b) => {
     const cmpResult = compareNumericStrings(a.egressAmount, b.egressAmount);
     return cmpResult === Comparison.Less ? b : a;

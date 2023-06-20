@@ -300,7 +300,7 @@ exports[`ApiService getChains gets testnet chains (sisyphos) 1`] = `
 ]
 `;
 
-exports[`ApiService getRoute gets a route with a quote 1`] = `
+exports[`ApiService getQuote gets a route with a quote 1`] = `
 {
   "destAddress": "",
   "destAsset": "ETH",
@@ -315,7 +315,7 @@ exports[`ApiService getRoute gets a route with a quote 1`] = `
 }
 `;
 
-exports[`ApiService getRoute gets a route with a quote 2`] = `
+exports[`ApiService getQuote gets a route with a quote 2`] = `
 [
   "https://swapperoo.org/quote?amount=10000&srcAsset=BTC&destAsset=ETH",
   {

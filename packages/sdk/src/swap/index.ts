@@ -2,8 +2,8 @@ export { SwapSDK, type SDKOptions } from './sdk';
 export {
   type ChainData,
   type AssetData,
-  type RouteRequest,
-  type RouteResponse,
+  type QuoteRequest,
+  type QuoteResponse,
   type SwapRequest,
   type SwapResponse,
   type SwapStatusRequest,

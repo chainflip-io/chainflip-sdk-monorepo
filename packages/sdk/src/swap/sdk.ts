@@ -7,9 +7,9 @@ import ApiService, { RequestOptions } from './services/ApiService';
 import type {
   ChainData,
   AssetData,
-  RouteRequest,
+  QuoteRequest,
   SwapResponse,
-  RouteResponse,
+  QuoteResponse,
   SwapStatusRequest,
   SwapStatusResponse,
   SwapRequest,
@@ -47,11 +47,11 @@ export class SwapSDK {
     return ApiService.getAssets(chain, this.network);
   }
 
-  getRoute(
-    routeRequest: RouteRequest,
+  getQuote(
+    quoteRequest: QuoteRequest,
     options: RequestOptions = {},
-  ): Promise<RouteResponse> {
-    return ApiService.getRoute(this.baseUrl, routeRequest, options);
+  ): Promise<QuoteResponse> {
+    return ApiService.getQuote(this.baseUrl, quoteRequest, options);
   }
 
   requestDepositAddress(

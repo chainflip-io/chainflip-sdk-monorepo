@@ -1,9 +1,9 @@
 import { Observable, Subject } from 'rxjs';
 import { Socket } from 'socket.io';
-import { QuoteResponse, quoteResponseSchema } from '@/shared/schemas';
+import { QuoteQueryResponse, quoteResponseSchema } from '@/shared/schemas';
 import logger from '../utils/logger';
 
-type Quote = { client: string; quote: QuoteResponse };
+type Quote = { client: string; quote: QuoteQueryResponse };
 
 type ConnectionHandler = {
   quotes$: Observable<Quote>;
