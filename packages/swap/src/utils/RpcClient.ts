@@ -73,8 +73,8 @@ export default class RpcClient<
     // this event is also emitted if a socket fails to open, so all reconnection
     // logic will be funnelled through here
     this.socket.once('close', async () => {
-      if (this.expectClose) return;
       this.emit(DISCONNECT);
+      if (this.expectClose) return;
 
       const backoff = Math.min(250 * 2 ** this.connectionFailures, 30000);
 
