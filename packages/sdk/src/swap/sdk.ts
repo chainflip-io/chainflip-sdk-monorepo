@@ -15,8 +15,6 @@ import type {
   SwapRequest,
 } from './types';
 
-export * from './types';
-
 export type SDKOptions = {
   backendServiceUrl?: string;
   network?: ChainflipNetwork;

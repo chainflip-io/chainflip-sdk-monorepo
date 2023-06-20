@@ -1,4 +1,14 @@
-export { SwapSDK } from './sdk';
+export { SwapSDK, SDKOptions } from './sdk';
+export {
+  ChainData,
+  AssetData,
+  RouteRequest,
+  RouteResponse,
+  SwapRequest,
+  SwapResponse,
+  SwapStatusRequest,
+  SwapStatusResponse,
+} from './types';
 export {
   type Chain,
   type Asset,

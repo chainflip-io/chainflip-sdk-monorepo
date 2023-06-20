@@ -1,8 +1,6 @@
 import { Chain, Asset, chainAssets } from '@/shared/enums';
 import { QuoteResponse } from '@/shared/schemas';
 
-export type { SDKOptions } from '../sdk';
-
 export interface ChainData {
   id: Chain;
   name: string;
