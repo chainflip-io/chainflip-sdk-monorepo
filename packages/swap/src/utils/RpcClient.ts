@@ -4,7 +4,7 @@ import { filter, firstValueFrom, Subject, timeout } from 'rxjs';
 import WebSocket from 'ws';
 import { z } from 'zod';
 import { Asset } from '@/shared/enums';
-import { handleExit, waitWithTimeout } from './function';
+import { handleExit, onceWithTimeout } from './function';
 import logger from './logger';
 
 const READY = 'READY';
@@ -54,7 +54,7 @@ export default class RpcClient<
 
   private async connectionReady() {
     if (this.socket.readyState === WebSocket.OPEN) return;
-    await waitWithTimeout(once(this, READY), 30000);
+    await onceWithTimeout(this, READY, 30000);
   }
 
   private handleDisconnect = async () => {
@@ -87,7 +87,7 @@ export default class RpcClient<
     });
 
     if (this.socket.readyState !== WebSocket.OPEN) {
-      await waitWithTimeout(once(this.socket, 'open'), 30000);
+      await onceWithTimeout(this.socket, 'open', 30000);
     }
 
     this.emit(READY);
