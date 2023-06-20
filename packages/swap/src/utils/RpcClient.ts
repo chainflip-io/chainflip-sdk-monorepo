@@ -147,6 +147,8 @@ export default class RpcClient<
 
     if ('error' in response) throw new Error(response.error.message);
 
+    logger.info('received response from broker:', response);
+
     return this.responseMap[method].parse(response.result) as z.infer<Res[R]>;
   }
 }
