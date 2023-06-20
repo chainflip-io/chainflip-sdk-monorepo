@@ -28,7 +28,7 @@ export default class RpcClient<
 
   private messages = new Subject<RpcResponse>();
 
-  private connectionFailures = 0;
+  private reconnectAttempts = 0;
 
   constructor(
     private readonly url: string,
@@ -60,18 +60,19 @@ export default class RpcClient<
   private handleDisconnect = async () => {
     this.emit(DISCONNECT);
 
-    const backoff = Math.min(250 * 2 ** this.connectionFailures, 30000);
+    const backoff = 250 * 2 ** this.reconnectAttempts;
 
     logger.info(`websocket closed, reconnecting in ${backoff}ms`);
 
     setTimeout(() => {
       this.connect().catch(() => {
-        this.connectionFailures += 1;
+        this.reconnectAttempts = Math.min(this.reconnectAttempts + 1, 7);
       });
     }, backoff);
   };
 
   async connect(): Promise<this> {
+    logger.info('attempting to open websocket connection');
     this.socket = new WebSocket(this.url);
     this.socket.on('message', (data) => {
       this.messages.next(JSON.parse(data.toString()));
@@ -87,11 +88,13 @@ export default class RpcClient<
     });
 
     if (this.socket.readyState !== WebSocket.OPEN) {
+      logger.info('waiting for websocket to be ready');
       await onceWithTimeout(this.socket, 'open', 30000);
     }
 
     this.emit(READY);
-    this.connectionFailures = 0;
+    this.reconnectAttempts = 0;
+    logger.info('websocket connection opened');
 
     return this;
   }
