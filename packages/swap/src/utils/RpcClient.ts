@@ -4,7 +4,7 @@ import { filter, firstValueFrom, Subject, timeout } from 'rxjs';
 import WebSocket from 'ws';
 import { z } from 'zod';
 import { Asset } from '@/shared/enums';
-import { handleExit, waitWithTimeout } from './function';
+import { handleExit, onceWithTimeout } from './function';
 import logger from './logger';
 
 const READY = 'READY';
@@ -28,7 +28,7 @@ export default class RpcClient<
 
   private messages = new Subject<RpcResponse>();
 
-  private connectionFailures = 0;
+  private reconnectAttempts = 0;
 
   constructor(
     private readonly url: string,
@@ -45,7 +45,7 @@ export default class RpcClient<
   }
 
   private async handleClose() {
-    this.socket.removeAllListeners('close');
+    this.socket.removeListener('close', this.handleClose);
     this.socket.close();
     if (this.socket.readyState !== WebSocket.CLOSED) {
       await once(this.socket, 'close');
@@ -54,10 +54,25 @@ export default class RpcClient<
 
   private async connectionReady() {
     if (this.socket.readyState === WebSocket.OPEN) return;
-    await waitWithTimeout(once(this, READY), 30000);
+    await onceWithTimeout(this, READY, 30000);
   }
 
+  private handleDisconnect = async () => {
+    this.emit(DISCONNECT);
+
+    const backoff = 250 * 2 ** this.reconnectAttempts;
+
+    logger.info(`websocket closed, reconnecting in ${backoff}ms`);
+
+    setTimeout(() => {
+      this.connect().catch(() => {
+        this.reconnectAttempts = Math.min(this.reconnectAttempts + 1, 7);
+      });
+    }, backoff);
+  };
+
   async connect(): Promise<this> {
+    logger.info('attempting to open websocket connection');
     this.socket = new WebSocket(this.url);
     this.socket.on('message', (data) => {
       this.messages.next(JSON.parse(data.toString()));
@@ -65,19 +80,7 @@ export default class RpcClient<
 
     // this event is also emitted if a socket fails to open, so all reconnection
     // logic will be funnelled through here
-    this.socket.once('close', async () => {
-      this.emit(DISCONNECT);
-
-      const backoff = Math.min(250 * 2 ** this.connectionFailures, 30000);
-
-      logger.info(`websocket closed, reconnecting in ${backoff}ms`);
-
-      setTimeout(() => {
-        this.connect().catch(() => {
-          this.connectionFailures += 1;
-        });
-      }, backoff);
-    });
+    this.socket.once('close', this.handleDisconnect);
 
     this.socket.on('error', (error) => {
       logger.customError('received websocket error', {}, { error });
@@ -85,11 +88,13 @@ export default class RpcClient<
     });
 
     if (this.socket.readyState !== WebSocket.OPEN) {
-      await waitWithTimeout(once(this.socket, 'open'), 30000);
+      logger.info('waiting for websocket to be ready');
+      await onceWithTimeout(this.socket, 'open', 30000);
     }
 
     this.emit(READY);
-    this.connectionFailures = 0;
+    this.reconnectAttempts = 0;
+    logger.info('websocket connection opened');
 
     return this;
   }
@@ -116,6 +121,7 @@ export default class RpcClient<
           }),
         );
 
+        const controller = new AbortController();
         response = await Promise.race([
           firstValueFrom(
             this.messages.pipe(
@@ -125,10 +131,11 @@ export default class RpcClient<
           ),
           // if the socket closes after sending a request but before getting a
           // response, we need to retry the request
-          once(this, DISCONNECT).then(() => {
+          once(this, DISCONNECT, { signal: controller.signal }).then(() => {
             throw new Error('disconnected');
           }),
         ]);
+        controller.abort();
 
         break;
       } catch {

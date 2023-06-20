@@ -1,3 +1,6 @@
+import { once } from 'events';
+import { EventEmitter } from 'stream';
+import { setTimeout as sleep } from 'timers/promises';
 import logger from './logger';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,23 +35,19 @@ export const handleExit = (cb: AnyFunction) => {
   };
 };
 
-export const waitWithTimeout = async <T>(
-  value: Promise<T>,
+export const onceWithTimeout = async (
+  eventEmitter: EventEmitter,
+  event: string | symbol,
   timeout: number,
-): Promise<T> => {
+): Promise<void> => {
   const controller = new AbortController();
 
-  const result = await Promise.race([
-    value,
-    new Promise<never>((resolve, reject) => {
-      const timer = setTimeout(reject, timeout, new Error('timeout'));
-      controller.signal.addEventListener('abort', () => {
-        reject(new Error('aborted'));
-        clearTimeout(timer);
-      });
+  await Promise.race([
+    once(eventEmitter, event, { signal: controller.signal }),
+    sleep(timeout, undefined, { signal: controller.signal }).then(() => {
+      throw new Error('timeout');
     }),
   ]);
 
   controller.abort();
-  return result;
 };
