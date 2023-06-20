@@ -1,4 +1,12 @@
-import { type Asset } from './consts';
-import { SwapSDK } from './sdk';
-
-export { SwapSDK, type Asset };
+export { SwapSDK } from './sdk';
+export {
+  type Chain,
+  type Asset,
+  type ChainflipNetwork,
+  Chains,
+  Assets,
+  ChainflipNetworks,
+  assetChains,
+  assetDecimals,
+  chainAssets,
+} from '@/shared/enums';

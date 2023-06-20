@@ -2,8 +2,6 @@
   "name": "@chainflip-io/cli",
   "version": "0.0.9",
   "description": "",
-  "main": "./dist/lib.js",
-  "types": "./dist/lib.d.ts",
   "bin": {
     "chainflip": "./dist/cli.js"
   },
@@ -11,14 +9,7 @@
     ".": {
       "import": "./dist/lib.mjs",
       "require": "./dist/lib.js",
-      "type": "./dist/lib.d.ts"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      ".": [
-        "dist/lib.d.ts"
-      ]
+      "types": "./dist/lib.d.ts"
     }
   },
   "files": [
