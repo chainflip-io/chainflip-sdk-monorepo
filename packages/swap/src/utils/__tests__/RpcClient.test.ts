@@ -70,6 +70,7 @@ describe(RpcClient, () => {
 
     const response2 = await client.sendRequest('echo', 'hello');
     expect(response2).toEqual('hello');
+    expect(client.eventNames()).toStrictEqual([]);
   });
 
   it("doesn't spam the reconnect", async () => {
@@ -92,5 +93,6 @@ describe(RpcClient, () => {
     }
 
     expect(connectSpy).toHaveBeenCalledTimes(10);
+    expect(client.eventNames()).toStrictEqual([]);
   });
 });

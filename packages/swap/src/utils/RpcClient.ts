@@ -45,7 +45,7 @@ export default class RpcClient<
   }
 
   private async handleClose() {
-    this.socket.removeAllListeners('close');
+    this.socket.removeListener('close', this.handleClose);
     this.socket.close();
     if (this.socket.readyState !== WebSocket.CLOSED) {
       await once(this.socket, 'close');
@@ -57,6 +57,20 @@ export default class RpcClient<
     await waitWithTimeout(once(this, READY), 30000);
   }
 
+  private handleDisconnect = async () => {
+    this.emit(DISCONNECT);
+
+    const backoff = Math.min(250 * 2 ** this.connectionFailures, 30000);
+
+    logger.info(`websocket closed, reconnecting in ${backoff}ms`);
+
+    setTimeout(() => {
+      this.connect().catch(() => {
+        this.connectionFailures += 1;
+      });
+    }, backoff);
+  };
+
   async connect(): Promise<this> {
     this.socket = new WebSocket(this.url);
     this.socket.on('message', (data) => {
@@ -65,19 +79,7 @@ export default class RpcClient<
 
     // this event is also emitted if a socket fails to open, so all reconnection
     // logic will be funnelled through here
-    this.socket.once('close', async () => {
-      this.emit(DISCONNECT);
-
-      const backoff = Math.min(250 * 2 ** this.connectionFailures, 30000);
-
-      logger.info(`websocket closed, reconnecting in ${backoff}ms`);
-
-      setTimeout(() => {
-        this.connect().catch(() => {
-          this.connectionFailures += 1;
-        });
-      }, backoff);
-    });
+    this.socket.once('close', this.handleDisconnect);
 
     this.socket.on('error', (error) => {
       logger.customError('received websocket error', {}, { error });
@@ -116,6 +118,7 @@ export default class RpcClient<
           }),
         );
 
+        const controller = new AbortController();
         response = await Promise.race([
           firstValueFrom(
             this.messages.pipe(
@@ -125,10 +128,11 @@ export default class RpcClient<
           ),
           // if the socket closes after sending a request but before getting a
           // response, we need to retry the request
-          once(this, DISCONNECT).then(() => {
+          once(this, DISCONNECT, { signal: controller.signal }).then(() => {
             throw new Error('disconnected');
           }),
         ]);
+        controller.abort();
 
         break;
       } catch {

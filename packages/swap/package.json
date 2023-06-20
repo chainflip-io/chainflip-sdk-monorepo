@@ -6,8 +6,9 @@
   "scripts": {
     "build": "pnpm clean && prisma generate && tsc && tsc-alias",
     "clean": "rm -rf dist",
-    "dev": "tsx watch src/index.ts",
-    "dev:process": "tsx watch src/process.ts",
+    "dev": "tsx -r envlocker/config --watch src/index.ts",
+    "dev:sisyphos": "ENVLOCKER_ENV_NAME=sisyphos pnpm dev",
+    "dev:process": "tsx -r envlocker/config --watch src/process.ts",
     "preinstall": "npx only-allow pnpm",
     "lint": "pnpm eslint --max-warnings 0 './**/*.ts'",
     "postinstall": "prisma generate",
