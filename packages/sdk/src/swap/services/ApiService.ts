@@ -7,7 +7,7 @@ import {
 } from '@/shared/enums';
 import type {
   QuoteQueryParams,
-  QuoteResponse,
+  QuoteQueryResponse,
   SwapRequestBody,
 } from '@/shared/schemas';
 import {
@@ -22,8 +22,8 @@ import {
 } from '../mocks';
 import {
   ChainData,
-  RouteRequest,
-  RouteResponse,
+  QuoteRequest,
+  QuoteResponse,
   SwapRequest,
   SwapResponse,
   SwapStatusRequest,
@@ -85,24 +85,24 @@ type BackendQuery<T, U> = (
   options: RequestOptions,
 ) => Promise<U>;
 
-const getRoute: BackendQuery<RouteRequest, RouteResponse> = async (
+const getQuote: BackendQuery<QuoteRequest, QuoteResponse> = async (
   baseUrl,
-  { amount, ...routeRequest },
+  { amount, ...quoteRequest },
   { signal },
 ) => {
   const params: QuoteQueryParams = {
     amount,
-    srcAsset: routeRequest.srcAsset,
-    destAsset: routeRequest.destAsset,
+    srcAsset: quoteRequest.srcAsset,
+    destAsset: quoteRequest.destAsset,
   };
 
   const queryParams = new URLSearchParams(params);
 
   const url = new URL(`/quote?${queryParams.toString()}`, baseUrl).toString();
 
-  const { data } = await axios.get<QuoteResponse>(url, { signal });
+  const { data } = await axios.get<QuoteQueryResponse>(url, { signal });
 
-  return { quote: data, ...routeRequest };
+  return { quote: data, ...quoteRequest };
 };
 
 const requestDepositAddress: BackendQuery<SwapRequest, SwapResponse> = async (
@@ -139,7 +139,7 @@ const getStatus: BackendQuery<SwapStatusRequest, SwapStatusResponse> = async (
 export default {
   getChains,
   getPossibleDestinationChains,
-  getRoute,
+  getQuote,
   getAssets,
   getStatus,
   requestDepositAddress,

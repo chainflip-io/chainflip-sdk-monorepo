@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Assets, ChainflipNetworks, Chains } from '@/shared/enums';
-import { RouteRequest } from '../../types';
+import { QuoteRequest } from '../../types';
 import ApiService from '../ApiService';
 
 jest.mock('axios', () => ({
@@ -16,7 +16,7 @@ describe('ApiService', () => {
     srcAsset: Assets.BTC,
     destChain: Chains.Ethereum,
     destAsset: Assets.ETH,
-  } satisfies RouteRequest;
+  } satisfies QuoteRequest;
 
   describe(ApiService.getChains, () => {
     it.each([
@@ -56,7 +56,7 @@ describe('ApiService', () => {
     );
   });
 
-  describe(ApiService.getRoute, () => {
+  describe(ApiService.getQuote, () => {
     it('gets a route with a quote', async () => {
       const mockedGet = jest.mocked(axios.get);
       mockedGet.mockResolvedValueOnce({
@@ -67,7 +67,7 @@ describe('ApiService', () => {
         },
       });
 
-      const route = await ApiService.getRoute(
+      const route = await ApiService.getQuote(
         'https://swapperoo.org',
         {
           amount: '10000',
@@ -94,7 +94,7 @@ describe('ApiService', () => {
         },
       });
 
-      await ApiService.getRoute('https://swapperoo.org', mockRoute, {
+      await ApiService.getQuote('https://swapperoo.org', mockRoute, {
         signal: new AbortController().signal,
       });
 

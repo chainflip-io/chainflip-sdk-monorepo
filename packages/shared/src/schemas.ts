@@ -43,7 +43,7 @@ export const quoteResponseSchema = z.union([
 ]);
 
 export type MarketMakerResponse = z.input<typeof quoteResponseSchema>;
-export type QuoteResponse = z.infer<typeof quoteResponseSchema>;
+export type QuoteQueryResponse = z.infer<typeof quoteResponseSchema>;
 
 interface BaseRequest {
   id: string; // random UUID

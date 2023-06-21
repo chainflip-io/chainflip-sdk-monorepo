@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { Asset } from '@/shared/enums';
 import { chainflipAsset, hexStringFromNumber } from '@/shared/parsers';
-import { QuoteResponse, QuoteQueryParams } from '../schemas';
+import { QuoteQueryResponse, QuoteQueryParams } from '../schemas';
 import { memoize } from './function';
 import RpcClient from './RpcClient';
 import { transformAsset } from './string';
@@ -49,7 +49,7 @@ const getSwapAmount = async (
 export const getBrokerQuote = async (
   { srcAsset, destAsset, amount }: QuoteQueryParams,
   id: string,
-): Promise<QuoteResponse> => {
+): Promise<QuoteQueryResponse> => {
   const { intermediary, output } = await getSwapAmount(
     srcAsset,
     destAsset,
