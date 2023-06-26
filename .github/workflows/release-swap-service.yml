@@ -21,7 +21,6 @@ jobs:
   build-docker-images:
     runs-on: ubuntu-latest
     name: Trigger Docker Image Build in chainflip-io/chainflip-web-services 🪼
-    needs: [test]
     steps:
       - name: Dispatch build-swap-staging to chainflip-web-services 🦕
         if: startsWith(github.ref, 'refs/tags/') != true
