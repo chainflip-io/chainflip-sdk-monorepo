@@ -1,6 +1,6 @@
 {
   "name": "swap",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Swapping service backend",
   "private": true,
   "scripts": {
