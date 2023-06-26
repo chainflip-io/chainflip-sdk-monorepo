@@ -24,7 +24,8 @@
     "graphql:codegen": "graphql-codegen --config .graphqlrc.js"
   },
   "keywords": [
-    "typescript"
+    "typescript",
+    "node"
   ],
   "license": "ISC",
   "devDependencies": {
