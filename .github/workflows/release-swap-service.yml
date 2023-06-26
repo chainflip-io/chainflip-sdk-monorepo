@@ -1,0 +1,42 @@
+name: Release Swap Service
+
+on:
+  push:
+    tags:
+      - "swap/v*"
+    branches:
+      - main
+    paths:
+      - packages/swap/**
+
+env:
+  FORCE_COLOR: 1
+  DB_NAME: "swap"
+  DB_USER: "postgres"
+  DB_PASS: "postgres"
+  DB_PORT: "5432"
+  PACKAGE: "swap"
+
+jobs:
+  build-docker-images:
+    runs-on: ubuntu-latest
+    name: Trigger Docker Image Build in chainflip-io/chainflip-web-services 🪼
+    needs: [test]
+    steps:
+      - name: Dispatch build-swap-staging to chainflip-web-services 🦕
+        if: startsWith(github.ref, 'refs/tags/') != true
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          repository: chainflip-io/chainflip-web-services
+          event-type: build-swap-staging
+          token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
+          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}"}'
+
+      - name: Dispatch build-swap-tag to chainflip-web-services 🦕
+        if: startsWith(github.ref, 'refs/tags/') == true
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          repository: chainflip-io/chainflip-web-services
+          event-type: build-swap-tag
+          token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
+          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}"}'

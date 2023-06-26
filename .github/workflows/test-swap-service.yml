@@ -74,17 +74,3 @@ jobs:
         with:
           flags: ${{ env.PACKAGE_WITHOUT_SCOPE }}
           token: ${{ secrets.CF_SDK_CODECOV_TOKEN }} # not required for public repos
-
-  build-docker-images:
-    runs-on: ubuntu-latest
-    name: Trigger Docker Image Build in chainflip-io/chainflip-web-services 🪼
-    needs: [test]
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && github.event_name != 'workflow_dispatch'
-    steps:
-      - name: Repository Dispatch to chainflip-web-services 🦕
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          repository: chainflip-io/chainflip-web-services
-          event-type: build-swap-staging
-          token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
-          client-payload: '{"commit_sha": "${{ github.sha }}"}'
