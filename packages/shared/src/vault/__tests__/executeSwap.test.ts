@@ -219,4 +219,31 @@ describe(executeSwap, () => {
     expect(allowanceSpy.mock.calls).toMatchSnapshot();
     expect(approveSpy.mock.calls).toMatchSnapshot();
   });
+
+  it.each([1, '1', 1n])('accepts a nonce (%o)', async (nonce) => {
+    const wait = jest
+      .fn()
+      .mockResolvedValue({ status: 1, transactionHash: 'hello world' });
+    const swapSpy = jest
+      .spyOn(MockVault.prototype, 'xSwapNative')
+      .mockResolvedValue({ wait });
+
+    expect(
+      await executeSwap(
+        {
+          amount: '1',
+          destAsset: Assets.BTC,
+          destChain: Chains.Bitcoin,
+          destAddress: BTC_ADDRESS,
+        } as ExecuteSwapParams,
+        {
+          network: ChainflipNetworks.sisyphos,
+          signer: new VoidSigner('MY ADDRESS'),
+          nonce,
+        },
+      ),
+    ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
+    expect(wait).toHaveBeenCalledWith(1);
+    expect(swapSpy.mock.calls).toMatchSnapshot();
+  });
 });

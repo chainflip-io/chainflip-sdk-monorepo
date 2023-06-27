@@ -39,13 +39,14 @@ const assetMap: Record<Asset, number> = {
 const swapNative = async (
   vault: Vault,
   { destChain, destAsset, destAddress, amount }: NativeSwapParams,
+  { nonce }: ExecuteSwapOptions,
 ): Promise<ContractReceipt> => {
   const transaction = await vault.xSwapNative(
     chainMap[destChain],
     destAddress,
     assetMap[destAsset],
     [],
-    { value: amount },
+    { value: amount, nonce },
   );
 
   return transaction.wait(1);
@@ -72,6 +73,7 @@ const swapToken = async (
     erc20Address,
     params.amount,
     [],
+    { nonce: opts.nonce },
   );
 
   return transaction.wait(1);
@@ -81,7 +83,10 @@ const isTokenSwap = (params: ExecuteSwapParams): params is TokenSwapParams =>
   'srcAsset' in params;
 
 const executeSwapOptionsSchema = z.intersection(
-  z.object({ signer: z.instanceof(Signer) }),
+  z.object({
+    signer: z.instanceof(Signer),
+    nonce: z.union([z.number(), z.bigint(), z.string()]).optional(),
+  }),
   z.union([
     z.object({ network: chainflipNetwork }),
     z.object({
@@ -114,7 +119,7 @@ const executeSwap = async (
   const vault = Vault__factory.connect(vaultContractAddress, opts.signer);
 
   if (isTokenSwap(parsedParams)) return swapToken(vault, parsedParams, opts);
-  return swapNative(vault, parsedParams);
+  return swapNative(vault, parsedParams, opts);
 };
 
 export default executeSwap;
