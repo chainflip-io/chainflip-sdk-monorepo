@@ -1,14 +1,11 @@
 import { btcAddress, dotAddress, u128, unsignedInteger } from '../parsers';
+import bitcoinAddresses from '../validation/__tests__/bitcoinAddresses.json' assert { type: 'json' };
 
 describe('btc parser', () => {
   it.each([
-    'bc1qxy2kgdygjrsqtzq2n0yrf249',
-    '1GX28yLjVWux7ws4UQ9FB4MnLH4UKTPK2z',
-    'bcrt1pj5pjkur59zl9yg3q5d33dxvgndw6967hf5zmt2er9xec6wya754s8vjtd9',
-    'bc1qc7slrfxkknqcq2jevvvkdgvrt8080852dfjewde450xdlk4ugp7szw5tk9',
-    'tb1',
-    'bcrt1',
-    'm',
+    Object.values(bitcoinAddresses).flatMap((addressMap) =>
+      Object.values(addressMap).flat(),
+    ),
   ])(`validates btc address %s to be true`, (address) => {
     expect(btcAddress.safeParse(address).success).toBeTruthy();
   });

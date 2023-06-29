@@ -5,6 +5,11 @@ import { z, ZodErrorMap } from 'zod';
 import type { Asset } from './enums';
 import { Assets, ChainflipNetworks, Chains } from './enums';
 import { isString } from './guards';
+import {
+  validateBitcoinMainnetAddress,
+  validateBitcoinRegtestAddress,
+  validateBitcoinTestnetAddress,
+} from './validation/addressValidation';
 
 const errorMap: ZodErrorMap = (issue, context) => ({
   message: `received: ${JSON.stringify(context.data)}`,
@@ -18,9 +23,11 @@ export const hexStringFromNumber = numericString
   .transform((arg) => ethers.BigNumber.from(arg).toHexString())
   .refine((arg) => arg.startsWith('0x'));
 export const bareHexString = string.regex(/^[0-9a-f]+$/);
-export const btcAddress = string
-  .regex(/^(bc1|tb1|bcrt1|m)/)
-  .or(string.regex(/^[13][a-km-zA-HJ-NP-Z1-9]{25,39}$/)); // not strict
+export const btcAddress = z.union([
+  string.regex(/^(1|3|bc1)/).refine(validateBitcoinMainnetAddress),
+  string.regex(/^(m|n|2|tb1)/).refine(validateBitcoinTestnetAddress),
+  string.regex(/^bcrt1/).refine(validateBitcoinRegtestAddress),
+]);
 
 export const dotAddress = z
   .union([string, hexString])
