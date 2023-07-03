@@ -46,6 +46,7 @@ const fetchBlocks = async (height: number): Promise<Block[]> => {
       return blocks;
     } catch (error) {
       logger.error('failed to fetch batch', { error });
+      if (i === 4) throw error;
     }
   }
 

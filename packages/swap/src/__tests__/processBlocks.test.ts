@@ -28,8 +28,9 @@ describe(processBlocks, () => {
         blocks: {
           nodes: [
             {
-              height: 1,
+              height: 0,
               timestamp: 1681989543437,
+              specId: 'chainflip-node@0',
               events: {
                 nodes: [swapScheduledDotDepositChannelMock.eventContext.event],
               },
@@ -41,7 +42,10 @@ describe(processBlocks, () => {
       .mockRejectedValue(Error('clean exit'));
 
     await expect(processBlocks()).rejects.toThrowError('clean exit');
-    expect(requestSpy).toHaveBeenCalledTimes(2);
+    expect(requestSpy).toHaveBeenCalledTimes(
+      1 + // once successfully for the first block
+        5, // five failures while we abort the loop
+    );
     const swaps = await prisma.swap.findMany();
     expect(swaps).toHaveLength(1);
     expect(swaps[0]).toMatchInlineSnapshot(
@@ -56,7 +60,7 @@ describe(processBlocks, () => {
         "createdAt": Any<Date>,
         "depositAmount": "125000000000",
         "depositReceivedAt": 2023-04-20T11:19:03.437Z,
-        "depositReceivedBlockIndex": "1-0",
+        "depositReceivedBlockIndex": "0-0",
         "destAddress": "bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa",
         "destAsset": "BTC",
         "egressCompletedAt": null,

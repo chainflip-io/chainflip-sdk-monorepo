@@ -265,7 +265,7 @@ describe('server', () => {
           srcAsset: Assets.ETH,
           destAsset: Assets.DOT,
           destAddress: HEX_DOT_ADDRESS,
-          expectedDepositAmount: '1000000000',
+          amount: '1000000000',
         },
       ],
       [
@@ -273,7 +273,7 @@ describe('server', () => {
           srcAsset: Assets.ETH,
           destAsset: Assets.DOT,
           destAddress: DOT_ADDRESS,
-          expectedDepositAmount: '1000000000',
+          amount: '1000000000',
         },
       ],
       [
@@ -281,7 +281,7 @@ describe('server', () => {
           srcAsset: Assets.DOT,
           destAsset: Assets.ETH,
           destAddress: ETH_ADDRESS,
-          expectedDepositAmount: '1000000000',
+          amount: '1000000000',
         },
       ],
     ])('creates a new swap deposit channel', async (requestBody) => {
@@ -312,7 +312,7 @@ describe('server', () => {
         createdAt: expect.any(Date),
       });
       expect(swapDepositChannel?.expectedDepositAmount.toString()).toBe(
-        requestBody.expectedDepositAmount,
+        requestBody.amount,
       );
       expect(status).toBe(200);
       expect(body).toMatchObject({
@@ -343,25 +343,19 @@ describe('server', () => {
     });
 
     it.each([
-      [
-        'ETH',
-        {
-          srcAsset: Assets.DOT,
-          destAsset: Assets.ETH,
-          destAddress: '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181f2',
-          expectedDepositAmount: '1000000000',
-        },
-      ],
-      [
-        'DOT',
-        {
-          srcAsset: Assets.ETH,
-          destAsset: Assets.DOT,
-          destAddress: '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181f2',
-          expectedDepositAmount: '1000000000',
-        },
-      ],
-    ])('throws on bad addresses (%s)', async (address, requestBody) => {
+      {
+        srcAsset: Assets.DOT,
+        destAsset: Assets.ETH,
+        destAddress: '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181f2',
+        amount: '1000000000',
+      },
+      {
+        srcAsset: Assets.ETH,
+        destAsset: Assets.DOT,
+        destAddress: '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181f2',
+        amount: '1000000000',
+      },
+    ])('throws on bad addresses (%s)', async (requestBody) => {
       const { body, status } = await request(app)
         .post('/swaps')
         .send(requestBody);
