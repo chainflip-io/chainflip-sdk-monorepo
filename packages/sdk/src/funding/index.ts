@@ -50,18 +50,22 @@ export class FundingSDK {
     return executeRedemption(accountId, this.options);
   }
 
-  getMinimumFunding(): Promise<BigNumber> {
-    return getMinimumFunding(this.options);
+  async getMinimumFunding(): Promise<bigint> {
+    const amount = await getMinimumFunding(this.options);
+    return amount.toBigInt();
   }
 
   async getRedemptionDelay(): Promise<number> {
     return getRedemptionDelay(this.options);
   }
 
-  async getFlipBalance(): Promise<BigNumber> {
+  async getFlipBalance(): Promise<bigint> {
     const flipAddress = getTokenContractAddress('FLIP', this.options.network);
     const flip = ERC20__factory.connect(flipAddress, this.options.signer);
-    return flip.balanceOf(await this.options.signer.getAddress());
+    const balance = await flip.balanceOf(
+      await this.options.signer.getAddress(),
+    );
+    return balance.toBigInt();
   }
 
   async requestFlipApproval(
