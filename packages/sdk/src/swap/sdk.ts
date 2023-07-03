@@ -34,16 +34,14 @@ export class SwapSDK {
     this.signer = options.signer;
   }
 
-  getChains(): Promise<ChainData[]>;
-  getChains(sourceChain: Chain): Promise<ChainData[] | undefined>;
-  getChains(sourceChain?: Chain): Promise<ChainData[] | undefined> {
+  getChains(sourceChain?: Chain): Promise<ChainData[]> {
     if (sourceChain !== undefined) {
       return ApiService.getPossibleDestinationChains(sourceChain, this.network);
     }
     return ApiService.getChains(this.network);
   }
 
-  getAssets(chain: Chain): Promise<AssetData[] | undefined> {
+  getAssets(chain: Chain): Promise<AssetData[]> {
     return ApiService.getAssets(chain, this.network);
   }
 
