@@ -1,4 +1,4 @@
-import type { ContractReceipt, Signer } from 'ethers';
+import type { BigNumberish, ContractReceipt, Signer } from 'ethers';
 import { ChainflipNetwork, ChainflipNetworks } from '@/shared/enums';
 import {
   executeRedemption,
@@ -6,9 +6,14 @@ import {
   getMinimumFunding,
   getRedemptionDelay,
 } from '@/shared/stateChainGateway';
+import {
+  getTokenContractAddress,
+  getVaultManagerContractAddress,
+  requestApproval,
+} from '../contracts';
 
 type SDKOptions = {
-  network?: ChainflipNetwork;
+  network?: Exclude<ChainflipNetwork, 'mainnet'>;
   signer: Signer;
 };
 
@@ -18,7 +23,7 @@ export class FundingSDK {
   constructor(options: SDKOptions) {
     this.options = {
       signer: options.signer,
-      network: options.network ?? ChainflipNetworks.sisyphos,
+      network: options.network ?? ChainflipNetworks.perseverance,
     };
   }
 
@@ -51,5 +56,19 @@ export class FundingSDK {
 
   async getRedemptionDelay(): Promise<number> {
     return getRedemptionDelay(this.options);
+  }
+
+  async requestFlipApproval(
+    amount: BigNumberish,
+  ): Promise<ContractReceipt | null> {
+    const flipAddress = getTokenContractAddress('FLIP', this.options.network);
+    const vaultAddress = getVaultManagerContractAddress(this.options.network);
+
+    return requestApproval(
+      flipAddress,
+      vaultAddress,
+      amount,
+      this.options.signer,
+    );
   }
 }

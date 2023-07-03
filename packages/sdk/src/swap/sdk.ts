@@ -2,7 +2,7 @@ import { ContractReceipt, Signer } from 'ethers';
 import { ChainflipNetwork, Chain, ChainflipNetworks } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { ExecuteSwapParams, executeSwap } from '@/shared/vault';
-import { BACKEND_SERVICE_URL } from './consts';
+import { BACKEND_SERVICE_URLS } from './consts';
 import ApiService, { RequestOptions } from './services/ApiService';
 import type {
   ChainData,
@@ -16,21 +16,20 @@ import type {
 } from './types';
 
 export type SDKOptions = {
-  backendServiceUrl?: string;
-  network?: ChainflipNetwork;
+  network?: Exclude<ChainflipNetwork, 'mainnet'>;
   signer?: Signer;
 };
 
 export class SwapSDK {
   private readonly baseUrl: string;
 
-  private readonly network: ChainflipNetwork;
+  private readonly network: Exclude<ChainflipNetwork, 'mainnet'>;
 
   private readonly signer?: Signer;
 
   constructor(options: SDKOptions = {}) {
-    this.baseUrl = options.backendServiceUrl ?? BACKEND_SERVICE_URL;
-    this.network = options.network ?? ChainflipNetworks.sisyphos;
+    this.network = options.network ?? ChainflipNetworks.perseverance;
+    this.baseUrl = BACKEND_SERVICE_URLS[this.network];
     this.signer = options.signer;
   }
 
