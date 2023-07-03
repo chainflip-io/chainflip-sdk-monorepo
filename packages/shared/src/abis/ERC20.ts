@@ -26,10 +26,11 @@ export interface ERC20Interface extends utils.Interface {
   functions: {
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
+    "balanceOf(address)": FunctionFragment;
   };
 
   getFunction(
-    nameOrSignatureOrTopic: "allowance" | "approve"
+    nameOrSignatureOrTopic: "allowance" | "approve" | "balanceOf"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -40,9 +41,11 @@ export interface ERC20Interface extends utils.Interface {
     functionFragment: "approve",
     values: [string, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
 
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
 
   events: {};
 }
@@ -85,6 +88,8 @@ export interface ERC20 extends BaseContract {
       amount: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
+
+    balanceOf(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
   allowance(
@@ -99,6 +104,8 @@ export interface ERC20 extends BaseContract {
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
+  balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
   callStatic: {
     allowance(
       owner: string,
@@ -111,6 +118,8 @@ export interface ERC20 extends BaseContract {
       amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   filters: {};
@@ -127,6 +136,8 @@ export interface ERC20 extends BaseContract {
       amount: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
+
+    balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -140,6 +151,11 @@ export interface ERC20 extends BaseContract {
       spender: string,
       amount: BigNumberish,
       overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    balanceOf(
+      account: string,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
 }

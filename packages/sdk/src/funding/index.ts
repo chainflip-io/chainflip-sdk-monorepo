@@ -1,4 +1,4 @@
-import type { BigNumberish, ContractReceipt, Signer } from 'ethers';
+import type { BigNumber, BigNumberish, ContractReceipt, Signer } from 'ethers';
 import {
   getTokenContractAddress,
   getVaultManagerContractAddress,
@@ -11,6 +11,7 @@ import {
   getMinimumFunding,
   getRedemptionDelay,
 } from '@/shared/stateChainGateway';
+import { ERC20__factory } from '../abis';
 
 type SDKOptions = {
   network?: Exclude<ChainflipNetwork, 'mainnet'>;
@@ -49,13 +50,18 @@ export class FundingSDK {
     return executeRedemption(accountId, this.options);
   }
 
-  async getMinimumFunding(): Promise<string> {
-    const amount = await getMinimumFunding(this.options);
-    return amount.toString();
+  getMinimumFunding(): Promise<BigNumber> {
+    return getMinimumFunding(this.options);
   }
 
   async getRedemptionDelay(): Promise<number> {
     return getRedemptionDelay(this.options);
+  }
+
+  async getFlipBalance(): Promise<BigNumber> {
+    const flipAddress = getTokenContractAddress('FLIP', this.options.network);
+    const flip = ERC20__factory.connect(flipAddress, this.options.signer);
+    return flip.balanceOf(await this.options.signer.getAddress());
   }
 
   async requestFlipApproval(
