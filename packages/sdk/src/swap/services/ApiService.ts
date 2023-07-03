@@ -109,12 +109,12 @@ const getQuote: BackendQuery<QuoteRequest, QuoteResponse> = async (
 const requestDepositAddress: BackendQuery<
   DepositAddressRequest,
   DepositAddressResponse
-> = async (baseUrl, swapRequest, { signal }) => {
+> = async (baseUrl, depositAssetRequest, { signal }) => {
   const body: SwapRequestBody = {
-    destAddress: swapRequest.destAddress,
-    srcAsset: swapRequest.srcAsset,
-    destAsset: swapRequest.destAsset,
-    amount: swapRequest.amount,
+    destAddress: depositAssetRequest.destAddress,
+    srcAsset: depositAssetRequest.srcAsset,
+    destAsset: depositAssetRequest.destAsset,
+    amount: depositAssetRequest.amount,
   };
 
   const url = new URL('/swaps', baseUrl).toString();
@@ -122,7 +122,7 @@ const requestDepositAddress: BackendQuery<
   const { data } = await axios.post<PostSwapResponse>(url, body, { signal });
 
   return {
-    ...swapRequest,
+    ...depositAssetRequest,
     depositChannelId: data.id,
     depositAddress: data.depositAddress,
   };
