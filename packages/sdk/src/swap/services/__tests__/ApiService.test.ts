@@ -115,7 +115,7 @@ describe('ApiService', () => {
         'https://swapperoo.org',
         {
           ...mockRoute,
-          expectedDepositAmount: mockRoute.amount,
+          amount: mockRoute.amount,
         },
         {},
       );
@@ -132,7 +132,7 @@ describe('ApiService', () => {
         'https://swapperoo.org',
         {
           ...mockRoute,
-          expectedDepositAmount: mockRoute.amount,
+          amount: mockRoute.amount,
         },
         {
           signal: new AbortController().signal,
