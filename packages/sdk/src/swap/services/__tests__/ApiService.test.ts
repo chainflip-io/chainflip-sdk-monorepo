@@ -114,11 +114,16 @@ describe('ApiService', () => {
         {
           ...mockRoute,
           amount: mockRoute.amount,
-          destAddress: '',
+          destAddress: 'abcdefgh',
         },
         {},
       );
-      expect(depositChannel).toEqual(response);
+      expect(depositChannel).toEqual({
+        ...mockRoute,
+        destAddress: 'abcdefgh',
+        depositChannelId: response.id,
+        depositAddress: response.depositAddress,
+      });
     });
 
     it('passes on the signal', async () => {

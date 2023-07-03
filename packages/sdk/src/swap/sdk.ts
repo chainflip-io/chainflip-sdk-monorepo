@@ -8,11 +8,11 @@ import type {
   ChainData,
   AssetData,
   QuoteRequest,
-  SwapResponse,
+  DepositAddressResponse,
   QuoteResponse,
   SwapStatusRequest,
   SwapStatusResponse,
-  SwapRequest,
+  DepositAddressRequest,
 } from './types';
 
 export type SDKOptions = {
@@ -53,10 +53,14 @@ export class SwapSDK {
   }
 
   requestDepositAddress(
-    swapRequest: SwapRequest,
+    depositAssetRequest: DepositAddressRequest,
     options: RequestOptions = {},
-  ): Promise<SwapResponse> {
-    return ApiService.requestDepositAddress(this.baseUrl, swapRequest, options);
+  ): Promise<DepositAddressResponse> {
+    return ApiService.requestDepositAddress(
+      this.baseUrl,
+      depositAssetRequest,
+      options,
+    );
   }
 
   getStatus(

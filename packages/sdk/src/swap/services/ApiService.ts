@@ -10,6 +10,7 @@ import type {
   QuoteQueryResponse,
   SwapRequestBody,
 } from '@/shared/schemas';
+import { PostSwapResponse } from '@/shared/schemas';
 import {
   bitcoin,
   polkadot,
@@ -24,8 +25,8 @@ import {
   ChainData,
   QuoteRequest,
   QuoteResponse,
-  SwapRequest,
-  SwapResponse,
+  DepositAddressRequest,
+  DepositAddressResponse,
   SwapStatusRequest,
   SwapStatusResponse,
   AssetData,
@@ -87,11 +88,11 @@ type BackendQuery<T, U> = (
 
 const getQuote: BackendQuery<QuoteRequest, QuoteResponse> = async (
   baseUrl,
-  { amount, ...quoteRequest },
+  quoteRequest,
   { signal },
 ) => {
   const params: QuoteQueryParams = {
-    amount,
+    amount: quoteRequest.amount,
     srcAsset: quoteRequest.srcAsset,
     destAsset: quoteRequest.destAsset,
   };
@@ -102,26 +103,29 @@ const getQuote: BackendQuery<QuoteRequest, QuoteResponse> = async (
 
   const { data } = await axios.get<QuoteQueryResponse>(url, { signal });
 
-  return { quote: data, ...quoteRequest };
+  return { ...quoteRequest, quote: data };
 };
 
-const requestDepositAddress: BackendQuery<SwapRequest, SwapResponse> = async (
-  baseUrl,
-  route,
-  { signal },
-) => {
+const requestDepositAddress: BackendQuery<
+  DepositAddressRequest,
+  DepositAddressResponse
+> = async (baseUrl, depositAssetRequest, { signal }) => {
   const body: SwapRequestBody = {
-    destAddress: route.destAddress,
-    srcAsset: route.srcAsset,
-    destAsset: route.destAsset,
-    amount: route.amount,
+    destAddress: depositAssetRequest.destAddress,
+    srcAsset: depositAssetRequest.srcAsset,
+    destAsset: depositAssetRequest.destAsset,
+    amount: depositAssetRequest.amount,
   };
 
   const url = new URL('/swaps', baseUrl).toString();
 
-  const { data } = await axios.post<SwapResponse>(url, body, { signal });
+  const { data } = await axios.post<PostSwapResponse>(url, body, { signal });
 
-  return data;
+  return {
+    ...depositAssetRequest,
+    depositChannelId: data.id,
+    depositAddress: data.depositAddress,
+  };
 };
 
 const getStatus: BackendQuery<SwapStatusRequest, SwapStatusResponse> = async (

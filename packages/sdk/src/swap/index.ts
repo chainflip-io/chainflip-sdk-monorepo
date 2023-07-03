@@ -4,8 +4,8 @@ export {
   type AssetData,
   type QuoteRequest,
   type QuoteResponse,
-  type SwapRequest,
-  type SwapResponse,
+  type DepositAddressRequest,
+  type DepositAddressResponse,
   type SwapStatusRequest,
   type SwapStatusResponse,
 } from './types';
