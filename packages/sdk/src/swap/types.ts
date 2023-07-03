@@ -35,9 +35,7 @@ export interface QuoteResponse extends Route {
   quote: QuoteQueryResponse;
 }
 
-export interface SwapRequest extends Omit<QuoteResponse, 'quote'> {
-  expectedDepositAmount: string;
-}
+export type SwapRequest = QuoteRequest;
 
 export interface SwapResponse {
   id: string;
