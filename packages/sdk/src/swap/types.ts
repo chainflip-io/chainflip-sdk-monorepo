@@ -30,16 +30,16 @@ export interface QuoteRequest extends ChainsAndAssets {
   amount: string;
 }
 
-export interface QuoteResponse extends ChainsAndAssets {
+export interface QuoteResponse extends QuoteRequest {
   quote: QuoteQueryResponse;
 }
 
-export interface SwapRequest extends QuoteRequest {
+export interface DepositAddressRequest extends QuoteRequest {
   destAddress: string;
 }
 
-export interface SwapResponse {
-  id: string;
+export interface DepositAddressResponse extends DepositAddressRequest {
+  depositChannelId: string;
   depositAddress: string;
 }
 

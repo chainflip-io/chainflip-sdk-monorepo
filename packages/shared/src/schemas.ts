@@ -23,6 +23,7 @@ export const postSwapSchema = z
   }));
 
 export type SwapRequestBody = z.input<typeof postSwapSchema>;
+export type PostSwapResponse = { id: string; depositAddress: string };
 
 export const quoteResponseSchema = z.union([
   z
