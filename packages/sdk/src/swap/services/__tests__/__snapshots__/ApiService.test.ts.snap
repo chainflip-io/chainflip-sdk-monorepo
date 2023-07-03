@@ -362,7 +362,6 @@ exports[`ApiService getChains gets testnet chains (sisyphos) 1`] = `
 
 exports[`ApiService getQuote gets a route with a quote 1`] = `
 {
-  "destAddress": "",
   "destAsset": "ETH",
   "destChain": "Ethereum",
   "quote": {
