@@ -1,4 +1,4 @@
-import type { BigNumberish, ContractReceipt, Signer } from 'ethers';
+import type { ContractReceipt, Signer } from 'ethers';
 import { ERC20__factory } from '@/shared/abis';
 import {
   getTokenContractAddress,
@@ -17,6 +17,8 @@ type SDKOptions = {
   network?: Exclude<ChainflipNetwork, 'mainnet'>;
   signer: Signer;
 };
+
+type TransactionHash = string;
 
 export class FundingSDK {
   private readonly options: Required<SDKOptions>;
@@ -46,8 +48,9 @@ export class FundingSDK {
    * @param signer a signer to use for the transaction if different from the one
    *               provided in the constructor
    */
-  executeRedemption(accountId: `0x${string}`): Promise<ContractReceipt> {
-    return executeRedemption(accountId, this.options);
+  async executeRedemption(accountId: `0x${string}`): Promise<TransactionHash> {
+    const tx = await executeRedemption(accountId, this.options);
+    return tx.transactionHash;
   }
 
   async getMinimumFunding(): Promise<bigint> {
@@ -68,17 +71,23 @@ export class FundingSDK {
     return balance.toBigInt();
   }
 
+  /**
+   * @param amount the amount of FLIP to request approval for
+   * @returns the transaction hash or null if no approval was required
+   */
   async requestFlipApproval(
-    amount: BigNumberish,
-  ): Promise<ContractReceipt | null> {
+    amount: bigint | string | number,
+  ): Promise<TransactionHash | null> {
     const flipAddress = getTokenContractAddress('FLIP', this.options.network);
     const vaultAddress = getVaultManagerContractAddress(this.options.network);
 
-    return requestApproval(
+    const tx = await requestApproval(
       flipAddress,
       vaultAddress,
       amount,
       this.options.signer,
     );
+
+    return tx?.transactionHash ?? null;
   }
 }

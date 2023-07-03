@@ -1,5 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { VoidSigner, ethers } from 'ethers';
+import { requestApproval } from '@/shared/contracts';
 import {
   fundStateChainAccount,
   executeRedemption,
@@ -8,6 +9,7 @@ import {
 } from '@/shared/stateChainGateway';
 import { FundingSDK } from '../index';
 
+jest.mock('@/shared/contracts');
 jest.mock('@/shared/stateChainGateway');
 
 class MockERC20 {
@@ -52,7 +54,12 @@ describe(FundingSDK, () => {
 
   describe(FundingSDK.prototype.executeRedemption, () => {
     it('approves the gateway and funds the account', async () => {
-      await sdk.executeRedemption('0x1234');
+      jest.mocked(executeRedemption).mockResolvedValue({
+        transactionHash: '0xabcdef',
+      } as any);
+
+      const txHash = await sdk.executeRedemption('0x1234');
+      expect(txHash).toEqual('0xabcdef');
 
       expect(executeRedemption).toHaveBeenCalledWith(
         '0x1234',
@@ -106,6 +113,16 @@ describe(FundingSDK, () => {
           ],
         ]
       `);
+    });
+  });
+
+  describe(FundingSDK.prototype.requestFlipApproval, () => {
+    it('requests approval and returns the tx hash', async () => {
+      jest.mocked(requestApproval).mockResolvedValueOnce({
+        transactionHash: '0xabcdef',
+      } as any);
+      const txHash = await sdk.requestFlipApproval(1);
+      expect(txHash).toBe('0xabcdef');
     });
   });
 });
