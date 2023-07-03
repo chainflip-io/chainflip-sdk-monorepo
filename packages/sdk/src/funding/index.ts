@@ -1,4 +1,5 @@
-import type { BigNumber, BigNumberish, ContractReceipt, Signer } from 'ethers';
+import type { BigNumberish, ContractReceipt, Signer } from 'ethers';
+import { ERC20__factory } from '@/shared/abis';
 import {
   getTokenContractAddress,
   getVaultManagerContractAddress,
@@ -11,7 +12,6 @@ import {
   getMinimumFunding,
   getRedemptionDelay,
 } from '@/shared/stateChainGateway';
-import { ERC20__factory } from '../abis';
 
 type SDKOptions = {
   network?: Exclude<ChainflipNetwork, 'mainnet'>;
