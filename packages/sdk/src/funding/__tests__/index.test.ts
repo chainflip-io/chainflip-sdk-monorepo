@@ -41,6 +41,10 @@ describe(FundingSDK, () => {
 
   describe(FundingSDK.prototype.fundStateChainAccount, () => {
     it('approves the gateway and funds the account', async () => {
+      jest.mocked(fundStateChainAccount).mockResolvedValueOnce({
+        transactionHash: '0xabcdef',
+      } as any);
+
       await sdk.fundStateChainAccount('0x1234', '1000');
 
       expect(fundStateChainAccount).toHaveBeenCalledWith(

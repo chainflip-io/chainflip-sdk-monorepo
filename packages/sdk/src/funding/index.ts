@@ -1,4 +1,4 @@
-import type { ContractReceipt, Signer } from 'ethers';
+import type { Signer } from 'ethers';
 import { ERC20__factory } from '@/shared/abis';
 import {
   getTokenContractAddress,
@@ -36,11 +36,12 @@ export class FundingSDK {
    * @param signer a signer to use for the transaction if different from the one
    *               provided in the constructor
    */
-  fundStateChainAccount(
+  async fundStateChainAccount(
     accountId: `0x${string}`,
     amount: string,
-  ): Promise<ContractReceipt> {
-    return fundStateChainAccount(accountId, amount, this.options);
+  ): Promise<TransactionHash> {
+    const tx = await fundStateChainAccount(accountId, amount, this.options);
+    return tx.transactionHash;
   }
 
   /**
