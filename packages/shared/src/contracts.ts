@@ -1,4 +1,4 @@
-import type { BigNumberish, Signer } from 'ethers';
+import type { BigNumberish, ContractReceipt, Signer } from 'ethers';
 import { ERC20__factory } from './abis';
 import {
   type ChainflipNetwork,
@@ -58,7 +58,7 @@ export const requestApproval = async (
   approvalAddress: string,
   amount: BigNumberish,
   signer: Signer,
-) => {
+): Promise<ContractReceipt | null> => {
   const erc20 = ERC20__factory.connect(erc20Address, signer);
   const signerAddress = await signer.getAddress();
   const allowance = await erc20.allowance(signerAddress, approvalAddress);
