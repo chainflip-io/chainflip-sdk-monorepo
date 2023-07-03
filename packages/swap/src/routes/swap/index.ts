@@ -1,5 +1,6 @@
 import assert from 'assert';
 import express from 'express';
+import { assetChains } from '@/shared/enums';
 import { postSwapSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../../client';
@@ -55,21 +56,23 @@ router.get(
 
     const response = {
       state,
-      depositAddress: swapDepositChannel.depositAddress,
-      depositAmount: swap?.depositAmount?.toString(),
+      srcChain: assetChains[swapDepositChannel.srcAsset],
+      destChain: assetChains[swapDepositChannel.destAsset],
       srcAsset: swapDepositChannel.srcAsset,
+      destAsset: swapDepositChannel.destAsset,
+      destAddress: swapDepositChannel.destAddress,
+      depositAddress: swapDepositChannel.depositAddress,
+      expectedDepositAmount:
+        swapDepositChannel.expectedDepositAmount.toString(),
+      depositAmount: swap?.depositAmount?.toString(),
       depositReceivedAt: swap?.depositReceivedAt.valueOf(),
       depositReceivedBlockIndex: swap?.depositReceivedBlockIndex,
-      destAddress: swapDepositChannel.destAddress,
-      destAsset: swapDepositChannel.destAsset,
+      swapExecutedAt: swap?.swapExecutedAt?.valueOf(),
+      swapExecutedBlockIndex: swap?.swapExecutedBlockIndex,
       egressAmount: swap?.egress?.amount?.toString(),
       egressCompletedAt: swap?.egressCompletedAt?.valueOf(),
       egressCompletedBlockIndex: swap?.egressCompletedBlockIndex,
       egressScheduledAt: swap?.egress?.timestamp.valueOf(),
-      expectedDepositAmount:
-        swapDepositChannel.expectedDepositAmount.toString(),
-      swapExecutedAt: swap?.swapExecutedAt?.valueOf(),
-      swapExecutedBlockIndex: swap?.swapExecutedBlockIndex,
     };
 
     logger.info('sending response for swap request', { uuid, response });

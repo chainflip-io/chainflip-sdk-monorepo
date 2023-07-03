@@ -47,13 +47,11 @@ export interface SwapStatusRequest {
   swapDepositChannelId: string;
 }
 
-type CommonStatusFields = {
-  depositAddress: string;
+export interface CommonStatusFields extends ChainsAndAssets {
   destAddress: string;
-  srcAsset: Asset;
-  destAsset: Asset;
+  depositAddress: string;
   expectedDepositAmount: string;
-};
+}
 
 export type SwapStatusResponse = CommonStatusFields &
   (
@@ -74,24 +72,24 @@ export type SwapStatusResponse = CommonStatusFields &
       }
     | {
         state: 'EGRESS_SCHEDULED';
-        egressAmount: string;
-        egressScheduledAt: number;
         depositAmount: string;
         depositReceivedAt: number;
         depositReceivedBlockIndex: string;
         swapExecutedAt: number;
         swapExecutedBlockIndex: string;
+        egressAmount: string;
+        egressScheduledAt: number;
       }
     | {
         state: 'COMPLETE';
+        depositAmount: string;
+        depositReceivedAt: number;
+        depositReceivedBlockIndex: string;
+        swapExecutedAt: number;
+        swapExecutedBlockIndex: string;
         egressAmount: string;
         egressCompletedAt: number;
         egressCompletedBlockIndex: string;
         egressScheduledAt: number;
-        depositAmount: string;
-        depositReceivedAt: number;
-        depositReceivedBlockIndex: string;
-        swapExecutedAt: number;
-        swapExecutedBlockIndex: string;
       }
   );
