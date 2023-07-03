@@ -1,5 +1,6 @@
 import type { Prisma } from '.prisma/client';
 import type { Block, Event } from '../gql/generated/graphql';
+import { buildHandlerMap, getDispatcher } from '../utils/handlers';
 import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';
 import networkBroadcastSuccess from './networkBroadcastSuccess';
 import networkEgressScheduled from './networkEgressScheduled';
@@ -7,47 +8,50 @@ import swapEgressScheduled from './swapEgressScheduled';
 import swapExecuted from './swapExecuted';
 import swapScheduled from './swapScheduled';
 
-export enum Swapping {
-  SwapScheduled = 'Swapping.SwapScheduled',
-  SwapExecuted = 'Swapping.SwapExecuted',
-  SwapEgressScheduled = 'Swapping.SwapEgressScheduled',
-}
+const values = Object.values as <T>(o: T) => T[keyof T][];
 
-export enum BitcoinIngressEgress {
-  EgressScheduled = 'BitcoinIngressEgress.EgressScheduled',
-  BatchBroadcastRequested = 'BitcoinIngressEgress.BatchBroadcastRequested',
-}
+export const swapping = {
+  SwapScheduled: 'Swapping.SwapScheduled',
+  SwapExecuted: 'Swapping.SwapExecuted',
+  SwapEgressScheduled: 'Swapping.SwapEgressScheduled',
+} as const;
 
-export enum BitcoinBroadcaster {
-  BroadcastSuccess = 'BitcoinBroadcaster.BroadcastSuccess',
-}
+export const bitcoinIngressEgress = {
+  EgressScheduled: 'BitcoinIngressEgress.EgressScheduled',
+  BatchBroadcastRequested: 'BitcoinIngressEgress.BatchBroadcastRequested',
+} as const;
 
-export enum EthereumIngressEgress {
-  EgressScheduled = 'EthereumIngressEgress.EgressScheduled',
-  BatchBroadcastRequested = 'EthereumIngressEgress.BatchBroadcastRequested',
-}
+export const bitcoinBroadcaster = {
+  BroadcastSuccess: 'BitcoinBroadcaster.BroadcastSuccess',
+} as const;
 
-export enum EthereumBroadcaster {
-  BroadcastSuccess = 'EthereumBroadcaster.BroadcastSuccess',
-}
+export const ethereumIngressEgress = {
+  EgressScheduled: 'EthereumIngressEgress.EgressScheduled',
+  BatchBroadcastRequested: 'EthereumIngressEgress.BatchBroadcastRequested',
+} as const;
 
-export enum PolkadotIngressEgress {
-  EgressScheduled = 'PolkadotIngressEgress.EgressScheduled',
-  BatchBroadcastRequested = 'PolkadotIngressEgress.BatchBroadcastRequested',
-}
+export const ethereumBroadcaster = {
+  BroadcastSuccess: 'EthereumBroadcaster.BroadcastSuccess',
+} as const;
 
-export enum PolkadotBroadcaster {
-  BroadcastSuccess = 'PolkadotBroadcaster.BroadcastSuccess',
-}
+export const polkadotIngressEgress = {
+  EgressScheduled: 'PolkadotIngressEgress.EgressScheduled',
+  BatchBroadcastRequested: 'PolkadotIngressEgress.BatchBroadcastRequested',
+} as const;
 
-export type SwappingEventName =
-  | BitcoinIngressEgress
-  | BitcoinBroadcaster
-  | EthereumBroadcaster
-  | EthereumIngressEgress
-  | PolkadotBroadcaster
-  | PolkadotIngressEgress
-  | Swapping;
+export const polkadotBroadcaster = {
+  BroadcastSuccess: 'PolkadotBroadcaster.BroadcastSuccess',
+} as const;
+
+export const swapEventNames = [
+  values(swapping),
+  values(bitcoinIngressEgress),
+  values(bitcoinBroadcaster),
+  values(ethereumIngressEgress),
+  values(ethereumBroadcaster),
+  values(polkadotIngressEgress),
+  values(polkadotBroadcaster),
+].flat();
 
 export type EventHandlerArgs = {
   prisma: Prisma.TransactionClient;
@@ -55,23 +59,53 @@ export type EventHandlerArgs = {
   block: Pick<Block, 'height' | 'timestamp'>;
 };
 
-export const eventHandlers: Record<
-  SwappingEventName,
-  (args: EventHandlerArgs) => Promise<void>
-> = {
-  [Swapping.SwapScheduled]: swapScheduled,
-  [Swapping.SwapExecuted]: swapExecuted,
-  [Swapping.SwapEgressScheduled]: swapEgressScheduled,
-  [BitcoinIngressEgress.EgressScheduled]: networkEgressScheduled,
-  [BitcoinIngressEgress.BatchBroadcastRequested]:
-    networkBatchBroadcastRequested,
-  [BitcoinBroadcaster.BroadcastSuccess]: networkBroadcastSuccess('Bitcoin'),
-  [EthereumIngressEgress.EgressScheduled]: networkEgressScheduled,
-  [EthereumIngressEgress.BatchBroadcastRequested]:
-    networkBatchBroadcastRequested,
-  [EthereumBroadcaster.BroadcastSuccess]: networkBroadcastSuccess('Ethereum'),
-  [PolkadotIngressEgress.EgressScheduled]: networkEgressScheduled,
-  [PolkadotIngressEgress.BatchBroadcastRequested]:
-    networkBatchBroadcastRequested,
-  [PolkadotBroadcaster.BroadcastSuccess]: networkBroadcastSuccess('Polkadot'),
-};
+const handlers = [
+  {
+    spec: 0,
+    handlers: [
+      { name: swapping.SwapScheduled, handler: swapScheduled },
+      { name: swapping.SwapExecuted, handler: swapExecuted },
+      { name: swapping.SwapEgressScheduled, handler: swapEgressScheduled },
+      {
+        name: bitcoinIngressEgress.EgressScheduled,
+        handler: networkEgressScheduled,
+      },
+      {
+        name: bitcoinIngressEgress.BatchBroadcastRequested,
+        handler: networkBatchBroadcastRequested,
+      },
+      {
+        name: bitcoinBroadcaster.BroadcastSuccess,
+        handler: networkBroadcastSuccess('Bitcoin'),
+      },
+      {
+        name: ethereumIngressEgress.EgressScheduled,
+        handler: networkEgressScheduled,
+      },
+      {
+        name: ethereumIngressEgress.BatchBroadcastRequested,
+        handler: networkBatchBroadcastRequested,
+      },
+      {
+        name: ethereumBroadcaster.BroadcastSuccess,
+        handler: networkBroadcastSuccess('Ethereum'),
+      },
+      {
+        name: polkadotIngressEgress.EgressScheduled,
+        handler: networkEgressScheduled,
+      },
+      {
+        name: polkadotIngressEgress.BatchBroadcastRequested,
+        handler: networkBatchBroadcastRequested,
+      },
+      {
+        name: polkadotBroadcaster.BroadcastSuccess,
+        handler: networkBroadcastSuccess('Polkadot'),
+      },
+    ],
+  },
+];
+
+const eventHandlerMap = buildHandlerMap(handlers);
+
+export const getEventHandler = getDispatcher(eventHandlerMap);
