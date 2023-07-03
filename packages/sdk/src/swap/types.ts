@@ -19,23 +19,24 @@ export type AssetData = {
   };
 }[keyof typeof chainAssets];
 
-interface Route {
+interface ChainsAndAssets {
   srcChain: Chain;
   destChain: Chain;
   srcAsset: Asset;
   destAsset: Asset;
-  destAddress: string;
 }
 
-export interface QuoteRequest extends Route {
+export interface QuoteRequest extends ChainsAndAssets {
   amount: string;
 }
 
-export interface QuoteResponse extends Route {
+export interface QuoteResponse extends ChainsAndAssets {
   quote: QuoteQueryResponse;
 }
 
-export type SwapRequest = QuoteRequest;
+export interface SwapRequest extends QuoteRequest {
+  destAddress: string;
+}
 
 export interface SwapResponse {
   id: string;
