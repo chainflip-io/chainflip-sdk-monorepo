@@ -70,6 +70,7 @@ export default async function swapScheduled({
           srcAsset: args.sourceAsset,
           depositAddress,
           expiryBlock: { gte: block.height },
+          issuedBlock: { lte: block.height },
         },
       });
 
