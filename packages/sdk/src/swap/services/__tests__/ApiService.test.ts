@@ -11,7 +11,6 @@ jest.mock('axios', () => ({
 describe('ApiService', () => {
   const mockRoute = {
     amount: '10000',
-    destAddress: '',
     srcChain: Chains.Bitcoin,
     srcAsset: Assets.BTC,
     destChain: Chains.Ethereum,
@@ -71,7 +70,6 @@ describe('ApiService', () => {
         'https://swapperoo.org',
         {
           amount: '10000',
-          destAddress: '',
           srcChain: Chains.Bitcoin,
           srcAsset: Assets.BTC,
           destChain: Chains.Ethereum,
@@ -115,7 +113,8 @@ describe('ApiService', () => {
         'https://swapperoo.org',
         {
           ...mockRoute,
-          expectedDepositAmount: mockRoute.amount,
+          amount: mockRoute.amount,
+          destAddress: '',
         },
         {},
       );
@@ -132,7 +131,8 @@ describe('ApiService', () => {
         'https://swapperoo.org',
         {
           ...mockRoute,
-          expectedDepositAmount: mockRoute.amount,
+          amount: mockRoute.amount,
+          destAddress: '',
         },
         {
           signal: new AbortController().signal,

@@ -1,30 +1,30 @@
-export const Chains = {
-  Bitcoin: 'Bitcoin',
-  Ethereum: 'Ethereum',
-  Polkadot: 'Polkadot',
-} as const;
+type ArrayToMap<T extends readonly string[]> = {
+  [K in T[number]]: K;
+};
+
+const arrayToMap = <const T extends readonly string[]>(
+  array: T,
+): ArrayToMap<T> =>
+  Object.fromEntries(array.map((key) => [key, key])) as ArrayToMap<T>;
+
+export const Chains = arrayToMap(['Bitcoin', 'Ethereum', 'Polkadot']);
 export type Chain = (typeof Chains)[keyof typeof Chains];
 
-export const Assets = {
-  FLIP: 'FLIP',
-  USDC: 'USDC',
-  DOT: 'DOT',
-  ETH: 'ETH',
-  BTC: 'BTC',
-} as const;
+export const Assets = arrayToMap(['FLIP', 'USDC', 'DOT', 'ETH', 'BTC']);
 export type Asset = (typeof Assets)[keyof typeof Assets];
 
-export const ChainflipNetworks = {
-  sisyphos: 'sisyphos',
-  perseverance: 'perseverance',
-  mainnet: 'mainnet',
-} as const;
+export const ChainflipNetworks = arrayToMap([
+  'sisyphos',
+  'perseverance',
+  'mainnet',
+  'partnernet',
+]);
+
 export type ChainflipNetwork =
   (typeof ChainflipNetworks)[keyof typeof ChainflipNetworks];
 
 export const isTestnet = (network: ChainflipNetwork): boolean =>
-  network === ChainflipNetworks.perseverance ||
-  network === ChainflipNetworks.sisyphos;
+  network !== ChainflipNetworks.mainnet;
 
 export const assetChains = {
   [Assets.ETH]: Chains.Ethereum,

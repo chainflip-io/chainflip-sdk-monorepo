@@ -10,14 +10,19 @@ export const quoteQuerySchema = z.object({
 
 export type QuoteQueryParams = z.infer<typeof quoteQuerySchema>;
 
-export const postSwapSchema = z.object({
-  srcAsset: chainflipAsset,
-  destAsset: chainflipAsset,
-  destAddress: z.string(),
-  expectedDepositAmount: numericString,
-});
+export const postSwapSchema = z
+  .object({
+    srcAsset: chainflipAsset,
+    destAsset: chainflipAsset,
+    destAddress: z.string(),
+    amount: numericString,
+  })
+  .transform(({ amount, ...rest }) => ({
+    ...rest,
+    expectedDepositAmount: amount,
+  }));
 
-export type SwapRequestBody = z.infer<typeof postSwapSchema>;
+export type SwapRequestBody = z.input<typeof postSwapSchema>;
 
 export const quoteResponseSchema = z.union([
   z

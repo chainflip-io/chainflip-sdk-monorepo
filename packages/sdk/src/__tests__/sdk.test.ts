@@ -16,7 +16,7 @@ import { SwapSDK } from '../swap/sdk';
 jest.mock('@/shared/vault', () => ({ executeSwap: jest.fn() }));
 
 describe(SwapSDK, () => {
-  const sdk = new SwapSDK({ network: ChainflipNetworks.mainnet });
+  const sdk = new SwapSDK({ network: ChainflipNetworks.mainnet as any });
 
   describe(SwapSDK.prototype.getChains, () => {
     it('returns the available chains', async () => {

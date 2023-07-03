@@ -114,7 +114,7 @@ const requestDepositAddress: BackendQuery<SwapRequest, SwapResponse> = async (
     destAddress: route.destAddress,
     srcAsset: route.srcAsset,
     destAsset: route.destAsset,
-    expectedDepositAmount: route.expectedDepositAmount,
+    amount: route.amount,
   };
 
   const url = new URL('/swaps', baseUrl).toString();
