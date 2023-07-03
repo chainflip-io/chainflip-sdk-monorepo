@@ -21,7 +21,7 @@ describe(FundingSDK, () => {
     expect(
       // @ts-expect-error it's private
       new FundingSDK({ signer: null as any }).options.network,
-    ).toEqual('sisyphos');
+    ).toEqual('perseverance');
   });
 
   describe(FundingSDK.prototype.fundStateChainAccount, () => {

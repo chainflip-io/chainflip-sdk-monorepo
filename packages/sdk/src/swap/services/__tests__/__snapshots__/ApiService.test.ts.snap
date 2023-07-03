@@ -60,6 +60,66 @@ exports[`ApiService getAssets (mainnet) gets the correct assets for testnets (Po
 ]
 `;
 
+exports[`ApiService getAssets (partnernet) gets the correct assets for testnets (Bitcoin) 1`] = `
+[
+  {
+    "chain": "Bitcoin",
+    "contractAddress": "0xbitcoin",
+    "decimals": 8,
+    "id": "BTC",
+    "isMainnet": false,
+    "name": "bitcoin",
+    "symbol": "BTC",
+  },
+]
+`;
+
+exports[`ApiService getAssets (partnernet) gets the correct assets for testnets (Ethereum) 1`] = `
+[
+  {
+    "chain": "Ethereum",
+    "contractAddress": "0xeth",
+    "decimals": 18,
+    "id": "ETH",
+    "isMainnet": false,
+    "name": "ether",
+    "symbol": "ETH",
+  },
+  {
+    "chain": "Ethereum",
+    "contractAddress": "0xusdc",
+    "decimals": 6,
+    "id": "USDC",
+    "isMainnet": false,
+    "name": "usdc",
+    "symbol": "USDC",
+  },
+  {
+    "chain": "Ethereum",
+    "contractAddress": "0xflip",
+    "decimals": 18,
+    "id": "FLIP",
+    "isMainnet": false,
+    "name": "flip",
+    "symbol": "FLIP",
+  },
+]
+`;
+
+exports[`ApiService getAssets (partnernet) gets the correct assets for testnets (Polkadot) 1`] = `
+[
+  {
+    "chain": "Polkadot",
+    "contractAddress": "0xdot",
+    "decimals": 10,
+    "id": "DOT",
+    "isMainnet": false,
+    "name": "dot",
+    "symbol": "DOT",
+  },
+]
+`;
+
 exports[`ApiService getAssets (perseverance) gets the correct assets for testnets (Bitcoin) 1`] = `
 [
   {

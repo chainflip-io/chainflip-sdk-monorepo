@@ -1,4 +1,9 @@
 import type { BigNumberish, ContractReceipt, Signer } from 'ethers';
+import {
+  getTokenContractAddress,
+  getVaultManagerContractAddress,
+  requestApproval,
+} from '@/shared/contracts';
 import { ChainflipNetwork, ChainflipNetworks } from '@/shared/enums';
 import {
   executeRedemption,
@@ -6,11 +11,6 @@ import {
   getMinimumFunding,
   getRedemptionDelay,
 } from '@/shared/stateChainGateway';
-import {
-  getTokenContractAddress,
-  getVaultManagerContractAddress,
-  requestApproval,
-} from '../contracts';
 
 type SDKOptions = {
   network?: Exclude<ChainflipNetwork, 'mainnet'>;

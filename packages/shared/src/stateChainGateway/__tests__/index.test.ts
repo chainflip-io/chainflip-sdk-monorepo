@@ -2,10 +2,7 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 /* eslint-disable max-classes-per-file */
 import { VoidSigner, ethers } from 'ethers';
-import {
-  SISYPHOS_STATE_CHAIN_MANAGER_CONTRACT_ADDRESS,
-  requestApproval,
-} from '../../contracts';
+import { ADDRESSES, requestApproval } from '../../contracts';
 import {
   executeRedemption,
   fundStateChainAccount,
@@ -50,7 +47,7 @@ describe(getStateChainGateway, () => {
           signer: new VoidSigner('0x0'),
         }),
       ).toMatchObject({
-        address: SISYPHOS_STATE_CHAIN_MANAGER_CONTRACT_ADDRESS,
+        address: ADDRESSES[network].STATE_CHAIN_MANAGER_CONTRACT_ADDRESS,
       });
     },
   );
