@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import { VoidSigner, ethers } from 'ethers';
 import {
   fundStateChainAccount,
@@ -9,10 +10,22 @@ import { FundingSDK } from '../index';
 
 jest.mock('@/shared/stateChainGateway');
 
+class MockERC20 {
+  async balanceOf(): Promise<ethers.BigNumber> {
+    throw new Error('unmocked call');
+  }
+}
+
+jest.mock('@/shared/abis/factories/ERC20__factory', () => ({
+  ERC20__factory: class {
+    static connect: () => MockERC20 = jest.fn(() => new MockERC20());
+  },
+}));
+
 describe(FundingSDK, () => {
   const sdk = new FundingSDK({
     network: 'sisyphos',
-    signer: new VoidSigner('0x0').connect(
+    signer: new VoidSigner('0xcafebabe').connect(
       ethers.providers.getDefaultProvider('goerli'),
     ),
   });
@@ -61,7 +74,7 @@ describe(FundingSDK, () => {
         sdk.options,
       );
 
-      expect(funding).toEqual('1000');
+      expect(funding).toEqual(1000n);
     });
   });
 
@@ -76,6 +89,23 @@ describe(FundingSDK, () => {
       );
 
       expect(delay).toEqual(1000);
+    });
+  });
+
+  describe(FundingSDK.prototype.getFlipBalance, () => {
+    it('gets the FLIP balance of an address', async () => {
+      const spy = jest
+        .spyOn(MockERC20.prototype, 'balanceOf')
+        .mockResolvedValueOnce(ethers.BigNumber.from(1000));
+      const balance = await sdk.getFlipBalance();
+      expect(balance).toBe(1000n);
+      expect(spy.mock.calls).toMatchInlineSnapshot(`
+        [
+          [
+            "0xcafebabe",
+          ],
+        ]
+      `);
     });
   });
 });

@@ -1,4 +1,5 @@
 import type { BigNumberish, ContractReceipt, Signer } from 'ethers';
+import { ERC20__factory } from '@/shared/abis';
 import {
   getTokenContractAddress,
   getVaultManagerContractAddress,
@@ -49,13 +50,22 @@ export class FundingSDK {
     return executeRedemption(accountId, this.options);
   }
 
-  async getMinimumFunding(): Promise<string> {
+  async getMinimumFunding(): Promise<bigint> {
     const amount = await getMinimumFunding(this.options);
-    return amount.toString();
+    return amount.toBigInt();
   }
 
   async getRedemptionDelay(): Promise<number> {
     return getRedemptionDelay(this.options);
+  }
+
+  async getFlipBalance(): Promise<bigint> {
+    const flipAddress = getTokenContractAddress('FLIP', this.options.network);
+    const flip = ERC20__factory.connect(flipAddress, this.options.signer);
+    const balance = await flip.balanceOf(
+      await this.options.signer.getAddress(),
+    );
+    return balance.toBigInt();
   }
 
   async requestFlipApproval(
