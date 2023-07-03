@@ -22,13 +22,19 @@ describe(processBlocks, () => {
       },
     });
 
+    await prisma.state.upsert({
+      where: { id: 1 },
+      create: { id: 1, height: 149 },
+      update: { height: 1 },
+    });
+
     const requestSpy = jest
       .spyOn(GraphQLClient.prototype, 'request')
       .mockResolvedValueOnce({
         blocks: {
           nodes: [
             {
-              height: 0,
+              height: 150,
               timestamp: 1681989543437,
               specId: 'chainflip-node@0',
               events: {
@@ -60,7 +66,7 @@ describe(processBlocks, () => {
         "createdAt": Any<Date>,
         "depositAmount": "125000000000",
         "depositReceivedAt": 2023-04-20T11:19:03.437Z,
-        "depositReceivedBlockIndex": "0-0",
+        "depositReceivedBlockIndex": "150-0",
         "destAddress": "bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa",
         "destAsset": "BTC",
         "egressCompletedAt": null,
