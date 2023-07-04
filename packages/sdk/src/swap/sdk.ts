@@ -53,12 +53,12 @@ export class SwapSDK {
   }
 
   requestDepositAddress(
-    depositAssetRequest: DepositAddressRequest,
+    depositAddressRequest: DepositAddressRequest,
     options: RequestOptions = {},
   ): Promise<DepositAddressResponse> {
     return ApiService.requestDepositAddress(
       this.baseUrl,
-      depositAssetRequest,
+      depositAddressRequest,
       options,
     );
   }
