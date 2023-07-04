@@ -88,8 +88,8 @@ export type SwapStatusResponse = CommonStatusFields &
         swapExecutedAt: number;
         swapExecutedBlockIndex: string;
         egressAmount: string;
+        egressScheduledAt: number;
         egressCompletedAt: number;
         egressCompletedBlockIndex: string;
-        egressScheduledAt: number;
       }
   );
