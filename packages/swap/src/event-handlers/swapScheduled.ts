@@ -103,6 +103,7 @@ export default async function swapScheduled({
           srcAsset: args.sourceAsset,
           destAsset: args.destinationAsset,
           destAddress: args.destinationAddress.address,
+          txHash: args.origin.txHash,
           ...newSwapData,
         },
       });

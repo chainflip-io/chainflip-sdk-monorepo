@@ -77,6 +77,7 @@ describe(processBlocks, () => {
         "swapDepositChannelId": Any<BigInt>,
         "swapExecutedAt": null,
         "swapExecutedBlockIndex": null,
+        "txHash": null,
         "updatedAt": Any<Date>,
       }
     `,

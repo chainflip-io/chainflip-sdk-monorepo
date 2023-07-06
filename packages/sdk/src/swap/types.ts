@@ -44,7 +44,7 @@ export interface DepositAddressResponse extends DepositAddressRequest {
 }
 
 export interface SwapStatusRequest {
-  swapDepositChannelId: string;
+  id: string;
 }
 
 export interface CommonStatusFields extends ChainsAndAssets {

@@ -16,6 +16,7 @@ exports[`swapExecuted updates an existing swap with the execution timestamp 1`] 
   "swapDepositChannelId": Any<BigInt>,
   "swapExecutedAt": 2022-12-06T14:31:39.000Z,
   "swapExecutedBlockIndex": "100-0",
+  "txHash": null,
   "updatedAt": Any<Date>,
 }
 `;

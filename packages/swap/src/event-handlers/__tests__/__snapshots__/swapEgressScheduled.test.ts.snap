@@ -21,6 +21,7 @@ exports[`swapEgressScheduled updates an existing swap with the scheduled timesta
   "swapDepositChannelId": Any<BigInt>,
   "swapExecutedAt": 2022-12-06T14:31:39.000Z,
   "swapExecutedBlockIndex": "120-0",
+  "txHash": null,
   "updatedAt": Any<Date>,
 }
 `;

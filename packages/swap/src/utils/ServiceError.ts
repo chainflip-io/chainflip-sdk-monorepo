@@ -1,3 +1,10 @@
+type IgnoredField =
+  | 'prototype'
+  | 'assert'
+  | 'captureStackTrace'
+  | 'prepareStackTrace'
+  | 'stackTraceLimit';
+
 export default class ServiceError extends Error {
   static badRequest(message: string): ServiceError {
     return new ServiceError(message, 400);
@@ -9,6 +16,14 @@ export default class ServiceError extends Error {
 
   static internalError(message = 'internal error'): ServiceError {
     return new ServiceError(message, 500);
+  }
+
+  static assert(
+    condition: unknown,
+    code: Exclude<keyof typeof ServiceError, IgnoredField>,
+    message: string,
+  ): asserts condition {
+    if (!condition) throw ServiceError[code](message);
   }
 
   constructor(message: string, readonly code: number) {
