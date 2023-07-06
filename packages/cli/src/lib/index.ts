@@ -6,6 +6,9 @@ export {
 export {
   fundStateChainAccount,
   type FundStateChainAccountOptions,
+  executeRedemption,
+  getMinimumFunding,
+  getRedemptionDelay,
 } from '@/shared/stateChainGateway';
 export {
   type Chain,
