@@ -3,7 +3,7 @@ import express from 'express';
 import { assetChains } from '@/shared/enums';
 import { postSwapSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
-import prisma from '../../client';
+import prisma, { Egress, Swap, SwapDepositChannel } from '../../client';
 import { submitSwapToBroker } from '../../utils/broker';
 import { isProduction } from '../../utils/consts';
 import logger from '../../utils/logger';
@@ -20,6 +20,10 @@ export enum State {
   AwaitingDeposit = 'AWAITING_DEPOSIT',
 }
 
+type SwapWithEgress = Swap & {
+  egress: Egress | null;
+};
+
 const uuidRegex = /^[a-f\d]{8}(-[a-f\d]{4}){4}[a-f\d]{8}$/i;
 const txHashRegex = /^0x[a-f\d]+$/i;
 
@@ -28,8 +32,11 @@ router.get(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    let swap;
-    let swapDepositChannel;
+    let swap: SwapWithEgress | null | undefined;
+    let swapDepositChannel:
+      | (SwapDepositChannel & { swaps: SwapWithEgress[] })
+      | null
+      | undefined;
 
     // TODO:0.9 refactor the deposit channel to use the $BLOCK_NUMBER-$CHANNEL_ID format
     if (uuidRegex.test(id)) {
@@ -74,24 +81,23 @@ router.get(
       state = State.AwaitingDeposit;
     }
 
+    const readField = <T extends keyof Swap & keyof SwapDepositChannel>(
+      field: T,
+    ) =>
+      (swap && swap[field]) ??
+      (swapDepositChannel && swapDepositChannel[field]);
+
+    const srcAsset = readField('srcAsset');
+    const destAsset = readField('destAsset');
+
     const response = {
       state,
       swapId: swap?.nativeId.toString(),
-      srcChain:
-        (swap && assetChains[swap.srcAsset]) ??
-        (swapDepositChannel && assetChains[swapDepositChannel.srcAsset]),
-      destChain:
-        (swap && assetChains[swap.destAsset]) ??
-        (swapDepositChannel && assetChains[swapDepositChannel.destAsset]),
-      srcAsset:
-        (swap && swap.srcAsset) ??
-        (swapDepositChannel && swapDepositChannel.srcAsset),
-      destAsset:
-        (swap && swap.destAsset) ??
-        (swapDepositChannel && swapDepositChannel.destAsset),
-      destAddress:
-        (swap && swap.destAddress) ??
-        (swapDepositChannel && swapDepositChannel.destAddress),
+      srcChain: srcAsset && assetChains[srcAsset],
+      destChain: destAsset && assetChains[destAsset],
+      srcAsset,
+      destAsset,
+      destAddress: readField('destAddress'),
       depositAddress: swapDepositChannel?.depositAddress,
       expectedDepositAmount:
         swapDepositChannel?.expectedDepositAmount.toString(),
