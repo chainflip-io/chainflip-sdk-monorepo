@@ -153,7 +153,7 @@ describe('ApiService', () => {
       mockedGet.mockResolvedValueOnce({ data: 'hello darkness' });
       mockedGet.mockResolvedValueOnce({ data: 'my old friend' });
 
-      const statusRequest = { swapDepositChannelId: 'the id' };
+      const statusRequest = { id: 'the id' };
 
       const status1 = await ApiService.getStatus(
         'https://swapperoo.org',
@@ -175,7 +175,7 @@ describe('ApiService', () => {
 
       await ApiService.getStatus(
         'https://swapperoo.org',
-        { swapDepositChannelId: '' },
+        { id: '' },
         { signal: new AbortController().signal },
       );
 
