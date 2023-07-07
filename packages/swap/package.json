@@ -14,7 +14,7 @@
     "postinstall": "prisma generate",
     "prettier:write": "pnpm prettier --write ./**/*",
     "start": "node dist/swap/src/index.js",
-    "test:ci": "CI=1 jest --forceExit",
+    "test:ci": "CI=1 jest --runInBand --forceExit",
     "test": "jest --runInBand",
     "typecheck": "tsc --noEmit",
     "generate:models": "prisma generate",

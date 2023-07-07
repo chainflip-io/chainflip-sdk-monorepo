@@ -130,10 +130,10 @@ const requestDepositAddress: BackendQuery<
 
 const getStatus: BackendQuery<SwapStatusRequest, SwapStatusResponse> = async (
   baseUrl,
-  { swapDepositChannelId },
+  { id },
   { signal },
 ): Promise<SwapStatusResponse> => {
-  const url = new URL(`/swaps/${swapDepositChannelId}`, baseUrl).toString();
+  const url = new URL(`/swaps/${id}`, baseUrl).toString();
   const { data } = await axios.get<SwapStatusResponse>(url, {
     signal,
   });

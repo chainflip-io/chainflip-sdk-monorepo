@@ -3,7 +3,7 @@ import express from 'express';
 import { assetChains } from '@/shared/enums';
 import { postSwapSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
-import prisma from '../../client';
+import prisma, { Egress, Swap, SwapDepositChannel } from '../../client';
 import { submitSwapToBroker } from '../../utils/broker';
 import { isProduction } from '../../utils/consts';
 import logger from '../../utils/logger';
@@ -20,22 +20,49 @@ export enum State {
   AwaitingDeposit = 'AWAITING_DEPOSIT',
 }
 
+type SwapWithEgress = Swap & {
+  egress: Egress | null;
+};
+
+const uuidRegex = /^[a-f\d]{8}(-[a-f\d]{4}){4}[a-f\d]{8}$/i;
+const txHashRegex = /^0x[a-f\d]+$/i;
+
 router.get(
-  '/:uuid',
+  '/:id',
   asyncHandler(async (req, res) => {
-    const { uuid } = req.params;
+    const { id } = req.params;
 
-    const swapDepositChannel = await prisma.swapDepositChannel.findUnique({
-      where: { uuid },
-      include: { swaps: { include: { egress: true } } },
-    });
+    let swap: SwapWithEgress | null | undefined;
+    let swapDepositChannel:
+      | (SwapDepositChannel & { swaps: SwapWithEgress[] })
+      | null
+      | undefined;
 
-    if (!swapDepositChannel) {
-      logger.info(`could not find swap request with id "${uuid}`);
-      throw ServiceError.notFound();
+    // TODO:0.9 refactor the deposit channel to use the $BLOCK_NUMBER-$CHANNEL_ID format
+    if (uuidRegex.test(id)) {
+      swapDepositChannel = await prisma.swapDepositChannel.findUnique({
+        where: { uuid: id },
+        include: { swaps: { include: { egress: true } } },
+      });
+
+      if (!swapDepositChannel) {
+        logger.info(`could not find swap request with id "${id}`);
+        throw ServiceError.notFound();
+      }
+
+      swap = swapDepositChannel.swaps.at(0);
+    } else if (txHashRegex.test(id)) {
+      swap = await prisma.swap.findUnique({
+        where: { txHash: id },
+        include: { egress: true },
+      });
     }
 
-    const swap = swapDepositChannel.swaps.at(0);
+    ServiceError.assert(
+      swapDepositChannel || swap,
+      'notFound',
+      'resource not found',
+    );
 
     let state: State;
 
@@ -54,16 +81,26 @@ router.get(
       state = State.AwaitingDeposit;
     }
 
+    const readField = <T extends keyof Swap & keyof SwapDepositChannel>(
+      field: T,
+    ) =>
+      (swap && swap[field]) ??
+      (swapDepositChannel && swapDepositChannel[field]);
+
+    const srcAsset = readField('srcAsset');
+    const destAsset = readField('destAsset');
+
     const response = {
       state,
-      srcChain: assetChains[swapDepositChannel.srcAsset],
-      destChain: assetChains[swapDepositChannel.destAsset],
-      srcAsset: swapDepositChannel.srcAsset,
-      destAsset: swapDepositChannel.destAsset,
-      destAddress: swapDepositChannel.destAddress,
-      depositAddress: swapDepositChannel.depositAddress,
+      swapId: swap?.nativeId.toString(),
+      srcChain: srcAsset && assetChains[srcAsset],
+      destChain: destAsset && assetChains[destAsset],
+      srcAsset,
+      destAsset,
+      destAddress: readField('destAddress'),
+      depositAddress: swapDepositChannel?.depositAddress,
       expectedDepositAmount:
-        swapDepositChannel.expectedDepositAmount.toString(),
+        swapDepositChannel?.expectedDepositAmount.toString(),
       depositAmount: swap?.depositAmount?.toString(),
       depositReceivedAt: swap?.depositReceivedAt.valueOf(),
       depositReceivedBlockIndex: swap?.depositReceivedBlockIndex,
@@ -75,7 +112,7 @@ router.get(
       egressScheduledAt: swap?.egress?.timestamp.valueOf(),
     };
 
-    logger.info('sending response for swap request', { uuid, response });
+    logger.info('sending response for swap request', { id, response });
 
     res.json(response);
   }),

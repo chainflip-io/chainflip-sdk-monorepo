@@ -16,6 +16,7 @@ exports[`swapScheduled deposit channel origin stores a new swap from a btc depos
   "swapDepositChannelId": Any<BigInt>,
   "swapExecutedAt": null,
   "swapExecutedBlockIndex": null,
+  "txHash": null,
   "updatedAt": Any<Date>,
 }
 `;
@@ -36,6 +37,7 @@ exports[`swapScheduled deposit channel origin stores a new swap from a dot depos
   "swapDepositChannelId": Any<BigInt>,
   "swapExecutedAt": null,
   "swapExecutedBlockIndex": null,
+  "txHash": null,
   "updatedAt": Any<Date>,
 }
 `;
@@ -56,6 +58,7 @@ exports[`swapScheduled smart contract origin stores a new swap from a contract d
   "swapDepositChannelId": null,
   "swapExecutedAt": null,
   "swapExecutedBlockIndex": null,
+  "txHash": "0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9",
   "updatedAt": Any<Date>,
 }
 `;

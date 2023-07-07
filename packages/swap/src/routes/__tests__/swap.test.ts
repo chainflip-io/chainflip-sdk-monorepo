@@ -50,6 +50,12 @@ describe('server', () => {
   });
 
   describe('GET /swaps/:id', () => {
+    let nativeId: bigint;
+
+    beforeEach(() => {
+      nativeId = randomId();
+    });
+
     it('throws an error if no swap deposit channel is found', async () => {
       const { body, status } = await request(server).get(`/swaps/1`);
 
@@ -83,9 +89,9 @@ describe('server', () => {
       const swapIntent = await createDepositChannel({
         swaps: {
           create: {
+            nativeId,
             depositAmount: '10',
             depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
-            nativeId: randomId(),
             depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
             srcAsset: Assets.ETH,
             destAsset: Assets.DOT,
@@ -99,7 +105,9 @@ describe('server', () => {
       );
 
       expect(status).toBe(200);
-      expect(body).toMatchInlineSnapshot(`
+      const { swapId, ...rest } = body;
+      expect(BigInt(swapId)).toEqual(nativeId);
+      expect(rest).toMatchInlineSnapshot(`
         {
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
@@ -122,7 +130,7 @@ describe('server', () => {
       const swapIntent = await createDepositChannel({
         swaps: {
           create: {
-            nativeId: randomId(),
+            nativeId,
             depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
             depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
             depositAmount: '10',
@@ -140,7 +148,9 @@ describe('server', () => {
       );
 
       expect(status).toBe(200);
-      expect(body).toMatchInlineSnapshot(`
+      const { swapId, ...rest } = body;
+      expect(BigInt(swapId)).toEqual(nativeId);
+      expect(rest).toMatchInlineSnapshot(`
         {
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
@@ -164,7 +174,7 @@ describe('server', () => {
       const swapIntent = await createDepositChannel({
         swaps: {
           create: {
-            nativeId: randomId(),
+            nativeId,
             depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
             depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
             depositAmount: '10',
@@ -190,7 +200,9 @@ describe('server', () => {
       );
 
       expect(status).toBe(200);
-      expect(body).toMatchInlineSnapshot(`
+      const { swapId, ...rest } = body;
+      expect(BigInt(swapId)).toEqual(nativeId);
+      expect(rest).toMatchInlineSnapshot(`
         {
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
@@ -216,7 +228,7 @@ describe('server', () => {
       const swapIntent = await createDepositChannel({
         swaps: {
           create: {
-            nativeId: randomId(),
+            nativeId,
             depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
             depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
             depositAmount: '10',
@@ -244,7 +256,9 @@ describe('server', () => {
       );
 
       expect(status).toBe(200);
-      expect(body).toMatchInlineSnapshot(`
+      const { swapId, ...rest } = body;
+      expect(BigInt(swapId)).toEqual(nativeId);
+      expect(rest).toMatchInlineSnapshot(`
         {
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
@@ -263,6 +277,43 @@ describe('server', () => {
           "state": "COMPLETE",
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
+        }
+      `);
+    });
+
+    it('retrieves a swap from a vault origin', async () => {
+      const txHash = `0x${crypto.randomBytes(64).toString('hex')}`;
+
+      await prisma.swap.create({
+        data: {
+          txHash,
+          nativeId,
+          srcAsset: Assets.ETH,
+          destAsset: Assets.DOT,
+          destAddress: DOT_ADDRESS,
+          depositAmount: '10',
+          depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
+          depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+        },
+      });
+
+      const { body, status } = await request(server).get(`/swaps/${txHash}`);
+      expect(status).toBe(200);
+      const { swapId, ...rest } = body;
+      expect(BigInt(swapId)).toEqual(nativeId);
+      expect(rest).toMatchInlineSnapshot(`
+        {
+          "depositAmount": "10",
+          "depositReceivedAt": 1669907135201,
+          "depositReceivedBlockIndex": "100-3",
+          "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
+          "destAsset": "DOT",
+          "destChain": "Polkadot",
+          "egressCompletedBlockIndex": null,
+          "srcAsset": "ETH",
+          "srcChain": "Ethereum",
+          "state": "DEPOSIT_RECEIVED",
+          "swapExecutedBlockIndex": null,
         }
       `);
     });
