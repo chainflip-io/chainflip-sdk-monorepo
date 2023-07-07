@@ -9,7 +9,7 @@ import {
   dotAddress,
   chainflipAsset,
 } from '@/shared/parsers';
-import { CcmMetadata, ccmMetadataSchema } from '../schemas';
+import { CcmMetadata, ccmMetadataSchema } from '@/shared/schemas';
 import { memoize } from './function';
 import RpcClient from './RpcClient';
 import { transformAsset } from './string';
