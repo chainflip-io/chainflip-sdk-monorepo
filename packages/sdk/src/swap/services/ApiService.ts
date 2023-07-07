@@ -115,6 +115,7 @@ const requestDepositAddress: BackendQuery<
     srcAsset: depositAddressRequest.srcAsset,
     destAsset: depositAddressRequest.destAsset,
     amount: depositAddressRequest.amount,
+    ccmMetadata: depositAddressRequest.ccmMetadata,
   };
 
   const url = new URL('/swaps', baseUrl).toString();

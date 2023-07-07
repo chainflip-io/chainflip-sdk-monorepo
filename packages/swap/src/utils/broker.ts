@@ -9,14 +9,25 @@ import {
   dotAddress,
   chainflipAsset,
 } from '@/shared/parsers';
+import { ccmMetadataSchema } from '../schemas';
 import { memoize } from './function';
 import RpcClient from './RpcClient';
 import { transformAsset } from './string';
+
+type ByteString = string | `0x${string}`;
+interface CcmMetadata {
+  gas_budget: string | number;
+  message: ByteString;
+  source_address: string;
+  source_chain: 'Bitcoin' | 'Ethereum' | 'Polkadot';
+  cf_parameters?: ByteString;
+}
 
 type NewSwapRequest = {
   srcAsset: Asset;
   destAsset: Asset;
   destAddress: string;
+  ccmMetadata?: CcmMetadata;
 };
 
 const requestValidators = {
@@ -26,6 +37,7 @@ const requestValidators = {
       chainflipAsset.transform(transformAsset),
       z.union([numericString, hexString, btcAddress]),
       z.number(),
+      ccmMetadataSchema.optional(),
     ])
     .transform(([a, b, c, d]) => [a, b, c, d]),
 };
@@ -71,7 +83,8 @@ export const submitSwapToBroker = async (
     destAsset === Assets.DOT
       ? u8aToHex(decodeAddress(destAddress))
       : destAddress,
-    0,
+    0, // broker commission
+    swapRequest.ccmMetadata,
   );
 
   return depositChannelResponse;

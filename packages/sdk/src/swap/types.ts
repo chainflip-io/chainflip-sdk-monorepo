@@ -26,6 +26,15 @@ interface ChainsAndAssets {
   destAsset: Asset;
 }
 
+type ByteString = string | `0x${string}`;
+interface CcmMetadata {
+  gas_budget: string | number;
+  message: ByteString;
+  source_address: string;
+  source_chain: 'Bitcoin' | 'Ethereum' | 'Polkadot';
+  cf_parameters?: ByteString;
+}
+
 export interface QuoteRequest extends ChainsAndAssets {
   amount: string;
 }
@@ -36,6 +45,7 @@ export interface QuoteResponse extends QuoteRequest {
 
 export interface DepositAddressRequest extends QuoteRequest {
   destAddress: string;
+  ccmMetadata?: CcmMetadata;
 }
 
 export interface DepositAddressResponse extends DepositAddressRequest {
