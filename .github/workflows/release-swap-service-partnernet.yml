@@ -1,4 +1,4 @@
-name: Release Swap Service
+name: Release Swap Service Partnernet
 
 on:
   push:
