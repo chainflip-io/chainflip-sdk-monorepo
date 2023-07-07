@@ -9,19 +9,10 @@ import {
   dotAddress,
   chainflipAsset,
 } from '@/shared/parsers';
-import { ccmMetadataSchema } from '../schemas';
+import { CcmMetadata, ccmMetadataSchema } from '../schemas';
 import { memoize } from './function';
 import RpcClient from './RpcClient';
 import { transformAsset } from './string';
-
-type ByteString = string | `0x${string}`;
-interface CcmMetadata {
-  gas_budget: string | number;
-  message: ByteString;
-  source_address: string;
-  source_chain: 'Bitcoin' | 'Ethereum' | 'Polkadot';
-  cf_parameters?: ByteString;
-}
 
 type NewSwapRequest = {
   srcAsset: Asset;

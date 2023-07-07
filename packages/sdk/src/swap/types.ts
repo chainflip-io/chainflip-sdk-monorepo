@@ -1,5 +1,5 @@
 import { Chain, Asset, chainAssets } from '@/shared/enums';
-import { QuoteQueryResponse } from '@/shared/schemas';
+import { CcmMetadata, QuoteQueryResponse } from '@/shared/schemas';
 
 export interface ChainData {
   id: Chain;
@@ -24,15 +24,6 @@ interface ChainsAndAssets {
   destChain: Chain;
   srcAsset: Asset;
   destAsset: Asset;
-}
-
-type ByteString = string | `0x${string}`;
-interface CcmMetadata {
-  gas_budget: string | number;
-  message: ByteString;
-  source_address: string;
-  source_chain: 'Bitcoin' | 'Ethereum' | 'Polkadot';
-  cf_parameters?: ByteString;
 }
 
 export interface QuoteRequest extends ChainsAndAssets {

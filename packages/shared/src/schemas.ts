@@ -10,6 +10,15 @@ export const quoteQuerySchema = z.object({
 
 export type QuoteQueryParams = z.infer<typeof quoteQuerySchema>;
 
+export type ByteString = string | `0x${string}`;
+export interface CcmMetadata {
+  gas_budget: string | number;
+  message: ByteString;
+  source_address: string;
+  source_chain: 'Bitcoin' | 'Ethereum' | 'Polkadot';
+  cf_parameters?: ByteString;
+}
+
 export const ccmMetadataSchema = z.object({
   gas_budget: z.union([numericString, z.number()]),
   message: z.union([hexString, z.string()]),
