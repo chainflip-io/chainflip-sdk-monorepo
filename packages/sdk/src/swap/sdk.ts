@@ -38,7 +38,7 @@ export class SwapSDK {
   private readonly signer?: Signer;
 
   constructor(options: SDKOptions = {}) {
-    this.network = ChainflipNetworks.partnernet; // TODO: make configurable when sisyphos is ready
+    this.network = options.network ?? ChainflipNetworks.partnernet;
     this.baseUrl = options.backendUrl ?? BACKEND_SERVICE_URLS[this.network];
     this.signer = options.signer;
   }
