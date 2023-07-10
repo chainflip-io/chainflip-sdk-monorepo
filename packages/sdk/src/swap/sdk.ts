@@ -2,6 +2,7 @@ import { Signer } from 'ethers';
 import { ChainflipNetwork, Chain, ChainflipNetworks } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
+import { TokenSwapParams } from '../vault/validators';
 import { BACKEND_SERVICE_URLS } from './consts';
 import ApiService, { RequestOptions } from './services/ApiService';
 import type {
@@ -82,7 +83,7 @@ export class SwapSDK {
   }
 
   async approveVault(
-    params: ExecuteSwapParams,
+    params: Pick<TokenSwapParams, 'srcAsset' | 'amount'>,
     options: { nonce?: bigint | number | string } = {},
   ): Promise<TransactionHash | null> {
     if (!('srcAsset' in params)) return null;

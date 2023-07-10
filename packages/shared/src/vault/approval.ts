@@ -10,7 +10,7 @@ import { ExecuteSwapOptions } from './executeSwap';
 import { TokenSwapParams } from './validators';
 
 export const checkVaultAllowance = (
-  params: TokenSwapParams,
+  params: Pick<TokenSwapParams, 'srcAsset' | 'amount'>,
   opts: ExecuteSwapOptions,
 ): ReturnType<typeof checkAllowance> => {
   const erc20Address =
@@ -34,7 +34,7 @@ export const checkVaultAllowance = (
 };
 
 export const approveVault = async (
-  params: TokenSwapParams,
+  params: Pick<TokenSwapParams, 'srcAsset' | 'amount'>,
   opts: ExecuteSwapOptions,
 ): Promise<ContractReceipt | null> => {
   const { isAllowable, erc20, allowance } = await checkVaultAllowance(
