@@ -104,13 +104,17 @@ describe(SwapSDK, () => {
   });
 
   describe(SwapSDK.prototype.executeSwap, () => {
-    it('calls executeSwap', () => {
+    it('calls executeSwap', async () => {
       const swap = {};
-      sdk.executeSwap(swap as any);
+      jest
+        .mocked(executeSwap)
+        .mockResolvedValueOnce({ transactionHash: 'hello world' });
+      const result = await sdk.executeSwap(swap as any);
       expect(executeSwap).toHaveBeenCalledWith(swap, {
         network: 'sisyphos',
         signer,
       });
+      expect(result).toEqual('hello world');
     });
   });
 });
