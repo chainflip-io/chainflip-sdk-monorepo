@@ -1,15 +1,14 @@
 /* eslint-disable max-classes-per-file */
 import { VoidSigner, ethers } from 'ethers';
-import { requestApproval } from '@/shared/contracts';
 import {
   fundStateChainAccount,
   executeRedemption,
   getMinimumFunding,
   getRedemptionDelay,
+  approveStateChainGateway,
 } from '@/shared/stateChainGateway';
 import { FundingSDK } from '../index';
 
-jest.mock('@/shared/contracts');
 jest.mock('@/shared/stateChainGateway');
 
 class MockERC20 {
@@ -120,12 +119,12 @@ describe(FundingSDK, () => {
     });
   });
 
-  describe(FundingSDK.prototype.requestFlipApproval, () => {
+  describe(FundingSDK.prototype.approveStateChainGateway, () => {
     it('requests approval and returns the tx hash', async () => {
-      jest.mocked(requestApproval).mockResolvedValueOnce({
+      jest.mocked(approveStateChainGateway).mockResolvedValueOnce({
         transactionHash: '0xabcdef',
       } as any);
-      const txHash = await sdk.requestFlipApproval(1);
+      const txHash = await sdk.approveStateChainGateway(1, 2);
       expect(txHash).toBe('0xabcdef');
     });
   });

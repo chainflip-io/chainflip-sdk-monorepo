@@ -2,6 +2,8 @@ export {
   executeSwap,
   type ExecuteSwapOptions,
   type ExecuteSwapParams,
+  approveVault,
+  checkVaultAllowance,
 } from '@/shared/vault';
 export {
   fundStateChainAccount,
@@ -9,6 +11,8 @@ export {
   executeRedemption,
   getMinimumFunding,
   getRedemptionDelay,
+  approveStateChainGateway,
+  checkStateChainGatewayAllowance,
 } from '@/shared/stateChainGateway';
 export {
   type Chain,

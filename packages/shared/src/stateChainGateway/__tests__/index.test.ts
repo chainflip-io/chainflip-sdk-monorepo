@@ -2,13 +2,12 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 /* eslint-disable max-classes-per-file */
 import { VoidSigner, ethers } from 'ethers';
-import { ADDRESSES, requestApproval } from '../../contracts';
+import { checkAllowance } from '../../contracts';
 import {
   executeRedemption,
   fundStateChainAccount,
   getMinimumFunding,
   getRedemptionDelay,
-  getStateChainGateway,
 } from '../index';
 
 class MockGateway {
@@ -29,7 +28,7 @@ jest.mock('../../abis/factories/StateChainGateway__factory', () => ({
 
 jest.mock('../../contracts', () => ({
   ...jest.requireActual('../../contracts'),
-  requestApproval: jest.fn(),
+  checkAllowance: jest.fn(),
 }));
 
 const signerOptions = {
@@ -37,40 +36,11 @@ const signerOptions = {
   signer: new VoidSigner('0x0'),
 } as const;
 
-describe(getStateChainGateway, () => {
-  it.each(['sisyphos'] as const)(
-    'returns the correct gateway for %s',
-    (network) => {
-      expect(
-        getStateChainGateway({
-          network,
-          signer: new VoidSigner('0x0'),
-        }),
-      ).toMatchObject({
-        address: ADDRESSES[network].STATE_CHAIN_MANAGER_CONTRACT_ADDRESS,
-      });
-    },
-  );
-
-  it('uses the address for localnets', () => {
-    const address = '0x1234';
-    expect(
-      getStateChainGateway({
-        network: 'localnet',
-        signer: new VoidSigner('0x0').connect(
-          ethers.providers.getDefaultProvider('goerli'),
-        ),
-        stateChainGatewayContractAddress: address,
-      }),
-    ).toMatchObject({
-      address,
-    });
-  });
-});
-
 describe(fundStateChainAccount, () => {
   it('approves the gateway and funds the account', async () => {
-    const approvalSpy = jest.mocked(requestApproval).mockResolvedValue();
+    const checkSpy = jest
+      .mocked(checkAllowance)
+      .mockResolvedValue({ isAllowable: true });
     const waitMock = jest.fn().mockResolvedValue({ status: 1 });
     const fundSpy = jest
       .spyOn(MockGateway.prototype, 'fundStateChainAccount')
@@ -78,7 +48,7 @@ describe(fundStateChainAccount, () => {
 
     await fundStateChainAccount('0x1234', '1000', signerOptions);
 
-    expect(approvalSpy).toHaveBeenCalled();
+    expect(checkSpy).toHaveBeenCalled();
     expect(waitMock).toHaveBeenCalledWith(1);
     expect(fundSpy).toHaveBeenCalledWith('0x1234', '1000');
   });
@@ -91,7 +61,7 @@ describe(executeRedemption, () => {
       .spyOn(MockGateway.prototype, 'executeRedemption')
       .mockResolvedValue({ wait: waitMock });
     await executeRedemption('0x1234', signerOptions);
-    expect(executeSpy).toHaveBeenCalledWith('0x1234');
+    expect(executeSpy).toHaveBeenCalledWith('0x1234', { nonce: undefined });
   });
 });
 

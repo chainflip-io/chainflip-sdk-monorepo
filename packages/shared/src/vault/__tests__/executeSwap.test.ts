@@ -151,19 +151,19 @@ describe(executeSwap, () => {
     },
   );
 
-  it('submits a token swap with approval', async () => {
+  it('submits a token swap with sufficient approval', async () => {
     const wait = jest
       .fn()
       .mockResolvedValue({ status: 1, transactionHash: 'hello world' });
     const approveSpy = jest
       .spyOn(MockERC20.prototype, 'approve')
-      .mockResolvedValue({ wait });
+      .mockRejectedValue(Error('unmocked call'));
     const swapSpy = jest
       .spyOn(MockVault.prototype, 'xSwapToken')
       .mockResolvedValue({ wait });
     const allowanceSpy = jest
       .spyOn(MockERC20.prototype, 'allowance')
-      .mockResolvedValueOnce(BigNumber.from(0));
+      .mockResolvedValueOnce(BigNumber.from(Number.MAX_SAFE_INTEGER - 1));
 
     expect(
       await executeSwap(
@@ -180,7 +180,7 @@ describe(executeSwap, () => {
     expect(wait).toHaveBeenCalledWith(1);
     expect(swapSpy.mock.calls).toMatchSnapshot();
     expect(allowanceSpy.mock.calls).toMatchSnapshot();
-    expect(approveSpy.mock.calls).toMatchSnapshot();
+    expect(approveSpy).not.toHaveBeenCalled();
   });
 
   it('can be invoked with localnet options', async () => {
@@ -195,7 +195,7 @@ describe(executeSwap, () => {
       .mockResolvedValue({ wait });
     const allowanceSpy = jest
       .spyOn(MockERC20.prototype, 'allowance')
-      .mockResolvedValueOnce(BigNumber.from(0));
+      .mockResolvedValueOnce(BigNumber.from(Number.MAX_SAFE_INTEGER - 1));
 
     expect(
       await executeSwap(
@@ -217,7 +217,7 @@ describe(executeSwap, () => {
     expect(wait).toHaveBeenCalledWith(1);
     expect(swapSpy.mock.calls).toMatchSnapshot();
     expect(allowanceSpy.mock.calls).toMatchSnapshot();
-    expect(approveSpy.mock.calls).toMatchSnapshot();
+    expect(approveSpy).not.toHaveBeenCalled();
   });
 
   it.each([1, '1', 1n])('accepts a nonce (%o)', async (nonce) => {
