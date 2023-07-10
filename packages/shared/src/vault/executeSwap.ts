@@ -25,11 +25,6 @@ const swapNative = async (
       ? opts.vaultContractAddress
       : getVaultManagerContractAddress(opts.network);
 
-  assert(
-    vaultContractAddress !== undefined,
-    'Missing vault contract address or network unsupported',
-  );
-
   const vault = Vault__factory.connect(vaultContractAddress, opts.signer);
 
   const transaction = await vault.xSwapNative(
@@ -51,11 +46,6 @@ const swapToken = async (
     opts.network === 'localnet'
       ? opts.vaultContractAddress
       : getVaultManagerContractAddress(opts.network);
-
-  assert(
-    vaultContractAddress !== undefined,
-    'Missing vault contract address or network unsupported',
-  );
 
   const erc20Address =
     opts.network === 'localnet'
