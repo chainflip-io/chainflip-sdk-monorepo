@@ -1,42 +1,51 @@
-import { ContractReceipt, Wallet, getDefaultProvider, providers } from 'ethers';
-import { z } from 'zod';
-import {
-  getStateChainGatewayContractAddress,
-  getTokenContractAddress,
-} from '@/shared/contracts';
-import { Assets } from '@/shared/enums';
-import { chainflipNetwork } from '@/shared/parsers';
+import { Wallet, getDefaultProvider, providers } from 'ethers';
+import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
+import { ChainflipNetworks } from '@/shared/enums';
 import { FundStateChainAccountOptions } from '@/shared/stateChainGateway';
 import { fundStateChainAccount } from './lib';
-import { askForPrivateKey, getEthNetwork } from './utils';
+import { askForPrivateKey, getEthNetwork, cliNetworks } from './utils';
 
-export const schema = z.intersection(
-  z.union([
-    z.object({
-      chainflipNetwork: z.literal('localnet'),
-      ethNetwork: z.string(),
-      stateChainManagerContractAddress: z.string(),
-      flipTokenContractAddress: z.string(),
-    }),
-    z.object({ chainflipNetwork }),
-  ]),
-  z.object({
-    walletPrivateKey: z.string().optional(),
-    accountId: z
-      .string()
-      .regex(/^0x[\da-f]+/i)
-      .transform((x) => x as `0x${string}`),
-    amount: z.string().regex(/^\d+$/),
-  }),
-);
+export const yargsOptions = {
+  'src-account-id': {
+    type: 'string',
+    demandOption: true,
+    describe: 'The account ID for the validator to be funded',
+  },
+  'chainflip-network': {
+    choices: cliNetworks,
+    describe: 'The Chainflip network to execute the swap on',
+    default: ChainflipNetworks.sisyphos,
+  },
+  amount: {
+    type: 'string',
+    demandOption: true,
+    describe: 'The amount in Flipperino to fund',
+  },
+  'wallet-private-key': {
+    type: 'string',
+    describe: 'The private key of the wallet to use',
+  },
+  'state-chain-manager-contract-address': {
+    type: 'string',
+    describe:
+      'The contract address of the state chain manager when `chainflip-network` is `localnet`',
+  },
+  'flip-token-contract-address': {
+    type: 'string',
+    describe:
+      'The contract address for the FLIP token when `chainflip-network` is `localnet`',
+  },
+  'eth-network': {
+    type: 'string',
+    describe:
+      'The eth network URL to use when `chainflip-network` is `localnet`',
+  },
+} as const satisfies { [key: string]: Options };
 
 export default async function cliFundStateChainAccount(
-  unvalidatedArgs: unknown,
-): Promise<ContractReceipt> {
-  const { accountId, walletPrivateKey, amount, ...args } =
-    schema.parse(unvalidatedArgs);
-
-  const privateKey = walletPrivateKey ?? (await askForPrivateKey());
+  args: ArgumentsCamelCase<InferredOptionTypes<typeof yargsOptions>>,
+) {
+  const privateKey = args.walletPrivateKey ?? (await askForPrivateKey());
 
   const ethNetwork = getEthNetwork(args);
 
@@ -46,25 +55,22 @@ export default async function cliFundStateChainAccount(
       : getDefaultProvider(ethNetwork),
   );
 
-  const flipContractAddress =
-    args.chainflipNetwork === 'localnet'
-      ? args.flipTokenContractAddress
-      : getTokenContractAddress(Assets.FLIP, args.chainflipNetwork);
-
-  const stateChainGatewayContractAddress =
-    args.chainflipNetwork === 'localnet'
-      ? args.stateChainManagerContractAddress
-      : getStateChainGatewayContractAddress(args.chainflipNetwork);
-
   const opts: FundStateChainAccountOptions =
     args.chainflipNetwork === 'localnet'
       ? {
+          stateChainGatewayContractAddress:
+            args.stateChainManagerContractAddress as string,
+          flipContractAddress: args.flipTokenContractAddress as string,
           signer: wallet,
-          network: 'localnet',
-          stateChainGatewayContractAddress,
-          flipContractAddress,
+          network: args.chainflipNetwork,
         }
       : { network: args.chainflipNetwork, signer: wallet };
 
-  return fundStateChainAccount(accountId, amount, opts);
+  const receipt = await fundStateChainAccount(
+    args.srcAccountId as `0x${string}`,
+    args.amount,
+    opts,
+  );
+
+  console.log(`Call executed. Transaction hash: ${receipt.transactionHash}`);
 }

@@ -1,18 +1,25 @@
 #! /usr/bin/env node
-import cliExecuteCall from './cliExecuteCall';
-import cliExecuteSwap from './cliExecuteSwap';
-import cliFundStateChainAccount from './cliFundStateChainAccount';
-import { parseArgs } from './utils';
+import yargs from 'yargs/yargs';
+import cliExecuteCall, {
+  yargsOptions as cliExecuteCallOptions,
+} from './cliExecuteCall';
+import cliExecuteSwap, {
+  yargsOptions as cliExecuteSwapOptions,
+} from './cliExecuteSwap';
+import cliFundStateChainAccount, {
+  yargsOptions as cliFundStateChainAccountOptions,
+} from './cliFundStateChainAccount';
 
-const {
-  _: [command],
-  ...args
-} = parseArgs(process.argv.slice(2));
-
-if (command === 'swap') {
-  cliExecuteSwap(args);
-} else if (command === 'call') {
-  cliExecuteCall(args);
-} else if (command === 'fund-state-chain-account') {
-  cliFundStateChainAccount(args);
-}
+yargs(process.argv.slice(2))
+  .scriptName('chainflip-cli')
+  .usage('$0 <cmd> [args]')
+  .command('swap', '', cliExecuteSwapOptions, cliExecuteSwap)
+  .command('call', '', cliExecuteCallOptions, cliExecuteCall)
+  .command(
+    'fund-state-chain-account',
+    '',
+    cliFundStateChainAccountOptions,
+    cliFundStateChainAccount,
+  )
+  .help()
+  .parse();
