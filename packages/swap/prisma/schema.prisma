@@ -57,7 +57,9 @@ model Swap {
   /// the swap id on the state chain
   nativeId                  BigInt              @unique
   srcAsset                  Asset
-  depositAmount             Decimal             @db.Decimal(30, 0)
+  depositAmount             Decimal              @db.Decimal(30, 0)
+  intermediateAmount        Decimal?             @db.Decimal(30, 0)
+  egressAmount              Decimal?             @db.Decimal(30, 0)
   destAsset                 Asset
   destAddress               String
   depositReceivedAt         DateTime

@@ -49,6 +49,8 @@ export const ethereumAddress = hexString.refine((address) =>
   ethers.utils.isAddress(address),
 );
 
+export const u64 = numericString.transform((arg) => BigInt(arg));
+
 export const u128 = z
   .union([numericString, hexString])
   .transform((arg) => BigInt(arg));

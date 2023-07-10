@@ -27,8 +27,7 @@ describe(swapScheduled, () => {
       btcSwapDepositChannel = await createDepositChannel({
         srcAsset: Assets.BTC,
         destAsset: Assets.ETH,
-        depositAddress:
-          'bcrt1pg03ca9ervkylq76ezng0umnqlul9ty8693k3zrav07u3hu4dlkrswxxdzf',
+        depositAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
         destAddress: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
       });
     });

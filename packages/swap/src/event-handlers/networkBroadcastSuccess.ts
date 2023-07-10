@@ -12,44 +12,35 @@ export async function handleEvent(
   chain: Chain,
   { prisma, block, event }: EventHandlerArgs,
 ): Promise<void> {
-  try {
-    const { broadcastId } = eventArgs.parse(event.args);
+  const { broadcastId } = eventArgs.parse(event.args);
 
-    const broadcast = await prisma.broadcast.findUnique({
-      where: { nativeId_chain: { chain, nativeId: broadcastId } },
-      include: { egresses: { include: { swap: true } } },
-    });
+  const broadcast = await prisma.broadcast.findUnique({
+    where: { nativeId_chain: { chain, nativeId: broadcastId } },
+    include: { egresses: { include: { swap: true } } },
+  });
 
-    if (!broadcast) {
-      logger.customInfo(
-        'no broadcast found, skipping',
-        {},
-        { broadcastId, chain },
-      );
-      return;
-    }
-    await prisma.swap.updateMany({
-      where: {
-        id: {
-          in: broadcast.egresses.reduce((acc, egress) => {
-            if (egress.swapId !== null) acc.push(egress.swapId);
-            return acc;
-          }, [] as bigint[]),
-        },
-      },
-      data: {
-        egressCompletedAt: new Date(block.timestamp),
-        egressCompletedBlockIndex: `${block.height}-${event.indexInBlock}`,
-      },
-    });
-  } catch (error) {
-    logger.customError(
-      'error in "chainBroadcastSuccess" handler',
-      { alertCode: 'EventHandlerError' },
-      { error, handler: 'chainBroadcastSuccess', chain },
+  if (!broadcast) {
+    logger.customInfo(
+      'no broadcast found, skipping',
+      {},
+      { broadcastId, chain },
     );
-    throw error;
+    return;
   }
+  await prisma.swap.updateMany({
+    where: {
+      id: {
+        in: broadcast.egresses.reduce((acc, egress) => {
+          if (egress.swapId !== null) acc.push(egress.swapId);
+          return acc;
+        }, [] as bigint[]),
+      },
+    },
+    data: {
+      egressCompletedAt: new Date(block.timestamp),
+      egressCompletedBlockIndex: `${block.height}-${event.indexInBlock}`,
+    },
+  });
 }
 
 /**
