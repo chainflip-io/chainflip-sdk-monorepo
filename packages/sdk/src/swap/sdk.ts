@@ -1,7 +1,7 @@
 import { ContractReceipt, Signer } from 'ethers';
 import { ChainflipNetwork, Chain, ChainflipNetworks } from '@/shared/enums';
 import { assert } from '@/shared/guards';
-import { ExecuteSwapParams, executeSwap } from '@/shared/vault';
+import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
 import { BACKEND_SERVICE_URLS } from './consts';
 import ApiService, { RequestOptions } from './services/ApiService';
 import type {
@@ -14,6 +14,8 @@ import type {
   SwapStatusResponse,
   DepositAddressRequest,
 } from './types';
+
+type TransactionHash = string;
 
 export type SDKOptions = {
   network?: Exclude<ChainflipNetwork, 'mainnet'>;
@@ -72,9 +74,22 @@ export class SwapSDK {
 
   executeSwap(params: ExecuteSwapParams): Promise<ContractReceipt> {
     assert(this.signer, 'No signer provided');
-    return executeSwap(params, {
-      network: this.network,
+    return executeSwap(params, { network: this.network, signer: this.signer });
+  }
+
+  async approveVault(
+    params: ExecuteSwapParams,
+    options: { nonce?: bigint | number | string } = {},
+  ): Promise<TransactionHash | null> {
+    if (!('srcAsset' in params)) return null;
+    assert(this.signer, 'No signer provided');
+
+    const receipt = await approveVault(params, {
       signer: this.signer,
+      network: this.network,
+      ...options,
     });
+
+    return receipt && receipt.transactionHash;
   }
 }

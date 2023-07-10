@@ -70,15 +70,6 @@ exports[`executeSwap can be invoked with localnet options 2`] = `
 ]
 `;
 
-exports[`executeSwap can be invoked with localnet options 3`] = `
-[
-  [
-    "0x123",
-    "1",
-  ],
-]
-`;
-
 exports[`executeSwap submits a native swap ({"destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "FLIP", "destChain": "Ethereum"}) 1`] = `
 [
   [
@@ -354,7 +345,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "bc1qar0srrr7xfkvy5l6
 ]
 `;
 
-exports[`executeSwap submits a token swap with approval 1`] = `
+exports[`executeSwap submits a token swap with sufficient approval 1`] = `
 [
   [
     3,
@@ -370,20 +361,11 @@ exports[`executeSwap submits a token swap with approval 1`] = `
 ]
 `;
 
-exports[`executeSwap submits a token swap with approval 2`] = `
+exports[`executeSwap submits a token swap with sufficient approval 2`] = `
 [
   [
     "MY ADDRESS",
     "0xBFF0d5051bC984ee6fF052b26ADBaFB5F1cDF9d4",
-  ],
-]
-`;
-
-exports[`executeSwap submits a token swap with approval 3`] = `
-[
-  [
-    "0xBFF0d5051bC984ee6fF052b26ADBaFB5F1cDF9d4",
-    "1",
   ],
 ]
 `;

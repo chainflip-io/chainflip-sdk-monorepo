@@ -1,12 +1,8 @@
 import type { Signer } from 'ethers';
-import { ERC20__factory } from '@/shared/abis';
-import {
-  getTokenContractAddress,
-  getVaultManagerContractAddress,
-  requestApproval,
-} from '@/shared/contracts';
+import { getFlipBalance } from '@/shared/contracts';
 import { ChainflipNetwork, ChainflipNetworks } from '@/shared/enums';
 import {
+  approveStateChainGateway,
   executeRedemption,
   fundStateChainAccount,
   getMinimumFunding,
@@ -64,31 +60,22 @@ export class FundingSDK {
   }
 
   async getFlipBalance(): Promise<bigint> {
-    const flipAddress = getTokenContractAddress('FLIP', this.options.network);
-    const flip = ERC20__factory.connect(flipAddress, this.options.signer);
-    const balance = await flip.balanceOf(
-      await this.options.signer.getAddress(),
-    );
-    return balance.toBigInt();
+    return getFlipBalance(this.options.network, this.options.signer);
   }
 
   /**
    * @param amount the amount of FLIP to request approval for
    * @returns the transaction hash or null if no approval was required
    */
-  async requestFlipApproval(
+  async approveStateChainGateway(
     amount: bigint | string | number,
+    nonce?: bigint | string | number,
   ): Promise<TransactionHash | null> {
-    const flipAddress = getTokenContractAddress('FLIP', this.options.network);
-    const vaultAddress = getVaultManagerContractAddress(this.options.network);
+    const receipt = await approveStateChainGateway(amount, {
+      nonce,
+      ...this.options,
+    });
 
-    const tx = await requestApproval(
-      flipAddress,
-      vaultAddress,
-      amount,
-      this.options.signer,
-    );
-
-    return tx?.transactionHash ?? null;
+    return receipt && receipt.transactionHash;
   }
 }

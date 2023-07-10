@@ -1,12 +1,12 @@
 import { ContractReceipt, Signer } from 'ethers';
 import { z } from 'zod';
-import { Vault, Vault__factory } from '../abis';
+import { Vault__factory } from '../abis';
+import { assetMap, chainMap } from '../consts';
 import {
-  requestApproval,
   getVaultManagerContractAddress,
   getTokenContractAddress,
+  checkAllowance,
 } from '../contracts';
-import { Asset, Chain, Chains, Assets } from '../enums';
 import { assert } from '../guards';
 import { chainflipNetwork } from '../parsers';
 import {
@@ -16,31 +16,22 @@ import {
   executeSwapParamsSchema,
 } from './validators';
 
-// !!!!! IMPORTANT !!!!!
-// Do not change these indices.
-const chainMap: Record<Chain, number> = {
-  [Chains.Ethereum]: 1,
-  [Chains.Polkadot]: 2,
-  [Chains.Bitcoin]: 3,
-};
-
-// !!!!!! IMPORTANT !!!!!!
-// Do not change these indices.
-const assetMap: Record<Asset, number> = {
-  // 0 is reservered for particular cross chain messaging scenarios where we want to pass
-  // through a message without making a swap.
-  [Assets.ETH]: 1,
-  [Assets.FLIP]: 2,
-  [Assets.USDC]: 3,
-  [Assets.DOT]: 4,
-  [Assets.BTC]: 5,
-};
-
 const swapNative = async (
-  vault: Vault,
   { destChain, destAsset, destAddress, amount }: NativeSwapParams,
-  { nonce }: ExecuteSwapOptions,
+  { nonce, ...opts }: ExecuteSwapOptions,
 ): Promise<ContractReceipt> => {
+  const vaultContractAddress =
+    opts.network === 'localnet'
+      ? opts.vaultContractAddress
+      : getVaultManagerContractAddress(opts.network);
+
+  assert(
+    vaultContractAddress !== undefined,
+    'Missing vault contract address or network unsupported',
+  );
+
+  const vault = Vault__factory.connect(vaultContractAddress, opts.signer);
+
   const transaction = await vault.xSwapNative(
     chainMap[destChain],
     destAddress,
@@ -53,10 +44,19 @@ const swapNative = async (
 };
 
 const swapToken = async (
-  vault: Vault,
   params: TokenSwapParams,
-  { signer, ...opts }: ExecuteSwapOptions,
+  opts: ExecuteSwapOptions,
 ): Promise<ContractReceipt> => {
+  const vaultContractAddress =
+    opts.network === 'localnet'
+      ? opts.vaultContractAddress
+      : getVaultManagerContractAddress(opts.network);
+
+  assert(
+    vaultContractAddress !== undefined,
+    'Missing vault contract address or network unsupported',
+  );
+
   const erc20Address =
     opts.network === 'localnet'
       ? opts.srcTokenContractAddress
@@ -64,7 +64,15 @@ const swapToken = async (
 
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
-  await requestApproval(erc20Address, vault.address, params.amount, signer);
+  const { isAllowable } = await checkAllowance(
+    params.amount,
+    vaultContractAddress,
+    erc20Address,
+    opts.signer,
+  );
+  assert(isAllowable, 'Swap amount exceeds allowance');
+
+  const vault = Vault__factory.connect(vaultContractAddress, opts.signer);
 
   const transaction = await vault.xSwapToken(
     chainMap[params.destChain],
@@ -106,20 +114,9 @@ const executeSwap = async (
   const parsedParams = executeSwapParamsSchema.parse(params);
   const opts = executeSwapOptionsSchema.parse(options);
 
-  const vaultContractAddress =
-    opts.network === 'localnet'
-      ? opts.vaultContractAddress
-      : getVaultManagerContractAddress(opts.network);
-
-  assert(
-    vaultContractAddress !== undefined,
-    'Missing vault contract address or network unsupported',
-  );
-
-  const vault = Vault__factory.connect(vaultContractAddress, opts.signer);
-
-  if (isTokenSwap(parsedParams)) return swapToken(vault, parsedParams, opts);
-  return swapNative(vault, parsedParams, opts);
+  return isTokenSwap(parsedParams)
+    ? swapToken(parsedParams, opts)
+    : swapNative(parsedParams, opts);
 };
 
 export default executeSwap;

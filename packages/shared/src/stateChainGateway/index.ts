@@ -1,19 +1,19 @@
 import type { BigNumber, ContractReceipt, Signer } from 'ethers';
-import { StateChainGateway__factory } from '../abis';
-import {
-  getStateChainGatewayContractAddress,
-  getTokenContractAddress,
-  requestApproval,
-} from '../contracts';
+import { checkAllowance, getTokenContractAddress } from '../contracts';
 import { Assets, ChainflipNetwork } from '../enums';
+import { assert } from '../guards';
+import { getStateChainGateway } from './utils';
 
-type SignerOptions =
+type WithNonce<T> = T & { nonce?: number | bigint | string };
+
+export type SignerOptions = WithNonce<
   | { network: ChainflipNetwork; signer: Signer }
   | {
       network: 'localnet';
       signer: Signer;
       stateChainGatewayContractAddress: string;
-    };
+    }
+>;
 
 type ExtendLocalnetOptions<T, U> = T extends { network: 'localnet' }
   ? T & U
@@ -23,18 +23,6 @@ export type FundStateChainAccountOptions = ExtendLocalnetOptions<
   SignerOptions,
   { flipContractAddress: string }
 >;
-
-export const getStateChainGateway = (options: SignerOptions) => {
-  const stateChainGatewayContractAddress =
-    options.network === 'localnet'
-      ? options.stateChainGatewayContractAddress
-      : getStateChainGatewayContractAddress(options.network);
-
-  return StateChainGateway__factory.connect(
-    stateChainGatewayContractAddress,
-    options.signer,
-  );
-};
 
 export const fundStateChainAccount = async (
   accountId: `0x${string}`,
@@ -48,12 +36,13 @@ export const fundStateChainAccount = async (
 
   const stateChainGateway = getStateChainGateway(options);
 
-  await requestApproval(
-    flipContractAddress,
-    stateChainGateway.address,
+  const { isAllowable } = await checkAllowance(
     amount,
+    stateChainGateway.address,
+    flipContractAddress,
     options.signer,
   );
+  assert(isAllowable, 'Insufficient allowance');
 
   const transaction = await stateChainGateway.fundStateChainAccount(
     accountId,
@@ -65,11 +54,13 @@ export const fundStateChainAccount = async (
 
 export const executeRedemption = async (
   accountId: `0x${string}`,
-  options: SignerOptions,
+  { nonce, ...options }: WithNonce<SignerOptions>,
 ): Promise<ContractReceipt> => {
   const stateChainGateway = getStateChainGateway(options);
 
-  const transaction = await stateChainGateway.executeRedemption(accountId);
+  const transaction = await stateChainGateway.executeRedemption(accountId, {
+    nonce,
+  });
 
   return transaction.wait(1);
 };
@@ -87,3 +78,5 @@ export const getRedemptionDelay = (options: SignerOptions): Promise<number> => {
 
   return stateChainGateway.REDEMPTION_DELAY();
 };
+
+export * from './approval';
