@@ -82,7 +82,7 @@ const isTokenSwap = (params: ExecuteSwapParams): params is TokenSwapParams =>
 
 const executeSwapOptionsSchema = z.intersection(
   z.object({
-    signer: z.instanceof(Signer),
+    signer: z.any().refine(Signer.isSigner),
     nonce: z.union([z.number(), z.bigint(), z.string()]).optional(),
   }),
   z.union([

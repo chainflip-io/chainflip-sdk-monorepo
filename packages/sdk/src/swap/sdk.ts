@@ -1,4 +1,4 @@
-import { ContractReceipt, Signer } from 'ethers';
+import { Signer } from 'ethers';
 import { ChainflipNetwork, Chain, ChainflipNetworks } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
@@ -72,9 +72,13 @@ export class SwapSDK {
     return ApiService.getStatus(this.baseUrl, swapStatusRequest, options);
   }
 
-  executeSwap(params: ExecuteSwapParams): Promise<ContractReceipt> {
+  async executeSwap(params: ExecuteSwapParams): Promise<TransactionHash> {
     assert(this.signer, 'No signer provided');
-    return executeSwap(params, { network: this.network, signer: this.signer });
+    const receipt = await executeSwap(params, {
+      network: this.network,
+      signer: this.signer,
+    });
+    return receipt.transactionHash;
   }
 
   async approveVault(
