@@ -108,7 +108,7 @@ describe(SwapSDK, () => {
       const swap = {};
       jest
         .mocked(executeSwap)
-        .mockResolvedValueOnce({ transactionHash: 'hello world' });
+        .mockResolvedValueOnce({ transactionHash: 'hello world' } as any);
       const result = await sdk.executeSwap(swap as any);
       expect(executeSwap).toHaveBeenCalledWith(swap, {
         network: 'sisyphos',
