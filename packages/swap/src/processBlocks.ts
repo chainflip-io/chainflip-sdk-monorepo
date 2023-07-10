@@ -122,7 +122,7 @@ export default async function processBlocks() {
             }
             await eventHandler({ prisma: txClient, event, block });
           }
-          const result = await prisma.state.updateMany({
+          const result = await txClient.state.updateMany({
             where: { id: 1, height: block.height - 1 },
             data: { height: block.height },
           });
