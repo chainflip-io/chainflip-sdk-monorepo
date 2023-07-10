@@ -28,7 +28,7 @@ jest.mock('../../abis/factories/StateChainGateway__factory', () => ({
 
 jest.mock('../../contracts', () => ({
   ...jest.requireActual('../../contracts'),
-  checkApproval: jest.fn(),
+  checkAllowance: jest.fn(),
 }));
 
 const signerOptions = {

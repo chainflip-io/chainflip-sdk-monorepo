@@ -48,7 +48,10 @@ export const approve = async (
   allowance: BigNumberish,
   nonce?: bigint | number | string,
 ): Promise<ContractReceipt | null> => {
-  const requiredAmount = BigNumber.from(amount).sub(allowance);
+  const amountBigNumber = BigNumber.from(amount);
+  const allowanceBigNumber = BigNumber.from(allowance);
+  if (allowanceBigNumber.gte(amountBigNumber)) return null;
+  const requiredAmount = amountBigNumber.sub(allowanceBigNumber);
   const tx = await erc20.approve(spenderAddress, requiredAmount, { nonce });
   return tx.wait(1);
 };
