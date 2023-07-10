@@ -18,44 +18,35 @@ export default async function networkBatchBroadcastRequested({
   prisma,
   event,
 }: EventHandlerArgs): Promise<void> {
-  try {
-    const { broadcastId, egressIds } = eventArgs.parse(event.args);
+  const { broadcastId, egressIds } = eventArgs.parse(event.args);
 
-    if (egressIds.length === 0) {
-      logger.customInfo('no egress ids, skipping', {}, { broadcastId });
-      return;
-    }
-
-    const [[chain]] = egressIds;
-
-    const depositChannels = await prisma.egress.findMany({
-      where: {
-        chain,
-        nativeId: { in: egressIds.map(([, id]) => id) },
-      },
-    });
-
-    if (depositChannels.length === 0) {
-      logger.customInfo('no egresss found, skipping', {}, { broadcastId });
-      return;
-    }
-
-    const broadcast = await prisma.broadcast.create({
-      data: { chain, nativeId: broadcastId },
-    });
-
-    await prisma.egress.updateMany({
-      where: {
-        id: { in: depositChannels.map((destination) => destination.id) },
-      },
-      data: { broadcastId: broadcast.id },
-    });
-  } catch (error) {
-    logger.customError(
-      'error in "networkBatchBroadcastRequested" handler',
-      { alertCode: 'EventHandlerError' },
-      { error, handler: 'networkBatchBroadcastRequested' },
-    );
-    throw error;
+  if (egressIds.length === 0) {
+    logger.customInfo('no egress ids, skipping', {}, { broadcastId });
+    return;
   }
+
+  const [[chain]] = egressIds;
+
+  const depositChannels = await prisma.egress.findMany({
+    where: {
+      chain,
+      nativeId: { in: egressIds.map(([, id]) => id) },
+    },
+  });
+
+  if (depositChannels.length === 0) {
+    logger.customInfo('no egresss found, skipping', {}, { broadcastId });
+    return;
+  }
+
+  const broadcast = await prisma.broadcast.create({
+    data: { chain, nativeId: broadcastId },
+  });
+
+  await prisma.egress.updateMany({
+    where: {
+      id: { in: depositChannels.map((destination) => destination.id) },
+    },
+    data: { broadcastId: broadcast.id },
+  });
 }

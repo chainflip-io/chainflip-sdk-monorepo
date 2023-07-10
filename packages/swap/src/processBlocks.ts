@@ -120,7 +120,22 @@ export default async function processBlocks() {
                 `unexpected event: "${event.name}" for specId: "${block.specId}"`,
               );
             }
-            await eventHandler({ prisma: txClient, event, block });
+            try {
+              await eventHandler({ prisma: txClient, event, block });
+            } catch (error) {
+              logger.customError(
+                `processBlock error: Error handling event ${event.name}`,
+                { alertCode: 'EventHandlerError' },
+                {
+                  error,
+                  eventName: event.name,
+                  indexInBlock: event.indexInBlock,
+                  blockHeight: block.height,
+                  specId: block.specId,
+                },
+              );
+              throw error;
+            }
           }
           const result = await prisma.state.updateMany({
             where: { id: 1, height: block.height - 1 },

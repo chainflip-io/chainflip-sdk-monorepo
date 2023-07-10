@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { chainflipChain, unsignedInteger } from '@/shared/parsers';
 import { Prisma } from '../client';
-import logger from '../utils/logger';
 import type { EventHandlerArgs } from '.';
 
 const eventArgs = z.object({
@@ -42,12 +41,6 @@ export default async function swapEgressScheduled({
       // intents that we already have in the db
       return;
     }
-
-    logger.customError(
-      'error in "swapEgressScheduled" handler',
-      { alertCode: 'EventHandlerError' },
-      { error, handler: 'swapEgressScheduled' },
-    );
     throw error;
   }
 }

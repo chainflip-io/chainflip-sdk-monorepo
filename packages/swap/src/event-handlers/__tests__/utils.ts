@@ -1,6 +1,7 @@
 import { Assets } from '@/shared/enums';
 import prisma, { SwapDepositChannel } from '../../client';
 import { swapping } from '../index';
+import { SwapExecutedEvent } from '../swapExecuted';
 import { SwapScheduledEvent } from '../swapScheduled';
 
 export const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
@@ -92,28 +93,27 @@ export const swapScheduledDotDepositChannelMock = buildSwapScheduledEvent({
       '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
     __kind: 'Btc',
   },
-} as const);
+});
 
 export const swapScheduledBtcDepositChannelMock = buildSwapScheduledEvent({
+  swapId: '3',
+  sourceAsset: { __kind: 'Btc' },
+  depositAmount: '75000000',
+  destinationAsset: { __kind: 'Eth' },
+  destinationAddress: {
+    __kind: 'Eth',
+    value: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
+  },
   origin: {
     __kind: 'DepositChannel',
     channelId: '2',
     depositAddress: {
-      value: {
-        data: '0x512043e38e97236589f07b5914d0fe6e60ff3e5590fa2c6d110fac7fb91bf2adfd87',
-      },
       __kind: 'Btc',
+      value:
+        '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
     },
   },
-  swapId: '3',
-  depositAsset: { __kind: 'Btc' },
-  depositAmount: '75000000',
-  destinationAsset: { __kind: 'Eth' },
-  destinationAddress: {
-    value: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
-    __kind: 'Eth',
-  },
-} as const);
+});
 
 export const swapScheduledVaultMock = buildSwapScheduledEvent({
   origin: {
@@ -122,16 +122,16 @@ export const swapScheduledVaultMock = buildSwapScheduledEvent({
       '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
   },
   swapId: '2',
-  depositAsset: { __kind: 'Eth' },
+  sourceAsset: { __kind: 'Eth' },
   depositAmount: '175000000000000000',
   destinationAsset: { __kind: 'Dot' },
   destinationAddress: {
     value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
     __kind: 'Dot',
   },
-} as const);
+});
 
-export const swapExecutedMock = {
+export const buildSwapExecutedMock = (args: SwapExecutedEvent) => ({
   block: {
     height: 100,
     timestamp: 1670337099000,
@@ -145,7 +145,7 @@ export const swapExecutedMock = {
           weight: '101978000',
           paysFee: [null],
         },
-        swapId: '9876545',
+        ...args,
       },
       id: '0000012799-000000-c1ea7',
       indexInBlock: 0,
@@ -175,7 +175,7 @@ export const swapExecutedMock = {
       },
     },
   },
-};
+});
 
 export const swapEgressScheduledMock = {
   block: {

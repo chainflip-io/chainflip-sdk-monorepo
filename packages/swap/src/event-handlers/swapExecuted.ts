@@ -1,31 +1,31 @@
 import { z } from 'zod';
-import { unsignedInteger } from '@/shared/parsers';
-import logger from '../utils/logger';
+import { u128, u64 } from '@/shared/parsers';
 import type { EventHandlerArgs } from '.';
 
-const eventArgs = z.object({ swapId: unsignedInteger });
+const swapExecutedArgs = z.object({
+  swapId: u64,
+  egressAmount: u128,
+  intermediateAmount: u128.optional(),
+});
+
+export type SwapExecutedEvent = z.input<typeof swapExecutedArgs>;
 
 export default async function swapExecuted({
   prisma,
   block,
   event,
 }: EventHandlerArgs): Promise<void> {
-  try {
-    const { swapId } = eventArgs.parse(event.args);
+  const { swapId, egressAmount, intermediateAmount } = swapExecutedArgs.parse(
+    event.args,
+  );
 
-    await prisma.swap.updateMany({
-      where: { nativeId: swapId },
-      data: {
-        swapExecutedAt: new Date(block.timestamp),
-        swapExecutedBlockIndex: `${block.height}-${event.indexInBlock}`,
-      },
-    });
-  } catch (error) {
-    logger.customError(
-      'error in "swapExecuted" handler',
-      { alertCode: 'EventHandlerError' },
-      { error, handler: 'swapExecuted' },
-    );
-    throw error;
-  }
+  await prisma.swap.updateMany({
+    where: { nativeId: swapId },
+    data: {
+      egressAmount: egressAmount.toString(),
+      intermediateAmount: intermediateAmount?.toString(),
+      swapExecutedAt: new Date(block.timestamp),
+      swapExecutedBlockIndex: `${block.height}-${event.indexInBlock}`,
+    },
+  });
 }
