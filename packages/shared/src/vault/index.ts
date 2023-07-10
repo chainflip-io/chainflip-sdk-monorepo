@@ -1,3 +1,8 @@
-export { default as executeSwap, type ExecuteSwapOptions } from './executeSwap';
-export type { ExecuteSwapParams } from './validators';
+export { default as executeSwap } from './executeSwap';
+export { default as executeCall } from './executeCall';
+export type {
+  ExecuteSwapParams,
+  ExecuteCallParams,
+  ExecuteOptions,
+} from './schemas';
 export * from './approval';

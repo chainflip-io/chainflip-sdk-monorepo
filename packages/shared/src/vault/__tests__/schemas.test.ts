@@ -1,5 +1,5 @@
 import { Assets, Chains } from '@/shared/enums';
-import { NativeSwapParams, executeSwapParamsSchema } from '../validators';
+import { NativeSwapParams, executeSwapParamsSchema } from '../schemas';
 
 const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
 const DOT_ADDRESS = '5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX';

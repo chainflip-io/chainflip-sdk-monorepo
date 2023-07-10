@@ -1,6 +1,6 @@
 import { VoidSigner } from 'ethers';
 import { Chain, ChainflipNetworks, Chains } from '@/shared/enums';
-import { executeSwap } from '@/shared/vault';
+import { executeCall, executeSwap } from '@/shared/vault';
 import {
   bitcoin,
   polkadot,
@@ -13,7 +13,10 @@ import {
 } from '../swap/mocks';
 import { SwapSDK } from '../swap/sdk';
 
-jest.mock('@/shared/vault', () => ({ executeSwap: jest.fn() }));
+jest.mock('@/shared/vault', () => ({
+  executeSwap: jest.fn(),
+  executeCall: jest.fn(),
+}));
 
 describe(SwapSDK, () => {
   const sdk = new SwapSDK({ network: ChainflipNetworks.mainnet as any });
@@ -105,12 +108,27 @@ describe(SwapSDK, () => {
 
   describe(SwapSDK.prototype.executeSwap, () => {
     it('calls executeSwap', async () => {
-      const swap = {};
+      const params = {};
       jest
         .mocked(executeSwap)
         .mockResolvedValueOnce({ transactionHash: 'hello world' } as any);
-      const result = await sdk.executeSwap(swap as any);
-      expect(executeSwap).toHaveBeenCalledWith(swap, {
+      const result = await sdk.executeSwap(params as any);
+      expect(executeSwap).toHaveBeenCalledWith(params, {
+        network: 'sisyphos',
+        signer,
+      });
+      expect(result).toEqual('hello world');
+    });
+  });
+
+  describe(SwapSDK.prototype.executeCall, () => {
+    it('calls executeCall', async () => {
+      const params = {};
+      jest
+        .mocked(executeCall)
+        .mockResolvedValueOnce({ transactionHash: 'hello world' } as any);
+      const result = await sdk.executeCall(params as any);
+      expect(executeCall).toHaveBeenCalledWith(params, {
         network: 'sisyphos',
         signer,
       });
