@@ -18,7 +18,9 @@ const errorMap: ZodErrorMap = (issue, context) => ({
 export const string = z.string({ errorMap });
 export const number = z.number({ errorMap });
 export const numericString = string.regex(/^[0-9]+$/);
-export const hexString = string.regex(/^0x[0-9a-f]+$/i);
+export const hexString = z.custom<`0x${string}`>((val) =>
+  /^0x[0-9a-f]+$/i.test(val as string),
+);
 export const hexStringFromNumber = numericString
   .transform((arg) => ethers.BigNumber.from(arg).toHexString())
   .refine((arg) => arg.startsWith('0x'));
