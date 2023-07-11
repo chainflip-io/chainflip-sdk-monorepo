@@ -19,14 +19,14 @@ export type ByteString = string | `0x${string}`;
 export interface CcmMetadata {
   gas_budget: `0x${string}` | number;
   message: ByteString;
-  source_address: '0'; // removed in future
+  source_address: 0; // tb removed
   cf_parameters?: ByteString;
 }
 
 export const ccmMetadataSchema = z.object({
   gas_budget: z.union([hexString, z.number()]),
   message: z.union([hexString, z.string()]),
-  source_address: z.literal('0'),
+  source_address: z.literal(0),
   cf_parameters: z.union([hexString, z.string()]).optional(),
 });
 

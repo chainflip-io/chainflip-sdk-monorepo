@@ -75,7 +75,7 @@ describe(submitSwapToBroker, () => {
       ccmMetadata: {
         gas_budget: 123,
         message: 'ByteString',
-        source_address: '0', // removed in future
+        source_address: 0, // tb removed
         cf_parameters: 'ByteString',
       },
     });
@@ -98,7 +98,7 @@ describe(submitSwapToBroker, () => {
         {
           gas_budget: 123,
           message: 'ByteString',
-          source_address: '0', // removed in future
+          source_address: 0, // tb removed
           cf_parameters: 'ByteString',
         },
       ],
