@@ -1,29 +1,39 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`schema properly parses the arguments 1`] = `
-{
-  "amount": "1000000000",
-  "chainflipNetwork": "localnet",
-  "destAddress": "0x0",
-  "destAsset": "USDC",
-  "destChain": "Ethereum",
-  "ethNetwork": "test",
-  "srcTokenContractAddress": "0x0",
-  "vaultContractAddress": "0x0",
-  "walletPrivateKey": "0x2",
-}
+exports[`cli calls the correct handler with the proper arguments 1`] = `
+[
+  [
+    {
+      "amount": "1000000000",
+      "destAddress": "0x0",
+      "destAsset": "USDC",
+      "destChain": "Ethereum",
+      "srcAsset": undefined,
+    },
+    {
+      "network": "localnet",
+      "signer": undefined,
+      "srcTokenContractAddress": "0x0",
+      "vaultContractAddress": "0x0",
+    },
+  ],
+]
 `;
 
-exports[`schema properly parses the arguments 2`] = `
-{
-  "amount": "1000000000",
-  "chainflipNetwork": "sisyphos",
-  "destAddress": "0x0",
-  "destAsset": "USDC",
-  "destChain": "Ethereum",
-  "ethNetwork": undefined,
-  "srcTokenContractAddress": undefined,
-  "vaultContractAddress": undefined,
-  "walletPrivateKey": "0x2",
-}
+exports[`cli calls the correct handler with the proper arguments 2`] = `
+[
+  [
+    {
+      "amount": "1000000000",
+      "destAddress": "0x0",
+      "destAsset": "USDC",
+      "destChain": "Ethereum",
+      "srcAsset": undefined,
+    },
+    {
+      "network": "sisyphos",
+      "signer": undefined,
+    },
+  ],
+]
 `;

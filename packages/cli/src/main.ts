@@ -1,18 +1,4 @@
 #! /usr/bin/env node
-import cliExecuteCall from './cliExecuteCall';
-import cliExecuteSwap from './cliExecuteSwap';
-import cliFundStateChainAccount from './cliFundStateChainAccount';
-import { parseArgs } from './utils';
+import cli from './cli';
 
-const {
-  _: [command],
-  ...args
-} = parseArgs(process.argv.slice(2));
-
-if (command === 'swap') {
-  cliExecuteSwap(args);
-} else if (command === 'call') {
-  cliExecuteCall(args);
-} else if (command === 'fund-state-chain-account') {
-  cliFundStateChainAccount(args);
-}
+cli(process.argv.slice(2));
