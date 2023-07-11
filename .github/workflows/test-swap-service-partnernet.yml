@@ -10,7 +10,7 @@ on:
       - packages/swap/**
   push:
     branches:
-      - release/*
+      - main
     paths:
       - packages/swap/**
 

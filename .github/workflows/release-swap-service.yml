@@ -5,7 +5,7 @@ on:
     tags:
       - "swap/v*"
     branches:
-      - main
+      - release/*
     paths:
       - packages/swap/**
 
