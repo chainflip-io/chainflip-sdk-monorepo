@@ -2,11 +2,11 @@ import { getDefaultProvider, providers, Wallet } from 'ethers';
 import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
 import { assetChains, Assets, ChainflipNetworks } from '@/shared/enums';
 import {
+  executeSwap,
   type ExecuteOptions,
-  executeCall,
-  type ExecuteCallParams,
+  type ExecuteSwapParams,
 } from '@/shared/vault';
-import { askForPrivateKey, getEthNetwork, cliNetworks } from './utils';
+import { askForPrivateKey, getEthNetwork, cliNetworks } from '../utils';
 
 export const yargsOptions = {
   'src-asset': {
@@ -33,16 +33,6 @@ export const yargsOptions = {
     demandOption: true,
     describe: 'The address to send the swapped assets to',
   },
-  message: {
-    type: 'string',
-    demandOption: true,
-    describe: 'The message that is sent along with the swapped assets',
-  },
-  'gas-amount': {
-    type: 'string',
-    demandOption: true,
-    describe: 'The maximum gas amount that is sent with the message',
-  },
   'wallet-private-key': {
     type: 'string',
     describe: 'The private key of the wallet to use',
@@ -64,7 +54,7 @@ export const yargsOptions = {
   },
 } as const satisfies { [key: string]: Options };
 
-export default async function cliExecuteCall(
+export default async function cliExecuteSwap(
   args: ArgumentsCamelCase<InferredOptionTypes<typeof yargsOptions>>,
 ) {
   const privateKey = args.walletPrivateKey ?? (await askForPrivateKey());
@@ -87,18 +77,16 @@ export default async function cliExecuteCall(
         }
       : { network: args.chainflipNetwork, signer: wallet };
 
-  const receipt = await executeCall(
+  const receipt = await executeSwap(
     {
-      srcAsset: args.srcAsset,
+      ...(args.srcAsset && { srcAsset: args.srcAsset }),
       destChain: assetChains[args.destAsset],
       destAsset: args.destAsset,
       amount: args.amount,
       destAddress: args.destAddress,
-      message: args.message,
-      gasAmount: args.gasAmount,
-    } as ExecuteCallParams,
+    } as ExecuteSwapParams,
     opts,
   );
 
-  console.log(`Call executed. Transaction hash: ${receipt.transactionHash}`);
+  console.log(`Swap executed. Transaction hash: ${receipt.transactionHash}`);
 }

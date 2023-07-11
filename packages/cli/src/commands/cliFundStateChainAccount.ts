@@ -2,8 +2,8 @@ import { Wallet, getDefaultProvider, providers } from 'ethers';
 import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
 import { ChainflipNetworks } from '@/shared/enums';
 import { FundStateChainAccountOptions } from '@/shared/stateChainGateway';
-import { fundStateChainAccount } from './lib';
-import { askForPrivateKey, getEthNetwork, cliNetworks } from './utils';
+import { fundStateChainAccount } from '../lib';
+import { askForPrivateKey, getEthNetwork, cliNetworks } from '../utils';
 
 export const yargsOptions = {
   'src-account-id': {
