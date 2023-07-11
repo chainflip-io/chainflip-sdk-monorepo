@@ -39,10 +39,14 @@ const requestValidators = {
       chainflipChain,
       chainflipAsset.transform(transformAsset),
       z.union([numericString, hexString, btcAddress]),
-      ccmMetadataSchema.optional(),
       z.number(),
+      ccmMetadataSchema.optional(),
     ])
-    .transform(([a, b, c, d]) => [a, b, c, d]),
+    .transform(([a, b, c, d, e, f, g]) =>
+      [a, b, c, d, e, f, g].filter(
+        (item) => item !== undefined && item !== null,
+      ),
+    ),
 };
 
 const responseValidators = {
@@ -79,6 +83,7 @@ export const submitSwapToBroker = async (
 ): Promise<DepositChannelResponse> => {
   const { srcAsset, destAsset, destAddress, srcChain, destChain } = swapRequest;
   const client = await initializeClient();
+
   const depositChannelResponse = await client.sendRequest(
     'requestSwapDepositAddress',
     srcChain,
@@ -86,8 +91,8 @@ export const submitSwapToBroker = async (
     destChain,
     destAsset,
     submitAddress(srcAsset, destAddress),
-    swapRequest.ccmMetadata,
     0, // broker commission
+    swapRequest.ccmMetadata,
   );
 
   return depositChannelResponse;

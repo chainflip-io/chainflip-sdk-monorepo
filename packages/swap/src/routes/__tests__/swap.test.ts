@@ -325,6 +325,8 @@ describe('server', () => {
         {
           srcAsset: Assets.ETH,
           destAsset: Assets.DOT,
+          srcChain: 'Ethereum',
+          destChain: 'Polkadot',
           destAddress: HEX_DOT_ADDRESS,
           amount: '1000000000',
         },
@@ -333,6 +335,8 @@ describe('server', () => {
         {
           srcAsset: Assets.ETH,
           destAsset: Assets.DOT,
+          srcChain: 'Ethereum',
+          destChain: 'Polkadot',
           destAddress: DOT_ADDRESS,
           amount: '1000000000',
         },
@@ -341,6 +345,8 @@ describe('server', () => {
         {
           srcAsset: Assets.DOT,
           destAsset: Assets.ETH,
+          srcChain: 'Ethereum',
+          destChain: 'Polkadot',
           destAddress: ETH_ADDRESS,
           amount: '1000000000',
         },
@@ -407,12 +413,16 @@ describe('server', () => {
       {
         srcAsset: Assets.DOT,
         destAsset: Assets.ETH,
+        srcChain: 'Polkadot',
+        destChain: 'Ethereum',
         destAddress: '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181f2',
         amount: '1000000000',
       },
       {
         srcAsset: Assets.ETH,
         destAsset: Assets.DOT,
+        srcChain: 'Ethereum',
+        destChain: 'Polkadot',
         destAddress: '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181f2',
         amount: '1000000000',
       },

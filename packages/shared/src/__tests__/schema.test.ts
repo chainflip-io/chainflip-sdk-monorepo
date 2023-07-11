@@ -2,7 +2,9 @@ import { postSwapSchema } from '../schemas';
 
 const swapBody = {
   srcAsset: 'BTC',
+  srcChain: 'Bitcoin',
   destAsset: 'ETH',
+  destChain: 'Ethereum',
   destAddress: '0x123',
   amount: '123',
 };
@@ -22,8 +24,7 @@ describe('postSwapSchema', () => {
         ccmMetadata: {
           gas_budget: '0x123',
           message: 'message',
-          source_address: '0x123',
-          source_chain: 'Bitcoin',
+          source_address: '0',
           cf_parameters: 'string',
         },
       }),
@@ -36,8 +37,7 @@ describe('postSwapSchema', () => {
         ccmMetadata: {
           gas_budget: '0x123',
           message: 'message',
-          source_address: '0x123',
-          source_chain: 'Bitcoin',
+          source_address: '0',
         },
       }),
     ).toEqual(expect.objectContaining({ success: true }));
@@ -48,8 +48,7 @@ describe('postSwapSchema', () => {
         ...swapBody,
         ccmMetadata: {
           gas_budget: '0x123',
-          message: 'message',
-          source_address: '0x123',
+          source_address: '0',
         },
       }),
     ).toEqual(expect.objectContaining({ success: false }));
@@ -59,9 +58,8 @@ describe('postSwapSchema', () => {
       postSwapSchema.safeParse({
         ...swapBody,
         ccmMetadata: {
-          gas_budget: '0x123',
           message: 'message',
-          source_address: '0x123',
+          source_address: '0',
           cf_parameters: 'string',
         },
       }),
@@ -76,8 +74,7 @@ describe('postSwapSchema', () => {
         ccmMetadata: {
           gas_budget: 123,
           message: 'message',
-          source_address: '0x123',
-          source_chain: 'Bitcoin',
+          source_address: '0',
           cf_parameters: 'string',
         },
       }),
@@ -90,8 +87,7 @@ describe('postSwapSchema', () => {
         ccmMetadata: {
           gas_budget: '123',
           message: 'message',
-          source_address: '0x123',
-          source_chain: 'Bitcoin',
+          source_address: '0',
           cf_parameters: 'string',
         },
       }),

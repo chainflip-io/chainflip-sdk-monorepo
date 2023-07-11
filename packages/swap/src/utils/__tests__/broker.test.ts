@@ -25,6 +25,8 @@ describe(submitSwapToBroker, () => {
     const resultPromise = submitSwapToBroker({
       srcAsset: Assets.FLIP,
       destAsset: Assets.USDC,
+      srcChain: 'Ethereum',
+      destChain: 'Ethereum',
       destAddress: '0xcafebabe',
     });
 
@@ -39,7 +41,7 @@ describe(submitSwapToBroker, () => {
       id: 0,
       jsonrpc: '2.0',
       method: 'broker_requestSwapDepositAddress',
-      params: ['Flip', 'Usdc', '0xcafebabe', 0],
+      params: ['Ethereum', 'Flip', 'Ethereum', 'Usdc', '0xcafebabe', 0],
     });
 
     messageHandler(
@@ -58,6 +60,48 @@ describe(submitSwapToBroker, () => {
       address: '0x1234567890',
       expiryBlock: 100,
       issuedBlock: 50,
+    });
+  });
+
+  it('submits ccm data', async () => {
+    const sendSpy = jest.spyOn(WebSocket.prototype, 'send');
+
+    submitSwapToBroker({
+      srcAsset: Assets.FLIP,
+      destAsset: Assets.USDC,
+      srcChain: 'Ethereum',
+      destChain: 'Ethereum',
+      destAddress: '0xcafebabe',
+      ccmMetadata: {
+        gas_budget: 123,
+        message: 'ByteString',
+        source_address: '0', // removed in future
+        cf_parameters: 'ByteString',
+      },
+    });
+
+    // event loop tick to allow promise within client to resolve
+    await sleep(0);
+    const requestObject = JSON.parse(sendSpy.mock.calls[0][0] as string);
+
+    expect(requestObject).toStrictEqual({
+      id: 1,
+      jsonrpc: '2.0',
+      method: 'broker_requestSwapDepositAddress',
+      params: [
+        'Ethereum',
+        'Flip',
+        'Ethereum',
+        'Usdc',
+        '0xcafebabe',
+        0,
+        {
+          gas_budget: 123,
+          message: 'ByteString',
+          source_address: '0', // removed in future
+          cf_parameters: 'ByteString',
+        },
+      ],
     });
   });
 });
