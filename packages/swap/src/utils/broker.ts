@@ -1,13 +1,14 @@
 import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import { z } from 'zod';
-import { Asset, Assets } from '@/shared/enums';
+import { Asset, Assets, Chain } from '@/shared/enums';
 import {
   hexString,
   numericString,
   btcAddress,
   dotAddress,
   chainflipAsset,
+  chainflipChain,
 } from '@/shared/parsers';
 import { CcmMetadata, ccmMetadataSchema } from '@/shared/schemas';
 import { memoize } from './function';
@@ -17,18 +18,29 @@ import { transformAsset } from './string';
 type NewSwapRequest = {
   srcAsset: Asset;
   destAsset: Asset;
+  srcChain: Chain;
+  destChain: Chain;
   destAddress: string;
   ccmMetadata?: CcmMetadata;
+};
+
+const submitAddress = (asset: Asset, address: string): string => {
+  if (asset === Assets.DOT) {
+    return u8aToHex(decodeAddress(address));
+  }
+  return address;
 };
 
 const requestValidators = {
   requestSwapDepositAddress: z
     .tuple([
+      chainflipChain,
       chainflipAsset.transform(transformAsset),
+      chainflipChain,
       chainflipAsset.transform(transformAsset),
       z.union([numericString, hexString, btcAddress]),
-      z.number(),
       ccmMetadataSchema.optional(),
+      z.number(),
     ])
     .transform(([a, b, c, d]) => [a, b, c, d]),
 };
@@ -65,17 +77,17 @@ export type DepositChannelResponse = z.infer<
 export const submitSwapToBroker = async (
   swapRequest: NewSwapRequest,
 ): Promise<DepositChannelResponse> => {
-  const { srcAsset, destAsset, destAddress } = swapRequest;
+  const { srcAsset, destAsset, destAddress, srcChain, destChain } = swapRequest;
   const client = await initializeClient();
   const depositChannelResponse = await client.sendRequest(
     'requestSwapDepositAddress',
+    srcChain,
     srcAsset,
+    destChain,
     destAsset,
-    destAsset === Assets.DOT
-      ? u8aToHex(decodeAddress(destAddress))
-      : destAddress,
-    0, // broker commission
+    submitAddress(srcAsset, destAddress),
     swapRequest.ccmMetadata,
+    0, // broker commission
   );
 
   return depositChannelResponse;
