@@ -3,17 +3,15 @@
 /* eslint-disable max-classes-per-file */
 import { BigNumber, VoidSigner } from 'ethers';
 import { Assets, ChainflipNetworks, Chains } from '@/shared/enums';
-import executeSwap from '../executeSwap';
-import { ExecuteSwapParams } from '../schemas';
+import executeCall from '../executeCall';
+import { ExecuteCallParams } from '../schemas';
 
 const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
-const DOT_ADDRESS = '5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX';
-const BTC_ADDRESS = 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq';
 
 class MockVault {
   constructor(readonly address: string) {}
-  async xSwapNative(): Promise<any> {}
-  async xSwapToken(): Promise<any> {}
+  async xCallNative(): Promise<any> {}
+  async xCallToken(): Promise<any> {}
 }
 
 class MockERC20 {
@@ -37,12 +35,12 @@ jest.mock('../../abis/factories/ERC20__factory', () => ({
   },
 }));
 
-describe(executeSwap, () => {
+describe(executeCall, () => {
   it.each([ChainflipNetworks.perseverance, ChainflipNetworks.mainnet] as const)(
     'only works on sisyphos for now',
     async (network) => {
       await expect(
-        executeSwap({} as any, {
+        executeCall({} as any, {
           network,
           signer: new VoidSigner('MY ADDRESS'),
         }),
@@ -51,16 +49,6 @@ describe(executeSwap, () => {
   );
 
   it.each([
-    {
-      destAsset: Assets.BTC,
-      destChain: Chains.Bitcoin,
-      destAddress: BTC_ADDRESS,
-    },
-    {
-      destAsset: 'BTC',
-      destChain: 'Bitcoin',
-      destAddress: BTC_ADDRESS,
-    },
     {
       destAsset: Assets.FLIP,
       destChain: Chains.Ethereum,
@@ -71,61 +59,46 @@ describe(executeSwap, () => {
       destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
     },
-    {
-      destAsset: Assets.DOT,
-      destChain: Chains.Polkadot,
-      destAddress: DOT_ADDRESS,
-    },
-  ] as Omit<ExecuteSwapParams, 'amount'>[])(
-    'submits a native swap (%p)',
+  ] as Omit<ExecuteCallParams, 'amount'>[])(
+    'submits a native call (%p)',
     async (params) => {
       const wait = jest
         .fn()
         .mockResolvedValue({ status: 1, transactionHash: 'hello world' });
-      const swapSpy = jest
-        .spyOn(MockVault.prototype, 'xSwapNative')
+      const callSpy = jest
+        .spyOn(MockVault.prototype, 'xCallNative')
         .mockResolvedValue({ wait });
 
       expect(
-        await executeSwap({ amount: '1', ...params } as ExecuteSwapParams, {
-          network: ChainflipNetworks.sisyphos,
-          signer: new VoidSigner('MY ADDRESS'),
-        }),
+        await executeCall(
+          {
+            amount: '1',
+            message: '0xdeadc0de',
+            gasAmount: '101',
+            ...params,
+          } as ExecuteCallParams,
+          {
+            network: ChainflipNetworks.sisyphos,
+            signer: new VoidSigner('MY ADDRESS'),
+          },
+        ),
       ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
       expect(wait).toHaveBeenCalledWith(1);
-      expect(swapSpy.mock.calls).toMatchSnapshot();
+      expect(callSpy.mock.calls).toMatchSnapshot();
     },
   );
 
   it.each([
     ...[Assets.FLIP, Assets.USDC].flatMap((srcAsset) => [
       {
-        destAsset: Assets.BTC,
-        destChain: Chains.Bitcoin,
-        destAddress: BTC_ADDRESS,
-        srcAsset,
-      },
-      {
-        destAsset: 'BTC',
-        destChain: 'Bitcoin',
-        destAddress: BTC_ADDRESS,
-        srcAsset,
-      },
-      {
         destAsset: Assets.ETH,
         destChain: Chains.Ethereum,
         destAddress: ETH_ADDRESS,
         srcAsset,
       },
-      {
-        destAsset: Assets.DOT,
-        destChain: Chains.Polkadot,
-        destAddress: DOT_ADDRESS,
-        srcAsset,
-      },
     ]),
-  ] as Omit<ExecuteSwapParams, 'amount'>[])(
-    'submits a token swap (%p)',
+  ] as Omit<ExecuteCallParams, 'amount'>[])(
+    'submits a token call (%p)',
     async (params) => {
       const wait = jest
         .fn()
@@ -133,25 +106,33 @@ describe(executeSwap, () => {
       const approveSpy = jest
         .spyOn(MockERC20.prototype, 'approve')
         .mockResolvedValue({ wait });
-      const swapSpy = jest
-        .spyOn(MockVault.prototype, 'xSwapToken')
+      const callSpy = jest
+        .spyOn(MockVault.prototype, 'xCallToken')
         .mockResolvedValue({ wait });
       const allowanceSpy = jest.spyOn(MockERC20.prototype, 'allowance');
 
       expect(
-        await executeSwap({ amount: '1', ...params } as ExecuteSwapParams, {
-          network: 'sisyphos',
-          signer: new VoidSigner('MY ADDRESS'),
-        }),
+        await executeCall(
+          {
+            amount: '1',
+            message: '0xdeadc0de',
+            gasAmount: '101',
+            ...params,
+          } as ExecuteCallParams,
+          {
+            network: 'sisyphos',
+            signer: new VoidSigner('MY ADDRESS'),
+          },
+        ),
       ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
       expect(wait).toHaveBeenCalledWith(1);
-      expect(swapSpy.mock.calls).toMatchSnapshot();
+      expect(callSpy.mock.calls).toMatchSnapshot();
       expect(allowanceSpy.mock.calls).toMatchSnapshot();
       expect(approveSpy).not.toHaveBeenCalled();
     },
   );
 
-  it('submits a token swap with sufficient approval', async () => {
+  it('submits a token call with sufficient approval', async () => {
     const wait = jest
       .fn()
       .mockResolvedValue({ status: 1, transactionHash: 'hello world' });
@@ -159,21 +140,23 @@ describe(executeSwap, () => {
       .spyOn(MockERC20.prototype, 'approve')
       .mockRejectedValue(Error('unmocked call'));
     const swapSpy = jest
-      .spyOn(MockVault.prototype, 'xSwapToken')
+      .spyOn(MockVault.prototype, 'xCallToken')
       .mockResolvedValue({ wait });
     const allowanceSpy = jest
       .spyOn(MockERC20.prototype, 'allowance')
       .mockResolvedValueOnce(BigNumber.from(Number.MAX_SAFE_INTEGER - 1));
 
     expect(
-      await executeSwap(
+      await executeCall(
         {
-          destAsset: Assets.BTC,
-          destChain: Chains.Bitcoin,
-          destAddress: BTC_ADDRESS,
+          destAsset: Assets.ETH,
+          destChain: Chains.Ethereum,
+          destAddress: ETH_ADDRESS,
           srcAsset: Assets.FLIP,
           amount: '1',
-        } as ExecuteSwapParams,
+          message: '0xdeadc0de',
+          gasAmount: '101',
+        } as ExecuteCallParams,
         { network: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
       ),
     ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
@@ -190,22 +173,24 @@ describe(executeSwap, () => {
     const approveSpy = jest
       .spyOn(MockERC20.prototype, 'approve')
       .mockResolvedValue({ wait });
-    const swapSpy = jest
-      .spyOn(MockVault.prototype, 'xSwapToken')
+    const callSpy = jest
+      .spyOn(MockVault.prototype, 'xCallToken')
       .mockResolvedValue({ wait });
     const allowanceSpy = jest
       .spyOn(MockERC20.prototype, 'allowance')
       .mockResolvedValueOnce(BigNumber.from(Number.MAX_SAFE_INTEGER - 1));
 
     expect(
-      await executeSwap(
+      await executeCall(
         {
-          destAsset: Assets.BTC,
-          destChain: Chains.Bitcoin,
-          destAddress: BTC_ADDRESS,
+          destAsset: Assets.ETH,
+          destChain: Chains.Ethereum,
+          destAddress: ETH_ADDRESS,
           srcAsset: Assets.FLIP,
           amount: '1',
-        } as ExecuteSwapParams,
+          message: '0xdeadc0de',
+          gasAmount: '101',
+        } as ExecuteCallParams,
         {
           network: 'localnet',
           signer: new VoidSigner('MY ADDRESS'),
@@ -215,7 +200,7 @@ describe(executeSwap, () => {
       ),
     ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
     expect(wait).toHaveBeenCalledWith(1);
-    expect(swapSpy.mock.calls).toMatchSnapshot();
+    expect(callSpy.mock.calls).toMatchSnapshot();
     expect(allowanceSpy.mock.calls).toMatchSnapshot();
     expect(approveSpy).not.toHaveBeenCalled();
   });
@@ -224,18 +209,20 @@ describe(executeSwap, () => {
     const wait = jest
       .fn()
       .mockResolvedValue({ status: 1, transactionHash: 'hello world' });
-    const swapSpy = jest
-      .spyOn(MockVault.prototype, 'xSwapNative')
+    const callSpy = jest
+      .spyOn(MockVault.prototype, 'xCallNative')
       .mockResolvedValue({ wait });
 
     expect(
-      await executeSwap(
+      await executeCall(
         {
           amount: '1',
-          destAsset: Assets.BTC,
-          destChain: Chains.Bitcoin,
-          destAddress: BTC_ADDRESS,
-        } as ExecuteSwapParams,
+          destAsset: Assets.FLIP,
+          destChain: Chains.Ethereum,
+          destAddress: ETH_ADDRESS,
+          message: '0xdeadc0de',
+          gasAmount: '101',
+        } as ExecuteCallParams,
         {
           network: ChainflipNetworks.sisyphos,
           signer: new VoidSigner('MY ADDRESS'),
@@ -244,6 +231,6 @@ describe(executeSwap, () => {
       ),
     ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
     expect(wait).toHaveBeenCalledWith(1);
-    expect(swapSpy.mock.calls).toMatchSnapshot();
+    expect(callSpy.mock.calls).toMatchSnapshot();
   });
 });

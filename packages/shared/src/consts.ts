@@ -1,31 +1,11 @@
-import { Asset, Chain, Chains, Assets, ChainflipNetworks } from './enums';
-
-// !!!!! IMPORTANT !!!!!
-// Do not change these indices.
-export const chainMap: Record<Chain, number> = {
-  [Chains.Ethereum]: 1,
-  [Chains.Polkadot]: 2,
-  [Chains.Bitcoin]: 3,
-};
-
-// !!!!!! IMPORTANT !!!!!!
-// Do not change these indices.
-export const assetMap: Record<Asset, number> = {
-  // 0 is reservered for particular cross chain messaging scenarios where we want to pass
-  // through a message without making a swap.
-  [Assets.ETH]: 1,
-  [Assets.FLIP]: 2,
-  [Assets.USDC]: 3,
-  [Assets.DOT]: 4,
-  [Assets.BTC]: 5,
-};
+import { ChainflipNetworks } from './enums';
 
 export const ADDRESSES = {
   [ChainflipNetworks.sisyphos]: {
-    FLIP_CONTRACT_ADDRESS: '0x8e3D3250470314f2e8C1eC6062Df43B5d67B5b7d',
-    VAULT_CONTRACT_ADDRESS: '0xBFF0d5051bC984ee6fF052b26ADBaFB5F1cDF9d4',
+    FLIP_CONTRACT_ADDRESS: '0x2FD78122663A07672e9ac63486573A99EB00125d',
+    VAULT_CONTRACT_ADDRESS: '0xd498606dcb9F440CD9F06B397C40fd3327FC2550',
     STATE_CHAIN_MANAGER_CONTRACT_ADDRESS:
-      '0x501E4D376001Dd74ca37f99b744Ab2889f7b4650',
+      '0xCCF267Bc5B709F1A1738122f3b76Cd01F0d9f947',
   },
   [ChainflipNetworks.partnernet]: {
     FLIP_CONTRACT_ADDRESS: '0x1A3960317647f7a9420c7eBB8E0FB1bCDfe4Ca24',

@@ -6,12 +6,11 @@ import {
   approve,
 } from '../contracts';
 import { assert } from '../guards';
-import { ExecuteSwapOptions } from './executeSwap';
-import { TokenSwapParams } from './validators';
+import { ExecuteOptions, TokenSwapParams } from './schemas';
 
 export const checkVaultAllowance = (
   params: Pick<TokenSwapParams, 'srcAsset' | 'amount'>,
-  opts: ExecuteSwapOptions,
+  opts: ExecuteOptions,
 ): ReturnType<typeof checkAllowance> => {
   const erc20Address =
     opts.network === 'localnet'
@@ -35,7 +34,7 @@ export const checkVaultAllowance = (
 
 export const approveVault = async (
   params: Pick<TokenSwapParams, 'srcAsset' | 'amount'>,
-  opts: ExecuteSwapOptions,
+  opts: ExecuteOptions,
 ): Promise<ContractReceipt | null> => {
   const { isAllowable, erc20, allowance } = await checkVaultAllowance(
     params,

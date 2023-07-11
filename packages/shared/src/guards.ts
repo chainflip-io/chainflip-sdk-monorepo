@@ -1,3 +1,10 @@
+import { ExecuteSwapParams } from './vault';
+import {
+  ExecuteCallParams,
+  TokenCallParams,
+  TokenSwapParams,
+} from './vault/schemas';
+
 export const isString = (value: unknown): value is string =>
   typeof value === 'string';
 
@@ -14,3 +21,11 @@ export function assert(condition: unknown, message: string): asserts condition {
 
   throw error;
 }
+
+export const isTokenSwap = (
+  params: ExecuteSwapParams,
+): params is TokenSwapParams => 'srcAsset' in params;
+
+export const isTokenCall = (
+  params: ExecuteCallParams,
+): params is TokenCallParams => 'srcAsset' in params;

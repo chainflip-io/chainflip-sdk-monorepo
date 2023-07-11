@@ -3,13 +3,14 @@ import { z } from 'zod';
 import { assetChains } from '@/shared/enums';
 import {
   numericString,
+  hexString,
   chainflipAsset,
   chainflipNetwork,
 } from '@/shared/parsers';
 import {
-  executeSwap,
   type ExecuteOptions,
-  type ExecuteSwapParams,
+  executeCall,
+  type ExecuteCallParams,
 } from '@/shared/vault';
 import { askForPrivateKey, getEthNetwork } from './utils';
 
@@ -44,6 +45,8 @@ export const schema = z
       destAsset: chainflipAsset,
       amount: numericString,
       destAddress: z.string(),
+      message: hexString,
+      gasAmount: numericString,
     }),
   )
   .transform(({ destAsset, srcAsset, ...rest }) => ({
@@ -53,7 +56,7 @@ export const schema = z
     ...(srcAsset && { srcAsset }),
   }));
 
-export default async function cliExecuteSwap(unvalidatedArgs: unknown) {
+export default async function cliExecuteCall(unvalidatedArgs: unknown) {
   const { walletPrivateKey, ...args } = schema.parse(unvalidatedArgs);
 
   const privateKey = walletPrivateKey ?? (await askForPrivateKey());
@@ -70,7 +73,7 @@ export default async function cliExecuteSwap(unvalidatedArgs: unknown) {
     chainflipNetwork: network,
     vaultContractAddress,
     srcTokenContractAddress,
-    ...swapParams
+    ...callParams
   } = args;
 
   const opts: ExecuteOptions =
@@ -83,7 +86,7 @@ export default async function cliExecuteSwap(unvalidatedArgs: unknown) {
         }
       : { network: args.chainflipNetwork, signer: wallet };
 
-  const receipt = await executeSwap(swapParams as ExecuteSwapParams, opts);
+  const receipt = await executeCall(callParams as ExecuteCallParams, opts);
 
-  console.log(`Swap executed. Transaction hash: ${receipt.transactionHash}`);
+  console.log(`Call executed. Transaction hash: ${receipt.transactionHash}`);
 }

@@ -1,8 +1,10 @@
 import { decodeAddress } from '@polkadot/util-crypto';
+import { Signer } from 'ethers';
 import { z } from 'zod';
 import { Assets, Chains } from '../enums';
 import {
   btcAddress,
+  chainflipNetwork,
   dotAddress,
   ethereumAddress,
   hexString,
@@ -74,3 +76,50 @@ export const executeSwapParamsSchema = z.union([
 ]);
 
 export type ExecuteSwapParams = z.infer<typeof executeSwapParamsSchema>;
+
+const nativeCallParamsSchema = ethereumBase
+  .extend({ destAsset: erc20, message: z.string(), gasAmount: numericString })
+  .strict();
+
+export type NativeCallParams = z.infer<typeof nativeCallParamsSchema>;
+
+const tokenCallParamsSchema = z.union([
+  ethereumBase.extend({
+    srcAsset: z.literal(Assets.FLIP),
+    destAsset: z.union([z.literal(Assets.USDC), z.literal(Assets.ETH)]),
+    message: hexString,
+    gasAmount: numericString,
+  }),
+  ethereumBase.extend({
+    srcAsset: z.literal(Assets.USDC),
+    destAsset: z.union([z.literal(Assets.FLIP), z.literal(Assets.ETH)]),
+    message: hexString,
+    gasAmount: numericString,
+  }),
+]);
+
+export type TokenCallParams = z.infer<typeof tokenCallParamsSchema>;
+
+export const executeCallParamsSchema = z.union([
+  nativeCallParamsSchema,
+  tokenCallParamsSchema,
+]);
+
+export type ExecuteCallParams = z.infer<typeof executeCallParamsSchema>;
+
+export const executeOptionsSchema = z.intersection(
+  z.object({
+    signer: z.instanceof(Signer),
+    nonce: z.union([z.number(), z.bigint(), z.string()]).optional(),
+  }),
+  z.union([
+    z.object({ network: chainflipNetwork }),
+    z.object({
+      network: z.literal('localnet'),
+      vaultContractAddress: z.string(),
+      srcTokenContractAddress: z.string().optional(),
+    }),
+  ]),
+);
+
+export type ExecuteOptions = z.infer<typeof executeOptionsSchema>;

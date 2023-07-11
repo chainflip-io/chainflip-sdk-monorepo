@@ -18,5 +18,7 @@ export {
   ChainflipNetworks,
   assetChains,
   assetDecimals,
+  assetContractIds,
   chainAssets,
+  chainContractIds,
 } from '@/shared/enums';

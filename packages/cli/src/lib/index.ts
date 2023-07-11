@@ -1,7 +1,9 @@
 export {
   executeSwap,
-  type ExecuteSwapOptions,
+  executeCall,
+  type ExecuteOptions,
   type ExecuteSwapParams,
+  type ExecuteCallParams,
   approveVault,
   checkVaultAllowance,
 } from '@/shared/vault';
@@ -23,5 +25,7 @@ export {
   ChainflipNetworks,
   assetChains,
   assetDecimals,
+  assetContractIds,
   chainAssets,
+  chainContractIds,
 } from '@/shared/enums';
