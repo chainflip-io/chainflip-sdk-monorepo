@@ -26,7 +26,6 @@ describe(submitSwapToBroker, () => {
       srcAsset: Assets.FLIP,
       destAsset: Assets.USDC,
       srcChain: 'Ethereum',
-      destChain: 'Ethereum',
       destAddress: '0xcafebabe',
     });
 
@@ -41,7 +40,7 @@ describe(submitSwapToBroker, () => {
       id: 0,
       jsonrpc: '2.0',
       method: 'broker_requestSwapDepositAddress',
-      params: ['Ethereum', 'Flip', 'Ethereum', 'Usdc', '0xcafebabe', 0],
+      params: ['Flip', 'Usdc', '0xcafebabe', 0],
     });
 
     messageHandler(
@@ -70,7 +69,6 @@ describe(submitSwapToBroker, () => {
       srcAsset: Assets.FLIP,
       destAsset: Assets.USDC,
       srcChain: 'Ethereum',
-      destChain: 'Ethereum',
       destAddress: '0xcafebabe',
       ccmMetadata: {
         gas_budget: 123,
@@ -89,9 +87,7 @@ describe(submitSwapToBroker, () => {
       jsonrpc: '2.0',
       method: 'broker_requestSwapDepositAddress',
       params: [
-        'Ethereum',
         'Flip',
-        'Ethereum',
         'Usdc',
         '0xcafebabe',
         0,
@@ -100,6 +96,7 @@ describe(submitSwapToBroker, () => {
           message: 'ByteString',
           source_address: 0, // tb removed
           cf_parameters: 'ByteString',
+          source_chain: 'Ethereum',
         },
       ],
     });

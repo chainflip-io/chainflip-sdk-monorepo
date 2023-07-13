@@ -19,7 +19,6 @@ type NewSwapRequest = {
   srcAsset: Asset;
   destAsset: Asset;
   srcChain: Chain;
-  destChain: Chain;
   destAddress: string;
   ccmMetadata?: CcmMetadata;
 };
@@ -34,18 +33,16 @@ const submitAddress = (asset: Asset, address: string): string => {
 const requestValidators = {
   requestSwapDepositAddress: z
     .tuple([
-      chainflipChain,
       chainflipAsset.transform(transformAsset),
-      chainflipChain,
       chainflipAsset.transform(transformAsset),
       z.union([numericString, hexString, btcAddress]),
       z.number(),
-      ccmMetadataSchema.optional(),
+      ccmMetadataSchema
+        .merge(z.object({ source_chain: chainflipChain }))
+        .optional(),
     ])
-    .transform(([a, b, c, d, e, f, g]) =>
-      [a, b, c, d, e, f, g].filter(
-        (item) => item !== undefined && item !== null,
-      ),
+    .transform(([a, b, c, d, e]) =>
+      [a, b, c, d, e].filter((item) => item !== undefined && item !== null),
     ),
 };
 
@@ -81,18 +78,19 @@ export type DepositChannelResponse = z.infer<
 export const submitSwapToBroker = async (
   swapRequest: NewSwapRequest,
 ): Promise<DepositChannelResponse> => {
-  const { srcAsset, destAsset, destAddress, srcChain, destChain } = swapRequest;
+  const { srcAsset, destAsset, destAddress, srcChain } = swapRequest;
   const client = await initializeClient();
 
   const depositChannelResponse = await client.sendRequest(
     'requestSwapDepositAddress',
-    srcChain,
     srcAsset,
-    destChain,
     destAsset,
     submitAddress(srcAsset, destAddress),
-    0, // broker commission
-    swapRequest.ccmMetadata,
+    0,
+    swapRequest.ccmMetadata && {
+      ...swapRequest.ccmMetadata,
+      source_chain: srcChain,
+    },
   );
 
   return depositChannelResponse;
