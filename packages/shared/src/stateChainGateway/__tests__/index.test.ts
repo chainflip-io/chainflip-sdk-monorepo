@@ -50,7 +50,9 @@ describe(fundStateChainAccount, () => {
 
     expect(checkSpy).toHaveBeenCalled();
     expect(waitMock).toHaveBeenCalledWith(1);
-    expect(fundSpy).toHaveBeenCalledWith('0x1234', '1000');
+    expect(fundSpy).toHaveBeenCalledWith('0x1234', '1000', {
+      nonce: undefined,
+    });
   });
 });
 
