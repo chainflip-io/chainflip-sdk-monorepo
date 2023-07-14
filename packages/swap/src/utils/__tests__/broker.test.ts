@@ -71,10 +71,9 @@ describe(submitSwapToBroker, () => {
       srcChain: 'Ethereum',
       destAddress: '0xcafebabe',
       ccmMetadata: {
-        gas_budget: 123,
+        gasBudget: 123,
         message: 'ByteString',
-        source_address: 0, // tb removed
-        cf_parameters: 'ByteString',
+        cfParameters: 'ByteString',
       },
     });
 
@@ -94,9 +93,9 @@ describe(submitSwapToBroker, () => {
         {
           gas_budget: 123,
           message: 'ByteString',
-          source_address: 0, // tb removed
           cf_parameters: 'ByteString',
           source_chain: 'Ethereum',
+          source_address: 0,
         },
       ],
     });

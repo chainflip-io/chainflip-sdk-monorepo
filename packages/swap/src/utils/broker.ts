@@ -13,7 +13,7 @@ import {
 import { CcmMetadata, ccmMetadataSchema } from '@/shared/schemas';
 import { memoize } from './function';
 import RpcClient from './RpcClient';
-import { transformAsset } from './string';
+import { camelToSnakeCase, transformAsset } from './string';
 
 type NewSwapRequest = {
   srcAsset: Asset;
@@ -21,6 +21,17 @@ type NewSwapRequest = {
   srcChain: Chain;
   destAddress: string;
   ccmMetadata?: CcmMetadata;
+};
+
+const transformObjToSnakeCase = (obj: Record<string, unknown> | undefined) => {
+  if (!obj) return undefined;
+  const newObj: Record<string, unknown> = {};
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      newObj[camelToSnakeCase(key)] = obj[key];
+    }
+  }
+  return newObj;
 };
 
 const submitAddress = (asset: Asset, address: string): string => {
@@ -38,11 +49,18 @@ const requestValidators = {
       z.union([numericString, hexString, btcAddress]),
       z.number(),
       ccmMetadataSchema
-        .merge(z.object({ source_chain: chainflipChain }))
+        .merge(
+          z.object({
+            source_chain: chainflipChain,
+            source_address: z.literal(0),
+          }),
+        )
         .optional(),
     ])
     .transform(([a, b, c, d, e]) =>
-      [a, b, c, d, e].filter((item) => item !== undefined && item !== null),
+      [a, b, c, d, transformObjToSnakeCase(e)].filter(
+        (item) => item !== undefined && item !== null,
+      ),
     ),
 };
 
@@ -90,6 +108,7 @@ export const submitSwapToBroker = async (
     swapRequest.ccmMetadata && {
       ...swapRequest.ccmMetadata,
       source_chain: srcChain,
+      source_address: 0,
     },
   );
 

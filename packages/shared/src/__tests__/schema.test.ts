@@ -24,7 +24,6 @@ describe('postSwapSchema', () => {
         ccmMetadata: {
           gas_budget: '0x123',
           message: 'message',
-          source_address: 0, // tb removed
           cf_parameters: 'string',
         },
       }),
@@ -37,7 +36,6 @@ describe('postSwapSchema', () => {
         ccmMetadata: {
           gas_budget: '0x123',
           message: 'message',
-          source_address: 0, // tb removed
         },
       }),
     ).toEqual(expect.objectContaining({ success: true }));
@@ -48,7 +46,6 @@ describe('postSwapSchema', () => {
         ...swapBody,
         ccmMetadata: {
           gas_budget: '0x123',
-          source_address: 0, // tb removed
         },
       }),
     ).toEqual(expect.objectContaining({ success: false }));
@@ -59,7 +56,6 @@ describe('postSwapSchema', () => {
         ...swapBody,
         ccmMetadata: {
           message: 'message',
-          source_address: 0, // tb removed
           cf_parameters: 'string',
         },
       }),
@@ -74,7 +70,6 @@ describe('postSwapSchema', () => {
         ccmMetadata: {
           gas_budget: 123,
           message: 'message',
-          source_address: 0, // tb removed
           cf_parameters: 'string',
         },
       }),
@@ -87,7 +82,6 @@ describe('postSwapSchema', () => {
         ccmMetadata: {
           gas_budget: '123',
           message: 'message',
-          source_address: 0, // tb removed
           cf_parameters: 'string',
         },
       }),
