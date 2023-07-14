@@ -2,6 +2,7 @@ import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import { z } from 'zod';
 import { Asset, Assets, Chain } from '@/shared/enums';
+import { isNotNullish } from '@/shared/guards';
 import {
   hexString,
   numericString,
@@ -11,7 +12,6 @@ import {
   chainflipChain,
 } from '@/shared/parsers';
 import { CcmMetadata, ccmMetadataSchema } from '@/shared/schemas';
-import { isNotNullish } from '../guards';
 import { memoize } from './function';
 import RpcClient from './RpcClient';
 import { camelToSnakeCase, transformAsset } from './string';
