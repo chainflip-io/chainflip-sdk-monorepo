@@ -1,5 +1,5 @@
 import { Chain, Asset, chainAssets } from '@/shared/enums';
-import { QuoteQueryResponse } from '@/shared/schemas';
+import { CcmMetadata, QuoteQueryResponse } from '@/shared/schemas';
 
 export interface ChainData {
   id: Chain;
@@ -36,6 +36,7 @@ export interface QuoteResponse extends QuoteRequest {
 
 export interface DepositAddressRequest extends QuoteRequest {
   destAddress: string;
+  ccmMetadata?: CcmMetadata;
 }
 
 export interface DepositAddressResponse extends DepositAddressRequest {

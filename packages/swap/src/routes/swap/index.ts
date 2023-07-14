@@ -138,9 +138,12 @@ router.post(
     const { address: depositAddress, ...blockInfo } = await submitSwapToBroker(
       payload,
     );
+
+    const { srcChain, destChain, ...rest } = payload;
+
     const { uuid } = await prisma.swapDepositChannel.create({
       data: {
-        ...payload,
+        ...rest,
         depositAddress,
         ...blockInfo,
       },
