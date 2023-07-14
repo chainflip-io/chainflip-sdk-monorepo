@@ -22,9 +22,9 @@ describe('postSwapSchema', () => {
       postSwapSchema.safeParse({
         ...swapBody,
         ccmMetadata: {
-          gas_budget: '0x123',
+          gasBudget: '0x123',
           message: 'message',
-          cf_parameters: 'string',
+          cfParameters: 'string',
         },
       }),
     ).toEqual(expect.objectContaining({ success: true }));
@@ -34,7 +34,7 @@ describe('postSwapSchema', () => {
       postSwapSchema.safeParse({
         ...swapBody,
         ccmMetadata: {
-          gas_budget: '0x123',
+          gasBudget: '0x123',
           message: 'message',
         },
       }),
@@ -45,7 +45,7 @@ describe('postSwapSchema', () => {
       postSwapSchema.safeParse({
         ...swapBody,
         ccmMetadata: {
-          gas_budget: '0x123',
+          gasBudget: '0x123',
         },
       }),
     ).toEqual(expect.objectContaining({ success: false }));
@@ -56,7 +56,7 @@ describe('postSwapSchema', () => {
         ...swapBody,
         ccmMetadata: {
           message: 'message',
-          cf_parameters: 'string',
+          cfParameters: 'string',
         },
       }),
     ).toEqual(expect.objectContaining({ success: false }));
@@ -68,21 +68,21 @@ describe('postSwapSchema', () => {
         destAsset: 'ETH',
         destAddress: '0x123',
         ccmMetadata: {
-          gas_budget: 123,
+          gasBudget: 123,
           message: 'message',
-          cf_parameters: 'string',
+          cfParameters: 'string',
         },
       }),
     ).toEqual(expect.objectContaining({ success: false }));
   });
-  it('handles wrong type for gas_budget', () => {
+  it('handles wrong type for gasBudget', () => {
     expect(
       postSwapSchema.safeParse({
         ...swapBody,
         ccmMetadata: {
-          gas_budget: '123',
+          gasBudget: '123',
           message: 'message',
-          cf_parameters: 'string',
+          cfParameters: 'string',
         },
       }),
     ).toEqual(expect.objectContaining({ success: false }));
