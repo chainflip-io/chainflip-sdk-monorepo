@@ -1,6 +1,6 @@
 {
   "name": "@chainflip-io/cli",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "",
   "main": "./dist/lib.js",
   "types": "./dist/lib.d.ts",
