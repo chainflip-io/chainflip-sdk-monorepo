@@ -11,6 +11,7 @@ import {
   chainflipChain,
 } from '@/shared/parsers';
 import { CcmMetadata, ccmMetadataSchema } from '@/shared/schemas';
+import { isNotNullish } from '../guards';
 import { memoize } from './function';
 import RpcClient from './RpcClient';
 import { camelToSnakeCase, transformAsset } from './string';
@@ -58,9 +59,7 @@ const requestValidators = {
         .optional(),
     ])
     .transform(([a, b, c, d, e]) =>
-      [a, b, c, d, transformObjToSnakeCase(e)].filter(
-        (item) => item !== undefined && item !== null,
-      ),
+      [a, b, c, d, transformObjToSnakeCase(e)].filter(isNotNullish),
     ),
 };
 

@@ -18,8 +18,8 @@ const errorMap: ZodErrorMap = (issue, context) => ({
 export const string = z.string({ errorMap });
 export const number = z.number({ errorMap });
 export const numericString = string.regex(/^[0-9]+$/);
-export const hexString = z.custom<`0x${string}`>((val) =>
-  /^0x[0-9a-f]+$/i.test(val as string),
+export const hexString = z.custom<`0x${string}`>(
+  (val) => typeof val === 'string' && /^0x[0-9a-f]+$/i.test(val),
 );
 export const hexStringFromNumber = numericString
   .transform((arg) => ethers.BigNumber.from(arg).toHexString())
