@@ -47,6 +47,7 @@ export const fundStateChainAccount = async (
   const transaction = await stateChainGateway.fundStateChainAccount(
     accountId,
     amount,
+    { nonce: options.nonce },
   );
 
   return transaction.wait(1);
