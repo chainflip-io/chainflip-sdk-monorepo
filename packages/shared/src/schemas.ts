@@ -1,6 +1,11 @@
 import { z } from 'zod';
 import { Asset } from './enums';
-import { chainflipAsset, numericString } from './parsers';
+import {
+  chainflipAsset,
+  chainflipChain,
+  hexString,
+  numericString,
+} from './parsers';
 
 export const quoteQuerySchema = z.object({
   srcAsset: chainflipAsset,
@@ -10,12 +15,23 @@ export const quoteQuerySchema = z.object({
 
 export type QuoteQueryParams = z.infer<typeof quoteQuerySchema>;
 
+export const ccmMetadataSchema = z.object({
+  gasBudget: z.union([hexString, z.number()]),
+  message: z.union([hexString, z.string()]),
+  cfParameters: z.union([hexString, z.string()]).optional(),
+});
+
+export type CcmMetadata = z.infer<typeof ccmMetadataSchema>;
+
 export const postSwapSchema = z
   .object({
     srcAsset: chainflipAsset,
     destAsset: chainflipAsset,
+    srcChain: chainflipChain,
+    destChain: chainflipChain,
     destAddress: z.string(),
     amount: numericString,
+    ccmMetadata: ccmMetadataSchema.optional(),
   })
   .transform(({ amount, ...rest }) => ({
     ...rest,
