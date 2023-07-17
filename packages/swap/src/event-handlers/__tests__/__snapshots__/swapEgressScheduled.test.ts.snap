@@ -11,11 +11,9 @@ exports[`swapEgressScheduled updates an existing swap with the scheduled timesta
   "egress": {
     "amount": "1234567890",
     "chain": "Ethereum",
-    "timestamp": 2022-12-06T14:31:45.000Z,
+    "scheduledAt": 2022-12-06T14:31:45.000Z,
   },
   "egressAmount": null,
-  "egressCompletedAt": null,
-  "egressCompletedBlockIndex": null,
   "id": Any<BigInt>,
   "intermediateAmount": null,
   "nativeId": 9876545n,
