@@ -16,8 +16,8 @@ export async function handleEvent(
   await prisma.broadcast.update({
     where: { nativeId_chain: { chain, nativeId: broadcastId } },
     data: {
-      successAt: new Date(block.timestamp),
-      successBlockIndex: `${block.height}-${event.indexInBlock}`,
+      succeededAt: new Date(block.timestamp),
+      succeededBlockIndex: `${block.height}-${event.indexInBlock}`,
     },
   });
 }

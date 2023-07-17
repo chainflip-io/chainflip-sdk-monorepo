@@ -103,8 +103,8 @@ model Broadcast {
   egresses            Egress[]
   requestedAt         DateTime?
   requestedBlockIndex String?
-  successAt           DateTime?
-  successBlockIndex   String?
+  succeededAt         DateTime?
+  succeededBlockIndex String?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @default(now()) @updatedAt
 

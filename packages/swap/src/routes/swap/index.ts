@@ -78,7 +78,7 @@ router.get(
 
     let state: State;
 
-    if (swap?.egress?.broadcast?.successAt) {
+    if (swap?.egress?.broadcast?.succeededAt) {
       assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
       assert(swap.egress, 'egress should not be null');
       assert(swap.egress.broadcast, 'broadcast should not be null');
@@ -129,8 +129,9 @@ router.get(
       broadcastRequestedAt: swap?.egress?.broadcast?.requestedAt?.valueOf(),
       broadcastRequestedBlockIndex:
         swap?.egress?.broadcast?.requestedBlockIndex,
-      broadcastSuccessAt: swap?.egress?.broadcast?.successAt?.valueOf(),
-      broadcastSuccessBlockIndex: swap?.egress?.broadcast?.successBlockIndex,
+      broadcastSucceededAt: swap?.egress?.broadcast?.succeededAt?.valueOf(),
+      broadcastSucceededBlockIndex:
+        swap?.egress?.broadcast?.succeededBlockIndex,
     };
 
     logger.info('sending response for swap request', { id, response });

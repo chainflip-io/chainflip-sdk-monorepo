@@ -107,7 +107,7 @@ export type SwapStatusResponse = CommonStatusFields &
         egressScheduledBlockIndex: string;
         broadcastRequestedAt: number;
         broadcastRequestedBlockIndex: string;
-        broadcastSuccessAt: number;
-        broadcastSuccessBlockIndex: string;
+        broadcastSucceededAt: number;
+        broadcastSucceededBlockIndex: string;
       }
   );
