@@ -16,6 +16,7 @@ const eventArgs = z.object({
  */
 export default async function networkBatchBroadcastRequested({
   prisma,
+  block,
   event,
 }: EventHandlerArgs): Promise<void> {
   const { broadcastId, egressIds } = eventArgs.parse(event.args);
@@ -27,25 +28,30 @@ export default async function networkBatchBroadcastRequested({
 
   const [[chain]] = egressIds;
 
-  const depositChannels = await prisma.egress.findMany({
+  const egresses = await prisma.egress.findMany({
     where: {
       chain,
       nativeId: { in: egressIds.map(([, id]) => id) },
     },
   });
 
-  if (depositChannels.length === 0) {
-    logger.customInfo('no egresss found, skipping', {}, { broadcastId });
+  if (egresses.length === 0) {
+    logger.customInfo('no egresses found, skipping', {}, { broadcastId });
     return;
   }
 
   const broadcast = await prisma.broadcast.create({
-    data: { chain, nativeId: broadcastId },
+    data: {
+      chain,
+      nativeId: broadcastId,
+      requestedAt: new Date(block.timestamp),
+      requestedBlockIndex: `${block.height}-${event.indexInBlock}`,
+    },
   });
 
   await prisma.egress.updateMany({
     where: {
-      id: { in: depositChannels.map((destination) => destination.id) },
+      id: { in: egresses.map((egress) => egress.id) },
     },
     data: { broadcastId: broadcast.id },
   });

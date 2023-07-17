@@ -3,7 +3,12 @@ import express from 'express';
 import { assetChains } from '@/shared/enums';
 import { postSwapSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
-import prisma, { Egress, Swap, SwapDepositChannel } from '../../client';
+import prisma, {
+  Egress,
+  Swap,
+  SwapDepositChannel,
+  Broadcast,
+} from '../../client';
 import { submitSwapToBroker } from '../../utils/broker';
 import { isProduction } from '../../utils/consts';
 import logger from '../../utils/logger';
@@ -14,14 +19,19 @@ const router = express.Router();
 
 export enum State {
   Complete = 'COMPLETE',
+  BroadcastRequested = 'BROADCAST_REQUESTED',
   EgressScheduled = 'EGRESS_SCHEDULED',
   SwapExecuted = 'SWAP_EXECUTED',
   DepositReceived = 'DEPOSIT_RECEIVED',
   AwaitingDeposit = 'AWAITING_DEPOSIT',
 }
 
-type SwapWithEgress = Swap & {
-  egress: Egress | null;
+type SwapWithBroadcast = Swap & {
+  egress:
+    | (Egress & {
+        broadcast: Broadcast | null;
+      })
+    | null;
 };
 
 const uuidRegex = /^[a-f\d]{8}(-[a-f\d]{4}){4}[a-f\d]{8}$/i;
@@ -32,9 +42,9 @@ router.get(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    let swap: SwapWithEgress | null | undefined;
+    let swap: SwapWithBroadcast | null | undefined;
     let swapDepositChannel:
-      | (SwapDepositChannel & { swaps: SwapWithEgress[] })
+      | (SwapDepositChannel & { swaps: SwapWithBroadcast[] })
       | null
       | undefined;
 
@@ -42,7 +52,9 @@ router.get(
     if (uuidRegex.test(id)) {
       swapDepositChannel = await prisma.swapDepositChannel.findUnique({
         where: { uuid: id },
-        include: { swaps: { include: { egress: true } } },
+        include: {
+          swaps: { include: { egress: { include: { broadcast: true } } } },
+        },
       });
 
       if (!swapDepositChannel) {
@@ -54,7 +66,7 @@ router.get(
     } else if (txHashRegex.test(id)) {
       swap = await prisma.swap.findUnique({
         where: { txHash: id },
-        include: { egress: true },
+        include: { egress: { include: { broadcast: true } } },
       });
     }
 
@@ -66,10 +78,15 @@ router.get(
 
     let state: State;
 
-    if (swap?.egressCompletedAt) {
+    if (swap?.egress?.broadcast?.successAt) {
       assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
       assert(swap.egress, 'egress should not be null');
+      assert(swap.egress.broadcast, 'broadcast should not be null');
       state = State.Complete;
+    } else if (swap?.egress?.broadcast) {
+      assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
+      assert(swap.egress, 'egress should not be null');
+      state = State.BroadcastRequested;
     } else if (swap?.egress) {
       assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
       state = State.EgressScheduled;
@@ -107,9 +124,13 @@ router.get(
       swapExecutedAt: swap?.swapExecutedAt?.valueOf(),
       swapExecutedBlockIndex: swap?.swapExecutedBlockIndex,
       egressAmount: swap?.egress?.amount?.toString(),
-      egressCompletedAt: swap?.egressCompletedAt?.valueOf(),
-      egressCompletedBlockIndex: swap?.egressCompletedBlockIndex,
-      egressScheduledAt: swap?.egress?.timestamp.valueOf(),
+      egressScheduledAt: swap?.egress?.scheduledAt?.valueOf(),
+      egressScheduledBlockIndex: swap?.egress?.scheduledBlockIndex,
+      broadcastRequestedAt: swap?.egress?.broadcast?.requestedAt?.valueOf(),
+      broadcastRequestedBlockIndex:
+        swap?.egress?.broadcast?.requestedBlockIndex,
+      broadcastSuccessAt: swap?.egress?.broadcast?.successAt?.valueOf(),
+      broadcastSuccessBlockIndex: swap?.egress?.broadcast?.successBlockIndex,
     };
 
     logger.info('sending response for swap request', { id, response });

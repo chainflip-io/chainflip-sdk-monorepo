@@ -19,7 +19,7 @@ export default async function swapExecuted({
     event.args,
   );
 
-  await prisma.swap.updateMany({
+  await prisma.swap.update({
     where: { nativeId: swapId },
     data: {
       egressAmount: egressAmount.toString(),

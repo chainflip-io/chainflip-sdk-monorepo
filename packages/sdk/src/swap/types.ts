@@ -80,6 +80,20 @@ export type SwapStatusResponse = CommonStatusFields &
         swapExecutedBlockIndex: string;
         egressAmount: string;
         egressScheduledAt: number;
+        egressScheduledBlockIndex: string;
+      }
+    | {
+        state: 'BROADCAST_REQUESTED';
+        depositAmount: string;
+        depositReceivedAt: number;
+        depositReceivedBlockIndex: string;
+        swapExecutedAt: number;
+        swapExecutedBlockIndex: string;
+        egressAmount: string;
+        egressScheduledAt: number;
+        egressScheduledBlockIndex: string;
+        broadcastRequestedAt: number;
+        broadcastRequestedBlockIndex: string;
       }
     | {
         state: 'COMPLETE';
@@ -90,7 +104,10 @@ export type SwapStatusResponse = CommonStatusFields &
         swapExecutedBlockIndex: string;
         egressAmount: string;
         egressScheduledAt: number;
-        egressCompletedAt: number;
-        egressCompletedBlockIndex: string;
+        egressScheduledBlockIndex: string;
+        broadcastRequestedAt: number;
+        broadcastRequestedBlockIndex: string;
+        broadcastSuccessAt: number;
+        broadcastSuccessBlockIndex: string;
       }
   );

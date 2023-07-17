@@ -27,7 +27,8 @@ export default async function networkEgressScheduled({
       nativeId: id[1],
       chain: assetChains[asset],
       amount: amount.toString(),
-      timestamp: new Date(block.timestamp),
+      scheduledAt: new Date(block.timestamp),
+      scheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
     },
   });
 }
