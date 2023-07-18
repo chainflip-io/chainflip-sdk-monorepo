@@ -2,6 +2,8 @@
 
 exports[`networkBroadcastSuccess updates an existing broadcast entity with the succeeded timestamp 1`] = `
 {
+  "abortedAt": null,
+  "abortedBlockIndex": null,
   "chain": "Ethereum",
   "createdAt": Any<Date>,
   "id": Any<BigInt>,

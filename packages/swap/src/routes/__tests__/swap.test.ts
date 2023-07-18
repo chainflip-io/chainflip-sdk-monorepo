@@ -266,6 +266,7 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
+          "broadcastAbortedBlockIndex": null,
           "broadcastRequestedAt": 1669907147201,
           "broadcastRequestedBlockIndex": "202-4",
           "broadcastSucceededBlockIndex": null,
@@ -289,7 +290,7 @@ describe('server', () => {
       `);
     });
 
-    it(`retrieves a swap in ${State.Complete} status`, async () => {
+    it(`retrieves a swap in ${State.BroadcastAborted} status`, async () => {
       const swapIntent = await createDepositChannel({
         swaps: {
           create: {
@@ -310,6 +311,76 @@ describe('server', () => {
                   create: {
                     chain: 'Ethereum',
                     nativeId: 2n,
+                    requestedAt: new Date(RECEIVED_TIMESTAMP + 12000),
+                    requestedBlockIndex: `202-4`,
+                    abortedAt: new Date(RECEIVED_TIMESTAMP + 18000),
+                    abortedBlockIndex: `204-4`,
+                  },
+                },
+              },
+            },
+            srcAsset: Assets.ETH,
+            destAsset: Assets.DOT,
+            destAddress: DOT_ADDRESS,
+          },
+        },
+      });
+
+      const { body, status } = await request(server).get(
+        `/swaps/${swapIntent.uuid}`,
+      );
+
+      expect(status).toBe(200);
+      const { swapId, ...rest } = body;
+      expect(BigInt(swapId)).toEqual(nativeId);
+      expect(rest).toMatchInlineSnapshot(`
+        {
+          "broadcastAbortedAt": 1669907153201,
+          "broadcastAbortedBlockIndex": "204-4",
+          "broadcastRequestedAt": 1669907147201,
+          "broadcastRequestedBlockIndex": "202-4",
+          "broadcastSucceededBlockIndex": null,
+          "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+          "depositAmount": "10",
+          "depositReceivedAt": 1669907135201,
+          "depositReceivedBlockIndex": "100-3",
+          "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
+          "destAsset": "DOT",
+          "destChain": "Polkadot",
+          "egressAmount": "1000000000000000000",
+          "egressScheduledAt": 1669907147201,
+          "egressScheduledBlockIndex": "202-3",
+          "expectedDepositAmount": "10000000000",
+          "srcAsset": "ETH",
+          "srcChain": "Ethereum",
+          "state": "BROADCAST_ABORTED",
+          "swapExecutedAt": 1669907141201,
+          "swapExecutedBlockIndex": "200-3",
+        }
+      `);
+    });
+
+    it(`retrieves a swap in ${State.Complete} status`, async () => {
+      const swapIntent = await createDepositChannel({
+        swaps: {
+          create: {
+            nativeId,
+            depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
+            depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+            depositAmount: '10',
+            swapExecutedAt: new Date(RECEIVED_TIMESTAMP + 6000),
+            swapExecutedBlockIndex: `200-3`,
+            egress: {
+              create: {
+                scheduledAt: new Date(RECEIVED_TIMESTAMP + 12000),
+                scheduledBlockIndex: `202-3`,
+                amount: (10n ** 18n).toString(),
+                chain: 'Ethereum',
+                nativeId: 3n,
+                broadcast: {
+                  create: {
+                    chain: 'Ethereum',
+                    nativeId: 3n,
                     requestedAt: new Date(RECEIVED_TIMESTAMP + 12000),
                     requestedBlockIndex: `202-4`,
                     succeededAt: new Date(RECEIVED_TIMESTAMP + 18000),
@@ -334,6 +405,7 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
+          "broadcastAbortedBlockIndex": null,
           "broadcastRequestedAt": 1669907147201,
           "broadcastRequestedBlockIndex": "202-4",
           "broadcastSucceededAt": 1669907153201,

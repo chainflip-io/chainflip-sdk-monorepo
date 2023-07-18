@@ -19,6 +19,7 @@ const router = express.Router();
 
 export enum State {
   Complete = 'COMPLETE',
+  BroadcastAborted = 'BROADCAST_ABORTED',
   BroadcastRequested = 'BROADCAST_REQUESTED',
   EgressScheduled = 'EGRESS_SCHEDULED',
   SwapExecuted = 'SWAP_EXECUTED',
@@ -81,6 +82,9 @@ router.get(
     if (swap?.egress?.broadcast?.succeededAt) {
       assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
       state = State.Complete;
+    } else if (swap?.egress?.broadcast?.abortedAt) {
+      assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
+      state = State.BroadcastAborted;
     } else if (swap?.egress?.broadcast) {
       assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
       state = State.BroadcastRequested;
@@ -126,6 +130,8 @@ router.get(
       broadcastRequestedAt: swap?.egress?.broadcast?.requestedAt?.valueOf(),
       broadcastRequestedBlockIndex:
         swap?.egress?.broadcast?.requestedBlockIndex,
+      broadcastAbortedAt: swap?.egress?.broadcast?.abortedAt?.valueOf(),
+      broadcastAbortedBlockIndex: swap?.egress?.broadcast?.abortedBlockIndex,
       broadcastSucceededAt: swap?.egress?.broadcast?.succeededAt?.valueOf(),
       broadcastSucceededBlockIndex:
         swap?.egress?.broadcast?.succeededBlockIndex,

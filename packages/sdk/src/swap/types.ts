@@ -96,6 +96,21 @@ export type SwapStatusResponse = CommonStatusFields &
         broadcastRequestedBlockIndex: string;
       }
     | {
+        state: 'BROADCAST_ABORTED';
+        depositAmount: string;
+        depositReceivedAt: number;
+        depositReceivedBlockIndex: string;
+        swapExecutedAt: number;
+        swapExecutedBlockIndex: string;
+        egressAmount: string;
+        egressScheduledAt: number;
+        egressScheduledBlockIndex: string;
+        broadcastRequestedAt: number;
+        broadcastRequestedBlockIndex: string;
+        broadcastAbortedAt: number;
+        broadcastAbortedBlockIndex: string;
+      }
+    | {
         state: 'COMPLETE';
         depositAmount: string;
         depositReceivedAt: number;
