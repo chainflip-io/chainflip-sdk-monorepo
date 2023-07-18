@@ -11,6 +11,7 @@ import prisma, {
   Broadcast,
 } from '../../client';
 import { isProduction } from '../../utils/consts';
+import { handleExit } from '../../utils/function';
 import logger from '../../utils/logger';
 import ServiceError from '../../utils/ServiceError';
 import { asyncHandler } from '../common';
@@ -156,7 +157,10 @@ router.post(
       throw ServiceError.badRequest('provided address is not valid');
     }
 
-    if (!client) client = await BrokerClient.create({ logger });
+    if (!client) {
+      client = await BrokerClient.create({ logger });
+      handleExit(() => client?.close());
+    }
 
     const { address: depositAddress, ...blockInfo } =
       await client.requestSwapDepositAddress(payload);
