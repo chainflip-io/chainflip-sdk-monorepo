@@ -27,6 +27,11 @@ export const yargsOptions = {
     describe: 'The chain to swap from',
     demandOption: true,
   },
+  'dest-chain': {
+    choices: Object.values(Chains),
+    describe: 'The chain to swap to',
+    demandOption: true,
+  },
 } as const satisfies { [key: string]: Options };
 
 export default async function cliRequestSwapDepositAddress(
@@ -39,6 +44,7 @@ export default async function cliRequestSwapDepositAddress(
     destAsset: args.destAsset,
     destAddress: args.destAddress,
     srcChain: args.srcChain,
+    destChain: args.destChain,
   });
 
   console.log(`Deposit address: ${result.address}`);

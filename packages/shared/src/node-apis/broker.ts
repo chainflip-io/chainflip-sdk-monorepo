@@ -24,6 +24,7 @@ type NewSwapRequest = {
   srcAsset: Asset;
   destAsset: Asset;
   srcChain: Chain;
+  destChain: Chain;
   destAddress: string;
   ccmMetadata?: CcmMetadata;
 };
