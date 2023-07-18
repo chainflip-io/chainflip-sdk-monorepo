@@ -21,6 +21,7 @@ export const yargsOptions = {
   'broker-url': {
     type: 'string',
     describe: 'The broker URL',
+    demandOption: true,
   },
   'src-chain': {
     choices: Object.values(Chains),
