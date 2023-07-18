@@ -83,7 +83,7 @@ model Egress {
   chain               Chain
   amount              Decimal    @db.Decimal(30, 0)
   scheduledAt         DateTime
-  scheduledBlockIndex String?
+  scheduledBlockIndex String
   swap                Swap?      @relation(fields: [swapId], references: [id])
   swapId              BigInt?    @unique
   broadcast           Broadcast? @relation(fields: [broadcastId], references: [id])
@@ -101,8 +101,8 @@ model Broadcast {
   nativeId            BigInt
   chain               Chain
   egresses            Egress[]
-  requestedAt         DateTime?
-  requestedBlockIndex String?
+  requestedAt         DateTime
+  requestedBlockIndex String
   succeededAt         DateTime?
   succeededBlockIndex String?
   createdAt           DateTime  @default(now())

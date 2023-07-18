@@ -13,8 +13,9 @@ export async function handleEvent(
 ): Promise<void> {
   const { broadcastId } = eventArgs.parse(event.args);
 
-  await prisma.broadcast.update({
-    where: { nativeId_chain: { chain, nativeId: broadcastId } },
+  // use updateMany to skip update if we are not tracking swap
+  await prisma.broadcast.updateMany({
+    where: { chain, nativeId: broadcastId },
     data: {
       succeededAt: new Date(block.timestamp),
       succeededBlockIndex: `${block.height}-${event.indexInBlock}`,
