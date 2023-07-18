@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { setTimeout as sleep } from 'timers/promises';
 import WebSocket, { OPEN } from 'ws';
-import { Assets } from '@/shared/enums';
-import { submitSwapToBroker } from '../broker';
+import { Assets } from '../../enums';
+import BrokerClient from '../broker';
 
 jest.mock(
   'ws',
@@ -13,20 +13,31 @@ jest.mock(
       once() {}
       send() {}
       close() {}
+      removeListener() {}
       readyState = OPEN;
     },
 );
 
-describe(submitSwapToBroker, () => {
-  it('gets a response from the broker', async () => {
-    const onSpy = jest.spyOn(WebSocket.prototype, 'on');
-    const sendSpy = jest.spyOn(WebSocket.prototype, 'send');
+describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
+  let client: BrokerClient;
+  const onSpy = jest.spyOn(WebSocket.prototype, 'on');
+  const sendSpy = jest.spyOn(WebSocket.prototype, 'send');
 
-    const resultPromise = submitSwapToBroker({
+  beforeEach(async () => {
+    client = await BrokerClient.create();
+  });
+
+  afterEach(async () => {
+    await client.close();
+  });
+
+  it('gets a response from the broker', async () => {
+    const resultPromise = client.requestSwapDepositAddress({
       srcAsset: Assets.FLIP,
       destAsset: Assets.USDC,
       srcChain: 'Ethereum',
       destAddress: '0xcafebabe',
+      destChain: 'Ethereum',
     });
 
     // event loop tick to allow promise within client to resolve
@@ -63,13 +74,12 @@ describe(submitSwapToBroker, () => {
   });
 
   it('submits ccm data', async () => {
-    const sendSpy = jest.spyOn(WebSocket.prototype, 'send');
-
-    submitSwapToBroker({
+    const result = client.requestSwapDepositAddress({
       srcAsset: Assets.FLIP,
       destAsset: Assets.USDC,
       srcChain: 'Ethereum',
       destAddress: '0xcafebabe',
+      destChain: 'Ethereum',
       ccmMetadata: {
         gasBudget: 123,
         message: 'ByteString',
@@ -80,9 +90,21 @@ describe(submitSwapToBroker, () => {
     // event loop tick to allow promise within client to resolve
     await sleep(0);
     const requestObject = JSON.parse(sendSpy.mock.calls[0][0] as string);
+    const messageHandler = onSpy.mock.calls[0][1] as (...args: any) => any;
+    messageHandler(
+      JSON.stringify({
+        id: 0,
+        jsonrpc: '2.0',
+        result: {
+          address: '0x1234567890',
+          expiry_block: 100,
+          issued_block: 50,
+        },
+      }),
+    );
 
     expect(requestObject).toStrictEqual({
-      id: 1,
+      id: 0,
       jsonrpc: '2.0',
       method: 'broker_requestSwapDepositAddress',
       params: [
@@ -99,5 +121,6 @@ describe(submitSwapToBroker, () => {
         },
       ],
     });
+    await expect(result).resolves.not.toThrowError();
   });
 });

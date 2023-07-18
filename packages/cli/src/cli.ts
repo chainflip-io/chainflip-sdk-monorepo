@@ -8,6 +8,9 @@ import cliExecuteSwap, {
 import cliFundStateChainAccount, {
   yargsOptions as cliFundStateChainAccountOptions,
 } from './commands/cliFundStateChainAccount';
+import cliRequestSwapDepositAddress, {
+  yargsOptions as cliRequestSwapDepositAddressOptions,
+} from './commands/cliRequestSwapDepositAddress';
 
 export default async function cli(args: string[]) {
   return yargs(args)
@@ -20,6 +23,12 @@ export default async function cli(args: string[]) {
       '',
       cliFundStateChainAccountOptions,
       cliFundStateChainAccount,
+    )
+    .command(
+      'request-swap-deposit-address',
+      '',
+      cliRequestSwapDepositAddressOptions,
+      cliRequestSwapDepositAddress,
     )
     .wrap(0)
     .strict()
