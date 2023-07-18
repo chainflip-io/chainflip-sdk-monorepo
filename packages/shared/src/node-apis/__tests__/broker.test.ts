@@ -37,6 +37,7 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
       destAsset: Assets.USDC,
       srcChain: 'Ethereum',
       destAddress: '0xcafebabe',
+      destChain: 'Ethereum',
     });
 
     // event loop tick to allow promise within client to resolve
@@ -73,11 +74,12 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
   });
 
   it('submits ccm data', async () => {
-    client.requestSwapDepositAddress({
+    const result = client.requestSwapDepositAddress({
       srcAsset: Assets.FLIP,
       destAsset: Assets.USDC,
       srcChain: 'Ethereum',
       destAddress: '0xcafebabe',
+      destChain: 'Ethereum',
       ccmMetadata: {
         gasBudget: 123,
         message: 'ByteString',
@@ -88,6 +90,18 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
     // event loop tick to allow promise within client to resolve
     await sleep(0);
     const requestObject = JSON.parse(sendSpy.mock.calls[0][0] as string);
+    const messageHandler = onSpy.mock.calls[0][1] as (...args: any) => any;
+    messageHandler(
+      JSON.stringify({
+        id: 0,
+        jsonrpc: '2.0',
+        result: {
+          address: '0x1234567890',
+          expiry_block: 100,
+          issued_block: 50,
+        },
+      }),
+    );
 
     expect(requestObject).toStrictEqual({
       id: 0,
@@ -107,5 +121,6 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
         },
       ],
     });
+    await expect(result).resolves.not.toThrowError();
   });
 });
