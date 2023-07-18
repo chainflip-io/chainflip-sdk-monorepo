@@ -1,6 +1,6 @@
 {
-  "name": "@chainflip-io/chainflip-sdk",
-  "version": "0.0.49",
+  "name": "@chainflip/sdk",
+  "version": "0.1.0",
   "description": "",
   "exports": {
     "./swap": {
@@ -42,7 +42,7 @@
     "node": "18.16.0",
     "pnpm": ">=7"
   },
-  "repository": "https://github.com/chainflip-io/chainflip-sdk.git",
+  "repository": "https://github.com/chainflip-io/chainflip-sdk-monorepo.git",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
