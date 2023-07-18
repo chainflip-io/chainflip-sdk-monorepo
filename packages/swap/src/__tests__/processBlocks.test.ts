@@ -70,8 +70,6 @@ describe(processBlocks, () => {
         "destAddress": "bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa",
         "destAsset": "BTC",
         "egressAmount": null,
-        "egressCompletedAt": null,
-        "egressCompletedBlockIndex": null,
         "id": Any<BigInt>,
         "intermediateAmount": null,
         "nativeId": 1n,

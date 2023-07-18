@@ -3,5 +3,15 @@
     "item": "sisyphos-swapping-backend",
     "vault": "Web",
     "account": "chainflip.1password.com"
+  },
+  "partnernet": {
+    "item": "partnernet-swapping-backend",
+    "vault": "Web",
+    "account": "chainflip.1password.com"
+  },
+  "backspin": {
+    "item": "backspin-swapping-backend",
+    "vault": "Web",
+    "account": "chainflip.1password.com"
   }
 }

@@ -116,7 +116,6 @@ describe('server', () => {
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "egressCompletedBlockIndex": null,
           "expectedDepositAmount": "10000000000",
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
@@ -159,7 +158,6 @@ describe('server', () => {
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "egressCompletedBlockIndex": null,
           "expectedDepositAmount": "10000000000",
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
@@ -182,7 +180,8 @@ describe('server', () => {
             swapExecutedBlockIndex: `200-3`,
             egress: {
               create: {
-                timestamp: new Date(RECEIVED_TIMESTAMP + 12000),
+                scheduledAt: new Date(RECEIVED_TIMESTAMP + 12000),
+                scheduledBlockIndex: `202-3`,
                 amount: (10n ** 18n).toString(),
                 chain: 'Ethereum',
                 nativeId: 1n,
@@ -212,12 +211,78 @@ describe('server', () => {
           "destAsset": "DOT",
           "destChain": "Polkadot",
           "egressAmount": "1000000000000000000",
-          "egressCompletedBlockIndex": null,
           "egressScheduledAt": 1669907147201,
+          "egressScheduledBlockIndex": "202-3",
           "expectedDepositAmount": "10000000000",
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "EGRESS_SCHEDULED",
+          "swapExecutedAt": 1669907141201,
+          "swapExecutedBlockIndex": "200-3",
+        }
+      `);
+    });
+
+    it(`retrieves a swap in ${State.BroadcastRequested} status`, async () => {
+      const swapIntent = await createDepositChannel({
+        swaps: {
+          create: {
+            nativeId,
+            depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
+            depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+            depositAmount: '10',
+            swapExecutedAt: new Date(RECEIVED_TIMESTAMP + 6000),
+            swapExecutedBlockIndex: `200-3`,
+            egress: {
+              create: {
+                scheduledAt: new Date(RECEIVED_TIMESTAMP + 12000),
+                scheduledBlockIndex: `202-3`,
+                amount: (10n ** 18n).toString(),
+                chain: 'Ethereum',
+                nativeId: 1n,
+                broadcast: {
+                  create: {
+                    chain: 'Ethereum',
+                    nativeId: 1n,
+                    requestedAt: new Date(RECEIVED_TIMESTAMP + 12000),
+                    requestedBlockIndex: `202-4`,
+                  },
+                },
+              },
+            },
+            srcAsset: Assets.ETH,
+            destAsset: Assets.DOT,
+            destAddress: DOT_ADDRESS,
+          },
+        },
+      });
+
+      const { body, status } = await request(server).get(
+        `/swaps/${swapIntent.uuid}`,
+      );
+
+      expect(status).toBe(200);
+      const { swapId, ...rest } = body;
+      expect(BigInt(swapId)).toEqual(nativeId);
+      expect(rest).toMatchInlineSnapshot(`
+        {
+          "broadcastRequestedAt": 1669907147201,
+          "broadcastRequestedBlockIndex": "202-4",
+          "broadcastSucceededBlockIndex": null,
+          "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+          "depositAmount": "10",
+          "depositReceivedAt": 1669907135201,
+          "depositReceivedBlockIndex": "100-3",
+          "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
+          "destAsset": "DOT",
+          "destChain": "Polkadot",
+          "egressAmount": "1000000000000000000",
+          "egressScheduledAt": 1669907147201,
+          "egressScheduledBlockIndex": "202-3",
+          "expectedDepositAmount": "10000000000",
+          "srcAsset": "ETH",
+          "srcChain": "Ethereum",
+          "state": "BROADCAST_REQUESTED",
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
         }
@@ -234,14 +299,23 @@ describe('server', () => {
             depositAmount: '10',
             swapExecutedAt: new Date(RECEIVED_TIMESTAMP + 6000),
             swapExecutedBlockIndex: `200-3`,
-            egressCompletedAt: new Date(RECEIVED_TIMESTAMP + 18000),
-            egressCompletedBlockIndex: RECEIVED_BLOCK_INDEX + 200,
             egress: {
               create: {
-                timestamp: new Date(RECEIVED_TIMESTAMP + 12000),
+                scheduledAt: new Date(RECEIVED_TIMESTAMP + 12000),
+                scheduledBlockIndex: `202-3`,
                 amount: (10n ** 18n).toString(),
                 chain: 'Ethereum',
-                nativeId: 1n,
+                nativeId: 2n,
+                broadcast: {
+                  create: {
+                    chain: 'Ethereum',
+                    nativeId: 2n,
+                    requestedAt: new Date(RECEIVED_TIMESTAMP + 12000),
+                    requestedBlockIndex: `202-4`,
+                    succeededAt: new Date(RECEIVED_TIMESTAMP + 18000),
+                    succeededBlockIndex: `204-4`,
+                  },
+                },
               },
             },
             srcAsset: Assets.ETH,
@@ -260,6 +334,10 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
+          "broadcastRequestedAt": 1669907147201,
+          "broadcastRequestedBlockIndex": "202-4",
+          "broadcastSucceededAt": 1669907153201,
+          "broadcastSucceededBlockIndex": "204-4",
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositReceivedAt": 1669907135201,
@@ -268,9 +346,8 @@ describe('server', () => {
           "destAsset": "DOT",
           "destChain": "Polkadot",
           "egressAmount": "1000000000000000000",
-          "egressCompletedAt": 1669907153201,
-          "egressCompletedBlockIndex": "100-3200",
           "egressScheduledAt": 1669907147201,
+          "egressScheduledBlockIndex": "202-3",
           "expectedDepositAmount": "10000000000",
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
@@ -309,7 +386,6 @@ describe('server', () => {
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "egressCompletedBlockIndex": null,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",

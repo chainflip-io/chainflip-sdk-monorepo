@@ -19,6 +19,7 @@ export default async function swapExecuted({
     event.args,
   );
 
+  // use updateMany to skip update if we are not tracking swap
   await prisma.swap.updateMany({
     where: { nativeId: swapId },
     data: {

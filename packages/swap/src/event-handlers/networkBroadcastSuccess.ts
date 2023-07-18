@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { Chain } from '@/shared/enums';
 import { unsignedInteger } from '@/shared/parsers';
-import logger from '../utils/logger';
 import type { EventHandlerArgs } from './index';
 
 const eventArgs = z.object({
@@ -14,31 +13,12 @@ export async function handleEvent(
 ): Promise<void> {
   const { broadcastId } = eventArgs.parse(event.args);
 
-  const broadcast = await prisma.broadcast.findUnique({
-    where: { nativeId_chain: { chain, nativeId: broadcastId } },
-    include: { egresses: { include: { swap: true } } },
-  });
-
-  if (!broadcast) {
-    logger.customInfo(
-      'no broadcast found, skipping',
-      {},
-      { broadcastId, chain },
-    );
-    return;
-  }
-  await prisma.swap.updateMany({
-    where: {
-      id: {
-        in: broadcast.egresses.reduce((acc, egress) => {
-          if (egress.swapId !== null) acc.push(egress.swapId);
-          return acc;
-        }, [] as bigint[]),
-      },
-    },
+  // use updateMany to skip update if we are not tracking swap
+  await prisma.broadcast.updateMany({
+    where: { chain, nativeId: broadcastId },
     data: {
-      egressCompletedAt: new Date(block.timestamp),
-      egressCompletedBlockIndex: `${block.height}-${event.indexInBlock}`,
+      succeededAt: new Date(block.timestamp),
+      succeededBlockIndex: `${block.height}-${event.indexInBlock}`,
     },
   });
 }

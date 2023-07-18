@@ -222,4 +222,89 @@ export const swapEgressScheduledMock = {
       },
     },
   },
-};
+} as const;
+
+export const networkEgressScheduledMock = {
+  block: {
+    height: 120,
+    timestamp: 1670337105000,
+  },
+  eventContext: {
+    kind: 'event',
+    event: {
+      args: {
+        id: [
+          {
+            __kind: 'Ethereum',
+          },
+          '13',
+        ],
+        asset: {
+          __kind: 'Usdc',
+        },
+        amount: '4396575964',
+        destinationAddress: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0',
+      },
+      name: 'EthereumIngressEgress.EgressScheduled',
+      indexInBlock: 123,
+    },
+  },
+} as const;
+
+export const networkBatchBroadcastRequestedMock = {
+  block: {
+    height: 120,
+    timestamp: 1670337105000,
+  },
+  eventContext: {
+    kind: 'event',
+    event: {
+      args: {
+        egressIds: [
+          [
+            {
+              __kind: 'Ethereum',
+            },
+            '10',
+          ],
+          [
+            {
+              __kind: 'Ethereum',
+            },
+            '11',
+          ],
+          [
+            {
+              __kind: 'Ethereum',
+            },
+            '12',
+          ],
+        ],
+        broadcastId: 9,
+      },
+      name: 'EthereumIngressEgress.BatchBroadcastRequested',
+      indexInBlock: 135,
+    },
+  },
+} as const;
+
+export const networkBroadcastSuccessMock = {
+  block: {
+    height: 120,
+    timestamp: 1670337105000,
+  },
+  eventContext: {
+    kind: 'event',
+    event: {
+      args: {
+        broadcastId: 12,
+        transactionOutId: {
+          s: '0x689c4add3e14ea8243a1966fc2cea3baea692ca52fd7ef464e1cc74e608bf262',
+          kTimesGAddress: '0x972c9f07cc7a847b29003655faf265c12e193f09',
+        },
+      },
+      name: 'EthereumBroadcaster.BroadcastSuccess',
+      indexInBlock: 12,
+    },
+  },
+} as const;

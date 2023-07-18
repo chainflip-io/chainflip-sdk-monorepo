@@ -57,17 +57,15 @@ model Swap {
   /// the swap id on the state chain
   nativeId                  BigInt              @unique
   srcAsset                  Asset
-  depositAmount             Decimal              @db.Decimal(30, 0)
-  intermediateAmount        Decimal?             @db.Decimal(30, 0)
-  egressAmount              Decimal?             @db.Decimal(30, 0)
+  depositAmount             Decimal             @db.Decimal(30, 0)
+  intermediateAmount        Decimal?            @db.Decimal(30, 0)
+  egressAmount              Decimal?            @db.Decimal(30, 0)
   destAsset                 Asset
   destAddress               String
   depositReceivedAt         DateTime
   depositReceivedBlockIndex String
   swapExecutedAt            DateTime?
   swapExecutedBlockIndex    String?
-  egressCompletedAt         DateTime?
-  egressCompletedBlockIndex String?
   swapDepositChannel        SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
   swapDepositChannelId      BigInt?
   txHash                    String?             @unique
@@ -79,29 +77,36 @@ model Swap {
 }
 
 model Egress {
-  id          BigInt     @id @default(autoincrement())
+  id                  BigInt     @id @default(autoincrement())
   /// the egress id on the state chain
-  nativeId    BigInt
-  /// the swap id on the state chain
-  chain       Chain
-  amount      Decimal    @db.Decimal(30, 0)
-  timestamp   DateTime
-  swap        Swap?      @relation(fields: [swapId], references: [id])
-  swapId      BigInt?    @unique
-  broadcast   Broadcast? @relation(fields: [broadcastId], references: [id])
-  broadcastId BigInt?
-  createdAt   DateTime   @default(now())
+  nativeId            BigInt
+  chain               Chain
+  amount              Decimal    @db.Decimal(30, 0)
+  scheduledAt         DateTime
+  scheduledBlockIndex String
+  swap                Swap?      @relation(fields: [swapId], references: [id])
+  swapId              BigInt?    @unique
+  broadcast           Broadcast? @relation(fields: [broadcastId], references: [id])
+  broadcastId         BigInt?
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @default(now()) @updatedAt
 
   @@unique([nativeId, chain])
   @@schema("public")
 }
 
 model Broadcast {
-  id       BigInt   @id @default(autoincrement())
+  id                  BigInt    @id @default(autoincrement())
   /// the broadcast id on the state chain
-  nativeId BigInt
-  chain    Chain
-  egresses Egress[]
+  nativeId            BigInt
+  chain               Chain
+  egresses            Egress[]
+  requestedAt         DateTime
+  requestedBlockIndex String
+  succeededAt         DateTime?
+  succeededBlockIndex String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @default(now()) @updatedAt
 
   @@unique([nativeId, chain])
   @@schema("public")

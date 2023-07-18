@@ -25,7 +25,8 @@ describe(swapEgressScheduled, () => {
         chain: event.args.egressId[0].__kind,
         nativeId: BigInt(event.args.egressId[1]),
         amount: '1234567890',
-        timestamp: new Date(block.timestamp),
+        scheduledAt: new Date(block.timestamp),
+        scheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
       },
     });
 
@@ -62,7 +63,7 @@ describe(swapEgressScheduled, () => {
         egress: {
           select: {
             amount: true,
-            timestamp: true,
+            scheduledAt: true,
             chain: true,
           },
         },
