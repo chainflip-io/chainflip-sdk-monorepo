@@ -80,12 +80,9 @@ router.get(
 
     if (swap?.egress?.broadcast?.succeededAt) {
       assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
-      assert(swap.egress, 'egress should not be null');
-      assert(swap.egress.broadcast, 'broadcast should not be null');
       state = State.Complete;
     } else if (swap?.egress?.broadcast) {
       assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
-      assert(swap.egress, 'egress should not be null');
       state = State.BroadcastRequested;
     } else if (swap?.egress) {
       assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
