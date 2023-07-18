@@ -104,8 +104,6 @@ export default class RpcClient<
     ...params: z.input<Req[R]>
   ): Promise<z.infer<Res[R]>> {
     let response: RpcResponse | undefined;
-    console.log('start');
-
     for (let i = 0; i < 5; i += 1) {
       try {
         const id = this.requestId;
@@ -144,7 +142,6 @@ export default class RpcClient<
       }
     }
 
-    console.log('finish');
     assert(response, 'no response received');
 
     if ('error' in response) throw new Error(response.error.message);
