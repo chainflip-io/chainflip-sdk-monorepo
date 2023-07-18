@@ -4,15 +4,15 @@ import { Server } from 'http';
 import { AddressInfo } from 'net';
 import request from 'supertest';
 import { promisify } from 'util';
+import RpcClient from '@/shared/node-apis/RpcClient';
 import prisma from '../../client';
 import QuotingClient from '../../quoting/QuotingClient';
 import app from '../../server';
-import RpcClient from '../../utils/RpcClient';
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
 jest.mock(
-  '../../utils/RpcClient',
+  '@/shared/node-apis/RpcClient',
   () =>
     class {
       async connect() {

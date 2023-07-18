@@ -60,7 +60,8 @@
         ]
       }
     ],
-    "camelcase": "off"
+    "camelcase": "off",
+    "no-await-in-loop": "off"
   },
   "ignorePatterns": ["**/dist", "**/generated"],
   "settings": {

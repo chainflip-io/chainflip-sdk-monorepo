@@ -1,8 +1,9 @@
 import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
+import type { Logger } from 'winston';
 import { z } from 'zod';
-import { Asset, Assets, Chain } from '@/shared/enums';
-import { isNotNullish } from '@/shared/guards';
+import { Asset, Assets, Chain } from '../enums';
+import { isNotNullish } from '../guards';
 import {
   hexString,
   numericString,
@@ -10,11 +11,14 @@ import {
   dotAddress,
   chainflipAsset,
   chainflipChain,
-} from '@/shared/parsers';
-import { CcmMetadata, ccmMetadataSchema } from '@/shared/schemas';
-import { memoize } from './function';
+} from '../parsers';
+import { CcmMetadata, ccmMetadataSchema } from '../schemas';
+import {
+  CamelCaseToSnakeCase,
+  camelToSnakeCase,
+  transformAsset,
+} from '../strings';
 import RpcClient from './RpcClient';
-import { camelToSnakeCase, transformAsset } from './string';
 
 type NewSwapRequest = {
   srcAsset: Asset;
@@ -24,7 +28,13 @@ type NewSwapRequest = {
   ccmMetadata?: CcmMetadata;
 };
 
-const transformObjToSnakeCase = (obj: Record<string, unknown> | undefined) => {
+type SnakeCaseKeys<T> = {
+  [K in keyof T as K extends string ? CamelCaseToSnakeCase<K> : K]: T[K];
+};
+
+const transformObjToSnakeCase = <T>(
+  obj: T | undefined,
+): SnakeCaseKeys<T> | undefined => {
   if (!obj) return undefined;
   const newObj: Record<string, unknown> = {};
   for (const key in obj) {
@@ -32,7 +42,7 @@ const transformObjToSnakeCase = (obj: Record<string, unknown> | undefined) => {
       newObj[camelToSnakeCase(key)] = obj[key];
     }
   }
-  return newObj;
+  return newObj as SnakeCaseKeys<T>;
 };
 
 const submitAddress = (asset: Asset, address: string): string => {
@@ -77,39 +87,51 @@ const responseValidators = {
     })),
 };
 
-const initializeClient = memoize(async () => {
-  const rpcClient = await new RpcClient(
-    process.env.RPC_BROKER_WSS_URL as string,
-    requestValidators,
-    responseValidators,
-    'broker',
-  ).connect();
-
-  return rpcClient;
-});
-
 export type DepositChannelResponse = z.infer<
   (typeof responseValidators)['requestSwapDepositAddress']
 >;
 
-export const submitSwapToBroker = async (
-  swapRequest: NewSwapRequest,
-): Promise<DepositChannelResponse> => {
-  const { srcAsset, destAsset, destAddress, srcChain } = swapRequest;
-  const client = await initializeClient();
-
-  const depositChannelResponse = await client.sendRequest(
-    'requestSwapDepositAddress',
-    srcAsset,
-    destAsset,
-    submitAddress(srcAsset, destAddress),
-    0,
-    swapRequest.ccmMetadata && {
-      ...swapRequest.ccmMetadata,
-      source_chain: srcChain,
-      source_address: 0,
-    },
-  );
-
-  return depositChannelResponse;
+type BrokerClientOpts = {
+  url?: string;
+  logger?: Logger;
 };
+
+export default class BrokerClient extends RpcClient<
+  typeof requestValidators,
+  typeof responseValidators
+> {
+  static create(opts: BrokerClientOpts = {}): Promise<BrokerClient> {
+    return new BrokerClient(opts).connect();
+  }
+
+  private constructor(opts: BrokerClientOpts = {}) {
+    super(
+      opts.url ?? (process.env.RPC_BROKER_WSS_URL as string),
+      requestValidators,
+      responseValidators,
+      'broker',
+      opts.logger,
+    );
+  }
+
+  async requestSwapDepositAddress(
+    swapRequest: NewSwapRequest,
+  ): Promise<DepositChannelResponse> {
+    const { srcAsset, destAsset, destAddress, srcChain } = swapRequest;
+
+    const depositChannelResponse = await this.sendRequest(
+      'requestSwapDepositAddress',
+      srcAsset,
+      destAsset,
+      submitAddress(srcAsset, destAddress),
+      0,
+      swapRequest.ccmMetadata && {
+        ...swapRequest.ccmMetadata,
+        source_chain: srcChain,
+        source_address: 0,
+      },
+    );
+
+    return depositChannelResponse;
+  }
+}

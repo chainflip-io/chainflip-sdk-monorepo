@@ -1,11 +1,11 @@
 import assert from 'assert';
 import EventEmitter, { once } from 'events';
 import { filter, firstValueFrom, Subject, timeout } from 'rxjs';
+import type { Logger } from 'winston';
 import WebSocket from 'ws';
 import { z } from 'zod';
-import { Asset } from '@/shared/enums';
-import { handleExit, onceWithTimeout } from './function';
-import logger from './logger';
+import { Asset } from '../enums';
+import { onceWithTimeout } from '../functions';
 
 const READY = 'READY';
 const DISCONNECT = 'DISCONNECT';
@@ -35,9 +35,9 @@ export default class RpcClient<
     private readonly requestMap: Req,
     private readonly responseMap: Res,
     private readonly namespace: string,
+    private readonly logger?: Logger,
   ) {
     super();
-    handleExit(() => this.handleClose());
   }
 
   async close() {
@@ -62,7 +62,7 @@ export default class RpcClient<
 
     const backoff = 250 * 2 ** this.reconnectAttempts;
 
-    logger.info(`websocket closed, reconnecting in ${backoff}ms`);
+    this.logger?.info(`websocket closed, reconnecting in ${backoff}ms`);
 
     setTimeout(() => {
       this.connect().catch(() => {
@@ -72,7 +72,7 @@ export default class RpcClient<
   };
 
   async connect(): Promise<this> {
-    logger.info('attempting to open websocket connection');
+    this.logger?.info('attempting to open websocket connection');
     this.socket = new WebSocket(this.url);
     this.socket.on('message', (data) => {
       this.messages.next(JSON.parse(data.toString()));
@@ -83,18 +83,18 @@ export default class RpcClient<
     this.socket.once('close', this.handleDisconnect);
 
     this.socket.on('error', (error) => {
-      logger.customError('received websocket error', {}, { error });
+      this.logger?.error('received websocket error', { error });
       this.socket.close();
     });
 
     if (this.socket.readyState !== WebSocket.OPEN) {
-      logger.info('waiting for websocket to be ready');
+      this.logger?.info('waiting for websocket to be ready');
       await onceWithTimeout(this.socket, 'open', 30000);
     }
 
     this.emit(READY);
     this.reconnectAttempts = 0;
-    logger.info('websocket connection opened');
+    this.logger?.info('websocket connection opened');
 
     return this;
   }
@@ -147,7 +147,7 @@ export default class RpcClient<
 
     if ('error' in response) throw new Error(response.error.message);
 
-    logger.info(
+    this.logger?.info(
       `received response from rpc client: ${response} ${JSON.stringify(
         response,
       )}}`,

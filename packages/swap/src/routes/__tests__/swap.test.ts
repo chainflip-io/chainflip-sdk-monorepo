@@ -2,6 +2,7 @@ import * as crypto from 'crypto';
 import { Server } from 'http';
 import request from 'supertest';
 import { Assets } from '@/shared/enums';
+import RpcClient from '@/shared/node-apis/RpcClient';
 import prisma from '../../client';
 import {
   DOT_ADDRESS,
@@ -9,7 +10,6 @@ import {
   createDepositChannel,
 } from '../../event-handlers/__tests__/utils';
 import app from '../../server';
-import RpcClient from '../../utils/RpcClient';
 import { State } from '../swap';
 
 jest.mock('timers/promises', () => ({
@@ -19,7 +19,7 @@ jest.mock('timers/promises', () => ({
 const randomId = () => BigInt(crypto.randomInt(1, 100000));
 
 jest.mock(
-  '../../utils/RpcClient',
+  '@/shared/node-apis/RpcClient',
   () =>
     class {
       async connect() {

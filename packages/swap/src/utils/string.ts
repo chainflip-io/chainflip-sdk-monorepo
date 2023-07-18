@@ -1,12 +1,3 @@
-import type { Asset } from '@/shared/enums';
-import type { RpcAsset } from './RpcClient';
-
-export const camelToSnakeCase = (str: string) =>
-  str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
-
-export const transformAsset = (asset: Asset): RpcAsset =>
-  (asset[0] + asset.slice(1).toLowerCase()) as Capitalize<Lowercase<Asset>>;
-
 export enum Comparison {
   Less = -1,
   Equal,

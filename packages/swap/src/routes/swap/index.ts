@@ -1,6 +1,7 @@
 import assert from 'assert';
 import express from 'express';
 import { assetChains } from '@/shared/enums';
+import BrokerClient from '@/shared/node-apis/broker';
 import { postSwapSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma, {
@@ -9,7 +10,6 @@ import prisma, {
   SwapDepositChannel,
   Broadcast,
 } from '../../client';
-import { submitSwapToBroker } from '../../utils/broker';
 import { isProduction } from '../../utils/consts';
 import logger from '../../utils/logger';
 import ServiceError from '../../utils/ServiceError';
@@ -137,6 +137,8 @@ router.get(
   }),
 );
 
+let client: BrokerClient | undefined;
+
 router.post(
   '/',
   asyncHandler(async (req, res) => {
@@ -154,9 +156,10 @@ router.post(
       throw ServiceError.badRequest('provided address is not valid');
     }
 
-    const { address: depositAddress, ...blockInfo } = await submitSwapToBroker(
-      payload,
-    );
+    if (!client) client = await BrokerClient.create({ logger });
+
+    const { address: depositAddress, ...blockInfo } =
+      await client.requestSwapDepositAddress(payload);
 
     const { srcChain, destChain, ...rest } = payload;
 

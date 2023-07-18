@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { setTimeout as sleep } from 'timers/promises';
 import WebSocket, { OPEN } from 'ws';
-import { Assets } from '@/shared/enums';
-import { submitSwapToBroker } from '../broker';
+import { Assets } from '../../enums';
+import BrokerClient from '../broker';
 
 jest.mock(
   'ws',
@@ -13,16 +13,26 @@ jest.mock(
       once() {}
       send() {}
       close() {}
+      removeListener() {}
       readyState = OPEN;
     },
 );
 
-describe(submitSwapToBroker, () => {
-  it('gets a response from the broker', async () => {
-    const onSpy = jest.spyOn(WebSocket.prototype, 'on');
-    const sendSpy = jest.spyOn(WebSocket.prototype, 'send');
+describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
+  let client: BrokerClient;
+  const onSpy = jest.spyOn(WebSocket.prototype, 'on');
+  const sendSpy = jest.spyOn(WebSocket.prototype, 'send');
 
-    const resultPromise = submitSwapToBroker({
+  beforeEach(async () => {
+    client = await BrokerClient.create();
+  });
+
+  afterEach(async () => {
+    await client.close();
+  });
+
+  it('gets a response from the broker', async () => {
+    const resultPromise = client.requestSwapDepositAddress({
       srcAsset: Assets.FLIP,
       destAsset: Assets.USDC,
       srcChain: 'Ethereum',
@@ -63,9 +73,7 @@ describe(submitSwapToBroker, () => {
   });
 
   it('submits ccm data', async () => {
-    const sendSpy = jest.spyOn(WebSocket.prototype, 'send');
-
-    submitSwapToBroker({
+    client.requestSwapDepositAddress({
       srcAsset: Assets.FLIP,
       destAsset: Assets.USDC,
       srcChain: 'Ethereum',
@@ -82,7 +90,7 @@ describe(submitSwapToBroker, () => {
     const requestObject = JSON.parse(sendSpy.mock.calls[0][0] as string);
 
     expect(requestObject).toStrictEqual({
-      id: 1,
+      id: 0,
       jsonrpc: '2.0',
       method: 'broker_requestSwapDepositAddress',
       params: [

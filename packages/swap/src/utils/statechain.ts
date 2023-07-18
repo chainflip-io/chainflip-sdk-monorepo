@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import { Asset } from '@/shared/enums';
+import RpcClient from '@/shared/node-apis/RpcClient';
 import { chainflipAsset, hexStringFromNumber } from '@/shared/parsers';
+import { transformAsset } from '@/shared/strings';
 import { QuoteQueryResponse, QuoteQueryParams } from '../schemas';
 import { memoize } from './function';
-import RpcClient from './RpcClient';
-import { transformAsset } from './string';
 
 const requestValidators = {
   swap_rate: z.tuple([
