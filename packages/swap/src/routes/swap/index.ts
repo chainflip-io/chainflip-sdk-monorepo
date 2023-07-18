@@ -1,6 +1,6 @@
 import assert from 'assert';
 import express from 'express';
-import { assetChains } from '@/shared/enums';
+import { assetChains, Chain } from '@/shared/enums';
 import BrokerClient from '@/shared/node-apis/broker';
 import { postSwapSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
@@ -36,7 +36,8 @@ type SwapWithBroadcast = Swap & {
     | null;
 };
 
-const uuidRegex = /^[a-f\d]{8}(-[a-f\d]{4}){4}[a-f\d]{8}$/i;
+const channelIdRegex = /^(\d+)-([a-z]+)-([a-z]+)$/i;
+const swapIdRegex = /^\d+$/i;
 const txHashRegex = /^0x[a-f\d]+$/i;
 
 router.get(
@@ -50,10 +51,19 @@ router.get(
       | null
       | undefined;
 
-    // TODO:0.9 refactor the deposit channel to use the $BLOCK_NUMBER-$CHANNEL_ID format
-    if (uuidRegex.test(id)) {
+    if (channelIdRegex.test(id)) {
+      const [, issuedBlock, srcChain, channelId] = channelIdRegex.exec(
+        id,
+      ) as RegExpExecArray;
+
       swapDepositChannel = await prisma.swapDepositChannel.findUnique({
-        where: { uuid: id },
+        where: {
+          issuedBlock_srcChain_channelId: {
+            issuedBlock: Number(issuedBlock),
+            srcChain: srcChain as Chain,
+            channelId: BigInt(channelId),
+          },
+        },
         include: {
           swaps: { include: { egress: { include: { broadcast: true } } } },
         },
@@ -65,6 +75,11 @@ router.get(
       }
 
       swap = swapDepositChannel.swaps.at(0);
+    } else if (swapIdRegex.test(id)) {
+      swap = await prisma.swap.findUnique({
+        where: { nativeId: BigInt(id) },
+        include: { egress: { include: { broadcast: true } } },
+      });
     } else if (txHashRegex.test(id)) {
       swap = await prisma.swap.findUnique({
         where: { txHash: id },
@@ -171,17 +186,22 @@ router.post(
     const { address: depositAddress, ...blockInfo } =
       await client.requestSwapDepositAddress(payload);
 
-    const { srcChain, destChain, ...rest } = payload;
+    const { destChain, ...rest } = payload;
 
-    const { uuid } = await prisma.swapDepositChannel.create({
-      data: {
-        ...rest,
-        depositAddress,
-        ...blockInfo,
-      },
+    const { issuedBlock, srcChain, channelId } =
+      await prisma.swapDepositChannel.create({
+        data: {
+          ...rest,
+          depositAddress,
+          ...blockInfo,
+        },
+      });
+
+    res.json({
+      id: `${issuedBlock}-${srcChain}-${channelId}`,
+      depositAddress,
+      issuedBlock: blockInfo.issuedBlock,
     });
-
-    res.json({ id: uuid, depositAddress, issuedBlock: blockInfo.issuedBlock });
   }),
 );
 

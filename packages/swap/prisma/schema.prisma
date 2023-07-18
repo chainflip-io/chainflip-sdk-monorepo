@@ -37,7 +37,8 @@ enum Asset {
 
 model SwapDepositChannel {
   id                    BigInt   @id @default(autoincrement())
-  uuid                  String   @unique @default(uuid())
+  channelId             BigInt
+  srcChain              Chain
   srcAsset              Asset
   depositAddress        String
   expectedDepositAmount Decimal  @db.Decimal(30, 0)
@@ -48,6 +49,7 @@ model SwapDepositChannel {
   createdAt             DateTime @default(now())
   swaps                 Swap[]
 
+  @@unique([issuedBlock, srcChain, channelId])
   @@index([depositAddress])
   @@schema("public")
 }
