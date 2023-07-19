@@ -1,26 +1,13 @@
 import axios from 'axios';
-import {
-  type ChainflipNetwork,
-  isTestnet,
-  Chain,
-  Chains,
-} from '@/shared/enums';
+import { type ChainflipNetwork, Chain, Chains } from '@/shared/enums';
 import type {
   QuoteQueryParams,
   QuoteQueryResponse,
   SwapRequestBody,
 } from '@/shared/schemas';
 import { PostSwapResponse } from '@/shared/schemas';
-import {
-  bitcoin,
-  polkadot,
-  dot$,
-  ethereum,
-  btc$,
-  ethereumAssets,
-  testnetChains,
-  testnetAssets,
-} from '../mocks';
+import { dot$, btc$, eth$, usdc$, flip$ } from '../assets';
+import { bitcoin, ethereum, polkadot } from '../chains';
 import {
   ChainData,
   QuoteRequest,
@@ -32,30 +19,22 @@ import {
   AssetData,
 } from '../types';
 
-const getChains = async (network: ChainflipNetwork): Promise<ChainData[]> => {
-  if (isTestnet(network)) {
-    return testnetChains([ethereum, polkadot, bitcoin]);
-  }
-  return [ethereum, polkadot, bitcoin];
-};
+const getChains = async (network: ChainflipNetwork): Promise<ChainData[]> => [
+  ethereum(network),
+  polkadot(network),
+  bitcoin(network),
+];
 
 const getPossibleDestinationChains = async (
   sourceChain: Chain,
   network: ChainflipNetwork,
 ): Promise<ChainData[]> => {
-  if (isTestnet(network)) {
-    if (sourceChain === Chains.Ethereum)
-      return testnetChains([polkadot, bitcoin]);
-    if (sourceChain === Chains.Polkadot)
-      return testnetChains([ethereum, bitcoin]);
-    if (sourceChain === Chains.Bitcoin)
-      return testnetChains([ethereum, polkadot]);
-    throw new Error('received testnet flag but mainnet chain');
-  }
-
-  if (sourceChain === Chains.Ethereum) return [bitcoin, polkadot];
-  if (sourceChain === Chains.Polkadot) return [ethereum, bitcoin];
-  if (sourceChain === Chains.Bitcoin) return [ethereum, polkadot];
+  if (sourceChain === Chains.Ethereum)
+    return [bitcoin(network), polkadot(network)];
+  if (sourceChain === Chains.Polkadot)
+    return [ethereum(network), bitcoin(network)];
+  if (sourceChain === Chains.Bitcoin)
+    return [ethereum(network), polkadot(network)];
   throw new Error('received unknown chain');
 };
 
@@ -63,17 +42,11 @@ const getAssets = async (
   chain: Chain,
   network: ChainflipNetwork,
 ): Promise<AssetData[]> => {
-  if (isTestnet(network)) {
-    if (chain === Chains.Ethereum) return testnetAssets(ethereumAssets);
-    if (chain === Chains.Polkadot) return testnetAssets([dot$]);
-    if (chain === Chains.Bitcoin) return testnetAssets([btc$]);
-    throw new Error('received testnet flag but mainnet chain');
-  }
-
-  if (chain === Chains.Ethereum) return ethereumAssets;
-  if (chain === Chains.Polkadot) return [dot$];
-  if (chain === Chains.Bitcoin) return [btc$];
-  throw new Error('received unknown chain');
+  if (chain === Chains.Ethereum)
+    return [eth$(network), usdc$(network), flip$(network)];
+  if (chain === Chains.Polkadot) return [dot$(network)];
+  if (chain === Chains.Bitcoin) return [btc$(network)];
+  throw new Error('received unexpected chain');
 };
 
 export type RequestOptions = {

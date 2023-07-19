@@ -11,7 +11,7 @@ export type AssetData = {
   [K in keyof typeof chainAssets]: {
     id: (typeof chainAssets)[K][number];
     chain: K;
-    contractAddress: string;
+    contractAddress: string | undefined;
     decimals: number;
     name: string;
     symbol: string;
