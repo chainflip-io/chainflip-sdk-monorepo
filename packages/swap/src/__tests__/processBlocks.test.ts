@@ -15,6 +15,8 @@ describe(processBlocks, () => {
         depositAddress: '5CGLqaFMheyVcsXz6QEtjtSAi6RcXFaEDJKvovgCdPiZhw11',
         issuedBlock: 100,
         expiryBlock: 200,
+        channelId: 250n,
+        srcChain: 'Polkadot',
         srcAsset: 'DOT',
         destAsset: 'BTC',
         destAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',

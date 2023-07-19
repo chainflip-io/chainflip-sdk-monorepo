@@ -50,8 +50,8 @@ export interface SwapStatusRequest {
 
 export interface CommonStatusFields extends ChainsAndAssets {
   destAddress: string;
-  depositAddress: string;
-  expectedDepositAmount: string;
+  depositAddress: string | undefined;
+  expectedDepositAmount: string | undefined;
 }
 
 export type SwapStatusResponse = CommonStatusFields &
@@ -59,12 +59,14 @@ export type SwapStatusResponse = CommonStatusFields &
     | { state: 'AWAITING_DEPOSIT' }
     | {
         state: 'DEPOSIT_RECEIVED';
+        swapId: string;
         depositAmount: string;
         depositReceivedAt: number;
         depositReceivedBlockIndex: string;
       }
     | {
         state: 'SWAP_EXECUTED';
+        swapId: string;
         depositAmount: string;
         depositReceivedAt: number;
         depositReceivedBlockIndex: string;
@@ -73,6 +75,7 @@ export type SwapStatusResponse = CommonStatusFields &
       }
     | {
         state: 'EGRESS_SCHEDULED';
+        swapId: string;
         depositAmount: string;
         depositReceivedAt: number;
         depositReceivedBlockIndex: string;
@@ -84,6 +87,7 @@ export type SwapStatusResponse = CommonStatusFields &
       }
     | {
         state: 'BROADCAST_REQUESTED';
+        swapId: string;
         depositAmount: string;
         depositReceivedAt: number;
         depositReceivedBlockIndex: string;
@@ -97,6 +101,7 @@ export type SwapStatusResponse = CommonStatusFields &
       }
     | {
         state: 'BROADCAST_ABORTED';
+        swapId: string;
         depositAmount: string;
         depositReceivedAt: number;
         depositReceivedBlockIndex: string;
@@ -112,6 +117,7 @@ export type SwapStatusResponse = CommonStatusFields &
       }
     | {
         state: 'COMPLETE';
+        swapId: string;
         depositAmount: string;
         depositReceivedAt: number;
         depositReceivedBlockIndex: string;

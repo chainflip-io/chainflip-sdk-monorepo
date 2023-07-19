@@ -65,10 +65,9 @@ describe('server', () => {
 
     it(`retrieves a swap in ${State.AwaitingDeposit} status`, async () => {
       const swapIntent = await createDepositChannel();
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
 
-      const { body, status } = await request(server).get(
-        `/swaps/${swapIntent.uuid}`,
-      );
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
 
       expect(status).toBe(200);
       expect(body).toMatchInlineSnapshot(`
@@ -99,10 +98,9 @@ describe('server', () => {
           },
         },
       });
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
 
-      const { body, status } = await request(server).get(
-        `/swaps/${swapIntent.uuid}`,
-      );
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
 
       expect(status).toBe(200);
       const { swapId, ...rest } = body;
@@ -141,10 +139,9 @@ describe('server', () => {
           },
         },
       });
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
 
-      const { body, status } = await request(server).get(
-        `/swaps/${swapIntent.uuid}`,
-      );
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
 
       expect(status).toBe(200);
       const { swapId, ...rest } = body;
@@ -193,10 +190,9 @@ describe('server', () => {
           },
         },
       });
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
 
-      const { body, status } = await request(server).get(
-        `/swaps/${swapIntent.uuid}`,
-      );
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
 
       expect(status).toBe(200);
       const { swapId, ...rest } = body;
@@ -256,10 +252,9 @@ describe('server', () => {
           },
         },
       });
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
 
-      const { body, status } = await request(server).get(
-        `/swaps/${swapIntent.uuid}`,
-      );
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
 
       expect(status).toBe(200);
       const { swapId, ...rest } = body;
@@ -325,10 +320,9 @@ describe('server', () => {
           },
         },
       });
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
 
-      const { body, status } = await request(server).get(
-        `/swaps/${swapIntent.uuid}`,
-      );
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
 
       expect(status).toBe(200);
       const { swapId, ...rest } = body;
@@ -395,10 +389,9 @@ describe('server', () => {
           },
         },
       });
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
 
-      const { body, status } = await request(server).get(
-        `/swaps/${swapIntent.uuid}`,
-      );
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
 
       expect(status).toBe(200);
       const { swapId, ...rest } = body;
@@ -465,6 +458,39 @@ describe('server', () => {
         }
       `);
     });
+
+    it('retrieves a swap from a native swap id', async () => {
+      await prisma.swap.create({
+        data: {
+          nativeId,
+          srcAsset: Assets.ETH,
+          destAsset: Assets.DOT,
+          destAddress: DOT_ADDRESS,
+          depositAmount: '10',
+          depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
+          depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+        },
+      });
+
+      const { body, status } = await request(server).get(`/swaps/${nativeId}`);
+      expect(status).toBe(200);
+      const { swapId, ...rest } = body;
+      expect(BigInt(swapId)).toEqual(nativeId);
+      expect(rest).toMatchInlineSnapshot(`
+        {
+          "depositAmount": "10",
+          "depositReceivedAt": 1669907135201,
+          "depositReceivedBlockIndex": "100-3",
+          "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
+          "destAsset": "DOT",
+          "destChain": "Polkadot",
+          "srcAsset": "ETH",
+          "srcChain": "Ethereum",
+          "state": "DEPOSIT_RECEIVED",
+          "swapExecutedBlockIndex": null,
+        }
+      `);
+    });
   });
 
   describe('POST /swaps', () => {
@@ -502,10 +528,14 @@ describe('server', () => {
     ])('creates a new swap deposit channel', async (requestBody) => {
       const issuedBlock = 123;
       const expiryBlock = 200;
+      const channelId = 200n;
       const address = 'THE_INGRESS_ADDRESS';
-      jest
-        .spyOn(RpcClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({ address, expiryBlock, issuedBlock });
+      jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        address,
+        expiryBlock,
+        issuedBlock,
+        channelId,
+      });
 
       const { body, status } = await request(app)
         .post('/swaps')
@@ -517,13 +547,13 @@ describe('server', () => {
 
       expect(swapDepositChannel).toMatchObject({
         id: expect.any(BigInt),
-        uuid: expect.any(String),
         srcAsset: requestBody.srcAsset,
         depositAddress: address,
         destAsset: requestBody.destAsset,
         destAddress: requestBody.destAddress,
         expiryBlock,
         issuedBlock,
+        channelId,
         createdAt: expect.any(Date),
       });
       expect(swapDepositChannel?.expectedDepositAmount.toString()).toBe(
@@ -531,9 +561,10 @@ describe('server', () => {
       );
       expect(status).toBe(200);
       expect(body).toMatchObject({
-        issuedBlock,
+        id: '123-Ethereum-200',
         depositAddress: address,
-        id: expect.any(String),
+        issuedBlock,
+        expiryBlock,
       });
     });
 

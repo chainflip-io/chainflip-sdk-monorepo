@@ -80,11 +80,13 @@ const responseValidators = {
       address: z.union([hexString, btcAddress, dotAddress]),
       expiry_block: z.number(),
       issued_block: z.number(),
+      channel_id: z.number(),
     })
-    .transform(({ address, expiry_block, issued_block }) => ({
+    .transform(({ address, expiry_block, issued_block, channel_id }) => ({
       address,
       expiryBlock: expiry_block,
       issuedBlock: issued_block,
+      channelId: BigInt(channel_id),
     })),
 };
 

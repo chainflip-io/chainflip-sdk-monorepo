@@ -1,4 +1,4 @@
-import { Assets } from '@/shared/enums';
+import { Assets, Chains } from '@/shared/enums';
 import prisma, { SwapDepositChannel } from '../../client';
 import { swapping } from '../index';
 import { SwapExecutedEvent } from '../swapExecuted';
@@ -17,6 +17,8 @@ export const createDepositChannel = (
 ): Promise<SwapDepositChannel> =>
   prisma.swapDepositChannel.create({
     data: {
+      channelId: 1n,
+      srcChain: Chains.Ethereum,
       srcAsset: Assets.ETH,
       destAsset: Assets.DOT,
       depositAddress: ETH_ADDRESS,
