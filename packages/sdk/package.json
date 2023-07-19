@@ -39,7 +39,7 @@
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": "18.16.0",
+    "node": "^16 || ^18.16.0",
     "pnpm": ">=7"
   },
   "repository": "https://github.com/chainflip-io/chainflip-sdk-monorepo.git",
