@@ -11,6 +11,7 @@ import { askForPrivateKey, getEthNetwork, cliNetworks } from '../utils';
 export const yargsOptions = {
   'src-asset': {
     choices: Object.values(Assets),
+    demandOption: true,
     describe: 'The asset to swap from',
   },
   'dest-asset': {
@@ -89,7 +90,8 @@ export default async function cliExecuteCall(
 
   const receipt = await executeCall(
     {
-      ...(args.srcAsset && { srcAsset: args.srcAsset }),
+      srcChain: assetChains[args.srcAsset],
+      srcAsset: args.srcAsset,
       destChain: assetChains[args.destAsset],
       destAsset: args.destAsset,
       amount: args.amount,
