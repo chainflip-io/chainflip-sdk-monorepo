@@ -1,6 +1,4 @@
-import { ChainflipNetworks } from '.';
-
-export { type Asset } from '@/shared/enums';
+import { ChainflipNetworks } from '@/shared/enums';
 
 export const BACKEND_SERVICE_URLS = {
   [ChainflipNetworks.sisyphos]: 'https://chainflip-swap.staging/',
