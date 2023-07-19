@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 /* eslint-disable max-classes-per-file */
 import { BigNumber, VoidSigner } from 'ethers';
-import { Assets, ChainflipNetworks, Chains } from '@/shared/enums';
+import { Assets, ChainflipNetworks, Chains } from '../../enums';
 import executeSwap from '../executeSwap';
 import { ExecuteSwapParams } from '../schemas';
 
@@ -55,26 +55,36 @@ describe(executeSwap, () => {
       destAsset: Assets.BTC,
       destChain: Chains.Bitcoin,
       destAddress: BTC_ADDRESS,
+      srcAsset: Assets.ETH,
+      srcChain: Chains.Ethereum,
     },
     {
       destAsset: 'BTC',
       destChain: 'Bitcoin',
       destAddress: BTC_ADDRESS,
+      srcAsset: Assets.ETH,
+      srcChain: Chains.Ethereum,
     },
     {
       destAsset: Assets.FLIP,
       destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
+      srcAsset: Assets.ETH,
+      srcChain: Chains.Ethereum,
     },
     {
       destAsset: Assets.USDC,
       destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
+      srcAsset: Assets.ETH,
+      srcChain: Chains.Ethereum,
     },
     {
       destAsset: Assets.DOT,
       destChain: Chains.Polkadot,
       destAddress: DOT_ADDRESS,
+      srcAsset: Assets.ETH,
+      srcChain: Chains.Ethereum,
     },
   ] as Omit<ExecuteSwapParams, 'amount'>[])(
     'submits a native swap (%p)',
@@ -98,30 +108,33 @@ describe(executeSwap, () => {
   );
 
   it.each([
-    ...[Assets.FLIP, Assets.USDC].flatMap((srcAsset) => [
+    ...[
+      { srcAsset: Assets.FLIP, srcChain: Chains.Ethereum },
+      { srcAsset: Assets.USDC, srcChain: Chains.Ethereum },
+    ].flatMap((src) => [
       {
         destAsset: Assets.BTC,
         destChain: Chains.Bitcoin,
         destAddress: BTC_ADDRESS,
-        srcAsset,
+        ...src,
       },
       {
         destAsset: 'BTC',
         destChain: 'Bitcoin',
         destAddress: BTC_ADDRESS,
-        srcAsset,
+        ...src,
       },
       {
         destAsset: Assets.ETH,
         destChain: Chains.Ethereum,
         destAddress: ETH_ADDRESS,
-        srcAsset,
+        ...src,
       },
       {
         destAsset: Assets.DOT,
         destChain: Chains.Polkadot,
         destAddress: DOT_ADDRESS,
-        srcAsset,
+        ...src,
       },
     ]),
   ] as Omit<ExecuteSwapParams, 'amount'>[])(
@@ -172,8 +185,9 @@ describe(executeSwap, () => {
           destChain: Chains.Bitcoin,
           destAddress: BTC_ADDRESS,
           srcAsset: Assets.FLIP,
+          srcChain: Chains.Ethereum,
           amount: '1',
-        } as ExecuteSwapParams,
+        },
         { network: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
       ),
     ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
@@ -205,7 +219,8 @@ describe(executeSwap, () => {
           destAddress: BTC_ADDRESS,
           srcAsset: Assets.FLIP,
           amount: '1',
-        } as ExecuteSwapParams,
+          srcChain: Chains.Ethereum,
+        },
         {
           network: 'localnet',
           signer: new VoidSigner('MY ADDRESS'),
@@ -235,7 +250,9 @@ describe(executeSwap, () => {
           destAsset: Assets.BTC,
           destChain: Chains.Bitcoin,
           destAddress: BTC_ADDRESS,
-        } as ExecuteSwapParams,
+          srcAsset: Assets.ETH,
+          srcChain: Chains.Ethereum,
+        },
         {
           network: ChainflipNetworks.sisyphos,
           signer: new VoidSigner('MY ADDRESS'),

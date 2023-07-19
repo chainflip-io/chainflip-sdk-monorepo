@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 /* eslint-disable max-classes-per-file */
 import { BigNumber, VoidSigner } from 'ethers';
-import { Assets, ChainflipNetworks, Chains } from '@/shared/enums';
+import { Assets, ChainflipNetworks, Chains } from '../../enums';
 import executeCall from '../executeCall';
 import { ExecuteCallParams } from '../schemas';
 
@@ -50,16 +50,20 @@ describe(executeCall, () => {
 
   it.each([
     {
+      srcAsset: Assets.ETH,
+      srcChain: Chains.Ethereum,
       destAsset: Assets.FLIP,
       destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
     },
     {
+      srcAsset: Assets.ETH,
+      srcChain: Chains.Ethereum,
       destAsset: Assets.USDC,
       destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
     },
-  ] as Omit<ExecuteCallParams, 'amount'>[])(
+  ] as Omit<ExecuteCallParams, 'amount' | 'message' | 'gasAmount'>[])(
     'submits a native call (%p)',
     async (params) => {
       const wait = jest
@@ -89,48 +93,53 @@ describe(executeCall, () => {
   );
 
   it.each([
-    ...[Assets.FLIP, Assets.USDC].flatMap((srcAsset) => [
-      {
-        destAsset: Assets.ETH,
-        destChain: Chains.Ethereum,
-        destAddress: ETH_ADDRESS,
-        srcAsset,
-      },
-    ]),
-  ] as Omit<ExecuteCallParams, 'amount'>[])(
-    'submits a token call (%p)',
-    async (params) => {
-      const wait = jest
-        .fn()
-        .mockResolvedValue({ status: 1, transactionHash: 'hello world' });
-      const approveSpy = jest
-        .spyOn(MockERC20.prototype, 'approve')
-        .mockResolvedValue({ wait });
-      const callSpy = jest
-        .spyOn(MockVault.prototype, 'xCallToken')
-        .mockResolvedValue({ wait });
-      const allowanceSpy = jest.spyOn(MockERC20.prototype, 'allowance');
-
-      expect(
-        await executeCall(
+    ...(
+      [
+        { srcAsset: Assets.FLIP, srcChain: Chains.Ethereum },
+        { srcAsset: Assets.USDC, srcChain: Chains.Ethereum },
+      ] as const
+    ).flatMap(
+      (src) =>
+        [
           {
-            amount: '1',
-            message: '0xdeadc0de',
-            gasAmount: '101',
-            ...params,
-          } as ExecuteCallParams,
-          {
-            network: 'sisyphos',
-            signer: new VoidSigner('MY ADDRESS'),
+            destAsset: Assets.ETH,
+            destChain: Chains.Ethereum,
+            destAddress: ETH_ADDRESS,
+            ...src,
           },
-        ),
-      ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
-      expect(wait).toHaveBeenCalledWith(1);
-      expect(callSpy.mock.calls).toMatchSnapshot();
-      expect(allowanceSpy.mock.calls).toMatchSnapshot();
-      expect(approveSpy).not.toHaveBeenCalled();
-    },
-  );
+        ] as const,
+    ),
+  ])('submits a token call (%p)', async (params) => {
+    const wait = jest
+      .fn()
+      .mockResolvedValue({ status: 1, transactionHash: 'hello world' });
+    const approveSpy = jest
+      .spyOn(MockERC20.prototype, 'approve')
+      .mockResolvedValue({ wait });
+    const callSpy = jest
+      .spyOn(MockVault.prototype, 'xCallToken')
+      .mockResolvedValue({ wait });
+    const allowanceSpy = jest.spyOn(MockERC20.prototype, 'allowance');
+
+    expect(
+      await executeCall(
+        {
+          amount: '1',
+          message: '0xdeadc0de',
+          gasAmount: '101',
+          ...params,
+        },
+        {
+          network: 'sisyphos',
+          signer: new VoidSigner('MY ADDRESS'),
+        },
+      ),
+    ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
+    expect(wait).toHaveBeenCalledWith(1);
+    expect(callSpy.mock.calls).toMatchSnapshot();
+    expect(allowanceSpy.mock.calls).toMatchSnapshot();
+    expect(approveSpy).not.toHaveBeenCalled();
+  });
 
   it('submits a token call with sufficient approval', async () => {
     const wait = jest
@@ -153,10 +162,11 @@ describe(executeCall, () => {
           destChain: Chains.Ethereum,
           destAddress: ETH_ADDRESS,
           srcAsset: Assets.FLIP,
+          srcChain: Chains.Ethereum,
           amount: '1',
           message: '0xdeadc0de',
           gasAmount: '101',
-        } as ExecuteCallParams,
+        },
         { network: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
       ),
     ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
@@ -183,6 +193,7 @@ describe(executeCall, () => {
     expect(
       await executeCall(
         {
+          srcChain: Chains.Ethereum,
           destAsset: Assets.ETH,
           destChain: Chains.Ethereum,
           destAddress: ETH_ADDRESS,
@@ -190,7 +201,7 @@ describe(executeCall, () => {
           amount: '1',
           message: '0xdeadc0de',
           gasAmount: '101',
-        } as ExecuteCallParams,
+        },
         {
           network: 'localnet',
           signer: new VoidSigner('MY ADDRESS'),
@@ -216,13 +227,15 @@ describe(executeCall, () => {
     expect(
       await executeCall(
         {
+          srcChain: Chains.Ethereum,
+          srcAsset: Assets.ETH,
           amount: '1',
           destAsset: Assets.FLIP,
           destChain: Chains.Ethereum,
           destAddress: ETH_ADDRESS,
           message: '0xdeadc0de',
           gasAmount: '101',
-        } as ExecuteCallParams,
+        },
         {
           network: ChainflipNetworks.sisyphos,
           signer: new VoidSigner('MY ADDRESS'),

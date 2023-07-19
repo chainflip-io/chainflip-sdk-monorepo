@@ -78,7 +78,7 @@ exports[`executeCall can be invoked with localnet options 2`] = `
 ]
 `;
 
-exports[`executeCall submits a native call ({"destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "FLIP", "destChain": "Ethereum"}) 1`] = `
+exports[`executeCall submits a native call ({"destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "FLIP", "destChain": "Ethereum", "srcAsset": "ETH", "srcChain": "Ethereum"}) 1`] = `
 [
   [
     1,
@@ -95,7 +95,7 @@ exports[`executeCall submits a native call ({"destAddress": "0x6Aa69332B63bB5b1d
 ]
 `;
 
-exports[`executeCall submits a native call ({"destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "USDC", "destChain": "Ethereum"}) 1`] = `
+exports[`executeCall submits a native call ({"destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "USDC", "destChain": "Ethereum", "srcAsset": "ETH", "srcChain": "Ethereum"}) 1`] = `
 [
   [
     1,
@@ -112,7 +112,7 @@ exports[`executeCall submits a native call ({"destAddress": "0x6Aa69332B63bB5b1d
 ]
 `;
 
-exports[`executeCall submits a token call ({"destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "FLIP"}) 1`] = `
+exports[`executeCall submits a token call ({"destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "FLIP", "srcChain": "Ethereum"}) 1`] = `
 [
   [
     1,
@@ -130,7 +130,7 @@ exports[`executeCall submits a token call ({"destAddress": "0x6Aa69332B63bB5b1d7
 ]
 `;
 
-exports[`executeCall submits a token call ({"destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "FLIP"}) 2`] = `
+exports[`executeCall submits a token call ({"destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "FLIP", "srcChain": "Ethereum"}) 2`] = `
 [
   [
     "MY ADDRESS",
@@ -139,7 +139,7 @@ exports[`executeCall submits a token call ({"destAddress": "0x6Aa69332B63bB5b1d7
 ]
 `;
 
-exports[`executeCall submits a token call ({"destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "USDC"}) 1`] = `
+exports[`executeCall submits a token call ({"destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "USDC", "srcChain": "Ethereum"}) 1`] = `
 [
   [
     1,
@@ -157,7 +157,7 @@ exports[`executeCall submits a token call ({"destAddress": "0x6Aa69332B63bB5b1d7
 ]
 `;
 
-exports[`executeCall submits a token call ({"destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "USDC"}) 2`] = `
+exports[`executeCall submits a token call ({"destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "USDC", "srcChain": "Ethereum"}) 2`] = `
 [
   [
     "MY ADDRESS",

@@ -18,6 +18,8 @@ const utf8ToHex = (str: string) => `0x${Buffer.from(str).toString('hex')}`;
 
 const base = z.object({
   amount: z.union([numericString, hexString, z.bigint()]),
+  srcChain: z.literal(Chains.Ethereum),
+  srcAsset: z.literal(Assets.ETH),
 });
 
 const ethereumBase = base.extend({
@@ -37,15 +39,13 @@ const bitcoinBase = base.extend({
 
 const erc20 = z.union([z.literal(Assets.FLIP), z.literal(Assets.USDC)]);
 
-const ethereumNative = ethereumBase.extend({ destAsset: erc20 }).strict();
+const ethereumNative = ethereumBase.extend({ destAsset: erc20 });
 
-const polkadotNative = polkadotBase
-  .extend({ destAsset: z.literal(Assets.DOT) })
-  .strict();
+const polkadotNative = polkadotBase.extend({
+  destAsset: z.literal(Assets.DOT),
+});
 
-const bitcoinNative = bitcoinBase
-  .extend({ destAsset: z.literal(Assets.BTC) })
-  .strict();
+const bitcoinNative = bitcoinBase.extend({ destAsset: z.literal(Assets.BTC) });
 
 const nativeSwapParamsSchema = z.union([
   ethereumNative,
@@ -77,9 +77,11 @@ export const executeSwapParamsSchema = z.union([
 
 export type ExecuteSwapParams = z.infer<typeof executeSwapParamsSchema>;
 
-const nativeCallParamsSchema = ethereumBase
-  .extend({ destAsset: erc20, message: z.string(), gasAmount: numericString })
-  .strict();
+const nativeCallParamsSchema = ethereumBase.extend({
+  destAsset: erc20,
+  message: z.string(),
+  gasAmount: numericString,
+});
 
 export type NativeCallParams = z.infer<typeof nativeCallParamsSchema>;
 

@@ -1,3 +1,4 @@
+import { Assets } from './enums';
 import { ExecuteSwapParams } from './vault';
 import {
   ExecuteCallParams,
@@ -27,8 +28,8 @@ export function assert(condition: unknown, message: string): asserts condition {
 
 export const isTokenSwap = (
   params: ExecuteSwapParams,
-): params is TokenSwapParams => 'srcAsset' in params;
+): params is TokenSwapParams => params.srcAsset !== Assets.ETH;
 
 export const isTokenCall = (
   params: ExecuteCallParams,
-): params is TokenCallParams => 'srcAsset' in params;
+): params is TokenCallParams => params.srcAsset !== Assets.ETH;
