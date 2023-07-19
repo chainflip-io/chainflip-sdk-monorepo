@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - packages/cli/**
+      - packages/sdk/**
 
 permissions:
   packages: write
@@ -25,9 +25,9 @@ jobs:
 
       - name: Check commit message
         run: |
-          if [[ "${{ github.event.head_commit.message }}" =~ ^@chainflip-io/cli/v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          if [[ "${{ github.event.head_commit.message }}" =~ ^@chainflip/sdk/v[0-9]+\.[0-9]+\.[0-9]+$ ]]
           then
-            echo "PACKAGE=@chainflip-io/cli" >> $GITHUB_ENV
+            echo "PACKAGE=@chainflip/sdk" >> $GITHUB_ENV
           fi
 
       - name: Get Node.JS version from .nvmrc
@@ -44,8 +44,8 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "pnpm"
-          registry-url: "https://npm.pkg.github.com"
-          scope: "@chainflip-io"
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@chainflip'
 
       - name: Install dependencies 🚚 📦
         if: ${{ env.PACKAGE != 'none' }}
@@ -62,4 +62,4 @@ jobs:
           pnpm --filter $PACKAGE publish
         working-directory: ./
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.CF_NPM_JS_PACKAGES_READ_WRITE }}
