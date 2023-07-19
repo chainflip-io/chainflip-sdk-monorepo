@@ -62,6 +62,7 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
           address: '0x1234567890',
           expiry_block: 100,
           issued_block: 50,
+          channel_id: 200,
         },
       }),
     );
@@ -70,11 +71,12 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
       address: '0x1234567890',
       expiryBlock: 100,
       issuedBlock: 50,
+      channelId: 200n,
     });
   });
 
   it('submits ccm data', async () => {
-    const result = client.requestSwapDepositAddress({
+    const resultPromise = client.requestSwapDepositAddress({
       srcAsset: Assets.FLIP,
       destAsset: Assets.USDC,
       srcChain: 'Ethereum',
@@ -99,6 +101,7 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
           address: '0x1234567890',
           expiry_block: 100,
           issued_block: 50,
+          channel_id: 200,
         },
       }),
     );
@@ -121,6 +124,11 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
         },
       ],
     });
-    await expect(result).resolves.not.toThrowError();
+    await expect(resultPromise).resolves.toStrictEqual({
+      address: '0x1234567890',
+      expiryBlock: 100,
+      issuedBlock: 50,
+      channelId: 200n,
+    });
   });
 });

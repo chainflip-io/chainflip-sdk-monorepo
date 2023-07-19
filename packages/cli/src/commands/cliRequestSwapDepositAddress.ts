@@ -51,6 +51,7 @@ export default async function cliRequestSwapDepositAddress(
   console.log(`Deposit address: ${result.address}`);
   console.log(`Issued block: ${result.issuedBlock}`);
   console.log(`Expiry block: ${result.expiryBlock}`);
+  console.log(`Channel ID: ${result.channelId}`);
 
   await client.close();
 }

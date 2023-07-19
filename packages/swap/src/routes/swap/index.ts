@@ -36,7 +36,8 @@ type SwapWithBroadcast = Swap & {
     | null;
 };
 
-const channelIdRegex = /^(\d+)-([a-z]+)-([a-z]+)$/i;
+const channelIdRegex =
+  /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
 const swapIdRegex = /^\d+$/i;
 const txHashRegex = /^0x[a-f\d]+$/i;
 
@@ -52,9 +53,8 @@ router.get(
       | undefined;
 
     if (channelIdRegex.test(id)) {
-      const [, issuedBlock, srcChain, channelId] = channelIdRegex.exec(
-        id,
-      ) as RegExpExecArray;
+      const { issuedBlock, srcChain, channelId } =
+        channelIdRegex.exec(id)!.groups!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
 
       swapDepositChannel = await prisma.swapDepositChannel.findUnique({
         where: {
@@ -126,7 +126,6 @@ router.get(
 
     const response = {
       state,
-      swapId: swap?.nativeId.toString(),
       srcChain: srcAsset && assetChains[srcAsset],
       destChain: destAsset && assetChains[destAsset],
       srcAsset,
@@ -135,6 +134,7 @@ router.get(
       depositAddress: swapDepositChannel?.depositAddress,
       expectedDepositAmount:
         swapDepositChannel?.expectedDepositAmount.toString(),
+      swapId: swap?.nativeId.toString(),
       depositAmount: swap?.depositAmount?.toString(),
       depositReceivedAt: swap?.depositReceivedAt.valueOf(),
       depositReceivedBlockIndex: swap?.depositReceivedBlockIndex,
@@ -188,7 +188,7 @@ router.post(
 
     const { destChain, ...rest } = payload;
 
-    const { issuedBlock, srcChain, channelId } =
+    const { issuedBlock, expiryBlock, srcChain, channelId } =
       await prisma.swapDepositChannel.create({
         data: {
           ...rest,
@@ -200,7 +200,8 @@ router.post(
     res.json({
       id: `${issuedBlock}-${srcChain}-${channelId}`,
       depositAddress,
-      issuedBlock: blockInfo.issuedBlock,
+      issuedBlock,
+      expiryBlock,
     });
   }),
 );

@@ -19,12 +19,14 @@ describe(swapScheduled, () => {
 
     beforeEach(async () => {
       dotSwapDepositChannel = await createDepositChannel({
+        srcChain: 'Polkadot',
         srcAsset: Assets.DOT,
         destAsset: Assets.BTC,
         depositAddress: '5CGLqaFMheyVcsXz6QEtjtSAi6RcXFaEDJKvovgCdPiZhw11',
         destAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
       });
       btcSwapDepositChannel = await createDepositChannel({
+        srcChain: 'Bitcoin',
         srcAsset: Assets.BTC,
         destAsset: Assets.ETH,
         depositAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
@@ -117,9 +119,10 @@ describe(swapScheduled, () => {
     });
 
     it('does not store a new swap if the deposit channel is not unique', async () => {
-      const { id, uuid, ...rest } = dotSwapDepositChannel;
-
-      await prisma.swapDepositChannel.create({ data: rest });
+      const { id, ...rest } = dotSwapDepositChannel;
+      await prisma.swapDepositChannel.create({
+        data: { ...rest, channelId: 2n },
+      });
 
       await expect(
         prisma.$transaction(async (client) => {
