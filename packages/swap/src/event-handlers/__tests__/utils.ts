@@ -308,3 +308,18 @@ export const networkBroadcastSuccessMock = {
     },
   },
 } as const;
+
+export const networkBroadcastAbortedMock = {
+  block: {
+    height: 120,
+    timestamp: 1670337105000,
+  },
+  eventContext: {
+    kind: 'event',
+    event: {
+      args: { broadcastId: 62 },
+      name: 'EthereumBroadcaster.BroadcastAborted',
+      indexInBlock: 7,
+    },
+  },
+} as const;

@@ -2,6 +2,8 @@
 
 exports[`networkBatchBroadcastRequested creates a broadcast entity and updates the relevant egress entities 1`] = `
 {
+  "abortedAt": null,
+  "abortedBlockIndex": null,
   "chain": "Ethereum",
   "createdAt": Any<Date>,
   "egresses": [

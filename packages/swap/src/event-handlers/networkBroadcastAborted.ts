@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { Chain } from '@/shared/enums';
 import { unsignedInteger } from '@/shared/parsers';
-import type { EventHandlerArgs } from './index';
+import { EventHandlerArgs } from './index';
 
 const eventArgs = z.object({
   broadcastId: unsignedInteger,
@@ -17,13 +17,13 @@ export async function handleEvent(
   await prisma.broadcast.updateMany({
     where: { chain, nativeId: broadcastId },
     data: {
-      succeededAt: new Date(block.timestamp),
-      succeededBlockIndex: `${block.height}-${event.indexInBlock}`,
+      abortedAt: new Date(block.timestamp),
+      abortedBlockIndex: `${block.height}-${event.indexInBlock}`,
     },
   });
 }
 
-export default function networkBroadcastSuccess(
+export default function networkBroadcastAborted(
   chain: Chain,
 ): (args: EventHandlerArgs) => Promise<void> {
   return (args: EventHandlerArgs) => handleEvent(chain, args);

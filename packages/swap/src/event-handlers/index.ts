@@ -2,6 +2,7 @@ import type { Prisma } from '.prisma/client';
 import type { Block, Event } from '../gql/generated/graphql';
 import { buildHandlerMap, getDispatcher } from '../utils/handlers';
 import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';
+import networkBroadcastAborted from './networkBroadcastAborted';
 import networkBroadcastSuccess from './networkBroadcastSuccess';
 import networkEgressScheduled from './networkEgressScheduled';
 import swapEgressScheduled from './swapEgressScheduled';
@@ -23,6 +24,7 @@ export const bitcoinIngressEgress = {
 
 export const bitcoinBroadcaster = {
   BroadcastSuccess: 'BitcoinBroadcaster.BroadcastSuccess',
+  BroadcastAborted: 'BitcoinBroadcaster.BroadcastAborted',
 } as const;
 
 export const ethereumIngressEgress = {
@@ -32,6 +34,7 @@ export const ethereumIngressEgress = {
 
 export const ethereumBroadcaster = {
   BroadcastSuccess: 'EthereumBroadcaster.BroadcastSuccess',
+  BroadcastAborted: 'EthereumBroadcaster.BroadcastAborted',
 } as const;
 
 export const polkadotIngressEgress = {
@@ -41,6 +44,7 @@ export const polkadotIngressEgress = {
 
 export const polkadotBroadcaster = {
   BroadcastSuccess: 'PolkadotBroadcaster.BroadcastSuccess',
+  BroadcastAborted: 'PolkadotBroadcaster.BroadcastAborted',
 } as const;
 
 export const swapEventNames = [
@@ -79,6 +83,10 @@ const handlers = [
         handler: networkBroadcastSuccess('Bitcoin'),
       },
       {
+        name: bitcoinBroadcaster.BroadcastAborted,
+        handler: networkBroadcastAborted('Bitcoin'),
+      },
+      {
         name: ethereumIngressEgress.EgressScheduled,
         handler: networkEgressScheduled,
       },
@@ -91,6 +99,10 @@ const handlers = [
         handler: networkBroadcastSuccess('Ethereum'),
       },
       {
+        name: ethereumBroadcaster.BroadcastAborted,
+        handler: networkBroadcastAborted('Ethereum'),
+      },
+      {
         name: polkadotIngressEgress.EgressScheduled,
         handler: networkEgressScheduled,
       },
@@ -101,6 +113,10 @@ const handlers = [
       {
         name: polkadotBroadcaster.BroadcastSuccess,
         handler: networkBroadcastSuccess('Polkadot'),
+      },
+      {
+        name: polkadotBroadcaster.BroadcastAborted,
+        handler: networkBroadcastAborted('Polkadot'),
       },
     ],
   },
