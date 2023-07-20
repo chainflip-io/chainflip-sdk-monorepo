@@ -46,7 +46,7 @@
     "supertest": "^6.3.3"
   },
   "engines": {
-    "node": "18.16.0",
+    "node": "18.17.0",
     "pnpm": ">=7"
   },
   "dependencies": {
