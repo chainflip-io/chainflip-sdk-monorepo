@@ -84,6 +84,15 @@ jobs:
           token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
           client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}"}'
 
+      - name: Dispatch build-swap-backspin to chainflip-web-services 🦕
+        if: startsWith(github.ref, 'refs/tags/') != true
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          repository: chainflip-io/chainflip-web-services
+          event-type: build-swap-backspin
+          token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
+          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}"}'
+
       - name: Dispatch build-swap-tag to chainflip-web-services 🦕
         if: startsWith(github.ref, 'refs/tags/') == true
         uses: peter-evans/repository-dispatch@v2
