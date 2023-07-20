@@ -70,7 +70,7 @@ model Swap {
   swapExecutedBlockIndex    String?
   swapDepositChannel        SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
   swapDepositChannelId      BigInt?
-  txHash                    String?             @unique
+  txHash                    String?
   egress                    Egress?
   createdAt                 DateTime            @default(now())
   updatedAt                 DateTime            @default(now()) @updatedAt
