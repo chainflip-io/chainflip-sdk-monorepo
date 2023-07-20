@@ -1,6 +1,7 @@
 name: Release Swap Service
 
 on:
+  workflow_dispatch: {}
   push:
     tags:
       - "swap/v*"
