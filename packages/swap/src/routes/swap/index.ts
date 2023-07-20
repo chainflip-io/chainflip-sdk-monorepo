@@ -81,9 +81,11 @@ router.get(
         include: { egress: { include: { broadcast: true } } },
       });
     } else if (txHashRegex.test(id)) {
-      swap = await prisma.swap.findUnique({
+      swap = await prisma.swap.findFirst({
         where: { txHash: id },
         include: { egress: { include: { broadcast: true } } },
+        // just get the last one for now
+        orderBy: { createdAt: 'desc' },
       });
     }
 
