@@ -64,7 +64,7 @@ const requestValidators = {
         .merge(
           z.object({
             source_chain: chainflipChain,
-            source_address: z.literal(0),
+            source_address: z.literal('0'),
           }),
         )
         .optional(),
@@ -131,7 +131,7 @@ export default class BrokerClient extends RpcClient<
       swapRequest.ccmMetadata && {
         ...swapRequest.ccmMetadata,
         source_chain: srcChain,
-        source_address: 0,
+        source_address: '0',
       },
     );
 
