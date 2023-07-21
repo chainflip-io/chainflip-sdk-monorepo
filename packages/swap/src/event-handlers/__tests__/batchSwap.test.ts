@@ -162,21 +162,6 @@ const batchEvents = [
       transactionOutId: '0xcafebabe',
     },
   },
-  // {
-  //   id: '0000000002-000001-a48d6',
-  //   blockId: '0000000002-a48d6',
-  //   indexInBlock: 1,
-  //   extrinsicId: null,
-  //   callId: null,
-  //   name: 'Swapping.SwapDepositAddressExpired',
-  //   args: {
-  //     channelId: '3',
-  //     depositAddress: {
-  //       value: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
-  //       __kind: 'Eth',
-  //     },
-  //   },
-  // },
 ]
   .sort((a, b) => (a.id < b.id ? -1 : 1))
   .reduce((acc, event) => {
