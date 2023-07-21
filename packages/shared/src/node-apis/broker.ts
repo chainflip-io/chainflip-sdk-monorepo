@@ -142,7 +142,7 @@ export default class BrokerClient extends RpcClient<
       'requestSwapDepositAddress',
       srcAsset,
       destAsset,
-      submitAddress(srcAsset, destAddress),
+      submitAddress(destAsset, destAddress),
       0,
       swapRequest.ccmMetadata && {
         ...swapRequest.ccmMetadata,
