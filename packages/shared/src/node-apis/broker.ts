@@ -79,6 +79,7 @@ const requestValidators = {
       ccmMetadataSchema
         .merge(
           z.object({
+            cf_parameters: z.union([hexString, z.string()]).optional(),
             source_chain: chainflipChain,
             source_address: z.union([hexString, btcAddress, dotAddress]),
           }),
@@ -146,6 +147,7 @@ export default class BrokerClient extends RpcClient<
       0,
       swapRequest.ccmMetadata && {
         ...swapRequest.ccmMetadata,
+        cf_parameters: undefined,
         source_chain: srcChain,
         source_address: sourceAddress(srcChain),
       },

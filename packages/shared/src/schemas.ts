@@ -18,7 +18,6 @@ export type QuoteQueryParams = z.infer<typeof quoteQuerySchema>;
 export const ccmMetadataSchema = z.object({
   gasBudget: z.union([hexString, z.number()]),
   message: z.union([hexString, z.string()]),
-  cfParameters: z.union([hexString, z.string()]).optional(),
 });
 
 export type CcmMetadata = z.infer<typeof ccmMetadataSchema>;
