@@ -1,7 +1,7 @@
 {
   "name": "swap",
   "version": "0.0.8",
-  "description": "Swapping service backend",
+  "description": "Swap service backend",
   "private": true,
   "scripts": {
     "build": "pnpm clean && prisma generate && tsc && tsc-alias",
