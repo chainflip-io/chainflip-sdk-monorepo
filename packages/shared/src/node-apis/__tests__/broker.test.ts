@@ -120,7 +120,7 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
           message: 'ByteString',
           cf_parameters: 'ByteString',
           source_chain: 'Ethereum',
-          source_address: '0',
+          source_address: '0x8ba1f109551bd432803012645ac136ddd64dba72',
         },
       ],
     });
