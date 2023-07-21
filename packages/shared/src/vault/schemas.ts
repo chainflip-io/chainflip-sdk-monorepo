@@ -80,7 +80,7 @@ export type ExecuteSwapParams = z.infer<typeof executeSwapParamsSchema>;
 const nativeCallParamsSchema = ethereumBase.extend({
   destAsset: erc20,
   message: z.string(),
-  gasAmount: numericString,
+  gasBudget: numericString,
 });
 
 export type NativeCallParams = z.infer<typeof nativeCallParamsSchema>;
@@ -90,13 +90,13 @@ const tokenCallParamsSchema = z.union([
     srcAsset: z.literal(Assets.FLIP),
     destAsset: z.union([z.literal(Assets.USDC), z.literal(Assets.ETH)]),
     message: hexString,
-    gasAmount: numericString,
+    gasBudget: numericString,
   }),
   ethereumBase.extend({
     srcAsset: z.literal(Assets.USDC),
     destAsset: z.union([z.literal(Assets.FLIP), z.literal(Assets.ETH)]),
     message: hexString,
-    gasAmount: numericString,
+    gasBudget: numericString,
   }),
 ]);
 

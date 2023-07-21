@@ -63,7 +63,7 @@ describe(executeCall, () => {
       destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
     },
-  ] as Omit<ExecuteCallParams, 'amount' | 'message' | 'gasAmount'>[])(
+  ] as Omit<ExecuteCallParams, 'amount' | 'message' | 'gasBudget'>[])(
     'submits a native call (%p)',
     async (params) => {
       const wait = jest
@@ -78,7 +78,7 @@ describe(executeCall, () => {
           {
             amount: '1',
             message: '0xdeadc0de',
-            gasAmount: '101',
+            gasBudget: '101',
             ...params,
           } as ExecuteCallParams,
           {
@@ -126,7 +126,7 @@ describe(executeCall, () => {
         {
           amount: '1',
           message: '0xdeadc0de',
-          gasAmount: '101',
+          gasBudget: '101',
           ...params,
         },
         {
@@ -165,7 +165,7 @@ describe(executeCall, () => {
           srcChain: Chains.Ethereum,
           amount: '1',
           message: '0xdeadc0de',
-          gasAmount: '101',
+          gasBudget: '101',
         },
         { network: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
       ),
@@ -200,7 +200,7 @@ describe(executeCall, () => {
           srcAsset: Assets.FLIP,
           amount: '1',
           message: '0xdeadc0de',
-          gasAmount: '101',
+          gasBudget: '101',
         },
         {
           network: 'localnet',
@@ -234,7 +234,7 @@ describe(executeCall, () => {
           destChain: Chains.Ethereum,
           destAddress: ETH_ADDRESS,
           message: '0xdeadc0de',
-          gasAmount: '101',
+          gasBudget: '101',
         },
         {
           network: ChainflipNetworks.sisyphos,

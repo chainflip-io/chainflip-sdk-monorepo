@@ -11,6 +11,7 @@ jest.mock('@/shared/vault', () => ({
 const localnet = `swap
   --wallet-private-key 0x2
   --chainflip-network localnet
+  --src-asset ETH
   --dest-asset USDC
   --amount 1000000000
   --dest-address 0x0
