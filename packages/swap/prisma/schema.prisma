@@ -71,7 +71,8 @@ model Swap {
   swapDepositChannel        SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
   swapDepositChannelId      BigInt?
   txHash                    String?
-  egress                    Egress?
+  egress                    Egress?             @relation(fields: [egressId], references: [id])
+  egressId                  BigInt?
   createdAt                 DateTime            @default(now())
   updatedAt                 DateTime            @default(now()) @updatedAt
 
@@ -86,8 +87,7 @@ model Egress {
   amount              Decimal    @db.Decimal(30, 0)
   scheduledAt         DateTime
   scheduledBlockIndex String
-  swap                Swap?      @relation(fields: [swapId], references: [id])
-  swapId              BigInt?    @unique
+  swaps               Swap[]
   broadcast           Broadcast? @relation(fields: [broadcastId], references: [id])
   broadcastId         BigInt?
   createdAt           DateTime   @default(now())

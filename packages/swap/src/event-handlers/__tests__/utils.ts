@@ -1,6 +1,6 @@
 import { Assets, Chains } from '@/shared/enums';
 import prisma, { SwapDepositChannel } from '../../client';
-import { swapping } from '../index';
+import { events } from '../index';
 import { SwapExecutedEvent } from '../swapExecuted';
 import { SwapScheduledEvent } from '../swapScheduled';
 
@@ -49,7 +49,7 @@ const buildSwapScheduledEvent = <T extends SwapScheduledEvent>(args: T) => ({
       id: '0000012799-000000-c1ea7',
       indexInBlock: 0,
       nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: swapping.SwapScheduled,
+      name: events.Swapping.SwapScheduled,
       phase: 'ApplyExtrinsic',
       pos: 2,
       extrinsic: {
@@ -152,7 +152,7 @@ export const buildSwapExecutedMock = (args: SwapExecutedEvent) => ({
       id: '0000012799-000000-c1ea7',
       indexInBlock: 0,
       nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: swapping.SwapExecuted,
+      name: events.Swapping.SwapExecuted,
       phase: 'ApplyExtrinsic',
       pos: 2,
       extrinsic: {
@@ -199,7 +199,7 @@ export const swapEgressScheduledMock = {
       id: '0000012799-000000-c1ea7',
       indexInBlock: 0,
       nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: swapping.SwapEgressScheduled,
+      name: events.Swapping.SwapEgressScheduled,
       phase: 'ApplyExtrinsic',
       pos: 2,
       extrinsic: {

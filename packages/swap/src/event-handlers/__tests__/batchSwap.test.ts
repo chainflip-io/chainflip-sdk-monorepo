@@ -189,7 +189,7 @@ const batchEvents = [
 
 describe('batch swap flow', () => {
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel" CASCADE`;
   });
 
   it('handles all the events', async () => {
@@ -257,23 +257,38 @@ describe('batch swap flow', () => {
 
     expect(swaps).toHaveLength(1);
 
-    expect(swaps[0]).toMatchSnapshot({
-      updatedAt: expect.any(Date),
-      createdAt: expect.any(Date),
-    });
+    expect(swaps[0]).toMatchSnapshot(
+      {
+        id: expect.any(BigInt),
+        swapDepositChannelId: expect.any(BigInt),
+        egressId: expect.any(BigInt),
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+      },
+      'swap',
+    );
 
     const egresses = await prisma.egress.findMany();
     expect(egresses).toHaveLength(1);
-    expect(egresses[0]).toMatchSnapshot({
-      updatedAt: expect.any(Date),
-      createdAt: expect.any(Date),
-    });
+    expect(egresses[0]).toMatchSnapshot(
+      {
+        id: expect.any(BigInt),
+        broadcastId: expect.any(BigInt),
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+      },
+      'egress',
+    );
 
     const broadcasts = await prisma.broadcast.findMany();
     expect(broadcasts).toHaveLength(1);
-    expect(broadcasts[0]).toMatchSnapshot({
-      updatedAt: expect.any(Date),
-      createdAt: expect.any(Date),
-    });
+    expect(broadcasts[0]).toMatchSnapshot(
+      {
+        id: expect.any(BigInt),
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+      },
+      'broadcast',
+    );
   });
 });

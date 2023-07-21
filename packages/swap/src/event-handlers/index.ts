@@ -11,7 +11,7 @@ import swapEgressScheduled from './swapEgressScheduled';
 import swapExecuted from './swapExecuted';
 import swapScheduled from './swapScheduled';
 
-const events = {
+export const events = {
   Swapping: {
     SwapScheduled: 'Swapping.SwapScheduled',
     SwapExecuted: 'Swapping.SwapExecuted',

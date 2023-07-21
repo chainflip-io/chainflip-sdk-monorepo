@@ -41,7 +41,7 @@ describe('server', () => {
   jest.setTimeout(1000);
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Egress" CASCADE`;
     server = app.listen(0);
   });
 
