@@ -1,6 +1,6 @@
 import { Assets, Chains } from '@/shared/enums';
 import prisma, { SwapDepositChannel } from '../../client';
-import { swapping } from '../index';
+import { events } from '../index';
 import { SwapExecutedEvent } from '../swapExecuted';
 import { SwapScheduledEvent } from '../swapScheduled';
 
@@ -49,7 +49,7 @@ const buildSwapScheduledEvent = <T extends SwapScheduledEvent>(args: T) => ({
       id: '0000012799-000000-c1ea7',
       indexInBlock: 0,
       nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: swapping.SwapScheduled,
+      name: events.Swapping.SwapScheduled,
       phase: 'ApplyExtrinsic',
       pos: 2,
       extrinsic: {
@@ -95,6 +95,9 @@ export const swapScheduledDotDepositChannelMock = buildSwapScheduledEvent({
       '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
     __kind: 'Btc',
   },
+  swapType: {
+    __kind: 'Swap',
+  },
 });
 
 export const swapScheduledBtcDepositChannelMock = buildSwapScheduledEvent({
@@ -115,6 +118,9 @@ export const swapScheduledBtcDepositChannelMock = buildSwapScheduledEvent({
         '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
     },
   },
+  swapType: {
+    __kind: 'Swap',
+  },
 });
 
 export const swapScheduledVaultMock = buildSwapScheduledEvent({
@@ -130,6 +136,9 @@ export const swapScheduledVaultMock = buildSwapScheduledEvent({
   destinationAddress: {
     value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
     __kind: 'Dot',
+  },
+  swapType: {
+    __kind: 'Swap',
   },
 });
 
@@ -152,7 +161,7 @@ export const buildSwapExecutedMock = (args: SwapExecutedEvent) => ({
       id: '0000012799-000000-c1ea7',
       indexInBlock: 0,
       nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: swapping.SwapExecuted,
+      name: events.Swapping.SwapExecuted,
       phase: 'ApplyExtrinsic',
       pos: 2,
       extrinsic: {
@@ -199,7 +208,7 @@ export const swapEgressScheduledMock = {
       id: '0000012799-000000-c1ea7',
       indexInBlock: 0,
       nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: swapping.SwapEgressScheduled,
+      name: events.Swapping.SwapEgressScheduled,
       phase: 'ApplyExtrinsic',
       pos: 2,
       extrinsic: {

@@ -14,6 +14,7 @@ exports[`swapEgressScheduled updates an existing swap with the scheduled timesta
     "scheduledAt": 2022-12-06T14:31:45.000Z,
   },
   "egressAmount": null,
+  "egressId": Any<BigInt>,
   "id": Any<BigInt>,
   "intermediateAmount": null,
   "nativeId": 9876545n,
@@ -22,6 +23,7 @@ exports[`swapEgressScheduled updates an existing swap with the scheduled timesta
   "swapExecutedAt": 2022-12-06T14:31:39.000Z,
   "swapExecutedBlockIndex": "120-0",
   "txHash": null,
+  "type": "SWAP",
   "updatedAt": Any<Date>,
 }
 `;

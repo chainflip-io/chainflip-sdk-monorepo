@@ -12,6 +12,7 @@ exports[`networkBroadcastAborted updates an existing broadcast entity with the s
   "requestedBlockIndex": "119-1",
   "succeededAt": null,
   "succeededBlockIndex": null,
+  "type": "BATCH",
   "updatedAt": Any<Date>,
 }
 `;

@@ -22,13 +22,20 @@ export default async function networkEgressScheduled({
 }: EventHandlerArgs): Promise<void> {
   const { id, asset, amount } = eventArgs.parse(event.args);
 
-  await prisma.egress.create({
-    data: {
+  await prisma.egress.upsert({
+    where: {
+      nativeId_chain: {
+        chain: assetChains[asset],
+        nativeId: id[1],
+      },
+    },
+    create: {
       nativeId: id[1],
       chain: assetChains[asset],
       amount: amount.toString(),
       scheduledAt: new Date(block.timestamp),
       scheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
     },
+    update: {},
   });
 }

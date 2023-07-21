@@ -45,6 +45,7 @@ describe(swapEgressScheduled, () => {
           srcAsset: Assets.ETH,
           destAsset: Assets.DOT,
           destAddress: DOT_ADDRESS,
+          type: 'SWAP',
         },
       },
     });
@@ -72,6 +73,7 @@ describe(swapEgressScheduled, () => {
 
     expect(swap).toMatchSnapshot({
       id: expect.any(BigInt),
+      egressId: expect.any(BigInt),
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       swapDepositChannelId: expect.any(BigInt),

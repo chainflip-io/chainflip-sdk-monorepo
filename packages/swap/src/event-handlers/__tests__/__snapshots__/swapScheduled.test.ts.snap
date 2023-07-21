@@ -9,6 +9,7 @@ exports[`swapScheduled deposit channel origin stores a new swap from a btc depos
   "destAddress": "0x41ad2bc63a2059f9b623533d87fe99887d794847",
   "destAsset": "ETH",
   "egressAmount": null,
+  "egressId": null,
   "id": Any<BigInt>,
   "intermediateAmount": null,
   "nativeId": 3n,
@@ -17,6 +18,7 @@ exports[`swapScheduled deposit channel origin stores a new swap from a btc depos
   "swapExecutedAt": null,
   "swapExecutedBlockIndex": null,
   "txHash": null,
+  "type": "SWAP",
   "updatedAt": Any<Date>,
 }
 `;
@@ -30,6 +32,7 @@ exports[`swapScheduled deposit channel origin stores a new swap from a dot depos
   "destAddress": "bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa",
   "destAsset": "BTC",
   "egressAmount": null,
+  "egressId": null,
   "id": Any<BigInt>,
   "intermediateAmount": null,
   "nativeId": 1n,
@@ -38,6 +41,7 @@ exports[`swapScheduled deposit channel origin stores a new swap from a dot depos
   "swapExecutedAt": null,
   "swapExecutedBlockIndex": null,
   "txHash": null,
+  "type": "SWAP",
   "updatedAt": Any<Date>,
 }
 `;
@@ -51,6 +55,7 @@ exports[`swapScheduled smart contract origin stores a new swap from a contract d
   "destAddress": "5D34dL5prEUaGNQtPPZ3yN5Y6BnkfXunKXXz6fo7ZJbLwRRH",
   "destAsset": "DOT",
   "egressAmount": null,
+  "egressId": null,
   "id": Any<BigInt>,
   "intermediateAmount": null,
   "nativeId": 2n,
@@ -59,6 +64,7 @@ exports[`swapScheduled smart contract origin stores a new swap from a contract d
   "swapExecutedAt": null,
   "swapExecutedBlockIndex": null,
   "txHash": "0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9",
+  "type": "SWAP",
   "updatedAt": Any<Date>,
 }
 `;

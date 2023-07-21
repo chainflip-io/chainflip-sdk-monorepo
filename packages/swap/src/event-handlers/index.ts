@@ -1,61 +1,54 @@
 import type { Prisma } from '.prisma/client';
+import { Chains } from '@/shared/enums';
 import type { Block, Event } from '../gql/generated/graphql';
 import { buildHandlerMap, getDispatcher } from '../utils/handlers';
 import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';
 import networkBroadcastAborted from './networkBroadcastAborted';
 import networkBroadcastSuccess from './networkBroadcastSuccess';
+import networkCcmBroadcastRequested from './networkCcmBroadcastRequested';
 import networkEgressScheduled from './networkEgressScheduled';
 import swapEgressScheduled from './swapEgressScheduled';
 import swapExecuted from './swapExecuted';
 import swapScheduled from './swapScheduled';
 
-const values = Object.values as <T>(o: T) => T[keyof T][];
-
-export const swapping = {
-  SwapScheduled: 'Swapping.SwapScheduled',
-  SwapExecuted: 'Swapping.SwapExecuted',
-  SwapEgressScheduled: 'Swapping.SwapEgressScheduled',
+export const events = {
+  Swapping: {
+    SwapScheduled: 'Swapping.SwapScheduled',
+    SwapExecuted: 'Swapping.SwapExecuted',
+    SwapEgressScheduled: 'Swapping.SwapEgressScheduled',
+  },
+  BitcoinIngressEgress: {
+    EgressScheduled: 'BitcoinIngressEgress.EgressScheduled',
+    BatchBroadcastRequested: 'BitcoinIngressEgress.BatchBroadcastRequested',
+    CcmBroadcastRequested: 'BitcoinIngressEgress.CcmBroadcastRequested',
+  },
+  BitcoinBroadcaster: {
+    BroadcastSuccess: 'BitcoinBroadcaster.BroadcastSuccess',
+    BroadcastAborted: 'BitcoinBroadcaster.BroadcastAborted',
+  },
+  EthereumIngressEgress: {
+    EgressScheduled: 'EthereumIngressEgress.EgressScheduled',
+    BatchBroadcastRequested: 'EthereumIngressEgress.BatchBroadcastRequested',
+    CcmBroadcastRequested: 'EthereumIngressEgress.CcmBroadcastRequested',
+  },
+  EthereumBroadcaster: {
+    BroadcastSuccess: 'EthereumBroadcaster.BroadcastSuccess',
+    BroadcastAborted: 'EthereumBroadcaster.BroadcastAborted',
+  },
+  PolkadotIngressEgress: {
+    EgressScheduled: 'PolkadotIngressEgress.EgressScheduled',
+    BatchBroadcastRequested: 'PolkadotIngressEgress.BatchBroadcastRequested',
+    CcmBroadcastRequested: 'PolkadotIngressEgress.CcmBroadcastRequested',
+  },
+  PolkadotBroadcaster: {
+    BroadcastSuccess: 'PolkadotBroadcaster.BroadcastSuccess',
+    BroadcastAborted: 'PolkadotBroadcaster.BroadcastAborted',
+  },
 } as const;
 
-export const bitcoinIngressEgress = {
-  EgressScheduled: 'BitcoinIngressEgress.EgressScheduled',
-  BatchBroadcastRequested: 'BitcoinIngressEgress.BatchBroadcastRequested',
-} as const;
-
-export const bitcoinBroadcaster = {
-  BroadcastSuccess: 'BitcoinBroadcaster.BroadcastSuccess',
-  BroadcastAborted: 'BitcoinBroadcaster.BroadcastAborted',
-} as const;
-
-export const ethereumIngressEgress = {
-  EgressScheduled: 'EthereumIngressEgress.EgressScheduled',
-  BatchBroadcastRequested: 'EthereumIngressEgress.BatchBroadcastRequested',
-} as const;
-
-export const ethereumBroadcaster = {
-  BroadcastSuccess: 'EthereumBroadcaster.BroadcastSuccess',
-  BroadcastAborted: 'EthereumBroadcaster.BroadcastAborted',
-} as const;
-
-export const polkadotIngressEgress = {
-  EgressScheduled: 'PolkadotIngressEgress.EgressScheduled',
-  BatchBroadcastRequested: 'PolkadotIngressEgress.BatchBroadcastRequested',
-} as const;
-
-export const polkadotBroadcaster = {
-  BroadcastSuccess: 'PolkadotBroadcaster.BroadcastSuccess',
-  BroadcastAborted: 'PolkadotBroadcaster.BroadcastAborted',
-} as const;
-
-export const swapEventNames = [
-  values(swapping),
-  values(bitcoinIngressEgress),
-  values(bitcoinBroadcaster),
-  values(ethereumIngressEgress),
-  values(ethereumBroadcaster),
-  values(polkadotIngressEgress),
-  values(polkadotBroadcaster),
-].flat();
+export const swapEventNames = Object.values(events).flatMap((pallets) =>
+  Object.values(pallets),
+);
 
 export type EventHandlerArgs = {
   prisma: Prisma.TransactionClient;
@@ -67,57 +60,34 @@ const handlers = [
   {
     spec: 0,
     handlers: [
-      { name: swapping.SwapScheduled, handler: swapScheduled },
-      { name: swapping.SwapExecuted, handler: swapExecuted },
-      { name: swapping.SwapEgressScheduled, handler: swapEgressScheduled },
+      { name: events.Swapping.SwapScheduled, handler: swapScheduled },
+      { name: events.Swapping.SwapExecuted, handler: swapExecuted },
       {
-        name: bitcoinIngressEgress.EgressScheduled,
-        handler: networkEgressScheduled,
+        name: events.Swapping.SwapEgressScheduled,
+        handler: swapEgressScheduled,
       },
-      {
-        name: bitcoinIngressEgress.BatchBroadcastRequested,
-        handler: networkBatchBroadcastRequested,
-      },
-      {
-        name: bitcoinBroadcaster.BroadcastSuccess,
-        handler: networkBroadcastSuccess('Bitcoin'),
-      },
-      {
-        name: bitcoinBroadcaster.BroadcastAborted,
-        handler: networkBroadcastAborted('Bitcoin'),
-      },
-      {
-        name: ethereumIngressEgress.EgressScheduled,
-        handler: networkEgressScheduled,
-      },
-      {
-        name: ethereumIngressEgress.BatchBroadcastRequested,
-        handler: networkBatchBroadcastRequested,
-      },
-      {
-        name: ethereumBroadcaster.BroadcastSuccess,
-        handler: networkBroadcastSuccess('Ethereum'),
-      },
-      {
-        name: ethereumBroadcaster.BroadcastAborted,
-        handler: networkBroadcastAborted('Ethereum'),
-      },
-      {
-        name: polkadotIngressEgress.EgressScheduled,
-        handler: networkEgressScheduled,
-      },
-      {
-        name: polkadotIngressEgress.BatchBroadcastRequested,
-        handler: networkBatchBroadcastRequested,
-      },
-      {
-        name: polkadotBroadcaster.BroadcastSuccess,
-        handler: networkBroadcastSuccess('Polkadot'),
-      },
-      {
-        name: polkadotBroadcaster.BroadcastAborted,
-        handler: networkBroadcastAborted('Polkadot'),
-      },
+      ...Object.values(Chains).flatMap((chain) => [
+        {
+          name: events[`${chain}IngressEgress`].EgressScheduled,
+          handler: networkEgressScheduled,
+        },
+        {
+          name: events[`${chain}IngressEgress`].BatchBroadcastRequested,
+          handler: networkBatchBroadcastRequested,
+        },
+        {
+          name: events[`${chain}IngressEgress`].CcmBroadcastRequested,
+          handler: networkCcmBroadcastRequested,
+        },
+        {
+          name: events[`${chain}Broadcaster`].BroadcastSuccess,
+          handler: networkBroadcastSuccess(chain),
+        },
+        {
+          name: events[`${chain}Broadcaster`].BroadcastAborted,
+          handler: networkBroadcastAborted(chain),
+        },
+      ]),
     ],
   },
 ];

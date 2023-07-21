@@ -34,6 +34,7 @@ describe(swapExecuted, () => {
           srcAsset: Assets.ETH,
           destAsset: Assets.DOT,
           destAddress: DOT_ADDRESS,
+          type: 'SWAP',
         },
       },
     });
@@ -81,6 +82,7 @@ describe(swapExecuted, () => {
           srcAsset: Assets.ETH,
           destAsset: Assets.DOT,
           destAddress: DOT_ADDRESS,
+          type: 'SWAP',
         },
       },
     });
