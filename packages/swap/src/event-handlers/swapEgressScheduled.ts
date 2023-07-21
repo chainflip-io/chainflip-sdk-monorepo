@@ -25,6 +25,8 @@ export default async function swapEgressScheduled({
       egressId: [chain, nativeId],
     } = eventArgs.parse(event.args);
 
+    console.log(await prisma.egress.findMany());
+
     await prisma.swap.update({
       where: { nativeId: swapId },
       data: {

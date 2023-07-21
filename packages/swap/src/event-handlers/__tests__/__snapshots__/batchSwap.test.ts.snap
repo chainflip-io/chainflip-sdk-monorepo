@@ -1,0 +1,54 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`batch swap flow handles all the events 1`] = `
+{
+  "createdAt": Any<Date>,
+  "depositAmount": "100000000010000000",
+  "depositReceivedAt": 1970-01-01T00:00:06.000Z,
+  "depositReceivedBlockIndex": "1-19",
+  "destAddress": "0x6d703351536f504e32694c4b724568647a3951623944534a5141754e774444613737",
+  "destAsset": "BTC",
+  "egressAmount": "662256",
+  "id": 1n,
+  "intermediateAmount": "990109107",
+  "nativeId": 1n,
+  "srcAsset": "ETH",
+  "swapDepositChannelId": 1n,
+  "swapExecutedAt": 1970-01-01T00:00:06.000Z,
+  "swapExecutedBlockIndex": "1-253",
+  "txHash": null,
+  "updatedAt": Any<Date>,
+}
+`;
+
+exports[`batch swap flow handles all the events 2`] = `
+{
+  "amount": "662256",
+  "broadcastId": 1n,
+  "chain": "Bitcoin",
+  "createdAt": Any<Date>,
+  "id": 1n,
+  "nativeId": 1n,
+  "scheduledAt": 1970-01-01T00:00:06.000Z,
+  "scheduledBlockIndex": "1-254",
+  "swapId": 1n,
+  "updatedAt": Any<Date>,
+}
+`;
+
+exports[`batch swap flow handles all the events 3`] = `
+{
+  "abortedAt": null,
+  "abortedBlockIndex": null,
+  "chain": "Bitcoin",
+  "createdAt": Any<Date>,
+  "id": 1n,
+  "nativeId": 5n,
+  "requestedAt": 1970-01-01T00:00:06.000Z,
+  "requestedBlockIndex": "1-259",
+  "succeededAt": 1970-01-01T00:00:12.000Z,
+  "succeededBlockIndex": "2-296",
+  "type": "BATCH",
+  "updatedAt": Any<Date>,
+}
+`;

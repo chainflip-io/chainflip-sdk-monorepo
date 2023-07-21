@@ -97,11 +97,19 @@ model Egress {
   @@schema("public")
 }
 
+enum BroadcastType {
+  BATCH
+  CCM
+
+  @@schema("public")
+}
+
 model Broadcast {
-  id                  BigInt    @id @default(autoincrement())
+  id                  BigInt        @id @default(autoincrement())
   /// the broadcast id on the state chain
   nativeId            BigInt
   chain               Chain
+  type                BroadcastType @default(BATCH)
   egresses            Egress[]
   requestedAt         DateTime
   requestedBlockIndex String
@@ -109,8 +117,8 @@ model Broadcast {
   succeededBlockIndex String?
   abortedAt           DateTime?
   abortedBlockIndex   String?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @default(now()) @updatedAt
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @default(now()) @updatedAt
 
   @@unique([nativeId, chain])
   @@schema("public")
