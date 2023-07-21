@@ -128,6 +128,7 @@ router.get(
 
     const response = {
       state,
+      type: swap?.type,
       srcChain: srcAsset && assetChains[srcAsset],
       destChain: destAsset && assetChains[destAsset],
       srcAsset,

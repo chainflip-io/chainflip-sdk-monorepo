@@ -49,6 +49,7 @@ exports[`batch swap flow handles all the events: swap 1`] = `
   "swapExecutedAt": 1970-01-01T00:00:06.000Z,
   "swapExecutedBlockIndex": "1-253",
   "txHash": null,
+  "type": "SWAP",
   "updatedAt": Any<Date>,
 }
 `;

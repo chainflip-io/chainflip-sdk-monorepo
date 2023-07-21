@@ -95,6 +95,7 @@ describe('server', () => {
             srcAsset: Assets.ETH,
             destAsset: Assets.DOT,
             destAddress: DOT_ADDRESS,
+            type: 'SWAP',
           },
         },
       });
@@ -119,6 +120,7 @@ describe('server', () => {
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
           "swapExecutedBlockIndex": null,
+          "type": "SWAP",
         }
       `);
     });
@@ -136,6 +138,7 @@ describe('server', () => {
             srcAsset: Assets.ETH,
             destAsset: Assets.DOT,
             destAddress: DOT_ADDRESS,
+            type: 'SWAP',
           },
         },
       });
@@ -161,6 +164,7 @@ describe('server', () => {
           "state": "SWAP_EXECUTED",
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
+          "type": "SWAP",
         }
       `);
     });
@@ -187,6 +191,7 @@ describe('server', () => {
             srcAsset: Assets.ETH,
             destAsset: Assets.DOT,
             destAddress: DOT_ADDRESS,
+            type: 'SWAP',
           },
         },
       });
@@ -215,6 +220,7 @@ describe('server', () => {
           "state": "EGRESS_SCHEDULED",
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
+          "type": "SWAP",
         }
       `);
     });
@@ -249,6 +255,7 @@ describe('server', () => {
             srcAsset: Assets.ETH,
             destAsset: Assets.DOT,
             destAddress: DOT_ADDRESS,
+            type: 'SWAP',
           },
         },
       });
@@ -281,6 +288,7 @@ describe('server', () => {
           "state": "BROADCAST_REQUESTED",
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
+          "type": "SWAP",
         }
       `);
     });
@@ -317,6 +325,7 @@ describe('server', () => {
             srcAsset: Assets.ETH,
             destAsset: Assets.DOT,
             destAddress: DOT_ADDRESS,
+            type: 'SWAP',
           },
         },
       });
@@ -350,6 +359,7 @@ describe('server', () => {
           "state": "BROADCAST_ABORTED",
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
+          "type": "SWAP",
         }
       `);
     });
@@ -386,6 +396,7 @@ describe('server', () => {
             srcAsset: Assets.ETH,
             destAsset: Assets.DOT,
             destAddress: DOT_ADDRESS,
+            type: 'SWAP',
           },
         },
       });
@@ -419,6 +430,7 @@ describe('server', () => {
           "state": "COMPLETE",
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
+          "type": "SWAP",
         }
       `);
     });
@@ -436,6 +448,7 @@ describe('server', () => {
           depositAmount: '10',
           depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
           depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+          type: 'SWAP',
         },
       });
 
@@ -455,6 +468,7 @@ describe('server', () => {
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
           "swapExecutedBlockIndex": null,
+          "type": "SWAP",
         }
       `);
     });
@@ -469,6 +483,7 @@ describe('server', () => {
           depositAmount: '10',
           depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
           depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+          type: 'SWAP',
         },
       });
 
@@ -488,6 +503,7 @@ describe('server', () => {
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
           "swapExecutedBlockIndex": null,
+          "type": "SWAP",
         }
       `);
     });

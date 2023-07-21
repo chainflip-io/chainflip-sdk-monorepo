@@ -18,6 +18,7 @@ exports[`swapExecuted updates an existing swap with the execution timestamp 1`] 
   "swapExecutedAt": 2022-12-06T14:31:39.000Z,
   "swapExecutedBlockIndex": "100-0",
   "txHash": null,
+  "type": "SWAP",
   "updatedAt": Any<Date>,
 }
 `;
@@ -40,6 +41,7 @@ exports[`swapExecuted updates an existing swap with the execution timestamp and 
   "swapExecutedAt": 2022-12-06T14:31:39.000Z,
   "swapExecutedBlockIndex": "100-0",
   "txHash": null,
+  "type": "SWAP",
   "updatedAt": Any<Date>,
 }
 `;

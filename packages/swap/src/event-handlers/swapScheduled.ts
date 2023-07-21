@@ -1,7 +1,12 @@
 // Set the column in the DB to the block timestamp and the deposit amount.
 import assert from 'assert';
 import { z } from 'zod';
-import { chainflipAssetEnum, u128, u64 } from '@/shared/parsers';
+import {
+  chainflipAssetEnum,
+  u128,
+  u64,
+  swapType as swapTypeSchema,
+} from '@/shared/parsers';
 import logger from '../utils/logger';
 import { encodedAddress } from './common';
 import type { EventHandlerArgs } from '.';
@@ -23,6 +28,7 @@ const swapScheduledArgs = z.object({
   destinationAsset: chainflipAssetEnum,
   destinationAddress: encodedAddress,
   origin: z.union([depositChannelSwapOrigin, vaultSwapOrigin]),
+  swapType: swapTypeSchema,
 });
 
 export type SwapScheduledEvent = z.input<typeof swapScheduledArgs>;
@@ -39,6 +45,7 @@ export default async function swapScheduled({
     destinationAsset,
     destinationAddress,
     origin,
+    swapType,
   } = swapScheduledArgs.parse(event.args);
 
   const newSwapData = {
@@ -74,6 +81,7 @@ export default async function swapScheduled({
 
     await prisma.swap.create({
       data: {
+        type: swapType.type,
         swapDepositChannelId: id,
         srcAsset,
         destAsset,
@@ -84,6 +92,7 @@ export default async function swapScheduled({
   } else if (origin.__kind === 'Vault') {
     await prisma.swap.create({
       data: {
+        type: swapType.type,
         srcAsset: sourceAsset,
         destAsset: destinationAsset,
         destAddress: destinationAddress.address,

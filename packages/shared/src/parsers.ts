@@ -69,3 +69,15 @@ export const chainflipAssetEnum = z
 export const chainflipChain = z.nativeEnum(Chains);
 export const chainflipAsset = z.nativeEnum(Assets);
 export const chainflipNetwork = z.nativeEnum(ChainflipNetworks);
+
+export const swapType = z.union([
+  z
+    .object({ __kind: z.literal('CcmPrincipal'), value: unsignedInteger })
+    .transform(({ value: ccmId }) => ({ type: 'PRINCIPAL' as const, ccmId })),
+  z
+    .object({ __kind: z.literal('CcmGas'), value: unsignedInteger })
+    .transform(({ value: ccmId }) => ({ type: 'GAS' as const, ccmId })),
+  z
+    .object({ __kind: z.literal('Swap') })
+    .transform(() => ({ type: 'SWAP' as const })),
+]);

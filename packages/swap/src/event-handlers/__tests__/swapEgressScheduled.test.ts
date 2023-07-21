@@ -45,6 +45,7 @@ describe(swapEgressScheduled, () => {
           srcAsset: Assets.ETH,
           destAsset: Assets.DOT,
           destAddress: DOT_ADDRESS,
+          type: 'SWAP',
         },
       },
     });
