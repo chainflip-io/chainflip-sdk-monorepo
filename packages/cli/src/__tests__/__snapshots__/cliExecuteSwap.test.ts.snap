@@ -8,7 +8,8 @@ exports[`cli calls the correct handler with the proper arguments 1`] = `
       "destAddress": "0x0",
       "destAsset": "USDC",
       "destChain": "Ethereum",
-      "srcAsset": undefined,
+      "srcAsset": "ETH",
+      "srcChain": "Ethereum",
     },
     {
       "network": "localnet",
@@ -28,7 +29,8 @@ exports[`cli calls the correct handler with the proper arguments 2`] = `
       "destAddress": "0x0",
       "destAsset": "USDC",
       "destChain": "Ethereum",
-      "srcAsset": undefined,
+      "srcAsset": "ETH",
+      "srcChain": "Ethereum",
     },
     {
       "network": "sisyphos",

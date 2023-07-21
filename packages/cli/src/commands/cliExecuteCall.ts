@@ -39,10 +39,10 @@ export const yargsOptions = {
     demandOption: true,
     describe: 'The message that is sent along with the swapped assets',
   },
-  'gas-amount': {
+  'gas-budget': {
     type: 'string',
     demandOption: true,
-    describe: 'The maximum gas amount that is sent with the message',
+    describe: 'The amount of gas that is sent with the message',
   },
   'wallet-private-key': {
     type: 'string',
@@ -97,7 +97,7 @@ export default async function cliExecuteCall(
       amount: args.amount,
       destAddress: args.destAddress,
       message: args.message,
-      gasAmount: args.gasAmount,
+      gasBudget: args.gasBudget,
     } as ExecuteCallParams,
     opts,
   );

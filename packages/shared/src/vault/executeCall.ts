@@ -32,7 +32,7 @@ const callNative = async (
     params.destAddress,
     assetContractIds[params.destAsset],
     params.message,
-    params.gasAmount,
+    params.gasBudget,
     [],
     { value: params.amount, nonce },
   );
@@ -71,7 +71,7 @@ const callToken = async (
     params.destAddress,
     assetContractIds[params.destAsset],
     params.message,
-    params.gasAmount,
+    params.gasBudget,
     erc20Address,
     params.amount,
     [],

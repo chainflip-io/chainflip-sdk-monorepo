@@ -45,6 +45,12 @@ void printTypes(
 );
 
 void printTypes(
+  path.resolve(rootPath, 'packages/shared/tsconfig.json'),
+  path.resolve(rootPath, 'packages/shared/src/schemas.ts'),
+  ['SwapRequestBody'],
+);
+
+void printTypes(
   path.resolve(rootPath, 'packages/sdk/tsconfig.json'),
   path.resolve(rootPath, 'packages/sdk/src/swap/types.ts'),
   ['SwapStatusResponse'],
