@@ -2,7 +2,7 @@ import assert from 'assert';
 import express from 'express';
 import { assetChains, Chain } from '@/shared/enums';
 import BrokerClient from '@/shared/node-apis/broker';
-import { postSwapSchema } from '@/shared/schemas';
+import { PostSwapResponse, postSwapSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma, {
   Egress,
@@ -200,12 +200,14 @@ router.post(
         },
       });
 
-    res.json({
+    const response: PostSwapResponse = {
       id: `${issuedBlock}-${srcChain}-${channelId}`,
       depositAddress,
       issuedBlock,
       expiryBlock,
-    });
+    };
+
+    res.json(response);
   }),
 );
 
