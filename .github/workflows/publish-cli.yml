@@ -1,9 +1,9 @@
-name: Publish npm packages 🛰️
+name: Publish @chainflip-io/cli 🛰️
 
 on:
   push:
     # tags:
-    #   - "@chainflip-io/sdk/*"
+    #   - "@chainflip-io/cli/*"
 
 permissions:
   packages: write
@@ -13,8 +13,8 @@ env:
   NODE_AUTH_TOKEN: ${{ secrets.CF_NPM_JS_PACKAGES_READ_WRITE }}
 
 jobs:
-  publish-sdk:
+  publish-cli:
     uses: ./.github/workflows/_30_publish_npm.yml
     with:
-      package_name: sdk
+      package_name: cli
     secrets: inherit

@@ -1,0 +1,48 @@
+on:
+  workflow_call:
+    inputs:
+      package_name:
+        description: "Name of the package to build"
+        type: string
+        required: true
+
+jobs:
+  lint-node-16:
+    uses: chainflip-io/chainflip-reusable-workflows/.github/workflows/_web_lint.yml@main
+    with:
+      node_version: "16"
+      lint_cmd: |
+        pnpm prettier:check
+        pnpm eslint:check
+        pnpm typecheck
+
+  lint-node-18:
+    uses: chainflip-io/chainflip-reusable-workflows/.github/workflows/_web_lint.yml@main
+    with:
+      node_version: "18"
+      lint_cmd: |
+        pnpm prettier:check
+        pnpm eslint:check
+        pnpm typecheck
+
+  test-node-16:
+    uses: chainflip-io/chainflip-reusable-workflows/.github/workflows/_web_test.yml@main
+    with:
+      node_version: "16"
+      test_cmd: pnpm --filter ${{ inputs.package_name }} test:ci
+      service: ${{ inputs.package_name }}
+
+  test-node-18:
+    uses: chainflip-io/chainflip-reusable-workflows/.github/workflows/_web_test.yml@main
+    with:
+      node_version: "18"
+      test_cmd: pnpm --filter ${{ inputs.package_name }} test:ci
+      service: ${{ inputs.package_name }}
+
+  # publish:
+  #   needs: [lint-node-16, lint-node-18, test-node-16, test-node-18]
+  #   uses: chainflip-io/chainflip-reusable-workflows/.github/workflows/_web_npm_publish.yml@chore/enable-additional-test-cmds
+  #   with:
+  #     node_version: "18"
+  #     publish_cmd: pnpm --filter @chainflip-io/${{ inputs.package_name }} build
+  #     build_cmd: pnpm --filter @chainflip-io/${{ inputs.package_name }} publish
