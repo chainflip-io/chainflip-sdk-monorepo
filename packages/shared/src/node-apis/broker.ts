@@ -2,7 +2,7 @@ import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import type { Logger } from 'winston';
 import { z } from 'zod';
-import { Asset, Assets, Chain, Chains } from '../enums';
+import { Asset, Assets, Chain } from '../enums';
 import { isNotNullish } from '../guards';
 import {
   hexString,
@@ -10,7 +10,6 @@ import {
   btcAddress,
   dotAddress,
   chainflipAsset,
-  chainflipChain,
 } from '../parsers';
 import { CcmMetadata, ccmMetadataSchema } from '../schemas';
 import {
@@ -53,22 +52,6 @@ const submitAddress = (asset: Asset, address: string): string => {
   return address;
 };
 
-// hardcoded for now -- remove when source_address is removed from ccmMetadata
-const sourceAddress = (chain: Chain): string => {
-  if (chain === Chains.Polkadot) {
-    return u8aToHex(
-      decodeAddress('5GrpknVvGGrGH3EFuURXeMrWHvbpj3VfER1oX5jFtuGbfzCE'),
-    );
-  }
-  if (chain === Chains.Ethereum) {
-    return '0x8ba1f109551bd432803012645ac136ddd64dba72';
-  }
-  if (chain === Chains.Bitcoin) {
-    // TODO: fix when broker api is fixed
-  }
-  return '0x';
-};
-
 const requestValidators = {
   requestSwapDepositAddress: z
     .tuple([
@@ -80,8 +63,6 @@ const requestValidators = {
         .merge(
           z.object({
             cf_parameters: z.union([hexString, z.string()]).optional(),
-            source_chain: chainflipChain,
-            source_address: z.union([hexString, btcAddress, dotAddress]),
           }),
         )
         .optional(),
@@ -137,7 +118,7 @@ export default class BrokerClient extends RpcClient<
   async requestSwapDepositAddress(
     swapRequest: NewSwapRequest,
   ): Promise<DepositChannelResponse> {
-    const { srcAsset, destAsset, destAddress, srcChain } = swapRequest;
+    const { srcAsset, destAsset, destAddress } = swapRequest;
 
     const depositChannelResponse = await this.sendRequest(
       'requestSwapDepositAddress',
@@ -148,8 +129,6 @@ export default class BrokerClient extends RpcClient<
       swapRequest.ccmMetadata && {
         ...swapRequest.ccmMetadata,
         cf_parameters: undefined,
-        source_chain: srcChain,
-        source_address: sourceAddress(srcChain),
       },
     );
 
