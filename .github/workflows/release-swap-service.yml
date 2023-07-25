@@ -95,7 +95,7 @@ jobs:
           token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
           client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-swap-partnernet"}'
 
-      - name: Dispatch build-swap-swap to chainflip-web-services 🦕
+      - name: Dispatch build-swap-sisyphos to chainflip-web-services 🦕
         if: startsWith(github.ref, 'refs/heads/release') == true && startsWith(github.ref, 'refs/heads/release/partnernet') == false
         uses: peter-evans/repository-dispatch@v2
         with:
