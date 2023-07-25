@@ -7,7 +7,7 @@ on:
       - "swap/v*"
     branches:
       - main
-      - release/partnernet
+      - release/*
     paths:
       - packages/swap/**
 
@@ -84,7 +84,7 @@ jobs:
           repository: chainflip-io/chainflip-web-services
           event-type: build-swap-backspin
           token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
-          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}"}'
+          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-swap-backspin"}'
 
       - name: Dispatch build-swap-partnernet to chainflip-web-services 🦕
         if: startsWith(github.ref, 'refs/heads/release/partnernet') == true
@@ -93,13 +93,22 @@ jobs:
           repository: chainflip-io/chainflip-web-services
           event-type: build-swap-partnernet
           token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
-          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}"}'
+          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-swap-partnernet"}'
 
-      - name: Dispatch build-swap-tag to chainflip-web-services 🦕
-        if: startsWith(github.ref, 'refs/tags/') == true
+      - name: Dispatch build-swap-sisyphos to chainflip-web-services 🦕
+        if: startsWith(github.ref, 'refs/heads/release') == true && startsWith(github.ref, 'refs/heads/release/partnernet') == false
         uses: peter-evans/repository-dispatch@v2
         with:
           repository: chainflip-io/chainflip-web-services
-          event-type: build-swap-tag
+          event-type: build-swap-sisyphos
           token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
-          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}"}'
+          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-swap-swap"}'
+
+      - name: Dispatch build-swap-perseverance to chainflip-web-services 🦕
+        if: startsWith(github.ref, 'refs/tags/') == true && startsWith(github.ref, 'refs/heads/release') == true && startsWith(github.ref, 'refs/heads/release/partnernet') == false
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          repository: chainflip-io/chainflip-web-services
+          event-type: build-swap-perseverance
+          token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
+          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-swap-perseverance"}'
