@@ -100,7 +100,7 @@ jobs:
         uses: peter-evans/repository-dispatch@v2
         with:
           repository: chainflip-io/chainflip-web-services
-          event-type: build-swap-swap
+          event-type: build-swap-sisyphos
           token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
           client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-swap-swap"}'
 
