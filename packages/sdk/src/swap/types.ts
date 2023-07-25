@@ -70,6 +70,7 @@ export type SwapStatusResponse = CommonStatusFields &
         depositAmount: string;
         depositReceivedAt: number;
         depositReceivedBlockIndex: string;
+        intermediateAmount: string | undefined;
         swapExecutedAt: number;
         swapExecutedBlockIndex: string;
       }
@@ -79,6 +80,7 @@ export type SwapStatusResponse = CommonStatusFields &
         depositAmount: string;
         depositReceivedAt: number;
         depositReceivedBlockIndex: string;
+        intermediateAmount: string | undefined;
         swapExecutedAt: number;
         swapExecutedBlockIndex: string;
         egressAmount: string;
@@ -91,6 +93,7 @@ export type SwapStatusResponse = CommonStatusFields &
         depositAmount: string;
         depositReceivedAt: number;
         depositReceivedBlockIndex: string;
+        intermediateAmount: string | undefined;
         swapExecutedAt: number;
         swapExecutedBlockIndex: string;
         egressAmount: string;
@@ -105,6 +108,7 @@ export type SwapStatusResponse = CommonStatusFields &
         depositAmount: string;
         depositReceivedAt: number;
         depositReceivedBlockIndex: string;
+        intermediateAmount: string | undefined;
         swapExecutedAt: number;
         swapExecutedBlockIndex: string;
         egressAmount: string;
@@ -121,6 +125,7 @@ export type SwapStatusResponse = CommonStatusFields &
         depositAmount: string;
         depositReceivedAt: number;
         depositReceivedBlockIndex: string;
+        intermediateAmount: string | undefined;
         swapExecutedAt: number;
         swapExecutedBlockIndex: string;
         egressAmount: string;

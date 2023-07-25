@@ -4,17 +4,12 @@ import { assetChains, Chain } from '@/shared/enums';
 import BrokerClient from '@/shared/node-apis/broker';
 import { PostSwapResponse, postSwapSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
-import prisma, {
-  Egress,
-  Swap,
-  SwapDepositChannel,
-  Broadcast,
-} from '../../client';
-import { isProduction } from '../../utils/consts';
-import { handleExit } from '../../utils/function';
-import logger from '../../utils/logger';
-import ServiceError from '../../utils/ServiceError';
-import { asyncHandler } from '../common';
+import prisma, { Egress, Swap, SwapDepositChannel, Broadcast } from '../client';
+import { isProduction } from '../utils/consts';
+import { handleExit } from '../utils/function';
+import logger from '../utils/logger';
+import ServiceError from '../utils/ServiceError';
+import { asyncHandler } from './common';
 
 const router = express.Router();
 
@@ -141,6 +136,7 @@ router.get(
       depositAmount: swap?.depositAmount?.toString(),
       depositReceivedAt: swap?.depositReceivedAt.valueOf(),
       depositReceivedBlockIndex: swap?.depositReceivedBlockIndex,
+      intermediateAmount: swap?.intermediateAmount?.toString(),
       swapExecutedAt: swap?.swapExecutedAt?.valueOf(),
       swapExecutedBlockIndex: swap?.swapExecutedBlockIndex,
       egressAmount: swap?.egress?.amount?.toString(),
