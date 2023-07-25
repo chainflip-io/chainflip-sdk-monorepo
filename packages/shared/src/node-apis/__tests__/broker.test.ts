@@ -117,8 +117,6 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
         {
           gas_budget: 123,
           message: 'ByteString',
-          source_chain: 'Ethereum',
-          source_address: '0x8ba1f109551bd432803012645ac136ddd64dba72',
         },
       ],
     });
