@@ -47,7 +47,9 @@ const transformObjToSnakeCase = <T>(
 
 const submitAddress = (asset: Asset, address: string): string => {
   if (asset === Assets.DOT) {
-    return u8aToHex(decodeAddress(address));
+    return address.startsWith('0x')
+      ? z.string().length(66).parse(address) // we only accept 32 byte dot addresses
+      : u8aToHex(decodeAddress(address));
   }
   return address;
 };
