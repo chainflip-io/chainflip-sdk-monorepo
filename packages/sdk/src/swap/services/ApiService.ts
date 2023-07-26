@@ -30,7 +30,7 @@ const getPossibleDestinationChains = async (
   network: ChainflipNetwork,
 ): Promise<ChainData[]> => {
   if (sourceChain === Chains.Ethereum)
-    return [bitcoin(network), polkadot(network)];
+    return [ethereum(network), bitcoin(network), polkadot(network)];
   if (sourceChain === Chains.Polkadot)
     return [ethereum(network), bitcoin(network)];
   if (sourceChain === Chains.Bitcoin)
