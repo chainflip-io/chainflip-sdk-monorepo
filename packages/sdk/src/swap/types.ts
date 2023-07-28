@@ -51,6 +51,7 @@ export interface SwapStatusRequest {
 export interface CommonStatusFields extends ChainsAndAssets {
   destAddress: string;
   depositAddress: string | undefined;
+  depositAddressCreatedAt: number | undefined;
   expectedDepositAmount: string | undefined;
 }
 
@@ -62,7 +63,6 @@ export type SwapStatusResponse = CommonStatusFields &
         swapId: string;
         depositAmount: string;
         depositReceivedAt: number;
-        depositAddressCreatedAt: number;
         depositReceivedBlockIndex: string;
       }
     | {
@@ -70,7 +70,6 @@ export type SwapStatusResponse = CommonStatusFields &
         swapId: string;
         depositAmount: string;
         depositReceivedAt: number;
-        depositAddressCreatedAt: number;
         depositReceivedBlockIndex: string;
         intermediateAmount: string | undefined;
         swapExecutedAt: number;
@@ -81,7 +80,6 @@ export type SwapStatusResponse = CommonStatusFields &
         swapId: string;
         depositAmount: string;
         depositReceivedAt: number;
-        depositAddressCreatedAt: number;
         depositReceivedBlockIndex: string;
         intermediateAmount: string | undefined;
         swapExecutedAt: number;
@@ -95,7 +93,6 @@ export type SwapStatusResponse = CommonStatusFields &
         swapId: string;
         depositAmount: string;
         depositReceivedAt: number;
-        depositAddressCreatedAt: number;
         depositReceivedBlockIndex: string;
         intermediateAmount: string | undefined;
         swapExecutedAt: number;
@@ -111,7 +108,6 @@ export type SwapStatusResponse = CommonStatusFields &
         swapId: string;
         depositAmount: string;
         depositReceivedAt: number;
-        depositAddressCreatedAt: number;
         depositReceivedBlockIndex: string;
         intermediateAmount: string | undefined;
         swapExecutedAt: number;
@@ -129,7 +125,6 @@ export type SwapStatusResponse = CommonStatusFields &
         swapId: string;
         depositAmount: string;
         depositReceivedAt: number;
-        depositAddressCreatedAt: number;
         depositReceivedBlockIndex: string;
         intermediateAmount: string | undefined;
         swapExecutedAt: number;
