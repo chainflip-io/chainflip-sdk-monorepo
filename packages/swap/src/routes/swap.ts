@@ -129,7 +129,7 @@ router.get(
       srcAsset,
       destAsset,
       destAddress: readField('destAddress'),
-      createdAt: swapDepositChannel?.createdAt.valueOf(),
+      depositChannelCreatedAt: swapDepositChannel?.createdAt.valueOf(),
       depositAddress: swapDepositChannel?.depositAddress,
       expectedDepositAmount:
         swapDepositChannel?.expectedDepositAmount.toString(),
