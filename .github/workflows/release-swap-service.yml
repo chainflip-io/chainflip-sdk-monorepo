@@ -102,7 +102,7 @@ jobs:
           repository: chainflip-io/chainflip-web-services
           event-type: build-swap-sisyphos
           token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
-          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-swap-swap"}'
+          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-swap-sisyphos"}'
 
       - name: Dispatch build-swap-perseverance to chainflip-web-services 🦕
         if: startsWith(github.ref, 'refs/tags/') == true && startsWith(github.ref, 'refs/heads/release') == true && startsWith(github.ref, 'refs/heads/release/partnernet') == false
