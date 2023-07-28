@@ -32,7 +32,6 @@ jest.mock(
     },
 );
 
-const HEX_DOT_ADDRESS = '0xca';
 const RECEIVED_TIMESTAMP = 1669907135201;
 const RECEIVED_BLOCK_INDEX = `100-3`;
 
@@ -526,7 +525,7 @@ describe('server', () => {
           destAsset: Assets.DOT,
           srcChain: 'Ethereum',
           destChain: 'Polkadot',
-          destAddress: HEX_DOT_ADDRESS,
+          destAddress: DOT_ADDRESS,
           amount: '1000000000',
         },
       ],
@@ -600,7 +599,7 @@ describe('server', () => {
       const requestBody = {
         srcAsset: Assets.ETH,
         destAsset: Assets.DOT,
-        destAddress: HEX_DOT_ADDRESS,
+        destAddress: DOT_ADDRESS,
         expectedDepositAmount: '1000000000',
         [key]: value,
       };
