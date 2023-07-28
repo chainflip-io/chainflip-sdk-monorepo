@@ -27,6 +27,7 @@ export const createDepositChannel = (
       expiryBlock: 200,
       issuedBlock: 100,
       ...data,
+      createdAt: new Date(1690556052834),
     },
   });
 

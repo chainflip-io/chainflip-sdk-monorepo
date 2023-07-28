@@ -73,6 +73,7 @@ describe('server', () => {
       expect(body).toMatchInlineSnapshot(`
         {
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+          "depositChannelCreatedAt": 1690556052834,
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
@@ -110,6 +111,7 @@ describe('server', () => {
         {
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
+          "depositChannelCreatedAt": 1690556052834,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
@@ -154,6 +156,7 @@ describe('server', () => {
         {
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
+          "depositChannelCreatedAt": 1690556052834,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
@@ -208,6 +211,7 @@ describe('server', () => {
         {
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
+          "depositChannelCreatedAt": 1690556052834,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
@@ -276,6 +280,7 @@ describe('server', () => {
           "broadcastSucceededBlockIndex": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
+          "depositChannelCreatedAt": 1690556052834,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
@@ -347,6 +352,7 @@ describe('server', () => {
           "broadcastSucceededBlockIndex": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
+          "depositChannelCreatedAt": 1690556052834,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
@@ -418,6 +424,7 @@ describe('server', () => {
           "broadcastSucceededBlockIndex": "204-4",
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
+          "depositChannelCreatedAt": 1690556052834,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
