@@ -18,21 +18,19 @@ import {
 
 const swapNative = async (
   { destChain, destAsset, destAddress, amount }: NativeSwapParams,
-  { nonce, ...opts }: ExecuteOptions,
+  { network, vaultContractAddress: address, signer, ...opts }: ExecuteOptions,
 ): Promise<ContractReceipt> => {
   const vaultContractAddress =
-    opts.network === 'localnet'
-      ? opts.vaultContractAddress
-      : getVaultManagerContractAddress(opts.network);
+    network === 'localnet' ? address : getVaultManagerContractAddress(network);
 
-  const vault = Vault__factory.connect(vaultContractAddress, opts.signer);
+  const vault = Vault__factory.connect(vaultContractAddress, signer);
 
   const transaction = await vault.xSwapNative(
     chainContractIds[destChain],
     destAddress,
     assetContractIds[destAsset],
     [],
-    { value: amount, nonce },
+    { value: amount, ...opts },
   );
 
   return transaction.wait(1);
@@ -40,17 +38,23 @@ const swapNative = async (
 
 const swapToken = async (
   params: TokenSwapParams,
-  opts: ExecuteOptions,
+  {
+    network,
+    vaultContractAddress: vaultAddress,
+    srcTokenContractAddress: tokenAddress,
+    signer,
+    ...opts
+  }: ExecuteOptions,
 ): Promise<ContractReceipt> => {
   const vaultContractAddress =
-    opts.network === 'localnet'
-      ? opts.vaultContractAddress
-      : getVaultManagerContractAddress(opts.network);
+    network === 'localnet'
+      ? vaultAddress
+      : getVaultManagerContractAddress(network);
 
   const erc20Address =
-    opts.network === 'localnet'
-      ? opts.srcTokenContractAddress
-      : getTokenContractAddress(params.srcAsset, opts.network);
+    network === 'localnet'
+      ? tokenAddress
+      : getTokenContractAddress(params.srcAsset, network);
 
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
@@ -58,11 +62,11 @@ const swapToken = async (
     params.amount,
     vaultContractAddress,
     erc20Address,
-    opts.signer,
+    signer,
   );
   assert(isAllowable, 'Swap amount exceeds allowance');
 
-  const vault = Vault__factory.connect(vaultContractAddress, opts.signer);
+  const vault = Vault__factory.connect(vaultContractAddress, signer);
 
   const transaction = await vault.xSwapToken(
     chainContractIds[params.destChain],
@@ -71,7 +75,7 @@ const swapToken = async (
     erc20Address,
     params.amount,
     [],
-    { nonce: opts.nonce },
+    opts,
   );
 
   return transaction.wait(1);

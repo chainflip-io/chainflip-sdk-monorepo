@@ -62,9 +62,7 @@ exports[`executeCall can be invoked with localnet options 1`] = `
     "0x456",
     "1",
     [],
-    {
-      "nonce": undefined,
-    },
+    {},
   ],
 ]
 `;
@@ -88,7 +86,6 @@ exports[`executeCall submits a native call ({"destAddress": "0x6Aa69332B63bB5b1d
     "101",
     [],
     {
-      "nonce": undefined,
       "value": "1",
     },
   ],
@@ -105,7 +102,6 @@ exports[`executeCall submits a native call ({"destAddress": "0x6Aa69332B63bB5b1d
     "101",
     [],
     {
-      "nonce": undefined,
       "value": "1",
     },
   ],
@@ -123,9 +119,7 @@ exports[`executeCall submits a token call ({"destAddress": "0x6Aa69332B63bB5b1d7
     "0x2FD78122663A07672e9ac63486573A99EB00125d",
     "1",
     [],
-    {
-      "nonce": undefined,
-    },
+    {},
   ],
 ]
 `;
@@ -150,9 +144,7 @@ exports[`executeCall submits a token call ({"destAddress": "0x6Aa69332B63bB5b1d7
     "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
     "1",
     [],
-    {
-      "nonce": undefined,
-    },
+    {},
   ],
 ]
 `;
@@ -177,9 +169,7 @@ exports[`executeCall submits a token call with sufficient approval 1`] = `
     "0x2FD78122663A07672e9ac63486573A99EB00125d",
     "1",
     [],
-    {
-      "nonce": undefined,
-    },
+    {},
   ],
 ]
 `;

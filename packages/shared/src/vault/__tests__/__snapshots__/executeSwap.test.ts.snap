@@ -54,9 +54,7 @@ exports[`executeSwap can be invoked with localnet options 1`] = `
     "0x456",
     "1",
     [],
-    {
-      "nonce": undefined,
-    },
+    {},
   ],
 ]
 `;
@@ -78,7 +76,6 @@ exports[`executeSwap submits a native swap ({"destAddress": "0x6Aa69332B63bB5b1d
     2,
     [],
     {
-      "nonce": undefined,
       "value": "1",
     },
   ],
@@ -93,7 +90,6 @@ exports[`executeSwap submits a native swap ({"destAddress": "0x6Aa69332B63bB5b1d
     3,
     [],
     {
-      "nonce": undefined,
       "value": "1",
     },
   ],
@@ -108,7 +104,6 @@ exports[`executeSwap submits a native swap ({"destAddress": "5F3sa2TJAWMqDhXG6jh
     4,
     [],
     {
-      "nonce": undefined,
       "value": "1",
     },
   ],
@@ -123,7 +118,6 @@ exports[`executeSwap submits a native swap ({"destAddress": "bc1qar0srrr7xfkvy5l
     5,
     [],
     {
-      "nonce": undefined,
       "value": "1",
     },
   ],
@@ -138,7 +132,6 @@ exports[`executeSwap submits a native swap ({"destAddress": "bc1qar0srrr7xfkvy5l
     5,
     [],
     {
-      "nonce": undefined,
       "value": "1",
     },
   ],
@@ -154,9 +147,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "0x6Aa69332B63bB5b1d7
     "0x2FD78122663A07672e9ac63486573A99EB00125d",
     "1",
     [],
-    {
-      "nonce": undefined,
-    },
+    {},
   ],
 ]
 `;
@@ -179,9 +170,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "0x6Aa69332B63bB5b1d7
     "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
     "1",
     [],
-    {
-      "nonce": undefined,
-    },
+    {},
   ],
 ]
 `;
@@ -204,9 +193,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "5F3sa2TJAWMqDhXG6jhV
     "0x2FD78122663A07672e9ac63486573A99EB00125d",
     "1",
     [],
-    {
-      "nonce": undefined,
-    },
+    {},
   ],
 ]
 `;
@@ -229,9 +216,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "5F3sa2TJAWMqDhXG6jhV
     "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
     "1",
     [],
-    {
-      "nonce": undefined,
-    },
+    {},
   ],
 ]
 `;
@@ -254,9 +239,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "bc1qar0srrr7xfkvy5l6
     "0x2FD78122663A07672e9ac63486573A99EB00125d",
     "1",
     [],
-    {
-      "nonce": undefined,
-    },
+    {},
   ],
 ]
 `;
@@ -279,9 +262,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "bc1qar0srrr7xfkvy5l6
     "0x2FD78122663A07672e9ac63486573A99EB00125d",
     "1",
     [],
-    {
-      "nonce": undefined,
-    },
+    {},
   ],
 ]
 `;
@@ -304,9 +285,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "bc1qar0srrr7xfkvy5l6
     "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
     "1",
     [],
-    {
-      "nonce": undefined,
-    },
+    {},
   ],
 ]
 `;
@@ -329,9 +308,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "bc1qar0srrr7xfkvy5l6
     "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
     "1",
     [],
-    {
-      "nonce": undefined,
-    },
+    {},
   ],
 ]
 `;
@@ -354,9 +331,7 @@ exports[`executeSwap submits a token swap with sufficient approval 1`] = `
     "0x2FD78122663A07672e9ac63486573A99EB00125d",
     "1",
     [],
-    {
-      "nonce": undefined,
-    },
+    {},
   ],
 ]
 `;

@@ -18,14 +18,19 @@ import {
 
 const callNative = async (
   params: NativeCallParams,
-  { nonce, ...opts }: ExecuteOptions,
+  {
+    network,
+    vaultContractAddress: vaultAddress,
+    signer,
+    ...opts
+  }: ExecuteOptions,
 ): Promise<ContractReceipt> => {
   const vaultContractAddress =
-    opts.network === 'localnet'
-      ? opts.vaultContractAddress
-      : getVaultManagerContractAddress(opts.network);
+    network === 'localnet'
+      ? vaultAddress
+      : getVaultManagerContractAddress(network);
 
-  const vault = Vault__factory.connect(vaultContractAddress, opts.signer);
+  const vault = Vault__factory.connect(vaultContractAddress, signer);
 
   const transaction = await vault.xCallNative(
     chainContractIds[params.destChain],
@@ -34,7 +39,7 @@ const callNative = async (
     params.message,
     params.gasBudget,
     [],
-    { value: params.amount, nonce },
+    { value: params.amount, ...opts },
   );
 
   return transaction.wait(1);
@@ -42,17 +47,23 @@ const callNative = async (
 
 const callToken = async (
   params: TokenCallParams,
-  { signer, ...opts }: ExecuteOptions,
+  {
+    signer,
+    network,
+    vaultContractAddress: vaultAddress,
+    srcTokenContractAddress: tokenAddress,
+    ...opts
+  }: ExecuteOptions,
 ): Promise<ContractReceipt> => {
   const vaultContractAddress =
-    opts.network === 'localnet'
-      ? opts.vaultContractAddress
-      : getVaultManagerContractAddress(opts.network);
+    network === 'localnet'
+      ? vaultAddress
+      : getVaultManagerContractAddress(network);
 
   const erc20Address =
-    opts.network === 'localnet'
-      ? opts.srcTokenContractAddress
-      : getTokenContractAddress(params.srcAsset, opts.network);
+    network === 'localnet'
+      ? tokenAddress
+      : getTokenContractAddress(params.srcAsset, network);
 
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
@@ -75,7 +86,7 @@ const callToken = async (
     erc20Address,
     params.amount,
     [],
-    { nonce: opts.nonce },
+    opts,
   );
 
   return transaction.wait(1);
