@@ -62,8 +62,8 @@ describe(executeRedemption, () => {
     const executeSpy = jest
       .spyOn(MockGateway.prototype, 'executeRedemption')
       .mockResolvedValue({ wait: waitMock });
-    await executeRedemption('0x1234', signerOptions);
-    expect(executeSpy).toHaveBeenCalledWith('0x1234', { nonce: undefined });
+    await executeRedemption('0x1234', { ...signerOptions, nonce: 1 });
+    expect(executeSpy.mock.lastCall).toMatchSnapshot();
   });
 });
 

@@ -2,11 +2,12 @@ import type { BigNumber, ContractReceipt, Signer } from 'ethers';
 import { checkAllowance, getTokenContractAddress } from '../contracts';
 import { Assets, ChainflipNetwork } from '../enums';
 import { assert } from '../guards';
+import { Overrides } from '../vault/schemas';
 import { getStateChainGateway } from './utils';
 
-type WithNonce<T> = T & { nonce?: number | bigint | string };
+type WithOverrides<T> = T & Overrides;
 
-export type SignerOptions = WithNonce<
+export type SignerOptions = WithOverrides<
   | { network: ChainflipNetwork; signer: Signer }
   | {
       network: 'localnet';
@@ -55,13 +56,14 @@ export const fundStateChainAccount = async (
 
 export const executeRedemption = async (
   accountId: `0x${string}`,
-  { nonce, ...options }: WithNonce<SignerOptions>,
+  options: WithOverrides<SignerOptions>,
 ): Promise<ContractReceipt> => {
   const stateChainGateway = getStateChainGateway(options);
 
-  const transaction = await stateChainGateway.executeRedemption(accountId, {
-    nonce,
-  });
+  const transaction = await stateChainGateway.executeRedemption(
+    accountId,
+    options,
+  );
 
   return transaction.wait(1);
 };

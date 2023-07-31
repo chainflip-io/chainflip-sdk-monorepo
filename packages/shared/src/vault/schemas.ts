@@ -1,4 +1,5 @@
 import { decodeAddress } from '@polkadot/util-crypto';
+import type ethers from 'ethers';
 import { Signer } from 'ethers';
 import { z } from 'zod';
 import { Assets, Chains } from '../enums';
@@ -113,18 +114,22 @@ export const executeCallParamsSchema = z.union([
 export type ExecuteCallParams = z.infer<typeof executeCallParamsSchema>;
 
 export const executeOptionsSchema = z.intersection(
-  z.object({
-    signer: z.instanceof(Signer),
-    nonce: z.union([z.number(), z.bigint(), z.string()]).optional(),
-  }),
+  z.object({ signer: z.instanceof(Signer) }).passthrough(),
   z.union([
-    z.object({ network: chainflipNetwork }),
-    z.object({
-      network: z.literal('localnet'),
-      vaultContractAddress: z.string(),
-      srcTokenContractAddress: z.string().optional(),
-    }),
+    z.object({ network: chainflipNetwork }).passthrough(),
+    z
+      .object({
+        network: z.literal('localnet'),
+        vaultContractAddress: z.string(),
+        srcTokenContractAddress: z.string().optional(),
+      })
+      .passthrough(),
   ]),
 );
 
-export type ExecuteOptions = z.infer<typeof executeOptionsSchema>;
+export type Overrides = Omit<
+  ethers.providers.TransactionRequest,
+  'to' | 'data' | 'value' | 'from'
+>;
+
+export type ExecuteOptions = z.infer<typeof executeOptionsSchema> & Overrides;
