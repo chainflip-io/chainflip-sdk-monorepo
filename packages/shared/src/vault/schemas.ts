@@ -85,21 +85,18 @@ const nativeCallParamsSchema = ethereumBase.extend({
 
 export type NativeCallParams = z.infer<typeof nativeCallParamsSchema>;
 
-const ccmMetadataSchema = z.object({
-  message: hexString,
-  gasBudget: numericString,
-});
-
 const tokenCallParamsSchema = z.union([
   ethereumBase.extend({
     srcAsset: z.literal(Assets.FLIP),
     destAsset: z.union([z.literal(Assets.USDC), z.literal(Assets.ETH)]),
-    ccmMetadata: ccmMetadataSchema,
+    message: hexString,
+    gasBudget: numericString,
   }),
   ethereumBase.extend({
     srcAsset: z.literal(Assets.USDC),
     destAsset: z.union([z.literal(Assets.FLIP), z.literal(Assets.ETH)]),
-    ccmMetadata: ccmMetadataSchema,
+    message: hexString,
+    gasBudget: numericString,
   }),
 ]);
 
