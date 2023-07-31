@@ -51,6 +51,7 @@ export interface SwapStatusRequest {
 export interface CommonStatusFields extends ChainsAndAssets {
   destAddress: string;
   depositAddress: string | undefined;
+  depositAddressCreatedAt: number | undefined;
   expectedDepositAmount: string | undefined;
 }
 
