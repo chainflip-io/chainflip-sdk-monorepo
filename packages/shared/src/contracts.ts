@@ -8,6 +8,7 @@ import {
   ChainflipNetworks,
 } from './enums';
 import { assert } from './guards';
+import { Overrides } from './vault/schemas';
 
 export const getTokenContractAddress = (
   asset: Asset,
@@ -46,7 +47,7 @@ export const approve = async (
   spenderAddress: string,
   erc20: ERC20,
   allowance: BigNumberish,
-  nonce?: bigint | number | string,
+  nonce?: Overrides['nonce'],
 ): Promise<ContractReceipt | null> => {
   const amountBigNumber = BigNumber.from(amount);
   const allowanceBigNumber = BigNumber.from(allowance);
