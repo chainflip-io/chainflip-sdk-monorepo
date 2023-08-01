@@ -87,9 +87,14 @@ export default async function cliExecuteSwap(
         }
       : { network: args.chainflipNetwork, signer: wallet };
 
+  let ccmMetadata;
   if (args.gasBudget || args.message) {
     assert(args.gasBudget, 'missing gas budget');
     assert(args.message, 'missing message');
+    ccmMetadata = {
+      message: args.message,
+      gasBudget: args.gasBudget,
+    };
   }
 
   const receipt = await executeSwap(
@@ -100,10 +105,7 @@ export default async function cliExecuteSwap(
       destAsset: args.destAsset,
       amount: args.amount,
       destAddress: args.destAddress,
-      ccmMetadata: {
-        message: args.message,
-        gasBudget: args.gasBudget,
-      },
+      ccmMetadata,
     } as ExecuteSwapParams,
     opts,
   );
