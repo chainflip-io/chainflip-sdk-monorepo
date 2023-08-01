@@ -6,7 +6,7 @@ import {
   getVaultManagerContractAddress,
 } from '../contracts';
 import { assetContractIds, chainContractIds } from '../enums';
-import { assert, isNotNullish, isTokenCall, isTokenSwap } from '../guards';
+import { assert, isTokenCall, isTokenSwap } from '../guards';
 import {
   executeOptionsSchema,
   type ExecuteOptions,
@@ -166,10 +166,7 @@ const executeSwap = async (
   const parsedParams = executeSwapParamsSchema.parse(params);
   const opts = executeOptionsSchema.parse(options);
 
-  if ('ccmMetadata' in parsedParams && isNotNullish(parsedParams.ccmMetadata)) {
-    assert(parsedParams.ccmMetadata.message, 'message cannot be empty');
-    assert(parsedParams.ccmMetadata.gasBudget, 'gasBudget cannot be empty');
-
+  if ('ccmMetadata' in parsedParams) {
     return isTokenCall(parsedParams)
       ? callToken(parsedParams, opts)
       : callNative(parsedParams, opts);
