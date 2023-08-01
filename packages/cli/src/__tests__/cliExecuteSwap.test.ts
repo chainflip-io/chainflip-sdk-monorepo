@@ -68,6 +68,7 @@ describe('cli', () => {
         'ccmMetadata.gasBudget',
         '500000',
       );
+      expect(jest.mocked(executeSwap).mock.calls).toMatchSnapshot();
       expect(logSpy).toHaveBeenCalledWith(
         expect.stringContaining('Transaction hash: example-tx-hash'),
       );
