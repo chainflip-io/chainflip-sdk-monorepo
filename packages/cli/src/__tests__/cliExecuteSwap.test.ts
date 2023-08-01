@@ -58,8 +58,6 @@ describe('cli', () => {
       await cli(args.split(/\s+/));
 
       expect(executeSwap).toHaveBeenCalledTimes(1);
-      console.error(jest.mocked(executeSwap).mock.calls);
-
       expect(jest.mocked(executeSwap).mock.calls[0][0]).toHaveProperty(
         'ccmMetadata.message',
         '0xdeadc0de',
