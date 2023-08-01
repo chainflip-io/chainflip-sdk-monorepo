@@ -1,10 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`cli calls the correct handler with the proper arguments 1`] = `
+exports[`cli calls the correct handler with the proper arguments (swap) 1`] = `
 [
   [
     {
       "amount": "1000000000",
+      "ccmMetadata": undefined,
       "destAddress": "0x0",
       "destAsset": "USDC",
       "destChain": "Ethereum",
@@ -21,11 +22,12 @@ exports[`cli calls the correct handler with the proper arguments 1`] = `
 ]
 `;
 
-exports[`cli calls the correct handler with the proper arguments 2`] = `
+exports[`cli calls the correct handler with the proper arguments (swap) 2`] = `
 [
   [
     {
       "amount": "1000000000",
+      "ccmMetadata": undefined,
       "destAddress": "0x0",
       "destAsset": "USDC",
       "destChain": "Ethereum",

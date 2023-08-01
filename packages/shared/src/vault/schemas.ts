@@ -69,46 +69,41 @@ const tokenSwapParamsSchema = z.union([
   bitcoinNative.extend({ srcAsset: erc20 }),
 ]);
 
-export type TokenSwapParams = z.infer<typeof tokenSwapParamsSchema>;
-
-export const executeSwapParamsSchema = z.union([
-  nativeSwapParamsSchema,
-  tokenSwapParamsSchema,
-]);
-
-export type ExecuteSwapParams = z.infer<typeof executeSwapParamsSchema>;
-
-const nativeCallParamsSchema = ethereumBase.extend({
-  destAsset: erc20,
+const ccmMetadataSchema = z.object({
   message: z.string(),
   gasBudget: numericString,
 });
-
-export type NativeCallParams = z.infer<typeof nativeCallParamsSchema>;
 
 const tokenCallParamsSchema = z.union([
   ethereumBase.extend({
     srcAsset: z.literal(Assets.FLIP),
     destAsset: z.union([z.literal(Assets.USDC), z.literal(Assets.ETH)]),
-    message: hexString,
-    gasBudget: numericString,
+    ccmMetadata: ccmMetadataSchema,
   }),
   ethereumBase.extend({
     srcAsset: z.literal(Assets.USDC),
     destAsset: z.union([z.literal(Assets.FLIP), z.literal(Assets.ETH)]),
-    message: hexString,
-    gasBudget: numericString,
+    ccmMetadata: ccmMetadataSchema,
   }),
 ]);
 
-export type TokenCallParams = z.infer<typeof tokenCallParamsSchema>;
+const nativeCallParamsSchema = ethereumBase.extend({
+  destAsset: erc20,
+  ccmMetadata: ccmMetadataSchema,
+});
 
-export const executeCallParamsSchema = z.union([
+export const executeSwapParamsSchema = z.union([
+  // call schemas needs to precede swap schemas
   nativeCallParamsSchema,
   tokenCallParamsSchema,
+  nativeSwapParamsSchema,
+  tokenSwapParamsSchema,
 ]);
 
-export type ExecuteCallParams = z.infer<typeof executeCallParamsSchema>;
+export type ExecuteSwapParams = z.infer<typeof executeSwapParamsSchema>;
+export type NativeCallParams = z.infer<typeof nativeCallParamsSchema>;
+export type TokenCallParams = z.infer<typeof tokenCallParamsSchema>;
+export type TokenSwapParams = z.infer<typeof tokenSwapParamsSchema>;
 
 export const executeOptionsSchema = z.intersection(
   z.object({ signer: z.instanceof(Signer) }).passthrough(),

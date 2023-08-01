@@ -1,6 +1,6 @@
 import { VoidSigner } from 'ethers';
 import { Chain, ChainflipNetworks, Chains } from '@/shared/enums';
-import { executeCall, executeSwap } from '@/shared/vault';
+import { executeSwap } from '@/shared/vault';
 import { dot$, btc$, eth$, usdc$, flip$ } from '../swap/assets';
 import { bitcoin, ethereum, polkadot } from '../swap/chains';
 import { SwapSDK } from '../swap/sdk';
@@ -184,21 +184,6 @@ describe(SwapSDK, () => {
         .mockResolvedValueOnce({ transactionHash: 'hello world' } as any);
       const result = await sdk.executeSwap(params as any);
       expect(executeSwap).toHaveBeenCalledWith(params, {
-        network: 'sisyphos',
-        signer,
-      });
-      expect(result).toEqual('hello world');
-    });
-  });
-
-  describe(SwapSDK.prototype.executeCall, () => {
-    it('calls executeCall', async () => {
-      const params = {};
-      jest
-        .mocked(executeCall)
-        .mockResolvedValueOnce({ transactionHash: 'hello world' } as any);
-      const result = await sdk.executeCall(params as any);
-      expect(executeCall).toHaveBeenCalledWith(params, {
         network: 'sisyphos',
         signer,
       });

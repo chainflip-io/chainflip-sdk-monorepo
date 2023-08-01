@@ -68,6 +68,38 @@ exports[`executeSwap can be invoked with localnet options 2`] = `
 ]
 `;
 
+exports[`executeSwap submits a native call ({"ccmMetadata": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "FLIP", "destChain": "Ethereum", "srcAsset": "ETH", "srcChain": "Ethereum"}) 1`] = `
+[
+  [
+    1,
+    "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+    2,
+    "0xdeadc0de",
+    "101",
+    [],
+    {
+      "value": "1",
+    },
+  ],
+]
+`;
+
+exports[`executeSwap submits a native call ({"ccmMetadata": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "USDC", "destChain": "Ethereum", "srcAsset": "ETH", "srcChain": "Ethereum"}) 1`] = `
+[
+  [
+    1,
+    "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+    3,
+    "0xdeadc0de",
+    "101",
+    [],
+    {
+      "value": "1",
+    },
+  ],
+]
+`;
+
 exports[`executeSwap submits a native swap ({"destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "FLIP", "destChain": "Ethereum", "srcAsset": "ETH", "srcChain": "Ethereum"}) 1`] = `
 [
   [
@@ -134,6 +166,56 @@ exports[`executeSwap submits a native swap ({"destAddress": "bc1qar0srrr7xfkvy5l
     {
       "value": "1",
     },
+  ],
+]
+`;
+
+exports[`executeSwap submits a token call ({"ccmMetadata": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "FLIP", "srcChain": "Ethereum"}) 1`] = `
+[
+  [
+    1,
+    "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+    1,
+    "0xdeadc0de",
+    "101",
+    "0x2FD78122663A07672e9ac63486573A99EB00125d",
+    "1",
+    [],
+    {},
+  ],
+]
+`;
+
+exports[`executeSwap submits a token call ({"ccmMetadata": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "FLIP", "srcChain": "Ethereum"}) 2`] = `
+[
+  [
+    "MY ADDRESS",
+    "0xd498606dcb9F440CD9F06B397C40fd3327FC2550",
+  ],
+]
+`;
+
+exports[`executeSwap submits a token call ({"ccmMetadata": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "USDC", "srcChain": "Ethereum"}) 1`] = `
+[
+  [
+    1,
+    "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+    1,
+    "0xdeadc0de",
+    "101",
+    "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
+    "1",
+    [],
+    {},
+  ],
+]
+`;
+
+exports[`executeSwap submits a token call ({"ccmMetadata": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "USDC", "srcChain": "Ethereum"}) 2`] = `
+[
+  [
+    "MY ADDRESS",
+    "0xd498606dcb9F440CD9F06B397C40fd3327FC2550",
   ],
 ]
 `;

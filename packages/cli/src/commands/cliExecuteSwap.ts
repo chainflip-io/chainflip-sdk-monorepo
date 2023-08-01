@@ -34,6 +34,14 @@ export const yargsOptions = {
     demandOption: true,
     describe: 'The address to send the swapped assets to',
   },
+  message: {
+    type: 'string',
+    describe: 'The message that is sent along with the swapped assets',
+  },
+  'gas-budget': {
+    type: 'string',
+    describe: 'The amount of gas that is sent with the message',
+  },
   'wallet-private-key': {
     type: 'string',
     describe: 'The private key of the wallet to use',
@@ -86,6 +94,11 @@ export default async function cliExecuteSwap(
       destAsset: args.destAsset,
       amount: args.amount,
       destAddress: args.destAddress,
+      ccmMetadata: args.message &&
+        args.gasBudget && {
+          message: args.message,
+          gasBudget: args.gasBudget,
+        },
     } as ExecuteSwapParams,
     opts,
   );

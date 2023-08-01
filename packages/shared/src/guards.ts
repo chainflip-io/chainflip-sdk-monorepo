@@ -1,10 +1,6 @@
 import { Assets } from './enums';
 import { ExecuteSwapParams } from './vault';
-import {
-  ExecuteCallParams,
-  TokenCallParams,
-  TokenSwapParams,
-} from './vault/schemas';
+import { TokenCallParams, TokenSwapParams } from './vault/schemas';
 
 export const isString = (value: unknown): value is string =>
   typeof value === 'string';
@@ -31,5 +27,5 @@ export const isTokenSwap = (
 ): params is TokenSwapParams => params.srcAsset !== Assets.ETH;
 
 export const isTokenCall = (
-  params: ExecuteCallParams,
+  params: ExecuteSwapParams,
 ): params is TokenCallParams => params.srcAsset !== Assets.ETH;

@@ -14,6 +14,8 @@ class MockVault {
   constructor(readonly address: string) {}
   async xSwapNative(): Promise<any> {}
   async xSwapToken(): Promise<any> {}
+  async xCallNative(): Promise<any> {}
+  async xCallToken(): Promise<any> {}
 }
 
 class MockERC20 {
@@ -262,5 +264,102 @@ describe(executeSwap, () => {
     ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
     expect(wait).toHaveBeenCalledWith(1);
     expect(swapSpy.mock.calls).toMatchSnapshot();
+  });
+
+  it.each([
+    {
+      srcAsset: Assets.ETH,
+      srcChain: Chains.Ethereum,
+      destAsset: Assets.FLIP,
+      destChain: Chains.Ethereum,
+      destAddress: ETH_ADDRESS,
+      ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+    },
+    {
+      srcAsset: Assets.ETH,
+      srcChain: Chains.Ethereum,
+      destAsset: Assets.USDC,
+      destChain: Chains.Ethereum,
+      destAddress: ETH_ADDRESS,
+      ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+    },
+  ])('submits a native call (%p)', async (params) => {
+    const wait = jest
+      .fn()
+      .mockResolvedValue({ status: 1, transactionHash: 'hello world' });
+    const callSpy = jest
+      .spyOn(MockVault.prototype, 'xCallNative')
+      .mockResolvedValue({ wait });
+
+    expect(
+      await executeSwap(
+        {
+          amount: '1',
+          ...params,
+        } as ExecuteSwapParams,
+        {
+          network: ChainflipNetworks.sisyphos,
+          signer: new VoidSigner('MY ADDRESS'),
+        },
+      ),
+    ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
+    expect(wait).toHaveBeenCalledWith(1);
+    expect(callSpy.mock.calls).toMatchSnapshot();
+  });
+
+  it.each([
+    ...(
+      [
+        {
+          srcAsset: Assets.FLIP,
+          srcChain: Chains.Ethereum,
+          ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+        },
+        {
+          srcAsset: Assets.USDC,
+          srcChain: Chains.Ethereum,
+          ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+        },
+      ] as const
+    ).flatMap(
+      (src) =>
+        [
+          {
+            destAsset: Assets.ETH,
+            destChain: Chains.Ethereum,
+            destAddress: ETH_ADDRESS,
+            ...src,
+          },
+        ] as const,
+    ),
+  ])('submits a token call (%p)', async (params) => {
+    const wait = jest
+      .fn()
+      .mockResolvedValue({ status: 1, transactionHash: 'hello world' });
+    const approveSpy = jest
+      .spyOn(MockERC20.prototype, 'approve')
+      .mockResolvedValue({ wait });
+    const callSpy = jest
+      .spyOn(MockVault.prototype, 'xCallToken')
+      .mockResolvedValue({ wait });
+    const allowanceSpy = jest.spyOn(MockERC20.prototype, 'allowance');
+
+    expect(
+      await executeSwap(
+        {
+          amount: '1',
+          ...params,
+        },
+        {
+          network: 'sisyphos',
+          signer: new VoidSigner('MY ADDRESS'),
+        },
+      ),
+    ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
+    expect(wait).toHaveBeenCalledWith(1);
+    expect(callSpy).toHaveBeenCalled();
+    expect(callSpy.mock.calls).toMatchSnapshot();
+    expect(allowanceSpy.mock.calls).toMatchSnapshot();
+    expect(approveSpy).not.toHaveBeenCalled();
   });
 });
