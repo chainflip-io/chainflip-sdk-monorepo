@@ -6,6 +6,7 @@ import {
   type ExecuteOptions,
   type ExecuteSwapParams,
 } from '@/shared/vault';
+import { assert } from '../guards';
 import { askForPrivateKey, getEthNetwork, cliNetworks } from '../utils';
 
 export const yargsOptions = {
@@ -86,6 +87,11 @@ export default async function cliExecuteSwap(
         }
       : { network: args.chainflipNetwork, signer: wallet };
 
+  if (args.gasBudget || args.message) {
+    assert(args.gasBudget, 'missing gas budget');
+    assert(args.message, 'missing message');
+  }
+
   const receipt = await executeSwap(
     {
       srcChain: assetChains[args.srcAsset],
@@ -94,11 +100,10 @@ export default async function cliExecuteSwap(
       destAsset: args.destAsset,
       amount: args.amount,
       destAddress: args.destAddress,
-      ccmMetadata: args.message &&
-        args.gasBudget && {
-          message: args.message,
-          gasBudget: args.gasBudget,
-        },
+      ccmMetadata: {
+        message: args.message,
+        gasBudget: args.gasBudget,
+      },
     } as ExecuteSwapParams,
     opts,
   );
