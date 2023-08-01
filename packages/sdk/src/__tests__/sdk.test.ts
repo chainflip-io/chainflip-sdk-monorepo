@@ -7,7 +7,6 @@ import { SwapSDK } from '../swap/sdk';
 
 jest.mock('@/shared/vault', () => ({
   executeSwap: jest.fn(),
-  executeCall: jest.fn(),
 }));
 
 describe(SwapSDK, () => {
