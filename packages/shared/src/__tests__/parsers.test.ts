@@ -1,22 +1,48 @@
+import { ChainflipNetwork } from '../enums';
 import { btcAddress, dotAddress, u128, unsignedInteger } from '../parsers';
 import bitcoinAddresses from '../validation/__tests__/bitcoinAddresses.json' assert { type: 'json' };
 
 describe('btc parser', () => {
   it.each([
-    Object.values(bitcoinAddresses).flatMap((addressMap) =>
-      Object.values(addressMap).flat(),
-    ),
-  ])(`validates btc address %s to be true`, (address) => {
-    expect(btcAddress.safeParse(address).success).toBeTruthy();
-  });
-
-  it.each([
+    [Object.values(bitcoinAddresses.mainnet).flat(), 'mainnet', 'sisyphos'],
+    [Object.values(bitcoinAddresses.testnet).flat(), 'sisyphos', 'mainnet'],
+    [Object.values(bitcoinAddresses.testnet).flat(), 'perseverance', 'mainnet'],
+    [Object.values(bitcoinAddresses.testnet).flat(), 'partnernet', 'mainnet'],
+    [Object.values(bitcoinAddresses.regtest).flat(), 'sisyphos', 'mainnet'],
+    [Object.values(bitcoinAddresses.regtest).flat(), 'perseverance', 'mainnet'],
+    [Object.values(bitcoinAddresses.regtest).flat(), 'partnernet', 'mainnet'],
+    [Object.values(bitcoinAddresses.regtest).flat(), 'backspin', 'mainnet'],
+    [Object.values(bitcoinAddresses.regtest).flat(), undefined, 'mainnet'],
+  ])(
+    'validates btc address %s to be true for the right network',
+    (address, network, wrongNetwork) => {
+      address.forEach((addr) =>
+        expect(
+          btcAddress(network as ChainflipNetwork).safeParse(addr).success,
+        ).toBeTruthy(),
+      );
+      address.forEach((addr) =>
+        expect(
+          btcAddress(wrongNetwork as ChainflipNetwork).safeParse(addr).success,
+        ).toBeFalsy(),
+      );
+    },
+  );
+  const wrongAddresses = [
     'br1qxy2kgdygjrsqtzq2n0yrf249',
     '',
     '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
     '5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX',
-  ])(`validates btc address %s to be false`, (address) => {
-    expect(btcAddress.safeParse(address).success).toBeFalsy();
+  ];
+  it.each([
+    [wrongAddresses, 'mainnet'],
+    [wrongAddresses, 'sisyphos'],
+    [wrongAddresses, 'partnernet'],
+    [wrongAddresses, 'perseverance'],
+  ])(`validates btc address %s to be false`, (address, network) => {
+    expect(
+      btcAddress(network as ChainflipNetwork).safeParse(address).success,
+    ).toBeFalsy();
   });
 });
 

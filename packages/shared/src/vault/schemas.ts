@@ -36,7 +36,7 @@ const ethToDot = eth.extend({
 
 const ethToBtc = eth.extend({
   destChain: z.literal(Chains.Bitcoin),
-  destAddress: btcAddress.transform(utf8ToHex),
+  destAddress: btcAddress().transform(utf8ToHex),
   destAsset: z.literal(Assets.BTC),
 });
 
