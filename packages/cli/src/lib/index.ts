@@ -1,9 +1,7 @@
 export {
   executeSwap,
-  executeCall,
   type ExecuteOptions,
   type ExecuteSwapParams,
-  type ExecuteCallParams,
   approveVault,
   checkVaultAllowance,
 } from '@/shared/vault';

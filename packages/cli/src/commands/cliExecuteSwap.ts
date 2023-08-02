@@ -1,6 +1,7 @@
 import { getDefaultProvider, providers, Wallet } from 'ethers';
 import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
 import { assetChains, Assets, ChainflipNetworks } from '@/shared/enums';
+import { assert } from '@/shared/guards';
 import {
   executeSwap,
   type ExecuteOptions,
@@ -33,6 +34,14 @@ export const yargsOptions = {
     type: 'string',
     demandOption: true,
     describe: 'The address to send the swapped assets to',
+  },
+  message: {
+    type: 'string',
+    describe: 'The message that is sent along with the swapped assets',
+  },
+  'gas-budget': {
+    type: 'string',
+    describe: 'The amount of gas that is sent with the message',
   },
   'wallet-private-key': {
     type: 'string',
@@ -78,6 +87,16 @@ export default async function cliExecuteSwap(
         }
       : { network: args.chainflipNetwork, signer: wallet };
 
+  let ccmMetadata;
+  if (args.gasBudget || args.message) {
+    assert(args.gasBudget, 'missing gas budget');
+    assert(args.message, 'missing message');
+    ccmMetadata = {
+      message: args.message,
+      gasBudget: args.gasBudget,
+    };
+  }
+
   const receipt = await executeSwap(
     {
       srcChain: assetChains[args.srcAsset],
@@ -86,6 +105,7 @@ export default async function cliExecuteSwap(
       destAsset: args.destAsset,
       amount: args.amount,
       destAddress: args.destAddress,
+      ccmMetadata,
     } as ExecuteSwapParams,
     opts,
   );

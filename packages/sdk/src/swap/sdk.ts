@@ -1,13 +1,7 @@
 import { Signer } from 'ethers';
 import { ChainflipNetwork, Chain, ChainflipNetworks } from '@/shared/enums';
 import { assert } from '@/shared/guards';
-import {
-  ExecuteSwapParams,
-  ExecuteCallParams,
-  approveVault,
-  executeSwap,
-  executeCall,
-} from '@/shared/vault';
+import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
 import type { TokenSwapParams, Overrides } from '@/shared/vault/schemas';
 import { BACKEND_SERVICE_URLS } from './consts';
 import ApiService, { RequestOptions } from './services/ApiService';
@@ -85,19 +79,6 @@ export class SwapSDK {
   ): Promise<TransactionHash> {
     assert(this.signer, 'No signer provided');
     const receipt = await executeSwap(params, {
-      ...overrides,
-      network: this.network,
-      signer: this.signer,
-    });
-    return receipt.transactionHash;
-  }
-
-  async executeCall(
-    params: ExecuteCallParams,
-    overrides: Overrides = {},
-  ): Promise<TransactionHash> {
-    assert(this.signer, 'No signer provided');
-    const receipt = await executeCall(params, {
       ...overrides,
       network: this.network,
       signer: this.signer,

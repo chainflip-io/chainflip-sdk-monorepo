@@ -1,10 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`cli calls the correct handler with the proper arguments 1`] = `
+exports[`cli calls the correct handler with the proper arguments (call) 1`] = `
 [
   [
     {
       "amount": "1000000000",
+      "ccmMetadata": {
+        "gasBudget": "500000",
+        "message": "0xdeadc0de",
+      },
       "destAddress": "0x0",
       "destAsset": "USDC",
       "destChain": "Ethereum",
@@ -21,11 +25,57 @@ exports[`cli calls the correct handler with the proper arguments 1`] = `
 ]
 `;
 
-exports[`cli calls the correct handler with the proper arguments 2`] = `
+exports[`cli calls the correct handler with the proper arguments (call) 2`] = `
 [
   [
     {
       "amount": "1000000000",
+      "ccmMetadata": {
+        "gasBudget": "500000",
+        "message": "0xdeadc0de",
+      },
+      "destAddress": "0x0",
+      "destAsset": "USDC",
+      "destChain": "Ethereum",
+      "srcAsset": "ETH",
+      "srcChain": "Ethereum",
+    },
+    {
+      "network": "sisyphos",
+      "signer": undefined,
+    },
+  ],
+]
+`;
+
+exports[`cli calls the correct handler with the proper arguments (swap) 1`] = `
+[
+  [
+    {
+      "amount": "1000000000",
+      "ccmMetadata": undefined,
+      "destAddress": "0x0",
+      "destAsset": "USDC",
+      "destChain": "Ethereum",
+      "srcAsset": "ETH",
+      "srcChain": "Ethereum",
+    },
+    {
+      "network": "localnet",
+      "signer": undefined,
+      "srcTokenContractAddress": "0x0",
+      "vaultContractAddress": "0x0",
+    },
+  ],
+]
+`;
+
+exports[`cli calls the correct handler with the proper arguments (swap) 2`] = `
+[
+  [
+    {
+      "amount": "1000000000",
+      "ccmMetadata": undefined,
       "destAddress": "0x0",
       "destAsset": "USDC",
       "destChain": "Ethereum",
