@@ -17,56 +17,56 @@ const bytesToHex = (arr: Uint8Array | number[]) =>
 
 const utf8ToHex = (str: string) => `0x${Buffer.from(str).toString('hex')}`;
 
-const base = z.object({
+const eth = z.object({
   amount: z.union([numericString, hexString, z.bigint()]),
   srcChain: z.literal(Chains.Ethereum),
   srcAsset: z.literal(Assets.ETH),
 });
 
-const ethereumBase = base.extend({
+const ethToEthereum = eth.extend({
   destChain: z.literal(Chains.Ethereum),
   destAddress: ethereumAddress,
 });
 
-const polkadotBase = base.extend({
+const ethToDot = eth.extend({
   destChain: z.literal(Chains.Polkadot),
   destAddress: dotAddress.transform((addr) => bytesToHex(decodeAddress(addr))),
-});
-
-const bitcoinBase = base.extend({
-  destChain: z.literal(Chains.Bitcoin),
-  destAddress: btcAddress.transform(utf8ToHex),
-});
-
-const erc20 = z.union([z.literal(Assets.FLIP), z.literal(Assets.USDC)]);
-
-const ethereumNative = ethereumBase.extend({ destAsset: erc20 });
-
-const polkadotNative = polkadotBase.extend({
   destAsset: z.literal(Assets.DOT),
 });
 
-const bitcoinNative = bitcoinBase.extend({ destAsset: z.literal(Assets.BTC) });
+const ethToBtc = eth.extend({
+  destChain: z.literal(Chains.Bitcoin),
+  destAddress: btcAddress.transform(utf8ToHex),
+  destAsset: z.literal(Assets.BTC),
+});
 
-const nativeSwapParamsSchema = z.union([
-  ethereumNative,
-  polkadotNative,
-  bitcoinNative,
-]);
+const erc20Asset = z.union([z.literal(Assets.FLIP), z.literal(Assets.USDC)]);
+
+const ethToERC20 = ethToEthereum.extend({ destAsset: erc20Asset });
+
+const nativeSwapParamsSchema = z.union([ethToERC20, ethToDot, ethToBtc]);
 
 export type NativeSwapParams = z.infer<typeof nativeSwapParamsSchema>;
 
+const flipToEthereumAsset = ethToEthereum.extend({
+  srcAsset: z.literal(Assets.FLIP),
+  destAsset: z.union([z.literal(Assets.USDC), z.literal(Assets.ETH)]),
+});
+
+const usdcToEthereumAsset = ethToEthereum.extend({
+  srcAsset: z.literal(Assets.USDC),
+  destAsset: z.union([z.literal(Assets.FLIP), z.literal(Assets.ETH)]),
+});
+
+const erc20ToDot = ethToDot.extend({ srcAsset: erc20Asset });
+
+const erc20ToBtc = ethToBtc.extend({ srcAsset: erc20Asset });
+
 const tokenSwapParamsSchema = z.union([
-  ethereumBase.extend({
-    srcAsset: z.literal(Assets.FLIP),
-    destAsset: z.union([z.literal(Assets.USDC), z.literal(Assets.ETH)]),
-  }),
-  ethereumBase.extend({
-    srcAsset: z.literal(Assets.USDC),
-    destAsset: z.union([z.literal(Assets.FLIP), z.literal(Assets.ETH)]),
-  }),
-  polkadotNative.extend({ srcAsset: erc20 }),
-  bitcoinNative.extend({ srcAsset: erc20 }),
+  flipToEthereumAsset,
+  usdcToEthereumAsset,
+  erc20ToDot,
+  erc20ToBtc,
 ]);
 
 const ccmMetadataSchema = z.object({
@@ -74,21 +74,20 @@ const ccmMetadataSchema = z.object({
   gasBudget: numericString,
 });
 
+const ccmFlipToEthereumAssset = flipToEthereumAsset.extend({
+  ccmMetadata: ccmMetadataSchema,
+});
+
+const ccmUsdcToEthereumAsset = usdcToEthereumAsset.extend({
+  ccmMetadata: ccmMetadataSchema,
+});
+
 const tokenCallParamsSchema = z.union([
-  ethereumBase.extend({
-    srcAsset: z.literal(Assets.FLIP),
-    destAsset: z.union([z.literal(Assets.USDC), z.literal(Assets.ETH)]),
-    ccmMetadata: ccmMetadataSchema,
-  }),
-  ethereumBase.extend({
-    srcAsset: z.literal(Assets.USDC),
-    destAsset: z.union([z.literal(Assets.FLIP), z.literal(Assets.ETH)]),
-    ccmMetadata: ccmMetadataSchema,
-  }),
+  ccmFlipToEthereumAssset,
+  ccmUsdcToEthereumAsset,
 ]);
 
-const nativeCallParamsSchema = ethereumBase.extend({
-  destAsset: erc20,
+const nativeCallParamsSchema = ethToERC20.extend({
   ccmMetadata: ccmMetadataSchema,
 });
 
