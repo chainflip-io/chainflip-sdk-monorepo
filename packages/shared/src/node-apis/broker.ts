@@ -59,7 +59,7 @@ const requestValidators = {
     .tuple([
       chainflipAsset.transform(transformAsset),
       chainflipAsset.transform(transformAsset),
-      z.union([numericString, hexString, btcAddress]),
+      z.union([numericString, hexString, btcAddress()]),
       z.number(),
       ccmMetadataSchema
         .merge(
@@ -77,7 +77,7 @@ const requestValidators = {
 const responseValidators = {
   requestSwapDepositAddress: z
     .object({
-      address: z.union([hexString, btcAddress, dotAddress]),
+      address: z.union([hexString, btcAddress(), dotAddress]),
       expiry_block: z.number(),
       issued_block: z.number(),
       channel_id: z.number(),
