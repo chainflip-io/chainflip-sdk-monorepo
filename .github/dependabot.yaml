@@ -1,0 +1,11 @@
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+    assignees:
+      - 'acdibble'
+    commit-message:
+      prefix: 'chore'
+      include: 'scope'
