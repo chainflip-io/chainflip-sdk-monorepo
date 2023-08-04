@@ -9,11 +9,11 @@ importers:
   .:
     devDependencies:
       '@swc/core':
-        specifier: ^1.3.36
-        version: 1.3.36
+        specifier: ^1.3.74
+        version: 1.3.74
       '@swc/jest':
         specifier: ^0.2.27
-        version: 0.2.27(@swc/core@1.3.36)
+        version: 0.2.27(@swc/core@1.3.74)
       '@types/jest':
         specifier: ^29.4.0
         version: 29.4.0
@@ -92,7 +92,7 @@ importers:
         version: 17.0.24
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(@swc/core@1.3.36)(typescript@5.0.2)
+        version: 6.7.0(@swc/core@1.3.74)(typescript@5.0.2)
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
@@ -126,7 +126,7 @@ importers:
     devDependencies:
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(@swc/core@1.3.36)(typescript@5.0.2)
+        version: 6.7.0(@swc/core@1.3.74)(typescript@5.0.2)
 
   packages/shared:
     dependencies:
@@ -2768,8 +2768,8 @@ packages:
     resolution: {integrity: sha512-QuU2nBql3J4KCnOWtWDw4n1K4JU0T79j54ZZvm/9nhsX6AIar13FyhsaBfs6QkJ2ixTQAnd7TocJIoJRWbqMZA==}
     dev: false
 
-  /@swc/core-darwin-arm64@1.3.36:
-    resolution: {integrity: sha512-lsP+C8p9cC/Vd9uAbtxpEnM8GoJI/MMnVuXak7OlxOtDH9/oTwmAcAQTfNGNaH19d2FAIRwf+5RbXCPnxa2Zjw==}
+  /@swc/core-darwin-arm64@1.3.74:
+    resolution: {integrity: sha512-2rMV4QxM583jXcREfo0MhV3Oj5pgRSfSh/kVrB1twL2rQxOrbzkAPT/8flmygdVoL4f2F7o1EY5lKlYxEBiIKQ==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [darwin]
@@ -2777,8 +2777,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-darwin-x64@1.3.36:
-    resolution: {integrity: sha512-jaLXsozWN5xachl9fPxDMi5nbWq1rRxPAt6ISeiYB6RJk0MQKH1634pOweBBem2pUDDzwDFXFw6f22LTm/cFvA==}
+  /@swc/core-darwin-x64@1.3.74:
+    resolution: {integrity: sha512-KKEGE1wXneYXe15fWDRM8/oekd/Q4yAuccA0vWY/7i6nOSPqWYcSDR0nRtR030ltDxWt0rk/eCTmNkrOWrKs3A==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [darwin]
@@ -2786,8 +2786,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-linux-arm-gnueabihf@1.3.36:
-    resolution: {integrity: sha512-vcBdTHjoEpvJDbFlgto+S6VwAHzLA9GyCiuNcTU2v4KNQlFzhbO4A4PMfMCb/Z0RLJEr16tirfHdWIxjU3h8nw==}
+  /@swc/core-linux-arm-gnueabihf@1.3.74:
+    resolution: {integrity: sha512-HehH5DR6r/5fIVu7tu8ZqgrHkhSCQNewf1ztFQJgcmaQWn+H4AJERBjwkjosqh4TvUJucZv8vyRTvrFeBXaCSA==}
     engines: {node: '>=10'}
     cpu: [arm]
     os: [linux]
@@ -2795,8 +2795,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-linux-arm64-gnu@1.3.36:
-    resolution: {integrity: sha512-o7f5OsvwWppJo+qIZmrGO5+XC6DPt6noecSbRHjF6o1YAcR13ETPC14k1eC9H1YbQwpyCFNVAFXyNcUbCeQyrQ==}
+  /@swc/core-linux-arm64-gnu@1.3.74:
+    resolution: {integrity: sha512-+xkbCRz/wczgdknoV4NwYxbRI2dD7x/qkIFcVM2buzLCq8oWLweuV8+aL4pRqu0qDh7ZSb1jcaVTUIsySCJznA==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
@@ -2804,8 +2804,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-linux-arm64-musl@1.3.36:
-    resolution: {integrity: sha512-FSHPngMi3c0fuGt9yY2Ubn5UcELi3EiPLJxBSC3X8TF9atI/WHZzK9PE9Gtn0C/LyRh4CoyOugDtSOPzGYmLQg==}
+  /@swc/core-linux-arm64-musl@1.3.74:
+    resolution: {integrity: sha512-maKFZSCD3tQznzPV7T3V+TtiWZFEFM8YrnSS5fQNNb+K9J65sL+170uTb3M7H4cFkG+9Sm5k5yCrCIutlvV48g==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
@@ -2813,8 +2813,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-linux-x64-gnu@1.3.36:
-    resolution: {integrity: sha512-PHSsH2rek5pr3e0K09VgWAbrWK2vJhaI7MW9TPoTjyACYjcs3WwjcjQ30MghXUs2Dc/bXjWAOi9KFTjq/uCyFg==}
+  /@swc/core-linux-x64-gnu@1.3.74:
+    resolution: {integrity: sha512-LEXpcShF6DLTWJSiBhMSYZkLQ27UvaQ24fCFhoIV/R3dhYaUpHmIyLPPBNC82T03lB3ONUFVwrRw6fxDJ/f00A==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
@@ -2822,8 +2822,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-linux-x64-musl@1.3.36:
-    resolution: {integrity: sha512-4LfMYQHzozHCKkIcmQy83b+4SpI+mOp6sYNbXqSRz5dYvTVjegKZXe596P1U/87cK2cgR4uYvkgkgBXquaWvwQ==}
+  /@swc/core-linux-x64-musl@1.3.74:
+    resolution: {integrity: sha512-sxsFctbFMZEFmDE7CmYljG0dMumH8XBTwwtGr8s6z0fYAzXBGNq2AFPcmEh2np9rPWkt7pE1m0ByESD+dMkbxQ==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
@@ -2831,8 +2831,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-win32-arm64-msvc@1.3.36:
-    resolution: {integrity: sha512-7y3dDcun79TAjCyk3Iv0eOMw1X/KNQbkVyKOGqnEgq9g22F8F1FoUGKHNTzUqVdzpHeJSsHgW5PlkEkl3c/d9w==}
+  /@swc/core-win32-arm64-msvc@1.3.74:
+    resolution: {integrity: sha512-F7hY9/BjFCozA4YPFYFH5FGCyWwa44vIXHqG66F5cDwXDGFn8ZtBsYIsiPfUYcx0AeAo1ojnVWKPxokZhYNYqA==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [win32]
@@ -2840,8 +2840,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-win32-ia32-msvc@1.3.36:
-    resolution: {integrity: sha512-zK0VR3B4LX5hzQ+7eD+K+FkxJlJg5Lo36BeahMzQ+/i0IURpnuyFlW88sdkFkMsc2swdU6bpvxLZeIRQ3W4OUg==}
+  /@swc/core-win32-ia32-msvc@1.3.74:
+    resolution: {integrity: sha512-qBAsiD1AlIdqED6wy3UNRHyAys9pWMUidX0LJ6mj24r/vfrzzTBAUrLJe5m7bzE+F1Rgi001avYJeEW1DLEJ+Q==}
     engines: {node: '>=10'}
     cpu: [ia32]
     os: [win32]
@@ -2849,8 +2849,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-win32-x64-msvc@1.3.36:
-    resolution: {integrity: sha512-2bIjr9DhAckGiXZEvj6z2z7ECPcTimG+wD0VuQTvr+wkx46uAJKl5Kq+Zk+dd15ErL7JGUtCet1T7bf1k4FwvQ==}
+  /@swc/core-win32-x64-msvc@1.3.74:
+    resolution: {integrity: sha512-S3YAvvLprTnPRwQuy9Dkwubb5SRLpVK3JJsqYDbGfgj8PGQyKHZcVJ5X3nfFsoWLy3j9B/3Os2nawprRSzeC5A==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [win32]
@@ -2858,31 +2858,36 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core@1.3.36:
-    resolution: {integrity: sha512-Ogrd9uRNIj7nHjXxG66UlKBIcXESUenJ7OD6K2a8p82qlg6ne7Ne5Goiipm/heHYhSfVmjcnRWL9ZJ4gv+YCPA==}
+  /@swc/core@1.3.74:
+    resolution: {integrity: sha512-P+MIExOTdWlfq8Heb1/NhBAke6UTckd4cRDuJoFcFMGBRvgoCMNWhnfP3FRRXPLI7GGg27dRZS+xHiqYyQmSrA==}
     engines: {node: '>=10'}
     requiresBuild: true
+    peerDependencies:
+      '@swc/helpers': ^0.5.0
+    peerDependenciesMeta:
+      '@swc/helpers':
+        optional: true
     optionalDependencies:
-      '@swc/core-darwin-arm64': 1.3.36
-      '@swc/core-darwin-x64': 1.3.36
-      '@swc/core-linux-arm-gnueabihf': 1.3.36
-      '@swc/core-linux-arm64-gnu': 1.3.36
-      '@swc/core-linux-arm64-musl': 1.3.36
-      '@swc/core-linux-x64-gnu': 1.3.36
-      '@swc/core-linux-x64-musl': 1.3.36
-      '@swc/core-win32-arm64-msvc': 1.3.36
-      '@swc/core-win32-ia32-msvc': 1.3.36
-      '@swc/core-win32-x64-msvc': 1.3.36
+      '@swc/core-darwin-arm64': 1.3.74
+      '@swc/core-darwin-x64': 1.3.74
+      '@swc/core-linux-arm-gnueabihf': 1.3.74
+      '@swc/core-linux-arm64-gnu': 1.3.74
+      '@swc/core-linux-arm64-musl': 1.3.74
+      '@swc/core-linux-x64-gnu': 1.3.74
+      '@swc/core-linux-x64-musl': 1.3.74
+      '@swc/core-win32-arm64-msvc': 1.3.74
+      '@swc/core-win32-ia32-msvc': 1.3.74
+      '@swc/core-win32-x64-msvc': 1.3.74
     dev: true
 
-  /@swc/jest@0.2.27(@swc/core@1.3.36):
+  /@swc/jest@0.2.27(@swc/core@1.3.74):
     resolution: {integrity: sha512-Xt8EJ6Wy0NYVL8KDPcDMsuUSzyV2UAByamyy28x2iDZCJw2eVz3acedCGBYxxlPR/DNr6QbA35OSymuXhC9QVA==}
     engines: {npm: '>= 7.0.0'}
     peerDependencies:
       '@swc/core': '*'
     dependencies:
       '@jest/create-cache-key-function': 27.5.1
-      '@swc/core': 1.3.36
+      '@swc/core': 1.3.74
       jsonc-parser: 3.2.0
     dev: true
 
@@ -8539,7 +8544,7 @@ packages:
   /tslib@2.5.2:
     resolution: {integrity: sha512-5svOrSA2w3iGFDs1HibEVBGbDrAY82bFQ3HZ3ixB+88nsbsWQoKqDRb5UBYAUPEzbBn6dAp5gRNXglySbx1MlA==}
 
-  /tsup@6.7.0(@swc/core@1.3.36)(typescript@5.0.2):
+  /tsup@6.7.0(@swc/core@1.3.74)(typescript@5.0.2):
     resolution: {integrity: sha512-L3o8hGkaHnu5TdJns+mCqFsDBo83bJ44rlK7e6VdanIvpea4ArPcU3swWGsLVbXak1PqQx/V+SSmFPujBK+zEQ==}
     engines: {node: '>=14.18'}
     hasBin: true
@@ -8555,7 +8560,7 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@swc/core': 1.3.36
+      '@swc/core': 1.3.74
       bundle-require: 4.0.1(esbuild@0.17.19)
       cac: 6.7.14
       chokidar: 3.5.3
