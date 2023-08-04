@@ -1,0 +1,20 @@
+version: 2
+
+registries:
+  npm-ghp-octocat:
+    type: 'npm-registry'
+    url: 'https://npm.pkg.github.com'
+    token: ${{ secrets.GH_REGISTRY_TOKEN }}
+
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+    assignees:
+      - 'acdibble'
+    commit-message:
+      prefix: 'chore'
+      include: 'scope'
+    registries:
+      - 'npm-ghp-octocat'
