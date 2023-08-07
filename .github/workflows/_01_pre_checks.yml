@@ -1,0 +1,47 @@
+on:
+  workflow_call:
+
+env:
+  FORCE_COLOR: 1
+
+jobs:
+  generate-matrix:
+    uses: ./.github/workflows/_utils_generate_matrix.yml
+  lint:
+    needs: [generate-matrix]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.generate-matrix.outputs.matrix).package }}
+        node_version: ${{ fromJson(needs.generate-matrix.outputs.matrix).node_version }}
+        include: ${{ fromJson(needs.generate-matrix.outputs.matrix).include }}
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Install pnpm 💿
+        run: npm i -g pnpm@8
+
+      - name: Setup Node.js ${{ matrix.node_version }} 🎮
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node_version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies 📦
+        run: |
+            for i in {1..5}
+            do
+              pnpm install && break
+              sleep 10
+            done
+
+      - name: Run prettier check 💅
+        run: pnpm prettier:check
+
+      - name: Run eslint check 🔍
+        run: pnpm eslint:check
+
+      - name: Run typecheck 🕵️‍♂️
+        run: pnpm typecheck

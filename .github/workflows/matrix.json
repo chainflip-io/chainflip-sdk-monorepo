@@ -1,0 +1,5 @@
+{
+  "package": ["shared", "sdk", "swap", "cli"],
+  "node_version": [18],
+  "include": [{ "node_version": 16, "package": "sdk" }]
+}

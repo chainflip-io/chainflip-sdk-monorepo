@@ -1,0 +1,109 @@
+on:
+  workflow_call:
+
+env:
+  FORCE_COLOR: 1
+  DB_NAME: "swap"
+  DB_USER: "postgres"
+  DB_PASS: "postgres"
+  DB_PORT: "5432"
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/swap?schema=public"
+
+jobs:
+  generate-matrix:
+    uses: ./.github/workflows/_utils_generate_matrix.yml
+
+  test:
+    needs: [generate-matrix]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.generate-matrix.outputs.matrix).package }}
+        node_version: ${{ fromJson(needs.generate-matrix.outputs.matrix).node_version }}
+        include: ${{ fromJson(needs.generate-matrix.outputs.matrix).include }}
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Install pnpm 💿
+        run: npm i -g pnpm@8
+
+      - name: Setup Node.js ${{ matrix.node_version }} 🎮
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node_version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies 📦
+        run: |
+            for i in {1..5}
+            do
+              pnpm install && break
+              sleep 10
+            done
+
+      - name: Setup Python 🐍
+        if: matrix.package == 'swap'
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+          cache: 'pip'
+
+      - name: Docker Compose Action 🐳
+        if: matrix.package == 'swap'
+        uses: isbang/compose-action@v1.4.1
+        with:
+          compose-file: ./packages/swap/docker-compose.yml
+
+      - name: Install Python Dependencies 🐍📦
+        if: matrix.package == 'swap'
+        run: pip install -r packages/swap/python-client/requirements.txt
+
+      - name: Migrate database 🗃️
+        if: matrix.package == 'swap'
+        run: pnpm --filter swap exec pnpm prisma migrate dev
+
+      - name: Run Test ${{ matrix.package }} 🧪
+        run: pnpm run test:ci:${{ matrix.package }}
+
+      - name: Upload coverage to Codecov ☂️
+        uses: codecov/codecov-action@v3
+        if: matrix.node_version == '18'
+        with:
+          flags: ${{ matrix.package }}
+          fail_ci_if_error: true
+          token: ${{ secrets.CF_SDK_CODECOV_TOKEN }}
+
+  build:
+    needs: [generate-matrix]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.generate-matrix.outputs.matrix).package }}
+        node_version: ${{ fromJson(needs.generate-matrix.outputs.matrix).node_version }}
+        include: ${{ fromJson(needs.generate-matrix.outputs.matrix).include }}
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Install pnpm 💿
+        run: npm i -g pnpm@8
+
+      - name: Setup Node.js ${{ matrix.node_version }} 🎮
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node_version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies 📦
+        run: |
+            for i in {1..5}
+            do
+              pnpm install && break
+              sleep 10
+            done
+
+      - name: Run build ${{ matrix.package }} 🏗️
+        run: pnpm run build:${{ matrix.package }}
