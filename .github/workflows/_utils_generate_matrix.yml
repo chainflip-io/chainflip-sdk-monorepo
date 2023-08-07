@@ -22,5 +22,5 @@ jobs:
         id: matrix
         run: |
           set -e
-          MATRIX=$(echo $(cat .github/workflows/matrix.json | jq '. | tostring'))
+          MATRIX=$(echo $(cat .github/workflows/matrix.json | jq -RrS 'tostring'))
           echo "matrix=${MATRIX}" >> $GITHUB_OUTPUT
