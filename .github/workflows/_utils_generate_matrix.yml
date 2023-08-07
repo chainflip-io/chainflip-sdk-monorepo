@@ -21,4 +21,6 @@ jobs:
       - name: Read Matrix File 📖
         id: matrix
         run: |
-          echo "matrix=$(cat .github/workflows/matrix.json | jq -RrS 'tostring')" >> $GITHUB_OUTPUT
+          set -e
+          MATRIX=$(echo $(cat .github/workflows/matrix.json | jq -RrS 'tostring'))
+          echo "matrix=${MATRIX}" >> $GITHUB_OUTPUT
