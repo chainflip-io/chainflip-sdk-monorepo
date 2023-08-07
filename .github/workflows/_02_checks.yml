@@ -10,16 +10,15 @@ env:
   DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/swap?schema=public"
 
 jobs:
+  generate-matrix:
+    uses: ./.github/workflows/_utils_generate_matrix.yml
+
   test:
+    needs: [generate-matrix]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        package: [shared, sdk, swap, cli]
-        node_version: [18]
-        include:
-          - node_version: 16
-            package: sdk
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
@@ -74,15 +73,11 @@ jobs:
           token: ${{ secrets.CF_SDK_CODECOV_TOKEN }}
 
   build:
+    needs: [generate-matrix]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        package: [shared, sdk, swap, cli]
-        node_version: [18]
-        include:
-          - node_version: 16
-            package: sdk
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3

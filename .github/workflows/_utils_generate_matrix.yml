@@ -1,0 +1,24 @@
+name: Node JS Context Reusable Workflow
+
+on:
+  workflow_call:
+    outputs:
+      matrix:
+        value: ${{ github.event.inputs.matrix }}
+
+env:
+  FORCE_COLOR: 1
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Read Matrix File 📖
+        id: matrix
+        run: |
+          echo "matrix=$(cat .github/workflows/matrix.json | jq -r '.')" >> $GITHUB_OUTPUT

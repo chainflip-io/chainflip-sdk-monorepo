@@ -5,16 +5,14 @@ env:
   FORCE_COLOR: 1
 
 jobs:
+  generate-matrix:
+    uses: ./.github/workflows/_utils_generate_matrix.yml
   lint:
+    needs: [generate-matrix]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        package: [shared, sdk, swap, cli]
-        node_version: [18]
-        include:
-          - node_version: 16
-            package: sdk
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
