@@ -7,7 +7,7 @@
     "build:sdk": "pnpm build:shared && pnpm --filter @chainflip-io/chainflip-sdk build",
     "build:swap": "pnpm build:shared && pnpm --filter swap build",
     "build:cli": "pnpm --filter cli build",
-    "test:ci:shred": "pnpm --filter shred test:ci",
+    "test:ci:shared": "pnpm --filter shared test:ci",
     "test:ci:sdk": "pnpm --filter @chainflip-io/chainflip-sdk test:ci",
     "test:ci:swap": "pnpm --filter swap test:ci",
     "test:ci:cli": "pnpm --filter cli test:ci",
