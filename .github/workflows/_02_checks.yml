@@ -3,6 +3,11 @@ on:
 
 env:
   FORCE_COLOR: 1
+  DB_NAME: "swap"
+  DB_USER: "postgres"
+  DB_PASS: "postgres"
+  DB_PORT: "5432"
+  DB_URL: "postgresql://postgres:postgres@localhost:5432/swap?schema=public"
 
 jobs:
   get-node-version:
@@ -44,7 +49,28 @@ jobs:
               sleep 10
             done
 
-      - name: Run build ${{ matrix.package }} 🏗️
+      - name: Setup Python 🐍
+        if: matrix.package == 'swap'
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+          cache: 'pip'
+
+      - name: Docker Compose Action 🐳
+        if: matrix.package == 'swap'
+        uses: isbang/compose-action@v1.4.1
+        with:
+          compose-file: ./packages/swap/docker-compose.yml
+
+      - name: Install Python Dependencies 🐍📦
+        if: matrix.package == 'swap'
+        run: pip install -r packages/swap/python-client/requirements.txt
+
+      - name: Migrate database 🗃️
+        if: matrix.package == 'swap'
+        run: pnpm --filter swap exec pnpm prisma migrate dev
+
+      - name: Run Test ${{ matrix.package }} 🧪
         run: pnpm run test:ci:${{ matrix.package }}
 
   build:

@@ -7,6 +7,12 @@ env:
   FORCE_COLOR: 1
 
 jobs:
+  semantic-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   pre-checks:
     uses: ./.github/workflows/_01_pre_checks.yml
   checks:
