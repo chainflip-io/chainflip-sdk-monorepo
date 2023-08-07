@@ -64,7 +64,7 @@ jobs:
       - name: Run Test ${{ matrix.package }} 🧪
         run: pnpm run test:ci:${{ matrix.package }}
 
-      - name: Upload coverage to Codecov
+      - name: Upload coverage to Codecov ☂️
         uses: codecov/codecov-action@v3
         with:
           flags: ${{ matrix.package }}
