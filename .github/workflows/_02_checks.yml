@@ -64,6 +64,12 @@ jobs:
       - name: Run Test ${{ matrix.package }} 🧪
         run: pnpm run test:ci:${{ matrix.package }}
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          flags: ${{ matrix.package }}
+          fail_ci_if_error: true
+
   build:
     needs: [get-node-version]
     runs-on: ubuntu-latest
