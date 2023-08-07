@@ -38,22 +38,18 @@ describe('ApiService', () => {
       it.each(Object.values(Chains))(
         'gets the correct assets for testnets (%s)',
         async (chain) => {
-          expect(await ApiService.getAssets(chain, network)).toMatchSnapshot();
+          if (network === 'mainnet' && chain === 'Ethereum') {
+            // not contract address for flip on mainnet yet
+            expect(ApiService.getAssets(chain, network)).rejects.toThrow();
+          } else {
+            expect(
+              await ApiService.getAssets(chain, network),
+            ).toMatchSnapshot();
+          }
         },
       );
     },
   );
-
-  describe(ApiService.getAssets, () => {
-    it.each(Object.values(Chains))(
-      'gets the correct assets for mainnets (%s)',
-      async (chain) => {
-        expect(
-          await ApiService.getAssets(chain, ChainflipNetworks.mainnet),
-        ).toMatchSnapshot();
-      },
-    );
-  });
 
   describe(ApiService.getQuote, () => {
     it('gets a route with a quote', async () => {
