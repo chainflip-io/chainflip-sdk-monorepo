@@ -11,16 +11,7 @@ env:
 
 jobs:
   get-node-version:
-    runs-on: ubuntu-latest
-    outputs:
-      node_version: ${{ steps.node-version.outputs.node_version }}
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v3
-
-      - name: Get Node.JS version from package.json 👀
-        id: node-version
-        run: echo "node_version=$(jq -r .engines.node ./package.json)" >> $GITHUB_OUTPUT
+    uses: ./.github/workflows/_web_node_context.yml
 
   test:
     needs: [get-node-version]
