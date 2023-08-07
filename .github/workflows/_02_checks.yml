@@ -11,7 +11,7 @@ env:
 
 jobs:
   get-node-version:
-    uses: ./.github/workflows/_web_node_context.yml
+    uses: ./.github/workflows/_node_context.yml
 
   test:
     needs: [get-node-version]
