@@ -14,38 +14,6 @@ exports[`ApiService getAssets (mainnet) gets the correct assets for testnets (Bi
 ]
 `;
 
-exports[`ApiService getAssets (mainnet) gets the correct assets for testnets (Ethereum) 1`] = `
-[
-  {
-    "chain": "Ethereum",
-    "contractAddress": "0xeth",
-    "decimals": 18,
-    "id": "ETH",
-    "isMainnet": true,
-    "name": "ether",
-    "symbol": "ETH",
-  },
-  {
-    "chain": "Ethereum",
-    "contractAddress": "0xusdc",
-    "decimals": 6,
-    "id": "USDC",
-    "isMainnet": true,
-    "name": "usdc",
-    "symbol": "USDC",
-  },
-  {
-    "chain": "Ethereum",
-    "contractAddress": "0xflip",
-    "decimals": 18,
-    "id": "FLIP",
-    "isMainnet": true,
-    "name": "flip",
-    "symbol": "FLIP",
-  },
-]
-`;
-
 exports[`ApiService getAssets (mainnet) gets the correct assets for testnets (Polkadot) 1`] = `
 [
   {
@@ -234,66 +202,6 @@ exports[`ApiService getAssets (sisyphos) gets the correct assets for testnets (P
     "decimals": 10,
     "id": "DOT",
     "isMainnet": false,
-    "name": "Polkadot",
-    "symbol": "DOT",
-  },
-]
-`;
-
-exports[`ApiService getAssets gets the correct assets for mainnets (Bitcoin) 1`] = `
-[
-  {
-    "chain": "Bitcoin",
-    "contractAddress": undefined,
-    "decimals": 8,
-    "id": "BTC",
-    "isMainnet": true,
-    "name": "Bitcoin",
-    "symbol": "BTC",
-  },
-]
-`;
-
-exports[`ApiService getAssets gets the correct assets for mainnets (Ethereum) 1`] = `
-[
-  {
-    "chain": "Ethereum",
-    "contractAddress": "0xeth",
-    "decimals": 18,
-    "id": "ETH",
-    "isMainnet": true,
-    "name": "ether",
-    "symbol": "ETH",
-  },
-  {
-    "chain": "Ethereum",
-    "contractAddress": "0xusdc",
-    "decimals": 6,
-    "id": "USDC",
-    "isMainnet": true,
-    "name": "usdc",
-    "symbol": "USDC",
-  },
-  {
-    "chain": "Ethereum",
-    "contractAddress": "0xflip",
-    "decimals": 18,
-    "id": "FLIP",
-    "isMainnet": true,
-    "name": "flip",
-    "symbol": "FLIP",
-  },
-]
-`;
-
-exports[`ApiService getAssets gets the correct assets for mainnets (Polkadot) 1`] = `
-[
-  {
-    "chain": "Polkadot",
-    "contractAddress": undefined,
-    "decimals": 10,
-    "id": "DOT",
-    "isMainnet": true,
     "name": "Polkadot",
     "symbol": "DOT",
   },
