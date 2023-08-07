@@ -1,0 +1,13 @@
+name: Development CI 👨‍🔬
+
+on:
+  pull_request:
+
+env:
+  FORCE_COLOR: 1
+
+jobs:
+  pre-checks:
+    uses: ./.github/workflows/_01_pre_checks.yml
+  checks:
+    uses: ./.github/workflows/_02_checks.yml

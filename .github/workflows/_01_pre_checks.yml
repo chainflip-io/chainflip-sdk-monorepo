@@ -1,0 +1,50 @@
+on:
+  workflow_call:
+
+env:
+  FORCE_COLOR: 1
+
+jobs:
+  get-node-version:
+    runs-on: ubuntu-latest
+    outputs:
+      node_version: ${{ steps.node-version.outputs.node_version }}
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Get Node.JS version from package.json 👀
+        id: node-version
+        run: echo "node_version=$(jq -r .engines.node ./package.json)" >> $GITHUB_OUTPUT
+  lint:
+    needs: [get-node-version]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Install pnpm 💿
+        run: npm i -g pnpm@8
+
+      - name: Setup Node.js ${{ needs.get-node-version.outputs.node_version }} 🎮
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ needs.get-node-version.outputs.node_version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies 📦
+        run: |
+            for i in {1..5}
+            do
+              pnpm install && break
+              sleep 10
+            done
+
+      - name: Run prettier check 💅
+        run: pnpm prettier:check
+
+      - name: Run eslint check 🔍
+        run: pnpm eslint:check
+
+      - name: Run typecheck 🕵️‍♂️
+        run: pnpm typecheck
