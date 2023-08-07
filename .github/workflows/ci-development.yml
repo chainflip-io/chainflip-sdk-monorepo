@@ -1,5 +1,9 @@
 name: Development CI 👨‍🔬
 
+concurrency:
+  group: ${{ github.ref }}-development-ci
+  cancel-in-progress: true
+
 on:
   pull_request:
 
