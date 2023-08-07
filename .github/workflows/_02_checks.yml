@@ -15,7 +15,11 @@ jobs:
     strategy:
       matrix:
         package: [shared, sdk, swap, cli]
-        node_version: [16, 18]
+        include:
+          - node_version: 16
+            package: sdk
+          - node_version: 18
+            package: sdk
       fail-fast: false
     steps:
       - name: Checkout 🛎️
@@ -75,7 +79,11 @@ jobs:
     strategy:
       matrix:
         package: [shared, sdk, swap, cli]
-        node_version: [16, 18]
+        include:
+          - node_version: 16
+            package: sdk
+          - node_version: 18
+            package: sdk
       fail-fast: false
     steps:
       - name: Checkout 🛎️
