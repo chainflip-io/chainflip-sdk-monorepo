@@ -68,6 +68,7 @@ jobs:
         with:
           flags: ${{ matrix.package }}
           fail_ci_if_error: true
+          token: ${{ secrets.CF_SDK_CODECOV_TOKEN }}
 
   build:
     runs-on: ubuntu-latest

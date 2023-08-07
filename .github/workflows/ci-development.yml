@@ -15,5 +15,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   pre-checks:
     uses: ./.github/workflows/_01_pre_checks.yml
+    secrets: inherit
   checks:
     uses: ./.github/workflows/_02_checks.yml
+    secrets: inherit
