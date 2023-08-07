@@ -10,15 +10,12 @@ env:
   DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/swap?schema=public"
 
 jobs:
-  get-node-version:
-    uses: ./.github/workflows/_node_context.yml
-
   test:
-    needs: [get-node-version]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         package: [shared, sdk, swap, cli]
+        node_version: [16, 18]
       fail-fast: false
     steps:
       - name: Checkout 🛎️
@@ -27,10 +24,10 @@ jobs:
       - name: Install pnpm 💿
         run: npm i -g pnpm@8
 
-      - name: Setup Node.js ${{ needs.get-node-version.outputs.node_version }} 🎮
+      - name: Setup Node.js ${{ matrix.node_version }} 🎮
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ needs.get-node-version.outputs.node_version }}
+          node-version: ${{ matrix.node_version }}
           cache: 'pnpm'
 
       - name: Install dependencies 📦
@@ -72,11 +69,11 @@ jobs:
           fail_ci_if_error: true
 
   build:
-    needs: [get-node-version]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         package: [shared, sdk, swap, cli]
+        node_version: [16, 18]
       fail-fast: false
     steps:
       - name: Checkout 🛎️
@@ -85,10 +82,10 @@ jobs:
       - name: Install pnpm 💿
         run: npm i -g pnpm@8
 
-      - name: Setup Node.js ${{ needs.get-node-version.outputs.node_version }} 🎮
+      - name: Setup Node.js ${{ matrix.node_version }} 🎮
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ needs.get-node-version.outputs.node_version }}
+          node-version: ${{ matrix.node_version }}
           cache: 'pnpm'
 
       - name: Install dependencies 📦
