@@ -7,7 +7,7 @@ env:
   DB_USER: "postgres"
   DB_PASS: "postgres"
   DB_PORT: "5432"
-  DB_URL: "postgresql://postgres:postgres@localhost:5432/swap?schema=public"
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/swap?schema=public"
 
 jobs:
   get-node-version:
