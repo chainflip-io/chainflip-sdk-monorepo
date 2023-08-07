@@ -7,6 +7,15 @@ env:
 jobs:
   generate-matrix:
     uses: ./.github/workflows/_utils_generate_matrix.yml
+  debug:
+    needs: [generate-matrix]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Debug matrix 🐛
+        run: echo "${{ needs.generate-matrix.outputs.matrix }}"
   lint:
     needs: [generate-matrix]
     runs-on: ubuntu-latest
