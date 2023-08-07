@@ -25,6 +25,7 @@ describe(SwapSDK, () => {
       [
         Chains.Ethereum,
         [
+          ethereum(ChainflipNetworks.perseverance),
           bitcoin(ChainflipNetworks.perseverance),
           polkadot(ChainflipNetworks.perseverance),
         ],
@@ -32,6 +33,7 @@ describe(SwapSDK, () => {
       [
         'Ethereum' as const,
         [
+          ethereum(ChainflipNetworks.perseverance),
           bitcoin(ChainflipNetworks.perseverance),
           polkadot(ChainflipNetworks.perseverance),
         ],
@@ -109,6 +111,7 @@ describe(SwapSDK, () => {
       [
         Chains.Ethereum,
         [
+          ethereum(ChainflipNetworks.sisyphos),
           bitcoin(ChainflipNetworks.sisyphos),
           polkadot(ChainflipNetworks.sisyphos),
         ],
@@ -116,6 +119,7 @@ describe(SwapSDK, () => {
       [
         'Ethereum' as const,
         [
+          ethereum(ChainflipNetworks.sisyphos),
           bitcoin(ChainflipNetworks.sisyphos),
           polkadot(ChainflipNetworks.sisyphos),
         ],
