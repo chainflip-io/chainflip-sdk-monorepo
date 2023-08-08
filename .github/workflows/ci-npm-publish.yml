@@ -21,7 +21,7 @@ jobs:
     uses: ./.github/workflows/_utils_check_commit_message.yml
   get-node-version:
     needs: [check-commit]
-    if: ${{ needs.check-commit.outputs.publish-cli }} == 'true' || ${{ needs.check-commit.outputs.publish-sdk }} == 'true'
+    if: needs.check-commit.outputs.publish-cli == 'true' || needs.check-commit.outputs.publish-sdk == 'true'
     uses: ./.github/workflows/_node_context.yml
 
   debug:
@@ -34,7 +34,7 @@ jobs:
 
   pre-checks-cli:
     needs: [check-commit]
-    if: ${{ needs.check-commit.outputs.publish-cli }} == 'true'
+    if: needs.check-commit.outputs.publish-cli == 'true'
     uses: ./.github/workflows/_01_pre_checks.yml
     with:
       package: cli
@@ -59,7 +59,7 @@ jobs:
 
   pre-checks-sdk:
     needs: [check-commit]
-    if: ${{ needs.check-commit.outputs.publish-sdk }} == 'true'
+    if: needs.check-commit.outputs.publish-sdk == 'true'
     uses: ./.github/workflows/_01_pre_checks.yml
     with:
       package: sdk
