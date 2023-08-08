@@ -11,8 +11,6 @@ env:
 jobs:
   generate-matrix:
     uses: ./.github/workflows/_utils_generate_matrix.yml
-    with:
-      package: sdk
   lint:
     needs: [generate-matrix]
     runs-on: ubuntu-latest
