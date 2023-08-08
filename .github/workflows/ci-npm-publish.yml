@@ -2,7 +2,7 @@ name: NPM Publich CI 🛰️
 
 concurrency:
   group: npm-publish-ci
-  cancel-in-progress: get-node-version, false
+  cancel-in-progress: false
 
 on:
   push:
