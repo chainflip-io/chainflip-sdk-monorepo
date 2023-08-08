@@ -104,8 +104,12 @@ export type NativeCallParams = z.infer<typeof nativeCallParamsSchema>;
 export type TokenCallParams = z.infer<typeof tokenCallParamsSchema>;
 export type TokenSwapParams = z.infer<typeof tokenSwapParamsSchema>;
 
-export type WithOverrides<T> = T &
-  Omit<ethers.providers.TransactionRequest, 'to' | 'data' | 'value' | 'from'>;
+export type Overrides = Omit<
+  ethers.providers.TransactionRequest,
+  'to' | 'data' | 'value' | 'from'
+>;
+
+export type WithOverrides<T> = T & Overrides;
 
 const stripOverrides = <T>(obj: WithOverrides<T>): WithOverrides<T> => {
   const { to, from, value, data, ...rest } = obj as WithOverrides<T> & {
