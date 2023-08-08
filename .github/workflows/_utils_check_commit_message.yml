@@ -24,7 +24,7 @@ jobs:
       - name: Check commit message
         id: check-commit-message
         env:
-          GITHUB_COMMIT_MESSAGE: ${{ github.event.inputs.commit_message }}
+          GITHUB_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
           commit_message="$GITHUB_COMMIT_MESSAGE"
           if [[ $commit_message =~ ^@chainflip-io/cli/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
