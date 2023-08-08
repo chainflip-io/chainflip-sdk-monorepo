@@ -28,9 +28,11 @@ jobs:
         run: |
           commit_message="$GITHUB_COMMIT_MESSAGE"
           if [[ $commit_message =~ ^@chainflip-io/cli/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Publishing CLI package"
             echo "publish_cli=true" >> $GITHUB_OUTPUT
             echo "publish_sdk=false" >> $GITHUB_OUTPUT
           elif  [[ $commit_message =~ ^@chainflip-io/sdk/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Publishing SDK package"
             echo "publish_cli=false" >> $GITHUB_OUTPUT
             echo "publish_sdk=true" >> $GITHUB_OUTPUT
           else
