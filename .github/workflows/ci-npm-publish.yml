@@ -9,8 +9,8 @@ on:
     branches:
       - main
     paths:
-      - "packages/cli/package.json"
-      - "packages/sdk/package.json"
+      - 'packages/cli/package.json'
+      - 'packages/sdk/package.json'
 
 permissions:
   packages: write
@@ -50,8 +50,8 @@ jobs:
     uses: ./.github/workflows/_npm_publish.yml
     with:
       node_version: ${{ needs.get-node-version.outputs.node_version }}
-      package_registry: "https://npm.pkg.github.com"
-      package_scope: "@chainflip-io"
+      package_registry: 'https://npm.pkg.github.com'
+      package_scope: '@chainflip-io'
       build_cmd: pnpm --filter @chainflip-io/cli build
       publish_cmd: pnpm --filter @chainflip-io/cli publish
     secrets:
@@ -75,9 +75,9 @@ jobs:
     uses: ./.github/workflows/_npm_publish.yml
     with:
       node_version: ${{ needs.get-node-version.outputs.node_version }}
-      package_registry: "https://registry.npmjs.org"
-      package_scope: "@chainflip-io"
-      build_cmd: pnpm --filter @chainflip-io/sdk build
-      publish_cmd: pnpm --filter @chainflip-io/sdk publish
+      package_registry: 'https://registry.npmjs.org'
+      package_scope: '@chainflip-io'
+      build_cmd: pnpm --filter @chainflip/sdk build
+      publish_cmd: pnpm --filter @chainflip/sdk publish
     secrets:
       node_auth_token: ${{ secrets.CF_NPM_JS_PACKAGES_READ_WRITE }}
