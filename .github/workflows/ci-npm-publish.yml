@@ -15,6 +15,8 @@ permissions:
   contents: read
 
 jobs:
+  get-node-version:
+    uses: ./.github/workflows/_node_context.yml
   pre-checks-cli:
     if: startsWith(github.ref_name, '@chainflip-io/cli')
     uses: ./.github/workflows/_01_pre_checks.yml
@@ -29,10 +31,11 @@ jobs:
       package: cli
     secrets: inherit
   publish-cli:
-    needs: [checks-cli]
+    needs: [get-node-version, checks-cli]
     if: startsWith(github.ref_name, '@chainflip-io/cli')
     uses: ./.github/workflows/_npm_publish.yml
     with:
+      node_version: ${{ needs.get-node-version.outputs.node_version }}
       package_registry: "https://npm.pkg.github.com"
       package_scope: "@chainflip-io"
       build_cmd: pnpm --filter @chainflip-io/cli build
@@ -54,10 +57,11 @@ jobs:
       package: sdk
     secrets: inherit
   publish-sdk:
-    needs: [checks-sdk]
+    needs: [get-node-version, checks-sdk]
     if: startsWith(github.ref_name, '@chainflip-io/sdk')
     uses: ./.github/workflows/_npm_publish.yml
     with:
+      node_version: ${{ needs.get-node-version.outputs.node_version }}
       package_registry: "https://registry.npmjs.org"
       package_scope: "@chainflip-io"
       build_cmd: pnpm --filter @chainflip-io/sdk build
