@@ -1,6 +1,10 @@
 on:
   workflow_call:
-
+    inputs:
+      package:
+        description: 'Package to lint'
+        type: string
+        default: 'all'
 env:
   FORCE_COLOR: 1
 

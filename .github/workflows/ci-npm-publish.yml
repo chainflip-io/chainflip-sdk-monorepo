@@ -15,17 +15,21 @@ permissions:
   contents: read
 
 jobs:
-  pre-checks:
+  pre-checks-cli:
+    if: startsWith(github.ref_name, '@chainflip-io/cli')
     uses: ./.github/workflows/_01_pre_checks.yml
+    with:
+      package: cli
     secrets: inherit
-
-  checks:
-    needs: [pre-checks]
+  checks-cli:
+    needs: [pre-checks-cli]
+    if: startsWith(github.ref_name, '@chainflip-io/cli')
     uses: ./.github/workflows/_02_checks.yml
+    with:
+      package: cli
     secrets: inherit
-
   publish-cli:
-    needs: [checks]
+    needs: [checks-cli]
     if: startsWith(github.ref_name, '@chainflip-io/cli')
     uses: ./.github/workflows/_npm_publish.yml
     with:
@@ -36,8 +40,21 @@ jobs:
     secrets:
       node_auth_token: ${{ secrets.GITHUB_TOKEN }}
 
+  pre-checks-sdk:
+    if: startsWith(github.ref_name, '@chainflip-io/sdk')
+    uses: ./.github/workflows/_01_pre_checks.yml
+    with:
+      package: sdk
+    secrets: inherit
+  checks-sdk:
+    needs: [pre-checks-sdk]
+    if: startsWith(github.ref_name, '@chainflip-io/sdk')
+    uses: ./.github/workflows/_02_checks.yml
+    with:
+      package: sdk
+    secrets: inherit
   publish-sdk:
-    needs: [checks]
+    needs: [checks-sdk]
     if: startsWith(github.ref_name, '@chainflip-io/sdk')
     uses: ./.github/workflows/_npm_publish.yml
     with:

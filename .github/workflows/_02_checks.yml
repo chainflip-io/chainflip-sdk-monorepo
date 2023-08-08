@@ -1,5 +1,10 @@
 on:
   workflow_call:
+    inputs:
+      package:
+        description: 'Package to lint'
+        type: string
+        default: 'all'
 
 env:
   FORCE_COLOR: 1
@@ -12,6 +17,8 @@ env:
 jobs:
   generate-matrix:
     uses: ./.github/workflows/_utils_generate_matrix.yml
+    with:
+      package: ${{ inputs.package }}
 
   test:
     needs: [generate-matrix]
