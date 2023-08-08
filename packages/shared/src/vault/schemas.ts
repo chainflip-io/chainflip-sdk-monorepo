@@ -104,23 +104,34 @@ export type NativeCallParams = z.infer<typeof nativeCallParamsSchema>;
 export type TokenCallParams = z.infer<typeof tokenCallParamsSchema>;
 export type TokenSwapParams = z.infer<typeof tokenSwapParamsSchema>;
 
-export const executeOptionsSchema = z.intersection(
-  z.object({ signer: z.instanceof(Signer) }).passthrough(),
-  z.union([
-    z.object({ network: chainflipNetwork }).passthrough(),
-    z
-      .object({
-        network: z.literal('localnet'),
-        vaultContractAddress: z.string(),
-        srcTokenContractAddress: z.string().optional(),
-      })
-      .passthrough(),
-  ]),
-);
+export type WithOverrides<T> = T &
+  Omit<ethers.providers.TransactionRequest, 'to' | 'data' | 'value' | 'from'>;
 
-export type Overrides = Omit<
-  ethers.providers.TransactionRequest,
-  'to' | 'data' | 'value' | 'from'
->;
+const stripOverrides = <T>(obj: WithOverrides<T>): WithOverrides<T> => {
+  const { to, from, value, data, ...rest } = obj as WithOverrides<T> & {
+    to: unknown;
+    data: unknown;
+    value: unknown;
+    from: unknown;
+  };
 
-export type ExecuteOptions = z.infer<typeof executeOptionsSchema> & Overrides;
+  return rest as WithOverrides<T>;
+};
+
+export const executeOptionsSchema = z
+  .intersection(
+    z.object({ signer: z.instanceof(Signer) }).passthrough(),
+    z.union([
+      z.object({ network: chainflipNetwork }).passthrough(),
+      z
+        .object({
+          network: z.literal('localnet'),
+          vaultContractAddress: z.string(),
+          srcTokenContractAddress: z.string().optional(),
+        })
+        .passthrough(),
+    ]),
+  )
+  .transform(stripOverrides);
+
+export type ExecuteOptions = z.infer<typeof executeOptionsSchema>;

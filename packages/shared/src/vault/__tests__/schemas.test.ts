@@ -1,8 +1,10 @@
+import { VoidSigner } from 'ethers';
 import { Assets, Chains } from '../../enums';
 import {
   NativeSwapParams,
   TokenSwapParams,
   executeSwapParamsSchema,
+  executeOptionsSchema,
 } from '../schemas';
 
 const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
@@ -174,4 +176,32 @@ describe('executeSwapParamsSchema', () => {
       expect(parse({ amount: '1', ...params })).toBe(false);
     },
   );
+});
+
+describe('executeOptionsSchema', () => {
+  it('strips unwanted overrides', () => {
+    expect(
+      executeOptionsSchema.parse({
+        signer: new VoidSigner('0x0'),
+        network: 'partnernet',
+        gasPrice: 0,
+        gasLimit: 0,
+        to: '0x1',
+        from: '0x2',
+        value: 1,
+        data: [],
+      }),
+    ).toMatchInlineSnapshot(`
+      {
+        "gasLimit": 0,
+        "gasPrice": 0,
+        "network": "partnernet",
+        "signer": VoidSigner {
+          "_isSigner": true,
+          "address": "0x0",
+          "provider": null,
+        },
+      }
+    `);
+  });
 });
