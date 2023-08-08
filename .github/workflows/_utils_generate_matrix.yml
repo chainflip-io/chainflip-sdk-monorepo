@@ -2,6 +2,11 @@ name: Node JS Context Reusable Workflow
 
 on:
   workflow_call:
+    inputs:
+      package:
+        description: 'Package name'
+        type: string
+        default: 'all'
     outputs:
       matrix:
         value: ${{ jobs.generate-matrix.outputs.matrix }}
@@ -10,7 +15,11 @@ env:
   FORCE_COLOR: 1
 
 jobs:
+  get-default-node-version:
+    uses: ./.github/workflows/_node_context.yml
+
   generate-matrix:
+    needs: [get-default-node-version]
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
@@ -22,5 +31,11 @@ jobs:
         id: matrix
         run: |
           set -e
+          if [[ ${{ inputs.package }} = "all" ]]; then
+            echo "all"
+          else
+            jq '.package = ["${{ inputs.package }}"]' .github/workflows/matrix.json > /tmp/matrix.json && mv /tmp/matrix.json .github/workflows/matrix.json
+          fi
+          jq '.node_version = ["${{ needs.get-default-node-version.outputs.node_version }}"]' .github/workflows/matrix.json > /tmp/matrix.json && mv /tmp/matrix.json .github/workflows/matrix.json
           MATRIX=$(echo $(cat .github/workflows/matrix.json | jq -RrS 'tostring'))
           echo "matrix=${MATRIX}" >> $GITHUB_OUTPUT
