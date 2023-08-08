@@ -6,11 +6,11 @@ concurrency:
 
 on:
   push:
-    # branches:
-    #   - main
-    # paths:
-    #   - "packages/cli/package.json"
-    #   - "packages/sdk/package.json"
+    branches:
+      - main
+    paths:
+      - "packages/cli/package.json"
+      - "packages/sdk/package.json"
 
 permissions:
   packages: write
