@@ -2,6 +2,11 @@ name: Node JS Context Reusable Workflow
 
 on:
   workflow_call:
+    inputs:
+      package:
+        description: 'Package name'
+        type: string
+        default: 'all'
     outputs:
       matrix:
         value: ${{ jobs.generate-matrix.outputs.matrix }}
@@ -22,5 +27,10 @@ jobs:
         id: matrix
         run: |
           set -e
+          if [[ ${{ inputs.package }} = "all" ]]; then
+            echo "all"
+          else
+            jq '.package = ["${{ inputs.package }}"]' .github/workflows/matrix.json > /tmp/matrix.json && mv /tmp/matrix.json .github/workflows/matrix.json
+          fi
           MATRIX=$(echo $(cat .github/workflows/matrix.json | jq -RrS 'tostring'))
           echo "matrix=${MATRIX}" >> $GITHUB_OUTPUT

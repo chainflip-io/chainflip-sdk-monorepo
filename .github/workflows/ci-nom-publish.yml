@@ -1,0 +1,49 @@
+name: NPM Publich CI 🛰️
+
+concurrency:
+  group: npm-publish-ci
+  cancel-in-progress: false
+
+on:
+  push:
+    tags:
+      - "@chainflip-io/cli/v*"
+      - "@chainflip-io/sdk/v*"
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  pre-checks:
+    uses: ./.github/workflows/_01_pre_checks.yml
+    secrets: inherit
+
+  checks:
+    needs: [pre-checks]
+    uses: ./.github/workflows/_02_checks.yml
+    secrets: inherit
+
+  publish-cli:
+    needs: [checks]
+    if: startsWith(github.ref_name, '@chainflip-io/cli')
+    uses: ./.github/workflows/_npm_publish.yml
+    with:
+      package_registry: "https://npm.pkg.github.com"
+      package_scope: "@chainflip-io"
+      build_cmd: pnpm --filter @chainflip-io/cli build
+      publish_cmd: pnpm --filter @chainflip-io/cli publish
+    secrets:
+      node_auth_token: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-sdk:
+    needs: [checks]
+    if: startsWith(github.ref_name, '@chainflip-io/sdk')
+    uses: ./.github/workflows/_npm_publish.yml
+    with:
+      package_registry: "https://registry.npmjs.org"
+      package_scope: "@chainflip-io"
+      build_cmd: pnpm --filter @chainflip-io/sdk build
+      publish_cmd: pnpm --filter @chainflip-io/sdk publish
+    secrets:
+      node_auth_token: ${{ secrets.CF_NPM_JS_PACKAGES_READ_WRITE }}

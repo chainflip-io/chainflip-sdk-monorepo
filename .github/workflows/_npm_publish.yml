@@ -33,6 +33,10 @@ on:
         required: false
         type: string
         default: pnpm publish
+    secrets:
+      node_auth_token:
+        description: Node auth token
+        required: true
 
 jobs:
   publish:
@@ -64,4 +68,6 @@ jobs:
         run: ${{ inputs.build_cmd }}
 
       - name: Publish npm package 📦
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.node_auth_token }}
         run: ${{ inputs.publish_cmd }}
