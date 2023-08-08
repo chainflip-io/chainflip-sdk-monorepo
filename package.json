@@ -30,7 +30,7 @@
     "@types/jest": "^29.4.0",
     "@types/node": "^18.11.9",
     "@typescript-eslint/eslint-plugin": "^5.59.8",
-    "@typescript-eslint/parser": "^5.59.8",
+    "@typescript-eslint/parser": "^5.62.0",
     "envlocker": "^0.2.0",
     "eslint": "^8.21.0",
     "eslint-config-airbnb-base": "^15.0.0",
