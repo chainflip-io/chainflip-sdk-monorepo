@@ -9,6 +9,8 @@ env:
   FORCE_COLOR: 1
 
 jobs:
+  actionlint:
+    uses: ./.github/workflows/_ci_actionlint.yml
   generate-matrix:
     uses: ./.github/workflows/_utils_generate_matrix.yml
   lint:
