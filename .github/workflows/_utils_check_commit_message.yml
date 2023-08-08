@@ -1,0 +1,40 @@
+name: Node JS Context Reusable Workflow
+
+on:
+  workflow_call:
+    outputs:
+      publish-cli:
+        value: ${{ jobs.check-commit-message.outputs.publish_cli }}
+      publish-sdk:
+        value: ${{ jobs.check-commit-message.outputs.publish_sdk }}
+
+env:
+  FORCE_COLOR: 1
+
+jobs:
+  check-commit-message:
+    runs-on: ubuntu-latest
+    outputs:
+      publish_cli: ${{ steps.check-commit-message.outputs.publish_cli }}
+      publish_sdk: ${{ steps.check-commit-message.outputs.publish_sdk }}
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Check commit message
+        id: check-commit-message
+        env:
+          GITHUB_COMMIT_MESSAGE: ${{ github.event.inputs.commit_message }}
+        run: |
+          commit_message="$GITHUB_COMMIT_MESSAGE"
+          if [[ $commit_message =~ ^@chainflip-io/cli/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "publish_cli=true" >> $GITHUB_OUTPUT
+            echo "publish_sdk=false" >> $GITHUB_OUTPUT
+          elif  [[ $commit_message =~ ^@chainflip-io/sdk/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "publish_cli=false" >> $GITHUB_OUTPUT
+            echo "publish_sdk=true" >> $GITHUB_OUTPUT
+          else
+            echo "No package name found in commit message"
+            echo "publish_cli=false" >> $GITHUB_OUTPUT
+            echo "publish_sdk=false" >> $GITHUB_OUTPUT
+          fi
