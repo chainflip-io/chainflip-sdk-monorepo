@@ -1,4 +1,4 @@
-name: Main CI 👨‍🔬
+name: Main CI 🔮
 
 concurrency:
   group: ${{ github.ref }}-main-ci
