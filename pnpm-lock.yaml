@@ -201,8 +201,8 @@ importers:
         specifier: ^8.10.0
         version: 8.10.0
       qs:
-        specifier: ^6.11.1
-        version: 6.11.1
+        specifier: ^6.11.2
+        version: 6.11.2
       rxjs:
         specifier: ^7.8.0
         version: 7.8.0
@@ -5351,7 +5351,7 @@ packages:
       dezalgo: 1.0.4
       hexoid: 1.0.0
       once: 1.4.0
-      qs: 6.11.1
+      qs: 6.11.2
     dev: true
 
   /forwarded@0.2.0:
@@ -7877,8 +7877,8 @@ packages:
       side-channel: 1.0.4
     dev: false
 
-  /qs@6.11.1:
-    resolution: {integrity: sha512-0wsrzgTz/kAVIeuxSjnpGC56rzYtr6JT/2BwEvMaPhFIoYa1aGO8LbzuU1R0uUYQkLpWBTOj0l/CLAJB64J6nQ==}
+  /qs@6.11.2:
+    resolution: {integrity: sha512-tDNIz22aBzCDxLtVH++VnTfzxlfeK5CbqohpSqpJgj1Wg/cQbStNAz3NuqCs5vV+pjBsK4x4pN9HlVh7rcYRiA==}
     engines: {node: '>=0.6'}
     dependencies:
       side-channel: 1.0.4
@@ -8532,7 +8532,7 @@ packages:
       formidable: 2.1.2
       methods: 1.1.2
       mime: 2.6.0
-      qs: 6.11.1
+      qs: 6.11.2
       semver: 7.5.1
     transitivePeerDependencies:
       - supports-color
