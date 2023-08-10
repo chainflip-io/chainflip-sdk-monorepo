@@ -1,4 +1,5 @@
 import { Assets, Chains } from '@/shared/enums';
+import bitcoinAddresses from './bitcoinAddresses.json' assert { type: 'json' };
 import {
   validateBitcoinMainnetAddress,
   validateBitcoinTestnetAddress,
@@ -6,7 +7,6 @@ import {
   validatePolkadotAddress,
   validateAddress,
 } from '../addressValidation';
-import bitcoinAddresses from './bitcoinAddresses.json' assert { type: 'json' };
 
 describe(validatePolkadotAddress, () => {
   it('validates valid addresses', () => {

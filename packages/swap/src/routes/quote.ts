@@ -1,6 +1,7 @@
 import express from 'express';
 import type { Server } from 'socket.io';
 import { quoteQuerySchema } from '@/shared/schemas';
+import { asyncHandler } from './common';
 import getConnectionHandler from '../quoting/getConnectionHandler';
 import {
   findBestQuote,
@@ -10,7 +11,6 @@ import {
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
 import { getBrokerQuote } from '../utils/statechain';
-import { asyncHandler } from './common';
 
 const quote = (io: Server) => {
   const router = express.Router();

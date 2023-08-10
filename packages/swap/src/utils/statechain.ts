@@ -3,8 +3,8 @@ import { Asset } from '@/shared/enums';
 import RpcClient from '@/shared/node-apis/RpcClient';
 import { chainflipAsset, hexStringFromNumber } from '@/shared/parsers';
 import { transformAsset } from '@/shared/strings';
-import { QuoteQueryResponse, QuoteQueryParams } from '../schemas';
 import { memoize } from './function';
+import { QuoteQueryResponse, QuoteQueryParams } from '../schemas';
 
 const requestValidators = {
   swap_rate: z.tuple([

@@ -1,12 +1,12 @@
 import { Assets } from '@/shared/enums';
-import prisma, { SwapDepositChannel } from '../../client';
-import swapScheduled from '../swapScheduled';
 import {
   createDepositChannel,
   swapScheduledBtcDepositChannelMock,
   swapScheduledDotDepositChannelMock,
   swapScheduledVaultMock,
 } from './utils';
+import prisma, { SwapDepositChannel } from '../../client';
+import swapScheduled from '../swapScheduled';
 
 describe(swapScheduled, () => {
   beforeEach(async () => {

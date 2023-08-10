@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { unsignedInteger } from '@/shared/parsers';
-import logger from '../utils/logger';
 import { egressId as egressIdSchema } from './common';
+import logger from '../utils/logger';
 import type { EventHandlerArgs } from '.';
 
 const ccmBroadcastRequestArgs = z.object({

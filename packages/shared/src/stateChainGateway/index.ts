@@ -1,9 +1,9 @@
 import type { BigNumber, ContractReceipt, Signer } from 'ethers';
+import { getStateChainGateway } from './utils';
 import { checkAllowance, getTokenContractAddress } from '../contracts';
 import { Assets, ChainflipNetwork } from '../enums';
 import { assert } from '../guards';
 import { Overrides } from '../vault/schemas';
-import { getStateChainGateway } from './utils';
 
 type WithOverrides<T> = T & Overrides;
 
