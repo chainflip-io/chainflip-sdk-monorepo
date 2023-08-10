@@ -42,7 +42,7 @@
     "@types/ws": "^8.5.4",
     "graphql": "^16.6.0",
     "prisma": "^5.1.1",
-    "socket.io-client": "^4.6.1",
+    "socket.io-client": "^4.7.2",
     "supertest": "^6.3.3"
   },
   "engines": {
