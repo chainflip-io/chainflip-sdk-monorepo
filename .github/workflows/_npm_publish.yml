@@ -38,6 +38,10 @@ on:
         description: Node auth token
         required: true
 
+permissions:
+  packages: write
+  contents: read
+
 jobs:
   publish:
     runs-on: ${{ inputs.runs_on }}
