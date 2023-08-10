@@ -1,12 +1,4 @@
 import { ContractReceipt } from 'ethers';
-import { Vault__factory } from '../abis';
-import {
-  checkAllowance,
-  getTokenContractAddress,
-  getVaultManagerContractAddress,
-} from '../contracts';
-import { assetContractIds, chainContractIds } from '../enums';
-import { assert, isTokenCall, isTokenSwap } from '../guards';
 import {
   executeOptionsSchema,
   type ExecuteOptions,
@@ -17,6 +9,14 @@ import {
   NativeCallParams,
   TokenCallParams,
 } from './schemas';
+import { Vault__factory } from '../abis';
+import {
+  checkAllowance,
+  getTokenContractAddress,
+  getVaultManagerContractAddress,
+} from '../contracts';
+import { assetContractIds, chainContractIds } from '../enums';
+import { assert, isTokenCall, isTokenSwap } from '../guards';
 
 const swapNative = async (
   { destChain, destAsset, destAddress, amount }: NativeSwapParams,

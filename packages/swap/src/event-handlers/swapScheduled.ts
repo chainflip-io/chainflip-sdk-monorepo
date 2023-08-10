@@ -7,8 +7,8 @@ import {
   u64,
   swapType as swapTypeSchema,
 } from '@/shared/parsers';
-import logger from '../utils/logger';
 import { encodedAddress } from './common';
+import logger from '../utils/logger';
 import type { EventHandlerArgs } from '.';
 
 const depositChannelSwapOrigin = z.object({

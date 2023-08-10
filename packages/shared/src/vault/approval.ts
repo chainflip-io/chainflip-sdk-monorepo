@@ -1,4 +1,5 @@
 import { ContractReceipt } from 'ethers';
+import { ExecuteOptions, TokenSwapParams } from './schemas';
 import {
   checkAllowance,
   getTokenContractAddress,
@@ -6,7 +7,6 @@ import {
   approve,
 } from '../contracts';
 import { assert } from '../guards';
-import { ExecuteOptions, TokenSwapParams } from './schemas';
 
 export const checkVaultAllowance = (
   params: Pick<TokenSwapParams, 'srcAsset' | 'amount'>,

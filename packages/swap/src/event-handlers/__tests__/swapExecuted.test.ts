@@ -1,11 +1,11 @@
 import { Assets } from '@/shared/enums';
-import prisma from '../../client';
-import swapExecuted from '../swapExecuted';
 import {
   DOT_ADDRESS,
   buildSwapExecutedMock,
   createDepositChannel,
 } from './utils';
+import prisma from '../../client';
+import swapExecuted from '../swapExecuted';
 
 describe(swapExecuted, () => {
   beforeEach(async () => {

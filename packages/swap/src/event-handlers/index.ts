@@ -1,7 +1,5 @@
 import type { Prisma } from '.prisma/client';
 import { Chains } from '@/shared/enums';
-import type { Block, Event } from '../gql/generated/graphql';
-import { buildHandlerMap, getDispatcher } from '../utils/handlers';
 import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';
 import networkBroadcastAborted from './networkBroadcastAborted';
 import networkBroadcastSuccess from './networkBroadcastSuccess';
@@ -10,6 +8,8 @@ import networkEgressScheduled from './networkEgressScheduled';
 import swapEgressScheduled from './swapEgressScheduled';
 import swapExecuted from './swapExecuted';
 import swapScheduled from './swapScheduled';
+import type { Block, Event } from '../gql/generated/graphql';
+import { buildHandlerMap, getDispatcher } from '../utils/handlers';
 
 export const events = {
   Swapping: {

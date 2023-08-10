@@ -2,6 +2,7 @@ import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import type { Logger } from 'winston';
 import { z } from 'zod';
+import RpcClient from './RpcClient';
 import { Asset, Assets, Chain } from '../enums';
 import { isNotNullish } from '../guards';
 import {
@@ -17,7 +18,6 @@ import {
   camelToSnakeCase,
   transformAsset,
 } from '../strings';
-import RpcClient from './RpcClient';
 
 type NewSwapRequest = {
   srcAsset: Asset;
