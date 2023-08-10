@@ -1,4 +1,36 @@
-import { ChainflipNetworks } from './enums';
+import { Asset, Assets, ChainflipNetwork, ChainflipNetworks } from './enums';
+
+// TODO: fetch minimum deposit amounts via rpc from the state chain
+const MINIMUM_DEPOSIT_AMOUNTS: Partial<
+  Record<ChainflipNetwork, Record<Asset, string>>
+> = {
+  [ChainflipNetworks.partnernet]: {
+    [Assets.ETH]: '0',
+    [Assets.FLIP]: '0',
+    [Assets.USDC]: '0',
+    [Assets.BTC]: '0',
+    [Assets.DOT]: '0',
+  },
+};
+export const getMinimumDepositAmount = (
+  network: ChainflipNetwork,
+  asset: Asset,
+) => MINIMUM_DEPOSIT_AMOUNTS[network]?.[asset] ?? '0';
+
+// TODO: fetch minimum swap amounts via rpc from the state chain
+const MINIMUM_SWAP_AMOUNTS: Partial<
+  Record<ChainflipNetwork, Record<Asset, string>>
+> = {
+  [ChainflipNetworks.partnernet]: {
+    [Assets.ETH]: '580000000000000',
+    [Assets.FLIP]: '1000000000000000000',
+    [Assets.USDC]: '1000000',
+    [Assets.BTC]: '390000',
+    [Assets.DOT]: '2000000000',
+  },
+};
+export const getMinimumSwapAmount = (network: ChainflipNetwork, asset: Asset) =>
+  MINIMUM_SWAP_AMOUNTS[network]?.[asset] ?? '0';
 
 export const ADDRESSES = {
   [ChainflipNetworks.sisyphos]: {

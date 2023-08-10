@@ -1,3 +1,4 @@
+import { getMinimumDepositAmount, getMinimumSwapAmount } from '@/shared/consts';
 import { getTokenContractAddress } from '@/shared/contracts';
 import {
   assetDecimals,
@@ -16,6 +17,8 @@ export const eth$: (network: ChainflipNetwork) => AssetData = (network) => ({
   name: 'Ether',
   symbol: 'ETH',
   isMainnet: !isTestnet(network),
+  minimumDepositAmount: getMinimumDepositAmount(network, Assets.ETH),
+  minimumSwapAmount: getMinimumSwapAmount(network, Assets.ETH),
 });
 
 export const usdc$: (network: ChainflipNetwork) => AssetData = (network) => ({
@@ -26,6 +29,8 @@ export const usdc$: (network: ChainflipNetwork) => AssetData = (network) => ({
   name: 'USDC',
   symbol: 'USDC',
   isMainnet: !isTestnet(network),
+  minimumDepositAmount: getMinimumDepositAmount(network, Assets.ETH),
+  minimumSwapAmount: getMinimumSwapAmount(network, Assets.ETH),
 });
 
 export const flip$: (network: ChainflipNetwork) => AssetData = (network) => ({
@@ -36,6 +41,8 @@ export const flip$: (network: ChainflipNetwork) => AssetData = (network) => ({
   name: 'FLIP',
   symbol: 'FLIP',
   isMainnet: !isTestnet(network),
+  minimumDepositAmount: getMinimumDepositAmount(network, Assets.ETH),
+  minimumSwapAmount: getMinimumSwapAmount(network, Assets.ETH),
 });
 
 export const dot$: (network: ChainflipNetwork) => AssetData = (network) => ({
@@ -46,6 +53,8 @@ export const dot$: (network: ChainflipNetwork) => AssetData = (network) => ({
   name: 'Polkadot',
   symbol: 'DOT',
   isMainnet: !isTestnet(network),
+  minimumDepositAmount: getMinimumDepositAmount(network, Assets.ETH),
+  minimumSwapAmount: getMinimumSwapAmount(network, Assets.ETH),
 });
 
 export const btc$: (network: ChainflipNetwork) => AssetData = (network) => ({
@@ -56,4 +65,6 @@ export const btc$: (network: ChainflipNetwork) => AssetData = (network) => ({
   name: 'Bitcoin',
   symbol: 'BTC',
   isMainnet: !isTestnet(network),
+  minimumDepositAmount: getMinimumDepositAmount(network, Assets.ETH),
+  minimumSwapAmount: getMinimumSwapAmount(network, Assets.ETH),
 });

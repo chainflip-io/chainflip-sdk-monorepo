@@ -16,6 +16,8 @@ export type AssetData = {
     name: string;
     symbol: string;
     isMainnet: boolean;
+    minimumDepositAmount: string;
+    minimumSwapAmount: string;
   };
 }[keyof typeof chainAssets];
 
