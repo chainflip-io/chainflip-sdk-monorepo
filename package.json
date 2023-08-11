@@ -29,7 +29,7 @@
     "@swc/jest": "^0.2.27",
     "@types/jest": "^29.4.0",
     "@types/node": "^20.4.9",
-    "@typescript-eslint/eslint-plugin": "^5.59.8",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "envlocker": "^0.2.0",
     "eslint": "^8.46.0",
