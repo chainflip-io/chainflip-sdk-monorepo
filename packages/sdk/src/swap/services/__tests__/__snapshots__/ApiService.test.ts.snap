@@ -94,7 +94,7 @@ exports[`ApiService getAssets (partnernet) gets the correct assets for testnets 
     "decimals": 10,
     "id": "DOT",
     "isMainnet": false,
-    "minimumDepositAmount": "0",
+    "minimumDepositAmount": "10000000000",
     "minimumSwapAmount": "2000000000",
     "name": "Polkadot",
     "symbol": "DOT",

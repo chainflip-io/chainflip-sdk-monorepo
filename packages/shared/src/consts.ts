@@ -9,7 +9,7 @@ const MINIMUM_DEPOSIT_AMOUNTS: Partial<
     [Assets.FLIP]: '0',
     [Assets.USDC]: '0',
     [Assets.BTC]: '0',
-    [Assets.DOT]: '0',
+    [Assets.DOT]: '10000000000', // https://support.polkadot.network/support/solutions/articles/65000168651-what-is-the-existential-deposit
   },
 };
 export const getMinimumDepositAmount = (
