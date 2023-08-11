@@ -29,8 +29,8 @@ export const usdc$: (network: ChainflipNetwork) => AssetData = (network) => ({
   name: 'USDC',
   symbol: 'USDC',
   isMainnet: !isTestnet(network),
-  minimumDepositAmount: getMinimumDepositAmount(network, Assets.ETH),
-  minimumSwapAmount: getMinimumSwapAmount(network, Assets.ETH),
+  minimumDepositAmount: getMinimumDepositAmount(network, Assets.USDC),
+  minimumSwapAmount: getMinimumSwapAmount(network, Assets.USDC),
 });
 
 export const flip$: (network: ChainflipNetwork) => AssetData = (network) => ({
@@ -41,8 +41,8 @@ export const flip$: (network: ChainflipNetwork) => AssetData = (network) => ({
   name: 'FLIP',
   symbol: 'FLIP',
   isMainnet: !isTestnet(network),
-  minimumDepositAmount: getMinimumDepositAmount(network, Assets.ETH),
-  minimumSwapAmount: getMinimumSwapAmount(network, Assets.ETH),
+  minimumDepositAmount: getMinimumDepositAmount(network, Assets.FLIP),
+  minimumSwapAmount: getMinimumSwapAmount(network, Assets.FLIP),
 });
 
 export const dot$: (network: ChainflipNetwork) => AssetData = (network) => ({
@@ -53,8 +53,8 @@ export const dot$: (network: ChainflipNetwork) => AssetData = (network) => ({
   name: 'Polkadot',
   symbol: 'DOT',
   isMainnet: !isTestnet(network),
-  minimumDepositAmount: getMinimumDepositAmount(network, Assets.ETH),
-  minimumSwapAmount: getMinimumSwapAmount(network, Assets.ETH),
+  minimumDepositAmount: getMinimumDepositAmount(network, Assets.DOT),
+  minimumSwapAmount: getMinimumSwapAmount(network, Assets.DOT),
 });
 
 export const btc$: (network: ChainflipNetwork) => AssetData = (network) => ({
@@ -65,6 +65,6 @@ export const btc$: (network: ChainflipNetwork) => AssetData = (network) => ({
   name: 'Bitcoin',
   symbol: 'BTC',
   isMainnet: !isTestnet(network),
-  minimumDepositAmount: getMinimumDepositAmount(network, Assets.ETH),
-  minimumSwapAmount: getMinimumSwapAmount(network, Assets.ETH),
+  minimumDepositAmount: getMinimumDepositAmount(network, Assets.BTC),
+  minimumSwapAmount: getMinimumSwapAmount(network, Assets.BTC),
 });
