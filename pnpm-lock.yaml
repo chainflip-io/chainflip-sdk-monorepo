@@ -100,8 +100,8 @@ importers:
   packages/indexer/gateway:
     dependencies:
       postgraphile:
-        specifier: ^4.12.11
-        version: 4.12.11
+        specifier: ^4.13.0
+        version: 4.13.0
       postgraphile-plugin-connection-filter:
         specifier: ^2.3.0
         version: 2.3.0
@@ -3075,20 +3075,20 @@ packages:
   /@types/bn.js@5.1.1:
     resolution: {integrity: sha512-qNrYbZqMx0uJAfKnKclPh+dTwK33KfLHYqtyODwd5HnXOjnkhc4qgn3BrK6RWyGZm5+sIFE7Q7Vz6QQtJB7w7g==}
     dependencies:
-      '@types/node': 20.4.8
+      '@types/node': 20.4.9
     dev: false
 
   /@types/body-parser@1.19.2:
     resolution: {integrity: sha512-ALYone6pm6QmwZoAgeyNksccT9Q4AWZQ6PvfwR37GT6r6FWUPguq6sUmNGSMV2Wr761oQoBxwGGa6DR5o1DC9g==}
     dependencies:
       '@types/connect': 3.4.35
-      '@types/node': 20.4.8
+      '@types/node': 20.4.9
     dev: true
 
   /@types/connect@3.4.35:
     resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}
     dependencies:
-      '@types/node': 20.4.8
+      '@types/node': 20.4.9
     dev: true
 
   /@types/cookie@0.4.1:
@@ -3176,10 +3176,10 @@ packages:
     resolution: {integrity: sha512-sqm9g7mHlPY/43fcSNrCYfOeX9zkTTK+euO5E6+CVijSMm5tTjkVdwdqRkY3ljjIAf8679vps5jKUoJBCLsMDA==}
     dev: false
 
-  /@types/jsonwebtoken@8.5.9:
-    resolution: {integrity: sha512-272FMnFGzAVMGtu9tkr29hRL6bZj4Zs1KZNeHLnKqAvp06tAIcarTMwOh8/8bz4FmKRcMxZhZNeUAQsNLoiPhg==}
+  /@types/jsonwebtoken@9.0.2:
+    resolution: {integrity: sha512-drE6uz7QBKq1fYqqoFKTDRdFCPHd5TCub75BM+D+cMx7NU9hUz7SESLfC2fSCXVFMO5Yj8sOWHuGqPgjc+fz0Q==}
     dependencies:
-      '@types/node': 20.4.8
+      '@types/node': 20.4.9
     dev: false
 
   /@types/mime@3.0.1:
@@ -3191,12 +3191,11 @@ packages:
 
   /@types/node@20.4.9:
     resolution: {integrity: sha512-8e2HYcg7ohnTUbHk8focoklEQYvemQmu9M/f43DZVx43kHn0tE3BY/6gSDxS7k0SprtS0NHvj+L80cGLnoOUcQ==}
-    dev: true
 
   /@types/pg@8.10.1:
     resolution: {integrity: sha512-AmEHA/XxMxemQom5iDwP62FYNkv+gDDnetRG7v2N2dPtju7UKI7FknUimcZo7SodKTHtckYPzaTqUEvUKbVJEA==}
     dependencies:
-      '@types/node': 20.4.8
+      '@types/node': 20.4.9
       pg-protocol: 1.6.0
       pg-types: 4.0.1
     dev: false
@@ -3221,7 +3220,7 @@ packages:
     resolution: {integrity: sha512-NUo5XNiAdULrJENtJXZZ3fHtfMolzZwczzBbnAeBbqBwG+LaG6YaJtuwzwGSQZ2wsCrxjEhNNjAkKigy3n8teQ==}
     dependencies:
       '@types/mime': 3.0.1
-      '@types/node': 20.4.8
+      '@types/node': 20.4.9
     dev: true
 
   /@types/stack-utils@2.0.1:
@@ -3232,7 +3231,7 @@ packages:
     resolution: {integrity: sha512-LOWgpacIV8GHhrsQU+QMZuomfqXiqzz3ILLkCtKx3Us6AmomFViuzKT9D693QTKgyut2oCytMG8/efOop+DB+w==}
     dependencies:
       '@types/cookiejar': 2.1.2
-      '@types/node': 20.4.8
+      '@types/node': 20.4.9
     dev: true
 
   /@types/supertest@2.0.12:
@@ -3247,7 +3246,7 @@ packages:
   /@types/ws@7.4.7:
     resolution: {integrity: sha512-JQbbmxZTZehdc2iszGKs5oC3NFnjeay7mtAWrdt7qNtAVK0g19muApzAy4bm9byz79xa2ZnO/BOBC2R8RC5Lww==}
     dependencies:
-      '@types/node': 20.4.8
+      '@types/node': 20.4.9
     dev: false
 
   /@types/ws@8.5.4:
@@ -4624,7 +4623,7 @@ packages:
     dependencies:
       '@types/cookie': 0.4.1
       '@types/cors': 2.8.13
-      '@types/node': 20.4.8
+      '@types/node': 20.4.9
       accepts: 1.3.8
       base64id: 2.0.0
       cookie: 0.4.2
@@ -5536,8 +5535,8 @@ packages:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
     dev: true
 
-  /graphile-build-pg@4.12.3(graphql@15.8.0)(pg@8.10.0):
-    resolution: {integrity: sha512-Gnwwxm2NRuyxOx5xchU+Po9a6XagRJpEgoezzHmfBRHwFBY2zprCMYdLvllqRrPJBBWdYAjx7H1NxctBiYiIoQ==}
+  /graphile-build-pg@4.13.0(graphql@15.8.0)(pg@8.10.0):
+    resolution: {integrity: sha512-1FD+3wjCdK1lbICY1QVO26A7s8efSjR522LarL9Bx1M1iBJHNIpCEW2PK+LkulQjY1l5LGQ1A93GQFqi6cZ6bg==}
     engines: {node: '>=8.6'}
     peerDependencies:
       pg: '>=6.1.0 <9'
@@ -5545,19 +5544,19 @@ packages:
       '@graphile/lru': 4.11.0
       chalk: 2.4.2
       debug: 4.3.4
-      graphile-build: 4.12.3(graphql@15.8.0)
-      jsonwebtoken: 8.5.1
+      graphile-build: 4.13.0(graphql@15.8.0)
+      jsonwebtoken: 9.0.1
       lodash: 4.17.21
       lru-cache: 4.1.5
       pg: 8.10.0
-      pg-sql2: 4.12.3(pg@8.10.0)
+      pg-sql2: 4.13.0(pg@8.10.0)
     transitivePeerDependencies:
       - graphql
       - supports-color
     dev: false
 
-  /graphile-build@4.12.3(graphql@15.8.0):
-    resolution: {integrity: sha512-xwNNNrieWm78DVkB29epKLBAMEd5U9nXY1tQQn2n5pMisbqYMtIQOnfZzLhwM6AsNEyAfaQYyV0fD6wCkyYQpA==}
+  /graphile-build@4.13.0(graphql@15.8.0):
+    resolution: {integrity: sha512-KPBrHgRw5fury6l9WEQH6ys1UtnxrRrG+Ehnr68NvfNELp4T+QsekTSVFi5LWoJOaXvdYMqP2L8MFBRQP2vKsw==}
     engines: {node: '>=8.6'}
     peerDependencies:
       graphql: '>=0.9 <0.14 || ^14.0.2 || ^15.4.0'
@@ -5566,7 +5565,7 @@ packages:
       chalk: 2.4.2
       debug: 4.3.4
       graphql: 15.8.0
-      graphql-parse-resolve-info: 4.12.3(graphql@15.8.0)
+      graphql-parse-resolve-info: 4.13.0(graphql@15.8.0)
       iterall: 1.3.0
       lodash: 4.17.21
       lru-cache: 5.1.1
@@ -5576,7 +5575,7 @@ packages:
       - supports-color
     dev: false
 
-  /graphile-utils@4.13.0(graphile-build-pg@4.12.3)(graphile-build@4.12.3):
+  /graphile-utils@4.13.0(graphile-build-pg@4.13.0)(graphile-build@4.13.0):
     resolution: {integrity: sha512-6nzlCNeJB1qV9AaPyJ/iHU+CDfs8jxpcmQ47Fmrgmp8r5VwKdL/uDt0LW8IuXu2VZrbM1GGyZ8rQtcdVmQYZ+g==}
     engines: {node: '>=8.6'}
     peerDependencies:
@@ -5584,8 +5583,8 @@ packages:
       graphile-build-pg: ^4.5.0
     dependencies:
       debug: 4.3.4
-      graphile-build: 4.12.3(graphql@15.8.0)
-      graphile-build-pg: 4.12.3(graphql@15.8.0)(pg@8.10.0)
+      graphile-build: 4.13.0(graphql@15.8.0)
+      graphile-build-pg: 4.13.0(graphql@15.8.0)(pg@8.10.0)
       graphql: 15.8.0
       tslib: 2.6.1
     transitivePeerDependencies:
@@ -5621,11 +5620,11 @@ packages:
       - utf-8-validate
     dev: true
 
-  /graphql-parse-resolve-info@4.12.3(graphql@15.8.0):
-    resolution: {integrity: sha512-Lxb+v+SCxzBZHKohK4xje3CBQ1iZ968DiKuFtmwzSaI45oP8FgPJjJv35TOzgv73QLijEdgH4NDZGwIvwJM7Kw==}
+  /graphql-parse-resolve-info@4.13.0(graphql@15.8.0):
+    resolution: {integrity: sha512-VVJ1DdHYcR7hwOGQKNH+QTzuNgsLA8l/y436HtP9YHoX6nmwXRWq3xWthU3autMysXdm0fQUbhTZCx0W9ICozw==}
     engines: {node: '>=8.6'}
     peerDependencies:
-      graphql: '>=0.9 <0.14 || ^14.0.2 || ^15.4.0'
+      graphql: '>=0.9 <0.14 || ^14.0.2 || ^15.4.0 || ^16.3.0'
     dependencies:
       debug: 4.3.4
       graphql: 15.8.0
@@ -6740,20 +6739,14 @@ packages:
     resolution: {integrity: sha512-2/Ki0GcmuqSrgFyelQq9M05y7PS0mEwuIzrf3f1fPqkVDVRvZrPZtVSMHxdgo8Aq0sxAOb/cr2aqqA3LeWHVPg==}
     dev: true
 
-  /jsonwebtoken@8.5.1:
-    resolution: {integrity: sha512-XjwVfRS6jTMsqYs0EsuJ4LGxXV14zQybNd4L2r0UvbVnSF9Af8x7p5MzbJ90Ioz/9TI41/hTCvznF/loiSzn8w==}
-    engines: {node: '>=4', npm: '>=1.4.28'}
+  /jsonwebtoken@9.0.1:
+    resolution: {integrity: sha512-K8wx7eJ5TPvEjuiVSkv167EVboBDv9PZdDoF7BgeQnBLVvZWW9clr2PsQHVJDTKaEIH5JBIwHujGcHp7GgI2eg==}
+    engines: {node: '>=12', npm: '>=6'}
     dependencies:
       jws: 3.2.2
-      lodash.includes: 4.3.0
-      lodash.isboolean: 3.0.3
-      lodash.isinteger: 4.0.4
-      lodash.isnumber: 3.0.3
-      lodash.isplainobject: 4.0.6
-      lodash.isstring: 4.0.1
-      lodash.once: 4.1.1
+      lodash: 4.17.21
       ms: 2.1.3
-      semver: 5.7.1
+      semver: 7.5.3
     dev: false
 
   /jwa@1.4.1:
@@ -6890,37 +6883,9 @@ packages:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
     dev: true
 
-  /lodash.includes@4.3.0:
-    resolution: {integrity: sha512-W3Bx6mdkRTGtlJISOvVD/lbqjTlPPUDTMnlXZFnVwi9NKJ6tiAk6LVdlhZMm17VZisqhKcgzpO5Wz91PCt5b0w==}
-    dev: false
-
-  /lodash.isboolean@3.0.3:
-    resolution: {integrity: sha512-Bz5mupy2SVbPHURB98VAcw+aHh4vRV5IPNhILUCsOzRmsTmSQ17jIuqopAentWoehktxGd9e/hbIXq980/1QJg==}
-    dev: false
-
-  /lodash.isinteger@4.0.4:
-    resolution: {integrity: sha512-DBwtEWN2caHQ9/imiNeEA5ys1JoRtRfY3d7V9wkqtbycnAmTvRRmbHKDV4a0EYc678/dia0jrte4tjYwVBaZUA==}
-    dev: false
-
-  /lodash.isnumber@3.0.3:
-    resolution: {integrity: sha512-QYqzpfwO3/CWf3XP+Z+tkQsfaLL/EnUlXWVkIk5FUPc4sBdTehEqZONuyRt2P67PXAk+NXmTBcc97zw9t1FQrw==}
-    dev: false
-
-  /lodash.isplainobject@4.0.6:
-    resolution: {integrity: sha512-oSXzaWypCMHkPC3NvBEaPHf0KsA5mvPrOPgQWDsbg8n7orZ290M0BmC/jgRZ4vcJ6DTAhjrsSYgdsW/F+MFOBA==}
-    dev: false
-
-  /lodash.isstring@4.0.1:
-    resolution: {integrity: sha512-0wJxfxH1wgO3GrbuP+dTTk7op+6L41QCXbGINEmD+ny/G/eCqGzxyCsh7159S+mgDDcoarnBw6PC1PS5+wUGgw==}
-    dev: false
-
   /lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
     dev: true
-
-  /lodash.once@4.1.1:
-    resolution: {integrity: sha512-Sb487aTOCr9drQVL8pIxOzVhafOjZN9UU54hiN8PU3uAiSV7lx1yYNpbNmex2PK6dSJoNTSJUUswT651yww3Mg==}
-    dev: false
 
   /lodash.sortby@4.7.0:
     resolution: {integrity: sha512-HDWXG8isMntAyRF5vZ7xKuEvOhT4AhlRt/3czTSjvGUxjYCBVRQY48ViDHyfYz9VIoBkW4TMGQNapx+l3RUwdA==}
@@ -6999,7 +6964,6 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       yallist: 4.0.0
-    dev: true
 
   /make-dir@3.1.0:
     resolution: {integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==}
@@ -7546,8 +7510,8 @@ packages:
     resolution: {integrity: sha512-M+PDm637OY5WM307051+bsDia5Xej6d9IR4GwJse1qA1DIhiKlksvrneZOYQq42OM+spubpcNYEo2FcKQrDk+Q==}
     dev: false
 
-  /pg-sql2@4.12.3(pg@8.10.0):
-    resolution: {integrity: sha512-xPVNoN7O5fT9ssq+j/IRbq0OOtD7Sagz0Xbzb5Z6M3T5cU1pi43QdBv6nvZ7wIuvi/iSq2/02wYridSp7B69EQ==}
+  /pg-sql2@4.13.0(pg@8.10.0):
+    resolution: {integrity: sha512-9sUlAR+FCuOPezS+2cQCSRUEmnyYrT929DiceZIsINk4R54hCGSh1OTWIP4gbAZeUMTYeEXnwTfnnEOupLYTRQ==}
     engines: {node: '>=8.6'}
     peerDependencies:
       pg: '>=6.1.0 <9'
@@ -7663,15 +7627,15 @@ packages:
       yaml: 1.10.2
     dev: true
 
-  /postgraphile-core@4.12.3(graphql@15.8.0)(pg@8.10.0):
-    resolution: {integrity: sha512-rr/UCIWQ0o0qXwynTPZbMhEzexdSUtcgmnktfAhr4V8StlexKIaYzg8oiW2ihI/DVWS9NkzD+eNF2EpcyqXAPA==}
+  /postgraphile-core@4.13.0(graphql@15.8.0)(pg@8.10.0):
+    resolution: {integrity: sha512-8O7xVKZ20K1dTw4KO0jNAfZPNrxNsGG2VrG3Q0IO70ki/OswE6kz/WBZnWFeGxX0sHSEOGWQa4NSrj9EYsSNuw==}
     engines: {node: '>=8.6'}
     peerDependencies:
       graphql: '>=0.9 <0.14 || ^14.0.2 || ^15.4.0'
       pg: '>=6.1.0 <9'
     dependencies:
-      graphile-build: 4.12.3(graphql@15.8.0)
-      graphile-build-pg: 4.12.3(graphql@15.8.0)(pg@8.10.0)
+      graphile-build: 4.13.0(graphql@15.8.0)
+      graphile-build-pg: 4.13.0(graphql@15.8.0)(pg@8.10.0)
       graphql: 15.8.0
       pg: 8.10.0
       tslib: 2.6.1
@@ -7685,14 +7649,14 @@ packages:
       tslib: 2.5.2
     dev: false
 
-  /postgraphile@4.12.11:
-    resolution: {integrity: sha512-rESMT7ZyQe2zeYT75/6/nbsOwnF5e20YBzZGu2EZqbNS6zcUNEvyClJuwSdpVP4Q9hnNvE2xc7khUyniEAucQw==}
+  /postgraphile@4.13.0:
+    resolution: {integrity: sha512-p2VqUnsECd1XrucylK1iosvKEn96J8CWeMVWzxF7b6G21jmaETvFe2CO2q4+dKY5DFCVEF2O9pEfmUfYCKl5+A==}
     engines: {node: '>=8.6'}
     hasBin: true
     dependencies:
       '@graphile/lru': 4.11.0
       '@types/json5': 0.0.30
-      '@types/jsonwebtoken': 8.5.9
+      '@types/jsonwebtoken': 9.0.2
       '@types/pg': 8.10.1
       '@types/ws': 7.4.7
       body-parser: 1.20.2
@@ -7700,22 +7664,22 @@ packages:
       commander: 2.20.3
       debug: 4.3.4
       finalhandler: 1.2.0
-      graphile-build: 4.12.3(graphql@15.8.0)
-      graphile-build-pg: 4.12.3(graphql@15.8.0)(pg@8.10.0)
-      graphile-utils: 4.13.0(graphile-build-pg@4.12.3)(graphile-build@4.12.3)
+      graphile-build: 4.13.0(graphql@15.8.0)
+      graphile-build-pg: 4.13.0(graphql@15.8.0)(pg@8.10.0)
+      graphile-utils: 4.13.0(graphile-build-pg@4.13.0)(graphile-build@4.13.0)
       graphql: 15.8.0
       graphql-ws: 5.13.1(graphql@15.8.0)
       http-errors: 1.8.1
       iterall: 1.3.0
       json5: 2.2.3
-      jsonwebtoken: 8.5.1
+      jsonwebtoken: 9.0.1
       parseurl: 1.3.3
       pg: 8.10.0
       pg-connection-string: 2.6.0
-      pg-sql2: 4.12.3(pg@8.10.0)
-      postgraphile-core: 4.12.3(graphql@15.8.0)(pg@8.10.0)
+      pg-sql2: 4.13.0(pg@8.10.0)
+      postgraphile-core: 4.13.0(graphql@15.8.0)(pg@8.10.0)
       subscriptions-transport-ws: 0.9.19(graphql@15.8.0)
-      tslib: 2.5.2
+      tslib: 2.6.1
       ws: 7.5.9
     transitivePeerDependencies:
       - bufferutil
@@ -8101,11 +8065,6 @@ packages:
     resolution: {integrity: sha512-MuCAyrGZcTLfQoH2XoBlQ8C6bzwN88XT/0slOGz0pn8+gIP85BOAfYa44ZXQUTOwRwPU0QvgU+V+OSajl/59Xg==}
     dev: true
 
-  /semver@5.7.1:
-    resolution: {integrity: sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==}
-    hasBin: true
-    dev: false
-
   /semver@6.3.0:
     resolution: {integrity: sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==}
     hasBin: true
@@ -8137,7 +8096,6 @@ packages:
     hasBin: true
     dependencies:
       lru-cache: 6.0.0
-    dev: true
 
   /send@0.18.0:
     resolution: {integrity: sha512-qqWzuOjSFOuqPjFe4NOsMLafToQQwBSOEpS+FwEt3A2V3vKubTquT3vmLTQpFgMXp8AlFWFuP1qKaJZOtPpVXg==}
@@ -9245,7 +9203,6 @@ packages:
 
   /yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
-    dev: true
 
   /yaml-ast-parser@0.0.43:
     resolution: {integrity: sha512-2PTINUwsRqSd+s8XxKaJWQlUuEMHJQyEuh2edBbW8KNJz0SJPwUSD2zRWqezFEdN7IzAgeuYHFUCF7o8zRdZ0A==}
