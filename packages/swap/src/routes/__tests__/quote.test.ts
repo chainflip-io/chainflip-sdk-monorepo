@@ -25,6 +25,11 @@ jest.mock(
     },
 );
 
+jest.mock('@/shared/consts', () => ({
+  ...jest.requireActual('@/shared/consts'),
+  getMinimumSwapAmount: jest.fn().mockReturnValue('100'),
+}));
+
 describe('server', () => {
   let server: Server;
   let client: QuotingClient;
@@ -57,6 +62,23 @@ describe('server', () => {
   });
 
   describe('GET /quote', () => {
+    it('rejects if amount is lower than minimum swap amount', async () => {
+      const params = new URLSearchParams({
+        srcAsset: 'FLIP',
+        destAsset: 'ETH',
+        amount: '50',
+      });
+
+      const { body, status } = await request(server).get(
+        `/quote?${params.toString()}`,
+      );
+
+      expect(status).toBe(400);
+      expect(body).toMatchObject({
+        message: 'expected amount is below minimum swap amount',
+      });
+    });
+
     it('gets the quote when the broker is best', async () => {
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
@@ -68,7 +90,7 @@ describe('server', () => {
       const params = new URLSearchParams({
         srcAsset: 'FLIP',
         destAsset: 'ETH',
-        amount: '1',
+        amount: '100',
       });
 
       client.setQuoteRequestHandler(async (req) => ({
@@ -100,7 +122,7 @@ describe('server', () => {
       const params = new URLSearchParams({
         srcAsset: 'FLIP',
         destAsset: 'ETH',
-        amount: '1',
+        amount: '100',
       });
 
       client.setQuoteRequestHandler(async (req) => ({
