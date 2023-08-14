@@ -1,6 +1,7 @@
 import assert from 'assert';
 import express from 'express';
-import { assetChains, Chain } from '@/shared/enums';
+import { getMinimumDepositAmount } from '@/shared/consts';
+import { assetChains, Chain, ChainflipNetwork } from '@/shared/enums';
 import BrokerClient from '@/shared/node-apis/broker';
 import { PostSwapResponse, postSwapSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
@@ -176,6 +177,16 @@ router.post(
       !validateAddress(payload.destAsset, payload.destAddress, isProduction)
     ) {
       throw ServiceError.badRequest('provided address is not valid');
+    }
+
+    const minimumAmount = getMinimumDepositAmount(
+      process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
+      payload.srcAsset,
+    );
+    if (BigInt(payload.expectedDepositAmount) < BigInt(minimumAmount)) {
+      throw ServiceError.badRequest(
+        'expected amount is below minimum deposit amount',
+      );
     }
 
     if (!client) {

@@ -16,6 +16,11 @@ jest.mock('timers/promises', () => ({
   setTimeout: jest.fn().mockResolvedValue(undefined),
 }));
 
+jest.mock('@/shared/consts', () => ({
+  ...jest.requireActual('@/shared/consts'),
+  getMinimumDepositAmount: jest.fn().mockReturnValue('10'),
+}));
+
 const randomId = () => BigInt(crypto.randomInt(1, 100000));
 
 jest.mock(
@@ -636,6 +641,22 @@ describe('server', () => {
 
       expect(status).toBe(400);
       expect(body).toMatchObject({ message: 'provided address is not valid' });
+    });
+
+    it('rejects if amount is lower than minimum deposit amount', async () => {
+      const { body, status } = await request(app).post('/swaps').send({
+        srcAsset: Assets.DOT,
+        destAsset: Assets.ETH,
+        srcChain: 'Ethereum',
+        destChain: 'Polkadot',
+        destAddress: ETH_ADDRESS,
+        amount: '5',
+      });
+
+      expect(status).toBe(400);
+      expect(body).toMatchObject({
+        message: 'expected amount is below minimum deposit amount',
+      });
     });
   });
 });
