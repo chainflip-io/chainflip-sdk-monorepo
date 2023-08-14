@@ -29,7 +29,7 @@
     "@ethersproject/providers": "^5.7.2",
     "@typechain/ethers-v5": "^11.0.0",
     "@types/ws": "^8.5.4",
-    "typechain": "^8.2.0",
+    "typechain": "^8.3.1",
     "winston": "^3.10.0",
     "zod": "^3.21.4"
   }
