@@ -68,3 +68,27 @@ export const btc$: (network: ChainflipNetwork) => AssetData = (network) => ({
   minimumDepositAmount: getMinimumDepositAmount(network, Assets.BTC),
   minimumSwapAmount: getMinimumSwapAmount(network, Assets.BTC),
 });
+
+export const arbeth$: (network: ChainflipNetwork) => AssetData = (network) => ({
+  id: Assets.ARBETH,
+  chain: Chains.Arbitrum,
+  contractAddress: undefined,
+  decimals: assetDecimals[Assets.ARBETH],
+  name: 'Arbitrum',
+  symbol: 'ARBETH',
+  isMainnet: !isTestnet(network),
+  minimumDepositAmount: getMinimumDepositAmount(network, Assets.ARBETH),
+  minimumSwapAmount: getMinimumSwapAmount(network, Assets.ARBETH),
+});
+
+export const arbusd$: (network: ChainflipNetwork) => AssetData = (network) => ({
+  id: Assets.ARBUSDC,
+  chain: Chains.Arbitrum,
+  contractAddress: undefined,
+  decimals: assetDecimals[Assets.ARBUSDC],
+  name: 'Arbitrum',
+  symbol: 'ARBUSDC',
+  isMainnet: !isTestnet(network),
+  minimumDepositAmount: getMinimumDepositAmount(network, Assets.ARBUSDC),
+  minimumSwapAmount: getMinimumSwapAmount(network, Assets.ARBUSDC),
+});

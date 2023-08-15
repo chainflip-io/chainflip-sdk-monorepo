@@ -124,20 +124,26 @@ export const validateChainAddress = (
   address: string,
   isMainnet = true,
 ): Record<Chain | Asset, boolean> => ({
+  [Chains.Ethereum]: validateEvmAddress(address),
   [Assets.ETH]: validateEvmAddress(address),
-  [Assets.BTC]: isMainnet
-    ? validateBitcoinMainnetAddress(address)
-    : validateBitcoinTestnetAddress(address) ||
-      validateBitcoinRegtestAddress(address),
-  [Assets.DOT]: validatePolkadotAddress(address),
   [Assets.FLIP]: validateEvmAddress(address),
   [Assets.USDC]: validateEvmAddress(address),
-  [Chains.Ethereum]: validateEvmAddress(address),
+
   [Chains.Bitcoin]: isMainnet
     ? validateBitcoinMainnetAddress(address)
     : validateBitcoinTestnetAddress(address) ||
       validateBitcoinRegtestAddress(address),
+  [Assets.BTC]: isMainnet
+    ? validateBitcoinMainnetAddress(address)
+    : validateBitcoinTestnetAddress(address) ||
+      validateBitcoinRegtestAddress(address),
+
   [Chains.Polkadot]: validatePolkadotAddress(address),
+  [Assets.DOT]: validatePolkadotAddress(address),
+
+  [Chains.Arbitrum]: validateEvmAddress(address),
+  [Assets.ARBETH]: validateEvmAddress(address),
+  [Assets.ARBUSDC]: validateEvmAddress(address),
 });
 
 export const validateAddress = (

@@ -22,3 +22,11 @@ export const bitcoin: (network: ChainflipNetwork) => ChainData = (network) => ({
   name: 'Bitcoin',
   isMainnet: !isTestnet(network),
 });
+
+export const arbitrum: (network: ChainflipNetwork) => ChainData = (
+  network,
+) => ({
+  id: Chains.Arbitrum,
+  name: 'Arbitrum',
+  isMainnet: !isTestnet(network),
+});

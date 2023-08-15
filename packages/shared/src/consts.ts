@@ -10,6 +10,8 @@ const MINIMUM_DEPOSIT_AMOUNTS: Partial<
     [Assets.USDC]: '0',
     [Assets.BTC]: '0',
     [Assets.DOT]: '10000000000', // https://support.polkadot.network/support/solutions/articles/65000168651-what-is-the-existential-deposit
+    [Assets.ARBETH]: '0',
+    [Assets.ARBUSDC]: '0',
   },
 };
 export const getMinimumDepositAmount = (
@@ -27,6 +29,8 @@ const MINIMUM_SWAP_AMOUNTS: Partial<
     [Assets.USDC]: '1000000',
     [Assets.BTC]: '390000',
     [Assets.DOT]: '2000000000',
+    [Assets.ARBETH]: '580000000000000', // TODO: ??
+    [Assets.ARBUSDC]: '1000000', // TODO: ??
   },
 };
 export const getMinimumSwapAmount = (network: ChainflipNetwork, asset: Asset) =>

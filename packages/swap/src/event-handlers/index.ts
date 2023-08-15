@@ -35,6 +35,15 @@ export const events = {
     BroadcastSuccess: 'EthereumBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'EthereumBroadcaster.BroadcastAborted',
   },
+  ArbitrumIngressEgress: {
+    EgressScheduled: 'ArbitrumIngressEgress.EgressScheduled',
+    BatchBroadcastRequested: 'ArbitrumIngressEgress.BatchBroadcastRequested',
+    CcmBroadcastRequested: 'ArbitrumIngressEgress.CcmBroadcastRequested',
+  },
+  ArbitrumBroadcaster: {
+    BroadcastSuccess: 'ArbitrumBroadcaster.BroadcastSuccess',
+    BroadcastAborted: 'ArbitrumBroadcaster.BroadcastAborted',
+  },
   PolkadotIngressEgress: {
     EgressScheduled: 'PolkadotIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'PolkadotIngressEgress.BatchBroadcastRequested',

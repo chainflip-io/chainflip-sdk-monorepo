@@ -6,8 +6,8 @@ import type {
   SwapRequestBody,
 } from '@/shared/schemas';
 import { PostSwapResponse } from '@/shared/schemas';
-import { dot$, btc$, eth$, usdc$, flip$ } from '../assets';
-import { bitcoin, ethereum, polkadot } from '../chains';
+import { dot$, btc$, eth$, usdc$, flip$, arbeth$, arbusd$ } from '../assets';
+import { arbitrum, bitcoin, ethereum, polkadot } from '../chains';
 import {
   ChainData,
   QuoteRequest,
@@ -23,6 +23,7 @@ const getChains = async (network: ChainflipNetwork): Promise<ChainData[]> => [
   ethereum(network),
   polkadot(network),
   bitcoin(network),
+  arbitrum(network),
 ];
 
 const getPossibleDestinationChains = async (
@@ -30,11 +31,23 @@ const getPossibleDestinationChains = async (
   network: ChainflipNetwork,
 ): Promise<ChainData[]> => {
   if (sourceChain === Chains.Ethereum)
-    return [ethereum(network), bitcoin(network), polkadot(network)];
+    return [
+      ethereum(network),
+      bitcoin(network),
+      polkadot(network),
+      arbitrum(network),
+    ];
   if (sourceChain === Chains.Polkadot)
-    return [ethereum(network), bitcoin(network)];
+    return [ethereum(network), bitcoin(network), arbitrum(network)];
   if (sourceChain === Chains.Bitcoin)
-    return [ethereum(network), polkadot(network)];
+    return [ethereum(network), polkadot(network), arbitrum(network)];
+  if (sourceChain === Chains.Arbitrum)
+    return [
+      arbitrum(network),
+      ethereum(network),
+      polkadot(network),
+      bitcoin(network),
+    ];
   throw new Error('received unknown chain');
 };
 
@@ -46,6 +59,7 @@ const getAssets = async (
     return [eth$(network), usdc$(network), flip$(network)];
   if (chain === Chains.Polkadot) return [dot$(network)];
   if (chain === Chains.Bitcoin) return [btc$(network)];
+  if (chain === Chains.Arbitrum) return [arbeth$(network), arbusd$(network)];
   throw new Error('received unexpected chain');
 };
 
