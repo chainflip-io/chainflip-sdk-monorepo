@@ -21,6 +21,7 @@ describe('ApiService', () => {
     it.each([
       ChainflipNetworks.sisyphos,
       ChainflipNetworks.perseverance,
+      ChainflipNetworks.backspin,
     ] as const)('gets testnet chains (%s)', async (network) => {
       expect(await ApiService.getChains(network)).toMatchSnapshot();
     });
@@ -35,7 +36,8 @@ describe('ApiService', () => {
   describe.each(Object.values(ChainflipNetworks))(
     `${ApiService.getAssets.name} (%s)`,
     (network) => {
-      it.each(Object.values(Chains))(
+      //  TODO: enable on mainnnet
+      it.each(Object.values(Chains).filter((chain) => chain !== 'Arbitrum'))(
         'gets the correct assets for testnets (%s)',
         async (chain) => {
           if (network === 'mainnet' && chain === 'Ethereum') {

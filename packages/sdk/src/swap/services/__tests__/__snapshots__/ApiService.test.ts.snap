@@ -1,28 +1,71 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ApiService getAssets (mainnet) gets the correct assets for testnets (Arbitrum) 1`] = `
+exports[`ApiService getAssets (backspin) gets the correct assets for testnets (Bitcoin) 1`] = `
 [
   {
-    "chain": "Arbitrum",
+    "chain": "Bitcoin",
+    "contractAddress": undefined,
+    "decimals": 8,
+    "id": "BTC",
+    "isMainnet": false,
+    "minimumDepositAmount": "0",
+    "minimumSwapAmount": "0",
+    "name": "Bitcoin",
+    "symbol": "BTC",
+  },
+]
+`;
+
+exports[`ApiService getAssets (backspin) gets the correct assets for testnets (Ethereum) 1`] = `
+[
+  {
+    "chain": "Ethereum",
     "contractAddress": undefined,
     "decimals": 18,
-    "id": "ARBETH",
-    "isMainnet": true,
+    "id": "ETH",
+    "isMainnet": false,
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "0",
-    "name": "Arbitrum",
-    "symbol": "ARBETH",
+    "name": "Ether",
+    "symbol": "ETH",
   },
   {
-    "chain": "Arbitrum",
-    "contractAddress": undefined,
+    "chain": "Ethereum",
+    "contractAddress": "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
     "decimals": 6,
-    "id": "ARBUSDC",
-    "isMainnet": true,
+    "id": "USDC",
+    "isMainnet": false,
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "0",
-    "name": "Arbitrum",
-    "symbol": "ARBUSDC",
+    "name": "USDC",
+    "symbol": "USDC",
+  },
+  {
+    "chain": "Ethereum",
+    "contractAddress": "0x0000",
+    "decimals": 18,
+    "id": "FLIP",
+    "isMainnet": false,
+    "minimumDepositAmount": "0",
+    "minimumSwapAmount": "0",
+    "name": "FLIP",
+    "symbol": "FLIP",
+  },
+]
+`;
+
+exports[`ApiService getAssets (backspin) gets the correct assets for testnets (Polkadot) 1`] = `
+[
+  {
+    "chain": "Polkadot",
+    "contractAddress": undefined,
+    "decimals": 10,
+    "id": "DOT",
+    "isMainnet": false,
+    "minimumDepositAmount": "0",
+    "minimumSwapAmount": "0",
+    "name": "Polkadot",
+    "symbol": "DOT",
   },
 ]
 `;
@@ -55,33 +98,6 @@ exports[`ApiService getAssets (mainnet) gets the correct assets for testnets (Po
     "minimumSwapAmount": "0",
     "name": "Polkadot",
     "symbol": "DOT",
-  },
-]
-`;
-
-exports[`ApiService getAssets (partnernet) gets the correct assets for testnets (Arbitrum) 1`] = `
-[
-  {
-    "chain": "Arbitrum",
-    "contractAddress": undefined,
-    "decimals": 18,
-    "id": "ARBETH",
-    "isMainnet": false,
-    "minimumDepositAmount": "0",
-    "minimumSwapAmount": "580000000000000",
-    "name": "Arbitrum",
-    "symbol": "ARBETH",
-  },
-  {
-    "chain": "Arbitrum",
-    "contractAddress": undefined,
-    "decimals": 6,
-    "id": "ARBUSDC",
-    "isMainnet": false,
-    "minimumDepositAmount": "0",
-    "minimumSwapAmount": "1000000",
-    "name": "Arbitrum",
-    "symbol": "ARBUSDC",
   },
 ]
 `;
@@ -156,33 +172,6 @@ exports[`ApiService getAssets (partnernet) gets the correct assets for testnets 
 ]
 `;
 
-exports[`ApiService getAssets (perseverance) gets the correct assets for testnets (Arbitrum) 1`] = `
-[
-  {
-    "chain": "Arbitrum",
-    "contractAddress": undefined,
-    "decimals": 18,
-    "id": "ARBETH",
-    "isMainnet": false,
-    "minimumDepositAmount": "0",
-    "minimumSwapAmount": "0",
-    "name": "Arbitrum",
-    "symbol": "ARBETH",
-  },
-  {
-    "chain": "Arbitrum",
-    "contractAddress": undefined,
-    "decimals": 6,
-    "id": "ARBUSDC",
-    "isMainnet": false,
-    "minimumDepositAmount": "0",
-    "minimumSwapAmount": "0",
-    "name": "Arbitrum",
-    "symbol": "ARBUSDC",
-  },
-]
-`;
-
 exports[`ApiService getAssets (perseverance) gets the correct assets for testnets (Bitcoin) 1`] = `
 [
   {
@@ -249,33 +238,6 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for testnet
     "minimumSwapAmount": "0",
     "name": "Polkadot",
     "symbol": "DOT",
-  },
-]
-`;
-
-exports[`ApiService getAssets (sisyphos) gets the correct assets for testnets (Arbitrum) 1`] = `
-[
-  {
-    "chain": "Arbitrum",
-    "contractAddress": undefined,
-    "decimals": 18,
-    "id": "ARBETH",
-    "isMainnet": false,
-    "minimumDepositAmount": "0",
-    "minimumSwapAmount": "0",
-    "name": "Arbitrum",
-    "symbol": "ARBETH",
-  },
-  {
-    "chain": "Arbitrum",
-    "contractAddress": undefined,
-    "decimals": 6,
-    "id": "ARBUSDC",
-    "isMainnet": false,
-    "minimumDepositAmount": "0",
-    "minimumSwapAmount": "0",
-    "name": "Arbitrum",
-    "symbol": "ARBUSDC",
   },
 ]
 `;
@@ -367,9 +329,29 @@ exports[`ApiService getChains gets mainnet chains 1`] = `
     "isMainnet": true,
     "name": "Bitcoin",
   },
+]
+`;
+
+exports[`ApiService getChains gets testnet chains (backspin) 1`] = `
+[
+  {
+    "id": "Ethereum",
+    "isMainnet": false,
+    "name": "Ethereum",
+  },
+  {
+    "id": "Polkadot",
+    "isMainnet": false,
+    "name": "Polkadot",
+  },
+  {
+    "id": "Bitcoin",
+    "isMainnet": false,
+    "name": "Bitcoin",
+  },
   {
     "id": "Arbitrum",
-    "isMainnet": true,
+    "isMainnet": false,
     "name": "Arbitrum",
   },
 ]
@@ -392,11 +374,6 @@ exports[`ApiService getChains gets testnet chains (perseverance) 1`] = `
     "isMainnet": false,
     "name": "Bitcoin",
   },
-  {
-    "id": "Arbitrum",
-    "isMainnet": false,
-    "name": "Arbitrum",
-  },
 ]
 `;
 
@@ -416,11 +393,6 @@ exports[`ApiService getChains gets testnet chains (sisyphos) 1`] = `
     "id": "Bitcoin",
     "isMainnet": false,
     "name": "Bitcoin",
-  },
-  {
-    "id": "Arbitrum",
-    "isMainnet": false,
-    "name": "Arbitrum",
   },
 ]
 `;

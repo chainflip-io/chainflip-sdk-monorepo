@@ -27,6 +27,7 @@ export const Assets = arrayToMap([
 export type Asset = (typeof Assets)[keyof typeof Assets];
 
 export const ChainflipNetworks = arrayToMap([
+  'backspin',
   'partnernet',
   'sisyphos',
   'perseverance',

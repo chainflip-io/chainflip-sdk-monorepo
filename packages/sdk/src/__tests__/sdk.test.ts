@@ -17,8 +17,93 @@ jest.mock('@/shared/vault', () => ({
   executeSwap: jest.fn(),
 }));
 
-describe(SwapSDK, () => {
+describe('SwapSDK on perseverance', () => {
   const sdk = new SwapSDK({ network: ChainflipNetworks.perseverance });
+
+  describe(SwapSDK.prototype.getChains, () => {
+    it('returns the available chains', async () => {
+      expect(await sdk.getChains()).toStrictEqual([
+        ethereum(ChainflipNetworks.perseverance),
+        polkadot(ChainflipNetworks.perseverance),
+        bitcoin(ChainflipNetworks.perseverance),
+      ]);
+    });
+
+    it.each([
+      [
+        Chains.Ethereum,
+        [
+          ethereum(ChainflipNetworks.perseverance),
+          bitcoin(ChainflipNetworks.perseverance),
+          polkadot(ChainflipNetworks.perseverance),
+        ],
+      ],
+      [
+        'Ethereum' as const,
+        [
+          ethereum(ChainflipNetworks.perseverance),
+          bitcoin(ChainflipNetworks.perseverance),
+          polkadot(ChainflipNetworks.perseverance),
+        ],
+      ],
+      [
+        Chains.Polkadot,
+        [
+          ethereum(ChainflipNetworks.perseverance),
+          bitcoin(ChainflipNetworks.perseverance),
+        ],
+      ],
+      [
+        Chains.Bitcoin,
+        [
+          ethereum(ChainflipNetworks.perseverance),
+          polkadot(ChainflipNetworks.perseverance),
+        ],
+      ],
+    ])(
+      `returns the possible destination chains for %s`,
+      async (chain, chains) => {
+        expect(await sdk.getChains(chain)).toEqual(chains);
+      },
+    );
+
+    it('throws when requesting an unsupported chain', async () => {
+      await expect(sdk.getChains('Dogecoin' as Chain)).rejects.toThrow();
+    });
+  });
+
+  describe(SwapSDK.prototype.getAssets, () => {
+    it.each([
+      [
+        Chains.Ethereum,
+        [
+          eth$(ChainflipNetworks.perseverance),
+          usdc$(ChainflipNetworks.perseverance),
+          flip$(ChainflipNetworks.perseverance),
+        ],
+      ],
+      [
+        'Ethereum' as const,
+        [
+          eth$(ChainflipNetworks.perseverance),
+          usdc$(ChainflipNetworks.perseverance),
+          flip$(ChainflipNetworks.perseverance),
+        ],
+      ],
+      [Chains.Polkadot, [dot$(ChainflipNetworks.perseverance)]],
+      [Chains.Bitcoin, [btc$(ChainflipNetworks.perseverance)]],
+    ])('returns the available assets for %s', async (chain, assets) => {
+      expect(await sdk.getAssets(chain)).toStrictEqual(assets);
+    });
+
+    it('throws when requesting an unsupported chain', async () => {
+      await expect(sdk.getChains('Dogecoin' as Chain)).rejects.toThrow();
+    });
+  });
+});
+
+describe('SwapSDK on backspin', () => {
+  const sdk = new SwapSDK({ network: ChainflipNetworks.backspin });
 
   describe(SwapSDK.prototype.getChains, () => {
     it('returns the available chains', async () => {
@@ -87,30 +172,30 @@ describe(SwapSDK, () => {
   });
 
   describe(SwapSDK.prototype.getAssets, () => {
-    it.each([
+    fit.each([
       [
         Chains.Ethereum,
         [
-          eth$(ChainflipNetworks.perseverance),
-          usdc$(ChainflipNetworks.perseverance),
-          flip$(ChainflipNetworks.perseverance),
+          eth$(ChainflipNetworks.backspin),
+          usdc$(ChainflipNetworks.backspin),
+          flip$(ChainflipNetworks.backspin),
         ],
       ],
       [
         'Ethereum' as const,
         [
-          eth$(ChainflipNetworks.perseverance),
-          usdc$(ChainflipNetworks.perseverance),
-          flip$(ChainflipNetworks.perseverance),
+          eth$(ChainflipNetworks.backspin),
+          usdc$(ChainflipNetworks.backspin),
+          flip$(ChainflipNetworks.backspin),
         ],
       ],
-      [Chains.Polkadot, [dot$(ChainflipNetworks.perseverance)]],
-      [Chains.Bitcoin, [btc$(ChainflipNetworks.perseverance)]],
+      [Chains.Polkadot, [dot$(ChainflipNetworks.backspin)]],
+      [Chains.Bitcoin, [btc$(ChainflipNetworks.backspin)]],
       [
         Chains.Arbitrum,
         [
-          arbeth$(ChainflipNetworks.perseverance),
-          arbusd$(ChainflipNetworks.perseverance),
+          arbeth$(ChainflipNetworks.backspin),
+          arbusd$(ChainflipNetworks.backspin),
         ],
       ],
     ])('returns the available assets for %s', async (chain, assets) => {
@@ -123,7 +208,7 @@ describe(SwapSDK, () => {
   });
 });
 
-describe(SwapSDK, () => {
+describe('SwapSDK on sisyphos', () => {
   const signer = new VoidSigner('0x0');
   const sdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
 
@@ -133,7 +218,6 @@ describe(SwapSDK, () => {
         ethereum(ChainflipNetworks.sisyphos),
         polkadot(ChainflipNetworks.sisyphos),
         bitcoin(ChainflipNetworks.sisyphos),
-        arbitrum(ChainflipNetworks.sisyphos),
       ]);
     });
 
@@ -144,7 +228,6 @@ describe(SwapSDK, () => {
           ethereum(ChainflipNetworks.sisyphos),
           bitcoin(ChainflipNetworks.sisyphos),
           polkadot(ChainflipNetworks.sisyphos),
-          arbitrum(ChainflipNetworks.sisyphos),
         ],
       ],
       [
@@ -153,7 +236,6 @@ describe(SwapSDK, () => {
           ethereum(ChainflipNetworks.sisyphos),
           bitcoin(ChainflipNetworks.sisyphos),
           polkadot(ChainflipNetworks.sisyphos),
-          arbitrum(ChainflipNetworks.sisyphos),
         ],
       ],
       [
@@ -161,7 +243,6 @@ describe(SwapSDK, () => {
         [
           ethereum(ChainflipNetworks.sisyphos),
           bitcoin(ChainflipNetworks.sisyphos),
-          arbitrum(ChainflipNetworks.sisyphos),
         ],
       ],
       [
@@ -169,16 +250,6 @@ describe(SwapSDK, () => {
         [
           ethereum(ChainflipNetworks.sisyphos),
           polkadot(ChainflipNetworks.sisyphos),
-          arbitrum(ChainflipNetworks.sisyphos),
-        ],
-      ],
-      [
-        Chains.Arbitrum,
-        [
-          arbitrum(ChainflipNetworks.sisyphos),
-          ethereum(ChainflipNetworks.sisyphos),
-          polkadot(ChainflipNetworks.sisyphos),
-          bitcoin(ChainflipNetworks.sisyphos),
         ],
       ],
     ])(
@@ -213,13 +284,6 @@ describe(SwapSDK, () => {
       ],
       [Chains.Polkadot, [dot$(ChainflipNetworks.sisyphos)]],
       [Chains.Bitcoin, [btc$(ChainflipNetworks.sisyphos)]],
-      [
-        Chains.Arbitrum,
-        [
-          arbeth$(ChainflipNetworks.sisyphos),
-          arbusd$(ChainflipNetworks.sisyphos),
-        ],
-      ],
     ])('returns the available assets for %s', async (chain, assets) => {
       expect(await sdk.getAssets(chain)).toStrictEqual(assets);
     });

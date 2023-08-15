@@ -19,35 +19,46 @@ import {
   AssetData,
 } from '../types';
 
-const getChains = async (network: ChainflipNetwork): Promise<ChainData[]> => [
-  ethereum(network),
-  polkadot(network),
-  bitcoin(network),
-  arbitrum(network),
-];
+const getChains = async (network: ChainflipNetwork): Promise<ChainData[]> =>
+  network === 'backspin'
+    ? [
+        ethereum(network),
+        polkadot(network),
+        bitcoin(network),
+        arbitrum(network),
+      ]
+    : [ethereum(network), polkadot(network), bitcoin(network)];
 
 const getPossibleDestinationChains = async (
   sourceChain: Chain,
   network: ChainflipNetwork,
 ): Promise<ChainData[]> => {
+  if (network === 'backspin') {
+    if (sourceChain === Chains.Ethereum)
+      return [
+        ethereum(network),
+        bitcoin(network),
+        polkadot(network),
+        arbitrum(network),
+      ];
+    if (sourceChain === Chains.Polkadot)
+      return [ethereum(network), bitcoin(network), arbitrum(network)];
+    if (sourceChain === Chains.Bitcoin)
+      return [ethereum(network), polkadot(network), arbitrum(network)];
+    if (sourceChain === Chains.Arbitrum)
+      return [
+        arbitrum(network),
+        ethereum(network),
+        polkadot(network),
+        bitcoin(network),
+      ];
+  }
   if (sourceChain === Chains.Ethereum)
-    return [
-      ethereum(network),
-      bitcoin(network),
-      polkadot(network),
-      arbitrum(network),
-    ];
+    return [ethereum(network), bitcoin(network), polkadot(network)];
   if (sourceChain === Chains.Polkadot)
-    return [ethereum(network), bitcoin(network), arbitrum(network)];
+    return [ethereum(network), bitcoin(network)];
   if (sourceChain === Chains.Bitcoin)
-    return [ethereum(network), polkadot(network), arbitrum(network)];
-  if (sourceChain === Chains.Arbitrum)
-    return [
-      arbitrum(network),
-      ethereum(network),
-      polkadot(network),
-      bitcoin(network),
-    ];
+    return [ethereum(network), polkadot(network)];
   throw new Error('received unknown chain');
 };
 
@@ -59,7 +70,8 @@ const getAssets = async (
     return [eth$(network), usdc$(network), flip$(network)];
   if (chain === Chains.Polkadot) return [dot$(network)];
   if (chain === Chains.Bitcoin) return [btc$(network)];
-  if (chain === Chains.Arbitrum) return [arbeth$(network), arbusd$(network)];
+  if (chain === Chains.Arbitrum && network === 'backspin')
+    return [arbeth$(network), arbusd$(network)];
   throw new Error('received unexpected chain');
 };
 

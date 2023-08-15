@@ -55,6 +55,11 @@ export const ADDRESSES = {
     STATE_CHAIN_MANAGER_CONTRACT_ADDRESS:
       '0xC960C4eEe4ADf40d24374D85094f3219cf2DD8EB',
   },
+  [ChainflipNetworks.backspin]: {
+    FLIP_CONTRACT_ADDRESS: '0x0000',
+    VAULT_CONTRACT_ADDRESS: '0x0000',
+    STATE_CHAIN_MANAGER_CONTRACT_ADDRESS: '0x0000',
+  },
 } as const;
 
 // https://developers.circle.com/developer/docs/usdc-on-testnet#usdc-on-ethereum-goerli
