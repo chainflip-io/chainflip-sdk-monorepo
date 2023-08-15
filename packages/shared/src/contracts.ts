@@ -17,6 +17,12 @@ export const getTokenContractAddress = (
   assert(network !== ChainflipNetworks.mainnet, 'Mainnet is not yet supported');
 
   if (asset === Assets.FLIP) return ADDRESSES[network].FLIP_CONTRACT_ADDRESS;
+  if (network === 'backspin') {
+    if (asset === Assets.ARBETH)
+      return ADDRESSES[network].ARBETH_CONTRACT_ADDRESS;
+    if (asset === Assets.ARBUSDC)
+      return ADDRESSES[network].ARBUSDC_CONTRACT_ADDRESS;
+  }
 
   assert(asset === Assets.USDC, 'Only FLIP and USDC are supported for now');
 

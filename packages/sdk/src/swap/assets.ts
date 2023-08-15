@@ -72,7 +72,7 @@ export const btc$: (network: ChainflipNetwork) => AssetData = (network) => ({
 export const arbeth$: (network: ChainflipNetwork) => AssetData = (network) => ({
   id: Assets.ARBETH,
   chain: Chains.Arbitrum,
-  contractAddress: undefined,
+  contractAddress: getTokenContractAddress(Assets.ARBETH, network),
   decimals: assetDecimals[Assets.ARBETH],
   name: 'Arbitrum',
   symbol: 'ARBETH',
@@ -84,7 +84,7 @@ export const arbeth$: (network: ChainflipNetwork) => AssetData = (network) => ({
 export const arbusd$: (network: ChainflipNetwork) => AssetData = (network) => ({
   id: Assets.ARBUSDC,
   chain: Chains.Arbitrum,
-  contractAddress: undefined,
+  contractAddress: getTokenContractAddress(Assets.ARBUSDC, network),
   decimals: assetDecimals[Assets.ARBUSDC],
   name: 'Arbitrum',
   symbol: 'ARBUSDC',
