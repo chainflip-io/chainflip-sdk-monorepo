@@ -35,5 +35,5 @@ export const encodedAddress = z
       ({
         chain: assetChains[__kind.toUpperCase() as Uppercase<typeof __kind>],
         address: value,
-      } as const),
+      }) as const,
   );
