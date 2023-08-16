@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@types/yargs": "^17.0.24",
-    "tsup": "^6.7.0",
+    "tsup": "^7.2.0",
     "tsx": "^3.12.7"
   },
   "repository": "https://github.com/chainflip-io/chainflip-sdk-monorepo.git",
