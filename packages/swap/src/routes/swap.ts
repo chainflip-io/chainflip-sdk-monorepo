@@ -7,6 +7,7 @@ import { PostSwapResponse, postSwapSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import { asyncHandler } from './common';
 import prisma, { Egress, Swap, SwapDepositChannel, Broadcast } from '../client';
+import { getPendingDeposit } from '../deposit-tracking';
 import { isProduction } from '../utils/consts';
 import { handleExit } from '../utils/function';
 import logger from '../utils/logger';
@@ -122,6 +123,18 @@ router.get(
     const srcAsset = readField('srcAsset');
     const destAsset = readField('destAsset');
 
+    let pendingDeposit;
+    if (
+      srcAsset &&
+      state === State.AwaitingDeposit &&
+      swapDepositChannel?.depositAddress
+    ) {
+      pendingDeposit = await getPendingDeposit(
+        assetChains[srcAsset],
+        swapDepositChannel.depositAddress,
+      );
+    }
+
     const response = {
       state,
       type: swap?.type,
@@ -135,7 +148,9 @@ router.get(
       expectedDepositAmount:
         swapDepositChannel?.expectedDepositAmount.toString(),
       swapId: swap?.nativeId.toString(),
-      depositAmount: swap?.depositAmount?.toString(),
+      depositAmount: swap?.depositAmount?.toString() ?? pendingDeposit?.amount,
+      depositTransactionHash: pendingDeposit?.transactionHash,
+      depositTransactionConfirmations: pendingDeposit?.transactionConfirmations,
       depositReceivedAt: swap?.depositReceivedAt.valueOf(),
       depositReceivedBlockIndex: swap?.depositReceivedBlockIndex,
       intermediateAmount: swap?.intermediateAmount?.toString(),

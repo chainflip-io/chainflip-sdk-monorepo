@@ -179,6 +179,9 @@ importers:
       '@prisma/client':
         specifier: ^5.1.1
         version: 5.1.1(prisma@5.1.1)
+      axios:
+        specifier: ^1.4.0
+        version: 1.4.0
       bignumber.js:
         specifier: ^9.1.1
         version: 9.1.1
