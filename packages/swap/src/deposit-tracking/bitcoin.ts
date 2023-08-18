@@ -52,7 +52,7 @@ export const fetchPendingBitcoinDeposit = async (address: string) => {
           .parseUnits(String(data.data.result[0].value), assetDecimals.BTC)
           .toString(),
         transactionConfirmations: data.data.result[0].confirmations,
-        transactionHash: data.data.result[0].tx_hash,
+        transactionHash: `0x${data.data.result[0].tx_hash}`,
       };
     }
 
