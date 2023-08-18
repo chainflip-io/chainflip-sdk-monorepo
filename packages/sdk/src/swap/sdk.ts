@@ -83,7 +83,7 @@ export class SwapSDK {
       network: this.network,
       signer: this.signer,
     });
-    return receipt.transactionHash;
+    return receipt.hash;
   }
 
   async approveVault(
@@ -99,6 +99,6 @@ export class SwapSDK {
       ...overrides,
     });
 
-    return receipt && receipt.transactionHash;
+    return receipt && receipt.hash;
   }
 }

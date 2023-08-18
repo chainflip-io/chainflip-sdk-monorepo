@@ -1,4 +1,4 @@
-import { ContractReceipt } from 'ethers';
+import { ContractTransactionReceipt } from 'ethers';
 import { ExecuteOptions, TokenSwapParams } from './schemas';
 import {
   checkAllowance,
@@ -35,7 +35,7 @@ export const checkVaultAllowance = (
 export const approveVault = async (
   params: Pick<TokenSwapParams, 'srcAsset' | 'amount'>,
   opts: ExecuteOptions,
-): Promise<ContractReceipt | null> => {
+): Promise<ContractTransactionReceipt | null> => {
   const { isAllowable, erc20, allowance } = await checkVaultAllowance(
     params,
     opts,
