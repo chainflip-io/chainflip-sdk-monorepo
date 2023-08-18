@@ -5,7 +5,7 @@ jest.mock('ethers');
 jest.mock('@/shared/stateChainGateway', () => ({
   fundStateChainAccount: jest
     .fn()
-    .mockResolvedValue({ status: 1, hash: 'example-tx-hash' }),
+    .mockResolvedValue({ status: 1, transactionHash: 'example-tx-hash' }),
 }));
 
 const localnet = `fund-state-chain-account

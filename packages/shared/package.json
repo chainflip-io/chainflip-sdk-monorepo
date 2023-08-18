@@ -6,7 +6,7 @@
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "build": "tsc -p tsconfig.cjs.json && tsc -p tsconfig.mjs.json",
-    "build:abis": "typechain --target=ethers-v6 --out-dir=./src/abis ./abis/**",
+    "build:abis": "typechain --target=ethers-v5 --out-dir=./src/abis ./abis/**",
     "lint": "pnpm eslint --max-warnings 0 './**/*.ts'",
     "test": "jest",
     "test:ci": "CI=1 pnpm test -- --forceExit"
@@ -20,14 +20,14 @@
   "dependencies": {
     "@polkadot/util": "^12.4.1",
     "@polkadot/util-crypto": "^12.3.2",
-    "ethers": "6.7.1",
+    "ethers": "5.7.2",
     "rxjs": "^7.8.1",
     "ws": "^8.13.0"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
-    "@typechain/ethers-v6": "^0.4.3",
+    "@typechain/ethers-v5": "^11.1.1",
     "@types/ws": "^8.5.5",
     "typechain": "^8.3.1",
     "winston": "^3.10.0",

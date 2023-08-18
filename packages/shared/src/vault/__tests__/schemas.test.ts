@@ -191,6 +191,17 @@ describe('executeOptionsSchema', () => {
         value: 1,
         data: [],
       }),
-    ).toMatchSnapshot();
+    ).toMatchInlineSnapshot(`
+      {
+        "gasLimit": 0,
+        "gasPrice": 0,
+        "network": "partnernet",
+        "signer": VoidSigner {
+          "_isSigner": true,
+          "address": "0x0",
+          "provider": null,
+        },
+      }
+    `);
   });
 });

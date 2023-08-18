@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 /* eslint-disable max-classes-per-file */
-import { VoidSigner } from 'ethers';
+import { BigNumber, VoidSigner } from 'ethers';
 import { Assets, ChainflipNetworks, Chains } from '../../enums';
 import executeSwap from '../executeSwap';
 import { ExecuteSwapParams } from '../schemas';
@@ -21,7 +21,7 @@ class MockVault {
 class MockERC20 {
   async approve(): Promise<any> {}
   async allowance(): Promise<any> {
-    return BigInt(Number.MAX_SAFE_INTEGER - 1);
+    return BigNumber.from(Number.MAX_SAFE_INTEGER - 1);
   }
 }
 
@@ -93,7 +93,7 @@ describe(executeSwap, () => {
     async (params) => {
       const wait = jest
         .fn()
-        .mockResolvedValue({ status: 1, hash: 'hello world' });
+        .mockResolvedValue({ status: 1, transactionHash: 'hello world' });
       const swapSpy = jest
         .spyOn(MockVault.prototype, 'xSwapNative')
         .mockResolvedValue({ wait });
@@ -103,7 +103,7 @@ describe(executeSwap, () => {
           network: ChainflipNetworks.sisyphos,
           signer: new VoidSigner('MY ADDRESS'),
         }),
-      ).toStrictEqual({ status: 1, hash: 'hello world' });
+      ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
       expect(wait).toHaveBeenCalledWith(1);
       expect(swapSpy.mock.calls).toMatchSnapshot();
     },
@@ -144,7 +144,7 @@ describe(executeSwap, () => {
     async (params) => {
       const wait = jest
         .fn()
-        .mockResolvedValue({ status: 1, hash: 'hello world' });
+        .mockResolvedValue({ status: 1, transactionHash: 'hello world' });
       const approveSpy = jest
         .spyOn(MockERC20.prototype, 'approve')
         .mockResolvedValue({ wait });
@@ -158,7 +158,7 @@ describe(executeSwap, () => {
           network: 'sisyphos',
           signer: new VoidSigner('MY ADDRESS'),
         }),
-      ).toStrictEqual({ status: 1, hash: 'hello world' });
+      ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
       expect(wait).toHaveBeenCalledWith(1);
       expect(swapSpy.mock.calls).toMatchSnapshot();
       expect(allowanceSpy.mock.calls).toMatchSnapshot();
@@ -169,7 +169,7 @@ describe(executeSwap, () => {
   it('submits a token swap with sufficient approval', async () => {
     const wait = jest
       .fn()
-      .mockResolvedValue({ status: 1, hash: 'hello world' });
+      .mockResolvedValue({ status: 1, transactionHash: 'hello world' });
     const approveSpy = jest
       .spyOn(MockERC20.prototype, 'approve')
       .mockRejectedValue(Error('unmocked call'));
@@ -178,7 +178,7 @@ describe(executeSwap, () => {
       .mockResolvedValue({ wait });
     const allowanceSpy = jest
       .spyOn(MockERC20.prototype, 'allowance')
-      .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
+      .mockResolvedValueOnce(BigNumber.from(Number.MAX_SAFE_INTEGER - 1));
 
     expect(
       await executeSwap(
@@ -192,7 +192,7 @@ describe(executeSwap, () => {
         },
         { network: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
       ),
-    ).toStrictEqual({ status: 1, hash: 'hello world' });
+    ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
     expect(wait).toHaveBeenCalledWith(1);
     expect(swapSpy.mock.calls).toMatchSnapshot();
     expect(allowanceSpy.mock.calls).toMatchSnapshot();
@@ -202,7 +202,7 @@ describe(executeSwap, () => {
   it('can be invoked with localnet options', async () => {
     const wait = jest
       .fn()
-      .mockResolvedValue({ status: 1, hash: 'hello world' });
+      .mockResolvedValue({ status: 1, transactionHash: 'hello world' });
     const approveSpy = jest
       .spyOn(MockERC20.prototype, 'approve')
       .mockResolvedValue({ wait });
@@ -211,7 +211,7 @@ describe(executeSwap, () => {
       .mockResolvedValue({ wait });
     const allowanceSpy = jest
       .spyOn(MockERC20.prototype, 'allowance')
-      .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
+      .mockResolvedValueOnce(BigNumber.from(Number.MAX_SAFE_INTEGER - 1));
 
     expect(
       await executeSwap(
@@ -230,17 +230,17 @@ describe(executeSwap, () => {
           srcTokenContractAddress: '0x456',
         },
       ),
-    ).toStrictEqual({ status: 1, hash: 'hello world' });
+    ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
     expect(wait).toHaveBeenCalledWith(1);
     expect(swapSpy.mock.calls).toMatchSnapshot();
     expect(allowanceSpy.mock.calls).toMatchSnapshot();
     expect(approveSpy).not.toHaveBeenCalled();
   });
 
-  it('accepts a nonce', async () => {
+  it.each([1, '1', 1n])('accepts a nonce (%o)', async (nonce) => {
     const wait = jest
       .fn()
-      .mockResolvedValue({ status: 1, hash: 'hello world' });
+      .mockResolvedValue({ status: 1, transactionHash: 'hello world' });
     const swapSpy = jest
       .spyOn(MockVault.prototype, 'xSwapNative')
       .mockResolvedValue({ wait });
@@ -258,10 +258,10 @@ describe(executeSwap, () => {
         {
           network: ChainflipNetworks.sisyphos,
           signer: new VoidSigner('MY ADDRESS'),
-          nonce: 1,
+          nonce,
         },
       ),
-    ).toStrictEqual({ status: 1, hash: 'hello world' });
+    ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
     expect(wait).toHaveBeenCalledWith(1);
     expect(swapSpy.mock.calls).toMatchSnapshot();
   });
@@ -286,7 +286,7 @@ describe(executeSwap, () => {
   ])('submits a native call (%p)', async (params) => {
     const wait = jest
       .fn()
-      .mockResolvedValue({ status: 1, hash: 'hello world' });
+      .mockResolvedValue({ status: 1, transactionHash: 'hello world' });
     const callSpy = jest
       .spyOn(MockVault.prototype, 'xCallNative')
       .mockResolvedValue({ wait });
@@ -302,7 +302,7 @@ describe(executeSwap, () => {
           signer: new VoidSigner('MY ADDRESS'),
         },
       ),
-    ).toStrictEqual({ status: 1, hash: 'hello world' });
+    ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
     expect(wait).toHaveBeenCalledWith(1);
     expect(callSpy.mock.calls).toMatchSnapshot();
   });
@@ -335,7 +335,7 @@ describe(executeSwap, () => {
   ])('submits a token call (%p)', async (params) => {
     const wait = jest
       .fn()
-      .mockResolvedValue({ status: 1, hash: 'hello world' });
+      .mockResolvedValue({ status: 1, transactionHash: 'hello world' });
     const approveSpy = jest
       .spyOn(MockERC20.prototype, 'approve')
       .mockResolvedValue({ wait });
@@ -355,7 +355,7 @@ describe(executeSwap, () => {
           signer: new VoidSigner('MY ADDRESS'),
         },
       ),
-    ).toStrictEqual({ status: 1, hash: 'hello world' });
+    ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
     expect(wait).toHaveBeenCalledWith(1);
     expect(callSpy).toHaveBeenCalled();
     expect(callSpy.mock.calls).toMatchSnapshot();

@@ -1,4 +1,4 @@
-import { ContractTransactionReceipt } from 'ethers';
+import { ContractReceipt } from 'ethers';
 import {
   executeOptionsSchema,
   type ExecuteOptions,
@@ -21,7 +21,7 @@ import { assert, isTokenCall, isTokenSwap } from '../guards';
 const swapNative = async (
   { destChain, destAsset, destAddress, amount }: NativeSwapParams,
   { network, vaultContractAddress: address, signer, ...opts }: ExecuteOptions,
-): Promise<ContractTransactionReceipt> => {
+): Promise<ContractReceipt> => {
   const vaultContractAddress =
     network === 'localnet' ? address : getVaultManagerContractAddress(network);
 
@@ -31,11 +31,11 @@ const swapNative = async (
     chainContractIds[destChain],
     destAddress,
     assetContractIds[destAsset],
-    '',
+    [],
     { value: amount, ...opts },
   );
 
-  return transaction.wait(1) as Promise<ContractTransactionReceipt>;
+  return transaction.wait(1);
 };
 
 const swapToken = async (
@@ -47,7 +47,7 @@ const swapToken = async (
     signer,
     ...opts
   }: ExecuteOptions,
-): Promise<ContractTransactionReceipt> => {
+): Promise<ContractReceipt> => {
   const vaultContractAddress =
     network === 'localnet'
       ? vaultAddress
@@ -76,11 +76,11 @@ const swapToken = async (
     assetContractIds[params.destAsset],
     erc20Address,
     params.amount,
-    '',
+    [],
     opts,
   );
 
-  return transaction.wait(1) as Promise<ContractTransactionReceipt>;
+  return transaction.wait(1);
 };
 
 const callNative = async (
@@ -91,7 +91,7 @@ const callNative = async (
     signer,
     ...opts
   }: ExecuteOptions,
-): Promise<ContractTransactionReceipt> => {
+): Promise<ContractReceipt> => {
   const vaultContractAddress =
     network === 'localnet'
       ? vaultAddress
@@ -105,11 +105,11 @@ const callNative = async (
     assetContractIds[params.destAsset],
     params.ccmMetadata.message,
     params.ccmMetadata.gasBudget,
-    '',
+    [],
     { value: params.amount, ...opts },
   );
 
-  return transaction.wait(1) as Promise<ContractTransactionReceipt>;
+  return transaction.wait(1);
 };
 
 const callToken = async (
@@ -121,7 +121,7 @@ const callToken = async (
     srcTokenContractAddress: tokenAddress,
     ...opts
   }: ExecuteOptions,
-): Promise<ContractTransactionReceipt> => {
+): Promise<ContractReceipt> => {
   const vaultContractAddress =
     network === 'localnet'
       ? vaultAddress
@@ -152,17 +152,17 @@ const callToken = async (
     params.ccmMetadata.gasBudget,
     erc20Address,
     params.amount,
-    '',
+    [],
     opts,
   );
 
-  return transaction.wait(1) as Promise<ContractTransactionReceipt>;
+  return transaction.wait(1);
 };
 
 const executeSwap = async (
   params: ExecuteSwapParams,
   options: ExecuteOptions,
-): Promise<ContractTransactionReceipt> => {
+): Promise<ContractReceipt> => {
   const parsedParams = executeSwapParamsSchema.parse(params);
   const opts = executeOptionsSchema.parse(options);
 
