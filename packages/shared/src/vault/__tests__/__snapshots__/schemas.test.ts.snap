@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`executeOptionsSchema strips unwanted overrides 1`] = `
+{
+  "gasLimit": 0,
+  "gasPrice": 0,
+  "network": "partnernet",
+  "signer": VoidSigner {
+    "address": "0x0",
+    "provider": null,
+  },
+}
+`;

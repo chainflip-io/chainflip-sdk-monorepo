@@ -1,4 +1,4 @@
-import { BigNumberish, ContractReceipt, Signer, BigNumber } from 'ethers';
+import { BigNumberish, ContractTransactionReceipt, Signer } from 'ethers';
 import { ERC20, ERC20__factory } from './abis';
 import { ADDRESSES, GOERLI_USDC_CONTRACT_ADDRESS } from './consts';
 import {
@@ -39,7 +39,7 @@ export const checkAllowance = async (
   const erc20 = ERC20__factory.connect(erc20Address, signer);
   const signerAddress = await signer.getAddress();
   const allowance = await erc20.allowance(signerAddress, spenderAddress);
-  return { allowance, isAllowable: allowance.gte(amount), erc20 };
+  return { allowance, isAllowable: allowance >= BigInt(amount), erc20 };
 };
 
 export const approve = async (
@@ -48,11 +48,11 @@ export const approve = async (
   erc20: ERC20,
   allowance: BigNumberish,
   nonce?: Overrides['nonce'],
-): Promise<ContractReceipt | null> => {
-  const amountBigNumber = BigNumber.from(amount);
-  const allowanceBigNumber = BigNumber.from(allowance);
-  if (allowanceBigNumber.gte(amountBigNumber)) return null;
-  const requiredAmount = amountBigNumber.sub(allowanceBigNumber);
+): Promise<ContractTransactionReceipt | null> => {
+  const amountBigNumber = BigInt(amount);
+  const allowanceBigNumber = BigInt(allowance);
+  if (allowanceBigNumber >= amountBigNumber) return null;
+  const requiredAmount = amountBigNumber - allowanceBigNumber;
   const tx = await erc20.approve(spenderAddress, requiredAmount, { nonce });
   return tx.wait(1);
 };
@@ -70,6 +70,5 @@ export const getFlipBalance = async (
 ): Promise<bigint> => {
   const flipAddress = getTokenContractAddress('FLIP', network);
   const flip = ERC20__factory.connect(flipAddress, signer);
-  const balance = await flip.balanceOf(await signer.getAddress());
-  return balance.toBigInt();
+  return flip.balanceOf(await signer.getAddress());
 };

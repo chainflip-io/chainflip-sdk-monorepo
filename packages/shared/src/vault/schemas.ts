@@ -1,6 +1,6 @@
 import { decodeAddress } from '@polkadot/util-crypto';
 import type ethers from 'ethers';
-import { Signer } from 'ethers';
+import { AbstractSigner } from 'ethers';
 import { z } from 'zod';
 import { Assets, Chains } from '../enums';
 import {
@@ -105,7 +105,7 @@ export type TokenCallParams = z.infer<typeof tokenCallParamsSchema>;
 export type TokenSwapParams = z.infer<typeof tokenSwapParamsSchema>;
 
 export type Overrides = Omit<
-  ethers.providers.TransactionRequest,
+  ethers.TransactionRequest,
   'to' | 'data' | 'value' | 'from'
 >;
 
@@ -124,7 +124,7 @@ const stripOverrides = <T>(obj: WithOverrides<T>): WithOverrides<T> => {
 
 export const executeOptionsSchema = z
   .intersection(
-    z.object({ signer: z.instanceof(Signer) }).passthrough(),
+    z.object({ signer: z.instanceof(AbstractSigner) }).passthrough(),
     z.union([
       z.object({ network: chainflipNetwork }).passthrough(),
       z

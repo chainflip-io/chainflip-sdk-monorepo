@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 /* eslint-disable max-classes-per-file */
-import { VoidSigner, ethers } from 'ethers';
+import { VoidSigner } from 'ethers';
 import { checkAllowance } from '../../contracts';
 import {
   executeRedemption,
@@ -71,10 +71,8 @@ describe(getMinimumFunding, () => {
   it('retrieves minimum funding amount', async () => {
     jest
       .spyOn(MockGateway.prototype, 'getMinimumFunding')
-      .mockResolvedValue(ethers.BigNumber.from('1234'));
-    expect(await getMinimumFunding(signerOptions)).toEqual(
-      ethers.BigNumber.from('1234'),
-    );
+      .mockResolvedValue(1234n);
+    expect(await getMinimumFunding(signerOptions)).toEqual(1234n);
   });
 });
 

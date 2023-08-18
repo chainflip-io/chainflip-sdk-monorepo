@@ -3,42 +3,44 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
-} from "ethers";
-import type {
   FunctionFragment,
   Result,
+  Interface,
   EventFragment,
-} from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
+} from "ethers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
+  TypedLogDescription,
   TypedListener,
-  OnEvent,
+  TypedContractMethod,
 } from "./common";
 
 export declare namespace IStateChainGateway {
   export type RedemptionStruct = {
     amount: BigNumberish;
-    redeemAddress: string;
+    redeemAddress: AddressLike;
     startTime: BigNumberish;
     expiryTime: BigNumberish;
   };
 
-  export type RedemptionStructOutput = [BigNumber, string, number, number] & {
-    amount: BigNumber;
+  export type RedemptionStructOutput = [
+    amount: bigint,
+    redeemAddress: string,
+    startTime: bigint,
+    expiryTime: bigint
+  ] & {
+    amount: bigint;
     redeemAddress: string;
-    startTime: number;
-    expiryTime: number;
+    startTime: bigint;
+    expiryTime: bigint;
   };
 }
 
@@ -46,46 +48,19 @@ export declare namespace IShared {
   export type SigDataStruct = {
     sig: BigNumberish;
     nonce: BigNumberish;
-    kTimesGAddress: string;
+    kTimesGAddress: AddressLike;
   };
 
-  export type SigDataStructOutput = [BigNumber, BigNumber, string] & {
-    sig: BigNumber;
-    nonce: BigNumber;
-    kTimesGAddress: string;
-  };
+  export type SigDataStructOutput = [
+    sig: bigint,
+    nonce: bigint,
+    kTimesGAddress: string
+  ] & { sig: bigint; nonce: bigint; kTimesGAddress: string };
 }
 
-export interface StateChainGatewayInterface extends utils.Interface {
-  functions: {
-    "REDEMPTION_DELAY()": FunctionFragment;
-    "disableCommunityGuard()": FunctionFragment;
-    "enableCommunityGuard()": FunctionFragment;
-    "executeRedemption(bytes32)": FunctionFragment;
-    "fundStateChainAccount(bytes32,uint256)": FunctionFragment;
-    "getCommunityGuardDisabled()": FunctionFragment;
-    "getCommunityKey()": FunctionFragment;
-    "getFLIP()": FunctionFragment;
-    "getGovernor()": FunctionFragment;
-    "getKeyManager()": FunctionFragment;
-    "getLastSupplyUpdateBlockNumber()": FunctionFragment;
-    "getMinimumFunding()": FunctionFragment;
-    "getPendingRedemption(bytes32)": FunctionFragment;
-    "getSuspendedState()": FunctionFragment;
-    "govUpdateFlipIssuer()": FunctionFragment;
-    "govWithdraw()": FunctionFragment;
-    "registerRedemption((uint256,uint256,address),bytes32,uint256,address,uint48)": FunctionFragment;
-    "resume()": FunctionFragment;
-    "setFlip(address)": FunctionFragment;
-    "setMinFunding(uint256)": FunctionFragment;
-    "suspend()": FunctionFragment;
-    "updateFlipIssuer((uint256,uint256,address),address,bool)": FunctionFragment;
-    "updateFlipSupply((uint256,uint256,address),uint256,uint256)": FunctionFragment;
-    "updateKeyManager((uint256,uint256,address),address,bool)": FunctionFragment;
-  };
-
+export interface StateChainGatewayInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "REDEMPTION_DELAY"
       | "disableCommunityGuard"
       | "enableCommunityGuard"
@@ -111,6 +86,21 @@ export interface StateChainGatewayInterface extends utils.Interface {
       | "updateFlipSupply"
       | "updateKeyManager"
   ): FunctionFragment;
+
+  getEvent(
+    nameOrSignatureOrTopic:
+      | "CommunityGuardDisabled"
+      | "FLIPSet"
+      | "FlipSupplyUpdated"
+      | "Funded"
+      | "GovernanceWithdrawal"
+      | "MinFundingChanged"
+      | "RedemptionExecuted"
+      | "RedemptionExpired"
+      | "RedemptionRegistered"
+      | "Suspended"
+      | "UpdatedKeyManager"
+  ): EventFragment;
 
   encodeFunctionData(
     functionFragment: "REDEMPTION_DELAY",
@@ -179,12 +169,15 @@ export interface StateChainGatewayInterface extends utils.Interface {
       IShared.SigDataStruct,
       BytesLike,
       BigNumberish,
-      string,
+      AddressLike,
       BigNumberish
     ]
   ): string;
   encodeFunctionData(functionFragment: "resume", values?: undefined): string;
-  encodeFunctionData(functionFragment: "setFlip", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "setFlip",
+    values: [AddressLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "setMinFunding",
     values: [BigNumberish]
@@ -192,7 +185,7 @@ export interface StateChainGatewayInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "suspend", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "updateFlipIssuer",
-    values: [IShared.SigDataStruct, string, boolean]
+    values: [IShared.SigDataStruct, AddressLike, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "updateFlipSupply",
@@ -200,7 +193,7 @@ export interface StateChainGatewayInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "updateKeyManager",
-    values: [IShared.SigDataStruct, string, boolean]
+    values: [IShared.SigDataStruct, AddressLike, boolean]
   ): string;
 
   decodeFunctionResult(
@@ -287,761 +280,637 @@ export interface StateChainGatewayInterface extends utils.Interface {
     functionFragment: "updateKeyManager",
     data: BytesLike
   ): Result;
-
-  events: {
-    "CommunityGuardDisabled(bool)": EventFragment;
-    "FLIPSet(address)": EventFragment;
-    "FlipSupplyUpdated(uint256,uint256,uint256)": EventFragment;
-    "Funded(bytes32,uint256,address)": EventFragment;
-    "GovernanceWithdrawal(address,uint256)": EventFragment;
-    "MinFundingChanged(uint256,uint256)": EventFragment;
-    "RedemptionExecuted(bytes32,uint256)": EventFragment;
-    "RedemptionExpired(bytes32,uint256)": EventFragment;
-    "RedemptionRegistered(bytes32,uint256,address,uint48,uint48)": EventFragment;
-    "Suspended(bool)": EventFragment;
-    "UpdatedKeyManager(address)": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "CommunityGuardDisabled"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "FLIPSet"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "FlipSupplyUpdated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Funded"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "GovernanceWithdrawal"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "MinFundingChanged"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RedemptionExecuted"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RedemptionExpired"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RedemptionRegistered"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Suspended"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "UpdatedKeyManager"): EventFragment;
 }
 
-export interface CommunityGuardDisabledEventObject {
-  communityGuardDisabled: boolean;
+export namespace CommunityGuardDisabledEvent {
+  export type InputTuple = [communityGuardDisabled: boolean];
+  export type OutputTuple = [communityGuardDisabled: boolean];
+  export interface OutputObject {
+    communityGuardDisabled: boolean;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type CommunityGuardDisabledEvent = TypedEvent<
-  [boolean],
-  CommunityGuardDisabledEventObject
->;
 
-export type CommunityGuardDisabledEventFilter =
-  TypedEventFilter<CommunityGuardDisabledEvent>;
-
-export interface FLIPSetEventObject {
-  flip: string;
+export namespace FLIPSetEvent {
+  export type InputTuple = [flip: AddressLike];
+  export type OutputTuple = [flip: string];
+  export interface OutputObject {
+    flip: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type FLIPSetEvent = TypedEvent<[string], FLIPSetEventObject>;
 
-export type FLIPSetEventFilter = TypedEventFilter<FLIPSetEvent>;
-
-export interface FlipSupplyUpdatedEventObject {
-  oldSupply: BigNumber;
-  newSupply: BigNumber;
-  stateChainBlockNumber: BigNumber;
+export namespace FlipSupplyUpdatedEvent {
+  export type InputTuple = [
+    oldSupply: BigNumberish,
+    newSupply: BigNumberish,
+    stateChainBlockNumber: BigNumberish
+  ];
+  export type OutputTuple = [
+    oldSupply: bigint,
+    newSupply: bigint,
+    stateChainBlockNumber: bigint
+  ];
+  export interface OutputObject {
+    oldSupply: bigint;
+    newSupply: bigint;
+    stateChainBlockNumber: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type FlipSupplyUpdatedEvent = TypedEvent<
-  [BigNumber, BigNumber, BigNumber],
-  FlipSupplyUpdatedEventObject
->;
 
-export type FlipSupplyUpdatedEventFilter =
-  TypedEventFilter<FlipSupplyUpdatedEvent>;
-
-export interface FundedEventObject {
-  nodeID: string;
-  amount: BigNumber;
-  funder: string;
+export namespace FundedEvent {
+  export type InputTuple = [
+    nodeID: BytesLike,
+    amount: BigNumberish,
+    funder: AddressLike
+  ];
+  export type OutputTuple = [nodeID: string, amount: bigint, funder: string];
+  export interface OutputObject {
+    nodeID: string;
+    amount: bigint;
+    funder: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type FundedEvent = TypedEvent<
-  [string, BigNumber, string],
-  FundedEventObject
->;
 
-export type FundedEventFilter = TypedEventFilter<FundedEvent>;
-
-export interface GovernanceWithdrawalEventObject {
-  to: string;
-  amount: BigNumber;
+export namespace GovernanceWithdrawalEvent {
+  export type InputTuple = [to: AddressLike, amount: BigNumberish];
+  export type OutputTuple = [to: string, amount: bigint];
+  export interface OutputObject {
+    to: string;
+    amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type GovernanceWithdrawalEvent = TypedEvent<
-  [string, BigNumber],
-  GovernanceWithdrawalEventObject
->;
 
-export type GovernanceWithdrawalEventFilter =
-  TypedEventFilter<GovernanceWithdrawalEvent>;
-
-export interface MinFundingChangedEventObject {
-  oldMinFunding: BigNumber;
-  newMinFunding: BigNumber;
+export namespace MinFundingChangedEvent {
+  export type InputTuple = [
+    oldMinFunding: BigNumberish,
+    newMinFunding: BigNumberish
+  ];
+  export type OutputTuple = [oldMinFunding: bigint, newMinFunding: bigint];
+  export interface OutputObject {
+    oldMinFunding: bigint;
+    newMinFunding: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type MinFundingChangedEvent = TypedEvent<
-  [BigNumber, BigNumber],
-  MinFundingChangedEventObject
->;
 
-export type MinFundingChangedEventFilter =
-  TypedEventFilter<MinFundingChangedEvent>;
-
-export interface RedemptionExecutedEventObject {
-  nodeID: string;
-  amount: BigNumber;
+export namespace RedemptionExecutedEvent {
+  export type InputTuple = [nodeID: BytesLike, amount: BigNumberish];
+  export type OutputTuple = [nodeID: string, amount: bigint];
+  export interface OutputObject {
+    nodeID: string;
+    amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type RedemptionExecutedEvent = TypedEvent<
-  [string, BigNumber],
-  RedemptionExecutedEventObject
->;
 
-export type RedemptionExecutedEventFilter =
-  TypedEventFilter<RedemptionExecutedEvent>;
-
-export interface RedemptionExpiredEventObject {
-  nodeID: string;
-  amount: BigNumber;
+export namespace RedemptionExpiredEvent {
+  export type InputTuple = [nodeID: BytesLike, amount: BigNumberish];
+  export type OutputTuple = [nodeID: string, amount: bigint];
+  export interface OutputObject {
+    nodeID: string;
+    amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type RedemptionExpiredEvent = TypedEvent<
-  [string, BigNumber],
-  RedemptionExpiredEventObject
->;
 
-export type RedemptionExpiredEventFilter =
-  TypedEventFilter<RedemptionExpiredEvent>;
-
-export interface RedemptionRegisteredEventObject {
-  nodeID: string;
-  amount: BigNumber;
-  redeemAddress: string;
-  startTime: number;
-  expiryTime: number;
+export namespace RedemptionRegisteredEvent {
+  export type InputTuple = [
+    nodeID: BytesLike,
+    amount: BigNumberish,
+    redeemAddress: AddressLike,
+    startTime: BigNumberish,
+    expiryTime: BigNumberish
+  ];
+  export type OutputTuple = [
+    nodeID: string,
+    amount: bigint,
+    redeemAddress: string,
+    startTime: bigint,
+    expiryTime: bigint
+  ];
+  export interface OutputObject {
+    nodeID: string;
+    amount: bigint;
+    redeemAddress: string;
+    startTime: bigint;
+    expiryTime: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type RedemptionRegisteredEvent = TypedEvent<
-  [string, BigNumber, string, number, number],
-  RedemptionRegisteredEventObject
->;
 
-export type RedemptionRegisteredEventFilter =
-  TypedEventFilter<RedemptionRegisteredEvent>;
-
-export interface SuspendedEventObject {
-  suspended: boolean;
+export namespace SuspendedEvent {
+  export type InputTuple = [suspended: boolean];
+  export type OutputTuple = [suspended: boolean];
+  export interface OutputObject {
+    suspended: boolean;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SuspendedEvent = TypedEvent<[boolean], SuspendedEventObject>;
 
-export type SuspendedEventFilter = TypedEventFilter<SuspendedEvent>;
-
-export interface UpdatedKeyManagerEventObject {
-  keyManager: string;
+export namespace UpdatedKeyManagerEvent {
+  export type InputTuple = [keyManager: AddressLike];
+  export type OutputTuple = [keyManager: string];
+  export interface OutputObject {
+    keyManager: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type UpdatedKeyManagerEvent = TypedEvent<
-  [string],
-  UpdatedKeyManagerEventObject
->;
-
-export type UpdatedKeyManagerEventFilter =
-  TypedEventFilter<UpdatedKeyManagerEvent>;
 
 export interface StateChainGateway extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): StateChainGateway;
+  waitForDeployment(): Promise<this>;
 
   interface: StateChainGatewayInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    REDEMPTION_DELAY(overrides?: CallOverrides): Promise<[number]>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    disableCommunityGuard(
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    enableCommunityGuard(
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  REDEMPTION_DELAY: TypedContractMethod<[], [bigint], "view">;
 
-    executeRedemption(
-      nodeID: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  disableCommunityGuard: TypedContractMethod<[], [void], "nonpayable">;
 
-    fundStateChainAccount(
-      nodeID: BytesLike,
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  enableCommunityGuard: TypedContractMethod<[], [void], "nonpayable">;
 
-    getCommunityGuardDisabled(overrides?: CallOverrides): Promise<[boolean]>;
+  executeRedemption: TypedContractMethod<
+    [nodeID: BytesLike],
+    [void],
+    "nonpayable"
+  >;
 
-    getCommunityKey(overrides?: CallOverrides): Promise<[string]>;
+  fundStateChainAccount: TypedContractMethod<
+    [nodeID: BytesLike, amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
-    getFLIP(overrides?: CallOverrides): Promise<[string]>;
+  getCommunityGuardDisabled: TypedContractMethod<[], [boolean], "view">;
 
-    getGovernor(overrides?: CallOverrides): Promise<[string]>;
+  getCommunityKey: TypedContractMethod<[], [string], "view">;
 
-    getKeyManager(overrides?: CallOverrides): Promise<[string]>;
+  getFLIP: TypedContractMethod<[], [string], "view">;
 
-    getLastSupplyUpdateBlockNumber(
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+  getGovernor: TypedContractMethod<[], [string], "view">;
 
-    getMinimumFunding(overrides?: CallOverrides): Promise<[BigNumber]>;
+  getKeyManager: TypedContractMethod<[], [string], "view">;
 
-    getPendingRedemption(
-      nodeID: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[IStateChainGateway.RedemptionStructOutput]>;
+  getLastSupplyUpdateBlockNumber: TypedContractMethod<[], [bigint], "view">;
 
-    getSuspendedState(overrides?: CallOverrides): Promise<[boolean]>;
+  getMinimumFunding: TypedContractMethod<[], [bigint], "view">;
 
-    govUpdateFlipIssuer(
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  getPendingRedemption: TypedContractMethod<
+    [nodeID: BytesLike],
+    [IStateChainGateway.RedemptionStructOutput],
+    "view"
+  >;
 
-    govWithdraw(
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  getSuspendedState: TypedContractMethod<[], [boolean], "view">;
 
-    registerRedemption(
+  govUpdateFlipIssuer: TypedContractMethod<[], [void], "nonpayable">;
+
+  govWithdraw: TypedContractMethod<[], [void], "nonpayable">;
+
+  registerRedemption: TypedContractMethod<
+    [
       sigData: IShared.SigDataStruct,
       nodeID: BytesLike,
       amount: BigNumberish,
-      redeemAddress: string,
-      expiryTime: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+      redeemAddress: AddressLike,
+      expiryTime: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
 
-    resume(
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  resume: TypedContractMethod<[], [void], "nonpayable">;
 
-    setFlip(
-      flip: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  setFlip: TypedContractMethod<[flip: AddressLike], [void], "nonpayable">;
 
-    setMinFunding(
-      newMinFunding: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  setMinFunding: TypedContractMethod<
+    [newMinFunding: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
-    suspend(
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  suspend: TypedContractMethod<[], [void], "nonpayable">;
 
-    updateFlipIssuer(
+  updateFlipIssuer: TypedContractMethod<
+    [
       sigData: IShared.SigDataStruct,
-      newIssuer: string,
-      omitChecks: boolean,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+      newIssuer: AddressLike,
+      omitChecks: boolean
+    ],
+    [void],
+    "nonpayable"
+  >;
 
-    updateFlipSupply(
+  updateFlipSupply: TypedContractMethod<
+    [
       sigData: IShared.SigDataStruct,
       newTotalSupply: BigNumberish,
-      stateChainBlockNumber: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+      stateChainBlockNumber: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
 
-    updateKeyManager(
+  updateKeyManager: TypedContractMethod<
+    [
       sigData: IShared.SigDataStruct,
-      keyManager: string,
-      omitChecks: boolean,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
-  };
+      keyManager: AddressLike,
+      omitChecks: boolean
+    ],
+    [void],
+    "nonpayable"
+  >;
 
-  REDEMPTION_DELAY(overrides?: CallOverrides): Promise<number>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-  disableCommunityGuard(
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  enableCommunityGuard(
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  executeRedemption(
-    nodeID: BytesLike,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  fundStateChainAccount(
-    nodeID: BytesLike,
-    amount: BigNumberish,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  getCommunityGuardDisabled(overrides?: CallOverrides): Promise<boolean>;
-
-  getCommunityKey(overrides?: CallOverrides): Promise<string>;
-
-  getFLIP(overrides?: CallOverrides): Promise<string>;
-
-  getGovernor(overrides?: CallOverrides): Promise<string>;
-
-  getKeyManager(overrides?: CallOverrides): Promise<string>;
-
-  getLastSupplyUpdateBlockNumber(overrides?: CallOverrides): Promise<BigNumber>;
-
-  getMinimumFunding(overrides?: CallOverrides): Promise<BigNumber>;
-
-  getPendingRedemption(
-    nodeID: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<IStateChainGateway.RedemptionStructOutput>;
-
-  getSuspendedState(overrides?: CallOverrides): Promise<boolean>;
-
-  govUpdateFlipIssuer(
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  govWithdraw(
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  registerRedemption(
-    sigData: IShared.SigDataStruct,
-    nodeID: BytesLike,
-    amount: BigNumberish,
-    redeemAddress: string,
-    expiryTime: BigNumberish,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  resume(
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  setFlip(
-    flip: string,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  setMinFunding(
-    newMinFunding: BigNumberish,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  suspend(
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  updateFlipIssuer(
-    sigData: IShared.SigDataStruct,
-    newIssuer: string,
-    omitChecks: boolean,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  updateFlipSupply(
-    sigData: IShared.SigDataStruct,
-    newTotalSupply: BigNumberish,
-    stateChainBlockNumber: BigNumberish,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  updateKeyManager(
-    sigData: IShared.SigDataStruct,
-    keyManager: string,
-    omitChecks: boolean,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  callStatic: {
-    REDEMPTION_DELAY(overrides?: CallOverrides): Promise<number>;
-
-    disableCommunityGuard(overrides?: CallOverrides): Promise<void>;
-
-    enableCommunityGuard(overrides?: CallOverrides): Promise<void>;
-
-    executeRedemption(
-      nodeID: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    fundStateChainAccount(
-      nodeID: BytesLike,
-      amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    getCommunityGuardDisabled(overrides?: CallOverrides): Promise<boolean>;
-
-    getCommunityKey(overrides?: CallOverrides): Promise<string>;
-
-    getFLIP(overrides?: CallOverrides): Promise<string>;
-
-    getGovernor(overrides?: CallOverrides): Promise<string>;
-
-    getKeyManager(overrides?: CallOverrides): Promise<string>;
-
-    getLastSupplyUpdateBlockNumber(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getMinimumFunding(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getPendingRedemption(
-      nodeID: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<IStateChainGateway.RedemptionStructOutput>;
-
-    getSuspendedState(overrides?: CallOverrides): Promise<boolean>;
-
-    govUpdateFlipIssuer(overrides?: CallOverrides): Promise<void>;
-
-    govWithdraw(overrides?: CallOverrides): Promise<void>;
-
-    registerRedemption(
+  getFunction(
+    nameOrSignature: "REDEMPTION_DELAY"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "disableCommunityGuard"
+  ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "enableCommunityGuard"
+  ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "executeRedemption"
+  ): TypedContractMethod<[nodeID: BytesLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "fundStateChainAccount"
+  ): TypedContractMethod<
+    [nodeID: BytesLike, amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "getCommunityGuardDisabled"
+  ): TypedContractMethod<[], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "getCommunityKey"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "getFLIP"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "getGovernor"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "getKeyManager"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "getLastSupplyUpdateBlockNumber"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getMinimumFunding"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getPendingRedemption"
+  ): TypedContractMethod<
+    [nodeID: BytesLike],
+    [IStateChainGateway.RedemptionStructOutput],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getSuspendedState"
+  ): TypedContractMethod<[], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "govUpdateFlipIssuer"
+  ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "govWithdraw"
+  ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "registerRedemption"
+  ): TypedContractMethod<
+    [
       sigData: IShared.SigDataStruct,
       nodeID: BytesLike,
       amount: BigNumberish,
-      redeemAddress: string,
-      expiryTime: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    resume(overrides?: CallOverrides): Promise<void>;
-
-    setFlip(flip: string, overrides?: CallOverrides): Promise<void>;
-
-    setMinFunding(
-      newMinFunding: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    suspend(overrides?: CallOverrides): Promise<void>;
-
-    updateFlipIssuer(
+      redeemAddress: AddressLike,
+      expiryTime: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "resume"
+  ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "setFlip"
+  ): TypedContractMethod<[flip: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "setMinFunding"
+  ): TypedContractMethod<[newMinFunding: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "suspend"
+  ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "updateFlipIssuer"
+  ): TypedContractMethod<
+    [
       sigData: IShared.SigDataStruct,
-      newIssuer: string,
-      omitChecks: boolean,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    updateFlipSupply(
+      newIssuer: AddressLike,
+      omitChecks: boolean
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "updateFlipSupply"
+  ): TypedContractMethod<
+    [
       sigData: IShared.SigDataStruct,
       newTotalSupply: BigNumberish,
-      stateChainBlockNumber: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    updateKeyManager(
+      stateChainBlockNumber: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "updateKeyManager"
+  ): TypedContractMethod<
+    [
       sigData: IShared.SigDataStruct,
-      keyManager: string,
-      omitChecks: boolean,
-      overrides?: CallOverrides
-    ): Promise<void>;
-  };
+      keyManager: AddressLike,
+      omitChecks: boolean
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  getEvent(
+    key: "CommunityGuardDisabled"
+  ): TypedContractEvent<
+    CommunityGuardDisabledEvent.InputTuple,
+    CommunityGuardDisabledEvent.OutputTuple,
+    CommunityGuardDisabledEvent.OutputObject
+  >;
+  getEvent(
+    key: "FLIPSet"
+  ): TypedContractEvent<
+    FLIPSetEvent.InputTuple,
+    FLIPSetEvent.OutputTuple,
+    FLIPSetEvent.OutputObject
+  >;
+  getEvent(
+    key: "FlipSupplyUpdated"
+  ): TypedContractEvent<
+    FlipSupplyUpdatedEvent.InputTuple,
+    FlipSupplyUpdatedEvent.OutputTuple,
+    FlipSupplyUpdatedEvent.OutputObject
+  >;
+  getEvent(
+    key: "Funded"
+  ): TypedContractEvent<
+    FundedEvent.InputTuple,
+    FundedEvent.OutputTuple,
+    FundedEvent.OutputObject
+  >;
+  getEvent(
+    key: "GovernanceWithdrawal"
+  ): TypedContractEvent<
+    GovernanceWithdrawalEvent.InputTuple,
+    GovernanceWithdrawalEvent.OutputTuple,
+    GovernanceWithdrawalEvent.OutputObject
+  >;
+  getEvent(
+    key: "MinFundingChanged"
+  ): TypedContractEvent<
+    MinFundingChangedEvent.InputTuple,
+    MinFundingChangedEvent.OutputTuple,
+    MinFundingChangedEvent.OutputObject
+  >;
+  getEvent(
+    key: "RedemptionExecuted"
+  ): TypedContractEvent<
+    RedemptionExecutedEvent.InputTuple,
+    RedemptionExecutedEvent.OutputTuple,
+    RedemptionExecutedEvent.OutputObject
+  >;
+  getEvent(
+    key: "RedemptionExpired"
+  ): TypedContractEvent<
+    RedemptionExpiredEvent.InputTuple,
+    RedemptionExpiredEvent.OutputTuple,
+    RedemptionExpiredEvent.OutputObject
+  >;
+  getEvent(
+    key: "RedemptionRegistered"
+  ): TypedContractEvent<
+    RedemptionRegisteredEvent.InputTuple,
+    RedemptionRegisteredEvent.OutputTuple,
+    RedemptionRegisteredEvent.OutputObject
+  >;
+  getEvent(
+    key: "Suspended"
+  ): TypedContractEvent<
+    SuspendedEvent.InputTuple,
+    SuspendedEvent.OutputTuple,
+    SuspendedEvent.OutputObject
+  >;
+  getEvent(
+    key: "UpdatedKeyManager"
+  ): TypedContractEvent<
+    UpdatedKeyManagerEvent.InputTuple,
+    UpdatedKeyManagerEvent.OutputTuple,
+    UpdatedKeyManagerEvent.OutputObject
+  >;
 
   filters: {
-    "CommunityGuardDisabled(bool)"(
-      communityGuardDisabled?: null
-    ): CommunityGuardDisabledEventFilter;
-    CommunityGuardDisabled(
-      communityGuardDisabled?: null
-    ): CommunityGuardDisabledEventFilter;
+    "CommunityGuardDisabled(bool)": TypedContractEvent<
+      CommunityGuardDisabledEvent.InputTuple,
+      CommunityGuardDisabledEvent.OutputTuple,
+      CommunityGuardDisabledEvent.OutputObject
+    >;
+    CommunityGuardDisabled: TypedContractEvent<
+      CommunityGuardDisabledEvent.InputTuple,
+      CommunityGuardDisabledEvent.OutputTuple,
+      CommunityGuardDisabledEvent.OutputObject
+    >;
 
-    "FLIPSet(address)"(flip?: null): FLIPSetEventFilter;
-    FLIPSet(flip?: null): FLIPSetEventFilter;
+    "FLIPSet(address)": TypedContractEvent<
+      FLIPSetEvent.InputTuple,
+      FLIPSetEvent.OutputTuple,
+      FLIPSetEvent.OutputObject
+    >;
+    FLIPSet: TypedContractEvent<
+      FLIPSetEvent.InputTuple,
+      FLIPSetEvent.OutputTuple,
+      FLIPSetEvent.OutputObject
+    >;
 
-    "FlipSupplyUpdated(uint256,uint256,uint256)"(
-      oldSupply?: null,
-      newSupply?: null,
-      stateChainBlockNumber?: null
-    ): FlipSupplyUpdatedEventFilter;
-    FlipSupplyUpdated(
-      oldSupply?: null,
-      newSupply?: null,
-      stateChainBlockNumber?: null
-    ): FlipSupplyUpdatedEventFilter;
+    "FlipSupplyUpdated(uint256,uint256,uint256)": TypedContractEvent<
+      FlipSupplyUpdatedEvent.InputTuple,
+      FlipSupplyUpdatedEvent.OutputTuple,
+      FlipSupplyUpdatedEvent.OutputObject
+    >;
+    FlipSupplyUpdated: TypedContractEvent<
+      FlipSupplyUpdatedEvent.InputTuple,
+      FlipSupplyUpdatedEvent.OutputTuple,
+      FlipSupplyUpdatedEvent.OutputObject
+    >;
 
-    "Funded(bytes32,uint256,address)"(
-      nodeID?: BytesLike | null,
-      amount?: null,
-      funder?: null
-    ): FundedEventFilter;
-    Funded(
-      nodeID?: BytesLike | null,
-      amount?: null,
-      funder?: null
-    ): FundedEventFilter;
+    "Funded(bytes32,uint256,address)": TypedContractEvent<
+      FundedEvent.InputTuple,
+      FundedEvent.OutputTuple,
+      FundedEvent.OutputObject
+    >;
+    Funded: TypedContractEvent<
+      FundedEvent.InputTuple,
+      FundedEvent.OutputTuple,
+      FundedEvent.OutputObject
+    >;
 
-    "GovernanceWithdrawal(address,uint256)"(
-      to?: null,
-      amount?: null
-    ): GovernanceWithdrawalEventFilter;
-    GovernanceWithdrawal(
-      to?: null,
-      amount?: null
-    ): GovernanceWithdrawalEventFilter;
+    "GovernanceWithdrawal(address,uint256)": TypedContractEvent<
+      GovernanceWithdrawalEvent.InputTuple,
+      GovernanceWithdrawalEvent.OutputTuple,
+      GovernanceWithdrawalEvent.OutputObject
+    >;
+    GovernanceWithdrawal: TypedContractEvent<
+      GovernanceWithdrawalEvent.InputTuple,
+      GovernanceWithdrawalEvent.OutputTuple,
+      GovernanceWithdrawalEvent.OutputObject
+    >;
 
-    "MinFundingChanged(uint256,uint256)"(
-      oldMinFunding?: null,
-      newMinFunding?: null
-    ): MinFundingChangedEventFilter;
-    MinFundingChanged(
-      oldMinFunding?: null,
-      newMinFunding?: null
-    ): MinFundingChangedEventFilter;
+    "MinFundingChanged(uint256,uint256)": TypedContractEvent<
+      MinFundingChangedEvent.InputTuple,
+      MinFundingChangedEvent.OutputTuple,
+      MinFundingChangedEvent.OutputObject
+    >;
+    MinFundingChanged: TypedContractEvent<
+      MinFundingChangedEvent.InputTuple,
+      MinFundingChangedEvent.OutputTuple,
+      MinFundingChangedEvent.OutputObject
+    >;
 
-    "RedemptionExecuted(bytes32,uint256)"(
-      nodeID?: BytesLike | null,
-      amount?: null
-    ): RedemptionExecutedEventFilter;
-    RedemptionExecuted(
-      nodeID?: BytesLike | null,
-      amount?: null
-    ): RedemptionExecutedEventFilter;
+    "RedemptionExecuted(bytes32,uint256)": TypedContractEvent<
+      RedemptionExecutedEvent.InputTuple,
+      RedemptionExecutedEvent.OutputTuple,
+      RedemptionExecutedEvent.OutputObject
+    >;
+    RedemptionExecuted: TypedContractEvent<
+      RedemptionExecutedEvent.InputTuple,
+      RedemptionExecutedEvent.OutputTuple,
+      RedemptionExecutedEvent.OutputObject
+    >;
 
-    "RedemptionExpired(bytes32,uint256)"(
-      nodeID?: BytesLike | null,
-      amount?: null
-    ): RedemptionExpiredEventFilter;
-    RedemptionExpired(
-      nodeID?: BytesLike | null,
-      amount?: null
-    ): RedemptionExpiredEventFilter;
+    "RedemptionExpired(bytes32,uint256)": TypedContractEvent<
+      RedemptionExpiredEvent.InputTuple,
+      RedemptionExpiredEvent.OutputTuple,
+      RedemptionExpiredEvent.OutputObject
+    >;
+    RedemptionExpired: TypedContractEvent<
+      RedemptionExpiredEvent.InputTuple,
+      RedemptionExpiredEvent.OutputTuple,
+      RedemptionExpiredEvent.OutputObject
+    >;
 
-    "RedemptionRegistered(bytes32,uint256,address,uint48,uint48)"(
-      nodeID?: BytesLike | null,
-      amount?: null,
-      redeemAddress?: string | null,
-      startTime?: null,
-      expiryTime?: null
-    ): RedemptionRegisteredEventFilter;
-    RedemptionRegistered(
-      nodeID?: BytesLike | null,
-      amount?: null,
-      redeemAddress?: string | null,
-      startTime?: null,
-      expiryTime?: null
-    ): RedemptionRegisteredEventFilter;
+    "RedemptionRegistered(bytes32,uint256,address,uint48,uint48)": TypedContractEvent<
+      RedemptionRegisteredEvent.InputTuple,
+      RedemptionRegisteredEvent.OutputTuple,
+      RedemptionRegisteredEvent.OutputObject
+    >;
+    RedemptionRegistered: TypedContractEvent<
+      RedemptionRegisteredEvent.InputTuple,
+      RedemptionRegisteredEvent.OutputTuple,
+      RedemptionRegisteredEvent.OutputObject
+    >;
 
-    "Suspended(bool)"(suspended?: null): SuspendedEventFilter;
-    Suspended(suspended?: null): SuspendedEventFilter;
+    "Suspended(bool)": TypedContractEvent<
+      SuspendedEvent.InputTuple,
+      SuspendedEvent.OutputTuple,
+      SuspendedEvent.OutputObject
+    >;
+    Suspended: TypedContractEvent<
+      SuspendedEvent.InputTuple,
+      SuspendedEvent.OutputTuple,
+      SuspendedEvent.OutputObject
+    >;
 
-    "UpdatedKeyManager(address)"(
-      keyManager?: null
-    ): UpdatedKeyManagerEventFilter;
-    UpdatedKeyManager(keyManager?: null): UpdatedKeyManagerEventFilter;
-  };
-
-  estimateGas: {
-    REDEMPTION_DELAY(overrides?: CallOverrides): Promise<BigNumber>;
-
-    disableCommunityGuard(
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    enableCommunityGuard(
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    executeRedemption(
-      nodeID: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    fundStateChainAccount(
-      nodeID: BytesLike,
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    getCommunityGuardDisabled(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getCommunityKey(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getFLIP(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getGovernor(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getKeyManager(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getLastSupplyUpdateBlockNumber(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getMinimumFunding(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getPendingRedemption(
-      nodeID: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getSuspendedState(overrides?: CallOverrides): Promise<BigNumber>;
-
-    govUpdateFlipIssuer(
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    govWithdraw(overrides?: Overrides & { from?: string }): Promise<BigNumber>;
-
-    registerRedemption(
-      sigData: IShared.SigDataStruct,
-      nodeID: BytesLike,
-      amount: BigNumberish,
-      redeemAddress: string,
-      expiryTime: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    resume(overrides?: Overrides & { from?: string }): Promise<BigNumber>;
-
-    setFlip(
-      flip: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    setMinFunding(
-      newMinFunding: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    suspend(overrides?: Overrides & { from?: string }): Promise<BigNumber>;
-
-    updateFlipIssuer(
-      sigData: IShared.SigDataStruct,
-      newIssuer: string,
-      omitChecks: boolean,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    updateFlipSupply(
-      sigData: IShared.SigDataStruct,
-      newTotalSupply: BigNumberish,
-      stateChainBlockNumber: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    updateKeyManager(
-      sigData: IShared.SigDataStruct,
-      keyManager: string,
-      omitChecks: boolean,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    REDEMPTION_DELAY(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    disableCommunityGuard(
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    enableCommunityGuard(
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    executeRedemption(
-      nodeID: BytesLike,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    fundStateChainAccount(
-      nodeID: BytesLike,
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    getCommunityGuardDisabled(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getCommunityKey(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getFLIP(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getGovernor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getKeyManager(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getLastSupplyUpdateBlockNumber(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getMinimumFunding(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getPendingRedemption(
-      nodeID: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getSuspendedState(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    govUpdateFlipIssuer(
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    govWithdraw(
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    registerRedemption(
-      sigData: IShared.SigDataStruct,
-      nodeID: BytesLike,
-      amount: BigNumberish,
-      redeemAddress: string,
-      expiryTime: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    resume(
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    setFlip(
-      flip: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    setMinFunding(
-      newMinFunding: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    suspend(
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    updateFlipIssuer(
-      sigData: IShared.SigDataStruct,
-      newIssuer: string,
-      omitChecks: boolean,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    updateFlipSupply(
-      sigData: IShared.SigDataStruct,
-      newTotalSupply: BigNumberish,
-      stateChainBlockNumber: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    updateKeyManager(
-      sigData: IShared.SigDataStruct,
-      keyManager: string,
-      omitChecks: boolean,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
+    "UpdatedKeyManager(address)": TypedContractEvent<
+      UpdatedKeyManagerEvent.InputTuple,
+      UpdatedKeyManagerEvent.OutputTuple,
+      UpdatedKeyManagerEvent.OutputObject
+    >;
+    UpdatedKeyManager: TypedContractEvent<
+      UpdatedKeyManagerEvent.InputTuple,
+      UpdatedKeyManagerEvent.OutputTuple,
+      UpdatedKeyManagerEvent.OutputObject
+    >;
   };
 }
