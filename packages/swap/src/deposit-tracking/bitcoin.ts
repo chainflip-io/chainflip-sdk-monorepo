@@ -41,6 +41,7 @@ export const fetchPendingBitcoinDeposit = async (address: string) => {
         headers: {
           'Content-Type': 'application/json',
         },
+        timeout: 500,
       },
     );
     const data = depositTrackerResponseSchema.safeParse(response.data);
