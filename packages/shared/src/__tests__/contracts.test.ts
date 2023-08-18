@@ -57,7 +57,9 @@ describe(approve, () => {
       const approveSpy = jest
         .spyOn(MockERC20.prototype, 'approve')
         .mockResolvedValueOnce({
-          wait: jest.fn().mockResolvedValue({ status: 1, hash: 'TX_HASH' }),
+          wait: jest
+            .fn()
+            .mockResolvedValue({ status: 1, transactionHash: 'TX_HASH' }),
         });
 
       const receipt = await approve(

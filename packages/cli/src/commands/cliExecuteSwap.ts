@@ -1,4 +1,4 @@
-import { AlchemyProvider, getDefaultProvider, Wallet } from 'ethers';
+import { getDefaultProvider, providers, Wallet } from 'ethers';
 import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
 import { assetChains, Assets, ChainflipNetworks } from '@/shared/enums';
 import { assert } from '@/shared/guards';
@@ -73,7 +73,7 @@ export default async function cliExecuteSwap(
 
   const wallet = new Wallet(privateKey).connect(
     process.env.ALCHEMY_KEY
-      ? new AlchemyProvider(ethNetwork, process.env.ALCHEMY_KEY)
+      ? new providers.AlchemyProvider(ethNetwork, process.env.ALCHEMY_KEY)
       : getDefaultProvider(ethNetwork),
   );
 
@@ -110,5 +110,5 @@ export default async function cliExecuteSwap(
     opts,
   );
 
-  console.log(`Swap executed. Transaction hash: ${receipt.hash}`);
+  console.log(`Swap executed. Transaction hash: ${receipt.transactionHash}`);
 }
