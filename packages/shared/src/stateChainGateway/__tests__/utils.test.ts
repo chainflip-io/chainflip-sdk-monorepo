@@ -12,7 +12,7 @@ describe(getStateChainGateway, () => {
           signer: new VoidSigner('0x0'),
         }),
       ).toMatchObject({
-        address: ADDRESSES[network].STATE_CHAIN_MANAGER_CONTRACT_ADDRESS,
+        target: ADDRESSES[network].STATE_CHAIN_MANAGER_CONTRACT_ADDRESS,
       });
     },
   );
@@ -23,12 +23,10 @@ describe(getStateChainGateway, () => {
       getStateChainGateway({
         network: 'localnet',
         signer: new VoidSigner('0x0').connect(
-          ethers.providers.getDefaultProvider('goerli'),
+          ethers.getDefaultProvider('goerli'),
         ),
         stateChainGatewayContractAddress: address,
       }),
-    ).toMatchObject({
-      address,
-    });
+    ).toMatchObject({ target: address });
   });
 });

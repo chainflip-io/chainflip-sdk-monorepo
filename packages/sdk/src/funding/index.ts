@@ -37,7 +37,7 @@ export class FundingSDK {
     amount: string,
   ): Promise<TransactionHash> {
     const tx = await fundStateChainAccount(accountId, amount, this.options);
-    return tx.transactionHash;
+    return tx.hash;
   }
 
   /**
@@ -47,15 +47,14 @@ export class FundingSDK {
    */
   async executeRedemption(accountId: `0x${string}`): Promise<TransactionHash> {
     const tx = await executeRedemption(accountId, this.options);
-    return tx.transactionHash;
+    return tx.hash;
   }
 
-  async getMinimumFunding(): Promise<bigint> {
-    const amount = await getMinimumFunding(this.options);
-    return amount.toBigInt();
+  getMinimumFunding(): Promise<bigint> {
+    return getMinimumFunding(this.options);
   }
 
-  async getRedemptionDelay(): Promise<number> {
+  async getRedemptionDelay(): Promise<bigint> {
     return getRedemptionDelay(this.options);
   }
 
@@ -69,13 +68,13 @@ export class FundingSDK {
    */
   async approveStateChainGateway(
     amount: bigint | string | number,
-    nonce?: bigint | string | number,
+    nonce?: number,
   ): Promise<TransactionHash | null> {
     const receipt = await approveStateChainGateway(amount, {
       nonce,
       ...this.options,
     });
 
-    return receipt && receipt.transactionHash;
+    return receipt && receipt.hash;
   }
 }

@@ -1,4 +1,4 @@
-import type { BigNumber, ContractReceipt, Signer } from 'ethers';
+import type { ContractTransactionReceipt, Signer } from 'ethers';
 import { getStateChainGateway } from './utils';
 import { checkAllowance, getTokenContractAddress } from '../contracts';
 import { Assets, ChainflipNetwork } from '../enums';
@@ -29,7 +29,7 @@ export const fundStateChainAccount = async (
   accountId: `0x${string}`,
   amount: string,
   options: FundStateChainAccountOptions,
-): Promise<ContractReceipt> => {
+): Promise<ContractTransactionReceipt> => {
   const flipContractAddress =
     options.network === 'localnet'
       ? options.flipContractAddress
@@ -39,7 +39,7 @@ export const fundStateChainAccount = async (
 
   const { isAllowable } = await checkAllowance(
     amount,
-    stateChainGateway.address,
+    await stateChainGateway.getAddress(),
     flipContractAddress,
     options.signer,
   );
@@ -51,13 +51,13 @@ export const fundStateChainAccount = async (
     { nonce: options.nonce },
   );
 
-  return transaction.wait(1);
+  return transaction.wait(1) as Promise<ContractTransactionReceipt>;
 };
 
 export const executeRedemption = async (
   accountId: `0x${string}`,
   options: WithOverrides<SignerOptions>,
-): Promise<ContractReceipt> => {
+): Promise<ContractTransactionReceipt> => {
   const stateChainGateway = getStateChainGateway(options);
 
   const transaction = await stateChainGateway.executeRedemption(
@@ -65,18 +65,16 @@ export const executeRedemption = async (
     options,
   );
 
-  return transaction.wait(1);
+  return transaction.wait(1) as Promise<ContractTransactionReceipt>;
 };
 
-export const getMinimumFunding = (
-  options: SignerOptions,
-): Promise<BigNumber> => {
+export const getMinimumFunding = (options: SignerOptions): Promise<bigint> => {
   const stateChainGateway = getStateChainGateway(options);
 
   return stateChainGateway.getMinimumFunding();
 };
 
-export const getRedemptionDelay = (options: SignerOptions): Promise<number> => {
+export const getRedemptionDelay = (options: SignerOptions): Promise<bigint> => {
   const stateChainGateway = getStateChainGateway(options);
 
   return stateChainGateway.REDEMPTION_DELAY();

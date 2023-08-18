@@ -3,159 +3,125 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
+  FunctionFragment,
+  Result,
+  Interface,
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
 } from "ethers";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
   TypedListener,
-  OnEvent,
+  TypedContractMethod,
 } from "./common";
 
-export interface ERC20Interface extends utils.Interface {
-  functions: {
-    "allowance(address,address)": FunctionFragment;
-    "approve(address,uint256)": FunctionFragment;
-    "balanceOf(address)": FunctionFragment;
-  };
-
+export interface ERC20Interface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic: "allowance" | "approve" | "balanceOf"
+    nameOrSignature: "allowance" | "approve" | "balanceOf"
   ): FunctionFragment;
 
   encodeFunctionData(
     functionFragment: "allowance",
-    values: [string, string]
+    values: [AddressLike, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "approve",
-    values: [string, BigNumberish]
+    values: [AddressLike, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "balanceOf",
+    values: [AddressLike]
+  ): string;
 
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
-
-  events: {};
 }
 
 export interface ERC20 extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): ERC20;
+  waitForDeployment(): Promise<this>;
 
   interface: ERC20Interface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    allowance(
-      owner: string,
-      spender: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    approve(
-      spender: string,
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    balanceOf(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
-  };
+  allowance: TypedContractMethod<
+    [owner: AddressLike, spender: AddressLike],
+    [bigint],
+    "view"
+  >;
 
-  allowance(
-    owner: string,
-    spender: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  approve: TypedContractMethod<
+    [spender: AddressLike, amount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
 
-  approve(
-    spender: string,
-    amount: BigNumberish,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
+  balanceOf: TypedContractMethod<[account: AddressLike], [bigint], "view">;
 
-  balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-  callStatic: {
-    allowance(
-      owner: string,
-      spender: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    approve(
-      spender: string,
-      amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
-  };
+  getFunction(
+    nameOrSignature: "allowance"
+  ): TypedContractMethod<
+    [owner: AddressLike, spender: AddressLike],
+    [bigint],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "approve"
+  ): TypedContractMethod<
+    [spender: AddressLike, amount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "balanceOf"
+  ): TypedContractMethod<[account: AddressLike], [bigint], "view">;
 
   filters: {};
-
-  estimateGas: {
-    allowance(
-      owner: string,
-      spender: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    approve(
-      spender: string,
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    allowance(
-      owner: string,
-      spender: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    approve(
-      spender: string,
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    balanceOf(
-      account: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-  };
 }

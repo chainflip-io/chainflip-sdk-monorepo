@@ -17,7 +17,7 @@ export const validatePolkadotAddress: AddressValidator = (address) => {
 };
 
 export const validateEvmAddress: AddressValidator = (address) =>
-  ethers.utils.isAddress(address);
+  ethers.isAddress(address);
 
 type BitcoinNetwork = 'mainnet' | 'testnet' | 'regtest';
 
@@ -29,23 +29,23 @@ const assertArraylikeEqual = <T>(a: ArrayLike<T>, b: ArrayLike<T>) => {
 };
 
 // if we go back to ethers 6 when typechain updates
-// const hexToUint8Array = (hex: string) => {
-//   const withoutPrefix = hex.replace(/^0x/, '');
-//   const padded =
-//     withoutPrefix.length % 2 === 0 ? withoutPrefix : `0${withoutPrefix}`;
-//   const matchArray = padded.match(/.{2}/g);
-//   assert(matchArray, 'matchArray must not be null');
-//   return new Uint8Array(matchArray.map((n) => Number.parseInt(n, 16)));
-// };
+const hexToUint8Array = (hex: string) => {
+  const withoutPrefix = hex.replace(/^0x/, '');
+  const padded =
+    withoutPrefix.length % 2 === 0 ? withoutPrefix : `0${withoutPrefix}`;
+  const matchArray = padded.match(/.{2}/g);
+  assert(matchArray, 'matchArray must not be null');
+  return new Uint8Array(matchArray.map((n) => Number.parseInt(n, 16)));
+};
 
-// const decodeBase58 = (address: string) => {
-//   const bigint = ethers.decodeBase58(address);
-//   // this regex will always match
-//   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-//   const leadingZeroes = address.match(/^1*/)![0].length;
-//   const hex = `${'0'.repeat(leadingZeroes)}${bigint.toString(16)}`;
-//   return hexToUint8Array(hex);
-// };
+const decodeBase58 = (address: string) => {
+  const bigint = ethers.decodeBase58(address);
+  // this regex will always match
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const leadingZeroes = address.match(/^1*/)![0].length;
+  const hex = `${'0'.repeat(leadingZeroes)}${bigint.toString(16)}`;
+  return hexToUint8Array(hex);
+};
 
 const validateP2PKHOrP2SHAddress = (
   address: string,
@@ -53,7 +53,7 @@ const validateP2PKHOrP2SHAddress = (
 ) => {
   try {
     // The address must be a valid base58 encoded string.
-    const decoded = ethers.utils.base58.decode(address);
+    const decoded = decodeBase58(address);
 
     // Decoding it must result in exactly 25 bytes.
     assert(decoded.length === 25, 'decoded address must be 25 bytes long');
@@ -73,8 +73,8 @@ const validateP2PKHOrP2SHAddress = (
     }
     // The last 4 decoded bytes must be equal to the first 4 bytes of the double sha256 of the first 21 decoded bytes
     const checksum = decoded.slice(-4);
-    const doubleHash = ethers.utils.arrayify(
-      ethers.utils.sha256(ethers.utils.sha256(decoded.slice(0, 21))),
+    const doubleHash = ethers.getBytes(
+      ethers.sha256(ethers.sha256(decoded.slice(0, 21))),
     );
 
     assertArraylikeEqual(checksum, doubleHash.slice(0, 4));

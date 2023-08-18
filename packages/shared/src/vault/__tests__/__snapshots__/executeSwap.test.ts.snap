@@ -1,21 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`executeSwap accepts a nonce ('1') 1`] = `
-[
-  [
-    3,
-    "0x74623171676539767664326d6d6a7866687578757132303468346678787068723076666e736e78323035",
-    5,
-    [],
-    {
-      "nonce": "1",
-      "value": "1",
-    },
-  ],
-]
-`;
-
-exports[`executeSwap accepts a nonce (1) 1`] = `
+exports[`executeSwap accepts a nonce 1`] = `
 [
   [
     3,
@@ -24,21 +9,6 @@ exports[`executeSwap accepts a nonce (1) 1`] = `
     [],
     {
       "nonce": 1,
-      "value": "1",
-    },
-  ],
-]
-`;
-
-exports[`executeSwap accepts a nonce (1n) 1`] = `
-[
-  [
-    3,
-    "0x74623171676539767664326d6d6a7866687578757132303468346678787068723076666e736e78323035",
-    5,
-    [],
-    {
-      "nonce": 1n,
       "value": "1",
     },
   ],
