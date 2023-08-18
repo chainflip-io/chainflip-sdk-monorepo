@@ -59,7 +59,12 @@ export interface CommonStatusFields extends ChainsAndAssets {
 
 export type SwapStatusResponse = CommonStatusFields &
   (
-    | { state: 'AWAITING_DEPOSIT' }
+    | {
+        state: 'AWAITING_DEPOSIT';
+        depositAmount: string | undefined;
+        depositTransactionHash: string | undefined;
+        depositTransactionConfirmations: number | undefined;
+      }
     | {
         state: 'DEPOSIT_RECEIVED';
         swapId: string;
