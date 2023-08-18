@@ -12,7 +12,7 @@ import { FundingSDK } from '../index';
 jest.mock('@/shared/stateChainGateway');
 
 class MockERC20 {
-  async balanceOf(): Promise<bigint> {
+  async balanceOf(): Promise<ethers.BigNumber> {
     throw new Error('unmocked call');
   }
 }
@@ -27,7 +27,7 @@ describe(FundingSDK, () => {
   const sdk = new FundingSDK({
     network: 'sisyphos',
     signer: new VoidSigner('0xcafebabe').connect(
-      ethers.getDefaultProvider('goerli'),
+      ethers.providers.getDefaultProvider('goerli'),
     ),
   });
 
@@ -41,7 +41,7 @@ describe(FundingSDK, () => {
   describe(FundingSDK.prototype.fundStateChainAccount, () => {
     it('approves the gateway and funds the account', async () => {
       jest.mocked(fundStateChainAccount).mockResolvedValueOnce({
-        hash: '0xabcdef',
+        transactionHash: '0xabcdef',
       } as any);
 
       await sdk.fundStateChainAccount('0x1234', '1000');
@@ -58,7 +58,7 @@ describe(FundingSDK, () => {
   describe(FundingSDK.prototype.executeRedemption, () => {
     it('approves the gateway and funds the account', async () => {
       jest.mocked(executeRedemption).mockResolvedValue({
-        hash: '0xabcdef',
+        transactionHash: '0xabcdef',
       } as any);
 
       const txHash = await sdk.executeRedemption('0x1234');
@@ -74,7 +74,9 @@ describe(FundingSDK, () => {
 
   describe(FundingSDK.prototype.getMinimumFunding, () => {
     it('approves the gateway and funds the account', async () => {
-      jest.mocked(getMinimumFunding).mockResolvedValue(1000n);
+      jest
+        .mocked(getMinimumFunding)
+        .mockResolvedValue(ethers.BigNumber.from(1000));
       const funding = await sdk.getMinimumFunding();
 
       expect(getMinimumFunding).toHaveBeenCalledWith(
@@ -88,7 +90,7 @@ describe(FundingSDK, () => {
 
   describe(FundingSDK.prototype.getRedemptionDelay, () => {
     it('approves the gateway and funds the account', async () => {
-      jest.mocked(getRedemptionDelay).mockResolvedValue(1000n);
+      jest.mocked(getRedemptionDelay).mockResolvedValue(1000);
       const delay = await sdk.getRedemptionDelay();
 
       expect(getRedemptionDelay).toHaveBeenCalledWith(
@@ -96,7 +98,7 @@ describe(FundingSDK, () => {
         sdk.options,
       );
 
-      expect(delay).toEqual(1000n);
+      expect(delay).toEqual(1000);
     });
   });
 
@@ -104,7 +106,7 @@ describe(FundingSDK, () => {
     it('gets the FLIP balance of an address', async () => {
       const spy = jest
         .spyOn(MockERC20.prototype, 'balanceOf')
-        .mockResolvedValueOnce(1000n);
+        .mockResolvedValueOnce(ethers.BigNumber.from(1000));
       const balance = await sdk.getFlipBalance();
       expect(balance).toBe(1000n);
       expect(spy.mock.calls).toMatchInlineSnapshot(`
@@ -120,7 +122,7 @@ describe(FundingSDK, () => {
   describe(FundingSDK.prototype.approveStateChainGateway, () => {
     it('requests approval and returns the tx hash', async () => {
       jest.mocked(approveStateChainGateway).mockResolvedValueOnce({
-        hash: '0xabcdef',
+        transactionHash: '0xabcdef',
       } as any);
       const txHash = await sdk.approveStateChainGateway(1, 2);
       expect(txHash).toBe('0xabcdef');

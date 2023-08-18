@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 /* eslint-disable max-classes-per-file */
-import { VoidSigner } from 'ethers';
+import { BigNumber, VoidSigner } from 'ethers';
 import { Assets, ChainflipNetworks, Chains } from '../../enums';
 import executeSwap from '../executeSwap';
 import { ExecuteSwapParams } from '../schemas';
@@ -21,7 +21,7 @@ class MockVault {
 class MockERC20 {
   async approve(): Promise<any> {}
   async allowance(): Promise<any> {
-    return BigInt(Number.MAX_SAFE_INTEGER - 1);
+    return BigNumber.from(Number.MAX_SAFE_INTEGER - 1);
   }
 }
 
@@ -178,7 +178,7 @@ describe(executeSwap, () => {
       .mockResolvedValue({ wait });
     const allowanceSpy = jest
       .spyOn(MockERC20.prototype, 'allowance')
-      .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
+      .mockResolvedValueOnce(BigNumber.from(Number.MAX_SAFE_INTEGER - 1));
 
     expect(
       await executeSwap(
@@ -211,7 +211,7 @@ describe(executeSwap, () => {
       .mockResolvedValue({ wait });
     const allowanceSpy = jest
       .spyOn(MockERC20.prototype, 'allowance')
-      .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
+      .mockResolvedValueOnce(BigNumber.from(Number.MAX_SAFE_INTEGER - 1));
 
     expect(
       await executeSwap(
@@ -237,7 +237,7 @@ describe(executeSwap, () => {
     expect(approveSpy).not.toHaveBeenCalled();
   });
 
-  it('accepts a nonce', async () => {
+  it.each([1, '1', 1n])('accepts a nonce (%o)', async (nonce) => {
     const wait = jest
       .fn()
       .mockResolvedValue({ status: 1, transactionHash: 'hello world' });
@@ -258,7 +258,7 @@ describe(executeSwap, () => {
         {
           network: ChainflipNetworks.sisyphos,
           signer: new VoidSigner('MY ADDRESS'),
-          nonce: 1,
+          nonce,
         },
       ),
     ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
