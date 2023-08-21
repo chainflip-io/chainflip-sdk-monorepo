@@ -244,8 +244,8 @@ importers:
         specifier: ^4.17.35
         version: 4.17.35
       '@types/graphql-fields':
-        specifier: ^1.3.4
-        version: 1.3.4
+        specifier: ^1.3.5
+        version: 1.3.5
       '@types/qs':
         specifier: ^6.9.7
         version: 6.9.7
@@ -3269,10 +3269,10 @@ packages:
       '@types/node': 20.5.0
     dev: true
 
-  /@types/graphql-fields@1.3.4:
-    resolution: {integrity: sha512-McLJaAaqY7lk9d9y7E61iQrj0AwcEjSb8uHlPh7KgYV+XX1MSLlSt/alhd5k2BPRE8gy/f4lnkLGb5ke3iG66Q==}
+  /@types/graphql-fields@1.3.5:
+    resolution: {integrity: sha512-F6Nkra4p4MeBRFhg4zfkrnl/2gL4HZdt5lkFgLKZaA+3U/5+eA1dMqSHuSHX7aFUbCFE48ch8qCBXB/udcRhMg==}
     dependencies:
-      graphql: 15.8.0
+      graphql: 16.8.0
     dev: true
 
   /@types/istanbul-lib-coverage@2.0.4:
@@ -5834,6 +5834,7 @@ packages:
   /graphql@15.8.0:
     resolution: {integrity: sha512-5gghUc24tP9HRznNpV2+FIoq3xKkj5dTQqf4v0CpdPbFVwFkWoxOM+o+2OC9ZSvjEMTjfmG9QT+gcvggTwW1zw==}
     engines: {node: '>= 10.x'}
+    dev: false
 
   /graphql@16.8.0:
     resolution: {integrity: sha512-0oKGaR+y3qcS5mCu1vb7KG+a89vjn06C7Ihq/dDl3jA+A8B3TKomvi3CiEcVLJQGalbu8F52LxkOym7U5sSfbg==}
