@@ -41,7 +41,7 @@ exports[`ApiService getAssets (partnernet) gets the correct assets for testnets 
     "id": "BTC",
     "isMainnet": false,
     "minimumDepositAmount": "0",
-    "minimumSwapAmount": "390000",
+    "minimumSwapAmount": "5000",
     "name": "Bitcoin",
     "symbol": "BTC",
   },
