@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@polkadot/util": "^12.4.1",
-    "@polkadot/util-crypto": "^12.3.2",
+    "@polkadot/util-crypto": "^12.4.1",
     "axios": "^1.4.0",
     "ethers": "5.7.2",
     "zod": "^3.22.1"

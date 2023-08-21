@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@polkadot/util": "^12.4.1",
-    "@polkadot/util-crypto": "^12.3.2",
+    "@polkadot/util-crypto": "^12.4.1",
     "@prisma/client": "^5.1.1",
     "axios": "^1.4.0",
     "bignumber.js": "^9.1.1",
