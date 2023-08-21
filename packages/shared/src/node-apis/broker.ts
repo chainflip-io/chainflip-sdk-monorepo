@@ -77,7 +77,7 @@ const requestValidators = {
 const responseValidators = {
   requestSwapDepositAddress: z
     .object({
-      address: z.union([hexString, btcAddress(), dotAddress]),
+      address: z.union([dotAddress, hexString, btcAddress()]),
       expiry_block: z.number(),
       issued_block: z.number(),
       channel_id: z.number(),
