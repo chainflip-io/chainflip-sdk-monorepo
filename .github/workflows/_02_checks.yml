@@ -76,7 +76,7 @@ jobs:
 
       - name: Upload coverage to Codecov ☂️
         uses: codecov/codecov-action@v3
-        if: matrix.node_version == '18'
+        if: contains(matrix.node_version, '18')
         with:
           flags: ${{ matrix.package }}
           fail_ci_if_error: true
