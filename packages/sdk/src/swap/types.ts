@@ -53,7 +53,7 @@ export interface SwapStatusRequest {
 export interface CommonStatusFields extends ChainsAndAssets {
   destAddress: string;
   depositAddress: string | undefined;
-  depositAddressCreatedAt: number | undefined;
+  depositChannelCreatedAt: number | undefined;
   expectedDepositAmount: string | undefined;
 }
 
