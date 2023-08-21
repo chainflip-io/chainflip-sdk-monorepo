@@ -25,7 +25,7 @@ const MINIMUM_SWAP_AMOUNTS: Partial<
     [Assets.ETH]: '580000000000000',
     [Assets.FLIP]: '1000000000000000000',
     [Assets.USDC]: '1000000',
-    [Assets.BTC]: '390000',
+    [Assets.BTC]: '5000',
     [Assets.DOT]: '2000000000',
   },
 };
