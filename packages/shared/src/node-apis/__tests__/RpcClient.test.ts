@@ -1,4 +1,4 @@
-import { on, once } from 'events';
+import { once } from 'events';
 import { AddressInfo, WebSocketServer } from 'ws';
 import { z } from 'zod';
 import RpcClient from '../RpcClient';
