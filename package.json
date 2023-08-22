@@ -38,7 +38,7 @@
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.28.1",
     "husky": "^8.0.3",
-    "jest": "^29.6.2",
+    "jest": "^29.6.3",
     "lint-staged": "^14.0.1",
     "prettier": "^3.0.2",
     "syncpack": "^11.2.1",
