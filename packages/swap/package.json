@@ -50,7 +50,7 @@
     "pnpm": ">=7"
   },
   "dependencies": {
-    "@polkadot/util": "^12.4.1",
+    "@polkadot/util": "^12.4.2",
     "@polkadot/util-crypto": "^12.4.1",
     "@prisma/client": "^5.2.0",
     "axios": "^1.4.0",
