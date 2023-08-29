@@ -115,8 +115,8 @@ importers:
         specifier: ^12.4.2
         version: 12.4.2(@polkadot/util@12.4.2)
       axios:
-        specifier: ^1.4.0
-        version: 1.4.0
+        specifier: ^1.5.0
+        version: 1.5.0
       ethers:
         specifier: 5.7.2
         version: 5.7.2
@@ -180,8 +180,8 @@ importers:
         specifier: ^5.2.0
         version: 5.2.0(prisma@5.2.0)
       axios:
-        specifier: ^1.4.0
-        version: 1.4.0
+        specifier: ^1.5.0
+        version: 1.5.0
       bignumber.js:
         specifier: ^9.1.1
         version: 9.1.1
@@ -3792,8 +3792,8 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /axios@1.4.0:
-    resolution: {integrity: sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==}
+  /axios@1.5.0:
+    resolution: {integrity: sha512-D4DdjDo5CY50Qms0qGQTTw6Q44jl7zRwY7bthds06pUGfChBCTcQs+N743eFWGEd6pRTMd6A+I87aWyFV5wiZQ==}
     dependencies:
       follow-redirects: 1.15.2
       form-data: 4.0.0
