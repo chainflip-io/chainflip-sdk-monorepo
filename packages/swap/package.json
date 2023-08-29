@@ -53,7 +53,7 @@
     "@polkadot/util": "^12.4.2",
     "@polkadot/util-crypto": "^12.4.2",
     "@prisma/client": "^5.2.0",
-    "axios": "^1.4.0",
+    "axios": "^1.5.0",
     "bignumber.js": "^9.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
