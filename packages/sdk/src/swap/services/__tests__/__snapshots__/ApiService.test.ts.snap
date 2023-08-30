@@ -144,7 +144,7 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for testnet
   },
   {
     "chain": "Ethereum",
-    "contractAddress": "0x1194C91d47Fc1b65bE18db38380B5344682b67db",
+    "contractAddress": "0x0485D65da68b2A6b48C3fA28D7CCAce196798B94",
     "decimals": 18,
     "id": "FLIP",
     "isMainnet": false,
@@ -214,7 +214,7 @@ exports[`ApiService getAssets (sisyphos) gets the correct assets for testnets (E
   },
   {
     "chain": "Ethereum",
-    "contractAddress": "0x2FD78122663A07672e9ac63486573A99EB00125d",
+    "contractAddress": "0x2BbB561C6eaB74f358cA9e8a961E3A20CAE3D100",
     "decimals": 18,
     "id": "FLIP",
     "isMainnet": false,
