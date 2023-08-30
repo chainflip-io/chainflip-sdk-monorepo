@@ -178,7 +178,7 @@ exports[`executeSwap submits a token call ({"ccmMetadata": [Object], "destAddres
     1,
     "0xdeadc0de",
     "101",
-    "0x2FD78122663A07672e9ac63486573A99EB00125d",
+    "0x2BbB561C6eaB74f358cA9e8a961E3A20CAE3D100",
     "1",
     [],
     {},
@@ -190,7 +190,7 @@ exports[`executeSwap submits a token call ({"ccmMetadata": [Object], "destAddres
 [
   [
     "MY ADDRESS",
-    "0xd498606dcb9F440CD9F06B397C40fd3327FC2550",
+    "0xC17CCec5015081EB2DF26d20A9e02c5484C1d641",
   ],
 ]
 `;
@@ -215,7 +215,7 @@ exports[`executeSwap submits a token call ({"ccmMetadata": [Object], "destAddres
 [
   [
     "MY ADDRESS",
-    "0xd498606dcb9F440CD9F06B397C40fd3327FC2550",
+    "0xC17CCec5015081EB2DF26d20A9e02c5484C1d641",
   ],
 ]
 `;
@@ -226,7 +226,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "0x6Aa69332B63bB5b1d7
     1,
     "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
     1,
-    "0x2FD78122663A07672e9ac63486573A99EB00125d",
+    "0x2BbB561C6eaB74f358cA9e8a961E3A20CAE3D100",
     "1",
     [],
     {},
@@ -238,7 +238,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "0x6Aa69332B63bB5b1d7
 [
   [
     "MY ADDRESS",
-    "0xd498606dcb9F440CD9F06B397C40fd3327FC2550",
+    "0xC17CCec5015081EB2DF26d20A9e02c5484C1d641",
   ],
 ]
 `;
@@ -261,7 +261,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "0x6Aa69332B63bB5b1d7
 [
   [
     "MY ADDRESS",
-    "0xd498606dcb9F440CD9F06B397C40fd3327FC2550",
+    "0xC17CCec5015081EB2DF26d20A9e02c5484C1d641",
   ],
 ]
 `;
@@ -272,7 +272,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "5F3sa2TJAWMqDhXG6jhV
     2,
     "0x841226ea070c9577979ca2e854130fbe3253853c13c05943e09908312950275d",
     4,
-    "0x2FD78122663A07672e9ac63486573A99EB00125d",
+    "0x2BbB561C6eaB74f358cA9e8a961E3A20CAE3D100",
     "1",
     [],
     {},
@@ -284,7 +284,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "5F3sa2TJAWMqDhXG6jhV
 [
   [
     "MY ADDRESS",
-    "0xd498606dcb9F440CD9F06B397C40fd3327FC2550",
+    "0xC17CCec5015081EB2DF26d20A9e02c5484C1d641",
   ],
 ]
 `;
@@ -307,7 +307,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "5F3sa2TJAWMqDhXG6jhV
 [
   [
     "MY ADDRESS",
-    "0xd498606dcb9F440CD9F06B397C40fd3327FC2550",
+    "0xC17CCec5015081EB2DF26d20A9e02c5484C1d641",
   ],
 ]
 `;
@@ -318,7 +318,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "tb1qge9vvd2mmjxfhuxu
     3,
     "0x74623171676539767664326d6d6a7866687578757132303468346678787068723076666e736e78323035",
     5,
-    "0x2FD78122663A07672e9ac63486573A99EB00125d",
+    "0x2BbB561C6eaB74f358cA9e8a961E3A20CAE3D100",
     "1",
     [],
     {},
@@ -330,7 +330,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "tb1qge9vvd2mmjxfhuxu
 [
   [
     "MY ADDRESS",
-    "0xd498606dcb9F440CD9F06B397C40fd3327FC2550",
+    "0xC17CCec5015081EB2DF26d20A9e02c5484C1d641",
   ],
 ]
 `;
@@ -341,7 +341,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "tb1qge9vvd2mmjxfhuxu
     3,
     "0x74623171676539767664326d6d6a7866687578757132303468346678787068723076666e736e78323035",
     5,
-    "0x2FD78122663A07672e9ac63486573A99EB00125d",
+    "0x2BbB561C6eaB74f358cA9e8a961E3A20CAE3D100",
     "1",
     [],
     {},
@@ -353,7 +353,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "tb1qge9vvd2mmjxfhuxu
 [
   [
     "MY ADDRESS",
-    "0xd498606dcb9F440CD9F06B397C40fd3327FC2550",
+    "0xC17CCec5015081EB2DF26d20A9e02c5484C1d641",
   ],
 ]
 `;
@@ -376,7 +376,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "tb1qge9vvd2mmjxfhuxu
 [
   [
     "MY ADDRESS",
-    "0xd498606dcb9F440CD9F06B397C40fd3327FC2550",
+    "0xC17CCec5015081EB2DF26d20A9e02c5484C1d641",
   ],
 ]
 `;
@@ -399,7 +399,7 @@ exports[`executeSwap submits a token swap ({"destAddress": "tb1qge9vvd2mmjxfhuxu
 [
   [
     "MY ADDRESS",
-    "0xd498606dcb9F440CD9F06B397C40fd3327FC2550",
+    "0xC17CCec5015081EB2DF26d20A9e02c5484C1d641",
   ],
 ]
 `;
@@ -410,7 +410,7 @@ exports[`executeSwap submits a token swap with sufficient approval 1`] = `
     3,
     "0x74623171676539767664326d6d6a7866687578757132303468346678787068723076666e736e78323035",
     5,
-    "0x2FD78122663A07672e9ac63486573A99EB00125d",
+    "0x2BbB561C6eaB74f358cA9e8a961E3A20CAE3D100",
     "1",
     [],
     {},
@@ -422,7 +422,7 @@ exports[`executeSwap submits a token swap with sufficient approval 2`] = `
 [
   [
     "MY ADDRESS",
-    "0xd498606dcb9F440CD9F06B397C40fd3327FC2550",
+    "0xC17CCec5015081EB2DF26d20A9e02c5484C1d641",
   ],
 ]
 `;
