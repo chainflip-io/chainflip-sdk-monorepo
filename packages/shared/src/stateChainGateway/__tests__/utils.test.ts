@@ -12,7 +12,7 @@ describe(getStateChainGateway, () => {
           signer: new VoidSigner('0x0'),
         }),
       ).toMatchObject({
-        address: ADDRESSES[network].STATE_CHAIN_MANAGER_CONTRACT_ADDRESS,
+        address: ADDRESSES[network].STATE_CHAIN_GATEWAY_ADDRESS,
       });
     },
   );

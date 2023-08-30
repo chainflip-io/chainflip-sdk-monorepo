@@ -27,7 +27,7 @@ export const getStateChainGatewayContractAddress = (
   network: ChainflipNetwork,
 ): string => {
   assert(network !== ChainflipNetworks.mainnet, 'Mainnet is not yet supported');
-  return ADDRESSES[network].STATE_CHAIN_MANAGER_CONTRACT_ADDRESS;
+  return ADDRESSES[network].STATE_CHAIN_GATEWAY_ADDRESS;
 };
 
 export const checkAllowance = async (
