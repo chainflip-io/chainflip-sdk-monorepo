@@ -46,10 +46,10 @@ describe(fundStateChainAccount, () => {
       .spyOn(MockGateway.prototype, 'fundStateChainAccount')
       .mockResolvedValue({ wait: waitMock });
 
-    await fundStateChainAccount('0x1234', '1000', signerOptions);
+    await fundStateChainAccount('0x1234', '1000', signerOptions, {});
 
     expect(checkSpy).toHaveBeenCalled();
-    expect(waitMock).toHaveBeenCalledWith(1);
+    expect(waitMock).toHaveBeenCalledWith(undefined);
     expect(fundSpy).toHaveBeenCalledWith('0x1234', '1000', {
       nonce: undefined,
     });
@@ -62,7 +62,7 @@ describe(executeRedemption, () => {
     const executeSpy = jest
       .spyOn(MockGateway.prototype, 'executeRedemption')
       .mockResolvedValue({ wait: waitMock });
-    await executeRedemption('0x1234', { ...signerOptions, nonce: 1 });
+    await executeRedemption('0x1234', signerOptions, { nonce: 1 });
     expect(executeSpy.mock.lastCall).toMatchSnapshot();
   });
 });

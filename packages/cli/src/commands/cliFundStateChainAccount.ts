@@ -1,8 +1,7 @@
 import { Wallet, getDefaultProvider, providers } from 'ethers';
 import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
 import { ChainflipNetworks } from '@/shared/enums';
-import { FundStateChainAccountOptions } from '@/shared/stateChainGateway';
-import { fundStateChainAccount } from '../lib';
+import { FundingNetworkOptions, fundStateChainAccount } from '../lib';
 import { askForPrivateKey, getEthNetwork, cliNetworks } from '../utils';
 
 export const yargsOptions = {
@@ -55,7 +54,7 @@ export default async function cliFundStateChainAccount(
       : getDefaultProvider(ethNetwork),
   );
 
-  const opts: FundStateChainAccountOptions =
+  const opts: FundingNetworkOptions =
     args.chainflipNetwork === 'localnet'
       ? {
           stateChainGatewayContractAddress:
@@ -70,6 +69,7 @@ export default async function cliFundStateChainAccount(
     args.srcAccountId as `0x${string}`,
     args.amount,
     opts,
+    {},
   );
 
   console.log(`Call executed. Transaction hash: ${receipt.transactionHash}`);

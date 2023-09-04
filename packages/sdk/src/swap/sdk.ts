@@ -1,8 +1,9 @@
 import { Signer } from 'ethers';
+import { TransactionOptions } from '@/shared/contracts';
 import { ChainflipNetwork, Chain, ChainflipNetworks } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
-import type { TokenSwapParams, Overrides } from '@/shared/vault/schemas';
+import type { TokenSwapParams } from '@/shared/vault/schemas';
 import { BACKEND_SERVICE_URLS } from './consts';
 import ApiService, { RequestOptions } from './services/ApiService';
 import type {
@@ -75,30 +76,35 @@ export class SwapSDK {
 
   async executeSwap(
     params: ExecuteSwapParams,
-    overrides: Overrides = {},
+    txOpts: TransactionOptions = {},
   ): Promise<TransactionHash> {
     assert(this.signer, 'No signer provided');
-    const receipt = await executeSwap(params, {
-      ...overrides,
-      network: this.network,
-      signer: this.signer,
-    });
+    const receipt = await executeSwap(
+      params,
+      {
+        network: this.network,
+        signer: this.signer,
+      },
+      txOpts,
+    );
     return receipt.transactionHash;
   }
 
   async approveVault(
     params: Pick<TokenSwapParams, 'srcAsset' | 'amount'>,
-    overrides: Overrides = {},
+    txOpts: TransactionOptions = {},
   ): Promise<TransactionHash | null> {
     if (!('srcAsset' in params)) return null;
     assert(this.signer, 'No signer provided');
 
-    const receipt = await approveVault(params, {
-      signer: this.signer,
-      network: this.network,
-      ...overrides,
-    });
-
+    const receipt = await approveVault(
+      params,
+      {
+        signer: this.signer,
+        network: this.network,
+      },
+      txOpts,
+    );
     return receipt && receipt.transactionHash;
   }
 }

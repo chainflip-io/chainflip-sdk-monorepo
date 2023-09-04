@@ -1,16 +1,18 @@
 import { ContractReceipt } from 'ethers';
-import { ExecuteOptions, TokenSwapParams } from './schemas';
+import { TokenSwapParams } from './schemas';
 import {
   checkAllowance,
   getTokenContractAddress,
   getVaultManagerContractAddress,
   approve,
+  TransactionOptions,
 } from '../contracts';
 import { assert } from '../guards';
+import { SwapNetworkOptions } from './index';
 
 export const checkVaultAllowance = (
   params: Pick<TokenSwapParams, 'srcAsset' | 'amount'>,
-  opts: ExecuteOptions,
+  opts: SwapNetworkOptions,
 ): ReturnType<typeof checkAllowance> => {
   const erc20Address =
     opts.network === 'localnet'
@@ -34,7 +36,8 @@ export const checkVaultAllowance = (
 
 export const approveVault = async (
   params: Pick<TokenSwapParams, 'srcAsset' | 'amount'>,
-  opts: ExecuteOptions,
+  opts: SwapNetworkOptions,
+  txOpts: TransactionOptions,
 ): Promise<ContractReceipt | null> => {
   const { isAllowable, erc20, allowance } = await checkVaultAllowance(
     params,
@@ -48,11 +51,5 @@ export const approveVault = async (
       ? opts.vaultContractAddress
       : getVaultManagerContractAddress(opts.network);
 
-  return approve(
-    params.amount,
-    vaultContractAddress,
-    erc20,
-    allowance,
-    opts.nonce,
-  );
+  return approve(params.amount, vaultContractAddress, erc20, allowance, txOpts);
 };

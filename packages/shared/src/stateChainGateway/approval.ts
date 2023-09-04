@@ -4,13 +4,14 @@ import {
   getStateChainGatewayContractAddress,
   getTokenContractAddress,
   approve,
+  TransactionOptions,
 } from '../contracts';
 import { Assets } from '../enums';
-import type { FundStateChainAccountOptions } from './index';
+import { FundingNetworkOptions } from './index';
 
 export const checkStateChainGatewayAllowance = async (
   amount: bigint | string | number,
-  options: FundStateChainAccountOptions,
+  options: FundingNetworkOptions,
 ): ReturnType<typeof checkAllowance> => {
   const flipContractAddress =
     options.network === 'localnet'
@@ -32,7 +33,8 @@ export const checkStateChainGatewayAllowance = async (
 
 export const approveStateChainGateway = async (
   amount: bigint | string | number,
-  options: FundStateChainAccountOptions,
+  options: FundingNetworkOptions,
+  txOpts: TransactionOptions,
 ): Promise<ContractReceipt | null> => {
   const { allowance, erc20, isAllowable } =
     await checkStateChainGatewayAllowance(amount, options);
@@ -44,13 +46,11 @@ export const approveStateChainGateway = async (
       ? options.stateChainGatewayContractAddress
       : getStateChainGatewayContractAddress(options.network);
 
-  const receipt = await approve(
+  return approve(
     amount,
     stateChainGatewayContractAddress,
     erc20,
     allowance,
-    options.nonce,
+    txOpts,
   );
-
-  return receipt;
 };

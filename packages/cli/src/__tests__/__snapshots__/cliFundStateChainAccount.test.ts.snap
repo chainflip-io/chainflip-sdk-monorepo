@@ -11,6 +11,7 @@ exports[`cli calls the correct handler with the proper arguments 1`] = `
       "signer": undefined,
       "stateChainGatewayContractAddress": "0x3",
     },
+    {},
   ],
 ]
 `;
@@ -24,6 +25,7 @@ exports[`cli calls the correct handler with the proper arguments 2`] = `
       "network": "sisyphos",
       "signer": undefined,
     },
+    {},
   ],
 ]
 `;

@@ -1,7 +1,5 @@
 import { ContractReceipt } from 'ethers';
 import {
-  executeOptionsSchema,
-  type ExecuteOptions,
   type ExecuteSwapParams,
   executeSwapParamsSchema,
   type NativeSwapParams,
@@ -12,51 +10,52 @@ import {
 import { Vault__factory } from '../abis';
 import {
   checkAllowance,
+  extractOverrides,
   getTokenContractAddress,
   getVaultManagerContractAddress,
+  TransactionOptions,
 } from '../contracts';
 import { assetContractIds, chainContractIds } from '../enums';
 import { assert, isTokenCall, isTokenSwap } from '../guards';
+import { SwapNetworkOptions } from './index';
 
 const swapNative = async (
   { destChain, destAsset, destAddress, amount }: NativeSwapParams,
-  { network, vaultContractAddress: address, signer, ...opts }: ExecuteOptions,
+  opts: SwapNetworkOptions,
+  txOpts: TransactionOptions,
 ): Promise<ContractReceipt> => {
   const vaultContractAddress =
-    network === 'localnet' ? address : getVaultManagerContractAddress(network);
+    opts.network === 'localnet'
+      ? opts.vaultContractAddress
+      : getVaultManagerContractAddress(opts.network);
 
-  const vault = Vault__factory.connect(vaultContractAddress, signer);
+  const vault = Vault__factory.connect(vaultContractAddress, opts.signer);
 
   const transaction = await vault.xSwapNative(
     chainContractIds[destChain],
     destAddress,
     assetContractIds[destAsset],
     [],
-    { value: amount, ...opts },
+    { value: amount, ...extractOverrides(txOpts) },
   );
 
-  return transaction.wait(1);
+  return transaction.wait(txOpts.wait);
 };
 
 const swapToken = async (
   params: TokenSwapParams,
-  {
-    network,
-    vaultContractAddress: vaultAddress,
-    srcTokenContractAddress: tokenAddress,
-    signer,
-    ...opts
-  }: ExecuteOptions,
+  opts: SwapNetworkOptions,
+  txOpts: TransactionOptions,
 ): Promise<ContractReceipt> => {
   const vaultContractAddress =
-    network === 'localnet'
-      ? vaultAddress
-      : getVaultManagerContractAddress(network);
+    opts.network === 'localnet'
+      ? opts.vaultContractAddress
+      : getVaultManagerContractAddress(opts.network);
 
   const erc20Address =
-    network === 'localnet'
-      ? tokenAddress
-      : getTokenContractAddress(params.srcAsset, network);
+    opts.network === 'localnet'
+      ? opts.srcTokenContractAddress
+      : getTokenContractAddress(params.srcAsset, opts.network);
 
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
@@ -64,11 +63,11 @@ const swapToken = async (
     params.amount,
     vaultContractAddress,
     erc20Address,
-    signer,
+    opts.signer,
   );
   assert(isAllowable, 'Swap amount exceeds allowance');
 
-  const vault = Vault__factory.connect(vaultContractAddress, signer);
+  const vault = Vault__factory.connect(vaultContractAddress, opts.signer);
 
   const transaction = await vault.xSwapToken(
     chainContractIds[params.destChain],
@@ -77,27 +76,23 @@ const swapToken = async (
     erc20Address,
     params.amount,
     [],
-    opts,
+    extractOverrides(txOpts),
   );
 
-  return transaction.wait(1);
+  return transaction.wait(txOpts.wait);
 };
 
 const callNative = async (
   params: NativeCallParams,
-  {
-    network,
-    vaultContractAddress: vaultAddress,
-    signer,
-    ...opts
-  }: ExecuteOptions,
+  opts: SwapNetworkOptions,
+  txOpts: TransactionOptions,
 ): Promise<ContractReceipt> => {
   const vaultContractAddress =
-    network === 'localnet'
-      ? vaultAddress
-      : getVaultManagerContractAddress(network);
+    opts.network === 'localnet'
+      ? opts.vaultContractAddress
+      : getVaultManagerContractAddress(opts.network);
 
-  const vault = Vault__factory.connect(vaultContractAddress, signer);
+  const vault = Vault__factory.connect(vaultContractAddress, opts.signer);
 
   const transaction = await vault.xCallNative(
     chainContractIds[params.destChain],
@@ -106,31 +101,26 @@ const callNative = async (
     params.ccmMetadata.message,
     params.ccmMetadata.gasBudget,
     [],
-    { value: params.amount, ...opts },
+    { value: params.amount, ...extractOverrides(txOpts) },
   );
 
-  return transaction.wait(1);
+  return transaction.wait(txOpts.wait);
 };
 
 const callToken = async (
   params: TokenCallParams,
-  {
-    signer,
-    network,
-    vaultContractAddress: vaultAddress,
-    srcTokenContractAddress: tokenAddress,
-    ...opts
-  }: ExecuteOptions,
+  opts: SwapNetworkOptions,
+  txOpts: TransactionOptions,
 ): Promise<ContractReceipt> => {
   const vaultContractAddress =
-    network === 'localnet'
-      ? vaultAddress
-      : getVaultManagerContractAddress(network);
+    opts.network === 'localnet'
+      ? opts.vaultContractAddress
+      : getVaultManagerContractAddress(opts.network);
 
   const erc20Address =
-    network === 'localnet'
-      ? tokenAddress
-      : getTokenContractAddress(params.srcAsset, network);
+    opts.network === 'localnet'
+      ? opts.srcTokenContractAddress
+      : getTokenContractAddress(params.srcAsset, opts.network);
 
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
@@ -138,11 +128,11 @@ const callToken = async (
     params.amount,
     vaultContractAddress,
     erc20Address,
-    signer,
+    opts.signer,
   );
   assert(isAllowable, 'Swap amount exceeds allowance');
 
-  const vault = Vault__factory.connect(vaultContractAddress, signer);
+  const vault = Vault__factory.connect(vaultContractAddress, opts.signer);
 
   const transaction = await vault.xCallToken(
     chainContractIds[params.destChain],
@@ -153,28 +143,28 @@ const callToken = async (
     erc20Address,
     params.amount,
     [],
-    opts,
+    extractOverrides(txOpts),
   );
 
-  return transaction.wait(1);
+  return transaction.wait(txOpts.wait);
 };
 
 const executeSwap = async (
   params: ExecuteSwapParams,
-  options: ExecuteOptions,
+  opts: SwapNetworkOptions,
+  txOpts: TransactionOptions,
 ): Promise<ContractReceipt> => {
   const parsedParams = executeSwapParamsSchema.parse(params);
-  const opts = executeOptionsSchema.parse(options);
 
   if ('ccmMetadata' in parsedParams) {
     return isTokenCall(parsedParams)
-      ? callToken(parsedParams, opts)
-      : callNative(parsedParams, opts);
+      ? callToken(parsedParams, opts, txOpts)
+      : callNative(parsedParams, opts, txOpts);
   }
 
   return isTokenSwap(parsedParams)
-    ? swapToken(parsedParams, opts)
-    : swapNative(parsedParams, opts);
+    ? swapToken(parsedParams, opts, txOpts)
+    : swapNative(parsedParams, opts, txOpts);
 };
 
 export default executeSwap;

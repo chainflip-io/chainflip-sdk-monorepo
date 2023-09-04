@@ -186,10 +186,14 @@ describe(SwapSDK, () => {
         .mocked(executeSwap)
         .mockResolvedValueOnce({ transactionHash: 'hello world' } as any);
       const result = await sdk.executeSwap(params as any);
-      expect(executeSwap).toHaveBeenCalledWith(params, {
-        network: 'sisyphos',
-        signer,
-      });
+      expect(executeSwap).toHaveBeenCalledWith(
+        params,
+        {
+          network: 'sisyphos',
+          signer,
+        },
+        {},
+      );
       expect(result).toEqual('hello world');
     });
   });
