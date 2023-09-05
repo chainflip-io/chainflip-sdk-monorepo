@@ -1,83 +1,80 @@
 import type { BigNumber, ContractReceipt, Signer } from 'ethers';
 import { getStateChainGateway } from './utils';
-import { checkAllowance, getTokenContractAddress } from '../contracts';
+import {
+  checkAllowance,
+  extractOverrides,
+  getTokenContractAddress,
+  TransactionOptions,
+} from '../contracts';
 import { Assets, ChainflipNetwork } from '../enums';
 import { assert } from '../guards';
-import { Overrides } from '../vault/schemas';
 
-type WithOverrides<T> = T & Overrides;
-
-export type SignerOptions = WithOverrides<
+export type FundingNetworkOptions =
   | { network: ChainflipNetwork; signer: Signer }
   | {
       network: 'localnet';
       signer: Signer;
       stateChainGatewayContractAddress: string;
-    }
->;
-
-type ExtendLocalnetOptions<T, U> = T extends { network: 'localnet' }
-  ? T & U
-  : T;
-
-export type FundStateChainAccountOptions = ExtendLocalnetOptions<
-  SignerOptions,
-  { flipContractAddress: string }
->;
+      flipContractAddress: string;
+    };
 
 export const fundStateChainAccount = async (
   accountId: `0x${string}`,
   amount: string,
-  options: FundStateChainAccountOptions,
+  networkOpts: FundingNetworkOptions,
+  txOpts: TransactionOptions,
 ): Promise<ContractReceipt> => {
   const flipContractAddress =
-    options.network === 'localnet'
-      ? options.flipContractAddress
-      : getTokenContractAddress(Assets.FLIP, options.network);
+    networkOpts.network === 'localnet'
+      ? networkOpts.flipContractAddress
+      : getTokenContractAddress(Assets.FLIP, networkOpts.network);
 
-  const stateChainGateway = getStateChainGateway(options);
+  const stateChainGateway = getStateChainGateway(networkOpts);
 
   const { isAllowable } = await checkAllowance(
     amount,
     stateChainGateway.address,
     flipContractAddress,
-    options.signer,
+    networkOpts.signer,
   );
   assert(isAllowable, 'Insufficient allowance');
 
   const transaction = await stateChainGateway.fundStateChainAccount(
     accountId,
     amount,
-    { nonce: options.nonce },
+    extractOverrides(txOpts),
   );
 
-  return transaction.wait(1);
+  return transaction.wait(txOpts.wait);
 };
 
 export const executeRedemption = async (
   accountId: `0x${string}`,
-  options: WithOverrides<SignerOptions>,
+  networkOpts: FundingNetworkOptions,
+  txOpts: TransactionOptions,
 ): Promise<ContractReceipt> => {
-  const stateChainGateway = getStateChainGateway(options);
+  const stateChainGateway = getStateChainGateway(networkOpts);
 
   const transaction = await stateChainGateway.executeRedemption(
     accountId,
-    options,
+    extractOverrides(txOpts),
   );
 
-  return transaction.wait(1);
+  return transaction.wait(txOpts.wait);
 };
 
 export const getMinimumFunding = (
-  options: SignerOptions,
+  networkOpts: FundingNetworkOptions,
 ): Promise<BigNumber> => {
-  const stateChainGateway = getStateChainGateway(options);
+  const stateChainGateway = getStateChainGateway(networkOpts);
 
   return stateChainGateway.getMinimumFunding();
 };
 
-export const getRedemptionDelay = (options: SignerOptions): Promise<number> => {
-  const stateChainGateway = getStateChainGateway(options);
+export const getRedemptionDelay = (
+  networkOpts: FundingNetworkOptions,
+): Promise<number> => {
+  const stateChainGateway = getStateChainGateway(networkOpts);
 
   return stateChainGateway.REDEMPTION_DELAY();
 };

@@ -1,15 +1,15 @@
 import { StateChainGateway__factory } from '../abis';
 import { getStateChainGatewayContractAddress } from '../contracts';
-import type { SignerOptions } from './index';
+import type { FundingNetworkOptions } from './index';
 
-export const getStateChainGateway = (options: SignerOptions) => {
+export const getStateChainGateway = (networkOpts: FundingNetworkOptions) => {
   const stateChainGatewayContractAddress =
-    options.network === 'localnet'
-      ? options.stateChainGatewayContractAddress
-      : getStateChainGatewayContractAddress(options.network);
+    networkOpts.network === 'localnet'
+      ? networkOpts.stateChainGatewayContractAddress
+      : getStateChainGatewayContractAddress(networkOpts.network);
 
   return StateChainGateway__factory.connect(
     stateChainGatewayContractAddress,
-    options.signer,
+    networkOpts.signer,
   );
 };

@@ -1,13 +1,13 @@
 export {
   executeSwap,
-  type ExecuteOptions,
+  type SwapNetworkOptions,
   type ExecuteSwapParams,
   approveVault,
   checkVaultAllowance,
 } from '@/shared/vault';
 export {
   fundStateChainAccount,
-  type FundStateChainAccountOptions,
+  type FundingNetworkOptions,
   executeRedemption,
   getMinimumFunding,
   getRedemptionDelay,

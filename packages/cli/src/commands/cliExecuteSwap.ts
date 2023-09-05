@@ -4,7 +4,7 @@ import { assetChains, Assets, ChainflipNetworks } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import {
   executeSwap,
-  type ExecuteOptions,
+  type SwapNetworkOptions,
   type ExecuteSwapParams,
 } from '@/shared/vault';
 import { askForPrivateKey, getEthNetwork, cliNetworks } from '../utils';
@@ -77,7 +77,7 @@ export default async function cliExecuteSwap(
       : getDefaultProvider(ethNetwork),
   );
 
-  const opts: ExecuteOptions =
+  const networkOpts: SwapNetworkOptions =
     args.chainflipNetwork === 'localnet'
       ? {
           vaultContractAddress: args.vaultContractAddress as string,
@@ -107,7 +107,8 @@ export default async function cliExecuteSwap(
       destAddress: args.destAddress,
       ccmMetadata,
     } as ExecuteSwapParams,
-    opts,
+    networkOpts,
+    {},
   );
 
   console.log(`Swap executed. Transaction hash: ${receipt.transactionHash}`);

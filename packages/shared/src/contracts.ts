@@ -1,4 +1,9 @@
-import { BigNumberish, ContractReceipt, Signer, BigNumber } from 'ethers';
+import ethers, {
+  BigNumberish,
+  ContractReceipt,
+  Signer,
+  BigNumber,
+} from 'ethers';
 import { ERC20, ERC20__factory } from './abis';
 import { ADDRESSES, GOERLI_USDC_CONTRACT_ADDRESS } from './consts';
 import {
@@ -8,7 +13,23 @@ import {
   ChainflipNetworks,
 } from './enums';
 import { assert } from './guards';
-import { Overrides } from './vault/schemas';
+
+export type TransactionOptions = {
+  gasLimit?: bigint;
+  gasPrice?: bigint;
+  maxFeePerGas?: bigint;
+  maxPriorityFeePerGas?: bigint;
+  nonce?: bigint;
+  wait?: number;
+};
+
+export const extractOverrides = (
+  transactionOverrides: TransactionOptions,
+): ethers.Overrides => {
+  const { wait, ...ethersOverrides } = transactionOverrides;
+
+  return ethersOverrides;
+};
 
 export const getTokenContractAddress = (
   asset: Asset,
@@ -47,14 +68,18 @@ export const approve = async (
   spenderAddress: string,
   erc20: ERC20,
   allowance: BigNumberish,
-  nonce?: Overrides['nonce'],
+  txOpts: TransactionOptions,
 ): Promise<ContractReceipt | null> => {
   const amountBigNumber = BigNumber.from(amount);
   const allowanceBigNumber = BigNumber.from(allowance);
   if (allowanceBigNumber.gte(amountBigNumber)) return null;
   const requiredAmount = amountBigNumber.sub(allowanceBigNumber);
-  const tx = await erc20.approve(spenderAddress, requiredAmount, { nonce });
-  return tx.wait(1);
+  const transaction = await erc20.approve(
+    spenderAddress,
+    requiredAmount,
+    extractOverrides(txOpts),
+  );
+  return transaction.wait(txOpts.wait);
 };
 
 export const getVaultManagerContractAddress = (

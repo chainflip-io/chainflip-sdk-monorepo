@@ -1,5 +1,5 @@
 import type { Signer } from 'ethers';
-import { getFlipBalance } from '@/shared/contracts';
+import { getFlipBalance, TransactionOptions } from '@/shared/contracts';
 import { ChainflipNetwork, ChainflipNetworks } from '@/shared/enums';
 import {
   approveStateChainGateway,
@@ -29,24 +29,29 @@ export class FundingSDK {
   /**
    * @param accountId the hex-encoded validator account id
    * @param amount the amount to fund in base units of FLIP
-   * @param signer a signer to use for the transaction if different from the one
-   *               provided in the constructor
    */
   async fundStateChainAccount(
     accountId: `0x${string}`,
     amount: string,
+    txOpts: TransactionOptions = {},
   ): Promise<TransactionHash> {
-    const tx = await fundStateChainAccount(accountId, amount, this.options);
+    const tx = await fundStateChainAccount(
+      accountId,
+      amount,
+      this.options,
+      txOpts,
+    );
     return tx.transactionHash;
   }
 
   /**
    * @param accountId the hex-encoded validator account id
-   * @param signer a signer to use for the transaction if different from the one
-   *               provided in the constructor
    */
-  async executeRedemption(accountId: `0x${string}`): Promise<TransactionHash> {
-    const tx = await executeRedemption(accountId, this.options);
+  async executeRedemption(
+    accountId: `0x${string}`,
+    txOpts: TransactionOptions = {},
+  ): Promise<TransactionHash> {
+    const tx = await executeRedemption(accountId, this.options, txOpts);
     return tx.transactionHash;
   }
 
@@ -69,12 +74,13 @@ export class FundingSDK {
    */
   async approveStateChainGateway(
     amount: bigint | string | number,
-    nonce?: bigint | string | number,
+    txOpts: TransactionOptions = {},
   ): Promise<TransactionHash | null> {
-    const receipt = await approveStateChainGateway(amount, {
-      nonce,
-      ...this.options,
-    });
+    const receipt = await approveStateChainGateway(
+      amount,
+      this.options,
+      txOpts,
+    );
 
     return receipt && receipt.transactionHash;
   }
