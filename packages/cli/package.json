@@ -3,7 +3,7 @@
   "version": "0.0.38",
   "description": "",
   "main": "./dist/lib.mjs",
-  "types": "./dist/lib.d.ts",
+  "types": "./dist/lib.d.mts",
   "bin": {
     "chainflip": "./dist/cli.mjs"
   },
