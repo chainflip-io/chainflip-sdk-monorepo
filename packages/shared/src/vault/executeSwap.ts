@@ -21,15 +21,18 @@ import { SwapNetworkOptions } from './index';
 
 const swapNative = async (
   { destChain, destAsset, destAddress, amount }: NativeSwapParams,
-  opts: SwapNetworkOptions,
+  networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractReceipt> => {
   const vaultContractAddress =
-    opts.network === 'localnet'
-      ? opts.vaultContractAddress
-      : getVaultManagerContractAddress(opts.network);
+    networkOpts.network === 'localnet'
+      ? networkOpts.vaultContractAddress
+      : getVaultManagerContractAddress(networkOpts.network);
 
-  const vault = Vault__factory.connect(vaultContractAddress, opts.signer);
+  const vault = Vault__factory.connect(
+    vaultContractAddress,
+    networkOpts.signer,
+  );
 
   const transaction = await vault.xSwapNative(
     chainContractIds[destChain],
@@ -44,18 +47,18 @@ const swapNative = async (
 
 const swapToken = async (
   params: TokenSwapParams,
-  opts: SwapNetworkOptions,
+  networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractReceipt> => {
   const vaultContractAddress =
-    opts.network === 'localnet'
-      ? opts.vaultContractAddress
-      : getVaultManagerContractAddress(opts.network);
+    networkOpts.network === 'localnet'
+      ? networkOpts.vaultContractAddress
+      : getVaultManagerContractAddress(networkOpts.network);
 
   const erc20Address =
-    opts.network === 'localnet'
-      ? opts.srcTokenContractAddress
-      : getTokenContractAddress(params.srcAsset, opts.network);
+    networkOpts.network === 'localnet'
+      ? networkOpts.srcTokenContractAddress
+      : getTokenContractAddress(params.srcAsset, networkOpts.network);
 
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
@@ -63,11 +66,14 @@ const swapToken = async (
     params.amount,
     vaultContractAddress,
     erc20Address,
-    opts.signer,
+    networkOpts.signer,
   );
   assert(isAllowable, 'Swap amount exceeds allowance');
 
-  const vault = Vault__factory.connect(vaultContractAddress, opts.signer);
+  const vault = Vault__factory.connect(
+    vaultContractAddress,
+    networkOpts.signer,
+  );
 
   const transaction = await vault.xSwapToken(
     chainContractIds[params.destChain],
@@ -84,15 +90,18 @@ const swapToken = async (
 
 const callNative = async (
   params: NativeCallParams,
-  opts: SwapNetworkOptions,
+  networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractReceipt> => {
   const vaultContractAddress =
-    opts.network === 'localnet'
-      ? opts.vaultContractAddress
-      : getVaultManagerContractAddress(opts.network);
+    networkOpts.network === 'localnet'
+      ? networkOpts.vaultContractAddress
+      : getVaultManagerContractAddress(networkOpts.network);
 
-  const vault = Vault__factory.connect(vaultContractAddress, opts.signer);
+  const vault = Vault__factory.connect(
+    vaultContractAddress,
+    networkOpts.signer,
+  );
 
   const transaction = await vault.xCallNative(
     chainContractIds[params.destChain],
@@ -109,18 +118,18 @@ const callNative = async (
 
 const callToken = async (
   params: TokenCallParams,
-  opts: SwapNetworkOptions,
+  networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractReceipt> => {
   const vaultContractAddress =
-    opts.network === 'localnet'
-      ? opts.vaultContractAddress
-      : getVaultManagerContractAddress(opts.network);
+    networkOpts.network === 'localnet'
+      ? networkOpts.vaultContractAddress
+      : getVaultManagerContractAddress(networkOpts.network);
 
   const erc20Address =
-    opts.network === 'localnet'
-      ? opts.srcTokenContractAddress
-      : getTokenContractAddress(params.srcAsset, opts.network);
+    networkOpts.network === 'localnet'
+      ? networkOpts.srcTokenContractAddress
+      : getTokenContractAddress(params.srcAsset, networkOpts.network);
 
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
@@ -128,11 +137,14 @@ const callToken = async (
     params.amount,
     vaultContractAddress,
     erc20Address,
-    opts.signer,
+    networkOpts.signer,
   );
   assert(isAllowable, 'Swap amount exceeds allowance');
 
-  const vault = Vault__factory.connect(vaultContractAddress, opts.signer);
+  const vault = Vault__factory.connect(
+    vaultContractAddress,
+    networkOpts.signer,
+  );
 
   const transaction = await vault.xCallToken(
     chainContractIds[params.destChain],
@@ -151,20 +163,20 @@ const callToken = async (
 
 const executeSwap = async (
   params: ExecuteSwapParams,
-  opts: SwapNetworkOptions,
+  networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractReceipt> => {
   const parsedParams = executeSwapParamsSchema.parse(params);
 
   if ('ccmMetadata' in parsedParams) {
     return isTokenCall(parsedParams)
-      ? callToken(parsedParams, opts, txOpts)
-      : callNative(parsedParams, opts, txOpts);
+      ? callToken(parsedParams, networkOpts, txOpts)
+      : callNative(parsedParams, networkOpts, txOpts);
   }
 
   return isTokenSwap(parsedParams)
-    ? swapToken(parsedParams, opts, txOpts)
-    : swapNative(parsedParams, opts, txOpts);
+    ? swapToken(parsedParams, networkOpts, txOpts)
+    : swapNative(parsedParams, networkOpts, txOpts);
 };
 
 export default executeSwap;

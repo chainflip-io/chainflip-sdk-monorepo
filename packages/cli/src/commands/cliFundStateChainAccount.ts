@@ -54,7 +54,7 @@ export default async function cliFundStateChainAccount(
       : getDefaultProvider(ethNetwork),
   );
 
-  const opts: FundingNetworkOptions =
+  const networkOpts: FundingNetworkOptions =
     args.chainflipNetwork === 'localnet'
       ? {
           stateChainGatewayContractAddress:
@@ -68,7 +68,7 @@ export default async function cliFundStateChainAccount(
   const receipt = await fundStateChainAccount(
     args.srcAccountId as `0x${string}`,
     args.amount,
-    opts,
+    networkOpts,
     {},
   );
 

@@ -77,7 +77,7 @@ export default async function cliExecuteSwap(
       : getDefaultProvider(ethNetwork),
   );
 
-  const opts: SwapNetworkOptions =
+  const networkOpts: SwapNetworkOptions =
     args.chainflipNetwork === 'localnet'
       ? {
           vaultContractAddress: args.vaultContractAddress as string,
@@ -107,7 +107,7 @@ export default async function cliExecuteSwap(
       destAddress: args.destAddress,
       ccmMetadata,
     } as ExecuteSwapParams,
-    opts,
+    networkOpts,
     {},
   );
 

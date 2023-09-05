@@ -21,21 +21,21 @@ export type FundingNetworkOptions =
 export const fundStateChainAccount = async (
   accountId: `0x${string}`,
   amount: string,
-  opts: FundingNetworkOptions,
+  networkOpts: FundingNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractReceipt> => {
   const flipContractAddress =
-    opts.network === 'localnet'
-      ? opts.flipContractAddress
-      : getTokenContractAddress(Assets.FLIP, opts.network);
+    networkOpts.network === 'localnet'
+      ? networkOpts.flipContractAddress
+      : getTokenContractAddress(Assets.FLIP, networkOpts.network);
 
-  const stateChainGateway = getStateChainGateway(opts);
+  const stateChainGateway = getStateChainGateway(networkOpts);
 
   const { isAllowable } = await checkAllowance(
     amount,
     stateChainGateway.address,
     flipContractAddress,
-    opts.signer,
+    networkOpts.signer,
   );
   assert(isAllowable, 'Insufficient allowance');
 
@@ -50,10 +50,10 @@ export const fundStateChainAccount = async (
 
 export const executeRedemption = async (
   accountId: `0x${string}`,
-  opts: FundingNetworkOptions,
+  networkOpts: FundingNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractReceipt> => {
-  const stateChainGateway = getStateChainGateway(opts);
+  const stateChainGateway = getStateChainGateway(networkOpts);
 
   const transaction = await stateChainGateway.executeRedemption(
     accountId,
@@ -64,17 +64,17 @@ export const executeRedemption = async (
 };
 
 export const getMinimumFunding = (
-  opts: FundingNetworkOptions,
+  networkOpts: FundingNetworkOptions,
 ): Promise<BigNumber> => {
-  const stateChainGateway = getStateChainGateway(opts);
+  const stateChainGateway = getStateChainGateway(networkOpts);
 
   return stateChainGateway.getMinimumFunding();
 };
 
 export const getRedemptionDelay = (
-  opts: FundingNetworkOptions,
+  networkOpts: FundingNetworkOptions,
 ): Promise<number> => {
-  const stateChainGateway = getStateChainGateway(opts);
+  const stateChainGateway = getStateChainGateway(networkOpts);
 
   return stateChainGateway.REDEMPTION_DELAY();
 };
