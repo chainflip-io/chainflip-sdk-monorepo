@@ -15,11 +15,11 @@ import {
 import { assert } from './guards';
 
 export type TransactionOptions = {
-  gasLimit?: ethers.Overrides['gasLimit'];
-  gasPrice?: ethers.Overrides['gasPrice'];
-  maxFeePerGas?: ethers.Overrides['maxFeePerGas'];
-  maxPriorityFeePerGas?: ethers.Overrides['maxPriorityFeePerGas'];
-  nonce?: ethers.Overrides['nonce'];
+  gasLimit?: bigint;
+  gasPrice?: bigint;
+  maxFeePerGas?: bigint;
+  maxPriorityFeePerGas?: bigint;
+  nonce?: bigint;
   wait?: number;
 };
 
