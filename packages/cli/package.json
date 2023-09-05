@@ -2,22 +2,21 @@
   "name": "@chainflip-io/cli",
   "version": "0.0.37",
   "description": "",
-  "main": "./dist/lib.js",
+  "main": "./dist/lib.mjs",
   "types": "./dist/lib.d.ts",
   "bin": {
-    "chainflip": "./dist/cli.js"
+    "chainflip": "./dist/cli.mjs"
   },
   "exports": {
     ".": {
       "import": "./dist/lib.mjs",
-      "require": "./dist/lib.js",
-      "types": "./dist/lib.d.ts"
+      "types": "./dist/lib.d.mts"
     }
   },
   "typesVersions": {
     "*": {
       ".": [
-        "dist/lib.d.ts"
+        "dist/lib.d.mts"
       ]
     }
   },
