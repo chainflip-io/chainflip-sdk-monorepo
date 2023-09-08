@@ -5,6 +5,7 @@ concurrency:
   cancel-in-progress: false
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - "swap/v*"
@@ -17,11 +18,13 @@ on:
 
 jobs:
   pre-checks:
+    if: ${{ github.event_name != 'workflow_dispatch' }}
     uses: ./.github/workflows/_01_pre_checks.yml
     with:
       package: swap
     secrets: inherit
   checks:
+    if: ${{ github.event_name != 'workflow_dispatch' }}
     needs: [pre-checks]
     uses: ./.github/workflows/_02_checks.yml
     with:
