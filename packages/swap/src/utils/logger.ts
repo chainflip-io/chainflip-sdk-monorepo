@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import stringify from 'safe-stable-stringify';
 import {
   createLogger,
   format,
@@ -71,8 +72,8 @@ const customMessageFormat = format.printf((info) => {
 
   return `${timestamp} ${level} [${component}]: ${message} ${
     error ? `${error.name} ${error.message} ${error.stack ?? ''}` : ''
-  } ${metadata ? JSON.stringify({ metadata }) : ''} ${
-    Object.keys(meta).length ? JSON.stringify(meta) : ''
+  } ${metadata ? stringify({ metadata }) : ''} ${
+    Object.keys(meta).length ? stringify(meta) : ''
   }`;
 });
 
