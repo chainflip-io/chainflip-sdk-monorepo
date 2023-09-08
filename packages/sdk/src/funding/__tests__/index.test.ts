@@ -51,6 +51,7 @@ describe(FundingSDK, () => {
         '1000',
         // @ts-expect-error it's private
         sdk.options,
+        {},
       );
     });
   });
@@ -68,6 +69,7 @@ describe(FundingSDK, () => {
         '0x1234',
         // @ts-expect-error it's private
         sdk.options,
+        {},
       );
     });
   });
@@ -124,7 +126,7 @@ describe(FundingSDK, () => {
       jest.mocked(approveStateChainGateway).mockResolvedValueOnce({
         transactionHash: '0xabcdef',
       } as any);
-      const txHash = await sdk.approveStateChainGateway(1, 2);
+      const txHash = await sdk.approveStateChainGateway(1, {});
       expect(txHash).toBe('0xabcdef');
     });
   });

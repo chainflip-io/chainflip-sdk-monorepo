@@ -4,53 +4,53 @@ import {
   getStateChainGatewayContractAddress,
   getTokenContractAddress,
   approve,
+  TransactionOptions,
 } from '../contracts';
 import { Assets } from '../enums';
-import type { FundStateChainAccountOptions } from './index';
+import { FundingNetworkOptions } from './index';
 
 export const checkStateChainGatewayAllowance = async (
   amount: bigint | string | number,
-  options: FundStateChainAccountOptions,
+  networkOpts: FundingNetworkOptions,
 ): ReturnType<typeof checkAllowance> => {
   const flipContractAddress =
-    options.network === 'localnet'
-      ? options.flipContractAddress
-      : getTokenContractAddress(Assets.FLIP, options.network);
+    networkOpts.network === 'localnet'
+      ? networkOpts.flipContractAddress
+      : getTokenContractAddress(Assets.FLIP, networkOpts.network);
 
   const stateChainGatewayContractAddress =
-    options.network === 'localnet'
-      ? options.stateChainGatewayContractAddress
-      : getStateChainGatewayContractAddress(options.network);
+    networkOpts.network === 'localnet'
+      ? networkOpts.stateChainGatewayContractAddress
+      : getStateChainGatewayContractAddress(networkOpts.network);
 
   return checkAllowance(
     amount,
     stateChainGatewayContractAddress,
     flipContractAddress,
-    options.signer,
+    networkOpts.signer,
   );
 };
 
 export const approveStateChainGateway = async (
   amount: bigint | string | number,
-  options: FundStateChainAccountOptions,
+  networkOpts: FundingNetworkOptions,
+  txOpts: TransactionOptions,
 ): Promise<ContractReceipt | null> => {
   const { allowance, erc20, isAllowable } =
-    await checkStateChainGatewayAllowance(amount, options);
+    await checkStateChainGatewayAllowance(amount, networkOpts);
 
   if (isAllowable) return null;
 
   const stateChainGatewayContractAddress =
-    options.network === 'localnet'
-      ? options.stateChainGatewayContractAddress
-      : getStateChainGatewayContractAddress(options.network);
+    networkOpts.network === 'localnet'
+      ? networkOpts.stateChainGatewayContractAddress
+      : getStateChainGatewayContractAddress(networkOpts.network);
 
-  const receipt = await approve(
+  return approve(
     amount,
     stateChainGatewayContractAddress,
     erc20,
     allowance,
-    options.nonce,
+    txOpts,
   );
-
-  return receipt;
 };

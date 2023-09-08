@@ -44,10 +44,14 @@ describe(executeSwap, () => {
     'only works on sisyphos for now',
     async (network) => {
       await expect(
-        executeSwap({} as any, {
-          network,
-          signer: new VoidSigner('MY ADDRESS'),
-        }),
+        executeSwap(
+          {} as any,
+          {
+            network,
+            signer: new VoidSigner('MY ADDRESS'),
+          },
+          {},
+        ),
       ).rejects.toThrowError();
     },
   );
@@ -99,12 +103,16 @@ describe(executeSwap, () => {
         .mockResolvedValue({ wait });
 
       expect(
-        await executeSwap({ amount: '1', ...params } as ExecuteSwapParams, {
-          network: ChainflipNetworks.sisyphos,
-          signer: new VoidSigner('MY ADDRESS'),
-        }),
+        await executeSwap(
+          { amount: '1', ...params } as ExecuteSwapParams,
+          {
+            network: ChainflipNetworks.sisyphos,
+            signer: new VoidSigner('MY ADDRESS'),
+          },
+          {},
+        ),
       ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
-      expect(wait).toHaveBeenCalledWith(1);
+      expect(wait).toHaveBeenCalledWith(undefined);
       expect(swapSpy.mock.calls).toMatchSnapshot();
     },
   );
@@ -154,12 +162,16 @@ describe(executeSwap, () => {
       const allowanceSpy = jest.spyOn(MockERC20.prototype, 'allowance');
 
       expect(
-        await executeSwap({ amount: '1', ...params } as ExecuteSwapParams, {
-          network: 'sisyphos',
-          signer: new VoidSigner('MY ADDRESS'),
-        }),
+        await executeSwap(
+          { amount: '1', ...params } as ExecuteSwapParams,
+          {
+            network: 'sisyphos',
+            signer: new VoidSigner('MY ADDRESS'),
+          },
+          {},
+        ),
       ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
-      expect(wait).toHaveBeenCalledWith(1);
+      expect(wait).toHaveBeenCalledWith(undefined);
       expect(swapSpy.mock.calls).toMatchSnapshot();
       expect(allowanceSpy.mock.calls).toMatchSnapshot();
       expect(approveSpy).not.toHaveBeenCalled();
@@ -191,9 +203,10 @@ describe(executeSwap, () => {
           amount: '1',
         },
         { network: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
+        {},
       ),
     ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
-    expect(wait).toHaveBeenCalledWith(1);
+    expect(wait).toHaveBeenCalledWith(undefined);
     expect(swapSpy.mock.calls).toMatchSnapshot();
     expect(allowanceSpy.mock.calls).toMatchSnapshot();
     expect(approveSpy).not.toHaveBeenCalled();
@@ -229,9 +242,10 @@ describe(executeSwap, () => {
           vaultContractAddress: '0x123',
           srcTokenContractAddress: '0x456',
         },
+        {},
       ),
     ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
-    expect(wait).toHaveBeenCalledWith(1);
+    expect(wait).toHaveBeenCalledWith(undefined);
     expect(swapSpy.mock.calls).toMatchSnapshot();
     expect(allowanceSpy.mock.calls).toMatchSnapshot();
     expect(approveSpy).not.toHaveBeenCalled();
@@ -258,11 +272,11 @@ describe(executeSwap, () => {
         {
           network: ChainflipNetworks.sisyphos,
           signer: new VoidSigner('MY ADDRESS'),
-          nonce,
         },
+        { nonce },
       ),
     ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
-    expect(wait).toHaveBeenCalledWith(1);
+    expect(wait).toHaveBeenCalledWith(undefined);
     expect(swapSpy.mock.calls).toMatchSnapshot();
   });
 
@@ -301,9 +315,10 @@ describe(executeSwap, () => {
           network: ChainflipNetworks.sisyphos,
           signer: new VoidSigner('MY ADDRESS'),
         },
+        {},
       ),
     ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
-    expect(wait).toHaveBeenCalledWith(1);
+    expect(wait).toHaveBeenCalledWith(undefined);
     expect(callSpy.mock.calls).toMatchSnapshot();
   });
 
@@ -354,9 +369,10 @@ describe(executeSwap, () => {
           network: 'sisyphos',
           signer: new VoidSigner('MY ADDRESS'),
         },
+        {},
       ),
     ).toStrictEqual({ status: 1, transactionHash: 'hello world' });
-    expect(wait).toHaveBeenCalledWith(1);
+    expect(wait).toHaveBeenCalledWith(undefined);
     expect(callSpy).toHaveBeenCalled();
     expect(callSpy.mock.calls).toMatchSnapshot();
     expect(allowanceSpy.mock.calls).toMatchSnapshot();

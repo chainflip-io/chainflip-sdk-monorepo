@@ -4,13 +4,7 @@ exports[`executeRedemption executes the redemption 1`] = `
 [
   "0x1234",
   {
-    "network": "sisyphos",
     "nonce": 1,
-    "signer": VoidSigner {
-      "_isSigner": true,
-      "address": "0x0",
-      "provider": null,
-    },
   },
 ]
 `;

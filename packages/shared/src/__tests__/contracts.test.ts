@@ -70,7 +70,7 @@ describe(approve, () => {
           new VoidSigner('0xcafebabe'),
         ),
         allowance,
-        1,
+        { nonce: 1 },
       );
 
       expect(receipt).not.toBe(null);
@@ -87,7 +87,7 @@ describe(approve, () => {
         new VoidSigner('0xcafebabe'),
       ),
       1000,
-      1,
+      { nonce: 1 },
     );
 
     expect(receipt).toBe(null);

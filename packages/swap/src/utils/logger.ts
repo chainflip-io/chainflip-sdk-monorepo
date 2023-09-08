@@ -65,19 +65,16 @@ const transformedLogger = (
   return loggerFn(message, { metadata: customMeta, ...meta });
 };
 
-const printFormat = () => {
-  if (isProduction) return format.json();
+const customMessageFormat = format.printf((info) => {
+  const { timestamp, level, component, message, error, metadata, ...meta } =
+    info;
 
-  return format.printf((info) => {
-    const { timestamp, level, component, message, error, metadata } = info;
-    return `${timestamp} ${level} [${component}]: ${message} ${
-      error ? `${error.name} ${error.message} ${error.stack ?? ''}` : ''
-    } ${metadata ? JSON.stringify({ metadata }) : ''}`;
-
-    // If we want to enable multiple params for logger
-    // const rest: string[] = info[Symbol.for('splat') as unknown as string];
-  });
-};
+  return `${timestamp} ${level} [${component}]: ${message} ${
+    error ? `${error.name} ${error.message} ${error.stack ?? ''}` : ''
+  } ${metadata ? JSON.stringify({ metadata }) : ''} ${
+    Object.keys(meta).length ? JSON.stringify(meta) : ''
+  }`;
+});
 
 const createLoggerFunc = (label: string) => {
   const logger = createLogger({
@@ -85,17 +82,13 @@ const createLoggerFunc = (label: string) => {
       format.timestamp({
         format: 'YY-MM-DD HH:mm:ss',
       }),
-      printFormat(),
+      isProduction
+        ? format.json()
+        : format.combine(customMessageFormat, format.colorize({ all: true })),
     ),
+    silent: isTest,
     defaultMeta: { component: label.toUpperCase() },
-    transports: [
-      new transports.Console({
-        format: isProduction
-          ? format.json()
-          : format.combine(format.colorize({ all: true })),
-        silent: isTest,
-      }),
-    ],
+    transports: [new transports.Console()],
   }) as CustomLogger;
 
   logger.customInfo = (

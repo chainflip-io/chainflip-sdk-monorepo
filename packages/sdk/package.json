@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/sdk",
-  "version": "0.1.19",
+  "version": "0.1.21",
   "description": "",
   "exports": {
     "./swap": {
@@ -50,7 +50,7 @@
   "dependencies": {
     "@polkadot/util": "^12.4.2",
     "@polkadot/util-crypto": "^12.4.2",
-    "axios": "^1.4.0",
+    "axios": "^1.5.0",
     "ethers": "5.7.2",
     "zod": "^3.22.2"
   },
