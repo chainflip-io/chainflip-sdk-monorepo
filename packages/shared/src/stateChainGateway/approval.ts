@@ -1,4 +1,4 @@
-import { ContractReceipt } from 'ethers';
+import { ContractTransactionReceipt } from 'ethers';
 import {
   checkAllowance,
   getStateChainGatewayContractAddress,
@@ -10,7 +10,7 @@ import { Assets } from '../enums';
 import { FundingNetworkOptions } from './index';
 
 export const checkStateChainGatewayAllowance = async (
-  amount: bigint | string | number,
+  amount: bigint,
   networkOpts: FundingNetworkOptions,
 ): ReturnType<typeof checkAllowance> => {
   const flipContractAddress =
@@ -32,10 +32,10 @@ export const checkStateChainGatewayAllowance = async (
 };
 
 export const approveStateChainGateway = async (
-  amount: bigint | string | number,
+  amount: bigint,
   networkOpts: FundingNetworkOptions,
   txOpts: TransactionOptions,
-): Promise<ContractReceipt | null> => {
+): Promise<ContractTransactionReceipt | null> => {
   const { allowance, erc20, isAllowable } =
     await checkStateChainGatewayAllowance(amount, networkOpts);
 

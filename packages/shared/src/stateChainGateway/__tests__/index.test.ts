@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 /* eslint-disable max-classes-per-file */
-import { VoidSigner, ethers } from 'ethers';
+import { VoidSigner } from 'ethers';
 import { checkAllowance } from '../../contracts';
 import {
   executeRedemption,
@@ -12,6 +12,9 @@ import {
 
 class MockGateway {
   constructor(readonly address: string) {}
+  async getAddress(): Promise<any> {
+    return this.address;
+  }
   async fundStateChainAccount(): Promise<any> {}
   async executeRedemption(): Promise<any> {}
   async getMinimumFunding(): Promise<any> {}
@@ -46,11 +49,11 @@ describe(fundStateChainAccount, () => {
       .spyOn(MockGateway.prototype, 'fundStateChainAccount')
       .mockResolvedValue({ wait: waitMock });
 
-    await fundStateChainAccount('0x1234', '1000', signerOptions, {});
+    await fundStateChainAccount('0x1234', 1000n, signerOptions, {});
 
     expect(checkSpy).toHaveBeenCalled();
     expect(waitMock).toHaveBeenCalledWith(undefined);
-    expect(fundSpy).toHaveBeenCalledWith('0x1234', '1000', {
+    expect(fundSpy).toHaveBeenCalledWith('0x1234', 1000n, {
       nonce: undefined,
     });
   });
@@ -71,10 +74,8 @@ describe(getMinimumFunding, () => {
   it('retrieves minimum funding amount', async () => {
     jest
       .spyOn(MockGateway.prototype, 'getMinimumFunding')
-      .mockResolvedValue(ethers.BigNumber.from('1234'));
-    expect(await getMinimumFunding(signerOptions)).toEqual(
-      ethers.BigNumber.from('1234'),
-    );
+      .mockResolvedValue(1234n);
+    expect(await getMinimumFunding(signerOptions)).toEqual(1234n);
   });
 });
 

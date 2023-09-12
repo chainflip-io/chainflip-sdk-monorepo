@@ -87,7 +87,7 @@ export class SwapSDK {
       },
       txOpts,
     );
-    return receipt.transactionHash;
+    return receipt.hash;
   }
 
   async approveVault(
@@ -105,6 +105,6 @@ export class SwapSDK {
       },
       txOpts,
     );
-    return receipt && receipt.transactionHash;
+    return receipt && receipt.hash;
   }
 }

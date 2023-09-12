@@ -38,7 +38,7 @@ describe('executeSwapParamsSchema', () => {
   ] as Omit<NativeSwapParams, 'amount'>[])(
     'accepts valid native swaps (%p)',
     (params) => {
-      expect(parse({ amount: '1', ...params })).toBe(true);
+      expect(parse({ amount: 1n, ...params })).toBe(true);
     },
   );
 
@@ -90,7 +90,7 @@ describe('executeSwapParamsSchema', () => {
   ] as Omit<NativeSwapParams, 'amount'>[])(
     'rejects native swaps with mismatching chains and assets (%p)',
     (params) => {
-      expect(parse({ amount: '1', ...params })).toBe(false);
+      expect(parse({ amount: 1n, ...params })).toBe(false);
     },
   );
 
@@ -143,7 +143,7 @@ describe('executeSwapParamsSchema', () => {
   ] as Omit<TokenSwapParams, 'amount'>[])(
     'accepts valid token swaps (%p)',
     (params) => {
-      expect(parse({ amount: '1', ...params })).toBe(true);
+      expect(parse({ amount: 1n, ...params })).toBe(true);
     },
   );
 
@@ -171,7 +171,7 @@ describe('executeSwapParamsSchema', () => {
   ] as Omit<NativeSwapParams, 'amount'>[])(
     'rejects tokens swaps with invalid srcAssets (%p)',
     (params) => {
-      expect(parse({ amount: '1', ...params })).toBe(false);
+      expect(parse({ amount: 1n, ...params })).toBe(false);
     },
   );
 });

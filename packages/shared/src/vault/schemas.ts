@@ -5,7 +5,6 @@ import {
   btcAddress,
   dotAddress,
   ethereumAddress,
-  hexString,
   numericString,
 } from '../parsers';
 
@@ -15,7 +14,7 @@ const bytesToHex = (arr: Uint8Array | number[]) =>
 const utf8ToHex = (str: string) => `0x${Buffer.from(str).toString('hex')}`;
 
 const eth = z.object({
-  amount: z.union([numericString, hexString, z.bigint()]),
+  amount: z.bigint(),
   srcChain: z.literal(Chains.Ethereum),
   srcAsset: z.literal(Assets.ETH),
 });

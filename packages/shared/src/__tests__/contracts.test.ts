@@ -1,17 +1,17 @@
 /* eslint-disable max-classes-per-file */
-import { BigNumberish, ContractTransaction, VoidSigner, ethers } from 'ethers';
+import { ContractTransaction, VoidSigner } from 'ethers';
 import { ERC20__factory } from '../abis';
 import { GOERLI_USDC_CONTRACT_ADDRESS } from '../consts';
 import { approve, checkAllowance } from '../contracts';
 
 class MockERC20 {
-  async allowance(_owner: string, _spender: string): Promise<ethers.BigNumber> {
+  async allowance(_owner: string, _spender: string): Promise<bigint> {
     throw new Error('unmocked call');
   }
 
   async approve(
     _spender: string,
-    _amount: BigNumberish,
+    _amount: bigint,
   ): Promise<ContractTransaction> {
     throw new Error('unmocked call');
   }
@@ -26,12 +26,12 @@ const spender = '0xdeadbeef';
 
 describe(checkAllowance, () => {
   it.each([
-    { allowance: 1000, spend: 100, expected: true },
-    { allowance: 1000, spend: 1500, expected: false },
+    { allowance: 1000n, spend: 100n, expected: true },
+    { allowance: 1000n, spend: 1500n, expected: false },
   ])('returns the allowance', async ({ allowance, spend, expected }) => {
     const allowanceSpy = jest
       .spyOn(MockERC20.prototype, 'allowance')
-      .mockResolvedValueOnce(ethers.BigNumber.from(allowance));
+      .mockResolvedValueOnce(BigInt(allowance));
     const signer = new VoidSigner('0xcafebabe');
 
     const result = await checkAllowance(
@@ -42,25 +42,23 @@ describe(checkAllowance, () => {
     );
 
     expect(result.isAllowable).toBe(expected);
-    expect(result.allowance).toEqual(ethers.BigNumber.from(allowance));
+    expect(result.allowance).toEqual(BigInt(allowance));
     expect(allowanceSpy.mock.calls).toMatchSnapshot();
   });
 });
 
 describe(approve, () => {
   it.each([
-    { allowance: 100, spend: 1000 },
-    { allowance: 0, spend: 1000 },
+    { allowance: 100n, spend: 1000n },
+    { allowance: 0n, spend: 1000n },
   ])(
     'approves the spender for an allowance equal to the spend request',
     async ({ allowance, spend }) => {
       const approveSpy = jest
         .spyOn(MockERC20.prototype, 'approve')
         .mockResolvedValueOnce({
-          wait: jest
-            .fn()
-            .mockResolvedValue({ status: 1, transactionHash: 'TX_HASH' }),
-        });
+          wait: jest.fn().mockResolvedValue({ status: 1, hash: 'TX_HASH' }),
+        } as unknown as ContractTransaction);
 
       const receipt = await approve(
         spend,
@@ -80,13 +78,13 @@ describe(approve, () => {
 
   it('returns null if the allowance is already sufficient', async () => {
     const receipt = await approve(
-      10,
+      10n,
       spender,
       ERC20__factory.connect(
         GOERLI_USDC_CONTRACT_ADDRESS,
         new VoidSigner('0xcafebabe'),
       ),
-      1000,
+      1000n,
       { nonce: 1 },
     );
 

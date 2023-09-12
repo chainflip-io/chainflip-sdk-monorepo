@@ -48,7 +48,7 @@ export const fetchPendingBitcoinDeposit = async (address: string) => {
 
     if (data.success && data.data.result[0]) {
       return {
-        amount: ethers.utils
+        amount: ethers
           .parseUnits(String(data.data.result[0].value), assetDecimals.BTC)
           .toString(),
         transactionConfirmations: data.data.result[0].confirmations,

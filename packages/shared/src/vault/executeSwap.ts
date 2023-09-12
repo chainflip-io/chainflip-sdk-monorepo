@@ -1,4 +1,4 @@
-import { ContractReceipt } from 'ethers';
+import { ContractTransactionReceipt } from 'ethers';
 import {
   type ExecuteSwapParams,
   executeSwapParamsSchema,
@@ -23,7 +23,7 @@ const swapNative = async (
   { destChain, destAsset, destAddress, amount }: NativeSwapParams,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
-): Promise<ContractReceipt> => {
+): Promise<ContractTransactionReceipt> => {
   const vaultContractAddress =
     networkOpts.network === 'localnet'
       ? networkOpts.vaultContractAddress
@@ -38,18 +38,18 @@ const swapNative = async (
     chainContractIds[destChain],
     destAddress,
     assetContractIds[destAsset],
-    [],
+    '',
     { value: amount, ...extractOverrides(txOpts) },
   );
 
-  return transaction.wait(txOpts.wait);
+  return transaction.wait(txOpts.wait) as Promise<ContractTransactionReceipt>;
 };
 
 const swapToken = async (
   params: TokenSwapParams,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
-): Promise<ContractReceipt> => {
+): Promise<ContractTransactionReceipt> => {
   const vaultContractAddress =
     networkOpts.network === 'localnet'
       ? networkOpts.vaultContractAddress
@@ -81,18 +81,18 @@ const swapToken = async (
     assetContractIds[params.destAsset],
     erc20Address,
     params.amount,
-    [],
+    '',
     extractOverrides(txOpts),
   );
 
-  return transaction.wait(txOpts.wait);
+  return transaction.wait(txOpts.wait) as Promise<ContractTransactionReceipt>;
 };
 
 const callNative = async (
   params: NativeCallParams,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
-): Promise<ContractReceipt> => {
+): Promise<ContractTransactionReceipt> => {
   const vaultContractAddress =
     networkOpts.network === 'localnet'
       ? networkOpts.vaultContractAddress
@@ -109,18 +109,18 @@ const callNative = async (
     assetContractIds[params.destAsset],
     params.ccmMetadata.message,
     params.ccmMetadata.gasBudget,
-    [],
+    '',
     { value: params.amount, ...extractOverrides(txOpts) },
   );
 
-  return transaction.wait(txOpts.wait);
+  return transaction.wait(txOpts.wait) as Promise<ContractTransactionReceipt>;
 };
 
 const callToken = async (
   params: TokenCallParams,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
-): Promise<ContractReceipt> => {
+): Promise<ContractTransactionReceipt> => {
   const vaultContractAddress =
     networkOpts.network === 'localnet'
       ? networkOpts.vaultContractAddress
@@ -154,18 +154,18 @@ const callToken = async (
     params.ccmMetadata.gasBudget,
     erc20Address,
     params.amount,
-    [],
+    '',
     extractOverrides(txOpts),
   );
 
-  return transaction.wait(txOpts.wait);
+  return transaction.wait(txOpts.wait) as Promise<ContractTransactionReceipt>;
 };
 
 const executeSwap = async (
   params: ExecuteSwapParams,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
-): Promise<ContractReceipt> => {
+): Promise<ContractTransactionReceipt> => {
   const parsedParams = executeSwapParamsSchema.parse(params);
 
   if ('ccmMetadata' in parsedParams) {

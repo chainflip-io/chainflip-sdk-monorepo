@@ -4,7 +4,7 @@ exports[`cli calls the correct handler with the proper arguments 1`] = `
 [
   [
     "0x1",
-    "1000000",
+    1000000n,
     {
       "flipContractAddress": "0x4",
       "network": "localnet",
@@ -20,7 +20,7 @@ exports[`cli calls the correct handler with the proper arguments 2`] = `
 [
   [
     "0x1",
-    "1000000",
+    1000000n,
     {
       "network": "sisyphos",
       "signer": undefined,
