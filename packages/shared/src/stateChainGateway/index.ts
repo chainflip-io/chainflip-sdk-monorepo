@@ -1,4 +1,4 @@
-import type { BigNumber, ContractReceipt, Signer } from 'ethers';
+import { ContractTransactionReceipt, Signer } from 'ethers';
 import { getStateChainGateway } from './utils';
 import {
   checkAllowance,
@@ -20,10 +20,10 @@ export type FundingNetworkOptions =
 
 export const fundStateChainAccount = async (
   accountId: `0x${string}`,
-  amount: string,
+  amount: bigint,
   networkOpts: FundingNetworkOptions,
   txOpts: TransactionOptions,
-): Promise<ContractReceipt> => {
+): Promise<ContractTransactionReceipt> => {
   const flipContractAddress =
     networkOpts.network === 'localnet'
       ? networkOpts.flipContractAddress
@@ -33,7 +33,7 @@ export const fundStateChainAccount = async (
 
   const { isAllowable } = await checkAllowance(
     amount,
-    stateChainGateway.address,
+    await stateChainGateway.getAddress(),
     flipContractAddress,
     networkOpts.signer,
   );
@@ -45,14 +45,14 @@ export const fundStateChainAccount = async (
     extractOverrides(txOpts),
   );
 
-  return transaction.wait(txOpts.wait);
+  return transaction.wait(txOpts.wait) as Promise<ContractTransactionReceipt>;
 };
 
 export const executeRedemption = async (
   accountId: `0x${string}`,
   networkOpts: FundingNetworkOptions,
   txOpts: TransactionOptions,
-): Promise<ContractReceipt> => {
+): Promise<ContractTransactionReceipt> => {
   const stateChainGateway = getStateChainGateway(networkOpts);
 
   const transaction = await stateChainGateway.executeRedemption(
@@ -60,12 +60,12 @@ export const executeRedemption = async (
     extractOverrides(txOpts),
   );
 
-  return transaction.wait(txOpts.wait);
+  return transaction.wait(txOpts.wait) as Promise<ContractTransactionReceipt>;
 };
 
 export const getMinimumFunding = (
   networkOpts: FundingNetworkOptions,
-): Promise<BigNumber> => {
+): Promise<bigint> => {
   const stateChainGateway = getStateChainGateway(networkOpts);
 
   return stateChainGateway.getMinimumFunding();
@@ -73,7 +73,7 @@ export const getMinimumFunding = (
 
 export const getRedemptionDelay = (
   networkOpts: FundingNetworkOptions,
-): Promise<number> => {
+): Promise<bigint> => {
   const stateChainGateway = getStateChainGateway(networkOpts);
 
   return stateChainGateway.REDEMPTION_DELAY();

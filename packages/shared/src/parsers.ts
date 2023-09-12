@@ -21,9 +21,9 @@ export const numericString = string.regex(/^[0-9]+$/);
 export const hexString = z.custom<`0x${string}`>(
   (val) => typeof val === 'string' && /^0x[0-9a-f]+$/i.test(val),
 );
-export const hexStringFromNumber = numericString
-  .transform((arg) => ethers.BigNumber.from(arg).toHexString())
-  .refine((arg) => arg.startsWith('0x'));
+export const hexStringFromNumber = numericString.transform(
+  (arg) => `0x${BigInt(arg).toString(16)}`,
+);
 export const bareHexString = string.regex(/^[0-9a-f]+$/);
 
 export const btcAddress = (env?: ChainflipNetwork) => {
@@ -54,7 +54,7 @@ export const dotAddress = z
   .refine(isString);
 
 export const ethereumAddress = hexString.refine((address) =>
-  ethers.utils.isAddress(address),
+  ethers.isAddress(address),
 );
 
 export const u64 = numericString.transform((arg) => BigInt(arg));

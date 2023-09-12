@@ -4,7 +4,7 @@ exports[`cli calls the correct handler with the proper arguments (call) 1`] = `
 [
   [
     {
-      "amount": "1000000000",
+      "amount": 1000000000n,
       "ccmMetadata": {
         "gasBudget": "500000",
         "message": "0xdeadc0de",
@@ -30,7 +30,7 @@ exports[`cli calls the correct handler with the proper arguments (call) 2`] = `
 [
   [
     {
-      "amount": "1000000000",
+      "amount": 1000000000n,
       "ccmMetadata": {
         "gasBudget": "500000",
         "message": "0xdeadc0de",
@@ -54,7 +54,7 @@ exports[`cli calls the correct handler with the proper arguments (swap) 1`] = `
 [
   [
     {
-      "amount": "1000000000",
+      "amount": 1000000000n,
       "ccmMetadata": undefined,
       "destAddress": "0x0",
       "destAsset": "USDC",
@@ -77,7 +77,7 @@ exports[`cli calls the correct handler with the proper arguments (swap) 2`] = `
 [
   [
     {
-      "amount": "1000000000",
+      "amount": 1000000000n,
       "ccmMetadata": undefined,
       "destAddress": "0x0",
       "destAsset": "USDC",
