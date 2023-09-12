@@ -1,6 +1,6 @@
 import { ChainflipNetwork } from '../enums';
 import { btcAddress, dotAddress, u128, unsignedInteger } from '../parsers';
-import bitcoinAddresses from '../validation/__tests__/bitcoinAddresses.json' assert { type: 'json' };
+import { bitcoinAddresses } from '../validation/__tests__/bitcoinAddresses';
 
 describe('btc parser', () => {
   it.each([

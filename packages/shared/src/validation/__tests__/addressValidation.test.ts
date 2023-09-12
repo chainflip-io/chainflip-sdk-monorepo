@@ -1,5 +1,5 @@
-import { Assets, Chains } from '@/shared/enums';
-import bitcoinAddresses from './bitcoinAddresses.json' assert { type: 'json' };
+import { bitcoinAddresses } from './bitcoinAddresses';
+import { Assets, Chains } from '../../enums';
 import {
   validateBitcoinMainnetAddress,
   validateBitcoinTestnetAddress,

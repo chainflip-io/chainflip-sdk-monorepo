@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 /* eslint-disable max-classes-per-file */
 import { VoidSigner } from 'ethers';
+import { ERC20 } from '../../abis';
 import { checkAllowance } from '../../contracts';
 import {
   executeRedemption,
@@ -41,9 +42,11 @@ const signerOptions = {
 
 describe(fundStateChainAccount, () => {
   it('approves the gateway and funds the account', async () => {
-    const checkSpy = jest
-      .mocked(checkAllowance)
-      .mockResolvedValue({ isAllowable: true });
+    const checkSpy = jest.mocked(checkAllowance).mockResolvedValue({
+      allowance: 100000n,
+      isAllowable: true,
+      erc20: {} as unknown as ERC20,
+    });
     const waitMock = jest.fn().mockResolvedValue({ status: 1 });
     const fundSpy = jest
       .spyOn(MockGateway.prototype, 'fundStateChainAccount')
