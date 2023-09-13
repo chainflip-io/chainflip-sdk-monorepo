@@ -14,7 +14,7 @@ type SDKOptions = {
   signer: Signer;
 };
 
-type TransactionHash = string;
+type TransactionHash = `0x${string}`;
 
 export class FundingSDK {
   private readonly options: Required<SDKOptions>;
@@ -41,7 +41,7 @@ export class FundingSDK {
       this.options,
       txOpts,
     );
-    return tx.hash;
+    return tx.hash as `0x${string}`;
   }
 
   /**
@@ -52,7 +52,7 @@ export class FundingSDK {
     txOpts: TransactionOptions = {},
   ): Promise<TransactionHash> {
     const tx = await executeRedemption(accountId, this.options, txOpts);
-    return tx.hash;
+    return tx.hash as `0x${string}`;
   }
 
   async getMinimumFunding(): Promise<bigint> {
@@ -81,6 +81,6 @@ export class FundingSDK {
       txOpts,
     );
 
-    return receipt && receipt.hash;
+    return receipt ? (receipt.hash as `0x${string}`) : null;
   }
 }

@@ -17,7 +17,7 @@ import type {
   DepositAddressRequest,
 } from './types';
 
-type TransactionHash = string;
+type TransactionHash = `0x${string}`;
 
 export type SDKOptions = {
   network?: Exclude<ChainflipNetwork, 'mainnet'>;
@@ -87,7 +87,7 @@ export class SwapSDK {
       },
       txOpts,
     );
-    return receipt.hash;
+    return receipt.hash as `0x${string}`;
   }
 
   async approveVault(
@@ -105,6 +105,6 @@ export class SwapSDK {
       },
       txOpts,
     );
-    return receipt && receipt.hash;
+    return receipt ? (receipt.hash as `0x${string}`) : null;
   }
 }
