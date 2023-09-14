@@ -62,7 +62,7 @@ jobs:
           client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-swap-sisyphos"}'
 
       - name: Dispatch build-swap-perseverance to chainflip-web-services 🦕
-        if: startsWith(github.ref, 'refs/tags/') == true && startsWith(github.ref, 'refs/heads/release') == true && startsWith(github.ref, 'refs/heads/release/partnernet') == false
+        if: startsWith(github.ref, 'refs/tags/') == true
         uses: peter-evans/repository-dispatch@v2
         with:
           repository: chainflip-io/chainflip-web-services
