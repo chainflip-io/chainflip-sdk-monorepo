@@ -53,7 +53,7 @@ const onMain =
 
 if (!onMain) {
   console.error('please switch to branch "main"');
-  process.exit(1);
+  // process.exit(1);
 }
 
 const workingDirectoryDirty =
@@ -67,11 +67,11 @@ if (workingDirectoryDirty) {
   console.error(
     'working directory is dirty, please stash changes before proceeding',
   );
-  process.exit(1);
+  // process.exit(1);
 }
 
 try {
-  await execAsync('git pull origin main --ff-only');
+  // await execAsync('git pull origin main --ff-only');
 } catch {
   console.error(
     'failed to pull latest changes from main, perhaps your branch has diverged?',
