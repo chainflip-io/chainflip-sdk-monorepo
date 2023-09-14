@@ -126,7 +126,9 @@ const tagPkg = async () => {
     `pnpm --filter ${packageJSON.name} exec pnpm version ${newVersion}`,
   );
   const tag = `${packageJSON.name}/v${newVersion}`;
-  await execCommand(`git commit -a -m "${tag}" --no-verify`);
+  await execCommand('git add .');
+  await execCommand('git reset -- scripts/createTag.mjs');
+  await execCommand(`git commit -m "${tag}" --no-verify`);
   await execCommand(`git tag ${tag}`);
   await execCommand('git push');
   await execCommand(`git push origin refs/tags/${tag}`);
