@@ -52,7 +52,7 @@
   "dependencies": {
     "@polkadot/util": "^12.5.1",
     "@polkadot/util-crypto": "^12.5.1",
-    "@prisma/client": "^5.3.0",
+    "@prisma/client": "^5.3.1",
     "axios": "^1.5.0",
     "bignumber.js": "^9.1.2",
     "cors": "^2.8.5",
