@@ -18,6 +18,13 @@ export type FundingNetworkOptions =
       flipContractAddress: string;
     };
 
+export type PendingRedemption = {
+  amount: bigint;
+  redeemAddress: string;
+  startTime: bigint;
+  expiryTime: bigint;
+};
+
 export const fundStateChainAccount = async (
   accountId: `0x${string}`,
   amount: bigint,
@@ -77,6 +84,19 @@ export const getRedemptionDelay = (
   const stateChainGateway = getStateChainGateway(networkOpts);
 
   return stateChainGateway.REDEMPTION_DELAY();
+};
+
+export const getPendingRedemption = async (
+  accountId: `0x${string}`,
+  networkOpts: FundingNetworkOptions,
+): Promise<PendingRedemption | undefined> => {
+  const stateChainGateway = getStateChainGateway(networkOpts);
+  const pendingRedemption =
+    await stateChainGateway.getPendingRedemption(accountId);
+
+  return pendingRedemption.amount > 0
+    ? stateChainGateway.getPendingRedemption(accountId)
+    : undefined;
 };
 
 export * from './approval';
