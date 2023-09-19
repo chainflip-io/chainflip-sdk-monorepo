@@ -8,7 +8,6 @@
     "clean": "rm -rf dist",
     "dev": "tsx watch -r envlocker/config src/index.ts",
     "dev:sisyphos": "ENVLOCKER_ENV_NAME=sisyphos pnpm dev",
-    "dev:partnernet": "ENVLOCKER_ENV_NAME=partnernet pnpm dev",
     "dev:backspin": "ENVLOCKER_ENV_NAME=backspin pnpm dev",
     "preinstall": "npx only-allow pnpm",
     "lint": "pnpm eslint --max-warnings 0 './**/*.ts'",

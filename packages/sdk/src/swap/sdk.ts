@@ -33,7 +33,7 @@ export class SwapSDK {
   private readonly signer?: Signer;
 
   constructor(options: SwapSDKOptions = {}) {
-    this.network = options.network ?? ChainflipNetworks.partnernet;
+    this.network = options.network ?? ChainflipNetworks.perseverance;
     this.baseUrl = options.backendUrl ?? BACKEND_SERVICE_URLS[this.network];
     this.signer = options.signer;
   }

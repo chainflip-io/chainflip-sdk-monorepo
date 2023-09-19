@@ -7,10 +7,8 @@ describe('btc parser', () => {
     [Object.values(bitcoinAddresses.mainnet).flat(), 'mainnet', 'sisyphos'],
     [Object.values(bitcoinAddresses.testnet).flat(), 'sisyphos', 'mainnet'],
     [Object.values(bitcoinAddresses.testnet).flat(), 'perseverance', 'mainnet'],
-    [Object.values(bitcoinAddresses.testnet).flat(), 'partnernet', 'mainnet'],
     [Object.values(bitcoinAddresses.regtest).flat(), 'sisyphos', 'mainnet'],
     [Object.values(bitcoinAddresses.regtest).flat(), 'perseverance', 'mainnet'],
-    [Object.values(bitcoinAddresses.regtest).flat(), 'partnernet', 'mainnet'],
     [Object.values(bitcoinAddresses.regtest).flat(), 'backspin', 'mainnet'],
     [Object.values(bitcoinAddresses.regtest).flat(), undefined, 'mainnet'],
   ])(
@@ -37,7 +35,6 @@ describe('btc parser', () => {
   it.each([
     [wrongAddresses, 'mainnet'],
     [wrongAddresses, 'sisyphos'],
-    [wrongAddresses, 'partnernet'],
     [wrongAddresses, 'perseverance'],
   ])(`validates btc address %s to be false`, (address, network) => {
     expect(
