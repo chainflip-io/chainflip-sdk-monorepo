@@ -38,7 +38,7 @@ const swapNative = async (
     chainContractIds[destChain],
     destAddress,
     assetContractIds[destAsset],
-    '',
+    '0x',
     { value: amount, ...extractOverrides(txOpts) },
   );
 
@@ -81,7 +81,7 @@ const swapToken = async (
     assetContractIds[params.destAsset],
     erc20Address,
     params.amount,
-    '',
+    '0x',
     extractOverrides(txOpts),
   );
 
@@ -109,7 +109,7 @@ const callNative = async (
     assetContractIds[params.destAsset],
     params.ccmMetadata.message,
     params.ccmMetadata.gasBudget,
-    '',
+    '0x',
     { value: params.amount, ...extractOverrides(txOpts) },
   );
 
@@ -154,7 +154,7 @@ const callToken = async (
     params.ccmMetadata.gasBudget,
     erc20Address,
     params.amount,
-    '',
+    '0x',
     extractOverrides(txOpts),
   );
 
