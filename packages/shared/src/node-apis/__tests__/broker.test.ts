@@ -83,7 +83,7 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
       destAddress: '0xcafebabe',
       destChain: 'Ethereum',
       ccmMetadata: {
-        gasBudget: '123',
+        gasBudget: '123456789',
         message: '0xdeadc0de',
       },
     });
@@ -115,7 +115,7 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
         '0xcafebabe',
         0,
         {
-          gas_budget: '123',
+          gas_budget: '0x75bcd15',
           message: '0xdeadc0de',
         },
       ],
