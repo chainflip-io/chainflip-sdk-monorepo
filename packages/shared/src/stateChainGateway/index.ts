@@ -94,7 +94,9 @@ export const getPendingRedemption = async (
   const pendingRedemption =
     await stateChainGateway.getPendingRedemption(accountId);
 
-  return pendingRedemption.amount > 0
+  // there is no null in solidity, therefore we compare against the initial value to determine if the value is set:
+  // https://www.wtf.academy/en/solidity-start/InitialValue/
+  return pendingRedemption.amount !== 0n
     ? stateChainGateway.getPendingRedemption(accountId)
     : undefined;
 };
