@@ -18,6 +18,13 @@ export type FundingNetworkOptions =
       flipContractAddress: string;
     };
 
+export type PendingRedemption = {
+  amount: bigint;
+  redeemAddress: string;
+  startTime: bigint;
+  expiryTime: bigint;
+};
+
 export const fundStateChainAccount = async (
   accountId: `0x${string}`,
   amount: bigint,
@@ -77,6 +84,21 @@ export const getRedemptionDelay = (
   const stateChainGateway = getStateChainGateway(networkOpts);
 
   return stateChainGateway.REDEMPTION_DELAY();
+};
+
+export const getPendingRedemption = async (
+  accountId: `0x${string}`,
+  networkOpts: FundingNetworkOptions,
+): Promise<PendingRedemption | undefined> => {
+  const stateChainGateway = getStateChainGateway(networkOpts);
+  const pendingRedemption =
+    await stateChainGateway.getPendingRedemption(accountId);
+
+  // there is no null in solidity, therefore we compare against the initial value to determine if the value is set:
+  // https://www.wtf.academy/en/solidity-start/InitialValue/
+  return pendingRedemption.amount !== 0n
+    ? stateChainGateway.getPendingRedemption(accountId)
+    : undefined;
 };
 
 export * from './approval';
