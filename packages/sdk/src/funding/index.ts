@@ -1,2 +1,2 @@
 export { FundingSDK, type FundingSDKOption } from './sdk';
-export { PendingRedemption } from '@/shared/stateChainGateway';
+export { type PendingRedemption } from '@/shared/stateChainGateway';
