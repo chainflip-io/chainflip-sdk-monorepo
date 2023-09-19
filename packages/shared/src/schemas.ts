@@ -16,8 +16,8 @@ export const quoteQuerySchema = z.object({
 export type QuoteQueryParams = z.infer<typeof quoteQuerySchema>;
 
 export const ccmMetadataSchema = z.object({
-  gasBudget: z.union([hexString, z.number()]),
-  message: z.union([hexString, z.string()]),
+  gasBudget: numericString,
+  message: hexString,
 });
 
 export type CcmMetadata = z.infer<typeof ccmMetadataSchema>;
@@ -49,8 +49,8 @@ export const quoteResponseSchema = z.union([
   z
     .object({
       id: z.string(),
-      intermediate_amount: z.string(),
-      egress_amount: z.string(),
+      intermediate_amount: numericString,
+      egress_amount: numericString,
     })
     .transform(({ id, ...rest }) => ({
       id,
@@ -60,7 +60,7 @@ export const quoteResponseSchema = z.union([
   z
     .object({
       id: z.string(),
-      egress_amount: z.string(),
+      egress_amount: numericString,
     })
     .transform(({ id, ...rest }) => ({
       id,

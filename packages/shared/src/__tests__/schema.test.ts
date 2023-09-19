@@ -22,8 +22,8 @@ describe('postSwapSchema', () => {
       postSwapSchema.safeParse({
         ...swapBody,
         ccmMetadata: {
-          gasBudget: '0x123',
-          message: 'message',
+          gasBudget: '123',
+          message: '0xdeadc0de',
           cfParameters: 'string',
         },
       }),
@@ -34,8 +34,8 @@ describe('postSwapSchema', () => {
       postSwapSchema.safeParse({
         ...swapBody,
         ccmMetadata: {
-          gasBudget: '0x123',
-          message: 'message',
+          gasBudget: '123',
+          message: '0xdeadc0de',
         },
       }),
     ).toEqual(expect.objectContaining({ success: true }));
@@ -45,7 +45,7 @@ describe('postSwapSchema', () => {
       postSwapSchema.safeParse({
         ...swapBody,
         ccmMetadata: {
-          gasBudget: '0x123',
+          gasBudget: '123',
         },
       }),
     ).toEqual(expect.objectContaining({ success: false }));
@@ -55,7 +55,7 @@ describe('postSwapSchema', () => {
       postSwapSchema.safeParse({
         ...swapBody,
         ccmMetadata: {
-          message: 'message',
+          message: '0xdeadc0de',
           cfParameters: 'string',
         },
       }),
@@ -68,8 +68,8 @@ describe('postSwapSchema', () => {
         destAsset: 'ETH',
         destAddress: '0x123',
         ccmMetadata: {
-          gasBudget: 123,
-          message: 'message',
+          gasBudget: '123',
+          message: '0xdeadc0de',
           cfParameters: 'string',
         },
       }),
@@ -80,8 +80,8 @@ describe('postSwapSchema', () => {
       postSwapSchema.safeParse({
         ...swapBody,
         ccmMetadata: {
-          gasBudget: '123',
-          message: 'message',
+          gasBudget: '0x123',
+          message: '0xdeadc0de',
           cfParameters: 'string',
         },
       }),
