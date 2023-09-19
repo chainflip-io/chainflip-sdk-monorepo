@@ -76,7 +76,7 @@ export class FundingSDK {
   }
 
   /**
-   * @param amount the amount of FLIP to request approval for
+   * @param the amount of FLIP to request approval for
    * @returns the transaction hash or null if no approval was required
    */
   async approveStateChainGateway(
