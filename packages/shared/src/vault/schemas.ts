@@ -1,12 +1,8 @@
 import { decodeAddress } from '@polkadot/util-crypto';
 import { z } from 'zod';
 import { Assets, Chains } from '../enums';
-import {
-  btcAddress,
-  dotAddress,
-  ethereumAddress,
-  numericString,
-} from '../parsers';
+import { btcAddress, dotAddress, ethereumAddress } from '../parsers';
+import { ccmMetadataSchema } from '../schemas';
 
 const bytesToHex = (arr: Uint8Array | number[]) =>
   `0x${[...arr].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
@@ -64,11 +60,6 @@ const tokenSwapParamsSchema = z.union([
   erc20ToDot,
   erc20ToBtc,
 ]);
-
-const ccmMetadataSchema = z.object({
-  message: z.string(),
-  gasBudget: numericString,
-});
 
 const ccmFlipToEthereumAssset = flipToEthereumAsset.extend({
   ccmMetadata: ccmMetadataSchema,
