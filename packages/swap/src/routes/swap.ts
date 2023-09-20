@@ -43,7 +43,7 @@ const readField = <A extends {}, B extends {}, K extends keyof A & keyof B>(
   a: A | null | undefined,
   b: B | null | undefined,
   key: K,
-) => (a && a[key]) ?? (b && b[key]);
+) => a?.[key] ?? b?.[key];
 
 router.get(
   '/:id',
