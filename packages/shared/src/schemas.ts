@@ -42,7 +42,6 @@ export type PostSwapResponse = {
   id: string;
   depositAddress: string;
   issuedBlock: number;
-  expiryBlock: number;
 };
 
 export const quoteResponseSchema = z.union([

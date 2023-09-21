@@ -80,13 +80,11 @@ const responseValidators = {
   requestSwapDepositAddress: z
     .object({
       address: z.union([dotAddress, hexString, btcAddress()]),
-      expiry_block: z.number(),
       issued_block: z.number(),
       channel_id: z.number(),
     })
-    .transform(({ address, expiry_block, issued_block, channel_id }) => ({
+    .transform(({ address, issued_block, channel_id }) => ({
       address,
-      expiryBlock: expiry_block,
       issuedBlock: issued_block,
       channelId: BigInt(channel_id),
     })),

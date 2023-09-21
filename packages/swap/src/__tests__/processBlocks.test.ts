@@ -14,7 +14,6 @@ describe(processBlocks, () => {
       data: {
         depositAddress: '5CGLqaFMheyVcsXz6QEtjtSAi6RcXFaEDJKvovgCdPiZhw11',
         issuedBlock: 100,
-        expiryBlock: 200,
         channelId: 250n,
         srcChain: 'Polkadot',
         srcAsset: 'DOT',

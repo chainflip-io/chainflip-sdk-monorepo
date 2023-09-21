@@ -60,7 +60,6 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
         jsonrpc: '2.0',
         result: {
           address: '0x1234567890',
-          expiry_block: 100,
           issued_block: 50,
           channel_id: 200,
         },
@@ -69,7 +68,6 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
 
     await expect(resultPromise).resolves.toStrictEqual({
       address: '0x1234567890',
-      expiryBlock: 100,
       issuedBlock: 50,
       channelId: 200n,
     });
@@ -98,7 +96,6 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
         jsonrpc: '2.0',
         result: {
           address: '0x1234567890',
-          expiry_block: 100,
           issued_block: 50,
           channel_id: 200,
         },
@@ -122,7 +119,6 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
     });
     await expect(resultPromise).resolves.toStrictEqual({
       address: '0x1234567890',
-      expiryBlock: 100,
       issuedBlock: 50,
       channelId: 200n,
     });

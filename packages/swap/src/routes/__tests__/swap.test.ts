@@ -556,12 +556,10 @@ describe('server', () => {
       ],
     ])('creates a new swap deposit channel', async (requestBody) => {
       const issuedBlock = 123;
-      const expiryBlock = 200;
       const channelId = 200n;
       const address = 'THE_INGRESS_ADDRESS';
       jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
         address,
-        expiryBlock,
         issuedBlock,
         channelId,
       });
@@ -580,7 +578,6 @@ describe('server', () => {
         depositAddress: address,
         destAsset: requestBody.destAsset,
         destAddress: requestBody.destAddress,
-        expiryBlock,
         issuedBlock,
         channelId,
         createdAt: expect.any(Date),
@@ -593,7 +590,6 @@ describe('server', () => {
         id: '123-Ethereum-200',
         depositAddress: address,
         issuedBlock,
-        expiryBlock,
       });
     });
 
