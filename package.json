@@ -42,7 +42,7 @@
     "lint-staged": "^14.0.1",
     "prettier": "^3.0.3",
     "syncpack": "^11.2.1",
-    "ts-morph": "^19.0.0",
+    "ts-morph": "^20.0.0",
     "tsc-alias": "^1.8.7",
     "tsx": "^3.12.10",
     "typescript": "^5.2.2",
