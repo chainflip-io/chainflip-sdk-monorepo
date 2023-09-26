@@ -23,7 +23,6 @@ const swapDepositAddressReadyEvent = {
   name: 'Swapping.SwapDepositAddressReady',
   args: {
     channelId: '3',
-    expiryBlock: 2,
     sourceAsset: {
       __kind: 'Eth',
     },
@@ -207,7 +206,6 @@ describe('batch swap flow', () => {
           swapDepositAddressReadyEvent.args.destinationAsset.__kind,
         ),
         destAddress: swapDepositAddressReadyEvent.args.destinationAddress.value,
-        expiryBlock: swapDepositAddressReadyEvent.args.expiryBlock,
         issuedBlock: 0,
       },
     });

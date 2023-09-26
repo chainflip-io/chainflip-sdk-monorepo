@@ -24,7 +24,6 @@ export const createDepositChannel = (
       depositAddress: ETH_ADDRESS,
       destAddress: DOT_ADDRESS,
       expectedDepositAmount: '10000000000',
-      expiryBlock: 200,
       issuedBlock: 100,
       ...data,
       createdAt: new Date(1690556052834),

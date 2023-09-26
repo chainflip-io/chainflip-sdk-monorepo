@@ -215,7 +215,7 @@ router.post(
 
     const { destChain, ...rest } = payload;
 
-    const { issuedBlock, expiryBlock, srcChain, channelId } =
+    const { issuedBlock, srcChain, channelId } =
       await prisma.swapDepositChannel.create({
         data: {
           ...rest,
@@ -228,7 +228,6 @@ router.post(
       id: `${issuedBlock}-${srcChain}-${channelId}`,
       depositAddress,
       issuedBlock,
-      expiryBlock,
     };
 
     res.json(response);
