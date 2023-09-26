@@ -84,24 +84,6 @@ describe(swapScheduled, () => {
       });
     });
 
-    // The expiry is now on the ingress-egress side.
-    // it('does not store a new swap if the deposit channel is expired', async () => {
-    //   await prisma.swapDepositChannel.update({
-    //     where: { id: dotSwapDepositChannel.id },
-    //     data: { expiryBlock: -1 },
-    //   });
-
-    //   await prisma.$transaction(async (client) => {
-    //     await swapScheduled({
-    //       prisma: client,
-    //       block: swapScheduledDotDepositChannelMock.block,
-    //       event: swapScheduledDotDepositChannelMock.eventContext.event as any,
-    //     });
-    //   });
-
-    //   expect(await prisma.swap.findFirst()).toBeNull();
-    // });
-
     it('does not store a new swap if the deposit channel is not found', async () => {
       await prisma.swapDepositChannel.update({
         where: { id: dotSwapDepositChannel.id },
