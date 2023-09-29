@@ -1,9 +1,12 @@
 import { Observable, Subject } from 'rxjs';
 import { Socket } from 'socket.io';
-import { QuoteQueryResponse, quoteResponseSchema } from '@/shared/schemas';
+import {
+  MarketMakerResponse,
+  marketMakerResponseSchema,
+} from '@/shared/schemas';
 import logger from '../utils/logger';
 
-type Quote = { client: string; quote: QuoteQueryResponse };
+type Quote = { client: string; quote: MarketMakerResponse };
 
 type ConnectionHandler = {
   quotes$: Observable<Quote>;
@@ -23,7 +26,7 @@ const getConnectionHandler = (): ConnectionHandler => {
       });
 
       socket.on('quote_response', (message) => {
-        const result = quoteResponseSchema.safeParse(message);
+        const result = marketMakerResponseSchema.safeParse(message);
 
         if (!result.success) {
           logger.warn('received invalid quote response', {}, { message });

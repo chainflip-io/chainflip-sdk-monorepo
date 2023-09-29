@@ -16,7 +16,6 @@ export default async function newPoolCreated({
     event.args,
   );
 
-  // use updateMany to skip update if we are not tracking swap
   await prisma.pool.create({
     data: {
       baseAsset,

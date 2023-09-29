@@ -1,25 +1,31 @@
 import assert from 'assert';
 import * as crypto from 'crypto';
 import { Observable, Subscription, filter } from 'rxjs';
-import { Assets } from '@/shared/enums';
+import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
+import { Assets, ChainflipNetwork } from '@/shared/enums';
 import {
   QuoteRequest,
-  QuoteQueryResponse,
   QuoteQueryParams,
+  QuoteFee,
+  MarketMakerResponse,
 } from '@/shared/schemas';
+import prisma, { Pool } from '../client';
 import { Comparison, compareNumericStrings } from '../utils/string';
 
 const QUOTE_TIMEOUT = Number.parseInt(process.env.QUOTE_TIMEOUT ?? '1000', 10);
 
-export const collectQuotes = (
+const getPips = (value: string, hundrethPips: number) =>
+  (BigInt(value) * BigInt(hundrethPips)) / 10000n;
+
+export const collectMakerQuotes = (
   requestId: string,
   expectedQuotes: number,
-  quotes$: Observable<{ client: string; quote: QuoteQueryResponse }>,
-): Promise<QuoteQueryResponse[]> => {
+  quotes$: Observable<{ client: string; quote: MarketMakerResponse }>,
+): Promise<MarketMakerResponse[]> => {
   if (expectedQuotes === 0) return Promise.resolve([]);
 
   const clientsReceivedQuotes = new Set<string>();
-  const quotes: QuoteQueryResponse[] = [];
+  const quotes: MarketMakerResponse[] = [];
 
   return new Promise((resolve) => {
     let sub: Subscription;
@@ -42,10 +48,42 @@ export const collectQuotes = (
   });
 };
 
+export const subtractFeesFromMakerQuote = (
+  quote: MarketMakerResponse,
+  quotePools: Pool[],
+): MarketMakerResponse => {
+  const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(
+    process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
+  );
+
+  if ('intermediateAmount' in quote) {
+    const intermediateAmount = getPips(
+      quote.intermediateAmount,
+      networkFeeHundredthPips + quotePools[0].feeHundredthPips,
+    ).toString();
+
+    const egressAmount = getPips(
+      quote.intermediateAmount,
+      networkFeeHundredthPips +
+        quotePools[0].feeHundredthPips +
+        quotePools[1].feeHundredthPips,
+    ).toString();
+
+    return { id: quote.id, intermediateAmount, egressAmount };
+  }
+
+  const egressAmount = getPips(
+    quote.egressAmount,
+    networkFeeHundredthPips + quotePools[0].feeHundredthPips,
+  ).toString();
+
+  return { id: quote.id, egressAmount };
+};
+
 export const findBestQuote = (
-  quotes: QuoteQueryResponse[],
-  brokerQuote: QuoteQueryResponse,
-): QuoteQueryResponse =>
+  quotes: MarketMakerResponse[],
+  brokerQuote: MarketMakerResponse,
+): MarketMakerResponse =>
   quotes.reduce((a, b) => {
     const cmpResult = compareNumericStrings(a.egressAmount, b.egressAmount);
     return cmpResult === Comparison.Less ? b : a;
@@ -82,4 +120,126 @@ export const buildQuoteRequest = (query: QuoteQueryParams): QuoteRequest => {
     destination_asset: destAsset,
     deposit_amount: amount,
   };
+};
+
+export const calculateIncludedFees = (
+  request: QuoteRequest,
+  quote: MarketMakerResponse,
+  quotePools: Pool[],
+): QuoteFee[] => {
+  const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(
+    process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
+  );
+
+  if (request.source_asset === Assets.USDC) {
+    return [
+      {
+        type: 'network',
+        asset: Assets.USDC,
+        amount: getPips(
+          request.deposit_amount,
+          networkFeeHundredthPips,
+        ).toString(),
+      },
+      {
+        type: 'liquidity',
+        asset: request.source_asset,
+        amount: getPips(
+          request.deposit_amount,
+          quotePools[0].feeHundredthPips,
+        ).toString(),
+      },
+    ];
+  }
+
+  if (request.destination_asset === Assets.USDC) {
+    const stableAmountBeforeNetworkFee =
+      BigInt(quote.egressAmount) / (10000n - BigInt(networkFeeHundredthPips));
+
+    return [
+      {
+        type: 'network',
+        asset: Assets.USDC,
+        amount: getPips(
+          String(stableAmountBeforeNetworkFee),
+          networkFeeHundredthPips,
+        ).toString(),
+      },
+      {
+        type: 'liquidity',
+        asset: request.source_asset,
+        amount: getPips(
+          request.deposit_amount,
+          quotePools[0].feeHundredthPips,
+        ).toString(),
+      },
+    ];
+  }
+
+  assert('intermediateAmount' in quote, 'no intermediate amount on quote');
+
+  return [
+    {
+      type: 'network',
+      asset: Assets.USDC,
+      amount: getPips(
+        quote.intermediateAmount,
+        networkFeeHundredthPips,
+      ).toString(),
+    },
+    {
+      type: 'liquidity',
+      asset: request.source_asset,
+      amount: getPips(
+        request.deposit_amount,
+        quotePools[0].feeHundredthPips,
+      ).toString(),
+    },
+    {
+      type: 'liquidity',
+      asset: request.intermediate_asset,
+      amount: getPips(
+        quote.intermediateAmount,
+        quotePools[1].feeHundredthPips,
+      ).toString(),
+    },
+  ];
+};
+
+export const getQuotePools = async (
+  query: QuoteQueryParams,
+): Promise<Pool[]> => {
+  const { srcAsset, destAsset } = query;
+
+  if (srcAsset === Assets.USDC || destAsset === Assets.USDC) {
+    return [
+      await prisma.pool.findUniqueOrThrow({
+        where: {
+          baseAsset_pairAsset: {
+            baseAsset: srcAsset === Assets.USDC ? srcAsset : destAsset,
+            pairAsset: srcAsset === Assets.USDC ? destAsset : srcAsset,
+          },
+        },
+      }),
+    ];
+  }
+
+  return Promise.all([
+    prisma.pool.findUniqueOrThrow({
+      where: {
+        baseAsset_pairAsset: {
+          baseAsset: Assets.USDC,
+          pairAsset: srcAsset,
+        },
+      },
+    }),
+    prisma.pool.findUniqueOrThrow({
+      where: {
+        baseAsset_pairAsset: {
+          baseAsset: Assets.USDC,
+          pairAsset: destAsset,
+        },
+      },
+    }),
+  ]);
 };

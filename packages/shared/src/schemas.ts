@@ -44,7 +44,7 @@ export type PostSwapResponse = {
   issuedBlock: number;
 };
 
-export const quoteResponseSchema = z.union([
+export const marketMakerResponseSchema = z.union([
   z
     .object({
       id: z.string(),
@@ -67,8 +67,17 @@ export const quoteResponseSchema = z.union([
     })),
 ]);
 
-export type MarketMakerResponse = z.input<typeof quoteResponseSchema>;
-export type QuoteQueryResponse = z.infer<typeof quoteResponseSchema>;
+export type MarketMakerResponse = z.infer<typeof marketMakerResponseSchema>;
+
+export type QuoteFee = {
+  type: 'liquidity' | 'network';
+  asset: Asset;
+  amount: string;
+};
+
+export type QuoteQueryResponse = MarketMakerResponse & {
+  includedFees: QuoteFee[];
+};
 
 interface BaseRequest {
   id: string; // random UUID

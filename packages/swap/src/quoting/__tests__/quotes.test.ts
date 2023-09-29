@@ -4,7 +4,8 @@ import { Assets } from '@/shared/enums';
 
 describe('quotes', () => {
   let oldEnv: NodeJS.ProcessEnv;
-  let collectQuotes: typeof import('../quotes').collectQuotes = jest.fn();
+  let collectMakerQuotes: typeof import('../quotes').collectMakerQuotes =
+    jest.fn();
   let findBestQuote: typeof import('../quotes').findBestQuote = jest.fn();
   let buildQuoteRequest: typeof import('../quotes').buildQuoteRequest =
     jest.fn();
@@ -12,7 +13,7 @@ describe('quotes', () => {
   beforeEach(async () => {
     jest.resetModules();
     oldEnv = process.env;
-    ({ collectQuotes, findBestQuote, buildQuoteRequest } = await import(
+    ({ collectMakerQuotes, findBestQuote, buildQuoteRequest } = await import(
       '../quotes'
     ));
   });
@@ -21,7 +22,7 @@ describe('quotes', () => {
     process.env = oldEnv;
   });
 
-  describe(collectQuotes, () => {
+  describe(collectMakerQuotes, () => {
     beforeEach(() => {
       jest.useFakeTimers();
     });
@@ -33,25 +34,25 @@ describe('quotes', () => {
     const quotes$ = new Subject<{ client: string; quote: any }>();
 
     it('returns an empty array if expectedQuotes is 0', async () => {
-      expect(await collectQuotes('id', 0, quotes$)).toEqual([]);
+      expect(await collectMakerQuotes('id', 0, quotes$)).toEqual([]);
     });
 
     it('returns an empty array if no quotes are received', async () => {
-      const promise = collectQuotes('id', 1, quotes$);
+      const promise = collectMakerQuotes('id', 1, quotes$);
       jest.advanceTimersByTime(1001);
       expect(await promise).toEqual([]);
     });
 
     it('returns an array of quotes if expectedQuotes is received', async () => {
       const id = crypto.randomUUID();
-      const promise = collectQuotes(id, 1, quotes$);
+      const promise = collectMakerQuotes(id, 1, quotes$);
       quotes$.next({ client: 'client', quote: { id } });
       expect(await promise).toEqual([{ id }]);
     });
 
     it('accepts only the first quote from each client', async () => {
       const id = crypto.randomUUID();
-      const promise = collectQuotes(id, 2, quotes$);
+      const promise = collectMakerQuotes(id, 2, quotes$);
       for (let i = 0; i < 2; i += 1) {
         quotes$.next({ client: 'client', quote: { id, index: i } });
       }
@@ -62,9 +63,9 @@ describe('quotes', () => {
     it('can be configured with QUOTE_TIMEOUT', async () => {
       jest.resetModules();
       process.env.QUOTE_TIMEOUT = '100';
-      ({ collectQuotes } = await import('../quotes'));
+      ({ collectMakerQuotes } = await import('../quotes'));
       const id = crypto.randomUUID();
-      const promise = collectQuotes(id, 1, quotes$);
+      const promise = collectMakerQuotes(id, 1, quotes$);
       jest.advanceTimersByTime(101);
       quotes$.next({ client: 'client', quote: { id } });
       expect(await promise).toEqual([]);
@@ -72,7 +73,7 @@ describe('quotes', () => {
 
     it('eagerly returns after all expected quotes are received', async () => {
       const id = crypto.randomUUID();
-      const promise = collectQuotes(id, 2, quotes$);
+      const promise = collectMakerQuotes(id, 2, quotes$);
       quotes$.next({ client: 'client', quote: { id, value: 1 } });
       quotes$.next({ client: 'client2', quote: { id, value: 2 } });
       // no need to advance timers because setTimeout is never called
