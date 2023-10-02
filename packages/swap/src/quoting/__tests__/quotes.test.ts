@@ -1,34 +1,34 @@
 import * as crypto from 'crypto';
 import { Subject } from 'rxjs';
 import { Assets } from '@/shared/enums';
+import prisma, { Pool } from '../../client';
+import {
+  buildQuoteRequest,
+  calculateIncludedFees,
+  collectMakerQuotes,
+  findBestQuote,
+  getQuotePools,
+  subtractFeesFromMakerQuote,
+} from '../quotes';
+
+jest.mock('@/shared/consts', () => ({
+  ...jest.requireActual('@/shared/consts'),
+  getPoolsNetworkFeeHundredthPips: jest.fn().mockReturnValue(1000),
+}));
 
 describe('quotes', () => {
-  let oldEnv: NodeJS.ProcessEnv;
-  let collectMakerQuotes: typeof import('../quotes').collectMakerQuotes =
-    jest.fn();
-  let findBestQuote: typeof import('../quotes').findBestQuote = jest.fn();
-  let buildQuoteRequest: typeof import('../quotes').buildQuoteRequest =
-    jest.fn();
-
-  beforeEach(async () => {
-    jest.resetModules();
-    oldEnv = process.env;
-    ({ collectMakerQuotes, findBestQuote, buildQuoteRequest } = await import(
-      '../quotes'
-    ));
-  });
-
-  afterEach(() => {
-    process.env = oldEnv;
-  });
-
   describe(collectMakerQuotes, () => {
+    let oldEnv: NodeJS.ProcessEnv;
+
     beforeEach(() => {
+      oldEnv = { ...process.env };
       jest.useFakeTimers();
     });
 
     afterEach(() => {
+      process.env = oldEnv;
       jest.useRealTimers();
+      jest.resetModules();
     });
 
     const quotes$ = new Subject<{ client: string; quote: any }>();
@@ -61,11 +61,12 @@ describe('quotes', () => {
     });
 
     it('can be configured with QUOTE_TIMEOUT', async () => {
-      jest.resetModules();
       process.env.QUOTE_TIMEOUT = '100';
-      ({ collectMakerQuotes } = await import('../quotes'));
+      const freshCollectMakerQuotes = (await import('../quotes'))
+        .collectMakerQuotes;
+
       const id = crypto.randomUUID();
-      const promise = collectMakerQuotes(id, 1, quotes$);
+      const promise = freshCollectMakerQuotes(id, 1, quotes$);
       jest.advanceTimersByTime(101);
       quotes$.next({ client: 'client', quote: { id } });
       expect(await promise).toEqual([]);
@@ -81,6 +82,44 @@ describe('quotes', () => {
         { id, value: 1 },
         { id, value: 2 },
       ]);
+    });
+  });
+
+  describe(subtractFeesFromMakerQuote, () => {
+    const examplePool: Pool = {
+      id: 1,
+      pairAsset: 'ETH',
+      baseAsset: 'USDC',
+      feeHundredthPips: 1000,
+    };
+
+    it('subtracts fees from quote without intermediate amount', () => {
+      expect(
+        subtractFeesFromMakerQuote(
+          { id: 'quote-id', egressAmount: (100e18).toString() },
+          [examplePool],
+        ),
+      ).toMatchObject({
+        id: 'quote-id',
+        egressAmount: (99.8e18).toString(),
+      });
+    });
+
+    it('subtracts fees from quote with intermediate amount', () => {
+      expect(
+        subtractFeesFromMakerQuote(
+          {
+            id: 'quote-id',
+            intermediateAmount: (100e6).toString(),
+            egressAmount: (100e18).toString(),
+          },
+          [examplePool, examplePool],
+        ),
+      ).toMatchObject({
+        id: 'quote-id',
+        intermediateAmount: (99.8e6).toString(),
+        egressAmount: (99.7e18).toString(),
+      });
     });
   });
 
@@ -161,6 +200,183 @@ describe('quotes', () => {
         intermediate_asset: null,
         destination_asset: 'USDC',
         deposit_amount: '100000000',
+      });
+    });
+  });
+
+  describe(calculateIncludedFees, () => {
+    const ethUsdcPool: Pool = {
+      id: 1,
+      pairAsset: 'ETH',
+      baseAsset: 'USDC',
+      feeHundredthPips: 1000,
+    };
+    const flipUsdcPool: Pool = {
+      id: 2,
+      pairAsset: 'FLIP',
+      baseAsset: 'USDC',
+      feeHundredthPips: 1000,
+    };
+
+    it('returns fees for quote with intermediate amount', () => {
+      const fees = calculateIncludedFees(
+        {
+          id: 'quote-id',
+          source_asset: 'ETH',
+          intermediate_asset: 'USDC',
+          destination_asset: 'FLIP',
+          deposit_amount: (100e18).toString(),
+        },
+        {
+          id: 'quote-id',
+          intermediateAmount: (100e6).toString(),
+          egressAmount: (100e18).toString(),
+        },
+        [ethUsdcPool, flipUsdcPool],
+      );
+
+      expect(fees).toMatchObject([
+        {
+          type: 'network',
+          asset: 'USDC',
+          amount: (0.1e6).toString(),
+        },
+        {
+          type: 'liquidity',
+          asset: 'ETH',
+          amount: (0.1e18).toString(),
+        },
+        {
+          type: 'liquidity',
+          asset: 'USDC',
+          amount: (0.1e6).toString(),
+        },
+      ]);
+    });
+
+    it('returns fees for quote from USDC', () => {
+      const fees = calculateIncludedFees(
+        {
+          id: 'quote-id',
+          source_asset: 'USDC',
+          intermediate_asset: null,
+          destination_asset: 'FLIP',
+          deposit_amount: (100e6).toString(),
+        },
+        {
+          id: 'quote-id',
+          egressAmount: (100e18).toString(),
+        },
+        [flipUsdcPool],
+      );
+
+      expect(fees).toMatchObject([
+        {
+          type: 'network',
+          asset: 'USDC',
+          amount: (0.1e6).toString(),
+        },
+        {
+          type: 'liquidity',
+          asset: 'USDC',
+          amount: (0.1e6).toString(),
+        },
+      ]);
+    });
+
+    it('returns fees for quote to USDC', () => {
+      const fees = calculateIncludedFees(
+        {
+          id: 'quote-id',
+          source_asset: 'ETH',
+          intermediate_asset: null,
+          destination_asset: 'USDC',
+          deposit_amount: (100e18).toString(),
+        },
+        {
+          id: 'quote-id',
+          egressAmount: (99.9e6).toString(),
+        },
+        [ethUsdcPool],
+      );
+
+      expect(fees).toMatchObject([
+        {
+          type: 'network',
+          asset: 'USDC',
+          amount: (0.1e6).toString(),
+        },
+        {
+          type: 'liquidity',
+          asset: 'ETH',
+          amount: (0.1e18).toString(),
+        },
+      ]);
+    });
+  });
+
+  describe(getQuotePools, () => {
+    beforeAll(async () => {
+      await prisma.$queryRaw`TRUNCATE TABLE public."Pool" CASCADE`;
+      await prisma.pool.createMany({
+        data: [
+          {
+            baseAsset: 'USDC',
+            pairAsset: 'FLIP',
+            feeHundredthPips: 1000,
+          },
+          {
+            baseAsset: 'USDC',
+            pairAsset: 'ETH',
+            feeHundredthPips: 2000,
+          },
+        ],
+      });
+    });
+
+    it('returns pools for quote with intermediate amount', async () => {
+      const pools = await getQuotePools({
+        srcAsset: Assets.FLIP,
+        destAsset: Assets.ETH,
+        amount: '1000000000000000000',
+      });
+
+      expect(pools).toHaveLength(2);
+      expect(pools[0]).toMatchObject({
+        baseAsset: Assets.USDC,
+        pairAsset: Assets.FLIP,
+      });
+      expect(pools[1]).toMatchObject({
+        baseAsset: Assets.USDC,
+        pairAsset: Assets.ETH,
+      });
+    });
+
+    it('returns pools for quote from USDC', async () => {
+      const pools = await getQuotePools({
+        srcAsset: Assets.USDC,
+        destAsset: Assets.ETH,
+        amount: '1000000000000000000',
+      });
+
+      expect(pools).toHaveLength(1);
+      expect(pools[0]).toMatchObject({
+        baseAsset: Assets.USDC,
+        pairAsset: Assets.ETH,
+      });
+    });
+
+    it('returns pools for quote to USDC', async () => {
+      const pools = await getQuotePools({
+        srcAsset: Assets.FLIP,
+        destAsset: Assets.USDC,
+        amount: '1000000000000000000',
+      });
+
+      expect(pools).toHaveLength(1);
+      expect(pools[0]).toMatchObject({
+        baseAsset: Assets.USDC,
+        pairAsset: Assets.FLIP,
       });
     });
   });

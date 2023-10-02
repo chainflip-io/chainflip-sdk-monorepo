@@ -33,6 +33,24 @@ describe('python integration test', () => {
   let stdout$: Observable<string>;
   let serverUrl: string;
 
+  beforeAll(async () => {
+    await prisma.$queryRaw`TRUNCATE TABLE public."Pool" CASCADE`;
+    await prisma.pool.createMany({
+      data: [
+        {
+          baseAsset: 'USDC',
+          pairAsset: 'FLIP',
+          feeHundredthPips: 1000,
+        },
+        {
+          baseAsset: 'USDC',
+          pairAsset: 'ETH',
+          feeHundredthPips: 2000,
+        },
+      ],
+    });
+  });
+
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE private."MarketMaker" CASCADE`;
     const pair = await generateKeyPairAsync('ed25519');
@@ -100,8 +118,25 @@ describe('python integration test', () => {
 
     expect(await response.json()).toEqual({
       id: expect.any(String),
-      intermediateAmount: '2000000000',
-      egressAmount: '1000000000000000000',
+      intermediateAmount: '1998000000',
+      egressAmount: '997000000000000000',
+      includedFees: [
+        {
+          amount: '0',
+          asset: 'USDC',
+          type: 'network',
+        },
+        {
+          amount: '1000000000000000',
+          asset: 'FLIP',
+          type: 'liquidity',
+        },
+        {
+          amount: '3996000',
+          asset: 'USDC',
+          type: 'liquidity',
+        },
+      ],
     });
   });
 });

@@ -334,3 +334,23 @@ export const networkBroadcastAbortedMock = {
     },
   },
 } as const;
+
+export const newPoolCreatedMock = {
+  block: {
+    height: 120,
+    timestamp: 1670337105000,
+  },
+  eventContext: {
+    kind: 'event',
+    event: {
+      args: {
+        baseAsset: { __kind: 'Usdc' },
+        pairAsset: { __kind: 'Btc' },
+        initialPrice: '170141183460469231731687303715884105728000',
+        feeHundredthPips: 1000,
+      },
+      name: 'LiquidityPools.NewPoolCreated',
+      indexInBlock: 7,
+    },
+  },
+} as const;

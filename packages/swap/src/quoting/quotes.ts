@@ -14,8 +14,10 @@ import { Comparison, compareNumericStrings } from '../utils/string';
 
 const QUOTE_TIMEOUT = Number.parseInt(process.env.QUOTE_TIMEOUT ?? '1000', 10);
 
+const ONE_IN_HUNDREDTH_PIPS = 1000000;
+
 const getPips = (value: string, hundrethPips: number) =>
-  (BigInt(value) * BigInt(hundrethPips)) / 10000n;
+  (BigInt(value) * BigInt(hundrethPips)) / BigInt(ONE_IN_HUNDREDTH_PIPS);
 
 export const collectMakerQuotes = (
   requestId: string,
@@ -57,14 +59,18 @@ export const subtractFeesFromMakerQuote = (
   );
 
   if ('intermediateAmount' in quote) {
+    assert(quotePools.length === 2, 'wrong number of pools given');
+
     const intermediateAmount = getPips(
       quote.intermediateAmount,
-      10000 - networkFeeHundredthPips - quotePools[0].feeHundredthPips,
+      ONE_IN_HUNDREDTH_PIPS -
+        networkFeeHundredthPips -
+        quotePools[0].feeHundredthPips,
     ).toString();
 
     const egressAmount = getPips(
       quote.egressAmount,
-      10000 -
+      ONE_IN_HUNDREDTH_PIPS -
         networkFeeHundredthPips -
         quotePools[0].feeHundredthPips -
         quotePools[1].feeHundredthPips,
@@ -73,9 +79,13 @@ export const subtractFeesFromMakerQuote = (
     return { id: quote.id, intermediateAmount, egressAmount };
   }
 
+  assert(quotePools.length === 1, 'wrong number of pools given');
+
   const egressAmount = getPips(
     quote.egressAmount,
-    10000 - networkFeeHundredthPips - quotePools[0].feeHundredthPips,
+    ONE_IN_HUNDREDTH_PIPS -
+      networkFeeHundredthPips -
+      quotePools[0].feeHundredthPips,
   ).toString();
 
   return { id: quote.id, egressAmount };
@@ -155,8 +165,8 @@ export const calculateIncludedFees = (
 
   if (request.destination_asset === Assets.USDC) {
     const stableAmountBeforeNetworkFee =
-      (BigInt(quote.egressAmount) * 10000n) /
-      (10000n - BigInt(networkFeeHundredthPips));
+      (BigInt(quote.egressAmount) * BigInt(ONE_IN_HUNDREDTH_PIPS)) /
+      BigInt(ONE_IN_HUNDREDTH_PIPS - networkFeeHundredthPips);
 
     return [
       {

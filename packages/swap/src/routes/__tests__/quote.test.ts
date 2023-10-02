@@ -28,7 +28,7 @@ jest.mock(
 jest.mock('@/shared/consts', () => ({
   ...jest.requireActual('@/shared/consts'),
   getMinimumSwapAmount: jest.fn().mockReturnValue('100'),
-  getPoolsNetworkFeeHundredthPips: jest.fn().mockReturnValue(100),
+  getPoolsNetworkFeeHundredthPips: jest.fn().mockReturnValue(1000),
 }));
 
 describe('server', () => {
@@ -36,17 +36,18 @@ describe('server', () => {
   let client: QuotingClient;
 
   beforeAll(async () => {
+    await prisma.$queryRaw`TRUNCATE TABLE public."Pool" CASCADE`;
     await prisma.pool.createMany({
       data: [
         {
           baseAsset: 'USDC',
           pairAsset: 'FLIP',
-          feeHundredthPips: 100,
+          feeHundredthPips: 1000,
         },
         {
           baseAsset: 'USDC',
           pairAsset: 'ETH',
-          feeHundredthPips: 200,
+          feeHundredthPips: 2000,
         },
       ],
     });
@@ -124,8 +125,8 @@ describe('server', () => {
         id: expect.any(String),
         egressAmount: (1e18).toString(),
         includedFees: [
-          { amount: '1000000', asset: 'USDC', type: 'network' },
-          { amount: '2000000', asset: 'USDC', type: 'liquidity' },
+          { amount: '100000', asset: 'USDC', type: 'network' },
+          { amount: '200000', asset: 'USDC', type: 'liquidity' },
         ],
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -158,8 +159,8 @@ describe('server', () => {
         id: expect.any(String),
         egressAmount: (100e6).toString(),
         includedFees: [
-          { amount: '1010101', asset: 'USDC', type: 'network' },
-          { amount: '20000000000000000', asset: 'ETH', type: 'liquidity' },
+          { amount: '100100', asset: 'USDC', type: 'network' },
+          { amount: '2000000000000000', asset: 'ETH', type: 'liquidity' },
         ],
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -195,9 +196,9 @@ describe('server', () => {
         intermediateAmount: (2000e6).toString(),
         egressAmount: (1e18).toString(),
         includedFees: [
-          { amount: '20000000', asset: 'USDC', type: 'network' },
-          { amount: '10000000000000000', asset: 'FLIP', type: 'liquidity' },
-          { amount: '40000000', asset: 'USDC', type: 'liquidity' },
+          { amount: '2000000', asset: 'USDC', type: 'network' },
+          { amount: '1000000000000000', asset: 'FLIP', type: 'liquidity' },
+          { amount: '4000000', asset: 'USDC', type: 'liquidity' },
         ],
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -229,12 +230,12 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body).toMatchObject({
         id: expect.any(String),
-        intermediateAmount: (2940e6).toString(),
-        egressAmount: (1.92e18).toString(),
+        intermediateAmount: (2994e6).toString(),
+        egressAmount: (1.992e18).toString(),
         includedFees: [
-          { amount: '29400000', asset: 'USDC', type: 'network' },
-          { amount: '10000000000000000', asset: 'FLIP', type: 'liquidity' },
-          { amount: '58800000', asset: 'USDC', type: 'liquidity' },
+          { amount: '2994000', asset: 'USDC', type: 'network' },
+          { amount: '1000000000000000', asset: 'FLIP', type: 'liquidity' },
+          { amount: '5988000', asset: 'USDC', type: 'liquidity' },
         ],
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
