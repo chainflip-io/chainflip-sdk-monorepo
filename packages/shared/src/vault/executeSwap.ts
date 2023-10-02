@@ -63,7 +63,7 @@ const swapToken = async (
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
   const { isAllowable } = await checkAllowance(
-    params.amount,
+    BigInt(params.amount),
     vaultContractAddress,
     erc20Address,
     networkOpts.signer,
@@ -134,7 +134,7 @@ const callToken = async (
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
   const { isAllowable } = await checkAllowance(
-    params.amount,
+    BigInt(params.amount),
     vaultContractAddress,
     erc20Address,
     networkOpts.signer,

@@ -104,7 +104,7 @@ describe(executeSwap, () => {
 
       expect(
         await executeSwap(
-          { amount: 1n, ...params } as ExecuteSwapParams,
+          { amount: '1', ...params } as ExecuteSwapParams,
           {
             network: ChainflipNetworks.sisyphos,
             signer: new VoidSigner('MY ADDRESS'),
@@ -163,7 +163,7 @@ describe(executeSwap, () => {
 
       expect(
         await executeSwap(
-          { amount: 1n, ...params } as ExecuteSwapParams,
+          { amount: '1', ...params } as ExecuteSwapParams,
           {
             network: 'sisyphos',
             signer: new VoidSigner('MY ADDRESS'),
@@ -200,7 +200,7 @@ describe(executeSwap, () => {
           destAddress: BTC_ADDRESS,
           srcAsset: Assets.FLIP,
           srcChain: Chains.Ethereum,
-          amount: 1n,
+          amount: '1',
         },
         { network: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
         {},
@@ -233,7 +233,7 @@ describe(executeSwap, () => {
           destChain: Chains.Bitcoin,
           destAddress: BTC_ADDRESS,
           srcAsset: Assets.FLIP,
-          amount: 1n,
+          amount: '1',
           srcChain: Chains.Ethereum,
         },
         {
@@ -262,7 +262,7 @@ describe(executeSwap, () => {
     expect(
       await executeSwap(
         {
-          amount: 1n,
+          amount: '1',
           destAsset: Assets.BTC,
           destChain: Chains.Bitcoin,
           destAddress: BTC_ADDRESS,
@@ -308,7 +308,7 @@ describe(executeSwap, () => {
     expect(
       await executeSwap(
         {
-          amount: 1n,
+          amount: '1',
           ...params,
         } as ExecuteSwapParams,
         {
@@ -362,7 +362,7 @@ describe(executeSwap, () => {
     expect(
       await executeSwap(
         {
-          amount: 1n,
+          amount: '1',
           ...params,
         },
         {

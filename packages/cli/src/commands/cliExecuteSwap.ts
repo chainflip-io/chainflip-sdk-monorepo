@@ -103,7 +103,7 @@ export default async function cliExecuteSwap(
       srcAsset: args.srcAsset,
       destChain: assetChains[args.destAsset],
       destAsset: args.destAsset,
-      amount: BigInt(args.amount),
+      amount: args.amount,
       destAddress: args.destAddress,
       ccmMetadata,
     } as ExecuteSwapParams,

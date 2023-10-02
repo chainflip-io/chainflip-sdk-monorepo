@@ -1,7 +1,12 @@
 import { decodeAddress } from '@polkadot/util-crypto';
 import { z } from 'zod';
 import { Assets, Chains } from '../enums';
-import { btcAddress, dotAddress, ethereumAddress } from '../parsers';
+import {
+  btcAddress,
+  dotAddress,
+  ethereumAddress,
+  numericString,
+} from '../parsers';
 import { ccmMetadataSchema } from '../schemas';
 
 const bytesToHex = (arr: Uint8Array | number[]) =>
@@ -10,7 +15,7 @@ const bytesToHex = (arr: Uint8Array | number[]) =>
 const utf8ToHex = (str: string) => `0x${Buffer.from(str).toString('hex')}`;
 
 const eth = z.object({
-  amount: z.bigint(),
+  amount: numericString,
   srcChain: z.literal(Chains.Ethereum),
   srcAsset: z.literal(Assets.ETH),
 });
