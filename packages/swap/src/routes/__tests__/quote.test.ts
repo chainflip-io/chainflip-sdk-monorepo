@@ -28,11 +28,29 @@ jest.mock(
 jest.mock('@/shared/consts', () => ({
   ...jest.requireActual('@/shared/consts'),
   getMinimumSwapAmount: jest.fn().mockReturnValue('100'),
+  getPoolsNetworkFeeHundredthPips: jest.fn().mockReturnValue(100),
 }));
 
 describe('server', () => {
   let server: Server;
   let client: QuotingClient;
+
+  beforeAll(async () => {
+    await prisma.pool.createMany({
+      data: [
+        {
+          baseAsset: 'USDC',
+          pairAsset: 'FLIP',
+          feeHundredthPips: 100,
+        },
+        {
+          baseAsset: 'USDC',
+          pairAsset: 'ETH',
+          feeHundredthPips: 200,
+        },
+      ],
+    });
+  });
 
   beforeEach(async () => {
     server = app.listen(0);
@@ -79,7 +97,75 @@ describe('server', () => {
       });
     });
 
-    it('gets the quote when the broker is best', async () => {
+    it('gets the quote from usdc when the broker is best', async () => {
+      const sendSpy = jest
+        .spyOn(RpcClient.prototype, 'sendRequest')
+        .mockResolvedValueOnce({
+          output: (1e18).toString(),
+        });
+
+      const params = new URLSearchParams({
+        srcAsset: 'USDC',
+        destAsset: 'ETH',
+        amount: (100e6).toString(),
+      });
+
+      client.setQuoteRequestHandler(async (req) => ({
+        id: req.id,
+        egress_amount: (0.5e18).toString(),
+      }));
+
+      const { body, status } = await request(server).get(
+        `/quote?${params.toString()}`,
+      );
+
+      expect(status).toBe(200);
+      expect(body).toMatchObject({
+        id: expect.any(String),
+        egressAmount: (1e18).toString(),
+        includedFees: [
+          { amount: '1000000', asset: 'USDC', type: 'network' },
+          { amount: '2000000', asset: 'USDC', type: 'liquidity' },
+        ],
+      });
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('gets the quote to usdc when the broker is best', async () => {
+      const sendSpy = jest
+        .spyOn(RpcClient.prototype, 'sendRequest')
+        .mockResolvedValueOnce({
+          output: (100e6).toString(),
+        });
+
+      const params = new URLSearchParams({
+        srcAsset: 'ETH',
+        destAsset: 'USDC',
+        amount: (1e18).toString(),
+      });
+
+      client.setQuoteRequestHandler(async (req) => ({
+        id: req.id,
+        egress_amount: (50e6).toString(),
+      }));
+
+      const { body, status } = await request(server).get(
+        `/quote?${params.toString()}`,
+      );
+
+      expect(status).toBe(200);
+      expect(body).toMatchObject({
+        id: expect.any(String),
+        egressAmount: (100e6).toString(),
+        includedFees: [
+          { amount: '1010101', asset: 'USDC', type: 'network' },
+          { amount: '20000000000000000', asset: 'ETH', type: 'liquidity' },
+        ],
+      });
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('gets the quote with intermediate amount when the broker is best', async () => {
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
@@ -90,13 +176,13 @@ describe('server', () => {
       const params = new URLSearchParams({
         srcAsset: 'FLIP',
         destAsset: 'ETH',
-        amount: '100',
+        amount: (1e18).toString(),
       });
 
       client.setQuoteRequestHandler(async (req) => ({
         id: req.id,
         intermediate_amount: (1000e6).toString(),
-        egress_amount: (5e17).toString(),
+        egress_amount: (0.5e18).toString(),
       }));
 
       const { body, status } = await request(server).get(
@@ -108,6 +194,11 @@ describe('server', () => {
         id: expect.any(String),
         intermediateAmount: (2000e6).toString(),
         egressAmount: (1e18).toString(),
+        includedFees: [
+          { amount: '20000000', asset: 'USDC', type: 'network' },
+          { amount: '10000000000000000', asset: 'FLIP', type: 'liquidity' },
+          { amount: '40000000', asset: 'USDC', type: 'liquidity' },
+        ],
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
@@ -122,13 +213,13 @@ describe('server', () => {
       const params = new URLSearchParams({
         srcAsset: 'FLIP',
         destAsset: 'ETH',
-        amount: '100',
+        amount: (1e18).toString(),
       });
 
       client.setQuoteRequestHandler(async (req) => ({
         id: req.id,
-        intermediate_amount: (2000e6).toString(),
-        egress_amount: (1.1e18).toString(),
+        intermediate_amount: (3000e6).toString(),
+        egress_amount: (2e18).toString(),
       }));
 
       const { body, status } = await request(server).get(
@@ -138,8 +229,13 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body).toMatchObject({
         id: expect.any(String),
-        intermediateAmount: (2000e6).toString(),
-        egressAmount: (1.1e18).toString(),
+        intermediateAmount: (2940e6).toString(),
+        egressAmount: (1.92e18).toString(),
+        includedFees: [
+          { amount: '29400000', asset: 'USDC', type: 'network' },
+          { amount: '10000000000000000', asset: 'FLIP', type: 'liquidity' },
+          { amount: '58800000', asset: 'USDC', type: 'liquidity' },
+        ],
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });

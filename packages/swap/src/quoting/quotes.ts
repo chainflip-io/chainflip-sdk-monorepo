@@ -59,13 +59,14 @@ export const subtractFeesFromMakerQuote = (
   if ('intermediateAmount' in quote) {
     const intermediateAmount = getPips(
       quote.intermediateAmount,
-      networkFeeHundredthPips + quotePools[0].feeHundredthPips,
+      10000 - networkFeeHundredthPips - quotePools[0].feeHundredthPips,
     ).toString();
 
     const egressAmount = getPips(
-      quote.intermediateAmount,
-      networkFeeHundredthPips +
-        quotePools[0].feeHundredthPips +
+      quote.egressAmount,
+      10000 -
+        networkFeeHundredthPips -
+        quotePools[0].feeHundredthPips -
         quotePools[1].feeHundredthPips,
     ).toString();
 
@@ -74,7 +75,7 @@ export const subtractFeesFromMakerQuote = (
 
   const egressAmount = getPips(
     quote.egressAmount,
-    networkFeeHundredthPips + quotePools[0].feeHundredthPips,
+    10000 - networkFeeHundredthPips - quotePools[0].feeHundredthPips,
   ).toString();
 
   return { id: quote.id, egressAmount };
@@ -154,7 +155,8 @@ export const calculateIncludedFees = (
 
   if (request.destination_asset === Assets.USDC) {
     const stableAmountBeforeNetworkFee =
-      BigInt(quote.egressAmount) / (10000n - BigInt(networkFeeHundredthPips));
+      (BigInt(quote.egressAmount) * 10000n) /
+      (10000n - BigInt(networkFeeHundredthPips));
 
     return [
       {
