@@ -125,7 +125,11 @@ describe('quotes', () => {
 
   describe(findBestQuote, () => {
     it('returns the quote with the highest egressAmount', () => {
-      const broker = { id: '1', egressAmount: '1' };
+      const broker = {
+        id: '1',
+        intermediateAmount: undefined,
+        egressAmount: '1',
+      };
       const a = { id: '2', egressAmount: '10' };
       const b = { id: '3', egressAmount: '20' };
       expect(findBestQuote([a, b], broker)).toBe(b);
@@ -133,7 +137,11 @@ describe('quotes', () => {
     });
 
     it('returns the quote with the highest egressAmount if many match', () => {
-      const broker = { id: '1', egressAmount: '1' };
+      const broker = {
+        id: '1',
+        intermediateAmount: undefined,
+        egressAmount: '1',
+      };
       const a = { id: '2', egressAmount: '10' };
       const b = { id: '3', egressAmount: '20' };
       const c = { id: '4', egressAmount: '20' };
@@ -144,12 +152,20 @@ describe('quotes', () => {
     it("returns the broker quote if it's best", () => {
       const a = { id: '1', egressAmount: '1' };
       const b = { id: '2', egressAmount: '10' };
-      const broker = { id: '3', egressAmount: '20' };
+      const broker = {
+        id: '3',
+        intermediateAmount: undefined,
+        egressAmount: '20',
+      };
       expect(findBestQuote([a, b], broker)).toBe(broker);
     });
 
     it('returns the broker quote in absence of market maker quotes', () => {
-      const broker = { id: '1', egressAmount: '1' };
+      const broker = {
+        id: '1',
+        intermediateAmount: undefined,
+        egressAmount: '1',
+      };
       expect(findBestQuote([], broker)).toBe(broker);
     });
   });

@@ -3,12 +3,8 @@ import * as crypto from 'crypto';
 import { Observable, Subscription, filter } from 'rxjs';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
 import { Assets, ChainflipNetwork } from '@/shared/enums';
-import {
-  QuoteRequest,
-  QuoteQueryParams,
-  QuoteFee,
-  MarketMakerResponse,
-} from '@/shared/schemas';
+import { QuoteRequest, QuoteQueryParams, QuoteFee } from '@/shared/schemas';
+import { BrokerQuote, MarketMakerQuote } from './schemas';
 import prisma, { Pool } from '../client';
 import { Comparison, compareNumericStrings } from '../utils/string';
 
@@ -22,12 +18,12 @@ const getPips = (value: string, hundrethPips: number) =>
 export const collectMakerQuotes = (
   requestId: string,
   expectedQuotes: number,
-  quotes$: Observable<{ client: string; quote: MarketMakerResponse }>,
-): Promise<MarketMakerResponse[]> => {
+  quotes$: Observable<{ client: string; quote: MarketMakerQuote }>,
+): Promise<MarketMakerQuote[]> => {
   if (expectedQuotes === 0) return Promise.resolve([]);
 
   const clientsReceivedQuotes = new Set<string>();
-  const quotes: MarketMakerResponse[] = [];
+  const quotes: MarketMakerQuote[] = [];
 
   return new Promise((resolve) => {
     let sub: Subscription;
@@ -51,9 +47,9 @@ export const collectMakerQuotes = (
 };
 
 export const subtractFeesFromMakerQuote = (
-  quote: MarketMakerResponse,
+  quote: MarketMakerQuote,
   quotePools: Pool[],
-): MarketMakerResponse => {
+): MarketMakerQuote => {
   const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(
     process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
   );
@@ -92,13 +88,16 @@ export const subtractFeesFromMakerQuote = (
 };
 
 export const findBestQuote = (
-  quotes: MarketMakerResponse[],
-  brokerQuote: MarketMakerResponse,
-): MarketMakerResponse =>
-  quotes.reduce((a, b) => {
-    const cmpResult = compareNumericStrings(a.egressAmount, b.egressAmount);
-    return cmpResult === Comparison.Less ? b : a;
-  }, brokerQuote);
+  quotes: MarketMakerQuote[],
+  brokerQuote: BrokerQuote,
+) =>
+  quotes.reduce(
+    (a, b) => {
+      const cmpResult = compareNumericStrings(a.egressAmount, b.egressAmount);
+      return cmpResult === Comparison.Less ? b : a;
+    },
+    brokerQuote as MarketMakerQuote | BrokerQuote,
+  );
 
 export const buildQuoteRequest = (query: QuoteQueryParams): QuoteRequest => {
   const { srcAsset, destAsset, amount } = query;
@@ -135,7 +134,7 @@ export const buildQuoteRequest = (query: QuoteQueryParams): QuoteRequest => {
 
 export const calculateIncludedFees = (
   request: QuoteRequest,
-  quote: MarketMakerResponse,
+  quote: MarketMakerQuote | BrokerQuote,
   quotePools: Pool[],
 ): QuoteFee[] => {
   const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(
@@ -188,7 +187,10 @@ export const calculateIncludedFees = (
     ];
   }
 
-  assert('intermediateAmount' in quote, 'no intermediate amount on quote');
+  assert(
+    'intermediateAmount' in quote && quote.intermediateAmount,
+    'no intermediate amount on quote',
+  );
 
   return [
     {

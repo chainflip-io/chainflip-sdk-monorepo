@@ -44,38 +44,15 @@ export type PostSwapResponse = {
   issuedBlock: number;
 };
 
-export const marketMakerResponseSchema = z.union([
-  z
-    .object({
-      id: z.string(),
-      intermediate_amount: numericString,
-      egress_amount: numericString,
-    })
-    .transform(({ id, ...rest }) => ({
-      id,
-      intermediateAmount: rest.intermediate_amount,
-      egressAmount: rest.egress_amount,
-    })),
-  z
-    .object({
-      id: z.string(),
-      egress_amount: numericString,
-    })
-    .transform(({ id, ...rest }) => ({
-      id,
-      egressAmount: rest.egress_amount,
-    })),
-]);
-
-export type MarketMakerResponse = z.infer<typeof marketMakerResponseSchema>;
-
 export type QuoteFee = {
   type: 'liquidity' | 'network';
   asset: Asset;
   amount: string;
 };
 
-export type QuoteQueryResponse = MarketMakerResponse & {
+export type QuoteQueryResponse = {
+  intermediateAmount?: string;
+  egressAmount: string;
   includedFees: QuoteFee[];
 };
 

@@ -3,7 +3,8 @@ import { EventEmitter } from 'events';
 import { io, Socket } from 'socket.io-client';
 import { promisify } from 'util';
 import { z } from 'zod';
-import { QuoteRequest, marketMakerResponseSchema } from '../schemas';
+import { marketMakerResponseSchema } from './schemas';
+import { QuoteRequest } from '../schemas';
 
 const signAsync = promisify(crypto.sign);
 

@@ -1,12 +1,9 @@
 import { Observable, Subject } from 'rxjs';
 import { Socket } from 'socket.io';
-import {
-  MarketMakerResponse,
-  marketMakerResponseSchema,
-} from '@/shared/schemas';
+import { MarketMakerQuote, marketMakerResponseSchema } from './schemas';
 import logger from '../utils/logger';
 
-type Quote = { client: string; quote: MarketMakerResponse };
+type Quote = { client: string; quote: MarketMakerQuote };
 
 type ConnectionHandler = {
   quotes$: Observable<Quote>;

@@ -102,7 +102,7 @@ describe('server', () => {
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
-          output: (1e18).toString(),
+          egressAmount: (1e18).toString(),
         });
 
       const params = new URLSearchParams({
@@ -136,7 +136,7 @@ describe('server', () => {
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
-          output: (100e6).toString(),
+          egressAmount: (100e6).toString(),
         });
 
       const params = new URLSearchParams({
@@ -170,8 +170,8 @@ describe('server', () => {
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
-          intermediary: (2000e6).toString(),
-          output: (1e18).toString(),
+          intermediateAmount: (2000e6).toString(),
+          egressAmount: (1e18).toString(),
         });
 
       const params = new URLSearchParams({
@@ -208,8 +208,8 @@ describe('server', () => {
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
-          intermediary: (2000e6).toString(),
-          output: (1e18).toString(),
+          intermediateAmount: (2000e6).toString(),
+          egressAmount: (1e18).toString(),
         });
       const params = new URLSearchParams({
         srcAsset: 'FLIP',
