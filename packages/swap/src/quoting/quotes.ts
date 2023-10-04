@@ -65,15 +65,15 @@ export const subtractFeesFromMakerQuote = (
       quote.intermediateAmount,
       ONE_IN_HUNDREDTH_PIPS -
         networkFeeHundredthPips -
-        quotePools[0].feeHundredthPips,
+        quotePools[0].liquidityFeeHundredthPips,
     ).toString();
 
     const egressAmount = getPips(
       quote.egressAmount,
       ONE_IN_HUNDREDTH_PIPS -
         networkFeeHundredthPips -
-        quotePools[0].feeHundredthPips -
-        quotePools[1].feeHundredthPips,
+        quotePools[0].liquidityFeeHundredthPips -
+        quotePools[1].liquidityFeeHundredthPips,
     ).toString();
 
     return { id: quote.id, intermediateAmount, egressAmount };
@@ -85,7 +85,7 @@ export const subtractFeesFromMakerQuote = (
     quote.egressAmount,
     ONE_IN_HUNDREDTH_PIPS -
       networkFeeHundredthPips -
-      quotePools[0].feeHundredthPips,
+      quotePools[0].liquidityFeeHundredthPips,
   ).toString();
 
   return { id: quote.id, egressAmount };
@@ -157,7 +157,7 @@ export const calculateIncludedFees = (
         asset: request.source_asset,
         amount: getPips(
           request.deposit_amount,
-          quotePools[0].feeHundredthPips,
+          quotePools[0].liquidityFeeHundredthPips,
         ).toString(),
       },
     ];
@@ -182,7 +182,7 @@ export const calculateIncludedFees = (
         asset: request.source_asset,
         amount: getPips(
           request.deposit_amount,
-          quotePools[0].feeHundredthPips,
+          quotePools[0].liquidityFeeHundredthPips,
         ).toString(),
       },
     ];
@@ -204,7 +204,7 @@ export const calculateIncludedFees = (
       asset: request.source_asset,
       amount: getPips(
         request.deposit_amount,
-        quotePools[0].feeHundredthPips,
+        quotePools[0].liquidityFeeHundredthPips,
       ).toString(),
     },
     {
@@ -212,7 +212,7 @@ export const calculateIncludedFees = (
       asset: request.intermediate_asset,
       amount: getPips(
         quote.intermediateAmount,
-        quotePools[1].feeHundredthPips,
+        quotePools[1].liquidityFeeHundredthPips,
       ).toString(),
     },
   ];

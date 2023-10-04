@@ -90,7 +90,7 @@ describe('quotes', () => {
       id: 1,
       pairAsset: 'ETH',
       baseAsset: 'USDC',
-      feeHundredthPips: 1000,
+      liquidityFeeHundredthPips: 1000,
     };
 
     it('subtracts fees from quote without intermediate amount', () => {
@@ -209,13 +209,13 @@ describe('quotes', () => {
       id: 1,
       pairAsset: 'ETH',
       baseAsset: 'USDC',
-      feeHundredthPips: 1000,
+      liquidityFeeHundredthPips: 1000,
     };
     const flipUsdcPool: Pool = {
       id: 2,
       pairAsset: 'FLIP',
       baseAsset: 'USDC',
-      feeHundredthPips: 1000,
+      liquidityFeeHundredthPips: 1000,
     };
 
     it('returns fees for quote with intermediate amount', () => {
@@ -323,12 +323,12 @@ describe('quotes', () => {
           {
             baseAsset: 'USDC',
             pairAsset: 'FLIP',
-            feeHundredthPips: 1000,
+            liquidityFeeHundredthPips: 1000,
           },
           {
             baseAsset: 'USDC',
             pairAsset: 'ETH',
-            feeHundredthPips: 2000,
+            liquidityFeeHundredthPips: 2000,
           },
         ],
       });

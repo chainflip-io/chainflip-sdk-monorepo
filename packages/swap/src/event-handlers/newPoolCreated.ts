@@ -20,7 +20,7 @@ export default async function newPoolCreated({
     data: {
       baseAsset,
       pairAsset,
-      feeHundredthPips: Number(feeHundredthPips),
+      liquidityFeeHundredthPips: Number(feeHundredthPips),
     },
   });
 }

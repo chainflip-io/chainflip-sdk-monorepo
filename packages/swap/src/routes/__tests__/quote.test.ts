@@ -42,12 +42,12 @@ describe('server', () => {
         {
           baseAsset: 'USDC',
           pairAsset: 'FLIP',
-          feeHundredthPips: 1000,
+          liquidityFeeHundredthPips: 1000,
         },
         {
           baseAsset: 'USDC',
           pairAsset: 'ETH',
-          feeHundredthPips: 2000,
+          liquidityFeeHundredthPips: 2000,
         },
       ],
     });
