@@ -1,5 +1,13 @@
 import { Asset, Assets, ChainflipNetwork, ChainflipNetworks } from './enums';
 
+const POOLS_NETWORK_FEE_HUNDREDTH_PIPS: Partial<
+  Record<ChainflipNetwork, number>
+> = {
+  [ChainflipNetworks.perseverance]: 100,
+};
+export const getPoolsNetworkFeeHundredthPips = (network: ChainflipNetwork) =>
+  POOLS_NETWORK_FEE_HUNDREDTH_PIPS[network] ?? 0;
+
 // TODO: fetch minimum deposit amounts via rpc from the state chain
 const MINIMUM_DEPOSIT_AMOUNTS: Partial<
   Record<ChainflipNetwork, Record<Asset, string>>

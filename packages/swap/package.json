@@ -7,6 +7,7 @@
     "build": "pnpm clean && prisma generate && tsc && tsc-alias",
     "clean": "rm -rf dist",
     "dev": "tsx watch -r envlocker/config src/index.ts",
+    "dev:perseverance": "ENVLOCKER_ENV_NAME=perseverance pnpm dev",
     "dev:sisyphos": "ENVLOCKER_ENV_NAME=sisyphos pnpm dev",
     "dev:backspin": "ENVLOCKER_ENV_NAME=backspin pnpm dev",
     "preinstall": "npx only-allow pnpm",

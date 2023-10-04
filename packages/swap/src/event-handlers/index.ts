@@ -5,6 +5,7 @@ import networkBroadcastAborted from './networkBroadcastAborted';
 import networkBroadcastSuccess from './networkBroadcastSuccess';
 import networkCcmBroadcastRequested from './networkCcmBroadcastRequested';
 import networkEgressScheduled from './networkEgressScheduled';
+import newPoolCreated from './newPoolCreated';
 import swapEgressScheduled from './swapEgressScheduled';
 import swapExecuted from './swapExecuted';
 import swapScheduled from './swapScheduled';
@@ -12,6 +13,9 @@ import type { Block, Event } from '../gql/generated/graphql';
 import { buildHandlerMap, getDispatcher } from '../utils/handlers';
 
 export const events = {
+  LiquidityPools: {
+    NewPoolCreated: 'LiquidityPools.NewPoolCreated',
+  },
   Swapping: {
     SwapScheduled: 'Swapping.SwapScheduled',
     SwapExecuted: 'Swapping.SwapExecuted',
@@ -60,6 +64,7 @@ const handlers = [
   {
     spec: 0,
     handlers: [
+      { name: events.LiquidityPools.NewPoolCreated, handler: newPoolCreated },
       { name: events.Swapping.SwapScheduled, handler: swapScheduled },
       { name: events.Swapping.SwapExecuted, handler: swapExecuted },
       {

@@ -44,31 +44,17 @@ export type PostSwapResponse = {
   issuedBlock: number;
 };
 
-export const quoteResponseSchema = z.union([
-  z
-    .object({
-      id: z.string(),
-      intermediate_amount: numericString,
-      egress_amount: numericString,
-    })
-    .transform(({ id, ...rest }) => ({
-      id,
-      intermediateAmount: rest.intermediate_amount,
-      egressAmount: rest.egress_amount,
-    })),
-  z
-    .object({
-      id: z.string(),
-      egress_amount: numericString,
-    })
-    .transform(({ id, ...rest }) => ({
-      id,
-      egressAmount: rest.egress_amount,
-    })),
-]);
+export type QuoteFee = {
+  type: 'liquidity' | 'network';
+  asset: Asset;
+  amount: string;
+};
 
-export type MarketMakerResponse = z.input<typeof quoteResponseSchema>;
-export type QuoteQueryResponse = z.infer<typeof quoteResponseSchema>;
+export type QuoteQueryResponse = {
+  intermediateAmount?: string;
+  egressAmount: string;
+  includedFees: QuoteFee[];
+};
 
 interface BaseRequest {
   id: string; // random UUID

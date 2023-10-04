@@ -4,7 +4,8 @@ import RpcClient from '@/shared/node-apis/RpcClient';
 import { chainflipAsset, hexStringFromNumber } from '@/shared/parsers';
 import { transformAsset } from '@/shared/strings';
 import { memoize } from './function';
-import { QuoteQueryResponse, QuoteQueryParams } from '../schemas';
+import { swapRateResponseSchema } from '../quoting/schemas';
+import { QuoteQueryParams } from '../schemas';
 
 const requestValidators = {
   swap_rate: z.tuple([
@@ -14,15 +15,8 @@ const requestValidators = {
   ]),
 };
 
-// parse hex encoding or decimal encoding into decimal encoding
-const assetAmount = z.string().transform((v) => BigInt(v).toString());
-
 const responseValidators = {
-  swap_rate: z.object({
-    // TODO: simplify when we know how Rust `Option` is encoded
-    intermediary: assetAmount.optional().nullable(),
-    output: assetAmount,
-  }),
+  swap_rate: swapRateResponseSchema,
 };
 
 const initializeClient = memoize(async () => {
@@ -49,16 +43,8 @@ const getSwapAmount = async (
 export const getBrokerQuote = async (
   { srcAsset, destAsset, amount }: QuoteQueryParams,
   id: string,
-): Promise<QuoteQueryResponse> => {
-  const { intermediary, output } = await getSwapAmount(
-    srcAsset,
-    destAsset,
-    amount,
-  );
+) => {
+  const quote = await getSwapAmount(srcAsset, destAsset, amount);
 
-  return {
-    id,
-    intermediateAmount: intermediary ?? undefined,
-    egressAmount: output,
-  };
+  return { id, ...quote };
 };
