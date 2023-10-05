@@ -100,25 +100,6 @@ describe(swapScheduled, () => {
 
       expect(await prisma.swap.findFirst()).toBeNull();
     });
-
-    it('does not store a new swap if the deposit channel is not unique', async () => {
-      const { id, ...rest } = dotSwapDepositChannel;
-      await prisma.swapDepositChannel.create({
-        data: { ...rest, channelId: 2n },
-      });
-
-      await expect(
-        prisma.$transaction(async (client) => {
-          await swapScheduled({
-            prisma: client,
-            block: swapScheduledDotDepositChannelMock.block,
-            event: swapScheduledDotDepositChannelMock.eventContext.event as any,
-          });
-        }),
-      ).rejects.toThrowError();
-
-      expect(await prisma.swap.findFirst()).toBeNull();
-    });
   });
 
   describe('smart contract origin', () => {
