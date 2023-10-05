@@ -19,7 +19,7 @@ import type {
 
 type TransactionHash = `0x${string}`;
 
-export type SDKOptions = {
+export type SwapSDKOptions = {
   network?: Exclude<ChainflipNetwork, 'mainnet'>;
   signer?: Signer;
   backendUrl?: string;
@@ -32,8 +32,8 @@ export class SwapSDK {
 
   private readonly signer?: Signer;
 
-  constructor(options: SDKOptions = {}) {
-    this.network = options.network ?? ChainflipNetworks.partnernet;
+  constructor(options: SwapSDKOptions = {}) {
+    this.network = options.network ?? ChainflipNetworks.perseverance;
     this.baseUrl = options.backendUrl ?? BACKEND_SERVICE_URLS[this.network];
     this.signer = options.signer;
   }

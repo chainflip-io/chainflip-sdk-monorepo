@@ -11,6 +11,7 @@ import {
   btcAddress,
   dotAddress,
   chainflipAsset,
+  hexStringFromNumber,
 } from '../parsers';
 import { CcmMetadata, ccmMetadataSchema } from '../schemas';
 import {
@@ -64,7 +65,8 @@ const requestValidators = {
       ccmMetadataSchema
         .merge(
           z.object({
-            cf_parameters: z.union([hexString, z.string()]).optional(),
+            gasBudget: hexStringFromNumber, // broker expects hex encoded number
+            cfParameters: z.union([hexString, z.string()]).optional(),
           }),
         )
         .optional(),
@@ -78,13 +80,11 @@ const responseValidators = {
   requestSwapDepositAddress: z
     .object({
       address: z.union([dotAddress, hexString, btcAddress()]),
-      expiry_block: z.number(),
       issued_block: z.number(),
       channel_id: z.number(),
     })
-    .transform(({ address, expiry_block, issued_block, channel_id }) => ({
+    .transform(({ address, issued_block, channel_id }) => ({
       address,
-      expiryBlock: expiry_block,
       issuedBlock: issued_block,
       channelId: BigInt(channel_id),
     })),
@@ -130,7 +130,7 @@ export default class BrokerClient extends RpcClient<
       0,
       swapRequest.ccmMetadata && {
         ...swapRequest.ccmMetadata,
-        cf_parameters: undefined,
+        cfParameters: undefined,
       },
     );
 

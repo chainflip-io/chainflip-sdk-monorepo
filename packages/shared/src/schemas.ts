@@ -16,8 +16,8 @@ export const quoteQuerySchema = z.object({
 export type QuoteQueryParams = z.infer<typeof quoteQuerySchema>;
 
 export const ccmMetadataSchema = z.object({
-  gasBudget: z.union([hexString, z.number()]),
-  message: z.union([hexString, z.string()]),
+  gasBudget: numericString,
+  message: hexString,
 });
 
 export type CcmMetadata = z.infer<typeof ccmMetadataSchema>;
@@ -42,34 +42,19 @@ export type PostSwapResponse = {
   id: string;
   depositAddress: string;
   issuedBlock: number;
-  expiryBlock: number;
 };
 
-export const quoteResponseSchema = z.union([
-  z
-    .object({
-      id: z.string(),
-      intermediate_amount: z.string(),
-      egress_amount: z.string(),
-    })
-    .transform(({ id, ...rest }) => ({
-      id,
-      intermediateAmount: rest.intermediate_amount,
-      egressAmount: rest.egress_amount,
-    })),
-  z
-    .object({
-      id: z.string(),
-      egress_amount: z.string(),
-    })
-    .transform(({ id, ...rest }) => ({
-      id,
-      egressAmount: rest.egress_amount,
-    })),
-]);
+export type QuoteFee = {
+  type: 'liquidity' | 'network';
+  asset: Asset;
+  amount: string;
+};
 
-export type MarketMakerResponse = z.input<typeof quoteResponseSchema>;
-export type QuoteQueryResponse = z.infer<typeof quoteResponseSchema>;
+export type QuoteQueryResponse = {
+  intermediateAmount?: string;
+  egressAmount: string;
+  includedFees: QuoteFee[];
+};
 
 interface BaseRequest {
   id: string; // random UUID

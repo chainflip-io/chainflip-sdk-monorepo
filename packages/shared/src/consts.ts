@@ -1,10 +1,18 @@
 import { Asset, Assets, ChainflipNetwork, ChainflipNetworks } from './enums';
 
+const POOLS_NETWORK_FEE_HUNDREDTH_PIPS: Partial<
+  Record<ChainflipNetwork, number>
+> = {
+  [ChainflipNetworks.perseverance]: 100,
+};
+export const getPoolsNetworkFeeHundredthPips = (network: ChainflipNetwork) =>
+  POOLS_NETWORK_FEE_HUNDREDTH_PIPS[network] ?? 0;
+
 // TODO: fetch minimum deposit amounts via rpc from the state chain
 const MINIMUM_DEPOSIT_AMOUNTS: Partial<
   Record<ChainflipNetwork, Record<Asset, string>>
 > = {
-  [ChainflipNetworks.partnernet]: {
+  [ChainflipNetworks.perseverance]: {
     [Assets.ETH]: '0',
     [Assets.FLIP]: '0',
     [Assets.USDC]: '0',
@@ -21,11 +29,11 @@ export const getMinimumDepositAmount = (
 const MINIMUM_SWAP_AMOUNTS: Partial<
   Record<ChainflipNetwork, Record<Asset, string>>
 > = {
-  [ChainflipNetworks.partnernet]: {
+  [ChainflipNetworks.perseverance]: {
     [Assets.ETH]: '580000000000000',
     [Assets.FLIP]: '1000000000000000000',
     [Assets.USDC]: '1000000',
-    [Assets.BTC]: '5000',
+    [Assets.BTC]: '1000',
     [Assets.DOT]: '2000000000',
   },
 };
@@ -37,11 +45,6 @@ export const ADDRESSES = {
     FLIP_CONTRACT_ADDRESS: '0x2BbB561C6eaB74f358cA9e8a961E3A20CAE3D100',
     VAULT_CONTRACT_ADDRESS: '0xC17CCec5015081EB2DF26d20A9e02c5484C1d641',
     STATE_CHAIN_GATEWAY_ADDRESS: '0xE8bE4B7F8a38C1913387c9C20B94402bc3Db9F70',
-  },
-  [ChainflipNetworks.partnernet]: {
-    FLIP_CONTRACT_ADDRESS: '0x1Ea4F05a319A8f779F05E153974605756bB13D4F',
-    VAULT_CONTRACT_ADDRESS: '0xAfD0C34E6d25F707d931F8b7EE9cf0Ff52160A46',
-    STATE_CHAIN_GATEWAY_ADDRESS: '0x07B3Bef16c640B072085BF83C24b6C43000aE056',
   },
   [ChainflipNetworks.perseverance]: {
     FLIP_CONTRACT_ADDRESS: '0x0485D65da68b2A6b48C3fA28D7CCAce196798B94',

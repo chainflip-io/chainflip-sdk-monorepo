@@ -56,8 +56,8 @@ export default async function cliRequestSwapDepositAddress(
     assert(args.message, 'missing message');
 
     ccmMetadata = {
-      gasBudget: Number(args.gasBudget),
-      message: args.message as string,
+      gasBudget: args.gasBudget,
+      message: args.message as `0x${string}`,
     };
   }
   const result = await client.requestSwapDepositAddress({
@@ -71,7 +71,6 @@ export default async function cliRequestSwapDepositAddress(
 
   console.log(`Deposit address: ${result.address}`);
   console.log(`Issued block: ${result.issuedBlock}`);
-  console.log(`Expiry block: ${result.expiryBlock}`);
   console.log(`Channel ID: ${result.channelId}`);
 
   await client.close();

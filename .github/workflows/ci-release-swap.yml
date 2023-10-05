@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - "swap/v*"
+      - 'swap/v*'
     branches:
       - main
       - release/*
@@ -43,17 +43,8 @@ jobs:
           token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
           client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-swap-backspin"}'
 
-      - name: Dispatch build-swap-partnernet to chainflip-web-services 🦕
-        if: startsWith(github.ref, 'refs/heads/release/partnernet') == true
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          repository: chainflip-io/chainflip-web-services
-          event-type: build-swap-partnernet
-          token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
-          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-swap-partnernet"}'
-
       - name: Dispatch build-swap-sisyphos to chainflip-web-services 🦕
-        if: startsWith(github.ref, 'refs/heads/release') == true && startsWith(github.ref, 'refs/heads/release/partnernet') == false
+        if: startsWith(github.ref, 'refs/heads/release') == true
         uses: peter-evans/repository-dispatch@v2
         with:
           repository: chainflip-io/chainflip-web-services

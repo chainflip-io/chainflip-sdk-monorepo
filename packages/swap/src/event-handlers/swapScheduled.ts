@@ -62,7 +62,6 @@ export default async function swapScheduled({
       where: {
         srcAsset: sourceAsset,
         depositAddress,
-        expiryBlock: { gte: block.height },
         issuedBlock: { lte: block.height },
       },
     });

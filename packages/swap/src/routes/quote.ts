@@ -8,7 +8,10 @@ import getConnectionHandler from '../quoting/getConnectionHandler';
 import {
   findBestQuote,
   buildQuoteRequest,
-  collectQuotes,
+  collectMakerQuotes,
+  getQuotePools,
+  subtractFeesFromMakerQuote,
+  calculateIncludedFees,
 } from '../quoting/quotes';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
@@ -42,16 +45,29 @@ const quote = (io: Server) => {
       }
 
       const quoteRequest = buildQuoteRequest(result.data);
+      const quotePools = await getQuotePools(result.data);
 
       io.emit('quote_request', quoteRequest);
 
       try {
-        const [marketMakerQuotes, brokerQuote] = await Promise.all([
-          collectQuotes(quoteRequest.id, io.sockets.sockets.size, quotes$),
+        const [rawMarketMakerQuotes, brokerQuote] = await Promise.all([
+          collectMakerQuotes(quoteRequest.id, io.sockets.sockets.size, quotes$),
           getBrokerQuote(result.data, quoteRequest.id),
         ]);
 
-        res.json(findBestQuote(marketMakerQuotes, brokerQuote));
+        // market maker quotes do not include liquidity pool fee and network fee
+        const marketMakerQuotes = rawMarketMakerQuotes.map((makerQuote) =>
+          subtractFeesFromMakerQuote(makerQuote, quotePools),
+        );
+
+        const bestQuote = findBestQuote(marketMakerQuotes, brokerQuote);
+        const includedFees = calculateIncludedFees(
+          quoteRequest,
+          bestQuote,
+          quotePools,
+        );
+
+        res.json({ ...bestQuote, includedFees });
       } catch (err) {
         const message =
           err instanceof Error

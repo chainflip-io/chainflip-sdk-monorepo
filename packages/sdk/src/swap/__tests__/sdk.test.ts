@@ -1,9 +1,9 @@
 import { VoidSigner } from 'ethers';
 import { Chain, ChainflipNetworks, Chains } from '@/shared/enums';
 import { executeSwap } from '@/shared/vault';
-import { dot$, btc$, eth$, usdc$, flip$ } from '../swap/assets';
-import { bitcoin, ethereum, polkadot } from '../swap/chains';
-import { SwapSDK } from '../swap/sdk';
+import { dot$, btc$, eth$, usdc$, flip$ } from '../assets';
+import { bitcoin, ethereum, polkadot } from '../chains';
+import { SwapSDK } from '../sdk';
 
 jest.mock('@/shared/vault', () => ({
   executeSwap: jest.fn(),

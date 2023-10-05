@@ -5,6 +5,7 @@ import {
   executeRedemption,
   getMinimumFunding,
   getRedemptionDelay,
+  getPendingRedemption,
   approveStateChainGateway,
 } from '@/shared/stateChainGateway';
 import { FundingSDK } from '../index';
@@ -55,7 +56,7 @@ describe(FundingSDK, () => {
   });
 
   describe(FundingSDK.prototype.executeRedemption, () => {
-    it('approves the gateway and funds the account', async () => {
+    it('executes the redemption', async () => {
       jest.mocked(executeRedemption).mockResolvedValue({
         hash: '0xabcdef',
       } as any);
@@ -73,7 +74,7 @@ describe(FundingSDK, () => {
   });
 
   describe(FundingSDK.prototype.getMinimumFunding, () => {
-    it('approves the gateway and funds the account', async () => {
+    it('returns the minimum funding', async () => {
       jest.mocked(getMinimumFunding).mockResolvedValue(1000n);
       const funding = await sdk.getMinimumFunding();
 
@@ -87,7 +88,7 @@ describe(FundingSDK, () => {
   });
 
   describe(FundingSDK.prototype.getRedemptionDelay, () => {
-    it('approves the gateway and funds the account', async () => {
+    it('returns the redemption delay', async () => {
       jest.mocked(getRedemptionDelay).mockResolvedValue(1000n);
       const delay = await sdk.getRedemptionDelay();
 
@@ -114,6 +115,27 @@ describe(FundingSDK, () => {
           ],
         ]
       `);
+    });
+  });
+
+  describe(FundingSDK.prototype.getPendingRedemption, () => {
+    it('returns the pending redemption for an account', async () => {
+      const redemption = {
+        amount: 101n,
+        redeemAddress: '0xcoffeebabe',
+        startTime: 1695126000n,
+        expiryTime: 1695129600n,
+      };
+      jest.mocked(getPendingRedemption).mockResolvedValue(redemption);
+      const result = await sdk.getPendingRedemption('0xcoffeebabe');
+
+      expect(getPendingRedemption).toHaveBeenCalledWith(
+        '0xcoffeebabe',
+        // @ts-expect-error it's private
+        sdk.options,
+      );
+
+      expect(result).toEqual(redemption);
     });
   });
 

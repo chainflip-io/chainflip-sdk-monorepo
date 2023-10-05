@@ -60,7 +60,6 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
         jsonrpc: '2.0',
         result: {
           address: '0x1234567890',
-          expiry_block: 100,
           issued_block: 50,
           channel_id: 200,
         },
@@ -69,7 +68,6 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
 
     await expect(resultPromise).resolves.toStrictEqual({
       address: '0x1234567890',
-      expiryBlock: 100,
       issuedBlock: 50,
       channelId: 200n,
     });
@@ -83,8 +81,8 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
       destAddress: '0xcafebabe',
       destChain: 'Ethereum',
       ccmMetadata: {
-        gasBudget: 123,
-        message: 'ByteString',
+        gasBudget: '123456789',
+        message: '0xdeadc0de',
       },
     });
 
@@ -98,7 +96,6 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
         jsonrpc: '2.0',
         result: {
           address: '0x1234567890',
-          expiry_block: 100,
           issued_block: 50,
           channel_id: 200,
         },
@@ -115,14 +112,13 @@ describe(BrokerClient.prototype.requestSwapDepositAddress, () => {
         '0xcafebabe',
         0,
         {
-          gas_budget: 123,
-          message: 'ByteString',
+          gas_budget: '0x75bcd15',
+          message: '0xdeadc0de',
         },
       ],
     });
     await expect(resultPromise).resolves.toStrictEqual({
       address: '0x1234567890',
-      expiryBlock: 100,
       issuedBlock: 50,
       channelId: 200n,
     });

@@ -38,6 +38,13 @@ const channelIdRegex =
 const swapIdRegex = /^\d+$/i;
 const txHashRegex = /^0x[a-f\d]+$/i;
 
+// eslint-disable-next-line @typescript-eslint/ban-types
+const readField = <A extends {}, B extends {}, K extends keyof A & keyof B>(
+  a: A | null | undefined,
+  b: B | null | undefined,
+  key: K,
+) => a?.[key] ?? b?.[key];
+
 router.get(
   '/:id',
   asyncHandler(async (req, res) => {
@@ -114,14 +121,8 @@ router.get(
       state = State.AwaitingDeposit;
     }
 
-    const readField = <T extends keyof Swap & keyof SwapDepositChannel>(
-      field: T,
-    ) =>
-      (swap && swap[field]) ??
-      (swapDepositChannel && swapDepositChannel[field]);
-
-    const srcAsset = readField('srcAsset');
-    const destAsset = readField('destAsset');
+    const srcAsset = readField(swap, swapDepositChannel, 'srcAsset');
+    const destAsset = readField(swap, swapDepositChannel, 'destAsset');
 
     let pendingDeposit;
     if (
@@ -142,7 +143,7 @@ router.get(
       destChain: destAsset && assetChains[destAsset],
       srcAsset,
       destAsset,
-      destAddress: readField('destAddress'),
+      destAddress: readField(swap, swapDepositChannel, 'destAddress'),
       depositChannelCreatedAt: swapDepositChannel?.createdAt.valueOf(),
       depositAddress: swapDepositChannel?.depositAddress,
       expectedDepositAmount:
@@ -214,7 +215,7 @@ router.post(
 
     const { destChain, ...rest } = payload;
 
-    const { issuedBlock, expiryBlock, srcChain, channelId } =
+    const { issuedBlock, srcChain, channelId } =
       await prisma.swapDepositChannel.create({
         data: {
           ...rest,
@@ -227,7 +228,6 @@ router.post(
       id: `${issuedBlock}-${srcChain}-${channelId}`,
       depositAddress,
       issuedBlock,
-      expiryBlock,
     };
 
     res.json(response);

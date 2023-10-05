@@ -7,6 +7,7 @@ import {
   ethereumAddress,
   numericString,
 } from '../parsers';
+import { ccmMetadataSchema } from '../schemas';
 
 const bytesToHex = (arr: Uint8Array | number[]) =>
   `0x${[...arr].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
@@ -14,7 +15,7 @@ const bytesToHex = (arr: Uint8Array | number[]) =>
 const utf8ToHex = (str: string) => `0x${Buffer.from(str).toString('hex')}`;
 
 const eth = z.object({
-  amount: z.bigint(),
+  amount: numericString,
   srcChain: z.literal(Chains.Ethereum),
   srcAsset: z.literal(Assets.ETH),
 });
@@ -64,11 +65,6 @@ const tokenSwapParamsSchema = z.union([
   erc20ToDot,
   erc20ToBtc,
 ]);
-
-const ccmMetadataSchema = z.object({
-  message: z.string(),
-  gasBudget: numericString,
-});
 
 const ccmFlipToEthereumAssset = flipToEthereumAsset.extend({
   ccmMetadata: ccmMetadataSchema,

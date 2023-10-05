@@ -27,7 +27,7 @@ export const checkVaultAllowance = (
       : getVaultManagerContractAddress(networkOpts.network);
 
   return checkAllowance(
-    params.amount,
+    BigInt(params.amount),
     vaultContractAddress,
     erc20Address,
     networkOpts.signer,
@@ -51,5 +51,11 @@ export const approveVault = async (
       ? networkOpts.vaultContractAddress
       : getVaultManagerContractAddress(networkOpts.network);
 
-  return approve(params.amount, vaultContractAddress, erc20, allowance, txOpts);
+  return approve(
+    BigInt(params.amount),
+    vaultContractAddress,
+    erc20,
+    allowance,
+    txOpts,
+  );
 };

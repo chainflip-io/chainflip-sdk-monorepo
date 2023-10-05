@@ -24,7 +24,6 @@ export const createDepositChannel = (
       depositAddress: ETH_ADDRESS,
       destAddress: DOT_ADDRESS,
       expectedDepositAmount: '10000000000',
-      expiryBlock: 200,
       issuedBlock: 100,
       ...data,
       createdAt: new Date(1690556052834),
@@ -331,6 +330,26 @@ export const networkBroadcastAbortedMock = {
     event: {
       args: { broadcastId: 62 },
       name: 'EthereumBroadcaster.BroadcastAborted',
+      indexInBlock: 7,
+    },
+  },
+} as const;
+
+export const newPoolCreatedMock = {
+  block: {
+    height: 120,
+    timestamp: 1670337105000,
+  },
+  eventContext: {
+    kind: 'event',
+    event: {
+      args: {
+        baseAsset: { __kind: 'Usdc' },
+        pairAsset: { __kind: 'Btc' },
+        initialPrice: '170141183460469231731687303715884105728000',
+        feeHundredthPips: 1000,
+      },
+      name: 'LiquidityPools.NewPoolCreated',
       indexInBlock: 7,
     },
   },

@@ -32,7 +32,7 @@ exports[`ApiService getAssets (mainnet) gets the correct assets for testnets (Po
 ]
 `;
 
-exports[`ApiService getAssets (partnernet) gets the correct assets for testnets (Bitcoin) 1`] = `
+exports[`ApiService getAssets (perseverance) gets the correct assets for testnets (Bitcoin) 1`] = `
 [
   {
     "chain": "Bitcoin",
@@ -41,14 +41,14 @@ exports[`ApiService getAssets (partnernet) gets the correct assets for testnets 
     "id": "BTC",
     "isMainnet": false,
     "minimumDepositAmount": "0",
-    "minimumSwapAmount": "5000",
+    "minimumSwapAmount": "1000",
     "name": "Bitcoin",
     "symbol": "BTC",
   },
 ]
 `;
 
-exports[`ApiService getAssets (partnernet) gets the correct assets for testnets (Ethereum) 1`] = `
+exports[`ApiService getAssets (perseverance) gets the correct assets for testnets (Ethereum) 1`] = `
 [
   {
     "chain": "Ethereum",
@@ -74,82 +74,12 @@ exports[`ApiService getAssets (partnernet) gets the correct assets for testnets 
   },
   {
     "chain": "Ethereum",
-    "contractAddress": "0x1Ea4F05a319A8f779F05E153974605756bB13D4F",
-    "decimals": 18,
-    "id": "FLIP",
-    "isMainnet": false,
-    "minimumDepositAmount": "0",
-    "minimumSwapAmount": "1000000000000000000",
-    "name": "FLIP",
-    "symbol": "FLIP",
-  },
-]
-`;
-
-exports[`ApiService getAssets (partnernet) gets the correct assets for testnets (Polkadot) 1`] = `
-[
-  {
-    "chain": "Polkadot",
-    "contractAddress": undefined,
-    "decimals": 10,
-    "id": "DOT",
-    "isMainnet": false,
-    "minimumDepositAmount": "10000000000",
-    "minimumSwapAmount": "2000000000",
-    "name": "Polkadot",
-    "symbol": "DOT",
-  },
-]
-`;
-
-exports[`ApiService getAssets (perseverance) gets the correct assets for testnets (Bitcoin) 1`] = `
-[
-  {
-    "chain": "Bitcoin",
-    "contractAddress": undefined,
-    "decimals": 8,
-    "id": "BTC",
-    "isMainnet": false,
-    "minimumDepositAmount": "0",
-    "minimumSwapAmount": "0",
-    "name": "Bitcoin",
-    "symbol": "BTC",
-  },
-]
-`;
-
-exports[`ApiService getAssets (perseverance) gets the correct assets for testnets (Ethereum) 1`] = `
-[
-  {
-    "chain": "Ethereum",
-    "contractAddress": undefined,
-    "decimals": 18,
-    "id": "ETH",
-    "isMainnet": false,
-    "minimumDepositAmount": "0",
-    "minimumSwapAmount": "0",
-    "name": "Ether",
-    "symbol": "ETH",
-  },
-  {
-    "chain": "Ethereum",
-    "contractAddress": "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
-    "decimals": 6,
-    "id": "USDC",
-    "isMainnet": false,
-    "minimumDepositAmount": "0",
-    "minimumSwapAmount": "0",
-    "name": "USDC",
-    "symbol": "USDC",
-  },
-  {
-    "chain": "Ethereum",
     "contractAddress": "0x0485D65da68b2A6b48C3fA28D7CCAce196798B94",
     "decimals": 18,
     "id": "FLIP",
     "isMainnet": false,
     "minimumDepositAmount": "0",
-    "minimumSwapAmount": "0",
+    "minimumSwapAmount": "1000000000000000000",
     "name": "FLIP",
     "symbol": "FLIP",
   },
@@ -164,8 +94,8 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for testnet
     "decimals": 10,
     "id": "DOT",
     "isMainnet": false,
-    "minimumDepositAmount": "0",
-    "minimumSwapAmount": "0",
+    "minimumDepositAmount": "10000000000",
+    "minimumSwapAmount": "2000000000",
     "name": "Polkadot",
     "symbol": "DOT",
   },

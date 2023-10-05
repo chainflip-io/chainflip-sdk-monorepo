@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 /* eslint-disable max-classes-per-file */
-import { VoidSigner } from 'ethers';
+import { BytesLike, VoidSigner } from 'ethers';
 import { ERC20 } from '../../abis';
 import { checkAllowance } from '../../contracts';
 import {
   executeRedemption,
   fundStateChainAccount,
   getMinimumFunding,
+  getPendingRedemption,
   getRedemptionDelay,
 } from '../index';
 
@@ -19,6 +20,7 @@ class MockGateway {
   async fundStateChainAccount(): Promise<any> {}
   async executeRedemption(): Promise<any> {}
   async getMinimumFunding(): Promise<any> {}
+  async getPendingRedemption(_nodeID: BytesLike): Promise<any> {}
   async REDEMPTION_DELAY(): Promise<any> {}
 }
 
@@ -88,5 +90,38 @@ describe(getRedemptionDelay, () => {
       .spyOn(MockGateway.prototype, 'REDEMPTION_DELAY')
       .mockResolvedValue(1234);
     expect(await getRedemptionDelay(signerOptions)).toEqual(1234);
+  });
+});
+
+describe(getPendingRedemption, () => {
+  it('retrieves the pending redemption for the account', async () => {
+    const redemption = {
+      amount: 101n,
+      redeemAddress: '0xcoffeebabe',
+      startTime: 1695126000n,
+      expiryTime: 1695129600n,
+    };
+    const spy = jest
+      .spyOn(MockGateway.prototype, 'getPendingRedemption')
+      .mockResolvedValue(redemption);
+
+    expect(await getPendingRedemption('0x1234', signerOptions)).toEqual(
+      redemption,
+    );
+    expect(spy).toBeCalledWith('0x1234');
+  });
+  it('returns undefined if there is no pending redemption', async () => {
+    const redemption = {
+      amount: 0n,
+      redeemAddress: '0x0000000000000000000000000000000000000000',
+      startTime: 0n,
+      expiryTime: 0n,
+    };
+    const spy = jest
+      .spyOn(MockGateway.prototype, 'getPendingRedemption')
+      .mockResolvedValue(redemption);
+
+    expect(await getPendingRedemption('0x1234', signerOptions)).toBeUndefined();
+    expect(spy).toBeCalledWith('0x1234');
   });
 });
