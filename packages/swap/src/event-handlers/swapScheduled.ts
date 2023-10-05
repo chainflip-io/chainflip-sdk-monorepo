@@ -1,5 +1,4 @@
 // Set the column in the DB to the block timestamp and the deposit amount.
-import assert from 'assert';
 import { z } from 'zod';
 import {
   chainflipAssetEnum,
@@ -58,25 +57,22 @@ export default async function swapScheduled({
   if (origin.__kind === 'DepositChannel') {
     const depositAddress = origin.depositAddress.address;
 
-    const channels = await prisma.swapDepositChannel.findMany({
+    const channel = await prisma.swapDepositChannel.findFirst({
       where: {
         srcAsset: sourceAsset,
         depositAddress,
         issuedBlock: { lte: block.height },
       },
+      orderBy: { id: 'desc' },
     });
-    if (channels.length === 0) {
+    if (!channel) {
       logger.info(
         `SwapScheduled: SwapDepositChannel not found for depositAddress ${depositAddress}`,
       );
       return;
     }
-    assert(
-      channels.length === 1,
-      `SwapScheduled: too many active swap intents found for depositAddress ${depositAddress}`,
-    );
 
-    const [{ srcAsset, destAddress, destAsset, id }] = channels;
+    const { srcAsset, destAddress, destAsset, id } = channel;
 
     await prisma.swap.create({
       data: {
