@@ -14,6 +14,7 @@ export const Assets = arrayToMap(['FLIP', 'USDC', 'DOT', 'ETH', 'BTC']);
 export type Asset = (typeof Assets)[keyof typeof Assets];
 
 export const ChainflipNetworks = arrayToMap([
+  'backspin',
   'sisyphos',
   'perseverance',
   'mainnet',

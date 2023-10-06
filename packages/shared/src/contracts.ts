@@ -1,6 +1,6 @@
 import { Signer, Overrides, ContractTransactionReceipt } from 'ethers';
 import { ERC20, ERC20__factory } from './abis';
-import { ADDRESSES, GOERLI_USDC_CONTRACT_ADDRESS } from './consts';
+import { ADDRESSES } from './consts';
 import {
   type ChainflipNetwork,
   type Asset,
@@ -33,10 +33,9 @@ export const getTokenContractAddress = (
   assert(network !== ChainflipNetworks.mainnet, 'Mainnet is not yet supported');
 
   if (asset === Assets.FLIP) return ADDRESSES[network].FLIP_CONTRACT_ADDRESS;
+  if (asset === Assets.USDC) return ADDRESSES[network].USDC_CONTRACT_ADDRESS;
 
-  assert(asset === Assets.USDC, 'Only FLIP and USDC are supported for now');
-
-  return GOERLI_USDC_CONTRACT_ADDRESS;
+  throw new Error('Only FLIP and USDC are supported for now');
 };
 
 export const getStateChainGatewayContractAddress = (
