@@ -4,7 +4,7 @@ import {
   swapAmountTooLowVaultMock,
 } from './utils';
 import prisma from '../../client';
-import swapAmountTooLow from '../sawpAmountTooLow';
+import swapAmountTooLow from '../swapAmountTooLow';
 
 describe(swapAmountTooLow, () => {
   beforeEach(async () => {

@@ -1,7 +1,7 @@
 import { Assets, Chains } from '@/shared/enums';
 import prisma, { SwapDepositChannel } from '../../client';
 import { events } from '../index';
-import { SwapAmountTooLowEvent } from '../sawpAmountTooLow';
+import { SwapAmountTooLowEvent } from '../swapAmountTooLow';
 import { SwapExecutedEvent } from '../swapExecuted';
 import { SwapScheduledEvent } from '../swapScheduled';
 
