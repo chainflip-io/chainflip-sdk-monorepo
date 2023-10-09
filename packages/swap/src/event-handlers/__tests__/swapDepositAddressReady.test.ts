@@ -35,33 +35,32 @@ describe(swapDepositAddressReady, () => {
     });
   });
 
-  describe('if deposit channel already exists', () => {
-    it('does not update it', async () => {
-      await createDepositChannel({
-        channelId: BigInt(event.args.channelId),
-        srcChain: Chains.Ethereum,
-        issuedBlock: 10,
-      });
+  it('does not update the already existing deposit channel', async () => {
+    await createDepositChannel({
+      channelId: BigInt(event.args.channelId),
+      srcChain: Chains.Ethereum,
+      issuedBlock: 10,
+    });
 
-      await prisma.$transaction(async (txClient) => {
-        await swapDepositAddressReady({
-          prisma: txClient,
-          event,
-          block: {
-            ...block,
-            height: 1000,
-          },
-        });
+    await prisma.$transaction(async (txClient) => {
+      await swapDepositAddressReady({
+        prisma: txClient,
+        event,
+        block: {
+          ...block,
+          height: 1000,
+        },
       });
+    });
 
-      const swapDepositChannel =
-        await prisma.swapDepositChannel.findFirstOrThrow({
-          where: { channelId: BigInt(event.args.channelId) },
-        });
+    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow(
+      {
+        where: { channelId: BigInt(event.args.channelId) },
+      },
+    );
 
-      expect(swapDepositChannel).toMatchObject({
-        issuedBlock: 10,
-      });
+    expect(swapDepositChannel).toMatchObject({
+      issuedBlock: 10,
     });
   });
 });

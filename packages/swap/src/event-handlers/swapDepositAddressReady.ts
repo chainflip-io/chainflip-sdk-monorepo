@@ -11,7 +11,7 @@ const swapDepositAddressReadyArgs = z.object({
   channelId: u64,
 });
 
-export type SwapDepositAddressReadyArgs = z.input<
+export type SwapDepositAddressReadyEvent = z.input<
   typeof swapDepositAddressReadyArgs
 >;
 
