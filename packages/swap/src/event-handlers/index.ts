@@ -7,6 +7,7 @@ import networkCcmBroadcastRequested from './networkCcmBroadcastRequested';
 import networkEgressScheduled from './networkEgressScheduled';
 import newPoolCreated from './newPoolCreated';
 import swapAmountTooLow from './swapAmountTooLow';
+import swapDepositAddressReady from './swapDepositAddressReady';
 import swapEgressScheduled from './swapEgressScheduled';
 import swapExecuted from './swapExecuted';
 import swapScheduled from './swapScheduled';
@@ -22,6 +23,7 @@ export const events = {
     SwapExecuted: 'Swapping.SwapExecuted',
     SwapEgressScheduled: 'Swapping.SwapEgressScheduled',
     SwapAmountTooLow: 'Swapping.SwapAmountTooLow',
+    SwapDepositAddressReady: 'Swapping.SwapDepositAddressReady',
   },
   BitcoinIngressEgress: {
     EgressScheduled: 'BitcoinIngressEgress.EgressScheduled',
@@ -70,6 +72,10 @@ const handlers = [
       { name: events.Swapping.SwapScheduled, handler: swapScheduled },
       { name: events.Swapping.SwapExecuted, handler: swapExecuted },
       { name: events.Swapping.SwapAmountTooLow, handler: swapAmountTooLow },
+      {
+        name: events.Swapping.SwapDepositAddressReady,
+        handler: swapDepositAddressReady,
+      },
       {
         name: events.Swapping.SwapEgressScheduled,
         handler: swapEgressScheduled,

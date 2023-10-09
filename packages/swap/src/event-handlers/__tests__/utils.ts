@@ -189,6 +189,37 @@ export const buildSwapExecutedMock = (args: SwapExecutedEvent) => ({
   },
 });
 
+export const swapDepositAddressReadyMocked = {
+  block: {
+    height: 120,
+    timestamp: 1670337105000,
+  },
+  eventContext: {
+    kind: 'event',
+    event: {
+      args: {
+        depositAddress: {
+          __kind: 'Eth',
+          value: '0x00000000219ab540356cBB839Cbe05303d7705Fa',
+        },
+        destinationAddress: {
+          __kind: 'Dot',
+          value: '16ZL8yLyXv3V3L3z9ofR1ovFLziyXaN1DPq4yffMAZ9czzBD',
+        },
+        sourceAsset: {
+          __kind: 'Eth',
+        },
+        destinationAsset: {
+          __kind: 'Dot',
+        },
+        channelId: '1',
+      },
+      indexInBlock: 0,
+      name: events.Swapping.SwapDepositAddressReady,
+    },
+  },
+} as const;
+
 export const swapEgressScheduledMock = {
   block: {
     height: 120,
