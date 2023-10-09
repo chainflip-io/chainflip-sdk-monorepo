@@ -356,7 +356,9 @@ export const newPoolCreatedMock = {
   },
 } as const;
 
-const buildSwapAmountTooLowEvent = <T extends SwapAmountTooLowEvent>(args: T) => ({
+const buildSwapAmountTooLowEvent = <T extends SwapAmountTooLowEvent>(
+  args: T,
+) => ({
   block: {
     timestamp: 1670337093000,
     height: 100,
@@ -402,47 +404,50 @@ const buildSwapAmountTooLowEvent = <T extends SwapAmountTooLowEvent>(args: T) =>
   },
 });
 
-export const swapAmountTooLowDotDepositChannelMock = buildSwapAmountTooLowEvent({
-  amount: '12500000000',
-  asset: {
-    __kind: 'Dot',
-  },
-  destinationAddress: {
-    value:
-      '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
-    __kind: 'Btc',
-  },
-  origin: {
-    __kind: 'DepositChannel',
-    channelId: '2',
-    depositAddress: {
-      value:
-        '0x08e03063439bf8a21add4a0648439d2095a6e5d88f5ee7ab8fa715b39ef68127',
+export const swapAmountTooLowDotDepositChannelMock = buildSwapAmountTooLowEvent(
+  {
+    amount: '12500000000',
+    asset: {
       __kind: 'Dot',
     },
-  },
-});
-
-export const swapAmountTooLowBtcDepositChannelMock = buildSwapAmountTooLowEvent({
-  amount: '12500000000',
-  asset: {
-    __kind: 'Btc',
-  },
-  destinationAddress: {
-    value:
-      '0x41ad2bc63a2059f9b623533d87fe99887d794847',
-    __kind: 'Eth',
-  },
-  origin: {
-    __kind: 'DepositChannel',
-    channelId: '2',
-    depositAddress: {
-      __kind: 'Btc',
+    destinationAddress: {
       value:
         '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
+      __kind: 'Btc',
+    },
+    origin: {
+      __kind: 'DepositChannel',
+      channelId: '2',
+      depositAddress: {
+        value:
+          '0x08e03063439bf8a21add4a0648439d2095a6e5d88f5ee7ab8fa715b39ef68127',
+        __kind: 'Dot',
+      },
     },
   },
-});
+);
+
+export const swapAmountTooLowBtcDepositChannelMock = buildSwapAmountTooLowEvent(
+  {
+    amount: '12500000000',
+    asset: {
+      __kind: 'Btc',
+    },
+    destinationAddress: {
+      value: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
+      __kind: 'Eth',
+    },
+    origin: {
+      __kind: 'DepositChannel',
+      channelId: '2',
+      depositAddress: {
+        __kind: 'Btc',
+        value:
+          '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
+      },
+    },
+  },
+);
 
 export const swapAmountTooLowVaultMock = buildSwapAmountTooLowEvent({
   amount: '12500000000',
