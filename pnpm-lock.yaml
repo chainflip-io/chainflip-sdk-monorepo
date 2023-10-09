@@ -63,8 +63,8 @@ importers:
         specifier: ^20.0.0
         version: 20.0.0
       tsc-alias:
-        specifier: ^1.8.7
-        version: 1.8.7
+        specifier: ^1.8.8
+        version: 1.8.8
       tsx:
         specifier: ^3.13.0
         version: 3.13.0
@@ -8539,8 +8539,8 @@ packages:
     resolution: {integrity: sha512-nsZd8ZeNUzukXPlJmTBwUAuABDe/9qtVDelJeT/qW0ow3ZS3BsQJtNkan1802aM9Uf68/Y8ljw86Hu0h5IUW3w==}
     dev: true
 
-  /tsc-alias@1.8.7:
-    resolution: {integrity: sha512-59Q/zUQa3miTf99mLbSqaW0hi1jt4WoG8Uhe5hSZJHQpSoFW9eEwvW7jlKMHXWvT+zrzy3SN9PE/YBhQ+WVydA==}
+  /tsc-alias@1.8.8:
+    resolution: {integrity: sha512-OYUOd2wl0H858NvABWr/BoSKNERw3N9GTi3rHPK8Iv4O1UyUXIrTTOAZNHsjlVpXFOhpJBVARI1s+rzwLivN3Q==}
     hasBin: true
     dependencies:
       chokidar: 3.5.3
