@@ -214,19 +214,30 @@ router.post(
       await client.requestSwapDepositAddress(payload);
 
     const { destChain, ...rest } = payload;
-
-    const { issuedBlock, srcChain, channelId } =
-      await prisma.swapDepositChannel.create({
-        data: {
-          ...rest,
-          depositAddress,
-          ...blockInfo,
+    const {
+      issuedBlock,
+      srcChain,
+      channelId,
+      depositAddress: channelDepositAddress,
+    } = await prisma.swapDepositChannel.upsert({
+      where: {
+        issuedBlock_srcChain_channelId: {
+          channelId: blockInfo.channelId,
+          issuedBlock: blockInfo.issuedBlock,
+          srcChain: payload.srcChain,
         },
-      });
+      },
+      create: {
+        ...rest,
+        depositAddress,
+        ...blockInfo,
+      },
+      update: {},
+    });
 
     const response: PostSwapResponse = {
       id: `${issuedBlock}-${srcChain}-${channelId}`,
-      depositAddress,
+      depositAddress: channelDepositAddress,
       issuedBlock,
     };
 
