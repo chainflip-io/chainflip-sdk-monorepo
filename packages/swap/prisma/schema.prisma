@@ -47,6 +47,7 @@ model SwapDepositChannel {
   issuedBlock           Int
   createdAt             DateTime @default(now())
   swaps                 Swap[]
+  failedSwaps           FailedSwap[]
 
   @@unique([issuedBlock, srcChain, channelId])
   @@index([depositAddress])
@@ -84,6 +85,20 @@ model Swap {
   createdAt                 DateTime            @default(now())
   updatedAt                 DateTime            @default(now()) @updatedAt
 
+  @@schema("public")
+}
+
+model FailedSwap {
+  id                     Int                   @id @default(autoincrement())
+  destinationAddress     String
+  destinationChain       Chain
+  depositAmount          Decimal               @db.Decimal(30, 0)
+  sourceChain            Chain
+  swapDepositChannel     SwapDepositChannel?   @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId   BigInt?
+  txHash                 String?
+
+  @@index([swapDepositChannelId])
   @@schema("public")
 }
 
