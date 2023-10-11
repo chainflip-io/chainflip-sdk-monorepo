@@ -1,14 +1,17 @@
 import { z } from 'zod';
-import { u64, chainflipAssetEnum } from '@/shared/parsers';
+import { u64, chainflipAssetEnum, u128 } from '@/shared/parsers';
 import { encodedAddress } from './common';
 import { EventHandlerArgs } from './index';
 
 const swapDepositAddressReadyArgs = z.object({
   depositAddress: encodedAddress,
   destinationAddress: encodedAddress,
+  // TODO(mainnet): remove this
+  expiryBlock: z.number().int().positive().safe().optional(),
   sourceAsset: chainflipAssetEnum,
   destinationAsset: chainflipAssetEnum,
   channelId: u64,
+  sourceChainExpiryBlock: u128.optional(),
 });
 
 export type SwapDepositAddressReadyEvent = z.input<

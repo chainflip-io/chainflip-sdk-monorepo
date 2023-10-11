@@ -36,16 +36,19 @@ enum Asset {
 }
 
 model SwapDepositChannel {
-  id                    BigInt   @id @default(autoincrement())
+  id                    BigInt       @id @default(autoincrement())
   channelId             BigInt
   srcChain              Chain
   srcAsset              Asset
   depositAddress        String
-  expectedDepositAmount Decimal  @db.Decimal(30, 0)
+  expectedDepositAmount Decimal      @db.Decimal(30, 0)
   destAsset             Asset
   destAddress           String
   issuedBlock           Int
-  createdAt             DateTime @default(now())
+  expiryBlock           Int?
+  srcChainExpiryBlock   BigInt?
+  isExpired             Boolean      @default(false)
+  createdAt             DateTime     @default(now())
   swaps                 Swap[]
   failedSwaps           FailedSwap[]
 
@@ -89,14 +92,14 @@ model Swap {
 }
 
 model FailedSwap {
-  id                     Int                   @id @default(autoincrement())
-  destinationAddress     String
-  destinationChain       Chain
-  depositAmount          Decimal               @db.Decimal(30, 0)
-  sourceChain            Chain
-  swapDepositChannel     SwapDepositChannel?   @relation(fields: [swapDepositChannelId], references: [id])
-  swapDepositChannelId   BigInt?
-  txHash                 String?
+  id                   Int                 @id @default(autoincrement())
+  destinationAddress   String
+  destinationChain     Chain
+  depositAmount        Decimal             @db.Decimal(30, 0)
+  sourceChain          Chain
+  swapDepositChannel   SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId BigInt?
+  txHash               String?
 
   @@index([swapDepositChannelId])
   @@schema("public")

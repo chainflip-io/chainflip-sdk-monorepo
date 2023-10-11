@@ -40,7 +40,7 @@ describe(swapAmountTooLow, () => {
           srcChain: 'Polkadot',
           depositAddress: '5CGLqaFMheyVcsXz6QEtjtSAi6RcXFaEDJKvovgCdPiZi5NW',
           channelId: 2n,
-          issuedBlock: { lte: 100 },
+          isExpired: false,
         },
         orderBy: { id: 'desc' },
       });
@@ -82,7 +82,7 @@ describe(swapAmountTooLow, () => {
           srcChain: 'Bitcoin',
           depositAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
           channelId: 2n,
-          issuedBlock: { lte: 100 },
+          isExpired: false,
         },
         orderBy: { id: 'desc' },
       });

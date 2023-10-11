@@ -24,7 +24,6 @@ export type SwapAmountTooLowEvent = z.input<typeof swapAmountTooLowArgs>;
 
 export default async function swapAmountTooLow({
   prisma,
-  block,
   event,
 }: EventHandlerArgs): Promise<void> {
   const { origin, amount, destinationAddress } = swapAmountTooLowArgs.parse(
@@ -39,7 +38,7 @@ export default async function swapAmountTooLow({
         srcChain: origin.depositAddress.chain,
         depositAddress: origin.depositAddress.address,
         channelId: origin.channelId,
-        issuedBlock: { lte: block.height },
+        isExpired: false,
       },
       orderBy: { id: 'desc' },
     });
