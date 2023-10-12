@@ -6,6 +6,7 @@ import prisma from './client';
 import { getEventHandler, swapEventNames } from './event-handlers';
 import { GetBatchQuery } from './gql/generated/graphql';
 import { GET_BATCH } from './gql/query';
+import preBlock from './preBlock';
 import { handleExit } from './utils/function';
 import logger from './utils/logger';
 
@@ -113,6 +114,8 @@ export default async function processBlocks() {
 
       await prisma.$transaction(
         async (txClient) => {
+          await preBlock(txClient, block);
+
           for (const event of block.events.nodes) {
             const eventHandler = getEventHandler(event.name, block.specId);
             if (!eventHandler) {
