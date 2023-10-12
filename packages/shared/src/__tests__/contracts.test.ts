@@ -1,7 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { ContractTransaction, VoidSigner } from 'ethers';
 import { ERC20__factory } from '../abis';
-import { GOERLI_USDC_CONTRACT_ADDRESS } from '../consts';
 import { approve, checkAllowance } from '../contracts';
 
 class MockERC20 {
@@ -34,12 +33,7 @@ describe(checkAllowance, () => {
       .mockResolvedValueOnce(BigInt(allowance));
     const signer = new VoidSigner('0xcafebabe');
 
-    const result = await checkAllowance(
-      spend,
-      spender,
-      GOERLI_USDC_CONTRACT_ADDRESS,
-      signer,
-    );
+    const result = await checkAllowance(spend, spender, '0x0', signer);
 
     expect(result.isAllowable).toBe(expected);
     expect(result.allowance).toEqual(BigInt(allowance));
@@ -63,10 +57,7 @@ describe(approve, () => {
       const receipt = await approve(
         spend,
         spender,
-        ERC20__factory.connect(
-          GOERLI_USDC_CONTRACT_ADDRESS,
-          new VoidSigner('0xcafebabe'),
-        ),
+        ERC20__factory.connect('0x0', new VoidSigner('0xcafebabe')),
         allowance,
         { nonce: 1 },
       );
@@ -80,10 +71,7 @@ describe(approve, () => {
     const receipt = await approve(
       10n,
       spender,
-      ERC20__factory.connect(
-        GOERLI_USDC_CONTRACT_ADDRESS,
-        new VoidSigner('0xcafebabe'),
-      ),
+      ERC20__factory.connect('0x0', new VoidSigner('0xcafebabe')),
       1000n,
       { nonce: 1 },
     );

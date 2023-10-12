@@ -523,37 +523,27 @@ describe('server', () => {
   });
 
   describe('POST /swaps', () => {
+    const ethToDotSwapRequestBody = {
+      srcAsset: Assets.ETH,
+      destAsset: Assets.DOT,
+      srcChain: 'Ethereum',
+      destChain: 'Polkadot',
+      destAddress: DOT_ADDRESS,
+      amount: '1000000000',
+    } as const;
+    const dotToEthSwapRequestBody = {
+      srcAsset: Assets.DOT,
+      destAsset: Assets.ETH,
+      srcChain: 'Ethereum',
+      destChain: 'Polkadot',
+      destAddress: ETH_ADDRESS,
+      amount: '1000000000',
+    } as const;
+
     it.each([
-      [
-        {
-          srcAsset: Assets.ETH,
-          destAsset: Assets.DOT,
-          srcChain: 'Ethereum',
-          destChain: 'Polkadot',
-          destAddress: DOT_ADDRESS,
-          amount: '1000000000',
-        },
-      ],
-      [
-        {
-          srcAsset: Assets.ETH,
-          destAsset: Assets.DOT,
-          srcChain: 'Ethereum',
-          destChain: 'Polkadot',
-          destAddress: DOT_ADDRESS,
-          amount: '1000000000',
-        },
-      ],
-      [
-        {
-          srcAsset: Assets.DOT,
-          destAsset: Assets.ETH,
-          srcChain: 'Ethereum',
-          destChain: 'Polkadot',
-          destAddress: ETH_ADDRESS,
-          amount: '1000000000',
-        },
-      ],
+      [ethToDotSwapRequestBody],
+      [ethToDotSwapRequestBody],
+      [dotToEthSwapRequestBody],
     ])('creates a new swap deposit channel', async (requestBody) => {
       const issuedBlock = 123;
       const channelId = 200n;
@@ -590,6 +580,37 @@ describe('server', () => {
         id: '123-Ethereum-200',
         depositAddress: address,
         issuedBlock,
+      });
+    });
+
+    it('does not update the already existing deposit channel', async () => {
+      const requestBody = ethToDotSwapRequestBody;
+      const channelId = 200n;
+      const oldAddress = 'THE_INGRESS_ADDRESS';
+      const newAddress = 'THE_NEW_INGRESS_ADDRESS';
+      const issuedBlock = 123;
+
+      await createDepositChannel({
+        channelId,
+        srcChain: requestBody.srcChain,
+        issuedBlock,
+        depositAddress: oldAddress,
+      });
+
+      jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        address: newAddress,
+        issuedBlock,
+        channelId,
+      });
+
+      const { body, status } = await request(app)
+        .post('/swaps')
+        .send(requestBody);
+
+      expect(status).toBe(200);
+      expect(body).toMatchObject({
+        issuedBlock,
+        depositAddress: oldAddress,
       });
     });
 
@@ -636,7 +657,9 @@ describe('server', () => {
         .send(requestBody);
 
       expect(status).toBe(400);
-      expect(body).toMatchObject({ message: 'provided address is not valid' });
+      expect(body).toMatchObject({
+        message: 'provided address is not valid',
+      });
     });
 
     it('rejects if amount is lower than minimum deposit amount', async () => {
