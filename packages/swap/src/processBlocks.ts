@@ -2,10 +2,11 @@ import assert from 'assert';
 import { GraphQLClient } from 'graphql-request';
 import { performance } from 'perf_hooks';
 import { setTimeout as sleep } from 'timers/promises';
-import prisma, { Prisma } from './client';
+import prisma from './client';
 import { getEventHandler, swapEventNames } from './event-handlers';
 import { GetBatchQuery } from './gql/generated/graphql';
 import { GET_BATCH } from './gql/query';
+import preBlock from './preBlock';
 import { handleExit } from './utils/function';
 import logger from './utils/logger';
 
@@ -53,12 +54,7 @@ const fetchBlocks = async (height: number): Promise<Block[]> => {
   throw new Error('failed to fetch batch');
 };
 
-export default async function processBlocks(
-  preBlockHook?: (
-    txClient: Prisma.TransactionClient,
-    block: Block,
-  ) => Promise<void>,
-) {
+export default async function processBlocks() {
   logger.info('processing blocks');
 
   let run = true;
@@ -118,7 +114,7 @@ export default async function processBlocks(
 
       await prisma.$transaction(
         async (txClient) => {
-          if (preBlockHook) await preBlockHook(txClient, block);
+          await preBlock(txClient, block);
 
           for (const event of block.events.nodes) {
             const eventHandler = getEventHandler(event.name, block.specId);
