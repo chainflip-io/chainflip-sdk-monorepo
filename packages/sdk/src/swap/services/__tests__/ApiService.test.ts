@@ -96,53 +96,6 @@ describe('ApiService', () => {
     });
   });
 
-  describe(ApiService.requestDepositAddress, () => {
-    it('executes the route and returns the data from the service', async () => {
-      const mockedPost = jest.mocked(axios.post);
-      const response = {
-        id: 'new deposit channel id',
-        depositAddress: '0xcafebabe',
-      };
-      mockedPost.mockResolvedValueOnce({ data: response });
-
-      const depositChannel = await ApiService.requestDepositAddress(
-        'https://swapperoo.org',
-        {
-          ...mockRoute,
-          amount: mockRoute.amount,
-          destAddress: 'abcdefgh',
-        },
-        {},
-      );
-      expect(depositChannel).toEqual({
-        ...mockRoute,
-        destAddress: 'abcdefgh',
-        depositChannelId: response.id,
-        depositAddress: response.depositAddress,
-      });
-    });
-
-    it('passes on the signal', async () => {
-      const mockedPost = jest.mocked(axios.post);
-      mockedPost.mockResolvedValueOnce({
-        data: { id: 'new deposit channel id', depositAddress: '0xcafebabe' },
-      });
-
-      await ApiService.requestDepositAddress(
-        'https://swapperoo.org',
-        {
-          ...mockRoute,
-          amount: mockRoute.amount,
-          destAddress: '',
-        },
-        {
-          signal: new AbortController().signal,
-        },
-      );
-      expect(mockedPost.mock.lastCall?.[2]?.signal).not.toBeUndefined();
-    });
-  });
-
   describe(ApiService.getStatus, () => {
     it('forwards whatever response it gets from the swap service', async () => {
       const mockedGet = jest.mocked(axios.get);

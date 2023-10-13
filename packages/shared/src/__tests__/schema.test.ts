@@ -1,4 +1,4 @@
-import { postSwapSchema } from '../schemas';
+import { openSwapDepositChannelSchema } from '../schemas';
 
 const swapBody = {
   srcAsset: 'BTC',
@@ -12,14 +12,14 @@ const swapBody = {
 describe('postSwapSchema', () => {
   it('handles empty ccmMetadata strings', () => {
     expect(
-      postSwapSchema.safeParse({
+      openSwapDepositChannelSchema.safeParse({
         ...swapBody,
       }),
     ).toEqual(expect.objectContaining({ success: true }));
   });
   it('handles full ccmMetadata', () => {
     expect(
-      postSwapSchema.safeParse({
+      openSwapDepositChannelSchema.safeParse({
         ...swapBody,
         ccmMetadata: {
           gasBudget: '123',
@@ -31,7 +31,7 @@ describe('postSwapSchema', () => {
   });
   it('handles without cf parameters', () => {
     expect(
-      postSwapSchema.safeParse({
+      openSwapDepositChannelSchema.safeParse({
         ...swapBody,
         ccmMetadata: {
           gasBudget: '123',
@@ -42,7 +42,7 @@ describe('postSwapSchema', () => {
   });
   it('handles missing ccm params', () => {
     expect(
-      postSwapSchema.safeParse({
+      openSwapDepositChannelSchema.safeParse({
         ...swapBody,
         ccmMetadata: {
           gasBudget: '123',
@@ -52,7 +52,7 @@ describe('postSwapSchema', () => {
   });
   it('handles missing ccm params', () => {
     expect(
-      postSwapSchema.safeParse({
+      openSwapDepositChannelSchema.safeParse({
         ...swapBody,
         ccmMetadata: {
           message: '0xdeadc0de',
@@ -63,7 +63,7 @@ describe('postSwapSchema', () => {
   });
   it('handles missing swap body params', () => {
     expect(
-      postSwapSchema.safeParse({
+      openSwapDepositChannelSchema.safeParse({
         srcAsset: 'BTC',
         destAsset: 'ETH',
         destAddress: '0x123',
@@ -77,7 +77,7 @@ describe('postSwapSchema', () => {
   });
   it('handles wrong type for gasBudget', () => {
     expect(
-      postSwapSchema.safeParse({
+      openSwapDepositChannelSchema.safeParse({
         ...swapBody,
         ccmMetadata: {
           gasBudget: '0x123',

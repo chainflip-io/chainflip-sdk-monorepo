@@ -1,8 +1,8 @@
 import * as crypto from 'crypto';
 import { Server } from 'http';
 import request from 'supertest';
+import * as broker from '@/shared/broker';
 import { Assets } from '@/shared/enums';
-import RpcClient from '@/shared/node-apis/RpcClient';
 import prisma from '../../client';
 import {
   DOT_ADDRESS,
@@ -23,19 +23,11 @@ jest.mock('@/shared/consts', () => ({
 
 const randomId = () => BigInt(crypto.randomInt(1, 100000));
 
-jest.mock(
-  '@/shared/node-apis/RpcClient',
-  () =>
-    class {
-      async connect() {
-        return this;
-      }
-
-      sendRequest() {
-        throw new Error('unmocked request');
-      }
-    },
-);
+jest.mock('@/shared/broker', () => ({
+  requestSwapDepositAddress: jest
+    .fn()
+    .mockRejectedValue(Error('unhandled mock')),
+}));
 
 const RECEIVED_TIMESTAMP = 1669907135201;
 const RECEIVED_BLOCK_INDEX = `100-3`;
@@ -548,19 +540,29 @@ describe('server', () => {
       const issuedBlock = 123;
       const channelId = 200n;
       const address = 'THE_INGRESS_ADDRESS';
-      jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sourceChainExpiryBlock = 1_000_000n;
+      jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
         address,
         issuedBlock,
         channelId,
+        sourceChainExpiryBlock,
       });
 
       const { body, status } = await request(app)
         .post('/swaps')
         .send(requestBody);
 
-      const swapDepositChannel = await prisma.swapDepositChannel.findFirst({
-        where: { depositAddress: address },
+      expect(body).toMatchObject({
+        id: '123-Ethereum-200',
+        depositAddress: address,
+        issuedBlock,
       });
+      expect(status).toBe(200);
+
+      const swapDepositChannel =
+        await prisma.swapDepositChannel.findFirstOrThrow({
+          where: { depositAddress: address },
+        });
 
       expect(swapDepositChannel).toMatchObject({
         id: expect.any(BigInt),
@@ -575,12 +577,6 @@ describe('server', () => {
       expect(swapDepositChannel?.expectedDepositAmount.toString()).toBe(
         requestBody.amount,
       );
-      expect(status).toBe(200);
-      expect(body).toMatchObject({
-        id: '123-Ethereum-200',
-        depositAddress: address,
-        issuedBlock,
-      });
     });
 
     it('does not update the already existing deposit channel', async () => {
@@ -589,6 +585,7 @@ describe('server', () => {
       const oldAddress = 'THE_INGRESS_ADDRESS';
       const newAddress = 'THE_NEW_INGRESS_ADDRESS';
       const issuedBlock = 123;
+      const sourceChainExpiryBlock = 1_000_000n;
 
       await createDepositChannel({
         channelId,
@@ -597,10 +594,11 @@ describe('server', () => {
         depositAddress: oldAddress,
       });
 
-      jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
         address: newAddress,
         issuedBlock,
         channelId,
+        sourceChainExpiryBlock,
       });
 
       const { body, status } = await request(app)
