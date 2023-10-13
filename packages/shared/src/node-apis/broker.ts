@@ -2,8 +2,8 @@ import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import assert from 'assert';
 import { z } from 'zod';
-import { Asset, Assets, Chain } from './enums';
-import { isNotNullish } from './guards';
+import { Asset, Assets, Chain } from '../enums';
+import { isNotNullish } from '../guards';
 import {
   hexString,
   numericString,
@@ -12,13 +12,13 @@ import {
   chainflipAsset,
   hexStringFromNumber,
   unsignedInteger,
-} from './parsers';
-import { CcmMetadata, ccmMetadataSchema } from './schemas';
+} from '../parsers';
+import { CcmMetadata, ccmMetadataSchema } from '../schemas';
 import {
   CamelCaseToSnakeCase,
   camelToSnakeCase,
   transformAsset,
-} from './strings';
+} from '../strings';
 
 type NewSwapRequest = {
   srcAsset: Asset;

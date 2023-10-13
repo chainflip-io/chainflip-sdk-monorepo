@@ -1,8 +1,8 @@
 import * as crypto from 'crypto';
 import { Server } from 'http';
 import request from 'supertest';
-import * as broker from '@/shared/broker';
 import { Assets } from '@/shared/enums';
+import * as broker from '@/shared/node-apis/broker';
 import prisma from '../../client';
 import {
   DOT_ADDRESS,

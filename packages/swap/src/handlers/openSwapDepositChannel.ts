@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import * as broker from '@/shared/broker';
 import { getMinimumDepositAmount } from '@/shared/consts';
 import { ChainflipNetwork } from '@/shared/enums';
+import * as broker from '@/shared/node-apis/broker';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';

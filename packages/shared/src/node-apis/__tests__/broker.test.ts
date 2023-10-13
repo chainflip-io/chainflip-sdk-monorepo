@@ -1,5 +1,5 @@
+import { Assets } from '../../enums';
 import * as broker from '../broker';
-import { Assets } from '../enums';
 
 describe(broker.requestSwapDepositAddress, () => {
   const fetchSpy = jest.spyOn(globalThis, 'fetch');
