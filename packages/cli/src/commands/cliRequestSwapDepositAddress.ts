@@ -2,7 +2,7 @@ import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
 import { Assets, Chains } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { CcmMetadata } from '@/shared/schemas';
-import { BrokerClient } from '../lib';
+import { broker } from '../lib';
 
 export const yargsOptions = {
   'src-asset': {
@@ -48,7 +48,6 @@ export const yargsOptions = {
 export default async function cliRequestSwapDepositAddress(
   args: ArgumentsCamelCase<InferredOptionTypes<typeof yargsOptions>>,
 ) {
-  const client = await BrokerClient.create({ url: args.brokerUrl });
   let ccmMetadata: CcmMetadata | undefined;
 
   if (args.gasBudget || args.message) {
@@ -60,18 +59,22 @@ export default async function cliRequestSwapDepositAddress(
       message: args.message as `0x${string}`,
     };
   }
-  const result = await client.requestSwapDepositAddress({
-    srcAsset: args.srcAsset,
-    destAsset: args.destAsset,
-    destAddress: args.destAddress,
-    srcChain: args.srcChain,
-    destChain: args.destChain,
-    ccmMetadata,
-  });
+  const result = await broker.requestSwapDepositAddress(
+    {
+      srcAsset: args.srcAsset,
+      destAsset: args.destAsset,
+      destAddress: args.destAddress,
+      srcChain: args.srcChain,
+      destChain: args.destChain,
+      ccmMetadata,
+    },
+    {
+      url: args.brokerUrl,
+      commissionBps: 0,
+    },
+  );
 
   console.log(`Deposit address: ${result.address}`);
   console.log(`Issued block: ${result.issuedBlock}`);
   console.log(`Channel ID: ${result.channelId}`);
-
-  await client.close();
 }
