@@ -23,7 +23,7 @@ jest.mock('@/shared/consts', () => ({
 
 const randomId = () => BigInt(crypto.randomInt(1, 100000));
 
-jest.mock('@/shared/broker', () => ({
+jest.mock('@/shared/node-apis/broker', () => ({
   requestSwapDepositAddress: jest
     .fn()
     .mockRejectedValue(Error('unhandled mock')),
