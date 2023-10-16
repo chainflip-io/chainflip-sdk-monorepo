@@ -154,13 +154,13 @@ importers:
         version: 5.7.2
       '@typechain/ethers-v6':
         specifier: ^0.5.0
-        version: 0.5.0(ethers@6.7.1)(typechain@8.3.1)(typescript@5.2.2)
+        version: 0.5.0(ethers@6.7.1)(typechain@8.3.2)(typescript@5.2.2)
       '@types/ws':
         specifier: ^8.5.6
         version: 8.5.6
       typechain:
-        specifier: ^8.3.1
-        version: 8.3.1(jest@29.7.0)(typescript@5.2.2)
+        specifier: ^8.3.2
+        version: 8.3.2(jest@29.7.0)(typescript@5.2.2)
       winston:
         specifier: ^3.10.0
         version: 3.10.0
@@ -2871,7 +2871,7 @@ packages:
       path-browserify: 1.0.1
     dev: true
 
-  /@typechain/ethers-v6@0.5.0(ethers@6.7.1)(typechain@8.3.1)(typescript@5.2.2):
+  /@typechain/ethers-v6@0.5.0(ethers@6.7.1)(typechain@8.3.2)(typescript@5.2.2):
     resolution: {integrity: sha512-wsz7AvbY5n2uVwpS2RHDYsW6wYOrhWxeTLFpxuzhO62w/ZDQEVIipArX731KA/hdqygP2zJ2RTkVXgzU1WrU1g==}
     peerDependencies:
       ethers: 6.x
@@ -2881,7 +2881,7 @@ packages:
       ethers: 6.7.1
       lodash: 4.17.21
       ts-essentials: 7.0.3(typescript@5.2.2)
-      typechain: 8.3.1(jest@29.7.0)(typescript@5.2.2)
+      typechain: 8.3.2(jest@29.7.0)(typescript@5.2.2)
       typescript: 5.2.2
     dev: true
 
@@ -8668,8 +8668,8 @@ packages:
       mime-types: 2.1.35
     dev: false
 
-  /typechain@8.3.1(jest@29.7.0)(typescript@5.2.2):
-    resolution: {integrity: sha512-fA7clol2IP/56yq6vkMTR+4URF1nGjV82Wx6Rf09EsqD4tkzMAvEaqYxVFCavJm/1xaRga/oD55K+4FtuXwQOQ==}
+  /typechain@8.3.2(jest@29.7.0)(typescript@5.2.2):
+    resolution: {integrity: sha512-x/sQYr5w9K7yv3es7jo4KTX05CLxOf7TRWwoHlrjRh8H82G64g+k7VuWPJlgMo6qrjfCulOdfBjiaDtmhFYD/Q==}
     hasBin: true
     peerDependencies:
       typescript: '>=4.3.0'
