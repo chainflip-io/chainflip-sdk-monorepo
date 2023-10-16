@@ -153,8 +153,8 @@ importers:
         specifier: ^5.7.2
         version: 5.7.2
       '@typechain/ethers-v6':
-        specifier: ^0.5.0
-        version: 0.5.0(ethers@6.7.1)(typechain@8.3.2)(typescript@5.2.2)
+        specifier: ^0.5.1
+        version: 0.5.1(ethers@6.7.1)(typechain@8.3.2)(typescript@5.2.2)
       '@types/ws':
         specifier: ^8.5.7
         version: 8.5.7
@@ -2871,11 +2871,11 @@ packages:
       path-browserify: 1.0.1
     dev: true
 
-  /@typechain/ethers-v6@0.5.0(ethers@6.7.1)(typechain@8.3.2)(typescript@5.2.2):
-    resolution: {integrity: sha512-wsz7AvbY5n2uVwpS2RHDYsW6wYOrhWxeTLFpxuzhO62w/ZDQEVIipArX731KA/hdqygP2zJ2RTkVXgzU1WrU1g==}
+  /@typechain/ethers-v6@0.5.1(ethers@6.7.1)(typechain@8.3.2)(typescript@5.2.2):
+    resolution: {integrity: sha512-F+GklO8jBWlsaVV+9oHaPh5NJdd6rAKN4tklGfInX1Q7h0xPgVLP39Jl3eCulPB5qexI71ZFHwbljx4ZXNfouA==}
     peerDependencies:
       ethers: 6.x
-      typechain: ^8.3.1
+      typechain: ^8.3.2
       typescript: '>=4.7.0'
     dependencies:
       ethers: 6.7.1
