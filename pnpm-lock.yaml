@@ -91,8 +91,8 @@ importers:
   packages/cli:
     dependencies:
       ethers:
-        specifier: 6.7.1
-        version: 6.7.1
+        specifier: 6.8.0
+        version: 6.8.0
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -128,8 +128,8 @@ importers:
         specifier: ^1.5.1
         version: 1.5.1
       ethers:
-        specifier: 6.7.1
-        version: 6.7.1
+        specifier: 6.8.0
+        version: 6.8.0
     devDependencies:
       tsup:
         specifier: ^7.2.0
@@ -144,8 +144,8 @@ importers:
         specifier: ^12.5.1
         version: 12.5.1(@polkadot/util@12.5.1)
       ethers:
-        specifier: 6.7.1
-        version: 6.7.1
+        specifier: 6.8.0
+        version: 6.8.0
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -161,7 +161,7 @@ importers:
         version: 5.7.2
       '@typechain/ethers-v6':
         specifier: ^0.5.1
-        version: 0.5.1(ethers@6.7.1)(typechain@8.3.2)(typescript@5.2.2)
+        version: 0.5.1(ethers@6.8.0)(typechain@8.3.2)(typescript@5.2.2)
       '@types/ws':
         specifier: ^8.5.7
         version: 8.5.7
@@ -199,8 +199,8 @@ importers:
         specifier: ^16.3.1
         version: 16.3.1
       ethers:
-        specifier: 6.7.1
-        version: 6.7.1
+        specifier: 6.8.0
+        version: 6.8.0
       express:
         specifier: ^4.18.2
         version: 4.18.2
@@ -289,8 +289,8 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /@adraffy/ens-normalize@1.9.2:
-    resolution: {integrity: sha512-0h+FrQDqe2Wn+IIGFkTCd4aAwTJ+7834Ek1COohCyV26AXhwQ7WQaz+4F/nLOeVl/3BtWHOHLPsq46V8YB46Eg==}
+  /@adraffy/ens-normalize@1.10.0:
+    resolution: {integrity: sha512-nA9XHtlAkYfJxY7bce8DcN7eKxWWCWkU+1GR9d+U6MbNpfwQp8TI7vqOsBsMcHoT4mBu2kypKoSKnghEzOOq5Q==}
 
   /@ampproject/remapping@2.2.1:
     resolution: {integrity: sha512-lFMjJTrFL3j7L9yBxwYfCq2k6qqwHyzuUl/XBnif78PWTJYyL/dfowQHWE3sp6U6ZzqWiiIZnpTMO96zhkjwtg==}
@@ -1773,7 +1773,7 @@ packages:
     dependencies:
       graphql: 16.8.1
       lodash.sortby: 4.7.0
-      tslib: 2.5.3
+      tslib: 2.6.2
     dev: true
 
   /@graphql-tools/executor-graphql-ws@1.1.0(graphql@16.8.1):
@@ -1968,7 +1968,7 @@ packages:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
     dependencies:
       graphql: 16.8.1
-      tslib: 2.5.3
+      tslib: 2.6.2
     dev: true
 
   /@graphql-tools/prisma-loader@8.0.1(@types/node@20.8.0)(graphql@16.8.1):
@@ -2013,7 +2013,7 @@ packages:
       '@ardatan/relay-compiler': 12.0.0(graphql@16.8.1)
       '@graphql-tools/utils': 10.0.7(graphql@16.8.1)
       graphql: 16.8.1
-      tslib: 2.5.3
+      tslib: 2.6.2
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -2394,18 +2394,10 @@ packages:
     resolution: {integrity: sha512-oYclrNgRaM9SsBUBVbb8M6DTV7ZHRTKugureoYEncY5c65HOmRzvSiTE3y5CYaPYJA/GVkrhXEoF0M3Ya9PMnw==}
     dependencies:
       '@noble/hashes': 1.3.2
-    dev: false
-
-  /@noble/hashes@1.1.2:
-    resolution: {integrity: sha512-KYRCASVTv6aeUi1tsF8/vpyR7zpfs3FUzy2Jqm+MU+LmUKhQ0y2FpfwqkCcxSg2ua4GALJd8k2R76WxwZGbQpA==}
 
   /@noble/hashes@1.3.2:
     resolution: {integrity: sha512-MVC8EAQp7MvEcm30KWENFjgR+Mkmf+D189XJTkFIlwohU5hcBbn1ZkKq7KVTi2Hme3PMGF390DaL52beVrIihQ==}
     engines: {node: '>= 16'}
-    dev: false
-
-  /@noble/secp256k1@1.7.1:
-    resolution: {integrity: sha512-hOUk6AyBFmqVrv7k5WAw/LpszxVbj9gGN4JRkIX52fdFAj1UA61KXmZDvqVEm+pOyec3+fIeZB02LYa/pWOArw==}
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -2823,14 +2815,14 @@ packages:
       path-browserify: 1.0.1
     dev: true
 
-  /@typechain/ethers-v6@0.5.1(ethers@6.7.1)(typechain@8.3.2)(typescript@5.2.2):
+  /@typechain/ethers-v6@0.5.1(ethers@6.8.0)(typechain@8.3.2)(typescript@5.2.2):
     resolution: {integrity: sha512-F+GklO8jBWlsaVV+9oHaPh5NJdd6rAKN4tklGfInX1Q7h0xPgVLP39Jl3eCulPB5qexI71ZFHwbljx4ZXNfouA==}
     peerDependencies:
       ethers: 6.x
       typechain: ^8.3.2
       typescript: '>=4.7.0'
     dependencies:
-      ethers: 6.7.1
+      ethers: 6.8.0
       lodash: 4.17.21
       ts-essentials: 7.0.3(typescript@5.2.2)
       typechain: 8.3.2(typescript@5.2.2)
@@ -4863,13 +4855,13 @@ packages:
     engines: {node: '>= 0.6'}
     dev: false
 
-  /ethers@6.7.1:
-    resolution: {integrity: sha512-qX5kxIFMfg1i+epfgb0xF4WM7IqapIIu50pOJ17aebkxxa4BacW5jFrQRmCJpDEg2ZK2oNtR5QjrQ1WDBF29dA==}
+  /ethers@6.8.0:
+    resolution: {integrity: sha512-zrFbmQRlraM+cU5mE4CZTLBurZTs2gdp2ld0nG/f3ecBK+x6lZ69KSxBqZ4NjclxwfTxl5LeNufcBbMsTdY53Q==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@adraffy/ens-normalize': 1.9.2
-      '@noble/hashes': 1.1.2
-      '@noble/secp256k1': 1.7.1
+      '@adraffy/ens-normalize': 1.10.0
+      '@noble/curves': 1.2.0
+      '@noble/hashes': 1.3.2
       '@types/node': 18.15.13
       aes-js: 4.0.0-beta.5
       tslib: 2.4.0
@@ -5474,7 +5466,7 @@ packages:
       graphql: ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
     dependencies:
       graphql: 16.8.1
-      tslib: 2.5.3
+      tslib: 2.6.2
     dev: true
 
   /graphql-ws@5.14.1(graphql@15.8.0):
