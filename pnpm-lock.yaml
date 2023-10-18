@@ -15,8 +15,8 @@ importers:
         specifier: ^10.40.0
         version: 10.40.0
       superjson:
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^1.13.1
+        version: 1.13.1
       zod:
         specifier: ^3.22.4
         version: 3.22.4
@@ -8355,9 +8355,9 @@ packages:
       - supports-color
     dev: true
 
-  /superjson@2.0.0:
-    resolution: {integrity: sha512-W3n+NJ7TFjaLle8ihIIvsr/bbuKpnxeatsyjmhy7iSkom+/cshaHziCQAWXrHGWJVQSQFDOuES6C3nSEvcbrQg==}
-    engines: {node: '>=16'}
+  /superjson@1.13.1:
+    resolution: {integrity: sha512-AVH2eknm9DEd3qvxM4Sq+LTCkSXE2ssfh1t11MHMXyYXFQyQ1HLgVvV+guLTsaQnJU3gnaVo34TohHPulY/wLg==}
+    engines: {node: '>=10'}
     dependencies:
       copy-anything: 3.0.5
     dev: false
