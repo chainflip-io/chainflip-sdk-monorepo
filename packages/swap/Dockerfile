@@ -8,6 +8,7 @@ COPY . .
 ARG package_mirror_url
 ARG package_mirror_url_auth
 
+RUN npm install pm2 -g
 RUN npm install -g pnpm@8
 
 RUN pnpm set registry=$package_mirror_url
@@ -37,4 +38,4 @@ COPY --from=builder /app/packages/swap /app/packages/swap
 WORKDIR /app/packages/swap
 
 # using ENTRYPOINT causes signals (SIGINT) to be passed onto the node process
-ENTRYPOINT ["node", "--enable-source-maps", "./dist/swap/src/index.js"]
+ENTRYPOINT ["pm2-runtime", "--enable-source-maps", "./dist/swap/src/index.js"]
