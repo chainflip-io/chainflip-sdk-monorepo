@@ -27,6 +27,7 @@ WORKDIR /app
 ARG package_mirror_url
 ARG package_mirror_url_auth
 
+RUN npm install pm2 -g
 RUN npm install -g pnpm@8
 
 COPY --from=builder /app/node_modules /app/node_modules
@@ -36,5 +37,4 @@ COPY --from=builder /app/packages/swap /app/packages/swap
 
 WORKDIR /app/packages/swap
 
-# using ENTRYPOINT causes signals (SIGINT) to be passed onto the node process
-ENTRYPOINT ["node", "--enable-source-maps", "./dist/swap/src/index.js"]
+CMD ["pm2-runtime", "./dist/swap/src/index.js", "--enable-source-maps"]

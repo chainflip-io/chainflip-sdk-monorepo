@@ -136,20 +136,15 @@ export async function requestSwapDepositAddress(
 ): Promise<DepositChannelResponse> {
   const { srcAsset, destAsset, destAddress } = swapRequest;
 
-  let url;
+  let url = process.env.RPC_BROKER_HTTPS_URL;
   let commissionBps = 0;
 
   if (opts) {
     url = opts.url;
     commissionBps = opts.commissionBps;
-  } else {
-    // TODO: add https env var?
-    const urlString = process.env.RPC_BROKER_WSS_URL;
-    assert(urlString, 'no broker url provided');
-    url = new URL(urlString);
-    url.protocol = 'https:';
   }
 
+  assert(url, 'no broker url provided');
   const depositChannelResponse = await makeRpcRequest(
     url,
     'requestSwapDepositAddress',
