@@ -28,10 +28,9 @@ describe(swapDepositAddressReady, () => {
       },
     );
 
-    expect(swapDepositChannel).toMatchObject({
-      channelId: expect.any(BigInt),
-      issuedBlock: expect.any(Number),
-      srcChain: expect.any(String),
+    expect(swapDepositChannel).toMatchSnapshot({
+      id: expect.any(BigInt),
+      createdAt: expect.any(Date),
     });
   });
 
@@ -59,8 +58,9 @@ describe(swapDepositAddressReady, () => {
       },
     );
 
-    expect(swapDepositChannel).toMatchObject({
-      issuedBlock: 10,
+    expect(swapDepositChannel).toMatchSnapshot({
+      id: expect.any(BigInt),
+      createdAt: expect.any(Date),
     });
   });
 });
