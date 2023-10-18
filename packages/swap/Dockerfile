@@ -37,5 +37,4 @@ COPY --from=builder /app/packages/swap /app/packages/swap
 
 WORKDIR /app/packages/swap
 
-# using ENTRYPOINT causes signals (SIGINT) to be passed onto the node process
-ENTRYPOINT ["pm2-runtime", "--enable-source-maps", "./dist/swap/src/index.js"]
+CMD ["pm2-runtime", "--enable-source-maps", "./dist/swap/src/index.js"]
