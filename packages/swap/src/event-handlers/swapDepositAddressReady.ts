@@ -31,6 +31,7 @@ export const swapDepositAddressReady = async ({
     sourceAsset,
     destinationAsset,
     channelId,
+    sourceChainExpiryBlock,
     ...rest
   } = swapDepositAddressReadyArgs.parse(event.args);
 
@@ -49,6 +50,7 @@ export const swapDepositAddressReady = async ({
       expectedDepositAmount: 0,
       destAsset: destinationAsset,
       destAddress: destinationAddress.address,
+      srcChainExpiryBlock: sourceChainExpiryBlock,
       issuedBlock,
       channelId,
       ...rest,

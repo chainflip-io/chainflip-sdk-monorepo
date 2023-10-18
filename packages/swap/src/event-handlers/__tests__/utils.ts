@@ -213,6 +213,7 @@ export const swapDepositAddressReadyMocked = {
           __kind: 'Dot',
         },
         channelId: '1',
+        sourceChainExpiryBlock: '0x100',
       },
       indexInBlock: 0,
       name: events.Swapping.SwapDepositAddressReady,
