@@ -41,7 +41,7 @@
     "@types/supertest": "^2.0.14",
     "@types/ws": "^8.5.7",
     "graphql": "^16.8.1",
-    "prisma": "^5.3.1",
+    "prisma": "^5.4.2",
     "socket.io-client": "^4.7.2",
     "supertest": "^6.3.3"
   },
@@ -52,7 +52,7 @@
   "dependencies": {
     "@polkadot/util": "^12.5.1",
     "@polkadot/util-crypto": "^12.5.1",
-    "@prisma/client": "^5.4.1",
+    "@prisma/client": "^5.4.2",
     "axios": "^1.5.1",
     "bignumber.js": "^9.1.2",
     "cors": "^2.8.5",
