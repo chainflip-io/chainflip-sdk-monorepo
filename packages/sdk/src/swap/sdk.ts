@@ -50,7 +50,7 @@ export class SwapSDK {
     this.brokerConfig = options.broker;
     this.trpc = createTRPCProxyClient<AppRouter>({
       transformer: superjson,
-      links: [httpBatchLink({ url: `${this.baseUrl}/trpc` })],
+      links: [httpBatchLink({ url: new URL('/trpc', this.baseUrl) })],
     });
   }
 
