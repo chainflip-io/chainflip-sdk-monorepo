@@ -30,6 +30,7 @@ describe(swapDepositAddressReady, () => {
 
     expect(swapDepositChannel).toMatchSnapshot({
       id: expect.any(BigInt),
+      createdAt: expect.any(Date),
     });
   });
 
@@ -59,6 +60,7 @@ describe(swapDepositAddressReady, () => {
 
     expect(swapDepositChannel).toMatchSnapshot({
       id: expect.any(BigInt),
+      createdAt: expect.any(Date),
     });
   });
 });
