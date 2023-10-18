@@ -22,7 +22,7 @@ export const ccmMetadataSchema = z.object({
 
 export type CcmMetadata = z.infer<typeof ccmMetadataSchema>;
 
-export const postSwapSchema = z
+export const openSwapDepositChannelSchema = z
   .object({
     srcAsset: chainflipAsset,
     destAsset: chainflipAsset,
@@ -31,13 +31,17 @@ export const postSwapSchema = z
     destAddress: z.string(),
     amount: numericString,
     ccmMetadata: ccmMetadataSchema.optional(),
+    broker: z.object({ url: z.string(), commissionBps: z.number() }).optional(),
   })
   .transform(({ amount, ...rest }) => ({
     ...rest,
     expectedDepositAmount: amount,
   }));
 
-export type SwapRequestBody = z.input<typeof postSwapSchema>;
+export type OpenSwapDepositChannelArgs = z.input<
+  typeof openSwapDepositChannelSchema
+>;
+
 export type PostSwapResponse = {
   id: string;
   depositAddress: string;

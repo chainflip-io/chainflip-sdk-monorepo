@@ -1,9 +1,12 @@
+import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import { Signer } from 'ethers';
+import superjson from 'superjson';
 import { TransactionOptions } from '@/shared/contracts';
 import { ChainflipNetwork, Chain, ChainflipNetworks } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
 import type { TokenSwapParams } from '@/shared/vault/schemas';
+import type { AppRouter } from '@/swap/server';
 import { BACKEND_SERVICE_URLS } from './consts';
 import ApiService, { RequestOptions } from './services/ApiService';
 import type {
@@ -23,6 +26,10 @@ export type SwapSDKOptions = {
   network?: Exclude<ChainflipNetwork, 'mainnet'>;
   signer?: Signer;
   backendUrl?: string;
+  broker?: {
+    url: string;
+    commissionBps: number;
+  };
 };
 
 export class SwapSDK {
@@ -32,10 +39,19 @@ export class SwapSDK {
 
   private readonly signer?: Signer;
 
+  private readonly trpc;
+
+  private readonly brokerConfig?;
+
   constructor(options: SwapSDKOptions = {}) {
     this.network = options.network ?? ChainflipNetworks.perseverance;
     this.baseUrl = options.backendUrl ?? BACKEND_SERVICE_URLS[this.network];
     this.signer = options.signer;
+    this.brokerConfig = options.broker;
+    this.trpc = createTRPCProxyClient<AppRouter>({
+      transformer: superjson,
+      links: [httpBatchLink({ url: `${this.baseUrl}/trpc` })],
+    });
   }
 
   getChains(sourceChain?: Chain): Promise<ChainData[]> {
@@ -56,15 +72,20 @@ export class SwapSDK {
     return ApiService.getQuote(this.baseUrl, quoteRequest, options);
   }
 
-  requestDepositAddress(
+  async requestDepositAddress(
     depositAddressRequest: DepositAddressRequest,
-    options: RequestOptions = {},
   ): Promise<DepositAddressResponse> {
-    return ApiService.requestDepositAddress(
-      this.baseUrl,
-      depositAddressRequest,
-      options,
-    );
+    const response = await this.trpc.openSwapDepositChannel.mutate({
+      ...depositAddressRequest,
+      broker: this.brokerConfig,
+    });
+
+    return {
+      ...depositAddressRequest,
+      depositChannelId: response.id,
+      depositAddress: response.depositAddress,
+      sourceChainExpiryBlock: response.sourceChainExpiryBlock as bigint,
+    };
   }
 
   getStatus(

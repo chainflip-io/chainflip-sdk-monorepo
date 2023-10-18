@@ -44,6 +44,7 @@ export interface DepositAddressRequest extends QuoteRequest {
 export interface DepositAddressResponse extends DepositAddressRequest {
   depositChannelId: string;
   depositAddress: string;
+  sourceChainExpiryBlock: bigint;
 }
 
 export interface SwapStatusRequest {

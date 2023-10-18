@@ -1,8 +1,7 @@
 import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
-import type { Logger } from 'winston';
+import assert from 'assert';
 import { z } from 'zod';
-import RpcClient from './RpcClient';
 import { Asset, Assets, Chain } from '../enums';
 import { isNotNullish } from '../guards';
 import {
@@ -12,6 +11,7 @@ import {
   dotAddress,
   chainflipAsset,
   hexStringFromNumber,
+  unsignedInteger,
 } from '../parsers';
 import { CcmMetadata, ccmMetadataSchema } from '../schemas';
 import {
@@ -82,58 +82,86 @@ const responseValidators = {
       address: z.union([dotAddress, hexString, btcAddress()]),
       issued_block: z.number(),
       channel_id: z.number(),
+      expiry_block: z.number().int().safe().positive().optional(),
+      source_chain_expiry_block: unsignedInteger.optional(),
     })
-    .transform(({ address, issued_block, channel_id }) => ({
-      address,
-      issuedBlock: issued_block,
-      channelId: BigInt(channel_id),
-    })),
+    .transform(
+      ({ address, issued_block, channel_id, source_chain_expiry_block }) => ({
+        address,
+        issuedBlock: issued_block,
+        channelId: BigInt(channel_id),
+        sourceChainExpiryBlock: source_chain_expiry_block,
+      }),
+    ),
 };
 
 export type DepositChannelResponse = z.infer<
   (typeof responseValidators)['requestSwapDepositAddress']
 >;
 
-type BrokerClientOpts = {
-  url?: string;
-  logger?: Logger;
+const makeRpcRequest = async <
+  T extends keyof typeof requestValidators & keyof typeof responseValidators,
+>(
+  url: string | URL,
+  method: T,
+  ...params: z.input<(typeof requestValidators)[T]>
+): Promise<z.output<(typeof responseValidators)[T]>> => {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      id: 1,
+      method: `broker_${method}`,
+      params: requestValidators[method].parse(params),
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`request failed with status ${res.status}`);
+  }
+
+  const body = await res.json();
+
+  if (body.error) {
+    throw new Error(`request failed with error ${body.error}`);
+  }
+
+  return responseValidators[method].parse(body.result);
 };
 
-export default class BrokerClient extends RpcClient<
-  typeof requestValidators,
-  typeof responseValidators
-> {
-  static create(opts: BrokerClientOpts = {}): Promise<BrokerClient> {
-    return new BrokerClient(opts).connect();
+export async function requestSwapDepositAddress(
+  swapRequest: NewSwapRequest,
+  opts?: { url: string; commissionBps: number },
+): Promise<DepositChannelResponse> {
+  const { srcAsset, destAsset, destAddress } = swapRequest;
+
+  let url;
+  let commissionBps = 0;
+
+  if (opts) {
+    url = opts.url;
+    commissionBps = opts.commissionBps;
+  } else {
+    // TODO: add https env var?
+    const urlString = process.env.RPC_BROKER_WSS_URL;
+    assert(urlString, 'no broker url provided');
+    url = new URL(urlString);
+    url.protocol = 'https:';
   }
 
-  private constructor(opts: BrokerClientOpts = {}) {
-    super(
-      opts.url ?? (process.env.RPC_BROKER_WSS_URL as string),
-      requestValidators,
-      responseValidators,
-      'broker',
-      opts.logger,
-    );
-  }
+  const depositChannelResponse = await makeRpcRequest(
+    url,
+    'requestSwapDepositAddress',
+    srcAsset,
+    destAsset,
+    submitAddress(destAsset, destAddress),
+    commissionBps,
+    swapRequest.ccmMetadata && {
+      ...swapRequest.ccmMetadata,
+      cfParameters: undefined,
+    },
+  );
 
-  async requestSwapDepositAddress(
-    swapRequest: NewSwapRequest,
-  ): Promise<DepositChannelResponse> {
-    const { srcAsset, destAsset, destAddress } = swapRequest;
-
-    const depositChannelResponse = await this.sendRequest(
-      'requestSwapDepositAddress',
-      srcAsset,
-      destAsset,
-      submitAddress(destAsset, destAddress),
-      0,
-      swapRequest.ccmMetadata && {
-        ...swapRequest.ccmMetadata,
-        cfParameters: undefined,
-      },
-    );
-
-    return depositChannelResponse;
-  }
+  return depositChannelResponse;
 }

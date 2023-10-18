@@ -1,19 +1,12 @@
 import axios from 'axios';
 import { type ChainflipNetwork, Chain, Chains } from '@/shared/enums';
-import type {
-  QuoteQueryParams,
-  QuoteQueryResponse,
-  SwapRequestBody,
-} from '@/shared/schemas';
-import { PostSwapResponse } from '@/shared/schemas';
+import type { QuoteQueryParams, QuoteQueryResponse } from '@/shared/schemas';
 import { dot$, btc$, eth$, usdc$, flip$ } from '../assets';
 import { bitcoin, ethereum, polkadot } from '../chains';
 import {
   ChainData,
   QuoteRequest,
   QuoteResponse,
-  DepositAddressRequest,
-  DepositAddressResponse,
   SwapStatusRequest,
   SwapStatusResponse,
   AssetData,
@@ -79,31 +72,6 @@ const getQuote: BackendQuery<QuoteRequest, QuoteResponse> = async (
   return { ...quoteRequest, quote: data };
 };
 
-const requestDepositAddress: BackendQuery<
-  DepositAddressRequest,
-  DepositAddressResponse
-> = async (baseUrl, depositAddressRequest, { signal }) => {
-  const body: SwapRequestBody = {
-    destAddress: depositAddressRequest.destAddress,
-    srcAsset: depositAddressRequest.srcAsset,
-    destAsset: depositAddressRequest.destAsset,
-    srcChain: depositAddressRequest.srcChain,
-    destChain: depositAddressRequest.destChain,
-    amount: depositAddressRequest.amount,
-    ccmMetadata: depositAddressRequest.ccmMetadata,
-  };
-
-  const url = new URL('/swaps', baseUrl).toString();
-
-  const { data } = await axios.post<PostSwapResponse>(url, body, { signal });
-
-  return {
-    ...depositAddressRequest,
-    depositChannelId: data.id,
-    depositAddress: data.depositAddress,
-  };
-};
-
 const getStatus: BackendQuery<SwapStatusRequest, SwapStatusResponse> = async (
   baseUrl,
   { id },
@@ -122,5 +90,4 @@ export default {
   getQuote,
   getAssets,
   getStatus,
-  requestDepositAddress,
 };
