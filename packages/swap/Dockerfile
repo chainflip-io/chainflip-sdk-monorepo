@@ -8,7 +8,6 @@ COPY . .
 ARG package_mirror_url
 ARG package_mirror_url_auth
 
-RUN npm install pm2 -g
 RUN npm install -g pnpm@8
 
 RUN pnpm set registry=$package_mirror_url
@@ -28,6 +27,7 @@ WORKDIR /app
 ARG package_mirror_url
 ARG package_mirror_url_auth
 
+RUN npm install pm2 -g
 RUN npm install -g pnpm@8
 
 COPY --from=builder /app/node_modules /app/node_modules
