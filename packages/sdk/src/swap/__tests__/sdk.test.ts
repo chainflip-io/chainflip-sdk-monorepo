@@ -9,6 +9,15 @@ jest.mock('@/shared/vault', () => ({
   executeSwap: jest.fn(),
 }));
 
+jest.mock('@trpc/client', () => ({
+  ...jest.requireActual('@trpc/client'),
+  createTRPCProxyClient: () => ({
+    openSwapDepositChannel: {
+      mutate: jest.fn(),
+    },
+  }),
+}));
+
 describe(SwapSDK, () => {
   const sdk = new SwapSDK({ network: ChainflipNetworks.perseverance });
 
@@ -195,6 +204,30 @@ describe(SwapSDK, () => {
         {},
       );
       expect(result).toEqual('hello world');
+    });
+  });
+
+  describe(SwapSDK.prototype.requestDepositAddress, () => {
+    it('calls openSwapDepositChannel', async () => {
+      const rpcSpy = jest
+        // @ts-expect-error - testing private method
+        .spyOn(sdk.trpc.openSwapDepositChannel, 'mutate')
+        .mockResolvedValueOnce({
+          id: 'channel id',
+          depositAddress: 'deposit address',
+          sourceChainExpiryBlock: 123n,
+        } as any);
+
+      const response = await sdk.requestDepositAddress({
+        property: true,
+      } as any);
+      expect(rpcSpy).toHaveBeenLastCalledWith({ property: true });
+      expect(response).toStrictEqual({
+        property: true,
+        depositChannelId: 'channel id',
+        depositAddress: 'deposit address',
+        sourceChainExpiryBlock: 123n,
+      });
     });
   });
 });

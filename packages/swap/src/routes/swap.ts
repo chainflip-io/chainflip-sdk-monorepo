@@ -1,15 +1,11 @@
 import assert from 'assert';
 import express from 'express';
-import { getMinimumDepositAmount } from '@/shared/consts';
-import { assetChains, Chain, ChainflipNetwork } from '@/shared/enums';
-import BrokerClient from '@/shared/node-apis/broker';
-import { PostSwapResponse, postSwapSchema } from '@/shared/schemas';
-import { validateAddress } from '@/shared/validation/addressValidation';
+import { assetChains, Chain } from '@/shared/enums';
+import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { asyncHandler } from './common';
 import prisma, { Egress, Swap, SwapDepositChannel, Broadcast } from '../client';
 import { getPendingDeposit } from '../deposit-tracking';
-import { isProduction } from '../utils/consts';
-import { handleExit } from '../utils/function';
+import openSwapDepositChannel from '../handlers/openSwapDepositChannel';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
 
@@ -176,70 +172,18 @@ router.get(
   }),
 );
 
-let client: BrokerClient | undefined;
-
+// TODO(major): remove this handler. it's replaced by tRPC
 router.post(
   '/',
   asyncHandler(async (req, res) => {
-    const result = postSwapSchema.safeParse(req.body);
+    const result = openSwapDepositChannelSchema.safeParse(req.body);
     if (!result.success) {
       logger.info('received bad request for new swap', { body: req.body });
       throw ServiceError.badRequest('invalid request body');
     }
 
-    const payload = result.data;
-
-    if (
-      !validateAddress(payload.destAsset, payload.destAddress, isProduction)
-    ) {
-      throw ServiceError.badRequest('provided address is not valid');
-    }
-
-    const minimumAmount = getMinimumDepositAmount(
-      process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
-      payload.srcAsset,
-    );
-    if (BigInt(payload.expectedDepositAmount) < BigInt(minimumAmount)) {
-      throw ServiceError.badRequest(
-        'expected amount is below minimum deposit amount',
-      );
-    }
-
-    if (!client) {
-      client = await BrokerClient.create({ logger });
-      handleExit(() => client?.close());
-    }
-
-    const { address: depositAddress, ...blockInfo } =
-      await client.requestSwapDepositAddress(payload);
-
-    const { destChain, ...rest } = payload;
-    const {
-      issuedBlock,
-      srcChain,
-      channelId,
-      depositAddress: channelDepositAddress,
-    } = await prisma.swapDepositChannel.upsert({
-      where: {
-        issuedBlock_srcChain_channelId: {
-          channelId: blockInfo.channelId,
-          issuedBlock: blockInfo.issuedBlock,
-          srcChain: payload.srcChain,
-        },
-      },
-      create: {
-        ...rest,
-        depositAddress,
-        ...blockInfo,
-      },
-      update: {},
-    });
-
-    const response: PostSwapResponse = {
-      id: `${issuedBlock}-${srcChain}-${channelId}`,
-      depositAddress: channelDepositAddress,
-      issuedBlock,
-    };
+    const { sourceChainExpiryBlock, ...response } =
+      await openSwapDepositChannel(result.data);
 
     res.json(response);
   }),

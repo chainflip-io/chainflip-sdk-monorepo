@@ -4,7 +4,6 @@ const path = require('path');
 module.exports = {
   extends: '../../.eslintrc.json',
   rules: {
-    'no-await-in-loop': 'off',
     'import/no-extraneous-dependencies': [
       'error',
       {
@@ -16,10 +15,9 @@ module.exports = {
       {
         patterns: [
           {
-            group: ['graphql-request'],
-            importNames: ['gql'],
+            group: ['@/shared/node-apis/*'],
             message:
-              'Import "gql" from "src/gql/generated" instead of "graphql-request"',
+              'This directory uses Node.js APIs that are not browser compatible.',
           },
         ],
       },
