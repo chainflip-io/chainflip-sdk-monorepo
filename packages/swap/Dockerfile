@@ -37,4 +37,4 @@ COPY --from=builder /app/packages/swap /app/packages/swap
 
 WORKDIR /app/packages/swap
 
-CMD ["pm2-runtime", "--enable-source-maps", "./dist/swap/src/index.js"]
+CMD ["pm2-runtime", "./dist/swap/src/index.js", "--enable-source-maps"]
