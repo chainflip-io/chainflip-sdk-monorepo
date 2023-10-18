@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`swapDepositAddressReady creates a swap deposit channel entry 1`] = `
+{
+  "channelId": 1n,
+  "createdAt": 2023-10-18T11:48:11.887Z,
+  "depositAddress": "0x00000000219ab540356cBB839Cbe05303d7705Fa",
+  "destAddress": "16ZL8yLyXv3V3L3z9ofR1ovFLziyXaN1DPq4yffMAZ9czzBD",
+  "destAsset": "DOT",
+  "expectedDepositAmount": "0",
+  "expiryBlock": null,
+  "id": Any<BigInt>,
+  "isExpired": false,
+  "issuedBlock": 120,
+  "srcAsset": "ETH",
+  "srcChain": "Ethereum",
+  "srcChainExpiryBlock": 256n,
+}
+`;
+
+exports[`swapDepositAddressReady does not update the already existing deposit channel 1`] = `
+{
+  "channelId": 1n,
+  "createdAt": 2023-07-28T14:54:12.834Z,
+  "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+  "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
+  "destAsset": "DOT",
+  "expectedDepositAmount": "10000000000",
+  "expiryBlock": null,
+  "id": Any<BigInt>,
+  "isExpired": false,
+  "issuedBlock": 10,
+  "srcAsset": "ETH",
+  "srcChain": "Ethereum",
+  "srcChainExpiryBlock": null,
+}
+`;
