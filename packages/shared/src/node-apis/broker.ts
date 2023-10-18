@@ -147,7 +147,7 @@ export async function requestSwapDepositAddress(
     const urlString = process.env.RPC_BROKER_WSS_URL;
     assert(urlString, 'no broker url provided');
     url = new URL(urlString);
-    url.protocol = 'https:';
+    url.protocol = url.protocol.replace(/^ws/, 'http');
   }
 
   const depositChannelResponse = await makeRpcRequest(
