@@ -27,4 +27,4 @@ export {
   chainAssets,
   chainContractIds,
 } from '@/shared/enums';
-export * as broker from '@/shared/node-apis/broker';
+export * as broker from '@/shared/broker';

@@ -1,9 +1,9 @@
 import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
-import assert from 'assert';
+import axios from 'axios';
 import { z } from 'zod';
-import { Asset, Assets, Chain } from '../enums';
-import { isNotNullish } from '../guards';
+import { Asset, Assets, Chain } from './enums';
+import { isNotNullish } from './guards';
 import {
   hexString,
   numericString,
@@ -12,13 +12,13 @@ import {
   chainflipAsset,
   hexStringFromNumber,
   unsignedInteger,
-} from '../parsers';
-import { CcmMetadata, ccmMetadataSchema } from '../schemas';
+} from './parsers';
+import { CcmMetadata, ccmMetadataSchema } from './schemas';
 import {
   CamelCaseToSnakeCase,
   camelToSnakeCase,
   transformAsset,
-} from '../strings';
+} from './strings';
 
 type NewSwapRequest = {
   srcAsset: Asset;
@@ -27,32 +27,6 @@ type NewSwapRequest = {
   destChain: Chain;
   destAddress: string;
   ccmMetadata?: CcmMetadata;
-};
-
-const fetchWithMaxSize = async (
-  url: string | URL,
-  { maxSize, ...init }: RequestInit & { maxSize: number },
-) => {
-  const res = await fetch(url, init);
-
-  if (!res.ok) {
-    throw new Error(`request failed with status ${res.status}`);
-  }
-
-  const chunks: Uint8Array[] = [];
-  let totalSize = 0;
-
-  for await (const chunk of res.body as unknown as AsyncIterable<Uint8Array>) {
-    totalSize += chunk.length;
-
-    if (totalSize > maxSize) {
-      throw new Error('response too large');
-    }
-
-    chunks.push(chunk);
-  }
-
-  return JSON.parse(Buffer.concat(chunks, totalSize).toString('utf8'));
 };
 
 type SnakeCaseKeys<T> = {
@@ -132,53 +106,32 @@ const makeRpcRequest = async <
   method: T,
   ...params: z.input<(typeof requestValidators)[T]>
 ): Promise<z.output<(typeof responseValidators)[T]>> => {
-  const body = await fetchWithMaxSize(url, {
-    signal: AbortSignal.timeout(15000),
-    maxSize: 1024, // 1kb
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      jsonrpc: '2.0',
-      id: 1,
-      method: `broker_${method}`,
-      params: requestValidators[method].parse(params),
-    }),
+  const res = await axios.post(url.toString(), {
+    jsonrpc: '2.0',
+    id: 1,
+    method: `broker_${method}`,
+    params: requestValidators[method].parse(params),
   });
 
-  if (body.error) {
-    throw new Error(`request failed with error ${body.error}`);
-  }
-
-  return responseValidators[method].parse(body.result);
+  return responseValidators[method].parse(res.data.result);
 };
 
 export async function requestSwapDepositAddress(
   swapRequest: NewSwapRequest,
-  opts?: { url: string; commissionBps: number },
+  opts: { url: string; commissionBps: number },
 ): Promise<DepositChannelResponse> {
   const { srcAsset, destAsset, destAddress } = swapRequest;
 
-  let url = process.env.RPC_BROKER_HTTPS_URL;
-  let commissionBps = 0;
-
-  if (opts) {
-    url = opts.url;
-    commissionBps = opts.commissionBps;
-  }
-
-  assert(url, 'no broker url provided');
-  const depositChannelResponse = await makeRpcRequest(
-    url,
+  return makeRpcRequest(
+    opts.url,
     'requestSwapDepositAddress',
     srcAsset,
     destAsset,
     submitAddress(destAsset, destAddress),
-    commissionBps,
+    opts.commissionBps,
     swapRequest.ccmMetadata && {
       ...swapRequest.ccmMetadata,
       cfParameters: undefined,
     },
   );
-
-  return depositChannelResponse;
 }

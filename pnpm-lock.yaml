@@ -143,6 +143,9 @@ importers:
       '@polkadot/util-crypto':
         specifier: ^12.5.1
         version: 12.5.1(@polkadot/util@12.5.1)
+      axios:
+        specifier: ^1.5.1
+        version: 1.5.1
       ethers:
         specifier: 6.8.0
         version: 6.8.0
