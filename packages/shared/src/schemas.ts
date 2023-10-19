@@ -31,7 +31,6 @@ export const openSwapDepositChannelSchema = z
     destAddress: z.string(),
     amount: numericString,
     ccmMetadata: ccmMetadataSchema.optional(),
-    broker: z.object({ url: z.string(), commissionBps: z.number() }).optional(),
   })
   .transform(({ amount, ...rest }) => ({
     ...rest,
