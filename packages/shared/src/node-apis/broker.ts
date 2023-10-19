@@ -29,6 +29,32 @@ type NewSwapRequest = {
   ccmMetadata?: CcmMetadata;
 };
 
+const fetchWithMaxSize = async (
+  url: string | URL,
+  { maxSize, ...init }: RequestInit & { maxSize: number },
+) => {
+  const res = await fetch(url, init);
+
+  if (!res.ok) {
+    throw new Error(`request failed with status ${res.status}`);
+  }
+
+  const chunks: Uint8Array[] = [];
+  let totalSize = 0;
+
+  for await (const chunk of res.body as unknown as AsyncIterable<Uint8Array>) {
+    totalSize += chunk.length;
+
+    if (totalSize > maxSize) {
+      throw new Error('response too large');
+    }
+
+    chunks.push(chunk);
+  }
+
+  return JSON.parse(Buffer.concat(chunks, totalSize).toString('utf8'));
+};
+
 type SnakeCaseKeys<T> = {
   [K in keyof T as K extends string ? CamelCaseToSnakeCase<K> : K]: T[K];
 };
@@ -106,7 +132,9 @@ const makeRpcRequest = async <
   method: T,
   ...params: z.input<(typeof requestValidators)[T]>
 ): Promise<z.output<(typeof responseValidators)[T]>> => {
-  const res = await fetch(url, {
+  const body = await fetchWithMaxSize(url, {
+    signal: AbortSignal.timeout(15000),
+    maxSize: 1024, // 1kb
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -116,12 +144,6 @@ const makeRpcRequest = async <
       params: requestValidators[method].parse(params),
     }),
   });
-
-  if (!res.ok) {
-    throw new Error(`request failed with status ${res.status}`);
-  }
-
-  const body = await res.json();
 
   if (body.error) {
     throw new Error(`request failed with error ${body.error}`);
