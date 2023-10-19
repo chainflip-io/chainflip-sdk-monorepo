@@ -113,7 +113,7 @@ const makeRpcRequest = async <
     params: requestValidators[method].parse(params),
   });
 
-  return responseValidators[method].parse(res.data);
+  return responseValidators[method].parse(res.data.result);
 };
 
 export async function requestSwapDepositAddress(
@@ -122,7 +122,7 @@ export async function requestSwapDepositAddress(
 ): Promise<DepositChannelResponse> {
   const { srcAsset, destAsset, destAddress } = swapRequest;
 
-  const depositChannelResponse = await makeRpcRequest(
+  return makeRpcRequest(
     opts.url,
     'requestSwapDepositAddress',
     srcAsset,
@@ -134,6 +134,4 @@ export async function requestSwapDepositAddress(
       cfParameters: undefined,
     },
   );
-
-  return depositChannelResponse;
 }
