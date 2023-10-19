@@ -78,9 +78,9 @@ export class SwapSDK {
     let response;
 
     if (this.brokerConfig !== undefined) {
-      const broker = await import('@/shared/broker');
+      const { requestSwapDepositAddress } = await import('@/shared/broker');
 
-      const result = await broker.requestSwapDepositAddress(
+      const result = await requestSwapDepositAddress(
         depositAddressRequest,
         this.brokerConfig,
       );

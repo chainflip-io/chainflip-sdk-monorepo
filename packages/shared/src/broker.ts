@@ -3,7 +3,7 @@ import { decodeAddress } from '@polkadot/util-crypto';
 import axios from 'axios';
 import { z } from 'zod';
 import { Asset, Assets, Chain } from './enums';
-import { assert, isNotNullish } from './guards';
+import { isNotNullish } from './guards';
 import {
   hexString,
   numericString,
@@ -118,26 +118,17 @@ const makeRpcRequest = async <
 
 export async function requestSwapDepositAddress(
   swapRequest: NewSwapRequest,
-  opts?: { url: string; commissionBps: number },
+  opts: { url: string; commissionBps: number },
 ): Promise<DepositChannelResponse> {
   const { srcAsset, destAsset, destAddress } = swapRequest;
 
-  let url = process.env.RPC_BROKER_HTTPS_URL;
-  let commissionBps = 0;
-
-  if (opts) {
-    url = opts.url;
-    commissionBps = opts.commissionBps;
-  }
-
-  assert(url, 'no broker url provided');
   const depositChannelResponse = await makeRpcRequest(
-    url,
+    opts.url,
     'requestSwapDepositAddress',
     srcAsset,
     destAsset,
     submitAddress(destAsset, destAddress),
-    commissionBps,
+    opts.commissionBps,
     swapRequest.ccmMetadata && {
       ...swapRequest.ccmMetadata,
       cfParameters: undefined,
