@@ -1,13 +1,20 @@
+/* eslint-disable func-names */
 import { Assets } from '../../enums';
 import * as broker from '../broker';
 
 describe(broker.requestSwapDepositAddress, () => {
-  const fetchSpy = jest.spyOn(globalThis, 'fetch');
+  const fetchSpy = jest
+    .spyOn(globalThis, 'fetch')
+    .mockRejectedValue(Error('unhandled mock'));
 
   const mockResponse = (response: any) =>
     fetchSpy.mockResolvedValueOnce({
       ok: true,
-      json: async () => response,
+      body: (async function* () {
+        for (const byte of new TextEncoder().encode(JSON.stringify(response))) {
+          yield Uint8Array.from([byte]);
+        }
+      })(),
     } as any);
 
   it('gets a response from the broker', async () => {
@@ -127,5 +134,32 @@ describe(broker.requestSwapDepositAddress, () => {
       channelId: 200n,
       sourceChainExpiryBlock: 1_000_000n,
     });
+  });
+
+  it('rejects oversize responses (1kb)', async () => {
+    fetchSpy.mockResolvedValueOnce({
+      ok: true,
+      body: (async function* () {
+        for (let i = 0; i < 1025; i += 1) {
+          yield Uint8Array.from([97]);
+        }
+      })(),
+    } as any);
+
+    await expect(
+      broker.requestSwapDepositAddress(
+        {
+          srcAsset: Assets.FLIP,
+          destAsset: Assets.USDC,
+          srcChain: 'Ethereum',
+          destAddress: '0xcafebabe',
+          destChain: 'Ethereum',
+        },
+        {
+          url: 'https://example.com',
+          commissionBps: 100,
+        },
+      ),
+    ).rejects.toThrowError('response too large');
   });
 });
