@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 import { Assets } from '../../enums';
 import * as broker from '../broker';
 
