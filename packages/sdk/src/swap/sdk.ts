@@ -75,10 +75,26 @@ export class SwapSDK {
   async requestDepositAddress(
     depositAddressRequest: DepositAddressRequest,
   ): Promise<DepositAddressResponse> {
-    const response = await this.trpc.openSwapDepositChannel.mutate({
-      ...depositAddressRequest,
-      broker: this.brokerConfig,
-    });
+    let response;
+
+    if (this.brokerConfig !== undefined) {
+      const broker = await import('@/shared/broker');
+
+      const result = await broker.requestSwapDepositAddress(
+        depositAddressRequest,
+        this.brokerConfig,
+      );
+
+      response = {
+        id: `${result.issuedBlock}-${depositAddressRequest.srcChain}-${result.channelId}`,
+        depositAddress: result.address,
+        sourceChainExpiryBlock: result.sourceChainExpiryBlock,
+      };
+    } else {
+      response = await this.trpc.openSwapDepositChannel.mutate(
+        depositAddressRequest,
+      );
+    }
 
     return {
       ...depositAddressRequest,

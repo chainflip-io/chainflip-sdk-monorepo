@@ -1,9 +1,9 @@
 import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
-import assert from 'assert';
+import axios from 'axios';
 import { z } from 'zod';
-import { Asset, Assets, Chain } from '../enums';
-import { isNotNullish } from '../guards';
+import { Asset, Assets, Chain } from './enums';
+import { assert, isNotNullish } from './guards';
 import {
   hexString,
   numericString,
@@ -12,13 +12,13 @@ import {
   chainflipAsset,
   hexStringFromNumber,
   unsignedInteger,
-} from '../parsers';
-import { CcmMetadata, ccmMetadataSchema } from '../schemas';
+} from './parsers';
+import { CcmMetadata, ccmMetadataSchema } from './schemas';
 import {
   CamelCaseToSnakeCase,
   camelToSnakeCase,
   transformAsset,
-} from '../strings';
+} from './strings';
 
 type NewSwapRequest = {
   srcAsset: Asset;
@@ -106,28 +106,14 @@ const makeRpcRequest = async <
   method: T,
   ...params: z.input<(typeof requestValidators)[T]>
 ): Promise<z.output<(typeof responseValidators)[T]>> => {
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      jsonrpc: '2.0',
-      id: 1,
-      method: `broker_${method}`,
-      params: requestValidators[method].parse(params),
-    }),
+  const res = await axios.post(url.toString(), {
+    jsonrpc: '2.0',
+    id: 1,
+    method: `broker_${method}`,
+    params: requestValidators[method].parse(params),
   });
 
-  if (!res.ok) {
-    throw new Error(`request failed with status ${res.status}`);
-  }
-
-  const body = await res.json();
-
-  if (body.error) {
-    throw new Error(`request failed with error ${body.error}`);
-  }
-
-  return responseValidators[method].parse(body.result);
+  return responseValidators[method].parse(res.data);
 };
 
 export async function requestSwapDepositAddress(

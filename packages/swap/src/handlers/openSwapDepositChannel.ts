@@ -1,17 +1,16 @@
 import { z } from 'zod';
+import * as broker from '@/shared/broker';
 import { getMinimumDepositAmount } from '@/shared/consts';
 import { ChainflipNetwork } from '@/shared/enums';
-import * as broker from '@/shared/node-apis/broker';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';
 import { isProduction } from '../utils/consts';
 import ServiceError from '../utils/ServiceError';
 
-export default async function openSwapDepositChannel({
-  broker: brokerConfig,
-  ...input
-}: z.output<typeof openSwapDepositChannelSchema>) {
+export default async function openSwapDepositChannel(
+  input: z.output<typeof openSwapDepositChannelSchema>,
+) {
   if (!validateAddress(input.destAsset, input.destAddress, isProduction)) {
     throw ServiceError.badRequest('provided address is not valid');
   }
@@ -30,7 +29,7 @@ export default async function openSwapDepositChannel({
     address: depositAddress,
     sourceChainExpiryBlock,
     ...blockInfo
-  } = await broker.requestSwapDepositAddress(input, brokerConfig);
+  } = await broker.requestSwapDepositAddress(input);
 
   const { destChain, ...rest } = input;
   const {
