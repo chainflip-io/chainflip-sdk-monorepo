@@ -55,6 +55,17 @@ const submitAddress = (asset: Asset, address: string): string => {
   return address;
 };
 
+const rpcResult = z.union([
+  z.object({
+    error: z.object({
+      code: z.number().optional(),
+      message: z.string().optional(),
+      data: z.unknown().optional(),
+    }),
+  }),
+  z.object({ result: z.unknown() }),
+]);
+
 const requestValidators = {
   requestSwapDepositAddress: z
     .tuple([
@@ -113,7 +124,15 @@ const makeRpcRequest = async <
     params: requestValidators[method].parse(params),
   });
 
-  return responseValidators[method].parse(res.data.result);
+  const result = rpcResult.parse(res.data);
+
+  if ('error' in result) {
+    throw new Error(
+      `Broker responded with error code ${result.error.code}: ${result.error.message}`,
+    );
+  }
+
+  return responseValidators[method].parse(result.result);
 };
 
 export async function requestSwapDepositAddress(

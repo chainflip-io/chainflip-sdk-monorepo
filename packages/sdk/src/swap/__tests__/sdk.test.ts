@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { VoidSigner } from 'ethers';
 import { Chain, ChainflipNetworks, Chains } from '@/shared/enums';
 import { executeSwap } from '@/shared/vault';
@@ -227,6 +228,56 @@ describe(SwapSDK, () => {
         depositChannelId: 'channel id',
         depositAddress: 'deposit address',
         sourceChainExpiryBlock: 123n,
+      });
+    });
+
+    it('goes right to the broker', async () => {
+      const postSpy = jest
+        .spyOn(axios, 'post')
+        .mockRejectedValue(Error('unhandled mock'))
+        .mockResolvedValueOnce({
+          data: {
+            result: {
+              address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+              issued_block: 123,
+              channel_id: 15,
+              source_chain_expiry_block: '1234',
+            },
+          },
+        });
+
+      const result = await new SwapSDK({
+        broker: { url: 'https://chainflap.org/broker', commissionBps: 5000 },
+      }).requestDepositAddress({
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'FLIP',
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        amount: BigInt(1e18).toString(),
+      });
+
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
+        id: 1,
+        jsonrpc: '2.0',
+        method: 'broker_requestSwapDepositAddress',
+        params: [
+          'Btc',
+          'Flip',
+          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          5000,
+        ],
+      });
+      expect(result).toStrictEqual({
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'FLIP',
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        amount: '1000000000000000000',
+        depositChannelId: '123-Bitcoin-15',
+        depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+        sourceChainExpiryBlock: 1234n,
       });
     });
   });

@@ -100,4 +100,30 @@ describe(broker.requestSwapDepositAddress, () => {
       sourceChainExpiryBlock: 1_000_000n,
     });
   });
+
+  it('formats RPC errors', async () => {
+    mockResponse({
+      id: 1,
+      jsonrpc: '2.0',
+      error: {
+        code: -1,
+        message: 'error message',
+        data: 'more information',
+      },
+    });
+    await expect(
+      broker.requestSwapDepositAddress(
+        {
+          srcAsset: Assets.FLIP,
+          destAsset: Assets.USDC,
+          srcChain: 'Ethereum',
+          destAddress: '0xcafebabe',
+          destChain: 'Ethereum',
+        },
+        brokerConfig,
+      ),
+    ).rejects.toThrowError(
+      'Broker responded with error code -1: error message',
+    );
+  });
 });
