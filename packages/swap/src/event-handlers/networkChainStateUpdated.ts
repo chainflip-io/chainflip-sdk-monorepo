@@ -17,6 +17,11 @@ const chainStateUpdated =
     ).newChainState;
 
     await Promise.all([
+      prisma.chainTracking.upsert({
+        where: { chain },
+        create: { chain, height: blockHeight },
+        update: { height: blockHeight },
+      }),
       prisma.swapDepositChannel.updateMany({
         where: {
           srcChain: chain,

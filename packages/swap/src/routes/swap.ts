@@ -6,6 +6,7 @@ import { asyncHandler } from './common';
 import prisma, { Egress, Swap, SwapDepositChannel, Broadcast } from '../client';
 import { getPendingDeposit } from '../deposit-tracking';
 import openSwapDepositChannel from '../handlers/openSwapDepositChannel';
+import { calculateTTL } from '../utils/function';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
 
@@ -132,6 +133,20 @@ router.get(
       );
     }
 
+    let depositChannelTTL;
+    if (swapDepositChannel && !swapDepositChannel.isExpired) {
+      const chainInfo = await prisma.chainTracking.findFirst({
+        where: {
+          chain: swapDepositChannel?.srcChain,
+        },
+      });
+      depositChannelTTL = calculateTTL({
+        chain: swapDepositChannel.srcChain,
+        startBlock: chainInfo?.height,
+        expiryBlock: swapDepositChannel.srcChainExpiryBlock,
+      });
+    }
+
     const response = {
       state,
       type: swap?.type,
@@ -164,6 +179,7 @@ router.get(
       broadcastSucceededAt: swap?.egress?.broadcast?.succeededAt?.valueOf(),
       broadcastSucceededBlockIndex:
         swap?.egress?.broadcast?.succeededBlockIndex,
+      depositChannelTTL,
     };
 
     logger.info('sending response for swap request', { id, response });
@@ -182,10 +198,23 @@ router.post(
       throw ServiceError.badRequest('invalid request body');
     }
 
-    const { sourceChainExpiryBlock, ...response } =
-      await openSwapDepositChannel(result.data);
+    const [{ sourceChainExpiryBlock, ...response }, chainInfo] =
+      await Promise.all([
+        openSwapDepositChannel(result.data),
+        prisma.chainTracking.findFirst({
+          where: {
+            chain: result.data.srcChain,
+          },
+        }),
+      ]);
 
-    res.json(response);
+    const depositChannelTTL = calculateTTL({
+      chain: result.data.srcChain,
+      startBlock: chainInfo?.height,
+      expiryBlock: sourceChainExpiryBlock,
+    });
+
+    res.json({ ...response, depositChannelTTL });
   }),
 );
 

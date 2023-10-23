@@ -1,3 +1,4 @@
+import { Chain } from '@/shared/enums';
 import logger from './logger';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -31,3 +32,33 @@ export const handleExit = (cb: AnyFunction) => {
     exitHandlers.delete(cb);
   };
 };
+
+export function unreachable(value: never, message: string): never {
+  throw new Error(message);
+}
+
+// It has always a return value or a rejection, however the linter does not recognize this properly
+// eslint-disable-next-line consistent-return
+export function calculateTTL(args: {
+  chain: Chain;
+  startBlock?: bigint;
+  expiryBlock?: bigint | null;
+}) {
+  const { chain, startBlock, expiryBlock } = args;
+
+  if (startBlock == null || expiryBlock == null) {
+    return -1;
+  }
+
+  const diff = Number(expiryBlock - startBlock);
+  switch (chain) {
+    case 'Bitcoin':
+      return diff * 6;
+    case 'Ethereum':
+      return diff * 6;
+    case 'Polkadot':
+      return diff * 6;
+    default:
+      unreachable(chain, 'Unsupported chain');
+  }
+}
