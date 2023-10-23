@@ -214,7 +214,10 @@ router.post(
       expiryBlock: sourceChainExpiryBlock,
     });
 
-    res.json({ ...response, depositChannelExpiryTime: depositChannelExpiryTime.valueOf() });
+    res.json({
+      ...response,
+      depositChannelExpiryTime: depositChannelExpiryTime.valueOf(),
+    });
   }),
 );
 

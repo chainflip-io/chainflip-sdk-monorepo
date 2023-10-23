@@ -196,10 +196,10 @@ model Pool {
 }
 
 model ChainTracking {
-  id        Int            @id @default(autoincrement())
-  chain     Chain @unique
-  height    BigInt         @default(0)
-  updatedAt DateTime       @updatedAt @db.Timestamptz(3)
+  id        Int      @id @default(autoincrement())
+  chain     Chain    @unique
+  height    BigInt   @default(0)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
   @@schema("public")
 }
