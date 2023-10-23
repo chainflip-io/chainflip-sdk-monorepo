@@ -38,9 +38,9 @@ export function unreachable(value: never, message: string): never {
 }
 
 const blockTimeMap: Record<Chain, number> = {
-  'Bitcoin': 60,
-  'Ethereum': 15,
-  'Polkadot': 6,
+  Bitcoin: 60,
+  Ethereum: 15,
+  Polkadot: 6,
 };
 
 export function calculateExpiryTime(args: {
@@ -58,6 +58,6 @@ export function calculateExpiryTime(args: {
   if (remainingBlocks < 0) {
     return null;
   }
-  
+
   return new Date(Date.now() + remainingBlocks * blockTimeMap[chain] * 1000);
 }
