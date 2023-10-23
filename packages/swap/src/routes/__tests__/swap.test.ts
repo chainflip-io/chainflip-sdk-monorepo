@@ -488,7 +488,6 @@ describe('server', () => {
       expect(rest).toMatchInlineSnapshot(`
         {
           "depositAmount": "10",
-          "depositChannelExpiryTime": 1640995200000,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
@@ -524,7 +523,6 @@ describe('server', () => {
       expect(rest).toMatchInlineSnapshot(`
         {
           "depositAmount": "10",
-          "depositChannelExpiryTime": 1640995200000,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",

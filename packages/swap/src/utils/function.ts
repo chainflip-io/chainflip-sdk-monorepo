@@ -37,6 +37,12 @@ export function unreachable(value: never, message: string): never {
   throw new Error(message);
 }
 
+const blockTimeMap: Record<Chain, number> = {
+  'Bitcoin': 60,
+  'Ethereum': 15,
+  'Polkadot': 6,
+};
+
 export function calculateExpiryTime(args: {
   chain: Chain;
   startBlock?: bigint;
@@ -45,22 +51,13 @@ export function calculateExpiryTime(args: {
   const { chain, startBlock, expiryBlock } = args;
 
   if (startBlock == null || expiryBlock == null) {
-    return new Date();
+    return null;
   }
 
-  let diff = Number(expiryBlock - startBlock);
-  switch (chain) {
-    case 'Bitcoin':
-      diff *= 60 * 10; // 10 minutes
-      break;
-    case 'Ethereum':
-      diff *= 15;
-      break;
-    case 'Polkadot':
-      diff *= 6;
-      break;
-    default:
-      unreachable(chain, 'Unsupported chain');
+  const remainingBlocks = Number(expiryBlock - startBlock);
+  if (remainingBlocks < 0) {
+    return null;
   }
-  return new Date(Date.now() + diff * 1000);
+  
+  return new Date(Date.now() + remainingBlocks * blockTimeMap[chain] * 1000);
 }

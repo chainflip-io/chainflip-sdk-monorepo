@@ -133,7 +133,7 @@ router.get(
       );
     }
 
-    let depositChannelExpiryTime = new Date();
+    let depositChannelExpiryTime;
     if (swapDepositChannel && !swapDepositChannel.isExpired) {
       const chainInfo = await prisma.chainTracking.findFirst({
         where: {
@@ -179,7 +179,7 @@ router.get(
       broadcastSucceededAt: swap?.egress?.broadcast?.succeededAt?.valueOf(),
       broadcastSucceededBlockIndex:
         swap?.egress?.broadcast?.succeededBlockIndex,
-      depositChannelExpiryTime: depositChannelExpiryTime.valueOf(),
+      depositChannelExpiryTime: depositChannelExpiryTime?.valueOf(),
     };
 
     logger.info('sending response for swap request', { id, response });
@@ -216,7 +216,7 @@ router.post(
 
     res.json({
       ...response,
-      depositChannelExpiryTime: depositChannelExpiryTime.valueOf(),
+      depositChannelExpiryTime: depositChannelExpiryTime?.valueOf(),
     });
   }),
 );
