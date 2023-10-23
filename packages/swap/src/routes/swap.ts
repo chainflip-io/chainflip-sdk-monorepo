@@ -133,7 +133,7 @@ router.get(
       );
     }
 
-    let depositChannelExpiryTime;
+    let depositChannelExpiryTime: Date | null = null;
     if (swapDepositChannel && !swapDepositChannel.isExpired) {
       const chainInfo = await prisma.chainTracking.findFirst({
         where: {
