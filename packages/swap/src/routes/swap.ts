@@ -6,7 +6,7 @@ import { asyncHandler } from './common';
 import prisma, { Egress, Swap, SwapDepositChannel, Broadcast } from '../client';
 import { getPendingDeposit } from '../deposit-tracking';
 import openSwapDepositChannel from '../handlers/openSwapDepositChannel';
-import { calculateTTL } from '../utils/function';
+import { calculateExpiryTime } from '../utils/function';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
 
@@ -133,14 +133,14 @@ router.get(
       );
     }
 
-    let depositChannelTTL;
+    let depositChannelExpiryTime = new Date();
     if (swapDepositChannel && !swapDepositChannel.isExpired) {
       const chainInfo = await prisma.chainTracking.findFirst({
         where: {
           chain: swapDepositChannel?.srcChain,
         },
       });
-      depositChannelTTL = calculateTTL({
+      depositChannelExpiryTime = calculateExpiryTime({
         chain: swapDepositChannel.srcChain,
         startBlock: chainInfo?.height,
         expiryBlock: swapDepositChannel.srcChainExpiryBlock,
@@ -179,7 +179,7 @@ router.get(
       broadcastSucceededAt: swap?.egress?.broadcast?.succeededAt?.valueOf(),
       broadcastSucceededBlockIndex:
         swap?.egress?.broadcast?.succeededBlockIndex,
-      depositChannelTTL,
+      depositChannelExpiryTime: depositChannelExpiryTime.valueOf(),
     };
 
     logger.info('sending response for swap request', { id, response });
@@ -208,13 +208,13 @@ router.post(
         }),
       ]);
 
-    const depositChannelTTL = calculateTTL({
+    const depositChannelExpiryTime = calculateExpiryTime({
       chain: result.data.srcChain,
       startBlock: chainInfo?.height,
       expiryBlock: sourceChainExpiryBlock,
     });
 
-    res.json({ ...response, depositChannelTTL });
+    res.json({ ...response, depositChannelExpiryTime: depositChannelExpiryTime.valueOf() });
   }),
 );
 

@@ -39,7 +39,7 @@ export function unreachable(value: never, message: string): never {
 
 // It has always a return value or a rejection, however the linter does not recognize this properly
 // eslint-disable-next-line consistent-return
-export function calculateTTL(args: {
+export function calculateExpiryTime(args: {
   chain: Chain;
   startBlock?: bigint;
   expiryBlock?: bigint | null;
@@ -47,18 +47,22 @@ export function calculateTTL(args: {
   const { chain, startBlock, expiryBlock } = args;
 
   if (startBlock == null || expiryBlock == null) {
-    return -1;
+    return new Date();
   }
 
-  const diff = Number(expiryBlock - startBlock);
+  let diff = Number(expiryBlock - startBlock);
   switch (chain) {
     case 'Bitcoin':
-      return diff * 6;
+      diff *= 60 * 10; // 10 minutes
+      break;
     case 'Ethereum':
-      return diff * 6;
+      diff *= 15;
+      break;
     case 'Polkadot':
-      return diff * 6;
+      diff *= 6;
+      break;
     default:
       unreachable(chain, 'Unsupported chain');
   }
+  return new Date(Date.now() + diff * 1000);
 }
