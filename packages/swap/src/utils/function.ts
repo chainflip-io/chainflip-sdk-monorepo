@@ -37,8 +37,6 @@ export function unreachable(value: never, message: string): never {
   throw new Error(message);
 }
 
-// It has always a return value or a rejection, however the linter does not recognize this properly
-// eslint-disable-next-line consistent-return
 export function calculateExpiryTime(args: {
   chain: Chain;
   startBlock?: bigint;
