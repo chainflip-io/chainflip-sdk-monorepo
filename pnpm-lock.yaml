@@ -254,8 +254,8 @@ importers:
         specifier: ^4.17.38
         version: 4.17.38
       '@types/graphql-fields':
-        specifier: ^1.3.6
-        version: 1.3.6
+        specifier: ^1.3.8
+        version: 1.3.8
       '@types/qs':
         specifier: ^6.9.8
         version: 6.9.8
@@ -2921,8 +2921,8 @@ packages:
       '@types/node': 20.8.6
     dev: true
 
-  /@types/graphql-fields@1.3.6:
-    resolution: {integrity: sha512-tLiskj9g5ftYgiVxq8VlvBEYDRow23IwY/LMnhljXfWvBhi+LIo9YEMa6AACjgIa3rG+edS9xh3v6Rja2UPbDg==}
+  /@types/graphql-fields@1.3.8:
+    resolution: {integrity: sha512-XA3QT8f1THR3t77YT4EpFV/qF3GatLFODwUHvSmF0EjDmjxZY09yWrp9Gw6ju3zpJHGZUwN/p/HID7CaKwGHtw==}
     dependencies:
       graphql: 16.8.1
     dev: true
