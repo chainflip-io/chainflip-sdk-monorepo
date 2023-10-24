@@ -33,10 +33,6 @@ export const handleExit = (cb: AnyFunction) => {
   };
 };
 
-export function unreachable(value: never, message: string): never {
-  throw new Error(message);
-}
-
 const blockTimeMap: Record<Chain, number> = {
   Bitcoin: 600,
   Ethereum: 15,
