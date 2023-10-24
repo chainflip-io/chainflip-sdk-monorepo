@@ -38,7 +38,7 @@ export function unreachable(value: never, message: string): never {
 }
 
 const blockTimeMap: Record<Chain, number> = {
-  Bitcoin: 60,
+  Bitcoin: 600,
   Ethereum: 15,
   Polkadot: 6,
 };
