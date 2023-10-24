@@ -1,3 +1,4 @@
+import { Chain } from '@/shared/enums';
 import logger from './logger';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -31,3 +32,28 @@ export const handleExit = (cb: AnyFunction) => {
     exitHandlers.delete(cb);
   };
 };
+
+const blockTimeMap: Record<Chain, number> = {
+  Bitcoin: 600,
+  Ethereum: 15,
+  Polkadot: 6,
+};
+
+export function calculateExpiryTime(args: {
+  chain: Chain;
+  startBlock?: bigint;
+  expiryBlock?: bigint | null;
+}) {
+  const { chain, startBlock, expiryBlock } = args;
+
+  if (startBlock == null || expiryBlock == null) {
+    return null;
+  }
+
+  const remainingBlocks = Number(expiryBlock - startBlock);
+  if (remainingBlocks < 0) {
+    return null;
+  }
+
+  return new Date(Date.now() + remainingBlocks * blockTimeMap[chain] * 1000);
+}

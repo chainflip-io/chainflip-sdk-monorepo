@@ -6,6 +6,7 @@ import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';
 import { isProduction } from '../utils/consts';
+import { calculateExpiryTime } from '../utils/function';
 import ServiceError from '../utils/ServiceError';
 
 export default async function openSwapDepositChannel(
@@ -35,25 +36,36 @@ export default async function openSwapDepositChannel(
   });
 
   const { destChain, ...rest } = input;
-  const {
-    issuedBlock,
-    srcChain,
-    channelId,
-    depositAddress: channelDepositAddress,
-  } = await prisma.swapDepositChannel.upsert({
-    where: {
-      issuedBlock_srcChain_channelId: {
-        channelId: blockInfo.channelId,
-        issuedBlock: blockInfo.issuedBlock,
-        srcChain: input.srcChain,
+  const [
+    { issuedBlock, srcChain, channelId, depositAddress: channelDepositAddress },
+    chainInfo,
+  ] = await Promise.all([
+    prisma.swapDepositChannel.upsert({
+      where: {
+        issuedBlock_srcChain_channelId: {
+          channelId: blockInfo.channelId,
+          issuedBlock: blockInfo.issuedBlock,
+          srcChain: input.srcChain,
+        },
       },
-    },
-    create: {
-      ...rest,
-      depositAddress,
-      ...blockInfo,
-    },
-    update: {},
+      create: {
+        ...rest,
+        depositAddress,
+        ...blockInfo,
+      },
+      update: {},
+    }),
+    prisma.chainTracking.findFirst({
+      where: {
+        chain: input.srcChain,
+      },
+    }),
+  ]);
+
+  const depositChannelExpiryTime = calculateExpiryTime({
+    chain: input.srcChain,
+    startBlock: chainInfo?.height,
+    expiryBlock: sourceChainExpiryBlock,
   });
 
   return {
@@ -61,5 +73,6 @@ export default async function openSwapDepositChannel(
     depositAddress: channelDepositAddress,
     issuedBlock,
     sourceChainExpiryBlock,
+    depositChannelExpiryTime: depositChannelExpiryTime?.valueOf(),
   };
 }

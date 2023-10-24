@@ -1,4 +1,4 @@
-import { Assets, Chains } from '@/shared/enums';
+import { Assets, Chain, Chains } from '@/shared/enums';
 import prisma, { SwapDepositChannel } from '../../client';
 import { events } from '../index';
 import { SwapAmountTooLowEvent } from '../swapAmountTooLow';
@@ -496,3 +496,16 @@ export const swapAmountTooLowVaultMock = buildSwapAmountTooLowEvent({
       '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
   },
 });
+
+export const createChainTrackingInfo = () => {
+  const chains: Chain[] = ['Bitcoin', 'Ethereum', 'Polkadot'];
+  return Promise.all(
+    chains.map((chain) =>
+      prisma.chainTracking.upsert({
+        where: { chain },
+        create: { chain, height: 10 },
+        update: { height: 10 },
+      }),
+    ),
+  );
+};

@@ -7,6 +7,7 @@ import prisma from '../../client';
 import {
   DOT_ADDRESS,
   ETH_ADDRESS,
+  createChainTrackingInfo,
   createDepositChannel,
 } from '../../event-handlers/__tests__/utils';
 import app from '../../server';
@@ -48,8 +49,16 @@ describe('server', () => {
   describe('GET /swaps/:id', () => {
     let nativeId: bigint;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       nativeId = randomId();
+      jest
+        .useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
+        .setSystemTime(new Date('2022-01-01'));
+      await createChainTrackingInfo();
+    });
+
+    afterEach(() => {
+      jest.clearAllTimers();
     });
 
     it('throws an error if no swap deposit channel is found', async () => {
@@ -60,7 +69,9 @@ describe('server', () => {
     });
 
     it(`retrieves a swap in ${State.AwaitingDeposit} status`, async () => {
-      const swapIntent = await createDepositChannel();
+      const swapIntent = await createDepositChannel({
+        srcChainExpiryBlock: 200,
+      });
       const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
 
       const { body, status } = await request(server).get(`/swaps/${channelId}`);
@@ -70,6 +81,7 @@ describe('server', () => {
         {
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositChannelCreatedAt": 1690556052834,
+          "depositChannelExpiryTime": 1640998050000,
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
@@ -83,6 +95,7 @@ describe('server', () => {
 
     it(`retrieves a swap in ${State.DepositReceived} status`, async () => {
       const swapIntent = await createDepositChannel({
+        srcChainExpiryBlock: 200,
         swaps: {
           create: {
             nativeId,
@@ -108,6 +121,7 @@ describe('server', () => {
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
+          "depositChannelExpiryTime": 1640998050000,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
@@ -125,6 +139,7 @@ describe('server', () => {
 
     it(`retrieves a swap in ${State.SwapExecuted} status`, async () => {
       const swapIntent = await createDepositChannel({
+        srcChainExpiryBlock: 200,
         swaps: {
           create: {
             nativeId,
@@ -153,6 +168,7 @@ describe('server', () => {
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
+          "depositChannelExpiryTime": 1640998050000,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
@@ -172,6 +188,7 @@ describe('server', () => {
 
     it(`retrieves a swap in ${State.EgressScheduled} status`, async () => {
       const swapIntent = await createDepositChannel({
+        srcChainExpiryBlock: 200,
         swaps: {
           create: {
             nativeId,
@@ -208,6 +225,7 @@ describe('server', () => {
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
+          "depositChannelExpiryTime": 1640998050000,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
@@ -229,6 +247,7 @@ describe('server', () => {
 
     it(`retrieves a swap in ${State.BroadcastRequested} status`, async () => {
       const swapIntent = await createDepositChannel({
+        srcChainExpiryBlock: 200,
         swaps: {
           create: {
             nativeId,
@@ -277,6 +296,7 @@ describe('server', () => {
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
+          "depositChannelExpiryTime": 1640998050000,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
@@ -298,6 +318,7 @@ describe('server', () => {
 
     it(`retrieves a swap in ${State.BroadcastAborted} status`, async () => {
       const swapIntent = await createDepositChannel({
+        srcChainExpiryBlock: 200,
         swaps: {
           create: {
             nativeId,
@@ -349,6 +370,7 @@ describe('server', () => {
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
+          "depositChannelExpiryTime": 1640998050000,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
@@ -370,6 +392,7 @@ describe('server', () => {
 
     it(`retrieves a swap in ${State.Complete} status`, async () => {
       const swapIntent = await createDepositChannel({
+        srcChainExpiryBlock: 200,
         swaps: {
           create: {
             nativeId,
@@ -421,6 +444,7 @@ describe('server', () => {
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
+          "depositChannelExpiryTime": 1640998050000,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
