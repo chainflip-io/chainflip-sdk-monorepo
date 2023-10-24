@@ -198,26 +198,10 @@ router.post(
       throw ServiceError.badRequest('invalid request body');
     }
 
-    const [{ sourceChainExpiryBlock, ...response }, chainInfo] =
-      await Promise.all([
-        openSwapDepositChannel(result.data),
-        prisma.chainTracking.findFirst({
-          where: {
-            chain: result.data.srcChain,
-          },
-        }),
-      ]);
+    const { sourceChainExpiryBlock, ...response } =
+      await openSwapDepositChannel(result.data);
 
-    const depositChannelExpiryTime = calculateExpiryTime({
-      chain: result.data.srcChain,
-      startBlock: chainInfo?.height,
-      expiryBlock: sourceChainExpiryBlock,
-    });
-
-    res.json({
-      ...response,
-      depositChannelExpiryTime: depositChannelExpiryTime?.valueOf(),
-    });
+    res.json(response);
   }),
 );
 
