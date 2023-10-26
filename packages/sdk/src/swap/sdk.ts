@@ -101,6 +101,7 @@ export class SwapSDK {
       depositChannelId: response.id,
       depositAddress: response.depositAddress,
       sourceChainExpiryBlock: response.sourceChainExpiryBlock as bigint,
+      depositChannelExpiryTime: response.depositChannelExpiryTime,
     };
   }
 
