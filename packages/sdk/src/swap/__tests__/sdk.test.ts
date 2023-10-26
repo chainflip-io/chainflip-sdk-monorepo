@@ -217,6 +217,7 @@ describe(SwapSDK, () => {
           id: 'channel id',
           depositAddress: 'deposit address',
           sourceChainExpiryBlock: 123n,
+          depositChannelExpiryTime: 1698334470000,
         } as any);
 
       const response = await sdk.requestDepositAddress({
@@ -228,6 +229,7 @@ describe(SwapSDK, () => {
         depositChannelId: 'channel id',
         depositAddress: 'deposit address',
         sourceChainExpiryBlock: 123n,
+        depositChannelExpiryTime: 1698334470000,
       });
     });
 
@@ -278,6 +280,7 @@ describe(SwapSDK, () => {
         depositChannelId: '123-Bitcoin-15',
         depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
         sourceChainExpiryBlock: 1234n,
+        depositChannelExpiryTime: undefined,
       });
     });
   });
