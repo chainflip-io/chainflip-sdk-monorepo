@@ -4,6 +4,7 @@ import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';
 import networkBroadcastAborted from './networkBroadcastAborted';
 import networkBroadcastSuccess from './networkBroadcastSuccess';
 import networkCcmBroadcastRequested from './networkCcmBroadcastRequested';
+import chainStateUpdated from './networkChainStateUpdated';
 import networkEgressScheduled from './networkEgressScheduled';
 import newPoolCreated from './newPoolCreated';
 import swapAmountTooLow from './swapAmountTooLow';
@@ -51,6 +52,15 @@ export const events = {
   PolkadotBroadcaster: {
     BroadcastSuccess: 'PolkadotBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'PolkadotBroadcaster.BroadcastAborted',
+  },
+  BitcoinChainTracking: {
+    ChainStateUpdated: 'BitcoinChainTracking.ChainStateUpdated',
+  },
+  EthereumChainTracking: {
+    ChainStateUpdated: 'EthereumChainTracking.ChainStateUpdated',
+  },
+  PolkadotChainTracking: {
+    ChainStateUpdated: 'PolkadotChainTracking.ChainStateUpdated',
   },
 } as const;
 
@@ -100,6 +110,10 @@ const handlers = [
         {
           name: events[`${chain}Broadcaster`].BroadcastAborted,
           handler: networkBroadcastAborted(chain),
+        },
+        {
+          name: events[`${chain}ChainTracking`].ChainStateUpdated,
+          handler: chainStateUpdated(chain),
         },
       ]),
     ],
