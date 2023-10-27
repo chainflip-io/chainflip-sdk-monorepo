@@ -1,6 +1,6 @@
 import { z } from 'zod';
+import { u128 } from '@/shared/parsers';
 import { Chain } from '../enums';
-import { u128 } from '../parsers';
 import { EventHandlerArgs } from '.';
 
 const chainStateUpdatedArgs = z.object({
