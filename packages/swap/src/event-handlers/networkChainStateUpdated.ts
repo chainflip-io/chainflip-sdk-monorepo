@@ -3,9 +3,14 @@ import { u128 } from '@/shared/parsers';
 import { Chain } from '../enums';
 import { EventHandlerArgs } from '.';
 
+const numberOrHex = z.union([
+  u128,
+  z.number().transform((n) => BigInt(n)),
+]);
+
 const chainStateUpdatedArgs = z.object({
   newChainState: z.object({
-    blockHeight: u128,
+    blockHeight: numberOrHex,
   }),
 });
 
