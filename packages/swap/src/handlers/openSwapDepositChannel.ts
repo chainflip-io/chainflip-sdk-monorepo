@@ -51,6 +51,7 @@ export default async function openSwapDepositChannel(
       create: {
         ...rest,
         depositAddress,
+        srcChainExpiryBlock: sourceChainExpiryBlock,
         ...blockInfo,
       },
       update: {},
