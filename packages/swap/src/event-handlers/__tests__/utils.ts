@@ -200,11 +200,11 @@ export const swapDepositAddressReadyMocked = {
       args: {
         depositAddress: {
           __kind: 'Eth',
-          value: '0x00000000219ab540356cBB839Cbe05303d7705Fa',
+          value: ETH_ADDRESS,
         },
         destinationAddress: {
           __kind: 'Dot',
-          value: '16ZL8yLyXv3V3L3z9ofR1ovFLziyXaN1DPq4yffMAZ9czzBD',
+          value: DOT_ADDRESS,
         },
         sourceAsset: {
           __kind: 'Eth',

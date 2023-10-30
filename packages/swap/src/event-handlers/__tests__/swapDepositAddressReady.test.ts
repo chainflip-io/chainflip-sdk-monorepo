@@ -34,11 +34,12 @@ describe(swapDepositAddressReady, () => {
     });
   });
 
-  it('does not update the already existing deposit channel', async () => {
+  it('does not overwrite expectedDepositAmount with zero', async () => {
     await createDepositChannel({
       channelId: BigInt(event.args.channelId),
       srcChain: Chains.Ethereum,
       issuedBlock: 10,
+      expectedDepositAmount: 650,
     });
 
     await prisma.$transaction(async (txClient) => {
@@ -47,7 +48,7 @@ describe(swapDepositAddressReady, () => {
         event,
         block: {
           ...block,
-          height: 1000,
+          height: 10,
         },
       });
     });
