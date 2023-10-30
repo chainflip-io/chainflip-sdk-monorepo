@@ -7,6 +7,7 @@ import networkCcmBroadcastRequested from './networkCcmBroadcastRequested';
 import chainStateUpdated from './networkChainStateUpdated';
 import networkEgressScheduled from './networkEgressScheduled';
 import newPoolCreated from './newPoolCreated';
+import poolFeeSet from './poolFeeSet';
 import swapAmountTooLow from './swapAmountTooLow';
 import swapDepositAddressReady from './swapDepositAddressReady';
 import swapEgressScheduled from './swapEgressScheduled';
@@ -18,6 +19,7 @@ import { buildHandlerMap, getDispatcher } from '../utils/handlers';
 export const events = {
   LiquidityPools: {
     NewPoolCreated: 'LiquidityPools.NewPoolCreated',
+    PoolFeeSet: 'LiquidityPools.PoolFeeSet',
   },
   Swapping: {
     SwapScheduled: 'Swapping.SwapScheduled',
@@ -79,6 +81,7 @@ const handlers = [
     spec: 0,
     handlers: [
       { name: events.LiquidityPools.NewPoolCreated, handler: newPoolCreated },
+      { name: events.LiquidityPools.PoolFeeSet, handler: poolFeeSet },
       { name: events.Swapping.SwapScheduled, handler: swapScheduled },
       { name: events.Swapping.SwapExecuted, handler: swapExecuted },
       { name: events.Swapping.SwapAmountTooLow, handler: swapAmountTooLow },
