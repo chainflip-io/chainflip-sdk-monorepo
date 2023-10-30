@@ -251,8 +251,8 @@ importers:
         specifier: ^4.17.18
         version: 4.17.18
       '@types/express-serve-static-core':
-        specifier: ^4.17.38
-        version: 4.17.38
+        specifier: ^4.17.39
+        version: 4.17.39
       '@types/graphql-fields':
         specifier: ^1.3.8
         version: 1.3.8
@@ -2897,8 +2897,8 @@ packages:
     dependencies:
       '@types/node': 20.8.6
 
-  /@types/express-serve-static-core@4.17.38:
-    resolution: {integrity: sha512-hXOtc0tuDHZPFwwhuBJXPbjemWtXnJjbvuuyNH2Y5Z6in+iXc63c4eXYDc7GGGqHy+iwYqAJMdaItqdnbcBKmg==}
+  /@types/express-serve-static-core@4.17.39:
+    resolution: {integrity: sha512-BiEUfAiGCOllomsRAZOiMFP7LAnrifHpt56pc4Z7l9K6ACyN06Ns1JLMBxwkfLOjJRlSf06NwWsT7yzfpaVpyQ==}
     dependencies:
       '@types/node': 20.8.6
       '@types/qs': 6.9.8
@@ -2910,7 +2910,7 @@ packages:
     resolution: {integrity: sha512-Sxv8BSLLgsBYmcnGdGjjEjqET2U+AKAdCRODmMiq02FgjwuV75Ut85DRpvFjyw/Mk0vgUOliGRU0UUmuuZHByQ==}
     dependencies:
       '@types/body-parser': 1.19.3
-      '@types/express-serve-static-core': 4.17.38
+      '@types/express-serve-static-core': 4.17.39
       '@types/qs': 6.9.8
       '@types/serve-static': 1.15.3
     dev: true
