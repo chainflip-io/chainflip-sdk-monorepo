@@ -188,7 +188,7 @@ importers:
         version: 12.5.1(@polkadot/util@12.5.1)
       '@prisma/client':
         specifier: ^5.4.2
-        version: 5.4.2(prisma@5.4.2)
+        version: 5.4.2(prisma@5.5.2)
       axios:
         specifier: ^1.5.1
         version: 1.5.1
@@ -269,8 +269,8 @@ importers:
         specifier: ^16.8.1
         version: 16.8.1
       prisma:
-        specifier: ^5.4.2
-        version: 5.4.2
+        specifier: ^5.5.2
+        version: 5.5.2
       socket.io-client:
         specifier: ^4.7.2
         version: 4.7.2
@@ -2614,7 +2614,7 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /@prisma/client@5.4.2(prisma@5.4.2):
+  /@prisma/client@5.4.2(prisma@5.5.2):
     resolution: {integrity: sha512-2xsPaz4EaMKj1WS9iW6MlPhmbqtBsXAOeVttSePp8vTFTtvzh2hZbDgswwBdSCgPzmmwF+tLB259QzggvCmJqA==}
     engines: {node: '>=16.13'}
     requiresBuild: true
@@ -2625,15 +2625,15 @@ packages:
         optional: true
     dependencies:
       '@prisma/engines-version': 5.4.1-2.ac9d7041ed77bcc8a8dbd2ab6616b39013829574
-      prisma: 5.4.2
+      prisma: 5.5.2
     dev: false
 
   /@prisma/engines-version@5.4.1-2.ac9d7041ed77bcc8a8dbd2ab6616b39013829574:
     resolution: {integrity: sha512-wvupDL4AA1vf4TQNANg7kR7y98ITqPsk6aacfBxZKtrJKRIsWjURHkZCGcQliHdqCiW/hGreO6d6ZuSv9MhdAA==}
     dev: false
 
-  /@prisma/engines@5.4.2:
-    resolution: {integrity: sha512-fqeucJ3LH0e1eyFdT0zRx+oETLancu5+n4lhiYECyEz6H2RDskPJHJYHkVc0LhkU4Uv7fuEnppKU3nVKNzMh8g==}
+  /@prisma/engines@5.5.2:
+    resolution: {integrity: sha512-Be5hoNF8k+lkB3uEMiCHbhbfF6aj1GnrTBnn5iYFT7GEr3TsOEp1soviEcBR0tYCgHbxjcIxJMhdbvxALJhAqg==}
     requiresBuild: true
 
   /@repeaterjs/repeater@3.0.4:
@@ -7611,13 +7611,13 @@ packages:
       react-is: 18.2.0
     dev: true
 
-  /prisma@5.4.2:
-    resolution: {integrity: sha512-GDMZwZy7mysB2oXU+angQqJ90iaPFdD0rHaZNkn+dio5NRkGLmMqmXs31//tg/qXT3iB0cTQwnGGQNuirhSTZg==}
+  /prisma@5.5.2:
+    resolution: {integrity: sha512-WQtG6fevOL053yoPl6dbHV+IWgKo25IRN4/pwAGqcWmg7CrtoCzvbDbN9fXUc7QS2KK0LimHIqLsaCOX/vHl8w==}
     engines: {node: '>=16.13'}
     hasBin: true
     requiresBuild: true
     dependencies:
-      '@prisma/engines': 5.4.2
+      '@prisma/engines': 5.5.2
 
   /proc-log@3.0.0:
     resolution: {integrity: sha512-++Vn7NS4Xf9NacaU9Xq3URUuqZETPsf8L4j5/ckhaRYsfPeRyzGw+iDjFhV/Jr3uNmTvvddEJFWh5R1gRgUH8A==}

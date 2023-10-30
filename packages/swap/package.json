@@ -41,7 +41,7 @@
     "@types/supertest": "^2.0.15",
     "@types/ws": "^8.5.8",
     "graphql": "^16.8.1",
-    "prisma": "^5.4.2",
+    "prisma": "^5.5.2",
     "socket.io-client": "^4.7.2",
     "supertest": "^6.3.3"
   },
