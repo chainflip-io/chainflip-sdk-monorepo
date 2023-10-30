@@ -39,7 +39,6 @@ export const swapDepositAddressReady = async ({
     srcChain: depositAddress.chain,
     srcAsset: sourceAsset,
     depositAddress: depositAddress.address,
-    expectedDepositAmount: 0,
     destAsset: destinationAsset,
     destAddress: destinationAddress.address,
     srcChainExpiryBlock: sourceChainExpiryBlock,
@@ -56,7 +55,10 @@ export const swapDepositAddressReady = async ({
         srcChain: depositAddress.chain,
       },
     },
-    create: data,
+    create: {
+      expectedDepositAmount: 0,
+      ...data,
+    },
     update: data,
   });
 };
