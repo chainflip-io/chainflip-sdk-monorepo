@@ -1,6 +1,7 @@
 import { newPoolCreatedMock, poolFeeSetMock } from './utils';
 import prisma from '../../client';
 import newPoolCreated from '../newPoolCreated';
+import poolFeeSet from '../poolFeeSet';
 
 describe(newPoolCreated, () => {
   beforeEach(async () => {
@@ -18,12 +19,12 @@ describe(newPoolCreated, () => {
         prisma: tx,
       }),
     );
-
     const pool = await prisma.pool.findFirstOrThrow();
-    expect(pool).toMatchSnapshot({
+
+    expect(pool).toMatchObject({
       id: expect.any(Number),
-      baseAsset: newPoolEvent.args.baseAsset,
-      pairAsset: newPoolEvent.args.pairAsset,
+      baseAsset: newPoolEvent.args.baseAsset.__kind.toUpperCase(),
+      pairAsset: newPoolEvent.args.pairAsset.__kind.toUpperCase(),
       liquidityFeeHundredthPips: newPoolEvent.args.feeHundredthPips,
     });
 
@@ -31,7 +32,7 @@ describe(newPoolCreated, () => {
     const { event: poolFeeSetEvent } = poolFeeSetMock.eventContext;
 
     await prisma.$transaction((tx) =>
-      newPoolCreated({
+      poolFeeSet({
         block: poolFeeSetBlock as any,
         event: poolFeeSetEvent as any,
         prisma: tx,
@@ -42,8 +43,8 @@ describe(newPoolCreated, () => {
 
     expect(pool2).toMatchSnapshot({
       id: expect.any(Number),
-      baseAsset: newPoolEvent.args.baseAsset,
-      pairAsset: newPoolEvent.args.pairAsset,
+      baseAsset: newPoolEvent.args.baseAsset.__kind.toUpperCase(),
+      pairAsset: newPoolEvent.args.pairAsset.__kind.toUpperCase(),
       liquidityFeeHundredthPips: poolFeeSetEvent.args.feeHundredthPips,
     });
   });
