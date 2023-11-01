@@ -15,7 +15,7 @@
   "author": "",
   "license": "ISC",
   "peerDependencies": {
-    "axios": "^1.5.1",
+    "axios": "*",
     "zod": "^3.22.2"
   },
   "dependencies": {
