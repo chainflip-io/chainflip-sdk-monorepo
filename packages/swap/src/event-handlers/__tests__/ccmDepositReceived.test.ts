@@ -1,7 +1,7 @@
-import { Assets } from "@/shared/enums";
-import prisma from "@/swap/client";
-import { DOT_ADDRESS, createDepositChannel } from "./utils";
-import ccmDepositReceived from "../ccmDepositReceived";
+import { Assets } from '@/shared/enums';
+import prisma from '@/swap/client';
+import { DOT_ADDRESS, createDepositChannel } from './utils';
+import ccmDepositReceived from '../ccmDepositReceived';
 
 describe(ccmDepositReceived, () => {
   beforeEach(async () => {
@@ -28,7 +28,7 @@ describe(ccmDepositReceived, () => {
         },
       },
     });
-    
+
     await prisma.$transaction(async (client) => {
       await ccmDepositReceived({
         prisma: client,
@@ -46,7 +46,7 @@ describe(ccmDepositReceived, () => {
               channelMetadata: {
                 gasBudget: '65000',
                 message: 'some-random-text',
-              }
+              },
             },
           },
           name: 'ccmDepositReceived',
