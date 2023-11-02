@@ -264,8 +264,8 @@ describe(SwapSDK, () => {
         jsonrpc: '2.0',
         method: 'broker_requestSwapDepositAddress',
         params: [
-          'Btc',
-          'Flip',
+          { asset: 'BTC', chain: 'Bitcoin' },
+          { asset: 'FLIP', chain: 'Ethereum' },
           '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
           5000,
         ],
