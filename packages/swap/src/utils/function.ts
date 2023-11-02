@@ -50,10 +50,7 @@ export function calculateExpiryTime(args: {
     return null;
   }
 
-  const remainingBlocks = Number(expiryBlock - startBlock);
-  if (remainingBlocks < 0) {
-    return null;
-  }
+  const remainingBlocks = Number(expiryBlock - startBlock); // If it is negative, it means the channel has already expired and will return the time from the past
 
   return new Date(Date.now() + remainingBlocks * blockTimeMap[chain] * 1000);
 }
