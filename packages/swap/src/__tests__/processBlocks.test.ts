@@ -64,6 +64,8 @@ describe(processBlocks, () => {
       },
       `
       {
+        "ccmGasBudget": null,
+        "ccmMessage": null,
         "createdAt": Any<Date>,
         "depositAmount": "125000000000",
         "depositReceivedAt": 2023-04-20T11:19:03.437Z,

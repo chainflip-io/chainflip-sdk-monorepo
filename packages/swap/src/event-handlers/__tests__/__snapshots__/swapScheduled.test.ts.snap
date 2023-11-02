@@ -2,6 +2,8 @@
 
 exports[`swapScheduled deposit channel origin stores a new swap from a btc deposit channel 1`] = `
 {
+  "ccmGasBudget": null,
+  "ccmMessage": null,
   "createdAt": Any<Date>,
   "depositAmount": "75000000",
   "depositReceivedAt": 2022-12-06T14:31:33.000Z,
@@ -25,6 +27,8 @@ exports[`swapScheduled deposit channel origin stores a new swap from a btc depos
 
 exports[`swapScheduled deposit channel origin stores a new swap from a dot deposit channel 1`] = `
 {
+  "ccmGasBudget": null,
+  "ccmMessage": null,
   "createdAt": Any<Date>,
   "depositAmount": "125000000000",
   "depositReceivedAt": 2022-12-06T14:31:33.000Z,
@@ -48,6 +52,8 @@ exports[`swapScheduled deposit channel origin stores a new swap from a dot depos
 
 exports[`swapScheduled smart contract origin stores a new swap from a contract deposit 1`] = `
 {
+  "ccmGasBudget": null,
+  "ccmMessage": null,
   "createdAt": Any<Date>,
   "depositAmount": "175000000000000000",
   "depositReceivedAt": 2022-12-06T14:31:33.000Z,

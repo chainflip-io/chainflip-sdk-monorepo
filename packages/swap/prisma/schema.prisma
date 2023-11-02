@@ -82,6 +82,8 @@ model Swap {
   swapExecutedBlockIndex    String?
   swapDepositChannel        SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
   swapDepositChannelId      BigInt?
+  ccmGasBudget              Decimal?            @db.Decimal(30, 0)
+  ccmMessage                String?
   txHash                    String?
   egress                    Egress?             @relation(fields: [egressId], references: [id])
   egressId                  BigInt?
