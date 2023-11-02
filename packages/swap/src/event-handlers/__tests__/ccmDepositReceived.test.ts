@@ -61,5 +61,6 @@ describe(ccmDepositReceived, () => {
 
     expect(swap.ccmGasBudget?.toString()).toEqual('65000');
     expect(swap.ccmMessage).toEqual('some-random-text');
+    expect(swap.ccmDepositReceivedBlockIndex).toEqual('1000-6');
   });
 });

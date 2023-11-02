@@ -171,6 +171,29 @@ const ccmEvents = [
     },
   },
   {
+    id: '0000000002-000014-a6740',
+    blockId: '0000000002-a6740',
+    indexInBlock: 18,
+    extrinsicId: '0000000002-000006-a6740',
+    callId: '0000000002-000006-a6740',
+    name: 'Swapping.CcmDepositReceived',
+    args: {
+      ccmId: '123',
+      principalSwapId: '2',
+      depositAmount: '1000000',
+      destinationAddress: {
+        value: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0',
+        __kind: 'Eth',
+      },
+      depositMetadata: {
+        channelMetadata: {
+          message: 'some-message',
+          gasBudget: '2000',
+        },
+      },
+    },
+  },
+  {
     id: '0000000002-000081-a6740',
     blockId: '0000000002-a6740',
     indexInBlock: 81,

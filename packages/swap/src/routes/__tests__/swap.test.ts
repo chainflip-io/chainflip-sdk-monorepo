@@ -534,6 +534,9 @@ describe('server', () => {
           depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
           depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
           type: 'SWAP',
+          ccmDepositReceivedBlockIndex: '223-16',
+          ccmGasBudget: '100',
+          ccmMessage: 'some-message',
         },
       });
 
@@ -543,8 +546,11 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
-          "ccmDepositReceivedBlockIndex": null,
-          "ccmMetadata": null,
+          "ccmDepositReceivedBlockIndex": "223-16",
+          "ccmMetadata": {
+            "gasBudget": "100",
+            "message": "some-message",
+          },
           "depositAmount": "10",
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",

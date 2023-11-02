@@ -26,6 +26,7 @@ export type CcmDepositReceivedArgs = z.input<typeof ccmDepositReceivedArgs>;
 export default async function ccmDepositReceived({
   prisma,
   event,
+  block,
 }: EventHandlerArgs) {
   const { principalSwapId, depositMetadata } = ccmDepositReceivedArgs.parse(
     event.args,
@@ -37,6 +38,7 @@ export default async function ccmDepositReceived({
         nativeId: principalSwapId,
       },
       data: {
+        ccmDepositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
         ccmGasBudget: depositMetadata.channelMetadata.gasBudget.toString(),
         ccmMessage: depositMetadata.channelMetadata.message,
       },
