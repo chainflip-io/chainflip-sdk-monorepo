@@ -133,14 +133,14 @@ router.get(
       );
     }
 
-    let depositChannelExpiryTime: Date | null = null;
+    let estimatedDepositChannelExpiryTime: Date | null = null;
     if (swapDepositChannel && !swapDepositChannel.isExpired) {
       const chainInfo = await prisma.chainTracking.findFirst({
         where: {
           chain: swapDepositChannel?.srcChain,
         },
       });
-      depositChannelExpiryTime = calculateExpiryTime({
+      estimatedDepositChannelExpiryTime = calculateExpiryTime({
         chain: swapDepositChannel.srcChain,
         startBlock: chainInfo?.height,
         expiryBlock: swapDepositChannel.srcChainExpiryBlock,
@@ -179,7 +179,10 @@ router.get(
       broadcastSucceededAt: swap?.egress?.broadcast?.succeededAt?.valueOf(),
       broadcastSucceededBlockIndex:
         swap?.egress?.broadcast?.succeededBlockIndex,
-      depositChannelExpiryTime: depositChannelExpiryTime?.valueOf(),
+      depositChannelExpiryBlock:
+        swapDepositChannel?.srcChainExpiryBlock?.toString(),
+      estimatedDepositChannelExpiryTime:
+        estimatedDepositChannelExpiryTime?.valueOf(),
     };
 
     logger.info('sending response for swap request', { id, response });
@@ -198,8 +201,9 @@ router.post(
       throw ServiceError.badRequest('invalid request body');
     }
 
-    const { sourceChainExpiryBlock, ...response } =
-      await openSwapDepositChannel(result.data);
+    const { srcChainExpiryBlock, ...response } = await openSwapDepositChannel(
+      result.data,
+    );
 
     res.json(response);
   }),

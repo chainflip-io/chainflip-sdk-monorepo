@@ -216,8 +216,8 @@ describe(SwapSDK, () => {
         .mockResolvedValueOnce({
           id: 'channel id',
           depositAddress: 'deposit address',
-          sourceChainExpiryBlock: 123n,
-          depositChannelExpiryTime: 1698334470000,
+          srcChainExpiryBlock: 123n,
+          estimatedExpiryTime: 1698334470000,
         } as any);
 
       const response = await sdk.requestDepositAddress({
@@ -228,8 +228,8 @@ describe(SwapSDK, () => {
         property: true,
         depositChannelId: 'channel id',
         depositAddress: 'deposit address',
-        sourceChainExpiryBlock: 123n,
-        depositChannelExpiryTime: 1698334470000,
+        depositChannelExpiryBlock: 123n,
+        estimatedDepositChannelExpiryTime: 1698334470000,
       });
     });
 
@@ -279,8 +279,8 @@ describe(SwapSDK, () => {
         amount: '1000000000000000000',
         depositChannelId: '123-Bitcoin-15',
         depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
-        sourceChainExpiryBlock: 1234n,
-        depositChannelExpiryTime: undefined,
+        depositChannelExpiryBlock: 1234n,
+        estimatedDepositChannelExpiryTime: undefined,
       });
     });
   });

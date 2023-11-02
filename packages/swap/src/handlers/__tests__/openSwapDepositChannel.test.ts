@@ -42,10 +42,10 @@ describe('openSwapDepositChannel', () => {
 
     expect(result).toEqual({
       depositAddress: 'address',
-      depositChannelExpiryTime: 1641008325000,
+      estimatedExpiryTime: 1641008325000,
       id: '123-Ethereum-888',
       issuedBlock: 123,
-      sourceChainExpiryBlock: 1000n,
+      srcChainExpiryBlock: 1000n,
     });
     expect(prisma.swapDepositChannel.upsert).toHaveBeenCalledWith({
       where: {

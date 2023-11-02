@@ -28,7 +28,7 @@ export default async function openSwapDepositChannel(
 
   const {
     address: depositAddress,
-    sourceChainExpiryBlock,
+    sourceChainExpiryBlock: srcChainExpiryBlock,
     ...blockInfo
   } = await broker.requestSwapDepositAddress(input, {
     url: process.env.RPC_BROKER_HTTPS_URL as string,
@@ -51,7 +51,7 @@ export default async function openSwapDepositChannel(
       create: {
         ...rest,
         depositAddress,
-        srcChainExpiryBlock: sourceChainExpiryBlock,
+        srcChainExpiryBlock,
         ...blockInfo,
       },
       update: {},
@@ -63,17 +63,17 @@ export default async function openSwapDepositChannel(
     }),
   ]);
 
-  const depositChannelExpiryTime = calculateExpiryTime({
+  const estimatedExpiryTime = calculateExpiryTime({
     chain: input.srcChain,
     startBlock: chainInfo?.height,
-    expiryBlock: sourceChainExpiryBlock,
+    expiryBlock: srcChainExpiryBlock,
   });
 
   return {
     id: `${issuedBlock}-${srcChain}-${channelId}`,
     depositAddress: channelDepositAddress,
     issuedBlock,
-    sourceChainExpiryBlock,
-    depositChannelExpiryTime: depositChannelExpiryTime?.valueOf(),
+    srcChainExpiryBlock,
+    estimatedExpiryTime: estimatedExpiryTime?.valueOf(),
   };
 }

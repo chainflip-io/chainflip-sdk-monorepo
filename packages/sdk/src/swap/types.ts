@@ -44,8 +44,8 @@ export interface DepositAddressRequest extends QuoteRequest {
 export interface DepositAddressResponse extends DepositAddressRequest {
   depositChannelId: string;
   depositAddress: string;
-  sourceChainExpiryBlock: bigint;
-  depositChannelExpiryTime: number | undefined;
+  depositChannelExpiryBlock: bigint;
+  estimatedDepositChannelExpiryTime: number | undefined;
 }
 
 export interface SwapStatusRequest {
@@ -57,7 +57,8 @@ export interface CommonStatusFields extends ChainsAndAssets {
   depositAddress: string | undefined;
   depositChannelCreatedAt: number | undefined;
   expectedDepositAmount: string | undefined;
-  depositChannelExpiryTime: number | undefined;
+  depositChannelExpiryBlock: bigint;
+  estimatedDepositChannelExpiryTime: number | undefined;
 }
 
 export type SwapStatusResponse = CommonStatusFields &

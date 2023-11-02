@@ -6,8 +6,7 @@ import { EventHandlerArgs } from './index';
 const swapDepositAddressReadyArgs = z.object({
   depositAddress: encodedAddress,
   destinationAddress: encodedAddress,
-  // TODO(mainnet): remove this
-  expiryBlock: z.number().int().positive().safe().optional(),
+  expiryBlock: z.number().int().positive().safe().optional(), // TODO(mainnet): remove this
   sourceAsset: chainflipAssetEnum,
   destinationAsset: chainflipAssetEnum,
   channelId: u64,
