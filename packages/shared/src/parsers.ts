@@ -11,8 +11,13 @@ import {
   validateBitcoinTestnetAddress,
 } from './validation/addressValidation';
 
+const safeStringify = (obj: unknown) =>
+  JSON.stringify(obj, (key, value) =>
+    typeof value === 'bigint' ? value.toString() : value,
+  );
+
 const errorMap: ZodErrorMap = (_issue, context) => ({
-  message: `received: ${JSON.stringify(context.data)}`,
+  message: `received: ${safeStringify(context.data)}`,
 });
 
 export const string = z.string({ errorMap });
