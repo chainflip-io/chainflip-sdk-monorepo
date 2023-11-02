@@ -94,10 +94,10 @@ model Swap {
 
 model FailedSwap {
   id                   Int                 @id @default(autoincrement())
-  destinationAddress   String
-  destinationChain     Chain
+  destAddress          String
+  destChain            Chain
   depositAmount        Decimal             @db.Decimal(30, 0)
-  sourceChain          Chain
+  srcChain             Chain
   swapDepositChannel   SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
   swapDepositChannelId BigInt?
   txHash               String?

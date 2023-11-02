@@ -51,10 +51,10 @@ export default async function swapAmountTooLow({
 
   await prisma.failedSwap.create({
     data: {
-      destinationAddress: destinationAddress.address,
-      destinationChain: destinationAddress.chain,
+      destAddress: destinationAddress.address,
+      destChain: destinationAddress.chain,
       depositAmount: amount.toString(),
-      sourceChain,
+      srcChain: sourceChain,
       swapDepositChannelId: dbDepositChannel?.id,
       txHash,
     },
