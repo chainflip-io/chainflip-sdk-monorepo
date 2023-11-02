@@ -47,11 +47,10 @@ describe(swapAmountTooLow, () => {
       expect(prisma.failedSwap.create).toHaveBeenCalledTimes(1);
       expect(prisma.failedSwap.create).toHaveBeenNthCalledWith(1, {
         data: {
-          destinationAddress:
-            'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
-          destinationChain: 'Bitcoin',
+          destAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
+          destChain: 'Bitcoin',
           depositAmount: '12500000000',
-          sourceChain: 'Polkadot',
+          srcChain: 'Polkadot',
           swapDepositChannelId: 'internal-deposit-channel-id',
           txHash: undefined,
         },
@@ -89,10 +88,10 @@ describe(swapAmountTooLow, () => {
       expect(prisma.failedSwap.create).toHaveBeenCalledTimes(1);
       expect(prisma.failedSwap.create).toHaveBeenNthCalledWith(1, {
         data: {
-          destinationAddress: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
-          destinationChain: 'Ethereum',
+          destAddress: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
+          destChain: 'Ethereum',
           depositAmount: '12500000000',
-          sourceChain: 'Bitcoin',
+          srcChain: 'Bitcoin',
           swapDepositChannelId: 'internal-deposit-channel-id',
           txHash: undefined,
         },
@@ -140,11 +139,10 @@ describe(swapAmountTooLow, () => {
       expect(prisma.failedSwap.create).toHaveBeenCalledTimes(1);
       expect(prisma.failedSwap.create).toHaveBeenNthCalledWith(1, {
         data: {
-          destinationAddress:
-            '5D34dL5prEUaGNQtPPZ3yN5Y6BnkfXunKXXz6fo7ZJbLwRRH',
-          destinationChain: 'Polkadot',
+          destAddress: '5D34dL5prEUaGNQtPPZ3yN5Y6BnkfXunKXXz6fo7ZJbLwRRH',
+          destChain: 'Polkadot',
           depositAmount: '12500000000',
-          sourceChain: 'Ethereum',
+          srcChain: 'Ethereum',
           swapDepositChannelId: undefined,
           txHash:
             '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
