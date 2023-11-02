@@ -88,6 +88,20 @@ const chainAssetMap = <Z extends z.ZodTypeAny>(parser: Z) =>
       .transform(({ Dot }) => ({ DOT: Dot as z.output<Z> })),
   });
 
+export type ChainAssetMap<T> = {
+  Bitcoin: {
+    BTC: T;
+  };
+  Ethereum: {
+    ETH: T;
+    USDC: T;
+    FLIP: T;
+  };
+  Polkadot: {
+    DOT: T;
+  };
+};
+
 const chainAssetNumberMap = chainAssetMap(numberOrHex);
 
 const swappingEnvironment = z.object({
