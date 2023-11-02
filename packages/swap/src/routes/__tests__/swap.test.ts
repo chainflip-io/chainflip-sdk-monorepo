@@ -119,6 +119,8 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
+          "ccmDepositReceivedBlockIndex": null,
+          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -130,7 +132,6 @@ describe('server', () => {
           "destChain": "Polkadot",
           "estimatedDepositChannelExpiryTime": 1640998050000,
           "expectedDepositAmount": "10000000000",
-          "message": null,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
@@ -168,6 +169,8 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
+          "ccmDepositReceivedBlockIndex": null,
+          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -180,7 +183,6 @@ describe('server', () => {
           "estimatedDepositChannelExpiryTime": 1640998050000,
           "expectedDepositAmount": "10000000000",
           "intermediateAmount": "20",
-          "message": null,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "SWAP_EXECUTED",
@@ -227,6 +229,8 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
+          "ccmDepositReceivedBlockIndex": null,
+          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -241,7 +245,6 @@ describe('server', () => {
           "egressScheduledBlockIndex": "202-3",
           "estimatedDepositChannelExpiryTime": 1640998050000,
           "expectedDepositAmount": "10000000000",
-          "message": null,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "EGRESS_SCHEDULED",
@@ -300,6 +303,8 @@ describe('server', () => {
           "broadcastRequestedAt": 1669907147201,
           "broadcastRequestedBlockIndex": "202-4",
           "broadcastSucceededBlockIndex": null,
+          "ccmDepositReceivedBlockIndex": null,
+          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -314,7 +319,6 @@ describe('server', () => {
           "egressScheduledBlockIndex": "202-3",
           "estimatedDepositChannelExpiryTime": 1640998050000,
           "expectedDepositAmount": "10000000000",
-          "message": null,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "BROADCAST_REQUESTED",
@@ -376,6 +380,8 @@ describe('server', () => {
           "broadcastRequestedAt": 1669907147201,
           "broadcastRequestedBlockIndex": "202-4",
           "broadcastSucceededBlockIndex": null,
+          "ccmDepositReceivedBlockIndex": null,
+          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -390,7 +396,6 @@ describe('server', () => {
           "egressScheduledBlockIndex": "202-3",
           "estimatedDepositChannelExpiryTime": 1640998050000,
           "expectedDepositAmount": "10000000000",
-          "message": null,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "BROADCAST_ABORTED",
@@ -452,6 +457,8 @@ describe('server', () => {
           "broadcastRequestedBlockIndex": "202-4",
           "broadcastSucceededAt": 1669907153201,
           "broadcastSucceededBlockIndex": "204-4",
+          "ccmDepositReceivedBlockIndex": null,
+          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -466,7 +473,6 @@ describe('server', () => {
           "egressScheduledBlockIndex": "202-3",
           "estimatedDepositChannelExpiryTime": 1640998050000,
           "expectedDepositAmount": "10000000000",
-          "message": null,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "COMPLETE",
@@ -500,13 +506,14 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
+          "ccmDepositReceivedBlockIndex": null,
+          "ccmMetadata": null,
           "depositAmount": "10",
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "message": null,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
@@ -536,13 +543,14 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
+          "ccmDepositReceivedBlockIndex": null,
+          "ccmMetadata": null,
           "depositAmount": "10",
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "message": null,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",

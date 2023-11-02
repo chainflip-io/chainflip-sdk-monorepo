@@ -59,8 +59,13 @@ export interface CommonStatusFields extends ChainsAndAssets {
   expectedDepositAmount: string | undefined;
   depositChannelExpiryBlock: bigint;
   estimatedDepositChannelExpiryTime: number | undefined;
-  ccmGasBudget: string | undefined;
-  ccmMessage: string | undefined;
+  ccmDepositReceivedBlockIndex: string | undefined;
+  ccmMetadata:
+    | {
+        gasBudget: string;
+        message: string;
+      }
+    | undefined;
 }
 
 export type SwapStatusResponse = CommonStatusFields &

@@ -183,8 +183,11 @@ router.get(
         swapDepositChannel?.srcChainExpiryBlock?.toString(),
       estimatedDepositChannelExpiryTime:
         estimatedDepositChannelExpiryTime?.valueOf(),
-      gasBudget: swap?.ccmGasBudget?.toString(),
-      message: swap?.ccmMessage,
+      ccmDepositReceivedBlockIndex: swap?.ccmDepositReceivedBlockIndex,
+      ccmMetadata: swap?.ccmGasBudget && {
+        gasBudget: swap?.ccmGasBudget?.toString(),
+        message: swap?.ccmMessage,
+      },
     };
 
     logger.info('sending response for swap request', { id, response });

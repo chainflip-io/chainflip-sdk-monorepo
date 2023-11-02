@@ -66,29 +66,30 @@ enum SwapType {
 }
 
 model Swap {
-  id                        BigInt              @id @default(autoincrement())
+  id                           BigInt              @id @default(autoincrement())
   /// the swap id on the state chain
-  nativeId                  BigInt              @unique
-  type                      SwapType
-  srcAsset                  Asset
-  depositAmount             Decimal             @db.Decimal(30, 0)
-  intermediateAmount        Decimal?            @db.Decimal(30, 0)
-  egressAmount              Decimal?            @db.Decimal(30, 0)
-  destAsset                 Asset
-  destAddress               String
-  depositReceivedAt         DateTime
-  depositReceivedBlockIndex String
-  swapExecutedAt            DateTime?
-  swapExecutedBlockIndex    String?
-  swapDepositChannel        SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
-  swapDepositChannelId      BigInt?
-  ccmGasBudget              Decimal?            @db.Decimal(30, 0)
-  ccmMessage                String?
-  txHash                    String?
-  egress                    Egress?             @relation(fields: [egressId], references: [id])
-  egressId                  BigInt?
-  createdAt                 DateTime            @default(now())
-  updatedAt                 DateTime            @default(now()) @updatedAt
+  nativeId                     BigInt              @unique
+  type                         SwapType
+  srcAsset                     Asset
+  depositAmount                Decimal             @db.Decimal(30, 0)
+  intermediateAmount           Decimal?            @db.Decimal(30, 0)
+  egressAmount                 Decimal?            @db.Decimal(30, 0)
+  destAsset                    Asset
+  destAddress                  String
+  depositReceivedAt            DateTime
+  depositReceivedBlockIndex    String
+  swapExecutedAt               DateTime?
+  swapExecutedBlockIndex       String?
+  swapDepositChannel           SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId         BigInt?
+  ccmDepositReceivedBlockIndex String?
+  ccmGasBudget                 Decimal?            @db.Decimal(30, 0)
+  ccmMessage                   String?
+  txHash                       String?
+  egress                       Egress?             @relation(fields: [egressId], references: [id])
+  egressId                     BigInt?
+  createdAt                    DateTime            @default(now())
+  updatedAt                    DateTime            @default(now()) @updatedAt
 
   @@schema("public")
 }

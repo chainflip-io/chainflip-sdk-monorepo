@@ -64,6 +64,7 @@ describe(processBlocks, () => {
       },
       `
       {
+        "ccmDepositReceivedBlockIndex": null,
         "ccmGasBudget": null,
         "ccmMessage": null,
         "createdAt": Any<Date>,

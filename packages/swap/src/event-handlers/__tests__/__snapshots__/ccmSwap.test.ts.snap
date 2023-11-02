@@ -33,6 +33,7 @@ exports[`batch swap flow handles all the events: egress 1`] = `
 
 exports[`batch swap flow handles all the events: gas swap 1`] = `
 {
+  "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "createdAt": Any<Date>,
@@ -58,6 +59,7 @@ exports[`batch swap flow handles all the events: gas swap 1`] = `
 
 exports[`batch swap flow handles all the events: principal swap 1`] = `
 {
+  "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "createdAt": Any<Date>,

@@ -2,6 +2,7 @@
 
 exports[`swapEgressScheduled updates an existing swap with the scheduled timestamp 1`] = `
 {
+  "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "createdAt": Any<Date>,
