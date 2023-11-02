@@ -88,7 +88,7 @@ export class SwapSDK {
       response = {
         id: `${result.issuedBlock}-${depositAddressRequest.srcChain}-${result.channelId}`,
         depositAddress: result.address,
-        sourceChainExpiryBlock: result.sourceChainExpiryBlock,
+        srcChainExpiryBlock: result.sourceChainExpiryBlock,
       };
     } else {
       response = await this.trpc.openSwapDepositChannel.mutate(
@@ -100,8 +100,8 @@ export class SwapSDK {
       ...depositAddressRequest,
       depositChannelId: response.id,
       depositAddress: response.depositAddress,
-      sourceChainExpiryBlock: response.sourceChainExpiryBlock as bigint,
-      depositChannelExpiryTime: response.depositChannelExpiryTime,
+      depositChannelExpiryBlock: response.srcChainExpiryBlock as bigint,
+      estimatedDepositChannelExpiryTime: response.estimatedExpiryTime,
     };
   }
 

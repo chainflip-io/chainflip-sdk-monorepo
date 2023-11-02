@@ -45,8 +45,7 @@ model SwapDepositChannel {
   destAsset             Asset
   destAddress           String
   issuedBlock           Int
-  // TODO(mainnet): remove this column
-  expiryBlock           Int?
+  expiryBlock           Int? // TODO(mainnet): remove this column
   srcChainExpiryBlock   BigInt?
   isExpired             Boolean      @default(false)
   createdAt             DateTime     @default(now())
