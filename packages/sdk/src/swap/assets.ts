@@ -9,7 +9,10 @@ import {
 import type { AssetData } from './types';
 import type { Environment } from '../rpc';
 
-type AssetFn = (network: ChainflipNetwork, env: Environment) => AssetData;
+type AssetFn = (
+  network: ChainflipNetwork,
+  env: Pick<Environment, 'ingressEgress' | 'swapping'>,
+) => AssetData;
 
 export const eth$: AssetFn = (network, env) => ({
   id: Assets.ETH,
