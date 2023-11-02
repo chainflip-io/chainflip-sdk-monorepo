@@ -1,0 +1,105 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getFundingEnvironment retrieves the funding environment 1`] = `
+[
+  [
+    "https://perseverance.chainflip.xyz",
+    {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "method": "cf_funding_environment",
+      "params": undefined,
+    },
+  ],
+]
+`;
+
+exports[`getIngressEgressEnvironment retrieves the ingress egress environment 1`] = `
+[
+  [
+    "https://perseverance.chainflip.xyz",
+    {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "method": "cf_ingress_egress_environment",
+      "params": undefined,
+    },
+  ],
+]
+`;
+
+exports[`getPoolsEnvironment retrieves the pools environment 1`] = `
+[
+  [
+    "https://perseverance.chainflip.xyz",
+    {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "method": "cf_pool_info",
+      "params": undefined,
+    },
+  ],
+]
+`;
+
+exports[`getPoolsEnvironment retrieves the pools environment: pool environment 1`] = `
+{
+  "fees": {
+    "Bitcoin": {
+      "BTC": {
+        "pairAsset": "Usdc",
+        "poolInfo": {
+          "limitOrderFeeHundredthPips": 1,
+          "rangeOrderFeeHundredthPips": 2,
+        },
+      },
+    },
+    "Ethereum": {
+      "ETH": {
+        "pairAsset": "Usdc",
+        "poolInfo": {
+          "limitOrderFeeHundredthPips": 1,
+          "rangeOrderFeeHundredthPips": 2,
+        },
+      },
+      "FLIP": {
+        "pairAsset": "Usdc",
+        "poolInfo": {
+          "limitOrderFeeHundredthPips": 1,
+          "rangeOrderFeeHundredthPips": 2,
+        },
+      },
+      "USDC": {
+        "pairAsset": "Usdc",
+        "poolInfo": {
+          "limitOrderFeeHundredthPips": 1,
+          "rangeOrderFeeHundredthPips": 2,
+        },
+      },
+    },
+    "Polkadot": {
+      "DOT": {
+        "pairAsset": "Usdc",
+        "poolInfo": {
+          "limitOrderFeeHundredthPips": 1,
+          "rangeOrderFeeHundredthPips": 2,
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`getSwappingEnvironment retrieves the swapping environment 1`] = `
+[
+  [
+    "https://perseverance.chainflip.xyz",
+    {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "method": "cf_swapping_environment",
+      "params": undefined,
+    },
+  ],
+]
+`;

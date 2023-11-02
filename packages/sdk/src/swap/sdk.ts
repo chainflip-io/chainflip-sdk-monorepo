@@ -4,6 +4,7 @@ import superjson from 'superjson';
 import { TransactionOptions } from '@/shared/contracts';
 import { ChainflipNetwork, Chain, ChainflipNetworks } from '@/shared/enums';
 import { assert } from '@/shared/guards';
+import { Environment, getEnvironment } from '@/shared/rpc';
 import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
 import type { TokenSwapParams } from '@/shared/vault/schemas';
 import type { AppRouter } from '@/swap/server';
@@ -43,6 +44,8 @@ export class SwapSDK {
 
   private readonly brokerConfig?;
 
+  private environment?: Environment;
+
   constructor(options: SwapSDKOptions = {}) {
     this.network = options.network ?? ChainflipNetworks.perseverance;
     this.baseUrl = options.backendUrl ?? BACKEND_SERVICE_URLS[this.network];
@@ -61,8 +64,10 @@ export class SwapSDK {
     return ApiService.getChains(this.network);
   }
 
-  getAssets(chain: Chain): Promise<AssetData[]> {
-    return ApiService.getAssets(chain, this.network);
+  async getAssets(chain: Chain): Promise<AssetData[]> {
+    this.environment ??= await getEnvironment(this.network);
+
+    return ApiService.getAssets(chain, this.network, this.environment);
   }
 
   getQuote(

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { type ChainflipNetwork, Chain, Chains } from '@/shared/enums';
 import type { QuoteQueryParams, QuoteQueryResponse } from '@/shared/schemas';
+import type { Environment } from '../../rpc';
 import { dot$, btc$, eth$, usdc$, flip$ } from '../assets';
 import { bitcoin, ethereum, polkadot } from '../chains';
 import {
@@ -34,11 +35,12 @@ const getPossibleDestinationChains = async (
 const getAssets = async (
   chain: Chain,
   network: ChainflipNetwork,
+  env: Environment,
 ): Promise<AssetData[]> => {
   if (chain === Chains.Ethereum)
-    return [eth$(network), usdc$(network), flip$(network)];
-  if (chain === Chains.Polkadot) return [dot$(network)];
-  if (chain === Chains.Bitcoin) return [btc$(network)];
+    return [eth$(network, env), usdc$(network, env), flip$(network, env)];
+  if (chain === Chains.Polkadot) return [dot$(network, env)];
+  if (chain === Chains.Bitcoin) return [btc$(network, env)];
   throw new Error('received unexpected chain');
 };
 

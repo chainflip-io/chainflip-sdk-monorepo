@@ -1,6 +1,7 @@
 import type { Signer } from 'ethers';
 import { getFlipBalance, TransactionOptions } from '@/shared/contracts';
 import { ChainflipNetwork, ChainflipNetworks } from '@/shared/enums';
+import { getFundingEnvironment } from '@/shared/rpc';
 import {
   approveStateChainGateway,
   executeRedemption,
@@ -20,6 +21,8 @@ export type TransactionHash = `0x${string}`;
 
 export class FundingSDK {
   private readonly options: Required<FundingSDKOption>;
+
+  private redemptionTax?: bigint;
 
   constructor(options: FundingSDKOption) {
     this.options = {
@@ -90,5 +93,15 @@ export class FundingSDK {
     );
 
     return receipt ? (receipt.hash as `0x${string}`) : null;
+  }
+
+  async getRedemptionTax(): Promise<bigint> {
+    if (this.redemptionTax) return this.redemptionTax;
+
+    const fundingEnv = await getFundingEnvironment(this.options.network);
+
+    this.redemptionTax = fundingEnv.minimumFundingAmount;
+
+    return this.redemptionTax;
   }
 }

@@ -1,4 +1,3 @@
-import { getMinimumDepositAmount, getMinimumSwapAmount } from '@/shared/consts';
 import { getTokenContractAddress } from '@/shared/contracts';
 import {
   assetDecimals,
@@ -8,8 +7,11 @@ import {
   isTestnet,
 } from '@/shared/enums';
 import type { AssetData } from './types';
+import type { Environment } from '../rpc';
 
-export const eth$: (network: ChainflipNetwork) => AssetData = (network) => ({
+type AssetFn = (network: ChainflipNetwork, env: Environment) => AssetData;
+
+export const eth$: AssetFn = (network, env) => ({
   id: Assets.ETH,
   chain: Chains.Ethereum,
   contractAddress: undefined,
@@ -17,11 +19,12 @@ export const eth$: (network: ChainflipNetwork) => AssetData = (network) => ({
   name: 'Ether',
   symbol: 'ETH',
   isMainnet: !isTestnet(network),
-  minimumDepositAmount: getMinimumDepositAmount(network, Assets.ETH),
-  minimumSwapAmount: getMinimumSwapAmount(network, Assets.ETH),
+  minimumDepositAmount:
+    env.ingressEgress.minimumDepositAmounts.Ethereum.ETH.toString(),
+  minimumSwapAmount: env.swapping.minimumSwapAmounts.Ethereum.ETH.toString(),
 });
 
-export const usdc$: (network: ChainflipNetwork) => AssetData = (network) => ({
+export const usdc$: AssetFn = (network, env) => ({
   id: Assets.USDC,
   chain: Chains.Ethereum,
   contractAddress: getTokenContractAddress(Assets.USDC, network),
@@ -29,11 +32,12 @@ export const usdc$: (network: ChainflipNetwork) => AssetData = (network) => ({
   name: 'USDC',
   symbol: 'USDC',
   isMainnet: !isTestnet(network),
-  minimumDepositAmount: getMinimumDepositAmount(network, Assets.USDC),
-  minimumSwapAmount: getMinimumSwapAmount(network, Assets.USDC),
+  minimumDepositAmount:
+    env.ingressEgress.minimumDepositAmounts.Ethereum.USDC.toString(),
+  minimumSwapAmount: env.swapping.minimumSwapAmounts.Ethereum.USDC.toString(),
 });
 
-export const flip$: (network: ChainflipNetwork) => AssetData = (network) => ({
+export const flip$: AssetFn = (network, env) => ({
   id: Assets.FLIP,
   chain: Chains.Ethereum,
   contractAddress: getTokenContractAddress(Assets.FLIP, network),
@@ -41,11 +45,12 @@ export const flip$: (network: ChainflipNetwork) => AssetData = (network) => ({
   name: 'FLIP',
   symbol: 'FLIP',
   isMainnet: !isTestnet(network),
-  minimumDepositAmount: getMinimumDepositAmount(network, Assets.FLIP),
-  minimumSwapAmount: getMinimumSwapAmount(network, Assets.FLIP),
+  minimumDepositAmount:
+    env.ingressEgress.minimumDepositAmounts.Ethereum.FLIP.toString(),
+  minimumSwapAmount: env.swapping.minimumSwapAmounts.Ethereum.FLIP.toString(),
 });
 
-export const dot$: (network: ChainflipNetwork) => AssetData = (network) => ({
+export const dot$: AssetFn = (network, env) => ({
   id: Assets.DOT,
   chain: Chains.Polkadot,
   contractAddress: undefined,
@@ -53,11 +58,12 @@ export const dot$: (network: ChainflipNetwork) => AssetData = (network) => ({
   name: 'Polkadot',
   symbol: 'DOT',
   isMainnet: !isTestnet(network),
-  minimumDepositAmount: getMinimumDepositAmount(network, Assets.DOT),
-  minimumSwapAmount: getMinimumSwapAmount(network, Assets.DOT),
+  minimumDepositAmount:
+    env.ingressEgress.minimumDepositAmounts.Polkadot.DOT.toString(),
+  minimumSwapAmount: env.swapping.minimumSwapAmounts.Polkadot.DOT.toString(),
 });
 
-export const btc$: (network: ChainflipNetwork) => AssetData = (network) => ({
+export const btc$: AssetFn = (network, env) => ({
   id: Assets.BTC,
   chain: Chains.Bitcoin,
   contractAddress: undefined,
@@ -65,6 +71,7 @@ export const btc$: (network: ChainflipNetwork) => AssetData = (network) => ({
   name: 'Bitcoin',
   symbol: 'BTC',
   isMainnet: !isTestnet(network),
-  minimumDepositAmount: getMinimumDepositAmount(network, Assets.BTC),
-  minimumSwapAmount: getMinimumSwapAmount(network, Assets.BTC),
+  minimumDepositAmount:
+    env.ingressEgress.minimumDepositAmounts.Bitcoin.BTC.toString(),
+  minimumSwapAmount: env.swapping.minimumSwapAmounts.Bitcoin.BTC.toString(),
 });
