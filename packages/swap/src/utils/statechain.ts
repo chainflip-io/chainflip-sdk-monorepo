@@ -5,7 +5,7 @@ import {
   chainflipAssetAndChain,
   hexStringFromNumber,
 } from '@/shared/parsers';
-import { QuoteQueryParams } from '@/shared/schemas';
+import { ParsedQuoteParams } from '@/shared/schemas';
 import { memoize } from './function';
 import { swapRateResponseSchema } from '../quoting/schemas';
 
@@ -43,7 +43,7 @@ const getSwapAmount = async (
 };
 
 export const getBrokerQuote = async (
-  { srcAsset, destAsset, amount }: QuoteQueryParams,
+  { srcAsset, destAsset, amount }: ParsedQuoteParams,
   id: string,
 ) => {
   const quote = await getSwapAmount(srcAsset, destAsset, amount);

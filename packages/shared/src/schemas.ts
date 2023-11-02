@@ -14,7 +14,8 @@ export const quoteQuerySchema = z.object({
   amount: numericString,
 });
 
-export type QuoteQueryParams = z.output<typeof quoteQuerySchema>;
+export type QuoteQueryParams = z.input<typeof quoteQuerySchema>;
+export type ParsedQuoteParams = z.output<typeof quoteQuerySchema>;
 
 export const ccmMetadataSchema = z.object({
   gasBudget: numericString,

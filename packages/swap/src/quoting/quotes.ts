@@ -3,7 +3,7 @@ import * as crypto from 'crypto';
 import { Observable, Subscription, filter } from 'rxjs';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
 import { Assets, ChainflipNetwork } from '@/shared/enums';
-import { QuoteRequest, QuoteQueryParams, QuoteFee } from '@/shared/schemas';
+import { QuoteRequest, QuoteFee, ParsedQuoteParams } from '@/shared/schemas';
 import { BrokerQuote, MarketMakerQuote } from './schemas';
 import prisma, { Pool } from '../client';
 import { Comparison, compareNumericStrings } from '../utils/string';
@@ -99,8 +99,14 @@ export const findBestQuote = (
     brokerQuote as MarketMakerQuote | BrokerQuote,
   );
 
-export const buildQuoteRequest = (query: QuoteQueryParams): QuoteRequest => {
-  const { srcAsset, destAsset, amount } = query;
+export const buildQuoteRequest = (query: ParsedQuoteParams): QuoteRequest => {
+  const {
+    srcAsset: srcAssetAndChain,
+    destAsset: destAssetAndChain,
+    amount,
+  } = query;
+  const srcAsset = srcAssetAndChain.asset;
+  const destAsset = destAssetAndChain.asset;
 
   if (srcAsset === Assets.USDC) {
     assert(destAsset !== Assets.USDC);
@@ -221,9 +227,11 @@ export const calculateIncludedFees = (
 };
 
 export const getQuotePools = async (
-  query: QuoteQueryParams,
+  query: ParsedQuoteParams,
 ): Promise<Pool[]> => {
-  const { srcAsset, destAsset } = query;
+  const { srcAsset: srcAssetAndChain, destAsset: destAssetAndChain } = query;
+  const srcAsset = srcAssetAndChain.asset;
+  const destAsset = destAssetAndChain.asset;
 
   if (srcAsset === Assets.USDC || destAsset === Assets.USDC) {
     return [

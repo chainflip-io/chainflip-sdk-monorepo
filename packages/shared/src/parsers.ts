@@ -72,7 +72,7 @@ export const chainflipAssetEnum = z
   .object({ __kind: z.enum(['Usdc', 'Flip', 'Dot', 'Eth', 'Btc']) })
   .transform(({ __kind }) => __kind.toUpperCase() as Asset);
 
-export const transformAsset = <T extends Asset>(
+const transformAsset = <T extends Asset>(
   asset: T,
 ): { asset: T; chain: (typeof assetChains)[T] } =>
   ({ asset, chain: assetChains[asset] }) as const;
@@ -85,7 +85,10 @@ export const chainflipChain = z.nativeEnum(Chains);
 export const chainflipAsset = z.nativeEnum(Assets);
 
 export const chainflipAssetAndChain = z
-  .object({ asset: z.nativeEnum(Assets), chain: z.nativeEnum(Chains) })
+  .union([
+    chainflipAsset.transform(transformAsset),
+    z.object({ asset: z.nativeEnum(Assets), chain: z.nativeEnum(Chains) }),
+  ])
   .superRefine((obj, ctx): obj is AssetAndChain => {
     if (assetChains[obj.asset] !== obj.chain) {
       ctx.addIssue({

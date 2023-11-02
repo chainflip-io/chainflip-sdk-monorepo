@@ -102,11 +102,12 @@ describe('python integration test', () => {
       ),
     ).resolves.toBe('connected');
 
-    const params = new URLSearchParams({
+    const query = {
       srcAsset: Assets.FLIP,
       destAsset: Assets.ETH,
       amount: '1000000000000000000',
-    } as QuoteQueryParams);
+    } as QuoteQueryParams;
+    const params = new URLSearchParams(query as Record<string, any>);
 
     jest.mocked(getBrokerQuote).mockResolvedValueOnce({
       id: "doesn't matter",
