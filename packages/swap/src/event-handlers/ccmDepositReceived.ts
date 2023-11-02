@@ -1,6 +1,6 @@
 import { z } from 'zod';
+import { u128, u64 } from '@/shared/parsers';
 import { encodedAddress } from './common';
-import { u128, u64 } from '../parsers';
 import type { EventHandlerArgs } from '.';
 
 const ccmChannelMetadataArgs = z.object({
@@ -32,7 +32,7 @@ export default async function ccmDepositReceived({
   );
 
   if (principalSwapId) {
-    prisma.swap.update({
+    await prisma.swap.update({
       where: {
         nativeId: principalSwapId,
       },
