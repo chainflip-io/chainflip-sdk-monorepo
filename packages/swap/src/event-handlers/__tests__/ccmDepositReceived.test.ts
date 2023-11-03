@@ -45,7 +45,7 @@ describe(ccmDepositReceived, () => {
             depositMetadata: {
               channelMetadata: {
                 gasBudget: '65000',
-                message: 'some-random-text',
+                message: '0x12abf87',
               },
             },
           },
@@ -60,7 +60,7 @@ describe(ccmDepositReceived, () => {
     });
 
     expect(swap.ccmGasBudget?.toString()).toEqual('65000');
-    expect(swap.ccmMessage).toEqual('some-random-text');
+    expect(swap.ccmMessage).toEqual('0x12abf87');
     expect(swap.ccmDepositReceivedBlockIndex).toEqual('1000-6');
   });
 });

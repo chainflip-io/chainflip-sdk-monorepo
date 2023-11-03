@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { u128, u64 } from '@/shared/parsers';
+import { hexString, u128, u64 } from '@/shared/parsers';
 import { encodedAddress } from './common';
 import type { EventHandlerArgs } from '.';
 
@@ -11,7 +11,7 @@ const ccmDepositReceivedArgs = z.object({
   destinationAddress: encodedAddress,
   depositMetadata: z.object({
     channelMetadata: z.object({
-      message: z.string(),
+      message: hexString,
       gasBudget: u128,
     }),
   }),

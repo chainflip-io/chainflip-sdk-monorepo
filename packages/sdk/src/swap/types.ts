@@ -63,7 +63,7 @@ export interface CommonStatusFields extends ChainsAndAssets {
   ccmDepositReceivedBlockIndex: string | undefined;
   ccmMetadata:
     | {
-        gasBudget: string;
+        gasBudget: `0x${string}`;
         message: string;
       }
     | undefined;
