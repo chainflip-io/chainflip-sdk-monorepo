@@ -119,6 +119,8 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
+          "ccmDepositReceivedBlockIndex": null,
+          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -167,6 +169,8 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
+          "ccmDepositReceivedBlockIndex": null,
+          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -225,6 +229,8 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
+          "ccmDepositReceivedBlockIndex": null,
+          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -297,6 +303,8 @@ describe('server', () => {
           "broadcastRequestedAt": 1669907147201,
           "broadcastRequestedBlockIndex": "202-4",
           "broadcastSucceededBlockIndex": null,
+          "ccmDepositReceivedBlockIndex": null,
+          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -372,6 +380,8 @@ describe('server', () => {
           "broadcastRequestedAt": 1669907147201,
           "broadcastRequestedBlockIndex": "202-4",
           "broadcastSucceededBlockIndex": null,
+          "ccmDepositReceivedBlockIndex": null,
+          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -447,6 +457,8 @@ describe('server', () => {
           "broadcastRequestedBlockIndex": "202-4",
           "broadcastSucceededAt": 1669907153201,
           "broadcastSucceededBlockIndex": "204-4",
+          "ccmDepositReceivedBlockIndex": null,
+          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -494,6 +506,8 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
+          "ccmDepositReceivedBlockIndex": null,
+          "ccmMetadata": null,
           "depositAmount": "10",
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
@@ -520,6 +534,9 @@ describe('server', () => {
           depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
           depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
           type: 'SWAP',
+          ccmDepositReceivedBlockIndex: '223-16',
+          ccmGasBudget: '100',
+          ccmMessage: 'some-message',
         },
       });
 
@@ -529,6 +546,11 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
+          "ccmDepositReceivedBlockIndex": "223-16",
+          "ccmMetadata": {
+            "gasBudget": "100",
+            "message": "some-message",
+          },
           "depositAmount": "10",
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",

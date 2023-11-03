@@ -1,5 +1,6 @@
 import type { Prisma } from '.prisma/client';
 import { Chains } from '@/shared/enums';
+import ccmDepositReceived from './ccmDepositReceived';
 import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';
 import networkBroadcastAborted from './networkBroadcastAborted';
 import networkBroadcastSuccess from './networkBroadcastSuccess';
@@ -25,6 +26,7 @@ export const events = {
     SwapEgressScheduled: 'Swapping.SwapEgressScheduled',
     SwapAmountTooLow: 'Swapping.SwapAmountTooLow',
     SwapDepositAddressReady: 'Swapping.SwapDepositAddressReady',
+    CcmDepositReceived: 'Swapping.CcmDepositReceived',
   },
   BitcoinIngressEgress: {
     EgressScheduled: 'BitcoinIngressEgress.EgressScheduled',
@@ -82,6 +84,10 @@ const handlers = [
       { name: events.Swapping.SwapScheduled, handler: swapScheduled },
       { name: events.Swapping.SwapExecuted, handler: swapExecuted },
       { name: events.Swapping.SwapAmountTooLow, handler: swapAmountTooLow },
+      {
+        name: events.Swapping.CcmDepositReceived,
+        handler: ccmDepositReceived,
+      },
       {
         name: events.Swapping.SwapDepositAddressReady,
         handler: swapDepositAddressReady,

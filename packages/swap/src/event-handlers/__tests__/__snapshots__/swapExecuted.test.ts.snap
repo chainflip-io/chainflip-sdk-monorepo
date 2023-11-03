@@ -2,6 +2,9 @@
 
 exports[`swapExecuted updates an existing swap with the execution timestamp 1`] = `
 {
+  "ccmDepositReceivedBlockIndex": null,
+  "ccmGasBudget": null,
+  "ccmMessage": null,
   "createdAt": Any<Date>,
   "depositAmount": "10000000000",
   "depositReceivedAt": 2022-12-06T14:31:33.000Z,
@@ -25,6 +28,9 @@ exports[`swapExecuted updates an existing swap with the execution timestamp 1`] 
 
 exports[`swapExecuted updates an existing swap with the execution timestamp and intermediate amount 1`] = `
 {
+  "ccmDepositReceivedBlockIndex": null,
+  "ccmGasBudget": null,
+  "ccmMessage": null,
   "createdAt": Any<Date>,
   "depositAmount": "10000000000",
   "depositReceivedAt": 2022-12-06T14:31:33.000Z,
