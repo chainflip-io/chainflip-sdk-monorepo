@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`newPoolCreated updates the pool fee correctly 1`] = `
+{
+  "baseAsset": "USDC",
+  "id": Any<Number>,
+  "liquidityFeeHundredthPips": 2000,
+  "pairAsset": "BTC",
+}
+`;

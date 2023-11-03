@@ -388,6 +388,26 @@ export const newPoolCreatedMock = {
   },
 } as const;
 
+export const poolFeeSetMock = {
+  block: {
+    height: 150,
+    timestamp: 1680337105000,
+  },
+  eventContext: {
+    kind: 'event',
+    event: {
+      args: {
+        baseAsset: { __kind: 'Usdc' },
+        pairAsset: { __kind: 'Btc' },
+        initialPrice: '170141183460469231731687303715884105728000',
+        feeHundredthPips: 2000,
+      },
+      name: 'LiquidityPools.PoolFeeSet',
+      indexInBlock: 7,
+    },
+  },
+} as const;
+
 const buildSwapAmountTooLowEvent = <T extends SwapAmountTooLowEvent>(
   args: T,
 ) => ({
