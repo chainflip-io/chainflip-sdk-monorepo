@@ -3,22 +3,18 @@ import { u128, u64 } from '@/shared/parsers';
 import { encodedAddress } from './common';
 import type { EventHandlerArgs } from '.';
 
-const ccmChannelMetadataArgs = z.object({
-  message: z.string(),
-  gasBudget: u128,
-});
-
-const ccmDepositMetadataArgs = z.object({
-  channelMetadata: ccmChannelMetadataArgs,
-});
-
 const ccmDepositReceivedArgs = z.object({
   ccmId: u64,
   principalSwapId: u64.nullable().optional(),
   gasSwapId: u64.nullable().optional(),
   depositAmount: u128,
   destinationAddress: encodedAddress,
-  depositMetadata: ccmDepositMetadataArgs,
+  depositMetadata: z.object({
+    channelMetadata: z.object({
+      message: z.string(),
+      gasBudget: u128,
+    }),
+  }),
 });
 
 export type CcmDepositReceivedArgs = z.input<typeof ccmDepositReceivedArgs>;
