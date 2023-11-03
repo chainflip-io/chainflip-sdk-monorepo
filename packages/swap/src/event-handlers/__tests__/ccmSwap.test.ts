@@ -187,7 +187,7 @@ const ccmEvents = [
       },
       depositMetadata: {
         channelMetadata: {
-          message: 'some-message',
+          message: '0x12abf87',
           gasBudget: '2000',
         },
       },

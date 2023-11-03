@@ -572,7 +572,7 @@ describe('server', () => {
           type: 'SWAP',
           ccmDepositReceivedBlockIndex: '223-16',
           ccmGasBudget: '100',
-          ccmMessage: 'some-message',
+          ccmMessage: '0x12abf87',
         },
       });
 
@@ -585,7 +585,7 @@ describe('server', () => {
           "ccmDepositReceivedBlockIndex": "223-16",
           "ccmMetadata": {
             "gasBudget": "100",
-            "message": "some-message",
+            "message": "0x12abf87",
           },
           "depositAmount": "10",
           "depositReceivedAt": 1669907135201,
