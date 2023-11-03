@@ -8,7 +8,7 @@ const eventArgs = z.union([
     pairAsset: chainflipAssetEnum,
     feeHundredthPips: unsignedInteger,
   }),
-  // previous event shape for sisyphos and perseverance
+  // support previous event shape used on sisyphos 0.9
   z
     .object({
       unstableAsset: chainflipAssetEnum,
