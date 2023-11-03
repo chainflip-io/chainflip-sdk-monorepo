@@ -134,10 +134,10 @@ router.get(
     }
 
     let estimatedDepositChannelExpiryTime: Date | null = null;
-    if (swapDepositChannel && !swapDepositChannel.isExpired) {
+    if (swapDepositChannel) {
       const chainInfo = await prisma.chainTracking.findFirst({
         where: {
-          chain: swapDepositChannel?.srcChain,
+          chain: swapDepositChannel.srcChain,
         },
       });
       estimatedDepositChannelExpiryTime = calculateExpiryTime({
@@ -183,6 +183,7 @@ router.get(
         swapDepositChannel?.srcChainExpiryBlock?.toString(),
       estimatedDepositChannelExpiryTime:
         estimatedDepositChannelExpiryTime?.valueOf(),
+      isDepositChanneExpired: swapDepositChannel?.isExpired ?? false,
       ccmDepositReceivedBlockIndex: swap?.ccmDepositReceivedBlockIndex,
       ccmMetadata: swap?.ccmGasBudget && {
         gasBudget: swap?.ccmGasBudget?.toString(),
