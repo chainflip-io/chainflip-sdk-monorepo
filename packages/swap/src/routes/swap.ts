@@ -183,7 +183,7 @@ router.get(
         swapDepositChannel?.srcChainExpiryBlock?.toString(),
       estimatedDepositChannelExpiryTime:
         estimatedDepositChannelExpiryTime?.valueOf(),
-      isExpired: swapDepositChannel?.isExpired ?? false,
+      isDepositChanneExpired: swapDepositChannel?.isExpired ?? false,
       ccmDepositReceivedBlockIndex: swap?.ccmDepositReceivedBlockIndex,
       ccmMetadata: swap?.ccmGasBudget && {
         gasBudget: swap?.ccmGasBudget?.toString(),
