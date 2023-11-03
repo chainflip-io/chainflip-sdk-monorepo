@@ -87,6 +87,35 @@ describe('server', () => {
           "destChain": "Polkadot",
           "estimatedDepositChannelExpiryTime": 1640998050000,
           "expectedDepositAmount": "10000000000",
+          "isExpired": false,
+          "srcAsset": "ETH",
+          "srcChain": "Ethereum",
+          "state": "AWAITING_DEPOSIT",
+        }
+      `);
+    });
+
+    it(`retrieves a swap in ${State.AwaitingDeposit} status and the channel is expired`, async () => {
+      const swapIntent = await createDepositChannel({
+        srcChainExpiryBlock: 1,
+        isExpired: true,
+      });
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
+
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+      expect(body).toMatchInlineSnapshot(`
+        {
+          "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+          "depositChannelCreatedAt": 1690556052834,
+          "depositChannelExpiryBlock": "1",
+          "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
+          "destAsset": "DOT",
+          "destChain": "Polkadot",
+          "estimatedDepositChannelExpiryTime": 1640995065000,
+          "expectedDepositAmount": "10000000000",
+          "isExpired": true,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "AWAITING_DEPOSIT",
@@ -132,6 +161,7 @@ describe('server', () => {
           "destChain": "Polkadot",
           "estimatedDepositChannelExpiryTime": 1640998050000,
           "expectedDepositAmount": "10000000000",
+          "isExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
@@ -183,6 +213,7 @@ describe('server', () => {
           "estimatedDepositChannelExpiryTime": 1640998050000,
           "expectedDepositAmount": "10000000000",
           "intermediateAmount": "20",
+          "isExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "SWAP_EXECUTED",
@@ -245,6 +276,7 @@ describe('server', () => {
           "egressScheduledBlockIndex": "202-3",
           "estimatedDepositChannelExpiryTime": 1640998050000,
           "expectedDepositAmount": "10000000000",
+          "isExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "EGRESS_SCHEDULED",
@@ -319,6 +351,7 @@ describe('server', () => {
           "egressScheduledBlockIndex": "202-3",
           "estimatedDepositChannelExpiryTime": 1640998050000,
           "expectedDepositAmount": "10000000000",
+          "isExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "BROADCAST_REQUESTED",
@@ -396,6 +429,7 @@ describe('server', () => {
           "egressScheduledBlockIndex": "202-3",
           "estimatedDepositChannelExpiryTime": 1640998050000,
           "expectedDepositAmount": "10000000000",
+          "isExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "BROADCAST_ABORTED",
@@ -473,6 +507,7 @@ describe('server', () => {
           "egressScheduledBlockIndex": "202-3",
           "estimatedDepositChannelExpiryTime": 1640998050000,
           "expectedDepositAmount": "10000000000",
+          "isExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "COMPLETE",
@@ -514,6 +549,7 @@ describe('server', () => {
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
+          "isExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
@@ -557,6 +593,7 @@ describe('server', () => {
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
+          "isExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
