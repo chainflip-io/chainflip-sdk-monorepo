@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@trpc/client':
-        specifier: ^10.43.0
-        version: 10.43.0(@trpc/server@10.43.0)
+        specifier: ^10.43.1
+        version: 10.43.1(@trpc/server@10.43.1)
       '@trpc/server':
-        specifier: ^10.43.0
-        version: 10.43.0
+        specifier: ^10.43.1
+        version: 10.43.1
       superjson:
         specifier: ^1.13.3
         version: 1.13.3
@@ -2801,16 +2801,17 @@ packages:
     resolution: {integrity: sha512-myfUej5naTBWnqOCc/MdVOLVjXUXtIA+NpDrDBKJtLLg2shUjBu3cZmB/85RyitKc55+lUUyl7oRfLOvkr2hsw==}
     dev: true
 
-  /@trpc/client@10.43.0(@trpc/server@10.43.0):
-    resolution: {integrity: sha512-8LbSpPHmIseb/Ke+GzL45y0itkKunGQWfxqHf2uy69RSRvER0vj+Gu67L8YD86FBgc/nsX/6GBuJiUet5lIDIw==}
+  /@trpc/client@10.43.1(@trpc/server@10.43.1):
+    resolution: {integrity: sha512-pkPtbDS0ck/2WZo2cWaPV11NFMII2I/nzse1Ggs5Cr0YczsZk3Z0DM77Sfb9FTSjmccYfkEtumHqxfTj6fRbbg==}
     peerDependencies:
-      '@trpc/server': 10.43.0
+      '@trpc/server': 10.43.1
     dependencies:
-      '@trpc/server': 10.43.0
+      '@trpc/server': 10.43.1
     dev: false
 
-  /@trpc/server@10.43.0:
-    resolution: {integrity: sha512-1/h9KCPkTNNmpN5VKfKO4kPcl/W4Y9VQla4YGg4pydSh/+4b//0IPfvk3Oz4tz/tvWyAUlBKkBVhD3GfDLcAQA==}
+  /@trpc/server@10.43.1:
+    resolution: {integrity: sha512-rKOSCpJOb1MdTyJFqdf3QNNESDfPkbP+yBOZBM2x6iIOS4VlCfJqxsaSrb3uLPR6s8Ni7DhTu+cu/q1r0xOGcw==}
+    engines: {node: '>=18.0.0'}
     dev: false
 
   /@ts-morph/common@0.21.0:
