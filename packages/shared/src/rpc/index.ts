@@ -121,11 +121,6 @@ export const getIngressEgressEnvironment = createRequest(
   ingressEgressEnvironment,
 );
 
-const poolFeeInfo = z.object({
-  limit_order_fee_hundredth_pips: z.number(),
-  range_order_fee_hundredth_pips: z.number(),
-});
-
 const rpcAsset = z.union([
   z.literal('Btc'),
   z.object({ chain: z.literal('Bitcoin'), asset: z.literal('Btc') }),
@@ -140,11 +135,18 @@ const rpcAsset = z.union([
 ]);
 
 const poolInfo = z.object({
-  pool_info: poolFeeInfo,
+  limit_order_fee_hundredth_pips: z.number(),
+  range_order_fee_hundredth_pips: z.number(),
   pair_asset: rpcAsset,
 });
 
-const feesInfo = chainAssetMap(poolInfo);
+const feesInfo = z.object({
+  Bitcoin: z.object({ Btc: poolInfo }).transform(({ Btc }) => ({ BTC: Btc })),
+  Ethereum: z
+    .object({ Eth: poolInfo, Flip: poolInfo })
+    .transform(({ Eth, Flip }) => ({ ETH: Eth, FLIP: Flip })),
+  Polkadot: z.object({ Dot: poolInfo }).transform(({ Dot }) => ({ DOT: Dot })),
+});
 
 const poolsEnvironment = z.object({ fees: feesInfo });
 

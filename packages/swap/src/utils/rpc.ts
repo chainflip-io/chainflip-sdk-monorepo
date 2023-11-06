@@ -5,7 +5,7 @@ import {
   type ChainAssetMap,
 } from '@/shared/rpc';
 
-const readAssetMinimum = (minimums: ChainAssetMap<bigint>, asset: Asset) => {
+const readAssetValue = (minimums: ChainAssetMap<bigint>, asset: Asset) => {
   const chain = assetChains[asset];
   const chainMinimums = minimums[chain];
   return chainMinimums[asset as keyof typeof chainMinimums];
@@ -16,7 +16,7 @@ export const getMinimumDepositAmount = async (
   asset: Asset,
 ): Promise<bigint> => {
   const ingressEgressEnv = await getIngressEgressEnvironment(network);
-  return readAssetMinimum(ingressEgressEnv.minimumDepositAmounts, asset);
+  return readAssetValue(ingressEgressEnv.minimumDepositAmounts, asset);
 };
 
 export const getMinimumSwapAmount = async (
@@ -24,5 +24,5 @@ export const getMinimumSwapAmount = async (
   asset: Asset,
 ): Promise<bigint> => {
   const swapEnv = await getSwappingEnvironment(network);
-  return readAssetMinimum(swapEnv.minimumSwapAmounts, asset);
+  return readAssetValue(swapEnv.minimumSwapAmounts, asset);
 };

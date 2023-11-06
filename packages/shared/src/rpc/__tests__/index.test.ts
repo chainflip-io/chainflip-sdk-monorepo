@@ -96,42 +96,39 @@ describe('getPoolsEnvironment', () => {
       fees: {
         Bitcoin: {
           Btc: {
-            pair_asset: 'Usdc',
-            pool_info: {
-              limit_order_fee_hundredth_pips: 1,
-              range_order_fee_hundredth_pips: 2,
+            limit_order_fee_hundredth_pips: 20,
+            range_order_fee_hundredth_pips: 20,
+            pair_asset: {
+              chain: 'Ethereum',
+              asset: 'Usdc',
             },
           },
         },
         Polkadot: {
           Dot: {
-            pair_asset: 'Usdc',
-            pool_info: {
-              limit_order_fee_hundredth_pips: 1,
-              range_order_fee_hundredth_pips: 2,
+            limit_order_fee_hundredth_pips: 20,
+            range_order_fee_hundredth_pips: 20,
+            pair_asset: {
+              chain: 'Ethereum',
+              asset: 'Usdc',
             },
           },
         },
         Ethereum: {
-          Eth: {
-            pair_asset: 'Usdc',
-            pool_info: {
-              limit_order_fee_hundredth_pips: 1,
-              range_order_fee_hundredth_pips: 2,
-            },
-          },
           Flip: {
-            pair_asset: 'Usdc',
-            pool_info: {
-              limit_order_fee_hundredth_pips: 1,
-              range_order_fee_hundredth_pips: 2,
+            limit_order_fee_hundredth_pips: 20,
+            range_order_fee_hundredth_pips: 20,
+            pair_asset: {
+              chain: 'Ethereum',
+              asset: 'Usdc',
             },
           },
-          Usdc: {
-            pair_asset: 'Usdc',
-            pool_info: {
-              limit_order_fee_hundredth_pips: 1,
-              range_order_fee_hundredth_pips: 2,
+          Eth: {
+            limit_order_fee_hundredth_pips: 20,
+            range_order_fee_hundredth_pips: 20,
+            pair_asset: {
+              chain: 'Ethereum',
+              asset: 'Usdc',
             },
           },
         },

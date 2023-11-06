@@ -47,43 +47,40 @@ exports[`getPoolsEnvironment retrieves the pools environment: pool environment 1
   "fees": {
     "Bitcoin": {
       "BTC": {
-        "pairAsset": "Usdc",
-        "poolInfo": {
-          "limitOrderFeeHundredthPips": 1,
-          "rangeOrderFeeHundredthPips": 2,
+        "limitOrderFeeHundredthPips": 20,
+        "pairAsset": {
+          "asset": "Usdc",
+          "chain": "Ethereum",
         },
+        "rangeOrderFeeHundredthPips": 20,
       },
     },
     "Ethereum": {
       "ETH": {
-        "pairAsset": "Usdc",
-        "poolInfo": {
-          "limitOrderFeeHundredthPips": 1,
-          "rangeOrderFeeHundredthPips": 2,
+        "limitOrderFeeHundredthPips": 20,
+        "pairAsset": {
+          "asset": "Usdc",
+          "chain": "Ethereum",
         },
+        "rangeOrderFeeHundredthPips": 20,
       },
       "FLIP": {
-        "pairAsset": "Usdc",
-        "poolInfo": {
-          "limitOrderFeeHundredthPips": 1,
-          "rangeOrderFeeHundredthPips": 2,
+        "limitOrderFeeHundredthPips": 20,
+        "pairAsset": {
+          "asset": "Usdc",
+          "chain": "Ethereum",
         },
-      },
-      "USDC": {
-        "pairAsset": "Usdc",
-        "poolInfo": {
-          "limitOrderFeeHundredthPips": 1,
-          "rangeOrderFeeHundredthPips": 2,
-        },
+        "rangeOrderFeeHundredthPips": 20,
       },
     },
     "Polkadot": {
       "DOT": {
-        "pairAsset": "Usdc",
-        "poolInfo": {
-          "limitOrderFeeHundredthPips": 1,
-          "rangeOrderFeeHundredthPips": 2,
+        "limitOrderFeeHundredthPips": 20,
+        "pairAsset": {
+          "asset": "Usdc",
+          "chain": "Ethereum",
         },
+        "rangeOrderFeeHundredthPips": 20,
       },
     },
   },
