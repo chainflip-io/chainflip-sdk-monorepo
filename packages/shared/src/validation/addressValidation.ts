@@ -126,10 +126,7 @@ export const validateChainAddress = (
 };
 
 export const validateAddress = (
-  assetAndChain: UncheckedAssetAndChain | undefined,
+  assetAndChain: UncheckedAssetAndChain,
   address: string,
   isMainnet = true,
-): boolean => {
-  if (!assetAndChain) return validateEvmAddress(address);
-  return validateChainAddress(assetAndChain.chain, address, isMainnet);
-};
+): boolean => validateChainAddress(assetAndChain.chain, address, isMainnet);
