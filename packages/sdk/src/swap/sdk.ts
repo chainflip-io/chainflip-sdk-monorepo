@@ -2,19 +2,12 @@ import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import { Signer } from 'ethers';
 import superjson from 'superjson';
 import { TransactionOptions } from '@/shared/contracts';
-import {
-  ChainflipNetwork,
-  Chain,
-  ChainflipNetworks,
-  assertIsValidAssetAndChain,
-  UncheckedAssetAndChain,
-} from '@/shared/enums';
+import { ChainflipNetwork, Chain, ChainflipNetworks } from '@/shared/enums';
 import { assert } from '@/shared/guards';
-import { Environment, getEnvironment } from '@/shared/rpc';
+import { Environment, RpcConfig, getEnvironment } from '@/shared/rpc';
 import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
 import type { TokenSwapParams } from '@/shared/vault/schemas';
 import type { AppRouter } from '@/swap/server';
-import { readAssetValue } from '@/swap/utils/rpc';
 import { BACKEND_SERVICE_URLS } from './consts';
 import ApiService, { RequestOptions } from './services/ApiService';
 import type {
@@ -38,6 +31,7 @@ export type SwapSDKOptions = {
     url: string;
     commissionBps: number;
   };
+  rpcUrl?: string;
 };
 
 export class SwapSDK {
@@ -53,6 +47,8 @@ export class SwapSDK {
 
   private stateChainEnvironment?: Environment;
 
+  private readonly rpcConfig: RpcConfig;
+
   constructor(options: SwapSDKOptions = {}) {
     this.network = options.network ?? ChainflipNetworks.perseverance;
     this.baseUrl = options.backendUrl ?? BACKEND_SERVICE_URLS[this.network];
@@ -62,6 +58,9 @@ export class SwapSDK {
       transformer: superjson,
       links: [httpBatchLink({ url: new URL('/trpc', this.baseUrl) })],
     });
+    this.rpcConfig = options.rpcUrl
+      ? { rpcUrl: options.rpcUrl }
+      : { network: this.network };
   }
 
   getChains(sourceChain?: Chain): Promise<ChainData[]> {
@@ -72,7 +71,7 @@ export class SwapSDK {
   }
 
   private async getStateChainEnvironment(): Promise<Environment> {
-    this.stateChainEnvironment ??= await getEnvironment(this.network);
+    this.stateChainEnvironment ??= await getEnvironment(this.rpcConfig);
 
     return this.stateChainEnvironment;
   }
@@ -176,13 +175,5 @@ export class SwapSDK {
       txOpts,
     );
     return receipt ? (receipt.hash as `0x${string}`) : null;
-  }
-
-  async getMinimumSwapAmount(asset: UncheckedAssetAndChain) {
-    assertIsValidAssetAndChain(asset);
-
-    const env = await this.getStateChainEnvironment();
-
-    return readAssetValue(env.swapping.minimumSwapAmounts, asset);
   }
 }

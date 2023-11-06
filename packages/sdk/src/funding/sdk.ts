@@ -1,7 +1,7 @@
 import type { Signer } from 'ethers';
 import { getFlipBalance, TransactionOptions } from '@/shared/contracts';
 import { ChainflipNetwork, ChainflipNetworks } from '@/shared/enums';
-import { getFundingEnvironment } from '@/shared/rpc';
+import { getFundingEnvironment, RpcConfig } from '@/shared/rpc';
 import {
   approveStateChainGateway,
   executeRedemption,
@@ -15,20 +15,25 @@ import {
 export type FundingSDKOption = {
   network?: Exclude<ChainflipNetwork, 'mainnet'>;
   signer: Signer;
+  rpcUrl?: string;
 };
 
 export type TransactionHash = `0x${string}`;
 
 export class FundingSDK {
-  private readonly options: Required<FundingSDKOption>;
+  private readonly options: Required<Omit<FundingSDKOption, 'rpcUrl'>>;
+
+  private readonly rpcConfig: RpcConfig;
 
   private redemptionTax?: bigint;
 
   constructor(options: FundingSDKOption) {
+    const network = options.network ?? ChainflipNetworks.perseverance;
     this.options = {
       signer: options.signer,
-      network: options.network ?? ChainflipNetworks.perseverance,
+      network,
     };
+    this.rpcConfig = options.rpcUrl ? { rpcUrl: options.rpcUrl } : { network };
   }
 
   /**
@@ -97,7 +102,7 @@ export class FundingSDK {
 
   async getRedemptionTax(): Promise<bigint> {
     this.redemptionTax ??= (
-      await getFundingEnvironment(this.options.network)
+      await getFundingEnvironment(this.rpcConfig)
     ).redemptionTax;
 
     return this.redemptionTax;

@@ -21,7 +21,7 @@ describe('getFundingEnvironment', () => {
   it('retrieves the funding environment', async () => {
     const spy = mockResponse(fundingEnvironment());
 
-    expect(await getFundingEnvironment('perseverance')).toEqual({
+    expect(await getFundingEnvironment({ network: 'perseverance' })).toEqual({
       redemptionTax: 0x4563918244f40000n,
       minimumFundingAmount: 0x8ac7230489e80000n,
     });
@@ -33,7 +33,7 @@ describe('getSwappingEnvironment', () => {
   it('retrieves the swapping environment', async () => {
     const spy = mockResponse(swappingEnvironment('0x4563918244f40000'));
 
-    expect(await getSwappingEnvironment('perseverance')).toEqual({
+    expect(await getSwappingEnvironment({ network: 'perseverance' })).toEqual({
       minimumSwapAmounts: {
         Bitcoin: { BTC: 0x4563918244f40000n },
         Ethereum: {
@@ -52,7 +52,9 @@ describe('getIngressEgressEnvironment', () => {
   it('retrieves the ingress egress environment', async () => {
     const spy = mockResponse(ingressEgressEnvironment('0x4563918244f40000'));
 
-    expect(await getIngressEgressEnvironment('perseverance')).toEqual({
+    expect(
+      await getIngressEgressEnvironment({ network: 'perseverance' }),
+    ).toEqual({
       minimumDepositAmounts: {
         Bitcoin: { BTC: 0x4563918244f40000n },
         Ethereum: {
@@ -71,9 +73,9 @@ describe('getPoolsEnvironment', () => {
   it('retrieves the pools environment', async () => {
     const spy = mockResponse(poolsEnvironment());
 
-    expect(await getPoolsEnvironment('perseverance')).toMatchSnapshot(
-      'pool environment',
-    );
+    expect(
+      await getPoolsEnvironment({ network: 'perseverance' }),
+    ).toMatchSnapshot('pool environment');
     expect(spy.mock.calls).toMatchSnapshot();
   });
 });
