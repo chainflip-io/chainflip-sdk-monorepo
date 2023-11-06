@@ -763,16 +763,14 @@ describe('server', () => {
     });
 
     it('rejects if amount is lower than minimum swap amount', async () => {
-      const max = `0x${Number.MAX_SAFE_INTEGER.toString(16)}`;
-
       jest.mocked(axios.post).mockResolvedValueOnce({
         data: {
           jsonrpc: '2.0',
           result: {
             minimum_swap_amounts: {
-              Ethereum: { Flip: max, Eth: max, Usdc: max },
-              Bitcoin: { Btc: max },
-              Polkadot: { Dot: max },
+              Ethereum: { Flip: '0xffffff', Eth: '0xffffff', Usdc: '0xffffff' },
+              Bitcoin: { Btc: '0xffffff' },
+              Polkadot: { Dot: '0xffffff' },
             },
           },
           id: 1,

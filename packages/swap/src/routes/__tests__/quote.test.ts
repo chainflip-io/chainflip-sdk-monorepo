@@ -1,3 +1,4 @@
+import axios from 'axios';
 import * as crypto from 'crypto';
 import { once } from 'events';
 import { Server } from 'http';
@@ -29,6 +30,22 @@ jest.mock('@/shared/consts', () => ({
   ...jest.requireActual('@/shared/consts'),
   getMinimumSwapAmount: jest.fn().mockReturnValue('100'),
   getPoolsNetworkFeeHundredthPips: jest.fn().mockReturnValue(1000),
+}));
+
+jest.mock('axios', () => ({
+  post: jest.fn().mockResolvedValue({
+    data: {
+      jsonrpc: '2.0',
+      result: {
+        minimum_swap_amounts: {
+          Ethereum: { Flip: '0x0', Eth: '0x0', Usdc: '0x0' },
+          Bitcoin: { Btc: '0x0' },
+          Polkadot: { Dot: '0x0' },
+        },
+      },
+      id: 1,
+    },
+  }),
 }));
 
 describe('server', () => {
@@ -82,6 +99,20 @@ describe('server', () => {
 
   describe('GET /quote', () => {
     it('rejects if amount is lower than minimum swap amount', async () => {
+      jest.mocked(axios.post).mockResolvedValueOnce({
+        data: {
+          jsonrpc: '2.0',
+          result: {
+            minimum_swap_amounts: {
+              Ethereum: { Flip: '0xffffff', Eth: '0xffffff', Usdc: '0xffffff' },
+              Bitcoin: { Btc: '0xffffff' },
+              Polkadot: { Dot: '0xffffff' },
+            },
+          },
+          id: 1,
+        },
+      });
+
       const params = new URLSearchParams({
         srcAsset: 'FLIP',
         destAsset: 'ETH',
