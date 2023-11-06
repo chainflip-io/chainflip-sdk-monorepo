@@ -1,5 +1,6 @@
 import axios from 'axios';
 import * as broker from '@/shared/broker';
+import { swappingEnvironment } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import openSwapDepositChannel from '../openSwapDepositChannel';
 
@@ -17,17 +18,9 @@ describe(openSwapDepositChannel, () => {
   });
 
   it('gathers and inserts the deposit channel info', async () => {
-    jest.mocked(axios.post).mockResolvedValueOnce({
-      data: {
-        result: {
-          minimum_swap_amounts: {
-            Polkadot: { Dot: '0x0' },
-            Bitcoin: { Btc: '0x0' },
-            Ethereum: { Flip: '0x0', Eth: '0x0', Usdc: '0x0' },
-          },
-        },
-      },
-    } as any);
+    jest
+      .mocked(axios.post)
+      .mockResolvedValueOnce({ data: swappingEnvironment() });
 
     jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),

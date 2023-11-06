@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { VoidSigner } from 'ethers';
 import { Assets, Chain, ChainflipNetworks, Chains } from '@/shared/enums';
+import { environment } from '@/shared/tests/fixtures';
 import { executeSwap } from '@/shared/vault';
 import { dot$, btc$, eth$, usdc$, flip$ } from '../assets';
 import { bitcoin, ethereum, polkadot } from '../chains';
@@ -31,13 +32,9 @@ const env = {
   },
   swapping: {
     minimumSwapAmounts: {
-      Ethereum: {
-        USDC: 0xf4240n,
-        ETH: 0x20f81c5f84000n,
-        FLIP: 0xde0b6b3a7640000n,
-      },
-      Polkadot: { DOT: 0x77359400n },
-      Bitcoin: { BTC: 0x5f370n },
+      Ethereum: { USDC: 0n, ETH: 0n, FLIP: 0n },
+      Polkadot: { DOT: 0n },
+      Bitcoin: { BTC: 0n },
     },
   },
 };
@@ -103,90 +100,7 @@ describe(SwapSDK, () => {
 
   describe(SwapSDK.prototype.getAssets, () => {
     beforeEach(() => {
-      jest.mocked(axios.post).mockResolvedValueOnce({
-        data: {
-          jsonrpc: '2.0',
-          result: {
-            ingress_egress: {
-              minimum_deposit_amounts: {
-                Ethereum: {
-                  Flip: '0x0',
-                  Usdc: '0x0',
-                  Eth: '0x0',
-                },
-                Polkadot: {
-                  Dot: '0x0',
-                },
-                Bitcoin: {
-                  Btc: '0x0',
-                },
-              },
-            },
-            swapping: {
-              minimum_swap_amounts: {
-                Bitcoin: {
-                  Btc: '0x5f370',
-                },
-                Ethereum: {
-                  Eth: '0x20f81c5f84000',
-                  Usdc: '0xf4240',
-                  Flip: '0xde0b6b3a7640000',
-                },
-                Polkadot: {
-                  Dot: '0x77359400',
-                },
-              },
-            },
-            funding: {
-              redemption_tax: '0x4563918244f40000',
-              minimum_funding_amount: '0x8ac7230489e80000',
-            },
-            pools: {
-              fees: {
-                Bitcoin: {
-                  Btc: {
-                    limit_order_fee_hundredth_pips: 20,
-                    range_order_fee_hundredth_pips: 20,
-                    pair_asset: {
-                      chain: 'Ethereum',
-                      asset: 'Usdc',
-                    },
-                  },
-                },
-                Polkadot: {
-                  Dot: {
-                    limit_order_fee_hundredth_pips: 20,
-                    range_order_fee_hundredth_pips: 20,
-                    pair_asset: {
-                      chain: 'Ethereum',
-                      asset: 'Usdc',
-                    },
-                  },
-                },
-                Ethereum: {
-                  Flip: {
-                    limit_order_fee_hundredth_pips: 20,
-                    range_order_fee_hundredth_pips: 20,
-                    pair_asset: {
-                      chain: 'Ethereum',
-                      asset: 'Usdc',
-                    },
-                  },
-                  Eth: {
-                    limit_order_fee_hundredth_pips: 20,
-                    range_order_fee_hundredth_pips: 20,
-                    pair_asset: {
-                      chain: 'Ethereum',
-                      asset: 'Usdc',
-                    },
-                  },
-                },
-              },
-            },
-          },
-          id: 1,
-        },
-      });
+      jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
     });
 
     it.each([
@@ -276,90 +190,7 @@ describe(SwapSDK, () => {
 
   describe(SwapSDK.prototype.getAssets, () => {
     beforeEach(() => {
-      jest.mocked(axios.post).mockResolvedValueOnce({
-        data: {
-          jsonrpc: '2.0',
-          result: {
-            ingress_egress: {
-              minimum_deposit_amounts: {
-                Ethereum: {
-                  Flip: '0x0',
-                  Usdc: '0x0',
-                  Eth: '0x0',
-                },
-                Polkadot: {
-                  Dot: '0x0',
-                },
-                Bitcoin: {
-                  Btc: '0x0',
-                },
-              },
-            },
-            swapping: {
-              minimum_swap_amounts: {
-                Bitcoin: {
-                  Btc: '0x5f370',
-                },
-                Ethereum: {
-                  Eth: '0x20f81c5f84000',
-                  Usdc: '0xf4240',
-                  Flip: '0xde0b6b3a7640000',
-                },
-                Polkadot: {
-                  Dot: '0x77359400',
-                },
-              },
-            },
-            funding: {
-              redemption_tax: '0x4563918244f40000',
-              minimum_funding_amount: '0x8ac7230489e80000',
-            },
-            pools: {
-              fees: {
-                Bitcoin: {
-                  Btc: {
-                    limit_order_fee_hundredth_pips: 20,
-                    range_order_fee_hundredth_pips: 20,
-                    pair_asset: {
-                      chain: 'Ethereum',
-                      asset: 'Usdc',
-                    },
-                  },
-                },
-                Polkadot: {
-                  Dot: {
-                    limit_order_fee_hundredth_pips: 20,
-                    range_order_fee_hundredth_pips: 20,
-                    pair_asset: {
-                      chain: 'Ethereum',
-                      asset: 'Usdc',
-                    },
-                  },
-                },
-                Ethereum: {
-                  Flip: {
-                    limit_order_fee_hundredth_pips: 20,
-                    range_order_fee_hundredth_pips: 20,
-                    pair_asset: {
-                      chain: 'Ethereum',
-                      asset: 'Usdc',
-                    },
-                  },
-                  Eth: {
-                    limit_order_fee_hundredth_pips: 20,
-                    range_order_fee_hundredth_pips: 20,
-                    pair_asset: {
-                      chain: 'Ethereum',
-                      asset: 'Usdc',
-                    },
-                  },
-                },
-              },
-            },
-          },
-          id: 1,
-        },
-      });
+      jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
     });
 
     it.each([

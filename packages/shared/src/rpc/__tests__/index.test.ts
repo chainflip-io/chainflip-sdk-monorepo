@@ -1,5 +1,11 @@
 import axios from 'axios';
 import {
+  fundingEnvironment,
+  ingressEgressEnvironment,
+  poolsEnvironment,
+  swappingEnvironment,
+} from '../../tests/fixtures';
+import {
   getFundingEnvironment,
   getSwappingEnvironment,
   getIngressEgressEnvironment,
@@ -8,25 +14,16 @@ import {
 
 jest.mock('axios');
 
-const mockResponse = (result: any) =>
-  jest.mocked(axios.post).mockResolvedValueOnce({
-    data: {
-      id: 1,
-      jsonrpc: '2.0',
-      result,
-    },
-  });
+const mockResponse = (data: any) =>
+  jest.mocked(axios.post).mockResolvedValueOnce({ data });
 
 describe('getFundingEnvironment', () => {
   it('retrieves the funding environment', async () => {
-    const spy = mockResponse({
-      redemption_tax: '0x4563918244f40000',
-      minimum_funding_amount: '0x8ac7230489e80000',
-    });
+    const spy = mockResponse(fundingEnvironment());
 
     expect(await getFundingEnvironment('perseverance')).toEqual({
-      redemptionTax: BigInt('0x4563918244f40000'),
-      minimumFundingAmount: BigInt('0x8ac7230489e80000'),
+      redemptionTax: 0x4563918244f40000n,
+      minimumFundingAmount: 0x8ac7230489e80000n,
     });
     expect(spy.mock.calls).toMatchSnapshot();
   });
@@ -34,27 +31,17 @@ describe('getFundingEnvironment', () => {
 
 describe('getSwappingEnvironment', () => {
   it('retrieves the swapping environment', async () => {
-    const spy = mockResponse({
-      minimum_swap_amounts: {
-        Bitcoin: { Btc: '0x4563918244f40000' },
-        Ethereum: {
-          Eth: '0x4563918244f40000',
-          Usdc: '0x4563918244f40000',
-          Flip: '0x4563918244f40000',
-        },
-        Polkadot: { Dot: '0x4563918244f40000' },
-      },
-    });
+    const spy = mockResponse(swappingEnvironment('0x4563918244f40000'));
 
     expect(await getSwappingEnvironment('perseverance')).toEqual({
       minimumSwapAmounts: {
-        Bitcoin: { BTC: BigInt('0x4563918244f40000') },
+        Bitcoin: { BTC: 0x4563918244f40000n },
         Ethereum: {
-          ETH: BigInt('0x4563918244f40000'),
-          USDC: BigInt('0x4563918244f40000'),
-          FLIP: BigInt('0x4563918244f40000'),
+          ETH: 0x4563918244f40000n,
+          USDC: 0x4563918244f40000n,
+          FLIP: 0x4563918244f40000n,
         },
-        Polkadot: { DOT: BigInt('0x4563918244f40000') },
+        Polkadot: { DOT: 0x4563918244f40000n },
       },
     });
     expect(spy.mock.calls).toMatchSnapshot();
@@ -63,27 +50,17 @@ describe('getSwappingEnvironment', () => {
 
 describe('getIngressEgressEnvironment', () => {
   it('retrieves the ingress egress environment', async () => {
-    const spy = mockResponse({
-      minimum_deposit_amounts: {
-        Bitcoin: { Btc: '0x4563918244f40000' },
-        Ethereum: {
-          Eth: '0x4563918244f40000',
-          Usdc: '0x4563918244f40000',
-          Flip: '0x4563918244f40000',
-        },
-        Polkadot: { Dot: '0x4563918244f40000' },
-      },
-    });
+    const spy = mockResponse(ingressEgressEnvironment('0x4563918244f40000'));
 
     expect(await getIngressEgressEnvironment('perseverance')).toEqual({
       minimumDepositAmounts: {
-        Bitcoin: { BTC: BigInt('0x4563918244f40000') },
+        Bitcoin: { BTC: 0x4563918244f40000n },
         Ethereum: {
-          ETH: BigInt('0x4563918244f40000'),
-          USDC: BigInt('0x4563918244f40000'),
-          FLIP: BigInt('0x4563918244f40000'),
+          ETH: 0x4563918244f40000n,
+          USDC: 0x4563918244f40000n,
+          FLIP: 0x4563918244f40000n,
         },
-        Polkadot: { DOT: BigInt('0x4563918244f40000') },
+        Polkadot: { DOT: 0x4563918244f40000n },
       },
     });
     expect(spy.mock.calls).toMatchSnapshot();
@@ -92,48 +69,7 @@ describe('getIngressEgressEnvironment', () => {
 
 describe('getPoolsEnvironment', () => {
   it('retrieves the pools environment', async () => {
-    const spy = mockResponse({
-      fees: {
-        Bitcoin: {
-          Btc: {
-            limit_order_fee_hundredth_pips: 20,
-            range_order_fee_hundredth_pips: 20,
-            pair_asset: {
-              chain: 'Ethereum',
-              asset: 'Usdc',
-            },
-          },
-        },
-        Polkadot: {
-          Dot: {
-            limit_order_fee_hundredth_pips: 20,
-            range_order_fee_hundredth_pips: 20,
-            pair_asset: {
-              chain: 'Ethereum',
-              asset: 'Usdc',
-            },
-          },
-        },
-        Ethereum: {
-          Flip: {
-            limit_order_fee_hundredth_pips: 20,
-            range_order_fee_hundredth_pips: 20,
-            pair_asset: {
-              chain: 'Ethereum',
-              asset: 'Usdc',
-            },
-          },
-          Eth: {
-            limit_order_fee_hundredth_pips: 20,
-            range_order_fee_hundredth_pips: 20,
-            pair_asset: {
-              chain: 'Ethereum',
-              asset: 'Usdc',
-            },
-          },
-        },
-      },
-    });
+    const spy = mockResponse(poolsEnvironment());
 
     expect(await getPoolsEnvironment('perseverance')).toMatchSnapshot(
       'pool environment',

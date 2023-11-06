@@ -4,6 +4,7 @@ import { Server } from 'http';
 import request from 'supertest';
 import * as broker from '@/shared/broker';
 import { Assets } from '@/shared/enums';
+import { swappingEnvironment } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import {
   DOT_ADDRESS,
@@ -33,17 +34,7 @@ jest.mock('@/shared/broker', () => ({
 
 jest.mock('axios', () => ({
   post: jest.fn().mockResolvedValue({
-    data: {
-      jsonrpc: '2.0',
-      result: {
-        minimum_swap_amounts: {
-          Ethereum: { Flip: '0x0', Eth: '0x0', Usdc: '0x0' },
-          Bitcoin: { Btc: '0x0' },
-          Polkadot: { Dot: '0x0' },
-        },
-      },
-      id: 1,
-    },
+    data: swappingEnvironment(),
   }),
 }));
 
@@ -763,19 +754,9 @@ describe('server', () => {
     });
 
     it('rejects if amount is lower than minimum swap amount', async () => {
-      jest.mocked(axios.post).mockResolvedValueOnce({
-        data: {
-          jsonrpc: '2.0',
-          result: {
-            minimum_swap_amounts: {
-              Ethereum: { Flip: '0xffffff', Eth: '0xffffff', Usdc: '0xffffff' },
-              Bitcoin: { Btc: '0xffffff' },
-              Polkadot: { Dot: '0xffffff' },
-            },
-          },
-          id: 1,
-        },
-      });
+      jest
+        .mocked(axios.post)
+        .mockResolvedValueOnce({ data: swappingEnvironment('0xffffff') });
 
       const { body, status } = await request(app).post('/swaps').send({
         srcAsset: Assets.DOT,

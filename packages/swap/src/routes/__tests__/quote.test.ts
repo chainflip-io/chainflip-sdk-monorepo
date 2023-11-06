@@ -6,6 +6,7 @@ import { AddressInfo } from 'net';
 import request from 'supertest';
 import { promisify } from 'util';
 import RpcClient from '@/shared/node-apis/RpcClient';
+import { swappingEnvironment } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import QuotingClient from '../../quoting/QuotingClient';
 import app from '../../server';
@@ -34,17 +35,7 @@ jest.mock('@/shared/consts', () => ({
 
 jest.mock('axios', () => ({
   post: jest.fn().mockResolvedValue({
-    data: {
-      jsonrpc: '2.0',
-      result: {
-        minimum_swap_amounts: {
-          Ethereum: { Flip: '0x0', Eth: '0x0', Usdc: '0x0' },
-          Bitcoin: { Btc: '0x0' },
-          Polkadot: { Dot: '0x0' },
-        },
-      },
-      id: 1,
-    },
+    data: swappingEnvironment(),
   }),
 }));
 
@@ -99,19 +90,9 @@ describe('server', () => {
 
   describe('GET /quote', () => {
     it('rejects if amount is lower than minimum swap amount', async () => {
-      jest.mocked(axios.post).mockResolvedValueOnce({
-        data: {
-          jsonrpc: '2.0',
-          result: {
-            minimum_swap_amounts: {
-              Ethereum: { Flip: '0xffffff', Eth: '0xffffff', Usdc: '0xffffff' },
-              Bitcoin: { Btc: '0xffffff' },
-              Polkadot: { Dot: '0xffffff' },
-            },
-          },
-          id: 1,
-        },
-      });
+      jest
+        .mocked(axios.post)
+        .mockResolvedValueOnce({ data: swappingEnvironment('0xffffff') });
 
       const params = new URLSearchParams({
         srcAsset: 'FLIP',
