@@ -18,7 +18,9 @@ class MockERC20 {
 
 jest.mock('@/shared/abis/factories/ERC20__factory', () => ({
   ERC20__factory: class {
-    static connect: () => MockERC20 = jest.fn(() => new MockERC20());
+    static connect() {
+      return new MockERC20();
+    }
   },
 }));
 const spender = '0xdeadbeef';
