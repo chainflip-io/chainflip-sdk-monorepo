@@ -65,3 +65,26 @@ export const chainContractIds: Record<Chain, number> = {
   [Chains.Polkadot]: 2,
   [Chains.Bitcoin]: 3,
 };
+
+export type AssetAndChain = {
+  [K in Asset]: { asset: K; chain: (typeof assetChains)[K] };
+}[Asset];
+
+export type UncheckedAssetAndChain = {
+  asset: Asset;
+  chain: Chain;
+};
+
+function assertAsset(asset: string): asserts asset is Asset {
+  if (!(asset in Assets)) throw new Error('invalid asset');
+}
+
+export function assertIsValidAssetAndChain(
+  assetAndChain: UncheckedAssetAndChain,
+): asserts assetAndChain is AssetAndChain {
+  const { asset, chain } = assetAndChain;
+  assertAsset(asset);
+  if (chain !== assetChains[asset]) {
+    throw new Error('invalid asset and chain combination');
+  }
+}

@@ -2,12 +2,19 @@ import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import { Signer } from 'ethers';
 import superjson from 'superjson';
 import { TransactionOptions } from '@/shared/contracts';
-import { ChainflipNetwork, Chain, ChainflipNetworks } from '@/shared/enums';
+import {
+  ChainflipNetwork,
+  Chain,
+  ChainflipNetworks,
+  assertIsValidAssetAndChain,
+  UncheckedAssetAndChain,
+} from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { Environment, getEnvironment } from '@/shared/rpc';
 import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
 import type { TokenSwapParams } from '@/shared/vault/schemas';
 import type { AppRouter } from '@/swap/server';
+import { readAssetValue } from '@/swap/utils/rpc';
 import { BACKEND_SERVICE_URLS } from './consts';
 import ApiService, { RequestOptions } from './services/ApiService';
 import type {
@@ -44,7 +51,7 @@ export class SwapSDK {
 
   private readonly brokerConfig?;
 
-  private environment?: Environment;
+  private stateChainEnvironment?: Environment;
 
   constructor(options: SwapSDKOptions = {}) {
     this.network = options.network ?? ChainflipNetworks.perseverance;
@@ -64,10 +71,16 @@ export class SwapSDK {
     return ApiService.getChains(this.network);
   }
 
-  async getAssets(chain: Chain): Promise<AssetData[]> {
-    this.environment ??= await getEnvironment(this.network);
+  private async getStateChainEnvironment(): Promise<Environment> {
+    this.stateChainEnvironment ??= await getEnvironment(this.network);
 
-    return ApiService.getAssets(chain, this.network, this.environment);
+    return this.stateChainEnvironment;
+  }
+
+  async getAssets(chain: Chain): Promise<AssetData[]> {
+    const env = await this.getStateChainEnvironment();
+
+    return ApiService.getAssets(chain, this.network, env);
   }
 
   getQuote(
@@ -77,10 +90,20 @@ export class SwapSDK {
     return ApiService.getQuote(this.baseUrl, quoteRequest, options);
   }
 
-  async requestDepositAddress(
-    depositAddressRequest: DepositAddressRequest,
-  ): Promise<DepositAddressResponse> {
+  async requestDepositAddress({
+    srcAsset,
+    srcChain,
+    destAsset,
+    destChain,
+    ...rest
+  }: DepositAddressRequest): Promise<DepositAddressResponse> {
     let response;
+
+    const depositAddressRequest = {
+      ...rest,
+      srcAsset: { asset: srcAsset, chain: srcChain },
+      destAsset: { asset: destAsset, chain: destChain },
+    };
 
     if (this.brokerConfig !== undefined) {
       const { requestSwapDepositAddress } = await import('@/shared/broker');
@@ -91,7 +114,7 @@ export class SwapSDK {
       );
 
       response = {
-        id: `${result.issuedBlock}-${depositAddressRequest.srcChain}-${result.channelId}`,
+        id: `${result.issuedBlock}-${srcChain}-${result.channelId}`,
         depositAddress: result.address,
         srcChainExpiryBlock: result.sourceChainExpiryBlock,
       };
@@ -102,7 +125,11 @@ export class SwapSDK {
     }
 
     return {
-      ...depositAddressRequest,
+      ...rest,
+      srcAsset,
+      srcChain,
+      destAsset,
+      destChain,
       depositChannelId: response.id,
       depositAddress: response.depositAddress,
       depositChannelExpiryBlock: response.srcChainExpiryBlock as bigint,
@@ -149,5 +176,13 @@ export class SwapSDK {
       txOpts,
     );
     return receipt ? (receipt.hash as `0x${string}`) : null;
+  }
+
+  async getMinimumSwapAmount(asset: UncheckedAssetAndChain) {
+    assertIsValidAssetAndChain(asset);
+
+    const env = await this.getStateChainEnvironment();
+
+    return readAssetValue(env.swapping.minimumSwapAmounts, asset);
   }
 }

@@ -2,7 +2,11 @@ import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import axios from 'axios';
 import { z } from 'zod';
-import { Asset, Assets, Chain } from './enums';
+import {
+  Assets,
+  UncheckedAssetAndChain,
+  assertIsValidAssetAndChain,
+} from './enums';
 import { isNotNullish } from './guards';
 import {
   hexString,
@@ -17,10 +21,8 @@ import { CcmMetadata, ccmMetadataSchema } from './schemas';
 import { CamelCaseToSnakeCase, camelToSnakeCase } from './strings';
 
 type NewSwapRequest = {
-  srcAsset: Asset;
-  destAsset: Asset;
-  srcChain: Chain;
-  destChain: Chain;
+  srcAsset: UncheckedAssetAndChain;
+  destAsset: UncheckedAssetAndChain;
   destAddress: string;
   ccmMetadata?: CcmMetadata;
 };
@@ -42,7 +44,10 @@ const transformObjToSnakeCase = <T>(
   return newObj as SnakeCaseKeys<T>;
 };
 
-const submitAddress = (asset: Asset, address: string): string => {
+const submitAddress = (
+  { asset }: UncheckedAssetAndChain,
+  address: string,
+): string => {
   if (asset === Assets.DOT) {
     return address.startsWith('0x')
       ? z.string().length(66).parse(address) // we only accept 32 byte dot addresses
@@ -135,13 +140,15 @@ export async function requestSwapDepositAddress(
   swapRequest: NewSwapRequest,
   opts: { url: string; commissionBps: number },
 ): Promise<DepositChannelResponse> {
-  const { srcAsset, srcChain, destAsset, destChain, destAddress } = swapRequest;
+  const { srcAsset, destAsset, destAddress } = swapRequest;
+  assertIsValidAssetAndChain(srcAsset);
+  assertIsValidAssetAndChain(destAsset);
 
   return makeRpcRequest(
     opts.url,
     'requestSwapDepositAddress',
-    { asset: srcAsset, chain: srcChain },
-    { asset: destAsset, chain: destChain },
+    srcAsset,
+    destAsset,
     submitAddress(destAsset, destAddress),
     opts.commissionBps,
     swapRequest.ccmMetadata && {

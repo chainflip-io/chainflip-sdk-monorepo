@@ -25,15 +25,30 @@ export const ccmMetadataSchema = z.object({
 export type CcmMetadata = z.infer<typeof ccmMetadataSchema>;
 
 export const openSwapDepositChannelSchema = z
-  .object({
-    srcAsset: chainflipAsset,
-    destAsset: chainflipAsset,
-    srcChain: chainflipChain,
-    destChain: chainflipChain,
-    destAddress: z.string(),
-    amount: numericString,
-    ccmMetadata: ccmMetadataSchema.optional(),
-  })
+  .intersection(
+    z.object({
+      destAddress: z.string(),
+      amount: numericString,
+      ccmMetadata: ccmMetadataSchema.optional(),
+    }),
+    z.union([
+      z
+        .object({
+          srcAsset: chainflipAsset,
+          destAsset: chainflipAsset,
+          srcChain: chainflipChain,
+          destChain: chainflipChain,
+        })
+        .transform(({ srcAsset, srcChain, destAsset, destChain }) => ({
+          srcAsset: { asset: srcAsset, chain: srcChain },
+          destAsset: { asset: destAsset, chain: destChain },
+        })),
+      z.object({
+        srcAsset: chainflipAssetAndChain,
+        destAsset: chainflipAssetAndChain,
+      }),
+    ]),
+  )
   .transform(({ amount, ...rest }) => ({
     ...rest,
     expectedDepositAmount: amount,

@@ -96,11 +96,9 @@ export class FundingSDK {
   }
 
   async getRedemptionTax(): Promise<bigint> {
-    if (this.redemptionTax) return this.redemptionTax;
-
-    const fundingEnv = await getFundingEnvironment(this.options.network);
-
-    this.redemptionTax = fundingEnv.minimumFundingAmount;
+    this.redemptionTax ??= (
+      await getFundingEnvironment(this.options.network)
+    ).redemptionTax;
 
     return this.redemptionTax;
   }

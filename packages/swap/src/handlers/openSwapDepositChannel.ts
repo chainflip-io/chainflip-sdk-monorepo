@@ -35,7 +35,7 @@ export default async function openSwapDepositChannel(
     commissionBps: 0,
   });
 
-  const { destChain, ...rest } = input;
+  const { destAsset, srcAsset, ...rest } = input;
   const [
     { issuedBlock, srcChain, channelId, depositAddress: channelDepositAddress },
     chainInfo,
@@ -45,26 +45,29 @@ export default async function openSwapDepositChannel(
         issuedBlock_srcChain_channelId: {
           channelId: blockInfo.channelId,
           issuedBlock: blockInfo.issuedBlock,
-          srcChain: input.srcChain,
+          srcChain: srcAsset.chain,
         },
       },
       create: {
         ...rest,
         depositAddress,
         srcChainExpiryBlock,
+        srcAsset: srcAsset.asset,
+        srcChain: srcAsset.chain,
+        destAsset: destAsset.asset,
         ...blockInfo,
       },
       update: {},
     }),
     prisma.chainTracking.findFirst({
       where: {
-        chain: input.srcChain,
+        chain: srcAsset.chain,
       },
     }),
   ]);
 
   const estimatedExpiryTime = calculateExpiryTime({
-    chain: input.srcChain,
+    chain: srcAsset.chain,
     startBlock: chainInfo?.height,
     expiryBlock: srcChainExpiryBlock,
   });

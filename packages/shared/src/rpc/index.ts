@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { z } from 'zod';
-import { ChainflipNetwork } from '../enums';
+import { ChainflipNetwork, ChainflipNetworks } from '../enums';
 
 const numberOrHex = z
   .union([z.string(), z.number()])
@@ -30,6 +30,13 @@ const camelCaseKeys = <T>(obj: T): CamelCaseRecord<T> => {
   ) as CamelCaseRecord<T>;
 };
 
+const RPC_URLS: Record<ChainflipNetwork, string> = {
+  [ChainflipNetworks.backspin]: 'https://backspin-rpc.staging',
+  [ChainflipNetworks.sisyphos]: 'https://sisyphos.chainflip.xyz',
+  [ChainflipNetworks.perseverance]: 'https://perseverance.chainflip.xyz',
+  [ChainflipNetworks.mainnet]: 'https://mainnet.chainflip.io',
+};
+
 const createRequest =
   <P extends z.ZodTypeAny, R extends z.ZodTypeAny>(
     method: string,
@@ -41,7 +48,7 @@ const createRequest =
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     params: z.input<P> extends any ? void : z.input<P>,
   ): Promise<CamelCaseRecord<z.output<R>>> => {
-    const { data } = await axios.post(`https://${network}.chainflip.xyz`, {
+    const { data } = await axios.post(RPC_URLS[network], {
       jsonrpc: '2.0',
       method,
       params: paramsParser?.parse(params),
