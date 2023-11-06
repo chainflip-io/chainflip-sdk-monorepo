@@ -1,3 +1,4 @@
+import axios from 'axios';
 import * as crypto from 'crypto';
 import { Server } from 'http';
 import request from 'supertest';
@@ -28,6 +29,22 @@ jest.mock('@/shared/broker', () => ({
   requestSwapDepositAddress: jest
     .fn()
     .mockRejectedValue(Error('unhandled mock')),
+}));
+
+jest.mock('axios', () => ({
+  post: jest.fn().mockResolvedValue({
+    data: {
+      jsonrpc: '2.0',
+      result: {
+        minimum_swap_amounts: {
+          Ethereum: { Flip: '0x0', Eth: '0x0', Usdc: '0x0' },
+          Bitcoin: { Btc: '0x0' },
+          Polkadot: { Dot: '0x0' },
+        },
+      },
+      id: 1,
+    },
+  }),
 }));
 
 const RECEIVED_TIMESTAMP = 1669907135201;
@@ -637,7 +654,7 @@ describe('server', () => {
           .send(requestBody);
 
         expect(body).toMatchObject({
-          id: '123-Ethereum-200',
+          id: `123-${requestBody.srcAsset.chain}-200`,
           depositAddress: address,
           issuedBlock,
         });
@@ -650,9 +667,9 @@ describe('server', () => {
 
         expect(swapDepositChannel).toMatchObject({
           id: expect.any(BigInt),
-          srcAsset: requestBody.srcAsset,
+          srcAsset: requestBody.srcAsset.asset,
           depositAddress: address,
-          destAsset: requestBody.destAsset,
+          destAsset: requestBody.destAsset.asset,
           destAddress: requestBody.destAddress,
           issuedBlock,
           channelId,
@@ -745,19 +762,35 @@ describe('server', () => {
       });
     });
 
-    it('rejects if amount is lower than minimum deposit amount', async () => {
+    it('rejects if amount is lower than minimum swap amount', async () => {
+      const max = `0x${Number.MAX_SAFE_INTEGER.toString(16)}`;
+
+      jest.mocked(axios.post).mockResolvedValueOnce({
+        data: {
+          jsonrpc: '2.0',
+          result: {
+            minimum_swap_amounts: {
+              Ethereum: { Flip: max, Eth: max, Usdc: max },
+              Bitcoin: { Btc: max },
+              Polkadot: { Dot: max },
+            },
+          },
+          id: 1,
+        },
+      });
+
       const { body, status } = await request(app).post('/swaps').send({
         srcAsset: Assets.DOT,
         destAsset: Assets.ETH,
-        srcChain: 'Ethereum',
-        destChain: 'Polkadot',
+        srcChain: 'Polkadot',
+        destChain: 'Ethereum',
         destAddress: ETH_ADDRESS,
         amount: '5',
       });
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
-        message: 'expected amount is below minimum deposit amount',
+        message: 'expected amount is below minimum swap amount',
       });
     });
   });

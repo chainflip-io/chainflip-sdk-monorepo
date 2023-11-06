@@ -6,7 +6,7 @@ import {
 } from '@polkadot/util-crypto';
 import * as ethers from 'ethers';
 import { isValidSegwitAddress } from './segwitAddr';
-import { Asset, Assets, Chain, Chains, UncheckedAssetAndChain } from '../enums';
+import { Chain, UncheckedAssetAndChain } from '../enums';
 import { assert } from '../guards';
 
 export type AddressValidator = (address: string) => boolean;
@@ -106,24 +106,24 @@ export const validateBitcoinRegtestAddress: AddressValidator = (
 ) => validateBitcoinAddress(address, 'regtest');
 
 export const validateChainAddress = (
+  chain: Chain,
   address: string,
   isMainnet = true,
-): Record<Chain | Asset, boolean> => ({
-  [Assets.ETH]: validateEvmAddress(address),
-  [Assets.BTC]: isMainnet
-    ? validateBitcoinMainnetAddress(address)
-    : validateBitcoinTestnetAddress(address) ||
-      validateBitcoinRegtestAddress(address),
-  [Assets.DOT]: validatePolkadotAddress(address),
-  [Assets.FLIP]: validateEvmAddress(address),
-  [Assets.USDC]: validateEvmAddress(address),
-  [Chains.Ethereum]: validateEvmAddress(address),
-  [Chains.Bitcoin]: isMainnet
-    ? validateBitcoinMainnetAddress(address)
-    : validateBitcoinTestnetAddress(address) ||
-      validateBitcoinRegtestAddress(address),
-  [Chains.Polkadot]: validatePolkadotAddress(address),
-});
+): boolean => {
+  switch (chain) {
+    case 'Bitcoin':
+      return isMainnet
+        ? validateBitcoinMainnetAddress(address)
+        : validateBitcoinTestnetAddress(address) ||
+            validateBitcoinRegtestAddress(address);
+    case 'Ethereum':
+      return validateEvmAddress(address);
+    case 'Polkadot':
+      return validatePolkadotAddress(address);
+    default:
+      return chain;
+  }
+};
 
 export const validateAddress = (
   assetAndChain: UncheckedAssetAndChain | undefined,
@@ -131,5 +131,5 @@ export const validateAddress = (
   isMainnet = true,
 ): boolean => {
   if (!assetAndChain) return validateEvmAddress(address);
-  return validateChainAddress(address, isMainnet)[assetAndChain.chain];
+  return validateChainAddress(assetAndChain.chain, address, isMainnet);
 };

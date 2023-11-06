@@ -6,7 +6,7 @@ import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';
 import { isProduction } from '../utils/consts';
 import { calculateExpiryTime } from '../utils/function';
-import { getMinimumDepositAmount } from '../utils/rpc';
+import { getMinimumSwapAmount } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
 
 export default async function openSwapDepositChannel(
@@ -16,13 +16,14 @@ export default async function openSwapDepositChannel(
     throw ServiceError.badRequest('provided address is not valid');
   }
 
-  const minimumAmount = await getMinimumDepositAmount(
+  const minimumAmount = await getMinimumSwapAmount(
     process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
     input.srcAsset,
   );
+
   if (BigInt(input.expectedDepositAmount) < minimumAmount) {
     throw ServiceError.badRequest(
-      'expected amount is below minimum deposit amount',
+      'expected amount is below minimum swap amount',
     );
   }
 
