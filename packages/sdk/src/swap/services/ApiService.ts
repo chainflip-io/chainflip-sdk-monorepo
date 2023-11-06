@@ -1,8 +1,7 @@
 import axios from 'axios';
 import { type ChainflipNetwork, Chain, Chains } from '@/shared/enums';
-import type { ChainAssetMap, Environment } from '@/shared/rpc';
+import type { Environment } from '@/shared/rpc';
 import type { QuoteQueryParams, QuoteQueryResponse } from '@/shared/schemas';
-import * as rpc from '@/swap/utils/rpc';
 import { dot$, btc$, eth$, usdc$, flip$ } from '../assets';
 import { bitcoin, ethereum, polkadot } from '../chains';
 import {
