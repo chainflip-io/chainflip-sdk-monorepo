@@ -32,10 +32,8 @@ describe('openSwapDepositChannel', () => {
     });
 
     const result = await openSwapDepositChannel({
-      srcAsset: 'FLIP',
-      destAsset: 'DOT',
-      srcChain: 'Ethereum',
-      destChain: 'Polkadot',
+      srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+      destAsset: { asset: 'DOT', chain: 'Polkadot' },
       destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
       expectedDepositAmount: '777',
     });

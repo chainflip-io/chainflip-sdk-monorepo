@@ -27,11 +27,9 @@ describe(broker.requestSwapDepositAddress, () => {
     });
     const result = await broker.requestSwapDepositAddress(
       {
-        srcAsset: Assets.FLIP,
-        destAsset: Assets.USDC,
-        srcChain: 'Ethereum',
+        srcAsset: { asset: Assets.FLIP, chain: 'Ethereum' },
+        destAsset: { asset: Assets.USDC, chain: 'Ethereum' },
         destAddress: '0xcafebabe',
-        destChain: 'Ethereum',
       },
       brokerConfig,
     );
@@ -69,11 +67,9 @@ describe(broker.requestSwapDepositAddress, () => {
     });
     const result = await broker.requestSwapDepositAddress(
       {
-        srcAsset: Assets.FLIP,
-        destAsset: Assets.USDC,
-        srcChain: 'Ethereum',
+        srcAsset: { asset: Assets.FLIP, chain: 'Ethereum' },
+        destAsset: { asset: Assets.USDC, chain: 'Ethereum' },
         destAddress: '0xcafebabe',
-        destChain: 'Ethereum',
         ccmMetadata: {
           gasBudget: '123456789',
           message: '0xdeadc0de',
@@ -119,11 +115,9 @@ describe(broker.requestSwapDepositAddress, () => {
     await expect(
       broker.requestSwapDepositAddress(
         {
-          srcAsset: Assets.FLIP,
-          destAsset: Assets.USDC,
-          srcChain: 'Ethereum',
+          srcAsset: { asset: Assets.FLIP, chain: 'Ethereum' },
+          destAsset: { asset: Assets.USDC, chain: 'Ethereum' },
           destAddress: '0xcafebabe',
-          destChain: 'Ethereum',
         },
         brokerConfig,
       ),
