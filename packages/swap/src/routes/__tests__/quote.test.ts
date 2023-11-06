@@ -34,11 +34,12 @@ jest.mock('@/shared/consts', () => ({
 }));
 
 jest.mock('axios', () => ({
-  post: jest.fn().mockResolvedValue({
-    data: swappingEnvironment(),
-  }),
+  post: jest.fn(() =>
+    Promise.resolve({
+      data: swappingEnvironment(),
+    }),
+  ),
 }));
-
 describe('server', () => {
   let server: Server;
   let client: QuotingClient;

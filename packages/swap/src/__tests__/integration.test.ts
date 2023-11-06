@@ -23,7 +23,7 @@ import { getBrokerQuote } from '../utils/statechain';
 jest.mock('../utils/statechain', () => ({ getBrokerQuote: jest.fn() }));
 
 jest.mock('axios', () => ({
-  post: jest.fn().mockResolvedValue(swappingEnvironment()),
+  post: jest.fn().mockResolvedValue({ data: swappingEnvironment() }),
 }));
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);

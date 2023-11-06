@@ -33,9 +33,11 @@ jest.mock('@/shared/broker', () => ({
 }));
 
 jest.mock('axios', () => ({
-  post: jest.fn().mockResolvedValue({
-    data: swappingEnvironment(),
-  }),
+  post: jest.fn(() =>
+    Promise.resolve({
+      data: swappingEnvironment(),
+    }),
+  ),
 }));
 
 const RECEIVED_TIMESTAMP = 1669907135201;
