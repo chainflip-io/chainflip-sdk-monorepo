@@ -56,7 +56,7 @@ const env = {
 
 describe(SwapSDK, () => {
   beforeEach(() => {
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
   const sdk = new SwapSDK({ network: ChainflipNetworks.perseverance });
