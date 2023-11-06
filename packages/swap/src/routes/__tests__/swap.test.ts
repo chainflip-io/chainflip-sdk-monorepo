@@ -606,68 +606,63 @@ describe('server', () => {
 
   describe('POST /swaps', () => {
     const ethToDotSwapRequestBody = {
-      srcAsset: Assets.ETH,
-      destAsset: Assets.DOT,
-      srcChain: 'Ethereum',
-      destChain: 'Polkadot',
+      srcAsset: { asset: Assets.ETH, chain: 'Ethereum' },
+      destAsset: { asset: Assets.DOT, chain: 'Polkadot' },
       destAddress: DOT_ADDRESS,
       amount: '1000000000',
     } as const;
     const dotToEthSwapRequestBody = {
-      srcAsset: Assets.DOT,
-      destAsset: Assets.ETH,
-      srcChain: 'Ethereum',
-      destChain: 'Polkadot',
+      srcAsset: { asset: Assets.DOT, chain: 'Polkadot' },
+      destAsset: { asset: Assets.ETH, chain: 'Ethereum' },
       destAddress: ETH_ADDRESS,
       amount: '1000000000',
     } as const;
 
-    it.each([
-      [ethToDotSwapRequestBody],
-      [ethToDotSwapRequestBody],
-      [dotToEthSwapRequestBody],
-    ])('creates a new swap deposit channel', async (requestBody) => {
-      const issuedBlock = 123;
-      const channelId = 200n;
-      const address = 'THE_INGRESS_ADDRESS';
-      const sourceChainExpiryBlock = 1_000_000n;
-      jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
-        address,
-        issuedBlock,
-        channelId,
-        sourceChainExpiryBlock,
-      });
-
-      const { body, status } = await request(app)
-        .post('/swaps')
-        .send(requestBody);
-
-      expect(body).toMatchObject({
-        id: '123-Ethereum-200',
-        depositAddress: address,
-        issuedBlock,
-      });
-      expect(status).toBe(200);
-
-      const swapDepositChannel =
-        await prisma.swapDepositChannel.findFirstOrThrow({
-          where: { depositAddress: address },
+    it.each([[ethToDotSwapRequestBody], [dotToEthSwapRequestBody]])(
+      'creates a new swap deposit channel',
+      async (requestBody) => {
+        const issuedBlock = 123;
+        const channelId = 200n;
+        const address = 'THE_INGRESS_ADDRESS';
+        const sourceChainExpiryBlock = 1_000_000n;
+        jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+          address,
+          issuedBlock,
+          channelId,
+          sourceChainExpiryBlock,
         });
 
-      expect(swapDepositChannel).toMatchObject({
-        id: expect.any(BigInt),
-        srcAsset: requestBody.srcAsset,
-        depositAddress: address,
-        destAsset: requestBody.destAsset,
-        destAddress: requestBody.destAddress,
-        issuedBlock,
-        channelId,
-        createdAt: expect.any(Date),
-      });
-      expect(swapDepositChannel?.expectedDepositAmount.toString()).toBe(
-        requestBody.amount,
-      );
-    });
+        const { body, status } = await request(app)
+          .post('/swaps')
+          .send(requestBody);
+
+        expect(body).toMatchObject({
+          id: '123-Ethereum-200',
+          depositAddress: address,
+          issuedBlock,
+        });
+        expect(status).toBe(200);
+
+        const swapDepositChannel =
+          await prisma.swapDepositChannel.findFirstOrThrow({
+            where: { depositAddress: address },
+          });
+
+        expect(swapDepositChannel).toMatchObject({
+          id: expect.any(BigInt),
+          srcAsset: requestBody.srcAsset,
+          depositAddress: address,
+          destAsset: requestBody.destAsset,
+          destAddress: requestBody.destAddress,
+          issuedBlock,
+          channelId,
+          createdAt: expect.any(Date),
+        });
+        expect(swapDepositChannel?.expectedDepositAmount.toString()).toBe(
+          requestBody.amount,
+        );
+      },
+    );
 
     it('does not update the already existing deposit channel', async () => {
       const requestBody = ethToDotSwapRequestBody;
@@ -679,7 +674,7 @@ describe('server', () => {
 
       await createDepositChannel({
         channelId,
-        srcChain: requestBody.srcChain,
+        srcChain: requestBody.srcAsset.chain,
         issuedBlock,
         depositAddress: oldAddress,
       });
