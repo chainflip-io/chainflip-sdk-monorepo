@@ -21,6 +21,30 @@ import { getBrokerQuote } from '../utils/statechain';
 
 jest.mock('../utils/statechain', () => ({ getBrokerQuote: jest.fn() }));
 
+jest.mock('axios', () => ({
+  post: jest.fn().mockResolvedValue({
+    data: {
+      jsonrpc: '2.0',
+      result: {
+        minimum_swap_amounts: {
+          Ethereum: {
+            Flip: '0xde0b6b3a7640000',
+            Eth: '0x20f81c5f84000',
+            Usdc: '0xf4240',
+          },
+          Bitcoin: {
+            Btc: '0x5f370',
+          },
+          Polkadot: {
+            Dot: '0x77359400',
+          },
+        },
+      },
+      id: 1,
+    },
+  }),
+}));
+
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
 describe('python integration test', () => {

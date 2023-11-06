@@ -15,7 +15,7 @@ export const readAssetValue = (
   asset: AssetAndChain,
 ) => {
   const chainMinimums = minimums[asset.chain];
-  return chainMinimums[asset as keyof typeof chainMinimums];
+  return chainMinimums[asset.asset as keyof typeof chainMinimums];
 };
 
 export const getMinimumDepositAmount = async (
