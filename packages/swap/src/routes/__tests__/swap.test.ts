@@ -628,51 +628,51 @@ describe('server', () => {
       amount: '1000000000',
     } as const;
 
-    it.each([[ethToDotSwapRequestBody], [dotToEthSwapRequestBody]])(
-      'creates a new swap deposit channel',
-      async (requestBody) => {
-        const issuedBlock = 123;
-        const channelId = 200n;
-        const address = 'THE_INGRESS_ADDRESS';
-        const sourceChainExpiryBlock = 1_000_000n;
-        jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
-          address,
-          issuedBlock,
-          channelId,
-          sourceChainExpiryBlock,
+    it.each([
+      [ethToDotSwapRequestBody], // a comment to prevent a huge PR diff
+      [dotToEthSwapRequestBody],
+    ])('creates a new swap deposit channel', async (requestBody) => {
+      const issuedBlock = 123;
+      const channelId = 200n;
+      const address = 'THE_INGRESS_ADDRESS';
+      const sourceChainExpiryBlock = 1_000_000n;
+      jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+        address,
+        issuedBlock,
+        channelId,
+        sourceChainExpiryBlock,
+      });
+
+      const { body, status } = await request(app)
+        .post('/swaps')
+        .send(requestBody);
+
+      expect(body).toMatchObject({
+        id: `123-${requestBody.srcAsset.chain}-200`,
+        depositAddress: address,
+        issuedBlock,
+      });
+      expect(status).toBe(200);
+
+      const swapDepositChannel =
+        await prisma.swapDepositChannel.findFirstOrThrow({
+          where: { depositAddress: address },
         });
 
-        const { body, status } = await request(app)
-          .post('/swaps')
-          .send(requestBody);
-
-        expect(body).toMatchObject({
-          id: `123-${requestBody.srcAsset.chain}-200`,
-          depositAddress: address,
-          issuedBlock,
-        });
-        expect(status).toBe(200);
-
-        const swapDepositChannel =
-          await prisma.swapDepositChannel.findFirstOrThrow({
-            where: { depositAddress: address },
-          });
-
-        expect(swapDepositChannel).toMatchObject({
-          id: expect.any(BigInt),
-          srcAsset: requestBody.srcAsset.asset,
-          depositAddress: address,
-          destAsset: requestBody.destAsset.asset,
-          destAddress: requestBody.destAddress,
-          issuedBlock,
-          channelId,
-          createdAt: expect.any(Date),
-        });
-        expect(swapDepositChannel?.expectedDepositAmount.toString()).toBe(
-          requestBody.amount,
-        );
-      },
-    );
+      expect(swapDepositChannel).toMatchObject({
+        id: expect.any(BigInt),
+        srcAsset: requestBody.srcAsset.asset,
+        depositAddress: address,
+        destAsset: requestBody.destAsset.asset,
+        destAddress: requestBody.destAddress,
+        issuedBlock,
+        channelId,
+        createdAt: expect.any(Date),
+      });
+      expect(swapDepositChannel?.expectedDepositAmount.toString()).toBe(
+        requestBody.amount,
+      );
+    });
 
     it('does not update the already existing deposit channel', async () => {
       const requestBody = ethToDotSwapRequestBody;
