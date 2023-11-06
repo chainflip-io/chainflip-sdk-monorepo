@@ -20,18 +20,10 @@ describe(openSwapDepositChannel, () => {
     jest.mocked(axios.post).mockResolvedValueOnce({
       data: {
         result: {
-          minimum_deposit_amounts: {
-            Polkadot: {
-              Dot: '0x0',
-            },
-            Bitcoin: {
-              Btc: '0x0',
-            },
-            Ethereum: {
-              Flip: '0x0',
-              Eth: '0x0',
-              Usdc: '0x0',
-            },
+          minimum_swap_amounts: {
+            Polkadot: { Dot: '0x0' },
+            Bitcoin: { Btc: '0x0' },
+            Ethereum: { Flip: '0x0', Eth: '0x0', Usdc: '0x0' },
           },
         },
       },
