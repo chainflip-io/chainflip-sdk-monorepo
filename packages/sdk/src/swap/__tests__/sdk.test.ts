@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { VoidSigner } from 'ethers';
-import { Chain, ChainflipNetworks, Chains } from '@/shared/enums';
+import { Assets, Chain, ChainflipNetworks, Chains } from '@/shared/enums';
 import { executeSwap } from '@/shared/vault';
 import { dot$, btc$, eth$, usdc$, flip$ } from '../assets';
 import { bitcoin, ethereum, polkadot } from '../chains';
@@ -434,15 +434,31 @@ describe(SwapSDK, () => {
         } as any);
 
       const response = await sdk.requestDepositAddress({
-        property: true,
-      } as any);
-      expect(rpcSpy).toHaveBeenLastCalledWith({ property: true });
+        srcChain: Chains.Bitcoin,
+        srcAsset: Assets.BTC,
+        destChain: Chains.Ethereum,
+        destAsset: Assets.FLIP,
+        destAddress: '0xcafebabe',
+        amount: BigInt(1e18).toString(),
+      });
+      expect(rpcSpy).toHaveBeenLastCalledWith({
+        srcAsset: { chain: Chains.Bitcoin, asset: Assets.BTC },
+        destAsset: { chain: Chains.Ethereum, asset: Assets.FLIP },
+        destAddress: '0xcafebabe',
+        amount: BigInt(1e18).toString(),
+      });
       expect(response).toStrictEqual({
-        property: true,
         depositChannelId: 'channel id',
         depositAddress: 'deposit address',
         depositChannelExpiryBlock: 123n,
         estimatedDepositChannelExpiryTime: 1698334470000,
+        sourceChainExpiryBlock: 123n,
+        amount: '1000000000000000000',
+        destAddress: '0xcafebabe',
+        destAsset: 'FLIP',
+        destChain: 'Ethereum',
+        srcAsset: 'BTC',
+        srcChain: 'Bitcoin',
       });
     });
 
