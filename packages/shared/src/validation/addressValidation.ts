@@ -6,7 +6,7 @@ import {
 } from '@polkadot/util-crypto';
 import * as ethers from 'ethers';
 import { isValidSegwitAddress } from './segwitAddr';
-import { Chain, UncheckedAssetAndChain } from '../enums';
+import { Chain } from '../enums';
 import { assert } from '../guards';
 
 export type AddressValidator = (address: string) => boolean;
@@ -126,7 +126,7 @@ export const validateChainAddress = (
 };
 
 export const validateAddress = (
-  assetAndChain: UncheckedAssetAndChain,
+  chain: Chain,
   address: string,
   isMainnet = true,
-): boolean => validateChainAddress(assetAndChain.chain, address, isMainnet);
+): boolean => validateChainAddress(chain, address, isMainnet);

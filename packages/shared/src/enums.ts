@@ -67,7 +67,7 @@ export const chainContractIds: Record<Chain, number> = {
 };
 
 export type AssetAndChain = {
-  [K in Asset]: { asset: K; chain: (typeof assetChains)[K] };
+  [A in Asset]: { asset: A; chain: (typeof assetChains)[A] };
 }[Asset];
 
 export type UncheckedAssetAndChain = {

@@ -12,13 +12,13 @@ import ServiceError from '../utils/ServiceError';
 export default async function openSwapDepositChannel(
   input: z.output<typeof openSwapDepositChannelSchema>,
 ) {
-  if (!validateAddress(input.destAsset, input.destAddress, isProduction)) {
+  if (!validateAddress(input.destChain, input.destAddress, isProduction)) {
     throw ServiceError.badRequest('provided address is not valid');
   }
 
   const minimumAmount = await getMinimumSwapAmount(
     process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
-    input.srcAsset,
+    { asset: input.srcAsset, chain: input.srcChain },
   );
 
   if (BigInt(input.expectedDepositAmount) < minimumAmount) {
@@ -36,7 +36,7 @@ export default async function openSwapDepositChannel(
     commissionBps: 0,
   });
 
-  const { destAsset, srcAsset, ...rest } = input;
+  const { destChain, ...rest } = input;
   const [
     { issuedBlock, srcChain, channelId, depositAddress: channelDepositAddress },
     chainInfo,
@@ -46,29 +46,26 @@ export default async function openSwapDepositChannel(
         issuedBlock_srcChain_channelId: {
           channelId: blockInfo.channelId,
           issuedBlock: blockInfo.issuedBlock,
-          srcChain: srcAsset.chain,
+          srcChain: input.srcChain,
         },
       },
       create: {
         ...rest,
         depositAddress,
         srcChainExpiryBlock,
-        srcAsset: srcAsset.asset,
-        srcChain: srcAsset.chain,
-        destAsset: destAsset.asset,
         ...blockInfo,
       },
       update: {},
     }),
     prisma.chainTracking.findFirst({
       where: {
-        chain: srcAsset.chain,
+        chain: input.srcChain,
       },
     }),
   ]);
 
   const estimatedExpiryTime = calculateExpiryTime({
-    chain: srcAsset.chain,
+    chain: input.srcChain,
     startBlock: chainInfo?.height,
     expiryBlock: srcChainExpiryBlock,
   });

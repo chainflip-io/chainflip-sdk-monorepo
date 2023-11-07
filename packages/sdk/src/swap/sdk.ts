@@ -89,20 +89,10 @@ export class SwapSDK {
     return ApiService.getQuote(this.baseUrl, quoteRequest, options);
   }
 
-  async requestDepositAddress({
-    srcAsset,
-    srcChain,
-    destAsset,
-    destChain,
-    ...rest
-  }: DepositAddressRequest): Promise<DepositAddressResponse> {
+  async requestDepositAddress(
+    depositAddressRequest: DepositAddressRequest,
+  ): Promise<DepositAddressResponse> {
     let response;
-
-    const depositAddressRequest = {
-      ...rest,
-      srcAsset: { asset: srcAsset, chain: srcChain },
-      destAsset: { asset: destAsset, chain: destChain },
-    };
 
     if (this.brokerConfig !== undefined) {
       const { requestSwapDepositAddress } = await import('@/shared/broker');
@@ -113,7 +103,7 @@ export class SwapSDK {
       );
 
       response = {
-        id: `${result.issuedBlock}-${srcChain}-${result.channelId}`,
+        id: `${result.issuedBlock}-${depositAddressRequest.srcChain}-${result.channelId}`,
         depositAddress: result.address,
         srcChainExpiryBlock: result.sourceChainExpiryBlock,
       };
@@ -124,11 +114,7 @@ export class SwapSDK {
     }
 
     return {
-      ...rest,
-      srcAsset,
-      srcChain,
-      destAsset,
-      destChain,
+      ...depositAddressRequest,
       depositChannelId: response.id,
       depositAddress: response.depositAddress,
       depositChannelExpiryBlock: response.srcChainExpiryBlock as bigint,

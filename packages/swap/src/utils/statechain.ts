@@ -1,10 +1,7 @@
 import { z } from 'zod';
+import { AssetAndChain } from '@/shared/enums';
 import RpcClient from '@/shared/node-apis/RpcClient';
-import {
-  AssetAndChain,
-  chainflipAssetAndChain,
-  hexStringFromNumber,
-} from '@/shared/parsers';
+import { chainflipAssetAndChain, hexStringFromNumber } from '@/shared/parsers';
 import { ParsedQuoteParams } from '@/shared/schemas';
 import { memoize } from './function';
 import { swapRateResponseSchema } from '../quoting/schemas';
