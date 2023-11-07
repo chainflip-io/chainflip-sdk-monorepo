@@ -261,8 +261,10 @@ describe(SwapSDK, () => {
         amount: BigInt(1e18).toString(),
       });
       expect(rpcSpy).toHaveBeenLastCalledWith({
-        srcAsset: { chain: Chains.Bitcoin, asset: Assets.BTC },
-        destAsset: { chain: Chains.Ethereum, asset: Assets.FLIP },
+        srcChain: Chains.Bitcoin,
+        srcAsset: Assets.BTC,
+        destChain: Chains.Ethereum,
+        destAsset: Assets.FLIP,
         destAddress: '0xcafebabe',
         amount: BigInt(1e18).toString(),
       });
