@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Asset, assertIsValidAssetAndChain } from './enums';
+import { Asset } from './enums';
 import {
   chainflipAsset,
   chainflipAssetAndChain,
@@ -26,13 +26,13 @@ export type CcmMetadata = z.infer<typeof ccmMetadataSchema>;
 
 export const openSwapDepositChannelSchema = z
   .object({
-    destAddress: z.string(),
-    amount: numericString,
-    ccmMetadata: ccmMetadataSchema.optional(),
     srcAsset: chainflipAsset,
     destAsset: chainflipAsset,
     srcChain: chainflipChain,
     destChain: chainflipChain,
+    destAddress: z.string(),
+    amount: numericString,
+    ccmMetadata: ccmMetadataSchema.optional(),
   })
   .transform(({ amount, ...rest }) => ({
     ...rest,
