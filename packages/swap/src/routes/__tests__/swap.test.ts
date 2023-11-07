@@ -616,14 +616,18 @@ describe('server', () => {
 
   describe('POST /swaps', () => {
     const ethToDotSwapRequestBody = {
-      srcAsset: { asset: Assets.ETH, chain: 'Ethereum' },
-      destAsset: { asset: Assets.DOT, chain: 'Polkadot' },
+      srcAsset: Assets.ETH,
+      srcChain: 'Ethereum',
+      destAsset: Assets.DOT,
+      destChain: 'Polkadot',
       destAddress: DOT_ADDRESS,
       amount: '1000000000',
     } as const;
     const dotToEthSwapRequestBody = {
-      srcAsset: { asset: Assets.DOT, chain: 'Polkadot' },
-      destAsset: { asset: Assets.ETH, chain: 'Ethereum' },
+      srcAsset: Assets.DOT,
+      srcChain: 'Polkadot',
+      destAsset: Assets.ETH,
+      destChain: 'Ethereum',
       destAddress: ETH_ADDRESS,
       amount: '1000000000',
     } as const;
@@ -648,7 +652,7 @@ describe('server', () => {
         .send(requestBody);
 
       expect(body).toMatchObject({
-        id: `123-${requestBody.srcAsset.chain}-200`,
+        id: `123-${requestBody.srcChain}-200`,
         depositAddress: address,
         issuedBlock,
       });
@@ -661,9 +665,9 @@ describe('server', () => {
 
       expect(swapDepositChannel).toMatchObject({
         id: expect.any(BigInt),
-        srcAsset: requestBody.srcAsset.asset,
+        srcAsset: requestBody.srcAsset,
         depositAddress: address,
-        destAsset: requestBody.destAsset.asset,
+        destAsset: requestBody.destAsset,
         destAddress: requestBody.destAddress,
         issuedBlock,
         channelId,
@@ -684,7 +688,7 @@ describe('server', () => {
 
       await createDepositChannel({
         channelId,
-        srcChain: requestBody.srcAsset.chain,
+        srcChain: requestBody.srcChain,
         issuedBlock,
         depositAddress: oldAddress,
       });
