@@ -9,16 +9,12 @@ import {
   numericString,
   btcAddress,
   dotAddress,
-  chainflipAsset,
   hexStringFromNumber,
   unsignedInteger,
+  chainflipAssetAndChain,
 } from './parsers';
 import { CcmMetadata, ccmMetadataSchema } from './schemas';
-import {
-  CamelCaseToSnakeCase,
-  camelToSnakeCase,
-  transformAsset,
-} from './strings';
+import { CamelCaseToSnakeCase, camelToSnakeCase } from './strings';
 
 type NewSwapRequest = {
   srcAsset: Asset;
@@ -69,8 +65,8 @@ const rpcResult = z.union([
 const requestValidators = {
   requestSwapDepositAddress: z
     .tuple([
-      chainflipAsset.transform(transformAsset),
-      chainflipAsset.transform(transformAsset),
+      chainflipAssetAndChain,
+      chainflipAssetAndChain,
       z.union([numericString, hexString, btcAddress()]),
       z.number(),
       ccmMetadataSchema
@@ -139,13 +135,13 @@ export async function requestSwapDepositAddress(
   swapRequest: NewSwapRequest,
   opts: { url: string; commissionBps: number },
 ): Promise<DepositChannelResponse> {
-  const { srcAsset, destAsset, destAddress } = swapRequest;
+  const { srcAsset, srcChain, destAsset, destChain, destAddress } = swapRequest;
 
   return makeRpcRequest(
     opts.url,
     'requestSwapDepositAddress',
-    srcAsset,
-    destAsset,
+    { asset: srcAsset, chain: srcChain },
+    { asset: destAsset, chain: destChain },
     submitAddress(destAsset, destAddress),
     opts.commissionBps,
     swapRequest.ccmMetadata && {

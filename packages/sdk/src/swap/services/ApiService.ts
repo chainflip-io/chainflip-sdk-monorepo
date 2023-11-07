@@ -63,7 +63,8 @@ const getQuote: BackendQuery<QuoteRequest, QuoteResponse> = async (
     destAsset: quoteRequest.destAsset,
   };
 
-  const queryParams = new URLSearchParams(params);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const queryParams = new URLSearchParams(params as Record<string, any>);
 
   const url = new URL(`/quote?${queryParams.toString()}`, baseUrl).toString();
 

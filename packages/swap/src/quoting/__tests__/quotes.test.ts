@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
 import { Subject } from 'rxjs';
-import { Assets } from '@/shared/enums';
+import { Asset, Assets, assetChains } from '@/shared/enums';
+import { AssetAndChain } from '@/shared/parsers';
 import prisma, { Pool } from '../../client';
 import {
   buildQuoteRequest,
@@ -170,12 +171,15 @@ describe('quotes', () => {
     });
   });
 
+  const wrapAsset = (asset: Asset) =>
+    ({ asset, chain: assetChains[asset] }) as AssetAndChain;
+
   describe(buildQuoteRequest, () => {
     it('returns a QuoteRequest', () => {
       expect(
         buildQuoteRequest({
-          srcAsset: Assets.FLIP,
-          destAsset: Assets.ETH,
+          srcAsset: wrapAsset(Assets.FLIP),
+          destAsset: wrapAsset(Assets.ETH),
           amount: '1000000000000000000',
         }),
       ).toEqual({
@@ -190,8 +194,8 @@ describe('quotes', () => {
     it('returns a QuoteRequest with a null intermediate_asset if srcAsset is USDC', () => {
       expect(
         buildQuoteRequest({
-          srcAsset: Assets.USDC,
-          destAsset: Assets.ETH,
+          srcAsset: wrapAsset(Assets.USDC),
+          destAsset: wrapAsset(Assets.ETH),
           amount: '100000000',
         }),
       ).toEqual({
@@ -206,8 +210,8 @@ describe('quotes', () => {
     it('returns a QuoteRequest with a null intermediate_asset if destAsset is USDC', () => {
       expect(
         buildQuoteRequest({
-          srcAsset: Assets.ETH,
-          destAsset: Assets.USDC,
+          srcAsset: wrapAsset(Assets.ETH),
+          destAsset: wrapAsset(Assets.USDC),
           amount: '100000000',
         }),
       ).toEqual({
@@ -352,8 +356,8 @@ describe('quotes', () => {
 
     it('returns pools for quote with intermediate amount', async () => {
       const pools = await getQuotePools({
-        srcAsset: Assets.FLIP,
-        destAsset: Assets.ETH,
+        srcAsset: wrapAsset(Assets.FLIP),
+        destAsset: wrapAsset(Assets.ETH),
         amount: '1000000000000000000',
       });
 
@@ -370,8 +374,8 @@ describe('quotes', () => {
 
     it('returns pools for quote from USDC', async () => {
       const pools = await getQuotePools({
-        srcAsset: Assets.USDC,
-        destAsset: Assets.ETH,
+        srcAsset: wrapAsset(Assets.USDC),
+        destAsset: wrapAsset(Assets.ETH),
         amount: '1000000000000000000',
       });
 
@@ -384,8 +388,8 @@ describe('quotes', () => {
 
     it('returns pools for quote to USDC', async () => {
       const pools = await getQuotePools({
-        srcAsset: Assets.FLIP,
-        destAsset: Assets.USDC,
+        srcAsset: wrapAsset(Assets.FLIP),
+        destAsset: wrapAsset(Assets.USDC),
         amount: '1000000000000000000',
       });
 

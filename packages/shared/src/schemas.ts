@@ -2,18 +2,20 @@ import { z } from 'zod';
 import { Asset } from './enums';
 import {
   chainflipAsset,
+  chainflipAssetAndChain,
   chainflipChain,
   hexString,
   numericString,
 } from './parsers';
 
 export const quoteQuerySchema = z.object({
-  srcAsset: chainflipAsset,
-  destAsset: chainflipAsset,
+  srcAsset: chainflipAssetAndChain,
+  destAsset: chainflipAssetAndChain,
   amount: numericString,
 });
 
-export type QuoteQueryParams = z.infer<typeof quoteQuerySchema>;
+export type QuoteQueryParams = z.input<typeof quoteQuerySchema>;
+export type ParsedQuoteParams = z.output<typeof quoteQuerySchema>;
 
 export const ccmMetadataSchema = z.object({
   gasBudget: numericString,

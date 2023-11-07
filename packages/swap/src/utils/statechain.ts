@@ -1,16 +1,18 @@
 import { z } from 'zod';
-import { Asset } from '@/shared/enums';
 import RpcClient from '@/shared/node-apis/RpcClient';
-import { chainflipAsset, hexStringFromNumber } from '@/shared/parsers';
-import { QuoteQueryParams } from '@/shared/schemas';
-import { transformAsset } from '@/shared/strings';
+import {
+  AssetAndChain,
+  chainflipAssetAndChain,
+  hexStringFromNumber,
+} from '@/shared/parsers';
+import { ParsedQuoteParams } from '@/shared/schemas';
 import { memoize } from './function';
 import { swapRateResponseSchema } from '../quoting/schemas';
 
 const requestValidators = {
   swap_rate: z.tuple([
-    chainflipAsset.transform(transformAsset),
-    chainflipAsset.transform(transformAsset),
+    chainflipAssetAndChain,
+    chainflipAssetAndChain,
     hexStringFromNumber,
   ]),
 };
@@ -31,17 +33,17 @@ const initializeClient = memoize(async () => {
 });
 
 const getSwapAmount = async (
-  srcAsset: Asset,
-  destAsset: Asset,
+  srcAsset: AssetAndChain,
+  destAsset: AssetAndChain,
   amount: string,
-): Promise<z.infer<(typeof responseValidators)['swap_rate']>> => {
+): Promise<z.output<(typeof responseValidators)['swap_rate']>> => {
   const client = await initializeClient();
 
   return client.sendRequest('swap_rate', srcAsset, destAsset, amount);
 };
 
 export const getBrokerQuote = async (
-  { srcAsset, destAsset, amount }: QuoteQueryParams,
+  { srcAsset, destAsset, amount }: ParsedQuoteParams,
   id: string,
 ) => {
   const quote = await getSwapAmount(srcAsset, destAsset, amount);
