@@ -109,6 +109,6 @@ if (dryRun) {
     dryRun = false;
     console.log('running without dry run mode');
     // @ts-expect-error -- .mts file
-    await tagService();
+    await tagPackage();
   }
 }
