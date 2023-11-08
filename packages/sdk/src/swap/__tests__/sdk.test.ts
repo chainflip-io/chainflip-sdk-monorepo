@@ -1,10 +1,13 @@
 import axios from 'axios';
 import { VoidSigner } from 'ethers';
-import { Chain, ChainflipNetworks, Chains } from '@/shared/enums';
+import { Assets, Chain, ChainflipNetworks, Chains } from '@/shared/enums';
+import { environment } from '@/shared/tests/fixtures';
 import { executeSwap } from '@/shared/vault';
 import { dot$, btc$, eth$, usdc$, flip$ } from '../assets';
 import { bitcoin, ethereum, polkadot } from '../chains';
 import { SwapSDK } from '../sdk';
+
+jest.mock('axios');
 
 jest.mock('@/shared/vault', () => ({
   executeSwap: jest.fn(),
@@ -19,7 +22,28 @@ jest.mock('@trpc/client', () => ({
   }),
 }));
 
+const env = {
+  ingressEgress: {
+    minimumDepositAmounts: {
+      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n },
+      Polkadot: { DOT: 0n },
+      Bitcoin: { BTC: 0n },
+    },
+  },
+  swapping: {
+    minimumSwapAmounts: {
+      Ethereum: { USDC: 0n, ETH: 0n, FLIP: 0n },
+      Polkadot: { DOT: 0n },
+      Bitcoin: { BTC: 0n },
+    },
+  },
+};
+
 describe(SwapSDK, () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   const sdk = new SwapSDK({ network: ChainflipNetworks.perseverance });
 
   describe(SwapSDK.prototype.getChains, () => {
@@ -75,25 +99,29 @@ describe(SwapSDK, () => {
   });
 
   describe(SwapSDK.prototype.getAssets, () => {
+    beforeEach(() => {
+      jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
+    });
+
     it.each([
       [
         Chains.Ethereum,
         [
-          eth$(ChainflipNetworks.perseverance),
-          usdc$(ChainflipNetworks.perseverance),
-          flip$(ChainflipNetworks.perseverance),
+          eth$(ChainflipNetworks.perseverance, env),
+          usdc$(ChainflipNetworks.perseverance, env),
+          flip$(ChainflipNetworks.perseverance, env),
         ],
       ],
       [
         'Ethereum' as const,
         [
-          eth$(ChainflipNetworks.perseverance),
-          usdc$(ChainflipNetworks.perseverance),
-          flip$(ChainflipNetworks.perseverance),
+          eth$(ChainflipNetworks.perseverance, env),
+          usdc$(ChainflipNetworks.perseverance, env),
+          flip$(ChainflipNetworks.perseverance, env),
         ],
       ],
-      [Chains.Polkadot, [dot$(ChainflipNetworks.perseverance)]],
-      [Chains.Bitcoin, [btc$(ChainflipNetworks.perseverance)]],
+      [Chains.Polkadot, [dot$(ChainflipNetworks.perseverance, env)]],
+      [Chains.Bitcoin, [btc$(ChainflipNetworks.perseverance, env)]],
     ])('returns the available assets for %s', async (chain, assets) => {
       expect(await sdk.getAssets(chain)).toStrictEqual(assets);
     });
@@ -161,25 +189,29 @@ describe(SwapSDK, () => {
   });
 
   describe(SwapSDK.prototype.getAssets, () => {
+    beforeEach(() => {
+      jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
+    });
+
     it.each([
       [
         Chains.Ethereum,
         [
-          eth$(ChainflipNetworks.sisyphos),
-          usdc$(ChainflipNetworks.sisyphos),
-          flip$(ChainflipNetworks.sisyphos),
+          eth$(ChainflipNetworks.sisyphos, env),
+          usdc$(ChainflipNetworks.sisyphos, env),
+          flip$(ChainflipNetworks.sisyphos, env),
         ],
       ],
       [
         'Ethereum' as const,
         [
-          eth$(ChainflipNetworks.sisyphos),
-          usdc$(ChainflipNetworks.sisyphos),
-          flip$(ChainflipNetworks.sisyphos),
+          eth$(ChainflipNetworks.sisyphos, env),
+          usdc$(ChainflipNetworks.sisyphos, env),
+          flip$(ChainflipNetworks.sisyphos, env),
         ],
       ],
-      [Chains.Polkadot, [dot$(ChainflipNetworks.sisyphos)]],
-      [Chains.Bitcoin, [btc$(ChainflipNetworks.sisyphos)]],
+      [Chains.Polkadot, [dot$(ChainflipNetworks.sisyphos, env)]],
+      [Chains.Bitcoin, [btc$(ChainflipNetworks.sisyphos, env)]],
     ])('returns the available assets for %s', async (chain, assets) => {
       expect(await sdk.getAssets(chain)).toStrictEqual(assets);
     });
@@ -221,21 +253,38 @@ describe(SwapSDK, () => {
         } as any);
 
       const response = await sdk.requestDepositAddress({
-        property: true,
-      } as any);
-      expect(rpcSpy).toHaveBeenLastCalledWith({ property: true });
+        srcChain: Chains.Bitcoin,
+        srcAsset: Assets.BTC,
+        destChain: Chains.Ethereum,
+        destAsset: Assets.FLIP,
+        destAddress: '0xcafebabe',
+        amount: BigInt(1e18).toString(),
+      });
+      expect(rpcSpy).toHaveBeenLastCalledWith({
+        srcChain: Chains.Bitcoin,
+        srcAsset: Assets.BTC,
+        destChain: Chains.Ethereum,
+        destAsset: Assets.FLIP,
+        destAddress: '0xcafebabe',
+        amount: BigInt(1e18).toString(),
+      });
       expect(response).toStrictEqual({
-        property: true,
         depositChannelId: 'channel id',
         depositAddress: 'deposit address',
         depositChannelExpiryBlock: 123n,
         estimatedDepositChannelExpiryTime: 1698334470000,
+        amount: '1000000000000000000',
+        destAddress: '0xcafebabe',
+        destAsset: 'FLIP',
+        destChain: 'Ethereum',
+        srcAsset: 'BTC',
+        srcChain: 'Bitcoin',
       });
     });
 
     it('goes right to the broker', async () => {
       const postSpy = jest
-        .spyOn(axios, 'post')
+        .mocked(axios.post)
         .mockRejectedValue(Error('unhandled mock'))
         .mockResolvedValueOnce({
           data: {

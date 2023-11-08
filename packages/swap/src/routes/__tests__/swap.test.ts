@@ -1,8 +1,10 @@
+import axios from 'axios';
 import * as crypto from 'crypto';
 import { Server } from 'http';
 import request from 'supertest';
 import * as broker from '@/shared/broker';
 import { Assets } from '@/shared/enums';
+import { swappingEnvironment } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import {
   DOT_ADDRESS,
@@ -28,6 +30,14 @@ jest.mock('@/shared/broker', () => ({
   requestSwapDepositAddress: jest
     .fn()
     .mockRejectedValue(Error('unhandled mock')),
+}));
+
+jest.mock('axios', () => ({
+  post: jest.fn(() =>
+    Promise.resolve({
+      data: swappingEnvironment(),
+    }),
+  ),
 }));
 
 const RECEIVED_TIMESTAMP = 1669907135201;
@@ -607,24 +617,23 @@ describe('server', () => {
   describe('POST /swaps', () => {
     const ethToDotSwapRequestBody = {
       srcAsset: Assets.ETH,
-      destAsset: Assets.DOT,
       srcChain: 'Ethereum',
+      destAsset: Assets.DOT,
       destChain: 'Polkadot',
       destAddress: DOT_ADDRESS,
       amount: '1000000000',
     } as const;
     const dotToEthSwapRequestBody = {
       srcAsset: Assets.DOT,
+      srcChain: 'Polkadot',
       destAsset: Assets.ETH,
-      srcChain: 'Ethereum',
-      destChain: 'Polkadot',
+      destChain: 'Ethereum',
       destAddress: ETH_ADDRESS,
       amount: '1000000000',
     } as const;
 
     it.each([
-      [ethToDotSwapRequestBody],
-      [ethToDotSwapRequestBody],
+      [ethToDotSwapRequestBody], // a comment to prevent a huge PR diff
       [dotToEthSwapRequestBody],
     ])('creates a new swap deposit channel', async (requestBody) => {
       const issuedBlock = 123;
@@ -643,7 +652,7 @@ describe('server', () => {
         .send(requestBody);
 
       expect(body).toMatchObject({
-        id: '123-Ethereum-200',
+        id: `123-${requestBody.srcChain}-200`,
         depositAddress: address,
         issuedBlock,
       });
@@ -750,19 +759,23 @@ describe('server', () => {
       });
     });
 
-    it('rejects if amount is lower than minimum deposit amount', async () => {
+    it('rejects if amount is lower than minimum swap amount', async () => {
+      jest
+        .mocked(axios.post)
+        .mockResolvedValueOnce({ data: swappingEnvironment('0xffffff') });
+
       const { body, status } = await request(app).post('/swaps').send({
         srcAsset: Assets.DOT,
         destAsset: Assets.ETH,
-        srcChain: 'Ethereum',
-        destChain: 'Polkadot',
+        srcChain: 'Polkadot',
+        destChain: 'Ethereum',
         destAddress: ETH_ADDRESS,
         amount: '5',
       });
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
-        message: 'expected amount is below minimum deposit amount',
+        message: 'expected amount is below minimum swap amount',
       });
     });
   });

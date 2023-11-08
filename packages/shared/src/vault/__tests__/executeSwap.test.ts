@@ -27,15 +27,17 @@ class MockERC20 {
 
 jest.mock('../../abis/factories/Vault__factory', () => ({
   Vault__factory: class {
-    static connect: (address: string) => MockVault = jest.fn(
-      (address: string) => new MockVault(address),
-    );
+    static connect(address: string) {
+      return new MockVault(address);
+    }
   },
 }));
 
 jest.mock('../../abis/factories/ERC20__factory', () => ({
   ERC20__factory: class {
-    static connect: () => MockERC20 = jest.fn(() => new MockERC20());
+    static connect() {
+      return new MockERC20();
+    }
   },
 }));
 
@@ -159,7 +161,9 @@ describe(executeSwap, () => {
       const swapSpy = jest
         .spyOn(MockVault.prototype, 'xSwapToken')
         .mockResolvedValue({ wait });
-      const allowanceSpy = jest.spyOn(MockERC20.prototype, 'allowance');
+      const allowanceSpy = jest
+        .spyOn(MockERC20.prototype, 'allowance')
+        .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
 
       expect(
         await executeSwap(
@@ -357,7 +361,9 @@ describe(executeSwap, () => {
     const callSpy = jest
       .spyOn(MockVault.prototype, 'xCallToken')
       .mockResolvedValue({ wait });
-    const allowanceSpy = jest.spyOn(MockERC20.prototype, 'allowance');
+    const allowanceSpy = jest
+      .spyOn(MockERC20.prototype, 'allowance')
+      .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
 
     expect(
       await executeSwap(

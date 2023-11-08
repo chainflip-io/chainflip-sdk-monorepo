@@ -1,6 +1,5 @@
 import express from 'express';
 import type { Server } from 'socket.io';
-import { getMinimumSwapAmount } from '@/shared/consts';
 import { ChainflipNetwork } from '@/shared/enums';
 import { quoteQuerySchema } from '@/shared/schemas';
 import { asyncHandler } from './common';
@@ -14,6 +13,7 @@ import {
   calculateIncludedFees,
 } from '../quoting/quotes';
 import logger from '../utils/logger';
+import { getMinimumSwapAmount } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
 import { getBrokerQuote } from '../utils/statechain';
 
@@ -34,11 +34,11 @@ const quote = (io: Server) => {
         throw ServiceError.badRequest('invalid request');
       }
 
-      const minimumAmount = getMinimumSwapAmount(
+      const minimumAmount = await getMinimumSwapAmount(
         process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
-        result.data.srcAsset.asset,
+        result.data.srcAsset,
       );
-      if (BigInt(result.data.amount) < BigInt(minimumAmount)) {
+      if (BigInt(result.data.amount) < minimumAmount) {
         throw ServiceError.badRequest(
           'expected amount is below minimum swap amount',
         );

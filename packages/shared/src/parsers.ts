@@ -2,7 +2,7 @@ import { hexToU8a } from '@polkadot/util';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 import * as ethers from 'ethers';
 import { z, ZodErrorMap } from 'zod';
-import type { Asset, ChainflipNetwork } from './enums';
+import type { Asset, AssetAndChain, ChainflipNetwork } from './enums';
 import { Assets, ChainflipNetworks, Chains, assetChains } from './enums';
 import { isString } from './guards';
 import {
@@ -81,10 +81,6 @@ const transformAsset = <T extends Asset>(
   asset: T,
 ): { asset: T; chain: (typeof assetChains)[T] } =>
   ({ asset, chain: assetChains[asset] }) as const;
-
-export type AssetAndChain = {
-  [A in Asset]: { asset: A; chain: (typeof assetChains)[A] };
-}[Asset];
 
 export const chainflipChain = z.nativeEnum(Chains);
 export const chainflipAsset = z.nativeEnum(Assets);

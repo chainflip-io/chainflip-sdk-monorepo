@@ -6,7 +6,7 @@ import {
 } from '@polkadot/util-crypto';
 import * as ethers from 'ethers';
 import { isValidSegwitAddress } from './segwitAddr';
-import { Asset, Assets, Chain, Chains } from '../enums';
+import { Chain } from '../enums';
 import { assert } from '../guards';
 
 export type AddressValidator = (address: string) => boolean;
@@ -106,30 +106,27 @@ export const validateBitcoinRegtestAddress: AddressValidator = (
 ) => validateBitcoinAddress(address, 'regtest');
 
 export const validateChainAddress = (
-  address: string,
-  isMainnet = true,
-): Record<Chain | Asset, boolean> => ({
-  [Assets.ETH]: validateEvmAddress(address),
-  [Assets.BTC]: isMainnet
-    ? validateBitcoinMainnetAddress(address)
-    : validateBitcoinTestnetAddress(address) ||
-      validateBitcoinRegtestAddress(address),
-  [Assets.DOT]: validatePolkadotAddress(address),
-  [Assets.FLIP]: validateEvmAddress(address),
-  [Assets.USDC]: validateEvmAddress(address),
-  [Chains.Ethereum]: validateEvmAddress(address),
-  [Chains.Bitcoin]: isMainnet
-    ? validateBitcoinMainnetAddress(address)
-    : validateBitcoinTestnetAddress(address) ||
-      validateBitcoinRegtestAddress(address),
-  [Chains.Polkadot]: validatePolkadotAddress(address),
-});
-
-export const validateAddress = (
-  assetOrChain: Chain | Asset | undefined,
+  chain: Chain,
   address: string,
   isMainnet = true,
 ): boolean => {
-  if (!assetOrChain) return validateEvmAddress(address);
-  return validateChainAddress(address, isMainnet)[assetOrChain];
+  switch (chain) {
+    case 'Bitcoin':
+      return isMainnet
+        ? validateBitcoinMainnetAddress(address)
+        : validateBitcoinTestnetAddress(address) ||
+            validateBitcoinRegtestAddress(address);
+    case 'Ethereum':
+      return validateEvmAddress(address);
+    case 'Polkadot':
+      return validatePolkadotAddress(address);
+    default:
+      return chain;
+  }
 };
+
+export const validateAddress = (
+  chain: Chain,
+  address: string,
+  isMainnet = true,
+): boolean => validateChainAddress(chain, address, isMainnet);

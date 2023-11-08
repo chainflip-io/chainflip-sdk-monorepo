@@ -1,3 +1,4 @@
+import axios from 'axios';
 import * as crypto from 'crypto';
 import { once } from 'events';
 import { Server } from 'http';
@@ -5,6 +6,7 @@ import { AddressInfo } from 'net';
 import request from 'supertest';
 import { promisify } from 'util';
 import RpcClient from '@/shared/node-apis/RpcClient';
+import { swappingEnvironment } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import QuotingClient from '../../quoting/QuotingClient';
 import app from '../../server';
@@ -31,6 +33,13 @@ jest.mock('@/shared/consts', () => ({
   getPoolsNetworkFeeHundredthPips: jest.fn().mockReturnValue(1000),
 }));
 
+jest.mock('axios', () => ({
+  post: jest.fn(() =>
+    Promise.resolve({
+      data: swappingEnvironment(),
+    }),
+  ),
+}));
 describe('server', () => {
   let server: Server;
   let client: QuotingClient;
@@ -82,6 +91,10 @@ describe('server', () => {
 
   describe('GET /quote', () => {
     it('rejects if amount is lower than minimum swap amount', async () => {
+      jest
+        .mocked(axios.post)
+        .mockResolvedValueOnce({ data: swappingEnvironment('0xffffff') });
+
       const params = new URLSearchParams({
         srcAsset: 'FLIP',
         destAsset: 'ETH',

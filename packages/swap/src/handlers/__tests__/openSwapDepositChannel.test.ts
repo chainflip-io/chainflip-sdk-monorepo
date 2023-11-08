@@ -1,4 +1,6 @@
+import axios from 'axios';
 import * as broker from '@/shared/broker';
+import { swappingEnvironment } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import openSwapDepositChannel from '../openSwapDepositChannel';
 
@@ -6,14 +8,20 @@ jest.mock('@/shared/broker', () => ({
   requestSwapDepositAddress: jest.fn(),
 }));
 
-describe('openSwapDepositChannel', () => {
+jest.mock('axios');
+
+describe(openSwapDepositChannel, () => {
   beforeAll(() => {
     jest
       .useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
       .setSystemTime(new Date('2022-01-01'));
   });
 
-  it('should gather and insert the deposit channel info', async () => {
+  it('gathers and inserts the deposit channel info', async () => {
+    jest
+      .mocked(axios.post)
+      .mockResolvedValueOnce({ data: swappingEnvironment() });
+
     jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
@@ -33,8 +41,8 @@ describe('openSwapDepositChannel', () => {
 
     const result = await openSwapDepositChannel({
       srcAsset: 'FLIP',
-      destAsset: 'DOT',
       srcChain: 'Ethereum',
+      destAsset: 'DOT',
       destChain: 'Polkadot',
       destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
       expectedDepositAmount: '777',
