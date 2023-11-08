@@ -1,10 +1,10 @@
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
-import type { inferRouterOutputs } from '@trpc/server';
 import { Signer } from 'ethers';
 import superjson from 'superjson';
 import { TransactionOptions } from '@/shared/contracts';
 import { ChainflipNetwork, Chain, ChainflipNetworks } from '@/shared/enums';
 import { assert } from '@/shared/guards';
+import { swapResponseSchema } from '@/shared/schemas';
 import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
 import type { TokenSwapParams } from '@/shared/vault/schemas';
 import type { AppRouter } from '@/swap/server';
@@ -20,7 +20,6 @@ import type {
   DepositAddressRequest,
 } from './types';
 
-type RouterOutput = inferRouterOutputs<AppRouter>;
 type TransactionHash = `0x${string}`;
 
 export type SwapSDKOptions = {
@@ -109,7 +108,7 @@ export class SwapSDK {
   getStatus(
     swapStatusRequest: SwapStatusRequest,
     options: RequestOptions = {},
-  ): Promise<RouterOutput['getStatus']> {
+  ): Promise<Zod.output<typeof swapResponseSchema>> {
     return this.trpc.getStatus.query(swapStatusRequest, {
       signal: options.signal,
     });
