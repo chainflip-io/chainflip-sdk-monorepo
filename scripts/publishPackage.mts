@@ -124,23 +124,21 @@ const execCommand = async (cmd: string) => {
   }
 };
 
-const tagPkg = async () => {
+const openVersionPR = async () => {
+  const message = `release(${args.package}): ${newVersion}`;
+
   await execCommand(
     `pnpm --filter ${packageJSON.name} exec pnpm version ${newVersion}`,
   );
-  const tag = `${packageJSON.name}/v${newVersion}`;
   await execCommand(`git switch -c chore/release-${newVersion}`);
   await execCommand(`git add .`);
-  await execCommand(`git commit -m "${tag}" --no-verify`);
-  await execCommand(`git tag ${tag}`);
+  await execCommand(`git commit -m "${message}" --no-verify`);
   await execCommand('git push');
-  await execCommand(
-    `gh pr create --title "release(${args.package}): ${newVersion}" --body ""`,
-  );
+  await execCommand(`gh pr create --title "${message}" --body ""`);
 };
 
 // @ts-expect-error -- .mts file
-await tagPkg();
+await openVersionPR();
 
 if (isDryRun) {
   console.log('END DRY RUN MODE');
@@ -159,6 +157,6 @@ if (isDryRun) {
     isDryRun = false;
     console.log('running without dry run mode');
     // @ts-expect-error -- .mts file
-    await tagPkg();
+    await openVersionPR();
   }
 }
