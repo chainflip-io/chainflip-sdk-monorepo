@@ -53,15 +53,11 @@ export interface SwapStatusRequest {
 }
 
 export interface CommonStatusFields extends ChainsAndAssets {
-  srcChain: Chain;
-  destChain: Chain;
-  srcAsset: Asset;
-  destAsset: Asset;
   destAddress: string;
   depositAddress: string | undefined;
   depositChannelCreatedAt: number | undefined;
   expectedDepositAmount: string | undefined;
-  depositChannelExpiryBlock: bigint | undefined;
+  depositChannelExpiryBlock: bigint;
   estimatedDepositChannelExpiryTime: number | undefined;
   isDepositChanneExpired: boolean;
   ccmDepositReceivedBlockIndex: string | undefined;
@@ -73,7 +69,6 @@ export interface CommonStatusFields extends ChainsAndAssets {
     | undefined;
 }
 
-// this is not 100% the ACTUAL response type. Its a visual guide as to what you can expect. The real type is inferred from the trpc output schema
 export type SwapStatusResponse = CommonStatusFields &
   (
     | {
