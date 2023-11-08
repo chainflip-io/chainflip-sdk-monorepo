@@ -273,7 +273,6 @@ describe(SwapSDK, () => {
         depositAddress: 'deposit address',
         depositChannelExpiryBlock: 123n,
         estimatedDepositChannelExpiryTime: 1698334470000,
-        sourceChainExpiryBlock: 123n,
         amount: '1000000000000000000',
         destAddress: '0xcafebabe',
         destAsset: 'FLIP',

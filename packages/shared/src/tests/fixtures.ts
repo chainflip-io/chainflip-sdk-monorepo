@@ -3,20 +3,16 @@ const ENVIRONMENT = {
   result: {
     ingress_egress: {
       minimum_deposit_amounts: {
-        Bitcoin: { Btc: '0x0' },
-        Polkadot: { Dot: '0x0' },
-        Ethereum: { Eth: '0x0', Flip: '0x0', Usdc: '0x0' },
+        Bitcoin: { BTC: '0x0' },
+        Polkadot: { DOT: '0x0' },
+        Ethereum: { ETH: '0x0', FLIP: '0x0', USDC: '0x0' },
       },
     },
     swapping: {
       minimum_swap_amounts: {
-        Polkadot: { Dot: '0x0' },
-        Bitcoin: { Btc: '0x0' },
-        Ethereum: {
-          Eth: '0x0',
-          Usdc: '0x0',
-          Flip: '0x0',
-        },
+        Polkadot: { DOT: '0x0' },
+        Bitcoin: { BTC: '0x0' },
+        Ethereum: { ETH: '0x0', USDC: '0x0', FLIP: '0x0' },
       },
     },
     funding: {
@@ -26,40 +22,40 @@ const ENVIRONMENT = {
     pools: {
       fees: {
         Bitcoin: {
-          Btc: {
+          BTC: {
             limit_order_fee_hundredth_pips: 20,
             range_order_fee_hundredth_pips: 20,
             pair_asset: {
               chain: 'Ethereum',
-              asset: 'Usdc',
+              asset: 'USDC',
             },
           },
         },
         Ethereum: {
-          Flip: {
+          FLIP: {
             limit_order_fee_hundredth_pips: 20,
             range_order_fee_hundredth_pips: 20,
             pair_asset: {
               chain: 'Ethereum',
-              asset: 'Usdc',
+              asset: 'USDC',
             },
           },
-          Eth: {
+          ETH: {
             limit_order_fee_hundredth_pips: 20,
             range_order_fee_hundredth_pips: 20,
             pair_asset: {
               chain: 'Ethereum',
-              asset: 'Usdc',
+              asset: 'USDC',
             },
           },
         },
         Polkadot: {
-          Dot: {
+          DOT: {
             limit_order_fee_hundredth_pips: 20,
             range_order_fee_hundredth_pips: 20,
             pair_asset: {
               chain: 'Ethereum',
-              asset: 'Usdc',
+              asset: 'USDC',
             },
           },
         },
@@ -78,9 +74,9 @@ export const swappingEnvironment = (amt = '0x0') => ({
   jsonrpc: '2.0',
   result: {
     minimum_swap_amounts: {
-      Polkadot: { Dot: amt },
-      Bitcoin: { Btc: amt },
-      Ethereum: { Eth: amt, Usdc: amt, Flip: amt },
+      Polkadot: { DOT: amt },
+      Bitcoin: { BTC: amt },
+      Ethereum: { ETH: amt, USDC: amt, FLIP: amt },
     },
   },
 });
@@ -102,9 +98,9 @@ export const ingressEgressEnvironment = (amt = '0x0') => ({
   jsonrpc: '2.0',
   result: {
     minimum_deposit_amounts: {
-      Bitcoin: { Btc: amt },
-      Polkadot: { Dot: amt },
-      Ethereum: { Eth: amt, Flip: amt, Usdc: amt },
+      Bitcoin: { BTC: amt },
+      Polkadot: { DOT: amt },
+      Ethereum: { ETH: amt, FLIP: amt, USDC: amt },
     },
   },
 });

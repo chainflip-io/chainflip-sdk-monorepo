@@ -81,24 +81,9 @@ export const getFundingEnvironment = createRequest(
 
 const chainAssetMap = <Z extends z.ZodTypeAny>(parser: Z) =>
   z.object({
-    Bitcoin: z
-      .object({ Btc: parser })
-      .transform(({ Btc }) => ({ BTC: Btc as z.output<Z> })),
-    Ethereum: z
-      .object({
-        Eth: parser,
-        Usdc: parser,
-        Flip: parser,
-      })
-      .transform(({ Eth, Usdc, Flip }) => ({
-        ETH: Eth as z.output<Z>,
-        USDC: Usdc as z.output<Z>,
-        FLIP: Flip as z.output<Z>,
-      })),
-
-    Polkadot: z
-      .object({ Dot: parser })
-      .transform(({ Dot }) => ({ DOT: Dot as z.output<Z> })),
+    Bitcoin: z.object({ BTC: parser }),
+    Ethereum: z.object({ ETH: parser, USDC: parser, FLIP: parser }),
+    Polkadot: z.object({ DOT: parser }),
   });
 
 export type ChainAssetMap<T> = {
@@ -135,16 +120,16 @@ export const getIngressEgressEnvironment = createRequest(
 );
 
 const rpcAsset = z.union([
-  z.literal('Btc'),
-  z.object({ chain: z.literal('Bitcoin'), asset: z.literal('Btc') }),
-  z.literal('Dot'),
-  z.object({ chain: z.literal('Polkadot'), asset: z.literal('Dot') }),
-  z.literal('Flip'),
-  z.object({ chain: z.literal('Ethereum'), asset: z.literal('Flip') }),
-  z.literal('Eth'),
-  z.object({ chain: z.literal('Ethereum'), asset: z.literal('Eth') }),
-  z.literal('Usdc'),
-  z.object({ chain: z.literal('Ethereum'), asset: z.literal('Usdc') }),
+  z.literal('BTC'),
+  z.object({ chain: z.literal('Bitcoin'), asset: z.literal('BTC') }),
+  z.literal('DOT'),
+  z.object({ chain: z.literal('Polkadot'), asset: z.literal('DOT') }),
+  z.literal('FLIP'),
+  z.object({ chain: z.literal('Ethereum'), asset: z.literal('FLIP') }),
+  z.literal('ETH'),
+  z.object({ chain: z.literal('Ethereum'), asset: z.literal('ETH') }),
+  z.literal('USDC'),
+  z.object({ chain: z.literal('Ethereum'), asset: z.literal('USDC') }),
 ]);
 
 const poolInfo = z.object({
@@ -154,11 +139,9 @@ const poolInfo = z.object({
 });
 
 const feesInfo = z.object({
-  Bitcoin: z.object({ Btc: poolInfo }).transform(({ Btc }) => ({ BTC: Btc })),
-  Ethereum: z
-    .object({ Eth: poolInfo, Flip: poolInfo })
-    .transform(({ Eth, Flip }) => ({ ETH: Eth, FLIP: Flip })),
-  Polkadot: z.object({ Dot: poolInfo }).transform(({ Dot }) => ({ DOT: Dot })),
+  Bitcoin: z.object({ BTC: poolInfo }),
+  Ethereum: z.object({ ETH: poolInfo, FLIP: poolInfo }),
+  Polkadot: z.object({ DOT: poolInfo }),
 });
 
 const poolsEnvironment = z.object({ fees: feesInfo });
