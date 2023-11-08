@@ -135,7 +135,7 @@ const tagPkg = async () => {
   await execCommand(`git tag ${tag}`);
   await execCommand('git push');
   await execCommand(
-    `gh pr create --title "release(${args.package}): ${newVersion}`,
+    `gh pr create --title "release(${args.package}): ${newVersion}" --body ""`,
   );
 };
 
