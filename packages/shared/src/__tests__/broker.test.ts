@@ -41,7 +41,12 @@ describe(broker.requestSwapDepositAddress, () => {
       id: 1,
       jsonrpc: '2.0',
       method: 'broker_requestSwapDepositAddress',
-      params: ['Flip', 'Usdc', '0xcafebabe', 0],
+      params: [
+        { asset: 'FLIP', chain: 'Ethereum' },
+        { asset: 'USDC', chain: 'Ethereum' },
+        '0xcafebabe',
+        0,
+      ],
     });
     expect(result).toStrictEqual({
       address: '0x1234567890',
@@ -82,8 +87,8 @@ describe(broker.requestSwapDepositAddress, () => {
       jsonrpc: '2.0',
       method: 'broker_requestSwapDepositAddress',
       params: [
-        'Flip',
-        'Usdc',
+        { asset: 'FLIP', chain: 'Ethereum' },
+        { asset: 'USDC', chain: 'Ethereum' },
         '0xcafebabe',
         0,
         {

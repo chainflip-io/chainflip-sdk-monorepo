@@ -3,7 +3,7 @@ import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 import * as ethers from 'ethers';
 import { z, ZodErrorMap } from 'zod';
 import type { Asset, ChainflipNetwork } from './enums';
-import { Assets, ChainflipNetworks, Chains } from './enums';
+import { Assets, ChainflipNetworks, Chains, assetChains } from './enums';
 import { isString } from './guards';
 import {
   validateBitcoinMainnetAddress,
@@ -11,8 +11,13 @@ import {
   validateBitcoinTestnetAddress,
 } from './validation/addressValidation';
 
+const safeStringify = (obj: unknown) =>
+  JSON.stringify(obj, (key, value) =>
+    typeof value === 'bigint' ? value.toString() : value,
+  );
+
 const errorMap: ZodErrorMap = (_issue, context) => ({
-  message: `received: ${JSON.stringify(context.data)}`,
+  message: `received: ${safeStringify(context.data)}`,
 });
 
 export const string = z.string({ errorMap });
@@ -72,8 +77,35 @@ export const chainflipAssetEnum = z
   .object({ __kind: z.enum(['Usdc', 'Flip', 'Dot', 'Eth', 'Btc']) })
   .transform(({ __kind }) => __kind.toUpperCase() as Asset);
 
+const transformAsset = <T extends Asset>(
+  asset: T,
+): { asset: T; chain: (typeof assetChains)[T] } =>
+  ({ asset, chain: assetChains[asset] }) as const;
+
+export type AssetAndChain = {
+  [A in Asset]: { asset: A; chain: (typeof assetChains)[A] };
+}[Asset];
+
 export const chainflipChain = z.nativeEnum(Chains);
 export const chainflipAsset = z.nativeEnum(Assets);
+
+export const chainflipAssetAndChain = z
+  .union([
+    chainflipAsset.transform(transformAsset),
+    z.object({ asset: z.nativeEnum(Assets), chain: z.nativeEnum(Chains) }),
+  ])
+  .superRefine((obj, ctx): obj is AssetAndChain => {
+    if (assetChains[obj.asset] !== obj.chain) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `asset ${obj.asset} does not belong to chain ${obj.chain}`,
+        path: [],
+      });
+    }
+
+    return z.NEVER;
+  });
+
 export const chainflipNetwork = z.nativeEnum(ChainflipNetworks);
 
 export const swapType = z.union([

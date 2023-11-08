@@ -1,6 +1,3 @@
-import type { Asset } from './enums';
-import type { RpcAsset } from './node-apis/RpcClient';
-
 export type CamelCaseToSnakeCase<S extends string> =
   S extends `${infer T}${infer U}`
     ? `${T extends Capitalize<T>

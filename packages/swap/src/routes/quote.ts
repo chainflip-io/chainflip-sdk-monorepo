@@ -36,7 +36,7 @@ const quote = (io: Server) => {
 
       const minimumAmount = getMinimumSwapAmount(
         process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
-        result.data.srcAsset,
+        result.data.srcAsset.asset,
       );
       if (BigInt(result.data.amount) < BigInt(minimumAmount)) {
         throw ServiceError.badRequest(
