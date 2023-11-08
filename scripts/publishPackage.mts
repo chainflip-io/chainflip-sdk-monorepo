@@ -1,4 +1,4 @@
-#!/usr/bin/env node --trace-uncaught
+#!/usr/bin/env node --trace-uncaught --loader tsx --no-warnings
 
 /* eslint-disable no-console */
 import { exec } from 'child_process';
@@ -12,11 +12,10 @@ import yargs from 'yargs/yargs';
 
 const execAsync = util.promisify(exec);
 
+// @ts-expect-error -- .mts file
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 const root = path.join(__dirname, '../');
-
-const packages = await fs.readdir(path.join(root, 'packages'));
 
 const args = yargs(process.argv)
   .option('new-version', {
@@ -35,7 +34,7 @@ const args = yargs(process.argv)
     alias: 'p',
     description: 'the package to tag',
     demandOption: true,
-    choices: packages,
+    choices: ['cli', 'sdk'],
   })
   .option('dry-run', {
     demandOption: false,
@@ -46,9 +45,10 @@ const args = yargs(process.argv)
       'additionally, there is a prompt after dry run mode to run the script live',
   })
   .help()
-  .parse();
+  .parseSync();
 
 const onMain =
+  // @ts-expect-error -- .mts file
   (await execAsync('git branch --show-current')).stdout.trim() === 'main';
 
 if (!onMain) {
@@ -57,6 +57,7 @@ if (!onMain) {
 }
 
 const workingDirectoryDirty =
+  // @ts-expect-error -- .mts file
   (await execAsync('git status --porcelain=v2')).stdout
     .trim()
     .split('\n')
@@ -71,6 +72,7 @@ if (workingDirectoryDirty) {
 }
 
 try {
+  // @ts-expect-error -- .mts file
   await execAsync('git pull origin main --ff-only');
 } catch {
   console.error(
@@ -79,11 +81,37 @@ try {
   process.exit(1);
 }
 
+let newVersion = args['new-version'];
+const packageRoot = path.join(root, 'packages', args.package);
+const packageJSON = JSON.parse(
+  // @ts-expect-error -- .mts file
+  await fs.readFile(path.join(packageRoot, 'package.json'), 'utf-8'),
+);
+
+if (!newVersion) {
+  const currentVersion = packageJSON.version;
+
+  if (typeof currentVersion !== 'string') {
+    console.error('failed to find current version');
+    process.exit(1);
+  }
+
+  const [, major, minor, patch] = /^(\d+)\.(\d+)\.(\d+)/.exec(currentVersion);
+
+  if (args.minor) {
+    newVersion = `${major}.${Number(minor) + 1}.0`;
+  } else if (args.major) {
+    newVersion = `${Number(major) + 1}.0.0`;
+  } else {
+    newVersion = `${major}.${minor}.${Number(patch) + 1}`;
+  }
+}
+
 let isDryRun = args['dry-run'];
 
 if (isDryRun) console.log('DRY RUN MODE');
 
-const execCommand = async (cmd) => {
+const execCommand = async (cmd: string) => {
   console.log('executing command %O', cmd);
 
   if (!isDryRun) {
@@ -96,55 +124,31 @@ const execCommand = async (cmd) => {
   }
 };
 
-let newVersion = args['new-version'];
-const packageRoot = path.join(root, 'packages', args.package);
-const packageJSON = JSON.parse(
-  await fs.readFile(path.join(packageRoot, 'package.json'), 'utf-8'),
-);
-
-if (!newVersion) {
-  const currentVersion = packageJSON.version;
-
-  if (typeof currentVersion !== 'string') {
-    console.error('failed to find current version');
-    process.exit(1);
-  }
-
-  const [major, minor, patch] = currentVersion.split('.');
-
-  if (args.minor) {
-    newVersion = `${major}.${Number(minor) + 1}.0`;
-  } else if (args.major) {
-    newVersion = `${Number(major) + 1}.0.0`;
-  } else {
-    newVersion = `${major}.${minor}.${Number(patch) + 1}`;
-  }
-}
-
 const tagPkg = async () => {
   await execCommand(
     `pnpm --filter ${packageJSON.name} exec pnpm version ${newVersion}`,
   );
   const tag = `${packageJSON.name}/v${newVersion}`;
-  await execCommand('git add .');
-  await execCommand('git reset -- scripts/createTag.mjs');
+  await execCommand(`git switch -c chore/release-${newVersion}`);
+  await execCommand(`git add .`);
   await execCommand(`git commit -m "${tag}" --no-verify`);
   await execCommand(`git tag ${tag}`);
   await execCommand('git push');
-  await execCommand(`git push origin refs/tags/${tag}`);
+  await execCommand(
+    `gh pr create --title "release(${args.package}): ${newVersion}`,
+  );
 };
 
+// @ts-expect-error -- .mts file
 await tagPkg();
 
 if (isDryRun) {
   console.log('END DRY RUN MODE');
-  const rl = createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
 
   const questionAsync = util.promisify(rl.question).bind(rl);
 
+  // @ts-expect-error -- .mts file
   const runAgain = await questionAsync(
     'would you like to run again without dry run?\n(y/N)> ',
   );
@@ -154,6 +158,7 @@ if (isDryRun) {
   if (runAgain?.trim().toLowerCase() === 'y') {
     isDryRun = false;
     console.log('running without dry run mode');
+    // @ts-expect-error -- .mts file
     await tagPkg();
   }
 }
