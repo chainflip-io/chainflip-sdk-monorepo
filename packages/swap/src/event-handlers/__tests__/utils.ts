@@ -1,5 +1,5 @@
 import { Assets, Chain, Chains } from '@/shared/enums';
-import prisma, { SwapDepositChannel } from '../../client';
+import prisma, { Egress, Swap, SwapDepositChannel } from '../../client';
 import { events } from '../index';
 import { SwapAmountTooLowEvent } from '../swapAmountTooLow';
 import { SwapExecutedEvent } from '../swapExecuted';
@@ -8,6 +8,7 @@ import { SwapScheduledEvent } from '../swapScheduled';
 export const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
 export const ETH_ADDRESS_2 = '0x6AA69332b63BB5B1d7CA5355387edd5624e181f3';
 export const DOT_ADDRESS = '5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX';
+export const BTC_ADDRESS = 'bcrt1qj7z0q2z2q5z2q5z2q5z2q5z2q5z2q5z2q5z2q5';
 
 type SwapChannelData = Parameters<
   (typeof prisma)['swapDepositChannel']['create']
@@ -28,6 +29,41 @@ export const createDepositChannel = (
       issuedBlock: 100,
       ...data,
       createdAt: new Date(1690556052834),
+    },
+  });
+
+type SwapData = Parameters<(typeof prisma)['swap']['create']>[0]['data'];
+
+export const createSwap = (data: Partial<SwapData> = {}): Promise<Swap> =>
+  prisma.swap.create({
+    data: {
+      id: 1n,
+      nativeId: 10n,
+      type: 'SWAP',
+      srcAsset: 'ETH',
+      destAsset: 'BTC',
+      depositAmount: '10000000000',
+      destAddress: BTC_ADDRESS,
+      depositReceivedAt: new Date(1690556052835),
+      depositReceivedBlockIndex: '100',
+      ...data,
+      createdAt: new Date(1690556052838),
+    },
+  });
+
+type EgressData = Parameters<(typeof prisma)['egress']['create']>[0]['data'];
+
+export const createEgress = (data: Partial<EgressData> = {}): Promise<Egress> =>
+  prisma.egress.create({
+    data: {
+      id: 1n,
+      nativeId: 10n,
+      chain: Chains.Ethereum,
+      amount: '10000000000',
+      scheduledAt: new Date(1690556052850),
+      scheduledBlockIndex: '100',
+      ...data,
+      createdAt: new Date(1690556052839),
     },
   });
 

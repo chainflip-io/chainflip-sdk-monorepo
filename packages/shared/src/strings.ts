@@ -18,3 +18,6 @@ export const camelToSnakeCase = <const T extends string>(
 
 export const transformAsset = (asset: Asset): RpcAsset =>
   (asset[0] + asset.slice(1).toLowerCase()) as Capitalize<Lowercase<Asset>>;
+
+export const channelIdRegex =
+  /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
