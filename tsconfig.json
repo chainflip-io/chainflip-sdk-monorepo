@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "esModuleInterop": true,
     "paths": {
       "@/shared/*": ["./packages/shared/src/*"],
       "@/swap/*": ["./packages/swap/src/*"]
