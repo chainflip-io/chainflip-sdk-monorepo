@@ -146,6 +146,9 @@ model Broadcast {
   succeededBlockIndex String?
   abortedAt           DateTime?
   abortedBlockIndex   String?
+  replacedBy          Broadcast?    @relation("replacedBy", fields: [replacedById], references: [id])
+  replaces            Broadcast?    @relation("replacedBy")
+  replacedById        BigInt?       @unique
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @default(now()) @updatedAt
 
