@@ -1,5 +1,9 @@
 import { Chains } from '@/shared/enums';
-import { createChainTrackingInfo, createDepositChannel, swapDepositAddressReadyMocked } from './utils';
+import {
+  createChainTrackingInfo,
+  createDepositChannel,
+  swapDepositAddressReadyMocked,
+} from './utils';
 import prisma from '../../client';
 import swapDepositAddressReady from '../swapDepositAddressReady';
 

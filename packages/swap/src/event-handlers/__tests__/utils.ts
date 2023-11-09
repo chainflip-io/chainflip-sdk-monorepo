@@ -524,7 +524,11 @@ export const createChainTrackingInfo = () => {
     chains.map((chain) =>
       prisma.chainTracking.upsert({
         where: { chain },
-        create: { chain, height: 10, blockTrackedAt: new Date('2023-11-09T10:00:00.000Z') },
+        create: {
+          chain,
+          height: 10,
+          blockTrackedAt: new Date('2023-11-09T10:00:00.000Z'),
+        },
         update: { height: 10 },
       }),
     ),
