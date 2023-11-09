@@ -126,14 +126,14 @@ const execCommand = async (cmd: string) => {
 
 const openVersionPR = async () => {
   const message = `release(${args.package}): ${newVersion}`;
-
+  const newBranch = `chore/release-${newVersion}`;
+  await execCommand(`git switch -c ${newBranch}`);
   await execCommand(
     `pnpm --filter ${packageJSON.name} exec pnpm version ${newVersion}`,
   );
-  await execCommand(`git switch -c chore/release-${newVersion}`);
   await execCommand(`git add .`);
   await execCommand(`git commit -m "${message}" --no-verify`);
-  await execCommand('git push');
+  await execCommand(`git push origin ${newBranch}`);
   await execCommand(`gh pr create --title "${message}" --body ""`);
 };
 
