@@ -13,7 +13,7 @@ const chainStateUpdatedArgs = z.object({
 
 const chainStateUpdated =
   (chain: Chain) =>
-  async ({ prisma, event }: EventHandlerArgs) => {
+  async ({ prisma, event, block }: EventHandlerArgs) => {
     const { blockHeight } = chainStateUpdatedArgs.parse(
       event.args,
     ).newChainState;
@@ -21,8 +21,8 @@ const chainStateUpdated =
     await Promise.all([
       prisma.chainTracking.upsert({
         where: { chain },
-        create: { chain, height: blockHeight },
-        update: { height: blockHeight },
+        create: { chain, height: blockHeight, blockTrackedAt: block.timestamp },
+        update: { height: blockHeight, blockTrackedAt: block.timestamp },
       }),
       prisma.swapDepositChannel.updateMany({
         where: {

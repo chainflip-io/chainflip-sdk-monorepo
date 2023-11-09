@@ -28,7 +28,9 @@ describe('openSwapDepositChannel', () => {
       depositAddress: 'address',
     });
     prisma.chainTracking.findFirst = jest.fn().mockResolvedValueOnce({
+      chain: 'Ethereum',
       height: BigInt('125'),
+      blockTrackedAt: new Date('2023-11-09T10:00:00.000Z'),
     });
 
     const result = await openSwapDepositChannel({
@@ -42,7 +44,7 @@ describe('openSwapDepositChannel', () => {
 
     expect(result).toEqual({
       depositAddress: 'address',
-      estimatedExpiryTime: 1641008325000,
+      estimatedExpiryTime: 1699537125000,
       id: '123-Ethereum-888',
       issuedBlock: 123,
       srcChainExpiryBlock: 1000n,
@@ -61,6 +63,7 @@ describe('openSwapDepositChannel', () => {
         srcChainExpiryBlock: 1000n,
         destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
         destAsset: 'DOT',
+        estimatedExpiryAt: new Date('2023-11-09T13:38:45.000Z'),
         expectedDepositAmount: '777',
         issuedBlock: 123,
         srcAsset: 'FLIP',

@@ -40,17 +40,23 @@ const blockTimeMap: Record<Chain, number> = {
 };
 
 export function calculateExpiryTime(args: {
-  chain: Chain;
-  startBlock?: bigint;
+  chainInfo?: {
+    chain: Chain;
+    height: bigint;
+    blockTrackedAt: Date;
+  } | null;
   expiryBlock?: bigint | null;
 }) {
-  const { chain, startBlock, expiryBlock } = args;
+  const { chainInfo, expiryBlock } = args;
 
-  if (startBlock == null || expiryBlock == null) {
+  if (chainInfo == null || expiryBlock == null) {
     return null;
   }
 
-  const remainingBlocks = Number(expiryBlock - startBlock); // If it is negative, it means the channel has already expired and will return the time from the past
+  const remainingBlocks = Number(expiryBlock - chainInfo.height); // If it is negative, it means the channel has already expired and will return the time from the past
 
-  return new Date(Date.now() + remainingBlocks * blockTimeMap[chain] * 1000);
+  return new Date(
+    chainInfo.blockTrackedAt.getTime() +
+      remainingBlocks * blockTimeMap[chainInfo.chain] * 1000,
+  );
 }

@@ -6,7 +6,6 @@ import { asyncHandler } from './common';
 import prisma, { Egress, Swap, SwapDepositChannel, Broadcast } from '../client';
 import { getPendingDeposit } from '../deposit-tracking';
 import openSwapDepositChannel from '../handlers/openSwapDepositChannel';
-import { calculateExpiryTime } from '../utils/function';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
 
@@ -133,20 +132,6 @@ router.get(
       );
     }
 
-    let estimatedDepositChannelExpiryTime: Date | null = null;
-    if (swapDepositChannel) {
-      const chainInfo = await prisma.chainTracking.findFirst({
-        where: {
-          chain: swapDepositChannel.srcChain,
-        },
-      });
-      estimatedDepositChannelExpiryTime = calculateExpiryTime({
-        chain: swapDepositChannel.srcChain,
-        startBlock: chainInfo?.height,
-        expiryBlock: swapDepositChannel.srcChainExpiryBlock,
-      });
-    }
-
     const response = {
       state,
       type: swap?.type,
@@ -182,7 +167,7 @@ router.get(
       depositChannelExpiryBlock:
         swapDepositChannel?.srcChainExpiryBlock?.toString(),
       estimatedDepositChannelExpiryTime:
-        estimatedDepositChannelExpiryTime?.valueOf(),
+        swapDepositChannel?.estimatedExpiryAt?.valueOf(),
       isDepositChanneExpired: swapDepositChannel?.isExpired ?? false,
       ccmDepositReceivedBlockIndex: swap?.ccmDepositReceivedBlockIndex,
       ccmMetadata: swap?.ccmGasBudget && {

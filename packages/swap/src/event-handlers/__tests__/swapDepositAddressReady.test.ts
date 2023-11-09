@@ -1,5 +1,5 @@
 import { Chains } from '@/shared/enums';
-import { createDepositChannel, swapDepositAddressReadyMocked } from './utils';
+import { createChainTrackingInfo, createDepositChannel, swapDepositAddressReadyMocked } from './utils';
 import prisma from '../../client';
 import swapDepositAddressReady from '../swapDepositAddressReady';
 
@@ -11,10 +11,12 @@ const {
 describe(swapDepositAddressReady, () => {
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;
   });
 
   it('creates a swap deposit channel entry', async () => {
     await prisma.$transaction(async (txClient) => {
+      await createChainTrackingInfo();
       await swapDepositAddressReady({
         prisma: txClient,
         event,
