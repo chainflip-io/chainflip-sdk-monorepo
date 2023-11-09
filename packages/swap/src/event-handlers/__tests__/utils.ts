@@ -409,6 +409,24 @@ export const poolFeeSetMock = {
   },
 } as const;
 
+export const thresholdSignatureInvalidMock = {
+  block: {
+    height: 420,
+    timestamp: 1680337105000,
+  },
+  eventContext: {
+    kind: 'event',
+    event: {
+      args: {
+        broadcastId: 1,
+        retryBroadcastId: 10,
+      },
+      name: 'EthereumBroadcaster.ThresholdSignatureInvalid',
+      indexInBlock: 7,
+    },
+  },
+} as const;
+
 const buildSwapAmountTooLowEvent = <T extends SwapAmountTooLowEvent>(
   args: T,
 ) => ({
