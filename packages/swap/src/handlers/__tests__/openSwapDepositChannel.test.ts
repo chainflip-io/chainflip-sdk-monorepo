@@ -1,4 +1,6 @@
+import axios from 'axios';
 import * as broker from '@/shared/broker';
+import { swappingEnvironment } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import openSwapDepositChannel from '../openSwapDepositChannel';
 
@@ -6,14 +8,20 @@ jest.mock('@/shared/broker', () => ({
   requestSwapDepositAddress: jest.fn(),
 }));
 
-describe('openSwapDepositChannel', () => {
+jest.mock('axios');
+
+describe(openSwapDepositChannel, () => {
   beforeAll(() => {
     jest
       .useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
       .setSystemTime(new Date('2022-01-01'));
   });
 
-  it('should gather and insert the deposit channel info', async () => {
+  it('gathers and inserts the deposit channel info', async () => {
+    jest
+      .mocked(axios.post)
+      .mockResolvedValueOnce({ data: swappingEnvironment() });
+
     jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
@@ -28,13 +36,15 @@ describe('openSwapDepositChannel', () => {
       depositAddress: 'address',
     });
     prisma.chainTracking.findFirst = jest.fn().mockResolvedValueOnce({
+      chain: 'Ethereum',
       height: BigInt('125'),
+      blockTrackedAt: new Date('2023-11-09T10:00:00.000Z'),
     });
 
     const result = await openSwapDepositChannel({
       srcAsset: 'FLIP',
-      destAsset: 'DOT',
       srcChain: 'Ethereum',
+      destAsset: 'DOT',
       destChain: 'Polkadot',
       destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
       expectedDepositAmount: '777',
@@ -42,7 +52,7 @@ describe('openSwapDepositChannel', () => {
 
     expect(result).toEqual({
       depositAddress: 'address',
-      estimatedExpiryTime: 1641008325000,
+      estimatedExpiryTime: 1699537125000,
       id: '123-Ethereum-888',
       issuedBlock: 123,
       srcChainExpiryBlock: 1000n,
@@ -61,6 +71,7 @@ describe('openSwapDepositChannel', () => {
         srcChainExpiryBlock: 1000n,
         destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
         destAsset: 'DOT',
+        estimatedExpiryAt: new Date('2023-11-09T13:38:45.000Z'),
         expectedDepositAmount: '777',
         issuedBlock: 123,
         srcAsset: 'FLIP',

@@ -4,6 +4,7 @@ import superjson from 'superjson';
 import { TransactionOptions } from '@/shared/contracts';
 import { ChainflipNetwork, Chain, ChainflipNetworks } from '@/shared/enums';
 import { assert } from '@/shared/guards';
+import { Environment, RpcConfig, getEnvironment } from '@/shared/rpc';
 import { swapResponseSchema } from '@/shared/schemas';
 import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
 import type { TokenSwapParams } from '@/shared/vault/schemas';
@@ -30,6 +31,7 @@ export type SwapSDKOptions = {
     url: string;
     commissionBps: number;
   };
+  rpcUrl?: string;
 };
 
 export class SwapSDK {
@@ -43,6 +45,10 @@ export class SwapSDK {
 
   private readonly brokerConfig?;
 
+  private stateChainEnvironment?: Environment;
+
+  private readonly rpcConfig: RpcConfig;
+
   constructor(options: SwapSDKOptions = {}) {
     this.network = options.network ?? ChainflipNetworks.perseverance;
     this.baseUrl = options.backendUrl ?? BACKEND_SERVICE_URLS[this.network];
@@ -52,6 +58,9 @@ export class SwapSDK {
       transformer: superjson,
       links: [httpBatchLink({ url: new URL('/trpc', this.baseUrl) })],
     });
+    this.rpcConfig = options.rpcUrl
+      ? { rpcUrl: options.rpcUrl }
+      : { network: this.network };
   }
 
   getChains(sourceChain?: Chain): Promise<ChainData[]> {
@@ -61,8 +70,16 @@ export class SwapSDK {
     return ApiService.getChains(this.network);
   }
 
-  getAssets(chain: Chain): Promise<AssetData[]> {
-    return ApiService.getAssets(chain, this.network);
+  private async getStateChainEnvironment(): Promise<Environment> {
+    this.stateChainEnvironment ??= await getEnvironment(this.rpcConfig);
+
+    return this.stateChainEnvironment;
+  }
+
+  async getAssets(chain: Chain): Promise<AssetData[]> {
+    const env = await this.getStateChainEnvironment();
+
+    return ApiService.getAssets(chain, this.network, env);
   }
 
   getQuote(

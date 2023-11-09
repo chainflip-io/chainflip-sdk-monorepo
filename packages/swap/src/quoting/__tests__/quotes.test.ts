@@ -1,7 +1,6 @@
 import * as crypto from 'crypto';
 import { Subject } from 'rxjs';
-import { Asset, Assets, assetChains } from '@/shared/enums';
-import { AssetAndChain } from '@/shared/parsers';
+import { Asset, Assets, assetChains, AssetAndChain } from '@/shared/enums';
 import prisma, { Pool } from '../../client';
 import {
   buildQuoteRequest,

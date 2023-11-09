@@ -1,8 +1,10 @@
+import axios from 'axios';
 import * as crypto from 'crypto';
 import { Server } from 'http';
 import request from 'supertest';
 import * as broker from '@/shared/broker';
 import { Assets } from '@/shared/enums';
+import { swappingEnvironment } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import {
   DOT_ADDRESS,
@@ -30,6 +32,14 @@ jest.mock('@/shared/broker', () => ({
     .mockRejectedValue(Error('unhandled mock')),
 }));
 
+jest.mock('axios', () => ({
+  post: jest.fn(() =>
+    Promise.resolve({
+      data: swappingEnvironment(),
+    }),
+  ),
+}));
+
 const RECEIVED_TIMESTAMP = 1669907135201;
 const RECEIVED_BLOCK_INDEX = `100-3`;
 
@@ -39,6 +49,7 @@ describe('server', () => {
 
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Egress" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;
     server = app.listen(0);
   });
 
@@ -85,7 +96,7 @@ describe('server', () => {
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "estimatedDepositChannelExpiryTime": 1640998050000,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": false,
           "srcAsset": "ETH",
@@ -113,7 +124,7 @@ describe('server', () => {
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "estimatedDepositChannelExpiryTime": 1640995065000,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": true,
           "srcAsset": "ETH",
@@ -159,7 +170,7 @@ describe('server', () => {
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "estimatedDepositChannelExpiryTime": 1640998050000,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": false,
           "srcAsset": "ETH",
@@ -210,7 +221,7 @@ describe('server', () => {
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "estimatedDepositChannelExpiryTime": 1640998050000,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "intermediateAmount": "20",
           "isDepositChanneExpired": false,
@@ -274,7 +285,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
-          "estimatedDepositChannelExpiryTime": 1640998050000,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": false,
           "srcAsset": "ETH",
@@ -349,7 +360,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
-          "estimatedDepositChannelExpiryTime": 1640998050000,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": false,
           "srcAsset": "ETH",
@@ -427,7 +438,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
-          "estimatedDepositChannelExpiryTime": 1640998050000,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": false,
           "srcAsset": "ETH",
@@ -505,7 +516,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
-          "estimatedDepositChannelExpiryTime": 1640998050000,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": false,
           "srcAsset": "ETH",
@@ -607,24 +618,23 @@ describe('server', () => {
   describe('POST /swaps', () => {
     const ethToDotSwapRequestBody = {
       srcAsset: Assets.ETH,
-      destAsset: Assets.DOT,
       srcChain: 'Ethereum',
+      destAsset: Assets.DOT,
       destChain: 'Polkadot',
       destAddress: DOT_ADDRESS,
       amount: '1000000000',
     } as const;
     const dotToEthSwapRequestBody = {
       srcAsset: Assets.DOT,
+      srcChain: 'Polkadot',
       destAsset: Assets.ETH,
-      srcChain: 'Ethereum',
-      destChain: 'Polkadot',
+      destChain: 'Ethereum',
       destAddress: ETH_ADDRESS,
       amount: '1000000000',
     } as const;
 
     it.each([
-      [ethToDotSwapRequestBody],
-      [ethToDotSwapRequestBody],
+      [ethToDotSwapRequestBody], // a comment to prevent a huge PR diff
       [dotToEthSwapRequestBody],
     ])('creates a new swap deposit channel', async (requestBody) => {
       const issuedBlock = 123;
@@ -643,7 +653,7 @@ describe('server', () => {
         .send(requestBody);
 
       expect(body).toMatchObject({
-        id: '123-Ethereum-200',
+        id: `123-${requestBody.srcChain}-200`,
         depositAddress: address,
         issuedBlock,
       });
@@ -750,19 +760,23 @@ describe('server', () => {
       });
     });
 
-    it('rejects if amount is lower than minimum deposit amount', async () => {
+    it('rejects if amount is lower than minimum swap amount', async () => {
+      jest
+        .mocked(axios.post)
+        .mockResolvedValueOnce({ data: swappingEnvironment('0xffffff') });
+
       const { body, status } = await request(app).post('/swaps').send({
         srcAsset: Assets.DOT,
         destAsset: Assets.ETH,
-        srcChain: 'Ethereum',
-        destChain: 'Polkadot',
+        srcChain: 'Polkadot',
+        destChain: 'Ethereum',
         destAddress: ETH_ADDRESS,
         amount: '5',
       });
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
-        message: 'expected amount is below minimum deposit amount',
+        message: 'expected amount is below minimum swap amount',
       });
     });
   });

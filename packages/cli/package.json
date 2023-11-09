@@ -26,8 +26,6 @@
   ],
   "scripts": {
     "build": "rm -rf dist && tsup",
-    "test": "jest",
-    "test:ci": "CI=1 jest --forceExit",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [],

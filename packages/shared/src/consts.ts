@@ -1,4 +1,4 @@
-import { Asset, Assets, ChainflipNetwork, ChainflipNetworks } from './enums';
+import { ChainflipNetwork, ChainflipNetworks } from './enums';
 
 const POOLS_NETWORK_FEE_HUNDREDTH_PIPS: Partial<
   Record<ChainflipNetwork, number>
@@ -7,38 +7,6 @@ const POOLS_NETWORK_FEE_HUNDREDTH_PIPS: Partial<
 };
 export const getPoolsNetworkFeeHundredthPips = (network: ChainflipNetwork) =>
   POOLS_NETWORK_FEE_HUNDREDTH_PIPS[network] ?? 0;
-
-// TODO: fetch minimum deposit amounts via rpc from the state chain
-const MINIMUM_DEPOSIT_AMOUNTS: Partial<
-  Record<ChainflipNetwork, Record<Asset, string>>
-> = {
-  [ChainflipNetworks.perseverance]: {
-    [Assets.ETH]: '0',
-    [Assets.FLIP]: '0',
-    [Assets.USDC]: '0',
-    [Assets.BTC]: '0',
-    [Assets.DOT]: '10000000000', // https://support.polkadot.network/support/solutions/articles/65000168651-what-is-the-existential-deposit
-  },
-};
-export const getMinimumDepositAmount = (
-  network: ChainflipNetwork,
-  asset: Asset,
-) => MINIMUM_DEPOSIT_AMOUNTS[network]?.[asset] ?? '0';
-
-// TODO: fetch minimum swap amounts via rpc from the state chain
-const MINIMUM_SWAP_AMOUNTS: Partial<
-  Record<ChainflipNetwork, Record<Asset, string>>
-> = {
-  [ChainflipNetworks.perseverance]: {
-    [Assets.ETH]: '580000000000000',
-    [Assets.FLIP]: '1000000000000000000',
-    [Assets.USDC]: '1000000',
-    [Assets.BTC]: '1000',
-    [Assets.DOT]: '2000000000',
-  },
-};
-export const getMinimumSwapAmount = (network: ChainflipNetwork, asset: Asset) =>
-  MINIMUM_SWAP_AMOUNTS[network]?.[asset] ?? '0';
 
 // https://developers.circle.com/developer/docs/usdc-on-testnet#usdc-on-ethereum-goerli
 const GOERLI_USDC_CONTRACT_ADDRESS =

@@ -33,6 +33,9 @@ importers:
       '@types/node':
         specifier: ^20.8.10
         version: 20.8.10
+      '@types/yargs':
+        specifier: ^17.0.29
+        version: 17.0.29
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.62.0
         version: 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.53.0)(typescript@5.2.2)

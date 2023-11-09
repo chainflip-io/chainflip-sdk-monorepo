@@ -1,5 +1,5 @@
 import { bitcoinAddresses } from './bitcoinAddresses';
-import { Assets, Chains } from '../../enums';
+import { Assets, assetChains } from '../../enums';
 import {
   validateBitcoinMainnetAddress,
   validateBitcoinTestnetAddress,
@@ -77,39 +77,28 @@ describe(validateAddress, () => {
     [Assets.USDC, '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
     [Assets.FLIP, '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
   ] as const)('returns true for valid supportedAssets %s', (asset, address) => {
-    expect(validateAddress(asset, address)).toBeTruthy();
+    expect(validateAddress(assetChains[asset], address)).toBeTruthy();
   });
 
   it.each([
-    [Chains.Polkadot, '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
-    ['Polkadot', '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
-    [Chains.Ethereum, '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
-    ['Ethereum', '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
-    [Chains.Ethereum, '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
-    [Chains.Ethereum, '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
-  ] as const)('returns true for valid supportedAssets %s', (asset, address) => {
-    expect(validateAddress(asset, address)).toBeTruthy();
-  });
-
-  it.each([
-    [Chains.Bitcoin, '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
-    ['Bitcoin', '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
+    [Assets.BTC, '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
+    ['BTC', '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
     [Assets.BTC, '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
     ['BTC', '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
   ] as const)(
     'returns false for invalid bitcoin addresses %s',
     (asset, address) => {
-      expect(validateAddress(asset, address)).toBeFalsy();
+      expect(validateAddress(assetChains[asset], address)).toBeFalsy();
     },
   );
 
   it.each([
-    [Chains.Bitcoin, 'mkPuLFihuytSjmdqLztCXXESD7vrjnTiTP'],
+    [Assets.BTC, 'mkPuLFihuytSjmdqLztCXXESD7vrjnTiTP'],
     ['BTC', 'miEfvT7iYiEJxS69uq9MMeBfcLpKjDMpWS'],
   ] as const)(
     'returns true for valid testnet bitcoin addresses %s',
     (asset, address) => {
-      expect(validateAddress(asset, address, false)).toBeTruthy();
+      expect(validateAddress(assetChains[asset], address, false)).toBeTruthy();
     },
   );
 
@@ -119,6 +108,6 @@ describe(validateAddress, () => {
     [Assets.USDC, '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
     [Assets.FLIP, '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
   ] as const)('returns false for invalid address %s', (asset, address) => {
-    expect(validateAddress(asset, address)).toBeFalsy();
+    expect(validateAddress(assetChains[asset], address)).toBeFalsy();
   });
 });

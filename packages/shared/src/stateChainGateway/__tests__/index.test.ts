@@ -26,9 +26,9 @@ class MockGateway {
 
 jest.mock('../../abis/factories/StateChainGateway__factory', () => ({
   StateChainGateway__factory: class {
-    static connect: (address: string) => MockGateway = jest.fn(
-      (address: string) => new MockGateway(address),
-    );
+    static connect(address: string) {
+      return new MockGateway(address);
+    }
   },
 }));
 

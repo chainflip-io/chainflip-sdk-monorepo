@@ -14,7 +14,7 @@ const {
 
 describe(swapEgressScheduled, () => {
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "Egress" CASCADE`;
   });
 
   it('updates an existing swap with the scheduled timestamp', async () => {

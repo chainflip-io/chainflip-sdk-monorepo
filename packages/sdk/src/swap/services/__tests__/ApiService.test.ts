@@ -8,6 +8,27 @@ jest.mock('axios', () => ({
   post: jest.fn(),
 }));
 
+const env = {
+  ingressEgress: {
+    minimumDepositAmounts: {
+      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n },
+      Polkadot: { DOT: 0n },
+      Bitcoin: { BTC: 0n },
+    },
+  },
+  swapping: {
+    minimumSwapAmounts: {
+      Ethereum: {
+        USDC: 0xf4240n,
+        ETH: 0x20f81c5f84000n,
+        FLIP: 0xde0b6b3a7640000n,
+      },
+      Polkadot: { DOT: 0x77359400n },
+      Bitcoin: { BTC: 0x5f370n },
+    },
+  },
+};
+
 describe('ApiService', () => {
   const mockRoute = {
     amount: '10000',
@@ -40,10 +61,10 @@ describe('ApiService', () => {
         async (chain) => {
           if (network === 'mainnet' && chain === 'Ethereum') {
             // not contract address for flip on mainnet yet
-            expect(ApiService.getAssets(chain, network)).rejects.toThrow();
+            expect(ApiService.getAssets(chain, network, env)).rejects.toThrow();
           } else {
             expect(
-              await ApiService.getAssets(chain, network),
+              await ApiService.getAssets(chain, network, env),
             ).toMatchSnapshot();
           }
         },

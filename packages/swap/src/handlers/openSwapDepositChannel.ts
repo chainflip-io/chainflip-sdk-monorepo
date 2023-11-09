@@ -1,28 +1,29 @@
 import { z } from 'zod';
 import * as broker from '@/shared/broker';
-import { getMinimumDepositAmount } from '@/shared/consts';
 import { ChainflipNetwork } from '@/shared/enums';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';
 import { isProduction } from '../utils/consts';
 import { calculateExpiryTime } from '../utils/function';
+import { getMinimumSwapAmount } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
 
 export default async function openSwapDepositChannel(
   input: z.output<typeof openSwapDepositChannelSchema>,
 ) {
-  if (!validateAddress(input.destAsset, input.destAddress, isProduction)) {
+  if (!validateAddress(input.destChain, input.destAddress, isProduction)) {
     throw ServiceError.badRequest('provided address is not valid');
   }
 
-  const minimumAmount = getMinimumDepositAmount(
+  const minimumAmount = await getMinimumSwapAmount(
     process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
-    input.srcAsset,
+    { asset: input.srcAsset, chain: input.srcChain },
   );
-  if (BigInt(input.expectedDepositAmount) < BigInt(minimumAmount)) {
+
+  if (BigInt(input.expectedDepositAmount) < minimumAmount) {
     throw ServiceError.badRequest(
-      'expected amount is below minimum deposit amount',
+      'expected amount is below minimum swap amount',
     );
   }
 
@@ -36,37 +37,38 @@ export default async function openSwapDepositChannel(
   });
 
   const { destChain, ...rest } = input;
-  const [
-    { issuedBlock, srcChain, channelId, depositAddress: channelDepositAddress },
-    chainInfo,
-  ] = await Promise.all([
-    prisma.swapDepositChannel.upsert({
-      where: {
-        issuedBlock_srcChain_channelId: {
-          channelId: blockInfo.channelId,
-          issuedBlock: blockInfo.issuedBlock,
-          srcChain: input.srcChain,
-        },
-      },
-      create: {
-        ...rest,
-        depositAddress,
-        srcChainExpiryBlock,
-        ...blockInfo,
-      },
-      update: {},
-    }),
-    prisma.chainTracking.findFirst({
-      where: {
-        chain: input.srcChain,
-      },
-    }),
-  ]);
 
+  const chainInfo = await prisma.chainTracking.findFirst({
+    where: {
+      chain: input.srcChain,
+    },
+  });
   const estimatedExpiryTime = calculateExpiryTime({
-    chain: input.srcChain,
-    startBlock: chainInfo?.height,
+    chainInfo,
     expiryBlock: srcChainExpiryBlock,
+  });
+
+  const {
+    issuedBlock,
+    srcChain,
+    channelId,
+    depositAddress: channelDepositAddress,
+  } = await prisma.swapDepositChannel.upsert({
+    where: {
+      issuedBlock_srcChain_channelId: {
+        channelId: blockInfo.channelId,
+        issuedBlock: blockInfo.issuedBlock,
+        srcChain: input.srcChain,
+      },
+    },
+    create: {
+      ...rest,
+      depositAddress,
+      srcChainExpiryBlock,
+      estimatedExpiryAt: estimatedExpiryTime,
+      ...blockInfo,
+    },
+    update: {},
   });
 
   return {

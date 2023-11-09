@@ -15,11 +15,16 @@ import {
 import { promisify } from 'util';
 import { Assets } from '@/shared/enums';
 import { QuoteQueryParams } from '@/shared/schemas';
+import { swappingEnvironment } from '@/shared/tests/fixtures';
 import prisma from '../client';
 import app from '../server';
 import { getBrokerQuote } from '../utils/statechain';
 
 jest.mock('../utils/statechain', () => ({ getBrokerQuote: jest.fn() }));
+
+jest.mock('axios', () => ({
+  post: jest.fn().mockResolvedValue({ data: swappingEnvironment() }),
+}));
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
