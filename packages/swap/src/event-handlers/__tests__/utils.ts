@@ -26,6 +26,7 @@ export const createDepositChannel = (
       destAddress: DOT_ADDRESS,
       expectedDepositAmount: '10000000000',
       issuedBlock: 100,
+      estimatedExpiryAt: new Date('2023-11-09T11:05:00.000Z'),
       ...data,
       createdAt: new Date(1690556052834),
     },
@@ -523,7 +524,11 @@ export const createChainTrackingInfo = () => {
     chains.map((chain) =>
       prisma.chainTracking.upsert({
         where: { chain },
-        create: { chain, height: 10 },
+        create: {
+          chain,
+          height: 10,
+          blockTrackedAt: new Date('2023-11-09T10:00:00.000Z'),
+        },
         update: { height: 10 },
       }),
     ),

@@ -49,6 +49,7 @@ describe('server', () => {
 
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Egress" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;
     server = app.listen(0);
   });
 
@@ -95,7 +96,7 @@ describe('server', () => {
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "estimatedDepositChannelExpiryTime": 1640998050000,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": false,
           "srcAsset": "ETH",
@@ -123,7 +124,7 @@ describe('server', () => {
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "estimatedDepositChannelExpiryTime": 1640995065000,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": true,
           "srcAsset": "ETH",
@@ -169,7 +170,7 @@ describe('server', () => {
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "estimatedDepositChannelExpiryTime": 1640998050000,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": false,
           "srcAsset": "ETH",
@@ -220,7 +221,7 @@ describe('server', () => {
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "estimatedDepositChannelExpiryTime": 1640998050000,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "intermediateAmount": "20",
           "isDepositChanneExpired": false,
@@ -284,7 +285,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
-          "estimatedDepositChannelExpiryTime": 1640998050000,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": false,
           "srcAsset": "ETH",
@@ -359,7 +360,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
-          "estimatedDepositChannelExpiryTime": 1640998050000,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": false,
           "srcAsset": "ETH",
@@ -437,7 +438,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
-          "estimatedDepositChannelExpiryTime": 1640998050000,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": false,
           "srcAsset": "ETH",
@@ -515,7 +516,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
-          "estimatedDepositChannelExpiryTime": 1640998050000,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": false,
           "srcAsset": "ETH",

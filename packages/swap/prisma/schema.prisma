@@ -51,6 +51,7 @@ model SwapDepositChannel {
   createdAt             DateTime     @default(now())
   swaps                 Swap[]
   failedSwaps           FailedSwap[]
+  estimatedExpiryAt     DateTime?
 
   @@unique([issuedBlock, srcChain, channelId])
   @@index([depositAddress])
@@ -198,10 +199,11 @@ model Pool {
 }
 
 model ChainTracking {
-  id        Int      @id @default(autoincrement())
-  chain     Chain    @unique
-  height    BigInt   @default(0)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  id             Int      @id @default(autoincrement())
+  chain          Chain    @unique
+  height         BigInt   @default(0)
+  blockTrackedAt DateTime @default(now())
+  updatedAt      DateTime @updatedAt @db.Timestamptz(3)
 
   @@schema("public")
 }
