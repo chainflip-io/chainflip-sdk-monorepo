@@ -1,6 +1,5 @@
 import express from 'express';
 import type { Server } from 'socket.io';
-import { ChainflipNetwork } from '@/shared/enums';
 import { quoteQuerySchema } from '@/shared/schemas';
 import { asyncHandler } from './common';
 import getConnectionHandler from '../quoting/getConnectionHandler';
@@ -35,7 +34,7 @@ const quote = (io: Server) => {
       }
 
       const minimumAmount = await getMinimumSwapAmount(
-        process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
+        process.env.RPC_NODE_HTTP_URL as string,
         result.data.srcAsset,
       );
       if (BigInt(result.data.amount) < minimumAmount) {

@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as broker from '@/shared/broker';
-import { ChainflipNetwork } from '@/shared/enums';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';
@@ -17,7 +16,7 @@ export default async function openSwapDepositChannel(
   }
 
   const minimumAmount = await getMinimumSwapAmount(
-    process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
+    process.env.RPC_NODE_HTTP_URL as string,
     { asset: input.srcAsset, chain: input.srcChain },
   );
 
