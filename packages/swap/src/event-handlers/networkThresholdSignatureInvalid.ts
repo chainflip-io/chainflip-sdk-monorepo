@@ -22,6 +22,7 @@ const networkThresholdSignatureInvalid =
           nativeId: broadcastId,
         },
       },
+      include: { egresses: true },
     });
     if (!broadcast) return;
 
@@ -42,7 +43,7 @@ const networkThresholdSignatureInvalid =
         data: { replacedById: newBroadcast.id },
       }),
       prisma.egress.updateMany({
-        where: { broadcastId: broadcast.id },
+        where: { id: { in: broadcast.egresses.map(({ id }) => id) } },
         data: { broadcastId: newBroadcast.id },
       }),
     ]);
