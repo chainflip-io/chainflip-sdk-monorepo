@@ -34,7 +34,7 @@ const RPC_URLS: Record<ChainflipNetwork, string> = {
   [ChainflipNetworks.backspin]: 'https://backspin-rpc.staging',
   [ChainflipNetworks.sisyphos]: 'https://sisyphos.chainflip.xyz',
   [ChainflipNetworks.perseverance]: 'https://perseverance.chainflip.xyz',
-  [ChainflipNetworks.mainnet]: 'https://mainnet.chainflip.io',
+  [ChainflipNetworks.mainnet]: 'https://mainnet-rpc.chainflip.io',
 };
 
 export type RpcConfig = { rpcUrl: string } | { network: ChainflipNetwork };

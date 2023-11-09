@@ -1,14 +1,9 @@
 import {
   AssetAndChain,
-  ChainflipNetwork,
   UncheckedAssetAndChain,
   assertIsValidAssetAndChain,
 } from '@/shared/enums';
-import {
-  getIngressEgressEnvironment,
-  getSwappingEnvironment,
-  type ChainAssetMap,
-} from '@/shared/rpc';
+import { getSwappingEnvironment, type ChainAssetMap } from '@/shared/rpc';
 
 const readAssetValue = (
   minimums: ChainAssetMap<bigint>,
@@ -18,20 +13,11 @@ const readAssetValue = (
   return chainMinimums[asset.asset as keyof typeof chainMinimums];
 };
 
-export const getMinimumDepositAmount = async (
-  network: ChainflipNetwork,
-  asset: UncheckedAssetAndChain,
-): Promise<bigint> => {
-  assertIsValidAssetAndChain(asset);
-  const ingressEgressEnv = await getIngressEgressEnvironment({ network });
-  return readAssetValue(ingressEgressEnv.minimumDepositAmounts, asset);
-};
-
 export const getMinimumSwapAmount = async (
-  network: ChainflipNetwork,
+  rpcUrl: string,
   asset: UncheckedAssetAndChain,
 ): Promise<bigint> => {
   assertIsValidAssetAndChain(asset);
-  const swapEnv = await getSwappingEnvironment({ network });
+  const swapEnv = await getSwappingEnvironment({ rpcUrl });
   return readAssetValue(swapEnv.minimumSwapAmounts, asset);
 };
