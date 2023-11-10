@@ -133,9 +133,6 @@ importers:
       ethers:
         specifier: 6.8.1
         version: 6.8.1
-      zod:
-        specifier: ^3.22.4
-        version: 3.22.4
     devDependencies:
       tsup:
         specifier: ^7.2.0

@@ -41,7 +41,6 @@ const readField = <A extends {}, B extends {}, K extends keyof A & keyof B>(
   key: K,
 ) => a?.[key] ?? b?.[key];
 
-// TODO(major): remove this handler. it's replaced by tRPC
 router.get(
   '/:id',
   asyncHandler(async (req, res) => {
@@ -169,7 +168,7 @@ router.get(
         swapDepositChannel?.srcChainExpiryBlock?.toString(),
       estimatedDepositChannelExpiryTime:
         swapDepositChannel?.estimatedExpiryAt?.valueOf(),
-      isDepositChannelExpired: swapDepositChannel?.isExpired ?? false,
+      isDepositChanneExpired: swapDepositChannel?.isExpired ?? false,
       ccmDepositReceivedBlockIndex: swap?.ccmDepositReceivedBlockIndex,
       ccmMetadata: swap?.ccmGasBudget && {
         gasBudget: swap?.ccmGasBudget?.toString(),

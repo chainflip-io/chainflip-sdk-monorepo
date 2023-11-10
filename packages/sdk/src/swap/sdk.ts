@@ -5,7 +5,6 @@ import { TransactionOptions } from '@/shared/contracts';
 import { ChainflipNetwork, Chain, ChainflipNetworks } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { Environment, RpcConfig, getEnvironment } from '@/shared/rpc';
-import { swapResponseSchema } from '@/shared/schemas';
 import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
 import type { TokenSwapParams } from '@/shared/vault/schemas';
 import type { AppRouter } from '@/swap/server';
@@ -18,6 +17,7 @@ import type {
   DepositAddressResponse,
   QuoteResponse,
   SwapStatusRequest,
+  SwapStatusResponse,
   DepositAddressRequest,
 } from './types';
 
@@ -125,10 +125,8 @@ export class SwapSDK {
   getStatus(
     swapStatusRequest: SwapStatusRequest,
     options: RequestOptions = {},
-  ): Promise<Zod.output<typeof swapResponseSchema>> {
-    return this.trpc.getStatus.query(swapStatusRequest, {
-      signal: options.signal,
-    });
+  ): Promise<SwapStatusResponse> {
+    return ApiService.getStatus(this.baseUrl, swapStatusRequest, options);
   }
 
   async executeSwap(
