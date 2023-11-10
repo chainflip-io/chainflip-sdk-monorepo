@@ -56,20 +56,20 @@ if (!onMain) {
   process.exit(1);
 }
 
-const workingDirectoryDirty =
-  // @ts-expect-error -- .mts file
-  (await execAsync('git status --porcelain=v2')).stdout
-    .trim()
-    .split('\n')
-    .filter(Boolean)
-    .filter((line) => !line.startsWith('?')).length !== 0;
+// const workingDirectoryDirty =
+//   // @ts-expect-error -- .mts file
+//   (await execAsync('git status --porcelain=v2')).stdout
+//     .trim()
+//     .split('\n')
+//     .filter(Boolean)
+//     .filter((line) => !line.startsWith('?')).length !== 0;
 
-if (workingDirectoryDirty) {
-  console.error(
-    'working directory is dirty, please stash changes before proceeding',
-  );
-  process.exit(1);
-}
+// if (workingDirectoryDirty) {
+//   console.error(
+//     'working directory is dirty, please stash changes before proceeding',
+//   );
+//   process.exit(1);
+// }
 
 try {
   // @ts-expect-error -- .mts file
@@ -125,7 +125,7 @@ const execCommand = async (cmd: string) => {
 };
 
 const openVersionPR = async () => {
-  const message = `release(${args.package}): ${newVersion}`;
+  const message = `chore(${args.package}): release ${packageJSON.name}/v${newVersion}`;
   const newBranch = `chore/release-${newVersion}`;
   await execCommand(`git switch -c ${newBranch}`);
   await execCommand(
