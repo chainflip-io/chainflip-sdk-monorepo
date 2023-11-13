@@ -20,19 +20,16 @@ const errorMap: ZodErrorMap = (_issue, context) => ({
   message: `received: ${safeStringify(context.data)}`,
 });
 
-export const hexStringWithMaxByteSize = (maxByteSize: number) =>
-  z
-    .string()
-    .refine((val) => /^0x[0-9a-f]+$/.test(val))
-    .refine((val) => val.length / 2 <= maxByteSize, {
-      message: `String must be less than ${maxByteSize} bytes`,
-    });
 export const string = z.string({ errorMap });
 export const number = z.number({ errorMap });
 export const numericString = string.regex(/^[0-9]+$/);
 export const hexString = z.custom<`0x${string}`>(
   (val) => typeof val === 'string' && /^0x[0-9a-f]+$/i.test(val),
 );
+export const hexStringWithMaxByteSize = (maxByteSize: number) =>
+  hexString.refine((val) => val.length / 2 <= maxByteSize + 1, {
+    message: `String must be less than or equal to ${maxByteSize} bytes`,
+  });
 export const hexStringFromNumber = numericString.transform(
   (arg) => `0x${BigInt(arg).toString(16)}`,
 );

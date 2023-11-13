@@ -102,7 +102,7 @@ describe('hexStringWithMaxByteSize', () => {
   });
 
   it('should accept hex string with exactly max bytes', () => {
-    expect(hexStringWithMaxByteSize(3).parse('0xabcd')).toEqual('0xabcd');
+    expect(hexStringWithMaxByteSize(3).parse('0xabcdef')).toEqual('0xabcdef');
   });
 
   it('should reject non hex strings', () => {
@@ -112,8 +112,12 @@ describe('hexStringWithMaxByteSize', () => {
   });
 
   it('should reject strings larger than max byte size', () => {
-    expect(() => hexStringWithMaxByteSize(3).parse('0xabcdef')).toThrow(
-      'String must be less than 3 bytes',
+    expect(() => hexStringWithMaxByteSize(2).parse('0xabcdef')).toThrow(
+      'String must be less than or equal to 2 bytes',
     );
+  });
+
+  it('should accept hex string with different cases', () => {
+    expect(hexStringWithMaxByteSize(100).parse('0xAbCdeF')).toEqual('0xAbCdeF');
   });
 });
