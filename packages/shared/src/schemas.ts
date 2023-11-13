@@ -4,7 +4,7 @@ import {
   chainflipAsset,
   chainflipAssetAndChain,
   chainflipChain,
-  hexString,
+  hexStringWithMaxByteSize,
   number,
   numericString,
   string,
@@ -22,7 +22,7 @@ export type ParsedQuoteParams = z.output<typeof quoteQuerySchema>;
 
 export const ccmMetadataSchema = z.object({
   gasBudget: numericString,
-  message: hexString,
+  message: hexStringWithMaxByteSize(1024 * 10),
 });
 
 export type CcmMetadata = z.infer<typeof ccmMetadataSchema>;
