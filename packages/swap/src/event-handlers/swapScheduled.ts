@@ -14,7 +14,9 @@ const depositChannelSwapOrigin = z.object({
   __kind: z.literal('DepositChannel'),
   channelId: u64,
   depositAddress: encodedAddress,
+  depositBlockHeight: u64,
 });
+
 const vaultSwapOrigin = z.object({
   __kind: z.literal('Vault'),
   txHash: z.string(),
@@ -61,10 +63,11 @@ export default async function swapScheduled({
       where: {
         srcAsset: sourceAsset,
         depositAddress,
-        isExpired: false,
+        srcChainExpiryBlock: { gte: origin.depositBlockHeight },
       },
       orderBy: { id: 'desc' },
     });
+
     if (!channel) {
       logger.info(
         `SwapScheduled: SwapDepositChannel not found for depositAddress ${depositAddress}`,

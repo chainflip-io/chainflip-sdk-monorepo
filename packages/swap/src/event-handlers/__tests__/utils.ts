@@ -123,6 +123,7 @@ export const swapScheduledDotDepositChannelMock = buildSwapScheduledEvent({
         '0x08e03063439bf8a21add4a0648439d2095a6e5d88f5ee7ab8fa715b39ef68126',
       __kind: 'Dot',
     },
+    depositBlockHeight: '100',
   },
   swapId: '1',
   sourceAsset: { __kind: 'Dot' },
@@ -155,6 +156,7 @@ export const swapScheduledBtcDepositChannelMock = buildSwapScheduledEvent({
       value:
         '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
     },
+    depositBlockHeight: '100',
   },
   swapType: {
     __kind: 'Swap',
