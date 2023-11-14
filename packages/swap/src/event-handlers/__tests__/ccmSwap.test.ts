@@ -5,6 +5,7 @@ import prisma from '../../client';
 import { Event } from '../../gql/generated/graphql';
 import processBlocks from '../../processBlocks';
 import { encodedAddress } from '../common';
+import { SwapScheduledEvent } from '../swapScheduled';
 
 jest.mock('graphql-request', () => ({
   GraphQLClient: class MockClient {
@@ -35,6 +36,7 @@ const swapDepositAddressReadyEvent = {
       value: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0',
       __kind: 'Eth',
     },
+    sourceChainExpiryBlock: '0x100',
   },
 } as const;
 
@@ -56,6 +58,7 @@ const ccmEvents = [
             '0xf1ebeed3a1b2bd9a24643e26509d52505d8c12a2d667ab8f66255f4c51ba0dbe',
           __kind: 'Dot',
         },
+        depositBlockHeight: '100',
       },
       swapId: '1',
       swapType: { value: '1', __kind: 'CcmPrincipal' },
@@ -66,7 +69,7 @@ const ccmEvents = [
         value: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0',
         __kind: 'Eth',
       },
-    },
+    } as SwapScheduledEvent,
   },
   {
     id: '0000000002-000014-a6740',
@@ -84,6 +87,7 @@ const ccmEvents = [
             '0xf1ebeed3a1b2bd9a24643e26509d52505d8c12a2d667ab8f66255f4c51ba0dbe',
           __kind: 'Dot',
         },
+        depositBlockHeight: '100',
       },
       swapId: '2',
       swapType: { value: '1', __kind: 'CcmGas' },
@@ -94,7 +98,7 @@ const ccmEvents = [
         value: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0',
         __kind: 'Eth',
       },
-    },
+    } as SwapScheduledEvent,
   },
   {
     id: '0000000002-000054-a6740',
@@ -262,6 +266,9 @@ describe('batch swap flow', () => {
         ),
         destAddress: swapDepositAddressReadyEvent.args.destinationAddress.value,
         issuedBlock: 0,
+        srcChainExpiryBlock: Number(
+          swapDepositAddressReadyEvent.args.sourceChainExpiryBlock,
+        ),
       },
     });
 

@@ -4,6 +4,7 @@ import { assetChains } from '@/shared/enums';
 import prisma from '../../client';
 import { Event } from '../../gql/generated/graphql';
 import processBlocks from '../../processBlocks';
+import { SwapScheduledEvent } from '../swapScheduled';
 
 jest.mock('graphql-request', () => ({
   GraphQLClient: class MockClient {
@@ -38,6 +39,7 @@ const swapDepositAddressReadyEvent = {
         '0x6d703351536f504e32694c4b724568647a3951623944534a5141754e774444613737',
       __kind: 'Btc',
     },
+    sourceChainExpiryBlock: '101',
   },
 } as const;
 
@@ -58,6 +60,7 @@ const batchEvents = [
           value: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
           __kind: 'Eth',
         },
+        depositBlockHeight: '100',
       },
       swapId: '1',
       sourceAsset: {
@@ -75,7 +78,7 @@ const batchEvents = [
       swapType: {
         __kind: 'Swap',
       },
-    },
+    } as SwapScheduledEvent,
   },
   {
     id: '0000000001-000253-09d28',
@@ -207,6 +210,9 @@ describe('batch swap flow', () => {
         ),
         destAddress: swapDepositAddressReadyEvent.args.destinationAddress.value,
         issuedBlock: 0,
+        srcChainExpiryBlock: Number(
+          swapDepositAddressReadyEvent.args.sourceChainExpiryBlock,
+        ),
       },
     });
 

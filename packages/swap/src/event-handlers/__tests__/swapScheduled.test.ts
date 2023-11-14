@@ -24,6 +24,12 @@ describe(swapScheduled, () => {
         destAsset: Assets.BTC,
         depositAddress: '5CGLqaFMheyVcsXz6QEtjtSAi6RcXFaEDJKvovgCdPiZhw11',
         destAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
+        isExpired: true,
+        srcChainExpiryBlock:
+          Number(
+            swapScheduledDotDepositChannelMock.eventContext.event.args.origin
+              .depositBlockHeight,
+          ) + 1,
       });
       btcSwapDepositChannel = await createDepositChannel({
         srcChain: 'Bitcoin',
@@ -31,6 +37,12 @@ describe(swapScheduled, () => {
         destAsset: Assets.ETH,
         depositAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
         destAddress: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
+        isExpired: true,
+        srcChainExpiryBlock:
+          Number(
+            swapScheduledBtcDepositChannelMock.eventContext.event.args.origin
+              .depositBlockHeight,
+          ) + 1,
       });
     });
 
