@@ -26,6 +26,10 @@ export const numericString = string.regex(/^[0-9]+$/);
 export const hexString = z.custom<`0x${string}`>(
   (val) => typeof val === 'string' && /^0x[0-9a-f]+$/i.test(val),
 );
+export const hexStringWithMaxByteSize = (maxByteSize: number) =>
+  hexString.refine((val) => val.length / 2 <= maxByteSize + 1, {
+    message: `String must be less than or equal to ${maxByteSize} bytes`,
+  });
 export const hexStringFromNumber = numericString.transform(
   (arg) => `0x${BigInt(arg).toString(16)}`,
 );

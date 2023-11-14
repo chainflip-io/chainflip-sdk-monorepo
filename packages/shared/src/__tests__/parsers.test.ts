@@ -1,5 +1,11 @@
 import { ChainflipNetwork } from '../enums';
-import { btcAddress, dotAddress, u128, unsignedInteger } from '../parsers';
+import {
+  btcAddress,
+  dotAddress,
+  hexStringWithMaxByteSize,
+  u128,
+  unsignedInteger,
+} from '../parsers';
 import { bitcoinAddresses } from '../validation/__tests__/bitcoinAddresses';
 
 describe('btc parser', () => {
@@ -85,5 +91,33 @@ describe('unsignedInteger', () => {
   it('rejects invalid hex string', () => {
     expect(() => u128.parse('0x123z')).toThrow();
     expect(() => u128.parse('0x')).toThrow();
+  });
+});
+
+describe('hexStringWithMaxByteSize', () => {
+  it('should accept hex string', () => {
+    expect(hexStringWithMaxByteSize(100).parse('0x0123456789abcdef')).toEqual(
+      '0x0123456789abcdef',
+    );
+  });
+
+  it('should accept hex string with exactly max bytes', () => {
+    expect(hexStringWithMaxByteSize(3).parse('0xabcdef')).toEqual('0xabcdef');
+  });
+
+  it('should reject non hex strings', () => {
+    expect(() => hexStringWithMaxByteSize(100).parse('hello')).toThrow(
+      'Invalid input',
+    );
+  });
+
+  it('should reject strings larger than max byte size', () => {
+    expect(() => hexStringWithMaxByteSize(2).parse('0xabcdef')).toThrow(
+      'String must be less than or equal to 2 bytes',
+    );
+  });
+
+  it('should accept hex string with different cases', () => {
+    expect(hexStringWithMaxByteSize(100).parse('0xAbCdeF')).toEqual('0xAbCdeF');
   });
 });
