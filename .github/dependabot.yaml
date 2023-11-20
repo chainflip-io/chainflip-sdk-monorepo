@@ -9,3 +9,16 @@ updates:
     commit-message:
       prefix: 'chore'
       include: 'scope'
+    groups:
+      prisma:
+        patterns:
+          - '*prisma*'
+      trpc:
+        patterns:
+          - '@trpc*'
+      types:
+        patterns:
+          - '@types*'
+      polkadot:
+        patterns:
+          - '@polkadot*'
