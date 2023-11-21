@@ -1,13 +1,7 @@
 import { Signer, Overrides, ContractTransactionReceipt } from 'ethers';
 import { ERC20, ERC20__factory } from './abis';
 import { ADDRESSES } from './consts';
-import {
-  type ChainflipNetwork,
-  type Asset,
-  Assets,
-  ChainflipNetworks,
-} from './enums';
-import { assert } from './guards';
+import { type ChainflipNetwork, type Asset, Assets } from './enums';
 
 export type TransactionOptions = {
   gasLimit?: bigint;
@@ -30,8 +24,6 @@ export const getTokenContractAddress = (
   asset: Asset,
   network: ChainflipNetwork,
 ): string => {
-  assert(network !== ChainflipNetworks.mainnet, 'Mainnet is not yet supported');
-
   if (asset === Assets.FLIP) return ADDRESSES[network].FLIP_CONTRACT_ADDRESS;
   if (asset === Assets.USDC) return ADDRESSES[network].USDC_CONTRACT_ADDRESS;
 
@@ -40,10 +32,7 @@ export const getTokenContractAddress = (
 
 export const getStateChainGatewayContractAddress = (
   network: ChainflipNetwork,
-): string => {
-  assert(network !== ChainflipNetworks.mainnet, 'Mainnet is not yet supported');
-  return ADDRESSES[network].STATE_CHAIN_GATEWAY_ADDRESS;
-};
+): string => ADDRESSES[network].STATE_CHAIN_GATEWAY_ADDRESS;
 
 export const checkAllowance = async (
   amount: bigint,
@@ -75,10 +64,7 @@ export const approve = async (
 
 export const getVaultManagerContractAddress = (
   network: ChainflipNetwork,
-): string => {
-  assert(network !== ChainflipNetworks.mainnet, 'Mainnet is not yet supported');
-  return ADDRESSES[network].VAULT_CONTRACT_ADDRESS;
-};
+): string => ADDRESSES[network].VAULT_CONTRACT_ADDRESS;
 
 export const getFlipBalance = async (
   network: ChainflipNetwork,

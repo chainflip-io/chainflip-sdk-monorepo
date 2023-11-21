@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ApiService getAssets (backspin) gets the correct assets for testnets (Bitcoin) 1`] = `
+exports[`ApiService getAssets (backspin) gets the correct assets for networks (Bitcoin) 1`] = `
 [
   {
     "chain": "Bitcoin",
@@ -16,7 +16,7 @@ exports[`ApiService getAssets (backspin) gets the correct assets for testnets (B
 ]
 `;
 
-exports[`ApiService getAssets (backspin) gets the correct assets for testnets (Ethereum) 1`] = `
+exports[`ApiService getAssets (backspin) gets the correct assets for networks (Ethereum) 1`] = `
 [
   {
     "chain": "Ethereum",
@@ -54,7 +54,7 @@ exports[`ApiService getAssets (backspin) gets the correct assets for testnets (E
 ]
 `;
 
-exports[`ApiService getAssets (backspin) gets the correct assets for testnets (Polkadot) 1`] = `
+exports[`ApiService getAssets (backspin) gets the correct assets for networks (Polkadot) 1`] = `
 [
   {
     "chain": "Polkadot",
@@ -70,7 +70,7 @@ exports[`ApiService getAssets (backspin) gets the correct assets for testnets (P
 ]
 `;
 
-exports[`ApiService getAssets (mainnet) gets the correct assets for testnets (Bitcoin) 1`] = `
+exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Bitcoin) 1`] = `
 [
   {
     "chain": "Bitcoin",
@@ -86,7 +86,45 @@ exports[`ApiService getAssets (mainnet) gets the correct assets for testnets (Bi
 ]
 `;
 
-exports[`ApiService getAssets (mainnet) gets the correct assets for testnets (Polkadot) 1`] = `
+exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Ethereum) 1`] = `
+[
+  {
+    "chain": "Ethereum",
+    "contractAddress": undefined,
+    "decimals": 18,
+    "id": "ETH",
+    "isMainnet": true,
+    "minimumDepositAmount": "0",
+    "minimumSwapAmount": "580000000000000",
+    "name": "Ether",
+    "symbol": "ETH",
+  },
+  {
+    "chain": "Ethereum",
+    "contractAddress": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    "decimals": 6,
+    "id": "USDC",
+    "isMainnet": true,
+    "minimumDepositAmount": "0",
+    "minimumSwapAmount": "1000000",
+    "name": "USDC",
+    "symbol": "USDC",
+  },
+  {
+    "chain": "Ethereum",
+    "contractAddress": "0x826180541412D574cf1336d22c0C0a287822678A",
+    "decimals": 18,
+    "id": "FLIP",
+    "isMainnet": true,
+    "minimumDepositAmount": "0",
+    "minimumSwapAmount": "1000000000000000000",
+    "name": "FLIP",
+    "symbol": "FLIP",
+  },
+]
+`;
+
+exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Polkadot) 1`] = `
 [
   {
     "chain": "Polkadot",
@@ -102,7 +140,7 @@ exports[`ApiService getAssets (mainnet) gets the correct assets for testnets (Po
 ]
 `;
 
-exports[`ApiService getAssets (perseverance) gets the correct assets for testnets (Bitcoin) 1`] = `
+exports[`ApiService getAssets (perseverance) gets the correct assets for networks (Bitcoin) 1`] = `
 [
   {
     "chain": "Bitcoin",
@@ -118,7 +156,7 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for testnet
 ]
 `;
 
-exports[`ApiService getAssets (perseverance) gets the correct assets for testnets (Ethereum) 1`] = `
+exports[`ApiService getAssets (perseverance) gets the correct assets for networks (Ethereum) 1`] = `
 [
   {
     "chain": "Ethereum",
@@ -156,7 +194,7 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for testnet
 ]
 `;
 
-exports[`ApiService getAssets (perseverance) gets the correct assets for testnets (Polkadot) 1`] = `
+exports[`ApiService getAssets (perseverance) gets the correct assets for networks (Polkadot) 1`] = `
 [
   {
     "chain": "Polkadot",
@@ -172,7 +210,7 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for testnet
 ]
 `;
 
-exports[`ApiService getAssets (sisyphos) gets the correct assets for testnets (Bitcoin) 1`] = `
+exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (Bitcoin) 1`] = `
 [
   {
     "chain": "Bitcoin",
@@ -188,7 +226,7 @@ exports[`ApiService getAssets (sisyphos) gets the correct assets for testnets (B
 ]
 `;
 
-exports[`ApiService getAssets (sisyphos) gets the correct assets for testnets (Ethereum) 1`] = `
+exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (Ethereum) 1`] = `
 [
   {
     "chain": "Ethereum",
@@ -226,7 +264,7 @@ exports[`ApiService getAssets (sisyphos) gets the correct assets for testnets (E
 ]
 `;
 
-exports[`ApiService getAssets (sisyphos) gets the correct assets for testnets (Polkadot) 1`] = `
+exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (Polkadot) 1`] = `
 [
   {
     "chain": "Polkadot",
