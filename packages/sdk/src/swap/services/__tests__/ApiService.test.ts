@@ -57,16 +57,11 @@ describe('ApiService', () => {
     `${ApiService.getAssets.name} (%s)`,
     (network) => {
       it.each(Object.values(Chains))(
-        'gets the correct assets for testnets (%s)',
+        'gets the correct assets for networks (%s)',
         async (chain) => {
-          if (network === 'mainnet' && chain === 'Ethereum') {
-            // not contract address for flip on mainnet yet
-            expect(ApiService.getAssets(chain, network, env)).rejects.toThrow();
-          } else {
-            expect(
-              await ApiService.getAssets(chain, network, env),
-            ).toMatchSnapshot();
-          }
+          expect(
+            await ApiService.getAssets(chain, network, env),
+          ).toMatchSnapshot();
         },
       );
     },

@@ -13,7 +13,7 @@ import {
 } from '@/shared/stateChainGateway';
 
 export type FundingSDKOption = {
-  network?: Exclude<ChainflipNetwork, 'mainnet'>;
+  network?: ChainflipNetwork;
   signer: Signer;
   rpcUrl?: string;
 };
