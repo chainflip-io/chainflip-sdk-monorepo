@@ -32,11 +32,19 @@ describe(FundingSDK, () => {
     signer: new VoidSigner('0xcafebabe').connect(getDefaultProvider('goerli')),
   });
 
-  it('uses sisyphos as the default network', () => {
+  it('uses perseverance as the default network', () => {
     expect(
       // @ts-expect-error it's private
       new FundingSDK({ signer: null as any }).options.network,
     ).toEqual('perseverance');
+  });
+
+  it('support mainnet', () => {
+    expect(
+      // @ts-expect-error it's private
+      new FundingSDK({ signer: null as any, network: 'mainnet' }).options
+        .network,
+    ).toEqual('mainnet');
   });
 
   describe(FundingSDK.prototype.fundStateChainAccount, () => {
