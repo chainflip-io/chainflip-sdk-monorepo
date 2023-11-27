@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@trpc/client':
-        specifier: ^10.43.6
-        version: 10.43.6(@trpc/server@10.43.6)
+        specifier: ^10.44.1
+        version: 10.44.1(@trpc/server@10.44.1)
       '@trpc/server':
-        specifier: ^10.43.6
-        version: 10.43.6
+        specifier: ^10.44.1
+        version: 10.44.1
       superjson:
         specifier: ^1.13.3
         version: 1.13.3
@@ -167,13 +167,13 @@ importers:
         version: 5.7.2
       '@typechain/ethers-v6':
         specifier: ^0.5.1
-        version: 0.5.1(ethers@6.8.1)(typechain@8.3.2)(typescript@5.2.2)
+        version: 0.5.1(ethers@6.8.1)(typechain@8.3.2)(typescript@5.3.2)
       '@types/ws':
         specifier: ^8.5.9
         version: 8.5.9
       typechain:
         specifier: ^8.3.2
-        version: 8.3.2(typescript@5.2.2)
+        version: 8.3.2(typescript@5.3.2)
       winston:
         specifier: ^3.11.0
         version: 3.11.0
@@ -3117,16 +3117,16 @@ packages:
     resolution: {integrity: sha512-myfUej5naTBWnqOCc/MdVOLVjXUXtIA+NpDrDBKJtLLg2shUjBu3cZmB/85RyitKc55+lUUyl7oRfLOvkr2hsw==}
     dev: true
 
-  /@trpc/client@10.43.6(@trpc/server@10.43.6):
-    resolution: {integrity: sha512-gQSxCQgPeBn/wqBEScu5Nq9UKqA16e965vWBj+BbdvI4URV72T44/yg0cl/E6xtBgycCVwdzwn7CuZaM8FA/VQ==}
+  /@trpc/client@10.44.1(@trpc/server@10.44.1):
+    resolution: {integrity: sha512-vTWsykNcgz1LnwePVl2fKZnhvzP9N3GaaLYPkfGINo314ZOS0OBqe9x0ytB2LLUnRVTAAZ2WoONzARd8nHiqrA==}
     peerDependencies:
-      '@trpc/server': 10.43.6
+      '@trpc/server': 10.44.1
     dependencies:
-      '@trpc/server': 10.43.6
+      '@trpc/server': 10.44.1
     dev: false
 
-  /@trpc/server@10.43.6:
-    resolution: {integrity: sha512-ziN7UXGAycxe4i3FwJstTe6jzCcKBlPociCrC9XtfPzFpMTf0hNbRQQlFiZjJk23ZGQSVYDjk9RO4yIHt94mJg==}
+  /@trpc/server@10.44.1:
+    resolution: {integrity: sha512-mF7B+K6LjuboX8I1RZgKE5GA/fJhsJ8tKGK2UBt3Bwik7hepEPb4NJgNr7vO6BK5IYwPdBLRLTctRw6XZx0sRg==}
     engines: {node: '>=18.0.0'}
     dev: false
 
@@ -3139,7 +3139,7 @@ packages:
       path-browserify: 1.0.1
     dev: true
 
-  /@typechain/ethers-v6@0.5.1(ethers@6.8.1)(typechain@8.3.2)(typescript@5.2.2):
+  /@typechain/ethers-v6@0.5.1(ethers@6.8.1)(typechain@8.3.2)(typescript@5.3.2):
     resolution: {integrity: sha512-F+GklO8jBWlsaVV+9oHaPh5NJdd6rAKN4tklGfInX1Q7h0xPgVLP39Jl3eCulPB5qexI71ZFHwbljx4ZXNfouA==}
     peerDependencies:
       ethers: 6.x
@@ -3148,9 +3148,9 @@ packages:
     dependencies:
       ethers: 6.8.1
       lodash: 4.17.21
-      ts-essentials: 7.0.3(typescript@5.2.2)
-      typechain: 8.3.2(typescript@5.2.2)
-      typescript: 5.2.2
+      ts-essentials: 7.0.3(typescript@5.3.2)
+      typechain: 8.3.2(typescript@5.3.2)
+      typescript: 5.3.2
     dev: true
 
   /@types/babel__core@7.20.2:
@@ -8916,12 +8916,12 @@ packages:
       string-format: 2.0.0
     dev: true
 
-  /ts-essentials@7.0.3(typescript@5.2.2):
+  /ts-essentials@7.0.3(typescript@5.3.2):
     resolution: {integrity: sha512-8+gr5+lqO3G84KdiTSMRLtuyJ+nTBVRKuCrK4lidMPdVeEp0uqC875uE5NMcaA7YYMN7XsNiFQuMvasF8HT/xQ==}
     peerDependencies:
       typescript: '>=3.7.0'
     dependencies:
-      typescript: 5.2.2
+      typescript: 5.3.2
     dev: true
 
   /ts-interface-checker@0.1.13:
@@ -9075,7 +9075,7 @@ packages:
       mime-types: 2.1.35
     dev: false
 
-  /typechain@8.3.2(typescript@5.2.2):
+  /typechain@8.3.2(typescript@5.3.2):
     resolution: {integrity: sha512-x/sQYr5w9K7yv3es7jo4KTX05CLxOf7TRWwoHlrjRh8H82G64g+k7VuWPJlgMo6qrjfCulOdfBjiaDtmhFYD/Q==}
     hasBin: true
     peerDependencies:
@@ -9090,8 +9090,8 @@ packages:
       mkdirp: 1.0.4
       prettier: 2.8.8
       ts-command-line-args: 2.5.1
-      ts-essentials: 7.0.3(typescript@5.2.2)
-      typescript: 5.2.2
+      ts-essentials: 7.0.3(typescript@5.3.2)
+      typescript: 5.3.2
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -9136,6 +9136,12 @@ packages:
 
   /typescript@5.2.2:
     resolution: {integrity: sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+    dev: true
+
+  /typescript@5.3.2:
+    resolution: {integrity: sha512-6l+RyNy7oAHDfxC4FzSJcz9vnjTKxrLpDG5M2Vu4SHRVNg6xzqZp6LYSR9zjqQTu8DU/f5xwxUdADOkbrIX2gQ==}
     engines: {node: '>=14.17'}
     hasBin: true
     dev: true
