@@ -94,8 +94,8 @@ importers:
   packages/cli:
     dependencies:
       ethers:
-        specifier: 6.8.1
-        version: 6.8.1
+        specifier: 6.9.0
+        version: 6.9.0
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -131,8 +131,8 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0
       ethers:
-        specifier: 6.8.1
-        version: 6.8.1
+        specifier: 6.9.0
+        version: 6.9.0
     devDependencies:
       tsup:
         specifier: ^8.0.0
@@ -150,8 +150,8 @@ importers:
         specifier: '*'
         version: 1.6.0
       ethers:
-        specifier: 6.8.1
-        version: 6.8.1
+        specifier: 6.9.0
+        version: 6.9.0
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -167,7 +167,7 @@ importers:
         version: 5.7.2
       '@typechain/ethers-v6':
         specifier: ^0.5.1
-        version: 0.5.1(ethers@6.8.1)(typechain@8.3.2)(typescript@5.3.2)
+        version: 0.5.1(ethers@6.9.0)(typechain@8.3.2)(typescript@5.3.2)
       '@types/ws':
         specifier: ^8.5.10
         version: 8.5.10
@@ -205,8 +205,8 @@ importers:
         specifier: ^16.3.1
         version: 16.3.1
       ethers:
-        specifier: 6.8.1
-        version: 6.8.1
+        specifier: 6.9.0
+        version: 6.9.0
       express:
         specifier: ^4.18.2
         version: 4.18.2
@@ -3134,14 +3134,14 @@ packages:
       path-browserify: 1.0.1
     dev: true
 
-  /@typechain/ethers-v6@0.5.1(ethers@6.8.1)(typechain@8.3.2)(typescript@5.3.2):
+  /@typechain/ethers-v6@0.5.1(ethers@6.9.0)(typechain@8.3.2)(typescript@5.3.2):
     resolution: {integrity: sha512-F+GklO8jBWlsaVV+9oHaPh5NJdd6rAKN4tklGfInX1Q7h0xPgVLP39Jl3eCulPB5qexI71ZFHwbljx4ZXNfouA==}
     peerDependencies:
       ethers: 6.x
       typechain: ^8.3.2
       typescript: '>=4.7.0'
     dependencies:
-      ethers: 6.8.1
+      ethers: 6.9.0
       lodash: 4.17.21
       ts-essentials: 7.0.3(typescript@5.3.2)
       typechain: 8.3.2(typescript@5.3.2)
@@ -5192,8 +5192,8 @@ packages:
     engines: {node: '>= 0.6'}
     dev: false
 
-  /ethers@6.8.1:
-    resolution: {integrity: sha512-iEKm6zox5h1lDn6scuRWdIdFJUCGg3+/aQWu0F4K0GVyEZiktFkqrJbRjTn1FlYEPz7RKA707D6g5Kdk6j7Ljg==}
+  /ethers@6.9.0:
+    resolution: {integrity: sha512-pmfNyQzc2mseLe91FnT2vmNaTt8dDzhxZ/xItAV7uGsF4dI4ek2ufMu3rAkgQETL/TIs0GS5A+U05g9QyWnv3Q==}
     engines: {node: '>=14.0.0'}
     dependencies:
       '@adraffy/ens-normalize': 1.10.0
