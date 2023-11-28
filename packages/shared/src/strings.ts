@@ -12,3 +12,6 @@ export const camelToSnakeCase = <const T extends string>(
     /[A-Z]/g,
     (letter) => `_${letter.toLowerCase()}`,
   ) as CamelCaseToSnakeCase<T>;
+
+export const channelIdRegex =
+  /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
