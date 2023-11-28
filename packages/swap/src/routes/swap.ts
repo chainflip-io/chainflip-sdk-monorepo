@@ -54,7 +54,7 @@ router.get(
 
     if (channelIdRegex.test(id)) {
       const { issuedBlock, srcChain, channelId } =
-        channelIdRegex.exec(id)!.groups!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+        channelIdRegex.exec(id)!.groups!;
 
       swapDepositChannel = await prisma.swapDepositChannel.findUnique({
         where: {

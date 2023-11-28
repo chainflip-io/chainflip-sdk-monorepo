@@ -18,7 +18,7 @@ updates:
           - '@trpc*'
       types:
         patterns:
-          - '@types*'
+          - '@types/*'
       polkadot:
         patterns:
           - '@polkadot*'

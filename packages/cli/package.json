@@ -36,7 +36,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@types/yargs": "^17.0.31",
+    "@types/yargs": "^17.0.32",
     "tsup": "^8.0.0",
     "tsx": "^4.5.0"
   },
