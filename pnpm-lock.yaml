@@ -104,8 +104,8 @@ importers:
         specifier: ^17.0.32
         version: 17.0.32
       tsup:
-        specifier: ^8.0.0
-        version: 8.0.0(@swc/core@1.3.99)(typescript@5.3.2)
+        specifier: ^8.0.1
+        version: 8.0.1(@swc/core@1.3.99)(typescript@5.3.2)
       tsx:
         specifier: ^4.6.0
         version: 4.6.0
@@ -135,8 +135,8 @@ importers:
         version: 6.9.0
     devDependencies:
       tsup:
-        specifier: ^8.0.0
-        version: 8.0.0(@swc/core@1.3.99)(typescript@5.3.2)
+        specifier: ^8.0.1
+        version: 8.0.1(@swc/core@1.3.99)(typescript@5.3.2)
 
   packages/shared:
     dependencies:
@@ -1496,7 +1496,7 @@ packages:
       debug: 4.3.4
       espree: 9.6.1
       globals: 13.23.0
-      ignore: 5.2.4
+      ignore: 5.3.0
       import-fresh: 3.3.0
       js-yaml: 4.1.0
       minimatch: 3.1.2
@@ -8955,8 +8955,8 @@ packages:
   /tslib@2.6.2:
     resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
 
-  /tsup@8.0.0(@swc/core@1.3.99)(typescript@5.3.2):
-    resolution: {integrity: sha512-9rOGn8LsFn2iAg2pCB1jnH7ygVuGjlzIomjw0jKXUxAii3iL5cXgm0jZMPKfFH1bSAjQovJ1DUVPSw+oDuIu8A==}
+  /tsup@8.0.1(@swc/core@1.3.99)(typescript@5.3.2):
+    resolution: {integrity: sha512-hvW7gUSG96j53ZTSlT4j/KL0q1Q2l6TqGBFc6/mu/L46IoNWqLLUzLRLP1R8Q7xrJTmkDxxDoojV5uCVs1sVOg==}
     engines: {node: '>=18'}
     hasBin: true
     peerDependencies:
