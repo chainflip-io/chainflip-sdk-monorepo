@@ -86,6 +86,10 @@ export class SwapSDK {
     quoteRequest: QuoteRequest,
     options: RequestOptions = {},
   ): Promise<QuoteResponse> {
+    // TODO: switch to TRPC
+    // return this.trpc.getQuote.query(quoteRequest, {
+    //   signal: options.signal,
+    // });
     return ApiService.getQuote(this.baseUrl, quoteRequest, options);
   }
 
