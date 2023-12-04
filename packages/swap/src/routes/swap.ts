@@ -173,6 +173,8 @@ router.get(
       ccmMetadata: swap?.ccmGasBudget && {
         gasBudget: swap?.ccmGasBudget?.toString(),
         message: swap?.ccmMessage,
+        depositChannelOpenedThroughBackend:
+          swapDepositChannel?.openedThroughBackend,
       },
     };
 
