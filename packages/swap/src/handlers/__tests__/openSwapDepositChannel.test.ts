@@ -76,6 +76,7 @@ describe(openSwapDepositChannel, () => {
         issuedBlock: 123,
         srcAsset: 'FLIP',
         srcChain: 'Ethereum',
+        openedWithCfBroker: true,
       },
       update: {},
     });
