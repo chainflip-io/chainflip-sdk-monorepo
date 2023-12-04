@@ -174,6 +174,8 @@ router.get(
         gasBudget: swap?.ccmGasBudget?.toString(),
         message: swap?.ccmMessage,
       },
+      depositChannelOpenedThroughBackend:
+        swapDepositChannel?.openedThroughBackend ?? false,
     };
 
     logger.info('sending response for swap request', { id, response });

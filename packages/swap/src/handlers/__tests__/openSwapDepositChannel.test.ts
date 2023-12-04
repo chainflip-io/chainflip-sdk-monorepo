@@ -76,8 +76,11 @@ describe(openSwapDepositChannel, () => {
         issuedBlock: 123,
         srcAsset: 'FLIP',
         srcChain: 'Ethereum',
+        openedThroughBackend: true,
       },
-      update: {},
+      update: {
+        openedThroughBackend: true,
+      },
     });
   });
 });

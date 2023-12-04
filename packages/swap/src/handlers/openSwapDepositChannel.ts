@@ -65,9 +65,12 @@ export default async function openSwapDepositChannel(
       depositAddress,
       srcChainExpiryBlock,
       estimatedExpiryAt: estimatedExpiryTime,
+      openedThroughBackend: true,
       ...blockInfo,
     },
-    update: {},
+    update: {
+      openedThroughBackend: true,
+    },
   });
 
   return {

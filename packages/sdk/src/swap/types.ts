@@ -60,6 +60,7 @@ export interface CommonStatusFields extends ChainsAndAssets {
   depositChannelExpiryBlock: bigint;
   estimatedDepositChannelExpiryTime: number | undefined;
   isDepositChanneExpired: boolean;
+  depositChannelOpenedThroughBackend: boolean;
   ccmDepositReceivedBlockIndex: string | undefined;
   ccmMetadata:
     | {
