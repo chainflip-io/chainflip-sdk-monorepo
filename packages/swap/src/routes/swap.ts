@@ -175,7 +175,7 @@ router.get(
         message: swap?.ccmMessage,
       },
       depositChannelOpenedThroughBackend:
-        swapDepositChannel?.openedThroughBackend,
+        swapDepositChannel?.openedThroughBackend ?? false,
     };
 
     logger.info('sending response for swap request', { id, response });
