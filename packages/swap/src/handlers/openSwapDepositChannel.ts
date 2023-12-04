@@ -65,7 +65,7 @@ export default async function openSwapDepositChannel(
       depositAddress,
       srcChainExpiryBlock,
       estimatedExpiryAt: estimatedExpiryTime,
-      openedWithCfBroker: true,
+      openedThroughBackend: true,
       ...blockInfo,
     },
     update: {},

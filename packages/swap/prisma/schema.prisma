@@ -52,7 +52,7 @@ model SwapDepositChannel {
   swaps                 Swap[]
   failedSwaps           FailedSwap[]
   estimatedExpiryAt     DateTime?
-  openedWithCfBroker    Boolean      @default(false)
+  openedThroughBackend  Boolean      @default(false)
 
   @@unique([issuedBlock, srcChain, channelId])
   @@index([depositAddress])
