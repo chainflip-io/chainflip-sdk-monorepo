@@ -45,4 +45,14 @@ describe(screenAddress, () => {
 
     expect(result).toBe(false);
   });
+
+  it('returns false if the API call throws', async () => {
+    jest.mocked(axios.get).mockRejectedValueOnce(new Error('test'));
+
+    const result = await screenAddress(
+      '0x72a5843cc08275C8171E582972Aa4fDa8C397B2A',
+    );
+
+    expect(result).toBe(false);
+  });
 });

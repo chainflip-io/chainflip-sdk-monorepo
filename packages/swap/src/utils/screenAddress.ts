@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { z } from 'zod';
+import logger from './logger';
 
 const schema = z.object({ identifications: z.array(z.object({})) });
 
@@ -8,10 +9,14 @@ export default async function screenAddress(address: string): Promise<boolean> {
 
   if (!apiKey) return false;
 
-  const response = await axios.get(
-    `https://public.chainalysis.com/api/v1/address/${address}`,
-    { headers: { 'X-API-Key': apiKey } },
-  );
+  const response = await axios
+    .get(`https://public.chainalysis.com/api/v1/address/${address}`, {
+      headers: { 'X-API-Key': apiKey },
+    })
+    .catch(() => {
+      logger.error('Failed to screen address');
+      return { data: { identifications: [] } };
+    });
 
   const result = schema.safeParse(response.data);
 
