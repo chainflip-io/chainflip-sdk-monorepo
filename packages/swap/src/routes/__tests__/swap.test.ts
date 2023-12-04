@@ -15,6 +15,11 @@ import {
 import app from '../../server';
 import { State } from '../swap';
 
+jest.mock('../../utils/screenAddress', () => ({
+  __esModule: true,
+  default: jest.fn().mockResolvedValue(false),
+}));
+
 jest.mock('timers/promises', () => ({
   setTimeout: jest.fn().mockResolvedValue(undefined),
 }));

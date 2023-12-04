@@ -2,10 +2,16 @@ import axios from 'axios';
 import * as broker from '@/shared/broker';
 import { swappingEnvironment } from '@/shared/tests/fixtures';
 import prisma from '../../client';
+import screenAddress from '../../utils/screenAddress';
 import openSwapDepositChannel from '../openSwapDepositChannel';
 
 jest.mock('@/shared/broker', () => ({
   requestSwapDepositAddress: jest.fn(),
+}));
+
+jest.mock('../../utils/screenAddress', () => ({
+  __esModule: true,
+  default: jest.fn().mockResolvedValue(false),
 }));
 
 jest.mock('axios');
@@ -82,5 +88,20 @@ describe(openSwapDepositChannel, () => {
         openedThroughBackend: true,
       },
     });
+  });
+
+  it('rejects sanctioned addresses', async () => {
+    jest.mocked(screenAddress).mockResolvedValueOnce(true);
+
+    await expect(
+      openSwapDepositChannel({
+        srcAsset: 'FLIP',
+        srcChain: 'Ethereum',
+        destAsset: 'DOT',
+        destChain: 'Polkadot',
+        destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
+        expectedDepositAmount: '777',
+      }),
+    ).rejects.toThrow('provided address is sanctioned');
   });
 });
