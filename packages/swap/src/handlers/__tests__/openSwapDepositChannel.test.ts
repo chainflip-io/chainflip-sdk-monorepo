@@ -78,7 +78,9 @@ describe(openSwapDepositChannel, () => {
         srcChain: 'Ethereum',
         openedThroughBackend: true,
       },
-      update: {},
+      update: {
+        openedThroughBackend: true,
+      },
     });
   });
 });

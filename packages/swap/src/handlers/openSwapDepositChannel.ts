@@ -68,7 +68,9 @@ export default async function openSwapDepositChannel(
       openedThroughBackend: true,
       ...blockInfo,
     },
-    update: {},
+    update: {
+      openedThroughBackend: true,
+    },
   });
 
   return {
