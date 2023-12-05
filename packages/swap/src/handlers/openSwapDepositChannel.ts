@@ -6,6 +6,7 @@ import prisma from '../client';
 import { isProduction } from '../utils/consts';
 import { calculateExpiryTime } from '../utils/function';
 import { getMinimumSwapAmount } from '../utils/rpc';
+import screenAddress from '../utils/screenAddress';
 import ServiceError from '../utils/ServiceError';
 
 export default async function openSwapDepositChannel(
@@ -13,6 +14,10 @@ export default async function openSwapDepositChannel(
 ) {
   if (!validateAddress(input.destChain, input.destAddress, isProduction)) {
     throw ServiceError.badRequest('provided address is not valid');
+  }
+
+  if (await screenAddress(input.destAddress)) {
+    throw ServiceError.badRequest('provided address is sanctioned');
   }
 
   const minimumAmount = await getMinimumSwapAmount(
