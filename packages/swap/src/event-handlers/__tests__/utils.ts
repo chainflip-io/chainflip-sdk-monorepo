@@ -381,7 +381,7 @@ export const newPoolCreatedMock = {
     event: {
       args: {
         baseAsset: { __kind: 'Usdc' },
-        pairAsset: { __kind: 'Btc' },
+        quoteAsset: { __kind: 'Btc' },
         initialPrice: '170141183460469231731687303715884105728000',
         feeHundredthPips: 1000,
       },
@@ -401,7 +401,7 @@ export const poolFeeSetMock = {
     event: {
       args: {
         baseAsset: { __kind: 'Usdc' },
-        pairAsset: { __kind: 'Btc' },
+        quoteAsset: { __kind: 'Btc' },
         initialPrice: '170141183460469231731687303715884105728000',
         feeHundredthPips: 2000,
       },

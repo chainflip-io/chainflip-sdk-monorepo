@@ -25,7 +25,7 @@ const ENVIRONMENT = {
           BTC: {
             limit_order_fee_hundredth_pips: 20,
             range_order_fee_hundredth_pips: 20,
-            pair_asset: {
+            quote_asset: {
               chain: 'Ethereum',
               asset: 'USDC',
             },
@@ -35,7 +35,7 @@ const ENVIRONMENT = {
           FLIP: {
             limit_order_fee_hundredth_pips: 20,
             range_order_fee_hundredth_pips: 20,
-            pair_asset: {
+            quote_asset: {
               chain: 'Ethereum',
               asset: 'USDC',
             },
@@ -43,7 +43,7 @@ const ENVIRONMENT = {
           ETH: {
             limit_order_fee_hundredth_pips: 20,
             range_order_fee_hundredth_pips: 20,
-            pair_asset: {
+            quote_asset: {
               chain: 'Ethereum',
               asset: 'USDC',
             },
@@ -53,7 +53,7 @@ const ENVIRONMENT = {
           DOT: {
             limit_order_fee_hundredth_pips: 20,
             range_order_fee_hundredth_pips: 20,
-            pair_asset: {
+            quote_asset: {
               chain: 'Ethereum',
               asset: 'USDC',
             },
