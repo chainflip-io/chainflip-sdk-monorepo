@@ -14,6 +14,11 @@ const ENVIRONMENT = {
         Bitcoin: { BTC: '0x0' },
         Ethereum: { ETH: '0x0', USDC: '0x0', FLIP: '0x0' },
       },
+      maximum_swap_amounts: {
+        Polkadot: { DOT: null },
+        Bitcoin: { BTC: '0x0' },
+        Ethereum: { ETH: null, USDC: '0x0', FLIP: '0x0' },
+      },
     },
     funding: {
       redemption_tax: '0x4563918244f40000',
@@ -77,6 +82,11 @@ export const swappingEnvironment = (amt = '0x0') => ({
       Polkadot: { DOT: amt },
       Bitcoin: { BTC: amt },
       Ethereum: { ETH: amt, USDC: amt, FLIP: amt },
+    },
+    maximum_swap_amounts: {
+      Polkadot: { DOT: null },
+      Bitcoin: { BTC: amt },
+      Ethereum: { ETH: null, USDC: amt, FLIP: null },
     },
   },
 });
