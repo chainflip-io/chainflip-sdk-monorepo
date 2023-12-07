@@ -13,10 +13,6 @@ jest.mock('@/shared/vault', () => ({
   executeSwap: jest.fn(),
 }));
 
-jest.mock('@/shared/rpc/utils', () => ({
-  validateSwapAmount: jest.fn().mockReturnValue({ success: true }),
-}));
-
 jest.mock('@trpc/client', () => ({
   ...jest.requireActual('@trpc/client'),
   createTRPCProxyClient: () => ({
@@ -236,17 +232,14 @@ describe(SwapSDK, () => {
 
   describe(SwapSDK.prototype.executeSwap, () => {
     it('calls executeSwap', async () => {
-      const params = {};
+      const params = { amount: '1', srcAsset: 'BTC', srcChain: 'Bitcoin' };
       jest
         .mocked(executeSwap)
         .mockResolvedValueOnce({ hash: 'hello world' } as any);
       const result = await sdk.executeSwap(params as any);
       expect(executeSwap).toHaveBeenCalledWith(
         params,
-        {
-          network: 'sisyphos',
-          signer,
-        },
+        { network: 'sisyphos', signer },
         {},
       );
       expect(result).toEqual('hello world');
@@ -296,6 +289,8 @@ describe(SwapSDK, () => {
     });
 
     it('goes right to the broker', async () => {
+      jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
+
       const postSpy = jest
         .mocked(axios.post)
         .mockRejectedValue(Error('unhandled mock'))

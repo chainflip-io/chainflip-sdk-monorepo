@@ -16,8 +16,12 @@ const ENVIRONMENT = {
       },
       maximum_swap_amounts: {
         Polkadot: { DOT: null },
-        Bitcoin: { BTC: '0x0' },
-        Ethereum: { ETH: null, USDC: '0x0', FLIP: '0x0' },
+        Bitcoin: { BTC: '0x1000000000000000' },
+        Ethereum: {
+          ETH: null,
+          USDC: '0x1000000000000000',
+          FLIP: '0x1000000000000000',
+        },
       },
     },
     funding: {
