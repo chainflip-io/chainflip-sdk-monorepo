@@ -106,7 +106,7 @@ const chainAssetNumberNullableMap = chainAssetMap(numberOrHex.nullable());
 const swappingEnvironment = z.object({
   minimum_swap_amounts: chainAssetNumberMap,
   maximum_swap_amounts: chainAssetNumberNullableMap
-    .nullable()
+    .optional()
     .transform((env) => {
       if (env !== null) return env;
 
