@@ -4,10 +4,12 @@ exports[`ApiService getAssets (backspin) gets the correct assets for networks (B
 [
   {
     "chain": "Bitcoin",
+    "chainflipId": "BTC",
     "contractAddress": undefined,
     "decimals": 8,
     "id": "BTC",
     "isMainnet": false,
+    "maximumSwapAmount": null,
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "390000",
     "name": "Bitcoin",
@@ -20,10 +22,12 @@ exports[`ApiService getAssets (backspin) gets the correct assets for networks (E
 [
   {
     "chain": "Ethereum",
+    "chainflipId": "ETH",
     "contractAddress": undefined,
     "decimals": 18,
     "id": "ETH",
     "isMainnet": false,
+    "maximumSwapAmount": null,
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "580000000000000",
     "name": "Ether",
@@ -31,10 +35,12 @@ exports[`ApiService getAssets (backspin) gets the correct assets for networks (E
   },
   {
     "chain": "Ethereum",
+    "chainflipId": "USDC",
     "contractAddress": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
     "decimals": 6,
     "id": "USDC",
     "isMainnet": false,
+    "maximumSwapAmount": "1000000",
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "1000000",
     "name": "USDC",
@@ -42,10 +48,12 @@ exports[`ApiService getAssets (backspin) gets the correct assets for networks (E
   },
   {
     "chain": "Ethereum",
+    "chainflipId": "FLIP",
     "contractAddress": "0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26",
     "decimals": 18,
     "id": "FLIP",
     "isMainnet": false,
+    "maximumSwapAmount": null,
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "1000000000000000000",
     "name": "FLIP",
@@ -58,10 +66,12 @@ exports[`ApiService getAssets (backspin) gets the correct assets for networks (P
 [
   {
     "chain": "Polkadot",
+    "chainflipId": "DOT",
     "contractAddress": undefined,
     "decimals": 10,
     "id": "DOT",
     "isMainnet": false,
+    "maximumSwapAmount": "2000000000",
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "2000000000",
     "name": "Polkadot",
@@ -74,10 +84,12 @@ exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Bi
 [
   {
     "chain": "Bitcoin",
+    "chainflipId": "BTC",
     "contractAddress": undefined,
     "decimals": 8,
     "id": "BTC",
     "isMainnet": true,
+    "maximumSwapAmount": null,
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "390000",
     "name": "Bitcoin",
@@ -90,10 +102,12 @@ exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Et
 [
   {
     "chain": "Ethereum",
+    "chainflipId": "ETH",
     "contractAddress": undefined,
     "decimals": 18,
     "id": "ETH",
     "isMainnet": true,
+    "maximumSwapAmount": null,
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "580000000000000",
     "name": "Ether",
@@ -101,10 +115,12 @@ exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Et
   },
   {
     "chain": "Ethereum",
+    "chainflipId": "USDC",
     "contractAddress": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     "decimals": 6,
     "id": "USDC",
     "isMainnet": true,
+    "maximumSwapAmount": "1000000",
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "1000000",
     "name": "USDC",
@@ -112,10 +128,12 @@ exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Et
   },
   {
     "chain": "Ethereum",
+    "chainflipId": "FLIP",
     "contractAddress": "0x826180541412D574cf1336d22c0C0a287822678A",
     "decimals": 18,
     "id": "FLIP",
     "isMainnet": true,
+    "maximumSwapAmount": null,
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "1000000000000000000",
     "name": "FLIP",
@@ -128,10 +146,12 @@ exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Po
 [
   {
     "chain": "Polkadot",
+    "chainflipId": "DOT",
     "contractAddress": undefined,
     "decimals": 10,
     "id": "DOT",
     "isMainnet": true,
+    "maximumSwapAmount": "2000000000",
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "2000000000",
     "name": "Polkadot",
@@ -144,10 +164,12 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for network
 [
   {
     "chain": "Bitcoin",
+    "chainflipId": "BTC",
     "contractAddress": undefined,
     "decimals": 8,
     "id": "BTC",
     "isMainnet": false,
+    "maximumSwapAmount": null,
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "390000",
     "name": "Bitcoin",
@@ -160,10 +182,12 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for network
 [
   {
     "chain": "Ethereum",
+    "chainflipId": "ETH",
     "contractAddress": undefined,
     "decimals": 18,
     "id": "ETH",
     "isMainnet": false,
+    "maximumSwapAmount": null,
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "580000000000000",
     "name": "Ether",
@@ -171,10 +195,12 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for network
   },
   {
     "chain": "Ethereum",
+    "chainflipId": "USDC",
     "contractAddress": "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
     "decimals": 6,
     "id": "USDC",
     "isMainnet": false,
+    "maximumSwapAmount": "1000000",
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "1000000",
     "name": "USDC",
@@ -182,10 +208,12 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for network
   },
   {
     "chain": "Ethereum",
+    "chainflipId": "FLIP",
     "contractAddress": "0x0485D65da68b2A6b48C3fA28D7CCAce196798B94",
     "decimals": 18,
     "id": "FLIP",
     "isMainnet": false,
+    "maximumSwapAmount": null,
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "1000000000000000000",
     "name": "FLIP",
@@ -198,10 +226,12 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for network
 [
   {
     "chain": "Polkadot",
+    "chainflipId": "DOT",
     "contractAddress": undefined,
     "decimals": 10,
     "id": "DOT",
     "isMainnet": false,
+    "maximumSwapAmount": "2000000000",
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "2000000000",
     "name": "Polkadot",
@@ -214,10 +244,12 @@ exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (B
 [
   {
     "chain": "Bitcoin",
+    "chainflipId": "BTC",
     "contractAddress": undefined,
     "decimals": 8,
     "id": "BTC",
     "isMainnet": false,
+    "maximumSwapAmount": null,
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "390000",
     "name": "Bitcoin",
@@ -230,10 +262,12 @@ exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (E
 [
   {
     "chain": "Ethereum",
+    "chainflipId": "ETH",
     "contractAddress": undefined,
     "decimals": 18,
     "id": "ETH",
     "isMainnet": false,
+    "maximumSwapAmount": null,
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "580000000000000",
     "name": "Ether",
@@ -241,10 +275,12 @@ exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (E
   },
   {
     "chain": "Ethereum",
+    "chainflipId": "USDC",
     "contractAddress": "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
     "decimals": 6,
     "id": "USDC",
     "isMainnet": false,
+    "maximumSwapAmount": "1000000",
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "1000000",
     "name": "USDC",
@@ -252,10 +288,12 @@ exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (E
   },
   {
     "chain": "Ethereum",
+    "chainflipId": "FLIP",
     "contractAddress": "0x2BbB561C6eaB74f358cA9e8a961E3A20CAE3D100",
     "decimals": 18,
     "id": "FLIP",
     "isMainnet": false,
+    "maximumSwapAmount": null,
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "1000000000000000000",
     "name": "FLIP",
@@ -268,10 +306,12 @@ exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (P
 [
   {
     "chain": "Polkadot",
+    "chainflipId": "DOT",
     "contractAddress": undefined,
     "decimals": 10,
     "id": "DOT",
     "isMainnet": false,
+    "maximumSwapAmount": "2000000000",
     "minimumDepositAmount": "0",
     "minimumSwapAmount": "2000000000",
     "name": "Polkadot",
