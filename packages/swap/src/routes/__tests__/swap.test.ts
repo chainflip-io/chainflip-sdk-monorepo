@@ -791,7 +791,27 @@ describe('server', () => {
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
-        message: 'expected amount is below minimum swap amount',
+        message: 'expected amount is below minimum swap amount (16777215)',
+      });
+    });
+
+    it('rejects if amount is higher than maximum swap amount', async () => {
+      jest
+        .mocked(axios.post)
+        .mockResolvedValueOnce({ data: swappingEnvironment('0x1') });
+
+      const { body, status } = await request(app).post('/swaps').send({
+        srcAsset: Assets.USDC,
+        destAsset: Assets.ETH,
+        srcChain: 'Ethereum',
+        destChain: 'Ethereum',
+        destAddress: ETH_ADDRESS,
+        amount: '5',
+      });
+
+      expect(status).toBe(400);
+      expect(body).toMatchObject({
+        message: 'expected amount is above maximum swap amount (2)',
       });
     });
   });

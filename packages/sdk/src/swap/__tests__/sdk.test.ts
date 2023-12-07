@@ -13,6 +13,10 @@ jest.mock('@/shared/vault', () => ({
   executeSwap: jest.fn(),
 }));
 
+jest.mock('@/shared/rpc/utils', () => ({
+  validateSwapAmount: jest.fn().mockReturnValue({ success: true }),
+}));
+
 jest.mock('@trpc/client', () => ({
   ...jest.requireActual('@trpc/client'),
   createTRPCProxyClient: () => ({

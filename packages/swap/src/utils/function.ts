@@ -10,7 +10,11 @@ export const memoize = <T extends AnyFunction>(fn: T, ttl?: number): T => {
   let setAt = 0;
 
   return ((...args) => {
-    if (!initialized || (ttl && Date.now() - setAt > ttl)) {
+    if (
+      !initialized ||
+      (ttl && Date.now() - setAt > ttl) ||
+      process.env.NODE_ENV === 'test' // TODO: remove this when we have a better solution for testing
+    ) {
       initialized = true;
       value = fn(...args);
       setAt = Date.now();
