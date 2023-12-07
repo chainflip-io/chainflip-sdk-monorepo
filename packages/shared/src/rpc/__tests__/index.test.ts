@@ -43,6 +43,19 @@ describe('getSwappingEnvironment', () => {
         },
         Polkadot: { DOT: 0x4563918244f40000n },
       },
+      maximumSwapAmounts: {
+        Bitcoin: {
+          BTC: 5000000000000000000n,
+        },
+        Ethereum: {
+          ETH: null,
+          FLIP: null,
+          USDC: 5000000000000000000n,
+        },
+        Polkadot: {
+          DOT: null,
+        },
+      },
     });
     expect(spy.mock.calls).toMatchSnapshot();
   });
