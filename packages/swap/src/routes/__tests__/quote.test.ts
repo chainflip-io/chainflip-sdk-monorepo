@@ -49,13 +49,13 @@ describe('server', () => {
     await prisma.pool.createMany({
       data: [
         {
-          baseAsset: 'USDC',
-          pairAsset: 'FLIP',
+          baseAsset: 'FLIP',
+          quoteAsset: 'USDC',
           liquidityFeeHundredthPips: 1000,
         },
         {
-          baseAsset: 'USDC',
-          pairAsset: 'ETH',
+          baseAsset: 'ETH',
+          quoteAsset: 'USDC',
           liquidityFeeHundredthPips: 2000,
         },
       ],
