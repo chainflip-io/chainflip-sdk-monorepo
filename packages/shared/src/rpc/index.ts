@@ -101,10 +101,13 @@ export type ChainAssetMap<T> = {
 };
 
 const chainAssetNumberMap = chainAssetMap(numberOrHex);
+const chainAssetNumberNullableMap = chainAssetMap(numberOrHex.nullable());
 
 const swappingEnvironment = z.object({
   minimum_swap_amounts: chainAssetNumberMap,
+  maximum_swap_amounts: chainAssetNumberNullableMap,
 });
+
 export const getSwappingEnvironment = createRequest(
   'cf_swapping_environment',
   swappingEnvironment,
@@ -132,11 +135,18 @@ const rpcAsset = z.union([
   z.object({ chain: z.literal('Ethereum'), asset: z.literal('USDC') }),
 ]);
 
-const poolInfo = z.object({
-  limit_order_fee_hundredth_pips: z.number(),
-  range_order_fee_hundredth_pips: z.number(),
-  pair_asset: rpcAsset,
-});
+const poolInfo = z.intersection(
+  z.object({
+    limit_order_fee_hundredth_pips: z.number(),
+    range_order_fee_hundredth_pips: z.number(),
+  }),
+  z.union([
+    z.object({ quote_asset: rpcAsset }),
+    z
+      .object({ pair_asset: rpcAsset })
+      .transform(({ pair_asset }) => ({ quote_asset: pair_asset })),
+  ]),
+);
 
 const feesInfo = z.object({
   Bitcoin: z.object({ BTC: poolInfo }),

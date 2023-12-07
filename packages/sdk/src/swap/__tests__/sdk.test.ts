@@ -36,6 +36,15 @@ const env = {
       Polkadot: { DOT: 0n },
       Bitcoin: { BTC: 0n },
     },
+    maximumSwapAmounts: {
+      Ethereum: {
+        USDC: 0xf4240n,
+        ETH: null,
+        FLIP: null,
+      },
+      Polkadot: { DOT: 0x77359400n },
+      Bitcoin: { BTC: null },
+    },
   },
 };
 
