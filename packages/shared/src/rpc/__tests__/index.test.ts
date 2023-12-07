@@ -45,12 +45,12 @@ describe('getSwappingEnvironment', () => {
       },
       maximumSwapAmounts: {
         Bitcoin: {
-          BTC: 5000000000000000000n,
+          BTC: 10000000000000000000n,
         },
         Ethereum: {
           ETH: null,
           FLIP: null,
-          USDC: 5000000000000000000n,
+          USDC: 10000000000000000000n,
         },
         Polkadot: {
           DOT: null,

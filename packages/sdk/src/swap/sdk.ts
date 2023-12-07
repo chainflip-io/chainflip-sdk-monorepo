@@ -2,9 +2,15 @@ import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import { Signer } from 'ethers';
 import superjson from 'superjson';
 import { TransactionOptions } from '@/shared/contracts';
-import { ChainflipNetwork, Chain, ChainflipNetworks } from '@/shared/enums';
+import {
+  ChainflipNetwork,
+  Chain,
+  ChainflipNetworks,
+  UncheckedAssetAndChain,
+} from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { Environment, RpcConfig, getEnvironment } from '@/shared/rpc';
+import { validateSwapAmount } from '@/shared/rpc/utils';
 import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
 import type { TokenSwapParams } from '@/shared/vault/schemas';
 import type { AppRouter } from '@/swap/server';
@@ -92,6 +98,13 @@ export class SwapSDK {
   async requestDepositAddress(
     depositAddressRequest: DepositAddressRequest,
   ): Promise<DepositAddressResponse> {
+    const { srcChain, srcAsset, amount } = depositAddressRequest;
+
+    await this.validateSwapAmount(
+      { chain: srcChain, asset: srcAsset },
+      BigInt(amount),
+    );
+
     let response;
 
     if (this.brokerConfig !== undefined) {
@@ -133,6 +146,13 @@ export class SwapSDK {
     params: ExecuteSwapParams,
     txOpts: TransactionOptions = {},
   ): Promise<TransactionHash> {
+    const { srcChain, srcAsset, amount } = params;
+
+    await this.validateSwapAmount(
+      { chain: srcChain, asset: srcAsset },
+      BigInt(amount),
+    );
+
     assert(this.signer, 'No signer provided');
     const receipt = await executeSwap(
       params,
@@ -161,5 +181,16 @@ export class SwapSDK {
       txOpts,
     );
     return receipt ? (receipt.hash as `0x${string}`) : null;
+  }
+
+  private async validateSwapAmount(
+    asset: UncheckedAssetAndChain,
+    amount: bigint,
+  ): Promise<void> {
+    const stateChainEnv = await this.getStateChainEnvironment();
+
+    const result = validateSwapAmount(stateChainEnv.swapping, asset, amount);
+
+    if (!result.success) throw new Error(result.reason);
   }
 }

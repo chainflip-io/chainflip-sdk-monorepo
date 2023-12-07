@@ -16,8 +16,12 @@ const ENVIRONMENT = {
       },
       maximum_swap_amounts: {
         Polkadot: { DOT: null },
-        Bitcoin: { BTC: '0x0' },
-        Ethereum: { ETH: null, USDC: '0x0', FLIP: '0x0' },
+        Bitcoin: { BTC: '0x1000000000000000' },
+        Ethereum: {
+          ETH: null,
+          USDC: '0x1000000000000000',
+          FLIP: '0x1000000000000000',
+        },
       },
     },
     funding: {
@@ -74,22 +78,26 @@ const clone = <T extends object>(obj: T): T => JSON.parse(JSON.stringify(obj));
 
 export const environment = () => clone(ENVIRONMENT);
 
-export const swappingEnvironment = (amt = '0x0') => ({
-  id: 1,
-  jsonrpc: '2.0',
-  result: {
-    minimum_swap_amounts: {
-      Polkadot: { DOT: amt },
-      Bitcoin: { BTC: amt },
-      Ethereum: { ETH: amt, USDC: amt, FLIP: amt },
+export const swappingEnvironment = (amt = '0x0') => {
+  const max = amt === '0x0' ? null : `0x${(BigInt(amt) * 2n).toString(16)}`;
+
+  return {
+    id: 1,
+    jsonrpc: '2.0',
+    result: {
+      minimum_swap_amounts: {
+        Polkadot: { DOT: amt },
+        Bitcoin: { BTC: amt },
+        Ethereum: { ETH: amt, USDC: amt, FLIP: amt },
+      },
+      maximum_swap_amounts: {
+        Polkadot: { DOT: null },
+        Bitcoin: { BTC: max },
+        Ethereum: { ETH: null, USDC: max, FLIP: null },
+      },
     },
-    maximum_swap_amounts: {
-      Polkadot: { DOT: null },
-      Bitcoin: { BTC: amt },
-      Ethereum: { ETH: null, USDC: amt, FLIP: null },
-    },
-  },
-});
+  };
+};
 
 export const fundingEnvironment = () => ({
   id: 1,

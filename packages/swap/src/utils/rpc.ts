@@ -1,23 +1,19 @@
-import {
-  AssetAndChain,
-  UncheckedAssetAndChain,
-  assertIsValidAssetAndChain,
-} from '@/shared/enums';
-import { getSwappingEnvironment, type ChainAssetMap } from '@/shared/rpc';
+import { UncheckedAssetAndChain } from '@/shared/enums';
+import { getSwappingEnvironment } from '@/shared/rpc';
+import { validateSwapAmount as validateAmount } from '@/shared/rpc/utils';
+import { memoize } from './function';
 
-const readAssetValue = (
-  minimums: ChainAssetMap<bigint>,
-  asset: AssetAndChain,
-) => {
-  const chainMinimums = minimums[asset.chain];
-  return chainMinimums[asset.asset as keyof typeof chainMinimums];
-};
+const cachedGetSwappingEnvironment = memoize(getSwappingEnvironment, 60_000);
 
-export const getMinimumSwapAmount = async (
-  rpcUrl: string,
+type Result = { success: true } | { success: false; reason: string };
+
+export const validateSwapAmount = async (
   asset: UncheckedAssetAndChain,
-): Promise<bigint> => {
-  assertIsValidAssetAndChain(asset);
-  const swapEnv = await getSwappingEnvironment({ rpcUrl });
-  return readAssetValue(swapEnv.minimumSwapAmounts, asset);
+  amount: bigint,
+): Promise<Result> => {
+  const swapEnv = await cachedGetSwappingEnvironment({
+    rpcUrl: process.env.RPC_NODE_HTTP_URL as string,
+  });
+
+  return validateAmount(swapEnv, asset, amount);
 };

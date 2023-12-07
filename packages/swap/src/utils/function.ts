@@ -4,14 +4,21 @@ import logger from './logger';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyFunction = (...args: any[]) => any;
 
-export const memoize = <T extends AnyFunction>(fn: T): T => {
+export const memoize = <T extends AnyFunction>(fn: T, ttl?: number): T => {
   let initialized = false;
   let value: ReturnType<T> | undefined;
+  let setAt = 0;
 
   return ((...args) => {
-    if (initialized) return value as ReturnType<T>;
-    initialized = true;
-    value = fn(...args);
+    if (
+      !initialized ||
+      (ttl && Date.now() - setAt > ttl) ||
+      process.env.NODE_ENV === 'test' // TODO: remove this when we have a better solution for testing
+    ) {
+      initialized = true;
+      value = fn(...args);
+      setAt = Date.now();
+    }
     return value;
   }) as T;
 };
