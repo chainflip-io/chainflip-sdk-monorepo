@@ -2,9 +2,9 @@
 
 exports[`newPoolCreated updates the pool fee correctly 1`] = `
 {
-  "baseAsset": "USDC",
+  "baseAsset": "BTC",
   "id": Any<Number>,
   "liquidityFeeHundredthPips": 2000,
-  "pairAsset": "BTC",
+  "quoteAsset": "USDC",
 }
 `;

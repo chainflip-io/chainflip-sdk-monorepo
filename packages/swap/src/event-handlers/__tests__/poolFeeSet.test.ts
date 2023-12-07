@@ -24,7 +24,7 @@ describe(newPoolCreated, () => {
     expect(pool).toMatchObject({
       id: expect.any(Number),
       baseAsset: newPoolEvent.args.baseAsset.__kind.toUpperCase(),
-      pairAsset: newPoolEvent.args.quoteAsset.__kind.toUpperCase(),
+      quoteAsset: newPoolEvent.args.quoteAsset.__kind.toUpperCase(),
       liquidityFeeHundredthPips: newPoolEvent.args.feeHundredthPips,
     });
 
@@ -44,7 +44,7 @@ describe(newPoolCreated, () => {
     expect(pool2).toMatchSnapshot({
       id: expect.any(Number),
       baseAsset: newPoolEvent.args.baseAsset.__kind.toUpperCase(),
-      pairAsset: newPoolEvent.args.quoteAsset.__kind.toUpperCase(),
+      quoteAsset: newPoolEvent.args.quoteAsset.__kind.toUpperCase(),
       liquidityFeeHundredthPips: poolFeeSetEvent.args.feeHundredthPips,
     });
   });

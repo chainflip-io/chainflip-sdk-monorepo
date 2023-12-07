@@ -195,10 +195,10 @@ model ThirdPartySwap {
 model Pool {
   id                        Int   @id @default(autoincrement())
   baseAsset                 Asset
-  pairAsset                 Asset
+  quoteAsset                Asset
   liquidityFeeHundredthPips Int
 
-  @@unique([baseAsset, pairAsset])
+  @@unique([baseAsset, quoteAsset])
   @@schema("public")
 }
 

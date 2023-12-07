@@ -237,9 +237,9 @@ export const getQuotePools = async (
     return [
       await prisma.pool.findUniqueOrThrow({
         where: {
-          baseAsset_pairAsset: {
-            baseAsset: srcAsset === Assets.USDC ? srcAsset : destAsset,
-            pairAsset: srcAsset === Assets.USDC ? destAsset : srcAsset,
+          baseAsset_quoteAsset: {
+            baseAsset: srcAsset === Assets.USDC ? destAsset : srcAsset,
+            quoteAsset: srcAsset === Assets.USDC ? srcAsset : destAsset,
           },
         },
       }),
@@ -249,17 +249,17 @@ export const getQuotePools = async (
   return Promise.all([
     prisma.pool.findUniqueOrThrow({
       where: {
-        baseAsset_pairAsset: {
-          baseAsset: Assets.USDC,
-          pairAsset: srcAsset,
+        baseAsset_quoteAsset: {
+          baseAsset: srcAsset,
+          quoteAsset: Assets.USDC,
         },
       },
     }),
     prisma.pool.findUniqueOrThrow({
       where: {
-        baseAsset_pairAsset: {
-          baseAsset: Assets.USDC,
-          pairAsset: destAsset,
+        baseAsset_quoteAsset: {
+          baseAsset: destAsset,
+          quoteAsset: Assets.USDC,
         },
       },
     }),

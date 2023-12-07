@@ -48,7 +48,7 @@ export default async function newPoolCreated({
   await prisma.pool.create({
     data: {
       baseAsset: unstableAsset,
-      pairAsset: stableAsset,
+      quoteAsset: stableAsset,
       liquidityFeeHundredthPips: Number(feeHundredthPips),
     },
   });

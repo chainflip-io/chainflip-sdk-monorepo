@@ -18,9 +18,9 @@ export default async function poolFeeSet({
 
   await prisma.pool.update({
     where: {
-      baseAsset_pairAsset: {
+      baseAsset_quoteAsset: {
         baseAsset,
-        pairAsset: quoteAsset,
+        quoteAsset,
       },
     },
     data: {

@@ -88,8 +88,8 @@ describe('quotes', () => {
   describe(subtractFeesFromMakerQuote, () => {
     const examplePool: Pool = {
       id: 1,
-      pairAsset: 'ETH',
-      baseAsset: 'USDC',
+      baseAsset: 'ETH',
+      quoteAsset: 'USDC',
       liquidityFeeHundredthPips: 1000,
     };
 
@@ -226,14 +226,14 @@ describe('quotes', () => {
   describe(calculateIncludedFees, () => {
     const ethUsdcPool: Pool = {
       id: 1,
-      pairAsset: 'ETH',
-      baseAsset: 'USDC',
+      baseAsset: 'ETH',
+      quoteAsset: 'USDC',
       liquidityFeeHundredthPips: 1000,
     };
     const flipUsdcPool: Pool = {
       id: 2,
-      pairAsset: 'FLIP',
-      baseAsset: 'USDC',
+      baseAsset: 'FLIP',
+      quoteAsset: 'USDC',
       liquidityFeeHundredthPips: 1000,
     };
 
@@ -340,13 +340,13 @@ describe('quotes', () => {
       await prisma.pool.createMany({
         data: [
           {
-            baseAsset: 'USDC',
-            pairAsset: 'FLIP',
+            baseAsset: 'FLIP',
+            quoteAsset: 'USDC',
             liquidityFeeHundredthPips: 1000,
           },
           {
-            baseAsset: 'USDC',
-            pairAsset: 'ETH',
+            baseAsset: 'ETH',
+            quoteAsset: 'USDC',
             liquidityFeeHundredthPips: 2000,
           },
         ],
@@ -362,12 +362,12 @@ describe('quotes', () => {
 
       expect(pools).toHaveLength(2);
       expect(pools[0]).toMatchObject({
-        baseAsset: Assets.USDC,
-        pairAsset: Assets.FLIP,
+        baseAsset: Assets.FLIP,
+        quoteAsset: Assets.USDC,
       });
       expect(pools[1]).toMatchObject({
-        baseAsset: Assets.USDC,
-        pairAsset: Assets.ETH,
+        baseAsset: Assets.ETH,
+        quoteAsset: Assets.USDC,
       });
     });
 
@@ -380,8 +380,8 @@ describe('quotes', () => {
 
       expect(pools).toHaveLength(1);
       expect(pools[0]).toMatchObject({
-        baseAsset: Assets.USDC,
-        pairAsset: Assets.ETH,
+        baseAsset: Assets.ETH,
+        quoteAsset: Assets.USDC,
       });
     });
 
@@ -394,8 +394,8 @@ describe('quotes', () => {
 
       expect(pools).toHaveLength(1);
       expect(pools[0]).toMatchObject({
-        baseAsset: Assets.USDC,
-        pairAsset: Assets.FLIP,
+        baseAsset: Assets.FLIP,
+        quoteAsset: Assets.USDC,
       });
     });
   });
