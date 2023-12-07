@@ -105,7 +105,19 @@ const chainAssetNumberNullableMap = chainAssetMap(numberOrHex.nullable());
 
 const swappingEnvironment = z.object({
   minimum_swap_amounts: chainAssetNumberMap,
-  maximum_swap_amounts: chainAssetNumberNullableMap,
+  maximum_swap_amounts: chainAssetNumberNullableMap
+    .nullable()
+    .transform((env) => {
+      if (env !== null) return env;
+
+      const tempEnv: z.output<typeof chainAssetNumberNullableMap> = {
+        Bitcoin: { BTC: null },
+        Ethereum: { ETH: null, USDC: null, FLIP: null },
+        Polkadot: { DOT: null },
+      };
+
+      return tempEnv;
+    }),
 });
 
 export const getSwappingEnvironment = createRequest(
