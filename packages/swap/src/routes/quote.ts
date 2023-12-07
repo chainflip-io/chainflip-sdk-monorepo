@@ -12,7 +12,7 @@ import {
   calculateIncludedFees,
 } from '../quoting/quotes';
 import logger from '../utils/logger';
-import { getMinimumSwapAmount } from '../utils/rpc';
+import { validateSwapAmount } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
 import { getBrokerQuote } from '../utils/statechain';
 
@@ -26,32 +26,33 @@ const quote = (io: Server) => {
   router.get(
     '/',
     asyncHandler(async (req, res) => {
-      const result = quoteQuerySchema.safeParse(req.query);
+      const queryResult = quoteQuerySchema.safeParse(req.query);
 
-      if (!result.success) {
+      if (!queryResult.success) {
         logger.info('received invalid quote request', { query: req.query });
         throw ServiceError.badRequest('invalid request');
       }
 
-      const minimumAmount = await getMinimumSwapAmount(
-        process.env.RPC_NODE_HTTP_URL as string,
-        result.data.srcAsset,
+      const query = queryResult.data;
+
+      const amountResult = await validateSwapAmount(
+        query.srcAsset,
+        BigInt(query.amount),
       );
-      if (BigInt(result.data.amount) < minimumAmount) {
-        throw ServiceError.badRequest(
-          'expected amount is below minimum swap amount',
-        );
+
+      if (!amountResult.success) {
+        throw ServiceError.badRequest(amountResult.reason);
       }
 
-      const quoteRequest = buildQuoteRequest(result.data);
-      const quotePools = await getQuotePools(result.data);
+      const quoteRequest = buildQuoteRequest(query);
+      const quotePools = await getQuotePools(query);
 
       io.emit('quote_request', quoteRequest);
 
       try {
         const [rawMarketMakerQuotes, brokerQuote] = await Promise.all([
           collectMakerQuotes(quoteRequest.id, io.sockets.sockets.size, quotes$),
-          getBrokerQuote(result.data, quoteRequest.id),
+          getBrokerQuote(query, quoteRequest.id),
         ]);
 
         // market maker quotes do not include liquidity pool fee and network fee

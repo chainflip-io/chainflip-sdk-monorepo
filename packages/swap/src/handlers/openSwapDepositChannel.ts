@@ -5,7 +5,7 @@ import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';
 import { isProduction } from '../utils/consts';
 import { calculateExpiryTime } from '../utils/function';
-import { getMinimumSwapAmount } from '../utils/rpc';
+import { validateSwapAmount } from '../utils/rpc';
 import screenAddress from '../utils/screenAddress';
 import ServiceError from '../utils/ServiceError';
 
@@ -20,16 +20,12 @@ export default async function openSwapDepositChannel(
     throw ServiceError.badRequest('provided address is sanctioned');
   }
 
-  const minimumAmount = await getMinimumSwapAmount(
-    process.env.RPC_NODE_HTTP_URL as string,
+  const result = await validateSwapAmount(
     { asset: input.srcAsset, chain: input.srcChain },
+    BigInt(input.expectedDepositAmount),
   );
 
-  if (BigInt(input.expectedDepositAmount) < minimumAmount) {
-    throw ServiceError.badRequest(
-      'expected amount is below minimum swap amount',
-    );
-  }
+  if (!result.success) throw ServiceError.badRequest(result.reason);
 
   const {
     address: depositAddress,
