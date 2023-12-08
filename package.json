@@ -10,6 +10,7 @@
     "test:ci:shared": "pnpm --filter sdk-shared test:ci",
     "test:ci:sdk": "pnpm --filter sdk test:ci",
     "test:ci:swap": "pnpm --filter swap test:ci",
+    "test:ci:cli": "exit 0",
     "prettier:check": "prettier ./** --check",
     "prettier:write": "prettier ./** --write",
     "eslint:check": "pnpm -r lint",
