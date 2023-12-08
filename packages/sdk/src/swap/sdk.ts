@@ -193,4 +193,14 @@ export class SwapSDK {
 
     if (!result.success) throw new Error(result.reason);
   }
+
+  async getSwapLimits(): Promise<
+    Pick<Environment['swapping'], 'minimumSwapAmounts' | 'maximumSwapAmounts'>
+  > {
+    const {
+      swapping: { minimumSwapAmounts, maximumSwapAmounts },
+    } = await this.getStateChainEnvironment();
+
+    return { minimumSwapAmounts, maximumSwapAmounts };
+  }
 }
