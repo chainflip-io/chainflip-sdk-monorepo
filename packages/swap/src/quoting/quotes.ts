@@ -1,19 +1,15 @@
 import assert from 'assert';
 import * as crypto from 'crypto';
-import { Observable, Subscription, filter } from 'rxjs';
+import { filter, Observable, Subscription } from 'rxjs';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
 import { Assets, ChainflipNetwork } from '@/shared/enums';
-import { QuoteRequest, QuoteFee, ParsedQuoteParams } from '@/shared/schemas';
+import { ParsedQuoteParams, QuoteRequest } from '@/shared/schemas';
+import { getPips, ONE_IN_HUNDREDTH_PIPS } from '@/swap/fees';
 import { BrokerQuote, MarketMakerQuote } from './schemas';
 import prisma, { Pool } from '../client';
-import { Comparison, compareNumericStrings } from '../utils/string';
+import { compareNumericStrings, Comparison } from '../utils/string';
 
 const QUOTE_TIMEOUT = Number.parseInt(process.env.QUOTE_TIMEOUT ?? '1000', 10);
-
-const ONE_IN_HUNDREDTH_PIPS = 1000000;
-
-const getPips = (value: string, hundrethPips: number) =>
-  (BigInt(value) * BigInt(hundrethPips)) / BigInt(ONE_IN_HUNDREDTH_PIPS);
 
 export const collectMakerQuotes = (
   requestId: string,
@@ -136,94 +132,6 @@ export const buildQuoteRequest = (query: ParsedQuoteParams): QuoteRequest => {
     destination_asset: destAsset,
     deposit_amount: amount,
   };
-};
-
-export const calculateIncludedFees = (
-  request: QuoteRequest,
-  quote: MarketMakerQuote | BrokerQuote,
-  quotePools: Pool[],
-): QuoteFee[] => {
-  const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(
-    process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
-  );
-
-  if (request.source_asset === Assets.USDC) {
-    return [
-      {
-        type: 'network',
-        asset: Assets.USDC,
-        amount: getPips(
-          request.deposit_amount,
-          networkFeeHundredthPips,
-        ).toString(),
-      },
-      {
-        type: 'liquidity',
-        asset: request.source_asset,
-        amount: getPips(
-          request.deposit_amount,
-          quotePools[0].liquidityFeeHundredthPips,
-        ).toString(),
-      },
-    ];
-  }
-
-  if (request.destination_asset === Assets.USDC) {
-    const stableAmountBeforeNetworkFee =
-      (BigInt(quote.egressAmount) * BigInt(ONE_IN_HUNDREDTH_PIPS)) /
-      BigInt(ONE_IN_HUNDREDTH_PIPS - networkFeeHundredthPips);
-
-    return [
-      {
-        type: 'network',
-        asset: Assets.USDC,
-        amount: getPips(
-          String(stableAmountBeforeNetworkFee),
-          networkFeeHundredthPips,
-        ).toString(),
-      },
-      {
-        type: 'liquidity',
-        asset: request.source_asset,
-        amount: getPips(
-          request.deposit_amount,
-          quotePools[0].liquidityFeeHundredthPips,
-        ).toString(),
-      },
-    ];
-  }
-
-  assert(
-    'intermediateAmount' in quote && quote.intermediateAmount,
-    'no intermediate amount on quote',
-  );
-
-  return [
-    {
-      type: 'network',
-      asset: Assets.USDC,
-      amount: getPips(
-        quote.intermediateAmount,
-        networkFeeHundredthPips,
-      ).toString(),
-    },
-    {
-      type: 'liquidity',
-      asset: request.source_asset,
-      amount: getPips(
-        request.deposit_amount,
-        quotePools[0].liquidityFeeHundredthPips,
-      ).toString(),
-    },
-    {
-      type: 'liquidity',
-      asset: request.intermediate_asset,
-      amount: getPips(
-        quote.intermediateAmount,
-        quotePools[1].liquidityFeeHundredthPips,
-      ).toString(),
-    },
-  ];
 };
 
 export const getQuotePools = async (

@@ -1,10 +1,10 @@
 import * as crypto from 'crypto';
 import { Subject } from 'rxjs';
 import { Asset, Assets, assetChains, AssetAndChain } from '@/shared/enums';
+import { calculateIncludedFees } from '@/swap/fees';
 import prisma, { Pool } from '../../client';
 import {
   buildQuoteRequest,
-  calculateIncludedFees,
   collectMakerQuotes,
   findBestQuote,
   getQuotePools,

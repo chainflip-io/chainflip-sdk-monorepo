@@ -1,6 +1,7 @@
 import express from 'express';
 import type { Server } from 'socket.io';
 import { quoteQuerySchema } from '@/shared/schemas';
+import { calculateIncludedFees } from '@/swap/fees';
 import { asyncHandler } from './common';
 import getConnectionHandler from '../quoting/getConnectionHandler';
 import {
@@ -9,7 +10,6 @@ import {
   collectMakerQuotes,
   getQuotePools,
   subtractFeesFromMakerQuote,
-  calculateIncludedFees,
 } from '../quoting/quotes';
 import logger from '../utils/logger';
 import { validateSwapAmount } from '../utils/rpc';

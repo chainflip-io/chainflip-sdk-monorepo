@@ -3,7 +3,10 @@ import { ChainflipNetwork, ChainflipNetworks } from './enums';
 const POOLS_NETWORK_FEE_HUNDREDTH_PIPS: Partial<
   Record<ChainflipNetwork, number>
 > = {
-  [ChainflipNetworks.perseverance]: 100,
+  [ChainflipNetworks.backspin]: 1000,
+  [ChainflipNetworks.sisyphos]: 1000,
+  [ChainflipNetworks.perseverance]: 1000,
+  [ChainflipNetworks.mainnet]: 1000,
 };
 export const getPoolsNetworkFeeHundredthPips = (network: ChainflipNetwork) =>
   POOLS_NETWORK_FEE_HUNDREDTH_PIPS[network] ?? 0;
