@@ -8,12 +8,6 @@ import {
   numericString,
 } from './parsers';
 
-export const quoteQuerySchema = z.object({
-  srcAsset: chainflipAssetAndChain,
-  destAsset: chainflipAssetAndChain,
-  amount: numericString,
-});
-
 export type QuoteQueryParams = z.input<typeof quoteQuerySchema>;
 export type ParsedQuoteParams = z.output<typeof quoteQuerySchema>;
 
@@ -43,11 +37,33 @@ export type OpenSwapDepositChannelArgs = z.input<
   typeof openSwapDepositChannelSchema
 >;
 
-export type PostSwapResponse = {
-  id: string;
-  depositAddress: string;
-  issuedBlock: number;
-};
+export const getQuoteRequestSchema = z.object({
+  srcChain: chainflipChain,
+  destChain: chainflipChain,
+  srcAsset: chainflipAsset,
+  destAsset: chainflipAsset,
+  amount: numericString,
+});
+
+export const quoteQuerySchema = z.object({
+  srcAsset: chainflipAssetAndChain,
+  destAsset: chainflipAssetAndChain,
+  amount: numericString,
+});
+
+export const getQuoteResponseSchema = getQuoteRequestSchema.extend({
+  quote: z.object({
+    intermediateAmount: z.string().optional(),
+    egressAmount: z.string(),
+    includedFees: z.array(
+      z.object({
+        type: z.enum(['liquidity', 'network']),
+        asset: chainflipAsset,
+        amount: z.string(),
+      }),
+    ),
+  }),
+});
 
 export type QuoteFee = {
   type: 'liquidity' | 'network';
