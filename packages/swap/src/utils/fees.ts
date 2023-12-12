@@ -24,12 +24,12 @@ export const calculateIncludedFees = async (
   if (srcAsset === Assets.USDC) {
     return [
       {
-        type: 'network',
+        type: 'NETWORK',
         asset: Assets.USDC,
         amount: getPips(depositAmount, networkFeeHundredthPips).toString(),
       },
       {
-        type: 'liquidity',
+        type: 'LIQUIDITY',
         asset: srcAsset,
         amount: getPips(
           depositAmount,
@@ -46,7 +46,7 @@ export const calculateIncludedFees = async (
 
     return [
       {
-        type: 'network',
+        type: 'NETWORK',
         asset: Assets.USDC,
         amount: getPips(
           String(stableAmountBeforeNetworkFee),
@@ -54,7 +54,7 @@ export const calculateIncludedFees = async (
         ).toString(),
       },
       {
-        type: 'liquidity',
+        type: 'LIQUIDITY',
         asset: srcAsset,
         amount: getPips(
           depositAmount,
@@ -68,12 +68,12 @@ export const calculateIncludedFees = async (
 
   return [
     {
-      type: 'network',
+      type: 'NETWORK',
       asset: Assets.USDC,
       amount: getPips(intermediateAmount, networkFeeHundredthPips).toString(),
     },
     {
-      type: 'liquidity',
+      type: 'LIQUIDITY',
       asset: srcAsset,
       amount: getPips(
         depositAmount,
@@ -81,7 +81,7 @@ export const calculateIncludedFees = async (
       ).toString(),
     },
     {
-      type: 'liquidity',
+      type: 'LIQUIDITY',
       asset: Assets.USDC,
       amount: getPips(
         intermediateAmount,

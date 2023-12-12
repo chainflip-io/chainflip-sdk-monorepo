@@ -37,17 +37,17 @@ describe('fees', () => {
 
       expect(fees).toMatchObject([
         {
-          type: 'network',
+          type: 'NETWORK',
           asset: 'USDC',
           amount: (0.1e6).toString(),
         },
         {
-          type: 'liquidity',
+          type: 'LIQUIDITY',
           asset: 'ETH',
           amount: (0.1e18).toString(),
         },
         {
-          type: 'liquidity',
+          type: 'LIQUIDITY',
           asset: 'USDC',
           amount: (0.1e6).toString(),
         },
@@ -65,12 +65,12 @@ describe('fees', () => {
 
       expect(fees).toMatchObject([
         {
-          type: 'network',
+          type: 'NETWORK',
           asset: 'USDC',
           amount: (0.1e6).toString(),
         },
         {
-          type: 'liquidity',
+          type: 'LIQUIDITY',
           asset: 'USDC',
           amount: (0.1e6).toString(),
         },
@@ -88,12 +88,12 @@ describe('fees', () => {
 
       expect(fees).toMatchObject([
         {
-          type: 'network',
+          type: 'NETWORK',
           asset: 'USDC',
           amount: (0.1e6).toString(),
         },
         {
-          type: 'liquidity',
+          type: 'LIQUIDITY',
           asset: 'ETH',
           amount: (0.1e18).toString(),
         },
