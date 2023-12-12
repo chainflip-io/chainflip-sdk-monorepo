@@ -1,14 +1,14 @@
 import express from 'express';
 import type { Server } from 'socket.io';
 import { quoteQuerySchema } from '@/shared/schemas';
-import { calculateIncludedFees } from '@/swap/fees';
+import { calculateIncludedFees } from '@/swap/utils/fees';
+import { getPools } from '@/swap/utils/pools';
 import { asyncHandler } from './common';
 import getConnectionHandler from '../quoting/getConnectionHandler';
 import {
   findBestQuote,
   buildQuoteRequest,
   collectMakerQuotes,
-  getQuotePools,
   subtractFeesFromMakerQuote,
 } from '../quoting/quotes';
 import logger from '../utils/logger';
@@ -45,7 +45,10 @@ const quote = (io: Server) => {
       }
 
       const quoteRequest = buildQuoteRequest(query);
-      const quotePools = await getQuotePools(query);
+      const quotePools = await getPools(
+        query.srcAsset.asset,
+        query.destAsset.asset,
+      );
 
       io.emit('quote_request', quoteRequest);
 
@@ -61,10 +64,14 @@ const quote = (io: Server) => {
         );
 
         const bestQuote = findBestQuote(marketMakerQuotes, brokerQuote);
-        const includedFees = calculateIncludedFees(
-          quoteRequest,
-          bestQuote,
-          quotePools,
+        const includedFees = await calculateIncludedFees(
+          quoteRequest.source_asset,
+          quoteRequest.destination_asset,
+          quoteRequest.deposit_amount,
+          'intermediateAmount' in bestQuote
+            ? bestQuote.intermediateAmount
+            : undefined,
+          bestQuote.egressAmount,
         );
 
         res.json({ ...bestQuote, includedFees });

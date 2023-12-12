@@ -49,7 +49,7 @@ export type PostSwapResponse = {
   issuedBlock: number;
 };
 
-export type QuoteFee = {
+export type SwapFee = {
   type: 'liquidity' | 'network';
   asset: Asset;
   amount: string;
@@ -58,7 +58,7 @@ export type QuoteFee = {
 export type QuoteQueryResponse = {
   intermediateAmount?: string;
   egressAmount: string;
-  includedFees: QuoteFee[];
+  includedFees: SwapFee[];
 };
 
 interface BaseRequest {

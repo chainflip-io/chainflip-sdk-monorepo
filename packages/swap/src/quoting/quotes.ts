@@ -4,9 +4,9 @@ import { filter, Observable, Subscription } from 'rxjs';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
 import { Assets, ChainflipNetwork } from '@/shared/enums';
 import { ParsedQuoteParams, QuoteRequest } from '@/shared/schemas';
-import { getPips, ONE_IN_HUNDREDTH_PIPS } from '@/swap/fees';
+import { getPips, ONE_IN_HUNDREDTH_PIPS } from '@/swap/utils/fees';
 import { BrokerQuote, MarketMakerQuote } from './schemas';
-import prisma, { Pool } from '../client';
+import { Pool } from '../client';
 import { compareNumericStrings, Comparison } from '../utils/string';
 
 const QUOTE_TIMEOUT = Number.parseInt(process.env.QUOTE_TIMEOUT ?? '1000', 10);
@@ -132,44 +132,4 @@ export const buildQuoteRequest = (query: ParsedQuoteParams): QuoteRequest => {
     destination_asset: destAsset,
     deposit_amount: amount,
   };
-};
-
-export const getQuotePools = async (
-  query: ParsedQuoteParams,
-): Promise<Pool[]> => {
-  const { srcAsset: srcAssetAndChain, destAsset: destAssetAndChain } = query;
-  const srcAsset = srcAssetAndChain.asset;
-  const destAsset = destAssetAndChain.asset;
-
-  if (srcAsset === Assets.USDC || destAsset === Assets.USDC) {
-    return [
-      await prisma.pool.findUniqueOrThrow({
-        where: {
-          baseAsset_quoteAsset: {
-            baseAsset: srcAsset === Assets.USDC ? destAsset : srcAsset,
-            quoteAsset: srcAsset === Assets.USDC ? srcAsset : destAsset,
-          },
-        },
-      }),
-    ];
-  }
-
-  return Promise.all([
-    prisma.pool.findUniqueOrThrow({
-      where: {
-        baseAsset_quoteAsset: {
-          baseAsset: srcAsset,
-          quoteAsset: Assets.USDC,
-        },
-      },
-    }),
-    prisma.pool.findUniqueOrThrow({
-      where: {
-        baseAsset_quoteAsset: {
-          baseAsset: destAsset,
-          quoteAsset: Assets.USDC,
-        },
-      },
-    }),
-  ]);
 };

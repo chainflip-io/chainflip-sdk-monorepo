@@ -1,46 +1,47 @@
 import assert from 'assert';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
-import { Assets, ChainflipNetwork } from '@/shared/enums';
-import { QuoteFee, QuoteRequest } from '@/shared/schemas';
-import { Pool } from '@/swap/client';
-import { BrokerQuote, MarketMakerQuote } from '@/swap/quoting/schemas';
+import { Asset, Assets, ChainflipNetwork } from '@/shared/enums';
+import { SwapFee } from '@/shared/schemas';
+import { getPools } from '@/swap/utils/pools';
 
 export const ONE_IN_HUNDREDTH_PIPS = 1000000;
+
 export const getPips = (value: string, hundrethPips: number) =>
   (BigInt(value) * BigInt(hundrethPips)) / BigInt(ONE_IN_HUNDREDTH_PIPS);
-export const calculateIncludedFees = (
-  request: QuoteRequest,
-  quote: MarketMakerQuote | BrokerQuote,
-  pools: Pool[],
-): QuoteFee[] => {
+
+export const calculateIncludedFees = async (
+  srcAsset: Asset,
+  destAsset: Asset,
+  depositAmount: string,
+  intermediateAmount: string | undefined,
+  egressAmount: string,
+): Promise<SwapFee[]> => {
   const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(
     process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
   );
+  const pools = await getPools(srcAsset, destAsset);
 
-  if (request.source_asset === Assets.USDC) {
+  if (srcAsset === Assets.USDC) {
     return [
       {
         type: 'network',
         asset: Assets.USDC,
-        amount: getPips(
-          request.deposit_amount,
-          networkFeeHundredthPips,
-        ).toString(),
+        amount: getPips(depositAmount, networkFeeHundredthPips).toString(),
       },
       {
         type: 'liquidity',
-        asset: request.source_asset,
+        asset: srcAsset,
         amount: getPips(
-          request.deposit_amount,
+          depositAmount,
           pools[0].liquidityFeeHundredthPips,
         ).toString(),
       },
     ];
   }
 
-  if (request.destination_asset === Assets.USDC) {
+  if (destAsset === Assets.USDC) {
     const stableAmountBeforeNetworkFee =
-      (BigInt(quote.egressAmount) * BigInt(ONE_IN_HUNDREDTH_PIPS)) /
+      (BigInt(egressAmount) * BigInt(ONE_IN_HUNDREDTH_PIPS)) /
       BigInt(ONE_IN_HUNDREDTH_PIPS - networkFeeHundredthPips);
 
     return [
@@ -54,42 +55,36 @@ export const calculateIncludedFees = (
       },
       {
         type: 'liquidity',
-        asset: request.source_asset,
+        asset: srcAsset,
         amount: getPips(
-          request.deposit_amount,
+          depositAmount,
           pools[0].liquidityFeeHundredthPips,
         ).toString(),
       },
     ];
   }
 
-  assert(
-    'intermediateAmount' in quote && quote.intermediateAmount,
-    'no intermediate amount on quote',
-  );
+  assert(intermediateAmount, 'no intermediate amount given');
 
   return [
     {
       type: 'network',
       asset: Assets.USDC,
-      amount: getPips(
-        quote.intermediateAmount,
-        networkFeeHundredthPips,
-      ).toString(),
+      amount: getPips(intermediateAmount, networkFeeHundredthPips).toString(),
     },
     {
       type: 'liquidity',
-      asset: request.source_asset,
+      asset: srcAsset,
       amount: getPips(
-        request.deposit_amount,
+        depositAmount,
         pools[0].liquidityFeeHundredthPips,
       ).toString(),
     },
     {
       type: 'liquidity',
-      asset: request.intermediate_asset,
+      asset: Assets.USDC,
       amount: getPips(
-        quote.intermediateAmount,
+        intermediateAmount,
         pools[1].liquidityFeeHundredthPips,
       ).toString(),
     },
