@@ -232,6 +232,25 @@ const ccmEvents = [
   }, new Map<string, Event[]>());
 
 describe('batch swap flow', () => {
+  beforeAll(async () => {
+    await prisma.$queryRaw`TRUNCATE TABLE public."Pool" CASCADE`;
+    await prisma.pool.createMany({
+      data: [
+        {
+          baseAsset: 'ETH',
+          quoteAsset: 'USDC',
+          liquidityFeeHundredthPips: 1000,
+        },
+
+        {
+          baseAsset: 'DOT',
+          quoteAsset: 'USDC',
+          liquidityFeeHundredthPips: 1500,
+        },
+      ],
+    });
+  });
+
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel" CASCADE`;
   });

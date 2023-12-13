@@ -13,7 +13,7 @@ export default function networkBroadcastSuccess(
   return async ({ prisma, block, event }: EventHandlerArgs): Promise<void> => {
     const { broadcastId } = eventArgs.parse(event.args);
 
-    // use updateMany to skip update if we are not tracking swap
+    // use updateMany to skip update if broadcast does not include any swap
     await prisma.broadcast.updateMany({
       where: { chain, nativeId: broadcastId },
       data: {

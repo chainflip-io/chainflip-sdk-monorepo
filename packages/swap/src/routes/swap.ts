@@ -3,7 +3,13 @@ import express from 'express';
 import { assetChains, Chain } from '@/shared/enums';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { asyncHandler } from './common';
-import prisma, { Egress, Swap, SwapDepositChannel, Broadcast } from '../client';
+import prisma, {
+  Egress,
+  Swap,
+  SwapDepositChannel,
+  Broadcast,
+  SwapFee,
+} from '../client';
 import { getPendingDeposit } from '../deposit-tracking';
 import openSwapDepositChannel from '../handlers/openSwapDepositChannel';
 import logger from '../utils/logger';
@@ -21,7 +27,8 @@ export enum State {
   AwaitingDeposit = 'AWAITING_DEPOSIT',
 }
 
-type SwapWithBroadcast = Swap & {
+type SwapWithBroadcastAndFees = Swap & {
+  fees: SwapFee[];
   egress:
     | (Egress & {
         broadcast: Broadcast | null;
@@ -46,9 +53,9 @@ router.get(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    let swap: SwapWithBroadcast | null | undefined;
+    let swap: SwapWithBroadcastAndFees | null | undefined;
     let swapDepositChannel:
-      | (SwapDepositChannel & { swaps: SwapWithBroadcast[] })
+      | (SwapDepositChannel & { swaps: SwapWithBroadcastAndFees[] })
       | null
       | undefined;
 
@@ -65,7 +72,9 @@ router.get(
           },
         },
         include: {
-          swaps: { include: { egress: { include: { broadcast: true } } } },
+          swaps: {
+            include: { egress: { include: { broadcast: true } }, fees: true },
+          },
         },
       });
 
@@ -78,12 +87,12 @@ router.get(
     } else if (swapIdRegex.test(id)) {
       swap = await prisma.swap.findUnique({
         where: { nativeId: BigInt(id) },
-        include: { egress: { include: { broadcast: true } } },
+        include: { egress: { include: { broadcast: true } }, fees: true },
       });
     } else if (txHashRegex.test(id)) {
       swap = await prisma.swap.findFirst({
         where: { txHash: id },
-        include: { egress: { include: { broadcast: true } } },
+        include: { egress: { include: { broadcast: true } }, fees: true },
         // just get the last one for now
         orderBy: { createdAt: 'desc' },
       });
@@ -156,6 +165,11 @@ router.get(
       egressAmount: swap?.egress?.amount?.toString(),
       egressScheduledAt: swap?.egress?.scheduledAt?.valueOf(),
       egressScheduledBlockIndex: swap?.egress?.scheduledBlockIndex,
+      feesPaid: swap?.fees.map((fee) => ({
+        type: fee.type,
+        asset: fee.asset,
+        amount: fee.amount.toString(),
+      })),
       broadcastRequestedAt: swap?.egress?.broadcast?.requestedAt?.valueOf(),
       broadcastRequestedBlockIndex:
         swap?.egress?.broadcast?.requestedBlockIndex,

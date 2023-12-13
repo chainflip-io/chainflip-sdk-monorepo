@@ -159,8 +159,8 @@ describe('server', () => {
         id: expect.any(String),
         egressAmount: (1e18).toString(),
         includedFees: [
-          { amount: '100000', asset: 'USDC', type: 'network' },
-          { amount: '200000', asset: 'USDC', type: 'liquidity' },
+          { amount: '100000', asset: 'USDC', type: 'NETWORK' },
+          { amount: '200000', asset: 'USDC', type: 'LIQUIDITY' },
         ],
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -193,8 +193,8 @@ describe('server', () => {
         id: expect.any(String),
         egressAmount: (100e6).toString(),
         includedFees: [
-          { amount: '100100', asset: 'USDC', type: 'network' },
-          { amount: '2000000000000000', asset: 'ETH', type: 'liquidity' },
+          { amount: '100100', asset: 'USDC', type: 'NETWORK' },
+          { amount: '2000000000000000', asset: 'ETH', type: 'LIQUIDITY' },
         ],
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -230,9 +230,9 @@ describe('server', () => {
         intermediateAmount: (2000e6).toString(),
         egressAmount: (1e18).toString(),
         includedFees: [
-          { amount: '2000000', asset: 'USDC', type: 'network' },
-          { amount: '1000000000000000', asset: 'FLIP', type: 'liquidity' },
-          { amount: '4000000', asset: 'USDC', type: 'liquidity' },
+          { amount: '2000000', asset: 'USDC', type: 'NETWORK' },
+          { amount: '1000000000000000', asset: 'FLIP', type: 'LIQUIDITY' },
+          { amount: '4000000', asset: 'USDC', type: 'LIQUIDITY' },
         ],
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -267,9 +267,9 @@ describe('server', () => {
         intermediateAmount: (2994e6).toString(),
         egressAmount: (1.992e18).toString(),
         includedFees: [
-          { amount: '2994000', asset: 'USDC', type: 'network' },
-          { amount: '1000000000000000', asset: 'FLIP', type: 'liquidity' },
-          { amount: '5988000', asset: 'USDC', type: 'liquidity' },
+          { amount: '2994000', asset: 'USDC', type: 'NETWORK' },
+          { amount: '1000000000000000', asset: 'FLIP', type: 'LIQUIDITY' },
+          { amount: '5988000', asset: 'USDC', type: 'LIQUIDITY' },
         ],
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
