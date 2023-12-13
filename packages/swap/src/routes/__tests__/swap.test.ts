@@ -251,11 +251,13 @@ describe('server', () => {
             {
               "amount": "10",
               "asset": "USDC",
+              "chain": "Ethereum",
               "type": "NETWORK",
             },
             {
               "amount": "5",
               "asset": "ETH",
+              "chain": "Ethereum",
               "type": "LIQUIDITY",
             },
           ],
@@ -342,11 +344,13 @@ describe('server', () => {
             {
               "amount": "10",
               "asset": "USDC",
+              "chain": "Ethereum",
               "type": "NETWORK",
             },
             {
               "amount": "5",
               "asset": "ETH",
+              "chain": "Ethereum",
               "type": "LIQUIDITY",
             },
           ],
@@ -444,11 +448,13 @@ describe('server', () => {
             {
               "amount": "10",
               "asset": "USDC",
+              "chain": "Ethereum",
               "type": "NETWORK",
             },
             {
               "amount": "5",
               "asset": "ETH",
+              "chain": "Ethereum",
               "type": "LIQUIDITY",
             },
           ],
@@ -549,11 +555,13 @@ describe('server', () => {
             {
               "amount": "10",
               "asset": "USDC",
+              "chain": "Ethereum",
               "type": "NETWORK",
             },
             {
               "amount": "5",
               "asset": "ETH",
+              "chain": "Ethereum",
               "type": "LIQUIDITY",
             },
           ],
@@ -654,11 +662,13 @@ describe('server', () => {
             {
               "amount": "10",
               "asset": "USDC",
+              "chain": "Ethereum",
               "type": "NETWORK",
             },
             {
               "amount": "5",
               "asset": "ETH",
+              "chain": "Ethereum",
               "type": "LIQUIDITY",
             },
           ],
@@ -723,11 +733,13 @@ describe('server', () => {
             {
               "amount": "10",
               "asset": "USDC",
+              "chain": "Ethereum",
               "type": "NETWORK",
             },
             {
               "amount": "5",
               "asset": "ETH",
+              "chain": "Ethereum",
               "type": "LIQUIDITY",
             },
           ],
@@ -794,11 +806,13 @@ describe('server', () => {
             {
               "amount": "10",
               "asset": "USDC",
+              "chain": "Ethereum",
               "type": "NETWORK",
             },
             {
               "amount": "5",
               "asset": "ETH",
+              "chain": "Ethereum",
               "type": "LIQUIDITY",
             },
           ],
