@@ -120,5 +120,10 @@ export const ingressEgressEnvironment = (amt = '0x0') => ({
       Polkadot: { DOT: amt },
       Ethereum: { ETH: amt, FLIP: amt, USDC: amt },
     },
+    ingress_fees: {
+      Bitcoin: { BTC: amt },
+      Polkadot: { DOT: amt },
+      Ethereum: { ETH: amt, FLIP: amt, USDC: amt },
+    },
   },
 });

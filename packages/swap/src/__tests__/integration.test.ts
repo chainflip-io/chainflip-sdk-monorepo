@@ -15,7 +15,10 @@ import {
 import { promisify } from 'util';
 import { Assets } from '@/shared/enums';
 import { QuoteQueryParams } from '@/shared/schemas';
-import { swappingEnvironment } from '@/shared/tests/fixtures';
+import {
+  ingressEgressEnvironment,
+  swappingEnvironment,
+} from '@/shared/tests/fixtures';
 import prisma from '../client';
 import app from '../server';
 import { getBrokerQuote } from '../utils/statechain';
@@ -23,7 +26,15 @@ import { getBrokerQuote } from '../utils/statechain';
 jest.mock('../utils/statechain', () => ({ getBrokerQuote: jest.fn() }));
 
 jest.mock('axios', () => ({
-  post: jest.fn().mockResolvedValue({ data: swappingEnvironment() }),
+  post: jest.fn((url, data) => {
+    if (data.method === 'cf_swapping_environment')
+      return Promise.resolve({ data: swappingEnvironment() });
+
+    if (data.method === 'cf_ingress_egress_environment')
+      return Promise.resolve({ data: ingressEgressEnvironment('0x123') });
+
+    throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+  }),
 }));
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
@@ -128,18 +139,27 @@ describe('python integration test', () => {
       egressAmount: '997000000000000000',
       includedFees: [
         {
+          amount: '291',
+          asset: 'FLIP',
+          chain: 'Ethereum',
+          type: 'INGRESS',
+        },
+        {
           amount: '0',
           asset: 'USDC',
+          chain: 'Ethereum',
           type: 'NETWORK',
         },
         {
           amount: '1000000000000000',
           asset: 'FLIP',
+          chain: 'Ethereum',
           type: 'LIQUIDITY',
         },
         {
           amount: '3996000',
           asset: 'USDC',
+          chain: 'Ethereum',
           type: 'LIQUIDITY',
         },
       ],
