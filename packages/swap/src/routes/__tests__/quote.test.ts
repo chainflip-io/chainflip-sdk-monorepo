@@ -6,7 +6,10 @@ import { AddressInfo } from 'net';
 import request from 'supertest';
 import { promisify } from 'util';
 import RpcClient from '@/shared/node-apis/RpcClient';
-import { swappingEnvironment } from '@/shared/tests/fixtures';
+import {
+  ingressEgressEnvironment,
+  swappingEnvironment,
+} from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import QuotingClient from '../../quoting/QuotingClient';
 import app from '../../server';
@@ -29,16 +32,19 @@ jest.mock(
 
 jest.mock('@/shared/consts', () => ({
   ...jest.requireActual('@/shared/consts'),
-  getMinimumSwapAmount: jest.fn().mockReturnValue('100'),
   getPoolsNetworkFeeHundredthPips: jest.fn().mockReturnValue(1000),
 }));
 
 jest.mock('axios', () => ({
-  post: jest.fn(() =>
-    Promise.resolve({
-      data: swappingEnvironment(),
-    }),
-  ),
+  post: jest.fn((url, data) => {
+    if (data.method === 'cf_swapping_environment')
+      return Promise.resolve({ data: swappingEnvironment() });
+
+    if (data.method === 'cf_ingress_egress_environment')
+      return Promise.resolve({ data: ingressEgressEnvironment('0x777') });
+
+    throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+  }),
 }));
 describe('server', () => {
   let server: Server;
@@ -159,8 +165,24 @@ describe('server', () => {
         id: expect.any(String),
         egressAmount: (1e18).toString(),
         includedFees: [
-          { amount: '100000', asset: 'USDC', type: 'NETWORK' },
-          { amount: '200000', asset: 'USDC', type: 'LIQUIDITY' },
+          {
+            amount: '1911',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'INGRESS',
+          },
+          {
+            amount: '100000',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'NETWORK',
+          },
+          {
+            amount: '200000',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'LIQUIDITY',
+          },
         ],
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -193,8 +215,24 @@ describe('server', () => {
         id: expect.any(String),
         egressAmount: (100e6).toString(),
         includedFees: [
-          { amount: '100100', asset: 'USDC', type: 'NETWORK' },
-          { amount: '2000000000000000', asset: 'ETH', type: 'LIQUIDITY' },
+          {
+            amount: '1911',
+            asset: 'ETH',
+            chain: 'Ethereum',
+            type: 'INGRESS',
+          },
+          {
+            amount: '100100',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'NETWORK',
+          },
+          {
+            amount: '2000000000000000',
+            asset: 'ETH',
+            chain: 'Ethereum',
+            type: 'LIQUIDITY',
+          },
         ],
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -230,9 +268,30 @@ describe('server', () => {
         intermediateAmount: (2000e6).toString(),
         egressAmount: (1e18).toString(),
         includedFees: [
-          { amount: '2000000', asset: 'USDC', type: 'NETWORK' },
-          { amount: '1000000000000000', asset: 'FLIP', type: 'LIQUIDITY' },
-          { amount: '4000000', asset: 'USDC', type: 'LIQUIDITY' },
+          {
+            amount: '1911',
+            asset: 'FLIP',
+            chain: 'Ethereum',
+            type: 'INGRESS',
+          },
+          {
+            amount: '2000000',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'NETWORK',
+          },
+          {
+            amount: '1000000000000000',
+            asset: 'FLIP',
+            chain: 'Ethereum',
+            type: 'LIQUIDITY',
+          },
+          {
+            amount: '4000000',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'LIQUIDITY',
+          },
         ],
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -267,9 +326,30 @@ describe('server', () => {
         intermediateAmount: (2994e6).toString(),
         egressAmount: (1.992e18).toString(),
         includedFees: [
-          { amount: '2994000', asset: 'USDC', type: 'NETWORK' },
-          { amount: '1000000000000000', asset: 'FLIP', type: 'LIQUIDITY' },
-          { amount: '5988000', asset: 'USDC', type: 'LIQUIDITY' },
+          {
+            amount: '1911',
+            asset: 'FLIP',
+            chain: 'Ethereum',
+            type: 'INGRESS',
+          },
+          {
+            amount: '2994000',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'NETWORK',
+          },
+          {
+            amount: '1000000000000000',
+            asset: 'FLIP',
+            chain: 'Ethereum',
+            type: 'LIQUIDITY',
+          },
+          {
+            amount: '5988000',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'LIQUIDITY',
+          },
         ],
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
