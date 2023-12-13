@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as broker from '@/shared/broker';
-import { swappingEnvironment } from '@/shared/tests/fixtures';
+import { environment } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import screenAddress from '../../utils/screenAddress';
 import openSwapDepositChannel from '../openSwapDepositChannel';
@@ -24,9 +24,7 @@ describe(openSwapDepositChannel, () => {
   });
 
   it('gathers and inserts the deposit channel info', async () => {
-    jest
-      .mocked(axios.post)
-      .mockResolvedValueOnce({ data: swappingEnvironment() });
+    jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
 
     jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
