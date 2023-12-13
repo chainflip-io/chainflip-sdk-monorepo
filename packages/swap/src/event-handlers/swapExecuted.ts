@@ -19,14 +19,9 @@ export default async function swapExecuted({
   const { swapId, intermediateAmount, egressAmount } = swapExecutedArgs.parse(
     event.args,
   );
-  const swap = await prisma.swap.findUnique({
+  const swap = await prisma.swap.findUniqueOrThrow({
     where: { nativeId: swapId },
   });
-
-  // skip update if we are not tracking swap
-  if (!swap) {
-    return;
-  }
 
   const fees = await calculateIncludedFees(
     swap.srcAsset,

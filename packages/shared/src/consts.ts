@@ -1,5 +1,6 @@
 import { ChainflipNetwork, ChainflipNetworks } from './enums';
 
+// TODO: read this value via rpc once there is an appropriate rpc method
 const POOLS_NETWORK_FEE_HUNDREDTH_PIPS: Partial<
   Record<ChainflipNetwork, number>
 > = {
