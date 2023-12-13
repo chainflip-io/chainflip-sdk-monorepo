@@ -165,7 +165,7 @@ router.get(
       egressAmount: swap?.egress?.amount?.toString(),
       egressScheduledAt: swap?.egress?.scheduledAt?.valueOf(),
       egressScheduledBlockIndex: swap?.egress?.scheduledBlockIndex,
-      paidFess: swap?.fees.map((fee) => ({
+      feesPaid: swap?.fees.map((fee) => ({
         type: fee.type,
         asset: fee.asset,
         amount: fee.amount.toString(),

@@ -108,7 +108,7 @@ export type SwapStatusResponse = CommonStatusFields &
         egressAmount: string;
         egressScheduledAt: number;
         egressScheduledBlockIndex: string;
-        paidFess: SwapFee[];
+        feesPaid: SwapFee[];
       }
     | {
         state: 'BROADCAST_REQUESTED';
@@ -122,7 +122,7 @@ export type SwapStatusResponse = CommonStatusFields &
         egressAmount: string;
         egressScheduledAt: number;
         egressScheduledBlockIndex: string;
-        paidFess: SwapFee[];
+        feesPaid: SwapFee[];
         broadcastRequestedAt: number;
         broadcastRequestedBlockIndex: string;
       }
@@ -138,7 +138,7 @@ export type SwapStatusResponse = CommonStatusFields &
         egressAmount: string;
         egressScheduledAt: number;
         egressScheduledBlockIndex: string;
-        paidFess: SwapFee[];
+        feesPaid: SwapFee[];
         broadcastRequestedAt: number;
         broadcastRequestedBlockIndex: string;
         broadcastAbortedAt: number;
@@ -156,7 +156,7 @@ export type SwapStatusResponse = CommonStatusFields &
         egressAmount: string;
         egressScheduledAt: number;
         egressScheduledBlockIndex: string;
-        paidFess: SwapFee[];
+        feesPaid: SwapFee[];
         broadcastRequestedAt: number;
         broadcastRequestedBlockIndex: string;
         broadcastSucceededAt: number;

@@ -180,8 +180,8 @@ describe('server', () => {
           "destChain": "Polkadot",
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
+          "feesPaid": [],
           "isDepositChanneExpired": false,
-          "paidFess": [],
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
@@ -247,9 +247,7 @@ describe('server', () => {
           "destChain": "Polkadot",
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
-          "intermediateAmount": "20",
-          "isDepositChanneExpired": false,
-          "paidFess": [
+          "feesPaid": [
             {
               "amount": "10",
               "asset": "USDC",
@@ -261,6 +259,8 @@ describe('server', () => {
               "type": "LIQUIDITY",
             },
           ],
+          "intermediateAmount": "20",
+          "isDepositChanneExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "SWAP_EXECUTED",
@@ -338,8 +338,7 @@ describe('server', () => {
           "egressScheduledBlockIndex": "202-3",
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
-          "isDepositChanneExpired": false,
-          "paidFess": [
+          "feesPaid": [
             {
               "amount": "10",
               "asset": "USDC",
@@ -351,6 +350,7 @@ describe('server', () => {
               "type": "LIQUIDITY",
             },
           ],
+          "isDepositChanneExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "EGRESS_SCHEDULED",
@@ -440,8 +440,7 @@ describe('server', () => {
           "egressScheduledBlockIndex": "202-3",
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
-          "isDepositChanneExpired": false,
-          "paidFess": [
+          "feesPaid": [
             {
               "amount": "10",
               "asset": "USDC",
@@ -453,6 +452,7 @@ describe('server', () => {
               "type": "LIQUIDITY",
             },
           ],
+          "isDepositChanneExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "BROADCAST_REQUESTED",
@@ -545,8 +545,7 @@ describe('server', () => {
           "egressScheduledBlockIndex": "202-3",
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
-          "isDepositChanneExpired": false,
-          "paidFess": [
+          "feesPaid": [
             {
               "amount": "10",
               "asset": "USDC",
@@ -558,6 +557,7 @@ describe('server', () => {
               "type": "LIQUIDITY",
             },
           ],
+          "isDepositChanneExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "BROADCAST_ABORTED",
@@ -650,8 +650,7 @@ describe('server', () => {
           "egressScheduledBlockIndex": "202-3",
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
-          "isDepositChanneExpired": false,
-          "paidFess": [
+          "feesPaid": [
             {
               "amount": "10",
               "asset": "USDC",
@@ -663,6 +662,7 @@ describe('server', () => {
               "type": "LIQUIDITY",
             },
           ],
+          "isDepositChanneExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "COMPLETE",
@@ -719,8 +719,7 @@ describe('server', () => {
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "isDepositChanneExpired": false,
-          "paidFess": [
+          "feesPaid": [
             {
               "amount": "10",
               "asset": "USDC",
@@ -732,6 +731,7 @@ describe('server', () => {
               "type": "LIQUIDITY",
             },
           ],
+          "isDepositChanneExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
@@ -790,8 +790,7 @@ describe('server', () => {
           "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "isDepositChanneExpired": false,
-          "paidFess": [
+          "feesPaid": [
             {
               "amount": "10",
               "asset": "USDC",
@@ -803,6 +802,7 @@ describe('server', () => {
               "type": "LIQUIDITY",
             },
           ],
+          "isDepositChanneExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
