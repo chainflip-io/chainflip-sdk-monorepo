@@ -1,6 +1,6 @@
 import assert from 'assert';
 import express from 'express';
-import { Asset, assetChains, Chain } from '@/shared/enums';
+import { assetChains, Chain } from '@/shared/enums';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { asyncHandler } from './common';
 import prisma, {

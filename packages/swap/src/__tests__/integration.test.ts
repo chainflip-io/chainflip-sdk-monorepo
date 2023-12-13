@@ -130,17 +130,17 @@ describe('python integration test', () => {
         {
           amount: '0',
           asset: 'USDC',
-          type: 'network',
+          type: 'NETWORK',
         },
         {
           amount: '1000000000000000',
           asset: 'FLIP',
-          type: 'liquidity',
+          type: 'LIQUIDITY',
         },
         {
           amount: '3996000',
           asset: 'USDC',
-          type: 'liquidity',
+          type: 'LIQUIDITY',
         },
       ],
     });
