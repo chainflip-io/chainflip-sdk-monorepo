@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`swapExecuted updates an existing swap with the execution timestamp 1`] = `
+exports[`swapExecuted updates an existing swap 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
@@ -10,9 +10,25 @@ exports[`swapExecuted updates an existing swap with the execution timestamp 1`] 
   "depositReceivedAt": 2022-12-06T14:31:33.000Z,
   "depositReceivedBlockIndex": "100-0",
   "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
-  "destAsset": "DOT",
+  "destAsset": "USDC",
   "egressAmount": "10000000000",
   "egressId": null,
+  "fees": [
+    {
+      "amount": "10010010",
+      "asset": "USDC",
+      "id": Any<BigInt>,
+      "swapId": Any<BigInt>,
+      "type": "NETWORK",
+    },
+    {
+      "amount": "10000000",
+      "asset": "ETH",
+      "id": Any<BigInt>,
+      "swapId": Any<BigInt>,
+      "type": "LIQUIDITY",
+    },
+  ],
   "id": Any<BigInt>,
   "intermediateAmount": null,
   "nativeId": 9876545n,
@@ -26,7 +42,7 @@ exports[`swapExecuted updates an existing swap with the execution timestamp 1`] 
 }
 `;
 
-exports[`swapExecuted updates an existing swap with the execution timestamp and intermediate amount 1`] = `
+exports[`swapExecuted updates an existing swap with intermediate amount 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
@@ -39,6 +55,29 @@ exports[`swapExecuted updates an existing swap with the execution timestamp and 
   "destAsset": "DOT",
   "egressAmount": "10000000000",
   "egressId": null,
+  "fees": [
+    {
+      "amount": "100",
+      "asset": "USDC",
+      "id": Any<BigInt>,
+      "swapId": Any<BigInt>,
+      "type": "NETWORK",
+    },
+    {
+      "amount": "10000000",
+      "asset": "ETH",
+      "id": Any<BigInt>,
+      "swapId": Any<BigInt>,
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "150",
+      "asset": "USDC",
+      "id": Any<BigInt>,
+      "swapId": Any<BigInt>,
+      "type": "LIQUIDITY",
+    },
+  ],
   "id": Any<BigInt>,
   "intermediateAmount": "100000",
   "nativeId": 9876545n,

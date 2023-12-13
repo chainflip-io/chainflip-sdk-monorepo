@@ -7,12 +7,36 @@ import {
 import prisma from '../../client';
 import swapExecuted from '../swapExecuted';
 
+jest.mock('@/shared/consts', () => ({
+  ...jest.requireActual('@/shared/consts'),
+  getPoolsNetworkFeeHundredthPips: jest.fn().mockReturnValue(1000),
+}));
+
 describe(swapExecuted, () => {
+  beforeAll(async () => {
+    await prisma.$queryRaw`TRUNCATE TABLE public."Pool" CASCADE`;
+    await prisma.pool.createMany({
+      data: [
+        {
+          baseAsset: 'ETH',
+          quoteAsset: 'USDC',
+          liquidityFeeHundredthPips: 1000,
+        },
+
+        {
+          baseAsset: 'DOT',
+          quoteAsset: 'USDC',
+          liquidityFeeHundredthPips: 1500,
+        },
+      ],
+    });
+  });
+
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap" CASCADE`;
   });
 
-  it('updates an existing swap with the execution timestamp', async () => {
+  it('updates an existing swap', async () => {
     const {
       eventContext: { event },
       block,
@@ -32,7 +56,7 @@ describe(swapExecuted, () => {
           depositReceivedAt: new Date(block.timestamp - 6000),
           depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
           srcAsset: Assets.ETH,
-          destAsset: Assets.DOT,
+          destAsset: Assets.USDC,
           destAddress: DOT_ADDRESS,
           type: 'SWAP',
         },
@@ -49,6 +73,7 @@ describe(swapExecuted, () => {
 
     const swap = await prisma.swap.findFirstOrThrow({
       where: { swapDepositChannelId: swapDepositChannel.id },
+      include: { fees: true },
     });
 
     expect(swap).toMatchSnapshot({
@@ -56,10 +81,14 @@ describe(swapExecuted, () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       swapDepositChannelId: expect.any(BigInt),
+      fees: [
+        { id: expect.any(BigInt), swapId: expect.any(BigInt) },
+        { id: expect.any(BigInt), swapId: expect.any(BigInt) },
+      ],
     });
   });
 
-  it('updates an existing swap with the execution timestamp and intermediate amount', async () => {
+  it('updates an existing swap with intermediate amount', async () => {
     const {
       eventContext: { event },
       block,
@@ -97,6 +126,7 @@ describe(swapExecuted, () => {
 
     const swap = await prisma.swap.findFirstOrThrow({
       where: { swapDepositChannelId: swapDepositChannel.id },
+      include: { fees: true },
     });
 
     expect(swap).toMatchSnapshot({
@@ -104,6 +134,11 @@ describe(swapExecuted, () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       swapDepositChannelId: expect.any(BigInt),
+      fees: [
+        { id: expect.any(BigInt), swapId: expect.any(BigInt) },
+        { id: expect.any(BigInt), swapId: expect.any(BigInt) },
+        { id: expect.any(BigInt), swapId: expect.any(BigInt) },
+      ],
     });
   });
 });
