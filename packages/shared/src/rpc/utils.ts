@@ -1,15 +1,12 @@
-import {
-  AssetAndChain,
-  UncheckedAssetAndChain,
-  assertIsValidAssetAndChain,
-} from '../enums';
+import { UncheckedAssetAndChain, assertIsValidAssetAndChain } from '../enums';
 import { ChainAssetMap, Environment } from './index';
 
-const readAssetValue = <T>(
-  minimums: ChainAssetMap<T>,
-  asset: AssetAndChain,
+export const readAssetValue = <T>(
+  value: ChainAssetMap<T>,
+  asset: UncheckedAssetAndChain,
 ): T => {
-  const chainMinimums = minimums[asset.chain];
+  assertIsValidAssetAndChain(asset);
+  const chainMinimums = value[asset.chain];
   return chainMinimums[asset.asset as keyof typeof chainMinimums];
 };
 
@@ -20,7 +17,6 @@ export const validateSwapAmount = (
   asset: UncheckedAssetAndChain,
   amount: bigint,
 ): Result => {
-  assertIsValidAssetAndChain(asset);
   const minAmount = readAssetValue(swapEnv.minimumSwapAmounts, asset);
 
   if (amount < minAmount) {

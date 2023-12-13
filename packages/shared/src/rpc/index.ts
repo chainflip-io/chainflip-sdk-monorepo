@@ -115,6 +115,8 @@ export const getSwappingEnvironment = createRequest(
 
 const ingressEgressEnvironment = z.object({
   minimum_deposit_amounts: chainAssetNumberMap,
+  ingress_fees: chainAssetNumberMap.optional(),
+  egress_fees: chainAssetNumberMap.optional(),
 });
 
 export const getIngressEgressEnvironment = createRequest(

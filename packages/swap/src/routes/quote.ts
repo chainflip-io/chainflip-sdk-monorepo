@@ -12,7 +12,7 @@ import {
   subtractFeesFromMakerQuote,
 } from '../quoting/quotes';
 import logger from '../utils/logger';
-import { validateSwapAmount } from '../utils/rpc';
+import { getEgressFee, getIngressFee, validateSwapAmount } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
 import { getBrokerQuote } from '../utils/statechain';
 
@@ -73,6 +73,26 @@ const quote = (io: Server) => {
             : undefined,
           bestQuote.egressAmount,
         );
+
+        const ingressFee = await getIngressFee(query.srcAsset);
+        if (ingressFee > 0n) {
+          includedFees.unshift({
+            type: 'INGRESS',
+            chain: query.srcAsset.chain,
+            asset: query.srcAsset.asset,
+            amount: ingressFee.toString(),
+          });
+        }
+
+        const egressFee = await getEgressFee(query.destAsset);
+        if (egressFee > 0n) {
+          includedFees.push({
+            type: 'EGRESS',
+            chain: query.destAsset.chain,
+            asset: query.destAsset.asset,
+            amount: egressFee.toString(),
+          });
+        }
 
         res.json({ ...bestQuote, includedFees });
       } catch (err) {
