@@ -1,6 +1,6 @@
 import assert from 'assert';
 import express from 'express';
-import { assetChains, Chain } from '@/shared/enums';
+import { Asset, assetChains, Chain } from '@/shared/enums';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { asyncHandler } from './common';
 import prisma, {
@@ -165,7 +165,11 @@ router.get(
       egressAmount: swap?.egress?.amount?.toString(),
       egressScheduledAt: swap?.egress?.scheduledAt?.valueOf(),
       egressScheduledBlockIndex: swap?.egress?.scheduledBlockIndex,
-      paidFess: swap?.fees,
+      paidFess: swap?.fees.map((fee) => ({
+        type: fee.type,
+        asset: fee.asset,
+        amount: fee.amount.toString(),
+      })),
       broadcastRequestedAt: swap?.egress?.broadcast?.requestedAt?.valueOf(),
       broadcastRequestedBlockIndex:
         swap?.egress?.broadcast?.requestedBlockIndex,

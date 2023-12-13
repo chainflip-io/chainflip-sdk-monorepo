@@ -181,6 +181,7 @@ describe('server', () => {
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": false,
+          "paidFess": [],
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
@@ -200,6 +201,20 @@ describe('server', () => {
             depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
             depositAmount: '10',
             intermediateAmount: '20',
+            fees: {
+              create: [
+                {
+                  type: 'NETWORK',
+                  asset: 'USDC',
+                  amount: '10',
+                },
+                {
+                  type: 'LIQUIDITY',
+                  asset: 'ETH',
+                  amount: '5',
+                },
+              ],
+            },
             swapExecutedAt: new Date(RECEIVED_TIMESTAMP + 6000),
             swapExecutedBlockIndex: `200-3`,
             srcAsset: Assets.ETH,
@@ -234,6 +249,18 @@ describe('server', () => {
           "expectedDepositAmount": "10000000000",
           "intermediateAmount": "20",
           "isDepositChanneExpired": false,
+          "paidFess": [
+            {
+              "amount": "10",
+              "asset": "USDC",
+              "type": "NETWORK",
+            },
+            {
+              "amount": "5",
+              "asset": "ETH",
+              "type": "LIQUIDITY",
+            },
+          ],
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "SWAP_EXECUTED",
@@ -253,6 +280,20 @@ describe('server', () => {
             depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
             depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
             depositAmount: '10',
+            fees: {
+              create: [
+                {
+                  type: 'NETWORK',
+                  asset: 'USDC',
+                  amount: '10',
+                },
+                {
+                  type: 'LIQUIDITY',
+                  asset: 'ETH',
+                  amount: '5',
+                },
+              ],
+            },
             swapExecutedAt: new Date(RECEIVED_TIMESTAMP + 6000),
             swapExecutedBlockIndex: `200-3`,
             egress: {
@@ -298,6 +339,18 @@ describe('server', () => {
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": false,
+          "paidFess": [
+            {
+              "amount": "10",
+              "asset": "USDC",
+              "type": "NETWORK",
+            },
+            {
+              "amount": "5",
+              "asset": "ETH",
+              "type": "LIQUIDITY",
+            },
+          ],
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "EGRESS_SCHEDULED",
@@ -317,6 +370,20 @@ describe('server', () => {
             depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
             depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
             depositAmount: '10',
+            fees: {
+              create: [
+                {
+                  type: 'NETWORK',
+                  asset: 'USDC',
+                  amount: '10',
+                },
+                {
+                  type: 'LIQUIDITY',
+                  asset: 'ETH',
+                  amount: '5',
+                },
+              ],
+            },
             swapExecutedAt: new Date(RECEIVED_TIMESTAMP + 6000),
             swapExecutedBlockIndex: `200-3`,
             egress: {
@@ -374,6 +441,18 @@ describe('server', () => {
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": false,
+          "paidFess": [
+            {
+              "amount": "10",
+              "asset": "USDC",
+              "type": "NETWORK",
+            },
+            {
+              "amount": "5",
+              "asset": "ETH",
+              "type": "LIQUIDITY",
+            },
+          ],
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "BROADCAST_REQUESTED",
@@ -393,6 +472,20 @@ describe('server', () => {
             depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
             depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
             depositAmount: '10',
+            fees: {
+              create: [
+                {
+                  type: 'NETWORK',
+                  asset: 'USDC',
+                  amount: '10',
+                },
+                {
+                  type: 'LIQUIDITY',
+                  asset: 'ETH',
+                  amount: '5',
+                },
+              ],
+            },
             swapExecutedAt: new Date(RECEIVED_TIMESTAMP + 6000),
             swapExecutedBlockIndex: `200-3`,
             egress: {
@@ -453,6 +546,18 @@ describe('server', () => {
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": false,
+          "paidFess": [
+            {
+              "amount": "10",
+              "asset": "USDC",
+              "type": "NETWORK",
+            },
+            {
+              "amount": "5",
+              "asset": "ETH",
+              "type": "LIQUIDITY",
+            },
+          ],
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "BROADCAST_ABORTED",
@@ -472,6 +577,20 @@ describe('server', () => {
             depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
             depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
             depositAmount: '10',
+            fees: {
+              create: [
+                {
+                  type: 'NETWORK',
+                  asset: 'USDC',
+                  amount: '10',
+                },
+                {
+                  type: 'LIQUIDITY',
+                  asset: 'ETH',
+                  amount: '5',
+                },
+              ],
+            },
             swapExecutedAt: new Date(RECEIVED_TIMESTAMP + 6000),
             swapExecutedBlockIndex: `200-3`,
             egress: {
@@ -532,6 +651,18 @@ describe('server', () => {
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "isDepositChanneExpired": false,
+          "paidFess": [
+            {
+              "amount": "10",
+              "asset": "USDC",
+              "type": "NETWORK",
+            },
+            {
+              "amount": "5",
+              "asset": "ETH",
+              "type": "LIQUIDITY",
+            },
+          ],
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "COMPLETE",
@@ -553,6 +684,20 @@ describe('server', () => {
           destAsset: Assets.DOT,
           destAddress: DOT_ADDRESS,
           depositAmount: '10',
+          fees: {
+            create: [
+              {
+                type: 'NETWORK',
+                asset: 'USDC',
+                amount: '10',
+              },
+              {
+                type: 'LIQUIDITY',
+                asset: 'ETH',
+                amount: '5',
+              },
+            ],
+          },
           depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
           depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
           type: 'SWAP',
@@ -575,6 +720,18 @@ describe('server', () => {
           "destAsset": "DOT",
           "destChain": "Polkadot",
           "isDepositChanneExpired": false,
+          "paidFess": [
+            {
+              "amount": "10",
+              "asset": "USDC",
+              "type": "NETWORK",
+            },
+            {
+              "amount": "5",
+              "asset": "ETH",
+              "type": "LIQUIDITY",
+            },
+          ],
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
@@ -592,6 +749,20 @@ describe('server', () => {
           destAsset: Assets.DOT,
           destAddress: DOT_ADDRESS,
           depositAmount: '10',
+          fees: {
+            create: [
+              {
+                type: 'NETWORK',
+                asset: 'USDC',
+                amount: '10',
+              },
+              {
+                type: 'LIQUIDITY',
+                asset: 'ETH',
+                amount: '5',
+              },
+            ],
+          },
           depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
           depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
           type: 'SWAP',
@@ -620,6 +791,18 @@ describe('server', () => {
           "destAsset": "DOT",
           "destChain": "Polkadot",
           "isDepositChanneExpired": false,
+          "paidFess": [
+            {
+              "amount": "10",
+              "asset": "USDC",
+              "type": "NETWORK",
+            },
+            {
+              "amount": "5",
+              "asset": "ETH",
+              "type": "LIQUIDITY",
+            },
+          ],
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
