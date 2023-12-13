@@ -35,9 +35,7 @@ export const getIngressFee = async (
     rpcUrl: process.env.RPC_NODE_HTTP_URL as string,
   });
 
-  return ingressEgressEnv.ingressFees
-    ? readAssetValue(ingressEgressEnv.ingressFees, asset)
-    : 0n;
+  return readAssetValue(ingressEgressEnv.ingressFees, asset);
 };
 
 export const getEgressFee = async (
@@ -47,7 +45,5 @@ export const getEgressFee = async (
     rpcUrl: process.env.RPC_NODE_HTTP_URL as string,
   });
 
-  return ingressEgressEnv.egressFees
-    ? readAssetValue(ingressEgressEnv.egressFees, asset)
-    : 0n;
+  return readAssetValue(ingressEgressEnv.egressFees, asset);
 };
