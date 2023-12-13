@@ -7,6 +7,16 @@ const ENVIRONMENT = {
         Polkadot: { DOT: '0x0' },
         Ethereum: { ETH: '0x0', FLIP: '0x0', USDC: '0x0' },
       },
+      ingress_fees: {
+        Bitcoin: { BTC: '0x0' },
+        Polkadot: { DOT: '0x0' },
+        Ethereum: { ETH: '0x0', FLIP: '0x0', USDC: '0x0' },
+      },
+      egress_fees: {
+        Bitcoin: { BTC: '0x0' },
+        Polkadot: { DOT: '0x0' },
+        Ethereum: { ETH: '0x0', FLIP: '0x0', USDC: '0x0' },
+      },
     },
     swapping: {
       minimum_swap_amounts: {
@@ -119,6 +129,16 @@ export const ingressEgressEnvironment = (amt = '0x0') => ({
       Bitcoin: { BTC: amt },
       Polkadot: { DOT: amt },
       Ethereum: { ETH: amt, FLIP: amt, USDC: amt },
+    },
+    ingress_fees: {
+      Bitcoin: { BTC: amt },
+      Polkadot: { DOT: amt },
+      Ethereum: { ETH: amt, FLIP: amt, USDC: amt },
+    },
+    egress_fees: {
+      Bitcoin: { BTC: '0x0' },
+      Polkadot: { DOT: '0x0' },
+      Ethereum: { ETH: '0x0', FLIP: '0x0', USDC: '0x0' },
     },
   },
 });

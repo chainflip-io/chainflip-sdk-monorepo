@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Asset } from './enums';
+import { Asset, Chain } from './enums';
 import {
   chainflipAsset,
   chainflipAssetAndChain,
@@ -50,7 +50,8 @@ export type PostSwapResponse = {
 };
 
 export type SwapFee = {
-  type: 'LIQUIDITY' | 'NETWORK';
+  type: 'LIQUIDITY' | 'NETWORK' | 'INGRESS' | 'EGRESS';
+  chain: Chain;
   asset: Asset;
   amount: string;
 };

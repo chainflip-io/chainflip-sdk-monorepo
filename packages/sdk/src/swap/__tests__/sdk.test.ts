@@ -29,6 +29,16 @@ const env = {
       Polkadot: { DOT: 0n },
       Bitcoin: { BTC: 0n },
     },
+    ingressFees: {
+      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n },
+      Polkadot: { DOT: 0n },
+      Bitcoin: { BTC: 0n },
+    },
+    egressFees: {
+      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n },
+      Polkadot: { DOT: 0n },
+      Bitcoin: { BTC: 0n },
+    },
   },
   swapping: {
     minimumSwapAmounts: {

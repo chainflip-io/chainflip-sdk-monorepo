@@ -37,7 +37,11 @@ export default async function swapExecuted({
       egressAmount: egressAmount.toString(),
       intermediateAmount: intermediateAmount?.toString(),
       fees: {
-        create: fees,
+        create: fees.map((fee) => ({
+          type: fee.type,
+          asset: fee.asset,
+          amount: fee.amount,
+        })),
       },
       swapExecutedAt: new Date(block.timestamp),
       swapExecutedBlockIndex: `${block.height}-${event.indexInBlock}`,

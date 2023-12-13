@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
-import { Asset, Assets, ChainflipNetwork } from '@/shared/enums';
+import { Asset, assetChains, Assets, ChainflipNetwork } from '@/shared/enums';
 import { SwapFee } from '@/shared/schemas';
 import { getPools } from '@/swap/utils/pools';
 
@@ -25,11 +25,13 @@ export const calculateIncludedFees = async (
     return [
       {
         type: 'NETWORK',
+        chain: assetChains[Assets.USDC],
         asset: Assets.USDC,
         amount: getPips(depositAmount, networkFeeHundredthPips).toString(),
       },
       {
         type: 'LIQUIDITY',
+        chain: assetChains[srcAsset],
         asset: srcAsset,
         amount: getPips(
           depositAmount,
@@ -47,6 +49,7 @@ export const calculateIncludedFees = async (
     return [
       {
         type: 'NETWORK',
+        chain: assetChains[Assets.USDC],
         asset: Assets.USDC,
         amount: getPips(
           String(stableAmountBeforeNetworkFee),
@@ -55,6 +58,7 @@ export const calculateIncludedFees = async (
       },
       {
         type: 'LIQUIDITY',
+        chain: assetChains[srcAsset],
         asset: srcAsset,
         amount: getPips(
           depositAmount,
@@ -69,11 +73,13 @@ export const calculateIncludedFees = async (
   return [
     {
       type: 'NETWORK',
+      chain: assetChains[Assets.USDC],
       asset: Assets.USDC,
       amount: getPips(intermediateAmount, networkFeeHundredthPips).toString(),
     },
     {
       type: 'LIQUIDITY',
+      chain: assetChains[srcAsset],
       asset: srcAsset,
       amount: getPips(
         depositAmount,
@@ -82,6 +88,7 @@ export const calculateIncludedFees = async (
     },
     {
       type: 'LIQUIDITY',
+      chain: assetChains[Assets.USDC],
       asset: Assets.USDC,
       amount: getPips(
         intermediateAmount,
