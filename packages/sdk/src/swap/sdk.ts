@@ -9,7 +9,12 @@ import {
   UncheckedAssetAndChain,
 } from '@/shared/enums';
 import { assert } from '@/shared/guards';
-import { Environment, RpcConfig, getEnvironment } from '@/shared/rpc';
+import {
+  ChainAssetMap,
+  Environment,
+  RpcConfig,
+  getEnvironment,
+} from '@/shared/rpc';
 import { validateSwapAmount } from '@/shared/rpc/utils';
 import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
 import type { TokenSwapParams } from '@/shared/vault/schemas';
@@ -189,18 +194,21 @@ export class SwapSDK {
   ): Promise<void> {
     const stateChainEnv = await this.getStateChainEnvironment();
 
-    const result = validateSwapAmount(stateChainEnv.swapping, asset, amount);
+    const result = validateSwapAmount(stateChainEnv, asset, amount);
 
     if (!result.success) throw new Error(result.reason);
   }
 
-  async getSwapLimits(): Promise<
-    Pick<Environment['swapping'], 'minimumSwapAmounts' | 'maximumSwapAmounts'>
-  > {
+  async getSwapLimits(): Promise<{
+    minimumSwapAmounts: ChainAssetMap<bigint>;
+    maximumSwapAmounts: ChainAssetMap<bigint | null>;
+    minimumDepositAmounts: ChainAssetMap<bigint>;
+  }> {
     const {
       swapping: { minimumSwapAmounts, maximumSwapAmounts },
+      ingressEgress: { minimumDepositAmounts },
     } = await this.getStateChainEnvironment();
 
-    return { minimumSwapAmounts, maximumSwapAmounts };
+    return { minimumSwapAmounts, maximumSwapAmounts, minimumDepositAmounts };
   }
 }

@@ -6,12 +6,13 @@ import {
   Chains,
   isTestnet,
 } from '@/shared/enums';
+import type { Environment } from '@/shared/rpc';
+import { readMinimumSwapAmount } from '@/shared/rpc/utils';
 import type { AssetData } from './types';
-import type { Environment } from '../rpc';
 
 type AssetFn = (
   network: ChainflipNetwork,
-  env: Pick<Environment, 'ingressEgress' | 'swapping'>,
+  env: Pick<Environment, 'swapping' | 'ingressEgress'>,
 ) => AssetData;
 
 export const eth$: AssetFn = (network, env) => ({
@@ -23,9 +24,10 @@ export const eth$: AssetFn = (network, env) => ({
   symbol: 'ETH',
   chainflipId: 'ETH',
   isMainnet: !isTestnet(network),
-  minimumDepositAmount:
-    env.ingressEgress.minimumDepositAmounts.Ethereum.ETH.toString(),
-  minimumSwapAmount: env.swapping.minimumSwapAmounts.Ethereum.ETH.toString(),
+  minimumSwapAmount: readMinimumSwapAmount(env, {
+    chain: 'Ethereum',
+    asset: 'ETH',
+  }).toString(),
   maximumSwapAmount:
     env.swapping.maximumSwapAmounts.Ethereum.ETH?.toString() ?? null,
 });
@@ -39,9 +41,10 @@ export const usdc$: AssetFn = (network, env) => ({
   symbol: 'USDC',
   chainflipId: 'USDC',
   isMainnet: !isTestnet(network),
-  minimumDepositAmount:
-    env.ingressEgress.minimumDepositAmounts.Ethereum.USDC.toString(),
-  minimumSwapAmount: env.swapping.minimumSwapAmounts.Ethereum.USDC.toString(),
+  minimumSwapAmount: readMinimumSwapAmount(env, {
+    chain: 'Ethereum',
+    asset: 'USDC',
+  }).toString(),
   maximumSwapAmount:
     env.swapping.maximumSwapAmounts.Ethereum.USDC?.toString() ?? null,
 });
@@ -55,9 +58,10 @@ export const flip$: AssetFn = (network, env) => ({
   symbol: 'FLIP',
   chainflipId: 'FLIP',
   isMainnet: !isTestnet(network),
-  minimumDepositAmount:
-    env.ingressEgress.minimumDepositAmounts.Ethereum.FLIP.toString(),
-  minimumSwapAmount: env.swapping.minimumSwapAmounts.Ethereum.FLIP.toString(),
+  minimumSwapAmount: readMinimumSwapAmount(env, {
+    chain: 'Ethereum',
+    asset: 'FLIP',
+  }).toString(),
   maximumSwapAmount:
     env.swapping.maximumSwapAmounts.Ethereum.FLIP?.toString() ?? null,
 });
@@ -71,9 +75,10 @@ export const dot$: AssetFn = (network, env) => ({
   symbol: 'DOT',
   chainflipId: 'DOT',
   isMainnet: !isTestnet(network),
-  minimumDepositAmount:
-    env.ingressEgress.minimumDepositAmounts.Polkadot.DOT.toString(),
-  minimumSwapAmount: env.swapping.minimumSwapAmounts.Polkadot.DOT.toString(),
+  minimumSwapAmount: readMinimumSwapAmount(env, {
+    chain: 'Polkadot',
+    asset: 'DOT',
+  }).toString(),
   maximumSwapAmount:
     env.swapping.maximumSwapAmounts.Polkadot.DOT?.toString() ?? null,
 });
@@ -87,9 +92,10 @@ export const btc$: AssetFn = (network, env) => ({
   symbol: 'BTC',
   chainflipId: 'BTC',
   isMainnet: !isTestnet(network),
-  minimumDepositAmount:
-    env.ingressEgress.minimumDepositAmounts.Bitcoin.BTC.toString(),
-  minimumSwapAmount: env.swapping.minimumSwapAmounts.Bitcoin.BTC.toString(),
+  minimumSwapAmount: readMinimumSwapAmount(env, {
+    chain: 'Bitcoin',
+    asset: 'BTC',
+  }).toString(),
   maximumSwapAmount:
     env.swapping.maximumSwapAmounts.Bitcoin.BTC?.toString() ?? null,
 });

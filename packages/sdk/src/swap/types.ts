@@ -16,7 +16,6 @@ export type AssetData = {
     name: string;
     symbol: string;
     isMainnet: boolean;
-    minimumDepositAmount: string;
     minimumSwapAmount: string;
     maximumSwapAmount: string | null;
   };
