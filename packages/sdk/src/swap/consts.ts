@@ -5,4 +5,5 @@ export const BACKEND_SERVICE_URLS = {
   [ChainflipNetworks.sisyphos]: 'https://chainflip-swap.staging/',
   [ChainflipNetworks.perseverance]:
     'https://chainflip-swap-perseverance.chainflip.io/',
+  [ChainflipNetworks.mainnet]: 'https://chainflip-swap.chainflip.io/',
 } as const;

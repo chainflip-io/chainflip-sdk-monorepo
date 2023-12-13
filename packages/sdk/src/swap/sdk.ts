@@ -30,7 +30,7 @@ import type {
 type TransactionHash = `0x${string}`;
 
 export type SwapSDKOptions = {
-  network?: Exclude<ChainflipNetwork, 'mainnet'>;
+  network?: ChainflipNetwork;
   signer?: Signer;
   backendUrl?: string;
   broker?: {
@@ -43,7 +43,7 @@ export type SwapSDKOptions = {
 export class SwapSDK {
   private readonly baseUrl: string;
 
-  private readonly network: Exclude<ChainflipNetwork, 'mainnet'>;
+  private readonly network: ChainflipNetwork;
 
   private readonly signer?: Signer;
 
