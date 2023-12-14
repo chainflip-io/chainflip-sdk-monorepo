@@ -62,11 +62,11 @@ export const depositReceived =
     );
 
     const channel = await prisma.depositChannel.findFirst({
-      where: { depositAddress, srcChain: chain, isSwapping: true },
-      orderBy: { id: 'desc' },
+      where: { depositAddress, srcChain: chain },
+      orderBy: { issuedBlock: 'desc' },
     });
 
-    if (!channel) {
+    if (!channel || !channel.isSwapping) {
       logger.info('no swap deposit channel found for address', {
         block: block.height,
         eventIndexInBlock: event.indexInBlock,
@@ -80,7 +80,7 @@ export const depositReceived =
     const swap = (
       await prisma.swapDepositChannel
         .findFirst({ where: { depositAddress }, orderBy: { id: 'desc' } })
-        .swaps({ orderBy: { id: 'desc' } })
+        .swaps({ orderBy: { nativeId: 'desc' } })
     )?.at(0);
 
     assert(swap, 'swap not found for deposit');

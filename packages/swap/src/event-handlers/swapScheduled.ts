@@ -67,7 +67,7 @@ export default async function swapScheduled({
         depositAddress,
         srcChainExpiryBlock: { gte: origin.depositBlockHeight },
       },
-      orderBy: { id: 'desc' },
+      orderBy: { issuedBlock: 'desc' },
     });
 
     if (!channel) {

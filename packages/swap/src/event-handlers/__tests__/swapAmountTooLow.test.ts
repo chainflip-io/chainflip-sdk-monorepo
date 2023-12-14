@@ -42,7 +42,7 @@ describe(swapAmountTooLow, () => {
           channelId: 2n,
           isExpired: false,
         },
-        orderBy: { id: 'desc' },
+        orderBy: { issuedBlock: 'desc' },
       });
       expect(prisma.failedSwap.create).toHaveBeenCalledTimes(1);
       expect(prisma.failedSwap.create).toHaveBeenNthCalledWith(1, {
@@ -83,7 +83,7 @@ describe(swapAmountTooLow, () => {
           channelId: 2n,
           isExpired: false,
         },
-        orderBy: { id: 'desc' },
+        orderBy: { issuedBlock: 'desc' },
       });
       expect(prisma.failedSwap.create).toHaveBeenCalledTimes(1);
       expect(prisma.failedSwap.create).toHaveBeenNthCalledWith(1, {

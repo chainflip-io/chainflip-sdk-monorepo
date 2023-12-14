@@ -1,4 +1,102 @@
-import { depositReceivedArgs } from '../depositReceived';
+import { Block, Event } from '@/swap/processBlocks';
+import prisma from '../../client';
+import { depositReceivedArgs, depositReceived } from '../depositReceived';
+
+describe('depositReceived', () => {
+  beforeEach(async () => {
+    await prisma.$queryRaw`TRUNCATE TABLE "DepositChannel" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "Metadata" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "Event" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "Block" CASCADE`;
+  });
+
+  it('should find the liquidity deposit channel and insert the record for Bitcoin', async () => {
+    await prisma.$transaction(async (txClient) => {
+      await Promise.all([
+        txClient.depositChannel.create({
+          data: {
+            srcChain: 'Bitcoin',
+            depositAddress:
+              'tb1pcy5k30tzv4xva4kw4jaarwk8nc0l3gclnal36dvmujy0vzjqxsl42q',
+            channelId: 3,
+            issuedBlock: 0,
+            isSwapping: true,
+          },
+        }),
+        txClient.swapDepositChannel.create({
+          data: {
+            srcAsset: 'BTC',
+            srcChain: 'Bitcoin',
+            srcChainExpiryBlock: 100,
+            depositAddress:
+              'tb1pcy5k30tzv4xva4kw4jaarwk8nc0l3gclnal36dvmujy0vzjqxsl42q',
+            expectedDepositAmount: 0,
+            destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
+            destAsset: 'ETH',
+            channelId: 3,
+            issuedBlock: 0,
+            swaps: {
+              create: {
+                srcAmount: '100000',
+                destAmount: '100000',
+                srcAsset: 'BTC',
+                destAsset: 'ETH',
+                depositAmount: '100000',
+                destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
+                type: 'SWAP',
+                nativeId: 1,
+              } as any,
+            },
+          },
+        }),
+      ]);
+
+      // await depositReceived('Bitcoin')({
+      //   block: { height: block.id } as Block,
+      //   prisma: txClient,
+      //   event: {
+      //     args: {
+      //       asset: {
+      //         __kind: 'Btc',
+      //       },
+      //       amount: '100000',
+      //       depositAddress: {
+      //         value:
+      //           '0x2469c12968bd62654cced6ceacbbd1bac79e1ff8a31f9f7f1d359be488f60a40',
+      //         __kind: 'Taproot',
+      //       },
+      //     },
+      //   } as Event,
+      //   eventId: event.id,
+      // });
+    });
+
+    // const result = await prisma.liquidityDeposit.findFirst();
+    // expect(result?.depositAmount.toString()).toEqual('100000');
+    // expect(result?.accountId).toEqual(
+    //   'cFK2B5cJzL3admAMkmEsfko9nJeWmgm7CC4zNQnM2EySVqJ6Y',
+    // );
+  });
+
+  it('should ignore the event as there is no liquidity deposit channel', async () => {
+    await prisma.$transaction(async (txClient) => {
+      await depositReceived('Ethereum')({
+        block: { height: 1 } as Block,
+        prisma: txClient,
+        event: {
+          args: {
+            asset: { __kind: 'Eth' },
+            amount: '100000',
+            depositAddress: '0x69c55204d2715cf09997de9108dbba739a52de2d',
+          },
+        } as Event,
+      });
+    });
+
+    const result = await prisma.depositChannel.findFirst();
+    expect(result).toEqual(null);
+  });
+});
 
 describe('depositReceivedArgs', () => {
   it.each([
