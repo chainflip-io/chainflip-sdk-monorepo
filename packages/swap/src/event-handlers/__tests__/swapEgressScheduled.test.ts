@@ -1,4 +1,6 @@
 import { Assets } from '@/shared/enums';
+import { RpcEnvironment } from '@/shared/rpc';
+import { environment, ingressEgressEnvironment } from '@/shared/tests/fixtures';
 import {
   DOT_ADDRESS,
   createDepositChannel,
@@ -11,6 +13,24 @@ const {
   eventContext: { event },
   block,
 } = swapEgressScheduledMock;
+
+jest.mock('axios', () => ({
+  post: jest.fn((url, data) => {
+    if (data.method === 'cf_environment') {
+      return Promise.resolve({
+        data: {
+          result: {
+            ...environment().result,
+            ingress_egress: ingressEgressEnvironment('0x0', '0x0', '0x777777')
+              .result,
+          } as RpcEnvironment,
+        },
+      });
+    }
+
+    throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+  }),
+}));
 
 describe(swapEgressScheduled, () => {
   beforeEach(async () => {
@@ -37,6 +57,7 @@ describe(swapEgressScheduled, () => {
           nativeId: BigInt(swapId),
           depositAmount: '10000000000',
           srcAmount: '10000000000',
+          destAmount: '10000000000',
           depositReceivedAt: new Date(block.timestamp - 12000),
           depositReceivedBlockIndex: `${block.height - 100}-${
             event.indexInBlock
@@ -69,6 +90,7 @@ describe(swapEgressScheduled, () => {
             chain: true,
           },
         },
+        fees: true,
       },
     });
 
@@ -78,6 +100,7 @@ describe(swapEgressScheduled, () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       swapDepositChannelId: expect.any(BigInt),
+      fees: [{ id: expect.any(BigInt), swapId: expect.any(BigInt) }],
     });
   });
 });

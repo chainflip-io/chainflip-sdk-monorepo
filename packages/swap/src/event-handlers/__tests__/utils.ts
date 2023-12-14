@@ -36,6 +36,7 @@ const buildSwapScheduledEvent = <T extends SwapScheduledEvent>(args: T) => ({
   block: {
     timestamp: 1670337093000,
     height: 100,
+    hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
   },
   eventContext: {
     kind: 'event',
@@ -221,6 +222,7 @@ export const swapDepositAddressReadyMocked = {
   block: {
     height: 120,
     timestamp: 1670337105000,
+    hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
   },
   eventContext: {
     kind: 'event',

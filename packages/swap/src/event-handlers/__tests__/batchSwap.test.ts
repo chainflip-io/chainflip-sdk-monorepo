@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { GraphQLClient } from 'graphql-request';
+import { RpcEnvironment } from '@/shared/rpc';
+import { environment, ingressEgressEnvironment } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import { Event } from '../../gql/generated/graphql';
 import processBlocks from '../../processBlocks';
@@ -10,6 +12,24 @@ jest.mock('graphql-request', () => ({
   GraphQLClient: class MockClient {
     request() {}
   },
+}));
+
+jest.mock('axios', () => ({
+  post: jest.fn((url, data) => {
+    if (data.method === 'cf_environment') {
+      return Promise.resolve({
+        data: {
+          result: {
+            ...environment().result,
+            ingress_egress: ingressEgressEnvironment('0x0', '0x0', '0x55524')
+              .result,
+          } as RpcEnvironment,
+        },
+      });
+    }
+
+    throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+  }),
 }));
 
 const swapDepositAddressReadyEvent = {
@@ -268,7 +288,7 @@ describe('batch swap flow', () => {
       'swap',
     );
 
-    expect(fees).toHaveLength(4);
+    expect(fees).toHaveLength(5);
     for (let i = 0; i < fees.length; i += 1) {
       expect(fees[i]).toMatchSnapshot(
         {

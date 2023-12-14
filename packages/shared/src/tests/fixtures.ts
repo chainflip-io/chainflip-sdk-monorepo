@@ -117,24 +117,28 @@ export const poolsEnvironment = () => ({
   result: environment().result.pools,
 });
 
-export const ingressEgressEnvironment = (amt = '0x0') => ({
+export const ingressEgressEnvironment = (
+  amt1 = '0x0',
+  amt2 = '0x0',
+  amt3 = '0x0',
+) => ({
   id: 1,
   jsonrpc: '2.0',
   result: {
     minimum_deposit_amounts: {
-      Bitcoin: { BTC: amt },
-      Polkadot: { DOT: amt },
-      Ethereum: { ETH: amt, FLIP: amt, USDC: amt },
+      Bitcoin: { BTC: amt1 },
+      Polkadot: { DOT: amt1 },
+      Ethereum: { ETH: amt1, FLIP: amt1, USDC: amt1 },
     },
     ingress_fees: {
-      Bitcoin: { BTC: amt },
-      Polkadot: { DOT: amt },
-      Ethereum: { ETH: amt, FLIP: amt, USDC: amt },
+      Bitcoin: { BTC: amt2 },
+      Polkadot: { DOT: amt2 },
+      Ethereum: { ETH: amt2, FLIP: amt2, USDC: amt2 },
     },
     egress_fees: {
-      Bitcoin: { BTC: '0x0' },
-      Polkadot: { DOT: '0x0' },
-      Ethereum: { ETH: '0x0', FLIP: '0x0', USDC: '0x0' },
+      Bitcoin: { BTC: amt3 },
+      Polkadot: { DOT: amt3 },
+      Ethereum: { ETH: amt3, FLIP: amt3, USDC: amt3 },
     },
   },
 });

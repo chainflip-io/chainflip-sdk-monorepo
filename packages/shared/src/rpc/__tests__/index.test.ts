@@ -63,7 +63,9 @@ describe('getSwappingEnvironment', () => {
 
 describe('getIngressEgressEnvironment', () => {
   it('retrieves the ingress egress environment', async () => {
-    const spy = mockResponse(ingressEgressEnvironment('0x4563918244f40000'));
+    const spy = mockResponse(
+      ingressEgressEnvironment('0x4563918244f40000', '0x4563918244f40000'),
+    );
 
     expect(
       await getIngressEgressEnvironment({ network: 'perseverance' }),

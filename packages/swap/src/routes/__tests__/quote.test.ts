@@ -45,7 +45,7 @@ jest.mock('axios', () => ({
           result: {
             ...environment().result,
             swapping: swappingEnvironment().result,
-            ingress_egress: ingressEgressEnvironment('0x777').result,
+            ingress_egress: ingressEgressEnvironment('0x777', '0x777').result,
           } as RpcEnvironment,
         },
       });
