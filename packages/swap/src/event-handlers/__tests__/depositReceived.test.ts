@@ -1,6 +1,9 @@
 import { Block, Event } from '@/swap/processBlocks';
 import prisma from '../../client';
-import { depositReceivedArgs, depositReceived } from '../depositReceived';
+import {
+  depositReceivedArgs,
+  networkDepositReceived,
+} from '../networkDepositReceived';
 
 describe('depositReceived', () => {
   beforeEach(async () => {
@@ -80,7 +83,7 @@ describe('depositReceived', () => {
 
   it('should ignore the event as there is no liquidity deposit channel', async () => {
     await prisma.$transaction(async (txClient) => {
-      await depositReceived('Ethereum')({
+      await networkDepositReceived('Ethereum')({
         block: { height: 1 } as Block,
         prisma: txClient,
         event: {

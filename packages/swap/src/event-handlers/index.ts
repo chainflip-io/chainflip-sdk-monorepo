@@ -1,12 +1,12 @@
 import type { Prisma } from '.prisma/client';
 import { Chains } from '@/shared/enums';
 import ccmDepositReceived from './ccmDepositReceived';
-import { depositReceived } from './depositReceived';
 import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';
 import networkBroadcastAborted from './networkBroadcastAborted';
 import networkBroadcastSuccess from './networkBroadcastSuccess';
 import networkCcmBroadcastRequested from './networkCcmBroadcastRequested';
 import chainStateUpdated from './networkChainStateUpdated';
+import { networkDepositReceived } from './networkDepositReceived';
 import networkEgressScheduled from './networkEgressScheduled';
 import newPoolCreated from './newPoolCreated';
 import poolFeeSet from './poolFeeSet';
@@ -118,7 +118,7 @@ const handlers = [
         },
         {
           name: events[`${chain}IngressEgress`].DepositReceived,
-          handler: depositReceived(chain),
+          handler: networkDepositReceived(chain),
         },
         {
           name: events[`${chain}Broadcaster`].BroadcastSuccess,

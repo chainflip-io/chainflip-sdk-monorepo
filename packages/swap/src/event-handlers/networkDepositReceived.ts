@@ -54,7 +54,7 @@ export const depositReceivedArgs = z
 
 export type DepositReceivedArgs = z.input<typeof depositReceivedArgs>;
 
-export const depositReceived =
+export const networkDepositReceived =
   (chain: Chain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
     const { asset, amount, depositAddress } = depositReceivedArgs.parse(
@@ -67,7 +67,7 @@ export const depositReceived =
     });
 
     if (!channel || !channel.isSwapping) {
-      logger.info('no swap deposit channel found for address', {
+      logger.info('no swap deposit channel found for deposit', {
         block: block.height,
         eventIndexInBlock: event.indexInBlock,
         eventName: event.name,

@@ -3,7 +3,7 @@ import { GraphQLClient } from 'graphql-request';
 import prisma from '../../client';
 import { Event } from '../../gql/generated/graphql';
 import processBlocks from '../../processBlocks';
-import { DepositReceivedArgs } from '../depositReceived';
+import { DepositReceivedArgs } from '../networkDepositReceived';
 import { SwapScheduledEvent } from '../swapScheduled';
 
 jest.mock('graphql-request', () => ({
