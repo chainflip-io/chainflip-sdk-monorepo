@@ -50,7 +50,7 @@ const env = {
       Ethereum: {
         USDC: 0x1000000000000000n,
         ETH: null,
-        FLIP: 0x1000000000000000n,
+        FLIP: null,
       },
       Polkadot: { DOT: null },
       Bitcoin: { BTC: 0x1000000000000000n },
@@ -119,7 +119,9 @@ describe(SwapSDK, () => {
 
   describe(SwapSDK.prototype.getAssets, () => {
     beforeEach(() => {
-      jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
+      jest.mocked(axios.post).mockResolvedValueOnce({
+        data: environment({ maxSwapAmount: '0x1000000000000000' }),
+      });
     });
 
     it.each([
@@ -209,7 +211,9 @@ describe(SwapSDK, () => {
 
   describe(SwapSDK.prototype.getAssets, () => {
     beforeEach(() => {
-      jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
+      jest.mocked(axios.post).mockResolvedValueOnce({
+        data: environment({ maxSwapAmount: '0x1000000000000000' }),
+      });
     });
 
     it.each([
@@ -299,7 +303,9 @@ describe(SwapSDK, () => {
     });
 
     it('goes right to the broker', async () => {
-      jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
+      jest.mocked(axios.post).mockResolvedValueOnce({
+        data: environment({ maxSwapAmount: '0x1000000000000000' }),
+      });
 
       const postSpy = jest
         .mocked(axios.post)

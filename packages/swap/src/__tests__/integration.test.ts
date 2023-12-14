@@ -25,7 +25,7 @@ jest.mock('../utils/statechain', () => ({ getBrokerQuote: jest.fn() }));
 jest.mock('axios', () => ({
   post: jest.fn(() =>
     Promise.resolve({
-      data: environment({ egressFee: '0x55524' }),
+      data: environment({ ingressFee: '0x123', egressFee: '0x55524' }),
     }),
   ),
 }));
@@ -154,6 +154,12 @@ describe('python integration test', () => {
           asset: 'USDC',
           chain: 'Ethereum',
           type: 'LIQUIDITY',
+        },
+        {
+          amount: '349476',
+          asset: 'ETH',
+          chain: 'Ethereum',
+          type: 'EGRESS',
         },
       ],
     });
