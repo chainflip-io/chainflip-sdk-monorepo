@@ -146,6 +146,31 @@ export const swapScheduledVaultMock = buildSwapScheduledEvent({
   },
 });
 
+export const networkDepositReceivedBtcMock = {
+  block: {
+    height: 120,
+    timestamp: 1670337105000,
+  },
+  eventContext: {
+    kind: 'event',
+    event: {
+      args: {
+        asset: {
+          __kind: 'Btc',
+        },
+        amount: '110000',
+        depositAddress: {
+          value:
+            '0x2469c12968bd62654cced6ceacbbd1bac79e1ff8a31f9f7f1d359be488f60a40',
+          __kind: 'Taproot',
+        },
+      },
+      name: 'BitcoinIngressEgress.DepositReceived',
+      indexInBlock: 7,
+    },
+  },
+} as const;
+
 export const buildSwapExecutedMock = (args: SwapExecutedEvent) => ({
   block: {
     height: 100,
