@@ -87,7 +87,9 @@ model Swap {
   type                         SwapType
   srcAsset                     Asset
   depositAmount                Decimal             @db.Decimal(30, 0)
+  srcAmount                    Decimal             @db.Decimal(30, 0)
   intermediateAmount           Decimal?            @db.Decimal(30, 0)
+  destAmount                   Decimal?            @db.Decimal(30, 0)
   egressAmount                 Decimal?            @db.Decimal(30, 0)
   fees                         SwapFee[]
   destAsset                    Asset

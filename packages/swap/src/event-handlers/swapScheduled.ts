@@ -51,9 +51,11 @@ export default async function swapScheduled({
 
   const newSwapData = {
     depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
-    depositAmount: depositAmount.toString(),
+    depositAmount: depositAmount.toString(), // TODO: read this value from "*IngressEgress.DepositReceived"
+    srcAmount: depositAmount.toString(),
     nativeId: swapId,
     depositReceivedAt: new Date(block.timestamp),
+    // fees: [], // TODO: add "INGRESS" fee based on difference between "depositAmount" and "srcAmount"
   };
 
   if (origin.__kind === 'DepositChannel') {

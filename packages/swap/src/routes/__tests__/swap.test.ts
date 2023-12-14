@@ -148,6 +148,7 @@ describe('server', () => {
           create: {
             nativeId,
             depositAmount: '10',
+            srcAmount: '10',
             depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
             depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
             srcAsset: Assets.ETH,
@@ -200,6 +201,7 @@ describe('server', () => {
             depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
             depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
             depositAmount: '10',
+            srcAmount: '10',
             intermediateAmount: '20',
             fees: {
               create: [
@@ -282,6 +284,7 @@ describe('server', () => {
             depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
             depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
             depositAmount: '10',
+            srcAmount: '10',
             fees: {
               create: [
                 {
@@ -374,6 +377,7 @@ describe('server', () => {
             depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
             depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
             depositAmount: '10',
+            srcAmount: '10',
             fees: {
               create: [
                 {
@@ -478,6 +482,7 @@ describe('server', () => {
             depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
             depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
             depositAmount: '10',
+            srcAmount: '10',
             fees: {
               create: [
                 {
@@ -585,6 +590,7 @@ describe('server', () => {
             depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
             depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
             depositAmount: '10',
+            srcAmount: '10',
             fees: {
               create: [
                 {
@@ -694,6 +700,7 @@ describe('server', () => {
           destAsset: Assets.DOT,
           destAddress: DOT_ADDRESS,
           depositAmount: '10',
+          srcAmount: '10',
           fees: {
             create: [
               {
@@ -761,6 +768,7 @@ describe('server', () => {
           destAsset: Assets.DOT,
           destAddress: DOT_ADDRESS,
           depositAmount: '10',
+          srcAmount: '10',
           fees: {
             create: [
               {
