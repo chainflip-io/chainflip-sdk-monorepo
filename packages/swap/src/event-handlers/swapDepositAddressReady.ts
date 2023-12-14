@@ -57,21 +57,32 @@ export const swapDepositAddressReady = async ({
     ...rest,
   };
 
-  await prisma.swapDepositChannel.upsert({
-    where: {
-      issuedBlock_srcChain_channelId: {
-        channelId,
-        issuedBlock,
-        srcChain: depositAddress.chain,
+  await Promise.all([
+    prisma.depositChannel.create({
+      data: {
+        srcChain: data.srcChain,
+        issuedBlock: data.issuedBlock,
+        depositAddress: data.depositAddress,
+        channelId: data.channelId,
+        isSwapping: true,
       },
-    },
-    create: {
-      expectedDepositAmount: 0,
-      estimatedExpiryAt: estimatedExpiryTime,
-      ...data,
-    },
-    update: data,
-  });
+    }),
+    prisma.swapDepositChannel.upsert({
+      where: {
+        issuedBlock_srcChain_channelId: {
+          channelId,
+          issuedBlock,
+          srcChain: depositAddress.chain,
+        },
+      },
+      create: {
+        expectedDepositAmount: 0,
+        estimatedExpiryAt: estimatedExpiryTime,
+        ...data,
+      },
+      update: data,
+    }),
+  ]);
 };
 
 export default swapDepositAddressReady;
