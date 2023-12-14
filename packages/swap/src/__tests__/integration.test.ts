@@ -15,34 +15,19 @@ import {
 import { promisify } from 'util';
 import { Assets } from '@/shared/enums';
 import { QuoteQueryParams } from '@/shared/schemas';
-import {
-  ingressEgressEnvironment,
-  swappingEnvironment,
-  environment,
-} from '@/shared/tests/fixtures';
+import { environment } from '@/shared/tests/fixtures';
 import prisma from '../client';
-import { RpcEnvironment } from '../rpc';
 import app from '../server';
 import { getBrokerQuote } from '../utils/statechain';
 
 jest.mock('../utils/statechain', () => ({ getBrokerQuote: jest.fn() }));
 
 jest.mock('axios', () => ({
-  post: jest.fn((url, data) => {
-    if (data.method === 'cf_environment') {
-      return Promise.resolve({
-        data: {
-          result: {
-            ...environment().result,
-            swapping: swappingEnvironment().result,
-            ingress_egress: ingressEgressEnvironment('0x123', '0x123').result,
-          } as RpcEnvironment,
-        },
-      });
-    }
-
-    throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
-  }),
+  post: jest.fn(() =>
+    Promise.resolve({
+      data: environment({ egressFee: '0x55524' }),
+    }),
+  ),
 }));
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);

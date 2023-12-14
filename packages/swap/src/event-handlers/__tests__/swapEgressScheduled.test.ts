@@ -1,6 +1,5 @@
 import { Assets } from '@/shared/enums';
-import { RpcEnvironment } from '@/shared/rpc';
-import { environment, ingressEgressEnvironment } from '@/shared/tests/fixtures';
+import { environment } from '@/shared/tests/fixtures';
 import {
   DOT_ADDRESS,
   createDepositChannel,
@@ -15,21 +14,9 @@ const {
 } = swapEgressScheduledMock;
 
 jest.mock('axios', () => ({
-  post: jest.fn((url, data) => {
-    if (data.method === 'cf_environment') {
-      return Promise.resolve({
-        data: {
-          result: {
-            ...environment().result,
-            ingress_egress: ingressEgressEnvironment('0x0', '0x0', '0x777777')
-              .result,
-          } as RpcEnvironment,
-        },
-      });
-    }
-
-    throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
-  }),
+  post: jest.fn(() =>
+    Promise.resolve({ data: environment({ egressFee: '0x777777' }) }),
+  ),
 }));
 
 describe(swapEgressScheduled, () => {

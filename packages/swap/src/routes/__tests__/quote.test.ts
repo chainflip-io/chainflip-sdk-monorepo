@@ -6,12 +6,7 @@ import { AddressInfo } from 'net';
 import request from 'supertest';
 import { promisify } from 'util';
 import RpcClient from '@/shared/node-apis/RpcClient';
-import { RpcEnvironment } from '@/shared/rpc';
-import {
-  environment,
-  ingressEgressEnvironment,
-  swappingEnvironment,
-} from '@/shared/tests/fixtures';
+import { environment } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import QuotingClient from '../../quoting/QuotingClient';
 import app from '../../server';
@@ -38,36 +33,12 @@ jest.mock('@/shared/consts', () => ({
 }));
 
 jest.mock('axios', () => ({
-  post: jest.fn((url, data) => {
-    if (data.method === 'cf_environment') {
-      return Promise.resolve({
-        data: {
-          result: {
-            ...environment().result,
-            swapping: swappingEnvironment().result,
-            ingress_egress: ingressEgressEnvironment('0x777', '0x777').result,
-          } as RpcEnvironment,
-        },
-      });
-    }
-
-    throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
-  }),
+  post: jest.fn(() =>
+    Promise.resolve({
+      data: environment({ maxSwapAmount: null, ingressFee: '0x777' }),
+    }),
+  ),
 }));
-
-const mockEnvironmentCall = ({
-  minimumDepositAmount = '0x0',
-  maximumSwapAmount = null as string | null,
-} = {}) =>
-  jest.mocked(axios.post).mockResolvedValueOnce({
-    data: {
-      result: {
-        ...environment().result,
-        swapping: swappingEnvironment(maximumSwapAmount).result,
-        ingress_egress: ingressEgressEnvironment(minimumDepositAmount).result,
-      } as RpcEnvironment,
-    },
-  });
 
 describe('server', () => {
   let server: Server;
@@ -120,7 +91,9 @@ describe('server', () => {
 
   describe('GET /quote', () => {
     it('rejects if amount is lower than minimum swap amount', async () => {
-      mockEnvironmentCall({ minimumDepositAmount: '0xffffff' });
+      jest.mocked(axios.post).mockResolvedValueOnce({
+        data: environment({ minDepositAmount: '0xffffff' }),
+      });
 
       const params = new URLSearchParams({
         srcAsset: 'FLIP',
@@ -139,7 +112,9 @@ describe('server', () => {
     });
 
     it('rejects if amount is higher than maximum swap amount', async () => {
-      mockEnvironmentCall({ maximumSwapAmount: '0x1' });
+      jest
+        .mocked(axios.post)
+        .mockResolvedValueOnce({ data: environment({ maxSwapAmount: '0x1' }) });
 
       const params = new URLSearchParams({
         srcAsset: 'USDC',
