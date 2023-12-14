@@ -17,6 +17,19 @@ datasource db {
   schemas  = ["public", "private"]
 }
 
+model DepositChannel {
+  id             BigInt  @id @default(autoincrement())
+  channelId      BigInt
+  srcChain       Chain
+  issuedBlock    Int
+  depositAddress String
+  isSwapping     Boolean
+
+  @@unique([issuedBlock, srcChain, channelId])
+  @@index([depositAddress])
+  @@schema("private")
+}
+
 enum Chain {
   Polkadot
   Ethereum
