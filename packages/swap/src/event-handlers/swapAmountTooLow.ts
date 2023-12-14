@@ -40,7 +40,7 @@ export default async function swapAmountTooLow({
         channelId: origin.channelId,
         isExpired: false,
       },
-      orderBy: { id: 'desc' },
+      orderBy: { issuedBlock: 'desc' },
     });
     sourceChain = origin.depositAddress.chain;
   } else {

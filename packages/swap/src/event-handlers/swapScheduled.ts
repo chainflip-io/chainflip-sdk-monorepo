@@ -51,11 +51,10 @@ export default async function swapScheduled({
 
   const newSwapData = {
     depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
-    depositAmount: depositAmount.toString(), // TODO: read this value from "*IngressEgress.DepositReceived"
+    depositAmount: depositAmount.toString(), // will be overwritten with value before fees in the networkDepositReceived handler
     srcAmount: depositAmount.toString(),
     nativeId: swapId,
     depositReceivedAt: new Date(block.timestamp),
-    // fees: [], // TODO: add "INGRESS" fee based on difference between "depositAmount" and "srcAmount"
   };
 
   if (origin.__kind === 'DepositChannel') {
@@ -67,7 +66,7 @@ export default async function swapScheduled({
         depositAddress,
         srcChainExpiryBlock: { gte: origin.depositBlockHeight },
       },
-      orderBy: { id: 'desc' },
+      orderBy: { issuedBlock: 'desc' },
     });
 
     if (!channel) {

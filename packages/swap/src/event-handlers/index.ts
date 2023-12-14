@@ -6,6 +6,7 @@ import networkBroadcastAborted from './networkBroadcastAborted';
 import networkBroadcastSuccess from './networkBroadcastSuccess';
 import networkCcmBroadcastRequested from './networkCcmBroadcastRequested';
 import chainStateUpdated from './networkChainStateUpdated';
+import { networkDepositReceived } from './networkDepositReceived';
 import networkEgressScheduled from './networkEgressScheduled';
 import newPoolCreated from './newPoolCreated';
 import poolFeeSet from './poolFeeSet';
@@ -34,6 +35,7 @@ export const events = {
     EgressScheduled: 'BitcoinIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'BitcoinIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'BitcoinIngressEgress.CcmBroadcastRequested',
+    DepositReceived: 'BitcoinIngressEgress.DepositReceived',
   },
   BitcoinBroadcaster: {
     BroadcastSuccess: 'BitcoinBroadcaster.BroadcastSuccess',
@@ -43,6 +45,7 @@ export const events = {
     EgressScheduled: 'EthereumIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'EthereumIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'EthereumIngressEgress.CcmBroadcastRequested',
+    DepositReceived: 'EthereumIngressEgress.DepositReceived',
   },
   EthereumBroadcaster: {
     BroadcastSuccess: 'EthereumBroadcaster.BroadcastSuccess',
@@ -52,6 +55,7 @@ export const events = {
     EgressScheduled: 'PolkadotIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'PolkadotIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'PolkadotIngressEgress.CcmBroadcastRequested',
+    DepositReceived: 'PolkadotIngressEgress.DepositReceived',
   },
   PolkadotBroadcaster: {
     BroadcastSuccess: 'PolkadotBroadcaster.BroadcastSuccess',
@@ -111,6 +115,10 @@ const handlers = [
         {
           name: events[`${chain}IngressEgress`].CcmBroadcastRequested,
           handler: networkCcmBroadcastRequested,
+        },
+        {
+          name: events[`${chain}IngressEgress`].DepositReceived,
+          handler: networkDepositReceived(chain),
         },
         {
           name: events[`${chain}Broadcaster`].BroadcastSuccess,

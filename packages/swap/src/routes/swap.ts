@@ -94,7 +94,7 @@ router.get(
         where: { txHash: id },
         include: { egress: { include: { broadcast: true } }, fees: true },
         // just get the last one for now
-        orderBy: { createdAt: 'desc' },
+        orderBy: { nativeId: 'desc' },
       });
     }
 
