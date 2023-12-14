@@ -11,9 +11,13 @@ jest.mock('axios', () => ({
 const env = {
   ingressEgress: {
     minimumDepositAmounts: {
-      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n },
-      Polkadot: { DOT: 0n },
-      Bitcoin: { BTC: 0n },
+      Ethereum: {
+        USDC: 0xf4240n,
+        ETH: 0x20f81c5f84000n,
+        FLIP: 0xde0b6b3a7640000n,
+      },
+      Polkadot: { DOT: 0x77359400n },
+      Bitcoin: { BTC: 0x5f370n },
     },
     ingressFees: {
       Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n },
@@ -28,13 +32,9 @@ const env = {
   },
   swapping: {
     minimumSwapAmounts: {
-      Ethereum: {
-        USDC: 0xf4240n,
-        ETH: 0x20f81c5f84000n,
-        FLIP: 0xde0b6b3a7640000n,
-      },
-      Polkadot: { DOT: 0x77359400n },
-      Bitcoin: { BTC: 0x5f370n },
+      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n },
+      Polkadot: { DOT: 0n },
+      Bitcoin: { BTC: 0n },
     },
     maximumSwapAmounts: {
       Ethereum: {

@@ -1,4 +1,5 @@
 import { UncheckedAssetAndChain, assertIsValidAssetAndChain } from '../enums';
+import { bigintMax } from '../functions';
 import { ChainAssetMap, Environment } from './index';
 
 export const readAssetValue = <T>(
@@ -10,23 +11,38 @@ export const readAssetValue = <T>(
   return chainMinimums[asset.asset as keyof typeof chainMinimums];
 };
 
+export const readMinimumSwapAmount = (
+  env: Pick<Environment, 'swapping' | 'ingressEgress'>,
+  asset: UncheckedAssetAndChain,
+): bigint => {
+  const minimumSwapAmount = readAssetValue(
+    env.swapping.minimumSwapAmounts,
+    asset,
+  );
+  const minimumDepositAmount = readAssetValue(
+    env.ingressEgress.minimumDepositAmounts,
+    asset,
+  );
+  return bigintMax(minimumSwapAmount, minimumDepositAmount);
+};
+
 type Result = { success: true } | { success: false; reason: string };
 
 export const validateSwapAmount = (
-  swapEnv: Environment['swapping'],
+  env: Environment,
   asset: UncheckedAssetAndChain,
   amount: bigint,
 ): Result => {
-  const minAmount = readAssetValue(swapEnv.minimumSwapAmounts, asset);
+  const minimumAmount = readMinimumSwapAmount(env, asset);
 
-  if (amount < minAmount) {
+  if (amount < minimumAmount) {
     return {
       success: false,
-      reason: `expected amount is below minimum swap amount (${minAmount})`,
+      reason: `expected amount is below minimum swap amount (${minimumAmount})`,
     };
   }
 
-  const maxAmount = readAssetValue(swapEnv.maximumSwapAmounts, asset);
+  const maxAmount = readAssetValue(env.swapping.maximumSwapAmounts, asset);
 
   if (maxAmount != null && amount > maxAmount) {
     return {

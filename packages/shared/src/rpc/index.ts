@@ -163,14 +163,15 @@ export const getPoolsEnvironment = createRequest(
   poolsEnvironment,
 );
 
-export const getEnvironment = createRequest(
-  'cf_environment',
-  z.object({
-    ingress_egress: ingressEgressEnvironment,
-    swapping: swappingEnvironment,
-    funding: fundingEnvironment,
-    pools: poolsEnvironment,
-  }),
-);
+const environment = z.object({
+  ingress_egress: ingressEgressEnvironment,
+  swapping: swappingEnvironment,
+  funding: fundingEnvironment,
+  pools: poolsEnvironment,
+});
+
+export const getEnvironment = createRequest('cf_environment', environment);
+
+export type RpcEnvironment = z.input<typeof environment>;
 
 export type Environment = Awaited<ReturnType<typeof getEnvironment>>;

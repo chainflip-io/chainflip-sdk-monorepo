@@ -4,7 +4,12 @@ import { Server } from 'http';
 import request from 'supertest';
 import * as broker from '@/shared/broker';
 import { Assets } from '@/shared/enums';
-import { swappingEnvironment } from '@/shared/tests/fixtures';
+import { RpcEnvironment } from '@/shared/rpc';
+import {
+  environment,
+  ingressEgressEnvironment,
+  swappingEnvironment,
+} from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import {
   DOT_ADDRESS,
@@ -40,10 +45,24 @@ jest.mock('@/shared/broker', () => ({
 jest.mock('axios', () => ({
   post: jest.fn(() =>
     Promise.resolve({
-      data: swappingEnvironment(),
+      data: environment(),
     }),
   ),
 }));
+
+const mockEnvironmentCall = ({
+  minimumDepositAmount = '0x0',
+  maximumSwapAmount = null as string | null,
+} = {}) =>
+  jest.mocked(axios.post).mockResolvedValueOnce({
+    data: {
+      result: {
+        ...environment().result,
+        swapping: swappingEnvironment(maximumSwapAmount).result,
+        ingress_egress: ingressEgressEnvironment(minimumDepositAmount).result,
+      } as RpcEnvironment,
+    },
+  });
 
 const RECEIVED_TIMESTAMP = 1669907135201;
 const RECEIVED_BLOCK_INDEX = `100-3`;
@@ -981,9 +1000,7 @@ describe('server', () => {
     });
 
     it('rejects if amount is lower than minimum swap amount', async () => {
-      jest
-        .mocked(axios.post)
-        .mockResolvedValueOnce({ data: swappingEnvironment('0xffffff') });
+      mockEnvironmentCall({ minimumDepositAmount: '0xffffff' });
 
       const { body, status } = await request(app).post('/swaps').send({
         srcAsset: Assets.DOT,
@@ -1001,9 +1018,7 @@ describe('server', () => {
     });
 
     it('rejects if amount is higher than maximum swap amount', async () => {
-      jest
-        .mocked(axios.post)
-        .mockResolvedValueOnce({ data: swappingEnvironment('0x1') });
+      mockEnvironmentCall({ maximumSwapAmount: '0x1' });
 
       const { body, status } = await request(app).post('/swaps').send({
         srcAsset: Assets.USDC,
@@ -1016,7 +1031,7 @@ describe('server', () => {
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
-        message: 'expected amount is above maximum swap amount (2)',
+        message: 'expected amount is above maximum swap amount (1)',
       });
     });
   });

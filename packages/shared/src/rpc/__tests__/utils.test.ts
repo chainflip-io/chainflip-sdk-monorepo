@@ -1,18 +1,19 @@
 import { validateSwapAmount } from '../utils';
 
-const swappingEnv = {
-  minimumSwapAmounts: {
-    Ethereum: { ETH: 100000000000000000n, FLIP: 0n },
+const env = {
+  swapping: {
+    minimumSwapAmounts: { Ethereum: { ETH: 0n, FLIP: 0n } },
+    maximumSwapAmounts: { Ethereum: { ETH: 1000000000000000000n, FLIP: null } },
   },
-  maximumSwapAmounts: {
-    Ethereum: { ETH: 1000000000000000000n, FLIP: null },
+  ingressEgress: {
+    minimumDepositAmounts: { Ethereum: { ETH: 100000000000000000n, FLIP: 0n } },
   },
 } as any;
 
 describe(validateSwapAmount, () => {
   it('fails if the amount is too small', () => {
     const result = validateSwapAmount(
-      swappingEnv,
+      env,
       { chain: 'Ethereum', asset: 'ETH' },
       100n,
     );
@@ -26,7 +27,7 @@ describe(validateSwapAmount, () => {
 
   it('fails if the amount is too large', () => {
     const result = validateSwapAmount(
-      swappingEnv,
+      env,
       { chain: 'Ethereum', asset: 'ETH' },
       1000000000000000001n,
     );
@@ -40,7 +41,7 @@ describe(validateSwapAmount, () => {
 
   it('succeeds if the amount is within range', () => {
     const result = validateSwapAmount(
-      swappingEnv,
+      env,
       { chain: 'Ethereum', asset: 'ETH' },
       100000000000000000n,
     );
@@ -50,7 +51,7 @@ describe(validateSwapAmount, () => {
 
   it('succeeds when their is no upper limit', () => {
     const result = validateSwapAmount(
-      swappingEnv,
+      env,
       { chain: 'Ethereum', asset: 'FLIP' },
       1000000000000000000000000000000000000000000000000000000000000000000000000000n,
     );

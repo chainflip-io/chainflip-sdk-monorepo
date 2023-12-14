@@ -35,22 +35,22 @@ describe('getSwappingEnvironment', () => {
 
     expect(await getSwappingEnvironment({ network: 'perseverance' })).toEqual({
       minimumSwapAmounts: {
-        Bitcoin: { BTC: 0x4563918244f40000n },
+        Bitcoin: { BTC: 0n },
         Ethereum: {
-          ETH: 0x4563918244f40000n,
-          USDC: 0x4563918244f40000n,
-          FLIP: 0x4563918244f40000n,
+          ETH: 0n,
+          USDC: 0n,
+          FLIP: 0n,
         },
-        Polkadot: { DOT: 0x4563918244f40000n },
+        Polkadot: { DOT: 0n },
       },
       maximumSwapAmounts: {
         Bitcoin: {
-          BTC: 10000000000000000000n,
+          BTC: 0x4563918244f40000n,
         },
         Ethereum: {
           ETH: null,
           FLIP: null,
-          USDC: 10000000000000000000n,
+          USDC: 0x4563918244f40000n,
         },
         Polkadot: {
           DOT: null,
