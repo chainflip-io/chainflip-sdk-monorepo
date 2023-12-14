@@ -183,6 +183,19 @@ describe('server', () => {
     });
 
     it('gets the quote to usdc when the broker is best', async () => {
+      const env = environment({
+        maxSwapAmount: null,
+        ingressFee: '0x777',
+        egressFee: '0x333',
+      });
+
+      // method is called three times
+      jest
+        .mocked(axios.post)
+        .mockResolvedValueOnce({ data: env })
+        .mockResolvedValueOnce({ data: env })
+        .mockResolvedValueOnce({ data: env });
+
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
@@ -226,6 +239,12 @@ describe('server', () => {
             asset: 'ETH',
             chain: 'Ethereum',
             type: 'LIQUIDITY',
+          },
+          {
+            amount: '819',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'EGRESS',
           },
         ],
       });
