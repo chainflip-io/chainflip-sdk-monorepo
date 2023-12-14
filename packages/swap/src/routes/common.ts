@@ -34,7 +34,7 @@ export const asyncHandler = <
     try {
       await handler(req, res, next);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       handleError(res, error);
     }
   }) as RequestHandler<P, ResBody, ReqBody, ReqQuery, Locals>;
