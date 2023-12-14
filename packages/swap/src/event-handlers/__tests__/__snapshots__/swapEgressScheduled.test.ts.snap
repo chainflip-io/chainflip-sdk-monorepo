@@ -10,6 +10,7 @@ exports[`swapEgressScheduled updates an existing swap with the scheduled timesta
   "depositReceivedAt": 2022-12-06T14:31:33.000Z,
   "depositReceivedBlockIndex": "20-0",
   "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
+  "destAmount": null,
   "destAsset": "DOT",
   "egress": {
     "amount": "1234567890",
@@ -21,6 +22,7 @@ exports[`swapEgressScheduled updates an existing swap with the scheduled timesta
   "id": Any<BigInt>,
   "intermediateAmount": null,
   "nativeId": 9876545n,
+  "srcAmount": "10000000000",
   "srcAsset": "ETH",
   "swapDepositChannelId": Any<BigInt>,
   "swapExecutedAt": 2022-12-06T14:31:39.000Z,
