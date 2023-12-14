@@ -51,7 +51,7 @@ export default async function swapScheduled({
 
   const newSwapData = {
     depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
-    depositAmount: depositAmount.toString(), // TODO: read this value from "*IngressEgress.DepositReceived"
+    depositAmount: depositAmount.toString(), // this is later overwritten by a deposit received event
     srcAmount: depositAmount.toString(),
     nativeId: swapId,
     depositReceivedAt: new Date(block.timestamp),

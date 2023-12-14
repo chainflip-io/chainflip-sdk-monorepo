@@ -12,3 +12,6 @@ export const camelToSnakeCase = <const T extends string>(
     /[A-Z]/g,
     (letter) => `_${letter.toLowerCase()}`,
   ) as CamelCaseToSnakeCase<T>;
+
+export const toUpperCase = <const T extends string>(value: T) =>
+  value.toUpperCase() as Uppercase<T>;

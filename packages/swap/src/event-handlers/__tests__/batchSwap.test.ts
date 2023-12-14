@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { GraphQLClient } from 'graphql-request';
-import { assetChains } from '@/shared/enums';
 import prisma from '../../client';
 import { Event } from '../../gql/generated/graphql';
 import processBlocks from '../../processBlocks';
+import { DepositReceivedArgs } from '../depositReceived';
 import { SwapScheduledEvent } from '../swapScheduled';
 
 jest.mock('graphql-request', () => ({
@@ -11,9 +11,6 @@ jest.mock('graphql-request', () => ({
     request() {}
   },
 }));
-
-const uppercase = <const T extends string>(str: T): Uppercase<T> =>
-  str.toUpperCase() as Uppercase<T>;
 
 const swapDepositAddressReadyEvent = {
   id: '0000000000-000358-8c2f5',
@@ -44,11 +41,11 @@ const swapDepositAddressReadyEvent = {
 } as const;
 
 const batchEvents = [
-  // swapDepositAddressReadyEvent,
+  swapDepositAddressReadyEvent,
   {
-    id: '0000000001-000019-09d28',
+    id: '0000000001-000020-09d28',
     blockId: '0000000001-09d28',
-    indexInBlock: 19,
+    indexInBlock: 20,
     extrinsicId: '0000000001-000008-09d28',
     callId: '0000000001-000008-09d28',
     name: 'Swapping.SwapScheduled',
@@ -66,7 +63,7 @@ const batchEvents = [
       sourceAsset: {
         __kind: 'Eth',
       },
-      depositAmount: '100000000010000000',
+      depositAmount: '100000000000000000',
       destinationAsset: {
         __kind: 'Btc',
       },
@@ -81,9 +78,22 @@ const batchEvents = [
     } as SwapScheduledEvent,
   },
   {
-    id: '0000000001-000253-09d28',
+    id: '0000000001-000020-09d28',
     blockId: '0000000001-09d28',
-    indexInBlock: 253,
+    indexInBlock: 30,
+    extrinsicId: '0000000001-000008-09d28',
+    callId: '0000000001-000008-09d28',
+    name: 'EthereumIngressEgress.DepositReceived',
+    args: {
+      asset: { __kind: 'Eth' },
+      amount: '100000000010000000',
+      depositAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
+    } as DepositReceivedArgs,
+  },
+  {
+    id: '0000000001-000250-09d28',
+    blockId: '0000000001-09d28',
+    indexInBlock: 250,
     extrinsicId: null,
     callId: null,
     name: 'Swapping.SwapExecuted',
@@ -93,7 +103,7 @@ const batchEvents = [
         __kind: 'Eth',
       },
       egressAmount: '662256',
-      depositAmount: '100000000010000000',
+      depositAmount: '100000000000000000',
       destinationAsset: {
         __kind: 'Btc',
       },
@@ -101,9 +111,9 @@ const batchEvents = [
     },
   },
   {
-    id: '0000000001-000254-09d28',
+    id: '0000000001-000260-09d28',
     blockId: '0000000001-09d28',
-    indexInBlock: 254,
+    indexInBlock: 260,
     extrinsicId: null,
     callId: null,
     name: 'BitcoinIngressEgress.EgressScheduled',
@@ -116,9 +126,9 @@ const batchEvents = [
     },
   },
   {
-    id: '0000000001-000255-09d28',
+    id: '0000000001-000270-09d28',
     blockId: '0000000001-09d28',
-    indexInBlock: 255,
+    indexInBlock: 270,
     extrinsicId: null,
     callId: null,
     name: 'Swapping.SwapEgressScheduled',
@@ -137,9 +147,9 @@ const batchEvents = [
     },
   },
   {
-    id: '0000000001-000259-09d28',
+    id: '0000000001-000280-09d28',
     blockId: '0000000001-09d28',
-    indexInBlock: 259,
+    indexInBlock: 280,
     extrinsicId: null,
     callId: null,
     name: 'BitcoinIngressEgress.BatchBroadcastRequested',
@@ -212,29 +222,6 @@ describe('batch swap flow', () => {
 
     const blocksIt = batchEvents.entries();
 
-    await prisma.swapDepositChannel.create({
-      data: {
-        srcAsset: uppercase(
-          swapDepositAddressReadyEvent.args.sourceAsset.__kind,
-        ),
-        depositAddress: swapDepositAddressReadyEvent.args.depositAddress.value,
-        srcChain:
-          assetChains[
-            uppercase(swapDepositAddressReadyEvent.args.sourceAsset.__kind)
-          ],
-        channelId: BigInt(swapDepositAddressReadyEvent.args.channelId),
-        expectedDepositAmount: '0',
-        destAsset: uppercase(
-          swapDepositAddressReadyEvent.args.destinationAsset.__kind,
-        ),
-        destAddress: swapDepositAddressReadyEvent.args.destinationAddress.value,
-        issuedBlock: 0,
-        srcChainExpiryBlock: Number(
-          swapDepositAddressReadyEvent.args.sourceChainExpiryBlock,
-        ),
-      },
-    });
-
     jest
       .spyOn(GraphQLClient.prototype, 'request')
       .mockImplementation(async () => {
@@ -264,11 +251,13 @@ describe('batch swap flow', () => {
 
     await expect(processBlocks()).rejects.toThrow('done');
 
-    const swaps = await prisma.swap.findMany();
+    const swaps = await prisma.swap.findMany({ include: { fees: true } });
 
     expect(swaps).toHaveLength(1);
 
-    expect(swaps[0]).toMatchSnapshot(
+    const [{ fees, ...swap }] = swaps;
+
+    expect(swap).toMatchSnapshot(
       {
         id: expect.any(BigInt),
         swapDepositChannelId: expect.any(BigInt),
@@ -278,6 +267,17 @@ describe('batch swap flow', () => {
       },
       'swap',
     );
+
+    expect(fees).toHaveLength(4);
+    for (let i = 0; i < fees.length; i += 1) {
+      expect(fees[i]).toMatchSnapshot(
+        {
+          id: expect.any(BigInt),
+          swapId: expect.any(BigInt),
+        },
+        `fee ${i}`,
+      );
+    }
 
     const egresses = await prisma.egress.findMany();
     expect(egresses).toHaveLength(1);
