@@ -47,8 +47,7 @@ const createRequest =
   ) =>
   async (
     urlOrNetwork: RpcConfig,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    params: z.input<P> extends any ? void : z.input<P>,
+    params: P extends z.ZodVoid ? void : z.input<P>,
   ): Promise<CamelCaseRecord<z.output<R>>> => {
     const url =
       'network' in urlOrNetwork
@@ -171,6 +170,11 @@ const environment = z.object({
 });
 
 export const getEnvironment = createRequest('cf_environment', environment);
+export const getEnvironmentAtBlock = createRequest(
+  'cf_environment',
+  environment,
+  z.tuple([z.string().optional()]), // [atBlockHash]
+);
 
 export type RpcEnvironment = z.input<typeof environment>;
 

@@ -9,6 +9,7 @@ export const GET_BATCH = gql(/* GraphQL */ `
     ) {
       nodes {
         height
+        hash
         timestamp
         specId
         events: eventsByBlockId(filter: { name: { in: $swapEvents } }) {
