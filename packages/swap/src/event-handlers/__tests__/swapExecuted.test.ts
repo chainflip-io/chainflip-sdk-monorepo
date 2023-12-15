@@ -53,7 +53,7 @@ describe(swapExecuted, () => {
         create: {
           nativeId: BigInt(swapId),
           depositAmount: '10000000000',
-          srcAmount: '10000000000',
+          swapInputAmount: '10000000000',
           depositReceivedAt: new Date(block.timestamp - 6000),
           depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
           srcAsset: Assets.ETH,
@@ -107,7 +107,7 @@ describe(swapExecuted, () => {
         create: {
           nativeId: BigInt(swapId),
           depositAmount: '10000000000',
-          srcAmount: '10000000000',
+          swapInputAmount: '10000000000',
           depositReceivedAt: new Date(block.timestamp - 6000),
           depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
           srcAsset: Assets.ETH,
