@@ -15,19 +15,36 @@ import {
 import { promisify } from 'util';
 import { Assets } from '@/shared/enums';
 import { QuoteQueryParams } from '@/shared/schemas';
-import { environment } from '@/shared/tests/fixtures';
+import { environment, swapRate } from '@/shared/tests/fixtures';
 import prisma from '../client';
 import app from '../server';
 import { getBrokerQuote } from '../utils/statechain';
 
-jest.mock('../utils/statechain', () => ({ getBrokerQuote: jest.fn() }));
-
+jest.mock('../utils/statechain', () => ({
+  getBrokerQuote: jest.fn(),
+}));
 jest.mock('axios', () => ({
-  post: jest.fn(() =>
-    Promise.resolve({
-      data: environment({ ingressFee: '0x123', egressFee: '0x55524' }),
-    }),
-  ),
+  post: jest.fn((url, data) => {
+    if (data.method === 'cf_environment') {
+      return Promise.resolve({
+        data: environment({
+          maxSwapAmount: null,
+          ingressFee: '0xF4240', // 2000000
+          egressFee: '0x61A8', // 25000
+        }),
+      });
+    }
+
+    if (data.method === 'cf_swap_rate') {
+      return Promise.resolve({
+        data: swapRate({
+          output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
+        }),
+      });
+    }
+
+    throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+  }),
 }));
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
@@ -129,10 +146,10 @@ describe('python integration test', () => {
     expect(await response.json()).toEqual({
       id: expect.any(String),
       intermediateAmount: '1998000000',
-      egressAmount: '997000000000000000',
+      egressAmount: '996999999999975000',
       includedFees: [
         {
-          amount: '291',
+          amount: '2000000',
           asset: 'FLIP',
           chain: 'Ethereum',
           type: 'INGRESS',
@@ -144,7 +161,7 @@ describe('python integration test', () => {
           type: 'NETWORK',
         },
         {
-          amount: '1000000000000000',
+          amount: '999999999998000',
           asset: 'FLIP',
           chain: 'Ethereum',
           type: 'LIQUIDITY',
@@ -156,7 +173,7 @@ describe('python integration test', () => {
           type: 'LIQUIDITY',
         },
         {
-          amount: '349476',
+          amount: '25000',
           asset: 'ETH',
           chain: 'Ethereum',
           type: 'EGRESS',
