@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { Server } from 'http';
+import { Server, createServer } from 'http';
 import start from './processor';
 import server from './server';
 import { handleExit } from './utils/function';
@@ -9,16 +9,26 @@ const isFlagSet = (name: string) => process.env[name]?.toUpperCase() === 'TRUE';
 
 let aFlagSet = false;
 
+const PORT =
+  Number.parseInt(process.env.SWAPPING_APP_PORT as string, 10) || 8080;
+
 if (isFlagSet('START_PROCESSOR')) {
   aFlagSet = true;
   start();
+
+  const healthServer = createServer((req, res) => {
+    res.end('i am still alive\n');
+  }).listen(PORT, () => {
+    logger.info(`server listening on ${PORT}`, {
+      address: healthServer.address(),
+    });
+
+    handleExit(() => healthServer.close());
+  });
 }
 
 if (isFlagSet('START_HTTP_SERVICE')) {
   aFlagSet = true;
-
-  const PORT =
-    Number.parseInt(process.env.SWAPPING_APP_PORT as string, 10) || 8080;
 
   server.listen(
     PORT,
