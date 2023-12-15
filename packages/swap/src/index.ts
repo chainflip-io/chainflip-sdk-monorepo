@@ -14,7 +14,7 @@ const PORT =
 
 if (isFlagSet('START_PROCESSOR')) {
   aFlagSet = true;
-  // start();
+  start();
 
   const healthServer = createServer((req, res) => {
     res.end('i am still alive\n');
