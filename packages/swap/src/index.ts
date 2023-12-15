@@ -41,7 +41,7 @@ if (START_HTTP_SERVICE) {
   );
 }
 
-if (!START_HTTP_SERVICE || !START_PROCESSOR) {
+if (!START_HTTP_SERVICE && !START_PROCESSOR) {
   logger.error('no services started');
   process.exit(1);
 }
