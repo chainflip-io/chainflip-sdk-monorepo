@@ -108,15 +108,12 @@ const quote = (io: Server) => {
           ),
           BigInt(bestQuote.egressAmount),
         );
-
-        if (egressFee > 0n) {
-          includedFees.push({
-            type: 'EGRESS',
-            chain: query.destAsset.chain,
-            asset: query.destAsset.asset,
-            amount: egressFee.toString(),
-          });
-        }
+        includedFees.push({
+          type: 'EGRESS',
+          chain: query.destAsset.chain,
+          asset: query.destAsset.asset,
+          amount: egressFee.toString(),
+        });
 
         res.json({
           ...bestQuote,
