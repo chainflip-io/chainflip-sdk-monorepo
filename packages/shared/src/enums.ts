@@ -59,6 +59,12 @@ export const chainAssets = {
   [Chains.Polkadot]: [Assets.DOT],
 } satisfies Record<Chain, Asset[]>;
 
+export const chainNativeAssets = {
+  [Chains.Ethereum]: Assets.ETH,
+  [Chains.Bitcoin]: Assets.BTC,
+  [Chains.Polkadot]: Assets.DOT,
+} satisfies Record<Chain, Asset>;
+
 // https://github.com/chainflip-io/chainflip-backend/blob/a2a3c2e447e7b629c4b96797d9eed22eb5b87a0b/state-chain/primitives/src/chains.rs#L52-L56
 export const chainContractIds: Record<Chain, number> = {
   [Chains.Ethereum]: 1,
