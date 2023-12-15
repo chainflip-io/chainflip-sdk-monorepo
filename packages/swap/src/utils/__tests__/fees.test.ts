@@ -1,9 +1,28 @@
-import { calculateIncludedSwapFees } from '@/swap/utils/fees';
+import axios from 'axios';
+import { swapRate } from '@/shared/tests/fixtures';
+import {
+  calculateIncludedSwapFees,
+  estimateIngressEgressFeeAssetAmount,
+} from '@/swap/utils/fees';
 import prisma from '../../client';
 
 jest.mock('@/shared/consts', () => ({
   ...jest.requireActual('@/shared/consts'),
   getPoolsNetworkFeeHundredthPips: jest.fn().mockReturnValue(1000),
+}));
+
+jest.mock('axios', () => ({
+  post: jest.fn((url, data) => {
+    if (data.method === 'cf_swap_rate') {
+      return Promise.resolve({
+        data: swapRate({
+          output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
+        }),
+      });
+    }
+
+    throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+  }),
 }));
 
 describe('fees', () => {
@@ -98,6 +117,39 @@ describe('fees', () => {
           amount: (0.1e18).toString(),
         },
       ]);
+    });
+  });
+
+  describe(estimateIngressEgressFeeAssetAmount, () => {
+    it('returns the same amount for the native asset', async () => {
+      const result = await estimateIngressEgressFeeAssetAmount(
+        100n,
+        'ETH',
+        undefined,
+      );
+
+      expect(result).toBe(100n);
+      expect(axios.post).not.toBeCalled();
+    });
+    it('returns the rate from the rpc for a non native asset', async () => {
+      const result = await estimateIngressEgressFeeAssetAmount(
+        100n,
+        'USDC',
+        undefined,
+      );
+
+      expect(result).toBe(200n);
+      expect(jest.mocked(axios.post).mock.calls).toMatchSnapshot();
+    });
+    it('returns the rate from the rpc for a non native asset and a block hash', async () => {
+      const result = await estimateIngressEgressFeeAssetAmount(
+        100n,
+        'USDC',
+        '0x8a741d03ae637a115ec7384c85e565799123f6a626414471260bc6d4e87d2d27',
+      );
+
+      expect(result).toBe(200n);
+      expect(jest.mocked(axios.post).mock.calls).toMatchSnapshot();
     });
   });
 });
