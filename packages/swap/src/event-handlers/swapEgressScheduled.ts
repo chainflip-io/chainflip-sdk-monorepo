@@ -107,18 +107,25 @@ export default async function swapEgressScheduled({
   // TODO: use an accurate source for determining the egress fee once the protocol provides one
   const egressFee = await getEgressFeeAtBlock(block.hash, swap.destAsset);
 
-  await prisma.swap.update({
-    where: { nativeId: swapId },
-    data: {
-      egressAmount: swap.destAmount?.sub(egressFee.toString()),
-      egress: { connect: { nativeId_chain: { chain, nativeId } } },
-      fees: {
-        create: {
-          type: 'EGRESS',
-          asset: swap.destAsset,
-          amount: egressFee.toString(),
+  await Promise.all([
+    prisma.egress.update({
+      where: { nativeId_chain: { chain, nativeId } },
+      data: {
+        amount: swap.destAmount?.sub(egressFee.toString()),
+      },
+    }),
+    prisma.swap.update({
+      where: { nativeId: swapId },
+      data: {
+        egress: { connect: { nativeId_chain: { chain, nativeId } } },
+        fees: {
+          create: {
+            type: 'EGRESS',
+            asset: swap.destAsset,
+            amount: egressFee.toString(),
+          },
         },
       },
-    },
-  });
+    }),
+  ]);
 }

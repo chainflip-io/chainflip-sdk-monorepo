@@ -20,7 +20,7 @@ exports[`batch swap flow handles all the events: broadcast 1`] = `
 
 exports[`batch swap flow handles all the events: egress 1`] = `
 {
-  "amount": "662256",
+  "amount": "312780",
   "broadcastId": Any<BigInt>,
   "chain": "Bitcoin",
   "createdAt": Any<Date>,
@@ -94,7 +94,6 @@ exports[`batch swap flow handles all the events: swap 1`] = `
   "destAddress": "mp3QSoPN2iLKrEhdz9Qb9DSJQAuNwDDa77",
   "destAmount": "662256",
   "destAsset": "BTC",
-  "egressAmount": "312780",
   "egressId": Any<BigInt>,
   "id": Any<BigInt>,
   "intermediateAmount": "990109107",
