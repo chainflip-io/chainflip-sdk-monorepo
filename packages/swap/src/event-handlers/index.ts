@@ -1,6 +1,7 @@
 import type { Prisma } from '.prisma/client';
 import { Chains } from '@/shared/enums';
 import ccmDepositReceived from './ccmDepositReceived';
+import liquidityDepositAddressReady from './liquidityDepositChannelReady';
 import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';
 import networkBroadcastAborted from './networkBroadcastAborted';
 import networkBroadcastSuccess from './networkBroadcastSuccess';
@@ -22,6 +23,10 @@ export const events = {
   LiquidityPools: {
     NewPoolCreated: 'LiquidityPools.NewPoolCreated',
     PoolFeeSet: 'LiquidityPools.PoolFeeSet',
+  },
+  LiquidityProvider: {
+    LiquidityDepositAddressReady:
+      'LiquidityProvider.LiquidityDepositAddressReady',
   },
   Swapping: {
     SwapScheduled: 'Swapping.SwapScheduled',
@@ -102,6 +107,10 @@ const handlers = [
       {
         name: events.Swapping.SwapEgressScheduled,
         handler: swapEgressScheduled,
+      },
+      {
+        name: events.LiquidityProvider.LiquidityDepositAddressReady,
+        handler: liquidityDepositAddressReady,
       },
       ...Object.values(Chains).flatMap((chain) => [
         {
