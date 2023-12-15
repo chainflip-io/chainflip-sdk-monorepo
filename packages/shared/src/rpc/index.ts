@@ -45,6 +45,12 @@ type RpcParams = {
   cf_ingress_egress_environment: [at?: string];
   cf_funding_environment: [at?: string];
   cf_pool_info: [at?: string];
+  cf_swap_rate: [
+    fromAsset: string,
+    toAsset: string,
+    amount: string,
+    at?: string,
+  ];
 };
 
 type RpcMethod = keyof RpcParams;
@@ -180,3 +186,8 @@ export const getEnvironment = createRequest('cf_environment', environment);
 export type RpcEnvironment = z.input<typeof environment>;
 
 export type Environment = Awaited<ReturnType<typeof getEnvironment>>;
+
+const swapRate = z.object({
+  output: numberOrHex,
+});
+export const getSwapRate = createRequest('cf_swap_rate', swapRate);

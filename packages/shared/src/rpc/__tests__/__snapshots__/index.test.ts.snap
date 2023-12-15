@@ -8,7 +8,7 @@ exports[`getFundingEnvironment retrieves the funding environment 1`] = `
       "id": 1,
       "jsonrpc": "2.0",
       "method": "cf_funding_environment",
-      "params": undefined,
+      "params": [],
     },
   ],
 ]
@@ -22,7 +22,7 @@ exports[`getIngressEgressEnvironment retrieves the ingress egress environment 1`
       "id": 1,
       "jsonrpc": "2.0",
       "method": "cf_ingress_egress_environment",
-      "params": undefined,
+      "params": [],
     },
   ],
 ]
@@ -36,7 +36,7 @@ exports[`getPoolsEnvironment retrieves the pools environment 1`] = `
       "id": 1,
       "jsonrpc": "2.0",
       "method": "cf_pool_info",
-      "params": undefined,
+      "params": [],
     },
   ],
 ]
@@ -95,7 +95,7 @@ exports[`getSwappingEnvironment retrieves the swapping environment 1`] = `
       "id": 1,
       "jsonrpc": "2.0",
       "method": "cf_swapping_environment",
-      "params": undefined,
+      "params": [],
     },
   ],
 ]

@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { Asset, assetChains } from '@/shared/enums';
+import { Asset, assetChains, chainNativeAssets } from '@/shared/enums';
 import { chainflipChain, unsignedInteger } from '@/shared/parsers';
-import { Environment, getEnvironment } from '@/shared/rpc';
+import { Environment, getEnvironment, getSwapRate } from '@/shared/rpc';
 import { readAssetValue } from '@/shared/rpc/utils';
 import { CacheMap } from '@/swap/utils/dataStructures';
 import type { EventHandlerArgs } from '.';
@@ -42,6 +42,38 @@ const getCachedEnvironmentAtBlock = async (
   return env;
 };
 
+const assetAmountByNativeAmountAndBlockHashCache = new CacheMap<
+  string,
+  Promise<bigint>
+>(60_000);
+
+const getCachedAssetAmountAtBlock = async (
+  asset: Asset,
+  nativeAmount: bigint,
+  blockHash: string,
+): Promise<bigint> => {
+  const cacheKey = `${asset}-${nativeAmount.toString()}-${blockHash}`;
+  const cached = assetAmountByNativeAmountAndBlockHashCache.get(cacheKey);
+  if (cached) return cached;
+
+  const nativeAsset = chainNativeAssets[assetChains[asset]];
+  if (asset === nativeAsset) return nativeAmount;
+
+  // TODO: we get the output amount for the "nativeAmount" instead of figuring out the required input amount
+  // this makes the result different to the backend if there are limit orders that affect the price in one direction
+  // https://github.com/chainflip-io/chainflip-backend/blob/4318931178a1696866e1e70e65d73d722bee4afd/state-chain/pallets/cf-pools/src/lib.rs#L2025
+  const rate = getSwapRate(rpcConfig, nativeAsset, asset, String(nativeAmount))
+    .then((r) => r.output)
+    .catch((e: Error) => {
+      assetAmountByNativeAmountAndBlockHashCache.delete(blockHash);
+      throw e;
+    });
+
+  assetAmountByNativeAmountAndBlockHashCache.set(cacheKey, rate);
+
+  return rate;
+};
+
 const getEgressFeeAtBlock = async (
   blockHash: string,
   asset: Asset,
@@ -49,10 +81,12 @@ const getEgressFeeAtBlock = async (
   const env = await getCachedEnvironmentAtBlock(blockHash);
   if (!env) return 0n;
 
-  return readAssetValue(env.ingressEgress.egressFees, {
+  const nativeFee = readAssetValue(env.ingressEgress.egressFees, {
     asset,
     chain: assetChains[asset],
   });
+
+  return getCachedAssetAmountAtBlock(asset, nativeFee, blockHash);
 };
 
 /**

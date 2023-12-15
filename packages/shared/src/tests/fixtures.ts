@@ -141,3 +141,15 @@ export const environment = ({
     pools: poolsEnvironment().result,
   },
 });
+
+export const swapRate = ({
+  output = '0x7777',
+}: {
+  output?: string;
+} = {}) => ({
+  id: 1,
+  jsonrpc: '2.0',
+  result: {
+    output,
+  },
+});
