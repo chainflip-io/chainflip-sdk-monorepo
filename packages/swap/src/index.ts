@@ -5,20 +5,36 @@ import server from './server';
 import { handleExit } from './utils/function';
 import logger from './utils/logger';
 
-const PORT =
-  Number.parseInt(process.env.SWAPPING_APP_PORT as string, 10) || 8080;
+const isFlagSet = (name: string) => process.env[name]?.toUpperCase() === 'TRUE';
 
-start();
+let aFlagSet = false;
 
-server.listen(
-  PORT,
-  // eslint-disable-next-line func-names
-  function (this: Server) {
-    logger.info(`server listening on ${PORT}`, { address: this.address() });
+if (isFlagSet('START_PROCESSOR')) {
+  aFlagSet = true;
+  start();
+}
 
-    handleExit(() => this.close());
-  },
-);
+if (isFlagSet('START_HTTP_SERVICE')) {
+  aFlagSet = true;
+
+  const PORT =
+    Number.parseInt(process.env.SWAPPING_APP_PORT as string, 10) || 8080;
+
+  server.listen(
+    PORT,
+    // eslint-disable-next-line func-names
+    function (this: Server) {
+      logger.info(`server listening on ${PORT}`, { address: this.address() });
+
+      handleExit(() => this.close());
+    },
+  );
+}
+
+if (!aFlagSet) {
+  logger.error('no services started');
+  process.exit(1);
+}
 
 process.on('exit', (code) => {
   logger.info(`process exiting with code "${code}"`);
