@@ -1,7 +1,10 @@
 import express from 'express';
 import type { Server } from 'socket.io';
-import { quoteQuerySchema } from '@/shared/schemas';
-import { calculateIncludedFees } from '@/swap/utils/fees';
+import { quoteQuerySchema, SwapFee } from '@/shared/schemas';
+import {
+  calculateIncludedSwapFees,
+  estimateIngressEgressFeeAssetAmount,
+} from '@/swap/utils/fees';
 import { getPools } from '@/swap/utils/pools';
 import { asyncHandler } from './common';
 import getConnectionHandler from '../quoting/getConnectionHandler';
@@ -12,7 +15,11 @@ import {
   subtractFeesFromMakerQuote,
 } from '../quoting/quotes';
 import logger from '../utils/logger';
-import { getEgressFee, getIngressFee, validateSwapAmount } from '../utils/rpc';
+import {
+  getNativeEgressFee,
+  getNativeIngressFee,
+  validateSwapAmount,
+} from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
 import { getBrokerQuote } from '../utils/statechain';
 
@@ -44,7 +51,24 @@ const quote = (io: Server) => {
         throw ServiceError.badRequest(amountResult.reason);
       }
 
-      const quoteRequest = buildQuoteRequest(query);
+      const includedFees: SwapFee[] = [];
+      const ingressFee = await estimateIngressEgressFeeAssetAmount(
+        await getNativeIngressFee(query.srcAsset),
+        query.srcAsset.asset,
+      );
+      if (ingressFee > 0n) {
+        includedFees.push({
+          type: 'INGRESS',
+          chain: query.srcAsset.chain,
+          asset: query.srcAsset.asset,
+          amount: ingressFee.toString(),
+        });
+      }
+
+      const quoteRequest = buildQuoteRequest({
+        ...query,
+        amount: String(BigInt(query.amount) - ingressFee),
+      });
       const quotePools = await getPools(
         query.srcAsset.asset,
         query.destAsset.asset,
@@ -64,7 +88,7 @@ const quote = (io: Server) => {
         );
 
         const bestQuote = findBestQuote(marketMakerQuotes, brokerQuote);
-        const includedFees = await calculateIncludedFees(
+        const quoteSwapFees = await calculateIncludedSwapFees(
           quoteRequest.source_asset,
           quoteRequest.destination_asset,
           quoteRequest.deposit_amount,
@@ -73,18 +97,13 @@ const quote = (io: Server) => {
             : undefined,
           bestQuote.egressAmount,
         );
+        includedFees.push(...quoteSwapFees);
 
-        const ingressFee = await getIngressFee(query.srcAsset);
-        if (ingressFee > 0n) {
-          includedFees.unshift({
-            type: 'INGRESS',
-            chain: query.srcAsset.chain,
-            asset: query.srcAsset.asset,
-            amount: ingressFee.toString(),
-          });
-        }
+        const egressFee = await estimateIngressEgressFeeAssetAmount(
+          await getNativeEgressFee(query.destAsset),
+          query.destAsset.asset,
+        );
 
-        const egressFee = await getEgressFee(query.destAsset);
         if (egressFee > 0n) {
           includedFees.push({
             type: 'EGRESS',
@@ -94,7 +113,11 @@ const quote = (io: Server) => {
           });
         }
 
-        res.json({ ...bestQuote, includedFees });
+        res.json({
+          ...bestQuote,
+          egressAmount: String(BigInt(bestQuote.egressAmount) - egressFee),
+          includedFees,
+        });
       } catch (err) {
         const message =
           err instanceof Error

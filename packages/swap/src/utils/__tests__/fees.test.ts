@@ -1,4 +1,4 @@
-import { calculateIncludedFees } from '@/swap/utils/fees';
+import { calculateIncludedSwapFees } from '@/swap/utils/fees';
 import prisma from '../../client';
 
 jest.mock('@/shared/consts', () => ({
@@ -7,7 +7,7 @@ jest.mock('@/shared/consts', () => ({
 }));
 
 describe('fees', () => {
-  describe(calculateIncludedFees, () => {
+  describe(calculateIncludedSwapFees, () => {
     beforeAll(async () => {
       await prisma.$queryRaw`TRUNCATE TABLE public."Pool" CASCADE`;
       await prisma.pool.createMany({
@@ -27,7 +27,7 @@ describe('fees', () => {
     });
 
     it('returns fees for quote with intermediate amount', async () => {
-      const fees = await calculateIncludedFees(
+      const fees = await calculateIncludedSwapFees(
         'ETH',
         'FLIP',
         (100e18).toString(),
@@ -55,7 +55,7 @@ describe('fees', () => {
     });
 
     it('returns fees for quote from USDC', async () => {
-      const fees = await calculateIncludedFees(
+      const fees = await calculateIncludedSwapFees(
         'USDC',
         'FLIP',
         (100e6).toString(),
@@ -78,7 +78,7 @@ describe('fees', () => {
     });
 
     it('returns fees for quote to USDC', async () => {
-      const fees = await calculateIncludedFees(
+      const fees = await calculateIncludedSwapFees(
         'ETH',
         'USDC',
         (100e18).toString(),

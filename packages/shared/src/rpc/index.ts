@@ -48,7 +48,7 @@ type RpcParams = {
   cf_swap_rate: [
     fromAsset: string,
     toAsset: string,
-    amount: string,
+    amount: `0x${string}`,
     at?: string,
   ];
 };
