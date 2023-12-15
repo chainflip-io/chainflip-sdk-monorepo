@@ -174,9 +174,8 @@ describe(swapEgressScheduled, () => {
       swapDepositChannelId: expect.any(BigInt),
       fees: [{ id: expect.any(BigInt), swapId: expect.any(BigInt) }],
     });
-    expect(axios.post).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ method: 'cf_swap_rate' }),
-    );
+    expect(
+      jest.mocked(axios.post).mock.calls.map((call) => call[1]),
+    ).toMatchSnapshot();
   });
 });

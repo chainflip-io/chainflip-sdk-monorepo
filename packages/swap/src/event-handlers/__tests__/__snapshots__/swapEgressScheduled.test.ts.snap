@@ -42,6 +42,22 @@ exports[`swapEgressScheduled updates an existing swap when the egress asset is n
 }
 `;
 
+exports[`swapEgressScheduled updates an existing swap when the egress asset is not the native asset 2`] = `
+[
+  {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "cf_swap_rate",
+    "params": [
+      "ETH",
+      "USDC",
+      "0x777777",
+      undefined,
+    ],
+  },
+]
+`;
+
 exports[`swapEgressScheduled updates an existing swap when the egress asset is the native asset 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,

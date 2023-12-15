@@ -149,7 +149,9 @@ describe('fees', () => {
       );
 
       expect(result).toBe(200n);
-      expect(jest.mocked(axios.post).mock.calls).toMatchSnapshot();
+      expect(
+        jest.mocked(axios.post).mock.calls.map((call) => call[1]),
+      ).toMatchSnapshot();
     });
   });
 });

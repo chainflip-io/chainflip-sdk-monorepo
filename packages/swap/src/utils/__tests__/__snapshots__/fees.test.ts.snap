@@ -21,19 +21,16 @@ exports[`fees estimateIngressEgressFeeAssetAmount returns the rate from the rpc 
 
 exports[`fees estimateIngressEgressFeeAssetAmount returns the rate from the rpc for a non native asset and a block hash 1`] = `
 [
-  [
-    "https://perseverance.chainflip.xyz",
-    {
-      "id": 1,
-      "jsonrpc": "2.0",
-      "method": "cf_swap_rate",
-      "params": [
-        "ETH",
-        "USDC",
-        "0x64",
-        "0x8a741d03ae637a115ec7384c85e565799123f6a626414471260bc6d4e87d2d27",
-      ],
-    },
-  ],
+  {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "cf_swap_rate",
+    "params": [
+      "ETH",
+      "USDC",
+      "0x64",
+      "0x8a741d03ae637a115ec7384c85e565799123f6a626414471260bc6d4e87d2d27",
+    ],
+  },
 ]
 `;
