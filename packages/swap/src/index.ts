@@ -7,29 +7,29 @@ import logger from './utils/logger';
 
 const isFlagSet = (name: string) => process.env[name]?.toUpperCase() === 'TRUE';
 
-let aFlagSet = false;
-
 const PORT =
   Number.parseInt(process.env.SWAPPING_APP_PORT as string, 10) || 8080;
 
-if (isFlagSet('START_PROCESSOR')) {
-  aFlagSet = true;
+const START_PROCESSOR = isFlagSet('START_PROCESSOR');
+const START_HTTP_SERVICE = isFlagSet('START_HTTP_SERVICE');
+
+if (START_PROCESSOR) {
   start();
 
-  const healthServer = createServer((req, res) => {
-    res.end('i am still alive\n');
-  }).listen(PORT, () => {
-    logger.info(`server listening on ${PORT}`, {
-      address: healthServer.address(),
-    });
+  if (!START_HTTP_SERVICE) {
+    const healthServer = createServer((req, res) => {
+      res.end('i am still alive\n');
+    }).listen(PORT, () => {
+      logger.info(`server listening on ${PORT}`, {
+        address: healthServer.address(),
+      });
 
-    handleExit(() => healthServer.close());
-  });
+      handleExit(() => healthServer.close());
+    });
+  }
 }
 
-if (isFlagSet('START_HTTP_SERVICE')) {
-  aFlagSet = true;
-
+if (START_HTTP_SERVICE) {
   server.listen(
     PORT,
     // eslint-disable-next-line func-names
@@ -41,7 +41,7 @@ if (isFlagSet('START_HTTP_SERVICE')) {
   );
 }
 
-if (!aFlagSet) {
+if (!START_HTTP_SERVICE || !START_PROCESSOR) {
   logger.error('no services started');
   process.exit(1);
 }
