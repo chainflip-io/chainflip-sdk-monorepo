@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Assets } from '@/shared/enums';
 import { environment, swapRate } from '@/shared/tests/fixtures';
 import {
@@ -102,6 +103,10 @@ describe(swapEgressScheduled, () => {
       swapDepositChannelId: expect.any(BigInt),
       fees: [{ id: expect.any(BigInt), swapId: expect.any(BigInt) }],
     });
+    expect(axios.post).not.toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ method: 'cf_swap_rate' }),
+    );
   });
 
   it('updates an existing swap when the egress asset is not the native asset', async () => {
@@ -169,5 +174,8 @@ describe(swapEgressScheduled, () => {
       swapDepositChannelId: expect.any(BigInt),
       fees: [{ id: expect.any(BigInt), swapId: expect.any(BigInt) }],
     });
+    expect(
+      jest.mocked(axios.post).mock.calls.map((call) => call[1]),
+    ).toMatchSnapshot();
   });
 });

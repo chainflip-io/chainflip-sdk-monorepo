@@ -21,7 +21,7 @@ export const validateSwapAmount = async (
   return validateAmount(env, asset, amount);
 };
 
-export const getIngressFee = async (
+export const getNativeIngressFee = async (
   asset: UncheckedAssetAndChain,
 ): Promise<bigint> => {
   const env = await cachedGetEnvironment({
@@ -31,7 +31,7 @@ export const getIngressFee = async (
   return readAssetValue(env.ingressEgress.ingressFees, asset);
 };
 
-export const getEgressFee = async (
+export const getNativeEgressFee = async (
   asset: UncheckedAssetAndChain,
 ): Promise<bigint> => {
   const env = await cachedGetEnvironment({

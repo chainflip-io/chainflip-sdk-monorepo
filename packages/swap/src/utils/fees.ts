@@ -1,6 +1,13 @@
 import assert from 'assert';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
-import { Asset, assetChains, Assets, ChainflipNetwork } from '@/shared/enums';
+import {
+  Asset,
+  assetChains,
+  Assets,
+  ChainflipNetwork,
+  chainNativeAssets,
+} from '@/shared/enums';
+import { getSwapRate } from '@/shared/rpc';
 import { SwapFee } from '@/shared/schemas';
 import { getPools } from '@/swap/utils/pools';
 
@@ -9,7 +16,7 @@ export const ONE_IN_HUNDREDTH_PIPS = 1000000;
 export const getPips = (value: string, hundrethPips: number) =>
   (BigInt(value) * BigInt(hundrethPips)) / BigInt(ONE_IN_HUNDREDTH_PIPS);
 
-export const calculateIncludedFees = async (
+export const calculateIncludedSwapFees = async (
   srcAsset: Asset,
   destAsset: Asset,
   depositAmount: string,
@@ -96,4 +103,26 @@ export const calculateIncludedFees = async (
       ).toString(),
     },
   ];
+};
+
+export const estimateIngressEgressFeeAssetAmount = async (
+  nativeFeeAmount: bigint,
+  asset: Asset,
+  blockHash: string | undefined = undefined,
+): Promise<bigint> => {
+  const nativeAsset = chainNativeAssets[assetChains[asset]];
+  if (asset === nativeAsset) return nativeFeeAmount;
+
+  // TODO: we get the output amount for the "nativeAmount" instead of figuring out the required input amount
+  // this makes the result different to the backend if there are limit orders that affect the price in one direction
+  // https://github.com/chainflip-io/chainflip-backend/blob/4318931178a1696866e1e70e65d73d722bee4afd/state-chain/pallets/cf-pools/src/lib.rs#L2025
+  const rate = await getSwapRate(
+    { rpcUrl: process.env.RPC_NODE_HTTP_URL as string },
+    nativeAsset,
+    asset,
+    `0x${nativeFeeAmount.toString(16)}`,
+    blockHash,
+  );
+
+  return rate.output;
 };

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { u128, u64 } from '@/shared/parsers';
-import { calculateIncludedFees } from '@/swap/utils/fees';
+import { calculateIncludedSwapFees } from '@/swap/utils/fees';
 import type { EventHandlerArgs } from '.';
 
 const swapExecutedArgs = z.object({
@@ -25,7 +25,7 @@ export default async function swapExecuted({
     where: { nativeId: swapId },
   });
 
-  const fees = await calculateIncludedFees(
+  const fees = await calculateIncludedSwapFees(
     swap.srcAsset,
     swap.destAsset,
     swap.srcAmount.toString(),
