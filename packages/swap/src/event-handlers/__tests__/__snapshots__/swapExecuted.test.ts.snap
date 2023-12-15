@@ -10,9 +10,9 @@ exports[`swapExecuted updates an existing swap 1`] = `
   "depositReceivedAt": 2022-12-06T14:31:33.000Z,
   "depositReceivedBlockIndex": "100-0",
   "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
-  "destAmount": null,
+  "destAmount": "10000000000",
   "destAsset": "USDC",
-  "egressAmount": "10000000000",
+  "egressAmount": null,
   "egressId": null,
   "fees": [
     {
@@ -54,9 +54,9 @@ exports[`swapExecuted updates an existing swap with intermediate amount 1`] = `
   "depositReceivedAt": 2022-12-06T14:31:33.000Z,
   "depositReceivedBlockIndex": "100-0",
   "destAddress": "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
-  "destAmount": null,
+  "destAmount": "10000000000",
   "destAsset": "DOT",
-  "egressAmount": "10000000000",
+  "egressAmount": null,
   "egressId": null,
   "fees": [
     {

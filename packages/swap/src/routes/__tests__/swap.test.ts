@@ -4,12 +4,7 @@ import { Server } from 'http';
 import request from 'supertest';
 import * as broker from '@/shared/broker';
 import { Assets } from '@/shared/enums';
-import { RpcEnvironment } from '@/shared/rpc';
-import {
-  environment,
-  ingressEgressEnvironment,
-  swappingEnvironment,
-} from '@/shared/tests/fixtures';
+import { environment } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import {
   DOT_ADDRESS,
@@ -29,11 +24,6 @@ jest.mock('timers/promises', () => ({
   setTimeout: jest.fn().mockResolvedValue(undefined),
 }));
 
-jest.mock('@/shared/consts', () => ({
-  ...jest.requireActual('@/shared/consts'),
-  getMinimumDepositAmount: jest.fn().mockReturnValue('10'),
-}));
-
 const randomId = () => BigInt(crypto.randomInt(1, 100000));
 
 jest.mock('@/shared/broker', () => ({
@@ -49,20 +39,6 @@ jest.mock('axios', () => ({
     }),
   ),
 }));
-
-const mockEnvironmentCall = ({
-  minimumDepositAmount = '0x0',
-  maximumSwapAmount = null as string | null,
-} = {}) =>
-  jest.mocked(axios.post).mockResolvedValueOnce({
-    data: {
-      result: {
-        ...environment().result,
-        swapping: swappingEnvironment(maximumSwapAmount).result,
-        ingress_egress: ingressEgressEnvironment(minimumDepositAmount).result,
-      } as RpcEnvironment,
-    },
-  });
 
 const RECEIVED_TIMESTAMP = 1669907135201;
 const RECEIVED_BLOCK_INDEX = `100-3`;
@@ -1000,7 +976,9 @@ describe('server', () => {
     });
 
     it('rejects if amount is lower than minimum swap amount', async () => {
-      mockEnvironmentCall({ minimumDepositAmount: '0xffffff' });
+      jest.mocked(axios.post).mockResolvedValueOnce({
+        data: environment({ minDepositAmount: '0xffffff' }),
+      });
 
       const { body, status } = await request(app).post('/swaps').send({
         srcAsset: Assets.DOT,
@@ -1018,7 +996,9 @@ describe('server', () => {
     });
 
     it('rejects if amount is higher than maximum swap amount', async () => {
-      mockEnvironmentCall({ maximumSwapAmount: '0x1' });
+      jest
+        .mocked(axios.post)
+        .mockResolvedValueOnce({ data: environment({ maxSwapAmount: '0x1' }) });
 
       const { body, status } = await request(app).post('/swaps').send({
         srcAsset: Assets.USDC,

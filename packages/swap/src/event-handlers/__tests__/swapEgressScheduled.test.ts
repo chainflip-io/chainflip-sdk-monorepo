@@ -1,4 +1,5 @@
 import { Assets } from '@/shared/enums';
+import { environment } from '@/shared/tests/fixtures';
 import {
   DOT_ADDRESS,
   createDepositChannel,
@@ -11,6 +12,12 @@ const {
   eventContext: { event },
   block,
 } = swapEgressScheduledMock;
+
+jest.mock('axios', () => ({
+  post: jest.fn(() =>
+    Promise.resolve({ data: environment({ egressFee: '0x777777' }) }),
+  ),
+}));
 
 describe(swapEgressScheduled, () => {
   beforeEach(async () => {
@@ -37,6 +44,7 @@ describe(swapEgressScheduled, () => {
           nativeId: BigInt(swapId),
           depositAmount: '10000000000',
           srcAmount: '10000000000',
+          destAmount: '10000000000',
           depositReceivedAt: new Date(block.timestamp - 12000),
           depositReceivedBlockIndex: `${block.height - 100}-${
             event.indexInBlock
@@ -69,6 +77,7 @@ describe(swapEgressScheduled, () => {
             chain: true,
           },
         },
+        fees: true,
       },
     });
 
@@ -78,6 +87,7 @@ describe(swapEgressScheduled, () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       swapDepositChannelId: expect.any(BigInt),
+      fees: [{ id: expect.any(BigInt), swapId: expect.any(BigInt) }],
     });
   });
 });

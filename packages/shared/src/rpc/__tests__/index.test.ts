@@ -31,7 +31,12 @@ describe('getFundingEnvironment', () => {
 
 describe('getSwappingEnvironment', () => {
   it('retrieves the swapping environment', async () => {
-    const spy = mockResponse(swappingEnvironment('0x4563918244f40000'));
+    const spy = mockResponse(
+      swappingEnvironment({
+        minSwapAmount: '0x0',
+        maxSwapAmount: '0x4563918244f40000',
+      }),
+    );
 
     expect(await getSwappingEnvironment({ network: 'perseverance' })).toEqual({
       minimumSwapAmounts: {
@@ -63,7 +68,12 @@ describe('getSwappingEnvironment', () => {
 
 describe('getIngressEgressEnvironment', () => {
   it('retrieves the ingress egress environment', async () => {
-    const spy = mockResponse(ingressEgressEnvironment('0x4563918244f40000'));
+    const spy = mockResponse(
+      ingressEgressEnvironment({
+        minDepositAmount: '0x4563918244f40000',
+        ingressFee: '0x4563918244f40000',
+      }),
+    );
 
     expect(
       await getIngressEgressEnvironment({ network: 'perseverance' }),

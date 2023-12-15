@@ -39,16 +39,21 @@ const RPC_URLS: Record<ChainflipNetwork, string> = {
 
 export type RpcConfig = { rpcUrl: string } | { network: ChainflipNetwork };
 
+type RpcParams = {
+  cf_environment: [at?: string];
+  cf_swapping_environment: [at?: string];
+  cf_ingress_egress_environment: [at?: string];
+  cf_funding_environment: [at?: string];
+  cf_pool_info: [at?: string];
+};
+
+type RpcMethod = keyof RpcParams;
+
 const createRequest =
-  <P extends z.ZodTypeAny, R extends z.ZodTypeAny>(
-    method: string,
-    responseParser: R,
-    paramsParser?: P,
-  ) =>
+  <M extends RpcMethod, R extends z.ZodTypeAny>(method: M, responseParser: R) =>
   async (
     urlOrNetwork: RpcConfig,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    params: z.input<P> extends any ? void : z.input<P>,
+    ...params: RpcParams[M]
   ): Promise<CamelCaseRecord<z.output<R>>> => {
     const url =
       'network' in urlOrNetwork
@@ -57,7 +62,7 @@ const createRequest =
     const { data } = await axios.post(url, {
       jsonrpc: '2.0',
       method,
-      params: paramsParser?.parse(params),
+      params,
       id: 1,
     });
 

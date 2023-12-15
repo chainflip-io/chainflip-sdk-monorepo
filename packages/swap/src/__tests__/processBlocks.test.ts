@@ -38,6 +38,7 @@ describe(processBlocks, () => {
             {
               height: 150,
               timestamp: 1681989543437,
+              hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
               specId: 'chainflip-node@0',
               events: {
                 nodes: [swapScheduledDotDepositChannelMock.eventContext.event],

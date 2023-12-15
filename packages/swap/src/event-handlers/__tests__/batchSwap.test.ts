@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { GraphQLClient } from 'graphql-request';
+import { environment } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import { Event } from '../../gql/generated/graphql';
 import processBlocks from '../../processBlocks';
@@ -10,6 +11,14 @@ jest.mock('graphql-request', () => ({
   GraphQLClient: class MockClient {
     request() {}
   },
+}));
+
+jest.mock('axios', () => ({
+  post: jest.fn(() =>
+    Promise.resolve({
+      data: environment({ egressFee: '0x55524' }),
+    }),
+  ),
 }));
 
 const swapDepositAddressReadyEvent = {
@@ -268,7 +277,7 @@ describe('batch swap flow', () => {
       'swap',
     );
 
-    expect(fees).toHaveLength(4);
+    expect(fees).toHaveLength(5);
     for (let i = 0; i < fees.length; i += 1) {
       expect(fees[i]).toMatchSnapshot(
         {
