@@ -1,6 +1,48 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`swapEgressScheduled updates an existing swap with the scheduled timestamp 1`] = `
+exports[`swapEgressScheduled updates an existing swap when the egress asset is not the native asset 1`] = `
+{
+  "ccmDepositReceivedBlockIndex": null,
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "createdAt": Any<Date>,
+  "depositAmount": "10000000000",
+  "depositReceivedAt": 2022-12-06T14:31:33.000Z,
+  "depositReceivedBlockIndex": "20-0",
+  "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+  "destAmount": "10000000000",
+  "destAsset": "USDC",
+  "egress": {
+    "amount": "1234567890",
+    "chain": "Ethereum",
+    "scheduledAt": 2022-12-06T14:31:45.000Z,
+  },
+  "egressAmount": "9976511899",
+  "egressId": Any<BigInt>,
+  "fees": [
+    {
+      "amount": "23488101",
+      "asset": "USDC",
+      "id": Any<BigInt>,
+      "swapId": Any<BigInt>,
+      "type": "EGRESS",
+    },
+  ],
+  "id": Any<BigInt>,
+  "intermediateAmount": null,
+  "nativeId": 9876545n,
+  "srcAmount": "10000000000",
+  "srcAsset": "ETH",
+  "swapDepositChannelId": Any<BigInt>,
+  "swapExecutedAt": 2022-12-06T14:31:39.000Z,
+  "swapExecutedBlockIndex": "120-0",
+  "txHash": null,
+  "type": "SWAP",
+  "updatedAt": Any<Date>,
+}
+`;
+
+exports[`swapEgressScheduled updates an existing swap when the egress asset is the native asset 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
