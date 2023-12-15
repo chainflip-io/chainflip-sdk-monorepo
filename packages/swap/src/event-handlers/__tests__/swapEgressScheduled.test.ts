@@ -57,8 +57,8 @@ describe(swapEgressScheduled, () => {
         create: {
           nativeId: BigInt(swapId),
           depositAmount: '10000000000',
-          srcAmount: '10000000000',
-          destAmount: '10000000000',
+          swapInputAmount: '10000000000',
+          swapOutputAmount: '10000000000',
           depositReceivedAt: new Date(block.timestamp - 12000),
           depositReceivedBlockIndex: `${block.height - 100}-${
             event.indexInBlock
@@ -128,8 +128,8 @@ describe(swapEgressScheduled, () => {
         create: {
           nativeId: BigInt(swapId),
           depositAmount: '10000000000',
-          srcAmount: '10000000000',
-          destAmount: '10000000000',
+          swapInputAmount: '10000000000',
+          swapOutputAmount: '10000000000',
           depositReceivedAt: new Date(block.timestamp - 12000),
           depositReceivedBlockIndex: `${block.height - 100}-${
             event.indexInBlock

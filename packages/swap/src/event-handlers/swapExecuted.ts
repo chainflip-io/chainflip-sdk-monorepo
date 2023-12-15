@@ -19,7 +19,7 @@ export default async function swapExecuted({
   const {
     swapId,
     intermediateAmount,
-    egressAmount: destAmount,
+    egressAmount: swapOutputAmount,
   } = swapExecutedArgs.parse(event.args);
   const swap = await prisma.swap.findUniqueOrThrow({
     where: { nativeId: swapId },
@@ -28,15 +28,15 @@ export default async function swapExecuted({
   const fees = await calculateIncludedSwapFees(
     swap.srcAsset,
     swap.destAsset,
-    swap.srcAmount.toString(),
+    swap.swapInputAmount.toString(),
     intermediateAmount?.toString(),
-    destAmount.toString(),
+    swapOutputAmount.toString(),
   );
 
   await prisma.swap.update({
     where: { nativeId: swapId },
     data: {
-      destAmount: destAmount.toString(),
+      swapOutputAmount: swapOutputAmount.toString(),
       intermediateAmount: intermediateAmount?.toString(),
       fees: {
         create: fees.map((fee) => ({

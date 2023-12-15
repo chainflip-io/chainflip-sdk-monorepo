@@ -19,7 +19,7 @@ describe(ccmDepositReceived, () => {
         create: {
           nativeId: BigInt(9876545),
           depositAmount: '10000000000',
-          srcAmount: '10000000000',
+          swapInputAmount: '10000000000',
           depositReceivedAt: new Date(Date.now() - 6000),
           depositReceivedBlockIndex: `${block.height}-${indexInBlock}`,
           srcAsset: Assets.ETH,

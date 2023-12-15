@@ -111,7 +111,7 @@ export default async function swapEgressScheduled({
     prisma.egress.update({
       where: { nativeId_chain: { chain, nativeId } },
       data: {
-        amount: swap.destAmount?.sub(egressFee.toString()),
+        amount: swap.swapOutputAmount?.sub(egressFee.toString()),
       },
     }),
     prisma.swap.update({

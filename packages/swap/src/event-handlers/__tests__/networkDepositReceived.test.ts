@@ -37,7 +37,7 @@ describe('depositReceived', () => {
         issuedBlock: 0,
         swaps: {
           create: {
-            srcAmount: '100000',
+            swapInputAmount: '100000',
             depositAmount: '100000',
             srcAsset: 'BTC',
             destAsset: 'ETH',
@@ -101,7 +101,7 @@ describe('depositReceived', () => {
         issuedBlock: 0,
         swaps: {
           create: {
-            srcAmount: '100000',
+            swapInputAmount: '100000',
             depositAmount: '100000',
             srcAsset: 'BTC',
             destAsset: 'ETH',
