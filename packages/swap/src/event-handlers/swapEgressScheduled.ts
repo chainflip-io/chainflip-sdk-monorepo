@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { Asset, assetChains } from '@/shared/enums';
 import { chainflipChain, unsignedInteger } from '@/shared/parsers';
-import { Environment, getEnvironmentAtBlock } from '@/shared/rpc';
+import { Environment, getEnvironment } from '@/shared/rpc';
 import { readAssetValue } from '@/shared/rpc/utils';
 import { CacheMap } from '@/swap/utils/dataStructures';
 import type { EventHandlerArgs } from '.';
@@ -19,30 +19,27 @@ const environmentByBlockHashCache = new CacheMap<
   Promise<Environment | null>
 >(60_000);
 
+const methodNotFoundRegExp = /Exported method .+ is not found/;
+const rpcConfig = { rpcUrl: process.env.RPC_NODE_HTTP_URL as string };
+
 const getCachedEnvironmentAtBlock = async (
   blockHash: string,
 ): Promise<Environment | null> => {
   const cached = environmentByBlockHashCache.get(blockHash);
   if (cached) return cached;
 
-  try {
-    const env = getEnvironmentAtBlock(
-      { rpcUrl: process.env.RPC_NODE_HTTP_URL as string },
-      [blockHash],
-    );
-    environmentByBlockHashCache.set(blockHash, env);
+  const env = getEnvironment(rpcConfig, blockHash).catch((e: Error) => {
+    const cause = e.cause as { message: string } | undefined;
 
-    return await env;
-  } catch (e) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (!/Exported method .+ is not found/.test((e as any)?.cause?.message)) {
-      throw e;
-    }
+    if (methodNotFoundRegExp.test(cause?.message ?? '')) return null;
 
-    environmentByBlockHashCache.set(blockHash, Promise.resolve(null));
-  }
+    environmentByBlockHashCache.delete(blockHash);
+    throw e;
+  });
 
-  return null;
+  environmentByBlockHashCache.set(blockHash, env);
+
+  return env;
 };
 
 const getEgressFeeAtBlock = async (

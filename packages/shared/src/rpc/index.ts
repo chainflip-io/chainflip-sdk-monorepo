@@ -39,15 +39,21 @@ const RPC_URLS: Record<ChainflipNetwork, string> = {
 
 export type RpcConfig = { rpcUrl: string } | { network: ChainflipNetwork };
 
+type RpcParams = {
+  cf_environment: [at?: string];
+  cf_swapping_environment: [at?: string];
+  cf_ingress_egress_environment: [at?: string];
+  cf_funding_environment: [at?: string];
+  cf_pool_info: [at?: string];
+};
+
+type RpcMethod = keyof RpcParams;
+
 const createRequest =
-  <P extends z.ZodTypeAny, R extends z.ZodTypeAny>(
-    method: string,
-    responseParser: R,
-    paramsParser?: P,
-  ) =>
+  <M extends RpcMethod, R extends z.ZodTypeAny>(method: M, responseParser: R) =>
   async (
     urlOrNetwork: RpcConfig,
-    params: P extends z.ZodVoid ? void : z.input<P>,
+    ...params: RpcParams[M]
   ): Promise<CamelCaseRecord<z.output<R>>> => {
     const url =
       'network' in urlOrNetwork
@@ -56,7 +62,7 @@ const createRequest =
     const { data } = await axios.post(url, {
       jsonrpc: '2.0',
       method,
-      params: paramsParser?.parse(params),
+      params,
       id: 1,
     });
 
@@ -170,11 +176,6 @@ const environment = z.object({
 });
 
 export const getEnvironment = createRequest('cf_environment', environment);
-export const getEnvironmentAtBlock = createRequest(
-  'cf_environment',
-  environment,
-  z.tuple([z.string().optional()]), // [atBlockHash]
-);
 
 export type RpcEnvironment = z.input<typeof environment>;
 
