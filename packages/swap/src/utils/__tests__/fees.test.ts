@@ -139,7 +139,9 @@ describe('fees', () => {
       );
 
       expect(result).toBe(200n);
-      expect(jest.mocked(axios.post).mock.calls).toMatchSnapshot();
+      expect(
+        jest.mocked(axios.post).mock.calls.map((call) => call[1]),
+      ).toMatchSnapshot();
     });
     it('returns the rate from the rpc for a non native asset and a block hash', async () => {
       const result = await estimateIngressEgressFeeAssetAmount(
