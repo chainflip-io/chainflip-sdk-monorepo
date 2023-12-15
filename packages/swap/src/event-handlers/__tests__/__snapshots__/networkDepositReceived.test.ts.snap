@@ -12,7 +12,6 @@ exports[`depositReceived should not change swap if there is a newer deposit chan
   "destAddress": "0x6fd76a7699e6269af49e9c63f01f61464ab21d1c",
   "destAmount": null,
   "destAsset": "ETH",
-  "egressAmount": null,
   "egressId": null,
   "fees": [],
   "id": Any<BigInt>,
@@ -41,7 +40,6 @@ exports[`depositReceived should update the values for an existing swap 1`] = `
   "destAddress": "0x6fd76a7699e6269af49e9c63f01f61464ab21d1c",
   "destAmount": null,
   "destAsset": "ETH",
-  "egressAmount": null,
   "egressId": null,
   "fees": [
     {

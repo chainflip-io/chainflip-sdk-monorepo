@@ -56,14 +56,12 @@ const quote = (io: Server) => {
         await getNativeIngressFee(query.srcAsset),
         query.srcAsset.asset,
       );
-      if (ingressFee > 0n) {
-        includedFees.push({
-          type: 'INGRESS',
-          chain: query.srcAsset.chain,
-          asset: query.srcAsset.asset,
-          amount: ingressFee.toString(),
-        });
-      }
+      includedFees.push({
+        type: 'INGRESS',
+        chain: query.srcAsset.chain,
+        asset: query.srcAsset.asset,
+        amount: ingressFee.toString(),
+      });
 
       const quoteRequest = buildQuoteRequest({
         ...query,

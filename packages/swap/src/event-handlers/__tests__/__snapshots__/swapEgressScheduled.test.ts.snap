@@ -13,11 +13,10 @@ exports[`swapEgressScheduled updates an existing swap when the egress asset is n
   "destAmount": "10000000000",
   "destAsset": "USDC",
   "egress": {
-    "amount": "1234567890",
+    "amount": "9976511899",
     "chain": "Ethereum",
     "scheduledAt": 2022-12-06T14:31:45.000Z,
   },
-  "egressAmount": "9976511899",
   "egressId": Any<BigInt>,
   "fees": [
     {
@@ -71,11 +70,10 @@ exports[`swapEgressScheduled updates an existing swap when the egress asset is t
   "destAmount": "10000000000",
   "destAsset": "DOT",
   "egress": {
-    "amount": "1234567890",
+    "amount": "9992170633",
     "chain": "Ethereum",
     "scheduledAt": 2022-12-06T14:31:45.000Z,
   },
-  "egressAmount": "9992170633",
   "egressId": Any<BigInt>,
   "fees": [
     {

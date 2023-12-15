@@ -20,7 +20,7 @@ exports[`batch swap flow handles all the events: broadcast 1`] = `
 
 exports[`batch swap flow handles all the events: egress 1`] = `
 {
-  "amount": "480766415032706356",
+  "amount": "960671821324",
   "broadcastId": Any<BigInt>,
   "chain": "Ethereum",
   "createdAt": Any<Date>,
@@ -44,7 +44,6 @@ exports[`batch swap flow handles all the events: gas swap 1`] = `
   "destAddress": "0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0",
   "destAmount": "960672170800",
   "destAsset": "ETH",
-  "egressAmount": "960671821324",
   "egressId": Any<BigInt>,
   "id": Any<BigInt>,
   "intermediateAmount": "970",
@@ -72,7 +71,6 @@ exports[`batch swap flow handles all the events: principal swap 1`] = `
   "destAddress": "0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0",
   "destAmount": "480766415032706356",
   "destAsset": "ETH",
-  "egressAmount": "480766415032356880",
   "egressId": Any<BigInt>,
   "id": Any<BigInt>,
   "intermediateAmount": "485434508",
