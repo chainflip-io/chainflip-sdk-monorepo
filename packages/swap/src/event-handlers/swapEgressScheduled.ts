@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { Asset, assetChains } from '@/shared/enums';
+import { bigintMin } from '@/shared/functions';
 import { chainflipChain, unsignedInteger } from '@/shared/parsers';
 import { Environment, getEnvironment } from '@/shared/rpc';
 import { readAssetValue } from '@/shared/rpc/utils';
@@ -105,7 +106,10 @@ export default async function swapEgressScheduled({
   });
 
   // TODO: use an accurate source for determining the egress fee once the protocol provides one
-  const egressFee = await getEgressFeeAtBlock(block.hash, swap.destAsset);
+  const egressFee = bigintMin(
+    await getEgressFeeAtBlock(block.hash, swap.destAsset),
+    BigInt(swap.swapOutputAmount?.toString() ?? 0),
+  );
 
   await Promise.all([
     prisma.egress.update({
