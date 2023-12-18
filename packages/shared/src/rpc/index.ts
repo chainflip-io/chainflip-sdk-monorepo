@@ -178,7 +178,7 @@ const environment = z.object({
   ingress_egress: ingressEgressEnvironment,
   swapping: swappingEnvironment,
   funding: fundingEnvironment,
-  pools: poolsEnvironment,
+  // pools: poolsEnvironment,
 });
 
 export const getEnvironment = createRequest('cf_environment', environment);
