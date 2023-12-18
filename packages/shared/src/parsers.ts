@@ -23,8 +23,8 @@ const errorMap: ZodErrorMap = (_issue, context) => ({
 export const string = z.string({ errorMap });
 export const number = z.number({ errorMap });
 export const numericString = string.regex(/^[0-9]+$/);
-export const hexString = z.custom<`0x${string}`>(
-  (val) => typeof val === 'string' && /^0x[0-9a-f]+$/i.test(val),
+export const hexString = string.refine((v): v is `0x${string}` =>
+  /^0x[0-9a-f]+$/i.test(v),
 );
 export const hexStringWithMaxByteSize = (maxByteSize: number) =>
   hexString.refine((val) => val.length / 2 <= maxByteSize + 1, {

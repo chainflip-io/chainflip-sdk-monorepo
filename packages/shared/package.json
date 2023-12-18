@@ -21,6 +21,7 @@
   "dependencies": {
     "@polkadot/util": "^12.6.1",
     "@polkadot/util-crypto": "^12.6.1",
+    "bech32-buffer": "^0.2.1",
     "ethers": "6.9.0",
     "rxjs": "^7.8.1",
     "ws": "^8.14.2"

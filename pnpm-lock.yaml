@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  bech32-buffer@0.2.1:
+    hash: elryfzb6nrq4qzi6wcigmgsdj4
+    path: patches/bech32-buffer@0.2.1.patch
+
 importers:
 
   .:
@@ -14,6 +19,9 @@ importers:
       '@trpc/server':
         specifier: ^10.44.1
         version: 10.44.1
+      bech32-buffer:
+        specifier: ^0.2.1
+        version: 0.2.1(patch_hash=elryfzb6nrq4qzi6wcigmgsdj4)
       superjson:
         specifier: ^1.13.3
         version: 1.13.3
@@ -149,6 +157,9 @@ importers:
       axios:
         specifier: '*'
         version: 1.6.0
+      bech32-buffer:
+        specifier: ^0.2.1
+        version: 0.2.1(patch_hash=elryfzb6nrq4qzi6wcigmgsdj4)
       ethers:
         specifier: 6.9.0
         version: 6.9.0
@@ -4021,6 +4032,12 @@ packages:
     resolution: {integrity: sha512-lGe34o6EHj9y3Kts9R4ZYs/Gr+6N7MCaMlIFA3F1R2O5/m7K06AxfSeO5530PEERE6/WyEg3lsuyw4GHlPZHog==}
     engines: {node: ^4.5.0 || >= 5.9}
     dev: false
+
+  /bech32-buffer@0.2.1(patch_hash=elryfzb6nrq4qzi6wcigmgsdj4):
+    resolution: {integrity: sha512-fCG1TyZuCN48Sdw97p/IR39fvqpFlWDVpG7qnuU1Uc3+Xtc/0uqAp8U7bMW/bGuVF5CcNVIXwxQsWwUr6un6FQ==}
+    engines: {node: '>=8'}
+    dev: false
+    patched: true
 
   /bech32@1.1.4:
     resolution: {integrity: sha512-s0IrSOzLlbvX7yp4WBfPITzpAU8sqQcpsmwXDiKwrG4r491vwCO/XpejasRNl0piBMe/DvP4Tz0mIS/X1DPJBQ==}

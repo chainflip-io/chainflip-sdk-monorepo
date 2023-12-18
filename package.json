@@ -56,7 +56,13 @@
   "dependencies": {
     "@trpc/client": "^10.44.1",
     "@trpc/server": "^10.44.1",
+    "bech32-buffer": "^0.2.1",
     "superjson": "^1.13.3",
     "zod": "^3.22.4"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "bech32-buffer@0.2.1": "patches/bech32-buffer@0.2.1.patch"
+    }
   }
 }

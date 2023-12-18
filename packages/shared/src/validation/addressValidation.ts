@@ -5,7 +5,7 @@ import {
   encodeAddress,
 } from '@polkadot/util-crypto';
 import * as ethers from 'ethers';
-import { isValidSegwitAddress } from './segwitAddr';
+import { isValidSegwitAddress } from '../bitcoin';
 import { Chain } from '../enums';
 import { assert } from '../guards';
 
