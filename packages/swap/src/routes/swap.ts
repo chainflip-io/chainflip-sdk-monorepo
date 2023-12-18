@@ -152,24 +152,24 @@ router.get(
       depositChannelCreatedAt: swapDepositChannel?.createdAt.valueOf(),
       depositAddress: swapDepositChannel?.depositAddress,
       expectedDepositAmount:
-        swapDepositChannel?.expectedDepositAmount.toString(),
+        swapDepositChannel?.expectedDepositAmount.toFixed(),
       swapId: swap?.nativeId.toString(),
-      depositAmount: swap?.depositAmount?.toString() ?? pendingDeposit?.amount,
+      depositAmount: swap?.depositAmount?.toFixed() ?? pendingDeposit?.amount,
       depositTransactionHash: pendingDeposit?.transactionHash,
       depositTransactionConfirmations: pendingDeposit?.transactionConfirmations,
       depositReceivedAt: swap?.depositReceivedAt.valueOf(),
       depositReceivedBlockIndex: swap?.depositReceivedBlockIndex,
-      intermediateAmount: swap?.intermediateAmount?.toString(),
+      intermediateAmount: swap?.intermediateAmount?.toFixed(),
       swapExecutedAt: swap?.swapExecutedAt?.valueOf(),
       swapExecutedBlockIndex: swap?.swapExecutedBlockIndex,
-      egressAmount: swap?.egress?.amount?.toString(),
+      egressAmount: swap?.egress?.amount?.toFixed(),
       egressScheduledAt: swap?.egress?.scheduledAt?.valueOf(),
       egressScheduledBlockIndex: swap?.egress?.scheduledBlockIndex,
       feesPaid: swap?.fees.map((fee) => ({
         type: fee.type,
         chain: assetChains[fee.asset],
         asset: fee.asset,
-        amount: fee.amount.toString(),
+        amount: fee.amount.toFixed(),
       })),
       broadcastRequestedAt: swap?.egress?.broadcast?.requestedAt?.valueOf(),
       broadcastRequestedBlockIndex:
@@ -186,7 +186,7 @@ router.get(
       isDepositChanneExpired: swapDepositChannel?.isExpired ?? false,
       ccmDepositReceivedBlockIndex: swap?.ccmDepositReceivedBlockIndex,
       ccmMetadata: swap?.ccmGasBudget && {
-        gasBudget: swap?.ccmGasBudget?.toString(),
+        gasBudget: swap?.ccmGasBudget?.toFixed(),
         message: swap?.ccmMessage,
       },
       depositChannelOpenedThroughBackend:

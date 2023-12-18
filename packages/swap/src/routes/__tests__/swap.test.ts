@@ -82,6 +82,7 @@ describe('server', () => {
     it(`retrieves a swap in ${State.AwaitingDeposit} status`, async () => {
       const swapIntent = await createDepositChannel({
         srcChainExpiryBlock: 200,
+        expectedDepositAmount: '25000000000000000000000',
       });
       const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
 
@@ -98,7 +99,7 @@ describe('server', () => {
           "destAsset": "DOT",
           "destChain": "Polkadot",
           "estimatedDepositChannelExpiryTime": 1699527900000,
-          "expectedDepositAmount": "10000000000",
+          "expectedDepositAmount": "25000000000000000000000",
           "isDepositChanneExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
