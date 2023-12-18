@@ -85,7 +85,7 @@ export const networkDepositReceived =
 
     assert(swap, 'swap not found for deposit');
 
-    const ingressFee = amount - BigInt(swap.swapInputAmount.toString());
+    const ingressFee = amount - BigInt(swap.swapInputAmount.toFixed());
 
     await prisma.swap.update({
       where: { id: swap.id },
