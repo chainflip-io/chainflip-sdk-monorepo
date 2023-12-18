@@ -16,7 +16,7 @@ describe('depositReceived', () => {
       data: {
         srcChain: 'Bitcoin',
         depositAddress:
-          'tb1pcy5k30tzv4xva4kw4jaarwk8nc0l3gclnal36dvmujy0vzjqxsl42q',
+          'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
         channelId: 3,
         issuedBlock: 0,
         isSwapping: true,
@@ -29,7 +29,7 @@ describe('depositReceived', () => {
         srcChain: 'Bitcoin',
         srcChainExpiryBlock: 100,
         depositAddress:
-          'tb1pcy5k30tzv4xva4kw4jaarwk8nc0l3gclnal36dvmujy0vzjqxsl42q',
+          'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
         expectedDepositAmount: 0,
         destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
         destAsset: 'ETH',
@@ -80,7 +80,7 @@ describe('depositReceived', () => {
       data: {
         srcChain: 'Bitcoin',
         depositAddress:
-          'tb1pcy5k30tzv4xva4kw4jaarwk8nc0l3gclnal36dvmujy0vzjqxsl42q',
+          'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
         channelId: 3,
         issuedBlock: 0,
         isSwapping: true,
@@ -93,7 +93,7 @@ describe('depositReceived', () => {
         srcChain: 'Bitcoin',
         srcChainExpiryBlock: 100,
         depositAddress:
-          'tb1pcy5k30tzv4xva4kw4jaarwk8nc0l3gclnal36dvmujy0vzjqxsl42q',
+          'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
         expectedDepositAmount: 0,
         destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
         destAsset: 'ETH',
@@ -120,7 +120,7 @@ describe('depositReceived', () => {
       data: {
         srcChain: 'Bitcoin',
         depositAddress:
-          'tb1pcy5k30tzv4xva4kw4jaarwk8nc0l3gclnal36dvmujy0vzjqxsl42q',
+          'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
         channelId: 3,
         issuedBlock: 2,
         isSwapping: false,

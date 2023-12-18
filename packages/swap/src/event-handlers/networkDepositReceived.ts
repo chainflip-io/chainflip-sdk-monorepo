@@ -16,7 +16,13 @@ export const depositReceivedArgs = z
     depositAddress: z.union([
       z
         .object({ __kind: z.literal('Taproot'), value: hexString })
-        .transform((o) => encodeBitcoinAddress(o.value)),
+        .transform((o) => {
+          try {
+            return encodeBitcoinAddress(o.value);
+          } catch {
+            return null;
+          }
+        }),
       hexString,
     ]),
   })

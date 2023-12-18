@@ -162,7 +162,7 @@ export const networkDepositReceivedBtcMock = {
         amount: '110000',
         depositAddress: {
           value:
-            '0x2469c12968bd62654cced6ceacbbd1bac79e1ff8a31f9f7f1d359be488f60a40',
+            '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
           __kind: 'Taproot',
         },
       },

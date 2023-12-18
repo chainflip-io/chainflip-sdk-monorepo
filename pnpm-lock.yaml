@@ -157,6 +157,9 @@ importers:
       axios:
         specifier: '*'
         version: 1.6.0
+      bech32-buffer:
+        specifier: ^0.2.1
+        version: 0.2.1(patch_hash=elryfzb6nrq4qzi6wcigmgsdj4)
       ethers:
         specifier: 6.9.0
         version: 6.9.0
