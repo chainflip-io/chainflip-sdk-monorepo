@@ -28,7 +28,7 @@ export default async function swapExecuted({
   const fees = await calculateIncludedSwapFees(
     swap.srcAsset,
     swap.destAsset,
-    swap.swapInputAmount.toString(),
+    swap.swapInputAmount.toFixed(),
     intermediateAmount?.toString(),
     swapOutputAmount.toString(),
   );
