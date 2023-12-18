@@ -2,27 +2,12 @@ import { type Chain } from '.prisma/client';
 import { encodeAddress } from '@polkadot/util-crypto';
 import assert from 'assert';
 import { z } from 'zod';
+import { encodeAddress as encodeBitcoinAddress } from '@/shared/bitcoin';
 import { u128, chainflipAssetEnum, hexString } from '@/shared/parsers';
 import { toUpperCase } from '@/shared/strings';
-import { segwitAddress } from '@/shared/validation/segwitAddr';
 import { Asset } from '../enums';
 import logger from '../utils/logger';
 import { EventHandlerArgs } from './index';
-
-const getBitcoinAddressHRP = () => {
-  switch (process.env.CHAINFLIP_NETWORK) {
-    case 'sisyphos':
-    case 'perseverance':
-      return 'tb';
-    case 'backspin':
-      return 'bcrt';
-    case 'berghain':
-    case 'mainnet':
-      return 'bc';
-    default:
-      return 'tb';
-  }
-};
 
 export const depositReceivedArgs = z
   .object({
@@ -31,11 +16,7 @@ export const depositReceivedArgs = z
     depositAddress: z.union([
       z
         .object({ __kind: z.literal('Taproot'), value: hexString })
-        .transform((o) =>
-          segwitAddress.encode(getBitcoinAddressHRP(), 1, [
-            ...Buffer.from(o.value.slice(6), 'hex'),
-          ]),
-        ),
+        .transform((o) => encodeBitcoinAddress(o.value)),
       hexString,
     ]),
   })
