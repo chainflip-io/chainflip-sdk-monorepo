@@ -67,9 +67,10 @@ const quote = (io: Server) => {
         amount: ingressFee.toString(),
       });
 
+      const swapInputAmount = BigInt(query.amount) - ingressFee;
       const quoteRequest = buildQuoteRequest({
         ...query,
-        amount: String(BigInt(query.amount) - ingressFee),
+        amount: String(swapInputAmount),
       });
       const quotePools = await getPools(
         query.srcAsset.asset,
@@ -81,7 +82,10 @@ const quote = (io: Server) => {
       try {
         const [rawMarketMakerQuotes, brokerQuote] = await Promise.all([
           collectMakerQuotes(quoteRequest.id, io.sockets.sockets.size, quotes$),
-          getBrokerQuote(query, quoteRequest.id),
+          getBrokerQuote(
+            { ...query, amount: String(swapInputAmount) },
+            quoteRequest.id,
+          ),
         ]);
 
         // market maker quotes do not include liquidity pool fee and network fee
