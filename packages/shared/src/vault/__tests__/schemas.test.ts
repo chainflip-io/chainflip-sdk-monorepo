@@ -10,7 +10,7 @@ const DOT_ADDRESS = '5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX';
 const BTC_ADDRESS = 'tb1qge9vvd2mmjxfhuxuq204h4fxxphr0vfnsnx205';
 
 const parse = (params: unknown): boolean =>
-  executeSwapParamsSchema.safeParse(params).success;
+  executeSwapParamsSchema('perseverance').safeParse(params).success;
 
 describe('executeSwapParamsSchema', () => {
   it.each([

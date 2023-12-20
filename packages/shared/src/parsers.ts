@@ -35,10 +35,10 @@ export const hexStringFromNumber = numericString.transform(
 );
 export const bareHexString = string.regex(/^[0-9a-f]+$/);
 
-export const btcAddress = (env?: ChainflipNetwork) => {
-  const network = env ?? process.env.CHAINFLIP_NETWORK;
-  if (network === 'mainnet')
+export const btcAddress = (network: ChainflipNetwork) => {
+  if (network === 'mainnet') {
     return string.regex(/^(1|3|bc1)/).refine(validateBitcoinMainnetAddress);
+  }
 
   return z.union([
     string.regex(/^(m|n|2|tb1)/).refine(validateBitcoinTestnetAddress),

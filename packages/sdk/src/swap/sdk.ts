@@ -118,6 +118,7 @@ export class SwapSDK {
       const result = await requestSwapDepositAddress(
         depositAddressRequest,
         this.brokerConfig,
+        this.network,
       );
 
       response = {

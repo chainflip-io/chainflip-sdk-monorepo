@@ -34,6 +34,7 @@ describe(broker.requestSwapDepositAddress, () => {
         destChain: 'Ethereum',
       },
       brokerConfig,
+      'perseverance',
     );
     expect(postSpy.mock.calls[0][0]).toBe(brokerConfig.url);
     const requestObject = postSpy.mock.calls[0][1];
@@ -45,6 +46,49 @@ describe(broker.requestSwapDepositAddress, () => {
         { asset: 'FLIP', chain: 'Ethereum' },
         { asset: 'USDC', chain: 'Ethereum' },
         '0xcafebabe',
+        0,
+      ],
+    });
+    expect(result).toStrictEqual({
+      address: '0x1234567890',
+      issuedBlock: 50,
+      channelId: 200n,
+      sourceChainExpiryBlock: 1_000_000n,
+    });
+  });
+
+  it('gets a response from the broker for bitoin mainnet', async () => {
+    mockResponse({
+      id: 1,
+      jsonrpc: '2.0',
+      result: {
+        address: '0x1234567890',
+        issued_block: 50,
+        channel_id: 200,
+        source_chain_expiry_block: 1_000_000,
+      },
+    });
+    const result = await broker.requestSwapDepositAddress(
+      {
+        srcAsset: Assets.FLIP,
+        destAsset: Assets.BTC,
+        srcChain: 'Ethereum',
+        destAddress: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
+        destChain: 'Bitcoin',
+      },
+      brokerConfig,
+      'mainnet',
+    );
+    expect(postSpy.mock.calls[0][0]).toBe(brokerConfig.url);
+    const requestObject = postSpy.mock.calls[0][1];
+    expect(requestObject).toStrictEqual({
+      id: 1,
+      jsonrpc: '2.0',
+      method: 'broker_requestSwapDepositAddress',
+      params: [
+        { asset: 'FLIP', chain: 'Ethereum' },
+        { asset: 'BTC', chain: 'Bitcoin' },
+        '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
         0,
       ],
     });
@@ -80,6 +124,7 @@ describe(broker.requestSwapDepositAddress, () => {
         },
       },
       brokerConfig,
+      'perseverance',
     );
     const requestObject = postSpy.mock.calls[0][1];
     expect(requestObject).toStrictEqual({
@@ -126,6 +171,7 @@ describe(broker.requestSwapDepositAddress, () => {
           destChain: 'Ethereum',
         },
         brokerConfig,
+        'perseverance',
       ),
     ).rejects.toThrowError(
       'Broker responded with error code -1: error message',
