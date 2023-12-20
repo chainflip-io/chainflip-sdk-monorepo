@@ -100,6 +100,22 @@ describe(broker.requestSwapDepositAddress, () => {
     });
   });
 
+  it('rejects testnet addresses for bitcoin mainnet', async () => {
+    await expect(
+      broker.requestSwapDepositAddress(
+        {
+          srcAsset: Assets.FLIP,
+          destAsset: Assets.BTC,
+          srcChain: 'Ethereum',
+          destAddress: '2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm',
+          destChain: 'Bitcoin',
+        },
+        brokerConfig,
+        'mainnet',
+      ),
+    ).rejects.toThrow();
+  });
+
   it('submits ccm data', async () => {
     mockResponse({
       id: 1,
