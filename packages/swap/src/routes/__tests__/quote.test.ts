@@ -300,6 +300,12 @@ describe('server', () => {
         intermediate_asset: null,
         source_asset: 'USDC',
       });
+      expect(sendSpy).toHaveBeenCalledWith(
+        'swap_rate',
+        { asset: 'USDC', chain: 'Ethereum' },
+        { asset: 'ETH', chain: 'Ethereum' },
+        '98000000', // deposit amount - ingress fee
+      );
       expect(body).toMatchObject({
         id: expect.any(String),
         egressAmount: (1e18 - 25000).toString(),
@@ -330,7 +336,6 @@ describe('server', () => {
           },
         ],
       });
-      expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 
     it('gets the quote to usdc when the broker is best', async () => {
