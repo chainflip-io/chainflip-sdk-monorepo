@@ -43,6 +43,11 @@ export const yargsOptions = {
     type: 'string',
     describe: 'The amount of gas that is sent with the CCM message',
   },
+  network: {
+    type: 'string',
+    demandOption: true,
+    choices: ['mainnet', 'perseverance', 'backspin', 'sisyphos'],
+  },
 } as const satisfies { [key: string]: Options };
 
 export default async function cliRequestSwapDepositAddress(
@@ -72,6 +77,7 @@ export default async function cliRequestSwapDepositAddress(
       url: args.brokerUrl,
       commissionBps: 0,
     },
+    args.network,
   );
 
   console.log(`Deposit address: ${result.address}`);
