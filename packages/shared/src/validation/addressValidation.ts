@@ -6,7 +6,7 @@ import {
 } from '@polkadot/util-crypto';
 import * as ethers from 'ethers';
 import { isValidSegwitAddress } from '../bitcoin';
-import { Chain } from '../enums';
+import { Chain, ChainflipNetwork } from '../enums';
 import { assert } from '../guards';
 
 export type AddressValidator = (address: string) => boolean;
@@ -113,25 +113,32 @@ export const validateBitcoinRegtestAddress: AddressValidator = (
 export const validateChainAddress = (
   chain: Chain,
   address: string,
-  isMainnet = true,
+  network: ChainflipNetwork,
 ): boolean => {
   switch (chain) {
     case 'Bitcoin':
-      return isMainnet
-        ? validateBitcoinMainnetAddress(address)
-        : validateBitcoinTestnetAddress(address) ||
-            validateBitcoinRegtestAddress(address);
+      switch (network) {
+        case 'mainnet':
+          return validateBitcoinMainnetAddress(address);
+        case 'perseverance':
+        case 'sisyphos':
+          return validateBitcoinTestnetAddress(address);
+        case 'backspin':
+          return validateBitcoinRegtestAddress(address);
+        default:
+          throw new Error(`unexpected chainflip network: ${network}`);
+      }
     case 'Ethereum':
       return validateEvmAddress(address);
     case 'Polkadot':
       return validatePolkadotAddress(address);
     default:
-      return chain;
+      throw new Error(`unexpected chain: ${chain}`);
   }
 };
 
 export const validateAddress = (
   chain: Chain,
   address: string,
-  isMainnet = true,
-): boolean => validateChainAddress(chain, address, isMainnet);
+  network: ChainflipNetwork,
+): boolean => validateChainAddress(chain, address, network);

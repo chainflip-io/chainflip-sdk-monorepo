@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import * as broker from '@/shared/broker';
+import { ChainflipNetwork } from '@/shared/enums';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';
-import { isProduction } from '../utils/consts';
 import { calculateExpiryTime } from '../utils/function';
 import { validateSwapAmount } from '../utils/rpc';
 import screenAddress from '../utils/screenAddress';
@@ -12,7 +12,13 @@ import ServiceError from '../utils/ServiceError';
 export default async function openSwapDepositChannel(
   input: z.output<typeof openSwapDepositChannelSchema>,
 ) {
-  if (!validateAddress(input.destChain, input.destAddress, isProduction)) {
+  if (
+    !validateAddress(
+      input.destChain,
+      input.destAddress,
+      process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
+    )
+  ) {
     throw ServiceError.badRequest('provided address is not valid');
   }
 
