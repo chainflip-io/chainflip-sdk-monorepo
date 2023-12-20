@@ -37,10 +37,14 @@ export default async function openSwapDepositChannel(
     address: depositAddress,
     sourceChainExpiryBlock: srcChainExpiryBlock,
     ...blockInfo
-  } = await broker.requestSwapDepositAddress(input, {
-    url: process.env.RPC_BROKER_HTTPS_URL as string,
-    commissionBps: 0,
-  });
+  } = await broker.requestSwapDepositAddress(
+    input,
+    {
+      url: process.env.RPC_BROKER_HTTPS_URL as string,
+      commissionBps: 0,
+    },
+    process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
+  );
 
   const { destChain, ...rest } = input;
 

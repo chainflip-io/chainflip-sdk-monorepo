@@ -166,7 +166,9 @@ const executeSwap = async (
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionReceipt> => {
-  const parsedParams = executeSwapParamsSchema.parse(params);
+  const network =
+    networkOpts.network === 'localnet' ? 'backspin' : networkOpts.network;
+  const parsedParams = executeSwapParamsSchema(network).parse(params);
 
   if ('ccmMetadata' in parsedParams) {
     return isTokenCall(parsedParams)

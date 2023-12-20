@@ -2,7 +2,7 @@ import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import axios from 'axios';
 import { z } from 'zod';
-import { Asset, Assets, Chain } from './enums';
+import { Asset, Assets, Chain, ChainflipNetwork } from './enums';
 import { isNotNullish } from './guards';
 import {
   hexString,
@@ -62,12 +62,12 @@ const rpcResult = z.union([
   z.object({ result: z.unknown() }),
 ]);
 
-const requestValidators = {
+const requestValidators = (network: ChainflipNetwork) => ({
   requestSwapDepositAddress: z
     .tuple([
       chainflipAssetAndChain,
       chainflipAssetAndChain,
-      z.union([numericString, hexString, btcAddress()]),
+      z.union([numericString, hexString, btcAddress(network)]),
       z.number(),
       ccmMetadataSchema
         .merge(
@@ -81,12 +81,12 @@ const requestValidators = {
     .transform(([a, b, c, d, e]) =>
       [a, b, c, d, transformObjToSnakeCase(e)].filter(isNotNullish),
     ),
-};
+});
 
-const responseValidators = {
+const responseValidators = (network: ChainflipNetwork) => ({
   requestSwapDepositAddress: z
     .object({
-      address: z.union([dotAddress, hexString, btcAddress()]),
+      address: z.union([dotAddress, hexString, btcAddress(network)]),
       issued_block: z.number(),
       channel_id: z.number(),
       expiry_block: z.number().int().safe().positive().optional(),
@@ -100,24 +100,28 @@ const responseValidators = {
         sourceChainExpiryBlock: source_chain_expiry_block,
       }),
     ),
-};
+});
+
+type RequestValidator = ReturnType<typeof requestValidators>;
+type ResponseValidator = ReturnType<typeof responseValidators>;
 
 export type DepositChannelResponse = z.infer<
-  (typeof responseValidators)['requestSwapDepositAddress']
+  ResponseValidator['requestSwapDepositAddress']
 >;
 
 const makeRpcRequest = async <
-  T extends keyof typeof requestValidators & keyof typeof responseValidators,
+  T extends keyof RequestValidator & keyof ResponseValidator,
 >(
+  network: ChainflipNetwork,
   url: string | URL,
   method: T,
-  ...params: z.input<(typeof requestValidators)[T]>
-): Promise<z.output<(typeof responseValidators)[T]>> => {
+  ...params: z.input<RequestValidator[T]>
+): Promise<z.output<ResponseValidator[T]>> => {
   const res = await axios.post(url.toString(), {
     jsonrpc: '2.0',
     id: 1,
     method: `broker_${method}`,
-    params: requestValidators[method].parse(params),
+    params: requestValidators(network)[method].parse(params),
   });
 
   const result = rpcResult.parse(res.data);
@@ -128,16 +132,18 @@ const makeRpcRequest = async <
     );
   }
 
-  return responseValidators[method].parse(result.result);
+  return responseValidators(network)[method].parse(result.result);
 };
 
 export async function requestSwapDepositAddress(
   swapRequest: NewSwapRequest,
   opts: { url: string; commissionBps: number },
+  chainflipNetwork: ChainflipNetwork,
 ): Promise<DepositChannelResponse> {
   const { srcAsset, srcChain, destAsset, destChain, destAddress } = swapRequest;
 
   return makeRpcRequest(
+    chainflipNetwork,
     opts.url,
     'requestSwapDepositAddress',
     { asset: srcAsset, chain: srcChain },
