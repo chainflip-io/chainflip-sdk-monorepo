@@ -31,13 +31,13 @@ jobs:
         include: ${{ fromJson(needs.generate-matrix.outputs.matrix).include }}
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
       - name: Install pnpm 💿
         run: npm i -g pnpm@8
 
       - name: Setup Node.js ${{ matrix.node_version }} 🎮
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65
         with:
           node-version: ${{ matrix.node_version }}
           cache: 'pnpm'
@@ -52,14 +52,14 @@ jobs:
 
       - name: Setup Python 🐍
         if: matrix.package == 'swap'
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c
         with:
           python-version: '3.8'
           cache: 'pip'
 
       - name: Docker Compose Action 🐳
         if: matrix.package == 'swap'
-        uses: isbang/compose-action@v1.4.1
+        uses: isbang/compose-action@178aeba5c9dbeed89ffffbb3e6548ec08e9839cf
         with:
           compose-file: ./packages/swap/docker-compose.yml
 
@@ -75,7 +75,7 @@ jobs:
         run: pnpm run test:ci:${{ matrix.package }}
 
       - name: Upload coverage to Codecov ☂️
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
         if: startsWith(matrix.node_version, '18')
         with:
           flags: ${{ matrix.package }}
@@ -93,13 +93,13 @@ jobs:
         include: ${{ fromJson(needs.generate-matrix.outputs.matrix).include }}
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
       - name: Install pnpm 💿
         run: npm i -g pnpm@8
 
       - name: Setup Node.js ${{ matrix.node_version }} 🎮
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65
         with:
           node-version: ${{ matrix.node_version }}
           cache: 'pnpm'

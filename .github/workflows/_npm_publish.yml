@@ -47,13 +47,13 @@ jobs:
     runs-on: ${{ inputs.runs_on }}
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
       - name: Install pnpm 💿
         run: npm i -g pnpm@8
 
       - name: Setup Node.js ${{ inputs.node_version }} 🎮
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65
         with:
           node-version: ${{ inputs.node_version }}
           cache: 'pnpm'
