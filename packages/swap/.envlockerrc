@@ -13,5 +13,10 @@
     "item": "backspin-swapping-backend",
     "vault": "Web",
     "account": "chainflip.1password.com"
+  },
+  "berghain": {
+    "item": "berghain-swapping-backend",
+    "vault": "Web",
+    "account": "chainflip.1password.com"
   }
 }
