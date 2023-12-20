@@ -36,7 +36,7 @@ jobs:
     steps:
       - name: Dispatch build-swap-backspin to chainflip-web-services 🦕
         if: startsWith(github.ref, 'refs/heads/main') == true
-        uses: peter-evans/repository-dispatch@v2
+        uses: peter-evans/repository-dispatch@bf47d102fdb849e755b0b0023ea3e81a44b6f570
         with:
           repository: chainflip-io/chainflip-web-services
           event-type: build-swap-backspin
@@ -45,7 +45,7 @@ jobs:
 
       - name: Dispatch build-swap-sisyphos to chainflip-web-services 🦕
         if: startsWith(github.ref, 'refs/heads/release') == true
-        uses: peter-evans/repository-dispatch@v2
+        uses: peter-evans/repository-dispatch@bf47d102fdb849e755b0b0023ea3e81a44b6f570
         with:
           repository: chainflip-io/chainflip-web-services
           event-type: build-swap-sisyphos
@@ -54,7 +54,7 @@ jobs:
 
       - name: Dispatch build-swap-perseverance to chainflip-web-services 🦕
         if: startsWith(github.ref, 'refs/tags/') == true
-        uses: peter-evans/repository-dispatch@v2
+        uses: peter-evans/repository-dispatch@bf47d102fdb849e755b0b0023ea3e81a44b6f570
         with:
           repository: chainflip-io/chainflip-web-services
           event-type: build-swap-perseverance
