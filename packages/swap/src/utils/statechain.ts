@@ -4,6 +4,7 @@ import RpcClient from '@/shared/node-apis/RpcClient';
 import { chainflipAssetAndChain, hexStringFromNumber } from '@/shared/parsers';
 import { ParsedQuoteParams } from '@/shared/schemas';
 import { memoize } from './function';
+import env from '../config/env';
 import { swapRateResponseSchema } from '../quoting/schemas';
 
 const requestValidators = {
@@ -20,7 +21,7 @@ const responseValidators = {
 
 const initializeClient = memoize(async () => {
   const rpcClient = await new RpcClient(
-    process.env.RPC_NODE_WSS_URL as string,
+    env.RPC_NODE_WSS_URL,
     requestValidators,
     responseValidators,
     'cf',

@@ -2,6 +2,7 @@ import axios from 'axios';
 import { ethers } from 'ethers';
 import { z } from 'zod';
 import { assetDecimals } from '@/shared/enums';
+import env from '../config/env';
 import logger from '../utils/logger';
 
 let lastJsonRpcRequestId = 0;
@@ -21,7 +22,7 @@ const depositTrackerResponseSchema = z.object({
 });
 
 export const fetchPendingBitcoinDeposit = async (address: string) => {
-  if (!process.env.BITCOIN_DEPOSIT_TRACKER_URL) {
+  if (!env.BITCOIN_DEPOSIT_TRACKER_URL) {
     logger.error(
       'cannot fetch pending deposit because BITCOIN_DEPOSIT_TRACKER_URL is not set',
     );
@@ -30,7 +31,7 @@ export const fetchPendingBitcoinDeposit = async (address: string) => {
 
   try {
     const response = await axios.post(
-      process.env.BITCOIN_DEPOSIT_TRACKER_URL,
+      env.BITCOIN_DEPOSIT_TRACKER_URL,
       {
         id: ++lastJsonRpcRequestId, // eslint-disable-line no-plusplus
         jsonrpc: '2.0',

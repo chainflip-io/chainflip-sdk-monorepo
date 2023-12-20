@@ -5,38 +5,35 @@ import {
   validateSwapAmount as validateAmount,
 } from '@/shared/rpc/utils';
 import { memoize } from './function';
+import env from '../config/env';
 
 const cachedGetEnvironment = memoize(getEnvironment, 6_000);
 
 type Result = { success: true } | { success: false; reason: string };
 
+const rpcConfig = { rpcUrl: env.RPC_NODE_HTTP_URL };
+
 export const validateSwapAmount = async (
   asset: UncheckedAssetAndChain,
   amount: bigint,
 ): Promise<Result> => {
-  const env = await cachedGetEnvironment({
-    rpcUrl: process.env.RPC_NODE_HTTP_URL as string,
-  });
+  const environment = await cachedGetEnvironment(rpcConfig);
 
-  return validateAmount(env, asset, amount);
+  return validateAmount(environment, asset, amount);
 };
 
 export const getNativeIngressFee = async (
   asset: UncheckedAssetAndChain,
 ): Promise<bigint> => {
-  const env = await cachedGetEnvironment({
-    rpcUrl: process.env.RPC_NODE_HTTP_URL as string,
-  });
+  const environment = await cachedGetEnvironment(rpcConfig);
 
-  return readAssetValue(env.ingressEgress.ingressFees, asset);
+  return readAssetValue(environment.ingressEgress.ingressFees, asset);
 };
 
 export const getNativeEgressFee = async (
   asset: UncheckedAssetAndChain,
 ): Promise<bigint> => {
-  const env = await cachedGetEnvironment({
-    rpcUrl: process.env.RPC_NODE_HTTP_URL as string,
-  });
+  const environment = await cachedGetEnvironment(rpcConfig);
 
-  return readAssetValue(env.ingressEgress.egressFees, asset);
+  return readAssetValue(environment.ingressEgress.egressFees, asset);
 };

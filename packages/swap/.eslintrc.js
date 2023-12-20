@@ -3,7 +3,9 @@ const path = require('path');
 
 module.exports = {
   extends: '../../.eslintrc.json',
+  plugins: ['eslint-plugin-n'],
   rules: {
+    'n/no-process-env': ['error'],
     'no-await-in-loop': 'off',
     'import/no-extraneous-dependencies': [
       'error',
@@ -25,4 +27,12 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      files: ['*.test.ts', '*.mjs', '*.js', '*.cjs'],
+      rules: {
+        'n/no-process-env': ['off'],
+      },
+    },
+  ],
 };

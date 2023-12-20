@@ -7,7 +7,7 @@ import {
   transports,
   type Logger,
 } from 'winston';
-import { isProduction, isTest } from './consts';
+import env from '../config/env';
 
 type CommonAlertCode = 'DbReadError' | 'DbWriteError';
 
@@ -83,11 +83,11 @@ const createLoggerFunc = (label: string) => {
       format.timestamp({
         format: 'YY-MM-DD HH:mm:ss',
       }),
-      isProduction
+      env.NODE_ENV === 'production'
         ? format.json()
         : format.combine(customMessageFormat, format.colorize({ all: true })),
     ),
-    silent: isTest,
+    silent: env.NODE_ENV === 'test',
     defaultMeta: { component: label.toUpperCase() },
     transports: [new transports.Console()],
   }) as CustomLogger;

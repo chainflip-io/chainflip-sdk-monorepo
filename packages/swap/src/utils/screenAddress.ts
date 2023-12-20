@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { z } from 'zod';
 import logger from './logger';
+import env from '../config/env';
 
 const schema = z.object({ identifications: z.array(z.object({})) });
 
 export default async function screenAddress(address: string): Promise<boolean> {
-  const apiKey = process.env.CHAINALYSIS_API_KEY;
+  const apiKey = env.CHAINALYSIS_API_KEY;
 
   if (!apiKey) return false;
 

@@ -2,14 +2,13 @@ import assert from 'assert';
 import * as crypto from 'crypto';
 import { filter, Observable, Subscription } from 'rxjs';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
-import { Assets, ChainflipNetwork } from '@/shared/enums';
+import { Assets } from '@/shared/enums';
 import { ParsedQuoteParams, QuoteRequest } from '@/shared/schemas';
 import { getPips, ONE_IN_HUNDREDTH_PIPS } from '@/swap/utils/fees';
 import { BrokerQuote, MarketMakerQuote } from './schemas';
 import { Pool } from '../client';
+import env from '../config/env';
 import { compareNumericStrings, Comparison } from '../utils/string';
-
-const QUOTE_TIMEOUT = Number.parseInt(process.env.QUOTE_TIMEOUT ?? '1000', 10);
 
 export const collectMakerQuotes = (
   requestId: string,
@@ -38,7 +37,7 @@ export const collectMakerQuotes = (
         if (quotes.length === expectedQuotes) complete();
       });
 
-    setTimeout(complete, QUOTE_TIMEOUT);
+    setTimeout(complete, env.QUOTE_TIMEOUT);
   });
 };
 
@@ -47,7 +46,7 @@ export const subtractFeesFromMakerQuote = (
   quotePools: Pool[],
 ): MarketMakerQuote => {
   const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(
-    process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
+    env.CHAINFLIP_NETWORK,
   );
 
   if ('intermediateAmount' in quote) {

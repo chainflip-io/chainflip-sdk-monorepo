@@ -1,5 +1,6 @@
 import { Chain } from '@/shared/enums';
 import logger from './logger';
+import env from '../config/env';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyFunction = (...args: any[]) => any;
@@ -13,7 +14,7 @@ export const memoize = <T extends AnyFunction>(fn: T, ttl?: number): T => {
     if (
       !initialized ||
       (ttl && Date.now() - setAt > ttl) ||
-      process.env.NODE_ENV === 'test' // TODO: remove this when we have a better solution for testing
+      env.NODE_ENV === 'test' // TODO: remove this when we have a better solution for testing
     ) {
       initialized = true;
       value = fn(...args);

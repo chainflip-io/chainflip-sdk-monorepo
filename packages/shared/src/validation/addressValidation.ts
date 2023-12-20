@@ -110,35 +110,31 @@ export const validateBitcoinRegtestAddress: AddressValidator = (
   address: string,
 ) => validateBitcoinAddress(address, 'regtest');
 
-export const validateChainAddress = (
-  chain: Chain,
-  address: string,
-  network: ChainflipNetwork,
-): boolean => {
-  switch (chain) {
-    case 'Bitcoin':
-      switch (network) {
-        case 'mainnet':
-          return validateBitcoinMainnetAddress(address);
-        case 'perseverance':
-        case 'sisyphos':
-          return validateBitcoinTestnetAddress(address);
-        case 'backspin':
-          return validateBitcoinRegtestAddress(address);
-        default:
-          throw new Error(`unexpected chainflip network: ${network}`);
-      }
-    case 'Ethereum':
-      return validateEvmAddress(address);
-    case 'Polkadot':
-      return validatePolkadotAddress(address);
-    default:
-      throw new Error(`unexpected chain: ${chain}`);
-  }
+const validators: Record<ChainflipNetwork, Record<Chain, AddressValidator>> = {
+  mainnet: {
+    Bitcoin: validateBitcoinMainnetAddress,
+    Ethereum: validateEvmAddress,
+    Polkadot: validatePolkadotAddress,
+  },
+  perseverance: {
+    Bitcoin: validateBitcoinTestnetAddress,
+    Ethereum: validateEvmAddress,
+    Polkadot: validatePolkadotAddress,
+  },
+  sisyphos: {
+    Bitcoin: validateBitcoinTestnetAddress,
+    Ethereum: validateEvmAddress,
+    Polkadot: validatePolkadotAddress,
+  },
+  backspin: {
+    Bitcoin: validateBitcoinRegtestAddress,
+    Ethereum: validateEvmAddress,
+    Polkadot: validatePolkadotAddress,
+  },
 };
 
 export const validateAddress = (
   chain: Chain,
   address: string,
   network: ChainflipNetwork,
-): boolean => validateChainAddress(chain, address, network);
+): boolean => validators[network][chain](address);
