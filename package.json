@@ -46,7 +46,7 @@
     "ts-morph": "^21.0.1",
     "tsc-alias": "^1.8.8",
     "tsx": "^4.6.2",
-    "typescript": "^5.3.2",
+    "typescript": "^5.3.3",
     "yargs": "^17.7.2"
   },
   "engines": {
