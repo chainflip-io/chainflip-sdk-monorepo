@@ -1,4 +1,4 @@
-import { isHex, hexToU8a } from '@polkadot/util';
+import { isHex, u8aToHex } from '@polkadot/util';
 import {
   base58Decode,
   decodeAddress,
@@ -13,7 +13,12 @@ export type AddressValidator = (address: string) => boolean;
 
 export const validatePolkadotAddress: AddressValidator = (address) => {
   try {
-    encodeAddress(isHex(address) ? hexToU8a(address) : decodeAddress(address));
+    const bytes = decodeAddress(address);
+    if (isHex(address)) {
+      const pubkey = u8aToHex(bytes);
+      if (pubkey.length !== 66) return false; // we only support 32 byte dot addresses (from dan)
+    }
+    encodeAddress(bytes);
     return true;
   } catch {
     return false;
