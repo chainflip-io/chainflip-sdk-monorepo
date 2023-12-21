@@ -1,14 +1,12 @@
 import axios from 'axios';
+import env from '@/swap/config/env';
 import screenAddress from '../screenAddress';
 
 jest.mock('axios');
 
 describe(screenAddress, () => {
-  beforeAll(() => {
-    process.env.CHAINALYSIS_API_KEY = 'test';
-  });
-
   it('returns true if sanctions are found', async () => {
+    env.CHAINALYSIS_API_KEY = 'test';
     jest.mocked(axios.get).mockResolvedValue({
       data: {
         identifications: [
@@ -34,7 +32,34 @@ describe(screenAddress, () => {
     expect(result).toBe(true);
   });
 
+  it('returns false if no API key is present', async () => {
+    env.CHAINALYSIS_API_KEY = undefined;
+    jest.mocked(axios.get).mockResolvedValue({
+      data: { identifications: [] },
+    });
+
+    const result = await screenAddress(
+      '0x72a5843cc08275C8171E582972Aa4fDa8C397B2A',
+    );
+
+    expect(result).toBe(false);
+  });
+
+  it('returns false if parsing fails', async () => {
+    env.CHAINALYSIS_API_KEY = 'test';
+    jest.mocked(axios.get).mockResolvedValue({
+      data: { ids: [] },
+    });
+
+    const result = await screenAddress(
+      '0x72a5843cc08275C8171E582972Aa4fDa8C397B2A',
+    );
+
+    expect(result).toBe(false);
+  });
+
   it('returns false if no sanctions are found', async () => {
+    env.CHAINALYSIS_API_KEY = 'test';
     jest.mocked(axios.get).mockResolvedValue({
       data: { identifications: [] },
     });
@@ -47,6 +72,7 @@ describe(screenAddress, () => {
   });
 
   it('returns false if the API call throws', async () => {
+    env.CHAINALYSIS_API_KEY = 'test';
     jest.mocked(axios.get).mockRejectedValueOnce(new Error('test'));
 
     const result = await screenAddress(

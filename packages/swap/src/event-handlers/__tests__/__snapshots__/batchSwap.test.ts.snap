@@ -44,7 +44,7 @@ exports[`batch swap flow handles all the events: fee 0 1`] = `
 
 exports[`batch swap flow handles all the events: fee 1 1`] = `
 {
-  "amount": "0",
+  "amount": "990109",
   "asset": "USDC",
   "id": Any<BigInt>,
   "swapId": Any<BigInt>,

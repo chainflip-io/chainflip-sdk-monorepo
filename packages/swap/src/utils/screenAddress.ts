@@ -21,7 +21,10 @@ export default async function screenAddress(address: string): Promise<boolean> {
 
   const result = schema.safeParse(response.data);
 
-  if (!result.success) return false;
+  if (!result.success) {
+    logger.error('failed to parse chainalysis response', result.error);
+    return false;
+  }
 
   return result.data.identifications.length > 0;
 }
