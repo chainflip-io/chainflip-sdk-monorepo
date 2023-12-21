@@ -23,7 +23,7 @@ const environmentByBlockHashCache = new CacheMap<
 >(60_000);
 
 const methodNotFoundRegExp = /Exported method .+ is not found/;
-const rpcConfig = { rpcUrl: env.RPC_NODE_HTTP_URL as string };
+const rpcConfig = { rpcUrl: env.RPC_NODE_HTTP_URL };
 
 const getCachedEnvironmentAtBlock = async (
   blockHash: string,
