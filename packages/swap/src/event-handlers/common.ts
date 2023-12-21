@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ChainflipNetwork, assetChains } from '@/shared/enums';
+import { assetChains } from '@/shared/enums';
 import {
   btcAddress,
   chainflipChain,
@@ -7,6 +7,7 @@ import {
   hexString,
   unsignedInteger,
 } from '@/shared/parsers';
+import env from '../config/env';
 
 export const egressId = z.tuple([
   z.object({ __kind: chainflipChain }).transform(({ __kind }) => __kind),
@@ -25,7 +26,7 @@ const btcChainAddress = z.object({
   __kind: z.literal('Btc'),
   value: hexString
     .transform((v) => Buffer.from(v.slice(2), 'hex').toString())
-    .pipe(btcAddress(process.env.CHAINFLIP_NETWORK as ChainflipNetwork)),
+    .pipe(btcAddress(env.CHAINFLIP_NETWORK)),
 });
 
 export const encodedAddress = z
