@@ -145,8 +145,8 @@ describe('python integration test', () => {
 
     expect(await response.json()).toEqual({
       id: expect.any(String),
-      intermediateAmount: '1998000000',
-      egressAmount: '996999999999975000',
+      intermediateAmount: '1996000000',
+      egressAmount: '995999999999975000',
       includedFees: [
         {
           amount: '2000000',
@@ -155,7 +155,7 @@ describe('python integration test', () => {
           type: 'INGRESS',
         },
         {
-          amount: '0',
+          amount: '1996000',
           asset: 'USDC',
           chain: 'Ethereum',
           type: 'NETWORK',
@@ -167,7 +167,7 @@ describe('python integration test', () => {
           type: 'LIQUIDITY',
         },
         {
-          amount: '3996000',
+          amount: '3992000',
           asset: 'USDC',
           chain: 'Ethereum',
           type: 'LIQUIDITY',
