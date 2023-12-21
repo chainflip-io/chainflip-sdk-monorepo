@@ -53,12 +53,9 @@ const quote = (io: Server) => {
       }
 
       const includedFees: SwapFee[] = [];
-      const ingressFee = bigintMin(
-        await estimateIngressEgressFeeAssetAmount(
-          await getNativeIngressFee(query.srcAsset),
-          query.srcAsset.asset,
-        ),
-        BigInt(query.amount ?? 0),
+      const ingressFee = await estimateIngressEgressFeeAssetAmount(
+        await getNativeIngressFee(query.srcAsset),
+        query.srcAsset.asset,
       );
       includedFees.push({
         type: 'INGRESS',
@@ -68,6 +65,12 @@ const quote = (io: Server) => {
       });
 
       const swapInputAmount = BigInt(query.amount) - ingressFee;
+      if (swapInputAmount <= 0n) {
+        throw ServiceError.badRequest(
+          `amount is lower than estimated ingress fee (${ingressFee})`,
+        );
+      }
+
       const quoteRequest = buildQuoteRequest({
         ...query,
         amount: String(swapInputAmount),
