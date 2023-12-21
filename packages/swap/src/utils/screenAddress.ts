@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { z } from 'zod';
 import logger from './logger';
+import env from '../config/env';
 
 const schema = z.object({ identifications: z.array(z.object({})) });
 
 export default async function screenAddress(address: string): Promise<boolean> {
-  const apiKey = process.env.CHAINALYSIS_API_KEY;
+  const apiKey = env.CHAINALYSIS_API_KEY;
 
   if (!apiKey) return false;
 
@@ -20,7 +21,10 @@ export default async function screenAddress(address: string): Promise<boolean> {
 
   const result = schema.safeParse(response.data);
 
-  if (!result.success) return false;
+  if (!result.success) {
+    logger.error('failed to parse chainalysis response', result.error);
+    return false;
+  }
 
   return result.data.identifications.length > 0;
 }

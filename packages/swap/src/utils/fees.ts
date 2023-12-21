@@ -1,15 +1,10 @@
 import assert from 'assert';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
-import {
-  Asset,
-  assetChains,
-  Assets,
-  ChainflipNetwork,
-  chainNativeAssets,
-} from '@/shared/enums';
+import { Asset, assetChains, Assets, chainNativeAssets } from '@/shared/enums';
 import { getSwapRate } from '@/shared/rpc';
 import { SwapFee } from '@/shared/schemas';
 import { getPools } from '@/swap/utils/pools';
+import env from '../config/env';
 
 export const ONE_IN_HUNDREDTH_PIPS = 1000000;
 
@@ -24,7 +19,7 @@ export const calculateIncludedSwapFees = async (
   egressAmount: string,
 ): Promise<SwapFee[]> => {
   const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(
-    process.env.CHAINFLIP_NETWORK as ChainflipNetwork,
+    env.CHAINFLIP_NETWORK,
   );
   const pools = await getPools(srcAsset, destAsset);
 
@@ -117,7 +112,7 @@ export const estimateIngressEgressFeeAssetAmount = async (
   // this makes the result different to the backend if there are limit orders that affect the price in one direction
   // https://github.com/chainflip-io/chainflip-backend/blob/4318931178a1696866e1e70e65d73d722bee4afd/state-chain/pallets/cf-pools/src/lib.rs#L2025
   const rate = await getSwapRate(
-    { rpcUrl: process.env.RPC_NODE_HTTP_URL as string },
+    { rpcUrl: env.RPC_NODE_HTTP_URL },
     nativeAsset,
     asset,
     `0x${nativeFeeAmount.toString(16)}`,

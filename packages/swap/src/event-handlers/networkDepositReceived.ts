@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { encodeAddress as encodeBitcoinAddress } from '@/shared/bitcoin';
 import { u128, chainflipAssetEnum, hexString } from '@/shared/parsers';
 import { toUpperCase } from '@/shared/strings';
+import env from '../config/env';
 import { Asset } from '../enums';
 import logger from '../utils/logger';
 import { EventHandlerArgs } from './index';
@@ -18,7 +19,7 @@ export const depositReceivedArgs = z
         .object({ __kind: z.literal('Taproot'), value: hexString })
         .transform((o) => {
           try {
-            return encodeBitcoinAddress(o.value);
+            return encodeBitcoinAddress(o.value, env.CHAINFLIP_NETWORK);
           } catch {
             return null;
           }

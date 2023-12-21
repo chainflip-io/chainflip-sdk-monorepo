@@ -6,6 +6,7 @@ import { Environment, getEnvironment } from '@/shared/rpc';
 import { readAssetValue } from '@/shared/rpc/utils';
 import { CacheMap } from '@/swap/utils/dataStructures';
 import { estimateIngressEgressFeeAssetAmount } from '@/swap/utils/fees';
+import env from '../config/env';
 import type { EventHandlerArgs } from '.';
 
 const eventArgs = z.object({
@@ -22,7 +23,7 @@ const environmentByBlockHashCache = new CacheMap<
 >(60_000);
 
 const methodNotFoundRegExp = /Exported method .+ is not found/;
-const rpcConfig = { rpcUrl: process.env.RPC_NODE_HTTP_URL as string };
+const rpcConfig = { rpcUrl: env.RPC_NODE_HTTP_URL };
 
 const getCachedEnvironmentAtBlock = async (
   blockHash: string,
@@ -30,7 +31,7 @@ const getCachedEnvironmentAtBlock = async (
   const cached = environmentByBlockHashCache.get(blockHash);
   if (cached) return cached;
 
-  const env = getEnvironment(rpcConfig, blockHash).catch((e: Error) => {
+  const environment = getEnvironment(rpcConfig, blockHash).catch((e: Error) => {
     const cause = e.cause as { message: string } | undefined;
 
     if (methodNotFoundRegExp.test(cause?.message ?? '')) return null;
@@ -39,9 +40,9 @@ const getCachedEnvironmentAtBlock = async (
     throw e;
   });
 
-  environmentByBlockHashCache.set(blockHash, env);
+  environmentByBlockHashCache.set(blockHash, environment);
 
-  return env;
+  return environment;
 };
 
 const assetAmountByNativeAmountAndBlockHashCache = new CacheMap<
@@ -76,10 +77,10 @@ const getEgressFeeAtBlock = async (
   blockHash: string,
   asset: Asset,
 ): Promise<bigint> => {
-  const env = await getCachedEnvironmentAtBlock(blockHash);
-  if (!env) return 0n;
+  const environment = await getCachedEnvironmentAtBlock(blockHash);
+  if (!environment) return 0n;
 
-  const nativeFee = readAssetValue(env.ingressEgress.egressFees, {
+  const nativeFee = readAssetValue(environment.ingressEgress.egressFees, {
     asset,
     chain: assetChains[asset],
   });

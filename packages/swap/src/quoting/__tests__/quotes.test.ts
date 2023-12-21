@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
 import { Subject } from 'rxjs';
 import { Asset, Assets, assetChains, AssetAndChain } from '@/shared/enums';
+import env from '@/swap/config/env';
 import { Pool } from '../../client';
 import {
   buildQuoteRequest,
@@ -16,15 +17,15 @@ jest.mock('@/shared/consts', () => ({
 
 describe('quotes', () => {
   describe(collectMakerQuotes, () => {
-    let oldEnv: NodeJS.ProcessEnv;
+    let oldEnv: typeof env;
 
     beforeEach(() => {
-      oldEnv = { ...process.env };
+      oldEnv = { ...env };
       jest.useFakeTimers();
     });
 
     afterEach(() => {
-      process.env = oldEnv;
+      Object.assign(env, oldEnv);
       jest.useRealTimers();
       jest.resetModules();
     });
@@ -59,12 +60,10 @@ describe('quotes', () => {
     });
 
     it('can be configured with QUOTE_TIMEOUT', async () => {
-      process.env.QUOTE_TIMEOUT = '100';
-      const freshCollectMakerQuotes = (await import('../quotes'))
-        .collectMakerQuotes;
+      env.QUOTE_TIMEOUT = 100;
 
       const id = crypto.randomUUID();
-      const promise = freshCollectMakerQuotes(id, 1, quotes$);
+      const promise = collectMakerQuotes(id, 1, quotes$);
       jest.advanceTimersByTime(101);
       quotes$.next({ client: 'client', quote: { id } });
       expect(await promise).toEqual([]);
