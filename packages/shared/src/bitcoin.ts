@@ -1,4 +1,5 @@
 import { BitcoinAddress } from 'bech32-buffer';
+import { ChainflipNetwork } from './enums';
 
 export const isValidSegwitAddress = (address: string) => {
   const hrp = /^(bc|tb|bcrt)1/.exec(address)?.[1];
@@ -7,29 +8,19 @@ export const isValidSegwitAddress = (address: string) => {
   return BitcoinAddress.decode(address).prefix === hrp;
 };
 
-export const encodeAddress = (address: `0x${string}`) => {
-  let hrp: 'bc' | 'bcrt' | 'tb';
+const prefixMap = {
+  sisyphos: 'tb',
+  perseverance: 'tb',
+  backspin: 'bcrt',
+  mainnet: 'bc',
+} as const satisfies Record<ChainflipNetwork, string>;
 
-  switch (process.env.CHAINFLIP_NETWORK) {
-    case 'sisyphos':
-    case 'perseverance':
-      hrp = 'tb';
-      break;
-    case 'backspin':
-      hrp = 'bcrt';
-      break;
-    case 'berghain':
-    case 'mainnet':
-      hrp = 'bc';
-      break;
-    default:
-      hrp = 'tb';
-  }
-
-  // encode script pubkey
-  return new BitcoinAddress(
-    hrp,
+export const encodeAddress = (
+  address: `0x${string}`,
+  network: ChainflipNetwork,
+) =>
+  new BitcoinAddress(
+    prefixMap[network],
     1,
     Buffer.from(address.slice(2), 'hex'),
   ).encode();
-};

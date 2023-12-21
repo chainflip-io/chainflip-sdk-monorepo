@@ -23,7 +23,6 @@ describe(encodeAddress, () => {
       'backspin',
     ],
   ] as const)('encodes encode %s', (pubkey, address, network) => {
-    process.env.CHAINFLIP_NETWORK = network;
-    expect(encodeAddress(pubkey)).toEqual(address);
+    expect(encodeAddress(pubkey, network)).toEqual(address);
   });
 });
