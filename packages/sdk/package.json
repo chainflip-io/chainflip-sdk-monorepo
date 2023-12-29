@@ -48,8 +48,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@polkadot/util": "^12.6.1",
-    "@polkadot/util-crypto": "^12.6.1",
+    "@polkadot/util": "^12.6.2",
+    "@polkadot/util-crypto": "^12.6.2",
     "axios": "^1.6.0",
     "ethers": "6.9.0"
   },
