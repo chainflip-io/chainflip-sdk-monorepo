@@ -32,7 +32,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ethers": "6.9.0",
+    "ethers": "6.9.1",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
