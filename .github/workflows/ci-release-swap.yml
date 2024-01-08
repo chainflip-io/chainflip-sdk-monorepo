@@ -1,7 +1,7 @@
 name: Release Swap Service CI 🚀
 
 concurrency:
-  group: release-swap-service-ci
+  group: ${{ github.ref }}-release-swap-service-ci
   cancel-in-progress: false
 
 on:
