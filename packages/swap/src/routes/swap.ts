@@ -2,6 +2,7 @@ import assert from 'assert';
 import express from 'express';
 import { assetChains } from '@/shared/enums';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
+import { screamingSnakeToPascalCase } from '@/shared/strings';
 import { asyncHandler } from './common';
 import prisma, {
   Egress,
@@ -12,7 +13,6 @@ import prisma, {
 } from '../client';
 import { getPendingDeposit } from '../deposit-tracking';
 import openSwapDepositChannel from '../handlers/openSwapDepositChannel';
-import { screamingSnakeToPascalCase } from '../strings';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
 
