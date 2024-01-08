@@ -2,7 +2,7 @@ name: Main CI 🔮
 
 concurrency:
   group: ${{ github.ref }}-main-ci
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 on:
   push:
