@@ -14,6 +14,7 @@ import { getPendingDeposit } from '../deposit-tracking';
 import openSwapDepositChannel from '../handlers/openSwapDepositChannel';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
+import { screamingSnakeToPascalCase } from '../strings';
 
 const router = express.Router();
 
@@ -34,6 +35,18 @@ type SwapWithBroadcastAndFees = Swap & {
         broadcast: Broadcast | null;
       })
     | null;
+};
+
+const coerceChain = (chain: string) => {
+  const uppercase = chain.toUpperCase();
+  switch (uppercase) {
+    case 'BITCOIN':
+    case 'ETHEREUM':
+    case 'POLKADOT':
+      return screamingSnakeToPascalCase(uppercase);
+    default:
+      throw ServiceError.badRequest(`invalid chain "${chain}"`);
+  }
 };
 
 const channelIdRegex =
@@ -67,7 +80,7 @@ router.get(
         where: {
           issuedBlock_srcChain_channelId: {
             issuedBlock: Number(issuedBlock),
-            srcChain: srcChain as Chain,
+            srcChain: coerceChain(srcChain),
             channelId: BigInt(channelId),
           },
         },
