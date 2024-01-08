@@ -1,7 +1,8 @@
 import assert from 'assert';
 import express from 'express';
-import { assetChains, Chain } from '@/shared/enums';
+import { assetChains } from '@/shared/enums';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
+import { screamingSnakeToPascalCase } from '@/shared/strings';
 import { asyncHandler } from './common';
 import prisma, {
   Egress,
@@ -36,6 +37,18 @@ type SwapWithBroadcastAndFees = Swap & {
     | null;
 };
 
+const coerceChain = (chain: string) => {
+  const uppercase = chain.toUpperCase();
+  switch (uppercase) {
+    case 'BITCOIN':
+    case 'ETHEREUM':
+    case 'POLKADOT':
+      return screamingSnakeToPascalCase(uppercase);
+    default:
+      throw ServiceError.badRequest(`invalid chain "${chain}"`);
+  }
+};
+
 const channelIdRegex =
   /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
 const swapIdRegex = /^\d+$/i;
@@ -67,7 +80,7 @@ router.get(
         where: {
           issuedBlock_srcChain_channelId: {
             issuedBlock: Number(issuedBlock),
-            srcChain: srcChain as Chain,
+            srcChain: coerceChain(srcChain),
             channelId: BigInt(channelId),
           },
         },

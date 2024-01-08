@@ -15,3 +15,14 @@ export const camelToSnakeCase = <const T extends string>(
 
 export const toUpperCase = <const T extends string>(value: T) =>
   value.toUpperCase() as Uppercase<T>;
+
+type ScreamingSnakeCaseToPascalCase<S extends string> =
+  S extends `${infer T}_${infer U}`
+    ? `${Capitalize<Lowercase<T>>}${ScreamingSnakeCaseToPascalCase<U>}`
+    : Capitalize<Lowercase<S>>;
+
+export const screamingSnakeToPascalCase = <const T extends string>(value: T) =>
+  value
+    .split('_')
+    .map((word) => `${word[0].toUpperCase()}${word.slice(1).toLowerCase()}`)
+    .join('') as ScreamingSnakeCaseToPascalCase<T>;
