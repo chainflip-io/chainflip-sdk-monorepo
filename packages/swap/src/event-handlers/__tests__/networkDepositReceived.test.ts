@@ -74,6 +74,45 @@ describe('depositReceived', () => {
     });
   });
 
+  it('should ignore deposit if there is no swap for deposit channel', async () => {
+    await prisma.depositChannel.create({
+      data: {
+        srcChain: 'Bitcoin',
+        depositAddress:
+          'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        channelId: 3,
+        issuedBlock: 0,
+        isSwapping: true,
+      },
+    });
+
+    await prisma.swapDepositChannel.create({
+      data: {
+        srcAsset: 'BTC',
+        srcChain: 'Bitcoin',
+        srcChainExpiryBlock: 100,
+        depositAddress:
+          'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        expectedDepositAmount: 0,
+        destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
+        destAsset: 'ETH',
+        channelId: 3,
+        issuedBlock: 0,
+      },
+    });
+
+    await prisma.$transaction(async (txClient) => {
+      await networkDepositReceived('Bitcoin')({
+        prisma: txClient,
+        block: networkDepositReceivedBtcMock.block as any,
+        event: networkDepositReceivedBtcMock.eventContext.event as any,
+      });
+    });
+
+    const swaps = await prisma.swap.findMany();
+    expect(swaps).toHaveLength(0);
+  });
+
   it('should not change swap if there is a newer deposit channel', async () => {
     // swap deposit channel
     await prisma.depositChannel.create({

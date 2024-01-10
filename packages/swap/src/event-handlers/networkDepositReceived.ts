@@ -1,6 +1,5 @@
 import { type Chain } from '.prisma/client';
 import { encodeAddress } from '@polkadot/util-crypto';
-import assert from 'assert';
 import { z } from 'zod';
 import { encodeAddress as encodeBitcoinAddress } from '@/shared/bitcoin';
 import { u128, chainflipAssetEnum, hexString } from '@/shared/parsers';
@@ -71,7 +70,17 @@ export const networkDepositReceived =
         .swaps({ orderBy: { nativeId: 'desc' } })
     )?.at(0);
 
-    assert(swap, 'swap not found for deposit');
+    if (!swap) {
+      // this happens if the deposit amount is higher than minimum_deposit_amount but smaller than minimum_swap_amount
+      logger.warn('no swap found for deposit to swap deposit channel', {
+        block: block.height,
+        eventIndexInBlock: event.indexInBlock,
+        eventName: event.name,
+        depositAddress,
+      });
+
+      return;
+    }
 
     const ingressFee = amount - BigInt(swap.swapInputAmount.toFixed());
 
