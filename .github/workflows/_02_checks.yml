@@ -79,7 +79,7 @@ jobs:
         if: startsWith(matrix.node_version, '18')
         with:
           flags: ${{ matrix.package }}
-          fail_ci_if_error: true
+          fail_ci_if_error: false
           token: ${{ secrets.CF_SDK_CODECOV_TOKEN }}
 
   build:
