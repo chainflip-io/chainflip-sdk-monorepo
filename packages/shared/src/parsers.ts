@@ -1,4 +1,4 @@
-import { hexToU8a } from '@polkadot/util';
+import { hexToU8a, u8aToHex } from '@polkadot/util';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 import * as ethers from 'ethers';
 import { z, ZodErrorMap } from 'zod';
@@ -19,7 +19,6 @@ const safeStringify = (obj: unknown) =>
 const errorMap: ZodErrorMap = (_issue, context) => ({
   message: `received: ${safeStringify(context.data)}`,
 });
-
 export const string = z.string({ errorMap });
 export const number = z.number({ errorMap });
 export const numericString = string.regex(/^[0-9]+$/);
@@ -46,16 +45,18 @@ export const btcAddress = (network: ChainflipNetwork) => {
   ]);
 };
 
+const DOT_PREFIX = 0;
+
 export const dotAddress = z
   .union([string, hexString])
   .transform((arg) => {
     try {
       if (arg.startsWith('0x')) {
-        return encodeAddress(hexToU8a(arg));
+        return encodeAddress(hexToU8a(arg), DOT_PREFIX);
       }
-      // this will throw if the address is invalid
-      decodeAddress(arg);
-      return arg;
+      // if substrate encoded, then decode and re-encode to dot format
+      const hex = u8aToHex(decodeAddress(arg));
+      return encodeAddress(hex, DOT_PREFIX);
     } catch {
       return null;
     }
