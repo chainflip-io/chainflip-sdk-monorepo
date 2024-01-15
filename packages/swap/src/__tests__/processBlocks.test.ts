@@ -1,6 +1,9 @@
 import { GraphQLClient } from 'graphql-request';
 import prisma from '../client';
-import { swapScheduledDotDepositChannelMock } from '../event-handlers/__tests__/utils';
+import {
+  DOT_ADDRESS,
+  swapScheduledDotDepositChannelMock,
+} from '../event-handlers/__tests__/utils';
 import { GetBatchQuery } from '../gql/generated/graphql';
 import processBlocks from '../processBlocks';
 
@@ -12,7 +15,7 @@ describe(processBlocks, () => {
   it('dispatches a SwapScheduled event', async () => {
     await prisma.swapDepositChannel.create({
       data: {
-        depositAddress: '5CGLqaFMheyVcsXz6QEtjtSAi6RcXFaEDJKvovgCdPiZhw11',
+        depositAddress: DOT_ADDRESS,
         issuedBlock: 100,
         channelId: 250n,
         srcChain: 'Polkadot',

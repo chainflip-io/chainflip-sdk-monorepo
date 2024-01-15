@@ -6,8 +6,7 @@ import { SwapExecutedEvent } from '../swapExecuted';
 import { SwapScheduledEvent } from '../swapScheduled';
 
 export const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
-export const ETH_ADDRESS_2 = '0x6AA69332b63BB5B1d7CA5355387edd5624e181f3';
-export const DOT_ADDRESS = '5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX';
+export const DOT_ADDRESS = '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo';
 
 type SwapChannelData = Parameters<
   (typeof prisma)['swapDepositChannel']['create']
@@ -85,7 +84,7 @@ export const swapScheduledDotDepositChannelMock = buildSwapScheduledEvent({
     channelId: '2',
     depositAddress: {
       value:
-        '0x08e03063439bf8a21add4a0648439d2095a6e5d88f5ee7ab8fa715b39ef68126',
+        '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
       __kind: 'Dot',
     },
     depositBlockHeight: '100',
@@ -520,7 +519,7 @@ export const swapAmountTooLowDotDepositChannelMock = buildSwapAmountTooLowEvent(
       channelId: '2',
       depositAddress: {
         value:
-          '0x08e03063439bf8a21add4a0648439d2095a6e5d88f5ee7ab8fa715b39ef68127',
+          '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
         __kind: 'Dot',
       },
     },
