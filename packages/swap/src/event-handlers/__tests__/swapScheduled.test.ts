@@ -22,7 +22,7 @@ describe(swapScheduled, () => {
         srcChain: 'Polkadot',
         srcAsset: Assets.DOT,
         destAsset: Assets.BTC,
-        depositAddress: '5CGLqaFMheyVcsXz6QEtjtSAi6RcXFaEDJKvovgCdPiZhw11',
+        depositAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         destAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
         isExpired: true,
         srcChainExpiryBlock:

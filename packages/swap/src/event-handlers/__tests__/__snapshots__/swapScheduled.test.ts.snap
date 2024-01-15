@@ -63,7 +63,7 @@ exports[`swapScheduled smart contract origin stores a new swap from a contract d
   "depositAmount": "175000000000000000",
   "depositReceivedAt": 2022-12-06T14:31:33.000Z,
   "depositReceivedBlockIndex": "100-0",
-  "destAddress": "5D34dL5prEUaGNQtPPZ3yN5Y6BnkfXunKXXz6fo7ZJbLwRRH",
+  "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "egressId": null,
   "id": Any<BigInt>,

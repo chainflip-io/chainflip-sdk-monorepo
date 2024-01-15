@@ -1,4 +1,5 @@
 import {
+  DOT_ADDRESS,
   swapAmountTooLowBtcDepositChannelMock,
   swapAmountTooLowDotDepositChannelMock,
   swapAmountTooLowVaultMock,
@@ -38,7 +39,7 @@ describe(swapAmountTooLow, () => {
       ).toHaveBeenNthCalledWith(1, {
         where: {
           srcChain: 'Polkadot',
-          depositAddress: '5CGLqaFMheyVcsXz6QEtjtSAi6RcXFaEDJKvovgCdPiZi5NW',
+          depositAddress: DOT_ADDRESS,
           channelId: 2n,
           isExpired: false,
         },
@@ -139,7 +140,7 @@ describe(swapAmountTooLow, () => {
       expect(prisma.failedSwap.create).toHaveBeenCalledTimes(1);
       expect(prisma.failedSwap.create).toHaveBeenNthCalledWith(1, {
         data: {
-          destAddress: '5D34dL5prEUaGNQtPPZ3yN5Y6BnkfXunKXXz6fo7ZJbLwRRH',
+          destAddress: DOT_ADDRESS,
           destChain: 'Polkadot',
           depositAmount: '12500000000',
           srcChain: 'Ethereum',
