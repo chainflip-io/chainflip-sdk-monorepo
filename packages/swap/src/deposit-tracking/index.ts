@@ -3,8 +3,9 @@ import RedisClient from '@/shared/node-apis/redis';
 import { fetchPendingBitcoinDeposit } from './bitcoin';
 import prisma from '../client';
 import env from '../config/env';
+import { handleExit } from '../utils/function';
 
-const redis = env.REDIS_URL ? new RedisClient(env.REDIS_URL) : undefined;
+let redis: RedisClient | undefined;
 
 export type PendingDeposit = {
   amount: string;
@@ -21,7 +22,13 @@ export const getPendingDeposit = async (
     return fetchPendingBitcoinDeposit(address);
   }
 
-  if (!redis) return undefined;
+  if (!env.REDIS_URL) return undefined;
+
+  if (!redis) {
+    redis = new RedisClient(env.REDIS_URL);
+
+    handleExit(() => redis!.quit());
+  }
 
   const [deposits, tracking] = await Promise.all([
     redis.getDeposits(chain, asset, address),
