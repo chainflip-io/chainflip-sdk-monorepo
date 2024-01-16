@@ -33,7 +33,6 @@ describe('getSwappingEnvironment', () => {
   it('retrieves the swapping environment', async () => {
     const spy = mockResponse(
       swappingEnvironment({
-        minSwapAmount: '0x0',
         maxSwapAmount: '0x4563918244f40000',
       }),
     );

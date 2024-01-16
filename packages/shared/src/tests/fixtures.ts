@@ -1,22 +1,11 @@
 export const swappingEnvironment = ({
-  minSwapAmount = '0x0',
   maxSwapAmount = null as string | null,
 }: {
-  minSwapAmount?: string;
   maxSwapAmount?: string | null;
 } = {}) => ({
   id: 1,
   jsonrpc: '2.0',
   result: {
-    minimum_swap_amounts: {
-      Polkadot: { DOT: minSwapAmount },
-      Bitcoin: { BTC: minSwapAmount },
-      Ethereum: {
-        ETH: minSwapAmount,
-        USDC: minSwapAmount,
-        FLIP: minSwapAmount,
-      },
-    },
     maximum_swap_amounts: {
       Polkadot: { DOT: null },
       Bitcoin: { BTC: maxSwapAmount },
@@ -116,13 +105,11 @@ export const ingressEgressEnvironment = ({
 });
 
 export const environment = ({
-  minSwapAmount = '0x0',
   maxSwapAmount = '0x0',
   minDepositAmount = '0x0',
   ingressFee = '0x0',
   egressFee = '0x0',
 }: {
-  minSwapAmount?: string;
   maxSwapAmount?: string | null;
   minDepositAmount?: string;
   ingressFee?: string;
@@ -136,7 +123,7 @@ export const environment = ({
       ingressFee,
       egressFee,
     }).result,
-    swapping: swappingEnvironment({ minSwapAmount, maxSwapAmount }).result,
+    swapping: swappingEnvironment({ maxSwapAmount }).result,
     funding: fundingEnvironment().result,
     pools: poolsEnvironment().result,
   },
