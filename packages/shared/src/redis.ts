@@ -1,5 +1,4 @@
 import { decodeAddress } from '@polkadot/util-crypto';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import Redis from 'ioredis';
 import { z } from 'zod';
 import type { Chain } from './enums';
