@@ -17,32 +17,31 @@ jest.mock('../../utils/screenAddress', () => ({
 jest.mock('axios');
 
 describe(openSwapDepositChannel, () => {
-  beforeAll(() => {
+  beforeAll(async () => {
     jest
       .useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
       .setSystemTime(new Date('2022-01-01'));
+
+    await prisma.chainTracking.create({
+      data: {
+        chain: 'Ethereum',
+        height: BigInt('125'),
+        blockTrackedAt: new Date('2023-11-09T10:00:00.000Z'),
+      },
+    });
   });
 
-  it('gathers and inserts the deposit channel info', async () => {
-    jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
+  beforeEach(async () => {
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel" CASCADE`;
+  });
 
+  it('creates channel and stores it in the database', async () => {
+    jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
     jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
       channelId: BigInt('888'),
       issuedBlock: 123,
-    });
-
-    prisma.swapDepositChannel.upsert = jest.fn().mockResolvedValueOnce({
-      issuedBlock: 123,
-      srcChain: 'Ethereum',
-      channelId: '888',
-      depositAddress: 'address',
-    });
-    prisma.chainTracking.findFirst = jest.fn().mockResolvedValueOnce({
-      chain: 'Ethereum',
-      height: BigInt('125'),
-      blockTrackedAt: new Date('2023-11-09T10:00:00.000Z'),
     });
 
     const result = await openSwapDepositChannel({
@@ -61,30 +60,50 @@ describe(openSwapDepositChannel, () => {
       issuedBlock: 123,
       srcChainExpiryBlock: 1000n,
     });
-    expect(prisma.swapDepositChannel.upsert).toHaveBeenCalledWith({
-      where: {
-        issuedBlock_srcChain_channelId: {
-          channelId: 888n,
-          issuedBlock: 123,
-          srcChain: 'Ethereum',
-        },
+    expect(
+      jest.mocked(broker.requestSwapDepositAddress).mock.calls,
+    ).toMatchSnapshot();
+    expect(await prisma.swapDepositChannel.findFirst()).toMatchSnapshot({
+      id: expect.any(BigInt),
+      createdAt: expect.any(Date),
+    });
+  });
+
+  it('creates channel with ccmMetadata and stores it in the database', async () => {
+    jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
+    jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+      sourceChainExpiryBlock: BigInt('1000'),
+      address: 'address',
+      channelId: BigInt('909'),
+      issuedBlock: 123,
+    });
+
+    const result = await openSwapDepositChannel({
+      srcAsset: 'FLIP',
+      srcChain: 'Ethereum',
+      destAsset: 'USDC',
+      destChain: 'Ethereum',
+      destAddress: '0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754',
+      expectedDepositAmount: '10101010',
+      ccmMetadata: {
+        message: '0xdeadc0de',
+        gasBudget: (125000).toString(),
       },
-      create: {
-        channelId: 888n,
-        depositAddress: 'address',
-        srcChainExpiryBlock: 1000n,
-        destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
-        destAsset: 'DOT',
-        estimatedExpiryAt: new Date('2023-11-09T13:38:45.000Z'),
-        expectedDepositAmount: '777',
-        issuedBlock: 123,
-        srcAsset: 'FLIP',
-        srcChain: 'Ethereum',
-        openedThroughBackend: true,
-      },
-      update: {
-        openedThroughBackend: true,
-      },
+    });
+
+    expect(result).toEqual({
+      depositAddress: 'address',
+      estimatedExpiryTime: 1699537125000,
+      id: '123-Ethereum-909',
+      issuedBlock: 123,
+      srcChainExpiryBlock: 1000n,
+    });
+    expect(
+      jest.mocked(broker.requestSwapDepositAddress).mock.calls,
+    ).toMatchSnapshot();
+    expect(await prisma.swapDepositChannel.findFirst()).toMatchSnapshot({
+      id: expect.any(BigInt),
+      createdAt: expect.any(Date),
     });
   });
 
