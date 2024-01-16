@@ -12,9 +12,10 @@ type CamelCase<T> = T extends string
     : T
   : never;
 
-type CamelCaseRecord<T> = T extends Record<string, unknown>
-  ? { [K in keyof T as CamelCase<K>]: CamelCaseRecord<T[K]> }
-  : T;
+type CamelCaseRecord<T> =
+  T extends Record<string, unknown>
+    ? { [K in keyof T as CamelCase<K>]: CamelCaseRecord<T[K]> }
+    : T;
 
 const camelCase = <T extends string>(str: T): CamelCase<T> =>
   str.replace(/_([a-z])/g, (_, char) => char.toUpperCase()) as CamelCase<T>;
