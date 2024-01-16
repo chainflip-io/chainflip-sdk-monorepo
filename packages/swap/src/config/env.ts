@@ -1,18 +1,24 @@
 import { z } from 'zod';
 
-const httpUrl = z.string().url().startsWith('http');
-const wsUrl = z.string().url().startsWith('ws');
+const envVar = z.string().trim();
 
-const optionalBoolean = z
-  .string()
+const urlWithProtocol = <T extends string>(protocol: T) =>
+  envVar
+    .url()
+    .refine((url): url is `${T}://${string}` | `${T}s://${string}` =>
+      new RegExp(String.raw`^${protocol}s?://`).test(url),
+    );
+
+const httpUrl = urlWithProtocol('http');
+const wsUrl = urlWithProtocol('ws');
+const redisUrl = urlWithProtocol('redis');
+
+const optionalBoolean = envVar
   .optional()
   .transform((value) => value?.toUpperCase() === 'TRUE');
 
 const optionalNumber = (defaultValue: number) =>
-  z
-    .string()
-    .optional()
-    .transform((n) => Number(n) || defaultValue);
+  envVar.optional().transform((n) => Number(n) || defaultValue);
 
 const chainflipNetwork = z.enum([
   'backspin',
@@ -35,10 +41,11 @@ export default z
     CHAINFLIP_NETWORK: chainflipNetwork,
     QUOTE_TIMEOUT: optionalNumber(1000),
     NODE_ENV: nodeEnv.default('production'),
-    CHAINALYSIS_API_KEY: z.string().optional(),
+    CHAINALYSIS_API_KEY: envVar.optional(),
     INGEST_GATEWAY_URL: httpUrl,
     PROCESSOR_BATCH_SIZE: optionalNumber(50),
     PROCESSOR_TRANSACTION_TIMEOUT: optionalNumber(10_000),
+    REDIS_URL: redisUrl.optional(),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);

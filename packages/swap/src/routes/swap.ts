@@ -150,6 +150,7 @@ router.get(
     ) {
       pendingDeposit = await getPendingDeposit(
         assetChains[srcAsset],
+        srcAsset,
         swapDepositChannel.depositAddress,
       );
     }

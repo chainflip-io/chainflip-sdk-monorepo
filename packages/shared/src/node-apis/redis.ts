@@ -1,24 +1,29 @@
 import { decodeAddress } from '@polkadot/util-crypto';
 import Redis from 'ioredis';
 import { z } from 'zod';
-import type { Chain } from './enums';
-import { number, u128, string } from './parsers';
+import { sorter } from '../arrays';
+import type { Asset, Chain } from '../enums';
+import { number, u128, string } from '../parsers';
 
 const ss58ToHex = (address: string) =>
   `0x${Buffer.from(decodeAddress(address)).toString('hex')}`;
 
-const asset = z.object({
+const assetSchema = z.object({
   asset: string,
   chain: string,
 });
 
-const deposits = z.array(
-  z.object({
-    amount: u128,
-    asset,
-    deposit_chain_block_height: number,
-  }),
-);
+const depositSchema = z.object({
+  amount: u128,
+  asset: assetSchema,
+  deposit_chain_block_height: number,
+});
+
+type Deposit = z.infer<typeof depositSchema>;
+
+const sortDepositAscending = sorter<Deposit>('deposit_chain_block_height');
+
+const deposits = z.array(depositSchema);
 
 const broadcastParsers = {
   Ethereum: z.object({
@@ -74,11 +79,16 @@ export default class RedisClient {
     return value ? broadcastParsers[chain].parse(JSON.parse(value)) : null;
   }
 
-  async getDeposits(chain: Chain, address: string) {
+  async getDeposits(chain: Chain, asset: Asset, address: string) {
     const parsedAddress = chain === 'Polkadot' ? ss58ToHex(address) : address;
     const key = `deposit:${chain}:${parsedAddress}`;
     const value = await this.client.get(key);
-    return value ? deposits.parse(JSON.parse(value)) : [];
+    return value
+      ? deposits
+          .parse(JSON.parse(value))
+          .filter((deposit) => deposit.asset.asset === asset)
+          .sort(sortDepositAscending)
+      : [];
   }
 
   async getMempoolTransaction(chain: 'Bitcoin', address: string) {
