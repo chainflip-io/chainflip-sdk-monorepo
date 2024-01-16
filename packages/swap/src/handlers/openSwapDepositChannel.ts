@@ -39,7 +39,7 @@ export default async function openSwapDepositChannel(
     env.CHAINFLIP_NETWORK,
   );
 
-  const { destChain, ...rest } = input;
+  const { destChain, ccmMetadata, ...rest } = input;
 
   const chainInfo = await prisma.chainTracking.findFirst({
     where: {
