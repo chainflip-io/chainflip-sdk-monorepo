@@ -109,7 +109,7 @@ export default async function swapEgressScheduled({
   // TODO: use an accurate source for determining the egress fee once the protocol provides one
   const egressFee = bigintMin(
     await getEgressFeeAtBlock(block.hash, swap.destAsset),
-    BigInt(swap.swapOutputAmount?.toString() ?? 0),
+    BigInt(swap.swapOutputAmount?.toFixed() ?? 0),
   );
 
   await Promise.all([
