@@ -115,7 +115,20 @@ const chainAssetNumberMap = chainAssetMap(numberOrHex);
 const chainAssetNumberNullableMap = chainAssetMap(numberOrHex.nullable());
 
 const swappingEnvironment = z.object({
-  minimum_swap_amounts: chainAssetNumberMap,
+  // TODO: remove minimum_swap_amounts once all networks are upgraded to include https://github.com/chainflip-io/chainflip-backend/pull/4419
+  minimum_swap_amounts: chainAssetNumberMap.optional().default({
+    Bitcoin: {
+      BTC: 0,
+    },
+    Ethereum: {
+      ETH: 0,
+      USDC: 0,
+      FLIP: 0,
+    },
+    Polkadot: {
+      DOT: 0,
+    },
+  }),
   maximum_swap_amounts: chainAssetNumberNullableMap,
 });
 
