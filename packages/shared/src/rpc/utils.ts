@@ -1,5 +1,4 @@
 import { UncheckedAssetAndChain, assertIsValidAssetAndChain } from '../enums';
-import { bigintMax } from '../functions';
 import { ChainAssetMap, Environment } from './index';
 
 export const readAssetValue = <T>(
