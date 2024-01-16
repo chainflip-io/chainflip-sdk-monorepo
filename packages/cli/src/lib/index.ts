@@ -28,3 +28,4 @@ export {
   chainContractIds,
 } from '@/shared/enums';
 export * as broker from '@/shared/broker';
+export { default as RedisClient } from '@/shared/redis';
