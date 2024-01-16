@@ -30,7 +30,7 @@
     "@types/jest": "^29.5.11",
     "@types/node": "^20.11.1",
     "@types/yargs": "^17.0.32",
-    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
     "@typescript-eslint/parser": "^6.18.0",
     "envlocker": "^0.2.0",
     "eslint": "^8.56.0",
