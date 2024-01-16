@@ -41,11 +41,6 @@ const env = {
     },
   },
   swapping: {
-    minimumSwapAmounts: {
-      Ethereum: { USDC: 0n, ETH: 0n, FLIP: 0n },
-      Polkadot: { DOT: 0n },
-      Bitcoin: { BTC: 0n },
-    },
     maximumSwapAmounts: {
       Ethereum: {
         USDC: 0x1000000000000000n,
