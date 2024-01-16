@@ -1,6 +1,7 @@
 import { decodeAddress } from '@polkadot/util-crypto';
 import Redis from 'ioredis';
 import { z } from 'zod';
+import { sorter } from '../arrays';
 import type { Asset, Chain } from '../enums';
 import { number, u128, string } from '../parsers';
 
@@ -12,13 +13,17 @@ const assetSchema = z.object({
   chain: string,
 });
 
-const deposits = z.array(
-  z.object({
-    amount: u128,
-    asset: assetSchema,
-    deposit_chain_block_height: number,
-  }),
-);
+const depositSchema = z.object({
+  amount: u128,
+  asset: assetSchema,
+  deposit_chain_block_height: number,
+});
+
+type Deposit = z.infer<typeof depositSchema>;
+
+const sortDepositAscending = sorter<Deposit>('deposit_chain_block_height');
+
+const deposits = z.array(depositSchema);
 
 const broadcastParsers = {
   Ethereum: z.object({
@@ -82,6 +87,7 @@ export default class RedisClient {
       ? deposits
           .parse(JSON.parse(value))
           .filter((deposit) => deposit.asset.asset === asset)
+          .sort(sortDepositAscending)
       : [];
   }
 
