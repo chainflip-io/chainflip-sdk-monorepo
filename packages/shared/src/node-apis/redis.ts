@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 import Redis from 'ioredis';
 import { z } from 'zod';
 import { sorter } from '../arrays';
-import { assetDecimals, type Asset, type Chain, Assets } from '../enums';
+import { assetDecimals, type Asset, type Chain } from '../enums';
 import { number, u128, string } from '../parsers';
 
 const ss58ToHex = (address: string) =>
