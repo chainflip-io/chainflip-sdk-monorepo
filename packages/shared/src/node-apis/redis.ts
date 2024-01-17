@@ -96,4 +96,8 @@ export default class RedisClient {
     const value = await this.client.get(key);
     return value ? mempoolTransaction.parse(JSON.parse(value)) : null;
   }
+
+  quit() {
+    return this.client.quit();
+  }
 }

@@ -13,4 +13,5 @@ jest.mock('../config/env', () => ({
   INGEST_GATEWAY_URL: '',
   PROCESSOR_BATCH_SIZE: 50,
   PROCESSOR_TRANSACTION_TIMEOUT: 10_000,
+  REDIS_URL: undefined,
 }));
