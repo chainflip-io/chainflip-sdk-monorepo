@@ -1,4 +1,5 @@
 import Redis from 'ioredis';
+import { Chain } from '@/shared/enums';
 import { getPendingBroadcast, getPendingDeposit } from '..';
 import prisma from '../../client';
 import logger from '../../utils/logger';
@@ -8,6 +9,13 @@ jest.mock('../../config/env', () => ({
 }));
 
 jest.mock('../../utils/logger');
+
+const updateChainTracking = (data: { chain: Chain; height: bigint }) =>
+  prisma.chainTracking.upsert({
+    where: { chain: data.chain },
+    update: data,
+    create: data,
+  });
 
 describe('ingress-egress-tracking', () => {
   let redis: Redis;
@@ -30,13 +38,8 @@ describe('ingress-egress-tracking', () => {
   });
 
   describe(getPendingDeposit, () => {
-    it('gets pending deposits from redis', async () => {
-      await prisma.chainTracking.create({
-        data: {
-          chain: 'Ethereum',
-          height: BigInt(1234567893),
-        },
-      });
+    it('gets pending non-bitcoin deposits from redis', async () => {
+      await updateChainTracking({ chain: 'Ethereum', height: 1234567893n });
 
       await redis.set(
         'deposit:Ethereum:0x1234',
@@ -54,32 +57,91 @@ describe('ingress-egress-tracking', () => {
       expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 3 });
     });
 
-    it('returns undefined if the deposit is not found', async () => {
-      await prisma.chainTracking.create({
-        data: {
-          chain: 'Ethereum',
-          height: BigInt(1234567893),
-        },
-      });
+    it('returns null if the non-bitcoin deposit is not found', async () => {
+      await updateChainTracking({ chain: 'Ethereum', height: 1234567893n });
 
       const deposit = await getPendingDeposit('Ethereum', 'FLIP', '0x1234');
 
-      expect(deposit).toBeUndefined();
+      expect(deposit).toBeNull();
       expect(logger.error).not.toHaveBeenCalled();
     });
 
-    it('returns undefined if the redis client throws', async () => {
-      jest.spyOn(Redis.prototype, 'get').mockRejectedValueOnce(new Error());
-      await prisma.chainTracking.create({
-        data: {
-          chain: 'Ethereum',
-          height: BigInt(1234567893),
-        },
+    it('gets mempool txs for bitcoin from redis', async () => {
+      await redis.set(
+        'confirmations:Bitcoin:tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf',
+        JSON.stringify({
+          tx_hash: 'deadc0de',
+          value: 0.00036864,
+          confirmations: 3,
+        }),
+      );
+
+      const deposit = await getPendingDeposit(
+        'Bitcoin',
+        'BTC',
+        'tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf',
+      );
+
+      expect(logger.error).not.toHaveBeenCalled();
+      expect(deposit).toEqual({
+        amount: '36864',
+        transactionConfirmations: 3,
+        transactionHash: '0xdeadc0de',
       });
+    });
+
+    it('gets pending bitcoin deposits from redis', async () => {
+      await Promise.all([
+        redis.set(
+          'deposit:Bitcoin:tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf',
+          JSON.stringify([
+            {
+              amount: '0x9000',
+              asset: { asset: 'BTC', chain: 'Bitoin' },
+              deposit_chain_block_height: 1234567890,
+            },
+          ]),
+        ),
+        updateChainTracking({ chain: 'Bitcoin', height: 1234567893n }),
+      ]);
+
+      const deposit = await getPendingDeposit(
+        'Bitcoin',
+        'BTC',
+        'tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf',
+      );
+
+      expect(logger.error).not.toHaveBeenCalled();
+      expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 3 });
+    });
+
+    it('returns null if the non-bitcoin deposit is not found', async () => {
+      const deposit = await getPendingDeposit(
+        'Bitcoin',
+        'BTC',
+        'tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf',
+      );
+
+      expect(logger.error).not.toHaveBeenCalled();
+      expect(deposit).toBeNull();
+    });
+
+    it('returns null if the redis client throws (non-bitcoin)', async () => {
+      jest.spyOn(Redis.prototype, 'get').mockRejectedValueOnce(new Error());
+      await updateChainTracking({ chain: 'Ethereum', height: 1234567893n });
 
       const deposit = await getPendingDeposit('Ethereum', 'FLIP', '0x1234');
 
-      expect(deposit).toBeUndefined();
+      expect(deposit).toBeNull();
+      expect(logger.error).toHaveBeenCalled();
+    });
+
+    it('returns null if the redis client throws (bitcoin)', async () => {
+      jest.spyOn(Redis.prototype, 'get').mockRejectedValueOnce(new Error());
+
+      const deposit = await getPendingDeposit('Bitcoin', 'BTC', '');
+
+      expect(deposit).toBeNull();
       expect(logger.error).toHaveBeenCalled();
     });
   });

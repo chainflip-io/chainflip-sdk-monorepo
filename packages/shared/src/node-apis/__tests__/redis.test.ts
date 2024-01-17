@@ -54,13 +54,19 @@ describe(RedisClient, () => {
     it('returns the tx if found', async () => {
       const mock = jest
         .mocked(Redis.prototype.get)
-        .mockResolvedValueOnce(JSON.stringify({ confirmations: 4 }));
+        .mockResolvedValueOnce(
+          JSON.stringify({ confirmations: 4, value: 3.14, tx_hash: '1234' }),
+        );
       const client = new RedisClient(url);
       const broadcast = await client.getMempoolTransaction(
         'Bitcoin',
         'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
       );
-      expect(broadcast).toEqual({ confirmations: 4 });
+      expect(broadcast).toEqual({
+        confirmations: 4,
+        value: '314000000',
+        tx_hash: '0x1234',
+      });
       expect(mock).toHaveBeenCalledWith(
         'confirmations:Bitcoin:tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
       );
