@@ -56,23 +56,23 @@ export default class RedisClient {
 
   async getBroadcast(
     chain: 'Ethereum',
-    broadcastId: number,
+    broadcastId: number | bigint,
   ): Promise<EthereumBroadcast | null>;
   async getBroadcast(
     chain: 'Polkadot',
-    broadcastId: number,
+    broadcastId: number | bigint,
   ): Promise<PolkadotBroadcast | null>;
   async getBroadcast(
     chain: 'Bitcoin',
-    broadcastId: number,
+    broadcastId: number | bigint,
   ): Promise<BitcoinBroadcast | null>;
   async getBroadcast(
     chain: Chain,
-    broadcastId: number,
+    broadcastId: number | bigint,
   ): Promise<Broadcast | null>;
   async getBroadcast(
     chain: Chain,
-    broadcastId: number,
+    broadcastId: number | bigint,
   ): Promise<Broadcast | null> {
     const key = `broadcast:${chain}:${broadcastId}`;
     const value = await this.client.get(key);
