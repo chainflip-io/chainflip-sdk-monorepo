@@ -250,6 +250,42 @@ export const swapDepositAddressReadyMocked = {
   },
 } as const;
 
+export const swapDepositAddressReadyCcmMetadataMocked = {
+  block: {
+    height: 120,
+    timestamp: 1670337105000,
+    hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
+  },
+  eventContext: {
+    kind: 'event',
+    event: {
+      args: {
+        channelId: '8249',
+        sourceAsset: { __kind: 'Btc' },
+        depositAddress: {
+          value:
+            '0x7462317079303874383832667679656b63393975336432656a7578347261336c72636b687970776d336137656578363838766a757571687138786e74336b',
+          __kind: 'Btc',
+        },
+        channelMetadata: {
+          message: '0xdeadc0de',
+          gasBudget: '125000',
+          cfParameters: '0x',
+        },
+        destinationAsset: { __kind: 'Eth' },
+        destinationAddress: {
+          value: '0xfcd3c82b154cb4717ac98718d0fd13eeba3d2754',
+          __kind: 'Eth',
+        },
+        brokerCommissionRate: 0,
+        sourceChainExpiryBlock: '2573643',
+      },
+      indexInBlock: 0,
+      name: events.Swapping.SwapDepositAddressReady,
+    },
+  },
+} as const;
+
 export const swapEgressScheduledMock = {
   block: {
     height: 120,

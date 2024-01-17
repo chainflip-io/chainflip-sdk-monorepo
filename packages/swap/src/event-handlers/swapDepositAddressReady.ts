@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { u64, chainflipAssetEnum, u128 } from '@/shared/parsers';
+import { ccmMetadataSchema } from '@/shared/schemas';
 import { encodedAddress } from './common';
 import { calculateExpiryTime } from '../utils/function';
 import { EventHandlerArgs } from './index';
@@ -12,6 +13,7 @@ const swapDepositAddressReadyArgs = z.object({
   destinationAsset: chainflipAssetEnum,
   channelId: u64,
   sourceChainExpiryBlock: u128.optional(),
+  channelMetadata: ccmMetadataSchema.optional(),
 });
 
 export type SwapDepositAddressReadyEvent = z.input<
@@ -32,6 +34,7 @@ export const swapDepositAddressReady = async ({
     destinationAsset,
     channelId,
     sourceChainExpiryBlock,
+    channelMetadata,
     ...rest
   } = swapDepositAddressReadyArgs.parse(event.args);
 
@@ -78,6 +81,8 @@ export const swapDepositAddressReady = async ({
       create: {
         expectedDepositAmount: 0,
         estimatedExpiryAt: estimatedExpiryTime,
+        ccmGasBudget: channelMetadata?.gasBudget,
+        ccmMessage: channelMetadata?.message,
         ...data,
       },
       update: data,

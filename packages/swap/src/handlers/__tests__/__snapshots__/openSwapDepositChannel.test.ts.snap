@@ -22,6 +22,8 @@ exports[`openSwapDepositChannel creates channel and stores it in the database 1`
 
 exports[`openSwapDepositChannel creates channel and stores it in the database 2`] = `
 {
+  "ccmGasBudget": null,
+  "ccmMessage": null,
   "channelId": 888n,
   "createdAt": Any<ClockDate>,
   "depositAddress": "address",
@@ -66,6 +68,8 @@ exports[`openSwapDepositChannel creates channel with ccmMetadata and stores it i
 
 exports[`openSwapDepositChannel creates channel with ccmMetadata and stores it in the database 2`] = `
 {
+  "ccmGasBudget": "125000",
+  "ccmMessage": "0xdeadc0de",
   "channelId": 909n,
   "createdAt": Any<ClockDate>,
   "depositAddress": "address",
