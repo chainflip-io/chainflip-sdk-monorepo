@@ -57,6 +57,8 @@ model SwapDepositChannel {
   expectedDepositAmount Decimal      @db.Decimal(30, 0)
   destAsset             Asset
   destAddress           String
+  ccmGasBudget          Decimal?     @db.Decimal(30, 0)
+  ccmMessage            String?
   issuedBlock           Int
   expiryBlock           Int? // TODO(mainnet): remove this column
   srcChainExpiryBlock   BigInt?

@@ -108,6 +108,41 @@ describe('server', () => {
       `);
     });
 
+    it(`retrieves a swap with ccm metadata in ${State.AwaitingDeposit} status`, async () => {
+      const swapIntent = await createDepositChannel({
+        srcChainExpiryBlock: 200,
+        expectedDepositAmount: '25000000000000000000000',
+        ccmMessage: '0xdeadbeef',
+        ccmGasBudget: '100000',
+      });
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
+
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+      expect(body).toMatchInlineSnapshot(`
+        {
+          "ccmMetadata": {
+            "gasBudget": "100000",
+            "message": "0xdeadbeef",
+          },
+          "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+          "depositChannelCreatedAt": 1690556052834,
+          "depositChannelExpiryBlock": "200",
+          "depositChannelOpenedThroughBackend": false,
+          "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+          "destAsset": "DOT",
+          "destChain": "Polkadot",
+          "estimatedDepositChannelExpiryTime": 1699527900000,
+          "expectedDepositAmount": "25000000000000000000000",
+          "isDepositChanneExpired": false,
+          "srcAsset": "ETH",
+          "srcChain": "Ethereum",
+          "state": "AWAITING_DEPOSIT",
+        }
+      `);
+    });
+
     it(`retrieves a swap in ${State.AwaitingDeposit} status and the channel is expired`, async () => {
       const swapIntent = await createDepositChannel({
         srcChainExpiryBlock: 1,
@@ -164,7 +199,6 @@ describe('server', () => {
       expect(rest).toMatchInlineSnapshot(`
         {
           "ccmDepositReceivedBlockIndex": null,
-          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -232,7 +266,6 @@ describe('server', () => {
       expect(rest).toMatchInlineSnapshot(`
         {
           "ccmDepositReceivedBlockIndex": null,
-          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -323,7 +356,6 @@ describe('server', () => {
       expect(rest).toMatchInlineSnapshot(`
         {
           "ccmDepositReceivedBlockIndex": null,
-          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -428,7 +460,6 @@ describe('server', () => {
           "broadcastRequestedBlockIndex": "202-4",
           "broadcastSucceededBlockIndex": null,
           "ccmDepositReceivedBlockIndex": null,
-          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -536,7 +567,6 @@ describe('server', () => {
           "broadcastRequestedBlockIndex": "202-4",
           "broadcastSucceededBlockIndex": null,
           "ccmDepositReceivedBlockIndex": null,
-          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -644,7 +674,6 @@ describe('server', () => {
           "broadcastSucceededAt": 1669907153201,
           "broadcastSucceededBlockIndex": "204-4",
           "ccmDepositReceivedBlockIndex": null,
-          "ccmMetadata": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelCreatedAt": 1690556052834,
@@ -724,7 +753,6 @@ describe('server', () => {
       expect(rest).toMatchInlineSnapshot(`
         {
           "ccmDepositReceivedBlockIndex": null,
-          "ccmMetadata": null,
           "depositAmount": "10",
           "depositChannelOpenedThroughBackend": false,
           "depositReceivedAt": 1669907135201,

@@ -2,6 +2,8 @@
 
 exports[`swapDepositAddressReady creates a swap deposit channel entry 1`] = `
 {
+  "ccmGasBudget": null,
+  "ccmMessage": null,
   "channelId": 1n,
   "createdAt": Any<Date>,
   "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
@@ -20,8 +22,32 @@ exports[`swapDepositAddressReady creates a swap deposit channel entry 1`] = `
 }
 `;
 
+exports[`swapDepositAddressReady creates a swap deposit channel entry with ccm metadata 1`] = `
+{
+  "ccmGasBudget": "125000",
+  "ccmMessage": "0xdeadc0de",
+  "channelId": 8249n,
+  "createdAt": Any<Date>,
+  "depositAddress": "tb1py08t882fvyekc99u3d2ejux4ra3lrckhypwm3a7eex688vjuuqhq8xnt3k",
+  "destAddress": "0xfcd3c82b154cb4717ac98718d0fd13eeba3d2754",
+  "destAsset": "ETH",
+  "estimatedExpiryAt": 2072-10-14T20:50:00.000Z,
+  "expectedDepositAmount": "0",
+  "expiryBlock": null,
+  "id": Any<BigInt>,
+  "isExpired": false,
+  "issuedBlock": 120,
+  "openedThroughBackend": false,
+  "srcAsset": "BTC",
+  "srcChain": "Bitcoin",
+  "srcChainExpiryBlock": 2573643n,
+}
+`;
+
 exports[`swapDepositAddressReady does not overwrite expectedDepositAmount with zero 1`] = `
 {
+  "ccmGasBudget": null,
+  "ccmMessage": null,
   "channelId": 1n,
   "createdAt": Any<Date>,
   "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",

@@ -168,6 +168,18 @@ router.get(
       );
     }
 
+    let ccmMetadata;
+    if (readField(swap, swapDepositChannel, 'ccmGasBudget')) {
+      ccmMetadata = {
+        gasBudget: readField(
+          swap,
+          swapDepositChannel,
+          'ccmGasBudget',
+        )?.toFixed(),
+        message: readField(swap, swapDepositChannel, 'ccmMessage'),
+      };
+    }
+
     const response = {
       state,
       type: swap?.type,
@@ -212,10 +224,7 @@ router.get(
         swapDepositChannel?.estimatedExpiryAt?.valueOf(),
       isDepositChanneExpired: swapDepositChannel?.isExpired ?? false,
       ccmDepositReceivedBlockIndex: swap?.ccmDepositReceivedBlockIndex,
-      ccmMetadata: swap?.ccmGasBudget && {
-        gasBudget: swap?.ccmGasBudget?.toFixed(),
-        message: swap?.ccmMessage,
-      },
+      ccmMetadata,
       depositChannelOpenedThroughBackend:
         swapDepositChannel?.openedThroughBackend ?? false,
     };

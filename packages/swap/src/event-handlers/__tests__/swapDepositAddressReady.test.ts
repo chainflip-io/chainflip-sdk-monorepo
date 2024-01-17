@@ -2,15 +2,14 @@ import { Chains } from '@/shared/enums';
 import {
   createChainTrackingInfo,
   createDepositChannel,
+  swapDepositAddressReadyCcmMetadataMocked,
   swapDepositAddressReadyMocked,
 } from './utils';
 import prisma from '../../client';
 import swapDepositAddressReady from '../swapDepositAddressReady';
 
-const {
-  block,
-  eventContext: { event },
-} = swapDepositAddressReadyMocked;
+const eventMock = swapDepositAddressReadyMocked;
+const ccmEventMock = swapDepositAddressReadyCcmMetadataMocked;
 
 describe(swapDepositAddressReady, () => {
   beforeEach(async () => {
@@ -23,14 +22,40 @@ describe(swapDepositAddressReady, () => {
       await createChainTrackingInfo();
       await swapDepositAddressReady({
         prisma: txClient,
-        event,
-        block,
+        event: eventMock.eventContext.event,
+        block: eventMock.block,
       });
     });
 
     const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow(
       {
-        where: { channelId: BigInt(event.args.channelId) },
+        where: {
+          channelId: BigInt(eventMock.eventContext.event.args.channelId),
+        },
+      },
+    );
+
+    expect(swapDepositChannel).toMatchSnapshot({
+      id: expect.any(BigInt),
+      createdAt: expect.any(Date),
+    });
+  });
+
+  it('creates a swap deposit channel entry with ccm metadata', async () => {
+    await prisma.$transaction(async (txClient) => {
+      await createChainTrackingInfo();
+      await swapDepositAddressReady({
+        prisma: txClient,
+        event: ccmEventMock.eventContext.event,
+        block: ccmEventMock.block,
+      });
+    });
+
+    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow(
+      {
+        where: {
+          channelId: BigInt(ccmEventMock.eventContext.event.args.channelId),
+        },
       },
     );
 
@@ -42,7 +67,7 @@ describe(swapDepositAddressReady, () => {
 
   it('does not overwrite expectedDepositAmount with zero', async () => {
     await createDepositChannel({
-      channelId: BigInt(event.args.channelId),
+      channelId: BigInt(eventMock.eventContext.event.args.channelId),
       srcChain: Chains.Ethereum,
       issuedBlock: 10,
       expectedDepositAmount: 650,
@@ -51,9 +76,9 @@ describe(swapDepositAddressReady, () => {
     await prisma.$transaction(async (txClient) => {
       await swapDepositAddressReady({
         prisma: txClient,
-        event,
+        event: eventMock.eventContext.event,
         block: {
-          ...block,
+          ...eventMock.block,
           height: 10,
         },
       });
@@ -61,7 +86,9 @@ describe(swapDepositAddressReady, () => {
 
     const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow(
       {
-        where: { channelId: BigInt(event.args.channelId) },
+        where: {
+          channelId: BigInt(eventMock.eventContext.event.args.channelId),
+        },
       },
     );
 
