@@ -11,8 +11,11 @@ import prisma, {
   Broadcast,
   SwapFee,
 } from '../client';
-import { getPendingDeposit } from '../deposit-tracking';
 import openSwapDepositChannel from '../handlers/openSwapDepositChannel';
+import {
+  getPendingBroadcast,
+  getPendingDeposit,
+} from '../ingress-egress-tracking';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
 
@@ -21,6 +24,7 @@ const router = express.Router();
 export enum State {
   Complete = 'COMPLETE',
   BroadcastAborted = 'BROADCAST_ABORTED',
+  Broadcasted = 'BROADCASTED',
   BroadcastRequested = 'BROADCAST_REQUESTED',
   EgressScheduled = 'EGRESS_SCHEDULED',
   SwapExecuted = 'SWAP_EXECUTED',
@@ -127,7 +131,16 @@ router.get(
       state = State.BroadcastAborted;
     } else if (swap?.egress?.broadcast) {
       assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
-      state = State.BroadcastRequested;
+      if (
+        await getPendingBroadcast(
+          swap.egress.broadcast.chain,
+          swap.egress.broadcast.id,
+        )
+      ) {
+        state = State.Broadcasted;
+      } else {
+        state = State.BroadcastRequested;
+      }
     } else if (swap?.egress) {
       assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
       state = State.EgressScheduled;
