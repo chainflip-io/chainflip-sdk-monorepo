@@ -160,6 +160,9 @@ importers:
       bech32-buffer:
         specifier: ^0.2.1
         version: 0.2.1(patch_hash=elryfzb6nrq4qzi6wcigmgsdj4)
+      bignumber.js:
+        specifier: ^9.1.2
+        version: 9.1.2
       ethers:
         specifier: 6.9.2
         version: 6.9.2

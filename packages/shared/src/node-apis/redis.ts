@@ -1,8 +1,9 @@
 import { decodeAddress } from '@polkadot/util-crypto';
+import BigNumber from 'bignumber.js';
 import Redis from 'ioredis';
 import { z } from 'zod';
 import { sorter } from '../arrays';
-import type { Asset, Chain } from '../enums';
+import { assetDecimals, type Asset, type Chain } from '../enums';
 import { number, u128, string } from '../parsers';
 
 const ss58ToHex = (address: string) =>
@@ -45,7 +46,13 @@ type PolkadotBroadcast = ChainBroadcast<'Polkadot'>;
 type BitcoinBroadcast = ChainBroadcast<'Bitcoin'>;
 type Broadcast = ChainBroadcast<Chain>;
 
-const mempoolTransaction = z.object({ confirmations: number });
+const mempoolTransaction = z.object({
+  confirmations: number,
+  value: number.transform((value) =>
+    new BigNumber(value).shiftedBy(assetDecimals.BTC).toString(),
+  ),
+  tx_hash: string.transform((value) => `0x${value}` as const),
+});
 
 export default class RedisClient {
   private client;
