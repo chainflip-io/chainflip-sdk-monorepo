@@ -116,7 +116,6 @@ const chainAssetNumberMap = chainAssetMap(numberOrHex);
 const chainAssetNumberNullableMap = chainAssetMap(numberOrHex.nullable());
 
 const swappingEnvironment = z.object({
-  minimum_swap_amounts: chainAssetNumberMap,
   maximum_swap_amounts: chainAssetNumberNullableMap,
 });
 

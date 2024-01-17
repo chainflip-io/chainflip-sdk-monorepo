@@ -2,7 +2,6 @@ import { validateSwapAmount } from '../utils';
 
 const env = {
   swapping: {
-    minimumSwapAmounts: { Ethereum: { ETH: 0n, FLIP: 0n } },
     maximumSwapAmounts: { Ethereum: { ETH: 1000000000000000000n, FLIP: null } },
   },
   ingressEgress: {

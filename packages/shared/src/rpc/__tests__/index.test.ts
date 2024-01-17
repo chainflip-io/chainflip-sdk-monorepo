@@ -33,21 +33,11 @@ describe('getSwappingEnvironment', () => {
   it('retrieves the swapping environment', async () => {
     const spy = mockResponse(
       swappingEnvironment({
-        minSwapAmount: '0x0',
         maxSwapAmount: '0x4563918244f40000',
       }),
     );
 
     expect(await getSwappingEnvironment({ network: 'perseverance' })).toEqual({
-      minimumSwapAmounts: {
-        Bitcoin: { BTC: 0n },
-        Ethereum: {
-          ETH: 0n,
-          USDC: 0n,
-          FLIP: 0n,
-        },
-        Polkadot: { DOT: 0n },
-      },
       maximumSwapAmounts: {
         Bitcoin: {
           BTC: 0x4563918244f40000n,
