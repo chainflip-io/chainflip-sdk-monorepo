@@ -16,6 +16,10 @@ describe('ingress-egress-tracking', () => {
     redis = new Redis();
   });
 
+  beforeEach(async () => {
+    await prisma.chainTracking.deleteMany();
+  });
+
   afterEach(async () => {
     await redis.flushall();
     await prisma.chainTracking.deleteMany();
