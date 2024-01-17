@@ -201,14 +201,14 @@ export class SwapSDK {
   }
 
   async getSwapLimits(): Promise<{
+    minimumSwapAmounts: ChainAssetMap<bigint>;
     maximumSwapAmounts: ChainAssetMap<bigint | null>;
-    minimumDepositAmounts: ChainAssetMap<bigint>;
   }> {
     const {
       swapping: { maximumSwapAmounts },
       ingressEgress: { minimumDepositAmounts },
     } = await this.getStateChainEnvironment();
 
-    return { maximumSwapAmounts, minimumDepositAmounts };
+    return { minimumSwapAmounts: minimumDepositAmounts, maximumSwapAmounts };
   }
 }
