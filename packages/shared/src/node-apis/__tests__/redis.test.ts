@@ -75,49 +75,47 @@ describe(RedisClient, () => {
 
   describe(RedisClient.prototype.getDeposits, () => {
     it('returns an empty array if no deposits are found', async () => {
-      const mock = jest.mocked(Redis.prototype.get).mockResolvedValueOnce(null);
+      const mock = jest
+        .mocked(Redis.prototype.lrange)
+        .mockResolvedValueOnce([]);
       const client = new RedisClient(url);
       const deposits = await client.getDeposits('Ethereum', 'ETH', '0x1234');
       expect(deposits).toEqual([]);
-      expect(mock).toHaveBeenCalledWith('deposit:Ethereum:0x1234');
+      expect(mock).toHaveBeenCalledWith('deposit:Ethereum:0x1234', 0, -1);
     });
 
     it('returns the deposits if found', async () => {
-      const mock = jest.mocked(Redis.prototype.get).mockResolvedValueOnce(
-        JSON.stringify([
-          {
-            amount: '0x8000',
-            asset: { chain: 'Ethereum', asset: 'ETH' },
-            deposit_chain_block_height: 1234,
-          },
-        ]),
-      );
+      const mock = jest.mocked(Redis.prototype.lrange).mockResolvedValueOnce([
+        JSON.stringify({
+          amount: '0x8000',
+          asset: 'ETH',
+          deposit_chain_block_height: 1234,
+        }),
+      ]);
       const client = new RedisClient(url);
       const deposits = await client.getDeposits('Ethereum', 'ETH', '0x1234');
       expect(deposits).toEqual([
         {
           amount: 0x8000n,
-          asset: { chain: 'Ethereum', asset: 'ETH' },
+          asset: 'ETH',
           deposit_chain_block_height: 1234,
         },
       ]);
-      expect(mock).toHaveBeenCalledWith('deposit:Ethereum:0x1234');
+      expect(mock).toHaveBeenCalledWith('deposit:Ethereum:0x1234', 0, -1);
     });
 
     it('filters out other assets for the same chain', async () => {
-      const mock = jest.mocked(Redis.prototype.get).mockResolvedValueOnce(
-        JSON.stringify([
-          {
-            amount: '0x8000',
-            asset: { chain: 'Ethereum', asset: 'FLIP' },
-            deposit_chain_block_height: 1234,
-          },
-        ]),
-      );
+      const mock = jest.mocked(Redis.prototype.lrange).mockResolvedValueOnce([
+        JSON.stringify({
+          amount: '0x8000',
+          asset: 'FLIP',
+          deposit_chain_block_height: 1234,
+        }),
+      ]);
       const client = new RedisClient(url);
       const deposits = await client.getDeposits('Ethereum', 'ETH', '0x1234');
       expect(deposits).toEqual([]);
-      expect(mock).toHaveBeenCalledWith('deposit:Ethereum:0x1234');
+      expect(mock).toHaveBeenCalledWith('deposit:Ethereum:0x1234', 0, -1);
     });
   });
 });
