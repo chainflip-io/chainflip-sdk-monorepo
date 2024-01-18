@@ -99,7 +99,7 @@ export default class RedisClient {
   }
 
   async getMempoolTransaction(chain: 'Bitcoin', address: string) {
-    const key = `confirmations:${chain}:${address}`;
+    const key = `mempool:${chain}:${address}`;
     const value = await this.client.get(key);
     return value ? mempoolTransaction.parse(JSON.parse(value)) : null;
   }

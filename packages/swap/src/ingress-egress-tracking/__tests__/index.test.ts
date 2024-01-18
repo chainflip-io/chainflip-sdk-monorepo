@@ -68,7 +68,7 @@ describe('ingress-egress-tracking', () => {
 
     it('gets mempool txs for bitcoin from redis', async () => {
       await redis.set(
-        'confirmations:Bitcoin:tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf',
+        'mempool:Bitcoin:tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf',
         JSON.stringify({
           tx_hash: 'deadc0de',
           value: 0.00036864,

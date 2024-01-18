@@ -47,7 +47,7 @@ describe(RedisClient, () => {
       );
       expect(broadcast).toBeNull();
       expect(mock).toHaveBeenCalledWith(
-        'confirmations:Bitcoin:tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        'mempool:Bitcoin:tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
       );
     });
 
@@ -68,7 +68,7 @@ describe(RedisClient, () => {
         tx_hash: '0x1234',
       });
       expect(mock).toHaveBeenCalledWith(
-        'confirmations:Bitcoin:tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        'mempool:Bitcoin:tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
       );
     });
   });
