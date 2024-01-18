@@ -53,12 +53,14 @@ export const getPendingDeposit = async (
       return getMempoolTransaction(chain, address);
     }
 
-    const confirmations =
-      tracking.height - BigInt(deposits[0].deposit_chain_block_height);
+    const confirmations = Math.max(
+      0,
+      Number(tracking.height) - deposits[0].deposit_chain_block_height + 1,
+    );
 
     return {
       amount: deposits[0].amount.toString(),
-      transactionConfirmations: Number(confirmations),
+      transactionConfirmations: confirmations,
     };
   } catch (error) {
     logger.error('error while looking up deposit in redis', { error });
