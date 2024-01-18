@@ -79,7 +79,6 @@ export const swapDepositAddressReady = async ({
         },
       },
       create: {
-        expectedDepositAmount: 0,
         estimatedExpiryAt: estimatedExpiryTime,
         ccmGasBudget: channelMetadata?.gasBudget,
         ccmMessage: channelMetadata?.message,

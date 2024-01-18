@@ -191,7 +191,7 @@ router.get(
       depositChannelCreatedAt: swapDepositChannel?.createdAt.valueOf(),
       depositAddress: swapDepositChannel?.depositAddress,
       expectedDepositAmount:
-        swapDepositChannel?.expectedDepositAmount.toFixed(),
+        swapDepositChannel?.expectedDepositAmount?.toFixed(),
       swapId: swap?.nativeId.toString(),
       depositAmount: swap?.depositAmount?.toFixed() ?? pendingDeposit?.amount,
       depositTransactionHash: pendingDeposit?.transactionHash,
