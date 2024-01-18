@@ -110,23 +110,7 @@ export type SwapStatusResponse = CommonStatusFields &
         feesPaid: SwapFee[];
       }
     | {
-        state: 'BROADCAST_REQUESTED';
-        swapId: string;
-        depositAmount: string;
-        depositReceivedAt: number;
-        depositReceivedBlockIndex: string;
-        intermediateAmount: string | undefined;
-        swapExecutedAt: number;
-        swapExecutedBlockIndex: string;
-        egressAmount: string;
-        egressScheduledAt: number;
-        egressScheduledBlockIndex: string;
-        feesPaid: SwapFee[];
-        broadcastRequestedAt: number;
-        broadcastRequestedBlockIndex: string;
-      }
-    | {
-        state: 'BROADCASTED';
+        state: 'BROADCAST_REQUESTED' | 'BROADCASTED';
         swapId: string;
         depositAmount: string;
         depositReceivedAt: number;
