@@ -131,12 +131,7 @@ router.get(
       state = State.BroadcastAborted;
     } else if (swap?.egress?.broadcast) {
       assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
-      if (
-        await getPendingBroadcast(
-          swap.egress.broadcast.chain,
-          swap.egress.broadcast.id,
-        )
-      ) {
+      if (await getPendingBroadcast(swap.egress.broadcast)) {
         state = State.Broadcasted;
       } else {
         state = State.BroadcastRequested;

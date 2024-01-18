@@ -1,6 +1,6 @@
 import { Asset, Chain, Chains } from '@/shared/enums';
 import RedisClient from '@/shared/node-apis/redis';
-import prisma from '../client';
+import prisma, { Broadcast } from '../client';
 import env from '../config/env';
 import { handleExit } from '../utils/function';
 import logger from '../utils/logger';
@@ -66,13 +66,10 @@ export const getPendingDeposit = async (
   }
 };
 
-export const getPendingBroadcast = async (
-  chain: Chain,
-  broadcastId: bigint,
-) => {
+export const getPendingBroadcast = async (broadcast: Broadcast) => {
   if (!redis) return null;
   try {
-    return await redis.getBroadcast(chain, broadcastId);
+    return await redis.getBroadcast(broadcast.chain, broadcast.nativeId);
   } catch (error) {
     logger.error('error while looking up broadcast in redis', { error });
     return null;

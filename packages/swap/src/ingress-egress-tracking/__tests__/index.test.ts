@@ -1,7 +1,7 @@
 import Redis from 'ioredis';
 import { Chain } from '@/shared/enums';
 import { getPendingBroadcast, getPendingDeposit } from '..';
-import prisma from '../../client';
+import prisma, { Broadcast } from '../../client';
 import logger from '../../utils/logger';
 
 jest.mock('../../config/env', () => ({
@@ -151,6 +151,12 @@ describe('ingress-egress-tracking', () => {
   });
 
   describe(getPendingBroadcast, () => {
+    const broadcast = {
+      chain: 'Ethereum',
+      nativeId: 1n,
+      id: 1234n,
+    } as Broadcast;
+
     it('gets pending broadcasts from redis', async () => {
       await redis.set(
         'broadcast:Ethereum:1',
@@ -159,18 +165,18 @@ describe('ingress-egress-tracking', () => {
         }),
       );
 
-      expect(await getPendingBroadcast('Ethereum', 1n)).not.toBeNull();
+      expect(await getPendingBroadcast(broadcast)).not.toBeNull();
     });
 
     it('returns null if the broadcast is not found', async () => {
-      expect(await getPendingBroadcast('Ethereum', 1n)).toBeNull();
+      expect(await getPendingBroadcast(broadcast)).toBeNull();
       expect(logger.error).not.toHaveBeenCalled();
     });
 
     it('returns null if the client throws an error', async () => {
       jest.spyOn(Redis.prototype, 'get').mockRejectedValueOnce(new Error());
 
-      expect(await getPendingBroadcast('Ethereum', 1n)).toBeNull();
+      expect(await getPendingBroadcast(broadcast)).toBeNull();
       expect(logger.error).toHaveBeenCalled();
     });
   });
