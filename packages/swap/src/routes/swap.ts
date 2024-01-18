@@ -134,7 +134,7 @@ router.get(
       if (
         await getPendingBroadcast(
           swap.egress.broadcast.chain,
-          swap.egress.broadcast.id,
+          swap.egress.broadcast.nativeId,
         )
       ) {
         state = State.Broadcasted;
