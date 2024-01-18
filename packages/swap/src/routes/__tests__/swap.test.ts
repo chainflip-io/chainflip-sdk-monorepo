@@ -1029,7 +1029,7 @@ describe('server', () => {
         channelId,
         createdAt: expect.any(Date),
       });
-      expect(swapDepositChannel?.expectedDepositAmount.toString()).toBe(
+      expect(swapDepositChannel?.expectedDepositAmount?.toString()).toBe(
         requestBody.amount,
       );
     });

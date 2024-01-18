@@ -54,7 +54,7 @@ model SwapDepositChannel {
   srcChain              Chain
   srcAsset              Asset
   depositAddress        String
-  expectedDepositAmount Decimal      @db.Decimal(30, 0)
+  expectedDepositAmount Decimal?     @db.Decimal(30, 0)
   destAsset             Asset
   destAddress           String
   ccmGasBudget          Decimal?     @db.Decimal(30, 0)

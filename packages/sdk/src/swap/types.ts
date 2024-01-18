@@ -110,7 +110,7 @@ export type SwapStatusResponse = CommonStatusFields &
         feesPaid: SwapFee[];
       }
     | {
-        state: 'BROADCAST_REQUESTED';
+        state: 'BROADCAST_REQUESTED' | 'BROADCASTED';
         swapId: string;
         depositAmount: string;
         depositReceivedAt: number;
