@@ -12,6 +12,7 @@ import {
   createChainTrackingInfo,
   createDepositChannel,
 } from '../../event-handlers/__tests__/utils';
+import { getPendingBroadcast } from '../../ingress-egress-tracking';
 import app from '../../server';
 import { State } from '../swap';
 
@@ -23,6 +24,8 @@ jest.mock('../../utils/screenAddress', () => ({
 jest.mock('timers/promises', () => ({
   setTimeout: jest.fn().mockResolvedValue(undefined),
 }));
+
+jest.mock('../../ingress-egress-tracking');
 
 const randomId = () => BigInt(crypto.randomInt(1, 100000));
 
@@ -48,7 +51,7 @@ describe('server', () => {
   jest.setTimeout(1000);
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Egress" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Egress", "Broadcast" CASCADE`;
     await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;
     server = app.listen(0);
   });
@@ -389,6 +392,114 @@ describe('server', () => {
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "EGRESS_SCHEDULED",
+          "swapExecutedAt": 1669907141201,
+          "swapExecutedBlockIndex": "200-3",
+          "type": "SWAP",
+        }
+      `);
+    });
+
+    it(`retrieves a swap in ${State.Broadcasted} status`, async () => {
+      jest.mocked(getPendingBroadcast).mockResolvedValueOnce({
+        tx_out_id: { hash: '0xdeadbeef' },
+      });
+
+      const swapIntent = await createDepositChannel({
+        srcChainExpiryBlock: 200,
+        swaps: {
+          create: {
+            nativeId,
+            depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
+            depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+            depositAmount: '10',
+            swapInputAmount: '10',
+            fees: {
+              create: [
+                {
+                  type: 'NETWORK',
+                  asset: 'USDC',
+                  amount: '10',
+                },
+                {
+                  type: 'LIQUIDITY',
+                  asset: 'ETH',
+                  amount: '5',
+                },
+              ],
+            },
+            swapExecutedAt: new Date(RECEIVED_TIMESTAMP + 6000),
+            swapExecutedBlockIndex: `200-3`,
+            egress: {
+              create: {
+                scheduledAt: new Date(RECEIVED_TIMESTAMP + 12000),
+                scheduledBlockIndex: `202-3`,
+                amount: (10n ** 18n).toString(),
+                chain: 'Ethereum',
+                nativeId: 1n,
+                broadcast: {
+                  create: {
+                    chain: 'Ethereum',
+                    nativeId: 1n,
+                    requestedAt: new Date(RECEIVED_TIMESTAMP + 12000),
+                    requestedBlockIndex: `202-4`,
+                  },
+                },
+              },
+            },
+            srcAsset: Assets.ETH,
+            destAsset: Assets.DOT,
+            destAddress: DOT_ADDRESS,
+            type: 'SWAP',
+          },
+        },
+      });
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
+
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+      const { swapId, ...rest } = body;
+      expect(BigInt(swapId)).toEqual(nativeId);
+      expect(rest).toMatchInlineSnapshot(`
+        {
+          "broadcastAbortedBlockIndex": null,
+          "broadcastRequestedAt": 1669907147201,
+          "broadcastRequestedBlockIndex": "202-4",
+          "broadcastSucceededBlockIndex": null,
+          "ccmDepositReceivedBlockIndex": null,
+          "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+          "depositAmount": "10",
+          "depositChannelCreatedAt": 1690556052834,
+          "depositChannelExpiryBlock": "200",
+          "depositChannelOpenedThroughBackend": false,
+          "depositReceivedAt": 1669907135201,
+          "depositReceivedBlockIndex": "100-3",
+          "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+          "destAsset": "DOT",
+          "destChain": "Polkadot",
+          "egressAmount": "1000000000000000000",
+          "egressScheduledAt": 1669907147201,
+          "egressScheduledBlockIndex": "202-3",
+          "estimatedDepositChannelExpiryTime": 1699527900000,
+          "expectedDepositAmount": "10000000000",
+          "feesPaid": [
+            {
+              "amount": "10",
+              "asset": "USDC",
+              "chain": "Ethereum",
+              "type": "NETWORK",
+            },
+            {
+              "amount": "5",
+              "asset": "ETH",
+              "chain": "Ethereum",
+              "type": "LIQUIDITY",
+            },
+          ],
+          "isDepositChanneExpired": false,
+          "srcAsset": "ETH",
+          "srcChain": "Ethereum",
+          "state": "BROADCASTED",
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
           "type": "SWAP",
