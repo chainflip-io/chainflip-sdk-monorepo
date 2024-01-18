@@ -1,9 +1,8 @@
 import { decodeAddress } from '@polkadot/util-crypto';
-import BigNumber from 'bignumber.js';
 import Redis from 'ioredis';
 import { z } from 'zod';
 import { sorter } from '../arrays';
-import { assetDecimals, type Asset, type Chain } from '../enums';
+import { type Asset, type Chain } from '../enums';
 import { number, u128, string } from '../parsers';
 
 const ss58ToHex = (address: string) =>
@@ -46,9 +45,7 @@ type Broadcast = ChainBroadcast<Chain>;
 const mempoolTransaction = jsonString.pipe(
   z.object({
     confirmations: number,
-    value: number.transform((value) =>
-      new BigNumber(value).shiftedBy(assetDecimals.BTC).toString(),
-    ),
+    value: u128,
     tx_hash: string.transform((value) => `0x${value}` as const),
   }),
 );

@@ -41,15 +41,13 @@ describe('ingress-egress-tracking', () => {
     it('gets pending non-bitcoin deposits from redis', async () => {
       await updateChainTracking({ chain: 'Ethereum', height: 1234567893n });
 
-      await redis.set(
+      await redis.rpush(
         'deposit:Ethereum:0x1234',
-        JSON.stringify([
-          {
-            amount: '0x9000',
-            asset: { asset: 'FLIP', chain: 'Ethereum' },
-            deposit_chain_block_height: 1234567890,
-          },
-        ]),
+        JSON.stringify({
+          amount: '0x9000',
+          asset: 'FLIP',
+          deposit_chain_block_height: 1234567890,
+        }),
       );
 
       const deposit = await getPendingDeposit('Ethereum', 'FLIP', '0x1234');
@@ -71,7 +69,7 @@ describe('ingress-egress-tracking', () => {
         'mempool:Bitcoin:tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf',
         JSON.stringify({
           tx_hash: 'deadc0de',
-          value: 0.00036864,
+          value: '0x9000',
           confirmations: 3,
         }),
       );
@@ -93,14 +91,20 @@ describe('ingress-egress-tracking', () => {
     it('gets pending bitcoin deposits from redis', async () => {
       await Promise.all([
         redis.set(
+          'mempool:Bitcoin:tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf',
+          JSON.stringify({
+            tx_hash: 'deadc0de',
+            value: '0x9000',
+            confirmations: 1,
+          }),
+        ),
+        redis.rpush(
           'deposit:Bitcoin:tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf',
-          JSON.stringify([
-            {
-              amount: '0x9000',
-              asset: { asset: 'BTC', chain: 'Bitoin' },
-              deposit_chain_block_height: 1234567890,
-            },
-          ]),
+          JSON.stringify({
+            amount: '0x9000',
+            asset: 'BTC',
+            deposit_chain_block_height: 1234567890,
+          }),
         ),
         updateChainTracking({ chain: 'Bitcoin', height: 1234567893n }),
       ]);
@@ -127,7 +131,7 @@ describe('ingress-egress-tracking', () => {
     });
 
     it('returns null if the redis client throws (non-bitcoin)', async () => {
-      jest.spyOn(Redis.prototype, 'get').mockRejectedValueOnce(new Error());
+      jest.spyOn(Redis.prototype, 'lrange').mockRejectedValueOnce(new Error());
       await updateChainTracking({ chain: 'Ethereum', height: 1234567893n });
 
       const deposit = await getPendingDeposit('Ethereum', 'FLIP', '0x1234');
@@ -137,7 +141,7 @@ describe('ingress-egress-tracking', () => {
     });
 
     it('returns null if the redis client throws (bitcoin)', async () => {
-      jest.spyOn(Redis.prototype, 'get').mockRejectedValueOnce(new Error());
+      jest.spyOn(Redis.prototype, 'lrange').mockRejectedValueOnce(new Error());
 
       const deposit = await getPendingDeposit('Bitcoin', 'BTC', '');
 

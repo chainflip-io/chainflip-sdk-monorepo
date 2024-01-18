@@ -15,6 +15,27 @@ export type PendingDeposit = {
   transactionConfirmations: number;
 };
 
+const getMempoolTransaction = async (
+  chain: Chain,
+  address: string,
+): Promise<PendingDeposit | null> => {
+  if (!redis) return null;
+
+  if (chain === Chains.Bitcoin) {
+    const tx = await redis.getMempoolTransaction('Bitcoin', address);
+
+    if (tx) {
+      return {
+        amount: tx.value.toString(),
+        transactionConfirmations: tx.confirmations,
+        transactionHash: tx.tx_hash,
+      };
+    }
+  }
+
+  return null;
+};
+
 export const getPendingDeposit = async (
   chain: Chain,
   asset: Asset,
@@ -23,24 +44,14 @@ export const getPendingDeposit = async (
   if (!redis) return null;
 
   try {
-    if (chain === Chains.Bitcoin) {
-      const tx = await redis.getMempoolTransaction('Bitcoin', address);
-
-      if (tx) {
-        return {
-          amount: tx.value,
-          transactionConfirmations: tx.confirmations,
-          transactionHash: tx.tx_hash,
-        };
-      }
-    }
-
     const [deposits, tracking] = await Promise.all([
       redis.getDeposits(chain, asset, address),
       prisma.chainTracking.findFirst({ where: { chain } }),
     ]);
 
-    if (deposits.length === 0 || tracking == null) return null;
+    if (deposits.length === 0 || tracking == null) {
+      return getMempoolTransaction(chain, address);
+    }
 
     const confirmations =
       tracking.height - BigInt(deposits[0].deposit_chain_block_height);
