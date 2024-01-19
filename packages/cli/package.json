@@ -9,6 +9,7 @@
   },
   "exports": {
     ".": {
+      "require": "./dist/lib.js",
       "import": "./dist/lib.mjs",
       "types": "./dist/lib.d.mts"
     }

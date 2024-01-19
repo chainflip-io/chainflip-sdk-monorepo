@@ -5,7 +5,7 @@ export default defineConfig({
   treeshake: true,
   minify: false,
   dts: true,
-  format: 'esm',
+  format: ['cjs', 'esm'],
   entry: {
     lib: 'src/lib/index.ts',
     cli: 'src/main.ts',
