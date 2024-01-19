@@ -1,5 +1,5 @@
 {
-  "name": "@chainflip-io/cli",
+  "name": "@chainflip/cli",
   "version": "1.1.4",
   "description": "",
   "main": "./dist/lib.mjs",

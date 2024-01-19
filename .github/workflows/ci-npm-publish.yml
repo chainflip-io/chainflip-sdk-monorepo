@@ -50,12 +50,12 @@ jobs:
     uses: ./.github/workflows/_npm_publish.yml
     with:
       node_version: ${{ needs.get-node-version.outputs.node_version }}
-      package_registry: 'https://npm.pkg.github.com'
+      package_registry: 'https://registry.npmjs.org'
       package_scope: '@chainflip-io'
-      build_cmd: pnpm --filter @chainflip-io/cli build
-      publish_cmd: pnpm --filter @chainflip-io/cli publish
+      build_cmd: pnpm --filter @chainflip/cli build
+      publish_cmd: pnpm --filter @chainflip/cli publish
     secrets:
-      node_auth_token: ${{ secrets.GITHUB_TOKEN }}
+      node_auth_token: ${{ secrets.CF_NPM_JS_PACKAGES_READ_WRITE }}
 
   pre-checks-sdk:
     needs: [check-commit]
