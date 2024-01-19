@@ -61,6 +61,10 @@ describe('dotAddress', () => {
 });
 
 describe('u128', () => {
+  it('handles numbers', () => {
+    expect(u128.parse(123)).toBe(123n);
+  });
+
   it('handles numeric strings', () => {
     expect(u128.parse('123')).toBe(123n);
   });
