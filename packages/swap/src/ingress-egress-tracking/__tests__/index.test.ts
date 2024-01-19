@@ -52,7 +52,7 @@ describe('ingress-egress-tracking', () => {
 
       const deposit = await getPendingDeposit('Ethereum', 'FLIP', '0x1234');
 
-      expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 3 });
+      expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 4 });
     });
 
     it('returns null if the non-bitcoin deposit is not found', async () => {
@@ -116,7 +116,7 @@ describe('ingress-egress-tracking', () => {
       );
 
       expect(logger.error).not.toHaveBeenCalled();
-      expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 3 });
+      expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 4 });
     });
 
     it('returns null if the non-bitcoin deposit is not found', async () => {
