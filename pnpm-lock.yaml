@@ -170,8 +170,8 @@ importers:
         specifier: ^7.8.1
         version: 7.8.1
       ws:
-        specifier: ^8.14.2
-        version: 8.14.2
+        specifier: ^8.16.0
+        version: 8.16.0
     devDependencies:
       '@ethersproject/abi':
         specifier: ^5.7.0
@@ -252,8 +252,8 @@ importers:
         specifier: ^3.11.0
         version: 3.11.0
       ws:
-        specifier: ^8.14.2
-        version: 8.14.2
+        specifier: ^8.16.0
+        version: 8.16.0
     devDependencies:
       '@babel/core':
         specifier: ^7.23.3
@@ -2044,9 +2044,9 @@ packages:
       '@types/ws': 8.5.10
       graphql: 16.8.1
       graphql-ws: 5.14.1(graphql@16.8.1)
-      isomorphic-ws: 5.0.0(ws@8.14.2)
+      isomorphic-ws: 5.0.0(ws@8.16.0)
       tslib: 2.6.2
-      ws: 8.14.2
+      ws: 8.16.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -2306,10 +2306,10 @@ packages:
       '@types/ws': 8.5.10
       '@whatwg-node/fetch': 0.9.13
       graphql: 16.8.1
-      isomorphic-ws: 5.0.0(ws@8.14.2)
+      isomorphic-ws: 5.0.0(ws@8.16.0)
       tslib: 2.6.2
       value-or-promise: 1.0.12
-      ws: 8.14.2
+      ws: 8.16.0
     transitivePeerDependencies:
       - '@types/node'
       - bufferutil
@@ -6506,12 +6506,12 @@ packages:
       ws: 8.14.1
     dev: true
 
-  /isomorphic-ws@5.0.0(ws@8.14.2):
+  /isomorphic-ws@5.0.0(ws@8.16.0):
     resolution: {integrity: sha512-muId7Zzn9ywDsyXgTIafTry2sV3nySZeUDe6YedVd1Hvuuep5AsIlqK+XefWpYTyJG5e503F2xIuT2lcU6rCSw==}
     peerDependencies:
       ws: '*'
     dependencies:
-      ws: 8.14.2
+      ws: 8.16.0
     dev: true
 
   /istanbul-lib-coverage@3.2.0:
@@ -9654,8 +9654,8 @@ packages:
         optional: true
     dev: true
 
-  /ws@8.14.2:
-    resolution: {integrity: sha512-wEBG1ftX4jcglPxgFCMJmZ2PLtSbJ2Peg6TmpJFTbe9GZYOQCDPdMYu/Tm0/bGZkw8paZnJY45J4K2PZrLYq8g==}
+  /ws@8.16.0:
+    resolution: {integrity: sha512-HS0c//TP7Ina87TfiPUz1rQzMhHrl/SG2guqRcTOIUYD2q8uhUdNHZYJUaQ8aTGPzCh+c6oawMKW35nFl1dxyQ==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
