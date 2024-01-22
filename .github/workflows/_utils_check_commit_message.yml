@@ -27,7 +27,7 @@ jobs:
           GITHUB_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
           commit_message="$GITHUB_COMMIT_MESSAGE"
-          if [[ $commit_message =~ @chainflip-io/cli/v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+          if [[ $commit_message =~ @chainflip/cli/v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
             echo "Publishing CLI package"
             echo "publish_cli=true" >> $GITHUB_OUTPUT
             echo "publish_sdk=false" >> $GITHUB_OUTPUT
