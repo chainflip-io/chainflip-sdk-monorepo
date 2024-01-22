@@ -69,6 +69,6 @@
     "safe-stable-stringify": "^2.4.3",
     "socket.io": "^4.7.2",
     "winston": "^3.11.0",
-    "ws": "^8.14.2"
+    "ws": "^8.16.0"
   }
 }
