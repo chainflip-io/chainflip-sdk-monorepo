@@ -103,6 +103,33 @@ export const swapScheduledDotDepositChannelMock = buildSwapScheduledEvent({
   },
 });
 
+export const swapScheduledDotDepositChannelBrokerCommissionMock =
+  buildSwapScheduledEvent({
+    origin: {
+      __kind: 'DepositChannel',
+      channelId: '2',
+      depositAddress: {
+        value:
+          '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
+        __kind: 'Dot',
+      },
+      depositBlockHeight: '100',
+    },
+    swapId: '1',
+    sourceAsset: { __kind: 'Dot' },
+    depositAmount: '125000000000',
+    destinationAsset: { __kind: 'Btc' },
+    destinationAddress: {
+      value:
+        '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
+      __kind: 'Btc',
+    },
+    swapType: {
+      __kind: 'Swap',
+    },
+    brokerCommission: 5000000000,
+  });
+
 export const swapScheduledBtcDepositChannelMock = buildSwapScheduledEvent({
   swapId: '3',
   sourceAsset: { __kind: 'Btc' },

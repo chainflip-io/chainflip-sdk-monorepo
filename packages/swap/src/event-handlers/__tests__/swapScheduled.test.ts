@@ -2,6 +2,7 @@ import { Assets } from '@/shared/enums';
 import {
   createDepositChannel,
   swapScheduledBtcDepositChannelMock,
+  swapScheduledDotDepositChannelBrokerCommissionMock,
   swapScheduledDotDepositChannelMock,
   swapScheduledVaultMock,
 } from './utils';
@@ -57,6 +58,7 @@ describe(swapScheduled, () => {
 
       const swap = await prisma.swap.findFirstOrThrow({
         where: { swapDepositChannelId: dotSwapDepositChannel.id },
+        include: { fees: true },
       });
 
       expect(swap.depositAmount.toString()).toEqual(
@@ -82,6 +84,7 @@ describe(swapScheduled, () => {
 
       const swap = await prisma.swap.findFirstOrThrow({
         where: { swapDepositChannelId: btcSwapDepositChannel.id },
+        include: { fees: true },
       });
 
       expect(swap.depositAmount.toString()).toEqual(
@@ -93,6 +96,40 @@ describe(swapScheduled, () => {
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
         swapDepositChannelId: expect.any(BigInt),
+      });
+    });
+
+    it('stores a new swap with a broker commission', async () => {
+      await prisma.$transaction(async (client) => {
+        await swapScheduled({
+          prisma: client,
+          block:
+            swapScheduledDotDepositChannelBrokerCommissionMock.block as any,
+          event: swapScheduledDotDepositChannelBrokerCommissionMock.eventContext
+            .event as any,
+        });
+      });
+
+      const swap = await prisma.swap.findFirstOrThrow({
+        where: { swapDepositChannelId: dotSwapDepositChannel.id },
+        include: { fees: true },
+      });
+
+      expect(swap.depositAmount.toString()).toEqual(
+        swapScheduledDotDepositChannelMock.eventContext.event.args
+          .depositAmount,
+      );
+      expect(swap).toMatchSnapshot({
+        id: expect.any(BigInt),
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        swapDepositChannelId: expect.any(BigInt),
+        fees: [
+          {
+            id: expect.any(BigInt),
+            swapId: expect.any(BigInt),
+          },
+        ],
       });
     });
 
@@ -125,7 +162,9 @@ describe(swapScheduled, () => {
         });
       });
 
-      const swap = await prisma.swap.findFirstOrThrow();
+      const swap = await prisma.swap.findFirstOrThrow({
+        include: { fees: true },
+      });
 
       expect(swap.depositAmount.toString()).toEqual(
         swapScheduledVaultMock.eventContext.event.args.depositAmount,
