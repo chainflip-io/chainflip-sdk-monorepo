@@ -184,6 +184,8 @@ router.get(
       destAsset,
       destAddress: readField(swap, swapDepositChannel, 'destAddress'),
       depositChannelCreatedAt: swapDepositChannel?.createdAt.valueOf(),
+      depositChannelBrokerCommissionBps:
+        swapDepositChannel?.brokerCommissionBps,
       depositAddress: swapDepositChannel?.depositAddress,
       expectedDepositAmount:
         swapDepositChannel?.expectedDepositAmount?.toFixed(),
