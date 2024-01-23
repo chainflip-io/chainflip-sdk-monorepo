@@ -118,6 +118,7 @@ enum SwapFeeType {
   NETWORK
   INGRESS
   EGRESS
+  BROKER
 
   @@schema("public")
 }

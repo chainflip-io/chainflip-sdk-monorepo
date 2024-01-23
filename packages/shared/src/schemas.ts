@@ -50,7 +50,7 @@ export type PostSwapResponse = {
 };
 
 export type SwapFee = {
-  type: 'LIQUIDITY' | 'NETWORK' | 'INGRESS' | 'EGRESS';
+  type: 'LIQUIDITY' | 'NETWORK' | 'INGRESS' | 'EGRESS' | 'BROKER';
   chain: Chain;
   asset: Asset;
   amount: string;
