@@ -135,8 +135,23 @@ model SwapFee {
   @@schema("public")
 }
 
+enum FailedSwapType {
+  FAILED
+  IGNORED
+
+  @@schema("public")
+}
+enum FailedSwapReason {
+  BelowMinimumDeposit 
+  NotEnoughToPayFees // gas price to process deposit is too high
+  EgressAmountZero  // egress amount left after fees is too low 
+  
+  @@schema("public")
+}
 model FailedSwap {
   id                   Int                 @id @default(autoincrement())
+  type                 FailedSwapType
+  reason               FailedSwapReason?
   destAddress          String
   destChain            Chain
   depositAmount        Decimal             @db.Decimal(30, 0)

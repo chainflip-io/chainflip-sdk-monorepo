@@ -22,6 +22,7 @@ const swapAmountTooLowArgs = z.object({
 
 export type SwapAmountTooLowEvent = z.input<typeof swapAmountTooLowArgs>;
 
+// TODO: Remove this event handler -- no longer used after v1.2 (we use deposit ignored instead)
 export default async function swapAmountTooLow({
   prisma,
   event,
@@ -51,6 +52,7 @@ export default async function swapAmountTooLow({
 
   await prisma.failedSwap.create({
     data: {
+      type: 'FAILED',
       destAddress: destinationAddress.address,
       destChain: destinationAddress.chain,
       depositAmount: amount.toString(),
