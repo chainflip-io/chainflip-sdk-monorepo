@@ -4,14 +4,14 @@ import {
   BTC_ADDRESS,
   DOT_ADDRESS,
   ETH_ADDRESS,
-  buildDepositIgnoredEvent,
+  buildGenericEvent,
   createDepositChannel,
 } from './utils';
 import { events } from '..';
 import prisma from '../../client';
 import depositIgnored from '../depositIgnored';
 
-const ethDepositIgnoredMock = buildDepositIgnoredEvent(
+const ethDepositIgnoredMock = buildGenericEvent(
   {
     asset: { __kind: 'Eth' },
     amount: '100000000000000',
@@ -19,7 +19,7 @@ const ethDepositIgnoredMock = buildDepositIgnoredEvent(
   },
   events.EthereumIngressEgress.DepositIgnored,
 );
-const dotDepositIgnoredMock = buildDepositIgnoredEvent(
+const dotDepositIgnoredMock = buildGenericEvent(
   {
     asset: { __kind: 'Dot' },
     amount: '1000000000',
@@ -27,7 +27,7 @@ const dotDepositIgnoredMock = buildDepositIgnoredEvent(
   },
   events.PolkadotIngressEgress.DepositIgnored,
 );
-const btcDepositIgnoredMock = buildDepositIgnoredEvent(
+const btcDepositIgnoredMock = buildGenericEvent(
   {
     asset: { __kind: 'Btc' },
     amount: '100000000000',

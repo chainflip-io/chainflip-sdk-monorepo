@@ -10,6 +10,7 @@ const eventArgs = z.object({
   amount: unsignedInteger,
 });
 
+export type NetworkEgressScheduledEvent = z.infer<typeof eventArgs>;
 /**
  * the event emits the egress id (Network, number) and the egress amount. the
  * egress id is used to uniquely identify an egress and correlate it to a swap

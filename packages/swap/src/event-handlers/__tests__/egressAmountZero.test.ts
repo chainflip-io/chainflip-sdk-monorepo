@@ -1,115 +1,109 @@
-// import { DOT_ADDRESS, swapAmountTooLowDotDepositChannelMock } from './utils';
-// import prisma from '../../client';
-// import egressAmountZero from '../egressAmountZero';
+import {
+  BTC_ADDRESS,
+  ETH_ADDRESS,
+  createDepositChannel,
+  egressAmountZeroMock,
+} from './utils';
+import prisma, { Prisma } from '../../client';
+import egressAmountZero from '../egressAmountZero';
 
-// describe(egressAmountZero, () => {
-//   beforeEach(async () => {
-//     await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "FailedSwap" CASCADE`;
-//   });
+describe(egressAmountZero, () => {
+  beforeEach(async () => {
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "FailedSwap" CASCADE`;
+  });
 
-//   afterEach(async () => {
-//     jest.resetAllMocks();
-//   });
+  afterEach(async () => {
+    jest.resetAllMocks();
+  });
 
-//   it('handles egressAmountZero event', async () => {
-//     prisma.swapDepositChannel.findFirstOrThrow = jest
-//       .fn()
-//       .mockResolvedValueOnce({
-//         id: 'internal-deposit-channel-id',
-//       });
-//     prisma.failedSwap.create = jest.fn();
+  it('handles egressAmountZero event', async () => {
+    const channel = await createDepositChannel({
+      id: 100n,
+      srcChain: 'Ethereum',
+      depositAddress: ETH_ADDRESS,
+      channelId: 99n,
+      destAsset: 'BTC',
+      destAddress: BTC_ADDRESS,
+    });
 
-//     await egressAmountZero({
-//       prisma,
-//       block: swapAmountTooLowDotDepositChannelMock.block as any,
-//       event: swapAmountTooLowDotDepositChannelMock.eventContext.event as any,
-//     });
+    await prisma.swap.create({
+      data: {
+        type: 'PRINCIPAL',
+        swapDepositChannelId: channel.id,
+        srcAsset: channel.srcAsset,
+        destAsset: channel.destAsset,
+        destAddress: channel.destAddress,
+        depositReceivedBlockIndex: `xxx-xxx`,
+        depositAmount: '1000000000',
+        swapInputAmount: '1000000000',
+        nativeId: 6969n,
+        depositReceivedAt: new Date(egressAmountZeroMock.block.timestamp),
+      },
+    });
 
-//     expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenCalledTimes(1);
-//     expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenNthCalledWith(
-//       1,
-//       {
-//         where: {
-//           srcChain: 'Polkadot',
-//           depositAddress: DOT_ADDRESS,
-//           channelId: 2n,
-//           isExpired: false,
-//         },
-//         orderBy: { issuedBlock: 'desc' },
-//       },
-//     );
-//     expect(prisma.failedSwap.create).toHaveBeenCalledTimes(1);
-//     expect(prisma.failedSwap.create).toHaveBeenNthCalledWith(1, {
-//       data: {
-//         destAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
-//         destChain: 'Bitcoin',
-//         depositAmount: '12500000000',
-//         srcChain: 'Polkadot',
-//         swapDepositChannelId: 'internal-deposit-channel-id',
-//         txHash: undefined,
-//         type: 'FAILED',
-//       },
-//     });
-//   });
+    const preEventChannel = await prisma.swapDepositChannel.findFirst({
+      where: {
+        id: 100n,
+      },
+      include: {
+        swaps: true,
+        failedSwaps: true,
+      },
+    });
 
-//   // it('handles a new event from a btc deposit channel', async () => {
-//   //   prisma.swapDepositChannel.findFirstOrThrow = jest
-//   //     .fn()
-//   //     .mockResolvedValueOnce({
-//   //       id: 'internal-deposit-channel-id',
-//   //     });
-//   //   prisma.failedSwap.create = jest.fn();
+    expect(preEventChannel?.swaps).toHaveLength(1);
+    expect(preEventChannel?.failedSwaps).toHaveLength(0);
 
-//   //   await swapAmountTooLow({
-//   //     prisma,
-//   //     block: swapAmountTooLowBtcDepositChannelMock.block as any,
-//   //     event: swapAmountTooLowBtcDepositChannelMock.eventContext.event as any,
-//   //   });
+    await egressAmountZero({
+      prisma,
+      block: egressAmountZeroMock.block as any,
+      event: egressAmountZeroMock.eventContext.event as any,
+    });
 
-//   //   expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenCalledTimes(1);
-//   //   expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenNthCalledWith(
-//   //     1,
-//   //     {
-//   //       where: {
-//   //         srcChain: 'Bitcoin',
-//   //         depositAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
-//   //         channelId: 2n,
-//   //         isExpired: false,
-//   //       },
-//   //       orderBy: { issuedBlock: 'desc' },
-//   //     },
-//   //   );
-//   //   expect(prisma.failedSwap.create).toHaveBeenCalledTimes(1);
-//   //   expect(prisma.failedSwap.create).toHaveBeenNthCalledWith(1, {
-//   //     data: {
-//   //       destAddress: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
-//   //       destChain: 'Ethereum',
-//   //       depositAmount: '12500000000',
-//   //       srcChain: 'Bitcoin',
-//   //       swapDepositChannelId: 'internal-deposit-channel-id',
-//   //       txHash: undefined,
-//   //       type: 'FAILED',
-//   //     },
-//   //   });
-//   // });
+    const postEventChannel = await prisma.swapDepositChannel.findFirst({
+      where: {
+        id: 100n,
+      },
+      include: {
+        swaps: true,
+        failedSwaps: true,
+      },
+    });
 
-//   // it('does not store a swap if the deposit channel is not found', async () => {
-//   //   prisma.swapDepositChannel.findFirstOrThrow = jest
-//   //     .fn()
-//   //     .mockRejectedValueOnce({ message: 'Not found' });
-//   //   prisma.failedSwap.create = jest.fn();
+    expect(postEventChannel?.swaps).toHaveLength(1);
+    expect(postEventChannel?.failedSwaps).toHaveLength(1);
+    expect(postEventChannel?.failedSwaps[0]).toMatchObject({
+      type: 'FAILED',
+      reason: 'EgressAmountZero',
+      swapDepositChannelId: 100n,
+      srcChain: 'Ethereum',
+      destAddress: BTC_ADDRESS,
+      destChain: 'Bitcoin',
+    });
+    expect(postEventChannel?.failedSwaps[0].depositAmount.toString()).toEqual(
+      '10000000000',
+    );
+  });
 
-//   //   try {
-//   //     await swapAmountTooLow({
-//   //       prisma,
-//   //       block: swapAmountTooLowBtcDepositChannelMock.block as any,
-//   //       event: swapAmountTooLowBtcDepositChannelMock.eventContext.event as any,
-//   //     });
-//   //   } catch (err) {
-//   //     expect(err).toEqual({ message: 'Not found' });
-//   //   }
+  it('does not store a swap if the deposit channel is not found', async () => {
+    prisma.swap.findUniqueOrThrow = jest
+      .fn()
+      .mockRejectedValueOnce({ message: 'Not found' });
+    prisma.failedSwap.create = jest.fn();
 
-//   //   expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenCalledTimes(1);
-//   //   expect(prisma.failedSwap.create).toHaveBeenCalledTimes(0);
-//   // });
-// });
+    try {
+      await egressAmountZero({
+        prisma,
+        block: egressAmountZeroMock.block as any,
+        event: egressAmountZeroMock.eventContext.event as any,
+      });
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        expect(err.message).toBe('No Swap found');
+      }
+    }
+
+    expect(prisma.swap.findUniqueOrThrow).toHaveBeenCalledTimes(1);
+    expect(prisma.failedSwap.create).toHaveBeenCalledTimes(0);
+  });
+});

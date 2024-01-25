@@ -3,8 +3,10 @@ import prisma, { SwapDepositChannel } from '../../client';
 import { DepositIgnoredArgs } from '../depositIgnored';
 import { EgressAmountZeroEvent } from '../egressAmountZero';
 import { events } from '../index';
+import { NetworkEgressScheduledEvent } from '../networkEgressScheduled';
 import { SwapAmountTooLowEvent } from '../swapAmountTooLow';
 import { SwapDepositAddressReadyEvent } from '../swapDepositAddressReady';
+import { SwapEgressScheduledEvent } from '../swapEgressScheduled';
 import { SwapExecutedEvent } from '../swapExecuted';
 import { SwapScheduledEvent } from '../swapScheduled';
 
@@ -36,14 +38,16 @@ export const createDepositChannel = (
     },
   });
 
-const buildGenericEventShell = <
+export const buildGenericEvent = <
   T extends
     | SwapScheduledEvent
     | SwapExecutedEvent
     | EgressAmountZeroEvent
     | SwapDepositAddressReadyEvent
+    | SwapEgressScheduledEvent
     | SwapAmountTooLowEvent
-    | DepositIgnoredArgs,
+    | DepositIgnoredArgs
+    | NetworkEgressScheduledEvent,
 >(
   args: T,
   name: string,
@@ -94,7 +98,7 @@ const buildGenericEventShell = <
   },
 });
 
-export const swapScheduledDotDepositChannelMock = buildGenericEventShell(
+export const swapScheduledDotDepositChannelMock = buildGenericEvent(
   {
     origin: {
       __kind: 'DepositChannel',
@@ -123,7 +127,7 @@ export const swapScheduledDotDepositChannelMock = buildGenericEventShell(
 );
 
 export const swapScheduledDotDepositChannelBrokerCommissionMock =
-  buildGenericEventShell(
+  buildGenericEvent(
     {
       origin: {
         __kind: 'DepositChannel',
@@ -152,7 +156,7 @@ export const swapScheduledDotDepositChannelBrokerCommissionMock =
     events.Swapping.SwapScheduled,
   );
 
-export const swapScheduledBtcDepositChannelMock = buildGenericEventShell(
+export const swapScheduledBtcDepositChannelMock = buildGenericEvent(
   {
     swapId: '3',
     sourceAsset: { __kind: 'Btc' },
@@ -179,7 +183,7 @@ export const swapScheduledBtcDepositChannelMock = buildGenericEventShell(
   events.Swapping.SwapScheduled,
 );
 
-export const swapScheduledVaultMock = buildGenericEventShell(
+export const swapScheduledVaultMock = buildGenericEvent(
   {
     origin: {
       __kind: 'Vault',
@@ -202,40 +206,30 @@ export const swapScheduledVaultMock = buildGenericEventShell(
   events.Swapping.SwapScheduled,
 );
 
-export const networkDepositReceivedBtcMock = {
-  block: {
-    height: 120,
-    timestamp: 1670337105000,
-  },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        asset: {
-          __kind: 'Btc',
-        },
-        amount: '110000',
-        depositAddress: {
-          value:
-            '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
-          __kind: 'Taproot',
-        },
-      },
-      name: 'BitcoinIngressEgress.DepositReceived',
-      indexInBlock: 7,
+export const networkDepositReceivedBtcMock = buildGenericEvent(
+  {
+    asset: {
+      __kind: 'Btc',
+    },
+    amount: '110000',
+    depositAddress: {
+      value:
+        '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
+      __kind: 'Taproot',
     },
   },
-} as const;
+  events.BitcoinIngressEgress.DepositReceived,
+);
 
 export const buildSwapExecutedMock = (args: SwapExecutedEvent) =>
-  buildGenericEventShell(
+  buildGenericEvent(
     {
       ...args,
     },
     events.Swapping.SwapExecuted,
   );
 
-export const swapDepositAddressReadyMocked = buildGenericEventShell(
+export const swapDepositAddressReadyMocked = buildGenericEvent(
   {
     depositAddress: {
       __kind: 'Eth',
@@ -257,7 +251,7 @@ export const swapDepositAddressReadyMocked = buildGenericEventShell(
   events.Swapping.SwapDepositAddressReady,
 );
 
-export const swapDepositAddressReadyCcmMetadataMocked = buildGenericEventShell(
+export const swapDepositAddressReadyCcmMetadataMocked = buildGenericEvent(
   {
     channelId: '8249',
     sourceAsset: { __kind: 'Btc' },
@@ -282,7 +276,7 @@ export const swapDepositAddressReadyCcmMetadataMocked = buildGenericEventShell(
   events.Swapping.SwapDepositAddressReady,
 );
 
-export const swapEgressScheduledMock = buildGenericEventShell(
+export const swapEgressScheduledMock = buildGenericEvent(
   {
     dispatchInfo: {
       class: [null],
@@ -454,7 +448,7 @@ export const thresholdSignatureInvalidMock = {
 } as const;
 
 const buildSwapAmountTooLowEvent = <T extends SwapAmountTooLowEvent>(args: T) =>
-  buildGenericEventShell(
+  buildGenericEvent(
     {
       dispatchInfo: {
         class: [null],
@@ -527,10 +521,12 @@ export const swapAmountTooLowVaultMock = buildSwapAmountTooLowEvent({
   },
 });
 
-export const buildDepositIgnoredEvent = <T extends DepositIgnoredArgs>(
-  args: T,
-  eventName: string,
-) => buildGenericEventShell({ ...args }, eventName);
+export const egressAmountZeroMock = buildGenericEvent(
+  {
+    swapId: '6969',
+  },
+  events.Swapping.EgressAmountZero,
+);
 
 export const createChainTrackingInfo = () => {
   const chains: Chain[] = ['Bitcoin', 'Ethereum', 'Polkadot'];
