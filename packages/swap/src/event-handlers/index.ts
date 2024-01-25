@@ -134,7 +134,7 @@ const handlers = [
           handler: networkDepositReceived(chain),
         },
         {
-          name: events[`${chain}IngressEgress`].DepositReceived,
+          name: events[`${chain}IngressEgress`].DepositIgnored,
           handler: depositIgnored(chain),
         },
         {

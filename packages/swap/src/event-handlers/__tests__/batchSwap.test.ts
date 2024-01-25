@@ -217,7 +217,7 @@ describe('batch swap flow', () => {
   });
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel", "FailedSwap" CASCADE`;
   });
 
   it('handles all the events', async () => {
