@@ -2,8 +2,7 @@ import { type Chain } from '.prisma/client';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { z } from 'zod';
 import { encodeAddress as encodeBitcoinAddress } from '@/shared/bitcoin';
-import { Asset } from '@/shared/enums';
-import { assetToChainMap } from '@/shared/map';
+import { Asset, assetChains } from '@/shared/enums';
 import {
   DOT_PREFIX,
   chainflipAssetEnum,
@@ -67,7 +66,7 @@ export const depositIgnored =
         swapDepositChannelId: channel.id,
         srcChain: chain,
         destAddress: channel.destAddress,
-        destChain: assetToChainMap[channel.destAsset],
+        destChain: assetChains[channel.destAsset],
         depositAmount: amount.toString(),
       },
     });
