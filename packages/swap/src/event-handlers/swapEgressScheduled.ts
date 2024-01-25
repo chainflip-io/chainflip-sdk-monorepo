@@ -17,6 +17,8 @@ const eventArgs = z.object({
   ]),
 });
 
+export type SwapEgressScheduledEvent = z.input<typeof eventArgs>;
+
 const environmentByBlockHashCache = new CacheMap<
   string,
   Promise<Environment | null>
