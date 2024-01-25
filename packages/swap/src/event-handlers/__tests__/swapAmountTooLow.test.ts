@@ -54,6 +54,7 @@ describe(swapAmountTooLow, () => {
           srcChain: 'Polkadot',
           swapDepositChannelId: 'internal-deposit-channel-id',
           txHash: undefined,
+          type: 'FAILED',
         },
       });
     });
@@ -95,6 +96,7 @@ describe(swapAmountTooLow, () => {
           srcChain: 'Bitcoin',
           swapDepositChannelId: 'internal-deposit-channel-id',
           txHash: undefined,
+          type: 'FAILED',
         },
       });
     });
@@ -147,6 +149,7 @@ describe(swapAmountTooLow, () => {
           swapDepositChannelId: undefined,
           txHash:
             '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
+          type: 'FAILED',
         },
       });
     });
