@@ -152,6 +152,17 @@ const handlers = [
       ]),
     ],
   },
+  {
+    spec: 114,
+    handlers: [
+      ...Object.values(Chains).flatMap((chain) => [
+        {
+          name: events[`${chain}IngressEgress`].DepositIgnored,
+          handler: depositIgnored(chain),
+        },
+      ]),
+    ],
+  },
 ];
 
 const eventHandlerMap = buildHandlerMap(handlers);
