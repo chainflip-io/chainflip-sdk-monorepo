@@ -10,6 +10,7 @@ import prisma, {
   SwapDepositChannel,
   Broadcast,
   SwapFee,
+  FailedSwap,
 } from '../client';
 import openSwapDepositChannel from '../handlers/openSwapDepositChannel';
 import {
@@ -22,6 +23,7 @@ import ServiceError from '../utils/ServiceError';
 const router = express.Router();
 
 export enum State {
+  Failed = 'FAILED',
   Complete = 'COMPLETE',
   BroadcastAborted = 'BROADCAST_ABORTED',
   Broadcasted = 'BROADCASTED',
@@ -71,8 +73,12 @@ router.get(
     const { id } = req.params;
 
     let swap: SwapWithBroadcastAndFees | null | undefined;
+    let failedSwap: FailedSwap | null | undefined;
     let swapDepositChannel:
-      | (SwapDepositChannel & { swaps: SwapWithBroadcastAndFees[] })
+      | (SwapDepositChannel & {
+          swaps: SwapWithBroadcastAndFees[];
+          failedSwaps: FailedSwap[];
+        })
       | null
       | undefined;
 
@@ -92,6 +98,7 @@ router.get(
           swaps: {
             include: { egress: { include: { broadcast: true } }, fees: true },
           },
+          failedSwaps: true,
         },
       });
 
@@ -101,6 +108,7 @@ router.get(
       }
 
       swap = swapDepositChannel.swaps.at(0);
+      failedSwap = swapDepositChannel.failedSwaps.at(0);
     } else if (swapIdRegex.test(id)) {
       swap = await prisma.swap.findUnique({
         where: { nativeId: BigInt(id) },
@@ -123,7 +131,9 @@ router.get(
 
     let state: State;
 
-    if (swap?.egress?.broadcast?.succeededAt) {
+    if (failedSwap) {
+      state = State.Failed;
+    } else if (swap?.egress?.broadcast?.succeededAt) {
       assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
       state = State.Complete;
     } else if (swap?.egress?.broadcast?.abortedAt) {
@@ -222,6 +232,10 @@ router.get(
       ccmMetadata,
       depositChannelOpenedThroughBackend:
         swapDepositChannel?.openedThroughBackend ?? false,
+      failed: failedSwap && {
+        type: failedSwap.type,
+        reason: failedSwap.reason,
+      },
     };
 
     logger.info('sending response for swap request', { id, response });
