@@ -2,6 +2,7 @@ import type { Prisma } from '.prisma/client';
 import { Chains } from '@/shared/enums';
 import ccmDepositReceived from './ccmDepositReceived';
 import depositIgnored from './depositIgnored';
+import egressAmountZero from './egressAmountZero';
 import liquidityDepositAddressReady from './liquidityDepositChannelReady';
 import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';
 import networkBroadcastAborted from './networkBroadcastAborted';
@@ -36,6 +37,7 @@ export const events = {
     SwapAmountTooLow: 'Swapping.SwapAmountTooLow',
     SwapDepositAddressReady: 'Swapping.SwapDepositAddressReady',
     CcmDepositReceived: 'Swapping.CcmDepositReceived',
+    EgressAmountZero: 'Swapping.EgressAmountZero',
   },
   BitcoinIngressEgress: {
     EgressScheduled: 'BitcoinIngressEgress.EgressScheduled',
@@ -157,6 +159,10 @@ const handlers = [
           handler: depositIgnored(chain),
         },
       ]),
+      {
+        name: events.Swapping.EgressAmountZero,
+        handler: egressAmountZero,
+      },
     ],
   },
 ];
