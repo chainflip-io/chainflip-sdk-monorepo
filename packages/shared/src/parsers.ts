@@ -45,7 +45,7 @@ export const btcAddress = (network: ChainflipNetwork) => {
   ]);
 };
 
-const DOT_PREFIX = 0;
+export const DOT_PREFIX = 0;
 
 export const dotAddress = z
   .union([string, hexString])

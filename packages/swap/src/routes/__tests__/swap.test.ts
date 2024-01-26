@@ -51,7 +51,7 @@ describe('server', () => {
   jest.setTimeout(1000);
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Egress", "Broadcast" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Egress", "Broadcast", "FailedSwap" CASCADE`;
     await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;
     server = app.listen(0);
   });
@@ -823,6 +823,114 @@ describe('server', () => {
           "type": "SWAP",
         }
       `);
+    });
+
+    it(`retrieves a swap in ${State.Failed} status`, async () => {
+      const channel = await createDepositChannel({
+        srcChainExpiryBlock: 200,
+      });
+      await prisma.failedSwap.create({
+        data: {
+          type: 'IGNORED',
+          reason: 'BelowMinimumDeposit',
+          swapDepositChannelId: channel.id,
+          srcChain: 'Ethereum',
+          destAddress: channel.destAddress,
+          destChain: 'Polkadot',
+          depositAmount: '10000000000',
+        },
+      });
+
+      const channelId = `${channel.issuedBlock}-${channel.srcChain}-${channel.channelId}`;
+
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+
+      expect(body).toMatchObject({
+        failed: {
+          reason: 'BelowMinimumDeposit',
+          type: 'IGNORED',
+        },
+        state: 'FAILED',
+      });
+    });
+
+    it(`returns ${State.Failed} status even if it has other completed swaps`, async () => {
+      const channel = await createDepositChannel({
+        srcChainExpiryBlock: 200,
+        swaps: {
+          create: {
+            nativeId,
+            depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
+            depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+            depositAmount: '10',
+            swapInputAmount: '10',
+            fees: {
+              create: [
+                {
+                  type: 'NETWORK',
+                  asset: 'USDC',
+                  amount: '10',
+                },
+                {
+                  type: 'LIQUIDITY',
+                  asset: 'ETH',
+                  amount: '5',
+                },
+              ],
+            },
+            swapExecutedAt: new Date(RECEIVED_TIMESTAMP + 6000),
+            swapExecutedBlockIndex: `200-3`,
+            egress: {
+              create: {
+                scheduledAt: new Date(RECEIVED_TIMESTAMP + 12000),
+                scheduledBlockIndex: `202-3`,
+                amount: (10n ** 18n).toString(),
+                chain: 'Ethereum',
+                nativeId: 3n,
+                broadcast: {
+                  create: {
+                    chain: 'Ethereum',
+                    nativeId: 3n,
+                    requestedAt: new Date(RECEIVED_TIMESTAMP + 12000),
+                    requestedBlockIndex: `202-4`,
+                    succeededAt: new Date(RECEIVED_TIMESTAMP + 18000),
+                    succeededBlockIndex: `204-4`,
+                  },
+                },
+              },
+            },
+            srcAsset: Assets.ETH,
+            destAsset: Assets.DOT,
+            destAddress: DOT_ADDRESS,
+            type: 'SWAP',
+          },
+        },
+      });
+      await prisma.failedSwap.create({
+        data: {
+          type: 'IGNORED',
+          reason: 'BelowMinimumDeposit',
+          swapDepositChannelId: channel.id,
+          srcChain: 'Ethereum',
+          destAddress: channel.destAddress,
+          destChain: 'Polkadot',
+          depositAmount: '10000000000',
+        },
+      });
+
+      const channelId = `${channel.issuedBlock}-${channel.srcChain}-${channel.channelId}`;
+
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+      const { swapId, ...rest } = body;
+      expect(rest).toMatchObject({
+        state: 'FAILED',
+        swapExecutedAt: 1669907141201,
+        failed: { type: 'IGNORED', reason: 'BelowMinimumDeposit' },
+      });
     });
 
     it('retrieves a swap from a vault origin', async () => {

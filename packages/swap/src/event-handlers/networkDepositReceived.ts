@@ -2,8 +2,12 @@ import { type Chain } from '.prisma/client';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { z } from 'zod';
 import { encodeAddress as encodeBitcoinAddress } from '@/shared/bitcoin';
-import { u128, chainflipAssetEnum, hexString } from '@/shared/parsers';
-import { toUpperCase } from '@/shared/strings';
+import {
+  u128,
+  chainflipAssetEnum,
+  hexString,
+  DOT_PREFIX,
+} from '@/shared/parsers';
 import env from '../config/env';
 import { Asset } from '../enums';
 import logger from '../utils/logger';
@@ -12,7 +16,7 @@ import { EventHandlerArgs } from './index';
 export const depositReceivedArgs = z
   .object({
     amount: u128,
-    asset: chainflipAssetEnum.transform(toUpperCase),
+    asset: chainflipAssetEnum,
     depositAddress: z.union([
       z
         .object({ __kind: z.literal('Taproot'), value: hexString })
@@ -33,7 +37,10 @@ export const depositReceivedArgs = z
   )
   .transform((args) => {
     if (args.asset === 'DOT') {
-      return { ...args, depositAddress: encodeAddress(args.depositAddress) };
+      return {
+        ...args,
+        depositAddress: encodeAddress(args.depositAddress, DOT_PREFIX),
+      };
     }
 
     return args;

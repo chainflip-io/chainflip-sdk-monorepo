@@ -1,6 +1,7 @@
 import type { Prisma } from '.prisma/client';
 import { Chains } from '@/shared/enums';
 import ccmDepositReceived from './ccmDepositReceived';
+import depositIgnored from './depositIgnored';
 import liquidityDepositAddressReady from './liquidityDepositChannelReady';
 import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';
 import networkBroadcastAborted from './networkBroadcastAborted';
@@ -41,6 +42,7 @@ export const events = {
     BatchBroadcastRequested: 'BitcoinIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'BitcoinIngressEgress.CcmBroadcastRequested',
     DepositReceived: 'BitcoinIngressEgress.DepositReceived',
+    DepositIgnored: 'BitcoinIngressEgress.DepositIgnored',
   },
   BitcoinBroadcaster: {
     BroadcastSuccess: 'BitcoinBroadcaster.BroadcastSuccess',
@@ -51,6 +53,7 @@ export const events = {
     BatchBroadcastRequested: 'EthereumIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'EthereumIngressEgress.CcmBroadcastRequested',
     DepositReceived: 'EthereumIngressEgress.DepositReceived',
+    DepositIgnored: 'EthereumIngressEgress.DepositIgnored',
   },
   EthereumBroadcaster: {
     BroadcastSuccess: 'EthereumBroadcaster.BroadcastSuccess',
@@ -61,6 +64,7 @@ export const events = {
     BatchBroadcastRequested: 'PolkadotIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'PolkadotIngressEgress.CcmBroadcastRequested',
     DepositReceived: 'PolkadotIngressEgress.DepositReceived',
+    DepositIgnored: 'PolkadotIngressEgress.DepositIgnored',
   },
   PolkadotBroadcaster: {
     BroadcastSuccess: 'PolkadotBroadcaster.BroadcastSuccess',
@@ -140,6 +144,17 @@ const handlers = [
         {
           name: events[`${chain}ChainTracking`].ChainStateUpdated,
           handler: chainStateUpdated(chain),
+        },
+      ]),
+    ],
+  },
+  {
+    spec: 114,
+    handlers: [
+      ...Object.values(Chains).flatMap((chain) => [
+        {
+          name: events[`${chain}IngressEgress`].DepositIgnored,
+          handler: depositIgnored(chain),
         },
       ]),
     ],

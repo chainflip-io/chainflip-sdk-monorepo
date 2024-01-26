@@ -1,12 +1,15 @@
 import { Assets, Chain, Chains } from '@/shared/enums';
 import prisma, { SwapDepositChannel } from '../../client';
+import { DepositIgnoredArgs } from '../depositIgnored';
 import { events } from '../index';
 import { SwapAmountTooLowEvent } from '../swapAmountTooLow';
 import { SwapExecutedEvent } from '../swapExecuted';
 import { SwapScheduledEvent } from '../swapScheduled';
 
 export const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
-export const DOT_ADDRESS = '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo';
+export const DOT_ADDRESS = '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo'; // 0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972
+export const BTC_ADDRESS =
+  'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6'; // 0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e
 
 type SwapChannelData = Parameters<
   (typeof prisma)['swapDepositChannel']['create']
@@ -624,6 +627,55 @@ export const swapAmountTooLowVaultMock = buildSwapAmountTooLowEvent({
     __kind: 'Vault',
     txHash:
       '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
+  },
+});
+
+export const buildDepositIgnoredEvent = <T extends DepositIgnoredArgs>(
+  args: T,
+  eventName: string,
+) => ({
+  block: {
+    timestamp: 1670337093000,
+    height: 100,
+  },
+  eventContext: {
+    kind: 'event',
+    event: {
+      args: {
+        dispatchInfo: {
+          class: [null],
+          weight: '101978000',
+          paysFee: [null],
+        },
+        ...args,
+      },
+      id: '0000012799-000000-c1ea7',
+      indexInBlock: 0,
+      nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
+      name: eventName,
+      phase: 'ApplyExtrinsic',
+      pos: 2,
+      extrinsic: {
+        error: null,
+        hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
+        id: '0000012799-000000-c1ea7',
+        indexInBlock: 0,
+        nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
+        pos: 1,
+        success: true,
+        version: 4,
+        call: {
+          args: [null],
+          error: null,
+          id: '0000012799-000000-c1ea7',
+          name: 'Timestamp.set',
+          nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
+          origin: [null],
+          pos: 0,
+          success: true,
+        },
+      },
+    },
   },
 });
 
