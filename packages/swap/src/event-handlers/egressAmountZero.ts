@@ -19,21 +19,17 @@ export default async function egressAmountZero({
     where: { nativeId: swapId },
     include: { swapDepositChannel: true },
   });
-  const channel = swap.swapDepositChannel;
-
-  if (!channel) {
-    throw new Error('Swap deposit channel not found');
-  }
 
   await prisma.failedSwap.create({
     data: {
       type: 'FAILED',
       reason: 'EgressAmountZero',
-      swapDepositChannelId: channel.id,
-      srcChain: channel.srcChain,
-      destAddress: channel.destAddress,
-      destChain: assetChains[channel.destAsset],
-      depositAmount: channel.expectedDepositAmount ?? '0',
+      swapDepositChannelId: swap.swapDepositChannelId,
+      swapId: swap.id,
+      srcChain: assetChains[swap.srcAsset],
+      destAddress: swap.destAddress,
+      destChain: assetChains[swap.destAsset],
+      depositAmount: swap.depositAmount,
     },
   });
 }
