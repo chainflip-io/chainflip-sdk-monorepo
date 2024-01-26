@@ -107,6 +107,7 @@ model Swap {
   txHash                       String?
   egress                       Egress?             @relation(fields: [egressId], references: [id])
   egressId                     BigInt?
+  failedSwap                   FailedSwap?
   createdAt                    DateTime            @default(now())
   updatedAt                    DateTime            @default(now()) @updatedAt
 
@@ -141,13 +142,15 @@ enum FailedSwapType {
 
   @@schema("public")
 }
+
 enum FailedSwapReason {
-  BelowMinimumDeposit 
+  BelowMinimumDeposit
   NotEnoughToPayFees // gas price to process deposit is too high
-  EgressAmountZero  // egress amount left after fees is too low 
-  
+  EgressAmountZero // egress amount left after fees is too low 
+
   @@schema("public")
 }
+
 model FailedSwap {
   id                   Int                 @id @default(autoincrement())
   type                 FailedSwapType
@@ -158,6 +161,8 @@ model FailedSwap {
   srcChain             Chain
   swapDepositChannel   SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
   swapDepositChannelId BigInt?
+  Swap                 Swap?               @relation(fields: [swapId], references: [id])
+  swapId               BigInt?             @unique
   txHash               String?
 
   @@index([swapDepositChannelId])
