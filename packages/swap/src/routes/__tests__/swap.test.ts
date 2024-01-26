@@ -933,6 +933,61 @@ describe('server', () => {
       });
     });
 
+    it(`returns ${State.Failed} status for smart contract swaps (no deposit channel)`, async () => {
+      const txHash = `0x${crypto.randomBytes(64).toString('hex')}`;
+      const swap = await prisma.swap.create({
+        data: {
+          txHash,
+          nativeId,
+          srcAsset: Assets.ETH,
+          destAsset: Assets.DOT,
+          destAddress: DOT_ADDRESS,
+          depositAmount: '10',
+          swapInputAmount: '10',
+          fees: {
+            create: [
+              {
+                type: 'NETWORK',
+                asset: 'USDC',
+                amount: '10',
+              },
+              {
+                type: 'LIQUIDITY',
+                asset: 'ETH',
+                amount: '5',
+              },
+            ],
+          },
+          swapExecutedAt: new Date(RECEIVED_TIMESTAMP + 6000),
+          swapExecutedBlockIndex: `200-3`,
+          depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
+          depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+          type: 'SWAP',
+        },
+      });
+      await prisma.failedSwap.create({
+        data: {
+          type: 'FAILED',
+          reason: 'EgressAmountZero',
+          srcChain: 'Ethereum',
+          swapId: swap.id,
+          destAddress: swap.destAddress,
+          destChain: 'Polkadot',
+          depositAmount: '10000000000',
+        },
+      });
+
+      const { body, status } = await request(server).get(`/swaps/${txHash}`);
+
+      expect(status).toBe(200);
+      const { swapId, ...rest } = body;
+      expect(rest).toMatchObject({
+        state: 'FAILED',
+        swapExecutedAt: 1669907141201,
+        failed: { type: 'FAILED', reason: 'EgressAmountZero' },
+      });
+    });
+
     it('retrieves a swap from a vault origin', async () => {
       const txHash = `0x${crypto.randomBytes(64).toString('hex')}`;
 
@@ -979,6 +1034,7 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
+          "failed": null,
           "feesPaid": [
             {
               "amount": "10",
@@ -1053,6 +1109,7 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
+          "failed": null,
           "feesPaid": [
             {
               "amount": "10",

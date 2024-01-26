@@ -41,6 +41,7 @@ type SwapWithBroadcastAndFees = Swap & {
         broadcast: Broadcast | null;
       })
     | null;
+  failedSwap?: FailedSwap | null;
 };
 
 const coerceChain = (chain: string) => {
@@ -96,7 +97,10 @@ router.get(
         },
         include: {
           swaps: {
-            include: { egress: { include: { broadcast: true } }, fees: true },
+            include: {
+              egress: { include: { broadcast: true } },
+              fees: true,
+            },
           },
           failedSwaps: true,
         },
@@ -108,19 +112,29 @@ router.get(
       }
 
       swap = swapDepositChannel.swaps.at(0);
-      failedSwap = swapDepositChannel.failedSwaps.at(0);
+      failedSwap = swapDepositChannel.failedSwaps?.at(0);
     } else if (swapIdRegex.test(id)) {
       swap = await prisma.swap.findUnique({
         where: { nativeId: BigInt(id) },
-        include: { egress: { include: { broadcast: true } }, fees: true },
+        include: {
+          egress: { include: { broadcast: true } },
+          fees: true,
+          failedSwap: true,
+        },
       });
+      failedSwap = swap?.failedSwap;
     } else if (txHashRegex.test(id)) {
       swap = await prisma.swap.findFirst({
         where: { txHash: id },
-        include: { egress: { include: { broadcast: true } }, fees: true },
+        include: {
+          egress: { include: { broadcast: true } },
+          fees: true,
+          failedSwap: true,
+        },
         // just get the last one for now
         orderBy: { nativeId: 'desc' },
       });
+      failedSwap = swap?.failedSwap;
     }
 
     ServiceError.assert(
