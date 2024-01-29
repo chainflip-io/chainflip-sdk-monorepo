@@ -291,6 +291,7 @@ describe('batch swap flow', () => {
           swapDepositAddressReadyEvent.args.destinationAsset.__kind,
         ),
         destAddress: swapDepositAddressReadyEvent.args.destinationAddress.value,
+        brokerCommissionBps: 0,
         issuedBlock: 0,
         srcChainExpiryBlock: Number(
           swapDepositAddressReadyEvent.args.sourceChainExpiryBlock,
