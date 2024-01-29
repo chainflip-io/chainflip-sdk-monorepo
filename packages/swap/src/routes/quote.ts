@@ -37,7 +37,10 @@ const quote = (io: Server) => {
       const queryResult = quoteQuerySchema.safeParse(req.query);
 
       if (!queryResult.success) {
-        logger.info('received invalid quote request', { query: req.query });
+        logger.info('received invalid quote request', {
+          query: req.query,
+          error: queryResult.error,
+        });
         throw ServiceError.badRequest('invalid request');
       }
 
@@ -64,11 +67,23 @@ const quote = (io: Server) => {
         amount: ingressFee.toString(),
       });
 
-      const swapInputAmount = BigInt(query.amount) - ingressFee;
+      let swapInputAmount = BigInt(query.amount) - ingressFee;
       if (swapInputAmount <= 0n) {
         throw ServiceError.badRequest(
           `amount is lower than estimated ingress fee (${ingressFee})`,
         );
+      }
+
+      if (query.brokerCommissionBps) {
+        const brokerFee =
+          (BigInt(query.amount) * BigInt(query.brokerCommissionBps)) / 10000n;
+        includedFees.push({
+          type: 'BROKER',
+          chain: query.srcAsset.chain,
+          asset: query.srcAsset.asset,
+          amount: brokerFee.toString(),
+        });
+        swapInputAmount -= brokerFee;
       }
 
       const quoteRequest = buildQuoteRequest({

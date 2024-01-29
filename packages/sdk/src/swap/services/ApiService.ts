@@ -54,15 +54,18 @@ type BackendQuery<T, U> = (
   options: RequestOptions,
 ) => Promise<U>;
 
-const getQuote: BackendQuery<QuoteRequest, QuoteResponse> = async (
-  baseUrl,
-  quoteRequest,
-  { signal },
-) => {
+const getQuote: BackendQuery<
+  QuoteRequest & { brokerCommissionBps?: number },
+  QuoteResponse
+> = async (baseUrl, quoteRequest, { signal }) => {
+  const { brokerCommissionBps, ...returnedRequestData } = quoteRequest;
   const params: QuoteQueryParams = {
-    amount: quoteRequest.amount,
-    srcAsset: quoteRequest.srcAsset,
-    destAsset: quoteRequest.destAsset,
+    amount: returnedRequestData.amount,
+    srcAsset: returnedRequestData.srcAsset,
+    destAsset: returnedRequestData.destAsset,
+    ...(brokerCommissionBps && {
+      brokerCommissionBps: String(brokerCommissionBps),
+    }),
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,7 +75,7 @@ const getQuote: BackendQuery<QuoteRequest, QuoteResponse> = async (
 
   const { data } = await axios.get<QuoteQueryResponse>(url, { signal });
 
-  return { ...quoteRequest, quote: data };
+  return { ...returnedRequestData, quote: data };
 };
 
 const getStatus: BackendQuery<SwapStatusRequest, SwapStatusResponse> = async (

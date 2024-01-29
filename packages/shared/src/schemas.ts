@@ -12,6 +12,11 @@ export const quoteQuerySchema = z.object({
   srcAsset: chainflipAssetAndChain,
   destAsset: chainflipAssetAndChain,
   amount: numericString,
+  brokerCommissionBps: z
+    .string()
+    .regex(/^[0-9]*$/)
+    .transform((v) => Number(v))
+    .optional(),
 });
 
 export type QuoteQueryParams = z.input<typeof quoteQuerySchema>;
