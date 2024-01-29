@@ -124,6 +124,7 @@ export class SwapSDK {
       response = {
         id: `${result.issuedBlock}-${depositAddressRequest.srcChain}-${result.channelId}`,
         depositAddress: result.address,
+        brokerCommissionBps: this.brokerConfig.commissionBps,
         srcChainExpiryBlock: result.sourceChainExpiryBlock,
       };
     } else {
@@ -136,6 +137,7 @@ export class SwapSDK {
       ...depositAddressRequest,
       depositChannelId: response.id,
       depositAddress: response.depositAddress,
+      brokerCommissionBps: response.brokerCommissionBps,
       depositChannelExpiryBlock: response.srcChainExpiryBlock as bigint,
       estimatedDepositChannelExpiryTime: response.estimatedExpiryTime,
     };
