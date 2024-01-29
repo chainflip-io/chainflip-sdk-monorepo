@@ -82,7 +82,7 @@ describe('ApiService', () => {
   );
 
   describe(ApiService.getQuote, () => {
-    it('gets a route with a quote', async () => {
+    it('gets a quote', async () => {
       const mockedGet = jest.mocked(axios.get);
       mockedGet.mockResolvedValueOnce({
         data: {
@@ -100,6 +100,33 @@ describe('ApiService', () => {
           srcAsset: Assets.BTC,
           destChain: Chains.Ethereum,
           destAsset: Assets.ETH,
+        },
+        {},
+      );
+
+      expect(route).toMatchSnapshot();
+      expect(mockedGet.mock.lastCall).toMatchSnapshot();
+    });
+
+    it('gets a quote with a broker commission', async () => {
+      const mockedGet = jest.mocked(axios.get);
+      mockedGet.mockResolvedValueOnce({
+        data: {
+          id: 'string',
+          intermediateAmount: '1',
+          egressAmount: '2',
+        },
+      });
+
+      const route = await ApiService.getQuote(
+        'https://swapperoo.org',
+        {
+          amount: '10000',
+          srcChain: Chains.Bitcoin,
+          srcAsset: Assets.BTC,
+          destChain: Chains.Ethereum,
+          destAsset: Assets.ETH,
+          brokerCommissionBps: 15,
         },
         {},
       );

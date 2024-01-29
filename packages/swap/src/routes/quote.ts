@@ -76,7 +76,7 @@ const quote = (io: Server) => {
 
       if (query.brokerCommissionBps) {
         const brokerFee =
-          (BigInt(query.amount) * BigInt(query.brokerCommissionBps)) / 10000n;
+          (swapInputAmount * BigInt(query.brokerCommissionBps)) / 10000n;
         includedFees.push({
           type: 'BROKER',
           chain: query.srcAsset.chain,
