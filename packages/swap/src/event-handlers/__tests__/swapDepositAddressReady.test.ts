@@ -41,6 +41,36 @@ describe(swapDepositAddressReady, () => {
     });
   });
 
+  it('creates a swap deposit channel entry with a broker commission', async () => {
+    await prisma.$transaction(async (txClient) => {
+      await createChainTrackingInfo();
+      await swapDepositAddressReady({
+        prisma: txClient,
+        event: {
+          ...eventMock.eventContext.event,
+          args: {
+            ...eventMock.eventContext.event.args,
+            brokerCommissionRate: 25,
+          },
+        },
+        block: { ...eventMock.block, height: 121 },
+      });
+    });
+
+    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow(
+      {
+        where: {
+          channelId: BigInt(eventMock.eventContext.event.args.channelId),
+        },
+      },
+    );
+
+    expect(swapDepositChannel).toMatchSnapshot({
+      id: expect.any(BigInt),
+      createdAt: expect.any(Date),
+    });
+  });
+
   it('creates a swap deposit channel entry with ccm metadata', async () => {
     await prisma.$transaction(async (txClient) => {
       await createChainTrackingInfo();

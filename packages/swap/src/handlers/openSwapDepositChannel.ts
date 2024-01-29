@@ -71,6 +71,7 @@ export default async function openSwapDepositChannel(
       estimatedExpiryAt: estimatedExpiryTime,
       ccmGasBudget: ccmMetadata?.gasBudget,
       ccmMessage: ccmMetadata?.message,
+      brokerCommissionBps: 0,
       openedThroughBackend: true,
       ...blockInfo,
     },

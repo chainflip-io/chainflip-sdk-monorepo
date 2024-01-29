@@ -22,6 +22,7 @@ describe(processBlocks, () => {
         srcAsset: 'DOT',
         destAsset: 'BTC',
         destAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
+        brokerCommissionBps: 0,
         expectedDepositAmount: '1000000000000000000',
         srcChainExpiryBlock: 1000,
       },

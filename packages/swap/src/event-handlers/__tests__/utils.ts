@@ -26,6 +26,7 @@ export const createDepositChannel = (
       destAsset: Assets.DOT,
       depositAddress: ETH_ADDRESS,
       destAddress: DOT_ADDRESS,
+      brokerCommissionBps: 0,
       expectedDepositAmount: '10000000000',
       issuedBlock: 100,
       estimatedExpiryAt: new Date('2023-11-09T11:05:00.000Z'),
@@ -271,6 +272,7 @@ export const swapDepositAddressReadyMocked = {
         destinationAsset: {
           __kind: 'Dot',
         },
+        brokerCommissionRate: 0,
         channelId: '1',
         sourceChainExpiryBlock: '0x100',
       },
