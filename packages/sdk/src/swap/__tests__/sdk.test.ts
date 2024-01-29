@@ -263,6 +263,7 @@ describe(SwapSDK, () => {
         .mockResolvedValueOnce({
           id: 'channel id',
           depositAddress: 'deposit address',
+          brokerCommissionBps: 0,
           srcChainExpiryBlock: 123n,
           estimatedExpiryTime: 1698334470000,
         } as any);
@@ -286,6 +287,7 @@ describe(SwapSDK, () => {
       expect(response).toStrictEqual({
         depositChannelId: 'channel id',
         depositAddress: 'deposit address',
+        brokerCommissionBps: 0,
         depositChannelExpiryBlock: 123n,
         estimatedDepositChannelExpiryTime: 1698334470000,
         amount: '1000000000000000000',
@@ -317,7 +319,7 @@ describe(SwapSDK, () => {
         });
 
       const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 5000 },
+        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
       }).requestDepositAddress({
         srcChain: 'Bitcoin',
         srcAsset: 'BTC',
@@ -335,7 +337,7 @@ describe(SwapSDK, () => {
           { asset: 'BTC', chain: 'Bitcoin' },
           { asset: 'FLIP', chain: 'Ethereum' },
           '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-          5000,
+          15,
         ],
       });
       expect(result).toStrictEqual({
@@ -344,6 +346,7 @@ describe(SwapSDK, () => {
         destChain: 'Ethereum',
         destAsset: 'FLIP',
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        brokerCommissionBps: 15,
         amount: '1000000000000000000',
         depositChannelId: '123-Bitcoin-15',
         depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
