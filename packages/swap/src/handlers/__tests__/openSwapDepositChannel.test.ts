@@ -55,6 +55,7 @@ describe(openSwapDepositChannel, () => {
 
     expect(result).toEqual({
       depositAddress: 'address',
+      brokerCommissionBps: 0,
       estimatedExpiryTime: 1699537125000,
       id: '123-Ethereum-888',
       issuedBlock: 123,
@@ -93,6 +94,7 @@ describe(openSwapDepositChannel, () => {
 
     expect(result).toEqual({
       depositAddress: 'address',
+      brokerCommissionBps: 0,
       estimatedExpiryTime: 1699537125000,
       id: '123-Ethereum-909',
       issuedBlock: 123,
