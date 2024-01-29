@@ -269,6 +269,7 @@ export const swapDepositAddressReadyMocked = {
         destinationAsset: {
           __kind: 'Dot',
         },
+        brokerCommissionRate: 0,
         channelId: '1',
         sourceChainExpiryBlock: '0x100',
       },

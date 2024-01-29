@@ -45,6 +45,7 @@ const swapDepositAddressReadyEvent = {
         '0x6d703351536f504e32694c4b724568647a3951623944534a5141754e774444613737',
       __kind: 'Btc',
     },
+    brokerCommissionRate: 0,
     sourceChainExpiryBlock: '101',
   },
 } as const;
