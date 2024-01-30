@@ -1,4 +1,4 @@
-#!/usr/bin/env node --trace-uncaught --loader tsx --no-warnings
+#!/usr/bin/env node --import=tsx --trace-uncaught --no-warnings
 
 /* eslint-disable no-console */
 import { exec } from 'child_process';
