@@ -97,7 +97,14 @@ export class SwapSDK {
     quoteRequest: QuoteRequest,
     options: RequestOptions = {},
   ): Promise<QuoteResponse> {
-    return ApiService.getQuote(this.baseUrl, quoteRequest, options);
+    return ApiService.getQuote(
+      this.baseUrl,
+      {
+        ...quoteRequest,
+        brokerCommissionBps: this.brokerConfig?.commissionBps,
+      },
+      options,
+    );
   }
 
   async requestDepositAddress(
