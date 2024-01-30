@@ -211,12 +211,13 @@ router.get(
       egressAmount: swap?.egress?.amount?.toFixed(),
       egressScheduledAt: swap?.egress?.scheduledAt?.valueOf(),
       egressScheduledBlockIndex: swap?.egress?.scheduledBlockIndex,
-      feesPaid: swap?.fees.map((fee) => ({
-        type: fee.type,
-        chain: assetChains[fee.asset],
-        asset: fee.asset,
-        amount: fee.amount.toFixed(),
-      })),
+      feesPaid:
+        swap?.fees.map((fee) => ({
+          type: fee.type,
+          chain: assetChains[fee.asset],
+          asset: fee.asset,
+          amount: fee.amount.toFixed(),
+        })) ?? [],
       broadcastRequestedAt: swap?.egress?.broadcast?.requestedAt?.valueOf(),
       broadcastRequestedBlockIndex:
         swap?.egress?.broadcast?.requestedBlockIndex,
