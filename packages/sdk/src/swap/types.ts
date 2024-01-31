@@ -61,7 +61,7 @@ export interface CommonStatusFields extends ChainsAndAssets {
   expectedDepositAmount: string | undefined;
   depositChannelExpiryBlock: bigint;
   estimatedDepositChannelExpiryTime: number | undefined;
-  isDepositChanneExpired: boolean;
+  isDepositChannelExpired: boolean;
   depositChannelOpenedThroughBackend: boolean;
   ccmDepositReceivedBlockIndex: string | undefined;
   ccmMetadata:
@@ -70,6 +70,7 @@ export interface CommonStatusFields extends ChainsAndAssets {
         message: `0x${string}`;
       }
     | undefined;
+  feesPaid: SwapFee[];
 }
 
 export type SwapStatusResponse = CommonStatusFields &
@@ -109,7 +110,6 @@ export type SwapStatusResponse = CommonStatusFields &
         egressAmount: string;
         egressScheduledAt: number;
         egressScheduledBlockIndex: string;
-        feesPaid: SwapFee[];
       }
     | {
         state: 'BROADCAST_REQUESTED' | 'BROADCASTED';
@@ -123,7 +123,6 @@ export type SwapStatusResponse = CommonStatusFields &
         egressAmount: string;
         egressScheduledAt: number;
         egressScheduledBlockIndex: string;
-        feesPaid: SwapFee[];
         broadcastRequestedAt: number;
         broadcastRequestedBlockIndex: string;
       }
@@ -139,7 +138,6 @@ export type SwapStatusResponse = CommonStatusFields &
         egressAmount: string;
         egressScheduledAt: number;
         egressScheduledBlockIndex: string;
-        feesPaid: SwapFee[];
         broadcastRequestedAt: number;
         broadcastRequestedBlockIndex: string;
         broadcastAbortedAt: number;
@@ -157,7 +155,6 @@ export type SwapStatusResponse = CommonStatusFields &
         egressAmount: string;
         egressScheduledAt: number;
         egressScheduledBlockIndex: string;
-        feesPaid: SwapFee[];
         broadcastRequestedAt: number;
         broadcastRequestedBlockIndex: string;
         broadcastSucceededAt: number;
