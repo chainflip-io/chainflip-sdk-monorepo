@@ -12,9 +12,9 @@ const swapExecutedArgs = z.intersection(
     // before v1.2.0
     z
       .object({ egressAmount: u128 })
-      .transform(({ egressAmount }) => ({ outputAmount: egressAmount })),
+      .transform(({ egressAmount }) => ({ swapOutput: egressAmount })),
     // after v1.2.0
-    z.object({ outputAmount: u128 }),
+    z.object({ swapOutput: u128 }),
   ]),
 );
 
@@ -25,7 +25,7 @@ export default async function swapExecuted({
   block,
   event,
 }: EventHandlerArgs): Promise<void> {
-  const { swapId, intermediateAmount, outputAmount } = swapExecutedArgs.parse(
+  const { swapId, intermediateAmount, swapOutput } = swapExecutedArgs.parse(
     event.args,
   );
   const swap = await prisma.swap.findUniqueOrThrow({
@@ -37,13 +37,13 @@ export default async function swapExecuted({
     swap.destAsset,
     swap.swapInputAmount.toFixed(),
     intermediateAmount?.toString(),
-    outputAmount.toString(),
+    swapOutput.toString(),
   );
 
   await prisma.swap.update({
     where: { nativeId: swapId },
     data: {
-      swapOutputAmount: outputAmount.toString(),
+      swapOutputAmount: swapOutput.toString(),
       intermediateAmount: intermediateAmount?.toString(),
       fees: {
         create: fees.map((fee) => ({

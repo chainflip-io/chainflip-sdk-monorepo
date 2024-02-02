@@ -38,7 +38,7 @@ describe(swapExecuted, () => {
 
   it.each([
     [{ egressAmount: '10000000000' }],
-    [{ outputAmount: '10000000000' }],
+    [{ swapOutput: '10000000000' }],
   ] as const)('updates an existing swap', async (amount) => {
     const {
       eventContext: { event },
