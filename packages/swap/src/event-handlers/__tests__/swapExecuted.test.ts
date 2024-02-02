@@ -36,14 +36,14 @@ describe(swapExecuted, () => {
     await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap" CASCADE`;
   });
 
-  it('updates an existing swap', async () => {
+  it.each([
+    [{ egressAmount: '10000000000' }],
+    [{ outputAmount: '10000000000' }],
+  ] as const)('updates an existing swap', async (amount) => {
     const {
       eventContext: { event },
       block,
-    } = buildSwapExecutedMock({
-      swapId: '9876545',
-      egressAmount: '10000000000',
-    });
+    } = buildSwapExecutedMock({ swapId: '9876545', ...amount });
 
     const { swapId } = event.args;
 

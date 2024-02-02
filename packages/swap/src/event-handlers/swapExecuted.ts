@@ -3,11 +3,20 @@ import { u128, u64 } from '@/shared/parsers';
 import { calculateIncludedSwapFees } from '@/swap/utils/fees';
 import type { EventHandlerArgs } from '.';
 
-const swapExecutedArgs = z.object({
-  swapId: u64,
-  egressAmount: u128,
-  intermediateAmount: u128.optional(),
-});
+const swapExecutedArgs = z.intersection(
+  z.object({
+    swapId: u64,
+    intermediateAmount: u128.optional(),
+  }),
+  z.union([
+    // before v1.2.0
+    z
+      .object({ egressAmount: u128 })
+      .transform(({ egressAmount }) => ({ outputAmount: egressAmount })),
+    // after v1.2.0
+    z.object({ outputAmount: u128 }),
+  ]),
+);
 
 export type SwapExecutedEvent = z.input<typeof swapExecutedArgs>;
 
@@ -16,11 +25,9 @@ export default async function swapExecuted({
   block,
   event,
 }: EventHandlerArgs): Promise<void> {
-  const {
-    swapId,
-    intermediateAmount,
-    egressAmount: swapOutputAmount,
-  } = swapExecutedArgs.parse(event.args);
+  const { swapId, intermediateAmount, outputAmount } = swapExecutedArgs.parse(
+    event.args,
+  );
   const swap = await prisma.swap.findUniqueOrThrow({
     where: { nativeId: swapId },
   });
@@ -30,13 +37,13 @@ export default async function swapExecuted({
     swap.destAsset,
     swap.swapInputAmount.toFixed(),
     intermediateAmount?.toString(),
-    swapOutputAmount.toString(),
+    outputAmount.toString(),
   );
 
   await prisma.swap.update({
     where: { nativeId: swapId },
     data: {
-      swapOutputAmount: swapOutputAmount.toString(),
+      swapOutputAmount: outputAmount.toString(),
       intermediateAmount: intermediateAmount?.toString(),
       fees: {
         create: fees.map((fee) => ({
