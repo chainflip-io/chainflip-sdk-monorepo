@@ -148,33 +148,6 @@ describe('server', () => {
       });
     });
 
-    it('rejects if egress amount is lower than minimum egress amount', async () => {
-      jest
-        .spyOn(RpcClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({ egressAmount: '0' });
-
-      const quoteHandler = jest.fn(async (req) => ({
-        id: req.id,
-        egress_amount: '0',
-      }));
-      client.setQuoteRequestHandler(quoteHandler);
-
-      const params = new URLSearchParams({
-        srcAsset: 'USDC',
-        destAsset: 'FLIP',
-        amount: (100e6).toString(),
-      });
-
-      const { body, status } = await request(server).get(
-        `/quote?${params.toString()}`,
-      );
-
-      expect(status).toBe(400);
-      expect(body).toMatchObject({
-        message: 'egress amount is lower than minimum egress amount (1)',
-      });
-    });
-
     it('gets the quote from usdc when the ingress amount is smaller than the ingress fee', async () => {
       const params = new URLSearchParams({
         srcAsset: 'USDC',
@@ -198,7 +171,7 @@ describe('server', () => {
       });
     });
 
-    it('gets the quote from usdc when the egress amount is smaller than the egress fee', async () => {
+    it('rejects when the egress amount is smaller than the egress fee', async () => {
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
@@ -221,36 +194,9 @@ describe('server', () => {
         `/quote?${params.toString()}`,
       );
 
-      expect(status).toBe(200);
+      expect(status).toBe(400);
       expect(body).toMatchObject({
-        id: expect.any(String),
-        egressAmount: '0',
-        includedFees: [
-          {
-            amount: '2000000',
-            asset: 'USDC',
-            chain: 'Ethereum',
-            type: 'INGRESS',
-          },
-          {
-            amount: '98000',
-            asset: 'USDC',
-            chain: 'Ethereum',
-            type: 'NETWORK',
-          },
-          {
-            amount: '196000',
-            asset: 'USDC',
-            chain: 'Ethereum',
-            type: 'LIQUIDITY',
-          },
-          {
-            amount: '1250',
-            asset: 'ETH',
-            chain: 'Ethereum',
-            type: 'EGRESS',
-          },
-        ],
+        message: 'egress amount is lower than minimum egress amount (1)',
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
@@ -407,10 +353,9 @@ describe('server', () => {
         egressFee: '0x0',
       });
 
-      // method is called four times
+      // method is called three times
       jest
         .mocked(axios.post)
-        .mockResolvedValueOnce({ data: env })
         .mockResolvedValueOnce({ data: env })
         .mockResolvedValueOnce({ data: env })
         .mockResolvedValueOnce({ data: env });
