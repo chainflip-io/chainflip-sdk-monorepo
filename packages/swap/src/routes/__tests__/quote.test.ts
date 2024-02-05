@@ -151,11 +151,11 @@ describe('server', () => {
     it('rejects if egress amount is lower than minimum egress amount', async () => {
       jest
         .spyOn(RpcClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({ egressAmount: (0).toString() });
+        .mockResolvedValueOnce({ egressAmount: '0' });
 
       const quoteHandler = jest.fn(async (req) => ({
         id: req.id,
-        egress_amount: (0).toString(),
+        egress_amount: '0',
       }));
       client.setQuoteRequestHandler(quoteHandler);
 
@@ -171,7 +171,7 @@ describe('server', () => {
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
-        message: 'egress amount is lower than minimum egresss amount (1)',
+        message: 'egress amount is lower than minimum egress amount (1)',
       });
     });
 
@@ -184,7 +184,7 @@ describe('server', () => {
 
       const quoteHandler = jest.fn(async (req) => ({
         id: req.id,
-        egress_amount: (0).toString(),
+        egress_amount: '0',
       }));
       client.setQuoteRequestHandler(quoteHandler);
 
@@ -213,7 +213,7 @@ describe('server', () => {
 
       const quoteHandler = jest.fn(async (req) => ({
         id: req.id,
-        egress_amount: (0).toString(),
+        egress_amount: '0',
       }));
       client.setQuoteRequestHandler(quoteHandler);
 
@@ -224,7 +224,7 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body).toMatchObject({
         id: expect.any(String),
-        egressAmount: (0).toString(),
+        egressAmount: '0',
         includedFees: [
           {
             amount: '2000000',

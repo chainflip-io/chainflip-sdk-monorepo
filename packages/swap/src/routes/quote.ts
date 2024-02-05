@@ -120,7 +120,7 @@ const quote = (io: Server) => {
 
         if (BigInt(bestQuote.egressAmount) < minimumEgressAmount) {
           throw ServiceError.badRequest(
-            `egress amount is lower than minimum egresss amount (${minimumEgressAmount})`,
+            `egress amount is lower than minimum egress amount (${minimumEgressAmount})`,
           );
         }
 
