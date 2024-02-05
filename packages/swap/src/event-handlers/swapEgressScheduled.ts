@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { Asset, assetChains } from '@/shared/enums';
 import { bigintMin } from '@/shared/functions';
-import { chainflipChain, unsignedInteger } from '@/shared/parsers';
+import { chainflipChain, u128, unsignedInteger } from '@/shared/parsers';
 import { Environment, getEnvironment } from '@/shared/rpc';
 import { readAssetValue } from '@/shared/rpc/utils';
 import { CacheMap } from '@/swap/utils/dataStructures';
@@ -9,13 +9,19 @@ import { estimateIngressEgressFeeAssetAmount } from '@/swap/utils/fees';
 import env from '../config/env';
 import type { EventHandlerArgs } from '.';
 
-const eventArgs = z.object({
+const eventArgsWithoutFee = z.object({
   swapId: unsignedInteger,
   egressId: z.tuple([
     z.object({ __kind: chainflipChain }).transform(({ __kind }) => __kind),
     unsignedInteger,
   ]),
 });
+
+const v120EventArgs = eventArgsWithoutFee.and(
+  z.object({ amount: u128, fee: u128 }),
+);
+
+const eventArgs = z.union([v120EventArgs, eventArgsWithoutFee]);
 
 const environmentByBlockHashCache = new CacheMap<
   string,
@@ -100,37 +106,51 @@ export default async function swapEgressScheduled({
   const {
     swapId,
     egressId: [chain, nativeId],
+    ...restArgs
   } = eventArgs.parse(event.args);
 
   const swap = await prisma.swap.findUniqueOrThrow({
     where: { nativeId: swapId },
   });
 
-  // TODO: use an accurate source for determining the egress fee once the protocol provides one
-  const egressFee = bigintMin(
-    await getEgressFeeAtBlock(block.hash, swap.destAsset),
-    BigInt(swap.swapOutputAmount?.toFixed() ?? 0),
-  );
+  let egressFee;
+  let egress;
 
-  await Promise.all([
-    prisma.egress.update({
+  if ('fee' in restArgs) {
+    egressFee = restArgs.fee;
+    egress = await prisma.egress.create({
+      data: {
+        nativeId,
+        chain,
+        amount: restArgs.amount.toString(),
+        scheduledAt: new Date(block.timestamp),
+        scheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
+      },
+    });
+  } else {
+    egressFee = bigintMin(
+      await getEgressFeeAtBlock(block.hash, swap.destAsset),
+      BigInt(swap.swapOutputAmount?.toFixed() ?? 0),
+    );
+    egress = await prisma.egress.update({
       where: { nativeId_chain: { chain, nativeId } },
       data: {
         amount: swap.swapOutputAmount?.sub(egressFee.toString()),
       },
-    }),
-    prisma.swap.update({
-      where: { nativeId: swapId },
-      data: {
-        egress: { connect: { nativeId_chain: { chain, nativeId } } },
-        fees: {
-          create: {
-            type: 'EGRESS',
-            asset: swap.destAsset,
-            amount: egressFee.toString(),
-          },
+    });
+  }
+
+  await prisma.swap.update({
+    where: { nativeId: swapId },
+    data: {
+      egress: { connect: { id: egress.id } },
+      fees: {
+        create: {
+          type: 'EGRESS',
+          asset: swap.destAsset,
+          amount: egressFee.toString(),
         },
       },
-    }),
-  ]);
+    },
+  });
 }
