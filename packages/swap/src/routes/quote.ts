@@ -17,6 +17,7 @@ import {
 } from '../quoting/quotes';
 import logger from '../utils/logger';
 import {
+  getMinimumEgressAmount,
   getNativeEgressFee,
   getNativeIngressFee,
   validateSwapAmount,
@@ -112,6 +113,17 @@ const quote = (io: Server) => {
         );
 
         const bestQuote = findBestQuote(marketMakerQuotes, brokerQuote);
+
+        const minimumEgressAmount = await getMinimumEgressAmount(
+          query.srcAsset,
+        );
+
+        if (BigInt(bestQuote.egressAmount) < minimumEgressAmount) {
+          throw ServiceError.badRequest(
+            `egress amount is lower than minimum egress amount (${minimumEgressAmount})`,
+          );
+        }
+
         const quoteSwapFees = await calculateIncludedSwapFees(
           quoteRequest.source_asset,
           quoteRequest.destination_asset,
@@ -143,6 +155,8 @@ const quote = (io: Server) => {
           includedFees,
         });
       } catch (err) {
+        if (err instanceof ServiceError) throw err;
+
         const message =
           err instanceof Error
             ? err.message

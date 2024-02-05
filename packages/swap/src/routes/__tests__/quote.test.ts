@@ -21,8 +21,8 @@ jest.mock(
         return this;
       }
 
-      sendRequest() {
-        throw new Error('unmocked request');
+      sendRequest(method: string) {
+        throw new Error(`unmocked request: "${method}"`);
       }
     },
 );
@@ -148,6 +148,33 @@ describe('server', () => {
       });
     });
 
+    it('rejects if egress amount is lower than minimum egress amount', async () => {
+      jest
+        .spyOn(RpcClient.prototype, 'sendRequest')
+        .mockResolvedValueOnce({ egressAmount: '0' });
+
+      const quoteHandler = jest.fn(async (req) => ({
+        id: req.id,
+        egress_amount: '0',
+      }));
+      client.setQuoteRequestHandler(quoteHandler);
+
+      const params = new URLSearchParams({
+        srcAsset: 'USDC',
+        destAsset: 'FLIP',
+        amount: (100e6).toString(),
+      });
+
+      const { body, status } = await request(server).get(
+        `/quote?${params.toString()}`,
+      );
+
+      expect(status).toBe(400);
+      expect(body).toMatchObject({
+        message: 'egress amount is lower than minimum egress amount (1)',
+      });
+    });
+
     it('gets the quote from usdc when the ingress amount is smaller than the ingress fee', async () => {
       const params = new URLSearchParams({
         srcAsset: 'USDC',
@@ -157,7 +184,7 @@ describe('server', () => {
 
       const quoteHandler = jest.fn(async (req) => ({
         id: req.id,
-        egress_amount: (0).toString(),
+        egress_amount: '0',
       }));
       client.setQuoteRequestHandler(quoteHandler);
 
@@ -186,7 +213,7 @@ describe('server', () => {
 
       const quoteHandler = jest.fn(async (req) => ({
         id: req.id,
-        egress_amount: (0).toString(),
+        egress_amount: '0',
       }));
       client.setQuoteRequestHandler(quoteHandler);
 
@@ -197,7 +224,7 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body).toMatchObject({
         id: expect.any(String),
-        egressAmount: (0).toString(),
+        egressAmount: '0',
         includedFees: [
           {
             amount: '2000000',
@@ -380,9 +407,10 @@ describe('server', () => {
         egressFee: '0x0',
       });
 
-      // method is called three times
+      // method is called four times
       jest
         .mocked(axios.post)
+        .mockResolvedValueOnce({ data: env })
         .mockResolvedValueOnce({ data: env })
         .mockResolvedValueOnce({ data: env })
         .mockResolvedValueOnce({ data: env });

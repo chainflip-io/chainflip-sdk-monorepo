@@ -22,6 +22,14 @@ export const validateSwapAmount = async (
   return validateAmount(environment, asset, amount);
 };
 
+export const getMinimumEgressAmount = async (
+  asset: UncheckedAssetAndChain,
+): Promise<bigint> => {
+  const environment = await cachedGetEnvironment(rpcConfig);
+
+  return readAssetValue(environment.ingressEgress.minimumEgressAmounts, asset);
+};
+
 export const getNativeIngressFee = async (
   asset: UncheckedAssetAndChain,
 ): Promise<bigint> => {

@@ -124,11 +124,33 @@ export const getSwappingEnvironment = createRequest(
   swappingEnvironment,
 );
 
-const ingressEgressEnvironment = z.object({
-  minimum_deposit_amounts: chainAssetNumberMap,
-  ingress_fees: chainAssetNumberMap,
-  egress_fees: chainAssetNumberMap,
-});
+type Rename<T, U extends Record<string, string>> = Omit<T, keyof U> & {
+  [K in keyof U as NonNullable<U[K]>]: K extends keyof T ? T[K] : never;
+};
+
+const rename =
+  <const U extends Record<string, string>>(mapping: U) =>
+  <T>(obj: T): Rename<T, U> =>
+    Object.fromEntries(
+      Object.entries(obj as Record<string, unknown>).map(([key, value]) => [
+        key in mapping ? mapping[key] : key,
+        value,
+      ]),
+    ) as Rename<T, U>;
+
+const ingressEgressEnvironment = z
+  .object({
+    minimum_deposit_amounts: chainAssetNumberMap,
+    ingress_fees: chainAssetNumberMap,
+    egress_fees: chainAssetNumberMap,
+    // TODO(1.2): remove optional and default value
+    egress_dust_limits: chainAssetNumberMap.optional().default({
+      Bitcoin: { BTC: 0x258 },
+      Ethereum: { ETH: 0x1, USDC: 0x1, FLIP: 0x1 },
+      Polkadot: { DOT: 0x1 },
+    }),
+  })
+  .transform(rename({ egress_dust_limits: 'minimum_egress_amounts' }));
 
 export const getIngressEgressEnvironment = createRequest(
   'cf_ingress_egress_environment',

@@ -20,15 +20,29 @@ export const extractOverrides = (
   return ethersOverrides;
 };
 
-export const getTokenContractAddress = (
+export function getTokenContractAddress(
   asset: Asset,
   network: ChainflipNetwork,
-): string => {
+): string;
+export function getTokenContractAddress(
+  asset: Asset,
+  network: ChainflipNetwork,
+  assert: false,
+): string | undefined;
+export function getTokenContractAddress(
+  asset: Asset,
+  network: ChainflipNetwork,
+  assert = true,
+): string | undefined {
   if (asset === Assets.FLIP) return ADDRESSES[network].FLIP_CONTRACT_ADDRESS;
   if (asset === Assets.USDC) return ADDRESSES[network].USDC_CONTRACT_ADDRESS;
 
-  throw new Error('Only FLIP and USDC are supported for now');
-};
+  if (assert) {
+    throw new Error('Only FLIP and USDC are supported for now');
+  }
+
+  return undefined;
+}
 
 export const getStateChainGatewayContractAddress = (
   network: ChainflipNetwork,

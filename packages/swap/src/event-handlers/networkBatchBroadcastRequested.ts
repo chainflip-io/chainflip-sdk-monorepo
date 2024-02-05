@@ -12,7 +12,7 @@ const eventArgs = z.object({
 /**
  * this event emits a list of egress ids and a new broadcast id to track the
  * egress. the broadcast success event will be emitted with this id when all
- * of the egresss are successful
+ * of the egresses are successful
  */
 export default async function networkBatchBroadcastRequested({
   prisma,
