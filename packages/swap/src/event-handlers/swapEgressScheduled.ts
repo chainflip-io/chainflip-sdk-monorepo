@@ -140,19 +140,17 @@ export default async function swapEgressScheduled({
     });
   }
 
-  await Promise.all([
-    prisma.swap.update({
-      where: { nativeId: swapId },
-      data: {
-        egress: { connect: { id: egress.id } },
-        fees: {
-          create: {
-            type: 'EGRESS',
-            asset: swap.destAsset,
-            amount: egressFee.toString(),
-          },
+  await prisma.swap.update({
+    where: { nativeId: swapId },
+    data: {
+      egress: { connect: { id: egress.id } },
+      fees: {
+        create: {
+          type: 'EGRESS',
+          asset: swap.destAsset,
+          amount: egressFee.toString(),
         },
       },
-    }),
-  ]);
+    },
+  });
 }
