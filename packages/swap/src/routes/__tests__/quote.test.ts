@@ -196,7 +196,7 @@ describe('server', () => {
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
-        message: 'egress amount is lower than minimum egress amount (1)',
+        message: 'egress amount (0) is lower than minimum egress amount (1)',
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
