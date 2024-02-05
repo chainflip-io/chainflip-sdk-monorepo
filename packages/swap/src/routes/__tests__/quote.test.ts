@@ -148,26 +148,32 @@ describe('server', () => {
       });
     });
 
-    // it('rejects if egress amount is lower than minimum egress amount', async () => {
-    //   jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-    //     egressAmount: (0).toString(),
-    //   });
+    it('rejects if egress amount is lower than minimum egress amount', async () => {
+      jest
+        .spyOn(RpcClient.prototype, 'sendRequest')
+        .mockResolvedValueOnce({ egressAmount: (0).toString() });
 
-    //   const params = new URLSearchParams({
-    //     srcAsset: 'USDC',
-    //     destAsset: 'FLIP',
-    //     amount: (100e6).toString(),
-    //   });
+      const quoteHandler = jest.fn(async (req) => ({
+        id: req.id,
+        egress_amount: (0).toString(),
+      }));
+      client.setQuoteRequestHandler(quoteHandler);
 
-    //   const { body, status } = await request(server).get(
-    //     `/quote?${params.toString()}`,
-    //   );
+      const params = new URLSearchParams({
+        srcAsset: 'USDC',
+        destAsset: 'FLIP',
+        amount: (100e6).toString(),
+      });
 
-    //   expect(status).toBe(400);
-    //   expect(body).toMatchObject({
-    //     message: 'egress amount is lower than minimum egresss amount (1)',
-    //   });
-    // });
+      const { body, status } = await request(server).get(
+        `/quote?${params.toString()}`,
+      );
+
+      expect(status).toBe(400);
+      expect(body).toMatchObject({
+        message: 'egress amount is lower than minimum egresss amount (1)',
+      });
+    });
 
     it('gets the quote from usdc when the ingress amount is smaller than the ingress fee', async () => {
       const params = new URLSearchParams({
