@@ -120,11 +120,13 @@ export const environment = ({
   minDepositAmount = '0x0',
   ingressFee = '0x0',
   egressFee = '0x0',
+  minEgressAmount = '0x1',
 }: {
   maxSwapAmount?: string | null;
   minDepositAmount?: string;
   ingressFee?: string;
   egressFee?: string;
+  minEgressAmount?: string;
 } = {}) => ({
   id: 1,
   jsonrpc: '2.0',
@@ -133,6 +135,7 @@ export const environment = ({
       minDepositAmount,
       ingressFee,
       egressFee,
+      minEgressAmount,
     }).result,
     swapping: swappingEnvironment({ maxSwapAmount }).result,
     funding: fundingEnvironment().result,

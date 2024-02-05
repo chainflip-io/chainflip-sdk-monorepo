@@ -155,6 +155,8 @@ const quote = (io: Server) => {
           includedFees,
         });
       } catch (err) {
+        if (err instanceof ServiceError) throw err;
+
         const message =
           err instanceof Error
             ? err.message
