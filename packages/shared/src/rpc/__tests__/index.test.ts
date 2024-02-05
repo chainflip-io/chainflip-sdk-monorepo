@@ -99,6 +99,19 @@ describe('getIngressEgressEnvironment', () => {
           DOT: 0n,
         },
       },
+      minimumEgressAmounts: {
+        Bitcoin: {
+          BTC: 0x258n,
+        },
+        Ethereum: {
+          ETH: 0x1n,
+          USDC: 0x1n,
+          FLIP: 0x1n,
+        },
+        Polkadot: {
+          DOT: 0x1n,
+        },
+      },
     });
     expect(spy.mock.calls).toMatchSnapshot();
   });

@@ -74,10 +74,12 @@ export const ingressEgressEnvironment = ({
   minDepositAmount = '0x0',
   ingressFee = '0x0',
   egressFee = '0x0',
+  minEgressAmount = '0x1',
 }: {
   minDepositAmount?: string;
   ingressFee?: string;
   egressFee?: string;
+  minEgressAmount?: string;
 } = {}) => ({
   id: 1,
   jsonrpc: '2.0',
@@ -100,6 +102,15 @@ export const ingressEgressEnvironment = ({
       Bitcoin: { BTC: egressFee },
       Polkadot: { DOT: egressFee },
       Ethereum: { ETH: egressFee, FLIP: egressFee, USDC: egressFee },
+    },
+    egress_dust_limits: {
+      Ethereum: {
+        ETH: minEgressAmount,
+        USDC: minEgressAmount,
+        FLIP: minEgressAmount,
+      },
+      Polkadot: { DOT: minEgressAmount },
+      Bitcoin: { BTC: '0x258' },
     },
   },
 });

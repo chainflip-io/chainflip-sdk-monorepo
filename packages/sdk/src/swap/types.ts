@@ -18,6 +18,7 @@ export type AssetData = {
     isMainnet: boolean;
     minimumSwapAmount: string;
     maximumSwapAmount: string | null;
+    minimumEgressAmount: string;
   };
 }[keyof typeof chainAssets];
 
