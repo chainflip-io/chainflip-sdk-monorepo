@@ -19,6 +19,7 @@ import swapExecuted from './swapExecuted';
 import swapScheduled from './swapScheduled';
 import type { Block, Event } from '../gql/generated/graphql';
 import { buildHandlerMap, getDispatcher } from '../utils/handlers';
+import swapEgressIgnored from './swapEgressIgnored';
 
 export const events = {
   LiquidityPools: {
@@ -32,6 +33,7 @@ export const events = {
   Swapping: {
     SwapScheduled: 'Swapping.SwapScheduled',
     SwapExecuted: 'Swapping.SwapExecuted',
+    SwapEgressIgnored: 'Swapping.SwapEgressIgnored',
     SwapEgressScheduled: 'Swapping.SwapEgressScheduled',
     SwapAmountTooLow: 'Swapping.SwapAmountTooLow',
     SwapDepositAddressReady: 'Swapping.SwapDepositAddressReady',
@@ -157,6 +159,15 @@ const handlers = [
           handler: depositIgnored(chain),
         },
       ]),
+    ],
+  },
+  {
+    spec: 120,
+    handlers: [
+      {
+        name: events.Swapping.SwapEgressIgnored,
+        handler: swapEgressIgnored,
+      },
     ],
   },
 ];

@@ -170,7 +170,6 @@ model FailedSwap {
 
 model IgnoredEgress {
   id                BigInt          @id @default(autoincrement())
-  /// the egress id on the state chain
   amount            Decimal         @db.Decimal(30, 0)
   ignoredAt         DateTime
   ignoredBlockIndex String
