@@ -1,5 +1,5 @@
+/* eslint-disable max-classes-per-file */
 import { Assets } from '@/shared/enums';
-import { environment, swapRate } from '@/shared/tests/fixtures';
 import {
   DOT_ADDRESS,
   createDepositChannel,

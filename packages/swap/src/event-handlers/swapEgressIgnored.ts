@@ -1,10 +1,10 @@
+import { ApiPromise, WsProvider } from '@polkadot/api';
+import { BN } from '@polkadot/util';
 import { z } from 'zod';
 import { u64, chainflipAssetEnum, u128, hexString } from '@/shared/parsers';
 import { Prisma } from '../client';
-import { EventHandlerArgs } from './index';
-import { ApiPromise, WsProvider } from '@polkadot/api';
-import { BN } from '@polkadot/util';
 import env from '../config/env';
+import { EventHandlerArgs } from './index';
 
 const swapEgressIgnoredArgs = z.object({
   asset: chainflipAssetEnum,
@@ -45,7 +45,7 @@ const lookupFailure = async (
   const failureReason = await prisma.stateChainError.findUnique({
     where: {
       specVersion_palletIndex_errorIndex: {
-        specVersion: specVersion,
+        specVersion,
         palletIndex,
         errorIndex,
       },
@@ -56,7 +56,7 @@ const lookupFailure = async (
 
   const registryError = api.registry.findMetaError({
     index: new BN(palletIndex),
-    error: error,
+    error,
   });
 
   return prisma.stateChainError.create({

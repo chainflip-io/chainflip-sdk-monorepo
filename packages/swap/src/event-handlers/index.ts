@@ -14,12 +14,12 @@ import newPoolCreated from './newPoolCreated';
 import poolFeeSet from './poolFeeSet';
 import swapAmountTooLow from './swapAmountTooLow';
 import swapDepositAddressReady from './swapDepositAddressReady';
+import swapEgressIgnored from './swapEgressIgnored';
 import swapEgressScheduled from './swapEgressScheduled';
 import swapExecuted from './swapExecuted';
 import swapScheduled from './swapScheduled';
 import type { Block, Event } from '../gql/generated/graphql';
 import { buildHandlerMap, getDispatcher } from '../utils/handlers';
-import swapEgressIgnored from './swapEgressIgnored';
 
 export const events = {
   LiquidityPools: {
