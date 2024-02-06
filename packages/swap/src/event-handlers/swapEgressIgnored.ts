@@ -42,7 +42,7 @@ const lookupFailure = async (
   const specVersion = historicApi.runtimeVersion.specVersion.toNumber();
   const palletIndex = value.index;
 
-  const failureReason = await prisma.failedSwapReason.findUnique({
+  const failureReason = await prisma.stateChainError.findUnique({
     where: {
       specVersion_palletIndex_errorIndex: {
         specVersion: specVersion,
@@ -59,13 +59,13 @@ const lookupFailure = async (
     error: error,
   });
 
-  return prisma.failedSwapReason.create({
+  return prisma.stateChainError.create({
     data: {
       specVersion: historicApi.runtimeVersion.specVersion.toNumber(),
       palletIndex,
       errorIndex,
-      name: registryError?.name ?? 'Unknown',
-      docs: registryError?.docs.join('\n').trim() ?? 'Unknown',
+      name: `${registryError.section}.${registryError.name}`,
+      docs: registryError.docs.join('\n').trim(),
     },
   });
 };
@@ -75,9 +75,20 @@ export default async function swapEgressIgnored({
   event,
   block,
 }: EventHandlerArgs): Promise<void> {
-  const { asset, amount, swapId, reason } = swapEgressIgnoredArgs.parse(
-    event.args,
-  );
+  const { amount, swapId, reason } = swapEgressIgnoredArgs.parse(event.args);
 
-  const failure = await lookupFailure(prisma, block.hash, reason);
+  const [failure, swap] = await Promise.all([
+    lookupFailure(prisma, block.hash, reason),
+    prisma.swap.findUniqueOrThrow({ where: { nativeId: swapId } }),
+  ]);
+
+  await prisma.ignoredEgress.create({
+    data: {
+      swapId: swap.id,
+      ignoredAt: new Date(block.timestamp),
+      ignoredBlockIndex: `${block.height}-${event.indexInBlock}`,
+      amount: amount.toString(),
+      stateChainErrorId: failure.id,
+    },
+  });
 }

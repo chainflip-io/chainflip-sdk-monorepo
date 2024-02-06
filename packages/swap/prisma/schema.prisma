@@ -108,6 +108,7 @@ model Swap {
   txHash                       String?
   egress                       Egress?             @relation(fields: [egressId], references: [id])
   egressId                     BigInt?
+  ignoredEgress                IgnoredEgress?
   createdAt                    DateTime            @default(now())
   updatedAt                    DateTime            @default(now()) @updatedAt
 
@@ -143,24 +144,18 @@ enum FailedSwapType {
   @@schema("public")
 }
 
-model FailedSwapReason {
-  id          Int    @id @default(autoincrement())
-  specVersion Int
-  palletIndex Int
-  errorIndex  Int
-  name        String
-  docs        String
+enum FailedSwapReason {
+  BelowMinimumDeposit
+  NotEnoughToPayFees // gas price to process deposit is too high
+  EgressAmountZero // egress amount left after fees is too low
 
-  failedSwaps FailedSwap[]
-
-  @@unique([specVersion, palletIndex, errorIndex])
   @@schema("public")
 }
 
 model FailedSwap {
   id                   Int                 @id @default(autoincrement())
   type                 FailedSwapType
-  reason               FailedSwapReason    @relation(fields: [failedSwapReasonId], references: [id])
+  reason               FailedSwapReason?
   destAddress          String
   destChain            Chain
   depositAmount        Decimal             @db.Decimal(30, 0)
@@ -168,9 +163,23 @@ model FailedSwap {
   swapDepositChannel   SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
   swapDepositChannelId BigInt?
   txHash               String?
-  failedSwapReasonId   Int
 
   @@index([swapDepositChannelId])
+  @@schema("public")
+}
+
+model IgnoredEgress {
+  id                BigInt          @id @default(autoincrement())
+  /// the egress id on the state chain
+  amount            Decimal         @db.Decimal(30, 0)
+  ignoredAt         DateTime
+  ignoredBlockIndex String
+  swap              Swap            @relation(fields: [swapId], references: [id])
+  swapId            BigInt          @unique
+  stateChainError   StateChainError @relation(fields: [stateChainErrorId], references: [id])
+  stateChainErrorId Int
+  createdAt         DateTime        @default(now())
+
   @@schema("public")
 }
 
@@ -273,5 +282,18 @@ model ChainTracking {
   blockTrackedAt DateTime @default(now())
   updatedAt      DateTime @updatedAt @db.Timestamptz(3)
 
+  @@schema("public")
+}
+
+model StateChainError {
+  id              Int             @id @default(autoincrement())
+  specVersion     Int
+  palletIndex     Int
+  errorIndex      Int
+  name            String
+  docs            String
+  ignoredEgresses IgnoredEgress[] @ignore
+
+  @@unique([specVersion, palletIndex, errorIndex])
   @@schema("public")
 }
