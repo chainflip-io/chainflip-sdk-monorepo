@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { u64, chainflipAssetEnum, u128, hexString } from '@/shared/parsers';
 import { Prisma } from '../client';
 import env from '../config/env';
+import { handleExit } from '../utils/function';
 import { EventHandlerArgs } from './index';
 
 const swapEgressIgnoredArgs = z.object({
@@ -32,11 +33,16 @@ const lookupFailure = async (
   blockHash: string,
   { value }: Reason,
 ) => {
-  api ??= await ApiPromise.create({
-    provider: new WsProvider(env.RPC_NODE_WSS_URL),
-  });
+  if (api === undefined) {
+    api = await ApiPromise.create({
+      provider: new WsProvider(env.RPC_NODE_WSS_URL),
+    });
+
+    handleExit(() => api?.disconnect());
+  }
 
   const historicApi = await api.at(blockHash);
+  // convert LE hex encoded number (e.g. "0x06000000") to BN (6)
   const error = new BN(value.error.slice(2), 'hex', 'le');
   const errorIndex = error.toNumber();
   const specVersion = historicApi.runtimeVersion.specVersion.toNumber();
