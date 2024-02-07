@@ -934,7 +934,7 @@ describe('server', () => {
           },
         },
       });
-      await prisma.ignoredEgress.create({
+      const ignoredEgress = await prisma.ignoredEgress.create({
         data: {
           amount: '10000000000',
           ignoredAt: new Date('2024-02-06T13:00:00.000Z'),
@@ -966,6 +966,9 @@ describe('server', () => {
           message: 'The amount is below the minimum egress amount.',
           name: 'bitcoinIngressEgress.BelowEgressDustLimit',
         },
+        egressIgnoredAt: ignoredEgress.ignoredAt.valueOf(),
+        ignoredEgressAmount: ignoredEgress.amount.toFixed(),
+        egressIgnoredBlockIndex: ignoredEgress.ignoredBlockIndex,
         state: 'FAILED',
       });
     });
