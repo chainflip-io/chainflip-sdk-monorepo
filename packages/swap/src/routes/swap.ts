@@ -150,9 +150,11 @@ router.get(
           message: failedSwapMessage[failedSwap.reason],
         };
       } else if (swap?.ignoredEgress) {
-        const stateChainError = await prisma.stateChainError.findUniqueOrThrow({
-          where: { id: swap.ignoredEgress.stateChainErrorId },
-        });
+        const [stateChainError] = await Promise.all([
+          prisma.stateChainError.findUniqueOrThrow({
+            where: { id: swap.ignoredEgress.stateChainErrorId },
+          }),
+        ]);
         error = {
           name: stateChainError.name,
           message: stateChainError.docs,
@@ -236,6 +238,9 @@ router.get(
       egressAmount: swap?.egress?.amount?.toFixed(),
       egressScheduledAt: swap?.egress?.scheduledAt?.valueOf(),
       egressScheduledBlockIndex: swap?.egress?.scheduledBlockIndex,
+      ignoredEgressAmount: swap?.ignoredEgress?.amount?.toFixed(),
+      egressIgnoredAt: swap?.ignoredEgress?.ignoredAt?.valueOf(),
+      egressIgnoredBlockIndex: swap?.ignoredEgress?.ignoredBlockIndex,
       feesPaid:
         swap?.fees.map((fee) => ({
           type: fee.type,
