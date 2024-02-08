@@ -1,5 +1,5 @@
-/* eslint-disable max-classes-per-file */
 import { Assets } from '@/shared/enums';
+import metadataMock from './metadata.json';
 import {
   DOT_ADDRESS,
   createDepositChannel,
@@ -8,31 +8,10 @@ import {
 import prisma from '../../client';
 import swapEgressIgnored from '../swapEgressIgnored';
 
-jest.mock('@polkadot/api', () => ({
-  ApiPromise: class {
-    static create() {
-      return new this();
-    }
-
-    async at() {
-      return this;
-    }
-
-    registry = {
-      findMetaError: jest.fn().mockReturnValue({
-        name: 'BelowEgressDustLimit',
-        section: 'bitcoinIngressEgress',
-        docs: ['The amount is below the minimum egress amount.'],
-      }),
-    };
-
-    runtimeVersion = {
-      specVersion: {
-        toNumber: () => 120,
-      },
-    };
-  },
-  WsProvider: class {},
+jest.mock('axios', () => ({
+  post: jest.fn().mockImplementation(async () => ({
+    data: metadataMock,
+  })),
 }));
 
 const {
