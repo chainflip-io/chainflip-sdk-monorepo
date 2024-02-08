@@ -255,7 +255,7 @@ describe('batch swap flow', () => {
             nodes: [
               {
                 height,
-                specId: 'test@0',
+                specId: 'test@120',
                 timestamp: new Date(height * 6000).toISOString(),
                 events: { nodes: events },
               },
