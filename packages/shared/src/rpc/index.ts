@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { z } from 'zod';
 import { ChainflipNetwork, ChainflipNetworks } from '../enums';
+import { hexString } from '../parsers';
 
 const numberOrHex = z
   .union([z.string(), z.number()])
@@ -52,6 +53,7 @@ type RpcParams = {
     amount: `0x${string}`,
     at?: string,
   ];
+  state_getMetadata: [at?: string];
 };
 
 type RpcMethod = keyof RpcParams;
@@ -213,3 +215,5 @@ const swapRate = z.object({
   output: numberOrHex,
 });
 export const getSwapRate = createRequest('cf_swap_rate', swapRate);
+
+export const getMetadata = createRequest('state_getMetadata', hexString);

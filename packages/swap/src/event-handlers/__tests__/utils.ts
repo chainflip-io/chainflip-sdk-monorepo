@@ -369,6 +369,7 @@ export const swapEgressIgnoredMock = {
   block: {
     height: 120,
     timestamp: 1670337105000,
+    specId: 'test@120',
   },
   eventContext: {
     kind: 'event',
