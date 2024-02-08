@@ -28,12 +28,12 @@ export default async function swapAmountTooLow({
   event,
   block,
 }: EventHandlerArgs): Promise<void> {
-  const { origin, amount, destinationAddress } = swapAmountTooLowArgs.parse(
-    event.args,
-  );
+  const { origin, amount, destinationAddress, asset } =
+    swapAmountTooLowArgs.parse(event.args);
   let sourceChain;
   let dbDepositChannel;
   let txHash;
+  let sourceAsset;
   if (origin.__kind === 'DepositChannel') {
     dbDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
       where: {
@@ -45,10 +45,12 @@ export default async function swapAmountTooLow({
       orderBy: { issuedBlock: 'desc' },
     });
     sourceChain = origin.depositAddress.chain;
+    sourceAsset = dbDepositChannel.srcAsset;
   } else {
     // Vault
     sourceChain = 'Ethereum' as const;
     txHash = origin.txHash;
+    sourceAsset = asset;
   }
 
   await prisma.failedSwap.create({
@@ -58,6 +60,7 @@ export default async function swapAmountTooLow({
       destChain: destinationAddress.chain,
       depositAmount: amount.toString(),
       srcChain: sourceChain,
+      srcAsset: sourceAsset,
       swapDepositChannelId: dbDepositChannel?.id,
       txHash,
       failedAt: new Date(block.timestamp),

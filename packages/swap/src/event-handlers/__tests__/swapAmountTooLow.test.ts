@@ -157,6 +157,7 @@ describe(swapAmountTooLow, () => {
           failedBlockIndex: '100-0',
           reason: 'BelowMinimumDeposit',
           srcChain: 'Ethereum',
+          srcAsset: 'ETH',
           swapDepositChannelId: undefined,
           txHash:
             '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',

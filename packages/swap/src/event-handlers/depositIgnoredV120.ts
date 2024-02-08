@@ -61,7 +61,7 @@ export type DepositIgnoredArgs = z.input<typeof depositIgnoredArgs>;
 export const depositIgnored =
   (chain: Chain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
-    const { amount, depositAddress, reason } = depositIgnoredArgs.parse(
+    const { amount, depositAddress, reason, asset } = depositIgnoredArgs.parse(
       event.args,
     );
 
@@ -78,6 +78,7 @@ export const depositIgnored =
         reason,
         swapDepositChannelId: channel.id,
         srcChain: chain,
+        srcAsset: asset,
         destAddress: channel.destAddress,
         destChain: assetChains[channel.destAsset],
         depositAmount: amount.toString(),

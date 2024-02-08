@@ -151,6 +151,7 @@ model FailedSwap {
   destChain            Chain
   depositAmount        Decimal             @db.Decimal(30, 0)
   srcChain             Chain
+  srcAsset             Asset
   swapDepositChannel   SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
   swapDepositChannelId BigInt?
   txHash               String?

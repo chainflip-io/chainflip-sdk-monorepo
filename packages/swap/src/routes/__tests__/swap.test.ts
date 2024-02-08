@@ -878,6 +878,7 @@ describe('server', () => {
         data: {
           reason: 'BelowMinimumDeposit',
           swapDepositChannelId: channel.id,
+          srcAsset: 'ETH',
           srcChain: 'Ethereum',
           destAddress: channel.destAddress,
           destChain: 'Polkadot',
@@ -900,6 +901,28 @@ describe('server', () => {
         },
         state: 'FAILED',
       });
+    });
+
+    it(`retrieves a swap in ${State.Failed} status without a deposit channel (deposit ignored)`, async () => {
+      await prisma.failedSwap.create({
+        data: {
+          reason: 'BelowMinimumDeposit',
+          srcAsset: 'FLIP',
+          srcChain: 'Ethereum',
+          destAddress: '0xcafebabe',
+          destChain: 'Polkadot',
+          depositAmount: '10000000000',
+          failedAt: new Date(RECEIVED_TIMESTAMP),
+          failedBlockIndex: RECEIVED_BLOCK_INDEX,
+          txHash: '0xdeadbeef',
+        },
+      });
+
+      const { body, status } = await request(server).get(`/swaps/0xdeadbeef`);
+
+      expect(status).toBe(200);
+
+      expect(body).toMatchSnapshot();
     });
 
     it(`retrieves a swap in ${State.Failed} status (egress ignored)`, async () => {
@@ -1030,6 +1053,7 @@ describe('server', () => {
         data: {
           reason: 'BelowMinimumDeposit',
           swapDepositChannelId: channel.id,
+          srcAsset: 'ETH',
           srcChain: 'Ethereum',
           destAddress: channel.destAddress,
           destChain: 'Polkadot',

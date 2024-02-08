@@ -124,10 +124,15 @@ router.get(
         // just get the last one for now
         orderBy: { nativeId: 'desc' },
       });
+      if (!swap) {
+        failedSwap = await prisma.failedSwap.findFirst({
+          where: { txHash: id },
+        });
+      }
     }
 
     ServiceError.assert(
-      swapDepositChannel || swap,
+      swapDepositChannel || swap || failedSwap,
       'notFound',
       'resource not found',
     );
@@ -185,7 +190,12 @@ router.get(
       state = State.AwaitingDeposit;
     }
 
-    const srcAsset = readField(swap, swapDepositChannel, 'srcAsset');
+    const srcAsset = readField(
+      swap,
+      swapDepositChannel,
+      failedSwap,
+      'srcAsset',
+    );
     const destAsset = readField(swap, swapDepositChannel, 'destAsset');
 
     let pendingDeposit;
@@ -234,7 +244,8 @@ router.get(
         swapDepositChannel?.expectedDepositAmount?.toFixed(),
       swapId: swap?.nativeId.toString(),
       depositAmount:
-        readField(swap, failedSwap, 'depositAmount') ?? pendingDeposit?.amount,
+        readField(swap, failedSwap, 'depositAmount')?.toFixed() ??
+        pendingDeposit?.amount,
       depositTransactionHash:
         pendingDeposit?.transactionHash ?? failedSwap?.txHash ?? undefined,
       depositTransactionConfirmations: pendingDeposit?.transactionConfirmations,

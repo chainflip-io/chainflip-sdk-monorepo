@@ -93,7 +93,7 @@ export function readField<
 ): A[K] | B[K] | C[K] | undefined;
 export function readField(...args: any[]) {
   const key = args.pop();
-  return args.reduce((acc, obj) => acc ?? obj?.[key], undefined);
+  return args.reduce((acc, obj) => acc ?? obj?.[key], undefined) ?? undefined;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 /* eslint-enable @typescript-eslint/ban-types */

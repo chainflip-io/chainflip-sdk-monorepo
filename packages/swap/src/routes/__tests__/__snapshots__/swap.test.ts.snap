@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`server GET /swaps/:id retrieves a swap in FAILED status without a deposit channel (deposit ignored) 1`] = `
+{
+  "depositAmount": "10000000000",
+  "depositTransactionHash": "0xdeadbeef",
+  "destAddress": "0xcafebabe",
+  "error": {
+    "message": "The deposited amount was below the minimum required",
+    "name": "BelowMinimumDeposit",
+  },
+  "failedAt": "2022-12-01T15:05:35.201Z",
+  "failedBlockIndex": "100-3",
+  "failure": "INGRESS_IGNORED",
+  "feesPaid": [],
+  "srcAsset": "FLIP",
+  "srcChain": "Ethereum",
+  "state": "FAILED",
+}
+`;

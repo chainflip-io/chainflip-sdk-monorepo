@@ -54,7 +54,11 @@ export interface SwapStatusRequest {
   id: string;
 }
 
-export interface CommonStatusFields extends ChainsAndAssets {
+export interface CommonStatusFields {
+  srcAsset: Asset;
+  srcChain: Chain;
+  destAsset: Asset | undefined;
+  destChain: Chain | undefined;
   destAddress: string;
   depositAddress: string | undefined;
   depositChannelCreatedAt: number | undefined;
