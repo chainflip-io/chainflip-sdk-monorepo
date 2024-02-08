@@ -11,6 +11,8 @@ import prisma, {
   Broadcast,
   SwapFee,
   FailedSwap,
+  IgnoredEgress,
+  FailedSwapReason,
 } from '../client';
 import openSwapDepositChannel from '../handlers/openSwapDepositChannel';
 import {
@@ -34,13 +36,26 @@ export enum State {
   AwaitingDeposit = 'AWAITING_DEPOSIT',
 }
 
-type SwapWithBroadcastAndFees = Swap & {
+type SwapWithAdditionalInfo = Swap & {
   fees: SwapFee[];
   egress:
     | (Egress & {
         broadcast: Broadcast | null;
       })
     | null;
+  ignoredEgress: IgnoredEgress | null;
+};
+
+const swapInclude = {
+  egress: { include: { broadcast: true } },
+  fees: true,
+  ignoredEgress: true,
+} as const;
+
+const failedSwapMessage: Record<FailedSwapReason, string> = {
+  BelowMinimumDeposit: 'The deposited amount was below the minimum required',
+  NotEnoughToPayFees: 'The deposited amount was not enough to pay the fees',
+  EgressAmountZero: 'The amount left after fees was zero',
 };
 
 const coerceChain = (chain: string) => {
@@ -72,11 +87,11 @@ router.get(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    let swap: SwapWithBroadcastAndFees | null | undefined;
+    let swap: SwapWithAdditionalInfo | null | undefined;
     let failedSwap: FailedSwap | null | undefined;
     let swapDepositChannel:
       | (SwapDepositChannel & {
-          swaps: SwapWithBroadcastAndFees[];
+          swaps: SwapWithAdditionalInfo[];
           failedSwaps: FailedSwap[];
         })
       | null
@@ -94,12 +109,7 @@ router.get(
             channelId: BigInt(channelId),
           },
         },
-        include: {
-          swaps: {
-            include: { egress: { include: { broadcast: true } }, fees: true },
-          },
-          failedSwaps: true,
-        },
+        include: { swaps: { include: swapInclude }, failedSwaps: true },
       });
 
       if (!swapDepositChannel) {
@@ -112,12 +122,12 @@ router.get(
     } else if (swapIdRegex.test(id)) {
       swap = await prisma.swap.findUnique({
         where: { nativeId: BigInt(id) },
-        include: { egress: { include: { broadcast: true } }, fees: true },
+        include: swapInclude,
       });
     } else if (txHashRegex.test(id)) {
       swap = await prisma.swap.findFirst({
         where: { txHash: id },
-        include: { egress: { include: { broadcast: true } }, fees: true },
+        include: swapInclude,
         // just get the last one for now
         orderBy: { nativeId: 'desc' },
       });
@@ -130,9 +140,26 @@ router.get(
     );
 
     let state: State;
+    let error: { name: string; message: string } | undefined;
 
-    if (failedSwap) {
+    if (failedSwap || swap?.ignoredEgress) {
       state = State.Failed;
+      if (failedSwap?.reason) {
+        error = {
+          name: failedSwap.reason,
+          message: failedSwapMessage[failedSwap.reason],
+        };
+      } else if (swap?.ignoredEgress) {
+        const [stateChainError] = await Promise.all([
+          prisma.stateChainError.findUniqueOrThrow({
+            where: { id: swap.ignoredEgress.stateChainErrorId },
+          }),
+        ]);
+        error = {
+          name: stateChainError.name,
+          message: stateChainError.docs,
+        };
+      }
     } else if (swap?.egress?.broadcast?.succeededAt) {
       assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
       state = State.Complete;
@@ -211,6 +238,9 @@ router.get(
       egressAmount: swap?.egress?.amount?.toFixed(),
       egressScheduledAt: swap?.egress?.scheduledAt?.valueOf(),
       egressScheduledBlockIndex: swap?.egress?.scheduledBlockIndex,
+      ignoredEgressAmount: swap?.ignoredEgress?.amount?.toFixed(),
+      egressIgnoredAt: swap?.ignoredEgress?.ignoredAt?.valueOf(),
+      egressIgnoredBlockIndex: swap?.ignoredEgress?.ignoredBlockIndex,
       feesPaid:
         swap?.fees.map((fee) => ({
           type: fee.type,
@@ -235,10 +265,7 @@ router.get(
       ccmMetadata,
       depositChannelOpenedThroughBackend:
         swapDepositChannel?.openedThroughBackend ?? false,
-      failed: failedSwap && {
-        type: failedSwap.type,
-        reason: failedSwap.reason,
-      },
+      error,
     };
 
     logger.info('sending response for swap request', { id, response });

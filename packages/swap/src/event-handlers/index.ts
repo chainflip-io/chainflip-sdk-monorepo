@@ -14,6 +14,7 @@ import newPoolCreated from './newPoolCreated';
 import poolFeeSet from './poolFeeSet';
 import swapAmountTooLow from './swapAmountTooLow';
 import swapDepositAddressReady from './swapDepositAddressReady';
+import swapEgressIgnored from './swapEgressIgnored';
 import swapEgressScheduled from './swapEgressScheduled';
 import swapExecuted from './swapExecuted';
 import swapScheduled from './swapScheduled';
@@ -32,6 +33,7 @@ export const events = {
   Swapping: {
     SwapScheduled: 'Swapping.SwapScheduled',
     SwapExecuted: 'Swapping.SwapExecuted',
+    SwapEgressIgnored: 'Swapping.SwapEgressIgnored',
     SwapEgressScheduled: 'Swapping.SwapEgressScheduled',
     SwapAmountTooLow: 'Swapping.SwapAmountTooLow',
     SwapDepositAddressReady: 'Swapping.SwapDepositAddressReady',
@@ -157,6 +159,15 @@ const handlers = [
           handler: depositIgnored(chain),
         },
       ]),
+    ],
+  },
+  {
+    spec: 120,
+    handlers: [
+      {
+        name: events.Swapping.SwapEgressIgnored,
+        handler: swapEgressIgnored,
+      },
     ],
   },
 ];

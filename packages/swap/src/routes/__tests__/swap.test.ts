@@ -51,7 +51,7 @@ describe('server', () => {
   jest.setTimeout(1000);
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Egress", "Broadcast", "FailedSwap" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Egress", "Broadcast", "FailedSwap", "StateChainError", "IgnoredEgress" CASCADE`;
     await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;
     server = app.listen(0);
   });
@@ -870,7 +870,7 @@ describe('server', () => {
       `);
     });
 
-    it(`retrieves a swap in ${State.Failed} status`, async () => {
+    it(`retrieves a swap in ${State.Failed} status (deposit ignored)`, async () => {
       const channel = await createDepositChannel({
         srcChainExpiryBlock: 200,
       });
@@ -893,10 +893,82 @@ describe('server', () => {
       expect(status).toBe(200);
 
       expect(body).toMatchObject({
-        failed: {
-          reason: 'BelowMinimumDeposit',
-          type: 'IGNORED',
+        error: {
+          message: 'The deposited amount was below the minimum required',
+          name: 'BelowMinimumDeposit',
         },
+        state: 'FAILED',
+      });
+    });
+
+    it(`retrieves a swap in ${State.Failed} status (egress ignored)`, async () => {
+      const channel = await createDepositChannel({
+        srcChainExpiryBlock: 200,
+        swaps: {
+          create: {
+            nativeId,
+            depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
+            depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+            depositAmount: '10',
+            swapInputAmount: '10',
+            fees: {
+              create: [
+                {
+                  type: 'NETWORK',
+                  asset: 'USDC',
+                  amount: '10',
+                },
+                {
+                  type: 'LIQUIDITY',
+                  asset: 'ETH',
+                  amount: '5',
+                },
+              ],
+            },
+            swapExecutedAt: new Date(RECEIVED_TIMESTAMP + 6000),
+            swapExecutedBlockIndex: '200-3',
+            srcAsset: Assets.ETH,
+            destAsset: Assets.DOT,
+            destAddress: DOT_ADDRESS,
+            type: 'SWAP',
+          },
+        },
+      });
+      const ignoredEgress = await prisma.ignoredEgress.create({
+        data: {
+          amount: '10000000000',
+          ignoredAt: new Date('2024-02-06T13:00:00.000Z'),
+          ignoredBlockIndex: '202-3',
+          swapId: (await prisma.swap.findUniqueOrThrow({ where: { nativeId } }))
+            .id,
+          stateChainErrorId: (
+            await prisma.stateChainError.create({
+              data: {
+                specVersion: 120,
+                palletIndex: 34,
+                errorIndex: 6,
+                name: 'bitcoinIngressEgress.BelowEgressDustLimit',
+                docs: 'The amount is below the minimum egress amount.',
+              },
+            })
+          ).id,
+        },
+      });
+
+      const channelId = `${channel.issuedBlock}-${channel.srcChain}-${channel.channelId}`;
+
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+
+      expect(body).toMatchObject({
+        error: {
+          message: 'The amount is below the minimum egress amount.',
+          name: 'bitcoinIngressEgress.BelowEgressDustLimit',
+        },
+        egressIgnoredAt: ignoredEgress.ignoredAt.valueOf(),
+        ignoredEgressAmount: ignoredEgress.amount.toFixed(),
+        egressIgnoredBlockIndex: ignoredEgress.ignoredBlockIndex,
         state: 'FAILED',
       });
     });
@@ -974,7 +1046,10 @@ describe('server', () => {
       expect(rest).toMatchObject({
         state: 'FAILED',
         swapExecutedAt: 1669907141201,
-        failed: { type: 'IGNORED', reason: 'BelowMinimumDeposit' },
+        error: {
+          message: 'The deposited amount was below the minimum required',
+          name: 'BelowMinimumDeposit',
+        },
       });
     });
 
