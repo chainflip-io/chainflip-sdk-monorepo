@@ -37,6 +37,7 @@ export const createDepositChannel = (
 
 const buildSwapScheduledEvent = <T extends SwapScheduledEvent>(args: T) => ({
   block: {
+    specId: 'test@1',
     timestamp: 1670337093000,
     height: 100,
     hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
@@ -179,6 +180,7 @@ export const swapScheduledVaultMock = buildSwapScheduledEvent({
 
 export const networkDepositReceivedBtcMock = {
   block: {
+    specId: 'test@1',
     height: 120,
     timestamp: 1670337105000,
   },
@@ -204,6 +206,7 @@ export const networkDepositReceivedBtcMock = {
 
 export const buildSwapExecutedMock = (args: SwapExecutedEvent) => ({
   block: {
+    specId: 'test@1',
     height: 100,
     timestamp: 1670337099000,
   },
@@ -250,6 +253,7 @@ export const buildSwapExecutedMock = (args: SwapExecutedEvent) => ({
 
 export const swapDepositAddressReadyMocked = {
   block: {
+    specId: 'test@1',
     height: 120,
     timestamp: 1670337105000,
     hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
@@ -284,6 +288,7 @@ export const swapDepositAddressReadyMocked = {
 
 export const swapDepositAddressReadyCcmMetadataMocked = {
   block: {
+    specId: 'test@1',
     height: 120,
     timestamp: 1670337105000,
     hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
@@ -320,6 +325,7 @@ export const swapDepositAddressReadyCcmMetadataMocked = {
 
 export const swapEgressScheduledMock = {
   block: {
+    specId: 'test@1',
     height: 120,
     timestamp: 1670337105000,
   },
@@ -367,9 +373,9 @@ export const swapEgressScheduledMock = {
 
 export const swapEgressIgnoredMock = {
   block: {
+    specId: 'test@1',
     height: 120,
     timestamp: 1670337105000,
-    specId: 'test@120',
   },
   eventContext: {
     kind: 'event',
@@ -401,6 +407,7 @@ export const swapEgressIgnoredMock = {
 
 export const networkEgressScheduledMock = {
   block: {
+    specId: 'test@1',
     height: 120,
     timestamp: 1670337105000,
   },
@@ -428,6 +435,7 @@ export const networkEgressScheduledMock = {
 
 export const networkBatchBroadcastRequestedMock = {
   block: {
+    specId: 'test@1',
     height: 120,
     timestamp: 1670337105000,
   },
@@ -465,6 +473,7 @@ export const networkBatchBroadcastRequestedMock = {
 
 export const networkBroadcastSuccessMock = {
   block: {
+    specId: 'test@1',
     height: 120,
     timestamp: 1670337105000,
   },
@@ -486,6 +495,7 @@ export const networkBroadcastSuccessMock = {
 
 export const networkBroadcastAbortedMock = {
   block: {
+    specId: 'test@1',
     height: 120,
     timestamp: 1670337105000,
   },
@@ -501,6 +511,7 @@ export const networkBroadcastAbortedMock = {
 
 export const newPoolCreatedMock = {
   block: {
+    specId: 'test@1',
     height: 120,
     timestamp: 1670337105000,
   },
@@ -521,6 +532,7 @@ export const newPoolCreatedMock = {
 
 export const poolFeeSetMock = {
   block: {
+    specId: 'test@1',
     height: 150,
     timestamp: 1680337105000,
   },
@@ -541,6 +553,7 @@ export const poolFeeSetMock = {
 
 export const thresholdSignatureInvalidMock = {
   block: {
+    specId: 'test@1',
     height: 420,
     timestamp: 1680337105000,
   },
@@ -561,6 +574,7 @@ const buildSwapAmountTooLowEvent = <T extends SwapAmountTooLowEvent>(
   args: T,
 ) => ({
   block: {
+    specId: 'test@1',
     timestamp: 1670337093000,
     height: 100,
   },
@@ -671,6 +685,7 @@ export const buildDepositIgnoredEvent = <T extends DepositIgnoredArgs>(
   eventName: string,
 ) => ({
   block: {
+    specId: 'test@1',
     timestamp: 1670337093000,
     height: 100,
   },

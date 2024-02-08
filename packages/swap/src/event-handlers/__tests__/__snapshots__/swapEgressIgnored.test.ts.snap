@@ -43,6 +43,6 @@ exports[`swapEgressIgnored adds an IgnoredEgress record for a egress ignored eve
   "id": Any<Number>,
   "name": "bitcoinIngressEgress.BelowEgressDustLimit",
   "palletIndex": 34,
-  "specVersion": 120,
+  "specVersion": 1,
 }
 `;
