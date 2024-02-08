@@ -54,6 +54,7 @@ describe(depositIgnored, () => {
     const channel = await createDepositChannel({
       id: 100n,
       srcChain: 'Ethereum',
+      srcAsset: 'ETH',
       depositAddress: ETH_ADDRESS,
       channelId: 99n,
       destAsset: 'DOT',
@@ -102,6 +103,7 @@ describe(depositIgnored, () => {
     const channel = await createDepositChannel({
       id: 100n,
       srcChain: 'Polkadot',
+      srcAsset: 'DOT',
       depositAddress: DOT_ADDRESS,
       channelId: 99n,
       destAsset: 'ETH',
@@ -150,6 +152,7 @@ describe(depositIgnored, () => {
     const channel = await createDepositChannel({
       id: 100n,
       srcChain: 'Bitcoin',
+      srcAsset: 'BTC',
       depositAddress: BTC_ADDRESS,
       channelId: 99n,
       destAsset: 'ETH',

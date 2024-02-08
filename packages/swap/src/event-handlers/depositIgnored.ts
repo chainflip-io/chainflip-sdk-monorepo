@@ -63,6 +63,7 @@ export const depositIgnored =
       data: {
         reason: 'BelowMinimumDeposit',
         swapDepositChannelId: channel.id,
+        srcAsset: channel.srcAsset,
         srcChain: chain,
         destAddress: channel.destAddress,
         destChain: assetChains[channel.destAsset],
