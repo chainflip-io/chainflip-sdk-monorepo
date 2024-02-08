@@ -50,11 +50,15 @@ describe(swapAmountTooLow, () => {
         data: {
           destAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
           destChain: 'Bitcoin',
+          failedAt: new Date(
+            swapAmountTooLowBtcDepositChannelMock.block.timestamp,
+          ),
+          failedBlockIndex: '100-0',
+          reason: 'BelowMinimumDeposit',
           depositAmount: '12500000000',
           srcChain: 'Polkadot',
           swapDepositChannelId: 'internal-deposit-channel-id',
           txHash: undefined,
-          type: 'FAILED',
         },
       });
     });
@@ -96,7 +100,11 @@ describe(swapAmountTooLow, () => {
           srcChain: 'Bitcoin',
           swapDepositChannelId: 'internal-deposit-channel-id',
           txHash: undefined,
-          type: 'FAILED',
+          failedAt: new Date(
+            swapAmountTooLowBtcDepositChannelMock.block.timestamp,
+          ),
+          failedBlockIndex: '100-0',
+          reason: 'BelowMinimumDeposit',
         },
       });
     });
@@ -145,11 +153,13 @@ describe(swapAmountTooLow, () => {
           destAddress: DOT_ADDRESS,
           destChain: 'Polkadot',
           depositAmount: '12500000000',
+          failedAt: new Date(swapAmountTooLowVaultMock.block.timestamp),
+          failedBlockIndex: '100-0',
+          reason: 'BelowMinimumDeposit',
           srcChain: 'Ethereum',
           swapDepositChannelId: undefined,
           txHash:
             '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
-          type: 'FAILED',
         },
       });
     });

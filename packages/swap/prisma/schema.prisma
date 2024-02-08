@@ -146,7 +146,7 @@ enum FailedSwapReason {
 
 model FailedSwap {
   id                   Int                 @id @default(autoincrement())
-  reason               FailedSwapReason?
+  reason               FailedSwapReason
   destAddress          String
   destChain            Chain
   depositAmount        Decimal             @db.Decimal(30, 0)

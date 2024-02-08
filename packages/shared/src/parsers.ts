@@ -78,6 +78,10 @@ export const unsignedInteger = z.union([
   z.number().transform((n) => BigInt(n)),
 ]);
 
+export const rustEnum = <U extends string, T extends readonly [U, ...U[]]>(
+  values: T,
+) => z.object({ __kind: z.enum(values) }).transform(({ __kind }) => __kind!);
+
 export const chainflipAssetEnum = z
   .object({ __kind: z.enum(['Usdc', 'Flip', 'Dot', 'Eth', 'Btc']) })
   .transform(({ __kind }) => __kind.toUpperCase() as Asset);

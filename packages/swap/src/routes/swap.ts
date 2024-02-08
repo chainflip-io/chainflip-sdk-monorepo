@@ -141,9 +141,9 @@ router.get(
         name: 'Unknown',
         message: 'An unknown error occurred',
       };
-
       state = State.Failed;
-      if (failedSwap?.reason) {
+
+      if (failedSwap) {
         failureMode = 'INGRESS_IGNORED';
         error = {
           name: failedSwap.reason,

@@ -3,7 +3,7 @@ ALTER TABLE "public"."FailedSwap" ADD COLUMN     "failedAt" TIMESTAMP(3),
 ADD COLUMN     "failedBlockIndex" TEXT;
 
 -- backfill with default values
-UPDATE TABLE "public"."FailedSwap"
+UPDATE "public"."FailedSwap"
 SET "failedAt" = 'epoch', "failedBlockIndex" = '0-0';
 
 -- Make columns not null
