@@ -54,7 +54,6 @@
     "pnpm": ">=7"
   },
   "dependencies": {
-    "@polkadot/types": "^10.11.2",
     "@trpc/client": "^10.45.0",
     "@trpc/server": "^10.45.0",
     "bech32-buffer": "^0.2.1",

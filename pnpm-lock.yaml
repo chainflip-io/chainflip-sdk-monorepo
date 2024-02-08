@@ -13,9 +13,6 @@ importers:
 
   .:
     dependencies:
-      '@polkadot/types':
-        specifier: ^10.11.2
-        version: 10.11.2
       '@trpc/client':
         specifier: ^10.45.0
         version: 10.45.0(@trpc/server@10.45.0)
@@ -218,6 +215,9 @@ importers:
 
   packages/swap:
     dependencies:
+      '@polkadot/types':
+        specifier: ^10.11.2
+        version: 10.11.2
       '@polkadot/util':
         specifier: ^12.6.2
         version: 12.6.2
