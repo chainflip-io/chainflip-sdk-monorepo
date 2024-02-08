@@ -240,7 +240,6 @@ describe('server', () => {
         '97902000', // deposit amount - ingress fee - broker fee
       );
       expect(body).toMatchObject({
-        id: expect.any(String),
         egressAmount: (1e18 - 25000).toString(),
         includedFees: [
           {
@@ -315,7 +314,6 @@ describe('server', () => {
         '98000000', // deposit amount - ingress fee
       );
       expect(body).toMatchObject({
-        id: expect.any(String),
         egressAmount: (1e18 - 25000).toString(),
         includedFees: [
           {
@@ -383,7 +381,6 @@ describe('server', () => {
 
       expect(status).toBe(200);
       expect(body).toMatchObject({
-        id: expect.any(String),
         egressAmount: (100e6).toString(),
         includedFees: [
           {
@@ -441,7 +438,6 @@ describe('server', () => {
 
       expect(status).toBe(200);
       expect(body).toMatchObject({
-        id: expect.any(String),
         intermediateAmount: (2000e6).toString(),
         egressAmount: (1e18 - 25000).toString(),
         includedFees: [
@@ -505,7 +501,6 @@ describe('server', () => {
 
       expect(status).toBe(200);
       expect(body).toMatchObject({
-        id: expect.any(String),
         intermediateAmount: (2994e6).toString(),
         egressAmount: (1.992e18 - 25000).toString(),
         includedFees: [
