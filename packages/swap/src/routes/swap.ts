@@ -19,6 +19,7 @@ import {
   getPendingBroadcast,
   getPendingDeposit,
 } from '../ingress-egress-tracking';
+import { readField } from '../utils/function';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
 
@@ -55,7 +56,6 @@ const swapInclude = {
 const failedSwapMessage: Record<FailedSwapReason, string> = {
   BelowMinimumDeposit: 'The deposited amount was below the minimum required',
   NotEnoughToPayFees: 'The deposited amount was not enough to pay the fees',
-  EgressAmountZero: 'The amount left after fees was zero',
 };
 
 const coerceChain = (chain: string) => {
@@ -74,13 +74,6 @@ const channelIdRegex =
   /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
 const swapIdRegex = /^\d+$/i;
 const txHashRegex = /^0x[a-f\d]+$/i;
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-const readField = <A extends {}, B extends {}, K extends keyof A & keyof B>(
-  a: A | null | undefined,
-  b: B | null | undefined,
-  key: K,
-) => a?.[key] ?? b?.[key];
 
 router.get(
   '/:id',
@@ -140,16 +133,24 @@ router.get(
     );
 
     let state: State;
+    let failureMode;
     let error: { name: string; message: string } | undefined;
 
     if (failedSwap || swap?.ignoredEgress) {
+      error = {
+        name: 'Unknown',
+        message: 'An unknown error occurred',
+      };
+
       state = State.Failed;
       if (failedSwap?.reason) {
+        failureMode = 'INGRESS_IGNORED';
         error = {
           name: failedSwap.reason,
           message: failedSwapMessage[failedSwap.reason],
         };
       } else if (swap?.ignoredEgress) {
+        failureMode = 'EGRESS_IGNORED';
         const [stateChainError] = await Promise.all([
           prisma.stateChainError.findUniqueOrThrow({
             where: { id: swap.ignoredEgress.stateChainErrorId },
@@ -219,7 +220,12 @@ router.get(
       destChain: destAsset && assetChains[destAsset],
       srcAsset,
       destAsset,
-      destAddress: readField(swap, swapDepositChannel, 'destAddress'),
+      destAddress: readField(
+        swap,
+        swapDepositChannel,
+        failedSwap,
+        'destAddress',
+      ),
       depositChannelCreatedAt: swapDepositChannel?.createdAt.valueOf(),
       depositChannelBrokerCommissionBps:
         swapDepositChannel?.brokerCommissionBps,
@@ -227,8 +233,10 @@ router.get(
       expectedDepositAmount:
         swapDepositChannel?.expectedDepositAmount?.toFixed(),
       swapId: swap?.nativeId.toString(),
-      depositAmount: swap?.depositAmount?.toFixed() ?? pendingDeposit?.amount,
-      depositTransactionHash: pendingDeposit?.transactionHash,
+      depositAmount:
+        readField(swap, failedSwap, 'depositAmount') ?? pendingDeposit?.amount,
+      depositTransactionHash:
+        pendingDeposit?.transactionHash ?? failedSwap?.txHash ?? undefined,
       depositTransactionConfirmations: pendingDeposit?.transactionConfirmations,
       depositReceivedAt: swap?.depositReceivedAt.valueOf(),
       depositReceivedBlockIndex: swap?.depositReceivedBlockIndex,
@@ -260,12 +268,15 @@ router.get(
         swapDepositChannel?.srcChainExpiryBlock?.toString(),
       estimatedDepositChannelExpiryTime:
         swapDepositChannel?.estimatedExpiryAt?.valueOf(),
-      isDepositChannelExpired: swapDepositChannel?.isExpired ?? false,
+      isDepositChannelExpired: swapDepositChannel?.isExpired,
       ccmDepositReceivedBlockIndex: swap?.ccmDepositReceivedBlockIndex,
       ccmMetadata,
       depositChannelOpenedThroughBackend:
-        swapDepositChannel?.openedThroughBackend ?? false,
+        swapDepositChannel?.openedThroughBackend,
       error,
+      failure: failureMode,
+      failedAt: failedSwap?.failedAt,
+      failedBlockIndex: failedSwap?.failedBlockIndex,
     };
 
     logger.info('sending response for swap request', { id, response });

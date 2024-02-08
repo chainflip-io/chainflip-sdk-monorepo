@@ -48,7 +48,7 @@ export type DepositIgnoredArgs = z.input<typeof depositIgnoredArgs>;
 
 export const depositIgnored =
   (chain: Chain) =>
-  async ({ prisma, event }: EventHandlerArgs) => {
+  async ({ prisma, event, block }: EventHandlerArgs) => {
     const { amount, depositAddress } = depositIgnoredArgs.parse(event.args);
 
     const channel = await prisma.swapDepositChannel.findFirstOrThrow({
@@ -61,13 +61,14 @@ export const depositIgnored =
 
     await prisma.failedSwap.create({
       data: {
-        type: 'IGNORED',
         reason: 'BelowMinimumDeposit',
         swapDepositChannelId: channel.id,
         srcChain: chain,
         destAddress: channel.destAddress,
         destChain: assetChains[channel.destAsset],
         depositAmount: amount.toString(),
+        failedAt: new Date(block.timestamp),
+        failedBlockIndex: `${block.height}-${event.indexInBlock}`,
       },
     });
   };
