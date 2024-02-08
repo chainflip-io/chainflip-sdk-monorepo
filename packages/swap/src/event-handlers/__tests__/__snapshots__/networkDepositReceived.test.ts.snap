@@ -28,6 +28,114 @@ exports[`depositReceived should not change swap if there is a newer deposit chan
 }
 `;
 
+exports[`depositReceived should update the values for an existing ccm gas swap 1`] = `
+{
+  "ccmDepositReceivedBlockIndex": null,
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "createdAt": Any<Date>,
+  "depositAmount": "110000",
+  "depositReceivedAt": 2022-12-06T14:31:39.000Z,
+  "depositReceivedBlockIndex": "0-15",
+  "destAddress": "0x6fd76a7699e6269af49e9c63f01f61464ab21d1c",
+  "destAsset": "ETH",
+  "egressId": null,
+  "fees": [
+    {
+      "amount": "1000",
+      "asset": "BTC",
+      "id": Any<BigInt>,
+      "swapId": Any<BigInt>,
+      "type": "INGRESS",
+    },
+  ],
+  "id": Any<BigInt>,
+  "intermediateAmount": null,
+  "nativeId": 1n,
+  "srcAsset": "BTC",
+  "swapDepositChannelId": Any<BigInt>,
+  "swapExecutedAt": null,
+  "swapExecutedBlockIndex": null,
+  "swapInputAmount": "100000",
+  "swapOutputAmount": null,
+  "txHash": null,
+  "type": "PRINCIPAL",
+  "updatedAt": Any<Date>,
+}
+`;
+
+exports[`depositReceived should update the values for an existing ccm principal swap 1`] = `
+{
+  "ccmDepositReceivedBlockIndex": null,
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "createdAt": Any<Date>,
+  "depositAmount": "110000",
+  "depositReceivedAt": 2022-12-06T14:31:39.000Z,
+  "depositReceivedBlockIndex": "0-15",
+  "destAddress": "0x6fd76a7699e6269af49e9c63f01f61464ab21d1c",
+  "destAsset": "ETH",
+  "egressId": null,
+  "fees": [
+    {
+      "amount": "1000",
+      "asset": "BTC",
+      "id": Any<BigInt>,
+      "swapId": Any<BigInt>,
+      "type": "INGRESS",
+    },
+  ],
+  "id": Any<BigInt>,
+  "intermediateAmount": null,
+  "nativeId": 1n,
+  "srcAsset": "BTC",
+  "swapDepositChannelId": Any<BigInt>,
+  "swapExecutedAt": null,
+  "swapExecutedBlockIndex": null,
+  "swapInputAmount": "100000",
+  "swapOutputAmount": null,
+  "txHash": null,
+  "type": "PRINCIPAL",
+  "updatedAt": Any<Date>,
+}
+`;
+
+exports[`depositReceived should update the values for an existing ccm swap 1`] = `
+{
+  "ccmDepositReceivedBlockIndex": null,
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "createdAt": Any<Date>,
+  "depositAmount": "110000",
+  "depositReceivedAt": 2022-12-06T14:31:39.000Z,
+  "depositReceivedBlockIndex": "0-15",
+  "destAddress": "0x6fd76a7699e6269af49e9c63f01f61464ab21d1c",
+  "destAsset": "ETH",
+  "egressId": null,
+  "fees": [
+    {
+      "amount": "1000",
+      "asset": "BTC",
+      "id": Any<BigInt>,
+      "swapId": Any<BigInt>,
+      "type": "INGRESS",
+    },
+  ],
+  "id": Any<BigInt>,
+  "intermediateAmount": null,
+  "nativeId": 1n,
+  "srcAsset": "BTC",
+  "swapDepositChannelId": Any<BigInt>,
+  "swapExecutedAt": null,
+  "swapExecutedBlockIndex": null,
+  "swapInputAmount": "100000",
+  "swapOutputAmount": null,
+  "txHash": null,
+  "type": "PRINCIPAL",
+  "updatedAt": Any<Date>,
+}
+`;
+
 exports[`depositReceived should update the values for an existing swap 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
@@ -42,7 +150,7 @@ exports[`depositReceived should update the values for an existing swap 1`] = `
   "egressId": null,
   "fees": [
     {
-      "amount": "10000",
+      "amount": "1000",
       "asset": "BTC",
       "id": Any<BigInt>,
       "swapId": Any<BigInt>,

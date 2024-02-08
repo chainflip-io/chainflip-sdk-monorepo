@@ -1,98 +1,55 @@
-import { type Chain } from '.prisma/client';
-import { encodeAddress } from '@polkadot/util-crypto';
 import { z } from 'zod';
-import { encodeAddress as encodeBitcoinAddress } from '@/shared/bitcoin';
-import {
-  u128,
-  chainflipAssetEnum,
-  hexString,
-  DOT_PREFIX,
-} from '@/shared/parsers';
-import env from '../config/env';
-import { Asset } from '../enums';
+import { u128, chainflipAssetEnum, hexString, u64 } from '@/shared/parsers';
 import logger from '../utils/logger';
 import { EventHandlerArgs } from './index';
 
-export const depositReceivedArgs = z
-  .object({
-    amount: u128,
-    asset: chainflipAssetEnum,
-    depositAddress: z.union([
-      z
-        .object({ __kind: z.literal('Taproot'), value: hexString })
-        .transform((o) => {
-          try {
-            return encodeBitcoinAddress(o.value, env.CHAINFLIP_NETWORK);
-          } catch {
-            return null;
-          }
-        }),
-      hexString,
-    ]),
-  })
-  .refine(
-    (args): args is { amount: bigint; asset: Asset; depositAddress: string } =>
-      args.depositAddress !== null,
-    { message: 'failed to parse bitcoin deposit address' },
-  )
-  .transform((args) => {
-    if (args.asset === 'DOT') {
-      return {
-        ...args,
-        depositAddress: encodeAddress(args.depositAddress, DOT_PREFIX),
-      };
-    }
+export const actionSchema = z.union([
+  z.object({ __kind: z.literal('Swap'), swapId: u64 }),
+  z.object({ __kind: z.literal('LiquidityProvision'), lpAccount: hexString }),
+  z.object({
+    __kind: z.literal('CcmTransfer'),
+    principalSwapId: u64.nullable().optional(),
+    gasSwapId: u64.nullable().optional(),
+  }),
+  z.object({
+    __kind: z.literal('NoAction'),
+  }),
+]);
 
-    return args;
-  });
+export const depositReceivedArgs = z.object({
+  amount: u128,
+  asset: chainflipAssetEnum,
+  ingressFee: u128,
+  action: actionSchema,
+});
 
 export type DepositReceivedArgs = z.input<typeof depositReceivedArgs>;
 
-export const networkDepositReceived =
-  (chain: Chain) =>
-  async ({ prisma, event, block }: EventHandlerArgs) => {
-    const { asset, amount, depositAddress } = depositReceivedArgs.parse(
-      event.args,
-    );
+export const networkDepositReceived = async ({
+  prisma,
+  event,
+}: EventHandlerArgs) => {
+  const { asset, amount, action, ingressFee } = depositReceivedArgs.parse(
+    event.args,
+  );
 
-    const channel = await prisma.depositChannel.findFirst({
-      where: { depositAddress, srcChain: chain },
-      orderBy: { issuedBlock: 'desc' },
-    });
-
-    if (!channel || !channel.isSwapping) {
-      logger.info('no swap deposit channel found for deposit', {
-        block: block.height,
-        eventIndexInBlock: event.indexInBlock,
-        eventName: event.name,
-        depositAddress,
-      });
-
-      return;
+  if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {
+    let swapId;
+    if ('principalSwapId' in action && action.principalSwapId !== null) {
+      swapId = action.principalSwapId;
+    } else if ('gasSwapId' in action && action.gasSwapId !== null) {
+      swapId = action.gasSwapId as bigint;
+    } else if ('swapId' in action && action.swapId !== null) {
+      swapId = action.swapId;
     }
 
-    const swap = (
-      await prisma.swapDepositChannel
-        .findFirst({ where: { depositAddress }, orderBy: { id: 'desc' } })
-        .swaps({ orderBy: { nativeId: 'desc' } })
-    )?.at(0);
-
-    if (!swap) {
-      // this happens if the deposit amount is higher than minimum_deposit_amount but smaller than minimum_swap_amount
-      logger.warn('no swap found for deposit to swap deposit channel', {
-        block: block.height,
-        eventIndexInBlock: event.indexInBlock,
-        eventName: event.name,
-        depositAddress,
-      });
-
+    if (!swapId) {
+      logger.warn('No swapId found in networkDepositReceived');
       return;
     }
-
-    const ingressFee = amount - BigInt(swap.swapInputAmount.toFixed());
 
     await prisma.swap.update({
-      where: { id: swap.id },
+      where: { nativeId: swapId },
       data: {
         depositAmount: amount.toString(),
         fees: {
@@ -100,4 +57,8 @@ export const networkDepositReceived =
         },
       },
     });
-  };
+  } else if (action.__kind === 'NoAction') {
+    // this means the ccm transfer failed https://github.com/chainflip-io/chainflip-backend/pull/4442
+    // currently not handled - we can do this at a later point
+  }
+};

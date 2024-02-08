@@ -1,7 +1,9 @@
+import { z } from 'zod';
 import { Assets, Chain, Chains } from '@/shared/enums';
 import prisma, { SwapDepositChannel } from '../../client';
 import { DepositIgnoredArgs } from '../depositIgnored';
 import { events } from '../index';
+import { actionSchema } from '../networkDepositReceived';
 import { SwapAmountTooLowEvent } from '../swapAmountTooLow';
 import { SwapExecutedEvent } from '../swapExecuted';
 import { SwapScheduledEvent } from '../swapScheduled';
@@ -177,30 +179,35 @@ export const swapScheduledVaultMock = buildSwapScheduledEvent({
   },
 });
 
-export const networkDepositReceivedBtcMock = {
-  block: {
-    height: 120,
-    timestamp: 1670337105000,
-  },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        asset: {
-          __kind: 'Btc',
-        },
-        amount: '110000',
-        depositAddress: {
-          value:
-            '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
-          __kind: 'Taproot',
-        },
-      },
-      name: 'BitcoinIngressEgress.DepositReceived',
-      indexInBlock: 7,
+export const networkDepositReceivedBtcMock = (
+  action?: z.input<typeof actionSchema>,
+) =>
+  ({
+    block: {
+      height: 120,
+      timestamp: 1670337105000,
     },
-  },
-} as const;
+    eventContext: {
+      kind: 'event',
+      event: {
+        args: {
+          asset: {
+            __kind: 'Btc',
+          },
+          amount: '110000',
+          depositAddress: {
+            value:
+              '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
+            __kind: 'Taproot',
+          },
+          ingressFee: '1000',
+          action: action || { __kind: 'Swap', swapId: '1' },
+        },
+        name: 'BitcoinIngressEgress.DepositReceived',
+        indexInBlock: 7,
+      },
+    },
+  }) as const;
 
 export const buildSwapExecutedMock = (args: SwapExecutedEvent) => ({
   block: {
