@@ -54,20 +54,20 @@ export interface SwapStatusRequest {
   id: string;
 }
 
-export interface CommonStatusFields {
+interface DepositAddressFields {
   srcAsset: Asset;
   srcChain: Chain;
-  destAsset: Asset | undefined;
-  destChain: Chain | undefined;
+  destAsset: Asset;
+  destChain: Chain;
   destAddress: string;
-  depositAddress: string | undefined;
-  depositChannelCreatedAt: number | undefined;
-  depositChannelBrokerCommissionBps: number | undefined;
+  depositAddress: string;
+  depositChannelCreatedAt: number;
+  depositChannelBrokerCommissionBps: number;
   expectedDepositAmount: string | undefined;
-  depositChannelExpiryBlock: string | undefined;
-  estimatedDepositChannelExpiryTime: number | undefined;
-  isDepositChannelExpired: boolean | undefined;
-  depositChannelOpenedThroughBackend: boolean | undefined;
+  depositChannelExpiryBlock: string;
+  estimatedDepositChannelExpiryTime: number;
+  isDepositChannelExpired: boolean;
+  depositChannelOpenedThroughBackend: boolean;
   ccmDepositReceivedBlockIndex: string | undefined;
   ccmMetadata:
     | {
@@ -78,7 +78,27 @@ export interface CommonStatusFields {
   feesPaid: SwapFee[];
 }
 
-export type SwapStatusResponse = CommonStatusFields &
+type CopyFields<T, U> = { [K in Exclude<keyof T, keyof U>]: undefined } & U;
+
+type FailedVaultDeposit = CopyFields<
+  DepositAddressFields,
+  {
+    depositAmount: string;
+    depositTransactionHash: string;
+    destAddress: string;
+    error: { message: string; name: string };
+    failedAt: number;
+    failedBlockIndex: string;
+    failure: string;
+    feesPaid: [];
+    srcAsset: Asset;
+    srcChain: Chain;
+    state: 'FAILED';
+    depositAddress: undefined;
+  }
+>;
+
+type DepositAddressStatusResponse = DepositAddressFields &
   (
     | {
         state: 'AWAITING_DEPOSIT';
@@ -191,3 +211,7 @@ export type SwapStatusResponse = CommonStatusFields &
         egressIgnoredBlockIndex: string;
       }
   );
+
+export type SwapStatusResponse =
+  | DepositAddressStatusResponse
+  | FailedVaultDeposit;
