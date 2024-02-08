@@ -54,16 +54,20 @@ export interface SwapStatusRequest {
   id: string;
 }
 
-export interface CommonStatusFields extends ChainsAndAssets {
+export interface CommonStatusFields {
+  srcAsset: Asset;
+  srcChain: Chain;
+  destAsset: Asset | undefined;
+  destChain: Chain | undefined;
   destAddress: string;
   depositAddress: string | undefined;
   depositChannelCreatedAt: number | undefined;
   depositChannelBrokerCommissionBps: number | undefined;
   expectedDepositAmount: string | undefined;
-  depositChannelExpiryBlock: bigint;
+  depositChannelExpiryBlock: string | undefined;
   estimatedDepositChannelExpiryTime: number | undefined;
-  isDepositChannelExpired: boolean;
-  depositChannelOpenedThroughBackend: boolean;
+  isDepositChannelExpired: boolean | undefined;
+  depositChannelOpenedThroughBackend: boolean | undefined;
   ccmDepositReceivedBlockIndex: string | undefined;
   ccmMetadata:
     | {
@@ -127,6 +131,7 @@ export type SwapStatusResponse = CommonStatusFields &
         broadcastRequestedAt: number;
         broadcastRequestedBlockIndex: string;
       }
+    // TODO: move broadcast aborted to FAILED state
     | {
         state: 'BROADCAST_ABORTED';
         swapId: string;
@@ -160,5 +165,29 @@ export type SwapStatusResponse = CommonStatusFields &
         broadcastRequestedBlockIndex: string;
         broadcastSucceededAt: number;
         broadcastSucceededBlockIndex: string;
+      }
+    | {
+        state: 'FAILED';
+        failure: 'INGRESS_IGNORED';
+        error: { name: string; message: string };
+        depositAmount: string;
+        depositTransactionHash: string | undefined;
+        failedAt: number;
+        failedBlockIndex: string;
+      }
+    | {
+        state: 'FAILED';
+        failure: 'EGRESS_IGNORED';
+        error: { name: string; message: string };
+        swapId: string;
+        depositAmount: string;
+        depositReceivedAt: number;
+        depositReceivedBlockIndex: string;
+        intermediateAmount: string | undefined;
+        swapExecutedAt: number;
+        swapExecutedBlockIndex: string;
+        ignoredEgressAmount: string;
+        egressIgnoredAt: number;
+        egressIgnoredBlockIndex: string;
       }
   );

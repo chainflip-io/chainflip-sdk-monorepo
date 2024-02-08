@@ -2,6 +2,7 @@ import type { Prisma } from '.prisma/client';
 import { Chains } from '@/shared/enums';
 import ccmDepositReceived from './ccmDepositReceived';
 import depositIgnored from './depositIgnored';
+import depositIgnoredV120 from './depositIgnoredV120';
 import liquidityDepositAddressReady from './liquidityDepositChannelReady';
 import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';
 import networkBroadcastAborted from './networkBroadcastAborted';
@@ -168,6 +169,12 @@ const handlers = [
         name: events.Swapping.SwapEgressIgnored,
         handler: swapEgressIgnored,
       },
+      ...Object.values(Chains).flatMap((chain) => [
+        {
+          name: events[`${chain}IngressEgress`].DepositIgnored,
+          handler: depositIgnoredV120(chain),
+        },
+      ]),
     ],
   },
 ];

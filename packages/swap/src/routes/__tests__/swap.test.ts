@@ -876,13 +876,15 @@ describe('server', () => {
       });
       await prisma.failedSwap.create({
         data: {
-          type: 'IGNORED',
           reason: 'BelowMinimumDeposit',
           swapDepositChannelId: channel.id,
+          srcAsset: 'ETH',
           srcChain: 'Ethereum',
           destAddress: channel.destAddress,
           destChain: 'Polkadot',
           depositAmount: '10000000000',
+          failedAt: new Date(RECEIVED_TIMESTAMP),
+          failedBlockIndex: RECEIVED_BLOCK_INDEX,
         },
       });
 
@@ -899,6 +901,28 @@ describe('server', () => {
         },
         state: 'FAILED',
       });
+    });
+
+    it(`retrieves a swap in ${State.Failed} status without a deposit channel (deposit ignored)`, async () => {
+      await prisma.failedSwap.create({
+        data: {
+          reason: 'BelowMinimumDeposit',
+          srcAsset: 'FLIP',
+          srcChain: 'Ethereum',
+          destAddress: '0xcafebabe',
+          destChain: 'Polkadot',
+          depositAmount: '10000000000',
+          failedAt: new Date(RECEIVED_TIMESTAMP),
+          failedBlockIndex: RECEIVED_BLOCK_INDEX,
+          txHash: '0xdeadbeef',
+        },
+      });
+
+      const { body, status } = await request(server).get(`/swaps/0xdeadbeef`);
+
+      expect(status).toBe(200);
+
+      expect(body).toMatchSnapshot();
     });
 
     it(`retrieves a swap in ${State.Failed} status (egress ignored)`, async () => {
@@ -1027,13 +1051,15 @@ describe('server', () => {
       });
       await prisma.failedSwap.create({
         data: {
-          type: 'IGNORED',
           reason: 'BelowMinimumDeposit',
           swapDepositChannelId: channel.id,
+          srcAsset: 'ETH',
           srcChain: 'Ethereum',
           destAddress: channel.destAddress,
           destChain: 'Polkadot',
           depositAmount: '10000000000',
+          failedAt: new Date(RECEIVED_TIMESTAMP + 6000),
+          failedBlockIndex: `200-3`,
         },
       });
 
@@ -1093,7 +1119,6 @@ describe('server', () => {
         {
           "ccmDepositReceivedBlockIndex": null,
           "depositAmount": "10",
-          "depositChannelOpenedThroughBackend": false,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
@@ -1113,7 +1138,6 @@ describe('server', () => {
               "type": "LIQUIDITY",
             },
           ],
-          "isDepositChannelExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
@@ -1167,7 +1191,6 @@ describe('server', () => {
             "message": "0x12abf87",
           },
           "depositAmount": "10",
-          "depositChannelOpenedThroughBackend": false,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
@@ -1187,7 +1210,6 @@ describe('server', () => {
               "type": "LIQUIDITY",
             },
           ],
-          "isDepositChannelExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",

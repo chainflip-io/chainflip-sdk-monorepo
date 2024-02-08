@@ -22,17 +22,18 @@ const swapAmountTooLowArgs = z.object({
 
 export type SwapAmountTooLowEvent = z.input<typeof swapAmountTooLowArgs>;
 
-// TODO: Remove this event handler -- no longer used after v1.2 (we use deposit ignored instead)
+/** @deprecated no longer exists after v1.2.0 */
 export default async function swapAmountTooLow({
   prisma,
   event,
+  block,
 }: EventHandlerArgs): Promise<void> {
-  const { origin, amount, destinationAddress } = swapAmountTooLowArgs.parse(
-    event.args,
-  );
+  const { origin, amount, destinationAddress, asset } =
+    swapAmountTooLowArgs.parse(event.args);
   let sourceChain;
   let dbDepositChannel;
   let txHash;
+  let sourceAsset;
   if (origin.__kind === 'DepositChannel') {
     dbDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
       where: {
@@ -44,21 +45,26 @@ export default async function swapAmountTooLow({
       orderBy: { issuedBlock: 'desc' },
     });
     sourceChain = origin.depositAddress.chain;
+    sourceAsset = dbDepositChannel.srcAsset;
   } else {
     // Vault
     sourceChain = 'Ethereum' as const;
     txHash = origin.txHash;
+    sourceAsset = asset;
   }
 
   await prisma.failedSwap.create({
     data: {
-      type: 'FAILED',
+      reason: 'BelowMinimumDeposit',
       destAddress: destinationAddress.address,
       destChain: destinationAddress.chain,
       depositAmount: amount.toString(),
       srcChain: sourceChain,
+      srcAsset: sourceAsset,
       swapDepositChannelId: dbDepositChannel?.id,
       txHash,
+      failedAt: new Date(block.timestamp),
+      failedBlockIndex: `${block.height}-${event.indexInBlock}`,
     },
   });
 }

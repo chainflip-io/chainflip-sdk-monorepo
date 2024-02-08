@@ -7,10 +7,15 @@ import {
   DOT_PREFIX,
   chainflipAssetEnum,
   hexString,
+  rustEnum,
   u128,
 } from '@/shared/parsers';
 import env from '../config/env';
 import type { EventHandlerArgs } from './index';
+
+const reasonSchema = rustEnum(['BelowMinimumDeposit', 'NotEnoughToPayFees']);
+
+type Reason = z.output<typeof reasonSchema>;
 
 const depositIgnoredArgs = z
   .object({
@@ -28,10 +33,17 @@ const depositIgnoredArgs = z
         }),
       hexString,
     ]),
+    reason: reasonSchema,
   })
   .refine(
-    (args): args is { amount: bigint; asset: Asset; depositAddress: string } =>
-      args.depositAddress !== null,
+    (
+      args,
+    ): args is {
+      amount: bigint;
+      asset: Asset;
+      depositAddress: string;
+      reason: Reason;
+    } => args.depositAddress !== null,
     { message: 'failed to parse bitcoin deposit address' },
   )
   .transform((args) => {
@@ -49,7 +61,9 @@ export type DepositIgnoredArgs = z.input<typeof depositIgnoredArgs>;
 export const depositIgnored =
   (chain: Chain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
-    const { amount, depositAddress } = depositIgnoredArgs.parse(event.args);
+    const { amount, depositAddress, reason, asset } = depositIgnoredArgs.parse(
+      event.args,
+    );
 
     const channel = await prisma.swapDepositChannel.findFirstOrThrow({
       where: {
@@ -61,10 +75,10 @@ export const depositIgnored =
 
     await prisma.failedSwap.create({
       data: {
-        reason: 'BelowMinimumDeposit',
+        reason,
         swapDepositChannelId: channel.id,
-        srcAsset: channel.srcAsset,
         srcChain: chain,
+        srcAsset: asset,
         destAddress: channel.destAddress,
         destChain: assetChains[channel.destAsset],
         depositAmount: amount.toString(),
