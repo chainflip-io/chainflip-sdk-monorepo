@@ -11,6 +11,7 @@ import networkCcmBroadcastRequested from './networkCcmBroadcastRequested';
 import chainStateUpdated from './networkChainStateUpdated';
 import { networkDepositReceived } from './networkDepositReceived';
 import networkEgressScheduled from './networkEgressScheduled';
+import networkTransactionBroadcastRequest from './networkTransactionBroadcastRequest';
 import newPoolCreated from './newPoolCreated';
 import poolFeeSet from './poolFeeSet';
 import swapAmountTooLow from './swapAmountTooLow';
@@ -50,6 +51,8 @@ export const events = {
   BitcoinBroadcaster: {
     BroadcastSuccess: 'BitcoinBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'BitcoinBroadcaster.BroadcastAborted',
+    TransactionBroadcastRequest:
+      'BitcoinBroadcaster.TransactionBroadcastRequest',
   },
   EthereumIngressEgress: {
     EgressScheduled: 'EthereumIngressEgress.EgressScheduled',
@@ -61,6 +64,8 @@ export const events = {
   EthereumBroadcaster: {
     BroadcastSuccess: 'EthereumBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'EthereumBroadcaster.BroadcastAborted',
+    TransactionBroadcastRequest:
+      'EthereumBroadcaster.TransactionBroadcastRequest',
   },
   PolkadotIngressEgress: {
     EgressScheduled: 'PolkadotIngressEgress.EgressScheduled',
@@ -72,6 +77,8 @@ export const events = {
   PolkadotBroadcaster: {
     BroadcastSuccess: 'PolkadotBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'PolkadotBroadcaster.BroadcastAborted',
+    TransactionBroadcastRequest:
+      'PolkadotBroadcaster.TransactionBroadcastRequest',
   },
   BitcoinChainTracking: {
     ChainStateUpdated: 'BitcoinChainTracking.ChainStateUpdated',
@@ -143,6 +150,10 @@ const handlers = [
         {
           name: events[`${chain}Broadcaster`].BroadcastAborted,
           handler: networkBroadcastAborted(chain),
+        },
+        {
+          name: events[`${chain}Broadcaster`].TransactionBroadcastRequest,
+          handler: networkTransactionBroadcastRequest(chain),
         },
         {
           name: events[`${chain}ChainTracking`].ChainStateUpdated,
