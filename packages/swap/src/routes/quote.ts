@@ -1,11 +1,7 @@
 import express from 'express';
 import type { Server } from 'socket.io';
 import { bigintMin } from '@/shared/functions';
-import {
-  QuoteQueryResponse,
-  quoteQuerySchema,
-  SwapFee,
-} from '@/shared/schemas';
+import { quoteQuerySchema, SwapFee } from '@/shared/schemas';
 import {
   calculateIncludedSwapFees,
   estimateIngressEgressFeeAssetAmount,
@@ -155,15 +151,11 @@ const quote = (io: Server) => {
           );
         }
 
-        const response = {
+        const { id = undefined, ...response } = {
           ...bestQuote,
           egressAmount: egressAmount.toString(),
           includedFees,
-        } as QuoteQueryResponse;
-
-        if ('id' in response) {
-          delete response.id;
-        }
+        };
 
         res.json(response);
       } catch (err) {
