@@ -949,9 +949,8 @@ describe('server', () => {
           amount: '10000000000',
           ignoredAt: new Date('2024-02-06T13:00:00.000Z'),
           ignoredBlockIndex: '202-3',
-          swapId: (
-            await prisma.swap.findUniqueOrThrow({ where: { nativeId } })
-          ).id,
+          swapId: (await prisma.swap.findUniqueOrThrow({ where: { nativeId } }))
+            .id,
           stateChainErrorId: (
             await prisma.stateChainError.create({
               data: {

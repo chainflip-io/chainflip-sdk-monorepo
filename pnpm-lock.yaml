@@ -80,9 +80,6 @@ importers:
       prettier:
         specifier: ^3.2.2
         version: 3.2.2
-      prettier-2:
-        specifier: npm:prettier@^2
-        version: /prettier@2.8.8
       syncpack:
         specifier: ^12.3.0
         version: 12.3.0(typescript@5.3.3)
