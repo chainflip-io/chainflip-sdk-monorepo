@@ -229,4 +229,6 @@ export default {
 
   // Whether to use watchman for file crawling
   // watchman: true,
+
+  prettierPath: url.fileURLToPath(import.meta.resolve('prettier-2')),
 };

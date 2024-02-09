@@ -250,16 +250,17 @@ router.get(
         pendingDeposit?.transactionHash ?? failedSwap?.txHash ?? undefined,
       depositTransactionConfirmations: pendingDeposit?.transactionConfirmations,
       depositReceivedAt: swap?.depositReceivedAt.valueOf(),
-      depositReceivedBlockIndex: swap?.depositReceivedBlockIndex,
+      depositReceivedBlockIndex: swap?.depositReceivedBlockIndex ?? undefined,
       intermediateAmount: swap?.intermediateAmount?.toFixed(),
       swapExecutedAt: swap?.swapExecutedAt?.valueOf(),
-      swapExecutedBlockIndex: swap?.swapExecutedBlockIndex,
+      swapExecutedBlockIndex: swap?.swapExecutedBlockIndex ?? undefined,
       egressAmount: swap?.egress?.amount?.toFixed(),
       egressScheduledAt: swap?.egress?.scheduledAt?.valueOf(),
-      egressScheduledBlockIndex: swap?.egress?.scheduledBlockIndex,
+      egressScheduledBlockIndex: swap?.egress?.scheduledBlockIndex ?? undefined,
       ignoredEgressAmount: swap?.ignoredEgress?.amount?.toFixed(),
       egressIgnoredAt: swap?.ignoredEgress?.ignoredAt?.valueOf(),
-      egressIgnoredBlockIndex: swap?.ignoredEgress?.ignoredBlockIndex,
+      egressIgnoredBlockIndex:
+        swap?.ignoredEgress?.ignoredBlockIndex ?? undefined,
       feesPaid:
         swap?.fees.map((fee) => ({
           type: fee.type,
@@ -269,25 +270,27 @@ router.get(
         })) ?? [],
       broadcastRequestedAt: swap?.egress?.broadcast?.requestedAt?.valueOf(),
       broadcastRequestedBlockIndex:
-        swap?.egress?.broadcast?.requestedBlockIndex,
+        swap?.egress?.broadcast?.requestedBlockIndex ?? undefined,
       broadcastAbortedAt: swap?.egress?.broadcast?.abortedAt?.valueOf(),
-      broadcastAbortedBlockIndex: swap?.egress?.broadcast?.abortedBlockIndex,
+      broadcastAbortedBlockIndex:
+        swap?.egress?.broadcast?.abortedBlockIndex ?? undefined,
       broadcastSucceededAt: swap?.egress?.broadcast?.succeededAt?.valueOf(),
       broadcastSucceededBlockIndex:
-        swap?.egress?.broadcast?.succeededBlockIndex,
+        swap?.egress?.broadcast?.succeededBlockIndex ?? undefined,
       depositChannelExpiryBlock:
         swapDepositChannel?.srcChainExpiryBlock?.toString(),
       estimatedDepositChannelExpiryTime:
         swapDepositChannel?.estimatedExpiryAt?.valueOf(),
       isDepositChannelExpired: swapDepositChannel?.isExpired,
-      ccmDepositReceivedBlockIndex: swap?.ccmDepositReceivedBlockIndex,
+      ccmDepositReceivedBlockIndex:
+        swap?.ccmDepositReceivedBlockIndex ?? undefined,
       ccmMetadata,
       depositChannelOpenedThroughBackend:
         swapDepositChannel?.openedThroughBackend,
       error,
       failure: failureMode,
       failedAt: failedSwap?.failedAt,
-      failedBlockIndex: failedSwap?.failedBlockIndex,
+      failedBlockIndex: failedSwap?.failedBlockIndex ?? undefined,
     };
 
     logger.info('sending response for swap request', { id, response });

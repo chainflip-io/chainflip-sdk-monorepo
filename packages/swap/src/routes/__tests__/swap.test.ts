@@ -239,7 +239,6 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
-          "ccmDepositReceivedBlockIndex": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelBrokerCommissionBps": 0,
@@ -258,7 +257,6 @@ describe('server', () => {
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
-          "swapExecutedBlockIndex": null,
           "type": "SWAP",
         }
       `);
@@ -307,7 +305,6 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
-          "ccmDepositReceivedBlockIndex": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelBrokerCommissionBps": 0,
@@ -398,7 +395,6 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
-          "ccmDepositReceivedBlockIndex": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelBrokerCommissionBps": 0,
@@ -503,11 +499,8 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
-          "broadcastAbortedBlockIndex": null,
           "broadcastRequestedAt": 1669907147201,
           "broadcastRequestedBlockIndex": "202-4",
-          "broadcastSucceededBlockIndex": null,
-          "ccmDepositReceivedBlockIndex": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelBrokerCommissionBps": 0,
@@ -608,11 +601,8 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
-          "broadcastAbortedBlockIndex": null,
           "broadcastRequestedAt": 1669907147201,
           "broadcastRequestedBlockIndex": "202-4",
-          "broadcastSucceededBlockIndex": null,
-          "ccmDepositReceivedBlockIndex": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelBrokerCommissionBps": 0,
@@ -719,8 +709,6 @@ describe('server', () => {
           "broadcastAbortedBlockIndex": "204-4",
           "broadcastRequestedAt": 1669907147201,
           "broadcastRequestedBlockIndex": "202-4",
-          "broadcastSucceededBlockIndex": null,
-          "ccmDepositReceivedBlockIndex": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelBrokerCommissionBps": 0,
@@ -823,12 +811,10 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
-          "broadcastAbortedBlockIndex": null,
           "broadcastRequestedAt": 1669907147201,
           "broadcastRequestedBlockIndex": "202-4",
           "broadcastSucceededAt": 1669907153201,
           "broadcastSucceededBlockIndex": "204-4",
-          "ccmDepositReceivedBlockIndex": null,
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelBrokerCommissionBps": 0,
@@ -963,8 +949,9 @@ describe('server', () => {
           amount: '10000000000',
           ignoredAt: new Date('2024-02-06T13:00:00.000Z'),
           ignoredBlockIndex: '202-3',
-          swapId: (await prisma.swap.findUniqueOrThrow({ where: { nativeId } }))
-            .id,
+          swapId: (
+            await prisma.swap.findUniqueOrThrow({ where: { nativeId } })
+          ).id,
           stateChainErrorId: (
             await prisma.stateChainError.create({
               data: {
@@ -1117,7 +1104,6 @@ describe('server', () => {
       expect(BigInt(swapId)).toEqual(nativeId);
       expect(rest).toMatchInlineSnapshot(`
         {
-          "ccmDepositReceivedBlockIndex": null,
           "depositAmount": "10",
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
@@ -1141,7 +1127,6 @@ describe('server', () => {
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
-          "swapExecutedBlockIndex": null,
           "type": "SWAP",
         }
       `);
@@ -1213,7 +1198,6 @@ describe('server', () => {
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
-          "swapExecutedBlockIndex": null,
           "type": "SWAP",
         }
       `);
