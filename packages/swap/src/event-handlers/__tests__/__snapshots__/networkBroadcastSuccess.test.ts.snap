@@ -71,6 +71,7 @@ exports[`networkBroadcastSuccess > updates an existing broadcast with the tx_ref
   "succeededAt": 2022-12-06T14:31:45.000Z,
   "succeededBlockIndex": "120-12",
   "transactionRef": "0x1234",
+  "transactionPayload": null,
   "type": "BATCH",
   "updatedAt": Any<Date>,
 }

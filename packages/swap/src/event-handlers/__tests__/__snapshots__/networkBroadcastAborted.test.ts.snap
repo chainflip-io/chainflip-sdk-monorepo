@@ -14,6 +14,7 @@ exports[`networkBroadcastAborted > updates an existing broadcast entity with the
   "succeededAt": null,
   "succeededBlockIndex": null,
   "transactionRef": null,
+  "transactionPayload": null,
   "type": "BATCH",
   "updatedAt": Any<Date>,
 }

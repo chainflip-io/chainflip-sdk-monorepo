@@ -26,6 +26,7 @@ exports[`networkBatchBroadcastRequested > creates a broadcast entity and updates
   "succeededAt": null,
   "succeededBlockIndex": null,
   "transactionRef": null,
+  "transactionPayload": null,
   "type": "BATCH",
   "updatedAt": Any<Date>,
 }
