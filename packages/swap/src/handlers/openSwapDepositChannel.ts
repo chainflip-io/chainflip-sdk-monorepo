@@ -85,6 +85,7 @@ export default async function openSwapDepositChannel(
     id: `${issuedBlock}-${srcChain}-${channelId}`,
     depositAddress: channelDepositAddress,
     brokerCommissionBps,
+    boostFeeBps: input.boostFeeBps, // TODO: fetch from db
     issuedBlock,
     srcChainExpiryBlock,
     estimatedExpiryTime: estimatedExpiryTime?.valueOf(),
