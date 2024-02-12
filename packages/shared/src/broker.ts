@@ -3,7 +3,7 @@ import { decodeAddress } from '@polkadot/util-crypto';
 import axios from 'axios';
 import { z } from 'zod';
 import { Asset, Assets, Chain, ChainflipNetwork } from './enums';
-import { isNotNullish } from './guards';
+import { isUndefined } from './guards';
 import {
   hexString,
   numericString,
@@ -23,6 +23,7 @@ type NewSwapRequest = {
   destChain: Chain;
   destAddress: string;
   ccmMetadata?: CcmMetadata;
+  boostFeeBps?: number;
 };
 
 type SnakeCaseKeys<T> = {
@@ -77,9 +78,12 @@ const requestValidators = (network: ChainflipNetwork) => ({
           }),
         )
         .optional(),
+      z.number().optional(),
     ])
-    .transform(([a, b, c, d, e]) =>
-      [a, b, c, d, transformObjToSnakeCase(e)].filter(isNotNullish),
+    .transform(([a, b, c, d, e, f]) =>
+      [a, b, c, d, transformObjToSnakeCase(e), f].map((value) =>
+        isUndefined(value) ? null : value,
+      ),
     ),
 });
 
@@ -154,5 +158,6 @@ export async function requestSwapDepositAddress(
       ...swapRequest.ccmMetadata,
       cfParameters: undefined,
     },
+    swapRequest.boostFeeBps,
   );
 }

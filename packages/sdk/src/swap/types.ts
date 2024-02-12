@@ -31,6 +31,7 @@ interface ChainsAndAssets {
 
 export interface QuoteRequest extends ChainsAndAssets {
   amount: string;
+  boostFeeBps?: number;
 }
 
 export interface QuoteResponse extends QuoteRequest {
