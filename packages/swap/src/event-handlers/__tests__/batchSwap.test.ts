@@ -98,6 +98,11 @@ const batchEvents = [
       asset: { __kind: 'Eth' },
       amount: '100000000010000000',
       depositAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
+      ingressFee: '1000',
+      action: {
+        __kind: 'Swap',
+        swapId: '1',
+      },
     } as DepositReceivedArgs,
   },
   {
@@ -250,7 +255,7 @@ describe('batch swap flow', () => {
             nodes: [
               {
                 height,
-                specId: 'test@0',
+                specId: 'test@120',
                 timestamp: new Date(height * 6000).toISOString(),
                 events: { nodes: events },
               },

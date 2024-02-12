@@ -19,6 +19,7 @@ import swapEgressIgnored from './swapEgressIgnored';
 import swapEgressScheduled from './swapEgressScheduled';
 import swapExecuted from './swapExecuted';
 import swapScheduled from './swapScheduled';
+import { networkDepositReceived as networkDepositReceivedV120 } from './v120/networkDepositReceived';
 import type { Block, Event } from '../gql/generated/graphql';
 import { buildHandlerMap, getDispatcher } from '../utils/handlers';
 
@@ -173,6 +174,10 @@ const handlers = [
         {
           name: events[`${chain}IngressEgress`].DepositIgnored,
           handler: depositIgnoredV120(chain),
+        },
+        {
+          name: events[`${chain}IngressEgress`].DepositReceived,
+          handler: networkDepositReceivedV120,
         },
       ]),
     ],

@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { Assets, Chain, Chains } from '@/shared/enums';
 import prisma, { SwapDepositChannel } from '../../client';
 import { DepositIgnoredArgs } from '../depositIgnored';
@@ -5,6 +6,7 @@ import { events } from '../index';
 import { SwapAmountTooLowEvent } from '../swapAmountTooLow';
 import { SwapExecutedEvent } from '../swapExecuted';
 import { SwapScheduledEvent } from '../swapScheduled';
+import { actionSchema } from '../v120/networkDepositReceived';
 
 export const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
 export const DOT_ADDRESS = '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo'; // 0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972
@@ -203,6 +205,36 @@ export const networkDepositReceivedBtcMock = {
     },
   },
 } as const;
+
+export const networkDepositReceivedBtcMockV120 = (
+  action?: z.input<typeof actionSchema>,
+) =>
+  ({
+    block: {
+      height: 120,
+      timestamp: 1670337105000,
+    },
+    eventContext: {
+      kind: 'event',
+      event: {
+        args: {
+          asset: {
+            __kind: 'Btc',
+          },
+          amount: '110000',
+          depositAddress: {
+            value:
+              '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
+            __kind: 'Taproot',
+          },
+          ingressFee: '1000',
+          action: action || { __kind: 'Swap', swapId: '1' },
+        },
+        name: 'BitcoinIngressEgress.DepositReceived',
+        indexInBlock: 7,
+      },
+    },
+  }) as const;
 
 export const buildSwapExecutedMock = (args: SwapExecutedEvent) => ({
   block: {
