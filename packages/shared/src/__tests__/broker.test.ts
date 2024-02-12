@@ -11,20 +11,23 @@ describe(broker.requestSwapDepositAddress, () => {
     .spyOn(axios, 'post')
     .mockRejectedValue(Error('unhandled mock'));
 
-  const mockResponse = (data: unknown) =>
-    postSpy.mockResolvedValueOnce({ data });
-
-  it('gets a response from the broker', async () => {
-    mockResponse({
+  const MOCKED_RESPONSE = {
+    result: {
+      address: '0x1234567890',
+      issued_block: 50,
+      channel_id: 200,
+      source_chain_expiry_block: 1_000_000,
+    },
+  };
+  const mockResponse = (data: Object = MOCKED_RESPONSE) =>
+    postSpy.mockResolvedValueOnce({
       id: 1,
       jsonrpc: '2.0',
-      result: {
-        address: '0x1234567890',
-        issued_block: 50,
-        channel_id: 200,
-        source_chain_expiry_block: 1_000_000,
-      },
+      ...data,
     });
+
+  it('gets a response from the broker', async () => {
+    mockResponse();
     const result = await broker.requestSwapDepositAddress(
       {
         srcAsset: Assets.FLIP,
@@ -47,6 +50,8 @@ describe(broker.requestSwapDepositAddress, () => {
         { asset: 'USDC', chain: 'Ethereum' },
         '0xcafebabe',
         0,
+        null,
+        null,
       ],
     });
     expect(result).toStrictEqual({
@@ -57,17 +62,8 @@ describe(broker.requestSwapDepositAddress, () => {
     });
   });
 
-  it('gets a response from the broker for bitoin mainnet', async () => {
-    mockResponse({
-      id: 1,
-      jsonrpc: '2.0',
-      result: {
-        address: '0x1234567890',
-        issued_block: 50,
-        channel_id: 200,
-        source_chain_expiry_block: 1_000_000,
-      },
-    });
+  it('gets a response from the broker for bitcoin mainnet', async () => {
+    mockResponse();
     const result = await broker.requestSwapDepositAddress(
       {
         srcAsset: Assets.FLIP,
@@ -90,6 +86,8 @@ describe(broker.requestSwapDepositAddress, () => {
         { asset: 'BTC', chain: 'Bitcoin' },
         '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
         0,
+        null,
+        null,
       ],
     });
     expect(result).toStrictEqual({
@@ -117,16 +115,7 @@ describe(broker.requestSwapDepositAddress, () => {
   });
 
   it('submits ccm data', async () => {
-    mockResponse({
-      id: 1,
-      jsonrpc: '2.0',
-      result: {
-        address: '0x1234567890',
-        issued_block: 50,
-        channel_id: 200,
-        source_chain_expiry_block: 1_000_000,
-      },
-    });
+    mockResponse();
     const result = await broker.requestSwapDepositAddress(
       {
         srcAsset: Assets.FLIP,
@@ -157,6 +146,51 @@ describe(broker.requestSwapDepositAddress, () => {
           gas_budget: '0x75bcd15',
           message: '0xdeadc0de',
         },
+        null,
+      ],
+    });
+    expect(result).toStrictEqual({
+      address: '0x1234567890',
+      issuedBlock: 50,
+      channelId: 200n,
+      sourceChainExpiryBlock: 1_000_000n,
+    });
+  });
+
+  it('submits boost fee', async () => {
+    mockResponse();
+    const result = await broker.requestSwapDepositAddress(
+      {
+        srcAsset: Assets.FLIP,
+        destAsset: Assets.USDC,
+        srcChain: 'Ethereum',
+        destAddress: '0xcafebabe',
+        destChain: 'Ethereum',
+        ccmMetadata: {
+          gasBudget: '123456789',
+          message: '0xdeadc0de',
+        },
+        boostFeeBps: 100,
+      },
+      brokerConfig,
+      'perseverance',
+    );
+    const requestObject = postSpy.mock.calls[0][1];
+    expect(requestObject).toStrictEqual({
+      id: 1,
+      jsonrpc: '2.0',
+      method: 'broker_requestSwapDepositAddress',
+      params: [
+        { asset: 'FLIP', chain: 'Ethereum' },
+        { asset: 'USDC', chain: 'Ethereum' },
+        '0xcafebabe',
+        0,
+        {
+          cf_parameters: undefined,
+          gas_budget: '0x75bcd15',
+          message: '0xdeadc0de',
+        },
+        100,
       ],
     });
     expect(result).toStrictEqual({
@@ -169,8 +203,6 @@ describe(broker.requestSwapDepositAddress, () => {
 
   it('formats RPC errors', async () => {
     mockResponse({
-      id: 1,
-      jsonrpc: '2.0',
       error: {
         code: -1,
         message: 'error message',
