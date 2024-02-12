@@ -19,7 +19,7 @@ describe(broker.requestSwapDepositAddress, () => {
       source_chain_expiry_block: 1_000_000,
     },
   };
-  const mockResponse = (data: Object = MOCKED_RESPONSE) =>
+  const mockResponse = (data: Record<string, any> = MOCKED_RESPONSE) =>
     postSpy.mockResolvedValueOnce({
       id: 1,
       jsonrpc: '2.0',
