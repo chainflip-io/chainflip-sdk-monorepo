@@ -40,7 +40,7 @@
   "devDependencies": {
     "@types/yargs": "^17.0.32",
     "tsup": "^8.0.1",
-    "tsx": "^4.7.0"
+    "tsx": "^4.7.1"
   },
   "peerDependencies": {
     "axios": "^1.x",
