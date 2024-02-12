@@ -150,12 +150,15 @@ const quote = (io: Server) => {
             `egress amount (${egressAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
           );
         }
-
-        res.json({
+        // We want to remove the id from the final response body as it is just a random uuid
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id = undefined, ...response } = {
           ...bestQuote,
           egressAmount: egressAmount.toString(),
           includedFees,
-        });
+        };
+
+        res.json(response);
       } catch (err) {
         if (err instanceof ServiceError) throw err;
 

@@ -144,7 +144,6 @@ describe('python integration test', () => {
     const response = await fetch(`${serverUrl}/quote?${params.toString()}`);
 
     expect(await response.json()).toEqual({
-      id: expect.any(String),
       intermediateAmount: '1996000000',
       egressAmount: '995999999999975000',
       includedFees: [
