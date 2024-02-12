@@ -146,7 +146,9 @@ export class SwapSDK {
       depositAddress: response.depositAddress,
       brokerCommissionBps: response.brokerCommissionBps,
       boostFeeBps:
-        response.boostFeeBps || depositAddressRequest.boostFeeBps || 0,
+        Number(response.boostFeeBps) ||
+        Number(depositAddressRequest.boostFeeBps) ||
+        0,
       depositChannelExpiryBlock: response.srcChainExpiryBlock as bigint,
       estimatedDepositChannelExpiryTime: response.estimatedExpiryTime,
     };
