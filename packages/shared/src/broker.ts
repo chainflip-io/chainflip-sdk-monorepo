@@ -144,7 +144,8 @@ export async function requestSwapDepositAddress(
   opts: { url: string; commissionBps: number },
   chainflipNetwork: ChainflipNetwork,
 ): Promise<DepositChannelResponse> {
-  const { srcAsset, srcChain, destAsset, destChain, destAddress } = swapRequest;
+  const { srcAsset, srcChain, destAsset, destChain, destAddress, boostFeeBps } =
+    swapRequest;
 
   return makeRpcRequest(
     chainflipNetwork,
@@ -158,6 +159,6 @@ export async function requestSwapDepositAddress(
       ...swapRequest.ccmMetadata,
       cfParameters: undefined,
     },
-    swapRequest.boostFeeBps,
+    boostFeeBps,
   );
 }

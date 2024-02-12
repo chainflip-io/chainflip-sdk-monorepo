@@ -21,9 +21,11 @@ describe(broker.requestSwapDepositAddress, () => {
   };
   const mockResponse = (data: Record<string, any> = MOCKED_RESPONSE) =>
     postSpy.mockResolvedValueOnce({
-      id: 1,
-      jsonrpc: '2.0',
-      ...data,
+      data: {
+        id: 1,
+        jsonrpc: '2.0',
+        ...data,
+      },
     });
 
   it('gets a response from the broker', async () => {
