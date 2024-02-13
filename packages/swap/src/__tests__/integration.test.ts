@@ -49,7 +49,7 @@ jest.mock('axios', () => ({
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
-xdescribe('python integration test', () => {
+describe('python integration test', () => {
   jest.setTimeout(10000);
 
   let privateKey: string;

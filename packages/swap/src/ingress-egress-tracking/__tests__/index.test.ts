@@ -17,7 +17,7 @@ const updateChainTracking = (data: { chain: Chain; height: bigint }) =>
     create: data,
   });
 
-xdescribe('ingress-egress-tracking', () => {
+describe('ingress-egress-tracking', () => {
   let redis: Redis;
 
   beforeAll(() => {
