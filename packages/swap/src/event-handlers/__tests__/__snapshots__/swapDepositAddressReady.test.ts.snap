@@ -2,6 +2,7 @@
 
 exports[`swapDepositAddressReady can handle empty ccm messages 1`] = `
 {
+  "boostFeeBps": 0,
   "brokerCommissionBps": 0,
   "ccmGasBudget": "0",
   "ccmMessage": "0x",
