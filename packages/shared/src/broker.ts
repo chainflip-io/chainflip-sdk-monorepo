@@ -3,7 +3,6 @@ import { decodeAddress } from '@polkadot/util-crypto';
 import axios from 'axios';
 import { z } from 'zod';
 import { Asset, Assets, Chain, ChainflipNetwork } from './enums';
-import { isUndefined } from './guards';
 import {
   hexString,
   numericString,
@@ -80,11 +79,14 @@ const requestValidators = (network: ChainflipNetwork) => ({
         .optional(),
       z.number().optional(),
     ])
-    .transform(([a, b, c, d, e, f]) =>
-      [a, b, c, d, transformObjToSnakeCase(e), f].map((value) =>
-        isUndefined(value) ? null : value,
-      ),
-    ),
+    .transform(([a, b, c, d, e, f]) => [
+      a,
+      b,
+      c,
+      d,
+      transformObjToSnakeCase(e),
+      f,
+    ]),
 });
 
 const responseValidators = (network: ChainflipNetwork) => ({
