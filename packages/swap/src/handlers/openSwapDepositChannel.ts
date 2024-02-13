@@ -57,6 +57,7 @@ export default async function openSwapDepositChannel(
     channelId,
     depositAddress: channelDepositAddress,
     brokerCommissionBps,
+    boostFeeBps,
   } = await prisma.swapDepositChannel.upsert({
     where: {
       issuedBlock_srcChain_channelId: {
@@ -73,6 +74,7 @@ export default async function openSwapDepositChannel(
       ccmGasBudget: ccmMetadata?.gasBudget,
       ccmMessage: ccmMetadata?.message,
       brokerCommissionBps: 0,
+      boostFeeBps: Number(rest.boostFeeBps) || 0,
       openedThroughBackend: true,
       ...blockInfo,
     },
@@ -85,7 +87,7 @@ export default async function openSwapDepositChannel(
     id: `${issuedBlock}-${srcChain}-${channelId}`,
     depositAddress: channelDepositAddress,
     brokerCommissionBps,
-    boostFeeBps: input.boostFeeBps, // TODO: fetch from db
+    boostFeeBps,
     issuedBlock,
     srcChainExpiryBlock,
     estimatedExpiryTime: estimatedExpiryTime?.valueOf(),

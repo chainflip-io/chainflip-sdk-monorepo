@@ -55,6 +55,7 @@ describe(openSwapDepositChannel, () => {
     });
 
     expect(result).toEqual({
+      boostFeeBps: 0,
       depositAddress: 'address',
       brokerCommissionBps: 0,
       estimatedExpiryTime: 1699537125000,
@@ -94,6 +95,7 @@ describe(openSwapDepositChannel, () => {
     });
 
     expect(result).toEqual({
+      boostFeeBps: 0,
       depositAddress: 'address',
       brokerCommissionBps: 0,
       estimatedExpiryTime: 1699537125000,
@@ -110,6 +112,43 @@ describe(openSwapDepositChannel, () => {
     });
   });
 
+  it('creates channel with boost fee and stores it in the database', async () => {
+    jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
+    jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+      sourceChainExpiryBlock: BigInt('1000'),
+      address: 'address',
+      channelId: BigInt('909'),
+      issuedBlock: 123,
+    });
+
+    const result = await openSwapDepositChannel({
+      srcAsset: 'FLIP',
+      srcChain: 'Ethereum',
+      destAsset: 'USDC',
+      destChain: 'Ethereum',
+      destAddress: '0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754',
+      expectedDepositAmount: '10101010',
+      boostFeeBps: 100,
+    });
+
+    expect(result).toEqual({
+      boostFeeBps: 100,
+      depositAddress: 'address',
+      brokerCommissionBps: 0,
+      estimatedExpiryTime: 1699537125000,
+      id: '123-Ethereum-909',
+      issuedBlock: 123,
+      srcChainExpiryBlock: 1000n,
+    });
+    expect(
+      jest.mocked(broker.requestSwapDepositAddress).mock.calls,
+    ).toMatchSnapshot();
+    expect(await prisma.swapDepositChannel.findFirst()).toMatchSnapshot({
+      id: expect.any(BigInt),
+      createdAt: expect.any(Date),
+      boostFeeBps: 100,
+    });
+  });
   it('rejects sanctioned addresses', async () => {
     jest.mocked(screenAddress).mockResolvedValueOnce(true);
 

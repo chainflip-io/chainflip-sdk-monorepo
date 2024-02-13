@@ -15,6 +15,7 @@ const swapDepositAddressReadyArgs = z.object({
   brokerCommissionRate: z.number().int(),
   sourceChainExpiryBlock: u128.optional(),
   channelMetadata: ccmMetadataSchema.optional(),
+  boostFee: z.number().int(),
 });
 
 export type SwapDepositAddressReadyEvent = z.input<
@@ -37,6 +38,7 @@ export const swapDepositAddressReady = async ({
     sourceChainExpiryBlock,
     channelMetadata,
     brokerCommissionRate,
+    boostFee,
     ...rest
   } = swapDepositAddressReadyArgs.parse(event.args);
 
@@ -58,6 +60,7 @@ export const swapDepositAddressReady = async ({
     destAddress: destinationAddress.address,
     srcChainExpiryBlock: sourceChainExpiryBlock,
     brokerCommissionBps: brokerCommissionRate,
+    boostFeeBps: boostFee,
     issuedBlock,
     channelId,
     ...rest,
