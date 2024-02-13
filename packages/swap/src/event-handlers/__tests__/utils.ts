@@ -311,6 +311,7 @@ export const swapDepositAddressReadyMocked = {
         brokerCommissionRate: 0,
         channelId: '1',
         sourceChainExpiryBlock: '0x100',
+        boostFeeBps: 0,
       },
       indexInBlock: 0,
       name: events.Swapping.SwapDepositAddressReady,
