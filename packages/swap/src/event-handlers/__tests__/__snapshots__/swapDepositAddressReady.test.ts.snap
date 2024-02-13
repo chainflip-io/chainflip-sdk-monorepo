@@ -1,5 +1,28 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`swapDepositAddressReady can handle empty ccm messages 1`] = `
+{
+  "brokerCommissionBps": 0,
+  "ccmGasBudget": "0",
+  "ccmMessage": "0x",
+  "channelId": 1n,
+  "createdAt": Any<Date>,
+  "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+  "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+  "destAsset": "DOT",
+  "estimatedExpiryAt": 2023-11-09T11:01:30.000Z,
+  "expectedDepositAmount": null,
+  "expiryBlock": null,
+  "id": Any<BigInt>,
+  "isExpired": false,
+  "issuedBlock": 120,
+  "openedThroughBackend": false,
+  "srcAsset": "ETH",
+  "srcChain": "Ethereum",
+  "srcChainExpiryBlock": 256n,
+}
+`;
+
 exports[`swapDepositAddressReady creates a swap deposit channel entry 1`] = `
 {
   "brokerCommissionBps": 0,
