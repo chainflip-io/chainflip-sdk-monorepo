@@ -349,6 +349,7 @@ export const swapDepositAddressReadyCcmMetadataMocked = {
         },
         brokerCommissionRate: 0,
         sourceChainExpiryBlock: '2573643',
+        boostFeeBps: 0,
       },
       indexInBlock: 0,
       name: events.Swapping.SwapDepositAddressReady,
