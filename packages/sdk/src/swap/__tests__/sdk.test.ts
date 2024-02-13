@@ -301,6 +301,7 @@ describe(SwapSDK, () => {
         destChain: 'Ethereum',
         srcAsset: 'BTC',
         srcChain: 'Bitcoin',
+        boostFeeBps: 0,
       });
     });
 
@@ -343,6 +344,8 @@ describe(SwapSDK, () => {
           { asset: 'FLIP', chain: 'Ethereum' },
           '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
           15,
+          undefined,
+          undefined,
         ],
       });
       expect(result).toStrictEqual({
@@ -357,7 +360,66 @@ describe(SwapSDK, () => {
         depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
         depositChannelExpiryBlock: 1234n,
         estimatedDepositChannelExpiryTime: undefined,
+        boostFeeBps: 0,
       });
+    });
+  });
+
+  it('allows defining boost fee when opening a deposit channel', async () => {
+    const BOOST_FEE_BPS = 100;
+    jest.mocked(axios.post).mockResolvedValueOnce({
+      data: environment({ maxSwapAmount: '0x1000000000000000' }),
+    });
+
+    const postSpy = jest.mocked(axios.post).mockResolvedValueOnce({
+      data: {
+        result: {
+          address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+          issued_block: 123,
+          channel_id: 15,
+          source_chain_expiry_block: '1234',
+        },
+      },
+    });
+
+    const result = await new SwapSDK({
+      broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+    }).requestDepositAddress({
+      srcChain: 'Bitcoin',
+      srcAsset: 'BTC',
+      destChain: 'Ethereum',
+      destAsset: 'FLIP',
+      destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+      amount: BigInt(1e18).toString(),
+      boostFeeBps: BOOST_FEE_BPS,
+    });
+
+    expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
+      id: 1,
+      jsonrpc: '2.0',
+      method: 'broker_requestSwapDepositAddress',
+      params: [
+        { asset: 'BTC', chain: 'Bitcoin' },
+        { asset: 'FLIP', chain: 'Ethereum' },
+        '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        15,
+        undefined,
+        BOOST_FEE_BPS,
+      ],
+    });
+    expect(result).toStrictEqual({
+      srcChain: 'Bitcoin',
+      srcAsset: 'BTC',
+      destChain: 'Ethereum',
+      destAsset: 'FLIP',
+      destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+      brokerCommissionBps: 15,
+      amount: '1000000000000000000',
+      depositChannelId: '123-Bitcoin-15',
+      depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+      depositChannelExpiryBlock: 1234n,
+      estimatedDepositChannelExpiryTime: undefined,
+      boostFeeBps: BOOST_FEE_BPS,
     });
   });
 });

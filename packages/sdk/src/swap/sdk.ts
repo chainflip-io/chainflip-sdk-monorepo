@@ -133,6 +133,7 @@ export class SwapSDK {
         depositAddress: result.address,
         brokerCommissionBps: this.brokerConfig.commissionBps,
         srcChainExpiryBlock: result.sourceChainExpiryBlock,
+        boostFeeBps: depositAddressRequest.boostFeeBps,
       };
     } else {
       response = await this.trpc.openSwapDepositChannel.mutate(
@@ -145,6 +146,7 @@ export class SwapSDK {
       depositChannelId: response.id,
       depositAddress: response.depositAddress,
       brokerCommissionBps: response.brokerCommissionBps,
+      boostFeeBps: Number(response.boostFeeBps) || 0,
       depositChannelExpiryBlock: response.srcChainExpiryBlock as bigint,
       estimatedDepositChannelExpiryTime: response.estimatedExpiryTime,
     };

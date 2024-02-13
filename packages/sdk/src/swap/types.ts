@@ -40,6 +40,7 @@ export interface QuoteResponse extends QuoteRequest {
 export interface DepositAddressRequest extends QuoteRequest {
   destAddress: string;
   ccmMetadata?: CcmMetadata;
+  boostFeeBps?: number; // TODO: move to `QuoteRequest` once suported inside `getQuote` method
 }
 
 export interface DepositAddressResponse extends DepositAddressRequest {

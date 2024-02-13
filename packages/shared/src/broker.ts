@@ -3,7 +3,6 @@ import { decodeAddress } from '@polkadot/util-crypto';
 import axios from 'axios';
 import { z } from 'zod';
 import { Asset, Assets, Chain, ChainflipNetwork } from './enums';
-import { isNotNullish } from './guards';
 import {
   hexString,
   numericString,
@@ -23,6 +22,7 @@ type NewSwapRequest = {
   destChain: Chain;
   destAddress: string;
   ccmMetadata?: CcmMetadata;
+  boostFeeBps?: number;
 };
 
 type SnakeCaseKeys<T> = {
@@ -77,10 +77,16 @@ const requestValidators = (network: ChainflipNetwork) => ({
           }),
         )
         .optional(),
+      z.number().optional(),
     ])
-    .transform(([a, b, c, d, e]) =>
-      [a, b, c, d, transformObjToSnakeCase(e)].filter(isNotNullish),
-    ),
+    .transform(([a, b, c, d, e, f]) => [
+      a,
+      b,
+      c,
+      d,
+      transformObjToSnakeCase(e),
+      f,
+    ]),
 });
 
 const responseValidators = (network: ChainflipNetwork) => ({
@@ -140,7 +146,8 @@ export async function requestSwapDepositAddress(
   opts: { url: string; commissionBps: number },
   chainflipNetwork: ChainflipNetwork,
 ): Promise<DepositChannelResponse> {
-  const { srcAsset, srcChain, destAsset, destChain, destAddress } = swapRequest;
+  const { srcAsset, srcChain, destAsset, destChain, destAddress, boostFeeBps } =
+    swapRequest;
 
   return makeRpcRequest(
     chainflipNetwork,
@@ -154,5 +161,6 @@ export async function requestSwapDepositAddress(
       ...swapRequest.ccmMetadata,
       cfParameters: undefined,
     },
+    boostFeeBps,
   );
 }
