@@ -52,8 +52,8 @@ describe(broker.requestSwapDepositAddress, () => {
         { asset: 'USDC', chain: 'Ethereum' },
         '0xcafebabe',
         0,
-        null,
-        null,
+        undefined,
+        undefined,
       ],
     });
     expect(result).toStrictEqual({
@@ -88,8 +88,8 @@ describe(broker.requestSwapDepositAddress, () => {
         { asset: 'BTC', chain: 'Bitcoin' },
         '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
         0,
-        null,
-        null,
+        undefined,
+        undefined,
       ],
     });
     expect(result).toStrictEqual({
@@ -148,7 +148,7 @@ describe(broker.requestSwapDepositAddress, () => {
           gas_budget: '0x75bcd15',
           message: '0xdeadc0de',
         },
-        null,
+        undefined,
       ],
     });
     expect(result).toStrictEqual({

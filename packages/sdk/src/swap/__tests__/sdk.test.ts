@@ -344,8 +344,8 @@ describe(SwapSDK, () => {
           { asset: 'FLIP', chain: 'Ethereum' },
           '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
           15,
-          null,
-          null,
+          undefined,
+          undefined,
         ],
       });
       expect(result).toStrictEqual({
@@ -403,7 +403,7 @@ describe(SwapSDK, () => {
         { asset: 'FLIP', chain: 'Ethereum' },
         '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         15,
-        null,
+        undefined,
         BOOST_FEE_BPS,
       ],
     });
