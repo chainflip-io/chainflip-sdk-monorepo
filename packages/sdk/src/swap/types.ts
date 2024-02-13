@@ -55,7 +55,7 @@ export interface SwapStatusRequest {
   id: string;
 }
 
-interface SwapStatusResponseCommonFields {
+interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   destAddress: string;
   ccmDepositReceivedBlockIndex: string | undefined;
   ccmMetadata:
@@ -85,7 +85,7 @@ type VaultSwapFields = CopyFields<
   SwapStatusResponseCommonFields
 >;
 
-type FailedVaultSwapStatusResponse = CopyFields<
+export type FailedVaultSwapStatusResponse = CopyFields<
   DepositAddressFields,
   {
     depositAmount: string;
@@ -215,8 +215,8 @@ type SwapState =
       egressIgnoredBlockIndex: string;
     };
 
-type DepositAddressStatusResponse = DepositAddressFields & SwapState;
-type VaultSwapStatusResponse = VaultSwapFields & SwapState;
+export type DepositAddressStatusResponse = DepositAddressFields & SwapState;
+export type VaultSwapStatusResponse = VaultSwapFields & SwapState;
 
 export type SwapStatusResponse =
   | DepositAddressStatusResponse
