@@ -22,6 +22,7 @@ describe(openSwapDepositChannel, () => {
       .useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
       .setSystemTime(new Date('2022-01-01'));
 
+    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;
     await prisma.chainTracking.create({
       data: {
         chain: 'Ethereum',
@@ -32,7 +33,7 @@ describe(openSwapDepositChannel, () => {
   });
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", private."DepositChannel" CASCADE`;
   });
 
   it('creates channel and stores it in the database', async () => {
