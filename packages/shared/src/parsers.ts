@@ -23,15 +23,17 @@ export const string = z.string({ errorMap });
 export const number = z.number({ errorMap });
 export const numericString = string.regex(/^[0-9]+$/);
 export const hexString = string.refine((v): v is `0x${string}` =>
-  /^0x[0-9a-f]+$/i.test(v),
+  /^0x[0-9a-f]*$/i.test(v),
 );
 export const hexStringWithMaxByteSize = (maxByteSize: number) =>
   hexString.refine((val) => val.length / 2 <= maxByteSize + 1, {
     message: `String must be less than or equal to ${maxByteSize} bytes`,
   });
+
 export const hexStringFromNumber = numericString.transform(
   (arg) => `0x${BigInt(arg).toString(16)}`,
 );
+
 export const bareHexString = string.regex(/^[0-9a-f]+$/);
 
 export const btcAddress = (network: ChainflipNetwork) => {

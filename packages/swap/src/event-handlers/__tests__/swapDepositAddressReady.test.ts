@@ -13,7 +13,7 @@ const ccmEventMock = swapDepositAddressReadyCcmMetadataMocked;
 
 describe(swapDepositAddressReady, () => {
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", private."DepositChannel" CASCADE`;
     await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;
   });
 
@@ -112,6 +112,38 @@ describe(swapDepositAddressReady, () => {
           height: 10,
         },
       });
+    });
+
+    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow(
+      {
+        where: {
+          channelId: BigInt(eventMock.eventContext.event.args.channelId),
+        },
+      },
+    );
+
+    expect(swapDepositChannel).toMatchSnapshot({
+      id: expect.any(BigInt),
+      createdAt: expect.any(Date),
+    });
+  });
+
+  it('can handle empty ccm messages', async () => {
+    await createChainTrackingInfo();
+    await swapDepositAddressReady({
+      prisma,
+      event: {
+        ...eventMock.eventContext.event,
+        args: {
+          ...eventMock.eventContext.event.args,
+          channelMetadata: {
+            message: '0x',
+            gasBudget: '0',
+            cfParameters: '0x',
+          },
+        },
+      },
+      block: eventMock.block,
     });
 
     const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow(
