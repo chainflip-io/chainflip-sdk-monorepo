@@ -3,6 +3,7 @@ import { Chain, Asset, InternalAsset } from './enums';
 import {
   chain,
   hexStringWithMaxByteSize,
+  numericOrEmptyString,
   numericString,
   asset,
 } from './parsers';
@@ -13,11 +14,10 @@ export const quoteQuerySchema = z.object({
   destChain: chain,
   destAsset: asset,
   amount: numericString,
-  brokerCommissionBps: z
-    .string()
-    .regex(/^[0-9]*$/)
+  brokerCommissionBps: numericOrEmptyString
     .transform((v) => Number(v))
     .optional(),
+  boostFeeBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
 });
 
 export type QuoteQueryParams = z.input<typeof quoteQuerySchema>;
@@ -47,7 +47,7 @@ export const openSwapDepositChannelSchema = z
   }));
 
 export type SwapFee = {
-  type: 'LIQUIDITY' | 'NETWORK' | 'INGRESS' | 'EGRESS' | 'BROKER';
+  type: 'LIQUIDITY' | 'NETWORK' | 'INGRESS' | 'EGRESS' | 'BROKER' | 'BOOST';
   chain: Chain;
   asset: Asset;
   amount: string;
