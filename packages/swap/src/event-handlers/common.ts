@@ -66,7 +66,7 @@ const getMetadata = async (block: EventHandlerArgs['block']) => {
   return metadata;
 };
 
-const parseSpecNumber = (specId: string) => {
+export const parseSpecNumber = (specId: string) => {
   const [, numberString] = specId.split('@');
   const number = Number.parseInt(numberString, 10);
   assert(Number.isSafeInteger(number), `Invalid spec id: ${specId}`);

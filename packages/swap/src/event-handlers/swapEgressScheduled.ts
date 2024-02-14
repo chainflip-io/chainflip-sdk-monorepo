@@ -6,6 +6,7 @@ import { Environment, getEnvironment } from '@/shared/rpc';
 import { readAssetValue } from '@/shared/rpc/utils';
 import { CacheMap } from '@/swap/utils/dataStructures';
 import { estimateIngressEgressFeeAssetAmount } from '@/swap/utils/fees';
+import { parseSpecNumber } from './common';
 import env from '../config/env';
 import type { EventHandlerArgs } from '.';
 
@@ -81,8 +82,11 @@ const getCachedAssetAmountAtBlock = async (
 
 const getEgressFeeAtBlock = async (
   blockHash: string,
+  specId: string,
   asset: Asset,
 ): Promise<bigint> => {
+  const spec = parseSpecNumber(specId);
+
   const environment = await getCachedEnvironmentAtBlock(blockHash);
   if (!environment) return 0n;
 
@@ -90,6 +94,8 @@ const getEgressFeeAtBlock = async (
     asset,
     chain: assetChains[asset],
   });
+
+  if (spec >= 120) return nativeFee;
 
   return getCachedAssetAmountAtBlock(asset, nativeFee, blockHash);
 };
@@ -129,7 +135,7 @@ export default async function swapEgressScheduled({
     });
   } else {
     egressFee = bigintMin(
-      await getEgressFeeAtBlock(block.hash, swap.destAsset),
+      await getEgressFeeAtBlock(block.hash, block.specId, swap.destAsset),
       BigInt(swap.swapOutputAmount?.toFixed() ?? 0),
     );
     egress = await prisma.egress.update({
