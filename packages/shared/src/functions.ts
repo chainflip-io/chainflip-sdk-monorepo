@@ -17,6 +17,4 @@ export const bigintMax = (...args: bigint[]): bigint =>
 export const calculateBpsAmountFromTotalAmount = (
   bps: bigint,
   amount: bigint,
-) => {
-  return (amount * bps) / 10000n;
-};
+) => (amount * bps) / 10000n;

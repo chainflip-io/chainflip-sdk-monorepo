@@ -1,6 +1,4 @@
-import { ChainflipNetwork } from '../enums';
 import { calculateBpsAmountFromTotalAmount } from '../functions';
-import { bitcoinAddresses } from '../validation/__tests__/bitcoinAddresses';
 
 describe(calculateBpsAmountFromTotalAmount, () => {
   it.each([
