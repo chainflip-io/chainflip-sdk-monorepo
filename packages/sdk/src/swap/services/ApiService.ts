@@ -58,13 +58,17 @@ const getQuote: BackendQuery<
   QuoteRequest & { brokerCommissionBps?: number },
   QuoteResponse
 > = async (baseUrl, quoteRequest, { signal }) => {
-  const { brokerCommissionBps, ...returnedRequestData } = quoteRequest;
+  const { brokerCommissionBps, boostFeeBps, ...returnedRequestData } =
+    quoteRequest;
   const params: QuoteQueryParams = {
     amount: returnedRequestData.amount,
     srcAsset: returnedRequestData.srcAsset,
     destAsset: returnedRequestData.destAsset,
     ...(brokerCommissionBps && {
       brokerCommissionBps: String(brokerCommissionBps),
+    }),
+    ...(boostFeeBps && {
+      boostFeeBps: String(boostFeeBps),
     }),
   };
 

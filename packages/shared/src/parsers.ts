@@ -22,6 +22,7 @@ const errorMap: ZodErrorMap = (_issue, context) => ({
 export const string = z.string({ errorMap });
 export const number = z.number({ errorMap });
 export const numericString = string.regex(/^[0-9]+$/);
+export const numericOrEmptyString = string.regex(/^[0-9]*$/);
 export const hexString = string.refine((v): v is `0x${string}` =>
   /^0x[0-9a-f]*$/i.test(v),
 );

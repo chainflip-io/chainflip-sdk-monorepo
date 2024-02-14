@@ -5,6 +5,7 @@ import {
   chainflipAssetAndChain,
   chainflipChain,
   hexStringWithMaxByteSize,
+  numericOrEmptyString,
   numericString,
 } from './parsers';
 
@@ -12,11 +13,10 @@ export const quoteQuerySchema = z.object({
   srcAsset: chainflipAssetAndChain,
   destAsset: chainflipAssetAndChain,
   amount: numericString,
-  brokerCommissionBps: z
-    .string()
-    .regex(/^[0-9]*$/)
+  brokerCommissionBps: numericOrEmptyString
     .transform((v) => Number(v))
     .optional(),
+  boostFeeBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
 });
 
 export type QuoteQueryParams = z.input<typeof quoteQuerySchema>;
@@ -56,7 +56,7 @@ export type PostSwapResponse = {
 };
 
 export type SwapFee = {
-  type: 'LIQUIDITY' | 'NETWORK' | 'INGRESS' | 'EGRESS' | 'BROKER';
+  type: 'LIQUIDITY' | 'NETWORK' | 'INGRESS' | 'EGRESS' | 'BROKER' | 'BOOST';
   chain: Chain;
   asset: Asset;
   amount: string;

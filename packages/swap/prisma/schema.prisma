@@ -121,6 +121,7 @@ enum SwapFeeType {
   INGRESS
   EGRESS
   BROKER
+  BOOST
 
   @@schema("public")
 }

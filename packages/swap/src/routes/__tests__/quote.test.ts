@@ -268,6 +268,81 @@ describe('server', () => {
       });
     });
 
+    it('gets the quote from usdc with a boost fee', async () => {
+      const sendSpy = jest
+        .spyOn(RpcClient.prototype, 'sendRequest')
+        .mockResolvedValueOnce({
+          egressAmount: (1e18).toString(),
+        });
+
+      const params = new URLSearchParams({
+        srcAsset: 'USDC',
+        destAsset: 'ETH',
+        amount: (100e6).toString(),
+        boostFeeBps: '10',
+      });
+
+      const quoteHandler = jest.fn(async (req) => ({
+        id: req.id,
+        egress_amount: (0.5e18).toString(),
+      }));
+      client.setQuoteRequestHandler(quoteHandler);
+
+      const { body, status } = await request(server).get(
+        `/quote?${params.toString()}`,
+      );
+
+      expect(status).toBe(200);
+      expect(quoteHandler).toHaveBeenCalledWith({
+        deposit_amount: '97900000', // deposit amount - boost fee - ingress fee
+        destination_asset: 'ETH',
+        id: expect.any(String),
+        intermediate_asset: null,
+        source_asset: 'USDC',
+      });
+      expect(sendSpy).toHaveBeenCalledWith(
+        'swap_rate',
+        { asset: 'USDC', chain: 'Ethereum' },
+        { asset: 'ETH', chain: 'Ethereum' },
+        '97900000', // deposit amount - boost fee - ingress fee
+      );
+      expect(body).toMatchObject({
+        egressAmount: (1e18 - 25000).toString(),
+        includedFees: [
+          {
+            amount: '100000',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'BOOST',
+          },
+          {
+            amount: '2000000',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'INGRESS',
+          },
+          {
+            amount: '97900',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'NETWORK',
+          },
+          {
+            amount: '195800',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'LIQUIDITY',
+          },
+          {
+            amount: '25000',
+            asset: 'ETH',
+            chain: 'Ethereum',
+            type: 'EGRESS',
+          },
+        ],
+      });
+    });
+
     it('gets the quote from usdc when the broker is best', async () => {
       jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
         egressAmount: (1e18).toString(),
