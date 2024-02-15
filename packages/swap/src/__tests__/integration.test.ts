@@ -15,7 +15,7 @@ import {
 import { promisify } from 'util';
 import { Assets } from '@/shared/enums';
 import { QuoteQueryParams } from '@/shared/schemas';
-import { environment, swapRate } from '@/shared/tests/fixtures';
+import { environment } from '@/shared/tests/fixtures';
 import prisma from '../client';
 import app from '../server';
 import { getBrokerQuote } from '../utils/statechain';
@@ -29,16 +29,8 @@ jest.mock('axios', () => ({
       return Promise.resolve({
         data: environment({
           maxSwapAmount: null,
-          ingressFee: '0xF4240', // 2000000
+          ingressFee: '0xF4240', // 1000000
           egressFee: '0x61A8', // 25000
-        }),
-      });
-    }
-
-    if (data.method === 'cf_swap_rate') {
-      return Promise.resolve({
-        data: swapRate({
-          output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
         }),
       });
     }
@@ -148,7 +140,7 @@ describe('python integration test', () => {
       egressAmount: '995999999999975000',
       includedFees: [
         {
-          amount: '2000000',
+          amount: '1000000',
           asset: 'FLIP',
           chain: 'Ethereum',
           type: 'INGRESS',
@@ -160,7 +152,7 @@ describe('python integration test', () => {
           type: 'NETWORK',
         },
         {
-          amount: '999999999998000',
+          amount: '999999999999000',
           asset: 'FLIP',
           chain: 'Ethereum',
           type: 'LIQUIDITY',

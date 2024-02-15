@@ -117,6 +117,7 @@ export default async function swapEgressScheduled({
   let egress;
 
   if ('fee' in restArgs) {
+    // > v120
     egressFee = restArgs.fee;
     egress = await prisma.egress.create({
       data: {
@@ -128,6 +129,7 @@ export default async function swapEgressScheduled({
       },
     });
   } else {
+    // < v120
     egressFee = bigintMin(
       await getEgressFeeAtBlock(block.hash, swap.destAsset),
       BigInt(swap.swapOutputAmount?.toFixed() ?? 0),

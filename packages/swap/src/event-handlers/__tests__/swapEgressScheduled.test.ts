@@ -250,7 +250,7 @@ describe(swapEgressScheduled, () => {
     ).toMatchSnapshot();
   });
 
-  it('uses the fee from the event and creates an egress record', async () => {
+  it('>v120 uses the fee from the event and creates an egress record', async () => {
     const { swapId } = event.args;
 
     // store a new swap intent to initiate a new swap
