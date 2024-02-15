@@ -269,12 +269,9 @@ describe('server', () => {
     });
 
     it('gets the quote from usdc when the broker is best', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const spy = jest
-        .spyOn(RpcClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({
-          egressAmount: (1e18).toString(),
-        });
+      jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        egressAmount: (1e18).toString(),
+      });
 
       const params = new URLSearchParams({
         srcAsset: 'USDC',
