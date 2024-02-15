@@ -15,8 +15,8 @@ import {
 import logger from '../utils/logger';
 import {
   getMinimumEgressAmount,
-  getNativeEgressFee,
-  getNativeIngressFee,
+  getEgressFee,
+  getIngressFee,
   validateSwapAmount,
 } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
@@ -54,7 +54,7 @@ const quote = (io: Server) => {
       }
 
       const includedFees: SwapFee[] = [];
-      const ingressFee = await getNativeIngressFee(query.srcAsset);
+      const ingressFee = await getIngressFee(query.srcAsset);
 
       includedFees.push({
         type: 'INGRESS',
@@ -121,7 +121,7 @@ const quote = (io: Server) => {
         includedFees.push(...quoteSwapFees);
 
         const egressFee = bigintMin(
-          await getNativeEgressFee(query.destAsset),
+          await getEgressFee(query.destAsset),
           BigInt(bestQuote.egressAmount),
         );
         includedFees.push({

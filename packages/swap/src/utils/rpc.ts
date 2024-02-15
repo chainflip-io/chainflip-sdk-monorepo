@@ -30,7 +30,7 @@ export const getMinimumEgressAmount = async (
   return readAssetValue(environment.ingressEgress.minimumEgressAmounts, asset);
 };
 
-export const getNativeIngressFee = async (
+export const getIngressFee = async (
   asset: UncheckedAssetAndChain,
 ): Promise<bigint> => {
   const environment = await cachedGetEnvironment(rpcConfig);
@@ -38,7 +38,7 @@ export const getNativeIngressFee = async (
   return readAssetValue(environment.ingressEgress.ingressFees, asset);
 };
 
-export const getNativeEgressFee = async (
+export const getEgressFee = async (
   asset: UncheckedAssetAndChain,
 ): Promise<bigint> => {
   const environment = await cachedGetEnvironment(rpcConfig);
