@@ -1,14 +1,5 @@
-import { UncheckedAssetAndChain, assertIsValidAssetAndChain } from '../enums';
-import { ChainAssetMap, Environment } from './index';
-
-export const readAssetValue = <T>(
-  value: ChainAssetMap<T>,
-  asset: UncheckedAssetAndChain,
-): T => {
-  assertIsValidAssetAndChain(asset);
-  const chainMinimums = value[asset.chain];
-  return chainMinimums[asset.asset as keyof typeof chainMinimums];
-};
+import { readChainAssetMap, UncheckedAssetAndChain } from '../enums';
+import { Environment } from './index';
 
 type Result = { success: true } | { success: false; reason: string };
 
@@ -17,7 +8,7 @@ export const validateSwapAmount = (
   asset: UncheckedAssetAndChain,
   amount: bigint,
 ): Result => {
-  const minimumAmount = readAssetValue(
+  const minimumAmount = readChainAssetMap(
     env.ingressEgress.minimumDepositAmounts,
     asset,
   );
@@ -29,7 +20,7 @@ export const validateSwapAmount = (
     };
   }
 
-  const maxAmount = readAssetValue(env.swapping.maximumSwapAmounts, asset);
+  const maxAmount = readChainAssetMap(env.swapping.maximumSwapAmounts, asset);
 
   if (maxAmount != null && amount > maxAmount) {
     return {

@@ -25,7 +25,7 @@ describe('depositReceived', () => {
 
     const swapDepositChannel = await prisma.swapDepositChannel.create({
       data: {
-        srcAsset: 'BTC',
+        srcAsset: 'Btc',
         srcChain: 'Bitcoin',
         srcChainExpiryBlock: 100,
         depositAddress:
@@ -33,15 +33,15 @@ describe('depositReceived', () => {
         expectedDepositAmount: 0,
         destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
         brokerCommissionBps: 0,
-        destAsset: 'ETH',
+        destAsset: 'Eth',
         channelId: 3,
         issuedBlock: 0,
         swaps: {
           create: {
             swapInputAmount: '100000',
             depositAmount: '100000',
-            srcAsset: 'BTC',
-            destAsset: 'ETH',
+            srcAsset: 'Btc',
+            destAsset: 'Eth',
             destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
             type: 'SWAP',
             nativeId: 1,
@@ -89,7 +89,7 @@ describe('depositReceived', () => {
 
     await prisma.swapDepositChannel.create({
       data: {
-        srcAsset: 'BTC',
+        srcAsset: 'Btc',
         srcChain: 'Bitcoin',
         srcChainExpiryBlock: 100,
         depositAddress:
@@ -97,7 +97,7 @@ describe('depositReceived', () => {
         expectedDepositAmount: 0,
         destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
         brokerCommissionBps: 0,
-        destAsset: 'ETH',
+        destAsset: 'Eth',
         channelId: 3,
         issuedBlock: 0,
       },
@@ -130,7 +130,7 @@ describe('depositReceived', () => {
 
     const swapDepositChannel = await prisma.swapDepositChannel.create({
       data: {
-        srcAsset: 'BTC',
+        srcAsset: 'Btc',
         srcChain: 'Bitcoin',
         srcChainExpiryBlock: 100,
         depositAddress:
@@ -138,15 +138,15 @@ describe('depositReceived', () => {
         expectedDepositAmount: 0,
         destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
         brokerCommissionBps: 0,
-        destAsset: 'ETH',
+        destAsset: 'Eth',
         channelId: 3,
         issuedBlock: 0,
         swaps: {
           create: {
             swapInputAmount: '100000',
             depositAmount: '100000',
-            srcAsset: 'BTC',
-            destAsset: 'ETH',
+            srcAsset: 'Btc',
+            destAsset: 'Eth',
             destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
             type: 'SWAP',
             nativeId: 1,

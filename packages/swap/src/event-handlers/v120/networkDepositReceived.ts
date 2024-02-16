@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { u128, chainflipAssetEnum, hexString, u64 } from '@/shared/parsers';
+import { u128, internalAssetEnum, hexString, u64 } from '@/shared/parsers';
 import logger from '../../utils/logger';
 import { EventHandlerArgs } from '../index';
 
@@ -18,7 +18,7 @@ export const actionSchema = z.union([
 
 export const depositReceivedArgs = z.object({
   amount: u128,
-  asset: chainflipAssetEnum,
+  asset: internalAssetEnum,
   ingressFee: u128,
   action: actionSchema,
 });

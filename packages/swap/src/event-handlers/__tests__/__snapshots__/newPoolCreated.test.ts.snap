@@ -2,9 +2,9 @@
 
 exports[`newPoolCreated creates a pool with the correct data 1`] = `
 {
-  "baseAsset": "BTC",
+  "baseAsset": "Btc",
   "id": Any<Number>,
   "liquidityFeeHundredthPips": 1000,
-  "quoteAsset": "USDC",
+  "quoteAsset": "Usdc",
 }
 `;

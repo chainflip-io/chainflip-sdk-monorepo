@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Assets } from '@/shared/enums';
+import { InternalAssets } from '@/shared/enums';
 import { environment, swapRate } from '@/shared/tests/fixtures';
 import {
   DOT_ADDRESS,
@@ -65,8 +65,8 @@ describe(swapEgressScheduled, () => {
           }`,
           swapExecutedAt: new Date(block.timestamp - 6000),
           swapExecutedBlockIndex: `${block.height}-${event.indexInBlock}`,
-          srcAsset: Assets.ETH,
-          destAsset: Assets.DOT,
+          srcAsset: InternalAssets.Eth,
+          destAsset: InternalAssets.Dot,
           destAddress: DOT_ADDRESS,
           type: 'SWAP',
         },
@@ -136,8 +136,8 @@ describe(swapEgressScheduled, () => {
           }`,
           swapExecutedAt: new Date(block.timestamp - 6000),
           swapExecutedBlockIndex: `${block.height}-${event.indexInBlock}`,
-          srcAsset: Assets.ETH,
-          destAsset: Assets.DOT,
+          srcAsset: InternalAssets.Eth,
+          destAsset: InternalAssets.Dot,
           destAddress: DOT_ADDRESS,
           type: 'SWAP',
         },
@@ -207,8 +207,8 @@ describe(swapEgressScheduled, () => {
           }`,
           swapExecutedAt: new Date(block.timestamp - 6000),
           swapExecutedBlockIndex: `${block.height}-${event.indexInBlock}`,
-          srcAsset: Assets.ETH,
-          destAsset: Assets.USDC,
+          srcAsset: InternalAssets.Eth,
+          destAsset: InternalAssets.Usdc,
           destAddress: ETH_ADDRESS,
           type: 'SWAP',
         },
@@ -267,8 +267,8 @@ describe(swapEgressScheduled, () => {
           }`,
           swapExecutedAt: new Date(block.timestamp - 6000),
           swapExecutedBlockIndex: `${block.height}-${event.indexInBlock}`,
-          srcAsset: Assets.ETH,
-          destAsset: Assets.DOT,
+          srcAsset: InternalAssets.Eth,
+          destAsset: InternalAssets.Dot,
           destAddress: DOT_ADDRESS,
           type: 'SWAP',
         },

@@ -1,7 +1,7 @@
 // Set the column in the DB to the block timestamp and the deposit amount.
 import { z } from 'zod';
 import {
-  chainflipAssetEnum,
+  internalAssetEnum,
   u128,
   u64,
   swapType as swapTypeSchema,
@@ -24,9 +24,9 @@ const vaultSwapOrigin = z.object({
 
 const swapScheduledArgs = z.object({
   swapId: u64,
-  sourceAsset: chainflipAssetEnum,
+  sourceAsset: internalAssetEnum,
   depositAmount: u128,
-  destinationAsset: chainflipAssetEnum,
+  destinationAsset: internalAssetEnum,
   destinationAddress: encodedAddress,
   origin: z.union([depositChannelSwapOrigin, vaultSwapOrigin]),
   swapType: swapTypeSchema,

@@ -1,4 +1,4 @@
-import { Assets } from '@/shared/enums';
+import { InternalAssets } from '@/shared/enums';
 import prisma from '@/swap/client';
 import { DOT_ADDRESS, createDepositChannel } from './utils';
 import ccmDepositReceived from '../ccmDepositReceived';
@@ -22,8 +22,8 @@ describe(ccmDepositReceived, () => {
           swapInputAmount: '10000000000',
           depositReceivedAt: new Date(Date.now() - 6000),
           depositReceivedBlockIndex: `${block.height}-${indexInBlock}`,
-          srcAsset: Assets.ETH,
-          destAsset: Assets.DOT,
+          srcAsset: InternalAssets.Eth,
+          destAsset: InternalAssets.Dot,
           destAddress: DOT_ADDRESS,
           type: 'SWAP',
         },

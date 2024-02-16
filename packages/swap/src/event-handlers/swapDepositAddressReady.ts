@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { u64, chainflipAssetEnum, u128 } from '@/shared/parsers';
+import { u64, internalAssetEnum, u128 } from '@/shared/parsers';
 import { ccmMetadataSchema } from '@/shared/schemas';
 import { encodedAddress } from './common';
 import { calculateExpiryTime } from '../utils/function';
@@ -9,8 +9,8 @@ const swapDepositAddressReadyArgs = z.object({
   depositAddress: encodedAddress,
   destinationAddress: encodedAddress,
   expiryBlock: z.number().int().positive().safe().optional(), // TODO(mainnet): remove this
-  sourceAsset: chainflipAssetEnum,
-  destinationAsset: chainflipAssetEnum,
+  sourceAsset: internalAssetEnum,
+  destinationAsset: internalAssetEnum,
   channelId: u64,
   brokerCommissionRate: z.number().int(),
   sourceChainExpiryBlock: u128.optional(),

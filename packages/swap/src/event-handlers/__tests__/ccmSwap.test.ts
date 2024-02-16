@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { GraphQLClient } from 'graphql-request';
-import { assetChains } from '@/shared/enums';
+import { assetConstants } from '@/shared/enums';
 import { environment } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import { Event } from '../../gql/generated/graphql';
@@ -19,9 +19,6 @@ jest.mock('axios', () => ({
     Promise.resolve({ data: environment({ egressFee: '0x55524' }) }),
   ),
 }));
-
-const uppercase = <const T extends string>(str: T): Uppercase<T> =>
-  str.toUpperCase() as Uppercase<T>;
 
 const swapDepositAddressReadyEvent = {
   id: '0000000001-000057-1d5a7',
@@ -244,14 +241,14 @@ describe('batch swap flow', () => {
     await prisma.pool.createMany({
       data: [
         {
-          baseAsset: 'ETH',
-          quoteAsset: 'USDC',
+          baseAsset: 'Eth',
+          quoteAsset: 'Usdc',
           liquidityFeeHundredthPips: 1000,
         },
 
         {
-          baseAsset: 'DOT',
-          quoteAsset: 'USDC',
+          baseAsset: 'Dot',
+          quoteAsset: 'Usdc',
           liquidityFeeHundredthPips: 1500,
         },
       ],
@@ -275,21 +272,16 @@ describe('batch swap flow', () => {
 
     await prisma.swapDepositChannel.create({
       data: {
-        srcAsset: uppercase(
-          swapDepositAddressReadyEvent.args.sourceAsset.__kind,
-        ),
+        srcAsset: swapDepositAddressReadyEvent.args.sourceAsset.__kind,
         depositAddress: encodedAddress.parse(
           swapDepositAddressReadyEvent.args.depositAddress,
         ).address,
         srcChain:
-          assetChains[
-            uppercase(swapDepositAddressReadyEvent.args.sourceAsset.__kind)
-          ],
+          assetConstants[swapDepositAddressReadyEvent.args.sourceAsset.__kind]
+            .chain,
         channelId: BigInt(swapDepositAddressReadyEvent.args.channelId),
         expectedDepositAmount: '0',
-        destAsset: uppercase(
-          swapDepositAddressReadyEvent.args.destinationAsset.__kind,
-        ),
+        destAsset: swapDepositAddressReadyEvent.args.destinationAsset.__kind,
         destAddress: swapDepositAddressReadyEvent.args.destinationAddress.value,
         brokerCommissionBps: 0,
         issuedBlock: 0,

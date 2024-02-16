@@ -1,9 +1,13 @@
 import { z } from 'zod';
-import { Asset, assetChains } from '@/shared/enums';
+import {
+  InternalAsset,
+  readChainAssetMap,
+  assetConstants,
+} from '@/shared/enums';
 import { bigintMin } from '@/shared/functions';
-import { chainflipChain, u128, unsignedInteger } from '@/shared/parsers';
+import { u128, unsignedInteger } from '@/shared/parsers';
 import { Environment, getEnvironment } from '@/shared/rpc';
-import { readAssetValue } from '@/shared/rpc/utils';
+import { egressId } from '@/swap/event-handlers/common';
 import { CacheMap } from '@/swap/utils/dataStructures';
 import { estimateIngressEgressFeeAssetAmount } from '@/swap/utils/fees';
 import env from '../config/env';
@@ -11,10 +15,7 @@ import type { EventHandlerArgs } from '.';
 
 const eventArgsWithoutFee = z.object({
   swapId: unsignedInteger,
-  egressId: z.tuple([
-    z.object({ __kind: chainflipChain }).transform(({ __kind }) => __kind),
-    unsignedInteger,
-  ]),
+  egressId,
 });
 
 const v120EventArgs = eventArgsWithoutFee.and(
@@ -57,7 +58,7 @@ const assetAmountByNativeAmountAndBlockHashCache = new CacheMap<
 >(60_000);
 
 const getCachedAssetAmountAtBlock = async (
-  asset: Asset,
+  asset: InternalAsset,
   nativeAmount: bigint,
   blockHash: string,
 ): Promise<bigint> => {
@@ -81,15 +82,15 @@ const getCachedAssetAmountAtBlock = async (
 
 const getEgressFeeAtBlock = async (
   blockHash: string,
-  asset: Asset,
+  asset: InternalAsset,
 ): Promise<bigint> => {
   const environment = await getCachedEnvironmentAtBlock(blockHash);
   if (!environment) return 0n;
 
-  const nativeFee = readAssetValue(environment.ingressEgress.egressFees, {
-    asset,
-    chain: assetChains[asset],
-  });
+  const nativeFee = readChainAssetMap(
+    environment.ingressEgress.egressFees,
+    assetConstants[asset],
+  );
 
   return getCachedAssetAmountAtBlock(asset, nativeFee, blockHash);
 };

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Assets, Chain, Chains } from '@/shared/enums';
+import { InternalAssets, Chain, Chains } from '@/shared/enums';
 import prisma, { SwapDepositChannel } from '../../client';
 import { DepositIgnoredArgs } from '../depositIgnored';
 import { events } from '../index';
@@ -24,8 +24,8 @@ export const createDepositChannel = (
     data: {
       channelId: 1n,
       srcChain: Chains.Ethereum,
-      srcAsset: Assets.ETH,
-      destAsset: Assets.DOT,
+      srcAsset: InternalAssets.Eth,
+      destAsset: InternalAssets.Dot,
       depositAddress: ETH_ADDRESS,
       destAddress: DOT_ADDRESS,
       brokerCommissionBps: 0,

@@ -1,7 +1,7 @@
 import { Signer, Overrides, ContractTransactionReceipt } from 'ethers';
 import { ERC20, ERC20__factory } from './abis';
 import { ADDRESSES } from './consts';
-import { type ChainflipNetwork, type Asset, Assets } from './enums';
+import { type ChainflipNetwork, InternalAsset, InternalAssets } from './enums';
 
 export type TransactionOptions = {
   gasLimit?: bigint;
@@ -21,21 +21,23 @@ export const extractOverrides = (
 };
 
 export function getTokenContractAddress(
-  asset: Asset,
+  asset: InternalAsset,
   network: ChainflipNetwork,
 ): string;
 export function getTokenContractAddress(
-  asset: Asset,
+  asset: InternalAsset,
   network: ChainflipNetwork,
   assert: false,
 ): string | undefined;
 export function getTokenContractAddress(
-  asset: Asset,
+  asset: InternalAsset,
   network: ChainflipNetwork,
   assert = true,
 ): string | undefined {
-  if (asset === Assets.FLIP) return ADDRESSES[network].FLIP_CONTRACT_ADDRESS;
-  if (asset === Assets.USDC) return ADDRESSES[network].USDC_CONTRACT_ADDRESS;
+  if (asset === InternalAssets.Flip)
+    return ADDRESSES[network].FLIP_CONTRACT_ADDRESS;
+  if (asset === InternalAssets.Usdc)
+    return ADDRESSES[network].USDC_CONTRACT_ADDRESS;
 
   if (assert) {
     throw new Error('Only FLIP and USDC are supported for now');
@@ -84,7 +86,7 @@ export const getFlipBalance = async (
   network: ChainflipNetwork,
   signer: Signer,
 ): Promise<bigint> => {
-  const flipAddress = getTokenContractAddress('FLIP', network);
+  const flipAddress = getTokenContractAddress(InternalAssets.Flip, network);
   const flip = ERC20__factory.connect(flipAddress, signer);
   return flip.balanceOf(await signer.getAddress());
 };

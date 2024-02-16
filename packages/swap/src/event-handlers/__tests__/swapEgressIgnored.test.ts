@@ -1,4 +1,4 @@
-import { Assets } from '@/shared/enums';
+import { InternalAssets } from '@/shared/enums';
 import metadataMock from './metadata.json';
 import {
   DOT_ADDRESS,
@@ -41,8 +41,8 @@ describe(swapEgressIgnored, () => {
           }`,
           swapExecutedAt: new Date(block.timestamp - 6000),
           swapExecutedBlockIndex: `${block.height}-${event.indexInBlock}`,
-          srcAsset: Assets.ETH,
-          destAsset: Assets.DOT,
+          srcAsset: InternalAssets.Eth,
+          destAsset: InternalAssets.Dot,
           destAddress: DOT_ADDRESS,
           type: 'SWAP',
         },

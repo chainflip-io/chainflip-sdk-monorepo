@@ -11,8 +11,8 @@ describe(getConnectionHandler, () => {
 
     const callback = socket.on.mock.calls[1][1];
 
-    callback({ id: 'string', egress_amount: 1 });
-    callback({ id: 'string', egress_amount: '2' });
+    callback({ id: 'string', output_amount: 1 });
+    callback({ id: 'string', output_amount: '2' });
 
     expect(next).toHaveBeenCalledTimes(1);
   });

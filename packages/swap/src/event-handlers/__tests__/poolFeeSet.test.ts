@@ -21,11 +21,8 @@ describe(newPoolCreated, () => {
     );
     const pool = await prisma.pool.findFirstOrThrow();
 
-    expect(pool).toMatchObject({
+    expect(pool).toMatchSnapshot({
       id: expect.any(Number),
-      baseAsset: newPoolEvent.args.baseAsset.__kind.toUpperCase(),
-      quoteAsset: newPoolEvent.args.quoteAsset.__kind.toUpperCase(),
-      liquidityFeeHundredthPips: newPoolEvent.args.feeHundredthPips,
     });
 
     const { block: poolFeeSetBlock } = poolFeeSetMock;
@@ -43,9 +40,6 @@ describe(newPoolCreated, () => {
 
     expect(pool2).toMatchSnapshot({
       id: expect.any(Number),
-      baseAsset: newPoolEvent.args.baseAsset.__kind.toUpperCase(),
-      quoteAsset: newPoolEvent.args.quoteAsset.__kind.toUpperCase(),
-      liquidityFeeHundredthPips: poolFeeSetEvent.args.feeHundredthPips,
     });
   });
 });

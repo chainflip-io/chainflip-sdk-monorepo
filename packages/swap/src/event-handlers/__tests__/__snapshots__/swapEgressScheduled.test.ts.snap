@@ -10,7 +10,7 @@ exports[`swapEgressScheduled >v120 uses the fee from the event and creates an eg
   "depositReceivedAt": 2022-12-06T14:31:33.000Z,
   "depositReceivedBlockIndex": "20-0",
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
-  "destAsset": "DOT",
+  "destAsset": "Dot",
   "egress": {
     "amount": "78187493520",
     "chain": "Ethereum",
@@ -20,7 +20,7 @@ exports[`swapEgressScheduled >v120 uses the fee from the event and creates an eg
   "fees": [
     {
       "amount": "291",
-      "asset": "DOT",
+      "asset": "Dot",
       "id": Any<BigInt>,
       "swapId": Any<BigInt>,
       "type": "EGRESS",
@@ -29,7 +29,7 @@ exports[`swapEgressScheduled >v120 uses the fee from the event and creates an eg
   "id": Any<BigInt>,
   "intermediateAmount": null,
   "nativeId": 9876545n,
-  "srcAsset": "ETH",
+  "srcAsset": "Eth",
   "swapDepositChannelId": Any<BigInt>,
   "swapExecutedAt": 2022-12-06T14:31:39.000Z,
   "swapExecutedBlockIndex": "120-0",
@@ -51,7 +51,7 @@ exports[`swapEgressScheduled updates an existing swap when the egress amount is 
   "depositReceivedAt": 2022-12-06T14:31:33.000Z,
   "depositReceivedBlockIndex": "20-0",
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
-  "destAsset": "DOT",
+  "destAsset": "Dot",
   "egress": {
     "amount": "0",
     "chain": "Ethereum",
@@ -61,7 +61,7 @@ exports[`swapEgressScheduled updates an existing swap when the egress amount is 
   "fees": [
     {
       "amount": "1000",
-      "asset": "DOT",
+      "asset": "Dot",
       "id": Any<BigInt>,
       "swapId": Any<BigInt>,
       "type": "EGRESS",
@@ -70,7 +70,7 @@ exports[`swapEgressScheduled updates an existing swap when the egress amount is 
   "id": Any<BigInt>,
   "intermediateAmount": null,
   "nativeId": 9876545n,
-  "srcAsset": "ETH",
+  "srcAsset": "Eth",
   "swapDepositChannelId": Any<BigInt>,
   "swapExecutedAt": 2022-12-06T14:31:39.000Z,
   "swapExecutedBlockIndex": "120-0",
@@ -92,7 +92,7 @@ exports[`swapEgressScheduled updates an existing swap when the egress asset is n
   "depositReceivedAt": 2022-12-06T14:31:33.000Z,
   "depositReceivedBlockIndex": "20-0",
   "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
-  "destAsset": "USDC",
+  "destAsset": "Usdc",
   "egress": {
     "amount": "9976511899",
     "chain": "Ethereum",
@@ -102,7 +102,7 @@ exports[`swapEgressScheduled updates an existing swap when the egress asset is n
   "fees": [
     {
       "amount": "23488101",
-      "asset": "USDC",
+      "asset": "Usdc",
       "id": Any<BigInt>,
       "swapId": Any<BigInt>,
       "type": "EGRESS",
@@ -111,7 +111,7 @@ exports[`swapEgressScheduled updates an existing swap when the egress asset is n
   "id": Any<BigInt>,
   "intermediateAmount": null,
   "nativeId": 9876545n,
-  "srcAsset": "ETH",
+  "srcAsset": "Eth",
   "swapDepositChannelId": Any<BigInt>,
   "swapExecutedAt": 2022-12-06T14:31:39.000Z,
   "swapExecutedBlockIndex": "120-0",
@@ -130,8 +130,14 @@ exports[`swapEgressScheduled updates an existing swap when the egress asset is n
     "jsonrpc": "2.0",
     "method": "cf_swap_rate",
     "params": [
-      "ETH",
-      "USDC",
+      {
+        "asset": "ETH",
+        "chain": "Ethereum",
+      },
+      {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
       "0x777777",
       undefined,
     ],
@@ -149,7 +155,7 @@ exports[`swapEgressScheduled updates an existing swap when the egress asset is t
   "depositReceivedAt": 2022-12-06T14:31:33.000Z,
   "depositReceivedBlockIndex": "20-0",
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
-  "destAsset": "DOT",
+  "destAsset": "Dot",
   "egress": {
     "amount": "9992170633",
     "chain": "Ethereum",
@@ -159,7 +165,7 @@ exports[`swapEgressScheduled updates an existing swap when the egress asset is t
   "fees": [
     {
       "amount": "7829367",
-      "asset": "DOT",
+      "asset": "Dot",
       "id": Any<BigInt>,
       "swapId": Any<BigInt>,
       "type": "EGRESS",
@@ -168,7 +174,7 @@ exports[`swapEgressScheduled updates an existing swap when the egress asset is t
   "id": Any<BigInt>,
   "intermediateAmount": null,
   "nativeId": 9876545n,
-  "srcAsset": "ETH",
+  "srcAsset": "Eth",
   "swapDepositChannelId": Any<BigInt>,
   "swapExecutedAt": 2022-12-06T14:31:39.000Z,
   "swapExecutedBlockIndex": "120-0",

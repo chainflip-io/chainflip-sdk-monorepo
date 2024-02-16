@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import * as broker from '@/shared/broker';
+import { getInternalAsset } from '@/shared/enums';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';
@@ -39,11 +40,12 @@ export default async function openSwapDepositChannel(
     env.CHAINFLIP_NETWORK,
   );
 
-  const { destChain, ccmMetadata, ...rest } = input;
+  const { srcChain, srcAsset, destChain, destAsset, ccmMetadata, ...rest } =
+    input;
 
   const chainInfo = await prisma.chainTracking.findFirst({
     where: {
-      chain: input.srcChain,
+      chain: srcChain,
     },
   });
   const estimatedExpiryTime = calculateExpiryTime({
@@ -51,23 +53,19 @@ export default async function openSwapDepositChannel(
     expiryBlock: srcChainExpiryBlock,
   });
 
-  const {
-    issuedBlock,
-    srcChain,
-    channelId,
-    depositAddress: channelDepositAddress,
-    brokerCommissionBps,
-    boostFeeBps,
-  } = await prisma.swapDepositChannel.upsert({
+  const channel = await prisma.swapDepositChannel.upsert({
     where: {
       issuedBlock_srcChain_channelId: {
         channelId: blockInfo.channelId,
         issuedBlock: blockInfo.issuedBlock,
-        srcChain: input.srcChain,
+        srcChain,
       },
     },
     create: {
       ...rest,
+      srcChain,
+      srcAsset: getInternalAsset({ asset: srcAsset, chain: srcChain }),
+      destAsset: getInternalAsset({ asset: destAsset, chain: destChain }),
       depositAddress,
       srcChainExpiryBlock,
       estimatedExpiryAt: estimatedExpiryTime,
@@ -84,11 +82,11 @@ export default async function openSwapDepositChannel(
   });
 
   return {
-    id: `${issuedBlock}-${srcChain}-${channelId}`,
-    depositAddress: channelDepositAddress,
-    brokerCommissionBps,
-    boostFeeBps,
-    issuedBlock,
+    id: `${channel.issuedBlock}-${channel.srcChain}-${channel.channelId}`,
+    depositAddress: channel.depositAddress,
+    brokerCommissionBps: channel.brokerCommissionBps,
+    boostFeeBps: channel.boostFeeBps,
+    issuedBlock: channel.issuedBlock,
     srcChainExpiryBlock,
     estimatedExpiryTime: estimatedExpiryTime?.valueOf(),
   };

@@ -7,14 +7,10 @@ import {
   Chain,
   ChainflipNetworks,
   UncheckedAssetAndChain,
+  ChainAssetMap,
 } from '@/shared/enums';
 import { assert } from '@/shared/guards';
-import {
-  ChainAssetMap,
-  Environment,
-  RpcConfig,
-  getEnvironment,
-} from '@/shared/rpc';
+import { Environment, RpcConfig, getEnvironment } from '@/shared/rpc';
 import { validateSwapAmount } from '@/shared/rpc/utils';
 import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
 import type { TokenSwapParams } from '@/shared/vault/schemas';

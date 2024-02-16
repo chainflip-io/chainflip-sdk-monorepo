@@ -1,6 +1,10 @@
 import { AlchemyProvider, getDefaultProvider, Wallet } from 'ethers';
 import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
-import { assetChains, Assets, ChainflipNetworks } from '@/shared/enums';
+import {
+  InternalAssets,
+  ChainflipNetworks,
+  assetConstants,
+} from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import {
   executeSwap,
@@ -11,12 +15,12 @@ import { askForPrivateKey, getEthNetwork, cliNetworks } from '../utils';
 
 export const yargsOptions = {
   'src-asset': {
-    choices: Object.values(Assets),
+    choices: Object.values(InternalAssets),
     demandOption: true,
     describe: 'The asset to swap from',
   },
   'dest-asset': {
-    choices: Object.values(Assets),
+    choices: Object.values(InternalAssets),
     demandOption: true,
     describe: 'The asset to swap to',
   },
@@ -99,10 +103,10 @@ export default async function cliExecuteSwap(
 
   const receipt = await executeSwap(
     {
-      srcChain: assetChains[args.srcAsset],
-      srcAsset: args.srcAsset,
-      destChain: assetChains[args.destAsset],
-      destAsset: args.destAsset,
+      srcChain: assetConstants[args.srcAsset].chain,
+      srcAsset: assetConstants[args.srcAsset].asset,
+      destChain: assetConstants[args.destAsset].chain,
+      destAsset: assetConstants[args.destAsset].asset,
       amount: args.amount,
       destAddress: args.destAddress,
       ccmMetadata,

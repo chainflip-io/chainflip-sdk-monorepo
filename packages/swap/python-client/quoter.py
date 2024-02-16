@@ -28,7 +28,7 @@ class Quoter(ABC):
     async def on_quote_request(self, quote: Quote) -> Tuple[str, str]:
         """
         :param quote: Quote object
-        :return: (intermediate_amount, egress_amount)
+        :return: (intermediate_amount, output_amount)
         """
         pass
 
@@ -57,12 +57,12 @@ class Quoter(ABC):
         @self.sio.event
         async def quote_request(data: Dict[str, Any]):
             quote = Quote(data)
-            (intermediate_amount, egress_amount) = await self.on_quote_request(quote)
+            (intermediate_amount, output_amount) = await self.on_quote_request(quote)
             await self.send_quote(
                 {
                     "id": quote.id,
                     "intermediate_amount": intermediate_amount,
-                    "egress_amount": egress_amount,
+                    "output_amount": output_amount,
                 }
             )
 

@@ -1,4 +1,4 @@
-import { Assets } from '@/shared/enums';
+import { InternalAssets } from '@/shared/enums';
 import { getPools } from '@/swap/utils/pools';
 import prisma from '../../client';
 
@@ -14,13 +14,13 @@ describe('pools', () => {
       await prisma.pool.createMany({
         data: [
           {
-            baseAsset: 'FLIP',
-            quoteAsset: 'USDC',
+            baseAsset: 'Flip',
+            quoteAsset: 'Usdc',
             liquidityFeeHundredthPips: 1000,
           },
           {
-            baseAsset: 'ETH',
-            quoteAsset: 'USDC',
+            baseAsset: 'Eth',
+            quoteAsset: 'Usdc',
             liquidityFeeHundredthPips: 2000,
           },
         ],
@@ -28,36 +28,36 @@ describe('pools', () => {
     });
 
     it('returns pools for quote with intermediate amount', async () => {
-      const pools = await getPools('FLIP', 'ETH');
+      const pools = await getPools('Flip', 'Eth');
 
       expect(pools).toHaveLength(2);
       expect(pools[0]).toMatchObject({
-        baseAsset: Assets.FLIP,
-        quoteAsset: Assets.USDC,
+        baseAsset: InternalAssets.Flip,
+        quoteAsset: InternalAssets.Usdc,
       });
       expect(pools[1]).toMatchObject({
-        baseAsset: Assets.ETH,
-        quoteAsset: Assets.USDC,
+        baseAsset: InternalAssets.Eth,
+        quoteAsset: InternalAssets.Usdc,
       });
     });
 
     it('returns pools for quote from USDC', async () => {
-      const pools = await getPools('USDC', 'ETH');
+      const pools = await getPools('Usdc', 'Eth');
 
       expect(pools).toHaveLength(1);
       expect(pools[0]).toMatchObject({
-        baseAsset: Assets.ETH,
-        quoteAsset: Assets.USDC,
+        baseAsset: InternalAssets.Eth,
+        quoteAsset: InternalAssets.Usdc,
       });
     });
 
     it('returns pools for quote to USDC', async () => {
-      const pools = await getPools('FLIP', 'USDC');
+      const pools = await getPools('Flip', 'Usdc');
 
       expect(pools).toHaveLength(1);
       expect(pools[0]).toMatchObject({
-        baseAsset: Assets.FLIP,
-        quoteAsset: Assets.USDC,
+        baseAsset: InternalAssets.Flip,
+        quoteAsset: InternalAssets.Usdc,
       });
     });
   });

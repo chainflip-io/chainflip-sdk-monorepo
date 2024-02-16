@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { u64, u128, chainflipAssetEnum } from '@/shared/parsers';
+import { u64, u128, internalAssetEnum } from '@/shared/parsers';
 import { encodedAddress } from './common';
 import { EventHandlerArgs } from '.';
 
@@ -14,7 +14,7 @@ const vaultSwapOrigin = z.object({
 });
 
 const swapAmountTooLowArgs = z.object({
-  asset: chainflipAssetEnum,
+  asset: internalAssetEnum,
   amount: u128,
   destinationAddress: encodedAddress,
   origin: z.union([depositChannelSwapOrigin, vaultSwapOrigin]),

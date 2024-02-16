@@ -54,10 +54,10 @@ describe(depositIgnored, () => {
     const channel = await createDepositChannel({
       id: 100n,
       srcChain: 'Ethereum',
-      srcAsset: 'ETH',
+      srcAsset: 'Eth',
       depositAddress: ETH_ADDRESS,
       channelId: 99n,
-      destAsset: 'DOT',
+      destAsset: 'Dot',
       destAddress: DOT_ADDRESS,
     });
 
@@ -89,7 +89,7 @@ describe(depositIgnored, () => {
         destAddress: DOT_ADDRESS,
         destChain: 'Polkadot',
         depositAmount: ethDepositIgnoredMock.eventContext.event.args.amount,
-        srcAsset: 'ETH',
+        srcAsset: 'Eth',
         srcChain: 'Ethereum',
         swapDepositChannelId: 100n,
         reason: 'BelowMinimumDeposit',
@@ -103,10 +103,10 @@ describe(depositIgnored, () => {
     const channel = await createDepositChannel({
       id: 100n,
       srcChain: 'Polkadot',
-      srcAsset: 'DOT',
+      srcAsset: 'Dot',
       depositAddress: DOT_ADDRESS,
       channelId: 99n,
-      destAsset: 'ETH',
+      destAsset: 'Eth',
       destAddress: ETH_ADDRESS,
     });
 
@@ -138,7 +138,7 @@ describe(depositIgnored, () => {
         destAddress: ETH_ADDRESS,
         destChain: 'Ethereum',
         depositAmount: dotDepositIgnoredMock.eventContext.event.args.amount,
-        srcAsset: 'DOT',
+        srcAsset: 'Dot',
         srcChain: 'Polkadot',
         swapDepositChannelId: 100n,
         reason: 'BelowMinimumDeposit',
@@ -152,10 +152,10 @@ describe(depositIgnored, () => {
     const channel = await createDepositChannel({
       id: 100n,
       srcChain: 'Bitcoin',
-      srcAsset: 'BTC',
+      srcAsset: 'Btc',
       depositAddress: BTC_ADDRESS,
       channelId: 99n,
-      destAsset: 'ETH',
+      destAsset: 'Eth',
       destAddress: ETH_ADDRESS,
     });
 
@@ -187,7 +187,7 @@ describe(depositIgnored, () => {
         destAddress: ETH_ADDRESS,
         destChain: 'Ethereum',
         depositAmount: btcDepositIgnoredMock.eventContext.event.args.amount,
-        srcAsset: 'BTC',
+        srcAsset: 'Btc',
         srcChain: 'Bitcoin',
         swapDepositChannelId: 100n,
         failedAt: new Date(ethDepositIgnoredMock.block.timestamp),

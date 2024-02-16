@@ -1,4 +1,4 @@
-import { Assets } from '@/shared/enums';
+import { InternalAssets } from '@/shared/enums';
 import {
   createDepositChannel,
   swapScheduledBtcDepositChannelMock,
@@ -21,8 +21,8 @@ describe(swapScheduled, () => {
     beforeEach(async () => {
       dotSwapDepositChannel = await createDepositChannel({
         srcChain: 'Polkadot',
-        srcAsset: Assets.DOT,
-        destAsset: Assets.BTC,
+        srcAsset: InternalAssets.Dot,
+        destAsset: InternalAssets.Btc,
         depositAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         destAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
         isExpired: true,
@@ -34,8 +34,8 @@ describe(swapScheduled, () => {
       });
       btcSwapDepositChannel = await createDepositChannel({
         srcChain: 'Bitcoin',
-        srcAsset: Assets.BTC,
-        destAsset: Assets.ETH,
+        srcAsset: InternalAssets.Btc,
+        destAsset: InternalAssets.Eth,
         depositAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
         destAddress: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
         isExpired: true,

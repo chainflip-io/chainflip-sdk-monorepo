@@ -1,17 +1,17 @@
 import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
-import { Assets, Chains } from '@/shared/enums';
+import { InternalAssets, Chains, assetConstants } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { CcmMetadata } from '@/shared/schemas';
 import { broker } from '../lib';
 
 export const yargsOptions = {
   'src-asset': {
-    choices: Object.values(Assets),
-    describe: 'The asset to swap from',
+    choices: Object.values(InternalAssets),
     demandOption: true,
+    describe: 'The asset to swap from',
   },
   'dest-asset': {
-    choices: Object.values(Assets),
+    choices: Object.values(InternalAssets),
     demandOption: true,
     describe: 'The asset to swap to',
   },
@@ -23,16 +23,6 @@ export const yargsOptions = {
   'broker-url': {
     type: 'string',
     describe: 'The broker URL',
-    demandOption: true,
-  },
-  'src-chain': {
-    choices: Object.values(Chains),
-    describe: 'The chain to swap from',
-    demandOption: true,
-  },
-  'dest-chain': {
-    choices: Object.values(Chains),
-    describe: 'The chain to swap to',
     demandOption: true,
   },
   message: {
@@ -66,11 +56,11 @@ export default async function cliRequestSwapDepositAddress(
   }
   const result = await broker.requestSwapDepositAddress(
     {
-      srcAsset: args.srcAsset,
-      destAsset: args.destAsset,
+      srcChain: assetConstants[args.srcAsset].chain,
+      srcAsset: assetConstants[args.srcAsset].asset,
+      destChain: assetConstants[args.destAsset].chain,
+      destAsset: assetConstants[args.destAsset].asset,
       destAddress: args.destAddress,
-      srcChain: args.srcChain,
-      destChain: args.destChain,
       ccmMetadata,
     },
     {

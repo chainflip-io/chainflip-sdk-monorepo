@@ -17,15 +17,14 @@ export {
 export {
   type Chain,
   type Asset,
+  type InternalAsset,
   type ChainflipNetwork,
   Chains,
   Assets,
+  InternalAssets,
   ChainflipNetworks,
-  assetChains,
-  assetDecimals,
-  assetContractIds,
-  chainAssets,
-  chainContractIds,
+  assetConstants,
+  chainConstants,
 } from '@/shared/enums';
 export * as broker from '@/shared/broker';
 export { default as RedisClient } from '@/shared/node-apis/redis';

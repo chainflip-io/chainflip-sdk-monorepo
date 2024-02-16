@@ -1,4 +1,4 @@
-import { Chain, Asset, chainAssets } from '@/shared/enums';
+import { Chain, Asset, AssetOfChain, InternalAsset } from '@/shared/enums';
 import { CcmMetadata, QuoteQueryResponse, SwapFee } from '@/shared/schemas';
 
 export interface ChainData {
@@ -8,10 +8,10 @@ export interface ChainData {
 }
 
 export type AssetData = {
-  [K in keyof typeof chainAssets]: {
-    chainflipId: string;
-    asset: (typeof chainAssets)[K][number];
-    chain: K;
+  [C in Chain]: {
+    chainflipId: InternalAsset;
+    asset: AssetOfChain<C>;
+    chain: C;
     contractAddress: string | undefined;
     decimals: number;
     name: string;
@@ -21,12 +21,12 @@ export type AssetData = {
     maximumSwapAmount: string | null;
     minimumEgressAmount: string;
   };
-}[keyof typeof chainAssets];
+}[Chain];
 
 interface ChainsAndAssets {
   srcChain: Chain;
-  destChain: Chain;
   srcAsset: Asset;
+  destChain: Chain;
   destAsset: Asset;
 }
 

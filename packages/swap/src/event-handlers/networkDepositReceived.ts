@@ -4,19 +4,19 @@ import { z } from 'zod';
 import { encodeAddress as encodeBitcoinAddress } from '@/shared/bitcoin';
 import {
   u128,
-  chainflipAssetEnum,
+  internalAssetEnum,
   hexString,
   DOT_PREFIX,
 } from '@/shared/parsers';
 import env from '../config/env';
-import { Asset } from '../enums';
+import { InternalAsset } from '../enums';
 import logger from '../utils/logger';
 import { EventHandlerArgs } from './index';
 
 export const depositReceivedArgs = z
   .object({
     amount: u128,
-    asset: chainflipAssetEnum,
+    asset: internalAssetEnum,
     depositAddress: z.union([
       z
         .object({ __kind: z.literal('Taproot'), value: hexString })
@@ -31,12 +31,17 @@ export const depositReceivedArgs = z
     ]),
   })
   .refine(
-    (args): args is { amount: bigint; asset: Asset; depositAddress: string } =>
-      args.depositAddress !== null,
+    (
+      args,
+    ): args is {
+      amount: bigint;
+      asset: InternalAsset;
+      depositAddress: string;
+    } => args.depositAddress !== null,
     { message: 'failed to parse bitcoin deposit address' },
   )
   .transform((args) => {
-    if (args.asset === 'DOT') {
+    if (args.asset === 'Dot') {
       return {
         ...args,
         depositAddress: encodeAddress(args.depositAddress, DOT_PREFIX),

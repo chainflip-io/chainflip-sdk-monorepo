@@ -1,16 +1,12 @@
 import { getTokenContractAddress } from '@/shared/contracts';
 import {
-  Asset,
-  AssetAndChain,
-  assetChains,
-  assetDecimals,
-  Assets,
+  InternalAsset,
   ChainflipNetwork,
   isTestnet,
+  readChainAssetMap,
+  assetConstants,
 } from '@/shared/enums';
 import type { Environment } from '@/shared/rpc';
-import { readAssetValue } from '@/shared/rpc/utils';
-import { screamingSnakeToPascalCase } from '@/shared/strings';
 import type { AssetData } from './types';
 
 type AssetFn = (
@@ -18,46 +14,35 @@ type AssetFn = (
   env: Pick<Environment, 'swapping' | 'ingressEgress'>,
 ) => AssetData;
 
-const assetName: Record<Asset, string> = {
-  [Assets.ETH]: 'Ether',
-  [Assets.USDC]: 'USDC',
-  [Assets.FLIP]: 'FLIP',
-  [Assets.DOT]: 'Polkadot',
-  [Assets.BTC]: 'Bitcoin',
-};
-
 const assetFactory =
-  (asset: Asset): AssetFn =>
-  (network, env) => {
-    const assetAndChain = { asset, chain: assetChains[asset] } as AssetAndChain;
-
-    return {
-      asset,
-      chain: assetChains[asset],
+  (asset: InternalAsset): AssetFn =>
+  (network, env) =>
+    ({
+      chainflipId: asset,
+      asset: assetConstants[asset].asset,
+      chain: assetConstants[asset].chain,
       contractAddress: getTokenContractAddress(asset, network, false),
-      decimals: assetDecimals[asset],
-      name: assetName[asset],
-      symbol: asset,
-      chainflipId: screamingSnakeToPascalCase(asset),
+      decimals: assetConstants[asset].decimals,
+      name: assetConstants[asset].name,
+      symbol: assetConstants[asset].asset,
       isMainnet: !isTestnet(network),
-      minimumSwapAmount: readAssetValue(
+      minimumSwapAmount: readChainAssetMap(
         env.ingressEgress.minimumDepositAmounts,
-        assetAndChain,
+        assetConstants[asset],
       ).toString(),
       maximumSwapAmount:
-        readAssetValue(
+        readChainAssetMap(
           env.swapping.maximumSwapAmounts,
-          assetAndChain,
+          assetConstants[asset],
         )?.toString() ?? null,
-      minimumEgressAmount: readAssetValue(
+      minimumEgressAmount: readChainAssetMap(
         env.ingressEgress.minimumEgressAmounts,
-        assetAndChain,
+        assetConstants[asset],
       ).toString(),
-    } as AssetData;
-  };
+    }) as AssetData;
 
-export const eth$ = assetFactory('ETH');
-export const usdc$ = assetFactory('USDC');
-export const flip$ = assetFactory('FLIP');
-export const dot$ = assetFactory('DOT');
-export const btc$ = assetFactory('BTC');
+export const eth$ = assetFactory('Eth');
+export const usdc$ = assetFactory('Usdc');
+export const flip$ = assetFactory('Flip');
+export const dot$ = assetFactory('Dot');
+export const btc$ = assetFactory('Btc');

@@ -2,13 +2,13 @@ import { Metadata, TypeRegistry } from '@polkadot/types';
 import { BN } from '@polkadot/util';
 import assert from 'assert';
 import { z } from 'zod';
-import { assetChains } from '@/shared/enums';
+import { assetConstants } from '@/shared/enums';
 import {
   btcAddress,
-  chainflipChain,
   dotAddress,
   hexString,
   unsignedInteger,
+  chainEnum,
 } from '@/shared/parsers';
 import * as rpc from '@/shared/rpc';
 import { Prisma } from '../client';
@@ -16,10 +16,7 @@ import env from '../config/env';
 import { CacheMap } from '../utils/dataStructures';
 import type { EventHandlerArgs } from '.';
 
-export const egressId = z.tuple([
-  z.object({ __kind: chainflipChain }).transform(({ __kind }) => __kind),
-  unsignedInteger,
-]);
+export const egressId = z.tuple([chainEnum, unsignedInteger]);
 
 const ethChainAddress = z.object({
   __kind: z.literal('Eth'),
@@ -41,7 +38,7 @@ export const encodedAddress = z
   .transform(
     ({ __kind, value }) =>
       ({
-        chain: assetChains[__kind.toUpperCase() as Uppercase<typeof __kind>],
+        chain: assetConstants[__kind].chain,
         address: value,
       }) as const,
   );

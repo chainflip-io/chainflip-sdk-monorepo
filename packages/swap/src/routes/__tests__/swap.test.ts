@@ -3,7 +3,7 @@ import * as crypto from 'crypto';
 import { Server } from 'http';
 import request from 'supertest';
 import * as broker from '@/shared/broker';
-import { Assets } from '@/shared/enums';
+import { Assets, getInternalAsset, InternalAssets } from '@/shared/enums';
 import { environment } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
 import prisma from '../../client';
@@ -227,8 +227,8 @@ describe('server', () => {
             swapInputAmount: '10',
             depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
             depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
-            srcAsset: Assets.ETH,
-            destAsset: Assets.DOT,
+            srcAsset: InternalAssets.Eth,
+            destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
           },
@@ -281,20 +281,20 @@ describe('server', () => {
               create: [
                 {
                   type: 'NETWORK',
-                  asset: 'USDC',
+                  asset: 'Usdc',
                   amount: '10',
                 },
                 {
                   type: 'LIQUIDITY',
-                  asset: 'ETH',
+                  asset: 'Eth',
                   amount: '5',
                 },
               ],
             },
             swapExecutedAt: new Date(RECEIVED_TIMESTAMP + 6000),
             swapExecutedBlockIndex: `200-3`,
-            srcAsset: Assets.ETH,
-            destAsset: Assets.DOT,
+            srcAsset: InternalAssets.Eth,
+            destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
           },
@@ -362,12 +362,12 @@ describe('server', () => {
               create: [
                 {
                   type: 'NETWORK',
-                  asset: 'USDC',
+                  asset: 'Usdc',
                   amount: '10',
                 },
                 {
                   type: 'LIQUIDITY',
-                  asset: 'ETH',
+                  asset: 'Eth',
                   amount: '5',
                 },
               ],
@@ -383,8 +383,8 @@ describe('server', () => {
                 nativeId: 1n,
               },
             },
-            srcAsset: Assets.ETH,
-            destAsset: Assets.DOT,
+            srcAsset: InternalAssets.Eth,
+            destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
           },
@@ -458,12 +458,12 @@ describe('server', () => {
               create: [
                 {
                   type: 'NETWORK',
-                  asset: 'USDC',
+                  asset: 'Usdc',
                   amount: '10',
                 },
                 {
                   type: 'LIQUIDITY',
-                  asset: 'ETH',
+                  asset: 'Eth',
                   amount: '5',
                 },
               ],
@@ -487,8 +487,8 @@ describe('server', () => {
                 },
               },
             },
-            srcAsset: Assets.ETH,
-            destAsset: Assets.DOT,
+            srcAsset: InternalAssets.Eth,
+            destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
           },
@@ -560,12 +560,12 @@ describe('server', () => {
               create: [
                 {
                   type: 'NETWORK',
-                  asset: 'USDC',
+                  asset: 'Usdc',
                   amount: '10',
                 },
                 {
                   type: 'LIQUIDITY',
-                  asset: 'ETH',
+                  asset: 'Eth',
                   amount: '5',
                 },
               ],
@@ -589,8 +589,8 @@ describe('server', () => {
                 },
               },
             },
-            srcAsset: Assets.ETH,
-            destAsset: Assets.DOT,
+            srcAsset: InternalAssets.Eth,
+            destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
           },
@@ -662,12 +662,12 @@ describe('server', () => {
               create: [
                 {
                   type: 'NETWORK',
-                  asset: 'USDC',
+                  asset: 'Usdc',
                   amount: '10',
                 },
                 {
                   type: 'LIQUIDITY',
-                  asset: 'ETH',
+                  asset: 'Eth',
                   amount: '5',
                 },
               ],
@@ -693,8 +693,8 @@ describe('server', () => {
                 },
               },
             },
-            srcAsset: Assets.ETH,
-            destAsset: Assets.DOT,
+            srcAsset: InternalAssets.Eth,
+            destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
           },
@@ -768,12 +768,12 @@ describe('server', () => {
               create: [
                 {
                   type: 'NETWORK',
-                  asset: 'USDC',
+                  asset: 'Usdc',
                   amount: '10',
                 },
                 {
                   type: 'LIQUIDITY',
-                  asset: 'ETH',
+                  asset: 'Eth',
                   amount: '5',
                 },
               ],
@@ -799,8 +799,8 @@ describe('server', () => {
                 },
               },
             },
-            srcAsset: Assets.ETH,
-            destAsset: Assets.DOT,
+            srcAsset: InternalAssets.Eth,
+            destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
           },
@@ -868,7 +868,7 @@ describe('server', () => {
         data: {
           reason: 'BelowMinimumDeposit',
           swapDepositChannelId: channel.id,
-          srcAsset: 'ETH',
+          srcAsset: 'Eth',
           srcChain: 'Ethereum',
           destAddress: channel.destAddress,
           destChain: 'Polkadot',
@@ -897,7 +897,7 @@ describe('server', () => {
       await prisma.failedSwap.create({
         data: {
           reason: 'BelowMinimumDeposit',
-          srcAsset: 'FLIP',
+          srcAsset: 'Flip',
           srcChain: 'Ethereum',
           destAddress: '0xcafebabe',
           destChain: 'Polkadot',
@@ -929,20 +929,20 @@ describe('server', () => {
               create: [
                 {
                   type: 'NETWORK',
-                  asset: 'USDC',
+                  asset: 'Usdc',
                   amount: '10',
                 },
                 {
                   type: 'LIQUIDITY',
-                  asset: 'ETH',
+                  asset: 'Eth',
                   amount: '5',
                 },
               ],
             },
             swapExecutedAt: new Date(RECEIVED_TIMESTAMP + 6000),
             swapExecutedBlockIndex: '200-3',
-            srcAsset: Assets.ETH,
-            destAsset: Assets.DOT,
+            srcAsset: InternalAssets.Eth,
+            destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
           },
@@ -1001,12 +1001,12 @@ describe('server', () => {
               create: [
                 {
                   type: 'NETWORK',
-                  asset: 'USDC',
+                  asset: 'Usdc',
                   amount: '10',
                 },
                 {
                   type: 'LIQUIDITY',
-                  asset: 'ETH',
+                  asset: 'Eth',
                   amount: '5',
                 },
               ],
@@ -1032,8 +1032,8 @@ describe('server', () => {
                 },
               },
             },
-            srcAsset: Assets.ETH,
-            destAsset: Assets.DOT,
+            srcAsset: InternalAssets.Eth,
+            destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
           },
@@ -1043,7 +1043,7 @@ describe('server', () => {
         data: {
           reason: 'BelowMinimumDeposit',
           swapDepositChannelId: channel.id,
-          srcAsset: 'ETH',
+          srcAsset: 'Eth',
           srcChain: 'Ethereum',
           destAddress: channel.destAddress,
           destChain: 'Polkadot',
@@ -1076,8 +1076,8 @@ describe('server', () => {
         data: {
           txHash,
           nativeId,
-          srcAsset: Assets.ETH,
-          destAsset: Assets.DOT,
+          srcAsset: InternalAssets.Eth,
+          destAsset: InternalAssets.Dot,
           destAddress: DOT_ADDRESS,
           depositAmount: '10',
           swapInputAmount: '10',
@@ -1085,12 +1085,12 @@ describe('server', () => {
             create: [
               {
                 type: 'NETWORK',
-                asset: 'USDC',
+                asset: 'Usdc',
                 amount: '10',
               },
               {
                 type: 'LIQUIDITY',
-                asset: 'ETH',
+                asset: 'Eth',
                 amount: '5',
               },
             ],
@@ -1139,8 +1139,8 @@ describe('server', () => {
       await prisma.swap.create({
         data: {
           nativeId,
-          srcAsset: Assets.ETH,
-          destAsset: Assets.DOT,
+          srcAsset: InternalAssets.Eth,
+          destAsset: InternalAssets.Dot,
           destAddress: DOT_ADDRESS,
           depositAmount: '10',
           swapInputAmount: '10',
@@ -1148,12 +1148,12 @@ describe('server', () => {
             create: [
               {
                 type: 'NETWORK',
-                asset: 'USDC',
+                asset: 'Usdc',
                 amount: '10',
               },
               {
                 type: 'LIQUIDITY',
-                asset: 'ETH',
+                asset: 'Eth',
                 amount: '5',
               },
             ],
@@ -1272,9 +1272,15 @@ describe('server', () => {
 
       expect(swapDepositChannel).toMatchObject({
         id: expect.any(BigInt),
-        srcAsset: requestBody.srcAsset,
+        srcAsset: getInternalAsset({
+          asset: requestBody.srcAsset,
+          chain: requestBody.srcChain,
+        }),
         depositAddress: address,
-        destAsset: requestBody.destAsset,
+        destAsset: getInternalAsset({
+          asset: requestBody.destAsset,
+          chain: requestBody.destChain,
+        }),
         destAddress: requestBody.destAddress,
         issuedBlock,
         channelId,

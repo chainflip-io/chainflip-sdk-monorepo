@@ -1,6 +1,6 @@
 import assert from 'assert';
 import express from 'express';
-import { assetChains } from '@/shared/enums';
+import { assetConstants } from '@/shared/enums';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { screamingSnakeToPascalCase } from '@/shared/strings';
 import { asyncHandler, maintenanceMiddleware } from './common';
@@ -190,23 +190,23 @@ router.get(
       state = State.AwaitingDeposit;
     }
 
-    const srcAsset = readField(
+    const internalSrcAsset = readField(
       swap,
       swapDepositChannel,
       failedSwap,
       'srcAsset',
     );
-    const destAsset = readField(swap, swapDepositChannel, 'destAsset');
+    const internalDestAsset = readField(swap, swapDepositChannel, 'destAsset');
 
     let pendingDeposit;
     if (
-      srcAsset &&
+      internalSrcAsset &&
       state === State.AwaitingDeposit &&
       swapDepositChannel?.depositAddress
     ) {
       pendingDeposit = await getPendingDeposit(
-        assetChains[srcAsset],
-        srcAsset,
+        assetConstants[internalSrcAsset].chain,
+        assetConstants[internalSrcAsset].asset,
         swapDepositChannel.depositAddress,
       );
     }
@@ -226,10 +226,10 @@ router.get(
     const response = {
       state,
       type: swap?.type,
-      srcChain: srcAsset && assetChains[srcAsset],
-      destChain: destAsset && assetChains[destAsset],
-      srcAsset,
-      destAsset,
+      srcChain: internalSrcAsset && assetConstants[internalSrcAsset].chain,
+      srcAsset: internalSrcAsset && assetConstants[internalSrcAsset].asset,
+      destChain: internalDestAsset && assetConstants[internalDestAsset].chain,
+      destAsset: internalDestAsset && assetConstants[internalDestAsset].asset,
       destAddress: readField(
         swap,
         swapDepositChannel,
@@ -264,8 +264,8 @@ router.get(
       feesPaid:
         swap?.fees.map((fee) => ({
           type: fee.type,
-          chain: assetChains[fee.asset],
-          asset: fee.asset,
+          chain: assetConstants[fee.asset].chain,
+          asset: assetConstants[fee.asset].asset,
           amount: fee.amount.toFixed(),
         })) ?? [],
       broadcastRequestedAt: swap?.egress?.broadcast?.requestedAt?.valueOf(),

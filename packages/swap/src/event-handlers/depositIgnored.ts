@@ -2,10 +2,10 @@ import { type Chain } from '.prisma/client';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { z } from 'zod';
 import { encodeAddress as encodeBitcoinAddress } from '@/shared/bitcoin';
-import { Asset, assetChains } from '@/shared/enums';
+import { assetConstants, InternalAsset } from '@/shared/enums';
 import {
   DOT_PREFIX,
-  chainflipAssetEnum,
+  internalAssetEnum,
   hexString,
   u128,
 } from '@/shared/parsers';
@@ -14,7 +14,7 @@ import type { EventHandlerArgs } from './index';
 
 const depositIgnoredArgs = z
   .object({
-    asset: chainflipAssetEnum,
+    asset: internalAssetEnum,
     amount: u128,
     depositAddress: z.union([
       z
@@ -30,12 +30,17 @@ const depositIgnoredArgs = z
     ]),
   })
   .refine(
-    (args): args is { amount: bigint; asset: Asset; depositAddress: string } =>
-      args.depositAddress !== null,
+    (
+      args,
+    ): args is {
+      amount: bigint;
+      asset: InternalAsset;
+      depositAddress: string;
+    } => args.depositAddress !== null,
     { message: 'failed to parse bitcoin deposit address' },
   )
   .transform((args) => {
-    if (args.asset === 'DOT') {
+    if (args.asset === 'Dot') {
       return {
         ...args,
         depositAddress: encodeAddress(args.depositAddress, DOT_PREFIX),
@@ -66,7 +71,7 @@ export const depositIgnored =
         srcAsset: channel.srcAsset,
         srcChain: chain,
         destAddress: channel.destAddress,
-        destChain: assetChains[channel.destAsset],
+        destChain: assetConstants[channel.destAsset].chain,
         depositAmount: amount.toString(),
         failedAt: new Date(block.timestamp),
         failedBlockIndex: `${block.height}-${event.indexInBlock}`,

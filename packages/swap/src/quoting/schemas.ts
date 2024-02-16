@@ -6,21 +6,21 @@ export const marketMakerResponseSchema = z.union([
     .object({
       id: z.string(),
       intermediate_amount: numericString,
-      egress_amount: numericString,
+      output_amount: numericString,
     })
     .transform(({ id, ...rest }) => ({
       id,
       intermediateAmount: rest.intermediate_amount,
-      egressAmount: rest.egress_amount,
+      outputAmount: rest.output_amount,
     })),
   z
     .object({
       id: z.string(),
-      egress_amount: numericString,
+      output_amount: numericString,
     })
     .transform(({ id, ...rest }) => ({
       id,
-      egressAmount: rest.egress_amount,
+      outputAmount: rest.output_amount,
     })),
 ]);
 export type MarketMakerQuote = z.infer<typeof marketMakerResponseSchema>;
@@ -33,6 +33,6 @@ export const swapRateResponseSchema = z
   })
   .transform((rate) => ({
     intermediateAmount: rate.intermediary?.toString(),
-    egressAmount: rate.output.toString(),
+    outputAmount: rate.output.toString(),
   }));
 export type BrokerQuote = z.infer<typeof swapRateResponseSchema>;

@@ -209,14 +209,14 @@ describe('batch swap flow', () => {
     await prisma.pool.createMany({
       data: [
         {
-          baseAsset: 'ETH',
-          quoteAsset: 'USDC',
+          baseAsset: 'Eth',
+          quoteAsset: 'Usdc',
           liquidityFeeHundredthPips: 1000,
         },
 
         {
-          baseAsset: 'BTC',
-          quoteAsset: 'USDC',
+          baseAsset: 'Btc',
+          quoteAsset: 'Usdc',
           liquidityFeeHundredthPips: 1500,
         },
       ],

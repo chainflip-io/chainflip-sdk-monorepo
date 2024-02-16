@@ -35,7 +35,7 @@ exports[`batch swap flow handles all the events: egress 1`] = `
 exports[`batch swap flow handles all the events: fee 0 1`] = `
 {
   "amount": "1000",
-  "asset": "ETH",
+  "asset": "Eth",
   "id": Any<BigInt>,
   "swapId": Any<BigInt>,
   "type": "INGRESS",
@@ -45,7 +45,7 @@ exports[`batch swap flow handles all the events: fee 0 1`] = `
 exports[`batch swap flow handles all the events: fee 1 1`] = `
 {
   "amount": "990109",
-  "asset": "USDC",
+  "asset": "Usdc",
   "id": Any<BigInt>,
   "swapId": Any<BigInt>,
   "type": "NETWORK",
@@ -55,7 +55,7 @@ exports[`batch swap flow handles all the events: fee 1 1`] = `
 exports[`batch swap flow handles all the events: fee 2 1`] = `
 {
   "amount": "100000000000000",
-  "asset": "ETH",
+  "asset": "Eth",
   "id": Any<BigInt>,
   "swapId": Any<BigInt>,
   "type": "LIQUIDITY",
@@ -65,7 +65,7 @@ exports[`batch swap flow handles all the events: fee 2 1`] = `
 exports[`batch swap flow handles all the events: fee 3 1`] = `
 {
   "amount": "1485163",
-  "asset": "USDC",
+  "asset": "Usdc",
   "id": Any<BigInt>,
   "swapId": Any<BigInt>,
   "type": "LIQUIDITY",
@@ -75,7 +75,7 @@ exports[`batch swap flow handles all the events: fee 3 1`] = `
 exports[`batch swap flow handles all the events: fee 4 1`] = `
 {
   "amount": "349476",
-  "asset": "BTC",
+  "asset": "Btc",
   "id": Any<BigInt>,
   "swapId": Any<BigInt>,
   "type": "EGRESS",
@@ -92,12 +92,12 @@ exports[`batch swap flow handles all the events: swap 1`] = `
   "depositReceivedAt": 1970-01-01T00:00:06.000Z,
   "depositReceivedBlockIndex": "1-20",
   "destAddress": "mp3QSoPN2iLKrEhdz9Qb9DSJQAuNwDDa77",
-  "destAsset": "BTC",
+  "destAsset": "Btc",
   "egressId": Any<BigInt>,
   "id": Any<BigInt>,
   "intermediateAmount": "990109107",
   "nativeId": 1n,
-  "srcAsset": "ETH",
+  "srcAsset": "Eth",
   "swapDepositChannelId": Any<BigInt>,
   "swapExecutedAt": 1970-01-01T00:00:06.000Z,
   "swapExecutedBlockIndex": "1-250",

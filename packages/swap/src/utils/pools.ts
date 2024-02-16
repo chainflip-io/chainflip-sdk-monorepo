@@ -1,17 +1,17 @@
-import { Asset, Assets } from '@/shared/enums';
+import { InternalAsset, InternalAssets } from '@/shared/enums';
 import prisma, { Pool } from '@/swap/client';
 
 export const getPools = async (
-  srcAsset: Asset,
-  destAsset: Asset,
+  srcAsset: InternalAsset,
+  destAsset: InternalAsset,
 ): Promise<Pool[]> => {
-  if (srcAsset === Assets.USDC || destAsset === Assets.USDC) {
+  if (srcAsset === InternalAssets.Usdc || destAsset === InternalAssets.Usdc) {
     return [
       await prisma.pool.findUniqueOrThrow({
         where: {
           baseAsset_quoteAsset: {
-            baseAsset: srcAsset === Assets.USDC ? destAsset : srcAsset,
-            quoteAsset: srcAsset === Assets.USDC ? srcAsset : destAsset,
+            baseAsset: srcAsset === InternalAssets.Usdc ? destAsset : srcAsset,
+            quoteAsset: srcAsset === InternalAssets.Usdc ? srcAsset : destAsset,
           },
         },
       }),
@@ -23,7 +23,7 @@ export const getPools = async (
       where: {
         baseAsset_quoteAsset: {
           baseAsset: srcAsset,
-          quoteAsset: Assets.USDC,
+          quoteAsset: InternalAssets.Usdc,
         },
       },
     }),
@@ -31,7 +31,7 @@ export const getPools = async (
       where: {
         baseAsset_quoteAsset: {
           baseAsset: destAsset,
-          quoteAsset: Assets.USDC,
+          quoteAsset: InternalAssets.Usdc,
         },
       },
     }),

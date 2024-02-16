@@ -7,17 +7,21 @@ import {
   approve,
   TransactionOptions,
 } from '../contracts';
+import { getInternalAsset } from '../enums';
 import { assert } from '../guards';
 import { SwapNetworkOptions } from './index';
 
 export const checkVaultAllowance = (
-  params: Pick<TokenSwapParams, 'srcAsset' | 'amount'>,
+  params: Pick<TokenSwapParams, 'srcChain' | 'srcAsset' | 'amount'>,
   networkOpts: SwapNetworkOptions,
 ): ReturnType<typeof checkAllowance> => {
   const erc20Address =
     networkOpts.network === 'localnet'
       ? networkOpts.srcTokenContractAddress
-      : getTokenContractAddress(params.srcAsset, networkOpts.network);
+      : getTokenContractAddress(
+          getInternalAsset({ chain: params.srcChain, asset: params.srcAsset }),
+          networkOpts.network,
+        );
 
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
@@ -35,7 +39,7 @@ export const checkVaultAllowance = (
 };
 
 export const approveVault = async (
-  params: Pick<TokenSwapParams, 'srcAsset' | 'amount'>,
+  params: Pick<TokenSwapParams, 'srcChain' | 'srcAsset' | 'amount'>,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionReceipt | null> => {

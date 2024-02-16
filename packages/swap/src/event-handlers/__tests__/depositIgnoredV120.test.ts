@@ -59,7 +59,7 @@ describe(depositIgnoredV120, () => {
       srcChain: 'Ethereum',
       depositAddress: ETH_ADDRESS,
       channelId: 99n,
-      destAsset: 'DOT',
+      destAsset: 'Dot',
       destAddress: DOT_ADDRESS,
     });
 
@@ -91,7 +91,7 @@ describe(depositIgnoredV120, () => {
         destAddress: DOT_ADDRESS,
         destChain: 'Polkadot',
         depositAmount: ethDepositIgnoredMock.eventContext.event.args.amount,
-        srcAsset: 'ETH',
+        srcAsset: 'Eth',
         srcChain: 'Ethereum',
         swapDepositChannelId: 100n,
         reason: 'BelowMinimumDeposit',
@@ -107,7 +107,7 @@ describe(depositIgnoredV120, () => {
       srcChain: 'Polkadot',
       depositAddress: DOT_ADDRESS,
       channelId: 99n,
-      destAsset: 'ETH',
+      destAsset: 'Eth',
       destAddress: ETH_ADDRESS,
     });
 
@@ -139,7 +139,7 @@ describe(depositIgnoredV120, () => {
         destAddress: ETH_ADDRESS,
         destChain: 'Ethereum',
         depositAmount: dotDepositIgnoredMock.eventContext.event.args.amount,
-        srcAsset: 'DOT',
+        srcAsset: 'Dot',
         srcChain: 'Polkadot',
         swapDepositChannelId: 100n,
         reason: 'NotEnoughToPayFees',
@@ -155,7 +155,7 @@ describe(depositIgnoredV120, () => {
       srcChain: 'Bitcoin',
       depositAddress: BTC_ADDRESS,
       channelId: 99n,
-      destAsset: 'ETH',
+      destAsset: 'Eth',
       destAddress: ETH_ADDRESS,
     });
 
@@ -187,7 +187,7 @@ describe(depositIgnoredV120, () => {
         destAddress: ETH_ADDRESS,
         destChain: 'Ethereum',
         depositAmount: btcDepositIgnoredMock.eventContext.event.args.amount,
-        srcAsset: 'BTC',
+        srcAsset: 'Btc',
         srcChain: 'Bitcoin',
         swapDepositChannelId: 100n,
         reason: 'BelowMinimumDeposit',

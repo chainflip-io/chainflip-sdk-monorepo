@@ -1,6 +1,10 @@
 import axios from 'axios';
 import { z } from 'zod';
-import { ChainflipNetwork, ChainflipNetworks } from '../enums';
+import {
+  ChainflipNetwork,
+  ChainflipNetworks,
+  UncheckedAssetAndChain,
+} from '../enums';
 import { hexString } from '../parsers';
 
 const numberOrHex = z
@@ -48,8 +52,8 @@ type RpcParams = {
   cf_funding_environment: [at?: string];
   cf_pool_info: [at?: string];
   cf_swap_rate: [
-    fromAsset: string,
-    toAsset: string,
+    fromAsset: UncheckedAssetAndChain,
+    toAsset: UncheckedAssetAndChain,
     amount: `0x${string}`,
     at?: string,
   ];
@@ -99,20 +103,6 @@ const chainAssetMap = <Z extends z.ZodTypeAny>(parser: Z) =>
     Ethereum: z.object({ ETH: parser, USDC: parser, FLIP: parser }),
     Polkadot: z.object({ DOT: parser }),
   });
-
-export type ChainAssetMap<T> = {
-  Bitcoin: {
-    BTC: T;
-  };
-  Ethereum: {
-    ETH: T;
-    USDC: T;
-    FLIP: T;
-  };
-  Polkadot: {
-    DOT: T;
-  };
-};
 
 const chainAssetNumberMap = chainAssetMap(numberOrHex);
 const chainAssetNumberNullableMap = chainAssetMap(numberOrHex.nullable());
