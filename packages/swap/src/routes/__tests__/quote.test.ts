@@ -294,17 +294,18 @@ describe('server', () => {
 
       expect(status).toBe(200);
       expect(quoteHandler).toHaveBeenCalledWith({
-        deposit_amount: '97900000', // deposit amount - boost fee - ingress fee
+        deposit_amount: '98900000', // deposit amount - boost fee - ingress fee
         destination_asset: 'ETH',
         id: expect.any(String),
         intermediate_asset: null,
         source_asset: 'USDC',
       });
+
       expect(sendSpy).toHaveBeenCalledWith(
         'swap_rate',
         { asset: 'USDC', chain: 'Ethereum' },
         { asset: 'ETH', chain: 'Ethereum' },
-        '97900000', // deposit amount - boost fee - ingress fee
+        '98900000', // deposit amount - boost fee - ingress fee
       );
       expect(body).toMatchObject({
         egressAmount: (1e18 - 25000).toString(),
@@ -316,19 +317,19 @@ describe('server', () => {
             type: 'BOOST',
           },
           {
-            amount: '2000000',
+            amount: '1000000',
             asset: 'USDC',
             chain: 'Ethereum',
             type: 'INGRESS',
           },
           {
-            amount: '97900',
+            amount: '98900',
             asset: 'USDC',
             chain: 'Ethereum',
             type: 'NETWORK',
           },
           {
-            amount: '195800',
+            amount: '197800',
             asset: 'USDC',
             chain: 'Ethereum',
             type: 'LIQUIDITY',
