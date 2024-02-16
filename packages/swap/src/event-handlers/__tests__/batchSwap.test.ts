@@ -47,6 +47,7 @@ const swapDepositAddressReadyEvent = {
     },
     brokerCommissionRate: 0,
     sourceChainExpiryBlock: '101',
+    boostFeeBps: 0,
   },
 } as const;
 

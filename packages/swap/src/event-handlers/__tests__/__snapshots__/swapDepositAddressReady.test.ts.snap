@@ -2,6 +2,7 @@
 
 exports[`swapDepositAddressReady can handle empty ccm messages 1`] = `
 {
+  "boostFeeBps": 0,
   "brokerCommissionBps": 0,
   "ccmGasBudget": "0",
   "ccmMessage": "0x",
@@ -25,6 +26,7 @@ exports[`swapDepositAddressReady can handle empty ccm messages 1`] = `
 
 exports[`swapDepositAddressReady creates a swap deposit channel entry 1`] = `
 {
+  "boostFeeBps": 0,
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
   "ccmMessage": null,
@@ -48,6 +50,7 @@ exports[`swapDepositAddressReady creates a swap deposit channel entry 1`] = `
 
 exports[`swapDepositAddressReady creates a swap deposit channel entry with a broker commission 1`] = `
 {
+  "boostFeeBps": 0,
   "brokerCommissionBps": 25,
   "ccmGasBudget": null,
   "ccmMessage": null,
@@ -71,6 +74,7 @@ exports[`swapDepositAddressReady creates a swap deposit channel entry with a bro
 
 exports[`swapDepositAddressReady creates a swap deposit channel entry with ccm metadata 1`] = `
 {
+  "boostFeeBps": 0,
   "brokerCommissionBps": 0,
   "ccmGasBudget": "125000",
   "ccmMessage": "0xdeadc0de",
@@ -94,6 +98,7 @@ exports[`swapDepositAddressReady creates a swap deposit channel entry with ccm m
 
 exports[`swapDepositAddressReady does not overwrite expectedDepositAmount with zero 1`] = `
 {
+  "boostFeeBps": 0,
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
   "ccmMessage": null,
