@@ -3,7 +3,10 @@ import * as crypto from 'crypto';
 import { filter, Observable, Subscription } from 'rxjs';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
 import { Assets } from '@/shared/enums';
-import { getPips, ONE_IN_HUNDREDTH_PIPS } from '@/shared/functions';
+import {
+  calculateHundredthPipAmountFromAmount,
+  ONE_IN_HUNDREDTH_PIPS,
+} from '@/shared/functions';
 import { ParsedQuoteParams, QuoteRequest } from '@/shared/schemas';
 import { BrokerQuote, MarketMakerQuote } from './schemas';
 import { Pool } from '../client';
@@ -52,14 +55,14 @@ export const subtractFeesFromMakerQuote = (
   if ('intermediateAmount' in quote) {
     assert(quotePools.length === 2, 'wrong number of pools given');
 
-    const intermediateAmount = getPips(
+    const intermediateAmount = calculateHundredthPipAmountFromAmount(
       quote.intermediateAmount,
       ONE_IN_HUNDREDTH_PIPS -
         networkFeeHundredthPips -
         quotePools[0].liquidityFeeHundredthPips,
     ).toString();
 
-    const egressAmount = getPips(
+    const egressAmount = calculateHundredthPipAmountFromAmount(
       quote.egressAmount,
       ONE_IN_HUNDREDTH_PIPS -
         networkFeeHundredthPips -
@@ -72,7 +75,7 @@ export const subtractFeesFromMakerQuote = (
 
   assert(quotePools.length === 1, 'wrong number of pools given');
 
-  const egressAmount = getPips(
+  const egressAmount = calculateHundredthPipAmountFromAmount(
     quote.egressAmount,
     ONE_IN_HUNDREDTH_PIPS -
       networkFeeHundredthPips -
