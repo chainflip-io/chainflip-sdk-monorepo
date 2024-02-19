@@ -1,6 +1,6 @@
 import express from 'express';
 import type { Server } from 'socket.io';
-import { bigintMin, calculateBpsAmountFromAmount } from '@/shared/functions';
+import { bigintMin, calculatePipAmountFromAmount } from '@/shared/functions';
 import { quoteQuerySchema, SwapFee } from '@/shared/schemas';
 import { calculateIncludedSwapFees } from '@/swap/utils/fees';
 import { getPools } from '@/swap/utils/pools';
@@ -58,9 +58,9 @@ const quote = (io: Server) => {
       let swapInputAmount = BigInt(query.amount);
 
       if (query.boostFeeBps) {
-        const boostFee = calculateBpsAmountFromAmount(
-          BigInt(query.boostFeeBps),
+        const boostFee = calculatePipAmountFromAmount(
           swapInputAmount,
+          query.boostFeeBps,
         );
         includedFees.push({
           type: 'BOOST',
@@ -86,9 +86,9 @@ const quote = (io: Server) => {
       }
 
       if (query.brokerCommissionBps) {
-        const brokerFee = calculateBpsAmountFromAmount(
-          BigInt(query.brokerCommissionBps),
+        const brokerFee = calculatePipAmountFromAmount(
           swapInputAmount,
+          query.brokerCommissionBps,
         );
         includedFees.push({
           type: 'BROKER',
