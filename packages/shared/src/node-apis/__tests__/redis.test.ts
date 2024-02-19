@@ -106,6 +106,29 @@ describe(RedisClient, () => {
       expect(mock).toHaveBeenCalledWith('deposit:Ethereum:0x1234', 0, -1);
     });
 
+    it('>V120 returns the deposits if found', async () => {
+      const mock = jest.mocked(Redis.prototype.lrange).mockResolvedValueOnce([
+        JSON.stringify({
+          amount: '0x8000',
+          asset: {
+            asset: 'BTC',
+            chain: 'Bitcoin',
+          },
+          deposit_chain_block_height: 1234,
+        }),
+      ]);
+      const client = new RedisClient(url);
+      const deposits = await client.getDeposits('Bitcoin', 'BTC', '0x1234');
+      expect(deposits).toEqual([
+        {
+          amount: 0x8000n,
+          asset: 'BTC',
+          deposit_chain_block_height: 1234,
+        },
+      ]);
+      expect(mock).toHaveBeenCalledWith('deposit:Bitcoin:0x1234', 0, -1);
+    });
+
     it('filters out other assets for the same chain', async () => {
       const mock = jest.mocked(Redis.prototype.lrange).mockResolvedValueOnce([
         JSON.stringify({
