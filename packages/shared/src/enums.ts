@@ -133,11 +133,11 @@ export function assertIsValidAssetAndChain(
 
 export const readChainAssetMap = <T>(
   value: ChainAssetMap<T>,
-  asset: UncheckedAssetAndChain,
+  assetAndChain: UncheckedAssetAndChain,
 ): T => {
-  assertIsValidAssetAndChain(asset);
-  const chainValues = value[asset.chain];
-  return chainValues[asset.asset as keyof typeof chainValues];
+  assertIsValidAssetAndChain(assetAndChain);
+  const chainValues = value[assetAndChain.chain];
+  return chainValues[assetAndChain.asset as keyof typeof chainValues];
 };
 
 export function getInternalAsset(asset: UncheckedAssetAndChain) {
