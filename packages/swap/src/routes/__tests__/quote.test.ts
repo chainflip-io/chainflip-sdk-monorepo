@@ -59,7 +59,7 @@ jest.mock('axios', () => ({
 
 describe('server', () => {
   let server: Server;
-  let client: QuotingClient;
+  let quotingClient: QuotingClient;
   let oldEnv: typeof env;
 
   beforeAll(async () => {
@@ -95,17 +95,22 @@ describe('server', () => {
       },
     });
 
-    client = new QuotingClient(
+    quotingClient = new QuotingClient(
       `http://localhost:${(server.address() as AddressInfo).port}`,
       name,
       pair.privateKey.export({ format: 'pem', type: 'pkcs8' }).toString(),
     );
-    await once(client, 'connected');
+    quotingClient.setQuoteRequestHandler(async (req) => ({
+      id: req.id,
+      intermediate_amount: '0',
+      output_amount: '0',
+    }));
+    await once(quotingClient, 'connected');
   });
 
   afterEach((cb) => {
     Object.assign(env, oldEnv);
-    client.close();
+      quotingClient.close();
     server.close(cb);
   });
 
@@ -169,7 +174,7 @@ describe('server', () => {
         id: req.id,
         output_amount: '0',
       }));
-      client.setQuoteRequestHandler(quoteHandler);
+      quotingClient.setQuoteRequestHandler(quoteHandler);
 
       const { body, status } = await request(server).get(
         `/quote?${params.toString()}`,
@@ -200,7 +205,7 @@ describe('server', () => {
         id: req.id,
         output_amount: '0',
       }));
-      client.setQuoteRequestHandler(quoteHandler);
+      quotingClient.setQuoteRequestHandler(quoteHandler);
 
       const { body, status } = await request(server).get(
         `/quote?${params.toString()}`,
@@ -233,7 +238,7 @@ describe('server', () => {
         id: req.id,
         output_amount: (0.5e18).toString(),
       }));
-      client.setQuoteRequestHandler(quoteHandler);
+      quotingClient.setQuoteRequestHandler(quoteHandler);
 
       const { body, status } = await request(server).get(
         `/quote?${params.toString()}`,
@@ -309,7 +314,7 @@ describe('server', () => {
         id: req.id,
         output_amount: (0.5e18).toString(),
       }));
-      client.setQuoteRequestHandler(quoteHandler);
+      quotingClient.setQuoteRequestHandler(quoteHandler);
 
       const { body, status } = await request(server).get(
         `/quote?${params.toString()}`,
@@ -388,7 +393,7 @@ describe('server', () => {
         amount: (1e18).toString(),
       });
 
-      client.setQuoteRequestHandler(async (req) => ({
+      quotingClient.setQuoteRequestHandler(async (req) => ({
         id: req.id,
         output_amount: (50e6).toString(),
       }));
@@ -446,7 +451,7 @@ describe('server', () => {
         amount: (1e18).toString(),
       });
 
-      client.setQuoteRequestHandler(async (req) => ({
+      quotingClient.setQuoteRequestHandler(async (req) => ({
         id: req.id,
         intermediate_amount: (1000e6).toString(),
         output_amount: (0.5e18).toString(),
@@ -511,7 +516,7 @@ describe('server', () => {
         amount: (1e18).toString(),
       });
 
-      client.setQuoteRequestHandler(async (req) => ({
+      quotingClient.setQuoteRequestHandler(async (req) => ({
         id: req.id,
         intermediate_amount: (3000e6).toString(),
         output_amount: (2e18).toString(),
@@ -566,5 +571,25 @@ describe('server', () => {
       const { status } = await request(app).get('/quote');
       expect(status).toBe(503);
     });
+  });
+
+  it('gets the quote for deprecated params without the chain', async () => {
+    jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      intermediateAmount: (2000e6).toString(),
+      outputAmount: (1e18).toString(),
+    });
+
+    const params = new URLSearchParams({
+      srcAsset: 'FLIP',
+      destAsset: 'ETH',
+      amount: (1e18).toString(),
+    });
+
+    const { body, status } = await request(server).get(
+      `/quote?${params.toString()}`,
+    );
+
+    expect(status).toBe(200);
+    expect(body).toMatchSnapshot();
   });
 });

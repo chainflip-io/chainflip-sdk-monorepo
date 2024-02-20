@@ -1,6 +1,6 @@
 import express from 'express';
 import type { Server } from 'socket.io';
-import { getInternalAsset } from '@/shared/enums';
+import { Asset, Assets, Chain, Chains, getInternalAsset } from '@/shared/enums';
 import { bigintMin } from '@/shared/functions';
 import { quoteQuerySchema, SwapFee } from '@/shared/schemas';
 import {
@@ -26,6 +26,14 @@ import {
 import ServiceError from '../utils/ServiceError';
 import { getBrokerQuote } from '../utils/statechain';
 
+const fallbackChains = {
+  [Assets.ETH]: Chains.Ethereum,
+  [Assets.USDC]: Chains.Ethereum,
+  [Assets.FLIP]: Chains.Ethereum,
+  [Assets.BTC]: Chains.Bitcoin,
+  [Assets.DOT]: Chains.Polkadot,
+} satisfies Record<Asset, Chain>;
+
 const quote = (io: Server) => {
   const router = express.Router();
 
@@ -36,6 +44,10 @@ const quote = (io: Server) => {
   router.get(
     '/',
     asyncHandler(async (req, res) => {
+      // this api did not require the srcChain and destChain param initially
+      // to keep it compatible with clients that do not include these params, we fall back to set them based on the asset
+      req.query.srcChain ??= fallbackChains[req.query.srcAsset as Asset];
+      req.query.destChain ??= fallbackChains[req.query.destAsset as Asset];
       const queryResult = quoteQuerySchema.safeParse(req.query);
 
       if (!queryResult.success) {

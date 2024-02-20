@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`server gets the quote for deprecated params without the chain 1`] = `
+{
+  "egressAmount": "999999999999975000",
+  "includedFees": [
+    {
+      "amount": "1000000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "2000000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "999999999999000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "4000000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "25000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
+  "intermediateAmount": "2000000000",
+}
+`;
