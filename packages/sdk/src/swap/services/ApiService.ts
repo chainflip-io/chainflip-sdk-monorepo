@@ -59,14 +59,16 @@ const getQuote: BackendQuery<
   QuoteResponse
 > = async (baseUrl, quoteRequest, { signal }) => {
   const { brokerCommissionBps, ...returnedRequestData } = quoteRequest;
-  const params: QuoteQueryParams = {
+  const params = {
     amount: returnedRequestData.amount,
+    srcChain: returnedRequestData.srcChain,
     srcAsset: returnedRequestData.srcAsset,
+    destChain: returnedRequestData.destChain,
     destAsset: returnedRequestData.destAsset,
     ...(brokerCommissionBps && {
       brokerCommissionBps: String(brokerCommissionBps),
     }),
-  };
+  } as QuoteQueryParams;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const queryParams = new URLSearchParams(params as Record<string, any>);

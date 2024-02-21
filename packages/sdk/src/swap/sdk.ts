@@ -183,7 +183,7 @@ export class SwapSDK {
   }
 
   async approveVault(
-    params: Pick<TokenSwapParams, 'srcAsset' | 'amount'>,
+    params: Pick<TokenSwapParams, 'srcChain' | 'srcAsset' | 'amount'>,
     txOpts: TransactionOptions = {},
   ): Promise<TransactionHash | null> {
     if (!('srcAsset' in params)) return null;

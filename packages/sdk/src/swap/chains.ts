@@ -4,7 +4,7 @@ import { ChainData } from './types';
 export const ethereum: (network: ChainflipNetwork) => ChainData = (
   network,
 ) => ({
-  id: Chains.Ethereum,
+  chain: Chains.Ethereum,
   name: 'Ethereum',
   isMainnet: !isTestnet(network),
 });
@@ -12,13 +12,13 @@ export const ethereum: (network: ChainflipNetwork) => ChainData = (
 export const polkadot: (network: ChainflipNetwork) => ChainData = (
   network,
 ) => ({
-  id: Chains.Polkadot,
+  chain: Chains.Polkadot,
   name: 'Polkadot',
   isMainnet: !isTestnet(network),
 });
 
 export const bitcoin: (network: ChainflipNetwork) => ChainData = (network) => ({
-  id: Chains.Bitcoin,
+  chain: Chains.Bitcoin,
   name: 'Bitcoin',
   isMainnet: !isTestnet(network),
 });

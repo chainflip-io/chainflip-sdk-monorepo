@@ -10,6 +10,7 @@ import {
 } from '@/shared/enums';
 import type { Environment } from '@/shared/rpc';
 import { readAssetValue } from '@/shared/rpc/utils';
+import { screamingSnakeToPascalCase } from '@/shared/strings';
 import type { AssetData } from './types';
 
 type AssetFn = (
@@ -31,13 +32,13 @@ const assetFactory =
     const assetAndChain = { asset, chain: assetChains[asset] } as AssetAndChain;
 
     return {
-      id: asset,
+      asset,
       chain: assetChains[asset],
       contractAddress: getTokenContractAddress(asset, network, false),
       decimals: assetDecimals[asset],
       name: assetName[asset],
       symbol: asset,
-      chainflipId: asset,
+      chainflipId: screamingSnakeToPascalCase(asset),
       isMainnet: !isTestnet(network),
       minimumSwapAmount: readAssetValue(
         env.ingressEgress.minimumDepositAmounts,

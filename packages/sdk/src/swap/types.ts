@@ -2,14 +2,15 @@ import { Chain, Asset, chainAssets } from '@/shared/enums';
 import { CcmMetadata, QuoteQueryResponse, SwapFee } from '@/shared/schemas';
 
 export interface ChainData {
-  id: Chain;
+  chain: Chain;
   name: string;
   isMainnet: boolean;
 }
 
 export type AssetData = {
   [K in keyof typeof chainAssets]: {
-    id: (typeof chainAssets)[K][number];
+    chainflipId: string;
+    asset: (typeof chainAssets)[K][number];
     chain: K;
     contractAddress: string | undefined;
     decimals: number;
