@@ -3,11 +3,11 @@
 exports[`ApiService getAssets (backspin) gets the correct assets for networks (Bitcoin) 1`] = `
 [
   {
+    "asset": "BTC",
     "chain": "Bitcoin",
-    "chainflipId": "BTC",
+    "chainflipId": "Btc",
     "contractAddress": undefined,
     "decimals": 8,
-    "id": "BTC",
     "isMainnet": false,
     "maximumSwapAmount": null,
     "minimumEgressAmount": "600",
@@ -21,11 +21,11 @@ exports[`ApiService getAssets (backspin) gets the correct assets for networks (B
 exports[`ApiService getAssets (backspin) gets the correct assets for networks (Ethereum) 1`] = `
 [
   {
+    "asset": "ETH",
     "chain": "Ethereum",
-    "chainflipId": "ETH",
+    "chainflipId": "Eth",
     "contractAddress": undefined,
     "decimals": 18,
-    "id": "ETH",
     "isMainnet": false,
     "maximumSwapAmount": null,
     "minimumEgressAmount": "1",
@@ -34,11 +34,11 @@ exports[`ApiService getAssets (backspin) gets the correct assets for networks (E
     "symbol": "ETH",
   },
   {
+    "asset": "USDC",
     "chain": "Ethereum",
-    "chainflipId": "USDC",
+    "chainflipId": "Usdc",
     "contractAddress": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
     "decimals": 6,
-    "id": "USDC",
     "isMainnet": false,
     "maximumSwapAmount": "1000000",
     "minimumEgressAmount": "1",
@@ -47,11 +47,11 @@ exports[`ApiService getAssets (backspin) gets the correct assets for networks (E
     "symbol": "USDC",
   },
   {
+    "asset": "FLIP",
     "chain": "Ethereum",
-    "chainflipId": "FLIP",
+    "chainflipId": "Flip",
     "contractAddress": "0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26",
     "decimals": 18,
-    "id": "FLIP",
     "isMainnet": false,
     "maximumSwapAmount": null,
     "minimumEgressAmount": "1",
@@ -65,11 +65,11 @@ exports[`ApiService getAssets (backspin) gets the correct assets for networks (E
 exports[`ApiService getAssets (backspin) gets the correct assets for networks (Polkadot) 1`] = `
 [
   {
+    "asset": "DOT",
     "chain": "Polkadot",
-    "chainflipId": "DOT",
+    "chainflipId": "Dot",
     "contractAddress": undefined,
     "decimals": 10,
-    "id": "DOT",
     "isMainnet": false,
     "maximumSwapAmount": "2000000000",
     "minimumEgressAmount": "1",
@@ -83,11 +83,11 @@ exports[`ApiService getAssets (backspin) gets the correct assets for networks (P
 exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Bitcoin) 1`] = `
 [
   {
+    "asset": "BTC",
     "chain": "Bitcoin",
-    "chainflipId": "BTC",
+    "chainflipId": "Btc",
     "contractAddress": undefined,
     "decimals": 8,
-    "id": "BTC",
     "isMainnet": true,
     "maximumSwapAmount": null,
     "minimumEgressAmount": "600",
@@ -101,11 +101,11 @@ exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Bi
 exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Ethereum) 1`] = `
 [
   {
+    "asset": "ETH",
     "chain": "Ethereum",
-    "chainflipId": "ETH",
+    "chainflipId": "Eth",
     "contractAddress": undefined,
     "decimals": 18,
-    "id": "ETH",
     "isMainnet": true,
     "maximumSwapAmount": null,
     "minimumEgressAmount": "1",
@@ -114,11 +114,11 @@ exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Et
     "symbol": "ETH",
   },
   {
+    "asset": "USDC",
     "chain": "Ethereum",
-    "chainflipId": "USDC",
+    "chainflipId": "Usdc",
     "contractAddress": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     "decimals": 6,
-    "id": "USDC",
     "isMainnet": true,
     "maximumSwapAmount": "1000000",
     "minimumEgressAmount": "1",
@@ -127,11 +127,11 @@ exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Et
     "symbol": "USDC",
   },
   {
+    "asset": "FLIP",
     "chain": "Ethereum",
-    "chainflipId": "FLIP",
+    "chainflipId": "Flip",
     "contractAddress": "0x826180541412D574cf1336d22c0C0a287822678A",
     "decimals": 18,
-    "id": "FLIP",
     "isMainnet": true,
     "maximumSwapAmount": null,
     "minimumEgressAmount": "1",
@@ -145,11 +145,11 @@ exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Et
 exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Polkadot) 1`] = `
 [
   {
+    "asset": "DOT",
     "chain": "Polkadot",
-    "chainflipId": "DOT",
+    "chainflipId": "Dot",
     "contractAddress": undefined,
     "decimals": 10,
-    "id": "DOT",
     "isMainnet": true,
     "maximumSwapAmount": "2000000000",
     "minimumEgressAmount": "1",
@@ -163,11 +163,11 @@ exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Po
 exports[`ApiService getAssets (perseverance) gets the correct assets for networks (Bitcoin) 1`] = `
 [
   {
+    "asset": "BTC",
     "chain": "Bitcoin",
-    "chainflipId": "BTC",
+    "chainflipId": "Btc",
     "contractAddress": undefined,
     "decimals": 8,
-    "id": "BTC",
     "isMainnet": false,
     "maximumSwapAmount": null,
     "minimumEgressAmount": "600",
@@ -181,11 +181,11 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for network
 exports[`ApiService getAssets (perseverance) gets the correct assets for networks (Ethereum) 1`] = `
 [
   {
+    "asset": "ETH",
     "chain": "Ethereum",
-    "chainflipId": "ETH",
+    "chainflipId": "Eth",
     "contractAddress": undefined,
     "decimals": 18,
-    "id": "ETH",
     "isMainnet": false,
     "maximumSwapAmount": null,
     "minimumEgressAmount": "1",
@@ -194,11 +194,11 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for network
     "symbol": "ETH",
   },
   {
+    "asset": "USDC",
     "chain": "Ethereum",
-    "chainflipId": "USDC",
+    "chainflipId": "Usdc",
     "contractAddress": "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
     "decimals": 6,
-    "id": "USDC",
     "isMainnet": false,
     "maximumSwapAmount": "1000000",
     "minimumEgressAmount": "1",
@@ -207,11 +207,11 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for network
     "symbol": "USDC",
   },
   {
+    "asset": "FLIP",
     "chain": "Ethereum",
-    "chainflipId": "FLIP",
+    "chainflipId": "Flip",
     "contractAddress": "0x0485D65da68b2A6b48C3fA28D7CCAce196798B94",
     "decimals": 18,
-    "id": "FLIP",
     "isMainnet": false,
     "maximumSwapAmount": null,
     "minimumEgressAmount": "1",
@@ -225,11 +225,11 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for network
 exports[`ApiService getAssets (perseverance) gets the correct assets for networks (Polkadot) 1`] = `
 [
   {
+    "asset": "DOT",
     "chain": "Polkadot",
-    "chainflipId": "DOT",
+    "chainflipId": "Dot",
     "contractAddress": undefined,
     "decimals": 10,
-    "id": "DOT",
     "isMainnet": false,
     "maximumSwapAmount": "2000000000",
     "minimumEgressAmount": "1",
@@ -243,11 +243,11 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for network
 exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (Bitcoin) 1`] = `
 [
   {
+    "asset": "BTC",
     "chain": "Bitcoin",
-    "chainflipId": "BTC",
+    "chainflipId": "Btc",
     "contractAddress": undefined,
     "decimals": 8,
-    "id": "BTC",
     "isMainnet": false,
     "maximumSwapAmount": null,
     "minimumEgressAmount": "600",
@@ -261,11 +261,11 @@ exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (B
 exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (Ethereum) 1`] = `
 [
   {
+    "asset": "ETH",
     "chain": "Ethereum",
-    "chainflipId": "ETH",
+    "chainflipId": "Eth",
     "contractAddress": undefined,
     "decimals": 18,
-    "id": "ETH",
     "isMainnet": false,
     "maximumSwapAmount": null,
     "minimumEgressAmount": "1",
@@ -274,11 +274,11 @@ exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (E
     "symbol": "ETH",
   },
   {
+    "asset": "USDC",
     "chain": "Ethereum",
-    "chainflipId": "USDC",
+    "chainflipId": "Usdc",
     "contractAddress": "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
     "decimals": 6,
-    "id": "USDC",
     "isMainnet": false,
     "maximumSwapAmount": "1000000",
     "minimumEgressAmount": "1",
@@ -287,11 +287,11 @@ exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (E
     "symbol": "USDC",
   },
   {
+    "asset": "FLIP",
     "chain": "Ethereum",
-    "chainflipId": "FLIP",
+    "chainflipId": "Flip",
     "contractAddress": "0x2BbB561C6eaB74f358cA9e8a961E3A20CAE3D100",
     "decimals": 18,
-    "id": "FLIP",
     "isMainnet": false,
     "maximumSwapAmount": null,
     "minimumEgressAmount": "1",
@@ -305,11 +305,11 @@ exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (E
 exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (Polkadot) 1`] = `
 [
   {
+    "asset": "DOT",
     "chain": "Polkadot",
-    "chainflipId": "DOT",
+    "chainflipId": "Dot",
     "contractAddress": undefined,
     "decimals": 10,
-    "id": "DOT",
     "isMainnet": false,
     "maximumSwapAmount": "2000000000",
     "minimumEgressAmount": "1",
@@ -323,17 +323,17 @@ exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (P
 exports[`ApiService getChains gets mainnet chains 1`] = `
 [
   {
-    "id": "Ethereum",
+    "chain": "Ethereum",
     "isMainnet": true,
     "name": "Ethereum",
   },
   {
-    "id": "Polkadot",
+    "chain": "Polkadot",
     "isMainnet": true,
     "name": "Polkadot",
   },
   {
-    "id": "Bitcoin",
+    "chain": "Bitcoin",
     "isMainnet": true,
     "name": "Bitcoin",
   },
@@ -343,17 +343,17 @@ exports[`ApiService getChains gets mainnet chains 1`] = `
 exports[`ApiService getChains gets testnet chains (perseverance) 1`] = `
 [
   {
-    "id": "Ethereum",
+    "chain": "Ethereum",
     "isMainnet": false,
     "name": "Ethereum",
   },
   {
-    "id": "Polkadot",
+    "chain": "Polkadot",
     "isMainnet": false,
     "name": "Polkadot",
   },
   {
-    "id": "Bitcoin",
+    "chain": "Bitcoin",
     "isMainnet": false,
     "name": "Bitcoin",
   },
@@ -363,17 +363,17 @@ exports[`ApiService getChains gets testnet chains (perseverance) 1`] = `
 exports[`ApiService getChains gets testnet chains (sisyphos) 1`] = `
 [
   {
-    "id": "Ethereum",
+    "chain": "Ethereum",
     "isMainnet": false,
     "name": "Ethereum",
   },
   {
-    "id": "Polkadot",
+    "chain": "Polkadot",
     "isMainnet": false,
     "name": "Polkadot",
   },
   {
-    "id": "Bitcoin",
+    "chain": "Bitcoin",
     "isMainnet": false,
     "name": "Bitcoin",
   },
@@ -397,7 +397,7 @@ exports[`ApiService getQuote gets a quote 1`] = `
 
 exports[`ApiService getQuote gets a quote 2`] = `
 [
-  "https://swapperoo.org/quote?amount=10000&srcAsset=BTC&destAsset=ETH",
+  "https://swapperoo.org/quote?amount=10000&srcChain=Bitcoin&srcAsset=BTC&destChain=Ethereum&destAsset=ETH",
   {
     "signal": undefined,
   },
@@ -421,7 +421,7 @@ exports[`ApiService getQuote gets a quote with a broker commission 1`] = `
 
 exports[`ApiService getQuote gets a quote with a broker commission 2`] = `
 [
-  "https://swapperoo.org/quote?amount=10000&srcAsset=BTC&destAsset=ETH&brokerCommissionBps=15",
+  "https://swapperoo.org/quote?amount=10000&srcChain=Bitcoin&srcAsset=BTC&destChain=Ethereum&destAsset=ETH&brokerCommissionBps=15",
   {
     "signal": undefined,
   },
