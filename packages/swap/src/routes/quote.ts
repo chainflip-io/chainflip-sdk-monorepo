@@ -7,7 +7,7 @@ import {
   estimateIngressEgressFeeAssetAmount,
 } from '@/swap/utils/fees';
 import { getPools } from '@/swap/utils/pools';
-import { asyncHandler, maintenanceMiddleware } from './common';
+import { asyncHandler } from './common';
 import getConnectionHandler from '../quoting/getConnectionHandler';
 import {
   findBestQuote,
@@ -26,7 +26,7 @@ import ServiceError from '../utils/ServiceError';
 import { getBrokerQuote } from '../utils/statechain';
 
 const quote = (io: Server) => {
-  const router = express.Router().use(maintenanceMiddleware);
+  const router = express.Router();
 
   const { handler, quotes$ } = getConnectionHandler();
 
