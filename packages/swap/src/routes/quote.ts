@@ -2,7 +2,10 @@ import express from 'express';
 import type { Server } from 'socket.io';
 import { bigintMin } from '@/shared/functions';
 import { quoteQuerySchema, SwapFee } from '@/shared/schemas';
-import { calculateIncludedSwapFees } from '@/swap/utils/fees';
+import {
+  calculateIncludedSwapFees,
+  estimateIngressEgressFeeAssetAmount,
+} from '@/swap/utils/fees';
 import { getPools } from '@/swap/utils/pools';
 import { asyncHandler } from './common';
 import getConnectionHandler from '../quoting/getConnectionHandler';
@@ -15,8 +18,8 @@ import {
 import logger from '../utils/logger';
 import {
   getMinimumEgressAmount,
-  getEgressFee,
-  getIngressFee,
+  getNativeEgressFee,
+  getNativeIngressFee,
   validateSwapAmount,
 } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
@@ -54,8 +57,10 @@ const quote = (io: Server) => {
       }
 
       const includedFees: SwapFee[] = [];
-      const ingressFee = await getIngressFee(query.srcAsset);
-
+      const ingressFee = await estimateIngressEgressFeeAssetAmount(
+        await getNativeIngressFee(query.srcAsset),
+        query.srcAsset.asset,
+      );
       includedFees.push({
         type: 'INGRESS',
         chain: query.srcAsset.chain,
@@ -121,7 +126,10 @@ const quote = (io: Server) => {
         includedFees.push(...quoteSwapFees);
 
         const egressFee = bigintMin(
-          await getEgressFee(query.destAsset),
+          await estimateIngressEgressFeeAssetAmount(
+            await getNativeEgressFee(query.destAsset),
+            query.destAsset.asset,
+          ),
           BigInt(bestQuote.egressAmount),
         );
         includedFees.push({

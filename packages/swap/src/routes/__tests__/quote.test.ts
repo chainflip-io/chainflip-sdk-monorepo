@@ -6,7 +6,7 @@ import { AddressInfo } from 'net';
 import request from 'supertest';
 import { promisify } from 'util';
 import RpcClient from '@/shared/node-apis/RpcClient';
-import { environment } from '@/shared/tests/fixtures';
+import { environment, swapRate } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import QuotingClient from '../../quoting/QuotingClient';
 import app from '../../server';
@@ -38,8 +38,16 @@ jest.mock('axios', () => ({
       return Promise.resolve({
         data: environment({
           maxSwapAmount: null,
-          ingressFee: '0xF4240', // 1000000
+          ingressFee: '0xF4240', // 2000000
           egressFee: '0x61A8', // 25000
+        }),
+      });
+    }
+
+    if (data.method === 'cf_swap_rate') {
+      return Promise.resolve({
+        data: swapRate({
+          output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
         }),
       });
     }
@@ -159,7 +167,7 @@ describe('server', () => {
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
-        message: 'amount is lower than estimated ingress fee (1000000)',
+        message: 'amount is lower than estimated ingress fee (2000000)',
       });
     });
 
@@ -219,7 +227,7 @@ describe('server', () => {
 
       expect(status).toBe(200);
       expect(quoteHandler).toHaveBeenCalledWith({
-        deposit_amount: '98901000', // deposit amount - ingress fee - broker fee
+        deposit_amount: '97902000', // deposit amount - ingress fee - broker fee
         destination_asset: 'ETH',
         id: expect.any(String),
         intermediate_asset: null,
@@ -229,31 +237,31 @@ describe('server', () => {
         'swap_rate',
         { asset: 'USDC', chain: 'Ethereum' },
         { asset: 'ETH', chain: 'Ethereum' },
-        '98901000', // deposit amount - ingress fee - broker fee
+        '97902000', // deposit amount - ingress fee - broker fee
       );
       expect(body).toMatchObject({
         egressAmount: (1e18 - 25000).toString(),
         includedFees: [
           {
-            amount: '1000000',
+            amount: '2000000',
             asset: 'USDC',
             chain: 'Ethereum',
             type: 'INGRESS',
           },
           {
-            amount: '99000',
+            amount: '98000',
             asset: 'USDC',
             chain: 'Ethereum',
             type: 'BROKER',
           },
           {
-            amount: '98901',
+            amount: '97902',
             asset: 'USDC',
             chain: 'Ethereum',
             type: 'NETWORK',
           },
           {
-            amount: '197802',
+            amount: '195804',
             asset: 'USDC',
             chain: 'Ethereum',
             type: 'LIQUIDITY',
@@ -269,9 +277,11 @@ describe('server', () => {
     });
 
     it('gets the quote from usdc when the broker is best', async () => {
-      jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        egressAmount: (1e18).toString(),
-      });
+      const sendSpy = jest
+        .spyOn(RpcClient.prototype, 'sendRequest')
+        .mockResolvedValueOnce({
+          egressAmount: (1e18).toString(),
+        });
 
       const params = new URLSearchParams({
         srcAsset: 'USDC',
@@ -291,29 +301,35 @@ describe('server', () => {
 
       expect(status).toBe(200);
       expect(quoteHandler).toHaveBeenCalledWith({
-        deposit_amount: '99000000', // deposit amount - ingress fee
+        deposit_amount: '98000000', // deposit amount - ingress fee
         destination_asset: 'ETH',
         id: expect.any(String),
         intermediate_asset: null,
         source_asset: 'USDC',
       });
+      expect(sendSpy).toHaveBeenCalledWith(
+        'swap_rate',
+        { asset: 'USDC', chain: 'Ethereum' },
+        { asset: 'ETH', chain: 'Ethereum' },
+        '98000000', // deposit amount - ingress fee
+      );
       expect(body).toMatchObject({
         egressAmount: (1e18 - 25000).toString(),
         includedFees: [
           {
-            amount: '1000000',
+            amount: '2000000',
             asset: 'USDC',
             chain: 'Ethereum',
             type: 'INGRESS',
           },
           {
-            amount: '99000',
+            amount: '98000',
             asset: 'USDC',
             chain: 'Ethereum',
             type: 'NETWORK',
           },
           {
-            amount: '198000',
+            amount: '196000',
             asset: 'USDC',
             chain: 'Ethereum',
             type: 'LIQUIDITY',
@@ -426,7 +442,7 @@ describe('server', () => {
         egressAmount: (1e18 - 25000).toString(),
         includedFees: [
           {
-            amount: '1000000',
+            amount: '2000000',
             asset: 'FLIP',
             chain: 'Ethereum',
             type: 'INGRESS',
@@ -438,7 +454,7 @@ describe('server', () => {
             type: 'NETWORK',
           },
           {
-            amount: '999999999999000',
+            amount: '999999999998000',
             asset: 'FLIP',
             chain: 'Ethereum',
             type: 'LIQUIDITY',
@@ -489,7 +505,7 @@ describe('server', () => {
         egressAmount: (1.992e18 - 25000).toString(),
         includedFees: [
           {
-            amount: '1000000',
+            amount: '2000000',
             asset: 'FLIP',
             chain: 'Ethereum',
             type: 'INGRESS',
@@ -501,7 +517,7 @@ describe('server', () => {
             type: 'NETWORK',
           },
           {
-            amount: '999999999999000',
+            amount: '999999999998000',
             asset: 'FLIP',
             chain: 'Ethereum',
             type: 'LIQUIDITY',
