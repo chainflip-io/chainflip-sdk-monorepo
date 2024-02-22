@@ -15,7 +15,6 @@ export const handleError = (res: Response, error: unknown) => {
       { alertCode: 'UnknownError' },
       { error },
     );
-    console.log(error);
     res.status(500).json({ message: 'unknown error' });
   }
 };
