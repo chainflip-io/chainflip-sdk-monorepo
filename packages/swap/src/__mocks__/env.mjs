@@ -14,4 +14,5 @@ jest.mock('../config/env', () => ({
   PROCESSOR_BATCH_SIZE: 50,
   PROCESSOR_TRANSACTION_TIMEOUT: 10_000,
   REDIS_URL: undefined,
+  MAINTENANCE_MODE: false,
 }));

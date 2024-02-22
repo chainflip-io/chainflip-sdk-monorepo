@@ -3,7 +3,7 @@ import express from 'express';
 import { assetChains } from '@/shared/enums';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { screamingSnakeToPascalCase } from '@/shared/strings';
-import { asyncHandler } from './common';
+import { asyncHandler, maintenanceMiddleware } from './common';
 import prisma, {
   Egress,
   Swap,
@@ -302,6 +302,7 @@ router.get(
 // TODO(major): remove this handler. it's replaced by tRPC
 router.post(
   '/',
+  maintenanceMiddleware,
   asyncHandler(async (req, res) => {
     const result = openSwapDepositChannelSchema.safeParse(req.body);
     if (!result.success) {

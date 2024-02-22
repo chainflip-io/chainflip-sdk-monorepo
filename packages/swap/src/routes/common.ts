@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import type { RouteParameters, Response } from 'express-serve-static-core';
 import type { ParsedQs } from 'qs';
+import env from '../config/env';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
 
@@ -17,6 +18,17 @@ export const handleError = (res: Response, error: unknown) => {
     );
     res.status(500).json({ message: 'unknown error' });
   }
+};
+
+export const maintenanceMiddleware: RequestHandler = (req, res, next) => {
+  if (env.MAINTENANCE_MODE) {
+    res.status(503).json({
+      message: 'The swap service is currently unavailable due to maintenance',
+    });
+    return;
+  }
+
+  next();
 };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

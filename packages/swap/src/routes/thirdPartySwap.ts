@@ -1,11 +1,11 @@
 import express from 'express';
-import { asyncHandler } from './common';
+import { asyncHandler, maintenanceMiddleware } from './common';
 import prisma from '../client';
 import logger from '../utils/logger';
 import { thirdPartySwapSchema } from '../utils/parsers';
 import ServiceError from '../utils/ServiceError';
 
-const router = express.Router();
+const router = express.Router().use(maintenanceMiddleware);
 
 router.post(
   '/',

@@ -1,18 +1,23 @@
 import * as crypto from 'crypto';
 import { Server } from 'http';
 import request from 'supertest';
+import env from '@/swap/config/env';
 import prisma from '../../client';
 import app from '../../server';
 
 describe('server', () => {
   let server: Server;
 
+  let oldEnv: typeof env;
+
   beforeEach(async () => {
+    oldEnv = { ...env };
     await prisma.$queryRaw`TRUNCATE TABLE "ThirdPartySwap" CASCADE`;
     server = app.listen(0);
   });
 
   afterEach((cb) => {
+    Object.assign(env, oldEnv);
     server.close(cb);
   });
 
@@ -77,6 +82,15 @@ describe('server', () => {
         .send(body);
       expect(status).toBe(400);
     });
+
+    it('is disabled in maintenance mode', async () => {
+      env.MAINTENANCE_MODE = true;
+
+      const { status } = await request(app)
+        .post('/third-party-swap')
+        .send({ routeResponse: { protocol: 'squid', route: 'route' } });
+      expect(status).toBe(503);
+    });
   });
 
   describe('GET /third-party-swap/:uuid', () => {
@@ -111,6 +125,14 @@ describe('server', () => {
     it('throws bad request uuid is not found', async () => {
       const { status } = await request(app).get('/third-party-swap/123');
       expect(status).toBe(404);
+    });
+
+    it('is disabled in maintenance mode', async () => {
+      env.MAINTENANCE_MODE = true;
+
+      const { status } = await request(app).get('/third-party-swap/test-uuid');
+
+      expect(status).toBe(503);
     });
   });
 });
