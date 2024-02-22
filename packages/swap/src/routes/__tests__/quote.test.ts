@@ -7,6 +7,7 @@ import request from 'supertest';
 import { promisify } from 'util';
 import RpcClient from '@/shared/node-apis/RpcClient';
 import { environment, swapRate } from '@/shared/tests/fixtures';
+import env from '@/swap/config/env';
 import prisma from '../../client';
 import QuotingClient from '../../quoting/QuotingClient';
 import app from '../../server';
@@ -59,6 +60,7 @@ jest.mock('axios', () => ({
 describe('server', () => {
   let server: Server;
   let client: QuotingClient;
+  let oldEnv: typeof env;
 
   beforeAll(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE public."Pool" CASCADE`;
@@ -79,6 +81,7 @@ describe('server', () => {
   });
 
   beforeEach(async () => {
+    oldEnv = { ...env };
     server = app.listen(0);
     await prisma.$queryRaw`TRUNCATE TABLE private."MarketMaker" CASCADE`;
     const name = 'web_team_whales';
@@ -101,6 +104,7 @@ describe('server', () => {
   });
 
   afterEach((cb) => {
+    Object.assign(env, oldEnv);
     client.close();
     server.close(cb);
   });
@@ -345,7 +349,7 @@ describe('server', () => {
     });
 
     it('gets the quote to usdc when the broker is best', async () => {
-      const env = environment({
+      const rpcEnv = environment({
         maxSwapAmount: null,
         ingressFee: '0x61A8',
         egressFee: '0x0',
@@ -354,9 +358,9 @@ describe('server', () => {
       // method is called three times
       jest
         .mocked(axios.post)
-        .mockResolvedValueOnce({ data: env })
-        .mockResolvedValueOnce({ data: env })
-        .mockResolvedValueOnce({ data: env });
+        .mockResolvedValueOnce({ data: rpcEnv })
+        .mockResolvedValueOnce({ data: rpcEnv })
+        .mockResolvedValueOnce({ data: rpcEnv });
 
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
@@ -537,6 +541,12 @@ describe('server', () => {
         ],
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('is disabled in maintenance mode', async () => {
+      env.MAINTENANCE_MODE = true;
+      const { status } = await request(app).get('/quote');
+      expect(status).toBe(503);
     });
   });
 });

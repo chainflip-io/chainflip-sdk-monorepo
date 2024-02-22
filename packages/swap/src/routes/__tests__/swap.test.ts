@@ -5,6 +5,7 @@ import request from 'supertest';
 import * as broker from '@/shared/broker';
 import { Assets } from '@/shared/enums';
 import { environment } from '@/shared/tests/fixtures';
+import env from '@/swap/config/env';
 import prisma from '../../client';
 import {
   DOT_ADDRESS,
@@ -62,6 +63,7 @@ describe('server', () => {
 
   describe('GET /swaps/:id', () => {
     let nativeId: bigint;
+    let oldEnv: typeof env;
 
     beforeEach(async () => {
       nativeId = randomId();
@@ -69,10 +71,12 @@ describe('server', () => {
         .useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
         .setSystemTime(new Date('2022-01-01'));
       await createChainTrackingInfo();
+      oldEnv = { ...env };
     });
 
     afterEach(() => {
       jest.clearAllTimers();
+      Object.assign(env, oldEnv);
     });
 
     it('throws an error if no swap deposit channel is found', async () => {
@@ -1201,6 +1205,20 @@ describe('server', () => {
         }
       `);
     });
+
+    it('works in maintenance mode', async () => {
+      env.MAINTENANCE_MODE = true;
+
+      const swapIntent = await createDepositChannel({
+        srcChainExpiryBlock: 200,
+        expectedDepositAmount: '25000000000000000000000',
+      });
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
+
+      const { status } = await request(server).get(`/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+    });
   });
 
   describe('POST /swaps', () => {
@@ -1387,5 +1405,20 @@ describe('server', () => {
         message: 'expected amount is above maximum swap amount (1)',
       });
     });
+  });
+
+  it('is disabled in maintenance mode', async () => {
+    env.MAINTENANCE_MODE = true;
+
+    const { status } = await request(app).post('/swaps').send({
+      srcAsset: Assets.USDC,
+      destAsset: Assets.ETH,
+      srcChain: 'Ethereum',
+      destChain: 'Ethereum',
+      destAddress: ETH_ADDRESS,
+      amount: '5',
+    });
+
+    expect(status).toBe(503);
   });
 });
