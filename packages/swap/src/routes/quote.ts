@@ -134,7 +134,7 @@ const quote = (io: Server) => {
         const egressAmount = BigInt(bestQuote.egressAmount) - egressFee;
 
         const minimumEgressAmount = await getMinimumEgressAmount(
-          query.srcAsset,
+          query.destAsset,
         );
 
         if (egressAmount < minimumEgressAmount) {
