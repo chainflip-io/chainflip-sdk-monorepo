@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@types/yargs": "^17.0.32",
-    "tsup": "^8.0.1",
+    "tsup": "^8.0.2",
     "tsx": "^4.7.1"
   },
   "peerDependencies": {
