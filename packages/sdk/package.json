@@ -54,6 +54,6 @@
     "ethers": "^6.11.1"
   },
   "devDependencies": {
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.2"
   }
 }
