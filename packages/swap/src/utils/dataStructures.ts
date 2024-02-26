@@ -17,7 +17,7 @@ class Timer<T> {
   }
 
   getValue(): T {
-    return this.reset().value;
+    return this.value;
   }
 
   clear(): void {

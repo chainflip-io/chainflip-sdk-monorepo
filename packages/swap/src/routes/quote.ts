@@ -9,6 +9,7 @@ import {
 } from '@/swap/utils/fees';
 import { getPools } from '@/swap/utils/pools';
 import { asyncHandler } from './common';
+import { checkLiquidityWarning } from '../pricing/liquidityWarning';
 import getConnectionHandler from '../quoting/getConnectionHandler';
 import {
   findBestQuote,
@@ -128,6 +129,12 @@ const quote = (io: Server) => {
         );
 
         const bestQuote = findBestQuote(marketMakerQuotes, brokerQuote);
+        const lowLiquidityWarning = await checkLiquidityWarning({
+          srcAsset: query.srcAsset,
+          destAsset: query.destAsset,
+          srcAmount: swapInputAmount,
+          destAmount: BigInt(bestQuote.outputAmount),
+        });
 
         const quoteSwapFees = await calculateIncludedSwapFees(
           getInternalAsset(srcChainAsset),
@@ -174,6 +181,7 @@ const quote = (io: Server) => {
           ...bestQuote,
           egressAmount: egressAmount.toString(),
           includedFees,
+          lowLiquidityWarning,
         };
 
         res.json(response);

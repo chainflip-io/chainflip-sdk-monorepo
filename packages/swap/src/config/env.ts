@@ -43,10 +43,12 @@ export default z
     NODE_ENV: nodeEnv.default('production'),
     CHAINALYSIS_API_KEY: envVar.optional(),
     INGEST_GATEWAY_URL: httpUrl,
+    CACHE_GATEWAY_URL: httpUrl,
     PROCESSOR_BATCH_SIZE: optionalNumber(50),
     PROCESSOR_TRANSACTION_TIMEOUT: optionalNumber(10_000),
     REDIS_URL: redisUrl.optional(),
     MAINTENANCE_MODE: optionalBoolean,
+    LIQUIDITY_WARNING_THRESHOLD: optionalNumber(-10),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);
