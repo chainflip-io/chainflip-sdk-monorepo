@@ -53,11 +53,17 @@ export type SwapFee = {
   amount: string;
 };
 
+export type PriceWarning = {
+  threshold: number;
+  warn: boolean;
+};
+
 export type QuoteQueryResponse = {
   intermediateAmount?: string;
   egressAmount: string;
   includedFees: SwapFee[];
-  lowLiquidityWarning: boolean | undefined;
+  lowLiquidityWarning: PriceWarning;
+  priceImpactWarning: PriceWarning;
 };
 
 interface BaseRequest {

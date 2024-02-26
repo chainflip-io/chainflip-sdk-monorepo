@@ -48,7 +48,8 @@ export default z
     PROCESSOR_TRANSACTION_TIMEOUT: optionalNumber(10_000),
     REDIS_URL: redisUrl.optional(),
     MAINTENANCE_MODE: optionalBoolean,
-    LIQUIDITY_WARNING_THRESHOLD: optionalNumber(-10),
+    LIQUIDITY_WARNING_THRESHOLD: optionalNumber(-5),
+    PRICE_IMPACT_WARNING_THRESHOLD: optionalNumber(-10),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);

@@ -1,12 +1,12 @@
 import { getAssetPrice } from '..';
-import { checkLiquidityWarning } from '../liquidityWarning';
+import { checkPriceWarning } from '../checkPriceWarning';
 
 jest.mock('../index.ts', () => ({
   getAssetPrice: jest.fn(),
 }));
 
-describe('checkLiquidityWarning', () => {
-  it('does not give low liquidity warning when price impact is <10%', async () => {
+describe('checkPriceWarning', () => {
+  it('returns false when threshold is below 10%', async () => {
     const srcAsset = 'ETH';
     const destAsset = 'BTC';
     const srcAmount = BigInt(1e18); // 1 eth
@@ -17,17 +17,21 @@ describe('checkLiquidityWarning', () => {
       .mockResolvedValueOnce(3048) // eth price
       .mockResolvedValueOnce(51000); // btc price
 
-    const result = await checkLiquidityWarning({
+    const result = await checkPriceWarning({
       srcAsset,
       destAsset,
       srcAmount,
       destAmount,
+      threshold: -10,
     });
 
-    expect(result).toBe(false);
+    expect(result).toMatchObject({
+      threshold: 10,
+      warn: false,
+    });
   });
 
-  it('gives low liquidity warning when price impact is >10%', async () => {
+  it('returns true when threshold is above 10%', async () => {
     const srcAsset = 'ETH';
     const destAsset = 'BTC';
     const srcAmount = BigInt(1e18); // 1 eth
@@ -38,13 +42,17 @@ describe('checkLiquidityWarning', () => {
       .mockResolvedValueOnce(3048) // eth price
       .mockResolvedValueOnce(51000); // btc price
 
-    const result = await checkLiquidityWarning({
+    const result = await checkPriceWarning({
       srcAsset,
       destAsset,
       srcAmount,
       destAmount,
+      threshold: -10,
     });
 
-    expect(result).toBe(true);
+    expect(result).toMatchObject({
+      threshold: 10,
+      warn: true,
+    });
   });
 });

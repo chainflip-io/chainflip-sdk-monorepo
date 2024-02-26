@@ -9,7 +9,8 @@ import {
 } from '@/swap/utils/fees';
 import { getPools } from '@/swap/utils/pools';
 import { asyncHandler } from './common';
-import { checkLiquidityWarning } from '../pricing/liquidityWarning';
+import env from '../config/env';
+import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import getConnectionHandler from '../quoting/getConnectionHandler';
 import {
   findBestQuote,
@@ -129,11 +130,12 @@ const quote = (io: Server) => {
         );
 
         const bestQuote = findBestQuote(marketMakerQuotes, brokerQuote);
-        const lowLiquidityWarning = await checkLiquidityWarning({
+        const lowLiquidityWarning = await checkPriceWarning({
           srcAsset: query.srcAsset,
           destAsset: query.destAsset,
           srcAmount: swapInputAmount,
           destAmount: BigInt(bestQuote.outputAmount),
+          threshold: env.LIQUIDITY_WARNING_THRESHOLD,
         });
 
         const quoteSwapFees = await calculateIncludedSwapFees(
@@ -172,9 +174,17 @@ const quote = (io: Server) => {
           );
         }
 
-        // remove the id and output amount from the final response body as it is internal information
+        const priceImpactWarning = await checkPriceWarning({
+          srcAsset: query.srcAsset,
+          destAsset: query.destAsset,
+          srcAmount: BigInt(query.amount),
+          destAmount: BigInt(bestQuote.outputAmount),
+          threshold: env.PRICE_IMPACT_WARNING_THRESHOLD,
+        });
+
         const {
-          id = undefined, // eslint-disable-line @typescript-eslint/no-unused-vars
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          id = undefined,
           outputAmount,
           ...response
         } = {
@@ -182,6 +192,7 @@ const quote = (io: Server) => {
           egressAmount: egressAmount.toString(),
           includedFees,
           lowLiquidityWarning,
+          priceImpactWarning,
         };
 
         res.json(response);
