@@ -74,7 +74,7 @@ const quote = (io: Server) => {
       const includedFees: SwapFee[] = [];
       const ingressFee = await estimateIngressEgressFeeAssetAmount(
         await getNativeIngressFee(srcAssetChain),
-          srcAssetChain.asset
+        getInternalAsset(srcAssetChain),
       );
       includedFees.push({
         type: 'INGRESS',
@@ -143,7 +143,7 @@ const quote = (io: Server) => {
         const egressFee = bigintMin(
           await estimateIngressEgressFeeAssetAmount(
             await getNativeEgressFee(destAssetChain),
-              destAssetChain.asset,
+            getInternalAsset(destAssetChain),
           ),
           BigInt(bestQuote.outputAmount),
         );
@@ -156,9 +156,8 @@ const quote = (io: Server) => {
 
         const egressAmount = BigInt(bestQuote.outputAmount) - egressFee;
 
-        const minimumEgressAmount = await getMinimumEgressAmount(
-          destAssetChain,
-        );
+        const minimumEgressAmount =
+          await getMinimumEgressAmount(destAssetChain);
 
         if (egressAmount < minimumEgressAmount) {
           throw ServiceError.badRequest(
