@@ -103,7 +103,10 @@ export const chainConstants = {
 export type AssetOfChain<C extends Chain> =
   (typeof chainConstants)[C]['assets'][number];
 
-export type UncheckedAssetAndChain = { asset: Asset; chain: Chain };
+export type UncheckedAssetAndChain = {
+  asset: Asset | string;
+  chain: Chain | string;
+};
 export type AssetAndChain = {
   [C in Chain]: { chain: C; asset: AssetOfChain<C> };
 }[Chain];
@@ -118,8 +121,9 @@ export function isValidAssetAndChain(
   assetAndChain: UncheckedAssetAndChain,
 ): assetAndChain is AssetAndChain {
   const { asset, chain } = assetAndChain;
-  const validAssets = chainConstants[chain].assets as string[];
+  if (!(chain in Chains)) return false;
 
+  const validAssets = chainConstants[chain as Chain].assets as string[];
   return validAssets.includes(asset);
 }
 
@@ -127,7 +131,9 @@ export function assertIsValidAssetAndChain(
   assetAndChain: UncheckedAssetAndChain,
 ): asserts assetAndChain is AssetAndChain {
   if (!isValidAssetAndChain(assetAndChain)) {
-    throw new Error('invalid asset and chain combination');
+    throw new Error(
+      `invalid asset and chain combination: ${JSON.stringify(assetAndChain)}`,
+    );
   }
 }
 
