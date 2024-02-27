@@ -1,4 +1,5 @@
 import { getAssetPrice } from '..';
+import env from '../../config/env';
 import { checkPriceWarning } from '../checkPriceWarning';
 
 jest.mock('../index.ts', () => ({
@@ -6,7 +7,9 @@ jest.mock('../index.ts', () => ({
 }));
 
 describe('checkPriceWarning', () => {
-  it('returns false when threshold is below 10%', async () => {
+  it('returns false when threshold is below 5%', async () => {
+    env.LIQUIDITY_WARNING_THRESHOLD = -5;
+
     const srcAsset = 'ETH';
     const destAsset = 'BTC';
     const srcAmount = BigInt(1e18); // 1 eth
@@ -22,16 +25,13 @@ describe('checkPriceWarning', () => {
       destAsset,
       srcAmount,
       destAmount,
-      threshold: -10,
     });
 
-    expect(result).toMatchObject({
-      threshold: 10,
-      warn: false,
-    });
+    expect(result).toBeFalsy();
   });
 
-  it('returns true when threshold is above 10%', async () => {
+  it('returns true when threshold is above 5%', async () => {
+    env.LIQUIDITY_WARNING_THRESHOLD = -5;
     const srcAsset = 'ETH';
     const destAsset = 'BTC';
     const srcAmount = BigInt(1e18); // 1 eth
@@ -47,12 +47,8 @@ describe('checkPriceWarning', () => {
       destAsset,
       srcAmount,
       destAmount,
-      threshold: -10,
     });
 
-    expect(result).toMatchObject({
-      threshold: 10,
-      warn: true,
-    });
+    expect(result).toBeTruthy();
   });
 });
