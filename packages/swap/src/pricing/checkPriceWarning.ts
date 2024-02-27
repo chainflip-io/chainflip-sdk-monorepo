@@ -39,7 +39,7 @@ export const checkPriceWarning = async ({
 
     return delta.lte(env.LIQUIDITY_WARNING_THRESHOLD);
   } catch (err) {
-    logger.error('error querying cache-gateway for price:', err);
+    logger.error('error querying coingecko for price:', err);
     return undefined;
   }
 };
