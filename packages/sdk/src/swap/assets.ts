@@ -3,7 +3,7 @@ import {
   InternalAsset,
   ChainflipNetwork,
   isTestnet,
-  readChainAssetMap,
+  readChainAssetValue,
   assetConstants,
 } from '@/shared/enums';
 import type { Environment } from '@/shared/rpc';
@@ -26,16 +26,16 @@ const assetFactory =
       name: assetConstants[asset].name,
       symbol: assetConstants[asset].asset,
       isMainnet: !isTestnet(network),
-      minimumSwapAmount: readChainAssetMap(
+      minimumSwapAmount: readChainAssetValue(
         env.ingressEgress.minimumDepositAmounts,
         assetConstants[asset],
       ).toString(),
       maximumSwapAmount:
-        readChainAssetMap(
+        readChainAssetValue(
           env.swapping.maximumSwapAmounts,
           assetConstants[asset],
         )?.toString() ?? null,
-      minimumEgressAmount: readChainAssetMap(
+      minimumEgressAmount: readChainAssetValue(
         env.ingressEgress.minimumEgressAmounts,
         assetConstants[asset],
       ).toString(),

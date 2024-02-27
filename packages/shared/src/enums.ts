@@ -67,7 +67,7 @@ export const assetConstants = {
     decimals: 8,
     contractId: 5,
   },
-} satisfies Record<
+} as const satisfies Record<
   InternalAsset,
   {
     chain: Chain;
@@ -95,7 +95,7 @@ export const chainConstants = {
     gasAsset: Assets.BTC,
     contractId: 3,
   },
-} satisfies Record<
+} as const satisfies Record<
   Chain,
   { assets: Asset[]; gasAsset: Asset; contractId: number }
 >;
@@ -131,12 +131,12 @@ export function assertIsValidAssetAndChain(
   }
 }
 
-export const readChainAssetMap = <T>(
-  value: ChainAssetMap<T>,
+export const readChainAssetValue = <T>(
+  map: ChainAssetMap<T>,
   assetAndChain: UncheckedAssetAndChain,
 ): T => {
   assertIsValidAssetAndChain(assetAndChain);
-  const chainValues = value[assetAndChain.chain];
+  const chainValues = map[assetAndChain.chain];
   return chainValues[assetAndChain.asset as keyof typeof chainValues];
 };
 
@@ -155,5 +155,5 @@ export function getInternalAsset(asset: UncheckedAssetAndChain) {
     },
   };
 
-  return readChainAssetMap(map, asset);
+  return readChainAssetValue(map, asset);
 }

@@ -1,4 +1,4 @@
-import { readChainAssetMap, UncheckedAssetAndChain } from '../enums';
+import { readChainAssetValue, UncheckedAssetAndChain } from '../enums';
 import { Environment } from './index';
 
 type Result = { success: true } | { success: false; reason: string };
@@ -8,7 +8,7 @@ export const validateSwapAmount = (
   asset: UncheckedAssetAndChain,
   amount: bigint,
 ): Result => {
-  const minimumAmount = readChainAssetMap(
+  const minimumAmount = readChainAssetValue(
     env.ingressEgress.minimumDepositAmounts,
     asset,
   );
@@ -20,7 +20,7 @@ export const validateSwapAmount = (
     };
   }
 
-  const maxAmount = readChainAssetMap(env.swapping.maximumSwapAmounts, asset);
+  const maxAmount = readChainAssetValue(env.swapping.maximumSwapAmounts, asset);
 
   if (maxAmount != null && amount > maxAmount) {
     return {

@@ -5,7 +5,7 @@ exports[`server gets the quote for deprecated params without the chain 1`] = `
   "egressAmount": "999999999999975000",
   "includedFees": [
     {
-      "amount": "1000000",
+      "amount": "2000000",
       "asset": "FLIP",
       "chain": "Ethereum",
       "type": "INGRESS",
@@ -17,7 +17,7 @@ exports[`server gets the quote for deprecated params without the chain 1`] = `
       "type": "NETWORK",
     },
     {
-      "amount": "999999999999000",
+      "amount": "999999999998000",
       "asset": "FLIP",
       "chain": "Ethereum",
       "type": "LIQUIDITY",

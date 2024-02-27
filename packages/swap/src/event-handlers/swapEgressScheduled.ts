@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import {
   InternalAsset,
-  readChainAssetMap,
+  readChainAssetValue,
   assetConstants,
 } from '@/shared/enums';
 import { bigintMin } from '@/shared/functions';
@@ -87,7 +87,7 @@ const getEgressFeeAtBlock = async (
   const environment = await getCachedEnvironmentAtBlock(blockHash);
   if (!environment) return 0n;
 
-  const nativeFee = readChainAssetMap(
+  const nativeFee = readChainAssetValue(
     environment.ingressEgress.egressFees,
     assetConstants[asset],
   );

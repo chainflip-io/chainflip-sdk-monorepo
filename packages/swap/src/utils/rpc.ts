@@ -1,4 +1,4 @@
-import { readChainAssetMap, UncheckedAssetAndChain } from '@/shared/enums';
+import { readChainAssetValue, UncheckedAssetAndChain } from '@/shared/enums';
 import { getEnvironment } from '@/shared/rpc';
 import { validateSwapAmount as validateAmount } from '@/shared/rpc/utils';
 import { memoize } from './function';
@@ -24,7 +24,7 @@ export const getMinimumEgressAmount = async (
 ): Promise<bigint> => {
   const environment = await cachedGetEnvironment(rpcConfig);
 
-  return readChainAssetMap(
+  return readChainAssetValue(
     environment.ingressEgress.minimumEgressAmounts,
     asset,
   );
@@ -35,7 +35,7 @@ export const getNativeIngressFee = async (
 ): Promise<bigint> => {
   const environment = await cachedGetEnvironment(rpcConfig);
 
-  return readChainAssetMap(environment.ingressEgress.ingressFees, asset);
+  return readChainAssetValue(environment.ingressEgress.ingressFees, asset);
 };
 
 export const getNativeEgressFee = async (
@@ -43,5 +43,5 @@ export const getNativeEgressFee = async (
 ): Promise<bigint> => {
   const environment = await cachedGetEnvironment(rpcConfig);
 
-  return readChainAssetMap(environment.ingressEgress.egressFees, asset);
+  return readChainAssetValue(environment.ingressEgress.egressFees, asset);
 };

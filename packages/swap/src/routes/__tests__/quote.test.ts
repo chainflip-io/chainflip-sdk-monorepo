@@ -110,7 +110,7 @@ describe('server', () => {
 
   afterEach((cb) => {
     Object.assign(env, oldEnv);
-      quotingClient.close();
+    quotingClient.close();
     server.close(cb);
   });
 
