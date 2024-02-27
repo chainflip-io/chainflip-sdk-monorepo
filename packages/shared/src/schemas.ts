@@ -1,16 +1,17 @@
 import { z } from 'zod';
-import { Asset, Chain } from './enums';
+import { Chain, Asset, InternalAsset } from './enums';
 import {
-  chainflipAsset,
-  chainflipAssetAndChain,
-  chainflipChain,
+  chain,
   hexStringWithMaxByteSize,
   numericString,
+  asset,
 } from './parsers';
 
 export const quoteQuerySchema = z.object({
-  srcAsset: chainflipAssetAndChain,
-  destAsset: chainflipAssetAndChain,
+  srcChain: chain,
+  srcAsset: asset,
+  destChain: chain,
+  destAsset: asset,
   amount: numericString,
   brokerCommissionBps: z
     .string()
@@ -31,10 +32,10 @@ export type CcmMetadata = z.infer<typeof ccmMetadataSchema>;
 
 export const openSwapDepositChannelSchema = z
   .object({
-    srcAsset: chainflipAsset,
-    destAsset: chainflipAsset,
-    srcChain: chainflipChain,
-    destChain: chainflipChain,
+    srcAsset: asset,
+    destAsset: asset,
+    srcChain: chain,
+    destChain: chain,
     destAddress: z.string(),
     amount: numericString,
     ccmMetadata: ccmMetadataSchema.optional(),
@@ -44,16 +45,6 @@ export const openSwapDepositChannelSchema = z
     ...rest,
     expectedDepositAmount: amount,
   }));
-
-export type OpenSwapDepositChannelArgs = z.input<
-  typeof openSwapDepositChannelSchema
->;
-
-export type PostSwapResponse = {
-  id: string;
-  depositAddress: string;
-  issuedBlock: number;
-};
 
 export type SwapFee = {
   type: 'LIQUIDITY' | 'NETWORK' | 'INGRESS' | 'EGRESS' | 'BROKER';
@@ -74,21 +65,21 @@ interface BaseRequest {
 }
 
 interface Intermediate extends BaseRequest {
-  source_asset: Exclude<Asset, 'USDC'>;
-  intermediate_asset: 'USDC';
-  destination_asset: Exclude<Asset, 'USDC'>;
+  source_asset: Exclude<InternalAsset, 'Usdc'>;
+  intermediate_asset: 'Usdc';
+  destination_asset: Exclude<InternalAsset, 'Usdc'>;
 }
 
 interface USDCDeposit extends BaseRequest {
-  source_asset: 'USDC';
+  source_asset: 'Usdc';
   intermediate_asset: null;
-  destination_asset: Exclude<Asset, 'USDC'>;
+  destination_asset: Exclude<InternalAsset, 'Usdc'>;
 }
 
 interface USDCEgress extends BaseRequest {
-  source_asset: Exclude<Asset, 'USDC'>;
+  source_asset: Exclude<InternalAsset, 'Usdc'>;
   intermediate_asset: null;
-  destination_asset: 'USDC';
+  destination_asset: 'Usdc';
 }
 
-export type QuoteRequest = Intermediate | USDCDeposit | USDCEgress;
+export type InternalQuoteRequest = Intermediate | USDCDeposit | USDCEgress;

@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { u64, chainflipAssetEnum, u128, hexString } from '@/shared/parsers';
+import { u64, internalAssetEnum, u128, hexString } from '@/shared/parsers';
 import { getStateChainError } from './common';
 import { EventHandlerArgs } from './index';
 
 const swapEgressIgnoredArgs = z.object({
-  asset: chainflipAssetEnum,
+  asset: internalAssetEnum,
   amount: u128,
   swapId: u64,
   reason: z.object({

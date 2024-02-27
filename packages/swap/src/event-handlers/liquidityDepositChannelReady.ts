@@ -6,7 +6,7 @@ import type { EventHandlerArgs } from './index';
 const liquidityDepositAddressReadyArgs = z.object({
   channelId: u64,
   depositAddress: encodedAddress,
-  // asset: chainflipAsset,
+  // asset: internalAssetEnum,
   // depositChainExpiryBlock: u64,
 });
 

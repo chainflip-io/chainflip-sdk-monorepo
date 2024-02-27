@@ -10,7 +10,7 @@ exports[`swapEgressIgnored adds an IgnoredEgress record for a egress ignored eve
   "depositReceivedAt": 2022-12-06T14:31:33.000Z,
   "depositReceivedBlockIndex": "20-0",
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
-  "destAsset": "DOT",
+  "destAsset": "Dot",
   "egressId": null,
   "id": Any<BigInt>,
   "ignoredEgress": {
@@ -24,7 +24,7 @@ exports[`swapEgressIgnored adds an IgnoredEgress record for a egress ignored eve
   },
   "intermediateAmount": null,
   "nativeId": 2n,
-  "srcAsset": "ETH",
+  "srcAsset": "Eth",
   "swapDepositChannelId": Any<BigInt>,
   "swapExecutedAt": 2022-12-06T14:31:39.000Z,
   "swapExecutedBlockIndex": "120-0",

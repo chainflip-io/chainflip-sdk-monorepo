@@ -32,13 +32,13 @@ describe('fees', () => {
       await prisma.pool.createMany({
         data: [
           {
-            baseAsset: 'FLIP',
-            quoteAsset: 'USDC',
+            baseAsset: 'Flip',
+            quoteAsset: 'Usdc',
             liquidityFeeHundredthPips: 1000,
           },
           {
-            baseAsset: 'ETH',
-            quoteAsset: 'USDC',
+            baseAsset: 'Eth',
+            quoteAsset: 'Usdc',
             liquidityFeeHundredthPips: 1000,
           },
         ],
@@ -47,8 +47,8 @@ describe('fees', () => {
 
     it('returns fees for quote with intermediate amount', async () => {
       const fees = await calculateIncludedSwapFees(
-        'ETH',
-        'FLIP',
+        'Eth',
+        'Flip',
         (100e18).toString(),
         (100e6).toString(),
         (100e18).toString(),
@@ -75,8 +75,8 @@ describe('fees', () => {
 
     it('returns fees for quote from USDC', async () => {
       const fees = await calculateIncludedSwapFees(
-        'USDC',
-        'FLIP',
+        'Usdc',
+        'Flip',
         (100e6).toString(),
         undefined,
         (100e18).toString(),
@@ -98,8 +98,8 @@ describe('fees', () => {
 
     it('returns fees for quote to USDC', async () => {
       const fees = await calculateIncludedSwapFees(
-        'ETH',
-        'USDC',
+        'Eth',
+        'Usdc',
         (100e18).toString(),
         undefined,
         (99.9e6).toString(),
@@ -124,7 +124,7 @@ describe('fees', () => {
     it('returns the same amount for the native asset', async () => {
       const result = await estimateIngressEgressFeeAssetAmount(
         100n,
-        'ETH',
+        'Eth',
         undefined,
       );
 
@@ -134,7 +134,7 @@ describe('fees', () => {
     it('returns the rate from the rpc for a non native asset', async () => {
       const result = await estimateIngressEgressFeeAssetAmount(
         100n,
-        'USDC',
+        'Usdc',
         undefined,
       );
 
@@ -146,7 +146,7 @@ describe('fees', () => {
     it('returns the rate from the rpc for a non native asset and a block hash', async () => {
       const result = await estimateIngressEgressFeeAssetAmount(
         100n,
-        'USDC',
+        'Usdc',
         '0x8a741d03ae637a115ec7384c85e565799123f6a626414471260bc6d4e87d2d27',
       );
 

@@ -1,4 +1,4 @@
-import { Assets } from '@/shared/enums';
+import { InternalAssets } from '@/shared/enums';
 import {
   DOT_ADDRESS,
   buildSwapExecutedMock,
@@ -18,14 +18,14 @@ describe(swapExecuted, () => {
     await prisma.pool.createMany({
       data: [
         {
-          baseAsset: 'ETH',
-          quoteAsset: 'USDC',
+          baseAsset: 'Eth',
+          quoteAsset: 'Usdc',
           liquidityFeeHundredthPips: 1000,
         },
 
         {
-          baseAsset: 'DOT',
-          quoteAsset: 'USDC',
+          baseAsset: 'Dot',
+          quoteAsset: 'Usdc',
           liquidityFeeHundredthPips: 1500,
         },
       ],
@@ -56,8 +56,8 @@ describe(swapExecuted, () => {
           swapInputAmount: '10000000000',
           depositReceivedAt: new Date(block.timestamp - 6000),
           depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
-          srcAsset: Assets.ETH,
-          destAsset: Assets.USDC,
+          srcAsset: InternalAssets.Eth,
+          destAsset: InternalAssets.Usdc,
           destAddress: DOT_ADDRESS,
           type: 'SWAP',
         },
@@ -110,8 +110,8 @@ describe(swapExecuted, () => {
           swapInputAmount: '10000000000',
           depositReceivedAt: new Date(block.timestamp - 6000),
           depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
-          srcAsset: Assets.ETH,
-          destAsset: Assets.DOT,
+          srcAsset: InternalAssets.Eth,
+          destAsset: InternalAssets.Dot,
           destAddress: DOT_ADDRESS,
           type: 'SWAP',
         },

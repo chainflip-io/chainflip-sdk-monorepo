@@ -1,6 +1,5 @@
 import * as crypto from 'crypto';
 import { Subject } from 'rxjs';
-import { Asset, Assets, assetChains, AssetAndChain } from '@/shared/enums';
 import env from '@/swap/config/env';
 import { Pool } from '../../client';
 import {
@@ -85,20 +84,20 @@ describe('quotes', () => {
   describe(subtractFeesFromMakerQuote, () => {
     const examplePool: Pool = {
       id: 1,
-      baseAsset: 'ETH',
-      quoteAsset: 'USDC',
+      baseAsset: 'Eth',
+      quoteAsset: 'Usdc',
       liquidityFeeHundredthPips: 1000,
     };
 
     it('subtracts fees from quote without intermediate amount', () => {
       expect(
         subtractFeesFromMakerQuote(
-          { id: 'quote-id', egressAmount: (100e18).toString() },
+          { id: 'quote-id', outputAmount: (100e18).toString() },
           [examplePool],
         ),
       ).toMatchObject({
         id: 'quote-id',
-        egressAmount: (99.8e18).toString(),
+        outputAmount: (99.8e18).toString(),
       });
     });
 
@@ -108,51 +107,51 @@ describe('quotes', () => {
           {
             id: 'quote-id',
             intermediateAmount: (100e6).toString(),
-            egressAmount: (100e18).toString(),
+            outputAmount: (100e18).toString(),
           },
           [examplePool, examplePool],
         ),
       ).toMatchObject({
         id: 'quote-id',
         intermediateAmount: (99.8e6).toString(),
-        egressAmount: (99.7e18).toString(),
+        outputAmount: (99.7e18).toString(),
       });
     });
   });
 
   describe(findBestQuote, () => {
-    it('returns the quote with the highest egressAmount', () => {
+    it('returns the quote with the highest outputAmount', () => {
       const broker = {
         id: '1',
         intermediateAmount: undefined,
-        egressAmount: '1',
+        outputAmount: '1',
       };
-      const a = { id: '2', egressAmount: '10' };
-      const b = { id: '3', egressAmount: '20' };
+      const a = { id: '2', outputAmount: '10' };
+      const b = { id: '3', outputAmount: '20' };
       expect(findBestQuote([a, b], broker)).toBe(b);
       expect(findBestQuote([b, a], broker)).toBe(b);
     });
 
-    it('returns the quote with the highest egressAmount if many match', () => {
+    it('returns the quote with the highest outputAmount if many match', () => {
       const broker = {
         id: '1',
         intermediateAmount: undefined,
-        egressAmount: '1',
+        outputAmount: '1',
       };
-      const a = { id: '2', egressAmount: '10' };
-      const b = { id: '3', egressAmount: '20' };
-      const c = { id: '4', egressAmount: '20' };
+      const a = { id: '2', outputAmount: '10' };
+      const b = { id: '3', outputAmount: '20' };
+      const c = { id: '4', outputAmount: '20' };
       expect(findBestQuote([c, a, b], broker)).toBe(c);
       expect(findBestQuote([b, a, c], broker)).toBe(b);
     });
 
     it("returns the broker quote if it's best", () => {
-      const a = { id: '1', egressAmount: '1' };
-      const b = { id: '2', egressAmount: '10' };
+      const a = { id: '1', outputAmount: '1' };
+      const b = { id: '2', outputAmount: '10' };
       const broker = {
         id: '3',
         intermediateAmount: undefined,
-        egressAmount: '20',
+        outputAmount: '20',
       };
       expect(findBestQuote([a, b], broker)).toBe(broker);
     });
@@ -161,28 +160,27 @@ describe('quotes', () => {
       const broker = {
         id: '1',
         intermediateAmount: undefined,
-        egressAmount: '1',
+        outputAmount: '1',
       };
       expect(findBestQuote([], broker)).toBe(broker);
     });
   });
 
-  const wrapAsset = (asset: Asset) =>
-    ({ asset, chain: assetChains[asset] }) as AssetAndChain;
-
   describe(buildQuoteRequest, () => {
     it('returns a QuoteRequest', () => {
       expect(
         buildQuoteRequest({
-          srcAsset: wrapAsset(Assets.FLIP),
-          destAsset: wrapAsset(Assets.ETH),
+          srcChain: 'Ethereum',
+          srcAsset: 'FLIP',
+          destChain: 'Ethereum',
+          destAsset: 'ETH',
           amount: '1000000000000000000',
         }),
       ).toEqual({
         id: expect.any(String),
-        source_asset: 'FLIP',
-        intermediate_asset: 'USDC',
-        destination_asset: 'ETH',
+        source_asset: 'Flip',
+        intermediate_asset: 'Usdc',
+        destination_asset: 'Eth',
         deposit_amount: '1000000000000000000',
       });
     });
@@ -190,15 +188,17 @@ describe('quotes', () => {
     it('returns a QuoteRequest with a null intermediate_asset if srcAsset is USDC', () => {
       expect(
         buildQuoteRequest({
-          srcAsset: wrapAsset(Assets.USDC),
-          destAsset: wrapAsset(Assets.ETH),
+          srcChain: 'Ethereum',
+          srcAsset: 'USDC',
+          destChain: 'Ethereum',
+          destAsset: 'ETH',
           amount: '100000000',
         }),
       ).toEqual({
         id: expect.any(String),
-        source_asset: 'USDC',
+        source_asset: 'Usdc',
         intermediate_asset: null,
-        destination_asset: 'ETH',
+        destination_asset: 'Eth',
         deposit_amount: '100000000',
       });
     });
@@ -206,15 +206,17 @@ describe('quotes', () => {
     it('returns a QuoteRequest with a null intermediate_asset if destAsset is USDC', () => {
       expect(
         buildQuoteRequest({
-          srcAsset: wrapAsset(Assets.ETH),
-          destAsset: wrapAsset(Assets.USDC),
+          srcChain: 'Ethereum',
+          srcAsset: 'ETH',
+          destChain: 'Ethereum',
+          destAsset: 'USDC',
           amount: '100000000',
         }),
       ).toEqual({
         id: expect.any(String),
-        source_asset: 'ETH',
+        source_asset: 'Eth',
         intermediate_asset: null,
-        destination_asset: 'USDC',
+        destination_asset: 'Usdc',
         deposit_amount: '100000000',
       });
     });

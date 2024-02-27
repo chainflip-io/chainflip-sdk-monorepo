@@ -2,14 +2,24 @@ import { hexToU8a, u8aToHex } from '@polkadot/util';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 import * as ethers from 'ethers';
 import { z, ZodErrorMap } from 'zod';
-import type { Asset, AssetAndChain, ChainflipNetwork } from './enums';
-import { Assets, ChainflipNetworks, Chains, assetChains } from './enums';
+import {
+  ChainflipNetwork,
+  InternalAssets,
+  ChainflipNetworks,
+  Chains,
+  Assets,
+  isValidAssetAndChain,
+} from './enums';
 import { isString } from './guards';
 import {
   validateBitcoinMainnetAddress,
   validateBitcoinRegtestAddress,
   validateBitcoinTestnetAddress,
 } from './validation/addressValidation';
+
+const enumValues = Object.values as <T>(
+  obj: T,
+) => T extends Record<string, never> ? never : [T[keyof T], ...T[keyof T][]];
 
 const safeStringify = (obj: unknown) =>
   JSON.stringify(obj, (key, value) =>
@@ -33,8 +43,6 @@ export const hexStringWithMaxByteSize = (maxByteSize: number) =>
 export const hexStringFromNumber = numericString.transform(
   (arg) => `0x${BigInt(arg).toString(16)}`,
 );
-
-export const bareHexString = string.regex(/^[0-9a-f]+$/);
 
 export const btcAddress = (network: ChainflipNetwork) => {
   if (network === 'mainnet') {
@@ -84,36 +92,16 @@ export const rustEnum = <U extends string, T extends readonly [U, ...U[]]>(
   values: T,
 ) => z.object({ __kind: z.enum(values) }).transform(({ __kind }) => __kind!);
 
-export const chainflipAssetEnum = z
-  .object({ __kind: z.enum(['Usdc', 'Flip', 'Dot', 'Eth', 'Btc']) })
-  .transform(({ __kind }) => __kind.toUpperCase() as Asset);
+export const internalAssetEnum = rustEnum(enumValues(InternalAssets));
+export const chainEnum = rustEnum(enumValues(Chains));
 
-const transformAsset = <T extends Asset>(
-  asset: T,
-): { asset: T; chain: (typeof assetChains)[T] } =>
-  ({ asset, chain: assetChains[asset] }) as const;
-
-export const chainflipChain = z.nativeEnum(Chains);
-export const chainflipAsset = z.nativeEnum(Assets);
-
-export const chainflipAssetAndChain = z
-  .union([
-    chainflipAsset.transform(transformAsset),
-    z.object({ asset: z.nativeEnum(Assets), chain: z.nativeEnum(Chains) }),
-  ])
-  .superRefine((obj, ctx): obj is AssetAndChain => {
-    if (assetChains[obj.asset] !== obj.chain) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: `asset ${obj.asset} does not belong to chain ${obj.chain}`,
-        path: [],
-      });
-    }
-
-    return z.NEVER;
-  });
-
+export const chain = z.nativeEnum(Chains);
+export const asset = z.nativeEnum(Assets);
 export const chainflipNetwork = z.nativeEnum(ChainflipNetworks);
+
+export const assetAndChain = z
+  .object({ asset, chain })
+  .refine(isValidAssetAndChain);
 
 export const swapType = z.union([
   z

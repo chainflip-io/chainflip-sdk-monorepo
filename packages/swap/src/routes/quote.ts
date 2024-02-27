@@ -1,5 +1,6 @@
 import express from 'express';
 import type { Server } from 'socket.io';
+import { Asset, Assets, Chain, Chains, getInternalAsset } from '@/shared/enums';
 import { bigintMin } from '@/shared/functions';
 import { quoteQuerySchema, SwapFee } from '@/shared/schemas';
 import {
@@ -25,6 +26,14 @@ import {
 import ServiceError from '../utils/ServiceError';
 import { getBrokerQuote } from '../utils/statechain';
 
+const fallbackChains = {
+  [Assets.ETH]: Chains.Ethereum,
+  [Assets.USDC]: Chains.Ethereum,
+  [Assets.FLIP]: Chains.Ethereum,
+  [Assets.BTC]: Chains.Bitcoin,
+  [Assets.DOT]: Chains.Polkadot,
+} satisfies Record<Asset, Chain>;
+
 const quote = (io: Server) => {
   const router = express.Router();
 
@@ -35,6 +44,10 @@ const quote = (io: Server) => {
   router.get(
     '/',
     asyncHandler(async (req, res) => {
+      // this api did not require the srcChain and destChain param initially
+      // to keep it compatible with clients that do not include these params, we fall back to set them based on the asset
+      req.query.srcChain ??= fallbackChains[req.query.srcAsset as Asset];
+      req.query.destChain ??= fallbackChains[req.query.destAsset as Asset];
       const queryResult = quoteQuerySchema.safeParse(req.query);
 
       if (!queryResult.success) {
@@ -46,9 +59,11 @@ const quote = (io: Server) => {
       }
 
       const query = queryResult.data;
+      const srcChainAsset = { asset: query.srcAsset, chain: query.srcChain };
+      const destChainAsset = { asset: query.destAsset, chain: query.destChain };
 
       const amountResult = await validateSwapAmount(
-        query.srcAsset,
+        srcChainAsset,
         BigInt(query.amount),
       );
 
@@ -58,13 +73,13 @@ const quote = (io: Server) => {
 
       const includedFees: SwapFee[] = [];
       const ingressFee = await estimateIngressEgressFeeAssetAmount(
-        await getNativeIngressFee(query.srcAsset),
-        query.srcAsset.asset,
+        await getNativeIngressFee(srcChainAsset),
+        getInternalAsset(srcChainAsset),
       );
       includedFees.push({
         type: 'INGRESS',
-        chain: query.srcAsset.chain,
-        asset: query.srcAsset.asset,
+        chain: srcChainAsset.chain,
+        asset: srcChainAsset.asset,
         amount: ingressFee.toString(),
       });
 
@@ -80,22 +95,22 @@ const quote = (io: Server) => {
           (swapInputAmount * BigInt(query.brokerCommissionBps)) / 10000n;
         includedFees.push({
           type: 'BROKER',
-          chain: query.srcAsset.chain,
-          asset: query.srcAsset.asset,
+          chain: srcChainAsset.chain,
+          asset: srcChainAsset.asset,
           amount: brokerFee.toString(),
         });
         swapInputAmount -= brokerFee;
       }
 
+      const quotePools = await getPools(
+        getInternalAsset(srcChainAsset),
+        getInternalAsset(destChainAsset),
+      );
+
       const quoteRequest = buildQuoteRequest({
         ...query,
         amount: String(swapInputAmount),
       });
-      const quotePools = await getPools(
-        query.srcAsset.asset,
-        query.destAsset.asset,
-      );
-
       io.emit('quote_request', quoteRequest);
 
       try {
@@ -115,44 +130,47 @@ const quote = (io: Server) => {
         const bestQuote = findBestQuote(marketMakerQuotes, brokerQuote);
 
         const quoteSwapFees = await calculateIncludedSwapFees(
-          quoteRequest.source_asset,
-          quoteRequest.destination_asset,
-          quoteRequest.deposit_amount,
+          getInternalAsset(srcChainAsset),
+          getInternalAsset(destChainAsset),
+          String(swapInputAmount),
           'intermediateAmount' in bestQuote
             ? bestQuote.intermediateAmount
             : undefined,
-          bestQuote.egressAmount,
+          bestQuote.outputAmount,
         );
         includedFees.push(...quoteSwapFees);
 
         const egressFee = bigintMin(
           await estimateIngressEgressFeeAssetAmount(
-            await getNativeEgressFee(query.destAsset),
-            query.destAsset.asset,
+            await getNativeEgressFee(destChainAsset),
+            getInternalAsset(destChainAsset),
           ),
-          BigInt(bestQuote.egressAmount),
+          BigInt(bestQuote.outputAmount),
         );
         includedFees.push({
           type: 'EGRESS',
-          chain: query.destAsset.chain,
-          asset: query.destAsset.asset,
+          chain: destChainAsset.chain,
+          asset: destChainAsset.asset,
           amount: egressFee.toString(),
         });
 
-        const egressAmount = BigInt(bestQuote.egressAmount) - egressFee;
+        const egressAmount = BigInt(bestQuote.outputAmount) - egressFee;
 
-        const minimumEgressAmount = await getMinimumEgressAmount(
-          query.destAsset,
-        );
+        const minimumEgressAmount =
+          await getMinimumEgressAmount(destChainAsset);
 
         if (egressAmount < minimumEgressAmount) {
           throw ServiceError.badRequest(
             `egress amount (${egressAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
           );
         }
-        // We want to remove the id from the final response body as it is just a random uuid
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { id = undefined, ...response } = {
+
+        // remove the id and output amount from the final response body as it is internal information
+        const {
+          id = undefined, // eslint-disable-line @typescript-eslint/no-unused-vars
+          outputAmount,
+          ...response
+        } = {
           ...bestQuote,
           egressAmount: egressAmount.toString(),
           includedFees,

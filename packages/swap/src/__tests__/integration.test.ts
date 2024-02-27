@@ -13,7 +13,7 @@ import {
   timeout,
 } from 'rxjs';
 import { promisify } from 'util';
-import { Assets } from '@/shared/enums';
+import { Assets, Chains } from '@/shared/enums';
 import { QuoteQueryParams } from '@/shared/schemas';
 import { environment, swapRate } from '@/shared/tests/fixtures';
 import prisma from '../client';
@@ -64,13 +64,13 @@ describe('python integration test', () => {
     await prisma.pool.createMany({
       data: [
         {
-          baseAsset: 'FLIP',
-          quoteAsset: 'USDC',
+          baseAsset: 'Flip',
+          quoteAsset: 'Usdc',
           liquidityFeeHundredthPips: 1000,
         },
         {
-          baseAsset: 'ETH',
-          quoteAsset: 'USDC',
+          baseAsset: 'Eth',
+          quoteAsset: 'Usdc',
           liquidityFeeHundredthPips: 2000,
         },
       ],
@@ -130,7 +130,9 @@ describe('python integration test', () => {
 
     const query = {
       srcAsset: Assets.FLIP,
+      srcChain: Chains.Ethereum,
       destAsset: Assets.ETH,
+      destChain: Chains.Ethereum,
       amount: '1000000000000000000',
     } as QuoteQueryParams;
     const params = new URLSearchParams(query as Record<string, any>);
@@ -138,7 +140,7 @@ describe('python integration test', () => {
     jest.mocked(getBrokerQuote).mockResolvedValueOnce({
       id: "doesn't matter",
       intermediateAmount: '2000000000',
-      egressAmount: '0', // this shouldn't be the result
+      outputAmount: '0', // this shouldn't be the result
     });
 
     const response = await fetch(`${serverUrl}/quote?${params.toString()}`);

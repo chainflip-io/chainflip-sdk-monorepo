@@ -6,7 +6,7 @@ import {
   getTokenContractAddress,
   TransactionOptions,
 } from '../contracts';
-import { Assets, ChainflipNetwork } from '../enums';
+import { InternalAssets, ChainflipNetwork } from '../enums';
 import { assert } from '../guards';
 
 export type FundingNetworkOptions =
@@ -34,7 +34,7 @@ export const fundStateChainAccount = async (
   const flipContractAddress =
     networkOpts.network === 'localnet'
       ? networkOpts.flipContractAddress
-      : getTokenContractAddress(Assets.FLIP, networkOpts.network);
+      : getTokenContractAddress(InternalAssets.Flip, networkOpts.network);
 
   const stateChainGateway = getStateChainGateway(networkOpts);
 

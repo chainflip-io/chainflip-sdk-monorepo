@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getInternalAsset } from '@/shared/enums';
 import { u128, u64 } from '@/shared/parsers';
 import { calculateIncludedSwapFees } from '@/swap/utils/fees';
 import type { EventHandlerArgs } from '.';
@@ -48,7 +49,7 @@ export default async function swapExecuted({
       fees: {
         create: fees.map((fee) => ({
           type: fee.type,
-          asset: fee.asset,
+          asset: getInternalAsset(fee),
           amount: fee.amount,
         })),
       },

@@ -59,7 +59,7 @@ jest.mock('axios', () => ({
 
 describe('server', () => {
   let server: Server;
-  let client: QuotingClient;
+  let quotingClient: QuotingClient;
   let oldEnv: typeof env;
 
   beforeAll(async () => {
@@ -67,13 +67,13 @@ describe('server', () => {
     await prisma.pool.createMany({
       data: [
         {
-          baseAsset: 'FLIP',
-          quoteAsset: 'USDC',
+          baseAsset: 'Flip',
+          quoteAsset: 'Usdc',
           liquidityFeeHundredthPips: 1000,
         },
         {
-          baseAsset: 'ETH',
-          quoteAsset: 'USDC',
+          baseAsset: 'Eth',
+          quoteAsset: 'Usdc',
           liquidityFeeHundredthPips: 2000,
         },
       ],
@@ -95,17 +95,22 @@ describe('server', () => {
       },
     });
 
-    client = new QuotingClient(
+    quotingClient = new QuotingClient(
       `http://localhost:${(server.address() as AddressInfo).port}`,
       name,
       pair.privateKey.export({ format: 'pem', type: 'pkcs8' }).toString(),
     );
-    await once(client, 'connected');
+    quotingClient.setQuoteRequestHandler(async (req) => ({
+      id: req.id,
+      intermediate_amount: '0',
+      output_amount: '0',
+    }));
+    await once(quotingClient, 'connected');
   });
 
   afterEach((cb) => {
     Object.assign(env, oldEnv);
-    client.close();
+    quotingClient.close();
     server.close(cb);
   });
 
@@ -116,7 +121,9 @@ describe('server', () => {
       });
 
       const params = new URLSearchParams({
+        srcChain: 'Ethereum',
         srcAsset: 'FLIP',
+        destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: '50',
       });
@@ -137,7 +144,9 @@ describe('server', () => {
         .mockResolvedValueOnce({ data: environment({ maxSwapAmount: '0x1' }) });
 
       const params = new URLSearchParams({
+        srcChain: 'Ethereum',
         srcAsset: 'USDC',
+        destChain: 'Ethereum',
         destAsset: 'FLIP',
         amount: '50',
       });
@@ -154,16 +163,18 @@ describe('server', () => {
 
     it('gets the quote from usdc when the ingress amount is smaller than the ingress fee', async () => {
       const params = new URLSearchParams({
+        srcChain: 'Ethereum',
         srcAsset: 'USDC',
+        destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: (1000).toString(),
       });
 
       const quoteHandler = jest.fn(async (req) => ({
         id: req.id,
-        egress_amount: '0',
+        output_amount: '0',
       }));
-      client.setQuoteRequestHandler(quoteHandler);
+      quotingClient.setQuoteRequestHandler(quoteHandler);
 
       const { body, status } = await request(server).get(
         `/quote?${params.toString()}`,
@@ -179,20 +190,22 @@ describe('server', () => {
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
-          egressAmount: (1250).toString(),
+          outputAmount: (1250).toString(),
         });
 
       const params = new URLSearchParams({
+        srcChain: 'Ethereum',
         srcAsset: 'USDC',
+        destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: (100e6).toString(),
       });
 
       const quoteHandler = jest.fn(async (req) => ({
         id: req.id,
-        egress_amount: '0',
+        output_amount: '0',
       }));
-      client.setQuoteRequestHandler(quoteHandler);
+      quotingClient.setQuoteRequestHandler(quoteHandler);
 
       const { body, status } = await request(server).get(
         `/quote?${params.toString()}`,
@@ -209,11 +222,13 @@ describe('server', () => {
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
-          egressAmount: (1e18).toString(),
+          outputAmount: (1e18).toString(),
         });
 
       const params = new URLSearchParams({
+        srcChain: 'Ethereum',
         srcAsset: 'USDC',
+        destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: (100e6).toString(),
         brokerCommissionBps: '10',
@@ -221,9 +236,9 @@ describe('server', () => {
 
       const quoteHandler = jest.fn(async (req) => ({
         id: req.id,
-        egress_amount: (0.5e18).toString(),
+        output_amount: (0.5e18).toString(),
       }));
-      client.setQuoteRequestHandler(quoteHandler);
+      quotingClient.setQuoteRequestHandler(quoteHandler);
 
       const { body, status } = await request(server).get(
         `/quote?${params.toString()}`,
@@ -232,10 +247,10 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(quoteHandler).toHaveBeenCalledWith({
         deposit_amount: '97902000', // deposit amount - ingress fee - broker fee
-        destination_asset: 'ETH',
+        destination_asset: 'Eth',
         id: expect.any(String),
         intermediate_asset: null,
-        source_asset: 'USDC',
+        source_asset: 'Usdc',
       });
       expect(sendSpy).toHaveBeenCalledWith(
         'swap_rate',
@@ -284,20 +299,22 @@ describe('server', () => {
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
-          egressAmount: (1e18).toString(),
+          outputAmount: (1e18).toString(),
         });
 
       const params = new URLSearchParams({
+        srcChain: 'Ethereum',
         srcAsset: 'USDC',
+        destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: (100e6).toString(),
       });
 
       const quoteHandler = jest.fn(async (req) => ({
         id: req.id,
-        egress_amount: (0.5e18).toString(),
+        output_amount: (0.5e18).toString(),
       }));
-      client.setQuoteRequestHandler(quoteHandler);
+      quotingClient.setQuoteRequestHandler(quoteHandler);
 
       const { body, status } = await request(server).get(
         `/quote?${params.toString()}`,
@@ -306,10 +323,10 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(quoteHandler).toHaveBeenCalledWith({
         deposit_amount: '98000000', // deposit amount - ingress fee
-        destination_asset: 'ETH',
+        destination_asset: 'Eth',
         id: expect.any(String),
         intermediate_asset: null,
-        source_asset: 'USDC',
+        source_asset: 'Usdc',
       });
       expect(sendSpy).toHaveBeenCalledWith(
         'swap_rate',
@@ -365,18 +382,20 @@ describe('server', () => {
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
-          egressAmount: (100e6).toString(),
+          outputAmount: (100e6).toString(),
         });
 
       const params = new URLSearchParams({
+        srcChain: 'Ethereum',
         srcAsset: 'ETH',
+        destChain: 'Ethereum',
         destAsset: 'USDC',
         amount: (1e18).toString(),
       });
 
-      client.setQuoteRequestHandler(async (req) => ({
+      quotingClient.setQuoteRequestHandler(async (req) => ({
         id: req.id,
-        egress_amount: (50e6).toString(),
+        output_amount: (50e6).toString(),
       }));
 
       const { body, status } = await request(server).get(
@@ -421,19 +440,21 @@ describe('server', () => {
         .spyOn(RpcClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
           intermediateAmount: (2000e6).toString(),
-          egressAmount: (1e18).toString(),
+          outputAmount: (1e18).toString(),
         });
 
       const params = new URLSearchParams({
+        srcChain: 'Ethereum',
         srcAsset: 'FLIP',
+        destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: (1e18).toString(),
       });
 
-      client.setQuoteRequestHandler(async (req) => ({
+      quotingClient.setQuoteRequestHandler(async (req) => ({
         id: req.id,
         intermediate_amount: (1000e6).toString(),
-        egress_amount: (0.5e18).toString(),
+        output_amount: (0.5e18).toString(),
       }));
 
       const { body, status } = await request(server).get(
@@ -485,18 +506,20 @@ describe('server', () => {
         .spyOn(RpcClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
           intermediateAmount: (2000e6).toString(),
-          egressAmount: (1e18).toString(),
+          outputAmount: (1e18).toString(),
         });
       const params = new URLSearchParams({
+        srcChain: 'Ethereum',
         srcAsset: 'FLIP',
+        destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: (1e18).toString(),
       });
 
-      client.setQuoteRequestHandler(async (req) => ({
+      quotingClient.setQuoteRequestHandler(async (req) => ({
         id: req.id,
         intermediate_amount: (3000e6).toString(),
-        egress_amount: (2e18).toString(),
+        output_amount: (2e18).toString(),
       }));
 
       const { body, status } = await request(server).get(
@@ -548,5 +571,25 @@ describe('server', () => {
       const { status } = await request(app).get('/quote');
       expect(status).toBe(503);
     });
+  });
+
+  it('gets the quote for deprecated params without the chain', async () => {
+    jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      intermediateAmount: (2000e6).toString(),
+      outputAmount: (1e18).toString(),
+    });
+
+    const params = new URLSearchParams({
+      srcAsset: 'FLIP',
+      destAsset: 'ETH',
+      amount: (1e18).toString(),
+    });
+
+    const { body, status } = await request(server).get(
+      `/quote?${params.toString()}`,
+    );
+
+    expect(status).toBe(200);
+    expect(body).toMatchSnapshot();
   });
 });

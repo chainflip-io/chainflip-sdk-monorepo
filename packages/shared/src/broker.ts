@@ -2,7 +2,7 @@ import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import axios from 'axios';
 import { z } from 'zod';
-import { Asset, Assets, Chain, ChainflipNetwork } from './enums';
+import { Chain, ChainflipNetwork, Asset, Chains } from './enums';
 import {
   hexString,
   numericString,
@@ -10,7 +10,7 @@ import {
   dotAddress,
   hexStringFromNumber,
   unsignedInteger,
-  chainflipAssetAndChain,
+  assetAndChain,
 } from './parsers';
 import { CcmMetadata, ccmMetadataSchema } from './schemas';
 import { CamelCaseToSnakeCase, camelToSnakeCase } from './strings';
@@ -42,8 +42,8 @@ const transformObjToSnakeCase = <T>(
   return newObj as SnakeCaseKeys<T>;
 };
 
-const submitAddress = (asset: Asset, address: string): string => {
-  if (asset === Assets.DOT) {
+const submitAddress = (chain: Chain, address: string): string => {
+  if (chain === Chains.Polkadot) {
     return address.startsWith('0x')
       ? z.string().length(66).parse(address) // we only accept 32 byte dot addresses
       : u8aToHex(decodeAddress(address));
@@ -65,8 +65,8 @@ const rpcResult = z.union([
 const requestValidators = (network: ChainflipNetwork) => ({
   requestSwapDepositAddress: z
     .tuple([
-      chainflipAssetAndChain,
-      chainflipAssetAndChain,
+      assetAndChain,
+      assetAndChain,
       z.union([numericString, hexString, btcAddress(network)]),
       z.number(),
       ccmMetadataSchema
@@ -155,7 +155,7 @@ export async function requestSwapDepositAddress(
     'requestSwapDepositAddress',
     { asset: srcAsset, chain: srcChain },
     { asset: destAsset, chain: destChain },
-    submitAddress(destAsset, destAddress),
+    submitAddress(destChain, destAddress),
     opts.commissionBps,
     swapRequest.ccmMetadata && {
       ...swapRequest.ccmMetadata,

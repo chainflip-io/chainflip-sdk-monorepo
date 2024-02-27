@@ -1,18 +1,18 @@
 import { z } from 'zod';
-import { chainflipAssetEnum, unsignedInteger } from '@/shared/parsers';
+import { internalAssetEnum, unsignedInteger } from '@/shared/parsers';
 import type { EventHandlerArgs } from './index';
 
 const eventArgs = z.union([
   z.object({
-    baseAsset: chainflipAssetEnum,
-    quoteAsset: chainflipAssetEnum,
+    baseAsset: internalAssetEnum,
+    quoteAsset: internalAssetEnum,
     feeHundredthPips: unsignedInteger,
   }),
   // support 1.0 event shape used on perseverance
   z
     .object({
-      baseAsset: chainflipAssetEnum,
-      pairAsset: chainflipAssetEnum,
+      baseAsset: internalAssetEnum,
+      pairAsset: internalAssetEnum,
       feeHundredthPips: unsignedInteger,
     })
     .transform(({ baseAsset, pairAsset, feeHundredthPips }) => ({

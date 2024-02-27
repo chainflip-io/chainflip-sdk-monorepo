@@ -1,4 +1,4 @@
-import { Asset, Chain, Chains } from '@/shared/enums';
+import { Chain, Chains, Asset } from '@/shared/enums';
 import RedisClient from '@/shared/node-apis/redis';
 import prisma, { Broadcast } from '../client';
 import env from '../config/env';

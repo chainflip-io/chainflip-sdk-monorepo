@@ -15,7 +15,7 @@ import {
   getVaultManagerContractAddress,
   TransactionOptions,
 } from '../contracts';
-import { assetContractIds, chainContractIds } from '../enums';
+import { assetConstants, chainConstants, getInternalAsset } from '../enums';
 import { assert, isTokenCall, isTokenSwap } from '../guards';
 import { SwapNetworkOptions } from './index';
 
@@ -24,6 +24,11 @@ const swapNative = async (
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionReceipt> => {
+  const internalDestAsset = getInternalAsset({
+    chain: destChain,
+    asset: destAsset,
+  });
+
   const vaultContractAddress =
     networkOpts.network === 'localnet'
       ? networkOpts.vaultContractAddress
@@ -35,9 +40,9 @@ const swapNative = async (
   );
 
   const transaction = await vault.xSwapNative(
-    chainContractIds[destChain],
+    chainConstants[destChain].contractId,
     destAddress,
-    assetContractIds[destAsset],
+    assetConstants[internalDestAsset].contractId,
     '0x',
     { value: amount, ...extractOverrides(txOpts) },
   );
@@ -50,6 +55,15 @@ const swapToken = async (
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionReceipt> => {
+  const internalSrcAsset = getInternalAsset({
+    chain: params.srcChain,
+    asset: params.srcAsset,
+  });
+  const internalDestAsset = getInternalAsset({
+    chain: params.destChain,
+    asset: params.destAsset,
+  });
+
   const vaultContractAddress =
     networkOpts.network === 'localnet'
       ? networkOpts.vaultContractAddress
@@ -58,7 +72,7 @@ const swapToken = async (
   const erc20Address =
     networkOpts.network === 'localnet'
       ? networkOpts.srcTokenContractAddress
-      : getTokenContractAddress(params.srcAsset, networkOpts.network);
+      : getTokenContractAddress(internalSrcAsset, networkOpts.network);
 
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
@@ -76,9 +90,9 @@ const swapToken = async (
   );
 
   const transaction = await vault.xSwapToken(
-    chainContractIds[params.destChain],
+    chainConstants[params.destChain].contractId,
     params.destAddress,
-    assetContractIds[params.destAsset],
+    assetConstants[internalDestAsset].contractId,
     erc20Address,
     params.amount,
     '0x',
@@ -93,6 +107,11 @@ const callNative = async (
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionReceipt> => {
+  const internalDestAsset = getInternalAsset({
+    chain: params.destChain,
+    asset: params.destAsset,
+  });
+
   const vaultContractAddress =
     networkOpts.network === 'localnet'
       ? networkOpts.vaultContractAddress
@@ -104,9 +123,9 @@ const callNative = async (
   );
 
   const transaction = await vault.xCallNative(
-    chainContractIds[params.destChain],
+    chainConstants[params.destChain].contractId,
     params.destAddress,
-    assetContractIds[params.destAsset],
+    assetConstants[internalDestAsset].contractId,
     params.ccmMetadata.message,
     params.ccmMetadata.gasBudget,
     '0x',
@@ -121,6 +140,15 @@ const callToken = async (
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionReceipt> => {
+  const internalSrcAsset = getInternalAsset({
+    chain: params.srcChain,
+    asset: params.srcAsset,
+  });
+  const internalDestAsset = getInternalAsset({
+    chain: params.destChain,
+    asset: params.destAsset,
+  });
+
   const vaultContractAddress =
     networkOpts.network === 'localnet'
       ? networkOpts.vaultContractAddress
@@ -129,7 +157,7 @@ const callToken = async (
   const erc20Address =
     networkOpts.network === 'localnet'
       ? networkOpts.srcTokenContractAddress
-      : getTokenContractAddress(params.srcAsset, networkOpts.network);
+      : getTokenContractAddress(internalSrcAsset, networkOpts.network);
 
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
@@ -147,9 +175,9 @@ const callToken = async (
   );
 
   const transaction = await vault.xCallToken(
-    chainContractIds[params.destChain],
+    chainConstants[params.destChain].contractId,
     params.destAddress,
-    assetContractIds[params.destAsset],
+    assetConstants[internalDestAsset].contractId,
     params.ccmMetadata.message,
     params.ccmMetadata.gasBudget,
     erc20Address,

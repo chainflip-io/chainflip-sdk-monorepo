@@ -2,8 +2,8 @@ import assert from 'assert';
 import * as crypto from 'crypto';
 import { filter, Observable, Subscription } from 'rxjs';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
-import { Assets } from '@/shared/enums';
-import { ParsedQuoteParams, QuoteRequest } from '@/shared/schemas';
+import { getInternalAsset, InternalAssets } from '@/shared/enums';
+import { ParsedQuoteParams, InternalQuoteRequest } from '@/shared/schemas';
 import { getPips, ONE_IN_HUNDREDTH_PIPS } from '@/swap/utils/fees';
 import { BrokerQuote, MarketMakerQuote } from './schemas';
 import { Pool } from '../client';
@@ -59,27 +59,27 @@ export const subtractFeesFromMakerQuote = (
         quotePools[0].liquidityFeeHundredthPips,
     ).toString();
 
-    const egressAmount = getPips(
-      quote.egressAmount,
+    const outputAmount = getPips(
+      quote.outputAmount,
       ONE_IN_HUNDREDTH_PIPS -
         networkFeeHundredthPips -
         quotePools[0].liquidityFeeHundredthPips -
         quotePools[1].liquidityFeeHundredthPips,
     ).toString();
 
-    return { id: quote.id, intermediateAmount, egressAmount };
+    return { id: quote.id, intermediateAmount, outputAmount };
   }
 
   assert(quotePools.length === 1, 'wrong number of pools given');
 
-  const egressAmount = getPips(
-    quote.egressAmount,
+  const outputAmount = getPips(
+    quote.outputAmount,
     ONE_IN_HUNDREDTH_PIPS -
       networkFeeHundredthPips -
       quotePools[0].liquidityFeeHundredthPips,
   ).toString();
 
-  return { id: quote.id, egressAmount };
+  return { id: quote.id, outputAmount };
 };
 
 export const findBestQuote = (
@@ -88,47 +88,50 @@ export const findBestQuote = (
 ) =>
   quotes.reduce(
     (a, b) => {
-      const cmpResult = compareNumericStrings(a.egressAmount, b.egressAmount);
+      const cmpResult = compareNumericStrings(a.outputAmount, b.outputAmount);
       return cmpResult === Comparison.Less ? b : a;
     },
     brokerQuote as MarketMakerQuote | BrokerQuote,
   );
 
-export const buildQuoteRequest = (query: ParsedQuoteParams): QuoteRequest => {
-  const {
-    srcAsset: srcAssetAndChain,
-    destAsset: destAssetAndChain,
-    amount,
-  } = query;
-  const srcAsset = srcAssetAndChain.asset;
-  const destAsset = destAssetAndChain.asset;
+export const buildQuoteRequest = (
+  query: ParsedQuoteParams,
+): InternalQuoteRequest => {
+  const srcAsset = getInternalAsset({
+    asset: query.srcAsset,
+    chain: query.srcChain,
+  });
+  const destAsset = getInternalAsset({
+    asset: query.destAsset,
+    chain: query.destChain,
+  });
 
-  if (srcAsset === Assets.USDC) {
-    assert(destAsset !== Assets.USDC);
+  if (srcAsset === InternalAssets.Usdc) {
+    assert(destAsset !== InternalAssets.Usdc);
     return {
       id: crypto.randomUUID(),
       source_asset: srcAsset,
       intermediate_asset: null,
       destination_asset: destAsset,
-      deposit_amount: amount,
+      deposit_amount: query.amount,
     };
   }
 
-  if (destAsset === Assets.USDC) {
+  if (destAsset === InternalAssets.Usdc) {
     return {
       id: crypto.randomUUID(),
       source_asset: srcAsset,
       intermediate_asset: null,
       destination_asset: destAsset,
-      deposit_amount: amount,
+      deposit_amount: query.amount,
     };
   }
 
   return {
     id: crypto.randomUUID(),
     source_asset: srcAsset,
-    intermediate_asset: Assets.USDC,
+    intermediate_asset: InternalAssets.Usdc,
     destination_asset: destAsset,
-    deposit_amount: amount,
+    deposit_amount: query.amount,
   };
 };
