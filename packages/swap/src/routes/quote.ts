@@ -130,8 +130,8 @@ const quote = (io: Server) => {
 
         const bestQuote = findBestQuote(marketMakerQuotes, brokerQuote);
         const lowLiquidityWarning = await checkPriceWarning({
-          srcAsset: query.srcAsset,
-          destAsset: query.destAsset,
+          srcAsset: getInternalAsset(srcChainAsset),
+          destAsset: getInternalAsset(destChainAsset),
           srcAmount: swapInputAmount,
           destAmount: BigInt(bestQuote.outputAmount),
         });

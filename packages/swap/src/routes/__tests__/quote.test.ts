@@ -576,18 +576,20 @@ describe('server', () => {
         .spyOn(RpcClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
           intermediateAmount: (2000e6).toString(),
-          egressAmount: (1e18).toString(),
+          outputAmount: (1e18).toString(),
         });
       const params = new URLSearchParams({
+        srcChain: 'Ethereum',
         srcAsset: 'FLIP',
+        destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: (1e18).toString(),
       });
 
-      client.setQuoteRequestHandler(async (req) => ({
+      quotingClient.setQuoteRequestHandler(async (req) => ({
         id: req.id,
         intermediate_amount: (3000e6).toString(),
-        egress_amount: (2e18).toString(),
+        output_amount: (2e18).toString(),
       }));
 
       jest.mocked(checkPriceWarning).mockResolvedValueOnce(true);
@@ -597,10 +599,10 @@ describe('server', () => {
       );
 
       expect(status).toBe(200);
-      expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(body).toMatchObject({
         lowLiquidityWarning: true,
       });
+      expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 
     it('is disabled in maintenance mode', async () => {

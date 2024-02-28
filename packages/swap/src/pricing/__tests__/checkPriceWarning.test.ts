@@ -10,8 +10,8 @@ describe('checkPriceWarning', () => {
   it('returns false when threshold is below 5%', async () => {
     env.LIQUIDITY_WARNING_THRESHOLD = -5;
 
-    const srcAsset = 'ETH';
-    const destAsset = 'BTC';
+    const srcAsset = 'Eth';
+    const destAsset = 'Btc';
     const srcAmount = BigInt(1e18); // 1 eth
     const destAmount = BigInt(0.06e8); // 0.06 btc
 
@@ -32,8 +32,8 @@ describe('checkPriceWarning', () => {
 
   it('returns true when threshold is above 5%', async () => {
     env.LIQUIDITY_WARNING_THRESHOLD = -5;
-    const srcAsset = 'ETH';
-    const destAsset = 'BTC';
+    const srcAsset = 'Eth';
+    const destAsset = 'Btc';
     const srcAmount = BigInt(1e18); // 1 eth
     const destAmount = BigInt(0.053e8); // 0.053 btc
 

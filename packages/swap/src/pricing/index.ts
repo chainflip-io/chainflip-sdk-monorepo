@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Asset } from '@/shared/enums';
+import { InternalAsset } from '@/shared/enums';
 import env from '../config/env';
 import { CacheMap } from '../utils/dataStructures';
 import logger from '../utils/logger';
@@ -7,13 +7,12 @@ import { deferredPromise } from '../utils/promise';
 
 const COINGECKO_VS_CURRENCY = 'usd';
 
-// TODO: refactor to use internal asset
-const coinGeckoIdMap: Record<Asset, string> = {
-  FLIP: 'chainflip',
-  USDC: 'usd-coin',
-  DOT: 'polkadot',
-  ETH: 'ethereum',
-  BTC: 'bitcoin',
+const coinGeckoIdMap: Record<InternalAsset, string> = {
+  Flip: 'chainflip',
+  Usdc: 'usd-coin',
+  Dot: 'polkadot',
+  Eth: 'ethereum',
+  Btc: 'bitcoin',
 };
 const priceCache = new CacheMap<string, Promise<number | undefined>>(10_000);
 
@@ -24,7 +23,7 @@ const coingeckoAxios = axios.create({
 });
 
 export const getAssetPrice = async (
-  asset: Asset,
+  asset: InternalAsset,
 ): Promise<number | undefined> => {
   logger.debug(`getting asset price for "${asset}"`);
 

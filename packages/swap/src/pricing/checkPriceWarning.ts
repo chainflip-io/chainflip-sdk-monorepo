@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { Asset, assetDecimals } from '@/shared/enums';
+import { InternalAsset, assetConstants } from '@/shared/enums';
 import env from '../config/env';
 import logger from '../utils/logger';
 import { getAssetPrice } from '.';
@@ -13,16 +13,16 @@ export const checkPriceWarning = async ({
   srcAmount,
   destAmount,
 }: {
-  srcAsset: Asset;
-  destAsset: Asset;
+  srcAsset: InternalAsset;
+  destAsset: InternalAsset;
   srcAmount: bigint;
   destAmount: bigint;
 }): Promise<boolean | undefined> => {
   try {
     const inputPrice = await getAssetPrice(srcAsset);
     const outputPrice = await getAssetPrice(destAsset);
-    const srcAssetDecimals = assetDecimals[srcAsset];
-    const destAssetDecimals = assetDecimals[destAsset];
+    const srcAssetDecimals = assetConstants[srcAsset].decimals;
+    const destAssetDecimals = assetConstants[destAsset].decimals;
 
     if (!inputPrice || !outputPrice) {
       return undefined;
