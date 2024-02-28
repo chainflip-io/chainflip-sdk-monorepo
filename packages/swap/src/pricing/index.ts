@@ -14,7 +14,7 @@ const coinGeckoIdMap: Record<InternalAsset, string> = {
   Eth: 'ethereum',
   Btc: 'bitcoin',
 };
-const priceCache = new CacheMap<string, Promise<number | undefined>>(10_000);
+const priceCache = new CacheMap<string, Promise<number | undefined>>(30_000);
 
 const coingeckoAxios = axios.create({
   baseURL: 'https://pro-api.coingecko.com/api/v3',
