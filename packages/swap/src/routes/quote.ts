@@ -9,6 +9,7 @@ import {
 } from '@/swap/utils/fees';
 import { getPools } from '@/swap/utils/pools';
 import { asyncHandler } from './common';
+import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import getConnectionHandler from '../quoting/getConnectionHandler';
 import {
   findBestQuote,
@@ -128,6 +129,12 @@ const quote = (io: Server) => {
         );
 
         const bestQuote = findBestQuote(marketMakerQuotes, brokerQuote);
+        const lowLiquidityWarning = await checkPriceWarning({
+          srcAsset: getInternalAsset(srcChainAsset),
+          destAsset: getInternalAsset(destChainAsset),
+          srcAmount: swapInputAmount,
+          destAmount: BigInt(bestQuote.outputAmount),
+        });
 
         const quoteSwapFees = await calculateIncludedSwapFees(
           getInternalAsset(srcChainAsset),
@@ -165,15 +172,16 @@ const quote = (io: Server) => {
           );
         }
 
-        // remove the id and output amount from the final response body as it is internal information
         const {
-          id = undefined, // eslint-disable-line @typescript-eslint/no-unused-vars
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          id = undefined,
           outputAmount,
           ...response
         } = {
           ...bestQuote,
           egressAmount: egressAmount.toString(),
           includedFees,
+          lowLiquidityWarning,
         };
 
         res.json(response);

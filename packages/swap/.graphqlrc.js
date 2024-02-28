@@ -1,5 +1,5 @@
 module.exports = {
-  schema: 'https://indexer-perseverance.chainflip.io/graphql',
+  schema: ['https://indexer.staging/graphql'],
   documents: ['**/*.ts', '**/*.tsx'],
   extensions: {
     codegen: {

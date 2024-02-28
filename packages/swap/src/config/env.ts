@@ -47,6 +47,8 @@ export default z
     PROCESSOR_TRANSACTION_TIMEOUT: optionalNumber(10_000),
     REDIS_URL: redisUrl.optional(),
     MAINTENANCE_MODE: optionalBoolean,
+    LIQUIDITY_WARNING_THRESHOLD: optionalNumber(-5),
+    COINGECKO_API_KEY: z.string(),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);

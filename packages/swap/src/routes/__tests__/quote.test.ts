@@ -9,6 +9,7 @@ import RpcClient from '@/shared/node-apis/RpcClient';
 import { environment, swapRate } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
 import prisma from '../../client';
+import { checkPriceWarning } from '../../pricing/checkPriceWarning';
 import QuotingClient from '../../quoting/QuotingClient';
 import app from '../../server';
 
@@ -31,6 +32,10 @@ jest.mock(
 jest.mock('@/shared/consts', () => ({
   ...jest.requireActual('@/shared/consts'),
   getPoolsNetworkFeeHundredthPips: jest.fn().mockReturnValue(1000),
+}));
+
+jest.mock('../../pricing/checkPriceWarning.ts', () => ({
+  checkPriceWarning: jest.fn(),
 }));
 
 jest.mock('axios', () => ({
@@ -562,6 +567,40 @@ describe('server', () => {
             type: 'EGRESS',
           },
         ],
+      });
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('gets the quote with low liquidity warning', async () => {
+      const sendSpy = jest
+        .spyOn(RpcClient.prototype, 'sendRequest')
+        .mockResolvedValueOnce({
+          intermediateAmount: (2000e6).toString(),
+          outputAmount: (1e18).toString(),
+        });
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'FLIP',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: (1e18).toString(),
+      });
+
+      quotingClient.setQuoteRequestHandler(async (req) => ({
+        id: req.id,
+        intermediate_amount: (3000e6).toString(),
+        output_amount: (2e18).toString(),
+      }));
+
+      jest.mocked(checkPriceWarning).mockResolvedValueOnce(true);
+
+      const { body, status } = await request(server).get(
+        `/quote?${params.toString()}`,
+      );
+
+      expect(status).toBe(200);
+      expect(body).toMatchObject({
+        lowLiquidityWarning: true,
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });

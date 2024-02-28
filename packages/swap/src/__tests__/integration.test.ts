@@ -24,6 +24,7 @@ jest.mock('../utils/statechain', () => ({
   getBrokerQuote: jest.fn(),
 }));
 jest.mock('axios', () => ({
+  create: jest.fn(),
   post: jest.fn((url, data) => {
     if (data.method === 'cf_environment') {
       return Promise.resolve({
