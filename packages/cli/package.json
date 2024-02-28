@@ -50,6 +50,7 @@
   },
   "repository": "https://github.com/chainflip-io/chainflip-sdk-monorepo.git",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   }
 }
