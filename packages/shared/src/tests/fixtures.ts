@@ -75,11 +75,13 @@ export const ingressEgressEnvironment = ({
   ingressFee = '0x0',
   egressFee = '0x0',
   minEgressAmount = '0x1',
+  witnessSafetyMargin = 2,
 }: {
   minDepositAmount?: string;
   ingressFee?: string;
   egressFee?: string;
   minEgressAmount?: string;
+  witnessSafetyMargin?: number;
 } = {}) => ({
   id: 1,
   jsonrpc: '2.0',
@@ -102,6 +104,11 @@ export const ingressEgressEnvironment = ({
       Bitcoin: { BTC: egressFee },
       Polkadot: { DOT: egressFee },
       Ethereum: { ETH: egressFee, FLIP: egressFee, USDC: egressFee },
+    },
+    witness_safety_margins: {
+      Ethereum: witnessSafetyMargin,
+      Polkadot: null,
+      Bitcoin: witnessSafetyMargin,
     },
     egress_dust_limits: {
       Ethereum: {

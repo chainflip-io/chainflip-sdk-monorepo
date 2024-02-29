@@ -107,6 +107,14 @@ const chainAssetMap = <Z extends z.ZodTypeAny>(parser: Z) =>
 const chainAssetNumberMap = chainAssetMap(numberOrHex);
 const chainAssetNumberNullableMap = chainAssetMap(numberOrHex.nullable());
 
+const chainMap = <Z extends z.ZodTypeAny>(parser: Z) =>
+  z.object({
+    Bitcoin: parser,
+    Ethereum: parser,
+    Polkadot: parser,
+  });
+const chainNumberNullableMap = chainMap(numberOrHex.nullable());
+
 const swappingEnvironment = z.object({
   maximum_swap_amounts: chainAssetNumberNullableMap,
 });
@@ -135,6 +143,7 @@ const ingressEgressEnvironment = z
     minimum_deposit_amounts: chainAssetNumberMap,
     ingress_fees: chainAssetNumberMap,
     egress_fees: chainAssetNumberMap,
+    witness_safety_margins: chainNumberNullableMap,
     // TODO(1.2): remove optional and default value
     egress_dust_limits: chainAssetNumberMap.optional().default({
       Bitcoin: { BTC: 0x258 },

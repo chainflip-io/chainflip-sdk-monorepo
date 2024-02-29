@@ -77,6 +77,7 @@ interface DepositAddressFields extends SwapStatusResponseCommonFields {
   estimatedDepositChannelExpiryTime: number;
   isDepositChannelExpired: boolean;
   depositChannelOpenedThroughBackend: boolean;
+  witnessSafetyMargin: number | undefined;
 }
 
 type CopyFields<T, U> = { [K in Exclude<keyof T, keyof U>]: undefined } & U;

@@ -21,6 +21,7 @@ import {
 } from '../ingress-egress-tracking';
 import { readField } from '../utils/function';
 import logger from '../utils/logger';
+import { getWitnessSafetyMargin } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
 
 const router = express.Router();
@@ -223,10 +224,12 @@ router.get(
       };
     }
 
+    const srcChain = internalSrcAsset && assetConstants[internalSrcAsset].chain;
+
     const response = {
       state,
       type: swap?.type,
-      srcChain: internalSrcAsset && assetConstants[internalSrcAsset].chain,
+      srcChain,
       srcAsset: internalSrcAsset && assetConstants[internalSrcAsset].asset,
       destChain: internalDestAsset && assetConstants[internalDestAsset].chain,
       destAsset: internalDestAsset && assetConstants[internalDestAsset].asset,
@@ -253,6 +256,7 @@ router.get(
       depositReceivedBlockIndex: swap?.depositReceivedBlockIndex ?? undefined,
       intermediateAmount: swap?.intermediateAmount?.toFixed(),
       swapExecutedAt: swap?.swapExecutedAt?.valueOf(),
+      witnessSafetyMargin: srcChain ? Number((await getWitnessSafetyMargin(srcChain))?.toString()) : undefined,
       swapExecutedBlockIndex: swap?.swapExecutedBlockIndex ?? undefined,
       egressAmount: swap?.egress?.amount?.toFixed(),
       egressScheduledAt: swap?.egress?.scheduledAt?.valueOf(),
