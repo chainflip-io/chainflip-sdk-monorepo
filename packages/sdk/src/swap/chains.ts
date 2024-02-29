@@ -1,5 +1,6 @@
 import { ChainflipNetwork, Chains, isTestnet } from '@/shared/enums';
 import { ChainData } from './types';
+import { isNotNullish } from '../guards';
 import { Environment } from '../rpc';
 
 export const ethereum: (
@@ -9,10 +10,11 @@ export const ethereum: (
   chain: Chains.Ethereum,
   name: 'Ethereum',
   isMainnet: !isTestnet(network),
-  witnessSafetyMargin:
-    env.ingressEgress.witnessSafetyMargins.Ethereum != undefined
-      ? Number(env.ingressEgress.witnessSafetyMargins.Ethereum)
-      : undefined,
+  witnessSafetyMargin: isNotNullish(
+    env.ingressEgress.witnessSafetyMargins.Ethereum,
+  )
+    ? Number(env.ingressEgress.witnessSafetyMargins.Ethereum)
+    : undefined,
 });
 
 export const polkadot: (
@@ -22,10 +24,11 @@ export const polkadot: (
   chain: Chains.Polkadot,
   name: 'Polkadot',
   isMainnet: !isTestnet(network),
-  witnessSafetyMargin:
-    env.ingressEgress.witnessSafetyMargins.Polkadot != undefined
-      ? Number(env.ingressEgress.witnessSafetyMargins.Polkadot)
-      : undefined,
+  witnessSafetyMargin: isNotNullish(
+    env.ingressEgress.witnessSafetyMargins.Polkadot,
+  )
+    ? Number(env.ingressEgress.witnessSafetyMargins.Polkadot)
+    : undefined,
 });
 
 export const bitcoin: (
@@ -35,8 +38,9 @@ export const bitcoin: (
   chain: Chains.Bitcoin,
   name: 'Bitcoin',
   isMainnet: !isTestnet(network),
-  witnessSafetyMargin:
-    env.ingressEgress.witnessSafetyMargins.Bitcoin != undefined
-      ? Number(env.ingressEgress.witnessSafetyMargins.Bitcoin)
-      : undefined,
+  witnessSafetyMargin: isNotNullish(
+    env.ingressEgress.witnessSafetyMargins.Bitcoin,
+  )
+    ? Number(env.ingressEgress.witnessSafetyMargins.Bitcoin)
+    : undefined,
 });
