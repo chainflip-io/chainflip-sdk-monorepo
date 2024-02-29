@@ -223,12 +223,10 @@ router.get(
       };
     }
 
-    const srcChain = internalSrcAsset && assetConstants[internalSrcAsset].chain;
-
     const response = {
       state,
       type: swap?.type,
-      srcChain,
+      srcChain: internalSrcAsset && assetConstants[internalSrcAsset].chain,
       srcAsset: internalSrcAsset && assetConstants[internalSrcAsset].asset,
       destChain: internalDestAsset && assetConstants[internalDestAsset].chain,
       destAsset: internalDestAsset && assetConstants[internalDestAsset].asset,
