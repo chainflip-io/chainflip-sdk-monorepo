@@ -112,6 +112,11 @@ describe('getIngressEgressEnvironment', () => {
           DOT: 0x1n,
         },
       },
+      witnessSafetyMargins: {
+        Bitcoin: 2n,
+        Ethereum: 2n,
+        Polkadot: null,
+      },
     });
     expect(spy.mock.calls).toMatchSnapshot();
   });
