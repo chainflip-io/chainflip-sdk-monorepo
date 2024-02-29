@@ -422,4 +422,14 @@ describe(SwapSDK, () => {
       boostFeeBps: BOOST_FEE_BPS,
     });
   });
+
+  describe(SwapSDK.prototype.getWitnessSafetyMargins, () => {
+    it('should return correct value for each chain', async () => {
+      expect(await sdk.getWitnessSafetyMargins('Ethereum')).toStrictEqual(1);
+      expect(await sdk.getWitnessSafetyMargins('Polkadot')).toStrictEqual(
+        undefined,
+      );
+      expect(await sdk.getWitnessSafetyMargins('Bitcoin')).toStrictEqual(2);
+    });
+  });
 });

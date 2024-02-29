@@ -114,7 +114,6 @@ describe('server', () => {
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "AWAITING_DEPOSIT",
-          "witnessSafetyMargin": 2,
         }
       `);
     });
@@ -147,7 +146,6 @@ describe('server', () => {
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "AWAITING_DEPOSIT",
-          "witnessSafetyMargin": 2,
         }
       `);
     });
@@ -185,7 +183,6 @@ describe('server', () => {
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "AWAITING_DEPOSIT",
-          "witnessSafetyMargin": 2,
         }
       `);
     });
@@ -217,7 +214,6 @@ describe('server', () => {
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "state": "AWAITING_DEPOSIT",
-          "witnessSafetyMargin": 2,
         }
       `);
     });
@@ -267,7 +263,6 @@ describe('server', () => {
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
           "type": "SWAP",
-          "witnessSafetyMargin": 2,
         }
       `);
     });
@@ -350,7 +345,6 @@ describe('server', () => {
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
           "type": "SWAP",
-          "witnessSafetyMargin": 2,
         }
       `);
     });
@@ -443,7 +437,6 @@ describe('server', () => {
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
           "type": "SWAP",
-          "witnessSafetyMargin": 2,
         }
       `);
     });
@@ -550,7 +543,6 @@ describe('server', () => {
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
           "type": "SWAP",
-          "witnessSafetyMargin": 2,
         }
       `);
     });
@@ -653,7 +645,6 @@ describe('server', () => {
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
           "type": "SWAP",
-          "witnessSafetyMargin": 2,
         }
       `);
     });
@@ -760,7 +751,6 @@ describe('server', () => {
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
           "type": "SWAP",
-          "witnessSafetyMargin": 2,
         }
       `);
     });
@@ -867,7 +857,6 @@ describe('server', () => {
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
           "type": "SWAP",
-          "witnessSafetyMargin": 2,
         }
       `);
     });
@@ -1143,7 +1132,6 @@ describe('server', () => {
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
           "type": "SWAP",
-          "witnessSafetyMargin": 2,
         }
       `);
     });
@@ -1215,7 +1203,6 @@ describe('server', () => {
           "srcChain": "Ethereum",
           "state": "DEPOSIT_RECEIVED",
           "type": "SWAP",
-          "witnessSafetyMargin": 2,
         }
       `);
     });

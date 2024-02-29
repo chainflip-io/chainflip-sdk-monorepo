@@ -114,7 +114,7 @@ describe('getIngressEgressEnvironment', () => {
       },
       witnessSafetyMargins: {
         Bitcoin: 2n,
-        Ethereum: 2n,
+        Ethereum: 1n,
         Polkadot: null,
       },
     });

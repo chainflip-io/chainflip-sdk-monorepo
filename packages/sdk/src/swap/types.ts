@@ -5,6 +5,7 @@ export interface ChainData {
   chain: Chain;
   name: string;
   isMainnet: boolean;
+  witnessSafetyMargin: number | undefined;
 }
 
 export type AssetData = {
@@ -77,7 +78,6 @@ interface DepositAddressFields extends SwapStatusResponseCommonFields {
   estimatedDepositChannelExpiryTime: number;
   isDepositChannelExpired: boolean;
   depositChannelOpenedThroughBackend: boolean;
-  witnessSafetyMargin: number | undefined;
 }
 
 type CopyFields<T, U> = { [K in Exclude<keyof T, keyof U>]: undefined } & U;

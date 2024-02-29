@@ -21,7 +21,6 @@ import {
 } from '../ingress-egress-tracking';
 import { readField } from '../utils/function';
 import logger from '../utils/logger';
-import { getWitnessSafetyMargin } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
 
 const router = express.Router();
@@ -256,9 +255,6 @@ router.get(
       depositReceivedBlockIndex: swap?.depositReceivedBlockIndex ?? undefined,
       intermediateAmount: swap?.intermediateAmount?.toFixed(),
       swapExecutedAt: swap?.swapExecutedAt?.valueOf(),
-      witnessSafetyMargin: srcChain
-        ? Number((await getWitnessSafetyMargin(srcChain))?.toString())
-        : undefined,
       swapExecutedBlockIndex: swap?.swapExecutedBlockIndex ?? undefined,
       egressAmount: swap?.egress?.amount?.toFixed(),
       egressScheduledAt: swap?.egress?.scheduledAt?.valueOf(),

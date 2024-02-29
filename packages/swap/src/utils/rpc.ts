@@ -34,14 +34,6 @@ export const getMinimumEgressAmount = async (
   );
 };
 
-export const getWitnessSafetyMargin = async (
-  chain: Chain,
-): Promise<bigint | null> => {
-  const environment = await cachedGetEnvironment(rpcConfig);
-
-  return environment.ingressEgress.witnessSafetyMargins[chain];
-};
-
 export const getNativeIngressFee = async (
   asset: UncheckedAssetAndChain,
 ): Promise<bigint> => {
