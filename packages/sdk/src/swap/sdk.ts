@@ -70,11 +70,16 @@ export class SwapSDK {
       : { network: this.network };
   }
 
-  getChains(sourceChain?: Chain): Promise<ChainData[]> {
+  async getChains(sourceChain?: Chain): Promise<ChainData[]> {
+    const env = await this.getStateChainEnvironment();
     if (sourceChain !== undefined) {
-      return ApiService.getPossibleDestinationChains(sourceChain, this.network);
+      return ApiService.getPossibleDestinationChains(
+        sourceChain,
+        this.network,
+        env,
+      );
     }
-    return ApiService.getChains(this.network);
+    return ApiService.getChains(this.network, env);
   }
 
   private async getStateChainEnvironment(): Promise<Environment> {

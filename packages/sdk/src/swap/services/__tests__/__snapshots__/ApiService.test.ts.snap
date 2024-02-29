@@ -326,16 +326,19 @@ exports[`ApiService getChains gets mainnet chains 1`] = `
     "chain": "Ethereum",
     "isMainnet": true,
     "name": "Ethereum",
+    "witnessSafetyMargin": 1,
   },
   {
     "chain": "Polkadot",
     "isMainnet": true,
     "name": "Polkadot",
+    "witnessSafetyMargin": undefined,
   },
   {
     "chain": "Bitcoin",
     "isMainnet": true,
     "name": "Bitcoin",
+    "witnessSafetyMargin": 2,
   },
 ]
 `;
@@ -346,16 +349,19 @@ exports[`ApiService getChains gets testnet chains (perseverance) 1`] = `
     "chain": "Ethereum",
     "isMainnet": false,
     "name": "Ethereum",
+    "witnessSafetyMargin": 1,
   },
   {
     "chain": "Polkadot",
     "isMainnet": false,
     "name": "Polkadot",
+    "witnessSafetyMargin": undefined,
   },
   {
     "chain": "Bitcoin",
     "isMainnet": false,
     "name": "Bitcoin",
+    "witnessSafetyMargin": 2,
   },
 ]
 `;
@@ -366,16 +372,19 @@ exports[`ApiService getChains gets testnet chains (sisyphos) 1`] = `
     "chain": "Ethereum",
     "isMainnet": false,
     "name": "Ethereum",
+    "witnessSafetyMargin": 1,
   },
   {
     "chain": "Polkadot",
     "isMainnet": false,
     "name": "Polkadot",
+    "witnessSafetyMargin": undefined,
   },
   {
     "chain": "Bitcoin",
     "isMainnet": false,
     "name": "Bitcoin",
+    "witnessSafetyMargin": 2,
   },
 ]
 `;
