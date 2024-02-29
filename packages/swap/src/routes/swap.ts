@@ -256,7 +256,9 @@ router.get(
       depositReceivedBlockIndex: swap?.depositReceivedBlockIndex ?? undefined,
       intermediateAmount: swap?.intermediateAmount?.toFixed(),
       swapExecutedAt: swap?.swapExecutedAt?.valueOf(),
-      witnessSafetyMargin: srcChain ? Number((await getWitnessSafetyMargin(srcChain))?.toString()) : undefined,
+      witnessSafetyMargin: srcChain
+        ? Number((await getWitnessSafetyMargin(srcChain))?.toString())
+        : undefined,
       swapExecutedBlockIndex: swap?.swapExecutedBlockIndex ?? undefined,
       egressAmount: swap?.egress?.amount?.toFixed(),
       egressScheduledAt: swap?.egress?.scheduledAt?.valueOf(),
