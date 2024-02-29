@@ -44,6 +44,11 @@ const env = {
       Polkadot: { DOT: 1n },
       Bitcoin: { BTC: 0x258n },
     },
+    witnessSafetyMargins: {
+      Ethereum: 1n,
+      Polkadot: null,
+      Bitcoin: 2n,
+    },
   },
   swapping: {
     maximumSwapAmounts: {
