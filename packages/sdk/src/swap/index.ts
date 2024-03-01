@@ -8,3 +8,4 @@ export {
   Assets,
   ChainflipNetworks,
 } from '@/shared/enums';
+export { getInternalAsset as getChainflipId } from '@/shared/enums';
