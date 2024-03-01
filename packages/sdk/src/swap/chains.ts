@@ -10,10 +10,10 @@ export const ethereum: (
   chain: Chains.Ethereum,
   name: 'Ethereum',
   isMainnet: !isTestnet(network),
-  witnessSafetyMargin: isNotNullish(
+  requiredBlockConfirmations: isNotNullish(
     env.ingressEgress.witnessSafetyMargins.Ethereum,
   )
-    ? Number(env.ingressEgress.witnessSafetyMargins.Ethereum)
+    ? Number(env.ingressEgress.witnessSafetyMargins.Ethereum) + 1
     : undefined,
 });
 
@@ -24,10 +24,10 @@ export const polkadot: (
   chain: Chains.Polkadot,
   name: 'Polkadot',
   isMainnet: !isTestnet(network),
-  witnessSafetyMargin: isNotNullish(
+  requiredBlockConfirmations: isNotNullish(
     env.ingressEgress.witnessSafetyMargins.Polkadot,
   )
-    ? Number(env.ingressEgress.witnessSafetyMargins.Polkadot)
+    ? Number(env.ingressEgress.witnessSafetyMargins.Polkadot) + 1
     : undefined,
 });
 
@@ -38,9 +38,9 @@ export const bitcoin: (
   chain: Chains.Bitcoin,
   name: 'Bitcoin',
   isMainnet: !isTestnet(network),
-  witnessSafetyMargin: isNotNullish(
+  requiredBlockConfirmations: isNotNullish(
     env.ingressEgress.witnessSafetyMargins.Bitcoin,
   )
-    ? Number(env.ingressEgress.witnessSafetyMargins.Bitcoin)
+    ? Number(env.ingressEgress.witnessSafetyMargins.Bitcoin) + 1
     : undefined,
 });

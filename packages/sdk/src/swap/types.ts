@@ -5,7 +5,7 @@ export interface ChainData {
   chain: Chain;
   name: string;
   isMainnet: boolean;
-  witnessSafetyMargin: number | undefined;
+  requiredBlockConfirmations: number | undefined;
 }
 
 export type AssetData = {

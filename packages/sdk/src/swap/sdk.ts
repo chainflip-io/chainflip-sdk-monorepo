@@ -224,13 +224,15 @@ export class SwapSDK {
     return { minimumSwapAmounts: minimumDepositAmounts, maximumSwapAmounts };
   }
 
-  async getWitnessSafetyMargins(chain: Chain): Promise<number | undefined> {
+  async getrequiredBlockConfirmations(
+    chain: Chain,
+  ): Promise<number | undefined> {
     const {
       ingressEgress: { witnessSafetyMargins },
     } = await this.getStateChainEnvironment();
 
     return witnessSafetyMargins[chain]
-      ? Number(witnessSafetyMargins[chain])
+      ? Number(witnessSafetyMargins[chain]) + 1
       : undefined;
   }
 }

@@ -433,13 +433,17 @@ describe(SwapSDK, () => {
     });
   });
 
-  describe(SwapSDK.prototype.getWitnessSafetyMargins, () => {
+  describe(SwapSDK.prototype.getrequiredBlockConfirmations, () => {
     it('should return correct value for each chain', async () => {
-      expect(await sdk.getWitnessSafetyMargins('Ethereum')).toStrictEqual(1);
-      expect(await sdk.getWitnessSafetyMargins('Polkadot')).toStrictEqual(
+      expect(await sdk.getrequiredBlockConfirmations('Ethereum')).toStrictEqual(
+        2,
+      );
+      expect(await sdk.getrequiredBlockConfirmations('Polkadot')).toStrictEqual(
         undefined,
       );
-      expect(await sdk.getWitnessSafetyMargins('Bitcoin')).toStrictEqual(2);
+      expect(await sdk.getrequiredBlockConfirmations('Bitcoin')).toStrictEqual(
+        3,
+      );
     });
   });
 });
