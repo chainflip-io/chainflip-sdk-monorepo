@@ -224,7 +224,7 @@ export class SwapSDK {
     return { minimumSwapAmounts: minimumDepositAmounts, maximumSwapAmounts };
   }
 
-  async getrequiredBlockConfirmations(
+  async getRequiredBlockConfirmations(
     chain: Chain,
   ): Promise<number | undefined> {
     const {

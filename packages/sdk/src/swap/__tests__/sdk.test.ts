@@ -433,15 +433,15 @@ describe(SwapSDK, () => {
     });
   });
 
-  describe(SwapSDK.prototype.getrequiredBlockConfirmations, () => {
+  describe(SwapSDK.prototype.getRequiredBlockConfirmations, () => {
     it('should return correct value for each chain', async () => {
-      expect(await sdk.getrequiredBlockConfirmations('Ethereum')).toStrictEqual(
+      expect(await sdk.getRequiredBlockConfirmations('Ethereum')).toStrictEqual(
         2,
       );
-      expect(await sdk.getrequiredBlockConfirmations('Polkadot')).toStrictEqual(
+      expect(await sdk.getRequiredBlockConfirmations('Polkadot')).toStrictEqual(
         undefined,
       );
-      expect(await sdk.getrequiredBlockConfirmations('Bitcoin')).toStrictEqual(
+      expect(await sdk.getRequiredBlockConfirmations('Bitcoin')).toStrictEqual(
         3,
       );
     });
