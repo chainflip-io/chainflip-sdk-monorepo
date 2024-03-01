@@ -59,6 +59,8 @@ const quote = (io: Server) => {
         throw ServiceError.badRequest('invalid request');
       }
 
+      logger.info('received a quote request', { query: req.query });
+
       const query = queryResult.data;
       const srcChainAsset = { asset: query.srcAsset, chain: query.srcChain };
       const destChainAsset = { asset: query.destAsset, chain: query.destChain };
