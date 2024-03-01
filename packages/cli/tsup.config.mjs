@@ -6,6 +6,8 @@ export default defineConfig({
   minify: false,
   dts: true,
   skipNodeModulesBundle: true,
+  // bundle patched bech32-buffer package to support validating regtest addresses
+  noExternal: ['bech32-buffer'],
   format: ['cjs', 'esm'],
   entry: {
     lib: 'src/lib/index.ts',

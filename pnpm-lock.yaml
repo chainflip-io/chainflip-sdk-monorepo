@@ -110,9 +110,6 @@ importers:
       axios:
         specifier: ^1.x
         version: 1.6.7
-      bech32-buffer:
-        specifier: ^0.2.1
-        version: 0.2.1(patch_hash=elryfzb6nrq4qzi6wcigmgsdj4)
       ethers:
         specifier: ^6.x
         version: 6.11.1
@@ -126,6 +123,9 @@ importers:
       '@types/yargs':
         specifier: ^17.0.32
         version: 17.0.32
+      bech32-buffer:
+        specifier: ^0.2.1
+        version: 0.2.1(patch_hash=elryfzb6nrq4qzi6wcigmgsdj4)
       tsup:
         specifier: ^8.0.2
         version: 8.0.2(@swc/core@1.4.2)(typescript@5.3.3)
@@ -3953,7 +3953,6 @@ packages:
   /bech32-buffer@0.2.1(patch_hash=elryfzb6nrq4qzi6wcigmgsdj4):
     resolution: {integrity: sha512-fCG1TyZuCN48Sdw97p/IR39fvqpFlWDVpG7qnuU1Uc3+Xtc/0uqAp8U7bMW/bGuVF5CcNVIXwxQsWwUr6un6FQ==}
     engines: {node: '>=8'}
-    dev: false
     patched: true
 
   /bech32@1.1.4:
