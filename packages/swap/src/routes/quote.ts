@@ -1,6 +1,14 @@
 import express from 'express';
 import type { Server } from 'socket.io';
-import { Asset, Assets, Chain, Chains, getInternalAsset } from '@/shared/enums';
+import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts';
+import {
+  Asset,
+  Assets,
+  Chain,
+  chainConstants,
+  Chains,
+  getInternalAsset,
+} from '@/shared/enums';
 import { bigintMin } from '@/shared/functions';
 import { quoteQuerySchema, SwapFee } from '@/shared/schemas';
 import {
@@ -22,6 +30,7 @@ import {
   getMinimumEgressAmount,
   getNativeEgressFee,
   getNativeIngressFee,
+  getWitnessSafetyMargin,
   validateSwapAmount,
 } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
@@ -174,6 +183,14 @@ const quote = (io: Server) => {
           );
         }
 
+        const ingressDuration =
+          chainConstants[srcChainAsset.chain].blockTimeSeconds *
+          Number((await getWitnessSafetyMargin(srcChainAsset.chain)) ?? 1n);
+        const egressDuration =
+          chainConstants[destChainAsset.chain].blockTimeSeconds *
+          Number((await getWitnessSafetyMargin(destChainAsset.chain)) ?? 1n);
+        const swapDuration = CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS * 3;
+
         const {
           id = undefined,
           outputAmount,
@@ -183,6 +200,8 @@ const quote = (io: Server) => {
           egressAmount: egressAmount.toString(),
           includedFees,
           lowLiquidityWarning,
+          estimatedDurationSeconds:
+            ingressDuration + egressDuration + swapDuration,
         };
 
         logger.info('sending response for quote request', { id, response });

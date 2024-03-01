@@ -58,6 +58,7 @@ export type QuoteQueryResponse = {
   egressAmount: string;
   includedFees: SwapFee[];
   lowLiquidityWarning: boolean | undefined;
+  estimatedDurationSeconds: number;
 };
 
 interface BaseRequest {

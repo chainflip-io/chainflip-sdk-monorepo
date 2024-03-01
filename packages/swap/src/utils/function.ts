@@ -1,4 +1,4 @@
-import { Chain } from '@/shared/enums';
+import { Chain, chainConstants } from '@/shared/enums';
 import logger from './logger';
 import env from '../config/env';
 
@@ -41,12 +41,6 @@ export const handleExit = (cb: AnyFunction) => {
   };
 };
 
-const blockTimeMap: Record<Chain, number> = {
-  Bitcoin: 600,
-  Ethereum: 15,
-  Polkadot: 6,
-};
-
 export function calculateExpiryTime(args: {
   chainInfo?: {
     chain: Chain;
@@ -62,10 +56,11 @@ export function calculateExpiryTime(args: {
   }
 
   const remainingBlocks = Number(expiryBlock - chainInfo.height); // If it is negative, it means the channel has already expired and will return the time from the past
+  const { blockTimeSeconds } = chainConstants[chainInfo.chain];
 
   return new Date(
     chainInfo.blockTrackedAt.getTime() +
-      remainingBlocks * blockTimeMap[chainInfo.chain] * 1000,
+      remainingBlocks * blockTimeSeconds * 1000,
   );
 }
 

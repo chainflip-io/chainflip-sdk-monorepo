@@ -84,20 +84,28 @@ export const chainConstants = {
     assets: [Assets.ETH, Assets.FLIP, Assets.USDC],
     gasAsset: Assets.ETH,
     contractId: 1,
+    blockTimeSeconds: 12,
   },
   [Chains.Polkadot]: {
     assets: [Assets.DOT],
     gasAsset: Assets.DOT,
     contractId: 2,
+    blockTimeSeconds: 6,
   },
   [Chains.Bitcoin]: {
     assets: [Assets.BTC],
     gasAsset: Assets.BTC,
     contractId: 3,
+    blockTimeSeconds: 10 * 60,
   },
 } as const satisfies Record<
   Chain,
-  { assets: Asset[]; gasAsset: Asset; contractId: number }
+  {
+    assets: Asset[];
+    gasAsset: Asset;
+    contractId: number;
+    blockTimeSeconds: number;
+  }
 >;
 
 export type AssetOfChain<C extends Chain> =
