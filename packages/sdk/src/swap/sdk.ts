@@ -8,6 +8,8 @@ import {
   ChainflipNetworks,
   UncheckedAssetAndChain,
   ChainAssetMap,
+  Chains,
+  ChainMap,
 } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { Environment, RpcConfig, getEnvironment } from '@/shared/rpc';
@@ -224,15 +226,19 @@ export class SwapSDK {
     return { minimumSwapAmounts: minimumDepositAmounts, maximumSwapAmounts };
   }
 
-  async getRequiredBlockConfirmations(
-    chain: Chain,
-  ): Promise<number | undefined> {
+  async getRequiredBlockConfirmations(): Promise<ChainMap<number | undefined>> {
     const {
       ingressEgress: { witnessSafetyMargins },
     } = await this.getStateChainEnvironment();
 
-    return witnessSafetyMargins[chain]
-      ? Number(witnessSafetyMargins[chain]) + 1
-      : undefined;
+    return Object.keys(Chains).reduce(
+      (acc, chain) => {
+        acc[chain as Chain] = witnessSafetyMargins[chain as Chain]
+          ? Number(witnessSafetyMargins[chain as Chain]) + 1
+          : undefined;
+        return acc;
+      },
+      {} as ChainMap<number | undefined>,
+    );
   }
 }

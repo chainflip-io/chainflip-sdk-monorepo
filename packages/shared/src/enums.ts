@@ -117,6 +117,10 @@ export type ChainAssetMap<T> = {
   };
 };
 
+export type ChainMap<T> = {
+  [C in Chain]: T;
+};
+
 export function isValidAssetAndChain(
   assetAndChain: UncheckedAssetAndChain,
 ): assetAndChain is AssetAndChain {
