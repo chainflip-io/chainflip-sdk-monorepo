@@ -1,6 +1,6 @@
 import { ChainflipNetwork, Chains, isTestnet } from '@/shared/enums';
+import { isNotNullish } from '@/shared/guards';
 import { ChainData } from './types';
-import { isNotNullish } from '../guards';
 import { Environment } from '../rpc';
 
 export const ethereum: (
