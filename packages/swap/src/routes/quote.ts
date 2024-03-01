@@ -173,7 +173,6 @@ const quote = (io: Server) => {
         }
 
         const {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           id = undefined,
           outputAmount,
           ...response
@@ -183,6 +182,8 @@ const quote = (io: Server) => {
           includedFees,
           lowLiquidityWarning,
         };
+
+        logger.info('sending response for quote request', { id, response });
 
         res.json(response);
       } catch (err) {
