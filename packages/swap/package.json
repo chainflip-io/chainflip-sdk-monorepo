@@ -68,7 +68,7 @@
     "qs": "^6.11.2",
     "rxjs": "^7.8.1",
     "safe-stable-stringify": "^2.4.3",
-    "socket.io": "^4.7.2",
+    "socket.io": "^4.7.4",
     "winston": "^3.11.0",
     "ws": "^8.16.0"
   }
