@@ -3,6 +3,7 @@
 exports[`server gets the quote for deprecated params without the chain 1`] = `
 {
   "egressAmount": "999999999999975000",
+  "estimatedDurationSeconds": 42,
   "includedFees": [
     {
       "amount": "2000000",
