@@ -5,6 +5,7 @@ export interface ChainData {
   chain: Chain;
   name: string;
   isMainnet: boolean;
+  requiredBlockConfirmations: number | undefined;
 }
 
 export type AssetData = {

@@ -103,6 +103,11 @@ export const ingressEgressEnvironment = ({
       Polkadot: { DOT: egressFee },
       Ethereum: { ETH: egressFee, FLIP: egressFee, USDC: egressFee },
     },
+    witness_safety_margins: {
+      Ethereum: 1,
+      Polkadot: null,
+      Bitcoin: 2,
+    },
     egress_dust_limits: {
       Ethereum: {
         ETH: minEgressAmount,

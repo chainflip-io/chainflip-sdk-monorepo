@@ -326,16 +326,19 @@ exports[`ApiService getChains gets mainnet chains 1`] = `
     "chain": "Ethereum",
     "isMainnet": true,
     "name": "Ethereum",
+    "requiredBlockConfirmations": 2,
   },
   {
     "chain": "Polkadot",
     "isMainnet": true,
     "name": "Polkadot",
+    "requiredBlockConfirmations": undefined,
   },
   {
     "chain": "Bitcoin",
     "isMainnet": true,
     "name": "Bitcoin",
+    "requiredBlockConfirmations": 3,
   },
 ]
 `;
@@ -346,16 +349,19 @@ exports[`ApiService getChains gets testnet chains (perseverance) 1`] = `
     "chain": "Ethereum",
     "isMainnet": false,
     "name": "Ethereum",
+    "requiredBlockConfirmations": 2,
   },
   {
     "chain": "Polkadot",
     "isMainnet": false,
     "name": "Polkadot",
+    "requiredBlockConfirmations": undefined,
   },
   {
     "chain": "Bitcoin",
     "isMainnet": false,
     "name": "Bitcoin",
+    "requiredBlockConfirmations": 3,
   },
 ]
 `;
@@ -366,16 +372,19 @@ exports[`ApiService getChains gets testnet chains (sisyphos) 1`] = `
     "chain": "Ethereum",
     "isMainnet": false,
     "name": "Ethereum",
+    "requiredBlockConfirmations": 2,
   },
   {
     "chain": "Polkadot",
     "isMainnet": false,
     "name": "Polkadot",
+    "requiredBlockConfirmations": undefined,
   },
   {
     "chain": "Bitcoin",
     "isMainnet": false,
     "name": "Bitcoin",
+    "requiredBlockConfirmations": 3,
   },
 ]
 `;

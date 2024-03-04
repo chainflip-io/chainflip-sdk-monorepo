@@ -8,6 +8,8 @@ import {
   ChainflipNetworks,
   UncheckedAssetAndChain,
   ChainAssetMap,
+  Chains,
+  ChainMap,
 } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { Environment, RpcConfig, getEnvironment } from '@/shared/rpc';
@@ -70,11 +72,16 @@ export class SwapSDK {
       : { network: this.network };
   }
 
-  getChains(sourceChain?: Chain): Promise<ChainData[]> {
+  async getChains(sourceChain?: Chain): Promise<ChainData[]> {
+    const env = await this.getStateChainEnvironment();
     if (sourceChain !== undefined) {
-      return ApiService.getPossibleDestinationChains(sourceChain, this.network);
+      return ApiService.getPossibleDestinationChains(
+        sourceChain,
+        this.network,
+        env,
+      );
     }
-    return ApiService.getChains(this.network);
+    return ApiService.getChains(this.network, env);
   }
 
   private async getStateChainEnvironment(): Promise<Environment> {
@@ -217,5 +224,21 @@ export class SwapSDK {
     } = await this.getStateChainEnvironment();
 
     return { minimumSwapAmounts: minimumDepositAmounts, maximumSwapAmounts };
+  }
+
+  async getRequiredBlockConfirmations(): Promise<ChainMap<number | undefined>> {
+    const {
+      ingressEgress: { witnessSafetyMargins },
+    } = await this.getStateChainEnvironment();
+
+    return Object.keys(Chains).reduce(
+      (acc, chain) => {
+        acc[chain as Chain] = witnessSafetyMargins[chain as Chain]
+          ? Number(witnessSafetyMargins[chain as Chain]) + 1
+          : undefined;
+        return acc;
+      },
+      {} as ChainMap<number | undefined>,
+    );
   }
 }

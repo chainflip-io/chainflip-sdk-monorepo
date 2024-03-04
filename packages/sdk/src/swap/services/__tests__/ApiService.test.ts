@@ -34,6 +34,11 @@ const env = {
       Polkadot: { DOT: 0x1n },
       Bitcoin: { BTC: 0x258n },
     },
+    witnessSafetyMargins: {
+      Ethereum: 1n,
+      Polkadot: null,
+      Bitcoin: 2n,
+    },
   },
   swapping: {
     maximumSwapAmounts: {
@@ -62,12 +67,12 @@ describe('ApiService', () => {
       ChainflipNetworks.sisyphos,
       ChainflipNetworks.perseverance,
     ] as const)('gets testnet chains (%s)', async (network) => {
-      expect(await ApiService.getChains(network)).toMatchSnapshot();
+      expect(await ApiService.getChains(network, env)).toMatchSnapshot();
     });
 
     it('gets mainnet chains', async () => {
       expect(
-        await ApiService.getChains(ChainflipNetworks.mainnet),
+        await ApiService.getChains(ChainflipNetworks.mainnet, env),
       ).toMatchSnapshot();
     });
   });

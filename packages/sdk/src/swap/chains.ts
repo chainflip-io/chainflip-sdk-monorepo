@@ -1,24 +1,27 @@
-import { ChainflipNetwork, Chains, isTestnet } from '@/shared/enums';
+import { ChainflipNetwork, Chains, Chain, isTestnet } from '@/shared/enums';
+import { isNotNullish } from '@/shared/guards';
 import { ChainData } from './types';
+import { Environment } from '../rpc';
 
-export const ethereum: (network: ChainflipNetwork) => ChainData = (
-  network,
-) => ({
-  chain: Chains.Ethereum,
-  name: 'Ethereum',
-  isMainnet: !isTestnet(network),
-});
+type ChainFn = (
+  network: ChainflipNetwork,
+  env: Pick<Environment, 'ingressEgress'>,
+) => ChainData;
 
-export const polkadot: (network: ChainflipNetwork) => ChainData = (
-  network,
-) => ({
-  chain: Chains.Polkadot,
-  name: 'Polkadot',
-  isMainnet: !isTestnet(network),
-});
+const chainFactory =
+  (chain: Chain): ChainFn =>
+  (network, env) =>
+    ({
+      chain,
+      name: Chains[chain],
+      isMainnet: !isTestnet(network),
+      requiredBlockConfirmations: isNotNullish(
+        env.ingressEgress.witnessSafetyMargins[Chains[chain]],
+      )
+        ? Number(env.ingressEgress.witnessSafetyMargins[Chains[chain]]) + 1
+        : undefined,
+    }) as ChainData;
 
-export const bitcoin: (network: ChainflipNetwork) => ChainData = (network) => ({
-  chain: Chains.Bitcoin,
-  name: 'Bitcoin',
-  isMainnet: !isTestnet(network),
-});
+export const ethereum = chainFactory(Chains.Ethereum);
+export const polkadot = chainFactory(Chains.Polkadot);
+export const bitcoin = chainFactory(Chains.Bitcoin);

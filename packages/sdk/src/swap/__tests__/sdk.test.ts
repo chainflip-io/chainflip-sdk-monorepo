@@ -44,6 +44,11 @@ const env = {
       Polkadot: { DOT: 1n },
       Bitcoin: { BTC: 0x258n },
     },
+    witnessSafetyMargins: {
+      Ethereum: 1n,
+      Polkadot: null,
+      Bitcoin: 2n,
+    },
   },
   swapping: {
     maximumSwapAmounts: {
@@ -61,6 +66,9 @@ const env = {
 describe(SwapSDK, () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.mocked(axios.post).mockResolvedValueOnce({
+      data: environment({ maxSwapAmount: '0x1000000000000000' }),
+    });
   });
 
   const sdk = new SwapSDK({ network: ChainflipNetworks.perseverance });
@@ -68,9 +76,9 @@ describe(SwapSDK, () => {
   describe(SwapSDK.prototype.getChains, () => {
     it('returns the available chains', async () => {
       expect(await sdk.getChains()).toStrictEqual([
-        ethereum(ChainflipNetworks.perseverance),
-        polkadot(ChainflipNetworks.perseverance),
-        bitcoin(ChainflipNetworks.perseverance),
+        ethereum(ChainflipNetworks.perseverance, env),
+        polkadot(ChainflipNetworks.perseverance, env),
+        bitcoin(ChainflipNetworks.perseverance, env),
       ]);
     });
 
@@ -78,31 +86,31 @@ describe(SwapSDK, () => {
       [
         Chains.Ethereum,
         [
-          ethereum(ChainflipNetworks.perseverance),
-          bitcoin(ChainflipNetworks.perseverance),
-          polkadot(ChainflipNetworks.perseverance),
+          ethereum(ChainflipNetworks.perseverance, env),
+          bitcoin(ChainflipNetworks.perseverance, env),
+          polkadot(ChainflipNetworks.perseverance, env),
         ],
       ],
       [
         'Ethereum' as const,
         [
-          ethereum(ChainflipNetworks.perseverance),
-          bitcoin(ChainflipNetworks.perseverance),
-          polkadot(ChainflipNetworks.perseverance),
+          ethereum(ChainflipNetworks.perseverance, env),
+          bitcoin(ChainflipNetworks.perseverance, env),
+          polkadot(ChainflipNetworks.perseverance, env),
         ],
       ],
       [
         Chains.Polkadot,
         [
-          ethereum(ChainflipNetworks.perseverance),
-          bitcoin(ChainflipNetworks.perseverance),
+          ethereum(ChainflipNetworks.perseverance, env),
+          bitcoin(ChainflipNetworks.perseverance, env),
         ],
       ],
       [
         Chains.Bitcoin,
         [
-          ethereum(ChainflipNetworks.perseverance),
-          polkadot(ChainflipNetworks.perseverance),
+          ethereum(ChainflipNetworks.perseverance, env),
+          polkadot(ChainflipNetworks.perseverance, env),
         ],
       ],
     ])(
@@ -119,6 +127,7 @@ describe(SwapSDK, () => {
 
   describe(SwapSDK.prototype.getAssets, () => {
     beforeEach(() => {
+      jest.clearAllMocks();
       jest.mocked(axios.post).mockResolvedValueOnce({
         data: environment({ maxSwapAmount: '0x1000000000000000' }),
       });
@@ -156,13 +165,19 @@ describe(SwapSDK, () => {
 describe(SwapSDK, () => {
   const signer = new VoidSigner('0x0');
   const sdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.mocked(axios.post).mockResolvedValueOnce({
+      data: environment({ maxSwapAmount: '0x1000000000000000' }),
+    });
+  });
 
   describe(SwapSDK.prototype.getChains, () => {
     it('returns the available chains', async () => {
       expect(await sdk.getChains()).toStrictEqual([
-        ethereum(ChainflipNetworks.sisyphos),
-        polkadot(ChainflipNetworks.sisyphos),
-        bitcoin(ChainflipNetworks.sisyphos),
+        ethereum(ChainflipNetworks.sisyphos, env),
+        polkadot(ChainflipNetworks.sisyphos, env),
+        bitcoin(ChainflipNetworks.sisyphos, env),
       ]);
     });
 
@@ -170,31 +185,31 @@ describe(SwapSDK, () => {
       [
         Chains.Ethereum,
         [
-          ethereum(ChainflipNetworks.sisyphos),
-          bitcoin(ChainflipNetworks.sisyphos),
-          polkadot(ChainflipNetworks.sisyphos),
+          ethereum(ChainflipNetworks.sisyphos, env),
+          bitcoin(ChainflipNetworks.sisyphos, env),
+          polkadot(ChainflipNetworks.sisyphos, env),
         ],
       ],
       [
         'Ethereum' as const,
         [
-          ethereum(ChainflipNetworks.sisyphos),
-          bitcoin(ChainflipNetworks.sisyphos),
-          polkadot(ChainflipNetworks.sisyphos),
+          ethereum(ChainflipNetworks.sisyphos, env),
+          bitcoin(ChainflipNetworks.sisyphos, env),
+          polkadot(ChainflipNetworks.sisyphos, env),
         ],
       ],
       [
         Chains.Polkadot,
         [
-          ethereum(ChainflipNetworks.sisyphos),
-          bitcoin(ChainflipNetworks.sisyphos),
+          ethereum(ChainflipNetworks.sisyphos, env),
+          bitcoin(ChainflipNetworks.sisyphos, env),
         ],
       ],
       [
         Chains.Bitcoin,
         [
-          ethereum(ChainflipNetworks.sisyphos),
-          polkadot(ChainflipNetworks.sisyphos),
+          ethereum(ChainflipNetworks.sisyphos, env),
+          polkadot(ChainflipNetworks.sisyphos, env),
         ],
       ],
     ])(
@@ -306,15 +321,12 @@ describe(SwapSDK, () => {
     });
 
     it('goes right to the broker', async () => {
-      jest.mocked(axios.post).mockResolvedValueOnce({
-        data: environment({ maxSwapAmount: '0x1000000000000000' }),
-      });
-
       const postSpy = jest
         .mocked(axios.post)
         .mockRejectedValue(Error('unhandled mock'))
         .mockResolvedValueOnce({
           data: {
+            ...environment({ maxSwapAmount: '0x1000000000000000' }),
             result: {
               address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
               issued_block: 123,
@@ -367,12 +379,10 @@ describe(SwapSDK, () => {
 
   it('allows defining boost fee when opening a deposit channel', async () => {
     const BOOST_FEE_BPS = 100;
-    jest.mocked(axios.post).mockResolvedValueOnce({
-      data: environment({ maxSwapAmount: '0x1000000000000000' }),
-    });
 
     const postSpy = jest.mocked(axios.post).mockResolvedValueOnce({
       data: {
+        ...environment({ maxSwapAmount: '0x1000000000000000' }),
         result: {
           address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
           issued_block: 123,
@@ -420,6 +430,20 @@ describe(SwapSDK, () => {
       depositChannelExpiryBlock: 1234n,
       estimatedDepositChannelExpiryTime: undefined,
       boostFeeBps: BOOST_FEE_BPS,
+    });
+  });
+
+  describe(SwapSDK.prototype.getRequiredBlockConfirmations, () => {
+    it('should return correct value for each chain', async () => {
+      expect(
+        (await sdk.getRequiredBlockConfirmations()).Ethereum,
+      ).toStrictEqual(2);
+      expect(
+        (await sdk.getRequiredBlockConfirmations()).Polkadot,
+      ).toStrictEqual(undefined);
+      expect((await sdk.getRequiredBlockConfirmations()).Bitcoin).toStrictEqual(
+        3,
+      );
     });
   });
 });

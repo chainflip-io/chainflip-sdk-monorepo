@@ -13,22 +13,30 @@ import {
   AssetData,
 } from '../types';
 
-const getChains = async (network: ChainflipNetwork): Promise<ChainData[]> => [
-  ethereum(network),
-  polkadot(network),
-  bitcoin(network),
+const getChains = async (
+  network: ChainflipNetwork,
+  env: Pick<Environment, 'ingressEgress'>,
+): Promise<ChainData[]> => [
+  ethereum(network, env),
+  polkadot(network, env),
+  bitcoin(network, env),
 ];
 
 const getPossibleDestinationChains = async (
   sourceChain: Chain,
   network: ChainflipNetwork,
+  env: Pick<Environment, 'ingressEgress'>,
 ): Promise<ChainData[]> => {
   if (sourceChain === Chains.Ethereum)
-    return [ethereum(network), bitcoin(network), polkadot(network)];
+    return [
+      ethereum(network, env),
+      bitcoin(network, env),
+      polkadot(network, env),
+    ];
   if (sourceChain === Chains.Polkadot)
-    return [ethereum(network), bitcoin(network)];
+    return [ethereum(network, env), bitcoin(network, env)];
   if (sourceChain === Chains.Bitcoin)
-    return [ethereum(network), polkadot(network)];
+    return [ethereum(network, env), polkadot(network, env)];
   throw new Error('received unknown chain');
 };
 
