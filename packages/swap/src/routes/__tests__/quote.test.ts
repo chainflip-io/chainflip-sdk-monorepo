@@ -166,7 +166,7 @@ describe('server', () => {
       });
     });
 
-    it('gets the quote from usdc when the ingress amount is smaller than the ingress fee', async () => {
+    it('rejects when the ingress amount is smaller than the ingress fee', async () => {
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
         srcAsset: 'USDC',
@@ -599,9 +599,7 @@ describe('server', () => {
       );
 
       expect(status).toBe(200);
-      expect(body).toMatchObject({
-        lowLiquidityWarning: true,
-      });
+      expect(body).toMatchSnapshot();
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 

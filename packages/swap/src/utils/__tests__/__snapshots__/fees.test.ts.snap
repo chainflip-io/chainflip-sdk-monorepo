@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`fees estimateIngressEgressFeeAssetAmount returns the rate from the rpc for a non native asset 1`] = `
+exports[`estimateIngressEgressFeeAssetAmount returns the rate from the rpc for a non native asset 1`] = `
 [
   {
     "id": 1,
@@ -22,7 +22,7 @@ exports[`fees estimateIngressEgressFeeAssetAmount returns the rate from the rpc 
 ]
 `;
 
-exports[`fees estimateIngressEgressFeeAssetAmount returns the rate from the rpc for a non native asset and a block hash 1`] = `
+exports[`estimateIngressEgressFeeAssetAmount returns the rate from the rpc for a non native asset and a block hash 1`] = `
 [
   {
     "id": 1,
