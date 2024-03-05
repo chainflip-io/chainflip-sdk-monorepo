@@ -15,12 +15,12 @@ jest.mock('axios', () => ({
 
 describe(estimateSwapDuration, () => {
   it.each([
-    ['Bitcoin', 'Bitcoin', 2 * 600 + 3 * 6 + 2 * 600] as const,
+    ['Bitcoin', 'Bitcoin', 2 * 600 + 3 * 6 + 600] as const,
     ['Bitcoin', 'Ethereum', 2 * 600 + 3 * 6 + 12] as const,
     ['Bitcoin', 'Polkadot', 2 * 600 + 3 * 6 + 6] as const,
     ['Ethereum', 'Ethereum', 12 + 3 * 6 + 12] as const,
     ['Ethereum', 'Polkadot', 12 + 3 * 6 + 6] as const,
-    ['Ethereum', 'Bitcoin', 12 + 3 * 6 + 2 * 600] as const,
+    ['Ethereum', 'Bitcoin', 12 + 3 * 6 + 600] as const,
   ])(
     `estimates time for swap from %s to %s`,
     (fromChain, toChain, expected) => {

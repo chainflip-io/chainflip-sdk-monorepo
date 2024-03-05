@@ -9,10 +9,10 @@ export const estimateSwapDuration = async (
   const ingressDuration =
     chainConstants[srcChain].blockTimeSeconds *
     Number((await getWitnessSafetyMargin(srcChain)) ?? 1n);
-  const egressDuration =
-    chainConstants[destChain].blockTimeSeconds *
-    Number((await getWitnessSafetyMargin(destChain)) ?? 1n);
   const swapDuration = CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS * 3;
+
+  // assets are spendable by the user once the egress is included in a block
+  const egressDuration = chainConstants[destChain].blockTimeSeconds;
 
   return ingressDuration + egressDuration + swapDuration;
 };
