@@ -8,6 +8,7 @@ import {
   estimateIngressEgressFeeAssetAmount,
 } from '@/swap/utils/fees';
 import { getPools } from '@/swap/utils/pools';
+import { estimateSwapDuration } from '@/swap/utils/swap';
 import { asyncHandler } from './common';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import getConnectionHandler from '../quoting/getConnectionHandler';
@@ -183,6 +184,10 @@ const quote = (io: Server) => {
           egressAmount: egressAmount.toString(),
           includedFees,
           lowLiquidityWarning,
+          estimatedDurationSeconds: await estimateSwapDuration(
+            srcChainAsset.chain,
+            destChainAsset.chain,
+          ),
         };
 
         logger.info('sending response for quote request', { id, response });

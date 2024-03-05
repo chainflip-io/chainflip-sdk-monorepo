@@ -25,135 +25,133 @@ jest.mock('axios', () => ({
   }),
 }));
 
-describe('fees', () => {
-  describe(calculateIncludedSwapFees, () => {
-    beforeAll(async () => {
-      await prisma.$queryRaw`TRUNCATE TABLE public."Pool" CASCADE`;
-      await prisma.pool.createMany({
-        data: [
-          {
-            baseAsset: 'Flip',
-            quoteAsset: 'Usdc',
-            liquidityFeeHundredthPips: 1000,
-          },
-          {
-            baseAsset: 'Eth',
-            quoteAsset: 'Usdc',
-            liquidityFeeHundredthPips: 1000,
-          },
-        ],
-      });
-    });
-
-    it('returns fees for quote with intermediate amount', async () => {
-      const fees = await calculateIncludedSwapFees(
-        'Eth',
-        'Flip',
-        (100e18).toString(),
-        (100e6).toString(),
-        (100e18).toString(),
-      );
-
-      expect(fees).toMatchObject([
+describe(calculateIncludedSwapFees, () => {
+  beforeAll(async () => {
+    await prisma.$queryRaw`TRUNCATE TABLE public."Pool" CASCADE`;
+    await prisma.pool.createMany({
+      data: [
         {
-          type: 'NETWORK',
-          asset: 'USDC',
-          amount: (0.1e6).toString(),
+          baseAsset: 'Flip',
+          quoteAsset: 'Usdc',
+          liquidityFeeHundredthPips: 1000,
         },
         {
-          type: 'LIQUIDITY',
-          asset: 'ETH',
-          amount: (0.1e18).toString(),
+          baseAsset: 'Eth',
+          quoteAsset: 'Usdc',
+          liquidityFeeHundredthPips: 1000,
         },
-        {
-          type: 'LIQUIDITY',
-          asset: 'USDC',
-          amount: (0.1e6).toString(),
-        },
-      ]);
-    });
-
-    it('returns fees for quote from USDC', async () => {
-      const fees = await calculateIncludedSwapFees(
-        'Usdc',
-        'Flip',
-        (100e6).toString(),
-        undefined,
-        (100e18).toString(),
-      );
-
-      expect(fees).toMatchObject([
-        {
-          type: 'NETWORK',
-          asset: 'USDC',
-          amount: (0.1e6).toString(),
-        },
-        {
-          type: 'LIQUIDITY',
-          asset: 'USDC',
-          amount: (0.1e6).toString(),
-        },
-      ]);
-    });
-
-    it('returns fees for quote to USDC', async () => {
-      const fees = await calculateIncludedSwapFees(
-        'Eth',
-        'Usdc',
-        (100e18).toString(),
-        undefined,
-        (99.9e6).toString(),
-      );
-
-      expect(fees).toMatchObject([
-        {
-          type: 'NETWORK',
-          asset: 'USDC',
-          amount: (0.1e6).toString(),
-        },
-        {
-          type: 'LIQUIDITY',
-          asset: 'ETH',
-          amount: (0.1e18).toString(),
-        },
-      ]);
+      ],
     });
   });
 
-  describe(estimateIngressEgressFeeAssetAmount, () => {
-    it('returns the same amount for the native asset', async () => {
-      const result = await estimateIngressEgressFeeAssetAmount(
-        100n,
-        'Eth',
-        undefined,
-      );
+  it('returns fees for quote with intermediate amount', async () => {
+    const fees = await calculateIncludedSwapFees(
+      'Eth',
+      'Flip',
+      (100e18).toString(),
+      (100e6).toString(),
+      (100e18).toString(),
+    );
 
-      expect(result).toBe(100n);
-      expect(axios.post).not.toBeCalled();
-    });
-    it('returns the rate from the rpc for a non native asset', async () => {
-      const result = await estimateIngressEgressFeeAssetAmount(
-        100n,
-        'Usdc',
-        undefined,
-      );
+    expect(fees).toMatchObject([
+      {
+        type: 'NETWORK',
+        asset: 'USDC',
+        amount: (0.1e6).toString(),
+      },
+      {
+        type: 'LIQUIDITY',
+        asset: 'ETH',
+        amount: (0.1e18).toString(),
+      },
+      {
+        type: 'LIQUIDITY',
+        asset: 'USDC',
+        amount: (0.1e6).toString(),
+      },
+    ]);
+  });
 
-      expect(result).toBe(200n);
-      expect(
-        jest.mocked(axios.post).mock.calls.map((call) => call[1]),
-      ).toMatchSnapshot();
-    });
-    it('returns the rate from the rpc for a non native asset and a block hash', async () => {
-      const result = await estimateIngressEgressFeeAssetAmount(
-        100n,
-        'Usdc',
-        '0x8a741d03ae637a115ec7384c85e565799123f6a626414471260bc6d4e87d2d27',
-      );
+  it('returns fees for quote from USDC', async () => {
+    const fees = await calculateIncludedSwapFees(
+      'Usdc',
+      'Flip',
+      (100e6).toString(),
+      undefined,
+      (100e18).toString(),
+    );
 
-      expect(result).toBe(200n);
-      expect(
-        jest.mocked(axios.post).mock.calls.map((call) => call[1]),
-      ).toMatchSnapshot();
-    });
+    expect(fees).toMatchObject([
+      {
+        type: 'NETWORK',
+        asset: 'USDC',
+        amount: (0.1e6).toString(),
+      },
+      {
+        type: 'LIQUIDITY',
+        asset: 'USDC',
+        amount: (0.1e6).toString(),
+      },
+    ]);
+  });
+
+  it('returns fees for quote to USDC', async () => {
+    const fees = await calculateIncludedSwapFees(
+      'Eth',
+      'Usdc',
+      (100e18).toString(),
+      undefined,
+      (99.9e6).toString(),
+    );
+
+    expect(fees).toMatchObject([
+      {
+        type: 'NETWORK',
+        asset: 'USDC',
+        amount: (0.1e6).toString(),
+      },
+      {
+        type: 'LIQUIDITY',
+        asset: 'ETH',
+        amount: (0.1e18).toString(),
+      },
+    ]);
+  });
+});
+
+describe(estimateIngressEgressFeeAssetAmount, () => {
+  it('returns the same amount for the native asset', async () => {
+    const result = await estimateIngressEgressFeeAssetAmount(
+      100n,
+      'Eth',
+      undefined,
+    );
+
+    expect(result).toBe(100n);
+    expect(axios.post).not.toBeCalled();
+  });
+  it('returns the rate from the rpc for a non native asset', async () => {
+    const result = await estimateIngressEgressFeeAssetAmount(
+      100n,
+      'Usdc',
+      undefined,
+    );
+
+    expect(result).toBe(200n);
+    expect(
+      jest.mocked(axios.post).mock.calls.map((call) => call[1]),
+    ).toMatchSnapshot();
+  });
+  it('returns the rate from the rpc for a non native asset and a block hash', async () => {
+    const result = await estimateIngressEgressFeeAssetAmount(
+      100n,
+      'Usdc',
+      '0x8a741d03ae637a115ec7384c85e565799123f6a626414471260bc6d4e87d2d27',
+    );
+
+    expect(result).toBe(200n);
+    expect(
+      jest.mocked(axios.post).mock.calls.map((call) => call[1]),
+    ).toMatchSnapshot();
   });
 });

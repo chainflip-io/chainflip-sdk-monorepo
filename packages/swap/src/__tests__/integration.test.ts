@@ -149,6 +149,7 @@ describe('python integration test', () => {
     expect(await response.json()).toEqual({
       intermediateAmount: '1996000000',
       egressAmount: '995999999999975000',
+      estimatedDurationSeconds: 42,
       includedFees: [
         {
           amount: '2000000',
