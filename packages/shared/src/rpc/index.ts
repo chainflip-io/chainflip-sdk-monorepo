@@ -107,7 +107,7 @@ const chainAssetMapFactory = <Z extends z.ZodTypeAny>(
       ETH: parser,
       USDC: parser,
       FLIP: parser,
-      USDT: parser.default(defaultValue), // remove default once usdt is available in all networks
+      USDT: parser.default(defaultValue), // TODO: remove default once usdt is available in all networks
     }),
     Polkadot: z.object({ DOT: parser }),
   });
