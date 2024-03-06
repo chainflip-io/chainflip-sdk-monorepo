@@ -25,22 +25,22 @@ jest.mock('@trpc/client', () => ({
 const env = {
   ingressEgress: {
     minimumDepositAmounts: {
-      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n },
+      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n, USDT: 0n },
       Polkadot: { DOT: 0n },
       Bitcoin: { BTC: 0n },
     },
     ingressFees: {
-      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n },
+      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n, USDT: 0n },
       Polkadot: { DOT: 0n },
       Bitcoin: { BTC: 0n },
     },
     egressFees: {
-      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n },
+      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n, USDT: 0n },
       Polkadot: { DOT: 0n },
       Bitcoin: { BTC: 0n },
     },
     minimumEgressAmounts: {
-      Ethereum: { ETH: 1n, FLIP: 1n, USDC: 1n },
+      Ethereum: { ETH: 1n, FLIP: 1n, USDC: 1n, USDT: 0n },
       Polkadot: { DOT: 1n },
       Bitcoin: { BTC: 0x258n },
     },
@@ -56,6 +56,7 @@ const env = {
         USDC: 0x1000000000000000n,
         ETH: null,
         FLIP: null,
+        USDT: null,
       },
       Polkadot: { DOT: null },
       Bitcoin: { BTC: 0x1000000000000000n },

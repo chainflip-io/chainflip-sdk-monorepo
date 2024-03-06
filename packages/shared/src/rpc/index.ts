@@ -97,15 +97,20 @@ export const getFundingEnvironment = createRequest(
   fundingEnvironment,
 );
 
-const chainAssetMap = <Z extends z.ZodTypeAny>(parser: Z) =>
+const chainAssetMapFactory = <Z extends z.ZodTypeAny>(
+  parser: Z,
+  defaultValue: z.input<Z>,
+) =>
   z.object({
     Bitcoin: z.object({ BTC: parser }),
-    Ethereum: z.object({ ETH: parser, USDC: parser, FLIP: parser }),
+    Ethereum: z.object({
+      ETH: parser,
+      USDC: parser,
+      FLIP: parser,
+      USDT: parser.default(defaultValue), // remove default once usdt is available in all networks
+    }),
     Polkadot: z.object({ DOT: parser }),
   });
-
-const chainAssetNumberMap = chainAssetMap(numberOrHex);
-const chainAssetNumberNullableMap = chainAssetMap(numberOrHex.nullable());
 
 const chainMap = <Z extends z.ZodTypeAny>(parser: Z) =>
   z.object({
@@ -116,7 +121,7 @@ const chainMap = <Z extends z.ZodTypeAny>(parser: Z) =>
 const chainNumberNullableMap = chainMap(numberOrHex.nullable());
 
 const swappingEnvironment = z.object({
-  maximum_swap_amounts: chainAssetNumberNullableMap,
+  maximum_swap_amounts: chainAssetMapFactory(numberOrHex.nullable(), null),
 });
 
 export const getSwappingEnvironment = createRequest(
@@ -140,16 +145,18 @@ const rename =
 
 const ingressEgressEnvironment = z
   .object({
-    minimum_deposit_amounts: chainAssetNumberMap,
-    ingress_fees: chainAssetNumberMap,
-    egress_fees: chainAssetNumberMap,
+    minimum_deposit_amounts: chainAssetMapFactory(numberOrHex, 0),
+    ingress_fees: chainAssetMapFactory(numberOrHex, 0),
+    egress_fees: chainAssetMapFactory(numberOrHex, 0),
     witness_safety_margins: chainNumberNullableMap,
     // TODO(1.2): remove optional and default value
-    egress_dust_limits: chainAssetNumberMap.optional().default({
-      Bitcoin: { BTC: 0x258 },
-      Ethereum: { ETH: 0x1, USDC: 0x1, FLIP: 0x1 },
-      Polkadot: { DOT: 0x1 },
-    }),
+    egress_dust_limits: chainAssetMapFactory(numberOrHex, 1)
+      .optional()
+      .default({
+        Bitcoin: { BTC: 0x258 },
+        Ethereum: { ETH: 0x1, USDC: 0x1, FLIP: 0x1, USDT: 0x1 },
+        Polkadot: { DOT: 0x1 },
+      }),
   })
   .transform(rename({ egress_dust_limits: 'minimum_egress_amounts' }));
 

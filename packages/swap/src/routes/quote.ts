@@ -34,6 +34,7 @@ const fallbackChains = {
   [Assets.FLIP]: Chains.Ethereum,
   [Assets.BTC]: Chains.Bitcoin,
   [Assets.DOT]: Chains.Polkadot,
+  [Assets.USDT]: Chains.Ethereum,
 } satisfies Record<Asset, Chain>;
 
 const quote = (io: Server) => {
