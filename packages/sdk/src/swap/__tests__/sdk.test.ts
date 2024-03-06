@@ -3,7 +3,7 @@ import { VoidSigner } from 'ethers';
 import { Assets, Chain, ChainflipNetworks, Chains } from '@/shared/enums';
 import { environment } from '@/shared/tests/fixtures';
 import { executeSwap } from '@/shared/vault';
-import { dot$, btc$, eth$, usdc$, flip$ } from '../assets';
+import { dot$, btc$, eth$, usdc$, flip$, usdt$ } from '../assets';
 import { bitcoin, ethereum, polkadot } from '../chains';
 import { SwapSDK } from '../sdk';
 
@@ -40,7 +40,7 @@ const env = {
       Bitcoin: { BTC: 0n },
     },
     minimumEgressAmounts: {
-      Ethereum: { ETH: 1n, FLIP: 1n, USDC: 1n, USDT: 0n },
+      Ethereum: { ETH: 1n, FLIP: 1n, USDC: 1n, USDT: 1n },
       Polkadot: { DOT: 1n },
       Bitcoin: { BTC: 0x258n },
     },
@@ -239,6 +239,7 @@ describe(SwapSDK, () => {
           eth$(ChainflipNetworks.sisyphos, env),
           usdc$(ChainflipNetworks.sisyphos, env),
           flip$(ChainflipNetworks.sisyphos, env),
+          usdt$(ChainflipNetworks.sisyphos, env),
         ],
       ],
       [
@@ -247,6 +248,7 @@ describe(SwapSDK, () => {
           eth$(ChainflipNetworks.sisyphos, env),
           usdc$(ChainflipNetworks.sisyphos, env),
           flip$(ChainflipNetworks.sisyphos, env),
+          usdt$(ChainflipNetworks.sisyphos, env),
         ],
       ],
       [Chains.Polkadot, [dot$(ChainflipNetworks.sisyphos, env)]],

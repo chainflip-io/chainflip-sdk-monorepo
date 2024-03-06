@@ -1,8 +1,13 @@
 import axios from 'axios';
-import { type ChainflipNetwork, Chain, Chains } from '@/shared/enums';
+import {
+  type ChainflipNetwork,
+  Chain,
+  Chains,
+  ChainflipNetworks,
+} from '@/shared/enums';
 import type { Environment } from '@/shared/rpc';
 import type { QuoteQueryParams, QuoteQueryResponse } from '@/shared/schemas';
-import { dot$, btc$, eth$, usdc$, flip$ } from '../assets';
+import { dot$, btc$, eth$, usdc$, flip$, usdt$ } from '../assets';
 import { bitcoin, ethereum, polkadot } from '../chains';
 import {
   ChainData,
@@ -27,16 +32,20 @@ const getPossibleDestinationChains = async (
   network: ChainflipNetwork,
   env: Pick<Environment, 'ingressEgress'>,
 ): Promise<ChainData[]> => {
-  if (sourceChain === Chains.Ethereum)
+  if (sourceChain === Chains.Ethereum) {
     return [
       ethereum(network, env),
       bitcoin(network, env),
       polkadot(network, env),
     ];
-  if (sourceChain === Chains.Polkadot)
+  }
+  if (sourceChain === Chains.Polkadot) {
     return [ethereum(network, env), bitcoin(network, env)];
-  if (sourceChain === Chains.Bitcoin)
+  }
+  if (sourceChain === Chains.Bitcoin) {
     return [ethereum(network, env), polkadot(network, env)];
+  }
+
   throw new Error('received unknown chain');
 };
 
@@ -45,10 +54,24 @@ const getAssets = async (
   network: ChainflipNetwork,
   env: Pick<Environment, 'swapping' | 'ingressEgress'>,
 ): Promise<AssetData[]> => {
-  if (chain === Chains.Ethereum)
-    return [eth$(network, env), usdc$(network, env), flip$(network, env)];
-  if (chain === Chains.Polkadot) return [dot$(network, env)];
-  if (chain === Chains.Bitcoin) return [btc$(network, env)];
+  if (chain === Chains.Ethereum) {
+    return network === ChainflipNetworks.backspin ||
+      network === ChainflipNetworks.sisyphos
+      ? [
+          eth$(network, env),
+          usdc$(network, env),
+          flip$(network, env),
+          usdt$(network, env),
+        ]
+      : [eth$(network, env), usdc$(network, env), flip$(network, env)];
+  }
+  if (chain === Chains.Polkadot) {
+    return [dot$(network, env)];
+  }
+  if (chain === Chains.Bitcoin) {
+    return [btc$(network, env)];
+  }
+
   throw new Error('received unexpected chain');
 };
 

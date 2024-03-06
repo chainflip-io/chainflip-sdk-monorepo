@@ -59,6 +59,19 @@ exports[`ApiService getAssets (backspin) gets the correct assets for networks (E
     "name": "FLIP",
     "symbol": "FLIP",
   },
+  {
+    "asset": "USDT",
+    "chain": "Ethereum",
+    "chainflipId": "Usdt",
+    "contractAddress": undefined,
+    "decimals": 6,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "USDT",
+    "symbol": "USDT",
+  },
 ]
 `;
 
@@ -298,6 +311,19 @@ exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (E
     "minimumSwapAmount": "1000000000000000000",
     "name": "FLIP",
     "symbol": "FLIP",
+  },
+  {
+    "asset": "USDT",
+    "chain": "Ethereum",
+    "chainflipId": "Usdt",
+    "contractAddress": undefined,
+    "decimals": 6,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "USDT",
+    "symbol": "USDT",
   },
 ]
 `;
