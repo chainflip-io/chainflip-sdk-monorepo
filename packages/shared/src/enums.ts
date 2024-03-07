@@ -7,14 +7,21 @@ const arrayToMap = <const T extends readonly string[]>(
 ): ArrayToMap<T> =>
   Object.fromEntries(array.map((key) => [key, key])) as ArrayToMap<T>;
 
-export const InternalAssets = arrayToMap(['Flip', 'Usdc', 'Dot', 'Eth', 'Btc']);
+export const InternalAssets = arrayToMap([
+  'Flip',
+  'Usdc',
+  'Dot',
+  'Eth',
+  'Btc',
+  'Usdt',
+]);
 export type InternalAsset =
   (typeof InternalAssets)[keyof typeof InternalAssets];
 
 export const Chains = arrayToMap(['Bitcoin', 'Ethereum', 'Polkadot']);
 export type Chain = (typeof Chains)[keyof typeof Chains];
 
-export const Assets = arrayToMap(['FLIP', 'USDC', 'DOT', 'ETH', 'BTC']);
+export const Assets = arrayToMap(['FLIP', 'USDC', 'DOT', 'ETH', 'BTC', 'USDT']);
 export type Asset = (typeof Assets)[keyof typeof Assets];
 
 export const ChainflipNetworks = arrayToMap([
@@ -30,7 +37,7 @@ export type ChainflipNetwork =
 export const isTestnet = (network: ChainflipNetwork): boolean =>
   network !== ChainflipNetworks.mainnet;
 
-// https://github.com/chainflip-io/chainflip-backend/blob/a2a3c2e447e7b629c4b96797d9eed22eb5b87a0b/state-chain/primitives/src/chains/assets.rs#L51-L59
+// https://github.com/chainflip-io/chainflip-backend/blob/4540356c923f30777aea46446b81066db1203a6d/state-chain/primitives/src/chains/assets.rs#L402
 export const assetConstants = {
   [InternalAssets.Eth]: {
     chain: Chains.Ethereum,
@@ -53,6 +60,13 @@ export const assetConstants = {
     decimals: 6,
     contractId: 3,
   },
+  [InternalAssets.Usdt]: {
+    chain: Chains.Ethereum,
+    asset: Assets.USDT,
+    name: 'USDT',
+    decimals: 6,
+    contractId: 6,
+  },
   [InternalAssets.Dot]: {
     chain: Chains.Polkadot,
     asset: Assets.DOT,
@@ -71,7 +85,7 @@ export const assetConstants = {
   InternalAsset,
   {
     chain: Chain;
-    asset: Asset;
+    asset: AssetOfChain<Chain>; // use AssetOfChain to enforce adding the asset to one of the chains
     name: string;
     decimals: number;
     contractId: number;
@@ -81,7 +95,7 @@ export const assetConstants = {
 // https://github.com/chainflip-io/chainflip-backend/blob/a2a3c2e447e7b629c4b96797d9eed22eb5b87a0b/state-chain/primitives/src/chains.rs#L52-L56
 export const chainConstants = {
   [Chains.Ethereum]: {
-    assets: [Assets.ETH, Assets.FLIP, Assets.USDC],
+    assets: [Assets.ETH, Assets.FLIP, Assets.USDC, Assets.USDT],
     gasAsset: Assets.ETH,
     contractId: 1,
     blockTimeSeconds: 12,
@@ -164,6 +178,7 @@ export function getInternalAsset(asset: UncheckedAssetAndChain) {
       [Assets.USDC]: InternalAssets.Usdc,
       [Assets.FLIP]: InternalAssets.Flip,
       [Assets.ETH]: InternalAssets.Eth,
+      [Assets.USDT]: InternalAssets.Usdt,
     },
     [Chains.Bitcoin]: {
       [Assets.BTC]: InternalAssets.Btc,

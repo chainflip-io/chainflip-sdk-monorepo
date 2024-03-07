@@ -14,6 +14,7 @@ const bytesToHex = (arr: Uint8Array | number[]) =>
 
 const utf8ToHex = (str: string) => `0x${Buffer.from(str).toString('hex')}`;
 
+// TODO: replace zod base validation with more readable custom validation
 const eth = z.object({
   amount: numericString,
   srcChain: z.literal(Chains.Ethereum),
@@ -38,7 +39,11 @@ const ethToBtc = (network: ChainflipNetwork) =>
     destAsset: z.literal(Assets.BTC),
   });
 
-const erc20Asset = z.union([z.literal(Assets.FLIP), z.literal(Assets.USDC)]);
+const erc20Asset = z.union([
+  z.literal(Assets.FLIP),
+  z.literal(Assets.USDC),
+  z.literal(Assets.USDT),
+]);
 
 const ethToERC20 = ethToEthereum.extend({ destAsset: erc20Asset });
 
@@ -51,12 +56,29 @@ export type NativeSwapParams = z.infer<
 
 const flipToEthereumAsset = ethToEthereum.extend({
   srcAsset: z.literal(Assets.FLIP),
-  destAsset: z.union([z.literal(Assets.USDC), z.literal(Assets.ETH)]),
+  destAsset: z.union([
+    z.literal(Assets.USDC),
+    z.literal(Assets.ETH),
+    z.literal(Assets.USDT),
+  ]),
 });
 
 const usdcToEthereumAsset = ethToEthereum.extend({
   srcAsset: z.literal(Assets.USDC),
-  destAsset: z.union([z.literal(Assets.FLIP), z.literal(Assets.ETH)]),
+  destAsset: z.union([
+    z.literal(Assets.FLIP),
+    z.literal(Assets.ETH),
+    z.literal(Assets.USDT),
+  ]),
+});
+
+const usdtToEthereumAsset = ethToEthereum.extend({
+  srcAsset: z.literal(Assets.USDT),
+  destAsset: z.union([
+    z.literal(Assets.FLIP),
+    z.literal(Assets.ETH),
+    z.literal(Assets.USDC),
+  ]),
 });
 
 const erc20ToDot = ethToDot.extend({ srcAsset: erc20Asset });
@@ -68,6 +90,7 @@ const tokenSwapParamsSchema = (network: ChainflipNetwork) =>
   z.union([
     flipToEthereumAsset,
     usdcToEthereumAsset,
+    usdtToEthereumAsset,
     erc20ToDot,
     erc20ToBtc(network),
   ]);
@@ -79,10 +102,14 @@ const ccmFlipToEthereumAssset = flipToEthereumAsset.extend({
 const ccmUsdcToEthereumAsset = usdcToEthereumAsset.extend({
   ccmMetadata: ccmMetadataSchema,
 });
+const ccmUsdtToEthereumAsset = usdtToEthereumAsset.extend({
+  ccmMetadata: ccmMetadataSchema,
+});
 
 const tokenCallParamsSchema = z.union([
   ccmFlipToEthereumAssset,
   ccmUsdcToEthereumAsset,
+  ccmUsdtToEthereumAsset,
 ]);
 
 const nativeCallParamsSchema = ethToERC20.extend({

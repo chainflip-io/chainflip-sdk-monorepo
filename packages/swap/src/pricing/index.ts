@@ -7,12 +7,14 @@ import { deferredPromise } from '../utils/promise';
 
 const COINGECKO_VS_CURRENCY = 'usd';
 
+// https://api.coingecko.com/api/v3/coins/list?include_platform=true
 const coinGeckoIdMap: Record<InternalAsset, string> = {
   Flip: 'chainflip',
   Usdc: 'usd-coin',
   Dot: 'polkadot',
   Eth: 'ethereum',
   Btc: 'bitcoin',
+  Usdt: 'tether',
 };
 const priceCache = new CacheMap<string, Promise<number | undefined>>(30_000);
 

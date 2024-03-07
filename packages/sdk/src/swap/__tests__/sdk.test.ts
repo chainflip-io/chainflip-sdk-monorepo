@@ -3,7 +3,7 @@ import { VoidSigner } from 'ethers';
 import { Assets, Chain, ChainflipNetworks, Chains } from '@/shared/enums';
 import { environment } from '@/shared/tests/fixtures';
 import { executeSwap } from '@/shared/vault';
-import { dot$, btc$, eth$, usdc$, flip$ } from '../assets';
+import { dot$, btc$, eth$, usdc$, flip$, usdt$ } from '../assets';
 import { bitcoin, ethereum, polkadot } from '../chains';
 import { SwapSDK } from '../sdk';
 
@@ -25,22 +25,22 @@ jest.mock('@trpc/client', () => ({
 const env = {
   ingressEgress: {
     minimumDepositAmounts: {
-      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n },
+      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n, USDT: 0n },
       Polkadot: { DOT: 0n },
       Bitcoin: { BTC: 0n },
     },
     ingressFees: {
-      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n },
+      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n, USDT: 0n },
       Polkadot: { DOT: 0n },
       Bitcoin: { BTC: 0n },
     },
     egressFees: {
-      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n },
+      Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n, USDT: 0n },
       Polkadot: { DOT: 0n },
       Bitcoin: { BTC: 0n },
     },
     minimumEgressAmounts: {
-      Ethereum: { ETH: 1n, FLIP: 1n, USDC: 1n },
+      Ethereum: { ETH: 1n, FLIP: 1n, USDC: 1n, USDT: 1n },
       Polkadot: { DOT: 1n },
       Bitcoin: { BTC: 0x258n },
     },
@@ -56,6 +56,7 @@ const env = {
         USDC: 0x1000000000000000n,
         ETH: null,
         FLIP: null,
+        USDT: null,
       },
       Polkadot: { DOT: null },
       Bitcoin: { BTC: 0x1000000000000000n },
@@ -238,6 +239,7 @@ describe(SwapSDK, () => {
           eth$(ChainflipNetworks.sisyphos, env),
           usdc$(ChainflipNetworks.sisyphos, env),
           flip$(ChainflipNetworks.sisyphos, env),
+          usdt$(ChainflipNetworks.sisyphos, env),
         ],
       ],
       [
@@ -246,6 +248,7 @@ describe(SwapSDK, () => {
           eth$(ChainflipNetworks.sisyphos, env),
           usdc$(ChainflipNetworks.sisyphos, env),
           flip$(ChainflipNetworks.sisyphos, env),
+          usdt$(ChainflipNetworks.sisyphos, env),
         ],
       ],
       [Chains.Polkadot, [dot$(ChainflipNetworks.sisyphos, env)]],

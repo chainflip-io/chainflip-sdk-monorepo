@@ -44,5 +44,6 @@ const assetFactory =
 export const eth$ = assetFactory('Eth');
 export const usdc$ = assetFactory('Usdc');
 export const flip$ = assetFactory('Flip');
+export const usdt$ = assetFactory('Usdt');
 export const dot$ = assetFactory('Dot');
 export const btc$ = assetFactory('Btc');
