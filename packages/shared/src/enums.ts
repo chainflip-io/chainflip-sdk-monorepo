@@ -65,7 +65,7 @@ export const assetConstants = {
     asset: Assets.USDT,
     name: 'USDT',
     decimals: 6,
-    contractId: 6,
+    contractId: 8,
   },
   [InternalAssets.Dot]: {
     chain: Chains.Polkadot,
