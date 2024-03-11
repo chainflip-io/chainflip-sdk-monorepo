@@ -52,7 +52,7 @@
     "pnpm": ">=7"
   },
   "dependencies": {
-    "@polkadot/types": "^10.11.3",
+    "@polkadot/types": "^10.12.1",
     "@polkadot/util": "^12.6.2",
     "@polkadot/util-crypto": "^12.6.2",
     "@prisma/client": "^5.10.2",
