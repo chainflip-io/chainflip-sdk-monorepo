@@ -142,6 +142,7 @@ describe('python integration test', () => {
       id: "doesn't matter",
       intermediateAmount: '2000000000',
       outputAmount: '0', // this shouldn't be the result
+      quoteType: 'broker',
     });
 
     const response = await fetch(`${serverUrl}/quote?${params.toString()}`);

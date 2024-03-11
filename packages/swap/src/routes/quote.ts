@@ -119,6 +119,8 @@ const quote = (io: Server) => {
       io.emit('quote_request', quoteRequest);
 
       try {
+        const start = performance.now();
+
         const [rawMarketMakerQuotes, brokerQuote] = await Promise.all([
           collectMakerQuotes(quoteRequest.id, io.sockets.sockets.size, quotes$),
           getBrokerQuote(
@@ -179,6 +181,7 @@ const quote = (io: Server) => {
         const {
           id = undefined,
           outputAmount,
+          quoteType,
           ...response
         } = {
           ...bestQuote,
@@ -190,8 +193,12 @@ const quote = (io: Server) => {
             destChainAsset.chain,
           ),
         };
-
-        logger.info('sending response for quote request', { id, response });
+        logger.info('sending response for quote request', {
+          id,
+          quoteType,
+          response,
+          performance: `${(performance.now() - start).toFixed(2)} ms`,
+        });
 
         res.json(response);
       } catch (err) {

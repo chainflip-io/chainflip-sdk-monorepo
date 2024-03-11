@@ -10,6 +10,8 @@ import { Pool } from '../client';
 import env from '../config/env';
 import { compareNumericStrings, Comparison } from '../utils/string';
 
+export type QuoteType = 'broker' | 'market_maker';
+
 export const collectMakerQuotes = (
   requestId: string,
   expectedQuotes: number,
@@ -48,6 +50,7 @@ export const subtractFeesFromMakerQuote = (
   const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(
     env.CHAINFLIP_NETWORK,
   );
+  const { quoteType } = quote;
 
   if ('intermediateAmount' in quote) {
     assert(quotePools.length === 2, 'wrong number of pools given');
@@ -67,7 +70,12 @@ export const subtractFeesFromMakerQuote = (
         quotePools[1].liquidityFeeHundredthPips,
     ).toString();
 
-    return { id: quote.id, intermediateAmount, outputAmount };
+    return {
+      id: quote.id,
+      intermediateAmount,
+      outputAmount,
+      quoteType,
+    };
   }
 
   assert(quotePools.length === 1, 'wrong number of pools given');
@@ -79,7 +87,7 @@ export const subtractFeesFromMakerQuote = (
       quotePools[0].liquidityFeeHundredthPips,
   ).toString();
 
-  return { id: quote.id, outputAmount };
+  return { id: quote.id, outputAmount, quoteType };
 };
 
 export const findBestQuote = (

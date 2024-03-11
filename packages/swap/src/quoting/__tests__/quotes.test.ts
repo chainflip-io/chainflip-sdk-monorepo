@@ -92,7 +92,11 @@ describe('quotes', () => {
     it('subtracts fees from quote without intermediate amount', () => {
       expect(
         subtractFeesFromMakerQuote(
-          { id: 'quote-id', outputAmount: (100e18).toString() },
+          {
+            id: 'quote-id',
+            outputAmount: (100e18).toString(),
+            quoteType: 'market_maker',
+          },
           [examplePool],
         ),
       ).toMatchObject({
@@ -108,6 +112,7 @@ describe('quotes', () => {
             id: 'quote-id',
             intermediateAmount: (100e6).toString(),
             outputAmount: (100e18).toString(),
+            quoteType: 'market_maker',
           },
           [examplePool, examplePool],
         ),
@@ -125,9 +130,18 @@ describe('quotes', () => {
         id: '1',
         intermediateAmount: undefined,
         outputAmount: '1',
+        quoteType: 'broker' as const,
       };
-      const a = { id: '2', outputAmount: '10' };
-      const b = { id: '3', outputAmount: '20' };
+      const a = {
+        id: '2',
+        outputAmount: '10',
+        quoteType: 'market_maker' as const,
+      };
+      const b = {
+        id: '3',
+        outputAmount: '20',
+        quoteType: 'market_maker' as const,
+      };
       expect(findBestQuote([a, b], broker)).toBe(b);
       expect(findBestQuote([b, a], broker)).toBe(b);
     });
@@ -137,21 +151,43 @@ describe('quotes', () => {
         id: '1',
         intermediateAmount: undefined,
         outputAmount: '1',
+        quoteType: 'broker' as const,
       };
-      const a = { id: '2', outputAmount: '10' };
-      const b = { id: '3', outputAmount: '20' };
-      const c = { id: '4', outputAmount: '20' };
+      const a = {
+        id: '2',
+        outputAmount: '10',
+        quoteType: 'market_maker' as const,
+      };
+      const b = {
+        id: '3',
+        outputAmount: '20',
+        quoteType: 'market_maker' as const,
+      };
+      const c = {
+        id: '4',
+        outputAmount: '20',
+        quoteType: 'market_maker' as const,
+      };
       expect(findBestQuote([c, a, b], broker)).toBe(c);
       expect(findBestQuote([b, a, c], broker)).toBe(b);
     });
 
     it("returns the broker quote if it's best", () => {
-      const a = { id: '1', outputAmount: '1' };
-      const b = { id: '2', outputAmount: '10' };
+      const a = {
+        id: '1',
+        outputAmount: '1',
+        quoteType: 'market_maker' as const,
+      };
+      const b = {
+        id: '2',
+        outputAmount: '10',
+        quoteType: 'market_maker' as const,
+      };
       const broker = {
         id: '3',
         intermediateAmount: undefined,
         outputAmount: '20',
+        quoteType: 'broker' as const,
       };
       expect(findBestQuote([a, b], broker)).toBe(broker);
     });
@@ -161,6 +197,7 @@ describe('quotes', () => {
         id: '1',
         intermediateAmount: undefined,
         outputAmount: '1',
+        quoteType: 'broker' as const,
       };
       expect(findBestQuote([], broker)).toBe(broker);
     });
