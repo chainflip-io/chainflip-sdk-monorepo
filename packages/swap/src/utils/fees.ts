@@ -50,12 +50,10 @@ export const calculateIncludedSwapFees = async (
         type: 'LIQUIDITY',
         chain: assetConstants[srcAsset].chain,
         asset: assetConstants[srcAsset].asset,
-        amount: pools
-          ? getPips(
-              swapInputAmount,
-              pools[0].liquidityFeeHundredthPips,
-            ).toString()
-          : '0',
+        amount: getPips(
+          swapInputAmount,
+          pools[0].liquidityFeeHundredthPips,
+        ).toString(),
       },
     ];
   }
@@ -79,12 +77,10 @@ export const calculateIncludedSwapFees = async (
         type: 'LIQUIDITY',
         chain: assetConstants[srcAsset].chain,
         asset: assetConstants[srcAsset].asset,
-        amount: pools
-          ? getPips(
-              swapInputAmount,
-              pools[0].liquidityFeeHundredthPips,
-            ).toString()
-          : '0',
+        amount: getPips(
+          swapInputAmount,
+          pools[0].liquidityFeeHundredthPips,
+        ).toString(),
       },
     ];
   }
@@ -102,23 +98,19 @@ export const calculateIncludedSwapFees = async (
       type: 'LIQUIDITY',
       chain: assetConstants[srcAsset].chain,
       asset: assetConstants[srcAsset].asset,
-      amount: pools
-        ? getPips(
-            swapInputAmount,
-            pools[0].liquidityFeeHundredthPips,
-          ).toString()
-        : '0',
+      amount: getPips(
+        swapInputAmount,
+        pools[0].liquidityFeeHundredthPips,
+      ).toString(),
     },
     {
       type: 'LIQUIDITY',
       chain: assetConstants[InternalAssets.Usdc].chain,
       asset: assetConstants[InternalAssets.Usdc].asset,
-      amount: pools
-        ? getPips(
-            intermediateAmount,
-            pools[1].liquidityFeeHundredthPips,
-          ).toString()
-        : '0',
+      amount: getPips(
+        intermediateAmount,
+        pools[1].liquidityFeeHundredthPips,
+      ).toString(),
     },
   ];
 };
