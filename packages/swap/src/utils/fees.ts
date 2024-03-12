@@ -26,7 +26,10 @@ export const calculateIncludedSwapFees = async (
   const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(
     env.CHAINFLIP_NETWORK,
   );
-  const pools = await getPools(srcAsset, destAsset);
+  const pools =
+    srcAsset === 'Usdc' && destAsset === 'Usdc'
+      ? null
+      : await getPools(srcAsset, destAsset);
 
   if (srcAsset === InternalAssets.Usdc) {
     return [
@@ -40,10 +43,12 @@ export const calculateIncludedSwapFees = async (
         type: 'LIQUIDITY',
         chain: assetConstants[srcAsset].chain,
         asset: assetConstants[srcAsset].asset,
-        amount: getPips(
-          swapInputAmount,
-          pools[0].liquidityFeeHundredthPips,
-        ).toString(),
+        amount: pools
+          ? getPips(
+              swapInputAmount,
+              pools[0].liquidityFeeHundredthPips,
+            ).toString()
+          : '0',
       },
     ];
   }
@@ -67,10 +72,12 @@ export const calculateIncludedSwapFees = async (
         type: 'LIQUIDITY',
         chain: assetConstants[srcAsset].chain,
         asset: assetConstants[srcAsset].asset,
-        amount: getPips(
-          swapInputAmount,
-          pools[0].liquidityFeeHundredthPips,
-        ).toString(),
+        amount: pools
+          ? getPips(
+              swapInputAmount,
+              pools[0].liquidityFeeHundredthPips,
+            ).toString()
+          : '0',
       },
     ];
   }
@@ -88,19 +95,23 @@ export const calculateIncludedSwapFees = async (
       type: 'LIQUIDITY',
       chain: assetConstants[srcAsset].chain,
       asset: assetConstants[srcAsset].asset,
-      amount: getPips(
-        swapInputAmount,
-        pools[0].liquidityFeeHundredthPips,
-      ).toString(),
+      amount: pools
+        ? getPips(
+            swapInputAmount,
+            pools[0].liquidityFeeHundredthPips,
+          ).toString()
+        : '0',
     },
     {
       type: 'LIQUIDITY',
       chain: assetConstants[InternalAssets.Usdc].chain,
       asset: assetConstants[InternalAssets.Usdc].asset,
-      amount: getPips(
-        intermediateAmount,
-        pools[1].liquidityFeeHundredthPips,
-      ).toString(),
+      amount: pools
+        ? getPips(
+            intermediateAmount,
+            pools[1].liquidityFeeHundredthPips,
+          ).toString()
+        : '0',
     },
   ];
 };
