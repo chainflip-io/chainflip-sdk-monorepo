@@ -133,11 +133,6 @@ describe(calculateIncludedSwapFees, () => {
         asset: 'USDC',
         amount: (0.1e6).toString(),
       },
-      {
-        type: 'LIQUIDITY',
-        asset: 'USDC',
-        amount: (0).toString(),
-      },
     ]);
   });
 });
