@@ -1,14 +1,18 @@
 import { z } from 'zod';
 import { Asset, Chain } from '@/shared/enums';
 import RpcClient from '@/shared/node-apis/RpcClient';
-import { assetAndChain, hexStringFromNumber } from '@/shared/parsers';
+import { hexStringFromNumber, uncheckedAssetAndChain } from '@/shared/parsers';
 import { ParsedQuoteParams } from '@/shared/schemas';
 import { memoize } from './function';
 import env from '../config/env';
 import { swapRateResponseSchema } from '../quoting/schemas';
 
 const requestValidators = {
-  swap_rate: z.tuple([assetAndChain, assetAndChain, hexStringFromNumber]),
+  swap_rate: z.tuple([
+    uncheckedAssetAndChain,
+    uncheckedAssetAndChain,
+    hexStringFromNumber,
+  ]),
 };
 
 const responseValidators = {

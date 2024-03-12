@@ -99,9 +99,13 @@ export const chain = z.nativeEnum(Chains);
 export const asset = z.nativeEnum(Assets);
 export const chainflipNetwork = z.nativeEnum(ChainflipNetworks);
 
-export const assetAndChain = z
-  .object({ asset, chain })
-  .refine(isValidAssetAndChain);
+export const uncheckedAssetAndChain = z.object({
+  asset: z.string(),
+  chain: z.string(),
+});
+
+export const assetAndChain =
+  uncheckedAssetAndChain.refine(isValidAssetAndChain);
 
 export const swapType = z.union([
   z

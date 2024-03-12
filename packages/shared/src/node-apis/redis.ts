@@ -3,14 +3,14 @@ import Redis from 'ioredis';
 import { z } from 'zod';
 import { sorter } from '../arrays';
 import { type Asset, type Chain } from '../enums';
-import { number, u128, string, assetAndChain } from '../parsers';
+import { number, u128, string, uncheckedAssetAndChain } from '../parsers';
 
 const ss58ToHex = (address: string) =>
   `0x${Buffer.from(decodeAddress(address)).toString('hex')}`;
 
 const jsonString = string.transform((value) => JSON.parse(value));
 
-const chainAsset = assetAndChain.transform(({ asset }) => asset);
+const chainAsset = uncheckedAssetAndChain.transform(({ asset }) => asset);
 
 const depositSchema = jsonString.pipe(
   z.object({

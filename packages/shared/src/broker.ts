@@ -10,7 +10,7 @@ import {
   dotAddress,
   hexStringFromNumber,
   unsignedInteger,
-  assetAndChain,
+  uncheckedAssetAndChain,
 } from './parsers';
 import { CcmMetadata, ccmMetadataSchema } from './schemas';
 import { CamelCaseToSnakeCase, camelToSnakeCase } from './strings';
@@ -65,8 +65,8 @@ const rpcResult = z.union([
 const requestValidators = (network: ChainflipNetwork) => ({
   requestSwapDepositAddress: z
     .tuple([
-      assetAndChain,
-      assetAndChain,
+      uncheckedAssetAndChain,
+      uncheckedAssetAndChain,
       z.union([numericString, hexString, btcAddress(network)]),
       z.number(),
       ccmMetadataSchema
