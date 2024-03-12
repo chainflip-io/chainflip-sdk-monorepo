@@ -1,5 +1,5 @@
 import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
-import { InternalAssets, Chains, assetConstants } from '@/shared/enums';
+import { InternalAssets, assetConstants } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { CcmMetadata } from '@/shared/schemas';
 import { broker } from '../lib';

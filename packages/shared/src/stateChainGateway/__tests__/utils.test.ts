@@ -22,7 +22,7 @@ describe(getStateChainGateway, () => {
     expect(
       getStateChainGateway({
         network: 'localnet',
-        signer: new VoidSigner('0x0').connect(getDefaultProvider('goerli')),
+        signer: new VoidSigner('0x0').connect(getDefaultProvider('sepolia')),
         stateChainGatewayContractAddress: address,
         flipContractAddress: '0x0000',
       }),
