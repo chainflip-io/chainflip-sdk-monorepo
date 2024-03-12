@@ -26,6 +26,16 @@ export const calculateIncludedSwapFees = async (
   const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(
     env.CHAINFLIP_NETWORK,
   );
+  if (srcAsset === 'Usdc' && destAsset === 'Usdc') {
+    return [
+      {
+        type: 'NETWORK',
+        chain: assetConstants[InternalAssets.Usdc].chain,
+        asset: assetConstants[InternalAssets.Usdc].asset,
+        amount: getPips(swapInputAmount, networkFeeHundredthPips).toString(),
+      },
+    ];
+  }
   const pools = await getPools(srcAsset, destAsset);
 
   if (srcAsset === InternalAssets.Usdc) {

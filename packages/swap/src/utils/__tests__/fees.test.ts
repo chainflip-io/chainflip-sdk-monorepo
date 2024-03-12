@@ -117,6 +117,24 @@ describe(calculateIncludedSwapFees, () => {
       },
     ]);
   });
+
+  it('returns fees for USDC to USDC special case', async () => {
+    const fees = await calculateIncludedSwapFees(
+      'Usdc',
+      'Usdc',
+      (100e6).toString(),
+      undefined,
+      (100e6).toString(),
+    );
+
+    expect(fees).toMatchObject([
+      {
+        type: 'NETWORK',
+        asset: 'USDC',
+        amount: (0.1e6).toString(),
+      },
+    ]);
+  });
 });
 
 describe(estimateIngressEgressFeeAssetAmount, () => {
