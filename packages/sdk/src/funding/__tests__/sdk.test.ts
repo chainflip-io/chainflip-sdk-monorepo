@@ -29,7 +29,7 @@ jest.mock('@/shared/abis/factories/ERC20__factory', () => ({
 describe(FundingSDK, () => {
   const sdk = new FundingSDK({
     network: 'sisyphos',
-    signer: new VoidSigner('0xcafebabe').connect(getDefaultProvider('goerli')),
+    signer: new VoidSigner('0xcafebabe').connect(getDefaultProvider('sepolia')),
   });
 
   it('uses perseverance as the default network', () => {
