@@ -5,6 +5,7 @@ import {
   isTestnet,
   readChainAssetValue,
   assetConstants,
+  chainConstants,
 } from '@/shared/enums';
 import type { Environment } from '@/shared/rpc';
 import type { AssetData } from './types';
@@ -14,6 +15,11 @@ type AssetFn = (
   env: Pick<Environment, 'swapping' | 'ingressEgress'>,
 ) => AssetData;
 
+const isGasAsset = (asset: InternalAsset) => {
+  const { chain } = assetConstants[asset];
+  return assetConstants[asset].asset === chainConstants[chain].gasAsset;
+};
+
 const assetFactory =
   (asset: InternalAsset): AssetFn =>
   (network, env) =>
@@ -21,7 +27,9 @@ const assetFactory =
       chainflipId: asset,
       asset: assetConstants[asset].asset,
       chain: assetConstants[asset].chain,
-      contractAddress: getTokenContractAddress(asset, network, false),
+      contractAddress: !isGasAsset(asset)
+        ? getTokenContractAddress(asset, network)
+        : undefined,
       decimals: assetConstants[asset].decimals,
       name: assetConstants[asset].name,
       symbol: assetConstants[asset].asset,
