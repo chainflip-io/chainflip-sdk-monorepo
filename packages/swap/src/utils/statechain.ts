@@ -55,5 +55,5 @@ export const getBrokerQuote = async (
     amount,
   );
 
-  return { id, ...quote };
+  return { id, ...quote, quoteType: 'broker' as const };
 };

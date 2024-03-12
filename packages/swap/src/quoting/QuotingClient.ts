@@ -48,12 +48,30 @@ export default class QuotingClient extends EventEmitter {
     });
 
     this.socket.on('connect', () => {
+      if (this.socket.connected) {
+        // eslint-disable-next-line no-console
+        console.log('connected to quoting service');
+      }
       this.emit('connected');
     });
 
     this.socket.on('quote_request', async (quote: InternalQuoteRequest) => {
       const response = await this.quoteHandler(quote);
       this.socket.emit('quote_response', { ...response, id: quote.id });
+    });
+
+    this.socket.on('connect_error', async (err) => {
+      // the reason of the error, for example "xhr poll error"
+      // eslint-disable-next-line no-console
+      console.log('connect_error', err.message);
+      // retry with a new signature
+      const updatedTimestamp = Date.now();
+      this.socket.auth = {
+        timestamp: updatedTimestamp,
+        client_version: '1',
+        market_maker_id: this.marketMakerId,
+        signature: await this.getSignature(updatedTimestamp),
+      };
     });
   }
 
