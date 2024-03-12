@@ -23,27 +23,15 @@ export const extractOverrides = (
 export function getTokenContractAddress(
   asset: InternalAsset,
   network: ChainflipNetwork,
-): string;
-export function getTokenContractAddress(
-  asset: InternalAsset,
-  network: ChainflipNetwork,
-  assert: false,
-): string | undefined;
-export function getTokenContractAddress(
-  asset: InternalAsset,
-  network: ChainflipNetwork,
-  assert = true,
-): string | undefined {
+) {
   if (asset === InternalAssets.Flip)
     return ADDRESSES[network].FLIP_CONTRACT_ADDRESS;
   if (asset === InternalAssets.Usdc)
     return ADDRESSES[network].USDC_CONTRACT_ADDRESS;
+  if (asset === InternalAssets.Usdt)
+    return ADDRESSES[network].USDT_CONTRACT_ADDRESS;
 
-  if (assert) {
-    throw new Error('Only FLIP and USDC are supported for now');
-  }
-
-  return undefined;
+  throw new Error(`No contract address for ${asset} on ${network}`);
 }
 
 export const getStateChainGatewayContractAddress = (
