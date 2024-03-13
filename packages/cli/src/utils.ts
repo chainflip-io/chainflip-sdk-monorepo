@@ -20,7 +20,6 @@ type GetEthNetworkOptions =
 export function getEthNetwork(opts: GetEthNetworkOptions) {
   if (opts.chainflipNetwork === 'localnet') return opts.ethNetwork as string;
   if (opts.chainflipNetwork === ChainflipNetworks.mainnet) return 'mainnet';
-  if (opts.chainflipNetwork === ChainflipNetworks.perseverance) return 'goerli';
   return 'sepolia';
 }
 
