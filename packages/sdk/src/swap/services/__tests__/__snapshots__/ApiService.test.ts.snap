@@ -303,7 +303,7 @@ exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (E
     "asset": "FLIP",
     "chain": "Ethereum",
     "chainflipId": "Flip",
-    "contractAddress": "0x4DB663768c7d3E100Ed905Eb147974c8aDDD8Bc8",
+    "contractAddress": "0xcD079EAB6B5443b545788Fd210C8800FEADd87fa",
     "decimals": 18,
     "isMainnet": false,
     "maximumSwapAmount": null,
