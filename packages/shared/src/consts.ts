@@ -12,7 +12,7 @@ const POOLS_NETWORK_FEE_HUNDREDTH_PIPS: Partial<
 export const getPoolsNetworkFeeHundredthPips = (network: ChainflipNetwork) =>
   POOLS_NETWORK_FEE_HUNDREDTH_PIPS[network] ?? 0;
 
-// https://developers.circle.com/developer/docs/usdc-on-testnet#usdc-on-ethereum-goerli
+// https://developers.circle.com/stablecoins/docs/usdc-on-test-networks
 const SEPOLIA_USDC_CONTRACT_ADDRESS =
   '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238';
 const SEPOLIA_USDT_CONTRACT_ADDRESS =
