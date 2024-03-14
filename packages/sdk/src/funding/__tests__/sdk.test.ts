@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import { VoidSigner, getDefaultProvider } from 'ethers';
+import { VoidSigner } from 'ethers';
 import {
   fundStateChainAccount,
   executeRedemption,

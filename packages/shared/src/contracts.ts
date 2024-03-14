@@ -47,7 +47,7 @@ export const checkAllowance = async (
   const erc20 = ERC20__factory.connect(erc20Address, signer);
   const signerAddress = await signer.getAddress();
   const allowance = await erc20.allowance(signerAddress, spenderAddress);
-  return { allowance, isAllowable: allowance >= amount, erc20 };
+  return { allowance, hasSufficientAllowance: allowance >= amount, erc20 };
 };
 
 export const approve = async (

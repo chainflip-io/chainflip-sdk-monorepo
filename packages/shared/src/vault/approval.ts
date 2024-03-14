@@ -43,12 +43,10 @@ export const approveVault = async (
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionReceipt | null> => {
-  const { isAllowable, erc20, allowance } = await checkVaultAllowance(
-    params,
-    networkOpts,
-  );
+  const { hasSufficientAllowance, erc20, allowance } =
+    await checkVaultAllowance(params, networkOpts);
 
-  if (isAllowable) return null;
+  if (hasSufficientAllowance) return null;
 
   const vaultContractAddress =
     networkOpts.network === 'localnet'

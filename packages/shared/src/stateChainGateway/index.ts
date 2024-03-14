@@ -38,13 +38,13 @@ export const fundStateChainAccount = async (
 
   const stateChainGateway = getStateChainGateway(networkOpts);
 
-  const { isAllowable } = await checkAllowance(
+  const { hasSufficientAllowance } = await checkAllowance(
     amount,
     await stateChainGateway.getAddress(),
     flipContractAddress,
     networkOpts.signer,
   );
-  assert(isAllowable, 'Insufficient allowance');
+  assert(hasSufficientAllowance, 'Insufficient allowance');
 
   const transaction = await stateChainGateway.fundStateChainAccount(
     accountId,

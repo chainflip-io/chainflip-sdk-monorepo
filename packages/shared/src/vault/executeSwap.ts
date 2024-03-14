@@ -76,13 +76,13 @@ const swapToken = async (
 
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
-  const { isAllowable } = await checkAllowance(
+  const { hasSufficientAllowance } = await checkAllowance(
     BigInt(params.amount),
     vaultContractAddress,
     erc20Address,
     networkOpts.signer,
   );
-  assert(isAllowable, 'Swap amount exceeds allowance');
+  assert(hasSufficientAllowance, 'Swap amount exceeds allowance');
 
   const vault = Vault__factory.connect(
     vaultContractAddress,
@@ -161,13 +161,13 @@ const callToken = async (
 
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
-  const { isAllowable } = await checkAllowance(
+  const { hasSufficientAllowance } = await checkAllowance(
     BigInt(params.amount),
     vaultContractAddress,
     erc20Address,
     networkOpts.signer,
   );
-  assert(isAllowable, 'Swap amount exceeds allowance');
+  assert(hasSufficientAllowance, 'Swap amount exceeds allowance');
 
   const vault = Vault__factory.connect(
     vaultContractAddress,

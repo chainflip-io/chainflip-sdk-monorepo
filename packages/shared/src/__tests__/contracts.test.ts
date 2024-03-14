@@ -37,7 +37,7 @@ describe(checkAllowance, () => {
 
     const result = await checkAllowance(spend, spender, '0x0', signer);
 
-    expect(result.isAllowable).toBe(expected);
+    expect(result.hasSufficientAllowance).toBe(expected);
     expect(result.allowance).toEqual(BigInt(allowance));
     expect(allowanceSpy.mock.calls).toMatchSnapshot();
   });

@@ -46,7 +46,7 @@ describe(fundStateChainAccount, () => {
   it('approves the gateway and funds the account', async () => {
     const checkSpy = jest.mocked(checkAllowance).mockResolvedValue({
       allowance: 100000n,
-      isAllowable: true,
+      hasSufficientAllowance: true,
       erc20: {} as unknown as ERC20,
     });
     const waitMock = jest.fn().mockResolvedValue({ status: 1 });

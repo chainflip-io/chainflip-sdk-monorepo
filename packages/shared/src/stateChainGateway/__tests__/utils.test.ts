@@ -1,4 +1,4 @@
-import { VoidSigner, getDefaultProvider } from 'ethers';
+import { VoidSigner } from 'ethers';
 import { ADDRESSES } from '../../consts';
 import { getStateChainGateway } from '../utils';
 
