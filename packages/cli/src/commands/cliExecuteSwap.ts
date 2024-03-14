@@ -75,11 +75,7 @@ export default async function cliExecuteSwap(
 
   const ethNetwork = getEthNetwork(args);
 
-  const wallet = new Wallet(privateKey).connect(
-    process.env.ALCHEMY_KEY
-      ? new AlchemyProvider(ethNetwork, process.env.ALCHEMY_KEY)
-      : getDefaultProvider(ethNetwork),
-  );
+  const wallet = new Wallet(privateKey).connect(getDefaultProvider(ethNetwork));
 
   const networkOpts: SwapNetworkOptions =
     args.chainflipNetwork === 'localnet'

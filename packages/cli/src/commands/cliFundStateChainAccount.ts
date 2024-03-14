@@ -48,11 +48,7 @@ export default async function cliFundStateChainAccount(
 
   const ethNetwork = getEthNetwork(args);
 
-  const wallet = new Wallet(privateKey).connect(
-    process.env.ALCHEMY_KEY
-      ? new AlchemyProvider(ethNetwork, process.env.ALCHEMY_KEY)
-      : getDefaultProvider(ethNetwork),
-  );
+  const wallet = new Wallet(privateKey).connect(getDefaultProvider(ethNetwork));
 
   const networkOpts: FundingNetworkOptions =
     args.chainflipNetwork === 'localnet'
