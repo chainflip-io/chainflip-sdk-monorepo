@@ -165,7 +165,9 @@ describe(SwapSDK, () => {
 });
 
 describe(SwapSDK, () => {
-  const signer = new VoidSigner('0x0');
+  const signer = new VoidSigner('0x0').connect({
+    getNetwork: () => Promise.resolve({ chainId: 11155111n }),
+  } as any);
   const sdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
   beforeEach(() => {
     jest.clearAllMocks();
@@ -265,7 +267,7 @@ describe(SwapSDK, () => {
 
   describe(SwapSDK.prototype.executeSwap, () => {
     it('calls executeSwap', async () => {
-      const params = { amount: '1', srcAsset: 'BTC', srcChain: 'Bitcoin' };
+      const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
       jest
         .mocked(executeSwap)
         .mockResolvedValueOnce({ hash: 'hello world' } as any);
@@ -280,8 +282,10 @@ describe(SwapSDK, () => {
     });
 
     it('calls executeSwap with the given signer', async () => {
-      const params = { amount: '1', srcAsset: 'BTC', srcChain: 'Bitcoin' };
-      const otherSigner = new VoidSigner('0x1');
+      const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
+      const otherSigner = new VoidSigner('0x1').connect({
+        getNetwork: () => Promise.resolve({ chainId: 11155111n }),
+      } as any);
       jest
         .mocked(executeSwap)
         .mockResolvedValueOnce({ hash: 'hello world' } as any);
@@ -300,7 +304,7 @@ describe(SwapSDK, () => {
 
   describe(SwapSDK.prototype.approveVault, () => {
     it('calls approveVault', async () => {
-      const params = { amount: '1', srcAsset: 'BTC', srcChain: 'Bitcoin' };
+      const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
       jest
         .mocked(approveVault)
         .mockResolvedValueOnce({ hash: 'hello world' } as any);
@@ -315,8 +319,10 @@ describe(SwapSDK, () => {
     });
 
     it('calls approveVault with given signer', async () => {
-      const params = { amount: '1', srcAsset: 'BTC', srcChain: 'Bitcoin' };
-      const otherSigner = new VoidSigner('0x1');
+      const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
+      const otherSigner = new VoidSigner('0x1').connect({
+        getNetwork: () => Promise.resolve({ chainId: 11155111n }),
+      } as any);
       jest
         .mocked(approveVault)
         .mockResolvedValueOnce({ hash: 'hello world' } as any);

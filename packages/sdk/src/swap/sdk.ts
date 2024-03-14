@@ -1,6 +1,7 @@
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import { Signer } from 'ethers';
 import superjson from 'superjson';
+import { getEvmChainId } from '@/shared/consts';
 import { TransactionOptions } from '@/shared/contracts';
 import {
   ChainflipNetwork,
@@ -172,6 +173,14 @@ export class SwapSDK {
     const { signer: optsSigner, ...remainingTxOpts } = txOpts;
     const signer = optsSigner ?? this.options.signer;
     assert(signer, 'No signer provided');
+    assert(signer.provider, 'Signer has no provider');
+
+    const sourceChainId = getEvmChainId(params.srcChain, this.options.network);
+    const { chainId: signerChainId } = await signer.provider.getNetwork();
+    assert(
+      signerChainId === BigInt(sourceChainId ?? -1),
+      `Signer is connected to unexpected evm chain (expected: ${sourceChainId}, got: ${signerChainId})`,
+    );
 
     await this.validateSwapAmount(
       { chain: srcChain, asset: srcAsset },
@@ -193,11 +202,17 @@ export class SwapSDK {
     params: Pick<TokenSwapParams, 'srcChain' | 'srcAsset' | 'amount'>,
     txOpts: TransactionOptions & { signer?: Signer } = {},
   ): Promise<TransactionHash | null> {
-    if (!('srcAsset' in params)) return null;
-
     const { signer: optsSigner, ...remainingTxOpts } = txOpts;
     const signer = optsSigner ?? this.options.signer;
     assert(signer, 'No signer provided');
+    assert(signer.provider, 'Signer has no provider');
+
+    const sourceChainId = getEvmChainId(params.srcChain, this.options.network);
+    const { chainId: signerChainId } = await signer.provider.getNetwork();
+    assert(
+      signerChainId === BigInt(sourceChainId ?? -1),
+      `Signer is connected to unexpected evm chain (expected: ${sourceChainId}, got: ${signerChainId})`,
+    );
 
     const receipt = await approveVault(
       params,

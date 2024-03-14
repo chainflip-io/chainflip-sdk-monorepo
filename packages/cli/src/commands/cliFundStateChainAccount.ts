@@ -1,8 +1,9 @@
-import { AlchemyProvider, Wallet, getDefaultProvider } from 'ethers';
+import { Wallet, getDefaultProvider } from 'ethers';
 import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
+import { getEvmChainId } from '@/shared/consts';
 import { ChainflipNetworks } from '@/shared/enums';
 import { FundingNetworkOptions, fundStateChainAccount } from '../lib';
-import { askForPrivateKey, getEthNetwork, cliNetworks } from '../utils';
+import { askForPrivateKey, cliNetworks } from '../utils';
 
 export const yargsOptions = {
   'src-account-id': {
@@ -46,7 +47,10 @@ export default async function cliFundStateChainAccount(
 ) {
   const privateKey = args.walletPrivateKey ?? (await askForPrivateKey());
 
-  const ethNetwork = getEthNetwork(args);
+  const ethNetwork =
+    args.chainflipNetwork === 'localnet'
+      ? args.ethNetwork
+      : getEvmChainId('Ethereum', args.chainflipNetwork);
 
   const wallet = new Wallet(privateKey).connect(getDefaultProvider(ethNetwork));
 

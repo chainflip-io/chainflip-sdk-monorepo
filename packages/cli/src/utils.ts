@@ -17,12 +17,6 @@ type GetEthNetworkOptions =
   | { chainflipNetwork: 'localnet'; ethNetwork?: string }
   | { chainflipNetwork: ChainflipNetwork };
 
-export function getEthNetwork(opts: GetEthNetworkOptions) {
-  if (opts.chainflipNetwork === 'localnet') return opts.ethNetwork as string;
-  if (opts.chainflipNetwork === ChainflipNetworks.mainnet) return 'mainnet';
-  return 'sepolia';
-}
-
 export const cliNetworks = [
   ...Object.values(chainflipNetwork.enum),
   'localnet',
