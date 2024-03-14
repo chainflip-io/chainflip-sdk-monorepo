@@ -4,7 +4,7 @@ import { CcmMetadata, QuoteQueryResponse, SwapFee } from '@/shared/schemas';
 export interface ChainData {
   chain: Chain;
   name: string;
-  evmChainId: number;
+  evmChainId: number | undefined;
   isMainnet: boolean;
   requiredBlockConfirmations: number | undefined;
 }

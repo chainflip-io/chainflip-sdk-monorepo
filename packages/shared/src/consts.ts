@@ -1,16 +1,27 @@
-import { ChainflipNetwork, ChainflipNetworks } from './enums';
+import { Chain, ChainflipNetwork, ChainflipNetworks, Chains } from './enums';
 
 // TODO: read this value via rpc once there is an appropriate rpc method
-const POOLS_NETWORK_FEE_HUNDREDTH_PIPS: Partial<
-  Record<ChainflipNetwork, number>
-> = {
+const POOLS_NETWORK_FEE_HUNDREDTH_PIPS: Record<ChainflipNetwork, number> = {
   [ChainflipNetworks.backspin]: 1000,
   [ChainflipNetworks.sisyphos]: 1000,
   [ChainflipNetworks.perseverance]: 1000,
   [ChainflipNetworks.mainnet]: 1000,
 };
 export const getPoolsNetworkFeeHundredthPips = (network: ChainflipNetwork) =>
-  POOLS_NETWORK_FEE_HUNDREDTH_PIPS[network] ?? 0;
+  POOLS_NETWORK_FEE_HUNDREDTH_PIPS[network];
+
+const ETHEREUM_EVM_CHAIN_ID: Record<ChainflipNetwork, number> = {
+  [ChainflipNetworks.backspin]: 10997, // backspin ethereum
+  [ChainflipNetworks.sisyphos]: 11155111, // sepolia
+  [ChainflipNetworks.perseverance]: 11155111, // sepolia
+  [ChainflipNetworks.mainnet]: 1, // mainnet
+};
+export const getEvmChainId = (chain: Chain, network: ChainflipNetwork) => {
+  if (chain === Chains.Ethereum) {
+    return ETHEREUM_EVM_CHAIN_ID[network];
+  }
+  return undefined;
+};
 
 // https://developers.circle.com/stablecoins/docs/usdc-on-test-networks
 const SEPOLIA_USDC_CONTRACT_ADDRESS =
