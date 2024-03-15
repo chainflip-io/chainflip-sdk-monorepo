@@ -9,6 +9,7 @@ import {
 } from '../contracts';
 import { getInternalAsset } from '../enums';
 import { assert } from '../guards';
+import { assertSignerIsConnectedToChain } from '../signer';
 import { SwapNetworkOptions } from './index';
 
 export const checkVaultAllowance = (
@@ -43,6 +44,8 @@ export const approveVault = async (
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionReceipt | null> => {
+  await assertSignerIsConnectedToChain(networkOpts, params.srcChain);
+
   const { hasSufficientAllowance, erc20, allowance } =
     await checkVaultAllowance(params, networkOpts);
 

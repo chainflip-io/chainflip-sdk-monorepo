@@ -165,9 +165,7 @@ describe(SwapSDK, () => {
 });
 
 describe(SwapSDK, () => {
-  const signer = new VoidSigner('0x0').connect({
-    getNetwork: () => Promise.resolve({ chainId: 11155111n }),
-  } as any);
+  const signer = new VoidSigner('0x0');
   const sdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
   beforeEach(() => {
     jest.clearAllMocks();
@@ -283,9 +281,7 @@ describe(SwapSDK, () => {
 
     it('calls executeSwap with the given signer', async () => {
       const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
-      const otherSigner = new VoidSigner('0x1').connect({
-        getNetwork: () => Promise.resolve({ chainId: 11155111n }),
-      } as any);
+      const otherSigner = new VoidSigner('0x1');
       jest
         .mocked(executeSwap)
         .mockResolvedValueOnce({ hash: 'hello world' } as any);
@@ -320,9 +316,7 @@ describe(SwapSDK, () => {
 
     it('calls approveVault with given signer', async () => {
       const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
-      const otherSigner = new VoidSigner('0x1').connect({
-        getNetwork: () => Promise.resolve({ chainId: 11155111n }),
-      } as any);
+      const otherSigner = new VoidSigner('0x1');
       jest
         .mocked(approveVault)
         .mockResolvedValueOnce({ hash: 'hello world' } as any);

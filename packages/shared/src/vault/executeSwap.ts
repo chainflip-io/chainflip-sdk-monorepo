@@ -17,6 +17,7 @@ import {
 } from '../contracts';
 import { assetConstants, chainConstants, getInternalAsset } from '../enums';
 import { assert, isTokenCall, isTokenSwap } from '../guards';
+import { assertSignerIsConnectedToChain } from '../signer';
 import { SwapNetworkOptions } from './index';
 
 const swapNative = async (
@@ -194,6 +195,8 @@ const executeSwap = async (
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionReceipt> => {
+  await assertSignerIsConnectedToChain(networkOpts, params.srcChain);
+
   const network =
     networkOpts.network === 'localnet' ? 'backspin' : networkOpts.network;
   const parsedParams = executeSwapParamsSchema(network).parse(params);
