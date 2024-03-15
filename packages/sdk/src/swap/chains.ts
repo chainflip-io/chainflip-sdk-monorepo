@@ -1,3 +1,4 @@
+import { getEvmChainId } from '@/shared/consts';
 import { ChainflipNetwork, Chains, Chain, isTestnet } from '@/shared/enums';
 import { isNotNullish } from '@/shared/guards';
 import { ChainData } from './types';
@@ -10,17 +11,17 @@ type ChainFn = (
 
 const chainFactory =
   (chain: Chain): ChainFn =>
-  (network, env) =>
-    ({
-      chain,
-      name: Chains[chain],
-      isMainnet: !isTestnet(network),
-      requiredBlockConfirmations: isNotNullish(
-        env.ingressEgress.witnessSafetyMargins[Chains[chain]],
-      )
-        ? Number(env.ingressEgress.witnessSafetyMargins[Chains[chain]]) + 1
-        : undefined,
-    }) as ChainData;
+  (network, env) => ({
+    chain,
+    name: chain,
+    evmChainId: getEvmChainId(chain, network),
+    isMainnet: !isTestnet(network),
+    requiredBlockConfirmations: isNotNullish(
+      env.ingressEgress.witnessSafetyMargins[chain],
+    )
+      ? Number(env.ingressEgress.witnessSafetyMargins[chain]) + 1
+      : undefined,
+  });
 
 export const ethereum = chainFactory(Chains.Ethereum);
 export const polkadot = chainFactory(Chains.Polkadot);

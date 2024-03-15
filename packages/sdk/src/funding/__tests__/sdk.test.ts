@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import { VoidSigner, getDefaultProvider } from 'ethers';
+import { VoidSigner } from 'ethers';
 import {
   fundStateChainAccount,
   executeRedemption,
@@ -29,7 +29,7 @@ jest.mock('@/shared/abis/factories/ERC20__factory', () => ({
 describe(FundingSDK, () => {
   const sdk = new FundingSDK({
     network: 'sisyphos',
-    signer: new VoidSigner('0xcafebabe').connect(getDefaultProvider('sepolia')),
+    signer: new VoidSigner('0xcafebabe'),
   });
 
   it('uses perseverance as the default network', () => {

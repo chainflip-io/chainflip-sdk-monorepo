@@ -14,6 +14,7 @@ import {
 import { assert } from '@/shared/guards';
 import { Environment, RpcConfig, getEnvironment } from '@/shared/rpc';
 import { validateSwapAmount } from '@/shared/rpc/utils';
+import { Required } from '@/shared/types';
 import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
 import type { TokenSwapParams } from '@/shared/vault/schemas';
 import type { AppRouter } from '@/swap/server';
@@ -34,8 +35,8 @@ type TransactionHash = `0x${string}`;
 
 export type SwapSDKOptions = {
   network?: ChainflipNetwork;
-  signer?: Signer;
   backendUrl?: string;
+  signer?: Signer;
   broker?: {
     url: string;
     commissionBps: number;
@@ -44,32 +45,28 @@ export type SwapSDKOptions = {
 };
 
 export class SwapSDK {
-  private readonly baseUrl: string;
-
-  private readonly network: ChainflipNetwork;
-
-  private readonly signer?: Signer;
-
-  private readonly trpc;
-
-  private readonly brokerConfig?;
-
-  private stateChainEnvironment?: Environment;
+  private readonly options: Required<SwapSDKOptions, 'network' | 'backendUrl'>;
 
   private readonly rpcConfig: RpcConfig;
 
+  private readonly trpc;
+
+  private stateChainEnvironment?: Environment;
+
   constructor(options: SwapSDKOptions = {}) {
-    this.network = options.network ?? ChainflipNetworks.perseverance;
-    this.baseUrl = options.backendUrl ?? BACKEND_SERVICE_URLS[this.network];
-    this.signer = options.signer;
-    this.brokerConfig = options.broker;
+    const network = options.network ?? ChainflipNetworks.perseverance;
+    this.options = {
+      ...options,
+      network,
+      backendUrl: options.backendUrl ?? BACKEND_SERVICE_URLS[network],
+    };
+    this.rpcConfig = options.rpcUrl ? { rpcUrl: options.rpcUrl } : { network };
     this.trpc = createTRPCProxyClient<AppRouter>({
       transformer: superjson,
-      links: [httpBatchLink({ url: new URL('/trpc', this.baseUrl) })],
+      links: [
+        httpBatchLink({ url: new URL('/trpc', this.options.backendUrl) }),
+      ],
     });
-    this.rpcConfig = options.rpcUrl
-      ? { rpcUrl: options.rpcUrl }
-      : { network: this.network };
   }
 
   async getChains(sourceChain?: Chain): Promise<ChainData[]> {
@@ -77,11 +74,11 @@ export class SwapSDK {
     if (sourceChain !== undefined) {
       return ApiService.getPossibleDestinationChains(
         sourceChain,
-        this.network,
+        this.options.network,
         env,
       );
     }
-    return ApiService.getChains(this.network, env);
+    return ApiService.getChains(this.options.network, env);
   }
 
   private async getStateChainEnvironment(): Promise<Environment> {
@@ -93,7 +90,7 @@ export class SwapSDK {
   async getAssets(chain: Chain): Promise<AssetData[]> {
     const env = await this.getStateChainEnvironment();
 
-    return ApiService.getAssets(chain, this.network, env);
+    return ApiService.getAssets(chain, this.options.network, env);
   }
 
   getQuote(
@@ -101,10 +98,10 @@ export class SwapSDK {
     options: RequestOptions = {},
   ): Promise<QuoteResponse> {
     return ApiService.getQuote(
-      this.baseUrl,
+      this.options.backendUrl,
       {
         ...quoteRequest,
-        brokerCommissionBps: this.brokerConfig?.commissionBps,
+        brokerCommissionBps: this.options.broker?.commissionBps,
       },
       options,
     );
@@ -122,19 +119,19 @@ export class SwapSDK {
 
     let response;
 
-    if (this.brokerConfig !== undefined) {
+    if (this.options.broker !== undefined) {
       const { requestSwapDepositAddress } = await import('@/shared/broker');
 
       const result = await requestSwapDepositAddress(
         depositAddressRequest,
-        this.brokerConfig,
-        this.network,
+        this.options.broker,
+        this.options.network,
       );
 
       response = {
         id: `${result.issuedBlock}-${depositAddressRequest.srcChain}-${result.channelId}`,
         depositAddress: result.address,
-        brokerCommissionBps: this.brokerConfig.commissionBps,
+        brokerCommissionBps: this.options.broker.commissionBps,
         srcChainExpiryBlock: result.sourceChainExpiryBlock,
         boostFeeBps: depositAddressRequest.boostFeeBps,
       };
@@ -159,46 +156,54 @@ export class SwapSDK {
     swapStatusRequest: SwapStatusRequest,
     options: RequestOptions = {},
   ): Promise<SwapStatusResponse> {
-    return ApiService.getStatus(this.baseUrl, swapStatusRequest, options);
+    return ApiService.getStatus(
+      this.options.backendUrl,
+      swapStatusRequest,
+      options,
+    );
   }
 
   async executeSwap(
     params: ExecuteSwapParams,
-    txOpts: TransactionOptions = {},
+    txOpts: TransactionOptions & { signer?: Signer } = {},
   ): Promise<TransactionHash> {
     const { srcChain, srcAsset, amount } = params;
+
+    const { signer: optsSigner, ...remainingTxOpts } = txOpts;
+    const signer = optsSigner ?? this.options.signer;
+    assert(signer, 'No signer provided');
 
     await this.validateSwapAmount(
       { chain: srcChain, asset: srcAsset },
       BigInt(amount),
     );
 
-    assert(this.signer, 'No signer provided');
     const receipt = await executeSwap(
       params,
       {
-        network: this.network,
-        signer: this.signer,
+        network: this.options.network,
+        signer,
       },
-      txOpts,
+      remainingTxOpts,
     );
     return receipt.hash as `0x${string}`;
   }
 
   async approveVault(
     params: Pick<TokenSwapParams, 'srcChain' | 'srcAsset' | 'amount'>,
-    txOpts: TransactionOptions = {},
+    txOpts: TransactionOptions & { signer?: Signer } = {},
   ): Promise<TransactionHash | null> {
-    if (!('srcAsset' in params)) return null;
-    assert(this.signer, 'No signer provided');
+    const { signer: optsSigner, ...remainingTxOpts } = txOpts;
+    const signer = optsSigner ?? this.options.signer;
+    assert(signer, 'No signer provided');
 
     const receipt = await approveVault(
       params,
       {
-        signer: this.signer,
-        network: this.network,
+        signer,
+        network: this.options.network,
       },
-      txOpts,
+      remainingTxOpts,
     );
     return receipt ? (receipt.hash as `0x${string}`) : null;
   }

@@ -36,10 +36,10 @@ export const approveStateChainGateway = async (
   networkOpts: FundingNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionReceipt | null> => {
-  const { allowance, erc20, isAllowable } =
+  const { allowance, erc20, hasSufficientAllowance } =
     await checkStateChainGatewayAllowance(amount, networkOpts);
 
-  if (isAllowable) return null;
+  if (hasSufficientAllowance) return null;
 
   const stateChainGatewayContractAddress =
     networkOpts.network === 'localnet'

@@ -1,4 +1,4 @@
-import { VoidSigner, getDefaultProvider } from 'ethers';
+import { VoidSigner } from 'ethers';
 import { ADDRESSES } from '../../consts';
 import { getStateChainGateway } from '../utils';
 
@@ -22,7 +22,7 @@ describe(getStateChainGateway, () => {
     expect(
       getStateChainGateway({
         network: 'localnet',
-        signer: new VoidSigner('0x0').connect(getDefaultProvider('sepolia')),
+        signer: new VoidSigner('0x0'),
         stateChainGatewayContractAddress: address,
         flipContractAddress: '0x0000',
       }),

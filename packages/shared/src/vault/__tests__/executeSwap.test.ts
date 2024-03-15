@@ -8,7 +8,9 @@ import { ExecuteSwapParams } from '../schemas';
 
 const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
 const DOT_ADDRESS = '5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX';
-const BTC_ADDRESS = 'tb1qge9vvd2mmjxfhuxuq204h4fxxphr0vfnsnx205';
+const TESTNET_BTC_ADDRESS = 'tb1qge9vvd2mmjxfhuxuq204h4fxxphr0vfnsnx205';
+const MAINNET_BTC_ADDRESS =
+  'bc1pv7lmxr8vvf220cumd4pft77l4pds85pt4l6rw6yrr3cghyf5kl7sq76puk';
 
 class MockVault {
   constructor(readonly address: string) {}
@@ -42,34 +44,18 @@ jest.mock('../../abis/factories/ERC20__factory', () => ({
 }));
 
 describe(executeSwap, () => {
-  it.each([ChainflipNetworks.perseverance, ChainflipNetworks.mainnet] as const)(
-    'only works on sisyphos for now',
-    async (network) => {
-      await expect(
-        executeSwap(
-          {} as any,
-          {
-            network,
-            signer: new VoidSigner('MY ADDRESS'),
-          },
-          {},
-        ),
-      ).rejects.toThrowError();
-    },
-  );
-
   it.each([
     {
       destAsset: Assets.BTC,
       destChain: Chains.Bitcoin,
-      destAddress: BTC_ADDRESS,
+      destAddress: TESTNET_BTC_ADDRESS,
       srcAsset: Assets.ETH,
       srcChain: Chains.Ethereum,
     },
     {
       destAsset: 'BTC',
       destChain: 'Bitcoin',
-      destAddress: BTC_ADDRESS,
+      destAddress: TESTNET_BTC_ADDRESS,
       srcAsset: Assets.ETH,
       srcChain: Chains.Ethereum,
     },
@@ -109,7 +95,9 @@ describe(executeSwap, () => {
           { amount: '1', ...params } as ExecuteSwapParams,
           {
             network: ChainflipNetworks.sisyphos,
-            signer: new VoidSigner('MY ADDRESS'),
+            signer: new VoidSigner('MY ADDRESS').connect({
+              getNetwork: () => Promise.resolve({ chainId: 11155111n }),
+            } as any),
           },
           {},
         ),
@@ -127,13 +115,13 @@ describe(executeSwap, () => {
       {
         destAsset: Assets.BTC,
         destChain: Chains.Bitcoin,
-        destAddress: BTC_ADDRESS,
+        destAddress: MAINNET_BTC_ADDRESS,
         ...src,
       },
       {
         destAsset: 'BTC',
         destChain: 'Bitcoin',
-        destAddress: BTC_ADDRESS,
+        destAddress: MAINNET_BTC_ADDRESS,
         ...src,
       },
       {
@@ -169,8 +157,10 @@ describe(executeSwap, () => {
         await executeSwap(
           { amount: '1', ...params } as ExecuteSwapParams,
           {
-            network: 'sisyphos',
-            signer: new VoidSigner('MY ADDRESS'),
+            network: 'mainnet',
+            signer: new VoidSigner('MY ADDRESS').connect({
+              getNetwork: () => Promise.resolve({ chainId: 1n }),
+            } as any),
           },
           {},
         ),
@@ -201,12 +191,17 @@ describe(executeSwap, () => {
         {
           destAsset: Assets.BTC,
           destChain: Chains.Bitcoin,
-          destAddress: BTC_ADDRESS,
+          destAddress: TESTNET_BTC_ADDRESS,
           srcAsset: Assets.FLIP,
           srcChain: Chains.Ethereum,
           amount: '1',
         },
-        { network: 'sisyphos', signer: new VoidSigner('MY ADDRESS') },
+        {
+          network: 'sisyphos',
+          signer: new VoidSigner('MY ADDRESS').connect({
+            getNetwork: () => Promise.resolve({ chainId: 11155111n }),
+          } as any),
+        },
         {},
       ),
     ).toStrictEqual({ status: 1, hash: 'hello world' });
@@ -235,7 +230,7 @@ describe(executeSwap, () => {
         {
           destAsset: Assets.BTC,
           destChain: Chains.Bitcoin,
-          destAddress: BTC_ADDRESS,
+          destAddress: TESTNET_BTC_ADDRESS,
           srcAsset: Assets.FLIP,
           amount: '1',
           srcChain: Chains.Ethereum,
@@ -269,13 +264,15 @@ describe(executeSwap, () => {
           amount: '1',
           destAsset: Assets.BTC,
           destChain: Chains.Bitcoin,
-          destAddress: BTC_ADDRESS,
+          destAddress: TESTNET_BTC_ADDRESS,
           srcAsset: Assets.ETH,
           srcChain: Chains.Ethereum,
         },
         {
           network: ChainflipNetworks.sisyphos,
-          signer: new VoidSigner('MY ADDRESS'),
+          signer: new VoidSigner('MY ADDRESS').connect({
+            getNetwork: () => Promise.resolve({ chainId: 11155111n }),
+          } as any),
         },
         { nonce },
       ),
@@ -317,7 +314,9 @@ describe(executeSwap, () => {
         } as ExecuteSwapParams,
         {
           network: ChainflipNetworks.sisyphos,
-          signer: new VoidSigner('MY ADDRESS'),
+          signer: new VoidSigner('MY ADDRESS').connect({
+            getNetwork: () => Promise.resolve({ chainId: 11155111n }),
+          } as any),
         },
         {},
       ),
@@ -373,7 +372,9 @@ describe(executeSwap, () => {
         },
         {
           network: 'sisyphos',
-          signer: new VoidSigner('MY ADDRESS'),
+          signer: new VoidSigner('MY ADDRESS').connect({
+            getNetwork: () => Promise.resolve({ chainId: 11155111n }),
+          } as any),
         },
         {},
       ),

@@ -17,6 +17,7 @@ import {
 } from '../contracts';
 import { assetConstants, chainConstants, getInternalAsset } from '../enums';
 import { assert, isTokenCall, isTokenSwap } from '../guards';
+import { assertSignerIsConnectedToChain } from '../signer';
 import { SwapNetworkOptions } from './index';
 
 const swapNative = async (
@@ -76,13 +77,13 @@ const swapToken = async (
 
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
-  const { isAllowable } = await checkAllowance(
+  const { hasSufficientAllowance } = await checkAllowance(
     BigInt(params.amount),
     vaultContractAddress,
     erc20Address,
     networkOpts.signer,
   );
-  assert(isAllowable, 'Swap amount exceeds allowance');
+  assert(hasSufficientAllowance, 'Swap amount exceeds allowance');
 
   const vault = Vault__factory.connect(
     vaultContractAddress,
@@ -161,13 +162,13 @@ const callToken = async (
 
   assert(erc20Address !== undefined, 'Missing ERC20 contract address');
 
-  const { isAllowable } = await checkAllowance(
+  const { hasSufficientAllowance } = await checkAllowance(
     BigInt(params.amount),
     vaultContractAddress,
     erc20Address,
     networkOpts.signer,
   );
-  assert(isAllowable, 'Swap amount exceeds allowance');
+  assert(hasSufficientAllowance, 'Swap amount exceeds allowance');
 
   const vault = Vault__factory.connect(
     vaultContractAddress,
@@ -194,6 +195,8 @@ const executeSwap = async (
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionReceipt> => {
+  await assertSignerIsConnectedToChain(networkOpts, params.srcChain);
+
   const network =
     networkOpts.network === 'localnet' ? 'backspin' : networkOpts.network;
   const parsedParams = executeSwapParamsSchema(network).parse(params);

@@ -350,18 +350,21 @@ exports[`ApiService getChains gets mainnet chains 1`] = `
 [
   {
     "chain": "Ethereum",
+    "evmChainId": 1,
     "isMainnet": true,
     "name": "Ethereum",
     "requiredBlockConfirmations": 2,
   },
   {
     "chain": "Polkadot",
+    "evmChainId": undefined,
     "isMainnet": true,
     "name": "Polkadot",
     "requiredBlockConfirmations": undefined,
   },
   {
     "chain": "Bitcoin",
+    "evmChainId": undefined,
     "isMainnet": true,
     "name": "Bitcoin",
     "requiredBlockConfirmations": 3,
@@ -373,18 +376,21 @@ exports[`ApiService getChains gets testnet chains (perseverance) 1`] = `
 [
   {
     "chain": "Ethereum",
+    "evmChainId": 11155111,
     "isMainnet": false,
     "name": "Ethereum",
     "requiredBlockConfirmations": 2,
   },
   {
     "chain": "Polkadot",
+    "evmChainId": undefined,
     "isMainnet": false,
     "name": "Polkadot",
     "requiredBlockConfirmations": undefined,
   },
   {
     "chain": "Bitcoin",
+    "evmChainId": undefined,
     "isMainnet": false,
     "name": "Bitcoin",
     "requiredBlockConfirmations": 3,
@@ -396,18 +402,21 @@ exports[`ApiService getChains gets testnet chains (sisyphos) 1`] = `
 [
   {
     "chain": "Ethereum",
+    "evmChainId": 11155111,
     "isMainnet": false,
     "name": "Ethereum",
     "requiredBlockConfirmations": 2,
   },
   {
     "chain": "Polkadot",
+    "evmChainId": undefined,
     "isMainnet": false,
     "name": "Polkadot",
     "requiredBlockConfirmations": undefined,
   },
   {
     "chain": "Bitcoin",
+    "evmChainId": undefined,
     "isMainnet": false,
     "name": "Bitcoin",
     "requiredBlockConfirmations": 3,

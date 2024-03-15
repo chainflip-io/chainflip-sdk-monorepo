@@ -1,5 +1,6 @@
-import { AlchemyProvider, getDefaultProvider, Wallet } from 'ethers';
+import { getDefaultProvider, Wallet } from 'ethers';
 import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
+import { getEvmChainId } from '@/shared/consts';
 import {
   InternalAssets,
   ChainflipNetworks,
@@ -11,7 +12,7 @@ import {
   type SwapNetworkOptions,
   type ExecuteSwapParams,
 } from '@/shared/vault';
-import { askForPrivateKey, getEthNetwork, cliNetworks } from '../utils';
+import { askForPrivateKey, cliNetworks } from '../utils';
 
 export const yargsOptions = {
   'src-asset': {
@@ -73,13 +74,15 @@ export default async function cliExecuteSwap(
 ) {
   const privateKey = args.walletPrivateKey ?? (await askForPrivateKey());
 
-  const ethNetwork = getEthNetwork(args);
+  const ethNetwork =
+    args.chainflipNetwork === 'localnet'
+      ? args.ethNetwork
+      : getEvmChainId(
+          assetConstants[args.srcAsset].chain,
+          args.chainflipNetwork,
+        );
 
-  const wallet = new Wallet(privateKey).connect(
-    process.env.ALCHEMY_KEY
-      ? new AlchemyProvider(ethNetwork, process.env.ALCHEMY_KEY)
-      : getDefaultProvider(ethNetwork),
-  );
+  const wallet = new Wallet(privateKey).connect(getDefaultProvider(ethNetwork));
 
   const networkOpts: SwapNetworkOptions =
     args.chainflipNetwork === 'localnet'
