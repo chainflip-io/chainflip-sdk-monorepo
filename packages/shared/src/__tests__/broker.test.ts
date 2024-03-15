@@ -13,7 +13,7 @@ describe(broker.requestSwapDepositAddress, () => {
 
   const MOCKED_RESPONSE = {
     result: {
-      address: '0x1234567890',
+      address: '0x31E9b3373F2AD5d964CAd0fd01332d6550cBBdE6',
       issued_block: 50,
       channel_id: 200,
       source_chain_expiry_block: 1_000_000,
@@ -35,7 +35,7 @@ describe(broker.requestSwapDepositAddress, () => {
         srcAsset: Assets.FLIP,
         destAsset: Assets.USDC,
         srcChain: 'Ethereum',
-        destAddress: '0xcafebabe',
+        destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
       },
       brokerConfig,
@@ -50,14 +50,14 @@ describe(broker.requestSwapDepositAddress, () => {
       params: [
         { asset: 'FLIP', chain: 'Ethereum' },
         { asset: 'USDC', chain: 'Ethereum' },
-        '0xcafebabe',
+        '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         0,
         undefined,
         undefined,
       ],
     });
     expect(result).toStrictEqual({
-      address: '0x1234567890',
+      address: '0x31E9b3373F2AD5d964CAd0fd01332d6550cBBdE6',
       issuedBlock: 50,
       channelId: 200n,
       sourceChainExpiryBlock: 1_000_000n,
@@ -94,7 +94,7 @@ describe(broker.requestSwapDepositAddress, () => {
       ],
     });
     expect(result).toStrictEqual({
-      address: '0x1234567890',
+      address: '0x31E9b3373F2AD5d964CAd0fd01332d6550cBBdE6',
       issuedBlock: 50,
       channelId: 200n,
       sourceChainExpiryBlock: 1_000_000n,
@@ -125,7 +125,7 @@ describe(broker.requestSwapDepositAddress, () => {
         srcAsset: Assets.FLIP,
         destAsset: Assets.USDC,
         srcChain: 'Ethereum',
-        destAddress: '0xcafebabe',
+        destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
         ccmMetadata: {
           gasBudget: '123456789',
@@ -143,7 +143,7 @@ describe(broker.requestSwapDepositAddress, () => {
       params: [
         { asset: 'FLIP', chain: 'Ethereum' },
         { asset: 'USDC', chain: 'Ethereum' },
-        '0xcafebabe',
+        '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         0,
         {
           cf_parameters: undefined,
@@ -154,7 +154,7 @@ describe(broker.requestSwapDepositAddress, () => {
       ],
     });
     expect(result).toStrictEqual({
-      address: '0x1234567890',
+      address: '0x31E9b3373F2AD5d964CAd0fd01332d6550cBBdE6',
       issuedBlock: 50,
       channelId: 200n,
       sourceChainExpiryBlock: 1_000_000n,
@@ -169,7 +169,7 @@ describe(broker.requestSwapDepositAddress, () => {
         srcAsset: Assets.FLIP,
         destAsset: Assets.USDC,
         srcChain: 'Ethereum',
-        destAddress: '0xcafebabe',
+        destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
         ccmMetadata: {
           gasBudget: '123456789',
@@ -188,7 +188,7 @@ describe(broker.requestSwapDepositAddress, () => {
       params: [
         { asset: 'FLIP', chain: 'Ethereum' },
         { asset: 'USDC', chain: 'Ethereum' },
-        '0xcafebabe',
+        '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         0,
         {
           cf_parameters: undefined,
@@ -199,7 +199,7 @@ describe(broker.requestSwapDepositAddress, () => {
       ],
     });
     expect(result).toStrictEqual({
-      address: '0x1234567890',
+      address: '0x31E9b3373F2AD5d964CAd0fd01332d6550cBBdE6',
       issuedBlock: 50,
       channelId: 200n,
       sourceChainExpiryBlock: 1_000_000n,
@@ -221,7 +221,7 @@ describe(broker.requestSwapDepositAddress, () => {
           srcAsset: Assets.FLIP,
           destAsset: Assets.USDC,
           srcChain: 'Ethereum',
-          destAddress: '0xcafebabe',
+          destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
           destChain: 'Ethereum',
         },
         brokerConfig,

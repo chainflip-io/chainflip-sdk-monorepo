@@ -15,12 +15,11 @@ import { assert } from '@/shared/guards';
 import { Environment, RpcConfig, getEnvironment } from '@/shared/rpc';
 import { validateSwapAmount } from '@/shared/rpc/utils';
 import { Required } from '@/shared/types';
-import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
-import type { TokenSwapParams } from '@/shared/vault/schemas';
+import { approveVault, executeSwap, ExecuteSwapParams } from '@/shared/vault';
 import type { AppRouter } from '@/swap/server';
 import { BACKEND_SERVICE_URLS } from './consts';
 import ApiService, { RequestOptions } from './services/ApiService';
-import type {
+import {
   ChainData,
   AssetData,
   QuoteRequest,
@@ -192,7 +191,7 @@ export class SwapSDK {
   }
 
   async approveVault(
-    params: Pick<TokenSwapParams, 'srcChain' | 'srcAsset' | 'amount'>,
+    params: Pick<ExecuteSwapParams, 'srcChain' | 'srcAsset' | 'amount'>,
     txOpts: TransactionOptions & { signer?: Signer } = {},
   ): Promise<TransactionHash | null> {
     const { signer: optsSigner, ...remainingTxOpts } = txOpts;

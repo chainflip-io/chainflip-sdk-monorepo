@@ -12,6 +12,7 @@ import {
   unsignedInteger,
   uncheckedAssetAndChain,
   u128,
+  ethereumAddress,
 } from './parsers';
 import { CcmMetadata, ccmMetadataSchema } from './schemas';
 import { CamelCaseToSnakeCase, camelToSnakeCase } from './strings';
@@ -93,7 +94,7 @@ const requestValidators = (network: ChainflipNetwork) => ({
 const responseValidators = (network: ChainflipNetwork) => ({
   requestSwapDepositAddress: z
     .object({
-      address: z.union([dotAddress, hexString, btcAddress(network)]),
+      address: z.union([dotAddress, ethereumAddress, btcAddress(network)]),
       issued_block: z.number(),
       channel_id: z.number(),
       expiry_block: z.number().int().safe().positive().optional(),

@@ -1,7 +1,13 @@
 import { Signer, Overrides, ContractTransactionReceipt } from 'ethers';
 import { ERC20, ERC20__factory } from './abis';
 import { ADDRESSES } from './consts';
-import { type ChainflipNetwork, InternalAsset, InternalAssets } from './enums';
+import {
+  Chain,
+  type ChainflipNetwork,
+  Chains,
+  InternalAsset,
+  InternalAssets,
+} from './enums';
 
 export type TransactionOptions = {
   gasLimit?: bigint;
@@ -66,9 +72,15 @@ export const approve = async (
   return transaction.wait(txOpts.wait);
 };
 
-export const getVaultManagerContractAddress = (
+export const getVaultContractAddress = (
+  chain: Chain,
   network: ChainflipNetwork,
-): string => ADDRESSES[network].VAULT_CONTRACT_ADDRESS;
+): string => {
+  if (chain === Chains.Ethereum)
+    return ADDRESSES[network].VAULT_CONTRACT_ADDRESS;
+
+  throw new Error(`No vault contract address for ${chain} on ${network}`);
+};
 
 export const getFlipBalance = async (
   network: ChainflipNetwork,

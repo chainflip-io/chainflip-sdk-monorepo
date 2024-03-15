@@ -4,10 +4,12 @@
 import { VoidSigner } from 'ethers';
 import { Assets, ChainflipNetworks, Chains } from '../../enums';
 import executeSwap from '../executeSwap';
-import { ExecuteSwapParams } from '../schemas';
+import { ExecuteSwapParams } from '../index';
 
 const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
 const DOT_ADDRESS = '5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX';
+const REGTEST_BTC_ADDRESS =
+  'bcrt1p7mnll6qup4l3lcggvh7t26m4gryawjy0d0cganzh6e4zjm2d3rtqt9usqx';
 const TESTNET_BTC_ADDRESS = 'tb1qge9vvd2mmjxfhuxuq204h4fxxphr0vfnsnx205';
 const MAINNET_BTC_ADDRESS =
   'bc1pv7lmxr8vvf220cumd4pft77l4pds85pt4l6rw6yrr3cghyf5kl7sq76puk';
@@ -230,7 +232,7 @@ describe(executeSwap, () => {
         {
           destAsset: Assets.BTC,
           destChain: Chains.Bitcoin,
-          destAddress: TESTNET_BTC_ADDRESS,
+          destAddress: REGTEST_BTC_ADDRESS,
           srcAsset: Assets.FLIP,
           amount: '1',
           srcChain: Chains.Ethereum,
@@ -250,7 +252,7 @@ describe(executeSwap, () => {
     expect(approveSpy).not.toHaveBeenCalled();
   });
 
-  it.each([1])('accepts a nonce (%o)', async (nonce) => {
+  it('accepts a nonce', async () => {
     const wait = jest
       .fn()
       .mockResolvedValue({ status: 1, hash: 'hello world' });
@@ -274,12 +276,18 @@ describe(executeSwap, () => {
             getNetwork: () => Promise.resolve({ chainId: 11155111n }),
           } as any),
         },
-        { nonce },
+        { nonce: 1 },
       ),
     ).toStrictEqual({ status: 1, hash: 'hello world' });
     expect(wait).toHaveBeenCalledWith(undefined);
     expect(swapSpy.mock.calls).toMatchSnapshot();
   });
+
+  // TODO: test invalid address
+  // TODO: test invalid src chain
+  // TODO: test invalid dest chain for call
+  // TODO: test invalid asset/chain combinations
+  // TODO: test signer connected to wrong chain
 
   it.each([
     {
