@@ -15,6 +15,7 @@ import {
 import { assert } from '@/shared/guards';
 import { Environment, RpcConfig, getEnvironment } from '@/shared/rpc';
 import { validateSwapAmount } from '@/shared/rpc/utils';
+import { Required } from '@/shared/types';
 import { ExecuteSwapParams, approveVault, executeSwap } from '@/shared/vault';
 import type { TokenSwapParams } from '@/shared/vault/schemas';
 import type { AppRouter } from '@/swap/server';
@@ -34,8 +35,8 @@ import type {
 type TransactionHash = `0x${string}`;
 
 export type SwapSDKOptions = {
-  network: ChainflipNetwork;
-  backendUrl: string;
+  network?: ChainflipNetwork;
+  backendUrl?: string;
   signer?: Signer;
   broker?: {
     url: string;
@@ -45,7 +46,7 @@ export type SwapSDKOptions = {
 };
 
 export class SwapSDK {
-  private readonly options: Omit<SwapSDKOptions, 'rpcUrl'>;
+  private readonly options: Required<SwapSDKOptions, 'network' | 'backendUrl'>;
 
   private readonly rpcConfig: RpcConfig;
 
@@ -53,13 +54,12 @@ export class SwapSDK {
 
   private stateChainEnvironment?: Environment;
 
-  constructor(options: Partial<SwapSDKOptions> = {}) {
+  constructor(options: SwapSDKOptions = {}) {
     const network = options.network ?? ChainflipNetworks.perseverance;
     this.options = {
+      ...options,
       network,
       backendUrl: options.backendUrl ?? BACKEND_SERVICE_URLS[network],
-      signer: options.signer,
-      broker: options.broker,
     };
     this.rpcConfig = options.rpcUrl ? { rpcUrl: options.rpcUrl } : { network };
     this.trpc = createTRPCProxyClient<AppRouter>({

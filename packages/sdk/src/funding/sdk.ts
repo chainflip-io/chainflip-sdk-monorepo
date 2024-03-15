@@ -11,6 +11,7 @@ import {
   getRedemptionDelay,
   PendingRedemption,
 } from '@/shared/stateChainGateway';
+import { Required } from '@/shared/types';
 
 export type FundingSDKOption = {
   network?: ChainflipNetwork;
@@ -21,7 +22,7 @@ export type FundingSDKOption = {
 export type TransactionHash = `0x${string}`;
 
 export class FundingSDK {
-  private readonly options: Required<Omit<FundingSDKOption, 'rpcUrl'>>;
+  private readonly options: Required<FundingSDKOption, 'network'>;
 
   private readonly rpcConfig: RpcConfig;
 
@@ -30,7 +31,7 @@ export class FundingSDK {
   constructor(options: FundingSDKOption) {
     const network = options.network ?? ChainflipNetworks.perseverance;
     this.options = {
-      signer: options.signer,
+      ...options,
       network,
     };
     this.rpcConfig = options.rpcUrl ? { rpcUrl: options.rpcUrl } : { network };
