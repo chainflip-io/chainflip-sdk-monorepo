@@ -39,27 +39,7 @@ jest.mock('../../pricing/checkPriceWarning.ts', () => ({
 }));
 
 jest.mock('axios', () => ({
-  post: jest.fn((url, data) => {
-    if (data.method === 'cf_environment') {
-      return Promise.resolve({
-        data: environment({
-          maxSwapAmount: null,
-          ingressFee: '0xF4240', // 2000000
-          egressFee: '0x61A8', // 25000
-        }),
-      });
-    }
-
-    if (data.method === 'cf_swap_rate') {
-      return Promise.resolve({
-        data: swapRate({
-          output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
-        }),
-      });
-    }
-
-    throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
-  }),
+  post: jest.fn(),
 }));
 
 describe('server', () => {
@@ -100,6 +80,30 @@ describe('server', () => {
       },
     });
 
+    jest.mocked(axios.post).mockImplementation((url, data: any) => {
+      if (data.method === 'cf_environment') {
+        return Promise.resolve({
+          data: environment({
+            maxSwapAmount: null,
+            ingressFee: '0xF4240', // 2000000
+            egressFee: '0x61A8', // 25000
+          }),
+        });
+      }
+
+      if (data.method === 'cf_swap_rate') {
+        return Promise.resolve({
+          data: swapRate({
+            output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
+          }),
+        });
+      }
+
+      throw new Error(
+        `unexpected axios call to ${url}: ${JSON.stringify(data)}`,
+      );
+    });
+
     quotingClient = new QuotingClient(
       `http://localhost:${(server.address() as AddressInfo).port}`,
       name,
@@ -121,7 +125,7 @@ describe('server', () => {
 
   describe('GET /quote', () => {
     it('rejects if amount is lower than minimum swap amount', async () => {
-      jest.mocked(axios.post).mockResolvedValueOnce({
+      jest.mocked(axios.post).mockResolvedValue({
         data: environment({ minDepositAmount: '0xffffff' }),
       });
 
@@ -146,7 +150,7 @@ describe('server', () => {
     it('rejects if amount is higher than maximum swap amount', async () => {
       jest
         .mocked(axios.post)
-        .mockResolvedValueOnce({ data: environment({ maxSwapAmount: '0x1' }) });
+        .mockResolvedValue({ data: environment({ maxSwapAmount: '0x1' }) });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -371,18 +375,29 @@ describe('server', () => {
     });
 
     it('gets the quote to usdc when the broker is best', async () => {
-      const rpcEnv = environment({
-        maxSwapAmount: null,
-        ingressFee: '0x61A8',
-        egressFee: '0x0',
-      });
+      jest.mocked(axios.post).mockImplementation((url, data: any) => {
+        if (data.method === 'cf_environment') {
+          return Promise.resolve({
+            data: environment({
+              maxSwapAmount: null,
+              ingressFee: '0x61A8',
+              egressFee: '0x0',
+            }),
+          });
+        }
 
-      // method is called three times
-      jest
-        .mocked(axios.post)
-        .mockResolvedValueOnce({ data: rpcEnv })
-        .mockResolvedValueOnce({ data: rpcEnv })
-        .mockResolvedValueOnce({ data: rpcEnv });
+        if (data.method === 'cf_swap_rate') {
+          return Promise.resolve({
+            data: swapRate({
+              output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
+            }),
+          });
+        }
+
+        throw new Error(
+          `unexpected axios call to ${url}: ${JSON.stringify(data)}`,
+        );
+      });
 
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
