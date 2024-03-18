@@ -80,3 +80,69 @@ exports[`server gets the quote for deprecated params without the chain 1`] = `
   "intermediateAmount": "2000000000",
 }
 `;
+
+exports[`server gets the quote when ingress and egress fee is returned as fee asset amount 1`] = `
+{
+  "egressAmount": "1999250000",
+  "estimatedDurationSeconds": 54,
+  "includedFees": [
+    {
+      "amount": "1000000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "2002002",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "999999999999000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "750000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
+}
+`;
+
+exports[`server gets the quote when ingress and egress fee is returned as gas asset amount 1`] = `
+{
+  "egressAmount": "1995000000",
+  "estimatedDurationSeconds": 54,
+  "includedFees": [
+    {
+      "amount": "5000000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "2002002",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "999999999995000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "5000000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
+}
+`;
