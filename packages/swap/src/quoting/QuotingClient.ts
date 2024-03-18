@@ -5,6 +5,7 @@ import { promisify } from 'util';
 import { z } from 'zod';
 import { marketMakerResponseSchema } from './schemas';
 import { InternalQuoteRequest } from '../schemas';
+import logger from '../utils/logger';
 
 const signAsync = promisify(crypto.sign);
 
@@ -49,8 +50,7 @@ export default class QuotingClient extends EventEmitter {
 
     this.socket.on('connect', () => {
       if (this.socket.connected) {
-        // eslint-disable-next-line no-console
-        console.log('connected to quoting service');
+        logger.info('connected to quoting service');
       }
       this.emit('connected');
     });
@@ -62,8 +62,7 @@ export default class QuotingClient extends EventEmitter {
 
     this.socket.on('connect_error', async (err) => {
       // the reason of the error, for example "xhr poll error"
-      // eslint-disable-next-line no-console
-      console.log('connect_error', err.message);
+      logger.error('connect_error', err.message);
       // retry with a new signature
       const updatedTimestamp = Date.now();
       this.socket.auth = {

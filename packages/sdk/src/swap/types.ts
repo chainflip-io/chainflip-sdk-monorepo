@@ -52,6 +52,7 @@ export interface DepositAddressResponse extends DepositAddressRequest {
   brokerCommissionBps: number;
   depositChannelExpiryBlock: bigint;
   estimatedDepositChannelExpiryTime: number | undefined;
+  channelOpeningFee: bigint;
 }
 
 export interface SwapStatusRequest {

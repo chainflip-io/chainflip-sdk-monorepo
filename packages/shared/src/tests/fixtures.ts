@@ -80,6 +80,7 @@ export const ingressEgressEnvironment = ({
   ingressFee?: string;
   egressFee?: string;
   minEgressAmount?: string;
+  channelOpeningFee?: string;
 } = {}) => ({
   id: 1,
   jsonrpc: '2.0',
@@ -116,6 +117,11 @@ export const ingressEgressEnvironment = ({
       },
       Polkadot: { DOT: minEgressAmount },
       Bitcoin: { BTC: '0x258' },
+    },
+    channel_opening_fees: {
+      Bitcoin: '0x0',
+      Ethereum: '0x10',
+      Polkadot: '0x0',
     },
   },
 });
