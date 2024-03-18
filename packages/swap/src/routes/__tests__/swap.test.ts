@@ -1253,6 +1253,7 @@ describe('server', () => {
         issuedBlock,
         channelId,
         sourceChainExpiryBlock,
+        channelOpeningFee: 0n,
       });
 
       const { body, status } = await request(app)
@@ -1312,6 +1313,7 @@ describe('server', () => {
         issuedBlock,
         channelId,
         sourceChainExpiryBlock,
+        channelOpeningFee: 0n,
       });
 
       const { body, status } = await request(app)

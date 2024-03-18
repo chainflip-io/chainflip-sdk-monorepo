@@ -310,9 +310,8 @@ router.post(
       throw ServiceError.badRequest('invalid request body');
     }
 
-    const { srcChainExpiryBlock, ...response } = await openSwapDepositChannel(
-      result.data,
-    );
+    const { srcChainExpiryBlock, channelOpeningFee, ...response } =
+      await openSwapDepositChannel(result.data);
 
     res.json(response);
   }),

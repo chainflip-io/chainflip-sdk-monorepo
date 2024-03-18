@@ -40,6 +40,11 @@ const env = {
       Polkadot: null,
       Bitcoin: 2n,
     },
+    channelOpeningFees: {
+      Ethereum: 16n,
+      Polkadot: 0n,
+      Bitcoin: 0n,
+    },
   },
   swapping: {
     maximumSwapAmounts: {

@@ -43,6 +43,7 @@ describe(openSwapDepositChannel, () => {
       address: 'address',
       channelId: BigInt('888'),
       issuedBlock: 123,
+      channelOpeningFee: 0n,
     });
 
     const result = await openSwapDepositChannel({
@@ -62,6 +63,7 @@ describe(openSwapDepositChannel, () => {
       id: '123-Ethereum-888',
       issuedBlock: 123,
       srcChainExpiryBlock: 1000n,
+      channelOpeningFee: 0n,
     });
     expect(
       jest.mocked(broker.requestSwapDepositAddress).mock.calls,
@@ -79,6 +81,7 @@ describe(openSwapDepositChannel, () => {
       address: 'address',
       channelId: BigInt('909'),
       issuedBlock: 123,
+      channelOpeningFee: 0n,
     });
 
     const result = await openSwapDepositChannel({
@@ -102,6 +105,7 @@ describe(openSwapDepositChannel, () => {
       id: '123-Ethereum-909',
       issuedBlock: 123,
       srcChainExpiryBlock: 1000n,
+      channelOpeningFee: 0n,
     });
     expect(
       jest.mocked(broker.requestSwapDepositAddress).mock.calls,
@@ -119,6 +123,7 @@ describe(openSwapDepositChannel, () => {
       address: 'address',
       channelId: BigInt('909'),
       issuedBlock: 123,
+      channelOpeningFee: 0n,
     });
 
     const result = await openSwapDepositChannel({
@@ -139,6 +144,7 @@ describe(openSwapDepositChannel, () => {
       id: '123-Ethereum-909',
       issuedBlock: 123,
       srcChainExpiryBlock: 1000n,
+      channelOpeningFee: 0n,
     });
     expect(
       jest.mocked(broker.requestSwapDepositAddress).mock.calls,
