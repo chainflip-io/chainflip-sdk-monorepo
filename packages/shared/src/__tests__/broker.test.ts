@@ -61,6 +61,7 @@ describe(broker.requestSwapDepositAddress, () => {
       issuedBlock: 50,
       channelId: 200n,
       sourceChainExpiryBlock: 1_000_000n,
+      channelOpeningFee: 0n,
     });
   });
 
@@ -97,6 +98,7 @@ describe(broker.requestSwapDepositAddress, () => {
       issuedBlock: 50,
       channelId: 200n,
       sourceChainExpiryBlock: 1_000_000n,
+      channelOpeningFee: 0n,
     });
   });
 
@@ -156,6 +158,7 @@ describe(broker.requestSwapDepositAddress, () => {
       issuedBlock: 50,
       channelId: 200n,
       sourceChainExpiryBlock: 1_000_000n,
+      channelOpeningFee: 0n,
     });
   });
 
@@ -200,6 +203,7 @@ describe(broker.requestSwapDepositAddress, () => {
       issuedBlock: 50,
       channelId: 200n,
       sourceChainExpiryBlock: 1_000_000n,
+      channelOpeningFee: 0n,
     });
   });
 

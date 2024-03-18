@@ -122,6 +122,11 @@ describe('getIngressEgressEnvironment', () => {
         Ethereum: 1n,
         Polkadot: null,
       },
+      channelOpeningFees: {
+        Bitcoin: 0n,
+        Ethereum: 16n,
+        Polkadot: 0n,
+      },
     });
     expect(spy.mock.calls).toMatchSnapshot();
   });

@@ -75,6 +75,7 @@ export const ingressEgressEnvironment = ({
   ingressFee = '0x0',
   egressFee = '0x0',
   minEgressAmount = '0x1',
+  channelOpeningFee,
 }: {
   minDepositAmount?: string;
   ingressFee?: string;
@@ -119,9 +120,9 @@ export const ingressEgressEnvironment = ({
       Bitcoin: { BTC: '0x258' },
     },
     channel_opening_fees: {
-      Bitcoin: '0x0',
-      Ethereum: '0x10',
-      Polkadot: '0x0',
+      Bitcoin: channelOpeningFee ?? '0x0',
+      Ethereum: channelOpeningFee ?? '0x10',
+      Polkadot: channelOpeningFee ?? '0x0',
     },
   },
 });
