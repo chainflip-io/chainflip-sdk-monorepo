@@ -50,6 +50,11 @@ const env = {
       Polkadot: null,
       Bitcoin: 2n,
     },
+    channelOpeningFees: {
+      Ethereum: 0n,
+      Polkadot: 0n,
+      Bitcoin: 0n,
+    },
   },
   swapping: {
     maximumSwapAmounts: {
@@ -344,7 +349,10 @@ describe(SwapSDK, () => {
           brokerCommissionBps: 0,
           srcChainExpiryBlock: 123n,
           estimatedExpiryTime: 1698334470000,
-        } as any);
+          channelOpeningFee: 0n,
+          issuedBlock: 1,
+          boostFeeBps: 0,
+        });
 
       const response = await sdk.requestDepositAddress({
         srcChain: Chains.Bitcoin,
@@ -375,6 +383,7 @@ describe(SwapSDK, () => {
         srcAsset: 'BTC',
         srcChain: 'Bitcoin',
         boostFeeBps: 0,
+        channelOpeningFee: 0n,
       });
     });
 
@@ -431,6 +440,7 @@ describe(SwapSDK, () => {
         depositChannelExpiryBlock: 1234n,
         estimatedDepositChannelExpiryTime: undefined,
         boostFeeBps: 0,
+        channelOpeningFee: 0n,
       });
     });
   });
@@ -488,6 +498,7 @@ describe(SwapSDK, () => {
       depositChannelExpiryBlock: 1234n,
       estimatedDepositChannelExpiryTime: undefined,
       boostFeeBps: BOOST_FEE_BPS,
+      channelOpeningFee: 0n,
     });
   });
 
@@ -502,6 +513,16 @@ describe(SwapSDK, () => {
       expect((await sdk.getRequiredBlockConfirmations()).Bitcoin).toStrictEqual(
         3,
       );
+    });
+  });
+
+  describe(SwapSDK.prototype.getChannelOpeningFees, () => {
+    it('should return correct fees', async () => {
+      expect(await sdk.getChannelOpeningFees()).toEqual({
+        Bitcoin: 0x0n,
+        Ethereum: 0x10n,
+        Polkadot: 0x0n,
+      });
     });
   });
 });

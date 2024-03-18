@@ -134,6 +134,7 @@ export class SwapSDK {
         brokerCommissionBps: this.options.broker.commissionBps,
         srcChainExpiryBlock: result.sourceChainExpiryBlock,
         boostFeeBps: depositAddressRequest.boostFeeBps,
+        channelOpeningFee: result.channelOpeningFee,
       };
     } else {
       response = await this.trpc.openSwapDepositChannel.mutate(
@@ -149,6 +150,7 @@ export class SwapSDK {
       boostFeeBps: Number(response.boostFeeBps) || 0,
       depositChannelExpiryBlock: response.srcChainExpiryBlock as bigint,
       estimatedDepositChannelExpiryTime: response.estimatedExpiryTime,
+      channelOpeningFee: response.channelOpeningFee,
     };
   }
 
@@ -245,5 +247,13 @@ export class SwapSDK {
       },
       {} as ChainMap<number | undefined>,
     );
+  }
+
+  async getChannelOpeningFees(): Promise<ChainMap<bigint>> {
+    const {
+      ingressEgress: { channelOpeningFees },
+    } = await this.getStateChainEnvironment();
+
+    return channelOpeningFees;
   }
 }

@@ -33,6 +33,7 @@ export default async function openSwapDepositChannel(
   const {
     address: depositAddress,
     sourceChainExpiryBlock: srcChainExpiryBlock,
+    channelOpeningFee,
     ...blockInfo
   } = await broker.requestSwapDepositAddress(
     input,
@@ -89,5 +90,6 @@ export default async function openSwapDepositChannel(
     issuedBlock: channel.issuedBlock,
     srcChainExpiryBlock,
     estimatedExpiryTime: estimatedExpiryTime?.valueOf(),
+    channelOpeningFee,
   };
 }

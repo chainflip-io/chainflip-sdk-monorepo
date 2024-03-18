@@ -149,14 +149,11 @@ const ingressEgressEnvironment = z
     ingress_fees: chainAssetMapFactory(numberOrHex, 0),
     egress_fees: chainAssetMapFactory(numberOrHex, 0),
     witness_safety_margins: chainNumberNullableMap,
-    // TODO(1.2): remove optional and default value
-    egress_dust_limits: chainAssetMapFactory(numberOrHex, 1)
+    egress_dust_limits: chainAssetMapFactory(numberOrHex, 1),
+    // TODO(1.3): remove optional and default value
+    channel_opening_fees: chainMap(numberOrHex)
       .optional()
-      .default({
-        Bitcoin: { BTC: 0x258 },
-        Ethereum: { ETH: 0x1, USDC: 0x1, FLIP: 0x1, USDT: 0x1 },
-        Polkadot: { DOT: 0x1 },
-      }),
+      .default({ Bitcoin: 0, Ethereum: 0, Polkadot: 0 }),
   })
   .transform(rename({ egress_dust_limits: 'minimum_egress_amounts' }));
 

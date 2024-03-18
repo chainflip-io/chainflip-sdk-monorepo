@@ -11,6 +11,7 @@ import {
   hexStringFromNumber,
   unsignedInteger,
   uncheckedAssetAndChain,
+  u128,
 } from './parsers';
 import { CcmMetadata, ccmMetadataSchema } from './schemas';
 import { CamelCaseToSnakeCase, camelToSnakeCase } from './strings';
@@ -97,13 +98,21 @@ const responseValidators = (network: ChainflipNetwork) => ({
       channel_id: z.number(),
       expiry_block: z.number().int().safe().positive().optional(),
       source_chain_expiry_block: unsignedInteger.optional(),
+      channel_opening_fee: u128.optional().default(0),
     })
     .transform(
-      ({ address, issued_block, channel_id, source_chain_expiry_block }) => ({
+      ({
+        address,
+        issued_block,
+        channel_id,
+        source_chain_expiry_block,
+        channel_opening_fee,
+      }) => ({
         address,
         issuedBlock: issued_block,
         channelId: BigInt(channel_id),
         sourceChainExpiryBlock: source_chain_expiry_block,
+        channelOpeningFee: channel_opening_fee,
       }),
     ),
 });
