@@ -21,8 +21,8 @@ import {
 import logger from '../utils/logger';
 import {
   getMinimumEgressAmount,
-  getNativeEgressFee,
-  getNativeIngressFee,
+  getEgressFee,
+  getIngressFee,
   validateSwapAmount,
 } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
@@ -63,6 +63,13 @@ const quote = (io: Server) => {
 
       logger.info('received a quote request', { query: req.query });
 
+      // detect if ingress and egress fees are exposed as gas asset amount or fee asset amount
+      // https://github.com/chainflip-io/chainflip-backend/pull/4497
+      // TODO: remove this once all networks are upraded to 1.3
+      const ingressEgressFeeIsGasAssetAmount =
+        (await getIngressFee({ chain: 'Ethereum', asset: 'FLIP' })) ===
+        (await getIngressFee({ chain: 'Ethereum', asset: 'USDC' }));
+
       const query = queryResult.data;
       const srcChainAsset = { asset: query.srcAsset, chain: query.srcChain };
       const destChainAsset = { asset: query.destAsset, chain: query.destChain };
@@ -77,10 +84,13 @@ const quote = (io: Server) => {
       }
 
       const includedFees: SwapFee[] = [];
-      const ingressFee = await estimateIngressEgressFeeAssetAmount(
-        await getNativeIngressFee(srcChainAsset),
-        getInternalAsset(srcChainAsset),
-      );
+      let ingressFee = await getIngressFee(srcChainAsset);
+      if (ingressEgressFeeIsGasAssetAmount) {
+        ingressFee = await estimateIngressEgressFeeAssetAmount(
+          ingressFee,
+          getInternalAsset(srcChainAsset),
+        );
+      }
       includedFees.push({
         type: 'INGRESS',
         chain: srcChainAsset.chain,
@@ -153,13 +163,14 @@ const quote = (io: Server) => {
         );
         includedFees.push(...quoteSwapFees);
 
-        const egressFee = bigintMin(
-          await estimateIngressEgressFeeAssetAmount(
-            await getNativeEgressFee(destChainAsset),
+        let egressFee = await getEgressFee(destChainAsset);
+        if (ingressEgressFeeIsGasAssetAmount) {
+          egressFee = await estimateIngressEgressFeeAssetAmount(
+            egressFee,
             getInternalAsset(destChainAsset),
-          ),
-          BigInt(bestQuote.outputAmount),
-        );
+          );
+        }
+        egressFee = bigintMin(egressFee, BigInt(bestQuote.outputAmount));
         includedFees.push({
           type: 'EGRESS',
           chain: destChainAsset.chain,
