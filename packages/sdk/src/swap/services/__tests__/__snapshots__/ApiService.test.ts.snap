@@ -465,7 +465,7 @@ exports[`ApiService getQuote gets a quote for a boostable swap 1`] = `
 
 exports[`ApiService getQuote gets a quote for a boostable swap 2`] = `
 [
-  "https://swapperoo.org/quote?amount=10000&srcAsset=BTC&destAsset=ETH&boostFeeBps=100",
+  "https://swapperoo.org/quote?amount=10000&srcChain=Bitcoin&srcAsset=BTC&destChain=Ethereum&destAsset=ETH&boostFeeBps=100",
   {
     "signal": undefined,
   },
