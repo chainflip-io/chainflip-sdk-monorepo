@@ -70,6 +70,33 @@ describe(swapDepositAddressReady, () => {
       createdAt: expect.any(Date),
     });
   });
+  it('creates a swap deposit channel entry with a channel opening fee', async () => {
+    await createChainTrackingInfo();
+    await swapDepositAddressReady({
+      prisma,
+      event: {
+        ...eventMock.eventContext.event,
+        args: {
+          ...eventMock.eventContext.event.args,
+          channelOpeningFee: 1000,
+        },
+      },
+      block: { ...eventMock.block, height: 121 },
+    });
+
+    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow(
+      {
+        where: {
+          channelId: BigInt(eventMock.eventContext.event.args.channelId),
+        },
+      },
+    );
+
+    expect(swapDepositChannel).toMatchSnapshot({
+      id: expect.any(BigInt),
+      createdAt: expect.any(Date),
+    });
+  });
 
   it('creates a swap deposit channel entry with ccm metadata', async () => {
     await prisma.$transaction(async (txClient) => {

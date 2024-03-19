@@ -25,6 +25,7 @@ describe(processBlocks, () => {
         brokerCommissionBps: 0,
         expectedDepositAmount: '1000000000000000000',
         srcChainExpiryBlock: 1000,
+        openingFeePaid: 0,
       },
     });
 

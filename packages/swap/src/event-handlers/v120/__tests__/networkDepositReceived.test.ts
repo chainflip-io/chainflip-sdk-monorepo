@@ -36,6 +36,7 @@ describe('depositReceivedV120', () => {
         destAsset: 'Eth',
         channelId: 3,
         issuedBlock: 0,
+        openingFeePaid: 0,
         swaps: {
           create: {
             swapInputAmount: '100000',
@@ -100,6 +101,7 @@ describe('depositReceivedV120', () => {
         destAsset: 'Eth',
         channelId: 3,
         issuedBlock: 0,
+        openingFeePaid: 0,
         swaps: {
           create: {
             swapInputAmount: '100000',
@@ -167,6 +169,7 @@ describe('depositReceivedV120', () => {
         destAsset: 'Eth',
         channelId: 3,
         issuedBlock: 0,
+        openingFeePaid: 0,
         swaps: {
           create: {
             swapInputAmount: '100000',
@@ -234,6 +237,7 @@ describe('depositReceivedV120', () => {
         destAsset: 'Eth',
         channelId: 3,
         issuedBlock: 0,
+        openingFeePaid: 0,
       },
     });
 
@@ -273,6 +277,7 @@ describe('depositReceivedV120', () => {
         destAsset: 'Eth',
         channelId: 3,
         issuedBlock: 0,
+        openingFeePaid: 0,
         swaps: {
           create: {
             swapInputAmount: '100000',

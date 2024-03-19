@@ -75,6 +75,7 @@ export default async function openSwapDepositChannel(
       brokerCommissionBps: 0,
       boostFeeBps: Number(rest.boostFeeBps) || 0,
       openedThroughBackend: true,
+      openingFeePaid: channelOpeningFee.toString(),
       ...blockInfo,
     },
     update: {
