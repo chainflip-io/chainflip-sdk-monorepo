@@ -87,7 +87,7 @@ const quote = (io: Server) => {
       let ingressFee = await getIngressFee(srcChainAsset);
       if (ingressFee == null) {
         throw ServiceError.internalError(
-          `no ingress fee for ${getInternalAsset(srcChainAsset)}`,
+          `could not determine ingress fee for ${getInternalAsset(srcChainAsset)}`,
         );
       }
       if (ingressEgressFeeIsGasAssetAmount) {
@@ -171,7 +171,7 @@ const quote = (io: Server) => {
         let egressFee = await getEgressFee(destChainAsset);
         if (egressFee == null) {
           throw ServiceError.internalError(
-            `no egress fee for ${getInternalAsset(destChainAsset)}`,
+            `could not determine egress fee for ${getInternalAsset(destChainAsset)}`,
           );
         }
         if (ingressEgressFeeIsGasAssetAmount) {

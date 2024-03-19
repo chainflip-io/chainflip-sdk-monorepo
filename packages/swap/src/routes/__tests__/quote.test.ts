@@ -195,6 +195,29 @@ describe('server', () => {
       });
     });
 
+    it('returns an error if backend cannot estimate ingress fee', async () => {
+      const rpcEnvironment = environment({ maxSwapAmount: null });
+      rpcEnvironment.result.ingress_egress.ingress_fees.Ethereum.USDC = null;
+      jest.mocked(axios.post).mockResolvedValue({ data: rpcEnvironment });
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'USDC',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: (100e6).toString(),
+      });
+
+      const { body, status } = await request(server).get(
+        `/quote?${params.toString()}`,
+      );
+
+      expect(status).toBe(500);
+      expect(body).toMatchObject({
+        message: 'could not determine ingress fee for Usdc',
+      });
+    });
+
     it('rejects when the egress amount is smaller than the egress fee', async () => {
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
@@ -225,6 +248,56 @@ describe('server', () => {
         message: 'egress amount (0) is lower than minimum egress amount (1)',
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns an error if backend cannot estimate egress fee', async () => {
+      jest.mocked(axios.post).mockImplementation((url, data: any) => {
+        if (data.method === 'cf_environment') {
+          const rpcEnvironment = environment({ maxSwapAmount: null });
+          rpcEnvironment.result.ingress_egress.egress_fees.Ethereum.ETH = null;
+
+          return Promise.resolve({ data: rpcEnvironment });
+        }
+
+        if (data.method === 'cf_swap_rate') {
+          return Promise.resolve({
+            data: swapRate({
+              output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
+            }),
+          });
+        }
+
+        throw new Error(
+          `unexpected axios call to ${url}: ${JSON.stringify(data)}`,
+        );
+      });
+
+      jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        outputAmount: (1e18).toString(),
+      });
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'USDC',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: (100e6).toString(),
+      });
+
+      const quoteHandler = jest.fn(async (req) => ({
+        id: req.id,
+        output_amount: '0',
+      }));
+      quotingClient.setQuoteRequestHandler(quoteHandler);
+
+      const { body, status } = await request(server).get(
+        `/quote?${params.toString()}`,
+      );
+
+      expect(status).toBe(500);
+      expect(body).toMatchObject({
+        message: 'could not determine egress fee for Eth',
+      });
     });
 
     it('gets the quote from usdc with a broker commission', async () => {
