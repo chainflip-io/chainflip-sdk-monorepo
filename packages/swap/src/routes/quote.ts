@@ -85,6 +85,11 @@ const quote = (io: Server) => {
 
       const includedFees: SwapFee[] = [];
       let ingressFee = await getIngressFee(srcChainAsset);
+      if (ingressFee == null) {
+        throw ServiceError.internalError(
+          `no ingress fee for ${getInternalAsset(srcChainAsset)}`,
+        );
+      }
       if (ingressEgressFeeIsGasAssetAmount) {
         ingressFee = await estimateIngressEgressFeeAssetAmount(
           ingressFee,
@@ -164,6 +169,11 @@ const quote = (io: Server) => {
         includedFees.push(...quoteSwapFees);
 
         let egressFee = await getEgressFee(destChainAsset);
+        if (egressFee == null) {
+          throw ServiceError.internalError(
+            `no egress fee for ${getInternalAsset(destChainAsset)}`,
+          );
+        }
         if (ingressEgressFeeIsGasAssetAmount) {
           egressFee = await estimateIngressEgressFeeAssetAmount(
             egressFee,
