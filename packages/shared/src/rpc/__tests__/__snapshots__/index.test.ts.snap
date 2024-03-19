@@ -3,7 +3,7 @@
 exports[`getFundingEnvironment retrieves the funding environment 1`] = `
 [
   [
-    "https://perseverance.chainflip.xyz",
+    "https://archive.perseverance.chainflip.io",
     {
       "id": 1,
       "jsonrpc": "2.0",
@@ -17,7 +17,7 @@ exports[`getFundingEnvironment retrieves the funding environment 1`] = `
 exports[`getIngressEgressEnvironment retrieves the ingress egress environment 1`] = `
 [
   [
-    "https://perseverance.chainflip.xyz",
+    "https://archive.perseverance.chainflip.io",
     {
       "id": 1,
       "jsonrpc": "2.0",
@@ -31,7 +31,7 @@ exports[`getIngressEgressEnvironment retrieves the ingress egress environment 1`
 exports[`getPoolsEnvironment retrieves the pools environment 1`] = `
 [
   [
-    "https://perseverance.chainflip.xyz",
+    "https://archive.perseverance.chainflip.io",
     {
       "id": 1,
       "jsonrpc": "2.0",
@@ -90,7 +90,7 @@ exports[`getPoolsEnvironment retrieves the pools environment: pool environment 1
 exports[`getSwappingEnvironment retrieves the swapping environment 1`] = `
 [
   [
-    "https://perseverance.chainflip.xyz",
+    "https://archive.perseverance.chainflip.io",
     {
       "id": 1,
       "jsonrpc": "2.0",

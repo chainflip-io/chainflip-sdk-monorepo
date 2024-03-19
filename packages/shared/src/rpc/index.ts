@@ -39,7 +39,7 @@ const camelCaseKeys = <T>(obj: T): CamelCaseRecord<T> => {
 const RPC_URLS: Record<ChainflipNetwork, string> = {
   [ChainflipNetworks.backspin]: 'https://backspin-rpc.staging',
   [ChainflipNetworks.sisyphos]: 'https://archive.sisyphos.chainflip.io',
-  [ChainflipNetworks.perseverance]: 'https://perseverance.chainflip.xyz',
+  [ChainflipNetworks.perseverance]: 'https://archive.perseverance.chainflip.io',
   [ChainflipNetworks.mainnet]: 'https://mainnet-rpc.chainflip.io',
 };
 
