@@ -320,9 +320,9 @@ describe('server', () => {
 
       const quoteHandler = jest.fn(async (req) => ({
         id: req.id,
-        egress_amount: (0.5e18).toString(),
+        output_amount: (0.5e18).toString(),
       }));
-      client.setQuoteRequestHandler(quoteHandler);
+      quotingClient.setQuoteRequestHandler(quoteHandler);
 
       const { body, status } = await request(server).get(
         `/quote?${params.toString()}`,
