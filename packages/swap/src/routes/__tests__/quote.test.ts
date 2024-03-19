@@ -312,7 +312,9 @@ describe('server', () => {
         });
 
       const params = new URLSearchParams({
+        srcChain: 'Ethereum',
         srcAsset: 'USDC',
+        destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: (100e6).toString(),
         boostFeeBps: '10',
