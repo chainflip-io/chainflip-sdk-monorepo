@@ -1,13 +1,13 @@
 #!/usr/bin/env node --import=tsx --trace-uncaught --no-warnings
-
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-console */
 import { exec } from 'child_process';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import * as prettier from 'prettier';
 import { createInterface } from 'readline';
 import * as url from 'url';
 import * as util from 'util';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import yargs from 'yargs/yargs';
 
 const execAsync = util.promisify(exec);
@@ -138,7 +138,7 @@ const updateReleases = async () => {
     await fs.writeFile(
       path.join(scripts, 'releases.json'),
       // @ts-expect-error -- it works
-      JSON.stringify([...versions], null, 2),
+      await prettier.format(JSON.stringify([...versions])),
     );
   }
 };
