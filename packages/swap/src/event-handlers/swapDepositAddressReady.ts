@@ -8,7 +8,6 @@ import { EventHandlerArgs } from './index';
 const swapDepositAddressReadyArgs = z.object({
   depositAddress: encodedAddress,
   destinationAddress: encodedAddress,
-  expiryBlock: z.number().int().positive().safe().optional(), // TODO(mainnet): remove this
   sourceAsset: internalAssetEnum,
   destinationAsset: internalAssetEnum,
   channelId: u64,
@@ -16,6 +15,7 @@ const swapDepositAddressReadyArgs = z.object({
   sourceChainExpiryBlock: u128.optional(),
   channelMetadata: ccmMetadataSchema.optional(),
   boostFee: z.number().int().optional(),
+  channelOpeningFee: u128.optional().default(0),
 });
 
 export type SwapDepositAddressReadyEvent = z.input<
@@ -39,6 +39,7 @@ export const swapDepositAddressReady = async ({
     channelMetadata,
     brokerCommissionRate,
     boostFee,
+    channelOpeningFee,
     ...rest
   } = swapDepositAddressReadyArgs.parse(event.args);
 
@@ -47,6 +48,7 @@ export const swapDepositAddressReady = async ({
       chain: depositAddress.chain,
     },
   });
+
   const estimatedExpiryTime = calculateExpiryTime({
     chainInfo,
     expiryBlock: sourceChainExpiryBlock,
@@ -63,6 +65,7 @@ export const swapDepositAddressReady = async ({
     boostFeeBps: boostFee,
     issuedBlock,
     channelId,
+    openingFeePaid: channelOpeningFee.toString(),
     ...rest,
   };
 

@@ -36,6 +36,7 @@ describe('depositReceived', () => {
         destAsset: 'Eth',
         channelId: 3,
         issuedBlock: 0,
+        openingFeePaid: 0,
         swaps: {
           create: {
             swapInputAmount: '100000',
@@ -100,6 +101,7 @@ describe('depositReceived', () => {
         destAsset: 'Eth',
         channelId: 3,
         issuedBlock: 0,
+        openingFeePaid: 0,
       },
     });
 
@@ -141,6 +143,7 @@ describe('depositReceived', () => {
         destAsset: 'Eth',
         channelId: 3,
         issuedBlock: 0,
+        openingFeePaid: 0,
         swaps: {
           create: {
             swapInputAmount: '100000',

@@ -32,6 +32,7 @@ export const createDepositChannel = (
       expectedDepositAmount: '10000000000',
       issuedBlock: 100,
       estimatedExpiryAt: new Date('2023-11-09T11:05:00.000Z'),
+      openingFeePaid: 0,
       ...data,
       createdAt: new Date(1690556052834),
     },

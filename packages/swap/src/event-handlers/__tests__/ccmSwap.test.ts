@@ -41,6 +41,7 @@ const swapDepositAddressReadyEvent = {
       __kind: 'Eth',
     },
     sourceChainExpiryBlock: '0x100',
+    channelOpeningFee: '1000',
   },
 } as const;
 
@@ -288,6 +289,7 @@ describe('batch swap flow', () => {
         srcChainExpiryBlock: Number(
           swapDepositAddressReadyEvent.args.sourceChainExpiryBlock,
         ),
+        openingFeePaid: swapDepositAddressReadyEvent.args.channelOpeningFee,
       },
     });
 

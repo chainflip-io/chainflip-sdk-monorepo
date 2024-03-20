@@ -71,6 +71,7 @@ model SwapDepositChannel {
   failedSwaps           FailedSwap[]
   estimatedExpiryAt     DateTime?
   openedThroughBackend  Boolean       @default(false)
+  openingFeePaid        Decimal       @db.Decimal(30, 0)
 
   @@unique([issuedBlock, srcChain, channelId])
   @@index([depositAddress])
