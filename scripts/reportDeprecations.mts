@@ -6,12 +6,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { createInterface } from 'readline';
 import * as url from 'url';
-import { ls, enumerate, execAsync } from './utils.mjs';
+import { ls, enumerate } from './utils.mjs';
 
 // @ts-expect-error -- .mts file
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..');
-const majorMinorRegex = /\d+\.\d+/;
+const majorMinorRegex = /^\d+\.\d+$/;
 
 const isReleaseLte = (version: string, target: string) => {
   const [majorA, minorA] = version.split('.').map(Number);
@@ -22,17 +22,9 @@ const isReleaseLte = (version: string, target: string) => {
 
 const checkDeprecations = async () => {
   // get the N-2 release
-  const removableDeprecationVersion = [
-    // @ts-expect-error -- some ts flag is missing
-    ...new Set(
-      (
-        await execAsync("git log --pretty=%B | grep 'chore(sdk): release'")
-      ).stdout
-        .trim()
-        .split('\n')
-        .map((msg) => /v(\d+\.\d+)/.exec(msg)[1]),
-    ),
-  ][2];
+  const removableDeprecationVersion = JSON.parse(
+    await fs.promises.readFile(path.join(__dirname, 'releases.json'), 'utf8'),
+  )[2];
 
   assert(majorMinorRegex.test(removableDeprecationVersion));
 

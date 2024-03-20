@@ -15,7 +15,7 @@ const execAsync = util.promisify(exec);
 // @ts-expect-error -- .mts file
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
-const root = path.join(__dirname, '../');
+const root = path.join(__dirname, '..');
 
 const args = yargs(process.argv)
   .option('new-version', {
@@ -56,20 +56,20 @@ if (!onMain) {
   process.exit(1);
 }
 
-// const workingDirectoryDirty =
-//   // @ts-expect-error -- .mts file
-//   (await execAsync('git status --porcelain=v2')).stdout
-//     .trim()
-//     .split('\n')
-//     .filter(Boolean)
-//     .filter((line) => !line.startsWith('?')).length !== 0;
+const workingDirectoryDirty =
+  // @ts-expect-error -- .mts file
+  (await execAsync('git status --porcelain=v2')).stdout
+    .trim()
+    .split('\n')
+    .filter(Boolean)
+    .filter((line) => !line.startsWith('?')).length !== 0;
 
-// if (workingDirectoryDirty) {
-//   console.error(
-//     'working directory is dirty, please stash changes before proceeding',
-//   );
-//   process.exit(1);
-// }
+if (workingDirectoryDirty) {
+  console.error(
+    'working directory is dirty, please stash changes before proceeding',
+  );
+  process.exit(1);
+}
 
 try {
   // @ts-expect-error -- .mts file
@@ -124,7 +124,27 @@ const execCommand = async (cmd: string) => {
   }
 };
 
+const updateReleases = async () => {
+  const scripts = path.join(root, 'scripts');
+
+  const versions = new Set([
+    newVersion.split('.').slice(0, 2).join('.'),
+    ...JSON.parse(
+      await fs.readFile(path.join(scripts, 'releases.json'), 'utf8'),
+    ),
+  ] as string[]);
+
+  if (!isDryRun) {
+    await fs.writeFile(
+      path.join(scripts, 'releases.json'),
+      // @ts-expect-error -- it works
+      JSON.stringify([...versions], null, 2),
+    );
+  }
+};
+
 const openVersionPR = async () => {
+  await updateReleases();
   const message = `chore(${args.package}): release ${packageJSON.name}/v${newVersion}`;
   const newBranch = `chore/release-${newVersion}`;
   await execCommand(`git switch -c ${newBranch}`);
