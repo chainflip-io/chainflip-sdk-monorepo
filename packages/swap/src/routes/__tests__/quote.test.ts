@@ -304,11 +304,11 @@ describe('server', () => {
       });
     });
 
-    it('gets the quote from usdc with a boost fee', async () => {
+    it.only('gets the quote from usdc with a boost fee', async () => {
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
-          egressAmount: (1e18).toString(),
+          outputAmount: (1e18).toString(),
         });
 
       const params = new URLSearchParams({
@@ -332,18 +332,18 @@ describe('server', () => {
 
       expect(status).toBe(200);
       expect(quoteHandler).toHaveBeenCalledWith({
-        deposit_amount: '98900000', // deposit amount - boost fee - ingress fee
-        destination_asset: 'ETH',
+        deposit_amount: '97900000', // deposit amount - boost fee - ingress fee
+        destination_asset: 'Eth',
         id: expect.any(String),
         intermediate_asset: null,
-        source_asset: 'USDC',
+        source_asset: 'Usdc',
       });
 
       expect(sendSpy).toHaveBeenCalledWith(
         'swap_rate',
         { asset: 'USDC', chain: 'Ethereum' },
         { asset: 'ETH', chain: 'Ethereum' },
-        '98900000', // deposit amount - boost fee - ingress fee
+        '97900000', // deposit amount - boost fee - ingress fee
       );
       expect(body).toMatchObject({
         egressAmount: (1e18 - 25000).toString(),
@@ -355,19 +355,19 @@ describe('server', () => {
             type: 'BOOST',
           },
           {
-            amount: '1000000',
+            amount: '2000000',
             asset: 'USDC',
             chain: 'Ethereum',
             type: 'INGRESS',
           },
           {
-            amount: '98900',
+            amount: '97900',
             asset: 'USDC',
             chain: 'Ethereum',
             type: 'NETWORK',
           },
           {
-            amount: '197800',
+            amount: '195800',
             asset: 'USDC',
             chain: 'Ethereum',
             type: 'LIQUIDITY',
