@@ -222,7 +222,8 @@ const quote = (io: Server) => {
 
         logger.error('error while collecting quotes:', err);
 
-        res.status(500).json({ error: message });
+        // DEPRECATED(1.3): remove `error`
+        res.status(500).json({ message, error: message });
       }
     }),
   );

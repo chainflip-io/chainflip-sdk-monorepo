@@ -15,6 +15,7 @@
     "prettier:write": "prettier ./** --write",
     "eslint:check": "pnpm -r lint",
     "eslint:fix": "eslint . --fix --ignore-path .gitignore",
+    "deprecations:report": "tsx ./scripts/reportDeprecations.mts",
     "syncpack:list": "pnpm syncpack list-mismatches",
     "syncpack:fix": "pnpm syncpack fix-mismatches",
     "typecheck": "pnpm -r typecheck",
