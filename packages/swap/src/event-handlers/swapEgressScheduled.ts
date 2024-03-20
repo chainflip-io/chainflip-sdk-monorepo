@@ -92,7 +92,7 @@ const getEgressFeeAtBlock = async (
     assetConstants[asset],
   );
 
-  return getCachedAssetAmountAtBlock(asset, nativeFee, blockHash);
+  return getCachedAssetAmountAtBlock(asset, nativeFee ?? 0n, blockHash);
 };
 
 /**

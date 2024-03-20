@@ -44,7 +44,7 @@ export const getWitnessSafetyMargin = async (
 
 export const getIngressFee = async (
   asset: UncheckedAssetAndChain,
-): Promise<bigint> => {
+): Promise<bigint | null> => {
   const environment = await cachedGetEnvironment(rpcConfig);
 
   return readChainAssetValue(environment.ingressEgress.ingressFees, asset);
@@ -52,7 +52,7 @@ export const getIngressFee = async (
 
 export const getEgressFee = async (
   asset: UncheckedAssetAndChain,
-): Promise<bigint> => {
+): Promise<bigint | null> => {
   const environment = await cachedGetEnvironment(rpcConfig);
 
   return readChainAssetValue(environment.ingressEgress.egressFees, asset);

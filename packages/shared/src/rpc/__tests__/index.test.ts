@@ -85,7 +85,7 @@ describe('getIngressEgressEnvironment', () => {
           ETH: 0x4563918244f40000n,
           USDC: 0x4563918244f40000n,
           FLIP: 0x4563918244f40000n,
-          USDT: 0n,
+          USDT: null,
         },
         Polkadot: { DOT: 0x4563918244f40000n },
       },
@@ -97,7 +97,7 @@ describe('getIngressEgressEnvironment', () => {
           ETH: 0n,
           FLIP: 0n,
           USDC: 0n,
-          USDT: 0n,
+          USDT: null,
         },
         Polkadot: {
           DOT: 0n,

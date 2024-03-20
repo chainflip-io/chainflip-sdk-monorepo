@@ -78,8 +78,8 @@ export const ingressEgressEnvironment = ({
   channelOpeningFee,
 }: {
   minDepositAmount?: string;
-  ingressFee?: string;
-  egressFee?: string;
+  ingressFee?: string | null;
+  egressFee?: string | null;
   minEgressAmount?: string;
   channelOpeningFee?: string;
 } = {}) => ({
@@ -136,8 +136,8 @@ export const environment = ({
 }: {
   maxSwapAmount?: string | null;
   minDepositAmount?: string;
-  ingressFee?: string;
-  egressFee?: string;
+  ingressFee?: string | null;
+  egressFee?: string | null;
   minEgressAmount?: string;
 } = {}) => ({
   id: 1,

@@ -146,8 +146,8 @@ const rename =
 const ingressEgressEnvironment = z
   .object({
     minimum_deposit_amounts: chainAssetMapFactory(numberOrHex, 0),
-    ingress_fees: chainAssetMapFactory(numberOrHex, 0),
-    egress_fees: chainAssetMapFactory(numberOrHex, 0),
+    ingress_fees: chainAssetMapFactory(numberOrHex.nullable(), null),
+    egress_fees: chainAssetMapFactory(numberOrHex.nullable(), null),
     witness_safety_margins: chainNumberNullableMap,
     egress_dust_limits: chainAssetMapFactory(numberOrHex, 1),
     // TODO(1.3): remove optional and default value
