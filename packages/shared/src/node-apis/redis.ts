@@ -48,7 +48,7 @@ const mempoolTransaction = jsonString.pipe(
   z.object({
     confirmations: number,
     value: u128,
-    tx_hash: string.transform((value) => `0x${value}` as const),
+    tx_hash: string,
   }),
 );
 

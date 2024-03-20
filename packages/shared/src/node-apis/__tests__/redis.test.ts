@@ -67,7 +67,7 @@ describe(RedisClient, () => {
       expect(broadcast).toEqual({
         confirmations: 4,
         value: 314000000n,
-        tx_hash: '0x1234',
+        tx_hash: '1234',
       });
       expect(mock).toHaveBeenCalledWith(
         'mempool:Bitcoin:tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
