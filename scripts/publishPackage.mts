@@ -138,7 +138,7 @@ const updateReleases = async () => {
     await fs.writeFile(
       path.join(scripts, 'releases.json'),
       // @ts-expect-error -- it works
-      await prettier.format(JSON.stringify([...versions])),
+      await prettier.format(JSON.stringify([...versions]), { parser: 'json' }),
     );
   }
 };
