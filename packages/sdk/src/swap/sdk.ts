@@ -233,7 +233,7 @@ export class SwapSDK {
     return { minimumSwapAmounts: minimumDepositAmounts, maximumSwapAmounts };
   }
 
-  async getRequiredBlockConfirmations(): Promise<ChainMap<number | undefined>> {
+  async getRequiredBlockConfirmations(): Promise<ChainMap<number | null>> {
     const {
       ingressEgress: { witnessSafetyMargins },
     } = await this.getStateChainEnvironment();
@@ -242,10 +242,10 @@ export class SwapSDK {
       (acc, chain) => {
         acc[chain as Chain] = witnessSafetyMargins[chain as Chain]
           ? Number(witnessSafetyMargins[chain as Chain]) + 1
-          : undefined;
+          : null;
         return acc;
       },
-      {} as ChainMap<number | undefined>,
+      {} as ChainMap<number | null>,
     );
   }
 

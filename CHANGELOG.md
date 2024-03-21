@@ -26,6 +26,11 @@ which it is deprecated.
   opening fee for each chain. It returns a map of each supported
   `ChainflipChain` to a `bigint` which is the fee in Flipperino to open a swap
   deposit channel.
+- `SwapSDK.prototype.getRequiredBlockConfirmations` has been added. It returns
+  `ChainMap<number | null>` which signifies the number of confirmations the
+  protocol requires before recognizing a transaction as confirmed. For networks
+  like Polkadot, there is deterministic finality, and therefore, no confirmation
+  count is required.
 
 ### Fixed
 
