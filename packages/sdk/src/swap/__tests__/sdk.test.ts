@@ -509,7 +509,7 @@ describe(SwapSDK, () => {
       ).toStrictEqual(2);
       expect(
         (await sdk.getRequiredBlockConfirmations()).Polkadot,
-      ).toStrictEqual(undefined);
+      ).toStrictEqual(null);
       expect((await sdk.getRequiredBlockConfirmations()).Bitcoin).toStrictEqual(
         3,
       );
