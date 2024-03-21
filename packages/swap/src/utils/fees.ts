@@ -7,7 +7,7 @@ import {
   chainConstants,
 } from '@/shared/enums';
 import {
-  calculateHundredthPipAmountFromAmount,
+  getHundredthPipAmountFromAmount,
   ONE_IN_HUNDREDTH_PIPS,
 } from '@/shared/functions';
 import { getSwapRate } from '@/shared/rpc';
@@ -31,7 +31,7 @@ export const calculateIncludedSwapFees = async (
         type: 'NETWORK',
         chain: assetConstants[InternalAssets.Usdc].chain,
         asset: assetConstants[InternalAssets.Usdc].asset,
-        amount: calculateHundredthPipAmountFromAmount(
+        amount: getHundredthPipAmountFromAmount(
           swapInputAmount,
           networkFeeHundredthPips,
         ).toString(),
@@ -46,7 +46,7 @@ export const calculateIncludedSwapFees = async (
         type: 'NETWORK',
         chain: assetConstants[InternalAssets.Usdc].chain,
         asset: assetConstants[InternalAssets.Usdc].asset,
-        amount: calculateHundredthPipAmountFromAmount(
+        amount: getHundredthPipAmountFromAmount(
           swapInputAmount,
           networkFeeHundredthPips,
         ).toString(),
@@ -55,7 +55,7 @@ export const calculateIncludedSwapFees = async (
         type: 'LIQUIDITY',
         chain: assetConstants[srcAsset].chain,
         asset: assetConstants[srcAsset].asset,
-        amount: calculateHundredthPipAmountFromAmount(
+        amount: getHundredthPipAmountFromAmount(
           swapInputAmount,
           pools[0].liquidityFeeHundredthPips,
         ).toString(),
@@ -73,7 +73,7 @@ export const calculateIncludedSwapFees = async (
         type: 'NETWORK',
         chain: assetConstants[InternalAssets.Usdc].chain,
         asset: assetConstants[InternalAssets.Usdc].asset,
-        amount: calculateHundredthPipAmountFromAmount(
+        amount: getHundredthPipAmountFromAmount(
           String(stableAmountBeforeNetworkFee),
           networkFeeHundredthPips,
         ).toString(),
@@ -82,7 +82,7 @@ export const calculateIncludedSwapFees = async (
         type: 'LIQUIDITY',
         chain: assetConstants[srcAsset].chain,
         asset: assetConstants[srcAsset].asset,
-        amount: calculateHundredthPipAmountFromAmount(
+        amount: getHundredthPipAmountFromAmount(
           swapInputAmount,
           pools[0].liquidityFeeHundredthPips,
         ).toString(),
@@ -97,7 +97,7 @@ export const calculateIncludedSwapFees = async (
       type: 'NETWORK',
       chain: assetConstants[InternalAssets.Usdc].chain,
       asset: assetConstants[InternalAssets.Usdc].asset,
-      amount: calculateHundredthPipAmountFromAmount(
+      amount: getHundredthPipAmountFromAmount(
         intermediateAmount,
         networkFeeHundredthPips,
       ).toString(),
@@ -106,7 +106,7 @@ export const calculateIncludedSwapFees = async (
       type: 'LIQUIDITY',
       chain: assetConstants[srcAsset].chain,
       asset: assetConstants[srcAsset].asset,
-      amount: calculateHundredthPipAmountFromAmount(
+      amount: getHundredthPipAmountFromAmount(
         swapInputAmount,
         pools[0].liquidityFeeHundredthPips,
       ).toString(),
@@ -115,7 +115,7 @@ export const calculateIncludedSwapFees = async (
       type: 'LIQUIDITY',
       chain: assetConstants[InternalAssets.Usdc].chain,
       asset: assetConstants[InternalAssets.Usdc].asset,
-      amount: calculateHundredthPipAmountFromAmount(
+      amount: getHundredthPipAmountFromAmount(
         intermediateAmount,
         pools[1].liquidityFeeHundredthPips,
       ).toString(),

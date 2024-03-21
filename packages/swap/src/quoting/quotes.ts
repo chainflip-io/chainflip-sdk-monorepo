@@ -4,7 +4,7 @@ import { filter, Observable, Subscription } from 'rxjs';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
 import { getInternalAsset, InternalAssets } from '@/shared/enums';
 import {
-  calculateHundredthPipAmountFromAmount,
+  getHundredthPipAmountFromAmount,
   ONE_IN_HUNDREDTH_PIPS,
 } from '@/shared/functions';
 import { ParsedQuoteParams, InternalQuoteRequest } from '@/shared/schemas';
@@ -58,14 +58,14 @@ export const subtractFeesFromMakerQuote = (
   if ('intermediateAmount' in quote) {
     assert(quotePools.length === 2, 'wrong number of pools given');
 
-    const intermediateAmount = calculateHundredthPipAmountFromAmount(
+    const intermediateAmount = getHundredthPipAmountFromAmount(
       quote.intermediateAmount,
       ONE_IN_HUNDREDTH_PIPS -
         networkFeeHundredthPips -
         quotePools[0].liquidityFeeHundredthPips,
     ).toString();
 
-    const outputAmount = calculateHundredthPipAmountFromAmount(
+    const outputAmount = getHundredthPipAmountFromAmount(
       quote.outputAmount,
       ONE_IN_HUNDREDTH_PIPS -
         networkFeeHundredthPips -
@@ -83,7 +83,7 @@ export const subtractFeesFromMakerQuote = (
 
   assert(quotePools.length === 1, 'wrong number of pools given');
 
-  const outputAmount = calculateHundredthPipAmountFromAmount(
+  const outputAmount = getHundredthPipAmountFromAmount(
     quote.outputAmount,
     ONE_IN_HUNDREDTH_PIPS -
       networkFeeHundredthPips -
