@@ -60,6 +60,12 @@ type ChainAssetMap<T> = {
 }
 ```
 
+### Changed
+
+- `SwapSDK.prototype.getRequiredBlockConfirmations` now has a return type of
+  `ChainMap<number | null>` instead of `ChainMap<number | undefined>` to be more
+  consistent with existing return types.
+
 ### Fixed
 
 - `getQuote` can respond with a 500 status code and a JSON response body with an
