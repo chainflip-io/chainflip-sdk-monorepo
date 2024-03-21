@@ -154,5 +154,5 @@ export const assertValidAddress = (
 ) =>
   assert(
     validators[network][chain](address),
-    `Address "${address}" is not a valid ${chain}" address`,
+    `Address "${address}" is not a valid "${chain}" address for "${network}"`,
   );

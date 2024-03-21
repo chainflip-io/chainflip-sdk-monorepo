@@ -283,11 +283,146 @@ describe(executeSwap, () => {
     expect(swapSpy.mock.calls).toMatchSnapshot();
   });
 
-  // TODO: test invalid address
-  // TODO: test invalid src chain
-  // TODO: test invalid dest chain for call
-  // TODO: test invalid asset/chain combinations
-  // TODO: test signer connected to wrong chain
+  it('rejects if source asset and chain are not valid', async () => {
+    await expect(
+      executeSwap(
+        {
+          amount: '1',
+          destAsset: Assets.BTC,
+          destChain: Chains.Bitcoin,
+          destAddress: TESTNET_BTC_ADDRESS,
+          srcAsset: Assets.BTC,
+          srcChain: Chains.Ethereum,
+        },
+        {
+          network: ChainflipNetworks.sisyphos,
+          signer: new VoidSigner('MY ADDRESS').connect({
+            getNetwork: () => Promise.resolve({ chainId: 11155111n }),
+          } as any),
+        },
+        { nonce: 1 },
+      ),
+    ).rejects.toThrow(
+      'invalid asset and chain combination: {"chain":"Ethereum","asset":"BTC"}',
+    );
+  });
+
+  it('rejects if destination asset and chain are not valid', async () => {
+    await expect(
+      executeSwap(
+        {
+          amount: '1',
+          destAsset: Assets.DOT,
+          destChain: Chains.Bitcoin,
+          destAddress: TESTNET_BTC_ADDRESS,
+          srcAsset: Assets.ETH,
+          srcChain: Chains.Ethereum,
+        },
+        {
+          network: ChainflipNetworks.sisyphos,
+          signer: new VoidSigner('MY ADDRESS').connect({
+            getNetwork: () => Promise.resolve({ chainId: 11155111n }),
+          } as any),
+        },
+        { nonce: 1 },
+      ),
+    ).rejects.toThrow(
+      'invalid asset and chain combination: {"chain":"Bitcoin","asset":"DOT"}',
+    );
+  });
+
+  it('rejects an invalid destination address', async () => {
+    await expect(
+      executeSwap(
+        {
+          amount: '1',
+          destAsset: Assets.BTC,
+          destChain: Chains.Bitcoin,
+          destAddress: 'invalid-btc-address',
+          srcAsset: Assets.ETH,
+          srcChain: Chains.Ethereum,
+        },
+        {
+          network: ChainflipNetworks.sisyphos,
+          signer: new VoidSigner('MY ADDRESS').connect({
+            getNetwork: () => Promise.resolve({ chainId: 11155111n }),
+          } as any),
+        },
+        { nonce: 1 },
+      ),
+    ).rejects.toThrow(
+      'Address "invalid-btc-address" is not a valid "Bitcoin" address',
+    );
+  });
+
+  it('rejects if the source chain is not an evm chain', async () => {
+    await expect(
+      executeSwap(
+        {
+          amount: '1',
+          destAsset: Assets.BTC,
+          destChain: Chains.Bitcoin,
+          destAddress: TESTNET_BTC_ADDRESS,
+          srcAsset: Assets.DOT,
+          srcChain: Chains.Polkadot,
+        },
+        {
+          network: ChainflipNetworks.sisyphos,
+          signer: new VoidSigner('MY ADDRESS').connect({
+            getNetwork: () => Promise.resolve({ chainId: 11155111n }),
+          } as any),
+        },
+        { nonce: 1 },
+      ),
+    ).rejects.toThrow('Chain Polkadot is not an evm chain');
+  });
+
+  it('rejects if the signer is connected to the wrong evm chain', async () => {
+    await expect(
+      executeSwap(
+        {
+          amount: '1',
+          destAsset: Assets.BTC,
+          destChain: Chains.Bitcoin,
+          destAddress: TESTNET_BTC_ADDRESS,
+          srcAsset: Assets.ETH,
+          srcChain: Chains.Ethereum,
+        },
+        {
+          network: ChainflipNetworks.sisyphos,
+          signer: new VoidSigner('MY ADDRESS').connect({
+            getNetwork: () => Promise.resolve({ chainId: 404n }),
+          } as any),
+        },
+        { nonce: 1 },
+      ),
+    ).rejects.toThrow(
+      'Signer is connected to unexpected evm chain (expected: 11155111, got: 404)',
+    );
+  });
+
+  it('rejects if the destination chain is not an evm chain for a call', async () => {
+    await expect(
+      executeSwap(
+        {
+          amount: '1',
+          destAsset: Assets.BTC,
+          destChain: Chains.Bitcoin,
+          destAddress: TESTNET_BTC_ADDRESS,
+          srcAsset: Assets.ETH,
+          srcChain: Chains.Ethereum,
+          ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+        },
+        {
+          network: ChainflipNetworks.sisyphos,
+          signer: new VoidSigner('MY ADDRESS').connect({
+            getNetwork: () => Promise.resolve({ chainId: 11155111n }),
+          } as any),
+        },
+        { nonce: 1 },
+      ),
+    ).rejects.toThrow('Chain Bitcoin is not an evm chain');
+  });
 
   it.each([
     {

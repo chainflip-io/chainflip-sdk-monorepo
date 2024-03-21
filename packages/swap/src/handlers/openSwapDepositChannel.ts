@@ -17,7 +17,7 @@ export default async function openSwapDepositChannel(
     !validateAddress(input.destChain, input.destAddress, env.CHAINFLIP_NETWORK)
   ) {
     throw ServiceError.badRequest(
-      `Address "${input.destAddress}" is not a valid ${input.destChain} address`,
+      `Address "${input.destAddress}" is not a valid "${input.destChain}" address`,
     );
   }
 

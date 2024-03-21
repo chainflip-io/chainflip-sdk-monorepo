@@ -50,7 +50,7 @@ export const btcAddress = (network: ChainflipNetwork | 'localnet') => {
     return string
       .regex(/^(1|3|bc1)/)
       .refine(validateBitcoinMainnetAddress, (address) => ({
-        message: `${address} is not a valid bitcoin address`,
+        message: `"${address}" is not a valid Bitcoin mainnet address`,
       }));
   }
 
@@ -58,10 +58,10 @@ export const btcAddress = (network: ChainflipNetwork | 'localnet') => {
     string
       .regex(/^(m|n|2|tb1)/)
       .refine(validateBitcoinTestnetAddress, (address) => ({
-        message: `${address} is not a valid bitcoin address`,
+        message: `"${address}" is not a valid Bitcoin testnet address`,
       })),
     string.regex(/^bcrt1/).refine(validateBitcoinRegtestAddress, (address) => ({
-      message: `${address} is not a valid bitcoin address`,
+      message: `"${address}" is not a valid Bitcoin regtest address`,
     })),
   ]);
 };

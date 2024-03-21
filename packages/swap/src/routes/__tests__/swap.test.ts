@@ -1371,7 +1371,7 @@ describe('server', () => {
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
-        message: `Address "${requestBody.destAddress}" is not a valid ${requestBody.destChain} address`,
+        message: `Address "${requestBody.destAddress}" is not a valid "${requestBody.destChain}" address`,
       });
     });
 

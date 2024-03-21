@@ -52,7 +52,9 @@ export default async function cliFundStateChainAccount(
       ? args.ethNetwork
       : getEvmChainId('Ethereum', args.chainflipNetwork);
 
-  const wallet = new Wallet(privateKey).connect(getDefaultProvider(ethNetwork));
+  const wallet = new Wallet(privateKey).connect(
+    getDefaultProvider(ethNetwork, { etherscan: '-' }), // disable etherscan provider because it is unreliable
+  );
 
   const networkOpts: FundingNetworkOptions =
     args.chainflipNetwork === 'localnet'
