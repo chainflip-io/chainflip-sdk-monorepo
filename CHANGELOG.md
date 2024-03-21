@@ -40,6 +40,25 @@ which it is deprecated.
   protocol requires before recognizing a transaction as confirmed. For networks
   like Polkadot, there is deterministic finality, and therefore, no confirmation
   count is required.
+- `USDT` has been added to our `ChainAssetMap` data structure under the
+  `Ethereum` key:
+
+```diff
+type ChainAssetMap<T> = {
+    Bitcoin: {
+        BTC: T;
+    };
+    Ethereum: {
+        ETH: T;
+        USDC: T;
+        FLIP: T;
++       USDT: T;
+    };
+    Polkadot: {
+        DOT: T;
+    };
+}
+```
 
 ### Fixed
 
