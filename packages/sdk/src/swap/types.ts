@@ -34,16 +34,16 @@ interface ChainsAndAssets {
 
 export interface QuoteRequest extends ChainsAndAssets {
   amount: string;
+  boostFeeBps?: number;
 }
 
-export interface QuoteResponse extends QuoteRequest {
+export interface QuoteResponse extends Omit<QuoteRequest, 'boostFeeBps'> {
   quote: QuoteQueryResponse;
 }
 
 export interface DepositAddressRequest extends QuoteRequest {
   destAddress: string;
   ccmMetadata?: CcmMetadata;
-  boostFeeBps?: number; // TODO: move to `QuoteRequest` once suported inside `getQuote` method
 }
 
 export interface DepositAddressResponse extends DepositAddressRequest {

@@ -1,7 +1,7 @@
 import express from 'express';
 import type { Server } from 'socket.io';
 import { Asset, Assets, Chain, Chains, getInternalAsset } from '@/shared/enums';
-import { bigintMin } from '@/shared/functions';
+import { bigintMin, getPipAmountFromAmount } from '@/shared/functions';
 import { quoteQuerySchema, SwapFee } from '@/shared/schemas';
 import {
   calculateIncludedSwapFees,
@@ -84,6 +84,23 @@ const quote = (io: Server) => {
       }
 
       const includedFees: SwapFee[] = [];
+
+      let swapInputAmount = BigInt(query.amount);
+
+      if (query.boostFeeBps) {
+        const boostFee = getPipAmountFromAmount(
+          swapInputAmount,
+          query.boostFeeBps,
+        );
+        includedFees.push({
+          type: 'BOOST',
+          chain: srcChainAsset.chain,
+          asset: srcChainAsset.asset,
+          amount: boostFee.toString(),
+        });
+        swapInputAmount -= boostFee;
+      }
+
       let ingressFee = await getIngressFee(srcChainAsset);
       if (ingressFee == null) {
         throw ServiceError.internalError(
@@ -102,8 +119,7 @@ const quote = (io: Server) => {
         asset: srcChainAsset.asset,
         amount: ingressFee.toString(),
       });
-
-      let swapInputAmount = BigInt(query.amount) - ingressFee;
+      swapInputAmount -= ingressFee;
       if (swapInputAmount <= 0n) {
         throw ServiceError.badRequest(
           `amount is lower than estimated ingress fee (${ingressFee})`,
@@ -111,8 +127,10 @@ const quote = (io: Server) => {
       }
 
       if (query.brokerCommissionBps) {
-        const brokerFee =
-          (swapInputAmount * BigInt(query.brokerCommissionBps)) / 10000n;
+        const brokerFee = getPipAmountFromAmount(
+          swapInputAmount,
+          query.brokerCommissionBps,
+        );
         includedFees.push({
           type: 'BROKER',
           chain: srcChainAsset.chain,

@@ -99,8 +99,8 @@ describe('ApiService', () => {
   );
 
   describe(ApiService.getQuote, () => {
-    it('gets a quote', async () => {
-      const mockedGet = jest.mocked(axios.get);
+    const mockedGet = jest.mocked(axios.get);
+    beforeEach(() => {
       mockedGet.mockResolvedValueOnce({
         data: {
           id: 'string',
@@ -108,16 +108,12 @@ describe('ApiService', () => {
           egressAmount: '2',
         },
       });
+    });
 
+    it('gets a quote', async () => {
       const route = await ApiService.getQuote(
         'https://swapperoo.org',
-        {
-          amount: '10000',
-          srcChain: Chains.Bitcoin,
-          srcAsset: Assets.BTC,
-          destChain: Chains.Ethereum,
-          destAsset: Assets.ETH,
-        },
+        mockRoute,
         {},
       );
 
@@ -126,23 +122,10 @@ describe('ApiService', () => {
     });
 
     it('gets a quote with a broker commission', async () => {
-      const mockedGet = jest.mocked(axios.get);
-      mockedGet.mockResolvedValueOnce({
-        data: {
-          id: 'string',
-          intermediateAmount: '1',
-          egressAmount: '2',
-        },
-      });
-
       const route = await ApiService.getQuote(
         'https://swapperoo.org',
         {
-          amount: '10000',
-          srcChain: Chains.Bitcoin,
-          srcAsset: Assets.BTC,
-          destChain: Chains.Ethereum,
-          destAsset: Assets.ETH,
+          ...mockRoute,
           brokerCommissionBps: 15,
         },
         {},
@@ -152,16 +135,21 @@ describe('ApiService', () => {
       expect(mockedGet.mock.lastCall).toMatchSnapshot();
     });
 
-    it('passes the signal to axios', async () => {
-      const mockedGet = jest.mocked(axios.get);
-      mockedGet.mockResolvedValueOnce({
-        data: {
-          id: 'string',
-          intermediateAmount: '1',
-          egressAmount: '2',
+    it('gets a quote for a boostable swap', async () => {
+      const route = await ApiService.getQuote(
+        'https://swapperoo.org',
+        {
+          ...mockRoute,
+          boostFeeBps: 100,
         },
-      });
+        {},
+      );
 
+      expect(route).toMatchSnapshot();
+      expect(mockedGet.mock.lastCall).toMatchSnapshot();
+    });
+
+    it('passes the signal to axios', async () => {
       await ApiService.getQuote('https://swapperoo.org', mockRoute, {
         signal: new AbortController().signal,
       });

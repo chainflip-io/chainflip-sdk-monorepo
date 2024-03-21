@@ -13,3 +13,17 @@ export const bigintMin = (...args: bigint[]): bigint =>
 
 export const bigintMax = (...args: bigint[]): bigint =>
   args.reduce((max, current) => (current > max ? current : max));
+
+export const ONE_IN_PIP = 10000;
+export const ONE_IN_HUNDREDTH_PIPS = ONE_IN_PIP * 100;
+
+export const getPipAmountFromAmount = (
+  amount: bigint | string,
+  pips: number,
+  denominator: number = ONE_IN_PIP,
+) => (BigInt(amount) * BigInt(pips)) / BigInt(denominator);
+
+export const getHundredthPipAmountFromAmount = (
+  amount: bigint | string,
+  hundredthPips: number,
+) => getPipAmountFromAmount(amount, hundredthPips, ONE_IN_HUNDREDTH_PIPS);
