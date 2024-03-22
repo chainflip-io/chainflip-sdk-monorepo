@@ -331,6 +331,28 @@ describe(executeSwap, () => {
     );
   });
 
+  it('rejects if source asset and destination asset is the same', async () => {
+    await expect(
+      executeSwap(
+        {
+          amount: '1',
+          destAsset: Assets.ETH,
+          destChain: Chains.Ethereum,
+          destAddress: ETH_ADDRESS,
+          srcAsset: Assets.ETH,
+          srcChain: Chains.Ethereum,
+        },
+        {
+          network: ChainflipNetworks.sisyphos,
+          signer: new VoidSigner('MY ADDRESS').connect({
+            getNetwork: () => Promise.resolve({ chainId: 11155111n }),
+          } as any),
+        },
+        { nonce: 1 },
+      ),
+    ).rejects.toThrow('source asset and destination asset cannot be the same');
+  });
+
   it('rejects an invalid destination address', async () => {
     await expect(
       executeSwap(

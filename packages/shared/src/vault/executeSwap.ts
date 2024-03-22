@@ -36,6 +36,22 @@ const encodeAddress = (chain: Chain, address: string) => {
   throw new Error(`cannot encode address for chain ${chain}`);
 };
 
+export const assertIsValidSwap = (params: ExecuteSwapParams) => {
+  const internalSrcAsset = getInternalAsset({
+    chain: params.srcChain,
+    asset: params.srcAsset,
+  });
+  const internalDestAsset = getInternalAsset({
+    chain: params.destChain,
+    asset: params.destAsset,
+  });
+
+  assert(
+    internalSrcAsset !== internalDestAsset,
+    `source asset and destination asset cannot be the same`,
+  );
+};
+
 const getVaultContract = (chain: Chain, networkOpts: SwapNetworkOptions) => {
   const vaultContractAddress =
     networkOpts.network === 'localnet'
@@ -207,6 +223,7 @@ const executeSwap = async (
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionReceipt> => {
+  assertIsValidSwap(params);
   assertIsEvmChain(params.srcChain);
   assertValidAddress(params.destChain, params.destAddress, networkOpts.network);
   await assertSignerIsConnectedToChain(networkOpts, params.srcChain);
