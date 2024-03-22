@@ -27,7 +27,7 @@ export const getEvmChainId = (chain: Chain, network: ChainflipNetwork) => {
 const SEPOLIA_USDC_CONTRACT_ADDRESS =
   '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238';
 const SEPOLIA_USDT_CONTRACT_ADDRESS =
-  '0x7169D38820dfd117C3FA1f22a697dBA58d90BA06';
+  '0x27CEA6Eb8a21Aae05Eb29C91c5CA10592892F584';
 
 export const ADDRESSES = {
   [ChainflipNetworks.backspin]: {
