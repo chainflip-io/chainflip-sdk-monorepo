@@ -13,11 +13,42 @@ const requestValidators = {
     uncheckedAssetAndChain,
     hexStringFromNumber,
   ]),
+  cf_pool_price: z.tuple([uncheckedAssetAndChain, uncheckedAssetAndChain]),
+  cf_pool_orders: z.tuple([uncheckedAssetAndChain, uncheckedAssetAndChain]),
 };
+
+const limitOrder = z.object({
+  tick: z.number(),
+  sell_amount: z.string(),
+});
+
+const rangeOrder = z.object({
+  liquidity: z.number(),
+  range: z.object({ start: z.number(), end: z.number() }),
+});
 
 const responseValidators = {
   swap_rate: swapRateResponseSchema,
+  cf_pool_orders: z.object({
+    limit_orders: z.object({
+      asks: z.array(limitOrder),
+      bids: z.array(limitOrder),
+    }),
+    range_orders: z.array(rangeOrder),
+  }),
+  cf_pool_price: z.object({
+    tick: z.number(),
+    price: z.string(),
+    sqrt_price: z.string(),
+  }),
 };
+
+type RpcResponse<T extends keyof typeof responseValidators> = z.output<
+  (typeof responseValidators)[T]
+>;
+
+export type PoolPrice = RpcResponse<'cf_pool_price'>;
+export type PoolOrders = RpcResponse<'cf_pool_orders'>;
 
 const initializeClient = memoize(async () => {
   const rpcClient = await new RpcClient(
