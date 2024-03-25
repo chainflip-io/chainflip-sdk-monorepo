@@ -13,6 +13,45 @@ exports[`networkBroadcastSuccess updates an existing broadcast entity with the s
   "requestedBlockIndex": "119-1",
   "succeededAt": 2022-12-06T14:31:45.000Z,
   "succeededBlockIndex": "120-12",
+  "transactionRef": null,
+  "type": "BATCH",
+  "updatedAt": Any<Date>,
+}
+`;
+
+exports[`networkBroadcastSuccess updates an existing broadcast with the tx_ref for polkadot if it exists 1`] = `
+{
+  "abortedAt": null,
+  "abortedBlockIndex": null,
+  "chain": "Polkadot",
+  "createdAt": Any<Date>,
+  "id": Any<BigInt>,
+  "nativeId": 12n,
+  "replacedById": null,
+  "requestedAt": 2022-12-06T14:31:45.000Z,
+  "requestedBlockIndex": "119-1",
+  "succeededAt": 2022-12-06T14:31:45.000Z,
+  "succeededBlockIndex": "120-12",
+  "transactionRef": "100-21",
+  "type": "BATCH",
+  "updatedAt": Any<Date>,
+}
+`;
+
+exports[`networkBroadcastSuccess updates an existing broadcast with the tx_ref if it exists 1`] = `
+{
+  "abortedAt": null,
+  "abortedBlockIndex": null,
+  "chain": "Ethereum",
+  "createdAt": Any<Date>,
+  "id": Any<BigInt>,
+  "nativeId": 12n,
+  "replacedById": null,
+  "requestedAt": 2022-12-06T14:31:45.000Z,
+  "requestedBlockIndex": "119-1",
+  "succeededAt": 2022-12-06T14:31:45.000Z,
+  "succeededBlockIndex": "120-12",
+  "transactionRef": "0x1234",
   "type": "BATCH",
   "updatedAt": Any<Date>,
 }

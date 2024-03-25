@@ -221,6 +221,7 @@ model Broadcast {
   replacedBy          Broadcast?    @relation("replacedBy", fields: [replacedById], references: [id])
   replaces            Broadcast?    @relation("replacedBy")
   replacedById        BigInt?       @unique
+  transactionRef      String?       @unique
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @default(now()) @updatedAt
 

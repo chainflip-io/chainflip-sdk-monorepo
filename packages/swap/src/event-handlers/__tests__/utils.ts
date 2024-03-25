@@ -3,6 +3,7 @@ import { InternalAssets, Chain, Chains } from '@/shared/enums';
 import prisma, { SwapDepositChannel } from '../../client';
 import { DepositIgnoredArgs } from '../depositIgnored';
 import { events } from '../index';
+import { networkBroadcastSuccessArgs } from '../networkBroadcastSuccess';
 import { SwapAmountTooLowEvent } from '../swapAmountTooLow';
 import { SwapExecutedEvent } from '../swapExecuted';
 import { SwapScheduledEvent } from '../swapScheduled';
@@ -506,27 +507,31 @@ export const networkBatchBroadcastRequestedMock = {
   },
 } as const;
 
-export const networkBroadcastSuccessMock = {
-  block: {
-    specId: 'test@1',
-    height: 120,
-    timestamp: 1670337105000,
-  },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        broadcastId: 12,
-        transactionOutId: {
-          s: '0x689c4add3e14ea8243a1966fc2cea3baea692ca52fd7ef464e1cc74e608bf262',
-          kTimesGAddress: '0x972c9f07cc7a847b29003655faf265c12e193f09',
-        },
-      },
-      name: 'EthereumBroadcaster.BroadcastSuccess',
-      indexInBlock: 12,
+export const networkBroadcastSuccessMock = (
+  args?: Partial<z.input<typeof networkBroadcastSuccessArgs>>,
+) =>
+  ({
+    block: {
+      specId: 'test@1',
+      height: 120,
+      timestamp: 1670337105000,
     },
-  },
-} as const;
+    eventContext: {
+      kind: 'event',
+      event: {
+        args: {
+          broadcastId: 12,
+          transactionOutId: {
+            s: '0x689c4add3e14ea8243a1966fc2cea3baea692ca52fd7ef464e1cc74e608bf262',
+            kTimesGAddress: '0x972c9f07cc7a847b29003655faf265c12e193f09',
+          },
+          ...args,
+        },
+        name: 'EthereumBroadcaster.BroadcastSuccess',
+        indexInBlock: 12,
+      },
+    },
+  }) as const;
 
 export const networkBroadcastAbortedMock = {
   block: {
