@@ -14,7 +14,7 @@ describe(networkBroadcastSuccess, () => {
     await prisma.broadcast.create({
       data: {
         chain: 'Ethereum',
-        nativeId: event.args.broadcastId,
+        nativeId: event.args.broadcastId as number,
         requestedAt: new Date(block.timestamp),
         requestedBlockIndex: `${block.height - 1}-1`,
       },
@@ -29,7 +29,7 @@ describe(networkBroadcastSuccess, () => {
     );
 
     const broadcast = await prisma.broadcast.findFirstOrThrow({
-      where: { nativeId: event.args.broadcastId },
+      where: { nativeId: event.args.broadcastId as number },
     });
 
     expect(broadcast).toMatchSnapshot({
@@ -48,7 +48,7 @@ describe(networkBroadcastSuccess, () => {
     await prisma.broadcast.create({
       data: {
         chain: 'Ethereum',
-        nativeId: event.args.broadcastId,
+        nativeId: event.args.broadcastId as number,
         requestedAt: new Date(block.timestamp),
         requestedBlockIndex: `${block.height - 1}-1`,
       },
@@ -63,7 +63,7 @@ describe(networkBroadcastSuccess, () => {
     );
 
     const broadcast = await prisma.broadcast.findFirstOrThrow({
-      where: { nativeId: event.args.broadcastId },
+      where: { nativeId: event.args.broadcastId as number },
     });
 
     expect(broadcast).toMatchSnapshot({
@@ -86,7 +86,7 @@ describe(networkBroadcastSuccess, () => {
     await prisma.broadcast.create({
       data: {
         chain: 'Polkadot',
-        nativeId: event.args.broadcastId,
+        nativeId: event.args.broadcastId as number,
         requestedAt: new Date(block.timestamp),
         requestedBlockIndex: `${block.height - 1}-1`,
       },
@@ -101,7 +101,7 @@ describe(networkBroadcastSuccess, () => {
     );
 
     const broadcast = await prisma.broadcast.findFirstOrThrow({
-      where: { nativeId: event.args.broadcastId },
+      where: { nativeId: event.args.broadcastId as number },
     });
 
     expect(broadcast).toMatchSnapshot({
