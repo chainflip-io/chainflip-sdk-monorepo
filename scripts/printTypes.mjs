@@ -40,12 +40,6 @@ const printTypes = async (tsConfigPath, filePath, names) => {
 
 void printTypes(
   path.resolve(rootPath, 'packages/shared/tsconfig.json'),
-  path.resolve(rootPath, 'packages/shared/src/vault/schemas.ts'),
-  ['ExecuteSwapParams', 'ExecuteCallParams', 'ExecuteOptions'],
-);
-
-void printTypes(
-  path.resolve(rootPath, 'packages/shared/tsconfig.json'),
   path.resolve(rootPath, 'packages/shared/src/schemas.ts'),
   ['SwapRequestBody'],
 );

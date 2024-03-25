@@ -1,7 +1,12 @@
 import { Signer } from 'ethers';
 import { getEvmChainId } from './consts';
-import { Chain, ChainflipNetwork } from './enums';
+import { Chain, ChainflipNetwork, ChainflipNetworks } from './enums';
 import { assert } from './guards';
+
+export const assertIsEvmChain = (chain: Chain) => {
+  const evmChainId = getEvmChainId(chain, ChainflipNetworks.backspin);
+  assert(evmChainId, `Chain ${chain} is not an evm chain`);
+};
 
 export const assertSignerIsConnectedToChain = async (
   opts: { network: ChainflipNetwork | 'localnet'; signer: Signer },

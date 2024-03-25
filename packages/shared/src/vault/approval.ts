@@ -1,19 +1,18 @@
 import { ContractTransactionReceipt } from 'ethers';
-import { TokenSwapParams } from './schemas';
 import {
   checkAllowance,
   getTokenContractAddress,
-  getVaultManagerContractAddress,
+  getVaultContractAddress,
   approve,
   TransactionOptions,
 } from '../contracts';
 import { getInternalAsset } from '../enums';
+import { assertSignerIsConnectedToChain } from '../evm';
 import { assert } from '../guards';
-import { assertSignerIsConnectedToChain } from '../signer';
-import { SwapNetworkOptions } from './index';
+import { ExecuteSwapParams, SwapNetworkOptions } from './index';
 
 export const checkVaultAllowance = (
-  params: Pick<TokenSwapParams, 'srcChain' | 'srcAsset' | 'amount'>,
+  params: Pick<ExecuteSwapParams, 'srcChain' | 'srcAsset' | 'amount'>,
   networkOpts: SwapNetworkOptions,
 ): ReturnType<typeof checkAllowance> => {
   const erc20Address =
@@ -29,7 +28,7 @@ export const checkVaultAllowance = (
   const vaultContractAddress =
     networkOpts.network === 'localnet'
       ? networkOpts.vaultContractAddress
-      : getVaultManagerContractAddress(networkOpts.network);
+      : getVaultContractAddress(params.srcChain, networkOpts.network);
 
   return checkAllowance(
     BigInt(params.amount),
@@ -40,7 +39,7 @@ export const checkVaultAllowance = (
 };
 
 export const approveVault = async (
-  params: Pick<TokenSwapParams, 'srcChain' | 'srcAsset' | 'amount'>,
+  params: Pick<ExecuteSwapParams, 'srcChain' | 'srcAsset' | 'amount'>,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionReceipt | null> => {
@@ -54,7 +53,7 @@ export const approveVault = async (
   const vaultContractAddress =
     networkOpts.network === 'localnet'
       ? networkOpts.vaultContractAddress
-      : getVaultManagerContractAddress(networkOpts.network);
+      : getVaultContractAddress(params.srcChain, networkOpts.network);
 
   return approve(
     BigInt(params.amount),

@@ -9,6 +9,7 @@ import {
   hexString,
   unsignedInteger,
   chainEnum,
+  ethereumAddress,
 } from '@/shared/parsers';
 import * as rpc from '@/shared/rpc';
 import { Prisma } from '../client';
@@ -20,7 +21,7 @@ export const egressId = z.tuple([chainEnum, unsignedInteger]);
 
 const ethChainAddress = z.object({
   __kind: z.literal('Eth'),
-  value: hexString,
+  value: ethereumAddress,
 });
 const dotChainAddress = z.object({
   __kind: z.literal('Dot'),

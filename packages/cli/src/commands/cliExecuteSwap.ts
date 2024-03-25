@@ -82,7 +82,9 @@ export default async function cliExecuteSwap(
           args.chainflipNetwork,
         );
 
-  const wallet = new Wallet(privateKey).connect(getDefaultProvider(ethNetwork));
+  const wallet = new Wallet(privateKey).connect(
+    getDefaultProvider(ethNetwork, { etherscan: '-' }), // disable etherscan provider because it is unreliable
+  );
 
   const networkOpts: SwapNetworkOptions =
     args.chainflipNetwork === 'localnet'

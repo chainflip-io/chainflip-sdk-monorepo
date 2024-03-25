@@ -110,7 +110,10 @@ export const validateBitcoinRegtestAddress: AddressValidator = (
   address: string,
 ) => validateBitcoinAddress(address, 'regtest');
 
-const validators: Record<ChainflipNetwork, Record<Chain, AddressValidator>> = {
+const validators: Record<
+  ChainflipNetwork | 'localnet',
+  Record<Chain, AddressValidator>
+> = {
   mainnet: {
     Bitcoin: validateBitcoinMainnetAddress,
     Ethereum: validateEvmAddress,
@@ -131,10 +134,25 @@ const validators: Record<ChainflipNetwork, Record<Chain, AddressValidator>> = {
     Ethereum: validateEvmAddress,
     Polkadot: validatePolkadotAddress,
   },
+  localnet: {
+    Bitcoin: validateBitcoinRegtestAddress,
+    Ethereum: validateEvmAddress,
+    Polkadot: validatePolkadotAddress,
+  },
 };
 
 export const validateAddress = (
   chain: Chain,
   address: string,
-  network: ChainflipNetwork,
+  network: ChainflipNetwork | 'localnet',
 ): boolean => validators[network][chain](address);
+
+export const assertValidAddress = (
+  chain: Chain,
+  address: string,
+  network: ChainflipNetwork | 'localnet',
+) =>
+  assert(
+    validators[network][chain](address),
+    `Address "${address}" is not a valid "${chain}" address for "${network}"`,
+  );
