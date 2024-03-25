@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { strip0x } from '@/shared/bitcoin';
 import { Chain } from '@/shared/enums';
 import { hexString, unsignedInteger } from '@/shared/parsers';
 import type { EventHandlerArgs } from './index';
@@ -27,7 +28,10 @@ export default function networkBroadcastSuccess(
       data: {
         succeededAt: new Date(block.timestamp),
         succeededBlockIndex: `${block.height}-${event.indexInBlock}`,
-        transactionRef: args.transactionRef,
+        transactionRef:
+          chain === 'Bitcoin'
+            ? strip0x(args.transactionRef)
+            : args.transactionRef,
       },
     });
   };

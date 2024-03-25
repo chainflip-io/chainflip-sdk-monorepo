@@ -24,3 +24,6 @@ export const encodeAddress = (
     1,
     Buffer.from(address.slice(2), 'hex'),
   ).encode();
+
+export const strip0x = (string: string | undefined) =>
+  string?.startsWith('0x') ? string.slice(2) : string;
