@@ -5,13 +5,31 @@ type ArrayToMap<T extends readonly string[]> = {
 const arrayToMap = <const T extends readonly string[]>(array: T): ArrayToMap<T> =>
   Object.fromEntries(array.map((key) => [key, key])) as ArrayToMap<T>;
 
-export const InternalAssets = arrayToMap(['Flip', 'Usdc', 'Dot', 'Eth', 'Btc', 'Usdt']);
+export const InternalAssets = arrayToMap([
+  'Flip',
+  'Usdc',
+  'Dot',
+  'Eth',
+  'Btc',
+  'Usdt',
+  'ArbUsdc',
+  'ArbEth',
+]);
 export type InternalAsset = (typeof InternalAssets)[keyof typeof InternalAssets];
 
-export const Chains = arrayToMap(['Bitcoin', 'Ethereum', 'Polkadot']);
+export const Chains = arrayToMap(['Bitcoin', 'Ethereum', 'Polkadot', 'Arbitrum']);
 export type Chain = (typeof Chains)[keyof typeof Chains];
 
-export const Assets = arrayToMap(['FLIP', 'USDC', 'DOT', 'ETH', 'BTC', 'USDT']);
+export const Assets = arrayToMap([
+  'FLIP',
+  'USDC',
+  'DOT',
+  'ETH',
+  'BTC',
+  'USDT',
+  'ARBUSDC',
+  'ARBETH',
+]);
 export type Asset = (typeof Assets)[keyof typeof Assets];
 
 export const ChainflipNetworks = arrayToMap(['backspin', 'sisyphos', 'perseverance', 'mainnet']);
@@ -65,6 +83,20 @@ export const assetConstants = {
     decimals: 8,
     contractId: 5,
   },
+  [InternalAssets.ArbEth]: {
+    chain: Chains.Arbitrum,
+    asset: Assets.ARBETH,
+    name: 'Arbitrum Ether',
+    decimals: 18,
+    contractId: 6,
+  },
+  [InternalAssets.ArbUsdc]: {
+    chain: Chains.Arbitrum,
+    asset: Assets.ARBUSDC,
+    name: 'Arbitrum USDC',
+    decimals: 6,
+    contractId: 7,
+  },
 } as const satisfies Record<
   InternalAsset,
   {
@@ -95,6 +127,12 @@ export const chainConstants = {
     gasAsset: Assets.BTC,
     contractId: 3,
     blockTimeSeconds: 10 * 60,
+  },
+  [Chains.Arbitrum]: {
+    assets: [Assets.ARBETH, Assets.ARBUSDC],
+    gasAsset: Assets.ARBETH,
+    contractId: 4,
+    blockTimeSeconds: 0.26,
   },
 } as const satisfies Record<
   Chain,
@@ -166,6 +204,10 @@ export function getInternalAsset(asset: UncheckedAssetAndChain) {
     },
     [Chains.Polkadot]: {
       [Assets.DOT]: InternalAssets.Dot,
+    },
+    [Chains.Arbitrum]: {
+      [Assets.ARBUSDC]: InternalAssets.ArbUsdc,
+      [Assets.ARBETH]: InternalAssets.ArbEth,
     },
   };
 
