@@ -35,8 +35,7 @@ const btcDepositIgnoredMock = buildDepositIgnoredEvent(
     amount: '100000000000',
     depositAddress: {
       __kind: 'Taproot',
-      value:
-        '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
+      value: '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
     },
     reason: { __kind: 'BelowMinimumDeposit' },
   },
@@ -63,9 +62,7 @@ describe(depositIgnoredV120, () => {
       destAddress: DOT_ADDRESS,
     });
 
-    prisma.swapDepositChannel.findFirstOrThrow = jest
-      .fn()
-      .mockResolvedValueOnce(channel);
+    prisma.swapDepositChannel.findFirstOrThrow = jest.fn().mockResolvedValueOnce(channel);
     prisma.failedSwap.create = jest.fn();
 
     await depositIgnoredV120('Ethereum')({
@@ -75,16 +72,13 @@ describe(depositIgnoredV120, () => {
     });
 
     expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenCalledTimes(1);
-    expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenNthCalledWith(
-      1,
-      {
-        where: {
-          srcChain: 'Ethereum',
-          depositAddress: ETH_ADDRESS,
-        },
-        orderBy: { issuedBlock: 'desc' },
+    expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenNthCalledWith(1, {
+      where: {
+        srcChain: 'Ethereum',
+        depositAddress: ETH_ADDRESS,
       },
-    );
+      orderBy: { issuedBlock: 'desc' },
+    });
     expect(prisma.failedSwap.create).toHaveBeenCalledTimes(1);
     expect(prisma.failedSwap.create).toHaveBeenNthCalledWith(1, {
       data: {
@@ -111,9 +105,7 @@ describe(depositIgnoredV120, () => {
       destAddress: ETH_ADDRESS,
     });
 
-    prisma.swapDepositChannel.findFirstOrThrow = jest
-      .fn()
-      .mockResolvedValueOnce(channel);
+    prisma.swapDepositChannel.findFirstOrThrow = jest.fn().mockResolvedValueOnce(channel);
     prisma.failedSwap.create = jest.fn();
 
     await depositIgnoredV120('Polkadot')({
@@ -123,16 +115,13 @@ describe(depositIgnoredV120, () => {
     });
 
     expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenCalledTimes(1);
-    expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenNthCalledWith(
-      1,
-      {
-        where: {
-          srcChain: 'Polkadot',
-          depositAddress: DOT_ADDRESS,
-        },
-        orderBy: { issuedBlock: 'desc' },
+    expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenNthCalledWith(1, {
+      where: {
+        srcChain: 'Polkadot',
+        depositAddress: DOT_ADDRESS,
       },
-    );
+      orderBy: { issuedBlock: 'desc' },
+    });
     expect(prisma.failedSwap.create).toHaveBeenCalledTimes(1);
     expect(prisma.failedSwap.create).toHaveBeenNthCalledWith(1, {
       data: {
@@ -159,9 +148,7 @@ describe(depositIgnoredV120, () => {
       destAddress: ETH_ADDRESS,
     });
 
-    prisma.swapDepositChannel.findFirstOrThrow = jest
-      .fn()
-      .mockResolvedValueOnce(channel);
+    prisma.swapDepositChannel.findFirstOrThrow = jest.fn().mockResolvedValueOnce(channel);
     prisma.failedSwap.create = jest.fn();
 
     await depositIgnoredV120('Bitcoin')({
@@ -171,16 +158,13 @@ describe(depositIgnoredV120, () => {
     });
 
     expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenCalledTimes(1);
-    expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenNthCalledWith(
-      1,
-      {
-        where: {
-          srcChain: 'Bitcoin',
-          depositAddress: BTC_ADDRESS,
-        },
-        orderBy: { issuedBlock: 'desc' },
+    expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenNthCalledWith(1, {
+      where: {
+        srcChain: 'Bitcoin',
+        depositAddress: BTC_ADDRESS,
       },
-    );
+      orderBy: { issuedBlock: 'desc' },
+    });
     expect(prisma.failedSwap.create).toHaveBeenCalledTimes(1);
     expect(prisma.failedSwap.create).toHaveBeenNthCalledWith(1, {
       data: {

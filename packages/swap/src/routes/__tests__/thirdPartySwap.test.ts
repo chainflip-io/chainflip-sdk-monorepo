@@ -31,9 +31,7 @@ describe('server', () => {
         txLink: 'https://etherscan.io/tx/0xhash',
       };
 
-      const { status } = await request(app)
-        .post('/third-party-swap')
-        .send(body);
+      const { status } = await request(app).post('/third-party-swap').send(body);
       const swap = await prisma.thirdPartySwap.findFirstOrThrow({
         where: { uuid },
       });
@@ -59,9 +57,7 @@ describe('server', () => {
         txHash: '0x123',
       },
     ])('throws when request body has missing info', async (requestBody) => {
-      const { status } = await request(app)
-        .post('/third-party-swap')
-        .send(requestBody);
+      const { status } = await request(app).post('/third-party-swap').send(requestBody);
       try {
         await prisma.thirdPartySwap.findFirstOrThrow({
           where: { uuid: requestBody.uuid },
@@ -77,9 +73,7 @@ describe('server', () => {
       const body = {
         routeResponse: { protocol: 'Lifi', route: 'route' },
       };
-      const { status } = await request(app)
-        .post('/third-party-swap')
-        .send(body);
+      const { status } = await request(app).post('/third-party-swap').send(body);
       expect(status).toBe(400);
     });
 
@@ -107,9 +101,7 @@ describe('server', () => {
     });
 
     it('fetches the correct third party swap information', async () => {
-      const { status, body } = await request(app).get(
-        '/third-party-swap/test-uuid',
-      );
+      const { status, body } = await request(app).get('/third-party-swap/test-uuid');
       expect(status).toBe(200);
       expect(body).toEqual(
         expect.objectContaining({

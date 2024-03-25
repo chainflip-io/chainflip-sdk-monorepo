@@ -1,9 +1,6 @@
 import { GraphQLClient } from 'graphql-request';
 import prisma from '../client';
-import {
-  DOT_ADDRESS,
-  swapScheduledDotDepositChannelMock,
-} from '../event-handlers/__tests__/utils';
+import { DOT_ADDRESS, swapScheduledDotDepositChannelMock } from '../event-handlers/__tests__/utils';
 import { GetBatchQuery } from '../gql/generated/graphql';
 import processBlocks from '../processBlocks';
 

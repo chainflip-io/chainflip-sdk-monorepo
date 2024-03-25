@@ -27,9 +27,7 @@ const assetFactory =
       chainflipId: asset,
       asset: assetConstants[asset].asset,
       chain: assetConstants[asset].chain,
-      contractAddress: !isGasAsset(asset)
-        ? getTokenContractAddress(asset, network)
-        : undefined,
+      contractAddress: !isGasAsset(asset) ? getTokenContractAddress(asset, network) : undefined,
       decimals: assetConstants[asset].decimals,
       name: assetConstants[asset].name,
       symbol: assetConstants[asset].asset,
@@ -39,10 +37,8 @@ const assetFactory =
         assetConstants[asset],
       ).toString(),
       maximumSwapAmount:
-        readChainAssetValue(
-          env.swapping.maximumSwapAmounts,
-          assetConstants[asset],
-        )?.toString() ?? null,
+        readChainAssetValue(env.swapping.maximumSwapAmounts, assetConstants[asset])?.toString() ??
+        null,
       minimumEgressAmount: readChainAssetValue(
         env.ingressEgress.minimumEgressAmounts,
         assetConstants[asset],

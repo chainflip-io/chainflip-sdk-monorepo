@@ -11,8 +11,7 @@ const thresholdSignatureInvalidArgs = z.object({
 const networkThresholdSignatureInvalid =
   (chain: Chain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
-    const { broadcastId, retryBroadcastId } =
-      thresholdSignatureInvalidArgs.parse(event.args);
+    const { broadcastId, retryBroadcastId } = thresholdSignatureInvalidArgs.parse(event.args);
     if (retryBroadcastId === undefined) return;
 
     const broadcast = await prisma.broadcast.findUnique({

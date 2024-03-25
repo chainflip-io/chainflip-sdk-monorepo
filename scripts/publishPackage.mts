@@ -65,9 +65,7 @@ const workingDirectoryDirty =
     .filter((line) => !line.startsWith('?')).length !== 0;
 
 if (workingDirectoryDirty) {
-  console.error(
-    'working directory is dirty, please stash changes before proceeding',
-  );
+  console.error('working directory is dirty, please stash changes before proceeding');
   process.exit(1);
 }
 
@@ -75,9 +73,7 @@ try {
   // @ts-expect-error -- .mts file
   await execAsync('git pull origin main --ff-only');
 } catch {
-  console.error(
-    'failed to pull latest changes from main, perhaps your branch has diverged?',
-  );
+  console.error('failed to pull latest changes from main, perhaps your branch has diverged?');
   process.exit(1);
 }
 
@@ -129,9 +125,7 @@ const updateReleases = async () => {
 
   const versions = new Set([
     newVersion.split('.').slice(0, 2).join('.'),
-    ...JSON.parse(
-      await fs.readFile(path.join(scripts, 'releases.json'), 'utf8'),
-    ),
+    ...JSON.parse(await fs.readFile(path.join(scripts, 'releases.json'), 'utf8')),
   ] as string[]);
 
   if (!isDryRun) {
@@ -148,9 +142,7 @@ const openVersionPR = async () => {
   const message = `chore(${args.package}): release ${packageJSON.name}/v${newVersion}`;
   const newBranch = `chore/release-${newVersion}`;
   await execCommand(`git switch -c ${newBranch}`);
-  await execCommand(
-    `pnpm --filter ${packageJSON.name} exec pnpm version ${newVersion}`,
-  );
+  await execCommand(`pnpm --filter ${packageJSON.name} exec pnpm version ${newVersion}`);
   await execCommand(`git add .`);
   await execCommand(`git commit -m "${message}" --no-verify`);
   await execCommand(`git push origin ${newBranch}`);
@@ -167,9 +159,7 @@ if (isDryRun) {
   const questionAsync = util.promisify(rl.question).bind(rl);
 
   // @ts-expect-error -- .mts file
-  const runAgain = await questionAsync(
-    'would you like to run again without dry run?\n(y/N)> ',
-  );
+  const runAgain = await questionAsync('would you like to run again without dry run?\n(y/N)> ');
 
   rl.close();
 

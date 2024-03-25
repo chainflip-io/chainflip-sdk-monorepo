@@ -25,9 +25,7 @@ describe(screenAddress, () => {
       },
     });
 
-    const result = await screenAddress(
-      '0x72a5843cc08275C8171E582972Aa4fDa8C397B2A',
-    );
+    const result = await screenAddress('0x72a5843cc08275C8171E582972Aa4fDa8C397B2A');
 
     expect(result).toBe(true);
   });
@@ -38,9 +36,7 @@ describe(screenAddress, () => {
       data: { identifications: [] },
     });
 
-    const result = await screenAddress(
-      '0x72a5843cc08275C8171E582972Aa4fDa8C397B2A',
-    );
+    const result = await screenAddress('0x72a5843cc08275C8171E582972Aa4fDa8C397B2A');
 
     expect(result).toBe(false);
   });
@@ -51,9 +47,7 @@ describe(screenAddress, () => {
       data: { ids: [] },
     });
 
-    const result = await screenAddress(
-      '0x72a5843cc08275C8171E582972Aa4fDa8C397B2A',
-    );
+    const result = await screenAddress('0x72a5843cc08275C8171E582972Aa4fDa8C397B2A');
 
     expect(result).toBe(false);
   });
@@ -64,9 +58,7 @@ describe(screenAddress, () => {
       data: { identifications: [] },
     });
 
-    const result = await screenAddress(
-      '0x72a5843cc08275C8171E582972Aa4fDa8C397B2A',
-    );
+    const result = await screenAddress('0x72a5843cc08275C8171E582972Aa4fDa8C397B2A');
 
     expect(result).toBe(false);
   });
@@ -75,9 +67,7 @@ describe(screenAddress, () => {
     env.CHAINALYSIS_API_KEY = 'test';
     jest.mocked(axios.get).mockRejectedValueOnce(new Error('test'));
 
-    const result = await screenAddress(
-      '0x72a5843cc08275C8171E582972Aa4fDa8C397B2A',
-    );
+    const result = await screenAddress('0x72a5843cc08275C8171E582972Aa4fDa8C397B2A');
 
     expect(result).toBe(false);
   });

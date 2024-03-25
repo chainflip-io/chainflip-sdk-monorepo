@@ -29,8 +29,7 @@ export const events = {
     PoolFeeSet: 'LiquidityPools.PoolFeeSet',
   },
   LiquidityProvider: {
-    LiquidityDepositAddressReady:
-      'LiquidityProvider.LiquidityDepositAddressReady',
+    LiquidityDepositAddressReady: 'LiquidityProvider.LiquidityDepositAddressReady',
   },
   Swapping: {
     SwapScheduled: 'Swapping.SwapScheduled',
@@ -85,9 +84,7 @@ export const events = {
   },
 } as const;
 
-export const swapEventNames = Object.values(events).flatMap((pallets) =>
-  Object.values(pallets),
-);
+export const swapEventNames = Object.values(events).flatMap((pallets) => Object.values(pallets));
 
 export type EventHandlerArgs = {
   prisma: Prisma.TransactionClient;

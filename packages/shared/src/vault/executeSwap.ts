@@ -26,10 +26,8 @@ import { assertValidAddress } from '../validation/addressValidation';
 import { ExecuteSwapParams, SwapNetworkOptions } from './index';
 
 const encodeAddress = (chain: Chain, address: string) => {
-  if (chain === Chains.Polkadot)
-    return u8aToHex(decodeAddress(dotAddress.parse(address)));
-  if (chain === Chains.Bitcoin)
-    return `0x${Buffer.from(address).toString('hex')}`;
+  if (chain === Chains.Polkadot) return u8aToHex(decodeAddress(dotAddress.parse(address)));
+  if (chain === Chains.Bitcoin) return `0x${Buffer.from(address).toString('hex')}`;
   if (chain === Chains.Ethereum) return address;
 
   // no fallback encoding to prevent submitting txs with wrongly encoded addresses for new chains
@@ -59,27 +57,18 @@ const getVaultContract = (chain: Chain, networkOpts: SwapNetworkOptions) => {
       : getVaultContractAddress(chain, networkOpts.network);
 
   return {
-    vaultContract: Vault__factory.connect(
-      vaultContractAddress,
-      networkOpts.signer,
-    ),
+    vaultContract: Vault__factory.connect(vaultContractAddress, networkOpts.signer),
     vaultAddress: vaultContractAddress,
   };
 };
 
-const getErc20Address = (
-  asset: InternalAsset,
-  networkOpts: SwapNetworkOptions,
-) => {
+const getErc20Address = (asset: InternalAsset, networkOpts: SwapNetworkOptions) => {
   const erc20Address =
     networkOpts.network === 'localnet'
       ? networkOpts.srcTokenContractAddress
       : getTokenContractAddress(asset, networkOpts.network);
 
-  assert(
-    erc20Address !== undefined,
-    `Missing ERC20 contract address for ${asset}`,
-  );
+  assert(erc20Address !== undefined, `Missing ERC20 contract address for ${asset}`);
 
   return erc20Address;
 };
@@ -93,10 +82,7 @@ const swapNative = async (
     chain: params.destChain,
     asset: params.destAsset,
   });
-  const { vaultContract: vault } = getVaultContract(
-    params.srcChain,
-    networkOpts,
-  );
+  const { vaultContract: vault } = getVaultContract(params.srcChain, networkOpts);
 
   const transaction = await vault.xSwapNative(
     chainConstants[params.destChain].contractId,
@@ -122,10 +108,7 @@ const swapToken = async (
     chain: params.destChain,
     asset: params.destAsset,
   });
-  const { vaultContract: vault, vaultAddress } = getVaultContract(
-    params.srcChain,
-    networkOpts,
-  );
+  const { vaultContract: vault, vaultAddress } = getVaultContract(params.srcChain, networkOpts);
   const erc20Address = getErc20Address(internalSrcAsset, networkOpts);
 
   const { hasSufficientAllowance } = await checkAllowance(
@@ -158,10 +141,7 @@ const callNative = async (
     chain: params.destChain,
     asset: params.destAsset,
   });
-  const { vaultContract: vault } = getVaultContract(
-    params.srcChain,
-    networkOpts,
-  );
+  const { vaultContract: vault } = getVaultContract(params.srcChain, networkOpts);
 
   const transaction = await vault.xCallNative(
     chainConstants[params.destChain].contractId,
@@ -189,10 +169,7 @@ const callToken = async (
     chain: params.destChain,
     asset: params.destAsset,
   });
-  const { vaultContract: vault, vaultAddress } = getVaultContract(
-    params.srcChain,
-    networkOpts,
-  );
+  const { vaultContract: vault, vaultAddress } = getVaultContract(params.srcChain, networkOpts);
   const erc20Address = getErc20Address(internalSrcAsset, networkOpts);
 
   const { hasSufficientAllowance } = await checkAllowance(

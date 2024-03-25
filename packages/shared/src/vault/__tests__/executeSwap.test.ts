@@ -8,11 +8,9 @@ import { ExecuteSwapParams } from '../index';
 
 const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
 const DOT_ADDRESS = '5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX';
-const REGTEST_BTC_ADDRESS =
-  'bcrt1p7mnll6qup4l3lcggvh7t26m4gryawjy0d0cganzh6e4zjm2d3rtqt9usqx';
+const REGTEST_BTC_ADDRESS = 'bcrt1p7mnll6qup4l3lcggvh7t26m4gryawjy0d0cganzh6e4zjm2d3rtqt9usqx';
 const TESTNET_BTC_ADDRESS = 'tb1qge9vvd2mmjxfhuxuq204h4fxxphr0vfnsnx205';
-const MAINNET_BTC_ADDRESS =
-  'bc1pv7lmxr8vvf220cumd4pft77l4pds85pt4l6rw6yrr3cghyf5kl7sq76puk';
+const MAINNET_BTC_ADDRESS = 'bc1pv7lmxr8vvf220cumd4pft77l4pds85pt4l6rw6yrr3cghyf5kl7sq76puk';
 
 class MockVault {
   constructor(readonly address: string) {}
@@ -82,32 +80,25 @@ describe(executeSwap, () => {
       srcAsset: Assets.ETH,
       srcChain: Chains.Ethereum,
     },
-  ] as Omit<ExecuteSwapParams, 'amount'>[])(
-    'submits a native swap (%p)',
-    async (params) => {
-      const wait = jest
-        .fn()
-        .mockResolvedValue({ status: 1, hash: 'hello world' });
-      const swapSpy = jest
-        .spyOn(MockVault.prototype, 'xSwapNative')
-        .mockResolvedValue({ wait });
+  ] as Omit<ExecuteSwapParams, 'amount'>[])('submits a native swap (%p)', async (params) => {
+    const wait = jest.fn().mockResolvedValue({ status: 1, hash: 'hello world' });
+    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapNative').mockResolvedValue({ wait });
 
-      expect(
-        await executeSwap(
-          { amount: '1', ...params } as ExecuteSwapParams,
-          {
-            network: ChainflipNetworks.sisyphos,
-            signer: new VoidSigner('MY ADDRESS').connect({
-              getNetwork: () => Promise.resolve({ chainId: 11155111n }),
-            } as any),
-          },
-          {},
-        ),
-      ).toStrictEqual({ status: 1, hash: 'hello world' });
-      expect(wait).toHaveBeenCalledWith(undefined);
-      expect(swapSpy.mock.calls).toMatchSnapshot();
-    },
-  );
+    expect(
+      await executeSwap(
+        { amount: '1', ...params } as ExecuteSwapParams,
+        {
+          network: ChainflipNetworks.sisyphos,
+          signer: new VoidSigner('MY ADDRESS').connect({
+            getNetwork: () => Promise.resolve({ chainId: 11155111n }),
+          } as any),
+        },
+        {},
+      ),
+    ).toStrictEqual({ status: 1, hash: 'hello world' });
+    expect(wait).toHaveBeenCalledWith(undefined);
+    expect(swapSpy.mock.calls).toMatchSnapshot();
+  });
 
   it.each([
     ...[
@@ -139,51 +130,38 @@ describe(executeSwap, () => {
         ...src,
       },
     ]),
-  ] as Omit<ExecuteSwapParams, 'amount'>[])(
-    'submits a token swap (%p)',
-    async (params) => {
-      const wait = jest
-        .fn()
-        .mockResolvedValue({ status: 1, hash: 'hello world' });
-      const approveSpy = jest
-        .spyOn(MockERC20.prototype, 'approve')
-        .mockResolvedValue({ wait });
-      const swapSpy = jest
-        .spyOn(MockVault.prototype, 'xSwapToken')
-        .mockResolvedValue({ wait });
-      const allowanceSpy = jest
-        .spyOn(MockERC20.prototype, 'allowance')
-        .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
+  ] as Omit<ExecuteSwapParams, 'amount'>[])('submits a token swap (%p)', async (params) => {
+    const wait = jest.fn().mockResolvedValue({ status: 1, hash: 'hello world' });
+    const approveSpy = jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({ wait });
+    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapToken').mockResolvedValue({ wait });
+    const allowanceSpy = jest
+      .spyOn(MockERC20.prototype, 'allowance')
+      .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
 
-      expect(
-        await executeSwap(
-          { amount: '1', ...params } as ExecuteSwapParams,
-          {
-            network: 'mainnet',
-            signer: new VoidSigner('MY ADDRESS').connect({
-              getNetwork: () => Promise.resolve({ chainId: 1n }),
-            } as any),
-          },
-          {},
-        ),
-      ).toStrictEqual({ status: 1, hash: 'hello world' });
-      expect(wait).toHaveBeenCalledWith(undefined);
-      expect(swapSpy.mock.calls).toMatchSnapshot();
-      expect(allowanceSpy.mock.calls).toMatchSnapshot();
-      expect(approveSpy).not.toHaveBeenCalled();
-    },
-  );
+    expect(
+      await executeSwap(
+        { amount: '1', ...params } as ExecuteSwapParams,
+        {
+          network: 'mainnet',
+          signer: new VoidSigner('MY ADDRESS').connect({
+            getNetwork: () => Promise.resolve({ chainId: 1n }),
+          } as any),
+        },
+        {},
+      ),
+    ).toStrictEqual({ status: 1, hash: 'hello world' });
+    expect(wait).toHaveBeenCalledWith(undefined);
+    expect(swapSpy.mock.calls).toMatchSnapshot();
+    expect(allowanceSpy.mock.calls).toMatchSnapshot();
+    expect(approveSpy).not.toHaveBeenCalled();
+  });
 
   it('submits a token swap with sufficient approval', async () => {
-    const wait = jest
-      .fn()
-      .mockResolvedValue({ status: 1, hash: 'hello world' });
+    const wait = jest.fn().mockResolvedValue({ status: 1, hash: 'hello world' });
     const approveSpy = jest
       .spyOn(MockERC20.prototype, 'approve')
       .mockRejectedValue(Error('unmocked call'));
-    const swapSpy = jest
-      .spyOn(MockVault.prototype, 'xSwapToken')
-      .mockResolvedValue({ wait });
+    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapToken').mockResolvedValue({ wait });
     const allowanceSpy = jest
       .spyOn(MockERC20.prototype, 'allowance')
       .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
@@ -214,15 +192,9 @@ describe(executeSwap, () => {
   });
 
   it('can be invoked with localnet options', async () => {
-    const wait = jest
-      .fn()
-      .mockResolvedValue({ status: 1, hash: 'hello world' });
-    const approveSpy = jest
-      .spyOn(MockERC20.prototype, 'approve')
-      .mockResolvedValue({ wait });
-    const swapSpy = jest
-      .spyOn(MockVault.prototype, 'xSwapToken')
-      .mockResolvedValue({ wait });
+    const wait = jest.fn().mockResolvedValue({ status: 1, hash: 'hello world' });
+    const approveSpy = jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({ wait });
+    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapToken').mockResolvedValue({ wait });
     const allowanceSpy = jest
       .spyOn(MockERC20.prototype, 'allowance')
       .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
@@ -253,12 +225,8 @@ describe(executeSwap, () => {
   });
 
   it('accepts a nonce', async () => {
-    const wait = jest
-      .fn()
-      .mockResolvedValue({ status: 1, hash: 'hello world' });
-    const swapSpy = jest
-      .spyOn(MockVault.prototype, 'xSwapNative')
-      .mockResolvedValue({ wait });
+    const wait = jest.fn().mockResolvedValue({ status: 1, hash: 'hello world' });
+    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapNative').mockResolvedValue({ wait });
 
     expect(
       await executeSwap(
@@ -302,9 +270,7 @@ describe(executeSwap, () => {
         },
         { nonce: 1 },
       ),
-    ).rejects.toThrow(
-      'invalid asset and chain combination: {"chain":"Ethereum","asset":"BTC"}',
-    );
+    ).rejects.toThrow('invalid asset and chain combination: {"chain":"Ethereum","asset":"BTC"}');
   });
 
   it('rejects if destination asset and chain are not valid', async () => {
@@ -326,9 +292,7 @@ describe(executeSwap, () => {
         },
         { nonce: 1 },
       ),
-    ).rejects.toThrow(
-      'invalid asset and chain combination: {"chain":"Bitcoin","asset":"DOT"}',
-    );
+    ).rejects.toThrow('invalid asset and chain combination: {"chain":"Bitcoin","asset":"DOT"}');
   });
 
   it('rejects if source asset and destination asset is the same', async () => {
@@ -372,9 +336,7 @@ describe(executeSwap, () => {
         },
         { nonce: 1 },
       ),
-    ).rejects.toThrow(
-      'Address "invalid-btc-address" is not a valid "Bitcoin" address',
-    );
+    ).rejects.toThrow('Address "invalid-btc-address" is not a valid "Bitcoin" address');
   });
 
   it('rejects if the source chain is not an evm chain', async () => {
@@ -418,9 +380,7 @@ describe(executeSwap, () => {
         },
         { nonce: 1 },
       ),
-    ).rejects.toThrow(
-      'Signer is connected to unexpected evm chain (expected: 11155111, got: 404)',
-    );
+    ).rejects.toThrow('Signer is connected to unexpected evm chain (expected: 11155111, got: 404)');
   });
 
   it('rejects if the destination chain is not an evm chain for a call', async () => {
@@ -464,12 +424,8 @@ describe(executeSwap, () => {
       ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
     },
   ])('submits a native call (%p)', async (params) => {
-    const wait = jest
-      .fn()
-      .mockResolvedValue({ status: 1, hash: 'hello world' });
-    const callSpy = jest
-      .spyOn(MockVault.prototype, 'xCallNative')
-      .mockResolvedValue({ wait });
+    const wait = jest.fn().mockResolvedValue({ status: 1, hash: 'hello world' });
+    const callSpy = jest.spyOn(MockVault.prototype, 'xCallNative').mockResolvedValue({ wait });
 
     expect(
       await executeSwap(
@@ -516,15 +472,9 @@ describe(executeSwap, () => {
         ] as const,
     ),
   ])('submits a token call (%p)', async (params) => {
-    const wait = jest
-      .fn()
-      .mockResolvedValue({ status: 1, hash: 'hello world' });
-    const approveSpy = jest
-      .spyOn(MockERC20.prototype, 'approve')
-      .mockResolvedValue({ wait });
-    const callSpy = jest
-      .spyOn(MockVault.prototype, 'xCallToken')
-      .mockResolvedValue({ wait });
+    const wait = jest.fn().mockResolvedValue({ status: 1, hash: 'hello world' });
+    const approveSpy = jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({ wait });
+    const callSpy = jest.spyOn(MockVault.prototype, 'xCallToken').mockResolvedValue({ wait });
     const allowanceSpy = jest
       .spyOn(MockERC20.prototype, 'allowance')
       .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));

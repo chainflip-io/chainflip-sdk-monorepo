@@ -1,7 +1,4 @@
-import {
-  getHundredthPipAmountFromAmount,
-  getPipAmountFromAmount,
-} from '../functions';
+import { getHundredthPipAmountFromAmount, getPipAmountFromAmount } from '../functions';
 
 describe(getPipAmountFromAmount, () => {
   it.each([
@@ -21,12 +18,7 @@ describe(getHundredthPipAmountFromAmount, () => {
     ['250', 100, 0n],
     ['0', 100, 0n],
     ['1', 100, 0n],
-  ])(
-    'calculates hundredth pip amount from amount',
-    (amount, hundredthPips, result) => {
-      expect(getHundredthPipAmountFromAmount(amount, hundredthPips)).toBe(
-        result,
-      );
-    },
-  );
+  ])('calculates hundredth pip amount from amount', (amount, hundredthPips, result) => {
+    expect(getHundredthPipAmountFromAmount(amount, hundredthPips)).toBe(result);
+  });
 });

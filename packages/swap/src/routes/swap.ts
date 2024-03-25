@@ -15,10 +15,7 @@ import prisma, {
   FailedSwapReason,
 } from '../client';
 import openSwapDepositChannel from '../handlers/openSwapDepositChannel';
-import {
-  getPendingBroadcast,
-  getPendingDeposit,
-} from '../ingress-egress-tracking';
+import { getPendingBroadcast, getPendingDeposit } from '../ingress-egress-tracking';
 import { readField } from '../utils/function';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
@@ -70,8 +67,7 @@ const coerceChain = (chain: string) => {
   }
 };
 
-const channelIdRegex =
-  /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
+const channelIdRegex = /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
 const swapIdRegex = /^\d+$/i;
 const txHashRegex = /^0x[a-f\d]+$/i;
 
@@ -91,8 +87,7 @@ router.get(
       | undefined;
 
     if (channelIdRegex.test(id)) {
-      const { issuedBlock, srcChain, channelId } =
-        channelIdRegex.exec(id)!.groups!;
+      const { issuedBlock, srcChain, channelId } = channelIdRegex.exec(id)!.groups!;
 
       swapDepositChannel = await prisma.swapDepositChannel.findUnique({
         where: {
@@ -131,11 +126,7 @@ router.get(
       }
     }
 
-    ServiceError.assert(
-      swapDepositChannel || swap || failedSwap,
-      'notFound',
-      'resource not found',
-    );
+    ServiceError.assert(swapDepositChannel || swap || failedSwap, 'notFound', 'resource not found');
 
     let state: State;
     let failureMode;
@@ -190,20 +181,11 @@ router.get(
       state = State.AwaitingDeposit;
     }
 
-    const internalSrcAsset = readField(
-      swap,
-      swapDepositChannel,
-      failedSwap,
-      'srcAsset',
-    );
+    const internalSrcAsset = readField(swap, swapDepositChannel, failedSwap, 'srcAsset');
     const internalDestAsset = readField(swap, swapDepositChannel, 'destAsset');
 
     let pendingDeposit;
-    if (
-      internalSrcAsset &&
-      state === State.AwaitingDeposit &&
-      swapDepositChannel?.depositAddress
-    ) {
+    if (internalSrcAsset && state === State.AwaitingDeposit && swapDepositChannel?.depositAddress) {
       pendingDeposit = await getPendingDeposit(
         assetConstants[internalSrcAsset].chain,
         assetConstants[internalSrcAsset].asset,
@@ -214,11 +196,7 @@ router.get(
     let ccmMetadata;
     if (readField(swap, swapDepositChannel, 'ccmGasBudget')) {
       ccmMetadata = {
-        gasBudget: readField(
-          swap,
-          swapDepositChannel,
-          'ccmGasBudget',
-        )?.toFixed(),
+        gasBudget: readField(swap, swapDepositChannel, 'ccmGasBudget')?.toFixed(),
         message: readField(swap, swapDepositChannel, 'ccmMessage'),
       };
     }
@@ -230,24 +208,15 @@ router.get(
       srcAsset: internalSrcAsset && assetConstants[internalSrcAsset].asset,
       destChain: internalDestAsset && assetConstants[internalDestAsset].chain,
       destAsset: internalDestAsset && assetConstants[internalDestAsset].asset,
-      destAddress: readField(
-        swap,
-        swapDepositChannel,
-        failedSwap,
-        'destAddress',
-      ),
+      destAddress: readField(swap, swapDepositChannel, failedSwap, 'destAddress'),
       depositChannelCreatedAt: swapDepositChannel?.createdAt.valueOf(),
-      depositChannelBrokerCommissionBps:
-        swapDepositChannel?.brokerCommissionBps,
+      depositChannelBrokerCommissionBps: swapDepositChannel?.brokerCommissionBps,
       depositAddress: swapDepositChannel?.depositAddress,
-      expectedDepositAmount:
-        swapDepositChannel?.expectedDepositAmount?.toFixed(),
+      expectedDepositAmount: swapDepositChannel?.expectedDepositAmount?.toFixed(),
       swapId: swap?.nativeId.toString(),
       depositAmount:
-        readField(swap, failedSwap, 'depositAmount')?.toFixed() ??
-        pendingDeposit?.amount,
-      depositTransactionHash:
-        pendingDeposit?.transactionHash ?? failedSwap?.txHash ?? undefined,
+        readField(swap, failedSwap, 'depositAmount')?.toFixed() ?? pendingDeposit?.amount,
+      depositTransactionHash: pendingDeposit?.transactionHash ?? failedSwap?.txHash ?? undefined,
       depositTransactionConfirmations: pendingDeposit?.transactionConfirmations,
       depositReceivedAt: swap?.depositReceivedAt.valueOf(),
       depositReceivedBlockIndex: swap?.depositReceivedBlockIndex ?? undefined,
@@ -259,8 +228,7 @@ router.get(
       egressScheduledBlockIndex: swap?.egress?.scheduledBlockIndex ?? undefined,
       ignoredEgressAmount: swap?.ignoredEgress?.amount?.toFixed(),
       egressIgnoredAt: swap?.ignoredEgress?.ignoredAt?.valueOf(),
-      egressIgnoredBlockIndex:
-        swap?.ignoredEgress?.ignoredBlockIndex ?? undefined,
+      egressIgnoredBlockIndex: swap?.ignoredEgress?.ignoredBlockIndex ?? undefined,
       feesPaid:
         swap?.fees.map((fee) => ({
           type: fee.type,
@@ -269,24 +237,17 @@ router.get(
           amount: fee.amount.toFixed(),
         })) ?? [],
       broadcastRequestedAt: swap?.egress?.broadcast?.requestedAt?.valueOf(),
-      broadcastRequestedBlockIndex:
-        swap?.egress?.broadcast?.requestedBlockIndex ?? undefined,
+      broadcastRequestedBlockIndex: swap?.egress?.broadcast?.requestedBlockIndex ?? undefined,
       broadcastAbortedAt: swap?.egress?.broadcast?.abortedAt?.valueOf(),
-      broadcastAbortedBlockIndex:
-        swap?.egress?.broadcast?.abortedBlockIndex ?? undefined,
+      broadcastAbortedBlockIndex: swap?.egress?.broadcast?.abortedBlockIndex ?? undefined,
       broadcastSucceededAt: swap?.egress?.broadcast?.succeededAt?.valueOf(),
-      broadcastSucceededBlockIndex:
-        swap?.egress?.broadcast?.succeededBlockIndex ?? undefined,
-      depositChannelExpiryBlock:
-        swapDepositChannel?.srcChainExpiryBlock?.toString(),
-      estimatedDepositChannelExpiryTime:
-        swapDepositChannel?.estimatedExpiryAt?.valueOf(),
+      broadcastSucceededBlockIndex: swap?.egress?.broadcast?.succeededBlockIndex ?? undefined,
+      depositChannelExpiryBlock: swapDepositChannel?.srcChainExpiryBlock?.toString(),
+      estimatedDepositChannelExpiryTime: swapDepositChannel?.estimatedExpiryAt?.valueOf(),
       isDepositChannelExpired: swapDepositChannel?.isExpired,
-      ccmDepositReceivedBlockIndex:
-        swap?.ccmDepositReceivedBlockIndex ?? undefined,
+      ccmDepositReceivedBlockIndex: swap?.ccmDepositReceivedBlockIndex ?? undefined,
       ccmMetadata,
-      depositChannelOpenedThroughBackend:
-        swapDepositChannel?.openedThroughBackend,
+      depositChannelOpenedThroughBackend: swapDepositChannel?.openedThroughBackend,
       error,
       failure: failureMode,
       failedAt: failedSwap?.failedAt,
@@ -310,8 +271,9 @@ router.post(
       throw ServiceError.badRequest('invalid request body');
     }
 
-    const { srcChainExpiryBlock, channelOpeningFee, ...response } =
-      await openSwapDepositChannel(result.data);
+    const { srcChainExpiryBlock, channelOpeningFee, ...response } = await openSwapDepositChannel(
+      result.data,
+    );
 
     res.json(response);
   }),

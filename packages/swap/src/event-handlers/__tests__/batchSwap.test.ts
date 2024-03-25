@@ -41,8 +41,7 @@ const swapDepositAddressReadyEvent = {
       __kind: 'Btc',
     },
     destinationAddress: {
-      value:
-        '0x6d703351536f504e32694c4b724568647a3951623944534a5141754e774444613737',
+      value: '0x6d703351536f504e32694c4b724568647a3951623944534a5141754e774444613737',
       __kind: 'Btc',
     },
     brokerCommissionRate: 0,
@@ -79,8 +78,7 @@ const batchEvents = [
         __kind: 'Btc',
       },
       destinationAddress: {
-        value:
-          '0x6d703351536f504e32694c4b724568647a3951623944534a5141754e774444613737',
+        value: '0x6d703351536f504e32694c4b724568647a3951623944534a5141754e774444613737',
         __kind: 'Btc',
       },
       swapType: {
@@ -137,8 +135,7 @@ const batchEvents = [
       id: [{ __kind: 'Bitcoin' }, '1'],
       asset: { __kind: 'Btc' },
       amount: '662256',
-      destinationAddress:
-        '0x6d703351536f504e32694c4b724568647a3951623944534a5141754e774444613737',
+      destinationAddress: '0x6d703351536f504e32694c4b724568647a3951623944534a5141754e774444613737',
     },
   },
   {
@@ -196,10 +193,7 @@ const batchEvents = [
 ]
   .sort((a, b) => (a.id < b.id ? -1 : 1))
   .reduce((acc, event) => {
-    acc.set(
-      event.blockId,
-      (acc.get(event.blockId) || []).concat([event as Event]),
-    );
+    acc.set(event.blockId, (acc.get(event.blockId) || []).concat([event as Event]));
     return acc;
   }, new Map<string, Event[]>());
 
@@ -228,8 +222,7 @@ describe('batch swap flow', () => {
   });
 
   it('handles all the events', async () => {
-    const startingHeight =
-      Number(batchEvents.keys().next().value.split('-')[0]) - 1;
+    const startingHeight = Number(batchEvents.keys().next().value.split('-')[0]) - 1;
     await prisma.state.upsert({
       where: { id: 1 },
       create: { id: 1, height: startingHeight },
@@ -238,32 +231,30 @@ describe('batch swap flow', () => {
 
     const blocksIt = batchEvents.entries();
 
-    jest
-      .spyOn(GraphQLClient.prototype, 'request')
-      .mockImplementation(async () => {
-        const batch = blocksIt.next();
-        if (batch.done) throw new Error('done');
-        const [blockId, events] = batch.value;
-        const height = Number(blockId.split('-')[0]);
-        await prisma.state.upsert({
-          where: { id: 1 },
-          create: { id: 1, height: height - 1 },
-          update: { height: height - 1 },
-        });
-
-        return {
-          blocks: {
-            nodes: [
-              {
-                height,
-                specId: 'test@120',
-                timestamp: new Date(height * 6000).toISOString(),
-                events: { nodes: events },
-              },
-            ],
-          },
-        };
+    jest.spyOn(GraphQLClient.prototype, 'request').mockImplementation(async () => {
+      const batch = blocksIt.next();
+      if (batch.done) throw new Error('done');
+      const [blockId, events] = batch.value;
+      const height = Number(blockId.split('-')[0]);
+      await prisma.state.upsert({
+        where: { id: 1 },
+        create: { id: 1, height: height - 1 },
+        update: { height: height - 1 },
       });
+
+      return {
+        blocks: {
+          nodes: [
+            {
+              height,
+              specId: 'test@120',
+              timestamp: new Date(height * 6000).toISOString(),
+              events: { nodes: events },
+            },
+          ],
+        },
+      };
+    });
 
     await expect(processBlocks()).rejects.toThrow('done');
 

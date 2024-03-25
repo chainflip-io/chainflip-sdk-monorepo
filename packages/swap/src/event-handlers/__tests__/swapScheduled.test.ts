@@ -28,8 +28,7 @@ describe(swapScheduled, () => {
         isExpired: true,
         srcChainExpiryBlock:
           Number(
-            swapScheduledDotDepositChannelMock.eventContext.event.args.origin
-              .depositBlockHeight,
+            swapScheduledDotDepositChannelMock.eventContext.event.args.origin.depositBlockHeight,
           ) + 1,
       });
       btcSwapDepositChannel = await createDepositChannel({
@@ -41,8 +40,7 @@ describe(swapScheduled, () => {
         isExpired: true,
         srcChainExpiryBlock:
           Number(
-            swapScheduledBtcDepositChannelMock.eventContext.event.args.origin
-              .depositBlockHeight,
+            swapScheduledBtcDepositChannelMock.eventContext.event.args.origin.depositBlockHeight,
           ) + 1,
       });
     });
@@ -62,8 +60,7 @@ describe(swapScheduled, () => {
       });
 
       expect(swap.depositAmount.toString()).toEqual(
-        swapScheduledDotDepositChannelMock.eventContext.event.args
-          .depositAmount,
+        swapScheduledDotDepositChannelMock.eventContext.event.args.depositAmount,
       );
       expect(swap).toMatchSnapshot({
         id: expect.any(BigInt),
@@ -88,8 +85,7 @@ describe(swapScheduled, () => {
       });
 
       expect(swap.depositAmount.toString()).toEqual(
-        swapScheduledBtcDepositChannelMock.eventContext.event.args
-          .depositAmount,
+        swapScheduledBtcDepositChannelMock.eventContext.event.args.depositAmount,
       );
       expect(swap).toMatchSnapshot({
         id: expect.any(BigInt),
@@ -103,10 +99,8 @@ describe(swapScheduled, () => {
       await prisma.$transaction(async (client) => {
         await swapScheduled({
           prisma: client,
-          block:
-            swapScheduledDotDepositChannelBrokerCommissionMock.block as any,
-          event: swapScheduledDotDepositChannelBrokerCommissionMock.eventContext
-            .event as any,
+          block: swapScheduledDotDepositChannelBrokerCommissionMock.block as any,
+          event: swapScheduledDotDepositChannelBrokerCommissionMock.eventContext.event as any,
         });
       });
 
@@ -116,8 +110,7 @@ describe(swapScheduled, () => {
       });
 
       expect(swap.depositAmount.toString()).toEqual(
-        swapScheduledDotDepositChannelMock.eventContext.event.args
-          .depositAmount,
+        swapScheduledDotDepositChannelMock.eventContext.event.args.depositAmount,
       );
       expect(swap).toMatchSnapshot({
         id: expect.any(BigInt),

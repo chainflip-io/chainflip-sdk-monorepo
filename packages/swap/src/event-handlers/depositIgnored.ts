@@ -3,12 +3,7 @@ import { encodeAddress } from '@polkadot/util-crypto';
 import { z } from 'zod';
 import { encodeAddress as encodeBitcoinAddress } from '@/shared/bitcoin';
 import { assetConstants, InternalAsset } from '@/shared/enums';
-import {
-  DOT_PREFIX,
-  internalAssetEnum,
-  hexString,
-  u128,
-} from '@/shared/parsers';
+import { DOT_PREFIX, internalAssetEnum, hexString, u128 } from '@/shared/parsers';
 import env from '../config/env';
 import type { EventHandlerArgs } from './index';
 
@@ -17,15 +12,13 @@ const depositIgnoredArgs = z
     asset: internalAssetEnum,
     amount: u128,
     depositAddress: z.union([
-      z
-        .object({ __kind: z.literal('Taproot'), value: hexString })
-        .transform((o) => {
-          try {
-            return encodeBitcoinAddress(o.value, env.CHAINFLIP_NETWORK);
-          } catch {
-            return null;
-          }
-        }),
+      z.object({ __kind: z.literal('Taproot'), value: hexString }).transform((o) => {
+        try {
+          return encodeBitcoinAddress(o.value, env.CHAINFLIP_NETWORK);
+        } catch {
+          return null;
+        }
+      }),
       hexString,
     ]),
   })

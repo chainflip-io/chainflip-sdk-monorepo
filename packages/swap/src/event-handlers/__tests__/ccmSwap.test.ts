@@ -15,9 +15,7 @@ jest.mock('graphql-request', () => ({
 }));
 
 jest.mock('axios', () => ({
-  post: jest.fn(() =>
-    Promise.resolve({ data: environment({ egressFee: '0x55524' }) }),
-  ),
+  post: jest.fn(() => Promise.resolve({ data: environment({ egressFee: '0x55524' }) })),
 }));
 
 const swapDepositAddressReadyEvent = {
@@ -31,8 +29,7 @@ const swapDepositAddressReadyEvent = {
     channelId: '6',
     sourceAsset: { __kind: 'Dot' },
     depositAddress: {
-      value:
-        '0xf1ebeed3a1b2bd9a24643e26509d52505d8c12a2d667ab8f66255f4c51ba0dbe',
+      value: '0xf1ebeed3a1b2bd9a24643e26509d52505d8c12a2d667ab8f66255f4c51ba0dbe',
       __kind: 'Dot',
     },
     destinationAsset: { __kind: 'Eth' },
@@ -59,8 +56,7 @@ const ccmEvents = [
         __kind: 'DepositChannel',
         channelId: '6',
         depositAddress: {
-          value:
-            '0xf1ebeed3a1b2bd9a24643e26509d52505d8c12a2d667ab8f66255f4c51ba0dbe',
+          value: '0xf1ebeed3a1b2bd9a24643e26509d52505d8c12a2d667ab8f66255f4c51ba0dbe',
           __kind: 'Dot',
         },
         depositBlockHeight: '100',
@@ -88,8 +84,7 @@ const ccmEvents = [
         __kind: 'DepositChannel',
         channelId: '6',
         depositAddress: {
-          value:
-            '0xf1ebeed3a1b2bd9a24643e26509d52505d8c12a2d667ab8f66255f4c51ba0dbe',
+          value: '0xf1ebeed3a1b2bd9a24643e26509d52505d8c12a2d667ab8f66255f4c51ba0dbe',
           __kind: 'Dot',
         },
         depositBlockHeight: '100',
@@ -229,10 +224,7 @@ const ccmEvents = [
 ]
   .sort((a, b) => (a.id < b.id ? -1 : 1))
   .reduce((acc, event) => {
-    acc.set(
-      event.blockId,
-      (acc.get(event.blockId) || []).concat([event as Event]),
-    );
+    acc.set(event.blockId, (acc.get(event.blockId) || []).concat([event as Event]));
     return acc;
   }, new Map<string, Event[]>());
 
@@ -261,8 +253,7 @@ describe('batch swap flow', () => {
   });
 
   it('handles all the events', async () => {
-    const startingHeight =
-      Number(ccmEvents.keys().next().value.split('-')[0]) - 1;
+    const startingHeight = Number(ccmEvents.keys().next().value.split('-')[0]) - 1;
     await prisma.state.upsert({
       where: { id: 1 },
       create: { id: 1, height: startingHeight },
@@ -274,51 +265,44 @@ describe('batch swap flow', () => {
     await prisma.swapDepositChannel.create({
       data: {
         srcAsset: swapDepositAddressReadyEvent.args.sourceAsset.__kind,
-        depositAddress: encodedAddress.parse(
-          swapDepositAddressReadyEvent.args.depositAddress,
-        ).address,
-        srcChain:
-          assetConstants[swapDepositAddressReadyEvent.args.sourceAsset.__kind]
-            .chain,
+        depositAddress: encodedAddress.parse(swapDepositAddressReadyEvent.args.depositAddress)
+          .address,
+        srcChain: assetConstants[swapDepositAddressReadyEvent.args.sourceAsset.__kind].chain,
         channelId: BigInt(swapDepositAddressReadyEvent.args.channelId),
         expectedDepositAmount: '0',
         destAsset: swapDepositAddressReadyEvent.args.destinationAsset.__kind,
         destAddress: swapDepositAddressReadyEvent.args.destinationAddress.value,
         brokerCommissionBps: 0,
         issuedBlock: 0,
-        srcChainExpiryBlock: Number(
-          swapDepositAddressReadyEvent.args.sourceChainExpiryBlock,
-        ),
+        srcChainExpiryBlock: Number(swapDepositAddressReadyEvent.args.sourceChainExpiryBlock),
         openingFeePaid: swapDepositAddressReadyEvent.args.channelOpeningFee,
       },
     });
 
-    jest
-      .spyOn(GraphQLClient.prototype, 'request')
-      .mockImplementation(async () => {
-        const batch = blocksIt.next();
-        if (batch.done) throw new Error('done');
-        const [blockId, events] = batch.value;
-        const height = Number(blockId.split('-')[0]);
-        await prisma.state.upsert({
-          where: { id: 1 },
-          create: { id: 1, height: height - 1 },
-          update: { height: height - 1 },
-        });
-
-        return {
-          blocks: {
-            nodes: [
-              {
-                height,
-                specId: 'test@0',
-                timestamp: new Date(height * 6000).toISOString(),
-                events: { nodes: events },
-              },
-            ],
-          },
-        };
+    jest.spyOn(GraphQLClient.prototype, 'request').mockImplementation(async () => {
+      const batch = blocksIt.next();
+      if (batch.done) throw new Error('done');
+      const [blockId, events] = batch.value;
+      const height = Number(blockId.split('-')[0]);
+      await prisma.state.upsert({
+        where: { id: 1 },
+        create: { id: 1, height: height - 1 },
+        update: { height: height - 1 },
       });
+
+      return {
+        blocks: {
+          nodes: [
+            {
+              height,
+              specId: 'test@0',
+              timestamp: new Date(height * 6000).toISOString(),
+              events: { nodes: events },
+            },
+          ],
+        },
+      };
+    });
 
     await expect(processBlocks()).rejects.toThrow('done');
 

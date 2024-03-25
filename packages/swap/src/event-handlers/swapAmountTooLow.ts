@@ -28,8 +28,7 @@ export default async function swapAmountTooLow({
   event,
   block,
 }: EventHandlerArgs): Promise<void> {
-  const { origin, amount, destinationAddress, asset } =
-    swapAmountTooLowArgs.parse(event.args);
+  const { origin, amount, destinationAddress, asset } = swapAmountTooLowArgs.parse(event.args);
   let sourceChain;
   let dbDepositChannel;
   let txHash;

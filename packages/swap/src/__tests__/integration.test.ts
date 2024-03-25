@@ -3,15 +3,7 @@ import * as crypto from 'crypto';
 import { on, once } from 'events';
 import { AddressInfo } from 'net';
 import * as path from 'path';
-import {
-  Observable,
-  filter,
-  firstValueFrom,
-  from,
-  map,
-  shareReplay,
-  timeout,
-} from 'rxjs';
+import { Observable, filter, firstValueFrom, from, map, shareReplay, timeout } from 'rxjs';
 import { promisify } from 'util';
 import { Assets, Chains } from '@/shared/enums';
 import { QuoteQueryParams } from '@/shared/schemas';
@@ -81,15 +73,11 @@ describe('python integration test', () => {
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE private."MarketMaker" CASCADE`;
     const pair = await generateKeyPairAsync('ed25519');
-    privateKey = pair.privateKey
-      .export({ type: 'pkcs8', format: 'pem' })
-      .toString();
+    privateKey = pair.privateKey.export({ type: 'pkcs8', format: 'pem' }).toString();
     await prisma.marketMaker.create({
       data: {
         name: marketMakerId,
-        publicKey: pair.publicKey
-          .export({ type: 'spki', format: 'pem' })
-          .toString(),
+        publicKey: pair.publicKey.export({ type: 'spki', format: 'pem' }).toString(),
       },
     });
     server = app.listen(0);

@@ -4,10 +4,7 @@ import { isNotNullish } from '@/shared/guards';
 import { ChainData } from './types';
 import { Environment } from '../rpc';
 
-type ChainFn = (
-  network: ChainflipNetwork,
-  env: Pick<Environment, 'ingressEgress'>,
-) => ChainData;
+type ChainFn = (network: ChainflipNetwork, env: Pick<Environment, 'ingressEgress'>) => ChainData;
 
 const chainFactory =
   (chain: Chain): ChainFn =>
@@ -16,9 +13,7 @@ const chainFactory =
     name: chain,
     evmChainId: getEvmChainId(chain, network),
     isMainnet: !isTestnet(network),
-    requiredBlockConfirmations: isNotNullish(
-      env.ingressEgress.witnessSafetyMargins[chain],
-    )
+    requiredBlockConfirmations: isNotNullish(env.ingressEgress.witnessSafetyMargins[chain])
       ? Number(env.ingressEgress.witnessSafetyMargins[chain]) + 1
       : undefined,
   });

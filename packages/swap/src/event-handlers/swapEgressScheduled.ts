@@ -1,9 +1,5 @@
 import { z } from 'zod';
-import {
-  InternalAsset,
-  readChainAssetValue,
-  assetConstants,
-} from '@/shared/enums';
+import { InternalAsset, readChainAssetValue, assetConstants } from '@/shared/enums';
 import { bigintMin } from '@/shared/functions';
 import { u128, unsignedInteger } from '@/shared/parsers';
 import { Environment, getEnvironment } from '@/shared/rpc';
@@ -18,23 +14,16 @@ const eventArgsWithoutFee = z.object({
   egressId,
 });
 
-const v120EventArgs = eventArgsWithoutFee.and(
-  z.object({ amount: u128, fee: u128 }),
-);
+const v120EventArgs = eventArgsWithoutFee.and(z.object({ amount: u128, fee: u128 }));
 
 const eventArgs = z.union([v120EventArgs, eventArgsWithoutFee]);
 
-const environmentByBlockHashCache = new CacheMap<
-  string,
-  Promise<Environment | null>
->(60_000);
+const environmentByBlockHashCache = new CacheMap<string, Promise<Environment | null>>(60_000);
 
 const methodNotFoundRegExp = /Exported method .+ is not found/;
 const rpcConfig = { rpcUrl: env.RPC_NODE_HTTP_URL };
 
-const getCachedEnvironmentAtBlock = async (
-  blockHash: string,
-): Promise<Environment | null> => {
+const getCachedEnvironmentAtBlock = async (blockHash: string): Promise<Environment | null> => {
   const cached = environmentByBlockHashCache.get(blockHash);
   if (cached) return cached;
 
@@ -52,10 +41,7 @@ const getCachedEnvironmentAtBlock = async (
   return environment;
 };
 
-const assetAmountByNativeAmountAndBlockHashCache = new CacheMap<
-  string,
-  Promise<bigint>
->(60_000);
+const assetAmountByNativeAmountAndBlockHashCache = new CacheMap<string, Promise<bigint>>(60_000);
 
 const getCachedAssetAmountAtBlock = async (
   asset: InternalAsset,
@@ -66,24 +52,19 @@ const getCachedAssetAmountAtBlock = async (
   const cached = assetAmountByNativeAmountAndBlockHashCache.get(cacheKey);
   if (cached) return cached;
 
-  const rate = estimateIngressEgressFeeAssetAmount(
-    nativeAmount,
-    asset,
-    blockHash,
-  ).catch((e: Error) => {
-    assetAmountByNativeAmountAndBlockHashCache.delete(blockHash);
-    throw e;
-  });
+  const rate = estimateIngressEgressFeeAssetAmount(nativeAmount, asset, blockHash).catch(
+    (e: Error) => {
+      assetAmountByNativeAmountAndBlockHashCache.delete(blockHash);
+      throw e;
+    },
+  );
 
   assetAmountByNativeAmountAndBlockHashCache.set(cacheKey, rate);
 
   return rate;
 };
 
-const getEgressFeeAtBlock = async (
-  blockHash: string,
-  asset: InternalAsset,
-): Promise<bigint> => {
+const getEgressFeeAtBlock = async (blockHash: string, asset: InternalAsset): Promise<bigint> => {
   const environment = await getCachedEnvironmentAtBlock(blockHash);
   if (!environment) return 0n;
 

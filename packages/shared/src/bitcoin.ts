@@ -15,15 +15,8 @@ const prefixMap = {
   mainnet: 'bc',
 } as const satisfies Record<ChainflipNetwork, string>;
 
-export const encodeAddress = (
-  address: `0x${string}`,
-  network: ChainflipNetwork,
-) =>
-  new BitcoinAddress(
-    prefixMap[network],
-    1,
-    Buffer.from(address.slice(2), 'hex'),
-  ).encode();
+export const encodeAddress = (address: `0x${string}`, network: ChainflipNetwork) =>
+  new BitcoinAddress(prefixMap[network], 1, Buffer.from(address.slice(2), 'hex')).encode();
 
 export const strip0x = (string: string | undefined) =>
   string?.startsWith('0x') ? string.slice(2) : string;

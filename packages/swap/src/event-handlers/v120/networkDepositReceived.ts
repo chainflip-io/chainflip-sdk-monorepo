@@ -25,13 +25,8 @@ export const depositReceivedArgs = z.object({
 
 export type DepositReceivedArgs = z.input<typeof depositReceivedArgs>;
 
-export const networkDepositReceived = async ({
-  prisma,
-  event,
-}: EventHandlerArgs) => {
-  const { asset, amount, action, ingressFee } = depositReceivedArgs.parse(
-    event.args,
-  );
+export const networkDepositReceived = async ({ prisma, event }: EventHandlerArgs) => {
+  const { asset, amount, action, ingressFee } = depositReceivedArgs.parse(event.args);
 
   if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {
     let swapId;

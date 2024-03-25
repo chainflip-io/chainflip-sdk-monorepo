@@ -28,10 +28,7 @@ export default function networkBroadcastSuccess(
       data: {
         succeededAt: new Date(block.timestamp),
         succeededBlockIndex: `${block.height}-${event.indexInBlock}`,
-        transactionRef:
-          chain === 'Bitcoin'
-            ? strip0x(args.transactionRef)
-            : args.transactionRef,
+        transactionRef: chain === 'Bitcoin' ? strip0x(args.transactionRef) : args.transactionRef,
       },
     });
   };

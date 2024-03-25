@@ -9,11 +9,7 @@ const ccmBroadcastRequestArgs = z.object({
   broadcastId: unsignedInteger,
 });
 
-const ccmBroadcastRequested = async ({
-  event,
-  prisma,
-  block,
-}: EventHandlerArgs) => {
+const ccmBroadcastRequested = async ({ event, prisma, block }: EventHandlerArgs) => {
   const { broadcastId, egressId } = ccmBroadcastRequestArgs.parse(event.args);
 
   const [chain, nativeId] = egressId;

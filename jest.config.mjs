@@ -8,10 +8,7 @@ import * as url from 'url';
 const tsconfig = JSON.parse(
   (
     await fs.readFile(
-      path.join(
-        path.dirname(url.fileURLToPath(import.meta.url)),
-        'tsconfig.json',
-      ),
+      path.join(path.dirname(url.fileURLToPath(import.meta.url)), 'tsconfig.json'),
       'utf8',
     )
   ).replace(/\/\*.*\*\//g, ''),

@@ -70,17 +70,13 @@ export const executeRedemption = async (
   return transaction.wait(txOpts.wait) as Promise<ContractTransactionReceipt>;
 };
 
-export const getMinimumFunding = (
-  networkOpts: FundingNetworkOptions,
-): Promise<bigint> => {
+export const getMinimumFunding = (networkOpts: FundingNetworkOptions): Promise<bigint> => {
   const stateChainGateway = getStateChainGateway(networkOpts);
 
   return stateChainGateway.getMinimumFunding();
 };
 
-export const getRedemptionDelay = (
-  networkOpts: FundingNetworkOptions,
-): Promise<bigint> => {
+export const getRedemptionDelay = (networkOpts: FundingNetworkOptions): Promise<bigint> => {
   const stateChainGateway = getStateChainGateway(networkOpts);
 
   return stateChainGateway.REDEMPTION_DELAY();
@@ -91,8 +87,7 @@ export const getPendingRedemption = async (
   networkOpts: FundingNetworkOptions,
 ): Promise<PendingRedemption | undefined> => {
   const stateChainGateway = getStateChainGateway(networkOpts);
-  const pendingRedemption =
-    await stateChainGateway.getPendingRedemption(accountId);
+  const pendingRedemption = await stateChainGateway.getPendingRedemption(accountId);
 
   // there is no null in solidity, therefore we compare against the initial value to determine if the value is set:
   // https://www.wtf.academy/en/solidity-start/InitialValue/

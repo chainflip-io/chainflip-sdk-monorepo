@@ -77,18 +77,14 @@ describe(executeRedemption, () => {
 
 describe(getMinimumFunding, () => {
   it('retrieves minimum funding amount', async () => {
-    jest
-      .spyOn(MockGateway.prototype, 'getMinimumFunding')
-      .mockResolvedValue(1234n);
+    jest.spyOn(MockGateway.prototype, 'getMinimumFunding').mockResolvedValue(1234n);
     expect(await getMinimumFunding(signerOptions)).toEqual(1234n);
   });
 });
 
 describe(getRedemptionDelay, () => {
   it('retrieves the redemption delay', async () => {
-    jest
-      .spyOn(MockGateway.prototype, 'REDEMPTION_DELAY')
-      .mockResolvedValue(1234);
+    jest.spyOn(MockGateway.prototype, 'REDEMPTION_DELAY').mockResolvedValue(1234);
     expect(await getRedemptionDelay(signerOptions)).toEqual(1234);
   });
 });
@@ -105,9 +101,7 @@ describe(getPendingRedemption, () => {
       .spyOn(MockGateway.prototype, 'getPendingRedemption')
       .mockResolvedValue(redemption);
 
-    expect(await getPendingRedemption('0x1234', signerOptions)).toEqual(
-      redemption,
-    );
+    expect(await getPendingRedemption('0x1234', signerOptions)).toEqual(redemption);
     expect(spy).toBeCalledWith('0x1234');
   });
   it('returns undefined if there is no pending redemption', async () => {

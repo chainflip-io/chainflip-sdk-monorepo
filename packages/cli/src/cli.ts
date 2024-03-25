@@ -1,7 +1,5 @@
 import yargs from 'yargs/yargs';
-import cliExecuteSwap, {
-  yargsOptions as cliExecuteSwapOptions,
-} from './commands/cliExecuteSwap';
+import cliExecuteSwap, { yargsOptions as cliExecuteSwapOptions } from './commands/cliExecuteSwap';
 import cliFundStateChainAccount, {
   yargsOptions as cliFundStateChainAccountOptions,
 } from './commands/cliFundStateChainAccount';

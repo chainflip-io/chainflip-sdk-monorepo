@@ -19,14 +19,8 @@ const ccmDepositReceivedArgs = z.object({
 
 export type CcmDepositReceivedArgs = z.input<typeof ccmDepositReceivedArgs>;
 
-export default async function ccmDepositReceived({
-  prisma,
-  event,
-  block,
-}: EventHandlerArgs) {
-  const { principalSwapId, depositMetadata } = ccmDepositReceivedArgs.parse(
-    event.args,
-  );
+export default async function ccmDepositReceived({ prisma, event, block }: EventHandlerArgs) {
+  const { principalSwapId, depositMetadata } = ccmDepositReceivedArgs.parse(event.args);
 
   if (principalSwapId) {
     await prisma.swap.update({

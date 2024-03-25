@@ -40,9 +40,7 @@ describe('server', () => {
       await prisma.marketMaker.create({
         data: {
           name,
-          publicKey: result.publicKey
-            .export({ format: 'pem', type: 'spki' })
-            .toString(),
+          publicKey: result.publicKey.export({ format: 'pem', type: 'spki' }).toString(),
         },
       });
       privateKey = result.privateKey;

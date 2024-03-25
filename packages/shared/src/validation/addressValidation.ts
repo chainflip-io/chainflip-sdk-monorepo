@@ -1,9 +1,5 @@
 import { isHex, u8aToHex } from '@polkadot/util';
-import {
-  base58Decode,
-  decodeAddress,
-  encodeAddress,
-} from '@polkadot/util-crypto';
+import { base58Decode, decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 import * as ethers from 'ethers';
 import { isValidSegwitAddress } from '../bitcoin';
 import { Chain, ChainflipNetwork } from '../enums';
@@ -25,8 +21,7 @@ export const validatePolkadotAddress: AddressValidator = (address) => {
   }
 };
 
-export const validateEvmAddress: AddressValidator = (address) =>
-  ethers.isAddress(address);
+export const validateEvmAddress: AddressValidator = (address) => ethers.isAddress(address);
 
 type BitcoinNetwork = 'mainnet' | 'testnet' | 'regtest';
 
@@ -37,10 +32,7 @@ const assertArraylikeEqual = <T>(a: ArrayLike<T>, b: ArrayLike<T>) => {
   }
 };
 
-const validateP2PKHOrP2SHAddress = (
-  address: string,
-  network: BitcoinNetwork,
-) => {
+const validateP2PKHOrP2SHAddress = (address: string, network: BitcoinNetwork) => {
   try {
     // The address must be a valid base58 encoded string.
     const decoded = base58Decode(address);
@@ -63,9 +55,7 @@ const validateP2PKHOrP2SHAddress = (
     }
     // The last 4 decoded bytes must be equal to the first 4 bytes of the double sha256 of the first 21 decoded bytes
     const checksum = decoded.slice(-4);
-    const doubleHash = ethers.getBytes(
-      ethers.sha256(ethers.sha256(decoded.slice(0, 21))),
-    );
+    const doubleHash = ethers.getBytes(ethers.sha256(ethers.sha256(decoded.slice(0, 21))));
 
     assertArraylikeEqual(checksum, doubleHash.slice(0, 4));
 
@@ -95,25 +85,18 @@ const validateSegwitAddress = (address: string, network: BitcoinNetwork) => {
 };
 
 const validateBitcoinAddress = (address: string, network: BitcoinNetwork) =>
-  validateP2PKHOrP2SHAddress(address, network) ||
-  validateSegwitAddress(address, network);
+  validateP2PKHOrP2SHAddress(address, network) || validateSegwitAddress(address, network);
 
-export const validateBitcoinMainnetAddress: AddressValidator = (
-  address: string,
-) => validateBitcoinAddress(address, 'mainnet');
+export const validateBitcoinMainnetAddress: AddressValidator = (address: string) =>
+  validateBitcoinAddress(address, 'mainnet');
 
-export const validateBitcoinTestnetAddress: AddressValidator = (
-  address: string,
-) => validateBitcoinAddress(address, 'testnet');
+export const validateBitcoinTestnetAddress: AddressValidator = (address: string) =>
+  validateBitcoinAddress(address, 'testnet');
 
-export const validateBitcoinRegtestAddress: AddressValidator = (
-  address: string,
-) => validateBitcoinAddress(address, 'regtest');
+export const validateBitcoinRegtestAddress: AddressValidator = (address: string) =>
+  validateBitcoinAddress(address, 'regtest');
 
-const validators: Record<
-  ChainflipNetwork | 'localnet',
-  Record<Chain, AddressValidator>
-> = {
+const validators: Record<ChainflipNetwork | 'localnet', Record<Chain, AddressValidator>> = {
   mainnet: {
     Bitcoin: validateBitcoinMainnetAddress,
     Ethereum: validateEvmAddress,

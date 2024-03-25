@@ -8,11 +8,7 @@ import env from '../config/env';
 import { swapRateResponseSchema } from '../quoting/schemas';
 
 const requestValidators = {
-  swap_rate: z.tuple([
-    uncheckedAssetAndChain,
-    uncheckedAssetAndChain,
-    hexStringFromNumber,
-  ]),
+  swap_rate: z.tuple([uncheckedAssetAndChain, uncheckedAssetAndChain, hexStringFromNumber]),
 };
 
 const responseValidators = {
@@ -51,13 +47,7 @@ export const getBrokerQuote = async (
   { srcChain, srcAsset, destChain, destAsset, amount }: ParsedQuoteParams,
   id: string,
 ) => {
-  const quote = await getSwapAmount(
-    srcChain,
-    srcAsset,
-    destChain,
-    destAsset,
-    amount,
-  );
+  const quote = await getSwapAmount(srcChain, srcAsset, destChain, destAsset, amount);
 
   return { id, ...quote, quoteType: 'broker' as const };
 };

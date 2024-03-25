@@ -21,14 +21,10 @@ describe('btc parser', () => {
     'validates btc address %s to be true for the right network',
     (address, network, wrongNetwork) => {
       address.forEach((addr) =>
-        expect(
-          btcAddress(network as ChainflipNetwork).safeParse(addr).success,
-        ).toBeTruthy(),
+        expect(btcAddress(network as ChainflipNetwork).safeParse(addr).success).toBeTruthy(),
       );
       address.forEach((addr) =>
-        expect(
-          btcAddress(wrongNetwork as ChainflipNetwork).safeParse(addr).success,
-        ).toBeFalsy(),
+        expect(btcAddress(wrongNetwork as ChainflipNetwork).safeParse(addr).success).toBeFalsy(),
       );
     },
   );
@@ -43,9 +39,7 @@ describe('btc parser', () => {
     [wrongAddresses, 'sisyphos'],
     [wrongAddresses, 'perseverance'],
   ])(`validates btc address %s to be false`, (address, network) => {
-    expect(
-      btcAddress(network as ChainflipNetwork).safeParse(address).success,
-    ).toBeFalsy();
+    expect(btcAddress(network as ChainflipNetwork).safeParse(address).success).toBeFalsy();
   });
 });
 
@@ -53,9 +47,7 @@ describe('dotAddress', () => {
   it('validates dot address and transforms a dot address', async () => {
     expect(dotAddress.parse('0x0')).toBe('1126');
     expect(
-      dotAddress.parse(
-        '0x9999999999999999999999999999999999999999999999999999999999999999',
-      ),
+      dotAddress.parse('0x9999999999999999999999999999999999999999999999999999999999999999'),
     ).toBe('14UPxPveENj36SF5YX8R2YMrb6HaS7Nuuxw5a1aysuxVZyDu');
   });
 });
@@ -100,9 +92,7 @@ describe('unsignedInteger', () => {
 
 describe('hexStringWithMaxByteSize', () => {
   it('should accept hex string', () => {
-    expect(hexStringWithMaxByteSize(100).parse('0x0123456789abcdef')).toEqual(
-      '0x0123456789abcdef',
-    );
+    expect(hexStringWithMaxByteSize(100).parse('0x0123456789abcdef')).toEqual('0x0123456789abcdef');
   });
 
   it('should accept hex string with exactly max bytes', () => {
@@ -110,9 +100,7 @@ describe('hexStringWithMaxByteSize', () => {
   });
 
   it('should reject non hex strings', () => {
-    expect(() => hexStringWithMaxByteSize(100).parse('hello')).toThrow(
-      'Invalid input',
-    );
+    expect(() => hexStringWithMaxByteSize(100).parse('hello')).toThrow('Invalid input');
   });
 
   it('should reject strings larger than max byte size', () => {

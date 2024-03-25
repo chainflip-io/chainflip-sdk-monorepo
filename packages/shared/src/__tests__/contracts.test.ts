@@ -8,10 +8,7 @@ class MockERC20 {
     throw new Error('unmocked call');
   }
 
-  async approve(
-    _spender: string,
-    _amount: bigint,
-  ): Promise<ContractTransaction> {
+  async approve(_spender: string, _amount: bigint): Promise<ContractTransaction> {
     throw new Error('unmocked call');
   }
 }
@@ -50,11 +47,9 @@ describe(approve, () => {
   ])(
     'approves the spender for an allowance equal to the spend request',
     async ({ allowance, spend }) => {
-      const approveSpy = jest
-        .spyOn(MockERC20.prototype, 'approve')
-        .mockResolvedValueOnce({
-          wait: jest.fn().mockResolvedValue({ status: 1, hash: 'TX_HASH' }),
-        } as unknown as ContractTransaction);
+      const approveSpy = jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValueOnce({
+        wait: jest.fn().mockResolvedValue({ status: 1, hash: 'TX_HASH' }),
+      } as unknown as ContractTransaction);
 
       const receipt = await approve(
         spend,

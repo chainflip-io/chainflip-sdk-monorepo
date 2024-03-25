@@ -70,31 +70,24 @@ describe('ApiService', () => {
   } satisfies QuoteRequest;
 
   describe(ApiService.getChains, () => {
-    it.each([
-      ChainflipNetworks.sisyphos,
-      ChainflipNetworks.perseverance,
-    ] as const)('gets testnet chains (%s)', async (network) => {
-      expect(await ApiService.getChains(network, env)).toMatchSnapshot();
-    });
+    it.each([ChainflipNetworks.sisyphos, ChainflipNetworks.perseverance] as const)(
+      'gets testnet chains (%s)',
+      async (network) => {
+        expect(await ApiService.getChains(network, env)).toMatchSnapshot();
+      },
+    );
 
     it('gets mainnet chains', async () => {
-      expect(
-        await ApiService.getChains(ChainflipNetworks.mainnet, env),
-      ).toMatchSnapshot();
+      expect(await ApiService.getChains(ChainflipNetworks.mainnet, env)).toMatchSnapshot();
     });
   });
 
   describe.each(Object.values(ChainflipNetworks))(
     `${ApiService.getAssets.name} (%s)`,
     (network) => {
-      it.each(Object.values(Chains))(
-        'gets the correct assets for networks (%s)',
-        async (chain) => {
-          expect(
-            await ApiService.getAssets(chain, network, env),
-          ).toMatchSnapshot();
-        },
-      );
+      it.each(Object.values(Chains))('gets the correct assets for networks (%s)', async (chain) => {
+        expect(await ApiService.getAssets(chain, network, env)).toMatchSnapshot();
+      });
     },
   );
 
@@ -111,11 +104,7 @@ describe('ApiService', () => {
     });
 
     it('gets a quote', async () => {
-      const route = await ApiService.getQuote(
-        'https://swapperoo.org',
-        mockRoute,
-        {},
-      );
+      const route = await ApiService.getQuote('https://swapperoo.org', mockRoute, {});
 
       expect(route).toMatchSnapshot();
       expect(mockedGet.mock.lastCall).toMatchSnapshot();
@@ -166,17 +155,9 @@ describe('ApiService', () => {
 
       const statusRequest = { id: 'the id' };
 
-      const status1 = await ApiService.getStatus(
-        'https://swapperoo.org',
-        statusRequest,
-        {},
-      );
+      const status1 = await ApiService.getStatus('https://swapperoo.org', statusRequest, {});
       expect(status1).toBe('hello darkness');
-      const status2 = await ApiService.getStatus(
-        'https://swapperoo.org',
-        statusRequest,
-        {},
-      );
+      const status2 = await ApiService.getStatus('https://swapperoo.org', statusRequest, {});
       expect(status2).toBe('my old friend');
     });
 

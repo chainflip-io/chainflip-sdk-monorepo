@@ -16,9 +16,7 @@ describe(authenticate, () => {
     await prisma.marketMaker.create({
       data: {
         name: 'web_team_whales',
-        publicKey: pair.publicKey
-          .export({ format: 'pem', type: 'spki' })
-          .toString('base64'),
+        publicKey: pair.publicKey.export({ format: 'pem', type: 'spki' }).toString('base64'),
       },
     });
     privateKey = pair.privateKey;

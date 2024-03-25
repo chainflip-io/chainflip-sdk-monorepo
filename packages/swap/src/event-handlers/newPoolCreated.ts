@@ -33,13 +33,8 @@ const eventArgs = z.union([
     })),
 ]);
 
-export default async function newPoolCreated({
-  prisma,
-  event,
-}: EventHandlerArgs): Promise<void> {
-  const { baseAsset, quoteAsset, feeHundredthPips } = eventArgs.parse(
-    event.args,
-  );
+export default async function newPoolCreated({ prisma, event }: EventHandlerArgs): Promise<void> {
+  const { baseAsset, quoteAsset, feeHundredthPips } = eventArgs.parse(event.args);
 
   // handle pools that were created with USDC as base asset on sisyphos: https://blocks.staging/events/384977-0
   const stableAsset = baseAsset === 'Usdc' ? baseAsset : quoteAsset;

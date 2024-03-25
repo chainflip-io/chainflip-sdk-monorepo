@@ -1,13 +1,7 @@
 import { Signer, Overrides, ContractTransactionReceipt } from 'ethers';
 import { ERC20, ERC20__factory } from './abis';
 import { ADDRESSES } from './consts';
-import {
-  Chain,
-  type ChainflipNetwork,
-  Chains,
-  InternalAsset,
-  InternalAssets,
-} from './enums';
+import { Chain, type ChainflipNetwork, Chains, InternalAsset, InternalAssets } from './enums';
 
 export type TransactionOptions = {
   gasLimit?: bigint;
@@ -18,31 +12,22 @@ export type TransactionOptions = {
   wait?: number;
 };
 
-export const extractOverrides = (
-  transactionOverrides: TransactionOptions,
-): Overrides => {
+export const extractOverrides = (transactionOverrides: TransactionOptions): Overrides => {
   const { wait, ...ethersOverrides } = transactionOverrides;
 
   return ethersOverrides;
 };
 
-export function getTokenContractAddress(
-  asset: InternalAsset,
-  network: ChainflipNetwork,
-) {
-  if (asset === InternalAssets.Flip)
-    return ADDRESSES[network].FLIP_CONTRACT_ADDRESS;
-  if (asset === InternalAssets.Usdc)
-    return ADDRESSES[network].USDC_CONTRACT_ADDRESS;
-  if (asset === InternalAssets.Usdt)
-    return ADDRESSES[network].USDT_CONTRACT_ADDRESS;
+export function getTokenContractAddress(asset: InternalAsset, network: ChainflipNetwork) {
+  if (asset === InternalAssets.Flip) return ADDRESSES[network].FLIP_CONTRACT_ADDRESS;
+  if (asset === InternalAssets.Usdc) return ADDRESSES[network].USDC_CONTRACT_ADDRESS;
+  if (asset === InternalAssets.Usdt) return ADDRESSES[network].USDT_CONTRACT_ADDRESS;
 
   throw new Error(`No contract address for ${asset} on ${network}`);
 }
 
-export const getStateChainGatewayContractAddress = (
-  network: ChainflipNetwork,
-): string => ADDRESSES[network].STATE_CHAIN_GATEWAY_ADDRESS;
+export const getStateChainGatewayContractAddress = (network: ChainflipNetwork): string =>
+  ADDRESSES[network].STATE_CHAIN_GATEWAY_ADDRESS;
 
 export const checkAllowance = async (
   amount: bigint,
@@ -72,12 +57,8 @@ export const approve = async (
   return transaction.wait(txOpts.wait);
 };
 
-export const getVaultContractAddress = (
-  chain: Chain,
-  network: ChainflipNetwork,
-): string => {
-  if (chain === Chains.Ethereum)
-    return ADDRESSES[network].VAULT_CONTRACT_ADDRESS;
+export const getVaultContractAddress = (chain: Chain, network: ChainflipNetwork): string => {
+  if (chain === Chains.Ethereum) return ADDRESSES[network].VAULT_CONTRACT_ADDRESS;
 
   throw new Error(`No vault contract address for ${chain} on ${network}`);
 };

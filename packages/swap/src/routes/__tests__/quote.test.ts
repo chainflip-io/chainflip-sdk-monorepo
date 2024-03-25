@@ -74,9 +74,7 @@ describe('server', () => {
     await prisma.marketMaker.create({
       data: {
         name: 'web_team_whales',
-        publicKey: pair.publicKey
-          .export({ format: 'pem', type: 'spki' })
-          .toString('base64'),
+        publicKey: pair.publicKey.export({ format: 'pem', type: 'spki' }).toString('base64'),
       },
     });
 
@@ -99,9 +97,7 @@ describe('server', () => {
         });
       }
 
-      throw new Error(
-        `unexpected axios call to ${url}: ${JSON.stringify(data)}`,
-      );
+      throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
     });
 
     quotingClient = new QuotingClient(
@@ -137,9 +133,7 @@ describe('server', () => {
         amount: '50',
       });
 
-      const { body, status } = await request(server).get(
-        `/quote?${params.toString()}`,
-      );
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
@@ -148,9 +142,7 @@ describe('server', () => {
     });
 
     it('rejects if amount is higher than maximum swap amount', async () => {
-      jest
-        .mocked(axios.post)
-        .mockResolvedValue({ data: environment({ maxSwapAmount: '0x1' }) });
+      jest.mocked(axios.post).mockResolvedValue({ data: environment({ maxSwapAmount: '0x1' }) });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -160,9 +152,7 @@ describe('server', () => {
         amount: '50',
       });
 
-      const { body, status } = await request(server).get(
-        `/quote?${params.toString()}`,
-      );
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
@@ -185,9 +175,7 @@ describe('server', () => {
       }));
       quotingClient.setQuoteRequestHandler(quoteHandler);
 
-      const { body, status } = await request(server).get(
-        `/quote?${params.toString()}`,
-      );
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
@@ -208,9 +196,7 @@ describe('server', () => {
         amount: (100e6).toString(),
       });
 
-      const { body, status } = await request(server).get(
-        `/quote?${params.toString()}`,
-      );
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
       expect(status).toBe(500);
       expect(body).toMatchObject({
@@ -219,11 +205,9 @@ describe('server', () => {
     });
 
     it('rejects when the egress amount is smaller than the egress fee', async () => {
-      const sendSpy = jest
-        .spyOn(RpcClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({
-          outputAmount: (1250).toString(),
-        });
+      const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        outputAmount: (1250).toString(),
+      });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -239,9 +223,7 @@ describe('server', () => {
       }));
       quotingClient.setQuoteRequestHandler(quoteHandler);
 
-      const { body, status } = await request(server).get(
-        `/quote?${params.toString()}`,
-      );
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
@@ -267,9 +249,7 @@ describe('server', () => {
           });
         }
 
-        throw new Error(
-          `unexpected axios call to ${url}: ${JSON.stringify(data)}`,
-        );
+        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
       jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
@@ -290,9 +270,7 @@ describe('server', () => {
       }));
       quotingClient.setQuoteRequestHandler(quoteHandler);
 
-      const { body, status } = await request(server).get(
-        `/quote?${params.toString()}`,
-      );
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
       expect(status).toBe(500);
       expect(body).toMatchObject({
@@ -301,11 +279,9 @@ describe('server', () => {
     });
 
     it('gets the quote from usdc with a broker commission', async () => {
-      const sendSpy = jest
-        .spyOn(RpcClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({
-          outputAmount: (1e18).toString(),
-        });
+      const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        outputAmount: (1e18).toString(),
+      });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -322,9 +298,7 @@ describe('server', () => {
       }));
       quotingClient.setQuoteRequestHandler(quoteHandler);
 
-      const { body, status } = await request(server).get(
-        `/quote?${params.toString()}`,
-      );
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
       expect(status).toBe(200);
       expect(quoteHandler).toHaveBeenCalledWith({
@@ -378,11 +352,9 @@ describe('server', () => {
     });
 
     it.only('gets the quote from usdc with a boost fee', async () => {
-      const sendSpy = jest
-        .spyOn(RpcClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({
-          outputAmount: (1e18).toString(),
-        });
+      const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        outputAmount: (1e18).toString(),
+      });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -399,9 +371,7 @@ describe('server', () => {
       }));
       quotingClient.setQuoteRequestHandler(quoteHandler);
 
-      const { body, status } = await request(server).get(
-        `/quote?${params.toString()}`,
-      );
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
       expect(status).toBe(200);
       expect(quoteHandler).toHaveBeenCalledWith({
@@ -456,11 +426,9 @@ describe('server', () => {
     });
 
     it('gets the quote from usdc when the broker is best', async () => {
-      const sendSpy = jest
-        .spyOn(RpcClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({
-          outputAmount: (1e18).toString(),
-        });
+      const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        outputAmount: (1e18).toString(),
+      });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -476,9 +444,7 @@ describe('server', () => {
       }));
       quotingClient.setQuoteRequestHandler(quoteHandler);
 
-      const { body, status } = await request(server).get(
-        `/quote?${params.toString()}`,
-      );
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
       expect(status).toBe(200);
       expect(quoteHandler).toHaveBeenCalledWith({
@@ -545,16 +511,12 @@ describe('server', () => {
           });
         }
 
-        throw new Error(
-          `unexpected axios call to ${url}: ${JSON.stringify(data)}`,
-        );
+        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      const sendSpy = jest
-        .spyOn(RpcClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({
-          outputAmount: (100e6).toString(),
-        });
+      const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        outputAmount: (100e6).toString(),
+      });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -569,9 +531,7 @@ describe('server', () => {
         output_amount: (50e6).toString(),
       }));
 
-      const { body, status } = await request(server).get(
-        `/quote?${params.toString()}`,
-      );
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
       expect(status).toBe(200);
       expect(body).toMatchObject({
@@ -607,12 +567,10 @@ describe('server', () => {
     });
 
     it('gets the quote with intermediate amount when the broker is best', async () => {
-      const sendSpy = jest
-        .spyOn(RpcClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({
-          intermediateAmount: (2000e6).toString(),
-          outputAmount: (1e18).toString(),
-        });
+      const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        intermediateAmount: (2000e6).toString(),
+        outputAmount: (1e18).toString(),
+      });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -628,9 +586,7 @@ describe('server', () => {
         output_amount: (0.5e18).toString(),
       }));
 
-      const { body, status } = await request(server).get(
-        `/quote?${params.toString()}`,
-      );
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
       expect(status).toBe(200);
       expect(body).toMatchObject({
@@ -673,12 +629,10 @@ describe('server', () => {
     });
 
     it('gets the quote when the market maker is best', async () => {
-      const sendSpy = jest
-        .spyOn(RpcClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({
-          intermediateAmount: (2000e6).toString(),
-          outputAmount: (1e18).toString(),
-        });
+      const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        intermediateAmount: (2000e6).toString(),
+        outputAmount: (1e18).toString(),
+      });
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
         srcAsset: 'FLIP',
@@ -693,9 +647,7 @@ describe('server', () => {
         output_amount: (2e18).toString(),
       }));
 
-      const { body, status } = await request(server).get(
-        `/quote?${params.toString()}`,
-      );
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
       expect(status).toBe(200);
       expect(body).toMatchObject({
@@ -738,12 +690,10 @@ describe('server', () => {
     });
 
     it('gets the quote with low liquidity warning', async () => {
-      const sendSpy = jest
-        .spyOn(RpcClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({
-          intermediateAmount: (2000e6).toString(),
-          outputAmount: (1e18).toString(),
-        });
+      const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        intermediateAmount: (2000e6).toString(),
+        outputAmount: (1e18).toString(),
+      });
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
         srcAsset: 'FLIP',
@@ -760,9 +710,7 @@ describe('server', () => {
 
       jest.mocked(checkPriceWarning).mockResolvedValueOnce(true);
 
-      const { body, status } = await request(server).get(
-        `/quote?${params.toString()}`,
-      );
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
       expect(status).toBe(200);
       expect(body).toMatchSnapshot();
@@ -788,9 +736,7 @@ describe('server', () => {
       amount: (1e18).toString(),
     });
 
-    const { body, status } = await request(server).get(
-      `/quote?${params.toString()}`,
-    );
+    const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
     expect(status).toBe(200);
     expect(body).toMatchSnapshot();
@@ -826,9 +772,7 @@ describe('server', () => {
         });
       }
 
-      throw new Error(
-        `unexpected axios call to ${url}: ${JSON.stringify(data)}`,
-      );
+      throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
     });
 
     const params = new URLSearchParams({
@@ -837,9 +781,7 @@ describe('server', () => {
       amount: (1e18).toString(),
     });
 
-    const { body, status } = await request(server).get(
-      `/quote?${params.toString()}`,
-    );
+    const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
     expect(status).toBe(200);
     expect(body).toMatchSnapshot();
@@ -875,9 +817,7 @@ describe('server', () => {
         });
       }
 
-      throw new Error(
-        `unexpected axios call to ${url}: ${JSON.stringify(data)}`,
-      );
+      throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
     });
 
     const params = new URLSearchParams({
@@ -886,9 +826,7 @@ describe('server', () => {
       amount: (1e18).toString(),
     });
 
-    const { body, status } = await request(server).get(
-      `/quote?${params.toString()}`,
-    );
+    const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
     expect(status).toBe(200);
     expect(body).toMatchSnapshot();

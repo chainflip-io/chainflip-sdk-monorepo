@@ -2,12 +2,7 @@ import { type Chain } from '.prisma/client';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { z } from 'zod';
 import { encodeAddress as encodeBitcoinAddress } from '@/shared/bitcoin';
-import {
-  u128,
-  internalAssetEnum,
-  hexString,
-  DOT_PREFIX,
-} from '@/shared/parsers';
+import { u128, internalAssetEnum, hexString, DOT_PREFIX } from '@/shared/parsers';
 import env from '../config/env';
 import { InternalAsset } from '../enums';
 import logger from '../utils/logger';
@@ -18,15 +13,13 @@ export const depositReceivedArgs = z
     amount: u128,
     asset: internalAssetEnum,
     depositAddress: z.union([
-      z
-        .object({ __kind: z.literal('Taproot'), value: hexString })
-        .transform((o) => {
-          try {
-            return encodeBitcoinAddress(o.value, env.CHAINFLIP_NETWORK);
-          } catch {
-            return null;
-          }
-        }),
+      z.object({ __kind: z.literal('Taproot'), value: hexString }).transform((o) => {
+        try {
+          return encodeBitcoinAddress(o.value, env.CHAINFLIP_NETWORK);
+        } catch {
+          return null;
+        }
+      }),
       hexString,
     ]),
   })
@@ -56,9 +49,7 @@ export type DepositReceivedArgs = z.input<typeof depositReceivedArgs>;
 export const networkDepositReceived =
   (chain: Chain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
-    const { asset, amount, depositAddress } = depositReceivedArgs.parse(
-      event.args,
-    );
+    const { asset, amount, depositAddress } = depositReceivedArgs.parse(event.args);
 
     const channel = await prisma.depositChannel.findFirst({
       where: { depositAddress, srcChain: chain },

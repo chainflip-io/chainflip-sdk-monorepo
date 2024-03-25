@@ -1,15 +1,7 @@
 import assert from 'assert';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
-import {
-  InternalAsset,
-  InternalAssets,
-  assetConstants,
-  chainConstants,
-} from '@/shared/enums';
-import {
-  getHundredthPipAmountFromAmount,
-  ONE_IN_HUNDREDTH_PIPS,
-} from '@/shared/functions';
+import { InternalAsset, InternalAssets, assetConstants, chainConstants } from '@/shared/enums';
+import { getHundredthPipAmountFromAmount, ONE_IN_HUNDREDTH_PIPS } from '@/shared/functions';
 import { getSwapRate } from '@/shared/rpc';
 import { SwapFee } from '@/shared/schemas';
 import { getPools } from '@/swap/utils/pools';
@@ -22,9 +14,7 @@ export const calculateIncludedSwapFees = async (
   intermediateAmount: string | undefined,
   swapOutputAmount: string,
 ): Promise<SwapFee[]> => {
-  const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(
-    env.CHAINFLIP_NETWORK,
-  );
+  const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(env.CHAINFLIP_NETWORK);
   if (srcAsset === 'Usdc' && destAsset === 'Usdc') {
     return [
       {

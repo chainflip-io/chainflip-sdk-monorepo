@@ -2,21 +2,11 @@ type ArrayToMap<T extends readonly string[]> = {
   [K in T[number]]: K;
 };
 
-const arrayToMap = <const T extends readonly string[]>(
-  array: T,
-): ArrayToMap<T> =>
+const arrayToMap = <const T extends readonly string[]>(array: T): ArrayToMap<T> =>
   Object.fromEntries(array.map((key) => [key, key])) as ArrayToMap<T>;
 
-export const InternalAssets = arrayToMap([
-  'Flip',
-  'Usdc',
-  'Dot',
-  'Eth',
-  'Btc',
-  'Usdt',
-]);
-export type InternalAsset =
-  (typeof InternalAssets)[keyof typeof InternalAssets];
+export const InternalAssets = arrayToMap(['Flip', 'Usdc', 'Dot', 'Eth', 'Btc', 'Usdt']);
+export type InternalAsset = (typeof InternalAssets)[keyof typeof InternalAssets];
 
 export const Chains = arrayToMap(['Bitcoin', 'Ethereum', 'Polkadot']);
 export type Chain = (typeof Chains)[keyof typeof Chains];
@@ -24,15 +14,9 @@ export type Chain = (typeof Chains)[keyof typeof Chains];
 export const Assets = arrayToMap(['FLIP', 'USDC', 'DOT', 'ETH', 'BTC', 'USDT']);
 export type Asset = (typeof Assets)[keyof typeof Assets];
 
-export const ChainflipNetworks = arrayToMap([
-  'backspin',
-  'sisyphos',
-  'perseverance',
-  'mainnet',
-]);
+export const ChainflipNetworks = arrayToMap(['backspin', 'sisyphos', 'perseverance', 'mainnet']);
 
-export type ChainflipNetwork =
-  (typeof ChainflipNetworks)[keyof typeof ChainflipNetworks];
+export type ChainflipNetwork = (typeof ChainflipNetworks)[keyof typeof ChainflipNetworks];
 
 export const isTestnet = (network: ChainflipNetwork): boolean =>
   network !== ChainflipNetworks.mainnet;
@@ -122,8 +106,7 @@ export const chainConstants = {
   }
 >;
 
-export type AssetOfChain<C extends Chain> =
-  (typeof chainConstants)[C]['assets'][number];
+export type AssetOfChain<C extends Chain> = (typeof chainConstants)[C]['assets'][number];
 
 export type UncheckedAssetAndChain = {
   asset: Asset | string;
@@ -157,9 +140,7 @@ export function assertIsValidAssetAndChain(
   assetAndChain: UncheckedAssetAndChain,
 ): asserts assetAndChain is AssetAndChain {
   if (!isValidAssetAndChain(assetAndChain)) {
-    throw new Error(
-      `invalid asset and chain combination: ${JSON.stringify(assetAndChain)}`,
-    );
+    throw new Error(`invalid asset and chain combination: ${JSON.stringify(assetAndChain)}`);
   }
 }
 

@@ -1,11 +1,6 @@
 // Set the column in the DB to the block timestamp and the deposit amount.
 import { z } from 'zod';
-import {
-  internalAssetEnum,
-  u128,
-  u64,
-  swapType as swapTypeSchema,
-} from '@/shared/parsers';
+import { internalAssetEnum, u128, u64, swapType as swapTypeSchema } from '@/shared/parsers';
 import { encodedAddress } from './common';
 import logger from '../utils/logger';
 import type { EventHandlerArgs } from '.';
