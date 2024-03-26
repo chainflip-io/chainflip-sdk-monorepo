@@ -18,12 +18,12 @@ export const ONE_IN_PIP = 10000;
 export const ONE_IN_HUNDREDTH_PIPS = ONE_IN_PIP * 100;
 
 export const getPipAmountFromAmount = (
-  amount: bigint | string,
+  amount: bigint,
   pips: number,
   denominator: number = ONE_IN_PIP,
-) => (BigInt(amount) * BigInt(pips)) / BigInt(denominator);
+) => (amount * BigInt(pips)) / BigInt(denominator);
 
-export const getHundredthPipAmountFromAmount = (amount: bigint | string, hundredthPips: number) =>
+export const getHundredthPipAmountFromAmount = (amount: bigint, hundredthPips: number) =>
   getPipAmountFromAmount(amount, hundredthPips, ONE_IN_HUNDREDTH_PIPS);
 
 export const assertUnreachable = (x: never): never => x;

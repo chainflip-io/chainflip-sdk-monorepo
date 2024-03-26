@@ -138,8 +138,8 @@ export const chainConstants = {
 export type AssetOfChain<C extends Chain> = (typeof chainConstants)[C]['assets'][number];
 
 export type UncheckedAssetAndChain = {
-  asset: Asset | string;
-  chain: Chain | string;
+  asset: Asset;
+  chain: Chain;
 };
 export type AssetAndChain = {
   [C in Chain]: { chain: C; asset: AssetOfChain<C> };
@@ -203,4 +203,46 @@ export function getInternalAsset(asset: UncheckedAssetAndChain) {
   };
 
   return readChainAssetValue(map, asset);
+}
+
+export const getInternalAssets = ({
+  srcAsset,
+  srcChain,
+  destAsset,
+  destChain,
+}: {
+  srcAsset: Asset;
+  srcChain: Chain;
+  destAsset: Asset;
+  destChain: Chain;
+}) => ({
+  srcAsset: getInternalAsset({ asset: srcAsset, chain: srcChain }),
+  destAsset: getInternalAsset({ asset: destAsset, chain: destChain }),
+});
+
+type PrefixedAssetAndChain<T extends string> = {
+  [K in `${T}Asset`]: Asset;
+} & {
+  [K in `${T}Chain`]: Chain;
+};
+
+export function getAssetAndChain(internalAsset: InternalAsset): AssetAndChain;
+export function getAssetAndChain<const T extends string>(
+  internalAsset: InternalAsset,
+  prefix: T,
+): PrefixedAssetAndChain<T>;
+export function getAssetAndChain<const T extends string>(
+  internalAsset: InternalAsset,
+  prefix?: T,
+): AssetAndChain | PrefixedAssetAndChain<T> {
+  const { chain, asset } = assetConstants[internalAsset];
+
+  if (prefix) {
+    return {
+      [`${prefix}Asset`]: asset,
+      [`${prefix}Chain`]: chain,
+    } as PrefixedAssetAndChain<T>;
+  }
+
+  return { chain, asset } as AssetAndChain;
 }
