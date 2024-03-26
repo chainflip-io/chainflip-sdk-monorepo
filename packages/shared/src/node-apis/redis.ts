@@ -61,20 +61,22 @@ const broadcastParsers = {
       .transform(({ hash }) => hash)
       .optional(), // TODO: V130 -- remove optional after v130
   }),
-  Arbitrum: z.object({
-    tx_out_id: z.object({
-      signature: z.object({
-        k_times_g_address: z.array(number),
-        s: z.array(number),
+  Arbitrum: z
+    .object({
+      tx_out_id: z.object({
+        signature: z.object({
+          k_times_g_address: z.array(number),
+          s: z.array(number),
+        }),
       }),
-    }),
-    tx_ref: z
-      .object({
-        hash: hexString,
-      })
-      .transform(({ hash }) => hash)
-      .optional(), // TODO: remove once Arbitrum is fully supported
-  }).optional(),  // TODO: remove once Arbitrum is available on all networks
+      tx_ref: z
+        .object({
+          hash: hexString,
+        })
+        .transform(({ hash }) => hash)
+        .optional(), // TODO: remove once Arbitrum is fully supported
+    })
+    .optional(), // TODO: remove once Arbitrum is available on all networks
 };
 
 type ChainBroadcast<C extends Chain> = z.infer<(typeof broadcastParsers)[C]>;
