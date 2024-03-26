@@ -17,7 +17,12 @@ export const InternalAssets = arrayToMap([
 ]);
 export type InternalAsset = (typeof InternalAssets)[keyof typeof InternalAssets];
 
-export const Chains = arrayToMap(['Bitcoin', 'Ethereum', 'Polkadot', 'Arbitrum']);
+export const Chains = arrayToMap([
+  'Bitcoin',
+  'Ethereum',
+  'Polkadot',
+  'Arbitrum',
+]);
 export type Chain = (typeof Chains)[keyof typeof Chains];
 
 export const Assets = arrayToMap([
