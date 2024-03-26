@@ -1,4 +1,4 @@
-import { encodeAddress } from '../bitcoin';
+import { encodeAddress, reverseHex } from '../bitcoin';
 
 describe(encodeAddress, () => {
   it.each([
@@ -24,5 +24,25 @@ describe(encodeAddress, () => {
     ],
   ] as const)('encodes encode %s', (pubkey, address, network) => {
     expect(encodeAddress(pubkey, network)).toEqual(address);
+  });
+});
+
+describe(reverseHex, () => {
+  it.each([
+    [
+      '0x2ad051fefd2448a750ece819c24f57b996084b4278dbe3b9d5d8334a6c35766e',
+      '6e76356c4a33d8d5b9e3db78424b0896b9574fc219e8ec50a74824fdfe51d02a',
+    ],
+    [
+      '0xb3551b30622e4fd7f615995838f06897009851881e024320bf52c4b3ca938c03',
+      '038c93cab3c452bf2043021e885198009768f038589915f6d74f2e62301b55b3',
+    ],
+    [
+      'b3551b30622e4fd7f615995838f06897009851881e024320bf52c4b3ca938c03',
+      '038c93cab3c452bf2043021e885198009768f038589915f6d74f2e62301b55b3',
+    ],
+    [undefined, undefined],
+  ] as const)('reverses hex correctly %s', (hex, reversed) => {
+    expect(reverseHex(hex)).toEqual(reversed);
   });
 });
