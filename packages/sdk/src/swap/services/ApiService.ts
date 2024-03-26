@@ -2,7 +2,7 @@ import axios from 'axios';
 import { type ChainflipNetwork, Chain, Chains, ChainflipNetworks } from '@/shared/enums';
 import type { Environment } from '@/shared/rpc';
 import type { QuoteQueryParams, QuoteQueryResponse } from '@/shared/schemas';
-import { dot$, btc$, eth$, usdc$, flip$, usdt$ } from '../assets';
+import { dot$, btc$, eth$, usdc$, flip$, usdt$, arbeth$, arbusdc$ } from '../assets';
 import { bitcoin, ethereum, polkadot } from '../chains';
 import {
   ChainData,
@@ -51,6 +51,9 @@ const getAssets = async (
   }
   if (chain === Chains.Bitcoin) {
     return [btc$(network, env)];
+  }
+  if (chain === Chains.Arbitrum) {
+    return [arbeth$(network, env), arbusdc$(network, env)];
   }
 
   throw new Error('received unexpected chain');

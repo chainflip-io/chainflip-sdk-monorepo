@@ -22,6 +22,7 @@ export function getTokenContractAddress(asset: InternalAsset, network: Chainflip
   if (asset === InternalAssets.Flip) return ADDRESSES[network].FLIP_CONTRACT_ADDRESS;
   if (asset === InternalAssets.Usdc) return ADDRESSES[network].USDC_CONTRACT_ADDRESS;
   if (asset === InternalAssets.Usdt) return ADDRESSES[network].USDT_CONTRACT_ADDRESS;
+  if (asset === InternalAssets.ArbUsdc) return ADDRESSES[network].ARBUSDC_CONTRACT_ADDRESS;
 
   throw new Error(`No contract address for ${asset} on ${network}`);
 }

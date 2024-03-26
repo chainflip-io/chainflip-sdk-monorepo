@@ -19,31 +19,37 @@ const env = {
       },
       Polkadot: { DOT: 0x77359400n },
       Bitcoin: { BTC: 0x5f370n },
+      Arbitrum: { ETH: 0n, USDC: 0n },
     },
     ingressFees: {
       Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n, USDT: 0n },
       Polkadot: { DOT: 0n },
       Bitcoin: { BTC: 0n },
+      Arbitrum: { ETH: 0n, USDC: 0n },
     },
     egressFees: {
       Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n, USDT: 0n },
       Polkadot: { DOT: 0n },
       Bitcoin: { BTC: 0n },
+      Arbitrum: { ETH: 0n, USDC: 0n },
     },
     minimumEgressAmounts: {
       Ethereum: { ETH: 0x1n, USDC: 0x1n, FLIP: 0x1n, USDT: 0x1n },
       Polkadot: { DOT: 0x1n },
       Bitcoin: { BTC: 0x258n },
+      Arbitrum: { ETH: 0x1n, USDC: 0x1n },
     },
     witnessSafetyMargins: {
       Ethereum: 1n,
       Polkadot: null,
       Bitcoin: 2n,
+      arbitrum: null,
     },
     channelOpeningFees: {
       Ethereum: 16n,
       Polkadot: 0n,
       Bitcoin: 0n,
+      Arbitrum: 0n,
     },
   },
   swapping: {
@@ -56,6 +62,7 @@ const env = {
       },
       Polkadot: { DOT: 0x77359400n },
       Bitcoin: { BTC: null },
+      Arbitrum: { ETH: null, USDC: null },
     },
   },
 };

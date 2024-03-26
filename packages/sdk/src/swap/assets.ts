@@ -51,3 +51,5 @@ export const flip$ = assetFactory('Flip');
 export const usdt$ = assetFactory('Usdt');
 export const dot$ = assetFactory('Dot');
 export const btc$ = assetFactory('Btc');
+export const arbeth$ = assetFactory('ArbEth');
+export const arbusdc$ = assetFactory('ArbUsdc');

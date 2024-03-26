@@ -38,6 +38,10 @@ describe('getSwappingEnvironment', () => {
 
     expect(await getSwappingEnvironment({ network: 'perseverance' })).toEqual({
       maximumSwapAmounts: {
+        Arbitrum: {
+          ETH: null,
+          USDC: null,
+        },
         Bitcoin: {
           BTC: 0x4563918244f40000n,
         },
@@ -67,6 +71,10 @@ describe('getIngressEgressEnvironment', () => {
 
     expect(await getIngressEgressEnvironment({ network: 'perseverance' })).toEqual({
       minimumDepositAmounts: {
+        Arbitrum: {
+          ETH: 0n,
+          USDC: 0n,
+        },
         Bitcoin: { BTC: 0x4563918244f40000n },
         Ethereum: {
           ETH: 0x4563918244f40000n,
@@ -77,6 +85,10 @@ describe('getIngressEgressEnvironment', () => {
         Polkadot: { DOT: 0x4563918244f40000n },
       },
       ingressFees: {
+        Arbitrum: {
+          ETH: null,
+          USDC: null,
+        },
         Bitcoin: { BTC: 0x4563918244f40000n },
         Ethereum: {
           ETH: 0x4563918244f40000n,
@@ -87,6 +99,10 @@ describe('getIngressEgressEnvironment', () => {
         Polkadot: { DOT: 0x4563918244f40000n },
       },
       egressFees: {
+        Arbitrum: {
+          ETH: null,
+          USDC: null,
+        },
         Bitcoin: {
           BTC: 0n,
         },
@@ -101,6 +117,10 @@ describe('getIngressEgressEnvironment', () => {
         },
       },
       minimumEgressAmounts: {
+        Arbitrum: {
+          ETH: 1n,
+          USDC: 1n,
+        },
         Bitcoin: {
           BTC: 0x258n,
         },

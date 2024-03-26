@@ -1,5 +1,36 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ApiService getAssets (backspin) gets the correct assets for networks (Arbitrum) 1`] = `
+[
+  {
+    "asset": "ETH",
+    "chain": "Arbitrum",
+    "chainflipId": "ArbEth",
+    "contractAddress": undefined,
+    "decimals": 18,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Arbitrum Ether",
+    "symbol": "ETH",
+  },
+  {
+    "asset": "USDC",
+    "chain": "Arbitrum",
+    "chainflipId": "ArbUsdc",
+    "contractAddress": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+    "decimals": 6,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Arbitrum USDC",
+    "symbol": "USDC",
+  },
+]
+`;
+
 exports[`ApiService getAssets (backspin) gets the correct assets for networks (Bitcoin) 1`] = `
 [
   {
@@ -93,6 +124,37 @@ exports[`ApiService getAssets (backspin) gets the correct assets for networks (P
 ]
 `;
 
+exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Arbitrum) 1`] = `
+[
+  {
+    "asset": "ETH",
+    "chain": "Arbitrum",
+    "chainflipId": "ArbEth",
+    "contractAddress": undefined,
+    "decimals": 18,
+    "isMainnet": true,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Arbitrum Ether",
+    "symbol": "ETH",
+  },
+  {
+    "asset": "USDC",
+    "chain": "Arbitrum",
+    "chainflipId": "ArbUsdc",
+    "contractAddress": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+    "decimals": 6,
+    "isMainnet": true,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Arbitrum USDC",
+    "symbol": "USDC",
+  },
+]
+`;
+
 exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Bitcoin) 1`] = `
 [
   {
@@ -173,6 +235,37 @@ exports[`ApiService getAssets (mainnet) gets the correct assets for networks (Po
 ]
 `;
 
+exports[`ApiService getAssets (perseverance) gets the correct assets for networks (Arbitrum) 1`] = `
+[
+  {
+    "asset": "ETH",
+    "chain": "Arbitrum",
+    "chainflipId": "ArbEth",
+    "contractAddress": undefined,
+    "decimals": 18,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Arbitrum Ether",
+    "symbol": "ETH",
+  },
+  {
+    "asset": "USDC",
+    "chain": "Arbitrum",
+    "chainflipId": "ArbUsdc",
+    "contractAddress": "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d",
+    "decimals": 6,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Arbitrum USDC",
+    "symbol": "USDC",
+  },
+]
+`;
+
 exports[`ApiService getAssets (perseverance) gets the correct assets for networks (Bitcoin) 1`] = `
 [
   {
@@ -249,6 +342,37 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for network
     "minimumSwapAmount": "2000000000",
     "name": "Polkadot",
     "symbol": "DOT",
+  },
+]
+`;
+
+exports[`ApiService getAssets (sisyphos) gets the correct assets for networks (Arbitrum) 1`] = `
+[
+  {
+    "asset": "ETH",
+    "chain": "Arbitrum",
+    "chainflipId": "ArbEth",
+    "contractAddress": undefined,
+    "decimals": 18,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Arbitrum Ether",
+    "symbol": "ETH",
+  },
+  {
+    "asset": "USDC",
+    "chain": "Arbitrum",
+    "chainflipId": "ArbUsdc",
+    "contractAddress": "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d",
+    "decimals": 6,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Arbitrum USDC",
+    "symbol": "USDC",
   },
 ]
 `;
