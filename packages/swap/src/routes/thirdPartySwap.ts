@@ -16,7 +16,7 @@ router.post(
       logger.info('received bad request for new third party swap', {
         body: req.body,
       });
-      throw ServiceError.badRequest('invalid request body');
+      throw ServiceError.badRequest('bad-request', 'invalid request body');
     }
     try {
       await prisma.thirdPartySwap.create({
@@ -31,7 +31,7 @@ router.post(
       });
       res.sendStatus(201);
     } catch (err) {
-      if (err instanceof Error) throw ServiceError.internalError(err.message);
+      if (err instanceof Error) throw ServiceError.internalError('internal-error', err.message);
       throw ServiceError.internalError();
     }
   }),
@@ -54,7 +54,7 @@ router.get(
       res.json({ ...swap });
     } catch (err) {
       if (err instanceof ServiceError) throw err;
-      if (err instanceof Error) throw ServiceError.internalError(err.message);
+      if (err instanceof Error) throw ServiceError.internalError('internal-error', err.message);
       throw ServiceError.internalError();
     }
   }),

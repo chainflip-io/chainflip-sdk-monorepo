@@ -63,7 +63,7 @@ const coerceChain = (chain: string) => {
     case 'POLKADOT':
       return screamingSnakeToPascalCase(uppercase);
     default:
-      throw ServiceError.badRequest(`invalid chain "${chain}"`);
+      throw ServiceError.badRequest('bad-request', `invalid chain "${chain}"`);
   }
 };
 
@@ -126,7 +126,12 @@ router.get(
       }
     }
 
-    ServiceError.assert(swapDepositChannel || swap || failedSwap, 'notFound', 'resource not found');
+    ServiceError.assert(
+      swapDepositChannel || swap || failedSwap,
+      'notFound',
+      'not-found',
+      `no swap for id "${id}" found`,
+    );
 
     let state: State;
     let failureMode;
@@ -268,7 +273,7 @@ router.post(
     const result = openSwapDepositChannelSchema.safeParse(req.body);
     if (!result.success) {
       logger.info('received bad request for new swap', { body: req.body });
-      throw ServiceError.badRequest('invalid request body');
+      throw ServiceError.badRequest('bad-request', 'invalid request body');
     }
 
     const { srcChainExpiryBlock, channelOpeningFee, ...response } = await openSwapDepositChannel(

@@ -2,6 +2,7 @@ import express from 'express';
 import type { Server } from 'socket.io';
 import { Asset, Assets, Chain, Chains, getInternalAsset } from '@/shared/enums';
 import { bigintMin, getPipAmountFromAmount } from '@/shared/functions';
+import { RpcClientError } from '@/shared/node-apis/RpcClient';
 import { quoteQuerySchema, SwapFee } from '@/shared/schemas';
 import { calculateIncludedSwapFees, estimateIngressEgressFeeAssetAmount } from '@/swap/utils/fees';
 import { getPools } from '@/swap/utils/pools';
@@ -55,14 +56,14 @@ const quote = (io: Server) => {
           query: req.query,
           error: queryResult.error,
         });
-        throw ServiceError.badRequest('invalid request');
+        throw ServiceError.badRequest('bad-request', `the quote request parameters are invalid`);
       }
 
       logger.info('received a quote request', { query: req.query });
 
       // detect if ingress and egress fees are exposed as gas asset amount or fee asset amount
       // https://github.com/chainflip-io/chainflip-backend/pull/4497
-      // TODO: remove this once all networks are upraded to 1.3
+      // TODO: remove this once all networks are upgraded to 1.3
       const ingressEgressFeeIsGasAssetAmount =
         (await getIngressFee({ chain: 'Ethereum', asset: 'FLIP' })) ===
         (await getIngressFee({ chain: 'Ethereum', asset: 'USDC' }));
@@ -74,7 +75,7 @@ const quote = (io: Server) => {
       const amountResult = await validateSwapAmount(srcChainAsset, BigInt(query.amount));
 
       if (!amountResult.success) {
-        throw ServiceError.badRequest(amountResult.reason);
+        throw ServiceError.badRequest('invalid-amount', amountResult.reason);
       }
 
       const includedFees: SwapFee[] = [];
@@ -95,6 +96,7 @@ const quote = (io: Server) => {
       let ingressFee = await getIngressFee(srcChainAsset);
       if (ingressFee == null) {
         throw ServiceError.internalError(
+          'rpc-error',
           `could not determine ingress fee for ${getInternalAsset(srcChainAsset)}`,
         );
       }
@@ -112,7 +114,10 @@ const quote = (io: Server) => {
       });
       swapInputAmount -= ingressFee;
       if (swapInputAmount <= 0n) {
-        throw ServiceError.badRequest(`amount is lower than estimated ingress fee (${ingressFee})`);
+        throw ServiceError.badRequest(
+          'invalid-amount',
+          `deposit amount (${query.amount}) is lower than estimated ingress fee (${ingressFee})`,
+        );
       }
 
       if (query.brokerCommissionBps) {
@@ -170,6 +175,7 @@ const quote = (io: Server) => {
         let egressFee = await getEgressFee(destChainAsset);
         if (egressFee == null) {
           throw ServiceError.internalError(
+            'rpc-error',
             `could not determine egress fee for ${getInternalAsset(destChainAsset)}`,
           );
         }
@@ -193,7 +199,8 @@ const quote = (io: Server) => {
 
         if (egressAmount < minimumEgressAmount) {
           throw ServiceError.badRequest(
-            `egress amount (${egressAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
+            'invalid-amount',
+            `expected egress amount (${egressAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
           );
         }
 
@@ -223,13 +230,29 @@ const quote = (io: Server) => {
       } catch (err) {
         if (err instanceof ServiceError) throw err;
 
-        const message =
-          err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';
+        let httpCode = 500;
+        let errorPayload;
+        if (err instanceof RpcClientError) {
+          if (err.message.includes('InsufficientLiquidity')) {
+            httpCode = 400;
+            errorPayload = {
+              code: 'invalid-amount',
+              message: `insufficient liquidity for swapping deposit amount (${query.amount})`,
+              error: err.message,
+            };
+          } else {
+            errorPayload = { code: 'rpc-error', message: err.message, error: err.message };
+          }
+        } else {
+          const message =
+            err instanceof Error ? err.message : 'an unexpected internal error occurred';
+          errorPayload = { code: 'rpc-error', message, error: message };
+        }
 
         logger.error('error while collecting quotes:', err);
 
-        // DEPRECATED(1.3): remove `error`
-        res.status(500).json({ message, error: message });
+        // DEPRECATED(1.3): remove `error`, return ServiceError.internalError instead
+        res.status(httpCode).json(errorPayload);
       }
     }),
   );
