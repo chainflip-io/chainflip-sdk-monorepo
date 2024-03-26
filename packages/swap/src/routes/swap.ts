@@ -130,6 +130,7 @@ router.get(
 
     let state: State;
     let failureMode;
+    let egressTrackerTxRef;
     let error: { name: string; message: string } | undefined;
 
     if (failedSwap || swap?.ignoredEgress) {
@@ -165,8 +166,10 @@ router.get(
       state = State.BroadcastAborted;
     } else if (swap?.egress?.broadcast) {
       assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
-      if (await getPendingBroadcast(swap.egress.broadcast)) {
+      const pendingBroadcast = await getPendingBroadcast(swap.egress.broadcast);
+      if (pendingBroadcast) {
         state = State.Broadcasted;
+        egressTrackerTxRef = pendingBroadcast.tx_ref;
       } else {
         state = State.BroadcastRequested;
       }
@@ -248,7 +251,7 @@ router.get(
       ccmDepositReceivedBlockIndex: swap?.ccmDepositReceivedBlockIndex ?? undefined,
       ccmMetadata,
       depositChannelOpenedThroughBackend: swapDepositChannel?.openedThroughBackend,
-      broadcastTxRef: swap?.egress?.broadcast?.transactionRef,
+      broadcastTxRef: swap?.egress?.broadcast?.transactionRef ?? egressTrackerTxRef,
       error,
       failure: failureMode,
       failedAt: failedSwap?.failedAt,
