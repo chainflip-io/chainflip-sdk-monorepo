@@ -9,7 +9,7 @@ export const handleError = (res: Response, error: unknown) => {
   logger.customInfo('received error', {}, { error });
 
   if (error instanceof ServiceError) {
-    res.status(error.code).json({ message: error.message });
+    res.status(error.httpCode).json({ code: error.code, message: error.message });
   } else {
     logger.customError('unknown error occurred', { alertCode: 'UnknownError' }, { error });
     res.status(500).json({ message: 'unknown error' });
