@@ -8,8 +8,5 @@ export const getStateChainGateway = (networkOpts: FundingNetworkOptions) => {
       ? networkOpts.stateChainGatewayContractAddress
       : getStateChainGatewayContractAddress(networkOpts.network);
 
-  return StateChainGateway__factory.connect(
-    stateChainGatewayContractAddress,
-    networkOpts.signer,
-  );
+  return StateChainGateway__factory.connect(stateChainGatewayContractAddress, networkOpts.signer);
 };

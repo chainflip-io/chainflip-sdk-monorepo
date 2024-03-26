@@ -3,10 +3,7 @@ import * as crypto from 'crypto';
 import { filter, Observable, Subscription } from 'rxjs';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
 import { getInternalAsset, InternalAssets } from '@/shared/enums';
-import {
-  getHundredthPipAmountFromAmount,
-  ONE_IN_HUNDREDTH_PIPS,
-} from '@/shared/functions';
+import { getHundredthPipAmountFromAmount, ONE_IN_HUNDREDTH_PIPS } from '@/shared/functions';
 import { ParsedQuoteParams, InternalQuoteRequest } from '@/shared/schemas';
 import { BrokerQuote, MarketMakerQuote } from './schemas';
 import { Pool } from '../client';
@@ -50,9 +47,7 @@ export const subtractFeesFromMakerQuote = (
   quote: MarketMakerQuote,
   quotePools: Pool[],
 ): MarketMakerQuote => {
-  const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(
-    env.CHAINFLIP_NETWORK,
-  );
+  const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(env.CHAINFLIP_NETWORK);
   const { quoteType } = quote;
 
   if ('intermediateAmount' in quote) {
@@ -60,9 +55,7 @@ export const subtractFeesFromMakerQuote = (
 
     const intermediateAmount = getHundredthPipAmountFromAmount(
       quote.intermediateAmount,
-      ONE_IN_HUNDREDTH_PIPS -
-        networkFeeHundredthPips -
-        quotePools[0].liquidityFeeHundredthPips,
+      ONE_IN_HUNDREDTH_PIPS - networkFeeHundredthPips - quotePools[0].liquidityFeeHundredthPips,
     ).toString();
 
     const outputAmount = getHundredthPipAmountFromAmount(
@@ -85,18 +78,13 @@ export const subtractFeesFromMakerQuote = (
 
   const outputAmount = getHundredthPipAmountFromAmount(
     quote.outputAmount,
-    ONE_IN_HUNDREDTH_PIPS -
-      networkFeeHundredthPips -
-      quotePools[0].liquidityFeeHundredthPips,
+    ONE_IN_HUNDREDTH_PIPS - networkFeeHundredthPips - quotePools[0].liquidityFeeHundredthPips,
   ).toString();
 
   return { id: quote.id, outputAmount, quoteType };
 };
 
-export const findBestQuote = (
-  quotes: MarketMakerQuote[],
-  brokerQuote: BrokerQuote,
-) =>
+export const findBestQuote = (quotes: MarketMakerQuote[], brokerQuote: BrokerQuote) =>
   quotes.reduce(
     (a, b) => {
       const cmpResult = compareNumericStrings(a.outputAmount, b.outputAmount);
@@ -105,9 +93,7 @@ export const findBestQuote = (
     brokerQuote as MarketMakerQuote | BrokerQuote,
   );
 
-export const buildQuoteRequest = (
-  query: ParsedQuoteParams,
-): InternalQuoteRequest => {
+export const buildQuoteRequest = (query: ParsedQuoteParams): InternalQuoteRequest => {
   const srcAsset = getInternalAsset({
     asset: query.srcAsset,
     chain: query.srcChain,

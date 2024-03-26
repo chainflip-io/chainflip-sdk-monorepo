@@ -17,7 +17,4 @@ type GetEthNetworkOptions =
   | { chainflipNetwork: 'localnet'; ethNetwork?: string }
   | { chainflipNetwork: ChainflipNetwork };
 
-export const cliNetworks = [
-  ...Object.values(chainflipNetwork.enum),
-  'localnet',
-] as const;
+export const cliNetworks = [...Object.values(chainflipNetwork.enum), 'localnet'] as const;

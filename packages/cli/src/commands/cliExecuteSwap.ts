@@ -1,17 +1,9 @@
 import { getDefaultProvider, Wallet } from 'ethers';
 import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
 import { getEvmChainId } from '@/shared/consts';
-import {
-  InternalAssets,
-  ChainflipNetworks,
-  assetConstants,
-} from '@/shared/enums';
+import { InternalAssets, ChainflipNetworks, assetConstants } from '@/shared/enums';
 import { assert } from '@/shared/guards';
-import {
-  executeSwap,
-  type SwapNetworkOptions,
-  type ExecuteSwapParams,
-} from '@/shared/vault';
+import { executeSwap, type SwapNetworkOptions, type ExecuteSwapParams } from '@/shared/vault';
 import { askForPrivateKey, cliNetworks } from '../utils';
 
 export const yargsOptions = {
@@ -59,13 +51,11 @@ export const yargsOptions = {
   },
   'vault-contract-address': {
     type: 'string',
-    describe:
-      'The contract address of the vault when `chainflip-network` is `localnet`',
+    describe: 'The contract address of the vault when `chainflip-network` is `localnet`',
   },
   'eth-network': {
     type: 'string',
-    describe:
-      'The eth network URL to use when `chainflip-network` is `localnet`',
+    describe: 'The eth network URL to use when `chainflip-network` is `localnet`',
   },
 } as const satisfies { [key: string]: Options };
 
@@ -77,10 +67,7 @@ export default async function cliExecuteSwap(
   const ethNetwork =
     args.chainflipNetwork === 'localnet'
       ? args.ethNetwork
-      : getEvmChainId(
-          assetConstants[args.srcAsset].chain,
-          args.chainflipNetwork,
-        );
+      : getEvmChainId(assetConstants[args.srcAsset].chain, args.chainflipNetwork);
 
   const wallet = new Wallet(privateKey).connect(
     getDefaultProvider(ethNetwork, { etherscan: '-' }), // disable etherscan provider because it is unreliable

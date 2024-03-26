@@ -18,11 +18,9 @@ describe(swapAmountTooLow, () => {
 
   describe('deposit channel origin', () => {
     it('handles a new event from a dot deposit channel', async () => {
-      prisma.swapDepositChannel.findFirstOrThrow = jest
-        .fn()
-        .mockResolvedValueOnce({
-          id: 'internal-deposit-channel-id',
-        });
+      prisma.swapDepositChannel.findFirstOrThrow = jest.fn().mockResolvedValueOnce({
+        id: 'internal-deposit-channel-id',
+      });
       prisma.failedSwap.create = jest.fn();
 
       await swapAmountTooLow({
@@ -31,12 +29,8 @@ describe(swapAmountTooLow, () => {
         event: swapAmountTooLowDotDepositChannelMock.eventContext.event as any,
       });
 
-      expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenCalledTimes(
-        1,
-      );
-      expect(
-        prisma.swapDepositChannel.findFirstOrThrow,
-      ).toHaveBeenNthCalledWith(1, {
+      expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenCalledTimes(1);
+      expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenNthCalledWith(1, {
         where: {
           srcChain: 'Polkadot',
           depositAddress: DOT_ADDRESS,
@@ -50,9 +44,7 @@ describe(swapAmountTooLow, () => {
         data: {
           destAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
           destChain: 'Bitcoin',
-          failedAt: new Date(
-            swapAmountTooLowBtcDepositChannelMock.block.timestamp,
-          ),
+          failedAt: new Date(swapAmountTooLowBtcDepositChannelMock.block.timestamp),
           failedBlockIndex: '100-0',
           reason: 'BelowMinimumDeposit',
           depositAmount: '12500000000',
@@ -64,11 +56,9 @@ describe(swapAmountTooLow, () => {
     });
 
     it('handles a new event from a btc deposit channel', async () => {
-      prisma.swapDepositChannel.findFirstOrThrow = jest
-        .fn()
-        .mockResolvedValueOnce({
-          id: 'internal-deposit-channel-id',
-        });
+      prisma.swapDepositChannel.findFirstOrThrow = jest.fn().mockResolvedValueOnce({
+        id: 'internal-deposit-channel-id',
+      });
       prisma.failedSwap.create = jest.fn();
 
       await swapAmountTooLow({
@@ -77,12 +67,8 @@ describe(swapAmountTooLow, () => {
         event: swapAmountTooLowBtcDepositChannelMock.eventContext.event as any,
       });
 
-      expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenCalledTimes(
-        1,
-      );
-      expect(
-        prisma.swapDepositChannel.findFirstOrThrow,
-      ).toHaveBeenNthCalledWith(1, {
+      expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenCalledTimes(1);
+      expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenNthCalledWith(1, {
         where: {
           srcChain: 'Bitcoin',
           depositAddress: 'bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa',
@@ -100,9 +86,7 @@ describe(swapAmountTooLow, () => {
           srcChain: 'Bitcoin',
           swapDepositChannelId: 'internal-deposit-channel-id',
           txHash: undefined,
-          failedAt: new Date(
-            swapAmountTooLowBtcDepositChannelMock.block.timestamp,
-          ),
+          failedAt: new Date(swapAmountTooLowBtcDepositChannelMock.block.timestamp),
           failedBlockIndex: '100-0',
           reason: 'BelowMinimumDeposit',
         },
@@ -119,16 +103,13 @@ describe(swapAmountTooLow, () => {
         await swapAmountTooLow({
           prisma,
           block: swapAmountTooLowBtcDepositChannelMock.block as any,
-          event: swapAmountTooLowBtcDepositChannelMock.eventContext
-            .event as any,
+          event: swapAmountTooLowBtcDepositChannelMock.eventContext.event as any,
         });
       } catch (err) {
         expect(err).toEqual({ message: 'Not found' });
       }
 
-      expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenCalledTimes(
-        1,
-      );
+      expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenCalledTimes(1);
       expect(prisma.failedSwap.create).toHaveBeenCalledTimes(0);
     });
   });
@@ -144,9 +125,7 @@ describe(swapAmountTooLow, () => {
         event: swapAmountTooLowVaultMock.eventContext.event as any,
       });
 
-      expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenCalledTimes(
-        0,
-      );
+      expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenCalledTimes(0);
       expect(prisma.failedSwap.create).toHaveBeenCalledTimes(1);
       expect(prisma.failedSwap.create).toHaveBeenNthCalledWith(1, {
         data: {
@@ -159,8 +138,7 @@ describe(swapAmountTooLow, () => {
           srcChain: 'Ethereum',
           srcAsset: 'Eth',
           swapDepositChannelId: undefined,
-          txHash:
-            '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
+          txHash: '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
         },
       });
     });

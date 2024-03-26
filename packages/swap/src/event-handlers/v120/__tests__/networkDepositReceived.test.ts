@@ -15,8 +15,7 @@ describe('depositReceivedV120', () => {
     await prisma.depositChannel.create({
       data: {
         srcChain: 'Bitcoin',
-        depositAddress:
-          'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        depositAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
         channelId: 3,
         issuedBlock: 0,
         isSwapping: true,
@@ -28,8 +27,7 @@ describe('depositReceivedV120', () => {
         srcAsset: 'Btc',
         srcChain: 'Bitcoin',
         srcChainExpiryBlock: 100,
-        depositAddress:
-          'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        depositAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
         expectedDepositAmount: 0,
         destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
         brokerCommissionBps: 0,
@@ -80,8 +78,7 @@ describe('depositReceivedV120', () => {
     await prisma.depositChannel.create({
       data: {
         srcChain: 'Bitcoin',
-        depositAddress:
-          'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        depositAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
         channelId: 3,
         issuedBlock: 0,
         isSwapping: true,
@@ -93,8 +90,7 @@ describe('depositReceivedV120', () => {
         srcAsset: 'Btc',
         srcChain: 'Bitcoin',
         srcChainExpiryBlock: 100,
-        depositAddress:
-          'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        depositAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
         expectedDepositAmount: 0,
         destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
         brokerCommissionBps: 0,
@@ -148,8 +144,7 @@ describe('depositReceivedV120', () => {
     await prisma.depositChannel.create({
       data: {
         srcChain: 'Bitcoin',
-        depositAddress:
-          'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        depositAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
         channelId: 3,
         issuedBlock: 0,
         isSwapping: true,
@@ -161,8 +156,7 @@ describe('depositReceivedV120', () => {
         srcAsset: 'Btc',
         srcChain: 'Bitcoin',
         srcChainExpiryBlock: 100,
-        depositAddress:
-          'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        depositAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
         expectedDepositAmount: 0,
         destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
         brokerCommissionBps: 0,
@@ -216,8 +210,7 @@ describe('depositReceivedV120', () => {
     await prisma.depositChannel.create({
       data: {
         srcChain: 'Bitcoin',
-        depositAddress:
-          'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        depositAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
         channelId: 3,
         issuedBlock: 0,
         isSwapping: true,
@@ -229,8 +222,7 @@ describe('depositReceivedV120', () => {
         srcAsset: 'Btc',
         srcChain: 'Bitcoin',
         srcChainExpiryBlock: 100,
-        depositAddress:
-          'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        depositAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
         expectedDepositAmount: 0,
         destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
         brokerCommissionBps: 0,
@@ -256,8 +248,7 @@ describe('depositReceivedV120', () => {
     await prisma.depositChannel.create({
       data: {
         srcChain: 'Bitcoin',
-        depositAddress:
-          'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        depositAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
         channelId: 3,
         issuedBlock: 0,
         isSwapping: true,
@@ -269,8 +260,7 @@ describe('depositReceivedV120', () => {
         srcAsset: 'Btc',
         srcChain: 'Bitcoin',
         srcChainExpiryBlock: 100,
-        depositAddress:
-          'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        depositAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
         expectedDepositAmount: 0,
         destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
         brokerCommissionBps: 0,
@@ -312,8 +302,7 @@ describe('depositReceivedArgsV120V120', () => {
       asset: { __kind: 'Btc' },
       amount: '1000000',
       depositAddress: {
-        value:
-          '0x69e988bde97e4b988f1d11fa362118c4bdf5e32c45a6e7e89fde3106b764bebd',
+        value: '0x69e988bde97e4b988f1d11fa362118c4bdf5e32c45a6e7e89fde3106b764bebd',
         __kind: 'Taproot',
       },
       depositDetails: {
@@ -359,8 +348,7 @@ describe('depositReceivedArgsV120V120', () => {
     {
       asset: { __kind: 'Dot' },
       amount: '30000000000',
-      depositAddress:
-        '0x2d369b6db7f9dc6f332ca5887208d5814dcd759a516ee2507f9582d8b25d7b97',
+      depositAddress: '0x2d369b6db7f9dc6f332ca5887208d5814dcd759a516ee2507f9582d8b25d7b97',
       action: {
         __kind: 'Swap',
         swapId: '1',

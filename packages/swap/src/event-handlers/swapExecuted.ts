@@ -26,9 +26,7 @@ export default async function swapExecuted({
   block,
   event,
 }: EventHandlerArgs): Promise<void> {
-  const { swapId, intermediateAmount, swapOutput } = swapExecutedArgs.parse(
-    event.args,
-  );
+  const { swapId, intermediateAmount, swapOutput } = swapExecutedArgs.parse(event.args);
   const swap = await prisma.swap.findUniqueOrThrow({
     where: { nativeId: swapId },
   });

@@ -5,8 +5,7 @@ import { sorter } from '../arrays';
 import { type Asset, type Chain } from '../enums';
 import { number, u128, string, uncheckedAssetAndChain } from '../parsers';
 
-const ss58ToHex = (address: string) =>
-  `0x${Buffer.from(decodeAddress(address)).toString('hex')}`;
+const ss58ToHex = (address: string) => `0x${Buffer.from(decodeAddress(address)).toString('hex')}`;
 
 const jsonString = string.transform((value) => JSON.parse(value));
 
@@ -71,14 +70,8 @@ export default class RedisClient {
     chain: 'Bitcoin',
     broadcastId: number | bigint,
   ): Promise<BitcoinBroadcast | null>;
-  async getBroadcast(
-    chain: Chain,
-    broadcastId: number | bigint,
-  ): Promise<Broadcast | null>;
-  async getBroadcast(
-    chain: Chain,
-    broadcastId: number | bigint,
-  ): Promise<Broadcast | null> {
+  async getBroadcast(chain: Chain, broadcastId: number | bigint): Promise<Broadcast | null>;
+  async getBroadcast(chain: Chain, broadcastId: number | bigint): Promise<Broadcast | null> {
     const key = `broadcast:${chain}:${broadcastId}`;
     const value = await this.client.get(key);
     return value ? broadcastParsers[chain].parse(JSON.parse(value)) : null;

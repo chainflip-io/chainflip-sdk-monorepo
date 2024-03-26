@@ -58,19 +58,12 @@ export function calculateExpiryTime(args: {
   const remainingBlocks = Number(expiryBlock - chainInfo.height); // If it is negative, it means the channel has already expired and will return the time from the past
   const { blockTimeSeconds } = chainConstants[chainInfo.chain];
 
-  return new Date(
-    chainInfo.blockTrackedAt.getTime() +
-      remainingBlocks * blockTimeSeconds * 1000,
-  );
+  return new Date(chainInfo.blockTrackedAt.getTime() + remainingBlocks * blockTimeSeconds * 1000);
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
-export function readField<
-  A extends {},
-  B extends {},
-  K extends keyof A & keyof B,
->(
+export function readField<A extends {}, B extends {}, K extends keyof A & keyof B>(
   a: A | null | undefined,
   b: B | null | undefined,
   key: K,

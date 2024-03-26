@@ -7,9 +7,7 @@ describe(broker.requestSwapDepositAddress, () => {
     url: 'https://example.com',
     commissionBps: 0,
   };
-  const postSpy = jest
-    .spyOn(axios, 'post')
-    .mockRejectedValue(Error('unhandled mock'));
+  const postSpy = jest.spyOn(axios, 'post').mockRejectedValue(Error('unhandled mock'));
 
   const MOCKED_RESPONSE = {
     result: {
@@ -227,8 +225,6 @@ describe(broker.requestSwapDepositAddress, () => {
         brokerConfig,
         'perseverance',
       ),
-    ).rejects.toThrowError(
-      'Broker responded with error code -1: error message',
-    );
+    ).rejects.toThrowError('Broker responded with error code -1: error message');
   });
 });

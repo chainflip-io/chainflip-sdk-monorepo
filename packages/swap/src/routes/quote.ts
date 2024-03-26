@@ -3,10 +3,7 @@ import type { Server } from 'socket.io';
 import { Asset, Assets, Chain, Chains, getInternalAsset } from '@/shared/enums';
 import { bigintMin, getPipAmountFromAmount } from '@/shared/functions';
 import { quoteQuerySchema, SwapFee } from '@/shared/schemas';
-import {
-  calculateIncludedSwapFees,
-  estimateIngressEgressFeeAssetAmount,
-} from '@/swap/utils/fees';
+import { calculateIncludedSwapFees, estimateIngressEgressFeeAssetAmount } from '@/swap/utils/fees';
 import { getPools } from '@/swap/utils/pools';
 import { estimateSwapDuration } from '@/swap/utils/swap';
 import { asyncHandler } from './common';
@@ -74,10 +71,7 @@ const quote = (io: Server) => {
       const srcChainAsset = { asset: query.srcAsset, chain: query.srcChain };
       const destChainAsset = { asset: query.destAsset, chain: query.destChain };
 
-      const amountResult = await validateSwapAmount(
-        srcChainAsset,
-        BigInt(query.amount),
-      );
+      const amountResult = await validateSwapAmount(srcChainAsset, BigInt(query.amount));
 
       if (!amountResult.success) {
         throw ServiceError.badRequest(amountResult.reason);
@@ -88,10 +82,7 @@ const quote = (io: Server) => {
       let swapInputAmount = BigInt(query.amount);
 
       if (query.boostFeeBps) {
-        const boostFee = getPipAmountFromAmount(
-          swapInputAmount,
-          query.boostFeeBps,
-        );
+        const boostFee = getPipAmountFromAmount(swapInputAmount, query.boostFeeBps);
         includedFees.push({
           type: 'BOOST',
           chain: srcChainAsset.chain,
@@ -121,16 +112,11 @@ const quote = (io: Server) => {
       });
       swapInputAmount -= ingressFee;
       if (swapInputAmount <= 0n) {
-        throw ServiceError.badRequest(
-          `amount is lower than estimated ingress fee (${ingressFee})`,
-        );
+        throw ServiceError.badRequest(`amount is lower than estimated ingress fee (${ingressFee})`);
       }
 
       if (query.brokerCommissionBps) {
-        const brokerFee = getPipAmountFromAmount(
-          swapInputAmount,
-          query.brokerCommissionBps,
-        );
+        const brokerFee = getPipAmountFromAmount(swapInputAmount, query.brokerCommissionBps);
         includedFees.push({
           type: 'BROKER',
           chain: srcChainAsset.chain,
@@ -156,10 +142,7 @@ const quote = (io: Server) => {
 
         const [rawMarketMakerQuotes, brokerQuote] = await Promise.all([
           collectMakerQuotes(quoteRequest.id, io.sockets.sockets.size, quotes$),
-          getBrokerQuote(
-            { ...query, amount: String(swapInputAmount) },
-            quoteRequest.id,
-          ),
+          getBrokerQuote({ ...query, amount: String(swapInputAmount) }, quoteRequest.id),
         ]);
 
         // market maker quotes do not include liquidity pool fee and network fee
@@ -179,9 +162,7 @@ const quote = (io: Server) => {
           getInternalAsset(srcChainAsset),
           getInternalAsset(destChainAsset),
           String(swapInputAmount),
-          'intermediateAmount' in bestQuote
-            ? bestQuote.intermediateAmount
-            : undefined,
+          'intermediateAmount' in bestQuote ? bestQuote.intermediateAmount : undefined,
           bestQuote.outputAmount,
         );
         includedFees.push(...quoteSwapFees);
@@ -208,8 +189,7 @@ const quote = (io: Server) => {
 
         const egressAmount = BigInt(bestQuote.outputAmount) - egressFee;
 
-        const minimumEgressAmount =
-          await getMinimumEgressAmount(destChainAsset);
+        const minimumEgressAmount = await getMinimumEgressAmount(destChainAsset);
 
         if (egressAmount < minimumEgressAmount) {
           throw ServiceError.badRequest(
@@ -244,9 +224,7 @@ const quote = (io: Server) => {
         if (err instanceof ServiceError) throw err;
 
         const message =
-          err instanceof Error
-            ? err.message
-            : 'unknown error (possibly no liquidity)';
+          err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';
 
         logger.error('error while collecting quotes:', err);
 

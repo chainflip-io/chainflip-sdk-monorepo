@@ -1,10 +1,6 @@
 import { InternalAssets } from '@/shared/enums';
 import metadataMock from './metadata.json';
-import {
-  DOT_ADDRESS,
-  createDepositChannel,
-  swapEgressIgnoredMock,
-} from './utils';
+import { DOT_ADDRESS, createDepositChannel, swapEgressIgnoredMock } from './utils';
 import prisma from '../../client';
 import swapEgressIgnored from '../swapEgressIgnored';
 
@@ -36,9 +32,7 @@ describe(swapEgressIgnored, () => {
           swapInputAmount: '10000000000',
           swapOutputAmount: '10000000000',
           depositReceivedAt: new Date(block.timestamp - 12000),
-          depositReceivedBlockIndex: `${block.height - 100}-${
-            event.indexInBlock
-          }`,
+          depositReceivedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
           swapExecutedAt: new Date(block.timestamp - 6000),
           swapExecutedBlockIndex: `${block.height}-${event.indexInBlock}`,
           srcAsset: InternalAssets.Eth,

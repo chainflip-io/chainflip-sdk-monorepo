@@ -1,9 +1,5 @@
 import { InternalAssets } from '@/shared/enums';
-import {
-  DOT_ADDRESS,
-  buildSwapExecutedMock,
-  createDepositChannel,
-} from './utils';
+import { DOT_ADDRESS, buildSwapExecutedMock, createDepositChannel } from './utils';
 import prisma from '../../client';
 import swapExecuted from '../swapExecuted';
 
@@ -36,58 +32,58 @@ describe(swapExecuted, () => {
     await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap" CASCADE`;
   });
 
-  it.each([
-    [{ egressAmount: '10000000000' }],
-    [{ swapOutput: '10000000000' }],
-  ] as const)('updates an existing swap', async (amount) => {
-    const {
-      eventContext: { event },
-      block,
-    } = buildSwapExecutedMock({ swapId: '9876545', ...amount });
+  it.each([[{ egressAmount: '10000000000' }], [{ swapOutput: '10000000000' }]] as const)(
+    'updates an existing swap',
+    async (amount) => {
+      const {
+        eventContext: { event },
+        block,
+      } = buildSwapExecutedMock({ swapId: '9876545', ...amount });
 
-    const { swapId } = event.args;
+      const { swapId } = event.args;
 
-    // store a new swap intent to initiate a new swap
-    const swapDepositChannel = await createDepositChannel({
-      swaps: {
-        create: {
-          nativeId: BigInt(swapId),
-          depositAmount: '10000000000',
-          swapInputAmount: '10000000000',
-          depositReceivedAt: new Date(block.timestamp - 6000),
-          depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
-          srcAsset: InternalAssets.Eth,
-          destAsset: InternalAssets.Usdc,
-          destAddress: DOT_ADDRESS,
-          type: 'SWAP',
+      // store a new swap intent to initiate a new swap
+      const swapDepositChannel = await createDepositChannel({
+        swaps: {
+          create: {
+            nativeId: BigInt(swapId),
+            depositAmount: '10000000000',
+            swapInputAmount: '10000000000',
+            depositReceivedAt: new Date(block.timestamp - 6000),
+            depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
+            srcAsset: InternalAssets.Eth,
+            destAsset: InternalAssets.Usdc,
+            destAddress: DOT_ADDRESS,
+            type: 'SWAP',
+          },
         },
-      },
-    });
+      });
 
-    await prisma.$transaction((tx) =>
-      swapExecuted({
-        block: block as any,
-        event: event as any,
-        prisma: tx,
-      }),
-    );
+      await prisma.$transaction((tx) =>
+        swapExecuted({
+          block: block as any,
+          event: event as any,
+          prisma: tx,
+        }),
+      );
 
-    const swap = await prisma.swap.findFirstOrThrow({
-      where: { swapDepositChannelId: swapDepositChannel.id },
-      include: { fees: true },
-    });
+      const swap = await prisma.swap.findFirstOrThrow({
+        where: { swapDepositChannelId: swapDepositChannel.id },
+        include: { fees: true },
+      });
 
-    expect(swap).toMatchSnapshot({
-      id: expect.any(BigInt),
-      createdAt: expect.any(Date),
-      updatedAt: expect.any(Date),
-      swapDepositChannelId: expect.any(BigInt),
-      fees: [
-        { id: expect.any(BigInt), swapId: expect.any(BigInt) },
-        { id: expect.any(BigInt), swapId: expect.any(BigInt) },
-      ],
-    });
-  });
+      expect(swap).toMatchSnapshot({
+        id: expect.any(BigInt),
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        swapDepositChannelId: expect.any(BigInt),
+        fees: [
+          { id: expect.any(BigInt), swapId: expect.any(BigInt) },
+          { id: expect.any(BigInt), swapId: expect.any(BigInt) },
+        ],
+      });
+    },
+  );
 
   it('updates an existing swap with intermediate amount', async () => {
     const {

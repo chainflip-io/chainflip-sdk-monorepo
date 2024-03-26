@@ -42,8 +42,7 @@ describe(FundingSDK, () => {
   it('support mainnet', () => {
     expect(
       // @ts-expect-error it's private
-      new FundingSDK({ signer: null as any, network: 'mainnet' }).options
-        .network,
+      new FundingSDK({ signer: null as any, network: 'mainnet' }).options.network,
     ).toEqual('mainnet');
   });
 
@@ -113,9 +112,7 @@ describe(FundingSDK, () => {
 
   describe(FundingSDK.prototype.getFlipBalance, () => {
     it('gets the FLIP balance of an address', async () => {
-      const spy = jest
-        .spyOn(MockERC20.prototype, 'balanceOf')
-        .mockResolvedValueOnce(1000n);
+      const spy = jest.spyOn(MockERC20.prototype, 'balanceOf').mockResolvedValueOnce(1000n);
       const balance = await sdk.getFlipBalance();
       expect(balance).toBe(1000n);
       expect(spy.mock.calls).toMatchInlineSnapshot(`

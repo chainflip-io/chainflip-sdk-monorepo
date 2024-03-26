@@ -31,9 +31,7 @@ type SnakeCaseKeys<T> = {
   [K in keyof T as K extends string ? CamelCaseToSnakeCase<K> : K]: T[K];
 };
 
-const transformObjToSnakeCase = <T>(
-  obj: T | undefined,
-): SnakeCaseKeys<T> | undefined => {
+const transformObjToSnakeCase = <T>(obj: T | undefined): SnakeCaseKeys<T> | undefined => {
   if (!obj) return undefined;
   const newObj: Record<string, unknown> = {};
   for (const key in obj) {
@@ -81,14 +79,7 @@ const requestValidators = (network: ChainflipNetwork) => ({
         .optional(),
       z.number().optional(),
     ])
-    .transform(([a, b, c, d, e, f]) => [
-      a,
-      b,
-      c,
-      d,
-      transformObjToSnakeCase(e),
-      f,
-    ]),
+    .transform(([a, b, c, d, e, f]) => [a, b, c, d, transformObjToSnakeCase(e), f]),
 });
 
 const responseValidators = (network: ChainflipNetwork) => ({
@@ -102,13 +93,7 @@ const responseValidators = (network: ChainflipNetwork) => ({
       channel_opening_fee: u128.optional().default(0),
     })
     .transform(
-      ({
-        address,
-        issued_block,
-        channel_id,
-        source_chain_expiry_block,
-        channel_opening_fee,
-      }) => ({
+      ({ address, issued_block, channel_id, source_chain_expiry_block, channel_opening_fee }) => ({
         address,
         issuedBlock: issued_block,
         channelId: BigInt(channel_id),
@@ -121,13 +106,9 @@ const responseValidators = (network: ChainflipNetwork) => ({
 type RequestValidator = ReturnType<typeof requestValidators>;
 type ResponseValidator = ReturnType<typeof responseValidators>;
 
-export type DepositChannelResponse = z.infer<
-  ResponseValidator['requestSwapDepositAddress']
->;
+export type DepositChannelResponse = z.infer<ResponseValidator['requestSwapDepositAddress']>;
 
-const makeRpcRequest = async <
-  T extends keyof RequestValidator & keyof ResponseValidator,
->(
+const makeRpcRequest = async <T extends keyof RequestValidator & keyof ResponseValidator>(
   network: ChainflipNetwork,
   url: string | URL,
   method: T,
@@ -156,8 +137,7 @@ export async function requestSwapDepositAddress(
   opts: { url: string; commissionBps: number },
   chainflipNetwork: ChainflipNetwork,
 ): Promise<DepositChannelResponse> {
-  const { srcAsset, srcChain, destAsset, destChain, destAddress, boostFeeBps } =
-    swapRequest;
+  const { srcAsset, srcChain, destAsset, destChain, destAddress, boostFeeBps } = swapRequest;
 
   return makeRpcRequest(
     chainflipNetwork,

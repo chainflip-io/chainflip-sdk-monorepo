@@ -16,9 +16,7 @@ const swapEgressIgnoredArgs = z.object({
   }),
 });
 
-export type SwapDepositAddressReadyEvent = z.input<
-  typeof swapEgressIgnoredArgs
->;
+export type SwapDepositAddressReadyEvent = z.input<typeof swapEgressIgnoredArgs>;
 
 export default async function swapEgressIgnored({
   prisma,

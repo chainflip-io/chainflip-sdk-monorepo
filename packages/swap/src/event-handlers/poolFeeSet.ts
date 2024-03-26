@@ -22,13 +22,8 @@ const eventArgs = z.union([
     })),
 ]);
 
-export default async function poolFeeSet({
-  prisma,
-  event,
-}: EventHandlerArgs): Promise<void> {
-  const { baseAsset, quoteAsset, feeHundredthPips } = eventArgs.parse(
-    event.args,
-  );
+export default async function poolFeeSet({ prisma, event }: EventHandlerArgs): Promise<void> {
+  const { baseAsset, quoteAsset, feeHundredthPips } = eventArgs.parse(event.args);
 
   await prisma.pool.update({
     where: {

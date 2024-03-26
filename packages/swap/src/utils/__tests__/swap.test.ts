@@ -21,12 +21,7 @@ describe(estimateSwapDuration, () => {
     ['Ethereum', 'Ethereum', 12 + 12 + 3 * 6 + 12] as const,
     ['Ethereum', 'Polkadot', 12 + 12 + 3 * 6 + 6] as const,
     ['Ethereum', 'Bitcoin', 12 + 12 + 3 * 6 + 600] as const,
-  ])(
-    `estimates time for swap from %s to %s`,
-    async (fromChain, toChain, expected) => {
-      expect(await estimateSwapDuration(fromChain, toChain)).toStrictEqual(
-        expected,
-      );
-    },
-  );
+  ])(`estimates time for swap from %s to %s`, async (fromChain, toChain, expected) => {
+    expect(await estimateSwapDuration(fromChain, toChain)).toStrictEqual(expected);
+  });
 });

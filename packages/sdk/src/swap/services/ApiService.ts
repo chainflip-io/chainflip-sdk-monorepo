@@ -1,10 +1,5 @@
 import axios from 'axios';
-import {
-  type ChainflipNetwork,
-  Chain,
-  Chains,
-  ChainflipNetworks,
-} from '@/shared/enums';
+import { type ChainflipNetwork, Chain, Chains, ChainflipNetworks } from '@/shared/enums';
 import type { Environment } from '@/shared/rpc';
 import type { QuoteQueryParams, QuoteQueryResponse } from '@/shared/schemas';
 import { dot$, btc$, eth$, usdc$, flip$, usdt$ } from '../assets';
@@ -21,11 +16,7 @@ import {
 const getChains = async (
   network: ChainflipNetwork,
   env: Pick<Environment, 'ingressEgress'>,
-): Promise<ChainData[]> => [
-  ethereum(network, env),
-  polkadot(network, env),
-  bitcoin(network, env),
-];
+): Promise<ChainData[]> => [ethereum(network, env), polkadot(network, env), bitcoin(network, env)];
 
 const getPossibleDestinationChains = async (
   sourceChain: Chain,
@@ -33,11 +24,7 @@ const getPossibleDestinationChains = async (
   env: Pick<Environment, 'ingressEgress'>,
 ): Promise<ChainData[]> => {
   if (sourceChain === Chains.Ethereum) {
-    return [
-      ethereum(network, env),
-      bitcoin(network, env),
-      polkadot(network, env),
-    ];
+    return [ethereum(network, env), bitcoin(network, env), polkadot(network, env)];
   }
   if (sourceChain === Chains.Polkadot) {
     return [ethereum(network, env), bitcoin(network, env)];
@@ -55,14 +42,8 @@ const getAssets = async (
   env: Pick<Environment, 'swapping' | 'ingressEgress'>,
 ): Promise<AssetData[]> => {
   if (chain === Chains.Ethereum) {
-    return network === ChainflipNetworks.backspin ||
-      network === ChainflipNetworks.sisyphos
-      ? [
-          eth$(network, env),
-          usdc$(network, env),
-          flip$(network, env),
-          usdt$(network, env),
-        ]
+    return network === ChainflipNetworks.backspin || network === ChainflipNetworks.sisyphos
+      ? [eth$(network, env), usdc$(network, env), flip$(network, env), usdt$(network, env)]
       : [eth$(network, env), usdc$(network, env), flip$(network, env)];
   }
   if (chain === Chains.Polkadot) {
@@ -79,18 +60,13 @@ export type RequestOptions = {
   signal?: AbortSignal;
 };
 
-type BackendQuery<T, U> = (
-  baseUrl: string,
-  args: T,
-  options: RequestOptions,
-) => Promise<U>;
+type BackendQuery<T, U> = (baseUrl: string, args: T, options: RequestOptions) => Promise<U>;
 
 const getQuote: BackendQuery<
   QuoteRequest & { brokerCommissionBps?: number },
   QuoteResponse
 > = async (baseUrl, quoteRequest, { signal }) => {
-  const { brokerCommissionBps, boostFeeBps, ...returnedRequestData } =
-    quoteRequest;
+  const { brokerCommissionBps, boostFeeBps, ...returnedRequestData } = quoteRequest;
   const params: QuoteQueryParams = {
     amount: returnedRequestData.amount,
     srcChain: returnedRequestData.srcChain,

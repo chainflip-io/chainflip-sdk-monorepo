@@ -18,9 +18,7 @@ const swapDepositAddressReadyArgs = z.object({
   channelOpeningFee: u128.optional().default(0),
 });
 
-export type SwapDepositAddressReadyEvent = z.input<
-  typeof swapDepositAddressReadyArgs
->;
+export type SwapDepositAddressReadyEvent = z.input<typeof swapDepositAddressReadyArgs>;
 
 export const swapDepositAddressReady = async ({
   prisma,

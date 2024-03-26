@@ -62,20 +62,14 @@ export class SwapSDK {
     this.rpcConfig = options.rpcUrl ? { rpcUrl: options.rpcUrl } : { network };
     this.trpc = createTRPCProxyClient<AppRouter>({
       transformer: superjson,
-      links: [
-        httpBatchLink({ url: new URL('/trpc', this.options.backendUrl) }),
-      ],
+      links: [httpBatchLink({ url: new URL('/trpc', this.options.backendUrl) })],
     });
   }
 
   async getChains(sourceChain?: Chain): Promise<ChainData[]> {
     const env = await this.getStateChainEnvironment();
     if (sourceChain !== undefined) {
-      return ApiService.getPossibleDestinationChains(
-        sourceChain,
-        this.options.network,
-        env,
-      );
+      return ApiService.getPossibleDestinationChains(sourceChain, this.options.network, env);
     }
     return ApiService.getChains(this.options.network, env);
   }
@@ -92,10 +86,7 @@ export class SwapSDK {
     return ApiService.getAssets(chain, this.options.network, env);
   }
 
-  getQuote(
-    quoteRequest: QuoteRequest,
-    options: RequestOptions = {},
-  ): Promise<QuoteResponse> {
+  getQuote(quoteRequest: QuoteRequest, options: RequestOptions = {}): Promise<QuoteResponse> {
     return ApiService.getQuote(
       this.options.backendUrl,
       {
@@ -111,10 +102,7 @@ export class SwapSDK {
   ): Promise<DepositAddressResponse> {
     const { srcChain, srcAsset, amount } = depositAddressRequest;
 
-    await this.validateSwapAmount(
-      { chain: srcChain, asset: srcAsset },
-      BigInt(amount),
-    );
+    await this.validateSwapAmount({ chain: srcChain, asset: srcAsset }, BigInt(amount));
 
     let response;
 
@@ -136,9 +124,7 @@ export class SwapSDK {
         channelOpeningFee: result.channelOpeningFee,
       };
     } else {
-      response = await this.trpc.openSwapDepositChannel.mutate(
-        depositAddressRequest,
-      );
+      response = await this.trpc.openSwapDepositChannel.mutate(depositAddressRequest);
     }
 
     return {
@@ -157,11 +143,7 @@ export class SwapSDK {
     swapStatusRequest: SwapStatusRequest,
     options: RequestOptions = {},
   ): Promise<SwapStatusResponse> {
-    return ApiService.getStatus(
-      this.options.backendUrl,
-      swapStatusRequest,
-      options,
-    );
+    return ApiService.getStatus(this.options.backendUrl, swapStatusRequest, options);
   }
 
   async executeSwap(
@@ -174,10 +156,7 @@ export class SwapSDK {
     const signer = optsSigner ?? this.options.signer;
     assert(signer, 'No signer provided');
 
-    await this.validateSwapAmount(
-      { chain: srcChain, asset: srcAsset },
-      BigInt(amount),
-    );
+    await this.validateSwapAmount({ chain: srcChain, asset: srcAsset }, BigInt(amount));
 
     const receipt = await executeSwap(
       params,
@@ -209,10 +188,7 @@ export class SwapSDK {
     return receipt ? (receipt.hash as `0x${string}`) : null;
   }
 
-  private async validateSwapAmount(
-    asset: UncheckedAssetAndChain,
-    amount: bigint,
-  ): Promise<void> {
+  private async validateSwapAmount(asset: UncheckedAssetAndChain, amount: bigint): Promise<void> {
     const stateChainEnv = await this.getStateChainEnvironment();
 
     const result = validateSwapAmount(stateChainEnv, asset, amount);

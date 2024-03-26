@@ -1,15 +1,9 @@
 import axios from 'axios';
 import { z } from 'zod';
-import {
-  ChainflipNetwork,
-  ChainflipNetworks,
-  UncheckedAssetAndChain,
-} from '../enums';
+import { ChainflipNetwork, ChainflipNetworks, UncheckedAssetAndChain } from '../enums';
 import { hexString } from '../parsers';
 
-const numberOrHex = z
-  .union([z.string(), z.number()])
-  .transform((str) => BigInt(str));
+const numberOrHex = z.union([z.string(), z.number()]).transform((str) => BigInt(str));
 
 type CamelCase<T> = T extends string
   ? T extends `${infer F}_${infer R}`
@@ -18,9 +12,7 @@ type CamelCase<T> = T extends string
   : never;
 
 type CamelCaseRecord<T> =
-  T extends Record<string, unknown>
-    ? { [K in keyof T as CamelCase<K>]: CamelCaseRecord<T[K]> }
-    : T;
+  T extends Record<string, unknown> ? { [K in keyof T as CamelCase<K>]: CamelCaseRecord<T[K]> } : T;
 
 const camelCase = <T extends string>(str: T): CamelCase<T> =>
   str.replace(/_([a-z])/g, (_, char) => char.toUpperCase()) as CamelCase<T>;
@@ -29,10 +21,7 @@ const camelCaseKeys = <T>(obj: T): CamelCaseRecord<T> => {
   if (typeof obj !== 'object' || obj === null) return obj as CamelCaseRecord<T>;
 
   return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) => [
-      camelCase(key),
-      camelCaseKeys(value),
-    ]),
+    Object.entries(obj).map(([key, value]) => [camelCase(key), camelCaseKeys(value)]),
   ) as CamelCaseRecord<T>;
 };
 
@@ -68,10 +57,7 @@ const createRequest =
     urlOrNetwork: RpcConfig,
     ...params: RpcParams[M]
   ): Promise<CamelCaseRecord<z.output<R>>> => {
-    const url =
-      'network' in urlOrNetwork
-        ? RPC_URLS[urlOrNetwork.network]
-        : urlOrNetwork.rpcUrl;
+    const url = 'network' in urlOrNetwork ? RPC_URLS[urlOrNetwork.network] : urlOrNetwork.rpcUrl;
     const { data } = await axios.post(url, {
       jsonrpc: '2.0',
       method,
@@ -92,15 +78,9 @@ const fundingEnvironment = z.object({
   redemption_tax: numberOrHex,
   minimum_funding_amount: numberOrHex,
 });
-export const getFundingEnvironment = createRequest(
-  'cf_funding_environment',
-  fundingEnvironment,
-);
+export const getFundingEnvironment = createRequest('cf_funding_environment', fundingEnvironment);
 
-const chainAssetMapFactory = <Z extends z.ZodTypeAny>(
-  parser: Z,
-  defaultValue: z.input<Z>,
-) =>
+const chainAssetMapFactory = <Z extends z.ZodTypeAny>(parser: Z, defaultValue: z.input<Z>) =>
   z.object({
     Bitcoin: z.object({ BTC: parser }),
     Ethereum: z.object({
@@ -124,10 +104,7 @@ const swappingEnvironment = z.object({
   maximum_swap_amounts: chainAssetMapFactory(numberOrHex.nullable(), null),
 });
 
-export const getSwappingEnvironment = createRequest(
-  'cf_swapping_environment',
-  swappingEnvironment,
-);
+export const getSwappingEnvironment = createRequest('cf_swapping_environment', swappingEnvironment);
 
 type Rename<T, U extends Record<string, string>> = Omit<T, keyof U> & {
   [K in keyof U as NonNullable<U[K]>]: K extends keyof T ? T[K] : never;
@@ -182,9 +159,7 @@ const poolInfo = z.intersection(
   }),
   z.union([
     z.object({ quote_asset: rpcAsset }),
-    z
-      .object({ pair_asset: rpcAsset })
-      .transform(({ pair_asset }) => ({ quote_asset: pair_asset })),
+    z.object({ pair_asset: rpcAsset }).transform(({ pair_asset }) => ({ quote_asset: pair_asset })),
   ]),
 );
 
@@ -196,10 +171,7 @@ const feesInfo = z.object({
 
 const poolsEnvironment = z.object({ fees: feesInfo });
 
-export const getPoolsEnvironment = createRequest(
-  'cf_pool_info',
-  poolsEnvironment,
-);
+export const getPoolsEnvironment = createRequest('cf_pool_info', poolsEnvironment);
 
 const environment = z.object({
   ingress_egress: ingressEgressEnvironment,

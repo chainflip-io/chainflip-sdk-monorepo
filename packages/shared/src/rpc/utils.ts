@@ -8,10 +8,7 @@ export const validateSwapAmount = (
   asset: UncheckedAssetAndChain,
   amount: bigint,
 ): Result => {
-  const minimumAmount = readChainAssetValue(
-    env.ingressEgress.minimumDepositAmounts,
-    asset,
-  );
+  const minimumAmount = readChainAssetValue(env.ingressEgress.minimumDepositAmounts, asset);
 
   if (amount < minimumAmount) {
     return {

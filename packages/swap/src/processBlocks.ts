@@ -86,11 +86,7 @@ export default async function processBlocks() {
         ? fetchBlocks(lastBlock + blocks.length + 1)
         : undefined;
 
-    logger.info(
-      `processing blocks from ${lastBlock + 1} to ${
-        lastBlock + blocks.length
-      }...`,
-    );
+    logger.info(`processing blocks from ${lastBlock + 1} to ${lastBlock + blocks.length}...`);
 
     for (const block of blocks) {
       const state = await prisma.state.findUniqueOrThrow({ where: { id: 1 } });
@@ -100,10 +96,7 @@ export default async function processBlocks() {
         'state height is not equal to lastBlock maybe another process is running',
       );
 
-      assert(
-        lastBlock + 1 === block.height,
-        'block height is not monotonically increasing',
-      );
+      assert(lastBlock + 1 === block.height, 'block height is not monotonically increasing');
 
       await prisma.$transaction(
         async (txClient) => {
@@ -112,9 +105,7 @@ export default async function processBlocks() {
           for (const event of block.events.nodes) {
             const eventHandler = getEventHandler(event.name, block.specId);
             if (!eventHandler) {
-              throw new Error(
-                `unexpected event: "${event.name}" for specId: "${block.specId}"`,
-              );
+              throw new Error(`unexpected event: "${event.name}" for specId: "${block.specId}"`);
             }
             try {
               await eventHandler({ prisma: txClient, event, block });
@@ -137,10 +128,7 @@ export default async function processBlocks() {
             where: { id: 1, height: block.height - 1 },
             data: { height: block.height },
           });
-          assert(
-            result.count === 1,
-            'failed to update state, maybe another process is running',
-          );
+          assert(result.count === 1, 'failed to update state, maybe another process is running');
         },
         { timeout: env.PROCESSOR_TRANSACTION_TIMEOUT },
       );
@@ -149,9 +137,7 @@ export default async function processBlocks() {
 
     const end = performance.now();
     logger.info(
-      `processed ${blocks.length} blocks in ${
-        end - start
-      } milliseconds, last block: ${lastBlock}`,
+      `processed ${blocks.length} blocks in ${end - start} milliseconds, last block: ${lastBlock}`,
     );
   }
 }

@@ -13,18 +13,14 @@ import ServiceError from '../utils/ServiceError';
 export default async function openSwapDepositChannel(
   input: z.output<typeof openSwapDepositChannelSchema>,
 ) {
-  if (
-    !validateAddress(input.destChain, input.destAddress, env.CHAINFLIP_NETWORK)
-  ) {
+  if (!validateAddress(input.destChain, input.destAddress, env.CHAINFLIP_NETWORK)) {
     throw ServiceError.badRequest(
       `Address "${input.destAddress}" is not a valid "${input.destChain}" address`,
     );
   }
 
   if (await screenAddress(input.destAddress)) {
-    throw ServiceError.badRequest(
-      `Address "${input.destAddress}" is sanctioned`,
-    );
+    throw ServiceError.badRequest(`Address "${input.destAddress}" is sanctioned`);
   }
 
   const result = await validateSwapAmount(
@@ -45,8 +41,7 @@ export default async function openSwapDepositChannel(
     env.CHAINFLIP_NETWORK,
   );
 
-  const { srcChain, srcAsset, destChain, destAsset, ccmMetadata, ...rest } =
-    input;
+  const { srcChain, srcAsset, destChain, destAsset, ccmMetadata, ...rest } = input;
 
   const chainInfo = await prisma.chainTracking.findFirst({
     where: {

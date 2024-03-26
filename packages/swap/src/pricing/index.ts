@@ -24,9 +24,7 @@ const coingeckoAxios = axios.create({
   headers: { 'x-cg-pro-api-key': env.COINGECKO_API_KEY },
 });
 
-export const getAssetPrice = async (
-  asset: InternalAsset,
-): Promise<number | undefined> => {
+export const getAssetPrice = async (asset: InternalAsset): Promise<number | undefined> => {
   logger.debug(`getting asset price for "${asset}"`);
 
   const cachedPrice = priceCache.get(asset);

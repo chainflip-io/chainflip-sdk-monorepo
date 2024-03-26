@@ -50,10 +50,7 @@ const getMetadata = async (block: EventHandlerArgs['block']) => {
   let metadata = metadataCache.get(block.specId);
 
   if (!metadata) {
-    const metadataString = await rpc.getMetadata(
-      { rpcUrl: env.RPC_NODE_HTTP_URL },
-      block.hash,
-    );
+    const metadataString = await rpc.getMetadata({ rpcUrl: env.RPC_NODE_HTTP_URL }, block.hash);
     const registry = new TypeRegistry();
     metadata = new Metadata(registry, metadataString);
     registry.setMetadata(metadata);

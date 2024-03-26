@@ -11,16 +11,11 @@ const env = {
 
 describe(validateSwapAmount, () => {
   it('fails if the amount is too small', () => {
-    const result = validateSwapAmount(
-      env,
-      { chain: 'Ethereum', asset: 'ETH' },
-      100n,
-    );
+    const result = validateSwapAmount(env, { chain: 'Ethereum', asset: 'ETH' }, 100n);
 
     expect(result).toEqual({
       success: false,
-      reason:
-        'expected amount is below minimum swap amount (100000000000000000)',
+      reason: 'expected amount is below minimum swap amount (100000000000000000)',
     });
   });
 
@@ -33,8 +28,7 @@ describe(validateSwapAmount, () => {
 
     expect(result).toEqual({
       success: false,
-      reason:
-        'expected amount is above maximum swap amount (1000000000000000000)',
+      reason: 'expected amount is above maximum swap amount (1000000000000000000)',
     });
   });
 

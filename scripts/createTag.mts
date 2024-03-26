@@ -62,9 +62,9 @@ let patch: string;
 if (lastTag === '') {
   patch = '0';
 } else {
-  const match = new RegExp(
-    String.raw`${args.package}/v${releaseVersion}\.(\d+)`,
-  ).exec(lastTag)?.[1];
+  const match = new RegExp(String.raw`${args.package}/v${releaseVersion}\.(\d+)`).exec(
+    lastTag,
+  )?.[1];
 
   assert(match, 'could not find last tag');
 
@@ -101,9 +101,7 @@ if (dryRun) {
   console.log('END DRY RUN MODE');
 
   // @ts-expect-error -- .mts file
-  const runAgain = await ask(
-    'would you like to run again without dry run?\n(y/N)> ',
-  );
+  const runAgain = await ask('would you like to run again without dry run?\n(y/N)> ');
 
   if (runAgain.toLowerCase() === 'y') {
     dryRun = false;

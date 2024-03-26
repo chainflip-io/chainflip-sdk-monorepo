@@ -35,18 +35,13 @@ const checkDeprecations = async () => {
   for await (const file of ls(packages)) {
     if (!file.endsWith('.ts') || /\.(d|test)\.ts$/.test(file)) continue;
 
-    const iterable = enumerate(
-      createInterface(fs.createReadStream(file, 'utf8')),
-    );
+    const iterable = enumerate(createInterface(fs.createReadStream(file, 'utf8')));
 
     for await (const [lineNumber, line] of iterable) {
       const match = deprecationRegex.exec(line);
       if (!match) continue;
       const [, version] = match;
-      const shouldBeRemoved = isReleaseLte(
-        version,
-        removableDeprecationVersion,
-      );
+      const shouldBeRemoved = isReleaseLte(version, removableDeprecationVersion);
 
       if (!shouldBeRemoved) continue;
 

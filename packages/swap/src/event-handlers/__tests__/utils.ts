@@ -11,12 +11,9 @@ import { actionSchema } from '../v120/networkDepositReceived';
 
 export const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
 export const DOT_ADDRESS = '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo'; // 0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972
-export const BTC_ADDRESS =
-  'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6'; // 0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e
+export const BTC_ADDRESS = 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6'; // 0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e
 
-type SwapChannelData = Parameters<
-  (typeof prisma)['swapDepositChannel']['create']
->[0]['data'];
+type SwapChannelData = Parameters<(typeof prisma)['swapDepositChannel']['create']>[0]['data'];
 
 export const createDepositChannel = (
   data: Partial<SwapChannelData> = {},
@@ -92,8 +89,7 @@ export const swapScheduledDotDepositChannelMock = buildSwapScheduledEvent({
     __kind: 'DepositChannel',
     channelId: '2',
     depositAddress: {
-      value:
-        '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
+      value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
       __kind: 'Dot',
     },
     depositBlockHeight: '100',
@@ -112,32 +108,30 @@ export const swapScheduledDotDepositChannelMock = buildSwapScheduledEvent({
   },
 });
 
-export const swapScheduledDotDepositChannelBrokerCommissionMock =
-  buildSwapScheduledEvent({
-    origin: {
-      __kind: 'DepositChannel',
-      channelId: '2',
-      depositAddress: {
-        value:
-          '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-        __kind: 'Dot',
-      },
-      depositBlockHeight: '100',
+export const swapScheduledDotDepositChannelBrokerCommissionMock = buildSwapScheduledEvent({
+  origin: {
+    __kind: 'DepositChannel',
+    channelId: '2',
+    depositAddress: {
+      value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
+      __kind: 'Dot',
     },
-    swapId: '1',
-    sourceAsset: { __kind: 'Dot' },
-    depositAmount: '125000000000',
-    destinationAsset: { __kind: 'Btc' },
-    destinationAddress: {
-      value:
-        '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
-      __kind: 'Btc',
-    },
-    swapType: {
-      __kind: 'Swap',
-    },
-    brokerCommission: 5000000000,
-  });
+    depositBlockHeight: '100',
+  },
+  swapId: '1',
+  sourceAsset: { __kind: 'Dot' },
+  depositAmount: '125000000000',
+  destinationAsset: { __kind: 'Btc' },
+  destinationAddress: {
+    value:
+      '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
+    __kind: 'Btc',
+  },
+  swapType: {
+    __kind: 'Swap',
+  },
+  brokerCommission: 5000000000,
+});
 
 export const swapScheduledBtcDepositChannelMock = buildSwapScheduledEvent({
   swapId: '3',
@@ -166,8 +160,7 @@ export const swapScheduledBtcDepositChannelMock = buildSwapScheduledEvent({
 export const swapScheduledVaultMock = buildSwapScheduledEvent({
   origin: {
     __kind: 'Vault',
-    txHash:
-      '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
+    txHash: '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
   },
   swapId: '2',
   sourceAsset: { __kind: 'Eth' },
@@ -197,8 +190,7 @@ export const networkDepositReceivedBtcMock = {
         },
         amount: '110000',
         depositAddress: {
-          value:
-            '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
+          value: '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
           __kind: 'Taproot',
         },
       },
@@ -208,9 +200,7 @@ export const networkDepositReceivedBtcMock = {
   },
 } as const;
 
-export const networkDepositReceivedBtcMockV120 = (
-  action?: z.input<typeof actionSchema>,
-) =>
+export const networkDepositReceivedBtcMockV120 = (action?: z.input<typeof actionSchema>) =>
   ({
     block: {
       height: 120,
@@ -225,8 +215,7 @@ export const networkDepositReceivedBtcMockV120 = (
           },
           amount: '110000',
           depositAddress: {
-            value:
-              '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
+            value: '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
             __kind: 'Taproot',
           },
           ingressFee: '1000',
@@ -610,9 +599,7 @@ export const thresholdSignatureInvalidMock = {
   },
 } as const;
 
-const buildSwapAmountTooLowEvent = <T extends SwapAmountTooLowEvent>(
-  args: T,
-) => ({
+const buildSwapAmountTooLowEvent = <T extends SwapAmountTooLowEvent>(args: T) => ({
   block: {
     specId: 'test@1',
     timestamp: 1670337093000,
@@ -659,50 +646,45 @@ const buildSwapAmountTooLowEvent = <T extends SwapAmountTooLowEvent>(
   },
 });
 
-export const swapAmountTooLowDotDepositChannelMock = buildSwapAmountTooLowEvent(
-  {
-    amount: '12500000000',
-    asset: {
+export const swapAmountTooLowDotDepositChannelMock = buildSwapAmountTooLowEvent({
+  amount: '12500000000',
+  asset: {
+    __kind: 'Dot',
+  },
+  destinationAddress: {
+    value:
+      '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
+    __kind: 'Btc',
+  },
+  origin: {
+    __kind: 'DepositChannel',
+    channelId: '2',
+    depositAddress: {
+      value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
       __kind: 'Dot',
     },
-    destinationAddress: {
+  },
+});
+
+export const swapAmountTooLowBtcDepositChannelMock = buildSwapAmountTooLowEvent({
+  amount: '12500000000',
+  asset: {
+    __kind: 'Btc',
+  },
+  destinationAddress: {
+    value: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
+    __kind: 'Eth',
+  },
+  origin: {
+    __kind: 'DepositChannel',
+    channelId: '2',
+    depositAddress: {
+      __kind: 'Btc',
       value:
         '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
-      __kind: 'Btc',
-    },
-    origin: {
-      __kind: 'DepositChannel',
-      channelId: '2',
-      depositAddress: {
-        value:
-          '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-        __kind: 'Dot',
-      },
     },
   },
-);
-
-export const swapAmountTooLowBtcDepositChannelMock = buildSwapAmountTooLowEvent(
-  {
-    amount: '12500000000',
-    asset: {
-      __kind: 'Btc',
-    },
-    destinationAddress: {
-      value: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
-      __kind: 'Eth',
-    },
-    origin: {
-      __kind: 'DepositChannel',
-      channelId: '2',
-      depositAddress: {
-        __kind: 'Btc',
-        value:
-          '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
-      },
-    },
-  },
-);
+});
 
 export const swapAmountTooLowVaultMock = buildSwapAmountTooLowEvent({
   amount: '12500000000',
@@ -715,8 +697,7 @@ export const swapAmountTooLowVaultMock = buildSwapAmountTooLowEvent({
   },
   origin: {
     __kind: 'Vault',
-    txHash:
-      '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
+    txHash: '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
   },
 });
 

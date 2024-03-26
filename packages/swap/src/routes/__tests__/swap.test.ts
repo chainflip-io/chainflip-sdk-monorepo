@@ -31,9 +31,7 @@ jest.mock('../../ingress-egress-tracking');
 const randomId = () => BigInt(crypto.randomInt(1, 100000));
 
 jest.mock('@/shared/broker', () => ({
-  requestSwapDepositAddress: jest
-    .fn()
-    .mockRejectedValue(Error('unhandled mock')),
+  requestSwapDepositAddress: jest.fn().mockRejectedValue(Error('unhandled mock')),
 }));
 
 jest.mock('axios', () => ({
@@ -954,8 +952,7 @@ describe('server', () => {
           amount: '10000000000',
           ignoredAt: new Date('2024-02-06T13:00:00.000Z'),
           ignoredBlockIndex: '202-3',
-          swapId: (await prisma.swap.findUniqueOrThrow({ where: { nativeId } }))
-            .id,
+          swapId: (await prisma.swap.findUniqueOrThrow({ where: { nativeId } })).id,
           stateChainErrorId: (
             await prisma.stateChainError.create({
               data: {
@@ -1256,9 +1253,7 @@ describe('server', () => {
         channelOpeningFee: 0n,
       });
 
-      const { body, status } = await request(app)
-        .post('/swaps')
-        .send(requestBody);
+      const { body, status } = await request(app).post('/swaps').send(requestBody);
 
       expect(body).toMatchObject({
         id: `123-${requestBody.srcChain}-200`,
@@ -1267,10 +1262,9 @@ describe('server', () => {
       });
       expect(status).toBe(200);
 
-      const swapDepositChannel =
-        await prisma.swapDepositChannel.findFirstOrThrow({
-          where: { depositAddress: address },
-        });
+      const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
+        where: { depositAddress: address },
+      });
 
       expect(swapDepositChannel).toMatchObject({
         id: expect.any(BigInt),
@@ -1288,9 +1282,7 @@ describe('server', () => {
         channelId,
         createdAt: expect.any(Date),
       });
-      expect(swapDepositChannel?.expectedDepositAmount?.toString()).toBe(
-        requestBody.amount,
-      );
+      expect(swapDepositChannel?.expectedDepositAmount?.toString()).toBe(requestBody.amount);
     });
 
     it('does not update the already existing deposit channel', async () => {
@@ -1316,9 +1308,7 @@ describe('server', () => {
         channelOpeningFee: 0n,
       });
 
-      const { body, status } = await request(app)
-        .post('/swaps')
-        .send(requestBody);
+      const { body, status } = await request(app).post('/swaps').send(requestBody);
 
       expect(status).toBe(200);
       expect(body).toMatchObject({
@@ -1339,9 +1329,7 @@ describe('server', () => {
         [key]: value,
       };
 
-      const { body, status } = await request(app)
-        .post('/swaps')
-        .send(requestBody);
+      const { body, status } = await request(app).post('/swaps').send(requestBody);
 
       expect(status).toBe(400);
       expect(body).toMatchObject({ message: 'invalid request body' });
@@ -1365,9 +1353,7 @@ describe('server', () => {
         amount: '1000000000',
       },
     ])('throws on bad addresses (%s)', async (requestBody) => {
-      const { body, status } = await request(app)
-        .post('/swaps')
-        .send(requestBody);
+      const { body, status } = await request(app).post('/swaps').send(requestBody);
 
       expect(status).toBe(400);
       expect(body).toMatchObject({

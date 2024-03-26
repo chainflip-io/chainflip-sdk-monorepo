@@ -5,10 +5,7 @@ export const bitcoinAddresses = {
     SEGWIT: ['bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej'],
   },
   testnet: {
-    P2PKH: [
-      'mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn',
-      'n2ZtW11kqP6pf3umiU4NaSRgrL9aQJVuJV',
-    ],
+    P2PKH: ['mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn', 'n2ZtW11kqP6pf3umiU4NaSRgrL9aQJVuJV'],
     P2SH: ['2MzQwSSnBHWHqSAqtTVQ6v47XtaisrJa1Vc'],
     SEGWIT: ['tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx'],
   },

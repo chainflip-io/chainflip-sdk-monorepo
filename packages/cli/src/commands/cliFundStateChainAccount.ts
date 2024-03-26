@@ -32,13 +32,11 @@ export const yargsOptions = {
   },
   'flip-token-contract-address': {
     type: 'string',
-    describe:
-      'The contract address for the FLIP token when `chainflip-network` is `localnet`',
+    describe: 'The contract address for the FLIP token when `chainflip-network` is `localnet`',
   },
   'eth-network': {
     type: 'string',
-    describe:
-      'The eth network URL to use when `chainflip-network` is `localnet`',
+    describe: 'The eth network URL to use when `chainflip-network` is `localnet`',
   },
 } as const satisfies { [key: string]: Options };
 
@@ -59,8 +57,7 @@ export default async function cliFundStateChainAccount(
   const networkOpts: FundingNetworkOptions =
     args.chainflipNetwork === 'localnet'
       ? {
-          stateChainGatewayContractAddress:
-            args.stateChainManagerContractAddress as string,
+          stateChainGatewayContractAddress: args.stateChainManagerContractAddress as string,
           flipContractAddress: args.flipTokenContractAddress as string,
           signer: wallet,
           network: args.chainflipNetwork,

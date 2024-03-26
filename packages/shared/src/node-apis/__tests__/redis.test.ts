@@ -77,9 +77,7 @@ describe(RedisClient, () => {
 
   describe(RedisClient.prototype.getDeposits, () => {
     it('returns an empty array if no deposits are found', async () => {
-      const mock = jest
-        .mocked(Redis.prototype.lrange)
-        .mockResolvedValueOnce([]);
+      const mock = jest.mocked(Redis.prototype.lrange).mockResolvedValueOnce([]);
       const client = new RedisClient(url);
       const deposits = await client.getDeposits('Ethereum', 'ETH', '0x1234');
       expect(deposits).toEqual([]);

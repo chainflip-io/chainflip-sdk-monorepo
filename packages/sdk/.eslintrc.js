@@ -16,8 +16,7 @@ module.exports = {
         patterns: [
           {
             group: ['@/shared/node-apis/*'],
-            message:
-              'This directory uses Node.js APIs that are not browser compatible.',
+            message: 'This directory uses Node.js APIs that are not browser compatible.',
           },
         ],
       },

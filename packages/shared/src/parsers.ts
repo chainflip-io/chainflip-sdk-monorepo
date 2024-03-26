@@ -22,9 +22,7 @@ const enumValues = Object.values as <T>(
 ) => T extends Record<string, never> ? never : [T[keyof T], ...T[keyof T][]];
 
 const safeStringify = (obj: unknown) =>
-  JSON.stringify(obj, (key, value) =>
-    typeof value === 'bigint' ? value.toString() : value,
-  );
+  JSON.stringify(obj, (key, value) => (typeof value === 'bigint' ? value.toString() : value));
 
 const errorMap: ZodErrorMap = (_issue, context) => ({
   message: `received: ${safeStringify(context.data)}`,
@@ -33,9 +31,7 @@ export const string = z.string({ errorMap });
 export const number = z.number({ errorMap });
 export const numericString = string.regex(/^[0-9]+$/);
 export const numericOrEmptyString = string.regex(/^[0-9]*$/);
-export const hexString = string.refine((v): v is `0x${string}` =>
-  /^0x[0-9a-f]*$/i.test(v),
-);
+export const hexString = string.refine((v): v is `0x${string}` => /^0x[0-9a-f]*$/i.test(v));
 export const hexStringWithMaxByteSize = (maxByteSize: number) =>
   hexString.refine((val) => val.length / 2 <= maxByteSize + 1, {
     message: `String must be less than or equal to ${maxByteSize} bytes`,
@@ -47,19 +43,15 @@ export const hexStringFromNumber = numericString.transform(
 
 export const btcAddress = (network: ChainflipNetwork | 'localnet') => {
   if (network === 'mainnet') {
-    return string
-      .regex(/^(1|3|bc1)/)
-      .refine(validateBitcoinMainnetAddress, (address) => ({
-        message: `"${address}" is not a valid Bitcoin mainnet address`,
-      }));
+    return string.regex(/^(1|3|bc1)/).refine(validateBitcoinMainnetAddress, (address) => ({
+      message: `"${address}" is not a valid Bitcoin mainnet address`,
+    }));
   }
 
   return z.union([
-    string
-      .regex(/^(m|n|2|tb1)/)
-      .refine(validateBitcoinTestnetAddress, (address) => ({
-        message: `"${address}" is not a valid Bitcoin testnet address`,
-      })),
+    string.regex(/^(m|n|2|tb1)/).refine(validateBitcoinTestnetAddress, (address) => ({
+      message: `"${address}" is not a valid Bitcoin testnet address`,
+    })),
     string.regex(/^bcrt1/).refine(validateBitcoinRegtestAddress, (address) => ({
       message: `"${address}" is not a valid Bitcoin regtest address`,
     })),
@@ -93,18 +85,12 @@ export const ethereumAddress = hexString.refine(
 
 export const u64 = numericString.transform((arg) => BigInt(arg));
 
-export const u128 = z
-  .union([number, numericString, hexString])
-  .transform((arg) => BigInt(arg));
+export const u128 = z.union([number, numericString, hexString]).transform((arg) => BigInt(arg));
 
-export const unsignedInteger = z.union([
-  u128,
-  z.number().transform((n) => BigInt(n)),
-]);
+export const unsignedInteger = z.union([u128, z.number().transform((n) => BigInt(n))]);
 
-export const rustEnum = <U extends string, T extends readonly [U, ...U[]]>(
-  values: T,
-) => z.object({ __kind: z.enum(values) }).transform(({ __kind }) => __kind!);
+export const rustEnum = <U extends string, T extends readonly [U, ...U[]]>(values: T) =>
+  z.object({ __kind: z.enum(values) }).transform(({ __kind }) => __kind!);
 
 export const internalAssetEnum = rustEnum(enumValues(InternalAssets));
 export const chainEnum = rustEnum(enumValues(Chains));
@@ -118,8 +104,7 @@ export const uncheckedAssetAndChain = z.object({
   chain: z.string(),
 });
 
-export const assetAndChain =
-  uncheckedAssetAndChain.refine(isValidAssetAndChain);
+export const assetAndChain = uncheckedAssetAndChain.refine(isValidAssetAndChain);
 
 export const swapType = z.union([
   z
@@ -128,7 +113,5 @@ export const swapType = z.union([
   z
     .object({ __kind: z.literal('CcmGas'), value: unsignedInteger })
     .transform(({ value: ccmId }) => ({ type: 'GAS' as const, ccmId })),
-  z
-    .object({ __kind: z.literal('Swap') })
-    .transform(() => ({ type: 'SWAP' as const })),
+  z.object({ __kind: z.literal('Swap') }).transform(() => ({ type: 'SWAP' as const })),
 ]);

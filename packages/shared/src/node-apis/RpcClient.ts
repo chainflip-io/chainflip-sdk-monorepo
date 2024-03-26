@@ -142,9 +142,7 @@ export default class RpcClient<
     if ('error' in response) throw new Error(response.error.message);
 
     this.logger?.info(
-      `received response from rpc client: ${response} ${JSON.stringify(
-        response,
-      )}}`,
+      `received response from rpc client: ${response} ${JSON.stringify(response)}}`,
     );
     return this.responseMap[method].parse(response.result) as z.infer<Res[R]>;
   }

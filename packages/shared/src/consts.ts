@@ -24,10 +24,8 @@ export const getEvmChainId = (chain: Chain, network: ChainflipNetwork) => {
 };
 
 // https://developers.circle.com/stablecoins/docs/usdc-on-test-networks
-const SEPOLIA_USDC_CONTRACT_ADDRESS =
-  '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238';
-const SEPOLIA_USDT_CONTRACT_ADDRESS =
-  '0x27CEA6Eb8a21Aae05Eb29C91c5CA10592892F584';
+const SEPOLIA_USDC_CONTRACT_ADDRESS = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238';
+const SEPOLIA_USDT_CONTRACT_ADDRESS = '0x27CEA6Eb8a21Aae05Eb29C91c5CA10592892F584';
 
 export const ADDRESSES = {
   [ChainflipNetworks.backspin]: {

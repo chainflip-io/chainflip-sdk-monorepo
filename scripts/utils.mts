@@ -18,9 +18,7 @@ export async function* ls(dirname: string): AsyncGenerator<string> {
   }
 }
 
-export async function* enumerate<T>(
-  iterable: AsyncIterable<T>,
-): AsyncGenerator<[number, T]> {
+export async function* enumerate<T>(iterable: AsyncIterable<T>): AsyncGenerator<[number, T]> {
   let i = 0;
   for await (const item of iterable) {
     yield [i, item];

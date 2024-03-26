@@ -13,19 +13,12 @@ const httpUrl = urlWithProtocol('http');
 const wsUrl = urlWithProtocol('ws');
 const redisUrl = urlWithProtocol('redis');
 
-const optionalBoolean = envVar
-  .optional()
-  .transform((value) => value?.toUpperCase() === 'TRUE');
+const optionalBoolean = envVar.optional().transform((value) => value?.toUpperCase() === 'TRUE');
 
 const optionalNumber = (defaultValue: number) =>
   envVar.optional().transform((n) => Number(n) || defaultValue);
 
-const chainflipNetwork = z.enum([
-  'backspin',
-  'sisyphos',
-  'perseverance',
-  'mainnet',
-]);
+const chainflipNetwork = z.enum(['backspin', 'sisyphos', 'perseverance', 'mainnet']);
 
 const nodeEnv = z.enum(['development', 'production', 'test']);
 

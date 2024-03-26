@@ -1,9 +1,6 @@
 import axios from 'axios';
 import { swapRate } from '@/shared/tests/fixtures';
-import {
-  calculateIncludedSwapFees,
-  estimateIngressEgressFeeAssetAmount,
-} from '@/swap/utils/fees';
+import { calculateIncludedSwapFees, estimateIngressEgressFeeAssetAmount } from '@/swap/utils/fees';
 import prisma from '../../client';
 
 jest.mock('@/shared/consts', () => ({
@@ -139,26 +136,16 @@ describe(calculateIncludedSwapFees, () => {
 
 describe(estimateIngressEgressFeeAssetAmount, () => {
   it('returns the same amount for the native asset', async () => {
-    const result = await estimateIngressEgressFeeAssetAmount(
-      100n,
-      'Eth',
-      undefined,
-    );
+    const result = await estimateIngressEgressFeeAssetAmount(100n, 'Eth', undefined);
 
     expect(result).toBe(100n);
     expect(axios.post).not.toBeCalled();
   });
   it('returns the rate from the rpc for a non native asset', async () => {
-    const result = await estimateIngressEgressFeeAssetAmount(
-      100n,
-      'Usdc',
-      undefined,
-    );
+    const result = await estimateIngressEgressFeeAssetAmount(100n, 'Usdc', undefined);
 
     expect(result).toBe(200n);
-    expect(
-      jest.mocked(axios.post).mock.calls.map((call) => call[1]),
-    ).toMatchSnapshot();
+    expect(jest.mocked(axios.post).mock.calls.map((call) => call[1])).toMatchSnapshot();
   });
   it('returns the rate from the rpc for a non native asset and a block hash', async () => {
     const result = await estimateIngressEgressFeeAssetAmount(
@@ -168,8 +155,6 @@ describe(estimateIngressEgressFeeAssetAmount, () => {
     );
 
     expect(result).toBe(200n);
-    expect(
-      jest.mocked(axios.post).mock.calls.map((call) => call[1]),
-    ).toMatchSnapshot();
+    expect(jest.mocked(axios.post).mock.calls.map((call) => call[1])).toMatchSnapshot();
   });
 });

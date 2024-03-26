@@ -25,12 +25,7 @@ const server = createServer(app);
 const io = new Server(server).use(authenticate);
 
 app.use('/swaps', express.json(), swap);
-app.use(
-  '/third-party-swap',
-  maintenanceMiddleware,
-  express.json(),
-  thirdPartySwap,
-);
+app.use('/third-party-swap', maintenanceMiddleware, express.json(), thirdPartySwap);
 
 app.get('/healthcheck', (req, res) => {
   res.status(200).send('OK');
@@ -38,10 +33,6 @@ app.get('/healthcheck', (req, res) => {
 
 app.use('/quote', maintenanceMiddleware, quote(io));
 
-app.use(
-  '/trpc',
-  maintenanceMiddleware,
-  trpcExpress.createExpressMiddleware({ router: appRouter }),
-);
+app.use('/trpc', maintenanceMiddleware, trpcExpress.createExpressMiddleware({ router: appRouter }));
 
 export default server;

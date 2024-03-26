@@ -45,8 +45,10 @@ export const approveVault = async (
 ): Promise<ContractTransactionReceipt | null> => {
   await assertSignerIsConnectedToChain(networkOpts, params.srcChain);
 
-  const { hasSufficientAllowance, erc20, allowance } =
-    await checkVaultAllowance(params, networkOpts);
+  const { hasSufficientAllowance, erc20, allowance } = await checkVaultAllowance(
+    params,
+    networkOpts,
+  );
 
   if (hasSufficientAllowance) return null;
 
@@ -55,11 +57,5 @@ export const approveVault = async (
       ? networkOpts.vaultContractAddress
       : getVaultContractAddress(params.srcChain, networkOpts.network);
 
-  return approve(
-    BigInt(params.amount),
-    vaultContractAddress,
-    erc20,
-    allowance,
-    txOpts,
-  );
+  return approve(BigInt(params.amount), vaultContractAddress, erc20, allowance, txOpts);
 };

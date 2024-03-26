@@ -24,14 +24,10 @@ const printTypes = async (tsConfigPath, filePath, names) => {
       console.log('type ' + name + ' =');
       if (statementType.isUnion()) {
         for (const unionType of statementType.getUnionTypes()) {
-          console.log(
-            '| ' + unionType.getText(undefined, TypeFormatFlags.NoTruncation),
-          );
+          console.log('| ' + unionType.getText(undefined, TypeFormatFlags.NoTruncation));
         }
       } else {
-        console.log(
-          statementType.getText(undefined, TypeFormatFlags.NoTruncation),
-        );
+        console.log(statementType.getText(undefined, TypeFormatFlags.NoTruncation));
       }
       console.log();
     }

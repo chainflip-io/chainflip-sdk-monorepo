@@ -10,18 +10,10 @@ const liquidityDepositAddressReadyArgs = z.object({
   // depositChainExpiryBlock: u64,
 });
 
-export type LiquidityDepositAddressReadyArgs = z.input<
-  typeof liquidityDepositAddressReadyArgs
->;
+export type LiquidityDepositAddressReadyArgs = z.input<typeof liquidityDepositAddressReadyArgs>;
 
-export const liquidityDepositAddressReady = async ({
-  prisma,
-  event,
-  block,
-}: EventHandlerArgs) => {
-  const { depositAddress, channelId } = liquidityDepositAddressReadyArgs.parse(
-    event.args,
-  );
+export const liquidityDepositAddressReady = async ({ prisma, event, block }: EventHandlerArgs) => {
+  const { depositAddress, channelId } = liquidityDepositAddressReadyArgs.parse(event.args);
 
   await prisma.depositChannel.create({
     data: {

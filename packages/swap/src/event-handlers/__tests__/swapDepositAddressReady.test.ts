@@ -27,13 +27,11 @@ describe(swapDepositAddressReady, () => {
       });
     });
 
-    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow(
-      {
-        where: {
-          channelId: BigInt(eventMock.eventContext.event.args.channelId),
-        },
+    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
+      where: {
+        channelId: BigInt(eventMock.eventContext.event.args.channelId),
       },
-    );
+    });
 
     expect(swapDepositChannel).toMatchSnapshot({
       id: expect.any(BigInt),
@@ -57,13 +55,11 @@ describe(swapDepositAddressReady, () => {
       });
     });
 
-    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow(
-      {
-        where: {
-          channelId: BigInt(eventMock.eventContext.event.args.channelId),
-        },
+    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
+      where: {
+        channelId: BigInt(eventMock.eventContext.event.args.channelId),
       },
-    );
+    });
 
     expect(swapDepositChannel).toMatchSnapshot({
       id: expect.any(BigInt),
@@ -84,13 +80,11 @@ describe(swapDepositAddressReady, () => {
       block: { ...eventMock.block, height: 121 },
     });
 
-    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow(
-      {
-        where: {
-          channelId: BigInt(eventMock.eventContext.event.args.channelId),
-        },
+    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
+      where: {
+        channelId: BigInt(eventMock.eventContext.event.args.channelId),
       },
-    );
+    });
 
     expect(swapDepositChannel).toMatchSnapshot({
       id: expect.any(BigInt),
@@ -108,13 +102,11 @@ describe(swapDepositAddressReady, () => {
       });
     });
 
-    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow(
-      {
-        where: {
-          channelId: BigInt(ccmEventMock.eventContext.event.args.channelId),
-        },
+    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
+      where: {
+        channelId: BigInt(ccmEventMock.eventContext.event.args.channelId),
       },
-    );
+    });
 
     expect(swapDepositChannel).toMatchSnapshot({
       id: expect.any(BigInt),
@@ -141,13 +133,11 @@ describe(swapDepositAddressReady, () => {
       });
     });
 
-    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow(
-      {
-        where: {
-          channelId: BigInt(eventMock.eventContext.event.args.channelId),
-        },
+    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
+      where: {
+        channelId: BigInt(eventMock.eventContext.event.args.channelId),
       },
-    );
+    });
 
     expect(swapDepositChannel).toMatchSnapshot({
       id: expect.any(BigInt),
@@ -173,13 +163,11 @@ describe(swapDepositAddressReady, () => {
       block: eventMock.block,
     });
 
-    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow(
-      {
-        where: {
-          channelId: BigInt(eventMock.eventContext.event.args.channelId),
-        },
+    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
+      where: {
+        channelId: BigInt(eventMock.eventContext.event.args.channelId),
       },
-    );
+    });
 
     expect(swapDepositChannel).toMatchSnapshot({
       id: expect.any(BigInt),

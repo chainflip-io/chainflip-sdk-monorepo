@@ -23,7 +23,5 @@ export const getPipAmountFromAmount = (
   denominator: number = ONE_IN_PIP,
 ) => (BigInt(amount) * BigInt(pips)) / BigInt(denominator);
 
-export const getHundredthPipAmountFromAmount = (
-  amount: bigint | string,
-  hundredthPips: number,
-) => getPipAmountFromAmount(amount, hundredthPips, ONE_IN_HUNDREDTH_PIPS);
+export const getHundredthPipAmountFromAmount = (amount: bigint | string, hundredthPips: number) =>
+  getPipAmountFromAmount(amount, hundredthPips, ONE_IN_HUNDREDTH_PIPS);

@@ -1,12 +1,7 @@
 import axios from 'axios';
 import { InternalAssets } from '@/shared/enums';
 import { environment, swapRate } from '@/shared/tests/fixtures';
-import {
-  DOT_ADDRESS,
-  createDepositChannel,
-  swapEgressScheduledMock,
-  ETH_ADDRESS,
-} from './utils';
+import { DOT_ADDRESS, createDepositChannel, swapEgressScheduledMock, ETH_ADDRESS } from './utils';
 import prisma from '../../client';
 import swapEgressScheduled from '../swapEgressScheduled';
 
@@ -60,9 +55,7 @@ describe(swapEgressScheduled, () => {
           swapInputAmount: '10000000000',
           swapOutputAmount: '10000000000',
           depositReceivedAt: new Date(block.timestamp - 12000),
-          depositReceivedBlockIndex: `${block.height - 100}-${
-            event.indexInBlock
-          }`,
+          depositReceivedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
           swapExecutedAt: new Date(block.timestamp - 6000),
           swapExecutedBlockIndex: `${block.height}-${event.indexInBlock}`,
           srcAsset: InternalAssets.Eth,
@@ -131,9 +124,7 @@ describe(swapEgressScheduled, () => {
           swapInputAmount: '1000',
           swapOutputAmount: '1000',
           depositReceivedAt: new Date(block.timestamp - 12000),
-          depositReceivedBlockIndex: `${block.height - 100}-${
-            event.indexInBlock
-          }`,
+          depositReceivedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
           swapExecutedAt: new Date(block.timestamp - 6000),
           swapExecutedBlockIndex: `${block.height}-${event.indexInBlock}`,
           srcAsset: InternalAssets.Eth,
@@ -202,9 +193,7 @@ describe(swapEgressScheduled, () => {
           swapInputAmount: '10000000000',
           swapOutputAmount: '10000000000',
           depositReceivedAt: new Date(block.timestamp - 12000),
-          depositReceivedBlockIndex: `${block.height - 100}-${
-            event.indexInBlock
-          }`,
+          depositReceivedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
           swapExecutedAt: new Date(block.timestamp - 6000),
           swapExecutedBlockIndex: `${block.height}-${event.indexInBlock}`,
           srcAsset: InternalAssets.Eth,
@@ -245,9 +234,7 @@ describe(swapEgressScheduled, () => {
       swapDepositChannelId: expect.any(BigInt),
       fees: [{ id: expect.any(BigInt), swapId: expect.any(BigInt) }],
     });
-    expect(
-      jest.mocked(axios.post).mock.calls.map((call) => call[1]),
-    ).toMatchSnapshot();
+    expect(jest.mocked(axios.post).mock.calls.map((call) => call[1])).toMatchSnapshot();
   });
 
   it('>v120 uses the fee from the event and creates an egress record', async () => {
@@ -262,9 +249,7 @@ describe(swapEgressScheduled, () => {
           swapInputAmount: '10000000000',
           swapOutputAmount: '10000000000',
           depositReceivedAt: new Date(block.timestamp - 12000),
-          depositReceivedBlockIndex: `${block.height - 100}-${
-            event.indexInBlock
-          }`,
+          depositReceivedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
           swapExecutedAt: new Date(block.timestamp - 6000),
           swapExecutedBlockIndex: `${block.height}-${event.indexInBlock}`,
           srcAsset: InternalAssets.Eth,

@@ -120,12 +120,9 @@ describe(SwapSDK, () => {
           polkadot(ChainflipNetworks.perseverance, env),
         ],
       ],
-    ])(
-      `returns the possible destination chains for %s`,
-      async (chain, chains) => {
-        expect(await sdk.getChains(chain)).toStrictEqual(chains);
-      },
-    );
+    ])(`returns the possible destination chains for %s`, async (chain, chains) => {
+      expect(await sdk.getChains(chain)).toStrictEqual(chains);
+    });
 
     it('throws when requesting an unsupported chain', async () => {
       await expect(sdk.getChains('Dogecoin' as Chain)).rejects.toThrow();
@@ -207,24 +204,15 @@ describe(SwapSDK, () => {
       ],
       [
         Chains.Polkadot,
-        [
-          ethereum(ChainflipNetworks.sisyphos, env),
-          bitcoin(ChainflipNetworks.sisyphos, env),
-        ],
+        [ethereum(ChainflipNetworks.sisyphos, env), bitcoin(ChainflipNetworks.sisyphos, env)],
       ],
       [
         Chains.Bitcoin,
-        [
-          ethereum(ChainflipNetworks.sisyphos, env),
-          polkadot(ChainflipNetworks.sisyphos, env),
-        ],
+        [ethereum(ChainflipNetworks.sisyphos, env), polkadot(ChainflipNetworks.sisyphos, env)],
       ],
-    ])(
-      `returns the possible destination chains for %s`,
-      async (chain, chains) => {
-        expect(await sdk.getChains(chain)).toEqual(chains);
-      },
-    );
+    ])(`returns the possible destination chains for %s`, async (chain, chains) => {
+      expect(await sdk.getChains(chain)).toEqual(chains);
+    });
 
     it('throws when requesting an unsupported chain', async () => {
       await expect(sdk.getChains('Dogecoin' as Chain)).rejects.toThrow();
@@ -271,25 +259,17 @@ describe(SwapSDK, () => {
   describe(SwapSDK.prototype.executeSwap, () => {
     it('calls executeSwap', async () => {
       const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
-      jest
-        .mocked(executeSwap)
-        .mockResolvedValueOnce({ hash: 'hello world' } as any);
+      jest.mocked(executeSwap).mockResolvedValueOnce({ hash: 'hello world' } as any);
 
       const result = await sdk.executeSwap(params as any);
-      expect(executeSwap).toHaveBeenCalledWith(
-        params,
-        { network: 'sisyphos', signer },
-        {},
-      );
+      expect(executeSwap).toHaveBeenCalledWith(params, { network: 'sisyphos', signer }, {});
       expect(result).toEqual('hello world');
     });
 
     it('calls executeSwap with the given signer', async () => {
       const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
       const otherSigner = new VoidSigner('0x1');
-      jest
-        .mocked(executeSwap)
-        .mockResolvedValueOnce({ hash: 'hello world' } as any);
+      jest.mocked(executeSwap).mockResolvedValueOnce({ hash: 'hello world' } as any);
 
       const result = await sdk.executeSwap(params as any, {
         signer: otherSigner,
@@ -306,25 +286,17 @@ describe(SwapSDK, () => {
   describe(SwapSDK.prototype.approveVault, () => {
     it('calls approveVault', async () => {
       const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
-      jest
-        .mocked(approveVault)
-        .mockResolvedValueOnce({ hash: 'hello world' } as any);
+      jest.mocked(approveVault).mockResolvedValueOnce({ hash: 'hello world' } as any);
 
       const result = await sdk.approveVault(params as any);
-      expect(approveVault).toHaveBeenCalledWith(
-        params,
-        { network: 'sisyphos', signer },
-        {},
-      );
+      expect(approveVault).toHaveBeenCalledWith(params, { network: 'sisyphos', signer }, {});
       expect(result).toEqual('hello world');
     });
 
     it('calls approveVault with given signer', async () => {
       const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
       const otherSigner = new VoidSigner('0x1');
-      jest
-        .mocked(approveVault)
-        .mockResolvedValueOnce({ hash: 'hello world' } as any);
+      jest.mocked(approveVault).mockResolvedValueOnce({ hash: 'hello world' } as any);
 
       const result = await sdk.approveVault(params as any, {
         signer: otherSigner,
@@ -504,15 +476,9 @@ describe(SwapSDK, () => {
 
   describe(SwapSDK.prototype.getRequiredBlockConfirmations, () => {
     it('should return correct value for each chain', async () => {
-      expect(
-        (await sdk.getRequiredBlockConfirmations()).Ethereum,
-      ).toStrictEqual(2);
-      expect(
-        (await sdk.getRequiredBlockConfirmations()).Polkadot,
-      ).toStrictEqual(null);
-      expect((await sdk.getRequiredBlockConfirmations()).Bitcoin).toStrictEqual(
-        3,
-      );
+      expect((await sdk.getRequiredBlockConfirmations()).Ethereum).toStrictEqual(2);
+      expect((await sdk.getRequiredBlockConfirmations()).Polkadot).toStrictEqual(null);
+      expect((await sdk.getRequiredBlockConfirmations()).Bitcoin).toStrictEqual(3);
     });
   });
 

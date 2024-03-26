@@ -65,9 +65,7 @@ describe(openSwapDepositChannel, () => {
       srcChainExpiryBlock: 1000n,
       channelOpeningFee: 100n,
     });
-    expect(
-      jest.mocked(broker.requestSwapDepositAddress).mock.calls,
-    ).toMatchSnapshot();
+    expect(jest.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
     expect(await prisma.swapDepositChannel.findFirst()).toMatchSnapshot({
       id: expect.any(BigInt),
       createdAt: expect.any(Date),
@@ -107,9 +105,7 @@ describe(openSwapDepositChannel, () => {
       srcChainExpiryBlock: 1000n,
       channelOpeningFee: 10n,
     });
-    expect(
-      jest.mocked(broker.requestSwapDepositAddress).mock.calls,
-    ).toMatchSnapshot();
+    expect(jest.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
     expect(await prisma.swapDepositChannel.findFirst()).toMatchSnapshot({
       id: expect.any(BigInt),
       createdAt: expect.any(Date),
@@ -146,9 +142,7 @@ describe(openSwapDepositChannel, () => {
       srcChainExpiryBlock: 1000n,
       channelOpeningFee: 0n,
     });
-    expect(
-      jest.mocked(broker.requestSwapDepositAddress).mock.calls,
-    ).toMatchSnapshot();
+    expect(jest.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
     expect(await prisma.swapDepositChannel.findFirst()).toMatchSnapshot({
       id: expect.any(BigInt),
       createdAt: expect.any(Date),
@@ -167,8 +161,6 @@ describe(openSwapDepositChannel, () => {
         destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
         expectedDepositAmount: '777',
       }),
-    ).rejects.toThrow(
-      'Address "5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd" is sanctioned',
-    );
+    ).rejects.toThrow('Address "5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd" is sanctioned');
   });
 });

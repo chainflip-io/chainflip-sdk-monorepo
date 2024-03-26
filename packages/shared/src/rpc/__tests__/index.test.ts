@@ -14,8 +14,7 @@ import {
 
 jest.mock('axios');
 
-const mockResponse = (data: any) =>
-  jest.mocked(axios.post).mockResolvedValueOnce({ data });
+const mockResponse = (data: any) => jest.mocked(axios.post).mockResolvedValueOnce({ data });
 
 describe('getFundingEnvironment', () => {
   it('retrieves the funding environment', async () => {
@@ -66,9 +65,7 @@ describe('getIngressEgressEnvironment', () => {
       }),
     );
 
-    expect(
-      await getIngressEgressEnvironment({ network: 'perseverance' }),
-    ).toEqual({
+    expect(await getIngressEgressEnvironment({ network: 'perseverance' })).toEqual({
       minimumDepositAmounts: {
         Bitcoin: { BTC: 0x4563918244f40000n },
         Ethereum: {
@@ -136,9 +133,9 @@ describe('getPoolsEnvironment', () => {
   it('retrieves the pools environment', async () => {
     const spy = mockResponse(poolsEnvironment());
 
-    expect(
-      await getPoolsEnvironment({ network: 'perseverance' }),
-    ).toMatchSnapshot('pool environment');
+    expect(await getPoolsEnvironment({ network: 'perseverance' })).toMatchSnapshot(
+      'pool environment',
+    );
     expect(spy.mock.calls).toMatchSnapshot();
   });
 });
