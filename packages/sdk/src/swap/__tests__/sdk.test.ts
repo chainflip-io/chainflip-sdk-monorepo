@@ -29,31 +29,37 @@ const env = {
       Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n, USDT: 0n },
       Polkadot: { DOT: 0n },
       Bitcoin: { BTC: 0n },
+      Arbitrum: { ETH: 0n, USDC: 0n },
     },
     ingressFees: {
       Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n, USDT: 0n },
       Polkadot: { DOT: 0n },
       Bitcoin: { BTC: 0n },
+      Arbitrum: { ETH: 0n, USDC: 0n },
     },
     egressFees: {
       Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n, USDT: 0n },
       Polkadot: { DOT: 0n },
       Bitcoin: { BTC: 0n },
+      Arbitrum: { ETH: 0n, USDC: 0n },
     },
     minimumEgressAmounts: {
       Ethereum: { ETH: 1n, FLIP: 1n, USDC: 1n, USDT: 1n },
       Polkadot: { DOT: 1n },
       Bitcoin: { BTC: 0x258n },
+      Arbitrum: { ETH: 1n, USDC: 1n },
     },
     witnessSafetyMargins: {
       Ethereum: 1n,
       Polkadot: null,
       Bitcoin: 2n,
+      Arbitrum: null,
     },
     channelOpeningFees: {
       Ethereum: 0n,
       Polkadot: 0n,
       Bitcoin: 0n,
+      Arbitrum: 0n,
     },
   },
   swapping: {
@@ -66,6 +72,7 @@ const env = {
       },
       Polkadot: { DOT: null },
       Bitcoin: { BTC: 0x1000000000000000n },
+      Arbitrum: { ETH: null, USDC: null },
     },
   },
 };
@@ -485,6 +492,7 @@ describe(SwapSDK, () => {
   describe(SwapSDK.prototype.getChannelOpeningFees, () => {
     it('should return correct fees', async () => {
       expect(await sdk.getChannelOpeningFees()).toEqual({
+        Arbitrum: 0x0n,
         Bitcoin: 0x0n,
         Ethereum: 0x10n,
         Polkadot: 0x0n,

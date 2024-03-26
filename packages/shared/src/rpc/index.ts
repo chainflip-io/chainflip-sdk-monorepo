@@ -95,14 +95,14 @@ const chainAssetMapFactory = <Z extends z.ZodTypeAny>(parser: Z, defaultValue: z
       .default({ ETH: defaultValue, USDC: defaultValue }), // TODO: remove default once arbitrum is available in all networks
   });
 
-const chainMap = <Z extends z.ZodTypeAny>(parser: Z) =>
+const chainMap = <Z extends z.ZodTypeAny>(parser: Z, defaultValue: z.input<Z>) =>
   z.object({
     Bitcoin: parser,
     Ethereum: parser,
     Polkadot: parser,
-    Arbitrum: parser.nullish(), // TODO: remove once arbitrum is available in all networks
+    Arbitrum: parser.default(defaultValue), // TODO: remove once arbitrum is available in all networks
   });
-const chainNumberNullableMap = chainMap(numberOrHex.nullable());
+const chainNumberNullableMap = chainMap(numberOrHex.nullable(), null);
 
 const swappingEnvironment = z.object({
   maximum_swap_amounts: chainAssetMapFactory(numberOrHex.nullable(), null),
@@ -132,7 +132,7 @@ const ingressEgressEnvironment = z
     witness_safety_margins: chainNumberNullableMap,
     egress_dust_limits: chainAssetMapFactory(numberOrHex, 1),
     // TODO(1.3): remove optional and default value
-    channel_opening_fees: chainMap(numberOrHex)
+    channel_opening_fees: chainMap(numberOrHex, 0)
       .optional()
       .default({ Bitcoin: 0, Ethereum: 0, Polkadot: 0, Arbitrum: 0 }),
   })

@@ -135,11 +135,13 @@ describe('getIngressEgressEnvironment', () => {
         },
       },
       witnessSafetyMargins: {
+        Arbitrum: null,
         Bitcoin: 2n,
         Ethereum: 1n,
         Polkadot: null,
       },
       channelOpeningFees: {
+        Arbitrum: 0n,
         Bitcoin: 0n,
         Ethereum: 16n,
         Polkadot: 0n,

@@ -43,7 +43,7 @@ const env = {
       Ethereum: 1n,
       Polkadot: null,
       Bitcoin: 2n,
-      arbitrum: null,
+      Arbitrum: null,
     },
     channelOpeningFees: {
       Ethereum: 16n,
