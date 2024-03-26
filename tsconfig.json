@@ -3,6 +3,7 @@
     "baseUrl": ".",
     "esModuleInterop": true,
     "paths": {
+      "@/amm-addon": ["./packages/amm-addon/index"],
       "@/shared/*": ["./packages/shared/src/*"],
       "@/swap/*": ["./packages/swap/src/*"]
     }
