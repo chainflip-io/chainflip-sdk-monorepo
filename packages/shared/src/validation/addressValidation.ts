@@ -101,26 +101,31 @@ const validators: Record<ChainflipNetwork | 'localnet', Record<Chain, AddressVal
     Bitcoin: validateBitcoinMainnetAddress,
     Ethereum: validateEvmAddress,
     Polkadot: validatePolkadotAddress,
+    Arbitrum: validateEvmAddress,
   },
   perseverance: {
     Bitcoin: validateBitcoinTestnetAddress,
     Ethereum: validateEvmAddress,
     Polkadot: validatePolkadotAddress,
+    Arbitrum: validateEvmAddress,
   },
   sisyphos: {
     Bitcoin: validateBitcoinTestnetAddress,
     Ethereum: validateEvmAddress,
     Polkadot: validatePolkadotAddress,
+    Arbitrum: validateEvmAddress,
   },
   backspin: {
     Bitcoin: validateBitcoinRegtestAddress,
     Ethereum: validateEvmAddress,
     Polkadot: validatePolkadotAddress,
+    Arbitrum: validateEvmAddress,
   },
   localnet: {
     Bitcoin: validateBitcoinRegtestAddress,
     Ethereum: validateEvmAddress,
     Polkadot: validatePolkadotAddress,
+    Arbitrum: validateEvmAddress,
   },
 };
 

@@ -21,3 +21,4 @@ const chainFactory =
 export const ethereum = chainFactory(Chains.Ethereum);
 export const polkadot = chainFactory(Chains.Polkadot);
 export const bitcoin = chainFactory(Chains.Bitcoin);
+export const arbitrum = chainFactory(Chains.Arbitrum);

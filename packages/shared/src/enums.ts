@@ -25,16 +25,7 @@ export const Chains = arrayToMap([
 ]);
 export type Chain = (typeof Chains)[keyof typeof Chains];
 
-export const Assets = arrayToMap([
-  'FLIP',
-  'USDC',
-  'DOT',
-  'ETH',
-  'BTC',
-  'USDT',
-  'ARBUSDC',
-  'ARBETH',
-]);
+export const Assets = arrayToMap(['FLIP', 'USDC', 'DOT', 'ETH', 'BTC', 'USDT']);
 export type Asset = (typeof Assets)[keyof typeof Assets];
 
 export const ChainflipNetworks = arrayToMap(['backspin', 'sisyphos', 'perseverance', 'mainnet']);
@@ -90,14 +81,14 @@ export const assetConstants = {
   },
   [InternalAssets.ArbEth]: {
     chain: Chains.Arbitrum,
-    asset: Assets.ARBETH,
+    asset: Assets.ETH,
     name: 'Arbitrum Ether',
     decimals: 18,
     contractId: 6,
   },
   [InternalAssets.ArbUsdc]: {
     chain: Chains.Arbitrum,
-    asset: Assets.ARBUSDC,
+    asset: Assets.USDC,
     name: 'Arbitrum USDC',
     decimals: 6,
     contractId: 7,
@@ -134,8 +125,8 @@ export const chainConstants = {
     blockTimeSeconds: 10 * 60,
   },
   [Chains.Arbitrum]: {
-    assets: [Assets.ARBETH, Assets.ARBUSDC],
-    gasAsset: Assets.ARBETH,
+    assets: [Assets.ETH, Assets.USDC],
+    gasAsset: Assets.ETH,
     contractId: 4,
     blockTimeSeconds: 0.26,
   },
@@ -211,8 +202,8 @@ export function getInternalAsset(asset: UncheckedAssetAndChain) {
       [Assets.DOT]: InternalAssets.Dot,
     },
     [Chains.Arbitrum]: {
-      [Assets.ARBUSDC]: InternalAssets.ArbUsdc,
-      [Assets.ARBETH]: InternalAssets.ArbEth,
+      [Assets.USDC]: InternalAssets.ArbUsdc,
+      [Assets.ETH]: InternalAssets.ArbEth,
     },
   };
 

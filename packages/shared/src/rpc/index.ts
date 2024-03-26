@@ -90,6 +90,9 @@ const chainAssetMapFactory = <Z extends z.ZodTypeAny>(parser: Z, defaultValue: z
       USDT: parser.default(defaultValue), // TODO: remove default once usdt is available in all networks
     }),
     Polkadot: z.object({ DOT: parser }),
+    Arbitrum: z
+      .object({ ETH: parser, USDC: parser })
+      .default({ ETH: defaultValue, USDC: defaultValue }), // TODO: remove default once arbitrum is available in all networks
   });
 
 const chainMap = <Z extends z.ZodTypeAny>(parser: Z) =>
@@ -97,6 +100,7 @@ const chainMap = <Z extends z.ZodTypeAny>(parser: Z) =>
     Bitcoin: parser,
     Ethereum: parser,
     Polkadot: parser,
+    Arbitrum: parser.nullish(), // TODO: remove once arbitrum is available in all networks
   });
 const chainNumberNullableMap = chainMap(numberOrHex.nullable());
 
@@ -130,7 +134,7 @@ const ingressEgressEnvironment = z
     // TODO(1.3): remove optional and default value
     channel_opening_fees: chainMap(numberOrHex)
       .optional()
-      .default({ Bitcoin: 0, Ethereum: 0, Polkadot: 0 }),
+      .default({ Bitcoin: 0, Ethereum: 0, Polkadot: 0, Arbitrum: 0 }),
   })
   .transform(rename({ egress_dust_limits: 'minimum_egress_amounts' }));
 
@@ -150,6 +154,9 @@ const rpcAsset = z.union([
   z.object({ chain: z.literal('Ethereum'), asset: z.literal('ETH') }),
   z.literal('USDC'),
   z.object({ chain: z.literal('Ethereum'), asset: z.literal('USDC') }),
+  z.object({ chain: z.literal('Ethereum'), asset: z.literal('USDT') }),
+  z.object({ chain: z.literal('Arbitrum'), asset: z.literal('ETH') }),
+  z.object({ chain: z.literal('Arbitrum'), asset: z.literal('USDC') }),
 ]);
 
 const poolInfo = z.intersection(
@@ -167,6 +174,7 @@ const feesInfo = z.object({
   Bitcoin: z.object({ BTC: poolInfo }),
   Ethereum: z.object({ ETH: poolInfo, FLIP: poolInfo }),
   Polkadot: z.object({ DOT: poolInfo }),
+  Arbitrum: z.object({ ETH: poolInfo, USDC: poolInfo }),
 });
 
 const poolsEnvironment = z.object({ fees: feesInfo });

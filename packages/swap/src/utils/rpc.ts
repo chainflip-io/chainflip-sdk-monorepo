@@ -25,7 +25,7 @@ export const getMinimumEgressAmount = async (asset: UncheckedAssetAndChain): Pro
   return readChainAssetValue(environment.ingressEgress.minimumEgressAmounts, asset);
 };
 
-export const getWitnessSafetyMargin = async (chain: Chain): Promise<bigint | null> => {
+export const getWitnessSafetyMargin = async (chain: Chain): Promise<bigint | null | undefined> => { // TODO: remove undefined once arbitrum is available on all networks
   const environment = await cachedGetEnvironment(rpcConfig);
 
   return environment.ingressEgress.witnessSafetyMargins[chain];
