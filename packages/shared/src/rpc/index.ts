@@ -174,7 +174,7 @@ const feesInfo = z.object({
   Bitcoin: z.object({ BTC: poolInfo }),
   Ethereum: z.object({ ETH: poolInfo, FLIP: poolInfo }),
   Polkadot: z.object({ DOT: poolInfo }),
-  Arbitrum: z.object({ ETH: poolInfo, USDC: poolInfo }).nullish(),
+  Arbitrum: z.object({ ETH: poolInfo, USDC: poolInfo }).optional(),
 });
 
 const poolsEnvironment = z.object({ fees: feesInfo });
