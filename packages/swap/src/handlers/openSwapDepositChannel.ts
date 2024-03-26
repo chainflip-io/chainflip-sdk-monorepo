@@ -15,12 +15,13 @@ export default async function openSwapDepositChannel(
 ) {
   if (!validateAddress(input.destChain, input.destAddress, env.CHAINFLIP_NETWORK)) {
     throw ServiceError.badRequest(
+      'bad-request',
       `Address "${input.destAddress}" is not a valid "${input.destChain}" address`,
     );
   }
 
   if (await screenAddress(input.destAddress)) {
-    throw ServiceError.badRequest(`Address "${input.destAddress}" is sanctioned`);
+    throw ServiceError.badRequest('bad-request', `Address "${input.destAddress}" is sanctioned`);
   }
 
   const result = await validateSwapAmount(
@@ -28,7 +29,7 @@ export default async function openSwapDepositChannel(
     BigInt(input.expectedDepositAmount),
   );
 
-  if (!result.success) throw ServiceError.badRequest(result.reason);
+  if (!result.success) throw ServiceError.badRequest('invalid-amount', result.reason);
 
   const {
     address: depositAddress,

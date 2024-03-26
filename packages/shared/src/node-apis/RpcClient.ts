@@ -1,4 +1,4 @@
-import assert from 'assert';
+/* eslint-disable max-classes-per-file */
 import EventEmitter, { once } from 'events';
 import { filter, firstValueFrom, Subject, timeout } from 'rxjs';
 import type { Logger } from 'winston';
@@ -12,6 +12,8 @@ const DISCONNECT = 'DISCONNECT';
 type RpcResponse =
   | { id: number; result: unknown }
   | { id: number; error: { code: number; message: string } };
+
+export class RpcClientError extends Error {}
 
 export default class RpcClient<
   Req extends Record<string, z.ZodTypeAny>,
@@ -126,7 +128,7 @@ export default class RpcClient<
           // if the socket closes after sending a request but before getting a
           // response, we need to retry the request
           once(this, DISCONNECT, { signal: controller.signal }).then(() => {
-            throw new Error('disconnected');
+            throw new RpcClientError('server disconnected before response was received');
           }),
         ]);
         controller.abort();
@@ -137,9 +139,13 @@ export default class RpcClient<
       }
     }
 
-    assert(response, 'no response received');
+    if (!response) {
+      throw new RpcClientError('no response received');
+    }
 
-    if ('error' in response) throw new Error(response.error.message);
+    if ('error' in response) {
+      throw new RpcClientError(response.error.message);
+    }
 
     this.logger?.info(
       `received response from rpc client: ${response} ${JSON.stringify(response)}}`,

@@ -15,7 +15,7 @@ describe(validateSwapAmount, () => {
 
     expect(result).toEqual({
       success: false,
-      reason: 'expected amount is below minimum swap amount (100000000000000000)',
+      reason: 'given amount (100) is below minimum swap amount (100000000000000000)',
     });
   });
 
@@ -28,7 +28,8 @@ describe(validateSwapAmount, () => {
 
     expect(result).toEqual({
       success: false,
-      reason: 'expected amount is above maximum swap amount (1000000000000000000)',
+      reason:
+        'given amount (1000000000000000001) is above maximum swap amount (1000000000000000000)',
     });
   });
 

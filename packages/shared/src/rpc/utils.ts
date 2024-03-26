@@ -13,7 +13,7 @@ export const validateSwapAmount = (
   if (amount < minimumAmount) {
     return {
       success: false,
-      reason: `expected amount is below minimum swap amount (${minimumAmount})`,
+      reason: `given amount (${amount}) is below minimum swap amount (${minimumAmount})`,
     };
   }
 
@@ -22,7 +22,7 @@ export const validateSwapAmount = (
   if (maxAmount != null && amount > maxAmount) {
     return {
       success: false,
-      reason: `expected amount is above maximum swap amount (${maxAmount})`,
+      reason: `given amount (${amount}) is above maximum swap amount (${maxAmount})`,
     };
   }
 
