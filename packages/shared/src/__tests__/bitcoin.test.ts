@@ -1,4 +1,4 @@
-import { encodeAddress, reverseHex } from '../bitcoin';
+import { encodeAddress, reverseHexBytes } from '../bitcoin';
 
 describe(encodeAddress, () => {
   it.each([
@@ -27,7 +27,7 @@ describe(encodeAddress, () => {
   });
 });
 
-describe(reverseHex, () => {
+describe(reverseHexBytes, () => {
   it.each([
     [
       '0x2ad051fefd2448a750ece819c24f57b996084b4278dbe3b9d5d8334a6c35766e',
@@ -43,6 +43,6 @@ describe(reverseHex, () => {
     ],
     [undefined, undefined],
   ] as const)('reverses hex correctly %s', (hex, reversed) => {
-    expect(reverseHex(hex)).toEqual(reversed);
+    expect(reverseHexBytes(hex)).toEqual(reversed);
   });
 });

@@ -18,7 +18,7 @@ const prefixMap = {
 export const encodeAddress = (address: `0x${string}`, network: ChainflipNetwork) =>
   new BitcoinAddress(prefixMap[network], 1, Buffer.from(address.slice(2), 'hex')).encode();
 
-export const reverseHex = (string: string | undefined) => {
+export const reverseHexBytes = (string: string | undefined) => {
   if (!string) return string;
   return string
     .match(/[a-fA-F0-9]{2}/g)

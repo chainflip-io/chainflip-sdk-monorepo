@@ -190,7 +190,7 @@ type SwapState =
       broadcastRequestedBlockIndex: string;
       broadcastSucceededAt: number;
       broadcastSucceededBlockIndex: string;
-      broadcastTxRef: string;
+      broadcastTransactionRef: string;
     }
   | {
       state: 'FAILED';

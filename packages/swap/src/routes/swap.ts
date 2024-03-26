@@ -251,7 +251,7 @@ router.get(
       ccmDepositReceivedBlockIndex: swap?.ccmDepositReceivedBlockIndex ?? undefined,
       ccmMetadata,
       depositChannelOpenedThroughBackend: swapDepositChannel?.openedThroughBackend,
-      broadcastTxRef: swap?.egress?.broadcast?.transactionRef ?? egressTrackerTxRef,
+      broadcastTransactionRef: swap?.egress?.broadcast?.transactionRef ?? egressTrackerTxRef,
       error,
       failure: failureMode,
       failedAt: failedSwap?.failedAt,
