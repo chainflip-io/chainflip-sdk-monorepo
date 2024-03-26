@@ -43,11 +43,14 @@ const getSwapAmount = async (
   );
 };
 
-export const getBrokerQuote = async (
-  { srcChain, srcAsset, destChain, destAsset, amount }: ParsedQuoteParams,
-  id: string,
-) => {
+export const getBrokerQuote = async ({
+  srcChain,
+  srcAsset,
+  destChain,
+  destAsset,
+  amount,
+}: ParsedQuoteParams) => {
   const quote = await getSwapAmount(srcChain, srcAsset, destChain, destAsset, amount);
 
-  return { id, ...quote, quoteType: 'broker' as const };
+  return { ...quote, quoteType: 'broker' as const };
 };
