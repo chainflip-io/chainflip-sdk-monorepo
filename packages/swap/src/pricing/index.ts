@@ -1,22 +1,24 @@
 import axios from 'axios';
 import { InternalAsset } from '@/shared/enums';
 import env from '../config/env';
-import { CacheMap } from '../utils/dataStructures';
 import logger from '../utils/logger';
 import { deferredPromise } from '../utils/promise';
 
 const COINGECKO_VS_CURRENCY = 'usd';
 
 // https://api.coingecko.com/api/v3/coins/list?include_platform=true
-const coinGeckoIdMap: Record<InternalAsset, string> = {
+export const coinGeckoIdMap = {
   Flip: 'chainflip',
   Usdc: 'usd-coin',
   Dot: 'polkadot',
   Eth: 'ethereum',
   Btc: 'bitcoin',
   Usdt: 'tether',
-};
-const priceCache = new CacheMap<string, Promise<number | undefined>>(30_000);
+} as const satisfies Record<InternalAsset, string>;
+
+type CoingeckoId = (typeof coinGeckoIdMap)[InternalAsset];
+
+type CoingeckoPriceResponse = Record<CoingeckoId, Record<typeof COINGECKO_VS_CURRENCY, number>>;
 
 const coingeckoAxios = axios.create({
   baseURL: 'https://pro-api.coingecko.com/api/v3',
@@ -24,35 +26,72 @@ const coingeckoAxios = axios.create({
   headers: { 'x-cg-pro-api-key': env.COINGECKO_API_KEY },
 });
 
-export const getAssetPrice = async (asset: InternalAsset): Promise<number | undefined> => {
-  logger.debug(`getting asset price for "${asset}"`);
+export class PriceCache {
+  static TTL = 30_000;
 
-  const cachedPrice = priceCache.get(asset);
+  cache: { [A in InternalAsset]?: number } = {};
 
-  if (cachedPrice) {
-    logger.debug(`found cached price for "${asset}": ${await cachedPrice}`);
-    return cachedPrice;
+  lastCacheSet = 0;
+
+  fetchPromise: Promise<void> | undefined;
+
+  shouldRefetch() {
+    return Date.now() - this.lastCacheSet < PriceCache.TTL;
   }
 
-  const { promise, resolve } = deferredPromise<number | undefined>();
+  async getAssetPrice(asset: InternalAsset): Promise<number | undefined> {
+    logger.debug(`getting asset price for "${asset}"`);
 
-  priceCache.set(asset, promise);
+    if (this.shouldRefetch()) {
+      logger.debug(`found cached price for "${asset}": ${this.cache[asset]}`);
+      return this.cache[asset];
+    }
 
-  logger.debug(`fetching price for "${asset}"`);
+    if (this.fetchPromise) {
+      await this.fetchPromise;
+      return this.getAssetPrice(asset);
+    }
 
-  const response = await coingeckoAxios.get(
-    `/simple/price?vs_currencies=${COINGECKO_VS_CURRENCY}&ids=${coinGeckoIdMap[asset]}`,
-  );
+    const { promise, resolve } = deferredPromise<void>();
+    this.fetchPromise = promise;
 
-  const price = response.data[coinGeckoIdMap[asset]][COINGECKO_VS_CURRENCY];
+    try {
+      logger.debug(`fetching price for "${asset}"`);
 
-  resolve(price);
+      const ids = Object.values(coinGeckoIdMap).join(',');
 
-  if (env.NODE_ENV === 'test' || price === undefined) {
-    priceCache.delete(asset);
+      const response = await coingeckoAxios.get(
+        `/simple/price?precision=full&vs_currencies=${COINGECKO_VS_CURRENCY}&ids=${ids}`,
+      );
+
+      const entries = Object.entries(coinGeckoIdMap) as {
+        [A in InternalAsset]: [A, (typeof coinGeckoIdMap)[A]];
+      }[InternalAsset][];
+
+      const coinData = response.data as CoingeckoPriceResponse;
+
+      for (const [id, coingeckoId] of entries) {
+        const price = coinData[coingeckoId][COINGECKO_VS_CURRENCY];
+        if (price === undefined) logger.error(`price for "${id}" is undefined`);
+        this.cache[id] = price;
+      }
+
+      this.lastCacheSet = Date.now();
+      const price = this.cache[asset];
+
+      logger.debug(`price for "${asset}": ${price}`);
+
+      return price;
+    } catch (err) {
+      this.lastCacheSet = 0;
+      throw err;
+    } finally {
+      resolve();
+      this.fetchPromise = undefined;
+    }
   }
+}
 
-  logger.debug(`price for "${asset}": ${price}`);
+const priceCache = new PriceCache();
 
-  return price;
-};
+export const getAssetPrice = priceCache.getAssetPrice.bind(priceCache);
