@@ -35,14 +35,14 @@ export class PriceCache {
 
   fetchPromise: Promise<void> | undefined;
 
-  shouldRefetch() {
+  freshEnough() {
     return Date.now() - this.lastCacheSet < PriceCache.TTL;
   }
 
   async getAssetPrice(asset: InternalAsset): Promise<number | undefined> {
     logger.debug(`getting asset price for "${asset}"`);
 
-    if (this.shouldRefetch()) {
+    if (this.freshEnough()) {
       logger.debug(`found cached price for "${asset}": ${this.cache[asset]}`);
       return this.cache[asset];
     }
