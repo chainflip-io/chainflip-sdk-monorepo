@@ -87,12 +87,12 @@ const chainAssetMapFactory = <Z extends z.ZodTypeAny>(parser: Z, defaultValue: z
       ETH: parser,
       USDC: parser,
       FLIP: parser,
-      USDT: parser.default(defaultValue), // TODO: remove default once usdt is available in all networks
+      USDT: parser.default(defaultValue), // TODO: remove default once usdt is available on all networks
     }),
     Polkadot: z.object({ DOT: parser }),
     Arbitrum: z
       .object({ ETH: parser, USDC: parser })
-      .default({ ETH: defaultValue, USDC: defaultValue }), // TODO: remove default once arbitrum is available in all networks
+      .default({ ETH: defaultValue, USDC: defaultValue }), // TODO: remove default once arbitrum is available on all networks
   });
 
 const chainMap = <Z extends z.ZodTypeAny>(parser: Z, defaultValue: z.input<Z>) =>
@@ -100,7 +100,7 @@ const chainMap = <Z extends z.ZodTypeAny>(parser: Z, defaultValue: z.input<Z>) =
     Bitcoin: parser,
     Ethereum: parser,
     Polkadot: parser,
-    Arbitrum: parser.default(defaultValue), // TODO: remove once arbitrum is available in all networks
+    Arbitrum: parser.default(defaultValue), // TODO: remove once arbitrum is available on all networks
   });
 const chainNumberNullableMap = chainMap(numberOrHex.nullable(), null);
 
