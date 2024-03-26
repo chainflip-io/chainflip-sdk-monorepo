@@ -23,13 +23,21 @@ describe(RedisClient, () => {
     });
 
     it.each([
-      ['Bitcoin' as const, { hash: '0x1234' }],
-      ['Polkadot' as const, { signature: '0x1234' }],
-      ['Ethereum' as const, { signature: { s: [], k_times_g_address: [] } }],
-    ])('parses a %s broadcast', async (chain, txOutId) => {
+      ['Bitcoin' as const, { hash: '0x1234' }, { hash: '0xdeadc0de' }],
+      [
+        'Polkadot' as const,
+        { signature: '0x1234' },
+        { transaction_id: { block_number: 100, extrinsic_index: 20 } },
+      ],
+      [
+        'Ethereum' as const,
+        { signature: { s: [], k_times_g_address: [] } },
+        { hash: '0xdeadc0de' },
+      ],
+    ])('parses a %s broadcast', async (chain, txOutId, txRef) => {
       const mock = jest
         .mocked(Redis.prototype.get)
-        .mockResolvedValueOnce(JSON.stringify({ tx_out_id: txOutId }));
+        .mockResolvedValueOnce(JSON.stringify({ tx_out_id: txOutId, tx_ref: txRef }));
       const client = new RedisClient(url);
       const broadcast = await client.getBroadcast(chain, 1);
       expect(broadcast).toMatchSnapshot(`${chain} broadcast`);

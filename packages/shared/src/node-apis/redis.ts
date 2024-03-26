@@ -3,7 +3,7 @@ import Redis from 'ioredis';
 import { z } from 'zod';
 import { sorter } from '../arrays';
 import { type Asset, type Chain } from '../enums';
-import { number, u128, string, uncheckedAssetAndChain } from '../parsers';
+import { number, u128, string, uncheckedAssetAndChain, hexString } from '../parsers';
 
 const ss58ToHex = (address: string) => `0x${Buffer.from(decodeAddress(address)).toString('hex')}`;
 
@@ -31,9 +31,36 @@ const broadcastParsers = {
         s: z.array(number),
       }),
     }),
+    tx_ref: z
+      .object({
+        hash: hexString,
+      })
+      .transform(({ hash }) => hash)
+      .optional(), // TODO: V130 -- remove optional after v130
   }),
-  Polkadot: z.object({ tx_out_id: z.object({ signature: string }) }),
-  Bitcoin: z.object({ tx_out_id: z.object({ hash: string }) }),
+  Polkadot: z.object({
+    tx_out_id: z.object({ signature: string }),
+    tx_ref: z
+      .object({
+        transaction_id: z.object({
+          block_number: number,
+          extrinsic_index: number,
+        }),
+      })
+      .transform(
+        ({ transaction_id }) => `${transaction_id.block_number}-${transaction_id.extrinsic_index}`,
+      )
+      .optional(), // TODO: V130 -- remove optional after v130
+  }),
+  Bitcoin: z.object({
+    tx_out_id: z.object({ hash: string }),
+    tx_ref: z
+      .object({
+        hash: string.transform((value) => (value.startsWith('0x') ? value.slice(2) : value)),
+      })
+      .transform(({ hash }) => hash)
+      .optional(), // TODO: V130 -- remove optional after v130
+  }),
 };
 
 type ChainBroadcast<C extends Chain> = z.infer<(typeof broadcastParsers)[C]>;

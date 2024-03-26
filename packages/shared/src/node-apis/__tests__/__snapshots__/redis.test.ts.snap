@@ -5,6 +5,7 @@ exports[`RedisClient getBroadcast parses a Bitcoin broadcast: Bitcoin broadcast 
   "tx_out_id": {
     "hash": "0x1234",
   },
+  "tx_ref": "deadc0de",
 }
 `;
 
@@ -16,6 +17,7 @@ exports[`RedisClient getBroadcast parses a Ethereum broadcast: Ethereum broadcas
       "s": [],
     },
   },
+  "tx_ref": "0xdeadc0de",
 }
 `;
 
@@ -24,5 +26,6 @@ exports[`RedisClient getBroadcast parses a Polkadot broadcast: Polkadot broadcas
   "tx_out_id": {
     "signature": "0x1234",
   },
+  "tx_ref": "100-20",
 }
 `;
