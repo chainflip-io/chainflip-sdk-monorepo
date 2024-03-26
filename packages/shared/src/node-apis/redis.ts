@@ -36,7 +36,7 @@ const broadcastParsers = {
         hash: hexString,
       })
       .transform(({ hash }) => hash)
-      .optional(), // V130 -- remove optional after v130
+      .optional(), // TODO: V130 -- remove optional after v130
   }),
   Polkadot: z.object({
     tx_out_id: z.object({ signature: string }),
@@ -50,7 +50,7 @@ const broadcastParsers = {
       .transform(
         ({ transaction_id }) => `${transaction_id.block_number}-${transaction_id.extrinsic_index}`,
       )
-      .optional(), // V130 -- remove optional after v130
+      .optional(), // TODO: V130 -- remove optional after v130
   }),
   Bitcoin: z.object({
     tx_out_id: z.object({ hash: string }),
@@ -59,7 +59,7 @@ const broadcastParsers = {
         hash: string.transform((value) => (value.startsWith('0x') ? value.slice(2) : value)),
       })
       .transform(({ hash }) => hash)
-      .optional(), // V130 -- remove optional after v130
+      .optional(), // TODO: V130 -- remove optional after v130
   }),
 };
 
