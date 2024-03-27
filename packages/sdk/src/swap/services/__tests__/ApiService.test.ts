@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Assets, ChainflipNetworks, Chains } from '@/shared/enums';
 import { QuoteRequest } from '../../types';
 import ApiService from '../ApiService';
+import { Environment } from '../../../rpc';
 
 jest.mock('axios', () => ({
   get: jest.fn(),
@@ -25,7 +26,6 @@ const env = {
       Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n, USDT: 0n },
       Polkadot: { DOT: 0n },
       Bitcoin: { BTC: 0n },
-      Arbitrum: { ETH: 0n, USDC: 0n },
     },
     egressFees: {
       Ethereum: { ETH: 0n, FLIP: 0n, USDC: 0n, USDT: 0n },
@@ -80,12 +80,12 @@ describe('ApiService', () => {
     it.each([ChainflipNetworks.sisyphos, ChainflipNetworks.perseverance] as const)(
       'gets testnet chains (%s)',
       async (network) => {
-        expect(await ApiService.getChains(network, env)).toMatchSnapshot();
+        expect(await ApiService.getChains(network, env as unknown as Pick<Environment, 'ingressEgress'>)).toMatchSnapshot();
       },
     );
 
     it('gets mainnet chains', async () => {
-      expect(await ApiService.getChains(ChainflipNetworks.mainnet, env)).toMatchSnapshot();
+      expect(await ApiService.getChains(ChainflipNetworks.mainnet, env as unknown as Pick<Environment, 'ingressEgress'>)).toMatchSnapshot();
     });
   });
 
@@ -93,7 +93,7 @@ describe('ApiService', () => {
     `${ApiService.getAssets.name} (%s)`,
     (network) => {
       it.each(Object.values(Chains))('gets the correct assets for networks (%s)', async (chain) => {
-        expect(await ApiService.getAssets(chain, network, env)).toMatchSnapshot();
+        expect(await ApiService.getAssets(chain, network, env as unknown as Pick<Environment,  'swapping' | 'ingressEgress'>)).toMatchSnapshot();
       });
     },
   );
