@@ -232,6 +232,19 @@ exports[`ApiService getAssets (perseverance) gets the correct assets for network
     "name": "FLIP",
     "symbol": "FLIP",
   },
+  {
+    "asset": "USDT",
+    "chain": "Ethereum",
+    "chainflipId": "Usdt",
+    "contractAddress": "0x27CEA6Eb8a21Aae05Eb29C91c5CA10592892F584",
+    "decimals": 6,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "USDT",
+    "symbol": "USDT",
+  },
 ]
 `;
 

@@ -42,7 +42,9 @@ const getAssets = async (
   env: Pick<Environment, 'swapping' | 'ingressEgress'>,
 ): Promise<AssetData[]> => {
   if (chain === Chains.Ethereum) {
-    return network === ChainflipNetworks.backspin || network === ChainflipNetworks.sisyphos
+    return network === ChainflipNetworks.backspin ||
+      network === ChainflipNetworks.sisyphos ||
+      network === ChainflipNetworks.perseverance
       ? [eth$(network, env), usdc$(network, env), flip$(network, env), usdt$(network, env)]
       : [eth$(network, env), usdc$(network, env), flip$(network, env)];
   }

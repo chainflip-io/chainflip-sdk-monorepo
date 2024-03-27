@@ -144,6 +144,7 @@ describe(SwapSDK, () => {
           eth$(ChainflipNetworks.perseverance, env),
           usdc$(ChainflipNetworks.perseverance, env),
           flip$(ChainflipNetworks.perseverance, env),
+          usdt$(ChainflipNetworks.perseverance, env),
         ],
       ],
       [
@@ -152,6 +153,7 @@ describe(SwapSDK, () => {
           eth$(ChainflipNetworks.perseverance, env),
           usdc$(ChainflipNetworks.perseverance, env),
           flip$(ChainflipNetworks.perseverance, env),
+          usdt$(ChainflipNetworks.perseverance, env),
         ],
       ],
       [Chains.Polkadot, [dot$(ChainflipNetworks.perseverance, env)]],
