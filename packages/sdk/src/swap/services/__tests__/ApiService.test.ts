@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { Assets, ChainflipNetworks, Chains } from '@/shared/enums';
+import { Environment } from '../../../rpc';
 import { QuoteRequest } from '../../types';
 import ApiService from '../ApiService';
-import { Environment } from '../../../rpc';
 
 jest.mock('axios', () => ({
   get: jest.fn(),
