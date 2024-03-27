@@ -53,7 +53,9 @@ const getAssets = async (
     return [btc$(network, env)];
   }
   if (chain === Chains.Arbitrum) {
-    return network === ChainflipNetworks.backspin ? [arbeth$(network, env), arbusdc$(network, env)] : [];
+    return network === ChainflipNetworks.backspin
+      ? [arbeth$(network, env), arbusdc$(network, env)]
+      : [];
   }
 
   throw new Error('received unexpected chain');
