@@ -11,7 +11,7 @@ export const calculateIncludedSwapFees = async (
   srcAsset: InternalAsset,
   destAsset: InternalAsset,
   swapInputAmount: bigint,
-  intermediateAmount: bigint | null,
+  intermediateAmount: bigint | null | undefined,
   swapOutputAmount: bigint,
 ): Promise<SwapFee[]> => {
   const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(env.CHAINFLIP_NETWORK);

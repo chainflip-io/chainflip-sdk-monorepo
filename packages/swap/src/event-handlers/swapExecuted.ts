@@ -53,9 +53,9 @@ export default async function swapExecuted({
   const fees = await calculateIncludedSwapFees(
     swap.srcAsset,
     swap.destAsset,
-    swap.swapInputAmount.toFixed(),
-    intermediateAmount?.toString(),
-    swapOutput.toString(),
+    BigInt(swap.swapInputAmount.toFixed()),
+    intermediateAmount,
+    swapOutput,
   );
 
   await prisma.swap.update({

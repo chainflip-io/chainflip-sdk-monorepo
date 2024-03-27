@@ -7,7 +7,7 @@ export type QuoteType = 'broker' | 'market_maker';
 export const collectMakerQuotes = (
   requestId: string,
   expectedQuotes: number,
-  quotes$: Observable<{ client: string; quote: MarketMakerQuote }>,
+  quotes$: Observable<{ marketMaker: string; quote: MarketMakerQuote }>,
 ): Promise<MarketMakerQuote[]> => {
   if (expectedQuotes === 0) return Promise.resolve([]);
 
@@ -23,8 +23,8 @@ export const collectMakerQuotes = (
 
     sub = quotes$
       .pipe(filter(({ quote }) => quote.id === requestId))
-      .subscribe(({ client, quote }) => {
-        clientsReceivedQuotes.set(client, quote);
+      .subscribe(({ marketMaker, quote }) => {
+        clientsReceivedQuotes.set(marketMaker, quote);
         if (clientsReceivedQuotes.size === expectedQuotes) complete();
       });
 
