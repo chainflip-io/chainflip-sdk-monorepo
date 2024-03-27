@@ -93,7 +93,7 @@ const quote = (io: Server) => {
     const { swappedAmount, remainingAmount } = await findPrice({
       poolFee: 0,
       amount: BigInt(amount),
-      limitOrders: quotes.flatMap(({ limitOrders }) =>
+      limitOrders: quotes.flatMap(({ limit_orders: limitOrders }) =>
         limitOrders.map(([tick, amt]) => ({ tick, amount: amt })),
       ),
     });

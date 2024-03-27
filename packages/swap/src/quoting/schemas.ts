@@ -4,7 +4,7 @@ import { QuoteType } from './quotes';
 
 export const marketMakerResponseSchema = z.object({
   id: z.string(),
-  limitOrders: z.array(z.tuple([z.number(), numericString.transform((n) => BigInt(n))])),
+  limit_orders: z.array(z.tuple([z.number(), numericString.transform((n) => BigInt(n))])),
 });
 
 export type MarketMakerQuote = z.infer<typeof marketMakerResponseSchema>;
