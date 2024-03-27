@@ -331,7 +331,7 @@ const quote = (io: Server) => {
           ...bestQuote,
           egressAmount: egressAmount.toString(),
           intermediateAmount: bestQuote.intermediateAmount?.toString(),
-          includedFees,
+          includedFees: [...includedFees, ...bestQuote.fees],
           lowLiquidityWarning,
           estimatedDurationSeconds: await estimateSwapDuration(
             srcChainAsset.chain,
