@@ -80,12 +80,19 @@ describe('ApiService', () => {
     it.each([ChainflipNetworks.sisyphos, ChainflipNetworks.perseverance] as const)(
       'gets testnet chains (%s)',
       async (network) => {
-        expect(await ApiService.getChains(network, env as unknown as Pick<Environment, 'ingressEgress'>)).toMatchSnapshot();
+        expect(
+          await ApiService.getChains(network, env as unknown as Pick<Environment, 'ingressEgress'>),
+        ).toMatchSnapshot();
       },
     );
 
     it('gets mainnet chains', async () => {
-      expect(await ApiService.getChains(ChainflipNetworks.mainnet, env as unknown as Pick<Environment, 'ingressEgress'>)).toMatchSnapshot();
+      expect(
+        await ApiService.getChains(
+          ChainflipNetworks.mainnet,
+          env as unknown as Pick<Environment, 'ingressEgress'>,
+        ),
+      ).toMatchSnapshot();
     });
   });
 
@@ -93,7 +100,13 @@ describe('ApiService', () => {
     `${ApiService.getAssets.name} (%s)`,
     (network) => {
       it.each(Object.values(Chains))('gets the correct assets for networks (%s)', async (chain) => {
-        expect(await ApiService.getAssets(chain, network, env as unknown as Pick<Environment,  'swapping' | 'ingressEgress'>)).toMatchSnapshot();
+        expect(
+          await ApiService.getAssets(
+            chain,
+            network,
+            env as unknown as Pick<Environment, 'swapping' | 'ingressEgress'>,
+          ),
+        ).toMatchSnapshot();
       });
     },
   );
