@@ -65,7 +65,7 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
 
     // https://socket.io/docs/v4/server-socket-instance/#socketdata
     // eslint-disable-next-line no-param-reassign
-    socket.data.marketMaker = marketMaker.name;
+    socket.data = { marketMaker: marketMaker.name };
 
     next();
   } catch (error) {

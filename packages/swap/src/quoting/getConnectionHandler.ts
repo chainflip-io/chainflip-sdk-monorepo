@@ -16,22 +16,25 @@ const getConnectionHandler = (): ConnectionHandler => {
   return {
     quotes$,
     handler(socket: QuotingSocket) {
-      const { marketMaker } = socket.data;
-      logger.info(`market maker "${marketMaker}" connected`);
+      logger.info(`market maker "${socket.data.marketMaker}" connected`);
 
       socket.on('disconnect', () => {
-        logger.info(`market maker "${marketMaker}" disconnected`);
+        logger.info(`market maker "${socket.data.marketMaker}" disconnected`);
       });
 
       socket.on('quote_response', (message) => {
         const result = marketMakerResponseSchema.safeParse(message);
 
         if (!result.success) {
-          logger.warn(`received invalid quote response from "${marketMaker}"`, {}, { message });
+          logger.warn(
+            `received invalid quote response from "${socket.data.marketMaker}"`,
+            {},
+            { message },
+          );
           return;
         }
 
-        quotes$.next({ marketMaker, quote: result.data });
+        quotes$.next({ marketMaker: socket.data.marketMaker, quote: result.data });
       });
     },
   };
