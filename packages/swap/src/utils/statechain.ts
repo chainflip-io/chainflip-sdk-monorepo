@@ -31,7 +31,7 @@ const getSwapAmount = async (
   srcAsset: Asset,
   destChain: Chain,
   destAsset: Asset,
-  amount: string,
+  amount: bigint,
 ): Promise<z.output<(typeof responseValidators)['swap_rate']>> => {
   const client = await initializeClient();
 
@@ -39,15 +39,18 @@ const getSwapAmount = async (
     'swap_rate',
     { asset: srcAsset, chain: srcChain },
     { asset: destAsset, chain: destChain },
-    amount,
+    String(amount),
   );
 };
 
-export const getBrokerQuote = async (
-  { srcChain, srcAsset, destChain, destAsset, amount }: ParsedQuoteParams,
-  id: string,
-) => {
+export const getBrokerQuote = async ({
+  srcChain,
+  srcAsset,
+  destChain,
+  destAsset,
+  amount,
+}: ParsedQuoteParams) => {
   const quote = await getSwapAmount(srcChain, srcAsset, destChain, destAsset, amount);
 
-  return { id, ...quote, quoteType: 'broker' as const };
+  return { ...quote, quoteType: 'broker' as const };
 };

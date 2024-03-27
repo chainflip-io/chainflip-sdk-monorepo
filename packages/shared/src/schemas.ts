@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Chain, Asset, InternalAsset } from './enums';
+import { Chain, Asset } from './enums';
 import {
   chain,
   hexStringWithMaxByteSize,
@@ -13,7 +13,7 @@ export const quoteQuerySchema = z.object({
   srcAsset: asset,
   destChain: chain,
   destAsset: asset,
-  amount: numericString,
+  amount: numericString.transform((n) => BigInt(n)),
   brokerCommissionBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
   boostFeeBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
 });
@@ -58,28 +58,3 @@ export type QuoteQueryResponse = {
   lowLiquidityWarning: boolean | undefined;
   estimatedDurationSeconds: number;
 };
-
-interface BaseRequest {
-  id: string; // random UUID
-  deposit_amount: string; // base unit of the deposit asset, e.g. wei for ETH
-}
-
-interface Intermediate extends BaseRequest {
-  source_asset: Exclude<InternalAsset, 'Usdc'>;
-  intermediate_asset: 'Usdc';
-  destination_asset: Exclude<InternalAsset, 'Usdc'>;
-}
-
-interface USDCDeposit extends BaseRequest {
-  source_asset: 'Usdc';
-  intermediate_asset: null;
-  destination_asset: Exclude<InternalAsset, 'Usdc'>;
-}
-
-interface USDCEgress extends BaseRequest {
-  source_asset: Exclude<InternalAsset, 'Usdc'>;
-  intermediate_asset: null;
-  destination_asset: 'Usdc';
-}
-
-export type InternalQuoteRequest = Intermediate | USDCDeposit | USDCEgress;
