@@ -31,7 +31,7 @@ const getSwapAmount = async (
   srcAsset: Asset,
   destChain: Chain,
   destAsset: Asset,
-  amount: string,
+  amount: bigint,
 ): Promise<z.output<(typeof responseValidators)['swap_rate']>> => {
   const client = await initializeClient();
 
@@ -39,7 +39,7 @@ const getSwapAmount = async (
     'swap_rate',
     { asset: srcAsset, chain: srcChain },
     { asset: destAsset, chain: destChain },
-    amount,
+    String(amount),
   );
 };
 

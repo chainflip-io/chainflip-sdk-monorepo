@@ -13,16 +13,23 @@ import {
   getInternalAsset,
   getInternalAssets,
 } from '@/shared/enums';
-import { bigintMin, getPipAmountFromAmount } from '@/shared/functions';
+import {
+  bigintMin,
+  getHundredthPipAmountFromAmount,
+  getPipAmountFromAmount,
+} from '@/shared/functions';
 import { ParsedQuoteParams, QuoteQueryResponse, quoteQuerySchema, SwapFee } from '@/shared/schemas';
 import { calculateIncludedSwapFees, estimateIngressEgressFeeAssetAmount } from '@/swap/utils/fees';
 import { estimateSwapDuration } from '@/swap/utils/swap';
 import { asyncHandler } from './common';
+import env from '../config/env';
+import { getPoolsNetworkFeeHundredthPips } from '../consts';
 import { getAssetPrice } from '../pricing';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import getConnectionHandler from '../quoting/getConnectionHandler';
 import { collectMakerQuotes } from '../quoting/quotes';
 import logger from '../utils/logger';
+import { getPools } from '../utils/pools';
 import {
   getMinimumEgressAmount,
   getEgressFee,
@@ -49,34 +56,34 @@ const quote = (io: Server) => {
   const approximateIntermediateOutput = async (asset: InternalAsset, amount: string) => {
     const price = await getAssetPrice(asset);
 
-    if (typeof price !== 'number') return undefined;
+    if (typeof price !== 'number') return null;
 
     return BigInt(new BigNumber(amount).times(price).toFixed(0));
   };
 
   async function quoteLeg(
     [baseAsset, quoteAsset]: readonly [InternalAsset, InternalAsset],
-    amount: undefined,
-  ): Promise<undefined>;
+    amount: null,
+  ): Promise<null>;
   async function quoteLeg(
     [baseAsset, quoteAsset]: readonly [InternalAsset, InternalAsset],
-    amount: string,
+    amount: bigint,
   ): Promise<bigint>;
   async function quoteLeg(
     [baseAsset, quoteAsset]: readonly [InternalAsset, InternalAsset],
-    amount: string | undefined,
-  ): Promise<bigint | undefined>;
+    amount: bigint | null,
+  ): Promise<bigint | null>;
   async function quoteLeg(
     [baseAsset, quoteAsset]: readonly [InternalAsset, InternalAsset],
-    amount: string | undefined,
-  ): Promise<bigint | undefined> {
-    if (!amount) return undefined;
+    amount: bigint | null,
+  ): Promise<bigint | null> {
+    if (!amount) return null;
 
     const id = randomUUID();
 
     io.emit('quote_request', {
       request_id: id,
-      amount,
+      amount: String(amount),
       base_asset: getAssetAndChain(baseAsset),
       quote_asset: getAssetAndChain(quoteAsset),
     });
@@ -98,38 +105,84 @@ const quote = (io: Server) => {
     return swappedAmount;
   }
 
-  const getBestQuote = async (quoteRequest: ParsedQuoteParams & { amount: string }) => {
+  const getBestQuote = async (quoteRequest: ParsedQuoteParams & { amount: bigint }) => {
     const { srcAsset, destAsset } = getInternalAssets(quoteRequest);
+    const networkFee = getPoolsNetworkFeeHundredthPips(env.CHAINFLIP_NETWORK);
+
+    const pools = await getPools(srcAsset, destAsset);
+
+    let intermediateAmount: bigint | null = null;
+    let outputAmount: bigint;
+    let networkFeeUsdc: bigint | null = null;
+    const firstLegPoolFee = getHundredthPipAmountFromAmount(
+      quoteRequest.amount,
+      pools[0].liquidityFeeHundredthPips,
+    );
+
+    const swapInputAmount = quoteRequest.amount - firstLegPoolFee;
+
+    const fees: SwapFee[] = [
+      {
+        type: 'LIQUIDITY',
+        amount: firstLegPoolFee.toString(),
+        ...getAssetAndChain(srcAsset),
+      },
+    ];
 
     if (srcAsset !== 'Usdc' && destAsset !== 'Usdc') {
       const leg1 = [srcAsset, 'Usdc'] as const;
       const leg2 = ['Usdc', destAsset] as const;
 
-      const approximateUsdcAmount = await approximateIntermediateOutput(
+      let approximateUsdcAmount = await approximateIntermediateOutput(
         srcAsset,
-        quoteRequest.amount,
+        swapInputAmount.toString(),
       );
 
-      // TODO: subtract network fee
-      // TODO: subtract liquidity fees
+      networkFeeUsdc =
+        approximateUsdcAmount && getHundredthPipAmountFromAmount(approximateUsdcAmount, networkFee);
 
-      const quotes = await Promise.all([
-        quoteLeg(leg1, quoteRequest.amount),
-        quoteLeg(leg1, approximateUsdcAmount?.toString()),
-      ]);
-
-      if (quotes[1] === undefined) {
-        quotes[1] = await quoteLeg(leg2, quotes[0].toString());
+      if (networkFeeUsdc && approximateUsdcAmount) {
+        approximateUsdcAmount -= networkFeeUsdc;
       }
 
-      return { intermediateAmount: quotes[1], outputAmount: quotes[0] };
+      const quotes = await Promise.all([
+        quoteLeg(leg1, swapInputAmount),
+        quoteLeg(leg1, approximateUsdcAmount),
+      ]);
+
+      // TODO: check if approximated value is close enough or we need to get a second quote
+      if (quotes[1] === null) {
+        networkFeeUsdc = getHundredthPipAmountFromAmount(quotes[0], networkFee);
+        quotes[0] -= networkFeeUsdc;
+        quotes[1] = await quoteLeg(leg2, quotes[0]);
+      }
+
+      const secondLegPoolFee = getHundredthPipAmountFromAmount(
+        quotes[1],
+        pools[1].liquidityFeeHundredthPips,
+      );
+      quotes[1] -= secondLegPoolFee;
+
+      fees.push({
+        type: 'LIQUIDITY',
+        amount: secondLegPoolFee.toString(),
+        ...getAssetAndChain(destAsset),
+      });
+
+      [intermediateAmount, outputAmount] = quotes;
+    } else {
+      const leg = [srcAsset, destAsset] as const;
+      outputAmount = await quoteLeg(leg, swapInputAmount);
     }
 
-    const leg = [srcAsset, destAsset] as const;
+    fees.push({
+      type: 'NETWORK',
+      amount: networkFeeUsdc!.toString(),
+      chain: 'Ethereum',
+      asset: 'USDC',
+    });
 
-    const outputAmount = await quoteLeg(leg, quoteRequest.amount);
-
-    return { intermediateAmount: null, outputAmount };
+    return { intermediateAmount, outputAmount, fees };
   };
 
   const router = express.Router();
@@ -222,7 +275,7 @@ const quote = (io: Server) => {
       try {
         const start = performance.now();
 
-        const bestQuote = await getBestQuote({ ...query, amount: String(swapInputAmount) });
+        const bestQuote = await getBestQuote({ ...query, amount: swapInputAmount });
 
         const lowLiquidityWarning = await checkPriceWarning({
           srcAsset: getInternalAsset(srcChainAsset),

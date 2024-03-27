@@ -13,7 +13,7 @@ export const quoteQuerySchema = z.object({
   srcAsset: asset,
   destChain: chain,
   destAsset: asset,
-  amount: numericString,
+  amount: numericString.transform((n) => BigInt(n)),
   brokerCommissionBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
   boostFeeBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
 });

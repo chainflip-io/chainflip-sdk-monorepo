@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import type { Server } from 'socket.io';
+import type { Server, Socket } from 'socket.io';
 import { promisify } from 'util';
 import { z } from 'zod';
 import prisma from '../client';
@@ -7,8 +7,9 @@ import prisma from '../client';
 const verifyAsync = promisify(crypto.verify);
 
 type Middleware = Parameters<Server['use']>[0];
-type Socket = Parameters<Middleware>[0];
 type Next = Parameters<Middleware>[1];
+
+export type QuotingSocket = Omit<Socket, 'data'> & { data: { marketMaker: string } };
 
 const authSchema = z.object({
   client_version: z.literal('1'),
@@ -35,7 +36,7 @@ const parseKey = (key: string) => {
   }
 };
 
-const authenticate = async (socket: Socket, next: Next) => {
+const authenticate = async (socket: QuotingSocket, next: Next) => {
   try {
     const result = authSchema.safeParse(socket.handshake.auth);
 
@@ -61,6 +62,10 @@ const authenticate = async (socket: Socket, next: Next) => {
     );
 
     assert(signaturesMatch, 'invalid signature');
+
+    // https://socket.io/docs/v4/server-socket-instance/#socketdata
+    // eslint-disable-next-line no-param-reassign
+    socket.data.marketMaker = marketMaker.name;
 
     next();
   } catch (error) {

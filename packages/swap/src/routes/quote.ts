@@ -57,7 +57,7 @@ router.get(
     const srcChainAsset = { asset: query.srcAsset, chain: query.srcChain };
     const destChainAsset = { asset: query.destAsset, chain: query.destChain };
 
-    const amountResult = await validateSwapAmount(srcChainAsset, BigInt(query.amount));
+    const amountResult = await validateSwapAmount(srcChainAsset, query.amount);
 
     if (!amountResult.success) {
       throw ServiceError.badRequest(amountResult.reason);
@@ -65,7 +65,7 @@ router.get(
 
     const includedFees: SwapFee[] = [];
 
-    let swapInputAmount = BigInt(query.amount);
+    let swapInputAmount = query.amount;
 
     if (query.boostFeeBps) {
       const boostFee = getPipAmountFromAmount(swapInputAmount, query.boostFeeBps);
@@ -115,7 +115,7 @@ router.get(
     try {
       const start = performance.now();
 
-      const bestQuote = await getBrokerQuote({ ...query, amount: String(swapInputAmount) });
+      const bestQuote = await getBrokerQuote({ ...query, amount: swapInputAmount });
 
       const lowLiquidityWarning = await checkPriceWarning({
         srcAsset: getInternalAsset(srcChainAsset),

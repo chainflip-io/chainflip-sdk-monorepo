@@ -1,13 +1,13 @@
 import { Observable, Subject } from 'rxjs';
-import { Socket } from 'socket.io';
+import type { QuotingSocket } from './authenticate';
 import { MarketMakerQuote, marketMakerResponseSchema } from './schemas';
 import logger from '../utils/logger';
 
-type Quote = { client: string; quote: MarketMakerQuote };
+type Quote = { marketMaker: string; quote: MarketMakerQuote };
 
 type ConnectionHandler = {
   quotes$: Observable<Quote>;
-  handler(socket: Socket): void;
+  handler(socket: QuotingSocket): void;
 };
 
 const getConnectionHandler = (): ConnectionHandler => {
@@ -15,22 +15,23 @@ const getConnectionHandler = (): ConnectionHandler => {
 
   return {
     quotes$,
-    handler(socket: Socket) {
-      logger.info(`socket connected with id "${socket.id}"`);
+    handler(socket: QuotingSocket) {
+      const { marketMaker } = socket.data;
+      logger.info(`market maker "${marketMaker}" connected`);
 
       socket.on('disconnect', () => {
-        logger.info(`socket disconnected with id "${socket.id}"`);
+        logger.info(`market maker "${marketMaker}" disconnected`);
       });
 
       socket.on('quote_response', (message) => {
         const result = marketMakerResponseSchema.safeParse(message);
 
         if (!result.success) {
-          logger.warn('received invalid quote response', {}, { message });
+          logger.warn(`received invalid quote response from "${marketMaker}"`, {}, { message });
           return;
         }
 
-        quotes$.next({ client: socket.id, quote: result.data });
+        quotes$.next({ marketMaker, quote: result.data });
       });
     },
   };
