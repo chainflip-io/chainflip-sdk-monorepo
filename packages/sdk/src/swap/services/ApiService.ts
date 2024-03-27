@@ -3,7 +3,7 @@ import { type ChainflipNetwork, Chain, Chains, ChainflipNetworks } from '@/share
 import type { Environment } from '@/shared/rpc';
 import type { QuoteQueryParams, QuoteQueryResponse } from '@/shared/schemas';
 import { dot$, btc$, eth$, usdc$, flip$, usdt$, arbeth$, arbusdc$ } from '../assets';
-import { bitcoin, ethereum, polkadot } from '../chains';
+import { arbitrum, bitcoin, ethereum, polkadot } from '../chains';
 import {
   ChainData,
   QuoteRequest,
@@ -16,21 +16,31 @@ import {
 const getChains = async (
   network: ChainflipNetwork,
   env: Pick<Environment, 'ingressEgress'>,
-): Promise<ChainData[]> => [ethereum(network, env), polkadot(network, env), bitcoin(network, env)];
+): Promise<ChainData[]> => {
+  const chains = [ethereum(network, env), polkadot(network, env), bitcoin(network, env)];
+  return network === 'backspin' ? [...chains, arbitrum(network, env)] : chains; // TODO: remove condition once arbitrum is available on all networks
+};
 
 const getPossibleDestinationChains = async (
   sourceChain: Chain,
   network: ChainflipNetwork,
   env: Pick<Environment, 'ingressEgress'>,
 ): Promise<ChainData[]> => {
+  let chains: ChainData[] = [];
   if (sourceChain === Chains.Ethereum) {
-    return [ethereum(network, env), bitcoin(network, env), polkadot(network, env)];
+    chains = [ethereum(network, env), bitcoin(network, env), polkadot(network, env)];
   }
   if (sourceChain === Chains.Polkadot) {
-    return [ethereum(network, env), bitcoin(network, env)];
+    chains = [ethereum(network, env), bitcoin(network, env)];
   }
   if (sourceChain === Chains.Bitcoin) {
-    return [ethereum(network, env), polkadot(network, env)];
+    chains = [ethereum(network, env), polkadot(network, env)];
+  }
+  if (sourceChain === Chains.Arbitrum) {
+    chains = [ethereum(network, env), bitcoin(network, env), polkadot(network, env)];
+  }
+  if (chains.length > 0) {
+    return network === 'backspin' ? [...chains, arbitrum(network, env)] : chains; // TODO: remove condition once arbitrum is available on all networks
   }
 
   throw new Error('received unknown chain');
