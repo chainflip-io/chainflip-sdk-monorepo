@@ -36,7 +36,8 @@ const getPossibleDestinationChains = async (
   if (sourceChain === Chains.Bitcoin) {
     chains = [ethereum(network, env), polkadot(network, env)];
   }
-  if (sourceChain === Chains.Arbitrum) {
+  if (sourceChain === Chains.Arbitrum && network === 'backspin') {
+    // TODO: remove condition once arbitrum is available on all networks
     chains = [ethereum(network, env), bitcoin(network, env), polkadot(network, env)];
   }
   if (chains.length > 0) {
