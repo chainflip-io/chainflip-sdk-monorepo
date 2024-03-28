@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { getInternalAsset } from '@/shared/enums';
 import { u128, u64 } from '@/shared/parsers';
 import { calculateIncludedSwapFees } from '@/swap/utils/fees';
+import logger from '../utils/logger';
 import type { EventHandlerArgs } from '.';
 
 const swapExecutedArgs = z.intersection(
@@ -27,9 +28,15 @@ export default async function swapExecuted({
   event,
 }: EventHandlerArgs): Promise<void> {
   const { swapId, intermediateAmount, swapOutput } = swapExecutedArgs.parse(event.args);
-  const swap = await prisma.swap.findUniqueOrThrow({
+  const swap = await prisma.swap.findUnique({
     where: { nativeId: swapId },
   });
+
+  // The burn swaps do not emit a `SwapScheduled` event. This means that a swap entry will not exist in the db yet.
+  if (!swap) {
+    logger.warn(`swapExecuted: No existing swap entity for swap ${swapId}.`);
+    return;
+  }
 
   const fees = await calculateIncludedSwapFees(
     swap.srcAsset,
