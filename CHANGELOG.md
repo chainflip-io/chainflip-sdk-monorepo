@@ -31,6 +31,36 @@ which it is deprecated.
   protocol requires before recognizing a transaction as confirmed. For networks
   like Polkadot, there is deterministic finality, and therefore, no confirmation
   count is required.
+- `USDT` has been added to our `ChainAssetMap` data structure under the
+  `Ethereum` key:
+
+```diff
+type ChainAssetMap<T> = {
+    Bitcoin: {
+        BTC: T;
+    };
+    Ethereum: {
+        ETH: T;
+        USDC: T;
+        FLIP: T;
++       USDT: T;
+    };
+    Polkadot: {
+        DOT: T;
+    };
+}
+```
+
+- `broadcastTransactionRef` has been added to the `getStatus` response for
+  swaps in the `COMPLETE` state. For Bitcoin and EVM chains, this is a
+  transaction hash. For Polkadot, it is a block number and extrinsic index in
+  the format of `${blockNumber}-${extrinsicIndex}`.
+
+### Changed
+
+- `SwapSDK.prototype.getRequiredBlockConfirmations` now has a return type of
+  `ChainMap<number | null>` instead of `ChainMap<number | undefined>` to be more
+  consistent with existing return types.
 
 ### Fixed
 
