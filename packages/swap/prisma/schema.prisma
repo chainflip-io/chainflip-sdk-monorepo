@@ -34,6 +34,7 @@ enum Chain {
   Polkadot
   Ethereum
   Bitcoin
+  Arbitrum
 
   @@schema("public")
 }
@@ -45,6 +46,8 @@ enum InternalAsset {
   Eth
   Btc
   Usdt
+  ArbEth
+  ArbUsdc
 
   @@schema("public")
 }

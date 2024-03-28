@@ -87,18 +87,22 @@ const chainAssetMapFactory = <Z extends z.ZodTypeAny>(parser: Z, defaultValue: z
       ETH: parser,
       USDC: parser,
       FLIP: parser,
-      USDT: parser.default(defaultValue), // TODO: remove default once usdt is available in all networks
+      USDT: parser.default(defaultValue), // TODO: remove default once usdt is available on all networks
     }),
     Polkadot: z.object({ DOT: parser }),
+    Arbitrum: z
+      .object({ ETH: parser, USDC: parser })
+      .default({ ETH: defaultValue, USDC: defaultValue }), // TODO: remove default once arbitrum is available on all networks
   });
 
-const chainMap = <Z extends z.ZodTypeAny>(parser: Z) =>
+const chainMapFactory = <Z extends z.ZodTypeAny>(parser: Z, defaultValue: z.input<Z>) =>
   z.object({
     Bitcoin: parser,
     Ethereum: parser,
     Polkadot: parser,
+    Arbitrum: parser.default(defaultValue), // TODO: remove once arbitrum is available on all networks
   });
-const chainNumberNullableMap = chainMap(numberOrHex.nullable());
+const chainNumberNullableMap = chainMapFactory(numberOrHex.nullable(), null);
 
 const swappingEnvironment = z.object({
   maximum_swap_amounts: chainAssetMapFactory(numberOrHex.nullable(), null),
@@ -128,9 +132,9 @@ const ingressEgressEnvironment = z
     witness_safety_margins: chainNumberNullableMap,
     egress_dust_limits: chainAssetMapFactory(numberOrHex, 1),
     // TODO(1.3): remove optional and default value
-    channel_opening_fees: chainMap(numberOrHex)
+    channel_opening_fees: chainMapFactory(numberOrHex, 0)
       .optional()
-      .default({ Bitcoin: 0, Ethereum: 0, Polkadot: 0 }),
+      .default({ Bitcoin: 0, Ethereum: 0, Polkadot: 0, Arbitrum: 0 }),
   })
   .transform(rename({ egress_dust_limits: 'minimum_egress_amounts' }));
 
@@ -150,6 +154,9 @@ const rpcAsset = z.union([
   z.object({ chain: z.literal('Ethereum'), asset: z.literal('ETH') }),
   z.literal('USDC'),
   z.object({ chain: z.literal('Ethereum'), asset: z.literal('USDC') }),
+  z.object({ chain: z.literal('Ethereum'), asset: z.literal('USDT') }),
+  z.object({ chain: z.literal('Arbitrum'), asset: z.literal('ETH') }),
+  z.object({ chain: z.literal('Arbitrum'), asset: z.literal('USDC') }),
 ]);
 
 const poolInfo = z.intersection(
@@ -167,6 +174,7 @@ const feesInfo = z.object({
   Bitcoin: z.object({ BTC: poolInfo }),
   Ethereum: z.object({ ETH: poolInfo, FLIP: poolInfo }),
   Polkadot: z.object({ DOT: poolInfo }),
+  Arbitrum: z.object({ ETH: poolInfo, USDC: poolInfo }).optional(),
 });
 
 const poolsEnvironment = z.object({ fees: feesInfo });

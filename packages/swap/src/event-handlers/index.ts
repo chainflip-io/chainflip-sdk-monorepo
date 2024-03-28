@@ -58,9 +58,20 @@ export const events = {
     DepositReceived: 'EthereumIngressEgress.DepositReceived',
     DepositIgnored: 'EthereumIngressEgress.DepositIgnored',
   },
+  ArbitrumIngressEgress: {
+    EgressScheduled: 'ArbitrumIngressEgress.EgressScheduled',
+    BatchBroadcastRequested: 'ArbitrumIngressEgress.BatchBroadcastRequested',
+    CcmBroadcastRequested: 'ArbitrumIngressEgress.CcmBroadcastRequested',
+    DepositReceived: 'ArbitrumIngressEgress.DepositReceived',
+    DepositIgnored: 'ArbitrumIngressEgress.DepositIgnored',
+  },
   EthereumBroadcaster: {
     BroadcastSuccess: 'EthereumBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'EthereumBroadcaster.BroadcastAborted',
+  },
+  ArbitrumBroadcaster: {
+    BroadcastSuccess: 'ArbitrumBroadcaster.BroadcastSuccess',
+    BroadcastAborted: 'ArbitrumBroadcaster.BroadcastAborted',
   },
   PolkadotIngressEgress: {
     EgressScheduled: 'PolkadotIngressEgress.EgressScheduled',
@@ -78,6 +89,9 @@ export const events = {
   },
   EthereumChainTracking: {
     ChainStateUpdated: 'EthereumChainTracking.ChainStateUpdated',
+  },
+  ArbitrumChainTracking: {
+    ChainStateUpdated: 'ArbitrumChainTracking.ChainStateUpdated',
   },
   PolkadotChainTracking: {
     ChainStateUpdated: 'PolkadotChainTracking.ChainStateUpdated',
