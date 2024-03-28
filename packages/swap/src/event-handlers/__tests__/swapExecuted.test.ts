@@ -38,7 +38,16 @@ describe(swapExecuted, () => {
       const {
         eventContext: { event },
         block,
-      } = buildSwapExecutedMock({ swapId: '9876545', ...amount });
+      } = buildSwapExecutedMock({
+        swapId: '9876545',
+        ...amount,
+        destinationAsset: {
+          __kind: 'Flip',
+        },
+        sourceAsset: {
+          __kind: 'Btc',
+        },
+      });
 
       const { swapId } = event.args;
 
@@ -93,6 +102,12 @@ describe(swapExecuted, () => {
       swapId: '9876545',
       egressAmount: '10000000000',
       intermediateAmount: '100000',
+      destinationAsset: {
+        __kind: 'Flip',
+      },
+      sourceAsset: {
+        __kind: 'Eth',
+      },
     });
 
     const { swapId } = event.args;
@@ -147,6 +162,12 @@ describe(swapExecuted, () => {
       swapId: '9876545',
       egressAmount: '10000000000',
       intermediateAmount: '100000',
+      destinationAsset: {
+        __kind: 'Flip',
+      },
+      sourceAsset: {
+        __kind: 'Usdc',
+      },
     });
 
     await prisma.$transaction((tx) =>
