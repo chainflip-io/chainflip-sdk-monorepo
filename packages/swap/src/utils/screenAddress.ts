@@ -5,7 +5,7 @@ import env from '../config/env';
 
 const schema = z.object({ identifications: z.array(z.object({})) });
 
-export default async function screenAddress(address: string): Promise<boolean> {
+export async function checkChainalysis(address: string): Promise<boolean> {
   const apiKey = env.CHAINALYSIS_API_KEY;
 
   if (!apiKey) return false;
@@ -27,4 +27,17 @@ export default async function screenAddress(address: string): Promise<boolean> {
   }
 
   return result.data.identifications.length > 0;
+}
+
+export const addressBlacklist: string[] = [];
+export function checkInternalBlacklist(address: string): boolean {
+  return addressBlacklist.includes(address);
+}
+
+export default async function screenAddress(address: string): Promise<boolean> {
+  const isBlacklisted = [checkInternalBlacklist(address), await checkChainalysis(address)].some(
+    (result) => result,
+  );
+
+  return isBlacklisted;
 }
