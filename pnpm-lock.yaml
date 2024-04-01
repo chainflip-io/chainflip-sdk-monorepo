@@ -280,8 +280,8 @@ importers:
         specifier: 5.0.0
         version: 5.0.0(@types/node@20.11.30)(graphql@16.8.1)(typescript@5.3.3)
       '@graphql-codegen/client-preset':
-        specifier: ^4.2.4
-        version: 4.2.4(graphql@16.8.1)
+        specifier: ^4.2.5
+        version: 4.2.5(graphql@16.8.1)
       '@graphql-typed-document-node/core':
         specifier: ^3.2.0
         version: 3.2.0(graphql@16.8.1)
@@ -1593,8 +1593,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@graphql-codegen/client-preset@4.2.4(graphql@16.8.1):
-    resolution: {integrity: sha512-k1c8v2YxJhhITGQGxViG9asLAoop9m7X9duU7Zztqjc98ooxsUzXICfvAWsH3mLAUibXAx4Ax6BPzKsTtQmBPg==}
+  /@graphql-codegen/client-preset@4.2.5(graphql@16.8.1):
+    resolution: {integrity: sha512-hAdB6HN8EDmkoBtr0bPUN/7NH6svzqbcTDMWBCRXPESXkl7y80po+IXrXUjsSrvhKG8xkNXgJNz/2mjwHzywcA==}
     peerDependencies:
       graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
     dependencies:
