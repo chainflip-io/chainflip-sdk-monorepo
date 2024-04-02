@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { once } from 'events';
+import EventEmitter, { once } from 'events';
 import { Server } from 'http';
 import { AddressInfo } from 'net';
 import { Socket, io } from 'socket.io-client';
@@ -67,7 +67,7 @@ describe('server', () => {
 
       const connected = await Promise.race([
         sleep(500).then(() => false),
-        once(socket, 'connect').then(() => true),
+        once(socket as unknown as EventEmitter, 'connect').then(() => true),
       ]);
 
       expect(connected).toBe(true);
