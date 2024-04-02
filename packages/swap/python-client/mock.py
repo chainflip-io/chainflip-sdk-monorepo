@@ -13,7 +13,7 @@ class MockQuoter(Quoter):
         print_and_flush("connected")
 
     async def on_quote_request(self, quote):
-        return ("2000000000", "1000000000000000000")
+        return [(-1, str(int(1e18)))]
 
 
 async def main(argv):

@@ -27,7 +27,7 @@ import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import getConnectionHandler from '../quoting/getConnectionHandler';
 import { collectMakerQuotes } from '../quoting/quotes';
 import { MarketMakerQuoteRequest } from '../quoting/schemas';
-import { calculateIncludedSwapFees, estimateIngressEgressFeeAssetAmount } from '../utils/fees';
+import { estimateIngressEgressFeeAssetAmount } from '../utils/fees';
 import getPoolQuote from '../utils/getPoolQuote';
 import logger from '../utils/logger';
 import { percentDiff } from '../utils/math';
@@ -203,7 +203,7 @@ const quote = (io: Server) => {
       asset: 'USDC',
     });
 
-    return { intermediateAmount, outputAmount, fees };
+    return { intermediateAmount, outputAmount, includedFees: fees };
   };
 
   const router = express.Router();
@@ -319,15 +319,6 @@ const quote = (io: Server) => {
           destAmount: bestQuote.outputAmount,
         });
 
-        const quoteSwapFees = await calculateIncludedSwapFees(
-          getInternalAsset(srcChainAsset),
-          getInternalAsset(destChainAsset),
-          swapInputAmount,
-          bestQuote.intermediateAmount,
-          bestQuote.outputAmount,
-        );
-        includedFees.push(...quoteSwapFees);
-
         let egressFee = await getEgressFee(destChainAsset);
         if (egressFee == null) {
           throw ServiceError.internalError(
@@ -366,7 +357,7 @@ const quote = (io: Server) => {
           ...bestQuote,
           egressAmount: egressAmount.toString(),
           intermediateAmount: bestQuote.intermediateAmount?.toString(),
-          includedFees: [...includedFees, ...bestQuote.fees],
+          includedFees: [...includedFees, ...bestQuote.includedFees],
           lowLiquidityWarning,
           estimatedDurationSeconds: await estimateSwapDuration(
             srcChainAsset.chain,

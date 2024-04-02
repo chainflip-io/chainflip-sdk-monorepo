@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`python integration test replies to a quote request 1`] = `
+{
+  "egressAmount": "995805826874549804",
+  "estimatedDurationSeconds": 54,
+  "includedFees": [
+    {
+      "amount": "2000000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "25000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+    {
+      "amount": "999999999998000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "1995602859468085",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "998900109987003",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+  ],
+  "intermediateAmount": "997901209877016295",
+}
+`;

@@ -3,21 +3,25 @@ from abc import ABC, abstractmethod
 from cryptography.hazmat.primitives import serialization
 from dataclasses import dataclass
 import base64, socketio, time
-from typing import Optional, Dict, Tuple
+from typing import Optional, Dict, Tuple, TypedDict, List
 
+AssetAndChain = TypedDict("AssetAndChain", {"asset": str, "chain": str})
 
-@dataclass
-class Quote:
-    id: str
-    source_asset: str
-    destination_asset: str
-    deposit_amount: str
+LimitOrder = Tuple[int, str]
+
+QuoteResponse = TypedDict("QuoteResponse", {"request_id": str, "limit_orders": List[LimitOrder]})
+
+class QuoteRequest:
+    request_id: str
+    amount: str
+    base_asset: AssetAndChain
+    quote_asset: AssetAndChain
 
     def __init__(self, json: Dict[str, Any]):
-        self.id = json["id"]
-        self.source_asset = json["source_asset"]
-        self.destination_asset = json["destination_asset"]
-        self.deposit_amount = json["deposit_amount"]
+        self.request_id = json["request_id"]
+        self.base_asset = json["base_asset"]
+        self.quote_asset = json["quote_asset"]
+        self.amount = json["amount"]
 
 
 class Quoter(ABC):
@@ -25,17 +29,13 @@ class Quoter(ABC):
     sio: Optional[socketio.AsyncClient] = None
 
     @abstractmethod
-    async def on_quote_request(self, quote: Quote) -> Tuple[str, str]:
-        """
-        :param quote: Quote object
-        :return: (intermediate_amount, output_amount)
-        """
+    async def on_quote_request(self, quote: QuoteRequest) -> List[LimitOrder]:
         pass
 
     def on_connect(self):
         pass
 
-    async def send_quote(self, response: Dict[str, str]):
+    async def send_quote(self, response: QuoteResponse):
         if self.connected and self.sio is not None:
             await self.sio.emit("quote_response", response)
 
@@ -56,13 +56,12 @@ class Quoter(ABC):
 
         @self.sio.event
         async def quote_request(data: Dict[str, Any]):
-            quote = Quote(data)
-            (intermediate_amount, output_amount) = await self.on_quote_request(quote)
+            quote = QuoteRequest(data)
+            limit_orders = await self.on_quote_request(quote)
             await self.send_quote(
                 {
-                    "id": quote.id,
-                    "intermediate_amount": intermediate_amount,
-                    "output_amount": output_amount,
+                    "request_id": quote.request_id,
+                    "limit_orders": limit_orders
                 }
             )
 

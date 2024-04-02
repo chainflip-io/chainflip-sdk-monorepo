@@ -12,11 +12,17 @@ import prisma from '../client';
 import app from '../server';
 import { getBrokerQuote } from '../utils/statechain';
 
+jest.mock('../pricing');
+
 jest.mock('../utils/statechain', () => ({
-  getBrokerQuote: jest.fn(),
+  getBrokerQuote: jest.fn().mockImplementation(() => Promise.reject(new Error('unexpected call'))),
 }));
+
 jest.mock('axios', () => ({
-  create: jest.fn(),
+  get: jest.fn(),
+  create() {
+    return this;
+  },
   post: jest.fn((url, data) => {
     if (data.method === 'cf_environment') {
       return Promise.resolve({
@@ -134,42 +140,6 @@ describe('python integration test', () => {
 
     const response = await fetch(`${serverUrl}/quote?${params.toString()}`);
 
-    expect(await response.json()).toEqual({
-      intermediateAmount: '1996000000',
-      egressAmount: '995999999999975000',
-      estimatedDurationSeconds: 54,
-      includedFees: [
-        {
-          amount: '2000000',
-          asset: 'FLIP',
-          chain: 'Ethereum',
-          type: 'INGRESS',
-        },
-        {
-          amount: '1996000',
-          asset: 'USDC',
-          chain: 'Ethereum',
-          type: 'NETWORK',
-        },
-        {
-          amount: '999999999998000',
-          asset: 'FLIP',
-          chain: 'Ethereum',
-          type: 'LIQUIDITY',
-        },
-        {
-          amount: '3992000',
-          asset: 'USDC',
-          chain: 'Ethereum',
-          type: 'LIQUIDITY',
-        },
-        {
-          amount: '25000',
-          asset: 'ETH',
-          chain: 'Ethereum',
-          type: 'EGRESS',
-        },
-      ],
-    });
+    expect(await response.json()).toMatchSnapshot();
   });
 });
