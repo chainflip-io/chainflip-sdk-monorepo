@@ -38,18 +38,18 @@ describe('quotes', () => {
     it('returns an array of quotes if expectedQuotes is received', async () => {
       const id = crypto.randomUUID();
       const promise = collectMakerQuotes(id, 1, quotes$);
-      quotes$.next({ marketMaker: 'marketMaker', quote: { id } });
-      expect(await promise).toEqual([{ id }]);
+      quotes$.next({ marketMaker: 'marketMaker', quote: { request_id: id } });
+      expect(await promise).toEqual([{ request_id: id }]);
     });
 
     it('accepts the most recent quote from each market maker', async () => {
       const id = crypto.randomUUID();
       const promise = collectMakerQuotes(id, 2, quotes$);
       for (let i = 0; i < 2; i += 1) {
-        quotes$.next({ marketMaker: 'marketMaker', quote: { id, index: i } });
+        quotes$.next({ marketMaker: 'marketMaker', quote: { request_id: id, index: i } });
       }
       jest.advanceTimersByTime(1001);
-      expect(await promise).toEqual([{ id, index: 1 }]);
+      expect(await promise).toEqual([{ request_id: id, index: 1 }]);
     });
 
     it('can be configured with QUOTE_TIMEOUT', async () => {
@@ -58,19 +58,19 @@ describe('quotes', () => {
       const id = crypto.randomUUID();
       const promise = collectMakerQuotes(id, 1, quotes$);
       jest.advanceTimersByTime(101);
-      quotes$.next({ marketMaker: 'marketMaker', quote: { id } });
+      quotes$.next({ marketMaker: 'marketMaker', quote: { request_id: id } });
       expect(await promise).toEqual([]);
     });
 
     it('eagerly returns after all expected quotes are received', async () => {
       const id = crypto.randomUUID();
       const promise = collectMakerQuotes(id, 2, quotes$);
-      quotes$.next({ marketMaker: 'marketMaker', quote: { id, value: 1 } });
-      quotes$.next({ marketMaker: 'marketMaker2', quote: { id, value: 2 } });
+      quotes$.next({ marketMaker: 'marketMaker', quote: { request_id: id, value: 1 } });
+      quotes$.next({ marketMaker: 'marketMaker2', quote: { request_id: id, value: 2 } });
       // no need to advance timers because setTimeout is never called
       expect(await promise).toEqual([
-        { id, value: 1 },
-        { id, value: 2 },
+        { request_id: id, value: 1 },
+        { request_id: id, value: 2 },
       ]);
     });
   });
