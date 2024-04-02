@@ -127,9 +127,8 @@ describe('python integration test', () => {
     const params = new URLSearchParams(query as Record<string, any>);
 
     jest.mocked(getBrokerQuote).mockResolvedValueOnce({
-      id: "doesn't matter",
-      intermediateAmount: '2000000000',
-      outputAmount: '0', // this shouldn't be the result
+      intermediateAmount: 2000000000n,
+      outputAmount: 0n, // this shouldn't be the result
       quoteType: 'broker',
     });
 

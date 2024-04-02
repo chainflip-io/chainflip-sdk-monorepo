@@ -22,7 +22,7 @@ export const collectMakerQuotes = (
     };
 
     sub = quotes$
-      .pipe(filter(({ quote }) => quote.id === requestId))
+      .pipe(filter(({ quote }) => quote.request_id === requestId))
       .subscribe(({ marketMaker, quote }) => {
         clientsReceivedQuotes.set(marketMaker, quote);
         if (clientsReceivedQuotes.size === expectedQuotes) complete();

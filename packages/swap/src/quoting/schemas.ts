@@ -1,18 +1,26 @@
 import { z } from 'zod';
+import { AssetAndChain } from '@/shared/enums';
 import { numericString, unsignedInteger } from '@/shared/parsers';
 import { QuoteType } from './quotes';
 
 export const marketMakerResponseSchema = z.object({
-  id: z.string(),
+  request_id: z.string(),
   limit_orders: z.array(z.tuple([z.number(), numericString.transform((n) => BigInt(n))])),
 });
 
-export type MarketMakerQuote = z.infer<typeof marketMakerResponseSchema>;
+export type MarketMakerRawQuote = z.input<typeof marketMakerResponseSchema>;
+export type MarketMakerQuote = z.output<typeof marketMakerResponseSchema>;
+
+export type MarketMakerQuoteRequest = {
+  request_id: string;
+  amount: string;
+  base_asset: AssetAndChain;
+  quote_asset: AssetAndChain;
+};
 
 export const swapRateResponseSchema = z
   .object({
-    // TODO: simplify when we know how Rust `Option` is encoded
-    intermediary: unsignedInteger.optional().nullable(),
+    intermediary: unsignedInteger.nullable(),
     output: unsignedInteger,
   })
   .transform((rate) => ({

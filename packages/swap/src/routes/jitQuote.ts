@@ -27,6 +27,7 @@ import { getAssetPrice } from '../pricing';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import getConnectionHandler from '../quoting/getConnectionHandler';
 import { collectMakerQuotes } from '../quoting/quotes';
+import { MarketMakerQuoteRequest } from '../quoting/schemas';
 import { calculateIncludedSwapFees, estimateIngressEgressFeeAssetAmount } from '../utils/fees';
 import logger from '../utils/logger';
 import { getPools } from '../utils/pools';
@@ -104,7 +105,7 @@ const quote = (io: Server) => {
       amount: String(amount),
       base_asset: getAssetAndChain(baseAsset),
       quote_asset: getAssetAndChain(quoteAsset),
-    });
+    } as MarketMakerQuoteRequest);
 
     const quotes = await collectMakerQuotes(id, io.sockets.sockets.size, quotes$);
 
