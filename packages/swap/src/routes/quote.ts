@@ -27,8 +27,8 @@ import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import getConnectionHandler from '../quoting/getConnectionHandler';
 import { collectMakerQuotes } from '../quoting/quotes';
 import { MarketMakerQuoteRequest } from '../quoting/schemas';
-import buildPoolQuote from '../utils/buildPoolQuote';
 import { calculateIncludedSwapFees, estimateIngressEgressFeeAssetAmount } from '../utils/fees';
+import getPoolQuote from '../utils/getPoolQuote';
 import logger from '../utils/logger';
 import { percentDiff } from '../utils/math';
 import { getPools } from '../utils/pools';
@@ -43,7 +43,7 @@ import ServiceError from '../utils/ServiceError';
 import { getBrokerQuote } from '../utils/statechain';
 import { estimateSwapDuration } from '../utils/swap';
 
-const getPoolQuoteResult = resultify(buildPoolQuote);
+const getPoolQuoteResult = resultify(getPoolQuote);
 
 type BaseAsset = Exclude<InternalAsset, 'Usdc'>;
 
@@ -246,7 +246,7 @@ const quote = (io: Server) => {
 
       const poolQuote = getPoolQuoteResult(queryResult, ingressEgressFeeIsGasAssetAmount);
 
-      if (!env.USE_NEW_QUOTING) {
+      if (!env.USE_JIT_QUOTING) {
         const result = await poolQuote;
 
         if (result.success) {

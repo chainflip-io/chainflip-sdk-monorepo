@@ -15,4 +15,5 @@ jest.mock('../config/env', () => ({
   PROCESSOR_TRANSACTION_TIMEOUT: 10_000,
   REDIS_URL: undefined,
   MAINTENANCE_MODE: false,
+  USE_JIT_QUOTING: true,
 }));

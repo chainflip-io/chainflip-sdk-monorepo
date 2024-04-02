@@ -10,7 +10,7 @@ import ServiceError from './ServiceError';
 import { getBrokerQuote } from './statechain';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 
-export default async function buildPoolQuote(
+export default async function getPoolQuote(
   queryResult: z.SafeParseSuccess<z.output<typeof quoteQuerySchema>>,
   ingressEgressFeeIsGasAssetAmount: boolean,
 ): Promise<QuoteQueryResponse> {
