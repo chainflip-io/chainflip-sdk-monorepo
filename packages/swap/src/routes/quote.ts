@@ -341,13 +341,10 @@ const quote = (io: Server) => {
 
         const egressAmount = BigInt(bestQuote.outputAmount) - egressFee;
 
-        const minimumEgressAmount = await getMinimumEgressAmount(destChainAsset);
-
-        if (egressAmount < minimumEgressAmount) {
-          throw ServiceError.badRequest(
-            `egress amount (${egressAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
-          );
-        }
+        const [minimumEgressAmount, poolQuoteResult] = await Promise.all([
+          getMinimumEgressAmount(destChainAsset),
+          poolQuote,
+        ]);
 
         const {
           id = undefined,
@@ -364,13 +361,8 @@ const quote = (io: Server) => {
             destChainAsset.chain,
           ),
         };
-        logger.info('sending response for quote request', {
-          id,
-          response,
-          performance: `${(performance.now() - start).toFixed(2)} ms`,
-        });
 
-        const poolQuoteResult = await poolQuote;
+        let bestResponse: QuoteQueryResponse = response;
 
         if (poolQuoteResult.success) {
           logger.info('quote results', {
@@ -378,13 +370,24 @@ const quote = (io: Server) => {
             old: poolQuoteResult.data,
           });
 
-          if (BigInt(poolQuoteResult.data.egressAmount) > BigInt(response.egressAmount)) {
-            res.json(poolQuoteResult.data);
-            return;
+          if (BigInt(poolQuoteResult.data.egressAmount) > egressAmount) {
+            bestResponse = poolQuoteResult.data;
           }
         }
 
-        res.json(response as QuoteQueryResponse);
+        if (BigInt(bestResponse.egressAmount) < minimumEgressAmount) {
+          throw ServiceError.badRequest(
+            `egress amount (${egressAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
+          );
+        }
+
+        logger.info('sending response for quote request', {
+          id,
+          response,
+          performance: `${(performance.now() - start).toFixed(2)} ms`,
+        });
+
+        res.json(bestResponse);
       } catch (err) {
         const poolQuoteResult = await poolQuote;
 

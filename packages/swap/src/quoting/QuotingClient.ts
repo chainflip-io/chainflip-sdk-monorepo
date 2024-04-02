@@ -9,7 +9,7 @@ import logger from '../utils/logger';
 const signAsync = promisify(crypto.sign);
 
 type RawQuoteResponse = Omit<z.input<typeof marketMakerResponseSchema>, 'id'>;
-type QuoteHandler = (quote: MarketMakerQuoteRequest) => Promise<RawQuoteResponse>;
+export type QuoteHandler = (quote: MarketMakerQuoteRequest) => Promise<RawQuoteResponse>;
 
 /**
  * A reference implementation of a client that connects to the quoting service
