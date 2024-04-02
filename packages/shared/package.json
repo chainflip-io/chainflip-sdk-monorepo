@@ -17,7 +17,7 @@
   "dependencies": {
     "@polkadot/util": "^12.6.2",
     "@polkadot/util-crypto": "^12.6.2",
-    "axios": "^1.6.7",
+    "axios": "^1.6.8",
     "bech32-buffer": "^0.2.1",
     "ethers": "^6.11.1",
     "ioredis": "^5.3.2",
