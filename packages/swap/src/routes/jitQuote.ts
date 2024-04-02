@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto';
 import express from 'express';
 import type { Server } from 'socket.io';
 import { findPrice } from '@/amm-addon';
+import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
 import {
   Asset,
   Assets,
@@ -19,16 +20,14 @@ import {
   getPipAmountFromAmount,
 } from '@/shared/functions';
 import { ParsedQuoteParams, QuoteQueryResponse, quoteQuerySchema, SwapFee } from '@/shared/schemas';
-import { calculateIncludedSwapFees, estimateIngressEgressFeeAssetAmount } from '@/swap/utils/fees';
-import { estimateSwapDuration } from '@/swap/utils/swap';
 import { asyncHandler } from './common';
 import buildPoolQuote from './quote';
 import env from '../config/env';
-import { getPoolsNetworkFeeHundredthPips } from '../consts';
 import { getAssetPrice } from '../pricing';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import getConnectionHandler from '../quoting/getConnectionHandler';
 import { collectMakerQuotes } from '../quoting/quotes';
+import { calculateIncludedSwapFees, estimateIngressEgressFeeAssetAmount } from '../utils/fees';
 import logger from '../utils/logger';
 import { getPools } from '../utils/pools';
 import { resultify } from '../utils/promise';
@@ -40,6 +39,7 @@ import {
 } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
 import { getBrokerQuote } from '../utils/statechain';
+import { estimateSwapDuration } from '../utils/swap';
 
 const getPoolQuoteResult = resultify(buildPoolQuote);
 
