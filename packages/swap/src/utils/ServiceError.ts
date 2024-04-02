@@ -18,6 +18,10 @@ export default class ServiceError extends Error {
     return new ServiceError(message, 500);
   }
 
+  static unavailable(message = 'service unavailable'): ServiceError {
+    return new ServiceError(message, 503);
+  }
+
   static assert(
     condition: unknown,
     code: Exclude<keyof typeof ServiceError, IgnoredField>,
@@ -33,5 +37,9 @@ export default class ServiceError extends Error {
     super(message);
 
     Error.captureStackTrace(this, ServiceError);
+  }
+
+  toJSON() {
+    return { message: this.message };
   }
 }

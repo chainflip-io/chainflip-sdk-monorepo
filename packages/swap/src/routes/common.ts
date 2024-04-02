@@ -9,7 +9,7 @@ export const handleError = (res: Response, error: unknown) => {
   logger.customInfo('received error', {}, { error });
 
   if (error instanceof ServiceError) {
-    res.status(error.code).json({ message: error.message });
+    res.status(error.code).json(error.toJSON());
   } else {
     logger.customError('unknown error occurred', { alertCode: 'UnknownError' }, { error });
     res.status(500).json({ message: 'unknown error' });
@@ -18,9 +18,11 @@ export const handleError = (res: Response, error: unknown) => {
 
 export const maintenanceMiddleware: RequestHandler = (req, res, next) => {
   if (env.MAINTENANCE_MODE) {
-    res.status(503).json({
-      message: 'The swap service is currently unavailable due to maintenance',
-    });
+    handleError(
+      res,
+      ServiceError.unavailable('The swap service is currently unavailable due to maintenance'),
+    );
+
     return;
   }
 
