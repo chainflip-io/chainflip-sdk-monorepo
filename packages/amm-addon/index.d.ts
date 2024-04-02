@@ -7,13 +7,13 @@ export interface LimitOrder {
   tick: number
   amount: bigint
 }
-export interface Args {
+export interface SwapInput {
   amount: bigint
   limitOrders: Array<LimitOrder>
   poolFee?: number
 }
-export interface Output {
+export interface SwapOutput {
   swappedAmount: bigint
   remainingAmount: bigint
 }
-export function findPrice(args: Args): Promise<Output>
+export function findPrice(args: SwapInput): Promise<SwapOutput>

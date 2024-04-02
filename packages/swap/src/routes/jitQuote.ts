@@ -22,6 +22,7 @@ import { ParsedQuoteParams, QuoteQueryResponse, quoteQuerySchema, SwapFee } from
 import { calculateIncludedSwapFees, estimateIngressEgressFeeAssetAmount } from '@/swap/utils/fees';
 import { estimateSwapDuration } from '@/swap/utils/swap';
 import { asyncHandler } from './common';
+import buildPoolQuote from './quote';
 import env from '../config/env';
 import { getPoolsNetworkFeeHundredthPips } from '../consts';
 import { getAssetPrice } from '../pricing';
@@ -30,6 +31,7 @@ import getConnectionHandler from '../quoting/getConnectionHandler';
 import { collectMakerQuotes } from '../quoting/quotes';
 import logger from '../utils/logger';
 import { getPools } from '../utils/pools';
+import { resultify } from '../utils/promise';
 import {
   getMinimumEgressAmount,
   getEgressFee,
@@ -37,7 +39,32 @@ import {
   validateSwapAmount,
 } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
-// import { getBrokerQuote } from '../utils/statechain';
+import { getBrokerQuote } from '../utils/statechain';
+
+const getPoolQuoteResult = resultify(buildPoolQuote);
+
+type BaseAsset = Exclude<InternalAsset, 'Usdc'>;
+
+type Leg = [BaseAsset, 'Usdc'] | ['Usdc', BaseAsset];
+
+const percentDiff = (expected: string, actual: string) => {
+  const a = new BigNumber(expected);
+  const b = new BigNumber(actual);
+
+  // |a - b| / ((a + b) / 2) * 100
+  return a.minus(b).abs().div(a.plus(b).div(2)).times(100);
+};
+
+const handleError = (res: express.Response, err: unknown) => {
+  if (err instanceof ServiceError) throw err;
+
+  const message = err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';
+
+  logger.error('error while collecting quotes:', err);
+
+  // DEPRECATED(1.3): remove `error`
+  res.status(500).json({ message, error: message });
+};
 
 const fallbackChains = {
   [Assets.ETH]: Chains.Ethereum,
@@ -61,20 +88,11 @@ const quote = (io: Server) => {
     return BigInt(new BigNumber(amount).times(price).toFixed(0));
   };
 
+  async function quoteLeg(leg: Leg, amount: null): Promise<null>;
+  async function quoteLeg(leg: Leg, amount: bigint): Promise<bigint>;
+  async function quoteLeg(leg: Leg, amount: bigint | null): Promise<bigint | null>;
   async function quoteLeg(
-    [baseAsset, quoteAsset]: readonly [InternalAsset, InternalAsset],
-    amount: null,
-  ): Promise<null>;
-  async function quoteLeg(
-    [baseAsset, quoteAsset]: readonly [InternalAsset, InternalAsset],
-    amount: bigint,
-  ): Promise<bigint>;
-  async function quoteLeg(
-    [baseAsset, quoteAsset]: readonly [InternalAsset, InternalAsset],
-    amount: bigint | null,
-  ): Promise<bigint | null>;
-  async function quoteLeg(
-    [baseAsset, quoteAsset]: readonly [InternalAsset, InternalAsset],
+    [baseAsset, quoteAsset]: Leg,
     amount: bigint | null,
   ): Promise<bigint | null> {
     if (!amount) return null;
@@ -99,7 +117,13 @@ const quote = (io: Server) => {
     });
 
     if (remainingAmount !== 0n) {
-      // TODO: handle remaining amount with the pool
+      const { outputAmount } = await getBrokerQuote({
+        ...getAssetAndChain(baseAsset, 'src'),
+        ...getAssetAndChain(quoteAsset, 'dest'),
+        amount: remainingAmount,
+      });
+
+      return remainingAmount + outputAmount;
     }
 
     return swappedAmount;
@@ -129,9 +153,12 @@ const quote = (io: Server) => {
       },
     ];
 
-    if (srcAsset !== 'Usdc' && destAsset !== 'Usdc') {
-      const leg1 = [srcAsset, 'Usdc'] as const;
-      const leg2 = ['Usdc', destAsset] as const;
+    if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
+      const leg = [srcAsset, destAsset] as Leg;
+      outputAmount = await quoteLeg(leg, swapInputAmount);
+    } else {
+      const leg1 = [srcAsset, 'Usdc'] as Leg;
+      const leg2 = ['Usdc', destAsset] as Leg;
 
       let approximateUsdcAmount = await approximateIntermediateOutput(
         srcAsset,
@@ -150,8 +177,11 @@ const quote = (io: Server) => {
         quoteLeg(leg1, approximateUsdcAmount),
       ]);
 
-      // TODO: check if approximated value is close enough or we need to get a second quote
-      if (quotes[1] === null) {
+      if (
+        quotes[1] === null ||
+        // if there is more than a 1% difference between the two quotes
+        percentDiff(approximateUsdcAmount!.toString(), quotes[0].toString()).gt(1)
+      ) {
         networkFeeUsdc = getHundredthPipAmountFromAmount(quotes[0], networkFee);
         quotes[0] -= networkFeeUsdc;
         quotes[1] = await quoteLeg(leg2, quotes[0]);
@@ -170,9 +200,6 @@ const quote = (io: Server) => {
       });
 
       [intermediateAmount, outputAmount] = quotes;
-    } else {
-      const leg = [srcAsset, destAsset] as const;
-      outputAmount = await quoteLeg(leg, swapInputAmount);
     }
 
     fees.push({
@@ -221,6 +248,20 @@ const quote = (io: Server) => {
 
       if (!amountResult.success) {
         throw ServiceError.badRequest(amountResult.reason);
+      }
+
+      const poolQuote = getPoolQuoteResult(queryResult, ingressEgressFeeIsGasAssetAmount);
+
+      if (!env.USE_NEW_QUOTING) {
+        const result = await poolQuote;
+
+        if (result.success) {
+          res.json(result.data);
+        } else {
+          handleError(res, result.reason);
+        }
+
+        return;
       }
 
       const includedFees: SwapFee[] = [];
@@ -344,17 +385,30 @@ const quote = (io: Server) => {
           performance: `${(performance.now() - start).toFixed(2)} ms`,
         });
 
+        const poolQuoteResult = await poolQuote;
+
+        if (poolQuoteResult.success) {
+          logger.info('quote results', {
+            new: response,
+            old: poolQuoteResult.data,
+          });
+
+          if (BigInt(poolQuoteResult.data.egressAmount) > BigInt(response.egressAmount)) {
+            res.json(poolQuoteResult.data);
+            return;
+          }
+        }
+
         res.json(response as QuoteQueryResponse);
       } catch (err) {
-        if (err instanceof ServiceError) throw err;
+        const poolQuoteResult = await poolQuote;
 
-        const message =
-          err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';
+        if (poolQuoteResult.success) {
+          res.json(poolQuoteResult.data);
+          return;
+        }
 
-        logger.error('error while collecting quotes:', err);
-
-        // DEPRECATED(1.3): remove `error`
-        res.status(500).json({ message, error: message });
+        handleError(res, err);
       }
     }),
   );

@@ -46,7 +46,7 @@ struct LimitOrder {
 
 #[derive(Debug)]
 #[napi(object)]
-struct Args {
+struct SwapInput {
     pub amount: BigInt,
     pub limit_orders: Vec<LimitOrder>,
     pub pool_fee: Option<u32>,
@@ -57,11 +57,11 @@ fn to_napi_error<E: std::fmt::Debug>(e: E) -> napi::Error {
 }
 
 struct AMM {
-    init: Args,
+    init: SwapInput,
 }
 
 #[napi(object)]
-struct Output {
+struct SwapOutput {
     pub swapped_amount: BigInt,
     pub remaining_amount: BigInt,
 }
@@ -69,7 +69,7 @@ struct Output {
 #[napi]
 impl Task for AMM {
     type Output = (U256, U256);
-    type JsValue = Output;
+    type JsValue = SwapOutput;
 
     fn compute(&mut self) -> napi::Result<Self::Output> {
         let args = &self.init;
@@ -105,7 +105,7 @@ impl Task for AMM {
         _env: napi::Env,
         (swapped_amount, remaining_amount): Self::Output,
     ) -> napi::Result<Self::JsValue> {
-        Ok(Output {
+        Ok(SwapOutput {
             swapped_amount: u256_to_bigint(swapped_amount),
             remaining_amount: u256_to_bigint(remaining_amount),
         })
@@ -113,6 +113,6 @@ impl Task for AMM {
 }
 
 #[napi]
-fn find_price(args: Args) -> AsyncTask<AMM> {
+fn find_price(args: SwapInput) -> AsyncTask<AMM> {
     AsyncTask::new(AMM { init: args })
 }

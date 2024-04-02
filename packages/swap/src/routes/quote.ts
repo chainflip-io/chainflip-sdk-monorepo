@@ -6,12 +6,7 @@ import { calculateIncludedSwapFees, estimateIngressEgressFeeAssetAmount } from '
 import { estimateSwapDuration } from '@/swap/utils/swap';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import logger from '../utils/logger';
-import {
-  getMinimumEgressAmount,
-  getEgressFee,
-  getIngressFee,
-  validateSwapAmount,
-} from '../utils/rpc';
+import { getMinimumEgressAmount, getEgressFee, getIngressFee } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
 import { getBrokerQuote } from '../utils/statechain';
 
@@ -22,12 +17,6 @@ export default async function buildPoolQuote(
   const query = queryResult.data;
   const srcChainAsset = { asset: query.srcAsset, chain: query.srcChain };
   const destChainAsset = { asset: query.destAsset, chain: query.destChain };
-
-  const amountResult = await validateSwapAmount(srcChainAsset, query.amount);
-
-  if (!amountResult.success) {
-    throw ServiceError.badRequest(amountResult.reason);
-  }
 
   const includedFees: SwapFee[] = [];
 
