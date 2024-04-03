@@ -75,6 +75,9 @@ export class SwapSDK {
   }
 
   async getChains(sourceChain?: Chain): Promise<ChainData[]> {
+    if (sourceChain && !(sourceChain in Chains))
+      throw new Error(`unsupported source chain "${sourceChain}"`);
+
     const [env, supportedAssets] = await Promise.all([
       this.getStateChainEnvironment(),
       this.getSupportedAssets(),
@@ -101,6 +104,8 @@ export class SwapSDK {
   }
 
   async getAssets(chain?: Chain): Promise<AssetData[]> {
+    if (chain && !(chain in Chains)) throw new Error(`unsupported chain "${chain}"`);
+
     const [env, supportedAssets] = await Promise.all([
       this.getStateChainEnvironment(),
       this.getSupportedAssets(),

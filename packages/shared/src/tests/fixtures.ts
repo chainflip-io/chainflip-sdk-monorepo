@@ -1,3 +1,5 @@
+import { assetConstants, InternalAsset, InternalAssets } from '../enums';
+
 export const swappingEnvironment = ({
   maxSwapAmount = null as string | null,
 }: {
@@ -165,4 +167,17 @@ export const swapRate = ({
   result: {
     output,
   },
+});
+
+export const supportedAssets = ({
+  assets = Object.values(InternalAssets),
+}: {
+  assets?: InternalAsset[];
+} = {}) => ({
+  id: 1,
+  jsonrpc: '2.0',
+  result: assets.map((asset) => ({
+    asset: assetConstants[asset].asset,
+    chain: assetConstants[asset].chain,
+  })),
 });
