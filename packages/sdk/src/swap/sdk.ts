@@ -10,13 +10,19 @@ import {
   ChainAssetMap,
   Chains,
   ChainMap,
+  InternalAsset,
+  getInternalAsset,
+  isValidAssetAndChain,
+  assetConstants,
 } from '@/shared/enums';
-import { assert } from '@/shared/guards';
-import { Environment, RpcConfig, getEnvironment } from '@/shared/rpc';
+import { assert, isNotNullish } from '@/shared/guards';
+import { Environment, RpcConfig, getEnvironment, getSupportedAssets } from '@/shared/rpc';
 import { validateSwapAmount } from '@/shared/rpc/utils';
 import { Required } from '@/shared/types';
 import { approveVault, executeSwap, ExecuteSwapParams } from '@/shared/vault';
 import type { AppRouter } from '@/swap/server';
+import { getAssetData } from './assets';
+import { getChainData } from './chains';
 import { BACKEND_SERVICE_URLS } from './consts';
 import ApiService, { RequestOptions } from './services/ApiService';
 import {
@@ -52,6 +58,8 @@ export class SwapSDK {
 
   private stateChainEnvironment?: Environment;
 
+  private supportedAssets?: InternalAsset[];
+
   constructor(options: SwapSDKOptions = {}) {
     const network = options.network ?? ChainflipNetworks.perseverance;
     this.options = {
@@ -67,11 +75,15 @@ export class SwapSDK {
   }
 
   async getChains(sourceChain?: Chain): Promise<ChainData[]> {
-    const env = await this.getStateChainEnvironment();
-    if (sourceChain !== undefined) {
-      return ApiService.getPossibleDestinationChains(sourceChain, this.options.network, env);
-    }
-    return ApiService.getChains(this.options.network, env);
+    const [env, supportedAssets] = await Promise.all([
+      this.getStateChainEnvironment(),
+      this.getSupportedAssets(),
+    ]);
+    const supportedChains = [...new Set(supportedAssets.map((a) => assetConstants[a].chain))];
+
+    return supportedChains
+      .map((chain) => getChainData(chain, this.options.network, env))
+      .filter((chain) => chain.chain !== sourceChain);
   }
 
   private async getStateChainEnvironment(): Promise<Environment> {
@@ -80,10 +92,23 @@ export class SwapSDK {
     return this.stateChainEnvironment;
   }
 
-  async getAssets(chain: Chain): Promise<AssetData[]> {
-    const env = await this.getStateChainEnvironment();
+  private async getSupportedAssets(): Promise<InternalAsset[]> {
+    this.supportedAssets ??= (await getSupportedAssets(this.rpcConfig))
+      .map((asset) => (isValidAssetAndChain(asset) ? getInternalAsset(asset) : undefined))
+      .filter(isNotNullish);
 
-    return ApiService.getAssets(chain, this.options.network, env);
+    return this.supportedAssets;
+  }
+
+  async getAssets(chain?: Chain): Promise<AssetData[]> {
+    const [env, supportedAssets] = await Promise.all([
+      this.getStateChainEnvironment(),
+      this.getSupportedAssets(),
+    ]);
+
+    return supportedAssets
+      .map((asset) => getAssetData(asset, this.options.network, env))
+      .filter((asset) => !chain || asset.chain === chain);
   }
 
   getQuote(quoteRequest: QuoteRequest, options: RequestOptions = {}): Promise<QuoteResponse> {
