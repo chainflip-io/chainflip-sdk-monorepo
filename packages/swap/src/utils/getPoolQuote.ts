@@ -1,89 +1,45 @@
 import { z } from 'zod';
 import { getInternalAsset } from '@/shared/enums';
-import { bigintMin, getPipAmountFromAmount } from '@/shared/functions';
+import { bigintMin } from '@/shared/functions';
 import { QuoteQueryResponse, quoteQuerySchema, SwapFee } from '@/shared/schemas';
 import { calculateIncludedSwapFees, estimateIngressEgressFeeAssetAmount } from '@/swap/utils/fees';
 import { estimateSwapDuration } from '@/swap/utils/swap';
 import logger from './logger';
-import { getMinimumEgressAmount, getEgressFee, getIngressFee } from './rpc';
+import { getMinimumEgressAmount, getEgressFee } from './rpc';
 import ServiceError from './ServiceError';
 import { getBrokerQuote } from './statechain';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
+import { QuoteType } from '../quoting/quotes';
 
 export default async function getPoolQuote(
-  queryResult: z.SafeParseSuccess<z.output<typeof quoteQuerySchema>>,
+  query: z.output<typeof quoteQuerySchema>,
   ingressEgressFeeIsGasAssetAmount: boolean,
-): Promise<QuoteQueryResponse> {
-  const query = queryResult.data;
+  fees: SwapFee[],
+): Promise<QuoteQueryResponse & { quoteType: QuoteType }> {
   const srcChainAsset = { asset: query.srcAsset, chain: query.srcChain };
   const destChainAsset = { asset: query.destAsset, chain: query.destChain };
 
-  const includedFees: SwapFee[] = [];
+  const includedFees: SwapFee[] = [...fees];
 
-  let swapInputAmount = query.amount;
-
-  if (query.boostFeeBps) {
-    const boostFee = getPipAmountFromAmount(swapInputAmount, query.boostFeeBps);
-    includedFees.push({
-      type: 'BOOST',
-      chain: srcChainAsset.chain,
-      asset: srcChainAsset.asset,
-      amount: boostFee.toString(),
-    });
-    swapInputAmount -= boostFee;
-  }
-
-  let ingressFee = await getIngressFee(srcChainAsset);
-  if (ingressFee == null) {
-    throw ServiceError.internalError(
-      `could not determine ingress fee for ${getInternalAsset(srcChainAsset)}`,
-    );
-  }
-  if (ingressEgressFeeIsGasAssetAmount) {
-    ingressFee = await estimateIngressEgressFeeAssetAmount(
-      ingressFee,
-      getInternalAsset(srcChainAsset),
-    );
-  }
-  includedFees.push({
-    type: 'INGRESS',
-    chain: srcChainAsset.chain,
-    asset: srcChainAsset.asset,
-    amount: ingressFee.toString(),
-  });
-  swapInputAmount -= ingressFee;
-  if (swapInputAmount <= 0n) {
-    throw ServiceError.badRequest(`amount is lower than estimated ingress fee (${ingressFee})`);
-  }
-
-  if (query.brokerCommissionBps) {
-    const brokerFee = getPipAmountFromAmount(swapInputAmount, query.brokerCommissionBps);
-    includedFees.push({
-      type: 'BROKER',
-      chain: srcChainAsset.chain,
-      asset: srcChainAsset.asset,
-      amount: brokerFee.toString(),
-    });
-    swapInputAmount -= brokerFee;
-  }
+  const swapInputAmount = query.amount;
 
   const start = performance.now();
 
-  const bestQuote = await getBrokerQuote({ ...query, amount: swapInputAmount });
+  const quote = await getBrokerQuote({ ...query, amount: swapInputAmount });
 
   const lowLiquidityWarning = await checkPriceWarning({
     srcAsset: getInternalAsset(srcChainAsset),
     destAsset: getInternalAsset(destChainAsset),
     srcAmount: swapInputAmount,
-    destAmount: BigInt(bestQuote.outputAmount),
+    destAmount: BigInt(quote.outputAmount),
   });
 
   const quoteSwapFees = await calculateIncludedSwapFees(
     getInternalAsset(srcChainAsset),
     getInternalAsset(destChainAsset),
     swapInputAmount,
-    bestQuote.intermediateAmount,
-    bestQuote.outputAmount,
+    quote.intermediateAmount,
+    quote.outputAmount,
   );
   includedFees.push(...quoteSwapFees);
 
@@ -99,7 +55,7 @@ export default async function getPoolQuote(
       getInternalAsset(destChainAsset),
     );
   }
-  egressFee = bigintMin(egressFee, BigInt(bestQuote.outputAmount));
+  egressFee = bigintMin(egressFee, BigInt(quote.outputAmount));
   includedFees.push({
     type: 'EGRESS',
     chain: destChainAsset.chain,
@@ -107,7 +63,7 @@ export default async function getPoolQuote(
     amount: egressFee.toString(),
   });
 
-  const egressAmount = BigInt(bestQuote.outputAmount) - egressFee;
+  const egressAmount = BigInt(quote.outputAmount) - egressFee;
 
   const minimumEgressAmount = await getMinimumEgressAmount(destChainAsset);
 
@@ -117,23 +73,16 @@ export default async function getPoolQuote(
     );
   }
 
-  const {
-    id = undefined,
-    outputAmount,
-    quoteType,
-    ...response
-  } = {
-    ...bestQuote,
-    intermediateAmount: bestQuote.intermediateAmount?.toString(),
+  const { outputAmount, ...response } = {
+    ...quote,
+    intermediateAmount: quote.intermediateAmount?.toString(),
     egressAmount: egressAmount.toString(),
     includedFees,
     lowLiquidityWarning,
     estimatedDurationSeconds: await estimateSwapDuration(srcChainAsset.chain, destChainAsset.chain),
   };
 
-  logger.info('sending response for quote request', {
-    id,
-    quoteType,
+  logger.info('finished getting pool quote', {
     response,
     performance: `${(performance.now() - start).toFixed(2)} ms`,
   });

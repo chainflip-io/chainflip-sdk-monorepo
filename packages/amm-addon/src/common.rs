@@ -24,11 +24,13 @@ pub enum SetFeesError {
     InvalidFeeAmount,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash)]
+#[napi]
 pub enum Side {
     Buy,
     Sell,
 }
+
 impl Side {
     pub fn to_sold_pair(&self) -> Pairs {
         match self {

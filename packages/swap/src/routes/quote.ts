@@ -1,8 +1,9 @@
+import assert from 'assert';
 import BigNumber from 'bignumber.js';
 import { randomUUID } from 'crypto';
 import express from 'express';
 import type { Server } from 'socket.io';
-import { findPrice } from '@/amm-addon';
+import { Side, findPrice } from '@/amm-addon';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
 import {
   Asset,
@@ -21,13 +22,15 @@ import {
 } from '@/shared/functions';
 import { ParsedQuoteParams, QuoteQueryResponse, quoteQuerySchema, SwapFee } from '@/shared/schemas';
 import { asyncHandler } from './common';
+import { Pool } from '../client';
 import env from '../config/env';
 import { getAssetPrice } from '../pricing';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import getConnectionHandler from '../quoting/getConnectionHandler';
-import { collectMakerQuotes } from '../quoting/quotes';
+import { QuoteType, collectMakerQuotes } from '../quoting/quotes';
 import { MarketMakerQuoteRequest } from '../quoting/schemas';
 import { estimateIngressEgressFeeAssetAmount } from '../utils/fees';
+import { assertUnreachable } from '../utils/function';
 import getPoolQuote from '../utils/getPoolQuote';
 import logger from '../utils/logger';
 import { percentDiff } from '../utils/math';
@@ -47,9 +50,9 @@ const getPoolQuoteResult = resultify(getPoolQuote);
 
 type BaseAsset = Exclude<InternalAsset, 'Usdc'>;
 
-type Leg = [BaseAsset, 'Usdc', 'BUY' | 'SELL'];
-
 const handleQuotingError = (res: express.Response, err: unknown) => {
+  // console.error(err);
+
   if (err instanceof ServiceError) throw err;
 
   const message = err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';
@@ -69,7 +72,49 @@ const fallbackChains = {
   [Assets.USDT]: Chains.Ethereum,
 } satisfies Record<Asset, Chain>;
 
-const quote = (io: Server) => {
+class Leg {
+  static of(baseAsset: InternalAsset, quoteAsset: InternalAsset) {
+    assert(baseAsset !== quoteAsset, 'baseAsset and quoteAsset must be different');
+    assert(baseAsset === 'Usdc' || quoteAsset === 'Usdc', 'one of the assets must be USDC');
+    return new Leg(baseAsset, quoteAsset);
+  }
+
+  private constructor(
+    private readonly baseAsset: InternalAsset,
+    private readonly quoteAsset: InternalAsset,
+  ) {}
+
+  toBrokerJSON() {
+    return {
+      ...getAssetAndChain(this.baseAsset, 'src'),
+      ...getAssetAndChain(this.quoteAsset, 'dest'),
+    };
+  }
+
+  toMarketMakerJSON() {
+    let side: 'BUY' | 'SELL';
+    let normalizedBaseAsset: BaseAsset;
+    const normalizedQuoteAsset = 'Usdc';
+
+    if (this.quoteAsset !== 'Usdc') {
+      side = 'BUY';
+      normalizedBaseAsset = this.quoteAsset;
+    } else if (this.baseAsset !== 'Usdc') {
+      side = 'SELL';
+      normalizedBaseAsset = this.baseAsset;
+    } else {
+      return assertUnreachable('invalid leg');
+    }
+
+    return {
+      base_asset: getAssetAndChain(normalizedBaseAsset),
+      quote_asset: getAssetAndChain(normalizedQuoteAsset),
+      side,
+    };
+  }
+}
+
+const quoteRouter = (io: Server) => {
   const { handler, quotes$ } = getConnectionHandler();
 
   io.on('connection', handler);
@@ -85,35 +130,32 @@ const quote = (io: Server) => {
   async function quoteLeg(leg: Leg, amount: null): Promise<null>;
   async function quoteLeg(leg: Leg, amount: bigint): Promise<bigint>;
   async function quoteLeg(leg: Leg, amount: bigint | null): Promise<bigint | null>;
-  async function quoteLeg(
-    [baseAsset, quoteAsset]: Leg,
-    amount: bigint | null,
-  ): Promise<bigint | null> {
+  async function quoteLeg(leg: Leg, amount: bigint | null): Promise<bigint | null> {
     if (!amount) return null;
 
     const id = randomUUID();
 
-    io.emit('quote_request', {
+    const quoteRequest: MarketMakerQuoteRequest = {
       request_id: id,
       amount: String(amount),
-      base_asset: getAssetAndChain(baseAsset),
-      quote_asset: getAssetAndChain(quoteAsset),
-    } as MarketMakerQuoteRequest);
+      ...leg.toMarketMakerJSON(),
+    };
+
+    io.emit('quote_request', quoteRequest);
 
     const quotes = await collectMakerQuotes(id, io.sockets.sockets.size, quotes$);
 
     const { swappedAmount, remainingAmount } = await findPrice({
-      poolFee: 0,
       amount: BigInt(amount),
       limitOrders: quotes.flatMap(({ limit_orders: limitOrders }) =>
         limitOrders.map(([tick, amt]) => ({ tick, amount: amt })),
       ),
+      side: quoteRequest.side === 'BUY' ? Side.Buy : Side.Sell,
     });
 
     if (remainingAmount !== 0n) {
       const { outputAmount } = await getBrokerQuote({
-        ...getAssetAndChain(baseAsset, 'src'),
-        ...getAssetAndChain(quoteAsset, 'dest'),
+        ...leg.toBrokerJSON(),
         amount: remainingAmount,
       });
 
@@ -123,37 +165,37 @@ const quote = (io: Server) => {
     return swappedAmount;
   }
 
-  const getBestQuote = async (quoteRequest: ParsedQuoteParams & { amount: bigint }) => {
-    const { srcAsset, destAsset } = getInternalAssets(quoteRequest);
+  const getBestQuote = async (
+    quoteRequest: ParsedQuoteParams & { amount: bigint },
+    srcAsset: InternalAsset,
+    destAsset: InternalAsset,
+    pools: Pool[],
+  ) => {
     const networkFee = getPoolsNetworkFeeHundredthPips(env.CHAINFLIP_NETWORK);
-
-    const pools = await getPools(srcAsset, destAsset);
 
     let intermediateAmount: bigint | null = null;
     let outputAmount: bigint;
     let networkFeeUsdc: bigint | null = null;
-    const firstLegPoolFee = getHundredthPipAmountFromAmount(
-      quoteRequest.amount,
-      pools[0].liquidityFeeHundredthPips,
-    );
 
-    const swapInputAmount = quoteRequest.amount - firstLegPoolFee;
+    const swapInputAmount = quoteRequest.amount;
 
-    const fees: SwapFee[] = [
-      {
-        type: 'LIQUIDITY',
-        amount: firstLegPoolFee.toString(),
-        ...getAssetAndChain(srcAsset),
-      },
-    ];
+    const fees: SwapFee[] = [];
 
     if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
-      const side = srcAsset === 'Usdc' ? 'BUY' : 'SELL';
-      const leg = [srcAsset, 'Usdc', side] as Leg;
-      outputAmount = await quoteLeg(leg, swapInputAmount);
+      if (srcAsset === 'Usdc') {
+        networkFeeUsdc = getHundredthPipAmountFromAmount(swapInputAmount, networkFee);
+      }
+
+      const leg = Leg.of(srcAsset, destAsset);
+      outputAmount = await quoteLeg(leg, swapInputAmount - (networkFeeUsdc ?? 0n));
+
+      if (destAsset === 'Usdc') {
+        networkFeeUsdc = getHundredthPipAmountFromAmount(outputAmount, networkFee);
+      }
+      outputAmount -= networkFeeUsdc!;
     } else {
-      const leg1 = [srcAsset, 'Usdc', 'SELL'] as Leg;
-      const leg2 = [destAsset, 'Usdc', 'BUY'] as Leg;
+      const leg1 = Leg.of(srcAsset, 'Usdc');
+      const leg2 = Leg.of('Usdc', destAsset);
 
       let approximateUsdcAmount = await approximateIntermediateOutput(
         srcAsset,
@@ -204,7 +246,12 @@ const quote = (io: Server) => {
       asset: 'USDC',
     });
 
-    return { intermediateAmount, outputAmount, includedFees: fees };
+    return {
+      intermediateAmount,
+      outputAmount,
+      includedFees: fees,
+      quoteType: 'market_maker' as QuoteType,
+    };
   };
 
   const router = express.Router();
@@ -245,19 +292,7 @@ const quote = (io: Server) => {
         throw ServiceError.badRequest(amountResult.reason);
       }
 
-      const poolQuote = getPoolQuoteResult(queryResult, ingressEgressFeeIsGasAssetAmount);
-
-      if (!env.USE_JIT_QUOTING || io.sockets.sockets.size === 0) {
-        const result = await poolQuote;
-
-        if (result.success) {
-          res.json(result.data);
-        } else {
-          handleQuotingError(res, result.reason);
-        }
-
-        return;
-      }
+      const { srcAsset, destAsset } = getInternalAssets(query);
 
       const includedFees: SwapFee[] = [];
 
@@ -267,9 +302,8 @@ const quote = (io: Server) => {
         const boostFee = getPipAmountFromAmount(swapInputAmount, query.boostFeeBps);
         includedFees.push({
           type: 'BOOST',
-          chain: srcChainAsset.chain,
-          asset: srcChainAsset.asset,
           amount: boostFee.toString(),
+          ...srcChainAsset,
         });
         swapInputAmount -= boostFee;
       }
@@ -288,9 +322,8 @@ const quote = (io: Server) => {
       }
       includedFees.push({
         type: 'INGRESS',
-        chain: srcChainAsset.chain,
-        asset: srcChainAsset.asset,
         amount: ingressFee.toString(),
+        ...srcChainAsset,
       });
       swapInputAmount -= ingressFee;
       if (swapInputAmount <= 0n) {
@@ -301,17 +334,59 @@ const quote = (io: Server) => {
         const brokerFee = getPipAmountFromAmount(swapInputAmount, query.brokerCommissionBps);
         includedFees.push({
           type: 'BROKER',
-          chain: srcChainAsset.chain,
-          asset: srcChainAsset.asset,
           amount: brokerFee.toString(),
+          ...srcChainAsset,
         });
         swapInputAmount -= brokerFee;
+      }
+
+      const poolQuote = getPoolQuoteResult(
+        { ...queryResult.data, amount: swapInputAmount },
+        ingressEgressFeeIsGasAssetAmount,
+        includedFees,
+      );
+
+      const pools = await getPools(srcAsset, destAsset);
+
+      const firstLegPoolFee = getHundredthPipAmountFromAmount(
+        swapInputAmount,
+        pools[0].liquidityFeeHundredthPips,
+      );
+
+      includedFees.push({
+        type: 'LIQUIDITY',
+        amount: firstLegPoolFee.toString(),
+        ...srcChainAsset,
+      });
+
+      swapInputAmount -= firstLegPoolFee;
+
+      if (!env.USE_JIT_QUOTING || io.sockets.sockets.size === 0) {
+        const result = await poolQuote;
+
+        logger.info('sending pool quote', {
+          USE_JIT_QUOTING: env.USE_JIT_QUOTING,
+          connectedSockets: io.sockets.sockets.size,
+        });
+
+        if (result.success) {
+          res.json({ ...result.data, quoteType: undefined });
+        } else {
+          handleQuotingError(res, result.reason);
+        }
+
+        return;
       }
 
       try {
         const start = performance.now();
 
-        const bestQuote = await getBestQuote({ ...query, amount: swapInputAmount });
+        const bestQuote = await getBestQuote(
+          { ...query, amount: swapInputAmount },
+          srcAsset,
+          destAsset,
+          pools,
+        );
 
         const lowLiquidityWarning = await checkPriceWarning({
           srcAsset: getInternalAsset(srcChainAsset),
@@ -347,11 +422,7 @@ const quote = (io: Server) => {
           poolQuote,
         ]);
 
-        const {
-          id = undefined,
-          outputAmount,
-          ...response
-        } = {
+        const { outputAmount, ...response } = {
           ...bestQuote,
           egressAmount: egressAmount.toString(),
           intermediateAmount: bestQuote.intermediateAmount?.toString(),
@@ -363,7 +434,7 @@ const quote = (io: Server) => {
           ),
         };
 
-        let bestResponse: QuoteQueryResponse = response;
+        let bestResponse: QuoteQueryResponse & { quoteType: QuoteType } = response;
 
         if (poolQuoteResult.success) {
           logger.info('quote results', {
@@ -382,13 +453,15 @@ const quote = (io: Server) => {
           );
         }
 
+        const { quoteType, ...quote } = bestResponse;
+
         logger.info('sending response for quote request', {
-          id,
-          response,
+          quoteType,
+          quote,
           performance: `${(performance.now() - start).toFixed(2)} ms`,
         });
 
-        res.json(bestResponse);
+        res.json(quote);
       } catch (err) {
         const poolQuoteResult = await poolQuote;
 
@@ -405,4 +478,4 @@ const quote = (io: Server) => {
   return router;
 };
 
-export default quote;
+export default quoteRouter;

@@ -148,6 +148,12 @@ export type AssetAndChain = {
   }[AssetOfChain<C>];
 }[Chain];
 
+type MutablePick<T, K extends keyof T> = { -readonly [P in K]: T[P] };
+
+type AssetAndChainFor<A extends InternalAsset> = {
+  [K in A]: MutablePick<(typeof assetConstants)[K], 'chain' | 'asset'>;
+}[A];
+
 export type BaseAssetAndChain = Exclude<AssetAndChain, { chain: 'Ethereum'; asset: 'USDC' }>;
 
 export type ChainAssetMap<T> = {
@@ -225,29 +231,35 @@ export const getInternalAssets = ({
   destAsset: getInternalAsset({ asset: destAsset, chain: destChain }),
 });
 
-type PrefixedAssetAndChain<T extends string> = {
-  [K in `${T}Asset`]: Asset;
-} & {
-  [K in `${T}Chain`]: Chain;
+/** not general purpose */
+type RemapKeys<T, P extends string> = {
+  [K in keyof T as `${P}${K extends string ? Capitalize<K> : never}`]: T[K];
 };
 
-export function getAssetAndChain(internalAsset: InternalAsset): AssetAndChain;
-export function getAssetAndChain<const T extends string>(
-  internalAsset: InternalAsset,
+type PrefixedAssetAndChainFor<I extends InternalAsset, P extends string> = RemapKeys<
+  AssetAndChainFor<I>,
+  P
+>;
+
+export function getAssetAndChain<const A extends InternalAsset>(
+  internalAsset: A,
+): AssetAndChainFor<A>;
+export function getAssetAndChain<const A extends InternalAsset, const T extends string>(
+  internalAsset: A,
   prefix: T,
-): PrefixedAssetAndChain<T>;
-export function getAssetAndChain<const T extends string>(
-  internalAsset: InternalAsset,
+): PrefixedAssetAndChainFor<A, T>;
+export function getAssetAndChain<const A extends InternalAsset, const T extends string>(
+  internalAsset: A,
   prefix?: T,
-): AssetAndChain | PrefixedAssetAndChain<T> {
+): AssetAndChainFor<A> | PrefixedAssetAndChainFor<A, T> {
   const { chain, asset } = assetConstants[internalAsset];
 
   if (prefix) {
     return {
       [`${prefix}Asset`]: asset,
       [`${prefix}Chain`]: chain,
-    } as PrefixedAssetAndChain<T>;
+    } as PrefixedAssetAndChainFor<A, T>;
   }
 
-  return { chain, asset } as AssetAndChain;
+  return { chain, asset } as AssetAndChainFor<A>;
 }

@@ -295,6 +295,7 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
-const { findPrice } = nativeBinding
+const { Side, findPrice } = nativeBinding
 
+module.exports.Side = Side
 module.exports.findPrice = findPrice

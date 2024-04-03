@@ -1,8 +1,7 @@
 #![deny(clippy::all)]
 
-use crate::common::Side;
 use amm::PoolState;
-use common::MIN_SQRT_PRICE;
+use common::{Pairs, Side, MAX_SQRT_PRICE, MIN_SQRT_PRICE};
 use napi::bindgen_prelude::*;
 use primitive_types::U256;
 
@@ -50,6 +49,7 @@ struct SwapInput {
     pub amount: BigInt,
     pub limit_orders: Vec<LimitOrder>,
     pub pool_fee: Option<u32>,
+    pub side: Side,
 }
 
 fn to_napi_error<E: std::fmt::Debug>(e: E) -> napi::Error {
@@ -82,9 +82,14 @@ impl Task for AMM {
             return Err(to_napi_error("Invalid pool fee"));
         }
 
+        let initial_sqrt_price = match args.side.to_sold_pair() {
+            Pairs::Base => MAX_SQRT_PRICE,
+            Pairs::Quote => MIN_SQRT_PRICE,
+        };
+
         let mut pool_state = PoolState {
             limit_orders: limit_orders::PoolState::new(pool_fee).unwrap(),
-            range_orders: range_orders::PoolState::new(pool_fee, MIN_SQRT_PRICE).unwrap(),
+            range_orders: range_orders::PoolState::new(pool_fee, initial_sqrt_price).unwrap(),
         };
 
         for (id, LimitOrder { tick, amount }) in args.limit_orders.iter().enumerate() {
@@ -97,7 +102,7 @@ impl Task for AMM {
 
         let amount = bigint_to_u256(&args.amount)?;
 
-        Ok(pool_state.swap(Side::Sell, amount, None))
+        Ok(pool_state.swap(args.side, amount, None))
     }
 
     fn resolve(
