@@ -11,7 +11,7 @@ const env = {
 
 describe(validateSwapAmount, () => {
   it('fails if the amount is too small', () => {
-    const result = validateSwapAmount(env, { chain: 'Ethereum', asset: 'ETH' }, 100n);
+    const result = validateSwapAmount(env, 'Eth', 100n);
 
     expect(result).toEqual({
       success: false,
@@ -20,11 +20,7 @@ describe(validateSwapAmount, () => {
   });
 
   it('fails if the amount is too large', () => {
-    const result = validateSwapAmount(
-      env,
-      { chain: 'Ethereum', asset: 'ETH' },
-      1000000000000000001n,
-    );
+    const result = validateSwapAmount(env, 'Eth', 1000000000000000001n);
 
     expect(result).toEqual({
       success: false,
@@ -33,11 +29,7 @@ describe(validateSwapAmount, () => {
   });
 
   it('succeeds if the amount is within range', () => {
-    const result = validateSwapAmount(
-      env,
-      { chain: 'Ethereum', asset: 'ETH' },
-      100000000000000000n,
-    );
+    const result = validateSwapAmount(env, 'Eth', 100000000000000000n);
 
     expect(result).toEqual({ success: true });
   });
@@ -45,7 +37,7 @@ describe(validateSwapAmount, () => {
   it('succeeds when their is no upper limit', () => {
     const result = validateSwapAmount(
       env,
-      { chain: 'Ethereum', asset: 'FLIP' },
+      'Flip',
       1000000000000000000000000000000000000000000000000000000000000000000000000000n,
     );
 

@@ -7,6 +7,16 @@ import { SwapFee } from '@/shared/schemas';
 import { getPools } from '@/swap/utils/pools';
 import env from '../config/env';
 
+export const buildFee = (
+  internalAsset: InternalAsset,
+  type: SwapFee['type'],
+  amount: bigint,
+): SwapFee => {
+  const { asset, chain } = assetConstants[internalAsset];
+
+  return { type, chain, asset, amount: amount.toString() };
+};
+
 export const calculateIncludedSwapFees = async (
   srcAsset: InternalAsset,
   destAsset: InternalAsset,

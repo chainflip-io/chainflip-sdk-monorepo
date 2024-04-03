@@ -2,7 +2,7 @@ import { filter, Observable, Subscription } from 'rxjs';
 import { MarketMakerQuote } from './schemas';
 import env from '../config/env';
 
-export type QuoteType = 'broker' | 'market_maker';
+export type QuoteType = 'pool' | 'market_maker';
 
 export const collectMakerQuotes = (
   requestId: string,

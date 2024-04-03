@@ -10,14 +10,14 @@ import { QuoteQueryParams } from '@/shared/schemas';
 import { environment, swapRate } from '@/shared/tests/fixtures';
 import prisma from '../client';
 import app from '../server';
-import { getBrokerQuote } from '../utils/statechain';
+import { getSwapRate } from '../utils/statechain';
 
 const execAsync = promisify(exec);
 
 jest.mock('../pricing');
 
 jest.mock('../utils/statechain', () => ({
-  getBrokerQuote: jest.fn().mockImplementation(() => Promise.reject(new Error('unexpected call'))),
+  getSwapRate: jest.fn().mockImplementation(() => Promise.reject(new Error('unexpected call'))),
 }));
 
 jest.mock('axios', () => ({
@@ -139,10 +139,10 @@ describe('python integration test', () => {
     } as QuoteQueryParams;
     const params = new URLSearchParams(query as Record<string, any>);
 
-    jest.mocked(getBrokerQuote).mockResolvedValueOnce({
+    jest.mocked(getSwapRate).mockResolvedValueOnce({
       intermediateAmount: 2000000000n,
       outputAmount: 0n, // this shouldn't be the result
-      quoteType: 'broker',
+      quoteType: 'pool',
     });
 
     const response = await fetch(`${serverUrl}/quote?${params.toString()}`);

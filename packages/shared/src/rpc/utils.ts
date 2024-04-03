@@ -1,11 +1,11 @@
-import { readChainAssetValue, UncheckedAssetAndChain } from '../enums';
+import { InternalAsset, readChainAssetValue } from '../enums';
 import { Environment } from './index';
 
 type Result = { success: true } | { success: false; reason: string };
 
 export const validateSwapAmount = (
   env: Environment,
-  asset: UncheckedAssetAndChain,
+  asset: InternalAsset,
   amount: bigint,
 ): Result => {
   const minimumAmount = readChainAssetValue(env.ingressEgress.minimumDepositAmounts, asset);

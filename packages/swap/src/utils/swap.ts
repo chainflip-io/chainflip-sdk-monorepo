@@ -1,8 +1,11 @@
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts';
-import { Chain, chainConstants } from '@/shared/enums';
+import { InternalAsset, chainConstants, getAssetAndChain } from '@/shared/enums';
 import { getWitnessSafetyMargin } from '@/swap/utils/rpc';
 
-export const estimateSwapDuration = async (srcChain: Chain, destChain: Chain) => {
+export const estimateSwapDuration = async (srcAsset: InternalAsset, destAsset: InternalAsset) => {
+  const { chain: srcChain } = getAssetAndChain(srcAsset);
+  const { chain: destChain } = getAssetAndChain(destAsset);
+
   // user transaction must be included before witnessing starts
   const ingressTransactionDuration = chainConstants[srcChain].blockTimeSeconds;
 

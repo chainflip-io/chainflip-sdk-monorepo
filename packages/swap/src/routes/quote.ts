@@ -12,7 +12,6 @@ import {
   Chains,
   InternalAsset,
   getAssetAndChain,
-  getInternalAsset,
   getInternalAssets,
 } from '@/shared/enums';
 import {
@@ -29,7 +28,7 @@ import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import getConnectionHandler from '../quoting/getConnectionHandler';
 import { QuoteType, collectMakerQuotes } from '../quoting/quotes';
 import { MarketMakerQuoteRequest } from '../quoting/schemas';
-import { estimateIngressEgressFeeAssetAmount } from '../utils/fees';
+import { buildFee, estimateIngressEgressFeeAssetAmount } from '../utils/fees';
 import { assertUnreachable } from '../utils/function';
 import getPoolQuote from '../utils/getPoolQuote';
 import logger from '../utils/logger';
@@ -43,7 +42,7 @@ import {
   validateSwapAmount,
 } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
-import { getBrokerQuote } from '../utils/statechain';
+import { getSwapRate } from '../utils/statechain';
 import { estimateSwapDuration } from '../utils/swap';
 
 const getPoolQuoteResult = resultify(getPoolQuote);
@@ -82,10 +81,10 @@ class Leg {
     private readonly quoteAsset: InternalAsset,
   ) {}
 
-  toBrokerJSON() {
+  toPoolJSON() {
     return {
-      ...getAssetAndChain(this.baseAsset, 'src'),
-      ...getAssetAndChain(this.quoteAsset, 'dest'),
+      srcAsset: this.baseAsset,
+      destAsset: this.quoteAsset,
     };
   }
 
@@ -152,8 +151,8 @@ const quoteRouter = (io: Server) => {
     });
 
     if (remainingAmount !== 0n) {
-      const { outputAmount } = await getBrokerQuote({
-        ...leg.toBrokerJSON(),
+      const { outputAmount } = await getSwapRate({
+        ...leg.toPoolJSON(),
         amount: remainingAmount,
       });
 
@@ -272,25 +271,20 @@ const quoteRouter = (io: Server) => {
       }
 
       logger.info('received a quote request', { query: req.query });
+      const query = queryResult.data;
+      const { srcAsset, destAsset } = getInternalAssets(query);
 
       // detect if ingress and egress fees are exposed as gas asset amount or fee asset amount
       // https://github.com/chainflip-io/chainflip-backend/pull/4497
       // TODO: remove this once all networks are upraded to 1.3
       const ingressEgressFeeIsGasAssetAmount =
-        (await getIngressFee({ chain: 'Ethereum', asset: 'FLIP' })) ===
-        (await getIngressFee({ chain: 'Ethereum', asset: 'USDC' }));
+        (await getIngressFee('Flip')) === (await getIngressFee('Usdc'));
 
-      const query = queryResult.data;
-      const srcChainAsset = { asset: query.srcAsset, chain: query.srcChain };
-      const destChainAsset = { asset: query.destAsset, chain: query.destChain };
-
-      const amountResult = await validateSwapAmount(srcChainAsset, BigInt(query.amount));
+      const amountResult = await validateSwapAmount(srcAsset, BigInt(query.amount));
 
       if (!amountResult.success) {
         throw ServiceError.badRequest(amountResult.reason);
       }
-
-      const { srcAsset, destAsset } = getInternalAssets(query);
 
       const includedFees: SwapFee[] = [];
 
@@ -298,31 +292,18 @@ const quoteRouter = (io: Server) => {
 
       if (query.boostFeeBps) {
         const boostFee = getPipAmountFromAmount(swapInputAmount, query.boostFeeBps);
-        includedFees.push({
-          type: 'BOOST',
-          amount: boostFee.toString(),
-          ...srcChainAsset,
-        });
+        includedFees.push(buildFee(srcAsset, 'BOOST', boostFee));
         swapInputAmount -= boostFee;
       }
 
-      let ingressFee = await getIngressFee(srcChainAsset);
+      let ingressFee = await getIngressFee(srcAsset);
       if (ingressFee == null) {
-        throw ServiceError.internalError(
-          `could not determine ingress fee for ${getInternalAsset(srcChainAsset)}`,
-        );
+        throw ServiceError.internalError(`could not determine ingress fee for ${srcAsset}`);
       }
       if (ingressEgressFeeIsGasAssetAmount) {
-        ingressFee = await estimateIngressEgressFeeAssetAmount(
-          ingressFee,
-          getInternalAsset(srcChainAsset),
-        );
+        ingressFee = await estimateIngressEgressFeeAssetAmount(ingressFee, srcAsset);
       }
-      includedFees.push({
-        type: 'INGRESS',
-        amount: ingressFee.toString(),
-        ...srcChainAsset,
-      });
+      includedFees.push(buildFee(srcAsset, 'INGRESS', ingressFee));
       swapInputAmount -= ingressFee;
       if (swapInputAmount <= 0n) {
         throw ServiceError.badRequest(`amount is lower than estimated ingress fee (${ingressFee})`);
@@ -330,16 +311,14 @@ const quoteRouter = (io: Server) => {
 
       if (query.brokerCommissionBps) {
         const brokerFee = getPipAmountFromAmount(swapInputAmount, query.brokerCommissionBps);
-        includedFees.push({
-          type: 'BROKER',
-          amount: brokerFee.toString(),
-          ...srcChainAsset,
-        });
+        includedFees.push(buildFee(srcAsset, 'BROKER', brokerFee));
         swapInputAmount -= brokerFee;
       }
 
       const poolQuote = getPoolQuoteResult(
-        { ...queryResult.data, amount: swapInputAmount },
+        srcAsset,
+        destAsset,
+        swapInputAmount,
         ingressEgressFeeIsGasAssetAmount,
         includedFees,
       );
@@ -351,11 +330,7 @@ const quoteRouter = (io: Server) => {
         pools[0].liquidityFeeHundredthPips,
       );
 
-      includedFees.push({
-        type: 'LIQUIDITY',
-        amount: firstLegPoolFee.toString(),
-        ...srcChainAsset,
-      });
+      includedFees.push(buildFee(srcAsset, 'LIQUIDITY', firstLegPoolFee));
 
       swapInputAmount -= firstLegPoolFee;
 
@@ -387,36 +362,26 @@ const quoteRouter = (io: Server) => {
         );
 
         const lowLiquidityWarning = await checkPriceWarning({
-          srcAsset: getInternalAsset(srcChainAsset),
-          destAsset: getInternalAsset(destChainAsset),
+          srcAsset,
+          destAsset,
           srcAmount: swapInputAmount,
           destAmount: bestQuote.outputAmount,
         });
 
-        let egressFee = await getEgressFee(destChainAsset);
+        let egressFee = await getEgressFee(destAsset);
         if (egressFee == null) {
-          throw ServiceError.internalError(
-            `could not determine egress fee for ${getInternalAsset(destChainAsset)}`,
-          );
+          throw ServiceError.internalError(`could not determine egress fee for ${destAsset}`);
         }
         if (ingressEgressFeeIsGasAssetAmount) {
-          egressFee = await estimateIngressEgressFeeAssetAmount(
-            egressFee,
-            getInternalAsset(destChainAsset),
-          );
+          egressFee = await estimateIngressEgressFeeAssetAmount(egressFee, destAsset);
         }
         egressFee = bigintMin(egressFee, BigInt(bestQuote.outputAmount));
-        includedFees.push({
-          type: 'EGRESS',
-          chain: destChainAsset.chain,
-          asset: destChainAsset.asset,
-          amount: egressFee.toString(),
-        });
+        includedFees.push(buildFee(destAsset, 'EGRESS', egressFee));
 
         const egressAmount = BigInt(bestQuote.outputAmount) - egressFee;
 
         const [minimumEgressAmount, poolQuoteResult] = await Promise.all([
-          getMinimumEgressAmount(destChainAsset),
+          getMinimumEgressAmount(destAsset),
           poolQuote,
         ]);
 
@@ -426,10 +391,7 @@ const quoteRouter = (io: Server) => {
           intermediateAmount: bestQuote.intermediateAmount?.toString(),
           includedFees: [...includedFees, ...bestQuote.includedFees],
           lowLiquidityWarning,
-          estimatedDurationSeconds: await estimateSwapDuration(
-            srcChainAsset.chain,
-            destChainAsset.chain,
-          ),
+          estimatedDurationSeconds: await estimateSwapDuration(srcAsset, destAsset),
         };
 
         let bestResponse: QuoteQueryResponse & { quoteType: QuoteType } = response;

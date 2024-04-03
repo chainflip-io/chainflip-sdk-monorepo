@@ -184,13 +184,10 @@ export function assertIsValidAssetAndChain(
   }
 }
 
-export const readChainAssetValue = <T>(
-  map: ChainAssetMap<T>,
-  assetAndChain: UncheckedAssetAndChain,
-): T => {
-  assertIsValidAssetAndChain(assetAndChain);
-  const chainValues = map[assetAndChain.chain];
-  return chainValues[assetAndChain.asset as keyof typeof chainValues];
+export const readChainAssetValue = <T>(map: ChainAssetMap<T>, asset: InternalAsset): T => {
+  const { chain, asset: symbol } = assetConstants[asset];
+  const chainValues = map[chain];
+  return chainValues[symbol as keyof typeof chainValues];
 };
 
 export function getInternalAsset(asset: UncheckedAssetAndChain) {
@@ -213,7 +210,11 @@ export function getInternalAsset(asset: UncheckedAssetAndChain) {
     },
   };
 
-  return readChainAssetValue(map, asset);
+  assertIsValidAssetAndChain(asset);
+
+  const chain = map[asset.chain];
+
+  return chain[asset.asset as keyof typeof chain] as InternalAsset;
 }
 
 export const getInternalAssets = ({
