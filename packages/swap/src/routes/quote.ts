@@ -247,7 +247,7 @@ const quote = (io: Server) => {
 
       const poolQuote = getPoolQuoteResult(queryResult, ingressEgressFeeIsGasAssetAmount);
 
-      if (!env.USE_JIT_QUOTING) {
+      if (!env.USE_JIT_QUOTING || io.sockets.sockets.size === 0) {
         const result = await poolQuote;
 
         if (result.success) {
