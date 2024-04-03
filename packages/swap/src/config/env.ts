@@ -42,7 +42,7 @@ export default z
     MAINTENANCE_MODE: optionalBoolean,
     LIQUIDITY_WARNING_THRESHOLD: optionalNumber(-5),
     COINGECKO_API_KEY: z.string(),
-    USE_JIT_QUOTING: optionalBoolean.default('TRUE'),
+    USE_JIT_QUOTING: optionalBoolean,
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);
