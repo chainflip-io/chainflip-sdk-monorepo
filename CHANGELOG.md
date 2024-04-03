@@ -17,6 +17,15 @@ which it is deprecated.
 
 ## 1.3.0
 
+### Changed
+
+- `SwapSDK.prototype.getAssets` now uses the `cf_supported_assets` RPC method to
+  determine the supported assets of the connected Chainflip network. The format
+  of the returned data was not changed.
+- `SwapSDK.prototype.getChains` now uses the `cf_supported_assets` RPC method to
+  determine the supported chains of the connected Chainflip network. The format
+  of the returned data was not changed.
+
 ### Added
 
 - `SwapSDK.prototype.requestDepositAddress` now returns the `channelOpeningFee`,
