@@ -18,8 +18,8 @@ const ETHEREUM_EVM_CHAIN_ID: Record<ChainflipNetwork, number> = {
 };
 const ARBITRUM_EVM_CHAIN_ID: Record<ChainflipNetwork, number> = {
   [ChainflipNetworks.backspin]: 412346, // backspin arbitrum
-  [ChainflipNetworks.sisyphos]: 421614, // sepolia
-  [ChainflipNetworks.perseverance]: 421614, // sepolia
+  [ChainflipNetworks.sisyphos]: 421614, // arb-sepolia
+  [ChainflipNetworks.perseverance]: 421614, // arb-sepolia
   [ChainflipNetworks.mainnet]: 42161, // mainnet
 };
 export const getEvmChainId = (chain: Chain, network: ChainflipNetwork) => {
