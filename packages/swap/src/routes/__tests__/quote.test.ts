@@ -84,6 +84,7 @@ describe('server', () => {
       quotingClient!.setQuoteRequestHandler(fn);
     };
 
+    // eslint-disable-next-line
     let connectQuotingClient: () => Promise<void>;
 
     beforeEach(async () => {
