@@ -16,11 +16,21 @@ const ETHEREUM_EVM_CHAIN_ID: Record<ChainflipNetwork, number> = {
   [ChainflipNetworks.perseverance]: 11155111, // sepolia
   [ChainflipNetworks.mainnet]: 1, // mainnet
 };
+const ARBITRUM_EVM_CHAIN_ID: Record<ChainflipNetwork, number> = {
+  [ChainflipNetworks.backspin]: 412346, // backspin arbitrum
+  [ChainflipNetworks.sisyphos]: 421614, // arb-sepolia
+  [ChainflipNetworks.perseverance]: 421614, // arb-sepolia
+  [ChainflipNetworks.mainnet]: 42161, // mainnet
+};
 export const getEvmChainId = (chain: Chain, network: ChainflipNetwork) => {
-  if (chain === Chains.Ethereum) {
-    return ETHEREUM_EVM_CHAIN_ID[network];
+  switch (chain) {
+    case Chains.Ethereum:
+      return ETHEREUM_EVM_CHAIN_ID[network];
+    case Chains.Arbitrum:
+      return ARBITRUM_EVM_CHAIN_ID[network];
+    default:
+      return undefined;
   }
-  return undefined;
 };
 
 // https://developers.circle.com/stablecoins/docs/usdc-on-test-networks
