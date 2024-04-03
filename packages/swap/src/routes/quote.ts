@@ -47,7 +47,7 @@ const getPoolQuoteResult = resultify(getPoolQuote);
 
 type BaseAsset = Exclude<InternalAsset, 'Usdc'>;
 
-type Leg = [BaseAsset, 'Usdc'] | ['Usdc', BaseAsset];
+type Leg = [BaseAsset, 'Usdc', 'BUY' | 'SELL'];
 
 const handleQuotingError = (res: express.Response, err: unknown) => {
   if (err instanceof ServiceError) throw err;
@@ -148,11 +148,12 @@ const quote = (io: Server) => {
     ];
 
     if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
-      const leg = [srcAsset, destAsset] as Leg;
+      const side = srcAsset === 'Usdc' ? 'BUY' : 'SELL';
+      const leg = [srcAsset, 'Usdc', side] as Leg;
       outputAmount = await quoteLeg(leg, swapInputAmount);
     } else {
-      const leg1 = [srcAsset, 'Usdc'] as Leg;
-      const leg2 = ['Usdc', destAsset] as Leg;
+      const leg1 = [srcAsset, 'Usdc', 'SELL'] as Leg;
+      const leg2 = [destAsset, 'Usdc', 'BUY'] as Leg;
 
       let approximateUsdcAmount = await approximateIntermediateOutput(
         srcAsset,

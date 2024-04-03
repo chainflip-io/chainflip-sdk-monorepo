@@ -141,9 +141,14 @@ export type UncheckedAssetAndChain = {
   asset: Asset;
   chain: Chain;
 };
+
 export type AssetAndChain = {
-  [C in Chain]: { chain: C; asset: AssetOfChain<C> };
+  [C in Chain]: {
+    [A in AssetOfChain<C>]: { chain: C; asset: A };
+  }[AssetOfChain<C>];
 }[Chain];
+
+export type BaseAssetAndChain = Exclude<AssetAndChain, { chain: 'Ethereum'; asset: 'USDC' }>;
 
 export type ChainAssetMap<T> = {
   [C in Chain]: {

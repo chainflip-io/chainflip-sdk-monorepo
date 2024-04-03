@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AssetAndChain } from '@/shared/enums';
+import { BaseAssetAndChain } from '@/shared/enums';
 import { numericString, unsignedInteger } from '@/shared/parsers';
 import { QuoteType } from './quotes';
 
@@ -14,8 +14,9 @@ export type MarketMakerQuote = z.output<typeof marketMakerResponseSchema>;
 export type MarketMakerQuoteRequest = {
   request_id: string;
   amount: string;
-  base_asset: AssetAndChain;
-  quote_asset: AssetAndChain;
+  base_asset: BaseAssetAndChain;
+  quote_asset: { chain: 'Ethereum'; asset: 'USDC' };
+  side: 'BUY' | 'SELL';
 };
 
 export const swapRateResponseSchema = z
