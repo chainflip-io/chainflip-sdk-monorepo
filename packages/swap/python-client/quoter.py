@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from cryptography.hazmat.primitives import serialization
 from dataclasses import dataclass
 import base64, socketio, time
-from typing import Optional, Dict, Tuple, TypedDict, List
+from typing import Optional, Dict, Tuple, TypedDict, List, Literal
 
 AssetAndChain = TypedDict("AssetAndChain", {"asset": str, "chain": str})
 
@@ -16,12 +16,14 @@ class QuoteRequest:
     amount: str
     base_asset: AssetAndChain
     quote_asset: AssetAndChain
+    side: Literal["BUY", "SELL"]
 
     def __init__(self, json: Dict[str, Any]):
         self.request_id = json["request_id"]
         self.base_asset = json["base_asset"]
         self.quote_asset = json["quote_asset"]
         self.amount = json["amount"]
+        self.side = json["side"]
 
 
 class Quoter(ABC):
