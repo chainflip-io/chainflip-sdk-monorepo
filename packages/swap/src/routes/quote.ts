@@ -51,8 +51,6 @@ const getPoolQuoteResult = resultify(getPoolQuote);
 type BaseAsset = Exclude<InternalAsset, 'Usdc'>;
 
 const handleQuotingError = (res: express.Response, err: unknown) => {
-  // console.error(err);
-
   if (err instanceof ServiceError) throw err;
 
   const message = err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';

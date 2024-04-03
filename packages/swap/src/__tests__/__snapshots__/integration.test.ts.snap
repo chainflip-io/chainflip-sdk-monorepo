@@ -2,7 +2,7 @@
 
 exports[`python integration test replies to a quote request 1`] = `
 {
-  "egressAmount": "995805826874549804",
+  "egressAmount": "997901209876966295",
   "estimatedDurationSeconds": 54,
   "includedFees": [
     {
@@ -12,22 +12,16 @@ exports[`python integration test replies to a quote request 1`] = `
       "type": "INGRESS",
     },
     {
-      "amount": "25000",
-      "asset": "ETH",
-      "chain": "Ethereum",
-      "type": "EGRESS",
-    },
-    {
       "amount": "999999999998000",
       "asset": "FLIP",
       "chain": "Ethereum",
       "type": "LIQUIDITY",
     },
     {
-      "amount": "1995602859468085",
-      "asset": "ETH",
+      "amount": "50000",
+      "asset": "USDC",
       "chain": "Ethereum",
-      "type": "LIQUIDITY",
+      "type": "EGRESS",
     },
     {
       "amount": "998900109987003",
@@ -36,6 +30,5 @@ exports[`python integration test replies to a quote request 1`] = `
       "type": "NETWORK",
     },
   ],
-  "intermediateAmount": "997901209877016295",
 }
 `;

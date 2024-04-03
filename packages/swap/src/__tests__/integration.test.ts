@@ -1,4 +1,4 @@
-import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
+import { spawn, ChildProcessWithoutNullStreams, exec } from 'child_process';
 import * as crypto from 'crypto';
 import { on, once } from 'events';
 import { AddressInfo } from 'net';
@@ -11,6 +11,8 @@ import { environment, swapRate } from '@/shared/tests/fixtures';
 import prisma from '../client';
 import app from '../server';
 import { getBrokerQuote } from '../utils/statechain';
+
+const execAsync = promisify(exec);
 
 jest.mock('../pricing');
 
@@ -89,7 +91,12 @@ describe('python integration test', () => {
     server = app.listen(0);
     serverUrl = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
 
-    child = spawn('python', [
+    const exeName = await Promise.any([
+      execAsync('python --version').then(() => 'python'),
+      execAsync('python3 --version').then(() => 'python3'),
+    ]);
+
+    child = spawn(exeName, [
       path.join(__dirname, '..', '..', 'python-client', 'mock.py'),
       '--private-key',
       privateKey,
@@ -126,7 +133,7 @@ describe('python integration test', () => {
     const query = {
       srcAsset: Assets.FLIP,
       srcChain: Chains.Ethereum,
-      destAsset: Assets.ETH,
+      destAsset: Assets.USDC,
       destChain: Chains.Ethereum,
       amount: '1000000000000000000',
     } as QuoteQueryParams;
