@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { z } from 'zod';
 import { ChainflipNetwork, ChainflipNetworks, UncheckedAssetAndChain } from '../enums';
-import { hexString } from '../parsers';
+import { hexString, uncheckedAssetAndChain } from '../parsers';
 
 const numberOrHex = z.union([z.string(), z.number()]).transform((str) => BigInt(str));
 
@@ -18,7 +18,8 @@ const camelCase = <T extends string>(str: T): CamelCase<T> =>
   str.replace(/_([a-z])/g, (_, char) => char.toUpperCase()) as CamelCase<T>;
 
 const camelCaseKeys = <T>(obj: T): CamelCaseRecord<T> => {
-  if (typeof obj !== 'object' || obj === null) return obj as CamelCaseRecord<T>;
+  if (typeof obj !== 'object' || Array.isArray(obj) || obj === null)
+    return obj as CamelCaseRecord<T>;
 
   return Object.fromEntries(
     Object.entries(obj).map(([key, value]) => [camelCase(key), camelCaseKeys(value)]),
@@ -36,6 +37,7 @@ export type RpcConfig = { rpcUrl: string } | { network: ChainflipNetwork };
 
 type RpcParams = {
   cf_environment: [at?: string];
+  cf_supported_assets: [at?: string];
   cf_swapping_environment: [at?: string];
   cf_ingress_egress_environment: [at?: string];
   cf_funding_environment: [at?: string];
@@ -200,3 +202,20 @@ const swapRate = z.object({
 export const getSwapRate = createRequest('cf_swap_rate', swapRate);
 
 export const getMetadata = createRequest('state_getMetadata', hexString);
+
+// TODO: V130 -- remove this schema when all networks are on 1.3.0
+const supportedAssetsV120 = z
+  .object({
+    Bitcoin: z.array(z.string()),
+    Ethereum: z.array(z.string()),
+    Polkadot: z.array(z.string()),
+  })
+  .transform((data) => [
+    ...data.Bitcoin.map((asset) => ({ chain: 'Bitcoin', asset })),
+    ...data.Ethereum.map((asset) => ({ chain: 'Ethereum', asset })),
+    ...data.Polkadot.map((asset) => ({ chain: 'Polkadot', asset })),
+  ]);
+const supportedAssetsV130 = z.array(uncheckedAssetAndChain);
+const supportedAssets = z.union([supportedAssetsV120, supportedAssetsV130]);
+
+export const getSupportedAssets = createRequest('cf_supported_assets', supportedAssets);
