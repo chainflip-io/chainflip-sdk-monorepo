@@ -17,15 +17,6 @@ which it is deprecated.
 
 ## 1.3.0
 
-### Changed
-
-- `SwapSDK.prototype.getAssets` now uses the `cf_supported_assets` RPC method to
-  determine the supported assets of the connected Chainflip network. The format
-  of the returned data was not changed.
-- `SwapSDK.prototype.getChains` now uses the `cf_supported_assets` RPC method to
-  determine the supported chains of the connected Chainflip network. The format
-  of the returned data was not changed.
-
 ### Added
 
 - `SwapSDK.prototype.requestDepositAddress` now returns the `channelOpeningFee`,
@@ -70,6 +61,12 @@ type ChainAssetMap<T> = {
 - `SwapSDK.prototype.getRequiredBlockConfirmations` now has a return type of
   `ChainMap<number | null>` instead of `ChainMap<number | undefined>` to be more
   consistent with existing return types.
+- `SwapSDK.prototype.getAssets` now uses the `cf_supported_assets` RPC method to
+  determine the supported assets of the connected Chainflip network. The format
+  of the returned data was not changed.
+- `SwapSDK.prototype.getChains` now uses the `cf_supported_assets` RPC method to
+  determine the supported chains of the connected Chainflip network. The format
+  of the returned data was not changed.
 
 ### Fixed
 
