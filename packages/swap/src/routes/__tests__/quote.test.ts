@@ -77,7 +77,7 @@ describe('server', () => {
         async (req) =>
           ({
             request_id: req.request_id,
-            limit_orders: orders,
+            legs: [orders],
           }) as MarketMakerRawQuote,
       );
 
