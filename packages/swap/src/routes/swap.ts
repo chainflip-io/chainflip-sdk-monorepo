@@ -2,9 +2,8 @@ import assert from 'assert';
 import express from 'express';
 import { Chain, assetConstants } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
-import { toUpperCase } from '@/shared/strings';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
-import { screamingSnakeToPascalCase } from '@/shared/strings';
+import { screamingSnakeToPascalCase, toUpperCase } from '@/shared/strings';
 import { asyncHandler, maintenanceMiddleware } from './common';
 import prisma, {
   Egress,
