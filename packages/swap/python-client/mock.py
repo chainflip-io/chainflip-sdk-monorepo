@@ -13,7 +13,21 @@ class MockQuoter(Quoter):
         print_and_flush("connected")
 
     async def on_quote_request(self, quote):
-        return [(-1, str(int(1e18)))]
+        if quote.leg2 is not None:
+            return [
+                [
+                    (-1, str(int(1e18))),
+                ],
+                [
+                    (-1, str(int(1e18))),
+                ],
+            ]
+
+        return [
+            [
+                (-1, str(int(1e18))),
+            ]
+        ]
 
 
 async def main(argv):

@@ -11,7 +11,7 @@ describe(getConnectionHandler, () => {
 
     const callback = socket.on.mock.calls[1][1];
 
-    callback({ request_id: 'string', limit_orders: [[-1, '123456']] });
+    callback({ request_id: 'string', legs: [[[-1, '123456']]] });
     callback({ request_id: 'string', range_orders: [] });
 
     expect(next).toHaveBeenCalledTimes(1);

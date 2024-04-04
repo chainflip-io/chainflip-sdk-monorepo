@@ -113,22 +113,33 @@ describe('python integration test', () => {
   });
 
   afterEach(async () => {
-    if (!child.killed) {
+    if (child.exitCode === null) {
       child.kill('SIGINT');
       await once(child, 'exit');
     }
     await promisify(server.close).bind(server)();
   });
 
-  it('replies to a quote request', async () => {
+  const expectMesage = async (message: string) => {
+    if (child.exitCode !== null) {
+      throw new Error('child process exited unexpectedly');
+    }
+
     await expect(
-      firstValueFrom(
-        stdout$.pipe(
-          filter((msg) => msg === 'connected'),
-          timeout(10000),
+      Promise.race([
+        firstValueFrom(
+          stdout$.pipe(
+            filter((msg) => msg === message),
+            timeout(10000),
+          ),
         ),
-      ),
-    ).resolves.toBe('connected');
+        once(child, 'close').then(() => Promise.reject(Error('child process exited unexpectedly'))),
+      ]),
+    ).resolves.toBe(message);
+  };
+
+  it('replies to a quote request', async () => {
+    await expectMesage('connected');
 
     const query = {
       srcAsset: Assets.FLIP,

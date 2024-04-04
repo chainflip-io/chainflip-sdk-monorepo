@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 import { randomUUID } from 'crypto';
 import express from 'express';
 import type { Server } from 'socket.io';
-import { Side, findPrice } from '@/amm-addon';
+import { Side, SwapInput, findPrice } from '@/amm-addon';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
 import {
   Asset,
@@ -27,7 +27,7 @@ import { getAssetPrice } from '../pricing';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import getConnectionHandler from '../quoting/getConnectionHandler';
 import { QuoteType, collectMakerQuotes } from '../quoting/quotes';
-import { MarketMakerQuoteRequest } from '../quoting/schemas';
+import { MarketMakerQuoteRequest, Leg as MarketMakerLeg } from '../quoting/schemas';
 import { buildFee, estimateIngressEgressFeeAssetAmount } from '../utils/fees';
 import { assertUnreachable } from '../utils/function';
 import getPoolQuote from '../utils/getPoolQuote';
@@ -42,7 +42,7 @@ import {
   validateSwapAmount,
 } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
-import { getSwapRate } from '../utils/statechain';
+import { SwapRateArgs, getSwapRate } from '../utils/statechain';
 import { estimateSwapDuration } from '../utils/swap';
 
 const getPoolQuoteResult = resultify(getPoolQuote);
@@ -70,34 +70,41 @@ const fallbackChains = {
 } satisfies Record<Asset, Chain>;
 
 class Leg {
-  static of(baseAsset: InternalAsset, quoteAsset: InternalAsset) {
+  static of(baseAsset: InternalAsset, quoteAsset: InternalAsset, amount: bigint): Leg;
+  static of(baseAsset: InternalAsset, quoteAsset: InternalAsset, amount: bigint | null): Leg | null;
+  static of(baseAsset: InternalAsset, quoteAsset: InternalAsset, amount: bigint | null) {
+    if (amount === null) return null;
     assert(baseAsset !== quoteAsset, 'baseAsset and quoteAsset must be different');
     assert(baseAsset === 'Usdc' || quoteAsset === 'Usdc', 'one of the assets must be USDC');
-    return new Leg(baseAsset, quoteAsset);
+    return new Leg(baseAsset, quoteAsset, amount);
   }
 
   private constructor(
     private readonly baseAsset: InternalAsset,
     private readonly quoteAsset: InternalAsset,
+    public amount: bigint,
   ) {}
 
-  toPoolJSON() {
+  toPoolJSON(): SwapRateArgs {
     return {
+      amount: this.amount,
       srcAsset: this.baseAsset,
       destAsset: this.quoteAsset,
     };
   }
 
-  toMarketMakerJSON() {
-    let side: 'BUY' | 'SELL';
+  private getSide(): 'BUY' | 'SELL' {
+    return this.quoteAsset !== 'Usdc' ? 'BUY' : 'SELL';
+  }
+
+  toMarketMakerJSON(): MarketMakerLeg {
+    const side = this.getSide();
     let normalizedBaseAsset: BaseAsset;
     const normalizedQuoteAsset = 'Usdc';
 
     if (this.quoteAsset !== 'Usdc') {
-      side = 'BUY';
       normalizedBaseAsset = this.quoteAsset;
     } else if (this.baseAsset !== 'Usdc') {
-      side = 'SELL';
       normalizedBaseAsset = this.baseAsset;
     } else {
       return assertUnreachable('invalid leg');
@@ -106,10 +113,31 @@ class Leg {
     return {
       base_asset: getAssetAndChain(normalizedBaseAsset),
       quote_asset: getAssetAndChain(normalizedQuoteAsset),
+      amount: this.amount.toString(),
       side,
     };
   }
+
+  toSwapInput(): SwapInput {
+    return {
+      side: this.getSide() === 'BUY' ? Side.Buy : Side.Sell,
+      amount: this.amount,
+      limitOrders: [],
+    };
+  }
 }
+
+const getPriceFromQuotesAndPool = async (leg: Leg, input: SwapInput) => {
+  const { swappedAmount, remainingAmount } = await findPrice(input);
+
+  if (remainingAmount !== 0n) {
+    const { outputAmount } = await getSwapRate(leg.toPoolJSON());
+
+    return remainingAmount + outputAmount;
+  }
+
+  return swappedAmount;
+};
 
 const quoteRouter = (io: Server) => {
   const { handler, quotes$ } = getConnectionHandler();
@@ -124,42 +152,44 @@ const quoteRouter = (io: Server) => {
     return BigInt(new BigNumber(amount).times(price).toFixed(0));
   };
 
-  async function quoteLeg(leg: Leg, amount: null): Promise<null>;
-  async function quoteLeg(leg: Leg, amount: bigint): Promise<bigint>;
-  async function quoteLeg(leg: Leg, amount: bigint | null): Promise<bigint | null>;
-  async function quoteLeg(leg: Leg, amount: bigint | null): Promise<bigint | null> {
-    if (!amount) return null;
+  async function quoteLegs(legs: [Leg]): Promise<[bigint]>;
+  async function quoteLegs(legs: [Leg, Leg]): Promise<[bigint, bigint]>;
+  async function quoteLegs(legs: [Leg, Leg | null]): Promise<[bigint, bigint | null]>;
+  async function quoteLegs([leg1, leg2]: [Leg] | [Leg, Leg | null]): Promise<
+    [bigint] | [bigint, bigint | null]
+  > {
+    const requestId = randomUUID();
 
-    const id = randomUUID();
+    const requestLegs = [leg1.toMarketMakerJSON()] as
+      | [MarketMakerLeg]
+      | [MarketMakerLeg, MarketMakerLeg];
 
-    const quoteRequest: MarketMakerQuoteRequest = {
-      request_id: id,
-      amount: String(amount),
-      ...leg.toMarketMakerJSON(),
-    };
+    if (leg2) requestLegs[1] = leg2.toMarketMakerJSON();
+
+    const quoteRequest: MarketMakerQuoteRequest = { request_id: requestId, legs: requestLegs };
 
     io.emit('quote_request', quoteRequest);
 
-    const quotes = await collectMakerQuotes(id, io.sockets.sockets.size, quotes$);
+    const quotes = await collectMakerQuotes(requestId, io.sockets.sockets.size, quotes$);
 
-    const { swappedAmount, remainingAmount } = await findPrice({
-      amount: BigInt(amount),
-      limitOrders: quotes.flatMap(({ limit_orders: limitOrders }) =>
-        limitOrders.map(([tick, amt]) => ({ tick, amount: amt })),
-      ),
-      side: quoteRequest.side === 'BUY' ? Side.Buy : Side.Sell,
-    });
+    const legLimitOrders = [leg1.toSwapInput()] as [SwapInput] | [SwapInput, SwapInput];
 
-    if (remainingAmount !== 0n) {
-      const { outputAmount } = await getSwapRate({
-        ...leg.toPoolJSON(),
-        amount: remainingAmount,
-      });
+    if (leg2) legLimitOrders[1] = leg2.toSwapInput();
 
-      return remainingAmount + outputAmount;
+    for (const { legs } of quotes) {
+      for (let i = 0; i < legs.length; i += 1) {
+        legLimitOrders[i].limitOrders.push(...legs[i].map(([tick, amount]) => ({ tick, amount })));
+      }
     }
 
-    return swappedAmount;
+    const results = [getPriceFromQuotesAndPool(leg1, legLimitOrders[0])] as
+      | [Promise<bigint>]
+      | [Promise<bigint>, Promise<bigint> | null];
+
+    results[1] =
+      leg2 && legLimitOrders[1] ? getPriceFromQuotesAndPool(leg2, legLimitOrders[1]) : null;
+
+    return Promise.all(results);
   }
 
   const getBestQuote = async (
@@ -183,17 +213,14 @@ const quoteRouter = (io: Server) => {
         networkFeeUsdc = getHundredthPipAmountFromAmount(swapInputAmount, networkFee);
       }
 
-      const leg = Leg.of(srcAsset, destAsset);
-      outputAmount = await quoteLeg(leg, swapInputAmount - (networkFeeUsdc ?? 0n));
+      const leg = Leg.of(srcAsset, destAsset, swapInputAmount - (networkFeeUsdc ?? 0n));
+      [outputAmount] = await quoteLegs([leg]);
 
       if (destAsset === 'Usdc') {
         networkFeeUsdc = getHundredthPipAmountFromAmount(outputAmount, networkFee);
       }
       outputAmount -= networkFeeUsdc!;
     } else {
-      const leg1 = Leg.of(srcAsset, 'Usdc');
-      const leg2 = Leg.of('Usdc', destAsset);
-
       let approximateUsdcAmount = await approximateIntermediateOutput(
         srcAsset,
         swapInputAmount.toString(),
@@ -206,10 +233,10 @@ const quoteRouter = (io: Server) => {
         approximateUsdcAmount -= networkFeeUsdc;
       }
 
-      const quotes = await Promise.all([
-        quoteLeg(leg1, swapInputAmount),
-        quoteLeg(leg1, approximateUsdcAmount),
-      ]);
+      const leg1 = Leg.of(srcAsset, 'Usdc', swapInputAmount);
+      let leg2 = Leg.of('Usdc', destAsset, approximateUsdcAmount);
+
+      const quotes = await quoteLegs([leg1, leg2]);
 
       if (
         quotes[1] === null ||
@@ -218,7 +245,8 @@ const quoteRouter = (io: Server) => {
       ) {
         networkFeeUsdc = getHundredthPipAmountFromAmount(quotes[0], networkFee);
         quotes[0] -= networkFeeUsdc;
-        quotes[1] = await quoteLeg(leg2, quotes[0]);
+        leg2 = Leg.of('Usdc', destAsset, quotes[0]);
+        [quotes[1]] = await quoteLegs([leg2]);
       }
 
       const secondLegPoolFee = getHundredthPipAmountFromAmount(
@@ -227,21 +255,12 @@ const quoteRouter = (io: Server) => {
       );
       quotes[1] -= secondLegPoolFee;
 
-      fees.push({
-        type: 'LIQUIDITY',
-        amount: secondLegPoolFee.toString(),
-        ...getAssetAndChain(destAsset),
-      });
+      fees.push(buildFee(destAsset, 'LIQUIDITY', secondLegPoolFee));
 
       [intermediateAmount, outputAmount] = quotes;
     }
 
-    fees.push({
-      type: 'NETWORK',
-      amount: networkFeeUsdc!.toString(),
-      chain: 'Ethereum',
-      asset: 'USDC',
-    });
+    fees.push(buildFee('Usdc', 'NETWORK', networkFeeUsdc!));
 
     return {
       intermediateAmount,

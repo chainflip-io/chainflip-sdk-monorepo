@@ -3,20 +3,29 @@ import { BaseAssetAndChain } from '@/shared/enums';
 import { numericString, unsignedInteger } from '@/shared/parsers';
 import { QuoteType } from './quotes';
 
+const limitOrder = z.tuple([z.number(), numericString.transform((n) => BigInt(n))]);
+
 export const marketMakerResponseSchema = z.object({
   request_id: z.string(),
-  limit_orders: z.array(z.tuple([z.number(), numericString.transform((n) => BigInt(n))])),
+  legs: z.union([
+    z.tuple([z.array(limitOrder), z.array(limitOrder)]),
+    z.tuple([z.array(limitOrder)]),
+  ]),
 });
 
 export type MarketMakerRawQuote = z.input<typeof marketMakerResponseSchema>;
 export type MarketMakerQuote = z.output<typeof marketMakerResponseSchema>;
 
-export type MarketMakerQuoteRequest = {
-  request_id: string;
+export type Leg = {
   amount: string;
   base_asset: BaseAssetAndChain;
   quote_asset: { chain: 'Ethereum'; asset: 'USDC' };
   side: 'BUY' | 'SELL';
+};
+
+export type MarketMakerQuoteRequest = {
+  request_id: string;
+  legs: [Leg] | [Leg, Leg];
 };
 
 export const swapRateResponseSchema = z

@@ -25,15 +25,13 @@ const initializeClient = memoize(async () => {
   return rpcClient;
 });
 
-export const getSwapRate = async ({
-  srcAsset,
-  destAsset,
-  amount,
-}: {
+export type SwapRateArgs = {
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
   amount: bigint;
-}) => {
+};
+
+export const getSwapRate = async ({ srcAsset, destAsset, amount }: SwapRateArgs) => {
   const client = await initializeClient();
 
   const quote = await client.sendRequest(

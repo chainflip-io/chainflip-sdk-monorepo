@@ -9,21 +9,32 @@ AssetAndChain = TypedDict("AssetAndChain", {"asset": str, "chain": str})
 
 LimitOrder = Tuple[int, str]
 
-QuoteResponse = TypedDict("QuoteResponse", {"request_id": str, "limit_orders": List[LimitOrder]})
+QuoteResponse = TypedDict(
+    "QuoteResponse", {"request_id": str, "legs": List[List[LimitOrder]]}
+)
 
+Leg = TypedDict(
+    "Leg",
+    {
+        "amount": str,
+        "base_asset": AssetAndChain,
+        "quote_asset": AssetAndChain,
+        "side": Literal["BUY", "SELL"],
+    },
+)
+
+
+@dataclass
 class QuoteRequest:
     request_id: str
-    amount: str
-    base_asset: AssetAndChain
-    quote_asset: AssetAndChain
-    side: Literal["BUY", "SELL"]
+    leg1: Leg
+    leg2: Optional[Leg] = None
 
     def __init__(self, json: Dict[str, Any]):
         self.request_id = json["request_id"]
-        self.base_asset = json["base_asset"]
-        self.quote_asset = json["quote_asset"]
-        self.amount = json["amount"]
-        self.side = json["side"]
+        self.leg1 = json["legs"][0]
+        if len(json["legs"]) > 1:
+            self.leg2 = json["legs"][1]
 
 
 class Quoter(ABC):
@@ -31,7 +42,7 @@ class Quoter(ABC):
     sio: Optional[socketio.AsyncClient] = None
 
     @abstractmethod
-    async def on_quote_request(self, quote: QuoteRequest) -> List[LimitOrder]:
+    async def on_quote_request(self, quote: QuoteRequest) -> List[List[LimitOrder]]:
         pass
 
     def on_connect(self):
@@ -59,13 +70,8 @@ class Quoter(ABC):
         @self.sio.event
         async def quote_request(data: Dict[str, Any]):
             quote = QuoteRequest(data)
-            limit_orders = await self.on_quote_request(quote)
-            await self.send_quote(
-                {
-                    "request_id": quote.request_id,
-                    "limit_orders": limit_orders
-                }
-            )
+            legs = await self.on_quote_request(quote)
+            await self.send_quote({"request_id": quote.request_id, "legs": legs})
 
         timestamp = round(time.time() * 1000)
         signature = serialization.load_pem_private_key(
