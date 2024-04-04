@@ -52,7 +52,7 @@ type ChainAssetMap<T> = {
 ```
 
 - `broadcastTransactionRef` has been added to the `getStatus` response for
-  swaps in the `COMPLETE` state. For Bitcoin and EVM chains, this is a
+  swaps in the `BROADCASTED`and `COMPLETE` state. For Bitcoin and EVM chains, this is a
   transaction hash. For Polkadot, it is a block number and extrinsic index in
   the format of `${blockNumber}-${extrinsicIndex}`.
 

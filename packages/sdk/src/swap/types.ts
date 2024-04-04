@@ -82,6 +82,21 @@ interface DepositAddressFields extends SwapStatusResponseCommonFields {
   depositChannelOpenedThroughBackend: boolean;
 }
 
+type BroadcastRequested = {
+  swapId: string;
+  depositAmount: string;
+  depositReceivedAt: number;
+  depositReceivedBlockIndex: string;
+  intermediateAmount: string | undefined;
+  swapExecutedAt: number;
+  swapExecutedBlockIndex: string;
+  egressAmount: string;
+  egressScheduledAt: number;
+  egressScheduledBlockIndex: string;
+  broadcastRequestedAt: number;
+  broadcastRequestedBlockIndex: string;
+};
+
 type CopyFields<T, U> = { [K in Exclude<keyof T, keyof U>]: undefined } & U;
 
 type VaultSwapFields = CopyFields<DepositAddressFields, SwapStatusResponseCommonFields>;
@@ -141,57 +156,22 @@ type SwapState =
       egressScheduledAt: number;
       egressScheduledBlockIndex: string;
     }
-  | {
-      state: 'BROADCAST_REQUESTED' | 'BROADCASTED';
-      swapId: string;
-      depositAmount: string;
-      depositReceivedAt: number;
-      depositReceivedBlockIndex: string;
-      intermediateAmount: string | undefined;
-      swapExecutedAt: number;
-      swapExecutedBlockIndex: string;
-      egressAmount: string;
-      egressScheduledAt: number;
-      egressScheduledBlockIndex: string;
-      broadcastRequestedAt: number;
-      broadcastRequestedBlockIndex: string;
-    }
+  | ({
+      state: 'BROADCAST_REQUESTED';
+    } & BroadcastRequested)
+  | ({ state: 'BROADCASTED'; broadcastTransactionRef: string } & BroadcastRequested)
   // TODO: move broadcast aborted to FAILED state
-  | {
+  | ({
       state: 'BROADCAST_ABORTED';
-      swapId: string;
-      depositAmount: string;
-      depositReceivedAt: number;
-      depositReceivedBlockIndex: string;
-      intermediateAmount: string | undefined;
-      swapExecutedAt: number;
-      swapExecutedBlockIndex: string;
-      egressAmount: string;
-      egressScheduledAt: number;
-      egressScheduledBlockIndex: string;
-      broadcastRequestedAt: number;
-      broadcastRequestedBlockIndex: string;
       broadcastAbortedAt: number;
       broadcastAbortedBlockIndex: string;
-    }
-  | {
+    } & BroadcastRequested)
+  | ({
       state: 'COMPLETE';
-      swapId: string;
-      depositAmount: string;
-      depositReceivedAt: number;
-      depositReceivedBlockIndex: string;
-      intermediateAmount: string | undefined;
-      swapExecutedAt: number;
-      swapExecutedBlockIndex: string;
-      egressAmount: string;
-      egressScheduledAt: number;
-      egressScheduledBlockIndex: string;
-      broadcastRequestedAt: number;
-      broadcastRequestedBlockIndex: string;
       broadcastSucceededAt: number;
       broadcastSucceededBlockIndex: string;
       broadcastTransactionRef: string;
-    }
+    } & BroadcastRequested)
   | {
       state: 'FAILED';
       failure: 'INGRESS_IGNORED';
