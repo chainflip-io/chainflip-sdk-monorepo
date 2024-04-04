@@ -60,6 +60,7 @@ export const approve = async (
 
 export const getVaultContractAddress = (chain: Chain, network: ChainflipNetwork): string => {
   if (chain === Chains.Ethereum) return ADDRESSES[network].VAULT_CONTRACT_ADDRESS;
+  if (chain === Chains.Arbitrum) return ADDRESSES[network].ARB_VAULT_CONTRACT_ADDRESS;
 
   throw new Error(`No vault contract address for ${chain} on ${network}`);
 };
