@@ -1,38 +1,20 @@
-import assert from 'assert';
-import BigNumber from 'bignumber.js';
-import { randomUUID } from 'crypto';
 import express from 'express';
 import type { Server } from 'socket.io';
-import { Side, SwapInput, findPrice } from '@/amm-addon';
-import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
-import {
-  Asset,
-  Assets,
-  Chain,
-  Chains,
-  InternalAsset,
-  getAssetAndChain,
-  getInternalAssets,
-} from '@/shared/enums';
+import { Asset, Assets, Chain, Chains, getInternalAssets } from '@/shared/enums';
 import {
   bigintMin,
   getHundredthPipAmountFromAmount,
   getPipAmountFromAmount,
 } from '@/shared/functions';
-import { ParsedQuoteParams, QuoteQueryResponse, quoteQuerySchema, SwapFee } from '@/shared/schemas';
+import { QuoteQueryResponse, quoteQuerySchema, SwapFee } from '@/shared/schemas';
 import { asyncHandler } from './common';
-import { Pool } from '../client';
 import env from '../config/env';
-import { getAssetPrice } from '../pricing';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
-import getConnectionHandler from '../quoting/getConnectionHandler';
-import { QuoteType, collectMakerQuotes } from '../quoting/quotes';
-import { MarketMakerQuoteRequest, Leg as MarketMakerLeg } from '../quoting/schemas';
+import Quoter from '../quoting/Quoter';
+import { QuoteType } from '../quoting/utils';
 import { buildFee, estimateIngressEgressFeeAssetAmount } from '../utils/fees';
-import { assertUnreachable } from '../utils/function';
 import getPoolQuote from '../utils/getPoolQuote';
 import logger from '../utils/logger';
-import { percentDiff } from '../utils/math';
 import { getPools } from '../utils/pools';
 import { resultify } from '../utils/promise';
 import {
@@ -42,12 +24,9 @@ import {
   validateSwapAmount,
 } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
-import { SwapRateArgs, getSwapRate } from '../utils/statechain';
 import { estimateSwapDuration } from '../utils/swap';
 
 const getPoolQuoteResult = resultify(getPoolQuote);
-
-type BaseAsset = Exclude<InternalAsset, 'Usdc'>;
 
 const handleQuotingError = (res: express.Response, err: unknown) => {
   if (err instanceof ServiceError) throw err;
@@ -69,206 +48,8 @@ const fallbackChains = {
   [Assets.USDT]: Chains.Ethereum,
 } satisfies Record<Asset, Chain>;
 
-class Leg {
-  static of(baseAsset: InternalAsset, quoteAsset: InternalAsset, amount: bigint): Leg;
-  static of(baseAsset: InternalAsset, quoteAsset: InternalAsset, amount: bigint | null): Leg | null;
-  static of(baseAsset: InternalAsset, quoteAsset: InternalAsset, amount: bigint | null) {
-    if (amount === null) return null;
-    assert(baseAsset !== quoteAsset, 'baseAsset and quoteAsset must be different');
-    assert(baseAsset === 'Usdc' || quoteAsset === 'Usdc', 'one of the assets must be USDC');
-    return new Leg(baseAsset, quoteAsset, amount);
-  }
-
-  private constructor(
-    private readonly baseAsset: InternalAsset,
-    private readonly quoteAsset: InternalAsset,
-    public amount: bigint,
-  ) {}
-
-  toPoolJSON(): SwapRateArgs {
-    return {
-      amount: this.amount,
-      srcAsset: this.baseAsset,
-      destAsset: this.quoteAsset,
-    };
-  }
-
-  private getSide(): 'BUY' | 'SELL' {
-    return this.quoteAsset !== 'Usdc' ? 'BUY' : 'SELL';
-  }
-
-  toMarketMakerJSON(): MarketMakerLeg {
-    const side = this.getSide();
-    let normalizedBaseAsset: BaseAsset;
-    const normalizedQuoteAsset = 'Usdc';
-
-    if (this.quoteAsset !== 'Usdc') {
-      normalizedBaseAsset = this.quoteAsset;
-    } else if (this.baseAsset !== 'Usdc') {
-      normalizedBaseAsset = this.baseAsset;
-    } else {
-      return assertUnreachable('invalid leg');
-    }
-
-    return {
-      base_asset: getAssetAndChain(normalizedBaseAsset),
-      quote_asset: getAssetAndChain(normalizedQuoteAsset),
-      amount: this.amount.toString(),
-      side,
-    };
-  }
-
-  toSwapInput(): SwapInput {
-    return {
-      side: this.getSide() === 'BUY' ? Side.Buy : Side.Sell,
-      amount: this.amount,
-      limitOrders: [],
-    };
-  }
-}
-
-const getPriceFromQuotesAndPool = async (leg: Leg, input: SwapInput) => {
-  const { swappedAmount, remainingAmount } = await findPrice(input);
-
-  if (remainingAmount !== 0n) {
-    const { outputAmount } = await getSwapRate(leg.toPoolJSON());
-
-    return remainingAmount + outputAmount;
-  }
-
-  return swappedAmount;
-};
-
 const quoteRouter = (io: Server) => {
-  const { handler, quotes$ } = getConnectionHandler();
-
-  io.on('connection', handler);
-
-  const approximateIntermediateOutput = async (asset: InternalAsset, amount: string) => {
-    const price = await getAssetPrice(asset);
-
-    if (typeof price !== 'number') return null;
-
-    return BigInt(new BigNumber(amount).times(price).toFixed(0));
-  };
-
-  async function quoteLegs(legs: [Leg]): Promise<[bigint]>;
-  async function quoteLegs(legs: [Leg, Leg]): Promise<[bigint, bigint]>;
-  async function quoteLegs(legs: [Leg, Leg | null]): Promise<[bigint, bigint | null]>;
-  async function quoteLegs([leg1, leg2]: [Leg] | [Leg, Leg | null]): Promise<
-    [bigint] | [bigint, bigint | null]
-  > {
-    const requestId = randomUUID();
-
-    const requestLegs = [leg1.toMarketMakerJSON()] as
-      | [MarketMakerLeg]
-      | [MarketMakerLeg, MarketMakerLeg];
-
-    if (leg2) requestLegs[1] = leg2.toMarketMakerJSON();
-
-    const quoteRequest: MarketMakerQuoteRequest = { request_id: requestId, legs: requestLegs };
-
-    io.emit('quote_request', quoteRequest);
-
-    const quotes = await collectMakerQuotes(requestId, io.sockets.sockets.size, quotes$);
-
-    const legLimitOrders = [leg1.toSwapInput()] as [SwapInput] | [SwapInput, SwapInput];
-
-    if (leg2) legLimitOrders[1] = leg2.toSwapInput();
-
-    for (const { legs } of quotes) {
-      for (let i = 0; i < legs.length; i += 1) {
-        legLimitOrders[i].limitOrders.push(...legs[i].map(([tick, amount]) => ({ tick, amount })));
-      }
-    }
-
-    const results = [getPriceFromQuotesAndPool(leg1, legLimitOrders[0])] as
-      | [Promise<bigint>]
-      | [Promise<bigint>, Promise<bigint> | null];
-
-    results[1] =
-      leg2 && legLimitOrders[1] ? getPriceFromQuotesAndPool(leg2, legLimitOrders[1]) : null;
-
-    return Promise.all(results);
-  }
-
-  const getBestQuote = async (
-    quoteRequest: ParsedQuoteParams & { amount: bigint },
-    srcAsset: InternalAsset,
-    destAsset: InternalAsset,
-    pools: Pool[],
-  ) => {
-    const networkFee = getPoolsNetworkFeeHundredthPips(env.CHAINFLIP_NETWORK);
-
-    let intermediateAmount: bigint | null = null;
-    let outputAmount: bigint;
-    let networkFeeUsdc: bigint | null = null;
-
-    const swapInputAmount = quoteRequest.amount;
-
-    const fees: SwapFee[] = [];
-
-    if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
-      if (srcAsset === 'Usdc') {
-        networkFeeUsdc = getHundredthPipAmountFromAmount(swapInputAmount, networkFee);
-      }
-
-      const leg = Leg.of(srcAsset, destAsset, swapInputAmount - (networkFeeUsdc ?? 0n));
-      [outputAmount] = await quoteLegs([leg]);
-
-      if (destAsset === 'Usdc') {
-        networkFeeUsdc = getHundredthPipAmountFromAmount(outputAmount, networkFee);
-      }
-      outputAmount -= networkFeeUsdc!;
-    } else {
-      let approximateUsdcAmount = await approximateIntermediateOutput(
-        srcAsset,
-        swapInputAmount.toString(),
-      );
-
-      networkFeeUsdc =
-        approximateUsdcAmount && getHundredthPipAmountFromAmount(approximateUsdcAmount, networkFee);
-
-      if (networkFeeUsdc && approximateUsdcAmount) {
-        approximateUsdcAmount -= networkFeeUsdc;
-      }
-
-      const leg1 = Leg.of(srcAsset, 'Usdc', swapInputAmount);
-      let leg2 = Leg.of('Usdc', destAsset, approximateUsdcAmount);
-
-      const quotes = await quoteLegs([leg1, leg2]);
-
-      if (
-        quotes[1] === null ||
-        // if there is more than a 1% difference between the two quotes
-        percentDiff(approximateUsdcAmount!.toString(), quotes[0].toString()).gt(1)
-      ) {
-        networkFeeUsdc = getHundredthPipAmountFromAmount(quotes[0], networkFee);
-        quotes[0] -= networkFeeUsdc;
-        leg2 = Leg.of('Usdc', destAsset, quotes[0]);
-        [quotes[1]] = await quoteLegs([leg2]);
-      }
-
-      const secondLegPoolFee = getHundredthPipAmountFromAmount(
-        quotes[1],
-        pools[1].liquidityFeeHundredthPips,
-      );
-      quotes[1] -= secondLegPoolFee;
-
-      fees.push(buildFee(destAsset, 'LIQUIDITY', secondLegPoolFee));
-
-      [intermediateAmount, outputAmount] = quotes;
-    }
-
-    fees.push(buildFee('Usdc', 'NETWORK', networkFeeUsdc!));
-
-    return {
-      intermediateAmount,
-      outputAmount,
-      includedFees: fees,
-      quoteType: 'market_maker' as QuoteType,
-    };
-  };
+  const quoter = new Quoter(io);
 
   const router = express.Router();
 
@@ -373,7 +154,7 @@ const quoteRouter = (io: Server) => {
       try {
         const start = performance.now();
 
-        const bestQuote = await getBestQuote(
+        const bestQuote = await quoter.getBestQuote(
           { ...query, amount: swapInputAmount },
           srcAsset,
           destAsset,
