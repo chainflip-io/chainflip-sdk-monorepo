@@ -2,7 +2,6 @@ import { Metadata, TypeRegistry } from '@polkadot/types';
 import { BN } from '@polkadot/util';
 import assert from 'assert';
 import { z } from 'zod';
-import { assetConstants } from '@/shared/enums';
 import {
   btcAddress,
   dotAddress,
@@ -19,30 +18,42 @@ import type { EventHandlerArgs } from '.';
 
 export const egressId = z.tuple([chainEnum, unsignedInteger]);
 
-const ethChainAddress = z.object({
-  __kind: z.literal('Eth'),
-  value: ethereumAddress,
-});
-const dotChainAddress = z.object({
-  __kind: z.literal('Dot'),
-  value: dotAddress,
-});
-const btcChainAddress = z.object({
-  __kind: z.literal('Btc'),
-  value: hexString
-    .transform((v) => Buffer.from(v.slice(2), 'hex').toString())
-    .pipe(btcAddress(env.CHAINFLIP_NETWORK)),
-});
+const ethChainAddress = z
+  .object({
+    __kind: z.literal('Eth'),
+    value: ethereumAddress,
+  })
+  .transform(({ value }) => ({ chain: 'Ethereum', address: value }) as const);
 
-export const encodedAddress = z
-  .union([ethChainAddress, dotChainAddress, btcChainAddress])
-  .transform(
-    ({ __kind, value }) =>
-      ({
-        chain: assetConstants[__kind].chain,
-        address: value,
-      }) as const,
-  );
+const dotChainAddress = z
+  .object({
+    __kind: z.literal('Dot'),
+    value: dotAddress,
+  })
+  .transform(({ value }) => ({ chain: 'Polkadot', address: value }) as const);
+
+const btcChainAddress = z
+  .object({
+    __kind: z.literal('Btc'),
+    value: hexString
+      .transform((v) => Buffer.from(v.slice(2), 'hex').toString())
+      .pipe(btcAddress(env.CHAINFLIP_NETWORK)),
+  })
+  .transform(({ value }) => ({ chain: 'Bitcoin', address: value }) as const);
+
+const arbChainAddress = z
+  .object({
+    __kind: z.literal('Arb'),
+    value: ethereumAddress,
+  })
+  .transform(({ value }) => ({ chain: 'Arbitrum', address: value }) as const);
+
+export const encodedAddress = z.union([
+  ethChainAddress,
+  dotChainAddress,
+  btcChainAddress,
+  arbChainAddress,
+]);
 
 const metadataCache = new CacheMap<string, Metadata>(60_000 * 60);
 
