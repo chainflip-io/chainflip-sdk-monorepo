@@ -137,7 +137,7 @@ describe('server', () => {
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
-        message: 'expected amount is below minimum swap amount (16777215)',
+        message: 'given amount (5) is below minimum swap amount (16777215)',
       });
     });
 
@@ -156,7 +156,7 @@ describe('server', () => {
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
-        message: 'expected amount is above maximum swap amount (1)',
+        message: 'given amount (5) is above maximum swap amount (1)',
       });
     });
 

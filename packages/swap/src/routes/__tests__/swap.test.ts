@@ -82,7 +82,7 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/swaps/1`);
 
       expect(status).toBe(404);
-      expect(body).toEqual({ message: 'resource not found' });
+      expect(body).toEqual({ code: 'not-found', message: 'no swap for id "1" found' });
     });
 
     it(`retrieves a swap in ${State.AwaitingDeposit} status`, async () => {
@@ -1377,7 +1377,7 @@ describe('server', () => {
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
-        message: 'expected amount is below minimum swap amount (16777215)',
+        message: 'given amount (5) is below minimum swap amount (16777215)',
       });
     });
 
@@ -1397,7 +1397,7 @@ describe('server', () => {
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
-        message: 'expected amount is above maximum swap amount (1)',
+        message: 'given amount (5) is above maximum swap amount (1)',
       });
     });
   });
