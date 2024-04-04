@@ -10,8 +10,7 @@ import { QuoteQueryResponse, quoteQuerySchema, SwapFee } from '@/shared/schemas'
 import { asyncHandler } from './common';
 import env from '../config/env';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
-import Quoter from '../quoting/Quoter';
-import { QuoteType } from '../quoting/utils';
+import Quoter, { type QuoteType } from '../quoting/Quoter';
 import { buildFee, estimateIngressEgressFeeAssetAmount } from '../utils/fees';
 import getPoolQuote from '../utils/getPoolQuote';
 import logger from '../utils/logger';

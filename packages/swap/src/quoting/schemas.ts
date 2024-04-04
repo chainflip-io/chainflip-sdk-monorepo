@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { BaseAssetAndChain } from '@/shared/enums';
 import { numericString, unsignedInteger } from '@/shared/parsers';
-import { QuoteType } from './utils';
+import { QuoteType } from './Quoter';
 
 const limitOrder = z.tuple([z.number(), numericString.transform((n) => BigInt(n))]);
 

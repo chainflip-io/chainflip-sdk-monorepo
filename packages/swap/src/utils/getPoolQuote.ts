@@ -12,7 +12,7 @@ import ServiceError from './ServiceError';
 import { getSwapRate } from './statechain';
 import { InternalAsset } from '../client';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
-import { QuoteType } from '../quoting/utils';
+import { QuoteType } from '../quoting/Leg';
 
 export default async function getPoolQuote(
   srcAsset: InternalAsset,

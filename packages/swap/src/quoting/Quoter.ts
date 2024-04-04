@@ -1,5 +1,6 @@
+import BigNumber from 'bignumber.js';
 import { randomUUID } from 'crypto';
-import { Subject } from 'rxjs';
+import { Subject, Subscription, filter } from 'rxjs';
 import { Server } from 'socket.io';
 import { findPrice, type SwapInput } from '@/amm-addon';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
@@ -7,15 +8,16 @@ import { InternalAsset } from '@/shared/enums';
 import { getHundredthPipAmountFromAmount } from '@/shared/functions';
 import { ParsedQuoteParams, SwapFee } from '@/shared/schemas';
 import { QuotingSocket } from './authenticate';
+import Leg from './Leg';
 import {
   Leg as MarketMakerLeg,
   MarketMakerQuote,
   MarketMakerQuoteRequest,
   marketMakerResponseSchema,
 } from './schemas';
-import { Leg, approximateIntermediateOutput, collectMakerQuotes } from './utils';
 import { Pool } from '../client';
 import env from '../config/env';
+import { getAssetPrice } from '../pricing';
 import { buildFee } from '../utils/fees';
 import logger from '../utils/logger';
 import { percentDiff } from '../utils/math';
@@ -35,6 +37,14 @@ const getPriceFromQuotesAndPool = async (leg: Leg, input: SwapInput) => {
   }
 
   return swappedAmount;
+};
+
+export const approximateIntermediateOutput = async (asset: InternalAsset, amount: string) => {
+  const price = await getAssetPrice(asset);
+
+  if (typeof price !== 'number') return null;
+
+  return BigInt(new BigNumber(amount).times(price).toFixed(0));
 };
 
 export default class Quoter {
@@ -65,6 +75,31 @@ export default class Quoter {
     });
   }
 
+  private async collectMakerQuotes(requestId: string): Promise<MarketMakerQuote[]> {
+    const connectedClients = this.io.sockets.sockets.size;
+    if (connectedClients === 0) return Promise.resolve([]);
+
+    const clientsReceivedQuotes = new Map<string, MarketMakerQuote>();
+
+    return new Promise((resolve) => {
+      let sub: Subscription;
+
+      const complete = () => {
+        sub.unsubscribe();
+        resolve([...clientsReceivedQuotes.values()]);
+      };
+
+      sub = this.quotes$
+        .pipe(filter(({ quote }) => quote.request_id === requestId))
+        .subscribe(({ marketMaker, quote }) => {
+          clientsReceivedQuotes.set(marketMaker, quote);
+          if (clientsReceivedQuotes.size === connectedClients) complete();
+        });
+
+      setTimeout(complete, env.QUOTE_TIMEOUT);
+    });
+  }
+
   async quoteLegs(legs: [Leg]): Promise<[bigint]>;
   async quoteLegs(legs: [Leg, Leg]): Promise<[bigint, bigint]>;
   async quoteLegs(legs: [Leg, Leg | null]): Promise<[bigint, bigint | null]>;
@@ -83,7 +118,7 @@ export default class Quoter {
 
     this.io.emit('quote_request', quoteRequest);
 
-    const quotes = await collectMakerQuotes(requestId, this.io.sockets.sockets.size, this.quotes$);
+    const quotes = await this.collectMakerQuotes(requestId);
 
     const legLimitOrders = [leg1.toSwapInput()] as [SwapInput] | [SwapInput, SwapInput];
 

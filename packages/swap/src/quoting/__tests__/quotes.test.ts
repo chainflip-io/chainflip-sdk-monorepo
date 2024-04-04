@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import { Subject } from 'rxjs';
 import env from '@/swap/config/env';
-import { collectMakerQuotes } from '../utils';
+import { collectMakerQuotes } from '../Leg';
 
 jest.mock('@/shared/consts', () => ({
   ...jest.requireActual('@/shared/consts'),
