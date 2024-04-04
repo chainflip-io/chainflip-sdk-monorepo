@@ -68,6 +68,13 @@ type ChainAssetMap<T> = {
   determine the supported chains of the connected Chainflip network. The format
   of the returned data was not changed.
 
+### Deprecated
+
+- `getQuote` can respond with a 500 status code and a JSON response body with an
+  string `error` field. A duplicate `message` field has been added to be
+  consistent with error handling with other parts of the API. The `error` field
+  will be removed in a future release.
+
 ### Fixed
 
 - `getQuote` can respond with a 500 status code and a JSON response body with an
