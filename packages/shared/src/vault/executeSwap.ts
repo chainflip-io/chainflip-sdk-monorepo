@@ -28,7 +28,7 @@ import { ExecuteSwapParams, SwapNetworkOptions } from './index';
 const encodeAddress = (chain: Chain, address: string) => {
   if (chain === Chains.Polkadot) return u8aToHex(decodeAddress(dotAddress.parse(address)));
   if (chain === Chains.Bitcoin) return `0x${Buffer.from(address).toString('hex')}`;
-  if (chain === Chains.Ethereum) return address;
+  if (chain === Chains.Ethereum || chain === Chains.Arbitrum) return address;
 
   // no fallback encoding to prevent submitting txs with wrongly encoded addresses for new chains
   throw new Error(`cannot encode address for chain ${chain}`);
