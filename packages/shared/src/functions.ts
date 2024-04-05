@@ -25,3 +25,5 @@ export const getPipAmountFromAmount = (
 
 export const getHundredthPipAmountFromAmount = (amount: bigint | string, hundredthPips: number) =>
   getPipAmountFromAmount(amount, hundredthPips, ONE_IN_HUNDREDTH_PIPS);
+
+export const assertUnreachable = (x: never): never => x;

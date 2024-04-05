@@ -1,8 +1,9 @@
 import assert from 'assert';
 import express from 'express';
-import { assetConstants } from '@/shared/enums';
+import { Chain, assetConstants } from '@/shared/enums';
+import { assertUnreachable } from '@/shared/functions';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
-import { screamingSnakeToPascalCase } from '@/shared/strings';
+import { screamingSnakeToPascalCase, toUpperCase } from '@/shared/strings';
 import { asyncHandler, maintenanceMiddleware } from './common';
 import prisma, {
   Egress,
@@ -56,13 +57,15 @@ const failedSwapMessage: Record<FailedSwapReason, string> = {
 };
 
 const coerceChain = (chain: string) => {
-  const uppercase = chain.toUpperCase();
-  switch (uppercase) {
+  const uppercaseChain = toUpperCase(chain) as Uppercase<Chain>;
+  switch (uppercaseChain) {
     case 'BITCOIN':
     case 'ETHEREUM':
     case 'POLKADOT':
-      return screamingSnakeToPascalCase(uppercase);
+    case 'ARBITRUM':
+      return screamingSnakeToPascalCase(uppercaseChain);
     default:
+      assertUnreachable(uppercaseChain);
       throw ServiceError.badRequest(`invalid chain "${chain}"`);
   }
 };
