@@ -1,4 +1,4 @@
-import { ContractTransactionReceipt, Signer } from 'ethers';
+import { ContractTransactionResponse, Signer } from 'ethers';
 import { getStateChainGateway } from './utils';
 import {
   checkAllowance,
@@ -30,7 +30,7 @@ export const fundStateChainAccount = async (
   amount: bigint,
   networkOpts: FundingNetworkOptions,
   txOpts: TransactionOptions,
-): Promise<ContractTransactionReceipt> => {
+): Promise<ContractTransactionResponse> => {
   const flipContractAddress =
     networkOpts.network === 'localnet'
       ? networkOpts.flipContractAddress
@@ -51,23 +51,25 @@ export const fundStateChainAccount = async (
     amount,
     extractOverrides(txOpts),
   );
+  await transaction.wait(txOpts.wait);
 
-  return transaction.wait(txOpts.wait) as Promise<ContractTransactionReceipt>;
+  return transaction;
 };
 
 export const executeRedemption = async (
   accountId: `0x${string}`,
   networkOpts: FundingNetworkOptions,
   txOpts: TransactionOptions,
-): Promise<ContractTransactionReceipt> => {
+): Promise<ContractTransactionResponse> => {
   const stateChainGateway = getStateChainGateway(networkOpts);
 
   const transaction = await stateChainGateway.executeRedemption(
     accountId,
     extractOverrides(txOpts),
   );
+  await transaction.wait(txOpts.wait);
 
-  return transaction.wait(txOpts.wait) as Promise<ContractTransactionReceipt>;
+  return transaction;
 };
 
 export const getMinimumFunding = (networkOpts: FundingNetworkOptions): Promise<bigint> => {

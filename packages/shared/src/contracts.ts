@@ -1,4 +1,4 @@
-import { Signer, Overrides, ContractTransactionReceipt } from 'ethers';
+import { Signer, Overrides, ContractTransactionResponse } from 'ethers';
 import { ERC20, ERC20__factory } from './abis';
 import { ADDRESSES } from './consts';
 import { Chain, type ChainflipNetwork, Chains, InternalAsset, InternalAssets } from './enums';
@@ -48,14 +48,16 @@ export const approve = async (
   erc20: ERC20,
   allowance: bigint,
   txOpts: TransactionOptions,
-): Promise<ContractTransactionReceipt | null> => {
+): Promise<ContractTransactionResponse | null> => {
   if (allowance >= amount) return null;
   const transaction = await erc20.approve(
     spenderAddress,
     amount - allowance,
     extractOverrides(txOpts),
   );
-  return transaction.wait(txOpts.wait);
+  await transaction.wait(txOpts.wait);
+
+  return transaction;
 };
 
 export const getVaultContractAddress = (chain: Chain, network: ChainflipNetwork): string => {
