@@ -229,8 +229,7 @@ const quote = (io: Server) => {
 
         let level: 'error' | 'warn' = 'error';
         if (message.includes('InsufficientLiquidity')) {
-          // DEPRECATED(1.3): remove spec version check and always throw error
-          if (await isAfterSpecVersion(150)) {
+          if (await isAfterSpecVersion(140)) {
             throw ServiceError.badRequest('insufficient liquidity for requested amount');
           }
 
