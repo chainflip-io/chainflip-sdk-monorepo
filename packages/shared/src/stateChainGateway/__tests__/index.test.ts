@@ -50,12 +50,10 @@ describe(fundStateChainAccount, () => {
       erc20: {} as unknown as ERC20,
     });
     const waitMock = jest.fn().mockResolvedValue({ status: 1 });
-    const fundSpy = jest
-      .spyOn(MockGateway.prototype, 'fundStateChainAccount')
-      .mockResolvedValue({
-        hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
-        wait: waitMock,
-      });
+    const fundSpy = jest.spyOn(MockGateway.prototype, 'fundStateChainAccount').mockResolvedValue({
+      hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
+      wait: waitMock,
+    });
 
     expect(await fundStateChainAccount('0x1234', 1000n, signerOptions, {})).toMatchObject({
       hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
@@ -72,12 +70,10 @@ describe(fundStateChainAccount, () => {
 describe(executeRedemption, () => {
   it('executes the redemption', async () => {
     const waitMock = jest.fn().mockResolvedValue({ status: 1 });
-    const executeSpy = jest
-      .spyOn(MockGateway.prototype, 'executeRedemption')
-      .mockResolvedValue({
-        hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
-        wait: waitMock,
-      });
+    const executeSpy = jest.spyOn(MockGateway.prototype, 'executeRedemption').mockResolvedValue({
+      hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
+      wait: waitMock,
+    });
 
     expect(await executeRedemption('0x1234', signerOptions, { nonce: 1 })).toMatchObject({
       hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',

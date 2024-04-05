@@ -15,6 +15,14 @@ which it is deprecated.
   string `error` field. This field has been replaced by `message` to be inline
   with how errors are returned in other parts of the API.
 
+## Unreleased
+
+### Changed
+
+- `SwapSDK.prototype.executeSwap` allows to not wait for transaction inclusion
+  by passing `{ wait: 0 }` as `txOpts` param now. The method will return the
+  transaction hash of the submitted transaction.
+
 ## 1.3.0
 
 ### Added
