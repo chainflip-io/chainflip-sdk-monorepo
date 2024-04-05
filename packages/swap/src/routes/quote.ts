@@ -226,9 +226,8 @@ const quote = (io: Server) => {
         const message =
           err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';
 
-        if (!message.includes('InsufficientLiquidity')) {
-          logger.error('error while collecting quotes:', err);
-        }
+        const level = message.includes('InsufficientLiquidity') ? 'warn' : 'error';
+        logger[level]('error while collecting quotes:', err);
 
         // DEPRECATED(1.3): remove `error`
         res.status(500).json({ message, error: message });
