@@ -48,10 +48,11 @@ describe(approve, () => {
     'approves the spender for an allowance equal to the spend request',
     async ({ allowance, spend }) => {
       const approveSpy = jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValueOnce({
-        wait: jest.fn().mockResolvedValue({ status: 1, hash: 'TX_HASH' }),
+        hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
+        wait: jest.fn().mockResolvedValue({ status: 1 }),
       } as unknown as ContractTransaction);
 
-      const receipt = await approve(
+      const tx = await approve(
         spend,
         spender,
         ERC20__factory.connect('0x0', new VoidSigner('0xcafebabe')),
@@ -59,13 +60,15 @@ describe(approve, () => {
         { nonce: 1 },
       );
 
-      expect(receipt).not.toBe(null);
+      expect(tx).toMatchObject({
+        hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
+      });
       expect(approveSpy.mock.calls).toMatchSnapshot();
     },
   );
 
   it('returns null if the allowance is already sufficient', async () => {
-    const receipt = await approve(
+    const tx = await approve(
       10n,
       spender,
       ERC20__factory.connect('0x0', new VoidSigner('0xcafebabe')),
@@ -73,6 +76,6 @@ describe(approve, () => {
       { nonce: 1 },
     );
 
-    expect(receipt).toBe(null);
+    expect(tx).toBe(null);
   });
 });

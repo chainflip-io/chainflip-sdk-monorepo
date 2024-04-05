@@ -52,9 +52,14 @@ describe(fundStateChainAccount, () => {
     const waitMock = jest.fn().mockResolvedValue({ status: 1 });
     const fundSpy = jest
       .spyOn(MockGateway.prototype, 'fundStateChainAccount')
-      .mockResolvedValue({ wait: waitMock });
+      .mockResolvedValue({
+        hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
+        wait: waitMock,
+      });
 
-    await fundStateChainAccount('0x1234', 1000n, signerOptions, {});
+    expect(await fundStateChainAccount('0x1234', 1000n, signerOptions, {})).toMatchObject({
+      hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
+    });
 
     expect(checkSpy).toHaveBeenCalled();
     expect(waitMock).toHaveBeenCalledWith(undefined);
@@ -69,8 +74,15 @@ describe(executeRedemption, () => {
     const waitMock = jest.fn().mockResolvedValue({ status: 1 });
     const executeSpy = jest
       .spyOn(MockGateway.prototype, 'executeRedemption')
-      .mockResolvedValue({ wait: waitMock });
-    await executeRedemption('0x1234', signerOptions, { nonce: 1 });
+      .mockResolvedValue({
+        hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
+        wait: waitMock,
+      });
+
+    expect(await executeRedemption('0x1234', signerOptions, { nonce: 1 })).toMatchObject({
+      hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
+    });
+
     expect(executeSpy.mock.lastCall).toMatchSnapshot();
   });
 });

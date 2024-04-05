@@ -188,7 +188,7 @@ export class SwapSDK {
 
     await this.validateSwapAmount({ chain: srcChain, asset: srcAsset }, BigInt(amount));
 
-    const receipt = await executeSwap(
+    const tx = await executeSwap(
       params,
       {
         network: this.options.network,
@@ -196,7 +196,7 @@ export class SwapSDK {
       },
       remainingTxOpts,
     );
-    return receipt.hash as `0x${string}`;
+    return tx.hash as `0x${string}`;
   }
 
   async approveVault(
@@ -207,7 +207,7 @@ export class SwapSDK {
     const signer = optsSigner ?? this.options.signer;
     assert(signer, 'No signer provided');
 
-    const receipt = await approveVault(
+    const tx = await approveVault(
       params,
       {
         signer,
@@ -215,7 +215,7 @@ export class SwapSDK {
       },
       remainingTxOpts,
     );
-    return receipt ? (receipt.hash as `0x${string}`) : null;
+    return tx ? (tx.hash as `0x${string}`) : null;
   }
 
   private async validateSwapAmount(asset: UncheckedAssetAndChain, amount: bigint): Promise<void> {
