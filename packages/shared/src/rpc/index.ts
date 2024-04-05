@@ -35,21 +35,24 @@ const RPC_URLS: Record<ChainflipNetwork, string> = {
 
 export type RpcConfig = { rpcUrl: string } | { network: ChainflipNetwork };
 
-type RpcParams = {
-  cf_environment: [at?: string];
-  cf_supported_assets: [at?: string];
-  cf_swapping_environment: [at?: string];
-  cf_ingress_egress_environment: [at?: string];
-  cf_funding_environment: [at?: string];
-  cf_pool_info: [at?: string];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type WithHash<T> = { [K in keyof T]: T[K] extends any[] ? [...T[K], at?: string] : never };
+
+type RpcParams = WithHash<{
+  cf_environment: [];
+  cf_supported_assets: [];
+  cf_swapping_environment: [];
+  cf_ingress_egress_environment: [];
+  cf_funding_environment: [];
+  cf_pool_info: [];
   cf_swap_rate: [
     fromAsset: UncheckedAssetAndChain,
     toAsset: UncheckedAssetAndChain,
     amount: `0x${string}`,
-    at?: string,
   ];
-  state_getMetadata: [at?: string];
-};
+  state_getMetadata: [];
+  state_getRuntimeVersion: [];
+}>;
 
 type RpcMethod = keyof RpcParams;
 
@@ -219,3 +222,8 @@ const supportedAssetsV130 = z.array(uncheckedAssetAndChain);
 const supportedAssets = z.union([supportedAssetsV120, supportedAssetsV130]);
 
 export const getSupportedAssets = createRequest('cf_supported_assets', supportedAssets);
+
+export const getRuntimeVersion = createRequest(
+  'state_getRuntimeVersion',
+  z.object({ specVersion: z.number() }),
+);

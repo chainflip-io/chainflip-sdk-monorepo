@@ -14,6 +14,18 @@ which it is deprecated.
 - `getQuote` can respond with a 500 status code and a JSON response body with an
   string `error` field. This field has been replaced by `message` to be inline
   with how errors are returned in other parts of the API.
+- `getQuote` returns a 500 for quotes for which there is insufficient liquidity.
+  This has been changed to return a 400, because there is action the user can
+  take to resolve there error.
+
+## Unreleased
+
+## Changed
+
+- `getQuote` responds with a 500 if there is insufficient liquidity. It has been
+  changed to a 400 because there are steps the user can take to fix the error,
+  namely change the swap input amount. The error message has been changed to a
+  more informative `insufficient liquidity for requested amount`.
 
 ## Unreleased
 

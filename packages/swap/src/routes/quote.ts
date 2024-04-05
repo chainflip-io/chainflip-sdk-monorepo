@@ -7,6 +7,7 @@ import { calculateIncludedSwapFees, estimateIngressEgressFeeAssetAmount } from '
 import { getPools } from '@/swap/utils/pools';
 import { estimateSwapDuration } from '@/swap/utils/swap';
 import { asyncHandler } from './common';
+import env from '../config/env';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import getConnectionHandler from '../quoting/getConnectionHandler';
 import {
@@ -15,6 +16,8 @@ import {
   collectMakerQuotes,
   subtractFeesFromMakerQuote,
 } from '../quoting/quotes';
+import * as rpc from '../rpc';
+import { memoize } from '../utils/function';
 import logger from '../utils/logger';
 import {
   getMinimumEgressAmount,
@@ -24,6 +27,11 @@ import {
 } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
 import { getBrokerQuote } from '../utils/statechain';
+
+const cachedGetSpecVersion = memoize(
+  () => rpc.getRuntimeVersion({ network: env.CHAINFLIP_NETWORK }).catch(() => ({ specVersion: 0 })),
+  6_000,
+);
 
 const fallbackChains = {
   [Assets.ETH]: Chains.Ethereum,
@@ -226,7 +234,20 @@ const quote = (io: Server) => {
         const message =
           err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';
 
-        const level = message.includes('InsufficientLiquidity') ? 'warn' : 'error';
+        let level: 'error' | 'warn' = 'error';
+        if (message.includes('InsufficientLiquidity')) {
+          const { specVersion } = await cachedGetSpecVersion();
+
+          logger.warn('insufficient liquidity', { specVersion });
+
+          // DEPRECATED(1.3): remove spec version check and always throw error
+          if (specVersion >= 150) {
+            throw ServiceError.badRequest('insufficient liquidity for requested amount');
+          }
+
+          level = 'warn';
+        }
+
         logger[level]('error while collecting quotes:', err);
 
         // DEPRECATED(1.3): remove `error`
