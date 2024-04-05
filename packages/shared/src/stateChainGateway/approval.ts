@@ -1,4 +1,4 @@
-import { ContractTransactionReceipt } from 'ethers';
+import { ContractTransactionResponse } from 'ethers';
 import {
   checkAllowance,
   getStateChainGatewayContractAddress,
@@ -35,7 +35,7 @@ export const approveStateChainGateway = async (
   amount: bigint,
   networkOpts: FundingNetworkOptions,
   txOpts: TransactionOptions,
-): Promise<ContractTransactionReceipt | null> => {
+): Promise<ContractTransactionResponse | null> => {
   const { allowance, erc20, hasSufficientAllowance } = await checkStateChainGatewayAllowance(
     amount,
     networkOpts,

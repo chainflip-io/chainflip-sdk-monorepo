@@ -64,12 +64,12 @@ export default async function cliFundStateChainAccount(
         }
       : { network: args.chainflipNetwork, signer: wallet };
 
-  const receipt = await fundStateChainAccount(
+  const tx = await fundStateChainAccount(
     args.srcAccountId as `0x${string}`,
     BigInt(args.amount),
     networkOpts,
     {},
   );
 
-  console.log(`Call executed. Transaction hash: ${receipt.hash}`);
+  console.log(`Call executed. Transaction hash: ${tx.hash}`);
 }

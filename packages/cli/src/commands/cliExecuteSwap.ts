@@ -93,7 +93,7 @@ export default async function cliExecuteSwap(
     };
   }
 
-  const receipt = await executeSwap(
+  const tx = await executeSwap(
     {
       srcChain: assetConstants[args.srcAsset].chain,
       srcAsset: assetConstants[args.srcAsset].asset,
@@ -107,5 +107,5 @@ export default async function cliExecuteSwap(
     {},
   );
 
-  console.log(`Swap executed. Transaction hash: ${receipt.hash}`);
+  console.log(`Swap executed. Transaction hash: ${tx.hash}`);
 }

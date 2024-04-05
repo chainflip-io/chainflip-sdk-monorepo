@@ -1,6 +1,6 @@
 import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
-import { ContractTransactionReceipt } from 'ethers';
+import { ContractTransactionResponse } from 'ethers';
 import { Vault__factory } from '../abis';
 import {
   checkAllowance,
@@ -77,7 +77,7 @@ const swapNative = async (
   params: ExecuteSwapParams & { ccmMetadata?: undefined },
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
-): Promise<ContractTransactionReceipt> => {
+): Promise<ContractTransactionResponse> => {
   const internalDestAsset = getInternalAsset({
     chain: params.destChain,
     asset: params.destAsset,
@@ -91,15 +91,16 @@ const swapNative = async (
     '0x',
     { value: params.amount, ...extractOverrides(txOpts) },
   );
+  await transaction.wait(txOpts.wait);
 
-  return transaction.wait(txOpts.wait) as Promise<ContractTransactionReceipt>;
+  return transaction;
 };
 
 const swapToken = async (
   params: ExecuteSwapParams & { ccmMetadata?: undefined },
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
-): Promise<ContractTransactionReceipt> => {
+): Promise<ContractTransactionResponse> => {
   const internalSrcAsset = getInternalAsset({
     chain: params.srcChain,
     asset: params.srcAsset,
@@ -128,15 +129,16 @@ const swapToken = async (
     '0x',
     extractOverrides(txOpts),
   );
+  await transaction.wait(txOpts.wait);
 
-  return transaction.wait(txOpts.wait) as Promise<ContractTransactionReceipt>;
+  return transaction;
 };
 
 const callNative = async (
   params: ExecuteSwapParams & Required<ExecuteSwapParams, 'ccmMetadata'>,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
-): Promise<ContractTransactionReceipt> => {
+): Promise<ContractTransactionResponse> => {
   const internalDestAsset = getInternalAsset({
     chain: params.destChain,
     asset: params.destAsset,
@@ -152,15 +154,16 @@ const callNative = async (
     '0x',
     { value: params.amount, ...extractOverrides(txOpts) },
   );
+  await transaction.wait(txOpts.wait);
 
-  return transaction.wait(txOpts.wait) as Promise<ContractTransactionReceipt>;
+  return transaction;
 };
 
 const callToken = async (
   params: ExecuteSwapParams & Required<ExecuteSwapParams, 'ccmMetadata'>,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
-): Promise<ContractTransactionReceipt> => {
+): Promise<ContractTransactionResponse> => {
   const internalSrcAsset = getInternalAsset({
     chain: params.srcChain,
     asset: params.srcAsset,
@@ -191,15 +194,16 @@ const callToken = async (
     '0x',
     extractOverrides(txOpts),
   );
+  await transaction.wait(txOpts.wait);
 
-  return transaction.wait(txOpts.wait) as Promise<ContractTransactionReceipt>;
+  return transaction;
 };
 
 const executeSwap = async (
   { ccmMetadata: unvalidatedCcmMetadata, ...params }: ExecuteSwapParams,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
-): Promise<ContractTransactionReceipt> => {
+): Promise<ContractTransactionResponse> => {
   assertIsValidSwap(params);
   assertIsEvmChain(params.srcChain);
   assertValidAddress(params.destChain, params.destAddress, networkOpts.network);

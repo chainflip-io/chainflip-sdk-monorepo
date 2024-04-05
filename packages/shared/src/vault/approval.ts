@@ -1,4 +1,4 @@
-import { ContractTransactionReceipt } from 'ethers';
+import { ContractTransactionResponse } from 'ethers';
 import {
   checkAllowance,
   getTokenContractAddress,
@@ -42,7 +42,7 @@ export const approveVault = async (
   params: Pick<ExecuteSwapParams, 'srcChain' | 'srcAsset' | 'amount'>,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
-): Promise<ContractTransactionReceipt | null> => {
+): Promise<ContractTransactionResponse | null> => {
   await assertSignerIsConnectedToChain(networkOpts, params.srcChain);
 
   const { hasSufficientAllowance, erc20, allowance } = await checkVaultAllowance(

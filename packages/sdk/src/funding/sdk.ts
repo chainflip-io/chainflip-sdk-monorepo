@@ -85,9 +85,9 @@ export class FundingSDK {
     amount: bigint,
     txOpts: TransactionOptions = {},
   ): Promise<TransactionHash | null> {
-    const receipt = await approveStateChainGateway(amount, this.options, txOpts);
+    const tx = await approveStateChainGateway(amount, this.options, txOpts);
 
-    return receipt ? (receipt.hash as `0x${string}`) : null;
+    return tx ? (tx.hash as `0x${string}`) : null;
   }
 
   async getRedemptionTax(): Promise<bigint> {

@@ -81,8 +81,11 @@ describe(executeSwap, () => {
       srcChain: Chains.Ethereum,
     },
   ] as Omit<ExecuteSwapParams, 'amount'>[])('submits a native swap (%p)', async (params) => {
-    const wait = jest.fn().mockResolvedValue({ status: 1, hash: 'hello world' });
-    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapNative').mockResolvedValue({ wait });
+    const wait = jest.fn().mockResolvedValue({ status: 1 });
+    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapNative').mockResolvedValue({
+      hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
+      wait,
+    });
 
     expect(
       await executeSwap(
@@ -95,7 +98,7 @@ describe(executeSwap, () => {
         },
         {},
       ),
-    ).toStrictEqual({ status: 1, hash: 'hello world' });
+    ).toMatchObject({ hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4' });
     expect(wait).toHaveBeenCalledWith(undefined);
     expect(swapSpy.mock.calls).toMatchSnapshot();
   });
@@ -131,9 +134,15 @@ describe(executeSwap, () => {
       },
     ]),
   ] as Omit<ExecuteSwapParams, 'amount'>[])('submits a token swap (%p)', async (params) => {
-    const wait = jest.fn().mockResolvedValue({ status: 1, hash: 'hello world' });
-    const approveSpy = jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({ wait });
-    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapToken').mockResolvedValue({ wait });
+    const wait = jest.fn().mockResolvedValue({ status: 1 });
+    const approveSpy = jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({
+      hash: '0x69e038ca41d2c7902c00f708afa52c1c8d8f9a779003979c814809d39fa6b9db',
+      wait,
+    });
+    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapToken').mockResolvedValue({
+      hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
+      wait,
+    });
     const allowanceSpy = jest
       .spyOn(MockERC20.prototype, 'allowance')
       .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
@@ -149,7 +158,7 @@ describe(executeSwap, () => {
         },
         {},
       ),
-    ).toStrictEqual({ status: 1, hash: 'hello world' });
+    ).toMatchObject({ hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4' });
     expect(wait).toHaveBeenCalledWith(undefined);
     expect(swapSpy.mock.calls).toMatchSnapshot();
     expect(allowanceSpy.mock.calls).toMatchSnapshot();
@@ -157,11 +166,14 @@ describe(executeSwap, () => {
   });
 
   it('submits a token swap with sufficient approval', async () => {
-    const wait = jest.fn().mockResolvedValue({ status: 1, hash: 'hello world' });
+    const wait = jest.fn().mockResolvedValue({ status: 1 });
     const approveSpy = jest
       .spyOn(MockERC20.prototype, 'approve')
       .mockRejectedValue(Error('unmocked call'));
-    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapToken').mockResolvedValue({ wait });
+    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapToken').mockResolvedValue({
+      hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
+      wait,
+    });
     const allowanceSpy = jest
       .spyOn(MockERC20.prototype, 'allowance')
       .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
@@ -184,7 +196,7 @@ describe(executeSwap, () => {
         },
         {},
       ),
-    ).toStrictEqual({ status: 1, hash: 'hello world' });
+    ).toMatchObject({ hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4' });
     expect(wait).toHaveBeenCalledWith(undefined);
     expect(swapSpy.mock.calls).toMatchSnapshot();
     expect(allowanceSpy.mock.calls).toMatchSnapshot();
@@ -192,9 +204,15 @@ describe(executeSwap, () => {
   });
 
   it('can be invoked with localnet options', async () => {
-    const wait = jest.fn().mockResolvedValue({ status: 1, hash: 'hello world' });
-    const approveSpy = jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({ wait });
-    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapToken').mockResolvedValue({ wait });
+    const wait = jest.fn().mockResolvedValue({ status: 1 });
+    const approveSpy = jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({
+      hash: '0x69e038ca41d2c7902c00f708afa52c1c8d8f9a779003979c814809d39fa6b9db',
+      wait,
+    });
+    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapToken').mockResolvedValue({
+      hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
+      wait,
+    });
     const allowanceSpy = jest
       .spyOn(MockERC20.prototype, 'allowance')
       .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
@@ -217,7 +235,7 @@ describe(executeSwap, () => {
         },
         {},
       ),
-    ).toStrictEqual({ status: 1, hash: 'hello world' });
+    ).toMatchObject({ hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4' });
     expect(wait).toHaveBeenCalledWith(undefined);
     expect(swapSpy.mock.calls).toMatchSnapshot();
     expect(allowanceSpy.mock.calls).toMatchSnapshot();
@@ -225,8 +243,11 @@ describe(executeSwap, () => {
   });
 
   it('accepts a nonce', async () => {
-    const wait = jest.fn().mockResolvedValue({ status: 1, hash: 'hello world' });
-    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapNative').mockResolvedValue({ wait });
+    const wait = jest.fn().mockResolvedValue({ status: 1 });
+    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapNative').mockResolvedValue({
+      hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
+      wait,
+    });
 
     expect(
       await executeSwap(
@@ -246,8 +267,38 @@ describe(executeSwap, () => {
         },
         { nonce: 1 },
       ),
-    ).toStrictEqual({ status: 1, hash: 'hello world' });
+    ).toMatchObject({ hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4' });
     expect(wait).toHaveBeenCalledWith(undefined);
+    expect(swapSpy.mock.calls).toMatchSnapshot();
+  });
+
+  it('allows to not wait for transaction inclusion', async () => {
+    const wait = jest.fn().mockResolvedValue(null);
+    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapNative').mockResolvedValue({
+      hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
+      wait,
+    });
+
+    expect(
+      await executeSwap(
+        {
+          amount: '1',
+          destAsset: Assets.BTC,
+          destChain: Chains.Bitcoin,
+          destAddress: TESTNET_BTC_ADDRESS,
+          srcAsset: Assets.ETH,
+          srcChain: Chains.Ethereum,
+        },
+        {
+          network: ChainflipNetworks.sisyphos,
+          signer: new VoidSigner('MY ADDRESS').connect({
+            getNetwork: () => Promise.resolve({ chainId: 11155111n }),
+          } as any),
+        },
+        { wait: 0 },
+      ),
+    ).toMatchObject({ hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4' });
+    expect(wait).toHaveBeenCalledWith(0);
     expect(swapSpy.mock.calls).toMatchSnapshot();
   });
 
@@ -424,8 +475,11 @@ describe(executeSwap, () => {
       ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
     },
   ])('submits a native call (%p)', async (params) => {
-    const wait = jest.fn().mockResolvedValue({ status: 1, hash: 'hello world' });
-    const callSpy = jest.spyOn(MockVault.prototype, 'xCallNative').mockResolvedValue({ wait });
+    const wait = jest.fn().mockResolvedValue({ status: 1 });
+    const callSpy = jest.spyOn(MockVault.prototype, 'xCallNative').mockResolvedValue({
+      hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
+      wait,
+    });
 
     expect(
       await executeSwap(
@@ -441,7 +495,7 @@ describe(executeSwap, () => {
         },
         {},
       ),
-    ).toStrictEqual({ status: 1, hash: 'hello world' });
+    ).toMatchObject({ hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4' });
     expect(wait).toHaveBeenCalledWith(undefined);
     expect(callSpy.mock.calls).toMatchSnapshot();
   });
@@ -472,9 +526,15 @@ describe(executeSwap, () => {
         ] as const,
     ),
   ])('submits a token call (%p)', async (params) => {
-    const wait = jest.fn().mockResolvedValue({ status: 1, hash: 'hello world' });
-    const approveSpy = jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({ wait });
-    const callSpy = jest.spyOn(MockVault.prototype, 'xCallToken').mockResolvedValue({ wait });
+    const wait = jest.fn().mockResolvedValue({ status: 1 });
+    const approveSpy = jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({
+      hash: '0x69e038ca41d2c7902c00f708afa52c1c8d8f9a779003979c814809d39fa6b9db',
+      wait,
+    });
+    const callSpy = jest.spyOn(MockVault.prototype, 'xCallToken').mockResolvedValue({
+      hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
+      wait,
+    });
     const allowanceSpy = jest
       .spyOn(MockERC20.prototype, 'allowance')
       .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
@@ -493,7 +553,7 @@ describe(executeSwap, () => {
         },
         {},
       ),
-    ).toStrictEqual({ status: 1, hash: 'hello world' });
+    ).toMatchObject({ hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4' });
     expect(wait).toHaveBeenCalledWith(undefined);
     expect(callSpy).toHaveBeenCalled();
     expect(callSpy.mock.calls).toMatchSnapshot();
