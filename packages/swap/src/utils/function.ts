@@ -1,4 +1,5 @@
 import { Chain, chainConstants } from '@/shared/enums';
+import * as rpc from '@/shared/rpc';
 import logger from './logger';
 import env from '../config/env';
 
@@ -85,3 +86,14 @@ export function readField(...args: any[]) {
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 /* eslint-enable @typescript-eslint/ban-types */
+
+const cachedGetSpecVersion = memoize(
+  () => rpc.getRuntimeVersion({ network: env.CHAINFLIP_NETWORK }).catch(() => ({ specVersion: 0 })),
+  6_000,
+);
+
+export const isAfterSpecVersion = async (specVersion: number) => {
+  const { specVersion: currentSpecVersion } = await cachedGetSpecVersion();
+
+  return currentSpecVersion >= specVersion;
+};

@@ -15,6 +15,7 @@ import {
   collectMakerQuotes,
   subtractFeesFromMakerQuote,
 } from '../quoting/quotes';
+import { isAfterSpecVersion } from '../utils/function';
 import logger from '../utils/logger';
 import {
   getMinimumEgressAmount,
@@ -226,7 +227,15 @@ const quote = (io: Server) => {
         const message =
           err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';
 
-        const level = message.includes('InsufficientLiquidity') ? 'warn' : 'error';
+        let level: 'error' | 'warn' = 'error';
+        if (message.includes('InsufficientLiquidity')) {
+          if (await isAfterSpecVersion(140)) {
+            throw ServiceError.badRequest('insufficient liquidity for requested amount');
+          }
+
+          level = 'warn';
+        }
+
         logger[level]('error while collecting quotes:', err);
 
         // DEPRECATED(1.3): remove `error`

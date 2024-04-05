@@ -23,6 +23,13 @@ which it is deprecated.
   by passing `{ wait: 0 }` as `txOpts` param now. The method will return the
   transaction hash of the submitted transaction.
 
+### Fixed
+
+- `getQuote` currently responds with a 500 if there is insufficient liquidity.
+  It has been changed to a 400 because there are steps the user can take to fix
+  the error, namely change the swap input amount. The error message has been
+  changed to a more informative `insufficient liquidity for requested amount`.
+
 ## 1.3.0
 
 ### Added
