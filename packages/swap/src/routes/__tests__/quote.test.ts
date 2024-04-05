@@ -351,7 +351,7 @@ describe('server', () => {
       });
     });
 
-    it.only('gets the quote from usdc with a boost fee', async () => {
+    it('gets the quote from usdc with a boost fee', async () => {
       const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
         outputAmount: (1e18).toString(),
       });
