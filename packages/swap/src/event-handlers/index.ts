@@ -20,6 +20,7 @@ import swapEgressScheduled from './swapEgressScheduled';
 import swapExecuted from './swapExecuted';
 import swapScheduled from './swapScheduled';
 import { networkDepositReceived as networkDepositReceivedV120 } from './v120/networkDepositReceived';
+import { depositFinalised } from './v140/depositFinalised';
 import type { Block, Event } from '../gql/generated/graphql';
 import { buildHandlerMap, getDispatcher } from '../utils/handlers';
 
@@ -44,7 +45,8 @@ export const events = {
     EgressScheduled: 'BitcoinIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'BitcoinIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'BitcoinIngressEgress.CcmBroadcastRequested',
-    DepositReceived: 'BitcoinIngressEgress.DepositReceived',
+    DepositReceived: 'BitcoinIngressEgress.DepositReceived', // Renamed to DepositFinalised since spec 140
+    DepositFinalised: 'BitcoinIngressEgress.DepositFinalised',
     DepositIgnored: 'BitcoinIngressEgress.DepositIgnored',
   },
   BitcoinBroadcaster: {
@@ -55,14 +57,16 @@ export const events = {
     EgressScheduled: 'EthereumIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'EthereumIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'EthereumIngressEgress.CcmBroadcastRequested',
-    DepositReceived: 'EthereumIngressEgress.DepositReceived',
+    DepositReceived: 'BitcoinIngressEgress.DepositReceived', // Renamed to DepositFinalised since spec 140
+    DepositFinalised: 'BitcoinIngressEgress.DepositFinalised',
     DepositIgnored: 'EthereumIngressEgress.DepositIgnored',
   },
   ArbitrumIngressEgress: {
     EgressScheduled: 'ArbitrumIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'ArbitrumIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'ArbitrumIngressEgress.CcmBroadcastRequested',
-    DepositReceived: 'ArbitrumIngressEgress.DepositReceived',
+    DepositReceived: 'BitcoinIngressEgress.DepositReceived', // Renamed to DepositFinalised since spec 140
+    DepositFinalised: 'BitcoinIngressEgress.DepositFinalised',
     DepositIgnored: 'ArbitrumIngressEgress.DepositIgnored',
   },
   EthereumBroadcaster: {
@@ -77,7 +81,8 @@ export const events = {
     EgressScheduled: 'PolkadotIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'PolkadotIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'PolkadotIngressEgress.CcmBroadcastRequested',
-    DepositReceived: 'PolkadotIngressEgress.DepositReceived',
+    DepositReceived: 'BitcoinIngressEgress.DepositReceived', // Renamed to DepositFinalised since spec 140
+    DepositFinalised: 'BitcoinIngressEgress.DepositFinalised',
     DepositIgnored: 'PolkadotIngressEgress.DepositIgnored',
   },
   PolkadotBroadcaster: {
@@ -192,6 +197,13 @@ const handlers = [
         },
       ]),
     ],
+  },
+  {
+    spec: 140,
+    handlers: Object.values(Chains).map((chain) => ({
+      name: events[`${chain}IngressEgress`].DepositFinalised,
+      handler: depositFinalised,
+    })),
   },
 ];
 
