@@ -316,8 +316,8 @@ importers:
         specifier: ^5.12.1
         version: 5.12.1
       socket.io-client:
-        specifier: ^4.7.4
-        version: 4.7.4
+        specifier: ^4.7.5
+        version: 4.7.5
       supertest:
         specifier: ^6.3.4
         version: 6.3.4
@@ -8563,8 +8563,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /socket.io-client@4.7.4:
-    resolution: {integrity: sha512-wh+OkeF0rAVCrABWQBaEjLfb7DVPotMbu0cgWgyR0v6eA4EoVnAwcIeIbcdTE3GT/H3kbdLl7OoH2+asoDRIIg==}
+  /socket.io-client@4.7.5:
+    resolution: {integrity: sha512-sJ/tqHOCe7Z50JCBCXrsY3I2k03iOiUe+tj1OmKeD2lXPiGH/RUCdTZFoqVyN7l1MnpIzPrGtLcijffmeouNlQ==}
     engines: {node: '>=10.0.0'}
     dependencies:
       '@socket.io/component-emitter': 3.1.0
