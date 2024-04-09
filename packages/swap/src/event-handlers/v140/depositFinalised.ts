@@ -1,4 +1,7 @@
-import { EventHandlerArgs } from '..';
-import { networkDepositReceived } from '../v120/networkDepositReceived';
+import {
+  depositReceivedArgs as depositReceivedArgsV120,
+  networkDepositReceived,
+} from '../v120/networkDepositReceived';
 
-export const depositFinalised = (args: EventHandlerArgs) => networkDepositReceived(args);
+export const depositFinalisedArgs = depositReceivedArgsV120;
+export const depositFinalised = networkDepositReceived;
