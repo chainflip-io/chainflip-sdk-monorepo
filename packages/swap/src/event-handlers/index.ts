@@ -57,16 +57,16 @@ export const events = {
     EgressScheduled: 'EthereumIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'EthereumIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'EthereumIngressEgress.CcmBroadcastRequested',
-    DepositReceived: 'BitcoinIngressEgress.DepositReceived', // Renamed to DepositFinalised since spec 140
-    DepositFinalised: 'BitcoinIngressEgress.DepositFinalised',
+    DepositReceived: 'EthereumIngressEgress.DepositReceived', // Renamed to DepositFinalised since spec 140
+    DepositFinalised: 'EthereumIngressEgress.DepositFinalised',
     DepositIgnored: 'EthereumIngressEgress.DepositIgnored',
   },
   ArbitrumIngressEgress: {
     EgressScheduled: 'ArbitrumIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'ArbitrumIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'ArbitrumIngressEgress.CcmBroadcastRequested',
-    DepositReceived: 'BitcoinIngressEgress.DepositReceived', // Renamed to DepositFinalised since spec 140
-    DepositFinalised: 'BitcoinIngressEgress.DepositFinalised',
+    DepositReceived: 'ArbitrumIngressEgress.DepositReceived', // Renamed to DepositFinalised since spec 140
+    DepositFinalised: 'ArbitrumIngressEgress.DepositFinalised',
     DepositIgnored: 'ArbitrumIngressEgress.DepositIgnored',
   },
   EthereumBroadcaster: {
@@ -81,8 +81,8 @@ export const events = {
     EgressScheduled: 'PolkadotIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'PolkadotIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'PolkadotIngressEgress.CcmBroadcastRequested',
-    DepositReceived: 'BitcoinIngressEgress.DepositReceived', // Renamed to DepositFinalised since spec 140
-    DepositFinalised: 'BitcoinIngressEgress.DepositFinalised',
+    DepositReceived: 'PolkadotIngressEgress.DepositReceived', // Renamed to DepositFinalised since spec 140
+    DepositFinalised: 'PolkadotIngressEgress.DepositFinalised',
     DepositIgnored: 'PolkadotIngressEgress.DepositIgnored',
   },
   PolkadotBroadcaster: {
