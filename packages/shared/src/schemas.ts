@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Chain, Asset } from './enums';
+import { Chain, Asset, getInternalAssets } from './enums';
 import {
   chain,
   hexStringWithMaxByteSize,
@@ -8,15 +8,45 @@ import {
   asset,
 } from './parsers';
 
-export const quoteQuerySchema = z.object({
-  srcChain: chain,
-  srcAsset: asset,
-  destChain: chain,
-  destAsset: asset,
-  amount: numericString.transform((n) => BigInt(n)),
-  brokerCommissionBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
-  boostFeeBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
-});
+export const quoteQuerySchema = z
+  .object({
+    srcChain: chain,
+    srcAsset: asset,
+    destChain: chain,
+    destAsset: asset,
+    amount: numericString.transform((n) => BigInt(n)),
+    brokerCommissionBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
+    boostFeeBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
+  })
+  .transform((args, ctx) => {
+    const { srcAsset, destAsset } = getInternalAssets(args, false);
+
+    if (srcAsset === null) {
+      ctx.addIssue({
+        message: `invalid asset and chain combination: ${JSON.stringify({ asset: args.srcAsset, chain: args.srcChain })}`,
+        code: z.ZodIssueCode.custom,
+      });
+
+      return z.NEVER;
+    }
+
+    if (destAsset === null) {
+      ctx.addIssue({
+        message: `invalid asset and chain combination: ${JSON.stringify({ asset: args.destAsset, chain: args.destChain })}`,
+        code: z.ZodIssueCode.custom,
+      });
+
+      return z.NEVER;
+    }
+
+    return {
+      srcAsset,
+      destAsset,
+      amount: args.amount,
+      brokerCommissionBps: args.brokerCommissionBps,
+      boostFeeBps: args.boostFeeBps,
+    };
+  });
 
 export type QuoteQueryParams = z.input<typeof quoteQuerySchema>;
 export type ParsedQuoteParams = z.output<typeof quoteQuerySchema>;

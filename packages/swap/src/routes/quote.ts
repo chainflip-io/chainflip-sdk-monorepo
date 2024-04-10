@@ -1,6 +1,6 @@
 import express from 'express';
 import type { Server } from 'socket.io';
-import { Asset, Assets, Chain, Chains, getInternalAssets } from '@/shared/enums';
+import { Asset, Assets, Chain, Chains } from '@/shared/enums';
 import {
   bigintMin,
   getHundredthPipAmountFromAmount,
@@ -12,6 +12,7 @@ import env from '../config/env';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import Quoter, { type QuoteType } from '../quoting/Quoter';
 import { buildFee, estimateIngressEgressFeeAssetAmount } from '../utils/fees';
+import { isAfterSpecVersion } from '../utils/function';
 import getPoolQuote from '../utils/getPoolQuote';
 import logger from '../utils/logger';
 import { getPools } from '../utils/pools';
@@ -27,12 +28,21 @@ import { estimateSwapDuration } from '../utils/swap';
 
 const getPoolQuoteResult = resultify(getPoolQuote);
 
-const handleQuotingError = (res: express.Response, err: unknown) => {
+const handleQuotingError = async (res: express.Response, err: unknown) => {
   if (err instanceof ServiceError) throw err;
 
   const message = err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';
 
-  logger.error('error while collecting quotes:', err);
+  let level: 'error' | 'warn' = 'error';
+  if (message.includes('InsufficientLiquidity')) {
+    if (await isAfterSpecVersion(140)) {
+      throw ServiceError.badRequest('insufficient liquidity for requested amount');
+    }
+
+    level = 'warn';
+  }
+
+  logger[level]('error while collecting quotes:', err);
 
   // DEPRECATED(1.3): remove `error`
   res.status(500).json({ message, error: message });
@@ -71,7 +81,7 @@ const quoteRouter = (io: Server) => {
 
       logger.info('received a quote request', { query: req.query });
       const query = queryResult.data;
-      const { srcAsset, destAsset } = getInternalAssets(query);
+      const { srcAsset, destAsset } = queryResult.data;
 
       // detect if ingress and egress fees are exposed as gas asset amount or fee asset amount
       // https://github.com/chainflip-io/chainflip-backend/pull/4497
@@ -139,12 +149,14 @@ const quoteRouter = (io: Server) => {
         logger.info('sending pool quote', {
           USE_JIT_QUOTING: env.USE_JIT_QUOTING,
           connectedSockets: io.sockets.sockets.size,
+          success: result.success,
+          response: result.success ? result.data : result.reason,
         });
 
         if (result.success) {
           res.json({ ...result.data, quoteType: undefined });
         } else {
-          handleQuotingError(res, result.reason);
+          await handleQuotingError(res, result.reason);
         }
 
         return;
@@ -193,6 +205,12 @@ const quoteRouter = (io: Server) => {
           estimatedDurationSeconds: await estimateSwapDuration(srcAsset, destAsset),
         };
 
+        if (BigInt(response.egressAmount) < minimumEgressAmount) {
+          throw ServiceError.badRequest(
+            `egress amount (${egressAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
+          );
+        }
+
         let bestResponse: QuoteQueryResponse & { quoteType: QuoteType } = response;
 
         if (poolQuoteResult.success) {
@@ -204,12 +222,6 @@ const quoteRouter = (io: Server) => {
           if (BigInt(poolQuoteResult.data.egressAmount) > egressAmount) {
             bestResponse = poolQuoteResult.data;
           }
-        }
-
-        if (BigInt(bestResponse.egressAmount) < minimumEgressAmount) {
-          throw ServiceError.badRequest(
-            `egress amount (${egressAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
-          );
         }
 
         const { quoteType, ...quote } = bestResponse;
@@ -229,7 +241,7 @@ const quoteRouter = (io: Server) => {
           return;
         }
 
-        handleQuotingError(res, err);
+        await handleQuotingError(res, err);
       }
     }),
   );

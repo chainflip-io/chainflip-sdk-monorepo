@@ -41,7 +41,7 @@ export default z
     REDIS_URL: redisUrl.optional(),
     MAINTENANCE_MODE: optionalBoolean,
     LIQUIDITY_WARNING_THRESHOLD: optionalNumber(-5),
-    COINGECKO_API_KEY: z.string(),
+    COINGECKO_API_KEY: z.string().optional(),
     USE_JIT_QUOTING: optionalBoolean,
   })
   // eslint-disable-next-line n/no-process-env

@@ -176,21 +176,19 @@ export function isValidAssetAndChain(
   return validAssets.includes(asset);
 }
 
-export function assertIsValidAssetAndChain(
-  assetAndChain: UncheckedAssetAndChain,
-): asserts assetAndChain is AssetAndChain {
-  if (!isValidAssetAndChain(assetAndChain)) {
-    throw new Error(`invalid asset and chain combination: ${JSON.stringify(assetAndChain)}`);
-  }
-}
-
 export const readChainAssetValue = <T>(map: ChainAssetMap<T>, asset: InternalAsset): T => {
   const { chain, asset: symbol } = assetConstants[asset];
   const chainValues = map[chain];
   return chainValues[symbol as keyof typeof chainValues];
 };
 
-export function getInternalAsset(asset: UncheckedAssetAndChain) {
+export function getInternalAsset(asset: UncheckedAssetAndChain): InternalAsset;
+export function getInternalAsset(asset: UncheckedAssetAndChain, assert: true): InternalAsset;
+export function getInternalAsset(
+  asset: UncheckedAssetAndChain,
+  assert: boolean,
+): InternalAsset | null;
+export function getInternalAsset(asset: UncheckedAssetAndChain, assert = false) {
   const map: ChainAssetMap<InternalAsset> = {
     [Chains.Ethereum]: {
       [Assets.USDC]: InternalAssets.Usdc,
@@ -210,28 +208,47 @@ export function getInternalAsset(asset: UncheckedAssetAndChain) {
     },
   };
 
-  assertIsValidAssetAndChain(asset);
+  if (!isValidAssetAndChain(asset)) {
+    if (assert) {
+      throw new Error(`invalid asset and chain combination: ${JSON.stringify(asset)}`);
+    }
+
+    return null;
+  }
 
   const chain = map[asset.chain];
 
   return chain[asset.asset as keyof typeof chain] as InternalAsset;
 }
 
-export const getInternalAssets = ({
-  srcAsset,
-  srcChain,
-  destAsset,
-  destChain,
-}: {
+export function getInternalAssets(data: {
   srcAsset: Asset;
   srcChain: Chain;
   destAsset: Asset;
   destChain: Chain;
-}) => ({
-  srcAsset: getInternalAsset({ asset: srcAsset, chain: srcChain }),
-  destAsset: getInternalAsset({ asset: destAsset, chain: destChain }),
-});
-
+}): { srcAsset: InternalAsset; destAsset: InternalAsset };
+export function getInternalAssets(
+  data: { srcAsset: Asset; srcChain: Chain; destAsset: Asset; destChain: Chain },
+  assert: true,
+): { srcAsset: InternalAsset; destAsset: InternalAsset };
+export function getInternalAssets(
+  data: { srcAsset: Asset; srcChain: Chain; destAsset: Asset; destChain: Chain },
+  assert: boolean,
+): { srcAsset: InternalAsset | null; destAsset: InternalAsset | null };
+export function getInternalAssets(
+  {
+    srcAsset,
+    srcChain,
+    destAsset,
+    destChain,
+  }: { srcAsset: Asset; srcChain: Chain; destAsset: Asset; destChain: Chain },
+  assert = false,
+) {
+  return {
+    srcAsset: getInternalAsset({ asset: srcAsset, chain: srcChain }, assert),
+    destAsset: getInternalAsset({ asset: destAsset, chain: destChain }, assert),
+  };
+}
 /** not general purpose */
 type RemapKeys<T, P extends string> = {
   [K in keyof T as `${P}${K extends string ? Capitalize<K> : never}`]: T[K];
