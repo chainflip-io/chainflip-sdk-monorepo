@@ -2,7 +2,6 @@ import assert from 'assert';
 import { Side, type SwapInput } from '@/amm-addon';
 import { InternalAsset, getAssetAndChain } from '@/shared/enums';
 import { Leg as MarketMakerLeg } from './schemas';
-import { assertUnreachable } from '../utils/function';
 import { SwapRateArgs } from '../utils/statechain';
 
 type BaseAsset = Exclude<InternalAsset, 'Usdc'>;
@@ -44,12 +43,10 @@ export default class Leg {
       normalizedBaseAsset = this.quoteAsset;
     } else if (this.baseAsset !== 'Usdc') {
       normalizedBaseAsset = this.baseAsset;
-    } else {
-      return assertUnreachable('invalid leg');
     }
 
     return {
-      base_asset: getAssetAndChain(normalizedBaseAsset),
+      base_asset: getAssetAndChain(normalizedBaseAsset!),
       quote_asset: getAssetAndChain(normalizedQuoteAsset),
       amount: this.amount.toString(),
       side,
