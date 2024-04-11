@@ -60,6 +60,7 @@ export default class Quoter {
 
       socket.on('quote_response', (message) => {
         const result = marketMakerResponseSchema.safeParse(message);
+        logger.log('quote_response', JSON.stringify(message));
 
         if (!result.success) {
           logger.warn(
@@ -84,9 +85,12 @@ export default class Quoter {
     return new Promise((resolve) => {
       let sub: Subscription;
 
+      let timer: ReturnType<typeof setTimeout>;
+
       const complete = () => {
-        sub.unsubscribe();
         resolve([...clientsReceivedQuotes.values()]);
+        sub.unsubscribe();
+        clearTimeout(timer);
       };
 
       sub = this.quotes$
@@ -96,7 +100,7 @@ export default class Quoter {
           if (clientsReceivedQuotes.size === connectedClients) complete();
         });
 
-      setTimeout(complete, env.QUOTE_TIMEOUT);
+      timer = setTimeout(complete, env.QUOTE_TIMEOUT);
     });
   }
 
