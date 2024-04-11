@@ -5,7 +5,7 @@ import { io, Socket } from 'socket.io-client';
 import { setTimeout as sleep } from 'timers/promises';
 import { promisify } from 'util';
 import env from '@/swap/config/env';
-import prisma from '../../client';
+import prisma, { Pool } from '../../client';
 import authenticate from '../authenticate';
 import Quoter from '../Quoter';
 import { MarketMakerQuote, MarketMakerRawQuote } from '../schemas';
@@ -13,11 +13,85 @@ import { MarketMakerQuote, MarketMakerRawQuote } from '../schemas';
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
 describe(Quoter, () => {
+  let oldEnv: typeof env;
+  let quoter: Quoter;
+  let connectClient: (name: string) => Promise<{
+    sendQuote: (quote: MarketMakerRawQuote) => MarketMakerQuote;
+  }>;
+  let server: Server;
+  const sockets: Socket[] = [];
+
+  beforeEach(async () => {
+    await prisma.$queryRaw`TRUNCATE TABLE private."MarketMaker" CASCADE`;
+    oldEnv = { ...env };
+    server = new Server().use(authenticate).listen(0);
+
+    quoter = new Quoter(server);
+
+    connectClient = async (name: string) => {
+      const { publicKey, privateKey } = await generateKeyPairAsync('ed25519');
+      await prisma.marketMaker.create({
+        data: {
+          name,
+          publicKey: publicKey.export({ format: 'pem', type: 'spki' }).toString(),
+        },
+      });
+
+      const { port } = server['httpServer'].address();
+      const timestamp = Date.now();
+
+      const socket = io(`http://localhost:${port}`, {
+        auth: {
+          client_version: '1',
+          market_maker_id: name,
+          timestamp,
+          signature: crypto
+            .sign(null, Buffer.from(`${name}${timestamp}`, 'utf8'), privateKey)
+            .toString('base64'),
+        },
+      });
+
+      await new Promise<void>((resolve, reject) => {
+        sleep(500).then(() => reject(new Error('socket did not connect')));
+        socket.on('connect', resolve);
+      });
+
+      sockets.push(socket);
+
+      return {
+        sendQuote(quote: MarketMakerRawQuote) {
+          socket.emit('quote_response', quote);
+
+          expect(socket.connected).toBe(true);
+
+          return {
+            request_id: quote.request_id,
+            legs: quote.legs.map((leg) => leg.map(([tick, amount]) => [tick, BigInt(amount)])),
+          } as MarketMakerQuote;
+        },
+      };
+    };
+  });
+
+  afterEach(async () => {
+    Object.assign(env, oldEnv);
+    await promisify(server.close.bind(server))();
+    await Promise.all(
+      sockets.splice(0).map(
+        (socket) =>
+          new Promise<unknown>((resolve) => {
+            socket.on('disconnect', resolve);
+            socket.disconnect();
+          }),
+      ),
+    );
+  });
+
   describe('constructor', () => {
     it('ignores malformed quote responses', () => {
       const fakeServer = { on: jest.fn() };
 
-      const quoter = new Quoter(fakeServer as unknown as Server);
+      const mockQuoter = new Quoter(fakeServer as unknown as Server);
 
       expect(fakeServer.on).toHaveBeenCalledWith('connection', expect.any(Function));
 
@@ -25,7 +99,7 @@ describe(Quoter, () => {
 
       const socket = { on: jest.fn(), data: { marketMaker: 'MM' } };
       const next = jest.fn();
-      quoter['quotes$'].subscribe(next);
+      mockQuoter['quotes$'].subscribe(next);
 
       handler(socket as any);
 
@@ -39,80 +113,6 @@ describe(Quoter, () => {
   });
 
   describe(Quoter.prototype['collectMakerQuotes'], () => {
-    let oldEnv: typeof env;
-    let quoter: Quoter;
-    let connectClient: (name: string) => Promise<{
-      sendQuote: (quote: MarketMakerRawQuote) => MarketMakerQuote;
-    }>;
-    let server: Server;
-    const sockets: Socket[] = [];
-
-    beforeEach(async () => {
-      await prisma.$queryRaw`TRUNCATE TABLE private."MarketMaker" CASCADE`;
-      oldEnv = { ...env };
-      server = new Server().use(authenticate).listen(0);
-
-      quoter = new Quoter(server);
-
-      connectClient = async (name: string) => {
-        const { publicKey, privateKey } = await generateKeyPairAsync('ed25519');
-        await prisma.marketMaker.create({
-          data: {
-            name,
-            publicKey: publicKey.export({ format: 'pem', type: 'spki' }).toString(),
-          },
-        });
-
-        const { port } = server['httpServer'].address();
-        const timestamp = Date.now();
-
-        const socket = io(`http://localhost:${port}`, {
-          auth: {
-            client_version: '1',
-            market_maker_id: name,
-            timestamp,
-            signature: crypto
-              .sign(null, Buffer.from(`${name}${timestamp}`, 'utf8'), privateKey)
-              .toString('base64'),
-          },
-        });
-
-        await new Promise<void>((resolve, reject) => {
-          sleep(500).then(() => reject(new Error('socket did not connect')));
-          socket.on('connect', resolve);
-        });
-
-        sockets.push(socket);
-
-        return {
-          sendQuote(quote: MarketMakerRawQuote) {
-            socket.emit('quote_response', quote);
-
-            expect(socket.connected).toBe(true);
-
-            return {
-              request_id: quote.request_id,
-              legs: quote.legs.map((leg) => leg.map(([tick, amount]) => [tick, BigInt(amount)])),
-            } as MarketMakerQuote;
-          },
-        };
-      };
-    });
-
-    afterEach(async () => {
-      Object.assign(env, oldEnv);
-      await promisify(server.close.bind(server))();
-      await Promise.all(
-        sockets.splice(0).map(
-          (socket) =>
-            new Promise<unknown>((resolve) => {
-              socket.on('disconnect', resolve);
-              socket.disconnect();
-            }),
-        ),
-      );
-    });
-
     it('returns an empty array if expectedQuotes is 0', async () => {
       expect(await quoter['collectMakerQuotes']('id')).toEqual([]);
     });
@@ -162,6 +162,31 @@ describe(Quoter, () => {
       const quote2 = mm2.sendQuote({ request_id: id, legs: [[[0, '200']]] });
       // no need to advance timers because setTimeout is never called
       expect(await promise).toEqual([quote2, quote1]);
+    });
+  });
+
+  describe(Quoter.prototype.getQuote, () => {
+    it('gets the quote for a single leg', async () => {
+      quoter['createId'] = () => 'id';
+      const { sendQuote } = await connectClient('marketMaker');
+      const quote = quoter.getQuote('Usdc', 'Flip', 1_000_000n, [
+        { liquidityFeeHundredthPips: 0 } as Pool,
+      ]);
+      sendQuote({ request_id: 'id', legs: [[[0, (1_000_000).toString()]]] });
+
+      expect(await quote).toEqual({
+        intermediateAmount: null,
+        outputAmount: 998999n,
+        includedFees: [
+          {
+            type: 'NETWORK',
+            chain: 'Ethereum',
+            asset: 'USDC',
+            amount: '1000',
+          },
+        ],
+        quoteType: 'market_maker',
+      });
     });
   });
 });

@@ -55,7 +55,7 @@ export default class Leg {
 
   toSwapInput(): SwapInput {
     return {
-      side: this.getSide() === 'BUY' ? Side.Buy : Side.Sell,
+      side: Side.Sell,
       amount: this.amount,
       limitOrders: [],
     };

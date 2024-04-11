@@ -6,7 +6,7 @@ import { findPrice, type SwapInput } from '@/amm-addon';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
 import { InternalAsset } from '@/shared/enums';
 import { getHundredthPipAmountFromAmount } from '@/shared/functions';
-import { ParsedQuoteParams, SwapFee } from '@/shared/schemas';
+import { SwapFee } from '@/shared/schemas';
 import { QuotingSocket } from './authenticate';
 import Leg from './Leg';
 import {
@@ -50,7 +50,10 @@ export const approximateIntermediateOutput = async (asset: InternalAsset, amount
 export default class Quoter {
   private readonly quotes$ = new Subject<Quote>();
 
-  constructor(private readonly io: Server) {
+  constructor(
+    private readonly io: Server,
+    private createId: () => string = randomUUID,
+  ) {
     io.on('connection', (socket: QuotingSocket) => {
       logger.info(`market maker "${socket.data.marketMaker}" connected`);
 
@@ -60,7 +63,6 @@ export default class Quoter {
 
       socket.on('quote_response', (message) => {
         const result = marketMakerResponseSchema.safeParse(message);
-        logger.log('quote_response', JSON.stringify(message));
 
         if (!result.success) {
           logger.warn(
@@ -104,13 +106,13 @@ export default class Quoter {
     });
   }
 
-  async quoteLegs(legs: [Leg]): Promise<[bigint]>;
-  async quoteLegs(legs: [Leg, Leg]): Promise<[bigint, bigint]>;
-  async quoteLegs(legs: [Leg, Leg | null]): Promise<[bigint, bigint | null]>;
-  async quoteLegs([leg1, leg2]: [Leg] | [Leg, Leg | null]): Promise<
+  private async quoteLegs(legs: [Leg]): Promise<[bigint]>;
+  private async quoteLegs(legs: [Leg, Leg]): Promise<[bigint, bigint]>;
+  private async quoteLegs(legs: [Leg, Leg | null]): Promise<[bigint, bigint | null]>;
+  private async quoteLegs([leg1, leg2]: [Leg] | [Leg, Leg | null]): Promise<
     [bigint] | [bigint, bigint | null]
   > {
-    const requestId = randomUUID();
+    const requestId = this.createId();
 
     const requestLegs = [leg1.toMarketMakerJSON()] as
       | [MarketMakerLeg]
@@ -144,10 +146,10 @@ export default class Quoter {
     return Promise.all(results);
   }
 
-  async getBestQuote(
-    quoteRequest: ParsedQuoteParams & { amount: bigint },
+  async getQuote(
     srcAsset: InternalAsset,
     destAsset: InternalAsset,
+    swapInputAmount: bigint,
     pools: Pool[],
   ) {
     const networkFee = getPoolsNetworkFeeHundredthPips(env.CHAINFLIP_NETWORK);
@@ -155,8 +157,6 @@ export default class Quoter {
     let intermediateAmount: bigint | null = null;
     let outputAmount: bigint;
     let networkFeeUsdc: bigint | null = null;
-
-    const swapInputAmount = quoteRequest.amount;
 
     const fees: SwapFee[] = [];
 
@@ -170,8 +170,8 @@ export default class Quoter {
 
       if (destAsset === 'Usdc') {
         networkFeeUsdc = getHundredthPipAmountFromAmount(outputAmount, networkFee);
+        outputAmount -= networkFeeUsdc!;
       }
-      outputAmount -= networkFeeUsdc!;
     } else {
       let approximateUsdcAmount = await approximateIntermediateOutput(
         srcAsset,

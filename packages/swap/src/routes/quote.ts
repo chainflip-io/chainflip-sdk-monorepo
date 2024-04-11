@@ -165,12 +165,7 @@ const quoteRouter = (io: Server) => {
       try {
         const start = performance.now();
 
-        const bestQuote = await quoter.getBestQuote(
-          { ...query, amount: swapInputAmount },
-          srcAsset,
-          destAsset,
-          pools,
-        );
+        const bestQuote = await quoter.getQuote(srcAsset, destAsset, swapInputAmount, pools);
 
         const lowLiquidityWarning = await checkPriceWarning({
           srcAsset,
