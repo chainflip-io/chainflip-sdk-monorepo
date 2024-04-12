@@ -82,7 +82,9 @@ impl Task for AMM {
             return Err(to_napi_error("Invalid pool fee"));
         }
 
-        let initial_sqrt_price = match args.side.to_sold_pair() {
+        let side = args.side;
+
+        let initial_sqrt_price = match side.to_sold_pair() {
             Pairs::Base => MAX_SQRT_PRICE,
             Pairs::Quote => MIN_SQRT_PRICE,
         };
@@ -96,13 +98,13 @@ impl Task for AMM {
             let amount = bigint_to_u256(amount)?;
 
             pool_state
-                .collect_and_mint_limit_order(&(id as i32), Side::Buy, *tick, amount)
+                .collect_and_mint_limit_order(&(id as i32), !side, *tick, amount)
                 .map_err(to_napi_error)?;
         }
 
         let amount = bigint_to_u256(&args.amount)?;
 
-        Ok(pool_state.swap(args.side, amount, None))
+        Ok(pool_state.swap(side, amount, None))
     }
 
     fn resolve(

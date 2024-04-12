@@ -44,7 +44,7 @@ export const approximateIntermediateOutput = async (asset: InternalAsset, amount
 
   if (typeof price !== 'number') return null;
 
-  return BigInt(new BigNumber(amount).times(price).toFixed(0));
+  return BigInt(new BigNumber(amount).times(price).shiftedBy(-2).toFixed(0));
 };
 
 export default class Quoter {
@@ -193,7 +193,9 @@ export default class Quoter {
       if (
         quotes[1] === null ||
         // if there is more than a 1% difference between the two quotes
-        percentDiff(approximateUsdcAmount!.toString(), quotes[0].toString()).gt(1)
+        percentDiff((approximateUsdcAmount! + networkFeeUsdc!).toString(), quotes[0].toString()).gt(
+          1,
+        )
       ) {
         networkFeeUsdc = getHundredthPipAmountFromAmount(quotes[0], networkFee);
         quotes[0] -= networkFeeUsdc;

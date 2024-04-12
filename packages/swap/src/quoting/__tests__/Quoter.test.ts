@@ -1,4 +1,5 @@
 /* eslint-disable dot-notation */
+import BigNumber from 'bignumber.js';
 import * as crypto from 'crypto';
 import { Server } from 'socket.io';
 import { io, Socket } from 'socket.io-client';
@@ -6,17 +7,37 @@ import { setTimeout as sleep } from 'timers/promises';
 import { promisify } from 'util';
 import env from '@/swap/config/env';
 import prisma, { Pool } from '../../client';
+import { getAssetPrice } from '../../pricing';
 import authenticate from '../authenticate';
 import Quoter from '../Quoter';
 import { MarketMakerQuote, MarketMakerRawQuote } from '../schemas';
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
+const serializeBigInt = (k: string, v: unknown) => (typeof v === 'bigint' ? v.toString() : v);
+
+jest.mock('../../utils/statechain', () => ({
+  getSwapRate: jest.fn((args) =>
+    Promise.reject(new Error(`unhandled getSwapRate(${JSON.stringify(args, serializeBigInt)})`)),
+  ),
+}));
+
+jest.mock('../../pricing');
+
+function toAtomicUnits(amount: number, decimals: number, output?: 'string'): string;
+function toAtomicUnits(amount: number, decimals: number, output: 'bigint'): bigint;
+function toAtomicUnits(amount: number, decimals: number, output: string | bigint = 'string') {
+  const amt = new BigNumber(amount).shiftedBy(decimals).toFixed();
+
+  return output === 'string' ? amt : BigInt(amt);
+}
+
 describe(Quoter, () => {
   let oldEnv: typeof env;
   let quoter: Quoter;
   let connectClient: (name: string) => Promise<{
     sendQuote: (quote: MarketMakerRawQuote) => MarketMakerQuote;
+    socket: Socket;
   }>;
   let server: Server;
   const sockets: Socket[] = [];
@@ -59,6 +80,7 @@ describe(Quoter, () => {
       sockets.push(socket);
 
       return {
+        socket,
         sendQuote(quote: MarketMakerRawQuote) {
           socket.emit('quote_response', quote);
 
@@ -125,6 +147,7 @@ describe(Quoter, () => {
     });
 
     it('returns an array of quotes if expectedQuotes is received', async () => {
+      env.QUOTE_TIMEOUT = 10_000;
       const { sendQuote } = await connectClient('marketMaker');
       const id = crypto.randomUUID();
       const promise = quoter['collectMakerQuotes'](id);
@@ -154,6 +177,7 @@ describe(Quoter, () => {
     });
 
     it('eagerly returns after all expected quotes are received', async () => {
+      env.QUOTE_TIMEOUT = 10_000;
       const mm1 = await connectClient('marketMaker');
       const mm2 = await connectClient('marketMaker2');
       const id = crypto.randomUUID();
@@ -166,23 +190,162 @@ describe(Quoter, () => {
   });
 
   describe(Quoter.prototype.getQuote, () => {
-    it('gets the quote for a single leg', async () => {
+    const ONE_USDC = toAtomicUnits(1, 6, 'bigint');
+    const ONE_FLIP = toAtomicUnits(1, 18, 'bigint');
+    const ONE_BTC = toAtomicUnits(1, 8, 'bigint');
+
+    it('gets the quote for a single leg (USDC => FLIP)', async () => {
       quoter['createId'] = () => 'id';
       const { sendQuote } = await connectClient('marketMaker');
-      const quote = quoter.getQuote('Usdc', 'Flip', 1_000_000n, [
+      const quote = quoter.getQuote('Usdc', 'Flip', ONE_USDC, [
         { liquidityFeeHundredthPips: 0 } as Pool,
       ]);
-      sendQuote({ request_id: 'id', legs: [[[0, (1_000_000).toString()]]] });
+      sendQuote({ request_id: 'id', legs: [[[-260483, ONE_FLIP.toString()]]] });
 
       expect(await quote).toEqual({
         intermediateAmount: null,
-        outputAmount: 998999n,
+        outputAmount: 204942885815213259n,
         includedFees: [
           {
             type: 'NETWORK',
             chain: 'Ethereum',
             asset: 'USDC',
             amount: '1000',
+          },
+        ],
+        quoteType: 'market_maker',
+      });
+    });
+
+    it('gets the quote for a single leg (FLIP => USDC)', async () => {
+      quoter['createId'] = () => 'id';
+      const { sendQuote } = await connectClient('marketMaker');
+      const quote = quoter.getQuote('Flip', 'Usdc', ONE_FLIP, [
+        { liquidityFeeHundredthPips: 0 } as Pool,
+      ]);
+      sendQuote({ request_id: 'id', legs: [[[-260483, (ONE_USDC * 5n).toString()]]] });
+
+      expect(await quote).toEqual({
+        intermediateAmount: null,
+        outputAmount: 4869653n,
+        includedFees: [
+          {
+            type: 'NETWORK',
+            chain: 'Ethereum',
+            asset: 'USDC',
+            amount: '4874',
+          },
+        ],
+        quoteType: 'market_maker',
+      });
+    });
+
+    it('gets the quote for a single leg (BTC => USDC)', async () => {
+      quoter['createId'] = () => 'id';
+      const { sendQuote } = await connectClient('marketMaker');
+      const quote = quoter.getQuote('Btc', 'Usdc', ONE_BTC, [
+        { liquidityFeeHundredthPips: 0 } as Pool,
+      ]);
+      sendQuote({ request_id: 'id', legs: [[[65636, (ONE_USDC * 75_000n).toString()]]] });
+
+      expect(await quote).toEqual({
+        intermediateAmount: null,
+        outputAmount: 70787770203n,
+        includedFees: [
+          {
+            type: 'NETWORK',
+            chain: 'Ethereum',
+            asset: 'USDC',
+            amount: '70858628',
+          },
+        ],
+        quoteType: 'market_maker',
+      });
+    });
+
+    it('gets the quote for two legs (BTC => USDC => FLIP)', async () => {
+      jest.mocked(getAssetPrice).mockResolvedValueOnce(70_000.0);
+      const ids = ['id2', 'id1'];
+      quoter['createId'] = () => ids.pop() as string;
+      const { sendQuote, socket } = await connectClient('marketMaker');
+
+      const quotes: Record<string, MarketMakerRawQuote> = {
+        id1: {
+          request_id: 'id1',
+          legs: [
+            [[65636, (ONE_USDC * 75_000n).toString()]], // BTC => USDC
+            [[-260483, (ONE_FLIP * 15_000n).toString()]], // USDC => FLIP
+          ],
+        },
+        id2: {
+          request_id: 'id2',
+          legs: [
+            [[-260483, (ONE_FLIP * 15_000n).toString()]], // USDC => FLIP
+          ],
+        },
+      };
+
+      socket.on('quote_request', (req) => {
+        sendQuote(quotes[req.request_id]);
+      });
+
+      const quote = quoter.getQuote('Btc', 'Flip', ONE_BTC, [
+        { liquidityFeeHundredthPips: 0 } as Pool,
+        { liquidityFeeHundredthPips: 1000 } as Pool,
+      ]);
+
+      expect(await quote).toEqual({
+        intermediateAmount: 70787770203n,
+        outputAmount: 14507449905826984626132n,
+        includedFees: [
+          {
+            amount: '14521971877704689315',
+            asset: 'FLIP',
+            chain: 'Ethereum',
+            type: 'LIQUIDITY',
+          },
+          {
+            type: 'NETWORK',
+            chain: 'Ethereum',
+            asset: 'USDC',
+            amount: '70858628',
+          },
+        ],
+        quoteType: 'market_maker',
+      });
+    });
+
+    it('gets the quote for two legs in one round trip (BTC => USDC => FLIP)', async () => {
+      jest.mocked(getAssetPrice).mockResolvedValueOnce(70_787.0);
+      quoter['createId'] = () => 'id';
+      const { sendQuote } = await connectClient('marketMaker');
+      const quote = quoter.getQuote('Btc', 'Flip', ONE_BTC, [
+        { liquidityFeeHundredthPips: 0 } as Pool,
+        { liquidityFeeHundredthPips: 1000 } as Pool,
+      ]);
+      sendQuote({
+        request_id: 'id',
+        legs: [
+          [[65636, (ONE_USDC * 75_000n).toString()]], // BTC => USDC
+          [[-260483, (ONE_FLIP * 15_000n).toString()]], // USDC => FLIP
+        ],
+      });
+
+      expect(await quote).toEqual({
+        intermediateAmount: 70858628831n,
+        outputAmount: 14492784766143299590341n,
+        includedFees: [
+          {
+            amount: '14507292058201501091',
+            asset: 'FLIP',
+            chain: 'Ethereum',
+            type: 'LIQUIDITY',
+          },
+          {
+            type: 'NETWORK',
+            chain: 'Ethereum',
+            asset: 'USDC',
+            amount: '70787000',
           },
         ],
         quoteType: 'market_maker',
