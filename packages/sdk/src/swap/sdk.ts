@@ -96,13 +96,7 @@ export class SwapSDK {
 
   private async getSupportedAssets(): Promise<InternalAsset[]> {
     this.supportedAssets ??= (await getSupportedAssets(this.rpcConfig))
-      .map((asset) => {
-        try {
-          return getInternalAsset(asset as UncheckedAssetAndChain);
-        } catch {
-          return undefined;
-        }
-      })
+      .map((asset) => getInternalAsset(asset as UncheckedAssetAndChain, false))
       .filter(isNotNullish);
 
     return this.supportedAssets;

@@ -3,7 +3,7 @@ import * as crypto from 'crypto';
 import { Server } from 'http';
 import request from 'supertest';
 import * as broker from '@/shared/broker';
-import { Assets, getInternalAsset, InternalAssets } from '@/shared/enums';
+import { Assets, getInternalAssets, InternalAssets } from '@/shared/enums';
 import { environment } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
 import prisma from '../../client';
@@ -1268,15 +1268,8 @@ describe('server', () => {
 
       expect(swapDepositChannel).toMatchObject({
         id: expect.any(BigInt),
-        srcAsset: getInternalAsset({
-          asset: requestBody.srcAsset,
-          chain: requestBody.srcChain,
-        }),
+        ...getInternalAssets(requestBody),
         depositAddress: address,
-        destAsset: getInternalAsset({
-          asset: requestBody.destAsset,
-          chain: requestBody.destChain,
-        }),
         destAddress: requestBody.destAddress,
         issuedBlock,
         channelId,

@@ -15,6 +15,7 @@ import {
   chainConstants,
   Chains,
   getInternalAsset,
+  getInternalAssets,
   InternalAsset,
 } from '../enums';
 import { assertIsEvmChain, assertSignerIsConnectedToChain } from '../evm';
@@ -35,19 +36,9 @@ const encodeAddress = (chain: Chain, address: string) => {
 };
 
 export const assertIsValidSwap = (params: ExecuteSwapParams) => {
-  const internalSrcAsset = getInternalAsset({
-    chain: params.srcChain,
-    asset: params.srcAsset,
-  });
-  const internalDestAsset = getInternalAsset({
-    chain: params.destChain,
-    asset: params.destAsset,
-  });
+  const { srcAsset, destAsset } = getInternalAssets(params);
 
-  assert(
-    internalSrcAsset !== internalDestAsset,
-    `source asset and destination asset cannot be the same`,
-  );
+  assert(srcAsset !== destAsset, 'source asset and destination asset cannot be the same');
 };
 
 const getVaultContract = (chain: Chain, networkOpts: SwapNetworkOptions) => {
@@ -78,7 +69,7 @@ const swapNative = async (
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
-  const internalDestAsset = getInternalAsset({
+  const destAsset = getInternalAsset({
     chain: params.destChain,
     asset: params.destAsset,
   });
@@ -87,7 +78,7 @@ const swapNative = async (
   const transaction = await vault.xSwapNative(
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
-    assetConstants[internalDestAsset].contractId,
+    assetConstants[destAsset].contractId,
     '0x',
     { value: params.amount, ...extractOverrides(txOpts) },
   );
@@ -101,16 +92,9 @@ const swapToken = async (
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
-  const internalSrcAsset = getInternalAsset({
-    chain: params.srcChain,
-    asset: params.srcAsset,
-  });
-  const internalDestAsset = getInternalAsset({
-    chain: params.destChain,
-    asset: params.destAsset,
-  });
+  const { srcAsset, destAsset } = getInternalAssets(params);
   const { vaultContract: vault, vaultAddress } = getVaultContract(params.srcChain, networkOpts);
-  const erc20Address = getErc20Address(internalSrcAsset, networkOpts);
+  const erc20Address = getErc20Address(srcAsset, networkOpts);
 
   const { hasSufficientAllowance } = await checkAllowance(
     BigInt(params.amount),
@@ -123,7 +107,7 @@ const swapToken = async (
   const transaction = await vault.xSwapToken(
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
-    assetConstants[internalDestAsset].contractId,
+    assetConstants[destAsset].contractId,
     erc20Address,
     params.amount,
     '0x',
@@ -139,7 +123,7 @@ const callNative = async (
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
-  const internalDestAsset = getInternalAsset({
+  const destAsset = getInternalAsset({
     chain: params.destChain,
     asset: params.destAsset,
   });
@@ -148,7 +132,7 @@ const callNative = async (
   const transaction = await vault.xCallNative(
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
-    assetConstants[internalDestAsset].contractId,
+    assetConstants[destAsset].contractId,
     params.ccmMetadata.message,
     params.ccmMetadata.gasBudget,
     '0x',
@@ -164,16 +148,9 @@ const callToken = async (
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
-  const internalSrcAsset = getInternalAsset({
-    chain: params.srcChain,
-    asset: params.srcAsset,
-  });
-  const internalDestAsset = getInternalAsset({
-    chain: params.destChain,
-    asset: params.destAsset,
-  });
+  const { srcAsset, destAsset } = getInternalAssets(params);
   const { vaultContract: vault, vaultAddress } = getVaultContract(params.srcChain, networkOpts);
-  const erc20Address = getErc20Address(internalSrcAsset, networkOpts);
+  const erc20Address = getErc20Address(srcAsset, networkOpts);
 
   const { hasSufficientAllowance } = await checkAllowance(
     BigInt(params.amount),
@@ -186,7 +163,7 @@ const callToken = async (
   const transaction = await vault.xCallToken(
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
-    assetConstants[internalDestAsset].contractId,
+    assetConstants[destAsset].contractId,
     params.ccmMetadata.message,
     params.ccmMetadata.gasBudget,
     erc20Address,
