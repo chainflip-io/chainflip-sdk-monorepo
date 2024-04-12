@@ -31,9 +31,13 @@ const getPriceFromQuotesAndPool = async (leg: Leg, input: SwapInput) => {
   const { swappedAmount, remainingAmount } = await findPrice(input);
 
   if (remainingAmount !== 0n) {
-    const { outputAmount } = await getSwapRate(leg.toPoolJSON());
+    // ignoring fees from the pool
+    const { outputAmount } = await getSwapRate({
+      ...leg.toPoolJSON(),
+      amount: remainingAmount,
+    });
 
-    return remainingAmount + outputAmount;
+    return swappedAmount + outputAmount;
   }
 
   return swappedAmount;

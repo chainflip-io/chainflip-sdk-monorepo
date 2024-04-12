@@ -8,6 +8,7 @@ import { promisify } from 'util';
 import env from '@/swap/config/env';
 import prisma, { Pool } from '../../client';
 import { getAssetPrice } from '../../pricing';
+import { getSwapRate, SwapRateArgs } from '../../utils/statechain';
 import authenticate from '../authenticate';
 import Quoter from '../Quoter';
 import { MarketMakerQuote, MarketMakerRawQuote } from '../schemas';
@@ -346,6 +347,88 @@ describe(Quoter, () => {
             chain: 'Ethereum',
             asset: 'USDC',
             amount: '70787000',
+          },
+        ],
+        quoteType: 'market_maker',
+      });
+    });
+
+    it('gets the quote for two legs without a USDC estimate (BTC => USDC => FLIP)', async () => {
+      jest.mocked(getAssetPrice).mockResolvedValueOnce(undefined);
+      const ids = ['id2', 'id1'];
+      quoter['createId'] = () => ids.pop() as string;
+      const { sendQuote, socket } = await connectClient('marketMaker');
+
+      const quotes: Record<string, MarketMakerRawQuote> = {
+        id1: {
+          request_id: 'id1',
+          legs: [
+            [[65636, (ONE_USDC * 75_000n).toString()]], // BTC => USDC
+          ],
+        },
+        id2: {
+          request_id: 'id2',
+          legs: [
+            [[-260483, (ONE_FLIP * 15_000n).toString()]], // USDC => FLIP
+          ],
+        },
+      };
+
+      socket.on('quote_request', (req) => {
+        sendQuote(quotes[req.request_id]);
+      });
+
+      const quote = quoter.getQuote('Btc', 'Flip', ONE_BTC, [
+        { liquidityFeeHundredthPips: 0 } as Pool,
+        { liquidityFeeHundredthPips: 1000 } as Pool,
+      ]);
+
+      expect(await quote).toEqual({
+        intermediateAmount: 70787770203n,
+        outputAmount: 14507449905826984626132n,
+        includedFees: [
+          {
+            amount: '14521971877704689315',
+            asset: 'FLIP',
+            chain: 'Ethereum',
+            type: 'LIQUIDITY',
+          },
+          {
+            type: 'NETWORK',
+            chain: 'Ethereum',
+            asset: 'USDC',
+            amount: '70858628',
+          },
+        ],
+        quoteType: 'market_maker',
+      });
+    });
+
+    it('gets the quote for one leg with a pool supplement', async () => {
+      jest.mocked(getSwapRate).mockImplementation((args: SwapRateArgs) =>
+        Promise.resolve({
+          outputAmount: args.amount * 5n * BigInt(1e11),
+          intermediateAmount: null,
+          quoteType: 'pool',
+        }),
+      );
+
+      quoter['createId'] = () => 'id';
+      const { sendQuote } = await connectClient('marketMaker');
+      const quote = quoter.getQuote('Usdc', 'Flip', ONE_USDC, [
+        { liquidityFeeHundredthPips: 0 } as Pool,
+      ]);
+      sendQuote({ request_id: 'id', legs: [[[-260483, (ONE_FLIP / 5n).toString()]]] });
+
+      expect(await quote).toEqual({
+        intermediateAmount: null,
+        outputAmount: 212047000000000000n,
+        includedFees: [
+          {
+            type: 'NETWORK',
+            chain: 'Ethereum',
+            asset: 'USDC',
+            amount: '1000',
           },
         ],
         quoteType: 'market_maker',
