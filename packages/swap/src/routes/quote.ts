@@ -143,7 +143,7 @@ const quoteRouter = (io: Server) => {
 
       swapInputAmount -= firstLegPoolFee;
 
-      if (!env.USE_JIT_QUOTING || io.sockets.sockets.size === 0) {
+      if (!quoter.canQuote()) {
         const result = await poolQuote;
 
         logger.info('sending pool quote', {
@@ -232,11 +232,11 @@ const quoteRouter = (io: Server) => {
         const poolQuoteResult = await poolQuote;
 
         if (poolQuoteResult.success) {
-          res.json(poolQuoteResult.data);
+          res.json({ ...poolQuoteResult.data, quoteType: undefined });
           return;
         }
 
-        await handleQuotingError(res, err);
+        await handleQuotingError(res, poolQuoteResult.reason);
       }
     }),
   );

@@ -82,6 +82,10 @@ export default class Quoter {
     });
   }
 
+  canQuote() {
+    return env.USE_JIT_QUOTING && this.io.sockets.sockets.size > 0;
+  }
+
   private async collectMakerQuotes(requestId: string): Promise<MarketMakerQuote[]> {
     const connectedClients = this.io.sockets.sockets.size;
     if (connectedClients === 0) return Promise.resolve([]);

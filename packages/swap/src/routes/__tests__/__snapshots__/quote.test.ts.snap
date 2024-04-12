@@ -146,3 +146,141 @@ exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
   "lowLiquidityWarning": true,
 }
 `;
+
+exports[`server GET /quote rejects malformed requests 1`] = `
+{
+  "message": "invalid request",
+}
+`;
+
+exports[`server GET /quote with market makers returns pool quote if market maker quote is too low 1`] = `
+{
+  "egressAmount": "999950000",
+  "estimatedDurationSeconds": 54,
+  "includedFees": [
+    {
+      "amount": "2000000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "1001001",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "98000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "50000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
+}
+`;
+
+exports[`server GET /quote with market makers returns the market maker quotes 1`] = `
+{
+  "egressAmount": "998950000",
+  "estimatedDurationSeconds": 54,
+  "includedFees": [
+    {
+      "amount": "2000000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "98000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "50000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+    {
+      "amount": "1000000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+  ],
+}
+`;
+
+exports[`server GET /quote with market makers returns the pool quote 1`] = `
+{
+  "egressAmount": "999950000",
+  "estimatedDurationSeconds": 54,
+  "includedFees": [
+    {
+      "amount": "2000000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "1001001",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "98000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "50000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
+}
+`;
+
+exports[`server GET /quote with market makers returns the pool quote if the quoter rejects 1`] = `
+{
+  "egressAmount": "999950000",
+  "estimatedDurationSeconds": 54,
+  "includedFees": [
+    {
+      "amount": "2000000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "1001001",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "98000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "50000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
+}
+`;
