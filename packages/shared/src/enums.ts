@@ -188,7 +188,7 @@ export function getInternalAsset(
   asset: UncheckedAssetAndChain,
   assert: boolean,
 ): InternalAsset | null;
-export function getInternalAsset(asset: UncheckedAssetAndChain, assert = false) {
+export function getInternalAsset(asset: UncheckedAssetAndChain, assert = true) {
   const map: ChainAssetMap<InternalAsset> = {
     [Chains.Ethereum]: {
       [Assets.USDC]: InternalAssets.Usdc,
@@ -242,7 +242,7 @@ export function getInternalAssets(
     destAsset,
     destChain,
   }: { srcAsset: Asset; srcChain: Chain; destAsset: Asset; destChain: Chain },
-  assert = false,
+  assert = true,
 ) {
   return {
     srcAsset: getInternalAsset({ asset: srcAsset, chain: srcChain }, assert),
