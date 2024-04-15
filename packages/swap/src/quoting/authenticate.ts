@@ -26,11 +26,7 @@ function assert(condition: unknown, message: string): asserts condition {
 
 const parseKey = (key: string) => {
   try {
-    return crypto.createPublicKey({
-      key: Buffer.from(key),
-      format: 'pem',
-      type: 'spki',
-    });
+    return crypto.createPublicKey({ key: Buffer.from(key), format: 'pem', type: 'spki' });
   } catch {
     throw new Error('invalid public key');
   }
@@ -44,7 +40,7 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
 
     const auth = result.data;
     const timeElapsed = Date.now() - auth.timestamp;
-    assert(timeElapsed < 10000 && timeElapsed >= 0, 'invalid timestamp');
+    assert(timeElapsed < 30_000 && timeElapsed >= 30_000, 'invalid timestamp');
 
     const marketMaker = await prisma.marketMaker.findUnique({
       where: { name: auth.market_maker_id },

@@ -1,4 +1,4 @@
-from quoter import Quoter
+from quoting_client import QuotingClient
 import sys, getopt, asyncio
 from typing import Optional
 
@@ -8,7 +8,7 @@ def print_and_flush(*args):
     sys.stdout.flush()
 
 
-class MockQuoter(Quoter):
+class MockQuoter(QuotingClient):
     def on_connect(self):
         print_and_flush("connected")
 
