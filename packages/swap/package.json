@@ -59,7 +59,7 @@
     "axios": "^1.6.8",
     "bignumber.js": "^9.1.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.1",
+    "dotenv": "^16.4.5",
     "ethers": "^6.11.1",
     "express": "^4.19.2",
     "graphql-request": "^6.1.0",
