@@ -133,6 +133,9 @@ The client receives the reponse and emits the following `quote_response` event:
 
 #### Double leg
 
+Quoting server emits the following quote_request event to sell $FLIP for $USDC
+and buy $USDT with $USDC:
+
 ```jsonc
 {
   "request_id": "018ee1da-e21f-7f93-a214-1f0fc465843e",
