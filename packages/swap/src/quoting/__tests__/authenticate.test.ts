@@ -45,7 +45,7 @@ describe(authenticate, () => {
     expect(next).toHaveBeenCalledWith(new Error('invalid auth'));
   });
 
-  it.each([[-10001, 1000]])('rejects invalid timestamps', async (diff) => {
+  it.each([[-30001, 30000]])('rejects invalid timestamps', async (diff) => {
     await authenticate(
       {
         handshake: {

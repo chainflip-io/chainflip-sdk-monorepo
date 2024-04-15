@@ -40,7 +40,7 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
 
     const auth = result.data;
     const timeElapsed = Date.now() - auth.timestamp;
-    assert(timeElapsed < 30_000 && timeElapsed >= 30_000, 'invalid timestamp');
+    assert(timeElapsed < 30_000 && timeElapsed >= -30_000, 'invalid timestamp');
 
     const marketMaker = await prisma.marketMaker.findUnique({
       where: { name: auth.market_maker_id },
