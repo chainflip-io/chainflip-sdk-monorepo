@@ -141,8 +141,6 @@ const quoteRouter = (io: Server) => {
 
       includedFees.push(buildFee(srcAsset, 'LIQUIDITY', firstLegPoolFee));
 
-      swapInputAmount -= firstLegPoolFee;
-
       if (!quoter.canQuote()) {
         const result = await poolQuote;
 
@@ -161,6 +159,8 @@ const quoteRouter = (io: Server) => {
 
         return;
       }
+
+      swapInputAmount -= firstLegPoolFee;
 
       try {
         const start = performance.now();

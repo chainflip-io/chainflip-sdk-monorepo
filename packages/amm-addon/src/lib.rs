@@ -120,6 +120,6 @@ impl Task for AMM {
 }
 
 #[napi]
-fn find_price(args: SwapInput) -> AsyncTask<AMM> {
+fn swap(args: SwapInput) -> AsyncTask<AMM> {
     AsyncTask::new(AMM { init: args })
 }

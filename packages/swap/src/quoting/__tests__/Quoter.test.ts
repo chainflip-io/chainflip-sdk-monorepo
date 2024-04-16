@@ -5,12 +5,13 @@ import { Server } from 'socket.io';
 import { io, Socket } from 'socket.io-client';
 import { setTimeout as sleep } from 'timers/promises';
 import { promisify } from 'util';
+import { assetConstants } from '@/shared/enums';
 import env from '@/swap/config/env';
-import prisma, { Pool } from '../../client';
+import prisma, { InternalAsset, Pool } from '../../client';
 import { getAssetPrice } from '../../pricing';
 import { getSwapRate, SwapRateArgs } from '../../utils/statechain';
 import authenticate from '../authenticate';
-import Quoter from '../Quoter';
+import Quoter, { approximateIntermediateOutput } from '../Quoter';
 import { MarketMakerQuote, MarketMakerRawQuote } from '../schemas';
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
@@ -25,10 +26,10 @@ jest.mock('../../utils/statechain', () => ({
 
 jest.mock('../../pricing');
 
-function toAtomicUnits(amount: number, decimals: number, output?: 'string'): string;
-function toAtomicUnits(amount: number, decimals: number, output: 'bigint'): bigint;
-function toAtomicUnits(amount: number, decimals: number, output: string | bigint = 'string') {
-  const amt = new BigNumber(amount).shiftedBy(decimals).toFixed();
+function toAtomicUnits(amount: number, asset: InternalAsset, output?: 'string'): string;
+function toAtomicUnits(amount: number, asset: InternalAsset, output: 'bigint'): bigint;
+function toAtomicUnits(amount: number, asset: InternalAsset, output: string | bigint = 'string') {
+  const amt = new BigNumber(amount).shiftedBy(assetConstants[asset].decimals).toFixed(0);
 
   return output === 'string' ? amt : BigInt(amt);
 }
@@ -191,9 +192,11 @@ describe(Quoter, () => {
   });
 
   describe(Quoter.prototype.getQuote, () => {
-    const ONE_USDC = toAtomicUnits(1, 6, 'bigint');
-    const ONE_FLIP = toAtomicUnits(1, 18, 'bigint');
-    const ONE_BTC = toAtomicUnits(1, 8, 'bigint');
+    const ONE_USDC = toAtomicUnits(1, 'Usdc', 'bigint');
+    const ONE_FLIP = toAtomicUnits(1, 'Flip', 'bigint');
+    const ONE_BTC = toAtomicUnits(1, 'Btc', 'bigint');
+    const ONE_DOT = toAtomicUnits(1, 'Dot', 'bigint');
+    const ONE_USDT = toAtomicUnits(1, 'Usdt', 'bigint');
 
     it('gets the quote for a single leg (USDC => FLIP)', async () => {
       quoter['createId'] = () => 'id';
@@ -312,6 +315,58 @@ describe(Quoter, () => {
             amount: '70858628',
           },
         ],
+        quoteType: 'market_maker',
+      });
+    });
+
+    it('gets the quote for two legs (DOT => USDC => USDT)', async () => {
+      jest.mocked(getAssetPrice).mockResolvedValueOnce(6.5);
+      const ids = ['id2', 'id1'];
+      quoter['createId'] = () => ids.pop() as string;
+      const { sendQuote, socket } = await connectClient('marketMaker');
+
+      const quotes: Record<string, MarketMakerRawQuote> = {
+        id1: {
+          request_id: 'id1',
+          legs: [
+            [[-73540, (ONE_USDC * 65_000n).toString()]], // DOT => USDC
+            [[0, (ONE_USDT * 65_000n).toString()]], // USDC => USDT
+          ],
+        },
+        id2: {
+          request_id: 'id2',
+          legs: [
+            [[0, (ONE_USDT * 65_000n).toString()]], // USDC => USDT
+          ],
+        },
+      };
+
+      socket.on('quote_request', (req) => {
+        sendQuote(quotes[req.request_id]);
+      });
+
+      const quote = quoter.getQuote('Dot', 'Usdt', ONE_DOT * 10_000n, [
+        { liquidityFeeHundredthPips: 0 } as Pool,
+        { liquidityFeeHundredthPips: 0 } as Pool,
+      ]);
+
+      expect(await quote).toEqual({
+        includedFees: [
+          {
+            amount: '0',
+            asset: 'USDT',
+            chain: 'Ethereum',
+            type: 'LIQUIDITY',
+          },
+          {
+            amount: '64026249',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'NETWORK',
+          },
+        ],
+        intermediateAmount: 63962222785n,
+        outputAmount: 63962222784n,
         quoteType: 'market_maker',
       });
     });
@@ -435,4 +490,27 @@ describe(Quoter, () => {
       });
     });
   });
+});
+
+describe(approximateIntermediateOutput, () => {
+  it.each([
+    ['Dot', 6.5],
+    ['Usdt', 1],
+    ['Btc', 65_000],
+    ['Flip', 4],
+    ['Eth', 2_000],
+  ] as [InternalAsset, number][])(
+    'correctly approximates the USD value of %s',
+    async (asset, price) => {
+      jest.mocked(getAssetPrice).mockResolvedValueOnce(price);
+
+      const oneInAtomicUnits = toAtomicUnits(1, asset);
+
+      const actual = await approximateIntermediateOutput(asset, oneInAtomicUnits);
+
+      const expected = toAtomicUnits(price, 'Usdc', 'bigint');
+
+      expect(actual).toEqual(expected);
+    },
+  );
 });

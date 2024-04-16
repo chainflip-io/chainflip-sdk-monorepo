@@ -2,9 +2,9 @@ import BigNumber from 'bignumber.js';
 import { randomUUID } from 'crypto';
 import { Subject, Subscription, filter } from 'rxjs';
 import { Server } from 'socket.io';
-import { findPrice, type SwapInput } from '@/amm-addon';
+import { swap, type SwapInput } from '@/amm-addon';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
-import { InternalAsset } from '@/shared/enums';
+import { InternalAsset, assetConstants } from '@/shared/enums';
 import { getHundredthPipAmountFromAmount } from '@/shared/functions';
 import { SwapFee } from '@/shared/schemas';
 import { QuotingSocket } from './authenticate';
@@ -28,7 +28,7 @@ export type QuoteType = 'pool' | 'market_maker';
 type Quote = { marketMaker: string; quote: MarketMakerQuote };
 
 const getPriceFromQuotesAndPool = async (leg: Leg, input: SwapInput) => {
-  const { swappedAmount, remainingAmount } = await findPrice(input);
+  const { swappedAmount, remainingAmount } = await swap(input);
 
   if (remainingAmount !== 0n) {
     // ignoring fees from the pool
@@ -48,7 +48,12 @@ export const approximateIntermediateOutput = async (asset: InternalAsset, amount
 
   if (typeof price !== 'number') return null;
 
-  return BigInt(new BigNumber(amount).times(price).shiftedBy(-2).toFixed(0));
+  return BigInt(
+    new BigNumber(amount)
+      .times(price)
+      .shiftedBy(assetConstants.Usdc.decimals - assetConstants[asset].decimals)
+      .toFixed(0),
+  );
 };
 
 export default class Quoter {
