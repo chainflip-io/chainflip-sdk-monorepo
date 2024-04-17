@@ -1,4 +1,3 @@
-import { time, timeLog } from 'console';
 import * as crypto from 'crypto';
 import type { Server, Socket } from 'socket.io';
 import { promisify } from 'util';
