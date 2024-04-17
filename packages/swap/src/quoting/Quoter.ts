@@ -20,7 +20,7 @@ import env from '../config/env';
 import { getAssetPrice } from '../pricing';
 import { buildFee } from '../utils/fees';
 import logger from '../utils/logger';
-import { percentDiff } from '../utils/math';
+import { percentDifference } from '../utils/math';
 import { getSwapRate } from '../utils/statechain';
 
 export type QuoteType = 'pool' | 'market_maker';
@@ -55,6 +55,12 @@ export const approximateIntermediateOutput = async (asset: InternalAsset, amount
       .toFixed(0),
   );
 };
+
+export const differenceExceedsThreshold = (
+  a: bigint,
+  b: bigint,
+  tolerance = env.QUOTE_APPROXIMATION_THRESHOLD,
+) => percentDifference(a.toString(), b.toString()).gt(tolerance);
 
 export default class Quoter {
   private readonly quotes$ = new Subject<Quote>();
@@ -206,9 +212,7 @@ export default class Quoter {
       if (
         quotes[1] === null ||
         // if there is more than a 1% difference between the two quotes
-        percentDiff((approximateUsdcAmount! + networkFeeUsdc!).toString(), quotes[0].toString()).gt(
-          1,
-        )
+        differenceExceedsThreshold(approximateUsdcAmount! + networkFeeUsdc!, quotes[0])
       ) {
         networkFeeUsdc = getHundredthPipAmountFromAmount(quotes[0], networkFee);
         quotes[0] -= networkFeeUsdc;

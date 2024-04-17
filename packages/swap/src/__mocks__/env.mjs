@@ -16,4 +16,5 @@ jest.mock('../config/env', () => ({
   REDIS_URL: undefined,
   MAINTENANCE_MODE: false,
   USE_JIT_QUOTING: true,
+  QUOTE_APPROXIMATION_THRESHOLD: 1,
 }));

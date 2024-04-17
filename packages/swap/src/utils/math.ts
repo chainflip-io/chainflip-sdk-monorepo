@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 
-export const percentDiff = (expected: BigNumber.Value, actual: BigNumber.Value) => {
+export const percentDifference = (expected: BigNumber.Value, actual: BigNumber.Value) => {
   const a = new BigNumber(expected);
   const b = new BigNumber(actual);
 

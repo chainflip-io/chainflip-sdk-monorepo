@@ -43,6 +43,7 @@ export default z
     LIQUIDITY_WARNING_THRESHOLD: optionalNumber(-5),
     COINGECKO_API_KEY: z.string().optional(),
     USE_JIT_QUOTING: optionalBoolean,
+    QUOTE_APPROXIMATION_THRESHOLD: optionalNumber(0.1),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);
