@@ -284,3 +284,71 @@ exports[`server GET /quote with market makers returns the pool quote if the quot
   ],
 }
 `;
+
+exports[`server GET /quote with market makers saves a quote result 1`] = `
+{
+  "createdAt": Any<Date>,
+  "depositAmount": "100000000",
+  "destAsset": "Usdc",
+  "id": Any<Number>,
+  "poolDuration": Any<Number>,
+  "poolFees": [
+    {
+      "amount": "2000000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "990990",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "98000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "50000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
+  "poolIntermediate": null,
+  "poolOutput": "989950000",
+  "quoterDuration": Any<Number>,
+  "quoterFees": [
+    {
+      "amount": "2000000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "98000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "50000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+    {
+      "amount": "1000000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+  ],
+  "quoterIntermediate": null,
+  "quoterOutput": "998950000",
+  "srcAsset": "Flip",
+}
+`;

@@ -20,10 +20,9 @@ export default async function getPoolQuote(
   swapInputAmount: bigint,
   ingressEgressFeeIsGasAssetAmount: boolean,
   fees: SwapFee[],
-): Promise<QuoteQueryResponse & { quoteType: QuoteType }> {
+  start: number,
+): Promise<{ response: QuoteQueryResponse & { quoteType: QuoteType }; duration: number }> {
   const includedFees: SwapFee[] = [...fees];
-
-  const start = performance.now();
 
   const quote = await getSwapRate({ srcAsset, destAsset, amount: swapInputAmount });
 
@@ -72,10 +71,9 @@ export default async function getPoolQuote(
     estimatedDurationSeconds: await estimateSwapDuration(srcAsset, destAsset),
   };
 
-  logger.info('finished getting pool quote', {
-    response,
-    performance: `${(performance.now() - start).toFixed(2)} ms`,
-  });
+  const duration = performance.now() - start;
 
-  return response;
+  logger.info('finished getting pool quote', { response, duration });
+
+  return { response, duration };
 }

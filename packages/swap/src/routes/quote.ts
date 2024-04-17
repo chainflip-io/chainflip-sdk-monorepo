@@ -1,6 +1,6 @@
 import express from 'express';
 import type { Server } from 'socket.io';
-import { Asset, Assets, Chain, Chains } from '@/shared/enums';
+import { Asset, Assets, Chain, Chains, InternalAsset } from '@/shared/enums';
 import {
   bigintMin,
   getHundredthPipAmountFromAmount,
@@ -8,6 +8,7 @@ import {
 } from '@/shared/functions';
 import { QuoteQueryResponse, quoteQuerySchema, SwapFee } from '@/shared/schemas';
 import { asyncHandler } from './common';
+import prisma from '../client';
 import env from '../config/env';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import Quoter, { type QuoteType } from '../quoting/Quoter';
@@ -27,6 +28,43 @@ import ServiceError from '../utils/ServiceError';
 import { estimateSwapDuration } from '../utils/swap';
 
 const getPoolQuoteResult = resultify(getPoolQuote);
+
+const saveResult = async ({
+  depositAmount,
+  srcAsset,
+  destAsset,
+  poolInfo,
+  quoterInfo,
+}: {
+  srcAsset: InternalAsset;
+  destAsset: InternalAsset;
+  depositAmount: bigint;
+  poolInfo: { response: QuoteQueryResponse; duration: number } | null;
+  quoterInfo: { response: QuoteQueryResponse; duration: number };
+}) => {
+  if (poolInfo === null) return;
+
+  const { response: poolResult, duration: poolDuration } = poolInfo;
+  const { response: quoterResult, duration: quoterDuration } = quoterInfo;
+
+  await prisma.quoteResult
+    .create({
+      data: {
+        srcAsset,
+        destAsset,
+        depositAmount: depositAmount.toString(),
+        quoterIntermediate: quoterResult.intermediateAmount,
+        quoterOutput: quoterResult.egressAmount,
+        quoterFees: quoterResult.includedFees,
+        quoterDuration,
+        poolIntermediate: poolResult.intermediateAmount,
+        poolOutput: poolResult.egressAmount,
+        poolFees: poolResult.includedFees,
+        poolDuration,
+      },
+    })
+    .catch(() => null);
+};
 
 const handleQuotingError = async (res: express.Response, err: unknown) => {
   if (err instanceof ServiceError) throw err;
@@ -79,6 +117,8 @@ const quoteRouter = (io: Server) => {
         throw ServiceError.badRequest('invalid request');
       }
 
+      const start = performance.now();
+
       logger.info('received a quote request', { query: req.query });
       const query = queryResult.data;
       const { srcAsset, destAsset } = queryResult.data;
@@ -124,12 +164,13 @@ const quoteRouter = (io: Server) => {
         swapInputAmount -= brokerFee;
       }
 
-      const poolQuote = getPoolQuoteResult(
+      const poolQuotePromise = getPoolQuoteResult(
         srcAsset,
         destAsset,
         swapInputAmount,
         ingressEgressFeeIsGasAssetAmount,
         includedFees,
+        start,
       );
 
       const pools = await getPools(srcAsset, destAsset);
@@ -142,7 +183,7 @@ const quoteRouter = (io: Server) => {
       includedFees.push(buildFee(srcAsset, 'LIQUIDITY', firstLegPoolFee));
 
       if (!quoter.canQuote()) {
-        const result = await poolQuote;
+        const result = await poolQuotePromise;
 
         logger.info('sending pool quote', {
           USE_JIT_QUOTING: env.USE_JIT_QUOTING,
@@ -152,7 +193,7 @@ const quoteRouter = (io: Server) => {
         });
 
         if (result.success) {
-          res.json({ ...result.data, quoteType: undefined });
+          res.json({ ...result.data.response, quoteType: undefined });
         } else {
           await handleQuotingError(res, result.reason);
         }
@@ -163,8 +204,6 @@ const quoteRouter = (io: Server) => {
       swapInputAmount -= firstLegPoolFee;
 
       try {
-        const start = performance.now();
-
         const bestQuote = await quoter.getQuote(srcAsset, destAsset, swapInputAmount, pools);
 
         const lowLiquidityWarning = await checkPriceWarning({
@@ -188,7 +227,7 @@ const quoteRouter = (io: Server) => {
 
         const [minimumEgressAmount, poolQuoteResult] = await Promise.all([
           getMinimumEgressAmount(destAsset),
-          poolQuote,
+          poolQuotePromise,
         ]);
 
         const { outputAmount, ...response } = {
@@ -206,33 +245,41 @@ const quoteRouter = (io: Server) => {
           );
         }
 
+        const duration = performance.now() - start;
+
         let bestResponse: QuoteQueryResponse & { quoteType: QuoteType } = response;
 
         if (poolQuoteResult.success) {
+          const poolQuote = poolQuoteResult.data.response;
+
           logger.info('quote results', {
             new: response,
-            old: poolQuoteResult.data,
+            old: poolQuote,
           });
 
-          if (BigInt(poolQuoteResult.data.egressAmount) > egressAmount) {
-            bestResponse = poolQuoteResult.data;
+          if (BigInt(poolQuote.egressAmount) > egressAmount) {
+            bestResponse = poolQuote;
           }
         }
 
         const { quoteType, ...quote } = bestResponse;
 
-        logger.info('sending response for quote request', {
-          quoteType,
-          quote,
-          performance: `${(performance.now() - start).toFixed(2)} ms`,
-        });
+        logger.info('sending response for quote request', { quoteType, quote, duration });
 
         res.json(quote);
+
+        saveResult({
+          srcAsset,
+          destAsset,
+          depositAmount: query.amount,
+          poolInfo: poolQuoteResult.success ? poolQuoteResult.data : null,
+          quoterInfo: { response, duration },
+        });
       } catch (err) {
-        const poolQuoteResult = await poolQuote;
+        const poolQuoteResult = await poolQuotePromise;
 
         if (poolQuoteResult.success) {
-          res.json({ ...poolQuoteResult.data, quoteType: undefined });
+          res.json({ ...poolQuoteResult.data.response, quoteType: undefined });
           return;
         }
 
