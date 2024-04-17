@@ -1,4 +1,4 @@
-from quoter import Quoter
+from quoting_client import QuotingClient
 import sys, getopt, asyncio
 from typing import Optional
 
@@ -8,12 +8,26 @@ def print_and_flush(*args):
     sys.stdout.flush()
 
 
-class MockQuoter(Quoter):
+class MockQuoter(QuotingClient):
     def on_connect(self):
         print_and_flush("connected")
 
     async def on_quote_request(self, quote):
-        return ("2000000000", "1000000000000000000")
+        if quote.leg2 is not None:
+            return [
+                [
+                    (-1, str(int(1e18))),
+                ],
+                [
+                    (-1, str(int(1e18))),
+                ],
+            ]
+
+        return [
+            [
+                (-1, str(int(1e18))),
+            ]
+        ]
 
 
 async def main(argv):

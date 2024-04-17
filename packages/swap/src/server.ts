@@ -7,7 +7,7 @@ import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import openSwapDepositChannel from './handlers/openSwapDepositChannel';
 import authenticate from './quoting/authenticate';
 import { maintenanceMiddleware } from './routes/common';
-import quote from './routes/quote';
+import quoteRouter from './routes/quote';
 import swap from './routes/swap';
 import thirdPartySwap from './routes/thirdPartySwap';
 import { publicProcedure, router } from './trpc';
@@ -31,7 +31,7 @@ app.get('/healthcheck', (req, res) => {
   res.status(200).send('OK');
 });
 
-app.use('/quote', maintenanceMiddleware, quote(io));
+app.use('/quote', maintenanceMiddleware, quoteRouter(io));
 
 app.use('/trpc', maintenanceMiddleware, trpcExpress.createExpressMiddleware({ router: appRouter }));
 

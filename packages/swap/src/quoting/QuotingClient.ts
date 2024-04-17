@@ -2,15 +2,12 @@ import * as crypto from 'crypto';
 import { EventEmitter } from 'events';
 import { io, Socket } from 'socket.io-client';
 import { promisify } from 'util';
-import { z } from 'zod';
-import { marketMakerResponseSchema } from './schemas';
-import { InternalQuoteRequest } from '../schemas';
+import { MarketMakerQuoteRequest, MarketMakerRawQuote } from './schemas';
 import logger from '../utils/logger';
 
 const signAsync = promisify(crypto.sign);
 
-type RawQuoteResponse = Omit<z.input<typeof marketMakerResponseSchema>, 'id'>;
-type QuoteHandler = (quote: InternalQuoteRequest) => Promise<RawQuoteResponse>;
+export type QuoteHandler = (quote: MarketMakerQuoteRequest) => Promise<MarketMakerRawQuote>;
 
 /**
  * A reference implementation of a client that connects to the quoting service
@@ -55,9 +52,12 @@ export default class QuotingClient extends EventEmitter {
       this.emit('connected');
     });
 
-    this.socket.on('quote_request', async (quote: InternalQuoteRequest) => {
+    this.socket.on('quote_request', async (quote: MarketMakerQuoteRequest) => {
       const response = await this.quoteHandler(quote);
-      this.socket.emit('quote_response', { ...response, id: quote.id });
+      this.socket.emit('quote_response', {
+        ...response,
+        request_id: quote.request_id,
+      } as MarketMakerRawQuote);
     });
 
     this.socket.on('connect_error', async (err) => {

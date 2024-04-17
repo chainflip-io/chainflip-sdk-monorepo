@@ -1,4 +1,4 @@
-import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
+import { spawn, ChildProcessWithoutNullStreams, exec } from 'child_process';
 import * as crypto from 'crypto';
 import { on, once } from 'events';
 import { AddressInfo } from 'net';
@@ -10,13 +10,21 @@ import { QuoteQueryParams } from '@/shared/schemas';
 import { environment, swapRate } from '@/shared/tests/fixtures';
 import prisma from '../client';
 import app from '../server';
-import { getBrokerQuote } from '../utils/statechain';
+import { getSwapRate } from '../utils/statechain';
+
+const execAsync = promisify(exec);
+
+jest.mock('../pricing');
 
 jest.mock('../utils/statechain', () => ({
-  getBrokerQuote: jest.fn(),
+  getSwapRate: jest.fn().mockImplementation(() => Promise.reject(new Error('unexpected call'))),
 }));
+
 jest.mock('axios', () => ({
-  create: jest.fn(),
+  get: jest.fn(),
+  create() {
+    return this;
+  },
   post: jest.fn((url, data) => {
     if (data.method === 'cf_environment') {
       return Promise.resolve({
@@ -83,7 +91,12 @@ describe('python integration test', () => {
     server = app.listen(0);
     serverUrl = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
 
-    child = spawn('python', [
+    const exeName = await Promise.any([
+      execAsync('python --version').then(() => 'python'),
+      execAsync('python3 --version').then(() => 'python3'),
+    ]);
+
+    child = spawn(exeName, [
       path.join(__dirname, '..', '..', 'python-client', 'mock.py'),
       '--private-key',
       privateKey,
@@ -100,77 +113,51 @@ describe('python integration test', () => {
   });
 
   afterEach(async () => {
-    if (!child.killed) {
+    if (child.exitCode === null) {
       child.kill('SIGINT');
       await once(child, 'exit');
     }
     await promisify(server.close).bind(server)();
   });
 
-  it('replies to a quote request', async () => {
+  const expectMesage = async (message: string) => {
+    if (child.exitCode !== null) {
+      throw new Error('child process exited unexpectedly');
+    }
+
     await expect(
-      firstValueFrom(
-        stdout$.pipe(
-          filter((msg) => msg === 'connected'),
-          timeout(10000),
+      Promise.race([
+        firstValueFrom(
+          stdout$.pipe(
+            filter((msg) => msg === message),
+            timeout(10000),
+          ),
         ),
-      ),
-    ).resolves.toBe('connected');
+        once(child, 'close').then(() => Promise.reject(Error('child process exited unexpectedly'))),
+      ]),
+    ).resolves.toBe(message);
+  };
+
+  it('replies to a quote request', async () => {
+    await expectMesage('connected');
 
     const query = {
       srcAsset: Assets.FLIP,
       srcChain: Chains.Ethereum,
-      destAsset: Assets.ETH,
+      destAsset: Assets.USDC,
       destChain: Chains.Ethereum,
       amount: '1000000000000000000',
     } as QuoteQueryParams;
     const params = new URLSearchParams(query as Record<string, any>);
 
-    jest.mocked(getBrokerQuote).mockResolvedValueOnce({
-      id: "doesn't matter",
-      intermediateAmount: '2000000000',
-      outputAmount: '0', // this shouldn't be the result
-      quoteType: 'broker',
+    jest.mocked(getSwapRate).mockResolvedValueOnce({
+      intermediateAmount: 2000000000n,
+      outputAmount: 0n, // this shouldn't be the result
+      quoteType: 'pool',
     });
 
     const response = await fetch(`${serverUrl}/quote?${params.toString()}`);
 
-    expect(await response.json()).toEqual({
-      intermediateAmount: '1996000000',
-      egressAmount: '995999999999975000',
-      estimatedDurationSeconds: 54,
-      includedFees: [
-        {
-          amount: '2000000',
-          asset: 'FLIP',
-          chain: 'Ethereum',
-          type: 'INGRESS',
-        },
-        {
-          amount: '1996000',
-          asset: 'USDC',
-          chain: 'Ethereum',
-          type: 'NETWORK',
-        },
-        {
-          amount: '999999999998000',
-          asset: 'FLIP',
-          chain: 'Ethereum',
-          type: 'LIQUIDITY',
-        },
-        {
-          amount: '3992000',
-          asset: 'USDC',
-          chain: 'Ethereum',
-          type: 'LIQUIDITY',
-        },
-        {
-          amount: '25000',
-          asset: 'ETH',
-          chain: 'Ethereum',
-          type: 'EGRESS',
-        },
-      ],
-    });
+    expect(await response.json()).toMatchSnapshot();
   });
 });

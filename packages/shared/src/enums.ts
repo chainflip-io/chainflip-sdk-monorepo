@@ -138,12 +138,23 @@ export const chainConstants = {
 export type AssetOfChain<C extends Chain> = (typeof chainConstants)[C]['assets'][number];
 
 export type UncheckedAssetAndChain = {
-  asset: Asset | string;
-  chain: Chain | string;
+  asset: Asset;
+  chain: Chain;
 };
+
 export type AssetAndChain = {
-  [C in Chain]: { chain: C; asset: AssetOfChain<C> };
+  [C in Chain]: {
+    [A in AssetOfChain<C>]: { chain: C; asset: A };
+  }[AssetOfChain<C>];
 }[Chain];
+
+type MutablePick<T, K extends keyof T> = { -readonly [P in K]: T[P] };
+
+type AssetAndChainFor<A extends InternalAsset> = {
+  [K in A]: MutablePick<(typeof assetConstants)[K], 'chain' | 'asset'>;
+}[A];
+
+export type BaseAssetAndChain = Exclude<AssetAndChain, { chain: 'Ethereum'; asset: 'USDC' }>;
 
 export type ChainAssetMap<T> = {
   [C in Chain]: {
@@ -165,24 +176,27 @@ export function isValidAssetAndChain(
   return validAssets.includes(asset);
 }
 
-export function assertIsValidAssetAndChain(
-  assetAndChain: UncheckedAssetAndChain,
-): asserts assetAndChain is AssetAndChain {
-  if (!isValidAssetAndChain(assetAndChain)) {
-    throw new Error(`invalid asset and chain combination: ${JSON.stringify(assetAndChain)}`);
-  }
-}
-
-export const readChainAssetValue = <T>(
-  map: ChainAssetMap<T>,
-  assetAndChain: UncheckedAssetAndChain,
-): T => {
-  assertIsValidAssetAndChain(assetAndChain);
-  const chainValues = map[assetAndChain.chain];
-  return chainValues[assetAndChain.asset as keyof typeof chainValues];
+export const readChainAssetValue = <T>(map: ChainAssetMap<T>, asset: InternalAsset): T => {
+  const { chain, asset: symbol } = assetConstants[asset];
+  const chainValues = map[chain];
+  return chainValues[symbol as keyof typeof chainValues];
 };
 
-export function getInternalAsset(asset: UncheckedAssetAndChain) {
+export function getInternalAsset(asset: UncheckedAssetAndChain): InternalAsset;
+export function getInternalAsset(asset: UncheckedAssetAndChain, assert: true): InternalAsset;
+export function getInternalAsset(
+  asset: UncheckedAssetAndChain,
+  assert: boolean,
+): InternalAsset | null;
+export function getInternalAsset(asset: UncheckedAssetAndChain, assert = true) {
+  if (!isValidAssetAndChain(asset)) {
+    if (assert) {
+      throw new Error(`invalid asset and chain combination: ${JSON.stringify(asset)}`);
+    }
+
+    return null;
+  }
+
   const map: ChainAssetMap<InternalAsset> = {
     [Chains.Ethereum]: {
       [Assets.USDC]: InternalAssets.Usdc,
@@ -202,5 +216,68 @@ export function getInternalAsset(asset: UncheckedAssetAndChain) {
     },
   };
 
-  return readChainAssetValue(map, asset);
+  const chain = map[asset.chain];
+
+  return chain[asset.asset as keyof typeof chain] as InternalAsset;
+}
+
+export function getInternalAssets(data: {
+  srcAsset: Asset;
+  srcChain: Chain;
+  destAsset: Asset;
+  destChain: Chain;
+}): { srcAsset: InternalAsset; destAsset: InternalAsset };
+export function getInternalAssets(
+  data: { srcAsset: Asset; srcChain: Chain; destAsset: Asset; destChain: Chain },
+  assert: true,
+): { srcAsset: InternalAsset; destAsset: InternalAsset };
+export function getInternalAssets(
+  data: { srcAsset: Asset; srcChain: Chain; destAsset: Asset; destChain: Chain },
+  assert: boolean,
+): { srcAsset: InternalAsset | null; destAsset: InternalAsset | null };
+export function getInternalAssets(
+  {
+    srcAsset,
+    srcChain,
+    destAsset,
+    destChain,
+  }: { srcAsset: Asset; srcChain: Chain; destAsset: Asset; destChain: Chain },
+  assert = true,
+) {
+  return {
+    srcAsset: getInternalAsset({ asset: srcAsset, chain: srcChain }, assert),
+    destAsset: getInternalAsset({ asset: destAsset, chain: destChain }, assert),
+  };
+}
+/** not general purpose */
+type RemapKeys<T, P extends string> = {
+  [K in keyof T as `${P}${K extends string ? Capitalize<K> : never}`]: T[K];
+};
+
+type PrefixedAssetAndChainFor<I extends InternalAsset, P extends string> = RemapKeys<
+  AssetAndChainFor<I>,
+  P
+>;
+
+export function getAssetAndChain<const A extends InternalAsset>(
+  internalAsset: A,
+): AssetAndChainFor<A>;
+export function getAssetAndChain<const A extends InternalAsset, const T extends string>(
+  internalAsset: A,
+  prefix: T,
+): PrefixedAssetAndChainFor<A, T>;
+export function getAssetAndChain<const A extends InternalAsset, const T extends string>(
+  internalAsset: A,
+  prefix?: T,
+): AssetAndChainFor<A> | PrefixedAssetAndChainFor<A, T> {
+  const { chain, asset } = assetConstants[internalAsset];
+
+  if (prefix) {
+    return {
+      [`${prefix}Asset`]: asset,
+      [`${prefix}Chain`]: chain,
+    } as PrefixedAssetAndChainFor<A, T>;
+  }
+
+  return { chain, asset } as AssetAndChainFor<A>;
 }

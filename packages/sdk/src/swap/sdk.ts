@@ -11,9 +11,8 @@ import {
   Chains,
   ChainMap,
   InternalAsset,
-  getInternalAsset,
-  isValidAssetAndChain,
   assetConstants,
+  getInternalAsset,
 } from '@/shared/enums';
 import { assert, isNotNullish } from '@/shared/guards';
 import { Environment, RpcConfig, getEnvironment, getSupportedAssets } from '@/shared/rpc';
@@ -97,7 +96,7 @@ export class SwapSDK {
 
   private async getSupportedAssets(): Promise<InternalAsset[]> {
     this.supportedAssets ??= (await getSupportedAssets(this.rpcConfig))
-      .map((asset) => (isValidAssetAndChain(asset) ? getInternalAsset(asset) : undefined))
+      .map((asset) => getInternalAsset(asset as UncheckedAssetAndChain, false))
       .filter(isNotNullish);
 
     return this.supportedAssets;
@@ -221,7 +220,9 @@ export class SwapSDK {
   private async validateSwapAmount(asset: UncheckedAssetAndChain, amount: bigint): Promise<void> {
     const stateChainEnv = await this.getStateChainEnvironment();
 
-    const result = validateSwapAmount(stateChainEnv, asset, amount);
+    const internalAsset = getInternalAsset(asset);
+
+    const result = validateSwapAmount(stateChainEnv, internalAsset, amount);
 
     if (!result.success) throw new Error(result.reason);
   }

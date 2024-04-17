@@ -22,11 +22,16 @@ type CoingeckoId = (typeof coinGeckoIdMap)[InternalAsset];
 
 type CoingeckoPriceResponse = Record<CoingeckoId, Record<typeof COINGECKO_VS_CURRENCY, number>>;
 
-const coingeckoAxios = axios.create({
-  baseURL: 'https://pro-api.coingecko.com/api/v3',
-  timeout: 5000,
-  headers: { 'x-cg-pro-api-key': env.COINGECKO_API_KEY },
-});
+const coingeckoAxios = env.COINGECKO_API_KEY
+  ? axios.create({
+      baseURL: 'https://pro-api.coingecko.com/api/v3',
+      timeout: 5000,
+      headers: { 'x-cg-pro-api-key': env.COINGECKO_API_KEY },
+    })
+  : axios.create({
+      baseURL: 'https://api.coingecko.com/api/v3',
+      timeout: 5000,
+    });
 
 export class PriceCache {
   static TTL = 30_000;

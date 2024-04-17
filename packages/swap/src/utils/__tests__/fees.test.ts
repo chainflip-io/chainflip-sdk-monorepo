@@ -45,9 +45,9 @@ describe(calculateIncludedSwapFees, () => {
     const fees = await calculateIncludedSwapFees(
       'Eth',
       'Flip',
-      (100e18).toString(),
-      (100e6).toString(),
-      (100e18).toString(),
+      BigInt(100e18),
+      BigInt(100e6),
+      BigInt(100e18),
     );
 
     expect(fees).toMatchObject([
@@ -73,9 +73,9 @@ describe(calculateIncludedSwapFees, () => {
     const fees = await calculateIncludedSwapFees(
       'Usdc',
       'Flip',
-      (100e6).toString(),
+      BigInt(100e6),
       undefined,
-      (100e18).toString(),
+      BigInt(100e18),
     );
 
     expect(fees).toMatchObject([
@@ -96,9 +96,9 @@ describe(calculateIncludedSwapFees, () => {
     const fees = await calculateIncludedSwapFees(
       'Eth',
       'Usdc',
-      (100e18).toString(),
+      BigInt(100e18),
       undefined,
-      (99.9e6).toString(),
+      BigInt(99.9e6),
     );
 
     expect(fees).toMatchObject([
@@ -119,9 +119,9 @@ describe(calculateIncludedSwapFees, () => {
     const fees = await calculateIncludedSwapFees(
       'Usdc',
       'Usdc',
-      (100e6).toString(),
+      BigInt(100e6),
       undefined,
-      (100e6).toString(),
+      BigInt(100e6),
     );
 
     expect(fees).toMatchObject([

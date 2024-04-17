@@ -45,7 +45,7 @@ describe(authenticate, () => {
     expect(next).toHaveBeenCalledWith(new Error('invalid auth'));
   });
 
-  it.each([[-10001, 1000]])('rejects invalid timestamps', async (diff) => {
+  it.each([[-30001, 30000]])('rejects invalid timestamps', async (diff) => {
     await authenticate(
       {
         handshake: {
@@ -142,20 +142,20 @@ describe(authenticate, () => {
       .sign(null, Buffer.from(`${name}${timestamp}`, 'utf8'), privateKey)
       .toString('base64');
 
-    await authenticate(
-      {
-        handshake: {
-          auth: {
-            client_version: '1',
-            market_maker_id: name,
-            timestamp,
-            signature,
-          },
+    const socket = {
+      handshake: {
+        auth: {
+          client_version: '1',
+          market_maker_id: name,
+          timestamp,
+          signature,
         },
-      } as any,
-      next,
-    );
+      },
+    };
+
+    await authenticate(socket as any, next);
     expect(next).toHaveBeenCalledTimes(1);
     expect(next).toHaveBeenCalledWith();
+    expect((socket as any).data).toStrictEqual({ marketMaker: name });
   });
 });

@@ -1,4 +1,4 @@
-import { Chain, readChainAssetValue, UncheckedAssetAndChain } from '@/shared/enums';
+import { Chain, readChainAssetValue, InternalAsset } from '@/shared/enums';
 import { getEnvironment } from '@/shared/rpc';
 import { validateSwapAmount as validateAmount } from '@/shared/rpc/utils';
 import { memoize } from './function';
@@ -10,16 +10,13 @@ type Result = { success: true } | { success: false; reason: string };
 
 const rpcConfig = { rpcUrl: env.RPC_NODE_HTTP_URL };
 
-export const validateSwapAmount = async (
-  asset: UncheckedAssetAndChain,
-  amount: bigint,
-): Promise<Result> => {
+export const validateSwapAmount = async (asset: InternalAsset, amount: bigint): Promise<Result> => {
   const environment = await cachedGetEnvironment(rpcConfig);
 
   return validateAmount(environment, asset, amount);
 };
 
-export const getMinimumEgressAmount = async (asset: UncheckedAssetAndChain): Promise<bigint> => {
+export const getMinimumEgressAmount = async (asset: InternalAsset): Promise<bigint> => {
   const environment = await cachedGetEnvironment(rpcConfig);
 
   return readChainAssetValue(environment.ingressEgress.minimumEgressAmounts, asset);
@@ -31,13 +28,13 @@ export const getWitnessSafetyMargin = async (chain: Chain): Promise<bigint | nul
   return environment.ingressEgress.witnessSafetyMargins[chain];
 };
 
-export const getIngressFee = async (asset: UncheckedAssetAndChain): Promise<bigint | null> => {
+export const getIngressFee = async (asset: InternalAsset): Promise<bigint | null> => {
   const environment = await cachedGetEnvironment(rpcConfig);
 
   return readChainAssetValue(environment.ingressEgress.ingressFees, asset);
 };
 
-export const getEgressFee = async (asset: UncheckedAssetAndChain): Promise<bigint | null> => {
+export const getEgressFee = async (asset: InternalAsset): Promise<bigint | null> => {
   const environment = await cachedGetEnvironment(rpcConfig);
 
   return readChainAssetValue(environment.ingressEgress.egressFees, asset);

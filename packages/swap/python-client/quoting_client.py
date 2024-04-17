@@ -3,39 +3,52 @@ from abc import ABC, abstractmethod
 from cryptography.hazmat.primitives import serialization
 from dataclasses import dataclass
 import base64, socketio, time
-from typing import Optional, Dict, Tuple
+from typing import Optional, Dict, Tuple, TypedDict, List, Literal
+
+AssetAndChain = TypedDict("AssetAndChain", {"asset": str, "chain": str})
+
+LimitOrder = Tuple[int, str]
+
+QuoteResponse = TypedDict(
+    "QuoteResponse", {"request_id": str, "legs": List[List[LimitOrder]]}
+)
+
+Leg = TypedDict(
+    "Leg",
+    {
+        "amount": str,
+        "base_asset": AssetAndChain,
+        "quote_asset": AssetAndChain,
+        "side": Literal["BUY", "SELL"],
+    },
+)
 
 
 @dataclass
-class Quote:
-    id: str
-    source_asset: str
-    destination_asset: str
-    deposit_amount: str
+class QuoteRequest:
+    request_id: str
+    leg1: Leg
+    leg2: Optional[Leg] = None
 
     def __init__(self, json: Dict[str, Any]):
-        self.id = json["id"]
-        self.source_asset = json["source_asset"]
-        self.destination_asset = json["destination_asset"]
-        self.deposit_amount = json["deposit_amount"]
+        self.request_id = json["request_id"]
+        self.leg1 = json["legs"][0]
+        if len(json["legs"]) > 1:
+            self.leg2 = json["legs"][1]
 
 
-class Quoter(ABC):
+class QuotingClient(ABC):
     connected = False
     sio: Optional[socketio.AsyncClient] = None
 
     @abstractmethod
-    async def on_quote_request(self, quote: Quote) -> Tuple[str, str]:
-        """
-        :param quote: Quote object
-        :return: (intermediate_amount, output_amount)
-        """
+    async def on_quote_request(self, quote: QuoteRequest) -> List[List[LimitOrder]]:
         pass
 
     def on_connect(self):
         pass
 
-    async def send_quote(self, response: Dict[str, str]):
+    async def send_quote(self, response: QuoteResponse):
         if self.connected and self.sio is not None:
             await self.sio.emit("quote_response", response)
 
@@ -56,15 +69,9 @@ class Quoter(ABC):
 
         @self.sio.event
         async def quote_request(data: Dict[str, Any]):
-            quote = Quote(data)
-            (intermediate_amount, output_amount) = await self.on_quote_request(quote)
-            await self.send_quote(
-                {
-                    "id": quote.id,
-                    "intermediate_amount": intermediate_amount,
-                    "output_amount": output_amount,
-                }
-            )
+            quote = QuoteRequest(data)
+            legs = await self.on_quote_request(quote)
+            await self.send_quote({"request_id": quote.request_id, "legs": legs})
 
         timestamp = round(time.time() * 1000)
         signature = serialization.load_pem_private_key(

@@ -1,47 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
-{
-  "egressAmount": "1991999999999975000",
-  "estimatedDurationSeconds": 54,
-  "includedFees": [
-    {
-      "amount": "2000000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "INGRESS",
-    },
-    {
-      "amount": "2994000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "NETWORK",
-    },
-    {
-      "amount": "999999999998000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "5988000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "25000",
-      "asset": "ETH",
-      "chain": "Ethereum",
-      "type": "EGRESS",
-    },
-  ],
-  "intermediateAmount": "2994000000",
-  "lowLiquidityWarning": true,
-}
-`;
-
-exports[`server gets the quote for deprecated params without the chain 1`] = `
+exports[`server GET /quote gets the quote for deprecated params without the chain 1`] = `
 {
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 54,
@@ -81,7 +40,7 @@ exports[`server gets the quote for deprecated params without the chain 1`] = `
 }
 `;
 
-exports[`server gets the quote when ingress and egress fee is returned as fee asset amount 1`] = `
+exports[`server GET /quote gets the quote when ingress and egress fee is returned as fee asset amount 1`] = `
 {
   "egressAmount": "1999250000",
   "estimatedDurationSeconds": 54,
@@ -114,7 +73,7 @@ exports[`server gets the quote when ingress and egress fee is returned as fee as
 }
 `;
 
-exports[`server gets the quote when ingress and egress fee is returned as gas asset amount 1`] = `
+exports[`server GET /quote gets the quote when ingress and egress fee is returned as gas asset amount 1`] = `
 {
   "egressAmount": "1995000000",
   "estimatedDurationSeconds": 54,
@@ -139,6 +98,185 @@ exports[`server gets the quote when ingress and egress fee is returned as gas as
     },
     {
       "amount": "5000000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
+}
+`;
+
+exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
+{
+  "egressAmount": "1999999999999975000",
+  "estimatedDurationSeconds": 54,
+  "includedFees": [
+    {
+      "amount": "2000000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "2994000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "999999999998000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "5988000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "25000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
+  "intermediateAmount": "2994000000",
+  "lowLiquidityWarning": true,
+}
+`;
+
+exports[`server GET /quote rejects malformed requests 1`] = `
+{
+  "message": "invalid request",
+}
+`;
+
+exports[`server GET /quote with market makers returns pool quote if market maker quote is too low 1`] = `
+{
+  "egressAmount": "999950000",
+  "estimatedDurationSeconds": 54,
+  "includedFees": [
+    {
+      "amount": "2000000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "1001001",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "98000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "50000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
+}
+`;
+
+exports[`server GET /quote with market makers returns the market maker quotes 1`] = `
+{
+  "egressAmount": "998950000",
+  "estimatedDurationSeconds": 54,
+  "includedFees": [
+    {
+      "amount": "2000000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "98000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "50000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+    {
+      "amount": "1000000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+  ],
+}
+`;
+
+exports[`server GET /quote with market makers returns the pool quote 1`] = `
+{
+  "egressAmount": "999950000",
+  "estimatedDurationSeconds": 54,
+  "includedFees": [
+    {
+      "amount": "2000000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "1001001",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "98000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "50000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
+}
+`;
+
+exports[`server GET /quote with market makers returns the pool quote if the quoter rejects 1`] = `
+{
+  "egressAmount": "999950000",
+  "estimatedDurationSeconds": 54,
+  "includedFees": [
+    {
+      "amount": "2000000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "1001001",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "98000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "50000",
       "asset": "USDC",
       "chain": "Ethereum",
       "type": "EGRESS",

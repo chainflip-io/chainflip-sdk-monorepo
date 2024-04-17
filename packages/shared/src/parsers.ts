@@ -9,6 +9,7 @@ import {
   Chains,
   Assets,
   isValidAssetAndChain,
+  UncheckedAssetAndChain,
 } from './enums';
 import { isString } from './guards';
 import {
@@ -104,7 +105,9 @@ export const uncheckedAssetAndChain = z.object({
   chain: z.string(),
 });
 
-export const assetAndChain = uncheckedAssetAndChain.refine(isValidAssetAndChain);
+export const assetAndChain = uncheckedAssetAndChain.refine((value) =>
+  isValidAssetAndChain(value as UncheckedAssetAndChain),
+);
 
 export const swapType = z.union([
   z

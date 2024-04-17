@@ -1,6 +1,7 @@
 import { Chain, chainConstants } from '@/shared/enums';
 import * as rpc from '@/shared/rpc';
 import logger from './logger';
+import ServiceError from './ServiceError';
 import env from '../config/env';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -96,4 +97,8 @@ export const isAfterSpecVersion = async (specVersion: number) => {
   const { specVersion: currentSpecVersion } = await cachedGetSpecVersion();
 
   return currentSpecVersion >= specVersion;
+};
+
+export const assertUnreachable = (message: string): never => {
+  throw ServiceError.internalError(message);
 };

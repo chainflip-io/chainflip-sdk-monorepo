@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import * as broker from '@/shared/broker';
-import { getInternalAsset } from '@/shared/enums';
+import { getInternalAssets } from '@/shared/enums';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';
@@ -23,10 +23,9 @@ export default async function openSwapDepositChannel(
     throw ServiceError.badRequest(`Address "${input.destAddress}" is sanctioned`);
   }
 
-  const result = await validateSwapAmount(
-    { asset: input.srcAsset, chain: input.srcChain },
-    BigInt(input.expectedDepositAmount),
-  );
+  const { srcAsset, destAsset } = getInternalAssets(input);
+
+  const result = await validateSwapAmount(srcAsset, BigInt(input.expectedDepositAmount));
 
   if (!result.success) throw ServiceError.badRequest(result.reason);
 
@@ -41,7 +40,7 @@ export default async function openSwapDepositChannel(
     env.CHAINFLIP_NETWORK,
   );
 
-  const { srcChain, srcAsset, destChain, destAsset, ccmMetadata, ...rest } = input;
+  const { expectedDepositAmount, destAddress, boostFeeBps, srcChain, ccmMetadata } = input;
 
   const chainInfo = await prisma.chainTracking.findFirst({
     where: {
@@ -62,17 +61,18 @@ export default async function openSwapDepositChannel(
       },
     },
     create: {
-      ...rest,
+      expectedDepositAmount,
+      destAddress,
       srcChain,
-      srcAsset: getInternalAsset({ asset: srcAsset, chain: srcChain }),
-      destAsset: getInternalAsset({ asset: destAsset, chain: destChain }),
+      srcAsset,
+      destAsset,
       depositAddress,
       srcChainExpiryBlock,
       estimatedExpiryAt: estimatedExpiryTime,
       ccmGasBudget: ccmMetadata?.gasBudget,
       ccmMessage: ccmMetadata?.message,
       brokerCommissionBps: 0,
-      boostFeeBps: Number(rest.boostFeeBps) || 0,
+      boostFeeBps: Number(boostFeeBps) || 0,
       openedThroughBackend: true,
       openingFeePaid: channelOpeningFee.toString(),
       ...blockInfo,

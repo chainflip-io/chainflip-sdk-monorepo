@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { InternalAsset, readChainAssetValue, assetConstants } from '@/shared/enums';
+import { InternalAsset, readChainAssetValue } from '@/shared/enums';
 import { bigintMin } from '@/shared/functions';
 import { u128, unsignedInteger } from '@/shared/parsers';
 import { Environment, getEnvironment } from '@/shared/rpc';
@@ -68,10 +68,7 @@ const getEgressFeeAtBlock = async (blockHash: string, asset: InternalAsset): Pro
   const environment = await getCachedEnvironmentAtBlock(blockHash);
   if (!environment) return 0n;
 
-  const nativeFee = readChainAssetValue(
-    environment.ingressEgress.egressFees,
-    assetConstants[asset],
-  );
+  const nativeFee = readChainAssetValue(environment.ingressEgress.egressFees, asset);
 
   return getCachedAssetAmountAtBlock(asset, nativeFee ?? 0n, blockHash);
 };

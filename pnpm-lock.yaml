@@ -99,6 +99,18 @@ importers:
         specifier: ^17.7.2
         version: 17.7.2
 
+  packages/amm-addon:
+    devDependencies:
+      '@napi-rs/cli':
+        specifier: ^2.18.0
+        version: 2.18.0
+
+  packages/amm-addon/npm/darwin-x64: {}
+
+  packages/amm-addon/npm/linux-x64-gnu: {}
+
+  packages/amm-addon/npm/win32-x64-msvc: {}
+
   packages/cli:
     dependencies:
       '@polkadot/util':
@@ -2474,6 +2486,12 @@ packages:
 
   /@kamilkisiela/fast-url-parser@1.1.4:
     resolution: {integrity: sha512-gbkePEBupNydxCelHCESvFSFM8XPh1Zs/OAVRW/rKpEqPAl5PbOM90Si8mv9bvnR53uPD2s/FiRxdvSejpRJew==}
+    dev: true
+
+  /@napi-rs/cli@2.18.0:
+    resolution: {integrity: sha512-lfSRT7cs3iC4L+kv9suGYQEezn5Nii7Kpu+THsYVI0tA1Vh59LH45p4QADaD7hvIkmOz79eEGtoKQ9nAkAPkzA==}
+    engines: {node: '>= 10'}
+    hasBin: true
     dev: true
 
   /@noble/curves@1.2.0:

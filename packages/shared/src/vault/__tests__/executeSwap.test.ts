@@ -321,7 +321,7 @@ describe(executeSwap, () => {
         },
         { nonce: 1 },
       ),
-    ).rejects.toThrow('invalid asset and chain combination: {"chain":"Ethereum","asset":"BTC"}');
+    ).rejects.toThrow('invalid asset and chain combination: {"asset":"BTC","chain":"Ethereum"}');
   });
 
   it('rejects if destination asset and chain are not valid', async () => {
@@ -343,7 +343,7 @@ describe(executeSwap, () => {
         },
         { nonce: 1 },
       ),
-    ).rejects.toThrow('invalid asset and chain combination: {"chain":"Bitcoin","asset":"DOT"}');
+    ).rejects.toThrow('invalid asset and chain combination: {"asset":"DOT","chain":"Bitcoin"}');
   });
 
   it('rejects if source asset and destination asset is the same', async () => {

@@ -7,12 +7,22 @@ import { SwapFee } from '@/shared/schemas';
 import { getPools } from '@/swap/utils/pools';
 import env from '../config/env';
 
+export const buildFee = (
+  internalAsset: InternalAsset,
+  type: SwapFee['type'],
+  amount: bigint,
+): SwapFee => {
+  const { asset, chain } = assetConstants[internalAsset];
+
+  return { type, chain, asset, amount: amount.toString() };
+};
+
 export const calculateIncludedSwapFees = async (
   srcAsset: InternalAsset,
   destAsset: InternalAsset,
-  swapInputAmount: string,
-  intermediateAmount: string | undefined,
-  swapOutputAmount: string,
+  swapInputAmount: bigint,
+  intermediateAmount: bigint | null | undefined,
+  swapOutputAmount: bigint,
 ): Promise<SwapFee[]> => {
   const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(env.CHAINFLIP_NETWORK);
   if (srcAsset === 'Usdc' && destAsset === 'Usdc') {
@@ -55,7 +65,7 @@ export const calculateIncludedSwapFees = async (
 
   if (destAsset === InternalAssets.Usdc) {
     const stableAmountBeforeNetworkFee =
-      (BigInt(swapOutputAmount) * BigInt(ONE_IN_HUNDREDTH_PIPS)) /
+      (swapOutputAmount * BigInt(ONE_IN_HUNDREDTH_PIPS)) /
       BigInt(ONE_IN_HUNDREDTH_PIPS - networkFeeHundredthPips);
 
     return [
@@ -64,7 +74,7 @@ export const calculateIncludedSwapFees = async (
         chain: assetConstants[InternalAssets.Usdc].chain,
         asset: assetConstants[InternalAssets.Usdc].asset,
         amount: getHundredthPipAmountFromAmount(
-          String(stableAmountBeforeNetworkFee),
+          stableAmountBeforeNetworkFee,
           networkFeeHundredthPips,
         ).toString(),
       },
