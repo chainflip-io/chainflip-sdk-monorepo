@@ -44,6 +44,7 @@ export default z
     COINGECKO_API_KEY: z.string().optional(),
     USE_JIT_QUOTING: optionalBoolean,
     QUOTE_APPROXIMATION_THRESHOLD: optionalNumber(0.1),
+    STEALTH_MODE: optionalBoolean.default('true'),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);
