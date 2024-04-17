@@ -1,7 +1,5 @@
 import { createInterface } from 'node:readline/promises';
-import { ChainflipNetworks } from '@/shared/enums';
 import { chainflipNetwork } from '@/shared/parsers';
-import { ChainflipNetwork } from './enums';
 
 export const askForPrivateKey = async () => {
   const rl = createInterface({ input: process.stdin, output: process.stdout });

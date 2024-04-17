@@ -3,7 +3,7 @@ import { Server } from 'http';
 import request from 'supertest';
 import RpcClient from '@/shared/node-apis/RpcClient';
 import { environment, swapRate } from '@/shared/tests/fixtures';
-import prisma, { QuoteResult } from '../../client';
+import prisma from '../../client';
 import env from '../../config/env';
 import { checkPriceWarning } from '../../pricing/checkPriceWarning';
 import Quoter from '../../quoting/Quoter';
