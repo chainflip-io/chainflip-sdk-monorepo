@@ -20,16 +20,16 @@ export const getAssetData = (
   network: ChainflipNetwork,
   env: Pick<Environment, 'swapping' | 'ingressEgress'>,
 ) => {
-  const constants = assetConstants[asset];
+  const assetConstant = assetConstants[asset];
 
   return {
     chainflipId: asset,
-    asset: constants.asset,
-    chain: constants.chain,
+    asset: assetConstant.asset,
+    chain: assetConstant.chain,
     contractAddress: !isGasAsset(asset) ? getTokenContractAddress(asset, network) : undefined,
-    decimals: constants.decimals,
-    name: constants.name,
-    symbol: constants.asset,
+    decimals: assetConstant.decimals,
+    name: assetConstant.name,
+    symbol: assetConstant.asset,
     isMainnet: !isTestnet(network),
     minimumSwapAmount: readChainAssetValue(
       env.ingressEgress.minimumDepositAmounts,

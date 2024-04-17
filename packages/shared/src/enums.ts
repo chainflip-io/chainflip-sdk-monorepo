@@ -189,6 +189,14 @@ export function getInternalAsset(
   assert: boolean,
 ): InternalAsset | null;
 export function getInternalAsset(asset: UncheckedAssetAndChain, assert = true) {
+  if (!isValidAssetAndChain(asset)) {
+    if (assert) {
+      throw new Error(`invalid asset and chain combination: ${JSON.stringify(asset)}`);
+    }
+
+    return null;
+  }
+
   const map: ChainAssetMap<InternalAsset> = {
     [Chains.Ethereum]: {
       [Assets.USDC]: InternalAssets.Usdc,
@@ -207,14 +215,6 @@ export function getInternalAsset(asset: UncheckedAssetAndChain, assert = true) {
       [Assets.ETH]: InternalAssets.ArbEth,
     },
   };
-
-  if (!isValidAssetAndChain(asset)) {
-    if (assert) {
-      throw new Error(`invalid asset and chain combination: ${JSON.stringify(asset)}`);
-    }
-
-    return null;
-  }
 
   const chain = map[asset.chain];
 
