@@ -183,6 +183,9 @@ const quoteRouter = (io: Server) => {
       includedFees.push(buildFee(srcAsset, 'LIQUIDITY', firstLegPoolFee));
 
       const canGetQuote = quoter.canQuote();
+      let responseSent = false;
+
+      // for stealth mode always send the pool quote
       if (env.STEALTH_MODE || !canGetQuote) {
         const result = await poolQuotePromise;
 
@@ -199,7 +202,8 @@ const quoteRouter = (io: Server) => {
           await handleQuotingError(res, result.reason);
         }
 
-        if (!env.STEALTH_MODE || !canGetQuote) return;
+        responseSent = true;
+        if (!canGetQuote) return;
       }
 
       swapInputAmount -= firstLegPoolFee;
@@ -267,7 +271,7 @@ const quoteRouter = (io: Server) => {
 
         logger.info('sending response for quote request', { quoteType, quote, duration });
 
-        if (!env.STEALTH_MODE) res.json(quote);
+        if (!responseSent) res.json(quote);
 
         saveResult({
           srcAsset,
