@@ -202,8 +202,8 @@ const quoteRouter = (io: Server) => {
           await handleQuotingError(res, result.reason);
         }
 
-        responseSent = true;
         if (!canGetQuote) return;
+        responseSent = true;
       }
 
       swapInputAmount -= firstLegPoolFee;
