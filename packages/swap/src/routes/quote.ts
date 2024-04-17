@@ -284,11 +284,11 @@ const quoteRouter = (io: Server) => {
         const poolQuoteResult = await poolQuotePromise;
 
         if (poolQuoteResult.success) {
-          res.json({ ...poolQuoteResult.data.response, quoteType: undefined });
+          if (!responseSent) res.json({ ...poolQuoteResult.data.response, quoteType: undefined });
           return;
         }
 
-        await handleQuotingError(res, poolQuoteResult.reason);
+        if (!responseSent) await handleQuotingError(res, poolQuoteResult.reason);
       }
     }),
   );
