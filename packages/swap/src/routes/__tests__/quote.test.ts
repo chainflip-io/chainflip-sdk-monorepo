@@ -54,7 +54,7 @@ describe('server', () => {
   let oldEnv: typeof env;
 
   beforeAll(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE public."Pool" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE public."Pool", private."QuoteResult" CASCADE`;
     await prisma.pool.createMany({
       data: [
         {
@@ -145,6 +145,47 @@ describe('server', () => {
 
         expect(status).toBe(200);
         expect(body).toMatchSnapshot();
+      });
+
+      it('saves a quote result', async () => {
+        jest.mocked(Quoter.prototype.canQuote).mockReturnValueOnce(true);
+
+        const params = new URLSearchParams({
+          srcChain: 'Ethereum',
+          srcAsset: 'FLIP',
+          destChain: 'Ethereum',
+          destAsset: 'USDC',
+          amount: (100e6).toString(),
+        });
+
+        jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+          outputAmount: BigInt(990000000n),
+        });
+
+        jest.mocked(Quoter.prototype.getQuote).mockResolvedValueOnce({
+          outputAmount: 999000000n,
+          intermediateAmount: null,
+          includedFees: [
+            {
+              type: 'NETWORK',
+              chain: 'Ethereum',
+              asset: 'USDC',
+              amount: '1000000',
+            },
+          ],
+          quoteType: 'market_maker',
+        });
+
+        await request(server).get(`/quote?${params.toString()}`);
+
+        const quoteResult = await prisma.quoteResult.findFirst();
+
+        expect(quoteResult).toMatchSnapshot({
+          id: expect.any(Number),
+          poolDuration: expect.any(Number),
+          quoterDuration: expect.any(Number),
+          createdAt: expect.any(Date),
+        });
       });
 
       it('returns pool quote if market maker quote is too low', async () => {

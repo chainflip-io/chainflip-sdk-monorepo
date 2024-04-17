@@ -17,4 +17,5 @@ jest.mock('../config/env', () => ({
   MAINTENANCE_MODE: false,
   USE_JIT_QUOTING: true,
   QUOTE_APPROXIMATION_THRESHOLD: 1,
+  STEALTH_MODE: false,
 }));
