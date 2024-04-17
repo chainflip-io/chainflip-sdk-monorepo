@@ -18,7 +18,6 @@ RUN pnpm install --frozen-lockfile
 ARG node_env
 ENV NODE_ENV=$node_env
 
-RUN pnpm --filter amm-addon build
 RUN pnpm --filter swap build
 
 FROM node:20.11.0-bullseye-slim
