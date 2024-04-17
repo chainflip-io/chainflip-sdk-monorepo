@@ -1,8 +1,10 @@
+import { time, timeLog } from 'console';
 import * as crypto from 'crypto';
 import type { Server, Socket } from 'socket.io';
 import { promisify } from 'util';
 import { z } from 'zod';
 import prisma from '../client';
+import logger from '../utils/logger';
 
 const verifyAsync = promisify(crypto.verify);
 
@@ -41,6 +43,8 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
     const auth = result.data;
     const timeElapsed = Date.now() - auth.timestamp;
     assert(timeElapsed < 30_000 && timeElapsed >= -30_000, 'invalid timestamp');
+
+    logger.info('time elapsed from handshake timestamp', { timeElapsed });
 
     const marketMaker = await prisma.marketMaker.findUnique({
       where: { name: auth.market_maker_id },
