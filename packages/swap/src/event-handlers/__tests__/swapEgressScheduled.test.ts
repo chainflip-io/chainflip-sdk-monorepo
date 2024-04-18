@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { InternalAssets } from '@/shared/enums';
 import { environment, swapRate } from '@/shared/tests/fixtures';
-import { DOT_ADDRESS, createDepositChannel, swapEgressScheduledMock, ETH_ADDRESS } from './utils';
+import { DOT_ADDRESS, createDepositChannel, swapEgressScheduledMock } from './utils';
 import prisma from '../../client';
 import swapEgressScheduled from '../swapEgressScheduled';
 
@@ -169,72 +169,6 @@ describe(swapEgressScheduled, () => {
       expect.anything(),
       expect.objectContaining({ method: 'cf_swap_rate' }),
     );
-  });
-
-  it('updates an existing swap when the egress asset is not the native asset', async () => {
-    const { swapId } = event.args;
-
-    await prisma.egress.create({
-      data: {
-        chain: event.args.egressId[0].__kind,
-        nativeId: BigInt(event.args.egressId[1]),
-        amount: '1234567890',
-        scheduledAt: new Date(block.timestamp),
-        scheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
-      },
-    });
-
-    // store a new swap intent to initiate a new swap
-    const swapDepositChannel = await createDepositChannel({
-      swaps: {
-        create: {
-          nativeId: BigInt(swapId),
-          depositAmount: '10000000000',
-          swapInputAmount: '10000000000',
-          swapOutputAmount: '10000000000',
-          depositReceivedAt: new Date(block.timestamp - 12000),
-          depositReceivedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
-          swapExecutedAt: new Date(block.timestamp - 6000),
-          swapExecutedBlockIndex: `${block.height}-${event.indexInBlock}`,
-          srcAsset: InternalAssets.Eth,
-          destAsset: InternalAssets.Usdc,
-          destAddress: ETH_ADDRESS,
-          type: 'SWAP',
-        },
-      },
-    });
-
-    await prisma.$transaction((tx) =>
-      swapEgressScheduled({
-        block: block as any,
-        event: event as any,
-        prisma: tx,
-      }),
-    );
-
-    const swap = await prisma.swap.findFirstOrThrow({
-      where: { swapDepositChannelId: swapDepositChannel.id },
-      include: {
-        egress: {
-          select: {
-            amount: true,
-            scheduledAt: true,
-            chain: true,
-          },
-        },
-        fees: true,
-      },
-    });
-
-    expect(swap).toMatchSnapshot({
-      id: expect.any(BigInt),
-      egressId: expect.any(BigInt),
-      createdAt: expect.any(Date),
-      updatedAt: expect.any(Date),
-      swapDepositChannelId: expect.any(BigInt),
-      fees: [{ id: expect.any(BigInt), swapId: expect.any(BigInt) }],
-    });
-    expect(jest.mocked(axios.post).mock.calls.map((call) => call[1])).toMatchSnapshot();
   });
 
   it('>v120 uses the fee from the event and creates an egress record', async () => {

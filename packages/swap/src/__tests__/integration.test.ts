@@ -30,8 +30,8 @@ jest.mock('axios', () => ({
       return Promise.resolve({
         data: environment({
           maxSwapAmount: null,
-          ingressFee: '0xF4240', // 1000000
-          egressFee: '0x61A8', // 25000
+          ingressFee: '2000000',
+          egressFee: '50000',
         }),
       });
     }

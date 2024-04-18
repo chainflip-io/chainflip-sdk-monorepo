@@ -1,10 +1,6 @@
 import { bigintMin } from '@/shared/functions';
 import { QuoteQueryResponse, SwapFee } from '@/shared/schemas';
-import {
-  buildFee,
-  calculateIncludedSwapFees,
-  estimateIngressEgressFeeAssetAmount,
-} from '@/swap/utils/fees';
+import { buildFee, calculateIncludedSwapFees } from '@/swap/utils/fees';
 import { estimateSwapDuration } from '@/swap/utils/swap';
 import logger from './logger';
 import { getMinimumEgressAmount, getEgressFee } from './rpc';
@@ -18,7 +14,6 @@ export default async function getPoolQuote(
   srcAsset: InternalAsset,
   destAsset: InternalAsset,
   swapInputAmount: bigint,
-  ingressEgressFeeIsGasAssetAmount: boolean,
   fees: SwapFee[],
   start: number,
 ): Promise<{ response: QuoteQueryResponse & { quoteType: QuoteType }; duration: number }> {
@@ -45,9 +40,6 @@ export default async function getPoolQuote(
   let egressFee = await getEgressFee(destAsset);
   if (egressFee == null) {
     throw ServiceError.internalError(`could not determine egress fee for ${destAsset}`);
-  }
-  if (ingressEgressFeeIsGasAssetAmount) {
-    egressFee = await estimateIngressEgressFeeAssetAmount(egressFee, destAsset);
   }
   egressFee = bigintMin(egressFee, BigInt(quote.outputAmount));
   includedFees.push(buildFee(destAsset, 'EGRESS', egressFee));
