@@ -29,6 +29,8 @@ which it is deprecated.
   It has been changed to a 400 because there are steps the user can take to fix
   the error, namely change the swap input amount. The error message has been
   changed to a more informative `insufficient liquidity for requested amount`.
+- `getQuote` and `requestSwapDepositChannel` reject requests with amounts larger
+  than the largest value of a 128 bit integer.
 
 ## 1.3.0
 

@@ -3,6 +3,8 @@ import { Environment } from './index';
 
 type Result = { success: true } | { success: false; reason: string };
 
+const MAX_SWAP_AMOUNT = 2n ** 128n - 1n;
+
 export const validateSwapAmount = (
   env: Environment,
   asset: InternalAsset,
@@ -17,7 +19,7 @@ export const validateSwapAmount = (
     };
   }
 
-  const maxAmount = readChainAssetValue(env.swapping.maximumSwapAmounts, asset);
+  const maxAmount = readChainAssetValue(env.swapping.maximumSwapAmounts, asset) ?? MAX_SWAP_AMOUNT;
 
   if (maxAmount != null && amount > maxAmount) {
     return {

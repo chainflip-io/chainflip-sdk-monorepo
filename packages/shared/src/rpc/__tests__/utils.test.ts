@@ -29,18 +29,17 @@ describe(validateSwapAmount, () => {
   });
 
   it('succeeds if the amount is within range', () => {
-    const result = validateSwapAmount(env, 'Eth', 100000000000000000n);
-
-    expect(result).toEqual({ success: true });
+    expect(validateSwapAmount(env, 'Eth', 100000000000000000n)).toEqual({ success: true });
+    expect(validateSwapAmount(env, 'Flip', 2n ** 128n - 1n)).toEqual({ success: true });
   });
 
-  it('succeeds when their is no upper limit', () => {
-    const result = validateSwapAmount(
-      env,
-      'Flip',
-      1000000000000000000000000000000000000000000000000000000000000000000000000000n,
-    );
+  it('fails when it exceeds u128::MAX', () => {
+    const result = validateSwapAmount(env, 'Flip', 2n ** 128n);
 
-    expect(result).toEqual({ success: true });
+    expect(result).toEqual({
+      success: false,
+      reason:
+        'expected amount is above maximum swap amount (340282366920938463463374607431768211455)',
+    });
   });
 });
