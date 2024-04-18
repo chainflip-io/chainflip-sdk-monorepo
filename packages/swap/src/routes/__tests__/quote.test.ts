@@ -49,6 +49,21 @@ jest.mock('axios', () => ({
 
 jest.mock('../../pricing/index');
 
+const mockRpcs = ({ ingressFee, egressFee }: { ingressFee: string; egressFee: string }) =>
+  jest.mocked(axios.post).mockImplementation((url, data: any) => {
+    if (data.method === 'cf_environment') {
+      return Promise.resolve({ data: environment({ maxSwapAmount: null, ingressFee, egressFee }) });
+    }
+
+    if (data.method === 'cf_swap_rate') {
+      return Promise.resolve({
+        data: swapRate({ output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}` }),
+      });
+    }
+
+    throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+  });
+
 describe('server', () => {
   let server: Server;
   let oldEnv: typeof env;
@@ -75,27 +90,7 @@ describe('server', () => {
     oldEnv = structuredClone(env);
     server = app.listen(0);
     jest.mocked(Quoter.prototype.canQuote).mockReturnValue(false);
-    jest.mocked(axios.post).mockImplementation((url, data: any) => {
-      if (data.method === 'cf_environment') {
-        return Promise.resolve({
-          data: environment({
-            maxSwapAmount: null,
-            ingressFee: '0xF4240', // 1000000
-            egressFee: '0x61A8', // 25000
-          }),
-        });
-      }
-
-      if (data.method === 'cf_swap_rate') {
-        return Promise.resolve({
-          data: swapRate({
-            output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
-          }),
-        });
-      }
-
-      throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
-    });
+    mockRpcs({ ingressFee: '2000000', egressFee: '50000' });
   });
 
   afterEach((cb) => {
@@ -497,6 +492,8 @@ describe('server', () => {
         outputAmount: (1e18).toString(),
       });
 
+      mockRpcs({ egressFee: '25000', ingressFee: '2000000' });
+
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
         srcAsset: 'USDC',
@@ -556,6 +553,28 @@ describe('server', () => {
     it('gets the quote from usdc with a boost fee', async () => {
       const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
         outputAmount: (1e18).toString(),
+      });
+
+      jest.mocked(axios.post).mockImplementation((url, data: any) => {
+        if (data.method === 'cf_environment') {
+          return Promise.resolve({
+            data: environment({
+              maxSwapAmount: null,
+              ingressFee: '2000000',
+              egressFee: '25000',
+            }),
+          });
+        }
+
+        if (data.method === 'cf_swap_rate') {
+          return Promise.resolve({
+            data: swapRate({
+              output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
+            }),
+          });
+        }
+
+        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
       const params = new URLSearchParams({
@@ -618,6 +637,7 @@ describe('server', () => {
       const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
         outputAmount: (1e18).toString(),
       });
+      mockRpcs({ ingressFee: '2000000', egressFee: '25000' });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -742,6 +762,7 @@ describe('server', () => {
         intermediateAmount: BigInt(2000e6),
         outputAmount: BigInt(1e18),
       });
+      mockRpcs({ ingressFee: '2000000', egressFee: '25000' });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -799,6 +820,28 @@ describe('server', () => {
         outputAmount: BigInt(2e18),
       });
 
+      jest.mocked(axios.post).mockImplementation((url, data: any) => {
+        if (data.method === 'cf_environment') {
+          return Promise.resolve({
+            data: environment({
+              maxSwapAmount: null,
+              ingressFee: '2000000',
+              egressFee: '25000',
+            }),
+          });
+        }
+
+        if (data.method === 'cf_swap_rate') {
+          return Promise.resolve({
+            data: swapRate({
+              output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
+            }),
+          });
+        }
+
+        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+      });
+
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
         srcAsset: 'FLIP',
@@ -828,40 +871,21 @@ describe('server', () => {
         outputAmount: BigInt(1e18),
       });
 
-      const params = new URLSearchParams({
-        srcAsset: 'FLIP',
-        destAsset: 'ETH',
-        amount: (1e18).toString(),
-      });
-
-      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
-
-      expect(status).toBe(200);
-      expect(body).toMatchSnapshot();
-    });
-
-    it('gets the quote when ingress and egress fee is returned as gas asset amount', async () => {
-      jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        outputAmount: BigInt(2000e6),
-      });
-
-      const rpcEnvironment = environment();
-      rpcEnvironment.result.ingress_egress.ingress_fees.Ethereum.FLIP = '0xF4240'; // 1000000
-      rpcEnvironment.result.ingress_egress.ingress_fees.Ethereum.USDC = '0xF4240'; // 1000000
-      rpcEnvironment.result.ingress_egress.egress_fees.Ethereum.FLIP = '0xF4240'; // 1000000
-      rpcEnvironment.result.ingress_egress.egress_fees.Ethereum.USDC = '0xF4240'; // 1000000
-
       jest.mocked(axios.post).mockImplementation((url, data: any) => {
         if (data.method === 'cf_environment') {
           return Promise.resolve({
-            data: rpcEnvironment,
+            data: environment({
+              maxSwapAmount: null,
+              ingressFee: '2000000',
+              egressFee: '25000',
+            }),
           });
         }
 
         if (data.method === 'cf_swap_rate') {
           return Promise.resolve({
             data: swapRate({
-              output: `0x${(BigInt(data.params[2]) * 5n).toString(16)}`,
+              output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
             }),
           });
         }
@@ -871,7 +895,7 @@ describe('server', () => {
 
       const params = new URLSearchParams({
         srcAsset: 'FLIP',
-        destAsset: 'USDC',
+        destAsset: 'ETH',
         amount: (1e18).toString(),
       });
 

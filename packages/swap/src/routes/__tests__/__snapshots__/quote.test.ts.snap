@@ -73,39 +73,6 @@ exports[`server GET /quote gets the quote when ingress and egress fee is returne
 }
 `;
 
-exports[`server GET /quote gets the quote when ingress and egress fee is returned as gas asset amount 1`] = `
-{
-  "egressAmount": "1995000000",
-  "estimatedDurationSeconds": 54,
-  "includedFees": [
-    {
-      "amount": "5000000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "INGRESS",
-    },
-    {
-      "amount": "2002002",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "NETWORK",
-    },
-    {
-      "amount": "999999999995000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "5000000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "EGRESS",
-    },
-  ],
-}
-`;
-
 exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
 {
   "egressAmount": "1999999999999975000",

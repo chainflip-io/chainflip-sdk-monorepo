@@ -5,7 +5,6 @@ import { u128, unsignedInteger } from '@/shared/parsers';
 import { Environment, getEnvironment } from '@/shared/rpc';
 import { egressId } from '@/swap/event-handlers/common';
 import { CacheMap } from '@/swap/utils/dataStructures';
-import { estimateIngressEgressFeeAssetAmount } from '@/swap/utils/fees';
 import env from '../config/env';
 import type { EventHandlerArgs } from '.';
 
@@ -41,36 +40,14 @@ const getCachedEnvironmentAtBlock = async (blockHash: string): Promise<Environme
   return environment;
 };
 
-const assetAmountByNativeAmountAndBlockHashCache = new CacheMap<string, Promise<bigint>>(60_000);
-
-const getCachedAssetAmountAtBlock = async (
-  asset: InternalAsset,
-  nativeAmount: bigint,
+const getEgressFeeAtBlock = async (
   blockHash: string,
-): Promise<bigint> => {
-  const cacheKey = `${asset}-${nativeAmount.toString()}-${blockHash}`;
-  const cached = assetAmountByNativeAmountAndBlockHashCache.get(cacheKey);
-  if (cached) return cached;
-
-  const rate = estimateIngressEgressFeeAssetAmount(nativeAmount, asset, blockHash).catch(
-    (e: Error) => {
-      assetAmountByNativeAmountAndBlockHashCache.delete(blockHash);
-      throw e;
-    },
-  );
-
-  assetAmountByNativeAmountAndBlockHashCache.set(cacheKey, rate);
-
-  return rate;
-};
-
-const getEgressFeeAtBlock = async (blockHash: string, asset: InternalAsset): Promise<bigint> => {
+  asset: InternalAsset,
+): Promise<bigint | null> => {
   const environment = await getCachedEnvironmentAtBlock(blockHash);
-  if (!environment) return 0n;
+  if (!environment) return null;
 
-  const nativeFee = readChainAssetValue(environment.ingressEgress.egressFees, asset);
-
-  return getCachedAssetAmountAtBlock(asset, nativeFee ?? 0n, blockHash);
+  return readChainAssetValue(environment.ingressEgress.egressFees, asset);
 };
 
 /**
@@ -110,7 +87,7 @@ export default async function swapEgressScheduled({
   } else {
     // < v120
     egressFee = bigintMin(
-      await getEgressFeeAtBlock(block.hash, swap.destAsset),
+      (await getEgressFeeAtBlock(block.hash, swap.destAsset)) ?? 0n,
       BigInt(swap.swapOutputAmount?.toFixed() ?? 0),
     );
     egress = await prisma.egress.update({

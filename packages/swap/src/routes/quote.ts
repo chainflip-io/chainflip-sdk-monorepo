@@ -12,7 +12,7 @@ import prisma from '../client';
 import env from '../config/env';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import Quoter, { type QuoteType } from '../quoting/Quoter';
-import { buildFee, estimateIngressEgressFeeAssetAmount } from '../utils/fees';
+import { buildFee } from '../utils/fees';
 import { isAfterSpecVersion } from '../utils/function';
 import getPoolQuote from '../utils/getPoolQuote';
 import logger from '../utils/logger';
@@ -123,12 +123,6 @@ const quoteRouter = (io: Server) => {
       const query = queryResult.data;
       const { srcAsset, destAsset } = queryResult.data;
 
-      // detect if ingress and egress fees are exposed as gas asset amount or fee asset amount
-      // https://github.com/chainflip-io/chainflip-backend/pull/4497
-      // TODO: remove this once all networks are upraded to 1.3
-      const ingressEgressFeeIsGasAssetAmount =
-        (await getIngressFee('Flip')) === (await getIngressFee('Usdc'));
-
       const amountResult = await validateSwapAmount(srcAsset, BigInt(query.amount));
 
       if (!amountResult.success) {
@@ -145,12 +139,9 @@ const quoteRouter = (io: Server) => {
         swapInputAmount -= boostFee;
       }
 
-      let ingressFee = await getIngressFee(srcAsset);
+      const ingressFee = await getIngressFee(srcAsset);
       if (ingressFee == null) {
         throw ServiceError.internalError(`could not determine ingress fee for ${srcAsset}`);
-      }
-      if (ingressEgressFeeIsGasAssetAmount) {
-        ingressFee = await estimateIngressEgressFeeAssetAmount(ingressFee, srcAsset);
       }
       includedFees.push(buildFee(srcAsset, 'INGRESS', ingressFee));
       swapInputAmount -= ingressFee;
@@ -168,7 +159,6 @@ const quoteRouter = (io: Server) => {
         srcAsset,
         destAsset,
         swapInputAmount,
-        ingressEgressFeeIsGasAssetAmount,
         includedFees,
         start,
       );
@@ -221,9 +211,6 @@ const quoteRouter = (io: Server) => {
         let egressFee = await getEgressFee(destAsset);
         if (egressFee == null) {
           throw ServiceError.internalError(`could not determine egress fee for ${destAsset}`);
-        }
-        if (ingressEgressFeeIsGasAssetAmount) {
-          egressFee = await estimateIngressEgressFeeAssetAmount(egressFee, destAsset);
         }
         egressFee = bigintMin(egressFee, BigInt(bestQuote.outputAmount));
         includedFees.push(buildFee(destAsset, 'EGRESS', egressFee));
