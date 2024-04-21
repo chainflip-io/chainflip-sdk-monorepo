@@ -18,6 +18,8 @@ const optionalBoolean = envVar.optional().transform((value) => value?.toUpperCas
 const optionalNumber = (defaultValue: number) =>
   envVar.optional().transform((n) => Number(n) || defaultValue);
 
+const optionalString = (defaultValue: string) => envVar.default(defaultValue);
+
 const chainflipNetwork = z.enum(['backspin', 'sisyphos', 'perseverance', 'mainnet']);
 
 const nodeEnv = z.enum(['development', 'production', 'test']);
@@ -45,6 +47,7 @@ export default z
     USE_JIT_QUOTING: optionalBoolean,
     QUOTE_APPROXIMATION_THRESHOLD: optionalNumber(0.1),
     STEALTH_MODE: optionalBoolean.default('true'),
+    DISABLED_INTERNAL_ASSETS: optionalString('').transform((s) => s.split(',')),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);
