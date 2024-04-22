@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { InternalAssets } from '@/shared/enums';
 
 const envVar = z.string().trim();
 
@@ -47,7 +48,15 @@ export default z
     USE_JIT_QUOTING: optionalBoolean,
     QUOTE_APPROXIMATION_THRESHOLD: optionalNumber(0.1),
     STEALTH_MODE: optionalBoolean.default('true'),
-    DISABLED_INTERNAL_ASSETS: optionalString('').transform((s) => s.split(',')),
+    DISABLED_INTERNAL_ASSETS: optionalString('').transform((string) =>
+      string.split(',').map((asset) => {
+        if (asset && !(asset in InternalAssets)) {
+          // eslint-disable-next-line no-console
+          console.warn(`unexpected value in DISABLED_INTERNAL_ASSETS variable: "${asset}"`);
+        }
+        return asset;
+      }),
+    ),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);
