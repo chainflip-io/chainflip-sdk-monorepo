@@ -117,10 +117,6 @@ const quoteRouter = (io: Server) => {
         throw ServiceError.badRequest('invalid request');
       }
 
-      if (queryResult.data.srcAsset === 'Dot' || queryResult.data.destAsset === 'Dot') {
-        throw ServiceError.unavailable('Polkadot is disabled');
-      }
-
       const start = performance.now();
 
       logger.info('received a quote request', { query: req.query });
