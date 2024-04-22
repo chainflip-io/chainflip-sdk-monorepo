@@ -249,8 +249,8 @@ const quoteRouter = (io: Server) => {
           const poolQuote = poolQuoteResult.data.response;
 
           logger.info('quote results', {
-            new: response,
-            old: poolQuote,
+            new: { response, duration },
+            old: poolQuoteResult.data,
           });
 
           if (BigInt(poolQuote.egressAmount) > egressAmount) {
