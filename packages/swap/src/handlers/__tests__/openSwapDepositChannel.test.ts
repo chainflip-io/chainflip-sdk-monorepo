@@ -202,4 +202,40 @@ describe(openSwapDepositChannel, () => {
       }),
     ).rejects.toThrow('Asset Dot is disabled');
   });
+
+  it('rejects if too many channels are open', async () => {
+    env.MAX_CHANNELS_OPEN_PER_ADDRESS = 5;
+
+    const opts = {
+      srcAsset: 'FLIP',
+      srcChain: 'Ethereum',
+      destAsset: 'DOT',
+      destChain: 'Polkadot',
+      destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
+      expectedDepositAmount: '777',
+    } as const;
+
+    for (let i = 0; i < 5; i += 1) {
+      jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
+      jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+        sourceChainExpiryBlock: BigInt('1000'),
+        address: `address${i}`,
+        channelId: BigInt('888'),
+        issuedBlock: 123 + i,
+        channelOpeningFee: 100n,
+      });
+      await expect(openSwapDepositChannel(opts)).resolves.not.toThrow();
+    }
+
+    jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
+    jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+      sourceChainExpiryBlock: BigInt('1000'),
+      address: 'address',
+      channelId: BigInt('888'),
+      issuedBlock: 123,
+      channelOpeningFee: 100n,
+    });
+
+    await expect(openSwapDepositChannel(opts)).rejects.toThrow('too many channels');
+  });
 });

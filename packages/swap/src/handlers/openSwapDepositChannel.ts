@@ -35,6 +35,19 @@ export default async function openSwapDepositChannel(
 
   if (!result.success) throw ServiceError.badRequest(result.reason);
 
+  const openChannelCount = await prisma.swapDepositChannel.count({
+    where: {
+      destAddress: input.destAddress,
+      srcAsset,
+      destAsset,
+      isExpired: false,
+    },
+  });
+
+  if (openChannelCount >= env.MAX_CHANNELS_OPEN_PER_ADDRESS) {
+    throw ServiceError.badRequest('too many channels');
+  }
+
   const {
     address: depositAddress,
     sourceChainExpiryBlock: srcChainExpiryBlock,

@@ -59,6 +59,7 @@ export default z
         return asset;
       }),
     ),
+    MAX_CHANNELS_OPEN_PER_ADDRESS: optionalNumber(25),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);
