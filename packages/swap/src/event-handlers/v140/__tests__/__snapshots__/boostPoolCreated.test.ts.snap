@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`boostPoolCreated handles event by creating a boost pool entry 1`] = `
+{
+  "asset": "Btc",
+  "boostEnabled": true,
+  "depositEnabled": true,
+  "feeTierPips": 10,
+  "id": 1,
+  "withdrawEnabled": true,
+}
+`;

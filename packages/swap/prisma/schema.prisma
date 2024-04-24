@@ -276,6 +276,18 @@ model Pool {
   @@schema("public")
 }
 
+model BoostPool {
+  id              Int           @id @default(autoincrement())
+  depositEnabled  Boolean
+  withdrawEnabled Boolean
+  boostEnabled    Boolean
+  asset           InternalAsset
+  feeTierPips     Int
+
+  @@unique([asset, feeTierPips])
+  @@schema("public")
+}
+
 model ChainTracking {
   id             Int      @id @default(autoincrement())
   chain          Chain    @unique
