@@ -19,4 +19,5 @@ jest.mock('../config/env', () => ({
   QUOTE_APPROXIMATION_THRESHOLD: 1,
   STEALTH_MODE: false,
   DISABLED_INTERNAL_ASSETS: [],
+  MAX_CHANNELS_OPEN_PER_ADDRESS: 10,
 }));
