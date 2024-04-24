@@ -52,7 +52,9 @@ export default z
       string.split(',').map((asset) => {
         if (asset && !(asset in InternalAssets)) {
           // eslint-disable-next-line no-console
-          console.warn(`unexpected value in DISABLED_INTERNAL_ASSETS variable: "${asset}"`);
+          console.warn({
+            message: `unexpected value in DISABLED_INTERNAL_ASSETS variable: "${asset}"`,
+          });
         }
         return asset;
       }),
