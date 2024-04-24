@@ -347,6 +347,44 @@ describe('server', () => {
       });
     });
 
+    it('rejects if source asset is disabled', async () => {
+      env.DISABLED_INTERNAL_ASSETS = ['Flip', 'Btc'];
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'FLIP',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: '50',
+      });
+
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
+
+      expect(status).toBe(503);
+      expect(body).toMatchObject({
+        message: 'Asset Flip is disabled',
+      });
+    });
+
+    it('rejects if destination asset is disabled', async () => {
+      env.DISABLED_INTERNAL_ASSETS = ['Btc', 'Eth'];
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'FLIP',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: '50',
+      });
+
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
+
+      expect(status).toBe(503);
+      expect(body).toMatchObject({
+        message: 'Asset Eth is disabled',
+      });
+    });
+
     it('rejects if amount is lower than minimum swap amount', async () => {
       jest.mocked(axios.post).mockResolvedValue({
         data: environment({ minDepositAmount: '0xffffff' }),

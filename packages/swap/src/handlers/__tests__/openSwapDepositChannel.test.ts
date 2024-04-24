@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as broker from '@/shared/broker';
 import { environment } from '@/shared/tests/fixtures';
+import env from '@/swap/config/env';
 import prisma from '../../client';
 import screenAddress from '../../utils/screenAddress';
 import openSwapDepositChannel from '../openSwapDepositChannel';
@@ -17,6 +18,8 @@ jest.mock('../../utils/screenAddress', () => ({
 jest.mock('axios');
 
 describe(openSwapDepositChannel, () => {
+  let oldEnv: typeof env;
+
   beforeAll(async () => {
     jest
       .useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
@@ -33,7 +36,12 @@ describe(openSwapDepositChannel, () => {
   });
 
   beforeEach(async () => {
+    oldEnv = structuredClone(env);
     await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", private."DepositChannel" CASCADE`;
+  });
+
+  afterEach(() => {
+    Object.assign(env, oldEnv);
   });
 
   it('creates channel and stores it in the database', async () => {
@@ -149,6 +157,7 @@ describe(openSwapDepositChannel, () => {
       boostFeeBps: 100,
     });
   });
+
   it('rejects sanctioned addresses', async () => {
     jest.mocked(screenAddress).mockResolvedValueOnce(true);
 
@@ -162,5 +171,35 @@ describe(openSwapDepositChannel, () => {
         expectedDepositAmount: '777',
       }),
     ).rejects.toThrow('Address "5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd" is sanctioned');
+  });
+
+  it('rejects if source asset is disabled', async () => {
+    env.DISABLED_INTERNAL_ASSETS = ['Flip', 'Btc'];
+
+    await expect(
+      openSwapDepositChannel({
+        srcAsset: 'FLIP',
+        srcChain: 'Ethereum',
+        destAsset: 'DOT',
+        destChain: 'Polkadot',
+        destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
+        expectedDepositAmount: '777',
+      }),
+    ).rejects.toThrow('Asset Flip is disabled');
+  });
+
+  it('rejects if destination asset is disabled', async () => {
+    env.DISABLED_INTERNAL_ASSETS = ['Btc', 'Dot'];
+
+    await expect(
+      openSwapDepositChannel({
+        srcAsset: 'FLIP',
+        srcChain: 'Ethereum',
+        destAsset: 'DOT',
+        destChain: 'Polkadot',
+        destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
+        expectedDepositAmount: '777',
+      }),
+    ).rejects.toThrow('Asset Dot is disabled');
   });
 });

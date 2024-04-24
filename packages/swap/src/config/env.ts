@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { InternalAssets } from '@/shared/enums';
 
 const envVar = z.string().trim();
 
@@ -17,6 +18,8 @@ const optionalBoolean = envVar.optional().transform((value) => value?.toUpperCas
 
 const optionalNumber = (defaultValue: number) =>
   envVar.optional().transform((n) => Number(n) || defaultValue);
+
+const optionalString = (defaultValue: string) => envVar.default(defaultValue);
 
 const chainflipNetwork = z.enum(['backspin', 'sisyphos', 'perseverance', 'mainnet']);
 
@@ -45,6 +48,17 @@ export default z
     USE_JIT_QUOTING: optionalBoolean,
     QUOTE_APPROXIMATION_THRESHOLD: optionalNumber(0.1),
     STEALTH_MODE: optionalBoolean.default('true'),
+    DISABLED_INTERNAL_ASSETS: optionalString('').transform((string) =>
+      string.split(',').map((asset) => {
+        if (asset && !(asset in InternalAssets)) {
+          // eslint-disable-next-line no-console
+          console.warn({
+            message: `unexpected value in DISABLED_INTERNAL_ASSETS variable: "${asset}"`,
+          });
+        }
+        return asset;
+      }),
+    ),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);

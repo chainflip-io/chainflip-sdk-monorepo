@@ -121,7 +121,14 @@ const quoteRouter = (io: Server) => {
 
       logger.info('received a quote request', { query: req.query });
       const query = queryResult.data;
+
       const { srcAsset, destAsset } = queryResult.data;
+      if (env.DISABLED_INTERNAL_ASSETS.includes(srcAsset)) {
+        throw ServiceError.unavailable(`Asset ${srcAsset} is disabled`);
+      }
+      if (env.DISABLED_INTERNAL_ASSETS.includes(destAsset)) {
+        throw ServiceError.unavailable(`Asset ${destAsset} is disabled`);
+      }
 
       const amountResult = await validateSwapAmount(srcAsset, BigInt(query.amount));
 

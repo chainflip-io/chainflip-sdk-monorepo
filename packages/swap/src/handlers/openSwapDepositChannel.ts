@@ -24,6 +24,12 @@ export default async function openSwapDepositChannel(
   }
 
   const { srcAsset, destAsset } = getInternalAssets(input);
+  if (env.DISABLED_INTERNAL_ASSETS.includes(srcAsset)) {
+    throw ServiceError.unavailable(`Asset ${srcAsset} is disabled`);
+  }
+  if (env.DISABLED_INTERNAL_ASSETS.includes(destAsset)) {
+    throw ServiceError.unavailable(`Asset ${destAsset} is disabled`);
+  }
 
   const result = await validateSwapAmount(srcAsset, BigInt(input.expectedDepositAmount));
 
