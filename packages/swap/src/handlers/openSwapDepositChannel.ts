@@ -37,7 +37,7 @@ export default async function openSwapDepositChannel(
 
   const openChannelCount = await prisma.swapDepositChannel.count({
     where: {
-      destAddress: input.destAddress,
+      OR: [{ destAddress: input.destAddress }, { destAddress: input.destAddress.toLowerCase() }],
       srcAsset,
       destAsset,
       isExpired: false,
