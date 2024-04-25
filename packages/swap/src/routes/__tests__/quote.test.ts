@@ -3,7 +3,7 @@ import { Server } from 'http';
 import request from 'supertest';
 import RpcClient from '@/shared/node-apis/RpcClient';
 import { environment, swapRate } from '@/shared/tests/fixtures';
-import prisma from '../../client';
+import prisma, { QuoteResult } from '../../client';
 import env from '../../config/env';
 import { checkPriceWarning } from '../../pricing/checkPriceWarning';
 import Quoter from '../../quoting/Quoter';
@@ -174,9 +174,10 @@ describe('server', () => {
 
         await request(server).get(`/quote?${params.toString()}`);
 
-        const quoteResult = await Array.from({ length: 10 }).reduce(
-          async (resultPromise) => (await resultPromise) || prisma.quoteResult.findFirst(),
-          prisma.quoteResult.findFirst(),
+        const quoteResult = await Array.from({ length: 10 }).reduce<Promise<QuoteResult | null>>(
+          (resultPromise) =>
+            resultPromise.then((result) => result ?? prisma.quoteResult.findFirst()),
+          Promise.resolve(null),
         );
 
         expect(quoteResult).toMatchSnapshot({
