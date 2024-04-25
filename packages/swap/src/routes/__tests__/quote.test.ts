@@ -69,7 +69,7 @@ describe('server', () => {
   let oldEnv: typeof env;
 
   beforeAll(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE public."Pool", private."QuoteResult" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "Pool" CASCADE`;
     await prisma.pool.createMany({
       data: [
         {
@@ -87,6 +87,7 @@ describe('server', () => {
   });
 
   beforeEach(async () => {
+    await prisma.$queryRaw`TRUNCATE TABLE private."QuoteResult" CASCADE`;
     oldEnv = structuredClone(env);
     server = app.listen(0);
     jest.mocked(Quoter.prototype.canQuote).mockReturnValue(false);
@@ -173,7 +174,10 @@ describe('server', () => {
 
         await request(server).get(`/quote?${params.toString()}`);
 
-        const quoteResult = await prisma.quoteResult.findFirst();
+        const quoteResult = await Array.from({ length: 10 }).reduce(
+          async (resultPromise) => (await resultPromise) || prisma.quoteResult.findFirst(),
+          prisma.quoteResult.findFirst(),
+        );
 
         expect(quoteResult).toMatchSnapshot({
           id: expect.any(Number),
@@ -274,6 +278,7 @@ describe('server', () => {
 
         expect(status).toBe(200);
         expect(body).toMatchSnapshot();
+        expect(await prisma.quoteResult.count()).toEqual(0);
       });
 
       it('rejects if both reject (400)', async () => {
