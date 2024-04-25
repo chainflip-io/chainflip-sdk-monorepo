@@ -144,6 +144,8 @@ export default class Quoter {
 
     const quotes = await this.collectMakerQuotes(requestId);
 
+    if (quotes.length === 0) throw new Error('no quotes received');
+
     const legLimitOrders = [leg1.toSwapInput()] as [SwapInput] | [SwapInput, SwapInput];
 
     if (leg2) legLimitOrders[1] = leg2.toSwapInput();

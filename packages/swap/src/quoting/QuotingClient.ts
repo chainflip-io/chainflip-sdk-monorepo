@@ -21,7 +21,7 @@ export default class QuotingClient extends EventEmitter {
   private privateKey: crypto.KeyObject;
 
   constructor(
-    url: string,
+    private readonly url: string,
     private readonly marketMakerId: string,
     privateKey: string,
   ) {
@@ -31,12 +31,12 @@ export default class QuotingClient extends EventEmitter {
       format: 'pem',
       type: 'pkcs8',
     });
-    this.connect(url);
   }
 
-  private async connect(url: string) {
+  async connect() {
     const timestamp = Date.now();
-    this.socket = io(url, {
+    this.socket = io(this.url, {
+      transports: ['websocket'],
       auth: {
         timestamp,
         client_version: '1',

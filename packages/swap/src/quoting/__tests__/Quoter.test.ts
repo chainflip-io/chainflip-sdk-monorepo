@@ -489,6 +489,16 @@ describe(Quoter, () => {
         quoteType: 'market_maker',
       });
     });
+
+    it('throws if no quotes are received', async () => {
+      await connectClient('marketMaker');
+
+      const quote = quoter.getQuote('Usdc', 'Flip', ONE_USDC, [
+        { liquidityFeeHundredthPips: 0 } as Pool,
+      ]);
+
+      await expect(quote).rejects.toThrow('no quotes received');
+    });
   });
 });
 

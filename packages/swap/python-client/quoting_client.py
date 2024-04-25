@@ -89,6 +89,7 @@ class QuotingClient(ABC):
                 "signature": base64.b64encode(signature).decode("utf-8"),
             },
             wait_timeout=wait_timeout,
+            transports=["websocket"],
         )
         await self.sio.wait()
 
