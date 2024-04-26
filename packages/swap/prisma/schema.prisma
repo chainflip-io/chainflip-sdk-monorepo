@@ -326,6 +326,6 @@ model QuoteResult {
   poolFees           Json?
   createdAt          DateTime      @default(now())
 
-  @@unique([srcAsset, destAsset])
+  @@index([srcAsset, destAsset])
   @@schema("private")
 }
