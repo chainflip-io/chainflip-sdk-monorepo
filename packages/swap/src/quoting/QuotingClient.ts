@@ -72,6 +72,10 @@ export default class QuotingClient extends EventEmitter {
         signature: await this.getSignature(updatedTimestamp),
       };
     });
+
+    this.socket.on('disconnect', () => {
+      this.emit('disconnect');
+    });
   }
 
   private async getSignature(timestamp: number): Promise<string> {

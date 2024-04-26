@@ -5,7 +5,7 @@ import { Server } from 'socket.io';
 import { io, Socket } from 'socket.io-client';
 import { setTimeout as sleep } from 'timers/promises';
 import { promisify } from 'util';
-import { assetConstants } from '@/shared/enums';
+import { assetConstants, getAssetAndChain } from '@/shared/enums';
 import env from '@/swap/config/env';
 import prisma, { InternalAsset, Pool } from '../../client';
 import { getAssetPrice } from '../../pricing';
@@ -137,22 +137,40 @@ describe(Quoter, () => {
   });
 
   describe(Quoter.prototype['collectMakerQuotes'], () => {
+    const collectQuotes = () => {
+      const id = crypto.randomUUID();
+
+      return {
+        promise: quoter['collectMakerQuotes']({
+          request_id: id,
+          legs: [
+            {
+              base_asset: getAssetAndChain('Flip'),
+              quote_asset: getAssetAndChain('Usdc'),
+              amount: '1000',
+              side: 'SELL',
+            },
+          ],
+        }),
+        id,
+      };
+    };
+
     it('returns an empty array if expectedQuotes is 0', async () => {
-      expect(await quoter['collectMakerQuotes']('id')).toEqual([]);
+      expect(await quoter['collectMakerQuotes']({ request_id: 'id', legs: [] as any })).toEqual([]);
     });
 
     it('returns an empty array if no quotes are received', async () => {
       env.QUOTE_TIMEOUT = 10;
       await connectClient('marketMaker');
-      const promise = quoter['collectMakerQuotes']('id');
+      const { promise } = collectQuotes();
       expect(await promise).toEqual([]);
     });
 
     it('returns an array of quotes if expectedQuotes is received', async () => {
       env.QUOTE_TIMEOUT = 10_000;
       const { sendQuote } = await connectClient('marketMaker');
-      const id = crypto.randomUUID();
-      const promise = quoter['collectMakerQuotes'](id);
+      const { id, promise } = collectQuotes();
       const quote = sendQuote({ request_id: id, legs: [[[0, '100']]] });
       expect(await promise).toEqual([quote]);
     });
@@ -161,8 +179,7 @@ describe(Quoter, () => {
       env.QUOTE_TIMEOUT = 10;
       const { sendQuote } = await connectClient('marketMaker');
       await connectClient('marketMaker2');
-      const id = crypto.randomUUID();
-      const promise = quoter['collectMakerQuotes'](id);
+      const { id, promise } = collectQuotes();
       sendQuote({ request_id: id, legs: [[[0, '100']]] });
       const quote = sendQuote({ request_id: id, legs: [[[0, '200']]] });
       expect(await promise).toEqual([quote]);
@@ -171,8 +188,7 @@ describe(Quoter, () => {
     it.each([10, 50, 100])('can be configured with QUOTE_TIMEOUT', async (timeout) => {
       env.QUOTE_TIMEOUT = timeout;
       const { sendQuote } = await connectClient('marketMaker');
-      const id = crypto.randomUUID();
-      const promise = quoter['collectMakerQuotes'](id);
+      const { id, promise } = collectQuotes();
       await sleep(timeout + 1);
       sendQuote({ request_id: id, legs: [[[0, '100']]] });
       expect(await promise).toEqual([]);
@@ -182,8 +198,7 @@ describe(Quoter, () => {
       env.QUOTE_TIMEOUT = 10_000;
       const mm1 = await connectClient('marketMaker');
       const mm2 = await connectClient('marketMaker2');
-      const id = crypto.randomUUID();
-      const promise = quoter['collectMakerQuotes'](id);
+      const { id, promise } = collectQuotes();
       const quote1 = mm1.sendQuote({ request_id: id, legs: [[[0, '100']]] });
       const quote2 = mm2.sendQuote({ request_id: id, legs: [[[0, '200']]] });
       // no need to advance timers because setTimeout is never called

@@ -19,6 +19,7 @@ import { Pool } from '../client';
 import env from '../config/env';
 import { getAssetPrice } from '../pricing';
 import { buildFee } from '../utils/fees';
+import { handleExit } from '../utils/function';
 import logger from '../utils/logger';
 import { percentDifference } from '../utils/math';
 import { getSwapRate } from '../utils/statechain';
@@ -72,8 +73,13 @@ export default class Quoter {
     io.on('connection', (socket: QuotingSocket) => {
       logger.info(`market maker "${socket.data.marketMaker}" connected`);
 
+      const cleanup = handleExit(() => {
+        socket.disconnect();
+      });
+
       socket.on('disconnect', () => {
         logger.info(`market maker "${socket.data.marketMaker}" disconnected`);
+        cleanup();
       });
 
       socket.on('quote_response', (message) => {
@@ -96,9 +102,11 @@ export default class Quoter {
     return env.USE_JIT_QUOTING && this.io.sockets.sockets.size > 0;
   }
 
-  private async collectMakerQuotes(requestId: string): Promise<MarketMakerQuote[]> {
+  private async collectMakerQuotes(request: MarketMakerQuoteRequest): Promise<MarketMakerQuote[]> {
     const connectedClients = this.io.sockets.sockets.size;
     if (connectedClients === 0) return Promise.resolve([]);
+
+    this.io.emit('quote_request', request);
 
     const clientsReceivedQuotes = new Map<string, MarketMakerQuote>();
 
@@ -114,7 +122,12 @@ export default class Quoter {
       };
 
       sub = this.quotes$
-        .pipe(filter(({ quote }) => quote.request_id === requestId))
+        .pipe(
+          filter(
+            ({ quote }) =>
+              quote.request_id === request.request_id && quote.legs.length === request.legs.length,
+          ),
+        )
         .subscribe(({ marketMaker, quote }) => {
           clientsReceivedQuotes.set(marketMaker, quote);
           if (clientsReceivedQuotes.size === connectedClients) complete();
@@ -140,9 +153,7 @@ export default class Quoter {
 
     const quoteRequest: MarketMakerQuoteRequest = { request_id: requestId, legs: requestLegs };
 
-    this.io.emit('quote_request', quoteRequest);
-
-    const quotes = await this.collectMakerQuotes(requestId);
+    const quotes = await this.collectMakerQuotes(quoteRequest);
 
     if (quotes.length === 0) throw new Error('no quotes received');
 
