@@ -45,7 +45,7 @@
     "graphql": "^16.8.1",
     "prisma": "^5.12.1",
     "socket.io-client": "^4.7.5",
-    "supertest": "^6.3.4"
+    "supertest": "^7.0.0"
   },
   "engines": {
     "node": "20.11.0",
