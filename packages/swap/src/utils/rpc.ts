@@ -51,9 +51,10 @@ const fetchOrdersAndPrice = async (baseAsset: Exclude<InternalAsset, 'Usdc'>) =>
 };
 
 const ordersCacheMap = new AsyncCacheMap({
-  refresh: false,
-  refreshInterval: 6_000,
+  resetExpiryOnLookup: false,
+  ttl: 6_000,
   fetch: fetchOrdersAndPrice,
 });
 
-export const getCachedPoolOrdersAndPrice = ordersCacheMap.get.bind(ordersCacheMap);
+export const getCachedPoolOrdersAndPrice = (baseAsset: Exclude<InternalAsset, 'Usdc'>) =>
+  ordersCacheMap.get(baseAsset);

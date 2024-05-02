@@ -87,7 +87,7 @@ describe(AsyncCacheMap, () => {
     // eslint-disable-next-line no-plusplus
     const fetch = jest.fn(async (key: string) => `${key}${id++}`);
 
-    const map = new AsyncCacheMap({ refreshInterval: 10, fetch });
+    const map = new AsyncCacheMap({ ttl: 10, fetch });
 
     const hello0 = await Promise.race([map.get('hello'), map.get('hello'), map.get('hello')]);
 
@@ -113,7 +113,7 @@ describe(AsyncCacheMap, () => {
       return `hello ${key}`;
     });
 
-    const map = new AsyncCacheMap({ refreshInterval: 10, fetch });
+    const map = new AsyncCacheMap({ ttl: 10, fetch });
 
     await expect(() => map.get('hello')).rejects.toThrow('nope');
     expect(await map.get('world')).toBe('hello world');

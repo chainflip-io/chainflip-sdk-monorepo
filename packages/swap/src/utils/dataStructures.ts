@@ -10,16 +10,16 @@ class Timer<T> {
     this.reset(true);
   }
 
-  reset(refresh: boolean): this {
-    if (refresh) {
+  reset(resetExpiryOnLookup: boolean): this {
+    if (resetExpiryOnLookup) {
       this.clear();
       this.timeout = setTimeout(this.cb, this.ms);
     }
     return this;
   }
 
-  getValue(refresh: boolean): T {
-    return this.reset(refresh).value;
+  getValue(resetExpiryOnLookup: boolean): T {
+    return this.reset(resetExpiryOnLookup).value;
   }
 
   clear(): void {
@@ -32,7 +32,7 @@ export class CacheMap<K, V> {
 
   constructor(
     private readonly ttl: number,
-    private readonly refresh = true,
+    private readonly resetExpiryOnLookup = true,
   ) {}
 
   set(key: K, value: V): this {
@@ -45,7 +45,7 @@ export class CacheMap<K, V> {
   }
 
   get(key: K): V | undefined {
-    return this.store.get(key)?.getValue(this.refresh);
+    return this.store.get(key)?.getValue(this.resetExpiryOnLookup);
   }
 
   delete(key: K): boolean {
@@ -59,14 +59,14 @@ export class AsyncCacheMap<K, V> extends CacheMap<K, Promise<V>> {
 
   constructor({
     fetch,
-    refreshInterval,
-    refresh = true,
+    ttl,
+    resetExpiryOnLookup = true,
   }: {
-    refresh?: boolean;
+    resetExpiryOnLookup?: boolean;
     fetch: (key: K) => Promise<V>;
-    refreshInterval: number;
+    ttl: number;
   }) {
-    super(refreshInterval, refresh);
+    super(ttl, resetExpiryOnLookup);
     this.fetch = fetch;
   }
 
