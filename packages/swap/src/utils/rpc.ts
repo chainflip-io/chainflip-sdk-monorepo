@@ -40,21 +40,3 @@ export const getEgressFee = async (asset: InternalAsset): Promise<bigint | null>
 
   return readChainAssetValue(environment.ingressEgress.egressFees, asset);
 };
-
-const fetchOrdersAndPrice = async (baseAsset: Exclude<InternalAsset, 'Usdc'>) => {
-  const [orders, price] = await Promise.all([
-    getPoolOrders(rpcConfig, getAssetAndChain(baseAsset), getAssetAndChain('Usdc')),
-    getPoolPriceV2(rpcConfig, getAssetAndChain(baseAsset), getAssetAndChain('Usdc')),
-  ]);
-
-  return { poolState: orders, rangeOrderPrice: price.rangeOrder };
-};
-
-const ordersCacheMap = new AsyncCacheMap({
-  resetExpiryOnLookup: false,
-  ttl: 6_000,
-  fetch: fetchOrdersAndPrice,
-});
-
-export const getCachedPoolOrdersAndPrice = (baseAsset: Exclude<InternalAsset, 'Usdc'>) =>
-  ordersCacheMap.get(baseAsset);
