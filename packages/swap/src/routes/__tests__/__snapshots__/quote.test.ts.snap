@@ -317,5 +317,6 @@ exports[`server GET /quote with market makers saves a quote result 1`] = `
   "quoterIntermediate": null,
   "quoterOutput": "998950000",
   "srcAsset": "Flip",
+  "version": 2,
 }
 `;

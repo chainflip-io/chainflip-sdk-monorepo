@@ -278,9 +278,6 @@ const quoteRouter = (io: Server) => {
       } catch (err) {
         const poolQuoteResult = await poolQuotePromise;
 
-        console.error(err);
-
-        console.log(poolQuoteResult);
         if (poolQuoteResult.success) {
           if (!responseSent) res.json({ ...poolQuoteResult.data.response, quoteType: undefined });
           return;

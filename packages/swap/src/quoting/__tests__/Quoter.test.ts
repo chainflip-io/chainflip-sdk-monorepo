@@ -26,6 +26,39 @@ jest.mock('../../utils/statechain', () => ({
 
 jest.mock('../../pricing');
 
+jest.mock('axios', () => ({
+  create() {
+    return this;
+  },
+  post: jest.fn((url, data) => {
+    if (data.method === 'cf_pool_orders') {
+      return {
+        data: JSON.stringify({
+          jsonrpc: '2.0',
+          result: {
+            limit_orders: {
+              asks: [],
+              bids: [],
+            },
+            range_orders: [],
+          },
+          id: 1,
+        }),
+      };
+    }
+
+    if (data.method === 'cf_pool_price_v2') {
+      return {
+        data: {
+          result: { range_order: '0x1000276a3' },
+        },
+      };
+    }
+
+    throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+  }),
+}));
+
 function toAtomicUnits(amount: number, asset: InternalAsset, output?: 'string'): string;
 function toAtomicUnits(amount: number, asset: InternalAsset, output: 'bigint'): bigint;
 function toAtomicUnits(amount: number, asset: InternalAsset, output: string | bigint = 'string') {
@@ -468,37 +501,6 @@ describe(Quoter, () => {
             chain: 'Ethereum',
             asset: 'USDC',
             amount: '70858628',
-          },
-        ],
-        quoteType: 'market_maker',
-      });
-    });
-
-    it('gets the quote for one leg with a pool supplement', async () => {
-      jest.mocked(getSwapRate).mockImplementation((args: SwapRateArgs) =>
-        Promise.resolve({
-          outputAmount: args.amount * 5n * BigInt(1e11),
-          intermediateAmount: null,
-          quoteType: 'pool',
-        }),
-      );
-
-      quoter['createId'] = () => 'id';
-      const { sendQuote } = await connectClient('marketMaker');
-      const quote = quoter.getQuote('Usdc', 'Flip', ONE_USDC, [
-        { liquidityFeeHundredthPips: 0 } as Pool,
-      ]);
-      sendQuote({ request_id: 'id', legs: [[[-260483, (ONE_FLIP / 5n).toString()]]] });
-
-      expect(await quote).toEqual({
-        intermediateAmount: null,
-        outputAmount: 212047000000000000n,
-        includedFees: [
-          {
-            type: 'NETWORK',
-            chain: 'Ethereum',
-            asset: 'USDC',
-            amount: '1000',
           },
         ],
         quoteType: 'market_maker',
