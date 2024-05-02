@@ -325,6 +325,7 @@ model QuoteResult {
   poolDuration       Int?
   poolFees           Json?
   createdAt          DateTime      @default(now())
+  version            Int
 
   @@index([srcAsset, destAsset])
   @@schema("private")
