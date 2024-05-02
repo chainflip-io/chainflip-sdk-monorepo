@@ -7,17 +7,19 @@ class Timer<T> {
     readonly cb: () => void,
     readonly ms: number,
   ) {
-    this.reset();
+    this.reset(true);
   }
 
-  reset(): this {
-    this.clear();
-    this.timeout = setTimeout(this.cb, this.ms);
+  reset(refresh: boolean): this {
+    if (refresh) {
+      this.clear();
+      this.timeout = setTimeout(this.cb, this.ms);
+    }
     return this;
   }
 
-  getValue(): T {
-    return this.reset().value;
+  getValue(refresh: boolean): T {
+    return this.reset(refresh).value;
   }
 
   clear(): void {
@@ -28,7 +30,10 @@ class Timer<T> {
 export class CacheMap<K, V> {
   private readonly store = new Map<K, Timer<V>>();
 
-  constructor(private readonly ttl: number) {}
+  constructor(
+    private readonly ttl: number,
+    private readonly refresh = true,
+  ) {}
 
   set(key: K, value: V): this {
     this.delete(key);
@@ -40,7 +45,7 @@ export class CacheMap<K, V> {
   }
 
   get(key: K): V | undefined {
-    return this.store.get(key)?.getValue();
+    return this.store.get(key)?.getValue(this.refresh);
   }
 
   delete(key: K): boolean {

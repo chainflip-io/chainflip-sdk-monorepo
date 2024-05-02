@@ -1,6 +1,7 @@
-import { Chain, readChainAssetValue, InternalAsset } from '@/shared/enums';
-import { getEnvironment } from '@/shared/rpc';
+import { Chain, readChainAssetValue, InternalAsset, getAssetAndChain } from '@/shared/enums';
+import { getEnvironment, getPoolOrders, getPoolPrice } from '@/shared/rpc';
 import { validateSwapAmount as validateAmount } from '@/shared/rpc/utils';
+import { CacheMap } from './dataStructures';
 import { memoize } from './function';
 import env from '../config/env';
 
@@ -38,4 +39,27 @@ export const getEgressFee = async (asset: InternalAsset): Promise<bigint | null>
   const environment = await cachedGetEnvironment(rpcConfig);
 
   return readChainAssetValue(environment.ingressEgress.egressFees, asset);
+};
+
+const ordersCacheMap = new CacheMap<
+  InternalAsset,
+  Promise<{ poolState: string; rangeOrderPrice: bigint }>
+>(6_000, false);
+
+export const getCachedPoolOrdersAndPrice = async (baseAsset: Exclude<InternalAsset, 'Usdc'>) => {
+  const cached = ordersCacheMap.get(baseAsset);
+
+  if (cached) return cached;
+
+  const base = getAssetAndChain(baseAsset);
+  const quote = getAssetAndChain('Usdc');
+
+  const orders = Promise.all([
+    getPoolOrders(rpcConfig, base, quote),
+    getPoolPrice(rpcConfig, base, quote),
+  ]).then(([poolState, price]) => ({ poolState, rangeOrderPrice: price.rangeOrder }));
+
+  ordersCacheMap.set(baseAsset, orders);
+
+  return orders;
 };

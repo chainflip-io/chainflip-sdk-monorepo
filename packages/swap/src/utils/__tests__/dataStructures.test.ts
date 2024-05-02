@@ -53,4 +53,21 @@ describe(CacheMap, () => {
     expect(setTimeoutSpy).toHaveBeenCalledTimes(3);
     expect(clearTimeoutSpy).toHaveBeenCalledTimes(2);
   });
+
+  it('does not refresh keys if not desired', () => {
+    const map = new CacheMap<string, string>(10, false);
+    const setTimeoutSpy = jest.spyOn(globalThis, 'setTimeout');
+
+    map.set('hello', 'world');
+
+    expect(map.get('hello')).not.toBeUndefined();
+    expect(map.get('hello')).not.toBeUndefined();
+    expect(map.get('hello')).not.toBeUndefined();
+
+    expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
+
+    jest.advanceTimersByTime(10);
+
+    expect(map.get('hello')).toBeUndefined();
+  });
 });
