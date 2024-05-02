@@ -1,5 +1,6 @@
 use crate::common::{
-    self, Amount, BaseToQuote, LiquidityProvider, Pairs, QuoteToBase, Side, SqrtPriceQ64F96, Tick,
+    self, Amount, BaseToQuote, LiquidityProvider, Pairs, PoolPairsMap, QuoteToBase, Side,
+    SqrtPriceQ64F96, Tick,
 };
 use crate::limit_orders;
 use crate::range_orders;
@@ -98,5 +99,29 @@ impl PoolState {
                     .collect_and_mint::<BaseToQuote>(lp, tick, sold_amount)
             }
         }
+    }
+
+    #[allow(dead_code)]
+    pub fn collect_and_mint_range_order<
+        T,
+        E,
+        TryDebit: FnOnce(PoolPairsMap<Amount>) -> Result<T, E>,
+    >(
+        &mut self,
+        lp: &LiquidityProvider,
+        tick_range: core::ops::Range<Tick>,
+        size: range_orders::Size,
+        try_debit: TryDebit,
+    ) -> Result<
+        (
+            T,
+            range_orders::Liquidity,
+            range_orders::Collected,
+            range_orders::PositionInfo,
+        ),
+        range_orders::PositionError<range_orders::MintError<E>>,
+    > {
+        self.range_orders
+            .collect_and_mint(lp, tick_range.start, tick_range.end, size, try_debit)
     }
 }

@@ -56,6 +56,10 @@ type RpcParams = WithHash<{
     toAsset: UncheckedAssetAndChain,
     amount: `0x${string}`,
   ];
+  cf_pool_price_v2: [
+    baseAsset: BaseAssetAndChain,
+    quoteAsset: { chain: 'Ethereum'; asset: 'USDC' },
+  ];
   state_getMetadata: [];
   state_getRuntimeVersion: [];
 }>;
@@ -255,3 +259,8 @@ export const getRuntimeVersion = createRequest(
 );
 
 export const getPoolOrders = createRequestWithoutParser('cf_pool_orders');
+
+export const getPoolPriceV2 = createRequest(
+  'cf_pool_price_v2',
+  z.object({ range_order: numberOrHex }),
+);
