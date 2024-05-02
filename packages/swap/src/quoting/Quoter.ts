@@ -149,6 +149,8 @@ export default class Quoter {
       leg2 && getCachedPoolOrdersAndPrice(leg2.getBaseAsset()),
     ]);
 
+    if (quotes.length === 0) throw new Error('no quotes received');
+
     const results = [
       simulateSwap(
         leg1.toSwapInput({

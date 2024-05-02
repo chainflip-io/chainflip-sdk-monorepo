@@ -44,6 +44,30 @@ jest.mock('axios', () => ({
       });
     }
 
+    if (data.method === 'cf_pool_orders') {
+      return {
+        data: JSON.stringify({
+          jsonrpc: '2.0',
+          result: {
+            limit_orders: {
+              asks: [],
+              bids: [],
+            },
+            range_orders: [],
+          },
+          id: 1,
+        }),
+      };
+    }
+
+    if (data.method === 'cf_pool_price_v2') {
+      return {
+        data: {
+          result: { range_order: '0x1000276a3' },
+        },
+      };
+    }
+
     throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
   }),
 }));
