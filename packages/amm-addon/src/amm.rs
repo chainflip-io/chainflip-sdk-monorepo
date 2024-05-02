@@ -101,7 +101,6 @@ impl PoolState {
         }
     }
 
-    #[allow(dead_code)]
     pub fn collect_and_mint_range_order<
         T,
         E,
