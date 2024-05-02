@@ -53,3 +53,35 @@ export class CacheMap<K, V> {
     return this.store.delete(key);
   }
 }
+
+export class AsyncCacheMap<K, V> extends CacheMap<K, Promise<V>> {
+  fetch;
+
+  constructor({
+    fetch,
+    refreshInterval,
+    refresh = true,
+  }: {
+    refresh?: boolean;
+    fetch: (key: K) => Promise<V>;
+    refreshInterval: number;
+  }) {
+    super(refreshInterval, refresh);
+    this.fetch = fetch;
+  }
+
+  override get(key: K): Promise<V> | undefined {
+    let promise = super.get(key);
+
+    if (!promise) {
+      promise = this.fetch(key).catch((err) => {
+        this.delete(key);
+        throw err;
+      });
+
+      this.set(key, promise);
+    }
+
+    return promise;
+  }
+}
