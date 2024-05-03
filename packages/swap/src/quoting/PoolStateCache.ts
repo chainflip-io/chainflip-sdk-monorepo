@@ -5,6 +5,7 @@ import { getBlockHash, getPoolOrders, getPoolPriceV2 } from '@/shared/rpc';
 import env from '../config/env';
 import { AsyncCacheMap } from '../utils/dataStructures';
 import { handleExit } from '../utils/function';
+import logger from '../utils/logger';
 
 const rpcConfig = { rpcUrl: env.RPC_NODE_HTTP_URL };
 
@@ -69,16 +70,18 @@ export default class PoolStateCache {
 
   private async startPolling() {
     while (this.running) {
-      const hash = await getBlockHash(rpcConfig);
+      const hash = await getBlockHash(rpcConfig).catch(() => null);
 
-      if (hash !== this.latestHash) {
+      if (hash !== null && hash !== this.latestHash) {
         this.latestHash = hash;
 
         const success = await this.cacheMap.load(hash);
 
-        assert(success, 'cache should be loaded');
-
-        this.age = Date.now();
+        if (success) {
+          this.age = Date.now();
+        } else {
+          logger.error('failed to fetch pool state', { hash });
+        }
       }
 
       await sleep(1_000);
