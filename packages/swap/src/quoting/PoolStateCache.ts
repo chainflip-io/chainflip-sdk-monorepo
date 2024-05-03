@@ -3,6 +3,7 @@ import { setTimeout as sleep } from 'timers/promises';
 import { InternalAsset, InternalAssets, getAssetAndChain } from '@/shared/enums';
 import { getBlockHash, getPoolOrders, getPoolPriceV2 } from '@/shared/rpc';
 import env from '../config/env';
+import { AsyncCacheMap } from '../utils/dataStructures';
 import { handleExit } from '../utils/function';
 
 const rpcConfig = { rpcUrl: env.RPC_NODE_HTTP_URL };
@@ -18,25 +19,45 @@ type PoolState = {
   rangeOrderPrice: bigint;
 };
 
+const fetchPoolState = async (hash: string) =>
+  Object.fromEntries(
+    await Promise.all(
+      baseAssets.map(async (asset) => {
+        const [orders, price] = await Promise.all([
+          getPoolOrders(rpcConfig, getAssetAndChain(asset), getAssetAndChain('Usdc'), hash),
+          getPoolPriceV2(rpcConfig, getAssetAndChain(asset), getAssetAndChain('Usdc'), hash),
+        ]);
+
+        return [asset, { poolState: orders, rangeOrderPrice: price.rangeOrder }] as const;
+      }),
+    ),
+  ) as Record<BaseAsset, PoolState>;
+
 export default class PoolStateCache {
   private running = false;
 
   private latestHash: string | null = null;
 
-  private cache: Record<BaseAsset, PoolState> | null = null;
-
   private age = 0;
 
   private cleanup?: () => void;
 
+  private cacheMap = new AsyncCacheMap<string, Record<BaseAsset, PoolState>>({
+    resetExpiryOnLookup: false,
+    ttl: 10_000,
+    fetch: fetchPoolState,
+  });
+
   start() {
+    if (this.running) return this;
+
     this.running = true;
 
     this.cleanup = handleExit(() => {
       this.stop();
     });
 
-    this.poll();
+    this.startPolling();
 
     return this;
   }
@@ -46,42 +67,35 @@ export default class PoolStateCache {
     this.cleanup?.();
   }
 
-  private async poll() {
-    if (!this.running) return;
+  private async startPolling() {
+    while (this.running) {
+      const hash = await getBlockHash(rpcConfig);
 
-    const hash = await getBlockHash(rpcConfig);
+      if (hash !== this.latestHash) {
+        this.latestHash = hash;
 
-    if (hash !== this.latestHash) {
-      this.latestHash = hash;
+        const success = await this.cacheMap.load(hash);
 
-      this.cache = Object.fromEntries(
-        await Promise.all(
-          baseAssets.map(async (asset) => [asset, await this.fetchPoolState(asset)]),
-        ),
-      );
+        assert(success, 'cache should be loaded');
 
-      this.age = Date.now();
+        this.age = Date.now();
+      }
+
+      await sleep(1_000);
     }
-
-    setTimeout(() => this.poll(), 1000);
-  }
-
-  private async fetchPoolState(asset: Exclude<InternalAsset, 'Usdc'>) {
-    const [orders, price] = await Promise.all([
-      getPoolOrders(rpcConfig, getAssetAndChain(asset), getAssetAndChain('Usdc'), this.latestHash),
-      getPoolPriceV2(rpcConfig, getAssetAndChain(asset), getAssetAndChain('Usdc'), this.latestHash),
-    ]);
-
-    return { poolState: orders, rangeOrderPrice: price.rangeOrder };
   }
 
   async getPoolState(asset: BaseAsset) {
-    while (this.cache === null && this.running) {
+    while (this.latestHash === null && this.running) {
       await sleep(1_000);
     }
 
-    assert(this.cache !== null && Date.now() - this.age < 10_000, 'cache should be fresh');
+    assert(this.latestHash !== null && Date.now() - this.age < 10_000, 'cache should be fresh');
 
-    return this.cache[asset];
+    const cache = await this.cacheMap.get(this.latestHash);
+
+    assert(cache !== undefined, 'cache should be present');
+
+    return cache[asset];
   }
 }

@@ -84,4 +84,13 @@ export class AsyncCacheMap<K, V> extends CacheMap<K, Promise<V>> {
 
     return promise;
   }
+
+  async load(key: K): Promise<boolean> {
+    try {
+      await this.get(key);
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }

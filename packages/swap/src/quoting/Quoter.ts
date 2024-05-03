@@ -62,9 +62,9 @@ export default class Quoter {
     private readonly io: Server,
     private createId: () => string = randomUUID,
   ) {
-    this.poolStateCache.start();
-
     io.on('connection', (socket: QuotingSocket) => {
+      this.poolStateCache.start();
+
       logger.info(`market maker "${socket.data.marketMaker}" connected`);
 
       const cleanup = handleExit(() => {

@@ -25,38 +25,7 @@ jest.mock('../../utils/statechain', () => ({
 
 jest.mock('../../pricing');
 
-jest.mock('axios', () => ({
-  create() {
-    return this;
-  },
-  post: jest.fn((url, data) => {
-    if (data.method === 'cf_pool_orders') {
-      return {
-        data: JSON.stringify({
-          jsonrpc: '2.0',
-          result: {
-            limit_orders: {
-              asks: [],
-              bids: [],
-            },
-            range_orders: [],
-          },
-          id: 1,
-        }),
-      };
-    }
-
-    if (data.method === 'cf_pool_price_v2') {
-      return {
-        data: {
-          result: { range_order: '0x1000276a3' },
-        },
-      };
-    }
-
-    throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
-  }),
-}));
+jest.mock('../PoolStateCache');
 
 function toAtomicUnits(amount: number, asset: InternalAsset, output?: 'string'): string;
 function toAtomicUnits(amount: number, asset: InternalAsset, output: 'bigint'): bigint;
