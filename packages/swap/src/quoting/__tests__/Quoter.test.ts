@@ -9,7 +9,6 @@ import { assetConstants, getAssetAndChain } from '@/shared/enums';
 import env from '@/swap/config/env';
 import prisma, { InternalAsset, Pool } from '../../client';
 import { getAssetPrice } from '../../pricing';
-import { getSwapRate, SwapRateArgs } from '../../utils/statechain';
 import authenticate from '../authenticate';
 import Quoter, { approximateIntermediateOutput, differenceExceedsThreshold } from '../Quoter';
 import { MarketMakerQuote, MarketMakerRawQuote } from '../schemas';
