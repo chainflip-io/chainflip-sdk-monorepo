@@ -70,7 +70,7 @@ export class AsyncCacheMap<K, V> extends CacheMap<K, Promise<V>> {
     this.fetch = fetch;
   }
 
-  override get(key: K): Promise<V> | undefined {
+  override get(key: K): Promise<V> {
     let promise = super.get(key);
 
     if (!promise) {
@@ -85,12 +85,10 @@ export class AsyncCacheMap<K, V> extends CacheMap<K, Promise<V>> {
     return promise;
   }
 
-  async load(key: K): Promise<boolean> {
-    try {
-      await this.get(key);
-      return true;
-    } catch {
-      return false;
-    }
+  load(key: K): Promise<boolean> {
+    return this.get(key).then(
+      () => true,
+      () => false,
+    );
   }
 }
