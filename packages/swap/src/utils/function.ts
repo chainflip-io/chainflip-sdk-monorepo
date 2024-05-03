@@ -1,4 +1,3 @@
-import { setTimeout as sleep } from 'timers/promises';
 import { Chain, chainConstants } from '@/shared/enums';
 import * as rpc from '@/shared/rpc';
 import logger from './logger';
