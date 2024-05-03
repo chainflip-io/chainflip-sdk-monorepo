@@ -32,6 +32,14 @@ export default class Leg {
     return this.destAsset !== 'Usdc' ? 'BUY' : 'SELL';
   }
 
+  getBaseAsset(): Exclude<InternalAsset, 'Usdc'> {
+    if (this.destAsset !== 'Usdc') return this.destAsset;
+
+    if (this.srcAsset !== 'Usdc') return this.srcAsset;
+
+    throw new Error('one of the assets must be Usdc');
+  }
+
   toMarketMakerJSON(): MarketMakerLeg {
     const side = this.getSide();
     let baseAsset: Exclude<InternalAsset, 'Usdc'>;
@@ -50,11 +58,23 @@ export default class Leg {
     };
   }
 
-  toSwapInput(): SwapInput {
+  toSwapInput({
+    poolState,
+    limitOrders: inputLimitOrders,
+    rangeOrderPrice,
+  }: {
+    poolState?: string | null;
+    rangeOrderPrice?: bigint;
+    limitOrders: [number, bigint][];
+  }): SwapInput {
+    const limitOrders = inputLimitOrders.map(([tick, amount]) => ({ tick, amount }));
+
     return {
       side: this.getSide() === 'BUY' ? Side.Buy : Side.Sell,
+      limitOrders,
       amount: this.amount,
-      limitOrders: [],
+      poolState: poolState ?? undefined,
+      rangeOrderPrice,
     };
   }
 }

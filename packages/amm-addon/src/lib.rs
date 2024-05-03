@@ -6,14 +6,15 @@ use napi::bindgen_prelude::*;
 use primitive_types::U256;
 
 mod amm;
-pub mod common;
-pub mod limit_orders;
-pub mod range_orders;
+mod common;
+mod limit_orders;
+mod range_orders;
+mod rpc;
 
 #[macro_use]
 extern crate napi_derive;
 
-fn bigint_to_u256(bigint: &BigInt) -> Result<U256> {
+fn try_bigint_to_u256(bigint: &BigInt) -> Result<U256> {
     if bigint.words.len() > 4 {
         return Err(napi::Error::from_reason(
             "BigInt value is too large".to_owned(),
@@ -38,30 +39,32 @@ fn u256_to_bigint(u256: U256) -> BigInt {
 
 #[derive(Debug)]
 #[napi(object)]
-struct LimitOrder {
+pub struct LimitOrder {
     pub tick: i32,
     pub amount: BigInt,
 }
 
 #[derive(Debug)]
 #[napi(object)]
-struct SwapInput {
+pub struct SwapInput {
     pub amount: BigInt,
     pub limit_orders: Vec<LimitOrder>,
     pub pool_fee: Option<u32>,
     pub side: Side,
+    pub pool_state: Option<String>,
+    pub range_order_price: Option<BigInt>,
 }
 
 fn to_napi_error<E: std::fmt::Debug>(e: E) -> napi::Error {
     napi::Error::from_reason(format!("{e:?}"))
 }
 
-struct AMM {
+pub struct AMM {
     init: SwapInput,
 }
 
 #[napi(object)]
-struct SwapOutput {
+pub struct SwapOutput {
     pub swapped_amount: BigInt,
     pub remaining_amount: BigInt,
 }
@@ -72,9 +75,16 @@ impl Task for AMM {
     type JsValue = SwapOutput;
 
     fn compute(&mut self) -> napi::Result<Self::Output> {
-        let args = &self.init;
+        let SwapInput {
+            limit_orders,
+            pool_fee,
+            side,
+            pool_state,
+            amount,
+            range_order_price,
+        } = &self.init;
 
-        let pool_fee = args.pool_fee.unwrap_or(0);
+        let pool_fee = pool_fee.unwrap_or(0);
 
         if !limit_orders::PoolState::validate_fees(pool_fee)
             || !range_orders::PoolState::validate_fees(pool_fee)
@@ -82,29 +92,65 @@ impl Task for AMM {
             return Err(to_napi_error("Invalid pool fee"));
         }
 
-        let side = args.side;
+        let initial_sqrt_price = range_order_price
+            .as_ref()
+            .map(|price| try_bigint_to_u256(price))
+            .transpose()?
+            .unwrap_or(match side.to_sold_pair() {
+                Pairs::Base => MAX_SQRT_PRICE,
+                Pairs::Quote => MIN_SQRT_PRICE,
+            });
 
-        let initial_sqrt_price = match side.to_sold_pair() {
-            Pairs::Base => MAX_SQRT_PRICE,
-            Pairs::Quote => MIN_SQRT_PRICE,
-        };
+        let rpc_response = pool_state
+            .as_ref()
+            .map(|string| {
+                serde_json::from_str::<rpc::PoolOrdersRpc>(&string).map_err(to_napi_error)
+            })
+            .transpose()?
+            .map(|rpc_response| rpc_response.into_pool_orders(side))
+            .unwrap_or_default();
+
+        let limit_orders = limit_orders
+            .iter()
+            .map(|order| (order.tick, try_bigint_to_u256(&order.amount)))
+            .chain(
+                rpc_response
+                    .0
+                    .into_iter()
+                    .map(|(tick, amount)| (tick, Ok(amount))),
+            )
+            .enumerate();
 
         let mut pool_state = PoolState {
             limit_orders: limit_orders::PoolState::new(pool_fee).unwrap(),
             range_orders: range_orders::PoolState::new(pool_fee, initial_sqrt_price).unwrap(),
         };
 
-        for (id, LimitOrder { tick, amount }) in args.limit_orders.iter().enumerate() {
-            let amount = bigint_to_u256(amount)?;
-
+        for (id, (tick, amount)) in limit_orders {
             pool_state
-                .collect_and_mint_limit_order(&(id as i32), !side, *tick, amount)
+                .collect_and_mint_limit_order(
+                    &(id as i32),
+                    !*side,
+                    tick,
+                    amount.map_err(to_napi_error)?,
+                )
                 .map_err(to_napi_error)?;
         }
 
-        let amount = bigint_to_u256(&args.amount)?;
+        for (id, (range, liquidity)) in rpc_response.1.into_iter().enumerate() {
+            pool_state
+                .collect_and_mint_range_order(
+                    &(id as i32),
+                    range,
+                    range_orders::Size::Liquidity { liquidity },
+                    Result::<_, &'static str>::Ok,
+                )
+                .map_err(to_napi_error)?;
+        }
 
-        Ok(pool_state.swap(side, amount, None))
+        let amount = try_bigint_to_u256(&amount)?;
+
+        Ok(pool_state.swap(*side, amount, None))
     }
 
     fn resolve(
@@ -120,6 +166,6 @@ impl Task for AMM {
 }
 
 #[napi]
-fn swap(args: SwapInput) -> AsyncTask<AMM> {
+pub fn swap(args: SwapInput) -> AsyncTask<AMM> {
     AsyncTask::new(AMM { init: args })
 }

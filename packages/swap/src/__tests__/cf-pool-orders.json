@@ -1,0 +1,165 @@
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "limit_orders": {
+      "asks": [
+        {
+          "lp": "cFLGvPhhrribWCx9id5kLVqwiFK4QiVNjQ6ViyaRFF2Nrgq7j",
+          "id": "0x0",
+          "tick": -195677,
+          "sell_amount": "0x574a2627bbc16628",
+          "fees_earned": "0x0",
+          "original_sell_amount": "0x574a2627bbc16628"
+        },
+        {
+          "lp": "cFLGvPhhrribWCx9id5kLVqwiFK4QiVNjQ6ViyaRFF2Nrgq7j",
+          "id": "0x1",
+          "tick": -195674,
+          "sell_amount": "0x15d28989eef05a070",
+          "fees_earned": "0x0",
+          "original_sell_amount": "0x15d28989eef05a070"
+        },
+        {
+          "lp": "cFLGvPhhrribWCx9id5kLVqwiFK4QiVNjQ6ViyaRFF2Nrgq7j",
+          "id": "0x2",
+          "tick": -195663,
+          "sell_amount": "0x368e57d8d558dfd90",
+          "fees_earned": "0x0",
+          "original_sell_amount": "0x368e57d8d558dfd90"
+        },
+        {
+          "lp": "cFLGvPhhrribWCx9id5kLVqwiFK4QiVNjQ6ViyaRFF2Nrgq7j",
+          "id": "0x3",
+          "tick": -195638,
+          "sell_amount": "0x368e57d8d558dfd90",
+          "fees_earned": "0x0",
+          "original_sell_amount": "0x368e57d8d558dfd90"
+        },
+        {
+          "lp": "cFLGvPhhrribWCx9id5kLVqwiFK4QiVNjQ6ViyaRFF2Nrgq7j",
+          "id": "0x4",
+          "tick": -195578,
+          "sell_amount": "0x6a4f6e77a40cf509c",
+          "fees_earned": "0x0",
+          "original_sell_amount": "0x6a4f6e77a40cf509c"
+        },
+        {
+          "lp": "cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh",
+          "id": "0x6173e40b2bc",
+          "tick": -195646,
+          "sell_amount": "0x1a055690d9db80000",
+          "fees_earned": "0x0",
+          "original_sell_amount": "0x1a055690d9db80000"
+        },
+        {
+          "lp": "cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh",
+          "id": "0x6173e40b2be",
+          "tick": -195626,
+          "sell_amount": "0x1a055690d9db80000",
+          "fees_earned": "0x0",
+          "original_sell_amount": "0x1a055690d9db80000"
+        },
+        {
+          "lp": "cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh",
+          "id": "0x6173e40b2c0",
+          "tick": -195576,
+          "sell_amount": "0x1a055690d9db80000",
+          "fees_earned": "0x0",
+          "original_sell_amount": "0x1a055690d9db80000"
+        }
+      ],
+      "bids": [
+        {
+          "lp": "cFLGvPhhrribWCx9id5kLVqwiFK4QiVNjQ6ViyaRFF2Nrgq7j",
+          "id": "0x0",
+          "tick": -195673,
+          "sell_amount": "0x4a817c800",
+          "fees_earned": "0x0",
+          "original_sell_amount": "0x4a817c800"
+        },
+        {
+          "lp": "cFLGvPhhrribWCx9id5kLVqwiFK4QiVNjQ6ViyaRFF2Nrgq7j",
+          "id": "0x1",
+          "tick": -195676,
+          "sell_amount": "0x12a05f2000",
+          "fees_earned": "0x0",
+          "original_sell_amount": "0x12a05f2000"
+        },
+        {
+          "lp": "cFLGvPhhrribWCx9id5kLVqwiFK4QiVNjQ6ViyaRFF2Nrgq7j",
+          "id": "0x2",
+          "tick": -195687,
+          "sell_amount": "0x2e90edd000",
+          "fees_earned": "0x0",
+          "original_sell_amount": "0x2e90edd000"
+        },
+        {
+          "lp": "cFLGvPhhrribWCx9id5kLVqwiFK4QiVNjQ6ViyaRFF2Nrgq7j",
+          "id": "0x3",
+          "tick": -195712,
+          "sell_amount": "0x2e90edd000",
+          "fees_earned": "0x0",
+          "original_sell_amount": "0x2e90edd000"
+        },
+        {
+          "lp": "cFLGvPhhrribWCx9id5kLVqwiFK4QiVNjQ6ViyaRFF2Nrgq7j",
+          "id": "0x4",
+          "tick": -195772,
+          "sell_amount": "0x5671824461",
+          "fees_earned": "0x0",
+          "original_sell_amount": "0x5671824461"
+        },
+        {
+          "lp": "cFLvCBxThPho4LP8iSP54B1iHdEtJhTHniUW5yyNcwDBGSe1X",
+          "id": "0x18dbe9c5baf",
+          "tick": -196947,
+          "sell_amount": "0x17456b9e",
+          "fees_earned": "0x0",
+          "original_sell_amount": "0x17456b9e"
+        }
+      ]
+    },
+    "range_orders": [
+      {
+        "lp": "cFM63NFq2MiujSSXUz1AfZgb4aZrkv5aWggdLkyufyTcpkrf2",
+        "id": "0x1",
+        "range": {
+          "start": -198197,
+          "end": -192004
+        },
+        "liquidity": 4115587651042067,
+        "fees_earned": {
+          "base": "0x26f866237f0dcf",
+          "quote": "0x221c3de"
+        }
+      },
+      {
+        "lp": "cFM63NFq2MiujSSXUz1AfZgb4aZrkv5aWggdLkyufyTcpkrf2",
+        "id": "0x2",
+        "range": {
+          "start": -207244,
+          "end": -200312
+        },
+        "liquidity": 6589186046511628,
+        "fees_earned": {
+          "base": "0x0",
+          "quote": "0x0"
+        }
+      },
+      {
+        "lp": "cFPMRc9TCuJPuS53fcRivbyR9UmsKmQbk6dtyAjmpcXCiVj7s",
+        "id": "0x18e9f56497e",
+        "range": {
+          "start": -887272,
+          "end": 887272
+        },
+        "liquidity": 8685518042712882,
+        "fees_earned": {
+          "base": "0xaf256200597363",
+          "quote": "0x939090e"
+        }
+      }
+    ]
+  },
+  "id": 1
+}

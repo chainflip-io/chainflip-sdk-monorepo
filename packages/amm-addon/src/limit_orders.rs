@@ -18,12 +18,12 @@
 //! percent_remaining values were recorded.
 
 use crate::common::{
-    is_tick_valid, mul_div_ceil, mul_div_floor, sqrt_price_at_tick, sqrt_price_to_price,
-    tick_at_sqrt_price, Amount, BaseToQuote, LiquidityProvider, PoolPairsMap, Price, QuoteToBase,
-    SetFeesError, SqrtPriceQ64F96, Tick, MAX_LP_FEE, ONE_IN_HUNDREDTH_PIPS, PRICE_FRACTIONAL_BITS,
+    is_tick_valid, mul_div_ceil, mul_div_floor, sqrt_price_at_tick, sqrt_price_to_price, Amount,
+    BaseToQuote, LiquidityProvider, PoolPairsMap, Price, QuoteToBase, SqrtPriceQ64F96, Tick,
+    MAX_LP_FEE, ONE_IN_HUNDREDTH_PIPS, PRICE_FRACTIONAL_BITS,
 };
 use primitive_types::{U256, U512};
-use std::{collections::btree_map::BTreeMap, convert::Infallible};
+use std::collections::btree_map::BTreeMap;
 
 // This is the maximum liquidity/amount of an asset that can be sold at a single tick/price. If an
 // LP attempts to add more liquidity that would increase the total at the tick past this value, the
@@ -260,14 +260,6 @@ pub enum NewError {
 }
 
 #[derive(Debug)]
-pub enum DepthError {
-    /// Invalid Price
-    InvalidTick,
-    /// Start tick must be less than or equal to the end tick
-    InvalidTickRange,
-}
-
-#[derive(Debug)]
 pub enum MintError {
     /// One of the start/end ticks of the range reached its maximum gross liquidity
     MaximumLiquidity,
@@ -292,9 +284,6 @@ impl<T> PositionError<T> {
         }
     }
 }
-
-#[derive(Debug)]
-pub enum BurnError {}
 
 #[derive(Debug)]
 pub enum CollectError {}
@@ -322,11 +311,7 @@ pub struct PositionInfo {
     /// The amount of liquidity in the position after the operation.
     pub amount: Amount,
 }
-impl PositionInfo {
-    pub fn new(amount: Amount) -> Self {
-        Self { amount }
-    }
-}
+
 impl<'a> From<&'a Position> for PositionInfo {
     fn from(value: &'a Position) -> Self {
         Self {
@@ -427,102 +412,6 @@ impl PoolState {
             total_swap_inputs: Default::default(),
             total_swap_outputs: Default::default(),
         })
-    }
-
-    /// Creates an iterator over all positions
-    ///
-    /// This function never panics.
-    pub fn positions<SD: SwapDirection>(
-        &self,
-    ) -> impl '_ + Iterator<Item = (LiquidityProvider, Tick, Collected, PositionInfo)> {
-        self.positions[!SD::INPUT_SIDE]
-            .iter()
-            .map(|((sqrt_price, lp), position)| {
-                let (collected, option_position) = Self::collect_from_position::<SD>(
-                    position.clone(),
-                    self.fixed_pools[!SD::INPUT_SIDE].get(sqrt_price),
-                    sqrt_price_to_price(*sqrt_price),
-                    self.fee_hundredth_pips,
-                );
-
-                (
-                    lp.clone(),
-                    tick_at_sqrt_price(*sqrt_price),
-                    collected,
-                    option_position
-                        .map_or(Default::default(), |position| PositionInfo::from(&position)),
-                )
-            })
-    }
-
-    /// Runs collect for all positions in the pool. Returns a PoolPairsMap
-    /// containing the state and fees collected from every position. The positions are grouped into
-    /// a PoolPairsMap by the asset they sell.
-    ///
-    /// This function never panics.
-    #[allow(clippy::type_complexity)]
-    pub fn collect_all(
-        &mut self,
-    ) -> PoolPairsMap<Vec<(LiquidityProvider, Tick, Collected, PositionInfo)>> {
-        // We must collect all positions before we can change the fee, otherwise the fee and swapped
-        // liquidity calculations would be wrong.
-        PoolPairsMap::from_array([
-            self.positions[!<QuoteToBase as crate::common::SwapDirection>::INPUT_SIDE]
-                .keys()
-                .cloned()
-                .collect::<std::vec::Vec<_>>()
-                .into_iter()
-                .map(|(sqrt_price, lp)| {
-                    let (collected, position_info) =
-                        self.inner_collect::<QuoteToBase>(&lp, sqrt_price).unwrap();
-
-                    (
-                        lp.clone(),
-                        tick_at_sqrt_price(sqrt_price),
-                        collected,
-                        position_info,
-                    )
-                })
-                .collect(),
-            self.positions[!<BaseToQuote as crate::common::SwapDirection>::INPUT_SIDE]
-                .keys()
-                .cloned()
-                .collect::<std::vec::Vec<_>>()
-                .into_iter()
-                .map(|(sqrt_price, lp)| {
-                    let (collected, position_info) =
-                        self.inner_collect::<BaseToQuote>(&lp, sqrt_price).unwrap();
-
-                    (
-                        lp.clone(),
-                        tick_at_sqrt_price(sqrt_price),
-                        collected,
-                        position_info,
-                    )
-                })
-                .collect(),
-        ])
-    }
-
-    /// Sets the fee for the pool. This will apply to future swaps. The fee may not be set
-    /// higher than 50%. Also runs collect for all positions in the pool. Returns a PoolPairsMap
-    /// containing the state and fees collected from every position as part of the set_fees
-    /// operation. The positions are grouped into a PoolPairsMap by the asset they sell.
-    ///
-    /// This function never panics.
-    #[allow(clippy::type_complexity)]
-    pub fn set_fees(
-        &mut self,
-        fee_hundredth_pips: u32,
-    ) -> Result<PoolPairsMap<Vec<(LiquidityProvider, Tick, Collected, PositionInfo)>>, SetFeesError>
-    {
-        Self::validate_fees(fee_hundredth_pips)
-            .then_some(())
-            .ok_or(SetFeesError::InvalidFeeAmount)?;
-
-        let collect_all = self.collect_all();
-        self.fee_hundredth_pips = fee_hundredth_pips;
-        Ok(collect_all)
     }
 
     /// Returns the current price of the pool for a given swap direction, if some liquidity exists.
@@ -788,76 +677,6 @@ impl PoolState {
             .ok_or(PositionError::InvalidTick)
     }
 
-    /// Collects any earnings from the specified position, and then removes the requested amount of
-    /// liquidity from it. The SwapDirection determines which direction of swaps the
-    /// liquidity/position you're burning was for.
-    ///
-    /// This function never panics.
-    pub fn collect_and_burn<SD: SwapDirection>(
-        &mut self,
-        lp: &LiquidityProvider,
-        tick: Tick,
-        amount: Amount,
-    ) -> Result<(Amount, Collected, PositionInfo), PositionError<BurnError>> {
-        if amount.is_zero() {
-            self.collect::<SD>(lp, tick)
-                .map_err(|err| err.map_other(|e| -> BurnError { match e {} }))
-                .map(|(collected_amounts, position_info)| {
-                    (Amount::zero(), collected_amounts, position_info)
-                })
-        } else {
-            let sqrt_price = Self::validate_tick(tick)?;
-            let price = sqrt_price_to_price(sqrt_price);
-
-            let positions = &mut self.positions[!SD::INPUT_SIDE];
-            let fixed_pools = &mut self.fixed_pools[!SD::INPUT_SIDE];
-
-            let position = positions
-                .get(&(sqrt_price, lp.clone()))
-                .ok_or(PositionError::NonExistent)?
-                .clone();
-            let option_fixed_pool = fixed_pools.get(&sqrt_price);
-
-            let (collected_amounts, option_position) = Self::collect_from_position::<SD>(
-                position,
-                option_fixed_pool,
-                price,
-                self.fee_hundredth_pips,
-            );
-            Ok(if let Some(mut position) = option_position {
-                let mut fixed_pool = option_fixed_pool.unwrap().clone(); // Position having liquidity remaining implies fixed pool existing before collect.
-
-                let amount = core::cmp::min(position.amount, amount);
-                position.amount -= amount;
-                position.original_amount = position.amount;
-                fixed_pool.available -= amount;
-
-                let position_info = PositionInfo::from(&position);
-
-                if position.amount.is_zero() {
-                    positions.remove(&(sqrt_price, lp.clone()));
-                } else {
-                    assert!(!fixed_pool.available.is_zero());
-                    positions.insert((sqrt_price, lp.clone()), position);
-                };
-                if fixed_pool.available.is_zero() {
-                    fixed_pools.remove(&sqrt_price);
-                } else {
-                    fixed_pools.insert(sqrt_price, fixed_pool);
-                }
-
-                (amount, collected_amounts, position_info)
-            } else {
-                positions.remove(&(sqrt_price, lp.clone()));
-                (
-                    Default::default(),
-                    collected_amounts,
-                    PositionInfo::default(),
-                )
-            })
-        }
-    }
-
     /// Collects any earnings from the specified position. The SwapDirection determines which
     /// direction of swaps the liquidity/position you're referring to is for.
     ///
@@ -902,67 +721,6 @@ impl PoolState {
                 PositionInfo::default()
             },
         ))
-    }
-
-    /// Returns all the assets associated with a position
-    ///
-    /// This function never panics.
-    pub fn position<SD: SwapDirection>(
-        &self,
-        lp: &LiquidityProvider,
-        tick: Tick,
-    ) -> Result<(Collected, PositionInfo), PositionError<Infallible>> {
-        let sqrt_price = Self::validate_tick(tick)?;
-        let price = sqrt_price_to_price(sqrt_price);
-
-        let positions = &self.positions[!SD::INPUT_SIDE];
-        let fixed_pools = &self.fixed_pools[!SD::INPUT_SIDE];
-
-        let (collected_amounts, option_position) = Self::collect_from_position::<SD>(
-            positions
-                .get(&(sqrt_price, lp.clone()))
-                .ok_or(PositionError::NonExistent)?
-                .clone(),
-            fixed_pools.get(&sqrt_price),
-            price,
-            self.fee_hundredth_pips,
-        );
-
-        Ok((
-            collected_amounts,
-            option_position.map_or(Default::default(), |position| PositionInfo::from(&position)),
-        ))
-    }
-
-    /// Returns all the assets available for swaps in a given direction
-    ///
-    /// This function never panics.
-    pub fn liquidity<SD: SwapDirection>(&self) -> Vec<(Tick, Amount)> {
-        self.fixed_pools[!SD::INPUT_SIDE]
-            .iter()
-            .map(|(sqrt_price, fixed_pool)| (tick_at_sqrt_price(*sqrt_price), fixed_pool.available))
-            .collect()
-    }
-
-    /// Returns all the assets available for swaps between two prices (inclusive..exclusive)
-    ///
-    /// This function never panics.
-    pub fn depth<SD: SwapDirection>(
-        &self,
-        range: core::ops::Range<Tick>,
-    ) -> Result<Amount, DepthError> {
-        let start =
-            Self::validate_tick::<Infallible>(range.start).map_err(|_| DepthError::InvalidTick)?;
-        let end =
-            Self::validate_tick::<Infallible>(range.end).map_err(|_| DepthError::InvalidTick)?;
-        if start <= end {
-            Ok(self.fixed_pools[!SD::INPUT_SIDE]
-                .range(start..end)
-                .map(|(_, fixed_pool)| fixed_pool.available)
-                .fold(Default::default(), |acc, x| acc + x))
-        } else {
-            Err(DepthError::InvalidTickRange)
-        }
     }
 
     pub fn validate_fees(fee_hundredth_pips: u32) -> bool {

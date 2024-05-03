@@ -1,0 +1,17 @@
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "base_asset": {
+      "chain": "Ethereum",
+      "asset": "ETH"
+    },
+    "quote_asset": {
+      "chain": "Ethereum",
+      "asset": "USDC"
+    },
+    "sell": "0x3b1fae539d980292c6575",
+    "buy": "0x3b04e691d9f9a80f15a85",
+    "range_order": "0x3b04e691d9f9a80f15a85"
+  },
+  "id": 1
+}

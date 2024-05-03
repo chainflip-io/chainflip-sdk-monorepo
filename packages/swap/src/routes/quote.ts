@@ -61,6 +61,7 @@ const saveResult = async ({
         poolOutput: poolResult.egressAmount,
         poolFees: poolResult.includedFees,
         poolDuration,
+        version: 2,
       },
     })
     .catch(() => null);

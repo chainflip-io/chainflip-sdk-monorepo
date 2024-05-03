@@ -20,13 +20,12 @@
 //! instances of SqrtPriceQ64F96 are <=U160::MAX.
 
 use crate::common::{
-    is_sqrt_price_valid, is_tick_valid, mul_div_ceil, mul_div_floor, sqrt_price_at_tick,
-    tick_at_sqrt_price, Amount, BaseToQuote, LiquidityProvider, Pairs, PoolPairsMap, QuoteToBase,
-    SetFeesError, SqrtPriceQ64F96, Tick, MAX_LP_FEE, MAX_TICK, MIN_TICK, ONE_IN_HUNDREDTH_PIPS,
-    SQRT_PRICE_FRACTIONAL_BITS,
+    is_sqrt_price_valid, mul_div_ceil, mul_div_floor, sqrt_price_at_tick, tick_at_sqrt_price,
+    Amount, BaseToQuote, LiquidityProvider, PoolPairsMap, QuoteToBase, SqrtPriceQ64F96, Tick,
+    MAX_LP_FEE, MAX_TICK, MIN_TICK, ONE_IN_HUNDREDTH_PIPS, SQRT_PRICE_FRACTIONAL_BITS,
 };
 use primitive_types::{U256, U512};
-use std::{collections::btree_map::BTreeMap, convert::Infallible, vec::Vec};
+use std::collections::btree_map::BTreeMap;
 
 /// This is the invariant wrt xy = k. It represents / is proportional to the depth of the
 /// pool/position.
@@ -384,37 +383,7 @@ pub enum PositionError<T> {
 }
 
 #[derive(Debug)]
-pub enum BurnError {
-    /// The ratio of assets removed from the position must match the ratio of assets in the
-    /// position, so that the ratio of assets in the position is maintained, but there are no
-    /// amounts between the specified maximum and minimum that could match that ratio
-    AssetRatioUnachieveable,
-}
-
-#[derive(Debug)]
 pub enum CollectError {}
-
-#[derive(Debug)]
-pub enum RequiredAssetRatioError {
-    /// Invalid Tick range
-    InvalidTickRange,
-}
-
-#[derive(Debug)]
-pub enum DepthError {
-    /// Invalid Price
-    InvalidTick,
-    /// Start tick must be less than or equal to the end tick
-    InvalidTickRange,
-}
-
-#[derive(Debug)]
-pub enum LiquidityToAmountsError {
-    /// Invalid Tick range
-    InvalidTickRange,
-    /// `liquidity` is larger than the maximum
-    LiquidityTooLarge,
-}
 
 #[derive(Default, Debug, PartialEq, Eq)]
 pub struct Collected {
@@ -425,13 +394,7 @@ pub struct Collected {
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Size {
-    Liquidity {
-        liquidity: Liquidity,
-    },
-    Amount {
-        maximum: PoolPairsMap<Amount>,
-        minimum: PoolPairsMap<Amount>,
-    },
+    Liquidity { liquidity: Liquidity },
 }
 
 #[derive(Default, Debug, PartialEq, Eq)]
@@ -494,35 +457,6 @@ impl PoolState {
         })
     }
 
-    pub fn collect_all(
-        &mut self,
-    ) -> impl '_ + Iterator<Item = ((LiquidityProvider, Tick, Tick), (Collected, PositionInfo))>
-    {
-        self.positions
-            .keys()
-            .cloned()
-            .collect::<std::vec::Vec<_>>()
-            .into_iter()
-            .map(|(lp, lower_tick, upper_tick)| {
-                (
-                    (lp.clone(), lower_tick, upper_tick),
-                    self.collect(&lp, lower_tick, upper_tick).unwrap(),
-                )
-            })
-    }
-
-    /// Sets the fee for the pool. This will apply to future swaps. This function will fail if the
-    /// fee is greater than 50%.
-    ///
-    /// This function never panics
-    pub fn set_fees(&mut self, fee_hundredth_pips: u32) -> Result<(), SetFeesError> {
-        Self::validate_fees(fee_hundredth_pips)
-            .then_some(())
-            .ok_or(SetFeesError::InvalidFeeAmount)?;
-        self.fee_hundredth_pips = fee_hundredth_pips;
-        Ok(())
-    }
-
     pub fn validate_fees(fee_hundredth_pips: u32) -> bool {
         fee_hundredth_pips <= MAX_LP_FEE
     }
@@ -533,11 +467,6 @@ impl PoolState {
     /// This function never panics
     pub fn current_sqrt_price<SD: SwapDirection>(&self) -> Option<SqrtPriceQ64F96> {
         SD::further_liquidity(self.current_tick).then_some(self.current_sqrt_price)
-    }
-
-    /// Returns the raw current sqrt price of the pool, without liquidity checks.
-    pub fn raw_current_sqrt_price(&self) -> SqrtPriceQ64F96 {
-        self.current_sqrt_price
     }
 
     /// Calculates the fees owed to the specified position, resets the fees owed for that position
@@ -652,102 +581,6 @@ impl PoolState {
             self.liquidity_map.insert(upper_tick, upper_delta);
 
             Ok((t, minted_liquidity, collected_fees, position_info))
-        } else {
-            Err(PositionError::NonExistent)
-        }
-    }
-
-    /// Calculates the fees owed to the specified position, resets the fees owed for that
-    /// position to zero, removes liquidity from the specified range-order, and returns the value of
-    /// the burnt liquidity in `Amounts` with the calculated amount of owed fees. If all the
-    /// position's liquidity is burned then it is destroyed. If the position does not exist returns
-    /// `Err(_)`
-    ///
-    /// This function never panics
-    ///
-    /// If this function returns an `Err(_)` no state changes have occurred
-    #[allow(clippy::type_complexity)]
-    pub fn collect_and_burn(
-        &mut self,
-        lp: &LiquidityProvider,
-        lower_tick: Tick,
-        upper_tick: Tick,
-        size: Size,
-    ) -> Result<(PoolPairsMap<Amount>, Liquidity, Collected, PositionInfo), PositionError<BurnError>>
-    {
-        Self::validate_position_range(lower_tick, upper_tick)?;
-        if let Some(mut position) = self
-            .positions
-            .get(&(lp.clone(), lower_tick, upper_tick))
-            .cloned()
-        {
-            assert!(position.liquidity != 0);
-
-            let burnt_liquidity = self
-                .size_as_liquidity(lower_tick, upper_tick, size)
-                .ok_or(PositionError::Other(BurnError::AssetRatioUnachieveable))
-                .map(|liquidity| core::cmp::min(position.liquidity, liquidity))?;
-
-            let mut lower_delta = self.liquidity_map.get(&lower_tick).unwrap().clone();
-            lower_delta.liquidity_gross -= burnt_liquidity;
-            lower_delta.liquidity_delta = lower_delta
-                .liquidity_delta
-                .checked_sub_unsigned(burnt_liquidity)
-                .unwrap();
-            let mut upper_delta = self.liquidity_map.get(&upper_tick).unwrap().clone();
-            upper_delta.liquidity_gross -= burnt_liquidity;
-            upper_delta.liquidity_delta = upper_delta
-                .liquidity_delta
-                .checked_add_unsigned(burnt_liquidity)
-                .unwrap();
-
-            let (collected_fees, position_info) = position.set_liquidity(
-                self,
-                position.liquidity - burnt_liquidity,
-                lower_tick,
-                &lower_delta,
-                upper_tick,
-                &upper_delta,
-            );
-
-            let (amounts_owed, current_liquidity_delta) =
-                self.inner_liquidity_to_amounts::<false>(burnt_liquidity, lower_tick, upper_tick);
-            // Will not underflow as current_liquidity_delta must have previously been added to
-            // current_liquidity for it to need to be subtracted now
-            self.current_liquidity -= current_liquidity_delta;
-
-            if lower_delta.liquidity_gross == 0 &&
-				/*Guarantee MIN_TICK is always in map to simplify swap logic*/ lower_tick != MIN_TICK
-            {
-                assert_eq!(position.liquidity, 0);
-                self.liquidity_map.remove(&lower_tick);
-            } else {
-                *self.liquidity_map.get_mut(&lower_tick).unwrap() = lower_delta;
-            }
-            if upper_delta.liquidity_gross == 0 &&
-				/*Guarantee MAX_TICK is always in map to simplify swap logic*/ upper_tick != MAX_TICK
-            {
-                assert_eq!(position.liquidity, 0);
-                self.liquidity_map.remove(&upper_tick);
-            } else {
-                *self.liquidity_map.get_mut(&upper_tick).unwrap() = upper_delta;
-            }
-
-            if position.liquidity == 0 {
-                // DIFF: This behaviour is different than Uniswap's to ensure if a position
-                // exists its ticks also exist in the liquidity_map, by removing zero liquidity
-                // positions
-                self.positions.remove(&(lp.clone(), lower_tick, upper_tick));
-            } else {
-                *self
-                    .positions
-                    .get_mut(&(lp.clone(), lower_tick, upper_tick))
-                    .unwrap() = position;
-            };
-
-            // DIFF: This behaviour is different than Uniswap's. We don't accumulated tokens
-            // owed in the position, instead it is returned here.
-            Ok((amounts_owed, burnt_liquidity, collected_fees, position_info))
         } else {
             Err(PositionError::NonExistent)
         }
@@ -945,47 +778,6 @@ impl PoolState {
             .ok_or(PositionError::InvalidTickRange)
     }
 
-    /// Returns the ratio of assets required to create a range order at the given tick range
-    ///
-    /// This function never panics
-    pub fn required_asset_ratio<const ROUND_UP: bool>(
-        &self,
-        lower_tick: Tick,
-        upper_tick: Tick,
-    ) -> Result<PoolPairsMap<Amount>, RequiredAssetRatioError> {
-        Self::validate_position_range::<Infallible>(lower_tick, upper_tick)
-            .map_err(|_err| RequiredAssetRatioError::InvalidTickRange)?;
-        Ok(self
-            .inner_liquidity_to_amounts::<ROUND_UP>(
-                MAX_TICK_GROSS_LIQUIDITY,
-                lower_tick,
-                upper_tick,
-            )
-            .0)
-    }
-
-    /// Returns the value of a range order with a given amount of liquidity, i.e. the assets that
-    /// you would need to create such as position, or that you would get if such a position was
-    /// burned.
-    ///
-    /// This function never panics
-    pub fn liquidity_to_amounts<const ROUND_UP: bool>(
-        &self,
-        liquidity: Liquidity,
-        lower_tick: Tick,
-        upper_tick: Tick,
-    ) -> Result<PoolPairsMap<Amount>, LiquidityToAmountsError> {
-        Self::validate_position_range::<Infallible>(lower_tick, upper_tick)
-            .map_err(|_err| LiquidityToAmountsError::InvalidTickRange)?;
-        if liquidity > MAX_TICK_GROSS_LIQUIDITY {
-            Err(LiquidityToAmountsError::LiquidityTooLarge)
-        } else {
-            Ok(self
-                .inner_liquidity_to_amounts::<ROUND_UP>(liquidity, lower_tick, upper_tick)
-                .0)
-        }
-    }
-
     fn inner_liquidity_to_amounts<const ROUND_UP: bool>(
         &self,
         liquidity: Liquidity,
@@ -1053,205 +845,12 @@ impl PoolState {
 
     fn size_as_liquidity(
         &self,
-        lower_tick: Tick,
-        upper_tick: Tick,
+        _lower_tick: Tick,
+        _upper_tick: Tick,
         size: Size,
     ) -> Option<Liquidity> {
         match size {
             Size::Liquidity { liquidity } => Some(liquidity),
-            Size::Amount { maximum, minimum } => {
-                let liquidity = self.inner_amounts_to_liquidity(lower_tick, upper_tick, maximum);
-
-                let (possible, _) =
-                    self.inner_liquidity_to_amounts::<false>(liquidity, lower_tick, upper_tick);
-
-                if possible[Pairs::Base] < minimum[Pairs::Base]
-                    || possible[Pairs::Quote] < minimum[Pairs::Quote]
-                {
-                    None
-                } else {
-                    Some(liquidity)
-                }
-            }
-        }
-    }
-
-    fn inner_amounts_to_liquidity(
-        &self,
-        lower_tick: Tick,
-        upper_tick: Tick,
-        amounts: PoolPairsMap<Amount>,
-    ) -> Liquidity {
-        // Inverse of `zero_amount_delta_ceil`
-        fn zero_amount_to_liquidity(
-            lower_sqrt_price: SqrtPriceQ64F96,
-            upper_sqrt_price: SqrtPriceQ64F96,
-            amounts: PoolPairsMap<Amount>,
-        ) -> U512 {
-            (U512::saturating_mul(
-                amounts[Pairs::Base].into(),
-                U256::full_mul(lower_sqrt_price, upper_sqrt_price),
-            ) / U512::from(upper_sqrt_price - lower_sqrt_price))
-                >> SQRT_PRICE_FRACTIONAL_BITS
-        }
-
-        // Inverse of `one_amount_delta_ceil`
-        fn one_amount_to_liquidity(
-            lower_sqrt_price: SqrtPriceQ64F96,
-            upper_sqrt_price: SqrtPriceQ64F96,
-            amounts: PoolPairsMap<Amount>,
-        ) -> U512 {
-            U256::full_mul(
-                amounts[Pairs::Quote],
-                U256::one() << SQRT_PRICE_FRACTIONAL_BITS,
-            ) / (upper_sqrt_price - lower_sqrt_price)
-        }
-
-        let [lower_sqrt_price, upper_sqrt_price] = [lower_tick, upper_tick].map(sqrt_price_at_tick);
-
-        if self.current_sqrt_price <= lower_sqrt_price {
-            zero_amount_to_liquidity(lower_sqrt_price, upper_sqrt_price, amounts)
-        } else if self.current_sqrt_price < upper_sqrt_price {
-            core::cmp::min(
-                zero_amount_to_liquidity(self.current_sqrt_price, upper_sqrt_price, amounts),
-                one_amount_to_liquidity(lower_sqrt_price, self.current_sqrt_price, amounts),
-            )
-        } else {
-            one_amount_to_liquidity(lower_sqrt_price, upper_sqrt_price, amounts)
-        }
-        .try_into()
-        .map(|liquidity| core::cmp::min(liquidity, MAX_TICK_GROSS_LIQUIDITY))
-        .unwrap_or(MAX_TICK_GROSS_LIQUIDITY)
-    }
-
-    /// Returns an iterator over all positions
-    ///
-    /// This function never panics.
-    pub fn positions(
-        &self,
-    ) -> impl '_ + Iterator<Item = (LiquidityProvider, Tick, Tick, Collected, PositionInfo)> {
-        self.positions
-            .iter()
-            .map(|((lp, lower_tick, upper_tick), position)| {
-                let mut position = position.clone();
-                (
-                    lp.clone(),
-                    *lower_tick,
-                    *upper_tick,
-                    position.collect_fees(
-                        self,
-                        *lower_tick,
-                        self.liquidity_map.get(lower_tick).unwrap(),
-                        *upper_tick,
-                        self.liquidity_map.get(upper_tick).unwrap(),
-                    ),
-                    PositionInfo::from(&position),
-                )
-            })
-    }
-
-    /// Returns the current value of a position i.e. the assets you would receive by burning the
-    /// position, and the fees earned by the position since the last time it was updated/collected.
-    ///
-    /// This function never panics
-    pub fn position(
-        &self,
-        lp: &LiquidityProvider,
-        lower_tick: Tick,
-        upper_tick: Tick,
-    ) -> Result<(Collected, PositionInfo), PositionError<Infallible>> {
-        Self::validate_position_range(lower_tick, upper_tick)?;
-        let mut position = self
-            .positions
-            .get(&(lp.clone(), lower_tick, upper_tick))
-            .ok_or(PositionError::NonExistent)?
-            .clone();
-        Ok((
-            position.collect_fees(
-                self,
-                lower_tick,
-                self.liquidity_map.get(&lower_tick).unwrap(),
-                upper_tick,
-                self.liquidity_map.get(&upper_tick).unwrap(),
-            ),
-            PositionInfo::from(&position),
-        ))
-    }
-
-    /// Returns a histogram of all the liquidity in the pool. Each entry in the returned vec is the
-    /// "start" tick, and the amount of liquidity in the pool from that tick, until the next tick,
-    /// i.e. the next tick in the pool. The first element will always be the MIN_TICK with some
-    /// amount of liquidity, and the last element will always be the MAX_TICK with a zero amount of
-    /// liquidity.
-    ///
-    /// This function never panics
-    pub fn liquidity(&self) -> Vec<(Tick, Liquidity)> {
-        let mut liquidity = 0u128;
-        self.liquidity_map
-            .iter()
-            .map(|(tick, tick_delta)| {
-                liquidity = liquidity
-                    .checked_add_signed(QuoteToBase::liquidity_delta_on_crossing_tick(tick_delta))
-                    .unwrap();
-
-                (*tick, liquidity)
-            })
-            .collect()
-    }
-
-    pub fn depth(
-        &self,
-        lower_tick: Tick,
-        upper_tick: Tick,
-    ) -> Result<PoolPairsMap<Amount>, DepthError> {
-        if !is_tick_valid(lower_tick) || !is_tick_valid(upper_tick) {
-            return Err(DepthError::InvalidTick);
-        }
-
-        if lower_tick <= upper_tick {
-            let liquidity_at_lower_tick: Liquidity =
-                self.liquidity_map
-                    .range(..lower_tick)
-                    .fold(0, |liquidity, (_, tick_delta)| {
-                        liquidity
-                            .checked_add_signed(tick_delta.liquidity_delta)
-                            .unwrap()
-                    });
-
-            let (_liquidity, _tick, assets) = self
-                .liquidity_map
-                .range(lower_tick..upper_tick)
-                .map(|(tick, tick_delta)| (tick, tick_delta.liquidity_delta))
-                .chain(core::iter::once((
-                    &upper_tick,
-                    0, /* value doesn't matter */
-                )))
-                .fold(
-                    (
-                        liquidity_at_lower_tick,
-                        lower_tick,
-                        PoolPairsMap::<Amount>::default(),
-                    ),
-                    |(liquidity, previous_tick, assets), (current_tick, liquidity_delta)| {
-                        (
-                            // Addition is guaranteed to never overflow, see test `max_liquidity`
-                            liquidity.checked_add_signed(liquidity_delta).unwrap(),
-                            *current_tick,
-                            assets
-                                + self
-                                    .inner_liquidity_to_amounts::<false>(
-                                        liquidity,
-                                        previous_tick,
-                                        *current_tick,
-                                    )
-                                    .0,
-                        )
-                    },
-                );
-
-            Ok(assets)
-        } else {
-            Err(DepthError::InvalidTickRange)
         }
     }
 }

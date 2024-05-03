@@ -1,6 +1,11 @@
 import axios from 'axios';
 import { z } from 'zod';
-import { ChainflipNetwork, ChainflipNetworks, UncheckedAssetAndChain } from '../enums';
+import {
+  BaseAssetAndChain,
+  ChainflipNetwork,
+  ChainflipNetworks,
+  UncheckedAssetAndChain,
+} from '../enums';
 import { hexString, uncheckedAssetAndChain } from '../parsers';
 
 const numberOrHex = z.union([z.string(), z.number()]).transform((str) => BigInt(str));
@@ -45,10 +50,15 @@ type RpcParams = WithHash<{
   cf_ingress_egress_environment: [];
   cf_funding_environment: [];
   cf_pool_info: [];
+  cf_pool_orders: [baseAsset: BaseAssetAndChain, quoteAsset: { chain: 'Ethereum'; asset: 'USDC' }];
   cf_swap_rate: [
     fromAsset: UncheckedAssetAndChain,
     toAsset: UncheckedAssetAndChain,
     amount: `0x${string}`,
+  ];
+  cf_pool_price_v2: [
+    baseAsset: BaseAssetAndChain,
+    quoteAsset: { chain: 'Ethereum'; asset: 'USDC' },
   ];
   state_getMetadata: [];
   state_getRuntimeVersion: [];
@@ -77,6 +87,26 @@ const createRequest =
     }
 
     throw new Error(`RPC request "${method}" failed`, { cause: data.error });
+  };
+
+const createRequestWithoutParser =
+  <M extends RpcMethod>(method: M) =>
+  async (urlOrNetwork: RpcConfig, ...params: RpcParams[M]): Promise<string> => {
+    const url = 'network' in urlOrNetwork ? RPC_URLS[urlOrNetwork.network] : urlOrNetwork.rpcUrl;
+    const { data } = await axios.post(
+      url,
+      {
+        jsonrpc: '2.0',
+        method,
+        params,
+        id: 1,
+      },
+      // prevent JSON.parse from being called because the RPC we are requesting
+      // returns numbers that are unsafe to parse
+      { transformResponse: (d) => d },
+    );
+
+    return data;
   };
 
 const fundingEnvironment = z.object({
@@ -226,4 +256,11 @@ export const getSupportedAssets = createRequest('cf_supported_assets', supported
 export const getRuntimeVersion = createRequest(
   'state_getRuntimeVersion',
   z.object({ specVersion: z.number() }),
+);
+
+export const getPoolOrders = createRequestWithoutParser('cf_pool_orders');
+
+export const getPoolPriceV2 = createRequest(
+  'cf_pool_price_v2',
+  z.object({ range_order: numberOrHex }),
 );

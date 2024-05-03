@@ -22,24 +22,14 @@ import { buildFee } from '../utils/fees';
 import { handleExit } from '../utils/function';
 import logger from '../utils/logger';
 import { percentDifference } from '../utils/math';
-import { getSwapRate } from '../utils/statechain';
+import { getCachedPoolOrdersAndPrice } from '../utils/rpc';
 
 export type QuoteType = 'pool' | 'market_maker';
 
 type Quote = { marketMaker: string; quote: MarketMakerQuote };
 
-const getPriceFromQuotesAndPool = async (leg: Leg, input: SwapInput) => {
-  const { swappedAmount, remainingAmount } = await swap(input);
-
-  if (remainingAmount !== 0n) {
-    // ignoring fees from the pool
-    const { outputAmount } = await getSwapRate({
-      ...leg.toPoolJSON(),
-      amount: remainingAmount,
-    });
-
-    return swappedAmount + outputAmount;
-  }
+const simulateSwap = async (input: SwapInput) => {
+  const { swappedAmount } = await swap(input);
 
   return swappedAmount;
 };
@@ -153,26 +143,31 @@ export default class Quoter {
 
     const quoteRequest: MarketMakerQuoteRequest = { request_id: requestId, legs: requestLegs };
 
-    const quotes = await this.collectMakerQuotes(quoteRequest);
+    const [quotes, firstPoolState, secondPoolState] = await Promise.all([
+      this.collectMakerQuotes(quoteRequest),
+      getCachedPoolOrdersAndPrice(leg1.getBaseAsset()),
+      leg2 && getCachedPoolOrdersAndPrice(leg2.getBaseAsset()),
+    ]);
 
     if (quotes.length === 0) throw new Error('no quotes received');
 
-    const legLimitOrders = [leg1.toSwapInput()] as [SwapInput] | [SwapInput, SwapInput];
+    const results = [
+      simulateSwap(
+        leg1.toSwapInput({
+          limitOrders: quotes.flatMap(({ legs }) => legs[0]),
+          ...firstPoolState,
+        }),
+      ),
+    ] as [Promise<bigint>] | [Promise<bigint>, Promise<bigint> | null];
 
-    if (leg2) legLimitOrders[1] = leg2.toSwapInput();
-
-    for (const { legs } of quotes) {
-      for (let i = 0; i < legs.length; i += 1) {
-        legLimitOrders[i].limitOrders.push(...legs[i].map(([tick, amount]) => ({ tick, amount })));
-      }
-    }
-
-    const results = [getPriceFromQuotesAndPool(leg1, legLimitOrders[0])] as
-      | [Promise<bigint>]
-      | [Promise<bigint>, Promise<bigint> | null];
-
-    results[1] =
-      leg2 && legLimitOrders[1] ? getPriceFromQuotesAndPool(leg2, legLimitOrders[1]) : null;
+    results[1] = leg2
+      ? simulateSwap(
+          leg2.toSwapInput({
+            limitOrders: quotes.flatMap(({ legs }) => legs[1]!),
+            ...secondPoolState,
+          }),
+        )
+      : null;
 
     return Promise.all(results);
   }
@@ -223,7 +218,6 @@ export default class Quoter {
 
       if (
         quotes[1] === null ||
-        // if there is more than a 1% difference between the two quotes
         differenceExceedsThreshold(approximateUsdcAmount! + networkFeeUsdc!, quotes[0])
       ) {
         networkFeeUsdc = getHundredthPipAmountFromAmount(quotes[0], networkFee);
