@@ -1,7 +1,6 @@
-import { Chain, readChainAssetValue, InternalAsset, getAssetAndChain } from '@/shared/enums';
-import { getEnvironment, getPoolOrders, getPoolPriceV2 } from '@/shared/rpc';
+import { Chain, readChainAssetValue, InternalAsset } from '@/shared/enums';
+import { getEnvironment } from '@/shared/rpc';
 import { validateSwapAmount as validateAmount } from '@/shared/rpc/utils';
-import { AsyncCacheMap } from './dataStructures';
 import { memoize } from './function';
 import env from '../config/env';
 
@@ -40,21 +39,3 @@ export const getEgressFee = async (asset: InternalAsset): Promise<bigint | null>
 
   return readChainAssetValue(environment.ingressEgress.egressFees, asset);
 };
-
-const fetchOrdersAndPrice = async (baseAsset: Exclude<InternalAsset, 'Usdc'>) => {
-  const [orders, price] = await Promise.all([
-    getPoolOrders(rpcConfig, getAssetAndChain(baseAsset), getAssetAndChain('Usdc')),
-    getPoolPriceV2(rpcConfig, getAssetAndChain(baseAsset), getAssetAndChain('Usdc')),
-  ]);
-
-  return { poolState: orders, rangeOrderPrice: price.rangeOrder };
-};
-
-const ordersCacheMap = new AsyncCacheMap({
-  resetExpiryOnLookup: false,
-  ttl: 6_000,
-  fetch: fetchOrdersAndPrice,
-});
-
-export const getCachedPoolOrdersAndPrice = (baseAsset: Exclude<InternalAsset, 'Usdc'>) =>
-  ordersCacheMap.get(baseAsset);

@@ -41,7 +41,7 @@ const RPC_URLS: Record<ChainflipNetwork, string> = {
 export type RpcConfig = { rpcUrl: string } | { network: ChainflipNetwork };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type WithHash<T> = { [K in keyof T]: T[K] extends any[] ? [...T[K], at?: string] : never };
+type WithHash<T> = { [K in keyof T]: T[K] extends any[] ? [...T[K], at?: string | null] : never };
 
 type RpcParams = WithHash<{
   cf_environment: [];
@@ -62,7 +62,9 @@ type RpcParams = WithHash<{
   ];
   state_getMetadata: [];
   state_getRuntimeVersion: [];
-}>;
+}> & {
+  chain_getBlockHash: [blockHeight?: number];
+};
 
 type RpcMethod = keyof RpcParams;
 
@@ -264,3 +266,5 @@ export const getPoolPriceV2 = createRequest(
   'cf_pool_price_v2',
   z.object({ range_order: numberOrHex }),
 );
+
+export const getBlockHash = createRequest('chain_getBlockHash', hexString);

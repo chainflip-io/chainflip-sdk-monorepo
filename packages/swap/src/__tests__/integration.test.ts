@@ -9,6 +9,7 @@ import { Assets, Chains } from '@/shared/enums';
 import { QuoteQueryParams } from '@/shared/schemas';
 import { environment, swapRate } from '@/shared/tests/fixtures';
 import prisma from '../client';
+import PoolStateCache from '../quoting/PoolStateCache';
 import app from '../server';
 import { getSwapRate } from '../utils/statechain';
 
@@ -44,33 +45,11 @@ jest.mock('axios', () => ({
       });
     }
 
-    if (data.method === 'cf_pool_orders') {
-      return {
-        data: JSON.stringify({
-          jsonrpc: '2.0',
-          result: {
-            limit_orders: {
-              asks: [],
-              bids: [],
-            },
-            range_orders: [],
-          },
-          id: 1,
-        }),
-      };
-    }
-
-    if (data.method === 'cf_pool_price_v2') {
-      return {
-        data: {
-          result: { range_order: '0x1000276a3' },
-        },
-      };
-    }
-
     throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
   }),
 }));
+
+jest.mock('../quoting/PoolStateCache');
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
@@ -164,6 +143,7 @@ describe('python integration test', () => {
 
   it('replies to a quote request', async () => {
     await expectMesage('connected');
+    expect(jest.mocked(PoolStateCache.prototype.start)).toHaveBeenCalled();
 
     const query = {
       srcAsset: Assets.FLIP,
@@ -178,6 +158,20 @@ describe('python integration test', () => {
       intermediateAmount: 2000000000n,
       outputAmount: 0n, // this shouldn't be the result
       quoteType: 'pool',
+    });
+    jest.mocked(PoolStateCache.prototype.getPoolState).mockResolvedValueOnce({
+      poolState: JSON.stringify({
+        jsonrpc: '2.0',
+        result: {
+          limit_orders: {
+            asks: [],
+            bids: [],
+          },
+          range_orders: [],
+        },
+        id: 1,
+      }),
+      rangeOrderPrice: 0x1000276a3n,
     });
 
     const response = await fetch(`${serverUrl}/quote?${params.toString()}`);

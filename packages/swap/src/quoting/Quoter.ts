@@ -9,6 +9,7 @@ import { getHundredthPipAmountFromAmount } from '@/shared/functions';
 import { SwapFee } from '@/shared/schemas';
 import { QuotingSocket } from './authenticate';
 import Leg from './Leg';
+import PoolStateCache from './PoolStateCache';
 import {
   Leg as MarketMakerLeg,
   MarketMakerQuote,
@@ -22,7 +23,6 @@ import { buildFee } from '../utils/fees';
 import { handleExit } from '../utils/function';
 import logger from '../utils/logger';
 import { percentDifference } from '../utils/math';
-import { getCachedPoolOrdersAndPrice } from '../utils/rpc';
 
 export type QuoteType = 'pool' | 'market_maker';
 
@@ -56,11 +56,15 @@ export const differenceExceedsThreshold = (
 export default class Quoter {
   private readonly quotes$ = new Subject<Quote>();
 
+  private poolStateCache = new PoolStateCache();
+
   constructor(
     private readonly io: Server,
     private createId: () => string = randomUUID,
   ) {
     io.on('connection', (socket: QuotingSocket) => {
+      this.poolStateCache.start();
+
       logger.info(`market maker "${socket.data.marketMaker}" connected`);
 
       const cleanup = handleExit(() => {
@@ -145,8 +149,8 @@ export default class Quoter {
 
     const [quotes, firstPoolState, secondPoolState] = await Promise.all([
       this.collectMakerQuotes(quoteRequest),
-      getCachedPoolOrdersAndPrice(leg1.getBaseAsset()),
-      leg2 && getCachedPoolOrdersAndPrice(leg2.getBaseAsset()),
+      this.poolStateCache.getPoolState(leg1.getBaseAsset()),
+      leg2 && this.poolStateCache.getPoolState(leg2.getBaseAsset()),
     ]);
 
     if (quotes.length === 0) throw new Error('no quotes received');

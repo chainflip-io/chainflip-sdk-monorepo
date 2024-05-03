@@ -9,6 +9,8 @@ import { promisify } from 'util';
 import prisma from '../client';
 import app from '../server';
 
+jest.mock('../quoting/PoolStateCache');
+
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
 describe('server', () => {
