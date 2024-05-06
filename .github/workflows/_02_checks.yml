@@ -8,11 +8,11 @@ on:
 
 env:
   FORCE_COLOR: 1
-  DB_NAME: "swap"
-  DB_USER: "postgres"
-  DB_PASS: "postgres"
-  DB_PORT: "5432"
-  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/swap?schema=public"
+  DB_NAME: 'swap'
+  DB_USER: 'postgres'
+  DB_PASS: 'postgres'
+  DB_PORT: '5432'
+  DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/swap?schema=public'
 
 jobs:
   generate-matrix:
@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
       - name: Install pnpm 💿
-        run: npm i -g pnpm@8
+        run: npm i -g pnpm@9
 
       - name: Setup Node.js ${{ matrix.node_version }} 🎮
         uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65
@@ -44,11 +44,11 @@ jobs:
 
       - name: Install dependencies 📦
         run: |
-            for i in {1..5}
-            do
-              pnpm install && break
-              sleep 10
-            done
+          for i in {1..5}
+          do
+            pnpm install && break
+            sleep 10
+          done
 
       - name: Setup Python 🐍
         if: matrix.package == 'swap'
@@ -96,7 +96,7 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
       - name: Install pnpm 💿
-        run: npm i -g pnpm@8
+        run: npm i -g pnpm@9
 
       - name: Setup Node.js ${{ matrix.node_version }} 🎮
         uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65
@@ -106,11 +106,11 @@ jobs:
 
       - name: Install dependencies 📦
         run: |
-            for i in {1..5}
-            do
-              pnpm install && break
-              sleep 10
-            done
+          for i in {1..5}
+          do
+            pnpm install && break
+            sleep 10
+          done
 
       - name: Run build ${{ matrix.package }} 🏗️
         run: pnpm run build:${{ matrix.package }}
