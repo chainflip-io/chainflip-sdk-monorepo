@@ -19,7 +19,7 @@
     "@polkadot/util-crypto": "^12.6.2",
     "axios": "^1.6.8",
     "bech32-buffer": "^0.2.1",
-    "ethers": "^6.11.1",
+    "ethers": "^6.12.1",
     "ioredis": "^5.4.1",
     "rxjs": "^7.8.1",
     "ws": "^8.17.0",
