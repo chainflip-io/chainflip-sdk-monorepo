@@ -17,8 +17,7 @@ describe(boostPoolCreated, () => {
           args: {
             boostPool: {
               asset: {
-                chain: 'Bitcoin',
-                asset: 'BTC',
+                __kind: 'Btc',
               },
               tier: 10,
             },
