@@ -126,8 +126,8 @@ importers:
         specifier: ^6.x
         version: 6.11.1
       ioredis:
-        specifier: ^5.3.2
-        version: 5.3.2
+        specifier: ^5.4.1
+        version: 5.4.1
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -191,8 +191,8 @@ importers:
         specifier: ^6.11.1
         version: 6.11.1
       ioredis:
-        specifier: ^5.3.2
-        version: 5.3.2
+        specifier: ^5.4.1
+        version: 5.4.1
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -261,8 +261,8 @@ importers:
         specifier: ^6.1.0
         version: 6.1.0(graphql@16.8.1)
       ioredis:
-        specifier: ^5.3.2
-        version: 5.3.2
+        specifier: ^5.4.1
+        version: 5.4.1
       pg:
         specifier: ^8.11.5
         version: 8.11.5
@@ -6181,8 +6181,8 @@ packages:
       loose-envify: 1.4.0
     dev: true
 
-  /ioredis@5.3.2:
-    resolution: {integrity: sha512-1DKMMzlIHM02eBBVOFQ1+AolGjs6+xEcM4PDL7NqOS6szq7H9jSaEkIUH6/a5Hl241LzW6JLSiAbNvTQjUupUA==}
+  /ioredis@5.4.1:
+    resolution: {integrity: sha512-2YZsvl7jopIa1gaePkeMtd9rAcSjOOjPtpcLlOeusyO+XH2SK5ZcT+UCrElPP+WVIInh2TzeI4XW9ENaSLVVHA==}
     engines: {node: '>=12.22.0'}
     dependencies:
       '@ioredis/commands': 1.2.0
