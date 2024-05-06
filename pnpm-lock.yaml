@@ -197,8 +197,8 @@ importers:
         specifier: ^7.8.1
         version: 7.8.1
       ws:
-        specifier: ^8.16.0
-        version: 8.16.0
+        specifier: ^8.17.0
+        version: 8.17.0
       zod:
         specifier: ^3.23.0
         version: 3.23.0
@@ -282,8 +282,8 @@ importers:
         specifier: ^3.13.0
         version: 3.13.0
       ws:
-        specifier: ^8.16.0
-        version: 8.16.0
+        specifier: ^8.17.0
+        version: 8.17.0
     devDependencies:
       '@babel/core':
         specifier: ^7.24.4
@@ -1842,9 +1842,9 @@ packages:
       '@types/ws': 8.5.10
       graphql: 16.8.1
       graphql-ws: 5.14.3(graphql@16.8.1)
-      isomorphic-ws: 5.0.0(ws@8.16.0)
+      isomorphic-ws: 5.0.0(ws@8.17.0)
       tslib: 2.6.2
-      ws: 8.16.0
+      ws: 8.17.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -1877,9 +1877,9 @@ packages:
       '@graphql-tools/utils': 10.0.13(graphql@16.8.1)
       '@types/ws': 8.5.10
       graphql: 16.8.1
-      isomorphic-ws: 5.0.0(ws@8.16.0)
+      isomorphic-ws: 5.0.0(ws@8.17.0)
       tslib: 2.6.2
-      ws: 8.16.0
+      ws: 8.17.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -2104,10 +2104,10 @@ packages:
       '@types/ws': 8.5.10
       '@whatwg-node/fetch': 0.9.15
       graphql: 16.8.1
-      isomorphic-ws: 5.0.0(ws@8.16.0)
+      isomorphic-ws: 5.0.0(ws@8.17.0)
       tslib: 2.6.2
       value-or-promise: 1.0.12
-      ws: 8.16.0
+      ws: 8.17.0
     transitivePeerDependencies:
       - '@types/node'
       - bufferutil
@@ -6439,12 +6439,12 @@ packages:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
     dev: true
 
-  /isomorphic-ws@5.0.0(ws@8.16.0):
+  /isomorphic-ws@5.0.0(ws@8.17.0):
     resolution: {integrity: sha512-muId7Zzn9ywDsyXgTIafTry2sV3nySZeUDe6YedVd1Hvuuep5AsIlqK+XefWpYTyJG5e503F2xIuT2lcU6rCSw==}
     peerDependencies:
       ws: '*'
     dependencies:
-      ws: 8.16.0
+      ws: 8.17.0
     dev: true
 
   /istanbul-lib-coverage@3.2.2:
@@ -9716,8 +9716,8 @@ packages:
       utf-8-validate:
         optional: true
 
-  /ws@8.16.0:
-    resolution: {integrity: sha512-HS0c//TP7Ina87TfiPUz1rQzMhHrl/SG2guqRcTOIUYD2q8uhUdNHZYJUaQ8aTGPzCh+c6oawMKW35nFl1dxyQ==}
+  /ws@8.17.0:
+    resolution: {integrity: sha512-uJq6108EgZMAl20KagGkzCKfMEjxmKvZHG7Tlq0Z6nOky7YF7aq4mOx6xK8TJ/i1LeK4Qus7INktacctDgY8Ow==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
