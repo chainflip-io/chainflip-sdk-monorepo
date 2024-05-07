@@ -1,5 +1,5 @@
-import { swapRate } from '@/shared/tests/fixtures';
-import { calculateIncludedSwapFees } from '@/swap/utils/fees';
+import { environment, swapRate } from '@/shared/tests/fixtures';
+import { calculateIncludedSwapFees, tryExtractFeesFromIngressAmount } from '@/swap/utils/fees';
 import prisma from '../../client';
 
 jest.mock('@/shared/consts', () => ({
@@ -7,12 +7,20 @@ jest.mock('@/shared/consts', () => ({
   getPoolsNetworkFeeHundredthPips: jest.fn().mockReturnValue(1000),
 }));
 
+const INGRESS_FEE = 10;
 jest.mock('axios', () => ({
   post: jest.fn((url, data) => {
     if (data.method === 'cf_swap_rate') {
       return Promise.resolve({
         data: swapRate({
           output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
+        }),
+      });
+    }
+    if (data.method === 'cf_environment') {
+      return Promise.resolve({
+        data: environment({
+          ingressFee: `0x${BigInt(INGRESS_FEE).toString(16)}`,
         }),
       });
     }
@@ -152,5 +160,46 @@ describe(calculateIncludedSwapFees, () => {
         amount: '0',
       },
     ]);
+  });
+});
+
+describe(tryExtractFeesFromIngressAmount, () => {
+  it('extracts the fees from the ingress amount and derives the swap input amount', async () => {
+    const { fees, amountAfterFees } = await tryExtractFeesFromIngressAmount({
+      srcAsset: 'Btc',
+      ingressAmount: BigInt(100e8),
+      brokerCommissionBps: 10,
+    });
+
+    expect(fees).toMatchObject([
+      {
+        type: 'INGRESS',
+        asset: 'BTC',
+        amount: INGRESS_FEE.toString(),
+      },
+      {
+        type: 'BROKER',
+        asset: 'BTC',
+        amount: '9999999',
+      },
+    ]);
+
+    expect(amountAfterFees.toString()).toBe('9989999991');
+  });
+  it("doesn't include broker fee when not provided with one", async () => {
+    const { fees, amountAfterFees } = await tryExtractFeesFromIngressAmount({
+      srcAsset: 'Btc',
+      ingressAmount: BigInt(100e8),
+    });
+
+    expect(fees).toMatchObject([
+      {
+        type: 'INGRESS',
+        asset: 'BTC',
+        amount: INGRESS_FEE.toString(),
+      },
+    ]);
+
+    expect(amountAfterFees.toString()).toBe(100e8 - INGRESS_FEE);
   });
 });

@@ -6,7 +6,7 @@ import {
   ChainflipNetworks,
   UncheckedAssetAndChain,
 } from '../enums';
-import { hexString, uncheckedAssetAndChain } from '../parsers';
+import { hexString, number, u128, uncheckedAssetAndChain } from '../parsers';
 
 const numberOrHex = z.union([z.string(), z.number()]).transform((str) => BigInt(str));
 
@@ -60,6 +60,7 @@ type RpcParams = WithHash<{
     baseAsset: BaseAssetAndChain,
     quoteAsset: { chain: 'Ethereum'; asset: 'USDC' },
   ];
+  cf_boost_pools_depth: [];
   state_getMetadata: [];
   state_getRuntimeVersion: [];
 }> & {
@@ -180,21 +181,26 @@ export const getIngressEgressEnvironment = createRequest(
   ingressEgressEnvironment,
 );
 
-const rpcAsset = z.union([
+const deprecatedRpcAssetSchema = z.union([
   z.literal('BTC'),
-  z.object({ chain: z.literal('Bitcoin'), asset: z.literal('BTC') }),
   z.literal('DOT'),
-  z.object({ chain: z.literal('Polkadot'), asset: z.literal('DOT') }),
   z.literal('FLIP'),
-  z.object({ chain: z.literal('Ethereum'), asset: z.literal('FLIP') }),
   z.literal('ETH'),
-  z.object({ chain: z.literal('Ethereum'), asset: z.literal('ETH') }),
   z.literal('USDC'),
+]);
+
+const rpcAssetSchema = z.union([
+  z.object({ chain: z.literal('Bitcoin'), asset: z.literal('BTC') }),
+  z.object({ chain: z.literal('Polkadot'), asset: z.literal('DOT') }),
+  z.object({ chain: z.literal('Ethereum'), asset: z.literal('FLIP') }),
+  z.object({ chain: z.literal('Ethereum'), asset: z.literal('ETH') }),
   z.object({ chain: z.literal('Ethereum'), asset: z.literal('USDC') }),
   z.object({ chain: z.literal('Ethereum'), asset: z.literal('USDT') }),
   z.object({ chain: z.literal('Arbitrum'), asset: z.literal('ETH') }),
   z.object({ chain: z.literal('Arbitrum'), asset: z.literal('USDC') }),
 ]);
+
+const rpcAsset = z.union([deprecatedRpcAssetSchema, rpcAssetSchema]);
 
 const poolInfo = z.intersection(
   z.object({
@@ -268,3 +274,18 @@ export const getPoolPriceV2 = createRequest(
 );
 
 export const getBlockHash = createRequest('chain_getBlockHash', hexString);
+
+const boostPoolsDepthResponseSchema = z.array(
+  z.intersection(
+    rpcAssetSchema,
+    z.object({
+      tier: number,
+      available_amount: u128,
+    }),
+  ),
+);
+
+export const getAllBoostPoolsDepth = createRequest(
+  'cf_boost_pools_depth',
+  boostPoolsDepthResponseSchema,
+);

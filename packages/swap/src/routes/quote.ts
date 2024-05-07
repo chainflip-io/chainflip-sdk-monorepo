@@ -6,28 +6,70 @@ import {
   getHundredthPipAmountFromAmount,
   getPipAmountFromAmount,
 } from '@/shared/functions';
-import { QuoteQueryResponse, quoteQuerySchema, SwapFee } from '@/shared/schemas';
+import { ParsedQuoteParams, QuoteQueryResponse, quoteQuerySchema, SwapFee } from '@/shared/schemas';
 import { asyncHandler } from './common';
 import prisma from '../client';
 import env from '../config/env';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import Quoter, { type QuoteType } from '../quoting/Quoter';
-import { buildFee } from '../utils/fees';
+import { getBoostFeeBpsForAmount } from '../utils/boost';
+import { buildFee, tryExtractFeesFromIngressAmount } from '../utils/fees';
 import { isAfterSpecVersion } from '../utils/function';
 import getPoolQuote from '../utils/getPoolQuote';
 import logger from '../utils/logger';
 import { getPools } from '../utils/pools';
 import { resultify } from '../utils/promise';
-import {
-  getMinimumEgressAmount,
-  getEgressFee,
-  getIngressFee,
-  validateSwapAmount,
-} from '../utils/rpc';
+import { getMinimumEgressAmount, getEgressFee, validateSwapAmount } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
 import { estimateSwapDuration } from '../utils/swap';
 
 const getPoolQuoteResult = resultify(getPoolQuote);
+
+export const getBoostedPoolQuoteResult = async (query: ParsedQuoteParams) => {
+  const { srcAsset, destAsset, brokerCommissionBps, amount } = query;
+  const fees: SwapFee[] = [];
+
+  const effectiveBoostFeeBps = await getBoostFeeBpsForAmount({
+    amount: BigInt(amount),
+    asset: srcAsset,
+  });
+
+  if (effectiveBoostFeeBps === undefined) return undefined;
+
+  const boostFee = getPipAmountFromAmount(amount, effectiveBoostFeeBps);
+  fees.push(buildFee(srcAsset, 'BOOST', boostFee));
+
+  if (amount <= 0n) {
+    logger.warn(`amount is lower than estimated boost fee (${boostFee})`);
+    return undefined;
+  }
+  try {
+    const { fees: includedFees, amountAfterFees } = await tryExtractFeesFromIngressAmount({
+      ingressAmount: amount - boostFee,
+      srcAsset,
+      brokerCommissionBps,
+    });
+    const swapInputAmount = amountAfterFees;
+    fees.push(...includedFees);
+
+    const boostedPoolQuote = await getPoolQuoteResult(
+      srcAsset,
+      destAsset,
+      swapInputAmount,
+      fees,
+      0,
+    );
+
+    if (!boostedPoolQuote.success) {
+      return undefined;
+    }
+
+    return { ...boostedPoolQuote.data.response, boostFeeBps: effectiveBoostFeeBps };
+  } catch {
+    // Amount after boost fee insufficient to pay for other fees
+    return undefined;
+  }
+};
 
 const saveResult = async ({
   depositAmount,
@@ -131,7 +173,7 @@ const quoteRouter = (io: Server) => {
       logger.info('received a quote request', { query: req.query });
       const query = queryResult.data;
 
-      const { srcAsset, destAsset } = queryResult.data;
+      const { srcAsset, destAsset, amount, brokerCommissionBps } = queryResult.data;
       if (env.DISABLED_INTERNAL_ASSETS.includes(srcAsset)) {
         throw ServiceError.unavailable(`Asset ${srcAsset} is disabled`);
       }
@@ -145,31 +187,12 @@ const quoteRouter = (io: Server) => {
         throw ServiceError.badRequest(amountResult.reason);
       }
 
-      const includedFees: SwapFee[] = [];
-
-      let swapInputAmount = BigInt(query.amount);
-
-      if (query.boostFeeBps) {
-        const boostFee = getPipAmountFromAmount(swapInputAmount, query.boostFeeBps);
-        includedFees.push(buildFee(srcAsset, 'BOOST', boostFee));
-        swapInputAmount -= boostFee;
-      }
-
-      const ingressFee = await getIngressFee(srcAsset);
-      if (ingressFee == null) {
-        throw ServiceError.internalError(`could not determine ingress fee for ${srcAsset}`);
-      }
-      includedFees.push(buildFee(srcAsset, 'INGRESS', ingressFee));
-      swapInputAmount -= ingressFee;
-      if (swapInputAmount <= 0n) {
-        throw ServiceError.badRequest(`amount is lower than estimated ingress fee (${ingressFee})`);
-      }
-
-      if (query.brokerCommissionBps) {
-        const brokerFee = getPipAmountFromAmount(swapInputAmount, query.brokerCommissionBps);
-        includedFees.push(buildFee(srcAsset, 'BROKER', brokerFee));
-        swapInputAmount -= brokerFee;
-      }
+      const { fees: includedFees, amountAfterFees } = await tryExtractFeesFromIngressAmount({
+        srcAsset,
+        ingressAmount: amount,
+        brokerCommissionBps,
+      });
+      let swapInputAmount = amountAfterFees;
 
       const poolQuotePromise = getPoolQuoteResult(
         srcAsset,
@@ -178,15 +201,6 @@ const quoteRouter = (io: Server) => {
         includedFees,
         start,
       );
-
-      const pools = await getPools(srcAsset, destAsset);
-
-      const firstLegPoolFee = getHundredthPipAmountFromAmount(
-        swapInputAmount,
-        pools[0].liquidityFeeHundredthPips,
-      );
-
-      includedFees.push(buildFee(srcAsset, 'LIQUIDITY', firstLegPoolFee));
 
       const canGetQuote = quoter.canQuote();
       let responseSent = false;
@@ -203,7 +217,11 @@ const quoteRouter = (io: Server) => {
         });
 
         if (result.success) {
-          res.json({ ...result.data.response, quoteType: undefined });
+          res.json({
+            ...result.data.response,
+            quoteType: undefined,
+            boostInformation: await getBoostedPoolQuoteResult(query),
+          });
         } else {
           await handleQuotingError(res, result.reason);
         }
@@ -211,6 +229,15 @@ const quoteRouter = (io: Server) => {
         if (!canGetQuote) return;
         responseSent = true;
       }
+
+      const pools = await getPools(srcAsset, destAsset);
+
+      const firstLegPoolFee = getHundredthPipAmountFromAmount(
+        swapInputAmount,
+        pools[0].liquidityFeeHundredthPips,
+      );
+
+      includedFees.push(buildFee(srcAsset, 'LIQUIDITY', firstLegPoolFee));
 
       swapInputAmount -= firstLegPoolFee;
 

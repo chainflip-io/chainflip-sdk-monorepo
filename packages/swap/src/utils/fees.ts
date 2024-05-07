@@ -1,9 +1,15 @@
 import assert from 'assert';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
 import { InternalAsset, InternalAssets, assetConstants } from '@/shared/enums';
-import { getHundredthPipAmountFromAmount, ONE_IN_HUNDREDTH_PIPS } from '@/shared/functions';
+import {
+  getHundredthPipAmountFromAmount,
+  getPipAmountFromAmount,
+  ONE_IN_HUNDREDTH_PIPS,
+} from '@/shared/functions';
 import { SwapFee } from '@/shared/schemas';
 import { getPools } from '@/swap/utils/pools';
+import { getIngressFee } from './rpc';
+import ServiceError from './ServiceError';
 import env from '../config/env';
 
 export const buildFee = (
@@ -120,4 +126,39 @@ export const calculateIncludedSwapFees = async (
       ).toString(),
     },
   ];
+};
+
+export const tryExtractFeesFromIngressAmount = async ({
+  srcAsset,
+  ingressAmount,
+  brokerCommissionBps,
+}: {
+  srcAsset: InternalAsset;
+  ingressAmount: bigint;
+  brokerCommissionBps?: number;
+}): Promise<{ fees: SwapFee[]; amountAfterFees: bigint }> => {
+  const fees: SwapFee[] = [];
+
+  let amountAfterFees = ingressAmount;
+
+  const ingressFee = await getIngressFee(srcAsset);
+  if (ingressFee == null) {
+    throw ServiceError.internalError(`could not determine ingress fee for ${srcAsset}`);
+  }
+  fees.push(buildFee(srcAsset, 'INGRESS', ingressFee));
+  amountAfterFees -= ingressFee;
+  if (amountAfterFees <= 0n) {
+    throw ServiceError.badRequest(`amount is lower than estimated ingress fee (${ingressFee})`);
+  }
+
+  if (brokerCommissionBps) {
+    const brokerFee = getPipAmountFromAmount(amountAfterFees, brokerCommissionBps);
+    fees.push(buildFee(srcAsset, 'BROKER', brokerFee));
+    amountAfterFees -= brokerFee;
+  }
+
+  return {
+    fees,
+    amountAfterFees,
+  };
 };

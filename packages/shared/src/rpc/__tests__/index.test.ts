@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {
+  boostPoolsDepth,
   fundingEnvironment,
   ingressEgressEnvironment,
   poolsEnvironment,
@@ -10,6 +11,7 @@ import {
   getSwappingEnvironment,
   getIngressEgressEnvironment,
   getPoolsEnvironment,
+  getAllBoostPoolsDepth,
 } from '../index';
 
 jest.mock('axios');
@@ -157,6 +159,17 @@ describe('getPoolsEnvironment', () => {
 
     expect(await getPoolsEnvironment({ network: 'perseverance' })).toMatchSnapshot(
       'pool environment',
+    );
+    expect(spy.mock.calls).toMatchSnapshot();
+  });
+});
+
+describe('getAllBoostPoolsDepth', () => {
+  it('retrieves the boost pools depth balance', async () => {
+    const spy = mockResponse(boostPoolsDepth());
+
+    expect(await getAllBoostPoolsDepth({ network: 'perseverance' })).toMatchSnapshot(
+      'boost pools depth',
     );
     expect(spy.mock.calls).toMatchSnapshot();
   });
