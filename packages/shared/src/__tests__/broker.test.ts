@@ -205,6 +205,107 @@ describe(broker.requestSwapDepositAddress, () => {
     });
   });
 
+  it('submits broker commission', async () => {
+    mockResponse();
+    const result = await broker.requestSwapDepositAddress(
+      {
+        srcAsset: Assets.FLIP,
+        destAsset: Assets.USDC,
+        srcChain: 'Ethereum',
+        destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
+        destChain: 'Ethereum',
+        ccmMetadata: {
+          gasBudget: '123456789',
+          message: '0xdeadc0de',
+        },
+        boostFeeBps: 100,
+      },
+      { ...brokerConfig, commissionBps: 25 },
+      'perseverance',
+    );
+    const requestObject = postSpy.mock.calls[0][1];
+    expect(requestObject).toStrictEqual({
+      id: 1,
+      jsonrpc: '2.0',
+      method: 'broker_requestSwapDepositAddress',
+      params: [
+        { asset: 'FLIP', chain: 'Ethereum' },
+        { asset: 'USDC', chain: 'Ethereum' },
+        '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
+        25,
+        {
+          cf_parameters: undefined,
+          gas_budget: '0x75bcd15',
+          message: '0xdeadc0de',
+        },
+        100,
+      ],
+    });
+    expect(result).toStrictEqual({
+      address: '0x31E9b3373F2AD5d964CAd0fd01332d6550cBBdE6',
+      issuedBlock: 50,
+      channelId: 200n,
+      sourceChainExpiryBlock: 1_000_000n,
+      channelOpeningFee: 0n,
+    });
+  });
+
+  it('submits affiliate brokers', async () => {
+    mockResponse();
+    const result = await broker.requestSwapDepositAddress(
+      {
+        srcAsset: Assets.FLIP,
+        destAsset: Assets.USDC,
+        srcChain: 'Ethereum',
+        destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
+        destChain: 'Ethereum',
+        ccmMetadata: {
+          gasBudget: '123456789',
+          message: '0xdeadc0de',
+        },
+        boostFeeBps: 100,
+      },
+      {
+        ...brokerConfig,
+        commissionBps: 30,
+        affiliateBrokers: [
+          { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
+          { account: 'cFJ4sqrg4FnrLPsGdt5w85XExGYxVLHLYLci28PnqcVVb8r8a', commissionBps: 20 },
+        ],
+      },
+      'perseverance',
+    );
+    const requestObject = postSpy.mock.calls[0][1];
+    expect(requestObject).toStrictEqual({
+      id: 1,
+      jsonrpc: '2.0',
+      method: 'broker_requestSwapDepositAddress',
+      params: [
+        { asset: 'FLIP', chain: 'Ethereum' },
+        { asset: 'USDC', chain: 'Ethereum' },
+        '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
+        30,
+        {
+          cf_parameters: undefined,
+          gas_budget: '0x75bcd15',
+          message: '0xdeadc0de',
+        },
+        100,
+        [
+          { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', bps: 10 },
+          { account: 'cFJ4sqrg4FnrLPsGdt5w85XExGYxVLHLYLci28PnqcVVb8r8a', bps: 20 },
+        ],
+      ],
+    });
+    expect(result).toStrictEqual({
+      address: '0x31E9b3373F2AD5d964CAd0fd01332d6550cBBdE6',
+      issuedBlock: 50,
+      channelId: 200n,
+      sourceChainExpiryBlock: 1_000_000n,
+      channelOpeningFee: 0n,
+    });
+  });
+
   it('formats RPC errors', async () => {
     mockResponse({
       error: {

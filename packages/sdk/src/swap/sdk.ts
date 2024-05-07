@@ -129,7 +129,8 @@ export class SwapSDK {
   async requestDepositAddress(
     depositAddressRequest: DepositAddressRequest,
   ): Promise<DepositAddressResponse> {
-    const { srcChain, srcAsset, amount } = depositAddressRequest;
+    const { srcChain, srcAsset, amount, brokerCommissionBps, affiliateBrokers } =
+      depositAddressRequest;
 
     await this.validateSwapAmount({ chain: srcChain, asset: srcAsset }, BigInt(amount));
 
@@ -140,7 +141,11 @@ export class SwapSDK {
 
       const result = await requestSwapDepositAddress(
         depositAddressRequest,
-        this.options.broker,
+        {
+          ...this.options.broker,
+          commissionBps: brokerCommissionBps ?? this.options.broker.commissionBps,
+          affiliateBrokers,
+        },
         this.options.network,
       );
 

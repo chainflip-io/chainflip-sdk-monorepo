@@ -89,7 +89,11 @@ const requestValidators = (network: ChainflipNetwork) => ({
         )
         .optional(),
     ])
-    .transform(([a, b, c, d, e, f]) => [a, b, c, d, transformObjToSnakeCase(e), f]),
+    .transform(([a, b, c, d, e, f, g]) =>
+      g
+        ? [a, b, c, d, transformObjToSnakeCase(e), f, g]
+        : [a, b, c, d, transformObjToSnakeCase(e), f],
+    ),
 });
 
 const responseValidators = (network: ChainflipNetwork) => ({
