@@ -1,5 +1,5 @@
 import { Chain, Asset, AssetOfChain, InternalAsset } from '@/shared/enums';
-import { CcmMetadata, QuoteQueryResponse, SwapFee } from '@/shared/schemas';
+import { AffiliateBroker, CcmMetadata, QuoteQueryResponse, SwapFee } from '@/shared/schemas';
 
 export interface ChainData {
   chain: Chain;
@@ -44,12 +44,15 @@ export interface QuoteResponse extends Omit<QuoteRequest, 'boostFeeBps'> {
 export interface DepositAddressRequest extends QuoteRequest {
   destAddress: string;
   ccmMetadata?: CcmMetadata;
+  brokerCommissionBps?: number;
+  affiliateBrokers?: AffiliateBroker[];
 }
 
 export interface DepositAddressResponse extends DepositAddressRequest {
   depositChannelId: string;
   depositAddress: string;
   brokerCommissionBps: number;
+  affiliateBrokers: AffiliateBroker[];
   depositChannelExpiryBlock: bigint;
   estimatedDepositChannelExpiryTime: number | undefined;
   channelOpeningFee: bigint;
@@ -62,12 +65,7 @@ export interface SwapStatusRequest {
 interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   destAddress: string;
   ccmDepositReceivedBlockIndex: string | undefined;
-  ccmMetadata:
-    | {
-        gasBudget: string;
-        message: `0x${string}`;
-      }
-    | undefined;
+  ccmMetadata: CcmMetadata | undefined;
   feesPaid: SwapFee[];
 }
 

@@ -6,6 +6,8 @@ import {
   numericOrEmptyString,
   numericString,
   asset,
+  chainflipAddress,
+  number,
 } from './parsers';
 
 export const quoteQuerySchema = z
@@ -57,6 +59,13 @@ export const ccmMetadataSchema = z.object({
 });
 
 export type CcmMetadata = z.infer<typeof ccmMetadataSchema>;
+
+export const affiliateBroker = z.object({
+  account: chainflipAddress,
+  commissionBps: number,
+});
+
+export type AffiliateBroker = z.infer<typeof affiliateBroker>;
 
 export const openSwapDepositChannelSchema = z
   .object({

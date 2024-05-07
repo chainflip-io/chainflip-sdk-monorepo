@@ -66,6 +66,7 @@ export default async function cliRequestSwapDepositAddress(
     {
       url: args.brokerUrl,
       commissionBps: 0,
+      affiliateBrokers: [],
     },
     args.network,
   );

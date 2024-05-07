@@ -13,8 +13,10 @@ import {
   uncheckedAssetAndChain,
   u128,
   ethereumAddress,
+  chainflipAddress,
+  number,
 } from './parsers';
-import { CcmMetadata, ccmMetadataSchema } from './schemas';
+import { AffiliateBroker, CcmMetadata, ccmMetadataSchema } from './schemas';
 import { CamelCaseToSnakeCase, camelToSnakeCase } from './strings';
 
 type NewSwapRequest = {
@@ -78,6 +80,14 @@ const requestValidators = (network: ChainflipNetwork) => ({
         )
         .optional(),
       z.number().optional(),
+      z
+        .array(
+          z.object({
+            account: chainflipAddress,
+            bps: number,
+          }),
+        )
+        .optional(),
     ])
     .transform(([a, b, c, d, e, f]) => [a, b, c, d, transformObjToSnakeCase(e), f]),
 });
@@ -134,7 +144,11 @@ const makeRpcRequest = async <T extends keyof RequestValidator & keyof ResponseV
 
 export async function requestSwapDepositAddress(
   swapRequest: NewSwapRequest,
-  opts: { url: string; commissionBps: number },
+  opts: {
+    url: string;
+    commissionBps: number;
+    affiliateBrokers?: AffiliateBroker[];
+  },
   chainflipNetwork: ChainflipNetwork,
 ): Promise<DepositChannelResponse> {
   const { srcAsset, srcChain, destAsset, destChain, destAddress, boostFeeBps } = swapRequest;
@@ -152,5 +166,8 @@ export async function requestSwapDepositAddress(
       cfParameters: undefined,
     },
     boostFeeBps,
+    opts.affiliateBrokers?.length
+      ? opts.affiliateBrokers.map(({ account, commissionBps }) => ({ account, bps: commissionBps }))
+      : undefined,
   );
 }

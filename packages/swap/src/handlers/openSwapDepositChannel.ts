@@ -42,7 +42,7 @@ export default async function openSwapDepositChannel(
     ...blockInfo
   } = await broker.requestSwapDepositAddress(
     input,
-    { url: env.RPC_BROKER_HTTPS_URL, commissionBps: 0 },
+    { url: env.RPC_BROKER_HTTPS_URL, commissionBps: 0, affiliateBrokers: [] },
     env.CHAINFLIP_NETWORK,
   );
 

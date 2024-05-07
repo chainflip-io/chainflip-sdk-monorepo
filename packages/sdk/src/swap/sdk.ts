@@ -153,6 +153,10 @@ export class SwapSDK {
         channelOpeningFee: result.channelOpeningFee,
       };
     } else {
+      assert(
+        !depositAddressRequest.affiliateBrokers?.length,
+        'Affiliate brokers are supported only when providing a brokerUrl',
+      );
       response = await this.trpc.openSwapDepositChannel.mutate(depositAddressRequest);
     }
 
@@ -161,6 +165,7 @@ export class SwapSDK {
       depositChannelId: response.id,
       depositAddress: response.depositAddress,
       brokerCommissionBps: response.brokerCommissionBps,
+      affiliateBrokers: depositAddressRequest.affiliateBrokers ?? [],
       boostFeeBps: Number(response.boostFeeBps) || 0,
       depositChannelExpiryBlock: response.srcChainExpiryBlock as bigint,
       estimatedDepositChannelExpiryTime: response.estimatedExpiryTime,

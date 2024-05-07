@@ -84,6 +84,11 @@ export const ethereumAddress = hexString.refine(
   (address) => ({ message: `${address} is not a valid ethereum address` }),
 );
 
+export const chainflipAddress = string.refine(
+  (address) => address.startsWith('cF') && decodeAddress(address),
+  (address) => ({ message: `${address} is not a valid chainflip address` }),
+);
+
 export const u64 = numericString.transform((arg) => BigInt(arg));
 
 export const u128 = z.union([number, numericString, hexString]).transform((arg) => BigInt(arg));
