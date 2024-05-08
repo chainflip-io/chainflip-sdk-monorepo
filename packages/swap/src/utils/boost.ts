@@ -1,5 +1,5 @@
 import { ONE_IN_PIP, bigintMin, getPipAmountFromAmount } from '@/shared/functions';
-import { BoostPoolsDepth } from '../rpc';
+import { BoostPoolsDepth } from '@/shared/rpc';
 
 export const getBoostFeeBpsForAmount = async ({
   amount,
