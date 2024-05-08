@@ -143,7 +143,7 @@ describe('server', () => {
         });
 
         jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-          outputAmount: BigInt(990000000n),
+          outputAmount: BigInt(990000000),
         });
 
         jest.mocked(Quoter.prototype.getQuote).mockResolvedValueOnce({
@@ -178,7 +178,7 @@ describe('server', () => {
         });
 
         jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-          outputAmount: BigInt(990000000n),
+          outputAmount: BigInt(990000000),
         });
 
         jest.mocked(Quoter.prototype.getQuote).mockResolvedValueOnce({
@@ -223,7 +223,7 @@ describe('server', () => {
         });
 
         jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-          outputAmount: BigInt(1000000000n),
+          outputAmount: BigInt(1000000000),
         });
 
         jest.mocked(Quoter.prototype.getQuote).mockResolvedValueOnce({
@@ -258,7 +258,7 @@ describe('server', () => {
         });
 
         jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-          outputAmount: BigInt(1000000000n),
+          outputAmount: BigInt(1000000000),
         });
 
         jest.mocked(Quoter.prototype.getQuote).mockResolvedValueOnce({
@@ -293,7 +293,7 @@ describe('server', () => {
         });
 
         jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-          outputAmount: BigInt(1000000000n),
+          outputAmount: BigInt(1000000000),
         });
 
         jest.mocked(Quoter.prototype.getQuote).mockRejectedValueOnce(new Error('quoter error'));
@@ -494,7 +494,7 @@ describe('server', () => {
 
     it('rejects when the egress amount is smaller than the egress fee', async () => {
       const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        outputAmount: (1250).toString(),
+        outputAmount: BigInt(1250),
       });
 
       const params = new URLSearchParams({
@@ -535,7 +535,7 @@ describe('server', () => {
       });
 
       jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        outputAmount: (1e18).toString(),
+        outputAmount: BigInt(1e18),
       });
 
       const params = new URLSearchParams({
@@ -556,7 +556,7 @@ describe('server', () => {
 
     it('gets the quote from usdc with a broker commission', async () => {
       const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        outputAmount: (1e18).toString(),
+        outputAmount: BigInt(1e18),
       });
 
       mockRpcs({ egressFee: '25000', ingressFee: '2000000' });
@@ -617,8 +617,8 @@ describe('server', () => {
       });
     });
 
-    it('gets the quote from usdc with boost information', async () => {
-      jest.mocked(Quoter.prototype.canQuote).mockReturnValue(false);
+    it('gets the quote from btc with boost information', async () => {
+      jest.mocked(Quoter.prototype.canQuote).mockReturnValueOnce(false);
 
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
@@ -674,23 +674,16 @@ describe('server', () => {
         '99850000', // deposit amount - boost fee - ingress fee
       );
 
-      expect(body).toMatchSnapshot({
-        boostInformation: expect.any(Object),
-      });
+      expect(body).toMatchSnapshot();
+      expect(body.boostInformation).not.toBeUndefined();
     });
     it("doesn't include boost information inside quote when there is no liquidity to fill the provided amount", async () => {
-      jest.mocked(Quoter.prototype.canQuote).mockReturnValue(false);
+      jest.mocked(Quoter.prototype.canQuote).mockReturnValueOnce(false);
 
-      const sendSpy = jest
-        .spyOn(RpcClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({
-          intermediateAmount: BigInt(2000e6),
-          outputAmount: BigInt(1e18),
-        })
-        .mockResolvedValueOnce({
-          intermediateAmount: BigInt(2000e6 - 5e5),
-          outputAmount: BigInt(1e18 - 5e10),
-        });
+      const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        intermediateAmount: BigInt(2000e6),
+        outputAmount: BigInt(1e18),
+      });
 
       mockRpcs({
         ingressFee: '100000',
@@ -731,7 +724,7 @@ describe('server', () => {
 
     it('gets the quote from usdc from the pools', async () => {
       const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        outputAmount: (1e18).toString(),
+        outputAmount: BigInt(1e18).toString(),
       });
       mockRpcs({ ingressFee: '2000000', egressFee: '25000' });
 
