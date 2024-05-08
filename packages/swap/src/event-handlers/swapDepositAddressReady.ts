@@ -93,7 +93,7 @@ export const swapDepositAddressReady = async ({
         },
       },
       create: {
-        beneficiaries: {
+        affiliates: {
           createMany: {
             data: affiliateFees.map((affiliate) => ({
               account: affiliate.account,

@@ -86,7 +86,7 @@ router.get(
       | (SwapDepositChannel & {
           swaps: SwapWithAdditionalInfo[];
           failedSwaps: FailedSwap[];
-          beneficiaries: Pick<SwapDepositChannelBeneficiary, 'account' | 'commissionBps'>[];
+          affiliates: Pick<SwapDepositChannelBeneficiary, 'account' | 'commissionBps'>[];
         })
       | null
       | undefined;
@@ -108,7 +108,7 @@ router.get(
         include: {
           swaps: { include: swapInclude },
           failedSwaps: true,
-          beneficiaries: {
+          affiliates: {
             select: {
               account: true,
               commissionBps: true,
@@ -124,8 +124,8 @@ router.get(
 
       swap = swapDepositChannel.swaps.at(0);
       failedSwap = swapDepositChannel.failedSwaps.at(0);
-      if (swapDepositChannel.beneficiaries.length > 0) {
-        affiliateBrokers = swapDepositChannel.beneficiaries;
+      if (swapDepositChannel.affiliates.length > 0) {
+        affiliateBrokers = swapDepositChannel.affiliates;
       }
     } else if (swapIdRegex.test(id)) {
       swap = await prisma.swap.findUnique({

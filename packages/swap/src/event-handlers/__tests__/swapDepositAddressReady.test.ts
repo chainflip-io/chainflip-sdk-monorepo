@@ -198,13 +198,13 @@ describe(swapDepositAddressReady, () => {
       where: {
         channelId: BigInt(eventMock.eventContext.event.args.channelId),
       },
-      include: { beneficiaries: true },
+      include: { affiliates: true },
     });
 
     expect(swapDepositChannel).toMatchSnapshot({
       id: expect.any(BigInt),
       createdAt: expect.any(Date),
-      beneficiaries: [
+      affiliates: [
         {
           id: expect.any(BigInt),
           channelId: expect.any(BigInt),

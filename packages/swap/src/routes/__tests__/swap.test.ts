@@ -1222,7 +1222,7 @@ describe('server', () => {
       const swapIntent = await createDepositChannel({
         srcChainExpiryBlock: 200,
         expectedDepositAmount: '25000000000000000000000',
-        beneficiaries: {
+        affiliates: {
           createMany: {
             data: [
               {
