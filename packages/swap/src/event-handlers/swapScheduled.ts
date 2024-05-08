@@ -26,6 +26,8 @@ const swapScheduledArgs = z.object({
   origin: z.union([depositChannelSwapOrigin, vaultSwapOrigin]),
   swapType: swapTypeSchema,
   brokerCommission: u128.optional(),
+  // >= v1.4.0
+  brokerFee: u128.optional(),
 });
 
 export type SwapScheduledEvent = z.input<typeof swapScheduledArgs>;
@@ -43,8 +45,11 @@ export default async function swapScheduled({
     destinationAddress,
     origin,
     swapType,
-    brokerCommission: brokerCommissionAmount,
+    brokerCommission,
+    brokerFee,
   } = swapScheduledArgs.parse(event.args);
+
+  const brokerFeeAmount = brokerFee ?? brokerCommission;
 
   const newSwapData = {
     depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
@@ -52,12 +57,12 @@ export default async function swapScheduled({
     swapInputAmount: depositAmount.toString(),
     nativeId: swapId,
     depositReceivedAt: new Date(block.timestamp),
-    fees: brokerCommissionAmount
+    fees: brokerFeeAmount
       ? {
           create: {
             type: 'BROKER' as const,
             asset: sourceAsset,
-            amount: brokerCommissionAmount.toString(),
+            amount: brokerFeeAmount.toString(),
           },
         }
       : undefined,

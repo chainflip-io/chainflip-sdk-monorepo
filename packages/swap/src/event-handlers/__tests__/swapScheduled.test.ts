@@ -126,6 +126,44 @@ describe(swapScheduled, () => {
       });
     });
 
+    it('stores a new swap with a broker fee', async () => {
+      await prisma.$transaction(async (client) => {
+        await swapScheduled({
+          prisma: client,
+          block: swapScheduledDotDepositChannelBrokerCommissionMock.block as any,
+          event: {
+            ...swapScheduledDotDepositChannelBrokerCommissionMock.eventContext.event,
+            args: {
+              ...swapScheduledDotDepositChannelBrokerCommissionMock.eventContext.event.args,
+              brokerCommission: undefined,
+              brokerFee: '0x1234567890',
+            },
+          },
+        });
+      });
+
+      const swap = await prisma.swap.findFirstOrThrow({
+        where: { swapDepositChannelId: dotSwapDepositChannel.id },
+        include: { fees: true },
+      });
+
+      expect(swap.depositAmount.toString()).toEqual(
+        swapScheduledDotDepositChannelMock.eventContext.event.args.depositAmount,
+      );
+      expect(swap).toMatchSnapshot({
+        id: expect.any(BigInt),
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        swapDepositChannelId: expect.any(BigInt),
+        fees: [
+          {
+            id: expect.any(BigInt),
+            swapId: expect.any(BigInt),
+          },
+        ],
+      });
+    });
+
     it('does not store a new swap if the deposit channel is not found', async () => {
       await prisma.swapDepositChannel.update({
         where: { id: dotSwapDepositChannel.id },
