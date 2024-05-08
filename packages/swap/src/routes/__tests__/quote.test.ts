@@ -724,7 +724,7 @@ describe('server', () => {
 
     it('gets the quote from usdc from the pools', async () => {
       const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        outputAmount: BigInt(1e18).toString(),
+        outputAmount: BigInt(1e18),
       });
       mockRpcs({ ingressFee: '2000000', egressFee: '25000' });
 

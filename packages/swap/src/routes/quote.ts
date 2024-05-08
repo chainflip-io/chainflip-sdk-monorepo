@@ -75,6 +75,7 @@ export const getBoostedPoolQuoteResult = async (query: ParsedQuoteParams) => {
       ...boostedPoolQuote.data.response,
       boostFeeBps: effectiveBoostFeeBps,
       quoteType: undefined,
+      // TODO: use boosted swap time for `estimatedDurationSeconds` here
     };
   } catch (e) {
     logger.warn('Fetching boosted pool quote failed');
