@@ -80,6 +80,7 @@ interface DepositAddressFields extends SwapStatusResponseCommonFields {
   estimatedDepositChannelExpiryTime: number;
   isDepositChannelExpired: boolean;
   depositChannelOpenedThroughBackend: boolean;
+  affiliateBrokers?: { account: string; commissionBps: number }[];
 }
 
 type BroadcastRequested = {

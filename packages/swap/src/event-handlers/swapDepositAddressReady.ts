@@ -1,9 +1,14 @@
 import { z } from 'zod';
-import { u64, internalAssetEnum, u128 } from '@/shared/parsers';
+import { u64, internalAssetEnum, u128, accountId } from '@/shared/parsers';
 import { ccmMetadataSchema } from '@/shared/schemas';
 import { encodedAddress } from './common';
 import { calculateExpiryTime } from '../utils/function';
 import { EventHandlerArgs } from './index';
+
+const affiliateSchema = z.object({
+  bps: z.number().int().positive(),
+  account: accountId,
+});
 
 const swapDepositAddressReadyArgs = z.object({
   depositAddress: encodedAddress,
@@ -16,6 +21,7 @@ const swapDepositAddressReadyArgs = z.object({
   channelMetadata: ccmMetadataSchema.optional(),
   boostFee: z.number().int().optional(),
   channelOpeningFee: u128.optional().default(0),
+  affiliateFees: z.array(affiliateSchema).optional().default([]),
 });
 
 export type SwapDepositAddressReadyEvent = z.input<typeof swapDepositAddressReadyArgs>;
@@ -38,6 +44,7 @@ export const swapDepositAddressReady = async ({
     brokerCommissionRate,
     boostFee,
     channelOpeningFee,
+    affiliateFees,
     ...rest
   } = swapDepositAddressReadyArgs.parse(event.args);
 
@@ -86,6 +93,14 @@ export const swapDepositAddressReady = async ({
         },
       },
       create: {
+        beneficiaries: {
+          createMany: {
+            data: affiliateFees.map((affiliate) => ({
+              account: affiliate.account,
+              commissionBps: affiliate.bps,
+            })),
+          },
+        },
         estimatedExpiryAt: estimatedExpiryTime,
         ccmGasBudget: channelMetadata?.gasBudget,
         ccmMessage: channelMetadata?.message,
