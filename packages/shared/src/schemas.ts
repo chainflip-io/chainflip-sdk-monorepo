@@ -89,11 +89,13 @@ export type SwapFee = {
   asset: Asset;
   amount: string;
 };
-
-export type QuoteQueryResponse = {
+export type QuoteDetails = {
   intermediateAmount?: string;
   egressAmount: string;
   includedFees: SwapFee[];
   lowLiquidityWarning: boolean | undefined;
   estimatedDurationSeconds: number;
+};
+export type QuoteQueryResponse = QuoteDetails & {
+  boostInformation?: QuoteDetails & { boostFeeBps: number };
 };

@@ -64,7 +64,11 @@ export const getBoostedPoolQuoteResult = async (query: ParsedQuoteParams) => {
       return undefined;
     }
 
-    return { ...boostedPoolQuote.data.response, boostFeeBps: effectiveBoostFeeBps };
+    return {
+      ...boostedPoolQuote.data.response,
+      boostFeeBps: effectiveBoostFeeBps,
+      quoteType: undefined,
+    };
   } catch {
     // Amount after boost fee insufficient to pay for other fees
     return undefined;
