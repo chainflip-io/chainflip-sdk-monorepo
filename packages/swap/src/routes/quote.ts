@@ -35,7 +35,6 @@ export const getBoostedPoolQuoteResult = async (query: ParsedQuoteParams) => {
   const fees: SwapFee[] = [];
 
   const assetBoostPoolsDepth = await getBoostPoolsDepth({ asset: srcAsset });
-  assetBoostPoolsDepth.sort((a, b) => (a.tier < b.tier ? -1 : 1));
 
   const effectiveBoostFeeBps = await getBoostFeeBpsForAmount({
     amount: BigInt(amount),
@@ -77,7 +76,8 @@ export const getBoostedPoolQuoteResult = async (query: ParsedQuoteParams) => {
       boostFeeBps: effectiveBoostFeeBps,
       quoteType: undefined,
     };
-  } catch {
+  } catch (e) {
+    logger.warn('Fetching boosted pool quote failed');
     // Amount after boost fee insufficient to pay for other fees
     return undefined;
   }

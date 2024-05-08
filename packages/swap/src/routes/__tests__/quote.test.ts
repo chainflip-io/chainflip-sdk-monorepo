@@ -1067,6 +1067,7 @@ describe('server', () => {
       });
 
       const { body, status } = await request(server).get(`/quote?${params.toString()}`);
+
       expect(status).toBe(200);
       expect(body).toMatchSnapshot();
     });

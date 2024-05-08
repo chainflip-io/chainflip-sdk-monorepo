@@ -8,6 +8,8 @@ export const getBoostFeeBpsForAmount = async ({
   amount: bigint;
   assetBoostPoolsDepth: BoostPoolsDepth;
 }): Promise<number | undefined> => {
+  assetBoostPoolsDepth.sort((a, b) => (a.tier < b.tier ? -1 : 1));
+
   let _amount = amount;
   let feeAmount = 0n;
 
