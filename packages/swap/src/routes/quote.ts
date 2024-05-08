@@ -19,7 +19,12 @@ import getPoolQuote from '../utils/getPoolQuote';
 import logger from '../utils/logger';
 import { getPools } from '../utils/pools';
 import { resultify } from '../utils/promise';
-import { getMinimumEgressAmount, getEgressFee, validateSwapAmount } from '../utils/rpc';
+import {
+  getMinimumEgressAmount,
+  getEgressFee,
+  validateSwapAmount,
+  getBoostPoolsDepth,
+} from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
 import { estimateSwapDuration } from '../utils/swap';
 
@@ -29,9 +34,12 @@ export const getBoostedPoolQuoteResult = async (query: ParsedQuoteParams) => {
   const { srcAsset, destAsset, brokerCommissionBps, amount } = query;
   const fees: SwapFee[] = [];
 
+  const assetBoostPoolsDepth = await getBoostPoolsDepth({ asset: srcAsset });
+  assetBoostPoolsDepth.sort((a, b) => (a.tier < b.tier ? -1 : 1));
+
   const effectiveBoostFeeBps = await getBoostFeeBpsForAmount({
     amount: BigInt(amount),
-    asset: srcAsset,
+    assetBoostPoolsDepth,
   });
 
   if (effectiveBoostFeeBps === undefined) return undefined;

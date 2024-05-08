@@ -278,13 +278,19 @@ export const getBlockHash = createRequest('chain_getBlockHash', hexString);
 const boostPoolsDepthResponseSchema = z.array(
   z.intersection(
     rpcAssetSchema,
-    z.object({
-      tier: number,
-      available_amount: u128,
-    }),
+    z
+      .object({
+        tier: number,
+        available_amount: u128,
+      })
+      .transform((obj) => ({
+        tier: obj.tier,
+        availableAmount: obj.available_amount,
+      })),
   ),
 );
 
+export type BoostPoolsDepth = Awaited<ReturnType<typeof getAllBoostPoolsDepth>>;
 export const getAllBoostPoolsDepth = createRequest(
   'cf_boost_pools_depth',
   boostPoolsDepthResponseSchema,

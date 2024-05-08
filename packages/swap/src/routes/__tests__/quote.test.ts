@@ -678,7 +678,7 @@ describe('server', () => {
         boostInformation: expect.any(Object),
       });
     });
-    it.only("doesn't include boost information inside quote when there is no liquidity to fill the provided amount", async () => {
+    it("doesn't include boost information inside quote when there is no liquidity to fill the provided amount", async () => {
       jest.mocked(Quoter.prototype.canQuote).mockReturnValue(false);
 
       const sendSpy = jest

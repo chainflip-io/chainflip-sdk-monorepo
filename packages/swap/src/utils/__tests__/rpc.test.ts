@@ -18,7 +18,7 @@ describe(getBoostPoolsDepth, () => {
       expect(boostPoolDepth).toMatchSnapshot({
         asset: 'BTC',
         chain: 'Bitcoin',
-        available_amount: expect.any(BigInt),
+        availableAmount: expect.any(BigInt),
         tier: expect.any(Number),
       });
     });

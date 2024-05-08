@@ -1,22 +1,18 @@
 import { ONE_IN_PIP, bigintMin, getPipAmountFromAmount } from '@/shared/functions';
-import { getBoostPoolsDepth } from './rpc';
-import { InternalAsset } from '../client';
+import { BoostPoolsDepth } from '../rpc';
 
 export const getBoostFeeBpsForAmount = async ({
   amount,
-  asset,
+  assetBoostPoolsDepth,
 }: {
   amount: bigint;
-  asset: InternalAsset;
+  assetBoostPoolsDepth: BoostPoolsDepth;
 }): Promise<number | undefined> => {
-  const assetBoostPoolsDepth = await getBoostPoolsDepth({ asset });
-  assetBoostPoolsDepth.sort((a, b) => (a.tier < b.tier ? -1 : 1));
-
   let _amount = amount;
   let feeAmount = 0n;
 
   for (const poolDepth of assetBoostPoolsDepth) {
-    const poolAvailableAmount = poolDepth.available_amount;
+    const poolAvailableAmount = poolDepth.availableAmount;
 
     const amountToBeUsedFromPool = bigintMin(_amount, poolAvailableAmount);
     feeAmount += getPipAmountFromAmount(amountToBeUsedFromPool, poolDepth.tier);

@@ -1,5 +1,5 @@
 import { Chain, readChainAssetValue, InternalAsset, getInternalAsset } from '@/shared/enums';
-import { getAllBoostPoolsDepth, getEnvironment } from '@/shared/rpc';
+import { BoostPoolsDepth, getAllBoostPoolsDepth, getEnvironment } from '@/shared/rpc';
 import { validateSwapAmount as validateAmount } from '@/shared/rpc/utils';
 import { memoize } from './function';
 import env from '../config/env';
@@ -44,7 +44,7 @@ export const getBoostPoolsDepth = async ({
   asset,
 }: {
   asset?: InternalAsset;
-}): Promise<ReturnType<typeof getAllBoostPoolsDepth>> => {
+}): Promise<BoostPoolsDepth> => {
   const allBoostPoolsDepth = await getAllBoostPoolsDepth(rpcConfig);
 
   if (asset) {
