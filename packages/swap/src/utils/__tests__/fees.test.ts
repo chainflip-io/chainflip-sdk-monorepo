@@ -200,6 +200,6 @@ describe(tryExtractFeesFromIngressAmount, () => {
       },
     ]);
 
-    expect(amountAfterFees.toString()).toBe(100e8 - INGRESS_FEE);
+    expect(amountAfterFees).toBe(BigInt(100e8) - BigInt(INGRESS_FEE));
   });
 });

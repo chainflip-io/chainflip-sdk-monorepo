@@ -40,6 +40,47 @@ exports[`server GET /quote gets the quote for deprecated params without the chai
 }
 `;
 
+exports[`server GET /quote gets the quote from usdc with boost information 1`] = `
+{
+  "boostInformation": Any<Object>,
+  "egressAmount": "999999999999975000",
+  "estimatedDurationSeconds": 1830,
+  "includedFees": [
+    {
+      "amount": "100000",
+      "asset": "BTC",
+      "chain": "Bitcoin",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "2000000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "199800",
+      "asset": "BTC",
+      "chain": "Bitcoin",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "4000000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "25000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
+  "intermediateAmount": "2000000000",
+}
+`;
+
 exports[`server GET /quote gets the quote when ingress and egress fee is returned as fee asset amount 1`] = `
 {
   "egressAmount": "1999250000",

@@ -57,7 +57,7 @@ export const getBoostedPoolQuoteResult = async (query: ParsedQuoteParams) => {
       destAsset,
       swapInputAmount,
       fees,
-      0,
+      Date.now(),
     );
 
     if (!boostedPoolQuote.success) {

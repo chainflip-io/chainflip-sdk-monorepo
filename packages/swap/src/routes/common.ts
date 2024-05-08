@@ -7,7 +7,6 @@ import ServiceError from '../utils/ServiceError';
 
 export const handleError: ErrorRequestHandler = (error, req, res, _next) => {
   logger.customInfo('received error', {}, { error });
-
   if (error instanceof ServiceError) {
     res.status(error.code).json(error.toJSON());
   } else {

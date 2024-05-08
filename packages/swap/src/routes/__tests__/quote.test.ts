@@ -2,7 +2,12 @@ import axios from 'axios';
 import { Server } from 'http';
 import request from 'supertest';
 import RpcClient from '@/shared/node-apis/RpcClient';
-import { environment, swapRate } from '@/shared/tests/fixtures';
+import {
+  MockedBoostPoolsDepth,
+  boostPoolsDepth,
+  environment,
+  swapRate,
+} from '@/shared/tests/fixtures';
 import prisma, { QuoteResult } from '../../client';
 import env from '../../config/env';
 import { checkPriceWarning } from '../../pricing/checkPriceWarning';
@@ -49,7 +54,15 @@ jest.mock('axios', () => ({
 
 jest.mock('../../pricing/index');
 
-const mockRpcs = ({ ingressFee, egressFee }: { ingressFee: string; egressFee: string }) =>
+const mockRpcs = ({
+  ingressFee,
+  egressFee,
+  mockedBoostPoolsDepth,
+}: {
+  ingressFee: string;
+  egressFee: string;
+  mockedBoostPoolsDepth?: MockedBoostPoolsDepth;
+}) =>
   jest.mocked(axios.post).mockImplementation((url, data: any) => {
     if (data.method === 'cf_environment') {
       return Promise.resolve({ data: environment({ maxSwapAmount: null, ingressFee, egressFee }) });
@@ -58,6 +71,12 @@ const mockRpcs = ({ ingressFee, egressFee }: { ingressFee: string; egressFee: st
     if (data.method === 'cf_swap_rate') {
       return Promise.resolve({
         data: swapRate({ output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}` }),
+      });
+    }
+
+    if (data.method === 'cf_boost_pools_depth') {
+      return Promise.resolve({
+        data: boostPoolsDepth(mockedBoostPoolsDepth),
       });
     }
 
@@ -79,6 +98,11 @@ describe('server', () => {
         },
         {
           baseAsset: 'Eth',
+          quoteAsset: 'Usdc',
+          liquidityFeeHundredthPips: 2000,
+        },
+        {
+          baseAsset: 'Btc',
           quoteAsset: 'Usdc',
           liquidityFeeHundredthPips: 2000,
         },
@@ -593,88 +617,116 @@ describe('server', () => {
       });
     });
 
-    // TODO: add tests for boostInformation
-    it('gets the quote from usdc with a boost fee', async () => {
-      const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        outputAmount: (1e18).toString(),
-      });
+    it('gets the quote from usdc with boost information', async () => {
+      jest.mocked(Quoter.prototype.canQuote).mockReturnValue(false);
 
-      jest.mocked(axios.post).mockImplementation((url, data: any) => {
-        if (data.method === 'cf_environment') {
-          return Promise.resolve({
-            data: environment({
-              maxSwapAmount: null,
-              ingressFee: '2000000',
-              egressFee: '25000',
-            }),
-          });
-        }
+      const sendSpy = jest
+        .spyOn(RpcClient.prototype, 'sendRequest')
+        .mockResolvedValueOnce({
+          intermediateAmount: BigInt(2000e6),
+          outputAmount: BigInt(1e18),
+        })
+        .mockResolvedValueOnce({
+          intermediateAmount: BigInt(2000e6 - 5e5),
+          outputAmount: BigInt(1e18 - 5e10),
+        });
 
-        if (data.method === 'cf_swap_rate') {
-          return Promise.resolve({
-            data: swapRate({
-              output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
-            }),
-          });
-        }
-
-        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+      mockRpcs({
+        ingressFee: '100000',
+        egressFee: '25000',
+        mockedBoostPoolsDepth: [
+          {
+            chain: 'Bitcoin',
+            asset: 'BTC',
+            tier: 5,
+            available_amount: `0x${(1e8).toString(16)}`,
+          },
+        ],
       });
 
       const params = new URLSearchParams({
-        srcChain: 'Ethereum',
-        srcAsset: 'USDC',
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
         destChain: 'Ethereum',
         destAsset: 'ETH',
-        amount: (100e6).toString(),
-        boostFeeBps: '10',
+        amount: (1e8).toString(),
       });
 
       const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
       expect(status).toBe(200);
 
-      expect(sendSpy).toHaveBeenCalledWith(
+      // Normal swap
+      expect(sendSpy).toHaveBeenNthCalledWith(
+        1,
         'swap_rate',
-        { asset: 'USDC', chain: 'Ethereum' },
+        { asset: 'BTC', chain: 'Bitcoin' },
         { asset: 'ETH', chain: 'Ethereum' },
-        '97900000', // deposit amount - boost fee - ingress fee
+        '99900000', // deposit amount - ingress fee
       );
-      expect(body).toMatchObject({
-        egressAmount: (1e18 - 25000).toString(),
-        includedFees: [
+
+      // Boosted swap
+      expect(sendSpy).toHaveBeenNthCalledWith(
+        2,
+        'swap_rate',
+        { asset: 'BTC', chain: 'Bitcoin' },
+        { asset: 'ETH', chain: 'Ethereum' },
+        '99850000', // deposit amount - boost fee - ingress fee
+      );
+
+      expect(body).toMatchSnapshot({
+        boostInformation: expect.any(Object),
+      });
+    });
+    it.only("doesn't include boost information inside quote when there is no liquidity to fill the provided amount", async () => {
+      jest.mocked(Quoter.prototype.canQuote).mockReturnValue(false);
+
+      const sendSpy = jest
+        .spyOn(RpcClient.prototype, 'sendRequest')
+        .mockResolvedValueOnce({
+          intermediateAmount: BigInt(2000e6),
+          outputAmount: BigInt(1e18),
+        })
+        .mockResolvedValueOnce({
+          intermediateAmount: BigInt(2000e6 - 5e5),
+          outputAmount: BigInt(1e18 - 5e10),
+        });
+
+      mockRpcs({
+        ingressFee: '100000',
+        egressFee: '25000',
+        mockedBoostPoolsDepth: [
           {
-            amount: '100000',
-            asset: 'USDC',
-            chain: 'Ethereum',
-            type: 'BOOST',
-          },
-          {
-            amount: '2000000',
-            asset: 'USDC',
-            chain: 'Ethereum',
-            type: 'INGRESS',
-          },
-          {
-            amount: '97900',
-            asset: 'USDC',
-            chain: 'Ethereum',
-            type: 'NETWORK',
-          },
-          {
-            amount: '195800',
-            asset: 'USDC',
-            chain: 'Ethereum',
-            type: 'LIQUIDITY',
-          },
-          {
-            amount: '25000',
-            asset: 'ETH',
-            chain: 'Ethereum',
-            type: 'EGRESS',
+            chain: 'Bitcoin',
+            asset: 'BTC',
+            tier: 5,
+            available_amount: `0x${(0.1e8).toString(16)}`,
           },
         ],
       });
+
+      const params = new URLSearchParams({
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: (1e8).toString(),
+      });
+
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
+
+      expect(status).toBe(200);
+
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+      expect(sendSpy).toHaveBeenNthCalledWith(
+        1,
+        'swap_rate',
+        { asset: 'BTC', chain: 'Bitcoin' },
+        { asset: 'ETH', chain: 'Ethereum' },
+        '99900000', // deposit amount - ingress fee
+      );
+
+      expect(body.boostInformation).toBe(undefined);
     });
 
     it('gets the quote from usdc from the pools', async () => {
@@ -748,6 +800,12 @@ describe('server', () => {
             data: swapRate({
               output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
             }),
+          });
+        }
+
+        if (data.method === 'cf_boost_pools_depth') {
+          return Promise.resolve({
+            data: boostPoolsDepth(),
           });
         }
 
@@ -883,6 +941,12 @@ describe('server', () => {
           });
         }
 
+        if (data.method === 'cf_boost_pools_depth') {
+          return Promise.resolve({
+            data: boostPoolsDepth(),
+          });
+        }
+
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
@@ -940,6 +1004,12 @@ describe('server', () => {
           });
         }
 
+        if (data.method === 'cf_boost_pools_depth') {
+          return Promise.resolve({
+            data: boostPoolsDepth(),
+          });
+        }
+
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
@@ -981,6 +1051,12 @@ describe('server', () => {
           });
         }
 
+        if (data.method === 'cf_boost_pools_depth') {
+          return Promise.resolve({
+            data: boostPoolsDepth(),
+          });
+        }
+
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
@@ -991,7 +1067,6 @@ describe('server', () => {
       });
 
       const { body, status } = await request(server).get(`/quote?${params.toString()}`);
-
       expect(status).toBe(200);
       expect(body).toMatchSnapshot();
     });
