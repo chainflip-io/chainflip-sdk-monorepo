@@ -25,9 +25,10 @@ const swapScheduledArgs = z.object({
   destinationAddress: encodedAddress,
   origin: z.union([depositChannelSwapOrigin, vaultSwapOrigin]),
   swapType: swapTypeSchema,
-  brokerCommission: u128.optional(),
+  // < v1.4.0
+  brokerCommission: u128.nullish(),
   // >= v1.4.0
-  brokerFee: u128.optional(),
+  brokerFee: u128.nullish(),
 });
 
 export type SwapScheduledEvent = z.input<typeof swapScheduledArgs>;

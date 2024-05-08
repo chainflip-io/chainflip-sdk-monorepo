@@ -152,7 +152,7 @@ exports[`swapDepositAddressReady does not overwrite expectedDepositAmount with z
 
 exports[`swapDepositAddressReady inserts affiliates 1`] = `
 {
-  "beneficiaries": [
+  "affiliates": [
     {
       "account": "cFLhKgAVKDYQiyPXLH6yuvsWMXebn214VzKZEyXvEgcB9WT4T",
       "channelId": Any<BigInt>,

@@ -1218,7 +1218,7 @@ describe('server', () => {
       expect(status).toBe(200);
     });
 
-    it('retrieves a channel with beneficiaries', async () => {
+    it('retrieves a channel with affiliates', async () => {
       const swapIntent = await createDepositChannel({
         srcChainExpiryBlock: 200,
         expectedDepositAmount: '25000000000000000000000',

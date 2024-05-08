@@ -14,7 +14,7 @@ import prisma, {
   FailedSwap,
   IgnoredEgress,
   FailedSwapReason,
-  SwapDepositChannelBeneficiary,
+  SwapDepositChannelAffiliate,
 } from '../client';
 import openSwapDepositChannel from '../handlers/openSwapDepositChannel';
 import { getPendingBroadcast, getPendingDeposit } from '../ingress-egress-tracking';
@@ -86,12 +86,12 @@ router.get(
       | (SwapDepositChannel & {
           swaps: SwapWithAdditionalInfo[];
           failedSwaps: FailedSwap[];
-          affiliates: Pick<SwapDepositChannelBeneficiary, 'account' | 'commissionBps'>[];
+          affiliates: Pick<SwapDepositChannelAffiliate, 'account' | 'commissionBps'>[];
         })
       | null
       | undefined;
     let affiliateBrokers:
-      | Pick<SwapDepositChannelBeneficiary, 'account' | 'commissionBps'>[]
+      | Pick<SwapDepositChannelAffiliate, 'account' | 'commissionBps'>[]
       | undefined;
 
     if (channelIdRegex.test(id)) {
