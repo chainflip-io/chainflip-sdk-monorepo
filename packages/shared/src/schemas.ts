@@ -63,9 +63,9 @@ export type CcmMetadata = z.infer<typeof ccmMetadataSchema>;
 export const affiliateBroker = z.object({
   account: chainflipAddress,
   commissionBps: number,
-});
+}).transform(({ account, commissionBps: bps }) => ({ account, bps }));
 
-export type AffiliateBroker = z.infer<typeof affiliateBroker>;
+export type AffiliateBroker = z.input<typeof affiliateBroker>;
 
 export const openSwapDepositChannelSchema = z
   .object({
