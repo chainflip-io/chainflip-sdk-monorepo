@@ -268,7 +268,7 @@ describe(broker.requestSwapDepositAddress, () => {
       {
         ...brokerConfig,
         commissionBps: 30,
-        affiliateBrokers: [
+        affiliates: [
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
           { account: 'cFJ4sqrg4FnrLPsGdt5w85XExGYxVLHLYLci28PnqcVVb8r8a', commissionBps: 20 },
         ],

@@ -60,10 +60,12 @@ export const ccmMetadataSchema = z.object({
 
 export type CcmMetadata = z.infer<typeof ccmMetadataSchema>;
 
-export const affiliateBroker = z.object({
-  account: chainflipAddress,
-  commissionBps: number,
-}).transform(({ account, commissionBps: bps }) => ({ account, bps }));
+export const affiliateBroker = z
+  .object({
+    account: chainflipAddress,
+    commissionBps: number,
+  })
+  .transform(({ account, commissionBps: bps }) => ({ account, bps }));
 
 export type AffiliateBroker = z.input<typeof affiliateBroker>;
 

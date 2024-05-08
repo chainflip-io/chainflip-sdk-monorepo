@@ -12,7 +12,7 @@ exports[`openSwapDepositChannel creates channel and stores it in the database 1`
       "srcChain": "Ethereum",
     },
     {
-      "affiliateBrokers": [],
+      "affiliates": [],
       "commissionBps": 0,
       "url": "",
     },
@@ -59,7 +59,7 @@ exports[`openSwapDepositChannel creates channel with boost fee and stores it in 
       "srcChain": "Ethereum",
     },
     {
-      "affiliateBrokers": [],
+      "affiliates": [],
       "commissionBps": 0,
       "url": "",
     },
@@ -109,7 +109,7 @@ exports[`openSwapDepositChannel creates channel with ccmMetadata and stores it i
       "srcChain": "Ethereum",
     },
     {
-      "affiliateBrokers": [],
+      "affiliates": [],
       "commissionBps": 0,
       "url": "",
     },

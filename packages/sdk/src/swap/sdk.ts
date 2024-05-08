@@ -144,7 +144,7 @@ export class SwapSDK {
         {
           ...this.options.broker,
           commissionBps: brokerCommissionBps ?? this.options.broker.commissionBps,
-          affiliateBrokers,
+          affiliates: affiliateBrokers,
         },
         this.options.network,
       );
@@ -159,8 +159,12 @@ export class SwapSDK {
       };
     } else {
       assert(
+        !depositAddressRequest.brokerCommissionBps,
+        'Broker commission is only supported only when initializing the SDK with a brokerUrl',
+      );
+      assert(
         !depositAddressRequest.affiliateBrokers?.length,
-        'Affiliate brokers are supported only when providing a brokerUrl',
+        'Affiliate brokers are supported only when initializing the SDK with a brokerUrl',
       );
       response = await this.trpc.openSwapDepositChannel.mutate(depositAddressRequest);
     }

@@ -32,6 +32,12 @@ which it is deprecated.
 - `getQuote` and `requestSwapDepositChannel` reject requests with amounts larger
   than the largest value of a 128 bit integer.
 
+### Added
+
+- `SwapSDK.prototype.requestDepositAddress` supports an optional `brokerCommissionBps`
+  and `affiliateBrokers` option. The new options are only available when initializing
+  the SDK with a brokerUrl and will be applied only to the requested deposit channel.
+
 ## 1.3.0
 
 ### Added
