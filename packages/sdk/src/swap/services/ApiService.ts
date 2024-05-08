@@ -8,7 +8,7 @@ export type RequestOptions = {
 
 type BackendQuery<T, U> = (baseUrl: string, args: T, options: RequestOptions) => Promise<U>;
 
-const getQuote: BackendQuery<
+export const getQuote: BackendQuery<
   QuoteRequest & { brokerCommissionBps?: number },
   QuoteResponse
 > = async (baseUrl, quoteRequest, { signal }) => {
@@ -37,7 +37,7 @@ const getQuote: BackendQuery<
   return { ...returnedRequestData, quote: data };
 };
 
-const getStatus: BackendQuery<SwapStatusRequest, SwapStatusResponse> = async (
+export const getStatus: BackendQuery<SwapStatusRequest, SwapStatusResponse> = async (
   baseUrl,
   { id },
   { signal },
@@ -47,9 +47,4 @@ const getStatus: BackendQuery<SwapStatusRequest, SwapStatusResponse> = async (
     signal,
   });
   return data;
-};
-
-export default {
-  getQuote,
-  getStatus,
 };

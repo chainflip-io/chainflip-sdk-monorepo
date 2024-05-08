@@ -35,17 +35,18 @@ interface ChainsAndAssets {
 export interface QuoteRequest extends ChainsAndAssets {
   amount: string;
   boostFeeBps?: number;
+  brokerCommissionBps?: number;
+  affiliateBrokers?: AffiliateBroker[];
 }
 
-export interface QuoteResponse extends Omit<QuoteRequest, 'boostFeeBps'> {
+export interface QuoteResponse
+  extends Omit<QuoteRequest, 'boostFeeBps' | 'brokerCommissionBps' | 'affiliateBrokers'> {
   quote: QuoteQueryResponse;
 }
 
 export interface DepositAddressRequest extends QuoteRequest {
   destAddress: string;
   ccmMetadata?: CcmMetadata;
-  brokerCommissionBps?: number;
-  affiliateBrokers?: AffiliateBroker[];
 }
 
 export interface DepositAddressResponse extends DepositAddressRequest {

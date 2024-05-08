@@ -30,15 +30,18 @@ which it is deprecated.
 
 ### Fixed
 
-- `getQuote` currently responds with a 500 if there is insufficient liquidity.
+- `SwapSDK.prototype.getQuote` currently responds with a 500 if there is insufficient liquidity.
   It has been changed to a 400 because there are steps the user can take to fix
   the error, namely change the swap input amount. The error message has been
   changed to a more informative `insufficient liquidity for requested amount`.
-- `getQuote` and `requestSwapDepositChannel` reject requests with amounts larger
+- `SwapSDK.prototype.getQuote` and `requestSwapDepositChannel` reject requests with amounts larger
   than the largest value of a 128 bit integer.
 
 ### Added
 
+- `SwapSDK.prototype.getQuote` supports an optional `brokerCommissionBps` and
+  `affiliateBrokers` option. If given, the `brokerCommissionBps` option will be
+  used instead of the `brokerCommissionBps` used to initialize the SDK instance.
 - `SwapSDK.prototype.requestDepositAddress` supports an optional `brokerCommissionBps`
   and `affiliateBrokers` option. The new options are only available when initializing
   the SDK with a brokerUrl and will be applied only to the requested deposit channel.
