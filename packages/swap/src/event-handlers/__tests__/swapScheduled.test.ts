@@ -100,7 +100,13 @@ describe(swapScheduled, () => {
         await swapScheduled({
           prisma: client,
           block: swapScheduledDotDepositChannelBrokerCommissionMock.block as any,
-          event: swapScheduledDotDepositChannelBrokerCommissionMock.eventContext.event as any,
+          event: {
+            ...swapScheduledDotDepositChannelBrokerCommissionMock.eventContext.event,
+            args: {
+              ...swapScheduledDotDepositChannelBrokerCommissionMock.eventContext.event.args,
+              brokerCommission: 5000000000,
+            },
+          },
         });
       });
 
@@ -131,14 +137,7 @@ describe(swapScheduled, () => {
         await swapScheduled({
           prisma: client,
           block: swapScheduledDotDepositChannelBrokerCommissionMock.block as any,
-          event: {
-            ...swapScheduledDotDepositChannelBrokerCommissionMock.eventContext.event,
-            args: {
-              ...swapScheduledDotDepositChannelBrokerCommissionMock.eventContext.event.args,
-              brokerCommission: undefined,
-              brokerFee: '0x1234567890',
-            },
-          },
+          event: swapScheduledDotDepositChannelBrokerCommissionMock.eventContext.event,
         });
       });
 

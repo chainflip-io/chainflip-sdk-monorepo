@@ -130,7 +130,7 @@ export const swapScheduledDotDepositChannelBrokerCommissionMock = buildSwapSched
   swapType: {
     __kind: 'Swap',
   },
-  brokerCommission: 5000000000,
+  brokerFee: 5000000000,
 });
 
 export const swapScheduledBtcDepositChannelMock = buildSwapScheduledEvent({

@@ -106,7 +106,7 @@ exports[`swapScheduled deposit channel origin stores a new swap with a broker fe
   "egressId": null,
   "fees": [
     {
-      "amount": "78187493520",
+      "amount": "5000000000",
       "asset": "Dot",
       "id": Any<BigInt>,
       "swapId": Any<BigInt>,
