@@ -330,3 +330,11 @@ model QuoteResult {
   @@index([srcAsset, destAsset])
   @@schema("private")
 }
+
+model BlockedAddress {
+  id      Int    @id @default(autoincrement())
+  address String
+
+  @@index([address])
+  @@schema("private")
+}
