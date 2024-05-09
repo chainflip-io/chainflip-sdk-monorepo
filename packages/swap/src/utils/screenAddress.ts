@@ -31,11 +31,16 @@ const screenChainalysis = async (address: string): Promise<boolean> => {
 };
 
 const checkBlocklist = async (address: string): Promise<boolean> => {
-  const results = await prisma.$queryRaw<
-    unknown[]
-  >`SELECT 1 FROM private."BlockedAddress" WHERE LOWER(address) = LOWER(${address})`;
+  const results = await prisma.blockedAddress.findFirst({
+    where: {
+      address: {
+        equals: address,
+        mode: 'insensitive',
+      },
+    },
+  });
 
-  return results.length > 0;
+  return results !== null;
 };
 
 export default async function screenAddress(address: string): Promise<boolean> {
