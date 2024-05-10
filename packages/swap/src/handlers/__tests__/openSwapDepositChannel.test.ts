@@ -209,9 +209,9 @@ describe(openSwapDepositChannel, () => {
     const opts = {
       srcAsset: 'FLIP',
       srcChain: 'Ethereum',
-      destAsset: 'DOT',
-      destChain: 'Polkadot',
-      destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
+      destAsset: 'ETH',
+      destChain: 'Ethereum',
+      destAddress: '0x72a5843cc08275C8171E582972Aa4fDa8C397B2A',
       expectedDepositAmount: '777',
     } as const;
 
@@ -236,6 +236,8 @@ describe(openSwapDepositChannel, () => {
       channelOpeningFee: 100n,
     });
 
-    await expect(openSwapDepositChannel(opts)).rejects.toThrow('too many channels');
+    await expect(
+      openSwapDepositChannel({ ...opts, destAddress: opts.destAddress.toLowerCase() }),
+    ).rejects.toThrow('too many channels');
   });
 });

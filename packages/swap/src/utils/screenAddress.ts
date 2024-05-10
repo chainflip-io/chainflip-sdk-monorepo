@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { z } from 'zod';
 import logger from './logger';
+import prisma from '../client';
 import env from '../config/env';
 
-const schema = z.object({ identifications: z.array(z.object({})) });
+const chainalysisSchema = z.object({ identifications: z.array(z.object({})) });
 
-export default async function screenAddress(address: string): Promise<boolean> {
+const screenChainalysis = async (address: string): Promise<boolean> => {
   const apiKey = env.CHAINALYSIS_API_KEY;
 
   if (!apiKey) return false;
@@ -19,7 +20,7 @@ export default async function screenAddress(address: string): Promise<boolean> {
       return { data: { identifications: [] } };
     });
 
-  const result = schema.safeParse(response.data);
+  const result = chainalysisSchema.safeParse(response.data);
 
   if (!result.success) {
     logger.error('failed to parse chainalysis response', result.error);
@@ -27,4 +28,21 @@ export default async function screenAddress(address: string): Promise<boolean> {
   }
 
   return result.data.identifications.length > 0;
+};
+
+const checkBlocklist = async (address: string): Promise<boolean> => {
+  const results = await prisma.blockedAddress.findFirst({
+    where: {
+      address: {
+        equals: address,
+        mode: 'insensitive',
+      },
+    },
+  });
+
+  return results !== null;
+};
+
+export default async function screenAddress(address: string): Promise<boolean> {
+  return (await Promise.all([screenChainalysis(address), checkBlocklist(address)])).some(Boolean);
 }
