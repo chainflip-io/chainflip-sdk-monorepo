@@ -7,7 +7,7 @@ import {
   getPipAmountFromAmount,
 } from '@/shared/functions';
 import { QuoteQueryResponse, quoteQuerySchema, SwapFee } from '@/shared/schemas';
-import { asyncHandler, handleError } from './common';
+import { asyncHandler } from './common';
 import prisma from '../client';
 import env from '../config/env';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
