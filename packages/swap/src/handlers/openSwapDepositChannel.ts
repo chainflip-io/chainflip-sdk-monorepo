@@ -6,6 +6,7 @@ import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';
 import env from '../config/env';
 import { calculateExpiryTime } from '../utils/function';
+import logger from '../utils/logger';
 import { validateSwapAmount } from '../utils/rpc';
 import screenAddress from '../utils/screenAddress';
 import ServiceError from '../utils/ServiceError';
@@ -20,6 +21,7 @@ export default async function openSwapDepositChannel(
   }
 
   if (await screenAddress(input.destAddress)) {
+    logger.info('blocked address found', { ...input });
     throw ServiceError.internalError('Failed to open deposit channel, please try again later');
   }
 

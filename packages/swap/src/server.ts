@@ -6,6 +6,7 @@ import { Server } from 'socket.io';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import openSwapDepositChannel from './handlers/openSwapDepositChannel';
 import authenticate from './quoting/authenticate';
+import addresses from './routes/addresses';
 import { handleError, maintenanceMode } from './routes/common';
 import quoteRouter from './routes/quote';
 import swap from './routes/swap';
@@ -34,6 +35,8 @@ app.get('/healthcheck', (req, res) => {
 app.use('/quote', quoteRouter(io));
 
 app.use('/trpc', maintenanceMode, trpcExpress.createExpressMiddleware({ router: appRouter }));
+
+app.use('/addresses', addresses);
 
 app.use(handleError);
 
