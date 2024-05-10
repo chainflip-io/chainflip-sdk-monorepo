@@ -1217,6 +1217,35 @@ describe('server', () => {
 
       expect(status).toBe(200);
     });
+
+    it('retrieves a channel with affiliates', async () => {
+      const swapIntent = await createDepositChannel({
+        srcChainExpiryBlock: 200,
+        expectedDepositAmount: '25000000000000000000000',
+        affiliates: {
+          createMany: {
+            data: [
+              {
+                account: 'cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy',
+                commissionBps: 100,
+              },
+            ],
+          },
+        },
+      });
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
+
+      const { status, body } = await request(server).get(`/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+
+      expect(body.affiliateBrokers).toStrictEqual([
+        {
+          account: 'cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy',
+          commissionBps: 100,
+        },
+      ]);
+    });
   });
 
   describe('POST /swaps', () => {

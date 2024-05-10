@@ -174,4 +174,42 @@ describe(swapDepositAddressReady, () => {
       createdAt: expect.any(Date),
     });
   });
+
+  it('inserts affiliates', async () => {
+    await createChainTrackingInfo();
+    await swapDepositAddressReady({
+      prisma,
+      event: {
+        ...eventMock.eventContext.event,
+        args: {
+          ...eventMock.eventContext.event.args,
+          affiliateFees: [
+            {
+              account: '0x7cf56f93db22f45007bbfa2e2ee89551365b2ebaece029fb006d5ad1b3756c3c',
+              bps: 100,
+            },
+          ],
+        },
+      },
+      block: eventMock.block,
+    });
+
+    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
+      where: {
+        channelId: BigInt(eventMock.eventContext.event.args.channelId),
+      },
+      include: { affiliates: true },
+    });
+
+    expect(swapDepositChannel).toMatchSnapshot({
+      id: expect.any(BigInt),
+      createdAt: expect.any(Date),
+      affiliates: [
+        {
+          id: expect.any(BigInt),
+          channelId: expect.any(BigInt),
+        },
+      ],
+    });
+  });
 });

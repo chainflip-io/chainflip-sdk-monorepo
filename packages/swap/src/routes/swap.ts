@@ -14,6 +14,7 @@ import prisma, {
   FailedSwap,
   IgnoredEgress,
   FailedSwapReason,
+  SwapDepositChannelAffiliate,
 } from '../client';
 import openSwapDepositChannel from '../handlers/openSwapDepositChannel';
 import { getPendingBroadcast, getPendingDeposit } from '../ingress-egress-tracking';
@@ -85,8 +86,12 @@ router.get(
       | (SwapDepositChannel & {
           swaps: SwapWithAdditionalInfo[];
           failedSwaps: FailedSwap[];
+          affiliates: Pick<SwapDepositChannelAffiliate, 'account' | 'commissionBps'>[];
         })
       | null
+      | undefined;
+    let affiliateBrokers:
+      | Pick<SwapDepositChannelAffiliate, 'account' | 'commissionBps'>[]
       | undefined;
 
     if (channelIdRegex.test(id)) {
@@ -100,7 +105,16 @@ router.get(
             channelId: BigInt(channelId),
           },
         },
-        include: { swaps: { include: swapInclude }, failedSwaps: true },
+        include: {
+          swaps: { include: swapInclude },
+          failedSwaps: true,
+          affiliates: {
+            select: {
+              account: true,
+              commissionBps: true,
+            },
+          },
+        },
       });
 
       if (!swapDepositChannel) {
@@ -110,6 +124,9 @@ router.get(
 
       swap = swapDepositChannel.swaps.at(0);
       failedSwap = swapDepositChannel.failedSwaps.at(0);
+      if (swapDepositChannel.affiliates.length > 0) {
+        affiliateBrokers = swapDepositChannel.affiliates;
+      }
     } else if (swapIdRegex.test(id)) {
       swap = await prisma.swap.findUnique({
         where: { nativeId: BigInt(id) },
@@ -259,6 +276,7 @@ router.get(
       failure: failureMode,
       failedAt: failedSwap?.failedAt,
       failedBlockIndex: failedSwap?.failedBlockIndex ?? undefined,
+      affiliateBrokers,
     };
 
     logger.info('sending response for swap request', { id, response });

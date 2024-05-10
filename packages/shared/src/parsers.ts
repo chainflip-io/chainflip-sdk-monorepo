@@ -123,3 +123,12 @@ export const swapType = z.union([
     .transform(({ value: ccmId }) => ({ type: 'GAS' as const, ccmId })),
   z.object({ __kind: z.literal('Swap') }).transform(() => ({ type: 'SWAP' as const })),
 ]);
+
+const chainflipSS58Prefix = 2112;
+
+export const accountId = z
+  .union([
+    hexString, //
+    string.regex(/^[a-f\d]$/i).transform<`0x${string}`>((value) => `0x${value}`),
+  ])
+  .transform((value) => encodeAddress(value, chainflipSS58Prefix) as `cF${string}`);
