@@ -129,7 +129,8 @@ export class SwapSDK {
   async requestDepositAddress(
     depositAddressRequest: DepositAddressRequest,
   ): Promise<DepositAddressResponse> {
-    const { srcChain, srcAsset, amount } = depositAddressRequest;
+    const { srcChain, srcAsset, amount, brokerCommissionBps, affiliateBrokers } =
+      depositAddressRequest;
 
     await this.validateSwapAmount({ chain: srcChain, asset: srcAsset }, BigInt(amount));
 
@@ -140,7 +141,11 @@ export class SwapSDK {
 
       const result = await requestSwapDepositAddress(
         depositAddressRequest,
-        this.options.broker,
+        {
+          ...this.options.broker,
+          commissionBps: brokerCommissionBps ?? this.options.broker.commissionBps,
+          affiliates: affiliateBrokers,
+        },
         this.options.network,
       );
 
@@ -153,6 +158,14 @@ export class SwapSDK {
         channelOpeningFee: result.channelOpeningFee,
       };
     } else {
+      assert(
+        !depositAddressRequest.brokerCommissionBps,
+        'Broker commission is only supported only when initializing the SDK with a brokerUrl',
+      );
+      assert(
+        !depositAddressRequest.affiliateBrokers?.length,
+        'Affiliate brokers are supported only when initializing the SDK with a brokerUrl',
+      );
       response = await this.trpc.openSwapDepositChannel.mutate(depositAddressRequest);
     }
 
@@ -161,6 +174,7 @@ export class SwapSDK {
       depositChannelId: response.id,
       depositAddress: response.depositAddress,
       brokerCommissionBps: response.brokerCommissionBps,
+      affiliateBrokers: depositAddressRequest.affiliateBrokers ?? [],
       boostFeeBps: Number(response.boostFeeBps) || 0,
       depositChannelExpiryBlock: response.srcChainExpiryBlock as bigint,
       estimatedDepositChannelExpiryTime: response.estimatedExpiryTime,

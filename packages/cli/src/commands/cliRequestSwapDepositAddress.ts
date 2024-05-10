@@ -25,6 +25,11 @@ export const yargsOptions = {
     describe: 'The broker URL',
     demandOption: true,
   },
+  commission: {
+    type: 'number',
+    describe: 'The broker commission in bps',
+    demandOption: false,
+  },
   message: {
     type: 'string',
     describe: 'The CCM message that is sent along with the swapped assets',
@@ -65,7 +70,8 @@ export default async function cliRequestSwapDepositAddress(
     },
     {
       url: args.brokerUrl,
-      commissionBps: 0,
+      commissionBps: args.commission ?? 0,
+      affiliates: [],
     },
     args.network,
   );

@@ -1,6 +1,7 @@
 import { ChainflipNetwork } from '../enums';
 import {
   btcAddress,
+  chainflipAddress,
   dotAddress,
   hexStringWithMaxByteSize,
   u128,
@@ -49,6 +50,22 @@ describe('dotAddress', () => {
     expect(
       dotAddress.parse('0x9999999999999999999999999999999999999999999999999999999999999999'),
     ).toBe('14UPxPveENj36SF5YX8R2YMrb6HaS7Nuuxw5a1aysuxVZyDu');
+  });
+});
+
+describe('dotAddress', () => {
+  it.each([
+    'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n',
+    'cFJ4sqrg4FnrLPsGdt5w85XExGYxVLHLYLci28PnqcVVb8r8a',
+  ])('valid chainflip address', async (address) => {
+    expect(chainflipAddress.parse(address)).toBe(address);
+  });
+  it.each([
+    '0x0',
+    '14UPxPveENj36SF5YX8R2YMrb6HaS7Nuuxw5a1aysuxVZyDu',
+    '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
+  ])('invalid chainflip address', async (address) => {
+    expect(chainflipAddress.safeParse(address).success).toBe(false);
   });
 });
 

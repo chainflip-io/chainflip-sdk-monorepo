@@ -14,7 +14,7 @@ import {
   u128,
   ethereumAddress,
 } from './parsers';
-import { CcmMetadata, ccmMetadataSchema } from './schemas';
+import { affiliateBroker, AffiliateBroker, CcmMetadata, ccmMetadataSchema } from './schemas';
 import { CamelCaseToSnakeCase, camelToSnakeCase } from './strings';
 
 type NewSwapRequest = {
@@ -78,8 +78,13 @@ const requestValidators = (network: ChainflipNetwork) => ({
         )
         .optional(),
       z.number().optional(),
+      z.array(affiliateBroker).optional(),
     ])
-    .transform(([a, b, c, d, e, f]) => [a, b, c, d, transformObjToSnakeCase(e), f]),
+    .transform(([a, b, c, d, e, f, g]) =>
+      g
+        ? [a, b, c, d, transformObjToSnakeCase(e), f, g]
+        : [a, b, c, d, transformObjToSnakeCase(e), f],
+    ),
 });
 
 const responseValidators = (network: ChainflipNetwork) => ({
@@ -134,7 +139,11 @@ const makeRpcRequest = async <T extends keyof RequestValidator & keyof ResponseV
 
 export async function requestSwapDepositAddress(
   swapRequest: NewSwapRequest,
-  opts: { url: string; commissionBps: number },
+  opts: {
+    url: string;
+    commissionBps: number;
+    affiliates?: AffiliateBroker[];
+  },
   chainflipNetwork: ChainflipNetwork,
 ): Promise<DepositChannelResponse> {
   const { srcAsset, srcChain, destAsset, destChain, destAddress, boostFeeBps } = swapRequest;
@@ -152,5 +161,6 @@ export async function requestSwapDepositAddress(
       cfParameters: undefined,
     },
     boostFeeBps,
+    opts.affiliates,
   );
 }
