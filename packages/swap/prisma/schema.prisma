@@ -345,8 +345,7 @@ model QuoteResult {
 
 model BlockedAddress {
   id      Int    @id @default(autoincrement())
-  address String
+  address String @unique
 
-  @@index([address])
   @@schema("private")
 }
