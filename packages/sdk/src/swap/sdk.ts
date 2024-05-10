@@ -23,7 +23,7 @@ import type { AppRouter } from '@/swap/server';
 import { getAssetData } from './assets';
 import { getChainData } from './chains';
 import { BACKEND_SERVICE_URLS } from './consts';
-import ApiService, { RequestOptions } from './services/ApiService';
+import * as ApiService from './services/ApiService';
 import {
   ChainData,
   AssetData,
@@ -115,12 +115,21 @@ export class SwapSDK {
       .filter((asset) => !chain || asset.chain === chain);
   }
 
-  getQuote(quoteRequest: QuoteRequest, options: RequestOptions = {}): Promise<QuoteResponse> {
+  getQuote(
+    quoteRequest: QuoteRequest,
+    options: ApiService.RequestOptions = {},
+  ): Promise<QuoteResponse> {
+    const { brokerCommissionBps, affiliateBrokers, ...remainingRequest } = quoteRequest;
+    const submitterBrokerCommissionBps =
+      brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0;
+    const affiliateBrokerCommissionBps =
+      affiliateBrokers?.reduce((acc, affiliate) => acc + affiliate.commissionBps, 0) ?? 0;
+
     return ApiService.getQuote(
       this.options.backendUrl,
       {
-        ...quoteRequest,
-        brokerCommissionBps: this.options.broker?.commissionBps,
+        ...remainingRequest,
+        brokerCommissionBps: submitterBrokerCommissionBps + affiliateBrokerCommissionBps,
       },
       options,
     );
@@ -184,7 +193,7 @@ export class SwapSDK {
 
   getStatus(
     swapStatusRequest: SwapStatusRequest,
-    options: RequestOptions = {},
+    options: ApiService.RequestOptions = {},
   ): Promise<SwapStatusResponse> {
     return ApiService.getStatus(this.options.backendUrl, swapStatusRequest, options);
   }
