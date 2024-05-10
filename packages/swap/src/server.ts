@@ -6,7 +6,7 @@ import { Server } from 'socket.io';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import openSwapDepositChannel from './handlers/openSwapDepositChannel';
 import authenticate from './quoting/authenticate';
-import { maintenanceMiddleware } from './routes/common';
+import { handleError, maintenanceMode } from './routes/common';
 import quoteRouter from './routes/quote';
 import swap from './routes/swap';
 import thirdPartySwap from './routes/thirdPartySwap';
@@ -25,14 +25,16 @@ const server = createServer(app);
 const io = new Server(server).use(authenticate);
 
 app.use('/swaps', express.json(), swap);
-app.use('/third-party-swap', maintenanceMiddleware, express.json(), thirdPartySwap);
+app.use('/third-party-swap', maintenanceMode, express.json(), thirdPartySwap);
 
 app.get('/healthcheck', (req, res) => {
   res.status(200).send('OK');
 });
 
-app.use('/quote', maintenanceMiddleware, quoteRouter(io));
+app.use('/quote', quoteRouter(io));
 
-app.use('/trpc', maintenanceMiddleware, trpcExpress.createExpressMiddleware({ router: appRouter }));
+app.use('/trpc', maintenanceMode, trpcExpress.createExpressMiddleware({ router: appRouter }));
+
+app.use(handleError);
 
 export default server;

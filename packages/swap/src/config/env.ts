@@ -60,6 +60,8 @@ export default z
       }),
     ),
     MAX_CHANNELS_OPEN_PER_ADDRESS: optionalNumber(25),
+    // in case we want to disable quoting as a part of maintenance mode
+    DISABLE_QUOTING: optionalBoolean,
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);

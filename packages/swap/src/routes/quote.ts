@@ -7,7 +7,7 @@ import {
   getPipAmountFromAmount,
 } from '@/shared/functions';
 import { QuoteQueryResponse, quoteQuerySchema, SwapFee } from '@/shared/schemas';
-import { asyncHandler } from './common';
+import { asyncHandler, handleError } from './common';
 import prisma from '../client';
 import env from '../config/env';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
@@ -99,7 +99,15 @@ const fallbackChains = {
 const quoteRouter = (io: Server) => {
   const quoter = new Quoter(io);
 
-  const router = express.Router();
+  const router = express.Router().use((req, res, next) => {
+    if (env.DISABLE_QUOTING) {
+      next(ServiceError.unavailable('Quoting is currently unavailable due to maintenance'));
+
+      return;
+    }
+
+    next();
+  });
 
   router.get(
     '/',

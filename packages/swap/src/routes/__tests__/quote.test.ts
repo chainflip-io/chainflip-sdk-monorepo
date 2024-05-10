@@ -66,7 +66,7 @@ const mockRpcs = ({ ingressFee, egressFee }: { ingressFee: string; egressFee: st
 
 describe('server', () => {
   let server: Server;
-  let oldEnv: typeof env;
+  const oldEnv = structuredClone(env);
 
   beforeAll(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "Pool" CASCADE`;
@@ -88,7 +88,6 @@ describe('server', () => {
 
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE private."QuoteResult" CASCADE`;
-    oldEnv = structuredClone(env);
     server = app.listen(0);
     jest.mocked(Quoter.prototype.canQuote).mockReturnValue(false);
     mockRpcs({ ingressFee: '2000000', egressFee: '50000' });
@@ -903,8 +902,14 @@ describe('server', () => {
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('is disabled in maintenance mode', async () => {
+    it('is not disabled in maintenance mode', async () => {
       env.MAINTENANCE_MODE = true;
+      const { status } = await request(app).get('/quote');
+      expect(status).not.toBe(503);
+    });
+
+    it('is disabled by flag', async () => {
+      env.DISABLE_QUOTING = true;
       const { status } = await request(app).get('/quote');
       expect(status).toBe(503);
     });
