@@ -131,4 +131,26 @@ describe(calculateIncludedSwapFees, () => {
       },
     ]);
   });
+
+  it('handles zero intermediate amounts', async () => {
+    const fees = await calculateIncludedSwapFees('Eth', 'Flip', BigInt(100e18), 0n, 0n);
+
+    expect(fees).toMatchObject([
+      {
+        type: 'NETWORK',
+        asset: 'USDC',
+        amount: '0',
+      },
+      {
+        type: 'LIQUIDITY',
+        asset: 'ETH',
+        amount: (0.1e18).toString(),
+      },
+      {
+        type: 'LIQUIDITY',
+        asset: 'USDC',
+        amount: '0',
+      },
+    ]);
+  });
 });
