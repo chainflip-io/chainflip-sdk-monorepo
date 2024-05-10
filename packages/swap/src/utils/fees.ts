@@ -89,7 +89,7 @@ export const calculateIncludedSwapFees = async (
     ];
   }
 
-  assert(intermediateAmount, 'no intermediate amount given');
+  assert(intermediateAmount != null, 'no intermediate amount given');
 
   return [
     {
