@@ -20,7 +20,7 @@ export default async function openSwapDepositChannel(
   }
 
   if (await screenAddress(input.destAddress)) {
-    throw ServiceError.badRequest(`Address "${input.destAddress}" is sanctioned`);
+    throw ServiceError.internalError('Failed to open deposit channel, please try again later');
   }
 
   const { srcAsset, destAsset } = getInternalAssets(input);
