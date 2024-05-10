@@ -1,11 +1,11 @@
-import { RequestHandler } from 'express';
-import type { RouteParameters, Response } from 'express-serve-static-core';
+import { RequestHandler, ErrorRequestHandler } from 'express';
+import type { RouteParameters } from 'express-serve-static-core';
 import type { ParsedQs } from 'qs';
 import env from '../config/env';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
 
-export const handleError = (res: Response, error: unknown) => {
+export const handleError: ErrorRequestHandler = (error, req, res, _next) => {
   logger.customInfo('received error', {}, { error });
 
   if (error instanceof ServiceError) {
@@ -16,13 +16,9 @@ export const handleError = (res: Response, error: unknown) => {
   }
 };
 
-export const maintenanceMiddleware: RequestHandler = (req, res, next) => {
+export const maintenanceMode: RequestHandler = (req, res, next) => {
   if (env.MAINTENANCE_MODE) {
-    handleError(
-      res,
-      ServiceError.unavailable('The swap service is currently unavailable due to maintenance'),
-    );
-
+    next(ServiceError.unavailable('The swap service is currently unavailable due to maintenance'));
     return;
   }
 
@@ -45,7 +41,7 @@ export const asyncHandler = <
       await handler(req, res, next);
     } catch (error) {
       // console.error(error);
-      handleError(res, error);
+      next(error);
     }
   }) as RequestHandler<P, ResBody, ReqBody, ReqQuery, Locals>;
 /* eslint-enable @typescript-eslint/no-explicit-any */

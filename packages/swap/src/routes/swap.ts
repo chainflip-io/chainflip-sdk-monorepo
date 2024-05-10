@@ -4,7 +4,7 @@ import { Chain, assetConstants } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { screamingSnakeToPascalCase, toUpperCase } from '@/shared/strings';
-import { asyncHandler, maintenanceMiddleware } from './common';
+import { asyncHandler, maintenanceMode } from './common';
 import prisma, {
   Egress,
   Swap,
@@ -270,7 +270,7 @@ router.get(
 // TODO(major): remove this handler. it's replaced by tRPC
 router.post(
   '/',
-  maintenanceMiddleware,
+  maintenanceMode,
   asyncHandler(async (req, res) => {
     const result = openSwapDepositChannelSchema.safeParse(req.body);
     if (!result.success) {
