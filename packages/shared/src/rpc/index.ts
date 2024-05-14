@@ -181,14 +181,6 @@ export const getIngressEgressEnvironment = createRequest(
   ingressEgressEnvironment,
 );
 
-const deprecatedRpcAssetSchema = z.union([
-  z.literal('BTC'),
-  z.literal('DOT'),
-  z.literal('FLIP'),
-  z.literal('ETH'),
-  z.literal('USDC'),
-]);
-
 const rpcAssetSchema = z.union([
   z.object({ chain: z.literal('Bitcoin'), asset: z.literal('BTC') }),
   z.object({ chain: z.literal('Polkadot'), asset: z.literal('DOT') }),
@@ -200,35 +192,10 @@ const rpcAssetSchema = z.union([
   z.object({ chain: z.literal('Arbitrum'), asset: z.literal('USDC') }),
 ]);
 
-const rpcAsset = z.union([deprecatedRpcAssetSchema, rpcAssetSchema]);
-
-const poolInfo = z.intersection(
-  z.object({
-    limit_order_fee_hundredth_pips: z.number(),
-    range_order_fee_hundredth_pips: z.number(),
-  }),
-  z.union([
-    z.object({ quote_asset: rpcAsset }),
-    z.object({ pair_asset: rpcAsset }).transform(({ pair_asset }) => ({ quote_asset: pair_asset })),
-  ]),
-);
-
-const feesInfo = z.object({
-  Bitcoin: z.object({ BTC: poolInfo }),
-  Ethereum: z.object({ ETH: poolInfo, FLIP: poolInfo }),
-  Polkadot: z.object({ DOT: poolInfo }),
-  Arbitrum: z.object({ ETH: poolInfo, USDC: poolInfo }).optional(),
-});
-
-const poolsEnvironment = z.object({ fees: feesInfo });
-
-export const getPoolsEnvironment = createRequest('cf_pool_info', poolsEnvironment);
-
 const environment = z.object({
   ingress_egress: ingressEgressEnvironment,
   swapping: swappingEnvironment,
   funding: fundingEnvironment,
-  // pools: poolsEnvironment,
 });
 
 export const getEnvironment = createRequest('cf_environment', environment);

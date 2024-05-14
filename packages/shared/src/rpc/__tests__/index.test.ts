@@ -3,14 +3,12 @@ import {
   boostPoolsDepth,
   fundingEnvironment,
   ingressEgressEnvironment,
-  poolsEnvironment,
   swappingEnvironment,
 } from '../../tests/fixtures';
 import {
   getFundingEnvironment,
   getSwappingEnvironment,
   getIngressEgressEnvironment,
-  getPoolsEnvironment,
   getAllBoostPoolsDepth,
 } from '../index';
 
@@ -149,17 +147,6 @@ describe('getIngressEgressEnvironment', () => {
         Polkadot: 0n,
       },
     });
-    expect(spy.mock.calls).toMatchSnapshot();
-  });
-});
-
-describe('getPoolsEnvironment', () => {
-  it('retrieves the pools environment', async () => {
-    const spy = mockResponse(poolsEnvironment());
-
-    expect(await getPoolsEnvironment({ network: 'perseverance' })).toMatchSnapshot(
-      'pool environment',
-    );
     expect(spy.mock.calls).toMatchSnapshot();
   });
 });
