@@ -19,12 +19,15 @@ type CamelCase<T> = T extends string
 type CamelCaseRecord<T> =
   T extends Record<string, unknown> ? { [K in keyof T as CamelCase<K>]: CamelCaseRecord<T[K]> } : T;
 
+type ArrayOfCamelCaseRecords<T> = CamelCaseRecord<T>[];
+
 const camelCase = <T extends string>(str: T): CamelCase<T> =>
   str.replace(/_([a-z])/g, (_, char) => char.toUpperCase()) as CamelCase<T>;
 
-const camelCaseKeys = <T>(obj: T): CamelCaseRecord<T> => {
-  if (typeof obj !== 'object' || Array.isArray(obj) || obj === null)
-    return obj as CamelCaseRecord<T>;
+const camelCaseKeys = <T>(obj: T): CamelCaseRecord<T> | ArrayOfCamelCaseRecords<T> => {
+  if (typeof obj !== 'object' || obj === null) return obj as CamelCaseRecord<T>;
+
+  if (Array.isArray(obj)) return obj.map((item) => camelCaseKeys(item));
 
   return Object.fromEntries(
     Object.entries(obj).map(([key, value]) => [camelCase(key), camelCaseKeys(value)]),
@@ -86,6 +89,7 @@ const createRequest =
     const result = responseParser.safeParse(data.result);
 
     if (result.success) {
+      console.log(method, camelCaseKeys(result.data));
       return camelCaseKeys(result.data);
     }
 
@@ -245,15 +249,10 @@ export const getBlockHash = createRequest('chain_getBlockHash', hexString);
 const boostPoolsDepthResponseSchema = z.array(
   z.intersection(
     rpcAssetSchema,
-    z
-      .object({
-        tier: number,
-        available_amount: u128,
-      })
-      .transform((obj) => ({
-        tier: obj.tier,
-        availableAmount: obj.available_amount,
-      })),
+    z.object({
+      tier: number,
+      available_amount: u128,
+    }),
   ),
 );
 
