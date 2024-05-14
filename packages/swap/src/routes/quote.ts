@@ -45,14 +45,15 @@ export const getBoostedPoolQuoteResult = async (query: ParsedQuoteParams) => {
 
   const boostFee = getPipAmountFromAmount(amount, effectiveBoostFeeBps);
   fees.push(buildFee(srcAsset, 'BOOST', boostFee));
+  const amountAfterBoostFees = amount - boostFee;
 
-  if (amount <= 0n) {
+  if (amountAfterBoostFees <= 0n) {
     logger.warn(`amount is lower than estimated boost fee (${boostFee})`);
     return undefined;
   }
   try {
     const { fees: includedFees, amountAfterFees } = await tryExtractFeesFromIngressAmount({
-      ingressAmount: amount - boostFee,
+      ingressAmount: amountAfterBoostFees,
       srcAsset,
       brokerCommissionBps,
     });
