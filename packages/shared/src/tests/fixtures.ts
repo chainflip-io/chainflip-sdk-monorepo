@@ -25,53 +25,6 @@ export const fundingEnvironment = () => ({
   },
 });
 
-export const poolsEnvironment = () => ({
-  id: 1,
-  jsonrpc: '2.0',
-  result: {
-    fees: {
-      Bitcoin: {
-        BTC: {
-          limit_order_fee_hundredth_pips: 20,
-          range_order_fee_hundredth_pips: 20,
-          quote_asset: {
-            chain: 'Ethereum',
-            asset: 'USDC',
-          },
-        },
-      },
-      Ethereum: {
-        FLIP: {
-          limit_order_fee_hundredth_pips: 20,
-          range_order_fee_hundredth_pips: 20,
-          quote_asset: {
-            chain: 'Ethereum',
-            asset: 'USDC',
-          },
-        },
-        ETH: {
-          limit_order_fee_hundredth_pips: 20,
-          range_order_fee_hundredth_pips: 20,
-          quote_asset: {
-            chain: 'Ethereum',
-            asset: 'USDC',
-          },
-        },
-      },
-      Polkadot: {
-        DOT: {
-          limit_order_fee_hundredth_pips: 20,
-          range_order_fee_hundredth_pips: 20,
-          quote_asset: {
-            chain: 'Ethereum',
-            asset: 'USDC',
-          },
-        },
-      },
-    },
-  },
-});
-
 export const ingressEgressEnvironment = ({
   minDepositAmount = '0x0',
   ingressFee = '0x0',
@@ -153,7 +106,6 @@ export const environment = ({
     }).result,
     swapping: swappingEnvironment({ maxSwapAmount }).result,
     funding: fundingEnvironment().result,
-    pools: poolsEnvironment().result,
   },
 });
 
