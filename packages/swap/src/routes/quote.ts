@@ -233,7 +233,7 @@ const quoteRouter = (io: Server) => {
           res.json({
             ...result.data.response,
             quoteType: undefined,
-            boostInformation: await getBoostedPoolQuoteResult(query),
+            boostedQuote: await getBoostedPoolQuoteResult(query),
           });
         } else {
           await handleQuotingError(res, result.reason);

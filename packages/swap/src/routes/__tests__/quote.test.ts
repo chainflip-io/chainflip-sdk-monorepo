@@ -675,7 +675,7 @@ describe('server', () => {
       );
 
       expect(body).toMatchSnapshot();
-      expect(body.boostInformation).not.toBeUndefined();
+      expect(body.boostedQuote).not.toBeUndefined();
     });
     it("doesn't include boost information inside quote when there is no liquidity to fill the provided amount", async () => {
       jest.mocked(Quoter.prototype.canQuote).mockReturnValueOnce(false);
@@ -719,7 +719,7 @@ describe('server', () => {
         '99900000', // deposit amount - ingress fee
       );
 
-      expect(body.boostInformation).toBe(undefined);
+      expect(body.boostedQuote).toBe(undefined);
     });
 
     it('gets the quote from usdc from the pools', async () => {

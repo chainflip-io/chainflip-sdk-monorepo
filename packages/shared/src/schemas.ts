@@ -97,5 +97,5 @@ export type QuoteDetails = {
   estimatedDurationSeconds: number;
 };
 export type QuoteQueryResponse = QuoteDetails & {
-  boostInformation?: QuoteDetails & { boostFeeBps: number };
+  boostedQuote?: QuoteDetails & { boostFeeBps: number };
 };
