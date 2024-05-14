@@ -234,7 +234,10 @@ const quoteRouter = (io: Server) => {
           res.json({
             ...result.data.response,
             quoteType: undefined,
-            boostedQuote: await getBoostedPoolQuoteResult(query),
+            boostedQuote:
+              env.CHAINFLIP_NETWORK === 'backspin'
+                ? await getBoostedPoolQuoteResult(query)
+                : undefined,
           });
         } else {
           await handleQuotingError(res, result.reason);
