@@ -276,7 +276,7 @@ router.get(
       failure: failureMode,
       failedAt: failedSwap?.failedAt,
       failedBlockIndex: failedSwap?.failedBlockIndex ?? undefined,
-      affiliateBrokers,
+      depositChannelAffiliateBrokers: affiliateBrokers,
     };
 
     logger.info('sending response for swap request', { id, response });

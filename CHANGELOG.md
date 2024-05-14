@@ -17,11 +17,6 @@ which it is deprecated.
 
 ## Unreleased
 
-### Added
-
-- `SwapSDK.prototype.getStatus` will return the list of affiliate brokers for a
-  deposit channel if it was opened with affiliates.
-
 ### Changed
 
 - `SwapSDK.prototype.executeSwap` allows to not wait for transaction inclusion
@@ -39,6 +34,8 @@ which it is deprecated.
 
 ### Added
 
+- `SwapSDK.prototype.getStatus` will return the list of affiliate brokers for a
+  deposit channel if it was opened with affiliates.
 - `SwapSDK.prototype.getQuote` supports an optional `brokerCommissionBps` and
   `affiliateBrokers` option. If given, the `brokerCommissionBps` option will be
   used instead of the `brokerCommissionBps` used to initialize the SDK instance.

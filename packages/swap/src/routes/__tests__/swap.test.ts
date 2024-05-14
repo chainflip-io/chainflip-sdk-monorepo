@@ -1239,7 +1239,7 @@ describe('server', () => {
 
       expect(status).toBe(200);
 
-      expect(body.affiliateBrokers).toStrictEqual([
+      expect(body.depositChannelAffiliateBrokers).toStrictEqual([
         {
           account: 'cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy',
           commissionBps: 100,
