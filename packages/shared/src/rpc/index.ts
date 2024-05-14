@@ -89,7 +89,6 @@ const createRequest =
     const result = responseParser.safeParse(data.result);
 
     if (result.success) {
-      console.log(method, camelCaseKeys(result.data));
       return camelCaseKeys(result.data);
     }
 
