@@ -618,7 +618,7 @@ describe('server', () => {
     });
 
     it('gets the quote from btc with boost information', async () => {
-      jest.mocked(Quoter.prototype.canQuote).mockReturnValueOnce(false);
+      env.CHAINFLIP_NETWORK = 'backspin';
 
       const sendSpy = jest
         .spyOn(RpcClient.prototype, 'sendRequest')
@@ -678,7 +678,7 @@ describe('server', () => {
       expect(body.boostedQuote).not.toBeUndefined();
     });
     it("doesn't include boost information inside quote when there is no liquidity to fill the provided amount", async () => {
-      jest.mocked(Quoter.prototype.canQuote).mockReturnValueOnce(false);
+      env.CHAINFLIP_NETWORK = 'backspin';
 
       const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
         intermediateAmount: BigInt(2000e6),

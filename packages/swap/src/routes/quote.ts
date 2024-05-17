@@ -13,6 +13,7 @@ import env from '../config/env';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 import Quoter, { type QuoteType } from '../quoting/Quoter';
 import { getBoostFeeBpsForAmount } from '../utils/boost';
+import { isLocalnet } from '../utils/env';
 import { buildFee, tryExtractFeesFromIngressAmount } from '../utils/fees';
 import { isAfterSpecVersion } from '../utils/function';
 import getPoolQuote from '../utils/getPoolQuote';
@@ -51,6 +52,7 @@ export const getBoostedPoolQuoteResult = async (query: ParsedQuoteParams) => {
     logger.warn(`amount is lower than estimated boost fee (${boostFee})`);
     return undefined;
   }
+
   try {
     const { fees: includedFees, amountAfterFees } = await tryExtractFeesFromIngressAmount({
       ingressAmount: amountAfterBoostFees,
@@ -234,10 +236,7 @@ const quoteRouter = (io: Server) => {
           res.json({
             ...result.data.response,
             quoteType: undefined,
-            boostedQuote:
-              env.CHAINFLIP_NETWORK === 'backspin'
-                ? await getBoostedPoolQuoteResult(query)
-                : undefined,
+            boostedQuote: isLocalnet() ? await getBoostedPoolQuoteResult(query) : undefined,
           });
         } else {
           await handleQuotingError(res, result.reason);

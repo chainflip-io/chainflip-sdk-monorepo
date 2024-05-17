@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { getInternalAsset } from '@/shared/enums';
 import { internalAssetEnum, u128, u64 } from '@/shared/parsers';
 import { calculateIncludedSwapFees } from '@/swap/utils/fees';
-import env from '../config/env';
+import { isLocalnet } from '../utils/env';
 import type { EventHandlerArgs } from '.';
 
 const swapExecutedArgs = z.intersection(
@@ -42,7 +42,7 @@ export default async function swapExecuted({
       return;
     }
 
-    if (env.CHAINFLIP_NETWORK === 'backspin') {
+    if (isLocalnet()) {
       // TODO: Ignoring all internal swaps on backspin until we decide on how to handle them
       return;
     }
