@@ -64,7 +64,9 @@ const saveResult = async ({
         version: 2,
       },
     })
-    .catch(() => null);
+    .catch((error) => {
+      logger.error('failed to save quote result', { error });
+    });
 };
 
 const handleQuotingError = async (res: express.Response, err: unknown) => {
