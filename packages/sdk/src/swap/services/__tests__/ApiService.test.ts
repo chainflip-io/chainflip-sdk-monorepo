@@ -50,20 +50,6 @@ describe('ApiService', () => {
       expect(mockedGet.mock.lastCall).toMatchSnapshot();
     });
 
-    it('gets a quote for a boostable swap', async () => {
-      const route = await getQuote(
-        'https://swapperoo.org',
-        {
-          ...mockRoute,
-          boostFeeBps: 100,
-        },
-        {},
-      );
-
-      expect(route).toMatchSnapshot();
-      expect(mockedGet.mock.lastCall).toMatchSnapshot();
-    });
-
     it('passes the signal to axios', async () => {
       await getQuote('https://swapperoo.org', mockRoute, {
         signal: new AbortController().signal,

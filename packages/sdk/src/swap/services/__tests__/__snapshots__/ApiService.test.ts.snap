@@ -24,30 +24,6 @@ exports[`ApiService getQuote gets a quote 2`] = `
 ]
 `;
 
-exports[`ApiService getQuote gets a quote for a boostable swap 1`] = `
-{
-  "amount": "10000",
-  "destAsset": "ETH",
-  "destChain": "Ethereum",
-  "quote": {
-    "egressAmount": "2",
-    "id": "string",
-    "intermediateAmount": "1",
-  },
-  "srcAsset": "BTC",
-  "srcChain": "Bitcoin",
-}
-`;
-
-exports[`ApiService getQuote gets a quote for a boostable swap 2`] = `
-[
-  "https://swapperoo.org/quote?amount=10000&srcChain=Bitcoin&srcAsset=BTC&destChain=Ethereum&destAsset=ETH&boostFeeBps=100",
-  {
-    "signal": undefined,
-  },
-]
-`;
-
 exports[`ApiService getQuote gets a quote with a broker commission 1`] = `
 {
   "amount": "10000",

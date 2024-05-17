@@ -6,7 +6,7 @@ import {
   ChainflipNetworks,
   UncheckedAssetAndChain,
 } from '../enums';
-import { hexString, uncheckedAssetAndChain } from '../parsers';
+import { hexString, number, u128, uncheckedAssetAndChain } from '../parsers';
 
 const numberOrHex = z.union([z.string(), z.number()]).transform((str) => BigInt(str));
 
@@ -16,19 +16,28 @@ type CamelCase<T> = T extends string
     : T
   : never;
 
-type CamelCaseRecord<T> =
-  T extends Record<string, unknown> ? { [K in keyof T as CamelCase<K>]: CamelCaseRecord<T[K]> } : T;
+type CamelCaseObject<T> = { [K in keyof T as CamelCase<K>]: CamelCaseObject<T[K]> };
+
+type ArrayOfCamelCaseObjects<T extends unknown[]> = CamelCaseObject<T[number]>[];
+
+type CamelCaseValue<T> =
+  T extends Record<string, unknown>
+    ? CamelCaseObject<T>
+    : T extends unknown[]
+      ? ArrayOfCamelCaseObjects<T>
+      : T;
 
 const camelCase = <T extends string>(str: T): CamelCase<T> =>
   str.replace(/_([a-z])/g, (_, char) => char.toUpperCase()) as CamelCase<T>;
 
-const camelCaseKeys = <T>(obj: T): CamelCaseRecord<T> => {
-  if (typeof obj !== 'object' || Array.isArray(obj) || obj === null)
-    return obj as CamelCaseRecord<T>;
+const camelCaseKeys = <T>(obj: T): CamelCaseValue<T> => {
+  if (typeof obj !== 'object' || obj === null) return obj as CamelCaseValue<T>;
+
+  if (Array.isArray(obj)) return obj.map((item) => camelCaseKeys(item)) as CamelCaseValue<T>;
 
   return Object.fromEntries(
     Object.entries(obj).map(([key, value]) => [camelCase(key), camelCaseKeys(value)]),
-  ) as CamelCaseRecord<T>;
+  ) as CamelCaseValue<T>;
 };
 
 const RPC_URLS: Record<ChainflipNetwork, string> = {
@@ -60,6 +69,7 @@ type RpcParams = WithHash<{
     baseAsset: BaseAssetAndChain,
     quoteAsset: { chain: 'Ethereum'; asset: 'USDC' },
   ];
+  cf_boost_pools_depth: [];
   state_getMetadata: [];
   state_getRuntimeVersion: [];
 }> & {
@@ -73,7 +83,7 @@ const createRequest =
   async (
     urlOrNetwork: RpcConfig,
     ...params: RpcParams[M]
-  ): Promise<CamelCaseRecord<z.output<R>>> => {
+  ): Promise<CamelCaseValue<z.output<R>>> => {
     const url = 'network' in urlOrNetwork ? RPC_URLS[urlOrNetwork.network] : urlOrNetwork.rpcUrl;
     const { data } = await axios.post(url, { jsonrpc: '2.0', method, params, id: 1 });
 
@@ -175,49 +185,21 @@ export const getIngressEgressEnvironment = createRequest(
   ingressEgressEnvironment,
 );
 
-const rpcAsset = z.union([
-  z.literal('BTC'),
+const rpcAssetSchema = z.union([
   z.object({ chain: z.literal('Bitcoin'), asset: z.literal('BTC') }),
-  z.literal('DOT'),
   z.object({ chain: z.literal('Polkadot'), asset: z.literal('DOT') }),
-  z.literal('FLIP'),
   z.object({ chain: z.literal('Ethereum'), asset: z.literal('FLIP') }),
-  z.literal('ETH'),
   z.object({ chain: z.literal('Ethereum'), asset: z.literal('ETH') }),
-  z.literal('USDC'),
   z.object({ chain: z.literal('Ethereum'), asset: z.literal('USDC') }),
   z.object({ chain: z.literal('Ethereum'), asset: z.literal('USDT') }),
   z.object({ chain: z.literal('Arbitrum'), asset: z.literal('ETH') }),
   z.object({ chain: z.literal('Arbitrum'), asset: z.literal('USDC') }),
 ]);
 
-const poolInfo = z.intersection(
-  z.object({
-    limit_order_fee_hundredth_pips: z.number(),
-    range_order_fee_hundredth_pips: z.number(),
-  }),
-  z.union([
-    z.object({ quote_asset: rpcAsset }),
-    z.object({ pair_asset: rpcAsset }).transform(({ pair_asset }) => ({ quote_asset: pair_asset })),
-  ]),
-);
-
-const feesInfo = z.object({
-  Bitcoin: z.object({ BTC: poolInfo }),
-  Ethereum: z.object({ ETH: poolInfo, FLIP: poolInfo }),
-  Polkadot: z.object({ DOT: poolInfo }),
-  Arbitrum: z.object({ ETH: poolInfo, USDC: poolInfo }).optional(),
-});
-
-const poolsEnvironment = z.object({ fees: feesInfo });
-
-export const getPoolsEnvironment = createRequest('cf_pool_info', poolsEnvironment);
-
 const environment = z.object({
   ingress_egress: ingressEgressEnvironment,
   swapping: swappingEnvironment,
   funding: fundingEnvironment,
-  // pools: poolsEnvironment,
 });
 
 export const getEnvironment = createRequest('cf_environment', environment);
@@ -250,3 +232,19 @@ export const getPoolPriceV2 = createRequest(
 );
 
 export const getBlockHash = createRequest('chain_getBlockHash', hexString);
+
+const boostPoolsDepthResponseSchema = z.array(
+  z.intersection(
+    rpcAssetSchema,
+    z.object({
+      tier: number,
+      available_amount: u128,
+    }),
+  ),
+);
+
+export type BoostPoolsDepth = Awaited<ReturnType<typeof getAllBoostPoolsDepth>>;
+export const getAllBoostPoolsDepth = createRequest(
+  'cf_boost_pools_depth',
+  boostPoolsDepthResponseSchema,
+);

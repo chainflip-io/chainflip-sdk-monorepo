@@ -1,5 +1,168 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`getAllBoostPoolsDepth retrieves the boost pools depth balance 1`] = `
+[
+  [
+    "https://archive.perseverance.chainflip.io",
+    {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "method": "cf_boost_pools_depth",
+      "params": [],
+    },
+  ],
+]
+`;
+
+exports[`getAllBoostPoolsDepth retrieves the boost pools depth balance: boost pools depth 1`] = `
+[
+  {
+    "asset": "FLIP",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 5,
+  },
+  {
+    "asset": "FLIP",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 30,
+  },
+  {
+    "asset": "FLIP",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 10,
+  },
+  {
+    "asset": "ETH",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 5,
+  },
+  {
+    "asset": "ETH",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 30,
+  },
+  {
+    "asset": "ETH",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 10,
+  },
+  {
+    "asset": "USDT",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 5,
+  },
+  {
+    "asset": "USDT",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 30,
+  },
+  {
+    "asset": "USDT",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 10,
+  },
+  {
+    "asset": "USDC",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 5,
+  },
+  {
+    "asset": "USDC",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 30,
+  },
+  {
+    "asset": "USDC",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 10,
+  },
+  {
+    "asset": "DOT",
+    "availableAmount": 0n,
+    "chain": "Polkadot",
+    "tier": 5,
+  },
+  {
+    "asset": "DOT",
+    "availableAmount": 0n,
+    "chain": "Polkadot",
+    "tier": 30,
+  },
+  {
+    "asset": "DOT",
+    "availableAmount": 0n,
+    "chain": "Polkadot",
+    "tier": 10,
+  },
+  {
+    "asset": "BTC",
+    "availableAmount": 0n,
+    "chain": "Bitcoin",
+    "tier": 5,
+  },
+  {
+    "asset": "BTC",
+    "availableAmount": 0n,
+    "chain": "Bitcoin",
+    "tier": 30,
+  },
+  {
+    "asset": "BTC",
+    "availableAmount": 100010n,
+    "chain": "Bitcoin",
+    "tier": 10,
+  },
+  {
+    "asset": "USDC",
+    "availableAmount": 0n,
+    "chain": "Arbitrum",
+    "tier": 5,
+  },
+  {
+    "asset": "USDC",
+    "availableAmount": 0n,
+    "chain": "Arbitrum",
+    "tier": 30,
+  },
+  {
+    "asset": "USDC",
+    "availableAmount": 0n,
+    "chain": "Arbitrum",
+    "tier": 10,
+  },
+  {
+    "asset": "ETH",
+    "availableAmount": 0n,
+    "chain": "Arbitrum",
+    "tier": 5,
+  },
+  {
+    "asset": "ETH",
+    "availableAmount": 0n,
+    "chain": "Arbitrum",
+    "tier": 30,
+  },
+  {
+    "asset": "ETH",
+    "availableAmount": 0n,
+    "chain": "Arbitrum",
+    "tier": 10,
+  },
+]
+`;
+
 exports[`getFundingEnvironment retrieves the funding environment 1`] = `
 [
   [
@@ -26,65 +189,6 @@ exports[`getIngressEgressEnvironment retrieves the ingress egress environment 1`
     },
   ],
 ]
-`;
-
-exports[`getPoolsEnvironment retrieves the pools environment 1`] = `
-[
-  [
-    "https://archive.perseverance.chainflip.io",
-    {
-      "id": 1,
-      "jsonrpc": "2.0",
-      "method": "cf_pool_info",
-      "params": [],
-    },
-  ],
-]
-`;
-
-exports[`getPoolsEnvironment retrieves the pools environment: pool environment 1`] = `
-{
-  "fees": {
-    "Bitcoin": {
-      "BTC": {
-        "limitOrderFeeHundredthPips": 20,
-        "quoteAsset": {
-          "asset": "USDC",
-          "chain": "Ethereum",
-        },
-        "rangeOrderFeeHundredthPips": 20,
-      },
-    },
-    "Ethereum": {
-      "ETH": {
-        "limitOrderFeeHundredthPips": 20,
-        "quoteAsset": {
-          "asset": "USDC",
-          "chain": "Ethereum",
-        },
-        "rangeOrderFeeHundredthPips": 20,
-      },
-      "FLIP": {
-        "limitOrderFeeHundredthPips": 20,
-        "quoteAsset": {
-          "asset": "USDC",
-          "chain": "Ethereum",
-        },
-        "rangeOrderFeeHundredthPips": 20,
-      },
-    },
-    "Polkadot": {
-      "DOT": {
-        "limitOrderFeeHundredthPips": 20,
-        "quoteAsset": {
-          "asset": "USDC",
-          "chain": "Ethereum",
-        },
-        "rangeOrderFeeHundredthPips": 20,
-      },
-    },
-  },
-}
 `;
 
 exports[`getSwappingEnvironment retrieves the swapping environment 1`] = `

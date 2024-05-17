@@ -1,4 +1,4 @@
-import { assetConstants, InternalAsset, InternalAssets } from '../enums';
+import { Asset, assetConstants, Chain, InternalAsset, InternalAssets } from '../enums';
 
 export const swappingEnvironment = ({
   maxSwapAmount = null as string | null,
@@ -22,53 +22,6 @@ export const fundingEnvironment = () => ({
   result: {
     redemption_tax: '0x4563918244f40000',
     minimum_funding_amount: '0x8ac7230489e80000',
-  },
-});
-
-export const poolsEnvironment = () => ({
-  id: 1,
-  jsonrpc: '2.0',
-  result: {
-    fees: {
-      Bitcoin: {
-        BTC: {
-          limit_order_fee_hundredth_pips: 20,
-          range_order_fee_hundredth_pips: 20,
-          quote_asset: {
-            chain: 'Ethereum',
-            asset: 'USDC',
-          },
-        },
-      },
-      Ethereum: {
-        FLIP: {
-          limit_order_fee_hundredth_pips: 20,
-          range_order_fee_hundredth_pips: 20,
-          quote_asset: {
-            chain: 'Ethereum',
-            asset: 'USDC',
-          },
-        },
-        ETH: {
-          limit_order_fee_hundredth_pips: 20,
-          range_order_fee_hundredth_pips: 20,
-          quote_asset: {
-            chain: 'Ethereum',
-            asset: 'USDC',
-          },
-        },
-      },
-      Polkadot: {
-        DOT: {
-          limit_order_fee_hundredth_pips: 20,
-          range_order_fee_hundredth_pips: 20,
-          quote_asset: {
-            chain: 'Ethereum',
-            asset: 'USDC',
-          },
-        },
-      },
-    },
   },
 });
 
@@ -153,7 +106,6 @@ export const environment = ({
     }).result,
     swapping: swappingEnvironment({ maxSwapAmount }).result,
     funding: fundingEnvironment().result,
-    pools: poolsEnvironment().result,
   },
 });
 
@@ -180,4 +132,163 @@ export const supportedAssets = ({
     asset: assetConstants[asset].asset,
     chain: assetConstants[asset].chain,
   })),
+});
+
+export type MockedBoostPoolsDepth = [
+  {
+    chain: Chain;
+    asset: Asset;
+    tier: number;
+    available_amount: string;
+  },
+];
+export const boostPoolsDepth = (mockedBoostPoolsDepth?: MockedBoostPoolsDepth) => ({
+  jsonrpc: '2.0',
+  result: mockedBoostPoolsDepth ?? [
+    {
+      chain: 'Ethereum',
+      asset: 'FLIP',
+      tier: 5,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Ethereum',
+      asset: 'FLIP',
+      tier: 30,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Ethereum',
+      asset: 'FLIP',
+      tier: 10,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Ethereum',
+      asset: 'ETH',
+      tier: 5,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Ethereum',
+      asset: 'ETH',
+      tier: 30,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Ethereum',
+      asset: 'ETH',
+      tier: 10,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Ethereum',
+      asset: 'USDT',
+      tier: 5,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Ethereum',
+      asset: 'USDT',
+      tier: 30,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Ethereum',
+      asset: 'USDT',
+      tier: 10,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Ethereum',
+      asset: 'USDC',
+      tier: 5,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Ethereum',
+      asset: 'USDC',
+      tier: 30,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Ethereum',
+      asset: 'USDC',
+      tier: 10,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Polkadot',
+      asset: 'DOT',
+      tier: 5,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Polkadot',
+      asset: 'DOT',
+      tier: 30,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Polkadot',
+      asset: 'DOT',
+      tier: 10,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Bitcoin',
+      asset: 'BTC',
+      tier: 5,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Bitcoin',
+      asset: 'BTC',
+      tier: 30,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Bitcoin',
+      asset: 'BTC',
+      tier: 10,
+      available_amount: '0x186aa',
+    },
+    {
+      chain: 'Arbitrum',
+      asset: 'USDC',
+      tier: 5,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Arbitrum',
+      asset: 'USDC',
+      tier: 30,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Arbitrum',
+      asset: 'USDC',
+      tier: 10,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Arbitrum',
+      asset: 'ETH',
+      tier: 5,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Arbitrum',
+      asset: 'ETH',
+      tier: 30,
+      available_amount: '0x0',
+    },
+    {
+      chain: 'Arbitrum',
+      asset: 'ETH',
+      tier: 10,
+      available_amount: '0x0',
+    },
+  ],
+  id: 1,
 });

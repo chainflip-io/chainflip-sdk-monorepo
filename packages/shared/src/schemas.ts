@@ -18,7 +18,6 @@ export const quoteQuerySchema = z
     destAsset: asset,
     amount: numericString.transform((n) => BigInt(n)),
     brokerCommissionBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
-    boostFeeBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
   })
   .transform((args, ctx) => {
     const { srcAsset, destAsset } = getInternalAssets(args, false);
@@ -46,7 +45,6 @@ export const quoteQuerySchema = z
       destAsset,
       amount: args.amount,
       brokerCommissionBps: args.brokerCommissionBps,
-      boostFeeBps: args.boostFeeBps,
     };
   });
 
@@ -91,11 +89,15 @@ export type SwapFee = {
   asset: Asset;
   amount: string;
 };
-
-export type QuoteQueryResponse = {
+export type QuoteDetails = {
   intermediateAmount?: string;
   egressAmount: string;
   includedFees: SwapFee[];
   lowLiquidityWarning: boolean | undefined;
   estimatedDurationSeconds: number;
+};
+export type BoostedQuoteDetails = QuoteDetails & { estimatedBoostFeeBps: number };
+
+export type QuoteQueryResponse = QuoteDetails & {
+  boostQuote?: BoostedQuoteDetails;
 };
