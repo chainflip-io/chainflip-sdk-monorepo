@@ -10,6 +10,7 @@ import {
   Assets,
   isValidAssetAndChain,
   UncheckedAssetAndChain,
+  AssetAndChain,
 } from './enums';
 import { isString } from './guards';
 import {
@@ -110,7 +111,7 @@ export const uncheckedAssetAndChain = z.object({
   chain: z.string(),
 });
 
-export const assetAndChain = uncheckedAssetAndChain.refine((value) =>
+export const assetAndChain = uncheckedAssetAndChain.refine((value): value is AssetAndChain =>
   isValidAssetAndChain(value as UncheckedAssetAndChain),
 );
 
