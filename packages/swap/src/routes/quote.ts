@@ -72,8 +72,8 @@ export const getBoostedPoolQuoteResult = async (query: ParsedQuoteParams) => {
     return {
       ...boostedPoolQuote.data.response,
       estimatedBoostFeeBps,
+      estimatedDurationSeconds: await estimateSwapDuration({ srcAsset, destAsset, boosted: true }),
       quoteType: undefined,
-      // TODO: use boosted swap time for `estimatedDurationSeconds` here
     };
   } catch (e) {
     logger.warn('Fetching boosted pool quote failed');
@@ -282,7 +282,7 @@ const quoteRouter = (io: Server) => {
           intermediateAmount: bestQuote.intermediateAmount?.toString(),
           includedFees: [...includedFees, ...bestQuote.includedFees],
           lowLiquidityWarning,
-          estimatedDurationSeconds: await estimateSwapDuration(srcAsset, destAsset),
+          estimatedDurationSeconds: await estimateSwapDuration({ srcAsset, destAsset }),
         };
 
         if (BigInt(response.egressAmount) < minimumEgressAmount) {

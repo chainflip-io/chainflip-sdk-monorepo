@@ -2,7 +2,15 @@ import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts';
 import { InternalAsset, chainConstants, getAssetAndChain } from '@/shared/enums';
 import { getWitnessSafetyMargin } from '@/swap/utils/rpc';
 
-export const estimateSwapDuration = async (srcAsset: InternalAsset, destAsset: InternalAsset) => {
+export const estimateSwapDuration = async ({
+  srcAsset,
+  destAsset,
+  boosted = false,
+}: {
+  srcAsset: InternalAsset;
+  destAsset: InternalAsset;
+  boosted?: boolean;
+}) => {
   const { chain: srcChain } = getAssetAndChain(srcAsset);
   const { chain: destChain } = getAssetAndChain(destAsset);
 
@@ -10,9 +18,11 @@ export const estimateSwapDuration = async (srcAsset: InternalAsset, destAsset: I
   const ingressTransactionDuration = chainConstants[srcChain].blockTimeSeconds;
 
   // once transaction is included, state chain validator witness transaction after safety margin is met
-  const ingressWitnessDuration =
-    chainConstants[srcChain].blockTimeSeconds *
-    Number((await getWitnessSafetyMargin(srcChain)) ?? 1n);
+  // in case of a boosted swap, the swap occurs at the moment a deposit is prewitnessed (deposit transaction included in a block)
+  const ingressWitnessDuration = boosted
+    ? 0
+    : chainConstants[srcChain].blockTimeSeconds *
+      Number((await getWitnessSafetyMargin(srcChain)) ?? 1n);
 
   // once ingress is witnessed, swap and egress are executed on the state chain
   const swapDuration = CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS * 3;
