@@ -26,7 +26,7 @@ type PoolState = {
 
 const fetchPoolState = async (hash: string) => {
   baseAssets ??= (await getSupportedAssets(rpcConfig))
-    .filter((asset) => asset.chain !== 'Ethereum' || asset.asset !== 'USDC')
+    .filter((asset) => !(asset.chain === 'Ethereum' && asset.asset === 'USDC'))
     .map((asset) => getInternalAsset(asset as UncheckedAssetAndChain)) as BaseAsset[];
 
   return Object.fromEntries(
