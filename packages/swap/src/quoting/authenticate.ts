@@ -37,6 +37,12 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
   try {
     const result = authSchema.safeParse(socket.handshake.auth);
 
+    logger.info('received auth', {
+      auth: result.data,
+      error: result.error?.message,
+      now: Date.now(),
+    });
+
     assert(result.success, 'invalid auth');
 
     const auth = result.data;
