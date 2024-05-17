@@ -91,13 +91,17 @@ export const calculateIncludedSwapFees = async (
 
   assert(intermediateAmount != null, 'no intermediate amount given');
 
+  const intermediateAmountBeforeNetworkFee =
+    (intermediateAmount * BigInt(ONE_IN_HUNDREDTH_PIPS)) /
+    BigInt(ONE_IN_HUNDREDTH_PIPS - networkFeeHundredthPips);
+
   return [
     {
       type: 'NETWORK',
       chain: assetConstants[InternalAssets.Usdc].chain,
       asset: assetConstants[InternalAssets.Usdc].asset,
       amount: getHundredthPipAmountFromAmount(
-        intermediateAmount,
+        intermediateAmountBeforeNetworkFee,
         networkFeeHundredthPips,
       ).toString(),
     },
