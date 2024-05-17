@@ -16,22 +16,28 @@ type CamelCase<T> = T extends string
     : T
   : never;
 
-type CamelCaseRecord<T> =
-  T extends Record<string, unknown> ? { [K in keyof T as CamelCase<K>]: CamelCaseRecord<T[K]> } : T;
+type CamelCaseObject<T> = { [K in keyof T as CamelCase<K>]: CamelCaseObject<T[K]> };
 
-type ArrayOfCamelCaseRecords<T> = CamelCaseRecord<T>[];
+type ArrayOfCamelCaseObjects<T extends unknown[]> = CamelCaseObject<T[number]>[];
+
+type CamelCaseValue<T> =
+  T extends Record<string, unknown>
+    ? CamelCaseObject<T>
+    : T extends unknown[]
+      ? ArrayOfCamelCaseObjects<T>
+      : T;
 
 const camelCase = <T extends string>(str: T): CamelCase<T> =>
   str.replace(/_([a-z])/g, (_, char) => char.toUpperCase()) as CamelCase<T>;
 
-const camelCaseKeys = <T>(obj: T): CamelCaseRecord<T> | ArrayOfCamelCaseRecords<T> => {
-  if (typeof obj !== 'object' || obj === null) return obj as CamelCaseRecord<T>;
+const camelCaseKeys = <T>(obj: T): CamelCaseValue<T> => {
+  if (typeof obj !== 'object' || obj === null) return obj as CamelCaseValue<T>;
 
-  if (Array.isArray(obj)) return obj.map((item) => camelCaseKeys(item));
+  if (Array.isArray(obj)) return obj.map((item) => camelCaseKeys(item)) as CamelCaseValue<T>;
 
   return Object.fromEntries(
     Object.entries(obj).map(([key, value]) => [camelCase(key), camelCaseKeys(value)]),
-  ) as CamelCaseRecord<T>;
+  ) as CamelCaseValue<T>;
 };
 
 const RPC_URLS: Record<ChainflipNetwork, string> = {
@@ -77,7 +83,7 @@ const createRequest =
   async (
     urlOrNetwork: RpcConfig,
     ...params: RpcParams[M]
-  ): Promise<CamelCaseRecord<z.output<R>>> => {
+  ): Promise<CamelCaseValue<z.output<R>>> => {
     const url = 'network' in urlOrNetwork ? RPC_URLS[urlOrNetwork.network] : urlOrNetwork.rpcUrl;
     const { data } = await axios.post(url, {
       jsonrpc: '2.0',
