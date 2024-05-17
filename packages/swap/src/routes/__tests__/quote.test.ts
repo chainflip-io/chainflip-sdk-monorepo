@@ -675,7 +675,7 @@ describe('server', () => {
       );
 
       expect(body).toMatchSnapshot();
-      expect(body.boostedQuote).not.toBeUndefined();
+      expect(body.boostQuote).not.toBeUndefined();
     });
     it("doesn't include boost information inside quote when there is no liquidity to fill the provided amount", async () => {
       env.CHAINFLIP_NETWORK = 'backspin';
@@ -719,7 +719,7 @@ describe('server', () => {
         '99900000', // deposit amount - ingress fee
       );
 
-      expect(body.boostedQuote).toBe(undefined);
+      expect(body.boostQuote).toBe(undefined);
     });
 
     it('gets the quote from usdc from the pools', async () => {

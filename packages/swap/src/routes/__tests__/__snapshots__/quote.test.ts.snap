@@ -42,9 +42,9 @@ exports[`server GET /quote gets the quote for deprecated params without the chai
 
 exports[`server GET /quote gets the quote from btc with boost information 1`] = `
 {
-  "boostedQuote": {
-    "boostFeeBps": 5,
+  "boostQuote": {
     "egressAmount": "999999949999975000",
+    "estimatedBoostFeeBps": 5,
     "estimatedDurationSeconds": 1830,
     "includedFees": [
       {

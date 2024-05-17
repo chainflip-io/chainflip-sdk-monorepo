@@ -37,21 +37,16 @@ export const getBoostedPoolQuoteResult = async (query: ParsedQuoteParams) => {
 
   const assetBoostPoolsDepth = await getBoostPoolsDepth({ asset: srcAsset });
 
-  const effectiveBoostFeeBps = await getBoostFeeBpsForAmount({
+  const estimatedBoostFeeBps = await getBoostFeeBpsForAmount({
     amount: BigInt(amount),
     assetBoostPoolsDepth,
   });
 
-  if (effectiveBoostFeeBps === undefined) return undefined;
+  if (estimatedBoostFeeBps === undefined) return undefined;
 
-  const boostFee = getPipAmountFromAmount(amount, effectiveBoostFeeBps);
+  const boostFee = getPipAmountFromAmount(amount, estimatedBoostFeeBps);
   fees.push(buildFee(srcAsset, 'BOOST', boostFee));
   const amountAfterBoostFees = amount - boostFee;
-
-  if (amountAfterBoostFees <= 0n) {
-    logger.warn(`amount is lower than estimated boost fee (${boostFee})`);
-    return undefined;
-  }
 
   try {
     const { fees: includedFees, amountAfterFees } = await tryExtractFeesFromIngressAmount({
@@ -76,7 +71,7 @@ export const getBoostedPoolQuoteResult = async (query: ParsedQuoteParams) => {
 
     return {
       ...boostedPoolQuote.data.response,
-      boostFeeBps: effectiveBoostFeeBps,
+      estimatedBoostFeeBps,
       quoteType: undefined,
       // TODO: use boosted swap time for `estimatedDurationSeconds` here
     };
@@ -236,7 +231,7 @@ const quoteRouter = (io: Server) => {
           res.json({
             ...result.data.response,
             quoteType: undefined,
-            boostedQuote: isLocalnet() ? await getBoostedPoolQuoteResult(query) : undefined,
+            boostQuote: isLocalnet() ? await getBoostedPoolQuoteResult(query) : undefined,
           });
         } else {
           await handleQuotingError(res, result.reason);

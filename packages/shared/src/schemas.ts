@@ -96,6 +96,8 @@ export type QuoteDetails = {
   lowLiquidityWarning: boolean | undefined;
   estimatedDurationSeconds: number;
 };
+export type BoostedQuoteDetails = QuoteDetails & { estimatedBoostFeeBps: number };
+
 export type QuoteQueryResponse = QuoteDetails & {
-  boostedQuote?: QuoteDetails & { boostFeeBps: number };
+  boostQuote?: BoostedQuoteDetails;
 };

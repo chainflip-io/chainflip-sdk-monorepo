@@ -19,6 +19,8 @@ export const getBoostFeeBpsForAmount = async ({
     const amountToBeUsedFromPool = bigintMin(remainingAmount, poolAvailableAmount);
     feeAmount += getPipAmountFromAmount(amountToBeUsedFromPool, poolDepth.tier);
     remainingAmount -= amountToBeUsedFromPool;
+
+    if (remainingAmount === 0n) break;
   }
 
   // Not enough liquidity in the boost pools
