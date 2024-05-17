@@ -59,7 +59,11 @@ type RpcParams = WithHash<{
   cf_ingress_egress_environment: [];
   cf_funding_environment: [];
   cf_pool_info: [];
-  cf_pool_orders: [baseAsset: BaseAssetAndChain, quoteAsset: { chain: 'Ethereum'; asset: 'USDC' }];
+  cf_pool_orders: [
+    baseAsset: BaseAssetAndChain,
+    quoteAsset: { chain: 'Ethereum'; asset: 'USDC' },
+    lp?: `cF${string}` | null,
+  ];
   cf_swap_rate: [
     fromAsset: UncheckedAssetAndChain,
     toAsset: UncheckedAssetAndChain,
