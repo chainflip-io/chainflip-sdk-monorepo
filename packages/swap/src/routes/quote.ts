@@ -117,7 +117,9 @@ const saveResult = async ({
         version: 2,
       },
     })
-    .catch(() => null);
+    .catch((error) => {
+      logger.error('failed to save quote result', { error });
+    });
 };
 
 const handleQuotingError = async (res: express.Response, err: unknown) => {
@@ -321,7 +323,8 @@ const quoteRouter = (io: Server) => {
           poolInfo: poolQuoteResult.success ? poolQuoteResult.data : null,
           quoterInfo: { response, duration },
         });
-      } catch (err) {
+      } catch (error) {
+        logger.error('error while collecting quotes:', { error });
         const poolQuoteResult = await poolQuotePromise;
 
         if (poolQuoteResult.success) {
