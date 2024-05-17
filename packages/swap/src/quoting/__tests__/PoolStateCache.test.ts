@@ -1,11 +1,5 @@
 import axios from 'axios';
-import {
-  InternalAsset,
-  InternalAssets,
-  assetConstants,
-  getAssetAndChain,
-  getInternalAsset,
-} from '@/shared/enums';
+import { InternalAsset, InternalAssets, getAssetAndChain, getInternalAsset } from '@/shared/enums';
 import { deferredPromise } from '@/swap/utils/promise';
 import PoolStateCache from '../PoolStateCache';
 
