@@ -36,7 +36,7 @@ const fetchPoolState = async (hash: string) => {
         const usdc = getAssetAndChain('Usdc');
 
         const [orders, price] = await Promise.all([
-          getPoolOrders(rpcConfig, base, usdc, hash),
+          getPoolOrders(rpcConfig, base, usdc, null, hash),
           getPoolPriceV2(rpcConfig, base, usdc, hash),
         ]);
 
