@@ -283,7 +283,8 @@ const quoteRouter = (io: Server) => {
           poolInfo: poolQuoteResult.success ? poolQuoteResult.data : null,
           quoterInfo: { response, duration },
         });
-      } catch (err) {
+      } catch (error) {
+        logger.error('error while collecting quotes:', { error });
         const poolQuoteResult = await poolQuotePromise;
 
         if (poolQuoteResult.success) {
