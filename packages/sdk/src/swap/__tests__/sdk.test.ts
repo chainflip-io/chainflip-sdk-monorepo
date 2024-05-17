@@ -247,7 +247,7 @@ describe(SwapSDK, () => {
           estimatedExpiryTime: 1698334470000,
           channelOpeningFee: 0n,
           issuedBlock: 1,
-          boostFeeBps: 0,
+          maxBoostFeeBps: 0,
         });
 
       const response = await sdk.requestDepositAddress({
@@ -278,7 +278,7 @@ describe(SwapSDK, () => {
         destChain: 'Ethereum',
         srcAsset: 'BTC',
         srcChain: 'Bitcoin',
-        boostFeeBps: 0,
+        maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
         affiliateBrokers: [],
       });
@@ -338,7 +338,7 @@ describe(SwapSDK, () => {
         depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
         depositChannelExpiryBlock: 1234n,
         estimatedDepositChannelExpiryTime: undefined,
-        boostFeeBps: 0,
+        maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
         affiliateBrokers: [],
       });
@@ -399,7 +399,7 @@ describe(SwapSDK, () => {
         depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
         depositChannelExpiryBlock: 1234n,
         estimatedDepositChannelExpiryTime: undefined,
-        boostFeeBps: 0,
+        maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
         affiliateBrokers: [],
       });
@@ -463,7 +463,7 @@ describe(SwapSDK, () => {
         depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
         depositChannelExpiryBlock: 1234n,
         estimatedDepositChannelExpiryTime: undefined,
-        boostFeeBps: 0,
+        maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
         affiliateBrokers: [
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
@@ -489,7 +489,7 @@ describe(SwapSDK, () => {
 
       return defaultAxiosMock(url, data);
     });
-    const BOOST_FEE_BPS = 100;
+    const MAX_BOOST_FEE_BPS = 100;
 
     const result = await new SwapSDK({
       broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
@@ -500,7 +500,7 @@ describe(SwapSDK, () => {
       destAsset: 'FLIP',
       destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
       amount: BigInt(1e18).toString(),
-      boostFeeBps: BOOST_FEE_BPS,
+      maxBoostFeeBps: MAX_BOOST_FEE_BPS,
     });
 
     expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
@@ -513,7 +513,7 @@ describe(SwapSDK, () => {
         '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         15,
         undefined,
-        BOOST_FEE_BPS,
+        MAX_BOOST_FEE_BPS,
       ],
     });
     expect(result).toStrictEqual({
@@ -528,7 +528,7 @@ describe(SwapSDK, () => {
       depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
       depositChannelExpiryBlock: 1234n,
       estimatedDepositChannelExpiryTime: undefined,
-      boostFeeBps: BOOST_FEE_BPS,
+      maxBoostFeeBps: MAX_BOOST_FEE_BPS,
       channelOpeningFee: 0n,
       affiliateBrokers: [],
     });

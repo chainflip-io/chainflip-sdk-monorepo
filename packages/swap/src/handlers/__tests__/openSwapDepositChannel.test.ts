@@ -64,7 +64,7 @@ describe(openSwapDepositChannel, () => {
     });
 
     expect(result).toEqual({
-      boostFeeBps: 0,
+      maxBoostFeeBps: 0,
       depositAddress: 'address',
       brokerCommissionBps: 0,
       estimatedExpiryTime: 1699534500000,
@@ -104,7 +104,7 @@ describe(openSwapDepositChannel, () => {
     });
 
     expect(result).toEqual({
-      boostFeeBps: 0,
+      maxBoostFeeBps: 0,
       depositAddress: 'address',
       brokerCommissionBps: 0,
       estimatedExpiryTime: 1699534500000,
@@ -137,11 +137,11 @@ describe(openSwapDepositChannel, () => {
       destChain: 'Ethereum',
       destAddress: '0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754',
       expectedDepositAmount: '10101010',
-      boostFeeBps: 100,
+      maxBoostFeeBps: 100,
     });
 
     expect(result).toEqual({
-      boostFeeBps: 100,
+      maxBoostFeeBps: 100,
       depositAddress: 'address',
       brokerCommissionBps: 0,
       estimatedExpiryTime: 1699534500000,
@@ -154,7 +154,7 @@ describe(openSwapDepositChannel, () => {
     expect(await prisma.swapDepositChannel.findFirst()).toMatchSnapshot({
       id: expect.any(BigInt),
       createdAt: expect.any(Date),
-      boostFeeBps: 100,
+      maxBoostFeeBps: 100,
     });
   });
 

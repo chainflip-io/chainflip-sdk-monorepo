@@ -67,7 +67,7 @@ export const swapDepositAddressReady = async ({
     destAddress: destinationAddress.address,
     srcChainExpiryBlock: sourceChainExpiryBlock,
     brokerCommissionBps: brokerCommissionRate,
-    boostFeeBps: boostFee,
+    maxBoostFeeBps: boostFee,
     issuedBlock,
     channelId,
     openingFeePaid: channelOpeningFee.toString(),
