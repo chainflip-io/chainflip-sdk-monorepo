@@ -67,7 +67,7 @@ model SwapDepositChannel {
   expiryBlock           Int? // TODO(mainnet): remove this column
   srcChainExpiryBlock   BigInt?
   brokerCommissionBps   Int
-  boostFeeBps           Int                           @default(0)
+  maxBoostFeeBps        Int                           @default(0)
   isExpired             Boolean                       @default(false)
   createdAt             DateTime                      @default(now())
   swaps                 Swap[]

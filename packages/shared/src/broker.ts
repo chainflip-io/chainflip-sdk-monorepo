@@ -24,7 +24,7 @@ type NewSwapRequest = {
   destChain: Chain;
   destAddress: string;
   ccmMetadata?: CcmMetadata;
-  boostFeeBps?: number;
+  maxBoostFeeBps?: number;
 };
 
 type SnakeCaseKeys<T> = {
@@ -146,7 +146,7 @@ export async function requestSwapDepositAddress(
   },
   chainflipNetwork: ChainflipNetwork,
 ): Promise<DepositChannelResponse> {
-  const { srcAsset, srcChain, destAsset, destChain, destAddress, boostFeeBps } = swapRequest;
+  const { srcAsset, srcChain, destAsset, destChain, destAddress, maxBoostFeeBps } = swapRequest;
 
   return makeRpcRequest(
     chainflipNetwork,
@@ -160,7 +160,7 @@ export async function requestSwapDepositAddress(
       ...swapRequest.ccmMetadata,
       cfParameters: undefined,
     },
-    boostFeeBps,
+    maxBoostFeeBps,
     opts.affiliates,
   );
 }

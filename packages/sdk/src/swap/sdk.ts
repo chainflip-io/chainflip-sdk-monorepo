@@ -163,7 +163,7 @@ export class SwapSDK {
         depositAddress: result.address,
         brokerCommissionBps: this.options.broker.commissionBps,
         srcChainExpiryBlock: result.sourceChainExpiryBlock,
-        boostFeeBps: depositAddressRequest.boostFeeBps,
+        maxBoostFeeBps: depositAddressRequest.maxBoostFeeBps,
         channelOpeningFee: result.channelOpeningFee,
       };
     } else {
@@ -184,7 +184,7 @@ export class SwapSDK {
       depositAddress: response.depositAddress,
       brokerCommissionBps: response.brokerCommissionBps,
       affiliateBrokers: depositAddressRequest.affiliateBrokers ?? [],
-      boostFeeBps: Number(response.boostFeeBps) || 0,
+      maxBoostFeeBps: Number(response.maxBoostFeeBps) || 0,
       depositChannelExpiryBlock: response.srcChainExpiryBlock as bigint,
       estimatedDepositChannelExpiryTime: response.estimatedExpiryTime,
       channelOpeningFee: response.channelOpeningFee,

@@ -23,7 +23,7 @@ exports[`openSwapDepositChannel creates channel and stores it in the database 1`
 
 exports[`openSwapDepositChannel creates channel and stores it in the database 2`] = `
 {
-  "boostFeeBps": 0,
+  "maxBoostFeeBps": 0,
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
   "ccmMessage": null,
@@ -50,7 +50,7 @@ exports[`openSwapDepositChannel creates channel with boost fee and stores it in 
 [
   [
     {
-      "boostFeeBps": 100,
+      "maxBoostFeeBps": 100,
       "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
       "destAsset": "USDC",
       "destChain": "Ethereum",
@@ -70,7 +70,7 @@ exports[`openSwapDepositChannel creates channel with boost fee and stores it in 
 
 exports[`openSwapDepositChannel creates channel with boost fee and stores it in the database 2`] = `
 {
-  "boostFeeBps": 100,
+  "maxBoostFeeBps": 100,
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
   "ccmMessage": null,
@@ -120,7 +120,7 @@ exports[`openSwapDepositChannel creates channel with ccmMetadata and stores it i
 
 exports[`openSwapDepositChannel creates channel with ccmMetadata and stores it in the database 2`] = `
 {
-  "boostFeeBps": 0,
+  "maxBoostFeeBps": 0,
   "brokerCommissionBps": 0,
   "ccmGasBudget": "125000",
   "ccmMessage": "0xdeadc0de",
