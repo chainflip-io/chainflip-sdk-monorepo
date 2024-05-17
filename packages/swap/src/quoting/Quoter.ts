@@ -81,7 +81,7 @@ export default class Quoter {
 
         if (!result.success) {
           logger.warn(`received invalid quote response from "${socket.data.marketMaker}"`, {
-            message,
+            quoteResponse: message,
             reason: result.error,
           });
           return;
