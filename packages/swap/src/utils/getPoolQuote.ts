@@ -60,7 +60,7 @@ export default async function getPoolQuote(
     egressAmount: egressAmount.toString(),
     includedFees,
     lowLiquidityWarning,
-    estimatedDurationSeconds: await estimateSwapDuration(srcAsset, destAsset),
+    estimatedDurationSeconds: await estimateSwapDuration({ srcAsset, destAsset }),
   };
 
   const duration = performance.now() - start;
