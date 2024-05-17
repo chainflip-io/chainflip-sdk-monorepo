@@ -489,7 +489,7 @@ describe(SwapSDK, () => {
 
       return defaultAxiosMock(url, data);
     });
-    const BOOST_FEE_BPS = 100;
+    const MAX_BOOST_FEE_BPS = 100;
 
     const result = await new SwapSDK({
       broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
@@ -500,7 +500,7 @@ describe(SwapSDK, () => {
       destAsset: 'FLIP',
       destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
       amount: BigInt(1e18).toString(),
-      maxBoostFeeBps: BOOST_FEE_BPS,
+      maxBoostFeeBps: MAX_BOOST_FEE_BPS,
     });
 
     expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
@@ -513,7 +513,7 @@ describe(SwapSDK, () => {
         '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         15,
         undefined,
-        BOOST_FEE_BPS,
+        MAX_BOOST_FEE_BPS,
       ],
     });
     expect(result).toStrictEqual({
@@ -528,7 +528,7 @@ describe(SwapSDK, () => {
       depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
       depositChannelExpiryBlock: 1234n,
       estimatedDepositChannelExpiryTime: undefined,
-      maxBoostFeeBps: BOOST_FEE_BPS,
+      maxBoostFeeBps: MAX_BOOST_FEE_BPS,
       channelOpeningFee: 0n,
       affiliateBrokers: [],
     });

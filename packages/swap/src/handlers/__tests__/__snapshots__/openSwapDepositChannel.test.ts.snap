@@ -23,7 +23,6 @@ exports[`openSwapDepositChannel creates channel and stores it in the database 1`
 
 exports[`openSwapDepositChannel creates channel and stores it in the database 2`] = `
 {
-  "maxBoostFeeBps": 0,
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
   "ccmMessage": null,
@@ -38,6 +37,7 @@ exports[`openSwapDepositChannel creates channel and stores it in the database 2`
   "id": Any<BigInt>,
   "isExpired": false,
   "issuedBlock": 123,
+  "maxBoostFeeBps": 0,
   "openedThroughBackend": true,
   "openingFeePaid": "100",
   "srcAsset": "Flip",
@@ -50,11 +50,11 @@ exports[`openSwapDepositChannel creates channel with boost fee and stores it in 
 [
   [
     {
-      "maxBoostFeeBps": 100,
       "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
       "destAsset": "USDC",
       "destChain": "Ethereum",
       "expectedDepositAmount": "10101010",
+      "maxBoostFeeBps": 100,
       "srcAsset": "FLIP",
       "srcChain": "Ethereum",
     },
@@ -70,7 +70,6 @@ exports[`openSwapDepositChannel creates channel with boost fee and stores it in 
 
 exports[`openSwapDepositChannel creates channel with boost fee and stores it in the database 2`] = `
 {
-  "maxBoostFeeBps": 100,
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
   "ccmMessage": null,
@@ -85,6 +84,7 @@ exports[`openSwapDepositChannel creates channel with boost fee and stores it in 
   "id": Any<BigInt>,
   "isExpired": false,
   "issuedBlock": 123,
+  "maxBoostFeeBps": 100,
   "openedThroughBackend": true,
   "openingFeePaid": "0",
   "srcAsset": "Flip",
@@ -120,7 +120,6 @@ exports[`openSwapDepositChannel creates channel with ccmMetadata and stores it i
 
 exports[`openSwapDepositChannel creates channel with ccmMetadata and stores it in the database 2`] = `
 {
-  "maxBoostFeeBps": 0,
   "brokerCommissionBps": 0,
   "ccmGasBudget": "125000",
   "ccmMessage": "0xdeadc0de",
@@ -135,6 +134,7 @@ exports[`openSwapDepositChannel creates channel with ccmMetadata and stores it i
   "id": Any<BigInt>,
   "isExpired": false,
   "issuedBlock": 123,
+  "maxBoostFeeBps": 0,
   "openedThroughBackend": true,
   "openingFeePaid": "10",
   "srcAsset": "Flip",

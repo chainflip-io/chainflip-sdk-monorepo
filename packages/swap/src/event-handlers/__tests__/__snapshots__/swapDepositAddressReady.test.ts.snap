@@ -2,7 +2,6 @@
 
 exports[`swapDepositAddressReady can handle empty ccm messages 1`] = `
 {
-  "boostFeeBps": 0,
   "brokerCommissionBps": 0,
   "ccmGasBudget": "0",
   "ccmMessage": "0x",
@@ -17,6 +16,7 @@ exports[`swapDepositAddressReady can handle empty ccm messages 1`] = `
   "id": Any<BigInt>,
   "isExpired": false,
   "issuedBlock": 120,
+  "maxBoostFeeBps": 0,
   "openedThroughBackend": false,
   "openingFeePaid": "0",
   "srcAsset": "Eth",
@@ -27,7 +27,6 @@ exports[`swapDepositAddressReady can handle empty ccm messages 1`] = `
 
 exports[`swapDepositAddressReady creates a swap deposit channel entry 1`] = `
 {
-  "boostFeeBps": 0,
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
   "ccmMessage": null,
@@ -42,6 +41,7 @@ exports[`swapDepositAddressReady creates a swap deposit channel entry 1`] = `
   "id": Any<BigInt>,
   "isExpired": false,
   "issuedBlock": 120,
+  "maxBoostFeeBps": 0,
   "openedThroughBackend": false,
   "openingFeePaid": "0",
   "srcAsset": "Eth",
@@ -52,7 +52,6 @@ exports[`swapDepositAddressReady creates a swap deposit channel entry 1`] = `
 
 exports[`swapDepositAddressReady creates a swap deposit channel entry with a broker commission 1`] = `
 {
-  "boostFeeBps": 0,
   "brokerCommissionBps": 25,
   "ccmGasBudget": null,
   "ccmMessage": null,
@@ -67,6 +66,7 @@ exports[`swapDepositAddressReady creates a swap deposit channel entry with a bro
   "id": Any<BigInt>,
   "isExpired": false,
   "issuedBlock": 121,
+  "maxBoostFeeBps": 0,
   "openedThroughBackend": false,
   "openingFeePaid": "0",
   "srcAsset": "Eth",
@@ -77,7 +77,6 @@ exports[`swapDepositAddressReady creates a swap deposit channel entry with a bro
 
 exports[`swapDepositAddressReady creates a swap deposit channel entry with a channel opening fee 1`] = `
 {
-  "boostFeeBps": 0,
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
   "ccmMessage": null,
@@ -92,6 +91,7 @@ exports[`swapDepositAddressReady creates a swap deposit channel entry with a cha
   "id": Any<BigInt>,
   "isExpired": false,
   "issuedBlock": 121,
+  "maxBoostFeeBps": 0,
   "openedThroughBackend": false,
   "openingFeePaid": "1000",
   "srcAsset": "Eth",
@@ -102,7 +102,6 @@ exports[`swapDepositAddressReady creates a swap deposit channel entry with a cha
 
 exports[`swapDepositAddressReady creates a swap deposit channel entry with ccm metadata 1`] = `
 {
-  "boostFeeBps": 0,
   "brokerCommissionBps": 0,
   "ccmGasBudget": "125000",
   "ccmMessage": "0xdeadc0de",
@@ -117,6 +116,7 @@ exports[`swapDepositAddressReady creates a swap deposit channel entry with ccm m
   "id": Any<BigInt>,
   "isExpired": false,
   "issuedBlock": 120,
+  "maxBoostFeeBps": 0,
   "openedThroughBackend": false,
   "openingFeePaid": "0",
   "srcAsset": "Btc",
@@ -127,7 +127,6 @@ exports[`swapDepositAddressReady creates a swap deposit channel entry with ccm m
 
 exports[`swapDepositAddressReady does not overwrite expectedDepositAmount with zero 1`] = `
 {
-  "boostFeeBps": 0,
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
   "ccmMessage": null,
@@ -142,6 +141,7 @@ exports[`swapDepositAddressReady does not overwrite expectedDepositAmount with z
   "id": Any<BigInt>,
   "isExpired": false,
   "issuedBlock": 10,
+  "maxBoostFeeBps": 0,
   "openedThroughBackend": false,
   "openingFeePaid": "0",
   "srcAsset": "Eth",
@@ -160,7 +160,6 @@ exports[`swapDepositAddressReady inserts affiliates 1`] = `
       "id": Any<BigInt>,
     },
   ],
-  "boostFeeBps": 0,
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
   "ccmMessage": null,
@@ -175,6 +174,7 @@ exports[`swapDepositAddressReady inserts affiliates 1`] = `
   "id": Any<BigInt>,
   "isExpired": false,
   "issuedBlock": 120,
+  "maxBoostFeeBps": 0,
   "openedThroughBackend": false,
   "openingFeePaid": "0",
   "srcAsset": "Eth",
