@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { InternalAsset, InternalAssets, getInternalAsset } from '@/shared/enums';
+import { InternalAsset, InternalAssets, getAssetAndChain, getInternalAsset } from '@/shared/enums';
 import { deferredPromise } from '@/swap/utils/promise';
 import PoolStateCache from '../PoolStateCache';
 
@@ -50,8 +50,18 @@ describe(PoolStateCache, () => {
     resolveHashRequest(hash);
 
     postSpy.mockImplementation(async (url, body: any) => {
-      const asset = getInternalAsset(body.params[0]);
       const { method } = body;
+      if (method === 'cf_supported_assets') {
+        return {
+          data: {
+            result: (Object.keys(InternalAssets) as InternalAsset[]).map((a) =>
+              getAssetAndChain(a),
+            ),
+          },
+        };
+      }
+
+      const asset = getInternalAsset(body.params[0]);
       expect(body.params.at(-1)).toEqual(hash);
       const mock = mockPoolStates[asset];
 

@@ -68,29 +68,6 @@ describe(SwapSDK, () => {
       expect(await freshSdk.getAssets()).toMatchSnapshot();
     });
 
-    it('supports the previous version of the cf_supported_assets rpc', async () => {
-      jest.mocked(axios.post).mockImplementation((url, data: any) => {
-        if (data.method === 'cf_supported_assets') {
-          return Promise.resolve({
-            data: {
-              jsonrpc: '2.0',
-              result: {
-                Ethereum: ['ETH', 'FLIP', 'USDC'],
-                Bitcoin: ['BTC'],
-                Polkadot: ['DOT'],
-              },
-              id: 1,
-            },
-          });
-        }
-
-        return defaultAxiosMock(url, data);
-      });
-
-      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
-      expect(await freshSdk.getAssets()).toMatchSnapshot();
-    });
-
     it('returns the filtered destination chains for the chain', async () => {
       expect(await sdk.getChains('Ethereum')).toMatchSnapshot();
     });

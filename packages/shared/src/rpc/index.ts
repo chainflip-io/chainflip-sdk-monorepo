@@ -75,12 +75,7 @@ const createRequest =
     ...params: RpcParams[M]
   ): Promise<CamelCaseRecord<z.output<R>>> => {
     const url = 'network' in urlOrNetwork ? RPC_URLS[urlOrNetwork.network] : urlOrNetwork.rpcUrl;
-    const { data } = await axios.post(url, {
-      jsonrpc: '2.0',
-      method,
-      params,
-      id: 1,
-    });
+    const { data } = await axios.post(url, { jsonrpc: '2.0', method, params, id: 1 });
 
     const result = responseParser.safeParse(data.result);
 
@@ -238,20 +233,7 @@ export const getSwapRate = createRequest('cf_swap_rate', swapRate);
 
 export const getMetadata = createRequest('state_getMetadata', hexString);
 
-// TODO: V130 -- remove this schema when all networks are on 1.3.0
-const supportedAssetsV120 = z
-  .object({
-    Bitcoin: z.array(z.string()),
-    Ethereum: z.array(z.string()),
-    Polkadot: z.array(z.string()),
-  })
-  .transform((data) => [
-    ...data.Bitcoin.map((asset) => ({ chain: 'Bitcoin', asset })),
-    ...data.Ethereum.map((asset) => ({ chain: 'Ethereum', asset })),
-    ...data.Polkadot.map((asset) => ({ chain: 'Polkadot', asset })),
-  ]);
-const supportedAssetsV130 = z.array(uncheckedAssetAndChain);
-const supportedAssets = z.union([supportedAssetsV120, supportedAssetsV130]);
+const supportedAssets = z.array(uncheckedAssetAndChain);
 
 export const getSupportedAssets = createRequest('cf_supported_assets', supportedAssets);
 

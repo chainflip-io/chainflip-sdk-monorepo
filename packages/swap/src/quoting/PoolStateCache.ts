@@ -1,7 +1,13 @@
+import 'dotenv/config';
 import assert from 'assert';
 import { setTimeout as sleep } from 'timers/promises';
-import { InternalAsset, InternalAssets, getAssetAndChain } from '@/shared/enums';
-import { getBlockHash, getPoolOrders, getPoolPriceV2 } from '@/shared/rpc';
+import {
+  InternalAsset,
+  UncheckedAssetAndChain,
+  getAssetAndChain,
+  getInternalAsset,
+} from '@/shared/enums';
+import { getBlockHash, getPoolOrders, getPoolPriceV2, getSupportedAssets } from '@/shared/rpc';
 import env from '../config/env';
 import { AsyncCacheMap } from '../utils/dataStructures';
 import { handleExit } from '../utils/function';
@@ -11,28 +17,34 @@ const rpcConfig = { rpcUrl: env.RPC_NODE_HTTP_URL };
 
 type BaseAsset = Exclude<InternalAsset, 'Usdc'>;
 
-const baseAssets = (Object.keys(InternalAssets) as InternalAsset[]).filter(
-  (asset): asset is BaseAsset => asset !== 'Usdc',
-);
+let baseAssets: BaseAsset[];
 
 type PoolState = {
   poolState: string;
   rangeOrderPrice: bigint;
 };
 
-const fetchPoolState = async (hash: string) =>
-  Object.fromEntries(
+const fetchPoolState = async (hash: string) => {
+  baseAssets ??= (await getSupportedAssets(rpcConfig))
+    .filter((asset) => !(asset.chain === 'Ethereum' && asset.asset === 'USDC'))
+    .map((asset) => getInternalAsset(asset as UncheckedAssetAndChain)) as BaseAsset[];
+
+  return Object.fromEntries(
     await Promise.all(
       baseAssets.map(async (asset) => {
+        const base = getAssetAndChain(asset);
+        const usdc = getAssetAndChain('Usdc');
+
         const [orders, price] = await Promise.all([
-          getPoolOrders(rpcConfig, getAssetAndChain(asset), getAssetAndChain('Usdc'), hash),
-          getPoolPriceV2(rpcConfig, getAssetAndChain(asset), getAssetAndChain('Usdc'), hash),
+          getPoolOrders(rpcConfig, base, usdc, hash),
+          getPoolPriceV2(rpcConfig, base, usdc, hash),
         ]);
 
         return [asset, { poolState: orders, rangeOrderPrice: price.rangeOrder }] as const;
       }),
     ),
   ) as Record<BaseAsset, PoolState>;
+};
 
 export default class PoolStateCache {
   private running = false;
