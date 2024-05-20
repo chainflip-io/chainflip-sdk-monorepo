@@ -55,9 +55,9 @@ async def main(argv):
 
         private_key_bytes = bytes(private_key, "utf-8")
 
-        quoter = MockQuoter()
+        quoter = MockQuoter(market_maker_id, private_key_bytes, url)
 
-        await quoter.connect(market_maker_id, private_key_bytes, url, wait_timeout=10)
+        await quoter.connect(wait_timeout=10)
     except Exception as e:
         print_and_flush(e)
         raise

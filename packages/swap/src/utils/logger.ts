@@ -69,7 +69,8 @@ const createLoggerFunc = (label: string) => {
         ? format.json()
         : format.combine(customMessageFormat, format.colorize({ all: true })),
     ),
-    silent: env.NODE_ENV === 'test',
+    // silent: env.NODE_ENV === 'test',
+    silent: true,
     defaultMeta: { component: label.toUpperCase() },
     transports: [new transports.Console()],
   }) as CustomLogger;
