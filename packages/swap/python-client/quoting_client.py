@@ -41,6 +41,34 @@ class QuotingClient(ABC):
     connected = False
     sio: Optional[socketio.AsyncClient] = None
 
+    def __init__(
+        self,
+        market_maker_id: str,
+        private_key_bytes: bytes,
+        url: str,
+        password: Optional[str] = None,
+    ):
+        self.market_maker_id = market_maker_id
+        self.private_key_bytes = private_key_bytes
+        self.url = url
+        self.password = password
+
+    def get_auth_data(self):
+        timestamp = round(time.time() * 1000)
+        signature = serialization.load_pem_private_key(
+            self.private_key_bytes, password=self.password
+        ).sign(
+            b"%b%b"
+            % (bytes(self.market_maker_id, "utf-8"), bytes(str(timestamp), "utf-8"))
+        )
+
+        return {
+            "client_version": "1",
+            "timestamp": timestamp,
+            "market_maker_id": self.market_maker_id,
+            "signature": base64.b64encode(signature).decode("utf-8"),
+        }
+
     @abstractmethod
     async def on_quote_request(self, quote: QuoteRequest) -> List[List[LimitOrder]]:
         pass
@@ -54,10 +82,6 @@ class QuotingClient(ABC):
 
     async def connect(
         self,
-        market_maker_id: str,
-        private_key_bytes: bytes,
-        url: str,
-        password: Optional[str] = None,
         wait_timeout: int = 1,
     ):
         self.sio = socketio.AsyncClient()
@@ -73,21 +97,9 @@ class QuotingClient(ABC):
             legs = await self.on_quote_request(quote)
             await self.send_quote({"request_id": quote.request_id, "legs": legs})
 
-        timestamp = round(time.time() * 1000)
-        signature = serialization.load_pem_private_key(
-            private_key_bytes, password=password
-        ).sign(
-            b"%b%b" % (bytes(market_maker_id, "utf-8"), bytes(str(timestamp), "utf-8"))
-        )
-
         await self.sio.connect(
-            url,
-            auth={
-                "client_version": "1",
-                "timestamp": timestamp,
-                "market_maker_id": market_maker_id,
-                "signature": base64.b64encode(signature).decode("utf-8"),
-            },
+            self.url,
+            auth=self.get_auth_data,
             wait_timeout=wait_timeout,
             transports=["websocket"],
         )
