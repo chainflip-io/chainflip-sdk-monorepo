@@ -16,13 +16,26 @@ import {
   MarketMakerQuoteRequest,
   marketMakerResponseSchema,
 } from './schemas';
-import { Pool } from '../client';
+import prisma, { Pool } from '../client';
 import env from '../config/env';
 import { getAssetPrice } from '../pricing';
+import { AsyncCacheMap } from '../utils/dataStructures';
 import { buildFee } from '../utils/fees';
 import { handleExit } from '../utils/function';
 import logger from '../utils/logger';
 import { percentDifference } from '../utils/math';
+
+const pairCacheMap = new AsyncCacheMap({
+  fetch: async (key: `${InternalAsset}-${InternalAsset}`) => {
+    const [from, to] = key.split('-') as [InternalAsset, InternalAsset];
+
+    const pair = await prisma.quotingPair.findUnique({ where: { from_to: { from, to } } });
+
+    return Boolean(pair?.enabled);
+  },
+  ttl: 60_000,
+  resetExpiryOnLookup: false,
+});
 
 export type QuoteType = 'pool' | 'market_maker';
 
@@ -92,8 +105,12 @@ export default class Quoter {
     });
   }
 
-  canQuote() {
-    return env.USE_JIT_QUOTING && this.io.sockets.sockets.size > 0;
+  async canQuote(srcAsset: InternalAsset, destAsset: InternalAsset) {
+    return (
+      env.USE_JIT_QUOTING &&
+      this.io.sockets.sockets.size > 0 &&
+      pairCacheMap.get(`${srcAsset}-${destAsset}`)
+    );
   }
 
   private async collectMakerQuotes(request: MarketMakerQuoteRequest): Promise<MarketMakerQuote[]> {

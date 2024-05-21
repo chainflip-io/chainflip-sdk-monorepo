@@ -5,10 +5,10 @@ import { AddressInfo } from 'net';
 import * as path from 'path';
 import { Observable, filter, firstValueFrom, from, map, shareReplay, timeout } from 'rxjs';
 import { promisify } from 'util';
-import { Assets, Chains } from '@/shared/enums';
+import { Assets, Chains, InternalAssets } from '@/shared/enums';
 import { QuoteQueryParams } from '@/shared/schemas';
 import { environment, swapRate } from '@/shared/tests/fixtures';
-import prisma from '../client';
+import prisma, { InternalAsset } from '../client';
 import PoolStateCache from '../quoting/PoolStateCache';
 import app from '../server';
 import { getSwapRate } from '../utils/statechain';
@@ -64,7 +64,7 @@ describe('python integration test', () => {
   let serverUrl: string;
 
   beforeAll(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE public."Pool" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE public."Pool", private."QuotingPair" CASCADE`;
     await prisma.pool.createMany({
       data: [
         {
@@ -78,6 +78,13 @@ describe('python integration test', () => {
           liquidityFeeHundredthPips: 2000,
         },
       ],
+    });
+    const assets = Object.keys(InternalAssets) as InternalAsset[];
+
+    await prisma.quotingPair.createMany({
+      data: assets.flatMap((fromAsset) =>
+        assets.map((to) => ({ from: fromAsset, to, enabled: true })),
+      ),
     });
   });
 

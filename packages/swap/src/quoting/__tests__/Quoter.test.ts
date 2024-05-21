@@ -46,7 +46,7 @@ describe(Quoter, () => {
   const sockets: Socket[] = [];
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE private."MarketMaker" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE private."MarketMaker", private."QuotingPair" CASCADE`;
     oldEnv = { ...env };
     server = new Server().use(authenticate).listen(0);
 
@@ -483,6 +483,43 @@ describe(Quoter, () => {
       ]);
 
       await expect(quote).rejects.toThrow('no quotes received');
+    });
+  });
+
+  describe(Quoter.prototype.canQuote, () => {
+    beforeEach(async () => {
+      await prisma.quotingPair.createMany({
+        data: [
+          {
+            from: 'Btc',
+            to: 'Eth',
+            enabled: true,
+          },
+          {
+            from: 'Btc',
+            to: 'Usdc',
+            enabled: false,
+          },
+        ],
+      });
+    });
+
+    it('returns true if the quoting pair is enabled', async () => {
+      await connectClient('name');
+
+      expect(await quoter.canQuote('Btc', 'Eth')).toBe(true);
+    });
+
+    it('returns false if the quoting pair is disabled', async () => {
+      await connectClient('name');
+
+      expect(await quoter.canQuote('Btc', 'Usdc')).toBe(false);
+    });
+
+    it('returns false if the quoting pair is absent', async () => {
+      await connectClient('name');
+
+      expect(await quoter.canQuote('Btc', 'Flip')).toBe(false);
     });
   });
 });

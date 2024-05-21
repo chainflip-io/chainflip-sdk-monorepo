@@ -215,11 +215,15 @@ const quoteRouter = (io: Server) => {
         start,
       );
 
-      const canGetQuote = quoter.canQuote();
+      const canGetQuote = quoter.canQuote(srcAsset, destAsset).catch((error) => {
+        logger.error('error while checking if route is quotable', { error });
+        return false;
+      });
+
       let responseSent = false;
 
       // for stealth mode always send the pool quote
-      if (env.STEALTH_MODE || !canGetQuote) {
+      if (env.STEALTH_MODE || !(await canGetQuote)) {
         const result = await poolQuotePromise;
 
         logger.info('sending pool quote', {
@@ -239,7 +243,7 @@ const quoteRouter = (io: Server) => {
           await handleQuotingError(res, result.reason);
         }
 
-        if (!canGetQuote) return;
+        if (!(await canGetQuote)) return;
         responseSent = true;
       }
 
