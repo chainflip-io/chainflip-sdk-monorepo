@@ -26,12 +26,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@swc/core": "^1.4.17",
+    "@swc/core": "^1.5.7",
     "@swc/jest": "^0.2.36",
     "@types/jest": "^29.5.12",
-    "@types/node": "^20.12.8",
+    "@types/node": "^20.12.12",
     "@types/yargs": "^17.0.32",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.10.0",
     "@typescript-eslint/parser": "^6.21.0",
     "envlocker": "^0.2.0",
     "eslint": "^8.57.0",
@@ -45,8 +45,8 @@
     "prettier": "^3.2.5",
     "syncpack": "^12.3.2",
     "ts-morph": "^22.0.0",
-    "tsc-alias": "^1.8.8",
-    "tsx": "^4.7.2",
+    "tsc-alias": "^1.8.10",
+    "tsx": "^4.10.5",
     "typescript": "^5.4.5",
     "yargs": "^17.7.2"
   },
@@ -59,7 +59,7 @@
     "@trpc/server": "^10.45.2",
     "bech32-buffer": "^0.2.1",
     "superjson": "^1.13.3",
-    "zod": "^3.23.0"
+    "zod": "^3.23.8"
   },
   "pnpm": {
     "patchedDependencies": {
