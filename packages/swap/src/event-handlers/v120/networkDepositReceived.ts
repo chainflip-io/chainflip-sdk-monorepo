@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { u128, internalAssetEnum, hexString, u64 } from '@/shared/parsers';
+import { u128, internalAssetEnum, hexString } from '@/shared/parsers';
 import logger from '../../utils/logger';
 import { EventHandlerArgs } from '../index';
 
