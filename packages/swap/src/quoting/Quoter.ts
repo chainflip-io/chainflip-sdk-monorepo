@@ -29,11 +29,7 @@ export type QuoteType = 'pool' | 'market_maker';
 type Quote = { marketMaker: string; quote: MarketMakerQuote };
 
 const simulateSwap = async (input: SwapInput) => {
-  console.log('before', input);
-
   const { swappedAmount } = await swap(input);
-
-  console.log('after');
 
   return swappedAmount;
 };

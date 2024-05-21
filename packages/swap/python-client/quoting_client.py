@@ -56,9 +56,10 @@ class QuotingClient(ABC):
     def get_auth_data(self):
         timestamp = round(time.time() * 1000)
         signature = serialization.load_pem_private_key(
-            private_key_bytes, password=password
+            self.private_key_bytes, password=self.password
         ).sign(
-            b"%b%b" % (bytes(market_maker_id, "utf-8"), bytes(str(timestamp), "utf-8"))
+            b"%b%b"
+            % (bytes(self.market_maker_id, "utf-8"), bytes(str(timestamp), "utf-8"))
         )
 
         return {
