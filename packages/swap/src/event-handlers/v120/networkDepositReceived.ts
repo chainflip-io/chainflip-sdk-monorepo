@@ -1,18 +1,22 @@
 import { z } from 'zod';
-import { u128, internalAssetEnum, hexString, u64 } from '@/shared/parsers';
+import { u128, internalAssetEnum, hexString } from '@/shared/parsers';
 import logger from '../../utils/logger';
 import { EventHandlerArgs } from '../index';
 
 export const actionSchema = z.union([
-  z.object({ __kind: z.literal('Swap'), swapId: u64 }),
+  z.object({ __kind: z.literal('Swap'), swapId: u128 }),
   z.object({ __kind: z.literal('LiquidityProvision'), lpAccount: hexString }),
   z.object({
     __kind: z.literal('CcmTransfer'),
-    principalSwapId: u64.nullable().optional(),
-    gasSwapId: u64.nullable().optional(),
+    principalSwapId: u128.nullable().optional(),
+    gasSwapId: u128.nullable().optional(),
   }),
   z.object({
     __kind: z.literal('NoAction'),
+  }),
+  z.object({
+    __kind: z.literal('BoostersCredited'),
+    prewitnessedDepositId: u128,
   }),
 ]);
 
