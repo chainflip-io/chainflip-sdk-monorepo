@@ -49,8 +49,8 @@ export type SwapSDKOptions = {
 };
 
 export class SwapSDK {
-  
-  private readonly options: Required<    SwapSDKOptions, 'network' | 'backendUrl'>;
+  private readonly options: Required<SwapSDKOptions, 'network' | 'backendUrl'>;
+
   private readonly rpcConfig: RpcConfig;
 
   private readonly trpc;
