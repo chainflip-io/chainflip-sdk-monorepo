@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "eslint:check": "pnpm eslint --max-warnings 0 './**/*.ts'",
+    "prettier:base": "prettier ./** --ignore-path=../../.prettierignore",
+    "prettier:check": "pnpm prettier:base --check",
+    "prettier:write": "pnpm prettier:base --write",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "build": "tsc -p tsconfig.cjs.json && tsc -p tsconfig.mjs.json",
     "build:abis": "typechain --target=ethers-v6 --out-dir=./src/abis ./abis/**",
-    "lint": "pnpm eslint --max-warnings 0 './**/*.ts'",
     "test": "jest",
     "test:ci": "CI=1 pnpm test -- --forceExit"
   },
@@ -22,8 +25,7 @@
     "ethers": "^6.11.1",
     "ioredis": "^5.4.1",
     "rxjs": "^7.8.1",
-    "ws": "^8.17.0",
-    "zod": "^3.23.0"
+    "ws": "^8.17.0"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.7.0",
