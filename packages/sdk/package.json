@@ -32,7 +32,10 @@
     "test": "jest --forceExit",
     "test:ci": "CI=1 jest --forceExit",
     "build": "rm -rf dist && tsup",
-    "lint": "pnpm eslint --max-warnings 0 './**/*.ts'",
+    "eslint:check": "pnpm eslint --max-warnings 0 './**/*.ts'",
+    "prettier:base": "prettier ./** --ignore-path=../../.prettierignore",
+    "prettier:check": "pnpm prettier:base --check",
+    "prettier:write": "pnpm prettier:base --write",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [],

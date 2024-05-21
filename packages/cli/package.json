@@ -39,7 +39,6 @@
   "devDependencies": {
     "@types/yargs": "^17.0.32",
     "tsup": "^8.0.2",
-    "tsx": "^4.7.2",
     "bech32-buffer": "^0.2.1"
   },
   "peerDependencies": {
