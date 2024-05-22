@@ -62,6 +62,8 @@ describe('insufficientBoostLiquidity', () => {
     expect(channel.failedBoosts).toMatchSnapshot([
       {
         swapDepositChannelId: expect.any(BigInt),
+        failedAtTimestamp: expect.any(Date),
+        failedAtBlockIndex: expect.any(String),
       },
     ]);
   });

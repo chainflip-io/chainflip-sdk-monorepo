@@ -188,6 +188,8 @@ model FailedBoost {
   swapDepositChannel   SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
   swapDepositChannelId BigInt?
   amount               Decimal             @db.Decimal(30, 0)
+  failedAtTimestamp    DateTime
+  failedAtBlockIndex   String
 
   @@index([swapDepositChannelId])
   @@schema("public")

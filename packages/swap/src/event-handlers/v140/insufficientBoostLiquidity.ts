@@ -9,7 +9,7 @@ export const insufficientBoostLiquiditySchema = z.object({
   channelId: u128,
 });
 
-export const insufficientBoostLiquidity = async ({ prisma, event }: EventHandlerArgs) => {
+export const insufficientBoostLiquidity = async ({ prisma, event, block }: EventHandlerArgs) => {
   const { channelId, asset, amountAttempted } = insufficientBoostLiquiditySchema.parse(event.args);
 
   const channel = await prisma.swapDepositChannel.findFirstOrThrow({
@@ -19,6 +19,8 @@ export const insufficientBoostLiquidity = async ({ prisma, event }: EventHandler
   await prisma.failedBoost.create({
     data: {
       amount: amountAttempted.toString(),
+      failedAtTimestamp: new Date(block.timestamp),
+      failedAtBlockIndex: `${block.height}-${event.indexInBlock}`,
       swapDepositChannel: {
         connect: {
           id: channel.id,
