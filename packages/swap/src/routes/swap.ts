@@ -2,6 +2,7 @@ import assert from 'assert';
 import express from 'express';
 import { Chain, assetConstants } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
+import { isNotNull } from '@/shared/guards';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { screamingSnakeToPascalCase, toUpperCase } from '@/shared/strings';
 import { asyncHandler, maintenanceMode } from './common';
@@ -227,6 +228,15 @@ router.get(
       };
     }
 
+    let boosted;
+    if (swapDepositChannel && swapDepositChannel.maxBoostFeeBps > 0) {
+      if (swap) {
+        boosted = isNotNull(swap.effectiveBoostFeeBps);
+      } else if (swapDepositChannel && swapDepositChannel.failedBoosts.length > 0) {
+        boosted = false;
+      }
+    }
+
     const response = {
       state,
       type: swap?.type,
@@ -281,13 +291,8 @@ router.get(
       failedBlockIndex: failedSwap?.failedBlockIndex ?? undefined,
       depositChannelAffiliateBrokers: affiliateBrokers,
       depositChannelMaxBoostFeeBps: swapDepositChannel?.maxBoostFeeBps,
-      failedBoosts:
-        swapDepositChannel?.failedBoosts.map((failedBoost) => ({
-          failedAtTimestamp: failedBoost.failedAtTimestamp,
-          failedAtBlockIndex: failedBoost.failedAtBlockIndex,
-          amount: failedBoost.amount.toFixed(),
-        })) ?? [],
       effectiveBoostFeeBps: swap?.effectiveBoostFeeBps,
+      boosted,
     };
 
     logger.info('sending response for swap request', { id, response });
