@@ -105,12 +105,11 @@ export default class Quoter {
     });
   }
 
-  async canQuote(srcAsset: InternalAsset, destAsset: InternalAsset) {
-    return (
-      env.USE_JIT_QUOTING &&
-      this.io.sockets.sockets.size > 0 &&
-      pairCacheMap.get(`${srcAsset}-${destAsset}`)
-    );
+  async getQuotingState(srcAsset: InternalAsset, destAsset: InternalAsset) {
+    return {
+      quotingActive: env.USE_JIT_QUOTING && this.io.sockets.sockets.size > 0,
+      pairEnabled: env.STEALTH_MODE || (await pairCacheMap.get(`${srcAsset}-${destAsset}`)),
+    };
   }
 
   private async collectMakerQuotes(request: MarketMakerQuoteRequest): Promise<MarketMakerQuote[]> {

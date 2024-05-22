@@ -486,7 +486,7 @@ describe(Quoter, () => {
     });
   });
 
-  describe(Quoter.prototype.canQuote, () => {
+  describe(Quoter.prototype.getQuotingState, () => {
     beforeEach(async () => {
       await prisma.quotingPair.createMany({
         data: [
@@ -504,27 +504,55 @@ describe(Quoter, () => {
       });
     });
 
-    it('returns true if the quoting pair is enabled', async () => {
-      await connectClient('name');
-
-      expect(await quoter.canQuote('Btc', 'Eth')).toBe(true);
+    it('returns quotingActive=false if no sockets are connected', async () => {
+      expect(await quoter.getQuotingState('Btc', 'Eth')).toStrictEqual({
+        quotingActive: false,
+        pairEnabled: true,
+      });
     });
 
-    it('returns false if the quoting pair is disabled', async () => {
-      await connectClient('name');
+    describe('with a connected socket', () => {
+      beforeEach(async () => {
+        await connectClient('name');
+      });
 
-      expect(await quoter.canQuote('Btc', 'Usdc')).toBe(false);
-    });
+      it('returns pairEnabled=true if the quoting pair is enabled', async () => {
+        expect(await quoter.getQuotingState('Btc', 'Eth')).toStrictEqual({
+          quotingActive: true,
+          pairEnabled: true,
+        });
+      });
 
-    it('returns false if the quoting pair is absent', async () => {
-      await connectClient('name');
+      it('returns pairEnabled=false if the quoting pair is disabled', async () => {
+        expect(await quoter.getQuotingState('Btc', 'Usdc')).toStrictEqual({
+          quotingActive: true,
+          pairEnabled: false,
+        });
+      });
 
-      expect(await quoter.canQuote('Btc', 'Flip')).toBe(false);
+      it('returns pairEnabled=false if the quoting pair is absent', async () => {
+        expect(await quoter.getQuotingState('Btc', 'Flip')).toStrictEqual({
+          quotingActive: true,
+          pairEnabled: false,
+        });
+      });
+
+      it('always returns pairEnabled=true in stealth mode', async () => {
+        env.STEALTH_MODE = true;
+        await prisma.$queryRaw`TRUNCATE TABLE private."QuotingPair"`;
+        const expected = { quotingActive: true, pairEnabled: true };
+        expect(await quoter.getQuotingState('Btc', 'Eth')).toStrictEqual(expected);
+        expect(await quoter.getQuotingState('Btc', 'Usdc')).toStrictEqual(expected);
+        expect(await quoter.getQuotingState('Btc', 'Flip')).toStrictEqual(expected);
+        expect(await quoter.getQuotingState('Btc', 'Dot')).toStrictEqual(expected);
+        expect(await quoter.getQuotingState('Btc', 'ArbEth')).toStrictEqual(expected);
+        expect(await quoter.getQuotingState('Btc', 'ArbUsdc')).toStrictEqual(expected);
+      });
     });
   });
 });
 
-describe(approximateIntermediateOutput, () => {
+describe('approximateIntermediateOutput', () => {
   it.each([
     ['Dot', 6.5],
     ['Usdt', 1],
@@ -547,7 +575,7 @@ describe(approximateIntermediateOutput, () => {
   );
 });
 
-describe(differenceExceedsThreshold, () => {
+describe('differenceExceedsThreshold', () => {
   it('returns false if the difference does not exceed the threshold', () => {
     expect(differenceExceedsThreshold(100n, 101n, 1)).toBe(false);
   });
