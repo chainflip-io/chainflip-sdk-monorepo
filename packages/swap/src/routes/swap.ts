@@ -15,6 +15,7 @@ import prisma, {
   IgnoredEgress,
   FailedSwapReason,
   SwapDepositChannelAffiliate,
+  FailedBoost,
 } from '../client';
 import openSwapDepositChannel from '../handlers/openSwapDepositChannel';
 import { getPendingBroadcast, getPendingDeposit } from '../ingress-egress-tracking';
@@ -86,6 +87,7 @@ router.get(
       | (SwapDepositChannel & {
           swaps: SwapWithAdditionalInfo[];
           failedSwaps: FailedSwap[];
+          failedBoosts: FailedBoost[];
           affiliates: Pick<SwapDepositChannelAffiliate, 'account' | 'commissionBps'>[];
         })
       | null
@@ -108,6 +110,7 @@ router.get(
         include: {
           swaps: { include: swapInclude },
           failedSwaps: true,
+          failedBoosts: true,
           affiliates: {
             select: {
               account: true,
@@ -277,6 +280,14 @@ router.get(
       failedAt: failedSwap?.failedAt,
       failedBlockIndex: failedSwap?.failedBlockIndex ?? undefined,
       depositChannelAffiliateBrokers: affiliateBrokers,
+      depositChannelMaxBoostFeeBps: swapDepositChannel?.maxBoostFeeBps,
+      failedBoosts:
+        swapDepositChannel?.failedBoosts.map((failedBoost) => ({
+          failedAtTimestamp: failedBoost.failedAtTimestamp,
+          failedAtBlockIndex: failedBoost.failedAtBlockIndex,
+          amount: failedBoost.amount.toFixed(),
+        })) ?? [],
+      effectiveBoostFeeBps: swap?.effectiveBoostFeeBps,
     };
 
     logger.info('sending response for swap request', { id, response });
