@@ -53,6 +53,7 @@ exports[`swapEgressScheduled updates an existing swap when the egress amount is 
   "depositReceivedBlockIndex": "20-0",
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "Dot",
+  "effectiveBoostFeeBps": null,
   "egress": {
     "amount": "0",
     "chain": "Ethereum",
@@ -94,6 +95,7 @@ exports[`swapEgressScheduled updates an existing swap when the egress asset is t
   "depositReceivedBlockIndex": "20-0",
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "Dot",
+  "effectiveBoostFeeBps": null,
   "egress": {
     "amount": "9992170633",
     "chain": "Ethereum",

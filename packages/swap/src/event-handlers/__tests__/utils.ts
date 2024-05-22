@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { InternalAssets, Chain, Chains } from '@/shared/enums';
+import { actionSchema } from '@/shared/parsers';
 import prisma, { SwapDepositChannel } from '../../client';
 import { DepositIgnoredArgs } from '../depositIgnored';
 import { events } from '../index';
@@ -7,7 +8,6 @@ import { networkBroadcastSuccessArgs } from '../networkBroadcastSuccess';
 import { SwapAmountTooLowEvent } from '../swapAmountTooLow';
 import { SwapExecutedEvent } from '../swapExecuted';
 import { SwapScheduledEvent } from '../swapScheduled';
-import { actionSchema } from '../v120/networkDepositReceived';
 
 export const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
 export const DOT_ADDRESS = '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo'; // 0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972

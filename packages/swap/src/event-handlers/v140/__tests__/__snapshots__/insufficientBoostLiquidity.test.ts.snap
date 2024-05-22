@@ -5,7 +5,7 @@ exports[`insufficientBoostLiquidity creates a failed boost record linked to the 
   {
     "amount": "1000000",
     "id": 1,
-    "swapDepositChannelId": 1n,
+    "swapDepositChannelId": Any<BigInt>,
   },
 ]
 `;
