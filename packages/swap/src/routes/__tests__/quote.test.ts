@@ -113,7 +113,9 @@ describe('server', () => {
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE private."QuoteResult" CASCADE`;
     server = app.listen(0);
-    jest.mocked(Quoter.prototype.canQuote).mockReturnValue(false);
+    jest
+      .mocked(Quoter.prototype.getQuotingState)
+      .mockResolvedValue({ quotingActive: false, pairEnabled: false });
     mockRpcs({ ingressFee: '2000000', egressFee: '50000' });
   });
 
@@ -132,7 +134,9 @@ describe('server', () => {
 
     describe('with market makers', () => {
       it('returns the market maker quotes', async () => {
-        jest.mocked(Quoter.prototype.canQuote).mockReturnValueOnce(true);
+        jest
+          .mocked(Quoter.prototype.getQuotingState)
+          .mockResolvedValueOnce({ pairEnabled: true, quotingActive: true });
 
         const params = new URLSearchParams({
           srcChain: 'Ethereum',
@@ -167,7 +171,9 @@ describe('server', () => {
       });
 
       it('saves a quote result', async () => {
-        jest.mocked(Quoter.prototype.canQuote).mockReturnValueOnce(true);
+        jest
+          .mocked(Quoter.prototype.getQuotingState)
+          .mockResolvedValueOnce({ pairEnabled: true, quotingActive: true });
 
         const params = new URLSearchParams({
           srcChain: 'Ethereum',
@@ -212,7 +218,9 @@ describe('server', () => {
       });
 
       it('returns pool quote if market maker quote is too low', async () => {
-        jest.mocked(Quoter.prototype.canQuote).mockReturnValueOnce(true);
+        jest
+          .mocked(Quoter.prototype.getQuotingState)
+          .mockResolvedValueOnce({ pairEnabled: true, quotingActive: true });
 
         const params = new URLSearchParams({
           srcChain: 'Ethereum',
@@ -247,7 +255,9 @@ describe('server', () => {
       });
 
       it('returns the pool quote', async () => {
-        jest.mocked(Quoter.prototype.canQuote).mockReturnValueOnce(true);
+        jest
+          .mocked(Quoter.prototype.getQuotingState)
+          .mockResolvedValueOnce({ pairEnabled: true, quotingActive: true });
 
         const params = new URLSearchParams({
           srcChain: 'Ethereum',
@@ -282,7 +292,9 @@ describe('server', () => {
       });
 
       it('returns the pool quote if the quoter rejects', async () => {
-        jest.mocked(Quoter.prototype.canQuote).mockReturnValueOnce(true);
+        jest
+          .mocked(Quoter.prototype.getQuotingState)
+          .mockResolvedValueOnce({ pairEnabled: true, quotingActive: true });
 
         const params = new URLSearchParams({
           srcChain: 'Ethereum',
@@ -306,7 +318,9 @@ describe('server', () => {
       });
 
       it('rejects if both reject (400)', async () => {
-        jest.mocked(Quoter.prototype.canQuote).mockReturnValueOnce(true);
+        jest
+          .mocked(Quoter.prototype.getQuotingState)
+          .mockResolvedValueOnce({ pairEnabled: true, quotingActive: true });
 
         const params = new URLSearchParams({
           srcChain: 'Ethereum',
@@ -329,7 +343,9 @@ describe('server', () => {
       });
 
       it('rejects if both reject (500)', async () => {
-        jest.mocked(Quoter.prototype.canQuote).mockReturnValueOnce(true);
+        jest
+          .mocked(Quoter.prototype.getQuotingState)
+          .mockResolvedValueOnce({ pairEnabled: true, quotingActive: true });
 
         const params = new URLSearchParams({
           srcChain: 'Ethereum',
@@ -352,7 +368,9 @@ describe('server', () => {
       });
 
       it('rejects if both reject (500, <v1.4.0)', async () => {
-        jest.mocked(Quoter.prototype.canQuote).mockReturnValueOnce(true);
+        jest
+          .mocked(Quoter.prototype.getQuotingState)
+          .mockResolvedValueOnce({ pairEnabled: true, quotingActive: true });
         jest.mocked(isAfterSpecVersion).mockResolvedValueOnce(false);
 
         const params = new URLSearchParams({

@@ -348,3 +348,13 @@ model BlockedAddress {
 
   @@schema("private")
 }
+
+model QuotingPair {
+  id      Int           @id @default(autoincrement())
+  from    InternalAsset
+  to      InternalAsset
+  enabled Boolean       @default(true)
+
+  @@unique([from, to])
+  @@schema("private")
+}

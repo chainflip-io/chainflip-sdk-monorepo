@@ -55,7 +55,7 @@ export class CacheMap<K, V> {
 }
 
 export class AsyncCacheMap<K, V> extends CacheMap<K, Promise<V>> {
-  fetch;
+  private readonly fetch;
 
   constructor({
     fetch,
