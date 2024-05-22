@@ -11,6 +11,7 @@ exports[`depositFinalised should update the values for an existing ccm gas swap 
   "depositReceivedBlockIndex": "0-15",
   "destAddress": "0x6fd76a7699e6269af49e9c63f01f61464ab21d1c",
   "destAsset": "Eth",
+  "effectiveBoostFeeBps": null,
   "egressId": null,
   "fees": [
     {
@@ -47,6 +48,7 @@ exports[`depositFinalised should update the values for an existing ccm principal
   "depositReceivedBlockIndex": "0-15",
   "destAddress": "0x6fd76a7699e6269af49e9c63f01f61464ab21d1c",
   "destAsset": "Eth",
+  "effectiveBoostFeeBps": null,
   "egressId": null,
   "fees": [
     {
@@ -83,6 +85,7 @@ exports[`depositFinalised should update the values for an existing swap 1`] = `
   "depositReceivedBlockIndex": "0-15",
   "destAddress": "0x6fd76a7699e6269af49e9c63f01f61464ab21d1c",
   "destAsset": "Eth",
+  "effectiveBoostFeeBps": null,
   "egressId": null,
   "fees": [
     {

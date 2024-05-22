@@ -59,6 +59,10 @@ describe('insufficientBoostLiquidity', () => {
       include: { failedBoosts: true },
     });
     expect(channel.failedBoosts).toHaveLength(1);
-    expect(channel.failedBoosts).toMatchSnapshot();
+    expect(channel.failedBoosts).toMatchSnapshot([
+      {
+        swapDepositChannelId: expect.any(BigInt),
+      },
+    ]);
   });
 });

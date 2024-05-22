@@ -67,6 +67,7 @@ exports[`swapScheduled deposit channel origin stores a new swap with a broker co
   "depositReceivedBlockIndex": "100-0",
   "destAddress": "bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa",
   "destAsset": "Btc",
+  "effectiveBoostFeeBps": null,
   "egressId": null,
   "fees": [
     {
@@ -103,6 +104,7 @@ exports[`swapScheduled deposit channel origin stores a new swap with a broker fe
   "depositReceivedBlockIndex": "100-0",
   "destAddress": "bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa",
   "destAsset": "Btc",
+  "effectiveBoostFeeBps": null,
   "egressId": null,
   "fees": [
     {
@@ -139,6 +141,7 @@ exports[`swapScheduled smart contract origin stores a new swap from a contract d
   "depositReceivedBlockIndex": "100-0",
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "Dot",
+  "effectiveBoostFeeBps": null,
   "egressId": null,
   "fees": [],
   "id": Any<BigInt>,
