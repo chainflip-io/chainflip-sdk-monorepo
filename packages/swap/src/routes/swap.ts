@@ -232,7 +232,7 @@ router.get(
     if (swapDepositChannel && swapDepositChannel.maxBoostFeeBps > 0) {
       if (swap) {
         boosted = isNotNull(swap.effectiveBoostFeeBps);
-      } else if (swapDepositChannel && swapDepositChannel.failedBoosts.length > 0) {
+      } else if (swapDepositChannel.failedBoosts.length > 0) {
         boosted = false;
       }
     }
