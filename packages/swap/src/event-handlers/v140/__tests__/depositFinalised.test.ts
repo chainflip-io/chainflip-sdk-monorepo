@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import prisma from '../../../client';
-import { actionSchema } from '../../v120/networkDepositReceived';
 import { depositFinalised, depositFinalisedArgs } from '../depositFinalised';
 
 export const depositFinalisedBtcMock = (action?: z.input<typeof actionSchema>) =>
