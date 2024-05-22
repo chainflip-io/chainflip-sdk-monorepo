@@ -133,3 +133,20 @@ export const accountId = z
     string.regex(/^[a-f\d]$/i).transform<`0x${string}`>((value) => `0x${value}`),
   ])
   .transform((value) => encodeAddress(value, chainflipSS58Prefix) as `cF${string}`);
+
+export const actionSchema = z.union([
+  z.object({ __kind: z.literal('Swap'), swapId: u128 }),
+  z.object({ __kind: z.literal('LiquidityProvision'), lpAccount: hexString }),
+  z.object({
+    __kind: z.literal('CcmTransfer'),
+    principalSwapId: u128.nullable().optional(),
+    gasSwapId: u128.nullable().optional(),
+  }),
+  z.object({
+    __kind: z.literal('NoAction'),
+  }),
+  z.object({
+    __kind: z.literal('BoostersCredited'),
+    prewitnessedDepositId: u128,
+  }),
+]);

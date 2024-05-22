@@ -21,7 +21,9 @@ import swapExecuted from './swapExecuted';
 import swapScheduled from './swapScheduled';
 import { networkDepositReceived as networkDepositReceivedV120 } from './v120/networkDepositReceived';
 import { boostPoolCreated } from './v140/boostPoolCreated';
+import { depositBoosted } from './v140/depositBoosted';
 import { depositFinalised } from './v140/depositFinalised';
+import { insufficientBoostLiquidity } from './v140/insufficientBoostLiquidity';
 import type { Block, Event } from '../gql/generated/graphql';
 import { buildHandlerMap, getDispatcher } from '../utils/handlers';
 
@@ -50,6 +52,8 @@ export const events = {
     DepositFinalised: 'BitcoinIngressEgress.DepositFinalised',
     DepositIgnored: 'BitcoinIngressEgress.DepositIgnored',
     BoostPoolCreated: 'BitcoinIngressEgress.BoostPoolCreated',
+    DepositBoosted: 'BitcoinIngressEgress.DepositBoosted',
+    InsufficientBoostLiquidity: 'BitcoinIngressEgress.InsufficientBoostLiquidity',
   },
   BitcoinBroadcaster: {
     BroadcastSuccess: 'BitcoinBroadcaster.BroadcastSuccess',
@@ -63,6 +67,8 @@ export const events = {
     DepositFinalised: 'EthereumIngressEgress.DepositFinalised',
     DepositIgnored: 'EthereumIngressEgress.DepositIgnored',
     BoostPoolCreated: 'EthereumIngressEgress.BoostPoolCreated',
+    DepositBoosted: 'EthereumIngressEgress.DepositBoosted',
+    InsufficientBoostLiquidity: 'EthereumIngressEgress.InsufficientBoostLiquidity',
   },
   ArbitrumIngressEgress: {
     EgressScheduled: 'ArbitrumIngressEgress.EgressScheduled',
@@ -72,6 +78,8 @@ export const events = {
     DepositFinalised: 'ArbitrumIngressEgress.DepositFinalised',
     DepositIgnored: 'ArbitrumIngressEgress.DepositIgnored',
     BoostPoolCreated: 'ArbitrumIngressEgress.BoostPoolCreated',
+    DepositBoosted: 'ArbitrumIngressEgress.DepositBoosted',
+    InsufficientBoostLiquidity: 'ArbitrumIngressEgress.InsufficientBoostLiquidity',
   },
   EthereumBroadcaster: {
     BroadcastSuccess: 'EthereumBroadcaster.BroadcastSuccess',
@@ -89,6 +97,8 @@ export const events = {
     DepositFinalised: 'PolkadotIngressEgress.DepositFinalised',
     DepositIgnored: 'PolkadotIngressEgress.DepositIgnored',
     BoostPoolCreated: 'PolkadotIngressEgress.BoostPoolCreated',
+    DepositBoosted: 'PolkadotIngressEgress.DepositBoosted',
+    InsufficientBoostLiquidity: 'PolkadotIngressEgress.InsufficientBoostLiquidity',
   },
   PolkadotBroadcaster: {
     BroadcastSuccess: 'PolkadotBroadcaster.BroadcastSuccess',
@@ -211,6 +221,15 @@ const handlers = [
       {
         name: events[`${chain}IngressEgress`].BoostPoolCreated,
         handler: boostPoolCreated,
+      },
+      {
+        name: events[`${chain}IngressEgress`].DepositBoosted,
+        handler: depositBoosted,
+      },
+
+      {
+        name: events[`${chain}IngressEgress`].InsufficientBoostLiquidity,
+        handler: insufficientBoostLiquidity,
       },
     ]),
   },

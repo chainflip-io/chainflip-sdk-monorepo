@@ -76,6 +76,7 @@ model SwapDepositChannel {
   openedThroughBackend  Boolean                       @default(false)
   openingFeePaid        Decimal                       @db.Decimal(30, 0)
   affiliates            SwapDepositChannelAffiliate[]
+  failedBoosts          FailedBoost[]
 
   @@unique([issuedBlock, srcChain, channelId])
   @@index([depositAddress])
@@ -129,6 +130,7 @@ model Swap {
   ignoredEgress                IgnoredEgress?
   createdAt                    DateTime            @default(now())
   updatedAt                    DateTime            @default(now()) @updatedAt
+  effectiveBoostFeeBps         Int?
 
   @@schema("public")
 }
@@ -176,6 +178,16 @@ model FailedSwap {
   txHash               String?
   failedAt             DateTime
   failedBlockIndex     String
+
+  @@index([swapDepositChannelId])
+  @@schema("public")
+}
+
+model FailedBoost {
+  id                   Int                 @id @default(autoincrement())
+  swapDepositChannel   SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId BigInt?
+  amount               Decimal             @db.Decimal(30, 0)
 
   @@index([swapDepositChannelId])
   @@schema("public")

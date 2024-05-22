@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`insufficientBoostLiquidity creates a failed boost record linked to the swap deposit channel 1`] = `
+[
+  {
+    "amount": "1000000",
+    "id": 1,
+    "swapDepositChannelId": 1n,
+  },
+]
+`;
