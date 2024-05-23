@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`depositReceived should not change swap if there is a newer deposit channel 1`] = `
+exports[`depositBoosted does nothing when the action is not a swap 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "createdAt": Any<Date>,
-  "depositAmount": "100000",
+  "depositAmount": "1000000",
   "depositReceivedAt": 2022-12-06T14:31:39.000Z,
   "depositReceivedBlockIndex": "0-15",
   "destAddress": "0x6fd76a7699e6269af49e9c63f01f61464ab21d1c",
@@ -21,7 +21,7 @@ exports[`depositReceived should not change swap if there is a newer deposit chan
   "swapDepositChannelId": Any<BigInt>,
   "swapExecutedAt": null,
   "swapExecutedBlockIndex": null,
-  "swapInputAmount": "100000",
+  "swapInputAmount": "1000000",
   "swapOutputAmount": null,
   "txHash": null,
   "type": "SWAP",
@@ -29,22 +29,29 @@ exports[`depositReceived should not change swap if there is a newer deposit chan
 }
 `;
 
-exports[`depositReceived should update the values for an existing swap 1`] = `
+exports[`depositBoosted updates the values for an existing swap 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "createdAt": Any<Date>,
-  "depositAmount": "110000",
+  "depositAmount": "1000000",
   "depositReceivedAt": 2022-12-06T14:31:39.000Z,
   "depositReceivedBlockIndex": "0-15",
   "destAddress": "0x6fd76a7699e6269af49e9c63f01f61464ab21d1c",
   "destAsset": "Eth",
-  "effectiveBoostFeeBps": null,
+  "effectiveBoostFeeBps": 5,
   "egressId": null,
   "fees": [
     {
-      "amount": "10000",
+      "amount": "500",
+      "asset": "Btc",
+      "id": Any<BigInt>,
+      "swapId": Any<BigInt>,
+      "type": "BOOST",
+    },
+    {
+      "amount": "1000",
       "asset": "Btc",
       "id": Any<BigInt>,
       "swapId": Any<BigInt>,
@@ -58,7 +65,7 @@ exports[`depositReceived should update the values for an existing swap 1`] = `
   "swapDepositChannelId": Any<BigInt>,
   "swapExecutedAt": null,
   "swapExecutedBlockIndex": null,
-  "swapInputAmount": "100000",
+  "swapInputAmount": "1000000",
   "swapOutputAmount": null,
   "txHash": null,
   "type": "SWAP",

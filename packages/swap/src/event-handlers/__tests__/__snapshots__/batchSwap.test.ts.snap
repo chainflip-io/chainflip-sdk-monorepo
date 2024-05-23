@@ -94,6 +94,7 @@ exports[`batch swap flow handles all the events: swap 1`] = `
   "depositReceivedBlockIndex": "1-20",
   "destAddress": "mp3QSoPN2iLKrEhdz9Qb9DSJQAuNwDDa77",
   "destAsset": "Btc",
+  "effectiveBoostFeeBps": null,
   "egressId": Any<BigInt>,
   "id": Any<BigInt>,
   "intermediateAmount": "990109107",

@@ -77,6 +77,7 @@ describe(processBlocks, () => {
         "depositReceivedBlockIndex": "150-0",
         "destAddress": "bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa",
         "destAsset": "Btc",
+        "effectiveBoostFeeBps": null,
         "egressId": null,
         "id": Any<BigInt>,
         "intermediateAmount": null,

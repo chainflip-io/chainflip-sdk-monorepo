@@ -15,6 +15,7 @@ import prisma, {
   IgnoredEgress,
   FailedSwapReason,
   SwapDepositChannelAffiliate,
+  FailedBoost,
 } from '../client';
 import openSwapDepositChannel from '../handlers/openSwapDepositChannel';
 import { getPendingBroadcast, getPendingDeposit } from '../ingress-egress-tracking';
@@ -44,12 +45,14 @@ type SwapWithAdditionalInfo = Swap & {
       })
     | null;
   ignoredEgress: IgnoredEgress | null;
+  swapDepositChannel: (SwapDepositChannel & { failedBoosts: FailedBoost[] }) | null;
 };
 
 const swapInclude = {
   egress: { include: { broadcast: true } },
   fees: true,
   ignoredEgress: true,
+  swapDepositChannel: { include: { failedBoosts: true } },
 } as const;
 
 const failedSwapMessage: Record<FailedSwapReason, string> = {
@@ -86,6 +89,7 @@ router.get(
       | (SwapDepositChannel & {
           swaps: SwapWithAdditionalInfo[];
           failedSwaps: FailedSwap[];
+          failedBoosts: FailedBoost[];
           affiliates: Pick<SwapDepositChannelAffiliate, 'account' | 'commissionBps'>[];
         })
       | null
@@ -108,6 +112,7 @@ router.get(
         include: {
           swaps: { include: swapInclude },
           failedSwaps: true,
+          failedBoosts: true,
           affiliates: {
             select: {
               account: true,
@@ -224,6 +229,17 @@ router.get(
       };
     }
 
+    let effectiveBoostFeeBps;
+    const channel = swapDepositChannel || swap?.swapDepositChannel;
+
+    if (channel && channel.maxBoostFeeBps > 0) {
+      if (swap) {
+        effectiveBoostFeeBps = swap.effectiveBoostFeeBps;
+      } else if (channel.failedBoosts.length > 0) {
+        effectiveBoostFeeBps = 0;
+      }
+    }
+
     const response = {
       state,
       type: swap?.type,
@@ -277,6 +293,8 @@ router.get(
       failedAt: failedSwap?.failedAt,
       failedBlockIndex: failedSwap?.failedBlockIndex ?? undefined,
       depositChannelAffiliateBrokers: affiliateBrokers,
+      depositChannelMaxBoostFeeBps: channel?.maxBoostFeeBps,
+      effectiveBoostFeeBps,
     };
 
     logger.info('sending response for swap request', { id, response });

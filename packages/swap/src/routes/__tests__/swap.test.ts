@@ -101,6 +101,7 @@ describe('server', () => {
           "depositChannelBrokerCommissionBps": 0,
           "depositChannelCreatedAt": 1690556052834,
           "depositChannelExpiryBlock": "200",
+          "depositChannelMaxBoostFeeBps": 0,
           "depositChannelOpenedThroughBackend": false,
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
@@ -133,6 +134,7 @@ describe('server', () => {
           "depositChannelBrokerCommissionBps": 15,
           "depositChannelCreatedAt": 1690556052834,
           "depositChannelExpiryBlock": "200",
+          "depositChannelMaxBoostFeeBps": 0,
           "depositChannelOpenedThroughBackend": false,
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
@@ -170,6 +172,7 @@ describe('server', () => {
           "depositChannelBrokerCommissionBps": 0,
           "depositChannelCreatedAt": 1690556052834,
           "depositChannelExpiryBlock": "200",
+          "depositChannelMaxBoostFeeBps": 0,
           "depositChannelOpenedThroughBackend": false,
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
@@ -201,6 +204,7 @@ describe('server', () => {
           "depositChannelBrokerCommissionBps": 0,
           "depositChannelCreatedAt": 1690556052834,
           "depositChannelExpiryBlock": "1",
+          "depositChannelMaxBoostFeeBps": 0,
           "depositChannelOpenedThroughBackend": false,
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
@@ -247,6 +251,7 @@ describe('server', () => {
           "depositChannelBrokerCommissionBps": 0,
           "depositChannelCreatedAt": 1690556052834,
           "depositChannelExpiryBlock": "200",
+          "depositChannelMaxBoostFeeBps": 0,
           "depositChannelOpenedThroughBackend": false,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
@@ -313,6 +318,7 @@ describe('server', () => {
           "depositChannelBrokerCommissionBps": 0,
           "depositChannelCreatedAt": 1690556052834,
           "depositChannelExpiryBlock": "200",
+          "depositChannelMaxBoostFeeBps": 0,
           "depositChannelOpenedThroughBackend": false,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
@@ -403,6 +409,7 @@ describe('server', () => {
           "depositChannelBrokerCommissionBps": 0,
           "depositChannelCreatedAt": 1690556052834,
           "depositChannelExpiryBlock": "200",
+          "depositChannelMaxBoostFeeBps": 0,
           "depositChannelOpenedThroughBackend": false,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
@@ -509,6 +516,7 @@ describe('server', () => {
           "depositChannelBrokerCommissionBps": 0,
           "depositChannelCreatedAt": 1690556052834,
           "depositChannelExpiryBlock": "200",
+          "depositChannelMaxBoostFeeBps": 0,
           "depositChannelOpenedThroughBackend": false,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
@@ -611,6 +619,7 @@ describe('server', () => {
           "depositChannelBrokerCommissionBps": 0,
           "depositChannelCreatedAt": 1690556052834,
           "depositChannelExpiryBlock": "200",
+          "depositChannelMaxBoostFeeBps": 0,
           "depositChannelOpenedThroughBackend": false,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
@@ -717,6 +726,7 @@ describe('server', () => {
           "depositChannelBrokerCommissionBps": 0,
           "depositChannelCreatedAt": 1690556052834,
           "depositChannelExpiryBlock": "200",
+          "depositChannelMaxBoostFeeBps": 0,
           "depositChannelOpenedThroughBackend": false,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
@@ -823,6 +833,7 @@ describe('server', () => {
           "depositChannelBrokerCommissionBps": 0,
           "depositChannelCreatedAt": 1690556052834,
           "depositChannelExpiryBlock": "200",
+          "depositChannelMaxBoostFeeBps": 0,
           "depositChannelOpenedThroughBackend": false,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
@@ -1245,6 +1256,69 @@ describe('server', () => {
           commissionBps: 100,
         },
       ]);
+    });
+
+    it('retrieves boost details when swap was boosted', async () => {
+      const swapIntent = await createDepositChannel({
+        maxBoostFeeBps: 30,
+      });
+
+      const swap = await prisma.swap.create({
+        data: {
+          nativeId,
+          srcAsset: InternalAssets.Btc,
+          destAsset: InternalAssets.Eth,
+          destAddress: ETH_ADDRESS,
+          depositAmount: '10',
+          swapInputAmount: '10',
+          depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
+          depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+          type: 'SWAP',
+          ccmDepositReceivedBlockIndex: '223-16',
+          ccmGasBudget: '100',
+          ccmMessage: '0x12abf87',
+          effectiveBoostFeeBps: 5,
+          swapDepositChannelId: swapIntent.channelId,
+        },
+      });
+
+      const { status, body } = await request(server).get(`/swaps/${swap.nativeId}`);
+
+      expect(status).toBe(200);
+      expect(body.effectiveBoostFeeBps).toBe(5);
+      expect(body.depositChannelMaxBoostFeeBps).toBe(30);
+    });
+
+    it.only('does not retrieve effectiveBoostFeeBps when a channel is not boostable', async () => {
+      const swapIntent = await createDepositChannel({
+        maxBoostFeeBps: 0, // signaling that we don't want a boost to occur on this channel
+      });
+
+      await prisma.swap.create({
+        data: {
+          nativeId,
+          srcAsset: InternalAssets.Btc,
+          destAsset: InternalAssets.Eth,
+          destAddress: ETH_ADDRESS,
+          depositAmount: '10',
+          swapInputAmount: '10',
+          depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
+          depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+          type: 'SWAP',
+          ccmDepositReceivedBlockIndex: '223-16',
+          ccmGasBudget: '100',
+          ccmMessage: '0x12abf87',
+          effectiveBoostFeeBps: 5,
+          swapDepositChannelId: swapIntent.channelId,
+        },
+      });
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
+
+      const { status, body } = await request(server).get(`/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+      expect(body.effectiveBoostFeeBps).toBeUndefined();
+      expect(body.depositChannelMaxBoostFeeBps).toBe(0);
     });
   });
 
