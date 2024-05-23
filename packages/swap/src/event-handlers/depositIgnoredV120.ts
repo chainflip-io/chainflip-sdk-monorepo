@@ -6,6 +6,7 @@ import { assetConstants, InternalAsset } from '@/shared/enums';
 import { internalAssetEnum, DOT_PREFIX, hexString, rustEnum, u128 } from '@/shared/parsers';
 import env from '../config/env';
 import type { EventHandlerArgs } from './index';
+import logger from '../utils/logger';
 
 const reasonSchema = rustEnum(['BelowMinimumDeposit', 'NotEnoughToPayFees']);
 
@@ -55,13 +56,18 @@ export const depositIgnored =
   async ({ prisma, event, block }: EventHandlerArgs) => {
     const { amount, depositAddress, reason, asset } = depositIgnoredArgs.parse(event.args);
 
-    const channel = await prisma.swapDepositChannel.findFirstOrThrow({
+    const channel = await prisma.swapDepositChannel.findFirst({
       where: {
         srcChain: chain,
         depositAddress,
       },
       orderBy: { issuedBlock: 'desc' },
     });
+
+    if (!channel) {
+      logger.warn('deposit ignored for unknown channel', { depositAddress, chain });
+      return;
+    }
 
     await prisma.failedSwap.create({
       data: {
