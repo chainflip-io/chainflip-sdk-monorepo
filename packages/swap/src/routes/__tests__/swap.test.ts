@@ -1294,7 +1294,7 @@ describe('server', () => {
         maxBoostFeeBps: 0, // signaling that we don't want a boost to occur on this channel
       });
 
-      const swap = await prisma.swap.create({
+      await prisma.swap.create({
         data: {
           nativeId,
           srcAsset: InternalAssets.Btc,
