@@ -54,9 +54,9 @@
     "pnpm": ">=9"
   },
   "dependencies": {
+    "@chainflip/utils": "^0.1.2",
     "@polkadot/types": "^11.0.2",
     "@polkadot/util": "^12.6.2",
-    "@polkadot/util-crypto": "^12.6.2",
     "@prisma/client": "^5.13.0",
     "axios": "^1.6.8",
     "bignumber.js": "^9.1.2",

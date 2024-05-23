@@ -19,6 +19,3 @@ updates:
       types:
         patterns:
           - '@types/*'
-      polkadot:
-        patterns:
-          - '@polkadot*'
