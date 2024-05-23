@@ -62,7 +62,7 @@ describe(depositIgnoredV120, () => {
       destAddress: DOT_ADDRESS,
     });
 
-    prisma.swapDepositChannel.findFirstOrThrow = jest.fn().mockResolvedValueOnce(channel);
+    prisma.swapDepositChannel.findFirst = jest.fn().mockResolvedValueOnce(channel);
     prisma.failedSwap.create = jest.fn();
 
     await depositIgnoredV120('Ethereum')({
@@ -71,8 +71,8 @@ describe(depositIgnoredV120, () => {
       event: ethDepositIgnoredMock.eventContext.event as any,
     });
 
-    expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenCalledTimes(1);
-    expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenNthCalledWith(1, {
+    expect(prisma.swapDepositChannel.findFirst).toHaveBeenCalledTimes(1);
+    expect(prisma.swapDepositChannel.findFirst).toHaveBeenNthCalledWith(1, {
       where: {
         srcChain: 'Ethereum',
         depositAddress: ETH_ADDRESS,
@@ -105,7 +105,7 @@ describe(depositIgnoredV120, () => {
       destAddress: ETH_ADDRESS,
     });
 
-    prisma.swapDepositChannel.findFirstOrThrow = jest.fn().mockResolvedValueOnce(channel);
+    prisma.swapDepositChannel.findFirst = jest.fn().mockResolvedValueOnce(channel);
     prisma.failedSwap.create = jest.fn();
 
     await depositIgnoredV120('Polkadot')({
@@ -114,8 +114,8 @@ describe(depositIgnoredV120, () => {
       event: dotDepositIgnoredMock.eventContext.event as any,
     });
 
-    expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenCalledTimes(1);
-    expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenNthCalledWith(1, {
+    expect(prisma.swapDepositChannel.findFirst).toHaveBeenCalledTimes(1);
+    expect(prisma.swapDepositChannel.findFirst).toHaveBeenNthCalledWith(1, {
       where: {
         srcChain: 'Polkadot',
         depositAddress: DOT_ADDRESS,
@@ -148,7 +148,7 @@ describe(depositIgnoredV120, () => {
       destAddress: ETH_ADDRESS,
     });
 
-    prisma.swapDepositChannel.findFirstOrThrow = jest.fn().mockResolvedValueOnce(channel);
+    prisma.swapDepositChannel.findFirst = jest.fn().mockResolvedValueOnce(channel);
     prisma.failedSwap.create = jest.fn();
 
     await depositIgnoredV120('Bitcoin')({
@@ -157,8 +157,8 @@ describe(depositIgnoredV120, () => {
       event: btcDepositIgnoredMock.eventContext.event as any,
     });
 
-    expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenCalledTimes(1);
-    expect(prisma.swapDepositChannel.findFirstOrThrow).toHaveBeenNthCalledWith(1, {
+    expect(prisma.swapDepositChannel.findFirst).toHaveBeenCalledTimes(1);
+    expect(prisma.swapDepositChannel.findFirst).toHaveBeenNthCalledWith(1, {
       where: {
         srcChain: 'Bitcoin',
         depositAddress: BTC_ADDRESS,
