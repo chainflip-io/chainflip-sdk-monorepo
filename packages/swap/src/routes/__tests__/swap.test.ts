@@ -1289,7 +1289,7 @@ describe('server', () => {
       expect(body.depositChannelMaxBoostFeeBps).toBe(30);
     });
 
-    it.only('does not retrieve effectiveBoostFeeBps when a channel is not boostable', async () => {
+    it('does not retrieve effectiveBoostFeeBps when a channel is not boostable', async () => {
       const swapIntent = await createDepositChannel({
         maxBoostFeeBps: 0, // signaling that we don't want a boost to occur on this channel
       });
