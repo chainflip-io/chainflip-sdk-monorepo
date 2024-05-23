@@ -5,8 +5,8 @@ import { encodeAddress as encodeBitcoinAddress } from '@/shared/bitcoin';
 import { assetConstants, InternalAsset } from '@/shared/enums';
 import { internalAssetEnum, DOT_PREFIX, hexString, rustEnum, u128 } from '@/shared/parsers';
 import env from '../config/env';
-import type { EventHandlerArgs } from './index';
 import logger from '../utils/logger';
+import type { EventHandlerArgs } from './index';
 
 const reasonSchema = rustEnum(['BelowMinimumDeposit', 'NotEnoughToPayFees']);
 
