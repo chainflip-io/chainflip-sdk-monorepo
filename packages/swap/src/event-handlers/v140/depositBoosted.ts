@@ -14,13 +14,13 @@ export const depositBoostedSchema = z.object({
   // prewitnessedDepositId: u128,
 });
 
-// DepositBoosted event is emitted instead of NetworkDepositReceived event in v140 due to boost
-// We need to update the depositAmount and store the ingress fee just like we do in the NetworkDepositReceived event
+// DepositBoosted event is emitted instead of DepositReceived event in v140 due to boost
+// We need to update the depositAmount and store the ingress fee just like we do in the DepositReceived event
 export const depositBoosted = async ({ prisma, event }: EventHandlerArgs) => {
   const { asset, boostFee, action, ingressFee, amounts } = depositBoostedSchema.parse(event.args);
 
   if (action.__kind === 'Swap') {
-    const depositAmount = amounts.reduce((acc, [_, amount]) => acc + amount, BigInt(0));
+    const depositAmount = amounts.reduce((acc, [, amount]) => acc + amount, BigInt(0));
     const effectiveBoostFeeBps = (boostFee * BigInt(ONE_IN_PIP)) / BigInt(depositAmount.toString());
 
     await prisma.swap.update({
