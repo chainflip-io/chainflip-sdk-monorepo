@@ -2,7 +2,6 @@ import assert from 'assert';
 import express from 'express';
 import { Chain, assetConstants } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
-import { isNotNull } from '@/shared/guards';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { screamingSnakeToPascalCase, toUpperCase } from '@/shared/strings';
 import { asyncHandler, maintenanceMode } from './common';
@@ -228,12 +227,12 @@ router.get(
       };
     }
 
-    let boosted;
+    let effectiveBoostFeeBps;
     if (swapDepositChannel && swapDepositChannel.maxBoostFeeBps > 0) {
       if (swap) {
-        boosted = isNotNull(swap.effectiveBoostFeeBps);
+        effectiveBoostFeeBps = swap.effectiveBoostFeeBps;
       } else if (swapDepositChannel.failedBoosts.length > 0) {
-        boosted = false;
+        effectiveBoostFeeBps = 0;
       }
     }
 
@@ -291,8 +290,7 @@ router.get(
       failedBlockIndex: failedSwap?.failedBlockIndex ?? undefined,
       depositChannelAffiliateBrokers: affiliateBrokers,
       depositChannelMaxBoostFeeBps: swapDepositChannel?.maxBoostFeeBps,
-      effectiveBoostFeeBps: swap?.effectiveBoostFeeBps,
-      boosted,
+      effectiveBoostFeeBps,
     };
 
     logger.info('sending response for swap request', { id, response });
