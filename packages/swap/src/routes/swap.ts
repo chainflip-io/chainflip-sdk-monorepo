@@ -45,12 +45,14 @@ type SwapWithAdditionalInfo = Swap & {
       })
     | null;
   ignoredEgress: IgnoredEgress | null;
+  swapDepositChannel: (SwapDepositChannel & { failedBoosts: FailedBoost[] }) | null;
 };
 
 const swapInclude = {
   egress: { include: { broadcast: true } },
   fees: true,
   ignoredEgress: true,
+  swapDepositChannel: { include: { failedBoosts: true } },
 } as const;
 
 const failedSwapMessage: Record<FailedSwapReason, string> = {
@@ -228,10 +230,12 @@ router.get(
     }
 
     let effectiveBoostFeeBps;
-    if (swapDepositChannel && swapDepositChannel.maxBoostFeeBps > 0) {
+    const channel = swapDepositChannel || swap?.swapDepositChannel;
+
+    if (channel && channel.maxBoostFeeBps > 0) {
       if (swap) {
         effectiveBoostFeeBps = swap.effectiveBoostFeeBps;
-      } else if (swapDepositChannel.failedBoosts.length > 0) {
+      } else if (channel.failedBoosts.length > 0) {
         effectiveBoostFeeBps = 0;
       }
     }
@@ -289,7 +293,7 @@ router.get(
       failedAt: failedSwap?.failedAt,
       failedBlockIndex: failedSwap?.failedBlockIndex ?? undefined,
       depositChannelAffiliateBrokers: affiliateBrokers,
-      depositChannelMaxBoostFeeBps: swapDepositChannel?.maxBoostFeeBps,
+      depositChannelMaxBoostFeeBps: channel?.maxBoostFeeBps,
       effectiveBoostFeeBps,
     };
 

@@ -258,7 +258,6 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "effectiveBoostFeeBps": null,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "feesPaid": [],
@@ -326,7 +325,6 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "effectiveBoostFeeBps": null,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "feesPaid": [
@@ -418,7 +416,6 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "effectiveBoostFeeBps": null,
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
@@ -526,7 +523,6 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "effectiveBoostFeeBps": null,
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
@@ -630,7 +626,6 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "effectiveBoostFeeBps": null,
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
@@ -738,7 +733,6 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "effectiveBoostFeeBps": null,
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
@@ -846,7 +840,6 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "effectiveBoostFeeBps": null,
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
@@ -1129,7 +1122,6 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "effectiveBoostFeeBps": null,
           "feesPaid": [
             {
               "amount": "10",
@@ -1201,7 +1193,6 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
-          "effectiveBoostFeeBps": null,
           "feesPaid": [
             {
               "amount": "10",
@@ -1265,6 +1256,69 @@ describe('server', () => {
           commissionBps: 100,
         },
       ]);
+    });
+
+    it('retrieves boost details when swap was boosted', async () => {
+      const swapIntent = await createDepositChannel({
+        maxBoostFeeBps: 30,
+      });
+
+      const swap = await prisma.swap.create({
+        data: {
+          nativeId,
+          srcAsset: InternalAssets.Btc,
+          destAsset: InternalAssets.Eth,
+          destAddress: ETH_ADDRESS,
+          depositAmount: '10',
+          swapInputAmount: '10',
+          depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
+          depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+          type: 'SWAP',
+          ccmDepositReceivedBlockIndex: '223-16',
+          ccmGasBudget: '100',
+          ccmMessage: '0x12abf87',
+          effectiveBoostFeeBps: 5,
+          swapDepositChannelId: swapIntent.channelId,
+        },
+      });
+
+      const { status, body } = await request(server).get(`/swaps/${swap.nativeId}`);
+
+      expect(status).toBe(200);
+      expect(body.effectiveBoostFeeBps).toBe(5);
+      expect(body.depositChannelMaxBoostFeeBps).toBe(30);
+    });
+
+    it.only('does not retrieve effectiveBoostFeeBps when a channel is not boostable', async () => {
+      const swapIntent = await createDepositChannel({
+        maxBoostFeeBps: 0, // signaling that we don't want a boost to occur on this channel
+      });
+
+      const swap = await prisma.swap.create({
+        data: {
+          nativeId,
+          srcAsset: InternalAssets.Btc,
+          destAsset: InternalAssets.Eth,
+          destAddress: ETH_ADDRESS,
+          depositAmount: '10',
+          swapInputAmount: '10',
+          depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
+          depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+          type: 'SWAP',
+          ccmDepositReceivedBlockIndex: '223-16',
+          ccmGasBudget: '100',
+          ccmMessage: '0x12abf87',
+          effectiveBoostFeeBps: 5,
+          swapDepositChannelId: swapIntent.channelId,
+        },
+      });
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
+
+      const { status, body } = await request(server).get(`/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+      expect(body.effectiveBoostFeeBps).toBeUndefined();
+      expect(body.depositChannelMaxBoostFeeBps).toBe(0);
     });
   });
 
