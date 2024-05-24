@@ -1,10 +1,6 @@
 {
   "parser": "@typescript-eslint/parser",
-  "extends": [
-    "airbnb-base",
-    "plugin:@typescript-eslint/recommended",
-    "prettier"
-  ],
+  "extends": ["airbnb-base", "plugin:@typescript-eslint/recommended", "prettier"],
   "plugins": ["@typescript-eslint"],
   "env": { "jest": true },
   "parserOptions": { "sourceType": "module", "ecmaVersion": "latest" },
@@ -40,12 +36,7 @@
           { "pattern": "react", "group": "external", "position": "before" },
           { "pattern": "next/**", "group": "external", "position": "before" }
         ],
-        "groups": [
-          ["external", "builtin"],
-          "internal",
-          ["sibling", "parent"],
-          "index"
-        ],
+        "groups": [["external", "builtin"], "internal", ["sibling", "parent"], "index"],
         "pathGroupsExcludedImportTypes": ["internal"],
         "alphabetize": { "order": "asc", "caseInsensitive": true }
       }
@@ -75,10 +66,13 @@
   "overrides": [
     {
       "files": ["**/*.test.ts"],
+      "plugins": ["jest"],
       "rules": {
         "@typescript-eslint/no-explicit-any": "off",
         "class-methods-use-this": "off",
-        "import/no-extraneous-dependencies": "off"
+        "import/no-extraneous-dependencies": "off",
+        "jest/no-disabled-tests": "error",
+        "jest/no-focused-tests": "error"
       }
     }
   ]
