@@ -1278,7 +1278,7 @@ describe('server', () => {
           ccmGasBudget: '100',
           ccmMessage: '0x12abf87',
           effectiveBoostFeeBps: 5,
-          swapDepositChannelId: swapIntent.channelId,
+          swapDepositChannelId: swapIntent.id,
         },
       });
 
@@ -1309,7 +1309,7 @@ describe('server', () => {
           ccmGasBudget: '100',
           ccmMessage: '0x12abf87',
           effectiveBoostFeeBps: 5,
-          swapDepositChannelId: swapIntent.channelId,
+          swapDepositChannelId: swapIntent.id,
         },
       });
       const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
