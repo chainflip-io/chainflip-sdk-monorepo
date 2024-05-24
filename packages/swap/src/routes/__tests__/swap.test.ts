@@ -1278,7 +1278,7 @@ describe('server', () => {
           ccmGasBudget: '100',
           ccmMessage: '0x12abf87',
           effectiveBoostFeeBps: 5,
-          swapDepositChannelId: swapIntent.channelId,
+          swapDepositChannelId: swapIntent.id,
         },
       });
 
@@ -1289,7 +1289,7 @@ describe('server', () => {
       expect(body.depositChannelMaxBoostFeeBps).toBe(30);
     });
 
-    it.only('does not retrieve effectiveBoostFeeBps when a channel is not boostable', async () => {
+    it('does not retrieve effectiveBoostFeeBps when a channel is not boostable', async () => {
       const swapIntent = await createDepositChannel({
         maxBoostFeeBps: 0, // signaling that we don't want a boost to occur on this channel
       });
@@ -1309,7 +1309,7 @@ describe('server', () => {
           ccmGasBudget: '100',
           ccmMessage: '0x12abf87',
           effectiveBoostFeeBps: 5,
-          swapDepositChannelId: swapIntent.channelId,
+          swapDepositChannelId: swapIntent.id,
         },
       });
       const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
