@@ -1,5 +1,5 @@
-import { u8aToHex } from '@polkadot/util';
-import { decodeAddress } from '@polkadot/util-crypto';
+import { bytesToHex } from '@chainflip/utils/bytes';
+import * as ss58 from '@chainflip/utils/ss58';
 import {
   BTC_ADDRESS,
   DOT_ADDRESS,
@@ -24,7 +24,7 @@ const dotDepositIgnoredMock = buildDepositIgnoredEvent(
   {
     asset: { __kind: 'Dot' },
     amount: '1000000000',
-    depositAddress: u8aToHex(decodeAddress(DOT_ADDRESS)),
+    depositAddress: bytesToHex(ss58.decode(DOT_ADDRESS).data),
     reason: { __kind: 'NotEnoughToPayFees' },
   },
   events.PolkadotIngressEgress.DepositIgnored,

@@ -1,5 +1,5 @@
-import { hexToU8a, u8aToHex } from '@polkadot/util';
-import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
+import * as ss58 from '@chainflip/utils/ss58';
+import { HexString } from '@chainflip/utils/types';
 import * as ethers from 'ethers';
 import { z, ZodErrorMap } from 'zod';
 import {
@@ -67,11 +67,10 @@ export const dotAddress = z
   .transform((arg) => {
     try {
       if (arg.startsWith('0x')) {
-        return encodeAddress(hexToU8a(arg), DOT_PREFIX);
+        return ss58.encode({ data: arg as HexString, ss58Format: DOT_PREFIX });
       }
       // if substrate encoded, then decode and re-encode to dot format
-      const hex = u8aToHex(decodeAddress(arg));
-      return encodeAddress(hex, DOT_PREFIX);
+      return ss58.encode({ data: ss58.decode(arg).data, ss58Format: DOT_PREFIX });
     } catch {
       return null;
     }
@@ -86,7 +85,7 @@ export const ethereumAddress = hexString.refine(
 );
 
 export const chainflipAddress = string.refine(
-  (address) => address.startsWith('cF') && decodeAddress(address),
+  (address) => address.startsWith('cF') && ss58.decode(address),
   (address) => ({ message: `${address} is not a valid chainflip address` }),
 );
 
@@ -132,7 +131,9 @@ export const accountId = z
     hexString, //
     string.regex(/^[a-f\d]$/i).transform<`0x${string}`>((value) => `0x${value}`),
   ])
-  .transform((value) => encodeAddress(value, chainflipSS58Prefix) as `cF${string}`);
+  .transform(
+    (value) => ss58.encode({ data: value, ss58Format: chainflipSS58Prefix }) as `cF${string}`,
+  );
 
 export const actionSchema = z.union([
   z.object({ __kind: z.literal('Swap'), swapId: u128 }),

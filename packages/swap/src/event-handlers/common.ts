@@ -1,4 +1,6 @@
+// @ts-expect-error should still work
 import { Metadata, TypeRegistry } from '@polkadot/types';
+// @ts-expect-error should still work
 import { BN } from '@polkadot/util';
 import assert from 'assert';
 import { z } from 'zod';

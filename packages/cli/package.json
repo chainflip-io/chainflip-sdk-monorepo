@@ -42,10 +42,9 @@
     "bech32-buffer": "^0.2.1"
   },
   "peerDependencies": {
+    "@chainflip/utils": "^0.1.2",
     "axios": "^1.x",
-    "ethers": "^6.x",
-    "@polkadot/util-crypto": "^12.x",
-    "@polkadot/util": "^12.x"
+    "ethers": "^6.x"
   },
   "repository": "https://github.com/chainflip-io/chainflip-sdk-monorepo.git",
   "publishConfig": {

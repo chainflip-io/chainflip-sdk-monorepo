@@ -1,5 +1,5 @@
-import { u8aToHex } from '@polkadot/util';
-import { decodeAddress } from '@polkadot/util-crypto';
+import { bytesToHex } from '@chainflip/utils/bytes';
+import * as ss58 from '@chainflip/utils/ss58';
 import axios from 'axios';
 import { z } from 'zod';
 import { Chain, ChainflipNetwork, Asset, Chains } from './enums';
@@ -46,7 +46,7 @@ const submitAddress = (chain: Chain, address: string): string => {
   if (chain === Chains.Polkadot) {
     return address.startsWith('0x')
       ? z.string().length(66).parse(address) // we only accept 32 byte dot addresses
-      : u8aToHex(decodeAddress(address));
+      : bytesToHex(ss58.decode(address).data);
   }
   return address;
 };

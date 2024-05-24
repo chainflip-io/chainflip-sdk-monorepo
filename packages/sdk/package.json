@@ -51,8 +51,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@polkadot/util": "^12.6.2",
-    "@polkadot/util-crypto": "^12.6.2",
+    "@chainflip/utils": "^0.1.2",
     "axios": "^1.6.8",
     "ethers": "^6.11.1"
   },

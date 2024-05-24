@@ -23,7 +23,7 @@ const pathsToModuleNameMapper = (pathMap) =>
       // go up to the root of the monorepo
       if (prefix.includes('packages')) prefix = path.join(prefix, '..', '..');
 
-      const regexKey = `^${key.replace(/\*$/, '(.*)')}$`;
+      const regexKey = `^${key.replace(/\*$/, '(.*?)(\\.js)?')}$`;
       const remappedPath = path.join(prefix, paths[0].replace(/\*$/, '$1'));
       return [regexKey, remappedPath];
     }),

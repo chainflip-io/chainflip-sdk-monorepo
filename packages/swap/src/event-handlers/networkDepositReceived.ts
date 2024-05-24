@@ -1,5 +1,7 @@
 import { type Chain } from '.prisma/client';
-import { encodeAddress } from '@polkadot/util-crypto';
+import * as ss58 from '@chainflip/utils/ss58';
+
+import { HexString } from '@chainflip/utils/types';
 import { z } from 'zod';
 import { encodeAddress as encodeBitcoinAddress } from '@/shared/bitcoin';
 import { u128, internalAssetEnum, hexString, DOT_PREFIX } from '@/shared/parsers';
@@ -37,7 +39,10 @@ export const depositReceivedArgs = z
     if (args.asset === 'Dot') {
       return {
         ...args,
-        depositAddress: encodeAddress(args.depositAddress, DOT_PREFIX),
+        depositAddress: ss58.encode({
+          data: args.depositAddress as HexString,
+          ss58Format: DOT_PREFIX,
+        }),
       };
     }
 

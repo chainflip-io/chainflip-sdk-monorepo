@@ -9,7 +9,7 @@
     "prettier:write": "pnpm prettier:base --write",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "build": "tsc -p tsconfig.cjs.json && tsc -p tsconfig.mjs.json",
+    "build": "tsc",
     "build:abis": "typechain --target=ethers-v6 --out-dir=./src/abis ./abis/**",
     "test": "jest",
     "test:ci": "CI=1 pnpm test -- --forceExit"
@@ -18,8 +18,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@polkadot/util": "^12.6.2",
-    "@polkadot/util-crypto": "^12.6.2",
+    "@chainflip/utils": "^0.1.2",
     "axios": "^1.6.8",
     "bech32-buffer": "^0.2.1",
     "ethers": "^6.11.1",

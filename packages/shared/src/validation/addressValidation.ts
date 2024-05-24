@@ -1,5 +1,5 @@
-import { isHex, u8aToHex } from '@polkadot/util';
-import { base58Decode, decodeAddress, encodeAddress } from '@polkadot/util-crypto';
+import * as base58 from '@chainflip/utils/base58';
+import * as ss58 from '@chainflip/utils/ss58';
 import * as ethers from 'ethers';
 import { isValidSegwitAddress } from '../bitcoin';
 import { Chain, ChainflipNetwork } from '../enums';
@@ -9,12 +9,7 @@ export type AddressValidator = (address: string) => boolean;
 
 export const validatePolkadotAddress: AddressValidator = (address) => {
   try {
-    const bytes = decodeAddress(address);
-    if (isHex(address)) {
-      const pubkey = u8aToHex(bytes);
-      if (pubkey.length !== 66) return false; // we only support 32 byte dot addresses (from dan)
-    }
-    encodeAddress(bytes);
+    ss58.decode(address);
     return true;
   } catch {
     return false;
@@ -35,7 +30,7 @@ const assertArraylikeEqual = <T>(a: ArrayLike<T>, b: ArrayLike<T>) => {
 const validateP2PKHOrP2SHAddress = (address: string, network: BitcoinNetwork) => {
   try {
     // The address must be a valid base58 encoded string.
-    const decoded = base58Decode(address);
+    const decoded = new Uint8Array(base58.decode(address));
 
     // Decoding it must result in exactly 25 bytes.
     assert(decoded.length === 25, 'decoded address must be 25 bytes long');

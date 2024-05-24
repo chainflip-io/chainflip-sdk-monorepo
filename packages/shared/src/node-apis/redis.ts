@@ -1,11 +1,12 @@
-import { decodeAddress } from '@polkadot/util-crypto';
+import * as ss58 from '@chainflip/utils/ss58';
 import Redis from 'ioredis';
 import { z } from 'zod';
 import { sorter } from '../arrays';
 import { type Asset, type Chain } from '../enums';
 import { number, u128, string, uncheckedAssetAndChain, hexString } from '../parsers';
 
-const ss58ToHex = (address: string) => `0x${Buffer.from(decodeAddress(address)).toString('hex')}`;
+const ss58ToHex = (address: string) =>
+  `0x${Buffer.from(ss58.decode(address).data).toString('hex')}`;
 
 const jsonString = string.transform((value) => JSON.parse(value));
 
