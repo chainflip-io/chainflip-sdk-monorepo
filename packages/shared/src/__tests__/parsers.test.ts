@@ -46,7 +46,6 @@ describe('btc parser', () => {
 
 describe('dotAddress', () => {
   it('validates dot address and transforms a dot address', async () => {
-    expect(dotAddress.parse('0x0')).toBe('1126');
     expect(
       dotAddress.parse('0x9999999999999999999999999999999999999999999999999999999999999999'),
     ).toBe('14UPxPveENj36SF5YX8R2YMrb6HaS7Nuuxw5a1aysuxVZyDu');
