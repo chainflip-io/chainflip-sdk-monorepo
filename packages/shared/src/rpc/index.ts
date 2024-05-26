@@ -1,5 +1,8 @@
 import { HttpClient, RpcMethod, RpcParams, RpcResult, constants } from '@chainflip/rpc';
-import { ChainflipNetwork } from '../enums';
+import axios from 'axios';
+import z from 'zod';
+import { BaseAssetAndChain, ChainflipNetwork } from '../enums';
+import { u128 } from '../parsers';
 
 type CamelCase<T> = T extends string
   ? T extends `${infer F}_${infer R}`
@@ -70,3 +73,49 @@ export const getBlockHash = createRequest('chain_getBlockHash');
 export const getAllBoostPoolsDepth = createRequest('cf_boost_pools_depth');
 
 export type BoostPoolsDepth = Awaited<ReturnType<typeof getAllBoostPoolsDepth>>;
+
+export const getPoolOrders = async (
+  rpcConfig: RpcConfig,
+  baseAsset: BaseAssetAndChain,
+  quoteAsset: { chain: 'Ethereum'; asset: 'USDC' },
+  lp: null,
+  hash: string,
+) => {
+  const url =
+    'network' in rpcConfig ? constants.PUBLIC_RPC_ENDPOINTS[rpcConfig.network] : rpcConfig.rpcUrl;
+  const { data } = await axios.post(
+    url,
+    {
+      id: '1',
+      jsonrpc: '2.0',
+      method: 'cf_pool_orders',
+      params: [baseAsset, quoteAsset, lp, hash],
+    },
+    {
+      transformResponse: (d) => d,
+    },
+  );
+
+  return z.string().parse(data);
+};
+
+export const getPoolPriceV2 = async (
+  rpcConfig: RpcConfig,
+  baseAsset: BaseAssetAndChain,
+  quoteAsset: { chain: 'Ethereum'; asset: 'USDC' },
+  hash: string,
+) => {
+  const url =
+    'network' in rpcConfig ? constants.PUBLIC_RPC_ENDPOINTS[rpcConfig.network] : rpcConfig.rpcUrl;
+  const { data } = await axios.post(url, {
+    id: '1',
+    jsonrpc: '2.0',
+    method: 'cf_pool_price_v2',
+    params: [baseAsset, quoteAsset, hash],
+  });
+
+  return z
+    .object({ range_order: u128 })
+    .transform(({ range_order }) => ({ rangeOrder: range_order }))
+    .parse(data);
+};
