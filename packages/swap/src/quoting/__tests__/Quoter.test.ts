@@ -25,8 +25,6 @@ jest.mock('../../utils/statechain', () => ({
 
 jest.mock('../../pricing');
 
-jest.mock('../PoolStateCache');
-
 function toAtomicUnits(amount: number, asset: InternalAsset, output?: 'string'): string;
 function toAtomicUnits(amount: number, asset: InternalAsset, output: 'bigint'): bigint;
 function toAtomicUnits(amount: number, asset: InternalAsset, output: string | bigint = 'string') {

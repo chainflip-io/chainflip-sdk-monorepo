@@ -1,17 +1,14 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import * as url from 'url';
 /*
  * For a detailed explanation regarding each configuration property, visit:
  * https://jestjs.io/docs/configuration
  */
 const tsconfig = JSON.parse(
-  (
-    await fs.readFile(
-      path.join(path.dirname(url.fileURLToPath(import.meta.url)), 'tsconfig.json'),
-      'utf8',
-    )
-  ).replace(/\/\*.*\*\//g, ''),
+  (await fs.readFile(path.join(import.meta.dirname, 'tsconfig.json'), 'utf8')).replace(
+    /\/\*.*\*\//g,
+    '',
+  ),
 );
 
 const pathsToModuleNameMapper = (pathMap) =>

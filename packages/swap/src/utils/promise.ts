@@ -1,15 +1,3 @@
-export const deferredPromise = <T>() => {
-  let resolve: (value: T) => void;
-  let reject: (error: Error) => void;
-
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  return { promise, resolve: resolve!, reject: reject! };
-};
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AsyncFn = (...args: any[]) => Promise<any>;
 

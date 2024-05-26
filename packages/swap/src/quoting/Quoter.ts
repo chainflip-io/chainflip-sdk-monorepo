@@ -2,14 +2,12 @@ import BigNumber from 'bignumber.js';
 import { randomUUID } from 'crypto';
 import { Subject, Subscription, filter } from 'rxjs';
 import { Server } from 'socket.io';
-import { swap, type SwapInput } from '@/amm-addon';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
 import { InternalAsset, assetConstants } from '@/shared/enums';
 import { getHundredthPipAmountFromAmount } from '@/shared/functions';
 import { SwapFee } from '@/shared/schemas';
 import { QuotingSocket } from './authenticate';
 import Leg from './Leg';
-import PoolStateCache from './PoolStateCache';
 import {
   Leg as MarketMakerLeg,
   MarketMakerQuote,
@@ -41,12 +39,6 @@ export type QuoteType = 'pool' | 'market_maker';
 
 type Quote = { marketMaker: string; quote: MarketMakerQuote };
 
-const simulateSwap = async (input: SwapInput) => {
-  const { swappedAmount } = await swap(input);
-
-  return swappedAmount;
-};
-
 export const approximateIntermediateOutput = async (asset: InternalAsset, amount: string) => {
   const price = await getAssetPrice(asset);
 
@@ -69,15 +61,11 @@ export const differenceExceedsThreshold = (
 export default class Quoter {
   private readonly quotes$ = new Subject<Quote>();
 
-  private poolStateCache = new PoolStateCache();
-
   constructor(
     private readonly io: Server,
     private createId: () => string = randomUUID,
   ) {
     io.on('connection', (socket: QuotingSocket) => {
-      this.poolStateCache.start();
-
       logger.info(`market maker "${socket.data.marketMaker}" connected`);
 
       const cleanup = handleExit(() => {
@@ -163,33 +151,15 @@ export default class Quoter {
 
     const quoteRequest: MarketMakerQuoteRequest = { request_id: requestId, legs: requestLegs };
 
-    const [quotes, firstPoolState, secondPoolState] = await Promise.all([
-      this.collectMakerQuotes(quoteRequest),
-      this.poolStateCache.getPoolState(leg1.getBaseAsset()),
-      leg2 && this.poolStateCache.getPoolState(leg2.getBaseAsset()),
-    ]);
+    const quotes = await this.collectMakerQuotes(quoteRequest);
 
     if (quotes.length === 0) throw new Error('no quotes received');
 
-    const results = [
-      simulateSwap(
-        leg1.toSwapInput({
-          limitOrders: quotes.flatMap(({ legs }) => legs[0]),
-          ...firstPoolState,
-        }),
-      ),
-    ] as [Promise<bigint>] | [Promise<bigint>, Promise<bigint> | null];
+    // todo: use quotes to get price from pool
 
-    results[1] = leg2
-      ? simulateSwap(
-          leg2.toSwapInput({
-            limitOrders: quotes.flatMap(({ legs }) => legs[1]!),
-            ...secondPoolState,
-          }),
-        )
-      : null;
+    // return Promise.all(results);
 
-    return Promise.all(results);
+    throw new Error('unimplemented');
   }
 
   async getQuote(

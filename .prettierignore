@@ -4,4 +4,3 @@ coverage
 node_modules
 packages/swap/src/gql/generated/*
 **/abis/**/*.ts
-packages/amm-addon

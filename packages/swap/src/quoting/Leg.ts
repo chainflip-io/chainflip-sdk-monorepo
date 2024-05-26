@@ -1,5 +1,4 @@
 import assert from 'assert';
-import { Side, type SwapInput } from '@/amm-addon';
 import { InternalAsset, getAssetAndChain } from '@/shared/enums';
 import { Leg as MarketMakerLeg } from './schemas';
 import { SwapRateArgs } from '../utils/statechain';
@@ -55,26 +54,6 @@ export default class Leg {
       quote_asset: getAssetAndChain('Usdc'),
       amount: this.amount.toString(),
       side,
-    };
-  }
-
-  toSwapInput({
-    poolState,
-    limitOrders: inputLimitOrders,
-    rangeOrderPrice,
-  }: {
-    poolState?: string | null;
-    rangeOrderPrice?: bigint;
-    limitOrders: [number, bigint][];
-  }): SwapInput {
-    const limitOrders = inputLimitOrders.map(([tick, amount]) => ({ tick, amount }));
-
-    return {
-      side: this.getSide() === 'BUY' ? Side.Buy : Side.Sell,
-      limitOrders,
-      amount: this.amount,
-      poolState: poolState ?? undefined,
-      rangeOrderPrice,
     };
   }
 }

@@ -1,4 +1,3 @@
-import { Side } from '@/amm-addon';
 import Leg from '../Leg';
 
 describe(Leg, () => {
@@ -54,36 +53,6 @@ describe(Leg, () => {
         quote_asset: { asset: 'USDC', chain: 'Ethereum' },
         amount: '100',
         side: 'SELL',
-      });
-    });
-  });
-
-  describe(Leg.prototype.toSwapInput, () => {
-    it('returns the leg formatted for the swap input (BUY)', () => {
-      const leg = Leg.of('Usdc', 'Dot', 100n);
-
-      expect(
-        leg.toSwapInput({
-          limitOrders: [[0, 100n]],
-          poolState: 'hello state',
-          rangeOrderPrice: 100n,
-        }),
-      ).toEqual({
-        side: Side.Buy,
-        amount: 100n,
-        limitOrders: [{ tick: 0, amount: 100n }],
-        poolState: 'hello state',
-        rangeOrderPrice: 100n,
-      });
-    });
-
-    it('returns the leg formatted for the swap input (SELL)', () => {
-      const leg = Leg.of('Dot', 'Usdc', 100n);
-
-      expect(leg.toSwapInput({ limitOrders: [] })).toEqual({
-        side: Side.Sell,
-        amount: 100n,
-        limitOrders: [],
       });
     });
   });
