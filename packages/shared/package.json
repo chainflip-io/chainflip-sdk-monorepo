@@ -18,7 +18,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@chainflip/rpc": "file:/Users/andrew/code/chainflip-product-toolkit/packages/rpc",
+    "@chainflip/rpc": "^1.4.0",
     "@chainflip/utils": "^0.1.5",
     "axios": "^1.6.8",
     "bech32-buffer": "^0.2.1",

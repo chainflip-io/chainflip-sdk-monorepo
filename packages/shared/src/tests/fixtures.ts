@@ -1,4 +1,3 @@
-import { AssetAndChain } from '@chainflip/rpc/parsers';
 import {
   CfBoostPoolsDepthResponse,
   CfEnvironmentResponse,
@@ -10,6 +9,7 @@ import {
 } from '@chainflip/rpc/types';
 import {
   Asset,
+  AssetAndChain,
   assetConstants,
   AssetOfChain,
   Chain,

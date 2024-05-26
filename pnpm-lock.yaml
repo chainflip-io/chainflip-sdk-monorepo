@@ -154,8 +154,8 @@ importers:
   packages/sdk:
     dependencies:
       '@chainflip/rpc':
-        specifier: file:/Users/andrew/code/chainflip-product-toolkit/packages/rpc
-        version: file:../chainflip-product-toolkit/packages/rpc
+        specifier: ^1.4.0
+        version: 1.4.0
       '@chainflip/utils':
         specifier: ^0.1.5
         version: 0.1.5
@@ -173,8 +173,8 @@ importers:
   packages/shared:
     dependencies:
       '@chainflip/rpc':
-        specifier: file:/Users/andrew/code/chainflip-product-toolkit/packages/rpc
-        version: file:../chainflip-product-toolkit/packages/rpc
+        specifier: ^1.4.0
+        version: 1.4.0
       '@chainflip/utils':
         specifier: ^0.1.5
         version: 0.1.5
@@ -222,8 +222,8 @@ importers:
   packages/swap:
     dependencies:
       '@chainflip/rpc':
-        specifier: file:/Users/andrew/code/chainflip-product-toolkit/packages/rpc
-        version: file:../chainflip-product-toolkit/packages/rpc
+        specifier: ^1.4.0
+        version: 1.4.0
       '@chainflip/utils':
         specifier: ^0.1.5
         version: 0.1.5
@@ -741,8 +741,8 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@chainflip/rpc@file:../chainflip-product-toolkit/packages/rpc':
-    resolution: {directory: ../chainflip-product-toolkit/packages/rpc, type: directory}
+  '@chainflip/rpc@1.4.0':
+    resolution: {integrity: sha512-VSiEIdayfdsT+MEcy1fkRLhQZiOlP3sZ7Pzh2sxNYZdlHncUJoc5Md6CIDDysZpwwhuY3G0nDfIALjIxxXJVqg==}
 
   '@chainflip/utils@0.1.5':
     resolution: {integrity: sha512-k3YxNjQnyube95N1tFKcfzVASYtiE53iIYcPmz9G/db+dKdxU39TTaHT40pjnpYedPqh8CBiA5ltiBR+Zap5yw==}
@@ -5978,7 +5978,7 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@chainflip/rpc@file:../chainflip-product-toolkit/packages/rpc':
+  '@chainflip/rpc@1.4.0':
     dependencies:
       '@chainflip/utils': 0.1.5
       zod: 3.23.8
