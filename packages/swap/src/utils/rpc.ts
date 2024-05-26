@@ -25,7 +25,9 @@ export const getMinimumEgressAmount = async (asset: InternalAsset): Promise<bigi
 export const getWitnessSafetyMargin = async (chain: Chain): Promise<bigint | null> => {
   const environment = await cachedGetEnvironment(rpcConfig);
 
-  return environment.ingressEgress.witnessSafetyMargins[chain];
+  const result = environment.ingressEgress.witnessSafetyMargins[chain];
+
+  return result !== null ? BigInt(result) : null;
 };
 
 export const getIngressFee = async (asset: InternalAsset): Promise<bigint | null> => {
