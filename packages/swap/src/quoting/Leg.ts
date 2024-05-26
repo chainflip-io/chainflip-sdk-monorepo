@@ -1,7 +1,6 @@
 import assert from 'assert';
 import { InternalAsset, getAssetAndChain } from '@/shared/enums';
 import { Leg as MarketMakerLeg } from './schemas';
-import { SwapRateArgs } from '../utils/statechain';
 
 export default class Leg {
   static of(srcAsset: InternalAsset, destAsset: InternalAsset, amount: bigint): Leg;
@@ -19,14 +18,6 @@ export default class Leg {
     public amount: bigint,
   ) {}
 
-  toPoolJSON(): SwapRateArgs {
-    return {
-      amount: this.amount,
-      srcAsset: this.srcAsset,
-      destAsset: this.destAsset,
-    };
-  }
-
   private getSide(): 'BUY' | 'SELL' {
     return this.destAsset !== 'Usdc' ? 'BUY' : 'SELL';
   }
@@ -39,7 +30,7 @@ export default class Leg {
     throw new Error('one of the assets must be Usdc');
   }
 
-  toMarketMakerJSON(): MarketMakerLeg {
+  toJSON(): MarketMakerLeg {
     const side = this.getSide();
     let baseAsset: Exclude<InternalAsset, 'Usdc'>;
 

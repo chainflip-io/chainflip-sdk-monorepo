@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { BaseAssetAndChain } from '@/shared/enums';
-import { numericString, unsignedInteger } from '@/shared/parsers';
-import { QuoteType } from './Quoter';
+import { numericString } from '@/shared/parsers';
 
 const limitOrder = z.tuple([z.number(), numericString.transform((n) => BigInt(n))]);
 
@@ -25,18 +24,5 @@ export type Leg = {
 
 export type MarketMakerQuoteRequest = {
   request_id: string;
-  legs: [Leg] | [Leg, Leg];
+  legs: readonly [Leg] | readonly [Leg, Leg];
 };
-
-export const swapRateResponseSchema = z
-  .object({
-    intermediary: unsignedInteger.nullable(),
-    output: unsignedInteger,
-  })
-  .transform((rate) => ({
-    intermediateAmount: rate.intermediary ?? null,
-    outputAmount: rate.output,
-    quoteType: 'broker' as QuoteType,
-  }));
-
-export type BrokerQuote = z.infer<typeof swapRateResponseSchema>;
