@@ -1,13 +1,10 @@
-import axios from 'axios';
 import { VoidSigner } from 'ethers';
 import { Assets, Chain, ChainflipNetworks, Chains, InternalAssets } from '@/shared/enums';
-import { environment, supportedAssets } from '@/shared/tests/fixtures';
+import { environment, mockRpcResponse, supportedAssets } from '@/shared/tests/fixtures';
 import { approveVault, executeSwap } from '@/shared/vault';
 import { SwapSDK } from '../sdk';
 import { getQuote, getStatus } from '../services/ApiService';
 import { QuoteRequest } from '../types';
-
-jest.mock('axios');
 
 jest.mock('@/shared/vault', () => ({
   executeSwap: jest.fn(),
@@ -32,7 +29,7 @@ describe(SwapSDK, () => {
   const signer = new VoidSigner('0x0');
   const sdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
 
-  const defaultAxiosMock = (url: string, data: any) => {
+  const defaultRpcMocks = (url: string, data: any) => {
     if (data.method === 'cf_environment') {
       return Promise.resolve({
         data: environment({ maxSwapAmount: '0x1000000000000000' }),
@@ -49,19 +46,19 @@ describe(SwapSDK, () => {
   };
 
   beforeEach(() => {
-    jest.mocked(axios.post).mockImplementation(defaultAxiosMock);
+    mockRpcResponse(defaultRpcMocks);
   });
 
   describe(SwapSDK.prototype.getChains, () => {
     it('returns the chains based on the cf_supported_assets rpc', async () => {
-      jest.mocked(axios.post).mockImplementation((url, data: any) => {
+      mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_supported_assets') {
           return Promise.resolve({
             data: supportedAssets({ assets: ['Btc', 'ArbUsdc'] }),
           });
         }
 
-        return defaultAxiosMock(url, data);
+        return defaultRpcMocks(url, data);
       });
 
       const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
@@ -80,21 +77,21 @@ describe(SwapSDK, () => {
       'returns the correct values for %s',
       async (network) => {
         const networkSdk = new SwapSDK({ network });
-        await expect(await networkSdk.getChains()).toMatchSnapshot();
+        expect(await networkSdk.getChains()).toMatchSnapshot();
       },
     );
   });
 
   describe(SwapSDK.prototype.getAssets, () => {
     it('returns the assets based on the cf_supported_assets rpc', async () => {
-      jest.mocked(axios.post).mockImplementation((url, data: any) => {
+      mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_supported_assets') {
           return Promise.resolve({
             data: supportedAssets({ assets: ['Btc', 'ArbUsdc'] }),
           });
         }
 
-        return defaultAxiosMock(url, data);
+        return defaultRpcMocks(url, data);
       });
 
       const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
@@ -285,21 +282,24 @@ describe(SwapSDK, () => {
     });
 
     it('calls the configured broker api', async () => {
-      const postSpy = jest.mocked(axios.post).mockImplementation((url, data: any) => {
+      const postSpy = mockRpcResponse((url, data: any) => {
         if (data.method === 'broker_requestSwapDepositAddress') {
           return Promise.resolve({
             data: {
+              id: '1',
+              jsonrpc: '2.0',
               result: {
                 address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
                 issued_block: 123,
                 channel_id: 15,
-                source_chain_expiry_block: '1234',
+                source_chain_expiry_block: '0x04d2',
+                channel_opening_fee: '0x0',
               },
             },
           });
         }
 
-        return defaultAxiosMock(url, data);
+        return defaultRpcMocks(url, data);
       });
 
       const result = await new SwapSDK({
@@ -314,7 +314,7 @@ describe(SwapSDK, () => {
       });
 
       expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
-        id: 1,
+        id: '1',
         jsonrpc: '2.0',
         method: 'broker_requestSwapDepositAddress',
         params: [
@@ -322,8 +322,9 @@ describe(SwapSDK, () => {
           { asset: 'FLIP', chain: 'Ethereum' },
           '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
           15,
-          undefined,
-          undefined,
+          null,
+          null,
+          null,
         ],
       });
       expect(result).toStrictEqual({
@@ -345,21 +346,24 @@ describe(SwapSDK, () => {
     });
 
     it('calls the configured broker api with the given broker commission', async () => {
-      const postSpy = jest.mocked(axios.post).mockImplementation((url, data: any) => {
+      const postSpy = mockRpcResponse((url, data: any) => {
         if (data.method === 'broker_requestSwapDepositAddress') {
           return Promise.resolve({
             data: {
+              id: '1',
+              jsonrpc: '2.0',
               result: {
                 address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
                 issued_block: 123,
                 channel_id: 15,
-                source_chain_expiry_block: '1234',
+                source_chain_expiry_block: '0x04d2',
+                channel_opening_fee: '0x0',
               },
             },
           });
         }
 
-        return defaultAxiosMock(url, data);
+        return defaultRpcMocks(url, data);
       });
 
       const result = await new SwapSDK({
@@ -375,7 +379,7 @@ describe(SwapSDK, () => {
       });
 
       expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
-        id: 1,
+        id: '1',
         jsonrpc: '2.0',
         method: 'broker_requestSwapDepositAddress',
         params: [
@@ -383,8 +387,9 @@ describe(SwapSDK, () => {
           { asset: 'FLIP', chain: 'Ethereum' },
           '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
           125,
-          undefined,
-          undefined,
+          null,
+          null,
+          null,
         ],
       });
       expect(result).toStrictEqual({
@@ -406,21 +411,24 @@ describe(SwapSDK, () => {
     });
 
     it('calls the configured broker api with the given affiliate brokers', async () => {
-      const postSpy = jest.mocked(axios.post).mockImplementation((url, data: any) => {
+      const postSpy = mockRpcResponse((url, data: any) => {
         if (data.method === 'broker_requestSwapDepositAddress') {
           return Promise.resolve({
             data: {
+              id: '1',
+              jsonrpc: '2.0',
               result: {
                 address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
                 issued_block: 123,
                 channel_id: 15,
-                source_chain_expiry_block: '1234',
+                source_chain_expiry_block: '0x04d2',
+                channel_opening_fee: '0x0',
               },
             },
           });
         }
 
-        return defaultAxiosMock(url, data);
+        return defaultRpcMocks(url, data);
       });
 
       const result = await new SwapSDK({
@@ -438,7 +446,7 @@ describe(SwapSDK, () => {
       });
 
       expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
-        id: 1,
+        id: '1',
         jsonrpc: '2.0',
         method: 'broker_requestSwapDepositAddress',
         params: [
@@ -446,8 +454,8 @@ describe(SwapSDK, () => {
           { asset: 'FLIP', chain: 'Ethereum' },
           '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
           15,
-          undefined,
-          undefined,
+          null,
+          null,
           [{ account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', bps: 10 }],
         ],
       });
@@ -473,21 +481,24 @@ describe(SwapSDK, () => {
   });
 
   it('allows defining boost fee when opening a deposit channel', async () => {
-    const postSpy = jest.mocked(axios.post).mockImplementation((url, data: any) => {
+    const postSpy = mockRpcResponse((url, data: any) => {
       if (data.method === 'broker_requestSwapDepositAddress') {
         return Promise.resolve({
           data: {
+            id: '1',
+            jsonrpc: '2.0',
             result: {
               address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
               issued_block: 123,
               channel_id: 15,
-              source_chain_expiry_block: '1234',
+              source_chain_expiry_block: '0x04d2',
+              channel_opening_fee: '0x0',
             },
           },
         });
       }
 
-      return defaultAxiosMock(url, data);
+      return defaultRpcMocks(url, data);
     });
     const MAX_BOOST_FEE_BPS = 100;
 
@@ -504,7 +515,7 @@ describe(SwapSDK, () => {
     });
 
     expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
-      id: 1,
+      id: '1',
       jsonrpc: '2.0',
       method: 'broker_requestSwapDepositAddress',
       params: [
@@ -512,8 +523,9 @@ describe(SwapSDK, () => {
         { asset: 'FLIP', chain: 'Ethereum' },
         '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         15,
-        undefined,
+        null,
         MAX_BOOST_FEE_BPS,
+        null,
       ],
     });
     expect(result).toStrictEqual({

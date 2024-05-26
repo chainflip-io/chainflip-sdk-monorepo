@@ -40,7 +40,7 @@ export const hexStringWithMaxByteSize = (maxByteSize: number) =>
   });
 
 export const hexStringFromNumber = numericString.transform(
-  (arg) => `0x${BigInt(arg).toString(16)}`,
+  (arg) => `0x${BigInt(arg).toString(16)}` as `0x${string}`,
 );
 
 export const btcAddress = (network: ChainflipNetwork | 'localnet') => {

@@ -1,6 +1,5 @@
-import axios from 'axios';
 import * as broker from '@/shared/broker';
-import { environment } from '@/shared/tests/fixtures';
+import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
 import prisma from '../../client';
 import screenAddress from '../../utils/screenAddress';
@@ -14,8 +13,6 @@ jest.mock('../../utils/screenAddress', () => ({
   __esModule: true,
   default: jest.fn().mockResolvedValue(false),
 }));
-
-jest.mock('axios');
 
 describe(openSwapDepositChannel, () => {
   let oldEnv: typeof env;
@@ -45,7 +42,7 @@ describe(openSwapDepositChannel, () => {
   });
 
   it('creates channel and stores it in the database', async () => {
-    jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
+    mockRpcResponse({ data: environment() });
     jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
@@ -81,7 +78,7 @@ describe(openSwapDepositChannel, () => {
   });
 
   it('creates channel with ccmMetadata and stores it in the database', async () => {
-    jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
+    mockRpcResponse({ data: environment() });
     jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
@@ -121,7 +118,7 @@ describe(openSwapDepositChannel, () => {
   });
 
   it('creates channel with boost fee and stores it in the database', async () => {
-    jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
+    mockRpcResponse({ data: environment() });
     jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
@@ -215,8 +212,8 @@ describe(openSwapDepositChannel, () => {
       expectedDepositAmount: '777',
     } as const;
 
+    mockRpcResponse({ data: environment() });
     for (let i = 0; i < 5; i += 1) {
-      jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
       jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
         sourceChainExpiryBlock: BigInt('1000'),
         address: `address${i}`,
@@ -227,7 +224,6 @@ describe(openSwapDepositChannel, () => {
       await expect(openSwapDepositChannel(opts)).resolves.not.toThrow();
     }
 
-    jest.mocked(axios.post).mockResolvedValueOnce({ data: environment() });
     jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',

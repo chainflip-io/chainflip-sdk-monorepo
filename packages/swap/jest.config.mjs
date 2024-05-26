@@ -3,7 +3,7 @@ import baseConfig from '../../jest.config.mjs';
 
 export default {
   ...baseConfig,
-  globalSetup: '<rootDir>/jest.setup.mjs',
+  globalSetup: '<rootDir>/jest-globalSetup.mjs',
   resetMocks: false,
-  setupFiles: ['<rootDir>/src/__mocks__/env.mjs'],
+  setupFiles: ['<rootDir>/src/__mocks__/env.mjs', '<rootDir>/jest-setup.mjs'],
 };

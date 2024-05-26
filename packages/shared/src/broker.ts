@@ -1,6 +1,6 @@
+import { HttpClient } from '@chainflip/rpc';
 import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
-import axios from 'axios';
 import { z } from 'zod';
 import { Chain, ChainflipNetwork, Asset, Chains } from './enums';
 import {
@@ -9,13 +9,10 @@ import {
   btcAddress,
   dotAddress,
   hexStringFromNumber,
-  unsignedInteger,
-  uncheckedAssetAndChain,
-  u128,
   ethereumAddress,
+  assetAndChain,
 } from './parsers';
 import { affiliateBroker, AffiliateBroker, CcmMetadata, ccmMetadataSchema } from './schemas';
-import { CamelCaseToSnakeCase, camelToSnakeCase } from './strings';
 
 type NewSwapRequest = {
   srcAsset: Asset;
@@ -27,21 +24,6 @@ type NewSwapRequest = {
   maxBoostFeeBps?: number;
 };
 
-type SnakeCaseKeys<T> = {
-  [K in keyof T as K extends string ? CamelCaseToSnakeCase<K> : K]: T[K];
-};
-
-const transformObjToSnakeCase = <T>(obj: T | undefined): SnakeCaseKeys<T> | undefined => {
-  if (!obj) return undefined;
-  const newObj: Record<string, unknown> = {};
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      newObj[camelToSnakeCase(key)] = obj[key];
-    }
-  }
-  return newObj as SnakeCaseKeys<T>;
-};
-
 const submitAddress = (chain: Chain, address: string): string => {
   if (chain === Chains.Polkadot) {
     return address.startsWith('0x')
@@ -51,22 +33,11 @@ const submitAddress = (chain: Chain, address: string): string => {
   return address;
 };
 
-const rpcResult = z.union([
-  z.object({
-    error: z.object({
-      code: z.number().optional(),
-      message: z.string().optional(),
-      data: z.unknown().optional(),
-    }),
-  }),
-  z.object({ result: z.unknown() }),
-]);
-
-const requestValidators = (network: ChainflipNetwork) => ({
-  requestSwapDepositAddress: z
+const validateRequest = (network: ChainflipNetwork, params: unknown) =>
+  z
     .tuple([
-      uncheckedAssetAndChain,
-      uncheckedAssetAndChain,
+      assetAndChain,
+      assetAndChain,
       z.union([numericString, hexString, btcAddress(network)]),
       z.number(),
       ccmMetadataSchema
@@ -76,26 +47,25 @@ const requestValidators = (network: ChainflipNetwork) => ({
             cfParameters: z.union([hexString, z.string()]).optional(),
           }),
         )
+        .transform(({ message, ...rest }) => ({
+          message,
+          cf_parameters: rest.cfParameters,
+          gas_budget: rest.gasBudget,
+        }))
         .optional(),
       z.number().optional(),
       z.array(affiliateBroker).optional(),
     ])
-    .transform(([a, b, c, d, e, f, g]) =>
-      g
-        ? [a, b, c, d, transformObjToSnakeCase(e), f, g]
-        : [a, b, c, d, transformObjToSnakeCase(e), f],
-    ),
-});
+    .parse(params);
 
-const responseValidators = (network: ChainflipNetwork) => ({
-  requestSwapDepositAddress: z
+const validateResponse = (network: ChainflipNetwork, response: unknown) =>
+  z
     .object({
       address: z.union([dotAddress, ethereumAddress, btcAddress(network)]),
       issued_block: z.number(),
       channel_id: z.number(),
-      expiry_block: z.number().int().safe().positive().optional(),
-      source_chain_expiry_block: unsignedInteger.optional(),
-      channel_opening_fee: u128.optional().default(0),
+      source_chain_expiry_block: z.bigint(),
+      channel_opening_fee: z.bigint(),
     })
     .transform(
       ({ address, issued_block, channel_id, source_chain_expiry_block, channel_opening_fee }) => ({
@@ -105,37 +75,10 @@ const responseValidators = (network: ChainflipNetwork) => ({
         sourceChainExpiryBlock: source_chain_expiry_block,
         channelOpeningFee: channel_opening_fee,
       }),
-    ),
-});
+    )
+    .parse(response);
 
-type RequestValidator = ReturnType<typeof requestValidators>;
-type ResponseValidator = ReturnType<typeof responseValidators>;
-
-export type DepositChannelResponse = z.infer<ResponseValidator['requestSwapDepositAddress']>;
-
-const makeRpcRequest = async <T extends keyof RequestValidator & keyof ResponseValidator>(
-  network: ChainflipNetwork,
-  url: string | URL,
-  method: T,
-  ...params: z.input<RequestValidator[T]>
-): Promise<z.output<ResponseValidator[T]>> => {
-  const res = await axios.post(url.toString(), {
-    jsonrpc: '2.0',
-    id: 1,
-    method: `broker_${method}`,
-    params: requestValidators(network)[method].parse(params),
-  });
-
-  const result = rpcResult.parse(res.data);
-
-  if ('error' in result) {
-    throw new Error(
-      `Broker responded with error code ${result.error.code}: ${result.error.message}`,
-    );
-  }
-
-  return responseValidators(network)[method].parse(result.result);
-};
+export type DepositChannelResponse = ReturnType<typeof validateResponse>;
 
 export async function requestSwapDepositAddress(
   swapRequest: NewSwapRequest,
@@ -148,10 +91,9 @@ export async function requestSwapDepositAddress(
 ): Promise<DepositChannelResponse> {
   const { srcAsset, srcChain, destAsset, destChain, destAddress, maxBoostFeeBps } = swapRequest;
 
-  return makeRpcRequest(
-    chainflipNetwork,
-    opts.url,
-    'requestSwapDepositAddress',
+  const client = new HttpClient(opts.url);
+
+  const params = validateRequest(chainflipNetwork, [
     { asset: srcAsset, chain: srcChain },
     { asset: destAsset, chain: destChain },
     submitAddress(destChain, destAddress),
@@ -162,5 +104,9 @@ export async function requestSwapDepositAddress(
     },
     maxBoostFeeBps,
     opts.affiliates,
-  );
+  ]);
+
+  const response = await client.sendRequest('broker_requestSwapDepositAddress', ...params);
+
+  return validateResponse(chainflipNetwork, response);
 }

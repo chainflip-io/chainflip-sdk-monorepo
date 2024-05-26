@@ -1,10 +1,9 @@
-import axios from 'axios';
 import * as crypto from 'crypto';
 import { Server } from 'http';
 import request from 'supertest';
 import * as broker from '@/shared/broker';
 import { Assets, getInternalAssets, InternalAssets } from '@/shared/enums';
-import { environment } from '@/shared/tests/fixtures';
+import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
 import prisma from '../../client';
 import {
@@ -34,14 +33,7 @@ jest.mock('@/shared/broker', () => ({
   requestSwapDepositAddress: jest.fn().mockRejectedValue(Error('unhandled mock')),
 }));
 
-jest.mock('axios', () => ({
-  create: jest.fn(),
-  post: jest.fn(() =>
-    Promise.resolve({
-      data: environment(),
-    }),
-  ),
-}));
+mockRpcResponse({ data: environment() });
 
 const RECEIVED_TIMESTAMP = 1669907135201;
 const RECEIVED_BLOCK_INDEX = `100-3`;
@@ -1458,7 +1450,7 @@ describe('server', () => {
     });
 
     it('rejects if amount is lower than minimum swap amount', async () => {
-      jest.mocked(axios.post).mockResolvedValueOnce({
+      mockRpcResponse({
         data: environment({ minDepositAmount: '0xffffff' }),
       });
 
@@ -1478,9 +1470,7 @@ describe('server', () => {
     });
 
     it('rejects if amount is higher than maximum swap amount', async () => {
-      jest
-        .mocked(axios.post)
-        .mockResolvedValueOnce({ data: environment({ maxSwapAmount: '0x1' }) });
+      mockRpcResponse({ data: environment({ maxSwapAmount: '0x1' }) });
 
       const { body, status } = await request(app).post('/swaps').send({
         srcAsset: Assets.USDC,

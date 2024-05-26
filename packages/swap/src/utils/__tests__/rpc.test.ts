@@ -1,14 +1,9 @@
-import axios from 'axios';
-import { boostPoolsDepth } from '@/shared/tests/fixtures';
+import { boostPoolsDepth, mockRpcResponse } from '@/shared/tests/fixtures';
 import { getBoostPoolsDepth } from '../rpc';
-
-jest.mock('axios');
-
-const mockResponse = (data: any) => jest.mocked(axios.post).mockResolvedValueOnce({ data });
 
 describe(getBoostPoolsDepth, () => {
   it('allows filtering by asset through all the boost pools', async () => {
-    mockResponse(boostPoolsDepth());
+    mockRpcResponse(async () => ({ data: boostPoolsDepth() }));
 
     const assetBoostPoolsDepth = await getBoostPoolsDepth({
       asset: 'Btc',

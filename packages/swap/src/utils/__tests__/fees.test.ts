@@ -1,4 +1,4 @@
-import { environment, swapRate } from '@/shared/tests/fixtures';
+import { environment, mockRpcResponse, swapRate } from '@/shared/tests/fixtures';
 import { calculateIncludedSwapFees, tryExtractFeesFromIngressAmount } from '@/swap/utils/fees';
 import prisma from '../../client';
 
@@ -8,26 +8,24 @@ jest.mock('@/shared/consts', () => ({
 }));
 
 const INGRESS_FEE = 10;
-jest.mock('axios', () => ({
-  post: jest.fn((url, data) => {
-    if (data.method === 'cf_swap_rate') {
-      return Promise.resolve({
-        data: swapRate({
-          output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
-        }),
-      });
-    }
-    if (data.method === 'cf_environment') {
-      return Promise.resolve({
-        data: environment({
-          ingressFee: `0x${BigInt(INGRESS_FEE).toString(16)}`,
-        }),
-      });
-    }
+mockRpcResponse((url, data) => {
+  if (data.method === 'cf_swap_rate') {
+    return Promise.resolve({
+      data: swapRate({
+        output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
+      }),
+    });
+  }
+  if (data.method === 'cf_environment') {
+    return Promise.resolve({
+      data: environment({
+        ingressFee: `0x${BigInt(INGRESS_FEE).toString(16)}`,
+      }),
+    });
+  }
 
-    throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
-  }),
-}));
+  throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+});
 
 describe(calculateIncludedSwapFees, () => {
   beforeAll(async () => {

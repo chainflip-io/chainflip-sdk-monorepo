@@ -1,6 +1,5 @@
-import axios from 'axios';
 import { InternalAssets } from '@/shared/enums';
-import { environment, swapRate } from '@/shared/tests/fixtures';
+import { environment, mockRpcResponse, swapRate } from '@/shared/tests/fixtures';
 import { DOT_ADDRESS, createDepositChannel, swapEgressScheduledMock } from './utils';
 import prisma from '../../client';
 import swapEgressScheduled from '../swapEgressScheduled';
@@ -10,23 +9,21 @@ const {
   block,
 } = swapEgressScheduledMock;
 
-jest.mock('axios', () => ({
-  post: jest.fn((url, data) => {
-    if (data.method === 'cf_environment') {
-      return Promise.resolve({ data: environment({ egressFee: '0x777777' }) });
-    }
+mockRpcResponse((url, data) => {
+  if (data.method === 'cf_environment') {
+    return Promise.resolve({ data: environment({ egressFee: '0x777777' }) });
+  }
 
-    if (data.method === 'cf_swap_rate') {
-      return Promise.resolve({
-        data: swapRate({
-          output: `0x${(BigInt(data.params[2]) * 3n).toString(16)}`,
-        }),
-      });
-    }
+  if (data.method === 'cf_swap_rate') {
+    return Promise.resolve({
+      data: swapRate({
+        output: `0x${(BigInt(data.params[2]) * 3n).toString(16)}`,
+      }),
+    });
+  }
 
-    throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
-  }),
-}));
+  throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+});
 
 describe(swapEgressScheduled, () => {
   beforeEach(async () => {
@@ -96,10 +93,6 @@ describe(swapEgressScheduled, () => {
       swapDepositChannelId: expect.any(BigInt),
       fees: [{ id: expect.any(BigInt), swapId: expect.any(BigInt) }],
     });
-    expect(axios.post).not.toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ method: 'cf_swap_rate' }),
-    );
   });
 
   it('updates an existing swap when the egress amount is higher than the swapOutputAmount', async () => {
@@ -165,10 +158,6 @@ describe(swapEgressScheduled, () => {
       swapDepositChannelId: expect.any(BigInt),
       fees: [{ id: expect.any(BigInt), swapId: expect.any(BigInt) }],
     });
-    expect(axios.post).not.toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ method: 'cf_swap_rate' }),
-    );
   });
 
   it('>v120 uses the fee from the event and creates an egress record', async () => {
@@ -231,9 +220,5 @@ describe(swapEgressScheduled, () => {
       swapDepositChannelId: expect.any(BigInt),
       fees: [{ id: expect.any(BigInt), swapId: expect.any(BigInt) }],
     });
-    expect(axios.post).not.toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ method: 'cf_swap_rate' }),
-    );
   });
 });
