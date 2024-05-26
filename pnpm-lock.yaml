@@ -117,8 +117,8 @@ importers:
   packages/cli:
     dependencies:
       '@chainflip/utils':
-        specifier: ^0.1.2
-        version: 0.1.2
+        specifier: ^0.1.4
+        version: 0.1.4
       axios:
         specifier: ^1.x
         version: 1.6.7
@@ -154,8 +154,8 @@ importers:
   packages/sdk:
     dependencies:
       '@chainflip/utils':
-        specifier: ^0.1.2
-        version: 0.1.2
+        specifier: ^0.1.4
+        version: 0.1.4
       axios:
         specifier: ^1.6.8
         version: 1.6.8
@@ -170,8 +170,8 @@ importers:
   packages/shared:
     dependencies:
       '@chainflip/utils':
-        specifier: ^0.1.2
-        version: 0.1.2
+        specifier: ^0.1.4
+        version: 0.1.4
       axios:
         specifier: ^1.6.8
         version: 1.6.8
@@ -216,8 +216,8 @@ importers:
   packages/swap:
     dependencies:
       '@chainflip/utils':
-        specifier: ^0.1.2
-        version: 0.1.2
+        specifier: ^0.1.4
+        version: 0.1.4
       '@polkadot/types':
         specifier: ^11.0.2
         version: 11.1.1
@@ -732,8 +732,8 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@chainflip/utils@0.1.2':
-    resolution: {integrity: sha512-LC53lVrrVEUZre8liIDq7jANz+fR7OD7gONIzcw6yTvL8jXJNSCfI9Go6sp0EbtdQsQ+qy0KMF8oJrJpG65A1w==}
+  '@chainflip/utils@0.1.4':
+    resolution: {integrity: sha512-ahIR31yoMyAsg5uxO41+kcb9JamQX4SHGLzLO7lMZm1THsYc55RjouCyuTD2zSzqmxmhNv/D24JhGGoBbZB44w==}
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -5966,7 +5966,7 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@chainflip/utils@0.1.2': {}
+  '@chainflip/utils@0.1.4': {}
 
   '@colors/colors@1.6.0': {}
 
