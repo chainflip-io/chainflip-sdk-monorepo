@@ -18,18 +18,6 @@ exports[`server GET /quote gets the quote for deprecated params without the chai
       "type": "NETWORK",
     },
     {
-      "amount": "999999999998000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "4000000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
       "amount": "25000",
       "asset": "ETH",
       "chain": "Ethereum",
@@ -37,6 +25,38 @@ exports[`server GET /quote gets the quote for deprecated params without the chai
     },
   ],
   "intermediateAmount": "2000000000",
+  "poolInfo": [
+    {
+      "baseAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
+      "fee": {
+        "amount": "999999999998000",
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
+      "quoteAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+    },
+    {
+      "baseAsset": {
+        "asset": "ETH",
+        "chain": "Ethereum",
+      },
+      "fee": {
+        "amount": "4000000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+      "quoteAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+    },
+  ],
 }
 `;
 
@@ -66,18 +86,6 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
         "type": "NETWORK",
       },
       {
-        "amount": "199700",
-        "asset": "BTC",
-        "chain": "Bitcoin",
-        "type": "LIQUIDITY",
-      },
-      {
-        "amount": "3999000",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "LIQUIDITY",
-      },
-      {
         "amount": "25000",
         "asset": "ETH",
         "chain": "Ethereum",
@@ -85,6 +93,38 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
       },
     ],
     "intermediateAmount": "1999500000",
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "BTC",
+          "chain": "Bitcoin",
+        },
+        "fee": {
+          "amount": "199700",
+          "asset": "BTC",
+          "chain": "Bitcoin",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "3999000",
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
   },
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 1830,
@@ -96,22 +136,10 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
       "type": "INGRESS",
     },
     {
-      "amount": "2000000",
+      "amount": "1999500",
       "asset": "USDC",
       "chain": "Ethereum",
       "type": "NETWORK",
-    },
-    {
-      "amount": "199800",
-      "asset": "BTC",
-      "chain": "Bitcoin",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "4000000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
     },
     {
       "amount": "25000",
@@ -121,37 +149,36 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
     },
   ],
   "intermediateAmount": "2000000000",
-}
-`;
-
-exports[`server GET /quote gets the quote when ingress and egress fee is returned as fee asset amount 1`] = `
-{
-  "egressAmount": "1999250000",
-  "estimatedDurationSeconds": 54,
-  "includedFees": [
+  "poolInfo": [
     {
-      "amount": "1000000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "INGRESS",
+      "baseAsset": {
+        "asset": "BTC",
+        "chain": "Bitcoin",
+      },
+      "fee": {
+        "amount": "199800",
+        "asset": "BTC",
+        "chain": "Bitcoin",
+      },
+      "quoteAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
     },
     {
-      "amount": "2002002",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "NETWORK",
-    },
-    {
-      "amount": "999999999999000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "750000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "EGRESS",
+      "baseAsset": {
+        "asset": "ETH",
+        "chain": "Ethereum",
+      },
+      "fee": {
+        "amount": "4000000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+      "quoteAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
     },
   ],
 }
@@ -175,18 +202,6 @@ exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
       "type": "NETWORK",
     },
     {
-      "amount": "999999999998000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "5988000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
       "amount": "25000",
       "asset": "ETH",
       "chain": "Ethereum",
@@ -195,212 +210,43 @@ exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
   ],
   "intermediateAmount": "2994000000",
   "lowLiquidityWarning": true,
+  "poolInfo": [
+    {
+      "baseAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
+      "fee": {
+        "amount": "999999999998000",
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
+      "quoteAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+    },
+    {
+      "baseAsset": {
+        "asset": "ETH",
+        "chain": "Ethereum",
+      },
+      "fee": {
+        "amount": "5988000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+      "quoteAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+    },
+  ],
 }
 `;
 
 exports[`server GET /quote rejects malformed requests 1`] = `
 {
   "message": "invalid request",
-}
-`;
-
-exports[`server GET /quote with market makers returns pool quote if market maker quote is too low 1`] = `
-{
-  "egressAmount": "999950000",
-  "estimatedDurationSeconds": 54,
-  "includedFees": [
-    {
-      "amount": "2000000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "INGRESS",
-    },
-    {
-      "amount": "1001001",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "NETWORK",
-    },
-    {
-      "amount": "98000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "50000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "EGRESS",
-    },
-  ],
-}
-`;
-
-exports[`server GET /quote with market makers returns the market maker quotes 1`] = `
-{
-  "egressAmount": "998950000",
-  "estimatedDurationSeconds": 54,
-  "includedFees": [
-    {
-      "amount": "2000000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "INGRESS",
-    },
-    {
-      "amount": "98000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "50000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "EGRESS",
-    },
-    {
-      "amount": "1000000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "NETWORK",
-    },
-  ],
-}
-`;
-
-exports[`server GET /quote with market makers returns the pool quote 1`] = `
-{
-  "egressAmount": "999950000",
-  "estimatedDurationSeconds": 54,
-  "includedFees": [
-    {
-      "amount": "2000000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "INGRESS",
-    },
-    {
-      "amount": "1001001",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "NETWORK",
-    },
-    {
-      "amount": "98000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "50000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "EGRESS",
-    },
-  ],
-}
-`;
-
-exports[`server GET /quote with market makers returns the pool quote if the quoter rejects 1`] = `
-{
-  "egressAmount": "999950000",
-  "estimatedDurationSeconds": 54,
-  "includedFees": [
-    {
-      "amount": "2000000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "INGRESS",
-    },
-    {
-      "amount": "1001001",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "NETWORK",
-    },
-    {
-      "amount": "98000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "50000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "EGRESS",
-    },
-  ],
-}
-`;
-
-exports[`server GET /quote with market makers saves a quote result 1`] = `
-{
-  "createdAt": Any<Date>,
-  "depositAmount": "100000000",
-  "destAsset": "Usdc",
-  "id": Any<Number>,
-  "poolDuration": Any<Number>,
-  "poolFees": [
-    {
-      "amount": "2000000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "INGRESS",
-    },
-    {
-      "amount": "990990",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "NETWORK",
-    },
-    {
-      "amount": "98000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "50000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "EGRESS",
-    },
-  ],
-  "poolIntermediate": null,
-  "poolOutput": "989950000",
-  "quoterDuration": Any<Number>,
-  "quoterFees": [
-    {
-      "amount": "2000000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "INGRESS",
-    },
-    {
-      "amount": "98000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "50000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "EGRESS",
-    },
-    {
-      "amount": "1000000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "NETWORK",
-    },
-  ],
-  "quoterIntermediate": null,
-  "quoterOutput": "998950000",
-  "srcAsset": "Flip",
-  "version": 2,
 }
 `;

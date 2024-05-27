@@ -15,7 +15,7 @@ export type SwapRateArgs = {
 
 export type LimitOrders = RpcParams['cf_swap_rate_v2'][3];
 
-export const getSwapRate = async ({ srcAsset, destAsset, amount, limitOrders }: SwapRateArgs) => {
+export const getSwapRateV2 = async ({ srcAsset, destAsset, amount, limitOrders }: SwapRateArgs) => {
   const client = initializeClient();
 
   const {

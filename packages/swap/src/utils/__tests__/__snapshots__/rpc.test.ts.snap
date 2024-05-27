@@ -1,28 +1,21 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`getBoostPoolsDepth allows filtering by asset through all the boost pools 1`] = `
-{
-  "asset": "BTC",
-  "availableAmount": Any<BigInt>,
-  "chain": "Bitcoin",
-  "tier": Any<Number>,
-}
-`;
-
-exports[`getBoostPoolsDepth allows filtering by asset through all the boost pools 2`] = `
-{
-  "asset": "BTC",
-  "availableAmount": Any<BigInt>,
-  "chain": "Bitcoin",
-  "tier": Any<Number>,
-}
-`;
-
-exports[`getBoostPoolsDepth allows filtering by asset through all the boost pools 3`] = `
-{
-  "asset": "BTC",
-  "availableAmount": Any<BigInt>,
-  "chain": "Bitcoin",
-  "tier": Any<Number>,
-}
+exports[`getBoostPoolsDepth allows filtering by asset through all the boost pools and sorts the result 1`] = `
+[
+  {
+    "asset": "Btc",
+    "availableAmount": 0n,
+    "tier": 5,
+  },
+  {
+    "asset": "Btc",
+    "availableAmount": 100010n,
+    "tier": 10,
+  },
+  {
+    "asset": "Btc",
+    "availableAmount": 0n,
+    "tier": 30,
+  },
+]
 `;

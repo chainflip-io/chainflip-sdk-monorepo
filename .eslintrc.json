@@ -55,6 +55,15 @@
     "camelcase": "off",
     "no-await-in-loop": "off"
   },
+  "overrides": [
+    {
+      "files": ["*.test.ts"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "class-methods-use-this": "off"
+      }
+    }
+  ],
   "ignorePatterns": ["**/dist", "**/generated"],
   "settings": {
     "import/resolver": { "alias": { "extensions": [".ts", ".js"] } }

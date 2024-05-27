@@ -1,26 +1,69 @@
+import { getAssetAndChain, getInternalAsset } from '@/shared/enums';
+import { getPipAmountFromAmount } from '@/shared/functions';
 import { QuoteQueryResponse } from '@/shared/schemas';
 import { estimateSwapDuration } from '@/swap/utils/swap';
-import { buildFee } from './fees';
+import { buildFee, getPoolFees } from './fees';
 import { getMinimumEgressAmount } from './rpc';
 import ServiceError from './ServiceError';
-import { LimitOrders, getSwapRate } from './statechain';
-import { InternalAsset } from '../client';
-import { getInternalAsset } from '../enums';
+import { LimitOrders, getSwapRateV2 } from './statechain';
+import { InternalAsset, Pool } from '../client';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 
-export default async function getPoolQuote(
-  srcAsset: InternalAsset,
-  destAsset: InternalAsset,
-  swapInputAmount: bigint,
-  limitOrders?: LimitOrders,
-  boosted?: boolean,
-): Promise<QuoteQueryResponse> {
-  const { egressFee, ingressFee, networkFee, ...quote } = await getSwapRate({
+export default async function getPoolQuote({
+  srcAsset,
+  destAsset,
+  swapInputAmount: originalSwapInputAmount,
+  limitOrders,
+  boostFeeBps,
+  brokerCommissionBps,
+  pools,
+}: {
+  srcAsset: InternalAsset;
+  destAsset: InternalAsset;
+  swapInputAmount: bigint;
+  brokerCommissionBps?: number;
+  limitOrders?: LimitOrders;
+  boostFeeBps?: number;
+  pools: Pool[];
+}): Promise<QuoteQueryResponse> {
+  const includedFees = [];
+  let swapInputAmount = originalSwapInputAmount;
+
+  const brokerFee =
+    brokerCommissionBps && getPipAmountFromAmount(swapInputAmount, brokerCommissionBps);
+
+  if (brokerFee) {
+    includedFees.push(buildFee(srcAsset, 'BROKER', brokerFee));
+    swapInputAmount -= brokerFee;
+  }
+
+  if (boostFeeBps) {
+    const boostFee = getPipAmountFromAmount(swapInputAmount, boostFeeBps);
+    includedFees.push(buildFee(srcAsset, 'BOOST', boostFee));
+    swapInputAmount -= boostFee;
+  }
+
+  const { egressFee, ingressFee, networkFee, ...quote } = await getSwapRateV2({
     srcAsset,
     destAsset,
     amount: swapInputAmount,
     limitOrders,
   });
+
+  swapInputAmount -= ingressFee.amount;
+
+  const minimumEgressAmount = await getMinimumEgressAmount(destAsset);
+
+  if (quote.outputAmount === 0n) {
+    if (networkFee.amount === 0n) {
+      // this shouldn't happen because we check before but i'll keep it here anyway
+      throw ServiceError.badRequest('swap amount is lower than ingress fee');
+    }
+
+    throw ServiceError.badRequest(
+      `egress amount (${quote.outputAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
+    );
+  }
 
   const lowLiquidityWarning = await checkPriceWarning({
     srcAsset,
@@ -29,19 +72,24 @@ export default async function getPoolQuote(
     destAmount: BigInt(quote.outputAmount),
   });
 
-  const includedFees = [
+  includedFees.push(
     buildFee(getInternalAsset(ingressFee), 'INGRESS', ingressFee.amount),
     buildFee('Usdc', 'NETWORK', networkFee.amount),
-    buildFee(getInternalAsset(egressFee), 'EGRESS', ingressFee.amount),
-  ];
+  );
 
-  const minimumEgressAmount = await getMinimumEgressAmount(destAsset);
+  includedFees.push(buildFee(getInternalAsset(egressFee), 'EGRESS', egressFee.amount));
 
-  if (quote.outputAmount < minimumEgressAmount) {
-    throw ServiceError.badRequest(
-      `egress amount (${quote.outputAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
-    );
-  }
+  const poolInfo = getPoolFees(
+    srcAsset,
+    destAsset,
+    swapInputAmount,
+    quote.intermediateAmount,
+    pools,
+  ).map(({ type, ...fee }, i) => ({
+    baseAsset: getAssetAndChain(pools[i].baseAsset),
+    quoteAsset: getAssetAndChain(pools[i].quoteAsset),
+    fee,
+  }));
 
   const { outputAmount, ...response } = {
     ...quote,
@@ -49,7 +97,12 @@ export default async function getPoolQuote(
     egressAmount: quote.outputAmount.toString(),
     includedFees,
     lowLiquidityWarning,
-    estimatedDurationSeconds: await estimateSwapDuration({ srcAsset, destAsset, boosted }),
+    poolInfo,
+    estimatedDurationSeconds: await estimateSwapDuration({
+      srcAsset,
+      destAsset,
+      boosted: Boolean(boostFeeBps),
+    }),
   };
 
   return response;

@@ -1,7 +1,8 @@
-import { WsClient } from '@chainflip/rpc';
+import { CfSwapRateV2, CfSwapRateV2Response, WsClient } from '@chainflip/rpc';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { Server } from 'http';
 import request from 'supertest';
+import { getAssetAndChain } from '@/shared/enums';
 import {
   MockedBoostPoolsDepth,
   boostPoolsDepth,
@@ -9,12 +10,12 @@ import {
   mockRpcResponse,
   swapRate,
 } from '@/shared/tests/fixtures';
-import prisma, { QuoteResult } from '../../client';
+import prisma, { InternalAsset } from '../../client';
 import env from '../../config/env';
 import { checkPriceWarning } from '../../pricing/checkPriceWarning';
 import Quoter from '../../quoting/Quoter';
 import app from '../../server';
-import { isAfterSpecVersion } from '../../utils/function';
+import { boostPoolsCache } from '../../utils/boost';
 
 jest.mock('../../utils/function', () => ({
   ...jest.requireActual('../../utils/function'),
@@ -47,6 +48,17 @@ jest.mock('../../pricing/checkPriceWarning.ts', () => ({
 
 jest.mock('../../pricing/index');
 
+const buildFee = (asset: InternalAsset, amount: bigint | number) => ({
+  bigint: {
+    amount: BigInt(amount),
+    ...getAssetAndChain(asset),
+  },
+  string: {
+    amount: hexEncodeNumber(amount),
+    ...getAssetAndChain(asset),
+  },
+});
+
 const mockRpcs = ({
   ingressFee,
   egressFee,
@@ -55,6 +67,7 @@ const mockRpcs = ({
   ingressFee: string;
   egressFee: string;
   mockedBoostPoolsDepth?: MockedBoostPoolsDepth;
+  swapRate?: CfSwapRateV2Response;
 }) =>
   mockRpcResponse((url, data: any) => {
     if (data.method === 'cf_environment') {
@@ -63,9 +76,10 @@ const mockRpcs = ({
       });
     }
 
-    if (data.method === 'cf_swap_rate') {
+    if (data.method === 'cf_swap_rate_v2') {
       return Promise.resolve({
-        data: swapRate({ output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}` }),
+        data: swapRate({ output: hexEncodeNumber(BigInt(data.params[2]) * 2n) }),
+        ...swapRate,
       });
     }
 
@@ -108,10 +122,10 @@ describe('server', () => {
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE private."QuoteResult" CASCADE`;
     server = app.listen(0);
-    jest
-      .mocked(Quoter.prototype.getQuotingState)
-      .mockResolvedValue({ quotingActive: false, pairEnabled: false });
+    jest.mocked(Quoter.prototype.getLimitOrders).mockResolvedValue([]);
     mockRpcs({ ingressFee: hexEncodeNumber(2000000), egressFee: hexEncodeNumber(50000) });
+    // eslint-disable-next-line dot-notation
+    boostPoolsCache['store'].clear();
   });
 
   afterEach((cb) => {
@@ -125,273 +139,6 @@ describe('server', () => {
 
       expect(status).toBe(400);
       expect(body).toMatchSnapshot();
-    });
-
-    describe('with market makers', () => {
-      it('returns the market maker quotes', async () => {
-        jest
-          .mocked(Quoter.prototype.getQuotingState)
-          .mockResolvedValueOnce({ pairEnabled: true, quotingActive: true });
-
-        const params = new URLSearchParams({
-          srcChain: 'Ethereum',
-          srcAsset: 'FLIP',
-          destChain: 'Ethereum',
-          destAsset: 'USDC',
-          amount: (100e6).toString(),
-        });
-
-        jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-          intermediary: null,
-          output: BigInt(990000000),
-        });
-
-        jest.mocked(Quoter.prototype.getQuote).mockResolvedValueOnce({
-          outputAmount: 999000000n,
-          intermediateAmount: null,
-          includedFees: [
-            {
-              type: 'NETWORK',
-              chain: 'Ethereum',
-              asset: 'USDC',
-              amount: '1000000',
-            },
-          ],
-          quoteType: 'market_maker',
-        });
-
-        const { body, status } = await request(server).get(`/quote?${params.toString()}`);
-
-        expect(status).toBe(200);
-        expect(body).toMatchSnapshot();
-      });
-
-      it('saves a quote result', async () => {
-        jest
-          .mocked(Quoter.prototype.getQuotingState)
-          .mockResolvedValueOnce({ pairEnabled: true, quotingActive: true });
-
-        const params = new URLSearchParams({
-          srcChain: 'Ethereum',
-          srcAsset: 'FLIP',
-          destChain: 'Ethereum',
-          destAsset: 'USDC',
-          amount: (100e6).toString(),
-        });
-
-        jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-          intermediary: null,
-          output: BigInt(990000000),
-        });
-
-        jest.mocked(Quoter.prototype.getQuote).mockResolvedValueOnce({
-          outputAmount: 999000000n,
-          intermediateAmount: null,
-          includedFees: [
-            {
-              type: 'NETWORK',
-              chain: 'Ethereum',
-              asset: 'USDC',
-              amount: '1000000',
-            },
-          ],
-          quoteType: 'market_maker',
-        });
-
-        await request(server).get(`/quote?${params.toString()}`);
-
-        const quoteResult = await Array.from({ length: 10 }).reduce<Promise<QuoteResult | null>>(
-          (resultPromise) =>
-            resultPromise.then((result) => result ?? prisma.quoteResult.findFirst()),
-          Promise.resolve(null),
-        );
-
-        expect(quoteResult).toMatchSnapshot({
-          id: expect.any(Number),
-          poolDuration: expect.any(Number),
-          quoterDuration: expect.any(Number),
-          createdAt: expect.any(Date),
-        });
-      });
-
-      it('returns pool quote if market maker quote is too low', async () => {
-        jest
-          .mocked(Quoter.prototype.getQuotingState)
-          .mockResolvedValueOnce({ pairEnabled: true, quotingActive: true });
-
-        const params = new URLSearchParams({
-          srcChain: 'Ethereum',
-          srcAsset: 'FLIP',
-          destChain: 'Ethereum',
-          destAsset: 'USDC',
-          amount: (100e6).toString(),
-        });
-
-        jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-          intermediary: null,
-          output: BigInt(1000000000),
-        });
-
-        jest.mocked(Quoter.prototype.getQuote).mockResolvedValueOnce({
-          outputAmount: 1n,
-          intermediateAmount: null,
-          includedFees: [
-            {
-              type: 'NETWORK',
-              chain: 'Ethereum',
-              asset: 'USDC',
-              amount: '1000000',
-            },
-          ],
-          quoteType: 'market_maker',
-        });
-
-        const { body, status } = await request(server).get(`/quote?${params.toString()}`);
-
-        expect(status).toBe(200);
-        expect(body).toMatchSnapshot();
-      });
-
-      it('returns the pool quote', async () => {
-        jest
-          .mocked(Quoter.prototype.getQuotingState)
-          .mockResolvedValueOnce({ pairEnabled: true, quotingActive: true });
-
-        const params = new URLSearchParams({
-          srcChain: 'Ethereum',
-          srcAsset: 'FLIP',
-          destChain: 'Ethereum',
-          destAsset: 'USDC',
-          amount: (100e6).toString(),
-        });
-
-        jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-          intermediary: null,
-          output: BigInt(1000000000),
-        });
-
-        jest.mocked(Quoter.prototype.getQuote).mockResolvedValueOnce({
-          outputAmount: 999000000n,
-          intermediateAmount: null,
-          includedFees: [
-            {
-              type: 'NETWORK',
-              chain: 'Ethereum',
-              asset: 'USDC',
-              amount: '12345678',
-            },
-          ],
-          quoteType: 'market_maker',
-        });
-
-        const { body, status } = await request(server).get(`/quote?${params.toString()}`);
-
-        expect(status).toBe(200);
-        expect(body).toMatchSnapshot();
-      });
-
-      it('returns the pool quote if the quoter rejects', async () => {
-        jest
-          .mocked(Quoter.prototype.getQuotingState)
-          .mockResolvedValueOnce({ pairEnabled: true, quotingActive: true });
-
-        const params = new URLSearchParams({
-          srcChain: 'Ethereum',
-          srcAsset: 'FLIP',
-          destChain: 'Ethereum',
-          destAsset: 'USDC',
-          amount: (100e6).toString(),
-        });
-
-        jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-          intermediary: null,
-          output: BigInt(1000000000),
-        });
-
-        jest.mocked(Quoter.prototype.getQuote).mockRejectedValueOnce(new Error('quoter error'));
-
-        const { body, status } = await request(server).get(`/quote?${params.toString()}`);
-
-        expect(status).toBe(200);
-        expect(body).toMatchSnapshot();
-        expect(await prisma.quoteResult.count()).toEqual(0);
-      });
-
-      it('rejects if both reject (400)', async () => {
-        jest
-          .mocked(Quoter.prototype.getQuotingState)
-          .mockResolvedValueOnce({ pairEnabled: true, quotingActive: true });
-
-        const params = new URLSearchParams({
-          srcChain: 'Ethereum',
-          srcAsset: 'FLIP',
-          destChain: 'Ethereum',
-          destAsset: 'USDC',
-          amount: (100e6).toString(),
-        });
-
-        jest
-          .spyOn(WsClient.prototype, 'sendRequest')
-          .mockRejectedValueOnce(Error('InsufficientLiquidity'));
-
-        jest.mocked(Quoter.prototype.getQuote).mockRejectedValueOnce(Error('quoter error'));
-
-        const { body, status } = await request(server).get(`/quote?${params.toString()}`);
-
-        expect(status).toBe(400);
-        expect(body).toEqual({ message: 'insufficient liquidity for requested amount' });
-      });
-
-      it('rejects if both reject (500)', async () => {
-        jest
-          .mocked(Quoter.prototype.getQuotingState)
-          .mockResolvedValueOnce({ pairEnabled: true, quotingActive: true });
-
-        const params = new URLSearchParams({
-          srcChain: 'Ethereum',
-          srcAsset: 'FLIP',
-          destChain: 'Ethereum',
-          destAsset: 'USDC',
-          amount: (100e6).toString(),
-        });
-
-        jest
-          .spyOn(WsClient.prototype, 'sendRequest')
-          .mockRejectedValueOnce(Error('some other error'));
-
-        jest.mocked(Quoter.prototype.getQuote).mockRejectedValueOnce(Error('quoter error'));
-
-        const { body, status } = await request(server).get(`/quote?${params.toString()}`);
-
-        expect(status).toBe(500);
-        expect(body).toEqual({ message: 'some other error', error: 'some other error' });
-      });
-
-      it('rejects if both reject (500, <v1.4.0)', async () => {
-        jest
-          .mocked(Quoter.prototype.getQuotingState)
-          .mockResolvedValueOnce({ pairEnabled: true, quotingActive: true });
-        jest.mocked(isAfterSpecVersion).mockResolvedValueOnce(false);
-
-        const params = new URLSearchParams({
-          srcChain: 'Ethereum',
-          srcAsset: 'FLIP',
-          destChain: 'Ethereum',
-          destAsset: 'USDC',
-          amount: (100e6).toString(),
-        });
-
-        jest
-          .spyOn(WsClient.prototype, 'sendRequest')
-          .mockRejectedValueOnce(Error('InsufficientLiquidity'));
-
-        jest.mocked(Quoter.prototype.getQuote).mockRejectedValueOnce(Error('quoter error'));
-
-        const { body, status } = await request(server).get(`/quote?${params.toString()}`);
-
-        expect(status).toBe(500);
-        expect(body).toEqual({ message: 'InsufficientLiquidity', error: 'InsufficientLiquidity' });
-      });
     });
 
     it('rejects if source asset is disabled', async () => {
@@ -512,9 +259,12 @@ describe('server', () => {
 
     it('rejects when the egress amount is smaller than the egress fee', async () => {
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        egress_fee: buildFee('Eth', 25000).bigint,
+        network_fee: buildFee('Usdc', 2000000).bigint,
+        ingress_fee: buildFee('Usdc', 2000000).bigint,
         intermediary: null,
-        output: BigInt(1250),
-      });
+        output: BigInt(0),
+      } as CfSwapRateV2);
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -533,52 +283,14 @@ describe('server', () => {
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('returns an error if backend cannot estimate egress fee', async () => {
-      mockRpcResponse((url, data: any) => {
-        if (data.method === 'cf_environment') {
-          const rpcEnvironment = environment({ maxSwapAmount: null });
-          rpcEnvironment.result.ingress_egress.egress_fees.Ethereum.ETH = null;
-
-          return Promise.resolve({ data: rpcEnvironment });
-        }
-
-        if (data.method === 'cf_swap_rate') {
-          return Promise.resolve({
-            data: swapRate({
-              output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
-            }),
-          });
-        }
-
-        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
-      });
-
-      jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        intermediary: null,
-        output: BigInt(1e18),
-      });
-
-      const params = new URLSearchParams({
-        srcChain: 'Ethereum',
-        srcAsset: 'USDC',
-        destChain: 'Ethereum',
-        destAsset: 'ETH',
-        amount: (100e6).toString(),
-      });
-
-      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
-
-      expect(status).toBe(500);
-      expect(body).toMatchObject({
-        message: 'could not determine egress fee for Eth',
-      });
-    });
-
-    it('gets the quote from usdc with a broker commission', async () => {
+    it('gets the quote from USDC with a broker commission', async () => {
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        egress_fee: buildFee('Eth', 25000).bigint,
+        network_fee: buildFee('Usdc', 97902).bigint,
+        ingress_fee: buildFee('Usdc', 2000000).bigint,
         intermediary: null,
-        output: BigInt(1e18),
-      });
+        output: 999999999999975000n,
+      } as CfSwapRateV2);
 
       mockRpcs({ egressFee: hexEncodeNumber(25000), ingressFee: hexEncodeNumber(2000000) });
 
@@ -596,25 +308,26 @@ describe('server', () => {
       expect(status).toBe(200);
 
       expect(sendSpy).toHaveBeenCalledWith(
-        'cf_swap_rate',
+        'cf_swap_rate_v2',
         { asset: 'USDC', chain: 'Ethereum' },
         { asset: 'ETH', chain: 'Ethereum' },
-        hexEncodeNumber(97902000), // deposit amount - ingress fee - broker fee
+        hexEncodeNumber(99_900_000), // deposit amount - broker fee
+        [],
       );
       expect(body).toMatchObject({
         egressAmount: (1e18 - 25000).toString(),
         includedFees: [
           {
+            amount: '100000',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'BROKER',
+          },
+          {
             amount: '2000000',
             asset: 'USDC',
             chain: 'Ethereum',
             type: 'INGRESS',
-          },
-          {
-            amount: '98000',
-            asset: 'USDC',
-            chain: 'Ethereum',
-            type: 'BROKER',
           },
           {
             amount: '97902',
@@ -623,16 +336,21 @@ describe('server', () => {
             type: 'NETWORK',
           },
           {
-            amount: '195804',
-            asset: 'USDC',
-            chain: 'Ethereum',
-            type: 'LIQUIDITY',
-          },
-          {
             amount: '25000',
             asset: 'ETH',
             chain: 'Ethereum',
             type: 'EGRESS',
+          },
+        ],
+        poolInfo: [
+          {
+            fee: {
+              amount: '195800',
+              asset: 'USDC',
+              chain: 'Ethereum',
+            },
+            baseAsset: { asset: 'ETH', chain: 'Ethereum' },
+            quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
           },
         ],
       });
@@ -644,13 +362,19 @@ describe('server', () => {
       const sendSpy = jest
         .spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
+          ingress_fee: buildFee('Btc', 100000).bigint,
+          network_fee: buildFee('Usdc', 1999500).bigint,
+          egress_fee: buildFee('Eth', 25000).bigint,
           intermediary: BigInt(2000e6),
-          output: BigInt(1e18),
-        })
+          output: 999999999999975000n,
+        } as CfSwapRateV2)
         .mockResolvedValueOnce({
+          ingress_fee: buildFee('Btc', 100000).bigint,
+          network_fee: buildFee('Usdc', 1999500).bigint,
+          egress_fee: buildFee('Eth', 25000).bigint,
           intermediary: BigInt(2000e6 - 5e5),
-          output: BigInt(1e18 - 5e10),
-        });
+          output: 999999949999975000n,
+        } as CfSwapRateV2);
 
       mockRpcs({
         ingressFee: hexEncodeNumber(100000),
@@ -678,30 +402,34 @@ describe('server', () => {
       expect(status).toBe(200);
 
       // Normal swap
-      expect(sendSpy).toHaveBeenNthCalledWith(
-        1,
-        'cf_swap_rate',
+      expect(sendSpy).toHaveBeenCalledWith(
+        'cf_swap_rate_v2',
         { asset: 'BTC', chain: 'Bitcoin' },
         { asset: 'ETH', chain: 'Ethereum' },
-        hexEncodeNumber(99900000), // deposit amount - ingress fee
+        hexEncodeNumber(1e8), // deposit amount
+        [],
       );
 
       // Boosted swap
-      expect(sendSpy).toHaveBeenNthCalledWith(
-        2,
-        'cf_swap_rate',
+      expect(sendSpy).toHaveBeenCalledWith(
+        'cf_swap_rate_v2',
         { asset: 'BTC', chain: 'Bitcoin' },
         { asset: 'ETH', chain: 'Ethereum' },
-        hexEncodeNumber(99850000), // deposit amount - boost fee - ingress fee
+        hexEncodeNumber(99950000), // deposit amount - boost fee
+        [],
       );
 
       expect(body).toMatchSnapshot();
       expect(body.boostQuote).not.toBeUndefined();
     });
+
     it("doesn't include boost information inside quote when there is no liquidity to fill the provided amount", async () => {
       env.CHAINFLIP_NETWORK = 'backspin';
 
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        ingress_fee: buildFee('Btc', 100000).bigint,
+        network_fee: buildFee('Usdc', 1999500).bigint,
+        egress_fee: buildFee('Eth', 25000).bigint,
         intermediary: BigInt(2000e6),
         output: BigInt(1e18),
       });
@@ -734,19 +462,23 @@ describe('server', () => {
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(sendSpy).toHaveBeenNthCalledWith(
         1,
-        'cf_swap_rate',
+        'cf_swap_rate_v2',
         { asset: 'BTC', chain: 'Bitcoin' },
         { asset: 'ETH', chain: 'Ethereum' },
-        hexEncodeNumber(99900000), // deposit amount - ingress fee
+        hexEncodeNumber(1e8), // deposit amount
+        [],
       );
 
       expect(body.boostQuote).toBe(undefined);
     });
 
-    it('gets the quote from usdc from the pools', async () => {
+    it('gets the quote from USDC from the pools', async () => {
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        ingress_fee: buildFee('Usdc', 2000000).bigint,
+        network_fee: buildFee('Usdc', 98000).bigint,
+        egress_fee: buildFee('Eth', 25000).bigint,
         intermediary: null,
-        output: BigInt(1e18),
+        output: 999999999999975000n,
       });
       mockRpcs({ ingressFee: hexEncodeNumber(2000000), egressFee: hexEncodeNumber(25000) });
 
@@ -762,10 +494,11 @@ describe('server', () => {
 
       expect(status).toBe(200);
       expect(sendSpy).toHaveBeenCalledWith(
-        'cf_swap_rate',
+        'cf_swap_rate_v2',
         { asset: 'USDC', chain: 'Ethereum' },
         { asset: 'ETH', chain: 'Ethereum' },
-        hexEncodeNumber(98000000), // deposit amount - ingress fee
+        hexEncodeNumber(100e6), // deposit amount
+        [],
       );
       expect(body).toMatchObject({
         egressAmount: (1e18 - 25000).toString(),
@@ -783,22 +516,23 @@ describe('server', () => {
             type: 'NETWORK',
           },
           {
-            amount: '196000',
-            asset: 'USDC',
-            chain: 'Ethereum',
-            type: 'LIQUIDITY',
-          },
-          {
             amount: '25000',
             asset: 'ETH',
             chain: 'Ethereum',
             type: 'EGRESS',
           },
         ],
+        poolInfo: [
+          {
+            baseAsset: { asset: 'ETH', chain: 'Ethereum' },
+            fee: { amount: '196000', asset: 'USDC', chain: 'Ethereum' },
+            quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
+          },
+        ],
       });
     });
 
-    it('gets the quote to usdc', async () => {
+    it('gets the quote to USDC', async () => {
       mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_environment') {
           return Promise.resolve({
@@ -806,14 +540,6 @@ describe('server', () => {
               maxSwapAmount: null,
               ingressFee: hexEncodeNumber(0x61a8),
               egressFee: hexEncodeNumber(0x0),
-            }),
-          });
-        }
-
-        if (data.method === 'cf_swap_rate') {
-          return Promise.resolve({
-            data: swapRate({
-              output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
             }),
           });
         }
@@ -828,6 +554,9 @@ describe('server', () => {
       });
 
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        ingress_fee: buildFee('Eth', 25000).bigint,
+        egress_fee: buildFee('Usdc', 0).bigint,
+        network_fee: buildFee('Usdc', 100100).bigint,
         intermediary: null,
         output: BigInt(100e6),
       });
@@ -859,16 +588,21 @@ describe('server', () => {
             type: 'NETWORK',
           },
           {
-            amount: '1999999999999950',
-            asset: 'ETH',
-            chain: 'Ethereum',
-            type: 'LIQUIDITY',
-          },
-          {
             amount: '0',
             asset: 'USDC',
             chain: 'Ethereum',
             type: 'EGRESS',
+          },
+        ],
+        poolInfo: [
+          {
+            baseAsset: { asset: 'ETH', chain: 'Ethereum' },
+            fee: {
+              amount: '1999999999999950',
+              asset: 'ETH',
+              chain: 'Ethereum',
+            },
+            quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
           },
         ],
       });
@@ -878,9 +612,11 @@ describe('server', () => {
     it('gets the quote with intermediate amount', async () => {
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         intermediary: BigInt(2000e6),
-        output: BigInt(1e18),
-      });
-      mockRpcs({ ingressFee: hexEncodeNumber(2000000), egressFee: hexEncodeNumber(25000) });
+        output: 999999999999975000n,
+        egress_fee: buildFee('Eth', 25000).bigint,
+        ingress_fee: buildFee('Flip', 2000000).bigint,
+        network_fee: buildFee('Usdc', 2000000).bigint,
+      } as CfSwapRateV2);
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -910,22 +646,26 @@ describe('server', () => {
             type: 'NETWORK',
           },
           {
-            amount: '999999999998000',
-            asset: 'FLIP',
-            chain: 'Ethereum',
-            type: 'LIQUIDITY',
-          },
-          {
-            amount: '4000000',
-            asset: 'USDC',
-            chain: 'Ethereum',
-            type: 'LIQUIDITY',
-          },
-          {
             amount: '25000',
             asset: 'ETH',
             chain: 'Ethereum',
             type: 'EGRESS',
+          },
+        ],
+        poolInfo: [
+          {
+            fee: {
+              amount: '999999999998000',
+              asset: 'FLIP',
+              chain: 'Ethereum',
+            },
+          },
+          {
+            fee: {
+              amount: '4000000',
+              asset: 'USDC',
+              chain: 'Ethereum',
+            },
           },
         ],
       });
@@ -934,9 +674,12 @@ describe('server', () => {
 
     it('gets the quote with low liquidity warning', async () => {
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        ingress_fee: buildFee('Flip', 2000000).bigint,
+        network_fee: buildFee('Usdc', 2994000).bigint,
+        egress_fee: buildFee('Eth', 25000).bigint,
         intermediary: BigInt(2994e6),
-        output: BigInt(2e18),
-      });
+        output: 1999999999999975000n,
+      } as CfSwapRateV2);
 
       mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_environment') {
@@ -949,7 +692,7 @@ describe('server', () => {
           });
         }
 
-        if (data.method === 'cf_swap_rate') {
+        if (data.method === 'cf_swap_rate_v2') {
           return Promise.resolve({
             data: swapRate({
               output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
@@ -997,8 +740,11 @@ describe('server', () => {
 
     it('gets the quote for deprecated params without the chain', async () => {
       jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        intermediary: BigInt(2000000000),
-        output: BigInt(1e18),
+        ingress_fee: buildFee('Flip', 2000000).bigint,
+        network_fee: buildFee('Usdc', 2000000).bigint,
+        egress_fee: buildFee('Eth', 25000).bigint,
+        intermediary: 2000000000n,
+        output: 999999999999975000n,
       });
 
       mockRpcResponse((url, data: any) => {
@@ -1032,54 +778,6 @@ describe('server', () => {
       const params = new URLSearchParams({
         srcAsset: 'FLIP',
         destAsset: 'ETH',
-        amount: (1e18).toString(),
-      });
-
-      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
-
-      expect(status).toBe(200);
-      expect(body).toMatchSnapshot();
-    });
-
-    it('gets the quote when ingress and egress fee is returned as fee asset amount', async () => {
-      jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        intermediary: null,
-        output: BigInt(2000e6),
-      });
-
-      const rpcEnvironment = environment();
-      rpcEnvironment.result.ingress_egress.ingress_fees.Ethereum.FLIP = '0xF4240'; // 1000000
-      rpcEnvironment.result.ingress_egress.ingress_fees.Ethereum.USDC = '0xB71B0'; // 750000
-      rpcEnvironment.result.ingress_egress.egress_fees.Ethereum.FLIP = '0xF4240'; // 1000000
-      rpcEnvironment.result.ingress_egress.egress_fees.Ethereum.USDC = '0xB71B0'; // 750000
-
-      mockRpcResponse((url, data: any) => {
-        if (data.method === 'cf_environment') {
-          return Promise.resolve({
-            data: rpcEnvironment,
-          });
-        }
-
-        if (data.method === 'cf_swap_rate') {
-          return Promise.resolve({
-            data: swapRate({
-              output: `0x${(BigInt(data.params[2]) * 5n).toString(16)}`,
-            }),
-          });
-        }
-
-        if (data.method === 'cf_boost_pools_depth') {
-          return Promise.resolve({
-            data: boostPoolsDepth(),
-          });
-        }
-
-        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
-      });
-
-      const params = new URLSearchParams({
-        srcAsset: 'FLIP',
-        destAsset: 'USDC',
         amount: (1e18).toString(),
       });
 

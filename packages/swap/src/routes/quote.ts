@@ -4,15 +4,15 @@ import { Asset, Assets, Chain, Chains } from '@/shared/enums';
 import { quoteQuerySchema } from '@/shared/schemas';
 import { asyncHandler } from './common';
 import env from '../config/env';
-import { getPipAmountFromAmount } from '../functions';
 import Quoter from '../quoting/Quoter';
-import { buildFee } from '../utils/fees';
+import { getBoostFeeBpsForAmount } from '../utils/boost';
 import getPoolQuote from '../utils/getPoolQuote';
 import logger from '../utils/logger';
-import { validateSwapAmount } from '../utils/rpc';
+import { getPools } from '../utils/pools';
+import { getIngressFee, validateSwapAmount } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
 
-const handleQuotingError = async (res: express.Response, err: unknown) => {
+const handleQuotingError = (res: express.Response, err: unknown) => {
   if (err instanceof ServiceError) throw err;
 
   const message = err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';
@@ -86,34 +86,39 @@ const quoteRouter = (io: Server) => {
         throw ServiceError.badRequest(amountResult.reason);
       }
 
+      const ingressFee = await getIngressFee(srcAsset);
+
+      if (ingressFee === null) {
+        throw ServiceError.internalError(`could not determine ingress fee for ${srcAsset}`);
+      }
+
+      if (ingressFee > amount) {
+        throw ServiceError.badRequest(`amount is lower than estimated ingress fee (${ingressFee})`);
+      }
+
       try {
-        const limitOrders = await quoter.getLimitOrders(srcAsset, destAsset, amount);
-
-        // TODO: estimate
-        const estimatedBoostFeeBps = 30;
-        const boostFee = getPipAmountFromAmount(amount, estimatedBoostFeeBps);
-
-        const brokerCommission = getPipAmountFromAmount(amount, brokerCommissionBps ?? 0);
-
-        const swapInputAmount = amount - brokerCommission;
-        const [quote, boostedQuote] = await Promise.all([
-          getPoolQuote(srcAsset, destAsset, swapInputAmount, limitOrders),
-          getPoolQuote(srcAsset, destAsset, swapInputAmount - boostFee, limitOrders).catch(
-            () => null,
-          ),
+        const [limitOrders, estimatedBoostFeeBps, pools] = await Promise.all([
+          quoter.getLimitOrders(srcAsset, destAsset, amount),
+          getBoostFeeBpsForAmount({ amount, asset: srcAsset }),
+          getPools(srcAsset, destAsset),
         ]);
 
-        // TODO: estimate LP fees
-        if (brokerCommission !== 0n) {
-          quote.includedFees.push(buildFee(srcAsset, 'BROKER', brokerCommission));
-          if (boostedQuote) {
-            boostedQuote.includedFees.push(buildFee(srcAsset, 'BROKER', brokerCommission));
-          }
-        }
+        const quoteArgs = {
+          srcAsset,
+          destAsset,
+          swapInputAmount: amount,
+          limitOrders,
+          brokerCommissionBps,
+          pools,
+        };
 
-        if (boostedQuote) {
-          boostedQuote.includedFees.push(buildFee(srcAsset, 'BOOST', boostFee));
+        const [quote, boostedQuote] = await Promise.all([
+          getPoolQuote(quoteArgs),
+          estimatedBoostFeeBps &&
+            getPoolQuote({ ...quoteArgs, boostFeeBps: estimatedBoostFeeBps }).catch(() => null),
+        ]);
 
+        if (boostedQuote && estimatedBoostFeeBps) {
           quote.boostQuote = { ...boostedQuote, estimatedBoostFeeBps };
         }
 

@@ -1,5 +1,5 @@
 import { HttpClient, RpcMethod, RpcParams, RpcResult, constants } from '@chainflip/rpc';
-import { ChainflipNetwork } from '../enums';
+import { ChainflipNetwork, getInternalAsset } from '../enums';
 
 type CamelCase<T> = T extends string
   ? T extends `${infer F}_${infer R}`
@@ -47,6 +47,17 @@ const createRequest =
     return camelCaseKeys(result);
   };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AsyncFn = (...args: any[]) => Promise<any>;
+
+const transform =
+  <T, F extends AsyncFn>(
+    fn: F,
+    cb: (value: Awaited<ReturnType<F>>) => T,
+  ): ((...args: Parameters<F>) => Promise<T>) =>
+  (...args) =>
+    fn(...args).then(cb);
+
 export const getFundingEnvironment = createRequest('cf_funding_environment');
 
 export const getSwappingEnvironment = createRequest('cf_swapping_environment');
@@ -67,7 +78,13 @@ export const getRuntimeVersion = createRequest('state_getRuntimeVersion');
 
 export const getBlockHash = createRequest('chain_getBlockHash');
 
-export const getAllBoostPoolsDepth = createRequest('cf_boost_pools_depth');
+export const getAllBoostPoolsDepth = transform(createRequest('cf_boost_pools_depth'), (result) =>
+  result.map(({ availableAmount, tier, ...rest }) => ({
+    asset: getInternalAsset(rest),
+    tier,
+    availableAmount,
+  })),
+);
 
 export type BoostPoolsDepth = Awaited<ReturnType<typeof getAllBoostPoolsDepth>>;
 

@@ -1,12 +1,140 @@
-import { InternalAsset, assetConstants } from '@/shared/enums';
-import { SwapFee } from '@/shared/schemas';
+import assert from 'assert';
+import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
+import { InternalAsset, InternalAssets, assetConstants } from '@/shared/enums';
+import { getHundredthPipAmountFromAmount, ONE_IN_HUNDREDTH_PIPS } from '@/shared/functions';
+import { PoolFee, SwapFee } from '@/shared/schemas';
+import { getPools } from '@/swap/utils/pools';
+import { Pool } from '../client';
+import env from '../config/env';
 
-export const buildFee = (
+export function buildFee(
   internalAsset: InternalAsset,
   type: SwapFee['type'],
   amount: bigint,
-): SwapFee => {
+): SwapFee;
+export function buildFee(
+  internalAsset: InternalAsset,
+  type: PoolFee['type'],
+  amount: bigint,
+): PoolFee;
+export function buildFee(
+  internalAsset: InternalAsset,
+  type: SwapFee['type'] | PoolFee['type'],
+  amount: bigint,
+): SwapFee | PoolFee;
+export function buildFee(
+  internalAsset: InternalAsset,
+  type: SwapFee['type'] | PoolFee['type'],
+  amount: bigint,
+): SwapFee | PoolFee {
   const { asset, chain } = assetConstants[internalAsset];
 
   return { type, chain, asset, amount: amount.toString() };
+}
+
+export const getPoolFees = (
+  srcAsset: InternalAsset,
+  destAsset: InternalAsset,
+  swapInputAmount: bigint,
+  intermediateAmount: bigint | null | undefined,
+  pools: Pool[],
+): [PoolFee] | [PoolFee, PoolFee] => {
+  if (srcAsset === InternalAssets.Usdc || destAsset === InternalAssets.Usdc) {
+    return [
+      buildFee(
+        srcAsset,
+        'LIQUIDITY',
+        getHundredthPipAmountFromAmount(swapInputAmount, pools[0].liquidityFeeHundredthPips),
+      ),
+    ];
+  }
+
+  assert(intermediateAmount != null, 'no intermediate amount given');
+
+  return [
+    buildFee(
+      srcAsset,
+      'LIQUIDITY',
+      getHundredthPipAmountFromAmount(swapInputAmount, pools[0].liquidityFeeHundredthPips),
+    ),
+    buildFee(
+      'Usdc',
+      'LIQUIDITY',
+      getHundredthPipAmountFromAmount(intermediateAmount, pools[1].liquidityFeeHundredthPips),
+    ),
+  ];
+};
+
+export const calculateIncludedSwapFees = async (
+  srcAsset: InternalAsset,
+  destAsset: InternalAsset,
+  swapInputAmount: bigint,
+  intermediateAmount: bigint | null | undefined,
+  swapOutputAmount: bigint,
+): Promise<(SwapFee | PoolFee)[]> => {
+  const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(env.CHAINFLIP_NETWORK);
+  if (srcAsset === 'Usdc' && destAsset === 'Usdc') {
+    return [
+      {
+        type: 'NETWORK',
+        chain: assetConstants[InternalAssets.Usdc].chain,
+        asset: assetConstants[InternalAssets.Usdc].asset,
+        amount: getHundredthPipAmountFromAmount(
+          swapInputAmount,
+          networkFeeHundredthPips,
+        ).toString(),
+      },
+    ];
+  }
+
+  const pools = await getPools(srcAsset, destAsset);
+  const lpFees = getPoolFees(srcAsset, destAsset, swapInputAmount, intermediateAmount, pools);
+
+  if (srcAsset === InternalAssets.Usdc) {
+    return [
+      {
+        type: 'NETWORK',
+        chain: assetConstants[InternalAssets.Usdc].chain,
+        asset: assetConstants[InternalAssets.Usdc].asset,
+        amount: getHundredthPipAmountFromAmount(
+          swapInputAmount,
+          networkFeeHundredthPips,
+        ).toString(),
+      },
+    ];
+  }
+
+  if (destAsset === InternalAssets.Usdc) {
+    const stableAmountBeforeNetworkFee =
+      (swapOutputAmount * BigInt(ONE_IN_HUNDREDTH_PIPS)) /
+      BigInt(ONE_IN_HUNDREDTH_PIPS - networkFeeHundredthPips);
+
+    return [
+      {
+        type: 'NETWORK',
+        chain: assetConstants[InternalAssets.Usdc].chain,
+        asset: assetConstants[InternalAssets.Usdc].asset,
+        amount: getHundredthPipAmountFromAmount(
+          stableAmountBeforeNetworkFee,
+          networkFeeHundredthPips,
+        ).toString(),
+      },
+      ...lpFees,
+    ];
+  }
+
+  assert(intermediateAmount != null, 'no intermediate amount given');
+
+  return [
+    {
+      type: 'NETWORK',
+      chain: assetConstants[InternalAssets.Usdc].chain,
+      asset: assetConstants[InternalAssets.Usdc].asset,
+      amount: getHundredthPipAmountFromAmount(
+        intermediateAmount,
+        networkFeeHundredthPips,
+      ).toString(),
+    },
+    ...lpFees,
+  ];
 };

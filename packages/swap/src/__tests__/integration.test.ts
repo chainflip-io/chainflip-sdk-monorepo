@@ -12,7 +12,7 @@ import { QuoteQueryParams } from '@/shared/schemas';
 import { environment, mockRpcResponse, swapRate } from '@/shared/tests/fixtures';
 import prisma, { InternalAsset } from '../client';
 import app from '../server';
-import { getSwapRate } from '../utils/statechain';
+import { getSwapRateV2 } from '../utils/statechain';
 
 const execAsync = promisify(exec);
 
@@ -153,7 +153,7 @@ describe('python integration test', () => {
     } as QuoteQueryParams;
     const params = new URLSearchParams(query as Record<string, any>);
 
-    jest.mocked(getSwapRate).mockResolvedValueOnce({
+    jest.mocked(getSwapRateV2).mockResolvedValueOnce({
       intermediateAmount: 2000000000n,
       outputAmount: 0n, // this shouldn't be the result
       quoteType: 'pool',
