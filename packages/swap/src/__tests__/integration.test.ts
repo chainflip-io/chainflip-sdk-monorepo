@@ -9,7 +9,7 @@ import { Observable, filter, firstValueFrom, from, map, shareReplay, timeout } f
 import { promisify } from 'util';
 import { Assets, Chains, InternalAssets } from '@/shared/enums';
 import { QuoteQueryParams } from '@/shared/schemas';
-import { boostPoolsDepth, environment, mockRpcResponse, swapRate } from '@/shared/tests/fixtures';
+import { boostPoolsDepth, environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import prisma, { InternalAsset } from '../client';
 import app from '../server';
 import { getSwapRateV2 } from '../utils/statechain';
@@ -67,14 +67,6 @@ describe('python integration test', () => {
             maxSwapAmount: null,
             ingressFee: hexEncodeNumber(2000000),
             egressFee: hexEncodeNumber(50000),
-          }),
-        });
-      }
-
-      if (data.method === 'cf_swap_rate_v2') {
-        return Promise.resolve({
-          data: swapRate({
-            output: hexEncodeNumber(BigInt(data.params[2]) * 2n),
           }),
         });
       }
