@@ -1,10 +1,11 @@
 import { WsClient, RpcParams } from '@chainflip/rpc';
 import { hexEncodeNumber } from '@chainflip/utils/number';
+import WebSocket from 'ws';
 import { InternalAsset, getAssetAndChain } from '@/shared/enums';
 import { memoize } from './function';
 import env from '../config/env';
 
-const initializeClient = memoize(() => new WsClient(env.RPC_NODE_WSS_URL));
+const initializeClient = memoize(() => new WsClient(env.RPC_NODE_WSS_URL, WebSocket as never));
 
 export type SwapRateArgs = {
   srcAsset: InternalAsset;
