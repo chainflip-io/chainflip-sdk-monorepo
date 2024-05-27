@@ -3,6 +3,7 @@
   "extends": ["airbnb-base", "plugin:@typescript-eslint/recommended", "prettier"],
   "plugins": ["@typescript-eslint"],
   "parserOptions": { "sourceType": "module", "ecmaVersion": "latest" },
+  "env": { "jest": true },
   "rules": {
     "no-underscore-dangle": "off",
     "@typescript-eslint/array-type": "error",
