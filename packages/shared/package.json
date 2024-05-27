@@ -18,7 +18,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@chainflip/utils": "^0.1.4",
+    "@chainflip/rpc": "^1.4.0",
+    "@chainflip/utils": "^0.1.5",
     "axios": "^1.6.8",
     "bech32-buffer": "^0.2.1",
     "ethers": "^6.11.1",

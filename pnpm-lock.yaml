@@ -117,8 +117,8 @@ importers:
   packages/cli:
     dependencies:
       '@chainflip/utils':
-        specifier: ^0.1.4
-        version: 0.1.4
+        specifier: ^0.1.5
+        version: 0.1.5
       axios:
         specifier: ^1.x
         version: 1.6.7
@@ -153,9 +153,12 @@ importers:
 
   packages/sdk:
     dependencies:
+      '@chainflip/rpc':
+        specifier: ^1.4.0
+        version: 1.4.0
       '@chainflip/utils':
-        specifier: ^0.1.4
-        version: 0.1.4
+        specifier: ^0.1.5
+        version: 0.1.5
       axios:
         specifier: ^1.6.8
         version: 1.6.8
@@ -169,9 +172,12 @@ importers:
 
   packages/shared:
     dependencies:
+      '@chainflip/rpc':
+        specifier: ^1.4.0
+        version: 1.4.0
       '@chainflip/utils':
-        specifier: ^0.1.4
-        version: 0.1.4
+        specifier: ^0.1.5
+        version: 0.1.5
       axios:
         specifier: ^1.6.8
         version: 1.6.8
@@ -215,9 +221,12 @@ importers:
 
   packages/swap:
     dependencies:
+      '@chainflip/rpc':
+        specifier: ^1.4.0
+        version: 1.4.0
       '@chainflip/utils':
-        specifier: ^0.1.4
-        version: 0.1.4
+        specifier: ^0.1.5
+        version: 0.1.5
       '@polkadot/types':
         specifier: ^11.0.2
         version: 11.1.1
@@ -732,8 +741,11 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@chainflip/utils@0.1.4':
-    resolution: {integrity: sha512-ahIR31yoMyAsg5uxO41+kcb9JamQX4SHGLzLO7lMZm1THsYc55RjouCyuTD2zSzqmxmhNv/D24JhGGoBbZB44w==}
+  '@chainflip/rpc@1.4.0':
+    resolution: {integrity: sha512-VSiEIdayfdsT+MEcy1fkRLhQZiOlP3sZ7Pzh2sxNYZdlHncUJoc5Md6CIDDysZpwwhuY3G0nDfIALjIxxXJVqg==}
+
+  '@chainflip/utils@0.1.5':
+    resolution: {integrity: sha512-k3YxNjQnyube95N1tFKcfzVASYtiE53iIYcPmz9G/db+dKdxU39TTaHT40pjnpYedPqh8CBiA5ltiBR+Zap5yw==}
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -5966,7 +5978,12 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@chainflip/utils@0.1.4': {}
+  '@chainflip/rpc@1.4.0':
+    dependencies:
+      '@chainflip/utils': 0.1.5
+      zod: 3.23.8
+
+  '@chainflip/utils@0.1.5': {}
 
   '@colors/colors@1.6.0': {}
 

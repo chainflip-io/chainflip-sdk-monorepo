@@ -5,7 +5,7 @@ exports[`getAllBoostPoolsDepth retrieves the boost pools depth balance 1`] = `
   [
     "https://archive.perseverance.chainflip.io",
     {
-      "id": 1,
+      "id": "1",
       "jsonrpc": "2.0",
       "method": "cf_boost_pools_depth",
       "params": [],
@@ -17,106 +17,46 @@ exports[`getAllBoostPoolsDepth retrieves the boost pools depth balance 1`] = `
 exports[`getAllBoostPoolsDepth retrieves the boost pools depth balance: boost pools depth 1`] = `
 [
   {
-    "asset": "FLIP",
-    "availableAmount": 0n,
-    "chain": "Ethereum",
-    "tier": 5,
-  },
-  {
-    "asset": "FLIP",
-    "availableAmount": 0n,
-    "chain": "Ethereum",
-    "tier": 30,
-  },
-  {
-    "asset": "FLIP",
-    "availableAmount": 0n,
-    "chain": "Ethereum",
-    "tier": 10,
-  },
-  {
     "asset": "ETH",
     "availableAmount": 0n,
-    "chain": "Ethereum",
+    "chain": "Arbitrum",
     "tier": 5,
   },
   {
     "asset": "ETH",
     "availableAmount": 0n,
-    "chain": "Ethereum",
-    "tier": 30,
+    "chain": "Arbitrum",
+    "tier": 10,
   },
   {
     "asset": "ETH",
     "availableAmount": 0n,
-    "chain": "Ethereum",
-    "tier": 10,
-  },
-  {
-    "asset": "USDT",
-    "availableAmount": 0n,
-    "chain": "Ethereum",
-    "tier": 5,
-  },
-  {
-    "asset": "USDT",
-    "availableAmount": 0n,
-    "chain": "Ethereum",
-    "tier": 30,
-  },
-  {
-    "asset": "USDT",
-    "availableAmount": 0n,
-    "chain": "Ethereum",
-    "tier": 10,
-  },
-  {
-    "asset": "USDC",
-    "availableAmount": 0n,
-    "chain": "Ethereum",
-    "tier": 5,
-  },
-  {
-    "asset": "USDC",
-    "availableAmount": 0n,
-    "chain": "Ethereum",
+    "chain": "Arbitrum",
     "tier": 30,
   },
   {
     "asset": "USDC",
     "availableAmount": 0n,
-    "chain": "Ethereum",
-    "tier": 10,
-  },
-  {
-    "asset": "DOT",
-    "availableAmount": 0n,
-    "chain": "Polkadot",
+    "chain": "Arbitrum",
     "tier": 5,
   },
   {
-    "asset": "DOT",
+    "asset": "USDC",
     "availableAmount": 0n,
-    "chain": "Polkadot",
-    "tier": 30,
+    "chain": "Arbitrum",
+    "tier": 10,
   },
   {
-    "asset": "DOT",
+    "asset": "USDC",
     "availableAmount": 0n,
-    "chain": "Polkadot",
-    "tier": 10,
+    "chain": "Arbitrum",
+    "tier": 30,
   },
   {
     "asset": "BTC",
     "availableAmount": 0n,
     "chain": "Bitcoin",
     "tier": 5,
-  },
-  {
-    "asset": "BTC",
-    "availableAmount": 0n,
-    "chain": "Bitcoin",
-    "tier": 30,
   },
   {
     "asset": "BTC",
@@ -125,40 +65,100 @@ exports[`getAllBoostPoolsDepth retrieves the boost pools depth balance: boost po
     "tier": 10,
   },
   {
-    "asset": "USDC",
+    "asset": "BTC",
     "availableAmount": 0n,
-    "chain": "Arbitrum",
-    "tier": 5,
-  },
-  {
-    "asset": "USDC",
-    "availableAmount": 0n,
-    "chain": "Arbitrum",
-    "tier": 30,
-  },
-  {
-    "asset": "USDC",
-    "availableAmount": 0n,
-    "chain": "Arbitrum",
-    "tier": 10,
-  },
-  {
-    "asset": "ETH",
-    "availableAmount": 0n,
-    "chain": "Arbitrum",
-    "tier": 5,
-  },
-  {
-    "asset": "ETH",
-    "availableAmount": 0n,
-    "chain": "Arbitrum",
+    "chain": "Bitcoin",
     "tier": 30,
   },
   {
     "asset": "ETH",
     "availableAmount": 0n,
-    "chain": "Arbitrum",
+    "chain": "Ethereum",
+    "tier": 5,
+  },
+  {
+    "asset": "ETH",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
     "tier": 10,
+  },
+  {
+    "asset": "ETH",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 30,
+  },
+  {
+    "asset": "FLIP",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 5,
+  },
+  {
+    "asset": "FLIP",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 10,
+  },
+  {
+    "asset": "FLIP",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 30,
+  },
+  {
+    "asset": "USDC",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 5,
+  },
+  {
+    "asset": "USDC",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 10,
+  },
+  {
+    "asset": "USDC",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 30,
+  },
+  {
+    "asset": "USDT",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 5,
+  },
+  {
+    "asset": "USDT",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 10,
+  },
+  {
+    "asset": "USDT",
+    "availableAmount": 0n,
+    "chain": "Ethereum",
+    "tier": 30,
+  },
+  {
+    "asset": "DOT",
+    "availableAmount": 0n,
+    "chain": "Polkadot",
+    "tier": 5,
+  },
+  {
+    "asset": "DOT",
+    "availableAmount": 0n,
+    "chain": "Polkadot",
+    "tier": 10,
+  },
+  {
+    "asset": "DOT",
+    "availableAmount": 0n,
+    "chain": "Polkadot",
+    "tier": 30,
   },
 ]
 `;
@@ -168,7 +168,7 @@ exports[`getFundingEnvironment retrieves the funding environment 1`] = `
   [
     "https://archive.perseverance.chainflip.io",
     {
-      "id": 1,
+      "id": "1",
       "jsonrpc": "2.0",
       "method": "cf_funding_environment",
       "params": [],
@@ -182,7 +182,7 @@ exports[`getIngressEgressEnvironment retrieves the ingress egress environment 1`
   [
     "https://archive.perseverance.chainflip.io",
     {
-      "id": 1,
+      "id": "1",
       "jsonrpc": "2.0",
       "method": "cf_ingress_egress_environment",
       "params": [],
@@ -196,7 +196,7 @@ exports[`getSwappingEnvironment retrieves the swapping environment 1`] = `
   [
     "https://archive.perseverance.chainflip.io",
     {
-      "id": 1,
+      "id": "1",
       "jsonrpc": "2.0",
       "method": "cf_swapping_environment",
       "params": [],

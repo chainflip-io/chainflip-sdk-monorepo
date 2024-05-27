@@ -1,14 +1,8 @@
+import { HttpClient, RpcMethod, RpcParams, RpcResult, constants } from '@chainflip/rpc';
 import axios from 'axios';
-import { z } from 'zod';
-import {
-  BaseAssetAndChain,
-  ChainflipNetwork,
-  ChainflipNetworks,
-  UncheckedAssetAndChain,
-} from '../enums';
-import { hexString, number, u128, uncheckedAssetAndChain } from '../parsers';
-
-const numberOrHex = z.union([z.string(), z.number()]).transform((str) => BigInt(str));
+import z from 'zod';
+import { BaseAssetAndChain, ChainflipNetwork } from '../enums';
+import { u128 } from '../parsers';
 
 type CamelCase<T> = T extends string
   ? T extends `${infer F}_${infer R}`
@@ -40,215 +34,88 @@ const camelCaseKeys = <T>(obj: T): CamelCaseValue<T> => {
   ) as CamelCaseValue<T>;
 };
 
-const RPC_URLS: Record<ChainflipNetwork, string> = {
-  [ChainflipNetworks.backspin]: 'https://backspin-rpc.staging',
-  [ChainflipNetworks.sisyphos]: 'https://archive.sisyphos.chainflip.io',
-  [ChainflipNetworks.perseverance]: 'https://archive.perseverance.chainflip.io',
-  [ChainflipNetworks.mainnet]: 'https://mainnet-rpc.chainflip.io',
-};
-
 export type RpcConfig = { rpcUrl: string } | { network: ChainflipNetwork };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type WithHash<T> = { [K in keyof T]: T[K] extends any[] ? [...T[K], at?: string | null] : never };
-
-type RpcParams = WithHash<{
-  cf_environment: [];
-  cf_supported_assets: [];
-  cf_swapping_environment: [];
-  cf_ingress_egress_environment: [];
-  cf_funding_environment: [];
-  cf_pool_info: [];
-  cf_pool_orders: [
-    baseAsset: BaseAssetAndChain,
-    quoteAsset: { chain: 'Ethereum'; asset: 'USDC' },
-    lp?: `cF${string}` | null,
-  ];
-  cf_swap_rate: [
-    fromAsset: UncheckedAssetAndChain,
-    toAsset: UncheckedAssetAndChain,
-    amount: `0x${string}`,
-  ];
-  cf_pool_price_v2: [
-    baseAsset: BaseAssetAndChain,
-    quoteAsset: { chain: 'Ethereum'; asset: 'USDC' },
-  ];
-  cf_boost_pools_depth: [];
-  state_getMetadata: [];
-  state_getRuntimeVersion: [];
-}> & {
-  chain_getBlockHash: [blockHeight?: number];
-};
-
-type RpcMethod = keyof RpcParams;
-
 const createRequest =
-  <M extends RpcMethod, R extends z.ZodTypeAny>(method: M, responseParser: R) =>
+  <M extends RpcMethod>(method: M) =>
   async (
     urlOrNetwork: RpcConfig,
     ...params: RpcParams[M]
-  ): Promise<CamelCaseValue<z.output<R>>> => {
-    const url = 'network' in urlOrNetwork ? RPC_URLS[urlOrNetwork.network] : urlOrNetwork.rpcUrl;
-    const { data } = await axios.post(url, { jsonrpc: '2.0', method, params, id: 1 });
-
-    const result = responseParser.safeParse(data.result);
-
-    if (result.success) {
-      return camelCaseKeys(result.data);
-    }
-
-    throw new Error(`RPC request "${method}" failed`, { cause: data.error });
+  ): Promise<CamelCaseValue<RpcResult<M>>> => {
+    const url =
+      'network' in urlOrNetwork
+        ? constants.PUBLIC_RPC_ENDPOINTS[urlOrNetwork.network]
+        : urlOrNetwork.rpcUrl;
+    const result = await new HttpClient(url).sendRequest(method, ...params);
+    return camelCaseKeys(result);
   };
 
-const createRequestWithoutParser =
-  <M extends RpcMethod>(method: M) =>
-  async (urlOrNetwork: RpcConfig, ...params: RpcParams[M]): Promise<string> => {
-    const url = 'network' in urlOrNetwork ? RPC_URLS[urlOrNetwork.network] : urlOrNetwork.rpcUrl;
-    const { data } = await axios.post(
-      url,
-      {
-        jsonrpc: '2.0',
-        method,
-        params,
-        id: 1,
-      },
-      // prevent JSON.parse from being called because the RPC we are requesting
-      // returns numbers that are unsafe to parse
-      { transformResponse: (d) => d },
-    );
+export const getFundingEnvironment = createRequest('cf_funding_environment');
 
-    return data;
-  };
+export const getSwappingEnvironment = createRequest('cf_swapping_environment');
 
-const fundingEnvironment = z.object({
-  redemption_tax: numberOrHex,
-  minimum_funding_amount: numberOrHex,
-});
-export const getFundingEnvironment = createRequest('cf_funding_environment', fundingEnvironment);
+export const getIngressEgressEnvironment = createRequest('cf_ingress_egress_environment');
 
-const chainAssetMapFactory = <Z extends z.ZodTypeAny>(parser: Z, defaultValue: z.input<Z>) =>
-  z.object({
-    Bitcoin: z.object({ BTC: parser }),
-    Ethereum: z.object({
-      ETH: parser,
-      USDC: parser,
-      FLIP: parser,
-      USDT: parser.default(defaultValue), // TODO: remove default once usdt is available on all networks
-    }),
-    Polkadot: z.object({ DOT: parser }),
-    Arbitrum: z
-      .object({ ETH: parser, USDC: parser })
-      .default({ ETH: defaultValue, USDC: defaultValue }), // TODO: remove default once arbitrum is available on all networks
-  });
-
-const chainMapFactory = <Z extends z.ZodTypeAny>(parser: Z, defaultValue: z.input<Z>) =>
-  z.object({
-    Bitcoin: parser,
-    Ethereum: parser,
-    Polkadot: parser,
-    Arbitrum: parser.default(defaultValue), // TODO: remove once arbitrum is available on all networks
-  });
-const chainNumberNullableMap = chainMapFactory(numberOrHex.nullable(), null);
-
-const swappingEnvironment = z.object({
-  maximum_swap_amounts: chainAssetMapFactory(numberOrHex.nullable(), null),
-});
-
-export const getSwappingEnvironment = createRequest('cf_swapping_environment', swappingEnvironment);
-
-type Rename<T, U extends Record<string, string>> = Omit<T, keyof U> & {
-  [K in keyof U as NonNullable<U[K]>]: K extends keyof T ? T[K] : never;
-};
-
-const rename =
-  <const U extends Record<string, string>>(mapping: U) =>
-  <T>(obj: T): Rename<T, U> =>
-    Object.fromEntries(
-      Object.entries(obj as Record<string, unknown>).map(([key, value]) => [
-        key in mapping ? mapping[key] : key,
-        value,
-      ]),
-    ) as Rename<T, U>;
-
-const ingressEgressEnvironment = z
-  .object({
-    minimum_deposit_amounts: chainAssetMapFactory(numberOrHex, 0),
-    ingress_fees: chainAssetMapFactory(numberOrHex.nullable(), null),
-    egress_fees: chainAssetMapFactory(numberOrHex.nullable(), null),
-    witness_safety_margins: chainNumberNullableMap,
-    egress_dust_limits: chainAssetMapFactory(numberOrHex, 1),
-    // TODO(1.3): remove optional and default value
-    channel_opening_fees: chainMapFactory(numberOrHex, 0)
-      .optional()
-      .default({ Bitcoin: 0, Ethereum: 0, Polkadot: 0, Arbitrum: 0 }),
-  })
-  .transform(rename({ egress_dust_limits: 'minimum_egress_amounts' }));
-
-export const getIngressEgressEnvironment = createRequest(
-  'cf_ingress_egress_environment',
-  ingressEgressEnvironment,
-);
-
-const rpcAssetSchema = z.union([
-  z.object({ chain: z.literal('Bitcoin'), asset: z.literal('BTC') }),
-  z.object({ chain: z.literal('Polkadot'), asset: z.literal('DOT') }),
-  z.object({ chain: z.literal('Ethereum'), asset: z.literal('FLIP') }),
-  z.object({ chain: z.literal('Ethereum'), asset: z.literal('ETH') }),
-  z.object({ chain: z.literal('Ethereum'), asset: z.literal('USDC') }),
-  z.object({ chain: z.literal('Ethereum'), asset: z.literal('USDT') }),
-  z.object({ chain: z.literal('Arbitrum'), asset: z.literal('ETH') }),
-  z.object({ chain: z.literal('Arbitrum'), asset: z.literal('USDC') }),
-]);
-
-const environment = z.object({
-  ingress_egress: ingressEgressEnvironment,
-  swapping: swappingEnvironment,
-  funding: fundingEnvironment,
-});
-
-export const getEnvironment = createRequest('cf_environment', environment);
-
-export type RpcEnvironment = z.input<typeof environment>;
+export const getEnvironment = createRequest('cf_environment');
 
 export type Environment = Awaited<ReturnType<typeof getEnvironment>>;
 
-const swapRate = z.object({
-  output: numberOrHex,
-});
-export const getSwapRate = createRequest('cf_swap_rate', swapRate);
+export const getSwapRate = createRequest('cf_swap_rate');
 
-export const getMetadata = createRequest('state_getMetadata', hexString);
+export const getMetadata = createRequest('state_getMetadata');
 
-const supportedAssets = z.array(uncheckedAssetAndChain);
+export const getSupportedAssets = createRequest('cf_supported_assets');
 
-export const getSupportedAssets = createRequest('cf_supported_assets', supportedAssets);
+export const getRuntimeVersion = createRequest('state_getRuntimeVersion');
 
-export const getRuntimeVersion = createRequest(
-  'state_getRuntimeVersion',
-  z.object({ specVersion: z.number() }),
-);
+export const getBlockHash = createRequest('chain_getBlockHash');
 
-export const getPoolOrders = createRequestWithoutParser('cf_pool_orders');
-
-export const getPoolPriceV2 = createRequest(
-  'cf_pool_price_v2',
-  z.object({ range_order: numberOrHex }),
-);
-
-export const getBlockHash = createRequest('chain_getBlockHash', hexString);
-
-const boostPoolsDepthResponseSchema = z.array(
-  z.intersection(
-    rpcAssetSchema,
-    z.object({
-      tier: number,
-      available_amount: u128,
-    }),
-  ),
-);
+export const getAllBoostPoolsDepth = createRequest('cf_boost_pools_depth');
 
 export type BoostPoolsDepth = Awaited<ReturnType<typeof getAllBoostPoolsDepth>>;
-export const getAllBoostPoolsDepth = createRequest(
-  'cf_boost_pools_depth',
-  boostPoolsDepthResponseSchema,
-);
+
+export const getPoolOrders = async (
+  rpcConfig: RpcConfig,
+  baseAsset: BaseAssetAndChain,
+  quoteAsset: { chain: 'Ethereum'; asset: 'USDC' },
+  lp: null,
+  hash: string,
+) => {
+  const url =
+    'network' in rpcConfig ? constants.PUBLIC_RPC_ENDPOINTS[rpcConfig.network] : rpcConfig.rpcUrl;
+  const { data } = await axios.post(
+    url,
+    {
+      id: '1',
+      jsonrpc: '2.0',
+      method: 'cf_pool_orders',
+      params: [baseAsset, quoteAsset, lp, hash],
+    },
+    {
+      transformResponse: (d) => d,
+    },
+  );
+
+  return z.string().parse(data);
+};
+
+export const getPoolPriceV2 = async (
+  rpcConfig: RpcConfig,
+  baseAsset: BaseAssetAndChain,
+  quoteAsset: { chain: 'Ethereum'; asset: 'USDC' },
+  hash: string,
+) => {
+  const url =
+    'network' in rpcConfig ? constants.PUBLIC_RPC_ENDPOINTS[rpcConfig.network] : rpcConfig.rpcUrl;
+  const { data } = await axios.post(url, {
+    id: '1',
+    jsonrpc: '2.0',
+    method: 'cf_pool_price_v2',
+    params: [baseAsset, quoteAsset, hash],
+  });
+
+  return z
+    .object({ range_order: u128 })
+    .transform(({ range_order }) => ({ rangeOrder: range_order }))
+    .parse(data);
+};

@@ -1,14 +1,11 @@
 import { InternalAssets } from '@/shared/enums';
+import { mockRpcResponse } from '@/shared/tests/fixtures';
 import metadataMock from './metadata.json';
 import { DOT_ADDRESS, createDepositChannel, swapEgressIgnoredMock } from './utils';
 import prisma from '../../client';
 import swapEgressIgnored from '../swapEgressIgnored';
 
-jest.mock('axios', () => ({
-  post: jest.fn().mockImplementation(async () => ({
-    data: metadataMock,
-  })),
-}));
+mockRpcResponse({ data: metadataMock });
 
 const {
   eventContext: { event },

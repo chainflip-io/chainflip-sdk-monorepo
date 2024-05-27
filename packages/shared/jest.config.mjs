@@ -5,4 +5,5 @@ process.env.RPC_BROKER_HTTPS_URL = 'wss://rpc-broker.example.com';
 
 export default {
   ...baseConfig,
+  setupFilesAfterEnv: ['<rootDir>/jest-setup.mjs'],
 };

@@ -1,3 +1,5 @@
+import { hexEncodeNumber } from '@chainflip/utils/number';
+import axios from 'axios';
 import { spawn, ChildProcessWithoutNullStreams, exec } from 'child_process';
 import * as crypto from 'crypto';
 import { on, once } from 'events';
@@ -7,7 +9,7 @@ import { Observable, filter, firstValueFrom, from, map, shareReplay, timeout } f
 import { promisify } from 'util';
 import { Assets, Chains, InternalAssets } from '@/shared/enums';
 import { QuoteQueryParams } from '@/shared/schemas';
-import { environment, swapRate } from '@/shared/tests/fixtures';
+import { environment, mockRpcResponse, swapRate } from '@/shared/tests/fixtures';
 import prisma, { InternalAsset } from '../client';
 import PoolStateCache from '../quoting/PoolStateCache';
 import app from '../server';
@@ -19,34 +21,6 @@ jest.mock('../pricing');
 
 jest.mock('../utils/statechain', () => ({
   getSwapRate: jest.fn().mockImplementation(() => Promise.reject(new Error('unexpected call'))),
-}));
-
-jest.mock('axios', () => ({
-  get: jest.fn(),
-  create() {
-    return this;
-  },
-  post: jest.fn((url, data) => {
-    if (data.method === 'cf_environment') {
-      return Promise.resolve({
-        data: environment({
-          maxSwapAmount: null,
-          ingressFee: '2000000',
-          egressFee: '50000',
-        }),
-      });
-    }
-
-    if (data.method === 'cf_swap_rate') {
-      return Promise.resolve({
-        data: swapRate({
-          output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
-        }),
-      });
-    }
-
-    throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
-  }),
 }));
 
 jest.mock('../quoting/PoolStateCache');
@@ -89,6 +63,28 @@ describe('python integration test', () => {
   });
 
   beforeEach(async () => {
+    mockRpcResponse((url, data) => {
+      if (data.method === 'cf_environment') {
+        return Promise.resolve({
+          data: environment({
+            maxSwapAmount: null,
+            ingressFee: hexEncodeNumber(2000000),
+            egressFee: hexEncodeNumber(50000),
+          }),
+        });
+      }
+
+      if (data.method === 'cf_swap_rate') {
+        return Promise.resolve({
+          data: swapRate({
+            output: hexEncodeNumber(BigInt(data.params[2]) * 2n),
+          }),
+        });
+      }
+
+      throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+    });
+
     await prisma.$queryRaw`TRUNCATE TABLE private."MarketMaker" CASCADE`;
     const pair = await generateKeyPairAsync('ed25519');
     privateKey = pair.privateKey.export({ type: 'pkcs8', format: 'pem' }).toString();
@@ -181,8 +177,8 @@ describe('python integration test', () => {
       rangeOrderPrice: 0x1000276a3n,
     });
 
-    const response = await fetch(`${serverUrl}/quote?${params.toString()}`);
+    const response = await axios.get(`${serverUrl}/quote?${params.toString()}`);
 
-    expect(await response.json()).toMatchSnapshot();
+    expect(await response.data).toMatchSnapshot();
   });
 });

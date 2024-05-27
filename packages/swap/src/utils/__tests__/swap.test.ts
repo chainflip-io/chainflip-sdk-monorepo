@@ -1,17 +1,15 @@
-import { environment } from '@/shared/tests/fixtures';
+import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import { estimateSwapDuration } from '@/swap/utils/swap';
 
-jest.mock('axios', () => ({
-  post: jest.fn((url, data) => {
-    if (data.method === 'cf_environment') {
-      return Promise.resolve({
-        data: environment(),
-      });
-    }
+mockRpcResponse((url, data) => {
+  if (data.method === 'cf_environment') {
+    return Promise.resolve({
+      data: environment(),
+    });
+  }
 
-    throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
-  }),
-}));
+  throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+});
 
 describe(estimateSwapDuration, () => {
   it.each([

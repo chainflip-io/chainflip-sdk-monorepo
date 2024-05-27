@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { GraphQLClient } from 'graphql-request';
-import { environment } from '@/shared/tests/fixtures';
+import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import { Event } from '../../gql/generated/graphql';
 import processBlocks from '../../processBlocks';
@@ -13,13 +13,9 @@ jest.mock('graphql-request', () => ({
   },
 }));
 
-jest.mock('axios', () => ({
-  post: jest.fn(() =>
-    Promise.resolve({
-      data: environment({ egressFee: '0x55524' }),
-    }),
-  ),
-}));
+mockRpcResponse({
+  data: environment({ egressFee: '0x55524' }),
+});
 
 const swapDepositAddressReadyEvent = {
   id: '0000000000-000358-8c2f5',

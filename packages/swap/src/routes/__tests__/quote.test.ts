@@ -1,11 +1,12 @@
-import axios from 'axios';
+import { WsClient } from '@chainflip/rpc';
+import { hexEncodeNumber } from '@chainflip/utils/number';
 import { Server } from 'http';
 import request from 'supertest';
-import RpcClient from '@/shared/node-apis/RpcClient';
 import {
   MockedBoostPoolsDepth,
   boostPoolsDepth,
   environment,
+  mockRpcResponse,
   swapRate,
 } from '@/shared/tests/fixtures';
 import prisma, { QuoteResult } from '../../client';
@@ -22,19 +23,18 @@ jest.mock('../../utils/function', () => ({
 
 jest.mock('../../quoting/Quoter');
 
-jest.mock(
-  '@/shared/node-apis/RpcClient',
-  () =>
-    class {
-      async connect() {
-        return this;
-      }
+jest.mock('@chainflip/rpc', () => ({
+  ...jest.requireActual('@chainflip/rpc'),
+  WsClient: class {
+    async connect() {
+      return this;
+    }
 
-      sendRequest(method: string) {
-        throw new Error(`unmocked request: "${method}"`);
-      }
-    },
-);
+    sendRequest(method: string) {
+      throw new Error(`unmocked request: "${method}"`);
+    }
+  },
+}));
 
 jest.mock('@/shared/consts', () => ({
   ...jest.requireActual('@/shared/consts'),
@@ -43,13 +43,6 @@ jest.mock('@/shared/consts', () => ({
 
 jest.mock('../../pricing/checkPriceWarning.ts', () => ({
   checkPriceWarning: jest.fn(),
-}));
-
-jest.mock('axios', () => ({
-  post: jest.fn(),
-  create() {
-    return this;
-  },
 }));
 
 jest.mock('../../pricing/index');
@@ -63,9 +56,11 @@ const mockRpcs = ({
   egressFee: string;
   mockedBoostPoolsDepth?: MockedBoostPoolsDepth;
 }) =>
-  jest.mocked(axios.post).mockImplementation((url, data: any) => {
+  mockRpcResponse((url, data: any) => {
     if (data.method === 'cf_environment') {
-      return Promise.resolve({ data: environment({ maxSwapAmount: null, ingressFee, egressFee }) });
+      return Promise.resolve({
+        data: environment({ maxSwapAmount: null, ingressFee, egressFee }),
+      });
     }
 
     if (data.method === 'cf_swap_rate') {
@@ -116,7 +111,7 @@ describe('server', () => {
     jest
       .mocked(Quoter.prototype.getQuotingState)
       .mockResolvedValue({ quotingActive: false, pairEnabled: false });
-    mockRpcs({ ingressFee: '2000000', egressFee: '50000' });
+    mockRpcs({ ingressFee: hexEncodeNumber(2000000), egressFee: hexEncodeNumber(50000) });
   });
 
   afterEach((cb) => {
@@ -146,8 +141,9 @@ describe('server', () => {
           amount: (100e6).toString(),
         });
 
-        jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-          outputAmount: BigInt(990000000),
+        jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+          intermediary: null,
+          output: BigInt(990000000),
         });
 
         jest.mocked(Quoter.prototype.getQuote).mockResolvedValueOnce({
@@ -183,8 +179,9 @@ describe('server', () => {
           amount: (100e6).toString(),
         });
 
-        jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-          outputAmount: BigInt(990000000),
+        jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+          intermediary: null,
+          output: BigInt(990000000),
         });
 
         jest.mocked(Quoter.prototype.getQuote).mockResolvedValueOnce({
@@ -230,8 +227,9 @@ describe('server', () => {
           amount: (100e6).toString(),
         });
 
-        jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-          outputAmount: BigInt(1000000000),
+        jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+          intermediary: null,
+          output: BigInt(1000000000),
         });
 
         jest.mocked(Quoter.prototype.getQuote).mockResolvedValueOnce({
@@ -267,8 +265,9 @@ describe('server', () => {
           amount: (100e6).toString(),
         });
 
-        jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-          outputAmount: BigInt(1000000000),
+        jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+          intermediary: null,
+          output: BigInt(1000000000),
         });
 
         jest.mocked(Quoter.prototype.getQuote).mockResolvedValueOnce({
@@ -304,8 +303,9 @@ describe('server', () => {
           amount: (100e6).toString(),
         });
 
-        jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-          outputAmount: BigInt(1000000000),
+        jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+          intermediary: null,
+          output: BigInt(1000000000),
         });
 
         jest.mocked(Quoter.prototype.getQuote).mockRejectedValueOnce(new Error('quoter error'));
@@ -331,7 +331,7 @@ describe('server', () => {
         });
 
         jest
-          .spyOn(RpcClient.prototype, 'sendRequest')
+          .spyOn(WsClient.prototype, 'sendRequest')
           .mockRejectedValueOnce(Error('InsufficientLiquidity'));
 
         jest.mocked(Quoter.prototype.getQuote).mockRejectedValueOnce(Error('quoter error'));
@@ -356,7 +356,7 @@ describe('server', () => {
         });
 
         jest
-          .spyOn(RpcClient.prototype, 'sendRequest')
+          .spyOn(WsClient.prototype, 'sendRequest')
           .mockRejectedValueOnce(Error('some other error'));
 
         jest.mocked(Quoter.prototype.getQuote).mockRejectedValueOnce(Error('quoter error'));
@@ -382,7 +382,7 @@ describe('server', () => {
         });
 
         jest
-          .spyOn(RpcClient.prototype, 'sendRequest')
+          .spyOn(WsClient.prototype, 'sendRequest')
           .mockRejectedValueOnce(Error('InsufficientLiquidity'));
 
         jest.mocked(Quoter.prototype.getQuote).mockRejectedValueOnce(Error('quoter error'));
@@ -433,7 +433,7 @@ describe('server', () => {
     });
 
     it('rejects if amount is lower than minimum swap amount', async () => {
-      jest.mocked(axios.post).mockResolvedValue({
+      mockRpcResponse({
         data: environment({ minDepositAmount: '0xffffff' }),
       });
 
@@ -454,7 +454,7 @@ describe('server', () => {
     });
 
     it('rejects if amount is higher than maximum swap amount', async () => {
-      jest.mocked(axios.post).mockResolvedValue({ data: environment({ maxSwapAmount: '0x1' }) });
+      mockRpcResponse({ data: environment({ maxSwapAmount: '0x1' }) });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -492,7 +492,7 @@ describe('server', () => {
     it('returns an error if backend cannot estimate ingress fee', async () => {
       const rpcEnvironment = environment({ maxSwapAmount: null });
       rpcEnvironment.result.ingress_egress.ingress_fees.Ethereum.USDC = null;
-      jest.mocked(axios.post).mockResolvedValue({ data: rpcEnvironment });
+      mockRpcResponse({ data: rpcEnvironment });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -511,8 +511,9 @@ describe('server', () => {
     });
 
     it('rejects when the egress amount is smaller than the egress fee', async () => {
-      const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        outputAmount: BigInt(1250),
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        intermediary: null,
+        output: BigInt(1250),
       });
 
       const params = new URLSearchParams({
@@ -533,7 +534,7 @@ describe('server', () => {
     });
 
     it('returns an error if backend cannot estimate egress fee', async () => {
-      jest.mocked(axios.post).mockImplementation((url, data: any) => {
+      mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_environment') {
           const rpcEnvironment = environment({ maxSwapAmount: null });
           rpcEnvironment.result.ingress_egress.egress_fees.Ethereum.ETH = null;
@@ -552,8 +553,9 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        outputAmount: BigInt(1e18),
+      jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        intermediary: null,
+        output: BigInt(1e18),
       });
 
       const params = new URLSearchParams({
@@ -573,11 +575,12 @@ describe('server', () => {
     });
 
     it('gets the quote from usdc with a broker commission', async () => {
-      const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        outputAmount: BigInt(1e18),
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        intermediary: null,
+        output: BigInt(1e18),
       });
 
-      mockRpcs({ egressFee: '25000', ingressFee: '2000000' });
+      mockRpcs({ egressFee: hexEncodeNumber(25000), ingressFee: hexEncodeNumber(2000000) });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -593,10 +596,10 @@ describe('server', () => {
       expect(status).toBe(200);
 
       expect(sendSpy).toHaveBeenCalledWith(
-        'swap_rate',
+        'cf_swap_rate',
         { asset: 'USDC', chain: 'Ethereum' },
         { asset: 'ETH', chain: 'Ethereum' },
-        '97902000', // deposit amount - ingress fee - broker fee
+        hexEncodeNumber(97902000), // deposit amount - ingress fee - broker fee
       );
       expect(body).toMatchObject({
         egressAmount: (1e18 - 25000).toString(),
@@ -639,19 +642,19 @@ describe('server', () => {
       env.CHAINFLIP_NETWORK = 'backspin';
 
       const sendSpy = jest
-        .spyOn(RpcClient.prototype, 'sendRequest')
+        .spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
-          intermediateAmount: BigInt(2000e6),
-          outputAmount: BigInt(1e18),
+          intermediary: BigInt(2000e6),
+          output: BigInt(1e18),
         })
         .mockResolvedValueOnce({
-          intermediateAmount: BigInt(2000e6 - 5e5),
-          outputAmount: BigInt(1e18 - 5e10),
+          intermediary: BigInt(2000e6 - 5e5),
+          output: BigInt(1e18 - 5e10),
         });
 
       mockRpcs({
-        ingressFee: '100000',
-        egressFee: '25000',
+        ingressFee: hexEncodeNumber(100000),
+        egressFee: hexEncodeNumber(25000),
         mockedBoostPoolsDepth: [
           {
             chain: 'Bitcoin',
@@ -677,19 +680,19 @@ describe('server', () => {
       // Normal swap
       expect(sendSpy).toHaveBeenNthCalledWith(
         1,
-        'swap_rate',
+        'cf_swap_rate',
         { asset: 'BTC', chain: 'Bitcoin' },
         { asset: 'ETH', chain: 'Ethereum' },
-        '99900000', // deposit amount - ingress fee
+        hexEncodeNumber(99900000), // deposit amount - ingress fee
       );
 
       // Boosted swap
       expect(sendSpy).toHaveBeenNthCalledWith(
         2,
-        'swap_rate',
+        'cf_swap_rate',
         { asset: 'BTC', chain: 'Bitcoin' },
         { asset: 'ETH', chain: 'Ethereum' },
-        '99850000', // deposit amount - boost fee - ingress fee
+        hexEncodeNumber(99850000), // deposit amount - boost fee - ingress fee
       );
 
       expect(body).toMatchSnapshot();
@@ -698,14 +701,14 @@ describe('server', () => {
     it("doesn't include boost information inside quote when there is no liquidity to fill the provided amount", async () => {
       env.CHAINFLIP_NETWORK = 'backspin';
 
-      const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        intermediateAmount: BigInt(2000e6),
-        outputAmount: BigInt(1e18),
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        intermediary: BigInt(2000e6),
+        output: BigInt(1e18),
       });
 
       mockRpcs({
-        ingressFee: '100000',
-        egressFee: '25000',
+        ingressFee: hexEncodeNumber(100000),
+        egressFee: hexEncodeNumber(25000),
         mockedBoostPoolsDepth: [
           {
             chain: 'Bitcoin',
@@ -731,20 +734,21 @@ describe('server', () => {
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(sendSpy).toHaveBeenNthCalledWith(
         1,
-        'swap_rate',
+        'cf_swap_rate',
         { asset: 'BTC', chain: 'Bitcoin' },
         { asset: 'ETH', chain: 'Ethereum' },
-        '99900000', // deposit amount - ingress fee
+        hexEncodeNumber(99900000), // deposit amount - ingress fee
       );
 
       expect(body.boostQuote).toBe(undefined);
     });
 
     it('gets the quote from usdc from the pools', async () => {
-      const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        outputAmount: BigInt(1e18),
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        intermediary: null,
+        output: BigInt(1e18),
       });
-      mockRpcs({ ingressFee: '2000000', egressFee: '25000' });
+      mockRpcs({ ingressFee: hexEncodeNumber(2000000), egressFee: hexEncodeNumber(25000) });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -758,10 +762,10 @@ describe('server', () => {
 
       expect(status).toBe(200);
       expect(sendSpy).toHaveBeenCalledWith(
-        'swap_rate',
+        'cf_swap_rate',
         { asset: 'USDC', chain: 'Ethereum' },
         { asset: 'ETH', chain: 'Ethereum' },
-        '98000000', // deposit amount - ingress fee
+        hexEncodeNumber(98000000), // deposit amount - ingress fee
       );
       expect(body).toMatchObject({
         egressAmount: (1e18 - 25000).toString(),
@@ -795,13 +799,13 @@ describe('server', () => {
     });
 
     it('gets the quote to usdc', async () => {
-      jest.mocked(axios.post).mockImplementation((url, data: any) => {
+      mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_environment') {
           return Promise.resolve({
             data: environment({
               maxSwapAmount: null,
-              ingressFee: '0x61A8',
-              egressFee: '0x0',
+              ingressFee: hexEncodeNumber(0x61a8),
+              egressFee: hexEncodeNumber(0x0),
             }),
           });
         }
@@ -823,8 +827,9 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        outputAmount: BigInt(100e6),
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        intermediary: null,
+        output: BigInt(100e6),
       });
 
       const params = new URLSearchParams({
@@ -871,11 +876,11 @@ describe('server', () => {
     });
 
     it('gets the quote with intermediate amount', async () => {
-      const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        intermediateAmount: BigInt(2000e6),
-        outputAmount: BigInt(1e18),
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        intermediary: BigInt(2000e6),
+        output: BigInt(1e18),
       });
-      mockRpcs({ ingressFee: '2000000', egressFee: '25000' });
+      mockRpcs({ ingressFee: hexEncodeNumber(2000000), egressFee: hexEncodeNumber(25000) });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -928,18 +933,18 @@ describe('server', () => {
     });
 
     it('gets the quote with low liquidity warning', async () => {
-      const sendSpy = jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        intermediateAmount: BigInt(2994e6),
-        outputAmount: BigInt(2e18),
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        intermediary: BigInt(2994e6),
+        output: BigInt(2e18),
       });
 
-      jest.mocked(axios.post).mockImplementation((url, data: any) => {
+      mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_environment') {
           return Promise.resolve({
             data: environment({
               maxSwapAmount: null,
-              ingressFee: '2000000',
-              egressFee: '25000',
+              ingressFee: hexEncodeNumber(2000000),
+              egressFee: hexEncodeNumber(25000),
             }),
           });
         }
@@ -991,18 +996,18 @@ describe('server', () => {
     });
 
     it('gets the quote for deprecated params without the chain', async () => {
-      jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        intermediateAmount: BigInt(2000e6),
-        outputAmount: BigInt(1e18),
+      jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        intermediary: BigInt(2000000000),
+        output: BigInt(1e18),
       });
 
-      jest.mocked(axios.post).mockImplementation((url, data: any) => {
+      mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_environment') {
           return Promise.resolve({
             data: environment({
               maxSwapAmount: null,
-              ingressFee: '2000000',
-              egressFee: '25000',
+              ingressFee: hexEncodeNumber(2000000),
+              egressFee: hexEncodeNumber(25000),
             }),
           });
         }
@@ -1037,8 +1042,9 @@ describe('server', () => {
     });
 
     it('gets the quote when ingress and egress fee is returned as fee asset amount', async () => {
-      jest.spyOn(RpcClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        outputAmount: BigInt(2000e6),
+      jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        intermediary: null,
+        output: BigInt(2000e6),
       });
 
       const rpcEnvironment = environment();
@@ -1047,7 +1053,7 @@ describe('server', () => {
       rpcEnvironment.result.ingress_egress.egress_fees.Ethereum.FLIP = '0xF4240'; // 1000000
       rpcEnvironment.result.ingress_egress.egress_fees.Ethereum.USDC = '0xB71B0'; // 750000
 
-      jest.mocked(axios.post).mockImplementation((url, data: any) => {
+      mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_environment') {
           return Promise.resolve({
             data: rpcEnvironment,

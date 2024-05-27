@@ -546,7 +546,7 @@ exports[`SwapSDK getChains returns the correct values for backspin 1`] = `
     "evmChainId": 412346,
     "isMainnet": false,
     "name": "Arbitrum",
-    "requiredBlockConfirmations": undefined,
+    "requiredBlockConfirmations": 2,
   },
 ]
 `;
@@ -579,7 +579,7 @@ exports[`SwapSDK getChains returns the correct values for mainnet 1`] = `
     "evmChainId": 42161,
     "isMainnet": true,
     "name": "Arbitrum",
-    "requiredBlockConfirmations": undefined,
+    "requiredBlockConfirmations": 2,
   },
 ]
 `;
@@ -612,7 +612,7 @@ exports[`SwapSDK getChains returns the correct values for perseverance 1`] = `
     "evmChainId": 421614,
     "isMainnet": false,
     "name": "Arbitrum",
-    "requiredBlockConfirmations": undefined,
+    "requiredBlockConfirmations": 2,
   },
 ]
 `;
@@ -645,7 +645,7 @@ exports[`SwapSDK getChains returns the correct values for sisyphos 1`] = `
     "evmChainId": 421614,
     "isMainnet": false,
     "name": "Arbitrum",
-    "requiredBlockConfirmations": undefined,
+    "requiredBlockConfirmations": 2,
   },
 ]
 `;
@@ -671,7 +671,7 @@ exports[`SwapSDK getChains returns the filtered destination chains for the chain
     "evmChainId": 421614,
     "isMainnet": false,
     "name": "Arbitrum",
-    "requiredBlockConfirmations": undefined,
+    "requiredBlockConfirmations": 2,
   },
 ]
 `;
