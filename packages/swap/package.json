@@ -4,7 +4,7 @@
   "description": "Swap service backend",
   "private": true,
   "scripts": {
-    "build": "pnpm clean && prisma generate && tsc && pnpm --filter amm-addon build && cp -R ../amm-addon dist && tsc-alias",
+    "build": "pnpm clean && prisma generate && tsc && tsc-alias",
     "clean": "rm -rf dist",
     "dev": "tsx watch -r envlocker/config src/index.ts",
     "dev:berghain": "START_PROCESSOR=TRUE START_HTTP_SERVICE=TRUE ENVLOCKER_ENV_NAME=berghain pnpm dev",
@@ -54,7 +54,7 @@
     "pnpm": ">=9"
   },
   "dependencies": {
-    "@chainflip/rpc": "^1.4.0",
+    "@chainflip/rpc": "^1.4.1",
     "@chainflip/utils": "^0.1.5",
     "@polkadot/types": "^11.0.2",
     "@polkadot/util": "^12.6.2",
