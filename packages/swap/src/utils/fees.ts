@@ -101,6 +101,7 @@ export const calculateIncludedSwapFees = async (
           networkFeeHundredthPips,
         ).toString(),
       },
+      ...lpFees,
     ];
   }
 
