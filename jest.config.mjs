@@ -6,10 +6,12 @@ import * as url from 'url';
  * https://jestjs.io/docs/configuration
  */
 const tsconfig = JSON.parse(
-  await fs.readFile(
-    path.join(path.dirname(url.fileURLToPath(import.meta.url)), 'tsconfig.json'),
-    'utf8',
-  ),
+  (
+    await fs.readFile(
+      path.join(path.dirname(url.fileURLToPath(import.meta.url)), 'tsconfig.json'),
+      'utf8',
+    )
+  ).replace(/\/\*.*\*\//g, ''),
 );
 
 const pathsToModuleNameMapper = (pathMap) =>
