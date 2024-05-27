@@ -9,7 +9,7 @@ import { Observable, filter, firstValueFrom, from, map, shareReplay, timeout } f
 import { promisify } from 'util';
 import { Assets, Chains, InternalAssets } from '@/shared/enums';
 import { QuoteQueryParams } from '@/shared/schemas';
-import { environment, mockRpcResponse, swapRate } from '@/shared/tests/fixtures';
+import { boostPoolsDepth, environment, mockRpcResponse, swapRate } from '@/shared/tests/fixtures';
 import prisma, { InternalAsset } from '../client';
 import app from '../server';
 import { getSwapRateV2 } from '../utils/statechain';
@@ -19,7 +19,7 @@ const execAsync = promisify(exec);
 jest.mock('../pricing');
 
 jest.mock('../utils/statechain', () => ({
-  getSwapRate: jest.fn().mockImplementation(() => Promise.reject(new Error('unexpected call'))),
+  getSwapRateV2: jest.fn().mockImplementation(() => Promise.reject(new Error('unexpected call'))),
 }));
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
@@ -71,12 +71,16 @@ describe('python integration test', () => {
         });
       }
 
-      if (data.method === 'cf_swap_rate') {
+      if (data.method === 'cf_swap_rate_v2') {
         return Promise.resolve({
           data: swapRate({
             output: hexEncodeNumber(BigInt(data.params[2]) * 2n),
           }),
         });
+      }
+
+      if (data.method === 'cf_boost_pools_depth') {
+        return Promise.resolve({ data: boostPoolsDepth([]) });
       }
 
       throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
@@ -154,13 +158,16 @@ describe('python integration test', () => {
     const params = new URLSearchParams(query as Record<string, any>);
 
     jest.mocked(getSwapRateV2).mockResolvedValueOnce({
+      ingressFee: { amount: 2000000n, chain: 'Ethereum', asset: 'FLIP' },
+      networkFee: { amount: 998900109987003n, chain: 'Ethereum', asset: 'USDC' },
+      egressFee: { amount: 50000n, chain: 'Ethereum', asset: 'USDC' },
       intermediateAmount: 2000000000n,
-      outputAmount: 0n, // this shouldn't be the result
-      quoteType: 'pool',
+      outputAmount: 997901209876966295n,
     });
 
     const response = await axios.get(`${serverUrl}/quote?${params.toString()}`);
 
     expect(await response.data).toMatchSnapshot();
+    expect(jest.mocked(getSwapRateV2).mock.calls).toMatchSnapshot();
   });
 });

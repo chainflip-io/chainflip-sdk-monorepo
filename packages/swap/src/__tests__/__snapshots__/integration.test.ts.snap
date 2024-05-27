@@ -12,10 +12,10 @@ exports[`python integration test replies to a quote request 1`] = `
       "type": "INGRESS",
     },
     {
-      "amount": "999999999998000",
-      "asset": "FLIP",
+      "amount": "998900109987003",
+      "asset": "USDC",
       "chain": "Ethereum",
-      "type": "LIQUIDITY",
+      "type": "NETWORK",
     },
     {
       "amount": "50000",
@@ -23,12 +23,53 @@ exports[`python integration test replies to a quote request 1`] = `
       "chain": "Ethereum",
       "type": "EGRESS",
     },
+  ],
+  "intermediateAmount": "2000000000",
+  "poolInfo": [
     {
-      "amount": "998900109987003",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "NETWORK",
+      "baseAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
+      "fee": {
+        "amount": "999999999998000",
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
+      "quoteAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
     },
   ],
 }
+`;
+
+exports[`python integration test replies to a quote request 2`] = `
+[
+  [
+    {
+      "amount": 1000000000000000000n,
+      "destAsset": "Usdc",
+      "limitOrders": [
+        {
+          "LimitOrder": {
+            "base_asset": {
+              "asset": "FLIP",
+              "chain": "Ethereum",
+            },
+            "quote_asset": {
+              "asset": "USDC",
+              "chain": "Ethereum",
+            },
+            "sell_amount": "0xde0b6b3a7640000",
+            "side": "sell",
+            "tick": -1,
+          },
+        },
+      ],
+      "srcAsset": "Flip",
+    },
+  ],
+]
 `;
