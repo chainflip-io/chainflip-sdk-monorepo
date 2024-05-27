@@ -142,8 +142,8 @@ importers:
   packages/sdk:
     dependencies:
       '@chainflip/rpc':
-        specifier: ^1.4.0
-        version: 1.4.0
+        specifier: ^1.4.1
+        version: 1.4.1
       '@chainflip/utils':
         specifier: ^0.1.5
         version: 0.1.5
@@ -161,8 +161,8 @@ importers:
   packages/shared:
     dependencies:
       '@chainflip/rpc':
-        specifier: ^1.4.0
-        version: 1.4.0
+        specifier: ^1.4.1
+        version: 1.4.1
       '@chainflip/utils':
         specifier: ^0.1.5
         version: 0.1.5
@@ -210,8 +210,8 @@ importers:
   packages/swap:
     dependencies:
       '@chainflip/rpc':
-        specifier: ^1.4.0
-        version: 1.4.0
+        specifier: ^1.4.1
+        version: 1.4.1
       '@chainflip/utils':
         specifier: ^0.1.5
         version: 0.1.5
@@ -729,8 +729,8 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@chainflip/rpc@1.4.0':
-    resolution: {integrity: sha512-VSiEIdayfdsT+MEcy1fkRLhQZiOlP3sZ7Pzh2sxNYZdlHncUJoc5Md6CIDDysZpwwhuY3G0nDfIALjIxxXJVqg==}
+  '@chainflip/rpc@1.4.1':
+    resolution: {integrity: sha512-51b6G1TG+guqEsWYJ9sesQuYUpHfH5stD+UAJWhKpGve94MVr+mwc86MsAWiQOeT5CaczTp7ySJ4ICjjOoOqKA==}
 
   '@chainflip/utils@0.1.5':
     resolution: {integrity: sha512-k3YxNjQnyube95N1tFKcfzVASYtiE53iIYcPmz9G/db+dKdxU39TTaHT40pjnpYedPqh8CBiA5ltiBR+Zap5yw==}
@@ -5961,7 +5961,7 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@chainflip/rpc@1.4.0':
+  '@chainflip/rpc@1.4.1':
     dependencies:
       '@chainflip/utils': 0.1.5
       zod: 3.23.8
