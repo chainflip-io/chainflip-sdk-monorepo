@@ -1,7 +1,7 @@
+import { InternalAsset } from '@/shared/enums';
 import { ONE_IN_PIP, bigintMin, getPipAmountFromAmount } from '@/shared/functions';
 import { AsyncCacheMap } from './dataStructures';
 import { getBoostPoolsDepth } from './rpc';
-import { InternalAsset } from '../enums';
 
 export const boostPoolsCache = new AsyncCacheMap({
   fetch: (asset: InternalAsset) => getBoostPoolsDepth({ asset }),
