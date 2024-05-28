@@ -75,9 +75,8 @@ export default async function getPoolQuote({
   includedFees.push(
     buildFee(getInternalAsset(ingressFee), 'INGRESS', ingressFee.amount),
     buildFee('Usdc', 'NETWORK', networkFee.amount),
+    buildFee(getInternalAsset(egressFee), 'EGRESS', egressFee.amount),
   );
-
-  includedFees.push(buildFee(getInternalAsset(egressFee), 'EGRESS', egressFee.amount));
 
   const poolInfo = getPoolFees(
     srcAsset,
