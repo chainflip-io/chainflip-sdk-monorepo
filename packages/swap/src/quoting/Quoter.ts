@@ -134,20 +134,15 @@ export default class Quoter {
   }
 
   async getLimitOrders(srcAsset: InternalAsset, destAsset: InternalAsset, swapInputAmount: bigint) {
-    let intermediateAmount = null;
-
-    if (destAsset !== 'Usdc') {
-      intermediateAmount = await approximateIntermediateOutput(
-        srcAsset,
-        swapInputAmount.toString(),
-      );
-    }
-
     let legs;
 
     if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
       legs = [Leg.of(srcAsset, destAsset, swapInputAmount).toJSON()] as const;
     } else {
+      const intermediateAmount = await approximateIntermediateOutput(
+        srcAsset,
+        swapInputAmount.toString(),
+      );
       assert(intermediateAmount !== null, 'failed to approximate intermediate output');
       legs = [
         Leg.of(srcAsset, 'Usdc', swapInputAmount).toJSON(),
