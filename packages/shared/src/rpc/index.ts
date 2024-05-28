@@ -81,7 +81,7 @@ export const getBlockHash = createRequest('chain_getBlockHash');
 export const getAllBoostPoolsDepth = transform(createRequest('cf_boost_pools_depth'), (result) =>
   result.map(({ chain, asset, ...rest }) => ({
     asset: getInternalAsset({ chain, asset }),
-    ...rest
+    ...rest,
   })),
 );
 
