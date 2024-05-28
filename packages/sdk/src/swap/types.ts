@@ -68,6 +68,7 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   ccmDepositReceivedBlockIndex: string | undefined;
   ccmMetadata: CcmMetadata | undefined;
   feesPaid: SwapFee[];
+  effectiveBoostFeeBps: number | undefined;
 }
 
 interface DepositAddressFields extends SwapStatusResponseCommonFields {
@@ -79,9 +80,14 @@ interface DepositAddressFields extends SwapStatusResponseCommonFields {
   estimatedDepositChannelExpiryTime: number;
   isDepositChannelExpired: boolean;
   depositChannelOpenedThroughBackend: boolean;
+<<<<<<< Updated upstream
   depositChannelAffiliateBrokers?: { account: string; commissionBps: number }[];
   depositChannelMaxBoostFeeBps: number;
   effectiveBoostFeeBps?: number;
+=======
+  depositChannelAffiliateBrokers: { account: string; commissionBps: number }[] | undefined;
+  depositChannelMaxBoostFeeBps: number | undefined;
+>>>>>>> Stashed changes
 }
 
 type BroadcastRequested = {
