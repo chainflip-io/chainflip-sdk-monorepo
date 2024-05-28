@@ -1,11 +1,13 @@
 import { InternalAssets } from '@/shared/enums';
-import { mockRpcResponse } from '@/shared/tests/fixtures';
 import metadataMock from './metadata.json';
 import { DOT_ADDRESS, createDepositChannel, swapEgressIgnoredMock } from './utils';
 import prisma from '../../client';
+import { Block, Event } from '../../processBlocks';
 import swapEgressIgnored from '../swapEgressIgnored';
 
-mockRpcResponse({ data: metadataMock });
+jest.mock('@/shared/rpc', () => ({
+  getMetadata: jest.fn().mockResolvedValue(metadataMock.result),
+}));
 
 const {
   eventContext: { event },
@@ -40,13 +42,11 @@ describe(swapEgressIgnored, () => {
       },
     });
 
-    await prisma.$transaction((tx) =>
-      swapEgressIgnored({
-        block: block as any,
-        event: event as any,
-        prisma: tx,
-      }),
-    );
+    await swapEgressIgnored({
+      block: block as Block,
+      event: event as Event,
+      prisma,
+    });
 
     const swap = await prisma.swap.findFirstOrThrow({
       where: { swapDepositChannelId: swapDepositChannel.id },

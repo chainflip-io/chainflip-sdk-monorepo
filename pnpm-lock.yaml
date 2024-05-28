@@ -218,9 +218,6 @@ importers:
       '@polkadot/types':
         specifier: ^11.0.2
         version: 11.1.1
-      '@polkadot/util':
-        specifier: ^12.6.2
-        version: 12.6.2
       '@prisma/client':
         specifier: ^5.13.0
         version: 5.13.0(prisma@5.13.0)
