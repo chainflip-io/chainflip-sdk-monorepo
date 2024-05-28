@@ -60,6 +60,8 @@
     {
       "files": ["*.test.ts"],
       "rules": {
+        "jest/no-disabled-tests": "error",
+        "jest/no-focused-tests": "error",
         "@typescript-eslint/no-explicit-any": "off",
         "class-methods-use-this": "off"
       }
