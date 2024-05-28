@@ -145,14 +145,14 @@ export default class Quoter {
 
     let legs;
 
-    if (srcAsset !== 'Usdc' && destAsset !== 'Usdc') {
+    if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
+      legs = [Leg.of(srcAsset, destAsset, swapInputAmount).toJSON()] as const;
+    } else {
       assert(intermediateAmount !== null, 'failed to approximate intermediate output');
       legs = [
         Leg.of(srcAsset, 'Usdc', swapInputAmount).toJSON(),
         Leg.of('Usdc', destAsset, intermediateAmount).toJSON(),
       ] as const;
-    } else {
-      legs = [Leg.of(srcAsset, destAsset, swapInputAmount).toJSON()] as const;
     }
 
     const request: MarketMakerQuoteRequest = { request_id: this.createId(), legs };
