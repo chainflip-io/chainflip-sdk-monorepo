@@ -1,7 +1,5 @@
 // @ts-expect-error should still work
 import { Metadata, TypeRegistry } from '@polkadot/types';
-// @ts-expect-error should still work
-import { BN } from '@polkadot/util';
 import assert from 'assert';
 import { z } from 'zod';
 import {
@@ -86,9 +84,8 @@ export const getStateChainError = async (
   block: EventHandlerArgs['block'],
   value: { error: `0x${string}`; index: number },
 ) => {
-  // convert LE hex encoded number (e.g. "0x06000000") to BN (6)
-  const error = new BN(value.error.slice(2), 'hex', 'le');
-  const errorIndex = error.toNumber();
+  // convert LE hex encoded number (e.g. "0x06000000") to number (6)
+  const errorIndex = Buffer.from(value.error.slice(2), 'hex').readUint32LE();
   const specVersion = parseSpecNumber(block.specId);
   const palletIndex = value.index;
 
@@ -106,10 +103,7 @@ export const getStateChainError = async (
 
   const metadata = await getMetadata(block);
 
-  const registryError = metadata.registry.findMetaError({
-    index: new BN(palletIndex),
-    error,
-  });
+  const registryError = metadata.registry.findMetaError(new Uint8Array([palletIndex, errorIndex]));
 
   return prisma.stateChainError.create({
     data: {
