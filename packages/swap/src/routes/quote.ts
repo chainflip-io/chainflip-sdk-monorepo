@@ -99,7 +99,9 @@ const quoteRouter = (io: Server) => {
       try {
         const [limitOrders, estimatedBoostFeeBps, pools] = await Promise.all([
           quoter.getLimitOrders(srcAsset, destAsset, amount),
-          getBoostFeeBpsForAmount({ amount, asset: srcAsset }),
+          env.DISABLE_BOOST_QUOTING
+            ? undefined
+            : getBoostFeeBpsForAmount({ amount, asset: srcAsset }),
           getPools(srcAsset, destAsset),
         ]);
 

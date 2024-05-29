@@ -498,6 +498,47 @@ describe('server', () => {
       expect(body.boostQuote).toBe(undefined);
     });
 
+    it("doesn't include boost information when disabled", async () => {
+      env.CHAINFLIP_NETWORK = 'backspin';
+      env.DISABLE_BOOST_QUOTING = true;
+
+      jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        ingress_fee: buildFee('Btc', 100000).bigint,
+        network_fee: buildFee('Usdc', 1999500).bigint,
+        egress_fee: buildFee('Eth', 25000).bigint,
+        intermediary: BigInt(2000e6),
+        output: 999999999999975000n,
+      } as CfSwapRateV2);
+
+      mockRpcs({
+        ingressFee: hexEncodeNumber(100000),
+        egressFee: hexEncodeNumber(25000),
+        mockedBoostPoolsDepth: [
+          {
+            chain: 'Bitcoin',
+            asset: 'BTC',
+            tier: 5,
+            available_amount: `0x${(2e8).toString(16)}`,
+          },
+        ],
+      });
+
+      const params = new URLSearchParams({
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: (1e8).toString(),
+      });
+
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
+
+      expect(status).toBe(200);
+
+      expect(body).toMatchSnapshot();
+      expect(body.boostQuote).toBeUndefined();
+    });
+
     it('gets the quote from USDC from the pools', async () => {
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         ingress_fee: buildFee('Usdc', 2000000).bigint,
