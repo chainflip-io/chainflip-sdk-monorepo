@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { getInternalAsset } from '@/shared/enums';
 import { internalAssetEnum, u128, u64 } from '@/shared/parsers';
 import { calculateIncludedSwapFees } from '@/swap/utils/fees';
-import { isLocalnet } from '../utils/env';
 import type { EventHandlerArgs } from '.';
 
 export const swapTypeEnum = z
