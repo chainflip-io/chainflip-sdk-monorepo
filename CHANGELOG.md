@@ -22,6 +22,9 @@ which it is deprecated.
 - `SwapSDK.prototype.executeSwap` allows to not wait for transaction inclusion
   by passing `{ wait: 0 }` as `txOpts` param now. The method will return the
   transaction hash of the submitted transaction.
+- Liquidity fees have been moved from the `includedFees` property on the
+  `getQuote` response, into a new `poolInfo` property, which is an array of the
+  pools the swap passes through, along with the estimated fee and fee asset.
 
 ### Fixed
 
@@ -42,6 +45,40 @@ which it is deprecated.
 - `SwapSDK.prototype.requestDepositAddress` supports an optional `brokerCommissionBps`
   and `affiliateBrokers` option. The new options are only available when initializing
   the SDK with a brokerUrl and will be applied only to the requested deposit channel.
+- Support for Arbitrum tokens have been added.
+- Arbitrum ETH and USDC have been added to the `ChainAssetMap` type:
+
+```diff
+type ChainAssetMap<T> = {
+  Bitcoin: {
+    BTC: T;
+  };
+  Ethereum: {
+    ETH: T;
+    USDC: T;
+    FLIP: T;
+    USDT: T;
+  };
+  Polkadot: {
+    DOT: T;
+  };
++ Arbitrum: {
++   ETH: T;
++   USDC: T
++ };
+}
+```
+
+- Arbitrum has also been added to our `ChainMap` type:
+
+```diff
+type ChainMap<T> = {
+  Bitcoin: T;
+  Ethereum: T;
+  Polkadot: T;
++ Arbitrum: T;
+}
+```
 
 ## 1.3.0
 
@@ -64,18 +101,18 @@ which it is deprecated.
 
 ```diff
 type ChainAssetMap<T> = {
-    Bitcoin: {
-        BTC: T;
-    };
-    Ethereum: {
-        ETH: T;
-        USDC: T;
-        FLIP: T;
-+       USDT: T;
-    };
-    Polkadot: {
-        DOT: T;
-    };
+  Bitcoin: {
+    BTC: T;
+  };
+  Ethereum: {
+    ETH: T;
+    USDC: T;
+    FLIP: T;
++   USDT: T;
+  };
+  Polkadot: {
+    DOT: T;
+  };
 }
 ```
 

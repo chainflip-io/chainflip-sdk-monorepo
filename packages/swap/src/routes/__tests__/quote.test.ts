@@ -263,7 +263,7 @@ describe('server', () => {
         network_fee: buildFee('Usdc', 2000000).bigint,
         ingress_fee: buildFee('Usdc', 2000000).bigint,
         intermediary: null,
-        output: BigInt(0),
+        output: 0n,
       } as CfSwapRateV2);
 
       const params = new URLSearchParams({
@@ -278,7 +278,33 @@ describe('server', () => {
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
-        message: 'egress amount (0) is lower than minimum egress amount (1)',
+        message: 'swap output amount is lower than the egress fee (50000)',
+      });
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('rejects when the egress amount is smaller than the minimum egress amount', async () => {
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        egress_fee: buildFee('Eth', 25000).bigint,
+        network_fee: buildFee('Usdc', 2000000).bigint,
+        ingress_fee: buildFee('Usdc', 2000000).bigint,
+        intermediary: null,
+        output: 599n,
+      } as CfSwapRateV2);
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'ETH',
+        destChain: 'Bitcoin',
+        destAsset: 'BTC',
+        amount: (100e6).toString(),
+      });
+
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
+
+      expect(status).toBe(400);
+      expect(body).toMatchObject({
+        message: 'egress amount (599) is lower than minimum egress amount (600)',
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
