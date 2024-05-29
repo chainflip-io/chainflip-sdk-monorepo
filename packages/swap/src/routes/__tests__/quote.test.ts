@@ -502,22 +502,13 @@ describe('server', () => {
       env.CHAINFLIP_NETWORK = 'backspin';
       env.DISABLE_BOOST_QUOTING = true;
 
-      jest
-        .spyOn(WsClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({
-          ingress_fee: buildFee('Btc', 100000).bigint,
-          network_fee: buildFee('Usdc', 1999500).bigint,
-          egress_fee: buildFee('Eth', 25000).bigint,
-          intermediary: BigInt(2000e6),
-          output: 999999999999975000n,
-        } as CfSwapRateV2)
-        .mockResolvedValueOnce({
-          ingress_fee: buildFee('Btc', 100000).bigint,
-          network_fee: buildFee('Usdc', 1999500).bigint,
-          egress_fee: buildFee('Eth', 25000).bigint,
-          intermediary: BigInt(2000e6 - 5e5),
-          output: 999999949999975000n,
-        } as CfSwapRateV2);
+      jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        ingress_fee: buildFee('Btc', 100000).bigint,
+        network_fee: buildFee('Usdc', 1999500).bigint,
+        egress_fee: buildFee('Eth', 25000).bigint,
+        intermediary: BigInt(2000e6),
+        output: 999999999999975000n,
+      } as CfSwapRateV2);
 
       mockRpcs({
         ingressFee: hexEncodeNumber(100000),
