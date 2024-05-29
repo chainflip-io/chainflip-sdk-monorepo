@@ -1,8 +1,5 @@
 import { HttpClient, RpcMethod, RpcParams, RpcResult, constants } from '@chainflip/rpc';
-import axios from 'axios';
-import z from 'zod';
-import { BaseAssetAndChain, ChainflipNetwork } from '../enums';
-import { u128 } from '../parsers';
+import { ChainflipNetwork, getInternalAsset } from '../enums';
 
 type CamelCase<T> = T extends string
   ? T extends `${infer F}_${infer R}`
@@ -50,6 +47,17 @@ const createRequest =
     return camelCaseKeys(result);
   };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AsyncFn = (...args: any[]) => Promise<any>;
+
+const transform =
+  <T, F extends AsyncFn>(
+    fn: F,
+    cb: (value: Awaited<ReturnType<F>>) => T,
+  ): ((...args: Parameters<F>) => Promise<T>) =>
+  (...args) =>
+    fn(...args).then(cb);
+
 export const getFundingEnvironment = createRequest('cf_funding_environment');
 
 export const getSwappingEnvironment = createRequest('cf_swapping_environment');
@@ -70,52 +78,13 @@ export const getRuntimeVersion = createRequest('state_getRuntimeVersion');
 
 export const getBlockHash = createRequest('chain_getBlockHash');
 
-export const getAllBoostPoolsDepth = createRequest('cf_boost_pools_depth');
+export const getAllBoostPoolsDepth = transform(createRequest('cf_boost_pools_depth'), (result) =>
+  result.map(({ chain, asset, ...rest }) => ({
+    asset: getInternalAsset({ chain, asset }),
+    ...rest,
+  })),
+);
 
 export type BoostPoolsDepth = Awaited<ReturnType<typeof getAllBoostPoolsDepth>>;
 
-export const getPoolOrders = async (
-  rpcConfig: RpcConfig,
-  baseAsset: BaseAssetAndChain,
-  quoteAsset: { chain: 'Ethereum'; asset: 'USDC' },
-  lp: null,
-  hash: string,
-) => {
-  const url =
-    'network' in rpcConfig ? constants.PUBLIC_RPC_ENDPOINTS[rpcConfig.network] : rpcConfig.rpcUrl;
-  const { data } = await axios.post(
-    url,
-    {
-      id: '1',
-      jsonrpc: '2.0',
-      method: 'cf_pool_orders',
-      params: [baseAsset, quoteAsset, lp, hash],
-    },
-    {
-      transformResponse: (d) => d,
-    },
-  );
-
-  return z.string().parse(data);
-};
-
-export const getPoolPriceV2 = async (
-  rpcConfig: RpcConfig,
-  baseAsset: BaseAssetAndChain,
-  quoteAsset: { chain: 'Ethereum'; asset: 'USDC' },
-  hash: string,
-) => {
-  const url =
-    'network' in rpcConfig ? constants.PUBLIC_RPC_ENDPOINTS[rpcConfig.network] : rpcConfig.rpcUrl;
-  const { data } = await axios.post(url, {
-    id: '1',
-    jsonrpc: '2.0',
-    method: 'cf_pool_price_v2',
-    params: [baseAsset, quoteAsset, hash],
-  });
-
-  return z
-    .object({ range_order: u128 })
-    .transform(({ range_order }) => ({ rangeOrder: range_order }))
-    .parse(data);
-};
+export const getSwapRateV2 = createRequest('cf_swap_rate_v2');

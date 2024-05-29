@@ -102,18 +102,6 @@ importers:
         specifier: ^17.7.2
         version: 17.7.2
 
-  packages/amm-addon:
-    devDependencies:
-      '@napi-rs/cli':
-        specifier: ^2.18.0
-        version: 2.18.0
-
-  packages/amm-addon/npm/darwin-x64: {}
-
-  packages/amm-addon/npm/linux-x64-gnu: {}
-
-  packages/amm-addon/npm/win32-x64-msvc: {}
-
   packages/cli:
     dependencies:
       '@chainflip/utils':
@@ -1446,11 +1434,6 @@ packages:
 
   '@kamilkisiela/fast-url-parser@1.1.4':
     resolution: {integrity: sha512-gbkePEBupNydxCelHCESvFSFM8XPh1Zs/OAVRW/rKpEqPAl5PbOM90Si8mv9bvnR53uPD2s/FiRxdvSejpRJew==}
-
-  '@napi-rs/cli@2.18.0':
-    resolution: {integrity: sha512-lfSRT7cs3iC4L+kv9suGYQEezn5Nii7Kpu+THsYVI0tA1Vh59LH45p4QADaD7hvIkmOz79eEGtoKQ9nAkAPkzA==}
-    engines: {node: '>= 10'}
-    hasBin: true
 
   '@noble/curves@1.2.0':
     resolution: {integrity: sha512-oYclrNgRaM9SsBUBVbb8M6DTV7ZHRTKugureoYEncY5c65HOmRzvSiTE3y5CYaPYJA/GVkrhXEoF0M3Ya9PMnw==}
@@ -6970,8 +6953,6 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.4.15
 
   '@kamilkisiela/fast-url-parser@1.1.4': {}
-
-  '@napi-rs/cli@2.18.0': {}
 
   '@noble/curves@1.2.0':
     dependencies:

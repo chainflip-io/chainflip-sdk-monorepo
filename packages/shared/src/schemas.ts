@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Chain, Asset, getInternalAssets } from './enums';
+import { Chain, Asset, getInternalAssets, AssetAndChain } from './enums';
 import {
   chain,
   hexStringWithMaxByteSize,
@@ -83,16 +83,28 @@ export const openSwapDepositChannelSchema = z
     expectedDepositAmount: amount,
   }));
 
-export type SwapFee = {
-  type: 'LIQUIDITY' | 'NETWORK' | 'INGRESS' | 'EGRESS' | 'BROKER' | 'BOOST';
+type Fee<T> = {
+  type: T;
   chain: Chain;
   asset: Asset;
   amount: string;
 };
+
+export type SwapFee = Fee<'NETWORK' | 'INGRESS' | 'EGRESS' | 'BROKER' | 'BOOST'>;
+
+export type PoolFee = Fee<'LIQUIDITY'>;
+
+export type PoolInfo = {
+  baseAsset: AssetAndChain;
+  quoteAsset: AssetAndChain;
+  fee: Omit<PoolFee, 'type'>;
+};
+
 export type QuoteDetails = {
   intermediateAmount?: string;
   egressAmount: string;
   includedFees: SwapFee[];
+  poolInfo: PoolInfo[];
   lowLiquidityWarning: boolean | undefined;
   estimatedDurationSeconds: number;
 };

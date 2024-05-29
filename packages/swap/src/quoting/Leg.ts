@@ -1,8 +1,6 @@
 import assert from 'assert';
-import { Side, type SwapInput } from '@/amm-addon';
 import { InternalAsset, getAssetAndChain } from '@/shared/enums';
 import { Leg as MarketMakerLeg } from './schemas';
-import { SwapRateArgs } from '../utils/statechain';
 
 export default class Leg {
   static of(srcAsset: InternalAsset, destAsset: InternalAsset, amount: bigint): Leg;
@@ -20,14 +18,6 @@ export default class Leg {
     public amount: bigint,
   ) {}
 
-  toPoolJSON(): SwapRateArgs {
-    return {
-      amount: this.amount,
-      srcAsset: this.srcAsset,
-      destAsset: this.destAsset,
-    };
-  }
-
   private getSide(): 'BUY' | 'SELL' {
     return this.destAsset !== 'Usdc' ? 'BUY' : 'SELL';
   }
@@ -40,7 +30,7 @@ export default class Leg {
     throw new Error('one of the assets must be Usdc');
   }
 
-  toMarketMakerJSON(): MarketMakerLeg {
+  toJSON(): MarketMakerLeg {
     const side = this.getSide();
     let baseAsset: Exclude<InternalAsset, 'Usdc'>;
 
@@ -55,26 +45,6 @@ export default class Leg {
       quote_asset: getAssetAndChain('Usdc'),
       amount: this.amount.toString(),
       side,
-    };
-  }
-
-  toSwapInput({
-    poolState,
-    limitOrders: inputLimitOrders,
-    rangeOrderPrice,
-  }: {
-    poolState?: string | null;
-    rangeOrderPrice?: bigint;
-    limitOrders: [number, bigint][];
-  }): SwapInput {
-    const limitOrders = inputLimitOrders.map(([tick, amount]) => ({ tick, amount }));
-
-    return {
-      side: this.getSide() === 'BUY' ? Side.Buy : Side.Sell,
-      limitOrders,
-      amount: this.amount,
-      poolState: poolState ?? undefined,
-      rangeOrderPrice,
     };
   }
 }

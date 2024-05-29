@@ -1,6 +1,6 @@
+import { deferredPromise } from '@chainflip/utils/async';
 import axios from 'axios';
 import { InternalAsset } from '@/shared/enums';
-import { deferredPromise } from '@/swap/utils/promise';
 import { coinGeckoIdMap, PriceCache } from '..';
 import logger from '../../utils/logger';
 

@@ -1,14 +1,22 @@
+import { InternalAsset } from '@/shared/enums';
 import { ONE_IN_PIP, bigintMin, getPipAmountFromAmount } from '@/shared/functions';
-import { BoostPoolsDepth } from '@/shared/rpc';
+import { AsyncCacheMap } from './dataStructures';
+import { getBoostPoolsDepth } from './rpc';
+
+export const boostPoolsCache = new AsyncCacheMap({
+  fetch: (asset: InternalAsset) => getBoostPoolsDepth({ asset }),
+  resetExpiryOnLookup: false,
+  ttl: 6_000,
+});
 
 export const getBoostFeeBpsForAmount = async ({
   amount,
-  assetBoostPoolsDepth,
+  asset,
 }: {
   amount: bigint;
-  assetBoostPoolsDepth: BoostPoolsDepth;
+  asset: InternalAsset;
 }): Promise<number | undefined> => {
-  assetBoostPoolsDepth.sort((a, b) => (a.tier < b.tier ? -1 : 1));
+  const assetBoostPoolsDepth = await boostPoolsCache.get(asset);
 
   let remainingAmount = amount;
   let feeAmount = 0n;

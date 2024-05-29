@@ -1,5 +1,5 @@
 import { environment, mockRpcResponse, swapRate } from '@/shared/tests/fixtures';
-import { calculateIncludedSwapFees, tryExtractFeesFromIngressAmount } from '@/swap/utils/fees';
+import { calculateIncludedSwapFees } from '@/swap/utils/fees';
 import prisma from '../../client';
 
 jest.mock('@/shared/consts', () => ({
@@ -158,46 +158,5 @@ describe(calculateIncludedSwapFees, () => {
         amount: '0',
       },
     ]);
-  });
-});
-
-describe(tryExtractFeesFromIngressAmount, () => {
-  it('extracts the fees from the ingress amount and derives the swap input amount', async () => {
-    const { fees, amountAfterFees } = await tryExtractFeesFromIngressAmount({
-      srcAsset: 'Btc',
-      ingressAmount: BigInt(100e8),
-      brokerCommissionBps: 10,
-    });
-
-    expect(fees).toMatchObject([
-      {
-        type: 'INGRESS',
-        asset: 'BTC',
-        amount: INGRESS_FEE.toString(),
-      },
-      {
-        type: 'BROKER',
-        asset: 'BTC',
-        amount: '9999999',
-      },
-    ]);
-
-    expect(amountAfterFees.toString()).toBe('9989999991');
-  });
-  it("doesn't include broker fee when not provided with one", async () => {
-    const { fees, amountAfterFees } = await tryExtractFeesFromIngressAmount({
-      srcAsset: 'Btc',
-      ingressAmount: BigInt(100e8),
-    });
-
-    expect(fees).toMatchObject([
-      {
-        type: 'INGRESS',
-        asset: 'BTC',
-        amount: INGRESS_FEE.toString(),
-      },
-    ]);
-
-    expect(amountAfterFees).toBe(BigInt(100e8) - BigInt(INGRESS_FEE));
   });
 });
