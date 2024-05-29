@@ -154,30 +154,37 @@ describe(swapExecuted, () => {
       ],
     });
   });
-  it('ignores burn swaps', async () => {
-    const {
-      eventContext: { event },
-      block,
-    } = buildSwapExecutedMock({
-      swapId: '9876545',
-      egressAmount: '10000000000',
-      intermediateAmount: '100000',
-      destinationAsset: {
-        __kind: 'Flip',
-      },
-      sourceAsset: {
-        __kind: 'Usdc',
-      },
-    });
 
-    await prisma.$transaction((tx) =>
-      swapExecuted({
-        block: block as any,
-        event: event as any,
-        prisma: tx,
-      }),
-    );
+  it.each(['NetworkFee', 'IngressEgressFee'] as const)(
+    'ignores internal unscheduled swaps (%s)',
+    async (type) => {
+      const {
+        eventContext: { event },
+        block,
+      } = buildSwapExecutedMock({
+        swapId: '9876545',
+        egressAmount: '10000000000',
+        intermediateAmount: '100000',
+        destinationAsset: {
+          __kind: 'Flip',
+        },
+        sourceAsset: {
+          __kind: 'Usdc',
+        },
+        swapType: {
+          __kind: type,
+        },
+      });
 
-    expect(await prisma.swap.count()).toBe(0);
-  });
+      await prisma.$transaction((tx) =>
+        swapExecuted({
+          block: block as any,
+          event: event as any,
+          prisma: tx,
+        }),
+      );
+
+      expect(await prisma.swap.count()).toBe(0);
+    },
+  );
 });
