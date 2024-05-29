@@ -3,7 +3,7 @@ import { getPipAmountFromAmount } from '@/shared/functions';
 import { QuoteQueryResponse } from '@/shared/schemas';
 import { estimateSwapDuration } from '@/swap/utils/swap';
 import { buildFee, getPoolFees } from './fees';
-import { getMinimumEgressAmount } from './rpc';
+import { getEgressFee, getMinimumEgressAmount } from './rpc';
 import ServiceError from './ServiceError';
 import { LimitOrders, getSwapRateV2 } from './statechain';
 import { InternalAsset, Pool } from '../client';
@@ -60,6 +60,13 @@ export default async function getPoolQuote({
       throw ServiceError.badRequest('swap amount is lower than ingress fee');
     }
 
+    const rpcEgressFee = await getEgressFee(destAsset);
+    throw ServiceError.badRequest(
+      `swap output amount is lower than the egress fee (${rpcEgressFee})`,
+    );
+  }
+
+  if (quote.outputAmount < minimumEgressAmount) {
     throw ServiceError.badRequest(
       `egress amount (${quote.outputAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
     );
