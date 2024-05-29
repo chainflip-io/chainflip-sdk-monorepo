@@ -1,5 +1,65 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`server GET /quote doesn't include boost information when disabled 1`] = `
+{
+  "egressAmount": "999999999999975000",
+  "estimatedDurationSeconds": 1830,
+  "includedFees": [
+    {
+      "amount": "100000",
+      "asset": "BTC",
+      "chain": "Bitcoin",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "1999500",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "25000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
+  "intermediateAmount": "2000000000",
+  "poolInfo": [
+    {
+      "baseAsset": {
+        "asset": "BTC",
+        "chain": "Bitcoin",
+      },
+      "fee": {
+        "amount": "199800",
+        "asset": "BTC",
+        "chain": "Bitcoin",
+      },
+      "quoteAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+    },
+    {
+      "baseAsset": {
+        "asset": "ETH",
+        "chain": "Ethereum",
+      },
+      "fee": {
+        "amount": "4000000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+      "quoteAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+    },
+  ],
+}
+`;
+
 exports[`server GET /quote gets the quote for deprecated params without the chain 1`] = `
 {
   "egressAmount": "999999999999975000",
