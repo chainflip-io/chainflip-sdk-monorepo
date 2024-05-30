@@ -64,6 +64,7 @@ export default async function swapExecuted({
     swapOutput,
   );
 
+  // TODO(1.5): remove this
   if (swap.srcAsset === 'Usdc') {
     const networkFee = fees.find((type) => type.type === 'NETWORK')!;
     swapInputAmount -= BigInt(networkFee.amount);
