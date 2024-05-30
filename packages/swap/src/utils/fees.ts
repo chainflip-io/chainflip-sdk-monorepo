@@ -65,6 +65,9 @@ export const getPoolFees = (
   ];
 };
 
+const buildNetworkFee = (usdcAmount: bigint, networkFeeHundredthPips: number) =>
+  buildFee('Usdc', 'NETWORK', getHundredthPipAmountFromAmount(usdcAmount, networkFeeHundredthPips));
+
 export const calculateIncludedSwapFees = async (
   srcAsset: InternalAsset,
   destAsset: InternalAsset,
@@ -74,68 +77,29 @@ export const calculateIncludedSwapFees = async (
 ): Promise<(SwapFee | PoolFee)[]> => {
   const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(env.CHAINFLIP_NETWORK);
   if (srcAsset === 'Usdc' && destAsset === 'Usdc') {
-    return [
-      {
-        type: 'NETWORK',
-        chain: assetConstants[InternalAssets.Usdc].chain,
-        asset: assetConstants[InternalAssets.Usdc].asset,
-        amount: getHundredthPipAmountFromAmount(
-          swapInputAmount,
-          networkFeeHundredthPips,
-        ).toString(),
-      },
-    ];
+    return [buildNetworkFee(swapInputAmount, networkFeeHundredthPips)];
   }
 
   const pools = await getPools(srcAsset, destAsset);
   const lpFees = getPoolFees(srcAsset, destAsset, swapInputAmount, intermediateAmount, pools);
 
   if (srcAsset === InternalAssets.Usdc) {
-    return [
-      {
-        type: 'NETWORK',
-        chain: assetConstants[InternalAssets.Usdc].chain,
-        asset: assetConstants[InternalAssets.Usdc].asset,
-        amount: getHundredthPipAmountFromAmount(
-          swapInputAmount,
-          networkFeeHundredthPips,
-        ).toString(),
-      },
-      ...lpFees,
-    ];
+    return [buildNetworkFee(swapInputAmount, networkFeeHundredthPips), ...lpFees];
   }
+
+  let usdcAmount;
 
   if (destAsset === InternalAssets.Usdc) {
-    const stableAmountBeforeNetworkFee =
+    usdcAmount =
       (swapOutputAmount * BigInt(ONE_IN_HUNDREDTH_PIPS)) /
       BigInt(ONE_IN_HUNDREDTH_PIPS - networkFeeHundredthPips);
+  } else {
+    assert(intermediateAmount != null, 'no intermediate amount given');
 
-    return [
-      {
-        type: 'NETWORK',
-        chain: assetConstants[InternalAssets.Usdc].chain,
-        asset: assetConstants[InternalAssets.Usdc].asset,
-        amount: getHundredthPipAmountFromAmount(
-          stableAmountBeforeNetworkFee,
-          networkFeeHundredthPips,
-        ).toString(),
-      },
-      ...lpFees,
-    ];
+    usdcAmount =
+      (intermediateAmount * BigInt(ONE_IN_HUNDREDTH_PIPS)) /
+      BigInt(ONE_IN_HUNDREDTH_PIPS - networkFeeHundredthPips);
   }
 
-  assert(intermediateAmount != null, 'no intermediate amount given');
-
-  return [
-    {
-      type: 'NETWORK',
-      chain: assetConstants[InternalAssets.Usdc].chain,
-      asset: assetConstants[InternalAssets.Usdc].asset,
-      amount: getHundredthPipAmountFromAmount(
-        intermediateAmount,
-        networkFeeHundredthPips,
-      ).toString(),
-    },
-    ...lpFees,
-  ];
+  return [buildNetworkFee(usdcAmount, networkFeeHundredthPips), ...lpFees];
 };

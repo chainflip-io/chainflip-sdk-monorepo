@@ -51,7 +51,7 @@ describe(calculateIncludedSwapFees, () => {
       'Eth',
       'Flip',
       BigInt(100e18),
-      BigInt(100e6),
+      BigInt(100e6 - 100e3),
       BigInt(100e18),
     );
 
@@ -69,7 +69,7 @@ describe(calculateIncludedSwapFees, () => {
       {
         type: 'LIQUIDITY',
         asset: 'USDC',
-        amount: (0.1e6).toString(),
+        amount: '99900',
       },
     ]);
   });
