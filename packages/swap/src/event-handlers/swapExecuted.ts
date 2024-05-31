@@ -54,17 +54,26 @@ export default async function swapExecuted({
     throw new Error(`swapExecuted: No existing swap entity for swap ${swapId}.`);
   }
 
+  let swapInputAmount = BigInt(swap.swapInputAmount.toFixed());
+
   const fees = await calculateIncludedSwapFees(
     swap.srcAsset,
     swap.destAsset,
-    BigInt(swap.swapInputAmount.toFixed()),
+    swapInputAmount,
     intermediateAmount,
     swapOutput,
   );
 
+  // TODO(1.5): remove this
+  if (swap.srcAsset === 'Usdc') {
+    const networkFee = fees.find((type) => type.type === 'NETWORK')!;
+    swapInputAmount -= BigInt(networkFee.amount);
+  }
+
   await prisma.swap.update({
     where: { nativeId: swapId },
     data: {
+      swapInputAmount: swapInputAmount.toString(),
       swapOutputAmount: swapOutput.toString(),
       intermediateAmount: intermediateAmount?.toString(),
       fees: {
