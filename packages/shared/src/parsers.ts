@@ -1,11 +1,15 @@
+import { decodeAddress } from '@chainflip/bitcoin';
 import * as ss58 from '@chainflip/utils/ss58';
+import { isHex } from '@chainflip/utils/string';
 import { HexString } from '@chainflip/utils/types';
+import assert from 'assert';
 import * as ethers from 'ethers';
 import { z, ZodErrorMap } from 'zod';
 import {
   ChainflipNetwork,
-  InternalAssets,
   ChainflipNetworks,
+  InternalAsset,
+  InternalAssets,
   Chains,
   Assets,
   isValidAssetAndChain,
@@ -151,3 +155,40 @@ export const actionSchema = z.union([
     prewitnessedDepositId: u128,
   }),
 ]);
+
+export const bitcoinScriptPubKey = (network: ChainflipNetwork) =>
+  z
+    .union([
+      z.object({ __kind: z.literal('P2PKH'), value: hexString }),
+      z.object({ __kind: z.literal('P2SH'), value: hexString }),
+      z.object({ __kind: z.literal('P2WPKH'), value: hexString }),
+      z.object({ __kind: z.literal('P2WSH'), value: hexString }),
+      z.object({ __kind: z.literal('Taproot'), value: hexString }),
+      z.object({
+        __kind: z.literal('OtherSegwit'),
+        value: z.object({ version: z.number(), program: hexString }),
+      }),
+    ])
+    .transform(({ __kind, value }) => {
+      if (__kind === 'OtherSegwit') {
+        throw new Error('OtherSegwit scriptPubKey not supported');
+      }
+
+      return decodeAddress(value, __kind, network);
+    });
+
+export const depositAddressSchema = (network: ChainflipNetwork) =>
+  z.union([hexString, bitcoinScriptPubKey(network)]);
+
+export const encodeDotAddress = <T extends { asset: InternalAsset; depositAddress: string }>(
+  args: T,
+): T => {
+  if (args.asset === 'Dot') {
+    assert(isHex(args.depositAddress));
+    return {
+      ...args,
+      depositAddress: ss58.encode({ data: args.depositAddress, ss58Format: DOT_PREFIX }),
+    };
+  }
+  return args;
+};

@@ -25,7 +25,7 @@ describe(validateBitcoinMainnetAddress, () => {
         addresses.map((address) => [address, network === 'mainnet'] as const),
       ),
     ),
-  )('validates valid addresses', (address, expected) => {
+  )('validates valid addresses %s', (address, expected) => {
     expect(validateBitcoinMainnetAddress(address)).toBe(expected);
   });
 });
@@ -37,7 +37,7 @@ describe(validateBitcoinTestnetAddress, () => {
         addresses.map((address) => [address, network === 'testnet'] as const),
       ),
     ),
-  )('validates valid addresses', (address, expected) => {
+  )('validates valid addresses %s', (address, expected) => {
     expect(validateBitcoinTestnetAddress(address)).toBe(expected);
   });
 });
@@ -55,7 +55,7 @@ describe(validateBitcoinRegtestAddress, () => {
         ),
       ),
     ),
-  )('validates valid addresses', (address, expected) => {
+  )('validates valid addresses %s', (address, expected) => {
     expect(validateBitcoinRegtestAddress(address)).toBe(expected);
   });
 });
@@ -100,7 +100,7 @@ describe(validateAddress, () => {
     ],
     [Chains.Bitcoin, 'bc1qvwmuc3pjhwju287sjs5vg7467t2jlymnmjyatp', 'mainnet'],
     [Chains.Bitcoin, 'bc1p7jc7jx0z32gcm5k3dewpqra2vv303jnnhurhrwl384kgnnhsp73qf9a9c3', 'mainnet'],
-  ] as const)('returns true for valid testnet bitcoin addresses %s', (chain, address, network) => {
+  ] as const)('returns true for valid %s addresses %s on %s', (chain, address, network) => {
     expect(validateAddress(chain, address, network)).toBeTruthy();
   });
 
