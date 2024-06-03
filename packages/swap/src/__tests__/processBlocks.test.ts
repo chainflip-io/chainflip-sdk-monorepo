@@ -83,6 +83,8 @@ describe(processBlocks, () => {
         "intermediateAmount": null,
         "nativeId": 1n,
         "srcAsset": "Dot",
+        "depositBoostedAt": null,
+        "depositBoostedBlockIndex": null,
         "swapDepositChannelId": Any<BigInt>,
         "swapExecutedAt": null,
         "swapExecutedBlockIndex": null,

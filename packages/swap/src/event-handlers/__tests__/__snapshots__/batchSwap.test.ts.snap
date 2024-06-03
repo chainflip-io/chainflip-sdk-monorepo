@@ -90,6 +90,8 @@ exports[`batch swap flow handles all the events: swap 1`] = `
   "ccmMessage": null,
   "createdAt": Any<Date>,
   "depositAmount": "100000000010000000",
+  "depositBoostedAt": null,
+  "depositBoostedBlockIndex": null,
   "depositReceivedAt": 1970-01-01T00:00:06.000Z,
   "depositReceivedBlockIndex": "1-20",
   "destAddress": "mp3QSoPN2iLKrEhdz9Qb9DSJQAuNwDDa77",

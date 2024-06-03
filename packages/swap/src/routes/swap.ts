@@ -295,6 +295,10 @@ router.get(
       depositChannelAffiliateBrokers: affiliateBrokers,
       depositChannelMaxBoostFeeBps: channel?.maxBoostFeeBps,
       effectiveBoostFeeBps,
+      depositBoostedAt: swap?.depositBoostedAt?.valueOf(),
+      depositBoostedBlockIndex: swap?.depositBoostedBlockIndex ?? undefined,
+      boostSkippedAt: channel?.failedBoosts.at(0)?.failedAtTimestamp.valueOf(),
+      boostSkippedBlockIndex: channel?.failedBoosts.at(0)?.failedAtBlockIndex ?? undefined,
     };
 
     logger.info('sending response for swap request', { id, response });

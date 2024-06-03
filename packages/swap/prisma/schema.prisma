@@ -119,6 +119,8 @@ model Swap {
   depositReceivedBlockIndex    String
   swapExecutedAt               DateTime?
   swapExecutedBlockIndex       String?
+  depositBoostedAt             DateTime?
+  depositBoostedBlockIndex     String?
   swapDepositChannel           SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
   swapDepositChannelId         BigInt?
   ccmDepositReceivedBlockIndex String?
