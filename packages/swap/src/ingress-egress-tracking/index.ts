@@ -50,7 +50,10 @@ export const getPendingDeposit = async (
     ]);
 
     if (deposits.length === 0 || tracking == null) {
-      return getMempoolTransaction(chain, address);
+      // there is a delay between the tx getting included and the ingress egress tracker detecting the pending deposit
+      // to prevent jumping confirmation numbers, we use 0 until the ingress egress tracker detects the pending deposit
+      const mempoolTx = await getMempoolTransaction(chain, address);
+      return mempoolTx && { ...mempoolTx, transactionConfirmations: 0 };
     }
 
     const confirmations = Math.max(
