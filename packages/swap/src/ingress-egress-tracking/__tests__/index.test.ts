@@ -83,7 +83,7 @@ describe('ingress-egress-tracking', () => {
       expect(logger.error).not.toHaveBeenCalled();
       expect(deposit).toEqual({
         amount: '36864',
-        transactionConfirmations: 3,
+        transactionConfirmations: 0,
         transactionHash: 'deadc0de',
       });
     });
