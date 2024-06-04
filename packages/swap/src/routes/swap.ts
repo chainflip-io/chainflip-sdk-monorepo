@@ -234,7 +234,7 @@ router.get(
 
     if (channel && channel.maxBoostFeeBps > 0) {
       if (swap) {
-        effectiveBoostFeeBps = swap.effectiveBoostFeeBps;
+        effectiveBoostFeeBps = swap.effectiveBoostFeeBps ?? undefined;
       } else if (channel.failedBoosts.length > 0) {
         effectiveBoostFeeBps = 0;
       }
