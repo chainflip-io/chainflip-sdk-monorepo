@@ -71,6 +71,8 @@ describe('depositBoosted', () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       swapDepositChannelId: expect.any(BigInt),
+      depositBoostedAt: expect.any(Date),
+      depositBoostedBlockIndex: expect.any(String),
       fees: [
         { id: expect.any(BigInt), swapId: expect.any(BigInt), type: 'BOOST' },
         { id: expect.any(BigInt), swapId: expect.any(BigInt), type: 'INGRESS' },

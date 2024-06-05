@@ -82,6 +82,8 @@ interface DepositAddressFields extends SwapStatusResponseCommonFields {
   depositChannelAffiliateBrokers?: { account: string; commissionBps: number }[];
   depositChannelMaxBoostFeeBps: number;
   effectiveBoostFeeBps?: number;
+  boostSkippedAt?: number;
+  boostSkippedBlockIndex?: string;
 }
 
 type BroadcastRequested = {
@@ -134,6 +136,8 @@ type SwapState =
       depositAmount: string;
       depositReceivedAt: number;
       depositReceivedBlockIndex: string;
+      depositBoostedAt?: number;
+      depositBoostedBlockIndex?: string;
     }
   | {
       state: 'SWAP_EXECUTED';

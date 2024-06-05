@@ -73,6 +73,8 @@ describe(processBlocks, () => {
         "ccmMessage": null,
         "createdAt": Any<Date>,
         "depositAmount": "125000000000",
+        "depositBoostedAt": null,
+        "depositBoostedBlockIndex": null,
         "depositReceivedAt": 2023-04-20T11:19:03.437Z,
         "depositReceivedBlockIndex": "150-0",
         "destAddress": "bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa",

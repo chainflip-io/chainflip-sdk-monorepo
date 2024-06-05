@@ -16,7 +16,7 @@ export const depositBoostedSchema = z.object({
 
 // DepositBoosted event is emitted instead of DepositReceived event in v140 due to boost
 // We need to update the depositAmount and store the ingress fee just like we do in the DepositReceived event
-export const depositBoosted = async ({ prisma, event }: EventHandlerArgs) => {
+export const depositBoosted = async ({ prisma, event, block }: EventHandlerArgs) => {
   const { asset, boostFee, action, ingressFee, amounts } = depositBoostedSchema.parse(event.args);
 
   if (action.__kind === 'Swap') {
@@ -28,6 +28,8 @@ export const depositBoosted = async ({ prisma, event }: EventHandlerArgs) => {
       data: {
         effectiveBoostFeeBps: Number(effectiveBoostFeeBps),
         depositAmount: depositAmount.toString(),
+        depositBoostedAt: new Date(block.timestamp),
+        depositBoostedBlockIndex: `${block.height}-${event.indexInBlock}`,
         fees: {
           create: [
             {

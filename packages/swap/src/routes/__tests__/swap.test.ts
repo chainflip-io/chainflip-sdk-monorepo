@@ -1265,6 +1265,8 @@ describe('server', () => {
           swapInputAmount: '10',
           depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
           depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+          depositBoostedAt: new Date(RECEIVED_TIMESTAMP),
+          depositBoostedBlockIndex: RECEIVED_BLOCK_INDEX,
           type: 'SWAP',
           ccmDepositReceivedBlockIndex: '223-16',
           ccmGasBudget: '100',
@@ -1279,9 +1281,13 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body.effectiveBoostFeeBps).toBe(5);
       expect(body.depositChannelMaxBoostFeeBps).toBe(30);
+      expect(body.depositBoostedAt.valueOf()).toBe(RECEIVED_TIMESTAMP);
+      expect(body.depositBoostedBlockIndex).toBe(RECEIVED_BLOCK_INDEX);
+      expect(body.boostSkippedAt).toBeUndefined();
+      expect(body.boostSkippedBlockIndex).toBeUndefined();
     });
 
-    it('does not retrieve effectiveBoostFeeBps when a channel is not boostable', async () => {
+    it('does not retrieve boost details when a channel is not boostable', async () => {
       const swapIntent = await createDepositChannel({
         maxBoostFeeBps: 0, // signaling that we don't want a boost to occur on this channel
       });
@@ -1311,6 +1317,52 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body.effectiveBoostFeeBps).toBeUndefined();
       expect(body.depositChannelMaxBoostFeeBps).toBe(0);
+      expect(body.depositBoostedAt).toBeUndefined();
+      expect(body.depositBoostedBlockIndex).toBeUndefined();
+      expect(body.boostSkippedAt).toBeUndefined();
+      expect(body.boostSkippedBlockIndex).toBeUndefined();
+    });
+
+    it('retrieves boost skipped properties when there was a failed boost attempt for the swap', async () => {
+      const swapIntent = await createDepositChannel({
+        maxBoostFeeBps: 30,
+        failedBoosts: {
+          create: [
+            {
+              failedAtTimestamp: new Date(RECEIVED_TIMESTAMP),
+              failedAtBlockIndex: RECEIVED_BLOCK_INDEX,
+              amount: '100',
+            },
+          ],
+        },
+      });
+
+      await prisma.swap.create({
+        data: {
+          nativeId,
+          srcAsset: InternalAssets.Btc,
+          destAsset: InternalAssets.Eth,
+          destAddress: ETH_ADDRESS,
+          depositAmount: '10',
+          swapInputAmount: '10',
+          depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
+          depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+          type: 'SWAP',
+          ccmDepositReceivedBlockIndex: '223-16',
+          ccmGasBudget: '100',
+          ccmMessage: '0x12abf87',
+          swapDepositChannelId: swapIntent.id,
+        },
+      });
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
+
+      const { status, body } = await request(server).get(`/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+      expect(body.effectiveBoostFeeBps).toBeUndefined();
+      expect(body.depositChannelMaxBoostFeeBps).toBe(30);
+      expect(body.boostSkippedAt.valueOf()).toBe(RECEIVED_TIMESTAMP);
+      expect(body.boostSkippedBlockIndex).toBe(RECEIVED_BLOCK_INDEX);
     });
   });
 
