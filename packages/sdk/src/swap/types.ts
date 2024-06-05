@@ -83,7 +83,7 @@ interface DepositAddressFields extends SwapStatusResponseCommonFields {
   depositChannelMaxBoostFeeBps: number;
   effectiveBoostFeeBps?: number;
   boostSkippedAt?: number;
-  boostKippedBlockIndex?: string;
+  boostSkippedBlockIndex?: string;
 }
 
 type BroadcastRequested = {
