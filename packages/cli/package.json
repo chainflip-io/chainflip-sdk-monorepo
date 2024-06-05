@@ -38,11 +38,10 @@
   },
   "devDependencies": {
     "@types/yargs": "^17.0.32",
-    "tsup": "^8.0.2",
-    "bech32-buffer": "^0.2.1"
+    "tsup": "^8.0.2"
   },
   "peerDependencies": {
-    "@chainflip/utils": "^0.1.5",
+    "@chainflip/utils": "^0.2.1",
     "axios": "^1.x",
     "ethers": "^6.x"
   },

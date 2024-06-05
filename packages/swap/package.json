@@ -55,7 +55,7 @@
   },
   "dependencies": {
     "@chainflip/rpc": "^1.4.2",
-    "@chainflip/utils": "^0.1.5",
+    "@chainflip/utils": "^0.2.1",
     "@polkadot/types": "^11.0.2",
     "@prisma/client": "^5.13.0",
     "axios": "^1.6.8",

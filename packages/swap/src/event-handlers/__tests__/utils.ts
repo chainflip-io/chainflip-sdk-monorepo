@@ -497,7 +497,7 @@ export const networkBatchBroadcastRequestedMock = {
 } as const;
 
 export const networkBroadcastSuccessMock = (
-  args?: Partial<z.input<typeof networkBroadcastSuccessArgs>>,
+  args?: Partial<z.input<ReturnType<typeof networkBroadcastSuccessArgs>>>,
 ) =>
   ({
     block: {
