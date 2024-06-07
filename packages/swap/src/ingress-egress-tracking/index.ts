@@ -49,13 +49,16 @@ export const getPendingDeposit = async (
       prisma.chainTracking.findFirst({ where: { chain } }),
     ]);
 
-    if (deposits.length === 0 || tracking == null) {
+    const currentHeight = (await prisma.state.findFirstOrThrow()).height;
+    const isOneBlockPassedTwoBlocks =
+      currentHeight - (tracking?.blockTrackedAtStateChainBlock ?? 0) > 2;
+
+    if (deposits.length === 0 || tracking == null || !isOneBlockPassedTwoBlocks) {
       // there is a delay between the tx getting included and the ingress egress tracker detecting the pending deposit
       // to prevent jumping confirmation numbers, we use 0 until the ingress egress tracker detects the pending deposit
       const mempoolTx = await getMempoolTransaction(chain, address);
       return mempoolTx && { ...mempoolTx, transactionConfirmations: 0 };
     }
-
     const confirmations = Math.max(
       0,
       Number(tracking.height) - deposits[0].deposit_chain_block_height + 1,

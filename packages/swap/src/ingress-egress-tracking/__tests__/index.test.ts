@@ -13,8 +13,8 @@ jest.mock('../../utils/logger');
 const updateChainTracking = (data: { chain: Chain; height: bigint }) =>
   prisma.chainTracking.upsert({
     where: { chain: data.chain },
-    update: data,
-    create: data,
+    update: { ...data, blockTrackedAtStateChainBlock: 1 },
+    create: { ...data, blockTrackedAtStateChainBlock: 1 },
   });
 
 describe('ingress-egress-tracking', () => {

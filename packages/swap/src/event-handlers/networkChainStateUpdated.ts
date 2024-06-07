@@ -19,8 +19,17 @@ const chainStateUpdated =
     await Promise.all([
       prisma.chainTracking.upsert({
         where: { chain },
-        create: { chain, height: blockHeight, blockTrackedAt: block.timestamp },
-        update: { height: blockHeight, blockTrackedAt: block.timestamp },
+        create: {
+          chain,
+          height: blockHeight,
+          blockTrackedAt: block.timestamp,
+          blockTrackedAtStateChainBlock: block.height,
+        },
+        update: {
+          height: blockHeight,
+          blockTrackedAt: block.timestamp,
+          blockTrackedAtStateChainBlock: block.height,
+        },
       }),
       prisma.swapDepositChannel.updateMany({
         where: {
