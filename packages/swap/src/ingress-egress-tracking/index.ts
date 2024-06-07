@@ -50,6 +50,9 @@ export const getPendingDeposit = async (
     ]);
 
     const currentHeight = (await prisma.state.findFirstOrThrow()).height;
+    // For boosted swaps, state chain will track the foreign chain block one state chain block before the DepositBoosted event
+    // Because of this, frontend will jump to confirmations page and then, will switch back to checking boost liquidity
+    // To prevent this, we need to wait for 2 state chain blocks before checking the confirmations
     const isOneBlockPassedTwoBlocks =
       currentHeight - (tracking?.blockTrackedAtStateChainBlock ?? 0) > 2;
 
