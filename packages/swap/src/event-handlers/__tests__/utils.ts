@@ -761,7 +761,7 @@ export const createChainTrackingInfo = () => {
           chain,
           height: 10,
           blockTrackedAt: new Date('2023-11-09T10:00:00.000Z'),
-          blockTrackedAtStateChainBlock: 200,
+          eventWitnessedBlock: 200,
         },
         update: { height: 10 },
       }),

@@ -28,7 +28,7 @@ describe(openSwapDepositChannel, () => {
         chain: 'Ethereum',
         height: BigInt('125'),
         blockTrackedAt: new Date('2023-11-09T10:00:00.000Z'),
-        blockTrackedAtStateChainBlock: 1,
+        eventWitnessedBlock: 1,
       },
     });
   });

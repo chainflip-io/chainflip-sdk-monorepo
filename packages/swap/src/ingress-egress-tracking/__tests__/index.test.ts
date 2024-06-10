@@ -19,8 +19,8 @@ const updateChainTracking = async (data: {
   await prisma.state.create({ data: { height: stateChainHeight ?? 1 } });
   await prisma.chainTracking.upsert({
     where: { chain },
-    update: { chain, height, previousHeight: height - 1n, blockTrackedAtStateChainBlock: 1 },
-    create: { chain, height, previousHeight: height - 1n, blockTrackedAtStateChainBlock: 1 },
+    update: { chain, height, previousHeight: height - 1n, eventWitnessedBlock: 1 },
+    create: { chain, height, previousHeight: height - 1n, eventWitnessedBlock: 1 },
   });
 };
 
