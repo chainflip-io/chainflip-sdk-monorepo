@@ -25,11 +25,13 @@ const chainStateUpdated =
           height: blockHeight,
           previousHeight: currentState.height,
           blockTrackedAt: block.timestamp,
+          blockTrackedAtStateChainBlock: block.height,
         },
         update: {
           height: blockHeight,
           previousHeight: currentState.height,
           blockTrackedAt: block.timestamp,
+          blockTrackedAtStateChainBlock: block.height,
         },
       }),
       prisma.swapDepositChannel.updateMany({

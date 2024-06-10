@@ -10,12 +10,19 @@ jest.mock('../../config/env', () => ({
 
 jest.mock('../../utils/logger');
 
-const updateChainTracking = (data: { chain: Chain; height: bigint }) =>
-  prisma.chainTracking.upsert({
-    where: { chain: data.chain },
-    update: { ...data, previousHeight: data.height - 1n },
-    create: { ...data, previousHeight: data.height - 1n },
+const updateChainTracking = async (data: {
+  chain: Chain;
+  height: bigint;
+  stateChainHeight?: number;
+}) => {
+  const { chain, height, stateChainHeight } = data;
+  await prisma.state.create({ data: { height: stateChainHeight ?? 1 } });
+  await prisma.chainTracking.upsert({
+    where: { chain },
+    update: { chain, height, previousHeight: height - 1n, blockTrackedAtStateChainBlock: 1 },
+    create: { chain, height, previousHeight: height - 1n, blockTrackedAtStateChainBlock: 1 },
   });
+};
 
 describe('ingress-egress-tracking', () => {
   let redis: Redis;
@@ -25,12 +32,9 @@ describe('ingress-egress-tracking', () => {
   });
 
   beforeEach(async () => {
-    await prisma.chainTracking.deleteMany();
-  });
-
-  afterEach(async () => {
     await redis.flushall();
     await prisma.chainTracking.deleteMany();
+    await prisma.state.deleteMany();
   });
 
   afterAll(async () => {
@@ -53,6 +57,23 @@ describe('ingress-egress-tracking', () => {
       const deposit = await getPendingDeposit('Ethereum', 'FLIP', '0x1234');
 
       expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 3 });
+    });
+
+    it('ensures foreign block height is used only after 1 extra state chain block', async () => {
+      await updateChainTracking({ chain: 'Ethereum', height: 1234567893n, stateChainHeight: 2 });
+
+      await redis.rpush(
+        'deposit:Ethereum:0x1234',
+        JSON.stringify({
+          amount: '0x9000',
+          asset: 'FLIP',
+          deposit_chain_block_height: 1234567890,
+        }),
+      );
+
+      const deposit = await getPendingDeposit('Ethereum', 'FLIP', '0x1234');
+
+      expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 4 });
     });
 
     it('returns null if the non-bitcoin deposit is not found', async () => {
