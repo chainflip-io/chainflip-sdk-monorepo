@@ -13,8 +13,8 @@ jest.mock('../../utils/logger');
 const updateChainTracking = (data: { chain: Chain; height: bigint }) =>
   prisma.chainTracking.upsert({
     where: { chain: data.chain },
-    update: { ...data, blockTrackedAtStateChainBlock: 1 },
-    create: { ...data, blockTrackedAtStateChainBlock: 1 },
+    update: { ...data, previousHeight: data.height - 1n },
+    create: { ...data, previousHeight: data.height - 1n },
   });
 
 describe('ingress-egress-tracking', () => {
@@ -52,7 +52,7 @@ describe('ingress-egress-tracking', () => {
 
       const deposit = await getPendingDeposit('Ethereum', 'FLIP', '0x1234');
 
-      expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 4 });
+      expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 3 });
     });
 
     it('returns null if the non-bitcoin deposit is not found', async () => {
@@ -106,7 +106,7 @@ describe('ingress-egress-tracking', () => {
             deposit_chain_block_height: 1234567890,
           }),
         ),
-        updateChainTracking({ chain: 'Bitcoin', height: 1234567893n }),
+        updateChainTracking({ chain: 'Bitcoin', height: 1234567894n }),
       ]);
 
       const deposit = await getPendingDeposit(

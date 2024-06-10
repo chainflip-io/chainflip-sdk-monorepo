@@ -317,12 +317,12 @@ model BoostPool {
 }
 
 model ChainTracking {
-  id                            Int      @id @default(autoincrement())
-  chain                         Chain    @unique
-  height                        BigInt   @default(0)
-  blockTrackedAt                DateTime @default(now())
-  updatedAt                     DateTime @updatedAt @db.Timestamptz(3)
-  blockTrackedAtStateChainBlock Int
+  id             Int      @id @default(autoincrement())
+  chain          Chain    @unique
+  height         BigInt   @default(0)
+  previousHeight BigInt   @default(0)
+  blockTrackedAt DateTime @default(now())
+  updatedAt      DateTime @updatedAt @db.Timestamptz(3)
 
   @@schema("public")
 }
