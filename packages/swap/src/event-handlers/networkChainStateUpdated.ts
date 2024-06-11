@@ -15,7 +15,7 @@ const chainStateUpdated =
   (chain: Chain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
     const { blockHeight } = chainStateUpdatedArgs.parse(event.args).newChainState;
-    const currentState = await prisma.state.findFirstOrThrow();
+    const currentTracking = await prisma.chainTracking.findFirst({ where: { chain } });
 
     await Promise.all([
       prisma.chainTracking.upsert({
@@ -23,13 +23,12 @@ const chainStateUpdated =
         create: {
           chain,
           height: blockHeight,
-          previousHeight: currentState.height,
           blockTrackedAt: block.timestamp,
           eventWitnessedBlock: block.height,
         },
         update: {
           height: blockHeight,
-          previousHeight: currentState.height,
+          previousHeight: currentTracking?.height,
           blockTrackedAt: block.timestamp,
           eventWitnessedBlock: block.height,
         },
