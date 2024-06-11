@@ -56,9 +56,17 @@ export const getPendingDeposit = async (
       return mempoolTx && { ...mempoolTx, transactionConfirmations: 0 };
     }
 
+    const currentHeight = (await prisma.state.findFirstOrThrow()).height;
+
+    const stateChainBlocksSinceTracking = currentHeight - (tracking?.eventWitnessedBlock ?? 0);
+    const lastWitnessedBlockHeight =
+      stateChainBlocksSinceTracking > 0 ? tracking.height : tracking.previousHeight;
+
+    // deposits in an external block will be witnessed (and boosted) one stateChain block after chain tracking is updated
+    // to prevent jumping from "1 confirmation" to "checking boost liquidity", we need to calculate confirmations based on the last witnessed block
     const confirmations = Math.max(
       0,
-      Number(tracking.height) - deposits[0].deposit_chain_block_height + 1,
+      Number(lastWitnessedBlockHeight) - deposits[0].deposit_chain_block_height + 1,
     );
 
     return {
