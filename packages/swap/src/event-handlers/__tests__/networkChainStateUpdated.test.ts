@@ -1,4 +1,3 @@
-import { networkBroadcastSuccessMock } from './utils';
 import prisma from '../../client';
 import chainStateUpdated from '../networkChainStateUpdated';
 
