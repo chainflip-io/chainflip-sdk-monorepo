@@ -17,6 +17,13 @@ const chainStateUpdated =
     const { blockHeight } = chainStateUpdatedArgs.parse(event.args).newChainState;
     const currentTracking = await prisma.chainTracking.findFirst({ where: { chain } });
 
+    // We may receive multiple chain state updates for the same stateChain block,
+    // but we want to preserve the last height in the previous stateChain block
+    const previousHeight =
+      currentTracking?.eventWitnessedBlock === block.height
+        ? currentTracking?.previousHeight
+        : currentTracking?.height;
+
     await Promise.all([
       prisma.chainTracking.upsert({
         where: { chain },
@@ -28,7 +35,7 @@ const chainStateUpdated =
         },
         update: {
           height: blockHeight,
-          previousHeight: currentTracking?.height,
+          previousHeight,
           blockTrackedAt: block.timestamp,
           eventWitnessedBlock: block.height,
         },
