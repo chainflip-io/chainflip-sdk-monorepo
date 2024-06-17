@@ -47,7 +47,6 @@ export default z
     COINGECKO_API_KEY: z.string().optional(),
     USE_JIT_QUOTING: optionalBoolean,
     QUOTE_APPROXIMATION_THRESHOLD: optionalNumber(0.1),
-    STEALTH_MODE: optionalBoolean.default('true'),
     DISABLED_INTERNAL_ASSETS: optionalString('').transform((string) =>
       string.split(',').map((asset) => {
         if (asset && !(asset in InternalAssets)) {
