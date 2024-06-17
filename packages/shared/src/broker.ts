@@ -1,4 +1,4 @@
-import { HttpClient } from '@chainflip/rpc';
+import { HttpClient, RpcParams } from '@chainflip/rpc';
 import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { z } from 'zod';
@@ -106,7 +106,10 @@ export async function requestSwapDepositAddress(
     opts.affiliates,
   ]);
 
-  const response = await client.sendRequest('broker_requestSwapDepositAddress', ...params);
+  const response = await client.sendRequest(
+    'broker_requestSwapDepositAddress',
+    ...(params as RpcParams['broker_requestSwapDepositAddress']),
+  );
 
   return validateResponse(chainflipNetwork, response);
 }
