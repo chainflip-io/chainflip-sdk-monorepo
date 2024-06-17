@@ -204,6 +204,12 @@ exports[`server GET /quote rejects malformed requests 1`] = `
 }
 `;
 
+exports[`server GET /quote with market makers rejects if the pool rejects 1`] = `
+{
+  "message": "insufficient liquidity for requested amount",
+}
+`;
+
 exports[`server GET /quote with market makers returns pool quote if market maker quote is too low 1`] = `
 {
   "egressAmount": "999950000",

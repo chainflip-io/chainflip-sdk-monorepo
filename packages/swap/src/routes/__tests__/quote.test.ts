@@ -170,6 +170,43 @@ describe('server', () => {
         expect(body).toMatchSnapshot();
       });
 
+      it('rejects if the pool rejects', async () => {
+        jest
+          .mocked(Quoter.prototype.getQuotingState)
+          .mockResolvedValueOnce({ pairEnabled: true, quotingActive: true });
+
+        const params = new URLSearchParams({
+          srcChain: 'Ethereum',
+          srcAsset: 'FLIP',
+          destChain: 'Ethereum',
+          destAsset: 'USDC',
+          amount: (100e6).toString(),
+        });
+
+        jest
+          .spyOn(RpcClient.prototype, 'sendRequest')
+          .mockRejectedValueOnce(new Error('InsufficientLiquidity'));
+
+        jest.mocked(Quoter.prototype.getQuote).mockResolvedValueOnce({
+          outputAmount: 999000000n,
+          intermediateAmount: null,
+          includedFees: [
+            {
+              type: 'NETWORK',
+              chain: 'Ethereum',
+              asset: 'USDC',
+              amount: '1000000',
+            },
+          ],
+          quoteType: 'market_maker',
+        });
+
+        const { body, status } = await request(server).get(`/quote?${params.toString()}`);
+
+        expect(status).toBe(400);
+        expect(body).toMatchSnapshot();
+      });
+
       it('saves a quote result', async () => {
         jest
           .mocked(Quoter.prototype.getQuotingState)

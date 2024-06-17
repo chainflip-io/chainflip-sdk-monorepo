@@ -163,7 +163,7 @@ describe('python integration test', () => {
 
     jest.mocked(getSwapRate).mockResolvedValueOnce({
       intermediateAmount: 2000000000n,
-      outputAmount: 0n, // this shouldn't be the result
+      outputAmount: 100000000n, // this shouldn't be the result
       quoteType: 'pool',
     });
     jest.mocked(PoolStateCache.prototype.getPoolState).mockResolvedValueOnce({
