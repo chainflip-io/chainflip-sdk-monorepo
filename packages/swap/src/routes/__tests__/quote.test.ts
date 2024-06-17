@@ -203,7 +203,6 @@ describe('server', () => {
 
         const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
-        console.log(body);
         expect(status).toBe(400);
         expect(body).toMatchSnapshot();
       });
