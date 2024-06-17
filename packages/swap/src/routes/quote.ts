@@ -315,6 +315,8 @@ const quoteRouter = (io: Server) => {
           if (BigInt(poolQuote.egressAmount) > egressAmount) {
             bestResponse = poolQuote;
           }
+        } else {
+          throw poolQuoteResult.reason;
         }
 
         const { quoteType, ...quote } = bestResponse;
