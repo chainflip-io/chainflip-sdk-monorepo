@@ -4,6 +4,7 @@ import { Asset, Assets, Chain, Chains } from '@/shared/enums';
 import { quoteQuerySchema } from '@/shared/schemas';
 import { asyncHandler } from './common';
 import env from '../config/env';
+import { getBoostSafeMode } from '../polkadot/api';
 import Quoter from '../quoting/Quoter';
 import { getBoostFeeBpsForAmount } from '../utils/boost';
 import getPoolQuote from '../utils/getPoolQuote';
@@ -72,6 +73,7 @@ const quoteRouter = (io: Server) => {
       const query = queryResult.data;
 
       const { srcAsset, destAsset, amount, brokerCommissionBps } = queryResult.data;
+      const boostDepositsEnabled = getBoostSafeMode(srcAsset).catch(() => true);
 
       if (env.DISABLED_INTERNAL_ASSETS.includes(srcAsset)) {
         throw ServiceError.unavailable(`Asset ${srcAsset} is disabled`);
@@ -99,7 +101,7 @@ const quoteRouter = (io: Server) => {
       try {
         const [limitOrders, estimatedBoostFeeBps, pools] = await Promise.all([
           quoter.getLimitOrders(srcAsset, destAsset, amount),
-          env.DISABLE_BOOST_QUOTING
+          env.DISABLE_BOOST_QUOTING || !(await boostDepositsEnabled)
             ? undefined
             : getBoostFeeBpsForAmount({ amount, asset: srcAsset }),
           getPools(srcAsset, destAsset),
