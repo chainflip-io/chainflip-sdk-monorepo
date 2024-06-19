@@ -338,18 +338,18 @@ const quoteRouter = (io: Server) => {
         logger.error('error while collecting quotes:', { error });
         const poolQuoteResult = await poolQuotePromise;
 
+        try {
+          logger.error(JSON.stringify(error));
+        } catch {
+          // noop
+        }
+
         if (poolQuoteResult.success) {
           if (!responseSent) res.json({ ...poolQuoteResult.data.response, quoteType: undefined });
           return;
         }
 
         if (!responseSent) await handleQuotingError(res, poolQuoteResult.reason);
-
-        try {
-          logger.error(JSON.stringify(error));
-        } catch {
-          // noop
-        }
       }
     }),
   );
