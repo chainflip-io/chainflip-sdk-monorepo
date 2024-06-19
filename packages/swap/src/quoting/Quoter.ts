@@ -169,7 +169,9 @@ export default class Quoter {
       leg2 && this.poolStateCache.getPoolState(leg2.getBaseAsset()),
     ]);
 
-    if (quotes.length === 0) throw new Error('no quotes received');
+    if (quotes.length === 0) {
+      logger.warn('no quotes received', { legs: requestLegs, requestId });
+    }
 
     const results = [
       simulateSwap(

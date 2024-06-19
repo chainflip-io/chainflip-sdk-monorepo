@@ -1,5 +1,6 @@
 import express from 'express';
 import type { Server } from 'socket.io';
+import { inspect } from 'util';
 import { Asset, Assets, Chain, Chains, InternalAsset } from '@/shared/enums';
 import {
   bigintMin,
@@ -333,7 +334,7 @@ const quoteRouter = (io: Server) => {
           quoterInfo: { response, duration },
         });
       } catch (error) {
-        logger.error('error while collecting quotes:', { error });
+        logger.error('error while collecting quotes:', { error: inspect(error) });
         const poolQuoteResult = await poolQuotePromise;
 
         if (poolQuoteResult.success) {
