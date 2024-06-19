@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/sdk",
-  "version": "1.4.0-alpha.3",
+  "version": "1.4.0-alpha.4",
   "description": "",
   "exports": {
     "./swap": {
