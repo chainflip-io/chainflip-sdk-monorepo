@@ -1,6 +1,5 @@
 import express from 'express';
 import type { Server } from 'socket.io';
-import { inspect } from 'util';
 import { Asset, Assets, Chain, Chains, InternalAsset } from '@/shared/enums';
 import {
   bigintMin,
@@ -265,9 +264,7 @@ const quoteRouter = (io: Server) => {
       swapInputAmount -= firstLegPoolFee;
 
       try {
-        logger.info('collecting market maker quotes');
         const bestQuote = await quoter.getQuote(srcAsset, destAsset, swapInputAmount, pools);
-        logger.info('got market maker quote');
 
         const lowLiquidityWarning = await checkPriceWarning({
           srcAsset,
@@ -342,7 +339,7 @@ const quoteRouter = (io: Server) => {
         const poolQuoteResult = await poolQuotePromise;
 
         try {
-          logger.error(JSON.stringify(error), { type: typeof error, inspect: inspect(error) });
+          logger.error(JSON.stringify(error));
         } catch {
           // noop
         }
