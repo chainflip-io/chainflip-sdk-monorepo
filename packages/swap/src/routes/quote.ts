@@ -136,8 +136,6 @@ const handleQuotingError = async (res: express.Response, err: unknown) => {
     level = 'warn';
   }
 
-  logger.error(message);
-
   logger[level]('error while collecting quotes:', err);
 
   // DEPRECATED(1.3): remove `error`
@@ -344,12 +342,6 @@ const quoteRouter = (io: Server) => {
         }
 
         if (!responseSent) await handleQuotingError(res, poolQuoteResult.reason);
-
-        try {
-          logger.error(JSON.stringify(error));
-        } catch {
-          // noop
-        }
       }
     }),
   );

@@ -1,6 +1,4 @@
 /* eslint-disable max-classes-per-file */
-import logger from './logger';
-
 class Timer<T> {
   timeout?: ReturnType<typeof setTimeout>;
 
@@ -90,16 +88,7 @@ export class AsyncCacheMap<K, V> extends CacheMap<K, Promise<V>> {
   load(key: K): Promise<boolean> {
     return this.get(key).then(
       () => true,
-      (error) => {
-        logger.error('failed to load cache value', { error });
-        try {
-          logger.error(JSON.stringify(error));
-        } catch {
-          // noop
-        }
-
-        return false;
-      },
+      () => false,
     );
   }
 }
