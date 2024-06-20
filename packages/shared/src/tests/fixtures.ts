@@ -3,6 +3,7 @@ import {
   CfEnvironmentResponse,
   CfFundingEnvironmentResponse,
   CfIngressEgressEnvironmentResponse,
+  CfPoolsEnvironmentResponse,
   CfSupportedAssetsResponse,
   CfSwapRateResponse,
   CfSwappingEnvironmentResponse,
@@ -118,6 +119,46 @@ export const ingressEgressEnvironment = ({
   },
 });
 
+const poolsEnvironment = (): RpcResponse<CfPoolsEnvironmentResponse> => {
+  const fees = {
+    limit_order_fee_hundredth_pips: 1000,
+    limit_order_total_fees_earned: {
+      base: '0x0',
+      quote: '0x0',
+    },
+    range_order_fee_hundredth_pips: 1000,
+    range_order_total_fees_earned: {
+      base: '0x0',
+      quote: '0x0',
+    },
+    range_total_swap_inputs: {
+      base: '0x0',
+      quote: '0x0',
+    },
+    limit_total_swap_inputs: {
+      base: '0x0',
+      quote: '0x0',
+    },
+    quote_asset: {
+      asset: 'USDC',
+      chain: 'Ethereum',
+    },
+  } as const;
+
+  return {
+    id: 1,
+    jsonrpc: '2.0',
+    result: {
+      fees: {
+        Bitcoin: { BTC: fees },
+        Ethereum: { ETH: fees, FLIP: fees, USDT: fees },
+        Polkadot: { DOT: fees },
+        Arbitrum: { ETH: fees, USDC: fees },
+      },
+    },
+  };
+};
+
 export const environment = ({
   maxSwapAmount = '0x0',
   minDepositAmount = '0x0',
@@ -142,8 +183,7 @@ export const environment = ({
     }).result,
     swapping: swappingEnvironment({ maxSwapAmount }).result,
     funding: fundingEnvironment().result,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    pools: {} as any,
+    pools: poolsEnvironment().result,
   },
 });
 
