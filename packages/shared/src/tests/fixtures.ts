@@ -142,6 +142,8 @@ export const environment = ({
     }).result,
     swapping: swappingEnvironment({ maxSwapAmount }).result,
     funding: fundingEnvironment().result,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    pools: {} as any,
   },
 });
 
