@@ -131,8 +131,8 @@ importers:
   packages/sdk:
     dependencies:
       '@chainflip/rpc':
-        specifier: ^1.4.2
-        version: 1.4.2
+        specifier: ^1.4.7
+        version: 1.4.7
       '@chainflip/utils':
         specifier: ^0.2.1
         version: 0.2.1
@@ -153,8 +153,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       '@chainflip/rpc':
-        specifier: ^1.4.2
-        version: 1.4.2
+        specifier: ^1.4.7
+        version: 1.4.7
       '@chainflip/utils':
         specifier: ^0.2.1
         version: 0.2.1
@@ -199,8 +199,8 @@ importers:
   packages/swap:
     dependencies:
       '@chainflip/rpc':
-        specifier: ^1.4.2
-        version: 1.4.2
+        specifier: ^1.4.7
+        version: 1.4.7
       '@chainflip/utils':
         specifier: ^0.2.1
         version: 0.2.1
@@ -721,14 +721,14 @@ packages:
   '@chainflip/bitcoin@0.2.2':
     resolution: {integrity: sha512-45WfB9VTeAltbAz1GscDcYJISx3kUDY0e3R6a02X5+EbsMsZzaqyCeEFRWTvzsYeRewTB69VEHY5+7jJos7Q5g==}
 
-  '@chainflip/rpc@1.4.2':
-    resolution: {integrity: sha512-TvUl9zSGNkyyj897d2fXj4L6KmsT0pt//lRGOHh3Pr03W+GTAgv4amZ37SK/RdicqVTntFzVv5zw/d6HM+7q/Q==}
-
-  '@chainflip/utils@0.1.5':
-    resolution: {integrity: sha512-k3YxNjQnyube95N1tFKcfzVASYtiE53iIYcPmz9G/db+dKdxU39TTaHT40pjnpYedPqh8CBiA5ltiBR+Zap5yw==}
+  '@chainflip/rpc@1.4.7':
+    resolution: {integrity: sha512-RNrWiiZhXm/WMwRN7SjmSmI9UeCBMPMXgFeLFTLtZaHudWCHINj9FVFZDcQaTQwEcEfXYXG5Y5cpSosRrmGapg==}
 
   '@chainflip/utils@0.2.1':
     resolution: {integrity: sha512-LeAGM+rTf2YUBA5FVrIWTwoGsvzh7/6wMsF48T1DgNXu9GNy859+BPWCEP5zPiLCukGS8qpSEKYN1Pt7ChJreg==}
+
+  '@chainflip/utils@0.3.0':
+    resolution: {integrity: sha512-csW8E3lRcSG1udN/kgsOhjZ7bfRrSbgv8Hdh/pzjM+VjQ6Hh46/LuiZHeQR0rQMimfG+lu2Afxk4jeRXRGFWTg==}
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -1775,6 +1775,7 @@ packages:
 
   '@substrate/connect@0.8.10':
     resolution: {integrity: sha512-DIyQ13DDlXqVFnLV+S6/JDgiGowVRRrh18kahieJxhgvzcWicw5eLc6jpfQ0moVVLBYkO7rctB5Wreldwpva8w==}
+    deprecated: versions below 1.x are no longer maintained
 
   '@substrate/light-client-extension-helpers@0.0.6':
     resolution: {integrity: sha512-girltEuxQ1BvkJWmc8JJlk4ZxnlGXc/wkLcNguhY+UoDEMBK0LsdtfzQKIfrIehi4QdeSBlFEFBoI4RqPmsZzA==}
@@ -6092,14 +6093,14 @@ snapshots:
 
   '@chainflip/bitcoin@0.2.2': {}
 
-  '@chainflip/rpc@1.4.2':
+  '@chainflip/rpc@1.4.7':
     dependencies:
-      '@chainflip/utils': 0.1.5
+      '@chainflip/utils': 0.3.0
       zod: 3.23.8
 
-  '@chainflip/utils@0.1.5': {}
-
   '@chainflip/utils@0.2.1': {}
+
+  '@chainflip/utils@0.3.0': {}
 
   '@colors/colors@1.6.0': {}
 
