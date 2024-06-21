@@ -255,7 +255,7 @@ router.get(
       swapId: swap?.nativeId.toString(),
       depositAmount:
         readField(swap, failedSwap, 'depositAmount')?.toFixed() ?? pendingDeposit?.amount,
-      depositTransactionHash: pendingDeposit?.transactionHash ?? failedSwap?.txHash ?? undefined,
+      depositTransactionHash: pendingDeposit?.transactionHash,
       depositTransactionConfirmations: pendingDeposit?.transactionConfirmations,
       depositReceivedAt: swap?.depositReceivedAt.valueOf(),
       depositReceivedBlockIndex: swap?.depositReceivedBlockIndex ?? undefined,
