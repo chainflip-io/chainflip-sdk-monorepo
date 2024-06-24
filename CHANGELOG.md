@@ -15,25 +15,7 @@ which it is deprecated.
   string `error` field. This field has been replaced by `message` to be inline
   with how errors are returned in other parts of the API.
 
-## Unreleased
-
-### Changed
-
-- `SwapSDK.prototype.executeSwap` allows to not wait for transaction inclusion
-  by passing `{ wait: 0 }` as `txOpts` param now. The method will return the
-  transaction hash of the submitted transaction.
-- Liquidity fees have been moved from the `includedFees` property on the
-  `getQuote` response, into a new `poolInfo` property, which is an array of the
-  pools the swap passes through, along with the estimated fee and fee asset.
-
-### Fixed
-
-- `SwapSDK.prototype.getQuote` currently responds with a 500 if there is insufficient liquidity.
-  It has been changed to a 400 because there are steps the user can take to fix
-  the error, namely change the swap input amount. The error message has been
-  changed to a more informative `insufficient liquidity for requested amount`.
-- `SwapSDK.prototype.getQuote` and `requestSwapDepositChannel` reject requests with amounts larger
-  than the largest value of a 128 bit integer.
+## 1.4.0
 
 ### Added
 
@@ -79,6 +61,24 @@ type ChainMap<T> = {
 + Arbitrum: T;
 }
 ```
+
+### Changed
+
+- `SwapSDK.prototype.executeSwap` allows to not wait for transaction inclusion
+  by passing `{ wait: 0 }` as `txOpts` param now. The method will return the
+  transaction hash of the submitted transaction.
+- Liquidity fees have been moved from the `includedFees` property on the
+  `getQuote` response, into a new `poolInfo` property, which is an array of the
+  pools the swap passes through, along with the estimated fee and fee asset.
+
+### Fixed
+
+- `SwapSDK.prototype.getQuote` currently responds with a 500 if there is insufficient liquidity.
+  It has been changed to a 400 because there are steps the user can take to fix
+  the error, namely change the swap input amount. The error message has been
+  changed to a more informative `insufficient liquidity for requested amount`.
+- `SwapSDK.prototype.getQuote` and `requestSwapDepositChannel` reject requests with amounts larger
+  than the largest value of a 128 bit integer.
 
 ## 1.3.0
 
