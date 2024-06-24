@@ -7,26 +7,35 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
-## Deprecation warnings
-
-### 1.3.0
-
-- `getQuote` can respond with a 500 status code and a JSON response body with an
-  string `error` field. This field has been replaced by `message` to be inline
-  with how errors are returned in other parts of the API.
-
 ## 1.4.0
 
 ### Added
 
+- `SwapSDK.prototype.getStatus` now returns a bunch of properties used to identify
+  a boosted swap and its attributes:
+  - `depositBoostedAt` - Timestamp of the boosting action (`DepositBoosted` event)
+  - `depositBoostedBlockIndex` - {blockId}-{eventIndex} - the index of the event in the block
+  - `effectiveBoostFeeBps` - The effective boost fee bps taken for the boosted swap on this channel.
+  - `boostSkippedAt` - Timestamp of the boost skipping action (`InsufficientBoostLiquidity` event)
+  - `boostSkippedBlockIndex` - {blockId}-{eventIndex} - the index of the event in the block
+  - `depositChannelMaxBoostFeeBps` - The boost fee limit in bps set by the channel opener at the time
+    of opening the deposit channel.
+- `SwapSDK.prototype.getStatus` will return the `broadcastTransactionRef`,transaction reference (tx hash or id) for the
+  destination chain. This can be used to lookup for the transaction on the destination.
 - `SwapSDK.prototype.getStatus` will return the list of affiliate brokers for a
   deposit channel if it was opened with affiliates.
 - `SwapSDK.prototype.getQuote` supports an optional `brokerCommissionBps` and
   `affiliateBrokers` option. If given, the `brokerCommissionBps` option will be
   used instead of the `brokerCommissionBps` used to initialize the SDK instance.
-- `SwapSDK.prototype.requestDepositAddress` supports an optional `brokerCommissionBps`
-  and `affiliateBrokers` option. The new options are only available when initializing
+- `SwapSDK.prototype.getQuote` now returns a `boostQuote` property whenever available for
+  the requested route and amount. Currently only available for `BTC -> Any` routes.
+- `SwapSDK.prototype.requestDepositAddress` supports an optional `brokerCommissionBpsş
+and `affiliateBrokers` option. The new options are only available when initializing
   the SDK with a brokerUrl and will be applied only to the requested deposit channel.
+- `SwapSDK.prototype.requestDepositAddress` now supports creating boostable channels by
+  setting the boost fee bps limit that the user is willing to tolerate. By passing the
+  `maxBoostFeeBps` option to this method, one can set the boost fee limit in bps for that
+  channel. Default value is 0 which means a non-boostable channel is being opened.
 - Support for Arbitrum tokens have been added.
 - Arbitrum ETH and USDC have been added to the `ChainAssetMap` type:
 
