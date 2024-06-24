@@ -34,7 +34,7 @@ which it is deprecated.
   the SDK with a brokerUrl and will be applied only to the requested deposit channel.
 - `SwapSDK.prototype.requestDepositAddress` now supports creating boostable channels by
   setting the boost fee bps limit that the user is willing to tolerate. By passing the
-  `maxBoostFeeBps` option to this method, one can set the boost fee limit in bps for that
+  `maxBoostFeeBps` option to this method, one can set the maximum boost fee in bps for that
   channel. Default value is 0 which means a non-boostable channel is being opened.
 - Support for Arbitrum tokens have been added.
 - Arbitrum ETH and USDC have been added to the `ChainAssetMap` type:
