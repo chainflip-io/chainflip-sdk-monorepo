@@ -11,7 +11,7 @@ which it is deprecated.
 
 ### Added
 
-- `SwapSDK.prototype.getStatus` now returns a bunch of properties used to identify
+- `SwapSDK.prototype.getStatus` now returns multiple properties that are used to identify
   a boosted swap and its attributes:
   - `depositBoostedAt` - Timestamp of the boosting action (`DepositBoosted` event)
   - `depositBoostedBlockIndex` - {blockId}-{eventIndex} - the index of the event in the block
@@ -29,8 +29,8 @@ which it is deprecated.
   used instead of the `brokerCommissionBps` used to initialize the SDK instance.
 - `SwapSDK.prototype.getQuote` now returns a `boostQuote` property whenever available for
   the requested route and amount. Currently only available for `BTC -> Any` routes.
-- `SwapSDK.prototype.requestDepositAddress` supports an optional `brokerCommissionBpsş
-and `affiliateBrokers` option. The new options are only available when initializing
+- `SwapSDK.prototype.requestDepositAddress` supports an optional `brokerCommissionBps`
+  and `affiliateBrokers` option. The new options are only available when initializing
   the SDK with a brokerUrl and will be applied only to the requested deposit channel.
 - `SwapSDK.prototype.requestDepositAddress` now supports creating boostable channels by
   setting the boost fee bps limit that the user is willing to tolerate. By passing the
