@@ -14,7 +14,7 @@ export const coinGeckoIdMap = {
   Eth: 'ethereum',
   Btc: 'bitcoin',
   Usdt: 'tether',
-  ArbEth: 'arbitrum',
+  ArbEth: 'ethereum',
   ArbUsdc: 'usd-coin',
 } as const satisfies Record<InternalAsset, string>;
 

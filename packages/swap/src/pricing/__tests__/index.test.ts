@@ -19,7 +19,7 @@ const priceMap = {
   Dot: 9.914487887030168,
   Usdt: 0.9996396835618839,
   Usdc: 0.9989897393887496,
-  ArbEth: 3637.78272243294,
+  ArbEth: 3638.78272243294,
   ArbUsdc: 0.9989897393887496,
 } as const satisfies Record<InternalAsset, number>;
 
