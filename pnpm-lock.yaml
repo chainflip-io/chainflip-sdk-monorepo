@@ -96,6 +96,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@chainflip/bitcoin':
+        specifier: ^0.2.2
+        version: 0.2.2
       '@chainflip/utils':
         specifier: ^0.2.1
         version: 0.2.1
