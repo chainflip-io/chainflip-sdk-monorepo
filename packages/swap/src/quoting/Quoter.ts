@@ -134,6 +134,13 @@ export default class Quoter {
   }
 
   async getLimitOrders(srcAsset: InternalAsset, destAsset: InternalAsset, swapInputAmount: bigint) {
+    logger.info('requesting limit orders from market makers', {
+      connectedMarketMakerCount: this.io.sockets.sockets.size,
+      srcAsset,
+      destAsset,
+      swapInputAmount: swapInputAmount.toString(),
+    });
+
     let legs;
 
     if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
@@ -154,7 +161,7 @@ export default class Quoter {
 
     const quotes = await this.collectMakerQuotes(request);
 
-    return [
+    const orders = [
       ...formatLimitOrders(
         quotes.flatMap((quote) => quote.legs[0]),
         legs[0],
@@ -164,5 +171,9 @@ export default class Quoter {
         legs[1],
       ),
     ];
+
+    logger.info('received limit orders from market makers', orders);
+
+    return orders;
   }
 }
