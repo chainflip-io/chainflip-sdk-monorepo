@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/cli",
-  "version": "1.4.0-solana.0",
+  "version": "1.4.0-solana.1",
   "description": "",
   "main": "./dist/lib.mjs",
   "types": "./dist/lib.d.mts",
@@ -33,6 +33,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@chainflip/bitcoin": "^0.2.2",
     "ioredis": "^5.4.1",
     "yargs": "^17.7.2"
   },
