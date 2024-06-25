@@ -72,10 +72,13 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) =>
     ])
     .parse(params);
 
+// TODO: parse me
+const solanaAddress = z.string();
+
 const validateResponse = (network: ChainflipNetwork, response: unknown) =>
   z
     .object({
-      address: z.union([dotAddress, ethereumAddress, btcAddress(network)]),
+      address: z.union([dotAddress, ethereumAddress, btcAddress(network), solanaAddress]),
       issued_block: z.number(),
       channel_id: z.number(),
       source_chain_expiry_block: z.bigint(),

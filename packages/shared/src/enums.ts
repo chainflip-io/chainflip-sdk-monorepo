@@ -144,8 +144,8 @@ export const chainConstants = {
   [Chains.Solana]: {
     assets: [Assets.SOL, Assets.USDC],
     gasAsset: Assets.SOL,
-    contractId: (400 + 800) / 2,
-    blockTimeSeconds: 0.26,
+    contractId: 5,
+    blockTimeSeconds: (400 + 800) / 2,
   },
 } as const satisfies Record<
   Chain,
