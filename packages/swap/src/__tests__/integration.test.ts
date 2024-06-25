@@ -35,7 +35,7 @@ describe('python integration test', () => {
   let serverUrl: string;
 
   beforeAll(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE public."Pool", private."QuotingPair" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE public."Pool" CASCADE`;
     await prisma.pool.createMany({
       data: [
         {
