@@ -44,7 +44,7 @@ describe(Quoter, () => {
   const sockets: Socket[] = [];
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE private."MarketMaker", private."QuotingPair" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE private."MarketMaker" CASCADE`;
     oldEnv = { ...env };
     server = new Server().use(authenticate).listen(0);
 
