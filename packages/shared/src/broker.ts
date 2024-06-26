@@ -41,12 +41,15 @@ const submitAddress = (chain: Chain, address: string): string => {
   return address;
 };
 
+// TODO: parse me
+const solanaAddress = z.string();
+
 const validateRequest = (network: ChainflipNetwork, params: unknown) =>
   z
     .tuple([
       assetAndChain,
       assetAndChain,
-      z.union([numericString, hexString, btcAddress(network)]),
+      z.union([numericString, hexString, btcAddress(network), solanaAddress]),
       z.number(),
       ccmParamsSchema
         .merge(
@@ -71,9 +74,6 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) =>
         .optional(),
     ])
     .parse(params);
-
-// TODO: parse me
-const solanaAddress = z.string();
 
 const validateResponse = (network: ChainflipNetwork, response: unknown) =>
   z
