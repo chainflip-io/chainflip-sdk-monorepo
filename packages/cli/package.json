@@ -26,6 +26,7 @@
     "README.md"
   ],
   "scripts": {
+    "prepublish": "pnpm build",
     "build": "rm -rf dist && tsup",
     "typecheck": "tsc --noEmit"
   },
