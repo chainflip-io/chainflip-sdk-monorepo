@@ -98,6 +98,7 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
+          "estimatedDefaultDurationSeconds": 48,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "25000000000000000000000",
           "feesPaid": [],
@@ -131,6 +132,7 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
+          "estimatedDefaultDurationSeconds": 48,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "25000000000000000000000",
           "feesPaid": [],
@@ -169,6 +171,7 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
+          "estimatedDefaultDurationSeconds": 48,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "25000000000000000000000",
           "feesPaid": [],
@@ -201,6 +204,7 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
+          "estimatedDefaultDurationSeconds": 48,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "feesPaid": [],
@@ -250,6 +254,7 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
+          "estimatedDefaultDurationSeconds": 48,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "feesPaid": [],
@@ -317,6 +322,7 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
+          "estimatedDefaultDurationSeconds": 48,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "feesPaid": [
@@ -411,6 +417,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
+          "estimatedDefaultDurationSeconds": 48,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "feesPaid": [
@@ -518,6 +525,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
+          "estimatedDefaultDurationSeconds": 48,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "feesPaid": [
@@ -621,6 +629,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
+          "estimatedDefaultDurationSeconds": 48,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "feesPaid": [
@@ -728,6 +737,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
+          "estimatedDefaultDurationSeconds": 48,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "feesPaid": [
@@ -835,6 +845,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
+          "estimatedDefaultDurationSeconds": 48,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
           "feesPaid": [
@@ -1114,6 +1125,7 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
+          "estimatedDefaultDurationSeconds": 48,
           "feesPaid": [
             {
               "amount": "10",
@@ -1185,6 +1197,7 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
+          "estimatedDefaultDurationSeconds": 48,
           "feesPaid": [
             {
               "amount": "10",

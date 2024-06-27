@@ -22,6 +22,7 @@ import { getPendingBroadcast, getPendingDeposit } from '../ingress-egress-tracki
 import { readField } from '../utils/function';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
+import { estimateSwapDuration } from '../utils/swap';
 
 const router = express.Router();
 
@@ -239,6 +240,10 @@ router.get(
         effectiveBoostFeeBps = 0;
       }
     }
+    const { srcAsset, destAsset } = {
+      srcAsset: swapDepositChannel?.srcAsset || swap?.srcAsset,
+      destAsset: swapDepositChannel?.destAsset || swap?.destAsset,
+    };
 
     const response = {
       state,
@@ -299,6 +304,13 @@ router.get(
       depositBoostedBlockIndex: swap?.depositBoostedBlockIndex ?? undefined,
       boostSkippedAt: channel?.failedBoosts.at(0)?.failedAtTimestamp.valueOf(),
       boostSkippedBlockIndex: channel?.failedBoosts.at(0)?.failedAtBlockIndex ?? undefined,
+      estimatedDefaultDurationSeconds:
+        srcAsset &&
+        destAsset &&
+        (await estimateSwapDuration({
+          srcAsset,
+          destAsset,
+        })),
     };
 
     logger.info('sending response for swap request', { id, response });
