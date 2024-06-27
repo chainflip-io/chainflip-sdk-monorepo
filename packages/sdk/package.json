@@ -51,7 +51,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@chainflip/rpc": "^1.4.9",
+    "@chainflip/rpc": "^1.4.10",
     "@chainflip/utils": "^0.2.1",
     "axios": "^1.6.8",
     "ethers": "^6.11.1"
