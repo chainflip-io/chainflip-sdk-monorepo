@@ -68,6 +68,7 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   ccmDepositReceivedBlockIndex: string | undefined;
   ccmMetadata: CcmMetadata | undefined;
   feesPaid: SwapFee[];
+  estimatedDefaultDurationSeconds: number | undefined;
 }
 
 interface DepositAddressFields extends SwapStatusResponseCommonFields {
