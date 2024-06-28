@@ -31,7 +31,6 @@ export default z
     START_HTTP_SERVICE: optionalBoolean,
     START_PROCESSOR: optionalBoolean,
     SWAPPING_APP_PORT: optionalNumber(8080),
-    BITCOIN_DEPOSIT_TRACKER_URL: httpUrl.optional(),
     RPC_BROKER_HTTPS_URL: httpUrl,
     RPC_NODE_WSS_URL: wsUrl,
     CHAINFLIP_NETWORK: chainflipNetwork,
