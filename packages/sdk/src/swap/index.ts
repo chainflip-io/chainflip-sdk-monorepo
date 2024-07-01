@@ -4,6 +4,7 @@ export {
   type Chain,
   type Asset,
   type InternalAsset as ChainflipId,
+  type UncheckedAssetAndChain,
   type ChainflipNetwork,
   Chains,
   Assets,
