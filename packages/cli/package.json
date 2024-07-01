@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@types/yargs": "^17.0.32",
-    "tsup": "^8.0.2"
+    "tsup": "^8.1.0"
   },
   "peerDependencies": {
     "@chainflip/utils": "^0.2.1",
