@@ -497,7 +497,7 @@ exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based
 ]
 `;
 
-exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc 2`] = `
+exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by asset 1`] = `
 [
   {
     "asset": "Btc",
