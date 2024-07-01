@@ -63,7 +63,7 @@
     "bignumber.js": "^9.1.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "ethers": "^6.11.1",
+    "ethers": "^6.13.1",
     "express": "^4.19.2",
     "graphql-request": "^6.1.0",
     "ioredis": "^5.4.1",
