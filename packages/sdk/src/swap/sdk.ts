@@ -13,6 +13,7 @@ import {
   InternalAsset,
   assetConstants,
   getInternalAsset,
+  getAssetAndChain,
 } from '@/shared/enums';
 import { assert, isNotNullish } from '@/shared/guards';
 import {
@@ -40,6 +41,7 @@ import {
   SwapStatusRequest,
   SwapStatusResponse,
   DepositAddressRequest,
+  BoostPoolDepth,
 } from './types';
 
 type TransactionHash = `0x${string}`;
@@ -65,8 +67,6 @@ export class SwapSDK {
   private stateChainEnvironment?: Environment;
 
   private supportedAssets?: InternalAsset[];
-
-  private boostPoolsDepth?: BoostPoolsDepth;
 
   constructor(options: SwapSDKOptions = {}) {
     const network = options.network ?? ChainflipNetworks.perseverance;
@@ -112,9 +112,7 @@ export class SwapSDK {
   }
 
   private async getBoostPoolsDepth(): Promise<BoostPoolsDepth> {
-    this.boostPoolsDepth ??= await getAllBoostPoolsDepth(this.rpcConfig);
-
-    return this.boostPoolsDepth;
+    return getAllBoostPoolsDepth(this.rpcConfig);
   }
 
   async getAssets(chain?: Chain): Promise<AssetData[]> {
@@ -301,17 +299,29 @@ export class SwapSDK {
     return channelOpeningFees;
   }
 
-  async getBoostLiquidity(asset?: UncheckedAssetAndChain): Promise<BoostPoolsDepth> {
-    const poolsDepth = await this.getBoostPoolsDepth();
+  async getBoostLiquidity({
+    chainAsset,
+    tier,
+  }: {
+    chainAsset?: UncheckedAssetAndChain;
+    tier?: number;
+  } = {}): Promise<BoostPoolDepth[]> {
+    let poolsDepth = await this.getBoostPoolsDepth();
 
-    if (asset) {
-      const internalAsset = getInternalAsset(asset);
-
-      return poolsDepth
+    if (chainAsset) {
+      const internalAsset = getInternalAsset(chainAsset);
+      poolsDepth = poolsDepth
         .filter((boostPoolDepth) => boostPoolDepth.asset === internalAsset)
         .sort((a, b) => (a.tier < b.tier ? -1 : 1));
     }
 
-    return poolsDepth;
+    if (tier) {
+      poolsDepth = poolsDepth.filter((boostPoolDepth) => boostPoolDepth.tier === tier);
+    }
+
+    return poolsDepth.map((depth) => ({
+      ...depth,
+      ...getAssetAndChain(depth.asset),
+    }));
   }
 }

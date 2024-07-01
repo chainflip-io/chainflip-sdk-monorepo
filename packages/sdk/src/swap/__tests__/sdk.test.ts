@@ -619,8 +619,91 @@ describe(SwapSDK, () => {
 
       const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
       expect(
-        await freshSdk.getBoostLiquidity({ asset: 'BTC', chain: 'Bitcoin' }),
+        await freshSdk.getBoostLiquidity({
+          chainAsset: {
+            asset: 'BTC',
+            chain: 'Bitcoin',
+          },
+        }),
       ).toMatchSnapshot();
     });
+  });
+  it('returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by tier', async () => {
+    mockRpcResponse((url, data: any) => {
+      if (data.method === 'cf_boost_pools_depth') {
+        return Promise.resolve({
+          data: boostPoolsDepth([
+            {
+              chain: 'Bitcoin',
+              asset: 'BTC',
+              tier: 10,
+              available_amount: '0x186a0',
+            },
+            {
+              chain: 'Ethereum',
+              asset: 'ETH',
+              tier: 10,
+              available_amount: '0x186a0',
+            },
+            {
+              chain: 'Ethereum',
+              asset: 'ETH',
+              tier: 30,
+              available_amount: '0x186a0',
+            },
+          ]),
+        });
+      }
+
+      return defaultRpcMocks(url, data);
+    });
+
+    const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
+    expect(
+      await freshSdk.getBoostLiquidity({
+        tier: 10,
+      }),
+    ).toMatchSnapshot();
+  });
+  it('returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by tier & asset', async () => {
+    mockRpcResponse((url, data: any) => {
+      if (data.method === 'cf_boost_pools_depth') {
+        return Promise.resolve({
+          data: boostPoolsDepth([
+            {
+              chain: 'Bitcoin',
+              asset: 'BTC',
+              tier: 10,
+              available_amount: '0x186a0',
+            },
+            {
+              chain: 'Ethereum',
+              asset: 'ETH',
+              tier: 10,
+              available_amount: '0x186a0',
+            },
+            {
+              chain: 'Ethereum',
+              asset: 'ETH',
+              tier: 30,
+              available_amount: '0x186a0',
+            },
+          ]),
+        });
+      }
+
+      return defaultRpcMocks(url, data);
+    });
+
+    const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
+    expect(
+      await freshSdk.getBoostLiquidity({
+        tier: 10,
+        chainAsset: {
+          asset: 'ETH',
+          chain: 'Ethereum',
+        },
+      }),
+    ).toMatchSnapshot();
   });
 });
