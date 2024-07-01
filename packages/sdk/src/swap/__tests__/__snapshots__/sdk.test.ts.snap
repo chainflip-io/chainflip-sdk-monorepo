@@ -487,6 +487,26 @@ exports[`SwapSDK getAssets returns the filtered assets for the chain 1`] = `
 
 exports[`SwapSDK getAssets throws when requesting an unsupported chain 1`] = `[Error: unsupported source chain "Dogecoin"]`;
 
+exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc 1`] = `
+[
+  {
+    "asset": "Btc",
+    "availableAmount": 100000n,
+    "tier": 10,
+  },
+]
+`;
+
+exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc 2`] = `
+[
+  {
+    "asset": "Btc",
+    "availableAmount": 100000n,
+    "tier": 10,
+  },
+]
+`;
+
 exports[`SwapSDK getChains returns the chains based on the cf_supported_assets rpc 1`] = `
 [
   {
