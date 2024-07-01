@@ -6,7 +6,7 @@ import { calculateExpiryTime } from '../utils/function';
 import { EventHandlerArgs } from './index';
 
 const affiliateSchema = z.object({
-  bps: z.number().int().positive(),
+  bps: z.number().int().nonnegative(),
   account: accountId,
 });
 
