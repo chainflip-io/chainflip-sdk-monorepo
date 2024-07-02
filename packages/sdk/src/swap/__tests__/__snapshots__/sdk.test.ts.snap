@@ -493,18 +493,24 @@ exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based
     "asset": "BTC",
     "availableAmount": 100000n,
     "chain": "Bitcoin",
-    "tier": 10,
+    "feeTierBps": 10,
   },
 ]
 `;
 
-exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by asset 1`] = `
+exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by asset and sorted descending 1`] = `
 [
   {
     "asset": "BTC",
     "availableAmount": 100000n,
     "chain": "Bitcoin",
-    "tier": 10,
+    "feeTierBps": 20,
+  },
+  {
+    "asset": "BTC",
+    "availableAmount": 100000n,
+    "chain": "Bitcoin",
+    "feeTierBps": 10,
   },
 ]
 `;
@@ -706,7 +712,7 @@ exports[`SwapSDK returns the boost pools liquidity depth based on the cf_boost_p
     "asset": "ETH",
     "availableAmount": 100000n,
     "chain": "Ethereum",
-    "tier": 10,
+    "feeTierBps": 10,
   },
 ]
 `;
@@ -717,13 +723,13 @@ exports[`SwapSDK returns the boost pools liquidity depth based on the cf_boost_p
     "asset": "BTC",
     "availableAmount": 100000n,
     "chain": "Bitcoin",
-    "tier": 10,
+    "feeTierBps": 10,
   },
   {
     "asset": "ETH",
     "availableAmount": 100000n,
     "chain": "Ethereum",
-    "tier": 10,
+    "feeTierBps": 10,
   },
 ]
 `;

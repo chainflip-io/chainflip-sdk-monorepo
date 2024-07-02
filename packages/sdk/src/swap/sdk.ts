@@ -312,7 +312,7 @@ export class SwapSDK {
       const internalAsset = getInternalAsset(chainAsset);
       poolsDepth = poolsDepth
         .filter((boostPoolDepth) => boostPoolDepth.asset === internalAsset)
-        .sort((a, b) => (a.tier < b.tier ? -1 : 1));
+        .sort((a, b) => b.tier - a.tier);
     }
 
     if (tier) {
@@ -320,7 +320,8 @@ export class SwapSDK {
     }
 
     return poolsDepth.map((depth) => ({
-      ...depth,
+      availableAmount: depth.availableAmount,
+      feeTierBps: depth.tier,
       ...getAssetAndChain(depth.asset),
     }));
   }

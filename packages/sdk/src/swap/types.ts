@@ -213,7 +213,7 @@ export type SwapStatusResponse =
   | FailedVaultSwapStatusResponse;
 
 export type BoostPoolDepth = {
-  tier: number;
+  feeTierBps: number;
   availableAmount: bigint;
   asset: Asset;
   chain: Chain;

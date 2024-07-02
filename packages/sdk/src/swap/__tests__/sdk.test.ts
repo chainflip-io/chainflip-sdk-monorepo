@@ -593,7 +593,7 @@ describe(SwapSDK, () => {
       expect(await freshSdk.getBoostLiquidity()).toMatchSnapshot();
     });
 
-    it('returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by asset', async () => {
+    it('returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by asset and sorted descending', async () => {
       mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_boost_pools_depth') {
           return Promise.resolve({
@@ -602,6 +602,12 @@ describe(SwapSDK, () => {
                 chain: 'Bitcoin',
                 asset: 'BTC',
                 tier: 10,
+                available_amount: '0x186a0',
+              },
+              {
+                chain: 'Bitcoin',
+                asset: 'BTC',
+                tier: 20,
                 available_amount: '0x186a0',
               },
               {
