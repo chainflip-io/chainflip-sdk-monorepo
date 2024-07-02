@@ -7,6 +7,13 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## 1.4.2
+
+- `SwapSDK.prototype.getBoostLiquidity` - _new_ method that returns the current liquidity state of the
+  boost pools. Supports filtering of the results by:
+  - `chainAsset: UncheckedAssetAndChain` - the combination of chain & asset (for ex. `{ chain: "Bitcoin", asset: "BTC" }`)
+  - `feeTierBps: number` - the fee tier of the pool (for ex. 5, 10, 30)
+
 ## 1.4.0
 
 ### Added
