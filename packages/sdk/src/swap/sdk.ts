@@ -301,10 +301,10 @@ export class SwapSDK {
 
   async getBoostLiquidity({
     chainAsset,
-    tier,
+    feeTierBps,
   }: {
     chainAsset?: UncheckedAssetAndChain;
-    tier?: number;
+    feeTierBps?: number;
   } = {}): Promise<BoostPoolDepth[]> {
     let poolsDepth = await this.getBoostPoolsDepth();
 
@@ -315,8 +315,8 @@ export class SwapSDK {
         .sort((a, b) => b.tier - a.tier);
     }
 
-    if (tier) {
-      poolsDepth = poolsDepth.filter((boostPoolDepth) => boostPoolDepth.tier === tier);
+    if (feeTierBps) {
+      poolsDepth = poolsDepth.filter((boostPoolDepth) => boostPoolDepth.tier === feeTierBps);
     }
 
     return poolsDepth.map((depth) => ({
