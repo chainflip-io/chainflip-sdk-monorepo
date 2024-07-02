@@ -667,7 +667,7 @@ describe(SwapSDK, () => {
     const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
     expect(
       await freshSdk.getBoostLiquidity({
-        tier: 10,
+        feeTierBps: 10,
       }),
     ).toMatchSnapshot();
   });
@@ -704,7 +704,7 @@ describe(SwapSDK, () => {
     const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
     expect(
       await freshSdk.getBoostLiquidity({
-        tier: 10,
+        feeTierBps: 10,
         chainAsset: {
           asset: 'ETH',
           chain: 'Ethereum',
