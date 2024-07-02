@@ -13,9 +13,17 @@ import {
   InternalAsset,
   assetConstants,
   getInternalAsset,
+  getAssetAndChain,
 } from '@/shared/enums';
 import { assert, isNotNullish } from '@/shared/guards';
-import { Environment, RpcConfig, getEnvironment, getSupportedAssets } from '@/shared/rpc';
+import {
+  BoostPoolsDepth,
+  Environment,
+  RpcConfig,
+  getAllBoostPoolsDepth,
+  getEnvironment,
+  getSupportedAssets,
+} from '@/shared/rpc';
 import { validateSwapAmount } from '@/shared/rpc/utils';
 import { Required } from '@/shared/types';
 import { approveVault, executeSwap, ExecuteSwapParams } from '@/shared/vault';
@@ -33,6 +41,7 @@ import {
   SwapStatusRequest,
   SwapStatusResponse,
   DepositAddressRequest,
+  BoostPoolDepth,
 } from './types';
 
 type TransactionHash = `0x${string}`;
@@ -100,6 +109,10 @@ export class SwapSDK {
       .filter(isNotNullish);
 
     return this.supportedAssets;
+  }
+
+  private async getBoostPoolsDepth(): Promise<BoostPoolsDepth> {
+    return getAllBoostPoolsDepth(this.rpcConfig);
   }
 
   async getAssets(chain?: Chain): Promise<AssetData[]> {
@@ -284,5 +297,32 @@ export class SwapSDK {
     } = await this.getStateChainEnvironment();
 
     return channelOpeningFees;
+  }
+
+  async getBoostLiquidity({
+    chainAsset,
+    tier,
+  }: {
+    chainAsset?: UncheckedAssetAndChain;
+    tier?: number;
+  } = {}): Promise<BoostPoolDepth[]> {
+    let poolsDepth = await this.getBoostPoolsDepth();
+
+    if (chainAsset) {
+      const internalAsset = getInternalAsset(chainAsset);
+      poolsDepth = poolsDepth
+        .filter((boostPoolDepth) => boostPoolDepth.asset === internalAsset)
+        .sort((a, b) => b.tier - a.tier);
+    }
+
+    if (tier) {
+      poolsDepth = poolsDepth.filter((boostPoolDepth) => boostPoolDepth.tier === tier);
+    }
+
+    return poolsDepth.map((depth) => ({
+      availableAmount: depth.availableAmount,
+      feeTierBps: depth.tier,
+      ...getAssetAndChain(depth.asset),
+    }));
   }
 }

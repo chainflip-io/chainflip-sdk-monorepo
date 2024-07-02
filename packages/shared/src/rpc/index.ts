@@ -1,5 +1,5 @@
 import { HttpClient, RpcMethod, RpcParams, RpcResult, constants } from '@chainflip/rpc';
-import { ChainflipNetwork, UncheckedAssetAndChain, getInternalAsset } from '../enums';
+import { ChainflipNetwork, getInternalAsset } from '../enums';
 
 type CamelCase<T> = T extends string
   ? T extends `${infer F}_${infer R}`

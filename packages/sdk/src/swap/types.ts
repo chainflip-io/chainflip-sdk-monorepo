@@ -211,3 +211,10 @@ export type SwapStatusResponse =
   | DepositAddressStatusResponse
   | VaultSwapStatusResponse
   | FailedVaultSwapStatusResponse;
+
+export type BoostPoolDepth = {
+  feeTierBps: number;
+  availableAmount: bigint;
+  asset: Asset;
+  chain: Chain;
+};
