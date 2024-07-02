@@ -65,7 +65,7 @@
     "dotenv": "^16.4.5",
     "ethers": "^6.13.1",
     "express": "^4.19.2",
-    "graphql-request": "^6.1.0",
+    "graphql-request": "^7.1.0",
     "ioredis": "^5.4.1",
     "pg": "^8.11.5",
     "qs": "^6.12.0",
