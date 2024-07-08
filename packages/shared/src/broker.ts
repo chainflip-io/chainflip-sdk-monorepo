@@ -53,11 +53,6 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) =>
       z.union([numericString, hexString, btcAddress(network), solanaAddress]),
       z.number(),
       ccmParamsSchema
-        .merge(
-          z.object({
-            cfParameters: z.union([hexString, z.string()]).optional(),
-          }),
-        )
         .transform(({ message, ...rest }) => ({
           message,
           cf_parameters: rest.cfParameters,
@@ -111,11 +106,8 @@ export async function requestSwapDepositAddress(
     { asset: srcAsset, chain: srcChain },
     { asset: destAsset, chain: destChain },
     submitAddress(destChain, destAddress),
-    swapRequest.commissionBps ?? 0,
-    swapRequest.ccmParams && {
-      ...swapRequest.ccmParams,
-      cfParameters: undefined,
-    },
+    swapRequest.commissionBps,
+    swapRequest.ccmParams,
     maxBoostFeeBps,
     swapRequest.affiliates,
     swapRequest.fillOrKillParams,
