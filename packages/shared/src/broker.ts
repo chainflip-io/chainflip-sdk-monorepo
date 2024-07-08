@@ -8,7 +8,6 @@ import {
   numericString,
   btcAddress,
   dotAddress,
-  hexStringFromNumber,
   ethereumAddress,
   assetAndChain,
 } from './parsers';
@@ -44,12 +43,6 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) =>
       z.union([numericString, hexString, btcAddress(network), solanaAddress]),
       z.number(),
       ccmMetadataSchema
-        .merge(
-          z.object({
-            gasBudget: hexStringFromNumber, // broker expects hex encoded number
-            cfParameters: z.union([hexString, z.string()]).optional(),
-          }),
-        )
         .transform(({ message, ...rest }) => ({
           message,
           cf_parameters: rest.cfParameters,
@@ -101,10 +94,7 @@ export async function requestSwapDepositAddress(
     { asset: destAsset, chain: destChain },
     submitAddress(destChain, destAddress),
     opts.commissionBps,
-    swapRequest.ccmMetadata && {
-      ...swapRequest.ccmMetadata,
-      cfParameters: undefined,
-    },
+    swapRequest.ccmMetadata,
     maxBoostFeeBps,
     opts.affiliates,
   ]);
