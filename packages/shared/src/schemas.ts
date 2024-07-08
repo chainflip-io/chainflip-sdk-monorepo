@@ -67,6 +67,14 @@ export const affiliateBroker = z
 
 export type AffiliateBroker = z.input<typeof affiliateBroker>;
 
+export const refundParameters = z.object({
+  retryDuration: number,
+  refundAddress: z.string(),
+  minPrice: numericString,
+});
+
+export type RefundParameters = z.input<typeof refundParameters>;
+
 export const openSwapDepositChannelSchema = z
   .object({
     srcAsset: asset,

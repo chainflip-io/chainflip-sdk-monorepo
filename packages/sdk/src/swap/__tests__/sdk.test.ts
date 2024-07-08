@@ -330,6 +330,7 @@ describe(SwapSDK, () => {
           null,
           null,
           null,
+          null,
         ],
       });
       expect(result).toStrictEqual({
@@ -392,6 +393,7 @@ describe(SwapSDK, () => {
           { asset: 'FLIP', chain: 'Ethereum' },
           '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
           125,
+          null,
           null,
           null,
           null,
@@ -462,6 +464,7 @@ describe(SwapSDK, () => {
           null,
           null,
           [{ account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', bps: 10 }],
+          null,
         ],
       });
       expect(result).toStrictEqual({
@@ -530,6 +533,7 @@ describe(SwapSDK, () => {
         15,
         null,
         MAX_BOOST_FEE_BPS,
+        null,
         null,
       ],
     });

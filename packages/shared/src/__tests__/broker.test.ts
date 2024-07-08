@@ -48,6 +48,7 @@ describe(broker.requestSwapDepositAddress, () => {
         null,
         null,
         null,
+        null,
       ],
     });
     expect(result).toStrictEqual({
@@ -83,6 +84,7 @@ describe(broker.requestSwapDepositAddress, () => {
         { asset: 'BTC', chain: 'Bitcoin' },
         '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
         0,
+        null,
         null,
         null,
         null,
@@ -146,6 +148,7 @@ describe(broker.requestSwapDepositAddress, () => {
         },
         null,
         null,
+        null,
       ],
     });
     expect(result).toStrictEqual({
@@ -190,6 +193,7 @@ describe(broker.requestSwapDepositAddress, () => {
           message: '0xdeadc0de',
         },
         100,
+        null,
         null,
       ],
     });
@@ -236,6 +240,7 @@ describe(broker.requestSwapDepositAddress, () => {
           message: '0xdeadc0de',
         },
         100,
+        null,
         null,
       ],
     });
@@ -290,6 +295,62 @@ describe(broker.requestSwapDepositAddress, () => {
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', bps: 10 },
           { account: 'cFJ4sqrg4FnrLPsGdt5w85XExGYxVLHLYLci28PnqcVVb8r8a', bps: 20 },
         ],
+        null,
+      ],
+    });
+    expect(result).toStrictEqual({
+      address: '0x31E9b3373F2AD5d964CAd0fd01332d6550cBBdE6',
+      issuedBlock: 50,
+      channelId: 200n,
+      sourceChainExpiryBlock: 1_000_000n,
+      channelOpeningFee: 0n,
+    });
+  });
+
+  it('submits refund parameters', async () => {
+    const postSpy = mockResponse();
+    const result = await broker.requestSwapDepositAddress(
+      {
+        srcAsset: Assets.FLIP,
+        destAsset: Assets.USDC,
+        srcChain: 'Ethereum',
+        destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
+        destChain: 'Ethereum',
+        ccmMetadata: {
+          gasBudget: '123456789',
+          message: '0xdeadc0de',
+        },
+        maxBoostFeeBps: 100,
+        refundParameters: {
+          retryDuration: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '10000000000000',
+        },
+      },
+      brokerConfig,
+      'perseverance',
+    );
+    const requestObject = postSpy.mock.calls[0][1];
+    expect(requestObject).toStrictEqual({
+      id: '1',
+      jsonrpc: '2.0',
+      method: 'broker_requestSwapDepositAddress',
+      params: [
+        { asset: 'FLIP', chain: 'Ethereum' },
+        { asset: 'USDC', chain: 'Ethereum' },
+        '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
+        0,
+        {
+          gas_budget: '0x75bcd15',
+          message: '0xdeadc0de',
+        },
+        100,
+        null,
+        {
+          min_price: '0x9184e72a000',
+          refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          retry_duration: 500,
+        },
       ],
     });
     expect(result).toStrictEqual({

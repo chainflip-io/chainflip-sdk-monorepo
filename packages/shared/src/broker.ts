@@ -1,4 +1,4 @@
-import { HttpClient } from '@chainflip/rpc';
+import { HttpClient, RpcParams } from '@chainflip/rpc';
 import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { z } from 'zod';
@@ -11,7 +11,14 @@ import {
   ethereumAddress,
   assetAndChain,
 } from './parsers';
-import { affiliateBroker, AffiliateBroker, CcmMetadata, ccmMetadataSchema } from './schemas';
+import {
+  affiliateBroker,
+  AffiliateBroker,
+  CcmMetadata,
+  ccmMetadataSchema,
+  RefundParameters,
+  refundParameters,
+} from './schemas';
 
 type NewSwapRequest = {
   srcAsset: Asset;
@@ -23,6 +30,7 @@ type NewSwapRequest = {
   ccmMetadata?: CcmMetadata;
   maxBoostFeeBps?: number;
   affiliates?: AffiliateBroker[];
+  refundParameters?: RefundParameters;
 };
 
 const submitAddress = (chain: Chain, address: string): string => {
@@ -55,6 +63,13 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) =>
         .optional(),
       z.number().optional(),
       z.array(affiliateBroker).optional(),
+      refundParameters
+        .transform(({ retryDuration, refundAddress, minPrice }) => ({
+          retry_duration: retryDuration,
+          refund_address: refundAddress,
+          min_price: `0x${BigInt(minPrice).toString(16)}`,
+        }))
+        .optional(),
     ])
     .parse(params);
 
@@ -100,9 +115,13 @@ export async function requestSwapDepositAddress(
     },
     maxBoostFeeBps,
     swapRequest.affiliates,
+    swapRequest.refundParameters,
   ]);
 
-  const response = await client.sendRequest('broker_requestSwapDepositAddress', ...params);
+  const response = await client.sendRequest(
+    'broker_requestSwapDepositAddress',
+    ...(params as RpcParams['broker_requestSwapDepositAddress']),
+  );
 
   return validateResponse(chainflipNetwork, response);
 }
