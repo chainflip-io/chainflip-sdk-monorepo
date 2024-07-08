@@ -10,6 +10,7 @@ import {
   dotAddress,
   ethereumAddress,
   assetAndChain,
+  hexStringFromNumber,
 } from './parsers';
 import { affiliateBroker, AffiliateBroker, CcmMetadata, ccmMetadataSchema } from './schemas';
 
@@ -43,6 +44,11 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) =>
       z.union([numericString, hexString, btcAddress(network), solanaAddress]),
       z.number(),
       ccmMetadataSchema
+        .merge(
+          z.object({
+            gasBudget: hexStringFromNumber, // broker expects hex encoded number
+          }),
+        )
         .transform(({ message, ...rest }) => ({
           message,
           cf_parameters: rest.cfParameters,
