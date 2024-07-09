@@ -57,12 +57,6 @@ const formatLimitOrders = (
   }));
 };
 
-export const differenceExceedsThreshold = (
-  a: bigint,
-  b: bigint,
-  tolerance = env.QUOTE_APPROXIMATION_THRESHOLD,
-) => percentDifference(a.toString(), b.toString()).gt(tolerance);
-
 export default class Quoter {
   private readonly quotes$ = new Subject<Quote>();
 

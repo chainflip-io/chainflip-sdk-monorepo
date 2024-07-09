@@ -2,7 +2,7 @@ import * as broker from '@/shared/broker';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
 import prisma from '../../client';
-import screenAddress from '../../utils/screenAddress';
+import screenAddress from '../../utils/disallowChannel';
 import openSwapDepositChannel from '../openSwapDepositChannel';
 
 jest.mock('@/shared/broker', () => ({

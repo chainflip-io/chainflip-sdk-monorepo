@@ -47,6 +47,7 @@ export interface DepositAddressRequest extends QuoteRequest {
   destAddress: string;
   ccmMetadata?: CcmMetadata;
   maxBoostFeeBps?: number;
+  srcAddress?: string;
 }
 
 export interface DepositAddressResponse extends DepositAddressRequest {

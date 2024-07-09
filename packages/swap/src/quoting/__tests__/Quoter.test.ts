@@ -10,7 +10,7 @@ import env from '@/swap/config/env';
 import prisma, { InternalAsset } from '../../client';
 import { getAssetPrice } from '../../pricing';
 import authenticate from '../authenticate';
-import Quoter, { approximateIntermediateOutput, differenceExceedsThreshold } from '../Quoter';
+import Quoter, { approximateIntermediateOutput } from '../Quoter';
 import { MarketMakerQuote, MarketMakerRawQuote } from '../schemas';
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
@@ -227,14 +227,4 @@ describe('approximateIntermediateOutput', () => {
       expect(actual).toEqual(expected);
     },
   );
-});
-
-describe('differenceExceedsThreshold', () => {
-  it('returns false if the difference does not exceed the threshold', () => {
-    expect(differenceExceedsThreshold(100n, 101n, 1)).toBe(false);
-  });
-
-  it('returns false if the difference exceeds the threshold', () => {
-    expect(differenceExceedsThreshold(100n, 102n, 1)).toBe(true);
-  });
 });

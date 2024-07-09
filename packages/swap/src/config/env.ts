@@ -36,7 +36,6 @@ export default z
     CHAINFLIP_NETWORK: chainflipNetwork,
     QUOTE_TIMEOUT: optionalNumber(1000),
     NODE_ENV: nodeEnv.default('production'),
-    CHAINALYSIS_API_KEY: envVar.optional(),
     INGEST_GATEWAY_URL: httpUrl,
     PROCESSOR_BATCH_SIZE: optionalNumber(50),
     PROCESSOR_TRANSACTION_TIMEOUT: optionalNumber(10_000),
@@ -44,8 +43,6 @@ export default z
     MAINTENANCE_MODE: optionalBoolean,
     LIQUIDITY_WARNING_THRESHOLD: optionalNumber(-5),
     COINGECKO_API_KEY: z.string().optional(),
-    USE_JIT_QUOTING: optionalBoolean,
-    QUOTE_APPROXIMATION_THRESHOLD: optionalNumber(0.1),
     DISABLED_INTERNAL_ASSETS: optionalString('').transform((string) =>
       string.split(',').map((asset) => {
         if (asset && !(asset in InternalAssets)) {
@@ -61,6 +58,9 @@ export default z
     // in case we want to disable quoting as a part of maintenance mode
     DISABLE_QUOTING: optionalBoolean,
     DISABLE_BOOST_QUOTING: optionalBoolean,
+    ELLIPTIC_API_KEY: z.string().optional(),
+    ELLIPTIC_API_SECRET: z.string().optional(),
+    ELLIPTIC_RISK_SCORE_TOLERANCE: optionalNumber(9),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);
