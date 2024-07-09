@@ -77,6 +77,7 @@ export const openSwapDepositChannelSchema = z
     amount: numericString,
     ccmMetadata: ccmMetadataSchema.optional(),
     maxBoostFeeBps: z.number().optional(),
+    srcAddress: z.string().optional(),
   })
   .transform(({ amount, ...rest }) => ({
     ...rest,

@@ -16,7 +16,7 @@ import { getPendingBroadcast } from '../../ingress-egress-tracking';
 import app from '../../server';
 import { State } from '../swap';
 
-jest.mock('../../utils/screenAddress', () => ({
+jest.mock('../../utils/disallowChannel', () => ({
   __esModule: true,
   default: jest.fn().mockResolvedValue(false),
 }));

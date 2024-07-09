@@ -13,7 +13,6 @@ import env from '../config/env';
 import { getAssetPrice } from '../pricing';
 import { handleExit } from '../utils/function';
 import logger from '../utils/logger';
-import { percentDifference } from '../utils/math';
 
 type Quote = { marketMaker: string; quote: MarketMakerQuote };
 
@@ -56,12 +55,6 @@ const formatLimitOrders = (
     },
   }));
 };
-
-export const differenceExceedsThreshold = (
-  a: bigint,
-  b: bigint,
-  tolerance = env.QUOTE_APPROXIMATION_THRESHOLD,
-) => percentDifference(a.toString(), b.toString()).gt(tolerance);
 
 export default class Quoter {
   private readonly quotes$ = new Subject<Quote>();
