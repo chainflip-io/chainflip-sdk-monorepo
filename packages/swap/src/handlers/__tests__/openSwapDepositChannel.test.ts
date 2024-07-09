@@ -2,14 +2,14 @@ import * as broker from '@/shared/broker';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
 import prisma from '../../client';
-import screenAddress from '../../utils/disallowChannel';
+import disallowChannel from '../../utils/disallowChannel';
 import openSwapDepositChannel from '../openSwapDepositChannel';
 
 jest.mock('@/shared/broker', () => ({
   requestSwapDepositAddress: jest.fn(),
 }));
 
-jest.mock('../../utils/screenAddress', () => ({
+jest.mock('../../utils/disallowChannel', () => ({
   __esModule: true,
   default: jest.fn().mockResolvedValue(false),
 }));
@@ -157,7 +157,7 @@ describe(openSwapDepositChannel, () => {
   });
 
   it('rejects sanctioned addresses', async () => {
-    jest.mocked(screenAddress).mockResolvedValueOnce(true);
+    jest.mocked(disallowChannel).mockResolvedValueOnce(true);
 
     await expect(
       openSwapDepositChannel({
