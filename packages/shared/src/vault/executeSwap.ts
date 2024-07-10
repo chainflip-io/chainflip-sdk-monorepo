@@ -18,7 +18,7 @@ import {
   getInternalAssets,
   InternalAsset,
 } from '../enums';
-import { assertIsEvmChain, assertSignerIsConnectedToChain } from '../evm';
+import { assertIsEvmChain, assertIsCCMDestination, assertSignerIsConnectedToChain } from '../evm';
 import { assert } from '../guards';
 import { dotAddress } from '../parsers';
 import { ccmMetadataSchema } from '../schemas';
@@ -187,7 +187,7 @@ const executeSwap = async (
   await assertSignerIsConnectedToChain(networkOpts, params.srcChain);
 
   if (unvalidatedCcmMetadata) {
-    assertIsEvmChain(params.destChain);
+    assertIsCCMDestination(params.destChain);
     const ccmMetadata = ccmMetadataSchema.parse(unvalidatedCcmMetadata);
 
     return params.srcAsset === chainConstants[params.srcChain].gasAsset
