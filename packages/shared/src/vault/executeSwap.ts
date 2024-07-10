@@ -1,3 +1,4 @@
+import * as base58 from '@chainflip/utils/base58';
 import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
@@ -32,9 +33,8 @@ const encodeAddress = (chain: Chain, address: string) => {
   if (chain === Chains.Bitcoin) return `0x${Buffer.from(address).toString('hex')}`;
   if (chain === Chains.Ethereum || chain === Chains.Arbitrum) return address;
   if (chain === Chains.Solana) {
-    // TODO(solana): decode normal addresses
-    assert(isHex(address), 'Solana address must be hex encoded');
-    return address;
+    if (isHex(address)) return address;
+    return bytesToHex(base58.decode(address));
   }
 
   // no fallback encoding to prevent submitting txs with wrongly encoded addresses for new chains
