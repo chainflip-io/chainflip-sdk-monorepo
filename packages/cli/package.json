@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/cli",
-  "version": "1.4.0-solana.8",
+  "version": "1.4.0-solana.9",
   "description": "",
   "main": "./dist/lib.mjs",
   "types": "./dist/lib.d.mts",
