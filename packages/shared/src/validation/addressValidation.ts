@@ -26,36 +26,44 @@ export const validateBitcoinTestnetAddress: AddressValidator = (address: string)
 export const validateBitcoinRegtestAddress: AddressValidator = (address: string) =>
   bitcoin.isValidAddressForNetwork(address, 'regtest');
 
+// TODO(solana): implement
+export const validateSolanaAddress: AddressValidator = (_address: string) => true;
+
 const validators: Record<ChainflipNetwork | 'localnet', Record<Chain, AddressValidator>> = {
   mainnet: {
     Bitcoin: validateBitcoinMainnetAddress,
     Ethereum: validateEvmAddress,
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
+    Solana: validateSolanaAddress,
   },
   perseverance: {
     Bitcoin: validateBitcoinTestnetAddress,
     Ethereum: validateEvmAddress,
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
+    Solana: validateSolanaAddress,
   },
   sisyphos: {
     Bitcoin: validateBitcoinTestnetAddress,
     Ethereum: validateEvmAddress,
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
+    Solana: validateSolanaAddress,
   },
   backspin: {
     Bitcoin: validateBitcoinRegtestAddress,
     Ethereum: validateEvmAddress,
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
+    Solana: validateSolanaAddress,
   },
   localnet: {
     Bitcoin: validateBitcoinRegtestAddress,
     Ethereum: validateEvmAddress,
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
+    Solana: validateSolanaAddress,
   },
 };
 
