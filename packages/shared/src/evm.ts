@@ -8,6 +8,11 @@ export const assertIsEvmChain = (chain: Chain) => {
   assert(evmChainId, `Chain ${chain} is not an evm chain`);
 };
 
+export const assertIsCCMDestination = (chain: Chain) => {
+  if (chain === 'Solana') return;
+  assertIsEvmChain(chain);
+};
+
 export const assertSignerIsConnectedToChain = async (
   opts: { network: ChainflipNetwork | 'localnet'; signer: Signer },
   chain: Chain,
