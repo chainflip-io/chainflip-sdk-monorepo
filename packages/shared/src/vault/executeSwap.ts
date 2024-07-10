@@ -71,7 +71,7 @@ const getErc20Address = (asset: InternalAsset, networkOpts: SwapNetworkOptions) 
 };
 
 const swapNative = async (
-  params: ExecuteSwapParams & { ccmParams?: undefined },
+  params: ExecuteSwapParams,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
@@ -85,7 +85,7 @@ const swapNative = async (
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
     assetConstants[destAsset].contractId,
-    '0x',
+    params.ccmMetadata?.cfParameters ?? '0x',
     { value: params.amount, ...extractOverrides(txOpts) },
   );
   await transaction.wait(txOpts.wait);
@@ -94,7 +94,7 @@ const swapNative = async (
 };
 
 const swapToken = async (
-  params: ExecuteSwapParams & { ccmParams?: undefined },
+  params: ExecuteSwapParams,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
@@ -116,7 +116,7 @@ const swapToken = async (
     assetConstants[destAsset].contractId,
     erc20Address,
     params.amount,
-    '0x',
+    params.ccmParams?.cfParameters ?? '0x',
     extractOverrides(txOpts),
   );
   await transaction.wait(txOpts.wait);
@@ -141,7 +141,7 @@ const callNative = async (
     assetConstants[destAsset].contractId,
     params.ccmParams.message,
     params.ccmParams.gasBudget,
-    '0x',
+    params.ccmParams?.cfParameters ?? '0x',
     { value: params.amount, ...extractOverrides(txOpts) },
   );
   await transaction.wait(txOpts.wait);
@@ -174,7 +174,7 @@ const callToken = async (
     params.ccmParams.gasBudget,
     erc20Address,
     params.amount,
-    '0x',
+    params.ccmMetadata?.cfParameters ?? '0x',
     extractOverrides(txOpts),
   );
   await transaction.wait(txOpts.wait);
