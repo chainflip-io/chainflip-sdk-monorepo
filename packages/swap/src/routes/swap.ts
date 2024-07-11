@@ -267,7 +267,7 @@ router.get(
       depositAmount:
         readField(swap, failedSwap, 'depositAmount')?.toFixed() ?? pendingDeposit?.amount,
       depositTransactionHash: depositTransactionRef, // DEPRECATED(1.5): use depositTransactionRef instead
-      depositTransactionRef: depositTransactionRef,
+      depositTransactionRef,
       depositTransactionConfirmations: pendingDeposit?.transactionConfirmations,
       depositReceivedAt: swap?.depositReceivedAt.valueOf(),
       depositReceivedBlockIndex: swap?.depositReceivedBlockIndex ?? undefined,

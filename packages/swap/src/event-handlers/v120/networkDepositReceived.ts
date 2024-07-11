@@ -22,7 +22,9 @@ export const depositReceivedArgs = z.object({
   asset: internalAssetEnum,
   ingressFee: u128,
   action: actionSchema,
+  // >= v1.5.0
   blockHeight: u128.optional(),
+  // >= v1.5.0
   depositDetails: depositDetailsSchema.optional(),
 });
 
