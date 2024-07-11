@@ -4,6 +4,7 @@ exports[`server GET /swaps/:id retrieves a swap in FAILED status without a depos
 {
   "depositAmount": "10000000000",
   "depositTransactionHash": "0xdeadbeef",
+  "depositTransactionRef": "0xdeadbeef",
   "destAddress": "0xcafebabe",
   "error": {
     "message": "The deposited amount was below the minimum required",

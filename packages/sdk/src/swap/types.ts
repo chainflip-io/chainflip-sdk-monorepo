@@ -111,7 +111,8 @@ export type FailedVaultSwapStatusResponse = CopyFields<
   DepositAddressFields,
   {
     depositAmount: string;
-    depositTransactionHash: string;
+    depositTransactionHash: string | undefined; // DEPRECATED(1.5): use depositTransactionRef instead
+    depositTransactionRef: string | undefined;
     destAddress: string;
     error: { message: string; name: string };
     failedAt: number;
@@ -186,7 +187,8 @@ type SwapState =
       failure: 'INGRESS_IGNORED';
       error: { name: string; message: string };
       depositAmount: string;
-      depositTransactionHash: string | undefined;
+      depositTransactionHash: string | undefined; // DEPRECATED(1.5): use depositTransactionRef instead
+      depositTransactionRef: string | undefined;
       failedAt: number;
       failedBlockIndex: string;
     }

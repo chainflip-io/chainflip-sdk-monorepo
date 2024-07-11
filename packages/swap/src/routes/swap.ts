@@ -245,6 +245,12 @@ router.get(
       destAsset: swapDepositChannel?.destAsset || swap?.destAsset,
     };
 
+    const depositTransactionRef =
+      swap?.depositTransactionRef ??
+      pendingDeposit?.transactionHash ??
+      failedSwap?.txHash ??
+      undefined;
+
     const response = {
       state,
       type: swap?.type,
@@ -260,7 +266,8 @@ router.get(
       swapId: swap?.nativeId.toString(),
       depositAmount:
         readField(swap, failedSwap, 'depositAmount')?.toFixed() ?? pendingDeposit?.amount,
-      depositTransactionHash: pendingDeposit?.transactionHash ?? failedSwap?.txHash ?? undefined,
+      depositTransactionHash: depositTransactionRef, // DEPRECATED(1.5): use depositTransactionRef instead
+      depositTransactionRef: depositTransactionRef,
       depositTransactionConfirmations: pendingDeposit?.transactionConfirmations,
       depositReceivedAt: swap?.depositReceivedAt.valueOf(),
       depositReceivedBlockIndex: swap?.depositReceivedBlockIndex ?? undefined,
