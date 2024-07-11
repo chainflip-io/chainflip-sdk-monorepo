@@ -115,6 +115,7 @@ model Swap {
   fees                         SwapFee[]
   destAsset                    InternalAsset
   destAddress                  String
+  depositTransactionRef        String?
   depositReceivedAt            DateTime
   depositReceivedBlockIndex    String
   swapExecutedAt               DateTime?

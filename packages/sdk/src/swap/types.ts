@@ -129,7 +129,8 @@ type SwapState =
   | {
       state: 'AWAITING_DEPOSIT';
       depositAmount: string | undefined;
-      depositTransactionHash: string | undefined;
+      depositTransactionHash: string | undefined; // DEPRECATED(1.5): use depositTransactionRef instead
+      depositTransactionRef: string | undefined;
       depositTransactionConfirmations: number | undefined;
     }
   | {

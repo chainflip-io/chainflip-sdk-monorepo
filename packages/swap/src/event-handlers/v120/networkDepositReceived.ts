@@ -1,19 +1,58 @@
+import { reverseBytes } from '@chainflip/utils/bytes';
 import { z } from 'zod';
-import { u128, internalAssetEnum, actionSchema } from '@/shared/parsers';
+import { assetConstants, Chain } from '@/shared/enums';
+import { assertUnreachable } from '@/shared/functions';
+import { u128, internalAssetEnum, actionSchema, hexString } from '@/shared/parsers';
 import logger from '../../utils/logger';
 import { EventHandlerArgs } from '../index';
+
+const polkadotDepositDetails = z.number();
+const evmDepositDetails = z.object({ txHashes: z.array(hexString).nullish() });
+const bitcoinDepositDetails = z.object({
+  txId: hexString.transform((v) => reverseBytes(v.substring(2))),
+});
+const depositDetailsSchema = z.union([
+  bitcoinDepositDetails,
+  evmDepositDetails,
+  polkadotDepositDetails,
+]);
 
 export const depositReceivedArgs = z.object({
   amount: u128,
   asset: internalAssetEnum,
   ingressFee: u128,
   action: actionSchema,
+  blockHeight: u128.optional(),
+  depositDetails: depositDetailsSchema.optional(),
 });
 
 export type DepositReceivedArgs = z.input<typeof depositReceivedArgs>;
 
+const getTxRef = (
+  chain: Chain,
+  details: z.output<typeof depositDetailsSchema>,
+  blockHeight?: bigint,
+) => {
+  if (details === undefined) {
+    return undefined;
+  }
+
+  switch (chain) {
+    case 'Arbitrum':
+    case 'Ethereum':
+      return (details as z.output<typeof evmDepositDetails>)?.txHashes?.at(0);
+    case 'Bitcoin':
+      return (details as z.output<typeof bitcoinDepositDetails>)?.txId;
+    case 'Polkadot':
+      return `${blockHeight}-${details as z.output<typeof polkadotDepositDetails>}`;
+    default:
+      return assertUnreachable(chain);
+  }
+};
+
 export const networkDepositReceived = async ({ prisma, event }: EventHandlerArgs) => {
-  const { asset, amount, action, ingressFee } = depositReceivedArgs.parse(event.args);
+  const { asset, amount, action, ingressFee, depositDetails, blockHeight } =
+    depositReceivedArgs.parse(event.args);
 
   if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {
     let swapId;
@@ -30,10 +69,16 @@ export const networkDepositReceived = async ({ prisma, event }: EventHandlerArgs
       return;
     }
 
+    const txRef =
+      depositDetails !== undefined
+        ? getTxRef(assetConstants[asset].chain, depositDetails, blockHeight)
+        : undefined;
+
     await prisma.swap.update({
       where: { nativeId: swapId },
       data: {
         depositAmount: amount.toString(),
+        depositTransactionRef: txRef,
         fees: {
           create: { amount: ingressFee.toString(), type: 'INGRESS', asset },
         },

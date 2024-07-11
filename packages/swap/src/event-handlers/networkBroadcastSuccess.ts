@@ -14,7 +14,7 @@ export const networkBroadcastSuccessArgs = (chain: Chain) =>
           .transform((v) => `${v.blockNumber}-${v.extrinsicIndex}`),
         hexString,
       ])
-      .transform((v) => (chain === 'Bitcoin' ? reverseBytes(v) : v))
+      .transform((v) => (chain === 'Bitcoin' ? reverseBytes(v.substring(2)) : v))
       .optional(),
   });
 
