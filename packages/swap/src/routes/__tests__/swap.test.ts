@@ -267,6 +267,61 @@ describe('server', () => {
       `);
     });
 
+    it(`retrieves a swap in ${State.DepositReceived} status with a tx ref`, async () => {
+      const swapIntent = await createDepositChannel({
+        srcChainExpiryBlock: 200,
+        swaps: {
+          create: {
+            nativeId,
+            depositAmount: '10',
+            swapInputAmount: '10',
+            depositTransactionRef:
+              '0xa2d5df86c6ec123283eb052c598a0f4b650367a81ad141b9ff3adb0286a86c17',
+            depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
+            depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+            srcAsset: InternalAssets.Eth,
+            destAsset: InternalAssets.Dot,
+            destAddress: DOT_ADDRESS,
+            type: 'SWAP',
+          },
+        },
+      });
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
+
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+      const { swapId, ...rest } = body;
+      expect(BigInt(swapId)).toEqual(nativeId);
+      expect(rest).toMatchInlineSnapshot(`
+        {
+          "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+          "depositAmount": "10",
+          "depositChannelBrokerCommissionBps": 0,
+          "depositChannelCreatedAt": 1690556052834,
+          "depositChannelExpiryBlock": "200",
+          "depositChannelMaxBoostFeeBps": 0,
+          "depositChannelOpenedThroughBackend": false,
+          "depositReceivedAt": 1669907135201,
+          "depositReceivedBlockIndex": "100-3",
+          "depositTransactionHash": "0xa2d5df86c6ec123283eb052c598a0f4b650367a81ad141b9ff3adb0286a86c17",
+          "depositTransactionRef": "0xa2d5df86c6ec123283eb052c598a0f4b650367a81ad141b9ff3adb0286a86c17",
+          "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+          "destAsset": "DOT",
+          "destChain": "Polkadot",
+          "estimatedDefaultDurationSeconds": 48,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
+          "expectedDepositAmount": "10000000000",
+          "feesPaid": [],
+          "isDepositChannelExpired": false,
+          "srcAsset": "ETH",
+          "srcChain": "Ethereum",
+          "state": "DEPOSIT_RECEIVED",
+          "type": "SWAP",
+        }
+      `);
+    });
+
     it(`retrieves a swap in ${State.SwapExecuted} status`, async () => {
       const swapIntent = await createDepositChannel({
         srcChainExpiryBlock: 200,
@@ -488,6 +543,8 @@ describe('server', () => {
                     nativeId: 1n,
                     requestedAt: new Date(RECEIVED_TIMESTAMP + 12000),
                     requestedBlockIndex: `202-4`,
+                    transactionRef:
+                      '0xa2d5df86c6ec123283eb052c598a0f4b650367a81ad141b9ff3adb0286a86c17',
                   },
                 },
               },
@@ -510,6 +567,7 @@ describe('server', () => {
         {
           "broadcastRequestedAt": 1669907147201,
           "broadcastRequestedBlockIndex": "202-4",
+          "broadcastTransactionRef": "0xa2d5df86c6ec123283eb052c598a0f4b650367a81ad141b9ff3adb0286a86c17",
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
           "depositChannelBrokerCommissionBps": 0,

@@ -7,6 +7,27 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## Unreleased
+
+### Fixed
+
+- `SwapSDK.prototype.getStatus` returned a `broadcastTransactionRef` with a `0x`
+  prefix for bitcoin transactions previously. This is not accepted by popular bitcoin
+  block explorers and was therefore adjusted to not return a `0x` prefix. The returned
+  data was not changed for other chains.
+
+### Added
+
+- `SwapSDK.prototype.getStatus` will return a `depositTransactionRef`. This references
+  the transaction that triggered a swap. For Bitcoin and EVM chains, this is a transaction
+  hash. For Polkadot, it is a block number and extrinsic index in the format
+  of `${blockNumber}-${extrinsicIndex}`.
+
+### Deprecated
+
+- `SwapSDK.prototype.getStatus`: `depositTransactionHash` is deprecated and will be removed
+  in a future release. Use `depositTransactionRef` instead.
+
 ## 1.4.2
 
 - `SwapSDK.prototype.getBoostLiquidity` - _new_ method that returns the current liquidity state of the

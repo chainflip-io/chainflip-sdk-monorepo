@@ -74,6 +74,230 @@ describe('depositReceivedV120', () => {
     });
   });
 
+  it('should store the transaction ref for a bitcoin swap', async () => {
+    await prisma.depositChannel.create({
+      data: {
+        srcChain: 'Bitcoin',
+        depositAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        channelId: 3,
+        issuedBlock: 0,
+        isSwapping: true,
+      },
+    });
+
+    const swapDepositChannel = await prisma.swapDepositChannel.create({
+      data: {
+        srcAsset: 'Btc',
+        srcChain: 'Bitcoin',
+        srcChainExpiryBlock: 100,
+        depositAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        expectedDepositAmount: 0,
+        destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
+        brokerCommissionBps: 0,
+        destAsset: 'Eth',
+        channelId: 3,
+        issuedBlock: 0,
+        openingFeePaid: 0,
+        swaps: {
+          create: {
+            swapInputAmount: '100000',
+            depositAmount: '100000',
+            srcAsset: 'Btc',
+            destAsset: 'Eth',
+            destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
+            type: 'SWAP',
+            nativeId: 1,
+            depositReceivedAt: new Date(1670337099000),
+            depositReceivedBlockIndex: `0-15`,
+          } as any,
+        },
+      },
+    });
+
+    await prisma.$transaction(async (txClient) => {
+      await networkDepositReceivedV120({
+        prisma: txClient,
+        block: {
+          height: 120,
+          timestamp: 1670337105000,
+        } as any,
+        event: {
+          args: {
+            asset: {
+              __kind: 'Btc',
+            },
+            amount: '110000',
+            depositAddress: {
+              value: '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
+              __kind: 'Taproot',
+            },
+            ingressFee: '1000',
+            action: { __kind: 'Swap', swapId: '1' },
+            depositDetails: {
+              txId: '0x24a51322a8712af423116700969b2b85518342003e225fd1c4de27130d038087',
+              vout: 0,
+            },
+          },
+          name: 'BitcoinIngressEgress.DepositReceived',
+          indexInBlock: 7,
+        },
+      });
+    });
+
+    const swap = await prisma.swap.findFirstOrThrow({
+      where: { swapDepositChannelId: swapDepositChannel.id },
+    });
+    expect(swap.depositTransactionRef).toEqual(
+      '8780030d1327dec4d15f223e00428351852b9b9600671123f42a71a82213a524',
+    );
+  });
+
+  it('should store the transaction ref for a polkadot swap', async () => {
+    await prisma.depositChannel.create({
+      data: {
+        srcChain: 'Polkadot',
+        depositAddress: '13bvStqPaSnNDTk4PuZ51q6Shtz3bucaZABkJfxWjzsyLvAv',
+        channelId: 3,
+        issuedBlock: 0,
+        isSwapping: true,
+      },
+    });
+
+    const swapDepositChannel = await prisma.swapDepositChannel.create({
+      data: {
+        srcAsset: 'Dot',
+        srcChain: 'Polkadot',
+        srcChainExpiryBlock: 100,
+        depositAddress: '13bvStqPaSnNDTk4PuZ51q6Shtz3bucaZABkJfxWjzsyLvAv',
+        expectedDepositAmount: 0,
+        destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
+        brokerCommissionBps: 0,
+        destAsset: 'Eth',
+        channelId: 3,
+        issuedBlock: 0,
+        openingFeePaid: 0,
+        swaps: {
+          create: {
+            swapInputAmount: '100000',
+            depositAmount: '100000',
+            srcAsset: 'Dot',
+            destAsset: 'Eth',
+            destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
+            type: 'SWAP',
+            nativeId: 1,
+            depositReceivedAt: new Date(1670337099000),
+            depositReceivedBlockIndex: `0-15`,
+          } as any,
+        },
+      },
+    });
+
+    await prisma.$transaction(async (txClient) => {
+      await networkDepositReceivedV120({
+        prisma: txClient,
+        block: {
+          height: 120,
+          timestamp: 1670337105000,
+        } as any,
+        event: {
+          args: {
+            asset: {
+              __kind: 'Dot',
+            },
+            amount: '56979771050821',
+            depositAddress: '0x731aba38284769a557ac8630a190af1c69a134af7054dc2db3f69abcd3bf8969',
+            ingressFee: '1000',
+            action: { __kind: 'Swap', swapId: '1' },
+            depositDetails: 2,
+            blockHeight: 230281,
+          },
+          name: 'PolkadotIngressEgress.DepositReceived',
+          indexInBlock: 7,
+        },
+      });
+    });
+
+    const swap = await prisma.swap.findFirstOrThrow({
+      where: { swapDepositChannelId: swapDepositChannel.id },
+    });
+    expect(swap.depositTransactionRef).toEqual('230281-2');
+  });
+
+  it('should store the transaction ref for a ethereum swap', async () => {
+    await prisma.depositChannel.create({
+      data: {
+        srcChain: 'Ethereum',
+        depositAddress: '0xe720e23f62efc931d465a9d16ca303d72ad6c0bc',
+        channelId: 3,
+        issuedBlock: 0,
+        isSwapping: true,
+      },
+    });
+
+    const swapDepositChannel = await prisma.swapDepositChannel.create({
+      data: {
+        srcAsset: 'Usdc',
+        srcChain: 'Ethereum',
+        srcChainExpiryBlock: 100,
+        depositAddress: '0xe720e23f62efc931d465a9d16ca303d72ad6c0bc',
+        expectedDepositAmount: 0,
+        destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
+        brokerCommissionBps: 0,
+        destAsset: 'Eth',
+        channelId: 3,
+        issuedBlock: 0,
+        openingFeePaid: 0,
+        swaps: {
+          create: {
+            swapInputAmount: '100000',
+            depositAmount: '100000',
+            srcAsset: 'Usdc',
+            destAsset: 'Eth',
+            destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
+            type: 'SWAP',
+            nativeId: 1,
+            depositReceivedAt: new Date(1670337099000),
+            depositReceivedBlockIndex: `0-15`,
+          } as any,
+        },
+      },
+    });
+
+    await prisma.$transaction(async (txClient) => {
+      await networkDepositReceivedV120({
+        prisma: txClient,
+        block: {
+          height: 120,
+          timestamp: 1670337105000,
+        } as any,
+        event: {
+          args: {
+            asset: {
+              __kind: 'Usdc',
+            },
+            amount: '25000000000000000000',
+            depositAddress: '0x731aba38284769a557ac8630a190af1c69a134af7054dc2db3f69abcd3bf8969',
+            ingressFee: '350000',
+            action: { __kind: 'Swap', swapId: '1' },
+            depositDetails: {
+              txHashes: ['0xa2d5df86c6ec123283eb052c598a0f4b650367a81ad141b9ff3adb0286a86c17'],
+            },
+            blockHeight: '115311',
+          },
+          name: 'EthereumIngressEgress.DepositReceived',
+          indexInBlock: 7,
+        },
+      });
+    });
+
+    const swap = await prisma.swap.findFirstOrThrow({
+      where: { swapDepositChannelId: swapDepositChannel.id },
+    });
+    expect(swap.depositTransactionRef).toEqual(
+      '0xa2d5df86c6ec123283eb052c598a0f4b650367a81ad141b9ff3adb0286a86c17',
+    );
+  });
+
   it('should update the values for an existing ccm principal swap', async () => {
     await prisma.depositChannel.create({
       data: {
