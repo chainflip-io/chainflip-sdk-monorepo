@@ -216,8 +216,9 @@ describe(broker.requestSwapDepositAddress, () => {
           message: '0xdeadc0de',
         },
         maxBoostFeeBps: 100,
+        commissionBps: 25,
       },
-      { ...brokerConfig, commissionBps: 25 },
+      brokerConfig,
       'perseverance',
     );
     const requestObject = postSpy.mock.calls[0][1];
@@ -261,15 +262,13 @@ describe(broker.requestSwapDepositAddress, () => {
           message: '0xdeadc0de',
         },
         maxBoostFeeBps: 100,
-      },
-      {
-        ...brokerConfig,
         commissionBps: 30,
         affiliates: [
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
           { account: 'cFJ4sqrg4FnrLPsGdt5w85XExGYxVLHLYLci28PnqcVVb8r8a', commissionBps: 20 },
         ],
       },
+      brokerConfig,
       'perseverance',
     );
     const requestObject = postSpy.mock.calls[0][1];

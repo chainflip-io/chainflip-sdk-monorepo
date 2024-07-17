@@ -8,7 +8,6 @@ import {
   numericString,
   btcAddress,
   dotAddress,
-  hexStringFromNumber,
   ethereumAddress,
   assetAndChain,
 } from './parsers';
@@ -20,8 +19,10 @@ type NewSwapRequest = {
   srcChain: Chain;
   destChain: Chain;
   destAddress: string;
+  commissionBps?: number;
   ccmMetadata?: CcmMetadata;
   maxBoostFeeBps?: number;
+  affiliates?: AffiliateBroker[];
 };
 
 const submitAddress = (chain: Chain, address: string): string => {
@@ -43,14 +44,13 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) =>
       ccmMetadataSchema
         .merge(
           z.object({
-            gasBudget: hexStringFromNumber, // broker expects hex encoded number
             cfParameters: z.union([hexString, z.string()]).optional(),
           }),
         )
         .transform(({ message, ...rest }) => ({
           message,
           cf_parameters: rest.cfParameters,
-          gas_budget: rest.gasBudget,
+          gas_budget: `0x${BigInt(rest.gasBudget).toString(16)}` as `0x${string}`,
         }))
         .optional(),
       z.number().optional(),
@@ -82,11 +82,7 @@ export type DepositChannelResponse = ReturnType<typeof validateResponse>;
 
 export async function requestSwapDepositAddress(
   swapRequest: NewSwapRequest,
-  opts: {
-    url: string;
-    commissionBps: number;
-    affiliates?: AffiliateBroker[];
-  },
+  opts: { url: string },
   chainflipNetwork: ChainflipNetwork,
 ): Promise<DepositChannelResponse> {
   const { srcAsset, srcChain, destAsset, destChain, destAddress, maxBoostFeeBps } = swapRequest;
@@ -97,13 +93,13 @@ export async function requestSwapDepositAddress(
     { asset: srcAsset, chain: srcChain },
     { asset: destAsset, chain: destChain },
     submitAddress(destChain, destAddress),
-    opts.commissionBps,
+    swapRequest.commissionBps ?? 0,
     swapRequest.ccmMetadata && {
       ...swapRequest.ccmMetadata,
       cfParameters: undefined,
     },
     maxBoostFeeBps,
-    opts.affiliates,
+    swapRequest.affiliates,
   ]);
 
   const response = await client.sendRequest('broker_requestSwapDepositAddress', ...params);

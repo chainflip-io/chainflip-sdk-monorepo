@@ -162,12 +162,12 @@ export class SwapSDK {
       const { requestSwapDepositAddress } = await import('@/shared/broker.js');
 
       const result = await requestSwapDepositAddress(
-        depositAddressRequest,
         {
-          ...this.options.broker,
+          ...depositAddressRequest,
           commissionBps: brokerCommissionBps ?? this.options.broker.commissionBps,
           affiliates: affiliateBrokers,
         },
+        { url: this.options.broker.url },
         this.options.network,
       );
 
