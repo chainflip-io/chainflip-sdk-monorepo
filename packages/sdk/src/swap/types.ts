@@ -1,5 +1,11 @@
 import { Chain, Asset, AssetOfChain, InternalAsset } from '@/shared/enums';
-import { AffiliateBroker, CcmMetadata, QuoteQueryResponse, SwapFee } from '@/shared/schemas';
+import {
+  AffiliateBroker,
+  CcmMetadata,
+  QuoteQueryResponse,
+  RefundParameters,
+  SwapFee,
+} from '@/shared/schemas';
 
 export interface ChainData {
   chain: Chain;
@@ -48,6 +54,7 @@ export interface DepositAddressRequest extends QuoteRequest {
   ccmMetadata?: CcmMetadata;
   maxBoostFeeBps?: number;
   srcAddress?: string;
+  refundParameters?: RefundParameters;
 }
 
 export interface DepositAddressResponse extends DepositAddressRequest {
