@@ -67,11 +67,11 @@ export default async function cliRequestSwapDepositAddress(
       destAsset: assetConstants[args.destAsset].asset,
       destAddress: args.destAddress,
       ccmMetadata,
+      commissionBps: args.commission ?? 0,
+      affiliates: [],
     },
     {
       url: args.brokerUrl,
-      commissionBps: args.commission ?? 0,
-      affiliates: [],
     },
     args.network,
   );

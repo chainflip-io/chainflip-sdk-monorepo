@@ -82,11 +82,7 @@ export type DepositChannelResponse = ReturnType<typeof validateResponse>;
 
 export async function requestSwapDepositAddress(
   swapRequest: NewSwapRequest,
-  opts: {
-    url: string;
-    commissionBps?: number; // DEPRECATED(1.5): moved to `swapRequest`
-    affiliates?: AffiliateBroker[]; // DEPRECATED(1.5): moved to `swapRequest`
-  },
+  opts: { url: string },
   chainflipNetwork: ChainflipNetwork,
 ): Promise<DepositChannelResponse> {
   const { srcAsset, srcChain, destAsset, destChain, destAddress, maxBoostFeeBps } = swapRequest;
@@ -97,13 +93,13 @@ export async function requestSwapDepositAddress(
     { asset: srcAsset, chain: srcChain },
     { asset: destAsset, chain: destChain },
     submitAddress(destChain, destAddress),
-    swapRequest.commissionBps ?? opts.commissionBps ?? 0,
+    swapRequest.commissionBps ?? 0,
     swapRequest.ccmMetadata && {
       ...swapRequest.ccmMetadata,
       cfParameters: undefined,
     },
     maxBoostFeeBps,
-    swapRequest.affiliates ?? opts.affiliates,
+    swapRequest.affiliates,
   ]);
 
   const response = await client.sendRequest('broker_requestSwapDepositAddress', ...params);
