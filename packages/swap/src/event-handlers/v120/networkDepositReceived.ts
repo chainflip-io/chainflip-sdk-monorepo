@@ -56,6 +56,11 @@ export const networkDepositReceived = async ({ prisma, event }: EventHandlerArgs
   const { asset, amount, action, ingressFee, depositDetails, blockHeight } =
     depositReceivedArgs.parse(event.args);
 
+  const txRef =
+    depositDetails !== undefined
+      ? getTxRef(assetConstants[asset].chain, depositDetails, blockHeight)
+      : undefined;
+
   if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {
     let swapId;
     if ('principalSwapId' in action && action.principalSwapId !== null) {
@@ -71,11 +76,6 @@ export const networkDepositReceived = async ({ prisma, event }: EventHandlerArgs
       return;
     }
 
-    const txRef =
-      depositDetails !== undefined
-        ? getTxRef(assetConstants[asset].chain, depositDetails, blockHeight)
-        : undefined;
-
     await prisma.swap.update({
       where: { nativeId: swapId },
       data: {
@@ -85,6 +85,11 @@ export const networkDepositReceived = async ({ prisma, event }: EventHandlerArgs
           create: { amount: ingressFee.toString(), type: 'INGRESS', asset },
         },
       },
+    });
+  } else if (action.__kind === 'BoostersCredited') {
+    await prisma.swap.updateMany({
+      data: { depositTransactionRef: txRef },
+      where: { srcAsset: asset, prewitnessedDepositId: action.prewitnessedDepositId },
     });
   } else if (action.__kind === 'NoAction') {
     // this means the ccm transfer failed https://github.com/chainflip-io/chainflip-backend/pull/4442
