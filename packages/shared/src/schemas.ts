@@ -68,7 +68,7 @@ export const affiliateBroker = z
 export type AffiliateBroker = z.input<typeof affiliateBroker>;
 
 export const refundParameters = z.object({
-  retryDuration: number,
+  retryDurationBlocks: number,
   refundAddress: z.string(),
   minPrice: numericString,
 });

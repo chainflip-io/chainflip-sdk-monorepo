@@ -64,8 +64,8 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) =>
       z.number().optional(),
       z.array(affiliateBroker).optional(),
       refundParameters
-        .transform(({ retryDuration, refundAddress, minPrice }) => ({
-          retry_duration: retryDuration,
+        .transform(({ retryDurationBlocks, refundAddress, minPrice }) => ({
+          retry_duration: retryDurationBlocks,
           refund_address: refundAddress,
           min_price: `0x${BigInt(minPrice).toString(16)}`,
         }))

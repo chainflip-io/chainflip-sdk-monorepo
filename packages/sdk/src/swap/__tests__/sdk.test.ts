@@ -309,7 +309,7 @@ describe(SwapSDK, () => {
         destAddress: '0xcafebabe',
         amount: BigInt(1e18).toString(),
         refundParameters: {
-          retryDuration: 500,
+          retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           minPrice: '10000000000000',
         },
@@ -322,7 +322,7 @@ describe(SwapSDK, () => {
         destAddress: '0xcafebabe',
         amount: BigInt(1e18).toString(),
         refundParameters: {
-          retryDuration: 500,
+          retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           minPrice: '10000000000000',
         },
@@ -343,7 +343,7 @@ describe(SwapSDK, () => {
         channelOpeningFee: 0n,
         affiliateBrokers: [],
         refundParameters: {
-          retryDuration: 500,
+          retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           minPrice: '10000000000000',
         },
@@ -583,7 +583,7 @@ describe(SwapSDK, () => {
       destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
       amount: BigInt(1e18).toString(),
       refundParameters: {
-        retryDuration: 500,
+        retryDurationBlocks: 500,
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
         minPrice: '10000000000000',
       },
@@ -624,7 +624,7 @@ describe(SwapSDK, () => {
       channelOpeningFee: 0n,
       affiliateBrokers: [],
       refundParameters: {
-        retryDuration: 500,
+        retryDurationBlocks: 500,
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
         minPrice: '10000000000000',
       },
