@@ -26,7 +26,7 @@ export const depositBoostedBtcMock = ({
             __kind: 'Btc',
           },
           amounts: amounts ?? [[5, '1000000']],
-          prewitnessedDepositId: '1',
+          prewitnessedDepositId: '101',
           channelId: channelId ?? '1',
           ingressFee: '1000',
           boostFee: '500',

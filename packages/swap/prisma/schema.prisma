@@ -120,6 +120,7 @@ model Swap {
   depositReceivedBlockIndex    String
   swapExecutedAt               DateTime?
   swapExecutedBlockIndex       String?
+  prewitnessedDepositId        BigInt?
   depositBoostedAt             DateTime?
   depositBoostedBlockIndex     String?
   swapDepositChannel           SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
@@ -135,6 +136,7 @@ model Swap {
   updatedAt                    DateTime            @default(now()) @updatedAt
   effectiveBoostFeeBps         Int?
 
+  @@unique([srcAsset, prewitnessedDepositId])
   @@schema("public")
 }
 
