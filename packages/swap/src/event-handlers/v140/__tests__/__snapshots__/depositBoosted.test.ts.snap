@@ -68,7 +68,7 @@ exports[`depositBoosted updates the values for an existing swap 1`] = `
   "id": Any<BigInt>,
   "intermediateAmount": null,
   "nativeId": 1n,
-  "prewitnessedDepositId": 1n,
+  "prewitnessedDepositId": 101n,
   "srcAsset": "Btc",
   "swapDepositChannelId": Any<BigInt>,
   "swapExecutedAt": null,
