@@ -96,6 +96,12 @@ importers:
 
   packages/cli:
     dependencies:
+      '@chainflip/bitcoin':
+        specifier: ^0.2.2
+        version: 0.2.2
+      '@chainflip/rpc':
+        specifier: ^1.4.10
+        version: 1.4.10
       '@chainflip/utils':
         specifier: ^0.2.1
         version: 0.2.1
@@ -108,6 +114,9 @@ importers:
       ioredis:
         specifier: ^5.4.1
         version: 5.4.1
+      ws:
+        specifier: ^8.17.0
+        version: 8.17.1
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -167,9 +176,6 @@ importers:
       ioredis:
         specifier: ^5.4.1
         version: 5.4.1
-      rxjs:
-        specifier: ^7.8.1
-        version: 7.8.1
       ws:
         specifier: ^8.18.0
         version: 8.18.0
