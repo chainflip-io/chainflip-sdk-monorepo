@@ -102,6 +102,7 @@ exports[`batch swap flow handles all the events: swap 1`] = `
   "id": Any<BigInt>,
   "intermediateAmount": "990109107",
   "nativeId": 1n,
+  "prewitnessedDepositId": null,
   "srcAsset": "Eth",
   "swapDepositChannelId": Any<BigInt>,
   "swapExecutedAt": 1970-01-01T00:00:06.000Z,

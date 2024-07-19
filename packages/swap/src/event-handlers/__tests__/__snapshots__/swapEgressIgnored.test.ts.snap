@@ -28,6 +28,7 @@ exports[`swapEgressIgnored adds an IgnoredEgress record for a egress ignored eve
   },
   "intermediateAmount": null,
   "nativeId": 2n,
+  "prewitnessedDepositId": null,
   "srcAsset": "Eth",
   "swapDepositChannelId": Any<BigInt>,
   "swapExecutedAt": 2022-12-06T14:31:39.000Z,

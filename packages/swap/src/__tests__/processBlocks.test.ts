@@ -85,6 +85,7 @@ describe(processBlocks, () => {
         "id": Any<BigInt>,
         "intermediateAmount": null,
         "nativeId": 1n,
+        "prewitnessedDepositId": null,
         "srcAsset": "Dot",
         "swapDepositChannelId": Any<BigInt>,
         "swapExecutedAt": null,
