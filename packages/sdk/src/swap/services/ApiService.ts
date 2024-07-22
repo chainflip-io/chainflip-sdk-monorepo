@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { QuoteQueryParams, QuoteQueryResponse } from '@/shared/schemas';
-import { version } from '../../../package.json';
+import { CF_SDK_VERSION_HEADERS } from '../consts';
 import { QuoteRequest, QuoteResponse, SwapStatusRequest, SwapStatusResponse } from '../types';
 
 export type RequestOptions = {
@@ -29,9 +29,7 @@ export const getQuote: BackendQuery<
     baseURL: baseUrl,
     params,
     signal,
-    headers: {
-      'Cf-Sdk-Version': version,
-    },
+    headers: CF_SDK_VERSION_HEADERS,
   });
 
   return { ...returnedRequestData, quote: data };
@@ -45,9 +43,7 @@ export const getStatus: BackendQuery<SwapStatusRequest, SwapStatusResponse> = as
   const { data } = await axios.get<SwapStatusResponse>(`/swaps/${id}`, {
     baseURL: baseUrl,
     signal,
-    headers: {
-      'CF-SDK-Version': version,
-    },
+    headers: CF_SDK_VERSION_HEADERS,
   });
   return data;
 };

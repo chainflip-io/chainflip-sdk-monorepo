@@ -30,7 +30,7 @@ import { approveVault, executeSwap, ExecuteSwapParams } from '@/shared/vault';
 import type { AppRouter } from '@/swap/server';
 import { getAssetData } from './assets';
 import { getChainData } from './chains';
-import { BACKEND_SERVICE_URLS } from './consts';
+import { BACKEND_SERVICE_URLS, CF_SDK_VERSION_HEADERS } from './consts';
 import * as ApiService from './services/ApiService';
 import {
   ChainData,
@@ -78,7 +78,12 @@ export class SwapSDK {
     this.rpcConfig = options.rpcUrl ? { rpcUrl: options.rpcUrl } : { network };
     this.trpc = createTRPCProxyClient<AppRouter>({
       transformer: superjson,
-      links: [httpBatchLink({ url: new URL('/trpc', this.options.backendUrl) })],
+      links: [
+        httpBatchLink({
+          url: new URL('/trpc', this.options.backendUrl),
+          headers: CF_SDK_VERSION_HEADERS,
+        }),
+      ],
     });
   }
 
