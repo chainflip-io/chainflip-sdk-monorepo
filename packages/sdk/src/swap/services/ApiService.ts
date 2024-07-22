@@ -30,7 +30,7 @@ export const getQuote: BackendQuery<
     params,
     signal,
     headers: {
-      'CF-SDK-Version': version,
+      'Cf-Sdk-Version': version,
     },
   });
 

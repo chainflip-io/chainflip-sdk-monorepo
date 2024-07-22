@@ -21,7 +21,7 @@ exports[`ApiService getQuote gets a quote 2`] = `
   {
     "baseURL": "https://swapperoo.org",
     "headers": {
-      "CF-SDK-Version": "1.0-test",
+      "Cf-Sdk-Version": "1.0-test",
     },
     "params": {
       "amount": "10000",
@@ -56,7 +56,7 @@ exports[`ApiService getQuote gets a quote with a broker commission 2`] = `
   {
     "baseURL": "https://swapperoo.org",
     "headers": {
-      "CF-SDK-Version": "1.0-test",
+      "Cf-Sdk-Version": "1.0-test",
     },
     "params": {
       "amount": "10000",
