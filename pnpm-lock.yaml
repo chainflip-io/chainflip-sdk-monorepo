@@ -134,8 +134,8 @@ importers:
         specifier: ^1.4.10
         version: 1.4.10
       '@chainflip/utils':
-        specifier: ^0.2.1
-        version: 0.2.1
+        specifier: ^0.4.0
+        version: 0.4.0
       axios:
         specifier: ^1.6.8
         version: 1.6.8
@@ -156,8 +156,8 @@ importers:
         specifier: ^1.4.10
         version: 1.4.10
       '@chainflip/utils':
-        specifier: ^0.2.1
-        version: 0.2.1
+        specifier: ^0.4.0
+        version: 0.4.0
       axios:
         specifier: ^1.6.8
         version: 1.6.8
@@ -202,8 +202,8 @@ importers:
         specifier: ^1.4.10
         version: 1.4.10
       '@chainflip/utils':
-        specifier: ^0.2.1
-        version: 0.2.1
+        specifier: ^0.4.0
+        version: 0.4.0
       '@polkadot/api':
         specifier: ^11.3.1
         version: 11.3.1
@@ -732,6 +732,9 @@ packages:
 
   '@chainflip/utils@0.3.0':
     resolution: {integrity: sha512-csW8E3lRcSG1udN/kgsOhjZ7bfRrSbgv8Hdh/pzjM+VjQ6Hh46/LuiZHeQR0rQMimfG+lu2Afxk4jeRXRGFWTg==}
+
+  '@chainflip/utils@0.4.0':
+    resolution: {integrity: sha512-OuMFlgbIbyJ1Kt39zytfGh4HZ5dVY25/a3qb0c1K137+QmhdOuF+R7QSkFPqYAfDG4KhGRqo0rgUtEpaEEcSKA==}
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -5974,6 +5977,8 @@ snapshots:
   '@chainflip/utils@0.2.1': {}
 
   '@chainflip/utils@0.3.0': {}
+
+  '@chainflip/utils@0.4.0': {}
 
   '@colors/colors@1.6.0': {}
 
