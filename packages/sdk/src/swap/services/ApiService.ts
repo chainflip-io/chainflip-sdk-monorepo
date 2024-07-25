@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { QuoteQueryParams, QuoteQueryResponse } from '@/shared/schemas';
+import { CF_SDK_VERSION_HEADERS } from '../consts';
 import { QuoteRequest, QuoteResponse, SwapStatusRequest, SwapStatusResponse } from '../types';
 
 export type RequestOptions = {
@@ -24,12 +25,12 @@ export const getQuote: BackendQuery<
     }),
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const queryParams = new URLSearchParams(params as Record<string, any>);
-
-  const url = new URL(`/quote?${queryParams.toString()}`, baseUrl).toString();
-
-  const { data } = await axios.get<QuoteQueryResponse>(url, { signal });
+  const { data } = await axios.get<QuoteQueryResponse>('/quote', {
+    baseURL: baseUrl,
+    params,
+    signal,
+    headers: CF_SDK_VERSION_HEADERS,
+  });
 
   return { ...returnedRequestData, quote: data };
 };
@@ -39,9 +40,10 @@ export const getStatus: BackendQuery<SwapStatusRequest, SwapStatusResponse> = as
   { id },
   { signal },
 ): Promise<SwapStatusResponse> => {
-  const url = new URL(`/swaps/${id}`, baseUrl).toString();
-  const { data } = await axios.get<SwapStatusResponse>(url, {
+  const { data } = await axios.get<SwapStatusResponse>(`/swaps/${id}`, {
+    baseURL: baseUrl,
     signal,
+    headers: CF_SDK_VERSION_HEADERS,
   });
   return data;
 };
