@@ -16,6 +16,7 @@ exports[`server GET /swaps/:id retrieves a swap in FAILED status without a depos
   "feesPaid": [],
   "srcAsset": "FLIP",
   "srcChain": "Ethereum",
+  "srcChainRequiredBlockConfirmations": 2,
   "state": "FAILED",
 }
 `;
