@@ -4,6 +4,7 @@ import { Chain, assetConstants } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { screamingSnakeToPascalCase, toUpperCase } from '@/shared/strings';
+import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
 import { asyncHandler, maintenanceMode } from './common';
 import prisma, {
   Egress,
@@ -263,6 +264,8 @@ router.get(
       depositChannelBrokerCommissionBps: swapDepositChannel?.brokerCommissionBps,
       depositAddress: swapDepositChannel?.depositAddress,
       expectedDepositAmount: swapDepositChannel?.expectedDepositAmount?.toFixed(),
+      srcChainRequiredBlockConfirmations:
+        (internalSrcAsset && (await getRequiredBlockConfirmations(internalSrcAsset))) ?? undefined,
       swapId: swap?.nativeId.toString(),
       depositAmount:
         readField(swap, failedSwap, 'depositAmount')?.toFixed() ?? pendingDeposit?.amount,
