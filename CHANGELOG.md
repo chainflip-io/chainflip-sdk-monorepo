@@ -22,6 +22,10 @@ which it is deprecated.
   the transaction that triggered a swap. For Bitcoin and EVM chains, this is a transaction
   hash. For Polkadot, it is a block number and extrinsic index in the format
   of `${blockNumber}-${extrinsicIndex}`.
+- `SwapSDK.prototype.getStatus` will return a `srcChainRequiredBlockConfirmations`. This is
+  the number of confirmations the protocol requires before recognizing a transaction as confirmed.
+  For networks like Polkadot, there is deterministic finality, and therefore, no confirmation
+  count is required.
 
 ### Deprecated
 
