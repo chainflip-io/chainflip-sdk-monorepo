@@ -140,8 +140,8 @@ importers:
         specifier: ^1.6.8
         version: 1.6.8
       ethers:
-        specifier: ^6.13.1
-        version: 6.13.1
+        specifier: ^6.13.2
+        version: 6.13.2
     devDependencies:
       tsup:
         specifier: ^8.1.0
@@ -162,8 +162,8 @@ importers:
         specifier: ^1.6.8
         version: 1.6.8
       ethers:
-        specifier: ^6.13.1
-        version: 6.13.1
+        specifier: ^6.13.2
+        version: 6.13.2
       ioredis:
         specifier: ^5.4.1
         version: 5.4.1
@@ -182,7 +182,7 @@ importers:
         version: 5.7.2
       '@typechain/ethers-v6':
         specifier: ^0.5.1
-        version: 0.5.1(ethers@6.13.1)(typechain@8.3.2(typescript@5.5.3))(typescript@5.5.3)
+        version: 0.5.1(ethers@6.13.2)(typechain@8.3.2(typescript@5.5.3))(typescript@5.5.3)
       '@types/ws':
         specifier: ^8.5.10
         version: 8.5.10
@@ -229,8 +229,8 @@ importers:
         specifier: ^0.7.2
         version: 0.7.2
       ethers:
-        specifier: ^6.13.1
-        version: 6.13.1
+        specifier: ^6.13.2
+        version: 6.13.2
       express:
         specifier: ^4.19.2
         version: 4.19.2
@@ -2908,8 +2908,8 @@ packages:
     resolution: {integrity: sha512-mxTAE6wqJQAbp5QAe/+o+rXOID7Nw91OZXvgpjDa1r4fAbq2Nu314oEZSbjoRLacuCzs7kUC3clEvkCQowffGg==}
     engines: {node: '>=14.0.0'}
 
-  ethers@6.13.1:
-    resolution: {integrity: sha512-hdJ2HOxg/xx97Lm9HdCWk949BfYqYWpyw4//78SiwOLgASyfrNszfMUNB2joKjvGUdwhHfaiMMFFwacVVoLR9A==}
+  ethers@6.13.2:
+    resolution: {integrity: sha512-9VkriTTed+/27BGuY1s0hf441kqwHJ1wtN2edksEtiRvXx+soxRX3iSXTfFqq2+YwrOqbDoTHjIhQnjJRlzKmg==}
     engines: {node: '>=14.0.0'}
 
   eventemitter3@3.1.2:
@@ -7472,9 +7472,9 @@ snapshots:
       mkdirp: 3.0.1
       path-browserify: 1.0.1
 
-  '@typechain/ethers-v6@0.5.1(ethers@6.13.1)(typechain@8.3.2(typescript@5.5.3))(typescript@5.5.3)':
+  '@typechain/ethers-v6@0.5.1(ethers@6.13.2)(typechain@8.3.2(typescript@5.5.3))(typescript@5.5.3)':
     dependencies:
-      ethers: 6.13.1
+      ethers: 6.13.2
       lodash: 4.17.21
       ts-essentials: 7.0.3(typescript@5.5.3)
       typechain: 8.3.2(typescript@5.5.3)
@@ -8891,7 +8891,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  ethers@6.13.1:
+  ethers@6.13.2:
     dependencies:
       '@adraffy/ens-normalize': 1.10.1
       '@noble/curves': 1.2.0
