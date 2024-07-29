@@ -43,7 +43,7 @@
     "@types/qs": "^6.9.14",
     "@types/supertest": "^6.0.2",
     "@types/ws": "^8.5.10",
-    "eslint-plugin-n": "^17.9.0",
+    "eslint-plugin-n": "^17.10.1",
     "graphql": "^16.9.0",
     "prisma": "^5.17.0",
     "socket.io-client": "^4.7.5",
