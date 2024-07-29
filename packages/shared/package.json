@@ -25,13 +25,13 @@
     "ethers": "^6.13.1",
     "ioredis": "^5.4.1",
     "rxjs": "^7.8.1",
-    "ws": "^8.17.0"
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@typechain/ethers-v6": "^0.5.1",
-    "@types/ws": "^8.5.10",
+    "@types/ws": "^8.5.11",
     "eslint-plugin-n": "^17.9.0",
     "typechain": "^8.3.2",
     "winston": "^3.13.1"
