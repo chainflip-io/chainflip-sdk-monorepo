@@ -1,3 +1,4 @@
+import { hexEncodeNumber } from '@chainflip/utils/number';
 import { z } from 'zod';
 import { Chain, Asset, getInternalAssets, AssetAndChain } from './enums';
 import {
@@ -10,7 +11,6 @@ import {
   number,
   hexString,
 } from './parsers';
-import { hexEncodeNumber } from '@chainflip/utils/number';
 
 export const quoteQuerySchema = z
   .object({
@@ -54,7 +54,7 @@ export type QuoteQueryParams = z.input<typeof quoteQuerySchema>;
 export type ParsedQuoteParams = z.output<typeof quoteQuerySchema>;
 
 export const ccmMetadataSchema = z.object({
-  gasBudget: z.union([numericString, hexString]).transform(n => hexEncodeNumber(BigInt(n))),
+  gasBudget: z.union([numericString, hexString]).transform((n) => hexEncodeNumber(BigInt(n))),
   message: hexStringWithMaxByteSize(1024 * 10),
   // TODO(solana): update max size when it is known
   cfParameters: hexStringWithMaxByteSize(1024 * 10).optional(),
