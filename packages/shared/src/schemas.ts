@@ -54,7 +54,7 @@ export type ParsedQuoteParams = z.output<typeof quoteQuerySchema>;
 export const ccmParamsSchema = z.object({
   gasBudget: numericString,
   message: hexStringWithMaxByteSize(1024 * 10),
-  // TODO: update max size when it is known
+  // TODO(solana): update max size when it is known
   cfParameters: hexStringWithMaxByteSize(1024 * 10).optional(),
 });
 
