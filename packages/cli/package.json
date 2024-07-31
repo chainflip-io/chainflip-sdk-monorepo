@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/cli",
-  "version": "1.3.0",
+  "version": "1.5.0-fok.1",
   "description": "",
   "main": "./dist/lib.mjs",
   "types": "./dist/lib.d.mts",
@@ -26,6 +26,7 @@
     "README.md"
   ],
   "scripts": {
+    "prepublish": "pnpm build",
     "build": "rm -rf dist && tsup",
     "typecheck": "tsc --noEmit"
   },
@@ -33,7 +34,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@chainflip/bitcoin": "^0.2.2",
+    "@chainflip/rpc": "^1.4.10",
+    "@chainflip/utils": "^0.2.1",
     "ioredis": "^5.4.1",
+    "ws": "^8.17.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
@@ -41,7 +46,6 @@
     "tsup": "^8.1.0"
   },
   "peerDependencies": {
-    "@chainflip/utils": "^0.2.1",
     "axios": "^1.x",
     "ethers": "^6.x"
   },
