@@ -1,4 +1,4 @@
-import { Chain, readChainAssetValue, InternalAsset } from '@/shared/enums';
+import { Chain, readChainAssetValue, InternalAsset, assetConstants } from '@/shared/enums';
 import { BoostPoolsDepth, getAllBoostPoolsDepth, getEnvironment } from '@/shared/rpc';
 import { validateSwapAmount as validateAmount } from '@/shared/rpc/utils';
 import { memoize } from './function';
@@ -40,6 +40,16 @@ export const getEgressFee = async (asset: InternalAsset): Promise<bigint | null>
   const environment = await cachedGetEnvironment(rpcConfig);
 
   return readChainAssetValue(environment.ingressEgress.egressFees, asset);
+};
+
+export const getRequiredBlockConfirmations = async (
+  asset: InternalAsset,
+): Promise<number | null> => {
+  const environment = await cachedGetEnvironment(rpcConfig);
+  const { chain } = assetConstants[asset];
+  const safetyMargin = environment.ingressEgress.witnessSafetyMargins[chain];
+
+  return safetyMargin ? Number(safetyMargin) + 1 : null;
 };
 
 export const getBoostPoolsDepth = async ({

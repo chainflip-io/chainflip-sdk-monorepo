@@ -43,10 +43,6 @@ export const hexStringWithMaxByteSize = (maxByteSize: number) =>
     message: `String must be less than or equal to ${maxByteSize} bytes`,
   });
 
-export const hexStringFromNumber = numericString.transform(
-  (arg) => `0x${BigInt(arg).toString(16)}` as `0x${string}`,
-);
-
 export const btcAddress = (network: ChainflipNetwork | 'localnet') => {
   if (network === 'mainnet') {
     return string.regex(/^(1|3|bc1)/).refine(validateBitcoinMainnetAddress, (address) => ({

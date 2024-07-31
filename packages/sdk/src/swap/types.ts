@@ -1,5 +1,11 @@
 import { Chain, Asset, AssetOfChain, InternalAsset } from '@/shared/enums';
-import { AffiliateBroker, CcmMetadata, QuoteQueryResponse, SwapFee } from '@/shared/schemas';
+import {
+  AffiliateBroker,
+  CcmMetadata,
+  QuoteQueryResponse,
+  RefundParameters,
+  SwapFee,
+} from '@/shared/schemas';
 
 export interface ChainData {
   chain: Chain;
@@ -48,6 +54,7 @@ export interface DepositAddressRequest extends QuoteRequest {
   ccmMetadata?: CcmMetadata;
   maxBoostFeeBps?: number;
   srcAddress?: string;
+  refundParameters?: RefundParameters;
 }
 
 export interface DepositAddressResponse extends DepositAddressRequest {
@@ -70,6 +77,7 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   ccmMetadata: CcmMetadata | undefined;
   feesPaid: SwapFee[];
   estimatedDefaultDurationSeconds: number | undefined;
+  srcChainRequiredBlockConfirmations: number | undefined;
 }
 
 interface DepositAddressFields extends SwapStatusResponseCommonFields {
@@ -111,7 +119,8 @@ export type FailedVaultSwapStatusResponse = CopyFields<
   DepositAddressFields,
   {
     depositAmount: string;
-    depositTransactionHash: string;
+    depositTransactionHash: string | undefined; // DEPRECATED(1.5): use depositTransactionRef instead
+    depositTransactionRef: string | undefined;
     destAddress: string;
     error: { message: string; name: string };
     failedAt: number;
@@ -129,7 +138,8 @@ type SwapState =
   | {
       state: 'AWAITING_DEPOSIT';
       depositAmount: string | undefined;
-      depositTransactionHash: string | undefined;
+      depositTransactionHash: string | undefined; // DEPRECATED(1.5): use depositTransactionRef instead
+      depositTransactionRef: string | undefined;
       depositTransactionConfirmations: number | undefined;
     }
   | {
@@ -185,7 +195,8 @@ type SwapState =
       failure: 'INGRESS_IGNORED';
       error: { name: string; message: string };
       depositAmount: string;
-      depositTransactionHash: string | undefined;
+      depositTransactionHash: string | undefined; // DEPRECATED(1.5): use depositTransactionRef instead
+      depositTransactionRef: string | undefined;
       failedAt: number;
       failedBlockIndex: string;
     }

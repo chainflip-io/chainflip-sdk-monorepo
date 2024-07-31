@@ -8,7 +8,9 @@ import {
   asset,
   chainflipAddress,
   number,
+  hexString,
 } from './parsers';
+import { hexEncodeNumber } from '@chainflip/utils/number';
 
 export const quoteQuerySchema = z
   .object({
@@ -52,7 +54,7 @@ export type QuoteQueryParams = z.input<typeof quoteQuerySchema>;
 export type ParsedQuoteParams = z.output<typeof quoteQuerySchema>;
 
 export const ccmMetadataSchema = z.object({
-  gasBudget: numericString,
+  gasBudget: z.union([numericString, hexString]).transform(n => hexEncodeNumber(BigInt(n))),
   message: hexStringWithMaxByteSize(1024 * 10),
   // TODO: update max size when it is known
   cfParameters: hexStringWithMaxByteSize(1024 * 10).optional(),
@@ -69,6 +71,14 @@ export const affiliateBroker = z
 
 export type AffiliateBroker = z.input<typeof affiliateBroker>;
 
+export const refundParameters = z.object({
+  retryDurationBlocks: number,
+  refundAddress: z.string(),
+  minPrice: numericString,
+});
+
+export type RefundParameters = z.input<typeof refundParameters>;
+
 export const openSwapDepositChannelSchema = z
   .object({
     srcAsset: asset,
@@ -80,6 +90,7 @@ export const openSwapDepositChannelSchema = z
     ccmMetadata: ccmMetadataSchema.optional(),
     maxBoostFeeBps: z.number().optional(),
     srcAddress: z.string().optional(),
+    refundParameters: refundParameters.optional(),
   })
   .transform(({ amount, ...rest }) => ({
     ...rest,

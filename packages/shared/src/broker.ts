@@ -10,9 +10,15 @@ import {
   dotAddress,
   ethereumAddress,
   assetAndChain,
-  hexStringFromNumber,
 } from './parsers';
-import { affiliateBroker, AffiliateBroker, CcmMetadata, ccmMetadataSchema } from './schemas';
+import {
+  affiliateBroker,
+  AffiliateBroker,
+  CcmMetadata,
+  ccmMetadataSchema,
+  RefundParameters,
+  refundParameters,
+} from './schemas';
 
 type NewSwapRequest = {
   srcAsset: Asset;
@@ -20,8 +26,11 @@ type NewSwapRequest = {
   srcChain: Chain;
   destChain: Chain;
   destAddress: string;
+  commissionBps?: number;
   ccmMetadata?: CcmMetadata;
   maxBoostFeeBps?: number;
+  affiliates?: AffiliateBroker[];
+  refundParameters?: RefundParameters;
 };
 
 const submitAddress = (chain: Chain, address: string): string => {
@@ -44,19 +53,21 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) =>
       z.union([numericString, hexString, btcAddress(network), solanaAddress]),
       z.number(),
       ccmMetadataSchema
-        .merge(
-          z.object({
-            gasBudget: hexStringFromNumber, // broker expects hex encoded number
-          }),
-        )
         .transform(({ message, ...rest }) => ({
           message,
           cf_parameters: rest.cfParameters,
-          gas_budget: rest.gasBudget,
+          gas_budget: rest.gasBudget
         }))
         .optional(),
       z.number().optional(),
       z.array(affiliateBroker).optional(),
+      refundParameters
+        .transform(({ retryDurationBlocks, refundAddress, minPrice }) => ({
+          retry_duration: retryDurationBlocks,
+          refund_address: refundAddress,
+          min_price: `0x${BigInt(minPrice).toString(16)}`,
+        }))
+        .optional(),
     ])
     .parse(params);
 
@@ -84,11 +95,7 @@ export type DepositChannelResponse = ReturnType<typeof validateResponse>;
 
 export async function requestSwapDepositAddress(
   swapRequest: NewSwapRequest,
-  opts: {
-    url: string;
-    commissionBps: number;
-    affiliates?: AffiliateBroker[];
-  },
+  opts: { url: string },
   chainflipNetwork: ChainflipNetwork,
 ): Promise<DepositChannelResponse> {
   const { srcAsset, srcChain, destAsset, destChain, destAddress, maxBoostFeeBps } = swapRequest;
@@ -99,10 +106,11 @@ export async function requestSwapDepositAddress(
     { asset: srcAsset, chain: srcChain },
     { asset: destAsset, chain: destChain },
     submitAddress(destChain, destAddress),
-    opts.commissionBps,
+    swapRequest.commissionBps,
     swapRequest.ccmMetadata,
     maxBoostFeeBps,
-    opts.affiliates,
+    swapRequest.affiliates,
+    swapRequest.refundParameters,
   ]);
 
   const response = await client.sendRequest(

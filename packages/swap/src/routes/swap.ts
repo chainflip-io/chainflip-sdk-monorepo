@@ -4,6 +4,7 @@ import { Chain, assetConstants } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { screamingSnakeToPascalCase, toUpperCase } from '@/shared/strings';
+import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
 import { asyncHandler, maintenanceMode } from './common';
 import prisma, {
   Egress,
@@ -245,6 +246,12 @@ router.get(
       destAsset: swapDepositChannel?.destAsset || swap?.destAsset,
     };
 
+    const depositTransactionRef =
+      swap?.depositTransactionRef ??
+      pendingDeposit?.transactionHash ??
+      failedSwap?.txHash ??
+      undefined;
+
     const response = {
       state,
       type: swap?.type,
@@ -257,10 +264,13 @@ router.get(
       depositChannelBrokerCommissionBps: swapDepositChannel?.brokerCommissionBps,
       depositAddress: swapDepositChannel?.depositAddress,
       expectedDepositAmount: swapDepositChannel?.expectedDepositAmount?.toFixed(),
+      srcChainRequiredBlockConfirmations:
+        (internalSrcAsset && (await getRequiredBlockConfirmations(internalSrcAsset))) ?? undefined,
       swapId: swap?.nativeId.toString(),
       depositAmount:
         readField(swap, failedSwap, 'depositAmount')?.toFixed() ?? pendingDeposit?.amount,
-      depositTransactionHash: pendingDeposit?.transactionHash ?? failedSwap?.txHash ?? undefined,
+      depositTransactionHash: depositTransactionRef, // DEPRECATED(1.5): use depositTransactionRef instead
+      depositTransactionRef,
       depositTransactionConfirmations: pendingDeposit?.transactionConfirmations,
       depositReceivedAt: swap?.depositReceivedAt.valueOf(),
       depositReceivedBlockIndex: swap?.depositReceivedBlockIndex ?? undefined,

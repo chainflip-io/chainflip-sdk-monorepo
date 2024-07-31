@@ -11,13 +11,14 @@ export const depositBoostedSchema = z.object({
   action: actionSchema,
   // channelId: u128,
   // depositDetails: cfChainsBtcUtxoId,
-  // prewitnessedDepositId: u128,
+  prewitnessedDepositId: u128,
 });
 
 // DepositBoosted event is emitted instead of DepositReceived event in v140 due to boost
 // We need to update the depositAmount and store the ingress fee just like we do in the DepositReceived event
 export const depositBoosted = async ({ prisma, event, block }: EventHandlerArgs) => {
-  const { asset, boostFee, action, ingressFee, amounts } = depositBoostedSchema.parse(event.args);
+  const { asset, boostFee, action, ingressFee, amounts, prewitnessedDepositId } =
+    depositBoostedSchema.parse(event.args);
 
   if (action.__kind === 'Swap') {
     const depositAmount = amounts.reduce((acc, [, amount]) => acc + amount, BigInt(0));
@@ -27,6 +28,7 @@ export const depositBoosted = async ({ prisma, event, block }: EventHandlerArgs)
       where: { nativeId: action.swapId },
       data: {
         effectiveBoostFeeBps: Number(effectiveBoostFeeBps),
+        prewitnessedDepositId,
         depositAmount: depositAmount.toString(),
         depositBoostedAt: new Date(block.timestamp),
         depositBoostedBlockIndex: `${block.height}-${event.indexInBlock}`,

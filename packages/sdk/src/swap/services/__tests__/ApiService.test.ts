@@ -3,6 +3,10 @@ import { Assets, Chains } from '@/shared/enums';
 import { QuoteRequest } from '../../types';
 import { getQuote, getStatus } from '../ApiService';
 
+jest.mock('../../../../package.json', () => ({
+  version: '1.0-test',
+}));
+
 jest.mock('axios', () => ({
   get: jest.fn(),
   post: jest.fn(),
