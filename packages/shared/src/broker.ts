@@ -42,7 +42,7 @@ const submitAddress = (chain: Chain, address: string): string => {
   return address;
 };
 
-// TODO: parse me
+// TODO(solana): parse me
 const solanaAddress = z.string();
 
 const validateRequest = (network: ChainflipNetwork, params: unknown) =>
