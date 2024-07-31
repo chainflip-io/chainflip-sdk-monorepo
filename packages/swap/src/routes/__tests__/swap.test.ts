@@ -105,6 +105,7 @@ describe('server', () => {
           "isDepositChannelExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
           "state": "AWAITING_DEPOSIT",
         }
       `);
@@ -139,6 +140,7 @@ describe('server', () => {
           "isDepositChannelExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
           "state": "AWAITING_DEPOSIT",
         }
       `);
@@ -178,6 +180,7 @@ describe('server', () => {
           "isDepositChannelExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
           "state": "AWAITING_DEPOSIT",
         }
       `);
@@ -211,6 +214,7 @@ describe('server', () => {
           "isDepositChannelExpired": true,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
           "state": "AWAITING_DEPOSIT",
         }
       `);
@@ -261,6 +265,7 @@ describe('server', () => {
           "isDepositChannelExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
           "state": "DEPOSIT_RECEIVED",
           "type": "SWAP",
         }
@@ -316,6 +321,7 @@ describe('server', () => {
           "isDepositChannelExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
           "state": "DEPOSIT_RECEIVED",
           "type": "SWAP",
         }
@@ -398,6 +404,7 @@ describe('server', () => {
           "isDepositChannelExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
           "state": "SWAP_EXECUTED",
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
@@ -492,6 +499,7 @@ describe('server', () => {
           "isDepositChannelExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
           "state": "EGRESS_SCHEDULED",
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
@@ -603,6 +611,7 @@ describe('server', () => {
           "isDepositChannelExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
           "state": "BROADCASTED",
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
@@ -707,6 +716,7 @@ describe('server', () => {
           "isDepositChannelExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
           "state": "BROADCAST_REQUESTED",
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
@@ -815,6 +825,7 @@ describe('server', () => {
           "isDepositChannelExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
           "state": "BROADCAST_ABORTED",
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
@@ -923,6 +934,7 @@ describe('server', () => {
           "isDepositChannelExpired": false,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
           "state": "COMPLETE",
           "swapExecutedAt": 1669907141201,
           "swapExecutedBlockIndex": "200-3",
@@ -1200,6 +1212,7 @@ describe('server', () => {
           ],
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
           "state": "DEPOSIT_RECEIVED",
           "type": "SWAP",
         }
@@ -1272,6 +1285,7 @@ describe('server', () => {
           ],
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
           "state": "DEPOSIT_RECEIVED",
           "type": "SWAP",
         }

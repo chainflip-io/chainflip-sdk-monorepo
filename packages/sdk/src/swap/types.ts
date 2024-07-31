@@ -70,6 +70,7 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   ccmMetadata: CcmMetadata | undefined;
   feesPaid: SwapFee[];
   estimatedDefaultDurationSeconds: number | undefined;
+  srcChainRequiredBlockConfirmations: number | undefined;
 }
 
 interface DepositAddressFields extends SwapStatusResponseCommonFields {
