@@ -55,7 +55,7 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) =>
         .transform(({ message, ...rest }) => ({
           message,
           cf_parameters: rest.cfParameters,
-          gas_budget: `0x${BigInt(rest.gasBudget).toString(16)}` as `0x${string}`,
+          gas_budget: rest.gasBudget,
         }))
         .optional(),
       z.number().optional(),
