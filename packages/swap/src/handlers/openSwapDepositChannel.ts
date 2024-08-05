@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import * as broker from '@/shared/broker';
 import { getInternalAssets } from '@/shared/enums';
-import { openSwapDepositChannelSchema } from '@/shared/schemas';
+import { CcmParams, openSwapDepositChannelSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';
 import env from '../config/env';
@@ -51,6 +51,12 @@ export default async function openSwapDepositChannel(
 
   if (openChannelCount >= env.MAX_CHANNELS_OPEN_PER_ADDRESS) {
     throw ServiceError.badRequest('too many channels');
+  }
+
+  // DEPRECATED(1.5): use ccmParams instead of ccmMetadata
+  const deprecatedCcmMetadata = (input as { ccmMetadata?: CcmParams }).ccmMetadata;
+  if (!input.ccmParams && deprecatedCcmMetadata) {
+    input.ccmParams = deprecatedCcmMetadata; // eslint-disable-line no-param-reassign
   }
 
   const {

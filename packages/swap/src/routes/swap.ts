@@ -300,6 +300,7 @@ router.get(
       estimatedDepositChannelExpiryTime: swapDepositChannel?.estimatedExpiryAt?.valueOf(),
       isDepositChannelExpired: swapDepositChannel?.isExpired,
       ccmDepositReceivedBlockIndex: swap?.ccmDepositReceivedBlockIndex ?? undefined,
+      ccmMetadata: ccmParams, // DEPRECATED(1.5): use ccmParams instead
       ccmParams,
       depositChannelOpenedThroughBackend: swapDepositChannel?.openedThroughBackend,
       broadcastTransactionRef: swap?.egress?.broadcast?.transactionRef ?? egressTrackerTxRef,

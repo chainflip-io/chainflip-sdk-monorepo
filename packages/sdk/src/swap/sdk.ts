@@ -25,6 +25,7 @@ import {
   getSupportedAssets,
 } from '@/shared/rpc';
 import { validateSwapAmount } from '@/shared/rpc/utils';
+import { CcmParams } from '@/shared/schemas';
 import { Required } from '@/shared/types';
 import { approveVault, executeSwap, ExecuteSwapParams } from '@/shared/vault';
 import type { AppRouter } from '@/swap/server';
@@ -161,6 +162,13 @@ export class SwapSDK {
 
     await this.validateSwapAmount({ chain: srcChain, asset: srcAsset }, BigInt(amount));
 
+    // DEPRECATED(1.5): use ccmParams instead of ccmMetadata
+    const deprecatedCcmMetadata = (depositAddressRequest as { ccmMetadata?: CcmParams })
+      .ccmMetadata;
+    if (!depositAddressRequest.ccmParams && deprecatedCcmMetadata) {
+      depositAddressRequest.ccmParams = deprecatedCcmMetadata; // eslint-disable-line no-param-reassign
+    }
+
     let response;
 
     if (this.options.broker !== undefined) {
@@ -227,6 +235,12 @@ export class SwapSDK {
     assert(signer, 'No signer provided');
 
     await this.validateSwapAmount({ chain: srcChain, asset: srcAsset }, BigInt(amount));
+
+    // DEPRECATED(1.5): use ccmParams instead of ccmMetadata
+    const deprecatedCcmMetadata = (params as { ccmMetadata?: CcmParams }).ccmMetadata;
+    if (!params.ccmParams && deprecatedCcmMetadata) {
+      params.ccmParams = deprecatedCcmMetadata; // eslint-disable-line no-param-reassign
+    }
 
     const tx = await executeSwap(
       params,
