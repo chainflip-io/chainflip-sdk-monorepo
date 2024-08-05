@@ -92,7 +92,6 @@ describe(processBlocks, () => {
         "swapExecutedBlockIndex": null,
         "swapInputAmount": "125000000000",
         "swapOutputAmount": null,
-        "txHash": null,
         "type": "SWAP",
         "updatedAt": Any<Date>,
       }

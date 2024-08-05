@@ -138,7 +138,8 @@ describe(swapAmountTooLow, () => {
           srcChain: 'Ethereum',
           srcAsset: 'Eth',
           swapDepositChannelId: undefined,
-          txHash: '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
+          depositTransactionRef:
+            '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
         },
       });
     });

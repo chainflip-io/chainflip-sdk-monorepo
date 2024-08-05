@@ -42,7 +42,6 @@ exports[`swapExecuted updates an existing swap 1`] = `
   "swapExecutedBlockIndex": "100-0",
   "swapInputAmount": "10000000000",
   "swapOutputAmount": "10000000000",
-  "txHash": null,
   "type": "SWAP",
   "updatedAt": Any<Date>,
 }
@@ -90,7 +89,6 @@ exports[`swapExecuted updates an existing swap 2`] = `
   "swapExecutedBlockIndex": "100-0",
   "swapInputAmount": "10000000000",
   "swapOutputAmount": "10000000000",
-  "txHash": null,
   "type": "SWAP",
   "updatedAt": Any<Date>,
 }
@@ -145,7 +143,6 @@ exports[`swapExecuted updates an existing swap with intermediate amount 1`] = `
   "swapExecutedBlockIndex": "100-0",
   "swapInputAmount": "10000000000",
   "swapOutputAmount": "10000000000",
-  "txHash": null,
   "type": "SWAP",
   "updatedAt": Any<Date>,
 }

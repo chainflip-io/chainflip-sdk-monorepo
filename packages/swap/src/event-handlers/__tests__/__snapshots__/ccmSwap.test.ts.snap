@@ -59,7 +59,6 @@ exports[`batch swap flow handles all the events: gas swap 1`] = `
   "swapExecutedBlockIndex": "2-55",
   "swapInputAmount": "1000000",
   "swapOutputAmount": "960672170800",
-  "txHash": null,
   "type": "GAS",
   "updatedAt": Any<Date>,
 }
@@ -91,7 +90,6 @@ exports[`batch swap flow handles all the events: principal swap 1`] = `
   "swapExecutedBlockIndex": "2-54",
   "swapInputAmount": "499999000000",
   "swapOutputAmount": "480766415032706356",
-  "txHash": null,
   "type": "PRINCIPAL",
   "updatedAt": Any<Date>,
 }

@@ -35,7 +35,6 @@ exports[`depositReceivedV120 should update the values for an existing ccm gas sw
   "swapExecutedBlockIndex": null,
   "swapInputAmount": "100000",
   "swapOutputAmount": null,
-  "txHash": null,
   "type": "PRINCIPAL",
   "updatedAt": Any<Date>,
 }
@@ -76,7 +75,6 @@ exports[`depositReceivedV120 should update the values for an existing ccm princi
   "swapExecutedBlockIndex": null,
   "swapInputAmount": "100000",
   "swapOutputAmount": null,
-  "txHash": null,
   "type": "PRINCIPAL",
   "updatedAt": Any<Date>,
 }
@@ -117,7 +115,6 @@ exports[`depositReceivedV120 should update the values for an existing swap 1`] =
   "swapExecutedBlockIndex": null,
   "swapInputAmount": "100000",
   "swapOutputAmount": null,
-  "txHash": null,
   "type": "SWAP",
   "updatedAt": Any<Date>,
 }

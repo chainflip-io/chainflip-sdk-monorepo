@@ -40,7 +40,6 @@ exports[`swapEgressScheduled >v120 uses the fee from the event and creates an eg
   "swapExecutedBlockIndex": "120-0",
   "swapInputAmount": "10000000000",
   "swapOutputAmount": "10000000000",
-  "txHash": null,
   "type": "SWAP",
   "updatedAt": Any<Date>,
 }
@@ -86,7 +85,6 @@ exports[`swapEgressScheduled updates an existing swap when the egress amount is 
   "swapExecutedBlockIndex": "120-0",
   "swapInputAmount": "1000",
   "swapOutputAmount": "1000",
-  "txHash": null,
   "type": "SWAP",
   "updatedAt": Any<Date>,
 }
@@ -132,7 +130,6 @@ exports[`swapEgressScheduled updates an existing swap when the egress asset is t
   "swapExecutedBlockIndex": "120-0",
   "swapInputAmount": "10000000000",
   "swapOutputAmount": "10000000000",
-  "txHash": null,
   "type": "SWAP",
   "updatedAt": Any<Date>,
 }
