@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import * as broker from '@/shared/broker';
 import { getInternalAssets } from '@/shared/enums';
-import { CcmParams, openSwapDepositChannelSchema } from '@/shared/schemas';
+import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';
 import env from '../config/env';

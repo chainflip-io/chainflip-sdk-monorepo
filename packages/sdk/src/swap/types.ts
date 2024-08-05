@@ -55,6 +55,9 @@ export interface DepositAddressRequest extends QuoteRequest {
   maxBoostFeeBps?: number;
   srcAddress?: string;
   fillOrKillParams?: FillOrKillParams;
+
+  /** @deprecated DEPRECATED(1.5): use ccmParams instead of ccmMetadata */
+  ccmMetadata?: CcmParams;
 }
 
 export interface DepositAddressResponse extends DepositAddressRequest {
@@ -79,8 +82,11 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   estimatedDefaultDurationSeconds: number | undefined;
   srcChainRequiredBlockConfirmations: number | undefined;
   depositTransactionRef: string | undefined;
+
   /** @deprecated DEPRECATED(1.5): use depositTransactionRef instead */
-  depositTransactionHash: string | undefined; //
+  depositTransactionHash: string | undefined;
+  /** @deprecated DEPRECATED(1.5): use ccmParams instead of ccmMetadata */
+  ccmMetadata?: CcmParams;
 }
 
 interface DepositAddressFields extends SwapStatusResponseCommonFields {

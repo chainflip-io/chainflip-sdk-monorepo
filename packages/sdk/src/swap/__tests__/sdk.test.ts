@@ -281,6 +281,7 @@ describe(SwapSDK, () => {
         srcAsset: 'BTC',
         srcChain: 'Bitcoin',
         maxBoostFeeBps: 0,
+        ccmParams: undefined,
         channelOpeningFee: 0n,
         affiliateBrokers: [],
       });
@@ -341,6 +342,7 @@ describe(SwapSDK, () => {
         srcChain: 'Bitcoin',
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
+        ccmParams: undefined,
         affiliateBrokers: [],
         fillOrKillParams: {
           retryDurationBlocks: 500,
@@ -411,6 +413,7 @@ describe(SwapSDK, () => {
         estimatedDepositChannelExpiryTime: undefined,
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
+        ccmParams: undefined,
         affiliateBrokers: [],
       });
     });
@@ -477,6 +480,7 @@ describe(SwapSDK, () => {
         estimatedDepositChannelExpiryTime: undefined,
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
+        ccmParams: undefined,
         affiliateBrokers: [],
       });
     });
@@ -545,6 +549,7 @@ describe(SwapSDK, () => {
         estimatedDepositChannelExpiryTime: undefined,
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
+        ccmParams: undefined,
         affiliateBrokers: [
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
         ],
@@ -622,6 +627,7 @@ describe(SwapSDK, () => {
       estimatedDepositChannelExpiryTime: undefined,
       maxBoostFeeBps: 0,
       channelOpeningFee: 0n,
+      ccmParams: undefined,
       affiliateBrokers: [],
       fillOrKillParams: {
         retryDurationBlocks: 500,
@@ -694,6 +700,7 @@ describe(SwapSDK, () => {
       estimatedDepositChannelExpiryTime: undefined,
       maxBoostFeeBps: MAX_BOOST_FEE_BPS,
       channelOpeningFee: 0n,
+      ccmParams: undefined,
       affiliateBrokers: [],
     });
   });

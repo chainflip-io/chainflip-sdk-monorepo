@@ -13,6 +13,9 @@ export interface ExecuteSwapParams {
   amount: string;
   destAddress: string;
   ccmParams?: CcmParams;
+
+  /** @deprecated DEPRECATED(1.5): use ccmParams instead of ccmMetadata */
+  ccmMetadata?: CcmParams;
 }
 
 export type SwapNetworkOptions =
