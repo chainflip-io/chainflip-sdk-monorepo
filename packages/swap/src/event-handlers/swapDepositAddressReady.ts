@@ -1,5 +1,7 @@
 import { z } from 'zod';
+import BigNumber from 'bignumber.js';
 import { u64, internalAssetEnum, u128, accountId } from '@/shared/parsers';
+import { assetConstants } from '@/shared/enums';
 import { ccmParamsSchema } from '@/shared/schemas';
 import { encodedAddress } from './common';
 import { calculateExpiryTime } from '../utils/function';
@@ -22,6 +24,13 @@ const swapDepositAddressReadyArgs = z.object({
   boostFee: z.number().int().optional(),
   channelOpeningFee: u128.optional().default(0),
   affiliateFees: z.array(affiliateSchema).optional().default([]),
+  refundParameters: z
+    .object({
+      minPrice: u128,
+      refundAddress: encodedAddress,
+      retryDuration: z.number().int(),
+    })
+    .optional(),
 });
 
 export type SwapDepositAddressReadyEvent = z.input<typeof swapDepositAddressReadyArgs>;
@@ -45,6 +54,7 @@ export const swapDepositAddressReady = async ({
     boostFee,
     channelOpeningFee,
     affiliateFees,
+    refundParameters,
     ...rest
   } = swapDepositAddressReadyArgs.parse(event.args);
 
@@ -71,6 +81,16 @@ export const swapDepositAddressReady = async ({
     issuedBlock,
     channelId,
     openingFeePaid: channelOpeningFee.toString(),
+    fokMinPrice: refundParameters
+      ? new BigNumber(refundParameters.minPrice.toString())
+          .dividedBy(new BigNumber(2).pow(128))
+          .shiftedBy(
+            assetConstants[sourceAsset].decimals - assetConstants[destinationAsset].decimals,
+          )
+          .toFixed()
+      : undefined,
+    fokRefundAddress: refundParameters?.refundAddress.address,
+    fokRetryDuration: refundParameters?.retryDuration,
     ...rest,
   };
 
