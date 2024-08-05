@@ -987,7 +987,7 @@ describe('server', () => {
           depositAmount: '10000000000',
           failedAt: new Date(RECEIVED_TIMESTAMP),
           failedBlockIndex: RECEIVED_BLOCK_INDEX,
-          txHash: '0xdeadbeef',
+          depositTransactionRef: '0xdeadbeef',
         },
       });
 
@@ -1156,7 +1156,7 @@ describe('server', () => {
 
       await prisma.swap.create({
         data: {
-          txHash,
+          depositTransactionRef: txHash,
           nativeId,
           srcAsset: InternalAssets.Eth,
           destAsset: InternalAssets.Dot,

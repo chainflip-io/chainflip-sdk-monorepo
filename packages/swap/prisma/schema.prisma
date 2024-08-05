@@ -128,7 +128,6 @@ model Swap {
   ccmDepositReceivedBlockIndex String?
   ccmGasBudget                 Decimal?            @db.Decimal(30, 0)
   ccmMessage                   String?
-  txHash                       String?
   egress                       Egress?             @relation(fields: [egressId], references: [id])
   egressId                     BigInt?
   ignoredEgress                IgnoredEgress?
@@ -171,18 +170,18 @@ enum FailedSwapReason {
 }
 
 model FailedSwap {
-  id                   Int                 @id @default(autoincrement())
-  reason               FailedSwapReason
-  destAddress          String
-  destChain            Chain
-  depositAmount        Decimal             @db.Decimal(30, 0)
-  srcChain             Chain
-  srcAsset             InternalAsset
-  swapDepositChannel   SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
-  swapDepositChannelId BigInt?
-  txHash               String?
-  failedAt             DateTime
-  failedBlockIndex     String
+  id                    Int                 @id @default(autoincrement())
+  reason                FailedSwapReason
+  destAddress           String
+  destChain             Chain
+  depositAmount         Decimal             @db.Decimal(30, 0)
+  srcChain              Chain
+  srcAsset              InternalAsset
+  swapDepositChannel    SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId  BigInt?
+  depositTransactionRef String?
+  failedAt              DateTime
+  failedBlockIndex      String
 
   @@index([swapDepositChannelId])
   @@schema("public")

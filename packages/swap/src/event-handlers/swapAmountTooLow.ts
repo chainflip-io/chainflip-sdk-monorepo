@@ -61,7 +61,7 @@ export default async function swapAmountTooLow({
       srcChain: sourceChain,
       srcAsset: sourceAsset,
       swapDepositChannelId: dbDepositChannel?.id,
-      txHash,
+      depositTransactionRef: txHash,
       failedAt: new Date(block.timestamp),
       failedBlockIndex: `${block.height}-${event.indexInBlock}`,
     },

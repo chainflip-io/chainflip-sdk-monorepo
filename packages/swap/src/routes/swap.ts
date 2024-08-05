@@ -141,14 +141,14 @@ router.get(
       });
     } else if (txHashRegex.test(id)) {
       swap = await prisma.swap.findFirst({
-        where: { txHash: id },
+        where: { depositTransactionRef: id },
         include: swapInclude,
         // just get the last one for now
         orderBy: { nativeId: 'desc' },
       });
       if (!swap) {
         failedSwap = await prisma.failedSwap.findFirst({
-          where: { txHash: id },
+          where: { depositTransactionRef: id },
         });
       }
     }
@@ -249,7 +249,7 @@ router.get(
     const depositTransactionRef =
       swap?.depositTransactionRef ??
       pendingDeposit?.transactionHash ??
-      failedSwap?.txHash ??
+      failedSwap?.depositTransactionRef ??
       undefined;
 
     const response = {
