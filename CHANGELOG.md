@@ -31,6 +31,12 @@ which it is deprecated.
 
 - `SwapSDK.prototype.getStatus`: `depositTransactionHash` is deprecated and will be removed
   in a future release. Use `depositTransactionRef` instead.
+- `SwapSDK.prototype.getStatus`: `ccmMetadata` is deprecated and will be removed in a future
+  release. Use `ccmParams` instead.
+- `SwapSDK.prototype.requestDepositAddress`: `ccmMetadata` is deprecated and will be removed in a
+  future release. Use `ccmParams` instead.
+- `SwapSDK.prototype.executeSwap`: `ccmMetadata` is deprecated and will be removed in a future
+  release. Use `ccmParams` instead.
 
 ## 1.4.2
 
