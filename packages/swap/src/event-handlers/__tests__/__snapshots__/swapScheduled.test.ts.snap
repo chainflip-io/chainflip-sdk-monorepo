@@ -27,7 +27,6 @@ exports[`swapScheduled deposit channel origin stores a new swap from a btc depos
   "swapExecutedBlockIndex": null,
   "swapInputAmount": "75000000",
   "swapOutputAmount": null,
-  "txHash": null,
   "type": "SWAP",
   "updatedAt": Any<Date>,
 }
@@ -60,7 +59,6 @@ exports[`swapScheduled deposit channel origin stores a new swap from a dot depos
   "swapExecutedBlockIndex": null,
   "swapInputAmount": "125000000000",
   "swapOutputAmount": null,
-  "txHash": null,
   "type": "SWAP",
   "updatedAt": Any<Date>,
 }
@@ -101,7 +99,6 @@ exports[`swapScheduled deposit channel origin stores a new swap with a broker co
   "swapExecutedBlockIndex": null,
   "swapInputAmount": "125000000000",
   "swapOutputAmount": null,
-  "txHash": null,
   "type": "SWAP",
   "updatedAt": Any<Date>,
 }
@@ -142,7 +139,6 @@ exports[`swapScheduled deposit channel origin stores a new swap with a broker fe
   "swapExecutedBlockIndex": null,
   "swapInputAmount": "125000000000",
   "swapOutputAmount": null,
-  "txHash": null,
   "type": "SWAP",
   "updatedAt": Any<Date>,
 }
@@ -159,7 +155,7 @@ exports[`swapScheduled smart contract origin stores a new swap from a contract d
   "depositBoostedBlockIndex": null,
   "depositReceivedAt": 2022-12-06T14:31:33.000Z,
   "depositReceivedBlockIndex": "100-0",
-  "depositTransactionRef": null,
+  "depositTransactionRef": "0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9",
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "Dot",
   "effectiveBoostFeeBps": null,
@@ -175,7 +171,6 @@ exports[`swapScheduled smart contract origin stores a new swap from a contract d
   "swapExecutedBlockIndex": null,
   "swapInputAmount": "175000000000000000",
   "swapOutputAmount": null,
-  "txHash": "0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9",
   "type": "SWAP",
   "updatedAt": Any<Date>,
 }

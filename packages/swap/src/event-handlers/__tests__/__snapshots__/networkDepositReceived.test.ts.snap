@@ -27,7 +27,6 @@ exports[`depositReceived should not change swap if there is a newer deposit chan
   "swapExecutedBlockIndex": null,
   "swapInputAmount": "100000",
   "swapOutputAmount": null,
-  "txHash": null,
   "type": "SWAP",
   "updatedAt": Any<Date>,
 }
@@ -68,7 +67,6 @@ exports[`depositReceived should update the values for an existing swap 1`] = `
   "swapExecutedBlockIndex": null,
   "swapInputAmount": "100000",
   "swapOutputAmount": null,
-  "txHash": null,
   "type": "SWAP",
   "updatedAt": Any<Date>,
 }

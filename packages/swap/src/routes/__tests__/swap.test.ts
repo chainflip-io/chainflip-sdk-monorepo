@@ -1192,6 +1192,8 @@ describe('server', () => {
           "depositAmount": "10",
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
+          "depositTransactionHash": "${txHash}",
+          "depositTransactionRef": "${txHash}",
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",

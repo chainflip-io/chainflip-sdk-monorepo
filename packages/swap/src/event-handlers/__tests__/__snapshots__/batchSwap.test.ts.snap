@@ -109,7 +109,6 @@ exports[`batch swap flow handles all the events: swap 1`] = `
   "swapExecutedBlockIndex": "1-250",
   "swapInputAmount": "100000000000000000",
   "swapOutputAmount": "662256",
-  "txHash": null,
   "type": "SWAP",
   "updatedAt": Any<Date>,
 }
