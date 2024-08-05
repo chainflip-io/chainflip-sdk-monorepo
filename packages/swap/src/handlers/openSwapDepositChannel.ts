@@ -54,10 +54,7 @@ export default async function openSwapDepositChannel(
   }
 
   // DEPRECATED(1.5): use ccmParams instead of ccmMetadata
-  const deprecatedCcmMetadata = (input as { ccmMetadata?: CcmParams }).ccmMetadata;
-  if (!input.ccmParams && deprecatedCcmMetadata) {
-    input.ccmParams = deprecatedCcmMetadata; // eslint-disable-line no-param-reassign
-  }
+  input.ccmParams ??= input.ccmMetadata; // eslint-disable-line no-param-reassign
 
   const {
     address: depositAddress,
