@@ -16,8 +16,8 @@ import {
   AffiliateBroker,
   CcmMetadata,
   ccmMetadataSchema,
-  RefundParameters,
-  refundParameters,
+  FillOrKillParams,
+  fillOrKillParams,
 } from './schemas';
 
 type NewSwapRequest = {
@@ -30,7 +30,7 @@ type NewSwapRequest = {
   ccmMetadata?: CcmMetadata;
   maxBoostFeeBps?: number;
   affiliates?: AffiliateBroker[];
-  refundParameters?: RefundParameters;
+  fillOrKillParams?: FillOrKillParams;
 };
 
 const submitAddress = (chain: Chain, address: string): string => {
@@ -63,7 +63,7 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) =>
         .optional(),
       z.number().optional(),
       z.array(affiliateBroker).optional(),
-      refundParameters
+      fillOrKillParams
         .transform(({ retryDurationBlocks, refundAddress, minPrice }) => ({
           retry_duration: retryDurationBlocks,
           refund_address: refundAddress,
@@ -115,7 +115,7 @@ export async function requestSwapDepositAddress(
     },
     maxBoostFeeBps,
     swapRequest.affiliates,
-    swapRequest.refundParameters,
+    swapRequest.fillOrKillParams,
   ]);
 
   const response = await client.sendRequest(

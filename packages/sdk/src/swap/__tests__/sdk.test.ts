@@ -308,7 +308,7 @@ describe(SwapSDK, () => {
         destAsset: Assets.FLIP,
         destAddress: '0xcafebabe',
         amount: BigInt(1e18).toString(),
-        refundParameters: {
+        fillOrKillParams: {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           minPrice: '10000000000000',
@@ -321,7 +321,7 @@ describe(SwapSDK, () => {
         destAsset: Assets.FLIP,
         destAddress: '0xcafebabe',
         amount: BigInt(1e18).toString(),
-        refundParameters: {
+        fillOrKillParams: {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           minPrice: '10000000000000',
@@ -342,7 +342,7 @@ describe(SwapSDK, () => {
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
         affiliateBrokers: [],
-        refundParameters: {
+        fillOrKillParams: {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           minPrice: '10000000000000',
@@ -582,7 +582,7 @@ describe(SwapSDK, () => {
       destAsset: 'FLIP',
       destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
       amount: BigInt(1e18).toString(),
-      refundParameters: {
+      fillOrKillParams: {
         retryDurationBlocks: 500,
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
         minPrice: '10000000000000',
@@ -623,7 +623,7 @@ describe(SwapSDK, () => {
       maxBoostFeeBps: 0,
       channelOpeningFee: 0n,
       affiliateBrokers: [],
-      refundParameters: {
+      fillOrKillParams: {
         retryDurationBlocks: 500,
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
         minPrice: '10000000000000',
