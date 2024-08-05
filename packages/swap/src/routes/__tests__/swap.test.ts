@@ -160,7 +160,7 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body).toMatchInlineSnapshot(`
         {
-          "ccmMetadata": {
+          "ccmParams": {
             "gasBudget": "100000",
             "message": "0xdeadbeef",
           },
@@ -1260,7 +1260,7 @@ describe('server', () => {
       expect(rest).toMatchInlineSnapshot(`
         {
           "ccmDepositReceivedBlockIndex": "223-16",
-          "ccmMetadata": {
+          "ccmParams": {
             "gasBudget": "100",
             "message": "0x12abf87",
           },

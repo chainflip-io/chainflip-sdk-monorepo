@@ -89,11 +89,11 @@ exports[`openSwapDepositChannel creates channel with boost fee and stores it in 
 }
 `;
 
-exports[`openSwapDepositChannel creates channel with ccmMetadata and stores it in the database 1`] = `
+exports[`openSwapDepositChannel creates channel with ccmParams and stores it in the database 1`] = `
 [
   [
     {
-      "ccmMetadata": {
+      "ccmParams": {
         "gasBudget": "125000",
         "message": "0xdeadc0de",
       },
@@ -112,7 +112,7 @@ exports[`openSwapDepositChannel creates channel with ccmMetadata and stores it i
 ]
 `;
 
-exports[`openSwapDepositChannel creates channel with ccmMetadata and stores it in the database 2`] = `
+exports[`openSwapDepositChannel creates channel with ccmParams and stores it in the database 2`] = `
 {
   "brokerCommissionBps": 0,
   "ccmGasBudget": "125000",

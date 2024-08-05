@@ -52,7 +52,7 @@ exports[`executeSwap can be invoked with localnet options 2`] = `
 ]
 `;
 
-exports[`executeSwap submits a native call ({"ccmMetadata": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "FLIP", "destChain": "Ethereum", "srcAsset": "ETH", "srcChain": "Ethereum"}) 1`] = `
+exports[`executeSwap submits a native call ({"ccmParams": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "FLIP", "destChain": "Ethereum", "srcAsset": "ETH", "srcChain": "Ethereum"}) 1`] = `
 [
   [
     1,
@@ -68,7 +68,7 @@ exports[`executeSwap submits a native call ({"ccmMetadata": [Object], "destAddre
 ]
 `;
 
-exports[`executeSwap submits a native call ({"ccmMetadata": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "USDC", "destChain": "Ethereum", "srcAsset": "ETH", "srcChain": "Ethereum"}) 1`] = `
+exports[`executeSwap submits a native call ({"ccmParams": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "USDC", "destChain": "Ethereum", "srcAsset": "ETH", "srcChain": "Ethereum"}) 1`] = `
 [
   [
     1,
@@ -154,7 +154,7 @@ exports[`executeSwap submits a native swap ({"destAddress": "tb1qge9vvd2mmjxfhux
 ]
 `;
 
-exports[`executeSwap submits a token call ({"ccmMetadata": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "FLIP", "srcChain": "Ethereum"}) 1`] = `
+exports[`executeSwap submits a token call ({"ccmParams": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "FLIP", "srcChain": "Ethereum"}) 1`] = `
 [
   [
     1,
@@ -170,7 +170,7 @@ exports[`executeSwap submits a token call ({"ccmMetadata": [Object], "destAddres
 ]
 `;
 
-exports[`executeSwap submits a token call ({"ccmMetadata": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "FLIP", "srcChain": "Ethereum"}) 2`] = `
+exports[`executeSwap submits a token call ({"ccmParams": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "FLIP", "srcChain": "Ethereum"}) 2`] = `
 [
   [
     "MY ADDRESS",
@@ -179,7 +179,7 @@ exports[`executeSwap submits a token call ({"ccmMetadata": [Object], "destAddres
 ]
 `;
 
-exports[`executeSwap submits a token call ({"ccmMetadata": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "USDC", "srcChain": "Ethereum"}) 1`] = `
+exports[`executeSwap submits a token call ({"ccmParams": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "USDC", "srcChain": "Ethereum"}) 1`] = `
 [
   [
     1,
@@ -195,7 +195,7 @@ exports[`executeSwap submits a token call ({"ccmMetadata": [Object], "destAddres
 ]
 `;
 
-exports[`executeSwap submits a token call ({"ccmMetadata": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "USDC", "srcChain": "Ethereum"}) 2`] = `
+exports[`executeSwap submits a token call ({"ccmParams": [Object], "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2", "destAsset": "ETH", "destChain": "Ethereum", "srcAsset": "USDC", "srcChain": "Ethereum"}) 2`] = `
 [
   [
     "MY ADDRESS",

@@ -1,6 +1,6 @@
 import { Signer } from 'ethers';
 import { Asset, Chain, ChainflipNetwork } from '../enums';
-import { CcmMetadata } from '../schemas';
+import { CcmParams } from '../schemas';
 
 export { default as executeSwap } from './executeSwap';
 export * from './approval';
@@ -12,7 +12,7 @@ export interface ExecuteSwapParams {
   destAsset: Asset;
   amount: string;
   destAddress: string;
-  ccmMetadata?: CcmMetadata;
+  ccmParams?: CcmParams;
 }
 
 export type SwapNetworkOptions =

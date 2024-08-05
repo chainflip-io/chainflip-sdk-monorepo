@@ -444,7 +444,7 @@ describe(executeSwap, () => {
           destAddress: TESTNET_BTC_ADDRESS,
           srcAsset: Assets.ETH,
           srcChain: Chains.Ethereum,
-          ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+          ccmParams: { message: '0xdeadc0de', gasBudget: '101' },
         },
         {
           network: ChainflipNetworks.sisyphos,
@@ -464,7 +464,7 @@ describe(executeSwap, () => {
       destAsset: Assets.FLIP,
       destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
-      ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+      ccmParams: { message: '0xdeadc0de', gasBudget: '101' },
     },
     {
       srcAsset: Assets.ETH,
@@ -472,7 +472,7 @@ describe(executeSwap, () => {
       destAsset: Assets.USDC,
       destChain: Chains.Ethereum,
       destAddress: ETH_ADDRESS,
-      ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+      ccmParams: { message: '0xdeadc0de', gasBudget: '101' },
     },
   ])('submits a native call (%p)', async (params) => {
     const wait = jest.fn().mockResolvedValue({ status: 1 });
@@ -506,12 +506,12 @@ describe(executeSwap, () => {
         {
           srcAsset: Assets.FLIP,
           srcChain: Chains.Ethereum,
-          ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+          ccmParams: { message: '0xdeadc0de', gasBudget: '101' },
         },
         {
           srcAsset: Assets.USDC,
           srcChain: Chains.Ethereum,
-          ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+          ccmParams: { message: '0xdeadc0de', gasBudget: '101' },
         },
       ] as const
     ).flatMap(
