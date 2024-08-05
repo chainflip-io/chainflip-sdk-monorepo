@@ -310,7 +310,7 @@ export const swapDepositAddressReadyMocked = {
   },
 } as const;
 
-export const swapDepositAddressReadyCcmMetadataMocked = {
+export const swapDepositAddressReadyCcmParamsMocked = {
   block: {
     specId: 'test@1',
     height: 120,

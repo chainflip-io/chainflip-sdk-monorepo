@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { u64, internalAssetEnum, u128, accountId } from '@/shared/parsers';
-import { ccmMetadataSchema } from '@/shared/schemas';
+import { ccmParamsSchema } from '@/shared/schemas';
 import { encodedAddress } from './common';
 import { calculateExpiryTime } from '../utils/function';
 import { EventHandlerArgs } from './index';
@@ -18,7 +18,7 @@ const swapDepositAddressReadyArgs = z.object({
   channelId: u64,
   brokerCommissionRate: z.number().int(),
   sourceChainExpiryBlock: u128.optional(),
-  channelMetadata: ccmMetadataSchema.optional(),
+  channelMetadata: ccmParamsSchema.optional(),
   boostFee: z.number().int().optional(),
   channelOpeningFee: u128.optional().default(0),
   affiliateFees: z.array(affiliateSchema).optional().default([]),

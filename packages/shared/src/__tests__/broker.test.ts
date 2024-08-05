@@ -124,7 +124,7 @@ describe(broker.requestSwapDepositAddress, () => {
         srcChain: 'Ethereum',
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
-        ccmMetadata: {
+        ccmParams: {
           gasBudget: '123456789',
           message: '0xdeadc0de',
         },
@@ -169,7 +169,7 @@ describe(broker.requestSwapDepositAddress, () => {
         srcChain: 'Ethereum',
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
-        ccmMetadata: {
+        ccmParams: {
           gasBudget: '123456789',
           message: '0xdeadc0de',
         },
@@ -215,7 +215,7 @@ describe(broker.requestSwapDepositAddress, () => {
         srcChain: 'Ethereum',
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
-        ccmMetadata: {
+        ccmParams: {
           gasBudget: '123456789',
           message: '0xdeadc0de',
         },
@@ -262,7 +262,7 @@ describe(broker.requestSwapDepositAddress, () => {
         srcChain: 'Ethereum',
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
-        ccmMetadata: {
+        ccmParams: {
           gasBudget: '123456789',
           message: '0xdeadc0de',
         },
@@ -316,7 +316,7 @@ describe(broker.requestSwapDepositAddress, () => {
         srcChain: 'Ethereum',
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
-        ccmMetadata: {
+        ccmParams: {
           gasBudget: '123456789',
           message: '0xdeadc0de',
         },

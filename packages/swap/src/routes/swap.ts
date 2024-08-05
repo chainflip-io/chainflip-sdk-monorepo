@@ -223,9 +223,9 @@ router.get(
       );
     }
 
-    let ccmMetadata;
+    let ccmParams;
     if (readField(swap, swapDepositChannel, 'ccmGasBudget')) {
-      ccmMetadata = {
+      ccmParams = {
         gasBudget: readField(swap, swapDepositChannel, 'ccmGasBudget')?.toFixed(),
         message: readField(swap, swapDepositChannel, 'ccmMessage'),
       };
@@ -300,7 +300,8 @@ router.get(
       estimatedDepositChannelExpiryTime: swapDepositChannel?.estimatedExpiryAt?.valueOf(),
       isDepositChannelExpired: swapDepositChannel?.isExpired,
       ccmDepositReceivedBlockIndex: swap?.ccmDepositReceivedBlockIndex ?? undefined,
-      ccmMetadata,
+      ccmMetadata: ccmParams, // DEPRECATED(1.5): use ccmParams instead
+      ccmParams,
       depositChannelOpenedThroughBackend: swapDepositChannel?.openedThroughBackend,
       broadcastTransactionRef: swap?.egress?.broadcast?.transactionRef ?? egressTrackerTxRef,
       error,

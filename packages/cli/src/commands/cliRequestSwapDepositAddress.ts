@@ -1,7 +1,7 @@
 import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
 import { InternalAssets, assetConstants } from '@/shared/enums';
 import { assert } from '@/shared/guards';
-import { CcmMetadata } from '@/shared/schemas';
+import { CcmParams } from '@/shared/schemas';
 import { broker } from '../lib';
 
 export const yargsOptions = {
@@ -48,13 +48,13 @@ export const yargsOptions = {
 export default async function cliRequestSwapDepositAddress(
   args: ArgumentsCamelCase<InferredOptionTypes<typeof yargsOptions>>,
 ) {
-  let ccmMetadata: CcmMetadata | undefined;
+  let ccmParams: CcmParams | undefined;
 
   if (args.gasBudget || args.message) {
     assert(args.gasBudget, 'missing gas budget');
     assert(args.message, 'missing message');
 
-    ccmMetadata = {
+    ccmParams = {
       gasBudget: args.gasBudget,
       message: args.message as `0x${string}`,
     };
@@ -66,7 +66,7 @@ export default async function cliRequestSwapDepositAddress(
       destChain: assetConstants[args.destAsset].chain,
       destAsset: assetConstants[args.destAsset].asset,
       destAddress: args.destAddress,
-      ccmMetadata,
+      ccmParams,
       commissionBps: args.commission ?? 0,
       affiliates: [],
     },

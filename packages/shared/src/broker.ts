@@ -14,8 +14,8 @@ import {
 import {
   affiliateBroker,
   AffiliateBroker,
-  CcmMetadata,
-  ccmMetadataSchema,
+  CcmParams,
+  ccmParamsSchema,
   FillOrKillParams,
   fillOrKillParams,
 } from './schemas';
@@ -27,7 +27,7 @@ type NewSwapRequest = {
   destChain: Chain;
   destAddress: string;
   commissionBps?: number;
-  ccmMetadata?: CcmMetadata;
+  ccmParams?: CcmParams;
   maxBoostFeeBps?: number;
   affiliates?: AffiliateBroker[];
   fillOrKillParams?: FillOrKillParams;
@@ -49,7 +49,7 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) =>
       assetAndChain,
       z.union([numericString, hexString, btcAddress(network)]),
       z.number(),
-      ccmMetadataSchema
+      ccmParamsSchema
         .merge(
           z.object({
             cfParameters: z.union([hexString, z.string()]).optional(),
@@ -109,8 +109,8 @@ export async function requestSwapDepositAddress(
     { asset: destAsset, chain: destChain },
     submitAddress(destChain, destAddress),
     swapRequest.commissionBps ?? 0,
-    swapRequest.ccmMetadata && {
-      ...swapRequest.ccmMetadata,
+    swapRequest.ccmParams && {
+      ...swapRequest.ccmParams,
       cfParameters: undefined,
     },
     maxBoostFeeBps,

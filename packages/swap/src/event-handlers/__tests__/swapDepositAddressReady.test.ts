@@ -2,14 +2,14 @@ import { Chains } from '@/shared/enums';
 import {
   createChainTrackingInfo,
   createDepositChannel,
-  swapDepositAddressReadyCcmMetadataMocked,
+  swapDepositAddressReadyCcmParamsMocked,
   swapDepositAddressReadyMocked,
 } from './utils';
 import prisma from '../../client';
 import swapDepositAddressReady from '../swapDepositAddressReady';
 
 const eventMock = swapDepositAddressReadyMocked;
-const ccmEventMock = swapDepositAddressReadyCcmMetadataMocked;
+const ccmEventMock = swapDepositAddressReadyCcmParamsMocked;
 
 describe(swapDepositAddressReady, () => {
   beforeEach(async () => {

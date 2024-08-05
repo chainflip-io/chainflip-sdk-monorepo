@@ -21,7 +21,7 @@ import {
 import { assertIsEvmChain, assertSignerIsConnectedToChain } from '../evm';
 import { assert } from '../guards';
 import { dotAddress } from '../parsers';
-import { ccmMetadataSchema } from '../schemas';
+import { ccmParamsSchema } from '../schemas';
 import { Required } from '../types';
 import { assertValidAddress } from '../validation/addressValidation';
 import { ExecuteSwapParams, SwapNetworkOptions } from './index';
@@ -65,7 +65,7 @@ const getErc20Address = (asset: InternalAsset, networkOpts: SwapNetworkOptions) 
 };
 
 const swapNative = async (
-  params: ExecuteSwapParams & { ccmMetadata?: undefined },
+  params: ExecuteSwapParams & { ccmParams?: undefined },
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
@@ -88,7 +88,7 @@ const swapNative = async (
 };
 
 const swapToken = async (
-  params: ExecuteSwapParams & { ccmMetadata?: undefined },
+  params: ExecuteSwapParams & { ccmParams?: undefined },
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
@@ -119,7 +119,7 @@ const swapToken = async (
 };
 
 const callNative = async (
-  params: ExecuteSwapParams & Required<ExecuteSwapParams, 'ccmMetadata'>,
+  params: ExecuteSwapParams & Required<ExecuteSwapParams, 'ccmParams'>,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
@@ -133,8 +133,8 @@ const callNative = async (
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
     assetConstants[destAsset].contractId,
-    params.ccmMetadata.message,
-    params.ccmMetadata.gasBudget,
+    params.ccmParams.message,
+    params.ccmParams.gasBudget,
     '0x',
     { value: params.amount, ...extractOverrides(txOpts) },
   );
@@ -144,7 +144,7 @@ const callNative = async (
 };
 
 const callToken = async (
-  params: ExecuteSwapParams & Required<ExecuteSwapParams, 'ccmMetadata'>,
+  params: ExecuteSwapParams & Required<ExecuteSwapParams, 'ccmParams'>,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
@@ -164,8 +164,8 @@ const callToken = async (
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
     assetConstants[destAsset].contractId,
-    params.ccmMetadata.message,
-    params.ccmMetadata.gasBudget,
+    params.ccmParams.message,
+    params.ccmParams.gasBudget,
     erc20Address,
     params.amount,
     '0x',
@@ -177,7 +177,7 @@ const callToken = async (
 };
 
 const executeSwap = async (
-  { ccmMetadata: unvalidatedCcmMetadata, ...params }: ExecuteSwapParams,
+  { ccmParams: unvalidatedCcmParams, ...params }: ExecuteSwapParams,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
@@ -186,13 +186,13 @@ const executeSwap = async (
   assertValidAddress(params.destChain, params.destAddress, networkOpts.network);
   await assertSignerIsConnectedToChain(networkOpts, params.srcChain);
 
-  if (unvalidatedCcmMetadata) {
+  if (unvalidatedCcmParams) {
     assertIsEvmChain(params.destChain);
-    const ccmMetadata = ccmMetadataSchema.parse(unvalidatedCcmMetadata);
+    const ccmParams = ccmParamsSchema.parse(unvalidatedCcmParams);
 
     return params.srcAsset === chainConstants[params.srcChain].gasAsset
-      ? callNative({ ...params, ccmMetadata }, networkOpts, txOpts)
-      : callToken({ ...params, ccmMetadata }, networkOpts, txOpts);
+      ? callNative({ ...params, ccmParams }, networkOpts, txOpts)
+      : callToken({ ...params, ccmParams }, networkOpts, txOpts);
   }
 
   return params.srcAsset === chainConstants[params.srcChain].gasAsset

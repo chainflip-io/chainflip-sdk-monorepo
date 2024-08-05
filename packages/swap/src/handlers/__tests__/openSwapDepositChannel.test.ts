@@ -78,7 +78,7 @@ describe(openSwapDepositChannel, () => {
     });
   });
 
-  it('creates channel with ccmMetadata and stores it in the database', async () => {
+  it('creates channel with ccmParams and stores it in the database', async () => {
     mockRpcResponse({ data: environment() });
     jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
@@ -95,7 +95,7 @@ describe(openSwapDepositChannel, () => {
       destChain: 'Ethereum',
       destAddress: '0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754',
       expectedDepositAmount: '10101010',
-      ccmMetadata: {
+      ccmParams: {
         message: '0xdeadc0de',
         gasBudget: (125000).toString(),
       },

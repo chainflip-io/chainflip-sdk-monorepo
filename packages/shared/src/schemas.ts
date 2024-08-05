@@ -51,12 +51,12 @@ export const quoteQuerySchema = z
 export type QuoteQueryParams = z.input<typeof quoteQuerySchema>;
 export type ParsedQuoteParams = z.output<typeof quoteQuerySchema>;
 
-export const ccmMetadataSchema = z.object({
+export const ccmParamsSchema = z.object({
   gasBudget: numericString,
   message: hexStringWithMaxByteSize(1024 * 10),
 });
 
-export type CcmMetadata = z.infer<typeof ccmMetadataSchema>;
+export type CcmParams = z.infer<typeof ccmParamsSchema>;
 
 export const affiliateBroker = z
   .object({
@@ -83,7 +83,8 @@ export const openSwapDepositChannelSchema = z
     destChain: chain,
     destAddress: z.string(),
     amount: numericString,
-    ccmMetadata: ccmMetadataSchema.optional(),
+    ccmMetadata: ccmParamsSchema.optional(), // DEPRECATED(1.5): use ccmParams instead of ccmMetadata
+    ccmParams: ccmParamsSchema.optional(),
     maxBoostFeeBps: z.number().optional(),
     srcAddress: z.string().optional(),
     fillOrKillParams: fillOrKillParams.optional(),

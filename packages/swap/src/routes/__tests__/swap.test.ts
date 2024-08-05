@@ -164,6 +164,10 @@ describe('server', () => {
             "gasBudget": "100000",
             "message": "0xdeadbeef",
           },
+          "ccmParams": {
+            "gasBudget": "100000",
+            "message": "0xdeadbeef",
+          },
           "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositChannelBrokerCommissionBps": 0,
           "depositChannelCreatedAt": 1690556052834,
@@ -1261,6 +1265,10 @@ describe('server', () => {
         {
           "ccmDepositReceivedBlockIndex": "223-16",
           "ccmMetadata": {
+            "gasBudget": "100",
+            "message": "0x12abf87",
+          },
+          "ccmParams": {
             "gasBudget": "100",
             "message": "0x12abf87",
           },

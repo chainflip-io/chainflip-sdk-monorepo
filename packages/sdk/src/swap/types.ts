@@ -1,7 +1,7 @@
 import { Chain, Asset, AssetOfChain, InternalAsset } from '@/shared/enums';
 import {
   AffiliateBroker,
-  CcmMetadata,
+  CcmParams,
   QuoteQueryResponse,
   FillOrKillParams,
   SwapFee,
@@ -51,10 +51,13 @@ export interface QuoteResponse
 
 export interface DepositAddressRequest extends QuoteRequest {
   destAddress: string;
-  ccmMetadata?: CcmMetadata;
+  ccmParams?: CcmParams;
   maxBoostFeeBps?: number;
   srcAddress?: string;
   fillOrKillParams?: FillOrKillParams;
+
+  /** @deprecated DEPRECATED(1.5): use ccmParams instead of ccmMetadata */
+  ccmMetadata?: CcmParams;
 }
 
 export interface DepositAddressResponse extends DepositAddressRequest {
@@ -74,13 +77,16 @@ export interface SwapStatusRequest {
 interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   destAddress: string;
   ccmDepositReceivedBlockIndex: string | undefined;
-  ccmMetadata: CcmMetadata | undefined;
+  ccmParams: CcmParams | undefined;
   feesPaid: SwapFee[];
   estimatedDefaultDurationSeconds: number | undefined;
   srcChainRequiredBlockConfirmations: number | undefined;
   depositTransactionRef: string | undefined;
+
   /** @deprecated DEPRECATED(1.5): use depositTransactionRef instead */
-  depositTransactionHash: string | undefined; //
+  depositTransactionHash: string | undefined;
+  /** @deprecated DEPRECATED(1.5): use ccmParams instead of ccmMetadata */
+  ccmMetadata?: CcmParams;
 }
 
 interface DepositAddressFields extends SwapStatusResponseCommonFields {
