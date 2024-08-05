@@ -103,20 +103,23 @@ importers:
         specifier: ^1.4.10
         version: 1.4.10
       '@chainflip/utils':
-        specifier: ^0.2.1
-        version: 0.2.1
+        specifier: ^0.4.0
+        version: 0.4.0
       axios:
-        specifier: ^1.x
-        version: 1.6.7
+        specifier: ^1.6.8
+        version: 1.6.8
       ethers:
-        specifier: ^6.x
-        version: 6.11.1
+        specifier: ^6.13.2
+        version: 6.13.2
       ioredis:
         specifier: ^5.4.1
         version: 5.4.1
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.1
       ws:
-        specifier: ^8.17.0
-        version: 8.17.1
+        specifier: ^8.18.0
+        version: 8.18.0
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -732,9 +735,6 @@ packages:
 
   '@chainflip/rpc@1.4.10':
     resolution: {integrity: sha512-JUxCM1OK/G14WNFuxFzZ7zLA+jTj4Yuy9J/ttF0MUehlqpo203A/DTkPKH4hAYgkwTqjs2IuxrCTpggTi5cnSA==}
-
-  '@chainflip/utils@0.2.1':
-    resolution: {integrity: sha512-LeAGM+rTf2YUBA5FVrIWTwoGsvzh7/6wMsF48T1DgNXu9GNy859+BPWCEP5zPiLCukGS8qpSEKYN1Pt7ChJreg==}
 
   '@chainflip/utils@0.3.0':
     resolution: {integrity: sha512-csW8E3lRcSG1udN/kgsOhjZ7bfRrSbgv8Hdh/pzjM+VjQ6Hh46/LuiZHeQR0rQMimfG+lu2Afxk4jeRXRGFWTg==}
@@ -2339,9 +2339,6 @@ packages:
     resolution: {integrity: sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==}
     engines: {node: '>= 0.4'}
 
-  axios@1.6.7:
-    resolution: {integrity: sha512-/hDJGff6/c7u0hDkvkGxR/oy6CbCs8ziCsC7SqmhjfozqiJGc8Z11wrv9z9lYfY4K8l+H9TpjcMDX0xOZmx+RA==}
-
   axios@1.6.8:
     resolution: {integrity: sha512-v/ZHtJDU39mDpyBoFVkETcd/uNdxrWRrg3bKpOKzXFA6Bvqopts6ALSMU3y6ijYxbw2B+wPrIv46egTzJXCLGQ==}
 
@@ -3131,10 +3128,6 @@ packages:
     resolution: {integrity: sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==}
     engines: {node: '>= 0.6'}
 
-  ethers@6.11.1:
-    resolution: {integrity: sha512-mxTAE6wqJQAbp5QAe/+o+rXOID7Nw91OZXvgpjDa1r4fAbq2Nu314oEZSbjoRLacuCzs7kUC3clEvkCQowffGg==}
-    engines: {node: '>=14.0.0'}
-
   ethers@6.13.2:
     resolution: {integrity: sha512-9VkriTTed+/27BGuY1s0hf441kqwHJ1wtN2edksEtiRvXx+soxRX3iSXTfFqq2+YwrOqbDoTHjIhQnjJRlzKmg==}
     engines: {node: '>=14.0.0'}
@@ -3258,15 +3251,6 @@ packages:
 
   fn.name@1.1.0:
     resolution: {integrity: sha512-GRnmB5gPyJpAhTQdSZTSp9uaPSvl09KoYcMQtsB9rQoOmzs9dH6ffeccH+Z+cv6P68Hu5bC6JjRh4Ah/mHSNRw==}
-
-  follow-redirects@1.15.5:
-    resolution: {integrity: sha512-vSFWUON1B+yAw1VN4xMfxgn5fTUiaOzAJCKBwIIgT/+7CuGy9+r+5gITvP62j3RmaD5Ph65UaERdOSRGUzZtgw==}
-    engines: {node: '>=4.0'}
-    peerDependencies:
-      debug: '*'
-    peerDependenciesMeta:
-      debug:
-        optional: true
 
   follow-redirects@1.15.6:
     resolution: {integrity: sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==}
@@ -5607,18 +5591,6 @@ packages:
       utf-8-validate:
         optional: true
 
-  ws@8.5.0:
-    resolution: {integrity: sha512-BWX0SWVgLPzYwF8lTzEy1egjhS4S4OEAHfsO8o65WOVsrnSRGaSiUaa9e0ggGlkMTtBlmOpEXiie9RUcBO86qg==}
-    engines: {node: '>=10.0.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: ^5.0.2
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-
   xmlhttprequest-ssl@2.0.0:
     resolution: {integrity: sha512-QKxVRxiRACQcVuQEYFsI1hhkrMlrXHPegbbd1yn9UHOmRxY+si12nQYzri3vbzt8VdTTRviqcKxcyllFas5z2A==}
     engines: {node: '>=0.4.0'}
@@ -6214,8 +6186,6 @@ snapshots:
     dependencies:
       '@chainflip/utils': 0.3.0
       zod: 3.23.8
-
-  '@chainflip/utils@0.2.1': {}
 
   '@chainflip/utils@0.3.0': {}
 
@@ -8353,14 +8323,6 @@ snapshots:
     dependencies:
       possible-typed-array-names: 1.0.0
 
-  axios@1.6.7:
-    dependencies:
-      follow-redirects: 1.15.5
-      form-data: 4.0.0
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-
   axios@1.6.8:
     dependencies:
       follow-redirects: 1.15.6
@@ -9338,19 +9300,6 @@ snapshots:
 
   etag@1.8.1: {}
 
-  ethers@6.11.1:
-    dependencies:
-      '@adraffy/ens-normalize': 1.10.1
-      '@noble/curves': 1.2.0
-      '@noble/hashes': 1.3.2
-      '@types/node': 18.15.13
-      aes-js: 4.0.0-beta.5
-      tslib: 2.4.0
-      ws: 8.5.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
   ethers@6.13.2:
     dependencies:
       '@adraffy/ens-normalize': 1.10.1
@@ -9552,8 +9501,6 @@ snapshots:
   flatted@3.3.1: {}
 
   fn.name@1.1.0: {}
-
-  follow-redirects@1.15.5: {}
 
   follow-redirects@1.15.6: {}
 
@@ -12179,8 +12126,6 @@ snapshots:
   ws@8.17.1: {}
 
   ws@8.18.0: {}
-
-  ws@8.5.0: {}
 
   xmlhttprequest-ssl@2.0.0: {}
 

@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/cli",
-  "version": "1.5.0-fok.1",
+  "version": "1.5.0-solana.1",
   "description": "",
   "main": "./dist/lib.mjs",
   "types": "./dist/lib.d.mts",
@@ -36,9 +36,12 @@
   "dependencies": {
     "@chainflip/bitcoin": "^0.2.2",
     "@chainflip/rpc": "^1.4.10",
-    "@chainflip/utils": "^0.2.1",
+    "@chainflip/utils": "^0.4.0",
+    "axios": "^1.6.8",
+    "ethers": "^6.13.2",
     "ioredis": "^5.4.1",
-    "ws": "^8.17.0",
+    "rxjs": "^7.8.1",
+    "ws": "^8.18.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {

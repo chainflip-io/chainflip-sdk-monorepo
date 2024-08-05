@@ -78,6 +78,7 @@ const broadcastParsers = {
         .optional(), // TODO: remove once Arbitrum is fully supported
     })
     .optional(), // TODO: remove once Arbitrum is available on all networks
+  Solana: z.any(),
 };
 
 type ChainBroadcast<C extends Chain> = z.infer<(typeof broadcastParsers)[C]>;

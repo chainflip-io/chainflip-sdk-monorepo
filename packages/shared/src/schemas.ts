@@ -1,3 +1,4 @@
+import { hexEncodeNumber } from '@chainflip/utils/number';
 import { z } from 'zod';
 import { Chain, Asset, getInternalAssets, AssetAndChain } from './enums';
 import {
@@ -8,6 +9,7 @@ import {
   asset,
   chainflipAddress,
   number,
+  hexString,
 } from './parsers';
 
 export const quoteQuerySchema = z
@@ -52,11 +54,13 @@ export type QuoteQueryParams = z.input<typeof quoteQuerySchema>;
 export type ParsedQuoteParams = z.output<typeof quoteQuerySchema>;
 
 export const ccmMetadataSchema = z.object({
-  gasBudget: numericString,
+  gasBudget: z.union([numericString, hexString]).transform((n) => hexEncodeNumber(BigInt(n))),
   message: hexStringWithMaxByteSize(1024 * 10),
+  // TODO(solana): update max size when it is known
+  cfParameters: hexStringWithMaxByteSize(1024 * 10).optional(),
 });
 
-export type CcmMetadata = z.infer<typeof ccmMetadataSchema>;
+export type CcmMetadata = z.input<typeof ccmMetadataSchema>;
 
 export const affiliateBroker = z
   .object({
