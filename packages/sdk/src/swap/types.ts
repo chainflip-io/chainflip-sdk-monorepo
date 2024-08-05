@@ -3,7 +3,7 @@ import {
   AffiliateBroker,
   CcmMetadata,
   QuoteQueryResponse,
-  RefundParameters,
+  FillOrKillParams,
   SwapFee,
 } from '@/shared/schemas';
 
@@ -54,7 +54,7 @@ export interface DepositAddressRequest extends QuoteRequest {
   ccmMetadata?: CcmMetadata;
   maxBoostFeeBps?: number;
   srcAddress?: string;
-  refundParameters?: RefundParameters;
+  fillOrKillParams?: FillOrKillParams;
 }
 
 export interface DepositAddressResponse extends DepositAddressRequest {

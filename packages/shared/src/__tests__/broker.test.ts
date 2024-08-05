@@ -321,7 +321,7 @@ describe(broker.requestSwapDepositAddress, () => {
           message: '0xdeadc0de',
         },
         maxBoostFeeBps: 100,
-        refundParameters: {
+        fillOrKillParams: {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           minPrice: '10000000000000',

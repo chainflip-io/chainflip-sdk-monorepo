@@ -67,13 +67,13 @@ export const affiliateBroker = z
 
 export type AffiliateBroker = z.input<typeof affiliateBroker>;
 
-export const refundParameters = z.object({
+export const fillOrKillParams = z.object({
   retryDurationBlocks: number,
   refundAddress: z.string(),
   minPrice: numericString,
 });
 
-export type RefundParameters = z.input<typeof refundParameters>;
+export type FillOrKillParams = z.input<typeof fillOrKillParams>;
 
 export const openSwapDepositChannelSchema = z
   .object({
@@ -86,7 +86,7 @@ export const openSwapDepositChannelSchema = z
     ccmMetadata: ccmMetadataSchema.optional(),
     maxBoostFeeBps: z.number().optional(),
     srcAddress: z.string().optional(),
-    refundParameters: refundParameters.optional(),
+    fillOrKillParams: fillOrKillParams.optional(),
   })
   .transform(({ amount, ...rest }) => ({
     ...rest,
