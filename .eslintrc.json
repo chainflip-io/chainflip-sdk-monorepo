@@ -53,6 +53,7 @@
         ]
       }
     ],
+    "import/no-extraneous-dependencies": "off",
     "camelcase": "off",
     "no-await-in-loop": "off"
   },

@@ -1,4 +1,5 @@
 import { decodeAddress } from '@chainflip/bitcoin';
+import * as base58 from '@chainflip/utils/base58';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
 import { HexString } from '@chainflip/utils/types';
@@ -81,12 +82,17 @@ export const dotAddress = z
 
 export const ethereumAddress = hexString.refine(
   (address) => ethers.isAddress(address),
-  (address) => ({ message: `${address} is not a valid ethereum address` }),
+  (address) => ({ message: `${address} is not a valid Ethereum address` }),
 );
 
 export const chainflipAddress = string.refine(
   (address) => address.startsWith('cF') && ss58.decode(address),
-  (address) => ({ message: `${address} is not a valid chainflip address` }),
+  (address) => ({ message: `${address} is not a valid Chainflip address` }),
+);
+
+export const solanaAddress = string.refine(
+  (address) => base58.decode(address),
+  (address) => ({ message: `${address} is not a valid Solana address` }),
 );
 
 export const u64 = numericString.transform((arg) => BigInt(arg));
