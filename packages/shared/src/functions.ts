@@ -1,4 +1,6 @@
+import BigNumber from 'bignumber.js';
 import EventEmitter, { once } from 'events';
+import { assetConstants, InternalAsset } from './enums';
 
 export const onceWithTimeout = async (
   eventEmitter: EventEmitter,
@@ -25,5 +27,25 @@ export const getPipAmountFromAmount = (
 
 export const getHundredthPipAmountFromAmount = (amount: bigint, hundredthPips: number) =>
   getPipAmountFromAmount(amount, hundredthPips, ONE_IN_HUNDREDTH_PIPS);
+
+export const getPriceX128FromPrice = (
+  price: number | string,
+  srcAsset: InternalAsset,
+  destAsset: InternalAsset,
+) =>
+  BigNumber(price)
+    .multipliedBy(new BigNumber(2).pow(128))
+    .shiftedBy(assetConstants[destAsset].decimals - assetConstants[srcAsset].decimals)
+    .toFixed(0);
+
+export const getPriceFromPriceX128 = (
+  priceX128: bigint | string,
+  srcAsset: InternalAsset,
+  destAsset: InternalAsset,
+) =>
+  BigNumber(priceX128.toString())
+    .dividedBy(new BigNumber(2).pow(128))
+    .shiftedBy(assetConstants[srcAsset].decimals - assetConstants[destAsset].decimals)
+    .toFixed();
 
 export const assertUnreachable = (x: never): never => x;

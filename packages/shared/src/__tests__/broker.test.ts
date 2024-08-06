@@ -324,7 +324,7 @@ describe(broker.requestSwapDepositAddress, () => {
         fillOrKillParams: {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-          minPrice: '10000000000000',
+          minPriceX128: '10000000000000',
         },
       },
       brokerConfig,
