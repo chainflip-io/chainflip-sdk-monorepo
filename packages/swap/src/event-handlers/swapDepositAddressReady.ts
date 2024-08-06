@@ -22,6 +22,13 @@ const swapDepositAddressReadyArgs = z.object({
   boostFee: z.number().int().optional(),
   channelOpeningFee: u128.optional().default(0),
   affiliateFees: z.array(affiliateSchema).optional().default([]),
+  refundParameters: z
+    .object({
+      minPrice: u128,
+      refundAddress: encodedAddress,
+      retryDuration: z.number().int(),
+    })
+    .optional(),
 });
 
 export type SwapDepositAddressReadyEvent = z.input<typeof swapDepositAddressReadyArgs>;
@@ -45,6 +52,7 @@ export const swapDepositAddressReady = async ({
     boostFee,
     channelOpeningFee,
     affiliateFees,
+    refundParameters,
     ...rest
   } = swapDepositAddressReadyArgs.parse(event.args);
 
@@ -71,6 +79,9 @@ export const swapDepositAddressReady = async ({
     issuedBlock,
     channelId,
     openingFeePaid: channelOpeningFee.toString(),
+    fokMinPriceX128: refundParameters?.minPrice.toString(),
+    fokRefundAddress: refundParameters?.refundAddress.address,
+    fokRetryDurationBlocks: refundParameters?.retryDuration,
     ...rest,
   };
 

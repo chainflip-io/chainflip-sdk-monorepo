@@ -53,30 +53,33 @@ enum InternalAsset {
 }
 
 model SwapDepositChannel {
-  id                    BigInt                        @id @default(autoincrement())
-  channelId             BigInt
-  srcChain              Chain
-  srcAsset              InternalAsset
-  depositAddress        String
-  expectedDepositAmount Decimal?                      @db.Decimal(30, 0)
-  destAsset             InternalAsset
-  destAddress           String
-  ccmGasBudget          Decimal?                      @db.Decimal(30, 0)
-  ccmMessage            String?
-  issuedBlock           Int
-  expiryBlock           Int? // TODO(mainnet): remove this column
-  srcChainExpiryBlock   BigInt?
-  brokerCommissionBps   Int
-  maxBoostFeeBps        Int                           @default(0)
-  isExpired             Boolean                       @default(false)
-  createdAt             DateTime                      @default(now())
-  swaps                 Swap[]
-  failedSwaps           FailedSwap[]
-  estimatedExpiryAt     DateTime?
-  openedThroughBackend  Boolean                       @default(false)
-  openingFeePaid        Decimal                       @db.Decimal(30, 0)
-  affiliates            SwapDepositChannelAffiliate[]
-  failedBoosts          FailedBoost[]
+  id                     BigInt                        @id @default(autoincrement())
+  channelId              BigInt
+  srcChain               Chain
+  srcAsset               InternalAsset
+  depositAddress         String
+  expectedDepositAmount  Decimal?                      @db.Decimal(30, 0)
+  destAsset              InternalAsset
+  destAddress            String
+  ccmGasBudget           Decimal?                      @db.Decimal(30, 0)
+  ccmMessage             String?
+  issuedBlock            Int
+  expiryBlock            Int? // TODO(mainnet): remove this column
+  srcChainExpiryBlock    BigInt?
+  brokerCommissionBps    Int
+  maxBoostFeeBps         Int                           @default(0)
+  isExpired              Boolean                       @default(false)
+  createdAt              DateTime                      @default(now())
+  swaps                  Swap[]
+  failedSwaps            FailedSwap[]
+  estimatedExpiryAt      DateTime?
+  openedThroughBackend   Boolean                       @default(false)
+  openingFeePaid         Decimal                       @db.Decimal(30, 0)
+  affiliates             SwapDepositChannelAffiliate[]
+  failedBoosts           FailedBoost[]
+  fokMinPriceX128        Decimal?                      @db.Decimal(65, 0)
+  fokRefundAddress       String?
+  fokRetryDurationBlocks Int?
 
   @@unique([issuedBlock, srcChain, channelId])
   @@index([depositAddress])

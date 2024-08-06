@@ -1459,6 +1459,48 @@ describe('server', () => {
       expect(body.boostSkippedAt.valueOf()).toBe(RECEIVED_TIMESTAMP);
       expect(body.boostSkippedBlockIndex).toBe(RECEIVED_BLOCK_INDEX);
     });
+
+    it(`retrieves a swap with FillOrKillParams in ${State.AwaitingDeposit} status`, async () => {
+      const swapIntent = await createDepositChannel({
+        srcChainExpiryBlock: 200,
+        expectedDepositAmount: '25000000000000000000000',
+        fokMinPriceX128: '2041694201525630780780247644590609',
+        fokRefundAddress: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
+        fokRetryDurationBlocks: 15,
+      });
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
+
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+      expect(body).toMatchInlineSnapshot(`
+        {
+          "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+          "depositChannelBrokerCommissionBps": 0,
+          "depositChannelCreatedAt": 1690556052834,
+          "depositChannelExpiryBlock": "200",
+          "depositChannelMaxBoostFeeBps": 0,
+          "depositChannelOpenedThroughBackend": false,
+          "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+          "destAsset": "DOT",
+          "destChain": "Polkadot",
+          "estimatedDefaultDurationSeconds": 48,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
+          "expectedDepositAmount": "25000000000000000000000",
+          "feesPaid": [],
+          "fillOrKillParams": {
+            "minPrice": "600",
+            "refundAddress": "0x541f563237a309b3a61e33bdf07a8930bdba8d99",
+            "retryDurationBlocks": 15,
+          },
+          "isDepositChannelExpired": false,
+          "srcAsset": "ETH",
+          "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
+          "state": "AWAITING_DEPOSIT",
+        }
+      `);
+    });
   });
 
   describe('POST /swaps', () => {
