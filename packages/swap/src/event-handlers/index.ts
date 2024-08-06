@@ -18,6 +18,7 @@ import swapDepositAddressReady from './swapDepositAddressReady';
 import swapEgressIgnored from './swapEgressIgnored';
 import swapEgressScheduled from './swapEgressScheduled';
 import swapExecuted from './swapExecuted';
+import swapRescheduled from './swapRescheduled';
 import swapScheduled from './swapScheduled';
 import { networkDepositReceived as networkDepositReceivedV120 } from './v120/networkDepositReceived';
 import { boostPoolCreated } from './v140/boostPoolCreated';
@@ -37,6 +38,7 @@ export const events = {
   },
   Swapping: {
     SwapScheduled: 'Swapping.SwapScheduled',
+    SwapRescheduled: 'Swapping.SwapRescheduled',
     SwapExecuted: 'Swapping.SwapExecuted',
     SwapEgressIgnored: 'Swapping.SwapEgressIgnored',
     SwapEgressScheduled: 'Swapping.SwapEgressScheduled',
@@ -133,6 +135,7 @@ const handlers = [
       { name: events.LiquidityPools.NewPoolCreated, handler: newPoolCreated },
       { name: events.LiquidityPools.PoolFeeSet, handler: poolFeeSet },
       { name: events.Swapping.SwapScheduled, handler: swapScheduled },
+      { name: events.Swapping.SwapRescheduled, handler: swapRescheduled },
       { name: events.Swapping.SwapExecuted, handler: swapExecuted },
       { name: events.Swapping.SwapAmountTooLow, handler: swapAmountTooLow },
       {

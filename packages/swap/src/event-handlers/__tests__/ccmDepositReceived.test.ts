@@ -26,6 +26,8 @@ describe(ccmDepositReceived, () => {
           destAsset: InternalAssets.Dot,
           destAddress: DOT_ADDRESS,
           type: 'SWAP',
+          latestSwapScheduledAt: new Date(Date.now() - 6000),
+          latestSwapScheduledBlockIndex: `${block.height}-${indexInBlock}`,
         },
       },
     });

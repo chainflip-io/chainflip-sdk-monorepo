@@ -38,6 +38,8 @@ describe(swapEgressIgnored, () => {
           destAsset: InternalAssets.Dot,
           destAddress: DOT_ADDRESS,
           type: 'SWAP',
+          latestSwapScheduledAt: new Date(Date.now() - 12000),
+          latestSwapScheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
         },
       },
     });
@@ -58,6 +60,7 @@ describe(swapEgressIgnored, () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       swapDepositChannelId: expect.any(BigInt),
+      latestSwapScheduledAt: expect.any(Date),
       ignoredEgress: {
         id: expect.any(BigInt),
         swapId: expect.any(BigInt),
