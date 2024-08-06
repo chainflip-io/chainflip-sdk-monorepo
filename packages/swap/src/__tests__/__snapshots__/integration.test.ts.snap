@@ -4,6 +4,7 @@ exports[`python integration test replies to a quote request 1`] = `
 {
   "egressAmount": "997901209876966295",
   "estimatedDurationSeconds": 54,
+  "estimatedPrice": "339568185650864388930145492057217503149",
   "includedFees": [
     {
       "amount": "2000000",

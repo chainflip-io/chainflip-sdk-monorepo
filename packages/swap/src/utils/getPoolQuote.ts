@@ -50,8 +50,6 @@ export default async function getPoolQuote({
     limitOrders,
   });
 
-  swapInputAmount -= ingressFee.amount;
-
   const minimumEgressAmount = await getMinimumEgressAmount(destAsset);
 
   if (quote.outputAmount === 0n) {
@@ -72,11 +70,14 @@ export default async function getPoolQuote({
     );
   }
 
+  swapInputAmount -= ingressFee.amount;
+  const swapOutputAmount = quote.outputAmount - egressFee.amount;
+
   const lowLiquidityWarning = await checkPriceWarning({
     srcAsset,
     destAsset,
     srcAmount: swapInputAmount,
-    destAmount: BigInt(quote.outputAmount),
+    destAmount: swapOutputAmount,
   });
 
   includedFees.push(
@@ -109,6 +110,7 @@ export default async function getPoolQuote({
       destAsset,
       boosted: Boolean(boostFeeBps),
     }),
+    estimatedPrice: String((swapOutputAmount * 2n ** 128n) / swapInputAmount),
   };
 
   return response;

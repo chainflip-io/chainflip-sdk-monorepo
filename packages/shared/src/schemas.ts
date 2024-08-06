@@ -118,6 +118,7 @@ export type QuoteDetails = {
   poolInfo: PoolInfo[];
   lowLiquidityWarning: boolean | undefined;
   estimatedDurationSeconds: number;
+  estimatedPrice: string;
 };
 export type BoostedQuoteDetails = QuoteDetails & { estimatedBoostFeeBps: number };
 

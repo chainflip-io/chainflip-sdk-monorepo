@@ -4,6 +4,7 @@ exports[`server GET /quote doesn't include boost information when disabled 1`] =
 {
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 1830,
+  "estimatedPrice": "3406229899108322816266552157243193620877161277171",
   "includedFees": [
     {
       "amount": "100000",
@@ -64,6 +65,7 @@ exports[`server GET /quote gets the quote for deprecated params without the chai
 {
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 54,
+  "estimatedPrice": "340282366921602014078871764536752786254",
   "includedFees": [
     {
       "amount": "2000000",
@@ -126,6 +128,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
     "egressAmount": "999999949999975000",
     "estimatedBoostFeeBps": 5,
     "estimatedDurationSeconds": 630,
+    "estimatedPrice": "3407935402171287964928446543213466911739788069999",
     "includedFees": [
       {
         "amount": "50000",
@@ -188,6 +191,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
   },
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 1830,
+  "estimatedPrice": "3406229899108322816266552157243193620877161277171",
   "includedFees": [
     {
       "amount": "100000",
@@ -248,6 +252,7 @@ exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
 {
   "egressAmount": "1999999999999975000",
   "estimatedDurationSeconds": 54,
+  "estimatedPrice": "680564733843221042276089610024915433401",
   "includedFees": [
     {
       "amount": "2000000",
