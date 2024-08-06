@@ -16,6 +16,7 @@ import {
   getAssetAndChain,
   Asset,
 } from '@/shared/enums';
+import { getPriceX128FromPrice } from '@/shared/functions';
 import { assert, isNotNullish } from '@/shared/guards';
 import {
   BoostPoolsDepth,
@@ -157,10 +158,28 @@ export class SwapSDK {
   async requestDepositAddress(
     depositAddressRequest: DepositAddressRequest,
   ): Promise<DepositAddressResponse> {
-    const { srcChain, srcAsset, amount, brokerCommissionBps, affiliateBrokers } =
-      depositAddressRequest;
+    const {
+      srcChain,
+      srcAsset,
+      amount,
+      destChain,
+      destAsset,
+      brokerCommissionBps,
+      affiliateBrokers,
+    } = depositAddressRequest;
 
     await this.validateSwapAmount({ chain: srcChain, asset: srcAsset }, BigInt(amount));
+
+    const fillOrKillParams = depositAddressRequest.fillOrKillParams
+      ? {
+          ...depositAddressRequest.fillOrKillParams,
+          minPriceX128: getPriceX128FromPrice(
+            depositAddressRequest.fillOrKillParams.minPrice,
+            getInternalAsset({ chain: srcChain, asset: srcAsset }),
+            getInternalAsset({ chain: destChain, asset: destAsset }),
+          ),
+        }
+      : undefined;
 
     // DEPRECATED(1.5): use ccmParams instead of ccmMetadata
     depositAddressRequest.ccmParams ??= depositAddressRequest.ccmMetadata; // eslint-disable-line no-param-reassign
@@ -175,6 +194,7 @@ export class SwapSDK {
           ...depositAddressRequest,
           commissionBps: brokerCommissionBps ?? this.options.broker.commissionBps,
           affiliates: affiliateBrokers,
+          fillOrKillParams,
         },
         { url: this.options.broker.url },
         this.options.network,
@@ -197,7 +217,10 @@ export class SwapSDK {
         !depositAddressRequest.affiliateBrokers?.length,
         'Affiliate brokers are supported only when initializing the SDK with a brokerUrl',
       );
-      response = await this.trpc.openSwapDepositChannel.mutate(depositAddressRequest);
+      response = await this.trpc.openSwapDepositChannel.mutate({
+        ...depositAddressRequest,
+        fillOrKillParams,
+      });
     }
 
     return {

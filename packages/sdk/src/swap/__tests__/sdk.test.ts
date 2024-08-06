@@ -326,6 +326,7 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           minPrice: '10000000000000',
+          minPriceX128: '34028236692093846346337460743176821145600000000000000000000000',
         },
       });
       expect(response).toStrictEqual({
@@ -590,7 +591,7 @@ describe(SwapSDK, () => {
       fillOrKillParams: {
         retryDurationBlocks: 500,
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-        minPrice: '10000000000000',
+        minPrice: '2458.206',
       },
     });
 
@@ -609,7 +610,7 @@ describe(SwapSDK, () => {
         {
           retry_duration: 500,
           refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-          min_price: '0x9184e72a000',
+          min_price: '0x165b74f4430000000000000000000000000000000000',
         },
       ],
     });
@@ -632,7 +633,7 @@ describe(SwapSDK, () => {
       fillOrKillParams: {
         retryDurationBlocks: 500,
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-        minPrice: '10000000000000',
+        minPrice: '2458.206',
       },
     });
   });

@@ -16,7 +16,7 @@ import {
   AffiliateBroker,
   CcmParams,
   ccmParamsSchema,
-  FillOrKillParams,
+  FillOrKillParamsX128,
   fillOrKillParams,
 } from './schemas';
 
@@ -30,7 +30,7 @@ type NewSwapRequest = {
   ccmParams?: CcmParams;
   maxBoostFeeBps?: number;
   affiliates?: AffiliateBroker[];
-  fillOrKillParams?: FillOrKillParams;
+  fillOrKillParams?: FillOrKillParamsX128;
 };
 
 const submitAddress = (chain: Chain, address: string): string => {
@@ -64,10 +64,10 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) =>
       z.number().optional(),
       z.array(affiliateBroker).optional(),
       fillOrKillParams
-        .transform(({ retryDurationBlocks, refundAddress, minPrice }) => ({
+        .transform(({ retryDurationBlocks, refundAddress, minPriceX128 }) => ({
           retry_duration: retryDurationBlocks,
           refund_address: refundAddress,
-          min_price: `0x${BigInt(minPrice).toString(16)}`,
+          min_price: `0x${BigInt(minPriceX128).toString(16)}`,
         }))
         .optional(),
     ])

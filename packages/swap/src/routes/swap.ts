@@ -1,8 +1,7 @@
 import assert from 'assert';
-import BigNumber from 'bignumber.js';
 import express from 'express';
 import { Chain, assetConstants } from '@/shared/enums';
-import { assertUnreachable } from '@/shared/functions';
+import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { screamingSnakeToPascalCase, toUpperCase } from '@/shared/strings';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
@@ -327,13 +326,11 @@ router.get(
         ? {
             retryDurationBlocks: channel.fokRetryDurationBlocks,
             refundAddress: channel.fokRefundAddress,
-            minPrice: new BigNumber(channel.fokMinPriceX128.toString())
-              .dividedBy(new BigNumber(2).pow(128))
-              .shiftedBy(
-                assetConstants[channel.srcAsset].decimals -
-                  assetConstants[channel.destAsset].decimals,
-              )
-              .toFixed(),
+            minPrice: getPriceFromPriceX128(
+              channel.fokMinPriceX128.toFixed(),
+              channel.srcAsset,
+              channel.destAsset,
+            ),
           }
         : undefined,
     };
