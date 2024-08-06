@@ -1,7 +1,7 @@
 import { InternalAssets } from '@/shared/enums';
+import { createDepositChannel, swapScheduledBtcDepositChannelMock } from './utils';
 import prisma, { SwapDepositChannel } from '../../client';
 import swapRescheduled from '../swapRescheduled';
-import { createDepositChannel, swapScheduledBtcDepositChannelMock } from './utils';
 
 describe(swapRescheduled, () => {
   let btcSwapDepositChannel: SwapDepositChannel;
