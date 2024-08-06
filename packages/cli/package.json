@@ -36,9 +36,9 @@
   "dependencies": {
     "@chainflip/bitcoin": "^0.2.2",
     "@chainflip/rpc": "^1.4.10",
-    "@chainflip/utils": "^0.2.1",
+    "@chainflip/utils": "^0.4.0",
     "ioredis": "^5.4.1",
-    "ws": "^8.17.0",
+    "ws": "^8.18.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {

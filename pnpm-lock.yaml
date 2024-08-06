@@ -103,8 +103,8 @@ importers:
         specifier: ^1.4.10
         version: 1.4.10
       '@chainflip/utils':
-        specifier: ^0.2.1
-        version: 0.2.1
+        specifier: ^0.4.0
+        version: 0.4.0
       axios:
         specifier: ^1.x
         version: 1.6.7
@@ -115,8 +115,8 @@ importers:
         specifier: ^5.4.1
         version: 5.4.1
       ws:
-        specifier: ^8.17.0
-        version: 8.17.1
+        specifier: ^8.18.0
+        version: 8.18.0
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -735,9 +735,6 @@ packages:
 
   '@chainflip/rpc@1.4.10':
     resolution: {integrity: sha512-JUxCM1OK/G14WNFuxFzZ7zLA+jTj4Yuy9J/ttF0MUehlqpo203A/DTkPKH4hAYgkwTqjs2IuxrCTpggTi5cnSA==}
-
-  '@chainflip/utils@0.2.1':
-    resolution: {integrity: sha512-LeAGM+rTf2YUBA5FVrIWTwoGsvzh7/6wMsF48T1DgNXu9GNy859+BPWCEP5zPiLCukGS8qpSEKYN1Pt7ChJreg==}
 
   '@chainflip/utils@0.3.0':
     resolution: {integrity: sha512-csW8E3lRcSG1udN/kgsOhjZ7bfRrSbgv8Hdh/pzjM+VjQ6Hh46/LuiZHeQR0rQMimfG+lu2Afxk4jeRXRGFWTg==}
@@ -6217,8 +6214,6 @@ snapshots:
     dependencies:
       '@chainflip/utils': 0.3.0
       zod: 3.23.8
-
-  '@chainflip/utils@0.2.1': {}
 
   '@chainflip/utils@0.3.0': {}
 
