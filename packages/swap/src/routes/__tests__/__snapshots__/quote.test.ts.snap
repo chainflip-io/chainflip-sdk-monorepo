@@ -4,7 +4,7 @@ exports[`server GET /quote doesn't include boost information when disabled 1`] =
 {
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 1830,
-  "estimatedPrice": "1.001001001000951",
+  "estimatedPrice": "1.00100100100095095095",
   "includedFees": [
     {
       "amount": "100000",
@@ -128,7 +128,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
     "egressAmount": "999999949999975000",
     "estimatedBoostFeeBps": 5,
     "estimatedDurationSeconds": 630,
-    "estimatedPrice": "1.0015022033049075",
+    "estimatedPrice": "1.00150220330490736104",
     "includedFees": [
       {
         "amount": "50000",
@@ -191,7 +191,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
   },
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 1830,
-  "estimatedPrice": "1.001001001000951",
+  "estimatedPrice": "1.00100100100095095095",
   "includedFees": [
     {
       "amount": "100000",
@@ -252,7 +252,7 @@ exports[`server GET /quote gets the quote with a realistic price 1`] = `
 {
   "egressAmount": "1229437998",
   "estimatedDurationSeconds": 54,
-  "estimatedPrice": "2458.206385724127",
+  "estimatedPrice": "2458.2063857241270825392",
   "includedFees": [
     {
       "amount": "169953533800000",

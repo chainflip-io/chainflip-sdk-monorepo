@@ -19,7 +19,7 @@ const getPrice = (
   const input = BigNumber(String(inputAmount)).shiftedBy(-assetConstants[inputAsset].decimals);
   const output = BigNumber(String(outputAmount)).shiftedBy(-assetConstants[outputAsset].decimals);
 
-  return output.div(input).toNumber();
+  return output.div(input).toFixed();
 };
 
 export default async function getPoolQuote({
@@ -123,7 +123,7 @@ export default async function getPoolQuote({
       destAsset,
       boosted: Boolean(boostFeeBps),
     }),
-    estimatedPrice: getPrice(swapInputAmount, srcAsset, swapOutputAmount, destAsset).toString(),
+    estimatedPrice: getPrice(swapInputAmount, srcAsset, swapOutputAmount, destAsset),
   };
 
   return response;
