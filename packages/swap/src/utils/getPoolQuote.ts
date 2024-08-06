@@ -1,4 +1,5 @@
-import { getAssetAndChain, getInternalAsset } from '@/shared/enums';
+import BigNumber from 'bignumber.js';
+import { assetConstants, getAssetAndChain, getInternalAsset } from '@/shared/enums';
 import { getPipAmountFromAmount } from '@/shared/functions';
 import { QuoteQueryResponse } from '@/shared/schemas';
 import { estimateSwapDuration } from '@/swap/utils/swap';
@@ -8,6 +9,18 @@ import ServiceError from './ServiceError';
 import { LimitOrders, getSwapRateV2 } from './statechain';
 import { InternalAsset, Pool } from '../client';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
+
+const getPrice = (
+  inputAmount: bigint,
+  inputAsset: InternalAsset,
+  outputAmount: bigint,
+  outputAsset: InternalAsset,
+) => {
+  const input = BigNumber(String(inputAmount)).shiftedBy(-assetConstants[inputAsset].decimals);
+  const output = BigNumber(String(outputAmount)).shiftedBy(-assetConstants[outputAsset].decimals);
+
+  return output.div(input).toFixed();
+};
 
 export default async function getPoolQuote({
   srcAsset,
@@ -50,8 +63,6 @@ export default async function getPoolQuote({
     limitOrders,
   });
 
-  swapInputAmount -= ingressFee.amount;
-
   const minimumEgressAmount = await getMinimumEgressAmount(destAsset);
 
   if (quote.outputAmount === 0n) {
@@ -72,11 +83,14 @@ export default async function getPoolQuote({
     );
   }
 
+  swapInputAmount -= ingressFee.amount;
+  const swapOutputAmount = quote.outputAmount - egressFee.amount;
+
   const lowLiquidityWarning = await checkPriceWarning({
     srcAsset,
     destAsset,
     srcAmount: swapInputAmount,
-    destAmount: BigInt(quote.outputAmount),
+    destAmount: swapOutputAmount,
   });
 
   includedFees.push(
@@ -109,6 +123,7 @@ export default async function getPoolQuote({
       destAsset,
       boosted: Boolean(boostFeeBps),
     }),
+    estimatedPrice: getPrice(swapInputAmount, srcAsset, swapOutputAmount, destAsset),
   };
 
   return response;
