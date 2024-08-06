@@ -14,6 +14,7 @@ import {
   assetConstants,
   getInternalAsset,
   getAssetAndChain,
+  Asset,
 } from '@/shared/enums';
 import { assert, isNotNullish } from '@/shared/guards';
 import {
@@ -310,24 +311,27 @@ export class SwapSDK {
     return channelOpeningFees;
   }
 
-  async getBoostLiquidity({
-    chainAsset,
-    feeTierBps,
-  }: {
-    chainAsset?: UncheckedAssetAndChain;
-    feeTierBps?: number;
-  } = {}): Promise<BoostPoolDepth[]> {
+  async getBoostLiquidity(
+    params:
+      | { feeTierBps?: number }
+      | {
+          feeTierBps?: number;
+          asset: Asset;
+          chain: Chain;
+        } = {},
+  ): Promise<BoostPoolDepth[]> {
     let poolsDepth = await this.getBoostPoolsDepth();
 
-    if (chainAsset) {
-      const internalAsset = getInternalAsset(chainAsset);
+    if ('chain' in params && 'asset' in params) {
+      const { chain, asset } = params;
+      const internalAsset = getInternalAsset({ chain, asset });
       poolsDepth = poolsDepth
         .filter((boostPoolDepth) => boostPoolDepth.asset === internalAsset)
         .sort((a, b) => b.tier - a.tier);
     }
 
-    if (feeTierBps) {
-      poolsDepth = poolsDepth.filter((boostPoolDepth) => boostPoolDepth.tier === feeTierBps);
+    if ('feeTierBps' in params && params.feeTierBps !== undefined) {
+      poolsDepth = poolsDepth.filter((boostPoolDepth) => boostPoolDepth.tier === params.feeTierBps);
     }
 
     return poolsDepth.map((depth) => ({
