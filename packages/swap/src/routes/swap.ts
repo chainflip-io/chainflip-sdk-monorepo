@@ -325,7 +325,7 @@ router.get(
         })),
       fillOrKillParams: channel?.fokMinPriceX128
         ? {
-            retryDurationBlocks: channel.fokRetryDuration,
+            retryDurationBlocks: channel.fokRetryDurationBlocks,
             refundAddress: channel.fokRefundAddress,
             minPrice: new BigNumber(channel.fokMinPriceX128.toString())
               .dividedBy(new BigNumber(2).pow(128))

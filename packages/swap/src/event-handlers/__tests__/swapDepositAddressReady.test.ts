@@ -246,6 +246,6 @@ describe(swapDepositAddressReady, () => {
     expect(swapDepositChannel.fokRefundAddress).toEqual(
       '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
     );
-    expect(swapDepositChannel.fokRetryDuration).toEqual(15);
+    expect(swapDepositChannel.fokRetryDurationBlocks).toEqual(15);
   });
 });

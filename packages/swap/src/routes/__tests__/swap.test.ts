@@ -1466,7 +1466,7 @@ describe('server', () => {
         expectedDepositAmount: '25000000000000000000000',
         fokMinPriceX128: '2041694201525630780780247644590609',
         fokRefundAddress: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
-        fokRetryDuration: 15,
+        fokRetryDurationBlocks: 15,
       });
       const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
 

@@ -81,7 +81,7 @@ export const swapDepositAddressReady = async ({
     openingFeePaid: channelOpeningFee.toString(),
     fokMinPriceX128: refundParameters?.minPrice.toString(),
     fokRefundAddress: refundParameters?.refundAddress.address,
-    fokRetryDuration: refundParameters?.retryDuration,
+    fokRetryDurationBlocks: refundParameters?.retryDuration,
     ...rest,
   };
 
