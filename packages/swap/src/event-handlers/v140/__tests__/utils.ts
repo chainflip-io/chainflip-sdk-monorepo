@@ -40,6 +40,8 @@ export const createBtcSwapDepositChannel = async (args: {
           nativeId: 1,
           depositReceivedAt: new Date(1670337099000),
           depositReceivedBlockIndex: `0-15`,
+          latestSwapScheduledAt: new Date(1670337099000),
+          latestSwapScheduledBlockIndex: `0-15`,
         },
       },
     },

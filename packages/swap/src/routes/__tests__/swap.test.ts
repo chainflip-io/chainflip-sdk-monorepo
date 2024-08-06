@@ -238,6 +238,8 @@ describe('server', () => {
             destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
+            latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+            latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
           },
         },
       });
@@ -267,6 +269,8 @@ describe('server', () => {
           "expectedDepositAmount": "10000000000",
           "feesPaid": [],
           "isDepositChannelExpired": false,
+          "latestSwapScheduledAt": 1669907135201,
+          "latestSwapScheduledBlockIndex": "100-3",
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -292,6 +296,8 @@ describe('server', () => {
             destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
+            latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+            latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
           },
         },
       });
@@ -323,6 +329,8 @@ describe('server', () => {
           "expectedDepositAmount": "10000000000",
           "feesPaid": [],
           "isDepositChannelExpired": false,
+          "latestSwapScheduledAt": 1669907135201,
+          "latestSwapScheduledBlockIndex": "100-3",
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -363,6 +371,8 @@ describe('server', () => {
             destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
+            latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+            latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
           },
         },
       });
@@ -406,6 +416,8 @@ describe('server', () => {
           ],
           "intermediateAmount": "20",
           "isDepositChannelExpired": false,
+          "latestSwapScheduledAt": 1669907135201,
+          "latestSwapScheduledBlockIndex": "100-3",
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -456,6 +468,8 @@ describe('server', () => {
             destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
+            latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+            latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
           },
         },
       });
@@ -501,6 +515,8 @@ describe('server', () => {
             },
           ],
           "isDepositChannelExpired": false,
+          "latestSwapScheduledAt": 1669907135201,
+          "latestSwapScheduledBlockIndex": "100-3",
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -565,6 +581,8 @@ describe('server', () => {
             destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
+            latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+            latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
           },
         },
       });
@@ -613,6 +631,8 @@ describe('server', () => {
             },
           ],
           "isDepositChannelExpired": false,
+          "latestSwapScheduledAt": 1669907135201,
+          "latestSwapScheduledBlockIndex": "100-3",
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -671,6 +691,8 @@ describe('server', () => {
             destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
+            latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+            latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
           },
         },
       });
@@ -718,6 +740,8 @@ describe('server', () => {
             },
           ],
           "isDepositChannelExpired": false,
+          "latestSwapScheduledAt": 1669907135201,
+          "latestSwapScheduledBlockIndex": "100-3",
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -778,6 +802,8 @@ describe('server', () => {
             destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
+            latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+            latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
           },
         },
       });
@@ -827,6 +853,8 @@ describe('server', () => {
             },
           ],
           "isDepositChannelExpired": false,
+          "latestSwapScheduledAt": 1669907135201,
+          "latestSwapScheduledBlockIndex": "100-3",
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -887,6 +915,8 @@ describe('server', () => {
             destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
+            latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+            latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
           },
         },
       });
@@ -936,6 +966,8 @@ describe('server', () => {
             },
           ],
           "isDepositChannelExpired": false,
+          "latestSwapScheduledAt": 1669907135201,
+          "latestSwapScheduledBlockIndex": "100-3",
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -1032,6 +1064,8 @@ describe('server', () => {
             destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
+            latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+            latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
           },
         },
       });
@@ -1122,6 +1156,8 @@ describe('server', () => {
             destAsset: InternalAssets.Dot,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
+            latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+            latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
           },
         },
       });
@@ -1184,6 +1220,8 @@ describe('server', () => {
           depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
           depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
           type: 'SWAP',
+          latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+          latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
         },
       });
 
@@ -1216,6 +1254,8 @@ describe('server', () => {
               "type": "LIQUIDITY",
             },
           ],
+          "latestSwapScheduledAt": 1669907135201,
+          "latestSwapScheduledBlockIndex": "100-3",
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -1254,6 +1294,8 @@ describe('server', () => {
           ccmDepositReceivedBlockIndex: '223-16',
           ccmGasBudget: '100',
           ccmMessage: '0x12abf87',
+          latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+          latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
         },
       });
 
@@ -1293,6 +1335,8 @@ describe('server', () => {
               "type": "LIQUIDITY",
             },
           ],
+          "latestSwapScheduledAt": 1669907135201,
+          "latestSwapScheduledBlockIndex": "100-3",
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -1368,6 +1412,8 @@ describe('server', () => {
           ccmMessage: '0x12abf87',
           effectiveBoostFeeBps: 5,
           swapDepositChannelId: swapIntent.id,
+          latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+          latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
         },
       });
 
@@ -1403,6 +1449,8 @@ describe('server', () => {
           ccmMessage: '0x12abf87',
           effectiveBoostFeeBps: 5,
           swapDepositChannelId: swapIntent.id,
+          latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+          latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
         },
       });
       const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
@@ -1447,6 +1495,8 @@ describe('server', () => {
           ccmGasBudget: '100',
           ccmMessage: '0x12abf87',
           swapDepositChannelId: swapIntent.id,
+          latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+          latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
         },
       });
       const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;

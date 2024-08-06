@@ -322,6 +322,8 @@ router.get(
           srcAsset,
           destAsset,
         })),
+      latestSwapScheduledAt: swap?.latestSwapScheduledAt.valueOf(),
+      latestSwapScheduledBlockIndex: swap?.latestSwapScheduledBlockIndex,
       fillOrKillParams: channel?.fokMinPriceX128
         ? {
             retryDurationBlocks: channel.fokRetryDurationBlocks,
