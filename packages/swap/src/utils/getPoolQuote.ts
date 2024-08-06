@@ -1,4 +1,5 @@
-import { getAssetAndChain, getInternalAsset } from '@/shared/enums';
+import BigNumber from 'bignumber.js';
+import { assetConstants, getAssetAndChain, getInternalAsset } from '@/shared/enums';
 import { getPipAmountFromAmount } from '@/shared/functions';
 import { QuoteQueryResponse } from '@/shared/schemas';
 import { estimateSwapDuration } from '@/swap/utils/swap';
@@ -8,6 +9,18 @@ import ServiceError from './ServiceError';
 import { LimitOrders, getSwapRateV2 } from './statechain';
 import { InternalAsset, Pool } from '../client';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
+
+const getPrice = (
+  inputAmount: bigint,
+  inputAsset: InternalAsset,
+  outputAmount: bigint,
+  outputAsset: InternalAsset,
+) => {
+  const input = BigNumber(String(inputAmount)).shiftedBy(-assetConstants[inputAsset].decimals);
+  const output = BigNumber(String(outputAmount)).shiftedBy(-assetConstants[outputAsset].decimals);
+
+  return output.div(input).toNumber();
+};
 
 export default async function getPoolQuote({
   srcAsset,
@@ -110,7 +123,7 @@ export default async function getPoolQuote({
       destAsset,
       boosted: Boolean(boostFeeBps),
     }),
-    estimatedPrice: String((swapOutputAmount * 2n ** 128n) / swapInputAmount),
+    estimatedPrice: getPrice(swapInputAmount, srcAsset, swapOutputAmount, destAsset).toString(),
   };
 
   return response;

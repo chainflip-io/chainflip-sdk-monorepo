@@ -4,7 +4,7 @@ exports[`server GET /quote doesn't include boost information when disabled 1`] =
 {
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 1830,
-  "estimatedPrice": "3406229899108322816266552157243193620877161277171",
+  "estimatedPrice": "1.001001001000951",
   "includedFees": [
     {
       "amount": "100000",
@@ -65,7 +65,7 @@ exports[`server GET /quote gets the quote for deprecated params without the chai
 {
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 54,
-  "estimatedPrice": "340282366921602014078871764536752786254",
+  "estimatedPrice": "1.00000000000195",
   "includedFees": [
     {
       "amount": "2000000",
@@ -128,7 +128,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
     "egressAmount": "999999949999975000",
     "estimatedBoostFeeBps": 5,
     "estimatedDurationSeconds": 630,
-    "estimatedPrice": "3407935402171287964928446543213466911739788069999",
+    "estimatedPrice": "1.0015022033049075",
     "includedFees": [
       {
         "amount": "50000",
@@ -191,7 +191,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
   },
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 1830,
-  "estimatedPrice": "3406229899108322816266552157243193620877161277171",
+  "estimatedPrice": "1.001001001000951",
   "includedFees": [
     {
       "amount": "100000",
@@ -248,11 +248,56 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
 }
 `;
 
+exports[`server GET /quote gets the quote with a realistic price 1`] = `
+{
+  "egressAmount": "1229437998",
+  "estimatedDurationSeconds": 54,
+  "estimatedPrice": "2458.206385724127",
+  "includedFees": [
+    {
+      "amount": "169953533800000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "1231422",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "752586",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
+  "poolInfo": [
+    {
+      "baseAsset": {
+        "asset": "ETH",
+        "chain": "Ethereum",
+      },
+      "fee": {
+        "amount": "999660092932400",
+        "asset": "ETH",
+        "chain": "Ethereum",
+      },
+      "quoteAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+    },
+  ],
+}
+`;
+
 exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
 {
   "egressAmount": "1999999999999975000",
   "estimatedDurationSeconds": 54,
-  "estimatedPrice": "680564733843221042276089610024915433401",
+  "estimatedPrice": "2.00000000000395",
   "includedFees": [
     {
       "amount": "2000000",

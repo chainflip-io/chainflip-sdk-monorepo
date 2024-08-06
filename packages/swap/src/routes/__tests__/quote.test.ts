@@ -739,6 +739,29 @@ describe('server', () => {
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 
+    it('gets the quote with a realistic price', async () => {
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        output: 1229437998n,
+        ingress_fee: buildFee('Eth', 169953533800000).bigint,
+        network_fee: buildFee('Usdc', 1231422).bigint,
+        egress_fee: buildFee('Usdc', 752586).bigint,
+      } as CfSwapRateV2);
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'ETH',
+        destChain: 'Ethereum',
+        destAsset: 'USDC',
+        amount: '500000000000000000',
+      });
+
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
+
+      expect(status).toBe(200);
+      expect(body).toMatchSnapshot();
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('gets the quote with low liquidity warning', async () => {
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         ingress_fee: buildFee('Flip', 2000000).bigint,
