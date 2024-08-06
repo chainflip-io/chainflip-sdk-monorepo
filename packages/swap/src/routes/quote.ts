@@ -24,8 +24,7 @@ const handleQuotingError = (res: express.Response, err: unknown) => {
 
   logger.error('error while collecting quotes:', err);
 
-  // DEPRECATED(1.3): remove `error`
-  res.status(500).json({ message, error: message });
+  res.status(500).json({ message });
 };
 
 const fallbackChains = {

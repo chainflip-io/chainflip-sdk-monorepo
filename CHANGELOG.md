@@ -27,6 +27,13 @@ which it is deprecated.
   For networks like Polkadot, there is deterministic finality, and therefore, no confirmation
   count is required.
 
+### Removed
+
+- `getQuote` used to respond with a 500 status code and a JSON response body
+  with a string `error` field. A duplicate `message` field was added in version
+  1.3 to be consistent with error handling with other parts of the API. The
+  `error` field has be removed.
+
 ### Deprecated
 
 - `SwapSDK.prototype.getStatus`: `depositTransactionHash` is deprecated and will be removed
