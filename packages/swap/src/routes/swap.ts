@@ -1,4 +1,5 @@
 import assert from 'assert';
+import BigNumber from 'bignumber.js';
 import express from 'express';
 import { Chain, assetConstants } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
@@ -322,6 +323,19 @@ router.get(
           srcAsset,
           destAsset,
         })),
+      fillOrKillParams: channel?.fokMinPriceX128
+        ? {
+            retryDurationBlocks: channel.fokRetryDuration,
+            refundAddress: channel.fokRefundAddress,
+            minPrice: new BigNumber(channel.fokMinPriceX128.toString())
+              .dividedBy(new BigNumber(2).pow(128))
+              .shiftedBy(
+                assetConstants[channel.srcAsset].decimals -
+                  assetConstants[channel.destAsset].decimals,
+              )
+              .toFixed(),
+          }
+        : undefined,
     };
 
     logger.info('sending response for swap request', { id, response });

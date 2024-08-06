@@ -1,6 +1,4 @@
-import BigNumber from 'bignumber.js';
 import { z } from 'zod';
-import { assetConstants } from '@/shared/enums';
 import { u64, internalAssetEnum, u128, accountId } from '@/shared/parsers';
 import { ccmParamsSchema } from '@/shared/schemas';
 import { encodedAddress } from './common';
@@ -81,14 +79,7 @@ export const swapDepositAddressReady = async ({
     issuedBlock,
     channelId,
     openingFeePaid: channelOpeningFee.toString(),
-    fokMinPrice: refundParameters
-      ? new BigNumber(refundParameters.minPrice.toString())
-          .dividedBy(new BigNumber(2).pow(128))
-          .shiftedBy(
-            assetConstants[sourceAsset].decimals - assetConstants[destinationAsset].decimals,
-          )
-          .toFixed()
-      : undefined,
+    fokMinPriceX128: refundParameters?.minPrice.toString(),
     fokRefundAddress: refundParameters?.refundAddress.address,
     fokRetryDuration: refundParameters?.retryDuration,
     ...rest,

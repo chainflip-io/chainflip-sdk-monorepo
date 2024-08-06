@@ -240,7 +240,9 @@ describe(swapDepositAddressReady, () => {
       },
     });
 
-    expect(swapDepositChannel.fokMinPrice?.toNumber()).toEqual(600);
+    expect(swapDepositChannel.fokMinPriceX128?.toFixed()).toEqual(
+      '2041694201525630780780247644590609',
+    );
     expect(swapDepositChannel.fokRefundAddress).toEqual(
       '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
     );
