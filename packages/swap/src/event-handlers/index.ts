@@ -13,6 +13,7 @@ import { networkDepositReceived } from './networkDepositReceived';
 import networkEgressScheduled from './networkEgressScheduled';
 import newPoolCreated from './newPoolCreated';
 import poolFeeSet from './poolFeeSet';
+import refundEgressScheduled from './refundEgressScheduled';
 import swapAmountTooLow from './swapAmountTooLow';
 import swapDepositAddressReady from './swapDepositAddressReady';
 import swapEgressIgnored from './swapEgressIgnored';
@@ -27,7 +28,6 @@ import { depositFinalised } from './v140/depositFinalised';
 import { insufficientBoostLiquidity } from './v140/insufficientBoostLiquidity';
 import type { Block, Event } from '../gql/generated/graphql';
 import { buildHandlerMap, getDispatcher } from '../utils/handlers';
-import refundEgressScheduled from './refundEgressScheduled';
 
 export const events = {
   LiquidityPools: {

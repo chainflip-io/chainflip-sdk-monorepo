@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { bigintMin } from '@/shared/functions';
 import { internalAssetEnum, u128, u64 } from '@/shared/parsers';
 import { egressId } from '@/swap/event-handlers/common';
 import type { EventHandlerArgs } from '.';
