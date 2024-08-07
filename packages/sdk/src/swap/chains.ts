@@ -15,4 +15,5 @@ export const getChainData = (
   requiredBlockConfirmations: isNotNullish(env.ingressEgress.witnessSafetyMargins[chain])
     ? Number(env.ingressEgress.witnessSafetyMargins[chain]) + 1
     : undefined,
+  maxRetryDurationBlocks: env.ingressEgress.maxSwapRetryDurationBlocks[chain],
 });
