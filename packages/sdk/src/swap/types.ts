@@ -13,6 +13,7 @@ export interface ChainData {
   evmChainId: number | undefined;
   isMainnet: boolean;
   requiredBlockConfirmations: number | undefined;
+  maxRetryDurationBlocks: number | undefined;
 }
 
 export type AssetData = {

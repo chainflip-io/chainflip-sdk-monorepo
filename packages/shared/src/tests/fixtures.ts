@@ -116,6 +116,12 @@ export const ingressEgressEnvironment = ({
       Polkadot: channelOpeningFee ?? '0x0',
       Arbitrum: channelOpeningFee ?? '0x0',
     },
+    max_swap_retry_duration_blocks: {
+      Ethereum: 10,
+      Polkadot: 20,
+      Bitcoin: 30,
+      Arbitrum: 40,
+    },
   },
 });
 

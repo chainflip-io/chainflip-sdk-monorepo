@@ -47,6 +47,12 @@ describe(SwapSDK, () => {
       });
     }
 
+    if (data.method === 'cf_environment') {
+      return Promise.resolve({
+        data: environment(),
+      });
+    }
+
     throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
   };
 
@@ -72,6 +78,13 @@ describe(SwapSDK, () => {
 
     it('returns the filtered destination chains for the chain', async () => {
       expect(await sdk.getChains('Ethereum')).toMatchSnapshot();
+    });
+
+    it('returns maxRetryDurationBlocks for the chain', async () => {
+      const chain = await sdk.getChains('Ethereum');
+      expect(chain[0]).toMatchObject({
+        maxRetryDurationBlocks: expect.any(Number),
+      });
     });
 
     it('throws when requesting an unsupported chain', async () => {

@@ -100,8 +100,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       '@chainflip/rpc':
-        specifier: ^1.4.10
-        version: 1.4.10
+        specifier: ^1.5.0
+        version: 1.5.0
       '@chainflip/utils':
         specifier: ^0.4.0
         version: 0.4.0
@@ -109,8 +109,8 @@ importers:
         specifier: ^1.x
         version: 1.6.7
       ethers:
-        specifier: ^6.x
-        version: 6.11.1
+        specifier: ^6.13.2
+        version: 6.13.2
       ioredis:
         specifier: ^5.4.1
         version: 5.4.1
@@ -140,8 +140,8 @@ importers:
   packages/sdk:
     dependencies:
       '@chainflip/rpc':
-        specifier: ^1.4.10
-        version: 1.4.10
+        specifier: ^1.5.0
+        version: 1.5.0
       '@chainflip/utils':
         specifier: ^0.4.0
         version: 0.4.0
@@ -162,8 +162,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       '@chainflip/rpc':
-        specifier: ^1.4.10
-        version: 1.4.10
+        specifier: ^1.5.0
+        version: 1.5.0
       '@chainflip/utils':
         specifier: ^0.4.0
         version: 0.4.0
@@ -208,8 +208,8 @@ importers:
   packages/swap:
     dependencies:
       '@chainflip/rpc':
-        specifier: ^1.4.10
-        version: 1.4.10
+        specifier: ^1.5.0
+        version: 1.5.0
       '@chainflip/utils':
         specifier: ^0.4.0
         version: 0.4.0
@@ -733,8 +733,8 @@ packages:
   '@chainflip/bitcoin@0.2.2':
     resolution: {integrity: sha512-45WfB9VTeAltbAz1GscDcYJISx3kUDY0e3R6a02X5+EbsMsZzaqyCeEFRWTvzsYeRewTB69VEHY5+7jJos7Q5g==}
 
-  '@chainflip/rpc@1.4.10':
-    resolution: {integrity: sha512-JUxCM1OK/G14WNFuxFzZ7zLA+jTj4Yuy9J/ttF0MUehlqpo203A/DTkPKH4hAYgkwTqjs2IuxrCTpggTi5cnSA==}
+  '@chainflip/rpc@1.5.0':
+    resolution: {integrity: sha512-4ayOsMQGx9YIVDZsdOrKCpgVMhR3KW0wazEGE6LqIXGSMwKOoymyimCTmQtwFv6R30Yr8van03zep6gu/zoKRQ==}
 
   '@chainflip/utils@0.3.0':
     resolution: {integrity: sha512-csW8E3lRcSG1udN/kgsOhjZ7bfRrSbgv8Hdh/pzjM+VjQ6Hh46/LuiZHeQR0rQMimfG+lu2Afxk4jeRXRGFWTg==}
@@ -3130,10 +3130,6 @@ packages:
   etag@1.8.1:
     resolution: {integrity: sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==}
     engines: {node: '>= 0.6'}
-
-  ethers@6.11.1:
-    resolution: {integrity: sha512-mxTAE6wqJQAbp5QAe/+o+rXOID7Nw91OZXvgpjDa1r4fAbq2Nu314oEZSbjoRLacuCzs7kUC3clEvkCQowffGg==}
-    engines: {node: '>=14.0.0'}
 
   ethers@6.13.2:
     resolution: {integrity: sha512-9VkriTTed+/27BGuY1s0hf441kqwHJ1wtN2edksEtiRvXx+soxRX3iSXTfFqq2+YwrOqbDoTHjIhQnjJRlzKmg==}
@@ -5607,18 +5603,6 @@ packages:
       utf-8-validate:
         optional: true
 
-  ws@8.5.0:
-    resolution: {integrity: sha512-BWX0SWVgLPzYwF8lTzEy1egjhS4S4OEAHfsO8o65WOVsrnSRGaSiUaa9e0ggGlkMTtBlmOpEXiie9RUcBO86qg==}
-    engines: {node: '>=10.0.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: ^5.0.2
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-
   xmlhttprequest-ssl@2.0.0:
     resolution: {integrity: sha512-QKxVRxiRACQcVuQEYFsI1hhkrMlrXHPegbbd1yn9UHOmRxY+si12nQYzri3vbzt8VdTTRviqcKxcyllFas5z2A==}
     engines: {node: '>=0.4.0'}
@@ -6210,7 +6194,7 @@ snapshots:
 
   '@chainflip/bitcoin@0.2.2': {}
 
-  '@chainflip/rpc@1.4.10':
+  '@chainflip/rpc@1.5.0':
     dependencies:
       '@chainflip/utils': 0.3.0
       zod: 3.23.8
@@ -9336,19 +9320,6 @@ snapshots:
 
   etag@1.8.1: {}
 
-  ethers@6.11.1:
-    dependencies:
-      '@adraffy/ens-normalize': 1.10.1
-      '@noble/curves': 1.2.0
-      '@noble/hashes': 1.3.2
-      '@types/node': 18.15.13
-      aes-js: 4.0.0-beta.5
-      tslib: 2.4.0
-      ws: 8.5.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
   ethers@6.13.2:
     dependencies:
       '@adraffy/ens-normalize': 1.10.1
@@ -12177,8 +12148,6 @@ snapshots:
   ws@8.17.1: {}
 
   ws@8.18.0: {}
-
-  ws@8.5.0: {}
 
   xmlhttprequest-ssl@2.0.0: {}
 
