@@ -44,7 +44,7 @@ export default async function refundEgressScheduled({
       fees: {
         create: {
           type: 'EGRESS',
-          asset: swap.destAsset,
+          asset: swap.srcAsset,
           amount: egressFee.toString(),
         },
       },

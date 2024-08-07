@@ -19,7 +19,7 @@ exports[`refundEgressScheduled creates egress for refund on an existing swap 1`]
   "fees": [
     {
       "amount": "291",
-      "asset": "Dot",
+      "asset": "Eth",
       "id": Any<BigInt>,
       "swapId": Any<BigInt>,
       "type": "EGRESS",
