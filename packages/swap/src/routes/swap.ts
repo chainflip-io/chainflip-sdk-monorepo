@@ -34,6 +34,7 @@ export enum State {
   Broadcasted = 'BROADCASTED',
   BroadcastRequested = 'BROADCAST_REQUESTED',
   EgressScheduled = 'EGRESS_SCHEDULED',
+  RefundEgressScheduled = 'REFUND_EGRESS_SCHEDULED',
   SwapExecuted = 'SWAP_EXECUTED',
   DepositReceived = 'DEPOSIT_RECEIVED',
   AwaitingDeposit = 'AWAITING_DEPOSIT',
@@ -46,12 +47,18 @@ type SwapWithAdditionalInfo = Swap & {
         broadcast: Broadcast | null;
       })
     | null;
+  refundEgress:
+    | (Egress & {
+        broadcast: Broadcast | null;
+      })
+    | null;
   ignoredEgress: IgnoredEgress | null;
   swapDepositChannel: (SwapDepositChannel & { failedBoosts: FailedBoost[] }) | null;
 };
 
 const swapInclude = {
   egress: { include: { broadcast: true } },
+  refundEgress: { include: { broadcast: true } },
   fees: true,
   ignoredEgress: true,
   swapDepositChannel: { include: { failedBoosts: true } },
@@ -203,6 +210,9 @@ router.get(
     } else if (swap?.egress) {
       assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
       state = State.EgressScheduled;
+    } else if (swap?.refundEgress) {
+      assert(!swap.swapExecutedAt, 'swapExecutedAt should be null');
+      state = State.RefundEgressScheduled;
     } else if (swap?.swapExecutedAt) {
       state = State.SwapExecuted;
     } else if (swap?.depositReceivedAt) {
@@ -252,6 +262,7 @@ router.get(
       failedSwap?.depositTransactionRef ??
       undefined;
 
+    const egress = swap?.egress ?? swap?.refundEgress;
     const response = {
       state,
       type: swap?.type,
@@ -277,9 +288,9 @@ router.get(
       intermediateAmount: swap?.intermediateAmount?.toFixed(),
       swapExecutedAt: swap?.swapExecutedAt?.valueOf(),
       swapExecutedBlockIndex: swap?.swapExecutedBlockIndex ?? undefined,
-      egressAmount: swap?.egress?.amount?.toFixed(),
-      egressScheduledAt: swap?.egress?.scheduledAt?.valueOf(),
-      egressScheduledBlockIndex: swap?.egress?.scheduledBlockIndex ?? undefined,
+      egressAmount: egress?.amount?.toFixed(),
+      egressScheduledAt: egress?.scheduledAt?.valueOf(),
+      egressScheduledBlockIndex: egress?.scheduledBlockIndex ?? undefined,
       ignoredEgressAmount: swap?.ignoredEgress?.amount?.toFixed(),
       egressIgnoredAt: swap?.ignoredEgress?.ignoredAt?.valueOf(),
       egressIgnoredBlockIndex: swap?.ignoredEgress?.ignoredBlockIndex ?? undefined,
@@ -290,12 +301,12 @@ router.get(
           asset: assetConstants[fee.asset].asset,
           amount: fee.amount.toFixed(),
         })) ?? [],
-      broadcastRequestedAt: swap?.egress?.broadcast?.requestedAt?.valueOf(),
-      broadcastRequestedBlockIndex: swap?.egress?.broadcast?.requestedBlockIndex ?? undefined,
-      broadcastAbortedAt: swap?.egress?.broadcast?.abortedAt?.valueOf(),
-      broadcastAbortedBlockIndex: swap?.egress?.broadcast?.abortedBlockIndex ?? undefined,
-      broadcastSucceededAt: swap?.egress?.broadcast?.succeededAt?.valueOf(),
-      broadcastSucceededBlockIndex: swap?.egress?.broadcast?.succeededBlockIndex ?? undefined,
+      broadcastRequestedAt: egress?.broadcast?.requestedAt?.valueOf(),
+      broadcastRequestedBlockIndex: egress?.broadcast?.requestedBlockIndex ?? undefined,
+      broadcastAbortedAt: egress?.broadcast?.abortedAt?.valueOf(),
+      broadcastAbortedBlockIndex: egress?.broadcast?.abortedBlockIndex ?? undefined,
+      broadcastSucceededAt: egress?.broadcast?.succeededAt?.valueOf(),
+      broadcastSucceededBlockIndex: egress?.broadcast?.succeededBlockIndex ?? undefined,
       depositChannelExpiryBlock: swapDepositChannel?.srcChainExpiryBlock?.toString(),
       estimatedDepositChannelExpiryTime: swapDepositChannel?.estimatedExpiryAt?.valueOf(),
       isDepositChannelExpired: swapDepositChannel?.isExpired,
@@ -303,7 +314,7 @@ router.get(
       ccmMetadata: ccmParams, // DEPRECATED(1.5): use ccmParams instead
       ccmParams,
       depositChannelOpenedThroughBackend: swapDepositChannel?.openedThroughBackend,
-      broadcastTransactionRef: swap?.egress?.broadcast?.transactionRef ?? egressTrackerTxRef,
+      broadcastTransactionRef: egress?.broadcast?.transactionRef ?? egressTrackerTxRef,
       error,
       failure: failureMode,
       failedAt: failedSwap?.failedAt,

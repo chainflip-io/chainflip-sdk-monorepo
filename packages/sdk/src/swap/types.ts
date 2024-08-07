@@ -182,6 +182,16 @@ type SwapState =
       egressScheduledAt: number;
       egressScheduledBlockIndex: string;
     }
+  | {
+      state: 'REFUND_EGRESS_SCHEDULED';
+      swapId: string;
+      depositAmount: string;
+      depositReceivedAt: number;
+      depositReceivedBlockIndex: string;
+      egressAmount: string;
+      egressScheduledAt: number;
+      egressScheduledBlockIndex: string;
+    }
   | ({
       state: 'BROADCAST_REQUESTED';
     } & BroadcastRequested)

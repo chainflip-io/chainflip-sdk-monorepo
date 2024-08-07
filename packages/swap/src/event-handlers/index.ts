@@ -27,6 +27,7 @@ import { depositFinalised } from './v140/depositFinalised';
 import { insufficientBoostLiquidity } from './v140/insufficientBoostLiquidity';
 import type { Block, Event } from '../gql/generated/graphql';
 import { buildHandlerMap, getDispatcher } from '../utils/handlers';
+import refundEgressScheduled from './refundEgressScheduled';
 
 export const events = {
   LiquidityPools: {
@@ -42,6 +43,7 @@ export const events = {
     SwapExecuted: 'Swapping.SwapExecuted',
     SwapEgressIgnored: 'Swapping.SwapEgressIgnored',
     SwapEgressScheduled: 'Swapping.SwapEgressScheduled',
+    RefundEgressScheduled: 'Swapping.RefundEgressScheduled',
     SwapAmountTooLow: 'Swapping.SwapAmountTooLow',
     SwapDepositAddressReady: 'Swapping.SwapDepositAddressReady',
     CcmDepositReceived: 'Swapping.CcmDepositReceived',
@@ -149,6 +151,10 @@ const handlers = [
       {
         name: events.Swapping.SwapEgressScheduled,
         handler: swapEgressScheduled,
+      },
+      {
+        name: events.Swapping.RefundEgressScheduled,
+        handler: refundEgressScheduled,
       },
       {
         name: events.LiquidityProvider.LiquidityDepositAddressReady,
