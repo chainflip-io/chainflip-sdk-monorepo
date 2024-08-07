@@ -77,7 +77,7 @@ describe(SwapSDK, () => {
     });
 
     it('returns the filtered destination chains for the chain', async () => {
-      expect(await sdk.getChains('Ethereum'));
+      expect(await sdk.getChains('Ethereum')).toMatchSnapshot();
     });
 
     it('returns maxRetryDurationBlocks for the chain', async () => {
