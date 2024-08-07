@@ -31,6 +31,7 @@ exports[`swapEgressIgnored adds an IgnoredEgress record for a egress ignored eve
   "latestSwapScheduledBlockIndex": "120-0",
   "nativeId": 2n,
   "prewitnessedDepositId": null,
+  "refundEgressId": null,
   "retryCount": 0,
   "srcAsset": "Eth",
   "swapDepositChannelId": Any<BigInt>,

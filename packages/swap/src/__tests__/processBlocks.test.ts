@@ -88,6 +88,7 @@ describe(processBlocks, () => {
         "latestSwapScheduledBlockIndex": "150-0",
         "nativeId": 1n,
         "prewitnessedDepositId": null,
+        "refundEgressId": null,
         "retryCount": 0,
         "srcAsset": "Dot",
         "swapDepositChannelId": Any<BigInt>,
