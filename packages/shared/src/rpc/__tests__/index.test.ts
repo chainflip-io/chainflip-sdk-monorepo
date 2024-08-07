@@ -145,6 +145,12 @@ describe('getIngressEgressEnvironment', () => {
         Ethereum: 16n,
         Polkadot: 0n,
       },
+      maxSwapRetryDurationBlocks: {
+        Ethereum: 10,
+        Polkadot: 20,
+        Bitcoin: 30,
+        Arbitrum: 40,
+      },
     });
     expect(spy.mock.calls).toMatchSnapshot();
   });
