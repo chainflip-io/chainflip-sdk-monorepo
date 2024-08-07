@@ -528,6 +528,101 @@ describe('server', () => {
       `);
     });
 
+    it(`retrieves a swap in ${State.RefundEgressScheduled} status`, async () => {
+      const swapIntent = await createDepositChannel({
+        srcChainExpiryBlock: 200,
+        swaps: {
+          create: {
+            nativeId,
+            depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
+            depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+            depositAmount: '10',
+            swapInputAmount: '10',
+            fees: {
+              create: [
+                {
+                  type: 'NETWORK',
+                  asset: 'Usdc',
+                  amount: '10',
+                },
+                {
+                  type: 'LIQUIDITY',
+                  asset: 'Eth',
+                  amount: '5',
+                },
+              ],
+            },
+            refundEgress: {
+              create: {
+                scheduledAt: new Date(RECEIVED_TIMESTAMP + 12000),
+                scheduledBlockIndex: `202-3`,
+                amount: (10n ** 18n).toString(),
+                chain: 'Ethereum',
+                nativeId: 1n,
+              },
+            },
+            srcAsset: InternalAssets.Eth,
+            destAsset: InternalAssets.Dot,
+            destAddress: DOT_ADDRESS,
+            type: 'SWAP',
+            latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+            latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
+          },
+        },
+      });
+      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
+
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+      const { swapId, ...rest } = body;
+      expect(BigInt(swapId)).toEqual(nativeId);
+      expect(rest).toMatchInlineSnapshot(`
+        {
+          "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+          "depositAmount": "10",
+          "depositChannelBrokerCommissionBps": 0,
+          "depositChannelCreatedAt": 1690556052834,
+          "depositChannelExpiryBlock": "200",
+          "depositChannelMaxBoostFeeBps": 0,
+          "depositChannelOpenedThroughBackend": false,
+          "depositReceivedAt": 1669907135201,
+          "depositReceivedBlockIndex": "100-3",
+          "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+          "destAsset": "DOT",
+          "destChain": "Polkadot",
+          "egressAmount": "1000000000000000000",
+          "egressScheduledAt": 1669907147201,
+          "egressScheduledBlockIndex": "202-3",
+          "estimatedDefaultDurationSeconds": 48,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
+          "expectedDepositAmount": "10000000000",
+          "feesPaid": [
+            {
+              "amount": "10",
+              "asset": "USDC",
+              "chain": "Ethereum",
+              "type": "NETWORK",
+            },
+            {
+              "amount": "5",
+              "asset": "ETH",
+              "chain": "Ethereum",
+              "type": "LIQUIDITY",
+            },
+          ],
+          "isDepositChannelExpired": false,
+          "latestSwapScheduledAt": 1669907135201,
+          "latestSwapScheduledBlockIndex": "100-3",
+          "srcAsset": "ETH",
+          "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
+          "state": "REFUND_EGRESS_SCHEDULED",
+          "type": "SWAP",
+        }
+      `);
+    });
+
     it(`retrieves a swap in ${State.Broadcasted} status`, async () => {
       jest.mocked(getPendingBroadcast).mockResolvedValueOnce({
         tx_out_id: { hash: '0xdeadbeef' },

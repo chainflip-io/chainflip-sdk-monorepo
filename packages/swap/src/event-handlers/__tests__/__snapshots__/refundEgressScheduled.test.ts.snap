@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`swapEgressIgnored adds an IgnoredEgress record for a egress ignored event 1`] = `
+exports[`refundEgressScheduled creates egress for refund on an existing swap 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
@@ -16,22 +16,27 @@ exports[`swapEgressIgnored adds an IgnoredEgress record for a egress ignored eve
   "destAsset": "Dot",
   "effectiveBoostFeeBps": null,
   "egressId": null,
+  "fees": [
+    {
+      "amount": "291",
+      "asset": "Eth",
+      "id": Any<BigInt>,
+      "swapId": Any<BigInt>,
+      "type": "EGRESS",
+    },
+  ],
   "id": Any<BigInt>,
-  "ignoredEgress": {
-    "amount": "11",
-    "createdAt": Any<Date>,
-    "id": Any<BigInt>,
-    "ignoredAt": 2022-12-06T14:31:45.000Z,
-    "ignoredBlockIndex": "120-0",
-    "stateChainErrorId": Any<Number>,
-    "swapId": Any<BigInt>,
-  },
   "intermediateAmount": null,
   "latestSwapScheduledAt": Any<Date>,
   "latestSwapScheduledBlockIndex": "120-0",
-  "nativeId": 2n,
+  "nativeId": 9876545n,
   "prewitnessedDepositId": null,
-  "refundEgressId": null,
+  "refundEgress": {
+    "amount": "78187493520",
+    "chain": "Ethereum",
+    "scheduledAt": 2022-12-06T14:31:45.000Z,
+  },
+  "refundEgressId": Any<BigInt>,
   "retryCount": 0,
   "srcAsset": "Eth",
   "swapDepositChannelId": Any<BigInt>,
@@ -41,16 +46,5 @@ exports[`swapEgressIgnored adds an IgnoredEgress record for a egress ignored eve
   "swapOutputAmount": "10000000000",
   "type": "SWAP",
   "updatedAt": Any<Date>,
-}
-`;
-
-exports[`swapEgressIgnored adds an IgnoredEgress record for a egress ignored event 2`] = `
-{
-  "docs": "The amount is below the minimum egress amount.",
-  "errorIndex": 6,
-  "id": Any<Number>,
-  "name": "bitcoinIngressEgress.BelowEgressDustLimit",
-  "palletIndex": 34,
-  "specVersion": 1,
 }
 `;

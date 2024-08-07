@@ -105,6 +105,7 @@ exports[`batch swap flow handles all the events: swap 1`] = `
   "latestSwapScheduledBlockIndex": "1-20",
   "nativeId": 1n,
   "prewitnessedDepositId": null,
+  "refundEgressId": null,
   "retryCount": 0,
   "srcAsset": "Eth",
   "swapDepositChannelId": Any<BigInt>,

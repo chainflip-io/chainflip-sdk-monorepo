@@ -131,8 +131,10 @@ model Swap {
   ccmDepositReceivedBlockIndex  String?
   ccmGasBudget                  Decimal?            @db.Decimal(30, 0)
   ccmMessage                    String?
-  egress                        Egress?             @relation(fields: [egressId], references: [id])
+  egress                        Egress?             @relation("egress", fields: [egressId], references: [id])
   egressId                      BigInt?
+  refundEgress                  Egress?             @relation("refundEgress", fields: [refundEgressId], references: [id])
+  refundEgressId                BigInt?
   ignoredEgress                 IgnoredEgress?
   createdAt                     DateTime            @default(now())
   updatedAt                     DateTime            @default(now()) @updatedAt
@@ -227,7 +229,8 @@ model Egress {
   amount              Decimal    @db.Decimal(30, 0)
   scheduledAt         DateTime
   scheduledBlockIndex String
-  swaps               Swap[]
+  swaps               Swap[]     @relation("egress")
+  refundedSwaps       Swap[]     @relation("refundEgress")
   broadcast           Broadcast? @relation(fields: [broadcastId], references: [id])
   broadcastId         BigInt?
   createdAt           DateTime   @default(now())
