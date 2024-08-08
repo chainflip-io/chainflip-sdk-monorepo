@@ -77,7 +77,7 @@ model SwapDepositChannel {
   openingFeePaid         Decimal                       @db.Decimal(30, 0)
   affiliates             SwapDepositChannelAffiliate[]
   failedBoosts           FailedBoost[]
-  fokMinPriceX128        Decimal?                      @db.Decimal(65, 0)
+  fokMinPriceX128        Decimal?                      @db.Decimal(78, 0)
   fokRefundAddress       String?
   fokRetryDurationBlocks Int?
 
