@@ -231,6 +231,19 @@ type SwapState =
       ignoredEgressAmount: string;
       egressIgnoredAt: number;
       egressIgnoredBlockIndex: string;
+    }
+  | {
+      state: 'FAILED';
+      failure: 'REFUND_BROADCAST_ABORTED';
+      swapId: string;
+      depositAmount: string;
+      depositReceivedAt: number;
+      depositReceivedBlockIndex: string;
+      intermediateAmount: string | undefined;
+      broadcastRequestedAt: number;
+      broadcastRequestedBlockIndex: string;
+      broadcastAbortedAt: number;
+      broadcastAbortedBlockIndex: string;
     };
 
 export type DepositAddressStatusResponse = DepositAddressFields & SwapState;

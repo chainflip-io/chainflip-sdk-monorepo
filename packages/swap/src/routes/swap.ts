@@ -30,7 +30,7 @@ const router = express.Router();
 export enum State {
   Failed = 'FAILED',
   Complete = 'COMPLETE',
-  BroadcastAborted = 'BROADCAST_ABORTED',
+  BroadcastAborted = 'BROADCAST_ABORTED', // TODO: move to Failed state
   Broadcasted = 'BROADCASTED',
   BroadcastRequested = 'BROADCAST_REQUESTED',
   EgressScheduled = 'EGRESS_SCHEDULED',
@@ -38,6 +38,12 @@ export enum State {
   SwapExecuted = 'SWAP_EXECUTED',
   DepositReceived = 'DEPOSIT_RECEIVED',
   AwaitingDeposit = 'AWAITING_DEPOSIT',
+}
+
+export enum Failure {
+  IngressIgnored = 'INGRESS_IGNORED',
+  EgressIgnored = 'EGRESS_IGNORED',
+  RefundBroadcastAborted = 'REFUND_BROADCAST_ABORTED',
 }
 
 type SwapWithAdditionalInfo = Swap & {
@@ -175,13 +181,13 @@ router.get(
       state = State.Failed;
 
       if (failedSwap) {
-        failureMode = 'INGRESS_IGNORED';
+        failureMode = Failure.IngressIgnored;
         error = {
           name: failedSwap.reason,
           message: failedSwapMessage[failedSwap.reason],
         };
       } else if (swap?.ignoredEgress) {
-        failureMode = 'EGRESS_IGNORED';
+        failureMode = Failure.EgressIgnored;
         const [stateChainError] = await Promise.all([
           prisma.stateChainError.findUniqueOrThrow({
             where: { id: swap.ignoredEgress.stateChainErrorId },
@@ -212,7 +218,12 @@ router.get(
       state = State.EgressScheduled;
     } else if (swap?.refundEgress) {
       assert(!swap.swapExecutedAt, 'swapExecutedAt should be null');
-      state = State.RefundEgressScheduled;
+      if (swap.refundEgress.broadcast?.abortedAt) {
+        state = State.Failed;
+        failureMode = Failure.RefundBroadcastAborted;
+      } else {
+        state = State.RefundEgressScheduled;
+      }
     } else if (swap?.swapExecutedAt) {
       state = State.SwapExecuted;
     } else if (swap?.depositReceivedAt) {
