@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { u64, internalAssetEnum, u128, accountId, foreignChainAddress } from '@/shared/parsers';
 import { ccmParamsSchema } from '@/shared/schemas';
 import { encodedAddress } from './common';
+import env from '../config/env';
 import { calculateExpiryTime } from '../utils/function';
 import { EventHandlerArgs } from './index';
 
@@ -25,7 +26,7 @@ const swapDepositAddressReadyArgs = z.object({
   refundParameters: z
     .object({
       minPrice: u128,
-      refundAddress: foreignChainAddress('backspin'),
+      refundAddress: foreignChainAddress(env.CHAINFLIP_NETWORK),
       retryDuration: z.number().int(),
     })
     .optional(),
