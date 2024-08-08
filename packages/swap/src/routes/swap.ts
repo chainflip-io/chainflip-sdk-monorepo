@@ -199,16 +199,6 @@ router.get(
           message: stateChainError.docs,
         };
       }
-    } else if (swap?.refundEgress) {
-      assert(!swap.swapExecutedAt, 'swapExecutedAt should be null');
-      if (swap.refundEgress.broadcast?.abortedAt) {
-        state = State.Failed;
-        failureMode = 'REFUND_BROADCAST_ABORTED';
-      } else if (swap.refundEgress.broadcast?.succeededAt) {
-        state = State.Refunded;
-      } else {
-        state = State.RefundEgressScheduled;
-      }
     } else if (swap?.egress?.broadcast?.succeededAt) {
       assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
       state = State.Complete;
@@ -232,6 +222,8 @@ router.get(
       if (swap.refundEgress.broadcast?.abortedAt) {
         state = State.Failed;
         failureMode = Failure.RefundBroadcastAborted;
+      } else if (swap.refundEgress.broadcast?.succeededAt) {
+        state = State.Refunded;
       } else {
         state = State.RefundEgressScheduled;
       }
