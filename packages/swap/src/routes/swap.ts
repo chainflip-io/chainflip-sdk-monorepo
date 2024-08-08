@@ -212,7 +212,12 @@ router.get(
       state = State.EgressScheduled;
     } else if (swap?.refundEgress) {
       assert(!swap.swapExecutedAt, 'swapExecutedAt should be null');
-      state = State.RefundEgressScheduled;
+      if (swap.refundEgress.broadcast?.abortedAt) {
+        state = State.Failed;
+        failureMode = 'REFUND_BROADCAST_ABORTED';
+      } else {
+        state = State.RefundEgressScheduled;
+      }
     } else if (swap?.swapExecutedAt) {
       state = State.SwapExecuted;
     } else if (swap?.depositReceivedAt) {
