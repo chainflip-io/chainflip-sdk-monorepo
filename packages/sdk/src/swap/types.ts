@@ -209,6 +209,12 @@ type SwapState =
       broadcastSucceededBlockIndex: string;
       broadcastTransactionRef: string;
     } & BroadcastRequested)
+  | ({
+      state: 'REFUNDED';
+      broadcastSucceededAt: number;
+      broadcastSucceededBlockIndex: string;
+      broadcastTransactionRef: string;
+    } & BroadcastRequested)
   | {
       state: 'FAILED';
       failure: 'INGRESS_IGNORED';

@@ -30,6 +30,7 @@ const router = express.Router();
 export enum State {
   Failed = 'FAILED',
   Complete = 'COMPLETE',
+  Refunded = 'REFUNDED',
   BroadcastAborted = 'BROADCAST_ABORTED', // TODO: move to Failed state
   Broadcasted = 'BROADCASTED',
   BroadcastRequested = 'BROADCAST_REQUESTED',
@@ -197,6 +198,16 @@ router.get(
           name: stateChainError.name,
           message: stateChainError.docs,
         };
+      }
+    } else if (swap?.refundEgress) {
+      assert(!swap.swapExecutedAt, 'swapExecutedAt should be null');
+      if (swap.refundEgress.broadcast?.abortedAt) {
+        state = State.Failed;
+        failureMode = 'REFUND_BROADCAST_ABORTED';
+      } else if (swap.refundEgress.broadcast?.succeededAt) {
+        state = State.Refunded;
+      } else {
+        state = State.RefundEgressScheduled;
       }
     } else if (swap?.egress?.broadcast?.succeededAt) {
       assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
