@@ -1,4 +1,6 @@
 import { decodeAddress } from '@chainflip/bitcoin';
+import * as base58 from '@chainflip/utils/base58';
+import { hexToBytes } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
 import { HexString } from '@chainflip/utils/types';
@@ -188,3 +190,21 @@ export const encodeDotAddress = <T extends { asset: InternalAsset; depositAddres
   }
   return args;
 };
+
+const extractAddress = <T extends { value: string }>({ value }: T) => value;
+const hexEncodedBase58Address = hexString.transform((value) => base58.encode(hexToBytes(value)));
+
+export const foreignChainAddress = (network: ChainflipNetwork) =>
+  z.union([
+    z.object({ __kind: z.literal('Eth'), value: hexString }).transform(extractAddress),
+    z
+      .object({ __kind: z.literal('Dot'), value: hexString })
+      .transform(({ value }) => ss58.encode({ data: value, ss58Format: DOT_PREFIX })),
+    z
+      .object({ __kind: z.literal('Btc'), value: bitcoinScriptPubKey(network) })
+      .transform(extractAddress),
+    z.object({ __kind: z.literal('Arb'), value: hexString }).transform(extractAddress),
+    z
+      .object({ __kind: z.literal('Sol'), value: hexEncodedBase58Address })
+      .transform(extractAddress),
+  ]);

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { u64, internalAssetEnum, u128, accountId } from '@/shared/parsers';
+import { u64, internalAssetEnum, u128, accountId, foreignChainAddress } from '@/shared/parsers';
 import { ccmParamsSchema } from '@/shared/schemas';
 import { encodedAddress } from './common';
 import { calculateExpiryTime } from '../utils/function';
@@ -25,7 +25,7 @@ const swapDepositAddressReadyArgs = z.object({
   refundParameters: z
     .object({
       minPrice: u128,
-      refundAddress: encodedAddress,
+      refundAddress: foreignChainAddress('backspin'),
       retryDuration: z.number().int(),
     })
     .optional(),
@@ -80,7 +80,7 @@ export const swapDepositAddressReady = async ({
     channelId,
     openingFeePaid: channelOpeningFee.toString(),
     fokMinPriceX128: refundParameters?.minPrice.toString(),
-    fokRefundAddress: refundParameters?.refundAddress.address,
+    fokRefundAddress: refundParameters?.refundAddress,
     fokRetryDurationBlocks: refundParameters?.retryDuration,
     ...rest,
   };
