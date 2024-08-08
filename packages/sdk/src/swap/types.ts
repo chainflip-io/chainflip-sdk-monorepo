@@ -6,7 +6,6 @@ import {
   FillOrKillParams,
   SwapFee,
 } from '@/shared/schemas';
-import { Failure } from '@/swap/routes/swap';
 
 export interface ChainData {
   chain: Chain;
@@ -212,7 +211,7 @@ type SwapState =
     } & BroadcastRequested)
   | {
       state: 'FAILED';
-      failure: Failure.IngressIgnored;
+      failure: 'INGRESS_IGNORED';
       error: { name: string; message: string };
       depositAmount: string;
       failedAt: number;
@@ -220,7 +219,7 @@ type SwapState =
     }
   | {
       state: 'FAILED';
-      failure: Failure.EgressIgnored;
+      failure: 'EGRESS_IGNORED';
       error: { name: string; message: string };
       swapId: string;
       depositAmount: string;
@@ -235,7 +234,7 @@ type SwapState =
     }
   | {
       state: 'FAILED';
-      failure: Failure.RefundBroadcastAborted;
+      failure: 'REFUND_BROADCAST_ABORTED';
       swapId: string;
       depositAmount: string;
       depositReceivedAt: number;

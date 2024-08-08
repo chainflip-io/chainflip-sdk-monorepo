@@ -14,7 +14,7 @@ import {
 } from '../../event-handlers/__tests__/utils';
 import { getPendingBroadcast } from '../../ingress-egress-tracking';
 import app from '../../server';
-import { State } from '../swap';
+import { Failure, State } from '../swap';
 
 jest.mock('../../utils/disallowChannel', () => ({
   __esModule: true,
@@ -1701,7 +1701,7 @@ describe('server', () => {
           retryDurationBlocks: expect.any(Number),
         },
         state: 'FAILED',
-        failure: 'REFUND_BROADCAST_ABORTED',
+        failure: Failure.RefundBroadcastAborted,
       });
     });
   });
