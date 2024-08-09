@@ -1704,6 +1704,63 @@ describe('server', () => {
         failure: Failure.RefundBroadcastAborted,
       });
     });
+
+    it(`retrieves a swap with FillOrKillParams in ${State.Refunded}`, async () => {
+      const channel = await createDepositChannel({
+        srcChainExpiryBlock: 200,
+        expectedDepositAmount: '25000000000000000000000',
+        fokMinPriceX128: '2041694201525630780780247644590609',
+        fokRefundAddress: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
+        fokRetryDurationBlocks: 15,
+        swaps: {
+          create: {
+            nativeId,
+            depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
+            depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+            depositAmount: '10',
+            swapInputAmount: '10',
+            refundEgress: {
+              create: {
+                scheduledAt: new Date(RECEIVED_TIMESTAMP + 12000),
+                scheduledBlockIndex: `202-3`,
+                amount: (10n ** 18n).toString(),
+                chain: 'Ethereum',
+                nativeId: 3n,
+                broadcast: {
+                  create: {
+                    chain: 'Ethereum',
+                    nativeId: 3n,
+                    requestedAt: new Date(RECEIVED_TIMESTAMP + 12000),
+                    requestedBlockIndex: `202-4`,
+                    succeededAt: new Date(RECEIVED_TIMESTAMP + 18000),
+                    succeededBlockIndex: `204-4`,
+                  },
+                },
+              },
+            },
+            srcAsset: InternalAssets.Eth,
+            destAsset: InternalAssets.Dot,
+            destAddress: DOT_ADDRESS,
+            type: 'SWAP',
+            latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+            latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
+          },
+        },
+      });
+      const channelId = `${channel.issuedBlock}-${channel.srcChain}-${channel.channelId}`;
+
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+      expect(body).toMatchObject({
+        fillOrKillParams: {
+          minPrice: expect.any(String),
+          refundAddress: expect.any(String),
+          retryDurationBlocks: expect.any(Number),
+        },
+        state: 'REFUNDED',
+      });
+    });
   });
 
   describe('POST /swaps', () => {

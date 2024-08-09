@@ -124,6 +124,11 @@ type BroadcastRequested = {
   broadcastRequestedBlockIndex: string;
 };
 
+type RefundBroadcastRequested = Omit<
+  BroadcastRequested,
+  'swapExecutedAt' | 'swapExecutedBlockIndex'
+>;
+
 type CopyFields<T, U> = { [K in Exclude<keyof T, keyof U>]: undefined } & U;
 
 type VaultSwapFields = CopyFields<DepositAddressFields, SwapStatusResponseCommonFields>;
@@ -209,6 +214,12 @@ type SwapState =
       broadcastSucceededBlockIndex: string;
       broadcastTransactionRef: string;
     } & BroadcastRequested)
+  | ({
+      state: 'REFUNDED';
+      broadcastSucceededAt: number;
+      broadcastSucceededBlockIndex: string;
+      broadcastTransactionRef: string;
+    } & RefundBroadcastRequested)
   | {
       state: 'FAILED';
       failure: 'INGRESS_IGNORED';

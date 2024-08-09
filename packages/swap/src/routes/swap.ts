@@ -30,6 +30,7 @@ const router = express.Router();
 export enum State {
   Failed = 'FAILED',
   Complete = 'COMPLETE',
+  Refunded = 'REFUNDED',
   BroadcastAborted = 'BROADCAST_ABORTED', // TODO: move to Failed state
   Broadcasted = 'BROADCASTED',
   BroadcastRequested = 'BROADCAST_REQUESTED',
@@ -221,6 +222,8 @@ router.get(
       if (swap.refundEgress.broadcast?.abortedAt) {
         state = State.Failed;
         failureMode = Failure.RefundBroadcastAborted;
+      } else if (swap.refundEgress.broadcast?.succeededAt) {
+        state = State.Refunded;
       } else {
         state = State.RefundEgressScheduled;
       }
