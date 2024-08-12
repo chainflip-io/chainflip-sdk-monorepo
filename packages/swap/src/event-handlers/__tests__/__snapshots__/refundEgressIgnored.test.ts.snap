@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`swapEgressIgnored adds an IgnoredEgress record for a egress ignored event 1`] = `
+exports[`refundEgressIgnored handles refundEgressIgnored event 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
@@ -18,19 +18,19 @@ exports[`swapEgressIgnored adds an IgnoredEgress record for a egress ignored eve
   "egressId": null,
   "id": Any<BigInt>,
   "ignoredEgress": {
-    "amount": "11",
+    "amount": "22000",
     "createdAt": Any<Date>,
     "id": Any<BigInt>,
     "ignoredAt": 2022-12-06T14:31:45.000Z,
     "ignoredBlockIndex": "120-0",
     "stateChainErrorId": Any<Number>,
     "swapId": Any<BigInt>,
-    "type": "SWAP",
+    "type": "REFUND",
   },
   "intermediateAmount": null,
   "latestSwapScheduledAt": Any<Date>,
   "latestSwapScheduledBlockIndex": "120-0",
-  "nativeId": 2n,
+  "nativeId": 377n,
   "prewitnessedDepositId": null,
   "refundEgressId": null,
   "retryCount": 0,
@@ -45,7 +45,7 @@ exports[`swapEgressIgnored adds an IgnoredEgress record for a egress ignored eve
 }
 `;
 
-exports[`swapEgressIgnored adds an IgnoredEgress record for a egress ignored event 2`] = `
+exports[`refundEgressIgnored handles refundEgressIgnored event 2`] = `
 {
   "docs": "The amount is below the minimum egress amount.",
   "errorIndex": 6,

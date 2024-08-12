@@ -1170,6 +1170,7 @@ describe('server', () => {
           ignoredAt: new Date('2024-02-06T13:00:00.000Z'),
           ignoredBlockIndex: '202-3',
           swapId: (await prisma.swap.findUniqueOrThrow({ where: { nativeId } })).id,
+          type: 'SWAP',
           stateChainErrorId: (
             await prisma.stateChainError.create({
               data: {
@@ -1198,6 +1199,82 @@ describe('server', () => {
         egressIgnoredAt: ignoredEgress.ignoredAt.valueOf(),
         ignoredEgressAmount: ignoredEgress.amount.toFixed(),
         egressIgnoredBlockIndex: ignoredEgress.ignoredBlockIndex,
+        failure: 'EGRESS_IGNORED',
+        state: 'FAILED',
+      });
+    });
+
+    it(`retrieves a swap in ${State.Failed} status (refund egress ignored)`, async () => {
+      const channel = await createDepositChannel({
+        srcChainExpiryBlock: 200,
+        swaps: {
+          create: {
+            nativeId,
+            depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
+            depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
+            depositAmount: '10',
+            swapInputAmount: '10',
+            fees: {
+              create: [
+                {
+                  type: 'NETWORK',
+                  asset: 'Usdc',
+                  amount: '10',
+                },
+                {
+                  type: 'LIQUIDITY',
+                  asset: 'Eth',
+                  amount: '5',
+                },
+              ],
+            },
+            swapExecutedAt: new Date(RECEIVED_TIMESTAMP + 6000),
+            swapExecutedBlockIndex: '200-3',
+            srcAsset: InternalAssets.Eth,
+            destAsset: InternalAssets.Dot,
+            destAddress: DOT_ADDRESS,
+            type: 'SWAP',
+            latestSwapScheduledAt: new Date(RECEIVED_TIMESTAMP),
+            latestSwapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
+          },
+        },
+      });
+      const ignoredEgress = await prisma.ignoredEgress.create({
+        data: {
+          amount: '10000000000',
+          ignoredAt: new Date('2024-02-06T13:00:00.000Z'),
+          ignoredBlockIndex: '202-3',
+          swapId: (await prisma.swap.findUniqueOrThrow({ where: { nativeId } })).id,
+          type: 'REFUND',
+          stateChainErrorId: (
+            await prisma.stateChainError.create({
+              data: {
+                specVersion: 120,
+                palletIndex: 34,
+                errorIndex: 6,
+                name: 'bitcoinIngressEgress.BelowEgressDustLimit',
+                docs: 'The amount is below the minimum egress amount.',
+              },
+            })
+          ).id,
+        },
+      });
+
+      const channelId = `${channel.issuedBlock}-${channel.srcChain}-${channel.channelId}`;
+
+      const { body, status } = await request(server).get(`/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+
+      expect(body).toMatchObject({
+        error: {
+          message: 'The amount is below the minimum egress amount.',
+          name: 'bitcoinIngressEgress.BelowEgressDustLimit',
+        },
+        egressIgnoredAt: ignoredEgress.ignoredAt.valueOf(),
+        ignoredEgressAmount: ignoredEgress.amount.toFixed(),
+        egressIgnoredBlockIndex: ignoredEgress.ignoredBlockIndex,
+        failure: 'REFUND_EGRESS_IGNORED',
         state: 'FAILED',
       });
     });

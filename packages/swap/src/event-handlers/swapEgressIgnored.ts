@@ -37,6 +37,7 @@ export default async function swapEgressIgnored({
       ignoredBlockIndex: `${block.height}-${event.indexInBlock}`,
       amount: amount.toString(),
       stateChainErrorId: failure.id,
+      type: 'SWAP',
     },
   });
 }

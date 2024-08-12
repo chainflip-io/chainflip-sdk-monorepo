@@ -207,6 +207,9 @@ importers:
 
   packages/swap:
     dependencies:
+      '@chainflip/processor':
+        specifier: ^1.4.9
+        version: 1.5.1
       '@chainflip/rpc':
         specifier: ^1.5.0
         version: 1.5.0
@@ -319,6 +322,18 @@ importers:
       supertest:
         specifier: ^7.0.0
         version: 7.0.0
+
+  packages/swap/dist/amm-addon:
+    devDependencies:
+      '@napi-rs/cli':
+        specifier: ^2.18.0
+        version: 2.18.4
+
+  packages/swap/dist/amm-addon/npm/darwin-x64: {}
+
+  packages/swap/dist/amm-addon/npm/linux-x64-gnu: {}
+
+  packages/swap/dist/amm-addon/npm/win32-x64-msvc: {}
 
 packages:
 
@@ -732,6 +747,9 @@ packages:
 
   '@chainflip/bitcoin@0.2.2':
     resolution: {integrity: sha512-45WfB9VTeAltbAz1GscDcYJISx3kUDY0e3R6a02X5+EbsMsZzaqyCeEFRWTvzsYeRewTB69VEHY5+7jJos7Q5g==}
+
+  '@chainflip/processor@1.5.1':
+    resolution: {integrity: sha512-d8t0kwkPn0yxnoSfeVgYbGJSctgl7rTNCwJRHnlaZi8CzYXnOz40QB8EVPvN+GD3vwPQ2C/k0Dlw1TF/hyPBLQ==}
 
   '@chainflip/rpc@1.5.0':
     resolution: {integrity: sha512-4ayOsMQGx9YIVDZsdOrKCpgVMhR3KW0wazEGE6LqIXGSMwKOoymyimCTmQtwFv6R30Yr8van03zep6gu/zoKRQ==}
@@ -1452,6 +1470,11 @@ packages:
 
   '@kamilkisiela/fast-url-parser@1.1.4':
     resolution: {integrity: sha512-gbkePEBupNydxCelHCESvFSFM8XPh1Zs/OAVRW/rKpEqPAl5PbOM90Si8mv9bvnR53uPD2s/FiRxdvSejpRJew==}
+
+  '@napi-rs/cli@2.18.4':
+    resolution: {integrity: sha512-SgJeA4df9DE2iAEpr3M2H0OKl/yjtg1BnRI5/JyowS71tUWhrfSu2LT0V3vlHET+g1hBVlrO60PmEXwUEKp8Mg==}
+    engines: {node: '>= 10'}
+    hasBin: true
 
   '@noble/curves@1.2.0':
     resolution: {integrity: sha512-oYclrNgRaM9SsBUBVbb8M6DTV7ZHRTKugureoYEncY5c65HOmRzvSiTE3y5CYaPYJA/GVkrhXEoF0M3Ya9PMnw==}
@@ -6194,6 +6217,12 @@ snapshots:
 
   '@chainflip/bitcoin@0.2.2': {}
 
+  '@chainflip/processor@1.5.1':
+    dependencies:
+      '@chainflip/rpc': 1.5.0
+      '@chainflip/utils': 0.3.0
+      zod: 3.23.8
+
   '@chainflip/rpc@1.5.0':
     dependencies:
       '@chainflip/utils': 0.3.0
@@ -7194,6 +7223,8 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.4.15
 
   '@kamilkisiela/fast-url-parser@1.1.4': {}
+
+  '@napi-rs/cli@2.18.4': {}
 
   '@noble/curves@1.2.0':
     dependencies:

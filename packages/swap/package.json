@@ -54,6 +54,7 @@
     "pnpm": ">=9"
   },
   "dependencies": {
+    "@chainflip/processor": "^1.4.9",
     "@chainflip/rpc": "^1.5.0",
     "@chainflip/utils": "^0.4.0",
     "@polkadot/api": "^12.2.3",

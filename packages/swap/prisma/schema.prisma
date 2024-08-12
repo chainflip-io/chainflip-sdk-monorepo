@@ -207,16 +207,24 @@ model FailedBoost {
   @@schema("public")
 }
 
+enum EgressIgnoredType {
+  SWAP
+  REFUND
+
+  @@schema("public")
+}
+
 model IgnoredEgress {
-  id                BigInt          @id @default(autoincrement())
-  amount            Decimal         @db.Decimal(30, 0)
+  id                BigInt            @id @default(autoincrement())
+  amount            Decimal           @db.Decimal(30, 0)
   ignoredAt         DateTime
   ignoredBlockIndex String
-  swap              Swap            @relation(fields: [swapId], references: [id])
-  swapId            BigInt          @unique
-  stateChainError   StateChainError @relation(fields: [stateChainErrorId], references: [id])
+  swap              Swap              @relation(fields: [swapId], references: [id])
+  swapId            BigInt            @unique
+  stateChainError   StateChainError   @relation(fields: [stateChainErrorId], references: [id])
   stateChainErrorId Int
-  createdAt         DateTime        @default(now())
+  type              EgressIgnoredType
+  createdAt         DateTime          @default(now())
 
   @@schema("public")
 }
