@@ -26,6 +26,14 @@ which it is deprecated.
   the number of confirmations the protocol requires before recognizing a transaction as confirmed.
   For networks like Polkadot, there is deterministic finality, and therefore, no confirmation
   count is required.
+- `SwapSDK.prototype.getStatus` will return `FillOrKillParams` that includes
+  - `retryDurationBlocks`: number of state chain blocks to continue retrying the swap if the price is below the expected price
+  - `refundAddress`: the address to return the funds to in case of not reaching the expected price
+  - `minPrice`: the minimum price that the swap can happen at
+- A new state `REFUND_EGRESS_SCHEDULED` can come in the `state` field in `SwapSDK.prototype.getStatus`. This state comes when a swap that was initiated with `FillOrKill` params has never reached above the `minPrice` during the `retryDurationBlocks` and is now scheduled for refund.
+- New failure values added under the `FAILED` state
+  - `REFUND_EGRESS_IGNORED`: This happens if the refund egress has been ignored, most likely due to refund egress amount being lower than the egress fee.
+  - `REFUND_BROADCAST_ABORTED`: This happens if an error occurs when broadcasting the refund egress.
 
 ### Removed
 
