@@ -251,7 +251,6 @@ type SwapState =
       depositAmount: string;
       depositReceivedAt: number;
       depositReceivedBlockIndex: string;
-      intermediateAmount: string | undefined;
       ignoredEgressAmount: string;
       egressIgnoredAt: number;
       egressIgnoredBlockIndex: string;
@@ -263,7 +262,6 @@ type SwapState =
       depositAmount: string;
       depositReceivedAt: number;
       depositReceivedBlockIndex: string;
-      intermediateAmount: string | undefined;
       broadcastRequestedAt: number;
       broadcastRequestedBlockIndex: string;
       broadcastAbortedAt: number;
