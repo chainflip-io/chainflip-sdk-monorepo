@@ -234,6 +234,19 @@ type SwapState =
     }
   | {
       state: 'FAILED';
+      failure: 'REFUND_EGRESS_IGNORED';
+      error: { name: string; message: string };
+      swapId: string;
+      depositAmount: string;
+      depositReceivedAt: number;
+      depositReceivedBlockIndex: string;
+      intermediateAmount: string | undefined;
+      ignoredEgressAmount: string;
+      egressIgnoredAt: number;
+      egressIgnoredBlockIndex: string;
+    }
+  | {
+      state: 'FAILED';
       failure: 'REFUND_BROADCAST_ABORTED';
       swapId: string;
       depositAmount: string;
