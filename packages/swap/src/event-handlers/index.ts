@@ -13,6 +13,7 @@ import { networkDepositReceived } from './networkDepositReceived';
 import networkEgressScheduled from './networkEgressScheduled';
 import newPoolCreated from './newPoolCreated';
 import poolFeeSet from './poolFeeSet';
+import refundEgressIgnored from './refundEgressIgnored';
 import refundEgressScheduled from './refundEgressScheduled';
 import swapAmountTooLow from './swapAmountTooLow';
 import swapDepositAddressReady from './swapDepositAddressReady';
@@ -42,6 +43,7 @@ export const events = {
     SwapRescheduled: 'Swapping.SwapRescheduled',
     SwapExecuted: 'Swapping.SwapExecuted',
     SwapEgressIgnored: 'Swapping.SwapEgressIgnored',
+    RefundEgressIgnored: 'Swapping.RefundEgressIgnored',
     SwapEgressScheduled: 'Swapping.SwapEgressScheduled',
     RefundEgressScheduled: 'Swapping.RefundEgressScheduled',
     SwapAmountTooLow: 'Swapping.SwapAmountTooLow',
@@ -241,6 +243,15 @@ const handlers = [
         handler: insufficientBoostLiquidity,
       },
     ]),
+  },
+  {
+    spec: 150,
+    handlers: [
+      {
+        name: events.Swapping.RefundEgressIgnored,
+        handler: refundEgressIgnored,
+      },
+    ],
   },
 ];
 

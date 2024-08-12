@@ -430,6 +430,40 @@ export const swapEgressIgnoredMock = {
   },
 } as const;
 
+export const refundEgressIgnoredMock = {
+  block: {
+    specId: 'test@1',
+    height: 120,
+    timestamp: 1670337105000,
+  },
+  eventContext: {
+    kind: 'event',
+    event: {
+      args: {
+        asset: {
+          __kind: 'Btc',
+        },
+        amount: '22000',
+        reason: {
+          value: {
+            error: '0x06000000',
+            index: 34,
+          },
+          __kind: 'Module',
+        },
+        swapId: '377',
+      },
+      id: '0000012799-000000-c1ea7',
+      indexInBlock: 0,
+      nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
+      name: events.Swapping.RefundEgressIgnored,
+      phase: 'ApplyExtrinsic',
+      pos: 2,
+      extrinsic: null,
+    },
+  },
+} as const;
+
 export const networkEgressScheduledMock = {
   block: {
     specId: 'test@1',

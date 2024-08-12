@@ -43,6 +43,7 @@ export enum State {
 export enum Failure {
   IngressIgnored = 'INGRESS_IGNORED',
   EgressIgnored = 'EGRESS_IGNORED',
+  RefundEgressIgnored = 'REFUND_EGRESS_IGNORED',
   RefundBroadcastAborted = 'REFUND_BROADCAST_ABORTED',
 }
 
@@ -187,7 +188,16 @@ router.get(
           message: failedSwapMessage[failedSwap.reason],
         };
       } else if (swap?.ignoredEgress) {
-        failureMode = Failure.EgressIgnored;
+        switch (swap.ignoredEgress.type) {
+          case 'REFUND':
+            failureMode = Failure.RefundEgressIgnored;
+            break;
+          case 'SWAP':
+            failureMode = Failure.EgressIgnored;
+            break;
+          default:
+            assertUnreachable(swap.ignoredEgress.type);
+        }
         const [stateChainError] = await Promise.all([
           prisma.stateChainError.findUniqueOrThrow({
             where: { id: swap.ignoredEgress.stateChainErrorId },
