@@ -69,7 +69,7 @@
     "express": "^4.19.2",
     "graphql-request": "^6.1.0",
     "ioredis": "^5.4.1",
-    "pg": "^8.11.5",
+    "pg": "^8.12.0",
     "qs": "^6.12.0",
     "rxjs": "^7.8.1",
     "safe-stable-stringify": "^2.4.3",
