@@ -1440,6 +1440,7 @@ describe('server', () => {
     it('retrieves a swap from a native swap id', async () => {
       await prisma.swap.create({
         data: {
+          swapDepositChannelId: (await createDepositChannel()).id,
           nativeId,
           srcAsset: InternalAssets.Eth,
           destAsset: InternalAssets.Dot,
@@ -1486,13 +1487,20 @@ describe('server', () => {
             "gasBudget": "100",
             "message": "0x12abf87",
           },
+          "depositAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
           "depositAmount": "10",
+          "depositChannelBrokerCommissionBps": 0,
+          "depositChannelCreatedAt": 1690556052834,
+          "depositChannelMaxBoostFeeBps": 0,
+          "depositChannelOpenedThroughBackend": false,
           "depositReceivedAt": 1669907135201,
           "depositReceivedBlockIndex": "100-3",
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Polkadot",
           "estimatedDefaultDurationSeconds": 48,
+          "estimatedDepositChannelExpiryTime": 1699527900000,
+          "expectedDepositAmount": "10000000000",
           "feesPaid": [
             {
               "amount": "10",
@@ -1507,6 +1515,7 @@ describe('server', () => {
               "type": "LIQUIDITY",
             },
           ],
+          "isDepositChannelExpired": false,
           "latestSwapScheduledAt": 1669907135201,
           "latestSwapScheduledBlockIndex": "100-3",
           "srcAsset": "ETH",
