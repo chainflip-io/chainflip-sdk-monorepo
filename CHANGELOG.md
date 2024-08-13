@@ -15,6 +15,8 @@ which it is deprecated.
   prefix for bitcoin transactions previously. This is not accepted by popular bitcoin
   block explorers and was therefore adjusted to not return a `0x` prefix. The returned
   data was not changed for other chains.
+- `SwapSDK.prototype.getStatus` will return deposit channel info even when
+  querying directly by swap id.
 
 ### Added
 
