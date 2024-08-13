@@ -6,18 +6,7 @@ import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { screamingSnakeToPascalCase, toUpperCase } from '@/shared/strings';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
 import { asyncHandler, maintenanceMode } from './common';
-import prisma, {
-  Egress,
-  Swap,
-  SwapDepositChannel,
-  Broadcast,
-  SwapFee,
-  FailedSwap,
-  IgnoredEgress,
-  FailedSwapReason,
-  SwapDepositChannelAffiliate,
-  FailedBoost,
-} from '../client';
+import prisma, { FailedSwapReason } from '../client';
 import openSwapDepositChannel from '../handlers/openSwapDepositChannel';
 import { getPendingBroadcast, getPendingDeposit } from '../ingress-egress-tracking';
 import { readField } from '../utils/function';
@@ -48,28 +37,25 @@ export enum Failure {
   RefundBroadcastAborted = 'REFUND_BROADCAST_ABORTED',
 }
 
-type SwapWithAdditionalInfo = Swap & {
-  fees: SwapFee[];
-  egress:
-    | (Egress & {
-        broadcast: Broadcast | null;
-      })
-    | null;
-  refundEgress:
-    | (Egress & {
-        broadcast: Broadcast | null;
-      })
-    | null;
-  ignoredEgress: IgnoredEgress | null;
-  swapDepositChannel: (SwapDepositChannel & { failedBoosts: FailedBoost[] }) | null;
-};
+const depositChannelInclude = {
+  failedBoosts: true,
+  failedSwaps: true,
+  affiliates: {
+    select: {
+      account: true,
+      commissionBps: true,
+    },
+  },
+} as const;
 
 const swapInclude = {
   egress: { include: { broadcast: true } },
   refundEgress: { include: { broadcast: true } },
   fees: true,
   ignoredEgress: true,
-  swapDepositChannel: { include: { failedBoosts: true } },
+  swapDepositChannel: {
+    include: depositChannelInclude,
+  },
 } as const;
 
 const failedSwapMessage: Record<FailedSwapReason, string> = {
@@ -100,20 +86,10 @@ router.get(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    let swap: SwapWithAdditionalInfo | null | undefined;
-    let failedSwap: FailedSwap | null | undefined;
-    let swapDepositChannel:
-      | (SwapDepositChannel & {
-          swaps: SwapWithAdditionalInfo[];
-          failedSwaps: FailedSwap[];
-          failedBoosts: FailedBoost[];
-          affiliates: Pick<SwapDepositChannelAffiliate, 'account' | 'commissionBps'>[];
-        })
-      | null
-      | undefined;
-    let affiliateBrokers:
-      | Pick<SwapDepositChannelAffiliate, 'account' | 'commissionBps'>[]
-      | undefined;
+    let swap;
+    let failedSwap;
+    let swapDepositChannel;
+    let affiliateBrokers;
 
     if (channelIdRegex.test(id)) {
       const { issuedBlock, srcChain, channelId } = channelIdRegex.exec(id)!.groups!;
@@ -128,7 +104,7 @@ router.get(
         },
         include: {
           swaps: { include: swapInclude },
-          failedSwaps: true,
+          failedSwaps: { include: { swapDepositChannel: { include: depositChannelInclude } } },
           failedBoosts: true,
           affiliates: {
             select: {
@@ -160,13 +136,17 @@ router.get(
         include: swapInclude,
         // just get the last one for now
         orderBy: { nativeId: 'desc' },
+        take: 1,
       });
       if (!swap) {
         failedSwap = await prisma.failedSwap.findFirst({
           where: { depositTransactionRef: id },
+          include: { swapDepositChannel: { include: depositChannelInclude } },
         });
       }
     }
+
+    swapDepositChannel ??= swap?.swapDepositChannel ?? failedSwap?.swapDepositChannel;
 
     ServiceError.assert(swapDepositChannel || swap || failedSwap, 'notFound', 'resource not found');
 
@@ -266,12 +246,11 @@ router.get(
     }
 
     let effectiveBoostFeeBps;
-    const channel = swapDepositChannel || swap?.swapDepositChannel;
 
-    if (channel && channel.maxBoostFeeBps > 0) {
+    if (swapDepositChannel && swapDepositChannel.maxBoostFeeBps > 0) {
       if (swap) {
         effectiveBoostFeeBps = swap.effectiveBoostFeeBps ?? undefined;
-      } else if (channel.failedBoosts.length > 0) {
+      } else if (swapDepositChannel.failedBoosts.length > 0) {
         effectiveBoostFeeBps = 0;
       }
     }
@@ -344,29 +323,25 @@ router.get(
       failedAt: failedSwap?.failedAt,
       failedBlockIndex: failedSwap?.failedBlockIndex ?? undefined,
       depositChannelAffiliateBrokers: affiliateBrokers,
-      depositChannelMaxBoostFeeBps: channel?.maxBoostFeeBps,
+      depositChannelMaxBoostFeeBps: swapDepositChannel?.maxBoostFeeBps,
       effectiveBoostFeeBps,
       depositBoostedAt: swap?.depositBoostedAt?.valueOf(),
       depositBoostedBlockIndex: swap?.depositBoostedBlockIndex ?? undefined,
-      boostSkippedAt: channel?.failedBoosts.at(0)?.failedAtTimestamp.valueOf(),
-      boostSkippedBlockIndex: channel?.failedBoosts.at(0)?.failedAtBlockIndex ?? undefined,
+      boostSkippedAt: swapDepositChannel?.failedBoosts.at(0)?.failedAtTimestamp.valueOf(),
+      boostSkippedBlockIndex:
+        swapDepositChannel?.failedBoosts.at(0)?.failedAtBlockIndex ?? undefined,
       estimatedDefaultDurationSeconds:
-        srcAsset &&
-        destAsset &&
-        (await estimateSwapDuration({
-          srcAsset,
-          destAsset,
-        })),
+        srcAsset && destAsset && (await estimateSwapDuration({ srcAsset, destAsset })),
       latestSwapScheduledAt: swap?.latestSwapScheduledAt.valueOf(),
       latestSwapScheduledBlockIndex: swap?.latestSwapScheduledBlockIndex,
-      fillOrKillParams: channel?.fokMinPriceX128
+      fillOrKillParams: swapDepositChannel?.fokMinPriceX128
         ? {
-            retryDurationBlocks: channel.fokRetryDurationBlocks,
-            refundAddress: channel.fokRefundAddress,
+            retryDurationBlocks: swapDepositChannel.fokRetryDurationBlocks,
+            refundAddress: swapDepositChannel.fokRefundAddress,
             minPrice: getPriceFromPriceX128(
-              channel.fokMinPriceX128.toFixed(),
-              channel.srcAsset,
-              channel.destAsset,
+              swapDepositChannel.fokMinPriceX128.toFixed(),
+              swapDepositChannel.srcAsset,
+              swapDepositChannel.destAsset,
             ),
           }
         : undefined,
