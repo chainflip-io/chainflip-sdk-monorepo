@@ -118,6 +118,47 @@ describe(openSwapDepositChannel, () => {
     });
   });
 
+  it('creates channel with fill or kill params and stores it in the database', async () => {
+    mockRpcResponse({ data: environment() });
+    jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+      sourceChainExpiryBlock: BigInt('1000'),
+      address: 'address',
+      channelId: BigInt('909'),
+      issuedBlock: 123,
+      channelOpeningFee: 10n,
+    });
+
+    const result = await openSwapDepositChannel({
+      srcAsset: 'FLIP',
+      srcChain: 'Ethereum',
+      destAsset: 'USDC',
+      destChain: 'Ethereum',
+      destAddress: '0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754',
+      expectedDepositAmount: '10101010',
+      fillOrKillParams: {
+        retryDurationBlocks: 500,
+        refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        minPriceX128: '10000000000000',
+      },
+    });
+
+    expect(result).toEqual({
+      maxBoostFeeBps: 0,
+      depositAddress: 'address',
+      brokerCommissionBps: 0,
+      estimatedExpiryTime: 1699534500000,
+      id: '123-Ethereum-909',
+      issuedBlock: 123,
+      srcChainExpiryBlock: 1000n,
+      channelOpeningFee: 10n,
+    });
+    expect(jest.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
+    expect(await prisma.swapDepositChannel.findFirst()).toMatchSnapshot({
+      id: expect.any(BigInt),
+      createdAt: expect.any(Date),
+    });
+  });
+
   it('creates channel with boost fee and stores it in the database', async () => {
     mockRpcResponse({ data: environment() });
     jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
