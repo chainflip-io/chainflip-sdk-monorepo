@@ -208,8 +208,8 @@ importers:
   packages/swap:
     dependencies:
       '@chainflip/processor':
-        specifier: ^1.5.3
-        version: 1.5.3
+        specifier: ^1.5.4
+        version: 1.5.4
       '@chainflip/rpc':
         specifier: ^1.5.6
         version: 1.5.6
@@ -736,8 +736,8 @@ packages:
   '@chainflip/bitcoin@0.2.2':
     resolution: {integrity: sha512-45WfB9VTeAltbAz1GscDcYJISx3kUDY0e3R6a02X5+EbsMsZzaqyCeEFRWTvzsYeRewTB69VEHY5+7jJos7Q5g==}
 
-  '@chainflip/processor@1.5.3':
-    resolution: {integrity: sha512-0tSWq8Zpnhx6fMNfddPxdoNWQN+eceXlhPfdOksTJ+o/fhGojJbJmrCFLQDsqbCMakZo9Hsa3RqcubyEyAmlJw==}
+  '@chainflip/processor@1.5.4':
+    resolution: {integrity: sha512-FmV/k9CKNu3V3MyatWYEo1jIqa8/+lgPVoPuon3KnAaBjW87tU7JDfkmsWrv1035dBYhivWJDBhzRrKwgZzTXA==}
 
   '@chainflip/rpc@1.5.6':
     resolution: {integrity: sha512-rPtLR/r0Xfh4SQdNhUMMCvEMO15jDdBFXaJOIDQsD7I/YGfx8FFv4EJHYFI0nz6H1Ts5xu6KLSpmcXWVfkOP7g==}
@@ -6181,7 +6181,7 @@ snapshots:
 
   '@chainflip/bitcoin@0.2.2': {}
 
-  '@chainflip/processor@1.5.3':
+  '@chainflip/processor@1.5.4':
     dependencies:
       '@chainflip/rpc': 1.5.6
       '@chainflip/utils': 0.3.0
