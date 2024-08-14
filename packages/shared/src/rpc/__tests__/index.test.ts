@@ -82,6 +82,10 @@ describe('getIngressEgressEnvironment', () => {
           USDT: 0x4563918244f40000n,
         },
         Polkadot: { DOT: 0x4563918244f40000n },
+        Solana: {
+          SOL: 0n,
+          USDC: 0n,
+        },
       },
       ingressFees: {
         Arbitrum: {
@@ -96,6 +100,10 @@ describe('getIngressEgressEnvironment', () => {
           USDT: 0x4563918244f40000n,
         },
         Polkadot: { DOT: 0x4563918244f40000n },
+        Solana: {
+          SOL: null,
+          USDC: null,
+        },
       },
       egressFees: {
         Arbitrum: {
@@ -113,6 +121,10 @@ describe('getIngressEgressEnvironment', () => {
         },
         Polkadot: {
           DOT: 0n,
+        },
+        Solana: {
+          SOL: null,
+          USDC: null,
         },
       },
       minimumEgressAmounts: {
@@ -132,24 +144,31 @@ describe('getIngressEgressEnvironment', () => {
         Polkadot: {
           DOT: 1n,
         },
+        Solana: {
+          SOL: 0n,
+          USDC: 0n,
+        },
       },
       witnessSafetyMargins: {
         Arbitrum: 1,
         Bitcoin: 2,
         Ethereum: 1,
         Polkadot: null,
+        Solana: null,
       },
       channelOpeningFees: {
         Arbitrum: 0n,
         Bitcoin: 0n,
         Ethereum: 16n,
         Polkadot: 0n,
+        Solana: 0n,
       },
       maxSwapRetryDurationBlocks: {
         Ethereum: 10,
         Polkadot: 20,
         Bitcoin: 30,
         Arbitrum: 40,
+        Solana: 0,
       },
     });
     expect(spy.mock.calls).toMatchSnapshot();
