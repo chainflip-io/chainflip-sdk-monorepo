@@ -106,42 +106,44 @@ enum SwapType {
 }
 
 model Swap {
-  id                            BigInt              @id @default(autoincrement())
+  id                              BigInt              @id @default(autoincrement())
   /// the swap id on the state chain
-  nativeId                      BigInt              @unique
-  type                          SwapType
-  srcAsset                      InternalAsset
-  depositAmount                 Decimal             @db.Decimal(30, 0)
-  swapInputAmount               Decimal             @db.Decimal(30, 0) // deposit amount after ingress fee was decucted
-  intermediateAmount            Decimal?            @db.Decimal(30, 0)
-  swapOutputAmount              Decimal?            @db.Decimal(30, 0) // output of the swap before egress fee is deducted
-  fees                          SwapFee[]
-  destAsset                     InternalAsset
-  destAddress                   String
-  depositTransactionRef         String?
-  depositReceivedAt             DateTime
-  depositReceivedBlockIndex     String
-  swapExecutedAt                DateTime?
-  swapExecutedBlockIndex        String?
-  prewitnessedDepositId         BigInt?
-  depositBoostedAt              DateTime?
-  depositBoostedBlockIndex      String?
-  swapDepositChannel            SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
-  swapDepositChannelId          BigInt?
-  ccmDepositReceivedBlockIndex  String?
-  ccmGasBudget                  Decimal?            @db.Decimal(30, 0)
-  ccmMessage                    String?
-  egress                        Egress?             @relation("egress", fields: [egressId], references: [id])
-  egressId                      BigInt?
-  refundEgress                  Egress?             @relation("refundEgress", fields: [refundEgressId], references: [id])
-  refundEgressId                BigInt?
-  ignoredEgress                 IgnoredEgress?
-  createdAt                     DateTime            @default(now())
-  updatedAt                     DateTime            @default(now()) @updatedAt
-  effectiveBoostFeeBps          Int?
-  latestSwapScheduledAt         DateTime
-  latestSwapScheduledBlockIndex String
-  retryCount                    Int                 @default(0)
+  nativeId                        BigInt              @unique
+  type                            SwapType
+  srcAsset                        InternalAsset
+  depositAmount                   Decimal             @db.Decimal(30, 0)
+  swapInputAmount                 Decimal             @db.Decimal(30, 0) // deposit amount after ingress fee was decucted
+  intermediateAmount              Decimal?            @db.Decimal(30, 0)
+  swapOutputAmount                Decimal?            @db.Decimal(30, 0) // output of the swap before egress fee is deducted
+  fees                            SwapFee[]
+  destAsset                       InternalAsset
+  destAddress                     String
+  depositTransactionRef           String?
+  depositReceivedAt               DateTime
+  depositReceivedBlockIndex       String
+  swapExecutedAt                  DateTime?
+  swapExecutedBlockIndex          String?
+  prewitnessedDepositId           BigInt?
+  depositBoostedAt                DateTime?
+  depositBoostedBlockIndex        String?
+  swapDepositChannel              SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId            BigInt?
+  ccmDepositReceivedBlockIndex    String?
+  ccmGasBudget                    Decimal?            @db.Decimal(30, 0)
+  ccmMessage                      String?
+  egress                          Egress?             @relation("egress", fields: [egressId], references: [id])
+  egressId                        BigInt?
+  refundEgress                    Egress?             @relation("refundEgress", fields: [refundEgressId], references: [id])
+  refundEgressId                  BigInt?
+  ignoredEgress                   IgnoredEgress?
+  createdAt                       DateTime            @default(now())
+  updatedAt                       DateTime            @default(now()) @updatedAt
+  effectiveBoostFeeBps            Int?
+  swapScheduledAt                 DateTime
+  swapScheduledBlockIndex         String
+  latestSwapRescheduledAt         DateTime?
+  latestSwapRescheduledBlockIndex String?
+  retryCount                      Int                 @default(0)
 
   @@unique([srcAsset, prewitnessedDepositId])
   @@schema("public")

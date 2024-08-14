@@ -38,8 +38,8 @@ describe(refundEgressIgnored, () => {
           destAsset: InternalAssets.Dot,
           destAddress: DOT_ADDRESS,
           type: 'SWAP',
-          latestSwapScheduledAt: new Date(Date.now() - 12000),
-          latestSwapScheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
+          swapScheduledAt: new Date(Date.now() - 12000),
+          swapScheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
         },
       },
     });
@@ -60,7 +60,7 @@ describe(refundEgressIgnored, () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       swapDepositChannelId: expect.any(BigInt),
-      latestSwapScheduledAt: expect.any(Date),
+      swapScheduledAt: expect.any(Date),
       ignoredEgress: {
         id: expect.any(BigInt),
         swapId: expect.any(BigInt),

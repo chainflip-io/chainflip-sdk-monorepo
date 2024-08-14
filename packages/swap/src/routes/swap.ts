@@ -332,8 +332,8 @@ router.get(
         swapDepositChannel?.failedBoosts.at(0)?.failedAtBlockIndex ?? undefined,
       estimatedDefaultDurationSeconds:
         srcAsset && destAsset && (await estimateSwapDuration({ srcAsset, destAsset })),
-      latestSwapScheduledAt: swap?.latestSwapScheduledAt.valueOf(),
-      latestSwapScheduledBlockIndex: swap?.latestSwapScheduledBlockIndex,
+      swapScheduledAt: swap?.swapScheduledAt.valueOf(),
+      swapScheduledBlockIndex: swap?.swapScheduledBlockIndex,
       fillOrKillParams: swapDepositChannel?.fokMinPriceX128
         ? {
             retryDurationBlocks: swapDepositChannel.fokRetryDurationBlocks,

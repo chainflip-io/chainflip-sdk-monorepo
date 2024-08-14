@@ -60,8 +60,8 @@ export default async function swapScheduled({
     swapInputAmount: depositAmount.toString(),
     nativeId: swapId,
     depositReceivedAt: new Date(block.timestamp),
-    latestSwapScheduledAt: new Date(block.timestamp),
-    latestSwapScheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
+    swapScheduledAt: new Date(block.timestamp),
+    swapScheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
     fees: brokerFeeAmount
       ? {
           create: {

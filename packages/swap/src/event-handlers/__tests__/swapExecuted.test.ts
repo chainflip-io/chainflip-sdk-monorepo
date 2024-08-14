@@ -64,8 +64,8 @@ describe(swapExecuted, () => {
             destAsset: InternalAssets.Usdc,
             destAddress: DOT_ADDRESS,
             type: 'SWAP',
-            latestSwapScheduledAt: new Date(Date.now() - 6000),
-            latestSwapScheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
+            swapScheduledAt: new Date(Date.now() - 6000),
+            swapScheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
           },
         },
       });
@@ -88,7 +88,7 @@ describe(swapExecuted, () => {
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
         swapDepositChannelId: expect.any(BigInt),
-        latestSwapScheduledAt: expect.any(Date),
+        swapScheduledAt: expect.any(Date),
         fees: [
           { id: expect.any(BigInt), swapId: expect.any(BigInt) },
           { id: expect.any(BigInt), swapId: expect.any(BigInt) },
@@ -128,8 +128,8 @@ describe(swapExecuted, () => {
           destAsset: InternalAssets.Dot,
           destAddress: DOT_ADDRESS,
           type: 'SWAP',
-          latestSwapScheduledAt: new Date(Date.now() - 6000),
-          latestSwapScheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
+          swapScheduledAt: new Date(Date.now() - 6000),
+          swapScheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
         },
       },
     });
@@ -152,7 +152,7 @@ describe(swapExecuted, () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       swapDepositChannelId: expect.any(BigInt),
-      latestSwapScheduledAt: expect.any(Date),
+      swapScheduledAt: expect.any(Date),
       fees: [
         { id: expect.any(BigInt), swapId: expect.any(BigInt) },
         { id: expect.any(BigInt), swapId: expect.any(BigInt) },

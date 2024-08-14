@@ -33,8 +33,8 @@ describe(swapRescheduled, () => {
         swapInputAmount: '990000000',
         depositReceivedAt: new Date('2024-08-06T00:00:00.000Z'),
         depositReceivedBlockIndex: '1-1',
-        latestSwapScheduledAt: new Date('2024-08-06T00:00:00.000Z'),
-        latestSwapScheduledBlockIndex: '1-1',
+        swapScheduledAt: new Date('2024-08-06T00:00:00.000Z'),
+        swapScheduledBlockIndex: '1-1',
       },
     });
   });
@@ -53,10 +53,10 @@ describe(swapRescheduled, () => {
     });
 
     const swap = await prisma.swap.findFirstOrThrow({ where: { nativeId: 3 } });
-    expect(swap.latestSwapScheduledAt.toISOString()).toEqual(
+    expect(swap.latestSwapRescheduledAt?.toISOString()).toEqual(
       new Date(swapScheduledBtcDepositChannelMock.block.timestamp).toISOString(),
     );
-    expect(swap.latestSwapScheduledBlockIndex).toEqual(
+    expect(swap.latestSwapRescheduledBlockIndex).toEqual(
       `${swapScheduledBtcDepositChannelMock.block.height}-${swapScheduledBtcDepositChannelMock.eventContext.event.indexInBlock}`,
     );
     expect(swap.retryCount).toEqual(1);
