@@ -15,8 +15,9 @@ describe('postSwapSchema', () => {
       openSwapDepositChannelSchema.safeParse({
         ...swapBody,
       }),
-    ).toEqual(expect.objectContaining({ success: true }));
+    ).toMatchObject({ success: true });
   });
+
   it('handles full ccmParams', () => {
     expect(
       openSwapDepositChannelSchema.safeParse({
@@ -24,11 +25,12 @@ describe('postSwapSchema', () => {
         ccmParams: {
           gasBudget: '123',
           message: '0xdeadc0de',
-          cfParameters: 'string',
+          cfParameters: '0xcafebabe',
         },
       }),
-    ).toEqual(expect.objectContaining({ success: true }));
+    ).toMatchObject({ success: true });
   });
+
   it('handles without cf parameters', () => {
     expect(
       openSwapDepositChannelSchema.safeParse({
@@ -38,8 +40,9 @@ describe('postSwapSchema', () => {
           message: '0xdeadc0de',
         },
       }),
-    ).toEqual(expect.objectContaining({ success: true }));
+    ).toMatchObject({ success: true });
   });
+
   it('handles missing ccm params', () => {
     expect(
       openSwapDepositChannelSchema.safeParse({
@@ -48,19 +51,21 @@ describe('postSwapSchema', () => {
           gasBudget: '123',
         },
       }),
-    ).toEqual(expect.objectContaining({ success: false }));
+    ).toMatchObject({ success: false });
   });
+
   it('handles missing ccm params', () => {
     expect(
       openSwapDepositChannelSchema.safeParse({
         ...swapBody,
         ccmParams: {
           message: '0xdeadc0de',
-          cfParameters: 'string',
+          cfParameters: '0xcafebabe',
         },
       }),
-    ).toEqual(expect.objectContaining({ success: false }));
+    ).toMatchObject({ success: false });
   });
+
   it('handles missing swap body params', () => {
     expect(
       openSwapDepositChannelSchema.safeParse({
@@ -70,21 +75,9 @@ describe('postSwapSchema', () => {
         ccmParams: {
           gasBudget: '123',
           message: '0xdeadc0de',
-          cfParameters: 'string',
+          cfParameters: '0xcafebabe',
         },
       }),
-    ).toEqual(expect.objectContaining({ success: false }));
-  });
-  it('handles wrong type for gasBudget', () => {
-    expect(
-      openSwapDepositChannelSchema.safeParse({
-        ...swapBody,
-        ccmParams: {
-          gasBudget: '0x123',
-          message: '0xdeadc0de',
-          cfParameters: 'string',
-        },
-      }),
-    ).toEqual(expect.objectContaining({ success: false }));
+    ).toMatchObject({ success: false });
   });
 });

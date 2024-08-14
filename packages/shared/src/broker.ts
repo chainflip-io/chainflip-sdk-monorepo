@@ -95,7 +95,7 @@ export async function requestSwapDepositAddress(
   opts: { url: string },
   chainflipNetwork: ChainflipNetwork,
 ): Promise<DepositChannelResponse> {
-  const { srcAsset, srcChain, destAsset, destChain, destAddress, maxBoostFeeBps } = swapRequest;
+  const { srcAsset, srcChain, destAsset, destChain, destAddress } = swapRequest;
 
   const client = new HttpClient(opts.url);
 
@@ -103,9 +103,9 @@ export async function requestSwapDepositAddress(
     { asset: srcAsset, chain: srcChain },
     { asset: destAsset, chain: destChain },
     submitAddress(destChain, destAddress),
-    swapRequest.commissionBps,
+    swapRequest.commissionBps ?? 0,
     swapRequest.ccmParams,
-    maxBoostFeeBps,
+    swapRequest.maxBoostFeeBps,
     swapRequest.affiliates,
     swapRequest.fillOrKillParams && {
       ...swapRequest.fillOrKillParams,

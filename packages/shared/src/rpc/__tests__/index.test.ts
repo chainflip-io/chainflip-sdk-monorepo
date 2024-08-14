@@ -52,6 +52,10 @@ describe('getSwappingEnvironment', () => {
         Polkadot: {
           DOT: null,
         },
+        Solana: {
+          SOL: null,
+          USDC: null,
+        },
       },
       networkFeeHundredthPips: 1000,
     });
