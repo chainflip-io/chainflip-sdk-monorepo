@@ -144,6 +144,7 @@ export const accountId = z
 
 export const actionSchema = z.union([
   z.object({ __kind: z.literal('Swap'), swapId: u128 }),
+  z.object({ __kind: z.literal('Swap'), swapRequestId: u128 }),
   z.object({ __kind: z.literal('LiquidityProvision'), lpAccount: hexString }),
   z.object({
     __kind: z.literal('CcmTransfer'),

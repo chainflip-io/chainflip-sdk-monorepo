@@ -2,6 +2,8 @@ import { swappingSwapDepositAddressReady as schema141 } from '@chainflip/process
 import { swappingSwapDepositAddressReady as schema150 } from '@chainflip/processor/150/swapping/swapDepositAddressReady';
 import { swappingSwapDepositAddressReady as schema160 } from '@chainflip/processor/160/swapping/swapDepositAddressReady';
 import { z } from 'zod';
+import { foreignChainAddress } from '@/shared/parsers';
+import env from '../config/env';
 import { calculateExpiryTime } from '../utils/function';
 import { EventHandlerArgs } from './index';
 
@@ -12,6 +14,8 @@ const swapDepositAddressReadyArgs = z.union([
 ]);
 
 export type SwapDepositAddressReadyEvent = z.input<typeof swapDepositAddressReadyArgs>;
+
+const foreignChainAddressSchema = foreignChainAddress(env.CHAINFLIP_NETWORK);
 
 export const swapDepositAddressReady = async ({
   prisma,
@@ -60,7 +64,8 @@ export const swapDepositAddressReady = async ({
     channelId,
     openingFeePaid: channelOpeningFee.toString(),
     fokMinPriceX128: refundParameters?.minPrice.toString(),
-    fokRefundAddress: refundParameters?.refundAddress.address,
+    // TODO(1.6): this should no longer a foreign chain address
+    fokRefundAddress: foreignChainAddressSchema.optional().parse(refundParameters?.refundAddress),
     fokRetryDurationBlocks: refundParameters?.retryDuration,
     ...rest,
   };
