@@ -9,6 +9,7 @@ import {
   dotAddress,
   ethereumAddress,
   assetAndChain,
+  solanaAddress,
 } from './parsers';
 import {
   affiliateBroker,
@@ -40,9 +41,6 @@ const submitAddress = (chain: Chain, address: string): string => {
   }
   return address;
 };
-
-// TODO(solana): parse me
-const solanaAddress = z.string();
 
 const validateRequest = (network: ChainflipNetwork, params: unknown) =>
   z
