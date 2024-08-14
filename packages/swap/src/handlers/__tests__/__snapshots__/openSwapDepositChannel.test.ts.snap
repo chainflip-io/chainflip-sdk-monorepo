@@ -147,3 +147,56 @@ exports[`openSwapDepositChannel creates channel with ccmParams and stores it in 
   "srcChainExpiryBlock": 1000n,
 }
 `;
+
+exports[`openSwapDepositChannel creates channel with fill or kill params and stores it in the database 1`] = `
+[
+  [
+    {
+      "ccmParams": undefined,
+      "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
+      "destAsset": "USDC",
+      "destChain": "Ethereum",
+      "expectedDepositAmount": "10101010",
+      "fillOrKillParams": {
+        "minPriceX128": "10000000000000",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "retryDurationBlocks": 500,
+      },
+      "srcAsset": "FLIP",
+      "srcChain": "Ethereum",
+    },
+    {
+      "url": "",
+    },
+    "perseverance",
+  ],
+]
+`;
+
+exports[`openSwapDepositChannel creates channel with fill or kill params and stores it in the database 2`] = `
+{
+  "brokerCommissionBps": 0,
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "channelId": 909n,
+  "createdAt": Any<ClockDate>,
+  "depositAddress": "address",
+  "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
+  "destAsset": "Usdc",
+  "estimatedExpiryAt": 2023-11-09T12:55:00.000Z,
+  "expectedDepositAmount": "10101010",
+  "expiryBlock": null,
+  "fokMinPriceX128": "10000000000000",
+  "fokRefundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+  "fokRetryDurationBlocks": 500,
+  "id": Any<BigInt>,
+  "isExpired": false,
+  "issuedBlock": 123,
+  "maxBoostFeeBps": 0,
+  "openedThroughBackend": true,
+  "openingFeePaid": "10",
+  "srcAsset": "Flip",
+  "srcChain": "Ethereum",
+  "srcChainExpiryBlock": 1000n,
+}
+`;

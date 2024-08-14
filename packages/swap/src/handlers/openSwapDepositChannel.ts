@@ -67,7 +67,14 @@ export default async function openSwapDepositChannel(
     env.CHAINFLIP_NETWORK,
   );
 
-  const { expectedDepositAmount, destAddress, maxBoostFeeBps, srcChain, ccmParams } = input;
+  const {
+    expectedDepositAmount,
+    destAddress,
+    maxBoostFeeBps,
+    srcChain,
+    ccmParams,
+    fillOrKillParams,
+  } = input;
 
   const chainInfo = await prisma.chainTracking.findFirst({
     where: {
@@ -102,6 +109,9 @@ export default async function openSwapDepositChannel(
       maxBoostFeeBps: Number(maxBoostFeeBps) || 0,
       openedThroughBackend: true,
       openingFeePaid: channelOpeningFee.toString(),
+      fokMinPriceX128: fillOrKillParams?.minPriceX128,
+      fokRetryDurationBlocks: fillOrKillParams?.retryDurationBlocks,
+      fokRefundAddress: fillOrKillParams?.refundAddress,
       ...blockInfo,
     },
     update: {
