@@ -1,37 +1,21 @@
+import { swappingSwapDepositAddressReady as schema141 } from '@chainflip/processor/141/swapping/swapDepositAddressReady';
+import { swappingSwapDepositAddressReady as schema150 } from '@chainflip/processor/150/swapping/swapDepositAddressReady';
+import { swappingSwapDepositAddressReady as schema160 } from '@chainflip/processor/160/swapping/swapDepositAddressReady';
 import { z } from 'zod';
-import { u64, internalAssetEnum, u128, accountId } from '@/shared/parsers';
-import { ccmParamsSchema } from '@/shared/schemas';
-import { encodedAddress } from './common';
+import { foreignChainAddress } from '@/shared/parsers';
+import env from '../config/env';
 import { calculateExpiryTime } from '../utils/function';
 import { EventHandlerArgs } from './index';
 
-const affiliateSchema = z.object({
-  bps: z.number().int().nonnegative(),
-  account: accountId,
-});
-
-const swapDepositAddressReadyArgs = z.object({
-  depositAddress: encodedAddress,
-  destinationAddress: encodedAddress,
-  sourceAsset: internalAssetEnum,
-  destinationAsset: internalAssetEnum,
-  channelId: u64,
-  brokerCommissionRate: z.number().int(),
-  sourceChainExpiryBlock: u128.optional(),
-  channelMetadata: ccmParamsSchema.optional(),
-  boostFee: z.number().int().optional(),
-  channelOpeningFee: u128.optional().default(0),
-  affiliateFees: z.array(affiliateSchema).optional().default([]),
-  refundParameters: z
-    .object({
-      minPrice: u128,
-      refundAddress: encodedAddress,
-      retryDuration: z.number().int(),
-    })
-    .optional(),
-});
+const swapDepositAddressReadyArgs = z.union([
+  schema160,
+  schema150,
+  schema141.transform((args) => ({ ...args, refundParameters: undefined })),
+]);
 
 export type SwapDepositAddressReadyEvent = z.input<typeof swapDepositAddressReadyArgs>;
+
+const foreignChainAddressSchema = foreignChainAddress(env.CHAINFLIP_NETWORK);
 
 export const swapDepositAddressReady = async ({
   prisma,
@@ -80,7 +64,8 @@ export const swapDepositAddressReady = async ({
     channelId,
     openingFeePaid: channelOpeningFee.toString(),
     fokMinPriceX128: refundParameters?.minPrice.toString(),
-    fokRefundAddress: refundParameters?.refundAddress.address,
+    // TODO(1.6): this should no longer a foreign chain address
+    fokRefundAddress: foreignChainAddressSchema.optional().parse(refundParameters?.refundAddress),
     fokRetryDurationBlocks: refundParameters?.retryDuration,
     ...rest,
   };
@@ -113,7 +98,7 @@ export const swapDepositAddressReady = async ({
           },
         },
         estimatedExpiryAt: estimatedExpiryTime,
-        ccmGasBudget: channelMetadata?.gasBudget,
+        ccmGasBudget: channelMetadata?.gasBudget.toString(),
         ccmMessage: channelMetadata?.message,
         ...data,
       },

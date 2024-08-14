@@ -1,4 +1,5 @@
 import { reverseBytes } from '@chainflip/utils/bytes';
+import assert from 'assert';
 import { z } from 'zod';
 import { assetConstants, Chain } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
@@ -47,6 +48,9 @@ const getTxRef = (
       return (details as z.output<typeof bitcoinDepositDetails>)?.txId;
     case 'Polkadot':
       return `${blockHeight}-${details as z.output<typeof polkadotDepositDetails>}`;
+    case 'Solana':
+      assert(details == null);
+      return undefined;
     default:
       return assertUnreachable(chain);
   }

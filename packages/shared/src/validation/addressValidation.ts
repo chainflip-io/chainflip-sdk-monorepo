@@ -1,4 +1,5 @@
 import * as bitcoin from '@chainflip/bitcoin';
+import * as base58 from '@chainflip/utils/base58';
 import * as ss58 from '@chainflip/utils/ss58';
 import * as ethers from 'ethers';
 import { Chain, ChainflipNetwork } from '../enums';
@@ -26,8 +27,14 @@ export const validateBitcoinTestnetAddress: AddressValidator = (address: string)
 export const validateBitcoinRegtestAddress: AddressValidator = (address: string) =>
   bitcoin.isValidAddressForNetwork(address, 'regtest');
 
-// TODO(solana): implement
-export const validateSolanaAddress: AddressValidator = (_address: string) => true;
+export const validateSolanaAddress: AddressValidator = (address: string) => {
+  try {
+    base58.decode(address);
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 const validators: Record<ChainflipNetwork | 'localnet', Record<Chain, AddressValidator>> = {
   mainnet: {

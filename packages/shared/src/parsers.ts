@@ -1,4 +1,6 @@
 import { decodeAddress } from '@chainflip/bitcoin';
+import * as base58 from '@chainflip/utils/base58';
+import { hexToBytes } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
 import { HexString } from '@chainflip/utils/types';
@@ -81,12 +83,17 @@ export const dotAddress = z
 
 export const ethereumAddress = hexString.refine(
   (address) => ethers.isAddress(address),
-  (address) => ({ message: `${address} is not a valid ethereum address` }),
+  (address) => ({ message: `${address} is not a valid Ethereum address` }),
 );
 
 export const chainflipAddress = string.refine(
   (address) => address.startsWith('cF') && ss58.decode(address),
-  (address) => ({ message: `${address} is not a valid chainflip address` }),
+  (address) => ({ message: `${address} is not a valid Chainflip address` }),
+);
+
+export const solanaAddress = string.refine(
+  (address) => base58.decode(address),
+  (address) => ({ message: `${address} is not a valid Solana address` }),
 );
 
 export const u64 = numericString.transform((arg) => BigInt(arg));
@@ -137,6 +144,7 @@ export const accountId = z
 
 export const actionSchema = z.union([
   z.object({ __kind: z.literal('Swap'), swapId: u128 }),
+  z.object({ __kind: z.literal('Swap'), swapRequestId: u128 }),
   z.object({ __kind: z.literal('LiquidityProvision'), lpAccount: hexString }),
   z.object({
     __kind: z.literal('CcmTransfer'),
@@ -160,17 +168,14 @@ export const bitcoinScriptPubKey = (network: ChainflipNetwork) =>
       z.object({ __kind: z.literal('P2WPKH'), value: hexString }),
       z.object({ __kind: z.literal('P2WSH'), value: hexString }),
       z.object({ __kind: z.literal('Taproot'), value: hexString }),
-      z.object({
-        __kind: z.literal('OtherSegwit'),
-        value: z.object({ version: z.number(), program: hexString }),
-      }),
+      z.object({ __kind: z.literal('OtherSegwit'), version: z.number(), program: hexString }),
     ])
-    .transform(({ __kind, value }) => {
-      if (__kind === 'OtherSegwit') {
+    .transform((script) => {
+      if (script.__kind === 'OtherSegwit') {
         throw new Error('OtherSegwit scriptPubKey not supported');
       }
 
-      return decodeAddress(value, __kind, network);
+      return decodeAddress(script.value, script.__kind, network);
     });
 
 export const depositAddressSchema = (network: ChainflipNetwork) =>
@@ -188,3 +193,21 @@ export const encodeDotAddress = <T extends { asset: InternalAsset; depositAddres
   }
   return args;
 };
+
+const hexEncodedBase58Address = hexString.transform((value) => base58.encode(hexToBytes(value)));
+const extractAddress = <T extends { value: string }>({ value }: T) => value;
+
+export const foreignChainAddress = (network: ChainflipNetwork) =>
+  z.union([
+    z.object({ __kind: z.literal('Eth'), value: hexString }).transform(extractAddress),
+    z
+      .object({ __kind: z.literal('Dot'), value: hexString })
+      .transform(({ value }) => ss58.encode({ data: value, ss58Format: 0 })),
+    z
+      .object({ __kind: z.literal('Btc'), value: bitcoinScriptPubKey(network) })
+      .transform(extractAddress),
+    z.object({ __kind: z.literal('Arb'), value: hexString }).transform(extractAddress),
+    z
+      .object({ __kind: z.literal('Sol'), value: hexEncodedBase58Address })
+      .transform(extractAddress),
+  ]);

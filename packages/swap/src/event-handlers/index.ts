@@ -61,10 +61,6 @@ export const events = {
     DepositBoosted: 'BitcoinIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'BitcoinIngressEgress.InsufficientBoostLiquidity',
   },
-  BitcoinBroadcaster: {
-    BroadcastSuccess: 'BitcoinBroadcaster.BroadcastSuccess',
-    BroadcastAborted: 'BitcoinBroadcaster.BroadcastAborted',
-  },
   EthereumIngressEgress: {
     EgressScheduled: 'EthereumIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'EthereumIngressEgress.BatchBroadcastRequested',
@@ -87,14 +83,6 @@ export const events = {
     DepositBoosted: 'ArbitrumIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'ArbitrumIngressEgress.InsufficientBoostLiquidity',
   },
-  EthereumBroadcaster: {
-    BroadcastSuccess: 'EthereumBroadcaster.BroadcastSuccess',
-    BroadcastAborted: 'EthereumBroadcaster.BroadcastAborted',
-  },
-  ArbitrumBroadcaster: {
-    BroadcastSuccess: 'ArbitrumBroadcaster.BroadcastSuccess',
-    BroadcastAborted: 'ArbitrumBroadcaster.BroadcastAborted',
-  },
   PolkadotIngressEgress: {
     EgressScheduled: 'PolkadotIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'PolkadotIngressEgress.BatchBroadcastRequested',
@@ -106,9 +94,36 @@ export const events = {
     DepositBoosted: 'PolkadotIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'PolkadotIngressEgress.InsufficientBoostLiquidity',
   },
+  SolanaIngressEgress: {
+    EgressScheduled: 'SolanaIngressEgress.EgressScheduled',
+    BatchBroadcastRequested: 'SolanaIngressEgress.BatchBroadcastRequested',
+    CcmBroadcastRequested: 'SolanaIngressEgress.CcmBroadcastRequested',
+    DepositReceived: 'PolkadotIngressEgress.DepositReceived', // Renamed to DepositFinalised since spec 140
+    DepositFinalised: 'SolanaIngressEgress.DepositFinalised',
+    DepositIgnored: 'SolanaIngressEgress.DepositIgnored',
+    BoostPoolCreated: 'SolanaIngressEgress.BoostPoolCreated',
+    DepositBoosted: 'SolanaIngressEgress.DepositBoosted',
+    InsufficientBoostLiquidity: 'SolanaIngressEgress.InsufficientBoostLiquidity',
+  },
+  BitcoinBroadcaster: {
+    BroadcastSuccess: 'BitcoinBroadcaster.BroadcastSuccess',
+    BroadcastAborted: 'BitcoinBroadcaster.BroadcastAborted',
+  },
+  EthereumBroadcaster: {
+    BroadcastSuccess: 'EthereumBroadcaster.BroadcastSuccess',
+    BroadcastAborted: 'EthereumBroadcaster.BroadcastAborted',
+  },
+  ArbitrumBroadcaster: {
+    BroadcastSuccess: 'ArbitrumBroadcaster.BroadcastSuccess',
+    BroadcastAborted: 'ArbitrumBroadcaster.BroadcastAborted',
+  },
   PolkadotBroadcaster: {
     BroadcastSuccess: 'PolkadotBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'PolkadotBroadcaster.BroadcastAborted',
+  },
+  SolanaBroadcaster: {
+    BroadcastSuccess: 'SolanaBroadcaster.BroadcastSuccess',
+    BroadcastAborted: 'SolanaBroadcaster.BroadcastAborted',
   },
   BitcoinChainTracking: {
     ChainStateUpdated: 'BitcoinChainTracking.ChainStateUpdated',
@@ -121,6 +136,9 @@ export const events = {
   },
   PolkadotChainTracking: {
     ChainStateUpdated: 'PolkadotChainTracking.ChainStateUpdated',
+  },
+  SolanaChainTracking: {
+    ChainStateUpdated: 'SolanaChainTracking.ChainStateUpdated',
   },
 } as const;
 
@@ -147,20 +165,12 @@ const handlers = [
         handler: ccmDepositReceived,
       },
       {
-        name: events.Swapping.SwapDepositAddressReady,
-        handler: swapDepositAddressReady,
-      },
-      {
         name: events.Swapping.SwapEgressScheduled,
         handler: swapEgressScheduled,
       },
       {
         name: events.Swapping.RefundEgressScheduled,
         handler: refundEgressScheduled,
-      },
-      {
-        name: events.LiquidityProvider.LiquidityDepositAddressReady,
-        handler: liquidityDepositAddressReady,
       },
       ...Object.values(Chains).flatMap((chain) => [
         {
@@ -224,25 +234,34 @@ const handlers = [
   },
   {
     spec: 140,
-    handlers: Object.values(Chains).flatMap((chain) => [
+    handlers: [
       {
-        name: events[`${chain}IngressEgress`].DepositFinalised,
-        handler: depositFinalised,
+        name: events.Swapping.SwapDepositAddressReady,
+        handler: swapDepositAddressReady,
       },
       {
-        name: events[`${chain}IngressEgress`].BoostPoolCreated,
-        handler: boostPoolCreated,
+        name: events.LiquidityProvider.LiquidityDepositAddressReady,
+        handler: liquidityDepositAddressReady,
       },
-      {
-        name: events[`${chain}IngressEgress`].DepositBoosted,
-        handler: depositBoosted,
-      },
-
-      {
-        name: events[`${chain}IngressEgress`].InsufficientBoostLiquidity,
-        handler: insufficientBoostLiquidity,
-      },
-    ]),
+      ...Object.values(Chains).flatMap((chain) => [
+        {
+          name: events[`${chain}IngressEgress`].DepositFinalised,
+          handler: depositFinalised,
+        },
+        {
+          name: events[`${chain}IngressEgress`].BoostPoolCreated,
+          handler: boostPoolCreated,
+        },
+        {
+          name: events[`${chain}IngressEgress`].DepositBoosted,
+          handler: depositBoosted,
+        },
+        {
+          name: events[`${chain}IngressEgress`].InsufficientBoostLiquidity,
+          handler: insufficientBoostLiquidity,
+        },
+      ]),
+    ],
   },
   {
     spec: 150,
