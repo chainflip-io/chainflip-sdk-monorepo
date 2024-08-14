@@ -60,7 +60,7 @@ export const ccmParamsSchema = z.object({
   cfParameters: hexStringWithMaxByteSize(1024 * 10).optional(),
 });
 
-export type CcmParams = z.infer<typeof ccmParamsSchema>;
+export type CcmParams = z.input<typeof ccmParamsSchema>;
 
 export const affiliateBroker = z
   .object({
