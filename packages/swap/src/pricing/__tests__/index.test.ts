@@ -21,6 +21,8 @@ const priceMap = {
   Usdc: 0.9989897393887496,
   ArbEth: 3638.78272243294,
   ArbUsdc: 0.9989897393887496,
+  Sol: 150.1234,
+  SolUsdc: 0.9989897393887496,
 } as const satisfies Record<InternalAsset, number>;
 
 describe(PriceCache, () => {

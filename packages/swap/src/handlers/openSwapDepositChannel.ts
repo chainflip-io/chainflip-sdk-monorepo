@@ -103,7 +103,7 @@ export default async function openSwapDepositChannel(
       depositAddress,
       srcChainExpiryBlock,
       estimatedExpiryAt: estimatedExpiryTime,
-      ccmGasBudget: ccmParams?.gasBudget,
+      ccmGasBudget: ccmParams?.gasBudget && BigInt(ccmParams.gasBudget).toString(),
       ccmMessage: ccmParams?.message,
       brokerCommissionBps: 0,
       maxBoostFeeBps: Number(maxBoostFeeBps) || 0,

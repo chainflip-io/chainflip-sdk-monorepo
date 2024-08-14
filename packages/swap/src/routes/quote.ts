@@ -34,6 +34,7 @@ const fallbackChains = {
   [Assets.BTC]: Chains.Bitcoin,
   [Assets.DOT]: Chains.Polkadot,
   [Assets.USDT]: Chains.Ethereum,
+  [Assets.SOL]: Chains.Solana,
 } satisfies Record<Asset, Chain>;
 
 const quoteRouter = (io: Server) => {
