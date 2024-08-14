@@ -728,12 +728,13 @@ describe(SwapSDK, () => {
   });
 
   describe(SwapSDK.prototype.getChannelOpeningFees, () => {
-    it('should return correct fees', async () => {
+    it('returns the correct fees', async () => {
       expect(await sdk.getChannelOpeningFees()).toEqual({
         Arbitrum: 0x0n,
         Bitcoin: 0x0n,
         Ethereum: 0x10n,
         Polkadot: 0x0n,
+        Solana: 0x0n,
       });
     });
   });

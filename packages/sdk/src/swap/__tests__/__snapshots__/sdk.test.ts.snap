@@ -137,6 +137,32 @@ exports[`SwapSDK getAssets returns the correct values for backspin 1`] = `
     "name": "Arbitrum Ether",
     "symbol": "ETH",
   },
+  {
+    "asset": "SOL",
+    "chain": "Solana",
+    "chainflipId": "Sol",
+    "contractAddress": undefined,
+    "decimals": 9,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "0",
+    "minimumSwapAmount": "0",
+    "name": "Solana",
+    "symbol": "SOL",
+  },
+  {
+    "asset": "USDC",
+    "chain": "Solana",
+    "chainflipId": "SolUsdc",
+    "contractAddress": "",
+    "decimals": 6,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "0",
+    "minimumSwapAmount": "0",
+    "name": "Solana USDC",
+    "symbol": "USDC",
+  },
 ]
 `;
 
@@ -245,6 +271,32 @@ exports[`SwapSDK getAssets returns the correct values for mainnet 1`] = `
     "minimumSwapAmount": "0",
     "name": "Arbitrum Ether",
     "symbol": "ETH",
+  },
+  {
+    "asset": "SOL",
+    "chain": "Solana",
+    "chainflipId": "Sol",
+    "contractAddress": undefined,
+    "decimals": 9,
+    "isMainnet": true,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "0",
+    "minimumSwapAmount": "0",
+    "name": "Solana",
+    "symbol": "SOL",
+  },
+  {
+    "asset": "USDC",
+    "chain": "Solana",
+    "chainflipId": "SolUsdc",
+    "contractAddress": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "decimals": 6,
+    "isMainnet": true,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "0",
+    "minimumSwapAmount": "0",
+    "name": "Solana USDC",
+    "symbol": "USDC",
   },
 ]
 `;
@@ -355,6 +407,32 @@ exports[`SwapSDK getAssets returns the correct values for perseverance 1`] = `
     "name": "Arbitrum Ether",
     "symbol": "ETH",
   },
+  {
+    "asset": "SOL",
+    "chain": "Solana",
+    "chainflipId": "Sol",
+    "contractAddress": undefined,
+    "decimals": 9,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "0",
+    "minimumSwapAmount": "0",
+    "name": "Solana",
+    "symbol": "SOL",
+  },
+  {
+    "asset": "USDC",
+    "chain": "Solana",
+    "chainflipId": "SolUsdc",
+    "contractAddress": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+    "decimals": 6,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "0",
+    "minimumSwapAmount": "0",
+    "name": "Solana USDC",
+    "symbol": "USDC",
+  },
 ]
 `;
 
@@ -463,6 +541,32 @@ exports[`SwapSDK getAssets returns the correct values for sisyphos 1`] = `
     "minimumSwapAmount": "0",
     "name": "Arbitrum Ether",
     "symbol": "ETH",
+  },
+  {
+    "asset": "SOL",
+    "chain": "Solana",
+    "chainflipId": "Sol",
+    "contractAddress": undefined,
+    "decimals": 9,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "0",
+    "minimumSwapAmount": "0",
+    "name": "Solana",
+    "symbol": "SOL",
+  },
+  {
+    "asset": "USDC",
+    "chain": "Solana",
+    "chainflipId": "SolUsdc",
+    "contractAddress": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+    "decimals": 6,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "0",
+    "minimumSwapAmount": "0",
+    "name": "Solana USDC",
+    "symbol": "USDC",
   },
 ]
 `;
@@ -580,6 +684,14 @@ exports[`SwapSDK getChains returns the correct values for backspin 1`] = `
     "name": "Arbitrum",
     "requiredBlockConfirmations": 2,
   },
+  {
+    "chain": "Solana",
+    "evmChainId": undefined,
+    "isMainnet": false,
+    "maxRetryDurationBlocks": 0,
+    "name": "Solana",
+    "requiredBlockConfirmations": undefined,
+  },
 ]
 `;
 
@@ -616,6 +728,14 @@ exports[`SwapSDK getChains returns the correct values for mainnet 1`] = `
     "maxRetryDurationBlocks": 40,
     "name": "Arbitrum",
     "requiredBlockConfirmations": 2,
+  },
+  {
+    "chain": "Solana",
+    "evmChainId": undefined,
+    "isMainnet": true,
+    "maxRetryDurationBlocks": 0,
+    "name": "Solana",
+    "requiredBlockConfirmations": undefined,
   },
 ]
 `;
@@ -654,6 +774,14 @@ exports[`SwapSDK getChains returns the correct values for perseverance 1`] = `
     "name": "Arbitrum",
     "requiredBlockConfirmations": 2,
   },
+  {
+    "chain": "Solana",
+    "evmChainId": undefined,
+    "isMainnet": false,
+    "maxRetryDurationBlocks": 0,
+    "name": "Solana",
+    "requiredBlockConfirmations": undefined,
+  },
 ]
 `;
 
@@ -691,6 +819,14 @@ exports[`SwapSDK getChains returns the correct values for sisyphos 1`] = `
     "name": "Arbitrum",
     "requiredBlockConfirmations": 2,
   },
+  {
+    "chain": "Solana",
+    "evmChainId": undefined,
+    "isMainnet": false,
+    "maxRetryDurationBlocks": 0,
+    "name": "Solana",
+    "requiredBlockConfirmations": undefined,
+  },
 ]
 `;
 
@@ -719,6 +855,14 @@ exports[`SwapSDK getChains returns the filtered destination chains for the chain
     "maxRetryDurationBlocks": 40,
     "name": "Arbitrum",
     "requiredBlockConfirmations": 2,
+  },
+  {
+    "chain": "Solana",
+    "evmChainId": undefined,
+    "isMainnet": false,
+    "maxRetryDurationBlocks": 0,
+    "name": "Solana",
+    "requiredBlockConfirmations": undefined,
   },
 ]
 `;
