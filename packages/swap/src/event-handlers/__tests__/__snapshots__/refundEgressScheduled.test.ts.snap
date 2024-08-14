@@ -27,8 +27,8 @@ exports[`refundEgressScheduled creates egress for refund on an existing swap 1`]
   ],
   "id": Any<BigInt>,
   "intermediateAmount": null,
-  "latestSwapScheduledAt": Any<Date>,
-  "latestSwapScheduledBlockIndex": "120-0",
+  "latestSwapRescheduledAt": null,
+  "latestSwapRescheduledBlockIndex": null,
   "nativeId": 9876545n,
   "prewitnessedDepositId": null,
   "refundEgress": {
@@ -44,6 +44,8 @@ exports[`refundEgressScheduled creates egress for refund on an existing swap 1`]
   "swapExecutedBlockIndex": "120-0",
   "swapInputAmount": "10000000000",
   "swapOutputAmount": "10000000000",
+  "swapScheduledAt": Any<Date>,
+  "swapScheduledBlockIndex": "120-0",
   "type": "SWAP",
   "updatedAt": Any<Date>,
 }
