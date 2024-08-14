@@ -18,8 +18,8 @@ export default async function swapRescheduled({
 
   await prisma.swap.update({
     data: {
-      latestSwapScheduledAt: new Date(block.timestamp),
-      latestSwapScheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
+      latestSwapRescheduledAt: new Date(block.timestamp),
+      latestSwapRescheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
       retryCount: {
         increment: 1,
       },
