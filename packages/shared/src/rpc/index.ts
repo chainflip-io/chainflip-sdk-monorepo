@@ -79,13 +79,10 @@ export const getRuntimeVersion = createRequest('state_getRuntimeVersion');
 export const getBlockHash = createRequest('chain_getBlockHash');
 
 export const getAllBoostPoolsDepth = transform(createRequest('cf_boost_pools_depth'), (result) =>
-  result
-    // TODO(solana): remove this
-    .filter((depth) => depth.chain !== 'Solana')
-    .map(({ chain, asset, ...rest }) => ({
-      asset: getInternalAsset({ chain, asset }),
-      ...rest,
-    })),
+  result.map(({ chain, asset, ...rest }) => ({
+    asset: getInternalAsset({ chain, asset }),
+    ...rest,
+  })),
 );
 
 export type BoostPoolsDepth = Awaited<ReturnType<typeof getAllBoostPoolsDepth>>;
