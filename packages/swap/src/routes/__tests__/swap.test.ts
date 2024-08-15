@@ -14,7 +14,7 @@ import {
 } from '../../event-handlers/__tests__/utils';
 import { getPendingBroadcast } from '../../ingress-egress-tracking';
 import app from '../../server';
-import { Failure, State } from '../swap';
+import { State } from '../swap';
 
 jest.mock('../../utils/disallowChannel', () => ({
   __esModule: true,
@@ -497,6 +497,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
+          "egressType": "SWAP",
           "estimatedDefaultDurationSeconds": 48,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
@@ -528,7 +529,7 @@ describe('server', () => {
       `);
     });
 
-    it(`retrieves a swap in ${State.RefundEgressScheduled} status`, async () => {
+    it(`retrieves a swap with a refund in ${State.EgressScheduled} status`, async () => {
       const swapIntent = await createDepositChannel({
         srcChainExpiryBlock: 200,
         swaps: {
@@ -594,6 +595,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
+          "egressType": "REFUND",
           "estimatedDefaultDurationSeconds": 48,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
@@ -615,7 +617,7 @@ describe('server', () => {
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
-          "state": "REFUND_EGRESS_SCHEDULED",
+          "state": "EGRESS_SCHEDULED",
           "swapScheduledAt": 1669907135201,
           "swapScheduledBlockIndex": "100-3",
           "type": "SWAP",
@@ -708,6 +710,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
+          "egressType": "SWAP",
           "estimatedDefaultDurationSeconds": 48,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
@@ -817,6 +820,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
+          "egressType": "SWAP",
           "estimatedDefaultDurationSeconds": 48,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
@@ -930,6 +934,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
+          "egressType": "SWAP",
           "estimatedDefaultDurationSeconds": 48,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
@@ -1043,6 +1048,7 @@ describe('server', () => {
           "egressAmount": "1000000000000000000",
           "egressScheduledAt": 1669907147201,
           "egressScheduledBlockIndex": "202-3",
+          "egressType": "SWAP",
           "estimatedDefaultDurationSeconds": 48,
           "estimatedDepositChannelExpiryTime": 1699527900000,
           "expectedDepositAmount": "10000000000",
@@ -1733,7 +1739,7 @@ describe('server', () => {
       `);
     });
 
-    it(`retrieves a swap with FillOrKillParams in ${State.Failed} with REFUND_BROADCAST_ABORTED`, async () => {
+    it(`retrieves a swap with FillOrKillParams in ${State.BroadcastAborted}`, async () => {
       const channel = await createDepositChannel({
         srcChainExpiryBlock: 200,
         expectedDepositAmount: '25000000000000000000000',
@@ -1786,12 +1792,12 @@ describe('server', () => {
           refundAddress: expect.any(String),
           retryDurationBlocks: expect.any(Number),
         },
-        state: 'FAILED',
-        failure: Failure.RefundBroadcastAborted,
+        state: 'BROADCAST_ABORTED',
+        egressType: 'REFUND',
       });
     });
 
-    it(`retrieves a swap with FillOrKillParams in ${State.Refunded}`, async () => {
+    it(`retrieves a swap with FillOrKillParams in ${State.Complete}`, async () => {
       const channel = await createDepositChannel({
         srcChainExpiryBlock: 200,
         expectedDepositAmount: '25000000000000000000000',
@@ -1844,7 +1850,8 @@ describe('server', () => {
           refundAddress: expect.any(String),
           retryDurationBlocks: expect.any(Number),
         },
-        state: 'REFUNDED',
+        state: 'COMPLETE',
+        egressType: 'REFUND',
       });
     });
   });

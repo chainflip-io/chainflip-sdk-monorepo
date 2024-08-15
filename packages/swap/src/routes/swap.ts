@@ -1,4 +1,3 @@
-import assert from 'assert';
 import express from 'express';
 import { Chain, assetConstants } from '@/shared/enums';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
@@ -19,12 +18,10 @@ const router = express.Router();
 export enum State {
   Failed = 'FAILED',
   Complete = 'COMPLETE',
-  Refunded = 'REFUNDED',
   BroadcastAborted = 'BROADCAST_ABORTED', // TODO: move to Failed state
   Broadcasted = 'BROADCASTED',
   BroadcastRequested = 'BROADCAST_REQUESTED',
   EgressScheduled = 'EGRESS_SCHEDULED',
-  RefundEgressScheduled = 'REFUND_EGRESS_SCHEDULED',
   SwapExecuted = 'SWAP_EXECUTED',
   DepositReceived = 'DEPOSIT_RECEIVED',
   AwaitingDeposit = 'AWAITING_DEPOSIT',
@@ -34,7 +31,6 @@ export enum Failure {
   IngressIgnored = 'INGRESS_IGNORED',
   EgressIgnored = 'EGRESS_IGNORED',
   RefundEgressIgnored = 'REFUND_EGRESS_IGNORED',
-  RefundBroadcastAborted = 'REFUND_BROADCAST_ABORTED',
 }
 
 const depositChannelInclude = {
@@ -155,6 +151,9 @@ router.get(
     let egressTrackerTxRef;
     let error: { name: string; message: string } | undefined;
 
+    const egress = swap?.egress ?? swap?.refundEgress;
+    const egressType = egress && (egress === swap?.egress ? 'SWAP' : 'REFUND');
+
     if (failedSwap || swap?.ignoredEgress) {
       error = {
         name: 'Unknown',
@@ -189,34 +188,20 @@ router.get(
           message: stateChainError.docs,
         };
       }
-    } else if (swap?.egress?.broadcast?.succeededAt) {
-      assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
+    } else if (egress?.broadcast?.succeededAt) {
       state = State.Complete;
-    } else if (swap?.egress?.broadcast?.abortedAt) {
-      assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
+    } else if (egress?.broadcast?.abortedAt) {
       state = State.BroadcastAborted;
-    } else if (swap?.egress?.broadcast) {
-      assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
-      const pendingBroadcast = await getPendingBroadcast(swap.egress.broadcast);
+    } else if (egress?.broadcast) {
+      const pendingBroadcast = await getPendingBroadcast(egress.broadcast);
       if (pendingBroadcast) {
         state = State.Broadcasted;
         egressTrackerTxRef = pendingBroadcast.tx_ref;
       } else {
         state = State.BroadcastRequested;
       }
-    } else if (swap?.egress) {
-      assert(swap.swapExecutedAt, 'swapExecutedAt should not be null');
+    } else if (egress) {
       state = State.EgressScheduled;
-    } else if (swap?.refundEgress) {
-      assert(!swap.swapExecutedAt, 'swapExecutedAt should be null');
-      if (swap.refundEgress.broadcast?.abortedAt) {
-        state = State.Failed;
-        failureMode = Failure.RefundBroadcastAborted;
-      } else if (swap.refundEgress.broadcast?.succeededAt) {
-        state = State.Refunded;
-      } else {
-        state = State.RefundEgressScheduled;
-      }
     } else if (swap?.swapExecutedAt) {
       state = State.SwapExecuted;
     } else if (swap?.depositReceivedAt) {
@@ -265,7 +250,6 @@ router.get(
       failedSwap?.depositTransactionRef ??
       undefined;
 
-    const egress = swap?.egress ?? swap?.refundEgress;
     const response = {
       state,
       type: swap?.type,
@@ -291,6 +275,7 @@ router.get(
       intermediateAmount: swap?.intermediateAmount?.toFixed(),
       swapExecutedAt: swap?.swapExecutedAt?.valueOf(),
       swapExecutedBlockIndex: swap?.swapExecutedBlockIndex ?? undefined,
+      egressType: egressType ?? undefined,
       egressAmount: egress?.amount?.toFixed(),
       egressScheduledAt: egress?.scheduledAt?.valueOf(),
       egressScheduledBlockIndex: egress?.scheduledBlockIndex ?? undefined,
