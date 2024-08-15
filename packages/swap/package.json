@@ -55,7 +55,7 @@
   },
   "dependencies": {
     "@chainflip/processor": "^1.4.9",
-    "@chainflip/rpc": "^1.5.3",
+    "@chainflip/rpc": "^1.5.4",
     "@chainflip/utils": "^0.4.0",
     "@polkadot/api": "^12.2.3",
     "@polkadot/types": "^11.0.2",
