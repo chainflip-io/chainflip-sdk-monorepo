@@ -1,5 +1,4 @@
 import { HttpClient, RpcParams } from '@chainflip/rpc';
-import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { z } from 'zod';
 import { Chain, ChainflipNetwork, Asset, Chains } from './enums';
@@ -37,7 +36,7 @@ const submitAddress = (chain: Chain, address: string): string => {
   if (chain === Chains.Polkadot) {
     return address.startsWith('0x')
       ? z.string().length(66).parse(address) // we only accept 32 byte dot addresses
-      : bytesToHex(ss58.decode(address).data);
+      : ss58.toPublicKey(address);
   }
   return address;
 };
@@ -115,7 +114,10 @@ export async function requestSwapDepositAddress(
     },
     maxBoostFeeBps,
     swapRequest.affiliates,
-    swapRequest.fillOrKillParams,
+    swapRequest.fillOrKillParams && {
+      ...swapRequest.fillOrKillParams,
+      refundAddress: submitAddress(srcChain, swapRequest.fillOrKillParams.refundAddress),
+    },
   ]);
 
   const response = await client.sendRequest(
