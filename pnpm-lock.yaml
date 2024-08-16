@@ -20,6 +20,9 @@ importers:
       superjson:
         specifier: ^1.13.3
         version: 1.13.3
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
     devDependencies:
       '@swc/core':
         specifier: ^1.7.10
@@ -97,8 +100,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       '@chainflip/rpc':
-        specifier: ^1.5.6
-        version: 1.5.6
+        specifier: ^1.6.0
+        version: 1.6.0
       '@chainflip/utils':
         specifier: ^0.4.0
         version: 0.4.0
@@ -137,8 +140,8 @@ importers:
   packages/sdk:
     dependencies:
       '@chainflip/rpc':
-        specifier: ^1.5.6
-        version: 1.5.6
+        specifier: ^1.6.0
+        version: 1.6.0
       '@chainflip/utils':
         specifier: ^0.4.0
         version: 0.4.0
@@ -159,8 +162,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       '@chainflip/rpc':
-        specifier: ^1.5.6
-        version: 1.5.6
+        specifier: ^1.6.0
+        version: 1.6.0
       '@chainflip/solana':
         specifier: ^1.0.0
         version: 1.0.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -214,8 +217,8 @@ importers:
         specifier: ^1.5.4
         version: 1.5.4
       '@chainflip/rpc':
-        specifier: ^1.5.6
-        version: 1.5.6
+        specifier: ^1.6.0
+        version: 1.6.0
       '@chainflip/utils':
         specifier: ^0.4.0
         version: 0.4.0
@@ -746,8 +749,8 @@ packages:
   '@chainflip/processor@1.5.4':
     resolution: {integrity: sha512-FmV/k9CKNu3V3MyatWYEo1jIqa8/+lgPVoPuon3KnAaBjW87tU7JDfkmsWrv1035dBYhivWJDBhzRrKwgZzTXA==}
 
-  '@chainflip/rpc@1.5.6':
-    resolution: {integrity: sha512-rPtLR/r0Xfh4SQdNhUMMCvEMO15jDdBFXaJOIDQsD7I/YGfx8FFv4EJHYFI0nz6H1Ts5xu6KLSpmcXWVfkOP7g==}
+  '@chainflip/rpc@1.6.0':
+    resolution: {integrity: sha512-LQFOJ9i8xceR/t6jJXH1UUU602aPDl5TW23V1IUGCZDd21YyoMG8xmk/q8Ija9HF5g1WBTqrfzRpIjBsoSGPRQ==}
 
   '@chainflip/solana@1.0.0':
     resolution: {integrity: sha512-e2xwWro9C5OimIW/s6jgJQ2aBfGJOJfuqB3K8Cd9S7PmC5CTOvZXl2z68enDknP0PGfNvSbkdxWTGB3kLrxSCw==}
@@ -6318,11 +6321,11 @@ snapshots:
 
   '@chainflip/processor@1.5.4':
     dependencies:
-      '@chainflip/rpc': 1.5.6
+      '@chainflip/rpc': 1.6.0
       '@chainflip/utils': 0.3.0
       zod: 3.23.8
 
-  '@chainflip/rpc@1.5.6':
+  '@chainflip/rpc@1.6.0':
     dependencies:
       '@chainflip/utils': 0.3.0
       zod: 3.23.8

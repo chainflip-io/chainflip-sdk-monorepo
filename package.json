@@ -58,6 +58,7 @@
     "@trpc/client": "^10.45.2",
     "@trpc/server": "^10.45.2",
     "eslint-plugin-jest": "^28.5.0",
-    "superjson": "^1.13.3"
+    "superjson": "^1.13.3",
+    "zod": "^3.23.8"
   }
 }
