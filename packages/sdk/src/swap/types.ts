@@ -175,19 +175,9 @@ type SwapState =
       swapExecutedAt: number;
       swapExecutedBlockIndex: string;
     }
-  | {
+  | ({
       state: 'EGRESS_SCHEDULED';
-      swapId: string;
-      depositAmount: string;
-      depositReceivedAt: number;
-      depositReceivedBlockIndex: string;
-      intermediateAmount: string | undefined;
-      swapExecutedAt: number;
-      swapExecutedBlockIndex: string;
-      egressAmount: string;
-      egressScheduledAt: number;
-      egressScheduledBlockIndex: string;
-    }
+    } & EgressScheduled)
   | ({
       state: 'BROADCAST_REQUESTED';
       broadcastRequestedAt: number;
