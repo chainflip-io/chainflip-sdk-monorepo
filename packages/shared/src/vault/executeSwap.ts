@@ -85,7 +85,7 @@ const swapNative = async (
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
     assetConstants[destAsset].contractId,
-    params.ccmMetadata?.cfParameters ?? '0x',
+    params.ccmParams?.cfParameters ?? '0x',
     { value: params.amount, ...extractOverrides(txOpts) },
   );
   await transaction.wait(txOpts.wait);
