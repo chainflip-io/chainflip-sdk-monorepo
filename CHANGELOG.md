@@ -10,7 +10,14 @@ which it is deprecated.
 ## 1.5.0
 
 ### Added
-
+- `SwapSDK.prototype.requestDepositAddress` supports an optional
+  `FillOrKillParams` option. It includes
+  - `retryDurationBlocks`: number of blocks to retry the swap if the price was
+  lower than the `minPrice`
+  - `refundAddress`: the address to refund the funds to in case the price limit
+  was never met
+  - `minPrice`: the minimum price that the swap can happen at. The swap will not
+  go through if the price is below this value
 - `SwapSDK.prototype.getStatus` will return a `depositTransactionRef`. This
   references the transaction that triggered a swap. For Bitcoin and EVM chains,
   this is a transaction hash. For Polkadot, it is a block number and extrinsic
@@ -26,15 +33,13 @@ which it is deprecated.
   - `refundAddress`: the address to return the funds to in case of not reaching
     the expected price
   - `minPrice`: the minimum price that the swap can happen at
-- A new state `REFUND_EGRESS_SCHEDULED` can come in the `state` field in
-  `SwapSDK.prototype.getStatus`. This state comes when a swap that was initiated
-  with `FillOrKill` params has never reached above the `minPrice` during the
-  `retryDurationBlocks` and is now scheduled for refund.
+- `egressType` property has been added to `EGRESS_SCHEDULED`,
+  `BROADCAST_REQUESTED`, `BROADCASTED`, `COMPLETE` and `BROADCAST_ABORTED`
+  states which can be `SWAP` or `REFUND`. Refund may happen in case of a fill or
+  kill swap.
 - New failure values added under the `FAILED` state
   - `REFUND_EGRESS_IGNORED`: This happens if the refund egress has been ignored,
     most likely due to refund egress amount being lower than the egress fee.
-  - `REFUND_BROADCAST_ABORTED`: This happens if an error occurs when
-    broadcasting the refund egress.
 
 ### Fixed
 
