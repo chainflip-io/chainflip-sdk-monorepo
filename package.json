@@ -29,7 +29,7 @@
     "@swc/core": "^1.7.10",
     "@swc/jest": "^0.2.36",
     "@types/jest": "^29.5.12",
-    "@types/node": "^22.2.0",
+    "@types/node": "^22.4.1",
     "@types/yargs": "^17.0.33",
     "@typescript-eslint/eslint-plugin": "^7.10.0",
     "@typescript-eslint/parser": "^6.21.0",
