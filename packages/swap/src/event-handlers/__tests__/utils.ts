@@ -4,9 +4,9 @@ import { z } from 'zod';
 import { InternalAssets, Chain, Chains } from '@/shared/enums';
 import { actionSchema } from '@/shared/parsers';
 import prisma, { SwapDepositChannel } from '../../client';
-import { DepositIgnoredArgs } from '../depositIgnored';
 import { events } from '../index';
 import { networkBroadcastSuccessArgs } from '../networkBroadcastSuccess';
+import { DepositIgnoredArgs } from '../networkDepositIgnored';
 import { SwapDepositAddressReadyEvent } from '../swapDepositAddressReady';
 import { SwapExecutedEvent } from '../swapExecuted';
 import { SwapScheduledEvent } from '../swapScheduled';
@@ -97,8 +97,9 @@ export const swapScheduledDotDepositChannelMock = buildSwapScheduledEvent({
     depositBlockHeight: '100',
   },
   swapId: '1',
+  swapRequestId: '1',
   sourceAsset: { __kind: 'Dot' },
-  depositAmount: '125000000000',
+  inputAmount: '125000000000',
   destinationAsset: { __kind: 'Btc' },
   destinationAddress: {
     value:
@@ -108,6 +109,7 @@ export const swapScheduledDotDepositChannelMock = buildSwapScheduledEvent({
   swapType: {
     __kind: 'Swap',
   },
+  executeAt: 0,
 });
 
 export const swapScheduledDotDepositChannelBrokerCommissionMock = buildSwapScheduledEvent({
@@ -121,8 +123,9 @@ export const swapScheduledDotDepositChannelBrokerCommissionMock = buildSwapSched
     depositBlockHeight: '100',
   },
   swapId: '1',
+  swapRequestId: '1',
   sourceAsset: { __kind: 'Dot' },
-  depositAmount: '125000000000',
+  inputAmount: '125000000000',
   destinationAsset: { __kind: 'Btc' },
   destinationAddress: {
     value:
@@ -133,12 +136,14 @@ export const swapScheduledDotDepositChannelBrokerCommissionMock = buildSwapSched
     __kind: 'Swap',
   },
   brokerFee: 5000000000,
+  executeAt: 0,
 });
 
 export const swapScheduledBtcDepositChannelMock = buildSwapScheduledEvent({
   swapId: '3',
+  swapRequestId: '3',
   sourceAsset: { __kind: 'Btc' },
-  depositAmount: '75000000',
+  inputAmount: '75000000',
   destinationAsset: { __kind: 'Eth' },
   destinationAddress: {
     __kind: 'Eth',
@@ -157,6 +162,7 @@ export const swapScheduledBtcDepositChannelMock = buildSwapScheduledEvent({
   swapType: {
     __kind: 'Swap',
   },
+  executeAt: 1,
 });
 
 export const swapScheduledVaultMock = buildSwapScheduledEvent({
@@ -165,8 +171,9 @@ export const swapScheduledVaultMock = buildSwapScheduledEvent({
     txHash: '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
   },
   swapId: '2',
+  swapRequestId: '2',
   sourceAsset: { __kind: 'Eth' },
-  depositAmount: '175000000000000000',
+  inputAmount: '175000000000000000',
   destinationAsset: { __kind: 'Dot' },
   destinationAddress: {
     value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
@@ -175,6 +182,7 @@ export const swapScheduledVaultMock = buildSwapScheduledEvent({
   swapType: {
     __kind: 'Swap',
   },
+  executeAt: 1,
 });
 
 export const networkDepositReceivedBtcMock = {

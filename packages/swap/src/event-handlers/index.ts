@@ -1,7 +1,7 @@
 import type { Prisma } from '.prisma/client';
 import { Chains } from '@/shared/enums';
 import ccmDepositReceived from './ccmDepositReceived';
-import depositIgnored from './depositIgnored';
+import depositIgnored from './networkDepositIgnored';
 import depositIgnoredV120 from './depositIgnoredV120';
 import liquidityDepositAddressReady from './liquidityDepositChannelReady';
 import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';

@@ -20,35 +20,35 @@ import { Chain } from '../client';
 import logger from '../utils/logger';
 import { EventHandlerArgs } from '.';
 
-const addDummyDepositDetails = <T>(obj: T) => ({
+const normalizeSchemas = <T>(obj: T) => ({
   ...obj,
   depositDetails: undefined,
   blockHeight: undefined,
 });
 
 const solanaSchema = z.union([
-  solanaSchema160.transform(addDummyDepositDetails),
-  solanaSchema150.transform(addDummyDepositDetails),
+  solanaSchema160.transform(normalizeSchemas),
+  solanaSchema150.transform(normalizeSchemas),
 ]);
 const arbitrumSchema = z.union([
   arbitrumSchema160,
   arbitrumSchema150,
-  arbitrumSchema141.transform(addDummyDepositDetails),
+  arbitrumSchema141.transform(normalizeSchemas),
 ]);
 const bitcoinSchema = z.union([
   bitcoinSchema160,
   bitcoinSchema150,
-  bitcoinSchema141.transform(addDummyDepositDetails),
+  bitcoinSchema141.transform(normalizeSchemas),
 ]);
 const ethereumSchema = z.union([
   ethereumSchema160,
   ethereumSchema150,
-  ethereumSchema141.transform(addDummyDepositDetails),
+  ethereumSchema141.transform(normalizeSchemas),
 ]);
 const polkadotSchema = z.union([
   polkadotSchema160,
   polkadotSchema150,
-  polkadotSchema141.transform(addDummyDepositDetails),
+  polkadotSchema141.transform(normalizeSchemas),
 ]);
 
 type EthereumDepositDetails = z.output<typeof ethereumSchema>['depositDetails'];
@@ -107,38 +107,32 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
       ? getTxRef(assetConstants[asset].chain, depositDetails, blockHeight)
       : undefined;
 
-  if ('swapRequestId' in action) {
-    await prisma.swapRequest.update({
-      where: { nativeId: action.swapRequestId },
-      data: {
-        depositReceivedAt: new Date(block.timestamp),
-        depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
-        depositTransactionRef: txRef,
-        ccmDepositReceivedBlockIndex:
-          action.__kind === 'CcmTransfer' ? `${block.height}-${event.indexInBlock}` : undefined,
-      },
-    });
-    // this if can be removed after 1.6 is on mainnet
-  } else if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {
-    let swapId;
+  if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {
+    let swapRequestId;
     if ('principalSwapId' in action && action.principalSwapId !== null) {
-      swapId = action.principalSwapId;
+      swapRequestId = action.principalSwapId;
     } else if ('gasSwapId' in action && action.gasSwapId !== null) {
-      swapId = action.gasSwapId as bigint;
+      swapRequestId = action.gasSwapId;
     } else if ('swapId' in action && action.swapId !== null) {
-      swapId = action.swapId;
+      swapRequestId = action.swapId;
+    } else if ('swapRequestId' in action && action.swapRequestId !== null) {
+      swapRequestId = action.swapRequestId;
     }
 
-    if (!swapId) {
+    if (!swapRequestId) {
       logger.warn('No swapId found in networkDepositReceived');
       return;
     }
 
     await prisma.swapRequest.update({
-      where: { nativeId: swapId },
+      where: { nativeId: swapRequestId },
       data: {
         depositAmount: amount.toString(),
+        depositReceivedAt: new Date(block.timestamp),
+        depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
         depositTransactionRef: txRef,
+        ccmDepositReceivedBlockIndex:
+          action.__kind === 'CcmTransfer' ? `${block.height}-${event.indexInBlock}` : undefined,
         fees: {
           create: { amount: ingressFee.toString(), type: 'INGRESS', asset },
         },
