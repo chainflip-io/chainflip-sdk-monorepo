@@ -27,20 +27,18 @@ export default async function refundEgressScheduled({
     where: { nativeId: swapId },
   });
 
-  const egress = await prisma.egress.create({
-    data: {
-      nativeId,
-      chain,
-      amount: amount.toString(),
-      scheduledAt: new Date(block.timestamp),
-      scheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
-    },
-  });
-
-  await prisma.swap.update({
+  await prisma.swapRequest.update({
     where: { nativeId: swapId },
     data: {
-      refundEgress: { connect: { id: egress.id } },
+      refundEgress: {
+        create: {
+          nativeId,
+          chain,
+          amount: amount.toString(),
+          scheduledAt: new Date(block.timestamp),
+          scheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
+        },
+      },
       fees: {
         create: {
           type: 'EGRESS',

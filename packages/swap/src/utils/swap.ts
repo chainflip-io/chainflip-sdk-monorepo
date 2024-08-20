@@ -1,6 +1,8 @@
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts';
 import { InternalAsset, chainConstants, getAssetAndChain } from '@/shared/enums';
 import { getWitnessSafetyMargin } from '@/swap/utils/rpc';
+import { Swap } from '../client';
+import { assertUnreachable } from '../functions';
 
 export const estimateSwapDuration = async ({
   srcAsset,
@@ -33,4 +35,17 @@ export const estimateSwapDuration = async ({
   return (
     ingressTransactionDuration + ingressWitnessDuration + egressTransactionDuration + swapDuration
   );
+};
+
+export const isEgressableSwap = (swap: Swap) => {
+  switch (swap.type) {
+    case 'PRINCIPAL':
+    case 'SWAP':
+      return true;
+    case 'GAS':
+      return false;
+    default:
+      assertUnreachable(swap.type);
+      return false;
+  }
 };

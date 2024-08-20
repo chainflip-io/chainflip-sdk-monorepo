@@ -19,11 +19,12 @@ const ccmDepositReceivedArgs = z.object({
 
 export type CcmDepositReceivedArgs = z.input<typeof ccmDepositReceivedArgs>;
 
+/** @deprecated remove after 1.6 is on mainnet */
 export default async function ccmDepositReceived({ prisma, event, block }: EventHandlerArgs) {
   const { principalSwapId, depositMetadata } = ccmDepositReceivedArgs.parse(event.args);
 
   if (principalSwapId) {
-    await prisma.swap.update({
+    await prisma.swapRequest.update({
       where: {
         nativeId: principalSwapId,
       },

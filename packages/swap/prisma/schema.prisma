@@ -73,7 +73,6 @@ model SwapDepositChannel {
   maxBoostFeeBps         Int                           @default(0)
   isExpired              Boolean                       @default(false)
   createdAt              DateTime                      @default(now())
-  swaps                  Swap[]
   failedSwaps            FailedSwap[]
   estimatedExpiryAt      DateTime?
   openedThroughBackend   Boolean                       @default(false)
@@ -83,6 +82,7 @@ model SwapDepositChannel {
   fokMinPriceX128        Decimal?                      @db.Decimal(78, 0)
   fokRefundAddress       String?
   fokRetryDurationBlocks Int?
+  swapRequests           SwapRequest[]
 
   @@unique([issuedBlock, srcChain, channelId])
   @@index([depositAddress])
@@ -100,6 +100,60 @@ model SwapDepositChannelAffiliate {
   @@schema("public")
 }
 
+enum SwapRequestOrigin {
+  DEPOSIT_CHANNEL
+  VAULT
+  INTERNAL
+
+  @@schema("public")
+}
+
+enum SwapRequestType {
+  LEGACY_SWAP
+  NETWORK_FEE
+  INGRESS_EGRESS_FEE
+  REGULAR
+  CCM
+
+  @@schema("public")
+}
+
+model SwapRequest {
+  id                           BigInt              @id @default(autoincrement())
+  /// the swap request id on the state chain
+  nativeId                     BigInt              @unique
+  originType                   SwapRequestOrigin
+  swapDepositChannel           SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId         BigInt?
+  depositTransactionRef        String?
+  srcAsset                     InternalAsset
+  destAsset                    InternalAsset
+  depositAmount                Decimal             @db.Decimal(30, 0)
+  requestType                  SwapRequestType
+  ccmDepositReceivedBlockIndex String?
+  ccmGasBudget                 Decimal?            @db.Decimal(30, 0)
+  ccmMessage                   String?
+  srcAddress                   String?
+  destAddress                  String?
+  swapRequestedAt              DateTime
+  depositReceivedAt            DateTime?
+  depositReceivedBlockIndex    String?
+  prewitnessedDepositId        BigInt?
+  effectiveBoostFeeBps         Int?
+  depositBoostedAt             DateTime?
+  depositBoostedBlockIndex     String?
+  egress                       Egress?             @relation("egress", fields: [egressId], references: [id])
+  egressId                     BigInt?
+  refundEgress                 Egress?             @relation("refundEgress", fields: [refundEgressId], references: [id])
+  refundEgressId               BigInt?
+  ignoredEgress                IgnoredEgress?
+  swaps                        Swap[]
+  fees                         SwapFee[]
+
+  @@index([srcAsset, prewitnessedDepositId])
+  @@schema("public")
+}
+
 enum SwapType {
   SWAP
   PRINCIPAL
@@ -109,46 +163,28 @@ enum SwapType {
 }
 
 model Swap {
-  id                              BigInt              @id @default(autoincrement())
+  id                              BigInt        @id @default(autoincrement())
   /// the swap id on the state chain
-  nativeId                        BigInt              @unique
+  nativeId                        BigInt        @unique
   type                            SwapType
   srcAsset                        InternalAsset
-  depositAmount                   Decimal             @db.Decimal(30, 0)
-  swapInputAmount                 Decimal             @db.Decimal(30, 0) // deposit amount after ingress fee was decucted
-  intermediateAmount              Decimal?            @db.Decimal(30, 0)
-  swapOutputAmount                Decimal?            @db.Decimal(30, 0) // output of the swap before egress fee is deducted
+  swapInputAmount                 Decimal       @db.Decimal(30, 0) // deposit amount after ingress fee was decucted
+  intermediateAmount              Decimal?      @db.Decimal(30, 0)
+  swapOutputAmount                Decimal?      @db.Decimal(30, 0) // output of the swap before egress fee is deducted
   fees                            SwapFee[]
   destAsset                       InternalAsset
-  destAddress                     String
-  depositTransactionRef           String?
-  depositReceivedAt               DateTime
-  depositReceivedBlockIndex       String
   swapExecutedAt                  DateTime?
   swapExecutedBlockIndex          String?
-  prewitnessedDepositId           BigInt?
-  depositBoostedAt                DateTime?
-  depositBoostedBlockIndex        String?
-  swapDepositChannel              SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
-  swapDepositChannelId            BigInt?
-  ccmDepositReceivedBlockIndex    String?
-  ccmGasBudget                    Decimal?            @db.Decimal(30, 0)
-  ccmMessage                      String?
-  egress                          Egress?             @relation("egress", fields: [egressId], references: [id])
-  egressId                        BigInt?
-  refundEgress                    Egress?             @relation("refundEgress", fields: [refundEgressId], references: [id])
-  refundEgressId                  BigInt?
-  ignoredEgress                   IgnoredEgress?
-  createdAt                       DateTime            @default(now())
-  updatedAt                       DateTime            @default(now()) @updatedAt
-  effectiveBoostFeeBps            Int?
+  createdAt                       DateTime      @default(now())
+  updatedAt                       DateTime      @default(now()) @updatedAt
   swapScheduledAt                 DateTime
   swapScheduledBlockIndex         String
   latestSwapRescheduledAt         DateTime?
   latestSwapRescheduledBlockIndex String?
-  retryCount                      Int                 @default(0)
+  retryCount                      Int           @default(0)
+  swapRequest                     SwapRequest   @relation(fields: [swapRequestId], references: [id])
+  swapRequestId                   BigInt
 
-  @@unique([srcAsset, prewitnessedDepositId])
   @@schema("public")
 }
 
@@ -164,12 +200,14 @@ enum SwapFeeType {
 }
 
 model SwapFee {
-  id     BigInt        @id @default(autoincrement())
-  swap   Swap          @relation(fields: [swapId], references: [id])
-  swapId BigInt
-  type   SwapFeeType
-  asset  InternalAsset
-  amount Decimal       @db.Decimal(30, 0)
+  id            BigInt        @id @default(autoincrement())
+  swap          Swap?         @relation(fields: [swapId], references: [id])
+  swapId        BigInt?
+  swapRequest   SwapRequest?  @relation(fields: [swapRequestId], references: [id])
+  swapRequestId BigInt?
+  type          SwapFeeType
+  asset         InternalAsset
+  amount        Decimal       @db.Decimal(30, 0)
 
   @@index([swapId])
   @@schema("public")
@@ -224,8 +262,8 @@ model IgnoredEgress {
   amount            Decimal           @db.Decimal(30, 0)
   ignoredAt         DateTime
   ignoredBlockIndex String
-  swap              Swap              @relation(fields: [swapId], references: [id])
-  swapId            BigInt            @unique
+  swapRequest       SwapRequest       @relation(fields: [swapRequestId], references: [id])
+  swapRequestId     BigInt            @unique
   stateChainError   StateChainError   @relation(fields: [stateChainErrorId], references: [id])
   stateChainErrorId Int
   type              EgressIgnoredType
@@ -235,19 +273,19 @@ model IgnoredEgress {
 }
 
 model Egress {
-  id                  BigInt     @id @default(autoincrement())
+  id                   BigInt        @id @default(autoincrement())
   /// the egress id on the state chain
-  nativeId            BigInt
-  chain               Chain
-  amount              Decimal    @db.Decimal(30, 0)
-  scheduledAt         DateTime
-  scheduledBlockIndex String
-  swaps               Swap[]     @relation("egress")
-  refundedSwaps       Swap[]     @relation("refundEgress")
-  broadcast           Broadcast? @relation(fields: [broadcastId], references: [id])
-  broadcastId         BigInt?
-  createdAt           DateTime   @default(now())
-  updatedAt           DateTime   @default(now()) @updatedAt
+  nativeId             BigInt
+  chain                Chain
+  amount               Decimal       @db.Decimal(30, 0)
+  scheduledAt          DateTime
+  scheduledBlockIndex  String
+  broadcast            Broadcast?    @relation(fields: [broadcastId], references: [id])
+  broadcastId          BigInt?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @default(now()) @updatedAt
+  swapRequests         SwapRequest[] @relation("egress")
+  refundedSwapRequests SwapRequest[] @relation("refundEgress")
 
   @@unique([nativeId, chain])
   @@schema("public")
