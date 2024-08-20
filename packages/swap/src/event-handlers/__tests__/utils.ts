@@ -7,7 +7,6 @@ import prisma, { SwapDepositChannel } from '../../client';
 import { DepositIgnoredArgs } from '../depositIgnored';
 import { events } from '../index';
 import { networkBroadcastSuccessArgs } from '../networkBroadcastSuccess';
-import { SwapAmountTooLowEvent } from '../swapAmountTooLow';
 import { SwapDepositAddressReadyEvent } from '../swapDepositAddressReady';
 import { SwapExecutedEvent } from '../swapExecuted';
 import { SwapScheduledEvent } from '../swapScheduled';
@@ -471,34 +470,6 @@ export const refundEgressIgnoredMock = {
   },
 } as const;
 
-export const networkEgressScheduledMock = {
-  block: {
-    specId: 'test@1',
-    height: 120,
-    timestamp: 1670337105000,
-  },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        id: [
-          {
-            __kind: 'Ethereum',
-          },
-          '13',
-        ],
-        asset: {
-          __kind: 'Usdc',
-        },
-        amount: '4396575964',
-        destinationAddress: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0',
-      },
-      name: 'EthereumIngressEgress.EgressScheduled',
-      indexInBlock: 123,
-    },
-  },
-} as const;
-
 export const networkBatchBroadcastRequestedMock = {
   block: {
     specId: 'test@1',
@@ -639,108 +610,6 @@ export const thresholdSignatureInvalidMock = {
     },
   },
 } as const;
-
-const buildSwapAmountTooLowEvent = <T extends SwapAmountTooLowEvent>(args: T) => ({
-  block: {
-    specId: 'test@1',
-    timestamp: 1670337093000,
-    height: 100,
-  },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        dispatchInfo: {
-          class: [null],
-          weight: '101978000',
-          paysFee: [null],
-        },
-        ...args,
-      },
-      id: '0000012799-000000-c1ea7',
-      indexInBlock: 0,
-      nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: events.Swapping.SwapAmountTooLow,
-      phase: 'ApplyExtrinsic',
-      pos: 2,
-      extrinsic: {
-        error: null,
-        hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
-        id: '0000012799-000000-c1ea7',
-        indexInBlock: 0,
-        nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
-        pos: 1,
-        success: true,
-        version: 4,
-        call: {
-          args: [null],
-          error: null,
-          id: '0000012799-000000-c1ea7',
-          name: 'Timestamp.set',
-          nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
-          origin: [null],
-          pos: 0,
-          success: true,
-        },
-      },
-    },
-  },
-});
-
-export const swapAmountTooLowDotDepositChannelMock = buildSwapAmountTooLowEvent({
-  amount: '12500000000',
-  asset: {
-    __kind: 'Dot',
-  },
-  destinationAddress: {
-    value:
-      '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
-    __kind: 'Btc',
-  },
-  origin: {
-    __kind: 'DepositChannel',
-    channelId: '2',
-    depositAddress: {
-      value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-      __kind: 'Dot',
-    },
-  },
-});
-
-export const swapAmountTooLowBtcDepositChannelMock = buildSwapAmountTooLowEvent({
-  amount: '12500000000',
-  asset: {
-    __kind: 'Btc',
-  },
-  destinationAddress: {
-    value: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
-    __kind: 'Eth',
-  },
-  origin: {
-    __kind: 'DepositChannel',
-    channelId: '2',
-    depositAddress: {
-      __kind: 'Btc',
-      value:
-        '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
-    },
-  },
-});
-
-export const swapAmountTooLowVaultMock = buildSwapAmountTooLowEvent({
-  amount: '12500000000',
-  asset: {
-    __kind: 'Eth',
-  },
-  destinationAddress: {
-    value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-    __kind: 'Dot',
-  },
-  origin: {
-    __kind: 'Vault',
-    txHash: '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
-  },
-});
 
 export const buildDepositIgnoredEvent = <T extends DepositIgnoredArgs>(
   args: T,

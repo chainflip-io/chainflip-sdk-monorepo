@@ -45,7 +45,7 @@ describe('depositBoosted', () => {
   });
 
   it('updates the values for an existing swap', async () => {
-    const swapDepositChannel = await createBtcSwapDepositChannel({});
+    const swapDepositChannel = await createBtcSwapDepositChannel();
     const eventData = depositBoostedBtcMock({ amounts: [[5, '1000000']] }) as any;
     const event = eventData.eventContext.event as any;
     const block = eventData.block as any;
@@ -58,18 +58,16 @@ describe('depositBoosted', () => {
       });
     });
 
-    const swap = await prisma.swap.findFirstOrThrow({
+    const request = await prisma.swapRequest.findFirstOrThrow({
       where: { swapDepositChannelId: swapDepositChannel.id },
       include: { fees: true },
     });
 
-    expect(swap.depositAmount.toString()).toBe('1000000');
-    expect(swap.effectiveBoostFeeBps).toBe(5);
+    expect(request.depositAmount.toString()).toBe('1000000');
+    expect(request.effectiveBoostFeeBps).toBe(5);
 
-    expect(swap).toMatchSnapshot({
+    expect(request).toMatchSnapshot({
       id: expect.any(BigInt),
-      createdAt: expect.any(Date),
-      updatedAt: expect.any(Date),
       swapDepositChannelId: expect.any(BigInt),
       depositBoostedAt: expect.any(Date),
       depositBoostedBlockIndex: expect.any(String),
@@ -97,17 +95,15 @@ describe('depositBoosted', () => {
       });
     });
 
-    const swap = await prisma.swap.findFirstOrThrow({
+    const request = await prisma.swapRequest.findFirstOrThrow({
       where: { swapDepositChannelId: swapDepositChannel.id },
       include: { fees: true },
     });
 
-    expect(swap.effectiveBoostFeeBps).toBeNull();
+    expect(request.effectiveBoostFeeBps).toBeNull();
 
-    expect(swap).toMatchSnapshot({
+    expect(request).toMatchSnapshot({
       id: expect.any(BigInt),
-      createdAt: expect.any(Date),
-      updatedAt: expect.any(Date),
       swapDepositChannelId: expect.any(BigInt),
       fees: [],
     });

@@ -1,21 +1,38 @@
+import { arbitrumIngressEgressDepositBoosted as arbitrumSchema141 } from '@chainflip/processor/141/arbitrumIngressEgress/depositBoosted';
+import { bitcoinIngressEgressDepositBoosted as bitcoinSchema141 } from '@chainflip/processor/141/bitcoinIngressEgress/depositBoosted';
+import { ethereumIngressEgressDepositBoosted as ethereumSchema141 } from '@chainflip/processor/141/ethereumIngressEgress/depositBoosted';
+import { polkadotIngressEgressDepositBoosted as polkadotSchema141 } from '@chainflip/processor/141/polkadotIngressEgress/depositBoosted';
+import { arbitrumIngressEgressDepositBoosted as arbitrumSchema150 } from '@chainflip/processor/150/arbitrumIngressEgress/depositBoosted';
+import { bitcoinIngressEgressDepositBoosted as bitcoinSchema150 } from '@chainflip/processor/150/bitcoinIngressEgress/depositBoosted';
+import { ethereumIngressEgressDepositBoosted as ethereumSchema150 } from '@chainflip/processor/150/ethereumIngressEgress/depositBoosted';
+import { polkadotIngressEgressDepositBoosted as polkadotSchema150 } from '@chainflip/processor/150/polkadotIngressEgress/depositBoosted';
+import { solanaIngressEgressDepositBoosted as solanaSchema150 } from '@chainflip/processor/150/solanaIngressEgress/depositBoosted';
+import { arbitrumIngressEgressDepositBoosted as arbitrumSchema160 } from '@chainflip/processor/160/arbitrumIngressEgress/depositBoosted';
+import { bitcoinIngressEgressDepositBoosted as bitcoinSchema160 } from '@chainflip/processor/160/bitcoinIngressEgress/depositBoosted';
+import { ethereumIngressEgressDepositBoosted as ethereumSchema160 } from '@chainflip/processor/160/ethereumIngressEgress/depositBoosted';
+import { polkadotIngressEgressDepositBoosted as polkadotSchema160 } from '@chainflip/processor/160/polkadotIngressEgress/depositBoosted';
+import { solanaIngressEgressDepositBoosted as solanaSchema160 } from '@chainflip/processor/160/solanaIngressEgress/depositBoosted';
 import { z } from 'zod';
 import { ONE_IN_PIP } from '@/shared/functions';
-import { actionSchema, internalAssetEnum, number, u128 } from '@/shared/parsers';
+import { SwapFeeType } from '@/swap/client';
 import { EventHandlerArgs } from '..';
 
-export const depositBoostedSchema = z.object({
-  asset: internalAssetEnum,
-  amounts: z.array(z.tuple([number, u128])),
-  ingressFee: u128,
-  boostFee: u128,
-  action: actionSchema,
-  // channelId: u128,
-  // depositDetails: cfChainsBtcUtxoId,
-  prewitnessedDepositId: u128,
-});
+const arbitrumSchema = z.union([arbitrumSchema160, arbitrumSchema150, arbitrumSchema141]);
+const bitcoinSchema = z.union([bitcoinSchema160, bitcoinSchema150, bitcoinSchema141]);
+const ethereumSchema = z.union([ethereumSchema160, ethereumSchema150, ethereumSchema141]);
+const polkadotSchema = z.union([polkadotSchema160, polkadotSchema150, polkadotSchema141]);
+const solanaSchema = z.union([solanaSchema160, solanaSchema150]);
 
-// DepositBoosted event is emitted instead of DepositReceived event in v140 due to boost
-// We need to update the depositAmount and store the ingress fee just like we do in the DepositReceived event
+const depositBoostedSchema = z.union([
+  arbitrumSchema,
+  bitcoinSchema,
+  ethereumSchema,
+  polkadotSchema,
+  solanaSchema,
+]);
+
+// DepositBoosted event is emitted instead of DepositFinalised event in v140 due to boost
+// We need to update the depositAmount and store the ingress fee just like we do in the DepositFinalised event
 export const depositBoosted = async ({ prisma, event, block }: EventHandlerArgs) => {
   const { asset, boostFee, action, ingressFee, amounts, prewitnessedDepositId } =
     depositBoostedSchema.parse(event.args);
@@ -24,25 +41,36 @@ export const depositBoosted = async ({ prisma, event, block }: EventHandlerArgs)
     const depositAmount = amounts.reduce((acc, [, amount]) => acc + amount, BigInt(0));
     const effectiveBoostFeeBps = (boostFee * BigInt(ONE_IN_PIP)) / BigInt(depositAmount.toString());
 
-    await prisma.swap.update({
-      where: { nativeId: action.swapId },
-      data: {
+    let nativeId;
+    let data;
+    const fees = {
+      create: [
+        { type: SwapFeeType.BOOST, asset, amount: boostFee.toString() },
+        { type: SwapFeeType.INGRESS, asset, amount: ingressFee.toString() },
+      ],
+    };
+
+    if ('swapId' in action) {
+      nativeId = action.swapId;
+      data = {
         effectiveBoostFeeBps: Number(effectiveBoostFeeBps),
         prewitnessedDepositId,
         depositAmount: depositAmount.toString(),
         depositBoostedAt: new Date(block.timestamp),
         depositBoostedBlockIndex: `${block.height}-${event.indexInBlock}`,
-        fees: {
-          create: [
-            {
-              type: 'BOOST',
-              asset,
-              amount: boostFee.toString(),
-            },
-            { amount: ingressFee.toString(), type: 'INGRESS', asset },
-          ],
-        },
-      },
-    });
+        fees,
+      };
+    } else {
+      nativeId = action.swapRequestId;
+      data = {
+        effectiveBoostFeeBps: Number(effectiveBoostFeeBps),
+        prewitnessedDepositId,
+        depositBoostedAt: new Date(block.timestamp),
+        depositBoostedBlockIndex: `${block.height}-${event.indexInBlock}`,
+        fees,
+      };
+    }
+
+    await prisma.swapRequest.update({ where: { nativeId }, data });
   }
 };

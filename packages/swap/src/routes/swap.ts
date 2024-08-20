@@ -11,7 +11,7 @@ import { getPendingBroadcast, getPendingDeposit } from '../ingress-egress-tracki
 import { readField } from '../utils/function';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
-import { estimateSwapDuration } from '../utils/swap';
+import { estimateSwapDuration, isEgressableSwap } from '../utils/swap';
 
 const router = express.Router();
 
@@ -44,7 +44,8 @@ const depositChannelInclude = {
   },
 } as const;
 
-const swapInclude = {
+const swapRequestInclude = {
+  swaps: true,
   egress: { include: { broadcast: true } },
   refundEgress: { include: { broadcast: true } },
   fees: true,
@@ -75,7 +76,7 @@ const coerceChain = (chain: string) => {
 };
 
 const channelIdRegex = /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
-const swapIdRegex = /^\d+$/i;
+const swapRequestId = /^\d+$/i;
 const txHashRegex = /^0x[a-f\d]+$/i;
 
 router.get(
@@ -83,7 +84,7 @@ router.get(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    let swap;
+    let swapRequest;
     let failedSwap;
     let swapDepositChannel;
     let affiliateBrokers;
@@ -100,7 +101,7 @@ router.get(
           },
         },
         include: {
-          swaps: { include: swapInclude },
+          swapRequests: { include: swapRequestInclude },
           failedSwaps: { include: { swapDepositChannel: { include: depositChannelInclude } } },
           failedBoosts: true,
           affiliates: {
@@ -113,29 +114,29 @@ router.get(
       });
 
       if (!swapDepositChannel) {
-        logger.info(`could not find swap request with id "${id}`);
+        logger.info(`could not find swap request with id "${id}"`);
         throw ServiceError.notFound();
       }
 
-      swap = swapDepositChannel.swaps.at(0);
+      swapRequest = swapDepositChannel.swapRequests.at(0);
       failedSwap = swapDepositChannel.failedSwaps.at(0);
       if (swapDepositChannel.affiliates.length > 0) {
         affiliateBrokers = swapDepositChannel.affiliates;
       }
-    } else if (swapIdRegex.test(id)) {
-      swap = await prisma.swap.findUnique({
+    } else if (swapRequestId.test(id)) {
+      swapRequest = await prisma.swapRequest.findUnique({
         where: { nativeId: BigInt(id) },
-        include: swapInclude,
+        include: swapRequestInclude,
       });
     } else if (txHashRegex.test(id)) {
-      swap = await prisma.swap.findFirst({
+      swapRequest = await prisma.swapRequest.findFirst({
         where: { depositTransactionRef: id },
-        include: swapInclude,
+        include: swapRequestInclude,
         // just get the last one for now
         orderBy: { nativeId: 'desc' },
         take: 1,
       });
-      if (!swap) {
+      if (!swapRequest) {
         failedSwap = await prisma.failedSwap.findFirst({
           where: { depositTransactionRef: id },
           include: { swapDepositChannel: { include: depositChannelInclude } },
@@ -143,19 +144,25 @@ router.get(
       }
     }
 
-    swapDepositChannel ??= swap?.swapDepositChannel ?? failedSwap?.swapDepositChannel;
+    swapDepositChannel ??= swapRequest?.swapDepositChannel ?? failedSwap?.swapDepositChannel;
 
-    ServiceError.assert(swapDepositChannel || swap || failedSwap, 'notFound', 'resource not found');
+    ServiceError.assert(
+      swapDepositChannel || swapRequest || failedSwap,
+      'notFound',
+      'resource not found',
+    );
 
     let state: State;
     let failureMode;
     let egressTrackerTxRef;
     let error: { name: string; message: string } | undefined;
 
-    const egress = swap?.egress ?? swap?.refundEgress;
-    const egressType = egress && (egress === swap?.egress ? 'SWAP' : 'REFUND');
+    const egress = swapRequest?.egress ?? swapRequest?.refundEgress;
+    const egressType = egress && (egress === swapRequest?.egress ? 'SWAP' : 'REFUND');
 
-    if (failedSwap || swap?.ignoredEgress) {
+    const swap = swapRequest?.swaps.find(isEgressableSwap);
+
+    if (failedSwap || swapRequest?.ignoredEgress) {
       error = {
         name: 'Unknown',
         message: 'An unknown error occurred',
@@ -168,8 +175,8 @@ router.get(
           name: failedSwap.reason,
           message: failedSwapMessage[failedSwap.reason],
         };
-      } else if (swap?.ignoredEgress) {
-        switch (swap.ignoredEgress.type) {
+      } else if (swapRequest?.ignoredEgress) {
+        switch (swapRequest.ignoredEgress.type) {
           case 'REFUND':
             failureMode = Failure.RefundEgressIgnored;
             break;
@@ -177,11 +184,11 @@ router.get(
             failureMode = Failure.EgressIgnored;
             break;
           default:
-            assertUnreachable(swap.ignoredEgress.type);
+            assertUnreachable(swapRequest.ignoredEgress.type);
         }
         const [stateChainError] = await Promise.all([
           prisma.stateChainError.findUniqueOrThrow({
-            where: { id: swap.ignoredEgress.stateChainErrorId },
+            where: { id: swapRequest.ignoredEgress.stateChainErrorId },
           }),
         ]);
         error = {
@@ -205,14 +212,14 @@ router.get(
       state = State.EgressScheduled;
     } else if (swap?.swapExecutedAt) {
       state = State.SwapExecuted;
-    } else if (swap?.depositReceivedAt) {
+    } else if (swapRequest?.depositReceivedAt) {
       state = State.DepositReceived;
     } else {
       state = State.AwaitingDeposit;
     }
 
-    const internalSrcAsset = readField(swap, swapDepositChannel, failedSwap, 'srcAsset');
-    const internalDestAsset = readField(swap, swapDepositChannel, 'destAsset');
+    const internalSrcAsset = readField(swapRequest, swapDepositChannel, failedSwap, 'srcAsset');
+    const internalDestAsset = readField(swapRequest, swapDepositChannel, 'destAsset');
 
     let pendingDeposit;
     if (internalSrcAsset && state === State.AwaitingDeposit && swapDepositChannel?.depositAddress) {
@@ -224,29 +231,29 @@ router.get(
     }
 
     let ccmParams;
-    if (readField(swap, swapDepositChannel, 'ccmGasBudget')) {
+    if (readField(swapRequest, swapDepositChannel, 'ccmGasBudget')) {
       ccmParams = {
-        gasBudget: readField(swap, swapDepositChannel, 'ccmGasBudget')?.toFixed(),
-        message: readField(swap, swapDepositChannel, 'ccmMessage'),
+        gasBudget: readField(swapRequest, swapDepositChannel, 'ccmGasBudget')?.toFixed(),
+        message: readField(swapRequest, swapDepositChannel, 'ccmMessage'),
       };
     }
 
     let effectiveBoostFeeBps;
 
     if (swapDepositChannel && swapDepositChannel.maxBoostFeeBps > 0) {
-      if (swap) {
-        effectiveBoostFeeBps = swap.effectiveBoostFeeBps ?? undefined;
+      if (swapRequest) {
+        effectiveBoostFeeBps = swapRequest.effectiveBoostFeeBps ?? undefined;
       } else if (swapDepositChannel.failedBoosts.length > 0) {
         effectiveBoostFeeBps = 0;
       }
     }
     const { srcAsset, destAsset } = {
-      srcAsset: swapDepositChannel?.srcAsset || swap?.srcAsset,
-      destAsset: swapDepositChannel?.destAsset || swap?.destAsset,
+      srcAsset: swapDepositChannel?.srcAsset || swapRequest?.srcAsset,
+      destAsset: swapDepositChannel?.destAsset || swapRequest?.destAsset,
     };
 
     const depositTransactionRef =
-      swap?.depositTransactionRef ??
+      swapRequest?.depositTransactionRef ??
       pendingDeposit?.transactionHash ??
       failedSwap?.depositTransactionRef ??
       undefined;
@@ -258,21 +265,21 @@ router.get(
       srcAsset: internalSrcAsset && assetConstants[internalSrcAsset].asset,
       destChain: internalDestAsset && assetConstants[internalDestAsset].chain,
       destAsset: internalDestAsset && assetConstants[internalDestAsset].asset,
-      destAddress: readField(swap, swapDepositChannel, failedSwap, 'destAddress'),
+      destAddress: readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress'),
       depositChannelCreatedAt: swapDepositChannel?.createdAt.valueOf(),
       depositChannelBrokerCommissionBps: swapDepositChannel?.brokerCommissionBps,
       depositAddress: swapDepositChannel?.depositAddress,
       expectedDepositAmount: swapDepositChannel?.expectedDepositAmount?.toFixed(),
       srcChainRequiredBlockConfirmations:
         (internalSrcAsset && (await getRequiredBlockConfirmations(internalSrcAsset))) ?? undefined,
-      swapId: swap?.nativeId.toString(),
+      swapId: swapRequest?.nativeId.toString(),
       depositAmount:
-        readField(swap, failedSwap, 'depositAmount')?.toFixed() ?? pendingDeposit?.amount,
+        readField(swapRequest, failedSwap, 'depositAmount')?.toFixed() ?? pendingDeposit?.amount,
       depositTransactionHash: depositTransactionRef, // DEPRECATED(1.5): use depositTransactionRef instead
       depositTransactionRef,
       depositTransactionConfirmations: pendingDeposit?.transactionConfirmations,
-      depositReceivedAt: swap?.depositReceivedAt.valueOf(),
-      depositReceivedBlockIndex: swap?.depositReceivedBlockIndex ?? undefined,
+      depositReceivedAt: swapRequest?.depositReceivedAt?.valueOf(),
+      depositReceivedBlockIndex: swapRequest?.depositReceivedBlockIndex ?? undefined,
       intermediateAmount: swap?.intermediateAmount?.toFixed(),
       swapExecutedAt: swap?.swapExecutedAt?.valueOf(),
       swapExecutedBlockIndex: swap?.swapExecutedBlockIndex ?? undefined,
@@ -280,11 +287,11 @@ router.get(
       egressAmount: egress?.amount?.toFixed(),
       egressScheduledAt: egress?.scheduledAt?.valueOf(),
       egressScheduledBlockIndex: egress?.scheduledBlockIndex ?? undefined,
-      ignoredEgressAmount: swap?.ignoredEgress?.amount?.toFixed(),
-      egressIgnoredAt: swap?.ignoredEgress?.ignoredAt?.valueOf(),
-      egressIgnoredBlockIndex: swap?.ignoredEgress?.ignoredBlockIndex ?? undefined,
+      ignoredEgressAmount: swapRequest?.ignoredEgress?.amount?.toFixed(),
+      egressIgnoredAt: swapRequest?.ignoredEgress?.ignoredAt?.valueOf(),
+      egressIgnoredBlockIndex: swapRequest?.ignoredEgress?.ignoredBlockIndex ?? undefined,
       feesPaid:
-        swap?.fees.map((fee) => ({
+        swapRequest?.fees.map((fee) => ({
           type: fee.type,
           chain: assetConstants[fee.asset].chain,
           asset: assetConstants[fee.asset].asset,
@@ -299,7 +306,7 @@ router.get(
       depositChannelExpiryBlock: swapDepositChannel?.srcChainExpiryBlock?.toString(),
       estimatedDepositChannelExpiryTime: swapDepositChannel?.estimatedExpiryAt?.valueOf(),
       isDepositChannelExpired: swapDepositChannel?.isExpired,
-      ccmDepositReceivedBlockIndex: swap?.ccmDepositReceivedBlockIndex ?? undefined,
+      ccmDepositReceivedBlockIndex: swapRequest?.ccmDepositReceivedBlockIndex ?? undefined,
       ccmMetadata: ccmParams, // DEPRECATED(1.5): use ccmParams instead
       ccmParams,
       depositChannelOpenedThroughBackend: swapDepositChannel?.openedThroughBackend,
@@ -311,8 +318,8 @@ router.get(
       depositChannelAffiliateBrokers: affiliateBrokers,
       depositChannelMaxBoostFeeBps: swapDepositChannel?.maxBoostFeeBps,
       effectiveBoostFeeBps,
-      depositBoostedAt: swap?.depositBoostedAt?.valueOf(),
-      depositBoostedBlockIndex: swap?.depositBoostedBlockIndex ?? undefined,
+      depositBoostedAt: swapRequest?.depositBoostedAt?.valueOf(),
+      depositBoostedBlockIndex: swapRequest?.depositBoostedBlockIndex ?? undefined,
       boostSkippedAt: swapDepositChannel?.failedBoosts.at(0)?.failedAtTimestamp.valueOf(),
       boostSkippedBlockIndex:
         swapDepositChannel?.failedBoosts.at(0)?.failedAtBlockIndex ?? undefined,
