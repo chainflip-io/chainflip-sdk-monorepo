@@ -4,6 +4,7 @@ import { InternalAsset } from '@/shared/enums';
 import { assertNever } from '@/shared/guards';
 import { foreignChainAddress } from '@/shared/parsers';
 import { pascalCaseToScreamingSnakeCase } from '@/shared/strings';
+import { formatTxHash } from './common';
 import { Prisma } from '../client';
 import env from '../config/env';
 import type { EventHandlerArgs } from './index';
@@ -70,7 +71,7 @@ export const getOriginInfo = async (
     return {
       originType: 'VAULT' as const,
       swapDepositChannelId: undefined,
-      depositTransactionRef: origin.txHash,
+      depositTransactionRef: formatTxHash(srcAsset, origin.txHash),
     };
   }
 

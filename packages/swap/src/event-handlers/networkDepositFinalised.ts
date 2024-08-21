@@ -16,6 +16,7 @@ import assert from 'assert';
 import z from 'zod';
 import { assetConstants } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
+import { formatTxHash } from './common';
 import { Chain } from '../client';
 import logger from '../utils/logger';
 import { EventHandlerArgs } from '.';
@@ -104,7 +105,7 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
 
   const txRef =
     depositDetails !== undefined
-      ? getTxRef(assetConstants[asset].chain, depositDetails, blockHeight)
+      ? formatTxHash(asset, getTxRef(assetConstants[asset].chain, depositDetails, blockHeight))
       : undefined;
 
   if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {

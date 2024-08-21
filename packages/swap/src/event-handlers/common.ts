@@ -2,6 +2,7 @@
 import { Metadata, TypeRegistry } from '@polkadot/types';
 import assert from 'assert';
 import { z } from 'zod';
+import { InternalAsset } from '@/shared/enums';
 import {
   btcAddress,
   dotAddress,
@@ -115,3 +116,10 @@ export const getStateChainError = async (
     },
   });
 };
+
+export function formatTxHash(asset: InternalAsset, txHash: string): string;
+export function formatTxHash(asset: InternalAsset, txHash: string | undefined): string | undefined;
+export function formatTxHash(asset: InternalAsset, txHash: string | undefined) {
+  if (!txHash || asset !== 'Btc') return txHash;
+  return Buffer.from(txHash.slice(2), 'hex').reverse().toString('hex');
+}

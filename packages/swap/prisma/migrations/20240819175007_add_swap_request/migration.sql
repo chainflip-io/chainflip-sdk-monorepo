@@ -59,7 +59,9 @@ INSERT INTO "SwapRequest" (
 	"refundEgressId",
 	"ccmDepositReceivedBlockIndex",
 	"ccmGasBudget",
-	"ccmMessage"
+	"ccmMessage",
+	"completedAt",
+	"completedBlockIndex"
 )
 SELECT
 	"nativeId",
@@ -86,7 +88,9 @@ SELECT
 	"refundEgressId",
 	"ccmDepositReceivedBlockIndex",
 	"ccmGasBudget",
-	"ccmMessage"
+	"ccmMessage",
+	"swapExecutedAt",
+	"swapExecutedBlockIndex"
 FROM
 	"Swap"
 ORDER BY
