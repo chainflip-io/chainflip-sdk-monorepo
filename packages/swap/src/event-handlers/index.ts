@@ -17,6 +17,7 @@ import swapDepositAddressReady from './swapDepositAddressReady';
 import swapEgressIgnored from './swapEgressIgnored';
 import swapEgressScheduled from './swapEgressScheduled';
 import swapExecuted from './swapExecuted';
+import swapRequestCompleted from './swapRequestCompleted';
 import swapRequested from './swapRequested';
 import swapRescheduled from './swapRescheduled';
 import swapScheduled from './swapScheduled';
@@ -45,6 +46,7 @@ export const events = {
     SwapDepositAddressReady: 'Swapping.SwapDepositAddressReady',
     CcmDepositReceived: 'Swapping.CcmDepositReceived',
     SwapRequested: 'Swapping.SwapRequested',
+    SwapRequestCompleted: 'Swapping.SwapRequestCompleted',
   },
   BitcoinIngressEgress: {
     BatchBroadcastRequested: 'BitcoinIngressEgress.BatchBroadcastRequested',
@@ -217,10 +219,8 @@ const handlers = [
   {
     spec: 160,
     handlers: [
-      {
-        name: events.Swapping.SwapRequested,
-        handler: swapRequested,
-      },
+      { name: events.Swapping.SwapRequested, handler: swapRequested },
+      { name: events.Swapping.SwapRequestCompleted, handler: swapRequestCompleted },
     ],
   },
 ];
