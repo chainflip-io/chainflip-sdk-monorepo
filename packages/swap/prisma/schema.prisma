@@ -142,6 +142,8 @@ model SwapRequest {
   effectiveBoostFeeBps         Int?
   depositBoostedAt             DateTime?
   depositBoostedBlockIndex     String?
+  completedAt                  DateTime?
+  completedBlockIndex          String?
   egress                       Egress?             @relation("egress", fields: [egressId], references: [id])
   egressId                     BigInt?
   refundEgress                 Egress?             @relation("refundEgress", fields: [refundEgressId], references: [id])
@@ -158,6 +160,8 @@ enum SwapType {
   SWAP
   PRINCIPAL
   GAS
+  INGRESS_EGRESS_FEE
+  NETWORK_FEE
 
   @@schema("public")
 }

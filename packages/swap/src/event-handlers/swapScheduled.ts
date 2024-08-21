@@ -1,4 +1,3 @@
-// Set the column in the DB to the block timestamp and the deposit amount.
 import { swappingSwapScheduled as schema141 } from '@chainflip/processor/141/swapping/swapScheduled';
 import { swappingSwapScheduled as schema150 } from '@chainflip/processor/150/swapping/swapScheduled';
 import { swappingSwapScheduled as schema160 } from '@chainflip/processor/160/swapping/swapScheduled';
@@ -30,9 +29,9 @@ const swapTypeMap = {
   CcmGas: 'GAS',
   CcmPrincipal: 'PRINCIPAL',
   Swap: 'SWAP',
-  NetworkFee: null,
-  IngressEgressFee: null,
-} as const satisfies Record<z.output<typeof swapScheduledArgs>['swapType'], string | null>;
+  NetworkFee: 'NETWORK_FEE',
+  IngressEgressFee: 'INGRESS_EGRESS_FEE',
+} as const;
 
 export default async function swapScheduled({
   prisma,
@@ -42,9 +41,6 @@ export default async function swapScheduled({
   const { swapId, swapRequestId, inputAmount, swapType, ...rest } = swapScheduledArgs.parse(
     event.args,
   );
-
-  const type = swapTypeMap[swapType];
-  if (!type) return;
 
   const swapRequest = await prisma.swapRequest.findUniqueOrThrow({
     where: { nativeId: swapRequestId },
@@ -57,7 +53,7 @@ export default async function swapScheduled({
       srcAsset: swapRequest.srcAsset,
       destAsset: swapRequest.destAsset,
       nativeId: swapId,
-      type,
+      type: swapTypeMap[swapType],
       swapScheduledAt: new Date(block.timestamp),
       swapScheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
       fees:

@@ -20,6 +20,8 @@ CREATE TABLE "public"."SwapRequest" (
     "swapRequestedAt" TIMESTAMP(3) NOT NULL,
     "depositReceivedAt" TIMESTAMP(3),
     "depositReceivedBlockIndex" TEXT,
+    "completedAt" TIMESTAMP(3),
+    "completedBlockIndex" TEXT,
     "prewitnessedDepositId" BIGINT,
     "depositBoostedAt" TIMESTAMP(3),
     "depositBoostedBlockIndex" TEXT,
@@ -155,3 +157,6 @@ ALTER TABLE "public"."SwapRequest" ADD CONSTRAINT "SwapRequest_refundEgressId_fk
 
 -- AddForeignKey
 ALTER TABLE "public"."IgnoredEgress" ADD CONSTRAINT "IgnoredEgress_swapRequestId_fkey" FOREIGN KEY ("swapRequestId") REFERENCES "public"."SwapRequest"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TYPE "public"."SwapType" ADD VALUE 'INGRESS_EGRESS_FEE';
+ALTER TYPE "public"."SwapType" ADD VALUE 'NETWORK_FEE';

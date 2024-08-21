@@ -98,9 +98,6 @@ export default async function swapRequested({
     origin,
   );
 
-  // ignore internal swaps
-  if (originType === 'INTERNAL') return;
-
   const { destAddress, ccmMetadata } = getRequestInfo(requestType);
 
   await prisma.swapRequest.create({
