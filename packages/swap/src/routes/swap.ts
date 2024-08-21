@@ -1,5 +1,5 @@
 import express from 'express';
-import { Chain, assetConstants } from '@/shared/enums';
+import { Chain, assetConstants, getAssetAndChain } from '@/shared/enums';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { screamingSnakeToPascalCase, toUpperCase } from '@/shared/strings';
@@ -263,10 +263,8 @@ router.get(
     const response = {
       state,
       type: swap?.type,
-      srcChain: internalSrcAsset && assetConstants[internalSrcAsset].chain,
-      srcAsset: internalSrcAsset && assetConstants[internalSrcAsset].asset,
-      destChain: internalDestAsset && assetConstants[internalDestAsset].chain,
-      destAsset: internalDestAsset && assetConstants[internalDestAsset].asset,
+      ...(internalSrcAsset && getAssetAndChain(internalSrcAsset, 'src')),
+      ...(internalDestAsset && getAssetAndChain(internalDestAsset, 'dest')),
       destAddress: readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress'),
       depositChannelCreatedAt: swapDepositChannel?.createdAt.valueOf(),
       depositChannelBrokerCommissionBps: swapDepositChannel?.brokerCommissionBps,
@@ -294,8 +292,7 @@ router.get(
       egressIgnoredBlockIndex: swapRequest?.ignoredEgress?.ignoredBlockIndex ?? undefined,
       feesPaid: fees.map((fee) => ({
         type: fee.type,
-        chain: assetConstants[fee.asset].chain,
-        asset: assetConstants[fee.asset].asset,
+        ...getAssetAndChain(fee.asset),
         amount: fee.amount.toFixed(),
       })),
       broadcastRequestedAt: egress?.broadcast?.requestedAt?.valueOf(),
