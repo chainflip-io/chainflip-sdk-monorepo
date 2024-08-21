@@ -25,7 +25,7 @@ export default async function refundEgressScheduled({
   } = eventArgs.parse(event.args);
 
   await prisma.swapRequest.update({
-    where: { id: swapRequestId },
+    where: { nativeId: swapRequestId },
     data: {
       refundEgress: {
         create: {

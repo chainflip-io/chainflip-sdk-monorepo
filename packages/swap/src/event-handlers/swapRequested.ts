@@ -40,7 +40,7 @@ const getRequestInfo = (requestType: RequestType) => {
   return assertNever(requestType, `unexpected request type: ${(requestType as any).__kind}`);
 };
 
-const getOriginInfo = async (
+export const getOriginInfo = async (
   prisma: Prisma.TransactionClient,
   srcAsset: InternalAsset,
   origin: Origin,
