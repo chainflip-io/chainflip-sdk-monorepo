@@ -45,7 +45,7 @@ const depositChannelInclude = {
 } as const;
 
 const swapRequestInclude = {
-  swaps: true,
+  swaps: { include: { fees: true } },
   egress: { include: { broadcast: true } },
   refundEgress: { include: { broadcast: true } },
   fees: true,
@@ -258,6 +258,8 @@ router.get(
       failedSwap?.depositTransactionRef ??
       undefined;
 
+    const fees = (swapRequest?.fees ?? []).concat(swap?.fees ?? []);
+
     const response = {
       state,
       type: swap?.type,
@@ -290,13 +292,12 @@ router.get(
       ignoredEgressAmount: swapRequest?.ignoredEgress?.amount?.toFixed(),
       egressIgnoredAt: swapRequest?.ignoredEgress?.ignoredAt?.valueOf(),
       egressIgnoredBlockIndex: swapRequest?.ignoredEgress?.ignoredBlockIndex ?? undefined,
-      feesPaid:
-        swapRequest?.fees.map((fee) => ({
-          type: fee.type,
-          chain: assetConstants[fee.asset].chain,
-          asset: assetConstants[fee.asset].asset,
-          amount: fee.amount.toFixed(),
-        })) ?? [],
+      feesPaid: fees.map((fee) => ({
+        type: fee.type,
+        chain: assetConstants[fee.asset].chain,
+        asset: assetConstants[fee.asset].asset,
+        amount: fee.amount.toFixed(),
+      })),
       broadcastRequestedAt: egress?.broadcast?.requestedAt?.valueOf(),
       broadcastRequestedBlockIndex: egress?.broadcast?.requestedBlockIndex ?? undefined,
       broadcastAbortedAt: egress?.broadcast?.abortedAt?.valueOf(),
