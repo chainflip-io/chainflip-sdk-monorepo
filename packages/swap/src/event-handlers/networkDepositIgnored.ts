@@ -7,11 +7,10 @@ import { arbitrumIngressEgressDepositIgnored as arbitrumSchema150 } from '@chain
 import { ethereumIngressEgressDepositIgnored as ethereumSchema150 } from '@chainflip/processor/150/ethereumIngressEgress/depositIgnored';
 import { polkadotIngressEgressDepositIgnored as polkadotSchema150 } from '@chainflip/processor/150/polkadotIngressEgress/depositIgnored';
 import { solanaIngressEgressDepositIgnored } from '@chainflip/processor/160/solanaIngressEgress/depositIgnored';
-
 import { z } from 'zod';
 import { assetConstants } from '@/shared/enums';
+import { foreignChainAddress } from '@/shared/parsers';
 import env from '../config/env';
-import { foreignChainAddress } from '../parsers';
 import logger from '../utils/logger';
 import type { EventHandlerArgs } from './index';
 

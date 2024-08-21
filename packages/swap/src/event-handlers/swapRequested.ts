@@ -1,17 +1,17 @@
 import { swappingSwapRequested as schema160 } from '@chainflip/processor/160/swapping/swapRequested';
 import z from 'zod';
 import { InternalAsset } from '@/shared/enums';
+import { assertNever } from '@/shared/guards';
+import { foreignChainAddress } from '@/shared/parsers';
+import { pascalCaseToScreamingSnakeCase } from '@/shared/strings';
 import { Prisma } from '../client';
 import env from '../config/env';
-import { assertNever } from '../guards';
-import { foreignChainAddress } from '../parsers';
-import { pascalCaseToScreamingSnakeCase } from '../strings';
 import type { EventHandlerArgs } from './index';
 
 type RequestType = z.output<typeof schema160>['requestType'];
 type Origin = z.output<typeof schema160>['origin'];
 
-const foreignChainAddressSchema = foreignChainAddress(env.CHAINFLIP_NETWORK);
+const optionalForeignChainAddress = foreignChainAddress(env.CHAINFLIP_NETWORK).optional();
 
 const getRequestInfo = (requestType: RequestType) => {
   let destAddress;
@@ -22,7 +22,9 @@ const getRequestInfo = (requestType: RequestType) => {
   } else if (requestType.__kind === 'Ccm') {
     ccmMetadata = {
       ...requestType.ccmDepositMetadata,
-      sourceAddress: foreignChainAddressSchema.parse(requestType.ccmDepositMetadata.sourceAddress),
+      sourceAddress: optionalForeignChainAddress.parse(
+        requestType.ccmDepositMetadata.sourceAddress,
+      ),
     };
     destAddress = requestType.outputAddress.address;
   }
