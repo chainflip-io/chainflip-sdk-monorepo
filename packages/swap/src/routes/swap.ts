@@ -45,7 +45,7 @@ const depositChannelInclude = {
 } as const;
 
 const swapRequestInclude = {
-  swaps: { include: { fees: true } },
+  swaps: { include: { fees: true }, orderBy: { nativeId: 'desc' } },
   egress: { include: { broadcast: true } },
   refundEgress: { include: { broadcast: true } },
   fees: true,
