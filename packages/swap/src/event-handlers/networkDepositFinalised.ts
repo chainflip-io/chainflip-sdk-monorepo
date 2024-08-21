@@ -120,7 +120,7 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
     }
 
     if (!swapRequestId) {
-      logger.warn('No swapId found in networkDepositReceived');
+      logger.warn('No swapRequestId found in networkDepositReceived');
       return;
     }
 

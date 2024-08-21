@@ -1,8 +1,6 @@
 import type { Prisma } from '.prisma/client';
 import { Chains } from '@/shared/enums';
 import ccmDepositReceived from './ccmDepositReceived';
-import depositIgnored from './networkDepositIgnored';
-import depositIgnoredV120 from './depositIgnoredV120';
 import liquidityDepositAddressReady from './liquidityDepositChannelReady';
 import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';
 import networkBroadcastAborted from './networkBroadcastAborted';
@@ -10,6 +8,7 @@ import networkBroadcastSuccess from './networkBroadcastSuccess';
 import networkCcmBroadcastRequested from './networkCcmBroadcastRequested';
 import chainStateUpdated from './networkChainStateUpdated';
 import { networkDepositFinalised } from './networkDepositFinalised';
+import networkDepositIgnored from './networkDepositIgnored';
 import newPoolCreated from './newPoolCreated';
 import poolFeeSet from './poolFeeSet';
 import refundEgressIgnored from './refundEgressIgnored';
@@ -143,20 +142,9 @@ const handlers = [
     handlers: [
       { name: events.LiquidityPools.NewPoolCreated, handler: newPoolCreated },
       { name: events.LiquidityPools.PoolFeeSet, handler: poolFeeSet },
-      { name: events.Swapping.SwapScheduled, handler: swapScheduled },
-      { name: events.Swapping.SwapRescheduled, handler: swapRescheduled },
-      { name: events.Swapping.SwapExecuted, handler: swapExecuted },
       {
         name: events.Swapping.CcmDepositReceived,
         handler: ccmDepositReceived,
-      },
-      {
-        name: events.Swapping.SwapEgressScheduled,
-        handler: swapEgressScheduled,
-      },
-      {
-        name: events.Swapping.RefundEgressScheduled,
-        handler: refundEgressScheduled,
       },
       ...Object.values(Chains).flatMap((chain) => [
         {
@@ -183,36 +171,13 @@ const handlers = [
     ],
   },
   {
-    spec: 114,
-    handlers: Object.values(Chains).flatMap((chain) => [
-      {
-        name: events[`${chain}IngressEgress`].DepositIgnored,
-        handler: depositIgnored(chain),
-      },
-    ]),
-  },
-  {
-    spec: 120,
-    handlers: [
-      {
-        name: events.Swapping.SwapEgressIgnored,
-        handler: swapEgressIgnored,
-      },
-      ...Object.values(Chains).flatMap((chain) => [
-        {
-          name: events[`${chain}IngressEgress`].DepositIgnored,
-          handler: depositIgnoredV120(chain),
-        },
-      ]),
-    ],
-  },
-  {
     spec: 140,
     handlers: [
-      {
-        name: events.Swapping.SwapDepositAddressReady,
-        handler: swapDepositAddressReady,
-      },
+      { name: events.Swapping.SwapExecuted, handler: swapExecuted },
+      { name: events.Swapping.SwapScheduled, handler: swapScheduled },
+      { name: events.Swapping.SwapDepositAddressReady, handler: swapDepositAddressReady },
+      { name: events.Swapping.SwapEgressIgnored, handler: swapEgressIgnored },
+      { name: events.Swapping.SwapEgressScheduled, handler: swapEgressScheduled },
       {
         name: events.LiquidityProvider.LiquidityDepositAddressReady,
         handler: liquidityDepositAddressReady,
@@ -234,16 +199,19 @@ const handlers = [
           name: events[`${chain}IngressEgress`].InsufficientBoostLiquidity,
           handler: insufficientBoostLiquidity,
         },
+        {
+          name: events[`${chain}IngressEgress`].DepositIgnored,
+          handler: networkDepositIgnored(chain),
+        },
       ]),
     ],
   },
   {
     spec: 150,
     handlers: [
-      {
-        name: events.Swapping.RefundEgressIgnored,
-        handler: refundEgressIgnored,
-      },
+      { name: events.Swapping.RefundEgressIgnored, handler: refundEgressIgnored },
+      { name: events.Swapping.RefundEgressScheduled, handler: refundEgressScheduled },
+      { name: events.Swapping.SwapRescheduled, handler: swapRescheduled },
     ],
   },
   {

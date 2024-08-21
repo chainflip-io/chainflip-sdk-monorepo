@@ -1,15 +1,15 @@
+import { swappingRefundEgressScheduled as schema150 } from '@chainflip/processor/150/swapping/refundEgressScheduled';
+import { swappingRefundEgressScheduled as schema160 } from '@chainflip/processor/160/swapping/refundEgressScheduled';
 import { z } from 'zod';
-import { internalAssetEnum, u128, u64 } from '@/shared/parsers';
-import { egressId } from '@/swap/event-handlers/common';
 import type { EventHandlerArgs } from '.';
 
-const eventArgs = z.object({
-  asset: internalAssetEnum,
-  amount: u128,
-  swapId: u64,
-  egressId,
-  egressFee: u128,
-});
+const eventArgs = z.union([
+  schema160,
+  schema150.transform(({ swapId, ...rest }) => ({
+    swapRequestId: swapId,
+    ...rest,
+  })),
+]);
 
 export default async function refundEgressScheduled({
   prisma,
@@ -17,18 +17,15 @@ export default async function refundEgressScheduled({
   block,
 }: EventHandlerArgs): Promise<void> {
   const {
-    swapId,
+    swapRequestId,
     egressId: [chain, nativeId],
     egressFee,
     amount,
+    asset,
   } = eventArgs.parse(event.args);
 
-  const swap = await prisma.swap.findUniqueOrThrow({
-    where: { nativeId: swapId },
-  });
-
   await prisma.swapRequest.update({
-    where: { nativeId: swapId },
+    where: { id: swapRequestId },
     data: {
       refundEgress: {
         create: {
@@ -42,7 +39,7 @@ export default async function refundEgressScheduled({
       fees: {
         create: {
           type: 'EGRESS',
-          asset: swap.srcAsset,
+          asset,
           amount: egressFee.toString(),
         },
       },
