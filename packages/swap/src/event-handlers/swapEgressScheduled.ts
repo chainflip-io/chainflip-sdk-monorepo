@@ -1,24 +1,15 @@
-import { swappingSwapEgressScheduled as schema141 } from '@chainflip/processor/141/swapping/swapEgressScheduled';
 import { swappingSwapEgressScheduled as schema150 } from '@chainflip/processor/150/swapping/swapEgressScheduled';
 import { swappingSwapEgressScheduled as schema160 } from '@chainflip/processor/160/swapping/swapEgressScheduled';
 import { z } from 'zod';
 import type { EventHandlerArgs } from '.';
 
-const transformOldShape = ({
-  swapId,
-  fee,
-  ...rest
-}: z.output<typeof schema141 | typeof schema150>) => ({
+const transformOldShape = ({ swapId, fee, ...rest }: z.output<typeof schema150>) => ({
   swapRequestId: swapId,
   egressFee: fee,
   ...rest,
 });
 
-const eventArgs = z.union([
-  schema160,
-  schema150.transform(transformOldShape),
-  schema141.transform(transformOldShape),
-]);
+const eventArgs = z.union([schema160, schema150.transform(transformOldShape)]);
 
 /**
  * this event is emitted in order to correlate the egress id from a network

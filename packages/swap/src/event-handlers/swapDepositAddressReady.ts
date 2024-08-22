@@ -1,15 +1,10 @@
-import { swappingSwapDepositAddressReady as schema141 } from '@chainflip/processor/141/swapping/swapDepositAddressReady';
 import { swappingSwapDepositAddressReady as schema150 } from '@chainflip/processor/150/swapping/swapDepositAddressReady';
 import { swappingSwapDepositAddressReady as schema160 } from '@chainflip/processor/160/swapping/swapDepositAddressReady';
 import { z } from 'zod';
 import { calculateExpiryTime } from '../utils/function';
 import { EventHandlerArgs } from './index';
 
-const swapDepositAddressReadyArgs = z.union([
-  schema160,
-  schema150,
-  schema141.transform((args) => ({ ...args, refundParameters: undefined })),
-]);
+const swapDepositAddressReadyArgs = z.union([schema160, schema150]);
 
 export type SwapDepositAddressReadyEvent = z.input<typeof swapDepositAddressReadyArgs>;
 

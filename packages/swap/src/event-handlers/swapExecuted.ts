@@ -1,4 +1,3 @@
-import { swappingSwapExecuted as schema141 } from '@chainflip/processor/141/swapping/swapExecuted';
 import { swappingSwapExecuted as schema150 } from '@chainflip/processor/150/swapping/swapExecuted';
 import { swappingSwapExecuted as schema160 } from '@chainflip/processor/160/swapping/swapExecuted';
 import { z } from 'zod';
@@ -12,7 +11,7 @@ const transformOldShape = ({
   swapInput,
   swapType,
   ...rest
-}: z.output<typeof schema141 | typeof schema150>) => ({
+}: z.output<typeof schema150>) => ({
   swapRequestId: swapId,
   swapId,
   outputAmount: swapOutput,
@@ -26,7 +25,6 @@ const transformOldShape = ({
 const swapExecutedArgs = z.union([
   schema160.transform((args) => ({ ...args, swapType: undefined, isLegacy: false })),
   schema150.transform(transformOldShape),
-  schema141.transform(transformOldShape),
 ]);
 
 export type SwapExecutedEvent = z.input<typeof swapExecutedArgs>;
