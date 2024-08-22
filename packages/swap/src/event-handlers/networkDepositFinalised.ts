@@ -16,7 +16,7 @@ import assert from 'assert';
 import z from 'zod';
 import { assetConstants } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
-import { formatTxHash } from './common';
+import { formatTxHash, parseSpecNumber } from './common';
 import { Chain } from '../client';
 import logger from '../utils/logger';
 import { EventHandlerArgs } from '.';
@@ -124,6 +124,7 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
       logger.warn('No swapRequestId found in networkDepositReceived');
       return;
     }
+    const spec = parseSpecNumber(block.specId);
 
     await prisma.swapRequest.update({
       where: { nativeId: swapRequestId },
@@ -133,7 +134,10 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
         depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
         depositTransactionRef: txRef,
         ccmDepositReceivedBlockIndex:
-          action.__kind === 'CcmTransfer' ? `${block.height}-${event.indexInBlock}` : undefined,
+          // the dedicated ccm deposit received event is removed in 1.6
+          spec >= 160 && action.__kind === 'CcmTransfer'
+            ? `${block.height}-${event.indexInBlock}`
+            : undefined,
         fees: {
           create: { amount: ingressFee.toString(), type: 'INGRESS', asset },
         },
