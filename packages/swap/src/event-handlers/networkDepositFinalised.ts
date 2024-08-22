@@ -110,8 +110,11 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
 
   if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {
     let swapRequestId;
+    // shouldn't be needed after 1.6 is on mainnet
+    let gasSwapRequestId;
     if ('principalSwapId' in action && action.principalSwapId !== null) {
       swapRequestId = action.principalSwapId;
+      gasSwapRequestId = action.gasSwapId;
     } else if ('gasSwapId' in action && action.gasSwapId !== null) {
       swapRequestId = action.gasSwapId;
     } else if ('swapId' in action && action.swapId !== null) {
@@ -126,23 +129,33 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
     }
     const spec = parseSpecNumber(block.specId);
 
-    await prisma.swapRequest.update({
-      where: { nativeId: swapRequestId },
-      data: {
-        depositAmount: amount.toString(),
-        depositReceivedAt: new Date(block.timestamp),
-        depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
-        depositTransactionRef: txRef,
-        ccmDepositReceivedBlockIndex:
-          // the dedicated ccm deposit received event is removed in 1.6
-          spec >= 160 && action.__kind === 'CcmTransfer'
-            ? `${block.height}-${event.indexInBlock}`
-            : undefined,
-        fees: {
-          create: { amount: ingressFee.toString(), type: 'INGRESS', asset },
+    await Promise.all([
+      prisma.swapRequest.update({
+        where: { nativeId: swapRequestId },
+        data: {
+          depositAmount: amount.toString(),
+          depositReceivedAt: new Date(block.timestamp),
+          depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
+          depositTransactionRef: txRef,
+          ccmDepositReceivedBlockIndex:
+            // the dedicated ccm deposit received event is removed in 1.6
+            spec >= 160 && action.__kind === 'CcmTransfer'
+              ? `${block.height}-${event.indexInBlock}`
+              : undefined,
+          fees: {
+            create: { amount: ingressFee.toString(), type: 'INGRESS', asset },
+          },
         },
-      },
-    });
+      }),
+      gasSwapRequestId &&
+        prisma.swapRequest.update({
+          where: { nativeId: gasSwapRequestId },
+          data: {
+            depositReceivedAt: new Date(block.timestamp),
+            depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
+          },
+        }),
+    ]);
   } else if (action.__kind === 'BoostersCredited') {
     await prisma.swapRequest.updateMany({
       data: { depositTransactionRef: txRef },
