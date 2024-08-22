@@ -50,7 +50,7 @@ describe('ApiService', () => {
       expect(mockedFetch.mock.lastCall).toMatchSnapshot();
     });
 
-    it('passes the signal to axios', async () => {
+    it('passes the signal to fetch', async () => {
       await getQuote('https://swapperoo.org', mockRoute, {
         signal: new AbortController().signal,
       });
@@ -79,7 +79,7 @@ describe('ApiService', () => {
       expect(status2).toBe('my old friend');
     });
 
-    it('passes the signal to axios', async () => {
+    it('passes the signal to fetch', async () => {
       const mockedFetch = jest.mocked(fetch);
       mockedFetch.mockResolvedValueOnce({
         ok: true,
