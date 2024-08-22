@@ -1,15 +1,9 @@
-import axios from 'axios';
 import { Assets, Chains } from '@/shared/enums';
 import { QuoteRequest } from '../../types';
 import { getQuote, getStatus } from '../ApiService';
 
 jest.mock('../../../../package.json', () => ({
   version: '1.0-test',
-}));
-
-jest.mock('axios', () => ({
-  get: jest.fn(),
-  post: jest.fn(),
 }));
 
 describe('ApiService', () => {
@@ -22,14 +16,16 @@ describe('ApiService', () => {
   } satisfies QuoteRequest;
 
   describe(getQuote, () => {
-    const mockedGet = jest.mocked(axios.get);
+    const mockedGet = jest.spyOn(globalThis, 'fetch');
     beforeEach(() => {
       mockedGet.mockResolvedValueOnce({
-        data: {
-          id: 'string',
-          intermediateAmount: '1',
-          egressAmount: '2',
-        },
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 'string',
+            intermediateAmount: '1',
+            egressAmount: '2',
+          }),
       });
     });
 
@@ -65,9 +61,9 @@ describe('ApiService', () => {
 
   describe(getStatus, () => {
     it('forwards whatever response it gets from the swap service', async () => {
-      const mockedGet = jest.mocked(axios.get);
-      mockedGet.mockResolvedValueOnce({ data: 'hello darkness' });
-      mockedGet.mockResolvedValueOnce({ data: 'my old friend' });
+      const mockedGet = jest.mocked(fetch);
+      mockedGet.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve('hello darkness') });
+      mockedGet.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve('my old friend') });
 
       const statusRequest = { id: 'the id' };
 
@@ -78,8 +74,8 @@ describe('ApiService', () => {
     });
 
     it('passes the signal to axios', async () => {
-      const mockedGet = jest.mocked(axios.get);
-      mockedGet.mockResolvedValueOnce({ data: null });
+      const mockedGet = jest.mocked(fetch);
+      mockedGet.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(null) });
 
       await getStatus(
         'https://swapperoo.org',
