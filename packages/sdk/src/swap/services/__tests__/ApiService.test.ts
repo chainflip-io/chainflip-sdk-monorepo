@@ -1,15 +1,9 @@
-import axios from 'axios';
 import { Assets, Chains } from '@/shared/enums';
 import { QuoteRequest } from '../../types';
 import { getQuote, getStatus } from '../ApiService';
 
 jest.mock('../../../../package.json', () => ({
   version: '1.0-test',
-}));
-
-jest.mock('axios', () => ({
-  get: jest.fn(),
-  post: jest.fn(),
 }));
 
 describe('ApiService', () => {
@@ -22,22 +16,24 @@ describe('ApiService', () => {
   } satisfies QuoteRequest;
 
   describe(getQuote, () => {
-    const mockedGet = jest.mocked(axios.get);
+    const mockedFetch = jest.spyOn(globalThis, 'fetch');
     beforeEach(() => {
-      mockedGet.mockResolvedValueOnce({
-        data: {
-          id: 'string',
-          intermediateAmount: '1',
-          egressAmount: '2',
-        },
-      });
+      mockedFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 'string',
+            intermediateAmount: '1',
+            egressAmount: '2',
+          }),
+      } as Response);
     });
 
     it('gets a quote', async () => {
       const route = await getQuote('https://swapperoo.org', mockRoute, {});
 
       expect(route).toMatchSnapshot();
-      expect(mockedGet.mock.lastCall).toMatchSnapshot();
+      expect(mockedFetch.mock.lastCall).toMatchSnapshot();
     });
 
     it('gets a quote with a broker commission', async () => {
@@ -51,7 +47,7 @@ describe('ApiService', () => {
       );
 
       expect(route).toMatchSnapshot();
-      expect(mockedGet.mock.lastCall).toMatchSnapshot();
+      expect(mockedFetch.mock.lastCall).toMatchSnapshot();
     });
 
     it('passes the signal to axios', async () => {
@@ -59,15 +55,21 @@ describe('ApiService', () => {
         signal: new AbortController().signal,
       });
 
-      expect(mockedGet.mock.lastCall?.[1]?.signal).not.toBeUndefined();
+      expect(mockedFetch.mock.lastCall?.[1]?.signal).not.toBeUndefined();
     });
   });
 
   describe(getStatus, () => {
     it('forwards whatever response it gets from the swap service', async () => {
-      const mockedGet = jest.mocked(axios.get);
-      mockedGet.mockResolvedValueOnce({ data: 'hello darkness' });
-      mockedGet.mockResolvedValueOnce({ data: 'my old friend' });
+      const mockedFetch = jest.mocked(fetch);
+      mockedFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve('hello darkness'),
+      } as Response);
+      mockedFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve('my old friend'),
+      } as Response);
 
       const statusRequest = { id: 'the id' };
 
@@ -78,8 +80,11 @@ describe('ApiService', () => {
     });
 
     it('passes the signal to axios', async () => {
-      const mockedGet = jest.mocked(axios.get);
-      mockedGet.mockResolvedValueOnce({ data: null });
+      const mockedFetch = jest.mocked(fetch);
+      mockedFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(null),
+      } as Response);
 
       await getStatus(
         'https://swapperoo.org',
@@ -87,7 +92,7 @@ describe('ApiService', () => {
         { signal: new AbortController().signal },
       );
 
-      expect(mockedGet.mock.lastCall?.[1]?.signal).not.toBeUndefined();
+      expect(mockedFetch.mock.lastCall?.[1]?.signal).not.toBeUndefined();
     });
   });
 });
