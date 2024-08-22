@@ -60,7 +60,7 @@
     "@polkadot/api": "^12.2.3",
     "@polkadot/types": "^11.0.2",
     "@prisma/client": "^5.18.0",
-    "axios": "^1.6.8",
+    "axios": "^1.7.4",
     "bignumber.js": "^9.1.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

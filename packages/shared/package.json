@@ -21,7 +21,7 @@
     "@chainflip/bitcoin": "^0.2.2",
     "@chainflip/rpc": "^1.5.5",
     "@chainflip/utils": "^0.4.0",
-    "axios": "^1.6.8",
+    "axios": "^1.7.4",
     "bignumber.js": "^9.1.2",
     "ethers": "^6.13.2",
     "ioredis": "^5.4.1",
