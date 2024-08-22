@@ -119,10 +119,9 @@ export default async function swapRequested({
       destAddress,
       swapRequestedAt: new Date(block.timestamp),
       // this is changing soon anyway
-      fees:
-        brokerFee > 0n
-          ? { create: { amount: brokerFee.toString(), type: 'BROKER', asset: inputAsset } }
-          : undefined,
+      fees: brokerFee
+        ? { create: { amount: brokerFee.toString(), type: 'BROKER', asset: inputAsset } }
+        : undefined,
     },
   });
 }
