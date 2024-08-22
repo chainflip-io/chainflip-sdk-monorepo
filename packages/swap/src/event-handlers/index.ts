@@ -173,8 +173,24 @@ const handlers = [
     ],
   },
   {
-    spec: 140,
+    spec: 150,
+    handlers: Object.values(Chains).flatMap((chain) => [
+      {
+        name: events[`${chain}IngressEgress`].BoostPoolCreated,
+        handler: boostPoolCreated,
+      },
+      {
+        name: events[`${chain}IngressEgress`].InsufficientBoostLiquidity,
+        handler: insufficientBoostLiquidity,
+      },
+    ]),
+  },
+  {
+    spec: 150,
     handlers: [
+      { name: events.Swapping.RefundEgressIgnored, handler: refundEgressIgnored },
+      { name: events.Swapping.RefundEgressScheduled, handler: refundEgressScheduled },
+      { name: events.Swapping.SwapRescheduled, handler: swapRescheduled },
       { name: events.Swapping.SwapExecuted, handler: swapExecuted },
       { name: events.Swapping.SwapScheduled, handler: swapScheduled },
       { name: events.Swapping.SwapDepositAddressReady, handler: swapDepositAddressReady },
@@ -190,30 +206,14 @@ const handlers = [
           handler: networkDepositFinalised,
         },
         {
-          name: events[`${chain}IngressEgress`].BoostPoolCreated,
-          handler: boostPoolCreated,
-        },
-        {
           name: events[`${chain}IngressEgress`].DepositBoosted,
           handler: depositBoosted,
-        },
-        {
-          name: events[`${chain}IngressEgress`].InsufficientBoostLiquidity,
-          handler: insufficientBoostLiquidity,
         },
         {
           name: events[`${chain}IngressEgress`].DepositIgnored,
           handler: networkDepositIgnored(chain),
         },
       ]),
-    ],
-  },
-  {
-    spec: 150,
-    handlers: [
-      { name: events.Swapping.RefundEgressIgnored, handler: refundEgressIgnored },
-      { name: events.Swapping.RefundEgressScheduled, handler: refundEgressScheduled },
-      { name: events.Swapping.SwapRescheduled, handler: swapRescheduled },
     ],
   },
   {

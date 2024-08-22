@@ -1,7 +1,3 @@
-import { arbitrumIngressEgressDepositFinalised as arbitrumSchema141 } from '@chainflip/processor/141/arbitrumIngressEgress/depositFinalised';
-import { bitcoinIngressEgressDepositFinalised as bitcoinSchema141 } from '@chainflip/processor/141/bitcoinIngressEgress/depositFinalised';
-import { ethereumIngressEgressDepositFinalised as ethereumSchema141 } from '@chainflip/processor/141/ethereumIngressEgress/depositFinalised';
-import { polkadotIngressEgressDepositFinalised as polkadotSchema141 } from '@chainflip/processor/141/polkadotIngressEgress/depositFinalised';
 import { arbitrumIngressEgressDepositFinalised as arbitrumSchema150 } from '@chainflip/processor/150/arbitrumIngressEgress/depositFinalised';
 import { bitcoinIngressEgressDepositFinalised as bitcoinSchema150 } from '@chainflip/processor/150/bitcoinIngressEgress/depositFinalised';
 import { ethereumIngressEgressDepositFinalised as ethereumSchema150 } from '@chainflip/processor/150/ethereumIngressEgress/depositFinalised';
@@ -31,26 +27,10 @@ const solanaSchema = z.union([
   solanaSchema160.transform(normalizeSchemas),
   solanaSchema150.transform(normalizeSchemas),
 ]);
-const arbitrumSchema = z.union([
-  arbitrumSchema160,
-  arbitrumSchema150,
-  arbitrumSchema141.transform(normalizeSchemas),
-]);
-const bitcoinSchema = z.union([
-  bitcoinSchema160,
-  bitcoinSchema150,
-  bitcoinSchema141.transform(normalizeSchemas),
-]);
-const ethereumSchema = z.union([
-  ethereumSchema160,
-  ethereumSchema150,
-  ethereumSchema141.transform(normalizeSchemas),
-]);
-const polkadotSchema = z.union([
-  polkadotSchema160,
-  polkadotSchema150,
-  polkadotSchema141.transform(normalizeSchemas),
-]);
+const arbitrumSchema = z.union([arbitrumSchema160, arbitrumSchema150]);
+const bitcoinSchema = z.union([bitcoinSchema160, bitcoinSchema150]);
+const ethereumSchema = z.union([ethereumSchema160, ethereumSchema150]);
+const polkadotSchema = z.union([polkadotSchema160, polkadotSchema150]);
 
 type EthereumDepositDetails = z.output<typeof ethereumSchema>['depositDetails'];
 type ArbitrumDepositDetails = z.output<typeof arbitrumSchema>['depositDetails'];

@@ -1,4 +1,3 @@
-import { swappingSwapScheduled as schema141 } from '@chainflip/processor/141/swapping/swapScheduled';
 import { swappingSwapScheduled as schema150 } from '@chainflip/processor/150/swapping/swapScheduled';
 import { swappingSwapScheduled as schema160 } from '@chainflip/processor/160/swapping/swapScheduled';
 import { z } from 'zod';
@@ -6,11 +5,11 @@ import { parseSpecNumber } from './common';
 import { getOriginInfo } from './swapRequested';
 import type { EventHandlerArgs } from '.';
 
-const allSchemas = z.union([schema160, schema150, schema141]);
+const allSchemas = z.union([schema160, schema150]);
 
 export type SwapScheduledEvent = z.input<typeof allSchemas>;
 
-const preRefactorSchema = z.union([schema150, schema141]);
+const preRefactorSchema = schema150;
 
 const swapTypeMap = {
   CcmGas: 'GAS',

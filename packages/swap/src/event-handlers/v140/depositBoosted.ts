@@ -1,7 +1,3 @@
-import { arbitrumIngressEgressDepositBoosted as arbitrumSchema141 } from '@chainflip/processor/141/arbitrumIngressEgress/depositBoosted';
-import { bitcoinIngressEgressDepositBoosted as bitcoinSchema141 } from '@chainflip/processor/141/bitcoinIngressEgress/depositBoosted';
-import { ethereumIngressEgressDepositBoosted as ethereumSchema141 } from '@chainflip/processor/141/ethereumIngressEgress/depositBoosted';
-import { polkadotIngressEgressDepositBoosted as polkadotSchema141 } from '@chainflip/processor/141/polkadotIngressEgress/depositBoosted';
 import { arbitrumIngressEgressDepositBoosted as arbitrumSchema150 } from '@chainflip/processor/150/arbitrumIngressEgress/depositBoosted';
 import { bitcoinIngressEgressDepositBoosted as bitcoinSchema150 } from '@chainflip/processor/150/bitcoinIngressEgress/depositBoosted';
 import { ethereumIngressEgressDepositBoosted as ethereumSchema150 } from '@chainflip/processor/150/ethereumIngressEgress/depositBoosted';
@@ -17,10 +13,10 @@ import { ONE_IN_PIP } from '@/shared/functions';
 import { SwapFeeType } from '@/swap/client';
 import { EventHandlerArgs } from '..';
 
-const arbitrumSchema = z.union([arbitrumSchema160, arbitrumSchema150, arbitrumSchema141]);
-const bitcoinSchema = z.union([bitcoinSchema160, bitcoinSchema150, bitcoinSchema141]);
-const ethereumSchema = z.union([ethereumSchema160, ethereumSchema150, ethereumSchema141]);
-const polkadotSchema = z.union([polkadotSchema160, polkadotSchema150, polkadotSchema141]);
+const arbitrumSchema = z.union([arbitrumSchema160, arbitrumSchema150]);
+const bitcoinSchema = z.union([bitcoinSchema160, bitcoinSchema150]);
+const ethereumSchema = z.union([ethereumSchema160, ethereumSchema150]);
+const polkadotSchema = z.union([polkadotSchema160, polkadotSchema150]);
 const solanaSchema = z.union([solanaSchema160, solanaSchema150]);
 
 const depositBoostedSchema = z.union([
