@@ -33,25 +33,25 @@ export default async function swapScheduled({
 
   let swapRequest;
   if (spec < 160) {
-    const parsed = preRefactorSchema.parse(event.args);
-
-    ({
-      swapId,
-      swapId: swapRequestId,
-      depositAmount: inputAmount,
-      swapType: { __kind: swapType },
-    } = parsed);
-
     const {
+      depositAmount,
       sourceAsset,
       destinationAddress,
       destinationAsset,
       origin,
       brokerCommission,
       brokerFee,
-    } = parsed;
+      ...rest
+    } = preRefactorSchema.parse(event.args);
 
-    const brokerFeeOrCommission = brokerFee ?? brokerCommission;
+    ({
+      swapId,
+      swapId: swapRequestId,
+      swapType: { __kind: swapType },
+    } = rest);
+
+    const brokerFeeOrCommission = brokerFee ?? brokerCommission ?? 0n;
+    inputAmount = depositAmount - brokerFeeOrCommission;
 
     const { originType, depositTransactionRef, swapDepositChannelId } = await getOriginInfo(
       prisma,
@@ -67,7 +67,7 @@ export default async function swapScheduled({
         swapDepositChannelId,
         srcAsset: sourceAsset,
         destAsset: destinationAsset,
-        depositAmount: inputAmount.toString(),
+        depositAmount: depositAmount.toString(),
         requestType: 'LEGACY_SWAP',
         destAddress: destinationAddress.address,
         swapRequestedAt: new Date(block.timestamp),
