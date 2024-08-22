@@ -73,16 +73,15 @@ export default async function swapScheduled({
         destAddress: destinationAddress.address,
         swapRequestedAt: new Date(block.timestamp),
         // this is changing soon anyway
-        fees:
-          brokerFeeOrCommission != null
-            ? {
-                create: {
-                  type: 'BROKER' as const,
-                  asset: sourceAsset,
-                  amount: brokerFeeOrCommission.toString(),
-                },
-              }
-            : undefined,
+        fees: brokerFeeOrCommission
+          ? {
+              create: {
+                type: 'BROKER' as const,
+                asset: sourceAsset,
+                amount: brokerFeeOrCommission.toString(),
+              },
+            }
+          : undefined,
       },
     });
   } else {
