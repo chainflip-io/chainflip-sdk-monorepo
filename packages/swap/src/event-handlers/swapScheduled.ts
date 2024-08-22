@@ -92,15 +92,13 @@ export default async function swapScheduled({
       return;
     }
 
-    const { srcAsset, destAddress, destAsset, id } = channel;
-
     await prisma.swap.create({
       data: {
         type: swapType.type,
-        swapDepositChannelId: id,
-        srcAsset,
-        destAsset,
-        destAddress,
+        swapDepositChannelId: channel.id,
+        srcAsset: sourceAsset,
+        destAsset: destinationAsset,
+        destAddress: destinationAddress.address,
         ...newSwapData,
       },
     });
