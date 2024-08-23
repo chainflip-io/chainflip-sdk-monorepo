@@ -33,7 +33,7 @@ const swapScheduledArgs = z
   })
   .transform(({ brokerCommission, brokerFee, ...rest }) => ({
     ...rest,
-    brokerFee: brokerFee ?? brokerCommission,
+    brokerFee: brokerFee ?? brokerCommission ?? 0n,
   }));
 
 export type SwapScheduledEvent = z.input<typeof swapScheduledArgs>;
@@ -51,23 +51,23 @@ export default async function swapScheduled({
     destinationAddress,
     origin,
     swapType,
-    brokerFee: brokerFeeAmount,
+    brokerFee,
   } = swapScheduledArgs.parse(event.args);
 
   const newSwapData = {
     depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
-    depositAmount: depositAmount.toString(), // will be overwritten with value before fees in the networkDepositReceived handler
-    swapInputAmount: depositAmount.toString(),
+    depositAmount: depositAmount.toString(),
+    swapInputAmount: (depositAmount - brokerFee).toString(),
     nativeId: swapId,
     depositReceivedAt: new Date(block.timestamp),
     swapScheduledAt: new Date(block.timestamp),
     swapScheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
-    fees: brokerFeeAmount
+    fees: brokerFee
       ? {
           create: {
             type: 'BROKER' as const,
             asset: sourceAsset,
-            amount: brokerFeeAmount.toString(),
+            amount: brokerFee.toString(),
           },
         }
       : undefined,
