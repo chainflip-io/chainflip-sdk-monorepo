@@ -56,7 +56,7 @@ export default async function swapScheduled({
 
   const newSwapData = {
     depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
-    depositAmount: depositAmount.toString(), // will be overwritten with value before fees in the networkDepositReceived handler
+    depositAmount: depositAmount.toString(),
     swapInputAmount: (depositAmount - brokerFee).toString(),
     nativeId: swapId,
     depositReceivedAt: new Date(block.timestamp),
