@@ -2,17 +2,13 @@ import { swappingSwapRequested as schema160 } from '@chainflip/processor/160/swa
 import z from 'zod';
 import { InternalAsset } from '@/shared/enums';
 import { assertNever } from '@/shared/guards';
-import { foreignChainAddress } from '@/shared/parsers';
 import { pascalCaseToScreamingSnakeCase } from '@/shared/strings';
 import { formatTxHash } from './common';
 import { Prisma } from '../client';
-import env from '../config/env';
 import type { EventHandlerArgs } from './index';
 
 type RequestType = z.output<typeof schema160>['requestType'];
 type Origin = z.output<typeof schema160>['origin'];
-
-const optionalForeignChainAddress = foreignChainAddress(env.CHAINFLIP_NETWORK).optional();
 
 const getRequestInfo = (requestType: RequestType) => {
   let destAddress;
@@ -23,9 +19,7 @@ const getRequestInfo = (requestType: RequestType) => {
   } else if (requestType.__kind === 'Ccm') {
     ccmMetadata = {
       ...requestType.ccmDepositMetadata,
-      sourceAddress: optionalForeignChainAddress.parse(
-        requestType.ccmDepositMetadata.sourceAddress,
-      ),
+      sourceAddress: requestType.ccmDepositMetadata.sourceAddress,
     };
     destAddress = requestType.outputAddress.address;
   }
@@ -92,7 +86,7 @@ export default async function swapRequested({
   event,
   block,
 }: EventHandlerArgs): Promise<void> {
-  const { inputAmount, inputAsset, swapRequestId, outputAsset, origin, brokerFee, requestType } =
+  const { inputAmount, inputAsset, swapRequestId, outputAsset, origin, requestType } =
     schema160.parse(event.args);
 
   const { originType, swapDepositChannelId, depositTransactionRef } = await getOriginInfo(
@@ -115,13 +109,9 @@ export default async function swapRequested({
       requestType: pascalCaseToScreamingSnakeCase(requestType.__kind),
       ccmGasBudget: ccmMetadata?.channelMetadata.gasBudget.toString(),
       ccmMessage: ccmMetadata?.channelMetadata.message,
-      srcAddress: ccmMetadata?.sourceAddress,
+      srcAddress: ccmMetadata?.sourceAddress?.address,
       destAddress,
       swapRequestedAt: new Date(block.timestamp),
-      // this is changing soon anyway
-      fees: brokerFee
-        ? { create: { amount: brokerFee.toString(), type: 'BROKER', asset: inputAsset } }
-        : undefined,
     },
   });
 }
