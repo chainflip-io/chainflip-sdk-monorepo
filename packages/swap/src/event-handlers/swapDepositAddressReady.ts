@@ -4,9 +4,12 @@ import { z } from 'zod';
 import { calculateExpiryTime } from '../utils/function';
 import { EventHandlerArgs } from './index';
 
-const swapDepositAddressReadyArgs = z.union([schema160, schema150]);
+const swapDepositAddressReadyArgs = z.union([
+  schema160,
+  schema150.transform((args) => ({ ...args, dcaParameters: null })),
+]);
 
-export type SwapDepositAddressReadyEvent = z.input<typeof swapDepositAddressReadyArgs>;
+export type SwapDepositAddressReadyArgs = z.input<typeof swapDepositAddressReadyArgs>;
 
 export const swapDepositAddressReady = async ({
   prisma,
@@ -28,7 +31,8 @@ export const swapDepositAddressReady = async ({
     channelOpeningFee,
     affiliateFees,
     refundParameters,
-    ...rest
+    // TODO(dca)
+    // dcaParameters,
   } = swapDepositAddressReadyArgs.parse(event.args);
 
   const chainInfo = await prisma.chainTracking.findFirst({
@@ -57,7 +61,6 @@ export const swapDepositAddressReady = async ({
     fokMinPriceX128: refundParameters?.minPrice.toString(),
     fokRefundAddress: refundParameters?.refundAddress.address,
     fokRetryDurationBlocks: refundParameters?.retryDuration,
-    ...rest,
   };
 
   await Promise.all([
