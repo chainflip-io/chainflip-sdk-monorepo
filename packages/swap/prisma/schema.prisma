@@ -387,3 +387,54 @@ model BlockedAddress {
 
   @@schema("private")
 }
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model backup_swap_fees {
+  id     BigInt?
+  swapId BigInt?
+  type   SwapFeeType?
+  asset  InternalAsset?
+  amount Decimal?       @db.Decimal(30, 0)
+
+  @@ignore
+  @@schema("private")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model backup_swaps {
+  id                              BigInt?
+  nativeId                        BigInt?
+  swapExecutedAt                  DateTime?
+  createdAt                       DateTime?
+  updatedAt                       DateTime?
+  depositAmount                   Decimal?       @db.Decimal(30, 0)
+  depositReceivedAt               DateTime?
+  swapDepositChannelId            BigInt?
+  destAddress                     String?
+  depositReceivedBlockIndex       String?
+  swapExecutedBlockIndex          String?
+  srcAsset                        InternalAsset?
+  destAsset                       InternalAsset?
+  intermediateAmount              Decimal?       @db.Decimal(30, 0)
+  egressId                        BigInt?
+  type                            SwapType?
+  ccmDepositReceivedBlockIndex    String?
+  ccmGasBudget                    Decimal?       @db.Decimal(30, 0)
+  ccmMessage                      String?
+  swapOutputAmount                Decimal?       @db.Decimal(30, 0)
+  swapInputAmount                 Decimal?       @db.Decimal(30, 0)
+  effectiveBoostFeeBps            Int?
+  depositBoostedAt                DateTime?
+  depositBoostedBlockIndex        String?
+  depositTransactionRef           String?
+  prewitnessedDepositId           BigInt?
+  swapScheduledAt                 DateTime?
+  swapScheduledBlockIndex         String?
+  retryCount                      Int?
+  refundEgressId                  BigInt?
+  latestSwapRescheduledAt         DateTime?
+  latestSwapRescheduledBlockIndex String?
+
+  @@ignore
+  @@schema("private")
+}
