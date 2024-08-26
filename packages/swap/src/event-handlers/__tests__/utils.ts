@@ -9,7 +9,6 @@ import { networkBroadcastSuccessArgs } from '../networkBroadcastSuccess';
 import { DepositIgnoredArgs } from '../networkDepositIgnored';
 import { SwapDepositAddressReadyArgs } from '../swapDepositAddressReady';
 import { SwapEgressScheduledArgs } from '../swapEgressScheduled';
-import { SwapExecutedEvent } from '../swapExecuted';
 
 export const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
 export const DOT_ADDRESS = '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo'; // 0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972
@@ -83,50 +82,6 @@ export const networkDepositReceivedBtcMockV120 = (action?: z.input<typeof action
       indexInBlock: 7,
     },
   }) as const;
-
-export const buildSwapExecutedMock = (args: SwapExecutedEvent) => ({
-  block: {
-    specId: 'test@150',
-    height: 100,
-    timestamp: 1670337099000,
-  },
-  event: {
-    args: {
-      dispatchInfo: {
-        class: [null],
-        weight: '101978000',
-        paysFee: [null],
-      },
-      ...args,
-    },
-    id: '0000012799-000000-c1ea7',
-    indexInBlock: 0,
-    nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-    name: events.Swapping.SwapExecuted,
-    phase: 'ApplyExtrinsic',
-    pos: 2,
-    extrinsic: {
-      error: null,
-      hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
-      id: '0000012799-000000-c1ea7',
-      indexInBlock: 0,
-      nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
-      pos: 1,
-      success: true,
-      version: 4,
-      call: {
-        args: [null],
-        error: null,
-        id: '0000012799-000000-c1ea7',
-        name: 'Timestamp.set',
-        nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
-        origin: [null],
-        pos: 0,
-        success: true,
-      },
-    },
-  },
-});
 
 export const swapDepositAddressReadyMocked = {
   block: {

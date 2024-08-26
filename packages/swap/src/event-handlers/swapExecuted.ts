@@ -28,7 +28,8 @@ const swapExecutedArgs = z.union([
   schema150.transform(transformOldShape),
 ]);
 
-export type SwapExecutedEvent = z.input<typeof swapExecutedArgs>;
+export type SwapExecutedArgs = z.input<typeof swapExecutedArgs>;
+export type SwapExecuted160Args = z.input<typeof schema160>;
 
 export default async function swapExecuted({
   prisma,
