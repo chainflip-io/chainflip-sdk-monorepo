@@ -11,7 +11,7 @@ const { event, block } = refundEgressIgnoredMock;
 
 describe(refundEgressIgnored, () => {
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "Egress", "IgnoredEgress", "StateChainError" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "Egress", "IgnoredEgress", "StateChainError", "SwapRequest" CASCADE`;
   });
 
   it('handles refundEgressIgnored event', async () => {
