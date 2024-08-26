@@ -9,10 +9,7 @@ jest.mock('@/shared/rpc', () => ({
   getMetadata: jest.fn().mockResolvedValue(metadataMock.result),
 }));
 
-const {
-  eventContext: { event },
-  block,
-} = refundEgressIgnoredMock;
+const { event, block } = refundEgressIgnoredMock;
 
 describe(refundEgressIgnored, () => {
   beforeEach(async () => {

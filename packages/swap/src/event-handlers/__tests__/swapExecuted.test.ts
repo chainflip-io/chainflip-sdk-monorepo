@@ -35,10 +35,7 @@ describe(swapExecuted, () => {
   it.each([[{ egressAmount: '10000000000' }], [{ swapOutput: '10000000000' }]] as const)(
     'updates an existing swap',
     async (amount) => {
-      const {
-        eventContext: { event },
-        block,
-      } = buildSwapExecutedMock({
+      const { event, block } = buildSwapExecutedMock({
         swapId: '9876545',
         ...amount,
         destinationAsset: {
@@ -98,10 +95,7 @@ describe(swapExecuted, () => {
   );
 
   it('updates an existing swap with intermediate amount', async () => {
-    const {
-      eventContext: { event },
-      block,
-    } = buildSwapExecutedMock({
+    const { event, block } = buildSwapExecutedMock({
       swapId: '9876545',
       egressAmount: '10000000000',
       intermediateAmount: '100000',
@@ -164,10 +158,7 @@ describe(swapExecuted, () => {
   it.each(['NetworkFee', 'IngressEgressFee'] as const)(
     'ignores internal unscheduled swaps (%s)',
     async (type) => {
-      const {
-        eventContext: { event },
-        block,
-      } = buildSwapExecutedMock({
+      const { event, block } = buildSwapExecutedMock({
         swapId: '9876545',
         egressAmount: '10000000000',
         intermediateAmount: '100000',

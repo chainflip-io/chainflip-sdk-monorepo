@@ -44,8 +44,28 @@ export const networkDepositReceivedBtcMock = {
     height: 120,
     timestamp: 1670337105000,
   },
-  eventContext: {
-    kind: 'event',
+  event: {
+    args: {
+      asset: {
+        __kind: 'Btc',
+      },
+      amount: '110000',
+      depositAddress: {
+        value: '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
+        __kind: 'Taproot',
+      },
+    },
+    name: 'BitcoinIngressEgress.DepositReceived',
+    indexInBlock: 7,
+  },
+} as const;
+
+export const networkDepositReceivedBtcMockV120 = (action?: z.input<typeof actionSchema>) =>
+  ({
+    block: {
+      height: 120,
+      timestamp: 1670337105000,
+    },
     event: {
       args: {
         asset: {
@@ -56,37 +76,11 @@ export const networkDepositReceivedBtcMock = {
           value: '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
           __kind: 'Taproot',
         },
+        ingressFee: '1000',
+        action: action || { __kind: 'Swap', swapId: '1' },
       },
       name: 'BitcoinIngressEgress.DepositReceived',
       indexInBlock: 7,
-    },
-  },
-} as const;
-
-export const networkDepositReceivedBtcMockV120 = (action?: z.input<typeof actionSchema>) =>
-  ({
-    block: {
-      height: 120,
-      timestamp: 1670337105000,
-    },
-    eventContext: {
-      kind: 'event',
-      event: {
-        args: {
-          asset: {
-            __kind: 'Btc',
-          },
-          amount: '110000',
-          depositAddress: {
-            value: '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
-            __kind: 'Taproot',
-          },
-          ingressFee: '1000',
-          action: action || { __kind: 'Swap', swapId: '1' },
-        },
-        name: 'BitcoinIngressEgress.DepositReceived',
-        indexInBlock: 7,
-      },
     },
   }) as const;
 
@@ -96,42 +90,39 @@ export const buildSwapExecutedMock = (args: SwapExecutedEvent) => ({
     height: 100,
     timestamp: 1670337099000,
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        dispatchInfo: {
-          class: [null],
-          weight: '101978000',
-          paysFee: [null],
-        },
-        ...args,
+  event: {
+    args: {
+      dispatchInfo: {
+        class: [null],
+        weight: '101978000',
+        paysFee: [null],
       },
+      ...args,
+    },
+    id: '0000012799-000000-c1ea7',
+    indexInBlock: 0,
+    nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
+    name: events.Swapping.SwapExecuted,
+    phase: 'ApplyExtrinsic',
+    pos: 2,
+    extrinsic: {
+      error: null,
+      hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
       id: '0000012799-000000-c1ea7',
       indexInBlock: 0,
-      nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: events.Swapping.SwapExecuted,
-      phase: 'ApplyExtrinsic',
-      pos: 2,
-      extrinsic: {
+      nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
+      pos: 1,
+      success: true,
+      version: 4,
+      call: {
+        args: [null],
         error: null,
-        hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
         id: '0000012799-000000-c1ea7',
-        indexInBlock: 0,
-        nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
-        pos: 1,
+        name: 'Timestamp.set',
+        nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
+        origin: [null],
+        pos: 0,
         success: true,
-        version: 4,
-        call: {
-          args: [null],
-          error: null,
-          id: '0000012799-000000-c1ea7',
-          name: 'Timestamp.set',
-          nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
-          origin: [null],
-          pos: 0,
-          success: true,
-        },
       },
     },
   },
@@ -144,34 +135,31 @@ export const swapDepositAddressReadyMocked = {
     timestamp: 1670337105000,
     hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        depositAddress: {
-          __kind: 'Eth',
-          value: ETH_ADDRESS,
-        },
-        destinationAddress: {
-          __kind: 'Dot',
-          value: bytesToHex(ss58.decode(DOT_ADDRESS).data),
-        },
-        sourceAsset: {
-          __kind: 'Eth',
-        },
-        destinationAsset: {
-          __kind: 'Dot',
-        },
-        brokerCommissionRate: 0,
-        channelId: '1',
-        sourceChainExpiryBlock: '0x100',
-        boostFee: 0,
-        channelOpeningFee: 0,
-        affiliateFees: [],
-      } as SwapDepositAddressReadyArgs,
-      indexInBlock: 0,
-      name: events.Swapping.SwapDepositAddressReady,
-    },
+  event: {
+    args: {
+      depositAddress: {
+        __kind: 'Eth',
+        value: ETH_ADDRESS,
+      },
+      destinationAddress: {
+        __kind: 'Dot',
+        value: bytesToHex(ss58.decode(DOT_ADDRESS).data),
+      },
+      sourceAsset: {
+        __kind: 'Eth',
+      },
+      destinationAsset: {
+        __kind: 'Dot',
+      },
+      brokerCommissionRate: 0,
+      channelId: '1',
+      sourceChainExpiryBlock: '0x100',
+      boostFee: 0,
+      channelOpeningFee: 0,
+      affiliateFees: [],
+    } as SwapDepositAddressReadyArgs,
+    indexInBlock: 0,
+    name: events.Swapping.SwapDepositAddressReady,
   },
 } as const;
 
@@ -182,36 +170,33 @@ export const swapDepositAddressReadyCcmParamsMocked = {
     timestamp: 1670337105000,
     hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        channelId: '8249',
-        sourceAsset: { __kind: 'Btc' },
-        depositAddress: {
-          value:
-            '0x7462317079303874383832667679656b63393975336432656a7578347261336c72636b687970776d336137656578363838766a757571687138786e74336b',
-          __kind: 'Btc',
-        },
-        channelMetadata: {
-          message: '0xdeadc0de',
-          gasBudget: '125000',
-          cfParameters: '0x',
-        },
-        destinationAsset: { __kind: 'Eth' },
-        destinationAddress: {
-          value: '0xfcd3c82b154cb4717ac98718d0fd13eeba3d2754',
-          __kind: 'Eth',
-        },
-        brokerCommissionRate: 0,
-        sourceChainExpiryBlock: '2573643',
-        boostFee: 0,
-        channelOpeningFee: 0,
-        affiliateFees: [],
-      } as SwapDepositAddressReadyArgs,
-      indexInBlock: 0,
-      name: events.Swapping.SwapDepositAddressReady,
-    },
+  event: {
+    args: {
+      channelId: '8249',
+      sourceAsset: { __kind: 'Btc' },
+      depositAddress: {
+        value:
+          '0x7462317079303874383832667679656b63393975336432656a7578347261336c72636b687970776d336137656578363838766a757571687138786e74336b',
+        __kind: 'Btc',
+      },
+      channelMetadata: {
+        message: '0xdeadc0de',
+        gasBudget: '125000',
+        cfParameters: '0x',
+      },
+      destinationAsset: { __kind: 'Eth' },
+      destinationAddress: {
+        value: '0xfcd3c82b154cb4717ac98718d0fd13eeba3d2754',
+        __kind: 'Eth',
+      },
+      brokerCommissionRate: 0,
+      sourceChainExpiryBlock: '2573643',
+      boostFee: 0,
+      channelOpeningFee: 0,
+      affiliateFees: [],
+    } as SwapDepositAddressReadyArgs,
+    indexInBlock: 0,
+    name: events.Swapping.SwapDepositAddressReady,
   },
 } as const;
 
@@ -221,48 +206,45 @@ export const swapEgressScheduledMock = {
     height: 120,
     timestamp: 1670337105000,
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        dispatchInfo: {
-          class: [null],
-          weight: '101978000',
-          paysFee: [null],
-        },
-        swapId: '9876545',
-        swapRequestId: '9876545',
-        fee: '1000000000',
-        egressFee: '1000000000',
-        asset: { __kind: 'Eth' },
-        amount: '10000000000',
-        egressId: [{ __kind: 'Ethereum' }, '1'] as const,
-      } as SwapEgressScheduledArgs,
+  event: {
+    args: {
+      dispatchInfo: {
+        class: [null],
+        weight: '101978000',
+        paysFee: [null],
+      },
+      swapId: '9876545',
+      swapRequestId: '9876545',
+      fee: '1000000000',
+      egressFee: '1000000000',
+      asset: { __kind: 'Eth' },
+      amount: '10000000000',
+      egressId: [{ __kind: 'Ethereum' }, '1'] as const,
+    } as SwapEgressScheduledArgs,
+    id: '0000012799-000000-c1ea7',
+    indexInBlock: 0,
+    nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
+    name: events.Swapping.SwapEgressScheduled,
+    phase: 'ApplyExtrinsic',
+    pos: 2,
+    extrinsic: {
+      error: null,
+      hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
       id: '0000012799-000000-c1ea7',
       indexInBlock: 0,
-      nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: events.Swapping.SwapEgressScheduled,
-      phase: 'ApplyExtrinsic',
-      pos: 2,
-      extrinsic: {
+      nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
+      pos: 1,
+      success: true,
+      version: 4,
+      call: {
+        args: [null],
         error: null,
-        hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
         id: '0000012799-000000-c1ea7',
-        indexInBlock: 0,
-        nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
-        pos: 1,
+        name: 'Timestamp.set',
+        nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
+        origin: [null],
+        pos: 0,
         success: true,
-        version: 4,
-        call: {
-          args: [null],
-          error: null,
-          id: '0000012799-000000-c1ea7',
-          name: 'Timestamp.set',
-          nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
-          origin: [null],
-          pos: 0,
-          success: true,
-        },
       },
     },
   },
@@ -274,31 +256,28 @@ export const swapEgressIgnoredMock = {
     height: 120,
     timestamp: 1670337105000,
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        asset: {
-          __kind: 'Btc',
-        },
-        amount: '11',
-        reason: {
-          value: {
-            error: '0x06000000',
-            index: 34,
-          },
-          __kind: 'Module',
-        },
-        swapId: '2',
+  event: {
+    args: {
+      asset: {
+        __kind: 'Btc',
       },
-      id: '0000012799-000000-c1ea7',
-      indexInBlock: 0,
-      nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: events.Swapping.SwapEgressIgnored,
-      phase: 'ApplyExtrinsic',
-      pos: 2,
-      extrinsic: null,
+      amount: '11',
+      reason: {
+        value: {
+          error: '0x06000000',
+          index: 34,
+        },
+        __kind: 'Module',
+      },
+      swapId: '2',
     },
+    id: '0000012799-000000-c1ea7',
+    indexInBlock: 0,
+    nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
+    name: events.Swapping.SwapEgressIgnored,
+    phase: 'ApplyExtrinsic',
+    pos: 2,
+    extrinsic: null,
   },
 } as const;
 
@@ -308,31 +287,28 @@ export const refundEgressIgnoredMock = {
     height: 120,
     timestamp: 1670337105000,
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        asset: {
-          __kind: 'Btc',
-        },
-        amount: '22000',
-        reason: {
-          value: {
-            error: '0x06000000',
-            index: 34,
-          },
-          __kind: 'Module',
-        },
-        swapId: '377',
+  event: {
+    args: {
+      asset: {
+        __kind: 'Btc',
       },
-      id: '0000012799-000000-c1ea7',
-      indexInBlock: 0,
-      nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: events.Swapping.RefundEgressIgnored,
-      phase: 'ApplyExtrinsic',
-      pos: 2,
-      extrinsic: null,
+      amount: '22000',
+      reason: {
+        value: {
+          error: '0x06000000',
+          index: 34,
+        },
+        __kind: 'Module',
+      },
+      swapId: '377',
     },
+    id: '0000012799-000000-c1ea7',
+    indexInBlock: 0,
+    nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
+    name: events.Swapping.RefundEgressIgnored,
+    phase: 'ApplyExtrinsic',
+    pos: 2,
+    extrinsic: null,
   },
 } as const;
 
@@ -342,35 +318,32 @@ export const networkBatchBroadcastRequestedMock = {
     height: 120,
     timestamp: 1670337105000,
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        egressIds: [
-          [
-            {
-              __kind: 'Ethereum',
-            },
-            '10',
-          ],
-          [
-            {
-              __kind: 'Ethereum',
-            },
-            '11',
-          ],
-          [
-            {
-              __kind: 'Ethereum',
-            },
-            '12',
-          ],
+  event: {
+    args: {
+      egressIds: [
+        [
+          {
+            __kind: 'Ethereum',
+          },
+          '10',
         ],
-        broadcastId: 9,
-      },
-      name: 'EthereumIngressEgress.BatchBroadcastRequested',
-      indexInBlock: 135,
+        [
+          {
+            __kind: 'Ethereum',
+          },
+          '11',
+        ],
+        [
+          {
+            __kind: 'Ethereum',
+          },
+          '12',
+        ],
+      ],
+      broadcastId: 9,
     },
+    name: 'EthereumIngressEgress.BatchBroadcastRequested',
+    indexInBlock: 135,
   },
 } as const;
 
@@ -383,20 +356,17 @@ export const networkBroadcastSuccessMock = (
       height: 120,
       timestamp: 1670337105000,
     },
-    eventContext: {
-      kind: 'event',
-      event: {
-        args: {
-          broadcastId: 12,
-          transactionOutId: {
-            s: '0x689c4add3e14ea8243a1966fc2cea3baea692ca52fd7ef464e1cc74e608bf262',
-            kTimesGAddress: '0x972c9f07cc7a847b29003655faf265c12e193f09',
-          },
-          ...args,
+    event: {
+      args: {
+        broadcastId: 12,
+        transactionOutId: {
+          s: '0x689c4add3e14ea8243a1966fc2cea3baea692ca52fd7ef464e1cc74e608bf262',
+          kTimesGAddress: '0x972c9f07cc7a847b29003655faf265c12e193f09',
         },
-        name: 'EthereumBroadcaster.BroadcastSuccess',
-        indexInBlock: 12,
+        ...args,
       },
+      name: 'EthereumBroadcaster.BroadcastSuccess',
+      indexInBlock: 12,
     },
   }) as const;
 
@@ -406,13 +376,10 @@ export const networkBroadcastAbortedMock = {
     height: 120,
     timestamp: 1670337105000,
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: { broadcastId: 62 },
-      name: 'EthereumBroadcaster.BroadcastAborted',
-      indexInBlock: 7,
-    },
+  event: {
+    args: { broadcastId: 62 },
+    name: 'EthereumBroadcaster.BroadcastAborted',
+    indexInBlock: 7,
   },
 } as const;
 
@@ -422,18 +389,15 @@ export const newPoolCreatedMock = {
     height: 120,
     timestamp: 1670337105000,
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        baseAsset: { __kind: 'Btc' },
-        quoteAsset: { __kind: 'Usdc' },
-        initialPrice: '170141183460469231731687303715884105728000',
-        feeHundredthPips: 1000,
-      },
-      name: 'LiquidityPools.NewPoolCreated',
-      indexInBlock: 7,
+  event: {
+    args: {
+      baseAsset: { __kind: 'Btc' },
+      quoteAsset: { __kind: 'Usdc' },
+      initialPrice: '170141183460469231731687303715884105728000',
+      feeHundredthPips: 1000,
     },
+    name: 'LiquidityPools.NewPoolCreated',
+    indexInBlock: 7,
   },
 } as const;
 
@@ -443,18 +407,15 @@ export const poolFeeSetMock = {
     height: 150,
     timestamp: 1680337105000,
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        baseAsset: { __kind: 'Btc' },
-        quoteAsset: { __kind: 'Usdc' },
-        initialPrice: '170141183460469231731687303715884105728000',
-        feeHundredthPips: 2000,
-      },
-      name: 'LiquidityPools.PoolFeeSet',
-      indexInBlock: 7,
+  event: {
+    args: {
+      baseAsset: { __kind: 'Btc' },
+      quoteAsset: { __kind: 'Usdc' },
+      initialPrice: '170141183460469231731687303715884105728000',
+      feeHundredthPips: 2000,
     },
+    name: 'LiquidityPools.PoolFeeSet',
+    indexInBlock: 7,
   },
 } as const;
 
@@ -464,16 +425,13 @@ export const thresholdSignatureInvalidMock = {
     height: 420,
     timestamp: 1680337105000,
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        broadcastId: 1,
-        retryBroadcastId: 10,
-      },
-      name: 'EthereumBroadcaster.ThresholdSignatureInvalid',
-      indexInBlock: 7,
+  event: {
+    args: {
+      broadcastId: 1,
+      retryBroadcastId: 10,
     },
+    name: 'EthereumBroadcaster.ThresholdSignatureInvalid',
+    indexInBlock: 7,
   },
 } as const;
 
@@ -486,42 +444,39 @@ export const buildDepositIgnoredEvent = <T extends DepositIgnoredArgs>(
     timestamp: 1670337093000,
     height: 100,
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        dispatchInfo: {
-          class: [null],
-          weight: '101978000',
-          paysFee: [null],
-        },
-        ...args,
+  event: {
+    args: {
+      dispatchInfo: {
+        class: [null],
+        weight: '101978000',
+        paysFee: [null],
       },
+      ...args,
+    },
+    id: '0000012799-000000-c1ea7',
+    indexInBlock: 0,
+    nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
+    name: eventName,
+    phase: 'ApplyExtrinsic',
+    pos: 2,
+    extrinsic: {
+      error: null,
+      hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
       id: '0000012799-000000-c1ea7',
       indexInBlock: 0,
-      nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: eventName,
-      phase: 'ApplyExtrinsic',
-      pos: 2,
-      extrinsic: {
+      nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
+      pos: 1,
+      success: true,
+      version: 4,
+      call: {
+        args: [null],
         error: null,
-        hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
         id: '0000012799-000000-c1ea7',
-        indexInBlock: 0,
-        nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
-        pos: 1,
+        name: 'Timestamp.set',
+        nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
+        origin: [null],
+        pos: 0,
         success: true,
-        version: 4,
-        call: {
-          args: [null],
-          error: null,
-          id: '0000012799-000000-c1ea7',
-          name: 'Timestamp.set',
-          nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
-          origin: [null],
-          pos: 0,
-          success: true,
-        },
       },
     },
   },

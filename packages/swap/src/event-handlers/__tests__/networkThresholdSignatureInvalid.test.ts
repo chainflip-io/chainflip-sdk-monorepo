@@ -8,10 +8,7 @@ describe(networkThresholdSignatureInvalid, () => {
   });
 
   it('handles the replacement of an invalid broadcast', async () => {
-    const {
-      block,
-      eventContext: { event },
-    } = thresholdSignatureInvalidMock;
+    const { block, event } = thresholdSignatureInvalidMock;
 
     await prisma.broadcast.create({
       data: {

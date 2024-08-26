@@ -8,8 +8,7 @@ describe(networkBatchBroadcastRequested, () => {
   });
 
   it('creates a broadcast entity and updates the relevant egress entities', async () => {
-    const { block } = networkBatchBroadcastRequestedMock;
-    const { event } = networkBatchBroadcastRequestedMock.eventContext;
+    const { block, event } = networkBatchBroadcastRequestedMock;
 
     await prisma.egress.create({
       data: {
@@ -59,8 +58,7 @@ describe(networkBatchBroadcastRequested, () => {
   });
 
   it('does not create a broadcast entity if egresses are not tracked', async () => {
-    const { block } = networkBatchBroadcastRequestedMock;
-    const { event } = networkBatchBroadcastRequestedMock.eventContext;
+    const { block, event } = networkBatchBroadcastRequestedMock;
 
     await prisma.$transaction((tx) =>
       networkBatchBroadcastRequested({

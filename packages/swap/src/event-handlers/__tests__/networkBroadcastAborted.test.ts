@@ -8,8 +8,7 @@ describe(networkBroadcastAborted, () => {
   });
 
   it('updates an existing broadcast entity with the succeeded timestamp', async () => {
-    const { block } = networkBroadcastAbortedMock;
-    const { event } = networkBroadcastAbortedMock.eventContext;
+    const { block, event } = networkBroadcastAbortedMock;
 
     await prisma.broadcast.create({
       data: {
