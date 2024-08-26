@@ -22,14 +22,14 @@ describe(swapDepositAddressReady, () => {
       await createChainTrackingInfo();
       await swapDepositAddressReady({
         prisma: txClient,
-        event: eventMock.eventContext.event,
+        event: eventMock.event,
         block: eventMock.block,
       });
     });
 
     const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
       where: {
-        channelId: BigInt(eventMock.eventContext.event.args.channelId),
+        channelId: BigInt(eventMock.event.args.channelId),
       },
     });
 
@@ -45,9 +45,9 @@ describe(swapDepositAddressReady, () => {
       await swapDepositAddressReady({
         prisma: txClient,
         event: {
-          ...eventMock.eventContext.event,
+          ...eventMock.event,
           args: {
-            ...eventMock.eventContext.event.args,
+            ...eventMock.event.args,
             brokerCommissionRate: 25,
           },
         },
@@ -57,7 +57,7 @@ describe(swapDepositAddressReady, () => {
 
     const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
       where: {
-        channelId: BigInt(eventMock.eventContext.event.args.channelId),
+        channelId: BigInt(eventMock.event.args.channelId),
       },
     });
 
@@ -71,9 +71,9 @@ describe(swapDepositAddressReady, () => {
     await swapDepositAddressReady({
       prisma,
       event: {
-        ...eventMock.eventContext.event,
+        ...eventMock.event,
         args: {
-          ...eventMock.eventContext.event.args,
+          ...eventMock.event.args,
           channelOpeningFee: 1000,
         },
       },
@@ -82,7 +82,7 @@ describe(swapDepositAddressReady, () => {
 
     const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
       where: {
-        channelId: BigInt(eventMock.eventContext.event.args.channelId),
+        channelId: BigInt(eventMock.event.args.channelId),
       },
     });
 
@@ -97,14 +97,14 @@ describe(swapDepositAddressReady, () => {
       await createChainTrackingInfo();
       await swapDepositAddressReady({
         prisma: txClient,
-        event: ccmEventMock.eventContext.event,
+        event: ccmEventMock.event,
         block: ccmEventMock.block,
       });
     });
 
     const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
       where: {
-        channelId: BigInt(ccmEventMock.eventContext.event.args.channelId),
+        channelId: BigInt(ccmEventMock.event.args.channelId),
       },
     });
 
@@ -116,7 +116,7 @@ describe(swapDepositAddressReady, () => {
 
   it('does not overwrite expectedDepositAmount with zero', async () => {
     await createDepositChannel({
-      channelId: BigInt(eventMock.eventContext.event.args.channelId),
+      channelId: BigInt(eventMock.event.args.channelId),
       srcChain: Chains.Ethereum,
       issuedBlock: 10,
       expectedDepositAmount: 650,
@@ -125,7 +125,7 @@ describe(swapDepositAddressReady, () => {
     await prisma.$transaction(async (txClient) => {
       await swapDepositAddressReady({
         prisma: txClient,
-        event: eventMock.eventContext.event,
+        event: eventMock.event,
         block: {
           ...eventMock.block,
           height: 10,
@@ -135,7 +135,7 @@ describe(swapDepositAddressReady, () => {
 
     const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
       where: {
-        channelId: BigInt(eventMock.eventContext.event.args.channelId),
+        channelId: BigInt(eventMock.event.args.channelId),
       },
     });
 
@@ -150,9 +150,9 @@ describe(swapDepositAddressReady, () => {
     await swapDepositAddressReady({
       prisma,
       event: {
-        ...eventMock.eventContext.event,
+        ...eventMock.event,
         args: {
-          ...eventMock.eventContext.event.args,
+          ...eventMock.event.args,
           channelMetadata: {
             message: '0x',
             gasBudget: '0',
@@ -165,7 +165,7 @@ describe(swapDepositAddressReady, () => {
 
     const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
       where: {
-        channelId: BigInt(eventMock.eventContext.event.args.channelId),
+        channelId: BigInt(eventMock.event.args.channelId),
       },
     });
 
@@ -180,9 +180,9 @@ describe(swapDepositAddressReady, () => {
     await swapDepositAddressReady({
       prisma,
       event: {
-        ...eventMock.eventContext.event,
+        ...eventMock.event,
         args: {
-          ...eventMock.eventContext.event.args,
+          ...eventMock.event.args,
           affiliateFees: [
             {
               account: '0x7cf56f93db22f45007bbfa2e2ee89551365b2ebaece029fb006d5ad1b3756c3c',
@@ -196,7 +196,7 @@ describe(swapDepositAddressReady, () => {
 
     const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
       where: {
-        channelId: BigInt(eventMock.eventContext.event.args.channelId),
+        channelId: BigInt(eventMock.event.args.channelId),
       },
       include: { affiliates: true },
     });
@@ -218,9 +218,9 @@ describe(swapDepositAddressReady, () => {
     await swapDepositAddressReady({
       prisma,
       event: {
-        ...eventMock.eventContext.event,
+        ...eventMock.event,
         args: {
-          ...eventMock.eventContext.event.args,
+          ...eventMock.event.args,
           refundParameters: {
             minPrice: '2041694201525630780780247644590609',
             refundAddress: {
@@ -236,7 +236,7 @@ describe(swapDepositAddressReady, () => {
 
     const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
       where: {
-        channelId: BigInt(eventMock.eventContext.event.args.channelId),
+        channelId: BigInt(eventMock.event.args.channelId),
       },
     });
 

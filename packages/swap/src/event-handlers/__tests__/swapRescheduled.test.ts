@@ -17,9 +17,7 @@ describe(swapRescheduled, () => {
       destAddress: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
       isExpired: true,
       srcChainExpiryBlock:
-        Number(
-          swapScheduledBtcDepositChannelMock.eventContext.event.args.origin.depositBlockHeight,
-        ) + 1,
+        Number(swapScheduledBtcDepositChannelMock.event.args.origin.depositBlockHeight) + 1,
     });
     await prisma.swap.create({
       data: {
@@ -44,7 +42,7 @@ describe(swapRescheduled, () => {
       prisma,
       block: { ...swapScheduledBtcDepositChannelMock.block },
       event: {
-        ...swapScheduledBtcDepositChannelMock.eventContext.event,
+        ...swapScheduledBtcDepositChannelMock.event,
         args: {
           swapId: '3',
           executeAt: swapScheduledBtcDepositChannelMock.block.height + 5,
@@ -57,7 +55,7 @@ describe(swapRescheduled, () => {
       new Date(swapScheduledBtcDepositChannelMock.block.timestamp).toISOString(),
     );
     expect(swap.latestSwapRescheduledBlockIndex).toEqual(
-      `${swapScheduledBtcDepositChannelMock.block.height}-${swapScheduledBtcDepositChannelMock.eventContext.event.indexInBlock}`,
+      `${swapScheduledBtcDepositChannelMock.block.height}-${swapScheduledBtcDepositChannelMock.event.indexInBlock}`,
     );
     expect(swap.retryCount).toEqual(1);
   });

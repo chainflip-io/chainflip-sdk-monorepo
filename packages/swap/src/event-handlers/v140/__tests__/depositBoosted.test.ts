@@ -18,23 +18,20 @@ export const depositBoostedBtcMock = ({
       height: 120,
       timestamp: 1670337105000,
     },
-    eventContext: {
-      kind: 'event',
-      event: {
-        args: {
-          asset: {
-            __kind: 'Btc',
-          },
-          amounts: amounts ?? [[5, '1000000']],
-          prewitnessedDepositId: '101',
-          channelId: channelId ?? '1',
-          ingressFee: '1000',
-          boostFee: '500',
-          action: action ?? { __kind: 'Swap', swapId: '1' },
+    event: {
+      args: {
+        asset: {
+          __kind: 'Btc',
         },
-        name: 'BitcoinIngressEgress.DepositBoosted',
-        indexInBlock: 7,
+        amounts: amounts ?? [[5, '1000000']],
+        prewitnessedDepositId: '101',
+        channelId: channelId ?? '1',
+        ingressFee: '1000',
+        boostFee: '500',
+        action: action ?? { __kind: 'Swap', swapId: '1' },
       },
+      name: 'BitcoinIngressEgress.DepositBoosted',
+      indexInBlock: 7,
     },
   }) as const;
 
@@ -47,7 +44,7 @@ describe('depositBoosted', () => {
   it('updates the values for an existing swap', async () => {
     const swapDepositChannel = await createBtcSwapDepositChannel();
     const eventData = depositBoostedBtcMock({ amounts: [[5, '1000000']] }) as any;
-    const event = eventData.eventContext.event as any;
+    const event = eventData.event as any;
     const block = eventData.block as any;
 
     await prisma.$transaction(async (txClient) => {
@@ -84,7 +81,7 @@ describe('depositBoosted', () => {
       amounts: [[5, '1000000']],
       action: { __kind: 'LiquidityProvision', lpAccount: '0x123' },
     }) as any;
-    const event = eventData.eventContext.event as any;
+    const event = eventData.event as any;
     const block = eventData.block as any;
 
     await prisma.$transaction(async (txClient) => {

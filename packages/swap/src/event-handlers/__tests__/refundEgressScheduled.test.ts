@@ -3,10 +3,7 @@ import { DOT_ADDRESS, createDepositChannel, swapEgressScheduledMock } from './ut
 import prisma from '../../client';
 import refundEgressScheduled from '../refundEgressScheduled';
 
-const {
-  eventContext: { event },
-  block,
-} = swapEgressScheduledMock;
+const { event, block } = swapEgressScheduledMock;
 
 describe(refundEgressScheduled, () => {
   beforeEach(async () => {

@@ -8,8 +8,7 @@ describe(newPoolCreated, () => {
   });
 
   it('creates a pool with the correct data', async () => {
-    const { block } = newPoolCreatedMock;
-    const { event } = newPoolCreatedMock.eventContext;
+    const { block, event } = newPoolCreatedMock;
 
     await prisma.$transaction((tx) =>
       newPoolCreated({

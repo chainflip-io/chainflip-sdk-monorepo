@@ -4,10 +4,7 @@ import { DOT_ADDRESS, createDepositChannel, swapEgressScheduledMock } from './ut
 import prisma from '../../client';
 import swapEgressScheduled from '../swapEgressScheduled';
 
-const {
-  eventContext: { event },
-  block,
-} = swapEgressScheduledMock;
+const { event, block } = swapEgressScheduledMock;
 
 mockRpcResponse((url, data) => {
   if (data.method === 'cf_environment') {

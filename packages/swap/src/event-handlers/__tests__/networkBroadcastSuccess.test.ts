@@ -8,8 +8,7 @@ describe(networkBroadcastSuccess, () => {
   });
 
   it('updates an existing broadcast entity with the succeeded timestamp', async () => {
-    const { block } = networkBroadcastSuccessMock();
-    const { event } = networkBroadcastSuccessMock().eventContext;
+    const { block, event } = networkBroadcastSuccessMock();
 
     await prisma.broadcast.create({
       data: {
@@ -43,7 +42,7 @@ describe(networkBroadcastSuccess, () => {
     const { block } = networkBroadcastSuccessMock();
     const { event } = networkBroadcastSuccessMock({
       transactionRef: '0x1234',
-    }).eventContext;
+    });
 
     await prisma.broadcast.create({
       data: {
@@ -81,7 +80,7 @@ describe(networkBroadcastSuccess, () => {
         blockNumber: 100,
         extrinsicIndex: 21,
       },
-    }).eventContext;
+    });
 
     await prisma.broadcast.create({
       data: {
@@ -117,7 +116,7 @@ describe(networkBroadcastSuccess, () => {
     const { block } = networkBroadcastSuccessMock();
     const { event } = networkBroadcastSuccessMock({
       transactionRef: '0x5a6571d73cd1760fc659f9f845252d2a3b275a0d1a0b5db91ed9dc29b2283092',
-    }).eventContext;
+    });
 
     await prisma.broadcast.create({
       data: {

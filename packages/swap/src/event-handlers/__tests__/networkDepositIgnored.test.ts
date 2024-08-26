@@ -72,7 +72,7 @@ describe(networkDepositIgnored, () => {
     await networkDepositIgnored('Ethereum')({
       prisma,
       block: ethDepositIgnoredMock.block as any,
-      event: ethDepositIgnoredMock.eventContext.event as any,
+      event: ethDepositIgnoredMock.event as any,
     });
 
     expect(prisma.swapDepositChannel.findFirst).toHaveBeenCalledTimes(1);
@@ -88,13 +88,13 @@ describe(networkDepositIgnored, () => {
       data: {
         destAddress: DOT_ADDRESS,
         destChain: 'Polkadot',
-        depositAmount: ethDepositIgnoredMock.eventContext.event.args.amount,
+        depositAmount: ethDepositIgnoredMock.event.args.amount,
         srcAsset: 'Eth',
         srcChain: 'Ethereum',
         swapDepositChannelId: 100n,
         reason: 'BelowMinimumDeposit',
         failedAt: new Date(ethDepositIgnoredMock.block.timestamp),
-        failedBlockIndex: `${ethDepositIgnoredMock.block.height}-${ethDepositIgnoredMock.eventContext.event.indexInBlock}`,
+        failedBlockIndex: `${ethDepositIgnoredMock.block.height}-${ethDepositIgnoredMock.event.indexInBlock}`,
       },
     });
   });
@@ -115,7 +115,7 @@ describe(networkDepositIgnored, () => {
     await networkDepositIgnored('Polkadot')({
       prisma,
       block: dotDepositIgnoredMock.block as any,
-      event: dotDepositIgnoredMock.eventContext.event as any,
+      event: dotDepositIgnoredMock.event as any,
     });
 
     expect(prisma.swapDepositChannel.findFirst).toHaveBeenCalledTimes(1);
@@ -131,13 +131,13 @@ describe(networkDepositIgnored, () => {
       data: {
         destAddress: ETH_ADDRESS,
         destChain: 'Ethereum',
-        depositAmount: dotDepositIgnoredMock.eventContext.event.args.amount,
+        depositAmount: dotDepositIgnoredMock.event.args.amount,
         srcAsset: 'Dot',
         srcChain: 'Polkadot',
         swapDepositChannelId: 100n,
         reason: 'NotEnoughToPayFees',
         failedAt: new Date(ethDepositIgnoredMock.block.timestamp),
-        failedBlockIndex: `${ethDepositIgnoredMock.block.height}-${ethDepositIgnoredMock.eventContext.event.indexInBlock}`,
+        failedBlockIndex: `${ethDepositIgnoredMock.block.height}-${ethDepositIgnoredMock.event.indexInBlock}`,
       },
     });
   });
@@ -158,7 +158,7 @@ describe(networkDepositIgnored, () => {
     await networkDepositIgnored('Bitcoin')({
       prisma,
       block: btcDepositIgnoredMock.block as any,
-      event: btcDepositIgnoredMock.eventContext.event as any,
+      event: btcDepositIgnoredMock.event as any,
     });
 
     expect(prisma.swapDepositChannel.findFirst).toHaveBeenCalledTimes(1);
@@ -174,13 +174,13 @@ describe(networkDepositIgnored, () => {
       data: {
         destAddress: ETH_ADDRESS,
         destChain: 'Ethereum',
-        depositAmount: btcDepositIgnoredMock.eventContext.event.args.amount,
+        depositAmount: btcDepositIgnoredMock.event.args.amount,
         srcAsset: 'Btc',
         srcChain: 'Bitcoin',
         swapDepositChannelId: 100n,
         reason: 'BelowMinimumDeposit',
         failedAt: new Date(ethDepositIgnoredMock.block.timestamp),
-        failedBlockIndex: `${ethDepositIgnoredMock.block.height}-${ethDepositIgnoredMock.eventContext.event.indexInBlock}`,
+        failedBlockIndex: `${ethDepositIgnoredMock.block.height}-${ethDepositIgnoredMock.event.indexInBlock}`,
       },
     });
   });

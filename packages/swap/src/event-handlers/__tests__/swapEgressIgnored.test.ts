@@ -9,10 +9,7 @@ jest.mock('@/shared/rpc', () => ({
   getMetadata: jest.fn().mockResolvedValue(metadataMock.result),
 }));
 
-const {
-  eventContext: { event },
-  block,
-} = swapEgressIgnoredMock;
+const { event, block } = swapEgressIgnoredMock;
 
 describe(swapEgressIgnored, () => {
   beforeEach(async () => {

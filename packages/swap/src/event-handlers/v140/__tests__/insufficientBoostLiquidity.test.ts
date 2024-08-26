@@ -14,20 +14,17 @@ export const insufficientBoostLiquidityMock = ({
       height: 120,
       timestamp: 1670337105000,
     },
-    eventContext: {
-      kind: 'event',
-      event: {
-        args: {
-          prewitnessedDepositId: '1',
-          asset: {
-            __kind: 'Btc',
-          },
-          amountAttempted: amountAttempted ?? '1000000',
-          channelId: channelId ?? '1',
+    event: {
+      args: {
+        prewitnessedDepositId: '1',
+        asset: {
+          __kind: 'Btc',
         },
-        name: 'BitcoinIngressEgress.InsufficientBoostLiquidity',
-        indexInBlock: 7,
+        amountAttempted: amountAttempted ?? '1000000',
+        channelId: channelId ?? '1',
       },
+      name: 'BitcoinIngressEgress.InsufficientBoostLiquidity',
+      indexInBlock: 7,
     },
   }) as const;
 
@@ -43,7 +40,7 @@ describe('insufficientBoostLiquidity', () => {
       amountAttempted: '1000000',
       channelId: swapDepositChannel.channelId.toString(),
     }) as any;
-    const event = eventData.eventContext.event as any;
+    const event = eventData.event as any;
     const block = eventData.block as any;
 
     await prisma.$transaction(async (txClient) => {
