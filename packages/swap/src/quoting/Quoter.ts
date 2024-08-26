@@ -79,12 +79,18 @@ export default class Quoter {
         const result = marketMakerResponseSchema.safeParse(message);
 
         if (!result.success) {
-          logger.warn(`received invalid quote response from "${socket.data.marketMaker}"`, {
+          logger.warn('received invalid quote response', {
             quoteResponse: message,
             reason: result.error,
+            marketMaker: socket.data.marketMaker,
           });
           return;
         }
+
+        logger.debug('received quote', {
+          quote: result.data,
+          marketMaker: socket.data.marketMaker,
+        });
 
         this.quotes$.next({ marketMaker: socket.data.marketMaker, quote: result.data });
       });
@@ -165,7 +171,7 @@ export default class Quoter {
       ),
     ];
 
-    logger.info('received limit orders from market makers', orders);
+    logger.info('received limit orders from market makers', { orders });
 
     return orders;
   }
