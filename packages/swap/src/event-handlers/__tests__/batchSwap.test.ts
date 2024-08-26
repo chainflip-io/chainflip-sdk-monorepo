@@ -4,9 +4,9 @@ import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import { Event } from '../../gql/generated/graphql';
 import processBlocks from '../../processBlocks';
-import { DepositReceivedArgs } from '../networkDepositReceived';
-import { SwapDepositAddressReadyEvent } from '../swapDepositAddressReady';
-import { SwapScheduledEvent } from '../swapScheduled';
+import { DepositFinalisedArgs } from '../networkDepositFinalised';
+import { SwapDepositAddressReadyArgs } from '../swapDepositAddressReady';
+import { SwapScheduledArgs } from '../swapScheduled';
 
 jest.mock('graphql-request', () => ({
   GraphQLClient: class MockClient {
@@ -46,7 +46,8 @@ const swapDepositAddressReadyEvent = {
     boostFee: 0,
     channelOpeningFee: 0,
     affiliateFees: [],
-  } as SwapDepositAddressReadyEvent,
+    refundParameters: null,
+  } as SwapDepositAddressReadyArgs,
 } as const;
 
 const batchEvents = [
@@ -83,7 +84,7 @@ const batchEvents = [
       swapType: {
         __kind: 'Swap',
       },
-    } as SwapScheduledEvent,
+    } as SwapScheduledArgs,
   },
   {
     id: '0000000001-000020-09d28',
@@ -101,7 +102,7 @@ const batchEvents = [
         __kind: 'Swap',
         swapId: '1',
       },
-    } as DepositReceivedArgs,
+    } as DepositFinalisedArgs,
   },
   {
     id: '0000000001-000250-09d28',
@@ -246,7 +247,7 @@ describe('batch swap flow', () => {
           nodes: [
             {
               height,
-              specId: 'test@120',
+              specId: 'test@150',
               timestamp: new Date(height * 6000).toISOString(),
               events: { nodes: events },
             },

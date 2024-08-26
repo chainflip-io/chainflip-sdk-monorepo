@@ -6,7 +6,7 @@ import prisma from '../../client';
 import { Event } from '../../gql/generated/graphql';
 import processBlocks from '../../processBlocks';
 import { encodedAddress } from '../common';
-import { SwapScheduledEvent } from '../swapScheduled';
+import { SwapScheduledArgs } from '../swapScheduled';
 
 jest.mock('graphql-request', () => ({
   GraphQLClient: class MockClient {
@@ -68,7 +68,7 @@ const ccmEvents = [
         value: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0',
         __kind: 'Eth',
       },
-    } as SwapScheduledEvent,
+    } as SwapScheduledArgs,
   },
   {
     id: '0000000002-000014-a6740',
@@ -96,7 +96,7 @@ const ccmEvents = [
         value: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0',
         __kind: 'Eth',
       },
-    } as SwapScheduledEvent,
+    } as SwapScheduledArgs,
   },
   {
     id: '0000000002-000054-a6740',
@@ -293,7 +293,7 @@ describe('batch swap flow', () => {
           nodes: [
             {
               height,
-              specId: 'test@0',
+              specId: 'test@150',
               timestamp: new Date(height * 6000).toISOString(),
               events: { nodes: events },
             },
