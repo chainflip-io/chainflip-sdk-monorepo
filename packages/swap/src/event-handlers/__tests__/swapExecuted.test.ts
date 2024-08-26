@@ -98,6 +98,7 @@ describe(swapExecuted, () => {
       id: expect.any(BigInt),
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
+      swapRequestId: expect.any(BigInt),
     });
   });
 
@@ -108,6 +109,7 @@ describe(swapExecuted, () => {
       id: expect.any(BigInt),
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
+      swapRequestId: expect.any(BigInt),
     });
   });
 });
