@@ -401,7 +401,7 @@ model StateChainError {
   errorIndex      Int
   name            String
   docs            String
-  ignoredEgresses IgnoredEgress[] @ignore
+  ignoredEgresses IgnoredEgress[]
 
   @@unique([specVersion, palletIndex, errorIndex])
   @@schema("public")

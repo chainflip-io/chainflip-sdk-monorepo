@@ -210,6 +210,7 @@ export const swapEgressIgnoredMock = {
     specId: 'test@150',
     height: 120,
     timestamp: 1670337105000,
+    hash: '0x123',
   },
   event: {
     args: {
