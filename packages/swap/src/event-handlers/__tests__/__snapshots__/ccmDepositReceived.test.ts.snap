@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ccmDepositReceived updates the CCM fields 1`] = `
+{
+  "ccmDepositReceivedBlockIndex": "1000-6",
+  "ccmGasBudget": "65000",
+  "ccmMessage": "0xcafebabe",
+  "completedAt": null,
+  "completedBlockIndex": null,
+  "depositAmount": "1000000000000000000",
+  "depositBoostedAt": null,
+  "depositBoostedBlockIndex": null,
+  "depositReceivedAt": null,
+  "depositReceivedBlockIndex": null,
+  "depositTransactionRef": null,
+  "destAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+  "destAsset": "ArbEth",
+  "effectiveBoostFeeBps": null,
+  "egressId": null,
+  "id": Any<BigInt>,
+  "nativeId": 1n,
+  "originType": "VAULT",
+  "prewitnessedDepositId": null,
+  "refundEgressId": null,
+  "requestType": "LEGACY_SWAP",
+  "srcAddress": null,
+  "srcAsset": "Eth",
+  "swapDepositChannelId": null,
+  "swapRequestedAt": 2024-08-23T13:10:06.000Z,
+}
+`;
