@@ -11,6 +11,8 @@ const transformOldShape = ({ swapId, fee, ...rest }: z.output<typeof schema150>)
 
 const eventArgs = z.union([schema160, schema150.transform(transformOldShape)]);
 
+export type SwapEgressScheduledArgs = z.input<typeof eventArgs>;
+
 /**
  * this event is emitted in order to correlate the egress id from a network
  * deposit/egress pallet to a swap id
