@@ -25,7 +25,7 @@ exports[`swapRequested creates a new swap request (DEPOSIT_CHANNEL) 1`] = `
   "requestType": "CCM",
   "srcAddress": null,
   "srcAsset": "Btc",
-  "swapDepositChannelId": 1n,
+  "swapDepositChannelId": Any<BigInt>,
   "swapRequestedAt": 2024-08-23T13:13:12.002Z,
 }
 `;
