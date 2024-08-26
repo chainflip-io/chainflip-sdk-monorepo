@@ -7,7 +7,8 @@ import type { EventHandlerArgs } from '.';
 
 const allSchemas = z.union([schema160, schema150]);
 
-export type SwapScheduledEvent = z.input<typeof allSchemas>;
+export type SwapScheduledArgs = z.input<typeof allSchemas>;
+export type SwapScheduled150Args = z.input<typeof schema150>;
 
 const preRefactorSchema = schema150;
 
@@ -71,7 +72,6 @@ export default async function swapScheduled({
         requestType: 'LEGACY_SWAP',
         destAddress: destinationAddress.address,
         swapRequestedAt: new Date(block.timestamp),
-        // this is changing soon anyway
         fees: brokerFeeOrCommission
           ? {
               create: {

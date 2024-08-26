@@ -106,7 +106,7 @@ describe(swapRequested, () => {
   });
 
   it('creates a new swap request (DEPOSIT_CHANNEL)', async () => {
-    await prisma.swapDepositChannel.create({
+    const channel = await prisma.swapDepositChannel.create({
       data: {
         srcChain: assetConstants[depositChannel.inputAsset.__kind].chain,
         depositAddress: Buffer.from(
@@ -128,8 +128,10 @@ describe(swapRequested, () => {
 
     const request = await prisma.swapRequest.findFirstOrThrow();
 
+    expect(request.swapDepositChannelId).toBe(channel.id);
     expect(request).toMatchSnapshot({
       id: expect.any(BigInt),
+      swapDepositChannelId: expect.any(BigInt),
     });
   });
 });

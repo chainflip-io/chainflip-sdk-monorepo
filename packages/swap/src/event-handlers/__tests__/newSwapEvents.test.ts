@@ -76,7 +76,7 @@ describe('new swap events flow', () => {
           nodes: [
             {
               height,
-              specId: 'test@160',
+              specId: 'test@150',
               timestamp: new Date(height * 6000).toISOString(),
               events: { nodes: events },
             },
