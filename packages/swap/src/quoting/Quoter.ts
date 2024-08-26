@@ -86,7 +86,10 @@ export default class Quoter {
           return;
         }
 
-        logger.debug(`received quote from "${socket.data.marketMaker}"`, result.data);
+        logger.debug(`received quote`, {
+          quote: result.data,
+          marketMaker: socket.data.marketMaker,
+        });
 
         this.quotes$.next({ marketMaker: socket.data.marketMaker, quote: result.data });
       });
