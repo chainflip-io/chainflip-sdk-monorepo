@@ -19,6 +19,15 @@ const ethereumSchema = z.union([ethereumSchema160, ethereumSchema150]);
 const polkadotSchema = z.union([polkadotSchema160, polkadotSchema150]);
 const solanaSchema = z.union([solanaSchema160, solanaSchema150]);
 
+export type Schema150 =
+  | typeof arbitrumSchema150
+  | typeof bitcoinSchema150
+  | typeof ethereumSchema150
+  | typeof polkadotSchema150
+  | typeof solanaSchema150;
+
+export type Action150 = z.input<Schema150>['action'];
+
 const depositBoostedSchema = z.union([
   arbitrumSchema,
   bitcoinSchema,
@@ -26,6 +35,8 @@ const depositBoostedSchema = z.union([
   polkadotSchema,
   solanaSchema,
 ]);
+
+export type DepositBoostedArgs = z.input<Schema150>;
 
 // DepositBoosted event is emitted instead of DepositFinalised event in v140 due to boost
 // We need to update the depositAmount and store the ingress fee just like we do in the DepositFinalised event
