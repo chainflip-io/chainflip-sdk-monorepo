@@ -6,7 +6,7 @@ describe(swapRescheduled, () => {
   let btcSwapDepositChannel: SwapDepositChannel;
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "SwapRequest" CASCADE`;
 
     btcSwapDepositChannel = await createDepositChannel({
       srcChain: 'Bitcoin',

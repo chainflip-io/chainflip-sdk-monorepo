@@ -6,7 +6,7 @@ const { event, block } = swapEgressScheduledMock;
 
 describe(swapEgressScheduled, () => {
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "Egress" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "Egress", "SwapRequest" CASCADE`;
   });
 
   it('adds an egress and fee to a swap request', async () => {

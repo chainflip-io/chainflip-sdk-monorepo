@@ -6,7 +6,7 @@ const { event, block } = swapEgressScheduledMock;
 
 describe(refundEgressScheduled, () => {
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "Egress" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "Egress", "SwapRequest" CASCADE`;
   });
 
   it('creates egress for refund on an existing swap', async () => {
@@ -29,10 +29,10 @@ describe(refundEgressScheduled, () => {
 
     refundEgressScheduled({ block, event, prisma });
 
-    const swapRequest = await prisma.swapRequest.findFirstOrThrow({
+    const swapRequest = await prisma.swapRequest.findUniqueOrThrow({
       where: { nativeId: swapId },
       include: {
-        refundEgress: { select: { amount: true, scheduledAt: true, chain: true } },
+        refundEgress: true,
         fees: { select: { amount: true, asset: true, type: true } },
       },
     });
@@ -40,6 +40,11 @@ describe(refundEgressScheduled, () => {
     expect(swapRequest).toMatchSnapshot({
       id: expect.any(BigInt),
       refundEgressId: expect.any(BigInt),
+      refundEgress: {
+        id: expect.any(BigInt),
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+      },
     });
   });
 });
