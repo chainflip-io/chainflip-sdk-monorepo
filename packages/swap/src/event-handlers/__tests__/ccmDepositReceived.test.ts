@@ -1,69 +1,64 @@
-import { InternalAssets } from '@/shared/enums';
 import prisma from '@/swap/client';
-import { DOT_ADDRESS, createDepositChannel } from './utils';
-import ccmDepositReceived from '../ccmDepositReceived';
+import ccmDepositReceived, { CcmDepositReceivedArgs } from '../ccmDepositReceived';
 
 describe(ccmDepositReceived, () => {
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "SwapRequest" CASCADE`;
   });
 
-  it('happy case', async () => {
+  it('updates the CCM fields', async () => {
     const block = {
-      timestamp: Date.now(),
+      timestamp: new Date().toISOString(),
       height: 1000,
+      specId: 'test@150',
+      hash: '0x123',
     };
-    const indexInBlock = 5;
-    await createDepositChannel({
-      swaps: {
-        create: {
-          nativeId: BigInt(9876545),
-          depositAmount: '10000000000',
-          swapInputAmount: '10000000000',
-          depositReceivedAt: new Date(Date.now() - 6000),
-          depositReceivedBlockIndex: `${block.height}-${indexInBlock}`,
-          srcAsset: InternalAssets.Eth,
-          destAsset: InternalAssets.Dot,
-          destAddress: DOT_ADDRESS,
-          type: 'SWAP',
-          swapScheduledAt: new Date(Date.now() - 6000),
-          swapScheduledBlockIndex: `${block.height}-${indexInBlock}`,
-        },
+    const swapRequest = await prisma.swapRequest.create({
+      data: {
+        nativeId: 1n,
+        originType: 'VAULT',
+        requestType: 'LEGACY_SWAP',
+        srcAsset: 'Eth',
+        destAsset: 'ArbEth',
+        destAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        depositAmount: '1000000000000000000',
+        swapRequestedAt: new Date('2024-08-23 13:10:06.000+00'),
+        ccmGasBudget: null,
+        ccmDepositReceivedBlockIndex: null,
+        ccmMessage: null,
       },
     });
 
-    await prisma.$transaction(async (client) => {
-      await ccmDepositReceived({
-        prisma: client,
-        block: block as any,
-        event: {
-          args: {
-            ccmId: '150',
-            depositAmount: '3829832913',
-            destinationAddress: {
-              value: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
-              __kind: 'Eth',
-            },
-            principalSwapId: '9876545',
-            depositMetadata: {
-              channelMetadata: {
-                gasBudget: '65000',
-                message: '0x12abf87',
-              },
-            },
-          },
-          name: 'ccmDepositReceived',
-          indexInBlock: 6,
+    const args: CcmDepositReceivedArgs = {
+      principalSwapId: swapRequest.nativeId.toString(),
+      destinationAddress: {
+        __kind: 'Arb',
+        value: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+      },
+      ccmId: '1',
+      depositAmount: '1000000000000000000',
+      depositMetadata: {
+        channelMetadata: {
+          message: '0xcafebabe',
+          gasBudget: '65000',
         },
-      });
+      },
+    };
+
+    await ccmDepositReceived({
+      prisma,
+      block,
+      event: {
+        args,
+        name: 'Swapping.CcmDepositReceived',
+        indexInBlock: 6,
+      },
     });
 
-    const swap = await prisma.swap.findFirstOrThrow({
-      where: { nativeId: BigInt(9876545) },
+    expect(
+      await prisma.swapRequest.findUniqueOrThrow({ where: { id: swapRequest.id } }),
+    ).toMatchSnapshot({
+      id: expect.any(BigInt),
     });
-
-    expect(swap.ccmGasBudget?.toString()).toEqual('65000');
-    expect(swap.ccmMessage).toEqual('0x12abf87');
-    expect(swap.ccmDepositReceivedBlockIndex).toEqual('1000-6');
   });
 });
