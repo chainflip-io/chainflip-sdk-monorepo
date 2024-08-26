@@ -24,7 +24,7 @@ const refundEgressIgnored = async ({ prisma, event, block }: EventHandlerArgs) =
         create: {
           ignoredAt: new Date(block.timestamp),
           ignoredBlockIndex: `${block.height}-${event.indexInBlock}`,
-          stateChainErrorId: failure?.id,
+          stateChainError: { connect: { id: failure?.id } },
           amount: amount.toString(),
           type: 'REFUND',
         },
