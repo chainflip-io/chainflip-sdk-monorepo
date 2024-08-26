@@ -79,9 +79,10 @@ export default class Quoter {
         const result = marketMakerResponseSchema.safeParse(message);
 
         if (!result.success) {
-          logger.warn(`received invalid quote response from "${socket.data.marketMaker}"`, {
+          logger.warn('received invalid quote response', {
             quoteResponse: message,
             reason: result.error,
+            marketMaker: socket.data.marketMaker,
           });
           return;
         }
