@@ -8,7 +8,6 @@ import { events } from '../index';
 import { networkBroadcastSuccessArgs } from '../networkBroadcastSuccess';
 import { DepositIgnoredArgs } from '../networkDepositIgnored';
 import { SwapDepositAddressReadyArgs } from '../swapDepositAddressReady';
-import { SwapEgressScheduledArgs } from '../swapEgressScheduled';
 
 export const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
 export const DOT_ADDRESS = '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo'; // 0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972
@@ -160,6 +159,7 @@ export const swapEgressScheduledMock = {
     specId: 'test@150',
     height: 120,
     timestamp: 1670337105000,
+    hash: '0x123',
   },
   event: {
     args: {
@@ -175,7 +175,7 @@ export const swapEgressScheduledMock = {
       asset: { __kind: 'Eth' },
       amount: '10000000000',
       egressId: [{ __kind: 'Ethereum' }, '1'] as const,
-    } as SwapEgressScheduledArgs,
+    },
     id: '0000012799-000000-c1ea7',
     indexInBlock: 0,
     nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
@@ -242,6 +242,7 @@ export const refundEgressIgnoredMock = {
     specId: 'test@150',
     height: 120,
     timestamp: 1670337105000,
+    hash: '0x123',
   },
   event: {
     args: {

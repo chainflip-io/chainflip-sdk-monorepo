@@ -12,7 +12,6 @@ describe(refundEgressScheduled, () => {
   it('creates egress for refund on an existing swap', async () => {
     const swapId = BigInt(event.args.swapId);
 
-    // store a new swap intent to initiate a new swap
     await prisma.swapRequest.create({
       data: {
         nativeId: BigInt(swapId),
