@@ -4,24 +4,33 @@ import { arbitrumIngressEgressDepositIgnored } from '@chainflip/processor/150/ar
 import { ethereumIngressEgressDepositIgnored } from '@chainflip/processor/150/ethereumIngressEgress/depositIgnored';
 import { polkadotIngressEgressDepositIgnored } from '@chainflip/processor/150/polkadotIngressEgress/depositIgnored';
 import { solanaIngressEgressDepositIgnored } from '@chainflip/processor/160/solanaIngressEgress/depositIgnored';
+import * as base58 from '@chainflip/utils/base58';
+import { hexToBytes } from '@chainflip/utils/bytes';
+import * as ss58 from '@chainflip/utils/ss58';
 import { z } from 'zod';
 import { assetConstants } from '@/shared/enums';
-import { foreignChainAddress } from '@/shared/parsers';
+import { bitcoinScriptPubKey } from '@/shared/parsers';
 import env from '../config/env';
 import logger from '../utils/logger';
 import type { EventHandlerArgs } from './index';
 
-const foreignChainAddressSchema = foreignChainAddress(env.CHAINFLIP_NETWORK);
+const bitcoinScriptPubKeySchema = bitcoinScriptPubKey(env.CHAINFLIP_NETWORK);
 
-const depositIgnoredArgs = z.union([
+export const depositIgnoredArgs = z.union([
   bitcoinIngressEgressDepositIgnored.transform(({ depositAddress, ...rest }) => ({
-    depositAddress: foreignChainAddressSchema.parse(depositAddress),
+    depositAddress: bitcoinScriptPubKeySchema.parse(depositAddress),
     ...rest,
   })),
   arbitrumIngressEgressDepositIgnored,
   ethereumIngressEgressDepositIgnored,
-  polkadotIngressEgressDepositIgnored,
-  solanaIngressEgressDepositIgnored,
+  polkadotIngressEgressDepositIgnored.transform(({ depositAddress, ...rest }) => ({
+    depositAddress: ss58.encode({ data: hexToBytes(depositAddress), ss58Format: 0 }),
+    ...rest,
+  })),
+  solanaIngressEgressDepositIgnored.transform(({ depositAddress, ...rest }) => ({
+    depositAddress: base58.encode(hexToBytes(depositAddress)),
+    ...rest,
+  })),
 ]);
 
 export type DepositIgnoredArgs = z.input<typeof depositIgnoredArgs>;

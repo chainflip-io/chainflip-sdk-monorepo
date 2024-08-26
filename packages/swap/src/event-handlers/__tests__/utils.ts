@@ -1,7 +1,7 @@
 import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { z } from 'zod';
-import { InternalAssets, Chain, Chains } from '@/shared/enums';
+import { InternalAssets, Chain, Chains, assetConstants } from '@/shared/enums';
 import { actionSchema } from '@/shared/parsers';
 import prisma, { SwapDepositChannel } from '../../client';
 import { events } from '../index';
@@ -390,52 +390,14 @@ export const thresholdSignatureInvalidMock = {
   },
 } as const;
 
-export const buildDepositIgnoredEvent = <T extends DepositIgnoredArgs>(
-  args: T,
-  eventName: string,
-) => ({
-  block: {
-    specId: 'test@150',
-    timestamp: 1670337093000,
-    height: 100,
-  },
-  event: {
-    args: {
-      dispatchInfo: {
-        class: [null],
-        weight: '101978000',
-        paysFee: [null],
-      },
-      ...args,
-    },
-    id: '0000012799-000000-c1ea7',
-    indexInBlock: 0,
-    nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-    name: eventName,
-    phase: 'ApplyExtrinsic',
-    pos: 2,
-    extrinsic: {
-      error: null,
-      hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
-      id: '0000012799-000000-c1ea7',
-      indexInBlock: 0,
-      nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
-      pos: 1,
-      success: true,
-      version: 4,
-      call: {
-        args: [null],
-        error: null,
-        id: '0000012799-000000-c1ea7',
-        name: 'Timestamp.set',
-        nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
-        origin: [null],
-        pos: 0,
-        success: true,
-      },
-    },
-  },
-});
+export const buildDepositIgnoredEvent = <T extends DepositIgnoredArgs>(args: T) => {
+  const { chain } = assetConstants[args.asset.__kind];
+
+  return {
+    block: { specId: 'test@150', timestamp: 1670337093000, height: 100, hash: '0x123' },
+    event: { args, indexInBlock: 0, name: `${chain}IngressEgress.DepositIgnored` },
+  };
+};
 
 export const createChainTrackingInfo = () => {
   const chains: Chain[] = ['Bitcoin', 'Ethereum', 'Polkadot'];

@@ -7,44 +7,39 @@ import {
   buildDepositIgnoredEvent,
   createDepositChannel,
 } from './utils';
-import { events } from '..';
 import prisma from '../../client';
-import networkDepositIgnored from '../networkDepositIgnored';
+import networkDepositIgnored, {
+  DepositIgnoredArgs,
+  depositIgnoredArgs,
+} from '../networkDepositIgnored';
 
-const ethDepositIgnoredMock = buildDepositIgnoredEvent(
-  {
-    asset: { __kind: 'Eth' },
-    amount: '100000000000000',
-    depositAddress: ETH_ADDRESS,
-    reason: { __kind: 'BelowMinimumDeposit' },
+const ethDepositIgnoredMock = buildDepositIgnoredEvent({
+  asset: { __kind: 'Eth' },
+  amount: '100000000000000',
+  depositAddress: ETH_ADDRESS,
+  reason: { __kind: 'BelowMinimumDeposit' },
+  depositDetails: { txHashes: [] },
+});
+const dotDepositIgnoredMock = buildDepositIgnoredEvent({
+  asset: { __kind: 'Dot' },
+  amount: '1000000000',
+  depositAddress: bytesToHex(ss58.decode(DOT_ADDRESS).data),
+  reason: { __kind: 'NotEnoughToPayFees' },
+  depositDetails: 2,
+});
+const btcDepositIgnoredMock = buildDepositIgnoredEvent({
+  asset: { __kind: 'Btc' },
+  amount: '100000000000',
+  depositAddress: {
+    __kind: 'Taproot',
+    value: '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
   },
-  events.EthereumIngressEgress.DepositIgnored,
-);
-const dotDepositIgnoredMock = buildDepositIgnoredEvent(
-  {
-    asset: { __kind: 'Dot' },
-    amount: '1000000000',
-    depositAddress: bytesToHex(ss58.decode(DOT_ADDRESS).data),
-    reason: { __kind: 'NotEnoughToPayFees' },
+  reason: { __kind: 'BelowMinimumDeposit' },
+  depositDetails: {
+    txId: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+    vout: 0,
   },
-  events.PolkadotIngressEgress.DepositIgnored,
-);
-const btcDepositIgnoredMock = buildDepositIgnoredEvent(
-  {
-    asset: { __kind: 'Btc' },
-    amount: '100000000000',
-    depositAddress: {
-      __kind: 'Taproot',
-      value: '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
-    },
-    reason: { __kind: 'BelowMinimumDeposit' },
-    depositDetails: {
-      txId: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
-      vout: 0,
-    },
-  },
-  events.BitcoinIngressEgress.DepositIgnored,
-);
+});
 
 describe(networkDepositIgnored, () => {
   beforeEach(async () => {
@@ -71,8 +66,7 @@ describe(networkDepositIgnored, () => {
 
     await networkDepositIgnored('Ethereum')({
       prisma,
-      block: ethDepositIgnoredMock.block as any,
-      event: ethDepositIgnoredMock.event as any,
+      ...ethDepositIgnoredMock,
     });
 
     expect(prisma.swapDepositChannel.findFirst).toHaveBeenCalledTimes(1);
@@ -114,8 +108,7 @@ describe(networkDepositIgnored, () => {
 
     await networkDepositIgnored('Polkadot')({
       prisma,
-      block: dotDepositIgnoredMock.block as any,
-      event: dotDepositIgnoredMock.event as any,
+      ...dotDepositIgnoredMock,
     });
 
     expect(prisma.swapDepositChannel.findFirst).toHaveBeenCalledTimes(1);
@@ -157,8 +150,7 @@ describe(networkDepositIgnored, () => {
 
     await networkDepositIgnored('Bitcoin')({
       prisma,
-      block: btcDepositIgnoredMock.block as any,
-      event: btcDepositIgnoredMock.event as any,
+      ...btcDepositIgnoredMock,
     });
 
     expect(prisma.swapDepositChannel.findFirst).toHaveBeenCalledTimes(1);
@@ -183,5 +175,15 @@ describe(networkDepositIgnored, () => {
         failedBlockIndex: `${ethDepositIgnoredMock.block.height}-${ethDepositIgnoredMock.event.indexInBlock}`,
       },
     });
+  });
+
+  it('parses solana addresses', () => {
+    const args: DepositIgnoredArgs = {
+      asset: { __kind: 'Sol' },
+      amount: '1000000000',
+      depositAddress: '0x1ce359ed5a012e04fa142b9c751a1c5e87cfd0a0161b9c85ffd31b78cdfcd8f6',
+      reason: { __kind: 'NotEnoughToPayFees' },
+    };
+    expect(depositIgnoredArgs.parse(args)).toMatchSnapshot();
   });
 });
