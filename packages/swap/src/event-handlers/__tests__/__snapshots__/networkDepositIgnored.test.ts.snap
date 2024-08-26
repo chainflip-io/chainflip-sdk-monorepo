@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`depositIgnored parses solana addresses 1`] = `
+{
+  "amount": 1000000000n,
+  "asset": "Sol",
+  "depositAddress": "2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9",
+  "reason": "NotEnoughToPayFees",
+}
+`;
