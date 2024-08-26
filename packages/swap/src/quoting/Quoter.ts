@@ -86,6 +86,8 @@ export default class Quoter {
           return;
         }
 
+        logger.debug(`received quote from "${socket.data.marketMaker}"`, result.data);
+
         this.quotes$.next({ marketMaker: socket.data.marketMaker, quote: result.data });
       });
     });
@@ -165,7 +167,7 @@ export default class Quoter {
       ),
     ];
 
-    logger.info('received limit orders from market makers', orders);
+    logger.info('received limit orders from market makers', { orders });
 
     return orders;
   }
