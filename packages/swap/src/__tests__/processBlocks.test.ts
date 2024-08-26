@@ -68,6 +68,6 @@ describe(processBlocks, () => {
     );
     const trackings = await prisma.chainTracking.findMany();
     expect(trackings).toHaveLength(1);
-    expect(trackings[0]).toMatchSnapshot({ updatedAt: expect.any(Date) });
+    expect(trackings[0]).toMatchSnapshot({ id: expect.any(Number), updatedAt: expect.any(Date) });
   });
 });
