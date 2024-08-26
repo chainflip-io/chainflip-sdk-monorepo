@@ -110,6 +110,7 @@ describe(swapScheduled, () => {
         fees: [
           {
             id: expect.any(BigInt),
+            swapRequestId: expect.any(BigInt),
           },
         ],
         swaps: [

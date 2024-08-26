@@ -75,7 +75,7 @@ exports[`swapScheduled spec 1.5.0 creates a swap request and swap 1`] = `
       "asset": "Btc",
       "id": Any<BigInt>,
       "swapId": null,
-      "swapRequestId": 2n,
+      "swapRequestId": Any<BigInt>,
       "type": "BROKER",
     },
   ],
