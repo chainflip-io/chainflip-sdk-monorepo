@@ -56,16 +56,17 @@ export default async function getPoolQuote({
     swapInputAmount -= boostFee;
   }
 
-  const { egressFee, ingressFee, networkFee, ...quote } = await getSwapRateV2({
-    srcAsset,
-    destAsset,
-    amount: swapInputAmount,
-    limitOrders,
-  });
+  const { egressFee, ingressFee, networkFee, outputAmount, intermediateAmount } =
+    await getSwapRateV2({
+      srcAsset,
+      destAsset,
+      amount: swapInputAmount,
+      limitOrders,
+    });
 
   const minimumEgressAmount = await getMinimumEgressAmount(destAsset);
 
-  if (quote.outputAmount === 0n) {
+  if (outputAmount === 0n) {
     if (networkFee.amount === 0n) {
       // this shouldn't happen because we check before but i'll keep it here anyway
       throw ServiceError.badRequest('swap amount is lower than ingress fee');
@@ -77,20 +78,17 @@ export default async function getPoolQuote({
     );
   }
 
-  if (quote.outputAmount < minimumEgressAmount) {
+  if (outputAmount < minimumEgressAmount) {
     throw ServiceError.badRequest(
-      `egress amount (${quote.outputAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
+      `egress amount (${outputAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
     );
   }
-
-  swapInputAmount -= ingressFee.amount;
-  const swapOutputAmount = quote.outputAmount - egressFee.amount;
 
   const lowLiquidityWarning = await checkPriceWarning({
     srcAsset,
     destAsset,
     srcAmount: swapInputAmount,
-    destAmount: swapOutputAmount,
+    destAmount: outputAmount,
   });
 
   includedFees.push(
@@ -99,22 +97,17 @@ export default async function getPoolQuote({
     buildFee(getInternalAsset(egressFee), 'EGRESS', egressFee.amount),
   );
 
-  const poolInfo = getPoolFees(
-    srcAsset,
-    destAsset,
-    swapInputAmount,
-    quote.intermediateAmount,
-    pools,
-  ).map(({ type, ...fee }, i) => ({
-    baseAsset: getAssetAndChain(pools[i].baseAsset),
-    quoteAsset: getAssetAndChain(pools[i].quoteAsset),
-    fee,
-  }));
+  const poolInfo = getPoolFees(srcAsset, destAsset, swapInputAmount, intermediateAmount, pools).map(
+    ({ type, ...fee }, i) => ({
+      baseAsset: getAssetAndChain(pools[i].baseAsset),
+      quoteAsset: getAssetAndChain(pools[i].quoteAsset),
+      fee,
+    }),
+  );
 
-  const { outputAmount, ...response } = {
-    ...quote,
-    intermediateAmount: quote.intermediateAmount?.toString(),
-    egressAmount: quote.outputAmount.toString(),
+  return {
+    intermediateAmount: intermediateAmount?.toString(),
+    egressAmount: outputAmount.toString(),
     includedFees,
     lowLiquidityWarning,
     poolInfo,
@@ -123,8 +116,6 @@ export default async function getPoolQuote({
       destAsset,
       boosted: Boolean(boostFeeBps),
     }),
-    estimatedPrice: getPrice(swapInputAmount, srcAsset, swapOutputAmount, destAsset),
+    estimatedPrice: getPrice(swapInputAmount, srcAsset, outputAmount, destAsset),
   };
-
-  return response;
 }

@@ -4,7 +4,7 @@ exports[`server GET /quote doesn't include boost information when disabled 1`] =
 {
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 1830,
-  "estimatedPrice": "1.00100100100095095095",
+  "estimatedPrice": "0.999999999999975",
   "includedFees": [
     {
       "amount": "100000",
@@ -33,7 +33,7 @@ exports[`server GET /quote doesn't include boost information when disabled 1`] =
         "chain": "Bitcoin",
       },
       "fee": {
-        "amount": "199800",
+        "amount": "200000",
         "asset": "BTC",
         "chain": "Bitcoin",
       },
@@ -65,7 +65,7 @@ exports[`server GET /quote gets the quote for deprecated params without the chai
 {
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 54,
-  "estimatedPrice": "1.00000000000195",
+  "estimatedPrice": "0.999999999999975",
   "includedFees": [
     {
       "amount": "2000000",
@@ -94,7 +94,7 @@ exports[`server GET /quote gets the quote for deprecated params without the chai
         "chain": "Ethereum",
       },
       "fee": {
-        "amount": "999999999998000",
+        "amount": "1000000000000000",
         "asset": "FLIP",
         "chain": "Ethereum",
       },
@@ -128,7 +128,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
     "egressAmount": "999999949999975000",
     "estimatedBoostFeeBps": 5,
     "estimatedDurationSeconds": 630,
-    "estimatedPrice": "1.00150220330490736104",
+    "estimatedPrice": "1.00050020010002501251",
     "includedFees": [
       {
         "amount": "50000",
@@ -163,7 +163,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
           "chain": "Bitcoin",
         },
         "fee": {
-          "amount": "199700",
+          "amount": "199900",
           "asset": "BTC",
           "chain": "Bitcoin",
         },
@@ -191,7 +191,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
   },
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 1830,
-  "estimatedPrice": "1.00100100100095095095",
+  "estimatedPrice": "0.999999999999975",
   "includedFees": [
     {
       "amount": "100000",
@@ -220,7 +220,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
         "chain": "Bitcoin",
       },
       "fee": {
-        "amount": "199800",
+        "amount": "200000",
         "asset": "BTC",
         "chain": "Bitcoin",
       },
@@ -252,7 +252,7 @@ exports[`server GET /quote gets the quote with a realistic price 1`] = `
 {
   "egressAmount": "1229437998",
   "estimatedDurationSeconds": 54,
-  "estimatedPrice": "2458.2063857241270825392",
+  "estimatedPrice": "2458.875996",
   "includedFees": [
     {
       "amount": "169953533800000",
@@ -280,7 +280,7 @@ exports[`server GET /quote gets the quote with a realistic price 1`] = `
         "chain": "Ethereum",
       },
       "fee": {
-        "amount": "999660092932400",
+        "amount": "1000000000000000",
         "asset": "ETH",
         "chain": "Ethereum",
       },
@@ -297,7 +297,7 @@ exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
 {
   "egressAmount": "1999999999999975000",
   "estimatedDurationSeconds": 54,
-  "estimatedPrice": "2.00000000000395",
+  "estimatedPrice": "1.999999999999975",
   "includedFees": [
     {
       "amount": "2000000",
@@ -327,7 +327,7 @@ exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
         "chain": "Ethereum",
       },
       "fee": {
-        "amount": "999999999998000",
+        "amount": "1000000000000000",
         "asset": "FLIP",
         "chain": "Ethereum",
       },
