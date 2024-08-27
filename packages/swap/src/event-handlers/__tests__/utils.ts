@@ -404,7 +404,7 @@ export const buildDepositIgnoredEvent = <T extends DepositIgnoredArgs>(args: T) 
 };
 
 export const createChainTrackingInfo = () => {
-  const chains: Chain[] = ['Bitcoin', 'Ethereum', 'Polkadot'];
+  const chains: Chain[] = ['Bitcoin', 'Ethereum', 'Polkadot', 'Solana'];
   return Promise.all(
     chains.map((chain) =>
       prisma.chainTracking.upsert({
@@ -421,7 +421,18 @@ export const createChainTrackingInfo = () => {
   );
 };
 
-export const processEvents = async (events: (Event & { id: string })[]) => {
+export const createPools = () => {
+  const assets = Object.values(InternalAssets).filter((asset) => asset !== 'Usdc');
+  return prisma.pool.createMany({
+    data: assets.map((baseAsset) => ({
+      baseAsset,
+      quoteAsset: 'Usdc',
+      liquidityFeeHundredthPips: 1000,
+    })),
+  });
+};
+
+export const processEvents = async (events: (Event & { id: string })[], version = '160') => {
   const eventMap = events
     .sort((a, b) => (a.id < b.id ? -1 : 1))
     .reduce((acc, event) => {
@@ -454,13 +465,13 @@ export const processEvents = async (events: (Event & { id: string })[]) => {
         nodes: [
           ...Array.from({ length: dummyBlockLength }, (_, i) => ({
             height: height - dummyBlockLength + i,
-            specId: 'test@160',
+            specId: `test@${version}`,
             timestamp: new Date(height * 6000).toISOString(),
             events: { nodes: [] },
           })),
           {
             height,
-            specId: 'test@160',
+            specId: `test@${version}`,
             timestamp: new Date(height * 6000).toISOString(),
             events: { nodes: blockEvents },
           },
