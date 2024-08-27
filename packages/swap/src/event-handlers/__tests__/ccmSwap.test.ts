@@ -1,7 +1,5 @@
-import { GraphQLClient } from 'graphql-request';
+import { processEvents } from './utils';
 import prisma from '../../client';
-import { Event } from '../../gql/generated/graphql';
-import processBlocks from '../../processBlocks';
 import { SwapDepositAddressReadyArgs } from '../swapDepositAddressReady';
 import { SwapEgressScheduledArgs } from '../swapEgressScheduled';
 import { SwapExecutedArgs } from '../swapExecuted';
@@ -244,13 +242,7 @@ const ccmEvents = [
       },
     },
   },
-]
-  .sort((a, b) => (a.id < b.id ? -1 : 1))
-  .reduce((acc, event) => {
-    const id = Number.parseInt(event.id, 10);
-    acc.set(id, (acc.get(id) || []).concat([event as Event]));
-    return acc;
-  }, new Map<number, Event[]>());
+];
 
 describe('ccm swap flow', () => {
   beforeAll(async () => {
@@ -277,46 +269,7 @@ describe('ccm swap flow', () => {
   });
 
   it('handles all the events', async () => {
-    const startingHeight = Number(ccmEvents.keys().next().value) - 1;
-    await prisma.state.upsert({
-      where: { id: 1 },
-      create: { id: 1, height: startingHeight },
-      update: { height: startingHeight },
-    });
-
-    const blocksIt = ccmEvents.entries();
-
-    let previousHeight = startingHeight + 1;
-
-    jest.spyOn(GraphQLClient.prototype, 'request').mockImplementation(async () => {
-      const batch = blocksIt.next();
-      if (batch.done) throw new Error('done');
-      const [height, events] = batch.value;
-
-      const dummyBlockLength = height - previousHeight - 1;
-      previousHeight = height;
-
-      return {
-        blocks: {
-          nodes: [
-            ...Array.from({ length: dummyBlockLength }, (_, i) => ({
-              height: height - dummyBlockLength + i,
-              specId: 'test@160',
-              timestamp: new Date(height * 6000).toISOString(),
-              events: { nodes: [] },
-            })),
-            {
-              height,
-              specId: 'test@160',
-              timestamp: new Date(height * 6000).toISOString(),
-              events: { nodes: events },
-            },
-          ],
-        },
-      };
-    });
-
-    await expect(processBlocks()).rejects.toThrow('done');
+    await processEvents(ccmEvents);
 
     const fees = { select: { asset: true, amount: true, type: true } } as const;
 

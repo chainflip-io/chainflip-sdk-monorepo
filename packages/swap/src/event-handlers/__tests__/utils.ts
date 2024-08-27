@@ -1,10 +1,12 @@
 import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
+import { GraphQLClient } from 'graphql-request';
 import { z } from 'zod';
 import { InternalAssets, Chain, Chains, assetConstants } from '@/shared/enums';
 import { actionSchema } from '@/shared/parsers';
+import processBlocks, { Event } from '@/swap/processBlocks';
 import prisma, { SwapDepositChannel } from '../../client';
-import { events } from '../index';
+import { events as eventNames } from '../index';
 import { networkBroadcastSuccessArgs } from '../networkBroadcastSuccess';
 import { DepositIgnoredArgs } from '../networkDepositIgnored';
 import { SwapDepositAddressReadyArgs } from '../swapDepositAddressReady';
@@ -113,7 +115,7 @@ export const swapDepositAddressReadyMocked = {
       affiliateFees: [],
     } as SwapDepositAddressReadyArgs,
     indexInBlock: 0,
-    name: events.Swapping.SwapDepositAddressReady,
+    name: eventNames.Swapping.SwapDepositAddressReady,
   },
 } as const;
 
@@ -150,7 +152,7 @@ export const swapDepositAddressReadyCcmParamsMocked = {
       affiliateFees: [],
     } as SwapDepositAddressReadyArgs,
     indexInBlock: 0,
-    name: events.Swapping.SwapDepositAddressReady,
+    name: eventNames.Swapping.SwapDepositAddressReady,
   },
 } as const;
 
@@ -179,7 +181,7 @@ export const swapEgressScheduledMock = {
     id: '0000012799-000000-c1ea7',
     indexInBlock: 0,
     nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-    name: events.Swapping.SwapEgressScheduled,
+    name: eventNames.Swapping.SwapEgressScheduled,
     phase: 'ApplyExtrinsic',
     pos: 2,
     extrinsic: {
@@ -230,7 +232,7 @@ export const swapEgressIgnoredMock = {
     id: '0000012799-000000-c1ea7',
     indexInBlock: 0,
     nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-    name: events.Swapping.SwapEgressIgnored,
+    name: eventNames.Swapping.SwapEgressIgnored,
     phase: 'ApplyExtrinsic',
     pos: 2,
     extrinsic: null,
@@ -262,7 +264,7 @@ export const refundEgressIgnoredMock = {
     id: '0000012799-000000-c1ea7',
     indexInBlock: 0,
     nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-    name: events.Swapping.RefundEgressIgnored,
+    name: eventNames.Swapping.RefundEgressIgnored,
     phase: 'ApplyExtrinsic',
     pos: 2,
     extrinsic: null,
@@ -417,4 +419,55 @@ export const createChainTrackingInfo = () => {
       }),
     ),
   );
+};
+
+export const processEvents = async (events: (Event & { id: string })[]) => {
+  const eventMap = events
+    .sort((a, b) => (a.id < b.id ? -1 : 1))
+    .reduce((acc, event) => {
+      const id = Number.parseInt(event.id, 10);
+      acc.set(id, (acc.get(id) || []).concat([event]));
+      return acc;
+    }, new Map<number, Event[]>());
+
+  const startingHeight = Number(eventMap.keys().next().value) - 1;
+  await prisma.state.upsert({
+    where: { id: 1 },
+    create: { id: 1, height: startingHeight },
+    update: { height: startingHeight },
+  });
+
+  const blocksIt = eventMap.entries();
+
+  let previousHeight = startingHeight + 1;
+
+  jest.spyOn(GraphQLClient.prototype, 'request').mockImplementation(async () => {
+    const batch = blocksIt.next();
+    if (batch.done) throw new Error('done');
+    const [height, blockEvents] = batch.value;
+
+    const dummyBlockLength = height - previousHeight - 1;
+    previousHeight = height;
+
+    return {
+      blocks: {
+        nodes: [
+          ...Array.from({ length: dummyBlockLength }, (_, i) => ({
+            height: height - dummyBlockLength + i,
+            specId: 'test@160',
+            timestamp: new Date(height * 6000).toISOString(),
+            events: { nodes: [] },
+          })),
+          {
+            height,
+            specId: 'test@160',
+            timestamp: new Date(height * 6000).toISOString(),
+            events: { nodes: blockEvents },
+          },
+        ],
+      },
+    };
+  });
+
+  await expect(processBlocks()).rejects.toThrow('done');
 };

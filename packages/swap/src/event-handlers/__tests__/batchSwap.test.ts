@@ -1,19 +1,5 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-import { GraphQLClient } from 'graphql-request';
-import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
+import { processEvents } from './utils';
 import prisma from '../../client';
-import { Event } from '../../gql/generated/graphql';
-import processBlocks from '../../processBlocks';
-
-jest.mock('graphql-request', () => ({
-  GraphQLClient: class MockClient {
-    request() {}
-  },
-}));
-
-mockRpcResponse({
-  data: environment({ egressFee: '0x55524' }),
-});
 
 const batchEvents = [
   {
@@ -201,13 +187,7 @@ const batchEvents = [
         '0x2bafbe8a6fc4b8fc6a7d9ee3d6e98df78211eac79a0e31bda5d44a58ea5c63d746c60eecd6b771d949282352d15f98c072deac328bc38dd758605ca72711d10c',
     },
   },
-]
-  .sort((a, b) => (a.id < b.id ? -1 : 1))
-  .reduce((acc, event) => {
-    const id = Number.parseInt(event.id, 10);
-    acc.set(id, (acc.get(id) || []).concat([event as Event]));
-    return acc;
-  }, new Map<number, Event[]>());
+];
 
 describe('batch swap flow', () => {
   beforeAll(async () => {
@@ -234,46 +214,7 @@ describe('batch swap flow', () => {
   });
 
   it('handles all the events', async () => {
-    const startingHeight = Number(batchEvents.keys().next().value) - 1;
-    await prisma.state.upsert({
-      where: { id: 1 },
-      create: { id: 1, height: startingHeight },
-      update: { height: startingHeight },
-    });
-
-    const blocksIt = batchEvents.entries();
-
-    let previousHeight = startingHeight + 1;
-
-    jest.spyOn(GraphQLClient.prototype, 'request').mockImplementation(async () => {
-      const batch = blocksIt.next();
-      if (batch.done) throw new Error('done');
-      const [height, events] = batch.value;
-
-      const dummyBlockLength = height - previousHeight - 1;
-      previousHeight = height;
-
-      return {
-        blocks: {
-          nodes: [
-            ...Array.from({ length: dummyBlockLength }, (_, i) => ({
-              height: height - dummyBlockLength + i,
-              specId: 'test@160',
-              timestamp: new Date(height * 6000).toISOString(),
-              events: { nodes: [] },
-            })),
-            {
-              height,
-              specId: 'test@160',
-              timestamp: new Date(height * 6000).toISOString(),
-              events: { nodes: events },
-            },
-          ],
-        },
-      };
-    });
-
-    await expect(processBlocks()).rejects.toThrow('done');
+    await processEvents(batchEvents);
 
     const fees = { select: { asset: true, amount: true, type: true } } as const;
 
