@@ -56,22 +56,17 @@ export default async function getPoolQuote({
     swapInputAmount -= boostFee;
   }
 
-  const {
-    egressFee,
-    ingressFee,
-    networkFee,
-    outputAmount: swapOutputAmount,
-    intermediateAmount,
-  } = await getSwapRateV2({
-    srcAsset,
-    destAsset,
-    amount: swapInputAmount,
-    limitOrders,
-  });
+  const { egressFee, ingressFee, networkFee, outputAmount, intermediateAmount } =
+    await getSwapRateV2({
+      srcAsset,
+      destAsset,
+      amount: swapInputAmount,
+      limitOrders,
+    });
 
   const minimumEgressAmount = await getMinimumEgressAmount(destAsset);
 
-  if (swapOutputAmount === 0n) {
+  if (outputAmount === 0n) {
     if (networkFee.amount === 0n) {
       // this shouldn't happen because we check before but i'll keep it here anyway
       throw ServiceError.badRequest('swap amount is lower than ingress fee');
@@ -83,9 +78,9 @@ export default async function getPoolQuote({
     );
   }
 
-  if (swapOutputAmount < minimumEgressAmount) {
+  if (outputAmount < minimumEgressAmount) {
     throw ServiceError.badRequest(
-      `egress amount (${swapOutputAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
+      `egress amount (${outputAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
     );
   }
 
@@ -93,7 +88,7 @@ export default async function getPoolQuote({
     srcAsset,
     destAsset,
     srcAmount: swapInputAmount,
-    destAmount: swapOutputAmount,
+    destAmount: outputAmount,
   });
 
   includedFees.push(
@@ -112,7 +107,7 @@ export default async function getPoolQuote({
 
   return {
     intermediateAmount: intermediateAmount?.toString(),
-    egressAmount: swapOutputAmount.toString(),
+    egressAmount: outputAmount.toString(),
     includedFees,
     lowLiquidityWarning,
     poolInfo,
@@ -121,6 +116,6 @@ export default async function getPoolQuote({
       destAsset,
       boosted: Boolean(boostFeeBps),
     }),
-    estimatedPrice: getPrice(swapInputAmount, srcAsset, swapOutputAmount, destAsset),
+    estimatedPrice: getPrice(swapInputAmount, srcAsset, outputAmount, destAsset),
   };
 }
