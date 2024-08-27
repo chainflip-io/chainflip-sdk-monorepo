@@ -116,6 +116,31 @@ const batchEvents = [
     },
   },
   {
+    id: '0000000092-000140-77afe',
+    blockId: '0000000092-77afe',
+    indexInBlock: 140,
+    extrinsicId: '0000000092-000008-77afe',
+    callId: '0000000092-000008-77afe',
+    name: 'EthereumIngressEgress.DepositFinalised',
+    args: {
+      asset: {
+        __kind: 'Flip',
+      },
+      action: {
+        __kind: 'Swap',
+        swapRequestId: '287',
+      },
+      amount: '500000000000000000000',
+      channelId: '49',
+      ingressFee: '7984700546373484',
+      blockHeight: '222',
+      depositAddress: '0xe89e5fe04b8db0f5b3cd87295fd8331260d656f2',
+      depositDetails: {
+        txHashes: ['0xa38f5b782542360b97895e216a4f09ce21f0f28e50575381794f84da5891fa81'],
+      },
+    },
+  },
+  {
     id: '0000000094-000383-75b12',
     blockId: '0000000094-75b12',
     indexInBlock: 383,
