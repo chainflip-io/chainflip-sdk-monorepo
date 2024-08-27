@@ -136,6 +136,29 @@ const ccmEvents = [
     } as SwapScheduledArgs,
   },
   {
+    id: '0000000057-000012-29eb0',
+    blockId: '0000000057-29eb0',
+    indexInBlock: 12,
+    extrinsicId: '0000000057-000003-29eb0',
+    callId: '0000000057-000003-29eb0',
+    name: 'PolkadotIngressEgress.DepositFinalised',
+    args: {
+      asset: {
+        __kind: 'Dot',
+      },
+      action: {
+        __kind: 'CcmTransfer',
+        swapRequestId: '28',
+      },
+      amount: '500000000000',
+      channelId: '2',
+      ingressFee: '197300000',
+      blockHeight: 57,
+      depositAddress: '0x7b42c78a80b6e72e1ec500cfb88a064959dfae5fe8b09f366444d35878364513',
+      depositDetails: 2,
+    },
+  },
+  {
     id: '0000000059-000036-fbdf4',
     blockId: '0000000059-fbdf4',
     indexInBlock: 36,
