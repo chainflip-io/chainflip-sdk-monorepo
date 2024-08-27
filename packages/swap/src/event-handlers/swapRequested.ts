@@ -9,6 +9,7 @@ import type { EventHandlerArgs } from './index';
 
 type RequestType = z.output<typeof schema160>['requestType'];
 type Origin = z.output<typeof schema160>['origin'];
+export type SwapRequestedArgs = z.input<typeof schema160>;
 
 const getRequestInfo = (requestType: RequestType) => {
   let destAddress;
