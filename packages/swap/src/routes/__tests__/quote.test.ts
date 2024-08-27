@@ -371,7 +371,7 @@ describe('server', () => {
         poolInfo: [
           {
             fee: {
-              amount: '195800',
+              amount: '199800',
               asset: 'USDC',
               chain: 'Ethereum',
             },
@@ -592,7 +592,7 @@ describe('server', () => {
         poolInfo: [
           {
             baseAsset: { asset: 'ETH', chain: 'Ethereum' },
-            fee: { amount: '196000', asset: 'USDC', chain: 'Ethereum' },
+            fee: { amount: '200000', asset: 'USDC', chain: 'Ethereum' },
             quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
           },
         ],
@@ -665,7 +665,7 @@ describe('server', () => {
           {
             baseAsset: { asset: 'ETH', chain: 'Ethereum' },
             fee: {
-              amount: '1999999999999950',
+              amount: '2000000000000000',
               asset: 'ETH',
               chain: 'Ethereum',
             },
@@ -722,7 +722,7 @@ describe('server', () => {
         poolInfo: [
           {
             fee: {
-              amount: '999999999998000',
+              amount: '1000000000000000',
               asset: 'FLIP',
               chain: 'Ethereum',
             },
