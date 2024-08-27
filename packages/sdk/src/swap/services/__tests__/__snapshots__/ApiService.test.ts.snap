@@ -17,10 +17,18 @@ exports[`ApiService getQuote gets a quote 1`] = `
 
 exports[`ApiService getQuote gets a quote 2`] = `
 [
-  "https://swapperoo.org/quote?amount=10000&srcChain=Bitcoin&srcAsset=BTC&destChain=Ethereum&destAsset=ETH",
+  "/quote",
   {
+    "baseURL": "https://swapperoo.org",
     "headers": {
       "Cf-Sdk-Version": "1.0-test",
+    },
+    "params": {
+      "amount": "10000",
+      "destAsset": "ETH",
+      "destChain": "Ethereum",
+      "srcAsset": "BTC",
+      "srcChain": "Bitcoin",
     },
     "signal": undefined,
   },
@@ -44,10 +52,19 @@ exports[`ApiService getQuote gets a quote with a broker commission 1`] = `
 
 exports[`ApiService getQuote gets a quote with a broker commission 2`] = `
 [
-  "https://swapperoo.org/quote?amount=10000&srcChain=Bitcoin&srcAsset=BTC&destChain=Ethereum&destAsset=ETH&brokerCommissionBps=15",
+  "/quote",
   {
+    "baseURL": "https://swapperoo.org",
     "headers": {
       "Cf-Sdk-Version": "1.0-test",
+    },
+    "params": {
+      "amount": "10000",
+      "brokerCommissionBps": "15",
+      "destAsset": "ETH",
+      "destChain": "Ethereum",
+      "srcAsset": "BTC",
+      "srcChain": "Bitcoin",
     },
     "signal": undefined,
   },

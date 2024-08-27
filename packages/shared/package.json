@@ -19,7 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "@chainflip/bitcoin": "^0.2.2",
-    "@chainflip/rpc": "^1.5.5",
+    "@chainflip/rpc": "^1.5.6",
     "@chainflip/utils": "^0.4.0",
     "axios": "^1.6.8",
     "bignumber.js": "^9.1.2",
