@@ -61,7 +61,7 @@ export default async function getPoolQuote({
     ingressFee,
     networkFee,
     outputAmount: swapOutputAmount,
-    ...quote
+    intermediateAmount,
   } = await getSwapRateV2({
     srcAsset,
     destAsset,
@@ -102,21 +102,16 @@ export default async function getPoolQuote({
     buildFee(getInternalAsset(egressFee), 'EGRESS', egressFee.amount),
   );
 
-  const poolInfo = getPoolFees(
-    srcAsset,
-    destAsset,
-    swapInputAmount,
-    quote.intermediateAmount,
-    pools,
-  ).map(({ type, ...fee }, i) => ({
-    baseAsset: getAssetAndChain(pools[i].baseAsset),
-    quoteAsset: getAssetAndChain(pools[i].quoteAsset),
-    fee,
-  }));
+  const poolInfo = getPoolFees(srcAsset, destAsset, swapInputAmount, intermediateAmount, pools).map(
+    ({ type, ...fee }, i) => ({
+      baseAsset: getAssetAndChain(pools[i].baseAsset),
+      quoteAsset: getAssetAndChain(pools[i].quoteAsset),
+      fee,
+    }),
+  );
 
   return {
-    ...quote,
-    intermediateAmount: quote.intermediateAmount?.toString(),
+    intermediateAmount: intermediateAmount?.toString(),
     egressAmount: swapOutputAmount.toString(),
     includedFees,
     lowLiquidityWarning,
