@@ -38,6 +38,26 @@ const ccmEvents = [
     },
   },
   {
+    id: '0000000052-000001-25edd',
+    blockId: '0000000052-25edd',
+    indexInBlock: 1,
+    extrinsicId: '0000000052-000001-25edd',
+    callId: '0000000052-000001-25edd',
+    name: 'PolkadotChainTracking.ChainStateUpdated',
+    args: {
+      newChainState: {
+        blockHeight: 55,
+        trackedData: {
+          medianTip: '0',
+          runtimeVersion: {
+            specVersion: 1002005,
+            transactionVersion: 26,
+          },
+        },
+      },
+    },
+  },
+  {
     id: '0000000052-000024-25edd',
     blockId: '0000000052-25edd',
     indexInBlock: 24,

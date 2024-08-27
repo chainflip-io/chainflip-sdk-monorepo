@@ -45,6 +45,23 @@ const batchEvents = [
     },
   },
   {
+    id: '0000000086-000023-f8e73',
+    blockId: '0000000086-f8e73',
+    indexInBlock: 23,
+    extrinsicId: '0000000086-000007-f8e73',
+    callId: '0000000086-000007-f8e73',
+    name: 'EthereumChainTracking.ChainStateUpdated',
+    args: {
+      newChainState: {
+        blockHeight: '221',
+        trackedData: {
+          baseFee: '7',
+          priorityFee: '1500000000',
+        },
+      },
+    },
+  },
+  {
     id: '0000000086-000264-f8e73',
     blockId: '0000000086-f8e73',
     indexInBlock: 264,
@@ -213,7 +230,7 @@ describe('batch swap flow', () => {
   });
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel", "FailedSwap", "SwapRequest", "Pool" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel", "FailedSwap", "SwapRequest", "Pool", "ChainTracking" CASCADE`;
   });
 
   it('handles all the events', async () => {

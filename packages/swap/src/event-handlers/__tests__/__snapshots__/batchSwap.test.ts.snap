@@ -10,7 +10,7 @@ exports[`batch swap flow handles all the events 1`] = `
   "depositAddress": "0xe89e5fe04b8db0f5b3cd87295fd8331260d656f2",
   "destAddress": "7RmHjikNqaPWAr5QrqHaJowxg18gZ8dx1nMmqeGMjSdr",
   "destAsset": "Sol",
-  "estimatedExpiryAt": null,
+  "estimatedExpiryAt": 1970-01-01T00:17:24.000Z,
   "expectedDepositAmount": null,
   "expiryBlock": null,
   "fokMinPriceX128": null,

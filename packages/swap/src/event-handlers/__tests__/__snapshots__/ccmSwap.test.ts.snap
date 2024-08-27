@@ -10,7 +10,7 @@ exports[`ccm swap flow handles all the events 1`] = `
   "depositAddress": "13ncjCBPL5daZDyC2BwKvRc63j6fNDaYCh4CD5mumGfLyatA",
   "destAddress": "0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0",
   "destAsset": "Flip",
-  "estimatedExpiryAt": null,
+  "estimatedExpiryAt": 1970-01-01T00:15:24.000Z,
   "expectedDepositAmount": null,
   "expiryBlock": null,
   "fokMinPriceX128": null,
