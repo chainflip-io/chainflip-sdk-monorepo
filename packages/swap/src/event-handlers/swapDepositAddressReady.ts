@@ -61,6 +61,7 @@ export const swapDepositAddressReady = async ({
     fokMinPriceX128: refundParameters?.minPrice.toString(),
     fokRefundAddress: refundParameters?.refundAddress.address,
     fokRetryDurationBlocks: refundParameters?.retryDuration,
+    createdAt: new Date(block.timestamp),
   };
 
   await Promise.all([

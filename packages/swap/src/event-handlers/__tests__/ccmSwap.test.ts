@@ -288,7 +288,7 @@ describe('ccm swap flow', () => {
   });
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel", "SwapRequest", "Pool" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel", "SwapRequest", "Pool", "ChainTracking" CASCADE`;
   });
 
   it('handles all the events', async () => {
