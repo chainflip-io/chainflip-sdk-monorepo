@@ -2,7 +2,7 @@ import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
 import request from 'supertest';
 import * as broker from '@/shared/broker';
-import { Assets, getInternalAssets, InternalAssets } from '@/shared/enums';
+import { Assets, getInternalAssets } from '@/shared/enums';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
 import prisma from '../../client';
