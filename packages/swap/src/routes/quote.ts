@@ -1,6 +1,7 @@
+import BigNumber from 'bignumber.js';
 import express from 'express';
 import type { Server } from 'socket.io';
-import { Asset, Assets, Chain, Chains } from '@/shared/enums';
+import { Asset, assetConstants, Assets, Chain, Chains, InternalAsset } from '@/shared/enums';
 import { quoteQuerySchema } from '@/shared/schemas';
 import { asyncHandler } from './common';
 import env from '../config/env';
@@ -13,12 +14,20 @@ import { getPools } from '../utils/pools';
 import { getIngressFee, validateSwapAmount } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
 
-const handleQuotingError = (res: express.Response, err: unknown) => {
+type AdditionalInfo = {
+  srcAsset: InternalAsset;
+  destAsset: InternalAsset;
+  amount: string;
+  limitOrdersReceived: Awaited<ReturnType<Quoter['getLimitOrders']>> | undefined;
+};
+
+const handleQuotingError = (res: express.Response, err: unknown, info: AdditionalInfo) => {
   if (err instanceof ServiceError) throw err;
 
   const message = err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';
 
   if (message.includes('InsufficientLiquidity')) {
+    logger.info('insufficient liquidity received', info);
     throw ServiceError.badRequest('insufficient liquidity for requested amount');
   }
 
@@ -97,6 +106,7 @@ const quoteRouter = (io: Server) => {
         throw ServiceError.badRequest(`amount is lower than estimated ingress fee (${ingressFee})`);
       }
 
+      let limitOrdersReceived;
       try {
         const [limitOrders, estimatedBoostFeeBps, pools] = await Promise.all([
           quoter.getLimitOrders(srcAsset, destAsset, amount),
@@ -105,6 +115,7 @@ const quoteRouter = (io: Server) => {
             : getBoostFeeBpsForAmount({ amount, asset: srcAsset }),
           getPools(srcAsset, destAsset),
         ]);
+        limitOrdersReceived = limitOrders;
 
         const quoteArgs = {
           srcAsset,
@@ -131,7 +142,14 @@ const quoteRouter = (io: Server) => {
 
         res.json(quote);
       } catch (err) {
-        handleQuotingError(res, err);
+        handleQuotingError(res, err, {
+          srcAsset,
+          destAsset,
+          amount: new BigNumber(amount.toString())
+            .shiftedBy(-assetConstants[srcAsset].decimals)
+            .toFixed(),
+          limitOrdersReceived,
+        });
       }
     }),
   );
