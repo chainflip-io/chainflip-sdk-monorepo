@@ -1,3 +1,4 @@
+import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
 import request from 'supertest';
 import * as broker from '@/shared/broker';
@@ -137,6 +138,26 @@ const swapEventMap = {
       blockHeight: '222',
       depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
       depositDetails: {},
+    },
+  },
+  'EthereumIngressEgress.DepositBoosted': {
+    id: '0000000092-000400-77afe',
+    blockId: '0000000092-77afe',
+    indexInBlock: 400,
+    extrinsicId: '0000000092-000010-77afe',
+    callId: '0000000092-000010-77afe',
+    name: 'EthereumIngressEgress.DepositBoosted',
+    args: {
+      asset: { __kind: 'Eth' },
+      action: { __kind: 'Swap', swapRequestId: '368' },
+      amounts: [[4, '5000000000000000000']],
+      boostFee: '2500000000000000',
+      channelId: '85',
+      ingressFee: '50000000350000',
+      blockHeight: '222',
+      depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
+      depositDetails: {},
+      prewitnessedDepositId: '27',
     },
   },
   'Swapping.SwapExecuted': {
@@ -285,6 +306,7 @@ const swapEvents = [
 ] as const;
 
 const channelId = '86-Ethereum-85';
+const { swapRequestId } = swapEventMap['Swapping.SwapRequested'].args;
 
 describe('server', () => {
   let server: Server;
@@ -1286,59 +1308,19 @@ describe('server', () => {
       `);
     });
 
-    it.skip('retrieves a swap from a native swap id', async () => {
-      await prisma.swap.create({
-        data: {
-          swapDepositChannelId: (await createDepositChannel()).id,
-          nativeId,
-          srcAsset: InternalAssets.Eth,
-          destAsset: InternalAssets.Dot,
-          destAddress: DOT_ADDRESS,
-          depositAmount: '10',
-          swapInputAmount: '10',
-          fees: {
-            create: [
-              {
-                type: 'NETWORK',
-                asset: 'Usdc',
-                amount: '10',
-              },
-              {
-                type: 'LIQUIDITY',
-                asset: 'Eth',
-                amount: '5',
-              },
-            ],
-          },
-          depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
-          depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
-          type: 'SWAP',
-          ccmDepositReceivedBlockIndex: '223-16',
-          ccmGasBudget: '100',
-          ccmMessage: '0x12abf87',
-          swapScheduledAt: new Date(RECEIVED_TIMESTAMP),
-          swapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
-        },
-      });
+    it('retrieves a swap from a native swap id', async () => {
+      await processEvents(swapEvents.slice(0, 4));
 
-      const { body, status } = await request(server).get(`/swaps/${nativeId}`);
+      const { body, status } = await request(server).get(`/swaps/${swapRequestId}`);
       expect(status).toBe(200);
       const { swapId, ...rest } = body;
       expect(rest).toMatchInlineSnapshot(`
         {
-          "ccmDepositReceivedBlockIndex": "223-16",
-          "ccmMetadata": {
-            "gasBudget": "100",
-            "message": "0x12abf87",
-          },
-          "ccmParams": {
-            "gasBudget": "100",
-            "message": "0x12abf87",
-          },
           "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
           "depositAmount": "5000000000000000000",
           "depositChannelBrokerCommissionBps": 0,
           "depositChannelCreatedAt": 516000,
+          "depositChannelExpiryBlock": "265",
           "depositChannelMaxBoostFeeBps": 0,
           "depositChannelOpenedThroughBackend": false,
           "depositReceivedAt": 552000,
@@ -1350,16 +1332,10 @@ describe('server', () => {
           "estimatedDepositChannelExpiryTime": 1699527060000,
           "feesPaid": [
             {
-              "amount": "10",
-              "asset": "USDC",
-              "chain": "Ethereum",
-              "type": "NETWORK",
-            },
-            {
-              "amount": "5",
+              "amount": "50000000350000",
               "asset": "ETH",
               "chain": "Ethereum",
-              "type": "LIQUIDITY",
+              "type": "INGRESS",
             },
           ],
           "isDepositChannelExpired": false,
@@ -1374,34 +1350,26 @@ describe('server', () => {
       `);
     });
 
-    it.skip('works in maintenance mode', async () => {
+    it('works in maintenance mode', async () => {
       env.MAINTENANCE_MODE = true;
 
-      const swapIntent = await createDepositChannel({
-        srcChainExpiryBlock: 200,
-      });
-      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
+      await processEvents(swapEvents.slice(0, 1));
 
       const { status } = await request(server).get(`/swaps/${channelId}`);
 
       expect(status).toBe(200);
     });
 
-    it.skip('retrieves a channel with affiliates', async () => {
-      const swapIntent = await createDepositChannel({
-        srcChainExpiryBlock: 200,
-        affiliates: {
-          createMany: {
-            data: [
-              {
-                account: 'cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy',
-                commissionBps: 100,
-              },
-            ],
-          },
+    it('retrieves a channel with affiliates', async () => {
+      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      (depositChannelEvent.args.affiliateFees as any) = [
+        {
+          account: ss58.toPublicKey('cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy'),
+          bps: 100,
         },
-      });
-      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
+      ];
+
+      await processEvents([depositChannelEvent]);
 
       const { status, body } = await request(server).get(`/swaps/${channelId}`);
 
@@ -1415,71 +1383,23 @@ describe('server', () => {
       ]);
     });
 
-    it.skip('retrieves boost details when swap was boosted', async () => {
-      const swapIntent = await createDepositChannel({
-        maxBoostFeeBps: 30,
-      });
+    it('retrieves boost details when swap was boosted', async () => {
+      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.boostFee = 30;
+      await processEvents([
+        depositChannelEvent,
+        ...swapEvents.slice(1, 3),
+        swapEventMap['EthereumIngressEgress.DepositBoosted'],
+      ]);
 
-      const swap = await prisma.swap.create({
-        data: {
-          nativeId,
-          srcAsset: InternalAssets.Btc,
-          destAsset: InternalAssets.Eth,
-          destAddress: ETH_ADDRESS,
-          depositAmount: '10',
-          swapInputAmount: '10',
-          depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
-          depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
-          depositBoostedAt: new Date(RECEIVED_TIMESTAMP),
-          depositBoostedBlockIndex: RECEIVED_BLOCK_INDEX,
-          type: 'SWAP',
-          ccmDepositReceivedBlockIndex: '223-16',
-          ccmGasBudget: '100',
-          ccmMessage: '0x12abf87',
-          effectiveBoostFeeBps: 5,
-          swapDepositChannelId: swapIntent.id,
-          swapScheduledAt: new Date(RECEIVED_TIMESTAMP),
-          swapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
-        },
-      });
-
-      const { status, body } = await request(server).get(`/swaps/${swap.nativeId}`);
+      const { status, body } = await request(server).get(`/swaps/${swapRequestId}`);
 
       expect(status).toBe(200);
-      expect(body.effectiveBoostFeeBps).toBe(5);
-      expect(body.depositChannelMaxBoostFeeBps).toBe(30);
-      expect(body.depositBoostedAt.valueOf()).toBe(RECEIVED_TIMESTAMP);
-      expect(body.depositBoostedBlockIndex).toBe(RECEIVED_BLOCK_INDEX);
-      expect(body.boostSkippedAt).toBeUndefined();
-      expect(body.boostSkippedBlockIndex).toBeUndefined();
+      expect(body).toMatchSnapshot();
     });
 
-    it.skip('does not retrieve boost details when a channel is not boostable', async () => {
-      const swapIntent = await createDepositChannel({
-        maxBoostFeeBps: 0, // signaling that we don't want a boost to occur on this channel
-      });
-
-      await prisma.swap.create({
-        data: {
-          nativeId,
-          srcAsset: InternalAssets.Btc,
-          destAsset: InternalAssets.Eth,
-          destAddress: ETH_ADDRESS,
-          depositAmount: '10',
-          swapInputAmount: '10',
-          depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
-          depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
-          type: 'SWAP',
-          ccmDepositReceivedBlockIndex: '223-16',
-          ccmGasBudget: '100',
-          ccmMessage: '0x12abf87',
-          effectiveBoostFeeBps: 5,
-          swapDepositChannelId: swapIntent.id,
-          swapScheduledAt: new Date(RECEIVED_TIMESTAMP),
-          swapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
-        },
-      });
-      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
+    it('does not retrieve boost details when a channel is not boostable', async () => {
+      await processEvents(swapEvents.slice(0, 9));
 
       const { status, body } = await request(server).get(`/swaps/${channelId}`);
 
@@ -1493,39 +1413,12 @@ describe('server', () => {
     });
 
     it.skip('retrieves boost skipped properties when there was a failed boost attempt for the swap', async () => {
-      const swapIntent = await createDepositChannel({
-        maxBoostFeeBps: 30,
-        failedBoosts: {
-          create: [
-            {
-              failedAtTimestamp: new Date(RECEIVED_TIMESTAMP),
-              failedAtBlockIndex: RECEIVED_BLOCK_INDEX,
-              amount: '100',
-            },
-          ],
-        },
-      });
-
-      await prisma.swap.create({
-        data: {
-          nativeId,
-          srcAsset: InternalAssets.Btc,
-          destAsset: InternalAssets.Eth,
-          destAddress: ETH_ADDRESS,
-          depositAmount: '10',
-          swapInputAmount: '10',
-          depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
-          depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
-          type: 'SWAP',
-          ccmDepositReceivedBlockIndex: '223-16',
-          ccmGasBudget: '100',
-          ccmMessage: '0x12abf87',
-          swapDepositChannelId: swapIntent.id,
-          swapScheduledAt: new Date(RECEIVED_TIMESTAMP),
-          swapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
-        },
-      });
-      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
+      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.boostFee = 30;
+      await processEvents([
+        depositChannelEvent,
+        swapEventMap['EthereumIngressEgress.DepositIgnored'],
+      ]);
 
       const { status, body } = await request(server).get(`/swaps/${channelId}`);
 
