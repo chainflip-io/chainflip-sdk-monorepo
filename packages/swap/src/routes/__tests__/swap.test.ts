@@ -160,6 +160,20 @@ const swapEventMap = {
       prewitnessedDepositId: '27',
     },
   },
+  'EthereumIngressEgress.InsufficientBoostLiquidity': {
+    id: '0000000092-000400-77afe',
+    blockId: '0000000092-77afe',
+    indexInBlock: 400,
+    extrinsicId: '0000000092-000010-77afe',
+    callId: '0000000092-000010-77afe',
+    name: 'EthereumIngressEgress.InsufficientBoostLiquidity',
+    args: {
+      prewitnessedDepositId: '27',
+      asset: { __kind: 'Eth' },
+      amountAttempted: '5000000000000000000',
+      channelId: '85',
+    },
+  },
   'Swapping.SwapExecuted': {
     id: '0000000094-000594-75b12',
     blockId: '0000000094-75b12',
@@ -215,6 +229,18 @@ const swapEventMap = {
       broadcastId: 7,
     },
   },
+  'EthereumIngressEgress.BatchBroadcastRequested': {
+    id: '0000000094-000843-75b12',
+    blockId: '0000000094-75b12',
+    indexInBlock: 843,
+    extrinsicId: null,
+    callId: null,
+    name: 'EthereumIngressEgress.BatchBroadcastRequested',
+    args: {
+      egressIds: [[{ __kind: 'Ethereum' }, '71']],
+      broadcastId: 7,
+    },
+  },
   'Swapping.RefundEgressScheduled': {
     id: '0000000094-000594-75b12',
     blockId: '0000000094-75b12',
@@ -244,6 +270,22 @@ const swapEventMap = {
         '0x7c53cc46ddfbf51ecd3aa7ee97e5dc60db89f99cb54426a2d641735c15d78908c047c33944df15f8720e20c6b5e49999680428e9ce7ae6a4bc223c26b0137f87',
     },
   },
+  'EthereumBroadcaster.BroadcastSuccess': {
+    id: '0000000104-000007-5dbb8',
+    blockId: '0000000104-5dbb8',
+    indexInBlock: 7,
+    extrinsicId: '0000000104-000002-5dbb8',
+    callId: '0000000104-000002-5dbb8',
+    name: 'EthereumBroadcaster.BroadcastSuccess',
+    args: {
+      broadcastId: 7,
+      transactionRef: '0xd2398250c9fa869f0eb7659015549ed46178c95cedd444c3539f655068f6a7d9',
+      transactionOutId: {
+        s: '0x4b4a8a15558f559ebb0bc4e591f276a24e1ea2a1aefa708bd0c1baec232b5a9b',
+        kTimesGAddress: '0x6bca5f42c73fc7bd8422ccc9c99e8d62f7aca092',
+      },
+    },
+  },
   'PolkadotBroadcaster.BroadcastAborted': {
     id: '0000000104-000007-5dbb8',
     blockId: '0000000104-5dbb8',
@@ -251,6 +293,17 @@ const swapEventMap = {
     extrinsicId: '0000000104-000002-5dbb8',
     callId: '0000000104-000002-5dbb8',
     name: 'PolkadotBroadcaster.BroadcastAborted',
+    args: {
+      broadcastId: 7,
+    },
+  },
+  'EthereumBroadcaster.BroadcastAborted': {
+    id: '0000000104-000007-5dbb8',
+    blockId: '0000000104-5dbb8',
+    indexInBlock: 7,
+    extrinsicId: '0000000104-000002-5dbb8',
+    callId: '0000000104-000002-5dbb8',
+    name: 'EthereumBroadcaster.BroadcastAborted',
     args: {
       broadcastId: 7,
     },
@@ -1412,12 +1465,13 @@ describe('server', () => {
       expect(body.boostSkippedBlockIndex).toBeUndefined();
     });
 
-    it.skip('retrieves boost skipped properties when there was a failed boost attempt for the swap', async () => {
+    it('retrieves boost skipped properties when there was a failed boost attempt for the swap', async () => {
       const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositChannelEvent.args.boostFee = 30;
       await processEvents([
         depositChannelEvent,
-        swapEventMap['EthereumIngressEgress.DepositIgnored'],
+        swapEventMap['EthereumIngressEgress.InsufficientBoostLiquidity'],
+        ...swapEvents.slice(1, 4),
       ]);
 
       const { status, body } = await request(server).get(`/swaps/${channelId}`);
@@ -1429,14 +1483,18 @@ describe('server', () => {
       expect(body.boostSkippedBlockIndex).toBe(RECEIVED_BLOCK_INDEX);
     });
 
-    it.skip(`retrieves a swap with FillOrKillParams in ${State.AwaitingDeposit} status`, async () => {
-      const swapIntent = await createDepositChannel({
-        srcChainExpiryBlock: 200,
-        fokMinPriceX128: '2041694201525630780780247644590609',
-        fokRefundAddress: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
-        fokRetryDurationBlocks: 15,
-      });
-      const channelId = `${swapIntent.issuedBlock}-${swapIntent.srcChain}-${swapIntent.channelId}`;
+    it(`retrieves a swap with FillOrKillParams in ${State.AwaitingDeposit} status`, async () => {
+      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.refundParameters = {
+        minPrice: '99999999999999999999999999999999999999999999999999999000000000000000000',
+        refundAddress: {
+          value: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
+          __kind: 'Eth',
+        },
+        retryDuration: 15,
+      };
+
+      await processEvents([depositChannelEvent]);
 
       const { body, status } = await request(server).get(`/swaps/${channelId}`);
 
@@ -1456,7 +1514,7 @@ describe('server', () => {
           "estimatedDepositChannelExpiryTime": 1699527060000,
           "feesPaid": [],
           "fillOrKillParams": {
-            "minPrice": "600",
+            "minPrice": "29387358770557187699218413430556141945466.638919302188",
             "refundAddress": "0x541f563237a309b3a61e33bdf07a8930bdba8d99",
             "retryDurationBlocks": 15,
           },
@@ -1469,48 +1527,23 @@ describe('server', () => {
       `);
     });
 
-    it.skip(`retrieves a swap with FillOrKillParams in ${State.BroadcastAborted}`, async () => {
-      const channel = await createDepositChannel({
-        srcChainExpiryBlock: 200,
-        fokMinPriceX128: '2041694201525630780780247644590609',
-        fokRefundAddress: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
-        fokRetryDurationBlocks: 15,
-        swaps: {
-          create: {
-            nativeId,
-            depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
-            depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
-            depositAmount: '10',
-            swapInputAmount: '10',
-            refundEgress: {
-              create: {
-                scheduledAt: new Date(RECEIVED_TIMESTAMP + 12000),
-                scheduledBlockIndex: `94-595`,
-                amount: (10n ** 18n).toString(),
-                chain: 'Ethereum',
-                nativeId: 3n,
-                broadcast: {
-                  create: {
-                    chain: 'Ethereum',
-                    nativeId: 3n,
-                    requestedAt: new Date(RECEIVED_TIMESTAMP + 12000),
-                    requestedBlockIndex: `202-4`,
-                    abortedAt: new Date(RECEIVED_TIMESTAMP + 18000),
-                    abortedBlockIndex: `104-7`,
-                  },
-                },
-              },
-            },
-            srcAsset: InternalAssets.Eth,
-            destAsset: InternalAssets.Dot,
-            destAddress: DOT_ADDRESS,
-            type: 'SWAP',
-            swapScheduledAt: new Date(RECEIVED_TIMESTAMP),
-            swapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
-          },
+    it(`retrieves a swap with FillOrKillParams in ${State.BroadcastAborted}`, async () => {
+      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.refundParameters = {
+        minPrice: '99999999999999999999999999999999999999999999999999999000000000000000000',
+        refundAddress: {
+          value: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
+          __kind: 'Eth',
         },
-      });
-      const channelId = `${channel.issuedBlock}-${channel.srcChain}-${channel.channelId}`;
+        retryDuration: 15,
+      };
+      await processEvents([
+        depositChannelEvent,
+        ...swapEvents.slice(1, 4),
+        swapEventMap['Swapping.RefundEgressScheduled'],
+        swapEventMap['EthereumIngressEgress.BatchBroadcastRequested'],
+        swapEventMap['EthereumBroadcaster.BroadcastAborted'],
+      ]);
 
       const { body, status } = await request(server).get(`/swaps/${channelId}`);
 
@@ -1526,48 +1559,23 @@ describe('server', () => {
       });
     });
 
-    it.skip(`retrieves a swap with FillOrKillParams in ${State.Complete}`, async () => {
-      const channel = await createDepositChannel({
-        srcChainExpiryBlock: 200,
-        fokMinPriceX128: '2041694201525630780780247644590609',
-        fokRefundAddress: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
-        fokRetryDurationBlocks: 15,
-        swaps: {
-          create: {
-            nativeId,
-            depositReceivedAt: new Date(RECEIVED_TIMESTAMP),
-            depositReceivedBlockIndex: RECEIVED_BLOCK_INDEX,
-            depositAmount: '10',
-            swapInputAmount: '10',
-            refundEgress: {
-              create: {
-                scheduledAt: new Date(RECEIVED_TIMESTAMP + 12000),
-                scheduledBlockIndex: `94-595`,
-                amount: (10n ** 18n).toString(),
-                chain: 'Ethereum',
-                nativeId: 3n,
-                broadcast: {
-                  create: {
-                    chain: 'Ethereum',
-                    nativeId: 3n,
-                    requestedAt: new Date(RECEIVED_TIMESTAMP + 12000),
-                    requestedBlockIndex: `202-4`,
-                    succeededAt: new Date(RECEIVED_TIMESTAMP + 18000),
-                    succeededBlockIndex: `104-7`,
-                  },
-                },
-              },
-            },
-            srcAsset: InternalAssets.Eth,
-            destAsset: InternalAssets.Dot,
-            destAddress: DOT_ADDRESS,
-            type: 'SWAP',
-            swapScheduledAt: new Date(RECEIVED_TIMESTAMP),
-            swapScheduledBlockIndex: RECEIVED_BLOCK_INDEX,
-          },
+    it(`retrieves a swap with FillOrKillParams in ${State.Complete}`, async () => {
+      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.refundParameters = {
+        minPrice: '99999999999999999999999999999999999999999999999999999000000000000000000',
+        refundAddress: {
+          value: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
+          __kind: 'Eth',
         },
-      });
-      const channelId = `${channel.issuedBlock}-${channel.srcChain}-${channel.channelId}`;
+        retryDuration: 15,
+      };
+      await processEvents([
+        depositChannelEvent,
+        ...swapEvents.slice(1, 4),
+        swapEventMap['Swapping.RefundEgressScheduled'],
+        swapEventMap['EthereumIngressEgress.BatchBroadcastRequested'],
+        swapEventMap['EthereumBroadcaster.BroadcastSuccess'],
+      ]);
 
       const { body, status } = await request(server).get(`/swaps/${channelId}`);
 
@@ -1691,13 +1699,13 @@ describe('server', () => {
       expect(body).toMatchObject({ message: 'invalid request body' });
     });
 
-    it.skip.each([
+    it.each([
       {
         srcAsset: Assets.DOT,
         destAsset: Assets.ETH,
         srcChain: 'Polkadot',
         destChain: 'Ethereum',
-        destAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
+        destAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFf',
         amount: '1000000000',
       },
       {
