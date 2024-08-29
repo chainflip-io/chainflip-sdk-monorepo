@@ -31,8 +31,7 @@ export const swapDepositAddressReady = async ({
     channelOpeningFee,
     affiliateFees,
     refundParameters,
-    // TODO(dca)
-    // dcaParameters,
+    dcaParameters,
   } = swapDepositAddressReadyArgs.parse(event.args);
 
   const chainInfo = await prisma.chainTracking.findFirst({
@@ -61,6 +60,8 @@ export const swapDepositAddressReady = async ({
     fokMinPriceX128: refundParameters?.minPrice.toString(),
     fokRefundAddress: refundParameters?.refundAddress.address,
     fokRetryDurationBlocks: refundParameters?.retryDuration,
+    numberOfChunks: dcaParameters?.numberOfChunks,
+    chunkIntervalBlocks: dcaParameters?.chunkInterval,
     createdAt: new Date(block.timestamp),
   };
 
