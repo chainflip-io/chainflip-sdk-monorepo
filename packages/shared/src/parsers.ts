@@ -8,6 +8,7 @@ import { HexString } from '@chainflip/utils/types';
 import assert from 'assert';
 import * as ethers from 'ethers';
 import { z, ZodErrorMap } from 'zod';
+import { encodeAddress } from './bitcoin';
 import {
   ChainflipNetwork,
   ChainflipNetworks,
@@ -174,7 +175,12 @@ export const bitcoinScriptPubKey = (network: ChainflipNetwork) =>
         throw new Error('OtherSegwit scriptPubKey not supported');
       }
 
-      return decodeAddress(script.value, script.__kind, network);
+      try {
+        return decodeAddress(script.value, script.__kind, network);
+      } catch (err) {
+        if (script.__kind !== 'Taproot') throw err;
+        return encodeAddress(script.value, network);
+      }
     });
 
 export const depositAddressSchema = (network: ChainflipNetwork) =>
