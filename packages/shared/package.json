@@ -23,6 +23,7 @@
     "@chainflip/solana": "^1.0.1",
     "@chainflip/utils": "^0.4.0",
     "axios": "^1.6.8",
+    "bech32-buffer": "^0.2.1",
     "bignumber.js": "^9.1.2",
     "ethers": "^6.13.2",
     "ioredis": "^5.4.1",

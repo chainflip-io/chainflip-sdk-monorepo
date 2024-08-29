@@ -13,4 +13,6 @@ export default defineConfig({
   },
   sourcemap: true,
   target: 'es2022',
+  // bundle patched bech32-buffer package to support validating regtest addresses
+  noExternal: ['bech32-buffer'],
 });
