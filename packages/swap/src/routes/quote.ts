@@ -138,7 +138,17 @@ const quoteRouter = (io: Server) => {
 
         const duration = performance.now() - start;
 
-        logger.info('quote request completed', { duration: duration.toFixed(2), quote });
+        logger.info('quote request completed', {
+          duration: duration.toFixed(2),
+          quote,
+          srcAsset,
+          destAsset,
+          inputAmount: quote.lowLiquidityWarning
+            ? new BigNumber(amount.toString())
+                .shiftedBy(-assetConstants[srcAsset].decimals)
+                .toFixed()
+            : undefined,
+        });
 
         res.json(quote);
       } catch (err) {
