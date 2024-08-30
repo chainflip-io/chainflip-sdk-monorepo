@@ -126,7 +126,7 @@ importers:
         version: 17.0.33
       tsup:
         specifier: ^8.2.4
-        version: 8.2.4(@swc/core@1.7.10(@swc/helpers@0.5.12))(jiti@1.21.0)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.3.4)
+        version: 8.2.4(@swc/core@1.7.10(@swc/helpers@0.5.12))(jiti@1.21.0)(tsx@4.16.2)(typescript@5.5.4)
 
   packages/indexer/gateway:
     dependencies:
@@ -154,7 +154,7 @@ importers:
     devDependencies:
       tsup:
         specifier: ^8.2.4
-        version: 8.2.4(@swc/core@1.7.10(@swc/helpers@0.5.12))(jiti@1.21.0)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.3.4)
+        version: 8.2.4(@swc/core@1.7.10(@swc/helpers@0.5.12))(jiti@1.21.0)(tsx@4.16.2)(typescript@5.5.4)
 
   packages/shared:
     dependencies:
@@ -165,8 +165,8 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0
       '@chainflip/solana':
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: ^1.0.2
+        version: 1.0.2
       '@chainflip/utils':
         specifier: ^0.4.0
         version: 0.4.0
@@ -748,8 +748,8 @@ packages:
   '@chainflip/rpc@1.6.0':
     resolution: {integrity: sha512-LQFOJ9i8xceR/t6jJXH1UUU602aPDl5TW23V1IUGCZDd21YyoMG8xmk/q8Ija9HF5g1WBTqrfzRpIjBsoSGPRQ==}
 
-  '@chainflip/solana@1.0.1':
-    resolution: {integrity: sha512-I82zTP5ER0eMDxdD+81H6QlPWMM2KIKGUXpxBpJXhle1ZknYgZSPkp3RxWSw+D6veYBEZ6ZsjQCrYpGp/HPYkw==}
+  '@chainflip/solana@1.0.2':
+    resolution: {integrity: sha512-8M+z0yjVCZBMpdCTGuBRt/Ns9NBJCNFvnSOjDu/kyaBRvxdUvECJOIseL0ENLBd0J/YmO9TcrZ30M0po3a96BA==}
 
   '@chainflip/utils@0.3.0':
     resolution: {integrity: sha512-csW8E3lRcSG1udN/kgsOhjZ7bfRrSbgv8Hdh/pzjM+VjQ6Hh46/LuiZHeQR0rQMimfG+lu2Afxk4jeRXRGFWTg==}
@@ -1473,9 +1473,6 @@ packages:
 
   '@noble/curves@1.4.0':
     resolution: {integrity: sha512-p+4cb332SFCrReJkCYe8Xzm0OWi4Jji5jVdIZRL/PmacmDkFNw6MrrV+gGpiPxLHbV+zKFRywUWbaseT+tZRXg==}
-
-  '@noble/curves@1.5.0':
-    resolution: {integrity: sha512-J5EKamIHnKPyClwVrzmaf5wSdQXgdHcPZIZLu3bwnbeCx8/7NPK5q2ZBWF+5FvYGByjiQQsJYX6jfgB2wDPn3A==}
 
   '@noble/hashes@1.3.2':
     resolution: {integrity: sha512-MVC8EAQp7MvEcm30KWENFjgR+Mkmf+D189XJTkFIlwohU5hcBbn1ZkKq7KVTi2Hme3PMGF390DaL52beVrIihQ==}
@@ -6219,10 +6216,9 @@ snapshots:
       '@chainflip/utils': 0.3.0
       zod: 3.23.8
 
-  '@chainflip/solana@1.0.1':
+  '@chainflip/solana@1.0.2':
     dependencies:
-      '@chainflip/utils': 0.3.0
-      '@noble/curves': 1.5.0
+      '@chainflip/utils': 0.4.0
 
   '@chainflip/utils@0.3.0': {}
 
@@ -7225,10 +7221,6 @@ snapshots:
       '@noble/hashes': 1.3.2
 
   '@noble/curves@1.4.0':
-    dependencies:
-      '@noble/hashes': 1.4.0
-
-  '@noble/curves@1.5.0':
     dependencies:
       '@noble/hashes': 1.4.0
 
@@ -11128,13 +11120,12 @@ snapshots:
 
   possible-typed-array-names@1.0.0: {}
 
-  postcss-load-config@6.0.1(jiti@1.21.0)(tsx@4.16.2)(yaml@2.3.4):
+  postcss-load-config@6.0.1(jiti@1.21.0)(tsx@4.16.2):
     dependencies:
       lilconfig: 3.1.2
     optionalDependencies:
       jiti: 1.21.0
       tsx: 4.16.2
-      yaml: 2.3.4
 
   postgraphile-core@4.13.0(graphql@15.8.0)(pg@8.11.5):
     dependencies:
@@ -11890,7 +11881,7 @@ snapshots:
 
   tslib@2.6.2: {}
 
-  tsup@8.2.4(@swc/core@1.7.10(@swc/helpers@0.5.12))(jiti@1.21.0)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.3.4):
+  tsup@8.2.4(@swc/core@1.7.10(@swc/helpers@0.5.12))(jiti@1.21.0)(tsx@4.16.2)(typescript@5.5.4):
     dependencies:
       bundle-require: 5.0.0(esbuild@0.23.0)
       cac: 6.7.14
@@ -11902,7 +11893,7 @@ snapshots:
       globby: 11.1.0
       joycon: 3.1.1
       picocolors: 1.0.1
-      postcss-load-config: 6.0.1(jiti@1.21.0)(tsx@4.16.2)(yaml@2.3.4)
+      postcss-load-config: 6.0.1(jiti@1.21.0)(tsx@4.16.2)
       resolve-from: 5.0.0
       rollup: 4.20.0
       source-map: 0.8.0-beta.0
