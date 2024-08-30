@@ -110,7 +110,7 @@ export default async function getPoolQuote({
     egressAmount: outputAmount.toString(),
     includedFees,
     lowLiquidityWarning,
-    inputUsdValue: boostFeeBps ? inputUsdValue : undefined,
+    inputUsdValue: boostFeeBps ? undefined : inputUsdValue,
     poolInfo,
     estimatedDurationSeconds: await estimateSwapDuration({
       srcAsset,
