@@ -18,6 +18,7 @@ type AdditionalInfo = {
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
   amount: string;
+  usdValue: string | undefined;
   limitOrdersReceived: Awaited<ReturnType<Quoter['getLimitOrders']>> | undefined;
 };
 
@@ -108,6 +109,7 @@ const quoteRouter = (io: Server) => {
       }
 
       let limitOrdersReceived;
+      let usdValue;
       try {
         const [limitOrders, estimatedBoostFeeBps, pools] = await Promise.all([
           quoter.getLimitOrders(srcAsset, destAsset, amount),
@@ -127,11 +129,12 @@ const quoteRouter = (io: Server) => {
           pools,
         };
 
-        const [quote, boostedQuote] = await Promise.all([
+        const [{ inputUsdValue, ...quote }, boostedQuote] = await Promise.all([
           getPoolQuote(quoteArgs),
           estimatedBoostFeeBps &&
             getPoolQuote({ ...quoteArgs, boostFeeBps: estimatedBoostFeeBps }).catch(() => null),
         ]);
+        usdValue = inputUsdValue;
 
         if (boostedQuote && estimatedBoostFeeBps) {
           quote.boostQuote = { ...boostedQuote, estimatedBoostFeeBps };
@@ -149,6 +152,7 @@ const quoteRouter = (io: Server) => {
                 .shiftedBy(-assetConstants[srcAsset].decimals)
                 .toFixed()
             : undefined,
+          usdValue,
         });
 
         res.json(quote);
@@ -160,6 +164,7 @@ const quoteRouter = (io: Server) => {
             .shiftedBy(-assetConstants[srcAsset].decimals)
             .toFixed(),
           limitOrdersReceived,
+          usdValue,
         });
       }
     }),
