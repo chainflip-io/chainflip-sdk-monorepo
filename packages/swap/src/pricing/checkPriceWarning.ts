@@ -5,7 +5,7 @@ import logger from '../utils/logger';
 import { getAssetPrice } from '.';
 
 const toTokenAmount = (amount: bigint, decimals: number) =>
-  new BigNumber(amount.toString()).shiftedBy(-decimals).toFixed(decimals);
+  new BigNumber(amount.toString()).shiftedBy(-decimals);
 
 export const checkPriceWarning = async ({
   srcAsset,
@@ -17,7 +17,7 @@ export const checkPriceWarning = async ({
   destAsset: InternalAsset;
   srcAmount: bigint;
   destAmount: bigint;
-}): Promise<boolean | undefined> => {
+}): Promise<{ lowLiquidityWarning: boolean | undefined; inputUsdValue: string | undefined }> => {
   try {
     const inputPrice = await getAssetPrice(srcAsset);
     const outputPrice = await getAssetPrice(destAsset);
@@ -25,21 +25,23 @@ export const checkPriceWarning = async ({
     const destAssetDecimals = assetConstants[destAsset].decimals;
 
     if (!inputPrice || !outputPrice) {
-      return undefined;
+      return { lowLiquidityWarning: undefined, inputUsdValue: undefined };
     }
+    const inputUsdValue = toTokenAmount(srcAmount, srcAssetDecimals).times(inputPrice);
 
-    const expectedOutput = new BigNumber(inputPrice)
-      .times(toTokenAmount(srcAmount, srcAssetDecimals))
-      .dividedBy(outputPrice);
+    const expectedOutput = inputUsdValue.dividedBy(outputPrice);
 
-    const delta = new BigNumber(toTokenAmount(destAmount, destAssetDecimals))
+    const delta = toTokenAmount(destAmount, destAssetDecimals)
       .minus(expectedOutput)
       .dividedBy(expectedOutput)
       .multipliedBy(100);
 
-    return delta.lte(env.LIQUIDITY_WARNING_THRESHOLD);
+    return {
+      lowLiquidityWarning: delta.lte(env.LIQUIDITY_WARNING_THRESHOLD),
+      inputUsdValue: inputUsdValue.toFixed(2),
+    };
   } catch (err) {
     logger.error('error querying coingecko for price:', err);
-    return undefined;
+    return { lowLiquidityWarning: undefined, inputUsdValue: undefined };
   }
 };
