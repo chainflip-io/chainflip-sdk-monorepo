@@ -71,20 +71,25 @@ export const affiliateBroker = z
 
 export type AffiliateBroker = z.input<typeof affiliateBroker>;
 
+export const dcaParams = z.object({
+  numberOfChunks: number,
+  chunkInterval: number,
+});
+
 export const fillOrKillParams = z.object({
   retryDurationBlocks: number,
   refundAddress: z.string(),
   minPriceX128: numericString,
 });
 
-export const dcaParams = z.object({
-  numberOfChunks: number,
-  chunkInterval: number,
-});
-
 export type FillOrKillParamsX128 = z.input<typeof fillOrKillParams>;
 export type FillOrKillParams = Omit<FillOrKillParamsX128, 'minPriceX128'> & {
   minPrice: string;
+};
+
+export type DcaParams = {
+  numberOfChunks: number;
+  chunkInterval: number;
 };
 
 export const openSwapDepositChannelSchema = z

@@ -5,6 +5,7 @@ import {
   QuoteQueryResponse,
   FillOrKillParams,
   SwapFee,
+  DcaParams,
 } from '@/shared/schemas';
 
 export interface ChainData {
@@ -56,6 +57,7 @@ export interface DepositAddressRequest extends QuoteRequest {
   maxBoostFeeBps?: number;
   srcAddress?: string;
   fillOrKillParams?: FillOrKillParams;
+  dcaParams?: DcaParams;
 
   /** @deprecated DEPRECATED(1.5): use ccmParams instead of ccmMetadata */
   ccmMetadata?: CcmParams;

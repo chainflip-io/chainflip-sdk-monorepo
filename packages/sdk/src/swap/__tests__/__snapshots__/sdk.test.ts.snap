@@ -619,6 +619,34 @@ exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based
 ]
 `;
 
+exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by tier & asset 1`] = `
+[
+  {
+    "asset": "ETH",
+    "availableAmount": 100000n,
+    "chain": "Ethereum",
+    "feeTierBps": 10,
+  },
+]
+`;
+
+exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by tier 1`] = `
+[
+  {
+    "asset": "BTC",
+    "availableAmount": 100000n,
+    "chain": "Bitcoin",
+    "feeTierBps": 10,
+  },
+  {
+    "asset": "ETH",
+    "availableAmount": 100000n,
+    "chain": "Ethereum",
+    "feeTierBps": 10,
+  },
+]
+`;
+
 exports[`SwapSDK getChains returns the chains based on the cf_supported_assets rpc 1`] = `
 [
   {
