@@ -14,13 +14,15 @@ export const InternalAssets = arrayToMap([
   'Usdt',
   'ArbUsdc',
   'ArbEth',
+  'Sol',
+  'SolUsdc',
 ]);
 export type InternalAsset = (typeof InternalAssets)[keyof typeof InternalAssets];
 
-export const Chains = arrayToMap(['Bitcoin', 'Ethereum', 'Polkadot', 'Arbitrum']);
+export const Chains = arrayToMap(['Bitcoin', 'Ethereum', 'Polkadot', 'Arbitrum', 'Solana']);
 export type Chain = (typeof Chains)[keyof typeof Chains];
 
-export const Assets = arrayToMap(['FLIP', 'USDC', 'DOT', 'ETH', 'BTC', 'USDT']);
+export const Assets = arrayToMap(['FLIP', 'USDC', 'DOT', 'ETH', 'BTC', 'USDT', 'SOL']);
 export type Asset = (typeof Assets)[keyof typeof Assets];
 
 export const ChainflipNetworks = arrayToMap(['backspin', 'sisyphos', 'perseverance', 'mainnet']);
@@ -88,6 +90,20 @@ export const assetConstants = {
     decimals: 6,
     contractId: 7,
   },
+  [InternalAssets.Sol]: {
+    chain: Chains.Solana,
+    asset: Assets.SOL,
+    name: 'Solana',
+    decimals: 9,
+    contractId: 9,
+  },
+  [InternalAssets.SolUsdc]: {
+    chain: Chains.Solana,
+    asset: Assets.USDC,
+    name: 'Solana USDC',
+    decimals: 6,
+    contractId: 10,
+  },
 } as const satisfies Record<
   InternalAsset,
   {
@@ -124,6 +140,12 @@ export const chainConstants = {
     gasAsset: Assets.ETH,
     contractId: 4,
     blockTimeSeconds: 0.26,
+  },
+  [Chains.Solana]: {
+    assets: [Assets.SOL, Assets.USDC],
+    gasAsset: Assets.SOL,
+    contractId: 5,
+    blockTimeSeconds: (400 + 800) / 2 / 1000,
   },
 } as const satisfies Record<
   Chain,
@@ -213,6 +235,10 @@ export function getInternalAsset(asset: UncheckedAssetAndChain, assert = true) {
     [Chains.Arbitrum]: {
       [Assets.USDC]: InternalAssets.ArbUsdc,
       [Assets.ETH]: InternalAssets.ArbEth,
+    },
+    [Chains.Solana]: {
+      [Assets.SOL]: InternalAssets.Sol,
+      [Assets.USDC]: InternalAssets.SolUsdc,
     },
   };
 

@@ -1,4 +1,5 @@
 import * as bitcoin from '@chainflip/bitcoin';
+import { isValidSolanaAddress } from '@chainflip/solana/address';
 import * as ss58 from '@chainflip/utils/ss58';
 import * as ethers from 'ethers';
 import { Chain, ChainflipNetwork } from '../enums';
@@ -26,36 +27,43 @@ export const validateBitcoinTestnetAddress: AddressValidator = (address: string)
 export const validateBitcoinRegtestAddress: AddressValidator = (address: string) =>
   bitcoin.isValidAddressForNetwork(address, 'regtest');
 
+export const validateSolanaAddress = isValidSolanaAddress;
+
 const validators: Record<ChainflipNetwork | 'localnet', Record<Chain, AddressValidator>> = {
   mainnet: {
     Bitcoin: validateBitcoinMainnetAddress,
     Ethereum: validateEvmAddress,
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
+    Solana: validateSolanaAddress,
   },
   perseverance: {
     Bitcoin: validateBitcoinTestnetAddress,
     Ethereum: validateEvmAddress,
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
+    Solana: validateSolanaAddress,
   },
   sisyphos: {
     Bitcoin: validateBitcoinTestnetAddress,
     Ethereum: validateEvmAddress,
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
+    Solana: validateSolanaAddress,
   },
   backspin: {
     Bitcoin: validateBitcoinRegtestAddress,
     Ethereum: validateEvmAddress,
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
+    Solana: validateSolanaAddress,
   },
   localnet: {
     Bitcoin: validateBitcoinRegtestAddress,
     Ethereum: validateEvmAddress,
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
+    Solana: validateSolanaAddress,
   },
 };
 

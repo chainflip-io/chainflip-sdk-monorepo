@@ -1,5 +1,7 @@
+import * as base58 from '@chainflip/utils/base58';
 import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
+import { isHex } from '@chainflip/utils/string';
 import { ContractTransactionResponse } from 'ethers';
 import { Vault__factory } from '../abis';
 import {
@@ -18,7 +20,7 @@ import {
   getInternalAssets,
   InternalAsset,
 } from '../enums';
-import { assertIsEvmChain, assertSignerIsConnectedToChain } from '../evm';
+import { assertIsEvmChain, assertIsCCMDestination, assertSignerIsConnectedToChain } from '../evm';
 import { assert } from '../guards';
 import { dotAddress } from '../parsers';
 import { ccmParamsSchema } from '../schemas';
@@ -30,6 +32,10 @@ const encodeAddress = (chain: Chain, address: string) => {
   if (chain === Chains.Polkadot) return bytesToHex(ss58.decode(dotAddress.parse(address)).data);
   if (chain === Chains.Bitcoin) return `0x${Buffer.from(address).toString('hex')}`;
   if (chain === Chains.Ethereum || chain === Chains.Arbitrum) return address;
+  if (chain === Chains.Solana) {
+    if (isHex(address)) return address;
+    return bytesToHex(base58.decode(address));
+  }
 
   // no fallback encoding to prevent submitting txs with wrongly encoded addresses for new chains
   throw new Error(`cannot encode address for chain ${chain}`);
@@ -65,7 +71,7 @@ const getErc20Address = (asset: InternalAsset, networkOpts: SwapNetworkOptions) 
 };
 
 const swapNative = async (
-  params: ExecuteSwapParams & { ccmParams?: undefined },
+  params: ExecuteSwapParams,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
@@ -79,7 +85,7 @@ const swapNative = async (
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
     assetConstants[destAsset].contractId,
-    '0x',
+    params.ccmParams?.cfParameters ?? '0x',
     { value: params.amount, ...extractOverrides(txOpts) },
   );
   await transaction.wait(txOpts.wait);
@@ -88,7 +94,7 @@ const swapNative = async (
 };
 
 const swapToken = async (
-  params: ExecuteSwapParams & { ccmParams?: undefined },
+  params: ExecuteSwapParams,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
@@ -110,7 +116,7 @@ const swapToken = async (
     assetConstants[destAsset].contractId,
     erc20Address,
     params.amount,
-    '0x',
+    params.ccmParams?.cfParameters ?? '0x',
     extractOverrides(txOpts),
   );
   await transaction.wait(txOpts.wait);
@@ -135,7 +141,7 @@ const callNative = async (
     assetConstants[destAsset].contractId,
     params.ccmParams.message,
     params.ccmParams.gasBudget,
-    '0x',
+    params.ccmParams?.cfParameters ?? '0x',
     { value: params.amount, ...extractOverrides(txOpts) },
   );
   await transaction.wait(txOpts.wait);
@@ -168,7 +174,7 @@ const callToken = async (
     params.ccmParams.gasBudget,
     erc20Address,
     params.amount,
-    '0x',
+    params.ccmMetadata?.cfParameters ?? '0x',
     extractOverrides(txOpts),
   );
   await transaction.wait(txOpts.wait);
@@ -187,7 +193,7 @@ const executeSwap = async (
   await assertSignerIsConnectedToChain(networkOpts, params.srcChain);
 
   if (unvalidatedCcmParams) {
-    assertIsEvmChain(params.destChain);
+    assertIsCCMDestination(params.destChain);
     const ccmParams = ccmParamsSchema.parse(unvalidatedCcmParams);
 
     return params.srcAsset === chainConstants[params.srcChain].gasAsset

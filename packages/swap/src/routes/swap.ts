@@ -66,6 +66,7 @@ const coerceChain = (chain: string) => {
     case 'ETHEREUM':
     case 'POLKADOT':
     case 'ARBITRUM':
+    case 'SOLANA':
       return screamingSnakeToPascalCase(uppercaseChain);
     default:
       assertUnreachable(uppercaseChain);

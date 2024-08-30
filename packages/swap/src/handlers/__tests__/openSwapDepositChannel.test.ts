@@ -97,7 +97,7 @@ describe(openSwapDepositChannel, () => {
       expectedDepositAmount: '10101010',
       ccmParams: {
         message: '0xdeadc0de',
-        gasBudget: (125000).toString(),
+        gasBudget: `0x${(125000).toString(16)}`,
       },
     });
 

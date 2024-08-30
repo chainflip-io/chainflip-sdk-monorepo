@@ -9,6 +9,7 @@ import {
   dotAddress,
   ethereumAddress,
   assetAndChain,
+  solanaAddress,
 } from './parsers';
 import {
   affiliateBroker,
@@ -46,18 +47,13 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) =>
     .tuple([
       assetAndChain,
       assetAndChain,
-      z.union([numericString, hexString, btcAddress(network)]),
+      z.union([numericString, hexString, btcAddress(network), solanaAddress]),
       z.number(),
       ccmParamsSchema
-        .merge(
-          z.object({
-            cfParameters: z.union([hexString, z.string()]).optional(),
-          }),
-        )
         .transform(({ message, ...rest }) => ({
           message,
           cf_parameters: rest.cfParameters,
-          gas_budget: `0x${BigInt(rest.gasBudget).toString(16)}` as `0x${string}`,
+          gas_budget: rest.gasBudget,
         }))
         .optional(),
       z.number().optional(),
@@ -75,7 +71,7 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) =>
 const validateResponse = (network: ChainflipNetwork, response: unknown) =>
   z
     .object({
-      address: z.union([dotAddress, ethereumAddress, btcAddress(network)]),
+      address: z.union([dotAddress, ethereumAddress, btcAddress(network), solanaAddress]),
       issued_block: z.number(),
       channel_id: z.number(),
       source_chain_expiry_block: z.bigint(),
@@ -99,7 +95,7 @@ export async function requestSwapDepositAddress(
   opts: { url: string },
   chainflipNetwork: ChainflipNetwork,
 ): Promise<DepositChannelResponse> {
-  const { srcAsset, srcChain, destAsset, destChain, destAddress, maxBoostFeeBps } = swapRequest;
+  const { srcAsset, srcChain, destAsset, destChain, destAddress } = swapRequest;
 
   const client = new HttpClient(opts.url);
 
@@ -108,11 +104,8 @@ export async function requestSwapDepositAddress(
     { asset: destAsset, chain: destChain },
     submitAddress(destChain, destAddress),
     swapRequest.commissionBps ?? 0,
-    swapRequest.ccmParams && {
-      ...swapRequest.ccmParams,
-      cfParameters: undefined,
-    },
-    maxBoostFeeBps,
+    swapRequest.ccmParams,
+    swapRequest.maxBoostFeeBps,
     swapRequest.affiliates,
     swapRequest.fillOrKillParams && {
       ...swapRequest.fillOrKillParams,

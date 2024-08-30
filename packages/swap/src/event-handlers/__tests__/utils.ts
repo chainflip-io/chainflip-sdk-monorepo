@@ -1,3 +1,5 @@
+import { bytesToHex } from '@chainflip/utils/bytes';
+import * as ss58 from '@chainflip/utils/ss58';
 import { z } from 'zod';
 import { InternalAssets, Chain, Chains } from '@/shared/enums';
 import { actionSchema } from '@/shared/parsers';
@@ -6,6 +8,7 @@ import { DepositIgnoredArgs } from '../depositIgnored';
 import { events } from '../index';
 import { networkBroadcastSuccessArgs } from '../networkBroadcastSuccess';
 import { SwapAmountTooLowEvent } from '../swapAmountTooLow';
+import { SwapDepositAddressReadyEvent } from '../swapDepositAddressReady';
 import { SwapExecutedEvent } from '../swapExecuted';
 import { SwapScheduledEvent } from '../swapScheduled';
 
@@ -291,7 +294,7 @@ export const swapDepositAddressReadyMocked = {
         },
         destinationAddress: {
           __kind: 'Dot',
-          value: DOT_ADDRESS,
+          value: bytesToHex(ss58.decode(DOT_ADDRESS).data),
         },
         sourceAsset: {
           __kind: 'Eth',
@@ -302,8 +305,10 @@ export const swapDepositAddressReadyMocked = {
         brokerCommissionRate: 0,
         channelId: '1',
         sourceChainExpiryBlock: '0x100',
-        boostFeeBps: 0,
-      },
+        boostFee: 0,
+        channelOpeningFee: 0,
+        affiliateFees: [],
+      } as SwapDepositAddressReadyEvent,
       indexInBlock: 0,
       name: events.Swapping.SwapDepositAddressReady,
     },
@@ -340,8 +345,10 @@ export const swapDepositAddressReadyCcmParamsMocked = {
         },
         brokerCommissionRate: 0,
         sourceChainExpiryBlock: '2573643',
-        boostFeeBps: 0,
-      },
+        boostFee: 0,
+        channelOpeningFee: 0,
+        affiliateFees: [],
+      } as SwapDepositAddressReadyEvent,
       indexInBlock: 0,
       name: events.Swapping.SwapDepositAddressReady,
     },

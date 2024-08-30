@@ -1,14 +1,10 @@
+import { liquidityProviderLiquidityDepositAddressReady as schema141 } from '@chainflip/processor/141/liquidityProvider/liquidityDepositAddressReady';
+import { liquidityProviderLiquidityDepositAddressReady as schema150 } from '@chainflip/processor/150/liquidityProvider/liquidityDepositAddressReady';
+import { liquidityProviderLiquidityDepositAddressReady as schema160 } from '@chainflip/processor/160/liquidityProvider/liquidityDepositAddressReady';
 import { z } from 'zod';
-import { u64 } from '@/shared/parsers';
-import { encodedAddress } from './common';
 import type { EventHandlerArgs } from './index';
 
-const liquidityDepositAddressReadyArgs = z.object({
-  channelId: u64,
-  depositAddress: encodedAddress,
-  // asset: internalAssetEnum,
-  // depositChainExpiryBlock: u64,
-});
+const liquidityDepositAddressReadyArgs = z.union([schema160, schema150, schema141]);
 
 export type LiquidityDepositAddressReadyArgs = z.input<typeof liquidityDepositAddressReadyArgs>;
 

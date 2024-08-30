@@ -10,6 +10,7 @@ export const boostSafeModeSchema = z.object({
   ingressEgressBitcoin: boostFlagsSchema,
   ingressEgressPolkadot: boostFlagsSchema,
   ingressEgressArbitrum: boostFlagsSchema,
+  ingressEgressSolana: boostFlagsSchema.optional(),
 });
 
 const getApi = memoize(async () => {
@@ -27,5 +28,5 @@ const getFlags = memoize(async () => {
 export const getBoostSafeMode = async (asset: InternalAsset) => {
   const flags = await getFlags();
   const { chain } = getAssetAndChain(asset);
-  return flags[`ingressEgress${chain}`].boostDepositsEnabled;
+  return flags[`ingressEgress${chain}`]?.boostDepositsEnabled ?? false;
 };

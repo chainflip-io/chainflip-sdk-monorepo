@@ -5,6 +5,7 @@ import prisma from '../../client';
 import { Event } from '../../gql/generated/graphql';
 import processBlocks from '../../processBlocks';
 import { DepositReceivedArgs } from '../networkDepositReceived';
+import { SwapDepositAddressReadyEvent } from '../swapDepositAddressReady';
 import { SwapScheduledEvent } from '../swapScheduled';
 
 jest.mock('graphql-request', () => ({
@@ -42,8 +43,10 @@ const swapDepositAddressReadyEvent = {
     },
     brokerCommissionRate: 0,
     sourceChainExpiryBlock: '101',
-    boostFeeBps: 0,
-  },
+    boostFee: 0,
+    channelOpeningFee: 0,
+    affiliateFees: [],
+  } as SwapDepositAddressReadyEvent,
 } as const;
 
 const batchEvents = [
