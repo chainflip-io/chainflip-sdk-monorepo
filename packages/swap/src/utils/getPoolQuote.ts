@@ -38,7 +38,7 @@ export default async function getPoolQuote({
   limitOrders?: LimitOrders;
   boostFeeBps?: number;
   pools: Pool[];
-}): Promise<QuoteQueryResponse> {
+}): Promise<QuoteQueryResponse & { inputUsdValue?: string }> {
   const includedFees = [];
   let swapInputAmount = originalSwapInputAmount;
 
@@ -84,7 +84,7 @@ export default async function getPoolQuote({
     );
   }
 
-  const lowLiquidityWarning = await checkPriceWarning({
+  const { lowLiquidityWarning, inputUsdValue } = await checkPriceWarning({
     srcAsset,
     destAsset,
     srcAmount: swapInputAmount,
@@ -110,6 +110,7 @@ export default async function getPoolQuote({
     egressAmount: outputAmount.toString(),
     includedFees,
     lowLiquidityWarning,
+    inputUsdValue: boostFeeBps ? undefined : inputUsdValue,
     poolInfo,
     estimatedDurationSeconds: await estimateSwapDuration({
       srcAsset,

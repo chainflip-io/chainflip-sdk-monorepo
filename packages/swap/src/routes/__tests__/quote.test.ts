@@ -43,7 +43,7 @@ jest.mock('@/shared/consts', () => ({
 }));
 
 jest.mock('../../pricing/checkPriceWarning.ts', () => ({
-  checkPriceWarning: jest.fn(),
+  checkPriceWarning: jest.fn().mockResolvedValue({}),
 }));
 
 jest.mock('../../pricing/index');
@@ -807,7 +807,9 @@ describe('server', () => {
         amount: (1e18).toString(),
       });
 
-      jest.mocked(checkPriceWarning).mockResolvedValueOnce(true);
+      jest
+        .mocked(checkPriceWarning)
+        .mockResolvedValueOnce({ lowLiquidityWarning: true, inputUsdValue: '3000.00' });
 
       const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
