@@ -80,4 +80,15 @@ describe('postSwapSchema', () => {
       }),
     ).toMatchObject({ success: false });
   });
+
+  it('handles missing dca params', () => {
+    expect(
+      openSwapDepositChannelSchema.safeParse({
+        ...swapBody,
+        dcaParams: {
+          numberOfChunks: 1,
+        },
+      }),
+    ).toMatchObject({ success: false });
+  });
 });

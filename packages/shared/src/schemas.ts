@@ -77,6 +77,11 @@ export const fillOrKillParams = z.object({
   minPriceX128: numericString,
 });
 
+export const dcaParams = z.object({
+  numberOfChunks: number,
+  chunkInterval: number,
+});
+
 export type FillOrKillParamsX128 = z.input<typeof fillOrKillParams>;
 export type FillOrKillParams = Omit<FillOrKillParamsX128, 'minPriceX128'> & {
   minPrice: string;
@@ -95,6 +100,12 @@ export const openSwapDepositChannelSchema = z
     maxBoostFeeBps: z.number().optional(),
     srcAddress: z.string().optional(),
     fillOrKillParams: fillOrKillParams.optional(),
+    dcaParams: z
+      .object({
+        numberOfChunks: z.number(),
+        chunkInterval: z.number(),
+      })
+      .optional(),
   })
   .transform(({ amount, ...rest }) => ({
     ...rest,
