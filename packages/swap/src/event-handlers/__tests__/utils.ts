@@ -1,16 +1,15 @@
 import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
+import { GraphQLClient } from 'graphql-request';
 import { z } from 'zod';
-import { InternalAssets, Chain, Chains } from '@/shared/enums';
+import { InternalAssets, Chain, Chains, assetConstants } from '@/shared/enums';
 import { actionSchema } from '@/shared/parsers';
+import processBlocks, { Event } from '@/swap/processBlocks';
 import prisma, { SwapDepositChannel } from '../../client';
-import { DepositIgnoredArgs } from '../depositIgnored';
-import { events } from '../index';
+import { events as eventNames } from '../index';
 import { networkBroadcastSuccessArgs } from '../networkBroadcastSuccess';
-import { SwapAmountTooLowEvent } from '../swapAmountTooLow';
-import { SwapDepositAddressReadyEvent } from '../swapDepositAddressReady';
-import { SwapExecutedEvent } from '../swapExecuted';
-import { SwapScheduledEvent } from '../swapScheduled';
+import { DepositIgnoredArgs } from '../networkDepositIgnored';
+import { SwapDepositAddressReadyArgs } from '../swapDepositAddressReady';
 
 export const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
 export const DOT_ADDRESS = '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo'; // 0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972
@@ -39,153 +38,34 @@ export const createDepositChannel = (
     },
   });
 
-const buildSwapScheduledEvent = <T extends SwapScheduledEvent>(args: T) => ({
-  block: {
-    specId: 'test@1',
-    timestamp: 1670337093000,
-    height: 100,
-    hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
-  },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        dispatchInfo: {
-          class: [null],
-          weight: '101978000',
-          paysFee: [null],
-        },
-        ...args,
-      },
-      id: '0000012799-000000-c1ea7',
-      indexInBlock: 0,
-      nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: events.Swapping.SwapScheduled,
-      phase: 'ApplyExtrinsic',
-      pos: 2,
-      extrinsic: {
-        error: null,
-        hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
-        id: '0000012799-000000-c1ea7',
-        indexInBlock: 0,
-        nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
-        pos: 1,
-        success: true,
-        version: 4,
-        call: {
-          args: [null],
-          error: null,
-          id: '0000012799-000000-c1ea7',
-          name: 'Timestamp.set',
-          nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
-          origin: [null],
-          pos: 0,
-          success: true,
-        },
-      },
-    },
-  },
-});
-
-export const swapScheduledDotDepositChannelMock = buildSwapScheduledEvent({
-  origin: {
-    __kind: 'DepositChannel',
-    channelId: '2',
-    depositAddress: {
-      value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-      __kind: 'Dot',
-    },
-    depositBlockHeight: '100',
-  },
-  swapId: '1',
-  sourceAsset: { __kind: 'Dot' },
-  depositAmount: '125000000000',
-  destinationAsset: { __kind: 'Btc' },
-  destinationAddress: {
-    value:
-      '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
-    __kind: 'Btc',
-  },
-  swapType: {
-    __kind: 'Swap',
-  },
-});
-
-export const swapScheduledDotDepositChannelBrokerCommissionMock = buildSwapScheduledEvent({
-  origin: {
-    __kind: 'DepositChannel',
-    channelId: '2',
-    depositAddress: {
-      value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-      __kind: 'Dot',
-    },
-    depositBlockHeight: '100',
-  },
-  swapId: '1',
-  sourceAsset: { __kind: 'Dot' },
-  depositAmount: '125000000000',
-  destinationAsset: { __kind: 'Btc' },
-  destinationAddress: {
-    value:
-      '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
-    __kind: 'Btc',
-  },
-  swapType: {
-    __kind: 'Swap',
-  },
-  brokerFee: 5000000000,
-});
-
-export const swapScheduledBtcDepositChannelMock = buildSwapScheduledEvent({
-  swapId: '3',
-  sourceAsset: { __kind: 'Btc' },
-  depositAmount: '75000000',
-  destinationAsset: { __kind: 'Eth' },
-  destinationAddress: {
-    __kind: 'Eth',
-    value: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
-  },
-  origin: {
-    __kind: 'DepositChannel',
-    channelId: '2',
-    depositAddress: {
-      __kind: 'Btc',
-      value:
-        '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
-    },
-    depositBlockHeight: '100',
-  },
-  swapType: {
-    __kind: 'Swap',
-  },
-});
-
-export const swapScheduledVaultMock = buildSwapScheduledEvent({
-  origin: {
-    __kind: 'Vault',
-    txHash: '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
-  },
-  swapId: '2',
-  sourceAsset: { __kind: 'Eth' },
-  depositAmount: '175000000000000000',
-  destinationAsset: { __kind: 'Dot' },
-  destinationAddress: {
-    value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-    __kind: 'Dot',
-  },
-  swapType: {
-    __kind: 'Swap',
-  },
-});
-
 export const networkDepositReceivedBtcMock = {
   block: {
-    specId: 'test@1',
+    specId: 'test@150',
     height: 120,
     timestamp: 1670337105000,
   },
-  eventContext: {
-    kind: 'event',
+  event: {
+    args: {
+      asset: {
+        __kind: 'Btc',
+      },
+      amount: '110000',
+      depositAddress: {
+        value: '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
+        __kind: 'Taproot',
+      },
+    },
+    name: 'BitcoinIngressEgress.DepositReceived',
+    indexInBlock: 7,
+  },
+} as const;
+
+export const networkDepositReceivedBtcMockV120 = (action?: z.input<typeof actionSchema>) =>
+  ({
+    block: {
+      height: 120,
+      timestamp: 1670337105000,
+    },
     event: {
       args: {
         asset: {
@@ -196,208 +76,132 @@ export const networkDepositReceivedBtcMock = {
           value: '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
           __kind: 'Taproot',
         },
+        ingressFee: '1000',
+        action: action || { __kind: 'Swap', swapId: '1' },
       },
       name: 'BitcoinIngressEgress.DepositReceived',
       indexInBlock: 7,
     },
-  },
-} as const;
-
-export const networkDepositReceivedBtcMockV120 = (action?: z.input<typeof actionSchema>) =>
-  ({
-    block: {
-      height: 120,
-      timestamp: 1670337105000,
-    },
-    eventContext: {
-      kind: 'event',
-      event: {
-        args: {
-          asset: {
-            __kind: 'Btc',
-          },
-          amount: '110000',
-          depositAddress: {
-            value: '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
-            __kind: 'Taproot',
-          },
-          ingressFee: '1000',
-          action: action || { __kind: 'Swap', swapId: '1' },
-        },
-        name: 'BitcoinIngressEgress.DepositReceived',
-        indexInBlock: 7,
-      },
-    },
   }) as const;
-
-export const buildSwapExecutedMock = (args: SwapExecutedEvent) => ({
-  block: {
-    specId: 'test@1',
-    height: 100,
-    timestamp: 1670337099000,
-  },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        dispatchInfo: {
-          class: [null],
-          weight: '101978000',
-          paysFee: [null],
-        },
-        ...args,
-      },
-      id: '0000012799-000000-c1ea7',
-      indexInBlock: 0,
-      nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: events.Swapping.SwapExecuted,
-      phase: 'ApplyExtrinsic',
-      pos: 2,
-      extrinsic: {
-        error: null,
-        hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
-        id: '0000012799-000000-c1ea7',
-        indexInBlock: 0,
-        nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
-        pos: 1,
-        success: true,
-        version: 4,
-        call: {
-          args: [null],
-          error: null,
-          id: '0000012799-000000-c1ea7',
-          name: 'Timestamp.set',
-          nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
-          origin: [null],
-          pos: 0,
-          success: true,
-        },
-      },
-    },
-  },
-});
 
 export const swapDepositAddressReadyMocked = {
   block: {
-    specId: 'test@1',
+    specId: 'test@150',
     height: 120,
     timestamp: 1670337105000,
     hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        depositAddress: {
-          __kind: 'Eth',
-          value: ETH_ADDRESS,
-        },
-        destinationAddress: {
-          __kind: 'Dot',
-          value: bytesToHex(ss58.decode(DOT_ADDRESS).data),
-        },
-        sourceAsset: {
-          __kind: 'Eth',
-        },
-        destinationAsset: {
-          __kind: 'Dot',
-        },
-        brokerCommissionRate: 0,
-        channelId: '1',
-        sourceChainExpiryBlock: '0x100',
-        boostFee: 0,
-        channelOpeningFee: 0,
-        affiliateFees: [],
-      } as SwapDepositAddressReadyEvent,
-      indexInBlock: 0,
-      name: events.Swapping.SwapDepositAddressReady,
-    },
+  event: {
+    args: {
+      depositAddress: {
+        __kind: 'Eth',
+        value: ETH_ADDRESS,
+      },
+      destinationAddress: {
+        __kind: 'Dot',
+        value: bytesToHex(ss58.decode(DOT_ADDRESS).data),
+      },
+      sourceAsset: {
+        __kind: 'Eth',
+      },
+      destinationAsset: {
+        __kind: 'Dot',
+      },
+      brokerCommissionRate: 0,
+      channelId: '1',
+      sourceChainExpiryBlock: '0x100',
+      boostFee: 0,
+      channelOpeningFee: 0,
+      affiliateFees: [],
+    } as SwapDepositAddressReadyArgs,
+    indexInBlock: 0,
+    name: eventNames.Swapping.SwapDepositAddressReady,
   },
 } as const;
 
 export const swapDepositAddressReadyCcmParamsMocked = {
   block: {
-    specId: 'test@1',
+    specId: 'test@150',
     height: 120,
     timestamp: 1670337105000,
     hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        channelId: '8249',
-        sourceAsset: { __kind: 'Btc' },
-        depositAddress: {
-          value:
-            '0x7462317079303874383832667679656b63393975336432656a7578347261336c72636b687970776d336137656578363838766a757571687138786e74336b',
-          __kind: 'Btc',
-        },
-        channelMetadata: {
-          message: '0xdeadc0de',
-          gasBudget: '125000',
-          cfParameters: '0x',
-        },
-        destinationAsset: { __kind: 'Eth' },
-        destinationAddress: {
-          value: '0xfcd3c82b154cb4717ac98718d0fd13eeba3d2754',
-          __kind: 'Eth',
-        },
-        brokerCommissionRate: 0,
-        sourceChainExpiryBlock: '2573643',
-        boostFee: 0,
-        channelOpeningFee: 0,
-        affiliateFees: [],
-      } as SwapDepositAddressReadyEvent,
-      indexInBlock: 0,
-      name: events.Swapping.SwapDepositAddressReady,
-    },
+  event: {
+    args: {
+      channelId: '8249',
+      sourceAsset: { __kind: 'Btc' },
+      depositAddress: {
+        value:
+          '0x7462317079303874383832667679656b63393975336432656a7578347261336c72636b687970776d336137656578363838766a757571687138786e74336b',
+        __kind: 'Btc',
+      },
+      channelMetadata: {
+        message: '0xdeadc0de',
+        gasBudget: '125000',
+        cfParameters: '0x',
+      },
+      destinationAsset: { __kind: 'Eth' },
+      destinationAddress: {
+        value: '0xfcd3c82b154cb4717ac98718d0fd13eeba3d2754',
+        __kind: 'Eth',
+      },
+      brokerCommissionRate: 0,
+      sourceChainExpiryBlock: '2573643',
+      boostFee: 0,
+      channelOpeningFee: 0,
+      affiliateFees: [],
+    } as SwapDepositAddressReadyArgs,
+    indexInBlock: 0,
+    name: eventNames.Swapping.SwapDepositAddressReady,
   },
 } as const;
 
 export const swapEgressScheduledMock = {
   block: {
-    specId: 'test@1',
+    specId: 'test@150',
     height: 120,
     timestamp: 1670337105000,
+    hash: '0x123',
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        dispatchInfo: {
-          class: [null],
-          weight: '101978000',
-          paysFee: [null],
-        },
-        swapId: '9876545',
-        egressId: [{ __kind: 'Ethereum' }, '1'] as const,
+  event: {
+    args: {
+      dispatchInfo: {
+        class: [null],
+        weight: '101978000',
+        paysFee: [null],
       },
+      swapId: '9876545',
+      swapRequestId: '9876545',
+      fee: '1000000000',
+      egressFee: '1000000000',
+      asset: { __kind: 'Eth' },
+      amount: '10000000000',
+      egressId: [{ __kind: 'Ethereum' }, '1'] as const,
+    },
+    id: '0000012799-000000-c1ea7',
+    indexInBlock: 0,
+    nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
+    name: eventNames.Swapping.SwapEgressScheduled,
+    phase: 'ApplyExtrinsic',
+    pos: 2,
+    extrinsic: {
+      error: null,
+      hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
       id: '0000012799-000000-c1ea7',
       indexInBlock: 0,
-      nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: events.Swapping.SwapEgressScheduled,
-      phase: 'ApplyExtrinsic',
-      pos: 2,
-      extrinsic: {
+      nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
+      pos: 1,
+      success: true,
+      version: 4,
+      call: {
+        args: [null],
         error: null,
-        hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
         id: '0000012799-000000-c1ea7',
-        indexInBlock: 0,
-        nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
-        pos: 1,
+        name: 'Timestamp.set',
+        nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
+        origin: [null],
+        pos: 0,
         success: true,
-        version: 4,
-        call: {
-          args: [null],
-          error: null,
-          id: '0000012799-000000-c1ea7',
-          name: 'Timestamp.set',
-          nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
-          origin: [null],
-          pos: 0,
-          success: true,
-        },
       },
     },
   },
@@ -405,135 +209,100 @@ export const swapEgressScheduledMock = {
 
 export const swapEgressIgnoredMock = {
   block: {
-    specId: 'test@1',
+    specId: 'test@150',
     height: 120,
     timestamp: 1670337105000,
+    hash: '0x123',
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        asset: {
-          __kind: 'Btc',
-        },
-        amount: '11',
-        reason: {
-          value: {
-            error: '0x06000000',
-            index: 34,
-          },
-          __kind: 'Module',
-        },
-        swapId: '2',
+  event: {
+    args: {
+      asset: {
+        __kind: 'Btc',
       },
-      id: '0000012799-000000-c1ea7',
-      indexInBlock: 0,
-      nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: events.Swapping.SwapEgressIgnored,
-      phase: 'ApplyExtrinsic',
-      pos: 2,
-      extrinsic: null,
+      amount: '11',
+      reason: {
+        value: {
+          error: '0x06000000',
+          index: 34,
+        },
+        __kind: 'Module',
+      },
+      swapId: '2',
     },
+    id: '0000012799-000000-c1ea7',
+    indexInBlock: 0,
+    nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
+    name: eventNames.Swapping.SwapEgressIgnored,
+    phase: 'ApplyExtrinsic',
+    pos: 2,
+    extrinsic: null,
   },
 } as const;
 
 export const refundEgressIgnoredMock = {
   block: {
-    specId: 'test@1',
+    specId: 'test@150',
     height: 120,
     timestamp: 1670337105000,
+    hash: '0x123',
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        asset: {
-          __kind: 'Btc',
-        },
-        amount: '22000',
-        reason: {
-          value: {
-            error: '0x06000000',
-            index: 34,
-          },
-          __kind: 'Module',
-        },
-        swapId: '377',
+  event: {
+    args: {
+      asset: {
+        __kind: 'Btc',
       },
-      id: '0000012799-000000-c1ea7',
-      indexInBlock: 0,
-      nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: events.Swapping.RefundEgressIgnored,
-      phase: 'ApplyExtrinsic',
-      pos: 2,
-      extrinsic: null,
-    },
-  },
-} as const;
-
-export const networkEgressScheduledMock = {
-  block: {
-    specId: 'test@1',
-    height: 120,
-    timestamp: 1670337105000,
-  },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        id: [
-          {
-            __kind: 'Ethereum',
-          },
-          '13',
-        ],
-        asset: {
-          __kind: 'Usdc',
+      amount: '22000',
+      reason: {
+        value: {
+          error: '0x06000000',
+          index: 34,
         },
-        amount: '4396575964',
-        destinationAddress: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0',
+        __kind: 'Module',
       },
-      name: 'EthereumIngressEgress.EgressScheduled',
-      indexInBlock: 123,
+      swapId: '377',
     },
+    id: '0000012799-000000-c1ea7',
+    indexInBlock: 0,
+    nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
+    name: eventNames.Swapping.RefundEgressIgnored,
+    phase: 'ApplyExtrinsic',
+    pos: 2,
+    extrinsic: null,
   },
 } as const;
 
 export const networkBatchBroadcastRequestedMock = {
   block: {
-    specId: 'test@1',
+    specId: 'test@150',
     height: 120,
     timestamp: 1670337105000,
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        egressIds: [
-          [
-            {
-              __kind: 'Ethereum',
-            },
-            '10',
-          ],
-          [
-            {
-              __kind: 'Ethereum',
-            },
-            '11',
-          ],
-          [
-            {
-              __kind: 'Ethereum',
-            },
-            '12',
-          ],
+  event: {
+    args: {
+      egressIds: [
+        [
+          {
+            __kind: 'Ethereum',
+          },
+          '10',
         ],
-        broadcastId: 9,
-      },
-      name: 'EthereumIngressEgress.BatchBroadcastRequested',
-      indexInBlock: 135,
+        [
+          {
+            __kind: 'Ethereum',
+          },
+          '11',
+        ],
+        [
+          {
+            __kind: 'Ethereum',
+          },
+          '12',
+        ],
+      ],
+      broadcastId: 9,
     },
+    name: 'EthereumIngressEgress.BatchBroadcastRequested',
+    indexInBlock: 135,
   },
 } as const;
 
@@ -542,258 +311,100 @@ export const networkBroadcastSuccessMock = (
 ) =>
   ({
     block: {
-      specId: 'test@1',
+      specId: 'test@150',
       height: 120,
       timestamp: 1670337105000,
     },
-    eventContext: {
-      kind: 'event',
-      event: {
-        args: {
-          broadcastId: 12,
-          transactionOutId: {
-            s: '0x689c4add3e14ea8243a1966fc2cea3baea692ca52fd7ef464e1cc74e608bf262',
-            kTimesGAddress: '0x972c9f07cc7a847b29003655faf265c12e193f09',
-          },
-          ...args,
+    event: {
+      args: {
+        broadcastId: 12,
+        transactionOutId: {
+          s: '0x689c4add3e14ea8243a1966fc2cea3baea692ca52fd7ef464e1cc74e608bf262',
+          kTimesGAddress: '0x972c9f07cc7a847b29003655faf265c12e193f09',
         },
-        name: 'EthereumBroadcaster.BroadcastSuccess',
-        indexInBlock: 12,
+        ...args,
       },
+      name: 'EthereumBroadcaster.BroadcastSuccess',
+      indexInBlock: 12,
     },
   }) as const;
 
 export const networkBroadcastAbortedMock = {
   block: {
-    specId: 'test@1',
+    specId: 'test@150',
     height: 120,
     timestamp: 1670337105000,
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: { broadcastId: 62 },
-      name: 'EthereumBroadcaster.BroadcastAborted',
-      indexInBlock: 7,
-    },
+  event: {
+    args: { broadcastId: 62 },
+    name: 'EthereumBroadcaster.BroadcastAborted',
+    indexInBlock: 7,
   },
 } as const;
 
 export const newPoolCreatedMock = {
   block: {
-    specId: 'test@1',
+    specId: 'test@150',
     height: 120,
     timestamp: 1670337105000,
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        baseAsset: { __kind: 'Btc' },
-        quoteAsset: { __kind: 'Usdc' },
-        initialPrice: '170141183460469231731687303715884105728000',
-        feeHundredthPips: 1000,
-      },
-      name: 'LiquidityPools.NewPoolCreated',
-      indexInBlock: 7,
+  event: {
+    args: {
+      baseAsset: { __kind: 'Btc' },
+      quoteAsset: { __kind: 'Usdc' },
+      initialPrice: '170141183460469231731687303715884105728000',
+      feeHundredthPips: 1000,
     },
+    name: 'LiquidityPools.NewPoolCreated',
+    indexInBlock: 7,
   },
 } as const;
 
 export const poolFeeSetMock = {
   block: {
-    specId: 'test@1',
+    specId: 'test@150',
     height: 150,
     timestamp: 1680337105000,
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        baseAsset: { __kind: 'Btc' },
-        quoteAsset: { __kind: 'Usdc' },
-        initialPrice: '170141183460469231731687303715884105728000',
-        feeHundredthPips: 2000,
-      },
-      name: 'LiquidityPools.PoolFeeSet',
-      indexInBlock: 7,
+  event: {
+    args: {
+      baseAsset: { __kind: 'Btc' },
+      quoteAsset: { __kind: 'Usdc' },
+      initialPrice: '170141183460469231731687303715884105728000',
+      feeHundredthPips: 2000,
     },
+    name: 'LiquidityPools.PoolFeeSet',
+    indexInBlock: 7,
   },
 } as const;
 
 export const thresholdSignatureInvalidMock = {
   block: {
-    specId: 'test@1',
+    specId: 'test@150',
     height: 420,
     timestamp: 1680337105000,
   },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        broadcastId: 1,
-        retryBroadcastId: 10,
-      },
-      name: 'EthereumBroadcaster.ThresholdSignatureInvalid',
-      indexInBlock: 7,
+  event: {
+    args: {
+      broadcastId: 1,
+      retryBroadcastId: 10,
     },
+    name: 'EthereumBroadcaster.ThresholdSignatureInvalid',
+    indexInBlock: 7,
   },
 } as const;
 
-const buildSwapAmountTooLowEvent = <T extends SwapAmountTooLowEvent>(args: T) => ({
-  block: {
-    specId: 'test@1',
-    timestamp: 1670337093000,
-    height: 100,
-  },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        dispatchInfo: {
-          class: [null],
-          weight: '101978000',
-          paysFee: [null],
-        },
-        ...args,
-      },
-      id: '0000012799-000000-c1ea7',
-      indexInBlock: 0,
-      nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: events.Swapping.SwapAmountTooLow,
-      phase: 'ApplyExtrinsic',
-      pos: 2,
-      extrinsic: {
-        error: null,
-        hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
-        id: '0000012799-000000-c1ea7',
-        indexInBlock: 0,
-        nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
-        pos: 1,
-        success: true,
-        version: 4,
-        call: {
-          args: [null],
-          error: null,
-          id: '0000012799-000000-c1ea7',
-          name: 'Timestamp.set',
-          nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
-          origin: [null],
-          pos: 0,
-          success: true,
-        },
-      },
-    },
-  },
-});
+export const buildDepositIgnoredEvent = <T extends DepositIgnoredArgs>(args: T) => {
+  const { chain } = assetConstants[args.asset.__kind];
 
-export const swapAmountTooLowDotDepositChannelMock = buildSwapAmountTooLowEvent({
-  amount: '12500000000',
-  asset: {
-    __kind: 'Dot',
-  },
-  destinationAddress: {
-    value:
-      '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
-    __kind: 'Btc',
-  },
-  origin: {
-    __kind: 'DepositChannel',
-    channelId: '2',
-    depositAddress: {
-      value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-      __kind: 'Dot',
-    },
-  },
-});
-
-export const swapAmountTooLowBtcDepositChannelMock = buildSwapAmountTooLowEvent({
-  amount: '12500000000',
-  asset: {
-    __kind: 'Btc',
-  },
-  destinationAddress: {
-    value: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
-    __kind: 'Eth',
-  },
-  origin: {
-    __kind: 'DepositChannel',
-    channelId: '2',
-    depositAddress: {
-      __kind: 'Btc',
-      value:
-        '0x6263727431707a6a64706337393971613566376d36356870723636383830726573356163336c72367932636863346a7361',
-    },
-  },
-});
-
-export const swapAmountTooLowVaultMock = buildSwapAmountTooLowEvent({
-  amount: '12500000000',
-  asset: {
-    __kind: 'Eth',
-  },
-  destinationAddress: {
-    value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-    __kind: 'Dot',
-  },
-  origin: {
-    __kind: 'Vault',
-    txHash: '0x1103ebed92b02a278b54789bfabc056e69ad5c6558049364ea23ec2f3bfa0fd9',
-  },
-});
-
-export const buildDepositIgnoredEvent = <T extends DepositIgnoredArgs>(
-  args: T,
-  eventName: string,
-) => ({
-  block: {
-    specId: 'test@1',
-    timestamp: 1670337093000,
-    height: 100,
-  },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        dispatchInfo: {
-          class: [null],
-          weight: '101978000',
-          paysFee: [null],
-        },
-        ...args,
-      },
-      id: '0000012799-000000-c1ea7',
-      indexInBlock: 0,
-      nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: eventName,
-      phase: 'ApplyExtrinsic',
-      pos: 2,
-      extrinsic: {
-        error: null,
-        hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
-        id: '0000012799-000000-c1ea7',
-        indexInBlock: 0,
-        nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
-        pos: 1,
-        success: true,
-        version: 4,
-        call: {
-          args: [null],
-          error: null,
-          id: '0000012799-000000-c1ea7',
-          name: 'Timestamp.set',
-          nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
-          origin: [null],
-          pos: 0,
-          success: true,
-        },
-      },
-    },
-  },
-});
+  return {
+    block: { specId: 'test@150', timestamp: 1670337093000, height: 100, hash: '0x123' },
+    event: { args, indexInBlock: 0, name: `${chain}IngressEgress.DepositIgnored` },
+  };
+};
 
 export const createChainTrackingInfo = () => {
-  const chains: Chain[] = ['Bitcoin', 'Ethereum', 'Polkadot'];
+  const chains: Chain[] = ['Bitcoin', 'Ethereum', 'Polkadot', 'Solana'];
   return Promise.all(
     chains.map((chain) =>
       prisma.chainTracking.upsert({
@@ -808,4 +419,66 @@ export const createChainTrackingInfo = () => {
       }),
     ),
   );
+};
+
+export const createPools = () => {
+  const assets = Object.values(InternalAssets).filter((asset) => asset !== 'Usdc');
+  return prisma.pool.createMany({
+    data: assets.map((baseAsset) => ({
+      baseAsset,
+      quoteAsset: 'Usdc',
+      liquidityFeeHundredthPips: 1000,
+    })),
+  });
+};
+
+export const processEvents = async (events: (Event & { id: string })[], version = '160') => {
+  const eventMap = events
+    .sort((a, b) => (a.id < b.id ? -1 : 1))
+    .reduce((acc, event) => {
+      const id = Number.parseInt(event.id, 10);
+      acc.set(id, (acc.get(id) || []).concat([event]));
+      return acc;
+    }, new Map<number, Event[]>());
+
+  const startingHeight = Number(eventMap.keys().next().value) - 1;
+  await prisma.state.upsert({
+    where: { id: 1 },
+    create: { id: 1, height: startingHeight },
+    update: { height: startingHeight },
+  });
+
+  const blocksIt = eventMap.entries();
+
+  let previousHeight = startingHeight + 1;
+
+  jest.spyOn(GraphQLClient.prototype, 'request').mockImplementation(async () => {
+    const batch = blocksIt.next();
+    if (batch.done) throw new Error('done');
+    const [height, blockEvents] = batch.value;
+
+    const dummyBlockLength = height - previousHeight - 1;
+    previousHeight = height;
+
+    return {
+      blocks: {
+        nodes: [
+          ...Array.from({ length: dummyBlockLength }, (_, i) => ({
+            height: height - dummyBlockLength + i,
+            specId: `test@${version}`,
+            timestamp: new Date(height * 6000).toISOString(),
+            events: { nodes: [] },
+          })),
+          {
+            height,
+            specId: `test@${version}`,
+            timestamp: new Date(height * 6000).toISOString(),
+            events: { nodes: blockEvents },
+          },
+        ],
+      },
+    };
+  });
+
+  await expect(processBlocks()).rejects.toThrow('done');
 };

@@ -1,115 +1,82 @@
-import { z } from 'zod';
-import { actionSchema } from '@/shared/parsers';
-import { createBtcSwapDepositChannel } from './utils';
 import prisma from '../../../client';
-import { depositBoosted } from '../depositBoosted';
+import { Action150, depositBoosted, DepositBoostedArgs } from '../depositBoosted';
 
-export const depositBoostedBtcMock = ({
-  action,
+export const depositBoostedBtcMock = async ({
+  action = { __kind: 'Swap', swapId: '1' },
   amounts,
   channelId,
 }: {
-  action?: z.input<typeof actionSchema>;
+  action?: Action150;
   amounts?: [[number, string]];
   channelId?: string;
-}) =>
-  ({
+} = {}) => {
+  const args: DepositBoostedArgs = {
+    blockHeight: 120,
+    asset: {
+      __kind: 'Btc',
+    },
+    amounts: amounts ?? [[5, '1000000']],
+    prewitnessedDepositId: '101',
+    channelId: channelId ?? '1',
+    ingressFee: '1000',
+    boostFee: '500',
+    action,
+    depositAddress: {
+      value: '0x52890cc3438775253262c88df4ab47841581ac04',
+      __kind: 'P2PKH',
+    },
+    depositDetails: {
+      txId: '0x626b620f866caa7474598d3a34a752dba98e5c55f1e3de1c310b75ad093b32c7',
+      vout: 0,
+    },
+  };
+
+  if (action.__kind === 'Swap') {
+    await prisma.swapRequest.create({
+      data: {
+        nativeId: BigInt(action.swapId),
+        srcAsset: 'Btc',
+        destAsset: 'Flip',
+        originType: 'VAULT',
+        requestType: 'LEGACY_SWAP',
+        depositAmount: '1000000',
+        swapRequestedAt: new Date('2023-01-01T00:00:00.000Z'),
+      },
+    });
+  }
+
+  return {
     block: {
       height: 120,
       timestamp: 1670337105000,
+      hash: '0x123',
+      specId: 'test@150',
     },
-    eventContext: {
-      kind: 'event',
-      event: {
-        args: {
-          asset: {
-            __kind: 'Btc',
-          },
-          amounts: amounts ?? [[5, '1000000']],
-          prewitnessedDepositId: '101',
-          channelId: channelId ?? '1',
-          ingressFee: '1000',
-          boostFee: '500',
-          action: action ?? { __kind: 'Swap', swapId: '1' },
-        },
-        name: 'BitcoinIngressEgress.DepositBoosted',
-        indexInBlock: 7,
-      },
+    event: {
+      args,
+      name: 'BitcoinIngressEgress.DepositBoosted',
+      indexInBlock: 7,
     },
-  }) as const;
+  } as const;
+};
 
 describe('depositBoosted', () => {
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "private"."DepositChannel" CASCADE`;
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "SwapRequest" CASCADE`;
   });
 
   it('updates the values for an existing swap', async () => {
-    const swapDepositChannel = await createBtcSwapDepositChannel({});
-    const eventData = depositBoostedBtcMock({ amounts: [[5, '1000000']] }) as any;
-    const event = eventData.eventContext.event as any;
-    const block = eventData.block as any;
+    const { event, block } = await depositBoostedBtcMock({ amounts: [[5, '1000000']] });
 
-    await prisma.$transaction(async (txClient) => {
-      await depositBoosted({
-        prisma: txClient,
-        event,
-        block,
-      });
+    await depositBoosted({ prisma, event, block });
+
+    const request = await prisma.swapRequest.findFirstOrThrow({
+      include: { fees: { select: { asset: true, amount: true, type: true } } },
     });
 
-    const swap = await prisma.swap.findFirstOrThrow({
-      where: { swapDepositChannelId: swapDepositChannel.id },
-      include: { fees: true },
-    });
-
-    expect(swap.depositAmount.toString()).toBe('1000000');
-    expect(swap.effectiveBoostFeeBps).toBe(5);
-
-    expect(swap).toMatchSnapshot({
+    expect(request).toMatchSnapshot({
       id: expect.any(BigInt),
-      createdAt: expect.any(Date),
-      updatedAt: expect.any(Date),
-      swapDepositChannelId: expect.any(BigInt),
-      depositBoostedAt: expect.any(Date),
-      depositBoostedBlockIndex: expect.any(String),
-      fees: [
-        { id: expect.any(BigInt), swapId: expect.any(BigInt), type: 'BOOST' },
-        { id: expect.any(BigInt), swapId: expect.any(BigInt), type: 'INGRESS' },
-      ],
-    });
-  });
-
-  it('does nothing when the action is not a swap', async () => {
-    const swapDepositChannel = await createBtcSwapDepositChannel({});
-    const eventData = depositBoostedBtcMock({
-      amounts: [[5, '1000000']],
-      action: { __kind: 'LiquidityProvision', lpAccount: '0x123' },
-    }) as any;
-    const event = eventData.eventContext.event as any;
-    const block = eventData.block as any;
-
-    await prisma.$transaction(async (txClient) => {
-      await depositBoosted({
-        prisma: txClient,
-        event,
-        block,
-      });
-    });
-
-    const swap = await prisma.swap.findFirstOrThrow({
-      where: { swapDepositChannelId: swapDepositChannel.id },
-      include: { fees: true },
-    });
-
-    expect(swap.effectiveBoostFeeBps).toBeNull();
-
-    expect(swap).toMatchSnapshot({
-      id: expect.any(BigInt),
-      createdAt: expect.any(Date),
-      updatedAt: expect.any(Date),
-      swapDepositChannelId: expect.any(BigInt),
-      fees: [],
     });
   });
 });

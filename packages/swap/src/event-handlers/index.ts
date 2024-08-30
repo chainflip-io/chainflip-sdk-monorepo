@@ -1,31 +1,28 @@
 import type { Prisma } from '.prisma/client';
 import { Chains } from '@/shared/enums';
 import ccmDepositReceived from './ccmDepositReceived';
-import depositIgnored from './depositIgnored';
-import depositIgnoredV120 from './depositIgnoredV120';
 import liquidityDepositAddressReady from './liquidityDepositChannelReady';
 import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';
 import networkBroadcastAborted from './networkBroadcastAborted';
 import networkBroadcastSuccess from './networkBroadcastSuccess';
 import networkCcmBroadcastRequested from './networkCcmBroadcastRequested';
 import chainStateUpdated from './networkChainStateUpdated';
-import { networkDepositReceived } from './networkDepositReceived';
-import networkEgressScheduled from './networkEgressScheduled';
+import { networkDepositFinalised } from './networkDepositFinalised';
+import networkDepositIgnored from './networkDepositIgnored';
 import newPoolCreated from './newPoolCreated';
 import poolFeeSet from './poolFeeSet';
 import refundEgressIgnored from './refundEgressIgnored';
 import refundEgressScheduled from './refundEgressScheduled';
-import swapAmountTooLow from './swapAmountTooLow';
 import swapDepositAddressReady from './swapDepositAddressReady';
 import swapEgressIgnored from './swapEgressIgnored';
 import swapEgressScheduled from './swapEgressScheduled';
 import swapExecuted from './swapExecuted';
+import swapRequestCompleted from './swapRequestCompleted';
+import swapRequested from './swapRequested';
 import swapRescheduled from './swapRescheduled';
 import swapScheduled from './swapScheduled';
-import { networkDepositReceived as networkDepositReceivedV120 } from './v120/networkDepositReceived';
 import { boostPoolCreated } from './v140/boostPoolCreated';
 import { depositBoosted } from './v140/depositBoosted';
-import { depositFinalised } from './v140/depositFinalised';
 import { insufficientBoostLiquidity } from './v140/insufficientBoostLiquidity';
 import type { Block, Event } from '../gql/generated/graphql';
 import { buildHandlerMap, getDispatcher } from '../utils/handlers';
@@ -46,15 +43,14 @@ export const events = {
     RefundEgressIgnored: 'Swapping.RefundEgressIgnored',
     SwapEgressScheduled: 'Swapping.SwapEgressScheduled',
     RefundEgressScheduled: 'Swapping.RefundEgressScheduled',
-    SwapAmountTooLow: 'Swapping.SwapAmountTooLow',
     SwapDepositAddressReady: 'Swapping.SwapDepositAddressReady',
     CcmDepositReceived: 'Swapping.CcmDepositReceived',
+    SwapRequested: 'Swapping.SwapRequested',
+    SwapRequestCompleted: 'Swapping.SwapRequestCompleted',
   },
   BitcoinIngressEgress: {
-    EgressScheduled: 'BitcoinIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'BitcoinIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'BitcoinIngressEgress.CcmBroadcastRequested',
-    DepositReceived: 'BitcoinIngressEgress.DepositReceived', // Renamed to DepositFinalised since spec 140
     DepositFinalised: 'BitcoinIngressEgress.DepositFinalised',
     DepositIgnored: 'BitcoinIngressEgress.DepositIgnored',
     BoostPoolCreated: 'BitcoinIngressEgress.BoostPoolCreated',
@@ -62,10 +58,8 @@ export const events = {
     InsufficientBoostLiquidity: 'BitcoinIngressEgress.InsufficientBoostLiquidity',
   },
   EthereumIngressEgress: {
-    EgressScheduled: 'EthereumIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'EthereumIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'EthereumIngressEgress.CcmBroadcastRequested',
-    DepositReceived: 'EthereumIngressEgress.DepositReceived', // Renamed to DepositFinalised since spec 140
     DepositFinalised: 'EthereumIngressEgress.DepositFinalised',
     DepositIgnored: 'EthereumIngressEgress.DepositIgnored',
     BoostPoolCreated: 'EthereumIngressEgress.BoostPoolCreated',
@@ -73,10 +67,8 @@ export const events = {
     InsufficientBoostLiquidity: 'EthereumIngressEgress.InsufficientBoostLiquidity',
   },
   ArbitrumIngressEgress: {
-    EgressScheduled: 'ArbitrumIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'ArbitrumIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'ArbitrumIngressEgress.CcmBroadcastRequested',
-    DepositReceived: 'ArbitrumIngressEgress.DepositReceived', // Renamed to DepositFinalised since spec 140
     DepositFinalised: 'ArbitrumIngressEgress.DepositFinalised',
     DepositIgnored: 'ArbitrumIngressEgress.DepositIgnored',
     BoostPoolCreated: 'ArbitrumIngressEgress.BoostPoolCreated',
@@ -84,10 +76,8 @@ export const events = {
     InsufficientBoostLiquidity: 'ArbitrumIngressEgress.InsufficientBoostLiquidity',
   },
   PolkadotIngressEgress: {
-    EgressScheduled: 'PolkadotIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'PolkadotIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'PolkadotIngressEgress.CcmBroadcastRequested',
-    DepositReceived: 'PolkadotIngressEgress.DepositReceived', // Renamed to DepositFinalised since spec 140
     DepositFinalised: 'PolkadotIngressEgress.DepositFinalised',
     DepositIgnored: 'PolkadotIngressEgress.DepositIgnored',
     BoostPoolCreated: 'PolkadotIngressEgress.BoostPoolCreated',
@@ -95,10 +85,8 @@ export const events = {
     InsufficientBoostLiquidity: 'PolkadotIngressEgress.InsufficientBoostLiquidity',
   },
   SolanaIngressEgress: {
-    EgressScheduled: 'SolanaIngressEgress.EgressScheduled',
     BatchBroadcastRequested: 'SolanaIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'SolanaIngressEgress.CcmBroadcastRequested',
-    DepositReceived: 'PolkadotIngressEgress.DepositReceived', // Renamed to DepositFinalised since spec 140
     DepositFinalised: 'SolanaIngressEgress.DepositFinalised',
     DepositIgnored: 'SolanaIngressEgress.DepositIgnored',
     BoostPoolCreated: 'SolanaIngressEgress.BoostPoolCreated',
@@ -156,27 +144,11 @@ const handlers = [
     handlers: [
       { name: events.LiquidityPools.NewPoolCreated, handler: newPoolCreated },
       { name: events.LiquidityPools.PoolFeeSet, handler: poolFeeSet },
-      { name: events.Swapping.SwapScheduled, handler: swapScheduled },
-      { name: events.Swapping.SwapRescheduled, handler: swapRescheduled },
-      { name: events.Swapping.SwapExecuted, handler: swapExecuted },
-      { name: events.Swapping.SwapAmountTooLow, handler: swapAmountTooLow },
       {
         name: events.Swapping.CcmDepositReceived,
         handler: ccmDepositReceived,
       },
-      {
-        name: events.Swapping.SwapEgressScheduled,
-        handler: swapEgressScheduled,
-      },
-      {
-        name: events.Swapping.RefundEgressScheduled,
-        handler: refundEgressScheduled,
-      },
       ...Object.values(Chains).flatMap((chain) => [
-        {
-          name: events[`${chain}IngressEgress`].EgressScheduled,
-          handler: networkEgressScheduled,
-        },
         {
           name: events[`${chain}IngressEgress`].BatchBroadcastRequested,
           handler: networkBatchBroadcastRequested,
@@ -184,10 +156,6 @@ const handlers = [
         {
           name: events[`${chain}IngressEgress`].CcmBroadcastRequested,
           handler: networkCcmBroadcastRequested,
-        },
-        {
-          name: events[`${chain}IngressEgress`].DepositReceived,
-          handler: networkDepositReceived(chain),
         },
         {
           name: events[`${chain}Broadcaster`].BroadcastSuccess,
@@ -205,40 +173,29 @@ const handlers = [
     ],
   },
   {
-    spec: 114,
+    spec: 150,
     handlers: Object.values(Chains).flatMap((chain) => [
       {
-        name: events[`${chain}IngressEgress`].DepositIgnored,
-        handler: depositIgnored(chain),
+        name: events[`${chain}IngressEgress`].BoostPoolCreated,
+        handler: boostPoolCreated,
+      },
+      {
+        name: events[`${chain}IngressEgress`].InsufficientBoostLiquidity,
+        handler: insufficientBoostLiquidity,
       },
     ]),
   },
   {
-    spec: 120,
+    spec: 150,
     handlers: [
-      {
-        name: events.Swapping.SwapEgressIgnored,
-        handler: swapEgressIgnored,
-      },
-      ...Object.values(Chains).flatMap((chain) => [
-        {
-          name: events[`${chain}IngressEgress`].DepositIgnored,
-          handler: depositIgnoredV120(chain),
-        },
-        {
-          name: events[`${chain}IngressEgress`].DepositReceived,
-          handler: networkDepositReceivedV120,
-        },
-      ]),
-    ],
-  },
-  {
-    spec: 140,
-    handlers: [
-      {
-        name: events.Swapping.SwapDepositAddressReady,
-        handler: swapDepositAddressReady,
-      },
+      { name: events.Swapping.RefundEgressIgnored, handler: refundEgressIgnored },
+      { name: events.Swapping.RefundEgressScheduled, handler: refundEgressScheduled },
+      { name: events.Swapping.SwapRescheduled, handler: swapRescheduled },
+      { name: events.Swapping.SwapExecuted, handler: swapExecuted },
+      { name: events.Swapping.SwapScheduled, handler: swapScheduled },
+      { name: events.Swapping.SwapDepositAddressReady, handler: swapDepositAddressReady },
+      { name: events.Swapping.SwapEgressIgnored, handler: swapEgressIgnored },
+      { name: events.Swapping.SwapEgressScheduled, handler: swapEgressScheduled },
       {
         name: events.LiquidityProvider.LiquidityDepositAddressReady,
         handler: liquidityDepositAddressReady,
@@ -246,30 +203,24 @@ const handlers = [
       ...Object.values(Chains).flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].DepositFinalised,
-          handler: depositFinalised,
-        },
-        {
-          name: events[`${chain}IngressEgress`].BoostPoolCreated,
-          handler: boostPoolCreated,
+          handler: networkDepositFinalised,
         },
         {
           name: events[`${chain}IngressEgress`].DepositBoosted,
           handler: depositBoosted,
         },
         {
-          name: events[`${chain}IngressEgress`].InsufficientBoostLiquidity,
-          handler: insufficientBoostLiquidity,
+          name: events[`${chain}IngressEgress`].DepositIgnored,
+          handler: networkDepositIgnored(chain),
         },
       ]),
     ],
   },
   {
-    spec: 150,
+    spec: 160,
     handlers: [
-      {
-        name: events.Swapping.RefundEgressIgnored,
-        handler: refundEgressIgnored,
-      },
+      { name: events.Swapping.SwapRequested, handler: swapRequested },
+      { name: events.Swapping.SwapRequestCompleted, handler: swapRequestCompleted },
     ],
   },
 ];

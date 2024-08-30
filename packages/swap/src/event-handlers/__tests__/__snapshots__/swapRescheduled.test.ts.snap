@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`swapRescheduled increments the retry count 1`] = `
+{
+  "createdAt": Any<Date>,
+  "destAsset": "Eth",
+  "id": Any<BigInt>,
+  "intermediateAmount": null,
+  "latestSwapRescheduledAt": 2024-08-06T00:00:06.000Z,
+  "latestSwapRescheduledBlockIndex": "10-7",
+  "nativeId": 3n,
+  "retryCount": 1,
+  "srcAsset": "Btc",
+  "swapExecutedAt": null,
+  "swapExecutedBlockIndex": null,
+  "swapInputAmount": "990000000",
+  "swapOutputAmount": null,
+  "swapRequestId": Any<BigInt>,
+  "swapScheduledAt": 2024-08-06T00:00:00.000Z,
+  "swapScheduledBlockIndex": "1-1",
+  "type": "SWAP",
+  "updatedAt": Any<Date>,
+}
+`;

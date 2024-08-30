@@ -1,42 +1,48 @@
+import { swappingSwapEgressIgnored as schema150 } from '@chainflip/processor/150/swapping/swapEgressIgnored';
+import { swappingSwapEgressIgnored as schema160 } from '@chainflip/processor/160/swapping/swapEgressIgnored';
 import { z } from 'zod';
-import { u64, internalAssetEnum, u128, hexString } from '@/shared/parsers';
 import { getStateChainError } from './common';
 import { EventHandlerArgs } from './index';
 
-const swapEgressIgnoredArgs = z.object({
-  asset: internalAssetEnum,
-  amount: u128,
-  swapId: u64,
-  reason: z.object({
-    __kind: z.literal('Module'),
-    value: z.object({
-      error: hexString,
-      index: z.number(),
-    }),
-  }),
+const transformOldShape = ({ swapId, ...rest }: z.output<typeof schema150>) => ({
+  swapRequestId: swapId,
+  ...rest,
 });
 
-export type SwapDepositAddressReadyEvent = z.input<typeof swapEgressIgnoredArgs>;
+const swapEgressIgnoredArgs = z.union([schema160, schema150.transform(transformOldShape)]);
+
+export type SwapEgressIgnoredArgs = z.input<typeof swapEgressIgnoredArgs>;
 
 export default async function swapEgressIgnored({
   prisma,
   event,
   block,
 }: EventHandlerArgs): Promise<void> {
-  const { amount, swapId, reason } = swapEgressIgnoredArgs.parse(event.args);
+  const { amount, swapRequestId, reason } = swapEgressIgnoredArgs.parse(event.args);
 
-  const [failure, swap] = await Promise.all([
-    getStateChainError(prisma, block, reason.value),
-    prisma.swap.findUniqueOrThrow({ where: { nativeId: swapId } }),
-  ]);
+  const failure = await (reason.__kind === 'Module'
+    ? getStateChainError(prisma, block, reason.value)
+    : prisma.stateChainError.upsert({
+        where: {
+          specVersion_palletIndex_errorIndex: { specVersion: 0, palletIndex: 0, errorIndex: 0 },
+        },
+        create: {
+          specVersion: 0,
+          palletIndex: 0,
+          errorIndex: 0,
+          docs: 'Unknown error',
+          name: 'Unknown error',
+        },
+        update: {},
+      }));
 
   await prisma.ignoredEgress.create({
     data: {
-      swapId: swap.id,
       ignoredAt: new Date(block.timestamp),
       ignoredBlockIndex: `${block.height}-${event.indexInBlock}`,
       amount: amount.toString(),
-      stateChainErrorId: failure.id,
+      stateChainError: { connect: { id: failure.id } },
+      swapRequest: { connect: { nativeId: swapRequestId } },
       type: 'SWAP',
     },
   });

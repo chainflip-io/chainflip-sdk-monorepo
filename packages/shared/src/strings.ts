@@ -17,3 +17,18 @@ export const screamingSnakeToPascalCase = <const T extends string>(value: T) =>
     .split('_')
     .map((word) => `${word[0].toUpperCase()}${word.slice(1).toLowerCase()}`)
     .join('') as ScreamingSnakeCaseToPascalCase<T>;
+
+type RemoveLeadingUnderscore<T> = T extends `_${infer U}` ? U : T;
+
+type InjectUnderscores<S extends string> = S extends `${infer T}${infer U}`
+  ? `${T extends Capitalize<T> ? '_' : ''}${Uppercase<T>}${InjectUnderscores<U>}`
+  : Uppercase<S>;
+
+type PascalCaseToScreamingSnakeCase<T extends string> = RemoveLeadingUnderscore<
+  InjectUnderscores<T>
+>;
+
+export const pascalCaseToScreamingSnakeCase = <const T extends string>(value: T) =>
+  value
+    .replaceAll(/(?<=.)[A-Z]/g, (letter) => `_${letter}`)
+    .toUpperCase() as PascalCaseToScreamingSnakeCase<T>;

@@ -1,121 +1,141 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`batch swap flow handles all the events: broadcast 1`] = `
+exports[`batch swap flow handles all the events 1`] = `
 {
-  "abortedAt": null,
-  "abortedBlockIndex": null,
-  "chain": "Bitcoin",
-  "createdAt": Any<Date>,
-  "id": Any<BigInt>,
-  "nativeId": 5n,
-  "replacedById": null,
-  "requestedAt": 1970-01-01T00:00:06.000Z,
-  "requestedBlockIndex": "1-280",
-  "succeededAt": 1970-01-01T00:00:12.000Z,
-  "succeededBlockIndex": "2-296",
-  "transactionRef": null,
-  "type": "BATCH",
-  "updatedAt": Any<Date>,
-}
-`;
-
-exports[`batch swap flow handles all the events: egress 1`] = `
-{
-  "amount": "312780",
-  "broadcastId": Any<BigInt>,
-  "chain": "Bitcoin",
-  "createdAt": Any<Date>,
-  "id": Any<BigInt>,
-  "nativeId": 1n,
-  "scheduledAt": 1970-01-01T00:00:06.000Z,
-  "scheduledBlockIndex": "1-260",
-  "updatedAt": Any<Date>,
-}
-`;
-
-exports[`batch swap flow handles all the events: fee 0 1`] = `
-{
-  "amount": "1000",
-  "asset": "Eth",
-  "id": Any<BigInt>,
-  "swapId": Any<BigInt>,
-  "type": "INGRESS",
-}
-`;
-
-exports[`batch swap flow handles all the events: fee 1 1`] = `
-{
-  "amount": "991100",
-  "asset": "Usdc",
-  "id": Any<BigInt>,
-  "swapId": Any<BigInt>,
-  "type": "NETWORK",
-}
-`;
-
-exports[`batch swap flow handles all the events: fee 2 1`] = `
-{
-  "amount": "100000000000000",
-  "asset": "Eth",
-  "id": Any<BigInt>,
-  "swapId": Any<BigInt>,
-  "type": "LIQUIDITY",
-}
-`;
-
-exports[`batch swap flow handles all the events: fee 3 1`] = `
-{
-  "amount": "1485163",
-  "asset": "Usdc",
-  "id": Any<BigInt>,
-  "swapId": Any<BigInt>,
-  "type": "LIQUIDITY",
-}
-`;
-
-exports[`batch swap flow handles all the events: fee 4 1`] = `
-{
-  "amount": "349476",
-  "asset": "Btc",
-  "id": Any<BigInt>,
-  "swapId": Any<BigInt>,
-  "type": "EGRESS",
-}
-`;
-
-exports[`batch swap flow handles all the events: swap 1`] = `
-{
-  "ccmDepositReceivedBlockIndex": null,
+  "brokerCommissionBps": 100,
   "ccmGasBudget": null,
   "ccmMessage": null,
+  "channelId": 49n,
   "createdAt": Any<Date>,
-  "depositAmount": "100000000010000000",
-  "depositBoostedAt": null,
-  "depositBoostedBlockIndex": null,
-  "depositReceivedAt": 1970-01-01T00:00:06.000Z,
-  "depositReceivedBlockIndex": "1-20",
-  "depositTransactionRef": null,
-  "destAddress": "mp3QSoPN2iLKrEhdz9Qb9DSJQAuNwDDa77",
-  "destAsset": "Btc",
-  "effectiveBoostFeeBps": null,
-  "egressId": Any<BigInt>,
+  "depositAddress": "0xe89e5fe04b8db0f5b3cd87295fd8331260d656f2",
+  "destAddress": "7RmHjikNqaPWAr5QrqHaJowxg18gZ8dx1nMmqeGMjSdr",
+  "destAsset": "Sol",
+  "estimatedExpiryAt": 1970-01-01T00:17:24.000Z,
+  "expectedDepositAmount": null,
+  "expiryBlock": null,
+  "fokMinPriceX128": null,
+  "fokRefundAddress": null,
+  "fokRetryDurationBlocks": null,
   "id": Any<BigInt>,
-  "intermediateAmount": "990109107",
-  "latestSwapRescheduledAt": null,
-  "latestSwapRescheduledBlockIndex": null,
-  "nativeId": 1n,
-  "prewitnessedDepositId": null,
-  "refundEgressId": null,
-  "retryCount": 0,
-  "srcAsset": "Eth",
-  "swapDepositChannelId": Any<BigInt>,
-  "swapExecutedAt": 1970-01-01T00:00:06.000Z,
-  "swapExecutedBlockIndex": "1-250",
-  "swapInputAmount": "100000000000000000",
-  "swapOutputAmount": "662256",
-  "swapScheduledAt": 1970-01-01T00:00:06.000Z,
-  "swapScheduledBlockIndex": "1-20",
-  "type": "SWAP",
-  "updatedAt": Any<Date>,
+  "isExpired": false,
+  "issuedBlock": 86,
+  "maxBoostFeeBps": 0,
+  "openedThroughBackend": false,
+  "openingFeePaid": "0",
+  "srcAsset": "Flip",
+  "srcChain": "Ethereum",
+  "srcChainExpiryBlock": 265n,
+  "swapRequests": [
+    {
+      "ccmDepositReceivedBlockIndex": null,
+      "ccmGasBudget": null,
+      "ccmMessage": null,
+      "completedAt": 1970-01-01T00:09:24.000Z,
+      "completedBlockIndex": "94-385",
+      "depositAmount": "500000000000000000000",
+      "depositBoostedAt": null,
+      "depositBoostedBlockIndex": null,
+      "depositReceivedAt": 1970-01-01T00:09:12.000Z,
+      "depositReceivedBlockIndex": "92-140",
+      "depositTransactionRef": "0xa38f5b782542360b97895e216a4f09ce21f0f28e50575381794f84da5891fa81",
+      "destAddress": "7RmHjikNqaPWAr5QrqHaJowxg18gZ8dx1nMmqeGMjSdr",
+      "destAsset": "Sol",
+      "effectiveBoostFeeBps": null,
+      "egress": {
+        "amount": "162665748156",
+        "broadcast": {
+          "abortedAt": null,
+          "abortedBlockIndex": null,
+          "chain": "Solana",
+          "createdAt": Any<Date>,
+          "id": Any<BigInt>,
+          "nativeId": 36n,
+          "replacedById": null,
+          "requestedAt": 1970-01-01T00:11:00.000Z,
+          "requestedBlockIndex": "110-119",
+          "succeededAt": 1970-01-01T00:12:24.000Z,
+          "succeededBlockIndex": "124-21",
+          "transactionRef": "0x2bafbe8a6fc4b8fc6a7d9ee3d6e98df78211eac79a0e31bda5d44a58ea5c63d746c60eecd6b771d949282352d15f98c072deac328bc38dd758605ca72711d10c",
+          "type": "BATCH",
+          "updatedAt": Any<Date>,
+        },
+        "broadcastId": Any<BigInt>,
+        "chain": "Solana",
+        "createdAt": Any<Date>,
+        "id": Any<BigInt>,
+        "nativeId": 31n,
+        "scheduledAt": 1970-01-01T00:09:24.000Z,
+        "scheduledBlockIndex": "94-384",
+        "updatedAt": Any<Date>,
+      },
+      "egressId": Any<BigInt>,
+      "fees": [
+        {
+          "amount": "7984700546373484",
+          "asset": "Flip",
+          "type": "INGRESS",
+        },
+        {
+          "amount": "5000",
+          "asset": "Sol",
+          "type": "EGRESS",
+        },
+      ],
+      "id": Any<BigInt>,
+      "nativeId": 287n,
+      "originType": "DEPOSIT_CHANNEL",
+      "prewitnessedDepositId": null,
+      "refundEgressId": null,
+      "requestType": "REGULAR",
+      "srcAddress": null,
+      "srcAsset": "Flip",
+      "swapDepositChannelId": Any<BigInt>,
+      "swapRequestedAt": 1970-01-01T00:09:12.000Z,
+      "swaps": [
+        {
+          "createdAt": Any<Date>,
+          "destAsset": "Sol",
+          "fees": [
+            {
+              "amount": "4802585",
+              "asset": "Usdc",
+              "type": "NETWORK",
+            },
+            {
+              "amount": "9999840305989072",
+              "asset": "Flip",
+              "type": "LIQUIDITY",
+            },
+            {
+              "amount": "94996",
+              "asset": "Usdc",
+              "type": "LIQUIDITY",
+            },
+            {
+              "amount": "47977823",
+              "asset": "Flip",
+              "type": "BROKER",
+            },
+          ],
+          "id": Any<BigInt>,
+          "intermediateAmount": "4749804473",
+          "latestSwapRescheduledAt": null,
+          "latestSwapRescheduledBlockIndex": null,
+          "nativeId": 342n,
+          "retryCount": 0,
+          "srcAsset": "Flip",
+          "swapExecutedAt": 1970-01-01T00:09:24.000Z,
+          "swapExecutedBlockIndex": "94-383",
+          "swapInputAmount": "499992015299453626516",
+          "swapOutputAmount": "162665753156",
+          "swapRequestId": Any<BigInt>,
+          "swapScheduledAt": 1970-01-01T00:09:12.000Z,
+          "swapScheduledBlockIndex": "92-139",
+          "type": "SWAP",
+          "updatedAt": Any<Date>,
+        },
+      ],
+    },
+  ],
 }
 `;

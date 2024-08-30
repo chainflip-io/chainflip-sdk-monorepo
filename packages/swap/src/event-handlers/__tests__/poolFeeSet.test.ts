@@ -9,8 +9,7 @@ describe(newPoolCreated, () => {
   });
 
   it('updates the pool fee correctly', async () => {
-    const { block: newPoolBlock } = newPoolCreatedMock;
-    const { event: newPoolEvent } = newPoolCreatedMock.eventContext;
+    const { block: newPoolBlock, event: newPoolEvent } = newPoolCreatedMock;
 
     await prisma.$transaction((tx) =>
       newPoolCreated({
@@ -25,8 +24,7 @@ describe(newPoolCreated, () => {
       id: expect.any(Number),
     });
 
-    const { block: poolFeeSetBlock } = poolFeeSetMock;
-    const { event: poolFeeSetEvent } = poolFeeSetMock.eventContext;
+    const { block: poolFeeSetBlock, event: poolFeeSetEvent } = poolFeeSetMock;
 
     await prisma.$transaction((tx) =>
       poolFeeSet({

@@ -1,4 +1,3 @@
-import { swappingSwapDepositAddressReady as schema141 } from '@chainflip/processor/141/swapping/swapDepositAddressReady';
 import { swappingSwapDepositAddressReady as schema150 } from '@chainflip/processor/150/swapping/swapDepositAddressReady';
 import { swappingSwapDepositAddressReady as schema160 } from '@chainflip/processor/160/swapping/swapDepositAddressReady';
 import { z } from 'zod';
@@ -7,11 +6,10 @@ import { EventHandlerArgs } from './index';
 
 const swapDepositAddressReadyArgs = z.union([
   schema160,
-  schema150,
-  schema141.transform((args) => ({ ...args, refundParameters: undefined })),
+  schema150.transform((args) => ({ ...args, dcaParameters: null })),
 ]);
 
-export type SwapDepositAddressReadyEvent = z.input<typeof swapDepositAddressReadyArgs>;
+export type SwapDepositAddressReadyArgs = z.input<typeof swapDepositAddressReadyArgs>;
 
 export const swapDepositAddressReady = async ({
   prisma,
@@ -33,7 +31,8 @@ export const swapDepositAddressReady = async ({
     channelOpeningFee,
     affiliateFees,
     refundParameters,
-    ...rest
+    // TODO(dca)
+    // dcaParameters,
   } = swapDepositAddressReadyArgs.parse(event.args);
 
   const chainInfo = await prisma.chainTracking.findFirst({
@@ -62,7 +61,7 @@ export const swapDepositAddressReady = async ({
     fokMinPriceX128: refundParameters?.minPrice.toString(),
     fokRefundAddress: refundParameters?.refundAddress.address,
     fokRetryDurationBlocks: refundParameters?.retryDuration,
-    ...rest,
+    createdAt: new Date(block.timestamp),
   };
 
   await Promise.all([

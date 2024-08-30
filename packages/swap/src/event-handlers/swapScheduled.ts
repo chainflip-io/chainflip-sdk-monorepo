@@ -1,117 +1,106 @@
-// Set the column in the DB to the block timestamp and the deposit amount.
+import { swappingSwapScheduled as schema150 } from '@chainflip/processor/150/swapping/swapScheduled';
+import { swappingSwapScheduled as schema160 } from '@chainflip/processor/160/swapping/swapScheduled';
 import { z } from 'zod';
-import { internalAssetEnum, u128, u64, swapType as swapTypeSchema } from '@/shared/parsers';
-import { encodedAddress } from './common';
-import logger from '../utils/logger';
+import { parseSpecNumber } from './common';
+import { getOriginInfo } from './swapRequested';
 import type { EventHandlerArgs } from '.';
 
-const depositChannelSwapOrigin = z.object({
-  __kind: z.literal('DepositChannel'),
-  channelId: u64,
-  depositAddress: encodedAddress,
-  depositBlockHeight: u64,
-});
+const allSchemas = z.union([schema160, schema150]);
 
-const vaultSwapOrigin = z.object({
-  __kind: z.literal('Vault'),
-  txHash: z.string(),
-});
+export type SwapScheduledArgs = z.input<typeof allSchemas>;
+export type SwapScheduled150Args = z.input<typeof schema150>;
 
-const swapScheduledArgs = z
-  .object({
-    swapId: u64,
-    sourceAsset: internalAssetEnum,
-    depositAmount: u128,
-    destinationAsset: internalAssetEnum,
-    destinationAddress: encodedAddress,
-    origin: z.union([depositChannelSwapOrigin, vaultSwapOrigin]),
-    swapType: swapTypeSchema,
-    // < v1.4.0
-    brokerCommission: u128.nullish(),
-    // >= v1.4.0
-    brokerFee: u128.nullish(),
-  })
-  .transform(({ brokerCommission, brokerFee, ...rest }) => ({
-    ...rest,
-    brokerFee: brokerFee ?? brokerCommission ?? 0n,
-  }));
+const preRefactorSchema = schema150;
 
-export type SwapScheduledEvent = z.input<typeof swapScheduledArgs>;
+const swapTypeMap = {
+  CcmGas: 'GAS',
+  CcmPrincipal: 'PRINCIPAL',
+  Swap: 'SWAP',
+  NetworkFee: 'NETWORK_FEE',
+  IngressEgressFee: 'INGRESS_EGRESS_FEE',
+} as const;
 
 export default async function swapScheduled({
   prisma,
   block,
   event,
 }: EventHandlerArgs): Promise<void> {
-  const {
-    swapId,
-    sourceAsset,
-    depositAmount,
-    destinationAsset,
-    destinationAddress,
-    origin,
-    swapType,
-    brokerFee,
-  } = swapScheduledArgs.parse(event.args);
+  let swapId;
+  let swapRequestId;
+  let inputAmount;
+  let swapType;
 
-  const newSwapData = {
-    depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
-    depositAmount: depositAmount.toString(),
-    swapInputAmount: (depositAmount - brokerFee).toString(),
-    nativeId: swapId,
-    depositReceivedAt: new Date(block.timestamp),
-    swapScheduledAt: new Date(block.timestamp),
-    swapScheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
-    fees: brokerFee
-      ? {
-          create: {
-            type: 'BROKER' as const,
-            asset: sourceAsset,
-            amount: brokerFee.toString(),
-          },
-        }
-      : undefined,
-  };
+  const spec = parseSpecNumber(block.specId);
 
-  if (origin.__kind === 'DepositChannel') {
-    const depositAddress = origin.depositAddress.address;
+  let swapRequest;
+  if (spec < 160) {
+    const {
+      depositAmount,
+      sourceAsset,
+      destinationAddress,
+      destinationAsset,
+      origin,
+      brokerCommission,
+      brokerFee,
+      ...rest
+    } = preRefactorSchema.parse(event.args);
 
-    const channel = await prisma.swapDepositChannel.findFirst({
-      where: {
-        srcAsset: sourceAsset,
-        depositAddress,
-        srcChainExpiryBlock: { gte: origin.depositBlockHeight },
-      },
-      orderBy: { issuedBlock: 'desc' },
-    });
+    ({
+      swapId,
+      swapId: swapRequestId,
+      swapType: { __kind: swapType },
+    } = rest);
 
-    if (!channel) {
-      logger.info(
-        `SwapScheduled: SwapDepositChannel not found for depositAddress ${depositAddress}`,
-      );
-      return;
-    }
+    const brokerFeeOrCommission = brokerFee ?? brokerCommission ?? 0n;
+    inputAmount = depositAmount - brokerFeeOrCommission;
 
-    await prisma.swap.create({
+    const { originType, depositTransactionRef, swapDepositChannelId } = await getOriginInfo(
+      prisma,
+      sourceAsset,
+      origin,
+    );
+
+    swapRequest = await prisma.swapRequest.create({
       data: {
-        type: swapType.type,
-        swapDepositChannelId: channel.id,
+        nativeId: swapRequestId,
+        originType,
+        depositTransactionRef,
+        swapDepositChannelId,
         srcAsset: sourceAsset,
         destAsset: destinationAsset,
+        depositAmount: depositAmount.toString(),
+        requestType: 'LEGACY_SWAP',
         destAddress: destinationAddress.address,
-        ...newSwapData,
+        swapRequestedAt: new Date(block.timestamp),
+        fees: brokerFeeOrCommission
+          ? {
+              create: {
+                type: 'BROKER' as const,
+                asset: sourceAsset,
+                amount: brokerFeeOrCommission.toString(),
+              },
+            }
+          : undefined,
       },
     });
-  } else if (origin.__kind === 'Vault') {
-    await prisma.swap.create({
-      data: {
-        type: swapType.type,
-        srcAsset: sourceAsset,
-        destAsset: destinationAsset,
-        destAddress: destinationAddress.address,
-        depositTransactionRef: origin.txHash,
-        ...newSwapData,
-      },
+  } else {
+    ({ swapId, swapRequestId, inputAmount, swapType } = schema160.parse(event.args));
+
+    swapRequest = await prisma.swapRequest.findUniqueOrThrow({
+      where: { nativeId: swapRequestId },
     });
   }
+
+  await prisma.swap.create({
+    data: {
+      swapRequestId: swapRequest.id,
+      swapInputAmount: inputAmount.toString(),
+      srcAsset: swapRequest.srcAsset,
+      destAsset: swapRequest.destAsset,
+      nativeId: swapId,
+      type: swapTypeMap[swapType],
+      swapScheduledAt: new Date(block.timestamp),
+      swapScheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
+    },
+  });
 }

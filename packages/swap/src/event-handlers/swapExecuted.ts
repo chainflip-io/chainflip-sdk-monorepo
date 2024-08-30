@@ -1,84 +1,108 @@
+import { swappingSwapExecuted as schema150 } from '@chainflip/processor/150/swapping/swapExecuted';
+import { swappingSwapExecuted as schema160 } from '@chainflip/processor/160/swapping/swapExecuted';
 import { z } from 'zod';
 import { getInternalAsset } from '@/shared/enums';
-import { internalAssetEnum, u128, u64 } from '@/shared/parsers';
 import { calculateIncludedSwapFees } from '@/swap/utils/fees';
 import type { EventHandlerArgs } from '.';
 
-export const swapTypeEnum = z
-  .union([
-    z.object({ __kind: z.literal('Swap') }),
-    z.object({ __kind: z.literal('CcmPrincipal') }),
-    z.object({ __kind: z.literal('CcmGas') }),
-    z.object({ __kind: z.literal('NetworkFee') }),
-    z.object({ __kind: z.literal('IngressEgressFee') }),
-  ])
-  .transform(({ __kind }) => __kind);
+const transformOldShape = ({
+  swapId,
+  swapOutput,
+  swapInput,
+  swapType,
+  ...rest
+}: z.output<typeof schema150>) => ({
+  swapRequestId: swapId,
+  swapId,
+  outputAmount: swapOutput,
+  inputAmount: swapInput,
+  swapType: swapType.__kind,
+  networkFee: undefined,
+  isLegacy: true,
+  brokerFee: null,
+  ...rest,
+});
 
-const swapExecutedArgs = z.intersection(
-  z.object({
-    swapId: u64,
-    intermediateAmount: u128.optional(),
-    destinationAsset: internalAssetEnum,
-    sourceAsset: internalAssetEnum,
-    // >= v1.4.0
-    swapType: swapTypeEnum.optional(),
-  }),
-  z.union([
-    // before v1.2.0
-    z
-      .object({ egressAmount: u128 })
-      .transform(({ egressAmount }) => ({ swapOutput: egressAmount })),
-    // after v1.2.0
-    z.object({ swapOutput: u128 }),
-  ]),
-);
+const swapExecutedArgs = z.union([
+  schema160.transform((args) => ({ ...args, swapType: undefined, isLegacy: false })),
+  schema150.transform(transformOldShape),
+]);
 
-export type SwapExecutedEvent = z.input<typeof swapExecutedArgs>;
+export type SwapExecutedArgs = z.input<typeof swapExecutedArgs>;
+export type SwapExecuted160Args = z.input<typeof schema160>;
 
 export default async function swapExecuted({
   prisma,
   block,
   event,
 }: EventHandlerArgs): Promise<void> {
-  const { swapId, intermediateAmount, swapOutput, swapType } = swapExecutedArgs.parse(event.args);
+  const {
+    swapId,
+    swapRequestId,
+    inputAmount,
+    intermediateAmount,
+    outputAmount,
+    swapType,
+    networkFee,
+    isLegacy,
+    brokerFee,
+  } = swapExecutedArgs.parse(event.args);
+
   const swap = await prisma.swap.findUnique({
     where: { nativeId: swapId },
   });
 
-  // Some internal swaps do not emit a `SwapScheduled` event. This means that a swap entry will not exist in the db yet.
+  // Some internal swaps did not emit a `SwapScheduled` event. This means that a
+  // swap entry will not exist in the db yet.
   if (!swap) {
-    if (swapType === 'IngressEgressFee' || swapType === 'NetworkFee') {
+    if (isLegacy && (swapType === 'IngressEgressFee' || swapType === 'NetworkFee')) {
       return;
     }
 
-    throw new Error(`swapExecuted: No existing swap entity for swap ${swapId}.`);
+    throw new Error(
+      `swapExecuted: No existing swap entity for swap "${swapId}", swapRequest "${swapRequestId}".`,
+    );
   }
 
-  const swapInputAmount = BigInt(swap.swapInputAmount.toFixed());
+  const fees = (
+    await calculateIncludedSwapFees(
+      swap.srcAsset,
+      swap.destAsset,
+      inputAmount,
+      intermediateAmount,
+      outputAmount,
+    )
+  ).map((fee) => ({ type: fee.type, asset: getInternalAsset(fee), amount: fee.amount }));
 
-  const fees = await calculateIncludedSwapFees(
-    swap.srcAsset,
-    swap.destAsset,
-    swapInputAmount,
-    intermediateAmount,
-    swapOutput,
-  );
+  // >= 1.6 we have a network fee on the event
+  if (networkFee) {
+    fees.find((fee) => fee.type === 'NETWORK')!.amount = networkFee.toString();
+  }
+
+  // >= 1.6 we have a broker fee on the event
+  if (brokerFee) {
+    fees.push({ type: 'BROKER', asset: swap.srcAsset, amount: brokerFee.toString() });
+  }
 
   await prisma.swap.update({
     where: { nativeId: swapId },
     data: {
-      swapInputAmount: swapInputAmount.toString(),
-      swapOutputAmount: swapOutput.toString(),
+      swapInputAmount: inputAmount.toString(),
+      swapOutputAmount: outputAmount.toString(),
       intermediateAmount: intermediateAmount?.toString(),
-      fees: {
-        create: fees.map((fee) => ({
-          type: fee.type,
-          asset: getInternalAsset(fee),
-          amount: fee.amount,
-        })),
-      },
+      fees: { create: fees },
       swapExecutedAt: new Date(block.timestamp),
       swapExecutedBlockIndex: `${block.height}-${event.indexInBlock}`,
+      swapRequest: isLegacy
+        ? {
+            update: {
+              data: {
+                completedAt: new Date(block.timestamp),
+                completedBlockIndex: `${block.height}-${event.indexInBlock}`,
+              },
+            },
+          }
+        : undefined,
     },
   });
 }

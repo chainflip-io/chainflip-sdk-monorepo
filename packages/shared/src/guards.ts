@@ -16,3 +16,7 @@ export function assert(condition: unknown, message: string): asserts condition {
 
   throw error;
 }
+
+export function assertNever(x: never, message: string): never {
+  throw new Error(message);
+}

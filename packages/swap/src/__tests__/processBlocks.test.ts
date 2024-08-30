@@ -1,12 +1,12 @@
 import { GraphQLClient } from 'graphql-request';
 import prisma from '../client';
-import { DOT_ADDRESS, swapScheduledDotDepositChannelMock } from '../event-handlers/__tests__/utils';
+import { DOT_ADDRESS } from '../event-handlers/__tests__/utils';
 import { GetBatchQuery } from '../gql/generated/graphql';
 import processBlocks from '../processBlocks';
 
 describe(processBlocks, () => {
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", private."State" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking", private."State" CASCADE`;
   });
 
   it('dispatches a SwapScheduled event', async () => {
@@ -39,11 +39,20 @@ describe(processBlocks, () => {
           nodes: [
             {
               height: 150,
-              timestamp: 1681989543437,
+              timestamp: '2024-08-26T00:00:00.000Z',
               hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
               specId: 'chainflip-node@0',
               events: {
-                nodes: [swapScheduledDotDepositChannelMock.eventContext.event],
+                nodes: [
+                  {
+                    name: 'BitcoinChainTracking.ChainStateUpdated',
+                    args: {
+                      newChainState: {
+                        blockHeight: 1000,
+                      },
+                    },
+                  },
+                ],
               },
             },
           ],
@@ -52,56 +61,13 @@ describe(processBlocks, () => {
       // terminate the loop
       .mockRejectedValue(Error('clean exit'));
 
-    await expect(processBlocks()).rejects.toThrowError('clean exit');
+    await expect(processBlocks()).rejects.toThrow('clean exit');
     expect(requestSpy).toHaveBeenCalledTimes(
       1 + // once successfully for the first block
         5, // five failures while we abort the loop
     );
-    const swaps = await prisma.swap.findMany();
-    expect(swaps).toHaveLength(1);
-    expect(swaps[0]).toMatchInlineSnapshot(
-      {
-        id: expect.any(BigInt),
-        swapDepositChannelId: expect.any(BigInt),
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date),
-      },
-      `
-      {
-        "ccmDepositReceivedBlockIndex": null,
-        "ccmGasBudget": null,
-        "ccmMessage": null,
-        "createdAt": Any<Date>,
-        "depositAmount": "125000000000",
-        "depositBoostedAt": null,
-        "depositBoostedBlockIndex": null,
-        "depositReceivedAt": 2023-04-20T11:19:03.437Z,
-        "depositReceivedBlockIndex": "150-0",
-        "depositTransactionRef": null,
-        "destAddress": "bcrt1pzjdpc799qa5f7m65hpr66880res5ac3lr6y2chc4jsa",
-        "destAsset": "Btc",
-        "effectiveBoostFeeBps": null,
-        "egressId": null,
-        "id": Any<BigInt>,
-        "intermediateAmount": null,
-        "latestSwapRescheduledAt": null,
-        "latestSwapRescheduledBlockIndex": null,
-        "nativeId": 1n,
-        "prewitnessedDepositId": null,
-        "refundEgressId": null,
-        "retryCount": 0,
-        "srcAsset": "Dot",
-        "swapDepositChannelId": Any<BigInt>,
-        "swapExecutedAt": null,
-        "swapExecutedBlockIndex": null,
-        "swapInputAmount": "125000000000",
-        "swapOutputAmount": null,
-        "swapScheduledAt": 2023-04-20T11:19:03.437Z,
-        "swapScheduledBlockIndex": "150-0",
-        "type": "SWAP",
-        "updatedAt": Any<Date>,
-      }
-    `,
-    );
+    const trackings = await prisma.chainTracking.findMany();
+    expect(trackings).toHaveLength(1);
+    expect(trackings[0]).toMatchSnapshot({ id: expect.any(Number), updatedAt: expect.any(Date) });
   });
 });

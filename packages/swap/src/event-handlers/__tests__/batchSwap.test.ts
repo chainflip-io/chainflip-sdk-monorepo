@@ -1,200 +1,218 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-import { GraphQLClient } from 'graphql-request';
-import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
+import { processEvents } from './utils';
 import prisma from '../../client';
-import { Event } from '../../gql/generated/graphql';
-import processBlocks from '../../processBlocks';
-import { DepositReceivedArgs } from '../networkDepositReceived';
-import { SwapDepositAddressReadyEvent } from '../swapDepositAddressReady';
-import { SwapScheduledEvent } from '../swapScheduled';
-
-jest.mock('graphql-request', () => ({
-  GraphQLClient: class MockClient {
-    request() {}
-  },
-}));
-
-mockRpcResponse({
-  data: environment({ egressFee: '0x55524' }),
-});
-
-const swapDepositAddressReadyEvent = {
-  id: '0000000000-000358-8c2f5',
-  blockId: '0000000000-8c2f5',
-  indexInBlock: 358,
-  extrinsicId: '0000000000-000179-8c2f5',
-  callId: '0000000000-000179-8c2f5',
-  name: 'Swapping.SwapDepositAddressReady',
-  args: {
-    channelId: '3',
-    sourceAsset: {
-      __kind: 'Eth',
-    },
-    depositAddress: {
-      value: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
-      __kind: 'Eth',
-    },
-    destinationAsset: {
-      __kind: 'Btc',
-    },
-    destinationAddress: {
-      value: '0x6d703351536f504e32694c4b724568647a3951623944534a5141754e774444613737',
-      __kind: 'Btc',
-    },
-    brokerCommissionRate: 0,
-    sourceChainExpiryBlock: '101',
-    boostFee: 0,
-    channelOpeningFee: 0,
-    affiliateFees: [],
-  } as SwapDepositAddressReadyEvent,
-} as const;
 
 const batchEvents = [
-  swapDepositAddressReadyEvent,
   {
-    id: '0000000001-000020-09d28',
-    blockId: '0000000001-09d28',
-    indexInBlock: 20,
-    extrinsicId: '0000000001-000008-09d28',
-    callId: '0000000001-000008-09d28',
-    name: 'Swapping.SwapScheduled',
+    id: '0000000031-000050-2d23a',
+    blockId: '0000000031-2d23a',
+    indexInBlock: 54,
+    extrinsicId: null,
+    callId: null,
+    name: 'LiquidityPools.NewPoolCreated',
+    args: {
+      baseAsset: { __kind: 'Flip' },
+      quoteAsset: { __kind: 'Usdc' },
+      initialPrice: '3402823669209384428752601088',
+      feeHundredthPips: 20,
+    },
+  },
+  {
+    id: '0000000031-000054-2d23a',
+    blockId: '0000000031-2d23a',
+    indexInBlock: 62,
+    extrinsicId: null,
+    callId: null,
+    name: 'LiquidityPools.NewPoolCreated',
+    args: {
+      baseAsset: { __kind: 'Sol' },
+      quoteAsset: { __kind: 'Usdc' },
+      initialPrice: '34028236692093848235284053891034906624',
+      feeHundredthPips: 20,
+    },
+  },
+  {
+    id: '0000000086-000023-f8e73',
+    blockId: '0000000086-f8e73',
+    indexInBlock: 23,
+    extrinsicId: '0000000086-000007-f8e73',
+    callId: '0000000086-000007-f8e73',
+    name: 'EthereumChainTracking.ChainStateUpdated',
+    args: {
+      newChainState: {
+        blockHeight: '221',
+        trackedData: {
+          baseFee: '7',
+          priorityFee: '1500000000',
+        },
+      },
+    },
+  },
+  {
+    id: '0000000086-000264-f8e73',
+    blockId: '0000000086-f8e73',
+    indexInBlock: 264,
+    extrinsicId: '0000000086-000067-f8e73',
+    callId: '0000000086-000067-f8e73',
+    name: 'Swapping.SwapDepositAddressReady',
+    args: {
+      boostFee: 0,
+      channelId: '49',
+      sourceAsset: { __kind: 'Flip' },
+      affiliateFees: [],
+      depositAddress: {
+        value: '0xe89e5fe04b8db0f5b3cd87295fd8331260d656f2',
+        __kind: 'Eth',
+      },
+      destinationAsset: { __kind: 'Sol' },
+      channelOpeningFee: '0',
+      destinationAddress: {
+        value: '0x5f7e2361d746df1d6e5248afb988c0f6ae4b0fa51b396bf7c5f1c2508e803c4d',
+        __kind: 'Sol',
+      },
+      brokerCommissionRate: 100,
+      sourceChainExpiryBlock: '265',
+    },
+  },
+  {
+    id: '0000000092-000138-77afe',
+    blockId: '0000000092-77afe',
+    indexInBlock: 138,
+    extrinsicId: '0000000092-000008-77afe',
+    callId: '0000000092-000008-77afe',
+    name: 'Swapping.SwapRequested',
     args: {
       origin: {
         __kind: 'DepositChannel',
-        channelId: '3',
-        depositAddress: {
-          value: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
-          __kind: 'Eth',
+        channelId: '49',
+        depositAddress: { value: '0xe89e5fe04b8db0f5b3cd87295fd8331260d656f2', __kind: 'Eth' },
+        depositBlockHeight: '222',
+      },
+      inputAsset: { __kind: 'Flip' },
+      inputAmount: '499992015299453626516',
+      outputAsset: { __kind: 'Sol' },
+      requestType: {
+        __kind: 'Regular',
+        outputAddress: {
+          value: '0x5f7e2361d746df1d6e5248afb988c0f6ae4b0fa51b396bf7c5f1c2508e803c4d',
+          __kind: 'Sol',
         },
-        depositBlockHeight: '100',
       },
-      swapId: '1',
-      sourceAsset: {
-        __kind: 'Eth',
-      },
-      depositAmount: '100000000000000000',
-      destinationAsset: {
-        __kind: 'Btc',
-      },
-      destinationAddress: {
-        value: '0x6d703351536f504e32694c4b724568647a3951623944534a5141754e774444613737',
-        __kind: 'Btc',
-      },
-      swapType: {
-        __kind: 'Swap',
-      },
-    } as SwapScheduledEvent,
+      swapRequestId: '287',
+    },
   },
   {
-    id: '0000000001-000020-09d28',
-    blockId: '0000000001-09d28',
-    indexInBlock: 30,
-    extrinsicId: '0000000001-000008-09d28',
-    callId: '0000000001-000008-09d28',
-    name: 'EthereumIngressEgress.DepositReceived',
+    id: '0000000092-000139-77afe',
+    blockId: '0000000092-77afe',
+    indexInBlock: 139,
+    extrinsicId: '0000000092-000008-77afe',
+    callId: '0000000092-000008-77afe',
+    name: 'Swapping.SwapScheduled',
     args: {
-      asset: { __kind: 'Eth' },
-      amount: '100000000010000000',
-      depositAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
-      ingressFee: '1000',
+      swapId: '342',
+      swapType: { __kind: 'Swap' },
+      executeAt: 94,
+      inputAmount: '499992015299453626516',
+      swapRequestId: '287',
+    },
+  },
+  {
+    id: '0000000092-000140-77afe',
+    blockId: '0000000092-77afe',
+    indexInBlock: 140,
+    extrinsicId: '0000000092-000008-77afe',
+    callId: '0000000092-000008-77afe',
+    name: 'EthereumIngressEgress.DepositFinalised',
+    args: {
+      asset: {
+        __kind: 'Flip',
+      },
       action: {
         __kind: 'Swap',
-        swapId: '1',
+        swapRequestId: '287',
       },
-    } as DepositReceivedArgs,
+      amount: '500000000000000000000',
+      channelId: '49',
+      ingressFee: '7984700546373484',
+      blockHeight: '222',
+      depositAddress: '0xe89e5fe04b8db0f5b3cd87295fd8331260d656f2',
+      depositDetails: {
+        txHashes: ['0xa38f5b782542360b97895e216a4f09ce21f0f28e50575381794f84da5891fa81'],
+      },
+    },
   },
   {
-    id: '0000000001-000250-09d28',
-    blockId: '0000000001-09d28',
-    indexInBlock: 250,
+    id: '0000000094-000383-75b12',
+    blockId: '0000000094-75b12',
+    indexInBlock: 383,
     extrinsicId: null,
     callId: null,
     name: 'Swapping.SwapExecuted',
     args: {
-      swapId: '1',
-      sourceAsset: {
-        __kind: 'Eth',
-      },
-      egressAmount: '662256',
-      depositAmount: '100000000000000000',
-      destinationAsset: {
-        __kind: 'Btc',
-      },
-      intermediateAmount: '990109107',
+      swapId: '342',
+      brokerFee: '47977823',
+      inputAsset: { __kind: 'Flip' },
+      networkFee: '4802585',
+      inputAmount: '499992015299453626516',
+      outputAsset: { __kind: 'Sol' },
+      outputAmount: '162665753156',
+      swapRequestId: '287',
+      intermediateAmount: '4749804473',
     },
   },
   {
-    id: '0000000001-000260-09d28',
-    blockId: '0000000001-09d28',
-    indexInBlock: 260,
-    extrinsicId: null,
-    callId: null,
-    name: 'BitcoinIngressEgress.EgressScheduled',
-    args: {
-      id: [{ __kind: 'Bitcoin' }, '1'],
-      asset: { __kind: 'Btc' },
-      amount: '662256',
-      destinationAddress: '0x6d703351536f504e32694c4b724568647a3951623944534a5141754e774444613737',
-    },
-  },
-  {
-    id: '0000000001-000270-09d28',
-    blockId: '0000000001-09d28',
-    indexInBlock: 270,
+    id: '0000000094-000384-75b12',
+    blockId: '0000000094-75b12',
+    indexInBlock: 384,
     extrinsicId: null,
     callId: null,
     name: 'Swapping.SwapEgressScheduled',
     args: {
-      asset: {
-        __kind: 'Btc',
-      },
-      amount: '662256',
-      swapId: '1',
-      egressId: [
-        {
-          __kind: 'Bitcoin',
-        },
-        '1',
-      ],
+      asset: { __kind: 'Sol' },
+      amount: '162665748156',
+      egressId: [{ __kind: 'Solana' }, '31'],
+      egressFee: '5000',
+      swapRequestId: '287',
     },
   },
   {
-    id: '0000000001-000280-09d28',
-    blockId: '0000000001-09d28',
-    indexInBlock: 280,
+    id: '0000000094-000385-75b12',
+    blockId: '0000000094-75b12',
+    indexInBlock: 385,
     extrinsicId: null,
     callId: null,
-    name: 'BitcoinIngressEgress.BatchBroadcastRequested',
+    name: 'Swapping.SwapRequestCompleted',
     args: {
-      egressIds: [
-        [
-          {
-            __kind: 'Bitcoin',
-          },
-          '1',
-        ],
-      ],
-      broadcastId: 5,
+      swapRequestId: '287',
     },
   },
   {
-    id: '0000000002-000296-f433b',
-    blockId: '0000000002-f433b',
-    indexInBlock: 296,
-    extrinsicId: '0000000002-000099-f433b',
-    callId: '0000000002-000099-f433b',
-    name: 'BitcoinBroadcaster.BroadcastSuccess',
+    id: '0000000110-000119-48635',
+    blockId: '0000000110-48635',
+    indexInBlock: 119,
+    extrinsicId: null,
+    callId: null,
+    name: 'SolanaIngressEgress.BatchBroadcastRequested',
     args: {
-      broadcastId: 5,
-      transactionOutId: '0xcafebabe',
+      egressIds: [[{ __kind: 'Solana' }, '31']],
+      broadcastId: 36,
     },
   },
-]
-  .sort((a, b) => (a.id < b.id ? -1 : 1))
-  .reduce((acc, event) => {
-    acc.set(event.blockId, (acc.get(event.blockId) || []).concat([event as Event]));
-    return acc;
-  }, new Map<string, Event[]>());
+  {
+    id: '0000000124-000021-b7537',
+    blockId: '0000000124-b7537',
+    indexInBlock: 21,
+    extrinsicId: null,
+    callId: null,
+    name: 'SolanaBroadcaster.BroadcastSuccess',
+    args: {
+      broadcastId: 36,
+      transactionRef:
+        '0x2bafbe8a6fc4b8fc6a7d9ee3d6e98df78211eac79a0e31bda5d44a58ea5c63d746c60eecd6b771d949282352d15f98c072deac328bc38dd758605ca72711d10c',
+      transactionOutId:
+        '0x2bafbe8a6fc4b8fc6a7d9ee3d6e98df78211eac79a0e31bda5d44a58ea5c63d746c60eecd6b771d949282352d15f98c072deac328bc38dd758605ca72711d10c',
+    },
+  },
+];
 
 describe('batch swap flow', () => {
   beforeAll(async () => {
@@ -217,95 +235,59 @@ describe('batch swap flow', () => {
   });
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel", "FailedSwap" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel", "FailedSwap", "SwapRequest", "Pool", "ChainTracking" CASCADE`;
   });
 
   it('handles all the events', async () => {
-    const startingHeight = Number(batchEvents.keys().next().value.split('-')[0]) - 1;
-    await prisma.state.upsert({
-      where: { id: 1 },
-      create: { id: 1, height: startingHeight },
-      update: { height: startingHeight },
+    await processEvents(batchEvents);
+
+    const fees = { select: { asset: true, amount: true, type: true } } as const;
+
+    const channel = await prisma.swapDepositChannel.findFirstOrThrow({
+      include: {
+        swapRequests: {
+          include: {
+            fees,
+            swaps: { include: { fees } },
+            egress: {
+              include: {
+                broadcast: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    const blocksIt = batchEvents.entries();
-
-    jest.spyOn(GraphQLClient.prototype, 'request').mockImplementation(async () => {
-      const batch = blocksIt.next();
-      if (batch.done) throw new Error('done');
-      const [blockId, events] = batch.value;
-      const height = Number(blockId.split('-')[0]);
-      await prisma.state.upsert({
-        where: { id: 1 },
-        create: { id: 1, height: height - 1 },
-        update: { height: height - 1 },
-      });
-
-      return {
-        blocks: {
-          nodes: [
+    expect(channel).toMatchSnapshot({
+      id: expect.any(BigInt),
+      createdAt: expect.any(Date),
+      swapRequests: [
+        {
+          id: expect.any(BigInt),
+          egressId: expect.any(BigInt),
+          swapDepositChannelId: expect.any(BigInt),
+          egress: {
+            id: expect.any(BigInt),
+            broadcastId: expect.any(BigInt),
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date),
+            broadcast: {
+              id: expect.any(BigInt),
+              createdAt: expect.any(Date),
+              updatedAt: expect.any(Date),
+            },
+          },
+          swaps: [
             {
-              height,
-              specId: 'test@120',
-              timestamp: new Date(height * 6000).toISOString(),
-              events: { nodes: events },
+              id: expect.any(BigInt),
+              swapRequestId: expect.any(BigInt),
+              createdAt: expect.any(Date),
+              updatedAt: expect.any(Date),
             },
           ],
         },
-      };
+      ],
     });
-
-    await expect(processBlocks()).rejects.toThrow('done');
-
-    const swaps = await prisma.swap.findMany({ include: { fees: true } });
-
-    expect(swaps).toHaveLength(1);
-
-    const [{ fees, ...swap }] = swaps;
-
-    expect(swap).toMatchSnapshot(
-      {
-        id: expect.any(BigInt),
-        swapDepositChannelId: expect.any(BigInt),
-        egressId: expect.any(BigInt),
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date),
-      },
-      'swap',
-    );
-
-    expect(fees).toHaveLength(5);
-    for (let i = 0; i < fees.length; i += 1) {
-      expect(fees[i]).toMatchSnapshot(
-        {
-          id: expect.any(BigInt),
-          swapId: expect.any(BigInt),
-        },
-        `fee ${i}`,
-      );
-    }
-
-    const egresses = await prisma.egress.findMany();
-    expect(egresses).toHaveLength(1);
-    expect(egresses[0]).toMatchSnapshot(
-      {
-        id: expect.any(BigInt),
-        broadcastId: expect.any(BigInt),
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date),
-      },
-      'egress',
-    );
-
-    const broadcasts = await prisma.broadcast.findMany();
-    expect(broadcasts).toHaveLength(1);
-    expect(broadcasts[0]).toMatchSnapshot(
-      {
-        id: expect.any(BigInt),
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date),
-      },
-      'broadcast',
-    );
   });
 });
