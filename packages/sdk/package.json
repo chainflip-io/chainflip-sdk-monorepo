@@ -53,7 +53,7 @@
   "dependencies": {
     "@chainflip/rpc": "^1.6.0",
     "@chainflip/utils": "^0.4.0",
-    "axios": "^1.6.8",
+    "axios": "^1.7.5",
     "ethers": "^6.13.2"
   },
   "devDependencies": {
