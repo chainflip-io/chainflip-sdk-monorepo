@@ -82,6 +82,8 @@ model SwapDepositChannel {
   fokMinPriceX128        Decimal?                      @db.Decimal(78, 0)
   fokRefundAddress       String?
   fokRetryDurationBlocks Int?
+  numberOfChunks         Int?                          @default(1)
+  chunkIntervalBlocks    Int?
   swapRequests           SwapRequest[]
 
   @@unique([issuedBlock, srcChain, channelId])

@@ -248,4 +248,46 @@ describe(swapDepositAddressReady, () => {
     );
     expect(swapDepositChannel.fokRetryDurationBlocks).toEqual(15);
   });
+
+  it('handles dcaParameters parameters', async () => {
+    await createChainTrackingInfo();
+    await swapDepositAddressReady({
+      prisma,
+      event: {
+        ...eventMock.event,
+        args: {
+          ...eventMock.event.args,
+          refundParameters: {
+            minPrice: '2041694201525630780780247644590609',
+            refundAddress: {
+              value: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
+              __kind: 'Eth',
+            },
+            retryDuration: 15,
+          },
+          dcaParameters: {
+            numberOfChunks: 100,
+            chunkInterval: 5,
+          },
+        },
+      },
+      block: eventMock.block,
+    });
+
+    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
+      where: {
+        channelId: BigInt(eventMock.event.args.channelId),
+      },
+    });
+
+    expect(swapDepositChannel.fokMinPriceX128?.toFixed()).toEqual(
+      '2041694201525630780780247644590609',
+    );
+    expect(swapDepositChannel.fokRefundAddress).toEqual(
+      '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
+    );
+    expect(swapDepositChannel.fokRetryDurationBlocks).toEqual(15);
+    expect(swapDepositChannel.numberOfChunks).toEqual(100);
+    expect(swapDepositChannel.chunkIntervalBlocks).toEqual(5);
+  });
 });
