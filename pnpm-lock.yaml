@@ -100,8 +100,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       '@chainflip/rpc':
-        specifier: ^1.6.0
-        version: 1.6.0
+        specifier: ^1.6.3
+        version: 1.6.3
       '@chainflip/utils':
         specifier: ^0.4.0
         version: 0.4.0
@@ -140,8 +140,8 @@ importers:
   packages/sdk:
     dependencies:
       '@chainflip/rpc':
-        specifier: ^1.6.0
-        version: 1.6.0
+        specifier: ^1.6.3
+        version: 1.6.3
       '@chainflip/utils':
         specifier: ^0.4.0
         version: 0.4.0
@@ -162,8 +162,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       '@chainflip/rpc':
-        specifier: ^1.6.0
-        version: 1.6.0
+        specifier: ^1.6.3
+        version: 1.6.3
       '@chainflip/solana':
         specifier: ^1.0.2
         version: 1.0.2
@@ -217,8 +217,8 @@ importers:
         specifier: ^1.5.6
         version: 1.5.6
       '@chainflip/rpc':
-        specifier: ^1.6.0
-        version: 1.6.0
+        specifier: ^1.6.3
+        version: 1.6.3
       '@chainflip/utils':
         specifier: ^0.4.0
         version: 0.4.0
@@ -745,8 +745,8 @@ packages:
   '@chainflip/processor@1.5.6':
     resolution: {integrity: sha512-6LnmpcAdmMjbdqiB5QOgsjF7iK6vT5ql3LiE3loDEPFA1NYSFTAPQWl9bgH7iL6Ipk6vV6v4u0nq2jeauqf0AA==}
 
-  '@chainflip/rpc@1.6.0':
-    resolution: {integrity: sha512-LQFOJ9i8xceR/t6jJXH1UUU602aPDl5TW23V1IUGCZDd21YyoMG8xmk/q8Ija9HF5g1WBTqrfzRpIjBsoSGPRQ==}
+  '@chainflip/rpc@1.6.3':
+    resolution: {integrity: sha512-R0xOsQ0npdREOTiXd30FCi6w8AtJPl+Jlqv9CARdK37Viyw6m54upWKsP1lMGt8zyjaoO99sMYesCwbru7vkYw==}
 
   '@chainflip/solana@1.0.2':
     resolution: {integrity: sha512-8M+z0yjVCZBMpdCTGuBRt/Ns9NBJCNFvnSOjDu/kyaBRvxdUvECJOIseL0ENLBd0J/YmO9TcrZ30M0po3a96BA==}
@@ -6207,11 +6207,11 @@ snapshots:
 
   '@chainflip/processor@1.5.6':
     dependencies:
-      '@chainflip/rpc': 1.6.0
+      '@chainflip/rpc': 1.6.3
       '@chainflip/utils': 0.3.0
       zod: 3.23.8
 
-  '@chainflip/rpc@1.6.0':
+  '@chainflip/rpc@1.6.3':
     dependencies:
       '@chainflip/utils': 0.3.0
       zod: 3.23.8
