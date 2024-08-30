@@ -1,4 +1,4 @@
-import { decodeAddress } from '@chainflip/bitcoin';
+import { encodeAddress } from '@chainflip/bitcoin';
 import { isValidSolanaAddress } from '@chainflip/solana';
 import * as base58 from '@chainflip/utils/base58';
 import { hexToBytes } from '@chainflip/utils/bytes';
@@ -8,7 +8,6 @@ import { HexString } from '@chainflip/utils/types';
 import assert from 'assert';
 import * as ethers from 'ethers';
 import { z, ZodErrorMap } from 'zod';
-import { encodeAddress } from './bitcoin';
 import {
   ChainflipNetwork,
   ChainflipNetworks,
@@ -175,12 +174,7 @@ export const bitcoinScriptPubKey = (network: ChainflipNetwork) =>
         throw new Error('OtherSegwit scriptPubKey not supported');
       }
 
-      try {
-        return decodeAddress(script.value, script.__kind, network);
-      } catch (err) {
-        if (script.__kind !== 'Taproot') throw err;
-        return encodeAddress(script.value, network);
-      }
+      return encodeAddress(script.value, script.__kind, network);
     });
 
 export const depositAddressSchema = (network: ChainflipNetwork) =>

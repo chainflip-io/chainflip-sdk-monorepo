@@ -2,7 +2,6 @@ import * as bitcoin from '@chainflip/bitcoin';
 import { isValidSolanaAddress } from '@chainflip/solana/address';
 import * as ss58 from '@chainflip/utils/ss58';
 import * as ethers from 'ethers';
-import { isValidSegwitAddressForNetwork } from '../bitcoin';
 import { Chain, ChainflipNetwork } from '../enums';
 import { assert } from '../guards';
 
@@ -19,23 +18,14 @@ export const validatePolkadotAddress: AddressValidator = (address) => {
 
 export const validateEvmAddress: AddressValidator = (address) => ethers.isAddress(address);
 
-const validateBitcoinAddressForNetwork =
-  (network: 'mainnet' | 'testnet' | 'regtest') => (address: string) => {
-    try {
-      return bitcoin.isValidAddressForNetwork(address, network);
-    } catch {
-      return isValidSegwitAddressForNetwork(address, network);
-    }
-  };
+export const validateBitcoinMainnetAddress: AddressValidator = (address: string) =>
+  bitcoin.isValidAddressForNetwork(address, 'mainnet');
 
-export const validateBitcoinMainnetAddress: AddressValidator =
-  validateBitcoinAddressForNetwork('mainnet');
+export const validateBitcoinTestnetAddress: AddressValidator = (address: string) =>
+  bitcoin.isValidAddressForNetwork(address, 'testnet');
 
-export const validateBitcoinTestnetAddress: AddressValidator =
-  validateBitcoinAddressForNetwork('testnet');
-
-export const validateBitcoinRegtestAddress: AddressValidator =
-  validateBitcoinAddressForNetwork('regtest');
+export const validateBitcoinRegtestAddress: AddressValidator = (address: string) =>
+  bitcoin.isValidAddressForNetwork(address, 'regtest');
 
 export const validateSolanaAddress = isValidSolanaAddress;
 

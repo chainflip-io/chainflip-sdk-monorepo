@@ -60,10 +60,5 @@
     "eslint-plugin-jest": "^28.5.0",
     "superjson": "^1.13.3",
     "zod": "^3.23.8"
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "bech32-buffer@0.2.1": "patches/bech32-buffer@0.2.1.patch"
-    }
   }
 }

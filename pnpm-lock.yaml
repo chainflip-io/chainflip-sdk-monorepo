@@ -4,11 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-patchedDependencies:
-  bech32-buffer@0.2.1:
-    hash: elryfzb6nrq4qzi6wcigmgsdj4
-    path: patches/bech32-buffer@0.2.1.patch
-
 importers:
 
   .:
@@ -102,8 +97,8 @@ importers:
   packages/cli:
     dependencies:
       '@chainflip/bitcoin':
-        specifier: ^0.2.2
-        version: 0.2.2
+        specifier: ^1.0.1
+        version: 1.0.1
       '@chainflip/rpc':
         specifier: ^1.6.0
         version: 1.6.0
@@ -131,7 +126,7 @@ importers:
         version: 17.0.33
       tsup:
         specifier: ^8.2.4
-        version: 8.2.4(@swc/core@1.7.10(@swc/helpers@0.5.12))(jiti@1.21.0)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.3.4)
+        version: 8.2.4(@swc/core@1.7.10(@swc/helpers@0.5.12))(jiti@1.21.0)(tsx@4.16.2)(typescript@5.5.4)
 
   packages/indexer/gateway:
     dependencies:
@@ -153,22 +148,19 @@ importers:
       axios:
         specifier: ^1.6.8
         version: 1.6.8
-      bech32-buffer:
-        specifier: ^0.2.1
-        version: 0.2.1(patch_hash=elryfzb6nrq4qzi6wcigmgsdj4)
       ethers:
         specifier: ^6.13.2
         version: 6.13.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     devDependencies:
       tsup:
         specifier: ^8.2.4
-        version: 8.2.4(@swc/core@1.7.10(@swc/helpers@0.5.12))(jiti@1.21.0)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.3.4)
+        version: 8.2.4(@swc/core@1.7.10(@swc/helpers@0.5.12))(jiti@1.21.0)(tsx@4.16.2)(typescript@5.5.4)
 
   packages/shared:
     dependencies:
       '@chainflip/bitcoin':
-        specifier: ^0.2.2
-        version: 0.2.2
+        specifier: ^1.0.1
+        version: 1.0.1
       '@chainflip/rpc':
         specifier: ^1.6.0
         version: 1.6.0
@@ -181,9 +173,6 @@ importers:
       axios:
         specifier: ^1.6.8
         version: 1.6.8
-      bech32-buffer:
-        specifier: ^0.2.1
-        version: 0.2.1(patch_hash=elryfzb6nrq4qzi6wcigmgsdj4)
       bignumber.js:
         specifier: ^9.1.2
         version: 9.1.2
@@ -750,8 +739,8 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@chainflip/bitcoin@0.2.2':
-    resolution: {integrity: sha512-45WfB9VTeAltbAz1GscDcYJISx3kUDY0e3R6a02X5+EbsMsZzaqyCeEFRWTvzsYeRewTB69VEHY5+7jJos7Q5g==}
+  '@chainflip/bitcoin@1.0.1':
+    resolution: {integrity: sha512-WAr4kzS4ZrQKQfCOEHO1dNCzmA3xrYftPQiJBkKCJUaDFe+TFCrT/2dM3VYv7fmIe4Mnq9r5IxDhQ7cQW15wlw==}
 
   '@chainflip/processor@1.5.6':
     resolution: {integrity: sha512-6LnmpcAdmMjbdqiB5QOgsjF7iK6vT5ql3LiE3loDEPFA1NYSFTAPQWl9bgH7iL6Ipk6vV6v4u0nq2jeauqf0AA==}
@@ -2419,10 +2408,6 @@ packages:
   base64id@2.0.0:
     resolution: {integrity: sha512-lGe34o6EHj9y3Kts9R4ZYs/Gr+6N7MCaMlIFA3F1R2O5/m7K06AxfSeO5530PEERE6/WyEg3lsuyw4GHlPZHog==}
     engines: {node: ^4.5.0 || >= 5.9}
-
-  bech32-buffer@0.2.1:
-    resolution: {integrity: sha512-fCG1TyZuCN48Sdw97p/IR39fvqpFlWDVpG7qnuU1Uc3+Xtc/0uqAp8U7bMW/bGuVF5CcNVIXwxQsWwUr6un6FQ==}
-    engines: {node: '>=8'}
 
   bech32@1.1.4:
     resolution: {integrity: sha512-s0IrSOzLlbvX7yp4WBfPITzpAU8sqQcpsmwXDiKwrG4r491vwCO/XpejasRNl0piBMe/DvP4Tz0mIS/X1DPJBQ==}
@@ -6221,7 +6206,10 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@chainflip/bitcoin@0.2.2': {}
+  '@chainflip/bitcoin@1.0.1':
+    dependencies:
+      '@chainflip/utils': 0.4.0
+      '@noble/hashes': 1.4.0
 
   '@chainflip/processor@1.5.6':
     dependencies:
@@ -8485,8 +8473,6 @@ snapshots:
   base64-js@1.5.1: {}
 
   base64id@2.0.0: {}
-
-  bech32-buffer@0.2.1(patch_hash=elryfzb6nrq4qzi6wcigmgsdj4): {}
 
   bech32@1.1.4: {}
 
@@ -11145,13 +11131,12 @@ snapshots:
 
   possible-typed-array-names@1.0.0: {}
 
-  postcss-load-config@6.0.1(jiti@1.21.0)(tsx@4.16.2)(yaml@2.3.4):
+  postcss-load-config@6.0.1(jiti@1.21.0)(tsx@4.16.2):
     dependencies:
       lilconfig: 3.1.2
     optionalDependencies:
       jiti: 1.21.0
       tsx: 4.16.2
-      yaml: 2.3.4
 
   postgraphile-core@4.13.0(graphql@15.8.0)(pg@8.11.5):
     dependencies:
@@ -11907,7 +11892,7 @@ snapshots:
 
   tslib@2.6.2: {}
 
-  tsup@8.2.4(@swc/core@1.7.10(@swc/helpers@0.5.12))(jiti@1.21.0)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.3.4):
+  tsup@8.2.4(@swc/core@1.7.10(@swc/helpers@0.5.12))(jiti@1.21.0)(tsx@4.16.2)(typescript@5.5.4):
     dependencies:
       bundle-require: 5.0.0(esbuild@0.23.0)
       cac: 6.7.14
@@ -11919,7 +11904,7 @@ snapshots:
       globby: 11.1.0
       joycon: 3.1.1
       picocolors: 1.0.1
-      postcss-load-config: 6.0.1(jiti@1.21.0)(tsx@4.16.2)(yaml@2.3.4)
+      postcss-load-config: 6.0.1(jiti@1.21.0)(tsx@4.16.2)
       resolve-from: 5.0.0
       rollup: 4.20.0
       source-map: 0.8.0-beta.0
