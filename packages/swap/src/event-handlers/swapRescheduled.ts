@@ -16,6 +16,13 @@ export default async function swapRescheduled({
 }: EventHandlerArgs): Promise<void> {
   const { swapId } = swapRescheduledArgs.parse(event.args);
 
+  const existingSwapCount = await prisma.swap.count({ where: { nativeId: swapId } });
+
+  if (existingSwapCount === 0) {
+    // internal swaps can get rescheduled now i guess
+    return;
+  }
+
   await prisma.swap.update({
     data: {
       latestSwapRescheduledAt: new Date(block.timestamp),
