@@ -20,7 +20,7 @@ describe('checkPriceWarning', () => {
       .mockResolvedValueOnce(3048) // eth price
       .mockResolvedValueOnce(51000); // btc price
 
-    const { lowLiquidityWarning, inputUsdValue } = await checkPriceWarning({
+    const lowLiquidityWarning = await checkPriceWarning({
       srcAsset,
       destAsset,
       srcAmount,
@@ -28,7 +28,6 @@ describe('checkPriceWarning', () => {
     });
 
     expect(lowLiquidityWarning).toBe(false);
-    expect(inputUsdValue).toBe('3048.00');
   });
 
   it('returns true when threshold is above 5%', async () => {
@@ -43,7 +42,7 @@ describe('checkPriceWarning', () => {
       .mockResolvedValueOnce(3048) // eth price
       .mockResolvedValueOnce(51000); // btc price
 
-    const { lowLiquidityWarning, inputUsdValue } = await checkPriceWarning({
+    const lowLiquidityWarning = await checkPriceWarning({
       srcAsset,
       destAsset,
       srcAmount,
@@ -51,6 +50,5 @@ describe('checkPriceWarning', () => {
     });
 
     expect(lowLiquidityWarning).toBe(true);
-    expect(inputUsdValue).toBe('3048.00');
   });
 });

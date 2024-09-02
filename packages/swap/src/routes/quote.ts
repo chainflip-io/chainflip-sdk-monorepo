@@ -6,6 +6,7 @@ import { quoteQuerySchema } from '@/shared/schemas';
 import { asyncHandler } from './common';
 import env from '../config/env';
 import { getBoostSafeMode } from '../polkadot/api';
+import { getUsdValue } from '../pricing/checkPriceWarning';
 import Quoter from '../quoting/Quoter';
 import { getBoostFeeBpsForAmount } from '../utils/boost';
 import getPoolQuote from '../utils/getPoolQuote';
@@ -108,7 +109,6 @@ const quoteRouter = (io: Server) => {
       }
 
       let limitOrdersReceived;
-      let usdValue;
       try {
         const [limitOrders, estimatedBoostFeeBps, pools] = await Promise.all([
           quoter.getLimitOrders(srcAsset, destAsset, amount),
@@ -128,12 +128,11 @@ const quoteRouter = (io: Server) => {
           pools,
         };
 
-        const [{ inputUsdValue, ...quote }, boostedQuote] = await Promise.all([
+        const [quote, boostedQuote] = await Promise.all([
           getPoolQuote(quoteArgs),
           estimatedBoostFeeBps &&
             getPoolQuote({ ...quoteArgs, boostFeeBps: estimatedBoostFeeBps }).catch(() => null),
         ]);
-        usdValue = inputUsdValue;
 
         if (boostedQuote && estimatedBoostFeeBps) {
           quote.boostQuote = { ...boostedQuote, estimatedBoostFeeBps };
@@ -141,20 +140,20 @@ const quoteRouter = (io: Server) => {
 
         const duration = performance.now() - start;
 
+        res.json(quote);
+
         logger.info('quote request completed', {
           duration: duration.toFixed(2),
           quote,
           srcAsset,
           destAsset,
-          inputAmount: quote.lowLiquidityWarning
-            ? new BigNumber(amount.toString())
-                .shiftedBy(-assetConstants[srcAsset].decimals)
-                .toFixed()
-            : undefined,
-          usdValue,
+          ...(quote.lowLiquidityWarning && {
+            inputAmount: new BigNumber(amount.toString())
+              .shiftedBy(-assetConstants[srcAsset].decimals)
+              .toFixed(),
+            usdValue: await getUsdValue(amount, srcAsset).catch(() => undefined),
+          }),
         });
-
-        res.json(quote);
       } catch (err) {
         handleQuotingError(res, err, {
           srcAsset,
@@ -163,7 +162,7 @@ const quoteRouter = (io: Server) => {
             .shiftedBy(-assetConstants[srcAsset].decimals)
             .toFixed(),
           limitOrdersReceived,
-          usdValue,
+          usdValue: await getUsdValue(amount, srcAsset).catch(() => undefined),
         });
       }
     }),
