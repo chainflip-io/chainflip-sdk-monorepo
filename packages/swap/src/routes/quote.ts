@@ -148,14 +148,12 @@ const quoteRouter = (io: Server) => {
           quote,
           srcAsset,
           destAsset,
-          ...(quote.lowLiquidityWarning
-            ? {
-                inputAmount: new BigNumber(amount.toString())
-                  .shiftedBy(-assetConstants[srcAsset].decimals)
-                  .toFixed(),
-                usdValue: await getUsdValue(amount, srcAsset).catch(() => undefined),
-              }
-            : undefined),
+          ...(quote.lowLiquidityWarning && {
+            inputAmount: new BigNumber(amount.toString())
+              .shiftedBy(-assetConstants[srcAsset].decimals)
+              .toFixed(),
+            usdValue: await getUsdValue(amount, srcAsset).catch(() => undefined),
+          }),
         });
       } catch (err) {
         handleQuotingError(res, err, {
