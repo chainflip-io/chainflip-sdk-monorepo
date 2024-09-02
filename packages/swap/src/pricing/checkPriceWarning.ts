@@ -2,10 +2,16 @@ import BigNumber from 'bignumber.js';
 import { InternalAsset, assetConstants } from '@/shared/enums';
 import env from '../config/env';
 import logger from '../utils/logger';
-import { getAssetPrice } from '.';
+import { getAssetPrice } from './index';
 
-const toTokenAmount = (amount: bigint, decimals: number) =>
-  new BigNumber(amount.toString()).shiftedBy(-decimals);
+const toTokenAmount = (amount: bigint, asset: InternalAsset) =>
+  new BigNumber(amount.toString()).shiftedBy(-assetConstants[asset].decimals);
+
+export const getUsdValue = async (amount: bigint, asset: InternalAsset) => {
+  const price = await getAssetPrice(asset);
+  if (price === undefined) return undefined;
+  return toTokenAmount(amount, asset).times(price).toFixed(2);
+};
 
 export const checkPriceWarning = async ({
   srcAsset,
@@ -17,31 +23,26 @@ export const checkPriceWarning = async ({
   destAsset: InternalAsset;
   srcAmount: bigint;
   destAmount: bigint;
-}): Promise<{ lowLiquidityWarning: boolean | undefined; inputUsdValue: string | undefined }> => {
+}): Promise<boolean | undefined> => {
   try {
     const inputPrice = await getAssetPrice(srcAsset);
     const outputPrice = await getAssetPrice(destAsset);
-    const srcAssetDecimals = assetConstants[srcAsset].decimals;
-    const destAssetDecimals = assetConstants[destAsset].decimals;
 
     if (!inputPrice || !outputPrice) {
-      return { lowLiquidityWarning: undefined, inputUsdValue: undefined };
+      return undefined;
     }
-    const inputUsdValue = toTokenAmount(srcAmount, srcAssetDecimals).times(inputPrice);
+    const inputUsdValue = toTokenAmount(srcAmount, srcAsset).times(inputPrice);
 
     const expectedOutput = inputUsdValue.dividedBy(outputPrice);
 
-    const delta = toTokenAmount(destAmount, destAssetDecimals)
+    const delta = toTokenAmount(destAmount, destAsset)
       .minus(expectedOutput)
       .dividedBy(expectedOutput)
       .multipliedBy(100);
 
-    return {
-      lowLiquidityWarning: delta.lte(env.LIQUIDITY_WARNING_THRESHOLD),
-      inputUsdValue: inputUsdValue.toFixed(2),
-    };
+    return delta.lte(env.LIQUIDITY_WARNING_THRESHOLD);
   } catch (err) {
     logger.error('error querying coingecko for price:', err);
-    return { lowLiquidityWarning: undefined, inputUsdValue: undefined };
+    return undefined;
   }
 };
