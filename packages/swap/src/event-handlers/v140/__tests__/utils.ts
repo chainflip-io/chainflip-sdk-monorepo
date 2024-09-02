@@ -25,7 +25,7 @@ export const createBtcSwapDepositChannel = async (
       destAddress: '0x6fd76a7699e6269af49e9c63f01f61464ab21d1c',
       brokerCommissionBps: 0,
       destAsset: 'Eth',
-      channelId: 3,
+      channelId: channelId ? BigInt(channelId) : 1n,
       issuedBlock: 0,
       openingFeePaid: 0,
     },
