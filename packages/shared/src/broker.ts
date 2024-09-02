@@ -18,6 +18,7 @@ import {
   ccmParamsSchema,
   FillOrKillParamsX128,
   fillOrKillParams,
+  dcaParams,
 } from './schemas';
 
 type NewSwapRequest = {
@@ -31,6 +32,10 @@ type NewSwapRequest = {
   maxBoostFeeBps?: number;
   affiliates?: AffiliateBroker[];
   fillOrKillParams?: FillOrKillParamsX128;
+  dcaParams?: {
+    numberOfChunks: number;
+    chunkInterval: number;
+  };
 };
 
 const submitAddress = (chain: Chain, address: string): string => {
@@ -63,6 +68,12 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) =>
           retry_duration: retryDurationBlocks,
           refund_address: refundAddress,
           min_price: `0x${BigInt(minPriceX128).toString(16)}`,
+        }))
+        .optional(),
+      dcaParams
+        .transform(({ numberOfChunks, chunkInterval }) => ({
+          number_of_chunks: numberOfChunks,
+          chunk_interval: chunkInterval,
         }))
         .optional(),
     ])
@@ -110,6 +121,9 @@ export async function requestSwapDepositAddress(
     swapRequest.fillOrKillParams && {
       ...swapRequest.fillOrKillParams,
       refundAddress: submitAddress(srcChain, swapRequest.fillOrKillParams.refundAddress),
+    },
+    swapRequest.dcaParams && {
+      ...swapRequest.dcaParams,
     },
   ]);
 
