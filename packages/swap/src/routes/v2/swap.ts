@@ -203,7 +203,7 @@ router.get(
       }
     } else if (egress) {
       state = StateV2.EgressScheduled;
-    } else if (swapRequest?.swaps.some((s) => s.swapExecutedAt)) {
+    } else if (swapRequest?.swaps.some((s) => s.swapScheduledAt)) {
       state = StateV2.Swapping;
     } else if (swapRequest?.depositReceivedAt) {
       state = StateV2.DepositReceived;
