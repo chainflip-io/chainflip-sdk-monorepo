@@ -2,7 +2,15 @@ import express from 'express';
 import { assetConstants, getAssetAndChain } from '@/shared/enums';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
-import prisma, { Prisma, Swap, Egress, Broadcast, SwapFee, IgnoredEgress } from '../../client';
+import prisma, {
+  Prisma,
+  Swap,
+  Egress,
+  Broadcast,
+  SwapFee,
+  IgnoredEgress,
+  FailedSwap,
+} from '../../client';
 import { getPendingBroadcast, getPendingDeposit } from '../../ingress-egress-tracking';
 import { readField } from '../../utils/function';
 import logger from '../../utils/logger';
@@ -24,8 +32,8 @@ const router = express.Router();
 export enum StateV2 {
   Failed = 'FAILED',
   Complete = 'COMPLETE',
-  Broadcasted = 'BROADCASTED',
-  EgressScheduled = 'EGRESS_SCHEDULED',
+  Broadcasted = 'SENT',
+  EgressScheduled = 'SENDING',
   Swapping = 'SWAPPING',
   DepositReceived = 'DEPOSIT_RECEIVED',
   AwaitingDeposit = 'AWAITING_DEPOSIT',
@@ -70,31 +78,37 @@ const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
   })),
 });
 
-const getEgressFields = (
-  egress: Egress,
+const getEgressStatusFields = (
+  egress: Egress | null | undefined,
+  broadcast: Broadcast | null | undefined,
   ignoredEgresses: IgnoredEgress[] | undefined,
-  type: IgnoredEgress['type'],
-) => ({
-  amount: egress?.amount?.toFixed(),
-  scheduledAt: egress?.scheduledAt?.valueOf(),
-  scheduledBlockIndex: egress?.scheduledBlockIndex ?? undefined,
-  ignoredAt: ignoredEgresses?.find((e) => e.type === type)?.ignoredAt?.valueOf(),
-  ignoredBlockIndex: ignoredEgresses?.find((e) => e.type === type)?.ignoredBlockIndex,
-  ignoredAmount: ignoredEgresses?.find((e) => e.type === type)?.amount?.toFixed(),
-});
-
-const getBroadcastFields = (
-  broadcast: Broadcast,
+  type: IgnoredEgress['type'] | undefined,
   egressTrackerTxRef: string | null | undefined,
-) => ({
-  requestedAt: broadcast?.requestedAt?.valueOf(),
-  requestedBlockIndex: broadcast?.requestedBlockIndex ?? undefined,
-  abortedAt: broadcast?.abortedAt?.valueOf(),
-  abortedBlockIndex: broadcast?.abortedBlockIndex ?? undefined,
-  succeededAt: broadcast?.succeededAt?.valueOf(),
-  succeededBlockIndex: broadcast?.succeededBlockIndex ?? undefined,
-  txRef: broadcast?.transactionRef ?? egressTrackerTxRef,
-});
+  failedSwap: FailedSwap | null | undefined,
+) => {
+  const ignoredEgress = ignoredEgresses?.find((e) => e.type === type);
+  const failedAt =
+    failedSwap?.failedAt ?? broadcast?.abortedAt?.valueOf() ?? ignoredEgress?.ignoredAt?.valueOf();
+  const failedAtBlockIndex =
+    failedSwap?.failedBlockIndex ??
+    broadcast?.abortedBlockIndex ??
+    ignoredEgress?.ignoredBlockIndex;
+
+  return {
+    ...(egress && {
+      outputAmount: egress.amount?.toFixed(),
+      scheduledAt: egress.scheduledAt?.valueOf(),
+      scheduledBlockIndex: egress.scheduledBlockIndex ?? undefined,
+    }),
+    ...(broadcast && {
+      sentAt: broadcast?.succeededAt?.valueOf(),
+      sentAtBlockIndex: broadcast?.succeededBlockIndex ?? undefined,
+      sentTxRef: broadcast?.transactionRef ?? egressTrackerTxRef,
+    }),
+    ...(failedAt && failedAtBlockIndex && { failedAt, failedAtBlockIndex }),
+    ...(ignoredEgress && { ignoredAmount: ignoredEgress.amount?.toFixed() }),
+  };
+};
 
 router.get(
   '/:id',
@@ -219,7 +233,14 @@ router.get(
           message: stateChainError.docs,
         };
       } else if (hasAbortedBroadcasts) {
+        const message = swapEgress?.broadcast?.abortedAt
+          ? 'The swap broadcast was aborted'
+          : 'The refund broadcast was aborted';
         failureMode = Failure.BroadcastAborted;
+        error = {
+          name: 'BroadcastAborted',
+          message,
+        };
       }
     } else if (egress?.broadcast?.succeededAt) {
       state = StateV2.Complete;
@@ -323,14 +344,14 @@ router.get(
       state,
       ...(internalSrcAsset && getAssetAndChain(internalSrcAsset, 'src')),
       ...(internalDestAsset && getAssetAndChain(internalDestAsset, 'dest')),
+      destAddress: readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress'),
       depositChannel: {
-        destAddress: readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress'),
         createdAt: swapDepositChannel?.createdAt.valueOf(),
         brokerCommissionBps: swapDepositChannel?.brokerCommissionBps,
         depositAddress: swapDepositChannel?.depositAddress,
-        expectedDepositAmount: swapDepositChannel?.expectedDepositAmount?.toFixed(),
         expiryBlock: swapDepositChannel?.srcChainExpiryBlock?.toString(),
         estimatedExpiryTime: swapDepositChannel?.estimatedExpiryAt?.valueOf(),
+        expectedDepositAmount: swapDepositChannel?.expectedDepositAmount?.toFixed(),
         isExpired: swapDepositChannel?.isExpired,
         openedThroughBackend: swapDepositChannel?.openedThroughBackend,
         affiliateBrokers,
@@ -362,22 +383,37 @@ router.get(
       },
       swap: {
         ...rolledSwaps,
+        totalAmountSwapped: rolledSwaps?.totalAmountSwapped.toFixed(),
         currentChunk: rolledSwaps && getSwapFields(rolledSwaps.currentChunk),
-        egress: swapEgress ? getEgressFields(swapEgress, ignoredEgresses, 'SWAP') : undefined,
-        broadcast: swapEgress?.broadcast
-          ? getBroadcastFields(swapEgress.broadcast, swapEgressTrackerTxRef)
-          : undefined,
+        ...getEgressStatusFields(
+          swapEgress,
+          swapEgress?.broadcast,
+          ignoredEgresses,
+          'SWAP',
+          swapEgressTrackerTxRef,
+          failedSwap,
+        ),
         srcChainRequiredBlockConfirmations:
           (internalSrcAsset && (await getRequiredBlockConfirmations(internalSrcAsset))) ??
           undefined,
-        estimatedDefaultDurationSeconds:
+        estimatedDurationSeconds:
           srcAsset && destAsset && (await estimateSwapDuration({ srcAsset, destAsset })),
+        failure: failureMode
+          ? {
+              mode: failureMode,
+              reason: error,
+            }
+          : undefined,
       },
       refund: {
-        egress: refundEgress ? getEgressFields(refundEgress, ignoredEgresses, 'REFUND') : undefined,
-        broadcast: refundEgress?.broadcast
-          ? getBroadcastFields(refundEgress.broadcast, refundEgressTrackerTxRef)
-          : undefined,
+        ...getEgressStatusFields(
+          refundEgress,
+          refundEgress?.broadcast,
+          ignoredEgresses,
+          'SWAP',
+          refundEgressTrackerTxRef,
+          failedSwap,
+        ),
       },
       ccm: {
         ...ccmParams,
@@ -390,13 +426,6 @@ router.get(
         boostedBlockIndex: swapRequest?.depositBoostedBlockIndex ?? undefined,
         skippedAt: swapDepositChannel?.failedBoosts.at(0)?.failedAtTimestamp.valueOf(),
         skippedBlockIndex: swapDepositChannel?.failedBoosts.at(0)?.failedAtBlockIndex ?? undefined,
-      },
-      error,
-      failure: {
-        mode: failureMode,
-        reason: error,
-        failedAt: failedSwap?.failedAt,
-        failedBlockIndex: failedSwap?.failedBlockIndex ?? undefined,
       },
     };
 
