@@ -2,7 +2,7 @@ import express from 'express';
 import { assetConstants, getAssetAndChain } from '@/shared/enums';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
-import prisma, { Prisma, Swap, SwapFee } from '../../client';
+import prisma, { Prisma, Swap, Egress, Broadcast, SwapFee, IgnoredEgress } from '../../client';
 import { getPendingBroadcast, getPendingDeposit } from '../../ingress-egress-tracking';
 import { readField } from '../../utils/function';
 import logger from '../../utils/logger';
@@ -68,6 +68,32 @@ const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
     ...getAssetAndChain(fee.asset),
     amount: fee.amount.toString(),
   })),
+});
+
+const getEgressFields = (
+  egress: Egress,
+  ignoredEgresses: IgnoredEgress[] | undefined,
+  type: IgnoredEgress['type'],
+) => ({
+  amount: egress?.amount?.toFixed(),
+  scheduledAt: egress?.scheduledAt?.valueOf(),
+  scheduledBlockIndex: egress?.scheduledBlockIndex ?? undefined,
+  ignoredAt: ignoredEgresses?.find((e) => e.type === type)?.ignoredAt?.valueOf(),
+  ignoredBlockIndex: ignoredEgresses?.find((e) => e.type === type)?.ignoredBlockIndex,
+  ignoredAmount: ignoredEgresses?.find((e) => e.type === type)?.amount?.toFixed(),
+});
+
+const getBroadcastFields = (
+  broadcast: Broadcast,
+  egressTrackerTxRef: string | null | undefined,
+) => ({
+  requestedAt: broadcast?.requestedAt?.valueOf(),
+  requestedBlockIndex: broadcast?.requestedBlockIndex ?? undefined,
+  abortedAt: broadcast?.abortedAt?.valueOf(),
+  abortedBlockIndex: broadcast?.abortedBlockIndex ?? undefined,
+  succeededAt: broadcast?.succeededAt?.valueOf(),
+  succeededBlockIndex: broadcast?.succeededBlockIndex ?? undefined,
+  txRef: broadcast?.transactionRef ?? egressTrackerTxRef,
 });
 
 router.get(
@@ -145,11 +171,13 @@ router.get(
 
     let state: StateV2 | undefined;
     let failureMode;
-    let egressTrackerTxRef;
+    let swapEgressTrackerTxRef;
+    let refundEgressTrackerTxRef;
     let error: { name: string; message: string } | undefined;
 
     const swapEgress = swapRequest?.egress;
     const refundEgress = swapRequest?.refundEgress;
+    const ignoredEgresses = swapRequest?.ignoredEgresses;
     const egress = swapEgress ?? refundEgress;
     const hasIgnoredEgresses =
       swapRequest?.ignoredEgresses && swapRequest.ignoredEgresses.length > 0;
@@ -196,10 +224,19 @@ router.get(
     } else if (egress?.broadcast?.succeededAt) {
       state = StateV2.Complete;
     } else if (egress?.broadcast) {
-      const pendingBroadcast = await getPendingBroadcast(egress.broadcast);
-      if (pendingBroadcast) {
-        state = StateV2.Broadcasted;
-        egressTrackerTxRef = pendingBroadcast.tx_ref;
+      if (swapEgress?.broadcast) {
+        const pendingSwapBroadcast = await getPendingBroadcast(swapEgress.broadcast);
+        if (pendingSwapBroadcast) {
+          state = StateV2.Broadcasted;
+          swapEgressTrackerTxRef = pendingSwapBroadcast.tx_ref;
+        }
+      }
+      if (refundEgress?.broadcast) {
+        const pendingRefundBroadcast = await getPendingBroadcast(refundEgress.broadcast);
+        if (pendingRefundBroadcast) {
+          state = StateV2.Broadcasted;
+          refundEgressTrackerTxRef = pendingRefundBroadcast.tx_ref;
+        }
       }
     } else if (egress) {
       state = StateV2.EgressScheduled;
@@ -255,14 +292,32 @@ router.get(
       failedSwap?.depositTransactionRef ??
       undefined;
 
-    const sortedSwaps = swapRequest?.swaps.sort((a, b) => {
+    const sortedSwaps = swapRequest?.swaps.filter(isEgressableSwap).sort((a, b) => {
       if (a.swapExecutedAt && b.swapExecutedAt) {
         return a.swapExecutedAt.valueOf() - b.swapExecutedAt.valueOf() ? 1 : -1;
       }
       return a.swapExecutedAt && !b.swapExecutedAt ? 1 : 0;
     });
-    // const fees = (swapRequest?.fees ?? []).concat(swap?.fees ?? []);
-    // type: swap?.type,
+    const rolledSwaps = sortedSwaps?.reduce(
+      (acc, curr) => {
+        acc.totalAmountSwapped = acc.totalAmountSwapped.plus(curr.swapOutputAmount ?? 0);
+        if (curr.swapScheduledAt && curr.swapExecutedAt) {
+          acc.lastExecutedChunk = curr;
+          acc.totalChunksExecuted += 1;
+        }
+        return acc;
+      },
+      {
+        totalAmountSwapped: new Prisma.Decimal(0),
+        totalChunksExecuted: 0,
+        currentChunk: sortedSwaps[0],
+        lastExecutedChunk: null as null | (typeof sortedSwaps)[number],
+        isDcaSwap:
+          swapDepositChannel?.chunkIntervalBlocks && swapDepositChannel.chunkIntervalBlocks > 1,
+      },
+    );
+
+    // const fees = (swapRequest?.fees ?? []).concat(swap?.fees ?? []); // handle fees after broker fee refactor
 
     const response = {
       state,
@@ -306,48 +361,12 @@ router.get(
         receivedBlockIndex: swapRequest?.depositReceivedBlockIndex ?? undefined,
       },
       swap: {
-        ...sortedSwaps?.reduce(
-          (acc, curr) => {
-            if (isEgressableSwap(curr)) {
-              acc.totalAmountSwapped = acc.totalAmountSwapped.plus(curr.swapOutputAmount ?? 0);
-              if (curr.swapScheduledAt && curr.swapExecutedAt) {
-                acc.lastExecutedChunk = getSwapFields(curr);
-                acc.totalChunksExecuted += 1;
-              }
-            }
-            return acc;
-          },
-          {
-            totalAmountSwapped: new Prisma.Decimal(0),
-            totalChunksExecuted: 0,
-            currentChunk: sortedSwaps[0],
-            lastExecutedChunk: null as null | ReturnType<typeof getSwapFields>,
-            isDcaSwap:
-              swapDepositChannel?.chunkIntervalBlocks && swapDepositChannel.chunkIntervalBlocks > 1,
-          },
-        ),
-        egress: {
-          amount: swapEgress?.amount?.toFixed(),
-          scheduledAt: swapEgress?.scheduledAt?.valueOf(),
-          scheduledBlockIndex: swapEgress?.scheduledBlockIndex ?? undefined,
-          ignoredAt: swapRequest?.ignoredEgresses
-            .find((e) => e.type === 'SWAP')
-            ?.ignoredAt?.valueOf(),
-          ignoredBlockIndex: swapRequest?.ignoredEgresses.find((e) => e.type === 'SWAP')
-            ?.ignoredBlockIndex,
-          ignoredAmount: swapRequest?.ignoredEgresses
-            .find((e) => e.type === 'SWAP')
-            ?.amount?.toFixed(),
-        },
-        broadcast: {
-          requestedAt: swapEgress?.broadcast?.requestedAt?.valueOf(),
-          requestedBlockIndex: swapEgress?.broadcast?.requestedBlockIndex ?? undefined,
-          abortedAt: swapEgress?.broadcast?.abortedAt?.valueOf(),
-          abortedBlockIndex: swapEgress?.broadcast?.abortedBlockIndex ?? undefined,
-          succeededAt: swapEgress?.broadcast?.succeededAt?.valueOf(),
-          succeededBlockIndex: swapEgress?.broadcast?.succeededBlockIndex ?? undefined,
-          txRef: egress?.broadcast?.transactionRef ?? egressTrackerTxRef,
-        },
+        ...rolledSwaps,
+        currentChunk: rolledSwaps && getSwapFields(rolledSwaps.currentChunk),
+        egress: swapEgress ? getEgressFields(swapEgress, ignoredEgresses, 'SWAP') : undefined,
+        broadcast: swapEgress?.broadcast
+          ? getBroadcastFields(swapEgress.broadcast, swapEgressTrackerTxRef)
+          : undefined,
         srcChainRequiredBlockConfirmations:
           (internalSrcAsset && (await getRequiredBlockConfirmations(internalSrcAsset))) ??
           undefined,
@@ -355,28 +374,10 @@ router.get(
           srcAsset && destAsset && (await estimateSwapDuration({ srcAsset, destAsset })),
       },
       refund: {
-        egress: {
-          amount: refundEgress?.amount?.toFixed(),
-          scheduledAt: refundEgress?.scheduledAt?.valueOf(),
-          scheduledBlockIndex: refundEgress?.scheduledBlockIndex ?? undefined,
-          ignoredAt: swapRequest?.ignoredEgresses
-            .find((e) => e.type === 'REFUND')
-            ?.ignoredAt?.valueOf(),
-          ignoredBlockIndex: swapRequest?.ignoredEgresses.find((e) => e.type === 'REFUND')
-            ?.ignoredBlockIndex,
-          ignoredAmount: swapRequest?.ignoredEgresses
-            .find((e) => e.type === 'REFUND')
-            ?.amount?.toFixed(),
-        },
-        broadcast: {
-          requestedAt: refundEgress?.broadcast?.requestedAt?.valueOf(),
-          requestedBlockIndex: refundEgress?.broadcast?.requestedBlockIndex ?? undefined,
-          abortedAt: refundEgress?.broadcast?.abortedAt?.valueOf(),
-          abortedBlockIndex: refundEgress?.broadcast?.abortedBlockIndex ?? undefined,
-          succeededAt: refundEgress?.broadcast?.succeededAt?.valueOf(),
-          succeededBlockIndex: refundEgress?.broadcast?.succeededBlockIndex ?? undefined,
-          txRef: egress?.broadcast?.transactionRef ?? egressTrackerTxRef,
-        },
+        egress: refundEgress ? getEgressFields(refundEgress, ignoredEgresses, 'REFUND') : undefined,
+        broadcast: refundEgress?.broadcast
+          ? getBroadcastFields(refundEgress.broadcast, refundEgressTrackerTxRef)
+          : undefined,
       },
       ccm: {
         ...ccmParams,
