@@ -1,6 +1,7 @@
 import type { Prisma } from '.prisma/client';
 import { Chains } from '@/shared/enums';
 import ccmDepositReceived from './ccmDepositReceived';
+import ccmFailed from './ccmFailed';
 import liquidityDepositAddressReady from './liquidityDepositChannelReady';
 import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';
 import networkBroadcastAborted from './networkBroadcastAborted';
@@ -47,6 +48,7 @@ export const events = {
     CcmDepositReceived: 'Swapping.CcmDepositReceived',
     SwapRequested: 'Swapping.SwapRequested',
     SwapRequestCompleted: 'Swapping.SwapRequestCompleted',
+    CcmFailed: 'Swapping.CcmFailed',
   },
   BitcoinIngressEgress: {
     BatchBroadcastRequested: 'BitcoinIngressEgress.BatchBroadcastRequested',
@@ -134,7 +136,7 @@ export const swapEventNames = Object.values(events).flatMap((pallets) => Object.
 
 export type EventHandlerArgs = {
   prisma: Prisma.TransactionClient;
-  event: Pick<Event, 'args' | 'name' | 'indexInBlock'>;
+  event: Pick<Event, 'args' | 'name' | 'indexInBlock' | 'callId'>;
   block: Pick<Block, 'height' | 'hash' | 'timestamp' | 'specId'>;
 };
 
@@ -196,6 +198,7 @@ const handlers = [
       { name: events.Swapping.SwapDepositAddressReady, handler: swapDepositAddressReady },
       { name: events.Swapping.SwapEgressIgnored, handler: swapEgressIgnored },
       { name: events.Swapping.SwapEgressScheduled, handler: swapEgressScheduled },
+      { name: events.Swapping.CcmFailed, handler: ccmFailed },
       {
         name: events.LiquidityProvider.LiquidityDepositAddressReady,
         handler: liquidityDepositAddressReady,
