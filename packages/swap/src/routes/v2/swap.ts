@@ -32,11 +32,10 @@ const router = express.Router();
 export enum StateV2 {
   Failed = 'FAILED',
   Complete = 'COMPLETE',
-  Broadcasted = 'SENT',
-  EgressScheduled = 'SENDING',
+  Sent = 'SENT',
+  Sending = 'SENDING',
   Swapping = 'SWAPPING',
-  DepositReceived = 'DEPOSIT_RECEIVED',
-  AwaitingDeposit = 'AWAITING_DEPOSIT',
+  Receiving = 'RECEIVING',
 }
 
 const depositChannelInclude = {
@@ -213,6 +212,7 @@ router.get(
       } else if (swapRequest?.ignoredEgresses && swapRequest.ignoredEgresses.length > 0) {
         if (swapRequest.ignoredEgresses.length > 1) failureMode = Failure.MultipleEgressIgnored;
         const ignored = swapRequest.ignoredEgresses.at(0)!;
+
         switch (ignored.type) {
           case 'REFUND':
             failureMode = Failure.RefundEgressIgnored;
@@ -248,36 +248,30 @@ router.get(
       if (swapEgress?.broadcast) {
         const pendingSwapBroadcast = await getPendingBroadcast(swapEgress.broadcast);
         if (pendingSwapBroadcast) {
-          state = StateV2.Broadcasted;
+          state = StateV2.Sent;
           swapEgressTrackerTxRef = pendingSwapBroadcast.tx_ref;
         }
       }
       if (refundEgress?.broadcast) {
         const pendingRefundBroadcast = await getPendingBroadcast(refundEgress.broadcast);
         if (pendingRefundBroadcast) {
-          state = StateV2.Broadcasted;
+          state = StateV2.Sent;
           refundEgressTrackerTxRef = pendingRefundBroadcast.tx_ref;
         }
       }
     } else if (egress) {
-      state = StateV2.EgressScheduled;
+      state = StateV2.Sending;
     } else if (swapRequest?.swaps.some((s) => s.swapScheduledAt)) {
       state = StateV2.Swapping;
-    } else if (swapRequest?.depositReceivedAt) {
-      state = StateV2.DepositReceived;
     } else {
-      state = StateV2.AwaitingDeposit;
+      state = StateV2.Receiving;
     }
 
     const internalSrcAsset = readField(swapRequest, swapDepositChannel, failedSwap, 'srcAsset');
     const internalDestAsset = readField(swapRequest, swapDepositChannel, 'destAsset');
 
     let pendingDeposit;
-    if (
-      internalSrcAsset &&
-      state === StateV2.AwaitingDeposit &&
-      swapDepositChannel?.depositAddress
-    ) {
+    if (internalSrcAsset && state === StateV2.Receiving && swapDepositChannel?.depositAddress) {
       pendingDeposit = await getPendingDeposit(
         assetConstants[internalSrcAsset].chain,
         assetConstants[internalSrcAsset].asset,
@@ -325,6 +319,7 @@ router.get(
         if (curr.swapScheduledAt && curr.swapExecutedAt) {
           acc.lastExecutedChunk = curr;
           acc.totalChunksExecuted += 1;
+          acc.fees = acc.fees.concat(...curr.fees);
         }
         return acc;
       },
@@ -332,16 +327,34 @@ router.get(
         totalAmountSwapped: new Prisma.Decimal(0),
         totalChunksExecuted: 0,
         currentChunk: sortedSwaps[0],
-        lastExecutedChunk: null as null | (typeof sortedSwaps)[number],
+        lastExecutedChunk: null as null | (typeof sortedSwaps)[number] | undefined,
         isDcaSwap:
           swapDepositChannel?.chunkIntervalBlocks && swapDepositChannel.chunkIntervalBlocks > 1,
+        fees: [] as SwapFee[],
       },
     );
 
-    // const fees = (swapRequest?.fees ?? []).concat(swap?.fees ?? []); // handle fees after broker fee refactor
+    const aggregateFees = rolledSwaps?.fees
+      .reduce((acc, curr) => {
+        const { type, asset, amount } = curr;
+
+        const index = acc.findIndex((fee) => fee.type === type && fee.asset === asset);
+        if (index !== -1) {
+          acc[index].amount = acc[index].amount.plus(amount);
+        } else acc.push(curr);
+
+        return acc;
+      }, [] as SwapFee[])
+      .concat(swapRequest?.fees ?? [])
+      .map((fee) => ({
+        type: fee.type,
+        ...getAssetAndChain(fee.asset),
+        amount: fee.amount.toFixed(),
+      }));
 
     const response = {
       state,
+      swapId: swapRequest?.nativeId.toString(),
       ...(internalSrcAsset && getAssetAndChain(internalSrcAsset, 'src')),
       ...(internalDestAsset && getAssetAndChain(internalDestAsset, 'dest')),
       destAddress: readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress'),
@@ -384,6 +397,8 @@ router.get(
       swap: {
         ...rolledSwaps,
         totalAmountSwapped: rolledSwaps?.totalAmountSwapped.toFixed(),
+        lastExecutedChunk:
+          rolledSwaps?.lastExecutedChunk && getSwapFields(rolledSwaps.lastExecutedChunk),
         currentChunk: rolledSwaps && getSwapFields(rolledSwaps.currentChunk),
         ...getEgressStatusFields(
           swapEgress,
@@ -393,6 +408,7 @@ router.get(
           swapEgressTrackerTxRef,
           failedSwap,
         ),
+        fees: aggregateFees,
         srcChainRequiredBlockConfirmations:
           (internalSrcAsset && (await getRequiredBlockConfirmations(internalSrcAsset))) ??
           undefined,
