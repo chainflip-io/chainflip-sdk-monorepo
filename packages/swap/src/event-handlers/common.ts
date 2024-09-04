@@ -1,8 +1,11 @@
+import * as base58 from '@chainflip/utils/base58';
+import { hexToBytes, reverseBytes } from '@chainflip/utils/bytes';
+import type { HexString } from '@chainflip/utils/types';
 // @ts-expect-error should still work
 import { Metadata, TypeRegistry } from '@polkadot/types';
 import assert from 'assert';
 import { z } from 'zod';
-import { InternalAsset } from '@/shared/enums';
+import { assetConstants, InternalAsset } from '@/shared/enums';
 import {
   btcAddress,
   dotAddress,
@@ -120,6 +123,16 @@ export const getStateChainError = async (
 export function formatTxHash(asset: InternalAsset, txHash: string): string;
 export function formatTxHash(asset: InternalAsset, txHash: string | undefined): string | undefined;
 export function formatTxHash(asset: InternalAsset, txHash: string | undefined) {
-  if (!txHash || asset !== 'Btc') return txHash;
-  return Buffer.from(txHash.slice(2), 'hex').reverse().toString('hex');
+  if (!txHash) return txHash;
+
+  const { chain } = assetConstants[asset];
+
+  switch (chain) {
+    case 'Bitcoin':
+      return reverseBytes(txHash.slice(2));
+    case 'Solana':
+      return base58.encode(hexToBytes(txHash as HexString));
+    default:
+      return txHash;
+  }
 }

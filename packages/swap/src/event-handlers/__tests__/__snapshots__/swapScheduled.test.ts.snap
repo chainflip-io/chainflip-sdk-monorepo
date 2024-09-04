@@ -64,7 +64,7 @@ exports[`swapScheduled spec 1.5.0 creates a swap request and swap 1`] = `
   "depositBoostedBlockIndex": null,
   "depositReceivedAt": null,
   "depositReceivedBlockIndex": null,
-  "depositTransactionRef": "12",
+  "depositTransactionRef": "3412",
   "destAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
   "destAsset": "Flip",
   "effectiveBoostFeeBps": null,
