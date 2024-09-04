@@ -80,7 +80,7 @@ describe(swapScheduled, () => {
         },
         origin: {
           __kind: 'Vault',
-          txHash: '0x123',
+          txHash: '0x1234',
         },
         executeAt: 58,
         brokerFee: '1000000',
