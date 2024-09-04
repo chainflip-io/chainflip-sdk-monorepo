@@ -10,7 +10,7 @@ exports[`ccmFailed creates a failed swap 1`] = `
   "destChain": "Arbitrum",
   "failedAt": 2024-07-24T10:18:30.000Z,
   "failedBlockIndex": "1895970-769",
-  "id": 1,
+  "id": Any<Number>,
   "reason": "InsufficientDepositAmount",
   "srcAsset": "Usdc",
   "srcChain": "Ethereum",
@@ -28,10 +28,10 @@ exports[`ccmFailed creates a failed swap 2`] = `
   "destChain": "Arbitrum",
   "failedAt": 2024-07-30T08:57:30.000Z,
   "failedBlockIndex": "1980316-838",
-  "id": 2,
+  "id": Any<Number>,
   "reason": "InsufficientDepositAmount",
   "srcAsset": "Eth",
   "srcChain": "Ethereum",
-  "swapDepositChannelId": 1n,
+  "swapDepositChannelId": Any<BigInt>,
 }
 `;

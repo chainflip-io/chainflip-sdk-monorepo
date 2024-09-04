@@ -173,6 +173,10 @@ describe(ccmFailed, () => {
 
     await ccmFailed({ prisma, event, block });
 
-    expect(await prisma.failedSwap.findFirstOrThrow()).toMatchSnapshot();
+    expect(await prisma.failedSwap.findFirstOrThrow()).toMatchSnapshot({
+      id: expect.any(Number),
+      swapDepositChannelId:
+        event.args.origin.__kind === 'DepositChannel' ? expect.any(BigInt) : null,
+    });
   });
 });
