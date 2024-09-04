@@ -47,7 +47,6 @@ export const getOriginInfo = async (
         srcAsset,
         depositAddress: origin.depositAddress.address,
         channelId: origin.channelId,
-        isExpired: false,
       },
       orderBy: {
         issuedBlock: 'desc',
