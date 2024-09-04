@@ -1,3 +1,6 @@
+import * as base58 from '@chainflip/utils/base58';
+import { hexToBytes, reverseBytes } from '@chainflip/utils/bytes';
+import type { HexString } from '@chainflip/utils/types';
 // @ts-expect-error should still work
 import { Metadata, TypeRegistry } from '@polkadot/types';
 import assert from 'assert';
@@ -126,8 +129,9 @@ export function formatTxHash(asset: InternalAsset, txHash: string | undefined) {
 
   switch (chain) {
     case 'Bitcoin':
-      return Buffer.from(txHash.slice(2), 'hex').reverse().toString('hex');
+      return reverseBytes(txHash.slice(2));
     case 'Solana':
+      return base58.encode(hexToBytes(txHash as HexString));
     default:
       return txHash;
   }
