@@ -58,6 +58,8 @@ const swapRequestInclude = {
 const failedSwapMessage: Record<FailedSwapReason, string> = {
   BelowMinimumDeposit: 'The deposited amount was below the minimum required',
   NotEnoughToPayFees: 'The deposited amount was not enough to pay the fees',
+  InsufficientDepositAmount: 'The gas budget exceeded the deposit amount',
+  UnsupportedForTargetChain: 'The destination chain does not support CCM',
 };
 
 const coerceChain = (chain: string) => {
