@@ -222,6 +222,8 @@ model SwapFee {
 enum FailedSwapReason {
   BelowMinimumDeposit
   NotEnoughToPayFees // gas price to process deposit is too high
+  UnsupportedForTargetChain // CCM reason
+  InsufficientDepositAmount // CCM reason
 
   @@schema("public")
 }
@@ -239,6 +241,8 @@ model FailedSwap {
   depositTransactionRef String?
   failedAt              DateTime
   failedBlockIndex      String
+  ccmGasBudget          Decimal?            @db.Decimal(30, 0)
+  ccmMessage            String?
 
   @@index([swapDepositChannelId])
   @@schema("public")

@@ -17,9 +17,18 @@ export const GET_BATCH = gql(/* GraphQL */ `
             args
             name
             indexInBlock
+            callId
           }
         }
       }
+    }
+  }
+`);
+
+export const GET_CALL = gql(/* GraphQL */ `
+  query GetCall($id: String!) {
+    call: callById(id: $id) {
+      args
     }
   }
 `);

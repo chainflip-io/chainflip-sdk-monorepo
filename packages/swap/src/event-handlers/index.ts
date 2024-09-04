@@ -47,6 +47,7 @@ export const events = {
     CcmDepositReceived: 'Swapping.CcmDepositReceived',
     SwapRequested: 'Swapping.SwapRequested',
     SwapRequestCompleted: 'Swapping.SwapRequestCompleted',
+    CcmFailed: 'Swapping.CcmFailed',
   },
   BitcoinIngressEgress: {
     BatchBroadcastRequested: 'BitcoinIngressEgress.BatchBroadcastRequested',
@@ -134,7 +135,7 @@ export const swapEventNames = Object.values(events).flatMap((pallets) => Object.
 
 export type EventHandlerArgs = {
   prisma: Prisma.TransactionClient;
-  event: Pick<Event, 'args' | 'name' | 'indexInBlock'>;
+  event: Pick<Event, 'args' | 'name' | 'indexInBlock' | 'callId'>;
   block: Pick<Block, 'height' | 'hash' | 'timestamp' | 'specId'>;
 };
 
