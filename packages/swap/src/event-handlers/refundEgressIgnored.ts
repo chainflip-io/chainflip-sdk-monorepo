@@ -20,7 +20,7 @@ const refundEgressIgnored = async ({ prisma, event, block }: EventHandlerArgs) =
   await prisma.swapRequest.update({
     where: { nativeId: swapRequestId },
     data: {
-      ignoredEgress: {
+      ignoredEgresses: {
         create: {
           ignoredAt: new Date(block.timestamp),
           ignoredBlockIndex: `${block.height}-${event.indexInBlock}`,

@@ -1,17 +1,17 @@
 import express from 'express';
 import { assetConstants, getAssetAndChain } from '@/shared/enums';
-import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
+import { getPriceFromPriceX128 } from '@/shared/functions';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
-import prisma, {
-  Prisma,
-  Swap,
-  Egress,
-  Broadcast,
-  SwapFee,
-  IgnoredEgress,
-  FailedSwap,
-} from '../../client';
-import { getPendingBroadcast, getPendingDeposit } from '../../ingress-egress-tracking';
+import {
+  depositChannelInclude,
+  getDepositIgnoredFailedState,
+  getEgressStatusFields,
+  getSwapFields,
+  getSwapState,
+  swapRequestInclude,
+} from './utils';
+import prisma, { Prisma, SwapFee } from '../../client';
+import { getPendingDeposit } from '../../ingress-egress-tracking';
 import { readField } from '../../utils/function';
 import logger from '../../utils/logger';
 import ServiceError from '../../utils/ServiceError';
@@ -22,10 +22,8 @@ import {
   txHashRegex,
   estimateSwapDuration,
   isEgressableSwap,
-  failedSwapMessage,
 } from '../../utils/swap';
 import { asyncHandler } from '../common';
-import { Failure } from '../swap';
 
 const router = express.Router();
 
@@ -37,77 +35,6 @@ export enum StateV2 {
   Swapping = 'SWAPPING',
   Receiving = 'RECEIVING',
 }
-
-const depositChannelInclude = {
-  failedBoosts: true,
-  failedSwaps: true,
-  affiliates: {
-    select: {
-      account: true,
-      commissionBps: true,
-    },
-  },
-} as const;
-
-const swapRequestInclude = {
-  swaps: { include: { fees: true }, orderBy: { nativeId: 'desc' } },
-  egress: { include: { broadcast: true } },
-  refundEgress: { include: { broadcast: true } },
-  fees: true,
-  ignoredEgresses: true,
-  swapDepositChannel: {
-    include: depositChannelInclude,
-  },
-} as const;
-
-const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
-  swapInputAmount: swap.swapInputAmount.toString(),
-  swapOutputAmount: swap.swapOutputAmount?.toString(),
-  scheduledAt: swap.swapScheduledAt,
-  scheduledBlockIndex: swap.swapScheduledBlockIndex ?? undefined,
-  executedAt: swap.swapExecutedAt,
-  executedBlockIndex: swap.swapExecutedBlockIndex ?? undefined,
-  retryCount: swap.retryCount,
-  latestSwapRescheduledAt: swap.latestSwapRescheduledAt,
-  latestSwapRescheduledBlockIndex: swap.latestSwapRescheduledBlockIndex ?? undefined,
-  fees: swap.fees.map((fee) => ({
-    type: fee.type,
-    ...getAssetAndChain(fee.asset),
-    amount: fee.amount.toString(),
-  })),
-});
-
-const getEgressStatusFields = (
-  egress: Egress | null | undefined,
-  broadcast: Broadcast | null | undefined,
-  ignoredEgresses: IgnoredEgress[] | undefined,
-  type: IgnoredEgress['type'] | undefined,
-  egressTrackerTxRef: string | null | undefined,
-  failedSwap: FailedSwap | null | undefined,
-) => {
-  const ignoredEgress = ignoredEgresses?.find((e) => e.type === type);
-  const failedAt =
-    failedSwap?.failedAt ?? broadcast?.abortedAt?.valueOf() ?? ignoredEgress?.ignoredAt?.valueOf();
-  const failedAtBlockIndex =
-    failedSwap?.failedBlockIndex ??
-    broadcast?.abortedBlockIndex ??
-    ignoredEgress?.ignoredBlockIndex;
-
-  return {
-    ...(egress && {
-      outputAmount: egress.amount?.toFixed(),
-      scheduledAt: egress.scheduledAt?.valueOf(),
-      scheduledBlockIndex: egress.scheduledBlockIndex ?? undefined,
-    }),
-    ...(broadcast && {
-      sentAt: broadcast?.succeededAt?.valueOf(),
-      sentAtBlockIndex: broadcast?.succeededBlockIndex ?? undefined,
-      sentTxRef: broadcast?.transactionRef ?? egressTrackerTxRef,
-    }),
-    ...(failedAt && failedAtBlockIndex && { failedAt, failedAtBlockIndex }),
-    ...(ignoredEgress && { ignoredAmount: ignoredEgress.amount?.toFixed() }),
-  };
-};
 
 router.get(
   '/:id',
@@ -182,90 +109,15 @@ router.get(
       'resource not found',
     );
 
-    let state: StateV2 | undefined;
-    let failureMode;
-    let swapEgressTrackerTxRef;
-    let refundEgressTrackerTxRef;
-    let error: { name: string; message: string } | undefined;
-
     const swapEgress = swapRequest?.egress;
     const refundEgress = swapRequest?.refundEgress;
     const ignoredEgresses = swapRequest?.ignoredEgresses;
-    const egress = swapEgress ?? refundEgress;
-    const hasIgnoredEgresses =
-      swapRequest?.ignoredEgresses && swapRequest.ignoredEgresses.length > 0;
-    const hasAbortedBroadcasts = egress?.broadcast?.abortedAt;
 
-    if (failedSwap || hasIgnoredEgresses || hasAbortedBroadcasts) {
-      error = {
-        name: 'Unknown',
-        message: 'An unknown error occurred',
-      };
-      state = StateV2.Failed;
-
-      if (failedSwap) {
-        failureMode = Failure.IngressIgnored;
-        error = {
-          name: failedSwap.reason,
-          message: failedSwapMessage[failedSwap.reason],
-        };
-      } else if (swapRequest?.ignoredEgresses && swapRequest.ignoredEgresses.length > 0) {
-        if (swapRequest.ignoredEgresses.length > 1) failureMode = Failure.MultipleEgressIgnored;
-        const ignored = swapRequest.ignoredEgresses.at(0)!;
-
-        switch (ignored.type) {
-          case 'REFUND':
-            failureMode = Failure.RefundEgressIgnored;
-            break;
-          case 'SWAP':
-            failureMode = Failure.EgressIgnored;
-            break;
-          default:
-            assertUnreachable(ignored.type);
-        }
-        const [stateChainError] = await Promise.all([
-          prisma.stateChainError.findUniqueOrThrow({
-            where: { id: swapRequest.ignoredEgresses.at(0)!.stateChainErrorId },
-          }),
-        ]);
-        error = {
-          name: stateChainError.name,
-          message: stateChainError.docs,
-        };
-      } else if (hasAbortedBroadcasts) {
-        const message = swapEgress?.broadcast?.abortedAt
-          ? 'The swap broadcast was aborted'
-          : 'The refund broadcast was aborted';
-        failureMode = Failure.BroadcastAborted;
-        error = {
-          name: 'BroadcastAborted',
-          message,
-        };
-      }
-    } else if (egress?.broadcast?.succeededAt) {
-      state = StateV2.Complete;
-    } else if (egress?.broadcast) {
-      if (swapEgress?.broadcast) {
-        const pendingSwapBroadcast = await getPendingBroadcast(swapEgress.broadcast);
-        if (pendingSwapBroadcast) {
-          state = StateV2.Sent;
-          swapEgressTrackerTxRef = pendingSwapBroadcast.tx_ref;
-        }
-      }
-      if (refundEgress?.broadcast) {
-        const pendingRefundBroadcast = await getPendingBroadcast(refundEgress.broadcast);
-        if (pendingRefundBroadcast) {
-          state = StateV2.Sent;
-          refundEgressTrackerTxRef = pendingRefundBroadcast.tx_ref;
-        }
-      }
-    } else if (egress) {
-      state = StateV2.Sending;
-    } else if (swapRequest?.swaps.some((s) => s.swapScheduledAt)) {
-      state = StateV2.Swapping;
-    } else {
-      state = StateV2.Receiving;
-    }
+    const { state, swapEgressTrackerTxRef, refundEgressTrackerTxRef } = await getSwapState(
+      failedSwap,
+      ignoredEgresses,
+      swapRequest,
+    );
 
     const internalSrcAsset = readField(swapRequest, swapDepositChannel, failedSwap, 'srcAsset');
     const internalDestAsset = readField(swapRequest, swapDepositChannel, 'destAsset');
@@ -393,6 +245,7 @@ router.get(
         txConfirmations: pendingDeposit?.transactionConfirmations,
         receivedAt: swapRequest?.depositReceivedAt?.valueOf(),
         receivedBlockIndex: swapRequest?.depositReceivedBlockIndex ?? undefined,
+        ...(failedSwap && { failure: getDepositIgnoredFailedState(failedSwap) }),
       },
       swap: {
         ...rolledSwaps,
@@ -400,36 +253,29 @@ router.get(
         lastExecutedChunk:
           rolledSwaps?.lastExecutedChunk && getSwapFields(rolledSwaps.lastExecutedChunk),
         currentChunk: rolledSwaps && getSwapFields(rolledSwaps.currentChunk),
-        ...getEgressStatusFields(
+        ...(await getEgressStatusFields(
           swapEgress,
           swapEgress?.broadcast,
           ignoredEgresses,
           'SWAP',
           swapEgressTrackerTxRef,
-          failedSwap,
-        ),
+        )),
+        type: sortedSwaps?.[0].type,
         fees: aggregateFees,
         srcChainRequiredBlockConfirmations:
           (internalSrcAsset && (await getRequiredBlockConfirmations(internalSrcAsset))) ??
           undefined,
         estimatedDurationSeconds:
           srcAsset && destAsset && (await estimateSwapDuration({ srcAsset, destAsset })),
-        failure: failureMode
-          ? {
-              mode: failureMode,
-              reason: error,
-            }
-          : undefined,
       },
       refund: {
-        ...getEgressStatusFields(
+        ...(await getEgressStatusFields(
           refundEgress,
           refundEgress?.broadcast,
           ignoredEgresses,
-          'SWAP',
+          'REFUND',
           refundEgressTrackerTxRef,
-          failedSwap,
-        ),
+        )),
       },
       ccm: {
         ...ccmParams,

@@ -401,8 +401,8 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchSnapshot({
-        state: 'AWAITING_DEPOSIT',
+      expect(body).toMatchObject({
+        state: 'RECEIVING',
         srcAsset: 'ETH',
         srcChain: 'Ethereum',
         destAsset: 'DOT',
@@ -437,7 +437,7 @@ describe('server', () => {
 
       expect(status).toBe(200);
       expect(body).toMatchObject({
-        state: 'AWAITING_DEPOSIT',
+        state: 'RECEIVING',
         srcAsset: 'ETH',
         srcChain: 'Ethereum',
         destAsset: 'DOT',
@@ -477,7 +477,7 @@ describe('server', () => {
       expect(status).toBe(200);
 
       expect(body).toMatchObject({
-        state: 'AWAITING_DEPOSIT',
+        state: 'RECEIVING',
         ccm: {
           gasBudget: '100000',
           message: '0xdeadbeef',
@@ -511,7 +511,7 @@ describe('server', () => {
       expect(status).toBe(200);
 
       expect(body).toMatchObject({
-        state: 'AWAITING_DEPOSIT',
+        state: 'RECEIVING',
         depositChannel: {
           createdAt: 516000,
           brokerCommissionBps: 0,
@@ -710,6 +710,7 @@ describe('server', () => {
           isDcaSwap: null,
           srcChainRequiredBlockConfirmations: 2,
           estimatedDurationSeconds: 48,
+          type: 'SWAP',
         },
       });
     });
@@ -775,6 +776,7 @@ describe('server', () => {
           scheduledBlockIndex: '94-595',
           srcChainRequiredBlockConfirmations: 2,
           estimatedDurationSeconds: 48,
+          type: 'SWAP',
         },
         refund: {},
         ccm: {},
@@ -831,6 +833,7 @@ describe('server', () => {
           fees: expect.any(Array),
           srcChainRequiredBlockConfirmations: 2,
           estimatedDurationSeconds: 48,
+          type: 'SWAP',
         },
         refund: {
           outputAmount: '999844999999160000',
@@ -908,6 +911,7 @@ describe('server', () => {
           sentTxRef: '0xdeadbeef',
           srcChainRequiredBlockConfirmations: 2,
           estimatedDurationSeconds: 48,
+          type: 'SWAP',
         },
         refund: {},
         ccm: {},
@@ -979,6 +983,7 @@ describe('server', () => {
           sentTxRef: '104-2',
           srcChainRequiredBlockConfirmations: 2,
           estimatedDurationSeconds: 48,
+          type: 'SWAP',
         },
         refund: {},
         ccm: {},
@@ -997,72 +1002,15 @@ describe('server', () => {
       expect(status).toBe(200);
       const { swapId, ...rest } = body;
 
-      expect(rest).toMatchSnapshot({
-        state: 'FAILED',
-        srcAsset: 'ETH',
-        srcChain: 'Ethereum',
-        destAsset: 'DOT',
-        destChain: 'Polkadot',
-        destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
-        depositChannel: {
-          createdAt: 516000,
-          brokerCommissionBps: 0,
-          depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
-          expiryBlock: '265',
-          estimatedExpiryTime: 1699527060000,
-          isExpired: false,
-          openedThroughBackend: false,
+      expect(rest.state).toBe('FAILED');
+      expect(rest.swap.failure).toMatchObject({
+        failedAt: 624000,
+        failedAtBlockIndex: '104-7',
+        mode: 'BROADCAST_ABORTED',
+        reason: {
+          name: 'BroadcastAborted',
+          message: 'The swap broadcast was aborted',
         },
-        deposit: {
-          amount: '5000000000000000000',
-          receivedAt: 552000,
-          receivedBlockIndex: '92-400',
-        },
-        swap: {
-          totalAmountSwapped: '4192904666034',
-          totalChunksExecuted: 1,
-          currentChunk: {
-            swapInputAmount: '4999949999999650000',
-            swapOutputAmount: '4192904666034',
-            scheduledAt: '1970-01-01T00:09:12.000Z',
-            scheduledBlockIndex: '92-399',
-            executedAt: '1970-01-01T00:09:24.000Z',
-            executedBlockIndex: '94-594',
-            retryCount: 0,
-            latestSwapRescheduledAt: null,
-            fees: expect.any(Array),
-          },
-          lastExecutedChunk: {
-            swapInputAmount: '4999949999999650000',
-            swapOutputAmount: '4192904666034',
-            scheduledAt: '1970-01-01T00:09:12.000Z',
-            scheduledBlockIndex: '92-399',
-            executedAt: '1970-01-01T00:09:24.000Z',
-            executedBlockIndex: '94-594',
-            retryCount: 0,
-            latestSwapRescheduledAt: null,
-            fees: expect.any(Array),
-          },
-          isDcaSwap: null,
-          fees: expect.any(Array),
-          outputAmount: '4192707216034',
-          scheduledAt: 564000,
-          scheduledBlockIndex: '94-595',
-          failedAt: 624000,
-          failedAtBlockIndex: '104-7',
-          srcChainRequiredBlockConfirmations: 2,
-          estimatedDurationSeconds: 48,
-          failure: {
-            mode: 'BROADCAST_ABORTED',
-            reason: {
-              name: 'BroadcastAborted',
-              message: 'The swap broadcast was aborted',
-            },
-          },
-        },
-        refund: {},
-        ccm: {},
-        boost: { maxBoostFeeBps: 0 },
       });
     });
 
@@ -1072,24 +1020,17 @@ describe('server', () => {
         swapEventMap['EthereumIngressEgress.DepositIgnored'],
       ]);
 
-      const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
+      const { body } = await request(server).get(`/v2/swaps/${channelId}`);
 
-      expect(status).toBe(200);
-      expect(body).toMatchObject({
-        swap: {
-          failedAt: '1970-01-01T00:09:12.000Z',
-          failedAtBlockIndex: '92-400',
-          srcChainRequiredBlockConfirmations: 2,
-          estimatedDurationSeconds: 48,
-          failure: {
-            mode: 'INGRESS_IGNORED',
-            reason: {
-              name: 'BelowMinimumDeposit',
-              message: 'The deposited amount was below the minimum required',
-            },
-          },
+      expect(body.state).toBe('FAILED');
+      expect(body.deposit.failure).toMatchObject({
+        failedAt: '1970-01-01T00:09:12.000Z',
+        failedAtBlockIndex: '92-400',
+        mode: 'INGRESS_IGNORED',
+        reason: {
+          name: 'BelowMinimumDeposit',
+          message: 'The deposited amount was below the minimum required',
         },
-        state: 'FAILED',
       });
     });
 
@@ -1160,23 +1101,19 @@ describe('server', () => {
 
       expect(status).toBe(200);
 
-      expect(body).toMatchObject({
-        state: 'FAILED',
-        swap: {
-          failedAt: 14292858000,
-          failedAtBlockIndex: '2382143-817',
-          failure: {
-            mode: 'EGRESS_IGNORED',
-            reason: {
-              message: 'The amount is below the minimum egress amount.',
-              name: 'ethereumIngressEgress.BelowEgressDustLimit',
-            },
-          },
+      expect(body.state).toBe('FAILED');
+      expect(body.swap.failure).toMatchObject({
+        failedAt: 14292858000,
+        failedAtBlockIndex: '2382143-817',
+        mode: 'EGRESS_IGNORED',
+        reason: {
+          message: 'The amount is below the minimum egress amount.',
+          name: 'ethereumIngressEgress.BelowEgressDustLimit',
         },
       });
     });
 
-    fit(`retrieves a swap in ${StateV2.Failed} status (refund egress ignored)`, async () => {
+    it(`retrieves a swap in ${StateV2.Failed} status (refund egress ignored)`, async () => {
       await processEvents([
         ...swapEvents.slice(0, 4),
         swapEventMap['Swapping.RefundEgressScheduled'],
@@ -1187,18 +1124,15 @@ describe('server', () => {
 
       expect(status).toBe(200);
 
-      expect(body).toMatchObject({
-        state: 'FAILED',
-        swap: {
-          failedAt: 14292858000,
-          failedAtBlockIndex: '2382143-817',
-          failure: {
-            mode: 'EGRESS_IGNORED',
-            reason: {
-              message: 'The amount is below the minimum egress amount.',
-              name: 'ethereumIngressEgress.BelowEgressDustLimit',
-            },
-          },
+      // console.log(body.swap);
+      expect(body.state).toBe('FAILED');
+      expect(body.refund.failure).toMatchObject({
+        failedAt: 624000,
+        failedAtBlockIndex: '104-1',
+        mode: 'REFUND_EGRESS_IGNORED',
+        reason: {
+          name: 'ethereumIngressEgress.BelowEgressDustLimit',
+          message: 'The amount is below the minimum egress amount.',
         },
       });
     });
@@ -1241,34 +1175,42 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/swaps/${txHash}`);
       expect(status).toBe(200);
       const { swapId, ...rest } = body;
-      expect(rest).toMatchInlineSnapshot(`
-        {
-          "depositAmount": "5000000000000000000",
-          "depositReceivedAt": 552000,
-          "depositReceivedBlockIndex": "92-400",
-          "depositTransactionHash": "0xb2dcb9ce8d50f0ab869995fee8482bcf304ffcfe5681ca748f90e34c0ad7b241",
-          "depositTransactionRef": "0xb2dcb9ce8d50f0ab869995fee8482bcf304ffcfe5681ca748f90e34c0ad7b241",
-          "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
-          "destAsset": "DOT",
-          "destChain": "Polkadot",
-          "estimatedDefaultDurationSeconds": 48,
-          "feesPaid": [
-            {
-              "amount": "50000000350000",
-              "asset": "ETH",
-              "chain": "Ethereum",
-              "type": "INGRESS",
-            },
-          ],
-          "srcAsset": "ETH",
-          "srcChain": "Ethereum",
-          "srcChainRequiredBlockConfirmations": 2,
-          "state": "DEPOSIT_RECEIVED",
-          "swapScheduledAt": 552000,
-          "swapScheduledBlockIndex": "92-399",
-          "type": "SWAP",
-        }
-      `);
+      expect(rest).toMatchSnapshot({
+        state: 'SWAPPING',
+        srcAsset: 'ETH',
+        srcChain: 'Ethereum',
+        destAsset: 'DOT',
+        destChain: 'Polkadot',
+        destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
+        depositChannel: {},
+        deposit: {
+          amount: '5000000000000000000',
+          transactionRef: '0xb2dcb9ce8d50f0ab869995fee8482bcf304ffcfe5681ca748f90e34c0ad7b241',
+          receivedAt: 552000,
+          receivedBlockIndex: '92-400',
+        },
+        swap: {
+          type: 'SWAP',
+          totalAmountSwapped: '0',
+          totalChunksExecuted: 0,
+          currentChunk: {
+            swapInputAmount: '4999949999999650000',
+            scheduledAt: '1970-01-01T00:09:12.000Z',
+            scheduledBlockIndex: '92-399',
+            executedAt: null,
+            retryCount: 0,
+            latestSwapRescheduledAt: null,
+            fees: [],
+          },
+          lastExecutedChunk: null,
+          fees: expect.any(Array),
+          srcChainRequiredBlockConfirmations: 2,
+          estimatedDurationSeconds: 48,
+        },
+        refund: {},
+        ccm: {},
+        boost: {},
+      });
     });
 
     it('retrieves a swap from a native swap id', async () => {
@@ -1277,40 +1219,51 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/swaps/${swapRequestId}`);
       expect(status).toBe(200);
       const { swapId, ...rest } = body;
-      expect(rest).toMatchInlineSnapshot(`
-        {
-          "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
-          "depositAmount": "5000000000000000000",
-          "depositChannelBrokerCommissionBps": 0,
-          "depositChannelCreatedAt": 516000,
-          "depositChannelExpiryBlock": "265",
-          "depositChannelMaxBoostFeeBps": 0,
-          "depositChannelOpenedThroughBackend": false,
-          "depositReceivedAt": 552000,
-          "depositReceivedBlockIndex": "92-400",
-          "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
-          "destAsset": "DOT",
-          "destChain": "Polkadot",
-          "estimatedDefaultDurationSeconds": 48,
-          "estimatedDepositChannelExpiryTime": 1699527060000,
-          "feesPaid": [
-            {
-              "amount": "50000000350000",
-              "asset": "ETH",
-              "chain": "Ethereum",
-              "type": "INGRESS",
-            },
-          ],
-          "isDepositChannelExpired": false,
-          "srcAsset": "ETH",
-          "srcChain": "Ethereum",
-          "srcChainRequiredBlockConfirmations": 2,
-          "state": "DEPOSIT_RECEIVED",
-          "swapScheduledAt": 552000,
-          "swapScheduledBlockIndex": "92-399",
-          "type": "SWAP",
-        }
-      `);
+
+      expect(rest).toMatchSnapshot({
+        state: 'SWAPPING',
+        srcAsset: 'ETH',
+        srcChain: 'Ethereum',
+        destAsset: 'DOT',
+        destChain: 'Polkadot',
+        destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
+        depositChannel: {
+          createdAt: 516000,
+          brokerCommissionBps: 0,
+          depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
+          expiryBlock: '265',
+          estimatedExpiryTime: 1699527060000,
+          isExpired: false,
+          openedThroughBackend: false,
+        },
+        deposit: {
+          amount: '5000000000000000000',
+          receivedAt: 552000,
+          receivedBlockIndex: '92-400',
+        },
+        swap: {
+          totalAmountSwapped: '0',
+          totalChunksExecuted: 0,
+          currentChunk: {
+            swapInputAmount: '4999949999999650000',
+            scheduledAt: '1970-01-01T00:09:12.000Z',
+            scheduledBlockIndex: '92-399',
+            executedAt: null,
+            retryCount: 0,
+            latestSwapRescheduledAt: null,
+            fees: [],
+          },
+          lastExecutedChunk: null,
+          isDcaSwap: null,
+          fees: expect.any(Array),
+          type: 'SWAP',
+          srcChainRequiredBlockConfirmations: 2,
+          estimatedDurationSeconds: 48,
+        },
+        refund: {},
+        ccm: {},
+        boost: { maxBoostFeeBps: 0 },
+      });
     });
 
     it('works in maintenance mode', async () => {
@@ -1338,7 +1291,7 @@ describe('server', () => {
 
       expect(status).toBe(200);
 
-      expect(body.depositChannelAffiliateBrokers).toStrictEqual([
+      expect(body.depositChannel.affiliateBrokers).toStrictEqual([
         {
           account: 'cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy',
           commissionBps: 100,
@@ -1358,7 +1311,13 @@ describe('server', () => {
       const { status, body } = await request(server).get(`/v2/swaps/${swapRequestId}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchSnapshot();
+      expect(body.state).toBe('SWAPPING');
+      expect(body.boost).toMatchObject({
+        effectiveBoostFeeBps: 5,
+        maxBoostFeeBps: 30,
+        boostedAt: 552000,
+        boostedBlockIndex: '92-400',
+      });
     });
 
     it('does not retrieve boost details when a channel is not boostable', async () => {
@@ -1367,12 +1326,10 @@ describe('server', () => {
       const { status, body } = await request(server).get(`/v2/swaps/${channelId}`);
 
       expect(status).toBe(200);
-      expect(body.effectiveBoostFeeBps).toBeUndefined();
-      expect(body.depositChannelMaxBoostFeeBps).toBe(0);
-      expect(body.depositBoostedAt).toBeUndefined();
-      expect(body.depositBoostedBlockIndex).toBeUndefined();
-      expect(body.boostSkippedAt).toBeUndefined();
-      expect(body.boostSkippedBlockIndex).toBeUndefined();
+      expect(body.state).toBe('COMPLETE');
+      expect(body.boost).toStrictEqual({
+        maxBoostFeeBps: 0,
+      });
     });
 
     it('retrieves boost skipped properties when there was a failed boost attempt for the swap', async () => {
@@ -1387,13 +1344,13 @@ describe('server', () => {
       const { status, body } = await request(server).get(`/v2/swaps/${channelId}`);
 
       expect(status).toBe(200);
-      expect(body.effectiveBoostFeeBps).toBeUndefined();
-      expect(body.depositChannelMaxBoostFeeBps).toBe(30);
-      expect(body.boostSkippedAt.valueOf()).toBe(RECEIVED_TIMESTAMP);
-      expect(body.boostSkippedBlockIndex).toBe(RECEIVED_BLOCK_INDEX);
+      expect(body.boost.effectiveBoostFeeBps).toBeUndefined();
+      expect(body.boost.maxBoostFeeBps).toBe(30);
+      expect(body.boost.skippedAt.valueOf()).toBe(RECEIVED_TIMESTAMP);
+      expect(body.boost.skippedBlockIndex).toBe(RECEIVED_BLOCK_INDEX);
     });
 
-    it(`retrieves a swap with FillOrKillParams in ${StateV2.AwaitingDeposit} status`, async () => {
+    it(`retrieves a swap with FillOrKillParams in ${StateV2.Receiving} status`, async () => {
       const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositChannelEvent.args.refundParameters = {
         minPrice: '99999999999999999999999999999999999999999999999999999000000000000000000',
@@ -1409,35 +1366,15 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchInlineSnapshot(`
-        {
-          "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
-          "depositChannelBrokerCommissionBps": 0,
-          "depositChannelCreatedAt": 516000,
-          "depositChannelExpiryBlock": "265",
-          "depositChannelMaxBoostFeeBps": 0,
-          "depositChannelOpenedThroughBackend": false,
-          "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
-          "destAsset": "DOT",
-          "destChain": "Polkadot",
-          "estimatedDefaultDurationSeconds": 48,
-          "estimatedDepositChannelExpiryTime": 1699527060000,
-          "feesPaid": [],
-          "fillOrKillParams": {
-            "minPrice": "29387358770557187699218413430556141945466.638919302188",
-            "refundAddress": "0x541f563237a309b3a61e33bdf07a8930bdba8d99",
-            "retryDurationBlocks": 15,
-          },
-          "isDepositChannelExpired": false,
-          "srcAsset": "ETH",
-          "srcChain": "Ethereum",
-          "srcChainRequiredBlockConfirmations": 2,
-          "state": "AWAITING_DEPOSIT",
-        }
-      `);
+      expect(body.depositChannel.fillOrKillParams).toMatchObject({
+        minPrice: '29387358770557187699218413430556141945466.638919302188',
+        refundAddress: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
+        retryDurationBlocks: 15,
+      });
+      expect(body.state).toBe('RECEIVING');
     });
 
-    it(`retrieves a swap with FillOrKillParams in ${StateV2.BroadcastAborted}`, async () => {
+    it(`retrieves a swap with FillOrKillParams in ${StateV2.Failed} when refund aborted`, async () => {
       const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositChannelEvent.args.refundParameters = {
         minPrice: '99999999999999999999999999999999999999999999999999999000000000000000000',
@@ -1458,14 +1395,17 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchObject({
-        fillOrKillParams: {
-          minPrice: expect.any(String),
-          refundAddress: expect.any(String),
-          retryDurationBlocks: expect.any(Number),
-        },
-        state: 'BROADCAST_ABORTED',
-        egressType: 'REFUND',
+      expect(body.state).toBe('FAILED');
+      expect(body.depositChannel.fillOrKillParams).toMatchObject({
+        minPrice: expect.any(String),
+        refundAddress: expect.any(String),
+        retryDurationBlocks: expect.any(Number),
+      });
+      expect(body.refund).toMatchObject({
+        outputAmount: '999844999999160000',
+        scheduledAt: 564000,
+        scheduledBlockIndex: '94-594',
+        failure: expect.any(Object),
       });
     });
 
@@ -1490,14 +1430,19 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchObject({
-        fillOrKillParams: {
-          minPrice: expect.any(String),
-          refundAddress: expect.any(String),
-          retryDurationBlocks: expect.any(Number),
-        },
-        state: 'COMPLETE',
-        egressType: 'REFUND',
+      expect(body.state).toBe('COMPLETE');
+      expect(body.depositChannel.fillOrKillParams).toMatchObject({
+        minPrice: expect.any(String),
+        refundAddress: expect.any(String),
+        retryDurationBlocks: expect.any(Number),
+      });
+      expect(body.refund).toStrictEqual({
+        outputAmount: '999844999999160000',
+        scheduledAt: 564000,
+        scheduledBlockIndex: '94-594',
+        sentAt: 624000,
+        sentAtBlockIndex: '104-7',
+        sentTxRef: '0xd2398250c9fa869f0eb7659015549ed46178c95cedd444c3539f655068f6a7d9',
       });
     });
   });
