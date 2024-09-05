@@ -435,9 +435,6 @@ describe('server', () => {
           srcChainRequiredBlockConfirmations: 2,
           estimatedDurationSeconds: 48,
         },
-        refund: {},
-        ccm: {},
-        boost: { maxBoostFeeBps: 0 },
       });
     });
 
@@ -470,9 +467,6 @@ describe('server', () => {
           srcChainRequiredBlockConfirmations: 2,
           estimatedDurationSeconds: 48,
         },
-        refund: {},
-        ccm: {},
-        boost: { maxBoostFeeBps: 0 },
       });
     });
 
@@ -593,9 +587,6 @@ describe('server', () => {
           srcChainRequiredBlockConfirmations: 2,
           estimatedDurationSeconds: 48,
         },
-        refund: {},
-        ccm: {},
-        boost: { maxBoostFeeBps: 0 },
       });
     });
 
@@ -658,9 +649,6 @@ describe('server', () => {
           srcChainRequiredBlockConfirmations: 2,
           estimatedDurationSeconds: 48,
         },
-        refund: {},
-        ccm: {},
-        boost: { maxBoostFeeBps: 0 },
       });
     });
 
@@ -789,15 +777,23 @@ describe('server', () => {
           estimatedDurationSeconds: 48,
           type: 'SWAP',
         },
-        refund: {},
-        ccm: {},
-        boost: { maxBoostFeeBps: 0 },
       });
     });
 
     it(`retrieves a swap with a refund in ${StateV2.Sending} status`, async () => {
+      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.refundParameters = {
+        minPrice: '99999999999999999999999999999999999999999999999999999000000000000000000',
+        refundAddress: {
+          value: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
+          __kind: 'Eth',
+        },
+        retryDuration: 15,
+      };
+
       await processEvents([
-        ...swapEvents.slice(0, 4),
+        depositChannelEvent,
+        ...swapEvents.slice(1, 4),
         swapEventMap['Swapping.RefundEgressScheduled'],
       ]);
 
@@ -821,6 +817,11 @@ describe('server', () => {
           estimatedExpiryTime: 1699527060000,
           isExpired: false,
           openedThroughBackend: false,
+          fillOrKillParams: {
+            minPrice: '29387358770557187699218413430556141945466.638919302188',
+            refundAddress: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
+            retryDurationBlocks: 15,
+          },
         },
         deposit: {
           amount: '5000000000000000000',
@@ -851,8 +852,6 @@ describe('server', () => {
           scheduledAt: 564000,
           scheduledBlockIndex: '94-594',
         },
-        ccm: {},
-        boost: { maxBoostFeeBps: 0 },
       });
     });
 
@@ -924,9 +923,6 @@ describe('server', () => {
           estimatedDurationSeconds: 48,
           type: 'SWAP',
         },
-        refund: {},
-        ccm: {},
-        boost: { maxBoostFeeBps: 0 },
       });
     });
 
@@ -996,9 +992,6 @@ describe('server', () => {
           estimatedDurationSeconds: 48,
           type: 'SWAP',
         },
-        refund: {},
-        ccm: {},
-        boost: { maxBoostFeeBps: 0 },
       });
     });
 
@@ -1125,8 +1118,19 @@ describe('server', () => {
     });
 
     it(`retrieves a swap in ${StateV2.Failed} status (refund egress ignored)`, async () => {
+      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.refundParameters = {
+        minPrice: '99999999999999999999999999999999999999999999999999999000000000000000000',
+        refundAddress: {
+          value: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
+          __kind: 'Eth',
+        },
+        retryDuration: 15,
+      };
+
       await processEvents([
-        ...swapEvents.slice(0, 4),
+        depositChannelEvent,
+        ...swapEvents.slice(1, 4),
         swapEventMap['Swapping.RefundEgressScheduled'],
         swapEventMap['Swapping.RefundEgressIgnored'],
       ]);
@@ -1135,7 +1139,6 @@ describe('server', () => {
 
       expect(status).toBe(200);
 
-      // console.log(body.swap);
       expect(body.state).toBe('FAILED');
       expect(body.refund.failure).toMatchObject({
         failedAt: 624000,
@@ -1218,9 +1221,6 @@ describe('server', () => {
           srcChainRequiredBlockConfirmations: 2,
           estimatedDurationSeconds: 48,
         },
-        refund: {},
-        ccm: {},
-        boost: {},
       });
     });
 
@@ -1271,9 +1271,6 @@ describe('server', () => {
           srcChainRequiredBlockConfirmations: 2,
           estimatedDurationSeconds: 48,
         },
-        refund: {},
-        ccm: {},
-        boost: { maxBoostFeeBps: 0 },
       });
     });
 
@@ -1338,9 +1335,7 @@ describe('server', () => {
 
       expect(status).toBe(200);
       expect(body.state).toBe('COMPLETE');
-      expect(body.boost).toStrictEqual({
-        maxBoostFeeBps: 0,
-      });
+      expect(body.boost).toBe(undefined);
     });
 
     it('retrieves boost skipped properties when there was a failed boost attempt for the swap', async () => {
@@ -1549,9 +1544,6 @@ describe('server', () => {
           srcChainRequiredBlockConfirmations: 2,
           estimatedDurationSeconds: 48,
         },
-        refund: {},
-        ccm: {},
-        boost: { maxBoostFeeBps: 0 },
       });
     });
 
@@ -1628,9 +1620,6 @@ describe('server', () => {
           srcChainRequiredBlockConfirmations: 2,
           estimatedDurationSeconds: 48,
         },
-        refund: {},
-        ccm: {},
-        boost: { maxBoostFeeBps: 0 },
       });
     });
 
@@ -1707,9 +1696,6 @@ describe('server', () => {
           srcChainRequiredBlockConfirmations: 2,
           estimatedDurationSeconds: 48,
         },
-        refund: {},
-        ccm: {},
-        boost: { maxBoostFeeBps: 0 },
       });
     });
 
@@ -1748,18 +1734,24 @@ describe('server', () => {
 
     it(`retrieves mulitple DCA swaps in ${StateV2.Failed} status if refund egress fails but swap completes`, async () => {
       const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.refundParameters = {
+        minPrice: '99999999999999999999999999999999999999999999999999999000000000000000000',
+        refundAddress: {
+          value: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
+          __kind: 'Eth',
+        },
+        retryDuration: 15,
+      };
       depositChannelEvent.args.dcaParameters = {
         numberOfChunks: 10,
         chunkInterval: 3,
       };
-      const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
-      const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
 
       await processEvents([
         depositChannelEvent,
         ...swapEvents.slice(1, 5),
-        incrementId(scheduledEvent),
-        incrementId(executedEvent),
+        incrementId(clone(swapEventMap['Swapping.SwapScheduled'])),
+        incrementId(clone(swapEventMap['Swapping.SwapExecuted'])),
         swapEventMap['Swapping.SwapEgressScheduled'],
         swapEventMap['Swapping.RefundEgressScheduled'],
         swapEventMap['PolkadotIngressEgress.BatchBroadcastRequested'],

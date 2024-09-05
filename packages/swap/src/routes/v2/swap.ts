@@ -205,6 +205,10 @@ router.get(
         amount: fee.amount.toFixed(),
       }));
 
+    const showBoost = swapDepositChannel?.maxBoostFeeBps && swapDepositChannel.maxBoostFeeBps > 0;
+    const showCcm = swapDepositChannel?.ccmGasBudget || swapDepositChannel?.ccmMessage;
+    const showRefund = swapDepositChannel?.fokRefundAddress;
+
     const response = {
       state,
       swapId: swapRequest?.nativeId.toString(),
@@ -269,27 +273,34 @@ router.get(
         estimatedDurationSeconds:
           srcAsset && destAsset && (await estimateSwapDuration({ srcAsset, destAsset })),
       },
-      refund: {
-        ...(await getEgressStatusFields(
-          refundEgress,
-          refundEgress?.broadcast,
-          ignoredEgresses,
-          'REFUND',
-          refundEgressTrackerTxRef,
-        )),
-      },
-      ccm: {
-        ...ccmParams,
-        receivedBlockIndex: swapRequest?.ccmDepositReceivedBlockIndex ?? undefined,
-      },
-      boost: {
-        effectiveBoostFeeBps,
-        maxBoostFeeBps: swapDepositChannel?.maxBoostFeeBps,
-        boostedAt: swapRequest?.depositBoostedAt?.valueOf(),
-        boostedBlockIndex: swapRequest?.depositBoostedBlockIndex ?? undefined,
-        skippedAt: swapDepositChannel?.failedBoosts.at(0)?.failedAtTimestamp.valueOf(),
-        skippedBlockIndex: swapDepositChannel?.failedBoosts.at(0)?.failedAtBlockIndex ?? undefined,
-      },
+      ...(showRefund && {
+        refund: {
+          ...(await getEgressStatusFields(
+            refundEgress,
+            refundEgress?.broadcast,
+            ignoredEgresses,
+            'REFUND',
+            refundEgressTrackerTxRef,
+          )),
+        },
+      }),
+      ...(showCcm && {
+        ccm: {
+          ...ccmParams,
+          receivedBlockIndex: swapRequest?.ccmDepositReceivedBlockIndex ?? undefined,
+        },
+      }),
+      ...(showBoost && {
+        boost: {
+          effectiveBoostFeeBps,
+          maxBoostFeeBps: swapDepositChannel?.maxBoostFeeBps,
+          boostedAt: swapRequest?.depositBoostedAt?.valueOf(),
+          boostedBlockIndex: swapRequest?.depositBoostedBlockIndex ?? undefined,
+          skippedAt: swapDepositChannel?.failedBoosts.at(0)?.failedAtTimestamp.valueOf(),
+          skippedBlockIndex:
+            swapDepositChannel?.failedBoosts.at(0)?.failedAtBlockIndex ?? undefined,
+        },
+      }),
     };
 
     logger.info('sending response for swap request', { id, response });
