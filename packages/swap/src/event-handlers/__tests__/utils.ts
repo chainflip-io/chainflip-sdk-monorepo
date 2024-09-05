@@ -1,5 +1,6 @@
 import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
+import assert from 'assert';
 import { GraphQLClient } from 'graphql-request';
 import { z } from 'zod';
 import { InternalAssets, Chain, Chains, assetConstants } from '@/shared/enums';
@@ -437,6 +438,7 @@ export const processEvents = async (events: (Event & { id: string })[], version 
     .sort((a, b) => (a.id < b.id ? -1 : 1))
     .reduce((acc, event) => {
       const id = Number.parseInt(event.id, 10);
+      assert(!Number.isNaN(id), 'event id is not a number');
       acc.set(id, (acc.get(id) || []).concat([event]));
       return acc;
     }, new Map<number, Event[]>());
