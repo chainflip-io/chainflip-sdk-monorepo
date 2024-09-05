@@ -97,6 +97,15 @@ export default async function swapRequested({
 
   const { destAddress, ccmMetadata } = getRequestInfo(requestType);
 
+  const additionalInfo =
+    requestType.__kind === 'Ccm'
+      ? {
+          depositReceivedAt: new Date(block.timestamp),
+          depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
+          ccmDepositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
+        }
+      : undefined;
+
   await prisma.swapRequest.create({
     data: {
       nativeId: swapRequestId,
@@ -112,6 +121,7 @@ export default async function swapRequested({
       srcAddress: ccmMetadata?.sourceAddress?.address,
       destAddress,
       swapRequestedAt: new Date(block.timestamp),
+      ...additionalInfo,
     },
   });
 }
