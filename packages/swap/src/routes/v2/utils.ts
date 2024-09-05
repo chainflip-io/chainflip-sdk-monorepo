@@ -154,7 +154,7 @@ export const getSwapState = async (
     | undefined
     | null,
 ) => {
-  let state: StateV2 = StateV2.Receiving;
+  let state: StateV2 | undefined;
   let swapEgressTrackerTxRef: string | null | undefined;
   let refundEgressTrackerTxRef: string | null | undefined;
   const swapEgress = swapRequest?.egress;
@@ -171,6 +171,7 @@ export const getSwapState = async (
     state = StateV2.Complete;
   } else if (egress?.broadcast) {
     if (swapEgress?.broadcast) {
+      state = StateV2.Sending;
       const pendingSwapBroadcast = await getPendingBroadcast(swapEgress.broadcast);
       if (pendingSwapBroadcast) {
         state = StateV2.Sent;
@@ -188,7 +189,10 @@ export const getSwapState = async (
     state = StateV2.Sending;
   } else if (swapRequest?.swaps.some((s) => s.swapScheduledAt)) {
     state = StateV2.Swapping;
+  } else {
+    state = StateV2.Receiving;
   }
+
   return {
     state,
     swapEgressTrackerTxRef,

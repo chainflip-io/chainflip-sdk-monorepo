@@ -14,6 +14,19 @@ import { getPendingBroadcast } from '../../../ingress-egress-tracking';
 import app from '../../../server';
 import { StateV2 } from '../../v2/swap';
 
+const incrementId = (obj: Mutable<(typeof swapEventMap)[keyof typeof swapEventMap]>, def = 1) => {
+  if ('swapId' in obj.args) {
+    return {
+      ...obj,
+      args: {
+        ...obj.args,
+        swapId: (parseInt(obj.args.swapId as string, 10) + def).toString(),
+      },
+    };
+  }
+  throw new Error('no incremental id in event');
+};
+
 jest.mock('@/shared/rpc', () => ({
   ...jest.requireActual('@/shared/rpc'),
   getMetadata: jest.fn().mockResolvedValue(metadata.result),
@@ -523,8 +536,6 @@ describe('server', () => {
         },
       });
     });
-
-    // test for case where first 3 events are processed
 
     it(`retrieves a swap in ${StateV2.Swapping} status`, async () => {
       await processEvents(swapEvents.slice(0, 4));
@@ -1444,6 +1455,371 @@ describe('server', () => {
         sentAtBlockIndex: '104-7',
         sentTxRef: '0xd2398250c9fa869f0eb7659015549ed46178c95cedd444c3539f655068f6a7d9',
       });
+    });
+
+    it(`retrieves a swap with DcaParams in ${StateV2.Receiving} status`, async () => {
+      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.dcaParameters = {
+        numberOfChunks: 10,
+        chunkInterval: 3,
+      };
+
+      await processEvents([depositChannelEvent]);
+
+      const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+
+      expect(body.depositChannel.dcaParams).toMatchObject({
+        numberOfChunks: 10,
+        chunkIntervalBlocks: 3,
+      });
+      expect(body.state).toBe('RECEIVING');
+    });
+
+    it(`retrieves mulitple DCA swaps in ${StateV2.Swapping} status`, async () => {
+      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.dcaParameters = {
+        numberOfChunks: 10,
+        chunkInterval: 3,
+      };
+      const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
+      const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
+
+      await processEvents([
+        depositChannelEvent,
+        ...swapEvents.slice(1, 5),
+        incrementId(scheduledEvent),
+        incrementId(executedEvent),
+      ]);
+
+      const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
+      const { swapId, ...rest } = body;
+      expect(status).toBe(200);
+      expect(rest).toMatchObject({
+        state: 'SWAPPING',
+        srcAsset: 'ETH',
+        srcChain: 'Ethereum',
+        destAsset: 'DOT',
+        destChain: 'Polkadot',
+        destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
+        depositChannel: {
+          createdAt: 516000,
+          brokerCommissionBps: 0,
+          depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
+          expiryBlock: '265',
+          estimatedExpiryTime: 1699527060000,
+          isExpired: false,
+          openedThroughBackend: false,
+          dcaParams: { numberOfChunks: 10, chunkIntervalBlocks: 3 },
+        },
+        deposit: {
+          amount: '5000000000000000000',
+          receivedAt: 552000,
+          receivedBlockIndex: '92-400',
+        },
+        swap: {
+          totalAmountSwapped: '8385809332068',
+          totalChunksExecuted: 2,
+          currentChunk: {
+            swapInputAmount: '4999949999999650000',
+            swapOutputAmount: '4192904666034',
+            scheduledAt: '1970-01-01T00:09:12.000Z',
+            scheduledBlockIndex: '92-399',
+            executedAt: '1970-01-01T00:09:24.000Z',
+            executedBlockIndex: '94-594',
+            retryCount: 0,
+            latestSwapRescheduledAt: null,
+            fees: expect.any(Array),
+          },
+          lastExecutedChunk: {
+            swapInputAmount: '4999949999999650000',
+            swapOutputAmount: '4192904666034',
+            scheduledAt: '1970-01-01T00:09:12.000Z',
+            scheduledBlockIndex: '92-399',
+            executedAt: '1970-01-01T00:09:24.000Z',
+            executedBlockIndex: '94-594',
+            retryCount: 0,
+            latestSwapRescheduledAt: null,
+            fees: expect.any(Array),
+          },
+          isDcaSwap: true,
+          fees: expect.any(Array),
+          type: 'SWAP',
+          srcChainRequiredBlockConfirmations: 2,
+          estimatedDurationSeconds: 48,
+        },
+        refund: {},
+        ccm: {},
+        boost: { maxBoostFeeBps: 0 },
+      });
+    });
+
+    it(`retrieves mulitple DCA swaps in ${StateV2.Sending} status`, async () => {
+      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.dcaParameters = {
+        numberOfChunks: 10,
+        chunkInterval: 3,
+      };
+      const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
+      const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
+
+      await processEvents([
+        depositChannelEvent,
+        ...swapEvents.slice(1, 5),
+        incrementId(scheduledEvent),
+        incrementId(executedEvent),
+        ...swapEvents.slice(5, 8),
+      ]);
+
+      const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
+      const { swapId, ...rest } = body;
+      expect(status).toBe(200);
+      expect(rest).toMatchObject({
+        state: 'SENDING',
+        srcAsset: 'ETH',
+        srcChain: 'Ethereum',
+        destAsset: 'DOT',
+        destChain: 'Polkadot',
+        destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
+        depositChannel: {
+          createdAt: 516000,
+          brokerCommissionBps: 0,
+          depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
+          expiryBlock: '265',
+          estimatedExpiryTime: 1699527060000,
+          isExpired: false,
+          openedThroughBackend: false,
+          dcaParams: { numberOfChunks: 10, chunkIntervalBlocks: 3 },
+        },
+        deposit: {
+          amount: '5000000000000000000',
+          receivedAt: 552000,
+          receivedBlockIndex: '92-400',
+        },
+        swap: {
+          totalAmountSwapped: '8385809332068',
+          totalChunksExecuted: 2,
+          currentChunk: {
+            swapInputAmount: '4999949999999650000',
+            swapOutputAmount: '4192904666034',
+            scheduledAt: '1970-01-01T00:09:12.000Z',
+            scheduledBlockIndex: '92-399',
+            executedAt: '1970-01-01T00:09:24.000Z',
+            executedBlockIndex: '94-594',
+            retryCount: 0,
+            latestSwapRescheduledAt: null,
+            fees: expect.any(Array),
+          },
+          lastExecutedChunk: {
+            swapInputAmount: '4999949999999650000',
+            swapOutputAmount: '4192904666034',
+            scheduledAt: '1970-01-01T00:09:12.000Z',
+            scheduledBlockIndex: '92-399',
+            executedAt: '1970-01-01T00:09:24.000Z',
+            executedBlockIndex: '94-594',
+            retryCount: 0,
+            latestSwapRescheduledAt: null,
+            fees: expect.any(Array),
+          },
+          isDcaSwap: true,
+          fees: expect.any(Array),
+          type: 'SWAP',
+          srcChainRequiredBlockConfirmations: 2,
+          estimatedDurationSeconds: 48,
+        },
+        refund: {},
+        ccm: {},
+        boost: { maxBoostFeeBps: 0 },
+      });
+    });
+
+    it(`retrieves mulitple DCA swaps in ${StateV2.Complete}`, async () => {
+      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.dcaParameters = {
+        numberOfChunks: 10,
+        chunkInterval: 3,
+      };
+      const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
+      const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
+
+      await processEvents([
+        depositChannelEvent,
+        ...swapEvents.slice(1, 5),
+        incrementId(scheduledEvent),
+        incrementId(executedEvent),
+        ...swapEvents.slice(5, 9),
+      ]);
+
+      const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
+      const { swapId, ...rest } = body;
+      expect(status).toBe(200);
+      expect(rest).toMatchObject({
+        state: 'COMPLETE',
+        srcAsset: 'ETH',
+        srcChain: 'Ethereum',
+        destAsset: 'DOT',
+        destChain: 'Polkadot',
+        destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
+        depositChannel: {
+          createdAt: 516000,
+          brokerCommissionBps: 0,
+          depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
+          expiryBlock: '265',
+          estimatedExpiryTime: 1699527060000,
+          isExpired: false,
+          openedThroughBackend: false,
+          dcaParams: { numberOfChunks: 10, chunkIntervalBlocks: 3 },
+        },
+        deposit: {
+          amount: '5000000000000000000',
+          receivedAt: 552000,
+          receivedBlockIndex: '92-400',
+        },
+        swap: {
+          totalAmountSwapped: '8385809332068',
+          totalChunksExecuted: 2,
+          currentChunk: {
+            swapInputAmount: '4999949999999650000',
+            swapOutputAmount: '4192904666034',
+            scheduledAt: '1970-01-01T00:09:12.000Z',
+            scheduledBlockIndex: '92-399',
+            executedAt: '1970-01-01T00:09:24.000Z',
+            executedBlockIndex: '94-594',
+            retryCount: 0,
+            latestSwapRescheduledAt: null,
+            fees: expect.any(Array),
+          },
+          lastExecutedChunk: {
+            swapInputAmount: '4999949999999650000',
+            swapOutputAmount: '4192904666034',
+            scheduledAt: '1970-01-01T00:09:12.000Z',
+            scheduledBlockIndex: '92-399',
+            executedAt: '1970-01-01T00:09:24.000Z',
+            executedBlockIndex: '94-594',
+            retryCount: 0,
+            latestSwapRescheduledAt: null,
+            fees: expect.any(Array),
+          },
+          isDcaSwap: true,
+          fees: expect.any(Array),
+          type: 'SWAP',
+          srcChainRequiredBlockConfirmations: 2,
+          estimatedDurationSeconds: 48,
+        },
+        refund: {},
+        ccm: {},
+        boost: { maxBoostFeeBps: 0 },
+      });
+    });
+
+    it(`retrieves mulitple DCA swaps in ${StateV2.Failed} status if swap egress fails`, async () => {
+      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.dcaParameters = {
+        numberOfChunks: 10,
+        chunkInterval: 3,
+      };
+      const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
+      const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
+
+      await processEvents([
+        depositChannelEvent,
+        ...swapEvents.slice(1, 5),
+        incrementId(scheduledEvent),
+        incrementId(executedEvent),
+        ...swapEvents.slice(5, 8),
+        swapEventMap['PolkadotBroadcaster.BroadcastAborted'],
+      ]);
+
+      const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
+      const { swapId, ...rest } = body;
+      expect(status).toBe(200);
+      expect(rest.state).toBe('FAILED');
+      expect(rest.swap.failure).toMatchObject({
+        failedAt: 624000,
+        failedAtBlockIndex: '104-7',
+        mode: 'BROADCAST_ABORTED',
+        reason: {
+          name: 'BroadcastAborted',
+          message: 'The swap broadcast was aborted',
+        },
+      });
+    });
+
+    it(`retrieves mulitple DCA swaps in ${StateV2.Failed} status if refund egress fails but swap completes`, async () => {
+      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.dcaParameters = {
+        numberOfChunks: 10,
+        chunkInterval: 3,
+      };
+      const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
+      const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
+
+      await processEvents([
+        depositChannelEvent,
+        ...swapEvents.slice(1, 5),
+        incrementId(scheduledEvent),
+        incrementId(executedEvent),
+        swapEventMap['Swapping.SwapEgressScheduled'],
+        swapEventMap['Swapping.RefundEgressScheduled'],
+        swapEventMap['PolkadotIngressEgress.BatchBroadcastRequested'],
+        swapEventMap['Swapping.RefundEgressIgnored'],
+        swapEventMap['PolkadotBroadcaster.BroadcastSuccess'],
+      ]);
+
+      const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
+      const { swapId, ...rest } = body;
+      expect(status).toBe(200);
+      expect(rest.state).toBe('FAILED');
+      expect(rest.refund.failure).toMatchObject({
+        failedAt: 624000,
+        failedAtBlockIndex: '104-1',
+        mode: 'REFUND_EGRESS_IGNORED',
+        reason: {
+          message: 'The amount is below the minimum egress amount.',
+          name: 'ethereumIngressEgress.BelowEgressDustLimit',
+        },
+      });
+      expect(rest.swap).toMatchObject({
+        totalChunksExecuted: 2,
+        outputAmount: '4192707216034',
+        scheduledAt: 564000,
+        scheduledBlockIndex: '94-595',
+        sentAt: 624000,
+        sentAtBlockIndex: '104-7',
+        sentTxRef: '104-2',
+      });
+    });
+
+    it(`retrieves mulitple DCA swaps with correctly flattened fees (two egresses)`, async () => {
+      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.dcaParameters = {
+        numberOfChunks: 10,
+        chunkInterval: 3,
+      };
+      const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
+      const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
+
+      await processEvents([
+        depositChannelEvent,
+        ...swapEvents.slice(1, 5),
+        incrementId(scheduledEvent),
+        incrementId(executedEvent),
+        swapEventMap['Swapping.SwapEgressScheduled'],
+        swapEventMap['Swapping.RefundEgressScheduled'],
+        swapEventMap['PolkadotIngressEgress.BatchBroadcastRequested'],
+        swapEventMap['Swapping.RefundEgressIgnored'],
+        swapEventMap['PolkadotBroadcaster.BroadcastSuccess'],
+      ]);
+
+      const { body } = await request(server).get(`/v2/swaps/${channelId}`);
+      const { swapId, ...rest } = body;
+
+      expect(rest.swap.fees.filter((fee: any) => fee.type === 'EGRESS').length).toBe(2);
+      expect(rest.swap.fees.filter((fee: any) => fee.type === 'INGRESS').length).toBe(1);
+      expect(rest.swap.fees.filter((fee: any) => fee.type === 'NETWORK').length).toBe(1);
+      expect(rest.swap.fees.filter((fee: any) => fee.type === 'LIQUIDITY').length).toBe(2);
+      expect(rest.swap.fees.filter((fee: any) => fee.type === 'BROKER').length).toBe(1);
     });
   });
 });

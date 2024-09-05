@@ -165,6 +165,7 @@ router.get(
       }
       return a.swapExecutedAt && !b.swapExecutedAt ? 1 : 0;
     });
+
     const rolledSwaps = sortedSwaps?.reduce(
       (acc, curr) => {
         acc.totalAmountSwapped = acc.totalAmountSwapped.plus(curr.swapOutputAmount ?? 0);
