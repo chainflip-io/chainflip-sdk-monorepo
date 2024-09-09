@@ -1,6 +1,7 @@
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import { Signer } from 'ethers';
 import superjson from 'superjson';
+import { requestSwapDepositAddress } from '@/shared/broker';
 import { TransactionOptions } from '@/shared/contracts';
 import {
   ChainflipNetwork,
@@ -187,8 +188,6 @@ export class SwapSDK {
     let response;
 
     if (this.options.broker !== undefined) {
-      const { requestSwapDepositAddress } = await import('@/shared/broker.js');
-
       const result = await requestSwapDepositAddress(
         {
           ...depositAddressRequest,
