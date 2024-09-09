@@ -1,17 +1,24 @@
 import express from 'express';
-import { Chain, assetConstants, getAssetAndChain } from '@/shared/enums';
+import { assetConstants, getAssetAndChain } from '@/shared/enums';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
-import { screamingSnakeToPascalCase, toUpperCase } from '@/shared/strings';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
 import { asyncHandler, maintenanceMode } from './common';
-import prisma, { FailedSwapReason } from '../client';
+import prisma from '../client';
 import openSwapDepositChannel from '../handlers/openSwapDepositChannel';
 import { getPendingBroadcast, getPendingDeposit } from '../ingress-egress-tracking';
 import { readField } from '../utils/function';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
-import { estimateSwapDuration, isEgressableSwap } from '../utils/swap';
+import {
+  channelIdRegex,
+  coerceChain,
+  estimateSwapDuration,
+  failedSwapMessage,
+  isEgressableSwap,
+  swapRequestId,
+  txHashRegex,
+} from '../utils/swap';
 
 const router = express.Router();
 
@@ -31,6 +38,8 @@ export enum Failure {
   IngressIgnored = 'INGRESS_IGNORED',
   EgressIgnored = 'EGRESS_IGNORED',
   RefundEgressIgnored = 'REFUND_EGRESS_IGNORED',
+  MultipleEgressIgnored = 'MULTIPLE_EGRESS_IGNORED',
+  BroadcastAborted = 'BROADCAST_ABORTED',
 }
 
 const depositChannelInclude = {
@@ -49,37 +58,11 @@ const swapRequestInclude = {
   egress: { include: { broadcast: true } },
   refundEgress: { include: { broadcast: true } },
   fees: true,
-  ignoredEgress: true,
+  ignoredEgresses: true,
   swapDepositChannel: {
     include: depositChannelInclude,
   },
 } as const;
-
-const failedSwapMessage: Record<FailedSwapReason, string> = {
-  BelowMinimumDeposit: 'The deposited amount was below the minimum required',
-  NotEnoughToPayFees: 'The deposited amount was not enough to pay the fees',
-  InsufficientDepositAmount: 'The gas budget exceeded the deposit amount',
-  UnsupportedForTargetChain: 'The destination chain does not support CCM',
-};
-
-const coerceChain = (chain: string) => {
-  const uppercaseChain = toUpperCase(chain) as Uppercase<Chain>;
-  switch (uppercaseChain) {
-    case 'BITCOIN':
-    case 'ETHEREUM':
-    case 'POLKADOT':
-    case 'ARBITRUM':
-    case 'SOLANA':
-      return screamingSnakeToPascalCase(uppercaseChain);
-    default:
-      assertUnreachable(uppercaseChain);
-      throw ServiceError.badRequest(`invalid chain "${chain}"`);
-  }
-};
-
-const channelIdRegex = /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
-const swapRequestId = /^\d+$/i;
-const txHashRegex = /^0x[a-f\d]+$/i;
 
 router.get(
   '/:id',
@@ -163,8 +146,10 @@ router.get(
     const egressType = egress && (egress === swapRequest?.egress ? 'SWAP' : 'REFUND');
 
     const swap = swapRequest?.swaps.find(isEgressableSwap);
+    const hasIgnoredEgresses =
+      swapRequest?.ignoredEgresses && swapRequest.ignoredEgresses.length > 0;
 
-    if (failedSwap || swapRequest?.ignoredEgress) {
+    if (failedSwap || hasIgnoredEgresses) {
       error = {
         name: 'Unknown',
         message: 'An unknown error occurred',
@@ -177,8 +162,9 @@ router.get(
           name: failedSwap.reason,
           message: failedSwapMessage[failedSwap.reason],
         };
-      } else if (swapRequest?.ignoredEgress) {
-        switch (swapRequest.ignoredEgress.type) {
+      } else if (hasIgnoredEgresses) {
+        const ignored = swapRequest?.ignoredEgresses.at(0);
+        switch (ignored!.type) {
           case 'REFUND':
             failureMode = Failure.RefundEgressIgnored;
             break;
@@ -186,11 +172,11 @@ router.get(
             failureMode = Failure.EgressIgnored;
             break;
           default:
-            assertUnreachable(swapRequest.ignoredEgress.type);
+            assertUnreachable(ignored!.type);
         }
         const [stateChainError] = await Promise.all([
           prisma.stateChainError.findUniqueOrThrow({
-            where: { id: swapRequest.ignoredEgress.stateChainErrorId },
+            where: { id: swapRequest?.ignoredEgresses.at(0)!.stateChainErrorId },
           }),
         ]);
         error = {
@@ -289,9 +275,9 @@ router.get(
       egressAmount: egress?.amount?.toFixed(),
       egressScheduledAt: egress?.scheduledAt?.valueOf(),
       egressScheduledBlockIndex: egress?.scheduledBlockIndex ?? undefined,
-      ignoredEgressAmount: swapRequest?.ignoredEgress?.amount?.toFixed(),
-      egressIgnoredAt: swapRequest?.ignoredEgress?.ignoredAt?.valueOf(),
-      egressIgnoredBlockIndex: swapRequest?.ignoredEgress?.ignoredBlockIndex ?? undefined,
+      ignoredEgressAmount: swapRequest?.ignoredEgresses?.at(0)?.amount?.toFixed(),
+      egressIgnoredAt: swapRequest?.ignoredEgresses?.at(0)?.ignoredAt?.valueOf(),
+      egressIgnoredBlockIndex: swapRequest?.ignoredEgresses?.at(0)?.ignoredBlockIndex ?? undefined,
       feesPaid: fees.map((fee) => ({
         type: fee.type,
         ...getAssetAndChain(fee.asset),

@@ -150,7 +150,7 @@ model SwapRequest {
   egressId                     BigInt?
   refundEgress                 Egress?             @relation("refundEgress", fields: [refundEgressId], references: [id])
   refundEgressId               BigInt?
-  ignoredEgress                IgnoredEgress?
+  ignoredEgresses              IgnoredEgress[]
   swaps                        Swap[]
   fees                         SwapFee[]
 

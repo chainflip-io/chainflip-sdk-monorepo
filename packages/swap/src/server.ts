@@ -11,6 +11,7 @@ import { handleError, maintenanceMode } from './routes/common';
 import quoteRouter from './routes/quote';
 import swap from './routes/swap';
 import thirdPartySwap from './routes/thirdPartySwap';
+import swapV2 from './routes/v2/swap';
 import { publicProcedure, router } from './trpc';
 
 const appRouter = router({
@@ -26,6 +27,7 @@ const server = createServer(app);
 const io = new Server(server).use(authenticate);
 
 app.use('/swaps', express.json(), swap);
+app.use('/v2/swaps', express.json(), swapV2);
 app.use('/third-party-swap', maintenanceMode, express.json(), thirdPartySwap);
 
 app.get('/healthcheck', (req, res) => {

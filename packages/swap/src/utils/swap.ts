@@ -1,8 +1,15 @@
+import { toUpperCase } from '@chainflip/utils/string';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts';
 import { InternalAsset, chainConstants, getAssetAndChain } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
+import { screamingSnakeToPascalCase } from '@/shared/strings';
 import { getWitnessSafetyMargin } from '@/swap/utils/rpc';
-import { Swap } from '../client';
+import ServiceError from './ServiceError';
+import { Chain, FailedSwapReason, Swap } from '../client';
+
+export const channelIdRegex = /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
+export const swapRequestId = /^\d+$/i;
+export const txHashRegex = /^0x[a-f\d]+$/i;
 
 export const estimateSwapDuration = async ({
   srcAsset,
@@ -50,4 +57,26 @@ export const isEgressableSwap = (swap: Swap) => {
       assertUnreachable(swap.type);
       return false;
   }
+};
+
+export const coerceChain = (chain: string) => {
+  const uppercaseChain = toUpperCase(chain) as Uppercase<Chain>;
+  switch (uppercaseChain) {
+    case 'BITCOIN':
+    case 'ETHEREUM':
+    case 'POLKADOT':
+    case 'ARBITRUM':
+    case 'SOLANA':
+      return screamingSnakeToPascalCase(uppercaseChain);
+    default:
+      assertUnreachable(uppercaseChain);
+      throw ServiceError.badRequest(`invalid chain "${chain}"`);
+  }
+};
+
+export const failedSwapMessage: Record<FailedSwapReason, string> = {
+  BelowMinimumDeposit: 'The deposited amount was below the minimum required',
+  NotEnoughToPayFees: 'The deposited amount was not enough to pay the fees',
+  InsufficientDepositAmount: 'The gas budget exceeded the deposit amount',
+  UnsupportedForTargetChain: 'The destination chain does not support CCM',
 };

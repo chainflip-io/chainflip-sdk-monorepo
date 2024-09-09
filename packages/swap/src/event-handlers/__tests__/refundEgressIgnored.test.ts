@@ -37,16 +37,18 @@ describe(refundEgressIgnored, () => {
     expect(
       await prisma.swapRequest.findUniqueOrThrow({
         where: { nativeId: BigInt(swapId) },
-        include: { ignoredEgress: true },
+        include: { ignoredEgresses: true },
       }),
     ).toMatchSnapshot({
       id: expect.any(BigInt),
-      ignoredEgress: {
-        id: expect.any(BigInt),
-        swapRequestId: expect.any(BigInt),
-        stateChainErrorId: expect.any(Number),
-        createdAt: expect.any(Date),
-      },
+      ignoredEgresses: [
+        {
+          id: expect.any(BigInt),
+          swapRequestId: expect.any(BigInt),
+          stateChainErrorId: expect.any(Number),
+          createdAt: expect.any(Date),
+        },
+      ],
     });
   });
 });
