@@ -80,7 +80,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a vault origin 1`] = `
 }
 `;
 
-exports[`server GET /v2/swaps/:id retrieves a swap in COMPLETE status 1`] = `
+exports[`server GET /v2/swaps/:id retrieves a swap in COMPLETED status 1`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
@@ -101,7 +101,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in COMPLETE status 1`] = `
   "destChain": "Polkadot",
   "srcAsset": "ETH",
   "srcChain": "Ethereum",
-  "state": "COMPLETE",
+  "state": "COMPLETED",
   "swap": {
     "currentChunk": {
       "executedAt": "1970-01-01T00:09:24.000Z",

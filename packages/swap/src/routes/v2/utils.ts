@@ -168,7 +168,7 @@ export const getSwapState = async (
   ) {
     state = StateV2.Failed;
   } else if (egress?.broadcast?.succeededAt) {
-    state = StateV2.Complete;
+    state = StateV2.Completed;
   } else if (egress?.broadcast) {
     if (swapEgress?.broadcast) {
       state = StateV2.Sending;

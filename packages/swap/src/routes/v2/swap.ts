@@ -29,7 +29,7 @@ const router = express.Router();
 
 export enum StateV2 {
   Failed = 'FAILED',
-  Complete = 'COMPLETE',
+  Completed = 'COMPLETED',
   Sent = 'SENT',
   Sending = 'SENDING',
   Swapping = 'SWAPPING',

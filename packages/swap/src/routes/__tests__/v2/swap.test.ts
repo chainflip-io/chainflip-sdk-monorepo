@@ -926,7 +926,7 @@ describe('server', () => {
       });
     });
 
-    it(`retrieves a swap in ${StateV2.Complete} status`, async () => {
+    it(`retrieves a swap in ${StateV2.Completed} status`, async () => {
       await processEvents(swapEvents.slice(0, 9));
 
       const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
@@ -935,7 +935,7 @@ describe('server', () => {
       const { swapId, ...rest } = body;
 
       expect(rest).toMatchSnapshot({
-        state: 'COMPLETE',
+        state: 'COMPLETED',
         srcAsset: 'ETH',
         srcChain: 'Ethereum',
         destAsset: 'DOT',
@@ -1334,7 +1334,7 @@ describe('server', () => {
       const { status, body } = await request(server).get(`/v2/swaps/${channelId}`);
 
       expect(status).toBe(200);
-      expect(body.state).toBe('COMPLETE');
+      expect(body.state).toBe('COMPLETED');
       expect(body.boost).toBe(undefined);
     });
 
@@ -1415,7 +1415,7 @@ describe('server', () => {
       });
     });
 
-    it(`retrieves a swap with FillOrKillParams in ${StateV2.Complete}`, async () => {
+    it(`retrieves a swap with FillOrKillParams in ${StateV2.Completed}`, async () => {
       const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositChannelEvent.args.refundParameters = {
         minPrice: '99999999999999999999999999999999999999999999999999999000000000000000000',
@@ -1436,7 +1436,7 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
 
       expect(status).toBe(200);
-      expect(body.state).toBe('COMPLETE');
+      expect(body.state).toBe('COMPLETED');
       expect(body.depositChannel.fillOrKillParams).toMatchObject({
         minPrice: expect.any(String),
         refundAddress: expect.any(String),
@@ -1623,7 +1623,7 @@ describe('server', () => {
       });
     });
 
-    it(`retrieves mulitple DCA swaps in ${StateV2.Complete}`, async () => {
+    it(`retrieves mulitple DCA swaps in ${StateV2.Completed}`, async () => {
       const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositChannelEvent.args.dcaParameters = {
         numberOfChunks: 10,
@@ -1644,7 +1644,7 @@ describe('server', () => {
       const { swapId, ...rest } = body;
       expect(status).toBe(200);
       expect(rest).toMatchObject({
-        state: 'COMPLETE',
+        state: 'COMPLETED',
         srcAsset: 'ETH',
         srcChain: 'Ethereum',
         destAsset: 'DOT',
