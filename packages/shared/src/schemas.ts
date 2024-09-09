@@ -147,4 +147,6 @@ export type BoostedQuoteDetails = QuoteDetails & { estimatedBoostFeeBps: number 
 
 export type QuoteQueryResponse = QuoteDetails & {
   boostQuote?: BoostedQuoteDetails;
+  dcaQuote?: QuoteDetails;
+  dcaBoostedQuote?: BoostedQuoteDetails;
 };

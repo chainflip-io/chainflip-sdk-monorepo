@@ -1,7 +1,15 @@
 import BigNumber from 'bignumber.js';
 import express from 'express';
 import type { Server } from 'socket.io';
-import { Asset, assetConstants, Assets, Chain, Chains, InternalAsset } from '@/shared/enums';
+import {
+  Asset,
+  assetConstants,
+  Assets,
+  Chain,
+  Chains,
+  InternalAsset,
+  InternalAssetMap,
+} from '@/shared/enums';
 import { quoteQuerySchema } from '@/shared/schemas';
 import { asyncHandler } from './common';
 import env from '../config/env';
@@ -36,6 +44,48 @@ const handleQuotingError = (res: express.Response, err: unknown, info: Additiona
   logger.error('error while collecting quotes:', err);
 
   res.status(500).json({ message });
+};
+
+const getDcaQuoteParams = (asset: InternalAsset, amount: bigint) => {
+  const chunkSizeMap: InternalAssetMap<bigint> = {
+    Usdc: BigInt(2000 * 10 ** assetConstants['Usdc'].decimals),
+    Flip: BigInt(1500 * 10 ** assetConstants['Flip'].decimals),
+    Eth: BigInt(0.5 * 10 ** assetConstants['Eth'].decimals),
+    Usdt: BigInt(2000 * 10 ** assetConstants['Usdt'].decimals),
+    Btc: BigInt(0.04 * 10 ** assetConstants['Btc'].decimals),
+    Dot: BigInt(500 * 10 ** assetConstants['Dot'].decimals),
+    ArbUsdc: BigInt(2000 * 10 ** assetConstants['ArbUsdc'].decimals),
+    ArbEth: BigInt(0.5 * 10 ** assetConstants['ArbEth'].decimals),
+    Sol: BigInt(15 * 10 ** assetConstants['Sol'].decimals),
+    SolUsdc: BigInt(2000 * 10 ** assetConstants['SolUsdc'].decimals),
+  };
+  const chunkSize = chunkSizeMap[asset];
+
+  // const minChunkSize = BigNumber(chunkSize.toString()).dividedBy(20);
+
+  // let numberOfChunks = Math.ceil(
+  //   BigNumber(amount.toString()).dividedBy(chunkSize.toString()).toNumber(),
+  // );
+  // let lastChunkAmount = BigNumber(amount.toString()).mod(chunkSize.toString());
+
+  // if (lastChunkAmount.lt(minChunkSize)) {
+  //   numberOfChunks -= 1;
+  //   lastChunkAmount = BigNumber(chunkSize.toString()).plus(lastChunkAmount);
+  // }
+
+  // return {
+  //   chunkSize,
+  //   numberOfChunks,
+  //   lastChunkAmount,
+  // };
+
+  let extrapolationCoef = BigNumber(amount.toString()).dividedBy(chunkSize.toString()).toNumber();
+
+  return {
+    chunkSize,
+    extrapolationCoef,
+    addedDurationSeconds: Math.ceil(3 * extrapolationCoef),
+  };
 };
 
 const fallbackChains = {
@@ -120,6 +170,9 @@ const quoteRouter = (io: Server) => {
         ]);
         limitOrdersReceived = limitOrders;
 
+        const dcaQuoteParams = getDcaQuoteParams(srcAsset, amount);
+        console.log('dcaQuoteParams', dcaQuoteParams);
+
         const quoteArgs = {
           srcAsset,
           destAsset,
@@ -129,14 +182,40 @@ const quoteRouter = (io: Server) => {
           pools,
         };
 
-        const [quote, boostedQuote] = await Promise.all([
+        const [quote, boostedQuote, dcaQuote, dcaBoostedQuote] = await Promise.all([
           getPoolQuote(quoteArgs),
           estimatedBoostFeeBps &&
             getPoolQuote({ ...quoteArgs, boostFeeBps: estimatedBoostFeeBps }).catch(() => null),
+          getPoolQuote({ ...quoteArgs, swapInputAmount: dcaQuoteParams.chunkSize }),
+          estimatedBoostFeeBps &&
+            getPoolQuote({
+              ...quoteArgs,
+              boostFeeBps: estimatedBoostFeeBps,
+              swapInputAmount: dcaQuoteParams.chunkSize,
+            }).catch(() => null),
         ]);
 
         if (boostedQuote && estimatedBoostFeeBps) {
           quote.boostQuote = { ...boostedQuote, estimatedBoostFeeBps };
+        }
+        quote.dcaQuote = {
+          ...dcaQuote,
+          egressAmount: BigNumber(dcaQuote.egressAmount)
+            .multipliedBy(dcaQuoteParams.extrapolationCoef)
+            .toString(),
+          estimatedDurationSeconds:
+            dcaQuote.estimatedDurationSeconds + dcaQuoteParams.addedDurationSeconds,
+        };
+        if (dcaBoostedQuote && estimatedBoostFeeBps) {
+          quote.dcaBoostedQuote = {
+            ...dcaBoostedQuote,
+            estimatedBoostFeeBps,
+            egressAmount: BigNumber(dcaBoostedQuote.egressAmount)
+              .multipliedBy(dcaQuoteParams.extrapolationCoef)
+              .toString(),
+            estimatedDurationSeconds:
+              dcaBoostedQuote.estimatedDurationSeconds + dcaQuoteParams.addedDurationSeconds,
+          };
         }
 
         const duration = performance.now() - start;
