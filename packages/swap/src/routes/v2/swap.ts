@@ -205,9 +205,35 @@ router.get(
         amount: fee.amount.toFixed(),
       }));
 
-    const showBoost = swapDepositChannel?.maxBoostFeeBps && swapDepositChannel.maxBoostFeeBps > 0;
-    const showCcm = swapDepositChannel?.ccmGasBudget || swapDepositChannel?.ccmMessage;
+    const showBoost = Boolean(
+      swapDepositChannel?.maxBoostFeeBps && swapDepositChannel.maxBoostFeeBps > 0,
+    );
+    const showCcm = Boolean(swapDepositChannel?.ccmGasBudget || swapDepositChannel?.ccmMessage);
     const showRefund = swapDepositChannel?.fokRefundAddress;
+
+    const [
+      swapEgressFields,
+      refundEgressFields,
+      estimatedDurationSeconds,
+      srcChainRequiredBlockConfirmations,
+    ] = await Promise.all([
+      getEgressStatusFields(
+        swapEgress,
+        swapEgress?.broadcast,
+        ignoredEgresses,
+        'SWAP',
+        swapEgressTrackerTxRef,
+      ),
+      getEgressStatusFields(
+        refundEgress,
+        refundEgress?.broadcast,
+        ignoredEgresses,
+        'REFUND',
+        refundEgressTrackerTxRef,
+      ),
+      srcAsset && destAsset && estimateSwapDuration({ srcAsset, destAsset }),
+      internalSrcAsset && getRequiredBlockConfirmations(internalSrcAsset),
+    ]);
 
     const response = {
       state,
@@ -258,30 +284,15 @@ router.get(
         lastExecutedChunk:
           rolledSwaps?.lastExecutedChunk && getSwapFields(rolledSwaps.lastExecutedChunk),
         currentChunk: rolledSwaps && getSwapFields(rolledSwaps.currentChunk),
-        ...(await getEgressStatusFields(
-          swapEgress,
-          swapEgress?.broadcast,
-          ignoredEgresses,
-          'SWAP',
-          swapEgressTrackerTxRef,
-        )),
+        ...swapEgressFields,
         type: sortedSwaps?.[0].type,
         fees: aggregateFees,
-        srcChainRequiredBlockConfirmations:
-          (internalSrcAsset && (await getRequiredBlockConfirmations(internalSrcAsset))) ??
-          undefined,
-        estimatedDurationSeconds:
-          srcAsset && destAsset && (await estimateSwapDuration({ srcAsset, destAsset })),
+        srcChainRequiredBlockConfirmations,
+        estimatedDurationSeconds,
       },
       ...(showRefund && {
         refund: {
-          ...(await getEgressStatusFields(
-            refundEgress,
-            refundEgress?.broadcast,
-            ignoredEgresses,
-            'REFUND',
-            refundEgressTrackerTxRef,
-          )),
+          ...refundEgressFields,
         },
       }),
       ...(showCcm && {
