@@ -25,7 +25,7 @@ export const assertSignerIsConnectedToChain = async (
 
   const { chainId: signerChainId } = await opts.signer.provider.getNetwork();
   assert(
-    signerChainId === BigInt(sourceChainId),
+    BigInt(signerChainId) === BigInt(sourceChainId),
     `Signer is connected to unexpected evm chain (expected: ${sourceChainId}, got: ${signerChainId})`,
   );
 };
