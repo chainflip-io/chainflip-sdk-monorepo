@@ -45,7 +45,7 @@
     "@types/ws": "^8.5.12",
     "eslint-plugin-n": "^17.10.1",
     "graphql": "^16.9.0",
-    "prisma": "^5.18.0",
+    "prisma": "^5.19.1",
     "socket.io-client": "^4.7.5",
     "supertest": "^7.0.0"
   },
@@ -59,7 +59,7 @@
     "@chainflip/utils": "^0.4.0",
     "@polkadot/api": "^12.2.3",
     "@polkadot/types": "^11.0.2",
-    "@prisma/client": "^5.18.0",
+    "@prisma/client": "^5.19.1",
     "axios": "^1.7.7",
     "bignumber.js": "^9.1.2",
     "cors": "^2.8.5",
