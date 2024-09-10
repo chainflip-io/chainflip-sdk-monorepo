@@ -881,7 +881,7 @@ describe('server', () => {
   });
 });
 
-describe.only('getDcaQuoteParams', () => {
+describe('getDcaQuoteParams', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     env.DCA_USD_CHUNK_SIZE = 3000;
