@@ -93,6 +93,7 @@ const mempoolTransaction = jsonString.pipe(
     confirmations: number,
     value: u128,
     tx_hash: string,
+    deposit_chain_block_height: number.optional(),
   }),
 );
 

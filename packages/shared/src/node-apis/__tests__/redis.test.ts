@@ -65,17 +65,19 @@ describe(RedisClient, () => {
           confirmations: 4,
           value: '0x12b74280',
           tx_hash: '1234',
+          deposit_chain_block_height: 402,
         }),
       );
       const client = new RedisClient(url);
-      const broadcast = await client.getMempoolTransaction(
+      const tx = await client.getMempoolTransaction(
         'Bitcoin',
         'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
       );
-      expect(broadcast).toEqual({
+      expect(tx).toEqual({
         confirmations: 4,
         value: 314000000n,
         tx_hash: '1234',
+        deposit_chain_block_height: 402,
       });
       expect(mock).toHaveBeenCalledWith(
         'mempool:Bitcoin:tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
