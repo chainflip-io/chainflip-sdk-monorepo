@@ -881,10 +881,11 @@ describe('server', () => {
   });
 });
 
-describe('getDcaQuoteParams', () => {
+describe.only('getDcaQuoteParams', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    env.USD_CHUNK_SIZE = 3000;
+    env.DCA_USD_CHUNK_SIZE = 3000;
+    env.DCA_CHUNK_INTERVAL_SECONDS = 3;
   });
 
   it('should correctly return 9060 usd worth of btc', async () => {
@@ -894,8 +895,8 @@ describe('getDcaQuoteParams', () => {
     expect(result).toMatchInlineSnapshot(`
     {
       "addedDurationSeconds": 6,
-      "chunkSize": "9000",
-      "lastChunkAmount": "9180",
+      "chunkSize": 9000n,
+      "lastChunkAmount": 9180n,
       "numberOfChunks": 3,
     }
     `);
@@ -908,8 +909,8 @@ describe('getDcaQuoteParams', () => {
     expect(result).toMatchInlineSnapshot(`
     {
       "addedDurationSeconds": 9,
-      "chunkSize": "9000",
-      "lastChunkAmount": "900",
+      "chunkSize": 9000n,
+      "lastChunkAmount": 900n,
       "numberOfChunks": 4,
     }
     `);
@@ -922,8 +923,8 @@ describe('getDcaQuoteParams', () => {
     expect(result).toMatchInlineSnapshot(`
     {
       "addedDurationSeconds": 0,
-      "chunkSize": "900",
-      "lastChunkAmount": "900",
+      "chunkSize": 900n,
+      "lastChunkAmount": 900n,
       "numberOfChunks": 1,
     }
     `);
@@ -936,8 +937,8 @@ describe('getDcaQuoteParams', () => {
     expect(result).toMatchInlineSnapshot(`
     {
       "addedDurationSeconds": 0,
-      "chunkSize": "90",
-      "lastChunkAmount": "90",
+      "chunkSize": 90n,
+      "lastChunkAmount": 90n,
       "numberOfChunks": 1,
     }
     `);

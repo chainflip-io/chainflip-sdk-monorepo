@@ -101,6 +101,7 @@ const addDcaToQuote = ({
         .plus(lastChunkNetWorkFee!.amount)
         .toFixed();
     }
+    // eslint-disable-next-line no-param-reassign
     quote.dcaQuote = {
       ...dcaQuote,
       egressAmount: BigNumber(dcaQuote.egressAmount)
@@ -134,6 +135,7 @@ const addDcaToQuote = ({
         .toFixed();
     }
 
+    // eslint-disable-next-line no-param-reassign
     quote.dcaBoostedQuote = {
       ...dcaBoostedQuote,
       estimatedBoostFeeBps,
@@ -230,7 +232,6 @@ const quoteRouter = (io: Server) => {
         limitOrdersReceived = limitOrders;
 
         const dcaQuoteParams = await getDcaQuoteParams(srcAsset, amount);
-        console.log('dcaQuoteParams', dcaQuoteParams);
 
         const quoteArgs = {
           srcAsset,
