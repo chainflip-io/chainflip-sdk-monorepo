@@ -1,16 +1,8 @@
 import BigNumber from 'bignumber.js';
 import express from 'express';
 import type { Server } from 'socket.io';
-import {
-  Asset,
-  assetConstants,
-  Assets,
-  Chain,
-  Chains,
-  InternalAsset,
-  InternalAssetMap,
-} from '@/shared/enums';
-import { quoteQuerySchema } from '@/shared/schemas';
+import { Asset, assetConstants, Assets, Chain, Chains, InternalAsset } from '@/shared/enums';
+import { quoteQuerySchema, QuoteQueryResponse } from '@/shared/schemas';
 import { asyncHandler } from './common';
 import env from '../config/env';
 import { getBoostSafeMode } from '../polkadot/api';
@@ -46,46 +38,113 @@ const handleQuotingError = (res: express.Response, err: unknown, info: Additiona
   res.status(500).json({ message });
 };
 
-const getDcaQuoteParams = (asset: InternalAsset, amount: bigint) => {
-  const chunkSizeMap: InternalAssetMap<bigint> = {
-    Usdc: BigInt(2000 * 10 ** assetConstants['Usdc'].decimals),
-    Flip: BigInt(1500 * 10 ** assetConstants['Flip'].decimals),
-    Eth: BigInt(0.5 * 10 ** assetConstants['Eth'].decimals),
-    Usdt: BigInt(2000 * 10 ** assetConstants['Usdt'].decimals),
-    Btc: BigInt(0.04 * 10 ** assetConstants['Btc'].decimals),
-    Dot: BigInt(500 * 10 ** assetConstants['Dot'].decimals),
-    ArbUsdc: BigInt(2000 * 10 ** assetConstants['ArbUsdc'].decimals),
-    ArbEth: BigInt(0.5 * 10 ** assetConstants['ArbEth'].decimals),
-    Sol: BigInt(15 * 10 ** assetConstants['Sol'].decimals),
-    SolUsdc: BigInt(2000 * 10 ** assetConstants['SolUsdc'].decimals),
-  };
-  const chunkSize = chunkSizeMap[asset];
+export const getDcaQuoteParams = async (asset: InternalAsset, amount: bigint) => {
+  const usdChunkSize = env.DCA_USD_CHUNK_SIZE;
 
-  // const minChunkSize = BigNumber(chunkSize.toString()).dividedBy(20);
+  const usdValue = await getUsdValue(amount, asset).catch(() => undefined);
+  if (usdValue) {
+    if (Number(usdValue) < usdChunkSize) {
+      return {
+        chunkSize: amount,
+        lastChunkAmount: amount,
+        numberOfChunks: 1,
+        addedDurationSeconds: 0,
+      };
+    }
+    const numberOfChunksPrecise = Number(usdValue) / usdChunkSize;
+    const chunkSize = BigNumber(amount.toString()).dividedBy(numberOfChunksPrecise);
 
-  // let numberOfChunks = Math.ceil(
-  //   BigNumber(amount.toString()).dividedBy(chunkSize.toString()).toNumber(),
-  // );
-  // let lastChunkAmount = BigNumber(amount.toString()).mod(chunkSize.toString());
+    const numberOfChunks =
+      numberOfChunksPrecise - Math.floor(numberOfChunksPrecise) < 0.05
+        ? Math.floor(numberOfChunksPrecise)
+        : Math.ceil(numberOfChunksPrecise);
 
-  // if (lastChunkAmount.lt(minChunkSize)) {
-  //   numberOfChunks -= 1;
-  //   lastChunkAmount = BigNumber(chunkSize.toString()).plus(lastChunkAmount);
-  // }
+    const lastChunkAmount = BigInt(
+      new BigNumber(amount.toString()).minus(chunkSize.multipliedBy(numberOfChunks - 1)).toFixed(0),
+    );
 
-  // return {
-  //   chunkSize,
-  //   numberOfChunks,
-  //   lastChunkAmount,
-  // };
+    return {
+      chunkSize: BigInt(chunkSize.toFixed(0)),
+      lastChunkAmount,
+      numberOfChunks,
+      addedDurationSeconds: Math.ceil(env.DCA_CHUNK_INTERVAL_SECONDS * (numberOfChunks - 1)), // we deduct 1 chunk because the first one is already accounted for in the regular quote
+    };
+  }
+  return null;
+};
 
-  let extrapolationCoef = BigNumber(amount.toString()).dividedBy(chunkSize.toString()).toNumber();
+const addDcaToQuote = ({
+  quote,
+  dcaQuoteParams,
+  dcaQuote,
+  dcaQuoteLastChunk,
+  dcaBoostedQuote,
+  dcaBoostedQuoteLastChunk,
+  estimatedBoostFeeBps,
+}: {
+  quote: QuoteQueryResponse;
+  dcaQuoteParams: Awaited<ReturnType<typeof getDcaQuoteParams>>;
+  dcaQuote: QuoteQueryResponse | null;
+  dcaQuoteLastChunk: QuoteQueryResponse | null;
+  dcaBoostedQuote?: QuoteQueryResponse | null | 0;
+  dcaBoostedQuoteLastChunk?: QuoteQueryResponse | null | 0;
+  estimatedBoostFeeBps?: number;
+}) => {
+  if (dcaQuoteParams && dcaQuoteLastChunk && dcaQuote) {
+    const netWorkFee = dcaQuote.includedFees.find((fee) => fee.type === 'NETWORK');
+    const lastChunkNetWorkFee = dcaQuoteLastChunk.includedFees.find(
+      (fee) => fee.type === 'NETWORK',
+    );
+    if (netWorkFee) {
+      netWorkFee.amount = new BigNumber(netWorkFee.amount)
+        .multipliedBy(dcaQuoteParams.numberOfChunks - 1)
+        .plus(lastChunkNetWorkFee!.amount)
+        .toFixed();
+    }
+    quote.dcaQuote = {
+      ...dcaQuote,
+      egressAmount: BigNumber(dcaQuote.egressAmount)
+        .multipliedBy(dcaQuoteParams.numberOfChunks - 1)
+        .plus(dcaQuoteLastChunk.egressAmount)
+        .toString(),
+      estimatedDurationSeconds:
+        dcaQuote.estimatedDurationSeconds + dcaQuoteParams.addedDurationSeconds,
+    };
+  }
+  if (dcaQuoteParams && dcaBoostedQuote && dcaBoostedQuoteLastChunk && estimatedBoostFeeBps) {
+    const netWorkFee = dcaBoostedQuote.includedFees.find((fee) => fee.type === 'NETWORK');
+    const lastChunkNetWorkFee = dcaBoostedQuoteLastChunk.includedFees.find(
+      (fee) => fee.type === 'NETWORK',
+    );
+    if (netWorkFee) {
+      netWorkFee.amount = new BigNumber(netWorkFee.amount)
+        .multipliedBy(dcaQuoteParams.numberOfChunks - 1)
+        .plus(lastChunkNetWorkFee!.amount)
+        .toFixed();
+    }
 
-  return {
-    chunkSize,
-    extrapolationCoef,
-    addedDurationSeconds: Math.ceil(3 * extrapolationCoef),
-  };
+    const boostFee = dcaBoostedQuote.includedFees.find((fee) => fee.type === 'BOOST');
+    const lastChunkBoostFee = dcaBoostedQuoteLastChunk.includedFees.find(
+      (fee) => fee.type === 'BOOST',
+    );
+    if (boostFee) {
+      boostFee.amount = new BigNumber(boostFee.amount)
+        .multipliedBy(dcaQuoteParams.numberOfChunks - 1)
+        .plus(lastChunkBoostFee!.amount)
+        .toFixed();
+    }
+
+    quote.dcaBoostedQuote = {
+      ...dcaBoostedQuote,
+      estimatedBoostFeeBps,
+      egressAmount: BigNumber(dcaBoostedQuote.egressAmount)
+        .multipliedBy(dcaQuoteParams.numberOfChunks - 1)
+        .plus(dcaBoostedQuoteLastChunk.egressAmount)
+        .toString(),
+      estimatedDurationSeconds:
+        dcaBoostedQuote.estimatedDurationSeconds + dcaQuoteParams.addedDurationSeconds,
+    };
+  }
 };
 
 const fallbackChains = {
@@ -170,7 +229,7 @@ const quoteRouter = (io: Server) => {
         ]);
         limitOrdersReceived = limitOrders;
 
-        const dcaQuoteParams = getDcaQuoteParams(srcAsset, amount);
+        const dcaQuoteParams = await getDcaQuoteParams(srcAsset, amount);
         console.log('dcaQuoteParams', dcaQuoteParams);
 
         const quoteArgs = {
@@ -182,41 +241,55 @@ const quoteRouter = (io: Server) => {
           pools,
         };
 
-        const [quote, boostedQuote, dcaQuote, dcaBoostedQuote] = await Promise.all([
+        const [
+          quote,
+          boostedQuote,
+          dcaQuote,
+          dcaQuoteLastChunk,
+          dcaBoostedQuote,
+          dcaBoostedQuoteLastChunk,
+        ] = await Promise.all([
           getPoolQuote(quoteArgs),
           estimatedBoostFeeBps &&
             getPoolQuote({ ...quoteArgs, boostFeeBps: estimatedBoostFeeBps }).catch(() => null),
-          getPoolQuote({ ...quoteArgs, swapInputAmount: dcaQuoteParams.chunkSize }),
-          estimatedBoostFeeBps &&
+          dcaQuoteParams &&
+            getPoolQuote({
+              ...quoteArgs,
+              swapInputAmount: dcaQuoteParams.chunkSize,
+            }),
+          dcaQuoteParams &&
+            getPoolQuote({
+              ...quoteArgs,
+              swapInputAmount: dcaQuoteParams.lastChunkAmount,
+            }),
+          dcaQuoteParams &&
+            estimatedBoostFeeBps &&
             getPoolQuote({
               ...quoteArgs,
               boostFeeBps: estimatedBoostFeeBps,
               swapInputAmount: dcaQuoteParams.chunkSize,
+            }).catch(() => null),
+          dcaQuoteParams &&
+            estimatedBoostFeeBps &&
+            getPoolQuote({
+              ...quoteArgs,
+              boostFeeBps: estimatedBoostFeeBps,
+              swapInputAmount: dcaQuoteParams.lastChunkAmount,
             }).catch(() => null),
         ]);
 
         if (boostedQuote && estimatedBoostFeeBps) {
           quote.boostQuote = { ...boostedQuote, estimatedBoostFeeBps };
         }
-        quote.dcaQuote = {
-          ...dcaQuote,
-          egressAmount: BigNumber(dcaQuote.egressAmount)
-            .multipliedBy(dcaQuoteParams.extrapolationCoef)
-            .toString(),
-          estimatedDurationSeconds:
-            dcaQuote.estimatedDurationSeconds + dcaQuoteParams.addedDurationSeconds,
-        };
-        if (dcaBoostedQuote && estimatedBoostFeeBps) {
-          quote.dcaBoostedQuote = {
-            ...dcaBoostedQuote,
-            estimatedBoostFeeBps,
-            egressAmount: BigNumber(dcaBoostedQuote.egressAmount)
-              .multipliedBy(dcaQuoteParams.extrapolationCoef)
-              .toString(),
-            estimatedDurationSeconds:
-              dcaBoostedQuote.estimatedDurationSeconds + dcaQuoteParams.addedDurationSeconds,
-          };
-        }
+        addDcaToQuote({
+          quote,
+          dcaQuoteParams,
+          dcaQuote,
+          dcaQuoteLastChunk,
+          dcaBoostedQuote,
+          dcaBoostedQuoteLastChunk,
+          estimatedBoostFeeBps,
+        });
 
         const duration = performance.now() - start;
 

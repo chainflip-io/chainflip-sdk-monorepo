@@ -184,10 +184,6 @@ export type ChainAssetMap<T> = {
   };
 };
 
-export type InternalAssetMap<T> = {
-  [C in InternalAsset]: T;
-};
-
 export type ChainMap<T> = {
   [C in Chain]: T;
 };
