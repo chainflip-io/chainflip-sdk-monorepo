@@ -42,10 +42,10 @@ import {
   DepositAddressResponse,
   QuoteResponse,
   SwapStatusRequest,
-  SwapStatusResponse,
   DepositAddressRequest,
   BoostPoolDepth,
 } from './types';
+import { SwapV2 } from './v2/types';
 
 type TransactionHash = `0x${string}`;
 
@@ -238,7 +238,7 @@ export class SwapSDK {
   getStatus(
     swapStatusRequest: SwapStatusRequest,
     options: ApiService.RequestOptions = {},
-  ): Promise<SwapStatusResponse> {
+  ): Promise<SwapV2.SwapStatusResponse> {
     return ApiService.getStatus(this.options.backendUrl, swapStatusRequest, options);
   }
 

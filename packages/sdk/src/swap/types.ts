@@ -33,7 +33,7 @@ export type AssetData = {
   };
 }[Chain];
 
-interface ChainsAndAssets {
+export interface ChainsAndAssets {
   srcChain: Chain;
   srcAsset: Asset;
   destChain: Chain;

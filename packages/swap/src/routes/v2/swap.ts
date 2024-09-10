@@ -181,8 +181,9 @@ router.get(
         totalChunksExecuted: 0,
         currentChunk: sortedSwaps[0],
         lastExecutedChunk: null as null | (typeof sortedSwaps)[number] | undefined,
-        isDcaSwap:
+        isDcaSwap: Boolean(
           swapDepositChannel?.chunkIntervalBlocks && swapDepositChannel.chunkIntervalBlocks > 1,
+        ),
         fees: [] as SwapFee[],
       },
     );
@@ -190,12 +191,11 @@ router.get(
     const aggregateFees = rolledSwaps?.fees
       .reduce((acc, curr) => {
         const { type, asset, amount } = curr;
-
         const index = acc.findIndex((fee) => fee.type === type && fee.asset === asset);
+
         if (index !== -1) {
           acc[index].amount = acc[index].amount.plus(amount);
         } else acc.push(curr);
-
         return acc;
       }, [] as SwapFee[])
       .concat(swapRequest?.fees ?? [])

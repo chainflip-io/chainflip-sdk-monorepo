@@ -34,11 +34,10 @@ export enum State {
   AwaitingDeposit = 'AWAITING_DEPOSIT',
 }
 
-export enum Failure {
+export enum FailureMode {
   IngressIgnored = 'INGRESS_IGNORED',
   EgressIgnored = 'EGRESS_IGNORED',
   RefundEgressIgnored = 'REFUND_EGRESS_IGNORED',
-  MultipleEgressIgnored = 'MULTIPLE_EGRESS_IGNORED',
   BroadcastAborted = 'BROADCAST_ABORTED',
 }
 
@@ -157,7 +156,7 @@ router.get(
       state = State.Failed;
 
       if (failedSwap) {
-        failureMode = Failure.IngressIgnored;
+        failureMode = FailureMode.IngressIgnored;
         error = {
           name: failedSwap.reason,
           message: failedSwapMessage[failedSwap.reason],
@@ -166,10 +165,10 @@ router.get(
         const ignored = swapRequest?.ignoredEgresses.at(0);
         switch (ignored!.type) {
           case 'REFUND':
-            failureMode = Failure.RefundEgressIgnored;
+            failureMode = FailureMode.RefundEgressIgnored;
             break;
           case 'SWAP':
-            failureMode = Failure.EgressIgnored;
+            failureMode = FailureMode.EgressIgnored;
             break;
           default:
             assertUnreachable(ignored!.type);
