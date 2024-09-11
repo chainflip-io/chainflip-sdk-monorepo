@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/cli",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "",
   "main": "./dist/lib.mjs",
   "types": "./dist/lib.d.mts",
@@ -36,6 +36,7 @@
   "dependencies": {
     "@chainflip/bitcoin": "^0.2.2",
     "@chainflip/rpc": "^1.6.3",
+    "@chainflip/solana": "^1.0.2",
     "@chainflip/utils": "^0.4.0",
     "ioredis": "^5.4.1",
     "ws": "^8.18.0",

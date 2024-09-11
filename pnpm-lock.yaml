@@ -102,6 +102,9 @@ importers:
       '@chainflip/rpc':
         specifier: ^1.6.3
         version: 1.6.3
+      '@chainflip/solana':
+        specifier: ^1.0.2
+        version: 1.0.2
       '@chainflip/utils':
         specifier: ^0.4.0
         version: 0.4.0
