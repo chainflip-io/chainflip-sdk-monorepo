@@ -80,3 +80,10 @@ export const failedSwapMessage: Record<FailedSwapReason, string> = {
   InsufficientDepositAmount: 'The gas budget exceeded the deposit amount',
   UnsupportedForTargetChain: 'The destination chain does not support CCM',
 };
+
+export enum FailureMode {
+  IngressIgnored = 'INGRESS_IGNORED',
+  SwapEgressIgnored = 'SWAP_EGRESS_IGNORED',
+  RefundEgressIgnored = 'REFUND_EGRESS_IGNORED',
+  BroadcastAborted = 'BROADCAST_ABORTED',
+}

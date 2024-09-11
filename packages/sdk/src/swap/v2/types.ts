@@ -6,15 +6,11 @@ import {
   type DcaParams as Dca,
 } from '@/shared/schemas';
 import { SwapType } from '@/swap/client';
-import { FailureMode } from '@/swap/routes/swap';
+import { FailureMode } from '@/swap/utils/swap';
 import { ChainsAndAssets } from '../types';
 
-// type Override<T, N> = Omit<T, keyof N> & N;
-// One property of T is defined
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace SwapV2 {
-  // type AtLeastOne<T, K extends keyof T = keyof T> = Partial<T> & { [P in K]: T[P] };
-
   type DcaParameters = Omit<Dca, 'chunkInterval'> & {
     chunkIntervalBlocks: string;
   };
@@ -46,7 +42,7 @@ export namespace SwapV2 {
     createdAt: number;
     brokerCommissionBps: number;
     depositAddress: string;
-    expiryBlock: string;
+    srcChainExpiryBlock: string;
     estimatedExpiryTime: number;
     expectedDepositAmount: string;
     isExpired: boolean;
@@ -54,11 +50,12 @@ export namespace SwapV2 {
     affiliateBrokers: AffiliateBroker[];
     fillOrKillParams: FillOrKillParams | undefined;
     dcaParams: DcaParameters | undefined;
+    srcChainRequiredBlockConfirmations: number | null | undefined;
   };
 
   type DepositFields = {
     amount: string | undefined;
-    transactionRef: string | undefined;
+    txRef: string | undefined;
     txConfirmations: number | undefined;
     receivedAt: number | undefined;
     receivedBlockIndex: string | undefined;
@@ -77,15 +74,14 @@ export namespace SwapV2 {
   };
 
   type SwapFields = {
-    totalAmountSwapped: string | undefined;
+    totalInputAmountSwapped: string | undefined;
+    totalOutputAmountSwapped: string | undefined;
     totalChunksExecuted: number;
     isDcaSwap: boolean;
     lastExecutedChunk: Swap | undefined;
     currentChunk: Swap;
     type: SwapType;
     fees: SwapFee[];
-    srcChainRequiredBlockConfirmations: number | null | undefined;
-    estimatedDurationSeconds: number | null | undefined;
   };
 
   interface SwapStatusResponseCommonFields extends ChainsAndAssets {
@@ -94,26 +90,44 @@ export namespace SwapV2 {
     depositChannel: DepositChannelFields;
     ccm: Ccm | undefined;
     boost: Boost | undefined;
+    estimatedDurationSeconds: number | null | undefined;
   }
 
-  type SendingFields = {
-    outputAmount: string;
+  type EgressFields = {
+    amount: string;
     scheduledAt: number;
     scheduledBlockIndex: string;
   };
-
-  type CompletedFields = {
+  type EgressSentFields = EgressFields & {
+    sentTxRef: string;
+  };
+  type EgressCompletedFields = EgressFields & {
     sentAt: number;
     sentAtBlockIndex: string;
   };
-
   type RefundFields = {
     ignoredAmount: string | undefined;
   };
 
-  type SendingSwapFields = SwapFields & SendingFields;
-  type SentSwapFields = SendingSwapFields & { sentTxRef: string | undefined };
-  type CompletedSwapFields = SentSwapFields & CompletedFields;
+  type WithEgressFields<T, F = undefined> = T & {
+    egress: (F extends undefined ? EgressFields : WithFailure<EgressFields>) | undefined;
+  };
+  type WtihEgressSentFields<T, F = undefined> = T & {
+    egress: (F extends undefined ? EgressSentFields : WithFailure<EgressSentFields>) | undefined;
+  };
+  type WtihEgressCompletedFields<T, F = undefined> = T & {
+    egress:
+      | (F extends undefined ? EgressCompletedFields : WithFailure<EgressCompletedFields>)
+      | undefined;
+  };
+
+  type SendingSwapFields = WithEgressFields<SwapFields, Failure> | undefined;
+  type SentSwapFields = WtihEgressSentFields<SwapFields, Failure> | undefined;
+  type CompletedSwapFields = WtihEgressCompletedFields<SwapFields> | undefined;
+
+  type SendingRefundFields = WithFailure<RefundFields & EgressFields> | undefined;
+  type SentRefundFields = WithFailure<RefundFields & EgressSentFields> | undefined;
+  type CompletedRefundFields = WithEgressFields<EgressCompletedFields> | undefined;
 
   interface DepositChannel extends SwapStatusResponseCommonFields {
     depositChannel: DepositChannelFields;
@@ -122,26 +136,26 @@ export namespace SwapV2 {
     deposit: WithFailure<DepositFields>;
   }
   interface Swapping extends Receiving {
-    swap: WithFailure<SwapFields>;
+    swap: SwapFields;
   }
-  export interface Sending extends Receiving {
-    swap: WithFailure<SendingSwapFields>;
-    refund: WithFailure<SendingFields & RefundFields> | undefined;
+  interface Sending extends Receiving {
+    swap: SendingSwapFields;
+    refund: SendingRefundFields;
   }
   interface Sent extends Receiving {
-    swap: WithFailure<SentSwapFields> | undefined;
-    refund: WithFailure<SentSwapFields & RefundFields> | undefined;
+    swap: SentSwapFields;
+    refund: SentRefundFields;
   }
   interface Completed extends Receiving {
-    swap: CompletedSwapFields | undefined;
-    refund: (CompletedSwapFields & RefundFields) | undefined;
+    swap: CompletedSwapFields;
+    refund: CompletedRefundFields;
   }
   interface Failed extends Receiving {
-    swap: WithFailure<SendingSwapFields> | undefined;
-    refund: WithFailure<SendingFields> | undefined;
+    swap: SendingSwapFields;
+    refund: SendingRefundFields;
   }
 
-  export type SwapState =
+  type SwapState =
     | ({
         state: 'RECEIVING';
       } & Receiving)
@@ -150,10 +164,10 @@ export namespace SwapV2 {
       } & Swapping)
     | ({
         state: 'SENDING';
-      } & Sending)
+      } & Sent)
     | ({
         state: 'SENT';
-      } & Sent)
+      } & Sending)
     | ({
         state: 'COMPLETED';
       } & Completed)
@@ -161,9 +175,9 @@ export namespace SwapV2 {
         state: 'FAILED';
       } & Failed);
 
-  export type DepositAddressStatusResponse = SwapState & Receiving;
+  type DepositAddressStatusResponse = SwapState & Receiving;
   // export type VaultSwapStatusResponse = VaultSwapFields & SwapState;
 
   export type SwapStatusResponse = DepositAddressStatusResponse;
+  // | VaultSwapStatusResponse
 }
-// | VaultSwapStatusResponse

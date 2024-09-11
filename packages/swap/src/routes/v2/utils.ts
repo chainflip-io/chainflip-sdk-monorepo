@@ -11,8 +11,7 @@ import prisma, {
   FailedSwap,
 } from '../../client';
 import { getPendingBroadcast } from '../../ingress-egress-tracking';
-import { failedSwapMessage } from '../../utils/swap';
-import { FailureMode } from '../swap';
+import { failedSwapMessage, FailureMode } from '../../utils/swap';
 
 export const depositChannelInclude = {
   failedBoosts: true,
@@ -86,7 +85,7 @@ export const getEgressFailureState = async (
           failureMode = FailureMode.RefundEgressIgnored;
           break;
         case 'SWAP':
-          failureMode = FailureMode.EgressIgnored;
+          failureMode = FailureMode.SwapEgressIgnored;
           break;
         default:
           assertUnreachable(ignoredEgress.type);
@@ -130,7 +129,7 @@ export const getEgressStatusFields = async (
   const failureState = await getEgressFailureState(ignoredEgress, broadcast, type);
   return {
     ...(egress && {
-      outputAmount: egress.amount?.toFixed(),
+      amount: egress.amount?.toFixed(),
       scheduledAt: egress.scheduledAt?.valueOf(),
       scheduledBlockIndex: egress.scheduledBlockIndex ?? undefined,
     }),
