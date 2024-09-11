@@ -110,15 +110,15 @@ export namespace SwapV2 {
   };
 
   type WithEgressFields<T, F = undefined> = T & {
-    egress: (F extends undefined ? EgressFields : WithFailure<EgressFields>) | undefined;
+    egress: (F extends undefined ? EgressFields : EgressFields & { failure: F }) | undefined;
   };
   type WtihEgressSentFields<T, F = undefined> = T & {
-    egress: (F extends undefined ? EgressSentFields : WithFailure<EgressSentFields>) | undefined;
-  };
-  type WtihEgressCompletedFields<T, F = undefined> = T & {
     egress:
-      | (F extends undefined ? EgressCompletedFields : WithFailure<EgressCompletedFields>)
+      | (F extends undefined ? EgressSentFields : EgressSentFields & { failure: F })
       | undefined;
+  };
+  type WtihEgressCompletedFields<T> = T & {
+    egress: EgressCompletedFields | undefined;
   };
 
   type SendingSwapFields = WithEgressFields<SwapFields, Failure> | undefined;
@@ -127,7 +127,7 @@ export namespace SwapV2 {
 
   type SendingRefundFields = WithFailure<RefundFields & EgressFields> | undefined;
   type SentRefundFields = WithFailure<RefundFields & EgressSentFields> | undefined;
-  type CompletedRefundFields = WithEgressFields<EgressCompletedFields> | undefined;
+  type CompletedRefundFields = EgressCompletedFields | undefined;
 
   interface DepositChannel extends SwapStatusResponseCommonFields {
     depositChannel: DepositChannelFields;
