@@ -15,7 +15,7 @@ exports[`server GET /swaps/:id retrieves a swap in FAILED status (egress ignored
     "name": "ethereumIngressEgress.BelowEgressDustLimit",
   },
   "estimatedDefaultDurationSeconds": 54,
-  "failure": "EGRESS_IGNORED",
+  "failure": "SWAP_EGRESS_IGNORED",
   "feesPaid": [
     {
       "amount": "0",
