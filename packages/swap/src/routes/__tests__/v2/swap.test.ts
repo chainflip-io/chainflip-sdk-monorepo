@@ -986,7 +986,7 @@ describe('server', () => {
       expect(rest.swap.egress.failure).toMatchObject({
         failedAt: 624000,
         failedAtBlockIndex: '104-7',
-        mode: 'BROADCAST_ABORTED',
+        mode: 'SENDING_FAILED',
         reason: {
           name: 'BroadcastAborted',
           message: 'The swap broadcast was aborted',
@@ -1006,7 +1006,7 @@ describe('server', () => {
       expect(body.deposit.failure).toMatchObject({
         failedAt: 552000,
         failedAtBlockIndex: '92-400',
-        mode: 'INGRESS_IGNORED',
+        mode: 'DEPOSIT_TOO_SMALL',
         reason: {
           name: 'BelowMinimumDeposit',
           message: 'The deposited amount was below the minimum required',
@@ -1085,7 +1085,7 @@ describe('server', () => {
       expect(body.swap.egress.failure).toMatchObject({
         failedAt: 14292858000,
         failedAtBlockIndex: '2382143-817',
-        mode: 'SWAP_EGRESS_IGNORED',
+        mode: 'SWAP_OUTPUT_TOO_SMALL',
         reason: {
           message: 'The amount is below the minimum egress amount.',
           name: 'ethereumIngressEgress.BelowEgressDustLimit',
@@ -1119,7 +1119,7 @@ describe('server', () => {
       expect(body.refund.failure).toMatchObject({
         failedAt: 624000,
         failedAtBlockIndex: '104-1',
-        mode: 'REFUND_EGRESS_IGNORED',
+        mode: 'REFUND_OUTPUT_TOO_SMALL',
         reason: {
           name: 'ethereumIngressEgress.BelowEgressDustLimit',
           message: 'The amount is below the minimum egress amount.',
@@ -1719,7 +1719,7 @@ describe('server', () => {
       expect(rest.swap.egress.failure).toMatchObject({
         failedAt: 624000,
         failedAtBlockIndex: '104-7',
-        mode: 'BROADCAST_ABORTED',
+        mode: 'SENDING_FAILED',
         reason: {
           name: 'BroadcastAborted',
           message: 'The swap broadcast was aborted',
@@ -1828,7 +1828,7 @@ describe('server', () => {
           failure: {
             failedAt: 624000,
             failedAtBlockIndex: '104-1',
-            mode: 'REFUND_EGRESS_IGNORED',
+            mode: 'REFUND_OUTPUT_TOO_SMALL',
             reason: {
               name: 'ethereumIngressEgress.BelowEgressDustLimit',
               message: 'The amount is below the minimum egress amount.',

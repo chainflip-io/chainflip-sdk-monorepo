@@ -487,7 +487,7 @@ exports[`server GET /v2/swaps/:id retrieves mulitple DCA swaps in FAILED status 
     "failure": {
       "failedAt": 624000,
       "failedAtBlockIndex": "104-1",
-      "mode": "REFUND_EGRESS_IGNORED",
+      "mode": "REFUND_OUTPUT_TOO_SMALL",
       "reason": {
         "message": "The amount is below the minimum egress amount.",
         "name": "ethereumIngressEgress.BelowEgressDustLimit",
