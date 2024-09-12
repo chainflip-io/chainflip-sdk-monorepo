@@ -292,6 +292,8 @@ router.get(
         totalOutputAmountSwapped: rolledSwaps?.totalOutputAmountSwapped.toFixed(),
         lastExecutedChunk:
           rolledSwaps?.lastExecutedChunk && getSwapFields(rolledSwaps.lastExecutedChunk),
+        allChunksExecuted:
+          rolledSwaps?.totalChunksExecuted === (swapDepositChannel?.numberOfChunks ?? 1),
         currentChunk: rolledSwaps && getSwapFields(rolledSwaps.currentChunk),
         fees: aggregateFees,
         ...(showEgress && { egress: { ...swapEgressFields } }),

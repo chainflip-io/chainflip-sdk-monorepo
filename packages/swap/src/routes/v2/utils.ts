@@ -168,9 +168,9 @@ export const getSwapState = async (
     state = StateV2.Failed;
   } else if (egress?.broadcast?.succeededAt) {
     state = StateV2.Completed;
-  } else if (egress?.broadcast) {
+  } else if (egress) {
+    state = StateV2.Sending;
     if (swapEgress?.broadcast) {
-      state = StateV2.Sending;
       const pendingSwapBroadcast = await getPendingBroadcast(swapEgress.broadcast);
       if (pendingSwapBroadcast) {
         state = StateV2.Sent;
@@ -184,8 +184,6 @@ export const getSwapState = async (
         refundEgressTrackerTxRef = pendingRefundBroadcast.tx_ref;
       }
     }
-  } else if (egress) {
-    state = StateV2.Sending;
   } else if (swapRequest?.swaps.some((s) => s.swapScheduledAt)) {
     state = StateV2.Swapping;
   } else {
