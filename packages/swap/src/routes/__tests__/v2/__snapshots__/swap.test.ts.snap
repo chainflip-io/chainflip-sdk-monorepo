@@ -25,6 +25,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a native swap id 1`] = `
   "srcChain": "Ethereum",
   "state": "SWAPPING",
   "swap": {
+    "allChunksExecuted": false,
     "currentChunk": {
       "fees": [],
       "retryCount": 0,
@@ -61,6 +62,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a vault origin 1`] = `
   "srcChain": "Ethereum",
   "state": "SWAPPING",
   "swap": {
+    "allChunksExecuted": false,
     "currentChunk": {
       "fees": [],
       "retryCount": 0,
@@ -103,6 +105,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in COMPLETED status 1`] = `
   "srcChain": "Ethereum",
   "state": "COMPLETED",
   "swap": {
+    "allChunksExecuted": true,
     "currentChunk": {
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
@@ -165,6 +168,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENDING status 1`] = `
   "srcChain": "Ethereum",
   "state": "SENDING",
   "swap": {
+    "allChunksExecuted": true,
     "currentChunk": {
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
@@ -224,6 +228,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENT status 1`] = `
   "srcChain": "Ethereum",
   "state": "SENT",
   "swap": {
+    "allChunksExecuted": true,
     "currentChunk": {
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
@@ -284,6 +289,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status 1`] = `
   "srcChain": "Ethereum",
   "state": "SWAPPING",
   "swap": {
+    "allChunksExecuted": true,
     "currentChunk": {
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
@@ -382,6 +388,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap with FillOrKillParams in COMP
   "srcChain": "Ethereum",
   "state": "COMPLETED",
   "swap": {
+    "allChunksExecuted": false,
     "currentChunk": {
       "fees": [],
       "retryCount": 0,
@@ -435,6 +442,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap with a refund in SENDING stat
   "srcChain": "Ethereum",
   "state": "SENDING",
   "swap": {
+    "allChunksExecuted": false,
     "currentChunk": {
       "fees": [],
       "retryCount": 0,
@@ -501,6 +509,7 @@ exports[`server GET /v2/swaps/:id retrieves mulitple DCA swaps in FAILED status 
   "srcChain": "Ethereum",
   "state": "FAILED",
   "swap": {
+    "allChunksExecuted": false,
     "currentChunk": {
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
