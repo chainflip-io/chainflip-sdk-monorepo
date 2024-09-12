@@ -8,7 +8,7 @@ import {
 } from '@/shared/tests/fixtures';
 import { approveVault, executeSwap } from '@/shared/vault';
 import { SwapSDK } from '../sdk';
-import { getQuote, getStatus } from '../services/ApiService';
+import { getQuote, getStatus, getStatusV2 } from '../services/ApiService';
 import { QuoteRequest } from '../types';
 
 jest.mock('@/shared/vault', () => ({
@@ -19,6 +19,7 @@ jest.mock('@/shared/vault', () => ({
 jest.mock('../services/ApiService', () => ({
   getQuote: jest.fn(),
   getStatus: jest.fn(),
+  getStatusV2: jest.fn(),
 }));
 
 jest.mock('@trpc/client', () => ({
@@ -191,6 +192,20 @@ describe(SwapSDK, () => {
 
       const result = await sdk.getStatus({ id: '1234' });
       expect(getStatus).toHaveBeenCalledWith('https://chainflip-swap.staging/', { id: '1234' }, {});
+      expect(result).toEqual({ status: 1234 });
+    });
+  });
+
+  describe(SwapSDK.prototype.getStatusV2, () => {
+    it('calls api', async () => {
+      jest.mocked(getStatusV2).mockResolvedValueOnce({ status: 1234 } as any);
+
+      const result = await sdk.getStatusV2({ id: '1234' });
+      expect(getStatusV2).toHaveBeenCalledWith(
+        'https://chainflip-swap.staging/',
+        { id: '1234' },
+        {},
+      );
       expect(result).toEqual({ status: 1234 });
     });
   });
