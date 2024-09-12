@@ -11,8 +11,7 @@ import prisma, {
   FailedSwap,
 } from '../../client';
 import { getPendingBroadcast } from '../../ingress-egress-tracking';
-import { failedSwapMessage } from '../../utils/swap';
-import { Failure } from '../swap';
+import { failedSwapMessage, FailureMode } from '../../utils/swap';
 
 export const depositChannelInclude = {
   failedBoosts: true,
@@ -39,12 +38,12 @@ export const swapRequestInclude = {
 export const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
   swapInputAmount: swap.swapInputAmount.toString(),
   swapOutputAmount: swap.swapOutputAmount?.toString(),
-  scheduledAt: swap.swapScheduledAt,
+  scheduledAt: swap.swapScheduledAt.valueOf(),
   scheduledBlockIndex: swap.swapScheduledBlockIndex ?? undefined,
-  executedAt: swap.swapExecutedAt,
+  executedAt: swap.swapExecutedAt?.valueOf(),
   executedBlockIndex: swap.swapExecutedBlockIndex ?? undefined,
   retryCount: swap.retryCount,
-  latestSwapRescheduledAt: swap.latestSwapRescheduledAt,
+  latestSwapRescheduledAt: swap.latestSwapRescheduledAt?.valueOf(),
   latestSwapRescheduledBlockIndex: swap.latestSwapRescheduledBlockIndex ?? undefined,
   fees: swap.fees.map((fee) => ({
     type: fee.type,
@@ -54,9 +53,9 @@ export const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
 });
 
 export const getDepositIgnoredFailedState = (failedSwap: FailedSwap) => ({
-  failedAt: failedSwap.failedAt,
+  failedAt: failedSwap.failedAt.valueOf(),
   failedAtBlockIndex: failedSwap.failedBlockIndex,
-  mode: Failure.IngressIgnored,
+  mode: FailureMode.IngressIgnored,
   reason: {
     name: failedSwap.reason,
     message: failedSwapMessage[failedSwap.reason],
@@ -83,10 +82,10 @@ export const getEgressFailureState = async (
     if (ignoredEgress) {
       switch (ignoredEgress.type) {
         case 'REFUND':
-          failureMode = Failure.RefundEgressIgnored;
+          failureMode = FailureMode.RefundEgressIgnored;
           break;
         case 'SWAP':
-          failureMode = Failure.EgressIgnored;
+          failureMode = FailureMode.SwapEgressIgnored;
           break;
         default:
           assertUnreachable(ignoredEgress.type);
@@ -103,7 +102,7 @@ export const getEgressFailureState = async (
     } else if (abortedBroadcast) {
       const message =
         type === 'SWAP' ? 'The swap broadcast was aborted' : 'The refund broadcast was aborted';
-      failureMode = Failure.BroadcastAborted;
+      failureMode = FailureMode.BroadcastAborted;
       error = {
         name: 'BroadcastAborted',
         message,
@@ -130,7 +129,7 @@ export const getEgressStatusFields = async (
   const failureState = await getEgressFailureState(ignoredEgress, broadcast, type);
   return {
     ...(egress && {
-      outputAmount: egress.amount?.toFixed(),
+      amount: egress.amount?.toFixed(),
       scheduledAt: egress.scheduledAt?.valueOf(),
       scheduledBlockIndex: egress.scheduledBlockIndex ?? undefined,
     }),

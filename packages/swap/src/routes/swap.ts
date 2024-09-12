@@ -15,6 +15,7 @@ import {
   coerceChain,
   estimateSwapDuration,
   failedSwapMessage,
+  FailureMode,
   isEgressableSwap,
   swapRequestId,
   txHashRegex,
@@ -32,14 +33,6 @@ export enum State {
   SwapExecuted = 'SWAP_EXECUTED',
   DepositReceived = 'DEPOSIT_RECEIVED',
   AwaitingDeposit = 'AWAITING_DEPOSIT',
-}
-
-export enum Failure {
-  IngressIgnored = 'INGRESS_IGNORED',
-  EgressIgnored = 'EGRESS_IGNORED',
-  RefundEgressIgnored = 'REFUND_EGRESS_IGNORED',
-  MultipleEgressIgnored = 'MULTIPLE_EGRESS_IGNORED',
-  BroadcastAborted = 'BROADCAST_ABORTED',
 }
 
 const depositChannelInclude = {
@@ -157,7 +150,7 @@ router.get(
       state = State.Failed;
 
       if (failedSwap) {
-        failureMode = Failure.IngressIgnored;
+        failureMode = FailureMode.IngressIgnored;
         error = {
           name: failedSwap.reason,
           message: failedSwapMessage[failedSwap.reason],
@@ -166,10 +159,10 @@ router.get(
         const ignored = swapRequest?.ignoredEgresses.at(0);
         switch (ignored!.type) {
           case 'REFUND':
-            failureMode = Failure.RefundEgressIgnored;
+            failureMode = FailureMode.RefundEgressIgnored;
             break;
           case 'SWAP':
-            failureMode = Failure.EgressIgnored;
+            failureMode = FailureMode.SwapEgressIgnored;
             break;
           default:
             assertUnreachable(ignored!.type);

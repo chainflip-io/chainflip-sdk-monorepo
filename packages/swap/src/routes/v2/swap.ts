@@ -168,8 +168,11 @@ router.get(
 
     const rolledSwaps = sortedSwaps?.reduce(
       (acc, curr) => {
-        acc.totalAmountSwapped = acc.totalAmountSwapped.plus(curr.swapOutputAmount ?? 0);
-        if (curr.swapScheduledAt && curr.swapExecutedAt) {
+        if (curr.swapExecutedAt) {
+          acc.totalOutputAmountSwapped = acc.totalOutputAmountSwapped.plus(
+            curr.swapOutputAmount ?? 0,
+          );
+          acc.totalInputAmountSwapped = acc.totalInputAmountSwapped.plus(curr.swapInputAmount);
           acc.lastExecutedChunk = curr;
           acc.totalChunksExecuted += 1;
           acc.fees = acc.fees.concat(...curr.fees);
@@ -177,12 +180,14 @@ router.get(
         return acc;
       },
       {
-        totalAmountSwapped: new Prisma.Decimal(0),
+        totalOutputAmountSwapped: new Prisma.Decimal(0),
+        totalInputAmountSwapped: new Prisma.Decimal(0),
         totalChunksExecuted: 0,
         currentChunk: sortedSwaps[0],
         lastExecutedChunk: null as null | (typeof sortedSwaps)[number] | undefined,
-        isDcaSwap:
+        isDcaSwap: Boolean(
           swapDepositChannel?.chunkIntervalBlocks && swapDepositChannel.chunkIntervalBlocks > 1,
+        ),
         fees: [] as SwapFee[],
       },
     );
@@ -190,12 +195,11 @@ router.get(
     const aggregateFees = rolledSwaps?.fees
       .reduce((acc, curr) => {
         const { type, asset, amount } = curr;
-
         const index = acc.findIndex((fee) => fee.type === type && fee.asset === asset);
+
         if (index !== -1) {
           acc[index].amount = acc[index].amount.plus(amount);
         } else acc.push(curr);
-
         return acc;
       }, [] as SwapFee[])
       .concat(swapRequest?.fees ?? [])
@@ -208,8 +212,6 @@ router.get(
     const showBoost = Boolean(
       swapDepositChannel?.maxBoostFeeBps && swapDepositChannel.maxBoostFeeBps > 0,
     );
-    const showCcm = Boolean(swapDepositChannel?.ccmGasBudget || swapDepositChannel?.ccmMessage);
-    const showRefund = swapDepositChannel?.fokRefundAddress;
 
     const [
       swapEgressFields,
@@ -235,22 +237,28 @@ router.get(
       internalSrcAsset && getRequiredBlockConfirmations(internalSrcAsset),
     ]);
 
+    const showCcm = Boolean(swapDepositChannel?.ccmGasBudget || swapDepositChannel?.ccmMessage);
+    const showRefund = swapDepositChannel?.fokRefundAddress;
+    const showEgress = Object.keys(swapEgressFields).length !== 0;
+
     const response = {
       state,
       swapId: swapRequest?.nativeId.toString(),
       ...(internalSrcAsset && getAssetAndChain(internalSrcAsset, 'src')),
       ...(internalDestAsset && getAssetAndChain(internalDestAsset, 'dest')),
       destAddress: readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress'),
+      estimatedDurationSeconds,
       depositChannel: {
         createdAt: swapDepositChannel?.createdAt.valueOf(),
         brokerCommissionBps: swapDepositChannel?.brokerCommissionBps,
         depositAddress: swapDepositChannel?.depositAddress,
-        expiryBlock: swapDepositChannel?.srcChainExpiryBlock?.toString(),
+        srcChainExpiryBlock: swapDepositChannel?.srcChainExpiryBlock?.toString(),
         estimatedExpiryTime: swapDepositChannel?.estimatedExpiryAt?.valueOf(),
         expectedDepositAmount: swapDepositChannel?.expectedDepositAmount?.toFixed(),
         isExpired: swapDepositChannel?.isExpired,
         openedThroughBackend: swapDepositChannel?.openedThroughBackend,
         affiliateBrokers,
+        srcChainRequiredBlockConfirmations,
         fillOrKillParams: swapDepositChannel?.fokMinPriceX128
           ? {
               retryDurationBlocks: swapDepositChannel.fokRetryDurationBlocks,
@@ -272,7 +280,7 @@ router.get(
       deposit: {
         amount:
           readField(swapRequest, failedSwap, 'depositAmount')?.toFixed() ?? pendingDeposit?.amount,
-        transactionRef: depositTransactionRef,
+        txRef: depositTransactionRef,
         txConfirmations: pendingDeposit?.transactionConfirmations,
         receivedAt: swapRequest?.depositReceivedAt?.valueOf(),
         receivedBlockIndex: swapRequest?.depositReceivedBlockIndex ?? undefined,
@@ -280,15 +288,13 @@ router.get(
       },
       swap: {
         ...rolledSwaps,
-        totalAmountSwapped: rolledSwaps?.totalAmountSwapped.toFixed(),
+        totalInputAmountSwapped: rolledSwaps?.totalInputAmountSwapped.toFixed(),
+        totalOutputAmountSwapped: rolledSwaps?.totalOutputAmountSwapped.toFixed(),
         lastExecutedChunk:
           rolledSwaps?.lastExecutedChunk && getSwapFields(rolledSwaps.lastExecutedChunk),
         currentChunk: rolledSwaps && getSwapFields(rolledSwaps.currentChunk),
-        ...swapEgressFields,
-        type: sortedSwaps?.[0].type,
         fees: aggregateFees,
-        srcChainRequiredBlockConfirmations,
-        estimatedDurationSeconds,
+        ...(showEgress && { egress: { ...swapEgressFields } }),
       },
       ...(showRefund && {
         refund: {
