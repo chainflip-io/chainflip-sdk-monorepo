@@ -12,11 +12,10 @@ import {
 } from '@/shared/tests/fixtures';
 import prisma, { InternalAsset } from '../../client';
 import env from '../../config/env';
-import { checkPriceWarning, getUsdValue } from '../../pricing/checkPriceWarning';
+import { checkPriceWarning } from '../../pricing/checkPriceWarning';
 import Quoter from '../../quoting/Quoter';
 import app from '../../server';
 import { boostPoolsCache } from '../../utils/boost';
-import { getDcaQuoteParams } from '../quote';
 
 jest.mock('../../utils/function', () => ({
   ...jest.requireActual('../../utils/function'),
@@ -878,69 +877,5 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body).toMatchSnapshot();
     });
-  });
-});
-
-describe('getDcaQuoteParams', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    env.DCA_USD_CHUNK_SIZE = 3000;
-    env.DCA_CHUNK_INTERVAL_SECONDS = 3;
-  });
-
-  it('should correctly return 9060 usd worth of btc', async () => {
-    jest.mocked(getUsdValue).mockResolvedValue('9060');
-
-    const result = await getDcaQuoteParams('Btc', 27180n);
-    expect(result).toMatchInlineSnapshot(`
-    {
-      "addedDurationSeconds": 6,
-      "chunkSize": 9000n,
-      "lastChunkAmount": 9180n,
-      "numberOfChunks": 3,
-    }
-    `);
-  });
-
-  it('should correctly return 9300 usd worth of btc', async () => {
-    jest.mocked(getUsdValue).mockResolvedValue('9300');
-
-    const result = await getDcaQuoteParams('Btc', 27900n);
-    expect(result).toMatchInlineSnapshot(`
-    {
-      "addedDurationSeconds": 9,
-      "chunkSize": 9000n,
-      "lastChunkAmount": 900n,
-      "numberOfChunks": 4,
-    }
-    `);
-  });
-
-  it('should correctly handle 300 usd worth of btc', async () => {
-    jest.mocked(getUsdValue).mockResolvedValue('300');
-
-    const result = await getDcaQuoteParams('Btc', 900n);
-    expect(result).toMatchInlineSnapshot(`
-    {
-      "addedDurationSeconds": 0,
-      "chunkSize": 900n,
-      "lastChunkAmount": 900n,
-      "numberOfChunks": 1,
-    }
-    `);
-  });
-
-  it('should correctly handle 30 usd worth of btc', async () => {
-    jest.mocked(getUsdValue).mockResolvedValue('30');
-
-    const result = await getDcaQuoteParams('Btc', 90n);
-    expect(result).toMatchInlineSnapshot(`
-    {
-      "addedDurationSeconds": 0,
-      "chunkSize": 90n,
-      "lastChunkAmount": 90n,
-      "numberOfChunks": 1,
-    }
-    `);
   });
 });

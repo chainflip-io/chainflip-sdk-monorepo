@@ -134,6 +134,8 @@ export type PoolInfo = {
   fee: Omit<PoolFee, 'type'>;
 };
 
+export type QuoteType = 'Standard' | 'DCA';
+
 export type QuoteDetails = {
   intermediateAmount?: string;
   egressAmount: string;
@@ -147,6 +149,5 @@ export type BoostedQuoteDetails = QuoteDetails & { estimatedBoostFeeBps: number 
 
 export type QuoteQueryResponse = QuoteDetails & {
   boostQuote?: BoostedQuoteDetails;
-  dcaQuote?: QuoteDetails;
-  dcaBoostedQuote?: BoostedQuoteDetails;
+  type: QuoteType;
 };

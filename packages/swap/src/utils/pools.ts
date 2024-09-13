@@ -1,5 +1,10 @@
-import { InternalAsset, InternalAssets } from '@/shared/enums';
+import { InternalAsset, InternalAssets, assetConstants, readChainAssetValue } from '@/shared/enums';
+import { FULL_TICK_RANGE } from '@/shared/consts';
+import { assert } from '@/shared/guards';
 import prisma, { Pool } from '@/swap/client';
+import { AsyncCacheMap } from './dataStructures';
+import { getPoolDepth } from './rpc';
+import { getLpAccounts } from './lp';
 
 export const getPools = async (
   srcAsset: InternalAsset,
@@ -36,4 +41,37 @@ export const getPools = async (
       },
     }),
   ]);
+};
+
+const undeployedLiquidityCache = new AsyncCacheMap({
+  fetch: async (asset: InternalAsset) => {
+    const lpAccounts = await getLpAccounts();
+    return lpAccounts.reduce((sum, account) => {
+      assert(account.role === 'liquidity_provider', 'Account should be liquidity provider');
+
+      return sum + readChainAssetValue(account.balances, asset);
+    }, 0n);
+  },
+  resetExpiryOnLookup: false,
+  ttl: 60_000,
+});
+
+export const deployedLiquidityCache = new AsyncCacheMap({
+  fetch: (asset: InternalAsset) => getPoolDepth(asset, InternalAssets.Usdc, FULL_TICK_RANGE),
+  resetExpiryOnLookup: false,
+  ttl: 60_000,
+});
+
+export const getTotalLiquidity = async (fromAsset: InternalAsset, toAsset: InternalAsset) => {
+  assert(
+    (fromAsset === 'Usdc' && toAsset !== 'Usdc') || (fromAsset !== 'Usdc' && toAsset === 'Usdc'),
+    'One and only one asset must be USDC',
+  );
+  const undeployedLiquidity = await undeployedLiquidityCache.get(toAsset);
+  if (fromAsset === InternalAssets.Usdc) {
+    const deployedLiquidity = await deployedLiquidityCache.get(toAsset);
+    return deployedLiquidity.baseLiquidityAmount + undeployedLiquidity;
+  }
+  const deployedLiquidity = await deployedLiquidityCache.get(fromAsset);
+  return deployedLiquidity.quoteLiquidityAmount + undeployedLiquidity;
 };

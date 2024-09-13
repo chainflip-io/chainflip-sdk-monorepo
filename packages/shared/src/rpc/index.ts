@@ -78,6 +78,12 @@ export const getRuntimeVersion = createRequest('state_getRuntimeVersion');
 
 export const getBlockHash = createRequest('chain_getBlockHash');
 
+export const getPoolDepth = createRequest('cf_pool_depth');
+
+export const getAccounts = createRequest('cf_accounts');
+
+export const getAccountInfo = createRequest('cf_account_info');
+
 export const getAllBoostPoolsDepth = transform(createRequest('cf_boost_pools_depth'), (result) =>
   result.map(({ chain, asset, ...rest }) => ({
     asset: getInternalAsset({ chain, asset }),
