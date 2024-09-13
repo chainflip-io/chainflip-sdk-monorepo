@@ -2,8 +2,7 @@ import BigNumber from 'bignumber.js';
 import express from 'express';
 import type { Server } from 'socket.io';
 import { Asset, assetConstants, Assets, Chain, Chains, InternalAsset } from '@/shared/enums';
-import { quoteQuerySchema, QuoteQueryResponse, dcaParams } from '@/shared/schemas';
-import { asyncHandler } from '../common';
+import { quoteQuerySchema, QuoteQueryResponse } from '@/shared/schemas';
 import env from '../../config/env';
 import { getBoostSafeMode } from '../../polkadot/api';
 import { getUsdValue } from '../../pricing/checkPriceWarning';
@@ -14,6 +13,7 @@ import logger from '../../utils/logger';
 import { getPools, getTotalLiquidity } from '../../utils/pools';
 import { getIngressFee, validateSwapAmount } from '../../utils/rpc';
 import ServiceError from '../../utils/ServiceError';
+import { asyncHandler } from '../common';
 
 type AdditionalInfo = {
   srcAsset: InternalAsset;
@@ -91,6 +91,7 @@ const adjustDcaQuote = ({
   const lastChunkRatio = new BigNumber(dcaQuoteParams.lastChunkAmount.toString()).dividedBy(
     new BigNumber(dcaQuoteParams.chunkSize.toString()),
   );
+  // eslint-disable-next-line no-param-reassign
   dcaQuote.type = 'DCA';
   if (dcaQuoteParams && dcaQuote) {
     const netWorkFee = dcaQuote.includedFees.find((fee) => fee.type === 'NETWORK');
@@ -101,12 +102,13 @@ const adjustDcaQuote = ({
         .toFixed(0);
     }
 
+    // eslint-disable-next-line no-param-reassign
     dcaQuote.egressAmount = new BigNumber(dcaQuote.egressAmount)
       .multipliedBy(dcaQuoteParams.numberOfChunks - 1)
       .plus(BigNumber(dcaQuote.egressAmount).multipliedBy(lastChunkRatio))
       .toFixed(0);
-    dcaQuote.estimatedDurationSeconds =
-      dcaQuote.estimatedDurationSeconds + dcaQuoteParams.addedDurationSeconds;
+    // eslint-disable-next-line no-param-reassign
+    dcaQuote.estimatedDurationSeconds += dcaQuoteParams.addedDurationSeconds;
   }
   if (dcaQuoteParams && dcaBoostedQuote && estimatedBoostFeeBps) {
     const netWorkFee = dcaBoostedQuote.includedFees.find((fee) => fee.type === 'NETWORK');
@@ -125,6 +127,7 @@ const adjustDcaQuote = ({
         .toFixed(0);
     }
 
+    // eslint-disable-next-line no-param-reassign
     dcaQuote.boostQuote = {
       ...dcaBoostedQuote,
       estimatedBoostFeeBps,

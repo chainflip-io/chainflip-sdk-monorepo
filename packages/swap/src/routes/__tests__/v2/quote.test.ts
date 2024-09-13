@@ -13,11 +13,11 @@ import {
   swapRate,
 } from '@/shared/tests/fixtures';
 import prisma, { InternalAsset } from '../../../client';
+import env from '../../../config/env';
+import { getUsdValue } from '../../../pricing/checkPriceWarning';
 import Quoter from '../../../quoting/Quoter';
 import app from '../../../server';
 import { boostPoolsCache } from '../../../utils/boost';
-import env from '../../../config/env';
-import { getUsdValue, checkPriceWarning } from '../../../pricing/checkPriceWarning';
 import { getDcaQuoteParams } from '../../v2/quote';
 
 jest.mock('../../../utils/function', () => ({

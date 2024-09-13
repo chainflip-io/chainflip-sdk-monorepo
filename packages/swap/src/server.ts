@@ -9,9 +9,9 @@ import authenticate from './quoting/authenticate';
 import addresses from './routes/addresses';
 import { handleError, maintenanceMode } from './routes/common';
 import quoteRouter from './routes/quote';
-import quoteRouterV2 from './routes/v2/quote';
 import swap from './routes/swap';
 import thirdPartySwap from './routes/thirdPartySwap';
+import quoteRouterV2 from './routes/v2/quote';
 import swapV2 from './routes/v2/swap';
 import { publicProcedure, router } from './trpc';
 

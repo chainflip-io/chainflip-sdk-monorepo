@@ -55,6 +55,7 @@ export default z
           .parse(JSON.parse(string));
       } catch (err) {
         const error = err as Error;
+        // eslint-disable-next-line no-console
         console.warn({
           message: `Could not parse DCA_USD_CHUNK_SIZE variable. error: "${error?.message}"`,
         });

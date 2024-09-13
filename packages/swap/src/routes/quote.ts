@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import express from 'express';
 import type { Server } from 'socket.io';
 import { Asset, assetConstants, Assets, Chain, Chains, InternalAsset } from '@/shared/enums';
-import { quoteQuerySchema, QuoteQueryResponse, dcaParams } from '@/shared/schemas';
+import { quoteQuerySchema } from '@/shared/schemas';
 import { asyncHandler } from './common';
 import env from '../config/env';
 import { getBoostSafeMode } from '../polkadot/api';
@@ -11,7 +11,7 @@ import Quoter from '../quoting/Quoter';
 import { getBoostFeeBpsForAmount } from '../utils/boost';
 import getPoolQuote from '../utils/getPoolQuote';
 import logger from '../utils/logger';
-import { getPools, getTotalLiquidity } from '../utils/pools';
+import { getPools } from '../utils/pools';
 import { getIngressFee, validateSwapAmount } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
 
