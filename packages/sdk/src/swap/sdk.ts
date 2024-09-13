@@ -236,6 +236,7 @@ export class SwapSDK {
     };
   }
 
+  /** @deprecated DEPRECATED(1.6) use getStatusV2() */
   getStatus(
     swapStatusRequest: SwapStatusRequest,
     options: ApiService.RequestOptions = {},
