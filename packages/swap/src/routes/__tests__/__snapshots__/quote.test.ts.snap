@@ -247,7 +247,6 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
       },
     },
   ],
-  "type": "Standard",
 }
 `;
 

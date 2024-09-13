@@ -73,6 +73,5 @@ exports[`python integration test replies to a quote request 2`] = `
       "srcAsset": "Flip",
     },
   ],
-  "type": "Standard",
 ]
 `;
