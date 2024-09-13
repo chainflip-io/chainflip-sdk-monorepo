@@ -190,6 +190,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
         },
       },
     ],
+    "type": "Standard",
   },
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 1830,
@@ -247,6 +248,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
       },
     },
   ],
+  "type": "Standard",
 }
 `;
 
