@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Assets, Chains } from '@/shared/enums';
 import { QuoteRequest } from '../../types';
-import { getQuote, getStatus } from '../ApiService';
+import { getQuote, getStatus, getStatusV2 } from '../ApiService';
 
 jest.mock('../../../../package.json', () => ({
   version: '1.0-test',
@@ -82,6 +82,34 @@ describe('ApiService', () => {
       mockedGet.mockResolvedValueOnce({ data: null });
 
       await getStatus(
+        'https://swapperoo.org',
+        { id: '' },
+        { signal: new AbortController().signal },
+      );
+
+      expect(mockedGet.mock.lastCall?.[1]?.signal).not.toBeUndefined();
+    });
+  });
+
+  describe(getStatusV2, () => {
+    it('forwards whatever response it gets from the swap service', async () => {
+      const mockedGet = jest.mocked(axios.get);
+      mockedGet.mockResolvedValueOnce({ data: 'hello darkness' });
+      mockedGet.mockResolvedValueOnce({ data: 'my old friend' });
+
+      const statusRequest = { id: 'the id' };
+
+      const status1 = await getStatusV2('https://swapperoo.org', statusRequest, {});
+      expect(status1).toBe('hello darkness');
+      const status2 = await getStatusV2('https://swapperoo.org', statusRequest, {});
+      expect(status2).toBe('my old friend');
+    });
+
+    it('passes the signal to axios', async () => {
+      const mockedGet = jest.mocked(axios.get);
+      mockedGet.mockResolvedValueOnce({ data: null });
+
+      await getStatusV2(
         'https://swapperoo.org',
         { id: '' },
         { signal: new AbortController().signal },

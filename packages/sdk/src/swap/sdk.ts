@@ -44,6 +44,7 @@ import {
   SwapStatusRequest,
   DepositAddressRequest,
   BoostPoolDepth,
+  SwapStatusResponse,
 } from './types';
 import { SwapV2 } from './v2/types';
 
@@ -235,11 +236,19 @@ export class SwapSDK {
     };
   }
 
+  /** @deprecated DEPRECATED(1.6) use getStatusV2() */
   getStatus(
     swapStatusRequest: SwapStatusRequest,
     options: ApiService.RequestOptions = {},
-  ): Promise<SwapV2.SwapStatusResponse> {
+  ): Promise<SwapStatusResponse> {
     return ApiService.getStatus(this.options.backendUrl, swapStatusRequest, options);
+  }
+
+  getStatusV2(
+    swapStatusRequest: SwapStatusRequest,
+    options: ApiService.RequestOptions = {},
+  ): Promise<SwapV2.SwapStatusResponse> {
+    return ApiService.getStatusV2(this.options.backendUrl, swapStatusRequest, options);
   }
 
   async executeSwap(
