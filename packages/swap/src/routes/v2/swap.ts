@@ -301,6 +301,7 @@ router.get(
               lastExecutedChunk:
                 rolledSwaps?.lastExecutedChunk && getSwapFields(rolledSwaps.lastExecutedChunk),
               allChunksExecuted:
+                sortedSwaps?.length &&
                 rolledSwaps?.totalChunksExecuted === (swapDepositChannel?.numberOfChunks ?? 1),
               currentChunk: rolledSwaps && getSwapFields(rolledSwaps.currentChunk),
             }
