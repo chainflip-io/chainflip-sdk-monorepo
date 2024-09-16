@@ -1,6 +1,5 @@
 import { RequestHandler, ErrorRequestHandler } from 'express';
 import type { RouteParameters } from 'express-serve-static-core';
-import type { ParsedQs } from 'qs';
 import env from '../config/env';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
@@ -31,7 +30,7 @@ export const asyncHandler = <
   P = RouteParameters<Route>,
   ResBody = any,
   ReqBody = any,
-  ReqQuery = ParsedQs,
+  ReqQuery = Record<string, string | string[] | undefined>,
   Locals extends Record<string, any> = Record<string, any>,
 >(
   handler: RequestHandler<P, ResBody, ReqBody, ReqQuery, Locals>,
