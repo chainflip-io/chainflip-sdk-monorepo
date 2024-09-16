@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import express from 'express';
+import { Query } from 'express-serve-static-core';
 import type { Server } from 'socket.io';
 import { Asset, assetConstants, InternalAsset } from '@/shared/enums';
 import { quoteQuerySchema, QuoteQueryResponse } from '@/shared/schemas';
@@ -138,6 +139,156 @@ const adjustDcaQuote = ({
   }
 };
 
+export const validateQuoteQuery = async (query: Query) => {
+  // this api did not require the srcChain and destChain param initially
+  // to keep it compatible with clients that do not include these params, we fall back to set them based on the asset
+  // eslint-disable-next-line no-param-reassign
+  query.srcChain ??= fallbackChains[query.srcAsset as Asset];
+  // eslint-disable-next-line no-param-reassign
+  query.destChain ??= fallbackChains[query.destAsset as Asset];
+  const queryResult = quoteQuerySchema.safeParse(query);
+
+  if (!queryResult.success) {
+    logger.info('received invalid quote request', {
+      query,
+      error: queryResult.error,
+    });
+    throw ServiceError.badRequest('invalid request');
+  }
+
+  logger.info('received a quote request', { query });
+  const parsedQuery = queryResult.data;
+
+  const { srcAsset, destAsset, amount, brokerCommissionBps } = queryResult.data;
+  const boostDepositsEnabled = await getBoostSafeMode(srcAsset).catch(() => true);
+
+  if (env.DISABLED_INTERNAL_ASSETS.includes(srcAsset)) {
+    throw ServiceError.unavailable(`Asset ${srcAsset} is disabled`);
+  }
+  if (env.DISABLED_INTERNAL_ASSETS.includes(destAsset)) {
+    throw ServiceError.unavailable(`Asset ${destAsset} is disabled`);
+  }
+
+  const amountResult = await validateSwapAmount(srcAsset, BigInt(parsedQuery.amount));
+
+  if (!amountResult.success) {
+    throw ServiceError.badRequest(amountResult.reason);
+  }
+
+  const ingressFee = await getIngressFee(srcAsset);
+
+  if (ingressFee === null) {
+    throw ServiceError.internalError(`could not determine ingress fee for ${srcAsset}`);
+  }
+
+  if (ingressFee > amount) {
+    throw ServiceError.badRequest(`amount is lower than estimated ingress fee (${ingressFee})`);
+  }
+
+  return {
+    srcAsset,
+    destAsset,
+    amount,
+    brokerCommissionBps,
+    boostDepositsEnabled,
+  };
+};
+
+export const generateQuotes = async ({
+  dcaQuoteParams,
+  amount,
+  srcAsset,
+  destAsset,
+  brokerCommissionBps,
+  boostDepositsEnabled,
+  quoter,
+}: {
+  dcaQuoteParams?: Awaited<ReturnType<typeof getDcaQuoteParams>>;
+  srcAsset: InternalAsset;
+  amount: bigint;
+  destAsset: InternalAsset;
+  brokerCommissionBps?: number;
+  boostDepositsEnabled: boolean;
+  quoter: Quoter;
+}) => {
+  const [limitOrders, estimatedBoostFeeBps, pools] = await Promise.all([
+    quoter.getLimitOrders(srcAsset, destAsset, amount),
+    env.DISABLE_BOOST_QUOTING || !(await boostDepositsEnabled)
+      ? undefined
+      : getBoostFeeBpsForAmount({ amount, asset: srcAsset }),
+    getPools(srcAsset, destAsset),
+  ]);
+
+  const quoteArgs = {
+    srcAsset,
+    destAsset,
+    swapInputAmount: amount,
+    limitOrders,
+    brokerCommissionBps,
+    pools,
+  };
+
+  const [quote, boostedQuote, dcaQuote, dcaBoostedQuote] = await Promise.all([
+    getPoolQuote(quoteArgs).catch((error) => {
+      if (dcaQuoteParams) {
+        return undefined;
+      }
+      throw error;
+    }),
+    estimatedBoostFeeBps &&
+      getPoolQuote({ ...quoteArgs, boostFeeBps: estimatedBoostFeeBps }).catch(() => undefined),
+    dcaQuoteParams &&
+      getPoolQuote({
+        ...quoteArgs,
+        swapInputAmount: dcaQuoteParams.chunkSize,
+      }),
+    dcaQuoteParams &&
+      estimatedBoostFeeBps &&
+      getPoolQuote({
+        ...quoteArgs,
+        boostFeeBps: estimatedBoostFeeBps,
+        swapInputAmount: dcaQuoteParams.chunkSize,
+      }).catch(() => undefined),
+  ]);
+
+  if (dcaQuoteParams && dcaQuote) {
+    // Check liquidity for DCA
+    if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
+      const totalLiquidity = await getTotalLiquidity(srcAsset, destAsset);
+      if (totalLiquidity < BigInt(dcaQuote.egressAmount) * BigInt(dcaQuoteParams.numberOfChunks)) {
+        throw ServiceError.badRequest(`Insufficient liquidity for the requested amount`);
+      }
+    } else {
+      const totalLiquidityLeg1 = await getTotalLiquidity(srcAsset, 'Usdc');
+      const totalLiquidityLeg2 = await getTotalLiquidity('Usdc', destAsset);
+      if (
+        totalLiquidityLeg1 <
+          BigInt(dcaQuote.intermediateAmount!) * BigInt(dcaQuoteParams.numberOfChunks) ||
+        totalLiquidityLeg2 < BigInt(dcaQuote.egressAmount) * BigInt(dcaQuoteParams.numberOfChunks)
+      ) {
+        throw ServiceError.badRequest(`Insufficient liquidity for the requested amount`);
+      }
+    }
+
+    // The received quotes are for a single chunk, we need to extrapolate them to the full amount
+    adjustDcaQuote({
+      dcaQuoteParams,
+      dcaQuote,
+      dcaBoostedQuote,
+      estimatedBoostFeeBps,
+    });
+  }
+
+  if (boostedQuote && estimatedBoostFeeBps && quote && boostedQuote) {
+    quote.boostQuote = { ...boostedQuote, estimatedBoostFeeBps };
+  }
+
+  const result = [];
+  if (quote) result.push(quote);
+  if (dcaQuote) result.push(dcaQuote);
+  return { quotes: result, limitOrders };
+};
+
 const quoteRouter = (io: Server) => {
   const quoter = new Quoter(io);
 
@@ -154,141 +305,30 @@ const quoteRouter = (io: Server) => {
   router.get(
     '/',
     asyncHandler(async (req, res) => {
-      // this api did not require the srcChain and destChain param initially
-      // to keep it compatible with clients that do not include these params, we fall back to set them based on the asset
-      req.query.srcChain ??= fallbackChains[req.query.srcAsset as Asset];
-      req.query.destChain ??= fallbackChains[req.query.destAsset as Asset];
-      const queryResult = quoteQuerySchema.safeParse(req.query);
-
-      if (!queryResult.success) {
-        logger.info('received invalid quote request', {
-          query: req.query,
-          error: queryResult.error,
-        });
-        throw ServiceError.badRequest('invalid request');
-      }
-
       const start = performance.now();
 
-      logger.info('received a quote request', { query: req.query });
-      const query = queryResult.data;
-
-      const { srcAsset, destAsset, amount, brokerCommissionBps } = queryResult.data;
-      const boostDepositsEnabled = getBoostSafeMode(srcAsset).catch(() => true);
-
-      if (env.DISABLED_INTERNAL_ASSETS.includes(srcAsset)) {
-        throw ServiceError.unavailable(`Asset ${srcAsset} is disabled`);
-      }
-      if (env.DISABLED_INTERNAL_ASSETS.includes(destAsset)) {
-        throw ServiceError.unavailable(`Asset ${destAsset} is disabled`);
-      }
-
-      const amountResult = await validateSwapAmount(srcAsset, BigInt(query.amount));
-
-      if (!amountResult.success) {
-        throw ServiceError.badRequest(amountResult.reason);
-      }
-
-      const ingressFee = await getIngressFee(srcAsset);
-
-      if (ingressFee === null) {
-        throw ServiceError.internalError(`could not determine ingress fee for ${srcAsset}`);
-      }
-
-      if (ingressFee > amount) {
-        throw ServiceError.badRequest(`amount is lower than estimated ingress fee (${ingressFee})`);
-      }
+      const { srcAsset, destAsset, amount, brokerCommissionBps, boostDepositsEnabled } =
+        await validateQuoteQuery(req.query);
 
       let limitOrdersReceived: Awaited<ReturnType<Quoter['getLimitOrders']>> | undefined;
       try {
-        const usdValue = await getUsdValue(amount, srcAsset).catch(() => undefined);
-
-        const [limitOrders, estimatedBoostFeeBps, pools] = await Promise.all([
-          quoter.getLimitOrders(srcAsset, destAsset, amount),
-          env.DISABLE_BOOST_QUOTING || !(await boostDepositsEnabled)
-            ? undefined
-            : getBoostFeeBpsForAmount({ amount, asset: srcAsset }),
-          getPools(srcAsset, destAsset),
-        ]);
-        limitOrdersReceived = limitOrders;
-
         const dcaQuoteParams = await getDcaQuoteParams(srcAsset, amount);
 
-        const quoteArgs = {
+        const { quotes, limitOrders } = await generateQuotes({
+          dcaQuoteParams,
           srcAsset,
+          amount,
           destAsset,
-          swapInputAmount: amount,
-          limitOrders,
           brokerCommissionBps,
-          pools,
-        };
-
-        const [quote, boostedQuote, dcaQuote, dcaBoostedQuote] = await Promise.all([
-          getPoolQuote(quoteArgs).catch((error) => {
-            if (dcaQuoteParams) {
-              return undefined;
-            }
-            throw error;
-          }),
-          estimatedBoostFeeBps &&
-            getPoolQuote({ ...quoteArgs, boostFeeBps: estimatedBoostFeeBps }).catch(
-              () => undefined,
-            ),
-          dcaQuoteParams &&
-            getPoolQuote({
-              ...quoteArgs,
-              swapInputAmount: dcaQuoteParams.chunkSize,
-            }),
-          dcaQuoteParams &&
-            estimatedBoostFeeBps &&
-            getPoolQuote({
-              ...quoteArgs,
-              boostFeeBps: estimatedBoostFeeBps,
-              swapInputAmount: dcaQuoteParams.chunkSize,
-            }).catch(() => undefined),
-        ]);
-
-        if (dcaQuoteParams && dcaQuote) {
-          // Check liquidity for DCA
-          if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
-            const totalLiquidity = await getTotalLiquidity(srcAsset, destAsset);
-            if (
-              totalLiquidity <
-              BigInt(dcaQuote.egressAmount) * BigInt(dcaQuoteParams.numberOfChunks)
-            ) {
-              throw ServiceError.badRequest(`Insufficient liquidity for the requested amount`);
-            }
-          } else {
-            const totalLiquidityLeg1 = await getTotalLiquidity(srcAsset, 'Usdc');
-            const totalLiquidityLeg2 = await getTotalLiquidity('Usdc', destAsset);
-            if (
-              totalLiquidityLeg1 <
-                BigInt(dcaQuote.intermediateAmount!) * BigInt(dcaQuoteParams.numberOfChunks) ||
-              totalLiquidityLeg2 <
-                BigInt(dcaQuote.egressAmount) * BigInt(dcaQuoteParams.numberOfChunks)
-            ) {
-              throw ServiceError.badRequest(`Insufficient liquidity for the requested amount`);
-            }
-          }
-          // The received quotes are for a single chunk, we need to extrapolate them to the full amount
-          adjustDcaQuote({
-            dcaQuoteParams,
-            dcaQuote,
-            dcaBoostedQuote,
-            estimatedBoostFeeBps,
-          });
-        }
-
-        if (boostedQuote && estimatedBoostFeeBps && quote && boostedQuote) {
-          quote.boostQuote = { ...boostedQuote, estimatedBoostFeeBps };
-        }
+          boostDepositsEnabled,
+          quoter,
+        });
+        const quote = quotes[0];
+        limitOrdersReceived = limitOrders;
 
         const duration = performance.now() - start;
 
-        const result = [];
-        if (quote) result.push(quote);
-        if (dcaQuote) result.push(dcaQuote);
-        res.json(result);
+        res.json(quotes);
 
         logger.info('quote request completed', {
           duration: duration.toFixed(2),
@@ -299,7 +339,7 @@ const quoteRouter = (io: Server) => {
             inputAmount: new BigNumber(amount.toString())
               .shiftedBy(-assetConstants[srcAsset].decimals)
               .toFixed(),
-            usdValue,
+            usdValue: await getUsdValue(amount, srcAsset).catch(() => undefined),
           }),
         });
       } catch (err) {
