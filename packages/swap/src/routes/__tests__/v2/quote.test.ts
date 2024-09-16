@@ -53,8 +53,8 @@ jest.mock('../../../pricing/checkPriceWarning', () => ({
 describe(getDcaQuoteParams, () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    env.DCA_USD_CHUNK_SIZE = [{ asset: 'Btc', usdChunkSize: 3000 }];
-    env.DCA_CHUNK_INTERVAL_SECONDS = 3;
+    env.DCA_USD_CHUNK_SIZE = { Btc: 3000 };
+    env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
   });
 
   it('should correctly return 9060 usd worth of btc', async () => {
@@ -63,9 +63,8 @@ describe(getDcaQuoteParams, () => {
     const result = await getDcaQuoteParams('Btc', 27180n);
     expect(result).toMatchInlineSnapshot(`
     {
-      "addedDurationSeconds": 6,
-      "chunkSize": 9000n,
-      "lastChunkAmount": 9180n,
+      "addedDurationSeconds": 24,
+      "chunkSize": 9060n,
       "numberOfChunks": 3,
     }
     `);
@@ -77,9 +76,8 @@ describe(getDcaQuoteParams, () => {
     const result = await getDcaQuoteParams('Btc', 27900n);
     expect(result).toMatchInlineSnapshot(`
     {
-      "addedDurationSeconds": 9,
-      "chunkSize": 9000n,
-      "lastChunkAmount": 900n,
+      "addedDurationSeconds": 36,
+      "chunkSize": 6975n,
       "numberOfChunks": 4,
     }
     `);
@@ -93,7 +91,6 @@ describe(getDcaQuoteParams, () => {
     {
       "addedDurationSeconds": 0,
       "chunkSize": 900n,
-      "lastChunkAmount": 900n,
       "numberOfChunks": 1,
     }
     `);
@@ -107,7 +104,6 @@ describe(getDcaQuoteParams, () => {
     {
       "addedDurationSeconds": 0,
       "chunkSize": 90n,
-      "lastChunkAmount": 90n,
       "numberOfChunks": 1,
     }
     `);
@@ -432,16 +428,15 @@ describe('server', () => {
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
-          type: 'Standard',
         },
       ]);
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 
     it('gets the DCA quote to USDC', async () => {
-      env.DCA_USD_CHUNK_SIZE = [{ asset: 'Btc', usdChunkSize: 3000 }];
-      env.DCA_CHUNK_INTERVAL_SECONDS = 3;
-      jest.mocked(getUsdValue).mockResolvedValue('9060');
+      env.DCA_USD_CHUNK_SIZE = { Btc: 3000 };
+      env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
+      jest.mocked(getUsdValue).mockResolvedValue('9800');
 
       mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_environment') {
@@ -515,7 +510,7 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchObject([
+      expect(body).toEqual([
         {
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
@@ -551,12 +546,11 @@ describe('server', () => {
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
-          type: 'Standard',
         },
         {
-          egressAmount: (302000000).toString(),
-          estimatedDurationSeconds: 60,
-          estimatedPrice: '302.00000000000000038656',
+          egressAmount: (400000000).toString(),
+          estimatedDurationSeconds: 90,
+          estimatedPrice: '400',
           includedFees: [
             {
               amount: '25000',
@@ -565,7 +559,7 @@ describe('server', () => {
               type: 'INGRESS',
             },
             {
-              amount: '302302',
+              amount: '400400',
               asset: 'USDC',
               chain: 'Ethereum',
               type: 'NETWORK',
@@ -581,14 +575,17 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '662251655629139',
+                amount: '500000000000000',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
-          type: 'DCA',
+          dcaParams: {
+            chunkInterval: 2,
+            numberOfChunks: 4,
+          },
         },
       ]);
       expect(sendSpy).toHaveBeenCalledTimes(2);

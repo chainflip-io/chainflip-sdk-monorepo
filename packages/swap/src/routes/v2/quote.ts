@@ -14,6 +14,7 @@ import { getPools, getTotalLiquidity } from '../../utils/pools';
 import { getIngressFee, validateSwapAmount } from '../../utils/rpc';
 import ServiceError from '../../utils/ServiceError';
 import { asyncHandler } from '../common';
+import { fallbackChains } from '../quote';
 
 type AdditionalInfo = {
   srcAsset: InternalAsset;
@@ -39,8 +40,7 @@ const handleQuotingError = (err: unknown, info: AdditionalInfo) => {
 };
 
 export const getDcaQuoteParams = async (asset: InternalAsset, amount: bigint) => {
-  const usdChunkSize =
-    env.DCA_USD_CHUNK_SIZE?.find((item) => item.asset === asset)?.usdChunkSize ?? 3000;
+  const usdChunkSize = env.DCA_USD_CHUNK_SIZE?.[asset] ?? 3000;
 
   const usdValue = await getUsdValue(amount, asset).catch(() => undefined);
   if (!usdValue) {
@@ -52,28 +52,20 @@ export const getDcaQuoteParams = async (asset: InternalAsset, amount: bigint) =>
   if (Number(usdValue) < usdChunkSize) {
     return {
       chunkSize: amount,
-      lastChunkAmount: amount,
       numberOfChunks: 1,
       addedDurationSeconds: 0,
     };
   }
   const numberOfChunksPrecise = Number(usdValue) / usdChunkSize;
-  const chunkSize = BigNumber(amount.toString()).dividedBy(numberOfChunksPrecise);
-
   const numberOfChunks =
     numberOfChunksPrecise - Math.floor(numberOfChunksPrecise) < 0.05
       ? Math.floor(numberOfChunksPrecise)
       : Math.ceil(numberOfChunksPrecise);
 
-  const lastChunkAmount = BigInt(
-    new BigNumber(amount.toString()).minus(chunkSize.multipliedBy(numberOfChunks - 1)).toFixed(0),
-  );
-
   return {
-    chunkSize: BigInt(chunkSize.toFixed(0)),
-    lastChunkAmount,
+    chunkSize: BigInt(new BigNumber(amount.toString()).dividedBy(numberOfChunks).toFixed(0)),
     numberOfChunks,
-    addedDurationSeconds: Math.ceil(env.DCA_CHUNK_INTERVAL_SECONDS * (numberOfChunks - 1)), // we deduct 1 chunk because the first one is already accounted for in the regular quote
+    addedDurationSeconds: Math.ceil(env.DCA_CHUNK_INTERVAL_BLOCKS * 6 * (numberOfChunks - 1)), // we deduct 1 chunk because the first one is already accounted for in the regular quote
   };
 };
 
@@ -88,24 +80,29 @@ const adjustDcaQuote = ({
   dcaBoostedQuote?: QuoteQueryResponse | null | 0;
   estimatedBoostFeeBps?: number;
 }) => {
-  const lastChunkRatio = new BigNumber(dcaQuoteParams.lastChunkAmount.toString()).dividedBy(
-    new BigNumber(dcaQuoteParams.chunkSize.toString()),
-  );
   // eslint-disable-next-line no-param-reassign
-  dcaQuote.type = 'DCA';
+  dcaQuote.dcaParams = {
+    chunkInterval: env.DCA_CHUNK_INTERVAL_BLOCKS,
+    numberOfChunks: dcaQuoteParams.numberOfChunks,
+  };
   if (dcaQuoteParams && dcaQuote) {
     const netWorkFee = dcaQuote.includedFees.find((fee) => fee.type === 'NETWORK');
     if (netWorkFee) {
       netWorkFee.amount = new BigNumber(netWorkFee.amount)
-        .multipliedBy(dcaQuoteParams.numberOfChunks - 1)
-        .plus(new BigNumber(netWorkFee.amount).multipliedBy(lastChunkRatio))
+        .multipliedBy(dcaQuoteParams.numberOfChunks)
+        .toFixed(0);
+    }
+
+    const brokerFee = dcaQuote.includedFees.find((fee) => fee.type === 'BROKER');
+    if (brokerFee) {
+      brokerFee.amount = new BigNumber(brokerFee.amount)
+        .multipliedBy(dcaQuoteParams.numberOfChunks)
         .toFixed(0);
     }
 
     // eslint-disable-next-line no-param-reassign
     dcaQuote.egressAmount = new BigNumber(dcaQuote.egressAmount)
-      .multipliedBy(dcaQuoteParams.numberOfChunks - 1)
-      .plus(BigNumber(dcaQuote.egressAmount).multipliedBy(lastChunkRatio))
+      .multipliedBy(dcaQuoteParams.numberOfChunks)
       .toFixed(0);
     // eslint-disable-next-line no-param-reassign
     dcaQuote.estimatedDurationSeconds += dcaQuoteParams.addedDurationSeconds;
@@ -114,16 +111,21 @@ const adjustDcaQuote = ({
     const netWorkFee = dcaBoostedQuote.includedFees.find((fee) => fee.type === 'NETWORK');
     if (netWorkFee) {
       netWorkFee.amount = new BigNumber(netWorkFee.amount)
-        .multipliedBy(dcaQuoteParams.numberOfChunks - 1)
-        .plus(BigNumber(netWorkFee.amount).multipliedBy(lastChunkRatio))
+        .multipliedBy(dcaQuoteParams.numberOfChunks)
+        .toFixed(0);
+    }
+
+    const brokerFee = dcaBoostedQuote.includedFees.find((fee) => fee.type === 'BROKER');
+    if (brokerFee) {
+      brokerFee.amount = new BigNumber(brokerFee.amount)
+        .multipliedBy(dcaQuoteParams.numberOfChunks)
         .toFixed(0);
     }
 
     const boostFee = dcaBoostedQuote.includedFees.find((fee) => fee.type === 'BOOST');
     if (boostFee) {
       boostFee.amount = new BigNumber(boostFee.amount)
-        .multipliedBy(dcaQuoteParams.numberOfChunks - 1)
-        .plus(BigNumber(boostFee.amount).multipliedBy(lastChunkRatio))
+        .multipliedBy(dcaQuoteParams.numberOfChunks)
         .toFixed(0);
     }
 
@@ -132,24 +134,13 @@ const adjustDcaQuote = ({
       ...dcaBoostedQuote,
       estimatedBoostFeeBps,
       egressAmount: BigNumber(dcaBoostedQuote.egressAmount)
-        .multipliedBy(dcaQuoteParams.numberOfChunks - 1)
-        .plus(BigNumber(dcaBoostedQuote.egressAmount).multipliedBy(lastChunkRatio))
+        .multipliedBy(dcaQuoteParams.numberOfChunks)
         .toFixed(0),
       estimatedDurationSeconds:
         dcaBoostedQuote.estimatedDurationSeconds + dcaQuoteParams.addedDurationSeconds,
     };
   }
 };
-
-const fallbackChains = {
-  [Assets.ETH]: Chains.Ethereum,
-  [Assets.USDC]: Chains.Ethereum,
-  [Assets.FLIP]: Chains.Ethereum,
-  [Assets.BTC]: Chains.Bitcoin,
-  [Assets.DOT]: Chains.Polkadot,
-  [Assets.USDT]: Chains.Ethereum,
-  [Assets.SOL]: Chains.Solana,
-} satisfies Record<Asset, Chain>;
 
 const quoteRouter = (io: Server) => {
   const quoter = new Quoter(io);

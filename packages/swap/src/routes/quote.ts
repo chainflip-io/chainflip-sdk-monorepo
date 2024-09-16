@@ -38,7 +38,7 @@ const handleQuotingError = (res: express.Response, err: unknown, info: Additiona
   res.status(500).json({ message });
 };
 
-const fallbackChains = {
+export const fallbackChains = {
   [Assets.ETH]: Chains.Ethereum,
   [Assets.USDC]: Chains.Ethereum,
   [Assets.FLIP]: Chains.Ethereum,

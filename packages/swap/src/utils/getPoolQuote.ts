@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { assetConstants, getAssetAndChain, getInternalAsset } from '@/shared/enums';
 import { getPipAmountFromAmount } from '@/shared/functions';
-import { QuoteQueryResponse, QuoteType } from '@/shared/schemas';
+import { QuoteQueryResponse } from '@/shared/schemas';
 import { estimateSwapDuration } from '@/swap/utils/swap';
 import { buildFee, getPoolFees } from './fees';
 import { getEgressFee, getMinimumEgressAmount } from './rpc';
@@ -30,7 +30,6 @@ export default async function getPoolQuote({
   boostFeeBps,
   brokerCommissionBps,
   pools,
-  quoteType = 'Standard',
 }: {
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
@@ -39,7 +38,6 @@ export default async function getPoolQuote({
   limitOrders?: LimitOrders;
   boostFeeBps?: number;
   pools: Pool[];
-  quoteType?: QuoteType;
 }): Promise<QuoteQueryResponse> {
   const includedFees = [];
   let swapInputAmount = originalSwapInputAmount;
@@ -119,6 +117,5 @@ export default async function getPoolQuote({
       boosted: Boolean(boostFeeBps),
     }),
     estimatedPrice: getPrice(swapInputAmount, srcAsset, outputAmount, destAsset),
-    type: quoteType,
   };
 }

@@ -1,11 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`server GET /quote rejects malformed requests 1`] = `
-{
-  "message": "invalid request",
-}
-`;
-
 exports[`server GET /v2/quote rejects malformed requests 1`] = `
 {
   "message": "invalid request",
