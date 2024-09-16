@@ -42,7 +42,6 @@ interface DepositChannelFields {
   affiliateBrokers: AffiliateBroker[];
   fillOrKillParams: FillOrKillParams | undefined;
   dcaParams: DcaParameters | undefined;
-  srcChainRequiredBlockConfirmations: number | null | undefined;
 }
 interface DepositFields {
   amount: string | undefined;
@@ -63,12 +62,13 @@ interface SwapChunk {
   latestSwapRescheduledAt: number | undefined;
   latestSwapRescheduledBlockIndex: number | undefined;
   fees: SwapFee[];
+  isDca: boolean;
 }
 interface SwapFields {
   totalInputAmountSwapped: string | undefined;
   totalOutputAmountSwapped: string | undefined;
   totalChunksExecuted: number;
-  isDcaSwap: boolean;
+  isDca: boolean;
   lastExecutedChunk: SwapChunk | undefined;
   currentChunk: SwapChunk;
   type: SwapType;
@@ -90,6 +90,7 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   ccm: Ccm | undefined;
   boost: Boost | undefined;
   estimatedDurationSeconds: number | null | undefined;
+  srcChainRequiredBlockConfirmations: number | null;
 }
 
 interface VaultSwapCommonFields extends Exclude<SwapStatusResponseCommonFields, 'boost'> {}

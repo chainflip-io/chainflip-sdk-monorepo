@@ -1,6 +1,7 @@
 import express from 'express';
 import { assetConstants, getAssetAndChain } from '@/shared/enums';
 import { getPriceFromPriceX128 } from '@/shared/functions';
+import { assert } from '@/shared/guards';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
 import {
   depositChannelInclude,
@@ -121,9 +122,10 @@ router.get(
 
     const internalSrcAsset = readField(swapRequest, swapDepositChannel, failedSwap, 'srcAsset');
     const internalDestAsset = readField(swapRequest, swapDepositChannel, 'destAsset');
+    assert(internalSrcAsset, 'srcAsset must be defined');
 
     let pendingDeposit;
-    if (internalSrcAsset && state === StateV2.Receiving && swapDepositChannel?.depositAddress) {
+    if (state === StateV2.Receiving && swapDepositChannel?.depositAddress) {
       pendingDeposit = await getPendingDeposit(
         assetConstants[internalSrcAsset].chain,
         assetConstants[internalSrcAsset].asset,
@@ -175,6 +177,8 @@ router.get(
           acc.totalInputAmountSwapped = acc.totalInputAmountSwapped.plus(curr.swapInputAmount);
           acc.lastExecutedChunk = curr;
           acc.totalChunksExecuted += 1;
+          acc.lastExcutedBlockIndex = curr.swapExecutedBlockIndex;
+          acc.lastExcutedAt = curr.swapExecutedAt.valueOf();
           acc.fees = acc.fees.concat(...curr.fees);
         }
         return acc;
@@ -185,7 +189,9 @@ router.get(
         totalChunksExecuted: 0,
         currentChunk: sortedSwaps[0],
         lastExecutedChunk: null as null | (typeof sortedSwaps)[number] | undefined,
-        isDcaSwap: Boolean(
+        lastExcutedBlockIndex: null as string | null,
+        lastExcutedAt: null as number | null,
+        isDca: Boolean(
           swapDepositChannel?.chunkIntervalBlocks && swapDepositChannel.chunkIntervalBlocks > 1,
         ),
         fees: [] as SwapFee[],
@@ -199,7 +205,9 @@ router.get(
 
         if (index !== -1) {
           acc[index].amount = acc[index].amount.plus(amount);
-        } else acc.push(curr);
+        } else {
+          acc.push(curr);
+        }
         return acc;
       }, [] as SwapFee[])
       .concat(swapRequest?.fees ?? [])
@@ -234,23 +242,20 @@ router.get(
         refundEgressTrackerTxRef,
       ),
       srcAsset && destAsset && estimateSwapDuration({ srcAsset, destAsset }),
-      internalSrcAsset && getRequiredBlockConfirmations(internalSrcAsset),
+      getRequiredBlockConfirmations(internalSrcAsset),
     ]);
 
     const showCcm = Boolean(swapDepositChannel?.ccmGasBudget || swapDepositChannel?.ccmMessage);
-    const showSwapEgress =
-      typeof swapEgress === 'object' && Object.keys(swapEgressFields).length !== 0;
-    const showRefundEgress =
-      typeof refundEgress === 'object' && Object.keys(refundEgressFields).length !== 0;
     const isVaultSwap = Boolean(swapRequest?.originType === 'VAULT');
     const showDepositchannel = !isVaultSwap;
 
     const response = {
       state,
       swapId: swapRequest?.nativeId.toString(),
-      ...(internalSrcAsset && getAssetAndChain(internalSrcAsset, 'src')),
+      ...getAssetAndChain(internalSrcAsset, 'src'),
       ...(internalDestAsset && getAssetAndChain(internalDestAsset, 'dest')),
       destAddress: readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress'),
+      srcChainRequiredBlockConfirmations,
       estimatedDurationSeconds,
       ...(showDepositchannel && {
         depositChannel: {
@@ -263,7 +268,6 @@ router.get(
           isExpired: swapDepositChannel?.isExpired,
           openedThroughBackend: swapDepositChannel?.openedThroughBackend,
           affiliateBrokers,
-          srcChainRequiredBlockConfirmations,
           fillOrKillParams: swapDepositChannel?.fokMinPriceX128
             ? {
                 retryDurationBlocks: swapDepositChannel.fokRetryDurationBlocks,
@@ -293,6 +297,7 @@ router.get(
         ...(failedSwap && { failure: getDepositIgnoredFailedState(failedSwap) }),
       },
       swap: {
+        isDca: false,
         ...(!isVaultSwap
           ? {
               ...rolledSwaps,
@@ -310,8 +315,8 @@ router.get(
             }),
         fees: aggregateFees,
       },
-      ...(showSwapEgress && { swapEgress: { ...swapEgressFields } }),
-      ...(showRefundEgress && { refundEgress: { ...refundEgressFields } }),
+      ...(swapEgressFields && { swapEgress: { ...swapEgressFields } }),
+      ...(refundEgressFields && { refundEgress: { ...refundEgressFields } }),
       ...(showCcm && {
         ccm: {
           ...ccmParams,

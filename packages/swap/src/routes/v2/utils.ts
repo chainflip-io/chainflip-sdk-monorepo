@@ -127,6 +127,7 @@ export const getEgressStatusFields = async (
 ) => {
   const ignoredEgress = ignoredEgresses?.find((e) => e.type === type);
   const failureState = await getEgressFailureState(ignoredEgress, broadcast, type);
+  if (!egress && !broadcast && !failureState && !ignoredEgress) return null;
   return {
     ...(egress && {
       amount: egress.amount?.toFixed(),
@@ -134,9 +135,11 @@ export const getEgressStatusFields = async (
       scheduledBlockIndex: egress.scheduledBlockIndex ?? undefined,
     }),
     ...(broadcast && {
-      sentAt: broadcast?.succeededAt?.valueOf(),
-      sentAtBlockIndex: broadcast?.succeededBlockIndex ?? undefined,
+      confirmedAt: broadcast?.succeededAt?.valueOf(),
+      confirmedBlockIndex: broadcast?.succeededBlockIndex ?? undefined,
       sentTxRef: broadcast?.transactionRef ?? egressTrackerTxRef,
+      failedAt: broadcast?.abortedAt?.valueOf(),
+      failedBlockIndex: broadcast?.abortedBlockIndex ?? undefined,
     }),
     ...(failureState && { failure: failureState }),
     ...(ignoredEgress && { ignoredAmount: ignoredEgress.amount?.toFixed() }),
