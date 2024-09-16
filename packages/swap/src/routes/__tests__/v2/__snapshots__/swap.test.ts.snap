@@ -25,14 +25,6 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a native swap id 1`] = `
   "srcChainRequiredBlockConfirmations": 2,
   "state": "SWAPPING",
   "swap": {
-    "allChunksExecuted": false,
-    "currentChunk": {
-      "fees": [],
-      "retryCount": 0,
-      "scheduledAt": 552000,
-      "scheduledBlockIndex": "92-399",
-      "swapInputAmount": "4999949999999650000",
-    },
     "fees": [
       {
         "amount": "50000000350000",
@@ -42,12 +34,10 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a native swap id 1`] = `
       },
     ],
     "isDca": false,
-    "lastExcutedAt": null,
-    "lastExcutedBlockIndex": null,
-    "lastExecutedChunk": null,
-    "totalChunksExecuted": 0,
-    "totalInputAmountSwapped": "0",
-    "totalOutputAmountSwapped": "0",
+    "retryCount": 0,
+    "scheduledAt": 552000,
+    "scheduledBlockIndex": "92-399",
+    "swapInputAmount": "4999949999999650000",
   },
 }
 `;
@@ -197,42 +187,8 @@ exports[`server GET /v2/swaps/:id retrieves a swap in COMPLETED status 1`] = `
   "srcChainRequiredBlockConfirmations": 2,
   "state": "COMPLETED",
   "swap": {
-    "allChunksExecuted": true,
-    "currentChunk": {
-      "executedAt": 564000,
-      "executedBlockIndex": "94-594",
-      "fees": [
-        {
-          "amount": "4556242",
-          "asset": "USDC",
-          "chain": "Ethereum",
-          "type": "NETWORK",
-        },
-        {
-          "amount": "4999949999999650",
-          "asset": "ETH",
-          "chain": "Ethereum",
-          "type": "LIQUIDITY",
-        },
-        {
-          "amount": "4506169",
-          "asset": "USDC",
-          "chain": "Ethereum",
-          "type": "LIQUIDITY",
-        },
-        {
-          "amount": "45516860",
-          "asset": "ETH",
-          "chain": "Ethereum",
-          "type": "BROKER",
-        },
-      ],
-      "retryCount": 0,
-      "scheduledAt": 552000,
-      "scheduledBlockIndex": "92-399",
-      "swapInputAmount": "4999949999999650000",
-      "swapOutputAmount": "4192904666034",
-    },
+    "executedAt": 564000,
+    "executedBlockIndex": "94-594",
     "fees": [
       {
         "amount": "4556242",
@@ -272,46 +228,11 @@ exports[`server GET /v2/swaps/:id retrieves a swap in COMPLETED status 1`] = `
       },
     ],
     "isDca": false,
-    "lastExcutedAt": 564000,
-    "lastExcutedBlockIndex": "94-594",
-    "lastExecutedChunk": {
-      "executedAt": 564000,
-      "executedBlockIndex": "94-594",
-      "fees": [
-        {
-          "amount": "4556242",
-          "asset": "USDC",
-          "chain": "Ethereum",
-          "type": "NETWORK",
-        },
-        {
-          "amount": "4999949999999650",
-          "asset": "ETH",
-          "chain": "Ethereum",
-          "type": "LIQUIDITY",
-        },
-        {
-          "amount": "4506169",
-          "asset": "USDC",
-          "chain": "Ethereum",
-          "type": "LIQUIDITY",
-        },
-        {
-          "amount": "45516860",
-          "asset": "ETH",
-          "chain": "Ethereum",
-          "type": "BROKER",
-        },
-      ],
-      "retryCount": 0,
-      "scheduledAt": 552000,
-      "scheduledBlockIndex": "92-399",
-      "swapInputAmount": "4999949999999650000",
-      "swapOutputAmount": "4192904666034",
-    },
-    "totalChunksExecuted": 1,
-    "totalInputAmountSwapped": "4999949999999650000",
-    "totalOutputAmountSwapped": "4192904666034",
+    "retryCount": 0,
+    "scheduledAt": 552000,
+    "scheduledBlockIndex": "92-399",
+    "swapInputAmount": "4999949999999650000",
+    "swapOutputAmount": "4192904666034",
   },
   "swapEgress": {
     "amount": "4192707216034",
@@ -349,42 +270,8 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENDING status 1`] = `
   "srcChainRequiredBlockConfirmations": 2,
   "state": "SENDING",
   "swap": {
-    "allChunksExecuted": true,
-    "currentChunk": {
-      "executedAt": 564000,
-      "executedBlockIndex": "94-594",
-      "fees": [
-        {
-          "amount": "4556242",
-          "asset": "USDC",
-          "chain": "Ethereum",
-          "type": "NETWORK",
-        },
-        {
-          "amount": "4999949999999650",
-          "asset": "ETH",
-          "chain": "Ethereum",
-          "type": "LIQUIDITY",
-        },
-        {
-          "amount": "4506169",
-          "asset": "USDC",
-          "chain": "Ethereum",
-          "type": "LIQUIDITY",
-        },
-        {
-          "amount": "45516860",
-          "asset": "ETH",
-          "chain": "Ethereum",
-          "type": "BROKER",
-        },
-      ],
-      "retryCount": 0,
-      "scheduledAt": 552000,
-      "scheduledBlockIndex": "92-399",
-      "swapInputAmount": "4999949999999650000",
-      "swapOutputAmount": "4192904666034",
-    },
+    "executedAt": 564000,
+    "executedBlockIndex": "94-594",
     "fees": [
       {
         "amount": "4556242",
@@ -424,46 +311,11 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENDING status 1`] = `
       },
     ],
     "isDca": false,
-    "lastExcutedAt": 564000,
-    "lastExcutedBlockIndex": "94-594",
-    "lastExecutedChunk": {
-      "executedAt": 564000,
-      "executedBlockIndex": "94-594",
-      "fees": [
-        {
-          "amount": "4556242",
-          "asset": "USDC",
-          "chain": "Ethereum",
-          "type": "NETWORK",
-        },
-        {
-          "amount": "4999949999999650",
-          "asset": "ETH",
-          "chain": "Ethereum",
-          "type": "LIQUIDITY",
-        },
-        {
-          "amount": "4506169",
-          "asset": "USDC",
-          "chain": "Ethereum",
-          "type": "LIQUIDITY",
-        },
-        {
-          "amount": "45516860",
-          "asset": "ETH",
-          "chain": "Ethereum",
-          "type": "BROKER",
-        },
-      ],
-      "retryCount": 0,
-      "scheduledAt": 552000,
-      "scheduledBlockIndex": "92-399",
-      "swapInputAmount": "4999949999999650000",
-      "swapOutputAmount": "4192904666034",
-    },
-    "totalChunksExecuted": 1,
-    "totalInputAmountSwapped": "4999949999999650000",
-    "totalOutputAmountSwapped": "4192904666034",
+    "retryCount": 0,
+    "scheduledAt": 552000,
+    "scheduledBlockIndex": "92-399",
+    "swapInputAmount": "4999949999999650000",
+    "swapOutputAmount": "4192904666034",
   },
   "swapEgress": {
     "amount": "4192707216034",
@@ -498,42 +350,8 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENT status 1`] = `
   "srcChainRequiredBlockConfirmations": 2,
   "state": "SENT",
   "swap": {
-    "allChunksExecuted": true,
-    "currentChunk": {
-      "executedAt": 564000,
-      "executedBlockIndex": "94-594",
-      "fees": [
-        {
-          "amount": "4556242",
-          "asset": "USDC",
-          "chain": "Ethereum",
-          "type": "NETWORK",
-        },
-        {
-          "amount": "4999949999999650",
-          "asset": "ETH",
-          "chain": "Ethereum",
-          "type": "LIQUIDITY",
-        },
-        {
-          "amount": "4506169",
-          "asset": "USDC",
-          "chain": "Ethereum",
-          "type": "LIQUIDITY",
-        },
-        {
-          "amount": "45516860",
-          "asset": "ETH",
-          "chain": "Ethereum",
-          "type": "BROKER",
-        },
-      ],
-      "retryCount": 0,
-      "scheduledAt": 552000,
-      "scheduledBlockIndex": "92-399",
-      "swapInputAmount": "4999949999999650000",
-      "swapOutputAmount": "4192904666034",
-    },
+    "executedAt": 564000,
+    "executedBlockIndex": "94-594",
     "fees": [
       {
         "amount": "4556242",
@@ -573,46 +391,11 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENT status 1`] = `
       },
     ],
     "isDca": false,
-    "lastExcutedAt": 564000,
-    "lastExcutedBlockIndex": "94-594",
-    "lastExecutedChunk": {
-      "executedAt": 564000,
-      "executedBlockIndex": "94-594",
-      "fees": [
-        {
-          "amount": "4556242",
-          "asset": "USDC",
-          "chain": "Ethereum",
-          "type": "NETWORK",
-        },
-        {
-          "amount": "4999949999999650",
-          "asset": "ETH",
-          "chain": "Ethereum",
-          "type": "LIQUIDITY",
-        },
-        {
-          "amount": "4506169",
-          "asset": "USDC",
-          "chain": "Ethereum",
-          "type": "LIQUIDITY",
-        },
-        {
-          "amount": "45516860",
-          "asset": "ETH",
-          "chain": "Ethereum",
-          "type": "BROKER",
-        },
-      ],
-      "retryCount": 0,
-      "scheduledAt": 552000,
-      "scheduledBlockIndex": "92-399",
-      "swapInputAmount": "4999949999999650000",
-      "swapOutputAmount": "4192904666034",
-    },
-    "totalChunksExecuted": 1,
-    "totalInputAmountSwapped": "4999949999999650000",
-    "totalOutputAmountSwapped": "4192904666034",
+    "retryCount": 0,
+    "scheduledAt": 552000,
+    "scheduledBlockIndex": "92-399",
+    "swapInputAmount": "4999949999999650000",
+    "swapOutputAmount": "4192904666034",
   },
   "swapEgress": {
     "amount": "4192707216034",
@@ -648,42 +431,50 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status 1`] = `
   "srcChainRequiredBlockConfirmations": 2,
   "state": "SWAPPING",
   "swap": {
-    "allChunksExecuted": true,
-    "currentChunk": {
-      "executedAt": 564000,
-      "executedBlockIndex": "94-594",
-      "fees": [
-        {
-          "amount": "4556242",
-          "asset": "USDC",
-          "chain": "Ethereum",
-          "type": "NETWORK",
-        },
-        {
-          "amount": "4999949999999650",
-          "asset": "ETH",
-          "chain": "Ethereum",
-          "type": "LIQUIDITY",
-        },
-        {
-          "amount": "4506169",
-          "asset": "USDC",
-          "chain": "Ethereum",
-          "type": "LIQUIDITY",
-        },
-        {
-          "amount": "45516860",
-          "asset": "ETH",
-          "chain": "Ethereum",
-          "type": "BROKER",
-        },
-      ],
-      "retryCount": 0,
-      "scheduledAt": 552000,
-      "scheduledBlockIndex": "92-399",
-      "swapInputAmount": "4999949999999650000",
-      "swapOutputAmount": "4192904666034",
-    },
+    "fees": [
+      {
+        "amount": "50000000350000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+    ],
+    "isDca": false,
+    "retryCount": 0,
+    "scheduledAt": 552000,
+    "scheduledBlockIndex": "92-399",
+    "swapInputAmount": "4999949999999650000",
+  },
+}
+`;
+
+exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status 2`] = `
+{
+  "deposit": {
+    "amount": "5000000000000000000",
+    "receivedAt": 552000,
+    "receivedBlockIndex": "92-400",
+  },
+  "depositChannel": {
+    "brokerCommissionBps": 0,
+    "createdAt": 516000,
+    "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
+    "estimatedExpiryTime": 1699527060000,
+    "isExpired": false,
+    "openedThroughBackend": false,
+    "srcChainExpiryBlock": "265",
+  },
+  "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+  "destAsset": "DOT",
+  "destChain": "Polkadot",
+  "estimatedDurationSeconds": 48,
+  "srcAsset": "ETH",
+  "srcChain": "Ethereum",
+  "srcChainRequiredBlockConfirmations": 2,
+  "state": "SWAPPING",
+  "swap": {
+    "executedAt": 564000,
+    "executedBlockIndex": "94-594",
     "fees": [
       {
         "amount": "4556242",
@@ -717,46 +508,54 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status 1`] = `
       },
     ],
     "isDca": false,
-    "lastExcutedAt": 564000,
-    "lastExcutedBlockIndex": "94-594",
-    "lastExecutedChunk": {
-      "executedAt": 564000,
-      "executedBlockIndex": "94-594",
-      "fees": [
-        {
-          "amount": "4556242",
-          "asset": "USDC",
-          "chain": "Ethereum",
-          "type": "NETWORK",
-        },
-        {
-          "amount": "4999949999999650",
-          "asset": "ETH",
-          "chain": "Ethereum",
-          "type": "LIQUIDITY",
-        },
-        {
-          "amount": "4506169",
-          "asset": "USDC",
-          "chain": "Ethereum",
-          "type": "LIQUIDITY",
-        },
-        {
-          "amount": "45516860",
-          "asset": "ETH",
-          "chain": "Ethereum",
-          "type": "BROKER",
-        },
-      ],
-      "retryCount": 0,
-      "scheduledAt": 552000,
-      "scheduledBlockIndex": "92-399",
-      "swapInputAmount": "4999949999999650000",
-      "swapOutputAmount": "4192904666034",
-    },
-    "totalChunksExecuted": 1,
-    "totalInputAmountSwapped": "4999949999999650000",
-    "totalOutputAmountSwapped": "4192904666034",
+    "retryCount": 0,
+    "scheduledAt": 552000,
+    "scheduledBlockIndex": "92-399",
+    "swapInputAmount": "4999949999999650000",
+    "swapOutputAmount": "4192904666034",
+  },
+}
+`;
+
+exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status with a tx ref 1`] = `
+{
+  "deposit": {
+    "amount": "5000000000000000000",
+    "receivedAt": 552000,
+    "receivedBlockIndex": "92-400",
+    "txRef": "0xa2d5df86c6ec123283eb052c598a0f4b650367a81ad141b9ff3adb0286a86c17",
+  },
+  "depositChannel": {
+    "brokerCommissionBps": 0,
+    "createdAt": 516000,
+    "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
+    "estimatedExpiryTime": 1699527060000,
+    "isExpired": false,
+    "openedThroughBackend": false,
+    "srcChainExpiryBlock": "265",
+  },
+  "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+  "destAsset": "DOT",
+  "destChain": "Polkadot",
+  "estimatedDurationSeconds": 48,
+  "srcAsset": "ETH",
+  "srcChain": "Ethereum",
+  "srcChainRequiredBlockConfirmations": 2,
+  "state": "SWAPPING",
+  "swap": {
+    "fees": [
+      {
+        "amount": "50000000350000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+    ],
+    "isDca": false,
+    "retryCount": 0,
+    "scheduledAt": 552000,
+    "scheduledBlockIndex": "92-399",
+    "swapInputAmount": "4999949999999650000",
   },
 }
 `;
@@ -799,14 +598,6 @@ exports[`server GET /v2/swaps/:id retrieves a swap with FillOrKillParams in COMP
   "srcChainRequiredBlockConfirmations": 2,
   "state": "COMPLETED",
   "swap": {
-    "allChunksExecuted": false,
-    "currentChunk": {
-      "fees": [],
-      "retryCount": 0,
-      "scheduledAt": 552000,
-      "scheduledBlockIndex": "92-399",
-      "swapInputAmount": "4999949999999650000",
-    },
     "fees": [
       {
         "amount": "50000000350000",
@@ -822,12 +613,10 @@ exports[`server GET /v2/swaps/:id retrieves a swap with FillOrKillParams in COMP
       },
     ],
     "isDca": false,
-    "lastExcutedAt": null,
-    "lastExcutedBlockIndex": null,
-    "lastExecutedChunk": null,
-    "totalChunksExecuted": 0,
-    "totalInputAmountSwapped": "0",
-    "totalOutputAmountSwapped": "0",
+    "retryCount": 0,
+    "scheduledAt": 552000,
+    "scheduledBlockIndex": "92-399",
+    "swapInputAmount": "4999949999999650000",
   },
   "swapId": "368",
 }
@@ -868,14 +657,6 @@ exports[`server GET /v2/swaps/:id retrieves a swap with a refund in SENDING stat
   "srcChainRequiredBlockConfirmations": 2,
   "state": "SENDING",
   "swap": {
-    "allChunksExecuted": false,
-    "currentChunk": {
-      "fees": [],
-      "retryCount": 0,
-      "scheduledAt": 552000,
-      "scheduledBlockIndex": "92-399",
-      "swapInputAmount": "4999949999999650000",
-    },
     "fees": [
       {
         "amount": "50000000350000",
@@ -891,12 +672,10 @@ exports[`server GET /v2/swaps/:id retrieves a swap with a refund in SENDING stat
       },
     ],
     "isDca": false,
-    "lastExcutedAt": null,
-    "lastExcutedBlockIndex": null,
-    "lastExecutedChunk": null,
-    "totalChunksExecuted": 0,
-    "totalInputAmountSwapped": "0",
-    "totalOutputAmountSwapped": "0",
+    "retryCount": 0,
+    "scheduledAt": 552000,
+    "scheduledBlockIndex": "92-399",
+    "swapInputAmount": "4999949999999650000",
   },
 }
 `;
@@ -936,7 +715,7 @@ exports[`server GET /v2/swaps/:id retrieves mulitple DCA swaps in FAILED status 
     "failedBlockIndex": "104-1",
     "failure": {
       "failedAt": 624000,
-      "failedAtBlockIndex": "104-1",
+      "failedBlockIndex": "104-1",
       "mode": "REFUND_OUTPUT_TOO_SMALL",
       "reason": {
         "message": "The amount is below the minimum egress amount.",
@@ -1033,8 +812,6 @@ exports[`server GET /v2/swaps/:id retrieves mulitple DCA swaps in FAILED status 
       },
     ],
     "isDca": true,
-    "lastExcutedAt": 564000,
-    "lastExcutedBlockIndex": "94-594",
     "lastExecutedChunk": {
       "executedAt": 564000,
       "executedBlockIndex": "94-594",

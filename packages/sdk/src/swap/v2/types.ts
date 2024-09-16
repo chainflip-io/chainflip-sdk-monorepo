@@ -7,21 +7,24 @@ interface DcaParameters {
   numberOfChunks: number;
   chunkIntervalBlocks: string;
 }
+
 interface Ccm {
   message: string;
   gasBudget: string;
   cfParameters: string | undefined;
   ccmDepositReceivedBlockIndex: string | undefined;
 }
+
 interface Failure {
   failedAt: number;
-  failedAtBlockIndex: string;
+  failedBlockIndex: string;
   mode: FailureMode;
   reason: {
     code: string;
     message: string;
   };
 }
+
 interface Boost {
   maxBoostFeeBps: number;
   effectiveBoostFeeBps: number | undefined;
@@ -30,6 +33,7 @@ interface Boost {
   skippedAt: number | undefined;
   skippedBlockIndex: string | undefined;
 }
+
 interface DepositChannelFields {
   createdAt: number;
   brokerCommissionBps: number;
@@ -43,6 +47,7 @@ interface DepositChannelFields {
   fillOrKillParams: FillOrKillParams | undefined;
   dcaParams: DcaParameters | undefined;
 }
+
 interface DepositFields {
   amount: string | undefined;
   txRef: string | undefined;
@@ -51,6 +56,7 @@ interface DepositFields {
   receivedBlockIndex: string | undefined;
   failure: Failure | undefined;
 }
+
 interface SwapChunk {
   swapInputAmount: string;
   swapOutputAmount: string | undefined;
@@ -62,18 +68,20 @@ interface SwapChunk {
   latestSwapRescheduledAt: number | undefined;
   latestSwapRescheduledBlockIndex: number | undefined;
   fees: SwapFee[];
-  isDca: boolean;
+  isDca: false;
 }
+
 interface SwapFields {
   totalInputAmountSwapped: string | undefined;
   totalOutputAmountSwapped: string | undefined;
   totalChunksExecuted: number;
-  isDca: boolean;
+  isDca: true;
   lastExecutedChunk: SwapChunk | undefined;
   currentChunk: SwapChunk;
   type: SwapType;
   fees: SwapFee[];
 }
+
 interface EgressFields {
   amount: string;
   scheduledAt: number;
@@ -84,8 +92,9 @@ interface EgressFields {
   ignoredAmount: string | undefined;
   failure: Failure | undefined;
   failedAt: number | undefined;
-  failedAtBlockIndex: string | undefined;
+  failedBlockIndex: string | undefined;
 }
+
 interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   swapId: string;
   destAddress: string;
@@ -96,15 +105,18 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
 }
 
 interface VaultSwapCommonFields extends Exclude<SwapStatusResponseCommonFields, 'boost'> {}
+
 interface ReceivingVaultSwap extends VaultSwapCommonFields {
   deposit: Pick<DepositFields, 'amount' | 'txRef'>;
 }
+
 interface SwappingVaultSwap extends ReceivingVaultSwap {
   swap:
     | Exclude<SwapChunk, 'latestSwapRescheduledAt' | 'latestSwapRescheduledBlockIndex'>
     | undefined;
   swapEgress: EgressFields | undefined;
 }
+
 interface SendingVaultSwap extends SwappingVaultSwap {
   swapEgress: EgressFields | undefined;
 }
@@ -112,17 +124,21 @@ interface SendingVaultSwap extends SwappingVaultSwap {
 interface DepositChannel extends SwapStatusResponseCommonFields {
   depositChannel: DepositChannelFields;
 }
+
 interface Receiving extends DepositChannel {
   deposit: DepositFields;
 }
+
 interface Swapping extends Receiving {
   swap: SwapFields;
 }
+
 interface Sending extends Receiving {
   swap: SwapFields;
   swapEgress: EgressFields | undefined;
   refundEgress: EgressFields | undefined;
 }
+
 type SwapState =
   | ({
       state: 'RECEIVING';

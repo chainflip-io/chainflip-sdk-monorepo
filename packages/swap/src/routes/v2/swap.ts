@@ -177,8 +177,6 @@ router.get(
           acc.totalInputAmountSwapped = acc.totalInputAmountSwapped.plus(curr.swapInputAmount);
           acc.lastExecutedChunk = curr;
           acc.totalChunksExecuted += 1;
-          acc.lastExcutedBlockIndex = curr.swapExecutedBlockIndex;
-          acc.lastExcutedAt = curr.swapExecutedAt.valueOf();
           acc.fees = acc.fees.concat(...curr.fees);
         }
         return acc;
@@ -189,8 +187,6 @@ router.get(
         totalChunksExecuted: 0,
         currentChunk: sortedSwaps[0],
         lastExecutedChunk: null as null | (typeof sortedSwaps)[number] | undefined,
-        lastExcutedBlockIndex: null as string | null,
-        lastExcutedAt: null as number | null,
         isDca: Boolean(
           swapDepositChannel?.chunkIntervalBlocks && swapDepositChannel.chunkIntervalBlocks > 1,
         ),
@@ -298,7 +294,7 @@ router.get(
       },
       swap: {
         isDca: false,
-        ...(!isVaultSwap
+        ...(rolledSwaps?.isDca
           ? {
               ...rolledSwaps,
               totalInputAmountSwapped: rolledSwaps?.totalInputAmountSwapped.toFixed(),

@@ -537,50 +537,7 @@ describe('server', () => {
 
       expect(BigInt(swapId)).toEqual(368n);
 
-      expect(rest).toMatchObject({
-        state: 'SWAPPING',
-        srcAsset: 'ETH',
-        srcChain: 'Ethereum',
-        destAsset: 'DOT',
-        destChain: 'Polkadot',
-        destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
-        depositChannel: {
-          createdAt: 516000,
-          brokerCommissionBps: 0,
-          depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
-          srcChainExpiryBlock: '265',
-          estimatedExpiryTime: 1699527060000,
-          isExpired: false,
-          openedThroughBackend: false,
-        },
-        estimatedDurationSeconds: 48,
-        deposit: {
-          amount: '5000000000000000000',
-          receivedAt: 552000,
-          receivedBlockIndex: '92-400',
-        },
-        swap: {
-          totalOutputAmountSwapped: '0',
-          totalChunksExecuted: 0,
-          currentChunk: {
-            swapInputAmount: '4999949999999650000',
-            scheduledAt: 552000,
-            scheduledBlockIndex: '92-399',
-            retryCount: 0,
-            fees: [],
-          },
-          lastExecutedChunk: null,
-          isDca: false,
-          fees: [
-            {
-              amount: '50000000350000',
-              asset: 'ETH',
-              chain: 'Ethereum',
-              type: 'INGRESS',
-            },
-          ],
-        },
-      });
+      expect(rest).toMatchSnapshot();
     });
 
     it(`retrieves a swap in ${StateV2.Swapping} status with a tx ref`, async () => {
@@ -596,50 +553,7 @@ describe('server', () => {
       expect(status).toBe(200);
       const { swapId, ...rest } = body;
 
-      expect(rest).toMatchObject({
-        state: 'SWAPPING',
-        srcAsset: 'ETH',
-        srcChain: 'Ethereum',
-        destAsset: 'DOT',
-        destChain: 'Polkadot',
-        destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
-        estimatedDurationSeconds: 48,
-        depositChannel: {
-          createdAt: 516000,
-          brokerCommissionBps: 0,
-          depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
-          srcChainExpiryBlock: '265',
-          estimatedExpiryTime: 1699527060000,
-          isExpired: false,
-          openedThroughBackend: false,
-        },
-        deposit: {
-          amount: '5000000000000000000',
-          txRef: '0xa2d5df86c6ec123283eb052c598a0f4b650367a81ad141b9ff3adb0286a86c17',
-          receivedAt: 552000,
-          receivedBlockIndex: '92-400',
-        },
-        swap: {
-          totalOutputAmountSwapped: '0',
-          totalChunksExecuted: 0,
-          currentChunk: {
-            swapInputAmount: '4999949999999650000',
-            scheduledAt: 552000,
-            scheduledBlockIndex: '92-399',
-            retryCount: 0,
-          },
-          lastExecutedChunk: null,
-          isDca: false,
-          fees: [
-            {
-              amount: '50000000350000',
-              asset: 'ETH',
-              chain: 'Ethereum',
-              type: 'INGRESS',
-            },
-          ],
-        },
-      });
+      expect(rest).toMatchSnapshot();
     });
 
     it(`retrieves a swap in ${StateV2.Swapping} status`, async () => {
@@ -729,7 +643,7 @@ describe('server', () => {
       expect(rest.state).toBe('FAILED');
       expect(rest.swapEgress.failure).toMatchObject({
         failedAt: 624000,
-        failedAtBlockIndex: '104-7',
+        failedBlockIndex: '104-7',
         mode: 'SENDING_FAILED',
         reason: {
           name: 'BroadcastAborted',
@@ -749,7 +663,7 @@ describe('server', () => {
       expect(body.state).toBe('FAILED');
       expect(body.deposit.failure).toMatchObject({
         failedAt: 552000,
-        failedAtBlockIndex: '92-400',
+        failedBlockIndex: '92-400',
         mode: 'DEPOSIT_TOO_SMALL',
         reason: {
           name: 'BelowMinimumDeposit',
@@ -828,7 +742,7 @@ describe('server', () => {
       expect(body.state).toBe('FAILED');
       expect(body.swapEgress.failure).toMatchObject({
         failedAt: 14292858000,
-        failedAtBlockIndex: '2382143-817',
+        failedBlockIndex: '2382143-817',
         mode: 'SWAP_OUTPUT_TOO_SMALL',
         reason: {
           message: 'The amount is below the minimum egress amount.',
@@ -862,7 +776,7 @@ describe('server', () => {
       expect(body.state).toBe('FAILED');
       expect(body.refundEgress.failure).toMatchObject({
         failedAt: 624000,
-        failedAtBlockIndex: '104-1',
+        failedBlockIndex: '104-1',
         mode: 'REFUND_OUTPUT_TOO_SMALL',
         reason: {
           name: 'ethereumIngressEgress.BelowEgressDustLimit',
@@ -1374,7 +1288,7 @@ describe('server', () => {
       expect(rest.state).toBe('FAILED');
       expect(rest.swapEgress.failure).toMatchObject({
         failedAt: 624000,
-        failedAtBlockIndex: '104-7',
+        failedBlockIndex: '104-7',
         mode: 'SENDING_FAILED',
         reason: {
           name: 'BroadcastAborted',

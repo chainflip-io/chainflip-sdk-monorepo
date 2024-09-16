@@ -54,7 +54,7 @@ export const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
 
 export const getDepositIgnoredFailedState = (failedSwap: FailedSwap) => ({
   failedAt: failedSwap.failedAt.valueOf(),
-  failedAtBlockIndex: failedSwap.failedBlockIndex,
+  failedBlockIndex: failedSwap.failedBlockIndex,
   mode: FailureMode.IngressIgnored,
   reason: {
     name: failedSwap.reason,
@@ -69,12 +69,12 @@ export const getEgressFailureState = async (
 ) => {
   const abortedBroadcast = broadcast?.abortedAt?.valueOf();
   const failedAt = abortedBroadcast ?? ignoredEgress?.ignoredAt?.valueOf();
-  const failedAtBlockIndex = broadcast?.abortedBlockIndex ?? ignoredEgress?.ignoredBlockIndex;
+  const failedBlockIndex = broadcast?.abortedBlockIndex ?? ignoredEgress?.ignoredBlockIndex;
 
   let error;
   let failureMode;
 
-  if (failedAt && failedAtBlockIndex) {
+  if (failedAt && failedBlockIndex) {
     error = {
       name: 'Unknown',
       message: 'An unknown error occurred',
@@ -110,7 +110,7 @@ export const getEgressFailureState = async (
     }
     return {
       failedAt,
-      failedAtBlockIndex,
+      failedBlockIndex,
       mode: failureMode,
       reason: error,
     };
