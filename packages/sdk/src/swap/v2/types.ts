@@ -87,7 +87,6 @@ interface EgressFields {
 interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   swapId: string;
   destAddress: string;
-  depositChannel: DepositChannelFields;
   ccm: Ccm | undefined;
   boost: Boost | undefined;
   estimatedDurationSeconds: number | null | undefined;
