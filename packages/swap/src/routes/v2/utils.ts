@@ -54,7 +54,7 @@ export const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
 
 export const getDepositIgnoredFailedState = (failedSwap: FailedSwap) => ({
   failedAt: failedSwap.failedAt.valueOf(),
-  failedAtBlockIndex: failedSwap.failedBlockIndex,
+  failedBlockIndex: failedSwap.failedBlockIndex,
   mode: FailureMode.IngressIgnored,
   reason: {
     name: failedSwap.reason,
@@ -69,12 +69,12 @@ export const getEgressFailureState = async (
 ) => {
   const abortedBroadcast = broadcast?.abortedAt?.valueOf();
   const failedAt = abortedBroadcast ?? ignoredEgress?.ignoredAt?.valueOf();
-  const failedAtBlockIndex = broadcast?.abortedBlockIndex ?? ignoredEgress?.ignoredBlockIndex;
+  const failedBlockIndex = broadcast?.abortedBlockIndex ?? ignoredEgress?.ignoredBlockIndex;
 
   let error;
   let failureMode;
 
-  if (failedAt && failedAtBlockIndex) {
+  if (failedAt && failedBlockIndex) {
     error = {
       name: 'Unknown',
       message: 'An unknown error occurred',
@@ -110,7 +110,7 @@ export const getEgressFailureState = async (
     }
     return {
       failedAt,
-      failedAtBlockIndex,
+      failedBlockIndex,
       mode: failureMode,
       reason: error,
     };
@@ -127,6 +127,7 @@ export const getEgressStatusFields = async (
 ) => {
   const ignoredEgress = ignoredEgresses?.find((e) => e.type === type);
   const failureState = await getEgressFailureState(ignoredEgress, broadcast, type);
+  if (!egress && !broadcast && !failureState && !ignoredEgress) return null;
   return {
     ...(egress && {
       amount: egress.amount?.toFixed(),
@@ -134,12 +135,18 @@ export const getEgressStatusFields = async (
       scheduledBlockIndex: egress.scheduledBlockIndex ?? undefined,
     }),
     ...(broadcast && {
-      sentAt: broadcast?.succeededAt?.valueOf(),
-      sentAtBlockIndex: broadcast?.succeededBlockIndex ?? undefined,
-      sentTxRef: broadcast?.transactionRef ?? egressTrackerTxRef,
+      confirmedAt: broadcast?.succeededAt?.valueOf(),
+      confirmedBlockIndex: broadcast?.succeededBlockIndex ?? undefined,
+      txRef: broadcast?.transactionRef ?? egressTrackerTxRef,
+      failedAt: broadcast?.abortedAt?.valueOf(),
+      failedBlockIndex: broadcast?.abortedBlockIndex ?? undefined,
     }),
     ...(failureState && { failure: failureState }),
-    ...(ignoredEgress && { ignoredAmount: ignoredEgress.amount?.toFixed() }),
+    ...(ignoredEgress && {
+      ignoredAmount: ignoredEgress.amount?.toFixed(),
+      failedAt: ignoredEgress.ignoredAt?.valueOf(),
+      failedBlockIndex: ignoredEgress.ignoredBlockIndex,
+    }),
   };
 };
 
