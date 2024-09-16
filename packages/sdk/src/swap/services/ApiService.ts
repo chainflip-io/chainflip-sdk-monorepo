@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { QuoteQueryParams, QuoteQueryResponse } from '@/shared/schemas';
 import { CF_SDK_VERSION_HEADERS } from '../consts';
 import { QuoteRequest, QuoteResponse, SwapStatusRequest, SwapStatusResponse } from '../types';
-import { SwapV2 } from '../v2/types';
+import { SwapStatusResponseV2 } from '../v2/types';
 
 export type RequestOptions = {
   signal?: AbortSignal;
@@ -49,12 +49,12 @@ export const getStatus: BackendQuery<SwapStatusRequest, SwapStatusResponse> = as
   return data;
 };
 
-export const getStatusV2: BackendQuery<SwapStatusRequest, SwapV2.SwapStatusResponse> = async (
+export const getStatusV2: BackendQuery<SwapStatusRequest, SwapStatusResponseV2> = async (
   baseUrl,
   { id },
   { signal },
-): Promise<SwapV2.SwapStatusResponse> => {
-  const { data } = await axios.get<SwapV2.SwapStatusResponse>(`/v2/swaps/${id}`, {
+): Promise<SwapStatusResponseV2> => {
+  const { data } = await axios.get<SwapStatusResponseV2>(`/v2/swaps/${id}`, {
     baseURL: baseUrl,
     signal,
     headers: CF_SDK_VERSION_HEADERS,
