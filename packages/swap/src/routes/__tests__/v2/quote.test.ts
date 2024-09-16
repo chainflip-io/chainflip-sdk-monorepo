@@ -53,8 +53,9 @@ jest.mock('../../../pricing/checkPriceWarning', () => ({
 describe(getDcaQuoteParams, () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    env.DCA_USD_CHUNK_SIZE = { Btc: 3000 };
+    env.DCA_CHUNK_SIZE_USD = { Btc: 3000 };
     env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
+    env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
   });
 
   it('should correctly return 9060 usd worth of btc', async () => {
@@ -63,9 +64,9 @@ describe(getDcaQuoteParams, () => {
     const result = await getDcaQuoteParams('Btc', 27180n);
     expect(result).toMatchInlineSnapshot(`
     {
-      "addedDurationSeconds": 24,
-      "chunkSize": 9060n,
-      "numberOfChunks": 3,
+      "addedDurationSeconds": 36,
+      "chunkSize": 6795n,
+      "numberOfChunks": 4,
     }
     `);
   });
@@ -434,8 +435,9 @@ describe('server', () => {
     });
 
     it('gets the DCA quote to USDC', async () => {
-      env.DCA_USD_CHUNK_SIZE = { Btc: 3000 };
+      env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
+      env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
       jest.mocked(getUsdValue).mockResolvedValue('9800');
 
       mockRpcResponse((url, data: any) => {

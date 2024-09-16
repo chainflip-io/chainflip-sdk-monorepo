@@ -43,26 +43,8 @@ export default z
     MAINTENANCE_MODE: optionalBoolean,
     LIQUIDITY_WARNING_THRESHOLD: optionalNumber(-5),
     COINGECKO_API_KEY: z.string().optional(),
-    // DCA_USD_CHUNK_SIZE: optionalString('{}').transform((string) => {
-    //   try {
-    //     return z
-    //       .array(
-    //         z.object({
-    //           asset: z.nativeEnum(InternalAssets),
-    //           usdChunkSize: z.number(),
-    //         }),
-    //       )
-    //       .parse(JSON.parse(string));
-    //   } catch (err) {
-    //     const error = err as Error;
-    //     // eslint-disable-next-line no-console
-    //     console.warn({
-    //       message: `Could not parse DCA_USD_CHUNK_SIZE variable. error: "${error?.message}"`,
-    //     });
-    //     return undefined;
-    //   }
-    // }),
-    DCA_USD_CHUNK_SIZE: optionalString('{}').transform((string) => {
+    DCA_DEFAULT_CHUNK_SIZE_USD: optionalNumber(3000),
+    DCA_CHUNK_SIZE_USD: optionalString('{}').transform((string) => {
       try {
         return z.record(z.nativeEnum(InternalAssets), z.number()).parse(JSON.parse(string));
       } catch (err) {

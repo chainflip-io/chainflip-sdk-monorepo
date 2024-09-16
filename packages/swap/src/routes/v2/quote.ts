@@ -40,7 +40,7 @@ const handleQuotingError = (err: unknown, info: AdditionalInfo) => {
 };
 
 export const getDcaQuoteParams = async (asset: InternalAsset, amount: bigint) => {
-  const usdChunkSize = env.DCA_USD_CHUNK_SIZE?.[asset] ?? 3000;
+  const usdChunkSize = env.DCA_CHUNK_SIZE_USD?.[asset] ?? env.DCA_DEFAULT_CHUNK_SIZE_USD;
 
   const usdValue = await getUsdValue(amount, asset).catch(() => undefined);
   if (!usdValue) {
@@ -56,11 +56,7 @@ export const getDcaQuoteParams = async (asset: InternalAsset, amount: bigint) =>
       addedDurationSeconds: 0,
     };
   }
-  const numberOfChunksPrecise = Number(usdValue) / usdChunkSize;
-  const numberOfChunks =
-    numberOfChunksPrecise - Math.floor(numberOfChunksPrecise) < 0.05
-      ? Math.floor(numberOfChunksPrecise)
-      : Math.ceil(numberOfChunksPrecise);
+  const numberOfChunks = Math.ceil(Number(usdValue) / usdChunkSize);
 
   return {
     chunkSize: BigInt(new BigNumber(amount.toString()).dividedBy(numberOfChunks).toFixed(0)),
@@ -260,7 +256,7 @@ const quoteRouter = (io: Server) => {
               totalLiquidity <
               BigInt(dcaQuote.egressAmount) * BigInt(dcaQuoteParams.numberOfChunks)
             ) {
-              throw ServiceError.badRequest(`Insufficient liquidity for the requested amount 1`);
+              throw ServiceError.badRequest(`Insufficient liquidity for the requested amount`);
             }
           } else {
             const totalLiquidityLeg1 = await getTotalLiquidity(srcAsset, 'Usdc');
@@ -271,9 +267,10 @@ const quoteRouter = (io: Server) => {
               totalLiquidityLeg2 <
                 BigInt(dcaQuote.egressAmount) * BigInt(dcaQuoteParams.numberOfChunks)
             ) {
-              throw ServiceError.badRequest(`Insufficient liquidity for the requested amount 1`);
+              throw ServiceError.badRequest(`Insufficient liquidity for the requested amount`);
             }
           }
+          // The received quotes are for a single chunk, we need to extrapolate them to the full amount
           adjustDcaQuote({
             dcaQuoteParams,
             dcaQuote,
