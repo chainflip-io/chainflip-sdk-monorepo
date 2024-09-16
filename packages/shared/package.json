@@ -36,6 +36,6 @@
     "@types/ws": "^8.5.12",
     "eslint-plugin-n": "^17.10.1",
     "typechain": "^8.3.2",
-    "winston": "^3.13.1"
+    "winston": "^3.14.2"
   }
 }
