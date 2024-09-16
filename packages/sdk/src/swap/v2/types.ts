@@ -78,9 +78,9 @@ interface EgressFields {
   amount: string;
   scheduledAt: number;
   scheduledBlockIndex: string;
-  sentTxRef: string | undefined;
-  sentAt: number | undefined;
-  sentAtBlockIndex: string | undefined;
+  txRef: string | undefined;
+  confirmedAt: number | undefined;
+  confirmedBlockIndex: string | undefined;
   ignoredAmount: string | undefined;
   failure: Failure | undefined;
   failedAt: number | undefined;

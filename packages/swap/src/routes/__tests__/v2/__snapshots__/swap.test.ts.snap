@@ -167,7 +167,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a vault origin in COMPLE
     "confirmedBlockIndex": "104-7",
     "scheduledAt": 564000,
     "scheduledBlockIndex": "94-595",
-    "sentTxRef": "104-2",
+    "txRef": "104-2",
   },
 }
 `;
@@ -319,7 +319,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in COMPLETED status 1`] = `
     "confirmedBlockIndex": "104-7",
     "scheduledAt": 564000,
     "scheduledBlockIndex": "94-595",
-    "sentTxRef": "104-2",
+    "txRef": "104-2",
   },
 }
 `;
@@ -618,7 +618,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENT status 1`] = `
     "amount": "4192707216034",
     "scheduledAt": 564000,
     "scheduledBlockIndex": "94-595",
-    "sentTxRef": "0xdeadbeef",
+    "txRef": "0xdeadbeef",
   },
 }
 `;
@@ -792,7 +792,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap with FillOrKillParams in COMP
     "confirmedBlockIndex": "104-7",
     "scheduledAt": 564000,
     "scheduledBlockIndex": "94-594",
-    "sentTxRef": "0xd2398250c9fa869f0eb7659015549ed46178c95cedd444c3539f655068f6a7d9",
+    "txRef": "0xd2398250c9fa869f0eb7659015549ed46178c95cedd444c3539f655068f6a7d9",
   },
   "srcAsset": "ETH",
   "srcChain": "Ethereum",
@@ -1080,7 +1080,7 @@ exports[`server GET /v2/swaps/:id retrieves mulitple DCA swaps in FAILED status 
     "confirmedBlockIndex": "104-7",
     "scheduledAt": 564000,
     "scheduledBlockIndex": "94-595",
-    "sentTxRef": "104-2",
+    "txRef": "104-2",
   },
 }
 `;

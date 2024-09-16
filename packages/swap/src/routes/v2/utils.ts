@@ -137,7 +137,7 @@ export const getEgressStatusFields = async (
     ...(broadcast && {
       confirmedAt: broadcast?.succeededAt?.valueOf(),
       confirmedBlockIndex: broadcast?.succeededBlockIndex ?? undefined,
-      sentTxRef: broadcast?.transactionRef ?? egressTrackerTxRef,
+      txRef: broadcast?.transactionRef ?? egressTrackerTxRef,
       failedAt: broadcast?.abortedAt?.valueOf(),
       failedBlockIndex: broadcast?.abortedBlockIndex ?? undefined,
     }),
