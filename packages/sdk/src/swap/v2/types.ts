@@ -83,6 +83,8 @@ interface EgressFields {
   sentAtBlockIndex: string | undefined;
   ignoredAmount: string | undefined;
   failure: Failure | undefined;
+  failedAt: number | undefined;
+  failedAtBlockIndex: string | undefined;
 }
 interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   swapId: string;

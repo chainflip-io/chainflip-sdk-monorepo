@@ -932,6 +932,8 @@ exports[`server GET /v2/swaps/:id retrieves mulitple DCA swaps in FAILED status 
   "estimatedDurationSeconds": 48,
   "refundEgress": {
     "amount": "999844999999160000",
+    "failedAt": 624000,
+    "failedBlockIndex": "104-1",
     "failure": {
       "failedAt": 624000,
       "failedAtBlockIndex": "104-1",
