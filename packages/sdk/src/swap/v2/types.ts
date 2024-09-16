@@ -92,8 +92,7 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   estimatedDurationSeconds: number | null | undefined;
 }
 
-interface VaultSwapCommonFields
-  extends Exclude<SwapStatusResponseCommonFields, 'depositChannel' | 'boost'> {}
+interface VaultSwapCommonFields extends Exclude<SwapStatusResponseCommonFields, 'boost'> {}
 interface ReceivingVaultSwap extends VaultSwapCommonFields {
   deposit: Pick<DepositFields, 'amount' | 'txRef'>;
 }
