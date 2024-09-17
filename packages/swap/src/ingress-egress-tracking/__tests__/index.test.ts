@@ -54,7 +54,7 @@ describe('ingress-egress-tracking', () => {
         }),
       );
 
-      const deposit = await getPendingDeposit('Ethereum', 'FLIP', '0x1234');
+      const deposit = await getPendingDeposit('Flip', '0x1234');
 
       expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 3 });
     });
@@ -71,7 +71,7 @@ describe('ingress-egress-tracking', () => {
         }),
       );
 
-      const deposit = await getPendingDeposit('Ethereum', 'FLIP', '0x1234');
+      const deposit = await getPendingDeposit('Flip', '0x1234');
 
       expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 4 });
     });
@@ -79,7 +79,7 @@ describe('ingress-egress-tracking', () => {
     it('returns null if the non-bitcoin deposit is not found', async () => {
       await updateChainTracking({ chain: 'Ethereum', height: 1234567893n });
 
-      const deposit = await getPendingDeposit('Ethereum', 'FLIP', '0x1234');
+      const deposit = await getPendingDeposit('Flip', '0x1234');
 
       expect(deposit).toBeNull();
       expect(logger.error).not.toHaveBeenCalled();
@@ -95,11 +95,7 @@ describe('ingress-egress-tracking', () => {
         }),
       );
 
-      const deposit = await getPendingDeposit(
-        'Bitcoin',
-        'BTC',
-        'tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf',
-      );
+      const deposit = await getPendingDeposit('Btc', 'tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf');
 
       expect(logger.error).not.toHaveBeenCalled();
       expect(deposit).toEqual({
@@ -130,22 +126,14 @@ describe('ingress-egress-tracking', () => {
         updateChainTracking({ chain: 'Bitcoin', height: 1234567894n }),
       ]);
 
-      const deposit = await getPendingDeposit(
-        'Bitcoin',
-        'BTC',
-        'tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf',
-      );
+      const deposit = await getPendingDeposit('Btc', 'tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf');
 
       expect(logger.error).not.toHaveBeenCalled();
       expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 4 });
     });
 
     it('returns null if the non-bitcoin deposit is not found', async () => {
-      const deposit = await getPendingDeposit(
-        'Bitcoin',
-        'BTC',
-        'tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf',
-      );
+      const deposit = await getPendingDeposit('Btc', 'tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf');
 
       expect(logger.error).not.toHaveBeenCalled();
       expect(deposit).toBeNull();
@@ -155,7 +143,7 @@ describe('ingress-egress-tracking', () => {
       jest.spyOn(Redis.prototype, 'lrange').mockRejectedValueOnce(new Error());
       await updateChainTracking({ chain: 'Ethereum', height: 1234567893n });
 
-      const deposit = await getPendingDeposit('Ethereum', 'FLIP', '0x1234');
+      const deposit = await getPendingDeposit('Flip', '0x1234');
 
       expect(deposit).toBeNull();
       expect(logger.error).toHaveBeenCalled();
@@ -164,7 +152,7 @@ describe('ingress-egress-tracking', () => {
     it('returns null if the redis client throws (bitcoin)', async () => {
       jest.spyOn(Redis.prototype, 'lrange').mockRejectedValueOnce(new Error());
 
-      const deposit = await getPendingDeposit('Bitcoin', 'BTC', '');
+      const deposit = await getPendingDeposit('Btc', '');
 
       expect(deposit).toBeNull();
       expect(logger.error).toHaveBeenCalled();

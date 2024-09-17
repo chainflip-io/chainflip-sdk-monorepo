@@ -1,18 +1,17 @@
 import express from 'express';
-import { assetConstants, getAssetAndChain } from '@/shared/enums';
+import { getAssetAndChain } from '@/shared/enums';
 import { getPriceFromPriceX128 } from '@/shared/functions';
 import { assert } from '@/shared/guards';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
 import {
   depositChannelInclude,
-  getDepositIgnoredFailedState,
+  getDepositInfo,
   getEgressStatusFields,
   getSwapFields,
   getSwapState,
   swapRequestInclude,
 } from './utils';
 import prisma, { Prisma, SwapFee } from '../../client';
-import { getPendingDeposit } from '../../ingress-egress-tracking';
 import { readField } from '../../utils/function';
 import logger from '../../utils/logger';
 import ServiceError from '../../utils/ServiceError';
@@ -35,6 +34,7 @@ export enum StateV2 {
   Sending = 'SENDING',
   Swapping = 'SWAPPING',
   Receiving = 'RECEIVING',
+  Waiting = 'WAITING',
 }
 
 router.get(
@@ -114,24 +114,12 @@ router.get(
     const refundEgress = swapRequest?.refundEgress;
     const ignoredEgresses = swapRequest?.ignoredEgresses;
 
-    const { state, swapEgressTrackerTxRef, refundEgressTrackerTxRef } = await getSwapState(
-      failedSwap,
-      ignoredEgresses,
-      swapRequest,
-    );
+    const { state, swapEgressTrackerTxRef, refundEgressTrackerTxRef, pendingDeposit } =
+      await getSwapState(failedSwap, ignoredEgresses, swapRequest);
 
     const internalSrcAsset = readField(swapRequest, swapDepositChannel, failedSwap, 'srcAsset');
     const internalDestAsset = readField(swapRequest, swapDepositChannel, 'destAsset');
     assert(internalSrcAsset, 'srcAsset must be defined');
-
-    let pendingDeposit;
-    if (state === StateV2.Receiving && swapDepositChannel?.depositAddress) {
-      pendingDeposit = await getPendingDeposit(
-        assetConstants[internalSrcAsset].chain,
-        assetConstants[internalSrcAsset].asset,
-        swapDepositChannel.depositAddress,
-      );
-    }
 
     let ccmParams;
     if (readField(swapRequest, swapDepositChannel, 'ccmGasBudget')) {
@@ -253,64 +241,60 @@ router.get(
       destAddress: readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress'),
       srcChainRequiredBlockConfirmations,
       estimatedDurationSeconds,
-      ...(showDepositchannel && {
-        depositChannel: {
-          createdAt: swapDepositChannel?.createdAt.valueOf(),
-          brokerCommissionBps: swapDepositChannel?.brokerCommissionBps,
-          depositAddress: swapDepositChannel?.depositAddress,
-          srcChainExpiryBlock: swapDepositChannel?.srcChainExpiryBlock?.toString(),
-          estimatedExpiryTime: swapDepositChannel?.estimatedExpiryAt?.valueOf(),
-          expectedDepositAmount: swapDepositChannel?.expectedDepositAmount?.toFixed(),
-          isExpired: swapDepositChannel?.isExpired,
-          openedThroughBackend: swapDepositChannel?.openedThroughBackend,
-          affiliateBrokers,
-          fillOrKillParams: swapDepositChannel?.fokMinPriceX128
+      ...(showDepositchannel &&
+        swapDepositChannel && {
+          depositChannel: {
+            id: `${swapDepositChannel.issuedBlock}-${swapDepositChannel.srcChain}-${swapDepositChannel.channelId}`,
+            createdAt: swapDepositChannel.createdAt.valueOf(),
+            brokerCommissionBps: swapDepositChannel.brokerCommissionBps,
+            depositAddress: swapDepositChannel.depositAddress,
+            srcChainExpiryBlock: swapDepositChannel.srcChainExpiryBlock?.toString(),
+            estimatedExpiryTime: swapDepositChannel.estimatedExpiryAt?.valueOf(),
+            expectedDepositAmount: swapDepositChannel.expectedDepositAmount?.toFixed(),
+            isExpired: swapDepositChannel.isExpired,
+            openedThroughBackend: swapDepositChannel.openedThroughBackend,
+            affiliateBrokers,
+            fillOrKillParams: swapDepositChannel.fokMinPriceX128
+              ? {
+                  retryDurationBlocks: swapDepositChannel.fokRetryDurationBlocks,
+                  refundAddress: swapDepositChannel.fokRefundAddress,
+                  minPrice: getPriceFromPriceX128(
+                    swapDepositChannel.fokMinPriceX128.toFixed(),
+                    swapDepositChannel.srcAsset,
+                    swapDepositChannel.destAsset,
+                  ),
+                }
+              : undefined,
+            dcaParams: swapDepositChannel.chunkIntervalBlocks
+              ? {
+                  numberOfChunks: swapDepositChannel?.numberOfChunks,
+                  chunkIntervalBlocks: swapDepositChannel?.chunkIntervalBlocks,
+                }
+              : undefined,
+          },
+        }),
+      ...getDepositInfo(swapRequest, failedSwap, pendingDeposit, depositTransactionRef),
+      ...(rolledSwaps && {
+        swap: {
+          isDca: false,
+          ...(rolledSwaps?.isDca
             ? {
-                retryDurationBlocks: swapDepositChannel.fokRetryDurationBlocks,
-                refundAddress: swapDepositChannel.fokRefundAddress,
-                minPrice: getPriceFromPriceX128(
-                  swapDepositChannel.fokMinPriceX128.toFixed(),
-                  swapDepositChannel.srcAsset,
-                  swapDepositChannel.destAsset,
-                ),
+                ...rolledSwaps,
+                totalInputAmountSwapped: rolledSwaps?.totalInputAmountSwapped.toFixed(),
+                totalOutputAmountSwapped: rolledSwaps?.totalOutputAmountSwapped.toFixed(),
+                lastExecutedChunk:
+                  rolledSwaps?.lastExecutedChunk && getSwapFields(rolledSwaps.lastExecutedChunk),
+                allChunksExecuted:
+                  sortedSwaps?.length &&
+                  rolledSwaps?.totalChunksExecuted === (swapDepositChannel?.numberOfChunks ?? 1),
+                currentChunk: rolledSwaps && getSwapFields(rolledSwaps.currentChunk),
               }
-            : undefined,
-          dcaParams: swapDepositChannel?.chunkIntervalBlocks
-            ? {
-                numberOfChunks: swapDepositChannel?.numberOfChunks,
-                chunkIntervalBlocks: swapDepositChannel?.chunkIntervalBlocks,
-              }
-            : undefined,
+            : {
+                ...(rolledSwaps?.currentChunk && getSwapFields(rolledSwaps.currentChunk)),
+              }),
+          fees: aggregateFees,
         },
       }),
-      deposit: {
-        amount:
-          readField(swapRequest, failedSwap, 'depositAmount')?.toFixed() ?? pendingDeposit?.amount,
-        txRef: depositTransactionRef,
-        txConfirmations: pendingDeposit?.transactionConfirmations,
-        receivedAt: swapRequest?.depositReceivedAt?.valueOf(),
-        receivedBlockIndex: swapRequest?.depositReceivedBlockIndex ?? undefined,
-        ...(failedSwap && { failure: getDepositIgnoredFailedState(failedSwap) }),
-      },
-      swap: {
-        isDca: false,
-        ...(rolledSwaps?.isDca
-          ? {
-              ...rolledSwaps,
-              totalInputAmountSwapped: rolledSwaps?.totalInputAmountSwapped.toFixed(),
-              totalOutputAmountSwapped: rolledSwaps?.totalOutputAmountSwapped.toFixed(),
-              lastExecutedChunk:
-                rolledSwaps?.lastExecutedChunk && getSwapFields(rolledSwaps.lastExecutedChunk),
-              allChunksExecuted:
-                sortedSwaps?.length &&
-                rolledSwaps?.totalChunksExecuted === (swapDepositChannel?.numberOfChunks ?? 1),
-              currentChunk: rolledSwaps && getSwapFields(rolledSwaps.currentChunk),
-            }
-          : {
-              ...(rolledSwaps?.currentChunk && getSwapFields(rolledSwaps.currentChunk)),
-            }),
-        fees: aggregateFees,
-      },
       ...(swapEgressFields && { swapEgress: { ...swapEgressFields } }),
       ...(refundEgressFields && { refundEgress: { ...refundEgressFields } }),
       ...(showCcm && {

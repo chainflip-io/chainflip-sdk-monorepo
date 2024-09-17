@@ -128,6 +128,8 @@ export type SwapFee = Fee<'NETWORK' | 'INGRESS' | 'EGRESS' | 'BROKER' | 'BOOST'>
 
 export type PoolFee = Fee<'LIQUIDITY'>;
 
+export type PaidFee = SwapFee | PoolFee;
+
 export type PoolInfo = {
   baseAsset: AssetAndChain;
   quoteAsset: AssetAndChain;

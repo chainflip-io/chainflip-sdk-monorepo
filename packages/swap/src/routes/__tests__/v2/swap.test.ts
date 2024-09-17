@@ -408,14 +408,14 @@ describe('server', () => {
       expect(body).toEqual({ message: 'resource not found' });
     });
 
-    it(`retrieves a swap in ${StateV2.Receiving} status`, async () => {
+    it(`retrieves a swap in ${StateV2.Waiting} status`, async () => {
       await processEvents(swapEvents.slice(0, 1));
 
       const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
 
       expect(status).toBe(200);
       expect(body).toMatchObject({
-        state: 'RECEIVING',
+        state: 'WAITING',
         srcAsset: 'ETH',
         srcChain: 'Ethereum',
         destAsset: 'DOT',
@@ -431,8 +431,6 @@ describe('server', () => {
           isExpired: false,
           openedThroughBackend: false,
         },
-        deposit: {},
-        swap: {},
       });
     });
 
@@ -445,7 +443,7 @@ describe('server', () => {
 
       expect(status).toBe(200);
       expect(body).toMatchObject({
-        state: 'RECEIVING',
+        state: 'WAITING',
         srcAsset: 'ETH',
         srcChain: 'Ethereum',
         destAsset: 'DOT',
@@ -461,12 +459,10 @@ describe('server', () => {
           isExpired: false,
           openedThroughBackend: false,
         },
-        deposit: {},
-        swap: {},
       });
     });
 
-    it(`retrieves a swap with ccm metadata in ${StateV2.Receiving} status`, async () => {
+    it(`retrieves a swap with ccm metadata in ${StateV2.Waiting} status`, async () => {
       const depositAddressEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositAddressEvent.args.channelMetadata = {
         message: '0xdeadbeef',
@@ -480,7 +476,7 @@ describe('server', () => {
       expect(status).toBe(200);
 
       expect(body).toMatchObject({
-        state: 'RECEIVING',
+        state: 'WAITING',
         ccm: {
           gasBudget: '100000',
           message: '0xdeadbeef',
@@ -514,7 +510,7 @@ describe('server', () => {
       expect(status).toBe(200);
 
       expect(body).toMatchObject({
-        state: 'RECEIVING',
+        state: 'WAITING',
         depositChannel: {
           createdAt: 516000,
           brokerCommissionBps: 0,
@@ -946,7 +942,7 @@ describe('server', () => {
       expect(body.boost.skippedBlockIndex).toBe(RECEIVED_BLOCK_INDEX);
     });
 
-    it(`retrieves a swap with FillOrKillParams in ${StateV2.Receiving} status`, async () => {
+    it(`retrieves a swap with FillOrKillParams in ${StateV2.Waiting} status`, async () => {
       const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositChannelEvent.args.refundParameters = {
         minPrice: '99999999999999999999999999999999999999999999999999999000000000000000000',
@@ -967,7 +963,7 @@ describe('server', () => {
         refundAddress: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
         retryDurationBlocks: 15,
       });
-      expect(body.state).toBe('RECEIVING');
+      expect(body.state).toBe('WAITING');
     });
 
     it(`retrieves a swap with FillOrKillParams in ${StateV2.Failed} when refund aborted`, async () => {
@@ -1029,7 +1025,7 @@ describe('server', () => {
       expect(body).toMatchSnapshot();
     });
 
-    it(`retrieves a swap with DcaParams in ${StateV2.Receiving} status`, async () => {
+    it(`retrieves a swap with DcaParams in ${StateV2.Waiting} status`, async () => {
       const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositChannelEvent.args.dcaParameters = {
         numberOfChunks: 10,
@@ -1046,7 +1042,7 @@ describe('server', () => {
         numberOfChunks: 10,
         chunkIntervalBlocks: 3,
       });
-      expect(body.state).toBe('RECEIVING');
+      expect(body.state).toBe('WAITING');
     });
 
     it(`retrieves mulitple DCA swaps in ${StateV2.Swapping} status`, async () => {
