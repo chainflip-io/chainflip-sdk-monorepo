@@ -1,11 +1,10 @@
 import express from 'express';
-import { assetConstants, getAssetAndChain } from '@/shared/enums';
+import { getAssetAndChain } from '@/shared/enums';
 import { getPriceFromPriceX128 } from '@/shared/functions';
 import { assert } from '@/shared/guards';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
 import {
   depositChannelInclude,
-  getDepositIgnoredFailedState,
   getDepositInfo,
   getEgressStatusFields,
   getSwapFields,
@@ -13,7 +12,6 @@ import {
   swapRequestInclude,
 } from './utils';
 import prisma, { Prisma, SwapFee } from '../../client';
-import { getPendingDeposit } from '../../ingress-egress-tracking';
 import { readField } from '../../utils/function';
 import logger from '../../utils/logger';
 import ServiceError from '../../utils/ServiceError';
@@ -116,24 +114,12 @@ router.get(
     const refundEgress = swapRequest?.refundEgress;
     const ignoredEgresses = swapRequest?.ignoredEgresses;
 
-    const { state, swapEgressTrackerTxRef, refundEgressTrackerTxRef } = await getSwapState(
-      failedSwap,
-      ignoredEgresses,
-      swapRequest,
-    );
+    const { state, swapEgressTrackerTxRef, refundEgressTrackerTxRef, pendingDeposit } =
+      await getSwapState(failedSwap, ignoredEgresses, swapRequest);
 
     const internalSrcAsset = readField(swapRequest, swapDepositChannel, failedSwap, 'srcAsset');
     const internalDestAsset = readField(swapRequest, swapDepositChannel, 'destAsset');
     assert(internalSrcAsset, 'srcAsset must be defined');
-
-    let pendingDeposit;
-    if (state === StateV2.Receiving && swapDepositChannel?.depositAddress) {
-      pendingDeposit = await getPendingDeposit(
-        assetConstants[internalSrcAsset].chain,
-        assetConstants[internalSrcAsset].asset,
-        swapDepositChannel.depositAddress,
-      );
-    }
 
     let ccmParams;
     if (readField(swapRequest, swapDepositChannel, 'ccmGasBudget')) {

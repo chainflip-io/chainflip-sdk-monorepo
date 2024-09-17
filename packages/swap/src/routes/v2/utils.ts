@@ -12,7 +12,11 @@ import prisma, {
   FailedSwap,
   SwapRequest,
 } from '../../client';
-import { getPendingBroadcast, PendingDeposit } from '../../ingress-egress-tracking';
+import {
+  getPendingBroadcast,
+  getPendingDeposit,
+  PendingDeposit,
+} from '../../ingress-egress-tracking';
 import { failedSwapMessage, FailureMode } from '../../utils/swap';
 
 export const depositChannelInclude = {
@@ -188,11 +192,16 @@ export const getSwapState = async (
       }>
     | undefined
     | null,
-  hasPendingDeposit: boolean,
-) => {
+): Promise<{
+  state: StateV2;
+  swapEgressTrackerTxRef: string | null | undefined;
+  refundEgressTrackerTxRef: string | null | undefined;
+  pendingDeposit: PendingDeposit | null;
+}> => {
   let state: StateV2 | undefined;
   let swapEgressTrackerTxRef: string | null | undefined;
   let refundEgressTrackerTxRef: string | null | undefined;
+  let pendingDeposit = null;
   const swapEgress = swapRequest?.egress;
   const refundEgress = swapRequest?.refundEgress;
   const egress = swapEgress ?? refundEgress;
@@ -223,15 +232,19 @@ export const getSwapState = async (
     }
   } else if (swapRequest?.swaps.some((s) => s.swapScheduledAt)) {
     state = StateV2.Swapping;
-  } else if (hasPendingDeposit) {
-    state = StateV2.Receiving;
   } else {
     state = StateV2.Pending;
+
+    if (swapRequest?.srcAsset && swapRequest.destAddress) {
+      pendingDeposit = await getPendingDeposit(swapRequest.srcAsset, swapRequest.destAddress);
+      if (pendingDeposit) state = StateV2.Receiving;
+    }
   }
 
   return {
     state,
     swapEgressTrackerTxRef,
     refundEgressTrackerTxRef,
+    pendingDeposit,
   };
 };

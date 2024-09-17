@@ -1,4 +1,4 @@
-import { Chain, Chains, Asset } from '@/shared/enums';
+import { Chain, Chains, Asset, InternalAsset, assetConstants } from '@/shared/enums';
 import RedisClient from '@/shared/node-apis/redis';
 import prisma, { Broadcast } from '../client';
 import env from '../config/env';
@@ -37,11 +37,12 @@ const getMempoolTransaction = async (
 };
 
 export const getPendingDeposit = async (
-  chain: Chain,
-  asset: Asset,
+  internalAsset: InternalAsset,
   address: string,
 ): Promise<PendingDeposit | null> => {
   if (!redis) return null;
+
+  const { chain, asset } = assetConstants[internalAsset];
 
   try {
     const [deposits, tracking] = await Promise.all([

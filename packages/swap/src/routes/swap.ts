@@ -1,5 +1,5 @@
 import express from 'express';
-import { assetConstants, getAssetAndChain } from '@/shared/enums';
+import { getAssetAndChain } from '@/shared/enums';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
@@ -204,11 +204,7 @@ router.get(
 
     let pendingDeposit;
     if (internalSrcAsset && state === State.AwaitingDeposit && swapDepositChannel?.depositAddress) {
-      pendingDeposit = await getPendingDeposit(
-        assetConstants[internalSrcAsset].chain,
-        assetConstants[internalSrcAsset].asset,
-        swapDepositChannel.depositAddress,
-      );
+      pendingDeposit = await getPendingDeposit(internalSrcAsset, swapDepositChannel.depositAddress);
     }
 
     let ccmParams;
