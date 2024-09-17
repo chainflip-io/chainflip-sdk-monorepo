@@ -228,28 +228,36 @@ export const generateQuotes = async ({
     pools,
   };
 
-  const [quote, boostedQuote, dcaQuote, dcaBoostedQuote] = await Promise.all([
-    getPoolQuote(quoteArgs).catch((error) => {
-      if (dcaQuoteParams) {
-        return undefined;
-      }
-      throw error;
-    }),
-    estimatedBoostFeeBps &&
-      getPoolQuote({ ...quoteArgs, boostFeeBps: estimatedBoostFeeBps }).catch(() => undefined),
-    dcaQuoteParams &&
-      getPoolQuote({
-        ...quoteArgs,
-        swapInputAmount: dcaQuoteParams.chunkSize,
-      }),
-    dcaQuoteParams &&
-      estimatedBoostFeeBps &&
-      getPoolQuote({
-        ...quoteArgs,
-        boostFeeBps: estimatedBoostFeeBps,
-        swapInputAmount: dcaQuoteParams.chunkSize,
-      }).catch(() => undefined),
-  ]);
+  const [quoteResult, boostedQuoteResult, dcaQuoteResult, dcaBoostedQuoteResult] =
+    await Promise.allSettled([
+      getPoolQuote(quoteArgs),
+      estimatedBoostFeeBps && getPoolQuote({ ...quoteArgs, boostFeeBps: estimatedBoostFeeBps }),
+      dcaQuoteParams &&
+        getPoolQuote({
+          ...quoteArgs,
+          swapInputAmount: dcaQuoteParams.chunkSize,
+        }),
+      dcaQuoteParams &&
+        estimatedBoostFeeBps &&
+        getPoolQuote({
+          ...quoteArgs,
+          boostFeeBps: estimatedBoostFeeBps,
+          swapInputAmount: dcaQuoteParams.chunkSize,
+        }),
+    ]);
+
+  if (dcaQuoteResult.status === 'rejected') {
+    throw dcaQuoteResult.reason;
+  }
+  if (!dcaQuoteParams && quoteResult.status === 'rejected') {
+    throw quoteResult.reason;
+  }
+
+  const dcaQuote = dcaQuoteResult.value;
+  const quote = quoteResult.status === 'fulfilled' ? quoteResult.value : null;
+  const boostedQuote = boostedQuoteResult.status === 'fulfilled' ? boostedQuoteResult.value : null;
+  const dcaBoostedQuote =
+    dcaBoostedQuoteResult.status === 'fulfilled' ? dcaBoostedQuoteResult.value : null;
 
   if (dcaQuoteParams && dcaQuote) {
     // Check liquidity for DCA

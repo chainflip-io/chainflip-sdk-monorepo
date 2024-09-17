@@ -24,6 +24,7 @@
     "generate:models": "prisma generate",
     "migrate:deploy": "prisma migrate deploy",
     "migrate:dev": "prisma migrate dev",
+    "migrate:reset": "prisma migrate reset",
     "migrate": "prisma migrate",
     "graphql:codegen": "graphql-codegen --config .graphqlrc.js"
   },
