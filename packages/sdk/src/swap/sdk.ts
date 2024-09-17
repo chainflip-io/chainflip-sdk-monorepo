@@ -45,6 +45,7 @@ import {
   DepositAddressRequest,
   BoostPoolDepth,
   SwapStatusResponse,
+  QuoteResponseV2,
 } from './types';
 import { type SwapStatusResponseV2 } from './v2/types';
 
@@ -137,6 +138,7 @@ export class SwapSDK {
       .filter((asset) => !chain || asset.chain === chain);
   }
 
+  /** @deprecated DEPRECATED(1.6) use getQuoteV2() */
   getQuote(
     quoteRequest: QuoteRequest,
     options: ApiService.RequestOptions = {},
@@ -148,6 +150,26 @@ export class SwapSDK {
       affiliateBrokers?.reduce((acc, affiliate) => acc + affiliate.commissionBps, 0) ?? 0;
 
     return ApiService.getQuote(
+      this.options.backendUrl,
+      {
+        ...remainingRequest,
+        brokerCommissionBps: submitterBrokerCommissionBps + affiliateBrokerCommissionBps,
+      },
+      options,
+    );
+  }
+
+  getQuoteV2(
+    quoteRequest: QuoteRequest,
+    options: ApiService.RequestOptions = {},
+  ): Promise<QuoteResponseV2> {
+    const { brokerCommissionBps, affiliateBrokers, ...remainingRequest } = quoteRequest;
+    const submitterBrokerCommissionBps =
+      brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0;
+    const affiliateBrokerCommissionBps =
+      affiliateBrokers?.reduce((acc, affiliate) => acc + affiliate.commissionBps, 0) ?? 0;
+
+    return ApiService.getQuoteV2(
       this.options.backendUrl,
       {
         ...remainingRequest,
