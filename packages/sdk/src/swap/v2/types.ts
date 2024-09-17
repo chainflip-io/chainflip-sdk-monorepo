@@ -1,4 +1,4 @@
-import { AffiliateBroker, FillOrKillParams, SwapFee } from '@/shared/schemas';
+import { AffiliateBroker, FillOrKillParams, PaidFee } from '@/shared/schemas';
 import { SwapType } from '@/swap/client';
 import { FailureMode } from '@/swap/utils/swap';
 import { ChainsAndAssets } from '../types';
@@ -35,6 +35,7 @@ interface Boost {
 }
 
 interface DepositChannelFields {
+  id: string;
   createdAt: number;
   brokerCommissionBps: number;
   depositAddress: string;
@@ -49,7 +50,7 @@ interface DepositChannelFields {
 }
 
 interface DepositFields {
-  amount: string | undefined;
+  amount: string;
   txRef: string | undefined;
   txConfirmations: number | undefined;
   receivedAt: number | undefined;
@@ -69,7 +70,7 @@ interface SwapChunk {
   retryCount: number;
   latestSwapRescheduledAt: number | undefined;
   latestSwapRescheduledBlockIndex: number | undefined;
-  fees: SwapFee[];
+  fees: PaidFee[];
   isDca: false;
 }
 
@@ -81,7 +82,7 @@ interface SwapFields {
   lastExecutedChunk: SwapChunk | undefined;
   currentChunk: SwapChunk;
   type: SwapType;
-  fees: SwapFee[];
+  fees: PaidFee[];
 }
 
 interface EgressFields {
@@ -109,7 +110,7 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
 interface VaultSwapCommonFields extends Exclude<SwapStatusResponseCommonFields, 'boost'> {}
 
 interface ReceivingVaultSwap extends VaultSwapCommonFields {
-  deposit: Pick<DepositFields, 'amount' | 'txRef'>;
+  deposit: DepositFields;
 }
 
 interface SwappingVaultSwap extends ReceivingVaultSwap {

@@ -241,36 +241,38 @@ router.get(
       destAddress: readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress'),
       srcChainRequiredBlockConfirmations,
       estimatedDurationSeconds,
-      ...(showDepositchannel && {
-        depositChannel: {
-          createdAt: swapDepositChannel?.createdAt.valueOf(),
-          brokerCommissionBps: swapDepositChannel?.brokerCommissionBps,
-          depositAddress: swapDepositChannel?.depositAddress,
-          srcChainExpiryBlock: swapDepositChannel?.srcChainExpiryBlock?.toString(),
-          estimatedExpiryTime: swapDepositChannel?.estimatedExpiryAt?.valueOf(),
-          expectedDepositAmount: swapDepositChannel?.expectedDepositAmount?.toFixed(),
-          isExpired: swapDepositChannel?.isExpired,
-          openedThroughBackend: swapDepositChannel?.openedThroughBackend,
-          affiliateBrokers,
-          fillOrKillParams: swapDepositChannel?.fokMinPriceX128
-            ? {
-                retryDurationBlocks: swapDepositChannel.fokRetryDurationBlocks,
-                refundAddress: swapDepositChannel.fokRefundAddress,
-                minPrice: getPriceFromPriceX128(
-                  swapDepositChannel.fokMinPriceX128.toFixed(),
-                  swapDepositChannel.srcAsset,
-                  swapDepositChannel.destAsset,
-                ),
-              }
-            : undefined,
-          dcaParams: swapDepositChannel?.chunkIntervalBlocks
-            ? {
-                numberOfChunks: swapDepositChannel?.numberOfChunks,
-                chunkIntervalBlocks: swapDepositChannel?.chunkIntervalBlocks,
-              }
-            : undefined,
-        },
-      }),
+      ...(showDepositchannel &&
+        swapDepositChannel && {
+          depositChannel: {
+            id: `${swapDepositChannel.issuedBlock}-${swapDepositChannel.srcChain}-${swapDepositChannel.channelId}`,
+            createdAt: swapDepositChannel.createdAt.valueOf(),
+            brokerCommissionBps: swapDepositChannel.brokerCommissionBps,
+            depositAddress: swapDepositChannel.depositAddress,
+            srcChainExpiryBlock: swapDepositChannel.srcChainExpiryBlock?.toString(),
+            estimatedExpiryTime: swapDepositChannel.estimatedExpiryAt?.valueOf(),
+            expectedDepositAmount: swapDepositChannel.expectedDepositAmount?.toFixed(),
+            isExpired: swapDepositChannel.isExpired,
+            openedThroughBackend: swapDepositChannel.openedThroughBackend,
+            affiliateBrokers,
+            fillOrKillParams: swapDepositChannel.fokMinPriceX128
+              ? {
+                  retryDurationBlocks: swapDepositChannel.fokRetryDurationBlocks,
+                  refundAddress: swapDepositChannel.fokRefundAddress,
+                  minPrice: getPriceFromPriceX128(
+                    swapDepositChannel.fokMinPriceX128.toFixed(),
+                    swapDepositChannel.srcAsset,
+                    swapDepositChannel.destAsset,
+                  ),
+                }
+              : undefined,
+            dcaParams: swapDepositChannel.chunkIntervalBlocks
+              ? {
+                  numberOfChunks: swapDepositChannel?.numberOfChunks,
+                  chunkIntervalBlocks: swapDepositChannel?.chunkIntervalBlocks,
+                }
+              : undefined,
+          },
+        }),
       ...getDepositInfo(swapRequest, failedSwap, pendingDeposit, depositTransactionRef),
       ...(rolledSwaps && {
         swap: {
