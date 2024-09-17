@@ -259,6 +259,127 @@ export const boostPoolsDepth = (
   id: 1,
 });
 
+export const cfPoolDepth = () => ({
+  jsonrpc: '2.0',
+  result: {
+    asks: {
+      limit_orders: {
+        price: null,
+        depth: '0x0',
+      },
+      range_orders: {
+        price: '0x44f2368f13d5f10e34b74a922',
+        depth: '0x361d9235abbc10e2fd',
+      },
+    },
+    bids: {
+      limit_orders: {
+        price: null,
+        depth: '0x0',
+      },
+      range_orders: {
+        price: '0x44f2368f13d5f10e34b74a922',
+        depth: '0xe930e52f3e',
+      },
+    },
+  },
+  id: 'some-id',
+});
+
+export const cfAccountInfo = () => ({
+  jsonrpc: '2.0',
+  result: {
+    role: 'liquidity_provider',
+    balances: {
+      Ethereum: {
+        ETH: '0x3c32edbbd8c4c54',
+        FLIP: '0xa2ac1bc07ee724bc6',
+        USDC: '0x79db7c',
+        USDT: '0x7c0a99',
+      },
+      Polkadot: {
+        DOT: '0x0',
+      },
+      Bitcoin: {
+        BTC: '0x0',
+      },
+      Arbitrum: {
+        ETH: '0x0',
+        USDC: '0x14db3632',
+      },
+      Solana: {
+        SOL: '0x0',
+      },
+    },
+    refund_addresses: {
+      Polkadot: null,
+      Arbitrum: '0x7a9fc530cbeef967d212337cc5d47edf701550cc',
+      Ethereum: '0x7a9fc530cbeef967d212337cc5d47edf701550cc',
+      Solana: null,
+      Bitcoin: 'bc1qstvpcgprgdh38q9xggwx4y04a537cr0p7qdz3g',
+    },
+    flip_balance: '0x8ac2b439ff488240',
+    earned_fees: {
+      Ethereum: {
+        ETH: '0x2703bfd2fe559',
+        FLIP: '0xe14bbc24d86251c',
+        USDC: '0x21082cc',
+        USDT: '0x14ed1f3',
+      },
+      Polkadot: {
+        DOT: '0x0',
+      },
+      Bitcoin: {
+        BTC: '0x9ed',
+      },
+      Arbitrum: {
+        ETH: '0x0',
+        USDC: '0x561984',
+      },
+      Solana: {
+        SOL: '0x0',
+      },
+    },
+    boost_balances: {
+      Ethereum: {
+        ETH: [],
+        FLIP: [],
+        USDC: [],
+        USDT: [],
+      },
+      Polkadot: {
+        DOT: [],
+      },
+      Bitcoin: {
+        BTC: [
+          {
+            fee_tier: 5,
+            total_balance: '0xf731c',
+            available_balance: '0xf731c',
+            in_use_balance: '0x0',
+            is_withdrawing: false,
+          },
+          {
+            fee_tier: 10,
+            total_balance: '0x2f371',
+            available_balance: '0x2f371',
+            in_use_balance: '0x0',
+            is_withdrawing: false,
+          },
+        ],
+      },
+      Arbitrum: {
+        ETH: [],
+        USDC: [],
+      },
+      Solana: {
+        SOL: [],
+      },
+    },
+  },
+  id: 'some-id',
+});
+
 export const mockRpcResponse = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   cb: ((url: string, data: any) => Promise<{ data: any }>) | Promise<{ data: any }> | { data: any },

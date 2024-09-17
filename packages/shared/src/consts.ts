@@ -82,3 +82,8 @@ export const ADDRESSES = {
 } as const;
 
 export const CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS = 6;
+
+export const MIN_TICK = -887272;
+export const MAX_TICK = -MIN_TICK;
+
+export const FULL_TICK_RANGE = { start: MIN_TICK, end: MAX_TICK };

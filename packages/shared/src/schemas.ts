@@ -149,4 +149,8 @@ export type BoostedQuoteDetails = QuoteDetails & { estimatedBoostFeeBps: number 
 
 export type QuoteQueryResponse = QuoteDetails & {
   boostQuote?: BoostedQuoteDetails;
+  dcaParams?: {
+    numberOfChunks: number;
+    chunkInterval: number;
+  };
 };

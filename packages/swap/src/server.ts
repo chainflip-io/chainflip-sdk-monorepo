@@ -11,6 +11,7 @@ import { handleError, maintenanceMode } from './routes/common';
 import quoteRouter from './routes/quote';
 import swap from './routes/swap';
 import thirdPartySwap from './routes/thirdPartySwap';
+import quoteRouterV2 from './routes/v2/quote';
 import swapV2 from './routes/v2/swap';
 import { publicProcedure, router } from './trpc';
 
@@ -35,6 +36,7 @@ app.get('/healthcheck', (req, res) => {
 });
 
 app.use('/quote', quoteRouter(io));
+app.use('/v2/quote', quoteRouterV2(io));
 
 app.use('/trpc', maintenanceMode, trpcExpress.createExpressMiddleware({ router: appRouter }));
 

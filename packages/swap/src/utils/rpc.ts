@@ -1,5 +1,12 @@
 import { Chain, readChainAssetValue, InternalAsset, assetConstants } from '@/shared/enums';
-import { BoostPoolsDepth, getAllBoostPoolsDepth, getEnvironment } from '@/shared/rpc';
+import {
+  BoostPoolsDepth,
+  getAllBoostPoolsDepth,
+  getEnvironment,
+  getPoolDepth as getPoolDepthRpc,
+  getAccounts as getAccountsRpc,
+  getAccountInfo as getAccountInfoRpc,
+} from '@/shared/rpc';
 import { validateSwapAmount as validateAmount } from '@/shared/rpc/utils';
 import { memoize } from './function';
 import env from '../config/env';
@@ -50,6 +57,45 @@ export const getRequiredBlockConfirmations = async (
   const safetyMargin = environment.ingressEgress.witnessSafetyMargins[chain];
 
   return safetyMargin ? Number(safetyMargin) + 1 : null;
+};
+
+export const getAccounts = async () => {
+  const accounts = await getAccountsRpc(rpcConfig);
+
+  return accounts.map((account) => ({
+    idSs58: account[0],
+    alias: account[1],
+  }));
+};
+
+export const getAccountInfo = async (idSs58: string) => {
+  const accounts = await getAccountInfoRpc(rpcConfig, idSs58);
+
+  return accounts;
+};
+
+export const getPoolDepth = async (
+  fromAsset: InternalAsset,
+  toAsset: InternalAsset,
+  tickRange: {
+    start: number;
+    end: number;
+  },
+) => {
+  const depth = await getPoolDepthRpc(
+    rpcConfig,
+    { asset: assetConstants[fromAsset].asset, chain: assetConstants[fromAsset].chain },
+    { asset: assetConstants[toAsset].asset, chain: assetConstants[toAsset].chain },
+    tickRange,
+  );
+  return {
+    quoteLiquidityAmount: !depth
+      ? 0n
+      : BigInt(depth.bids.limitOrders.depth) + BigInt(depth.bids.rangeOrders.depth),
+    baseLiquidityAmount: !depth
+      ? 0n
+      : BigInt(depth.asks.limitOrders.depth) + BigInt(depth.asks.rangeOrders.depth),
+  };
 };
 
 export const getBoostPoolsDepth = async ({
