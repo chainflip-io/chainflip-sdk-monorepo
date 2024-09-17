@@ -233,7 +233,7 @@ export const getSwapState = async (
   } else if (swapRequest?.swaps.some((s) => s.swapScheduledAt)) {
     state = StateV2.Swapping;
   } else {
-    state = StateV2.Pending;
+    state = StateV2.Waiting;
 
     if (swapRequest?.srcAsset && swapRequest.destAddress) {
       pendingDeposit = await getPendingDeposit(swapRequest.srcAsset, swapRequest.destAddress);

@@ -144,7 +144,7 @@ interface Sending extends Receiving {
 
 type SwapState =
   | ({
-      state: 'PENDING';
+      state: 'WAITING';
     } & DepositChannel)
   | ({
       state: 'RECEIVING';

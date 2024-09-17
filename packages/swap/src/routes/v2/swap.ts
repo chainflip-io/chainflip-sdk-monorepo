@@ -34,7 +34,7 @@ export enum StateV2 {
   Sending = 'SENDING',
   Swapping = 'SWAPPING',
   Receiving = 'RECEIVING',
-  Pending = 'PENDING',
+  Waiting = 'WAITING',
 }
 
 router.get(
