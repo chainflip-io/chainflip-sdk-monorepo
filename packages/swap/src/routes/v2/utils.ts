@@ -1,5 +1,6 @@
 import { getAssetAndChain } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
+import { readField } from '@/swap/utils/function';
 import { StateV2 } from './swap';
 import prisma, {
   Prisma,
@@ -9,8 +10,9 @@ import prisma, {
   SwapFee,
   IgnoredEgress,
   FailedSwap,
+  SwapRequest,
 } from '../../client';
-import { getPendingBroadcast } from '../../ingress-egress-tracking';
+import { getPendingBroadcast, PendingDeposit } from '../../ingress-egress-tracking';
 import { failedSwapMessage, FailureMode } from '../../utils/swap';
 
 export const depositChannelInclude = {
@@ -52,7 +54,7 @@ export const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
   })),
 });
 
-export const getDepositIgnoredFailedState = (failedSwap: FailedSwap) => ({
+const getDepositIgnoredFailedState = (failedSwap: FailedSwap) => ({
   failedAt: failedSwap.failedAt.valueOf(),
   failedBlockIndex: failedSwap.failedBlockIndex,
   mode: FailureMode.IngressIgnored,
@@ -61,6 +63,33 @@ export const getDepositIgnoredFailedState = (failedSwap: FailedSwap) => ({
     message: failedSwapMessage[failedSwap.reason],
   },
 });
+
+export const getDepositInfo = (
+  swapRequest: SwapRequest | null | undefined,
+  failedSwap: FailedSwap | null | undefined,
+  pendingDeposit: PendingDeposit | null | undefined,
+  txRef: string | undefined,
+) => {
+  const amount =
+    readField(swapRequest, failedSwap, 'depositAmount')?.toFixed() ?? pendingDeposit?.amount;
+
+  if (!amount) return null;
+
+  return {
+    deposit: {
+      amount,
+      txRef,
+      txConfirmations: pendingDeposit?.transactionConfirmations,
+      receivedAt: swapRequest?.depositReceivedAt?.valueOf(),
+      receivedBlockIndex: swapRequest?.depositReceivedBlockIndex ?? undefined,
+      ...(failedSwap && {
+        failure: getDepositIgnoredFailedState(failedSwap),
+        failedAt: failedSwap.failedAt.valueOf(),
+        failedBlockIndex: failedSwap.failedBlockIndex,
+      }),
+    },
+  };
+};
 
 export const getEgressFailureState = async (
   ignoredEgress: IgnoredEgress | undefined,
@@ -159,6 +188,7 @@ export const getSwapState = async (
       }>
     | undefined
     | null,
+  hasPendingDeposit: boolean,
 ) => {
   let state: StateV2 | undefined;
   let swapEgressTrackerTxRef: string | null | undefined;
@@ -193,8 +223,10 @@ export const getSwapState = async (
     }
   } else if (swapRequest?.swaps.some((s) => s.swapScheduledAt)) {
     state = StateV2.Swapping;
-  } else {
+  } else if (hasPendingDeposit) {
     state = StateV2.Receiving;
+  } else {
+    state = StateV2.Pending;
   }
 
   return {

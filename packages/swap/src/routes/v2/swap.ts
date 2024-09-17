@@ -6,6 +6,7 @@ import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
 import {
   depositChannelInclude,
   getDepositIgnoredFailedState,
+  getDepositInfo,
   getEgressStatusFields,
   getSwapFields,
   getSwapState,
@@ -35,6 +36,7 @@ export enum StateV2 {
   Sending = 'SENDING',
   Swapping = 'SWAPPING',
   Receiving = 'RECEIVING',
+  Pending = 'PENDING',
 }
 
 router.get(
@@ -283,34 +285,28 @@ router.get(
             : undefined,
         },
       }),
-      deposit: {
-        amount:
-          readField(swapRequest, failedSwap, 'depositAmount')?.toFixed() ?? pendingDeposit?.amount,
-        txRef: depositTransactionRef,
-        txConfirmations: pendingDeposit?.transactionConfirmations,
-        receivedAt: swapRequest?.depositReceivedAt?.valueOf(),
-        receivedBlockIndex: swapRequest?.depositReceivedBlockIndex ?? undefined,
-        ...(failedSwap && { failure: getDepositIgnoredFailedState(failedSwap) }),
-      },
-      swap: {
-        isDca: false,
-        ...(rolledSwaps?.isDca
-          ? {
-              ...rolledSwaps,
-              totalInputAmountSwapped: rolledSwaps?.totalInputAmountSwapped.toFixed(),
-              totalOutputAmountSwapped: rolledSwaps?.totalOutputAmountSwapped.toFixed(),
-              lastExecutedChunk:
-                rolledSwaps?.lastExecutedChunk && getSwapFields(rolledSwaps.lastExecutedChunk),
-              allChunksExecuted:
-                sortedSwaps?.length &&
-                rolledSwaps?.totalChunksExecuted === (swapDepositChannel?.numberOfChunks ?? 1),
-              currentChunk: rolledSwaps && getSwapFields(rolledSwaps.currentChunk),
-            }
-          : {
-              ...(rolledSwaps?.currentChunk && getSwapFields(rolledSwaps.currentChunk)),
-            }),
-        fees: aggregateFees,
-      },
+      ...getDepositInfo(swapRequest, failedSwap, pendingDeposit, depositTransactionRef),
+      ...(rolledSwaps && {
+        swap: {
+          isDca: false,
+          ...(rolledSwaps?.isDca
+            ? {
+                ...rolledSwaps,
+                totalInputAmountSwapped: rolledSwaps?.totalInputAmountSwapped.toFixed(),
+                totalOutputAmountSwapped: rolledSwaps?.totalOutputAmountSwapped.toFixed(),
+                lastExecutedChunk:
+                  rolledSwaps?.lastExecutedChunk && getSwapFields(rolledSwaps.lastExecutedChunk),
+                allChunksExecuted:
+                  sortedSwaps?.length &&
+                  rolledSwaps?.totalChunksExecuted === (swapDepositChannel?.numberOfChunks ?? 1),
+                currentChunk: rolledSwaps && getSwapFields(rolledSwaps.currentChunk),
+              }
+            : {
+                ...(rolledSwaps?.currentChunk && getSwapFields(rolledSwaps.currentChunk)),
+              }),
+          fees: aggregateFees,
+        },
+      }),
       ...(swapEgressFields && { swapEgress: { ...swapEgressFields } }),
       ...(refundEgressFields && { refundEgress: { ...refundEgressFields } }),
       ...(showCcm && {

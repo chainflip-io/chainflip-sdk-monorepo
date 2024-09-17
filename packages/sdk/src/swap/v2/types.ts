@@ -55,6 +55,8 @@ interface DepositFields {
   receivedAt: number | undefined;
   receivedBlockIndex: string | undefined;
   failure: Failure | undefined;
+  failedAt: number | undefined;
+  failedBlockIndex: string | undefined;
 }
 
 interface SwapChunk {
@@ -140,6 +142,9 @@ interface Sending extends Receiving {
 }
 
 type SwapState =
+  | ({
+      state: 'PENDING';
+    } & DepositChannel)
   | ({
       state: 'RECEIVING';
     } & Receiving)
