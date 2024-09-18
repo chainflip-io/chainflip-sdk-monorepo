@@ -84,8 +84,8 @@ export const getDepositInfo = (
       amount,
       txRef,
       txConfirmations: pendingDeposit?.transactionConfirmations,
-      receivedAt: swapRequest?.depositReceivedAt?.valueOf(),
-      receivedBlockIndex: swapRequest?.depositReceivedBlockIndex ?? undefined,
+      witnessedAt: swapRequest?.depositReceivedAt?.valueOf(),
+      witnessedBlockIndex: swapRequest?.depositReceivedBlockIndex ?? undefined,
       ...(failedSwap && {
         failure: getDepositIgnoredFailedState(failedSwap),
         failedAt: failedSwap.failedAt.valueOf(),
@@ -168,8 +168,8 @@ export const getEgressStatusFields = async (
       scheduledBlockIndex: egress.scheduledBlockIndex ?? undefined,
     }),
     ...(broadcast && {
-      confirmedAt: broadcast?.succeededAt?.valueOf(),
-      confirmedBlockIndex: broadcast?.succeededBlockIndex ?? undefined,
+      witnessedAt: broadcast?.succeededAt?.valueOf(),
+      witnessedBlockIndex: broadcast?.succeededBlockIndex ?? undefined,
       txRef: broadcast?.transactionRef ?? egressTrackerTxRef,
       failedAt: broadcast?.abortedAt?.valueOf(),
       failedBlockIndex: broadcast?.abortedBlockIndex ?? undefined,

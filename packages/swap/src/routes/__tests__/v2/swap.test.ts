@@ -1084,8 +1084,8 @@ describe('server', () => {
         },
         deposit: {
           amount: '5000000000000000000',
-          receivedAt: 552000,
-          receivedBlockIndex: '92-400',
+          witnessedAt: 552000,
+          witnessedBlockIndex: '92-400',
         },
         swap: {
           totalOutputAmountSwapped: '8385809332068',
@@ -1156,8 +1156,8 @@ describe('server', () => {
         },
         deposit: {
           amount: '5000000000000000000',
-          receivedAt: 552000,
-          receivedBlockIndex: '92-400',
+          witnessedAt: 552000,
+          witnessedBlockIndex: '92-400',
         },
         swap: {
           totalOutputAmountSwapped: '8385809332068',
@@ -1228,8 +1228,8 @@ describe('server', () => {
         },
         deposit: {
           amount: '5000000000000000000',
-          receivedAt: 552000,
-          receivedBlockIndex: '92-400',
+          witnessedAt: 552000,
+          witnessedBlockIndex: '92-400',
         },
         swap: {
           totalOutputAmountSwapped: '8385809332068',
