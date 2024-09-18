@@ -1,17 +1,6 @@
-import { AffiliateBroker, FillOrKillParams, PaidFee } from '@/shared/schemas';
+import { AffiliateBroker, CcmParams, DcaParams, FillOrKillParams, PaidFee } from '@/shared/schemas';
 import { FailureMode } from '@/swap/utils/swap';
 import { ChainsAndAssets } from '../types';
-
-interface DcaParameters {
-  numberOfChunks: number;
-  chunkIntervalBlocks: string;
-}
-
-interface CcmParameters {
-  message: string;
-  gasBudget: string;
-  cfParameters: string | undefined;
-}
 
 interface Failure {
   failedAt: number;
@@ -44,7 +33,7 @@ interface DepositChannelFields {
   openedThroughBackend: boolean;
   affiliateBrokers: AffiliateBroker[];
   fillOrKillParams: FillOrKillParams | undefined;
-  dcaParams: DcaParameters | undefined;
+  dcaParams: DcaParams | undefined;
 }
 
 interface DepositFields {
@@ -97,7 +86,7 @@ interface EgressFields {
 interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   swapId: string;
   destAddress: string;
-  ccmParams: CcmParameters | undefined;
+  ccmParams: CcmParams | undefined;
   boost: Boost | undefined;
   estimatedDurationSeconds: number | null | undefined;
   srcChainRequiredBlockConfirmations: number | null;

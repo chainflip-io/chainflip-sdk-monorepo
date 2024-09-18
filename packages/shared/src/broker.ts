@@ -19,6 +19,7 @@ import {
   FillOrKillParamsX128,
   fillOrKillParams,
   dcaParams,
+  DcaParams,
 } from './schemas';
 
 type NewSwapRequest = {
@@ -32,10 +33,7 @@ type NewSwapRequest = {
   maxBoostFeeBps?: number;
   affiliates?: AffiliateBroker[];
   fillOrKillParams?: FillOrKillParamsX128;
-  dcaParams?: {
-    numberOfChunks: number;
-    chunkInterval: number;
-  };
+  dcaParams?: DcaParams;
 };
 
 const submitAddress = (chain: Chain, address: string): string => {
@@ -71,9 +69,9 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) =>
         }))
         .optional(),
       dcaParams
-        .transform(({ numberOfChunks, chunkInterval }) => ({
+        .transform(({ numberOfChunks, chunkIntervalBlocks }) => ({
           number_of_chunks: numberOfChunks,
-          chunk_interval: chunkInterval,
+          chunk_interval: chunkIntervalBlocks,
         }))
         .optional(),
     ])
