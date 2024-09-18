@@ -297,12 +297,7 @@ router.get(
       }),
       ...(swapEgressFields && { swapEgress: { ...swapEgressFields } }),
       ...(refundEgressFields && { refundEgress: { ...refundEgressFields } }),
-      ...(showCcm && {
-        ccm: {
-          ...ccmParams,
-          receivedBlockIndex: swapRequest?.ccmDepositReceivedBlockIndex ?? undefined,
-        },
-      }),
+      ...(showCcm && { ccmParams }),
       ...(showBoost && {
         boost: {
           effectiveBoostFeeBps,
