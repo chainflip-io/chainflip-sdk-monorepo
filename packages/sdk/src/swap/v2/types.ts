@@ -40,8 +40,8 @@ interface DepositFields {
   amount: string;
   txRef: string | undefined;
   txConfirmations: number | undefined;
-  receivedAt: number | undefined;
-  receivedBlockIndex: string | undefined;
+  witnessedAt: number | undefined;
+  witnessedBlockIndex: string | undefined;
   failure: Failure | undefined;
   failedAt: number | undefined;
   failedBlockIndex: string | undefined;
@@ -76,8 +76,8 @@ interface EgressFields {
   scheduledAt: number;
   scheduledBlockIndex: string;
   txRef: string | undefined;
-  confirmedAt: number | undefined;
-  confirmedBlockIndex: string | undefined;
+  witnessedAt: number | undefined;
+  witnessedBlockIndex: string | undefined;
   failure: Failure | undefined;
   failedAt: number | undefined;
   failedBlockIndex: string | undefined;

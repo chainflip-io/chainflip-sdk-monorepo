@@ -4,8 +4,8 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a native swap id 1`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
-    "receivedAt": 552000,
-    "receivedBlockIndex": "92-400",
+    "witnessedAt": 552000,
+    "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
     "brokerCommissionBps": 0,
@@ -154,11 +154,11 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a vault origin in COMPLE
   },
   "swapEgress": {
     "amount": "4192707216034",
-    "confirmedAt": 624000,
-    "confirmedBlockIndex": "104-7",
     "scheduledAt": 564000,
     "scheduledBlockIndex": "94-595",
     "txRef": "104-2",
+    "witnessedAt": 624000,
+    "witnessedBlockIndex": "104-7",
   },
 }
 `;
@@ -167,8 +167,8 @@ exports[`server GET /v2/swaps/:id retrieves a swap in COMPLETED status 1`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
-    "receivedAt": 552000,
-    "receivedBlockIndex": "92-400",
+    "witnessedAt": 552000,
+    "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
     "brokerCommissionBps": 0,
@@ -238,11 +238,11 @@ exports[`server GET /v2/swaps/:id retrieves a swap in COMPLETED status 1`] = `
   },
   "swapEgress": {
     "amount": "4192707216034",
-    "confirmedAt": 624000,
-    "confirmedBlockIndex": "104-7",
     "scheduledAt": 564000,
     "scheduledBlockIndex": "94-595",
     "txRef": "104-2",
+    "witnessedAt": 624000,
+    "witnessedBlockIndex": "104-7",
   },
 }
 `;
@@ -251,8 +251,8 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENDING status 1`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
-    "receivedAt": 552000,
-    "receivedBlockIndex": "92-400",
+    "witnessedAt": 552000,
+    "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
     "brokerCommissionBps": 0,
@@ -332,8 +332,8 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENT status 1`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
-    "receivedAt": 552000,
-    "receivedBlockIndex": "92-400",
+    "witnessedAt": 552000,
+    "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
     "brokerCommissionBps": 0,
@@ -414,8 +414,8 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status 1`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
-    "receivedAt": 552000,
-    "receivedBlockIndex": "92-400",
+    "witnessedAt": 552000,
+    "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
     "brokerCommissionBps": 0,
@@ -457,8 +457,8 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status 2`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
-    "receivedAt": 552000,
-    "receivedBlockIndex": "92-400",
+    "witnessedAt": 552000,
+    "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
     "brokerCommissionBps": 0,
@@ -527,9 +527,9 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status with a tx 
 {
   "deposit": {
     "amount": "5000000000000000000",
-    "receivedAt": 552000,
-    "receivedBlockIndex": "92-400",
     "txRef": "0xa2d5df86c6ec123283eb052c598a0f4b650367a81ad141b9ff3adb0286a86c17",
+    "witnessedAt": 552000,
+    "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
     "brokerCommissionBps": 0,
@@ -571,8 +571,8 @@ exports[`server GET /v2/swaps/:id retrieves a swap with FillOrKillParams in COMP
 {
   "deposit": {
     "amount": "5000000000000000000",
-    "receivedAt": 552000,
-    "receivedBlockIndex": "92-400",
+    "witnessedAt": 552000,
+    "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
     "brokerCommissionBps": 0,
@@ -595,11 +595,11 @@ exports[`server GET /v2/swaps/:id retrieves a swap with FillOrKillParams in COMP
   "estimatedDurationSeconds": 48,
   "refundEgress": {
     "amount": "999844999999160000",
-    "confirmedAt": 624000,
-    "confirmedBlockIndex": "104-7",
     "scheduledAt": 564000,
     "scheduledBlockIndex": "94-594",
     "txRef": "0xd2398250c9fa869f0eb7659015549ed46178c95cedd444c3539f655068f6a7d9",
+    "witnessedAt": 624000,
+    "witnessedBlockIndex": "104-7",
   },
   "srcAsset": "ETH",
   "srcChain": "Ethereum",
@@ -634,8 +634,8 @@ exports[`server GET /v2/swaps/:id retrieves a swap with a refund in SENDING stat
 {
   "deposit": {
     "amount": "5000000000000000000",
-    "receivedAt": 552000,
-    "receivedBlockIndex": "92-400",
+    "witnessedAt": 552000,
+    "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
     "brokerCommissionBps": 0,
@@ -693,8 +693,8 @@ exports[`server GET /v2/swaps/:id retrieves mulitple DCA swaps in FAILED status 
 {
   "deposit": {
     "amount": "5000000000000000000",
-    "receivedAt": 552000,
-    "receivedBlockIndex": "92-400",
+    "witnessedAt": 552000,
+    "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
     "brokerCommissionBps": 0,
@@ -862,11 +862,11 @@ exports[`server GET /v2/swaps/:id retrieves mulitple DCA swaps in FAILED status 
   },
   "swapEgress": {
     "amount": "4192707216034",
-    "confirmedAt": 624000,
-    "confirmedBlockIndex": "104-7",
     "scheduledAt": 564000,
     "scheduledBlockIndex": "94-595",
     "txRef": "104-2",
+    "witnessedAt": 624000,
+    "witnessedBlockIndex": "104-7",
   },
 }
 `;
