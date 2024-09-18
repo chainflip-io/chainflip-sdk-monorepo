@@ -176,7 +176,7 @@ export const getEgressStatusFields = async (
     }),
     ...(failureState && { failure: failureState }),
     ...(ignoredEgress && {
-      ignoredAmount: ignoredEgress.amount?.toFixed(),
+      amount: ignoredEgress.amount?.toFixed(),
       failedAt: ignoredEgress.ignoredAt?.valueOf(),
       failedBlockIndex: ignoredEgress.ignoredBlockIndex,
     }),

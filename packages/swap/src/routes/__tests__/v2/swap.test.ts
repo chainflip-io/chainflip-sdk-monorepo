@@ -477,7 +477,7 @@ describe('server', () => {
 
       expect(body).toMatchObject({
         state: 'WAITING',
-        ccm: {
+        ccmParams: {
           gasBudget: '100000',
           message: '0xdeadbeef',
         },

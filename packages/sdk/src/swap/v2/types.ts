@@ -1,5 +1,4 @@
 import { AffiliateBroker, FillOrKillParams, PaidFee } from '@/shared/schemas';
-import { SwapType } from '@/swap/client';
 import { FailureMode } from '@/swap/utils/swap';
 import { ChainsAndAssets } from '../types';
 
@@ -8,11 +7,10 @@ interface DcaParameters {
   chunkIntervalBlocks: string;
 }
 
-interface Ccm {
+interface CcmParameters {
   message: string;
   gasBudget: string;
   cfParameters: string | undefined;
-  ccmDepositReceivedBlockIndex: string | undefined;
 }
 
 interface Failure {
@@ -81,7 +79,6 @@ interface SwapFields {
   isDca: true;
   lastExecutedChunk: SwapChunk | undefined;
   currentChunk: SwapChunk;
-  type: SwapType;
   fees: PaidFee[];
 }
 
@@ -92,7 +89,6 @@ interface EgressFields {
   txRef: string | undefined;
   confirmedAt: number | undefined;
   confirmedBlockIndex: string | undefined;
-  ignoredAmount: string | undefined;
   failure: Failure | undefined;
   failedAt: number | undefined;
   failedBlockIndex: string | undefined;
@@ -101,7 +97,7 @@ interface EgressFields {
 interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   swapId: string;
   destAddress: string;
-  ccm: Ccm | undefined;
+  ccmParams: CcmParameters | undefined;
   boost: Boost | undefined;
   estimatedDurationSeconds: number | null | undefined;
   srcChainRequiredBlockConfirmations: number | null;
@@ -114,10 +110,7 @@ interface ReceivingVaultSwap extends VaultSwapCommonFields {
 }
 
 interface SwappingVaultSwap extends ReceivingVaultSwap {
-  swap:
-    | Exclude<SwapChunk, 'latestSwapRescheduledAt' | 'latestSwapRescheduledBlockIndex'>
-    | undefined;
-  swapEgress: EgressFields | undefined;
+  swap: SwapChunk | undefined;
 }
 
 interface SendingVaultSwap extends SwappingVaultSwap {
@@ -133,11 +126,11 @@ interface Receiving extends DepositChannel {
 }
 
 interface Swapping extends Receiving {
-  swap: SwapFields;
+  swap: SwapFields | SwapChunk;
 }
 
 interface Sending extends Receiving {
-  swap: SwapFields;
+  swap: SwapFields | SwapChunk;
   swapEgress: EgressFields | undefined;
   refundEgress: EgressFields | undefined;
 }

@@ -732,7 +732,6 @@ exports[`server GET /v2/swaps/:id retrieves mulitple DCA swaps in FAILED status 
         "name": "ethereumIngressEgress.BelowEgressDustLimit",
       },
     },
-    "ignoredAmount": "999844999999160000",
     "scheduledAt": 564000,
     "scheduledBlockIndex": "94-594",
   },
