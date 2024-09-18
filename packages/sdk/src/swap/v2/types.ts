@@ -47,27 +47,39 @@ interface DepositFields {
   failedBlockIndex: string | undefined;
 }
 
-interface SwapChunk {
-  swapInputAmount: string;
-  swapOutputAmount: string | undefined;
-  scheduledAt: number;
-  scheduledBlockIndex: string;
-  executedAt: number | undefined;
-  executedBlockIndex: string | undefined;
-  retryCount: number;
-  latestSwapRescheduledAt: number | undefined;
-  latestSwapRescheduledBlockIndex: number | undefined;
-  fees: PaidFee[];
-  isDca: false;
-}
-
 interface SwapFields {
-  totalInputAmountSwapped: string | undefined;
-  totalOutputAmountSwapped: string | undefined;
-  totalChunksExecuted: number;
-  isDca: true;
-  lastExecutedChunk: SwapChunk | undefined;
-  currentChunk: SwapChunk;
+  originalInputAmount: string;
+  remainingInputAmount: string;
+  swappedInputAmount: string;
+  swappedOutputAmount: string;
+  regular?: {
+    inputAmount: string;
+    outputAmount: string;
+    scheduledAt: number;
+    scheduledBlockIndex: string;
+    executedAt?: number;
+    executedBlockIndex?: string;
+    retryCount: 0;
+  };
+  dca?: {
+    lastExecutedChunk: {
+      inputAmount: string;
+      outputAmount: string;
+      scheduledAt: number;
+      scheduledBlockIndex: string;
+      executedAt: number;
+      executedBlockIndex: string;
+      retryCount: number;
+    } | null;
+    currentChunk: {
+      inputAmount: string;
+      scheduledAt: number;
+      scheduledBlockIndex: string;
+      retryCount: number;
+    } | null;
+    executedChunks: number;
+    remainingChunks: number;
+  };
   fees: PaidFee[];
 }
 
@@ -99,7 +111,7 @@ interface ReceivingVaultSwap extends VaultSwapCommonFields {
 }
 
 interface SwappingVaultSwap extends ReceivingVaultSwap {
-  swap: SwapChunk | undefined;
+  swap: SwapFields | undefined;
 }
 
 interface SendingVaultSwap extends SwappingVaultSwap {
@@ -115,11 +127,11 @@ interface Receiving extends DepositChannel {
 }
 
 interface Swapping extends Receiving {
-  swap: SwapFields | SwapChunk;
+  swap: SwapFields;
 }
 
 interface Sending extends Receiving {
-  swap: SwapFields | SwapChunk;
+  swap: SwapFields;
   swapEgress: EgressFields | undefined;
   refundEgress: EgressFields | undefined;
 }

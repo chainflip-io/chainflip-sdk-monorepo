@@ -1,4 +1,3 @@
-import { getAssetAndChain } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
 import { readField } from '@/swap/utils/function';
 import { StateV2 } from './swap';
@@ -42,8 +41,8 @@ export const swapRequestInclude = {
 } as const;
 
 export const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
-  swapInputAmount: swap.swapInputAmount.toString(),
-  swapOutputAmount: swap.swapOutputAmount?.toString(),
+  inputAmount: swap.swapInputAmount.toString(),
+  outputAmount: swap.swapOutputAmount?.toString(),
   scheduledAt: swap.swapScheduledAt.valueOf(),
   scheduledBlockIndex: swap.swapScheduledBlockIndex ?? undefined,
   executedAt: swap.swapExecutedAt?.valueOf(),
@@ -51,11 +50,6 @@ export const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
   retryCount: swap.retryCount,
   latestSwapRescheduledAt: swap.latestSwapRescheduledAt?.valueOf(),
   latestSwapRescheduledBlockIndex: swap.latestSwapRescheduledBlockIndex ?? undefined,
-  fees: swap.fees.map((fee) => ({
-    type: fee.type,
-    ...getAssetAndChain(fee.asset),
-    amount: fee.amount.toString(),
-  })),
 });
 
 const getDepositIgnoredFailedState = (failedSwap: FailedSwap) => ({
