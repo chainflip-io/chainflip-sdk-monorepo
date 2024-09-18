@@ -458,7 +458,7 @@ describe(SwapSDK, () => {
         amount: BigInt(1e18).toString(),
         dcaParams: {
           numberOfChunks: 100,
-          chunkInterval: 5,
+          chunkIntervalBlocks: 5,
         },
       });
       expect(rpcSpy).toHaveBeenLastCalledWith({
@@ -470,7 +470,7 @@ describe(SwapSDK, () => {
         amount: BigInt(1e18).toString(),
         dcaParams: {
           numberOfChunks: 100,
-          chunkInterval: 5,
+          chunkIntervalBlocks: 5,
         },
       });
       expect(response).toStrictEqual({
@@ -491,7 +491,7 @@ describe(SwapSDK, () => {
         affiliateBrokers: [],
         dcaParams: {
           numberOfChunks: 100,
-          chunkInterval: 5,
+          chunkIntervalBlocks: 5,
         },
       });
     });
@@ -816,7 +816,7 @@ describe(SwapSDK, () => {
         amount: BigInt(1e18).toString(),
         dcaParams: {
           numberOfChunks: 100,
-          chunkInterval: 5,
+          chunkIntervalBlocks: 5,
         },
       });
 
@@ -857,7 +857,7 @@ describe(SwapSDK, () => {
         affiliateBrokers: [],
         dcaParams: {
           numberOfChunks: 100,
-          chunkInterval: 5,
+          chunkIntervalBlocks: 5,
         },
       });
     });

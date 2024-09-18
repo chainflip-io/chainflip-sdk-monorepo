@@ -79,7 +79,7 @@ const adjustDcaQuote = ({
 }) => {
   // eslint-disable-next-line no-param-reassign
   dcaQuote.dcaParams = {
-    chunkInterval: env.DCA_CHUNK_INTERVAL_BLOCKS,
+    chunkIntervalBlocks: env.DCA_CHUNK_INTERVAL_BLOCKS,
     numberOfChunks: dcaQuoteParams.numberOfChunks,
   };
   if (dcaQuoteParams && dcaQuote) {

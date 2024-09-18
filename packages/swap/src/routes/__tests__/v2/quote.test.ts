@@ -585,7 +585,7 @@ describe('server', () => {
             },
           ],
           dcaParams: {
-            chunkInterval: 2,
+            chunkIntervalBlocks: 2,
             numberOfChunks: 4,
           },
         },

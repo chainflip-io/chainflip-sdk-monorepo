@@ -386,7 +386,7 @@ describe(broker.requestSwapDepositAddress, () => {
         },
         dcaParams: {
           numberOfChunks: 100,
-          chunkInterval: 5,
+          chunkIntervalBlocks: 5,
         },
       },
       brokerConfig,
