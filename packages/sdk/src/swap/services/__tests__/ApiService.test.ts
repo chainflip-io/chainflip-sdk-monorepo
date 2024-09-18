@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Assets, Chains } from '@/shared/enums';
 import { QuoteRequest } from '../../types';
-import { getQuote, getStatus, getStatusV2 } from '../ApiService';
+import { getQuote, getQuoteV2, getStatus, getStatusV2 } from '../ApiService';
 
 jest.mock('../../../../package.json', () => ({
   version: '1.0-test',
@@ -56,6 +56,50 @@ describe('ApiService', () => {
 
     it('passes the signal to fetch', async () => {
       await getQuote('https://swapperoo.org', mockRoute, {
+        signal: new AbortController().signal,
+      });
+
+      expect(mockedGet.mock.lastCall?.[1]?.signal).not.toBeUndefined();
+    });
+  });
+
+  describe(getQuoteV2, () => {
+    const mockedGet = jest.mocked(axios.get);
+    beforeEach(() => {
+      mockedGet.mockResolvedValueOnce({
+        data: [
+          {
+            id: 'string',
+            intermediateAmount: '1',
+            egressAmount: '2',
+          },
+        ],
+      });
+    });
+
+    it('gets a quote', async () => {
+      const route = await getQuoteV2('https://swapperoo.org', mockRoute, {});
+
+      expect(route).toMatchSnapshot();
+      expect(mockedGet.mock.lastCall).toMatchSnapshot();
+    });
+
+    it('gets a quote with a broker commission', async () => {
+      const route = await getQuoteV2(
+        'https://swapperoo.org',
+        {
+          ...mockRoute,
+          brokerCommissionBps: 15,
+        },
+        {},
+      );
+
+      expect(route).toMatchSnapshot();
+      expect(mockedGet.mock.lastCall).toMatchSnapshot();
+    });
+
+    it('passes the signal to fetch', async () => {
+      await getQuoteV2('https://swapperoo.org', mockRoute, {
         signal: new AbortController().signal,
       });
 

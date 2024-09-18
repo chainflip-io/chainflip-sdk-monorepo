@@ -70,3 +70,78 @@ exports[`ApiService getQuote gets a quote with a broker commission 2`] = `
   },
 ]
 `;
+
+exports[`ApiService getQuoteV2 gets a quote 1`] = `
+{
+  "amount": "10000",
+  "destAsset": "ETH",
+  "destChain": "Ethereum",
+  "quotes": [
+    {
+      "egressAmount": "2",
+      "id": "string",
+      "intermediateAmount": "1",
+    },
+  ],
+  "srcAsset": "BTC",
+  "srcChain": "Bitcoin",
+}
+`;
+
+exports[`ApiService getQuoteV2 gets a quote 2`] = `
+[
+  "/v2/quote",
+  {
+    "baseURL": "https://swapperoo.org",
+    "headers": {
+      "Cf-Sdk-Version": "1.0-test",
+    },
+    "params": {
+      "amount": "10000",
+      "destAsset": "ETH",
+      "destChain": "Ethereum",
+      "srcAsset": "BTC",
+      "srcChain": "Bitcoin",
+    },
+    "signal": undefined,
+  },
+]
+`;
+
+exports[`ApiService getQuoteV2 gets a quote with a broker commission 1`] = `
+{
+  "amount": "10000",
+  "destAsset": "ETH",
+  "destChain": "Ethereum",
+  "quotes": [
+    {
+      "egressAmount": "2",
+      "id": "string",
+      "intermediateAmount": "1",
+    },
+  ],
+  "srcAsset": "BTC",
+  "srcChain": "Bitcoin",
+}
+`;
+
+exports[`ApiService getQuoteV2 gets a quote with a broker commission 2`] = `
+[
+  "/v2/quote",
+  {
+    "baseURL": "https://swapperoo.org",
+    "headers": {
+      "Cf-Sdk-Version": "1.0-test",
+    },
+    "params": {
+      "amount": "10000",
+      "brokerCommissionBps": "15",
+      "destAsset": "ETH",
+      "destChain": "Ethereum",
+      "srcAsset": "BTC",
+      "srcChain": "Bitcoin",
+    },
+    "signal": undefined,
+  },
+]
+`;

@@ -8,7 +8,7 @@ import {
 } from '@/shared/tests/fixtures';
 import { approveVault, executeSwap } from '@/shared/vault';
 import { SwapSDK } from '../sdk';
-import { getQuote, getStatus, getStatusV2 } from '../services/ApiService';
+import { getQuote, getQuoteV2, getStatus, getStatusV2 } from '../services/ApiService';
 import { QuoteRequest } from '../types';
 
 jest.mock('@/shared/vault', () => ({
@@ -18,6 +18,7 @@ jest.mock('@/shared/vault', () => ({
 
 jest.mock('../services/ApiService', () => ({
   getQuote: jest.fn(),
+  getQuoteV2: jest.fn(),
   getStatus: jest.fn(),
   getStatusV2: jest.fn(),
 }));
@@ -171,6 +172,58 @@ describe(SwapSDK, () => {
 
       const result = await sdk.getQuote(params);
       expect(getQuote).toHaveBeenCalledWith(
+        'https://chainflip-swap.staging/',
+        {
+          srcChain: 'Ethereum',
+          srcAsset: 'ETH',
+          destChain: 'Ethereum',
+          destAsset: 'USDC',
+          amount: '1',
+          brokerCommissionBps: 130,
+        },
+        {},
+      );
+      expect(result).toEqual({ quote: 1234 });
+    });
+  });
+
+  describe(SwapSDK.prototype.getQuoteV2, () => {
+    it('calls api', async () => {
+      const params: QuoteRequest = {
+        srcChain: 'Ethereum',
+        srcAsset: 'ETH',
+        destChain: 'Ethereum',
+        destAsset: 'USDC',
+        amount: '1',
+      };
+      jest.mocked(getQuoteV2).mockResolvedValueOnce({ quote: 1234 } as any);
+
+      const result = await sdk.getQuoteV2(params);
+      expect(getQuoteV2).toHaveBeenCalledWith(
+        'https://chainflip-swap.staging/',
+        { ...params, brokerCommissionBps: 0 },
+        {},
+      );
+      expect(result).toEqual({ quote: 1234 });
+    });
+
+    it('calls api with broker commission ', async () => {
+      const params: QuoteRequest = {
+        srcChain: 'Ethereum',
+        srcAsset: 'ETH',
+        destChain: 'Ethereum',
+        destAsset: 'USDC',
+        amount: '1',
+        brokerCommissionBps: 100,
+        affiliateBrokers: [
+          { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+          { account: 'cFLdopvNB7LaiBbJoNdNC26e9Gc1FNJKFtvNZjAmXAAVnzCk4', commissionBps: 20 },
+        ],
+      };
+      jest.mocked(getQuoteV2).mockResolvedValueOnce({ quote: 1234 } as any);
+
+      const result = await sdk.getQuoteV2(params);
+      expect(getQuoteV2).toHaveBeenCalledWith(
         'https://chainflip-swap.staging/',
         {
           srcChain: 'Ethereum',

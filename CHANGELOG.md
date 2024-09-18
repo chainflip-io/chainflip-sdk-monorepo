@@ -7,6 +7,9 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## 1.6.9
+- `getQuote` is now deprecated. `getQuoteV2` should be used instead.
+
 ## 1.5.0
 
 ### Added

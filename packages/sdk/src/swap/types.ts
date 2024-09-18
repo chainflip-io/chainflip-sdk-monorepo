@@ -51,6 +51,11 @@ export interface QuoteResponse
   quote: QuoteQueryResponse;
 }
 
+export interface QuoteResponseV2
+  extends Omit<QuoteRequest, 'brokerCommissionBps' | 'affiliateBrokers'> {
+  quotes: QuoteQueryResponse[];
+}
+
 export interface DepositAddressRequest extends QuoteRequest {
   destAddress: string;
   ccmParams?: CcmParams;

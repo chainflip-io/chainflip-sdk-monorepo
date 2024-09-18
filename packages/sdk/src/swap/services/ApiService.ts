@@ -1,7 +1,13 @@
 import axios from 'axios';
 import type { QuoteQueryParams, QuoteQueryResponse } from '@/shared/schemas';
 import { CF_SDK_VERSION_HEADERS } from '../consts';
-import { QuoteRequest, QuoteResponse, SwapStatusRequest, SwapStatusResponse } from '../types';
+import {
+  QuoteRequest,
+  QuoteResponse,
+  QuoteResponseV2,
+  SwapStatusRequest,
+  SwapStatusResponse,
+} from '../types';
 import { SwapStatusResponseV2 } from '../v2/types';
 
 export type RequestOptions = {
@@ -34,6 +40,32 @@ export const getQuote: BackendQuery<
   });
 
   return { ...returnedRequestData, quote: data };
+};
+
+export const getQuoteV2: BackendQuery<
+  QuoteRequest & { brokerCommissionBps?: number },
+  QuoteResponseV2
+> = async (baseUrl, quoteRequest, { signal }) => {
+  const { brokerCommissionBps, ...returnedRequestData } = quoteRequest;
+  const params: QuoteQueryParams = {
+    amount: returnedRequestData.amount,
+    srcChain: returnedRequestData.srcChain,
+    srcAsset: returnedRequestData.srcAsset,
+    destChain: returnedRequestData.destChain,
+    destAsset: returnedRequestData.destAsset,
+    ...(brokerCommissionBps && {
+      brokerCommissionBps: String(brokerCommissionBps),
+    }),
+  };
+
+  const { data } = await axios.get<QuoteQueryResponse[]>('/v2/quote', {
+    baseURL: baseUrl,
+    params,
+    signal,
+    headers: CF_SDK_VERSION_HEADERS,
+  });
+
+  return { ...returnedRequestData, quotes: data };
 };
 
 export const getStatus: BackendQuery<SwapStatusRequest, SwapStatusResponse> = async (
