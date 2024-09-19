@@ -51,7 +51,7 @@ describe('new swap events flow', () => {
   });
 
   it('handles all the events', async () => {
-    const startingHeight = Number(batchEvents.keys().next().value.split('-')[0]) - 1;
+    const startingHeight = Number(batchEvents.keys().next().value!.split('-')[0]) - 1;
     await prisma.state.upsert({
       where: { id: 1 },
       create: { id: 1, height: startingHeight },

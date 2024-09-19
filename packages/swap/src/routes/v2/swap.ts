@@ -21,7 +21,6 @@ import {
   swapRequestId,
   txHashRegex,
   estimateSwapDuration,
-  isEgressableSwap,
 } from '../../utils/swap';
 import { asyncHandler } from '../common';
 
@@ -59,7 +58,7 @@ router.get(
           },
         },
         include: {
-          swapRequests: { include: swapRequestInclude },
+          swapRequests: { include: swapRequestInclude, orderBy: { nativeId: 'desc' } },
           failedSwaps: { include: { swapDepositChannel: { include: depositChannelInclude } } },
           failedBoosts: true,
           affiliates: {
@@ -149,32 +148,36 @@ router.get(
       failedSwap?.depositTransactionRef ??
       undefined;
 
-    const sortedSwaps = swapRequest?.swaps.filter(isEgressableSwap).sort((a, b) => {
-      if (a.swapExecutedAt && b.swapExecutedAt) {
-        return a.swapExecutedAt.valueOf() - b.swapExecutedAt.valueOf() ? 1 : -1;
-      }
-      return a.swapExecutedAt && !b.swapExecutedAt ? 1 : 0;
-    });
+    let originalInputAmount;
 
-    const rolledSwaps = sortedSwaps?.reduce(
+    if (swapRequest) {
+      originalInputAmount = swapRequest.fees.reduce(
+        (acc, fee) => (fee.asset === swapRequest.srcAsset ? acc.minus(fee.amount) : acc),
+        swapRequest.depositAmount,
+      );
+    }
+
+    const swaps = swapRequest?.swaps;
+
+    const rolledSwaps = swapRequest?.swaps.reduce(
       (acc, curr) => {
         if (curr.swapExecutedAt) {
-          acc.totalOutputAmountSwapped = acc.totalOutputAmountSwapped.plus(
-            curr.swapOutputAmount ?? 0,
-          );
-          acc.totalInputAmountSwapped = acc.totalInputAmountSwapped.plus(curr.swapInputAmount);
+          acc.swappedOutputAmount = acc.swappedOutputAmount.plus(curr.swapOutputAmount ?? 0);
+          acc.swappedInputAmount = acc.swappedInputAmount.plus(curr.swapInputAmount);
           acc.lastExecutedChunk = curr;
-          acc.totalChunksExecuted += 1;
+          acc.executedChunks += 1;
           acc.fees = acc.fees.concat(...curr.fees);
+        } else {
+          acc.currentChunk = curr;
         }
         return acc;
       },
       {
-        totalOutputAmountSwapped: new Prisma.Decimal(0),
-        totalInputAmountSwapped: new Prisma.Decimal(0),
-        totalChunksExecuted: 0,
-        currentChunk: sortedSwaps[0],
-        lastExecutedChunk: null as null | (typeof sortedSwaps)[number] | undefined,
+        swappedOutputAmount: new Prisma.Decimal(0),
+        swappedInputAmount: new Prisma.Decimal(0),
+        executedChunks: 0,
+        currentChunk: null as null | NonNullable<typeof swaps>[number],
+        lastExecutedChunk: null as null | NonNullable<typeof swaps>[number],
         isDca: Boolean(
           swapDepositChannel?.chunkIntervalBlocks && swapDepositChannel.chunkIntervalBlocks > 1,
         ),
@@ -276,21 +279,29 @@ router.get(
       ...getDepositInfo(swapRequest, failedSwap, pendingDeposit, depositTransactionRef),
       ...(rolledSwaps && {
         swap: {
-          isDca: false,
+          originalInputAmount,
+          remainingInputAmount: originalInputAmount
+            ?.minus(rolledSwaps.swappedInputAmount)
+            .toFixed(),
+          swappedInputAmount: rolledSwaps.swappedInputAmount.toFixed(),
+          swappedOutputAmount: rolledSwaps.swappedOutputAmount.toFixed(),
           ...(rolledSwaps?.isDca
             ? {
-                ...rolledSwaps,
-                totalInputAmountSwapped: rolledSwaps?.totalInputAmountSwapped.toFixed(),
-                totalOutputAmountSwapped: rolledSwaps?.totalOutputAmountSwapped.toFixed(),
-                lastExecutedChunk:
-                  rolledSwaps?.lastExecutedChunk && getSwapFields(rolledSwaps.lastExecutedChunk),
-                allChunksExecuted:
-                  sortedSwaps?.length &&
-                  rolledSwaps?.totalChunksExecuted === (swapDepositChannel?.numberOfChunks ?? 1),
-                currentChunk: rolledSwaps && getSwapFields(rolledSwaps.currentChunk),
+                dca: {
+                  lastExecutedChunk:
+                    rolledSwaps.lastExecutedChunk && getSwapFields(rolledSwaps.lastExecutedChunk),
+                  currentChunk: rolledSwaps.currentChunk && getSwapFields(rolledSwaps.currentChunk),
+                  executedChunks: rolledSwaps.executedChunks,
+                  remainingChunks:
+                    (swapDepositChannel?.numberOfChunks ?? 1) - rolledSwaps.executedChunks,
+                },
               }
             : {
-                ...(rolledSwaps?.currentChunk && getSwapFields(rolledSwaps.currentChunk)),
+                ...((rolledSwaps.currentChunk || rolledSwaps.lastExecutedChunk) && {
+                  regular: getSwapFields(
+                    (rolledSwaps.currentChunk || rolledSwaps.lastExecutedChunk)!,
+                  ),
+                }),
               }),
           fees: aggregateFees,
         },
