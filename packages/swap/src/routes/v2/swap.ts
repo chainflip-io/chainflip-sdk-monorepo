@@ -148,14 +148,7 @@ router.get(
       failedSwap?.depositTransactionRef ??
       undefined;
 
-    let originalInputAmount;
-
-    if (swapRequest) {
-      originalInputAmount = swapRequest.fees.reduce(
-        (acc, fee) => (fee.asset === swapRequest.srcAsset ? acc.minus(fee.amount) : acc),
-        swapRequest.depositAmount,
-      );
-    }
+    const originalInputAmount = swapRequest?.swapInputAmount;
 
     const swaps = swapRequest?.swaps;
 

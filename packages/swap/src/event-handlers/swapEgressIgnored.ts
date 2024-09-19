@@ -1,15 +1,9 @@
-import { swappingSwapEgressIgnored as schema150 } from '@chainflip/processor/150/swapping/swapEgressIgnored';
-import { swappingSwapEgressIgnored as schema160 } from '@chainflip/processor/160/swapping/swapEgressIgnored';
+import { swappingSwapEgressIgnored } from '@chainflip/processor/160/swapping/swapEgressIgnored';
 import { z } from 'zod';
 import { getStateChainError } from './common';
 import { EventHandlerArgs } from './index';
 
-const transformOldShape = ({ swapId, ...rest }: z.output<typeof schema150>) => ({
-  swapRequestId: swapId,
-  ...rest,
-});
-
-const swapEgressIgnoredArgs = z.union([schema160, schema150.transform(transformOldShape)]);
+const swapEgressIgnoredArgs = swappingSwapEgressIgnored;
 
 export type SwapEgressIgnoredArgs = z.input<typeof swapEgressIgnoredArgs>;
 

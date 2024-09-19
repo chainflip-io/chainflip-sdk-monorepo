@@ -131,6 +131,7 @@ model SwapRequest {
   srcAsset                     InternalAsset
   destAsset                    InternalAsset
   depositAmount                Decimal             @db.Decimal(30, 0)
+  swapInputAmount              Decimal             @db.Decimal(30, 0)
   requestType                  SwapRequestType
   ccmDepositReceivedBlockIndex String?
   ccmGasBudget                 Decimal?            @db.Decimal(30, 0)

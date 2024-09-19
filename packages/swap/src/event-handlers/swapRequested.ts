@@ -121,6 +121,7 @@ export default async function swapRequested({
       srcAddress: ccmMetadata?.sourceAddress?.address,
       destAddress,
       swapRequestedAt: new Date(block.timestamp),
+      swapInputAmount: inputAmount.toString(),
       ...additionalInfo,
     },
   });

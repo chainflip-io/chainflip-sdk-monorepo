@@ -15,12 +15,13 @@ describe(refundEgressIgnored, () => {
   });
 
   it('handles refundEgressIgnored event', async () => {
-    const { swapId } = event.args;
+    const { swapRequestId } = event.args;
 
     await prisma.swapRequest.create({
       data: {
-        nativeId: BigInt(swapId),
+        nativeId: BigInt(swapRequestId),
         depositAmount: '10000000000',
+        swapInputAmount: '10000000000',
         depositReceivedAt: new Date(block.timestamp - 12000),
         depositReceivedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
         srcAsset: 'Eth',
@@ -36,7 +37,7 @@ describe(refundEgressIgnored, () => {
 
     expect(
       await prisma.swapRequest.findUniqueOrThrow({
-        where: { nativeId: BigInt(swapId) },
+        where: { nativeId: BigInt(swapRequestId) },
         include: { ignoredEgresses: true },
       }),
     ).toMatchSnapshot({

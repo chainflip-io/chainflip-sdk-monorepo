@@ -1,13 +1,6 @@
-import { swappingRefundEgressIgnored as schema150 } from '@chainflip/processor/150/swapping/refundEgressIgnored';
-import { swappingRefundEgressIgnored as schema160 } from '@chainflip/processor/160/swapping/refundEgressIgnored';
-import z from 'zod';
+import { swappingRefundEgressIgnored } from '@chainflip/processor/160/swapping/refundEgressIgnored';
 import { getStateChainError } from './common';
 import type { EventHandlerArgs } from './index';
-
-const swappingRefundEgressIgnored = z.union([
-  schema160,
-  schema150.transform(({ swapId, ...rest }) => ({ swapRequestId: swapId, ...rest })),
-]);
 
 const refundEgressIgnored = async ({ prisma, event, block }: EventHandlerArgs) => {
   const { swapRequestId, amount, reason } = swappingRefundEgressIgnored.parse(event.args);

@@ -3,6 +3,7 @@ import { Server } from 'http';
 import request from 'supertest';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
+import { SwapEgressIgnoredArgs } from '@/swap/event-handlers/swapEgressIgnored';
 import prisma from '../../../client';
 import metadata from '../../../event-handlers/__tests__/metadata.json';
 import {
@@ -669,76 +670,29 @@ describe('server', () => {
     });
 
     it(`retrieves a swap in ${StateV2.Failed} status (egress ignored)`, async () => {
-      const txHash = '0x245466cbf3907aee42a64c5589ccd804ec3dcd3c54c28eb2b418c804cf009915';
+      await processEvents([
+        ...swapEvents.slice(0, 5),
+        {
+          id: '0000000094-000595-75b12',
+          indexInBlock: 595,
+          name: 'Swapping.SwapEgressIgnored',
+          args: {
+            asset: { __kind: 'Flip' },
+            amount: '0',
+            reason: { value: { error: '0x06000000', index: 32 }, __kind: 'Module' },
+            swapRequestId: '368',
+          } as SwapEgressIgnoredArgs,
+        },
+      ]);
 
-      await processEvents(
-        [
-          {
-            id: '0002382141-000681-74d0a',
-            indexInBlock: 681,
-            name: 'Swapping.SwapScheduled',
-            args: {
-              origin: {
-                __kind: 'Vault',
-                txHash,
-              },
-              swapId: '2275',
-              swapType: {
-                value: { value: '0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff', __kind: 'Eth' },
-                __kind: 'Swap',
-              },
-              executeAt: 2382143,
-              sourceAsset: { __kind: 'Eth' },
-              depositAmount: '1',
-              destinationAsset: { __kind: 'Flip' },
-              destinationAddress: {
-                value: '0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff',
-                __kind: 'Eth',
-              },
-            },
-          },
-          {
-            id: '0002382143-000816-1f1cf',
-            indexInBlock: 816,
-            name: 'Swapping.SwapExecuted',
-            args: {
-              swapId: '2275',
-              swapType: {
-                value: { value: '0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff', __kind: 'Eth' },
-                __kind: 'Swap',
-              },
-              swapInput: '1',
-              swapOutput: '0',
-              sourceAsset: { __kind: 'Eth' },
-              egressAmount: '0',
-              depositAmount: '1',
-              destinationAsset: { __kind: 'Flip' },
-              intermediateAmount: '0',
-            },
-          },
-          {
-            id: '0002382143-000817-1f1cf',
-            indexInBlock: 817,
-            name: 'Swapping.SwapEgressIgnored',
-            args: {
-              asset: { __kind: 'Flip' },
-              amount: '0',
-              reason: { value: { error: '0x06000000', index: 32 }, __kind: 'Module' },
-              swapId: '2275',
-            },
-          },
-        ],
-        '150',
-      );
-
-      const { body, status } = await request(server).get(`/v2/swaps/${txHash}`);
+      const { body, status } = await request(server).get('/v2/swaps/368');
 
       expect(status).toBe(200);
 
       expect(body.state).toBe('FAILED');
       expect(body.swapEgress.failure).toMatchObject({
-        failedAt: 14292858000,
-        failedBlockIndex: '2382143-817',
+        failedAt: 564000,
+        failedBlockIndex: '94-595',
         mode: 'SWAP_OUTPUT_TOO_SMALL',
         reason: {
           message: 'The amount is below the minimum egress amount.',
@@ -1056,10 +1010,11 @@ describe('server', () => {
       const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
       const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
 
-      requestedEvent.args.inputAmount = (BigInt(scheduledEvent.args.inputAmount) * 2n).toString();
+      const doubleInput = BigInt(scheduledEvent.args.inputAmount) * 2n;
+      requestedEvent.args.inputAmount = doubleInput.toString();
       finalizedEvent.args.amount = (
-        BigInt(scheduledEvent.args.inputAmount) * 2n +
-        BigInt(finalizedEvent.args.ingressFee)
+        doubleInput +
+        BigInt(finalizedEvent.args.ingressFee) * 2n
       ).toString();
 
       await processEvents([
@@ -1096,7 +1051,7 @@ describe('server', () => {
           dcaParams: { numberOfChunks: 10, chunkIntervalBlocks: 3 },
         },
         deposit: {
-          amount: '9999949999999650000',
+          amount: '10000000000000000000',
           witnessedAt: 552000,
           witnessedBlockIndex: '92-400',
         },
@@ -1166,10 +1121,11 @@ describe('server', () => {
       const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
       const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
 
-      requestedEvent.args.inputAmount = (BigInt(scheduledEvent.args.inputAmount) * 2n).toString();
+      const doubleInput = BigInt(scheduledEvent.args.inputAmount) * 2n;
+      requestedEvent.args.inputAmount = doubleInput.toString();
       finalizedEvent.args.amount = (
-        BigInt(scheduledEvent.args.inputAmount) * 2n +
-        BigInt(finalizedEvent.args.ingressFee)
+        doubleInput +
+        BigInt(finalizedEvent.args.ingressFee) * 2n
       ).toString();
 
       await processEvents([
@@ -1207,7 +1163,7 @@ describe('server', () => {
           dcaParams: { numberOfChunks: 10, chunkIntervalBlocks: 3 },
         },
         deposit: {
-          amount: '9999949999999650000',
+          amount: '10000000000000000000',
           witnessedAt: 552000,
           witnessedBlockIndex: '92-400',
         },
@@ -1288,10 +1244,11 @@ describe('server', () => {
       const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
       const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
 
-      requestedEvent.args.inputAmount = (BigInt(scheduledEvent.args.inputAmount) * 2n).toString();
+      const doubleInput = BigInt(scheduledEvent.args.inputAmount) * 2n;
+      requestedEvent.args.inputAmount = doubleInput.toString();
       finalizedEvent.args.amount = (
-        BigInt(scheduledEvent.args.inputAmount) * 2n +
-        BigInt(finalizedEvent.args.ingressFee)
+        doubleInput +
+        BigInt(finalizedEvent.args.ingressFee) * 2n
       ).toString();
 
       await processEvents([
@@ -1329,7 +1286,7 @@ describe('server', () => {
           dcaParams: { numberOfChunks: 10, chunkIntervalBlocks: 3 },
         },
         deposit: {
-          amount: '9999949999999650000',
+          amount: '10000000000000000000',
           witnessedAt: 552000,
           witnessedBlockIndex: '92-400',
         },
@@ -1450,11 +1407,26 @@ describe('server', () => {
         chunkInterval: 3,
       };
 
+      const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
+      const finalizedEvent = clone(swapEventMap['EthereumIngressEgress.DepositFinalised']);
+      const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
+      const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
+
+      const doubleInput = BigInt(scheduledEvent.args.inputAmount) * 2n;
+      requestedEvent.args.inputAmount = doubleInput.toString();
+      finalizedEvent.args.amount = (
+        doubleInput +
+        BigInt(finalizedEvent.args.ingressFee) * 2n
+      ).toString();
+
       await processEvents([
         depositChannelEvent,
-        ...swapEvents.slice(1, 5),
-        incrementId(clone(swapEventMap['Swapping.SwapScheduled'])),
-        incrementId(clone(swapEventMap['Swapping.SwapExecuted'])),
+        requestedEvent,
+        swapEvents[2],
+        finalizedEvent,
+        ...swapEvents.slice(4, 5),
+        incrementId(scheduledEvent),
+        incrementId(executedEvent),
         swapEventMap['Swapping.SwapEgressScheduled'],
         swapEventMap['Swapping.RefundEgressScheduled'],
         swapEventMap['PolkadotIngressEgress.BatchBroadcastRequested'],
@@ -1474,12 +1446,24 @@ describe('server', () => {
         numberOfChunks: 10,
         chunkInterval: 3,
       };
+      const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
+      const finalizedEvent = clone(swapEventMap['EthereumIngressEgress.DepositFinalised']);
       const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
       const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
 
+      const doubleInput = BigInt(scheduledEvent.args.inputAmount) * 2n;
+      requestedEvent.args.inputAmount = doubleInput.toString();
+      finalizedEvent.args.amount = (
+        doubleInput +
+        BigInt(finalizedEvent.args.ingressFee) * 2n
+      ).toString();
+
       await processEvents([
         depositChannelEvent,
-        ...swapEvents.slice(1, 5),
+        requestedEvent,
+        swapEvents[2],
+        finalizedEvent,
+        ...swapEvents.slice(4, 5),
         incrementId(scheduledEvent),
         incrementId(executedEvent),
         swapEventMap['Swapping.SwapEgressScheduled'],

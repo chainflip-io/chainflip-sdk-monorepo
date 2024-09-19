@@ -1,12 +1,12 @@
 import prisma from '../../../client';
-import { Action150, depositBoosted, DepositBoostedArgs } from '../depositBoosted';
+import { depositBoosted, DepositBoostedArgs } from '../depositBoosted';
 
 export const depositBoostedBtcMock = async ({
-  action = { __kind: 'Swap', swapId: '1' },
+  action = { __kind: 'Swap', swapRequestId: '1' },
   amounts,
   channelId,
 }: {
-  action?: Action150;
+  action?: DepositBoostedArgs['action'];
   amounts?: [[number, string]];
   channelId?: string;
 } = {}) => {
@@ -34,12 +34,13 @@ export const depositBoostedBtcMock = async ({
   if (action.__kind === 'Swap') {
     await prisma.swapRequest.create({
       data: {
-        nativeId: BigInt(action.swapId),
+        nativeId: BigInt(action.swapRequestId),
         srcAsset: 'Btc',
         destAsset: 'Flip',
         originType: 'VAULT',
         requestType: 'LEGACY_SWAP',
         depositAmount: '1000000',
+        swapInputAmount: '1000000',
         swapRequestedAt: new Date('2023-01-01T00:00:00.000Z'),
       },
     });

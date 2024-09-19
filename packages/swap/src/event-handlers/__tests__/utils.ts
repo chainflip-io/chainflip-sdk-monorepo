@@ -41,7 +41,7 @@ export const createDepositChannel = (
 
 export const networkDepositReceivedBtcMock = {
   block: {
-    specId: 'test@150',
+    specId: 'test@160',
     height: 120,
     timestamp: 1670337105000,
   },
@@ -87,7 +87,7 @@ export const networkDepositReceivedBtcMockV120 = (action?: z.input<typeof action
 
 export const swapDepositAddressReadyMocked = {
   block: {
-    specId: 'test@150',
+    specId: 'test@160',
     height: 120,
     timestamp: 1670337105000,
     hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
@@ -122,7 +122,7 @@ export const swapDepositAddressReadyMocked = {
 
 export const swapDepositAddressReadyCcmParamsMocked = {
   block: {
-    specId: 'test@150',
+    specId: 'test@160',
     height: 120,
     timestamp: 1670337105000,
     hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
@@ -159,7 +159,7 @@ export const swapDepositAddressReadyCcmParamsMocked = {
 
 export const swapEgressScheduledMock = {
   block: {
-    specId: 'test@150',
+    specId: 'test@160',
     height: 120,
     timestamp: 1670337105000,
     hash: '0x123',
@@ -210,7 +210,7 @@ export const swapEgressScheduledMock = {
 
 export const swapEgressIgnoredMock = {
   block: {
-    specId: 'test@150',
+    specId: 'test@160',
     height: 120,
     timestamp: 1670337105000,
     hash: '0x123',
@@ -228,7 +228,7 @@ export const swapEgressIgnoredMock = {
         },
         __kind: 'Module',
       },
-      swapId: '2',
+      swapRequestId: '2',
     },
     id: '0000012799-000000-c1ea7',
     indexInBlock: 0,
@@ -242,7 +242,7 @@ export const swapEgressIgnoredMock = {
 
 export const refundEgressIgnoredMock = {
   block: {
-    specId: 'test@150',
+    specId: 'test@160',
     height: 120,
     timestamp: 1670337105000,
     hash: '0x123',
@@ -260,7 +260,7 @@ export const refundEgressIgnoredMock = {
         },
         __kind: 'Module',
       },
-      swapId: '377',
+      swapRequestId: '377',
     },
     id: '0000012799-000000-c1ea7',
     indexInBlock: 0,
@@ -274,7 +274,7 @@ export const refundEgressIgnoredMock = {
 
 export const networkBatchBroadcastRequestedMock = {
   block: {
-    specId: 'test@150',
+    specId: 'test@160',
     height: 120,
     timestamp: 1670337105000,
   },
@@ -312,7 +312,7 @@ export const networkBroadcastSuccessMock = (
 ) =>
   ({
     block: {
-      specId: 'test@150',
+      specId: 'test@160',
       height: 120,
       timestamp: 1670337105000,
     },
@@ -332,7 +332,7 @@ export const networkBroadcastSuccessMock = (
 
 export const networkBroadcastAbortedMock = {
   block: {
-    specId: 'test@150',
+    specId: 'test@160',
     height: 120,
     timestamp: 1670337105000,
   },
@@ -345,7 +345,7 @@ export const networkBroadcastAbortedMock = {
 
 export const newPoolCreatedMock = {
   block: {
-    specId: 'test@150',
+    specId: 'test@160',
     height: 120,
     timestamp: 1670337105000,
   },
@@ -363,7 +363,7 @@ export const newPoolCreatedMock = {
 
 export const poolFeeSetMock = {
   block: {
-    specId: 'test@150',
+    specId: 'test@160',
     height: 150,
     timestamp: 1680337105000,
   },
@@ -381,7 +381,7 @@ export const poolFeeSetMock = {
 
 export const thresholdSignatureInvalidMock = {
   block: {
-    specId: 'test@150',
+    specId: 'test@160',
     height: 420,
     timestamp: 1680337105000,
   },
@@ -399,7 +399,7 @@ export const buildDepositIgnoredEvent = <T extends DepositIgnoredArgs>(args: T) 
   const { chain } = assetConstants[args.asset.__kind];
 
   return {
-    block: { specId: 'test@150', timestamp: 1670337093000, height: 100, hash: '0x123' },
+    block: { specId: 'test@160', timestamp: 1670337093000, height: 100, hash: '0x123' },
     event: { args, indexInBlock: 0, name: `${chain}IngressEgress.DepositIgnored` },
   };
 };
