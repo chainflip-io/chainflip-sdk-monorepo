@@ -10,6 +10,7 @@ import prisma, {
   IgnoredEgress,
   FailedSwap,
   SwapRequest,
+  SwapDepositChannel,
 } from '../../client';
 import {
   getPendingBroadcast,
@@ -186,6 +187,7 @@ export const getSwapState = async (
       }>
     | undefined
     | null,
+  depositChannel: SwapDepositChannel | null | undefined,
 ): Promise<{
   state: StateV2;
   swapEgressTrackerTxRef: string | null | undefined;
@@ -229,8 +231,8 @@ export const getSwapState = async (
   } else {
     state = StateV2.Waiting;
 
-    if (swapRequest?.srcAsset && swapRequest.destAddress) {
-      pendingDeposit = await getPendingDeposit(swapRequest.srcAsset, swapRequest.destAddress);
+    if (depositChannel) {
+      pendingDeposit = await getPendingDeposit(depositChannel.srcAsset, depositChannel.destAddress);
       if (pendingDeposit) state = StateV2.Receiving;
     }
   }
