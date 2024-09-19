@@ -140,6 +140,10 @@ describe(openSwapDepositChannel, () => {
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
         minPriceX128: '10000000000000',
       },
+      dcaParams: {
+        chunkIntervalBlocks: 2,
+        numberOfChunks: 3,
+      },
     });
 
     expect(result).toEqual({

@@ -159,6 +159,10 @@ exports[`openSwapDepositChannel creates channel with fill or kill params and sto
   [
     {
       "ccmParams": undefined,
+      "dcaParams": {
+        "chunkIntervalBlocks": 2,
+        "numberOfChunks": 3,
+      },
       "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
       "destAsset": "USDC",
       "destChain": "Ethereum",
@@ -185,7 +189,7 @@ exports[`openSwapDepositChannel creates channel with fill or kill params and sto
   "ccmGasBudget": null,
   "ccmMessage": null,
   "channelId": 909n,
-  "chunkIntervalBlocks": null,
+  "chunkIntervalBlocks": 2,
   "createdAt": Any<ClockDate>,
   "depositAddress": "address",
   "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
@@ -200,7 +204,7 @@ exports[`openSwapDepositChannel creates channel with fill or kill params and sto
   "isExpired": false,
   "issuedBlock": 123,
   "maxBoostFeeBps": 0,
-  "numberOfChunks": 1,
+  "numberOfChunks": 3,
   "openedThroughBackend": true,
   "openingFeePaid": "10",
   "srcAsset": "Flip",
