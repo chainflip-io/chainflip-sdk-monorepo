@@ -186,7 +186,6 @@ router.get(
     );
 
     const aggregateFees = rolledSwaps?.fees
-      .splice(0)
       .reduce((acc, curr) => {
         const { type, asset, amount } = curr;
         const index = acc.findIndex((fee) => fee.type === type && fee.asset === asset);
