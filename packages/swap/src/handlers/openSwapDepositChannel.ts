@@ -74,6 +74,7 @@ export default async function openSwapDepositChannel(
     srcChain,
     ccmParams,
     fillOrKillParams,
+    dcaParams,
   } = input;
 
   const chainInfo = await prisma.chainTracking.findFirst({
@@ -112,6 +113,8 @@ export default async function openSwapDepositChannel(
       fokMinPriceX128: fillOrKillParams?.minPriceX128,
       fokRetryDurationBlocks: fillOrKillParams?.retryDurationBlocks,
       fokRefundAddress: fillOrKillParams?.refundAddress,
+      chunkIntervalBlocks: dcaParams?.chunkIntervalBlocks,
+      numberOfChunks: dcaParams?.numberOfChunks,
       ...blockInfo,
     },
     update: {
