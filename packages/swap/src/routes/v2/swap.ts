@@ -114,7 +114,7 @@ router.get(
     const ignoredEgresses = swapRequest?.ignoredEgresses;
 
     const { state, swapEgressTrackerTxRef, refundEgressTrackerTxRef, pendingDeposit } =
-      await getSwapState(failedSwap, ignoredEgresses, swapRequest);
+      await getSwapState(failedSwap, ignoredEgresses, swapRequest, swapDepositChannel);
 
     const internalSrcAsset = readField(swapRequest, swapDepositChannel, failedSwap, 'srcAsset');
     const internalDestAsset = readField(swapRequest, swapDepositChannel, 'destAsset');
