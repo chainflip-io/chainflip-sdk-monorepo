@@ -98,31 +98,18 @@ interface EgressFields {
 interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   swapId: string;
   destAddress: string;
+  depositChannel: DepositChannelFields | undefined;
   ccmParams: CcmParams | undefined;
   boost: Boost | undefined;
   estimatedDurationSeconds: number | null | undefined;
   srcChainRequiredBlockConfirmations: number | null;
 }
 
-interface VaultSwapCommonFields extends Exclude<SwapStatusResponseCommonFields, 'boost'> {}
-
-interface ReceivingVaultSwap extends VaultSwapCommonFields {
-  deposit: DepositFields;
-}
-
-interface SwappingVaultSwap extends ReceivingVaultSwap {
-  swap: SwapFields | undefined;
-}
-
-interface SendingVaultSwap extends SwappingVaultSwap {
-  swapEgress: EgressFields | undefined;
-}
-
-interface DepositChannel extends SwapStatusResponseCommonFields {
+interface Waiting extends SwapStatusResponseCommonFields {
   depositChannel: DepositChannelFields;
 }
 
-interface Receiving extends DepositChannel {
+interface Receiving extends SwapStatusResponseCommonFields {
   deposit: DepositFields;
 }
 
@@ -136,10 +123,10 @@ interface Sending extends Receiving {
   refundEgress: EgressFields | undefined;
 }
 
-type SwapState =
+export type SwapStatusResponseV2 =
   | ({
       state: 'WAITING';
-    } & DepositChannel)
+    } & Waiting)
   | ({
       state: 'RECEIVING';
     } & Receiving)
@@ -158,7 +145,3 @@ type SwapState =
   | ({
       state: 'FAILED';
     } & Sending);
-
-export type DepositAddressStatusResponseV2 = SwapState;
-export type VaultSwapStatusResponseV2 = SwapState & SendingVaultSwap;
-export type SwapStatusResponseV2 = DepositAddressStatusResponseV2 | VaultSwapStatusResponseV2;
