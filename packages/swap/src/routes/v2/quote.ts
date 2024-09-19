@@ -226,6 +226,7 @@ export const generateQuotes = async ({
     limitOrders,
     brokerCommissionBps,
     pools,
+    quoteType: 'REGULAR' as const,
   };
 
   const [quoteResult, boostedQuoteResult, dcaQuoteResult, dcaBoostedQuoteResult] =
@@ -236,6 +237,7 @@ export const generateQuotes = async ({
         getPoolQuote({
           ...quoteArgs,
           swapInputAmount: dcaQuoteParams.chunkSize,
+          quoteType: 'DCA',
         }),
       dcaQuoteParams &&
         estimatedBoostFeeBps &&
@@ -243,6 +245,7 @@ export const generateQuotes = async ({
           ...quoteArgs,
           boostFeeBps: estimatedBoostFeeBps,
           swapInputAmount: dcaQuoteParams.chunkSize,
+          quoteType: 'DCA',
         }),
     ]);
 

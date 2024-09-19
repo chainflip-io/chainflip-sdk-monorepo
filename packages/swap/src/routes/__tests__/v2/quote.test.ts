@@ -548,6 +548,7 @@ describe('server', () => {
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
+          type: 'REGULAR',
         },
         {
           egressAmount: (400000000).toString(),
@@ -588,6 +589,7 @@ describe('server', () => {
             chunkIntervalBlocks: 2,
             numberOfChunks: 4,
           },
+          type: 'DCA',
         },
       ]);
       expect(sendSpy).toHaveBeenCalledTimes(2);

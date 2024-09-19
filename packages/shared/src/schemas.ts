@@ -121,6 +121,8 @@ export type PoolFee = Fee<'LIQUIDITY'>;
 
 export type PaidFee = SwapFee | PoolFee;
 
+export type QuoteType = 'REGULAR' | 'DCA';
+
 export type PoolInfo = {
   baseAsset: AssetAndChain;
   quoteAsset: AssetAndChain;
@@ -144,4 +146,5 @@ export type QuoteQueryResponse = QuoteDetails & {
     numberOfChunks: number;
     chunkIntervalBlocks: number;
   };
+  type: QuoteType;
 };
