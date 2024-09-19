@@ -58,6 +58,7 @@ exports[`server GET /quote doesn't include boost information when disabled 1`] =
       },
     },
   ],
+  "type": "REGULAR",
 }
 `;
 
@@ -119,6 +120,7 @@ exports[`server GET /quote gets the quote for deprecated params without the chai
       },
     },
   ],
+  "type": "REGULAR",
 }
 `;
 
@@ -188,6 +190,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
         },
       },
     ],
+    "type": "REGULAR",
   },
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 1830,
@@ -245,6 +248,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
       },
     },
   ],
+  "type": "REGULAR",
 }
 `;
 
@@ -290,6 +294,7 @@ exports[`server GET /quote gets the quote with a realistic price 1`] = `
       },
     },
   ],
+  "type": "REGULAR",
 }
 `;
 
@@ -352,6 +357,7 @@ exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
       },
     },
   ],
+  "type": "REGULAR",
 }
 `;
 
