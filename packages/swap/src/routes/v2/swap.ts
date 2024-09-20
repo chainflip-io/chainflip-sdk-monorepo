@@ -142,12 +142,6 @@ router.get(
       destAsset: swapDepositChannel?.destAsset || swapRequest?.destAsset,
     };
 
-    const depositTransactionRef =
-      swapRequest?.depositTransactionRef ??
-      pendingDeposit?.transactionHash ??
-      failedSwap?.depositTransactionRef ??
-      undefined;
-
     const originalInputAmount = swapRequest?.swapInputAmount;
 
     const swaps = swapRequest?.swaps;
@@ -269,7 +263,7 @@ router.get(
               : undefined,
           },
         }),
-      ...getDepositInfo(swapRequest, failedSwap, pendingDeposit, depositTransactionRef),
+      ...getDepositInfo(swapRequest, failedSwap, pendingDeposit),
       ...(rolledSwaps && {
         swap: {
           originalInputAmount,
