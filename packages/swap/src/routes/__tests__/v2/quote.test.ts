@@ -88,26 +88,14 @@ describe(getDcaQuoteParams, () => {
     jest.mocked(getUsdValue).mockResolvedValue('300');
 
     const result = await getDcaQuoteParams('Btc', 900n);
-    expect(result).toMatchInlineSnapshot(`
-    {
-      "addedDurationSeconds": 0,
-      "chunkSize": 900n,
-      "numberOfChunks": 1,
-    }
-    `);
+    expect(result).toEqual(null);
   });
 
   it('should correctly handle 30 usd worth of btc', async () => {
     jest.mocked(getUsdValue).mockResolvedValue('30');
 
     const result = await getDcaQuoteParams('Btc', 90n);
-    expect(result).toMatchInlineSnapshot(`
-    {
-      "addedDurationSeconds": 0,
-      "chunkSize": 90n,
-      "numberOfChunks": 1,
-    }
-    `);
+    expect(result).toEqual(null);
   });
 });
 
@@ -593,6 +581,126 @@ describe('server', () => {
         },
       ]);
       expect(sendSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('gets only REGULAR quote because amount is less than 3000', async () => {
+      env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
+      env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
+      env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
+      jest.mocked(getUsdValue).mockResolvedValue('2000');
+
+      mockRpcResponse((url, data: any) => {
+        if (data.method === 'cf_environment') {
+          return Promise.resolve({
+            data: environment({
+              maxSwapAmount: null,
+              ingressFee: hexEncodeNumber(0x61a8),
+              egressFee: hexEncodeNumber(0x0),
+            }),
+          });
+        }
+
+        if (data.method === 'cf_boost_pools_depth') {
+          return Promise.resolve({
+            data: boostPoolsDepth(),
+          });
+        }
+
+        if (data.method === 'cf_accounts') {
+          return Promise.resolve({
+            data: {
+              id: 1,
+              jsonrpc: '2.0',
+              result: [
+                ['cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH', 'Chainflip Testnet Broker 2'],
+              ],
+            },
+          });
+        }
+
+        if (data.method === 'cf_account_info') {
+          return Promise.resolve({
+            data: cfAccountInfo(),
+          });
+        }
+
+        if (data.method === 'cf_pool_depth') {
+          return Promise.resolve({
+            data: cfPoolDepth(),
+          });
+        }
+
+        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+      });
+
+      const sendSpy = jest
+        .spyOn(WsClient.prototype, 'sendRequest')
+        .mockResolvedValueOnce({
+          ingress_fee: buildFee('Eth', 25000).bigint,
+          egress_fee: buildFee('Usdc', 0).bigint,
+          network_fee: buildFee('Usdc', 100100).bigint,
+          intermediary: null,
+          output: BigInt(100e6),
+        })
+        .mockResolvedValueOnce({
+          ingress_fee: buildFee('Eth', 25000).bigint,
+          egress_fee: buildFee('Usdc', 0).bigint,
+          network_fee: buildFee('Usdc', 100100).bigint,
+          intermediary: null,
+          output: BigInt(100e6),
+        });
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'ETH',
+        destChain: 'Ethereum',
+        destAsset: 'USDC',
+        amount: (1e18).toString(),
+      });
+
+      const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
+
+      expect(status).toBe(200);
+      expect(body).toEqual([
+        {
+          egressAmount: (100e6).toString(),
+          estimatedDurationSeconds: 54,
+          estimatedPrice: '100',
+          includedFees: [
+            {
+              amount: '25000',
+              asset: 'ETH',
+              chain: 'Ethereum',
+              type: 'INGRESS',
+            },
+            {
+              amount: '100100',
+              asset: 'USDC',
+              chain: 'Ethereum',
+              type: 'NETWORK',
+            },
+            {
+              amount: '0',
+              asset: 'USDC',
+              chain: 'Ethereum',
+              type: 'EGRESS',
+            },
+          ],
+          poolInfo: [
+            {
+              baseAsset: { asset: 'ETH', chain: 'Ethereum' },
+              fee: {
+                amount: '2000000000000000',
+                asset: 'ETH',
+                chain: 'Ethereum',
+              },
+              quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
+            },
+          ],
+          type: 'REGULAR',
+        },
+      ]);
+      expect(sendSpy).toHaveBeenCalledTimes(1);
     });
   });
 });
