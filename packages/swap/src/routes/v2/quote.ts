@@ -50,12 +50,8 @@ export const getDcaQuoteParams = async (asset: InternalAsset, amount: bigint) =>
     );
     return null;
   }
-  if (Number(usdValue) < usdChunkSize) {
-    return {
-      chunkSize: amount,
-      numberOfChunks: 1,
-      addedDurationSeconds: 0,
-    };
+  if (Number(usdValue) <= usdChunkSize) {
+    return null;
   }
   const numberOfChunks = Math.ceil(Number(usdValue) / usdChunkSize);
 
