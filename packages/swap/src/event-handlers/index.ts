@@ -170,22 +170,17 @@ const handlers = [
   },
   {
     spec: 150,
-    handlers: Object.values(Chains).flatMap((chain) => [
-      {
-        name: events[`${chain}IngressEgress`].BoostPoolCreated,
-        handler: boostPoolCreated,
-      },
-      {
-        name: events[`${chain}IngressEgress`].InsufficientBoostLiquidity,
-        handler: insufficientBoostLiquidity,
-      },
-    ]),
-  },
-  {
-    spec: 150,
     handlers: [
       { name: events.Swapping.SwapRescheduled, handler: swapRescheduled },
       ...Object.values(Chains).flatMap((chain) => [
+        {
+          name: events[`${chain}IngressEgress`].BoostPoolCreated,
+          handler: boostPoolCreated,
+        },
+        {
+          name: events[`${chain}IngressEgress`].InsufficientBoostLiquidity,
+          handler: insufficientBoostLiquidity,
+        },
         {
           name: events[`${chain}IngressEgress`].DepositIgnored,
           handler: networkDepositIgnored(chain),
