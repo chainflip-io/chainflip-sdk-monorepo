@@ -1,15 +1,8 @@
-import { swappingSwapEgressScheduled as schema150 } from '@chainflip/processor/150/swapping/swapEgressScheduled';
-import { swappingSwapEgressScheduled as schema160 } from '@chainflip/processor/160/swapping/swapEgressScheduled';
+import { swappingSwapEgressScheduled } from '@chainflip/processor/160/swapping/swapEgressScheduled';
 import { z } from 'zod';
 import type { EventHandlerArgs } from '.';
 
-const transformOldShape = ({ swapId, fee, ...rest }: z.output<typeof schema150>) => ({
-  swapRequestId: swapId,
-  egressFee: fee,
-  ...rest,
-});
-
-const eventArgs = z.union([schema160, schema150.transform(transformOldShape)]);
+const eventArgs = swappingSwapEgressScheduled;
 
 export type SwapEgressScheduledArgs = z.input<typeof eventArgs>;
 

@@ -44,6 +44,7 @@ exports[`swapEgressScheduled adds an egress and fee to a swap request 1`] = `
   "srcAddress": null,
   "srcAsset": "Eth",
   "swapDepositChannelId": null,
+  "swapInputAmount": "10000000000",
   "swapRequestedAt": 2022-12-06T14:31:33.000Z,
 }
 `;

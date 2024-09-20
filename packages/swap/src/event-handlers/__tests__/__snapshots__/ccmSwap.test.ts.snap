@@ -92,6 +92,7 @@ exports[`ccm swap flow handles all the deposit channel events 1`] = `
       "srcAddress": null,
       "srcAsset": "Dot",
       "swapDepositChannelId": Any<BigInt>,
+      "swapInputAmount": "499802700000",
       "swapRequestedAt": 1970-01-01T00:05:42.000Z,
       "swaps": [
         {
@@ -239,6 +240,7 @@ exports[`ccm swap flow handles all the vault events 1`] = `
   "srcAddress": "0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff",
   "srcAsset": "Eth",
   "swapDepositChannelId": null,
+  "swapInputAmount": "1",
   "swapRequestedAt": 1970-06-23T22:49:54.000Z,
   "swaps": [
     {

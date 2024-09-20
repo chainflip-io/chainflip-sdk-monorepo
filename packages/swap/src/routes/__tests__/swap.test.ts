@@ -5,6 +5,7 @@ import * as broker from '@/shared/broker';
 import { Assets, getInternalAssets } from '@/shared/enums';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
+import { SwapEgressIgnoredArgs } from '@/swap/event-handlers/swapEgressIgnored';
 import prisma from '../../client';
 import metadata from '../../event-handlers/__tests__/metadata.json';
 import {
@@ -1210,69 +1211,22 @@ describe('server', () => {
     });
 
     it(`retrieves a swap in ${State.Failed} status (egress ignored)`, async () => {
-      const txHash = '0x245466cbf3907aee42a64c5589ccd804ec3dcd3c54c28eb2b418c804cf009915';
+      await processEvents([
+        ...swapEvents.slice(0, 5),
+        {
+          id: '0000000094-000595-75b12',
+          indexInBlock: 595,
+          name: 'Swapping.SwapEgressIgnored',
+          args: {
+            asset: { __kind: 'Flip' },
+            amount: '0',
+            reason: { value: { error: '0x06000000', index: 32 }, __kind: 'Module' },
+            swapRequestId: '368',
+          } as SwapEgressIgnoredArgs,
+        },
+      ]);
 
-      await processEvents(
-        [
-          {
-            id: '0002382141-000681-74d0a',
-            indexInBlock: 681,
-            name: 'Swapping.SwapScheduled',
-            args: {
-              origin: {
-                __kind: 'Vault',
-                txHash,
-              },
-              swapId: '2275',
-              swapType: {
-                value: { value: '0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff', __kind: 'Eth' },
-                __kind: 'Swap',
-              },
-              executeAt: 2382143,
-              sourceAsset: { __kind: 'Eth' },
-              depositAmount: '1',
-              destinationAsset: { __kind: 'Flip' },
-              destinationAddress: {
-                value: '0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff',
-                __kind: 'Eth',
-              },
-            },
-          },
-          {
-            id: '0002382143-000816-1f1cf',
-            indexInBlock: 816,
-            name: 'Swapping.SwapExecuted',
-            args: {
-              swapId: '2275',
-              swapType: {
-                value: { value: '0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff', __kind: 'Eth' },
-                __kind: 'Swap',
-              },
-              swapInput: '1',
-              swapOutput: '0',
-              sourceAsset: { __kind: 'Eth' },
-              egressAmount: '0',
-              depositAmount: '1',
-              destinationAsset: { __kind: 'Flip' },
-              intermediateAmount: '0',
-            },
-          },
-          {
-            id: '0002382143-000817-1f1cf',
-            indexInBlock: 817,
-            name: 'Swapping.SwapEgressIgnored',
-            args: {
-              asset: { __kind: 'Flip' },
-              amount: '0',
-              reason: { value: { error: '0x06000000', index: 32 }, __kind: 'Module' },
-              swapId: '2275',
-            },
-          },
-        ],
-        '150',
-      );
-
-      const { body, status } = await request(server).get(`/swaps/${txHash}`);
+      const { body, status } = await request(server).get('/swaps/368');
 
       expect(status).toBe(200);
 

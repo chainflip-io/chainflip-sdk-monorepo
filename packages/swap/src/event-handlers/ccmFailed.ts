@@ -1,5 +1,4 @@
-import { swappingCcmFailed as schema150 } from '@chainflip/processor/150/swapping/ccmFailed';
-import { swappingCcmFailed as schema160 } from '@chainflip/processor/160/swapping/ccmFailed';
+import { swappingCcmFailed } from '@chainflip/processor/160/swapping/ccmFailed';
 import { GraphQLClient } from 'graphql-request';
 import z from 'zod';
 import { assert } from '@/shared/guards';
@@ -9,7 +8,7 @@ import { GET_CALL } from '../gql/query';
 import logger from '../utils/logger';
 import { EventHandlerArgs } from '.';
 
-const eventArgs = z.union([schema160, schema150]);
+const eventArgs = swappingCcmFailed;
 
 const client = new GraphQLClient(env.INGEST_GATEWAY_URL);
 

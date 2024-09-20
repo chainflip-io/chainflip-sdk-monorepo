@@ -15,15 +15,16 @@ describe(swapEgressIgnored, () => {
   });
 
   it('adds an IgnoredEgress record for a egress ignored event', async () => {
-    const { swapId } = event.args;
+    const { swapRequestId } = event.args;
 
     await prisma.swapRequest.create({
       data: {
-        nativeId: BigInt(swapId),
+        nativeId: BigInt(swapRequestId),
         srcAsset: 'Btc',
         destAsset: 'Eth',
         destAddress: DOT_ADDRESS,
         depositAmount: '100000000',
+        swapInputAmount: '100000000',
         depositReceivedAt: new Date('2024-08-06T00:00:00.000Z'),
         depositReceivedBlockIndex: '1-1',
         originType: 'VAULT',
@@ -36,7 +37,7 @@ describe(swapEgressIgnored, () => {
 
     expect(
       await prisma.swapRequest.findUniqueOrThrow({
-        where: { nativeId: BigInt(swapId) },
+        where: { nativeId: BigInt(swapRequestId) },
         include: { ignoredEgresses: true },
       }),
     ).toMatchSnapshot({

@@ -1,13 +1,13 @@
 import { InternalAssets } from '@/shared/enums';
 import prisma from '../../client';
-import swapExecuted, { SwapExecuted160Args } from '../swapExecuted';
+import swapExecuted, { SwapExecutedArgs } from '../swapExecuted';
 
 jest.mock('@/shared/consts', () => ({
   ...jest.requireActual('@/shared/consts'),
   getPoolsNetworkFeeHundredthPips: jest.fn().mockReturnValue(1000),
 }));
 
-const solArgs: SwapExecuted160Args = {
+const solArgs: SwapExecutedArgs = {
   swapId: '641',
   brokerFee: '0',
   inputAsset: { __kind: 'Flip' },
@@ -19,7 +19,7 @@ const solArgs: SwapExecuted160Args = {
   intermediateAmount: '1973504362',
 } as const;
 
-const usdcArgs: SwapExecuted160Args = {
+const usdcArgs: SwapExecutedArgs = {
   swapId: '612',
   brokerFee: '10000',
   inputAsset: { __kind: 'Flip' },
@@ -30,7 +30,7 @@ const usdcArgs: SwapExecuted160Args = {
   swapRequestId: '489',
 } as const;
 
-const runEvent = async (args: SwapExecuted160Args) => {
+const runEvent = async (args: SwapExecutedArgs) => {
   const swap = await prisma.swap.create({
     data: {
       nativeId: BigInt(args.swapId),
@@ -47,6 +47,7 @@ const runEvent = async (args: SwapExecuted160Args) => {
           srcAsset: args.inputAsset.__kind,
           destAsset: args.outputAsset.__kind,
           depositAmount: args.inputAmount,
+          swapInputAmount: args.inputAmount,
           swapRequestedAt: new Date('2024-08-23 13:14:06.000+00'),
           requestType: 'REGULAR',
         },

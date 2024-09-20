@@ -25,6 +25,7 @@ describe(swapRescheduled, () => {
         destAddress: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
         swapDepositChannelId: btcSwapDepositChannel.id,
         depositAmount: '100000000',
+        swapInputAmount: '100000000',
         depositReceivedAt: new Date('2024-08-06T00:00:00.000Z'),
         depositReceivedBlockIndex: '1-1',
         originType: 'DEPOSIT_CHANNEL',
