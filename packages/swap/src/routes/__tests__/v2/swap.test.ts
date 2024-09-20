@@ -11,7 +11,7 @@ import {
   createPools,
   processEvents,
 } from '../../../event-handlers/__tests__/utils';
-import { getPendingBroadcast } from '../../../ingress-egress-tracking';
+import { getPendingBroadcast, getPendingDeposit } from '../../../ingress-egress-tracking';
 import app from '../../../server';
 import { StateV2 } from '../../v2/swap';
 
@@ -435,7 +435,7 @@ describe('server', () => {
       });
     });
 
-    it(`retrieves a swap with a broker commission in ${StateV2.Receiving} status`, async () => {
+    it(`retrieves a swap with a broker commission in ${StateV2.Waiting} status`, async () => {
       const depositAddressEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositAddressEvent.args.brokerCommissionRate = 15;
       await processEvents([depositAddressEvent]);
@@ -485,7 +485,7 @@ describe('server', () => {
       });
     });
 
-    it(`retrieves a swap in ${StateV2.Receiving} status and the channel is expired`, async () => {
+    it(`retrieves a swap in ${StateV2.Waiting} status and the channel is expired`, async () => {
       const depositAddressEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositAddressEvent.args.sourceChainExpiryBlock = '1';
       await processEvents([
@@ -522,6 +522,39 @@ describe('server', () => {
           openedThroughBackend: false,
         },
       });
+    });
+
+    it(`retrieves a swap in ${StateV2.Receiving} status`, async () => {
+      jest.mocked(getPendingDeposit).mockResolvedValueOnce({
+        amount: '1500000000000000000',
+        transactionConfirmations: 2,
+      });
+
+      await processEvents(swapEvents.slice(0, 1));
+
+      const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+      expect(body).toMatchObject({
+        state: 'RECEIVING',
+        srcAsset: 'ETH',
+        srcChain: 'Ethereum',
+        destAsset: 'DOT',
+        destChain: 'Polkadot',
+        destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
+        estimatedDurationSeconds: 48,
+        depositChannel: {
+          createdAt: 516000,
+          brokerCommissionBps: 0,
+          depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
+          srcChainExpiryBlock: '265',
+          estimatedExpiryTime: 1699527060000,
+          isExpired: false,
+          openedThroughBackend: false,
+        },
+        deposit: {},
+      });
+      expect(getPendingDeposit).toBeCalledWith('Eth', '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2');
     });
 
     it(`retrieves a swap in ${StateV2.Swapping} status`, async () => {
@@ -613,6 +646,7 @@ describe('server', () => {
       const { swapId, ...rest } = body;
 
       expect(rest).toMatchSnapshot();
+      expect(getPendingBroadcast).toBeCalledWith(expect.objectContaining({ chain: 'Polkadot' }));
     });
 
     it(`retrieves a swap in ${StateV2.Completed} status`, async () => {

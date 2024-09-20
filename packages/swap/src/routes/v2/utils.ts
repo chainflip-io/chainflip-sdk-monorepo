@@ -67,17 +67,21 @@ export const getDepositInfo = (
   swapRequest: SwapRequest | null | undefined,
   failedSwap: FailedSwap | null | undefined,
   pendingDeposit: PendingDeposit | null | undefined,
-  txRef: string | undefined,
 ) => {
   const amount =
     readField(swapRequest, failedSwap, 'depositAmount')?.toFixed() ?? pendingDeposit?.amount;
+  const depositTransactionRef =
+    swapRequest?.depositTransactionRef ??
+    pendingDeposit?.transactionHash ??
+    failedSwap?.depositTransactionRef ??
+    undefined;
 
   if (!amount) return null;
 
   return {
     deposit: {
       amount,
-      txRef,
+      txRef: depositTransactionRef,
       txConfirmations: pendingDeposit?.transactionConfirmations,
       witnessedAt: swapRequest?.depositReceivedAt?.valueOf(),
       witnessedBlockIndex: swapRequest?.depositReceivedBlockIndex ?? undefined,
@@ -232,7 +236,10 @@ export const getSwapState = async (
     state = StateV2.Waiting;
 
     if (depositChannel) {
-      pendingDeposit = await getPendingDeposit(depositChannel.srcAsset, depositChannel.destAddress);
+      pendingDeposit = await getPendingDeposit(
+        depositChannel.srcAsset,
+        depositChannel.depositAddress,
+      );
       if (pendingDeposit) state = StateV2.Receiving;
     }
   }
