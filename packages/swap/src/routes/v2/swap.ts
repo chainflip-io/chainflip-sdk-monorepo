@@ -150,6 +150,9 @@ router.get(
       (acc, curr) => {
         if (curr.swapExecutedAt) {
           acc.swappedOutputAmount = acc.swappedOutputAmount.plus(curr.swapOutputAmount ?? 0);
+          acc.swappedIntermediateAmount = acc.swappedIntermediateAmount.plus(
+            curr.intermediateAmount ?? 0,
+          );
           acc.swappedInputAmount = acc.swappedInputAmount.plus(curr.swapInputAmount);
           acc.lastExecutedChunk = curr;
           acc.executedChunks += 1;
@@ -161,6 +164,7 @@ router.get(
       },
       {
         swappedOutputAmount: new Prisma.Decimal(0),
+        swappedIntermediateAmount: new Prisma.Decimal(0),
         swappedInputAmount: new Prisma.Decimal(0),
         executedChunks: 0,
         currentChunk: null as null | NonNullable<typeof swaps>[number],
@@ -271,6 +275,7 @@ router.get(
             ?.minus(rolledSwaps.swappedInputAmount)
             .toFixed(),
           swappedInputAmount: rolledSwaps.swappedInputAmount.toFixed(),
+          swappedIntermediateAmount: rolledSwaps.swappedIntermediateAmount.toFixed(),
           swappedOutputAmount: rolledSwaps.swappedOutputAmount.toFixed(),
           ...(rolledSwaps?.isDca
             ? {

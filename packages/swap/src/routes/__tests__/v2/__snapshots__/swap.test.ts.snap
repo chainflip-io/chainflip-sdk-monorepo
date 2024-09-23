@@ -43,6 +43,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a native swap id 1`] = `
     },
     "remainingInputAmount": "4999949999999650000",
     "swappedInputAmount": "0",
+    "swappedIntermediateAmount": "0",
     "swappedOutputAmount": "0",
   },
 }
@@ -95,6 +96,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a vault origin 1`] = `
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
       "inputAmount": "4999949999999650000",
+      "intermediateAmount": "4506169140",
       "outputAmount": "4192904666034",
       "retryCount": 0,
       "scheduledAt": 552000,
@@ -102,6 +104,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a vault origin 1`] = `
     },
     "remainingInputAmount": "0",
     "swappedInputAmount": "4999949999999650000",
+    "swappedIntermediateAmount": "4506169140",
     "swappedOutputAmount": "4192904666034",
   },
 }
@@ -160,6 +163,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a vault origin in COMPLE
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
       "inputAmount": "4999949999999650000",
+      "intermediateAmount": "4506169140",
       "outputAmount": "4192904666034",
       "retryCount": 0,
       "scheduledAt": 552000,
@@ -167,6 +171,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a vault origin in COMPLE
     },
     "remainingInputAmount": "0",
     "swappedInputAmount": "4999949999999650000",
+    "swappedIntermediateAmount": "4506169140",
     "swappedOutputAmount": "4192904666034",
   },
   "swapEgress": {
@@ -249,6 +254,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in COMPLETED status 1`] = `
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
       "inputAmount": "4999949999999650000",
+      "intermediateAmount": "4506169140",
       "outputAmount": "4192904666034",
       "retryCount": 0,
       "scheduledAt": 552000,
@@ -256,6 +262,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in COMPLETED status 1`] = `
     },
     "remainingInputAmount": "0",
     "swappedInputAmount": "4999949999999650000",
+    "swappedIntermediateAmount": "4506169140",
     "swappedOutputAmount": "4192904666034",
   },
   "swapEgress": {
@@ -338,6 +345,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENDING status 1`] = `
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
       "inputAmount": "4999949999999650000",
+      "intermediateAmount": "4506169140",
       "outputAmount": "4192904666034",
       "retryCount": 0,
       "scheduledAt": 552000,
@@ -345,6 +353,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENDING status 1`] = `
     },
     "remainingInputAmount": "0",
     "swappedInputAmount": "4999949999999650000",
+    "swappedIntermediateAmount": "4506169140",
     "swappedOutputAmount": "4192904666034",
   },
   "swapEgress": {
@@ -424,6 +433,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENT status 1`] = `
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
       "inputAmount": "4999949999999650000",
+      "intermediateAmount": "4506169140",
       "outputAmount": "4192904666034",
       "retryCount": 0,
       "scheduledAt": 552000,
@@ -431,6 +441,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENT status 1`] = `
     },
     "remainingInputAmount": "0",
     "swappedInputAmount": "4999949999999650000",
+    "swappedIntermediateAmount": "4506169140",
     "swappedOutputAmount": "4192904666034",
   },
   "swapEgress": {
@@ -485,6 +496,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status 1`] = `
     },
     "remainingInputAmount": "4999949999999650000",
     "swappedInputAmount": "0",
+    "swappedIntermediateAmount": "0",
     "swappedOutputAmount": "0",
   },
 }
@@ -553,6 +565,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status 2`] = `
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
       "inputAmount": "4999949999999650000",
+      "intermediateAmount": "4506169140",
       "outputAmount": "4192904666034",
       "retryCount": 0,
       "scheduledAt": 552000,
@@ -560,6 +573,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status 2`] = `
     },
     "remainingInputAmount": "0",
     "swappedInputAmount": "4999949999999650000",
+    "swappedIntermediateAmount": "4506169140",
     "swappedOutputAmount": "4192904666034",
   },
 }
@@ -609,6 +623,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status with a tx 
     },
     "remainingInputAmount": "4999949999999650000",
     "swappedInputAmount": "0",
+    "swappedIntermediateAmount": "0",
     "swappedOutputAmount": "0",
   },
 }
@@ -676,6 +691,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap with FillOrKillParams in COMP
     },
     "remainingInputAmount": "4999949999999650000",
     "swappedInputAmount": "0",
+    "swappedIntermediateAmount": "0",
     "swappedOutputAmount": "0",
   },
   "swapId": "368",
@@ -741,6 +757,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap with a refund in SENDING stat
     },
     "remainingInputAmount": "4999949999999650000",
     "swappedInputAmount": "0",
+    "swappedIntermediateAmount": "0",
     "swappedOutputAmount": "0",
   },
 }
@@ -804,6 +821,7 @@ exports[`server GET /v2/swaps/:id retrieves mulitple DCA swaps in FAILED status 
         "executedAt": 564000,
         "executedBlockIndex": "94-594",
         "inputAmount": "4999949999999650000",
+        "intermediateAmount": "4506169140",
         "outputAmount": "4192904666034",
         "retryCount": 0,
         "scheduledAt": 552000,
@@ -858,6 +876,7 @@ exports[`server GET /v2/swaps/:id retrieves mulitple DCA swaps in FAILED status 
     "originalInputAmount": "9999899999999300000",
     "remainingInputAmount": "0",
     "swappedInputAmount": "9999899999999300000",
+    "swappedIntermediateAmount": "9012338280",
     "swappedOutputAmount": "8385809332068",
   },
   "swapEgress": {

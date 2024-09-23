@@ -43,6 +43,7 @@ export const swapRequestInclude = {
 
 export const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
   inputAmount: swap.swapInputAmount.toString(),
+  intermediateAmount: swap.intermediateAmount?.toString(),
   outputAmount: swap.swapOutputAmount?.toString(),
   scheduledAt: swap.swapScheduledAt.valueOf(),
   scheduledBlockIndex: swap.swapScheduledBlockIndex ?? undefined,

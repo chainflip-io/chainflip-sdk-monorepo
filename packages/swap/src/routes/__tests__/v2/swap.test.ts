@@ -1093,10 +1093,12 @@ describe('server', () => {
           originalInputAmount: '9999899999999300000',
           remainingInputAmount: '0',
           swappedInputAmount: '9999899999999300000',
+          swappedIntermediateAmount: '9012338280',
           swappedOutputAmount: '8385809332068',
           dca: {
             lastExecutedChunk: {
               inputAmount: '4999949999999650000',
+              intermediateAmount: '4506169140',
               outputAmount: '4192904666034',
               scheduledAt: 552000,
               scheduledBlockIndex: '92-399',
@@ -1205,10 +1207,12 @@ describe('server', () => {
           originalInputAmount: '9999899999999300000',
           remainingInputAmount: '0',
           swappedInputAmount: '9999899999999300000',
+          swappedIntermediateAmount: '9012338280',
           swappedOutputAmount: '8385809332068',
           dca: {
             lastExecutedChunk: {
               inputAmount: '4999949999999650000',
+              intermediateAmount: '4506169140',
               outputAmount: '4192904666034',
               scheduledAt: 552000,
               scheduledBlockIndex: '92-399',
