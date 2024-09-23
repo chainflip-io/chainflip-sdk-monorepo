@@ -7,20 +7,38 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
-## 1.6.9
-- `getQuote` is now deprecated. `getQuoteV2` should be used instead.
+## 1.6.0
+
+### Deprecated
+
+- `SwapSDK.prototype.getQuote` is now deprecated
+- `SwapSDK.prototype.getStatus` is now deprecated
+
+### Added
+
+- `SwapSDK.prototype.getQuoteV2`
+  - Returns an array of quotes instead of single quote and includes new properties.
+    - `type`: quote type (DCA or REGULAR)
+    - `dcaParams`: object with `numberOfChunks` and `chunkIntervalBlocks`
+- `SwapSDK.prototype.getStatusV2`
+  - Revamped statuses and support for dca swaps
+- `SwapSDK.prototype.requestDepositAddress` supports an optional
+  `dcaParams` option. It includes
+  - `numberOfChunks`: The number of chunks to split the swap into
+  - `chunkIntervalBlocks`: Interval in state-chain blocks between each chunk. (minimum value: 2 blocks)
 
 ## 1.5.0
 
 ### Added
+
 - `SwapSDK.prototype.requestDepositAddress` supports an optional
   `FillOrKillParams` option. It includes
   - `retryDurationBlocks`: number of blocks to retry the swap if the price was
-  lower than the `minPrice`
+    lower than the `minPrice`
   - `refundAddress`: the address to refund the funds to in case the price limit
-  was never met
+    was never met
   - `minPrice`: the minimum price that the swap can happen at. The swap will not
-  go through if the price is below this value
+    go through if the price is below this value
 - `SwapSDK.prototype.getStatus` will return a `depositTransactionRef`. This
   references the transaction that triggered a swap. For Bitcoin and EVM chains,
   this is a transaction hash. For Polkadot, it is a block number and extrinsic
