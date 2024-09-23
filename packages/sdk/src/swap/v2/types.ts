@@ -51,10 +51,12 @@ interface SwapFields {
   originalInputAmount: string;
   remainingInputAmount: string;
   swappedInputAmount: string;
+  swappedIntermediateAmount: string;
   swappedOutputAmount: string;
   regular?: {
     inputAmount: string;
-    outputAmount: string;
+    intermediateAmount?: string;
+    outputAmount?: string;
     scheduledAt: number;
     scheduledBlockIndex: string;
     executedAt?: number;
