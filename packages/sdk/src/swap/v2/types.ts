@@ -85,8 +85,8 @@ interface SwapFields {
 
 interface EgressFields {
   amount: string;
-  scheduledAt: number;
-  scheduledBlockIndex: string;
+  scheduledAt: number | undefined;
+  scheduledBlockIndex: string | undefined;
   txRef: string | undefined;
   witnessedAt: number | undefined;
   witnessedBlockIndex: string | undefined;
