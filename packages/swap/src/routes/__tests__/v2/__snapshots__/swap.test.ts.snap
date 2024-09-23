@@ -84,7 +84,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a vault origin 1`] = `
       },
       {
         "amount": "45516860",
-        "asset": "ETH",
+        "asset": "USDC",
         "chain": "Ethereum",
         "type": "BROKER",
       },
@@ -142,7 +142,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a vault origin in COMPLE
       },
       {
         "amount": "45516860",
-        "asset": "ETH",
+        "asset": "USDC",
         "chain": "Ethereum",
         "type": "BROKER",
       },
@@ -225,7 +225,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in COMPLETED status 1`] = `
       },
       {
         "amount": "45516860",
-        "asset": "ETH",
+        "asset": "USDC",
         "chain": "Ethereum",
         "type": "BROKER",
       },
@@ -314,7 +314,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENDING status 1`] = `
       },
       {
         "amount": "45516860",
-        "asset": "ETH",
+        "asset": "USDC",
         "chain": "Ethereum",
         "type": "BROKER",
       },
@@ -400,7 +400,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENT status 1`] = `
       },
       {
         "amount": "45516860",
-        "asset": "ETH",
+        "asset": "USDC",
         "chain": "Ethereum",
         "type": "BROKER",
       },
@@ -535,7 +535,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status 2`] = `
       },
       {
         "amount": "45516860",
-        "asset": "ETH",
+        "asset": "USDC",
         "chain": "Ethereum",
         "type": "BROKER",
       },
@@ -830,7 +830,7 @@ exports[`server GET /v2/swaps/:id retrieves mulitple DCA swaps in FAILED status 
       },
       {
         "amount": "91033720",
-        "asset": "ETH",
+        "asset": "USDC",
         "chain": "Ethereum",
         "type": "BROKER",
       },

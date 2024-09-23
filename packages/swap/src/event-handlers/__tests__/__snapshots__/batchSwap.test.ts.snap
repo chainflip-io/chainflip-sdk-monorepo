@@ -116,7 +116,7 @@ exports[`batch swap flow handles all the events 1`] = `
             },
             {
               "amount": "47977823",
-              "asset": "Flip",
+              "asset": "Usdc",
               "type": "BROKER",
             },
           ],

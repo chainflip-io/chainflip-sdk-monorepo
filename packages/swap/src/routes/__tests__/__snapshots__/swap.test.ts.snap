@@ -50,7 +50,7 @@ exports[`server GET /swaps/:id retrieves a swap in FAILED status (egress ignored
     },
     {
       "amount": "45516860",
-      "asset": "ETH",
+      "asset": "USDC",
       "chain": "Ethereum",
       "type": "BROKER",
     },

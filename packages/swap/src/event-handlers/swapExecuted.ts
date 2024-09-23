@@ -50,7 +50,7 @@ export default async function swapExecuted({
 
   // >= 1.6 we have a broker fee on the event
   if (brokerFee) {
-    fees.push({ type: 'BROKER', asset: swap.srcAsset, amount: brokerFee.toString() });
+    fees.push({ type: 'BROKER', asset: 'Usdc', amount: brokerFee.toString() });
   }
 
   await prisma.swap.update({

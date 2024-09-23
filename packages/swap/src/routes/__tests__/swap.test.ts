@@ -695,7 +695,7 @@ describe('server', () => {
             },
             {
               "amount": "45516860",
-              "asset": "ETH",
+              "asset": "USDC",
               "chain": "Ethereum",
               "type": "BROKER",
             },
@@ -775,7 +775,7 @@ describe('server', () => {
             },
             {
               "amount": "45516860",
-              "asset": "ETH",
+              "asset": "USDC",
               "chain": "Ethereum",
               "type": "BROKER",
             },
@@ -917,7 +917,7 @@ describe('server', () => {
             },
             {
               "amount": "45516860",
-              "asset": "ETH",
+              "asset": "USDC",
               "chain": "Ethereum",
               "type": "BROKER",
             },
@@ -999,7 +999,7 @@ describe('server', () => {
             },
             {
               "amount": "45516860",
-              "asset": "ETH",
+              "asset": "USDC",
               "chain": "Ethereum",
               "type": "BROKER",
             },
@@ -1086,7 +1086,7 @@ describe('server', () => {
             },
             {
               "amount": "45516860",
-              "asset": "ETH",
+              "asset": "USDC",
               "chain": "Ethereum",
               "type": "BROKER",
             },
@@ -1171,7 +1171,7 @@ describe('server', () => {
             },
             {
               "amount": "45516860",
-              "asset": "ETH",
+              "asset": "USDC",
               "chain": "Ethereum",
               "type": "BROKER",
             },
