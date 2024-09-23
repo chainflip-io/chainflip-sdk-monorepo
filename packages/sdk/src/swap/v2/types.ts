@@ -47,38 +47,32 @@ interface DepositFields {
   failedBlockIndex: string | undefined;
 }
 
+type ChunkInfo = {
+  inputAmount: string;
+  intermediateAmount?: string;
+  outputAmount?: string;
+  scheduledAt: number;
+  scheduledBlockIndex: string;
+  executedAt?: number;
+  executedBlockIndex?: string;
+  retryCount: number;
+};
+
+type PickRequired<T> = {
+  [K in keyof T as undefined extends T[K] ? never : K]: T[K];
+  // eslint-disable-next-line @typescript-eslint/ban-types
+} & {};
+
 interface SwapFields {
   originalInputAmount: string;
   remainingInputAmount: string;
   swappedInputAmount: string;
   swappedIntermediateAmount: string;
   swappedOutputAmount: string;
-  regular?: {
-    inputAmount: string;
-    intermediateAmount?: string;
-    outputAmount?: string;
-    scheduledAt: number;
-    scheduledBlockIndex: string;
-    executedAt?: number;
-    executedBlockIndex?: string;
-    retryCount: 0;
-  };
+  regular?: ChunkInfo;
   dca?: {
-    lastExecutedChunk: {
-      inputAmount: string;
-      outputAmount: string;
-      scheduledAt: number;
-      scheduledBlockIndex: string;
-      executedAt: number;
-      executedBlockIndex: string;
-      retryCount: number;
-    } | null;
-    currentChunk: {
-      inputAmount: string;
-      scheduledAt: number;
-      scheduledBlockIndex: string;
-      retryCount: number;
-    } | null;
+    lastExecutedChunk: ChunkInfo | null;
+    currentChunk: PickRequired<ChunkInfo> | null;
     executedChunks: number;
     remainingChunks: number;
   };
