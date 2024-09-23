@@ -116,7 +116,7 @@ exports[`ccm swap flow handles all the deposit channel events 1`] = `
             },
             {
               "amount": "4973783",
-              "asset": "Dot",
+              "asset": "Usdc",
               "type": "BROKER",
             },
           ],

@@ -1096,7 +1096,7 @@ describe('server', () => {
             {
               type: 'BROKER',
               chain: 'Ethereum',
-              asset: 'ETH',
+              asset: 'USDC',
               amount: '91033720',
             },
             {
@@ -1208,7 +1208,7 @@ describe('server', () => {
             {
               type: 'BROKER',
               chain: 'Ethereum',
-              asset: 'ETH',
+              asset: 'USDC',
               amount: '91033720',
             },
             {
@@ -1331,7 +1331,7 @@ describe('server', () => {
             {
               type: 'BROKER',
               chain: 'Ethereum',
-              asset: 'ETH',
+              asset: 'USDC',
               amount: '91033720',
             },
             {
