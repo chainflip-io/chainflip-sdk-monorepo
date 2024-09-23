@@ -9,6 +9,8 @@ which it is deprecated.
 
 ## 1.6.0
 
+See migration guide [here](https://docs.chainflip.io/swapping/integrations/javascript-sdk/migration-guide-v2)
+
 ### Deprecated
 
 - `SwapSDK.prototype.getQuote` is now deprecated
