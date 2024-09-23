@@ -193,7 +193,7 @@ router.get(
       state = State.EgressScheduled;
     } else if (swap?.swapExecutedAt) {
       state = State.SwapExecuted;
-    } else if (swapRequest?.depositReceivedAt) {
+    } else if (swapRequest?.depositReceivedAt || swapRequest?.depositBoostedAt) {
       state = State.DepositReceived;
     } else {
       state = State.AwaitingDeposit;
