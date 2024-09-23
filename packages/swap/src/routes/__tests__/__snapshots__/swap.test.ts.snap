@@ -160,7 +160,7 @@ exports[`server GET /swaps/:id retrieves boost details when swap was boosted 1`]
   "srcAsset": "ETH",
   "srcChain": "Ethereum",
   "srcChainRequiredBlockConfirmations": 2,
-  "state": "AWAITING_DEPOSIT",
+  "state": "DEPOSIT_RECEIVED",
   "swapId": "368",
   "swapScheduledAt": 552000,
   "swapScheduledBlockIndex": "92-399",
