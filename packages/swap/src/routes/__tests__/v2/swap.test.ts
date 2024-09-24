@@ -1073,6 +1073,38 @@ describe('server', () => {
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         srcChainRequiredBlockConfirmations: 2,
         estimatedDurationSeconds: 48,
+        fees: [
+          {
+            type: 'NETWORK',
+            chain: 'Ethereum',
+            asset: 'USDC',
+            amount: '9112484',
+          },
+          {
+            type: 'LIQUIDITY',
+            chain: 'Ethereum',
+            asset: 'ETH',
+            amount: '9999899999999300',
+          },
+          {
+            type: 'LIQUIDITY',
+            chain: 'Ethereum',
+            asset: 'USDC',
+            amount: '9012338',
+          },
+          {
+            type: 'BROKER',
+            chain: 'Ethereum',
+            asset: 'USDC',
+            amount: '91033720',
+          },
+          {
+            type: 'INGRESS',
+            chain: 'Ethereum',
+            asset: 'ETH',
+            amount: '50000000350000',
+          },
+        ],
         depositChannel: {
           id: '86-Ethereum-85',
           createdAt: 516000,
@@ -1110,38 +1142,6 @@ describe('server', () => {
             executedChunks: 2,
             remainingChunks: 8,
           },
-          fees: [
-            {
-              type: 'NETWORK',
-              chain: 'Ethereum',
-              asset: 'USDC',
-              amount: '9112484',
-            },
-            {
-              type: 'LIQUIDITY',
-              chain: 'Ethereum',
-              asset: 'ETH',
-              amount: '9999899999999300',
-            },
-            {
-              type: 'LIQUIDITY',
-              chain: 'Ethereum',
-              asset: 'USDC',
-              amount: '9012338',
-            },
-            {
-              type: 'BROKER',
-              chain: 'Ethereum',
-              asset: 'USDC',
-              amount: '91033720',
-            },
-            {
-              type: 'INGRESS',
-              chain: 'Ethereum',
-              asset: 'ETH',
-              amount: '50000000350000',
-            },
-          ],
         },
       });
     });
@@ -1187,6 +1187,44 @@ describe('server', () => {
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         srcChainRequiredBlockConfirmations: 2,
         estimatedDurationSeconds: 48,
+        fees: [
+          {
+            type: 'NETWORK',
+            chain: 'Ethereum',
+            asset: 'USDC',
+            amount: '9112484',
+          },
+          {
+            type: 'LIQUIDITY',
+            chain: 'Ethereum',
+            asset: 'ETH',
+            amount: '9999899999999300',
+          },
+          {
+            type: 'LIQUIDITY',
+            chain: 'Ethereum',
+            asset: 'USDC',
+            amount: '9012338',
+          },
+          {
+            type: 'BROKER',
+            chain: 'Ethereum',
+            asset: 'USDC',
+            amount: '91033720',
+          },
+          {
+            type: 'INGRESS',
+            chain: 'Ethereum',
+            asset: 'ETH',
+            amount: '50000000350000',
+          },
+          {
+            type: 'EGRESS',
+            chain: 'Polkadot',
+            asset: 'DOT',
+            amount: '197450000',
+          },
+        ],
         depositChannel: {
           id: '86-Ethereum-85',
           createdAt: 516000,
@@ -1224,44 +1262,6 @@ describe('server', () => {
             executedChunks: 2,
             remainingChunks: 8,
           },
-          fees: [
-            {
-              type: 'NETWORK',
-              chain: 'Ethereum',
-              asset: 'USDC',
-              amount: '9112484',
-            },
-            {
-              type: 'LIQUIDITY',
-              chain: 'Ethereum',
-              asset: 'ETH',
-              amount: '9999899999999300',
-            },
-            {
-              type: 'LIQUIDITY',
-              chain: 'Ethereum',
-              asset: 'USDC',
-              amount: '9012338',
-            },
-            {
-              type: 'BROKER',
-              chain: 'Ethereum',
-              asset: 'USDC',
-              amount: '91033720',
-            },
-            {
-              type: 'INGRESS',
-              chain: 'Ethereum',
-              asset: 'ETH',
-              amount: '50000000350000',
-            },
-            {
-              type: 'EGRESS',
-              chain: 'Polkadot',
-              asset: 'DOT',
-              amount: '197450000',
-            },
-          ],
         },
         swapEgress: {
           amount: '4192707216034',
@@ -1312,6 +1312,44 @@ describe('server', () => {
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         srcChainRequiredBlockConfirmations: 2,
         estimatedDurationSeconds: 48,
+        fees: [
+          {
+            type: 'NETWORK',
+            chain: 'Ethereum',
+            asset: 'USDC',
+            amount: '9112484',
+          },
+          {
+            type: 'LIQUIDITY',
+            chain: 'Ethereum',
+            asset: 'ETH',
+            amount: '9999899999999300',
+          },
+          {
+            type: 'LIQUIDITY',
+            chain: 'Ethereum',
+            asset: 'USDC',
+            amount: '9012338',
+          },
+          {
+            type: 'BROKER',
+            chain: 'Ethereum',
+            asset: 'USDC',
+            amount: '91033720',
+          },
+          {
+            type: 'INGRESS',
+            chain: 'Ethereum',
+            asset: 'ETH',
+            amount: '50000000350000',
+          },
+          {
+            type: 'EGRESS',
+            chain: 'Polkadot',
+            asset: 'DOT',
+            amount: '197450000',
+          },
+        ],
         depositChannel: {
           id: '86-Ethereum-85',
           createdAt: 516000,
@@ -1347,44 +1385,6 @@ describe('server', () => {
             executedChunks: 2,
             remainingChunks: 8,
           },
-          fees: [
-            {
-              type: 'NETWORK',
-              chain: 'Ethereum',
-              asset: 'USDC',
-              amount: '9112484',
-            },
-            {
-              type: 'LIQUIDITY',
-              chain: 'Ethereum',
-              asset: 'ETH',
-              amount: '9999899999999300',
-            },
-            {
-              type: 'LIQUIDITY',
-              chain: 'Ethereum',
-              asset: 'USDC',
-              amount: '9012338',
-            },
-            {
-              type: 'BROKER',
-              chain: 'Ethereum',
-              asset: 'USDC',
-              amount: '91033720',
-            },
-            {
-              type: 'INGRESS',
-              chain: 'Ethereum',
-              asset: 'ETH',
-              amount: '50000000350000',
-            },
-            {
-              type: 'EGRESS',
-              chain: 'Polkadot',
-              asset: 'DOT',
-              amount: '197450000',
-            },
-          ],
         },
         swapEgress: {
           amount: '4192707216034',
@@ -1514,11 +1514,11 @@ describe('server', () => {
       const { body } = await request(server).get(`/v2/swaps/${channelId}`);
       const { swapId, ...rest } = body;
 
-      expect(rest.swap.fees.filter((fee: any) => fee.type === 'EGRESS').length).toBe(2);
-      expect(rest.swap.fees.filter((fee: any) => fee.type === 'INGRESS').length).toBe(1);
-      expect(rest.swap.fees.filter((fee: any) => fee.type === 'NETWORK').length).toBe(1);
-      expect(rest.swap.fees.filter((fee: any) => fee.type === 'LIQUIDITY').length).toBe(2);
-      expect(rest.swap.fees.filter((fee: any) => fee.type === 'BROKER').length).toBe(1);
+      expect(rest.fees.filter((fee: any) => fee.type === 'EGRESS').length).toBe(2);
+      expect(rest.fees.filter((fee: any) => fee.type === 'INGRESS').length).toBe(1);
+      expect(rest.fees.filter((fee: any) => fee.type === 'NETWORK').length).toBe(1);
+      expect(rest.fees.filter((fee: any) => fee.type === 'LIQUIDITY').length).toBe(2);
+      expect(rest.fees.filter((fee: any) => fee.type === 'BROKER').length).toBe(1);
     });
   });
 });

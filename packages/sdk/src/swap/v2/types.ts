@@ -76,7 +76,6 @@ interface SwapFields {
     executedChunks: number;
     remainingChunks: number;
   };
-  fees: PaidFee[];
 }
 
 interface EgressFields {
@@ -99,6 +98,7 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   boost: Boost | undefined;
   estimatedDurationSeconds: number | null | undefined;
   srcChainRequiredBlockConfirmations: number | null;
+  fees: PaidFee[];
 }
 
 interface Waiting extends SwapStatusResponseCommonFields {
