@@ -235,6 +235,7 @@ router.get(
       destAddress: readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress'),
       srcChainRequiredBlockConfirmations,
       estimatedDurationSeconds,
+      fees: aggregateFees,
       ...(showDepositchannel &&
         swapDepositChannel && {
           depositChannel: {
@@ -295,7 +296,6 @@ router.get(
                   ),
                 }),
               }),
-          fees: aggregateFees,
         },
       }),
       ...(swapEgressFields && { swapEgress: { ...swapEgressFields } }),

@@ -21,19 +21,19 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a native swap id 1`] = `
   "destAsset": "DOT",
   "destChain": "Polkadot",
   "estimatedDurationSeconds": 48,
+  "fees": [
+    {
+      "amount": "50000000350000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+  ],
   "srcAsset": "ETH",
   "srcChain": "Ethereum",
   "srcChainRequiredBlockConfirmations": 2,
   "state": "SWAPPING",
   "swap": {
-    "fees": [
-      {
-        "amount": "50000000350000",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "INGRESS",
-      },
-    ],
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "inputAmount": "4999949999999650000",
@@ -60,37 +60,37 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a vault origin 1`] = `
   "destAsset": "DOT",
   "destChain": "Polkadot",
   "estimatedDurationSeconds": 48,
+  "fees": [
+    {
+      "amount": "4556242",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "4999949999999650",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "4506169",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "45516860",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "BROKER",
+    },
+  ],
   "srcAsset": "ETH",
   "srcChain": "Ethereum",
   "srcChainRequiredBlockConfirmations": 2,
   "state": "SWAPPING",
   "swap": {
-    "fees": [
-      {
-        "amount": "4556242",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "NETWORK",
-      },
-      {
-        "amount": "4999949999999650",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "LIQUIDITY",
-      },
-      {
-        "amount": "4506169",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "LIQUIDITY",
-      },
-      {
-        "amount": "45516860",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "BROKER",
-      },
-    ],
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "executedAt": 564000,
@@ -121,43 +121,43 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a vault origin in COMPLE
   "destAsset": "DOT",
   "destChain": "Polkadot",
   "estimatedDurationSeconds": 48,
+  "fees": [
+    {
+      "amount": "4556242",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "4999949999999650",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "4506169",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "45516860",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "BROKER",
+    },
+    {
+      "amount": "197450000",
+      "asset": "DOT",
+      "chain": "Polkadot",
+      "type": "EGRESS",
+    },
+  ],
   "srcAsset": "ETH",
   "srcChain": "Ethereum",
   "srcChainRequiredBlockConfirmations": 2,
   "state": "COMPLETED",
   "swap": {
-    "fees": [
-      {
-        "amount": "4556242",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "NETWORK",
-      },
-      {
-        "amount": "4999949999999650",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "LIQUIDITY",
-      },
-      {
-        "amount": "4506169",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "LIQUIDITY",
-      },
-      {
-        "amount": "45516860",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "BROKER",
-      },
-      {
-        "amount": "197450000",
-        "asset": "DOT",
-        "chain": "Polkadot",
-        "type": "EGRESS",
-      },
-    ],
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "executedAt": 564000,
@@ -206,49 +206,49 @@ exports[`server GET /v2/swaps/:id retrieves a swap in COMPLETED status 1`] = `
   "destAsset": "DOT",
   "destChain": "Polkadot",
   "estimatedDurationSeconds": 48,
+  "fees": [
+    {
+      "amount": "4556242",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "4999949999999650",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "4506169",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "45516860",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "BROKER",
+    },
+    {
+      "amount": "50000000350000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "197450000",
+      "asset": "DOT",
+      "chain": "Polkadot",
+      "type": "EGRESS",
+    },
+  ],
   "srcAsset": "ETH",
   "srcChain": "Ethereum",
   "srcChainRequiredBlockConfirmations": 2,
   "state": "COMPLETED",
   "swap": {
-    "fees": [
-      {
-        "amount": "4556242",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "NETWORK",
-      },
-      {
-        "amount": "4999949999999650",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "LIQUIDITY",
-      },
-      {
-        "amount": "4506169",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "LIQUIDITY",
-      },
-      {
-        "amount": "45516860",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "BROKER",
-      },
-      {
-        "amount": "50000000350000",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "INGRESS",
-      },
-      {
-        "amount": "197450000",
-        "asset": "DOT",
-        "chain": "Polkadot",
-        "type": "EGRESS",
-      },
-    ],
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "executedAt": 564000,
@@ -297,49 +297,49 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENDING status 1`] = `
   "destAsset": "DOT",
   "destChain": "Polkadot",
   "estimatedDurationSeconds": 48,
+  "fees": [
+    {
+      "amount": "4556242",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "4999949999999650",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "4506169",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "45516860",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "BROKER",
+    },
+    {
+      "amount": "50000000350000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "197450000",
+      "asset": "DOT",
+      "chain": "Polkadot",
+      "type": "EGRESS",
+    },
+  ],
   "srcAsset": "ETH",
   "srcChain": "Ethereum",
   "srcChainRequiredBlockConfirmations": 2,
   "state": "SENDING",
   "swap": {
-    "fees": [
-      {
-        "amount": "4556242",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "NETWORK",
-      },
-      {
-        "amount": "4999949999999650",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "LIQUIDITY",
-      },
-      {
-        "amount": "4506169",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "LIQUIDITY",
-      },
-      {
-        "amount": "45516860",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "BROKER",
-      },
-      {
-        "amount": "50000000350000",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "INGRESS",
-      },
-      {
-        "amount": "197450000",
-        "asset": "DOT",
-        "chain": "Polkadot",
-        "type": "EGRESS",
-      },
-    ],
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "executedAt": 564000,
@@ -385,49 +385,49 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENT status 1`] = `
   "destAsset": "DOT",
   "destChain": "Polkadot",
   "estimatedDurationSeconds": 48,
+  "fees": [
+    {
+      "amount": "4556242",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "4999949999999650",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "4506169",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "45516860",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "BROKER",
+    },
+    {
+      "amount": "50000000350000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "197450000",
+      "asset": "DOT",
+      "chain": "Polkadot",
+      "type": "EGRESS",
+    },
+  ],
   "srcAsset": "ETH",
   "srcChain": "Ethereum",
   "srcChainRequiredBlockConfirmations": 2,
   "state": "SENT",
   "swap": {
-    "fees": [
-      {
-        "amount": "4556242",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "NETWORK",
-      },
-      {
-        "amount": "4999949999999650",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "LIQUIDITY",
-      },
-      {
-        "amount": "4506169",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "LIQUIDITY",
-      },
-      {
-        "amount": "45516860",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "BROKER",
-      },
-      {
-        "amount": "50000000350000",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "INGRESS",
-      },
-      {
-        "amount": "197450000",
-        "asset": "DOT",
-        "chain": "Polkadot",
-        "type": "EGRESS",
-      },
-    ],
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "executedAt": 564000,
@@ -474,19 +474,19 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status 1`] = `
   "destAsset": "DOT",
   "destChain": "Polkadot",
   "estimatedDurationSeconds": 48,
+  "fees": [
+    {
+      "amount": "50000000350000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+  ],
   "srcAsset": "ETH",
   "srcChain": "Ethereum",
   "srcChainRequiredBlockConfirmations": 2,
   "state": "SWAPPING",
   "swap": {
-    "fees": [
-      {
-        "amount": "50000000350000",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "INGRESS",
-      },
-    ],
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "inputAmount": "4999949999999650000",
@@ -523,43 +523,43 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status 2`] = `
   "destAsset": "DOT",
   "destChain": "Polkadot",
   "estimatedDurationSeconds": 48,
+  "fees": [
+    {
+      "amount": "4556242",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "4999949999999650",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "4506169",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "45516860",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "BROKER",
+    },
+    {
+      "amount": "50000000350000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+  ],
   "srcAsset": "ETH",
   "srcChain": "Ethereum",
   "srcChainRequiredBlockConfirmations": 2,
   "state": "SWAPPING",
   "swap": {
-    "fees": [
-      {
-        "amount": "4556242",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "NETWORK",
-      },
-      {
-        "amount": "4999949999999650",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "LIQUIDITY",
-      },
-      {
-        "amount": "4506169",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "LIQUIDITY",
-      },
-      {
-        "amount": "45516860",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "BROKER",
-      },
-      {
-        "amount": "50000000350000",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "INGRESS",
-      },
-    ],
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "executedAt": 564000,
@@ -601,19 +601,19 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status with a tx 
   "destAsset": "DOT",
   "destChain": "Polkadot",
   "estimatedDurationSeconds": 48,
+  "fees": [
+    {
+      "amount": "50000000350000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+  ],
   "srcAsset": "ETH",
   "srcChain": "Ethereum",
   "srcChainRequiredBlockConfirmations": 2,
   "state": "SWAPPING",
   "swap": {
-    "fees": [
-      {
-        "amount": "50000000350000",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "INGRESS",
-      },
-    ],
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "inputAmount": "4999949999999650000",
@@ -655,6 +655,20 @@ exports[`server GET /v2/swaps/:id retrieves a swap with FillOrKillParams in COMP
   "destAsset": "DOT",
   "destChain": "Polkadot",
   "estimatedDurationSeconds": 48,
+  "fees": [
+    {
+      "amount": "50000000350000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "105000000490000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
   "refundEgress": {
     "amount": "999844999999160000",
     "scheduledAt": 564000,
@@ -668,20 +682,6 @@ exports[`server GET /v2/swaps/:id retrieves a swap with FillOrKillParams in COMP
   "srcChainRequiredBlockConfirmations": 2,
   "state": "COMPLETED",
   "swap": {
-    "fees": [
-      {
-        "amount": "50000000350000",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "INGRESS",
-      },
-      {
-        "amount": "105000000490000",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "EGRESS",
-      },
-    ],
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "inputAmount": "4999949999999650000",
@@ -724,6 +724,20 @@ exports[`server GET /v2/swaps/:id retrieves a swap with a refund in SENDING stat
   "destAsset": "DOT",
   "destChain": "Polkadot",
   "estimatedDurationSeconds": 48,
+  "fees": [
+    {
+      "amount": "50000000350000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "105000000490000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
   "refundEgress": {
     "amount": "999844999999160000",
     "scheduledAt": 564000,
@@ -734,20 +748,6 @@ exports[`server GET /v2/swaps/:id retrieves a swap with a refund in SENDING stat
   "srcChainRequiredBlockConfirmations": 2,
   "state": "SENDING",
   "swap": {
-    "fees": [
-      {
-        "amount": "50000000350000",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "INGRESS",
-      },
-      {
-        "amount": "105000000490000",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "EGRESS",
-      },
-    ],
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "inputAmount": "4999949999999650000",
@@ -793,6 +793,50 @@ exports[`server GET /v2/swaps/:id retrieves mulitple DCA swaps in FAILED status 
   "destAsset": "DOT",
   "destChain": "Polkadot",
   "estimatedDurationSeconds": 48,
+  "fees": [
+    {
+      "amount": "9112484",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "9999899999999300",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "9012338",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "LIQUIDITY",
+    },
+    {
+      "amount": "91033720",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "BROKER",
+    },
+    {
+      "amount": "50000000350000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "105000000490000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+    {
+      "amount": "197450000",
+      "asset": "DOT",
+      "chain": "Polkadot",
+      "type": "EGRESS",
+    },
+  ],
   "refundEgress": {
     "amount": "999844999999160000",
     "failedAt": 624000,
@@ -829,50 +873,6 @@ exports[`server GET /v2/swaps/:id retrieves mulitple DCA swaps in FAILED status 
       },
       "remainingChunks": 8,
     },
-    "fees": [
-      {
-        "amount": "9112484",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "NETWORK",
-      },
-      {
-        "amount": "9999899999999300",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "LIQUIDITY",
-      },
-      {
-        "amount": "9012338",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "LIQUIDITY",
-      },
-      {
-        "amount": "91033720",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "BROKER",
-      },
-      {
-        "amount": "50000000350000",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "INGRESS",
-      },
-      {
-        "amount": "105000000490000",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "EGRESS",
-      },
-      {
-        "amount": "197450000",
-        "asset": "DOT",
-        "chain": "Polkadot",
-        "type": "EGRESS",
-      },
-    ],
     "originalInputAmount": "9999899999999300000",
     "remainingInputAmount": "0",
     "swappedInputAmount": "9999899999999300000",
