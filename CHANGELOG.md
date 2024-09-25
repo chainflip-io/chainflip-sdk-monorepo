@@ -7,6 +7,12 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## 1.6.2
+
+### Changed
+- Upgraded our internal RPC package to remove a web API and improve
+  compatibility with React Native/the Hermes compiler.
+
 ## 1.6.1
 
 ### Changed
