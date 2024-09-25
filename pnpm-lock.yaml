@@ -97,8 +97,8 @@ importers:
   packages/cli:
     dependencies:
       '@chainflip/bitcoin':
-        specifier: ^0.2.2
-        version: 0.2.2
+        specifier: ^1.0.2
+        version: 1.0.2
       '@chainflip/rpc':
         specifier: ^1.6.6
         version: 1.6.6
@@ -162,8 +162,8 @@ importers:
   packages/shared:
     dependencies:
       '@chainflip/bitcoin':
-        specifier: ^0.2.2
-        version: 0.2.2
+        specifier: ^1.0.2
+        version: 1.0.2
       '@chainflip/rpc':
         specifier: ^1.6.6
         version: 1.6.6
@@ -740,8 +740,8 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@chainflip/bitcoin@0.2.2':
-    resolution: {integrity: sha512-45WfB9VTeAltbAz1GscDcYJISx3kUDY0e3R6a02X5+EbsMsZzaqyCeEFRWTvzsYeRewTB69VEHY5+7jJos7Q5g==}
+  '@chainflip/bitcoin@1.0.2':
+    resolution: {integrity: sha512-OrkjJT5mH9+wvm7lSl09D2VlY/kEvqfFGgiLDvItxTUCrm/McADDiGontjXOwe3u4r8KdocPEF47jLHQLAg33A==}
 
   '@chainflip/processor@1.5.7':
     resolution: {integrity: sha512-fN4RwWYu/RukJxHWn1Zc0bEZjoZ2iyncv/DlC6vSApF636B5yVKnBfzkQBvTiz6gZGBYytxBh4F8JMZ5EdnU+g==}
@@ -6236,7 +6236,10 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@chainflip/bitcoin@0.2.2': {}
+  '@chainflip/bitcoin@1.0.2':
+    dependencies:
+      '@chainflip/utils': 0.4.0
+      '@noble/hashes': 1.4.0
 
   '@chainflip/processor@1.5.7':
     dependencies:
