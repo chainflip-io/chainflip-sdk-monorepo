@@ -7,6 +7,12 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## 1.6.1
+
+### Changed
+- Upgraded our internal Bitcoin package to remove WebAssembly. The WebAssembly
+  caused issues with React Native users as there is no WebAssembly runtime.
+
 ## 1.6.0
 
 See migration guide [here](https://docs.chainflip.io/swapping/integrations/javascript-sdk/migration-guide-v2)
