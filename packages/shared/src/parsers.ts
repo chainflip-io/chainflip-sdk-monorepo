@@ -1,4 +1,4 @@
-import { decodeAddress } from '@chainflip/bitcoin';
+import { encodeAddress } from '@chainflip/bitcoin';
 import { isValidSolanaAddress } from '@chainflip/solana';
 import * as base58 from '@chainflip/utils/base58';
 import { hexToBytes } from '@chainflip/utils/bytes';
@@ -174,7 +174,7 @@ export const bitcoinScriptPubKey = (network: ChainflipNetwork) =>
         throw new Error('OtherSegwit scriptPubKey not supported');
       }
 
-      return decodeAddress(script.value, script.__kind, network);
+      return encodeAddress(script.value, script.__kind, network);
     });
 
 export const depositAddressSchema = (network: ChainflipNetwork) =>
