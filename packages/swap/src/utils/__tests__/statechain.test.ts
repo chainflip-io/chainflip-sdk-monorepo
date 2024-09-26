@@ -1,4 +1,3 @@
-import exp from 'constants';
 import { getDeductedBrokerFeeOutput } from '../statechain';
 
 describe(getDeductedBrokerFeeOutput, () => {

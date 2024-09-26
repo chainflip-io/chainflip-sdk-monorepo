@@ -94,7 +94,6 @@ const quoteRouter = (io: Server) => {
           }),
         });
       } catch (err) {
-        console.log(err);
         handleQuotingError(res, err, {
           srcAsset,
           destAsset,
