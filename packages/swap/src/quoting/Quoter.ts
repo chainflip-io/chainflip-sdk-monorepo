@@ -145,10 +145,10 @@ export default class Quoter {
         quotedLegsMap.set(marketMaker, singleOrBothLegs);
       } else if (quotesFirstLeg) {
         message = { ...request, legs: [first.toJSON()] };
-        quotedLegsMap.set(marketMaker, padFirstLeg);
+        quotedLegsMap.set(marketMaker, padSecondLeg);
       } else if (second && quotesSecondLeg) {
         message = { ...request, legs: [second.toJSON()] };
-        quotedLegsMap.set(marketMaker, padSecondLeg);
+        quotedLegsMap.set(marketMaker, padFirstLeg);
       } else {
         // eslint-disable-next-line no-continue
         continue;
@@ -157,6 +157,8 @@ export default class Quoter {
       expectedResponses += 1;
       socket.emit('quote_request', message);
     }
+
+    if (expectedResponses === 0) return Promise.resolve([]);
 
     const clientsReceivedQuotes = new Map<string, MarketMakerQuote>();
 
