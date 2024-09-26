@@ -5,11 +5,12 @@ import { Server } from 'socket.io';
 import { io, Socket } from 'socket.io-client';
 import { setTimeout as sleep } from 'timers/promises';
 import { promisify } from 'util';
-import { assetConstants, getAssetAndChain } from '@/shared/enums';
+import { assetConstants } from '@/shared/enums';
 import env from '@/swap/config/env';
 import prisma, { InternalAsset } from '../../client';
 import { getAssetPrice } from '../../pricing';
 import authenticate from '../authenticate';
+import Leg from '../Leg';
 import Quoter, { approximateIntermediateOutput } from '../Quoter';
 import { MarketMakerQuote, MarketMakerRawQuote } from '../schemas';
 
@@ -98,7 +99,6 @@ describe(Quoter, () => {
 
   afterEach(async () => {
     Object.assign(env, oldEnv);
-    await promisify(server.close.bind(server))();
     await Promise.all(
       sockets.splice(0).map(
         (socket) =>
@@ -108,6 +108,7 @@ describe(Quoter, () => {
           }),
       ),
     );
+    await promisify(server.close.bind(server))();
   });
 
   describe('constructor', () => {
@@ -143,14 +144,7 @@ describe(Quoter, () => {
       return {
         promise: quoter['collectMakerQuotes']({
           request_id: id,
-          legs: [
-            {
-              base_asset: getAssetAndChain('Flip'),
-              quote_asset: getAssetAndChain('Usdc'),
-              amount: '1000',
-              side: 'SELL',
-            },
-          ],
+          legs: [Leg.of('Flip', 'Usdc', 1000n)],
         }),
         id,
       };
@@ -201,7 +195,7 @@ describe(Quoter, () => {
       const { id, promise } = collectQuotes();
       const quote1 = mm1.sendQuote({ request_id: id, legs: [[[0, '100']]] });
       const quote2 = mm2.sendQuote({ request_id: id, legs: [[[0, '200']]] });
-      // no need to advance timers because setTimeout is never called
+      // no need to advance timers because setTimeout is cleared
       expect(await promise).toEqual([quote2, quote1]);
     });
   });
