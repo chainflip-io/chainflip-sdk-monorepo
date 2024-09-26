@@ -98,7 +98,7 @@ export const getSwapRateV2 = async ({
     inputAmount: amount,
     destAsset,
     intermediateAmount,
-    outputAmount: outputAmount,
+    outputAmount,
     brokerCommissionBps,
     egressFee: egressFee.amount,
   });

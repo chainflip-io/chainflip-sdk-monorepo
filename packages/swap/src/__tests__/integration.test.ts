@@ -148,6 +148,7 @@ describe('python integration test', () => {
       egressFee: { amount: 50000n, chain: 'Ethereum', asset: 'USDC' },
       intermediateAmount: 2000000000n,
       outputAmount: 997901209876966295n,
+      brokerFee: undefined,
     });
 
     const response = await axios.get(`${serverUrl}/quote?${params.toString()}`);
