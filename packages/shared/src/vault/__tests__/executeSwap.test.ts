@@ -80,7 +80,7 @@ describe(executeSwap, () => {
       srcAsset: Assets.ETH,
       srcChain: Chains.Ethereum,
     },
-  ] as Omit<ExecuteSwapParams, 'amount'>[])('submits a native swap (%p)', async (params) => {
+  ] as Omit<ExecuteSwapParams, 'amount'>[])('submits a native swap (%O)', async (params) => {
     const wait = jest.fn().mockResolvedValue({ status: 1 });
     const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapNative').mockResolvedValue({
       hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
@@ -133,7 +133,7 @@ describe(executeSwap, () => {
         ...src,
       },
     ]),
-  ] as Omit<ExecuteSwapParams, 'amount'>[])('submits a token swap (%p)', async (params) => {
+  ] as Omit<ExecuteSwapParams, 'amount'>[])('submits a token swap (%O)', async (params) => {
     const wait = jest.fn().mockResolvedValue({ status: 1 });
     const approveSpy = jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({
       hash: '0x69e038ca41d2c7902c00f708afa52c1c8d8f9a779003979c814809d39fa6b9db',
@@ -474,7 +474,41 @@ describe(executeSwap, () => {
       destAddress: ETH_ADDRESS,
       ccmParams: { message: '0xdeadc0de', gasBudget: '101' },
     },
-  ])('submits a native call (%p)', async (params) => {
+    {
+      srcAsset: Assets.ETH,
+      srcChain: Chains.Ethereum,
+      destAsset: Assets.FLIP,
+      destChain: Chains.Ethereum,
+      destAddress: ETH_ADDRESS,
+      ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+    },
+    {
+      srcAsset: Assets.ETH,
+      srcChain: Chains.Ethereum,
+      destAsset: Assets.USDC,
+      destChain: Chains.Ethereum,
+      destAddress: ETH_ADDRESS,
+      ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+    },
+    {
+      srcAsset: Assets.ETH,
+      srcChain: Chains.Ethereum,
+      destAsset: Assets.FLIP,
+      destChain: Chains.Ethereum,
+      destAddress: ETH_ADDRESS,
+      ccmParams: { message: '0xcafebeef', gasBudget: '102' },
+      ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+    },
+    {
+      srcAsset: Assets.ETH,
+      srcChain: Chains.Ethereum,
+      destAsset: Assets.USDC,
+      destChain: Chains.Ethereum,
+      destAddress: ETH_ADDRESS,
+      ccmParams: { message: '0xcafebeef', gasBudget: '102' },
+      ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+    },
+  ])('submits a native call (%O)', async (params) => {
     const wait = jest.fn().mockResolvedValue({ status: 1 });
     const callSpy = jest.spyOn(MockVault.prototype, 'xCallNative').mockResolvedValue({
       hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
@@ -513,6 +547,28 @@ describe(executeSwap, () => {
           srcChain: Chains.Ethereum,
           ccmParams: { message: '0xdeadc0de', gasBudget: '101' },
         },
+        {
+          srcAsset: Assets.FLIP,
+          srcChain: Chains.Ethereum,
+          ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+        },
+        {
+          srcAsset: Assets.USDC,
+          srcChain: Chains.Ethereum,
+          ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+        },
+        {
+          srcAsset: Assets.FLIP,
+          srcChain: Chains.Ethereum,
+          ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+          ccmParams: { message: '0xcafebeef', gasBudget: '102' },
+        },
+        {
+          srcAsset: Assets.USDC,
+          srcChain: Chains.Ethereum,
+          ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
+          ccmParams: { message: '0xcafebeef', gasBudget: '102' },
+        },
       ] as const
     ).flatMap(
       (src) =>
@@ -525,7 +581,7 @@ describe(executeSwap, () => {
           },
         ] as const,
     ),
-  ])('submits a token call (%p)', async (params) => {
+  ])('submits a token call (%O)', async (params) => {
     const wait = jest.fn().mockResolvedValue({ status: 1 });
     const approveSpy = jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({
       hash: '0x69e038ca41d2c7902c00f708afa52c1c8d8f9a779003979c814809d39fa6b9db',

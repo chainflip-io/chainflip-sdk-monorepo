@@ -125,7 +125,7 @@ const swapToken = async (
 };
 
 const callNative = async (
-  params: ExecuteSwapParams & Required<ExecuteSwapParams, 'ccmParams'>,
+  params: Required<Omit<ExecuteSwapParams, 'ccmMetadata'>, 'ccmParams'>,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
@@ -150,7 +150,7 @@ const callNative = async (
 };
 
 const callToken = async (
-  params: ExecuteSwapParams & Required<ExecuteSwapParams, 'ccmParams'>,
+  params: Required<Omit<ExecuteSwapParams, 'ccmMetadata'>, 'ccmParams'>,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
@@ -174,7 +174,7 @@ const callToken = async (
     params.ccmParams.gasBudget,
     erc20Address,
     params.amount,
-    params.ccmMetadata?.cfParameters ?? '0x',
+    params.ccmParams?.cfParameters ?? '0x',
     extractOverrides(txOpts),
   );
   await transaction.wait(txOpts.wait);
@@ -183,7 +183,7 @@ const callToken = async (
 };
 
 const executeSwap = async (
-  { ccmParams: unvalidatedCcmParams, ...params }: ExecuteSwapParams,
+  { ccmParams, ccmMetadata, ...params }: ExecuteSwapParams,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
@@ -192,13 +192,15 @@ const executeSwap = async (
   assertValidAddress(params.destChain, params.destAddress, networkOpts.network);
   await assertSignerIsConnectedToChain(networkOpts, params.srcChain);
 
+  const unvalidatedCcmParams = ccmParams || ccmMetadata;
+
   if (unvalidatedCcmParams) {
     assertIsCCMDestination(params.destChain);
-    const ccmParams = ccmParamsSchema.parse(unvalidatedCcmParams);
+    const validatedCcmParams = ccmParamsSchema.parse(unvalidatedCcmParams);
 
     return params.srcAsset === chainConstants[params.srcChain].gasAsset
-      ? callNative({ ...params, ccmParams }, networkOpts, txOpts)
-      : callToken({ ...params, ccmParams }, networkOpts, txOpts);
+      ? callNative({ ...params, ccmParams: validatedCcmParams }, networkOpts, txOpts)
+      : callToken({ ...params, ccmParams: validatedCcmParams }, networkOpts, txOpts);
   }
 
   return params.srcAsset === chainConstants[params.srcChain].gasAsset
