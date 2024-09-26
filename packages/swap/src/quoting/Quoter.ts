@@ -3,7 +3,7 @@ import { toLowerCase } from '@chainflip/utils/string';
 import assert from 'assert';
 import BigNumber from 'bignumber.js';
 import { randomUUID } from 'crypto';
-import { EMPTY, Subject, Subscription, mergeMap, of } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { Server, Socket } from 'socket.io';
 import {
   InternalAsset,
@@ -44,7 +44,7 @@ export const approximateIntermediateOutput = async (asset: InternalAsset, amount
   );
 };
 
-type RpcLimitOrder = {
+export type RpcLimitOrder = {
   LimitOrder: {
     base_asset: UncheckedAssetAndChain;
     quote_asset: UncheckedAssetAndChain;
@@ -171,22 +171,17 @@ export default class Quoter {
         clearTimeout(timer);
       };
 
-      sub = this.quotes$
-        .pipe(
-          mergeMap(({ quote, marketMaker }) => {
-            const format = quotedLegsMap.get(marketMaker);
-            if (quote.request_id !== request.request_id || !format) return EMPTY;
-
-            return of({
-              marketMaker,
-              quote: { ...quote, legs: format(quote.legs) },
-            });
-          }),
-        )
-        .subscribe(({ marketMaker, quote }) => {
-          clientsReceivedQuotes.set(marketMaker, quote);
-          if (clientsReceivedQuotes.size === expectedResponses) complete();
-        });
+      sub = this.quotes$.subscribe(({ marketMaker, quote }) => {
+        const format = quotedLegsMap.get(marketMaker);
+        if (quote.request_id !== request.request_id) return;
+        if (format) {
+          clientsReceivedQuotes.set(marketMaker, { ...quote, legs: format(quote.legs) });
+        } else {
+          logger.error('unexpected missing format function');
+          expectedResponses -= 1;
+        }
+        if (clientsReceivedQuotes.size === expectedResponses) complete();
+      });
 
       timer = setTimeout(complete, env.QUOTE_TIMEOUT);
     });
