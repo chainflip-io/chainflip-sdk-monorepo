@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { BaseAssetAndChain } from '@/shared/enums';
 import { numericString } from '@/shared/parsers';
-import type Leg from './Leg';
 
 const limitOrder = z.tuple([z.number(), numericString.transform((n) => BigInt(n))]);
 
