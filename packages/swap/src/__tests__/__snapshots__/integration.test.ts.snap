@@ -52,6 +52,7 @@ exports[`python integration test replies to a quote request 2`] = `
   [
     {
       "amount": 1000000000000000000n,
+      "brokerCommissionBps": undefined,
       "destAsset": "Usdc",
       "limitOrders": [
         {

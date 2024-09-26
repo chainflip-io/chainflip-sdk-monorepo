@@ -338,11 +338,11 @@ describe('server', () => {
         'cf_swap_rate_v2',
         { asset: 'USDC', chain: 'Ethereum' },
         { asset: 'ETH', chain: 'Ethereum' },
-        hexEncodeNumber(99_900_000), // deposit amount - broker fee
+        hexEncodeNumber(100_000_000), // deposit amount
         [],
       );
       expect(body).toMatchObject({
-        egressAmount: (1e18 - 25000).toString(),
+        egressAmount: (1e18 - 25000 - 1e18 * 0.001).toString(),
         includedFees: [
           {
             amount: '100000',
@@ -372,7 +372,7 @@ describe('server', () => {
         poolInfo: [
           {
             fee: {
-              amount: '199800',
+              amount: '200000',
               asset: 'USDC',
               chain: 'Ethereum',
             },
