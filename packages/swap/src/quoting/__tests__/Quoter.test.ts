@@ -1,4 +1,5 @@
 /* eslint-disable dot-notation */
+import { deferredPromise } from '@chainflip/utils/async';
 import BigNumber from 'bignumber.js';
 import * as crypto from 'crypto';
 import { Server } from 'socket.io';
@@ -11,7 +12,7 @@ import prisma, { InternalAsset } from '../../client';
 import { getAssetPrice } from '../../pricing';
 import authenticate from '../authenticate';
 import Quoter, { approximateIntermediateOutput, type RpcLimitOrder } from '../Quoter';
-import { MarketMakerRawQuote } from '../schemas';
+import { LegJson, MarketMakerQuoteRequest, MarketMakerRawQuote } from '../schemas';
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
@@ -36,28 +37,31 @@ function toAtomicUnits(amount: number, asset: InternalAsset, output: string | bi
 describe(Quoter, () => {
   let oldEnv: typeof env;
   let quoter: Quoter;
-  let connectClient: (name: string) => Promise<{
-    sendQuote: (quote: MarketMakerRawQuote) => RpcLimitOrder[];
+  let connectClient: (
+    name: string,
+    quotedAssets?: InternalAsset[],
+  ) => Promise<{
+    sendQuote: (
+      quote: MarketMakerRawQuote,
+      srcAsset?: InternalAsset,
+      destAsset?: InternalAsset,
+    ) => RpcLimitOrder[];
     socket: Socket;
+    requestCount: number;
+    waitForRequest: () => Promise<MarketMakerQuoteRequest<LegJson>>;
   }>;
   let server: Server;
   const sockets: Socket[] = [];
-  let ids: string[];
 
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE private."MarketMaker" CASCADE`;
     oldEnv = { ...env };
     server = new Server().use(authenticate).listen(0);
-    ids = [];
-    quoter = new Quoter(server, () => {
-      const id = crypto.randomUUID();
-      ids.push(id);
-      return id;
-    });
+    quoter = new Quoter(server);
 
-    jest.mocked(getAssetPrice).mockImplementation(
-      async (asset) =>
-        ({
+    jest.mocked(getAssetPrice).mockImplementation((asset) =>
+      Promise.resolve(
+        {
           Dot: 6.5,
           Usdt: 1,
           Usdc: 1,
@@ -68,10 +72,11 @@ describe(Quoter, () => {
           Flip: 4,
           Eth: 2_000,
           ArbEth: 2_000,
-        })[asset],
+        }[asset],
+      ),
     );
 
-    connectClient = async (name: string) => {
+    connectClient = async (name: string, quotedAssets?: InternalAsset[]) => {
       const { publicKey, privateKey } = await generateKeyPairAsync('ed25519');
       await prisma.marketMaker.create({
         data: {
@@ -85,12 +90,13 @@ describe(Quoter, () => {
 
       const socket = io(`http://localhost:${port}`, {
         auth: {
-          client_version: '1',
+          client_version: quotedAssets ? '2' : '1',
           market_maker_id: name,
           timestamp,
           signature: crypto
             .sign(null, Buffer.from(`${name}${timestamp}`, 'utf8'), privateKey)
             .toString('base64'),
+          quoted_assets: quotedAssets?.map((a) => getAssetAndChain(a)),
         },
       });
 
@@ -101,6 +107,16 @@ describe(Quoter, () => {
 
       sockets.push(socket);
 
+      let requestCount = 0;
+      let onRequest = (_id: MarketMakerQuoteRequest<LegJson>) => {
+        // noop
+      };
+
+      socket.on('quote_request', (quoteRequest) => {
+        requestCount += 1;
+        onRequest(quoteRequest);
+      });
+
       return {
         socket,
         sendQuote(
@@ -110,23 +126,46 @@ describe(Quoter, () => {
         ): RpcLimitOrder[] {
           socket.emit('quote_response', quote);
 
-          expect(socket.connected).toBe(true);
-
           return quote.legs.flatMap((leg, i) =>
             leg.map(([tick, amount]) => {
-              const baseAsset = i === 0 ? srcAsset : destAsset;
+              let baseAsset;
+              let side;
+
+              if (srcAsset === 'Usdc') {
+                baseAsset = destAsset;
+                side = 'buy';
+              } else if (destAsset === 'Usdc') {
+                baseAsset = srcAsset;
+                side = 'sell';
+              } else if (i === 0) {
+                baseAsset = srcAsset;
+                side = 'sell';
+              } else if (i === 1) {
+                baseAsset = destAsset;
+                side = 'buy';
+              } else {
+                throw new Error('unexpected leg index');
+              }
 
               return {
                 LimitOrder: {
                   base_asset: getAssetAndChain(baseAsset),
                   quote_asset: { asset: 'USDC', chain: 'Ethereum' },
-                  side: baseAsset === 'Usdc' ? 'buy' : 'sell',
+                  side,
                   sell_amount: `0x${BigInt(amount).toString(16)}`,
                   tick,
                 },
               } as RpcLimitOrder;
             }),
           );
+        },
+        get requestCount() {
+          return requestCount;
+        },
+        waitForRequest() {
+          const { resolve, promise } = deferredPromise<MarketMakerQuoteRequest<LegJson>>();
+          onRequest = resolve;
+          return promise;
         },
       };
     };
@@ -188,31 +227,31 @@ describe(Quoter, () => {
 
     it('returns an array of quotes if expectedQuotes is received', async () => {
       env.QUOTE_TIMEOUT = 10_000;
-      const { sendQuote } = await connectClient('marketMaker');
+      const { sendQuote, waitForRequest } = await connectClient('marketMaker');
       const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
-      const id = ids[0];
-      const quote = sendQuote({ request_id: id, legs: [[[0, '100']]] });
+      const request = await waitForRequest();
+      const quote = sendQuote({ ...request, legs: [[[0, '100']]] });
       expect(await limitOrders).toEqual(quote);
     });
 
     it('accepts the most recent quote from each market maker', async () => {
       env.QUOTE_TIMEOUT = 10;
-      const { sendQuote } = await connectClient('marketMaker');
+      const { sendQuote, waitForRequest } = await connectClient('marketMaker');
       await connectClient('marketMaker2');
       const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
-      const id = ids[0];
-      sendQuote({ request_id: id, legs: [[[0, '100']]] });
-      const quote = sendQuote({ request_id: id, legs: [[[0, '200']]] });
+      const request = await waitForRequest();
+      sendQuote({ ...request, legs: [[[0, '100']]] });
+      const quote = sendQuote({ ...request, legs: [[[0, '200']]] });
       expect(await limitOrders).toEqual(quote);
     });
 
     it.each([10, 50, 100])('can be configured with QUOTE_TIMEOUT', async (timeout) => {
       env.QUOTE_TIMEOUT = timeout;
-      const { sendQuote } = await connectClient('marketMaker');
+      const { sendQuote, waitForRequest } = await connectClient('marketMaker');
       const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const request = await waitForRequest();
       await sleep(timeout + 1);
-      const id = ids[0];
-      sendQuote({ request_id: id, legs: [[[0, '100']]] });
+      sendQuote({ ...request, legs: [[[0, '100']]] });
       expect(await limitOrders).toEqual([]);
     });
 
@@ -221,11 +260,74 @@ describe(Quoter, () => {
       const mm1 = await connectClient('marketMaker');
       const mm2 = await connectClient('marketMaker2');
       const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
-      const id = ids[0];
-      const quote1 = mm1.sendQuote({ request_id: id, legs: [[[0, '100']]] });
-      const quote2 = mm2.sendQuote({ request_id: id, legs: [[[0, '200']]] });
+      const request = await mm1.waitForRequest();
+      const quote1 = mm1.sendQuote({ ...request, legs: [[[0, '100']]] });
+      const quote2 = mm2.sendQuote({ ...request, legs: [[[0, '200']]] });
       // no need to advance timers because setTimeout is cleared
-      expect(await limitOrders).toEqual([quote2[0], quote1[0]]);
+      expect(await limitOrders).toEqual([...quote2, ...quote1]);
+    });
+
+    it("respects the market makers's quoted assets", async () => {
+      env.QUOTE_TIMEOUT = 10_000;
+      const mm = await connectClient('marketMaker', ['Flip']);
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      expect(await limitOrders).toEqual([]);
+      expect(mm.requestCount).toBe(0);
+    });
+
+    it("respects the market makers's quoted assets", async () => {
+      env.QUOTE_TIMEOUT = 10_000;
+      const mm = await connectClient('marketMaker', ['Flip']);
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      expect(await limitOrders).toEqual([]);
+      expect(mm.requestCount).toBe(0);
+    });
+
+    it('can quote the first leg only', async () => {
+      env.QUOTE_TIMEOUT = 10_000;
+      const mm = await connectClient('marketMaker', ['Sol']);
+      const limitOrders = quoter.getLimitOrders('Sol', 'Flip', ONE_BTC);
+      const request = await mm.waitForRequest();
+      const quote = mm.sendQuote({ ...request, legs: [[[0, '100']]] }, 'Sol', 'Usdc');
+      expect(await limitOrders).toEqual(quote);
+      expect(mm.requestCount).toBe(1);
+      expect(request).toMatchSnapshot({ request_id: expect.any(String) });
+    });
+
+    it('can quote the second leg only', async () => {
+      env.QUOTE_TIMEOUT = 10_000;
+      const mm = await connectClient('marketMaker', ['Flip']);
+      const limitOrders = quoter.getLimitOrders('Btc', 'Flip', ONE_BTC);
+      const request = await mm.waitForRequest();
+      const quote = mm.sendQuote({ ...request, legs: [[[0, '100']]] }, 'Usdc', 'Flip');
+      expect(await limitOrders).toEqual(quote);
+      expect(mm.requestCount).toBe(1);
+    });
+
+    it('can quote both legs', async () => {
+      env.QUOTE_TIMEOUT = 10_000;
+      const mm = await connectClient('marketMaker', ['Sol', 'Flip']);
+      const limitOrders = quoter.getLimitOrders('Sol', 'Flip', ONE_BTC);
+      const request = await mm.waitForRequest();
+      const quote = mm.sendQuote({ ...request, legs: [[[0, '100']], [[1, '200']]] }, 'Sol', 'Flip');
+      expect(await limitOrders).toEqual(quote);
+      expect(mm.requestCount).toBe(1);
+      expect(request).toMatchSnapshot({ request_id: expect.any(String) });
+    });
+
+    it('can mix and match', async () => {
+      env.QUOTE_TIMEOUT = 10_000;
+      const mm1 = await connectClient('marketMaker', ['Sol']);
+      const mm2 = await connectClient('marketMaker2', ['Flip']);
+      const limitOrders = quoter.getLimitOrders('Sol', 'Flip', ONE_BTC);
+      const [request1, request2] = await Promise.all([mm1.waitForRequest(), mm2.waitForRequest()]);
+      const quote1 = mm1.sendQuote({ ...request1, legs: [[[0, '100']]] }, 'Sol');
+      const quote2 = mm2.sendQuote({ ...request2, legs: [[[1, '200']]] }, 'Usdc', 'Flip');
+      expect(await limitOrders).toEqual([...quote1, ...quote2]);
+      expect(mm1.requestCount).toBe(1);
+      expect(mm2.requestCount).toBe(1);
+      expect(request1).toMatchSnapshot({ request_id: expect.any(String) }, 'solana');
+      expect(request2).toMatchSnapshot({ request_id: expect.any(String) }, 'flip');
     });
   });
 });
