@@ -44,13 +44,13 @@ export default async function getPoolQuote({
   const includedFees = [];
   let swapInputAmount = originalSwapInputAmount;
 
-  const brokerFee =
-    brokerCommissionBps && getPipAmountFromAmount(swapInputAmount, brokerCommissionBps);
+  // const brokerFee =
+  //   brokerCommissionBps && getPipAmountFromAmount(swapInputAmount, brokerCommissionBps);
 
-  if (brokerFee) {
-    includedFees.push(buildFee(srcAsset, 'BROKER', brokerFee));
-    swapInputAmount -= brokerFee;
-  }
+  // if (brokerFee) {
+  //   includedFees.push(buildFee(srcAsset, 'BROKER', brokerFee));
+  //   swapInputAmount -= brokerFee;
+  // }
 
   if (boostFeeBps) {
     const boostFee = getPipAmountFromAmount(swapInputAmount, boostFeeBps);
@@ -58,15 +58,19 @@ export default async function getPoolQuote({
     swapInputAmount -= boostFee;
   }
 
-  const { egressFee, ingressFee, networkFee, outputAmount, intermediateAmount } =
+  const { egressFee, ingressFee, networkFee, outputAmount, intermediateAmount, brokerFee } =
     await getSwapRateV2({
       srcAsset,
       destAsset,
       amount: swapInputAmount,
       limitOrders,
+      brokerCommissionBps,
     });
 
   const minimumEgressAmount = await getMinimumEgressAmount(destAsset);
+  if (brokerFee) {
+    includedFees.push(buildFee('Usdc', 'BROKER', brokerFee));
+  }
 
   if (outputAmount === 0n) {
     if (networkFee.amount === 0n) {
