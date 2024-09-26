@@ -18,51 +18,32 @@ export type SwapRateArgs = {
 
 export type LimitOrders = RpcParams['cf_swap_rate_v2'][3];
 
-const getDeductedBrokerFeeOutput = ({
+export const getDeductedBrokerFeeOutput = ({
   destAsset,
   inputAmount,
   intermediateAmount,
-  outputAmount,
-  brokerCommissionBps,
+  egressAmount,
+  brokerCommissionBps = 0,
   egressFee,
 }: {
   destAsset: InternalAsset;
   inputAmount: bigint;
   intermediateAmount: bigint | null;
-  outputAmount: bigint;
+  egressAmount: bigint;
   brokerCommissionBps?: number;
   egressFee: bigint;
 }) => {
-  if (!brokerCommissionBps) {
-    return { intermediateAmount, outputAmount };
-  }
   let usdcAmount = intermediateAmount ?? inputAmount;
   if (destAsset === 'Usdc') {
-    usdcAmount = outputAmount;
+    usdcAmount = egressAmount;
   }
 
-  const brokerFee = BigInt(
-    brokerCommissionBps && getPipAmountFromAmount(usdcAmount, brokerCommissionBps),
-  );
+  const brokerFee = BigInt(getPipAmountFromAmount(usdcAmount, brokerCommissionBps));
 
-  const outputAmountExchangeRate = (outputAmount + egressFee) / (intermediateAmount ?? inputAmount);
-
-  if (intermediateAmount) {
-    return {
-      intermediateAmount: intermediateAmount - brokerFee,
-      outputAmount: outputAmount - brokerFee * outputAmountExchangeRate,
-      brokerFee,
-    };
-  }
-  if (destAsset === 'Usdc') {
-    return {
-      outputAmount: outputAmount - brokerFee,
-      brokerFee,
-    };
-  }
-  // Source asset is USDC
   return {
-    outputAmount: outputAmount - brokerFee * outputAmountExchangeRate,
+    intermediateAmount: intermediateAmount ? intermediateAmount - brokerFee : undefined,
+    egressAmount:
+      egressAmount - getPipAmountFromAmount(egressAmount + egressFee, brokerCommissionBps),
     brokerFee,
   };
 };
@@ -78,7 +59,7 @@ export const getSwapRateV2 = async ({
 
   const {
     intermediary: intermediateAmount,
-    output: outputAmount,
+    output: egressAmount,
     egress_fee: egressFee,
     ingress_fee: ingressFee,
     network_fee: networkFee,
@@ -91,21 +72,21 @@ export const getSwapRateV2 = async ({
   );
 
   const {
-    outputAmount: outputAmountExcludingBrokerFee,
+    egressAmount: egressAmountExcludingBrokerFee,
     intermediateAmount: intermediateAmountExcludingBrokerFee,
     brokerFee,
   } = getDeductedBrokerFeeOutput({
     inputAmount: amount,
     destAsset,
     intermediateAmount,
-    outputAmount,
+    egressAmount,
     brokerCommissionBps,
     egressFee: egressFee.amount,
   });
 
   return {
     intermediateAmount: intermediateAmountExcludingBrokerFee,
-    outputAmount: outputAmountExcludingBrokerFee,
+    egressAmount: egressAmountExcludingBrokerFee,
     egressFee,
     ingressFee,
     networkFee,

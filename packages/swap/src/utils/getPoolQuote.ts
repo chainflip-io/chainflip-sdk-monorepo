@@ -50,7 +50,7 @@ export default async function getPoolQuote({
     swapInputAmount -= boostFee;
   }
 
-  const { egressFee, ingressFee, networkFee, outputAmount, intermediateAmount, brokerFee } =
+  const { egressFee, ingressFee, networkFee, egressAmount, intermediateAmount, brokerFee } =
     await getSwapRateV2({
       srcAsset,
       destAsset,
@@ -64,7 +64,7 @@ export default async function getPoolQuote({
     includedFees.push(buildFee('Usdc', 'BROKER', brokerFee));
   }
 
-  if (outputAmount === 0n) {
+  if (egressAmount === 0n) {
     if (networkFee.amount === 0n) {
       // this shouldn't happen because we check before but i'll keep it here anyway
       throw ServiceError.badRequest('swap amount is lower than ingress fee');
@@ -76,9 +76,9 @@ export default async function getPoolQuote({
     );
   }
 
-  if (outputAmount < minimumEgressAmount) {
+  if (egressAmount < minimumEgressAmount) {
     throw ServiceError.badRequest(
-      `egress amount (${outputAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
+      `egress amount (${egressAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
     );
   }
 
@@ -86,7 +86,7 @@ export default async function getPoolQuote({
     srcAsset,
     destAsset,
     srcAmount: swapInputAmount,
-    destAmount: outputAmount,
+    destAmount: egressAmount,
   });
 
   includedFees.push(
@@ -105,7 +105,7 @@ export default async function getPoolQuote({
 
   return {
     intermediateAmount: intermediateAmount?.toString(),
-    egressAmount: outputAmount.toString(),
+    egressAmount: egressAmount.toString(),
     includedFees,
     lowLiquidityWarning,
     poolInfo,
@@ -114,7 +114,7 @@ export default async function getPoolQuote({
       destAsset,
       boosted: Boolean(boostFeeBps),
     }),
-    estimatedPrice: getPrice(swapInputAmount, srcAsset, outputAmount, destAsset),
+    estimatedPrice: getPrice(swapInputAmount, srcAsset, egressAmount, destAsset),
     type: quoteType,
   };
 }
