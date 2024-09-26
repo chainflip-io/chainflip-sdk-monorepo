@@ -188,6 +188,10 @@ export type ChainMap<T> = {
   [C in Chain]: T;
 };
 
+export type InternalAssetMap<T> = {
+  [A in InternalAsset]: T;
+};
+
 export function isValidAssetAndChain(
   assetAndChain: UncheckedAssetAndChain,
 ): assetAndChain is AssetAndChain {
