@@ -7,6 +7,12 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## 1.6.3
+
+### Fixed
+- Fixed a bug in the smart contract swaps where the CF Parameters were not being
+  properly passed to the smart contract call.
+
 ## 1.6.2
 
 ### Changed
