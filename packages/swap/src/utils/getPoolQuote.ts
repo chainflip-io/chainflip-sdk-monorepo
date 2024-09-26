@@ -44,14 +44,6 @@ export default async function getPoolQuote({
   const includedFees = [];
   let swapInputAmount = originalSwapInputAmount;
 
-  // const brokerFee =
-  //   brokerCommissionBps && getPipAmountFromAmount(swapInputAmount, brokerCommissionBps);
-
-  // if (brokerFee) {
-  //   includedFees.push(buildFee(srcAsset, 'BROKER', brokerFee));
-  //   swapInputAmount -= brokerFee;
-  // }
-
   if (boostFeeBps) {
     const boostFee = getPipAmountFromAmount(swapInputAmount, boostFeeBps);
     includedFees.push(buildFee(srcAsset, 'BOOST', boostFee));
