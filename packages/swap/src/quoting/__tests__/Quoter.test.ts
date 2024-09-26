@@ -5,14 +5,13 @@ import { Server } from 'socket.io';
 import { io, Socket } from 'socket.io-client';
 import { setTimeout as sleep } from 'timers/promises';
 import { promisify } from 'util';
-import { assetConstants } from '@/shared/enums';
+import { assetConstants, getAssetAndChain } from '@/shared/enums';
 import env from '@/swap/config/env';
 import prisma, { InternalAsset } from '../../client';
 import { getAssetPrice } from '../../pricing';
 import authenticate from '../authenticate';
-import Leg from '../Leg';
-import Quoter, { approximateIntermediateOutput } from '../Quoter';
-import { MarketMakerQuote, MarketMakerRawQuote } from '../schemas';
+import Quoter, { approximateIntermediateOutput, type RpcLimitOrder } from '../Quoter';
+import { MarketMakerRawQuote } from '../schemas';
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
@@ -38,18 +37,39 @@ describe(Quoter, () => {
   let oldEnv: typeof env;
   let quoter: Quoter;
   let connectClient: (name: string) => Promise<{
-    sendQuote: (quote: MarketMakerRawQuote) => MarketMakerQuote;
+    sendQuote: (quote: MarketMakerRawQuote) => RpcLimitOrder[];
     socket: Socket;
   }>;
   let server: Server;
   const sockets: Socket[] = [];
+  let ids: string[];
 
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE private."MarketMaker" CASCADE`;
     oldEnv = { ...env };
     server = new Server().use(authenticate).listen(0);
+    ids = [];
+    quoter = new Quoter(server, () => {
+      const id = crypto.randomUUID();
+      ids.push(id);
+      return id;
+    });
 
-    quoter = new Quoter(server);
+    jest.mocked(getAssetPrice).mockImplementation(
+      async (asset) =>
+        ({
+          Dot: 6.5,
+          Usdt: 1,
+          Usdc: 1,
+          ArbUsdc: 1,
+          SolUsdc: 1,
+          Sol: 150,
+          Btc: 65_000,
+          Flip: 4,
+          Eth: 2_000,
+          ArbEth: 2_000,
+        })[asset],
+    );
 
     connectClient = async (name: string) => {
       const { publicKey, privateKey } = await generateKeyPairAsync('ed25519');
@@ -83,15 +103,30 @@ describe(Quoter, () => {
 
       return {
         socket,
-        sendQuote(quote: MarketMakerRawQuote) {
+        sendQuote(
+          quote: MarketMakerRawQuote,
+          srcAsset: InternalAsset = 'Btc',
+          destAsset: InternalAsset = 'Usdc',
+        ): RpcLimitOrder[] {
           socket.emit('quote_response', quote);
 
           expect(socket.connected).toBe(true);
 
-          return {
-            request_id: quote.request_id,
-            legs: quote.legs.map((leg) => leg.map(([tick, amount]) => [tick, BigInt(amount)])),
-          } as MarketMakerQuote;
+          return quote.legs.flatMap((leg, i) =>
+            leg.map(([tick, amount]) => {
+              const baseAsset = i === 0 ? srcAsset : destAsset;
+
+              return {
+                LimitOrder: {
+                  base_asset: getAssetAndChain(baseAsset),
+                  quote_asset: { asset: 'USDC', chain: 'Ethereum' },
+                  side: baseAsset === 'Usdc' ? 'buy' : 'sell',
+                  sell_amount: `0x${BigInt(amount).toString(16)}`,
+                  tick,
+                },
+              } as RpcLimitOrder;
+            }),
+          );
         },
       };
     };
@@ -138,65 +173,59 @@ describe(Quoter, () => {
   });
 
   describe(Quoter.prototype['collectMakerQuotes'], () => {
-    const collectQuotes = () => {
-      const id = crypto.randomUUID();
-
-      return {
-        promise: quoter['collectMakerQuotes']({
-          request_id: id,
-          legs: [Leg.of('Flip', 'Usdc', 1000n)],
-        }),
-        id,
-      };
-    };
+    const ONE_BTC = toAtomicUnits(1, 'Btc', 'bigint');
 
     it('returns an empty array if expectedQuotes is 0', async () => {
-      expect(await quoter['collectMakerQuotes']({ request_id: 'id', legs: [] as any })).toEqual([]);
+      expect(await quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC)).toEqual([]);
     });
 
     it('returns an empty array if no quotes are received', async () => {
       env.QUOTE_TIMEOUT = 10;
       await connectClient('marketMaker');
-      const { promise } = collectQuotes();
-      expect(await promise).toEqual([]);
+      const orders = await quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      expect(orders).toEqual([]);
     });
 
     it('returns an array of quotes if expectedQuotes is received', async () => {
       env.QUOTE_TIMEOUT = 10_000;
       const { sendQuote } = await connectClient('marketMaker');
-      const { id, promise } = collectQuotes();
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const id = ids[0];
       const quote = sendQuote({ request_id: id, legs: [[[0, '100']]] });
-      expect(await promise).toEqual([quote]);
+      expect(await limitOrders).toEqual(quote);
     });
 
     it('accepts the most recent quote from each market maker', async () => {
       env.QUOTE_TIMEOUT = 10;
       const { sendQuote } = await connectClient('marketMaker');
       await connectClient('marketMaker2');
-      const { id, promise } = collectQuotes();
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const id = ids[0];
       sendQuote({ request_id: id, legs: [[[0, '100']]] });
       const quote = sendQuote({ request_id: id, legs: [[[0, '200']]] });
-      expect(await promise).toEqual([quote]);
+      expect(await limitOrders).toEqual(quote);
     });
 
     it.each([10, 50, 100])('can be configured with QUOTE_TIMEOUT', async (timeout) => {
       env.QUOTE_TIMEOUT = timeout;
       const { sendQuote } = await connectClient('marketMaker');
-      const { id, promise } = collectQuotes();
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
       await sleep(timeout + 1);
+      const id = ids[0];
       sendQuote({ request_id: id, legs: [[[0, '100']]] });
-      expect(await promise).toEqual([]);
+      expect(await limitOrders).toEqual([]);
     });
 
     it('eagerly returns after all expected quotes are received', async () => {
       env.QUOTE_TIMEOUT = 10_000;
       const mm1 = await connectClient('marketMaker');
       const mm2 = await connectClient('marketMaker2');
-      const { id, promise } = collectQuotes();
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const id = ids[0];
       const quote1 = mm1.sendQuote({ request_id: id, legs: [[[0, '100']]] });
       const quote2 = mm2.sendQuote({ request_id: id, legs: [[[0, '200']]] });
       // no need to advance timers because setTimeout is cleared
-      expect(await promise).toEqual([quote2, quote1]);
+      expect(await limitOrders).toEqual([quote2[0], quote1[0]]);
     });
   });
 });
