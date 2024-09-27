@@ -4,24 +4,16 @@ import { getPriceFromPriceX128 } from '@/shared/functions';
 import { assert } from '@/shared/guards';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
 import {
-  depositChannelInclude,
   getDepositInfo,
   getEgressStatusFields,
+  getLatestSwapForId,
   getSwapFields,
   getSwapState,
-  swapRequestInclude,
 } from './utils';
-import prisma, { Prisma, SwapFee } from '../../client';
+import { Prisma, SwapFee } from '../../client';
 import { readField } from '../../utils/function';
 import logger from '../../utils/logger';
-import ServiceError from '../../utils/ServiceError';
-import {
-  channelIdRegex,
-  coerceChain,
-  swapRequestId,
-  txHashRegex,
-  estimateSwapDuration,
-} from '../../utils/swap';
+import { estimateSwapDuration } from '../../utils/swap';
 import { asyncHandler } from '../common';
 
 const router = express.Router();
@@ -41,73 +33,8 @@ router.get(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    let swapRequest;
-    let failedSwap;
-    let swapDepositChannel;
-    let affiliateBrokers;
-
-    if (channelIdRegex.test(id)) {
-      const { issuedBlock, srcChain, channelId } = channelIdRegex.exec(id)!.groups!;
-
-      swapDepositChannel = await prisma.swapDepositChannel.findUnique({
-        where: {
-          issuedBlock_srcChain_channelId: {
-            issuedBlock: Number(issuedBlock),
-            srcChain: coerceChain(srcChain),
-            channelId: BigInt(channelId),
-          },
-        },
-        include: {
-          swapRequests: { include: swapRequestInclude, orderBy: { nativeId: 'desc' } },
-          failedSwaps: { include: { swapDepositChannel: { include: depositChannelInclude } } },
-          failedBoosts: true,
-          affiliates: {
-            select: {
-              account: true,
-              commissionBps: true,
-            },
-          },
-        },
-      });
-
-      if (!swapDepositChannel) {
-        logger.info(`could not find swap request with id "${id}"`);
-        throw ServiceError.notFound();
-      }
-
-      swapRequest = swapDepositChannel.swapRequests.at(0);
-      failedSwap = swapDepositChannel.failedSwaps.at(0);
-      if (swapDepositChannel.affiliates.length > 0) {
-        affiliateBrokers = swapDepositChannel.affiliates;
-      }
-    } else if (swapRequestId.test(id)) {
-      swapRequest = await prisma.swapRequest.findUnique({
-        where: { nativeId: BigInt(id) },
-        include: swapRequestInclude,
-      });
-    } else if (txHashRegex.test(id)) {
-      swapRequest = await prisma.swapRequest.findFirst({
-        where: { depositTransactionRef: id },
-        include: swapRequestInclude,
-        // just get the last one for now
-        orderBy: { nativeId: 'desc' },
-        take: 1,
-      });
-      if (!swapRequest) {
-        failedSwap = await prisma.failedSwap.findFirst({
-          where: { depositTransactionRef: id },
-          include: { swapDepositChannel: { include: depositChannelInclude } },
-        });
-      }
-    }
-
-    swapDepositChannel ??= swapRequest?.swapDepositChannel ?? failedSwap?.swapDepositChannel;
-
-    ServiceError.assert(
-      swapDepositChannel || swapRequest || failedSwap,
-      'notFound',
-      'resource not found',
-    );
+    const { swapRequest, failedSwap, swapDepositChannel, affiliateBrokers } =
+      await getLatestSwapForId(id);
 
     const swapEgress = swapRequest?.egress;
     const refundEgress = swapRequest?.refundEgress;
