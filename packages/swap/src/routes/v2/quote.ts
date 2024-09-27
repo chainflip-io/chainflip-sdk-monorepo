@@ -3,6 +3,7 @@ import express from 'express';
 import { Query } from 'express-serve-static-core';
 import type { Server } from 'socket.io';
 import { Asset, assetConstants, InternalAsset } from '@/shared/enums';
+import { exchangeAmount } from '@/shared/functions';
 import { quoteQuerySchema, QuoteQueryResponse } from '@/shared/schemas';
 import env from '../../config/env';
 import { getBoostSafeMode } from '../../polkadot/api';
@@ -131,6 +132,7 @@ const adjustDcaQuote = ({
         .toFixed(0),
       estimatedDurationSeconds:
         dcaBoostedQuote.estimatedDurationSeconds + dcaQuoteParams.addedDurationSeconds,
+      dcaParams: dcaQuote.dcaParams,
     };
   }
 };
@@ -225,25 +227,61 @@ export const generateQuotes = async ({
     quoteType: 'REGULAR' as const,
   };
 
-  const [quoteResult, boostedQuoteResult, dcaQuoteResult, dcaBoostedQuoteResult] =
-    await Promise.allSettled([
-      getPoolQuote(quoteArgs),
-      estimatedBoostFeeBps && getPoolQuote({ ...quoteArgs, boostFeeBps: estimatedBoostFeeBps }),
-      dcaQuoteParams &&
-        getPoolQuote({
-          ...quoteArgs,
-          swapInputAmount: dcaQuoteParams.chunkSize,
-          quoteType: 'DCA',
-        }),
-      dcaQuoteParams &&
-        estimatedBoostFeeBps &&
-        getPoolQuote({
-          ...quoteArgs,
-          boostFeeBps: estimatedBoostFeeBps,
-          swapInputAmount: dcaQuoteParams.chunkSize,
-          quoteType: 'DCA',
-        }),
-    ]);
+  const [quoteResult, boostedQuoteResult] = await Promise.allSettled([
+    getPoolQuote(quoteArgs),
+    estimatedBoostFeeBps && getPoolQuote({ ...quoteArgs, boostFeeBps: estimatedBoostFeeBps }),
+  ]);
+  const ingressFee =
+    quoteResult.status === 'fulfilled'
+      ? quoteResult.value.includedFees.find((fee) => fee.type === 'INGRESS')
+      : undefined;
+  const egressFee =
+    quoteResult.status === 'fulfilled'
+      ? quoteResult.value.includedFees.find((fee) => fee.type === 'EGRESS')
+      : undefined;
+
+  const exchangeRate = quoteResult.status === 'fulfilled' ? quoteResult.value.estimatedPrice : '0';
+  const sumIngressFeeEgressFee = new BigNumber(ingressFee?.amount ?? '0')
+    .plus(
+      egressFee
+        ? exchangeAmount({
+            amount: BigInt(egressFee.amount),
+            exchangeRate: new BigNumber(1).dividedBy(exchangeRate),
+            srcAsset: destAsset,
+            destAsset: srcAsset,
+          }) // we're exchanging from swap.destAsset to swap.srcAsset
+        : 0,
+    )
+    .toString();
+
+  const [dcaQuoteResult, dcaBoostedQuoteResult] = await Promise.allSettled([
+    dcaQuoteParams &&
+      getPoolQuote({
+        ...quoteArgs,
+        swapInputAmount:
+          dcaQuoteParams.chunkSize +
+          BigInt(
+            new BigNumber(sumIngressFeeEgressFee)
+              .dividedBy(dcaQuoteParams.numberOfChunks)
+              .toFixed(0),
+          ),
+        quoteType: 'DCA',
+      }),
+    dcaQuoteParams &&
+      estimatedBoostFeeBps &&
+      getPoolQuote({
+        ...quoteArgs,
+        boostFeeBps: estimatedBoostFeeBps,
+        swapInputAmount:
+          dcaQuoteParams.chunkSize +
+          BigInt(
+            new BigNumber(sumIngressFeeEgressFee)
+              .dividedBy(dcaQuoteParams.numberOfChunks)
+              .toFixed(0),
+          ),
+        quoteType: 'DCA',
+      }),
+  ]);
 
   if (dcaQuoteResult.status === 'rejected') {
     throw dcaQuoteResult.reason;

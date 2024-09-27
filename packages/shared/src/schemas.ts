@@ -137,14 +137,14 @@ export type QuoteDetails = {
   lowLiquidityWarning: boolean | undefined;
   estimatedDurationSeconds: number;
   estimatedPrice: string;
-};
-export type BoostedQuoteDetails = QuoteDetails & { estimatedBoostFeeBps: number };
-
-export type QuoteQueryResponse = QuoteDetails & {
-  boostQuote?: BoostedQuoteDetails;
   dcaParams?: {
     numberOfChunks: number;
     chunkIntervalBlocks: number;
   };
   type: QuoteType;
+};
+export type BoostedQuoteDetails = QuoteDetails & { estimatedBoostFeeBps: number };
+
+export type QuoteQueryResponse = QuoteDetails & {
+  boostQuote?: BoostedQuoteDetails;
 };
