@@ -1,15 +1,9 @@
-import { toUpperCase } from '@chainflip/utils/string';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts';
-import { InternalAsset, chainConstants, getAssetAndChain } from '@/shared/enums';
+import { Chains, InternalAsset, chainConstants, getAssetAndChain } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
-import { screamingSnakeToPascalCase } from '@/shared/strings';
 import { getWitnessSafetyMargin } from '@/swap/utils/rpc';
 import ServiceError from './ServiceError';
-import { Chain, FailedSwapReason, Swap } from '../client';
-
-export const channelIdRegex = /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
-export const swapRequestId = /^\d+$/i;
-export const txHashRegex = /^0x[a-f\d]+$/i;
+import { FailedSwapReason, Swap } from '../client';
 
 export const estimateSwapDuration = async ({
   srcAsset,
@@ -59,19 +53,10 @@ export const isEgressableSwap = (swap: Swap) => {
   }
 };
 
-export const coerceChain = (chain: string) => {
-  const uppercaseChain = toUpperCase(chain) as Uppercase<Chain>;
-  switch (uppercaseChain) {
-    case 'BITCOIN':
-    case 'ETHEREUM':
-    case 'POLKADOT':
-    case 'ARBITRUM':
-    case 'SOLANA':
-      return screamingSnakeToPascalCase(uppercaseChain);
-    default:
-      assertUnreachable(uppercaseChain);
-      throw ServiceError.badRequest(`invalid chain "${chain}"`);
-  }
+export const coerceChain = (maybeChain: string) => {
+  const chain = Object.values(Chains).find((c) => c.toLowerCase() === maybeChain.toLowerCase());
+  if (!chain) throw ServiceError.badRequest(`Invalid chain: ${maybeChain}`);
+  return chain;
 };
 
 export const failedSwapMessage: Record<FailedSwapReason, string> = {

@@ -1,8 +1,9 @@
 import { assertUnreachable } from '@/shared/functions';
 import { readField } from '@/swap/utils/function';
+import logger from '@/swap/utils/logger';
+import ServiceError from '@/swap/utils/ServiceError';
 import { StateV2 } from './swap';
 import prisma, {
-  Prisma,
   Swap,
   Egress,
   Broadcast,
@@ -10,16 +11,15 @@ import prisma, {
   IgnoredEgress,
   FailedSwap,
   SwapRequest,
-  SwapDepositChannel,
 } from '../../client';
 import {
   getPendingBroadcast,
   getPendingDeposit,
   PendingDeposit,
 } from '../../ingress-egress-tracking';
-import { failedSwapMessage, FailureMode } from '../../utils/swap';
+import { coerceChain, failedSwapMessage, FailureMode } from '../../utils/swap';
 
-export const depositChannelInclude = {
+const depositChannelInclude = {
   failedBoosts: true,
   failedSwaps: true,
   affiliates: {
@@ -30,7 +30,7 @@ export const depositChannelInclude = {
   },
 } as const;
 
-export const swapRequestInclude = {
+const swapRequestInclude = {
   swaps: { include: { fees: true }, orderBy: { nativeId: 'asc' } },
   egress: { include: { broadcast: true } },
   refundEgress: { include: { broadcast: true } },
@@ -40,6 +40,95 @@ export const swapRequestInclude = {
     include: depositChannelInclude,
   },
 } as const;
+
+const channelIdRegex = /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
+const swapRequestId = /^\d+$/i;
+const txHashRegex = /^0x[a-f\d]+$/i;
+
+export const getLatestSwapForId = async (id: string) => {
+  let swapRequest;
+  let failedSwap;
+  let swapDepositChannel;
+  let affiliateBrokers;
+
+  if (channelIdRegex.test(id)) {
+    const { issuedBlock, srcChain, channelId } = channelIdRegex.exec(id)!.groups!;
+
+    swapDepositChannel = await prisma.swapDepositChannel.findUnique({
+      where: {
+        issuedBlock_srcChain_channelId: {
+          issuedBlock: Number(issuedBlock),
+          srcChain: coerceChain(srcChain),
+          channelId: BigInt(channelId),
+        },
+      },
+      include: {
+        swapRequests: { include: swapRequestInclude, orderBy: { nativeId: 'desc' } },
+        failedSwaps: { include: { swapDepositChannel: { include: depositChannelInclude } } },
+        failedBoosts: true,
+        affiliates: {
+          select: {
+            account: true,
+            commissionBps: true,
+          },
+        },
+      },
+    });
+
+    if (!swapDepositChannel) {
+      logger.info(`could not find swap request with id "${id}"`);
+      throw ServiceError.notFound();
+    }
+
+    swapRequest = swapDepositChannel.swapRequests.at(0);
+    if (!swapRequest) {
+      failedSwap = swapDepositChannel.failedSwaps.at(0);
+    }
+    if (swapDepositChannel.affiliates.length > 0) {
+      affiliateBrokers = swapDepositChannel.affiliates;
+    }
+  } else if (swapRequestId.test(id)) {
+    swapRequest = await prisma.swapRequest.findUnique({
+      where: { nativeId: BigInt(id) },
+      include: swapRequestInclude,
+    });
+  } else if (txHashRegex.test(id)) {
+    swapRequest = await prisma.swapRequest.findFirst({
+      where: { depositTransactionRef: id },
+      include: swapRequestInclude,
+      // just get the last one for now
+      orderBy: { nativeId: 'desc' },
+      take: 1,
+    });
+    if (!swapRequest) {
+      failedSwap = await prisma.failedSwap.findFirst({
+        where: { depositTransactionRef: id },
+        include: { swapDepositChannel: { include: depositChannelInclude } },
+      });
+    }
+  }
+
+  swapDepositChannel ??= swapRequest?.swapDepositChannel ?? failedSwap?.swapDepositChannel;
+
+  ServiceError.assert(
+    swapDepositChannel || swapRequest || failedSwap,
+    'notFound',
+    'resource not found',
+  );
+
+  return {
+    swapRequest,
+    failedSwap,
+    swapDepositChannel,
+    affiliateBrokers,
+  };
+};
+
+type LatestSwapData = Awaited<ReturnType<typeof getLatestSwapForId>>;
+
+type SwapRequestData = NonNullable<LatestSwapData['swapRequest']>;
+type FailedSwapData = NonNullable<LatestSwapData['failedSwap']>;
+type SwapChannelData = NonNullable<LatestSwapData['swapDepositChannel']>;
 
 export const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
   inputAmount: swap.swapInputAmount.toString(),
@@ -187,15 +276,10 @@ export const getEgressStatusFields = async (
 };
 
 export const getSwapState = async (
-  failedSwap: FailedSwap | null | undefined,
+  failedSwap: FailedSwapData | null | undefined,
   ignoredEgresses: IgnoredEgress[] | undefined,
-  swapRequest:
-    | Prisma.SwapRequestGetPayload<{
-        include: typeof swapRequestInclude;
-      }>
-    | undefined
-    | null,
-  depositChannel: SwapDepositChannel | null | undefined,
+  swapRequest: SwapRequestData | undefined | null,
+  depositChannel: SwapChannelData | null | undefined,
 ): Promise<{
   state: StateV2;
   swapEgressTrackerTxRef: string | null | undefined;

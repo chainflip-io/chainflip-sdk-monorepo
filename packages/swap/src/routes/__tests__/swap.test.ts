@@ -1247,29 +1247,27 @@ describe('server', () => {
       expect(body).toMatchSnapshot();
     });
 
-    // TODO: reinstate
-    // it(`returns ${State.Failed} status even if it has other completed swaps`, async () => {
-    //   await processEvents([
-    //     ...swapEvents.slice(0, 9),
-    //     ...[
-    //       ...swapEvents.slice(0, 4),
-    //       swapEventMap['Swapping.RefundEgressScheduled'],
-    //       swapEventMap['Swapping.RefundEgressIgnored'],
-    //     ].map((obj) => incrementId(obj)),
-    //   ]);
-    //   const { body, status } = await request(server).get(`/swaps/${channelId}`);
-
-    //   expect(status).toBe(200);
-    //   const { swapId, ...rest } = body;
-    //   expect(rest).toMatchObject({
-    //     state: 'FAILED',
-    //     swapExecutedAt: 564000,
-    //     error: {
-    //       message: 'The deposited amount was below the minimum required',
-    //       name: 'BelowMinimumDeposit',
-    //     },
-    //   });
-    // });
+    it(`returns ${State.Complete} status even when the channel has other failed swaps`, async () => {
+      await processEvents(swapEvents.slice(0, 9));
+      const req1 = await request(server).get(`/swaps/${channelId}`);
+      expect(req1.status).toBe(200);
+      expect(req1.body.state).toBe('COMPLETE');
+      await prisma.failedSwap.create({
+        data: {
+          depositAmount: '100000',
+          destAddress: '0x1234',
+          reason: 'BelowMinimumDeposit',
+          destChain: 'Polkadot',
+          srcChain: 'Ethereum',
+          srcAsset: 'Eth',
+          failedAt: new Date(),
+          failedBlockIndex: '94-594',
+        },
+      });
+      const req2 = await request(server).get(`/swaps/${channelId}`);
+      expect(req2.status).toBe(200);
+      expect(req1.body).toStrictEqual(req2.body);
+    });
 
     it('retrieves a swap from a vault origin', async () => {
       const txHash = '0xb2dcb9ce8d50f0ab869995fee8482bcf304ffcfe5681ca748f90e34c0ad7b241';
