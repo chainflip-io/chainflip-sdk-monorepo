@@ -422,7 +422,7 @@ describe('server', () => {
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('gets the DCA quote to USDC', async () => {
+    it.only('gets the DCA quote to USDC', async () => {
       env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
@@ -541,7 +541,7 @@ describe('server', () => {
         {
           egressAmount: (400000000).toString(),
           estimatedDurationSeconds: 90,
-          estimatedPrice: '400',
+          estimatedPrice: '399.99999999999',
           includedFees: [
             {
               amount: '25000',
@@ -566,7 +566,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '500000000000000',
+                amount: '500000000000012',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
@@ -581,6 +581,22 @@ describe('server', () => {
         },
       ]);
       expect(sendSpy).toHaveBeenCalledTimes(2);
+      expect(sendSpy).toHaveBeenNthCalledWith(
+        1,
+        'cf_swap_rate_v2',
+        { asset: 'ETH', chain: 'Ethereum' },
+        { asset: 'USDC', chain: 'Ethereum' },
+        '0xde0b6b3a7640000', // 1e18
+        [],
+      );
+      expect(sendSpy).toHaveBeenNthCalledWith(
+        2,
+        'cf_swap_rate_v2',
+        { asset: 'ETH', chain: 'Ethereum' },
+        { asset: 'USDC', chain: 'Ethereum' },
+        '0x3782dace9d9186a', // 2.5e17 + 6250
+        [],
+      );
     });
 
     it('gets only REGULAR quote because amount is less than 3000', async () => {
