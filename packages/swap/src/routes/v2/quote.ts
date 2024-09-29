@@ -319,10 +319,11 @@ const quoteRouter = (io: Server) => {
 
       let limitOrdersReceived: Awaited<ReturnType<Quoter['getLimitOrders']>> | undefined;
       try {
-        const dcaQuoteParams = await getDcaQuoteParams(srcAsset, amount);
+        // Disable temporarily
+        // const dcaQuoteParams = await getDcaQuoteParams(srcAsset, amount);
 
         const { quotes, limitOrders } = await generateQuotes({
-          dcaQuoteParams,
+          dcaQuoteParams: undefined,
           srcAsset,
           amount,
           destAsset,
