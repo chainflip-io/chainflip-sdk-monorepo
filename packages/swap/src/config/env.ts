@@ -69,6 +69,7 @@ export default z
       }),
     ),
     MAX_CHANNELS_OPEN_PER_ADDRESS: optionalNumber(25),
+    DISABLE_DCA_QUOTING: optionalBoolean,
     // in case we want to disable quoting as a part of maintenance mode
     DISABLE_QUOTING: optionalBoolean,
     DISABLE_BOOST_QUOTING: optionalBoolean,
