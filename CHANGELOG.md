@@ -7,21 +7,38 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## 1.6.4
+
+### Changed
+
+- Optional parameter to enable DCA during SDK initialization
+  ```ts
+  new ChainflipSDK({
+    ...
+    enabledFeatures: {
+      dca: true;
+    };
+  });
+  ```
+
 ## 1.6.3
 
 ### Fixed
+
 - Fixed a bug in the smart contract swaps where the CF Parameters were not being
   properly passed to the smart contract call.
 
 ## 1.6.2
 
 ### Changed
+
 - Upgraded our internal RPC package to remove a web API and improve
   compatibility with React Native/the Hermes compiler.
 
 ## 1.6.1
 
 ### Changed
+
 - Upgraded our internal Bitcoin package to remove WebAssembly. The WebAssembly
   caused issues with React Native users as there is no WebAssembly runtime.
 
