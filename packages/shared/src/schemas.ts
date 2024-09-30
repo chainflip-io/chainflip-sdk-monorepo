@@ -10,6 +10,7 @@ import {
   chainflipAddress,
   number,
   hexString,
+  booleanString,
 } from './parsers';
 
 export const quoteQuerySchema = z
@@ -20,6 +21,7 @@ export const quoteQuerySchema = z
     destAsset: asset,
     amount: numericString.transform((n) => BigInt(n)),
     brokerCommissionBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
+    dcaEnabled: booleanString,
   })
   .transform((args, ctx) => {
     const { srcAsset, destAsset } = getInternalAssets(args, false);
@@ -47,6 +49,7 @@ export const quoteQuerySchema = z
       destAsset,
       amount: args.amount,
       brokerCommissionBps: args.brokerCommissionBps,
+      dcaEnabled: args.dcaEnabled,
     };
   });
 
