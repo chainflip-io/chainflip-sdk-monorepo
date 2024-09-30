@@ -78,7 +78,14 @@ describe('ApiService', () => {
     });
 
     it('gets a quote', async () => {
-      const route = await getQuoteV2('https://swapperoo.org', mockRoute, {});
+      const route = await getQuoteV2(
+        'https://swapperoo.org',
+        {
+          ...mockRoute,
+          dcaEnabled: false,
+        },
+        {},
+      );
 
       expect(route).toMatchSnapshot();
       expect(mockedGet.mock.lastCall).toMatchSnapshot();
@@ -90,6 +97,7 @@ describe('ApiService', () => {
         {
           ...mockRoute,
           brokerCommissionBps: 15,
+          dcaEnabled: false,
         },
         {},
       );
@@ -99,9 +107,16 @@ describe('ApiService', () => {
     });
 
     it('passes the signal to fetch', async () => {
-      await getQuoteV2('https://swapperoo.org', mockRoute, {
-        signal: new AbortController().signal,
-      });
+      await getQuoteV2(
+        'https://swapperoo.org',
+        {
+          ...mockRoute,
+          dcaEnabled: false,
+        },
+        {
+          signal: new AbortController().signal,
+        },
+      );
 
       expect(mockedGet.mock.lastCall?.[1]?.signal).not.toBeUndefined();
     });
