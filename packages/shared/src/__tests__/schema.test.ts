@@ -118,7 +118,7 @@ describe('postSwapSchema', () => {
     ).not.toThrow();
   });
 
-  it('only allows FoK params without DCA params', () => {
+  it('allows FoK params without DCA params', () => {
     expect(() =>
       openSwapDepositChannelSchema.parse({
         ...swapBody,
