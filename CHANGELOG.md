@@ -11,7 +11,7 @@ which it is deprecated.
 
 ### Changed
 
-- Optional parameter to enable DCA during SDK initialization
+- Optional parameter to enable DCA during SDK initialization. The default value for this parameter is `false`.
   ```ts
   new ChainflipSDK({
     ...
