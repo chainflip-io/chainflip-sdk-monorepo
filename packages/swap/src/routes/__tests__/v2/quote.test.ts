@@ -422,7 +422,7 @@ describe('server', () => {
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 
-    it.only('gets the DCA quote to USDC', async () => {
+    it('gets the DCA quote to USDC', async () => {
       env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
