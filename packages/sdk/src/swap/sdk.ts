@@ -60,6 +60,9 @@ export type SwapSDKOptions = {
     commissionBps: number;
   };
   rpcUrl?: string;
+  enabledFeatures?: {
+    dca?: boolean;
+  };
 };
 
 export class SwapSDK {
@@ -72,6 +75,8 @@ export class SwapSDK {
   private stateChainEnvironment?: Environment;
 
   private supportedAssets?: InternalAsset[];
+
+  private dcaEnabled = false;
 
   constructor(options: SwapSDKOptions = {}) {
     const network = options.network ?? ChainflipNetworks.perseverance;
@@ -90,6 +95,7 @@ export class SwapSDK {
         }),
       ],
     });
+    this.dcaEnabled = options.enabledFeatures?.dca ?? false;
   }
 
   async getChains(sourceChain?: Chain): Promise<ChainData[]> {
@@ -174,6 +180,7 @@ export class SwapSDK {
       {
         ...remainingRequest,
         brokerCommissionBps: submitterBrokerCommissionBps + affiliateBrokerCommissionBps,
+        dcaEnabled: this.dcaEnabled,
       },
       options,
     );

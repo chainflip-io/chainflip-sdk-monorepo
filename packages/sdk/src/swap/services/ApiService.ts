@@ -30,6 +30,7 @@ export const getQuote: BackendQuery<
     ...(brokerCommissionBps && {
       brokerCommissionBps: String(brokerCommissionBps),
     }),
+    dcaEnabled: 'false',
   };
 
   const { data } = await axios.get<QuoteQueryResponse>('/quote', {
@@ -43,7 +44,7 @@ export const getQuote: BackendQuery<
 };
 
 export const getQuoteV2: BackendQuery<
-  QuoteRequest & { brokerCommissionBps?: number },
+  QuoteRequest & { brokerCommissionBps?: number; dcaEnabled: boolean },
   QuoteResponseV2
 > = async (baseUrl, quoteRequest, { signal }) => {
   const { brokerCommissionBps, ...returnedRequestData } = quoteRequest;
@@ -56,6 +57,7 @@ export const getQuoteV2: BackendQuery<
     ...(brokerCommissionBps && {
       brokerCommissionBps: String(brokerCommissionBps),
     }),
+    dcaEnabled: String(quoteRequest.dcaEnabled),
   };
 
   const { data } = await axios.get<QuoteQueryResponse[]>('/v2/quote', {

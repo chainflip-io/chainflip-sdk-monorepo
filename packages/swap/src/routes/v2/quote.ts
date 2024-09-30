@@ -142,7 +142,7 @@ export const validateQuoteQuery = async (query: Query) => {
   query.srcChain ??= fallbackChains[query.srcAsset as Asset];
   // eslint-disable-next-line no-param-reassign
   query.destChain ??= fallbackChains[query.destAsset as Asset];
-  const queryResult = quoteQuerySchema.safeParse(query);
+  const queryResult = quoteQuerySchema.safeParse({ dcaEnabled: 'false', ...query });
 
   if (!queryResult.success) {
     logger.info('received invalid quote request', {
@@ -187,6 +187,7 @@ export const validateQuoteQuery = async (query: Query) => {
     amount,
     brokerCommissionBps,
     boostDepositsEnabled,
+    dcaEnabled: queryResult.data.dcaEnabled,
   };
 };
 
@@ -314,14 +315,15 @@ const quoteRouter = (io: Server) => {
     asyncHandler(async (req, res) => {
       const start = performance.now();
 
-      const { srcAsset, destAsset, amount, brokerCommissionBps, boostDepositsEnabled } =
+      const { srcAsset, destAsset, amount, brokerCommissionBps, boostDepositsEnabled, dcaEnabled } =
         await validateQuoteQuery(req.query);
 
       let limitOrdersReceived: Awaited<ReturnType<Quoter['getLimitOrders']>> | undefined;
       try {
-        const dcaQuoteParams = env.DISABLE_DCA_QUOTING
-          ? undefined
-          : await getDcaQuoteParams(srcAsset, amount);
+        const dcaQuoteParams =
+          env.DISABLE_DCA_QUOTING || !dcaEnabled
+            ? undefined
+            : await getDcaQuoteParams(srcAsset, amount);
 
         const { quotes, limitOrders } = await generateQuotes({
           dcaQuoteParams,
