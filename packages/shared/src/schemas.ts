@@ -1,5 +1,5 @@
 import { hexEncodeNumber } from '@chainflip/utils/number';
-import { z } from 'zod';
+import { RefinementCtx, z } from 'zod';
 import { Chain, Asset, getInternalAssets, AssetAndChain } from './enums';
 import {
   chain,
@@ -91,6 +91,22 @@ export type FillOrKillParams = Omit<FillOrKillParamsX128, 'minPriceX128'> & {
   minPrice: string;
 };
 
+export const ensureDcaWithFok = <
+  T extends { dcaParams?: Record<string, unknown>; fillOrKillParams?: Record<string, unknown> },
+>(
+  args: T,
+  ctx: RefinementCtx,
+  // eslint-disable-next-line consistent-return
+) => {
+  if (args.dcaParams && !args.fillOrKillParams) {
+    ctx.addIssue({
+      code: 'custom',
+      message: 'dcaParams requires fillOrKillParams',
+    });
+    return z.NEVER;
+  }
+};
+
 export const openSwapDepositChannelSchema = z
   .object({
     srcAsset: asset,
@@ -106,6 +122,8 @@ export const openSwapDepositChannelSchema = z
     fillOrKillParams: fillOrKillParams.optional(),
     dcaParams: dcaParams.optional(),
   })
+  .superRefine(ensureDcaWithFok)
+  // openSwapDepositChannelSchema
   .transform(({ amount, ...rest }) => ({
     ...rest,
     expectedDepositAmount: amount,

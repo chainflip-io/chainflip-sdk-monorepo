@@ -11,16 +11,16 @@ const swapBody = {
 
 describe('postSwapSchema', () => {
   it('handles empty ccmParams strings', () => {
-    expect(
-      openSwapDepositChannelSchema.safeParse({
+    expect(() =>
+      openSwapDepositChannelSchema.parse({
         ...swapBody,
       }),
-    ).toMatchObject({ success: true });
+    ).not.toThrow();
   });
 
   it('handles full ccmParams', () => {
-    expect(
-      openSwapDepositChannelSchema.safeParse({
+    expect(() =>
+      openSwapDepositChannelSchema.parse({
         ...swapBody,
         ccmParams: {
           gasBudget: '123',
@@ -28,47 +28,47 @@ describe('postSwapSchema', () => {
           cfParameters: '0xcafebabe',
         },
       }),
-    ).toMatchObject({ success: true });
+    ).not.toThrow();
   });
 
   it('handles without cf parameters', () => {
-    expect(
-      openSwapDepositChannelSchema.safeParse({
+    expect(() =>
+      openSwapDepositChannelSchema.parse({
         ...swapBody,
         ccmParams: {
           gasBudget: '123',
           message: '0xdeadc0de',
         },
       }),
-    ).toMatchObject({ success: true });
+    ).not.toThrow();
   });
 
   it('handles missing ccm params', () => {
-    expect(
-      openSwapDepositChannelSchema.safeParse({
+    expect(() =>
+      openSwapDepositChannelSchema.parse({
         ...swapBody,
         ccmParams: {
           gasBudget: '123',
         },
       }),
-    ).toMatchObject({ success: false });
+    ).toThrow();
   });
 
   it('handles missing ccm params', () => {
-    expect(
-      openSwapDepositChannelSchema.safeParse({
+    expect(() =>
+      openSwapDepositChannelSchema.parse({
         ...swapBody,
         ccmParams: {
           message: '0xdeadc0de',
           cfParameters: '0xcafebabe',
         },
       }),
-    ).toMatchObject({ success: false });
+    ).toThrow();
   });
 
   it('handles missing swap body params', () => {
-    expect(
-      openSwapDepositChannelSchema.safeParse({
+    expect(() =>
+      openSwapDepositChannelSchema.parse({
         srcAsset: 'BTC',
         destAsset: 'ETH',
         destAddress: '0x123',
@@ -78,17 +78,56 @@ describe('postSwapSchema', () => {
           cfParameters: '0xcafebabe',
         },
       }),
-    ).toMatchObject({ success: false });
+    ).toThrow();
   });
 
   it('handles missing dca params', () => {
-    expect(
-      openSwapDepositChannelSchema.safeParse({
+    expect(() =>
+      openSwapDepositChannelSchema.parse({
         ...swapBody,
         dcaParams: {
           numberOfChunks: 1,
         },
       }),
-    ).toMatchObject({ success: false });
+    ).toThrow();
+  });
+
+  it('only allows DCA params with FoK params', () => {
+    expect(() =>
+      openSwapDepositChannelSchema.parse({
+        ...swapBody,
+        dcaParams: {
+          numberOfChunks: 1,
+          chunkIntervalBlocks: 2,
+        },
+      }),
+    ).toThrow();
+    expect(() =>
+      openSwapDepositChannelSchema.parse({
+        ...swapBody,
+        dcaParams: {
+          numberOfChunks: 1,
+          chunkIntervalBlocks: 2,
+        },
+        fillOrKillParams: {
+          retryDurationBlocks: 10,
+          refundAddress: '0x1234',
+          minPriceX128: '1',
+        },
+      }),
+    ).not.toThrow();
+  });
+
+  it('only allows FoK params without DCA params', () => {
+    expect(() =>
+      openSwapDepositChannelSchema.parse({
+        ...swapBody,
+        fillOrKillParams: {
+          retryDurationBlocks: 10,
+          refundAddress: '0x1234',
+          minPriceX128: '1',
+        },
+      }),
+    ).not.toThrow();
   });
 });
