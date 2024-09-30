@@ -91,9 +91,7 @@ export type FillOrKillParams = Omit<FillOrKillParamsX128, 'minPriceX128'> & {
   minPrice: string;
 };
 
-export const ensureDcaWithFok = <
-  T extends { dcaParams?: Record<string, unknown>; fillOrKillParams?: Record<string, unknown> },
->(
+export const ensureDcaWithFok = <T extends { dcaParams?: unknown; fillOrKillParams?: unknown }>(
   args: T,
   ctx: RefinementCtx,
   // eslint-disable-next-line consistent-return
