@@ -3,7 +3,6 @@ import express from 'express';
 import { Query } from 'express-serve-static-core';
 import type { Server } from 'socket.io';
 import { Asset, assetConstants, InternalAsset } from '@/shared/enums';
-import { exchangeAmount } from '@/shared/functions';
 import { quoteQuerySchema, QuoteQueryResponse } from '@/shared/schemas';
 import env from '../../config/env';
 import { getBoostSafeMode } from '../../polkadot/api';

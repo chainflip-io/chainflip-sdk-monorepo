@@ -49,19 +49,3 @@ export const getPriceFromPriceX128 = (
     .toFixed();
 
 export const assertUnreachable = (x: never): never => x;
-
-export const exchangeAmount = ({
-  amount,
-  srcAsset,
-  destAsset,
-  exchangeRate,
-}: {
-  amount: bigint;
-  srcAsset: InternalAsset;
-  destAsset: InternalAsset;
-  exchangeRate: BigNumber;
-}) =>
-  BigNumber(amount.toString())
-    .multipliedBy(exchangeRate)
-    .shiftedBy(assetConstants[destAsset].decimals - assetConstants[srcAsset].decimals)
-    .toFixed();
