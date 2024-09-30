@@ -476,14 +476,14 @@ describe('server', () => {
         .spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
           ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 0).bigint,
+          egress_fee: buildFee('Usdc', 8000).bigint,
           network_fee: buildFee('Usdc', 100100).bigint,
           intermediary: null,
           output: BigInt(100e6),
         })
         .mockResolvedValueOnce({
           ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 0).bigint,
+          egress_fee: buildFee('Usdc', 8000).bigint,
           network_fee: buildFee('Usdc', 100100).bigint,
           intermediary: null,
           output: BigInt(100e6),
@@ -519,7 +519,7 @@ describe('server', () => {
               type: 'NETWORK',
             },
             {
-              amount: '0',
+              amount: '8000',
               asset: 'USDC',
               chain: 'Ethereum',
               type: 'EGRESS',
@@ -539,9 +539,9 @@ describe('server', () => {
           type: 'REGULAR',
         },
         {
-          egressAmount: (400000000).toString(),
+          egressAmount: (400024000).toString(),
           estimatedDurationSeconds: 90,
-          estimatedPrice: '399.99999999999',
+          estimatedPrice: '399.99999999997',
           includedFees: [
             {
               amount: '25000',
@@ -556,7 +556,7 @@ describe('server', () => {
               type: 'NETWORK',
             },
             {
-              amount: '0',
+              amount: '8000',
               asset: 'USDC',
               chain: 'Ethereum',
               type: 'EGRESS',
@@ -566,7 +566,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '500000000000012',
+                amount: '500000000000037',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
@@ -594,7 +594,7 @@ describe('server', () => {
         'cf_swap_rate_v2',
         { asset: 'ETH', chain: 'Ethereum' },
         { asset: 'USDC', chain: 'Ethereum' },
-        '0x3782dace9d9186a', // 2.5e17 + 6250
+        '0x3782dace9d9493e', // 2.5e17 + 3 * 6250 (ingressFee)
         [],
       );
     });

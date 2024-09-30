@@ -68,11 +68,13 @@ const adjustDcaQuote = ({
   dcaQuote,
   dcaBoostedQuote,
   estimatedBoostFeeBps,
+  egressFeeSurcharge,
 }: {
   dcaQuoteParams: NonNullable<Awaited<ReturnType<typeof getDcaQuoteParams>>>;
   dcaQuote: QuoteQueryResponse;
   dcaBoostedQuote?: QuoteQueryResponse | null | 0;
   estimatedBoostFeeBps?: number;
+  egressFeeSurcharge: bigint;
 }) => {
   // eslint-disable-next-line no-param-reassign
   dcaQuote.dcaParams = {
@@ -97,6 +99,7 @@ const adjustDcaQuote = ({
     // eslint-disable-next-line no-param-reassign
     dcaQuote.egressAmount = new BigNumber(dcaQuote.egressAmount)
       .multipliedBy(dcaQuoteParams.numberOfChunks)
+      .plus(egressFeeSurcharge.toString())
       .toFixed(0);
     // eslint-disable-next-line no-param-reassign
     dcaQuote.estimatedDurationSeconds += dcaQuoteParams.addedDurationSeconds;
@@ -129,6 +132,7 @@ const adjustDcaQuote = ({
       estimatedBoostFeeBps,
       egressAmount: BigNumber(dcaBoostedQuote.egressAmount)
         .multipliedBy(dcaQuoteParams.numberOfChunks)
+        .plus(egressFeeSurcharge.toString())
         .toFixed(0),
       estimatedDurationSeconds:
         dcaBoostedQuote.estimatedDurationSeconds + dcaQuoteParams.addedDurationSeconds,
@@ -240,31 +244,26 @@ export const generateQuotes = async ({
       ? quoteResult.value.includedFees.find((fee) => fee.type === 'EGRESS')
       : undefined;
 
-  const exchangeRate = quoteResult.status === 'fulfilled' ? quoteResult.value.estimatedPrice : '0';
-  const sumIngressFeeEgressFee = new BigNumber(ingressFee?.amount ?? '0')
-    .plus(
-      egressFee
-        ? exchangeAmount({
-            amount: BigInt(egressFee.amount),
-            exchangeRate: new BigNumber(1).dividedBy(exchangeRate),
-            srcAsset: destAsset,
-            destAsset: srcAsset,
-          }) // we're exchanging from swap.destAsset to swap.srcAsset
-        : 0,
-    )
-    .toString();
+  const ingressFeeSurcharge = dcaQuoteParams
+    ? BigInt(
+        new BigNumber(ingressFee?.amount ?? 0)
+          .multipliedBy((dcaQuoteParams.numberOfChunks - 1) / dcaQuoteParams.numberOfChunks)
+          .toFixed(0),
+      )
+    : 0n;
+  const egressFeeSurcharge = dcaQuoteParams
+    ? BigInt(
+        new BigNumber(egressFee?.amount ?? 0)
+          .multipliedBy(dcaQuoteParams.numberOfChunks - 1)
+          .toFixed(0),
+      )
+    : 0n;
 
   const [dcaQuoteResult, dcaBoostedQuoteResult] = await Promise.allSettled([
     dcaQuoteParams &&
       getPoolQuote({
         ...quoteArgs,
-        swapInputAmount:
-          dcaQuoteParams.chunkSize +
-          BigInt(
-            new BigNumber(sumIngressFeeEgressFee)
-              .dividedBy(dcaQuoteParams.numberOfChunks)
-              .toFixed(0),
-          ),
+        swapInputAmount: dcaQuoteParams.chunkSize + ingressFeeSurcharge,
         quoteType: 'DCA',
       }),
     dcaQuoteParams &&
@@ -272,13 +271,7 @@ export const generateQuotes = async ({
       getPoolQuote({
         ...quoteArgs,
         boostFeeBps: estimatedBoostFeeBps,
-        swapInputAmount:
-          dcaQuoteParams.chunkSize +
-          BigInt(
-            new BigNumber(sumIngressFeeEgressFee)
-              .dividedBy(dcaQuoteParams.numberOfChunks)
-              .toFixed(0),
-          ),
+        swapInputAmount: dcaQuoteParams.chunkSize + ingressFeeSurcharge,
         quoteType: 'DCA',
       }),
   ]);
@@ -321,6 +314,7 @@ export const generateQuotes = async ({
       dcaQuote,
       dcaBoostedQuote,
       estimatedBoostFeeBps,
+      egressFeeSurcharge,
     });
   }
 
