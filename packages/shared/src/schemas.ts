@@ -121,7 +121,6 @@ export const openSwapDepositChannelSchema = z
     dcaParams: dcaParams.optional(),
   })
   .superRefine(ensureDcaWithFok)
-  // openSwapDepositChannelSchema
   .transform(({ amount, ...rest }) => ({
     ...rest,
     expectedDepositAmount: amount,
