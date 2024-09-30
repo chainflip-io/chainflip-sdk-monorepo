@@ -424,4 +424,25 @@ describe(broker.requestSwapDepositAddress, () => {
       channelOpeningFee: 0n,
     });
   });
+
+  it("can't submit dca parameters without fok parameters", async () => {
+    await expect(
+      broker.requestSwapDepositAddress(
+        {
+          srcAsset: Assets.FLIP,
+          destAsset: Assets.USDC,
+          srcChain: 'Ethereum',
+          destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
+          destChain: 'Ethereum',
+          maxBoostFeeBps: 100,
+          dcaParams: {
+            numberOfChunks: 100,
+            chunkIntervalBlocks: 5,
+          },
+        },
+        brokerConfig,
+        'perseverance',
+      ),
+    ).rejects.toThrow('dcaParams requires fillOrKillParams');
+  });
 });

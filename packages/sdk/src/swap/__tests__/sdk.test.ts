@@ -819,6 +819,11 @@ describe(SwapSDK, () => {
           numberOfChunks: 100,
           chunkIntervalBlocks: 5,
         },
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '10000000000000',
+        },
       });
 
       expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
@@ -833,7 +838,11 @@ describe(SwapSDK, () => {
           null,
           null,
           null,
-          null,
+          {
+            min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+            refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+            retry_duration: 500,
+          },
           {
             number_of_chunks: 100,
             chunk_interval: 5,
@@ -852,6 +861,11 @@ describe(SwapSDK, () => {
         depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
         depositChannelExpiryBlock: 1234n,
         estimatedDepositChannelExpiryTime: undefined,
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          retryDurationBlocks: 500,
+        },
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
         ccmParams: undefined,
