@@ -476,14 +476,14 @@ describe('server', () => {
         .spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
           ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 0).bigint,
+          egress_fee: buildFee('Usdc', 8000).bigint,
           network_fee: buildFee('Usdc', 100100).bigint,
           intermediary: null,
           output: BigInt(100e6),
         })
         .mockResolvedValueOnce({
           ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 0).bigint,
+          egress_fee: buildFee('Usdc', 8000).bigint,
           network_fee: buildFee('Usdc', 100100).bigint,
           intermediary: null,
           output: BigInt(100e6),
@@ -520,7 +520,7 @@ describe('server', () => {
               type: 'NETWORK',
             },
             {
-              amount: '0',
+              amount: '8000',
               asset: 'USDC',
               chain: 'Ethereum',
               type: 'EGRESS',
@@ -540,9 +540,9 @@ describe('server', () => {
           type: 'REGULAR',
         },
         {
-          egressAmount: (400000000).toString(),
+          egressAmount: (400024000).toString(),
           estimatedDurationSeconds: 90,
-          estimatedPrice: '400',
+          estimatedPrice: '399.99999999997',
           includedFees: [
             {
               amount: '25000',
@@ -557,7 +557,7 @@ describe('server', () => {
               type: 'NETWORK',
             },
             {
-              amount: '0',
+              amount: '8000',
               asset: 'USDC',
               chain: 'Ethereum',
               type: 'EGRESS',
@@ -567,7 +567,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '500000000000000',
+                amount: '500000000000037',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
@@ -582,6 +582,22 @@ describe('server', () => {
         },
       ]);
       expect(sendSpy).toHaveBeenCalledTimes(2);
+      expect(sendSpy).toHaveBeenNthCalledWith(
+        1,
+        'cf_swap_rate_v2',
+        { asset: 'ETH', chain: 'Ethereum' },
+        { asset: 'USDC', chain: 'Ethereum' },
+        '0xde0b6b3a7640000', // 1e18
+        [],
+      );
+      expect(sendSpy).toHaveBeenNthCalledWith(
+        2,
+        'cf_swap_rate_v2',
+        { asset: 'ETH', chain: 'Ethereum' },
+        { asset: 'USDC', chain: 'Ethereum' },
+        '0x3782dace9d9493e', // 2.5e17 + 3 * 6250 (ingressFee)
+        [],
+      );
     });
 
     it('gets no DCA quote if the flag is missing', async () => {
