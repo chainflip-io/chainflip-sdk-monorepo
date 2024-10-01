@@ -67,13 +67,11 @@ const adjustDcaQuote = ({
   dcaQuote,
   dcaBoostedQuote,
   estimatedBoostFeeBps,
-  egressFeeSurcharge,
 }: {
   dcaQuoteParams: NonNullable<Awaited<ReturnType<typeof getDcaQuoteParams>>>;
   dcaQuote: QuoteQueryResponse;
   dcaBoostedQuote?: QuoteQueryResponse | null | 0;
   estimatedBoostFeeBps?: number;
-  egressFeeSurcharge: bigint;
 }) => {
   // eslint-disable-next-line no-param-reassign
   dcaQuote.dcaParams = {
@@ -95,10 +93,21 @@ const adjustDcaQuote = ({
         .toFixed(0);
     }
 
+    const egressFee = dcaQuote.includedFees.find((fee) => fee.type === 'EGRESS');
+    // when multiplying the egressAmount with numberOfChunks, we will deduct the egressFee multiple times.
+    // so we should add this fee back to the egress amount
+    const duplicatedEgressFeeAmount = dcaQuoteParams
+      ? BigInt(
+          new BigNumber(egressFee?.amount ?? 0)
+            .multipliedBy(dcaQuoteParams.numberOfChunks - 1)
+            .toFixed(0),
+        )
+      : 0n;
+
     // eslint-disable-next-line no-param-reassign
     dcaQuote.egressAmount = new BigNumber(dcaQuote.egressAmount)
       .multipliedBy(dcaQuoteParams.numberOfChunks)
-      .plus(egressFeeSurcharge.toString())
+      .plus(duplicatedEgressFeeAmount.toString())
       .toFixed(0);
     // eslint-disable-next-line no-param-reassign
     dcaQuote.estimatedDurationSeconds += dcaQuoteParams.addedDurationSeconds;
@@ -238,22 +247,13 @@ export const generateQuotes = async ({
     quoteResult.status === 'fulfilled'
       ? quoteResult.value.includedFees.find((fee) => fee.type === 'INGRESS')
       : undefined;
-  const egressFee =
-    quoteResult.status === 'fulfilled'
-      ? quoteResult.value.includedFees.find((fee) => fee.type === 'EGRESS')
-      : undefined;
 
+  // the swap_rate rpc will deduct the full ingress fee before simulating the swap
+  // as we quote a single chunk, we add a surcharge so that the effective deducted amount is 1/numberOfChunks
   const ingressFeeSurcharge = dcaQuoteParams
     ? BigInt(
         new BigNumber(ingressFee?.amount ?? 0)
           .multipliedBy((dcaQuoteParams.numberOfChunks - 1) / dcaQuoteParams.numberOfChunks)
-          .toFixed(0),
-      )
-    : 0n;
-  const egressFeeSurcharge = dcaQuoteParams
-    ? BigInt(
-        new BigNumber(egressFee?.amount ?? 0)
-          .multipliedBy(dcaQuoteParams.numberOfChunks - 1)
           .toFixed(0),
       )
     : 0n;
@@ -313,7 +313,6 @@ export const generateQuotes = async ({
       dcaQuote,
       dcaBoostedQuote,
       estimatedBoostFeeBps,
-      egressFeeSurcharge,
     });
   }
 
