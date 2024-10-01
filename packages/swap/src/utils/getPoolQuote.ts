@@ -25,7 +25,7 @@ const getPrice = (
 export default async function getPoolQuote({
   srcAsset,
   destAsset,
-  swapInputAmount: originalSwapInputAmount,
+  depositAmount,
   limitOrders,
   boostFeeBps,
   brokerCommissionBps,
@@ -34,7 +34,7 @@ export default async function getPoolQuote({
 }: {
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
-  swapInputAmount: bigint;
+  depositAmount: bigint;
   brokerCommissionBps?: number;
   limitOrders?: LimitOrders;
   boostFeeBps?: number;
@@ -42,7 +42,7 @@ export default async function getPoolQuote({
   quoteType: QuoteType;
 }): Promise<QuoteQueryResponse> {
   const includedFees = [];
-  let swapInputAmount = originalSwapInputAmount;
+  let swapInputAmount = depositAmount;
 
   if (boostFeeBps) {
     const boostFee = getPipAmountFromAmount(swapInputAmount, boostFeeBps);
@@ -59,7 +59,9 @@ export default async function getPoolQuote({
       brokerCommissionBps,
     });
 
-  const minimumEgressAmount = await getMinimumEgressAmount(destAsset);
+  if (ingressFee) {
+    swapInputAmount -= ingressFee.amount;
+  }
   if (brokerFee) {
     includedFees.push(buildFee('Usdc', 'BROKER', brokerFee));
   }
@@ -76,17 +78,19 @@ export default async function getPoolQuote({
     );
   }
 
+  const minimumEgressAmount = await getMinimumEgressAmount(destAsset);
   if (egressAmount < minimumEgressAmount) {
     throw ServiceError.badRequest(
       `egress amount (${egressAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
     );
   }
 
+  const swapOutputAmount = egressAmount + egressFee.amount;
   const lowLiquidityWarning = await checkPriceWarning({
     srcAsset,
     destAsset,
     srcAmount: swapInputAmount,
-    destAmount: egressAmount,
+    destAmount: swapOutputAmount,
   });
 
   includedFees.push(
@@ -114,7 +118,7 @@ export default async function getPoolQuote({
       destAsset,
       boosted: Boolean(boostFeeBps),
     }),
-    estimatedPrice: getPrice(swapInputAmount, srcAsset, egressAmount, destAsset),
+    estimatedPrice: getPrice(swapInputAmount, srcAsset, swapOutputAmount, destAsset),
     type: quoteType,
   };
 }
