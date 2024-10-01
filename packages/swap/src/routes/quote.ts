@@ -9,6 +9,7 @@ import Quoter from '../quoting/Quoter';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
 import { generateQuotes, validateQuoteQuery } from './v2/quote';
+import { sendJsonResponse } from '../utils/expressHelpers';
 
 type AdditionalInfo = {
   srcAsset: InternalAsset;
@@ -79,7 +80,7 @@ const quoteRouter = (io: Server) => {
 
         const duration = performance.now() - start;
 
-        res.json(quote);
+        sendJsonResponse(res, quote);
 
         logger.info('quote request completed', {
           duration: duration.toFixed(2),

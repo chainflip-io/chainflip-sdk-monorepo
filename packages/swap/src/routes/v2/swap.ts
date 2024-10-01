@@ -15,6 +15,7 @@ import { readField } from '../../utils/function';
 import logger from '../../utils/logger';
 import { estimateSwapDuration } from '../../utils/swap';
 import { asyncHandler } from '../common';
+import { sendJsonResponse } from '../../utils/expressHelpers';
 
 const router = express.Router();
 
@@ -243,7 +244,7 @@ router.get(
 
     logger.info('sending response for swap request', { id, response });
 
-    res.json(response);
+    sendJsonResponse(res, response);
   }),
 );
 

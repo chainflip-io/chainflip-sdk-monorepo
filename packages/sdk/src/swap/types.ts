@@ -8,6 +8,15 @@ import {
   DcaParams,
 } from '@/shared/schemas';
 
+export enum WarningCode {
+  CHAIN_TRACKING_NOT_FOUND,
+  CHAIN_TRACKING_NOT_SYNCED,
+}
+
+interface GeneralQueryResponse {
+  warning: WarningCode;
+}
+
 export interface ChainData {
   chain: Chain;
   name: string;
@@ -47,12 +56,14 @@ export interface QuoteRequest extends ChainsAndAssets {
 }
 
 export interface QuoteResponse
-  extends Omit<QuoteRequest, 'brokerCommissionBps' | 'affiliateBrokers'> {
+  extends GeneralQueryResponse,
+    Omit<QuoteRequest, 'brokerCommissionBps' | 'affiliateBrokers'> {
   quote: QuoteQueryResponse;
 }
 
 export interface QuoteResponseV2
-  extends Omit<QuoteRequest, 'brokerCommissionBps' | 'affiliateBrokers'> {
+  extends GeneralQueryResponse,
+    Omit<QuoteRequest, 'brokerCommissionBps' | 'affiliateBrokers'> {
   quotes: QuoteQueryResponse[];
 }
 
@@ -68,7 +79,7 @@ export interface DepositAddressRequest extends QuoteRequest {
   ccmMetadata?: CcmParams;
 }
 
-export interface DepositAddressResponse extends DepositAddressRequest {
+export interface DepositAddressResponse extends GeneralQueryResponse, DepositAddressRequest {
   depositChannelId: string;
   depositAddress: string;
   brokerCommissionBps: number;

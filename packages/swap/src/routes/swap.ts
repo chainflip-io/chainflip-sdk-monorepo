@@ -17,6 +17,7 @@ import {
   isEgressableSwap,
 } from '../utils/swap';
 import { getLatestSwapForId } from './v2/utils';
+import { sendJsonResponse } from '../utils/expressHelpers';
 
 const router = express.Router();
 
@@ -227,7 +228,7 @@ router.get(
 
     logger.info('sending response for swap request', { id, response });
 
-    res.json(response);
+    sendJsonResponse(res, response);
   }),
 );
 
@@ -246,7 +247,7 @@ router.post(
       result.data,
     );
 
-    res.json(response);
+    sendJsonResponse(res, response);
   }),
 );
 

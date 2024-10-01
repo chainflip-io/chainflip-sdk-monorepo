@@ -16,6 +16,7 @@ import { getIngressFee, validateSwapAmount } from '../../utils/rpc';
 import ServiceError from '../../utils/ServiceError';
 import { asyncHandler } from '../common';
 import { fallbackChains } from '../quote';
+import { sendJsonResponse } from '../../utils/expressHelpers';
 
 type AdditionalInfo = {
   srcAsset: InternalAsset;
@@ -369,7 +370,7 @@ const quoteRouter = (io: Server) => {
 
         const duration = performance.now() - start;
 
-        res.json(quotes);
+        await sendJsonResponse(res, quotes);
 
         logger.info('quote request completed', {
           duration: duration.toFixed(2),

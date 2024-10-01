@@ -4,6 +4,7 @@ import prisma from '../client';
 import logger from '../utils/logger';
 import { thirdPartySwapSchema } from '../utils/parsers';
 import ServiceError from '../utils/ServiceError';
+import { sendJsonResponse } from '../utils/expressHelpers';
 
 const router = express.Router();
 
@@ -51,7 +52,7 @@ router.get(
       if (!thirdPartySwap) throw ServiceError.notFound();
 
       const { id, ...swap } = thirdPartySwap;
-      res.json({ ...swap });
+      sendJsonResponse(res, { ...swap });
     } catch (err) {
       if (err instanceof ServiceError) throw err;
       if (err instanceof Error) throw ServiceError.internalError(err.message);
