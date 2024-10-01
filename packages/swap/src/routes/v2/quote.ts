@@ -78,51 +78,51 @@ const adjustDcaQuote = ({
     chunkIntervalBlocks: env.DCA_CHUNK_INTERVAL_BLOCKS,
     numberOfChunks: dcaQuoteParams.numberOfChunks,
   };
-  if (dcaQuoteParams && dcaQuote) {
-    const netWorkFee = dcaQuote.includedFees.find((fee) => fee.type === 'NETWORK');
-    if (netWorkFee) {
-      netWorkFee.amount = new BigNumber(netWorkFee.amount)
-        .multipliedBy(dcaQuoteParams.numberOfChunks)
-        .toFixed(0);
-    }
 
-    const brokerFee = dcaQuote.includedFees.find((fee) => fee.type === 'BROKER');
-    if (brokerFee) {
-      brokerFee.amount = new BigNumber(brokerFee.amount)
-        .multipliedBy(dcaQuoteParams.numberOfChunks)
-        .toFixed(0);
-    }
+  const egressFee = dcaQuote.includedFees.find((fee) => fee.type === 'EGRESS');
+  // when multiplying the egressAmount with numberOfChunks, we will deduct the egressFee multiple times.
+  // so we should add this fee back to the egress amount
+  const duplicatedEgressFeeAmount = dcaQuoteParams
+    ? BigInt(
+        new BigNumber(egressFee?.amount ?? 0)
+          .multipliedBy(dcaQuoteParams.numberOfChunks - 1)
+          .toFixed(0),
+      )
+    : 0n;
 
-    const egressFee = dcaQuote.includedFees.find((fee) => fee.type === 'EGRESS');
-    // when multiplying the egressAmount with numberOfChunks, we will deduct the egressFee multiple times.
-    // so we should add this fee back to the egress amount
-    const duplicatedEgressFeeAmount = dcaQuoteParams
-      ? BigInt(
-          new BigNumber(egressFee?.amount ?? 0)
-            .multipliedBy(dcaQuoteParams.numberOfChunks - 1)
-            .toFixed(0),
-        )
-      : 0n;
-
-    // eslint-disable-next-line no-param-reassign
-    dcaQuote.egressAmount = new BigNumber(dcaQuote.egressAmount)
+  const netWorkFee = dcaQuote.includedFees.find((fee) => fee.type === 'NETWORK');
+  if (netWorkFee) {
+    netWorkFee.amount = new BigNumber(netWorkFee.amount)
       .multipliedBy(dcaQuoteParams.numberOfChunks)
-      .plus(duplicatedEgressFeeAmount.toString())
       .toFixed(0);
-    // eslint-disable-next-line no-param-reassign
-    dcaQuote.estimatedDurationSeconds += dcaQuoteParams.addedDurationSeconds;
   }
+
+  const brokerFee = dcaQuote.includedFees.find((fee) => fee.type === 'BROKER');
+  if (brokerFee) {
+    brokerFee.amount = new BigNumber(brokerFee.amount)
+      .multipliedBy(dcaQuoteParams.numberOfChunks)
+      .toFixed(0);
+  }
+
+  // eslint-disable-next-line no-param-reassign
+  dcaQuote.egressAmount = new BigNumber(dcaQuote.egressAmount)
+    .multipliedBy(dcaQuoteParams.numberOfChunks)
+    .plus(duplicatedEgressFeeAmount.toString())
+    .toFixed(0);
+  // eslint-disable-next-line no-param-reassign
+  dcaQuote.estimatedDurationSeconds += dcaQuoteParams.addedDurationSeconds;
+
   if (dcaQuoteParams && dcaBoostedQuote && estimatedBoostFeeBps) {
-    const netWorkFee = dcaBoostedQuote.includedFees.find((fee) => fee.type === 'NETWORK');
-    if (netWorkFee) {
-      netWorkFee.amount = new BigNumber(netWorkFee.amount)
+    const boostNetWorkFee = dcaBoostedQuote.includedFees.find((fee) => fee.type === 'NETWORK');
+    if (boostNetWorkFee) {
+      boostNetWorkFee.amount = new BigNumber(boostNetWorkFee.amount)
         .multipliedBy(dcaQuoteParams.numberOfChunks)
         .toFixed(0);
     }
 
-    const brokerFee = dcaBoostedQuote.includedFees.find((fee) => fee.type === 'BROKER');
-    if (brokerFee) {
-      brokerFee.amount = new BigNumber(brokerFee.amount)
+    const boostBrokerFee = dcaBoostedQuote.includedFees.find((fee) => fee.type === 'BROKER');
+    if (boostBrokerFee) {
+      boostBrokerFee.amount = new BigNumber(boostBrokerFee.amount)
         .multipliedBy(dcaQuoteParams.numberOfChunks)
         .toFixed(0);
     }
@@ -140,7 +140,7 @@ const adjustDcaQuote = ({
       estimatedBoostFeeBps,
       egressAmount: BigNumber(dcaBoostedQuote.egressAmount)
         .multipliedBy(dcaQuoteParams.numberOfChunks)
-        .plus(egressFeeSurcharge.toString())
+        .plus(duplicatedEgressFeeAmount.toString())
         .toFixed(0),
       estimatedDurationSeconds:
         dcaBoostedQuote.estimatedDurationSeconds + dcaQuoteParams.addedDurationSeconds,
