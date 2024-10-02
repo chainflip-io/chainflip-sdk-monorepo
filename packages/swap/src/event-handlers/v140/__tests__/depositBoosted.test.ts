@@ -42,6 +42,7 @@ export const depositBoostedBtcMock = async ({
         depositAmount: '1000000',
         swapInputAmount: '1000000',
         swapRequestedAt: new Date('2023-01-01T00:00:00.000Z'),
+        swapRequestedBlockIndex: '92-398',
       },
     });
   }
