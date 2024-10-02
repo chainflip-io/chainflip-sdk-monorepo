@@ -4,7 +4,7 @@ exports[`python integration test replies to a quote request 1`] = `
 {
   "egressAmount": "997901209876966295",
   "estimatedDurationSeconds": 54,
-  "estimatedPrice": "997901209876.966295",
+  "estimatedPrice": "997901209879.01209741975802419484",
   "includedFees": [
     {
       "amount": "2000000",
@@ -33,7 +33,7 @@ exports[`python integration test replies to a quote request 1`] = `
         "chain": "Ethereum",
       },
       "fee": {
-        "amount": "1000000000000000",
+        "amount": "999999999998000",
         "asset": "FLIP",
         "chain": "Ethereum",
       },
