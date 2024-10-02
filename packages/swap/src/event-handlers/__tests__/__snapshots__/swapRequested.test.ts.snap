@@ -28,6 +28,7 @@ exports[`swapRequested creates a new swap request (DEPOSIT_CHANNEL) 1`] = `
   "swapDepositChannelId": Any<BigInt>,
   "swapInputAmount": "4999922",
   "swapRequestedAt": 2024-08-23T13:13:12.002Z,
+  "swapRequestedBlockIndex": "87-13",
 }
 `;
 
@@ -59,6 +60,7 @@ exports[`swapRequested creates a new swap request (INGRESS_EGRESS_FEE) 1`] = `
   "swapDepositChannelId": null,
   "swapInputAmount": "450800",
   "swapRequestedAt": 2024-08-23T13:13:12.002Z,
+  "swapRequestedBlockIndex": "87-13",
 }
 `;
 
@@ -90,5 +92,6 @@ exports[`swapRequested creates a new swap request (VAULT) 1`] = `
   "swapDepositChannelId": null,
   "swapInputAmount": "5000000000000000000",
   "swapRequestedAt": 2024-08-23T13:13:12.002Z,
+  "swapRequestedBlockIndex": "87-13",
 }
 `;

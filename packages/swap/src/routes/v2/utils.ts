@@ -174,10 +174,15 @@ export const getDepositInfo = (
       txRef: depositTransactionRef,
       txConfirmations: pendingDeposit?.transactionConfirmations,
       witnessedAt:
-        swapRequest?.originType === 'VAULT'
-          ? swapRequest.swapRequestedAt.valueOf()
-          : swapRequest?.depositReceivedAt?.valueOf(),
-      witnessedBlockIndex: swapRequest?.depositReceivedBlockIndex ?? undefined,
+        swapRequest?.depositBoostedAt?.valueOf() ??
+        swapRequest?.depositReceivedAt?.valueOf() ??
+        swapRequest?.swapRequestedAt?.valueOf() ??
+        undefined,
+      witnessedBlockIndex:
+        swapRequest?.depositBoostedBlockIndex ??
+        swapRequest?.depositReceivedBlockIndex ??
+        swapRequest?.swapRequestedBlockIndex ??
+        undefined,
       ...(failedSwap && {
         failure: getDepositIgnoredFailedState(failedSwap),
         failedAt: failedSwap.failedAt.valueOf(),

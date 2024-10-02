@@ -139,6 +139,7 @@ model SwapRequest {
   srcAddress                   String?
   destAddress                  String?
   swapRequestedAt              DateTime
+  swapRequestedBlockIndex      String?
   depositReceivedAt            DateTime?
   depositReceivedBlockIndex    String?
   prewitnessedDepositId        BigInt?

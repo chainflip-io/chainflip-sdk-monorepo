@@ -25,6 +25,7 @@ describe(refundEgressScheduled, () => {
         requestType: 'LEGACY_SWAP',
         originType: 'VAULT',
         swapRequestedAt: new Date(block.timestamp - 12000),
+        swapRequestedBlockIndex: '92-398',
       },
     });
 

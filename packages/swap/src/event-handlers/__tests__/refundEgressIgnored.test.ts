@@ -30,6 +30,7 @@ describe(refundEgressIgnored, () => {
         requestType: 'LEGACY_SWAP',
         originType: 'DEPOSIT_CHANNEL',
         swapRequestedAt: new Date(block.timestamp - 12000),
+        swapRequestedBlockIndex: '92-398',
       },
     });
 
