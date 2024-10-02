@@ -7,11 +7,19 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## 1.6.5
+
+### Changed
+
+- In order to open a DCA deposit channel, Fill or Kill parameters must now be
+  provided.
+
 ## 1.6.4
 
 ### Changed
 
-- Optional parameter to enable DCA during SDK initialization. The default value for this parameter is `false`.
+- Optional parameter to enable DCA during SDK initialization. The default value
+  for this parameter is `false`.
   ```ts
   new ChainflipSDK({
     ...
