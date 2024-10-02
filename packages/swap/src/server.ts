@@ -14,6 +14,7 @@ import thirdPartySwap from './routes/thirdPartySwap';
 import quoteRouterV2 from './routes/v2/quote';
 import swapV2 from './routes/v2/swap';
 import { publicProcedure, router } from './trpc';
+import { stalenessCheck } from './utils/intercept';
 
 const appRouter = router({
   openSwapDepositChannel: publicProcedure
@@ -27,8 +28,8 @@ const app = express().use(cors());
 const server = createServer(app);
 const io = new Server(server).use(authenticate);
 
-app.use('/swaps', express.json(), swap);
-app.use('/v2/swaps', express.json(), swapV2);
+app.use('/swaps', stalenessCheck, express.json(), swap);
+app.use('/v2/swaps', stalenessCheck, express.json(), swapV2);
 app.use('/third-party-swap', maintenanceMode, express.json(), thirdPartySwap);
 
 app.get('/healthcheck', (req, res) => {
@@ -38,7 +39,12 @@ app.get('/healthcheck', (req, res) => {
 app.use('/quote', quoteRouter(io));
 app.use('/v2/quote', quoteRouterV2(io));
 
-app.use('/trpc', maintenanceMode, trpcExpress.createExpressMiddleware({ router: appRouter }));
+app.use(
+  '/trpc',
+  maintenanceMode,
+  stalenessCheck,
+  trpcExpress.createExpressMiddleware({ router: appRouter }),
+);
 
 app.use('/addresses', addresses);
 
