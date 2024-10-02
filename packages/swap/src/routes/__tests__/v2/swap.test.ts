@@ -892,6 +892,11 @@ describe('server', () => {
 
       expect(status).toBe(200);
       expect(body.state).toBe('SWAPPING');
+      expect(body.deposit).toMatchObject({
+        amount: '4999949999999650000',
+        witnessedAt: 552000,
+        witnessedBlockIndex: '92-400',
+      });
       expect(body.boost).toMatchObject({
         effectiveBoostFeeBps: 5,
         maxBoostFeeBps: 30,
