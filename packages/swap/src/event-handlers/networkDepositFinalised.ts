@@ -41,8 +41,8 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
       where: { nativeId: swapRequestId },
       data: {
         depositAmount: amount.toString(),
-        depositReceivedAt: new Date(block.timestamp),
-        depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
+        depositFinalisedAt: new Date(block.timestamp),
+        depositFinalisedBlockIndex: `${block.height}-${event.indexInBlock}`,
         depositTransactionRef: txRef,
         ccmDepositReceivedBlockIndex:
           // the dedicated ccm deposit received event is removed in 1.6
