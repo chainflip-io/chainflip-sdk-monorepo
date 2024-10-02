@@ -240,7 +240,7 @@ router.get(
             swapDepositChannel?.failedBoosts.at(0)?.failedAtBlockIndex ?? undefined,
         },
       }),
-      lastStatechainUpdateAt: await getLastChainTrackingUpdateTimestamp(),
+      lastStatechainUpdateAt: (await getLastChainTrackingUpdateTimestamp())?.valueOf(),
     };
 
     logger.info('sending response for swap request', { id, response });

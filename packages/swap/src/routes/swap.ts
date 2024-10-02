@@ -224,7 +224,7 @@ router.get(
             ),
           }
         : undefined,
-      lastStatechainUpdateAt: await getLastChainTrackingUpdateTimestamp(),
+      lastStatechainUpdateAt: (await getLastChainTrackingUpdateTimestamp())?.valueOf(),
     };
 
     logger.info('sending response for swap request', { id, response });
