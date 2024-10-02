@@ -92,6 +92,7 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   depositTransactionRef: string | undefined;
   swapScheduledAt: number | undefined;
   swapScheduledBlockIndex: string | undefined;
+  lastStatechainUpdateAt: number | undefined;
 
   /** @deprecated DEPRECATED(1.5): use depositTransactionRef instead */
   depositTransactionHash: string | undefined;

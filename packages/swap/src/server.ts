@@ -39,12 +39,7 @@ app.get('/healthcheck', (req, res) => {
 app.use('/quote', quoteRouter(io));
 app.use('/v2/quote', quoteRouterV2(io));
 
-app.use(
-  '/trpc',
-  maintenanceMode,
-  stalenessCheck,
-  trpcExpress.createExpressMiddleware({ router: appRouter }),
-);
+app.use('/trpc', maintenanceMode, trpcExpress.createExpressMiddleware({ router: appRouter }));
 
 app.use('/addresses', addresses);
 

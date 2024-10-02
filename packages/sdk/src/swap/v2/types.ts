@@ -99,6 +99,7 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   estimatedDurationSeconds: number | null | undefined;
   srcChainRequiredBlockConfirmations: number | null;
   fees: PaidFee[];
+  lastStatechainUpdateAt: number | undefined;
 }
 
 interface Waiting extends SwapStatusResponseCommonFields {
