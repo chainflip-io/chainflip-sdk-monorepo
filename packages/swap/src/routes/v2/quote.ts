@@ -233,7 +233,7 @@ export const generateQuotes = async ({
   const quoteArgs = {
     srcAsset,
     destAsset,
-    swapInputAmount: amount,
+    depositAmount: amount,
     limitOrders,
     brokerCommissionBps,
     pools,
@@ -263,7 +263,7 @@ export const generateQuotes = async ({
     dcaQuoteParams &&
       getPoolQuote({
         ...quoteArgs,
-        swapInputAmount: dcaQuoteParams.chunkSize + ingressFeeSurcharge,
+        depositAmount: dcaQuoteParams.chunkSize + ingressFeeSurcharge,
         quoteType: 'DCA',
       }),
     dcaQuoteParams &&
@@ -271,7 +271,7 @@ export const generateQuotes = async ({
       getPoolQuote({
         ...quoteArgs,
         boostFeeBps: estimatedBoostFeeBps,
-        swapInputAmount: dcaQuoteParams.chunkSize + ingressFeeSurcharge,
+        depositAmount: dcaQuoteParams.chunkSize + ingressFeeSurcharge,
         quoteType: 'DCA',
       }),
   ]);

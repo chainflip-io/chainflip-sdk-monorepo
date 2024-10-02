@@ -385,7 +385,7 @@ describe('server', () => {
         {
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
-          estimatedPrice: '100',
+          estimatedPrice: '100.0000000000025',
           includedFees: [
             {
               amount: '25000',
@@ -410,7 +410,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '2000000000000000',
+                amount: '1999999999999950',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
@@ -505,7 +505,7 @@ describe('server', () => {
         {
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
-          estimatedPrice: '100',
+          estimatedPrice: '100.0080000000025002',
           includedFees: [
             {
               amount: '25000',
@@ -530,7 +530,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '2000000000000000',
+                amount: '1999999999999950',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
@@ -542,7 +542,7 @@ describe('server', () => {
         {
           egressAmount: (400024000).toString(),
           estimatedDurationSeconds: 90,
-          estimatedPrice: '399.99999999997',
+          estimatedPrice: '400.0320000000100008',
           includedFees: [
             {
               amount: '25000',
@@ -567,7 +567,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '500000000000037',
+                amount: '499999999999987',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
@@ -683,7 +683,7 @@ describe('server', () => {
         {
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
-          estimatedPrice: '100',
+          estimatedPrice: '100.0000000000025',
           includedFees: [
             {
               amount: '25000',
@@ -708,7 +708,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '2000000000000000',
+                amount: '1999999999999950',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
@@ -803,7 +803,7 @@ describe('server', () => {
         {
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
-          estimatedPrice: '100',
+          estimatedPrice: '100.0000000000025',
           includedFees: [
             {
               amount: '25000',
@@ -828,7 +828,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '2000000000000000',
+                amount: '1999999999999950',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
@@ -924,7 +924,7 @@ describe('server', () => {
         {
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
-          estimatedPrice: '100',
+          estimatedPrice: '100.0000000000025',
           includedFees: [
             {
               amount: '25000',
@@ -949,7 +949,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '2000000000000000',
+                amount: '1999999999999950',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
