@@ -28,7 +28,7 @@ interface DepositChannelFields {
   depositAddress: string;
   srcChainExpiryBlock: string;
   estimatedExpiryTime: number;
-  expectedDepositAmount: string;
+  expectedDepositAmount: string | undefined;
   isExpired: boolean;
   openedThroughBackend: boolean;
   affiliateBrokers: AffiliateBroker[];
@@ -49,12 +49,12 @@ interface DepositFields {
 
 type ChunkInfo = {
   inputAmount: string;
-  intermediateAmount?: string;
-  outputAmount?: string;
+  intermediateAmount: string | undefined;
+  outputAmount: string | undefined;
   scheduledAt: number;
   scheduledBlockIndex: string;
-  executedAt?: number;
-  executedBlockIndex?: string;
+  executedAt: number | undefined;
+  executedBlockIndex: string | undefined;
   retryCount: number;
 };
 
@@ -69,13 +69,15 @@ interface SwapFields {
   swappedInputAmount: string;
   swappedIntermediateAmount: string;
   swappedOutputAmount: string;
-  regular?: ChunkInfo;
-  dca?: {
-    lastExecutedChunk: ChunkInfo | null;
-    currentChunk: PickRequired<ChunkInfo> | null;
-    executedChunks: number;
-    remainingChunks: number;
-  };
+  regular: ChunkInfo | undefined;
+  dca:
+    | {
+        lastExecutedChunk: ChunkInfo | null;
+        currentChunk: PickRequired<ChunkInfo> | null;
+        executedChunks: number;
+        remainingChunks: number;
+      }
+    | undefined;
 }
 
 interface EgressFields {
@@ -102,7 +104,7 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
 }
 
 interface Waiting extends SwapStatusResponseCommonFields {
-  depositChannel: DepositChannelFields;
+  depositChannel: DepositChannelFields; // status is only possible for swaps with a deposit channel
 }
 
 interface Receiving extends SwapStatusResponseCommonFields {

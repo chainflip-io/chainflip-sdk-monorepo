@@ -1113,6 +1113,7 @@ describe('server', () => {
           isExpired: false,
           openedThroughBackend: false,
           dcaParams: { numberOfChunks: 10, chunkIntervalBlocks: 3 },
+          affiliateBrokers: [],
         },
         deposit: {
           amount: '10000000000000000000',
@@ -1233,6 +1234,7 @@ describe('server', () => {
           isExpired: false,
           openedThroughBackend: false,
           dcaParams: { numberOfChunks: 10, chunkIntervalBlocks: 3 },
+          affiliateBrokers: [],
         },
         deposit: {
           amount: '10000000000000000000',

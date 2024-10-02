@@ -162,7 +162,7 @@ router.get(
       destAddress: readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress'),
       srcChainRequiredBlockConfirmations,
       estimatedDurationSeconds,
-      fees: aggregateFees,
+      fees: aggregateFees ?? [],
       ...(showDepositchannel &&
         swapDepositChannel && {
           depositChannel: {
@@ -175,7 +175,7 @@ router.get(
             expectedDepositAmount: swapDepositChannel.expectedDepositAmount?.toFixed(),
             isExpired: swapDepositChannel.isExpired,
             openedThroughBackend: swapDepositChannel.openedThroughBackend,
-            affiliateBrokers,
+            affiliateBrokers: affiliateBrokers ?? [],
             fillOrKillParams: swapDepositChannel.fokMinPriceX128
               ? {
                   retryDurationBlocks: swapDepositChannel.fokRetryDurationBlocks,
@@ -198,7 +198,7 @@ router.get(
       ...getDepositInfo(swapRequest, failedSwap, pendingDeposit),
       ...(rolledSwaps && {
         swap: {
-          originalInputAmount,
+          originalInputAmount: originalInputAmount?.toFixed(),
           remainingInputAmount: originalInputAmount
             ?.minus(rolledSwaps.swappedInputAmount)
             .toFixed(),
