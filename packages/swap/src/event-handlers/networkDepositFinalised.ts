@@ -54,7 +54,11 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
     });
   } else if (action.__kind === 'BoostersCredited') {
     await prisma.swapRequest.updateMany({
-      data: { depositTransactionRef: txRef },
+      data: {
+        depositFinalisedAt: new Date(block.timestamp),
+        depositFinalisedBlockIndex: `${block.height}-${event.indexInBlock}`,
+        depositTransactionRef: txRef,
+      },
       where: { srcAsset: asset, prewitnessedDepositId: action.prewitnessedDepositId },
     });
   } else if (action.__kind === 'NoAction') {
