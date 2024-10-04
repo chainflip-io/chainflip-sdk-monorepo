@@ -404,7 +404,7 @@ export const buildDepositIgnoredEvent = <T extends DepositIgnoredArgs>(args: T) 
   };
 };
 
-export const createChainTrackingInfo = () => {
+export const createChainTrackingInfo = (date?: Date) => {
   const chains: Chain[] = ['Bitcoin', 'Ethereum', 'Polkadot', 'Solana'];
   return Promise.all(
     chains.map((chain) =>
@@ -413,7 +413,8 @@ export const createChainTrackingInfo = () => {
         create: {
           chain,
           height: 10,
-          blockTrackedAt: new Date('2023-11-09T10:00:00.000Z'),
+          blockTrackedAt: date ?? new Date('2023-11-09T10:00:00.000Z'),
+          updatedAt: date ?? new Date('2023-11-09T10:00:00.000Z'),
           eventWitnessedBlock: 200,
         },
         update: { height: 10 },
