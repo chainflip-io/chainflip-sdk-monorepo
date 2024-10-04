@@ -114,7 +114,6 @@ export default async function swapRequested({
       swapDepositChannelId,
       srcAsset: inputAsset,
       destAsset: outputAsset,
-      depositAmount: inputAmount.toString(),
       requestType: pascalCaseToScreamingSnakeCase(requestType.__kind),
       ccmGasBudget: ccmMetadata?.channelMetadata.gasBudget.toString(),
       ccmMessage: ccmMetadata?.channelMetadata.message,
@@ -124,6 +123,9 @@ export default async function swapRequested({
       swapRequestedBlockIndex: `${block.height}-${event.indexInBlock}`,
       swapInputAmount: inputAmount.toString(),
       ...additionalInfo,
+      ...(origin.__kind !== 'Internal' && {
+        depositAmount: inputAmount.toString(),
+      }),
     },
   });
 }
