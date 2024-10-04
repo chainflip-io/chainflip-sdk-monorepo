@@ -1,7 +1,7 @@
 import { ChainflipNetworks } from '@/shared/enums';
 import { version } from '../../package.json';
 
-export const CF_SDK_VERSION_HEADERS = { 'Cf-Sdk-Version': version };
+export const CF_SDK_VERSION_HEADERS = { 'X-Chainflip-Sdk-Version': version };
 
 export const BACKEND_SERVICE_URLS = {
   [ChainflipNetworks.backspin]: 'https://chainflip-swap-backspin.staging/',

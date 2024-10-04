@@ -388,11 +388,10 @@ describe('server', () => {
     let oldEnv: typeof env;
 
     beforeEach(async () => {
-      jest
-        .useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
-        .setSystemTime(new Date('2022-01-01'));
+      const time = new Date('2022-01-01');
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] }).setSystemTime(time);
       await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel", "SwapRequest", "Pool", "ChainTracking" CASCADE`;
-      await createChainTrackingInfo();
+      await createChainTrackingInfo(time);
       await createPools();
       oldEnv = { ...env };
     });
@@ -428,7 +427,7 @@ describe('server', () => {
           brokerCommissionBps: 0,
           depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
           srcChainExpiryBlock: '265',
-          estimatedExpiryTime: 1699527060000,
+          estimatedExpiryTime: 1640998260000,
           isExpired: false,
           openedThroughBackend: false,
         },
@@ -456,7 +455,7 @@ describe('server', () => {
           brokerCommissionBps: 15,
           depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
           srcChainExpiryBlock: '265',
-          estimatedExpiryTime: 1699527060000,
+          estimatedExpiryTime: 1640998260000,
           isExpired: false,
           openedThroughBackend: false,
         },
@@ -517,7 +516,7 @@ describe('server', () => {
           brokerCommissionBps: 0,
           depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
           srcChainExpiryBlock: '1',
-          estimatedExpiryTime: 1699523892000,
+          estimatedExpiryTime: 1640995092000,
           isExpired: true,
           openedThroughBackend: false,
         },
@@ -548,7 +547,7 @@ describe('server', () => {
           brokerCommissionBps: 0,
           depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
           srcChainExpiryBlock: '265',
-          estimatedExpiryTime: 1699527060000,
+          estimatedExpiryTime: 1640998260000,
           isExpired: false,
           openedThroughBackend: false,
         },
@@ -1036,7 +1035,7 @@ describe('server', () => {
       expect(body.state).toBe('WAITING');
     });
 
-    it(`retrieves mulitple DCA swaps in ${StateV2.Swapping} status`, async () => {
+    it(`retrieves multiple DCA swaps in ${StateV2.Swapping} status`, async () => {
       const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositChannelEvent.args.dcaParameters = {
         numberOfChunks: 10,
@@ -1076,6 +1075,7 @@ describe('server', () => {
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         srcChainRequiredBlockConfirmations: 2,
         estimatedDurationSeconds: 48,
+        lastStatechainUpdateAt: 1640995200000,
         fees: [
           {
             type: 'NETWORK',
@@ -1114,7 +1114,7 @@ describe('server', () => {
           brokerCommissionBps: 0,
           depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
           srcChainExpiryBlock: '265',
-          estimatedExpiryTime: 1699527060000,
+          estimatedExpiryTime: 1640998260000,
           isExpired: false,
           openedThroughBackend: false,
           dcaParams: { numberOfChunks: 10, chunkIntervalBlocks: 3 },
@@ -1150,7 +1150,7 @@ describe('server', () => {
       });
     });
 
-    it(`retrieves mulitple DCA swaps in ${StateV2.Sending} status`, async () => {
+    it(`retrieves multiple DCA swaps in ${StateV2.Sending} status`, async () => {
       const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositChannelEvent.args.dcaParameters = {
         numberOfChunks: 10,
@@ -1191,6 +1191,7 @@ describe('server', () => {
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         srcChainRequiredBlockConfirmations: 2,
         estimatedDurationSeconds: 48,
+        lastStatechainUpdateAt: 1640995200000,
         fees: [
           {
             type: 'NETWORK',
@@ -1235,7 +1236,7 @@ describe('server', () => {
           brokerCommissionBps: 0,
           depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
           srcChainExpiryBlock: '265',
-          estimatedExpiryTime: 1699527060000,
+          estimatedExpiryTime: 1640998260000,
           isExpired: false,
           openedThroughBackend: false,
           dcaParams: { numberOfChunks: 10, chunkIntervalBlocks: 3 },
@@ -1276,7 +1277,7 @@ describe('server', () => {
       });
     });
 
-    it(`retrieves mulitple DCA swaps in ${StateV2.Completed}`, async () => {
+    it(`retrieves multiple DCA swaps in ${StateV2.Completed}`, async () => {
       const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositChannelEvent.args.dcaParameters = {
         numberOfChunks: 10,
@@ -1317,6 +1318,7 @@ describe('server', () => {
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         srcChainRequiredBlockConfirmations: 2,
         estimatedDurationSeconds: 48,
+        lastStatechainUpdateAt: 1640995200000,
         fees: [
           {
             type: 'NETWORK',
@@ -1361,7 +1363,7 @@ describe('server', () => {
           brokerCommissionBps: 0,
           depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
           srcChainExpiryBlock: '265',
-          estimatedExpiryTime: 1699527060000,
+          estimatedExpiryTime: 1640998260000,
           isExpired: false,
           openedThroughBackend: false,
           dcaParams: { numberOfChunks: 10, chunkIntervalBlocks: 3 },
@@ -1402,7 +1404,7 @@ describe('server', () => {
       });
     });
 
-    it(`retrieves mulitple DCA swaps in ${StateV2.Failed} status if swap egress fails`, async () => {
+    it(`retrieves multiple DCA swaps in ${StateV2.Failed} status if swap egress fails`, async () => {
       const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositChannelEvent.args.dcaParameters = {
         numberOfChunks: 10,
@@ -1435,7 +1437,7 @@ describe('server', () => {
       });
     });
 
-    it(`retrieves mulitple DCA swaps in ${StateV2.Failed} status if refund egress fails but swap completes`, async () => {
+    it(`retrieves multiple DCA swaps in ${StateV2.Failed} status if refund egress fails but swap completes`, async () => {
       const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositChannelEvent.args.refundParameters = {
         minPrice: '99999999999999999999999999999999999999999999999999999000000000000000000',
@@ -1483,7 +1485,7 @@ describe('server', () => {
       expect(rest).toMatchSnapshot();
     });
 
-    it(`retrieves mulitple DCA swaps with correctly flattened fees (two egresses)`, async () => {
+    it(`retrieves multiple DCA swaps with correctly flattened fees (two egresses)`, async () => {
       const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositChannelEvent.args.dcaParameters = {
         numberOfChunks: 10,

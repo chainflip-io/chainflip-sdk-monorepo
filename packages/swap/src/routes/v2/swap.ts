@@ -2,6 +2,7 @@ import express from 'express';
 import { getAssetAndChain } from '@/shared/enums';
 import { getPriceFromPriceX128 } from '@/shared/functions';
 import { assert } from '@/shared/guards';
+import { getLastChainTrackingUpdateTimestamp } from '@/swap/utils/intercept';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
 import {
   getDepositInfo,
@@ -239,6 +240,7 @@ router.get(
             swapDepositChannel?.failedBoosts.at(0)?.failedAtBlockIndex ?? undefined,
         },
       }),
+      lastStatechainUpdateAt: (await getLastChainTrackingUpdateTimestamp())?.valueOf(),
     };
 
     logger.info('sending response for swap request', { id, response });

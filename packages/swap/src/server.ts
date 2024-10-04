@@ -14,6 +14,7 @@ import thirdPartySwap from './routes/thirdPartySwap';
 import quoteRouterV2 from './routes/v2/quote';
 import swapV2 from './routes/v2/swap';
 import { publicProcedure, router } from './trpc';
+import { lastUpdateHeader } from './utils/intercept';
 
 const appRouter = router({
   openSwapDepositChannel: publicProcedure
@@ -27,8 +28,8 @@ const app = express().use(cors());
 const server = createServer(app);
 const io = new Server(server).use(authenticate);
 
-app.use('/swaps', express.json(), swap);
-app.use('/v2/swaps', express.json(), swapV2);
+app.use('/swaps', lastUpdateHeader, express.json(), swap);
+app.use('/v2/swaps', lastUpdateHeader, express.json(), swapV2);
 app.use('/third-party-swap', maintenanceMode, express.json(), thirdPartySwap);
 
 app.get('/healthcheck', (req, res) => {

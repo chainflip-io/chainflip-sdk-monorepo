@@ -15,11 +15,11 @@ describe(swapDepositAddressReady, () => {
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", private."DepositChannel", "ChainTracking" CASCADE`;
     await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;
+    await createChainTrackingInfo();
   });
 
   it('creates a swap deposit channel entry', async () => {
     await prisma.$transaction(async (txClient) => {
-      await createChainTrackingInfo();
       await swapDepositAddressReady({
         prisma: txClient,
         event: eventMock.event,
@@ -41,7 +41,6 @@ describe(swapDepositAddressReady, () => {
 
   it('creates a swap deposit channel entry with a broker commission', async () => {
     await prisma.$transaction(async (txClient) => {
-      await createChainTrackingInfo();
       await swapDepositAddressReady({
         prisma: txClient,
         event: {
@@ -67,7 +66,6 @@ describe(swapDepositAddressReady, () => {
     });
   });
   it('creates a swap deposit channel entry with a channel opening fee', async () => {
-    await createChainTrackingInfo();
     await swapDepositAddressReady({
       prisma,
       event: {
@@ -94,7 +92,6 @@ describe(swapDepositAddressReady, () => {
 
   it('creates a swap deposit channel entry with ccm metadata', async () => {
     await prisma.$transaction(async (txClient) => {
-      await createChainTrackingInfo();
       await swapDepositAddressReady({
         prisma: txClient,
         event: ccmEventMock.event,
@@ -146,7 +143,6 @@ describe(swapDepositAddressReady, () => {
   });
 
   it('can handle empty ccm messages', async () => {
-    await createChainTrackingInfo();
     await swapDepositAddressReady({
       prisma,
       event: {
@@ -176,7 +172,6 @@ describe(swapDepositAddressReady, () => {
   });
 
   it('inserts affiliates', async () => {
-    await createChainTrackingInfo();
     await swapDepositAddressReady({
       prisma,
       event: {
@@ -214,7 +209,6 @@ describe(swapDepositAddressReady, () => {
   });
 
   it('handles Fill Or Kill parameters', async () => {
-    await createChainTrackingInfo();
     await swapDepositAddressReady({
       prisma,
       event: {
@@ -250,7 +244,6 @@ describe(swapDepositAddressReady, () => {
   });
 
   it('handles dcaParameters parameters', async () => {
-    await createChainTrackingInfo();
     await swapDepositAddressReady({
       prisma,
       event: {

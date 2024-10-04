@@ -380,11 +380,10 @@ describe('server', () => {
     let oldEnv: typeof env;
 
     beforeEach(async () => {
-      jest
-        .useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
-        .setSystemTime(new Date('2022-01-01'));
+      const time = new Date('2022-01-01');
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] }).setSystemTime(time);
       await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel", "SwapRequest", "Pool", "ChainTracking" CASCADE`;
-      await createChainTrackingInfo();
+      await createChainTrackingInfo(time);
       await createPools();
       oldEnv = { ...env };
     });
@@ -419,9 +418,10 @@ describe('server', () => {
           "destAsset": "DOT",
           "destChain": "Polkadot",
           "estimatedDefaultDurationSeconds": 48,
-          "estimatedDepositChannelExpiryTime": 1699527060000,
+          "estimatedDepositChannelExpiryTime": 1640998260000,
           "feesPaid": [],
           "isDepositChannelExpired": false,
+          "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -450,9 +450,10 @@ describe('server', () => {
           "destAsset": "DOT",
           "destChain": "Polkadot",
           "estimatedDefaultDurationSeconds": 48,
-          "estimatedDepositChannelExpiryTime": 1699527060000,
+          "estimatedDepositChannelExpiryTime": 1640998260000,
           "feesPaid": [],
           "isDepositChannelExpired": false,
+          "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -493,9 +494,10 @@ describe('server', () => {
           "destAsset": "DOT",
           "destChain": "Polkadot",
           "estimatedDefaultDurationSeconds": 48,
-          "estimatedDepositChannelExpiryTime": 1699527060000,
+          "estimatedDepositChannelExpiryTime": 1640998260000,
           "feesPaid": [],
           "isDepositChannelExpired": false,
+          "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -528,7 +530,11 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/swaps/${channelId}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchInlineSnapshot(`
+      expect(body).toMatchInlineSnapshot(
+        {
+          lastStatechainUpdateAt: expect.any(Number),
+        },
+        `
         {
           "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
           "depositChannelBrokerCommissionBps": 0,
@@ -540,15 +546,17 @@ describe('server', () => {
           "destAsset": "DOT",
           "destChain": "Polkadot",
           "estimatedDefaultDurationSeconds": 48,
-          "estimatedDepositChannelExpiryTime": 1699523892000,
+          "estimatedDepositChannelExpiryTime": 1640995092000,
           "feesPaid": [],
           "isDepositChannelExpired": true,
+          "lastStatechainUpdateAt": Any<Number>,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
           "state": "AWAITING_DEPOSIT",
         }
-      `);
+      `,
+      );
     });
 
     it(`retrieves a swap in ${State.DepositReceived} status`, async () => {
@@ -574,7 +582,7 @@ describe('server', () => {
           "destAsset": "DOT",
           "destChain": "Polkadot",
           "estimatedDefaultDurationSeconds": 48,
-          "estimatedDepositChannelExpiryTime": 1699527060000,
+          "estimatedDepositChannelExpiryTime": 1640998260000,
           "feesPaid": [
             {
               "amount": "50000000350000",
@@ -584,6 +592,7 @@ describe('server', () => {
             },
           ],
           "isDepositChannelExpired": false,
+          "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -624,7 +633,7 @@ describe('server', () => {
           "destAsset": "DOT",
           "destChain": "Polkadot",
           "estimatedDefaultDurationSeconds": 48,
-          "estimatedDepositChannelExpiryTime": 1699527060000,
+          "estimatedDepositChannelExpiryTime": 1640998260000,
           "feesPaid": [
             {
               "amount": "50000000350000",
@@ -634,6 +643,7 @@ describe('server', () => {
             },
           ],
           "isDepositChannelExpired": false,
+          "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -667,7 +677,7 @@ describe('server', () => {
           "destAsset": "DOT",
           "destChain": "Polkadot",
           "estimatedDefaultDurationSeconds": 48,
-          "estimatedDepositChannelExpiryTime": 1699527060000,
+          "estimatedDepositChannelExpiryTime": 1640998260000,
           "feesPaid": [
             {
               "amount": "50000000350000",
@@ -702,6 +712,7 @@ describe('server', () => {
           ],
           "intermediateAmount": "4506169140",
           "isDepositChannelExpired": false,
+          "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -741,7 +752,7 @@ describe('server', () => {
           "egressScheduledBlockIndex": "94-595",
           "egressType": "SWAP",
           "estimatedDefaultDurationSeconds": 48,
-          "estimatedDepositChannelExpiryTime": 1699527060000,
+          "estimatedDepositChannelExpiryTime": 1640998260000,
           "feesPaid": [
             {
               "amount": "50000000350000",
@@ -782,6 +793,7 @@ describe('server', () => {
           ],
           "intermediateAmount": "4506169140",
           "isDepositChannelExpired": false,
+          "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -824,7 +836,7 @@ describe('server', () => {
           "egressScheduledBlockIndex": "94-594",
           "egressType": "REFUND",
           "estimatedDefaultDurationSeconds": 48,
-          "estimatedDepositChannelExpiryTime": 1699527060000,
+          "estimatedDepositChannelExpiryTime": 1640998260000,
           "feesPaid": [
             {
               "amount": "50000000350000",
@@ -840,6 +852,7 @@ describe('server', () => {
             },
           ],
           "isDepositChannelExpired": false,
+          "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -883,7 +896,7 @@ describe('server', () => {
           "egressScheduledBlockIndex": "94-595",
           "egressType": "SWAP",
           "estimatedDefaultDurationSeconds": 48,
-          "estimatedDepositChannelExpiryTime": 1699527060000,
+          "estimatedDepositChannelExpiryTime": 1640998260000,
           "feesPaid": [
             {
               "amount": "50000000350000",
@@ -924,6 +937,7 @@ describe('server', () => {
           ],
           "intermediateAmount": "4506169140",
           "isDepositChannelExpired": false,
+          "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -965,7 +979,7 @@ describe('server', () => {
           "egressScheduledBlockIndex": "94-595",
           "egressType": "SWAP",
           "estimatedDefaultDurationSeconds": 48,
-          "estimatedDepositChannelExpiryTime": 1699527060000,
+          "estimatedDepositChannelExpiryTime": 1640998260000,
           "feesPaid": [
             {
               "amount": "50000000350000",
@@ -1006,6 +1020,7 @@ describe('server', () => {
           ],
           "intermediateAmount": "4506169140",
           "isDepositChannelExpired": false,
+          "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -1052,7 +1067,7 @@ describe('server', () => {
           "egressScheduledBlockIndex": "94-595",
           "egressType": "SWAP",
           "estimatedDefaultDurationSeconds": 48,
-          "estimatedDepositChannelExpiryTime": 1699527060000,
+          "estimatedDepositChannelExpiryTime": 1640998260000,
           "feesPaid": [
             {
               "amount": "50000000350000",
@@ -1093,6 +1108,7 @@ describe('server', () => {
           ],
           "intermediateAmount": "4506169140",
           "isDepositChannelExpired": false,
+          "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -1137,7 +1153,7 @@ describe('server', () => {
           "egressScheduledBlockIndex": "94-595",
           "egressType": "SWAP",
           "estimatedDefaultDurationSeconds": 48,
-          "estimatedDepositChannelExpiryTime": 1699527060000,
+          "estimatedDepositChannelExpiryTime": 1640998260000,
           "feesPaid": [
             {
               "amount": "50000000350000",
@@ -1178,6 +1194,7 @@ describe('server', () => {
           ],
           "intermediateAmount": "4506169140",
           "isDepositChannelExpired": false,
+          "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -1302,6 +1319,7 @@ describe('server', () => {
               "type": "INGRESS",
             },
           ],
+          "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -1334,7 +1352,7 @@ describe('server', () => {
           "destAsset": "DOT",
           "destChain": "Polkadot",
           "estimatedDefaultDurationSeconds": 48,
-          "estimatedDepositChannelExpiryTime": 1699527060000,
+          "estimatedDepositChannelExpiryTime": 1640998260000,
           "feesPaid": [
             {
               "amount": "50000000350000",
@@ -1344,6 +1362,7 @@ describe('server', () => {
             },
           ],
           "isDepositChannelExpired": false,
+          "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
@@ -1463,7 +1482,7 @@ describe('server', () => {
           "destAsset": "DOT",
           "destChain": "Polkadot",
           "estimatedDefaultDurationSeconds": 48,
-          "estimatedDepositChannelExpiryTime": 1699527060000,
+          "estimatedDepositChannelExpiryTime": 1640998260000,
           "feesPaid": [],
           "fillOrKillParams": {
             "minPrice": "29387358770557187699218413430556141945466.638919302188",
@@ -1471,6 +1490,7 @@ describe('server', () => {
             "retryDurationBlocks": 15,
           },
           "isDepositChannelExpired": false,
+          "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,

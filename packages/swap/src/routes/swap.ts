@@ -17,6 +17,7 @@ import {
   isEgressableSwap,
 } from '../utils/swap';
 import { getLatestSwapForId } from './v2/utils';
+import { getLastChainTrackingUpdateTimestamp } from '../utils/intercept';
 
 const router = express.Router();
 
@@ -223,6 +224,7 @@ router.get(
             ),
           }
         : undefined,
+      lastStatechainUpdateAt: (await getLastChainTrackingUpdateTimestamp())?.valueOf(),
     };
 
     logger.info('sending response for swap request', { id, response });
