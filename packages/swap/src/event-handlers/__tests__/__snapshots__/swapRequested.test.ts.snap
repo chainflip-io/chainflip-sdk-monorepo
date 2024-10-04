@@ -39,7 +39,7 @@ exports[`swapRequested creates a new swap request (INGRESS_EGRESS_FEE) 1`] = `
   "ccmMessage": null,
   "completedAt": null,
   "completedBlockIndex": null,
-  "depositAmount": "450800",
+  "depositAmount": null,
   "depositBoostedAt": null,
   "depositBoostedBlockIndex": null,
   "depositReceivedAt": null,
