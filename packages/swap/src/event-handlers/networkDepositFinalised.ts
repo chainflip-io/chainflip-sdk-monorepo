@@ -3,12 +3,9 @@ import { bitcoinIngressEgressDepositFinalised } from '@chainflip/processor/160/b
 import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/160/ethereumIngressEgress/depositFinalised';
 import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/160/polkadotIngressEgress/depositFinalised';
 import { solanaIngressEgressDepositFinalised } from '@chainflip/processor/160/solanaIngressEgress/depositFinalised';
-import assert from 'assert';
 import z from 'zod';
 import { assetConstants } from '@/shared/enums';
-import { assertUnreachable } from '@/shared/functions';
-import { formatTxHash } from './common';
-import { Chain } from '../client';
+import { getDepositTxRef } from './common';
 import { EventHandlerArgs } from '.';
 
 const normalizeSchema = <T>(obj: T) => ({
@@ -23,13 +20,6 @@ const ethereumSchema = ethereumIngressEgressDepositFinalised;
 const polkadotSchema = polkadotIngressEgressDepositFinalised;
 const solanaSchema = solanaIngressEgressDepositFinalised.transform(normalizeSchema);
 
-type EthereumDepositDetails = z.output<typeof ethereumSchema>['depositDetails'];
-type ArbitrumDepositDetails = z.output<typeof arbitrumSchema>['depositDetails'];
-type EvmDepositDetails = EthereumDepositDetails | ArbitrumDepositDetails;
-type BitcoinDepositDetails = z.output<typeof bitcoinSchema>['depositDetails'];
-type PolkadotDepositDetails = z.output<typeof polkadotSchema>['depositDetails'];
-type SolanaDepositDetails = z.output<typeof solanaSchema>['depositDetails'];
-
 const depositFinalisedSchema = z.union([
   solanaSchema,
   arbitrumSchema,
@@ -38,46 +28,11 @@ const depositFinalisedSchema = z.union([
   polkadotSchema,
 ]);
 
-export type DepositFinalisedArgs = z.input<typeof depositFinalisedSchema>;
-
-const getTxRef = (
-  chain: Chain,
-  details:
-    | BitcoinDepositDetails
-    | EvmDepositDetails
-    | PolkadotDepositDetails
-    | SolanaDepositDetails
-    | undefined,
-  blockHeight?: bigint | number,
-) => {
-  if (details === undefined) {
-    return undefined;
-  }
-
-  switch (chain) {
-    case 'Arbitrum':
-    case 'Ethereum':
-      return (details as EvmDepositDetails)?.txHashes?.at(0);
-    case 'Bitcoin':
-      return (details as BitcoinDepositDetails)?.txId;
-    case 'Polkadot':
-      return `${blockHeight}-${details as PolkadotDepositDetails}`;
-    case 'Solana':
-      assert(details == null);
-      return undefined;
-    default:
-      return assertUnreachable(chain);
-  }
-};
-
 export const networkDepositFinalised = async ({ prisma, event, block }: EventHandlerArgs) => {
   const { asset, amount, action, ingressFee, depositDetails, blockHeight } =
     depositFinalisedSchema.parse(event.args);
 
-  const txRef =
-    depositDetails !== undefined
-      ? formatTxHash(asset, getTxRef(assetConstants[asset].chain, depositDetails, blockHeight))
-      : undefined;
+  const txRef = getDepositTxRef(assetConstants[asset].chain, depositDetails, blockHeight);
 
   if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {
     const { swapRequestId } = action;

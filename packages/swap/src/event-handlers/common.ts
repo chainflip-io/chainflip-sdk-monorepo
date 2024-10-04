@@ -1,3 +1,6 @@
+import { bitcoinIngressEgressDepositFinalised } from '@chainflip/processor/160/bitcoinIngressEgress/depositFinalised';
+import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/160/ethereumIngressEgress/depositFinalised';
+import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/160/polkadotIngressEgress/depositFinalised';
 import * as base58 from '@chainflip/utils/base58';
 import { hexToBytes, reverseBytes } from '@chainflip/utils/bytes';
 import type { HexString } from '@chainflip/utils/types';
@@ -5,14 +8,15 @@ import type { HexString } from '@chainflip/utils/types';
 import { Metadata, TypeRegistry } from '@polkadot/types';
 import assert from 'assert';
 import { z } from 'zod';
-import { assetConstants, InternalAsset } from '@/shared/enums';
+import { Chain } from '@/shared/enums';
+import { assertUnreachable } from '@/shared/functions';
 import {
   btcAddress,
+  chainEnum,
   dotAddress,
+  ethereumAddress,
   hexString,
   unsignedInteger,
-  chainEnum,
-  ethereumAddress,
 } from '@/shared/parsers';
 import * as rpc from '@/shared/rpc';
 import { Prisma } from '../client';
@@ -120,12 +124,10 @@ export const getStateChainError = async (
   });
 };
 
-export function formatTxHash(asset: InternalAsset, txHash: string): string;
-export function formatTxHash(asset: InternalAsset, txHash: string | undefined): string | undefined;
-export function formatTxHash(asset: InternalAsset, txHash: string | undefined) {
+export function formatTxHash(chain: Chain, txHash: string): string;
+export function formatTxHash(chain: Chain, txHash: string | undefined): string | undefined;
+export function formatTxHash(chain: Chain, txHash: string | undefined) {
   if (!txHash) return txHash;
-
-  const { chain } = assetConstants[asset];
 
   switch (chain) {
     case 'Bitcoin':
@@ -136,3 +138,44 @@ export function formatTxHash(asset: InternalAsset, txHash: string | undefined) {
       return txHash;
   }
 }
+
+export const getDepositTxRef = (
+  chain: Chain,
+  depositDetails:
+    | z.output<typeof bitcoinIngressEgressDepositFinalised>['depositDetails']
+    | z.output<typeof ethereumIngressEgressDepositFinalised>['depositDetails']
+    | z.output<typeof polkadotIngressEgressDepositFinalised>['depositDetails']
+    | undefined,
+  blockHeight?: bigint | number,
+) => {
+  if (depositDetails === undefined) {
+    return undefined;
+  }
+
+  switch (chain) {
+    case 'Arbitrum':
+    case 'Ethereum': {
+      const details = depositDetails as z.output<
+        typeof ethereumIngressEgressDepositFinalised
+      >['depositDetails'];
+      return formatTxHash(chain, details?.txHashes?.at(0));
+    }
+    case 'Bitcoin': {
+      const details = depositDetails as z.output<
+        typeof bitcoinIngressEgressDepositFinalised
+      >['depositDetails'];
+      return formatTxHash(chain, details?.txId);
+    }
+    case 'Polkadot': {
+      const details = depositDetails as z.output<
+        typeof polkadotIngressEgressDepositFinalised
+      >['depositDetails'];
+      return formatTxHash(chain, `${blockHeight}-${details}`);
+    }
+    case 'Solana':
+      assert(depositDetails == null);
+      return undefined;
+    default:
+      return assertUnreachable(chain);
+  }
+};

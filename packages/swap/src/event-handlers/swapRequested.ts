@@ -1,6 +1,6 @@
 import { swappingSwapRequested as schema160 } from '@chainflip/processor/160/swapping/swapRequested';
 import z from 'zod';
-import { InternalAsset } from '@/shared/enums';
+import { assetConstants, InternalAsset } from '@/shared/enums';
 import { assertNever } from '@/shared/guards';
 import { pascalCaseToScreamingSnakeCase } from '@/shared/strings';
 import { formatTxHash } from './common';
@@ -65,7 +65,7 @@ export const getOriginInfo = async (
     return {
       originType: 'VAULT' as const,
       swapDepositChannelId: undefined,
-      depositTransactionRef: formatTxHash(srcAsset, origin.txHash),
+      depositTransactionRef: formatTxHash(assetConstants[srcAsset].chain, origin.txHash),
     };
   }
 
