@@ -12,7 +12,7 @@ exports[`depositBoosted updates the values for an existing swap 1`] = `
   "depositBoostedBlockIndex": "120-7",
   "depositReceivedAt": null,
   "depositReceivedBlockIndex": null,
-  "depositTransactionRef": null,
+  "depositTransactionRef": "c7323b09ad750b311cdee3f1555c8ea9db52a7343a8d597474aa6c860f626b62",
   "destAddress": null,
   "destAsset": "Flip",
   "effectiveBoostFeeBps": 5,
