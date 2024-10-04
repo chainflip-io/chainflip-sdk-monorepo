@@ -16,7 +16,7 @@ export const getLastChainTrackingUpdateTimestamp = async () => {
   return latestChainTracking.updatedAt;
 };
 
-export const stalenessCheck = asyncHandler(
+export const lastUpdateHeader = asyncHandler(
   async (_: Request, res: Response, next: NextFunction) => {
     const lastUpdateTimestamp = await getLastChainTrackingUpdateTimestamp();
 

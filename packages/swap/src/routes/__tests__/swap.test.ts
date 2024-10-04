@@ -530,7 +530,11 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/swaps/${channelId}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchInlineSnapshot(`
+      expect(body).toMatchInlineSnapshot(
+        {
+          lastStatechainUpdateAt: expect.any(Number),
+        },
+        `
         {
           "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
           "depositChannelBrokerCommissionBps": 0,
@@ -545,13 +549,14 @@ describe('server', () => {
           "estimatedDepositChannelExpiryTime": 1640995092000,
           "feesPaid": [],
           "isDepositChannelExpired": true,
-          "lastStatechainUpdateAt": Any<Date>,
+          "lastStatechainUpdateAt": Any<Number>,
           "srcAsset": "ETH",
           "srcChain": "Ethereum",
           "srcChainRequiredBlockConfirmations": 2,
           "state": "AWAITING_DEPOSIT",
         }
-      `);
+      `,
+      );
     });
 
     it(`retrieves a swap in ${State.DepositReceived} status`, async () => {
