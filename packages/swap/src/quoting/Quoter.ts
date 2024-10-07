@@ -89,14 +89,10 @@ export default class Quoter {
           return;
         }
 
-        logger.debug('received quote', {
-          ...result.data,
-          marketMaker: socket.data.marketMaker,
-        });
-
         if (!this.inflightRequests.has(result.data.request_id)) {
           logger.warn('received quote for unknown request', {
-            ...result.data,
+            legs: result.data.legs,
+            requestId: result.data.request_id,
             marketMaker: socket.data.marketMaker,
           });
           return;
@@ -137,7 +133,11 @@ export default class Quoter {
         )
         .subscribe(({ marketMaker, quote }) => {
           clientsReceivedQuotes.set(marketMaker, quote);
-          logger.info('received limit orders from market maker', { marketMaker, ...quote });
+          logger.info('received limit orders from market maker', {
+            marketMaker,
+            legs: quote.legs,
+            requestId: request.request_id,
+          });
           if (clientsReceivedQuotes.size === connectedClients) complete();
         });
 
@@ -146,14 +146,8 @@ export default class Quoter {
   }
 
   async getLimitOrders(srcAsset: InternalAsset, destAsset: InternalAsset, swapInputAmount: bigint) {
-    logger.info('requesting limit orders from market makers', {
-      connectedMarketMakerCount: this.io.sockets.sockets.size,
-      srcAsset,
-      destAsset,
-      swapInputAmount: swapInputAmount.toString(),
-    });
-
     let legs;
+    const start = performance.now();
 
     if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
       legs = [Leg.of(srcAsset, destAsset, swapInputAmount).toJSON()] as const;
@@ -171,6 +165,14 @@ export default class Quoter {
 
     const request: MarketMakerQuoteRequest = { request_id: this.createId(), legs };
 
+    logger.info('requesting limit orders from market makers', {
+      connectedMarketMakerCount: this.io.sockets.sockets.size,
+      srcAsset,
+      destAsset,
+      swapInputAmount: swapInputAmount.toString(),
+      requestId: request.request_id,
+    });
+
     const quotes = await this.collectMakerQuotes(request);
 
     const orders = [
@@ -184,7 +186,11 @@ export default class Quoter {
       ),
     ];
 
-    logger.info('received limit orders from market makers', { orders });
+    logger.info('received limit orders from market makers', {
+      orders,
+      requestId: request.request_id,
+      duration: performance.now() - start,
+    });
 
     return orders;
   }
