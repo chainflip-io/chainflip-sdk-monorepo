@@ -1,4 +1,5 @@
 import { VoidSigner } from 'ethers';
+import { ERC20__factory } from '@/shared/abis';
 import { Assets, Chain, ChainflipNetworks, Chains, InternalAssets } from '@/shared/enums';
 import {
   boostPoolsDepth,
@@ -6,7 +7,7 @@ import {
   mockRpcResponse,
   supportedAssets,
 } from '@/shared/tests/fixtures';
-import { approveVault, executeSwap } from '@/shared/vault';
+import { approveVault, checkVaultAllowance, executeSwap } from '@/shared/vault';
 import { SwapSDK } from '../sdk';
 import { getQuote, getQuoteV2, getStatus, getStatusV2 } from '../services/ApiService';
 import { QuoteRequest } from '../types';
@@ -14,6 +15,7 @@ import { QuoteRequest } from '../types';
 jest.mock('@/shared/vault', () => ({
   executeSwap: jest.fn(),
   approveVault: jest.fn(),
+  checkVaultAllowance: jest.fn(),
 }));
 
 jest.mock('../services/ApiService', () => ({
@@ -31,6 +33,15 @@ jest.mock('@trpc/client', () => ({
     },
   }),
 }));
+
+jest.mock('ethers', () => {
+  const originalModule = jest.requireActual('ethers');
+  return {
+    __esModule: true,
+    ...originalModule,
+    Contract: jest.fn(),
+  };
+});
 
 describe(SwapSDK, () => {
   const signer = new VoidSigner('0x0');
@@ -270,23 +281,58 @@ describe(SwapSDK, () => {
       jest.mocked(executeSwap).mockResolvedValueOnce({ hash: 'hello world' } as any);
 
       const result = await sdk.executeSwap(params as any);
+
       expect(executeSwap).toHaveBeenCalledWith(params, { network: 'sisyphos', signer }, {});
       expect(result).toEqual('hello world');
     });
 
     it('calls executeSwap with the given signer', async () => {
       const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
-      const otherSigner = new VoidSigner('0x1');
       jest.mocked(executeSwap).mockResolvedValueOnce({ hash: 'hello world' } as any);
 
       const result = await sdk.executeSwap(params as any, {
-        signer: otherSigner,
+        signer,
       });
-      expect(executeSwap).toHaveBeenCalledWith(
-        params,
-        { network: 'sisyphos', signer: otherSigner },
-        {},
-      );
+
+      expect(executeSwap).toHaveBeenCalledWith(params, { network: 'sisyphos', signer }, {});
+      expect(result).toEqual('hello world');
+    });
+
+    it('checks token allowance before calling executeSwap with the given signer', async () => {
+      const params = { amount: '1', srcAsset: 'FLIP', srcChain: 'Ethereum' };
+      jest.mocked(executeSwap).mockResolvedValueOnce({ hash: 'hello world' } as any);
+      jest.mocked(checkVaultAllowance).mockResolvedValueOnce({
+        hasSufficientAllowance: true,
+        allowance: 0n,
+        erc20: ERC20__factory.connect(''),
+      });
+
+      const result = await sdk.executeSwap(params as any, {
+        signer,
+      });
+
+      expect(checkVaultAllowance).toHaveBeenCalledWith(params, { network: 'sisyphos', signer });
+      expect(executeSwap).toHaveBeenCalledWith(params, { network: 'sisyphos', signer }, {});
+      expect(result).toEqual('hello world');
+    });
+
+    it('ensures correct token allowance before calling executeSwap with the given signer', async () => {
+      const params = { amount: '1', srcAsset: 'FLIP', srcChain: 'Ethereum' };
+      jest.mocked(executeSwap).mockResolvedValueOnce({ hash: 'hello world' } as any);
+      jest.mocked(approveVault).mockResolvedValueOnce({ hash: 'hello world 2' } as any);
+      jest.mocked(checkVaultAllowance).mockResolvedValueOnce({
+        hasSufficientAllowance: false,
+        allowance: 0n,
+        erc20: ERC20__factory.connect(''),
+      });
+
+      const result = await sdk.executeSwap(params as any, {
+        signer,
+      });
+
+      expect(checkVaultAllowance).toHaveBeenCalledWith(params, { network: 'sisyphos', signer });
+      expect(approveVault).toHaveBeenCalledWith(params, { network: 'sisyphos', signer }, {});
+      expect(executeSwap).toHaveBeenCalledWith(params, { network: 'sisyphos', signer }, {});
       expect(result).toEqual('hello world');
     });
   });

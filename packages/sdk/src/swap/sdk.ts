@@ -29,9 +29,9 @@ import {
 } from '@/shared/rpc';
 import { validateSwapAmount } from '@/shared/rpc/utils';
 import { Required } from '@/shared/types';
-import { approveVault, executeSwap, ExecuteSwapParams } from '@/shared/vault';
+import { approveVault, checkVaultAllowance, executeSwap, ExecuteSwapParams } from '@/shared/vault';
 import type { AppRouter } from '@/swap/server';
-import { getAssetData } from './assets';
+import { getAssetData, isGasAsset } from './assets';
 import { getChainData } from './chains';
 import { BACKEND_SERVICE_URLS, CF_SDK_VERSION_HEADERS } from './consts';
 import * as ApiService from './services/ApiService';
@@ -285,6 +285,8 @@ export class SwapSDK {
     txOpts: TransactionOptions & { signer?: Signer } = {},
   ): Promise<TransactionHash> {
     const { srcChain, srcAsset, amount } = params;
+    const { network } = this.options;
+    const internalAsset = getInternalAsset({ chain: srcChain, asset: srcAsset });
 
     const { signer: optsSigner, ...remainingTxOpts } = txOpts;
     const signer = optsSigner ?? this.options.signer;
@@ -292,13 +294,24 @@ export class SwapSDK {
 
     await this.validateSwapAmount({ chain: srcChain, asset: srcAsset }, BigInt(amount));
 
+    if (!isGasAsset(internalAsset)) {
+      const allowanceInfo = await checkVaultAllowance(params, {
+        signer,
+        network,
+      });
+
+      if (!allowanceInfo.hasSufficientAllowance) {
+        await this.approveVault(params, txOpts);
+      }
+    }
+
     // DEPRECATED(1.5): use ccmParams instead of ccmMetadata
     params.ccmParams ??= params.ccmMetadata; // eslint-disable-line no-param-reassign
 
     const tx = await executeSwap(
       params,
       {
-        network: this.options.network,
+        network,
         signer,
       },
       remainingTxOpts,
