@@ -115,6 +115,7 @@ describe(Quoter, () => {
       const fakeServer = { on: jest.fn() };
 
       const mockQuoter = new Quoter(fakeServer as unknown as Server);
+      mockQuoter['inflightRequests'].add('string');
 
       expect(fakeServer.on).toHaveBeenCalledWith('connection', expect.any(Function));
 

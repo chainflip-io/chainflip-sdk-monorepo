@@ -59,6 +59,8 @@ const formatLimitOrders = (
 export default class Quoter {
   private readonly quotes$ = new Subject<Quote>();
 
+  private readonly inflightRequests = new Set<string>();
+
   constructor(
     private readonly io: Server,
     private createId: () => string = randomUUID,
@@ -88,9 +90,17 @@ export default class Quoter {
         }
 
         logger.debug('received quote', {
-          quote: result.data,
+          ...result.data,
           marketMaker: socket.data.marketMaker,
         });
+
+        if (!this.inflightRequests.has(result.data.request_id)) {
+          logger.warn('received quote for unknown request', {
+            ...result.data,
+            marketMaker: socket.data.marketMaker,
+          });
+          return;
+        }
 
         this.quotes$.next({ marketMaker: socket.data.marketMaker, quote: result.data });
       });
@@ -101,6 +111,7 @@ export default class Quoter {
     const connectedClients = this.io.sockets.sockets.size;
     if (connectedClients === 0) return Promise.resolve([]);
 
+    this.inflightRequests.add(request.request_id);
     this.io.emit('quote_request', request);
 
     const clientsReceivedQuotes = new Map<string, MarketMakerQuote>();
@@ -114,6 +125,7 @@ export default class Quoter {
         resolve([...clientsReceivedQuotes.values()]);
         sub.unsubscribe();
         clearTimeout(timer);
+        this.inflightRequests.delete(request.request_id);
       };
 
       sub = this.quotes$
@@ -125,6 +137,7 @@ export default class Quoter {
         )
         .subscribe(({ marketMaker, quote }) => {
           clientsReceivedQuotes.set(marketMaker, quote);
+          logger.info('received limit orders from market maker', { marketMaker, ...quote });
           if (clientsReceivedQuotes.size === connectedClients) complete();
         });
 
