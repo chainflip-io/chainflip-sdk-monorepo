@@ -2,12 +2,14 @@ import * as crypto from 'crypto';
 import { EventEmitter } from 'events';
 import { io, Socket } from 'socket.io-client';
 import { promisify } from 'util';
-import { MarketMakerQuoteRequest, MarketMakerRawQuote } from './schemas';
+import { LegJson, MarketMakerQuoteRequest, MarketMakerRawQuote } from './schemas';
 import logger from '../utils/logger';
 
 const signAsync = promisify(crypto.sign);
 
-export type QuoteHandler = (quote: MarketMakerQuoteRequest) => Promise<MarketMakerRawQuote>;
+export type QuoteHandler = (
+  quote: MarketMakerQuoteRequest<LegJson>,
+) => Promise<MarketMakerRawQuote>;
 
 /**
  * A reference implementation of a client that connects to the quoting service
@@ -52,7 +54,7 @@ export default class QuotingClient extends EventEmitter {
       this.emit('connected');
     });
 
-    this.socket.on('quote_request', async (quote: MarketMakerQuoteRequest) => {
+    this.socket.on('quote_request', async (quote: MarketMakerQuoteRequest<LegJson>) => {
       const response = await this.quoteHandler(quote);
       this.socket.emit('quote_response', {
         ...response,

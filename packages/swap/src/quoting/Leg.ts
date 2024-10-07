@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { InternalAsset, getAssetAndChain } from '@/shared/enums';
-import { Leg as MarketMakerLeg } from './schemas';
+import { LegJson } from './schemas';
 
 export default class Leg {
   static of(srcAsset: InternalAsset, destAsset: InternalAsset, amount: bigint): Leg;
@@ -30,7 +30,7 @@ export default class Leg {
     throw new Error('one of the assets must be Usdc');
   }
 
-  toJSON(): MarketMakerLeg {
+  toJSON(): LegJson {
     const side = this.getSide();
     let baseAsset: Exclude<InternalAsset, 'Usdc'>;
 

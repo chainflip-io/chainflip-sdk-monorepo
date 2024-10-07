@@ -1,8 +1,12 @@
 import * as crypto from 'crypto';
-import type { Server, Socket } from 'socket.io';
+import type { Server } from 'socket.io';
 import { promisify } from 'util';
 import { z } from 'zod';
+import { InternalAssetMap, getInternalAsset, InternalAsset, InternalAssets } from '@/shared/enums';
+import { isNotNullish } from '@/shared/guards';
+import { assetAndChain } from '@/shared/parsers';
 import prisma from '../client';
+import { type QuotingSocket } from './Quoter';
 import logger from '../utils/logger';
 
 const verifyAsync = promisify(crypto.verify);
@@ -10,20 +14,41 @@ const verifyAsync = promisify(crypto.verify);
 type Middleware = Parameters<Server['use']>[0];
 type Next = Parameters<Middleware>[1];
 
-export type QuotingSocket = Omit<Socket, 'data'> & { data: { marketMaker: string } };
-
-const authSchema = z.object({
-  client_version: z.literal('1'),
-  market_maker_id: z.string(),
-  timestamp: z.number(),
-  signature: z.string(),
-});
-
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) {
     throw new Error(message);
   }
 }
+
+const mapAssets = (quotedAssets: InternalAsset[] | null): InternalAssetMap<boolean> => {
+  assert(quotedAssets === null || quotedAssets.length !== 0, 'no assets quoted');
+
+  return Object.fromEntries(
+    Object.values(InternalAssets).map(
+      (asset) => [asset, quotedAssets === null || quotedAssets.includes(asset)] as const,
+    ),
+  ) as InternalAssetMap<boolean>;
+};
+
+const authSchema = z.union([
+  z
+    .object({
+      client_version: z.literal('1'),
+      market_maker_id: z.string(),
+      timestamp: z.number(),
+      signature: z.string(),
+    })
+    .transform((data) => ({ ...data, quoted_assets: mapAssets(null) })),
+  z.object({
+    client_version: z.literal('2'),
+    market_maker_id: z.string(),
+    timestamp: z.number(),
+    signature: z.string(),
+    quoted_assets: z
+      .array(assetAndChain.transform(getInternalAsset))
+      .transform((assets) => mapAssets(assets.filter(isNotNullish))),
+  }),
+]);
 
 const parseKey = (key: string) => {
   try {
@@ -66,7 +91,7 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
 
     // https://socket.io/docs/v4/server-socket-instance/#socketdata
     // eslint-disable-next-line no-param-reassign
-    socket.data = { marketMaker: marketMaker.name };
+    socket.data = { marketMaker: marketMaker.name, quotedAssets: auth.quoted_assets };
 
     next();
   } catch (error) {

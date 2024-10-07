@@ -1,13 +1,12 @@
 import BigNumber from 'bignumber.js';
 import express from 'express';
 import { Query } from 'express-serve-static-core';
-import type { Server } from 'socket.io';
 import { Asset, assetConstants, InternalAsset } from '@/shared/enums';
 import { quoteQuerySchema, QuoteQueryResponse } from '@/shared/schemas';
 import env from '../../config/env';
 import { getBoostSafeMode } from '../../polkadot/api';
 import { getUsdValue } from '../../pricing/checkPriceWarning';
-import Quoter from '../../quoting/Quoter';
+import Quoter, { type QuotingServer } from '../../quoting/Quoter';
 import { getBoostFeeBpsForAmount } from '../../utils/boost';
 import getPoolQuote from '../../utils/getPoolQuote';
 import logger from '../../utils/logger';
@@ -327,7 +326,7 @@ export const generateQuotes = async ({
   return { quotes: result, limitOrders };
 };
 
-const quoteRouter = (io: Server) => {
+const quoteRouter = (io: QuotingServer) => {
   const quoter = new Quoter(io);
 
   const router = express.Router().use((req, res, next) => {
