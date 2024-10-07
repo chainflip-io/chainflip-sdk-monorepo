@@ -147,6 +147,7 @@ export default class Quoter {
 
   async getLimitOrders(srcAsset: InternalAsset, destAsset: InternalAsset, swapInputAmount: bigint) {
     let legs;
+    const start = performance.now();
 
     if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
       legs = [Leg.of(srcAsset, destAsset, swapInputAmount).toJSON()] as const;
@@ -188,6 +189,7 @@ export default class Quoter {
     logger.info('received limit orders from market makers', {
       orders,
       requestId: request.request_id,
+      duration: performance.now() - start,
     });
 
     return orders;
