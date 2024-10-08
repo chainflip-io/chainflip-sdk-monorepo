@@ -54,13 +54,16 @@ const isOnBlocklist = async (address: string | undefined): Promise<boolean> => {
 export default async function disallowChannel(
   destAddress: string,
   srcAddress: string | undefined,
+  refundAddress: string | undefined,
 ): Promise<boolean> {
   return (
     await Promise.all([
       isOnBlocklist(destAddress),
       isOnBlocklist(srcAddress),
+      isOnBlocklist(refundAddress),
       isTooRisky(destAddress),
       isTooRisky(srcAddress),
+      isTooRisky(refundAddress),
     ])
   ).some(Boolean);
 }
