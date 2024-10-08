@@ -1,5 +1,8 @@
+import * as base58 from '@chainflip/utils/base58';
+import { bytesToHex } from '@chainflip/utils/bytes';
+import * as ss58 from '@chainflip/utils/ss58';
 import * as broker from '../broker';
-import { Assets } from '../enums';
+import { Assets, chainConstants } from '../enums';
 import { mockRpcResponse } from '../tests/fixtures';
 
 describe(broker.requestSwapDepositAddress, () => {
@@ -491,5 +494,197 @@ describe(broker.requestSwapDepositAddress, () => {
     expect(postSpy.mock.calls[0][1].params[7].refund_address).toEqual(
       '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
     );
+  });
+});
+
+describe(broker.buildExtrinsicPayload, () => {
+  const evmAddress = '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF';
+  const dotAddress = '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo';
+  const solAddress = '3yKDHJgzS2GbZB9qruoadRYtq8597HZifnRju7fHpdRC';
+  const btcAddress = 'bcrt1p785mga8djc3r5f7afaechlth4laxaty2rt08ncgydw4j7zv8np5suf7etv';
+
+  const basicSwaps = [
+    [
+      'to Ethereum',
+      {
+        destAsset: 'FLIP',
+        destChain: 'Ethereum',
+        destAddress: evmAddress,
+      },
+    ],
+    [
+      'to Arbitrum',
+      {
+        destAsset: 'ETH',
+        destChain: 'Arbitrum',
+        destAddress: evmAddress,
+      },
+    ],
+    [
+      'to Solana',
+      {
+        destAsset: 'USDC',
+        destChain: 'Solana',
+        destAddress: solAddress,
+      },
+    ],
+    [
+      'to Polkadot (ss58)',
+      {
+        destAsset: 'DOT',
+        destChain: 'Polkadot',
+        destAddress: dotAddress,
+      },
+    ],
+    [
+      'to Polkadot (hex)',
+      {
+        destAsset: 'DOT',
+        destChain: 'Polkadot',
+        destAddress: ss58.toPublicKey(dotAddress),
+      },
+    ],
+    [
+      'to Bitcoin',
+      {
+        destAsset: 'BTC',
+        destChain: 'Bitcoin',
+        destAddress: btcAddress,
+      },
+    ],
+  ] as [string, Omit<broker.NewSwapRequest, 'srcAsset' | 'srcChain'>][];
+
+  it.each(basicSwaps)('builds basic swap params %s', (label, params) => {
+    expect(
+      broker.buildExtrinsicPayload(
+        {
+          srcAsset: 'SOL',
+          srcChain: 'Solana',
+          ...params,
+        },
+        'backspin',
+      ),
+    ).toMatchSnapshot(label);
+  });
+
+  it('adds the broker commission', () => {
+    expect(
+      broker.buildExtrinsicPayload(
+        {
+          srcAsset: 'SOL',
+          srcChain: 'Solana',
+          ...basicSwaps[0][1],
+          commissionBps: 100,
+        },
+        'backspin',
+      ),
+    ).toMatchSnapshot();
+  });
+
+  it('adds ccm params', () => {
+    const params = {
+      srcAsset: 'SOL',
+      srcChain: 'Solana',
+      ...basicSwaps[0][1],
+      ccmParams: {
+        message: '0xdeadbeef',
+        gasBudget: '123456789',
+      },
+    } satisfies broker.NewSwapRequest;
+
+    expect(broker.buildExtrinsicPayload(params, 'backspin')).toMatchSnapshot('dummy cf params');
+    expect(
+      broker.buildExtrinsicPayload(
+        { ...params, ccmParams: { ...params.ccmParams, cfParameters: '0x1234' } },
+        'backspin',
+      ),
+    ).toMatchSnapshot('with cf params');
+  });
+
+  it('adds max boost fee', () => {
+    const params = {
+      srcAsset: 'SOL',
+      srcChain: 'Solana',
+      ...basicSwaps[0][1],
+      maxBoostFeeBps: 30,
+    } satisfies broker.NewSwapRequest;
+
+    expect(broker.buildExtrinsicPayload(params, 'backspin')).toMatchSnapshot();
+  });
+
+  it('adds affiliates', () => {
+    const params = {
+      srcAsset: 'SOL',
+      srcChain: 'Solana',
+      ...basicSwaps[0][1],
+      affiliates: [
+        {
+          account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+          commissionBps: 10,
+        },
+      ],
+    } satisfies broker.NewSwapRequest;
+
+    expect(broker.buildExtrinsicPayload(params, 'backspin')).toMatchSnapshot();
+  });
+
+  it.each([
+    ['Bitcoin', 'P2PKH', '1PYVSoeftFP4EVBN3ou8vZctkhDthJamvp'],
+    ['Bitcoin', 'P2SH', '32k55FA93MYqbjhLk9hokD3P666Vz9QqKb'],
+    ['Bitcoin', 'P2WSH', 'bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej'],
+    ['Bitcoin', 'P2WSH', 'bc1qeklep85ntjz4605drds6aww9u0qr46qzrv5xswd35uhjuj8ahfcqgf6hak'],
+    ['Bitcoin', 'Taproot', 'bc1pcwtqa8tjnq7ry5nmf0a9udzn6nfaqzmxdjj6ee779q2h6c58nyxss5hkga'],
+    ['Solana', 'base58', solAddress],
+    ['Solana', 'hex', bytesToHex(base58.decode(solAddress))],
+    ['Polkadot', 'ss58', dotAddress],
+    ['Polkadot', 'hex', ss58.toPublicKey(dotAddress)],
+    ['Ethereum', '', evmAddress],
+    ['Arbitrum', '', evmAddress],
+  ] as const)('adds refund parameters (%s %s)', (chain, addressType, refundAddress) => {
+    const params = {
+      srcAsset: chainConstants[chain].assets[0],
+      srcChain: chain,
+      ...basicSwaps[0][1],
+      fillOrKillParams: {
+        refundAddress,
+        retryDurationBlocks: 100,
+        minPriceX128: '10000000000000',
+      },
+    } satisfies broker.NewSwapRequest;
+
+    expect(broker.buildExtrinsicPayload(params, 'mainnet')).toMatchSnapshot();
+  });
+
+  it('requires FoK for DCA', () => {
+    const params = {
+      srcAsset: 'SOL',
+      srcChain: 'Solana',
+      ...basicSwaps[0][1],
+      dcaParams: {
+        numberOfChunks: 100,
+        chunkIntervalBlocks: 5,
+      },
+    } satisfies broker.NewSwapRequest;
+
+    expect(() => broker.buildExtrinsicPayload(params, 'mainnet')).toThrow();
+  });
+
+  it('adds DCA params', () => {
+    const params = {
+      srcAsset: 'SOL',
+      srcChain: 'Solana',
+      ...basicSwaps[0][1],
+      fillOrKillParams: {
+        refundAddress: solAddress,
+        retryDurationBlocks: 100,
+        minPriceX128: '10000000000000',
+      },
+      dcaParams: {
+        numberOfChunks: 100,
+        chunkIntervalBlocks: 5,
+      },
+    } satisfies broker.NewSwapRequest;
+
+    expect(broker.buildExtrinsicPayload(params, 'mainnet')).toMatchSnapshot();
   });
 });
