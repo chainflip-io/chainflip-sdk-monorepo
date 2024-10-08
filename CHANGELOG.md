@@ -7,6 +7,13 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## 1.6.6
+
+### Fixed
+
+- Polkadot destination address were being improperly validated before being sent
+  to the broker.
+
 ## 1.6.5
 
 ### Changed
