@@ -446,3 +446,16 @@ describe(broker.requestSwapDepositAddress, () => {
     ).rejects.toThrow('dcaParams requires fillOrKillParams');
   });
 });
+
+describe(broker.validateRequest, () => {
+  it('works with polkadot addresses', () => {
+    expect(
+      broker.validateRequest('perseverance', {
+        srcAsset: { asset: Assets.ETH, chain: 'Ethereum' },
+        destAsset: { asset: Assets.DOT, chain: 'Polkadot' },
+        destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
+        amount: '1000000000',
+      }),
+    ).toMatchSnapshot();
+  });
+});

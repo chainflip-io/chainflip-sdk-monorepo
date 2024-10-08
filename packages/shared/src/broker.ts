@@ -10,6 +10,7 @@ import {
   ethereumAddress,
   assetAndChain,
   solanaAddress,
+  polkadotAddress,
 } from './parsers';
 import {
   affiliateBroker,
@@ -49,12 +50,18 @@ const paramOrder = [
   'dcaParams',
 ] as const;
 
-const validateRequest = (network: ChainflipNetwork, params: unknown) => {
+export const validateRequest = (network: ChainflipNetwork, params: unknown) => {
   const parsed = z
     .object({
       srcAsset: assetAndChain,
       destAsset: assetAndChain,
-      destAddress: z.union([numericString, hexString, btcAddress(network), solanaAddress]),
+      destAddress: z.union([
+        numericString,
+        hexString,
+        btcAddress(network),
+        solanaAddress,
+        polkadotAddress.transform(ss58.toPublicKey),
+      ]),
       commissionBps: z.number().optional().default(0),
       ccmParams: ccmParamsSchema
         .transform(({ message, ...rest }) => ({
@@ -81,12 +88,6 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) => {
     })
     .superRefine(ensureDcaWithFok)
     .parse(params);
-
-  if (parsed.destAsset.chain === 'Polkadot') {
-    parsed.destAddress = parsed.destAddress.startsWith('0x')
-      ? z.string().length(66).parse(parsed.destAddress) // we only accept 32 byte dot addresses
-      : ss58.toPublicKey(parsed.destAddress);
-  }
 
   return paramOrder.map((key) => parsed[key]);
 };

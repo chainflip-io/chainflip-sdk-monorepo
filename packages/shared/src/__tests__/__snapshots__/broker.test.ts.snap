@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`validateRequest works with polkadot addresses 1`] = `
+[
+  {
+    "asset": "ETH",
+    "chain": "Ethereum",
+  },
+  {
+    "asset": "DOT",
+    "chain": "Polkadot",
+  },
+  "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+  0,
+  undefined,
+  undefined,
+  undefined,
+  undefined,
+  undefined,
+]
+`;
