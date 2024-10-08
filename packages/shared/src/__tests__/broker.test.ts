@@ -445,4 +445,51 @@ describe(broker.requestSwapDepositAddress, () => {
       ),
     ).rejects.toThrow('dcaParams requires fillOrKillParams');
   });
+
+  it.each([
+    '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
+    '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
+  ])('works with polkadot dest addresses', async (destAddress) => {
+    const postSpy = mockResponse();
+    await broker.requestSwapDepositAddress(
+      {
+        srcAsset: Assets.ETH,
+        srcChain: 'Ethereum',
+        destAsset: Assets.DOT,
+        destChain: 'Polkadot',
+        destAddress,
+      },
+      brokerConfig,
+      'perseverance',
+    );
+    expect(postSpy.mock.calls[0][1].params[2]).toEqual(
+      '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
+    );
+  });
+
+  it.each([
+    '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
+    '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
+  ])('works with polkadot refund addresses', async (refundAddress) => {
+    const postSpy = mockResponse();
+    await broker.requestSwapDepositAddress(
+      {
+        srcAsset: Assets.DOT,
+        srcChain: 'Polkadot',
+        destAsset: Assets.ETH,
+        destChain: 'Ethereum',
+        destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress,
+          minPriceX128: '10000000000000',
+        },
+      },
+      brokerConfig,
+      'perseverance',
+    );
+    expect(postSpy.mock.calls[0][1].params[7].refund_address).toEqual(
+      '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
+    );
+  });
 });
