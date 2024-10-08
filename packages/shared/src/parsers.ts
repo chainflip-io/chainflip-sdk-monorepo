@@ -102,7 +102,7 @@ export const solanaAddress = string.refine(isValidSolanaAddress, (address) => ({
 }));
 
 export const polkadotAddress = string.refine(
-  (address) => ss58.decode(address).ss58Format === 0,
+  (address) => ss58.decode(address),
   (address) => ({ message: `${address} is not a valid polkadot address` }),
 );
 
