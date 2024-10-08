@@ -97,8 +97,11 @@ importers:
   packages/cli:
     dependencies:
       '@chainflip/bitcoin':
-        specifier: ^1.1.0
-        version: 1.1.0(typescript@5.6.2)
+        specifier: ^1.1.1
+        version: 1.1.1(typescript@5.6.2)
+      '@chainflip/extrinsics':
+        specifier: ^1.6.1
+        version: 1.6.1
       '@chainflip/rpc':
         specifier: ^1.6.7
         version: 1.6.7
@@ -165,8 +168,8 @@ importers:
   packages/shared:
     dependencies:
       '@chainflip/bitcoin':
-        specifier: ^1.1.0
-        version: 1.1.0(typescript@5.6.2)
+        specifier: ^1.1.1
+        version: 1.1.1(typescript@5.6.2)
       '@chainflip/extrinsics':
         specifier: ^1.6.1
         version: 1.6.1
@@ -746,8 +749,8 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@chainflip/bitcoin@1.1.0':
-    resolution: {integrity: sha512-hadz/FeqtJAk12tf3F5lGZ+3KH3cXN0OxEpF4D7fd/m2Cjdsltdcb+zLjNcW20TC+0q9ZNz3MQNK8lIINBX/Rw==}
+  '@chainflip/bitcoin@1.1.1':
+    resolution: {integrity: sha512-Jr6X/0QTSFYpTp23ZPhyioL6wL9x3Xpj6OGjadQKZyhobRN4BZkhLogv20HDYTJcRzVphzrTJArbEaNie04XVA==}
 
   '@chainflip/extrinsics@1.6.1':
     resolution: {integrity: sha512-sm3v2QguNW4/RiIZYHd+VRSxup2q4cVBY0VjbQJw6xYqhNCzZlt+Hl38Kni+TCHQu3hP/WgIF72yvvSs7/PBdg==}
@@ -6289,7 +6292,7 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@chainflip/bitcoin@1.1.0(typescript@5.6.2)':
+  '@chainflip/bitcoin@1.1.1(typescript@5.6.2)':
     dependencies:
       '@chainflip/utils': 0.4.0
       bitcoinjs-lib: 7.0.0-rc.0(typescript@5.6.2)

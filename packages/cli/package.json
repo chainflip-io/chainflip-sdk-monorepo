@@ -34,7 +34,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@chainflip/bitcoin": "^1.1.0",
+    "@chainflip/bitcoin": "^1.1.1",
     "@chainflip/extrinsics": "^1.6.1",
     "@chainflip/rpc": "^1.6.7",
     "@chainflip/solana": "^1.0.2",

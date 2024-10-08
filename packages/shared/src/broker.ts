@@ -6,6 +6,7 @@ import * as base58 from '@chainflip/utils/base58';
 import { bytesToHex, hexToBytes } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
+import { HexString } from '@chainflip/utils/types';
 import { z } from 'zod';
 import { Chain, ChainflipNetwork, Asset, getInternalAsset } from './enums';
 import { assert } from './guards';
@@ -77,13 +78,12 @@ const transformedDcaParamsSchema = dcaParamsSchema.transform(
   }),
 );
 
-const transformedCcmParamsSchema = ccmParamsSchema.transform(
-  ({ message, gasBudget, cfParameters }) => ({
+const transformedCcmParamsSchema = (defaultValue: HexString | undefined) =>
+  ccmParamsSchema.transform(({ message, gasBudget, cfParameters }) => ({
     message,
     gas_budget: gasBudget,
-    cf_parameters: cfParameters ?? '0x',
-  }),
-);
+    cf_parameters: cfParameters ?? defaultValue,
+  }));
 
 const validateAddressLength = (chain: Chain, address: string, type: 'destination' | 'refund') => {
   if ((chain === 'Arbitrum' || chain === 'Ethereum') && address.length !== 42) {
@@ -110,7 +110,7 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) => {
       destAsset: assetAndChain,
       destAddress: addressSchema,
       commissionBps: z.number().optional().default(0),
-      ccmParams: transformedCcmParamsSchema.optional(),
+      ccmParams: transformedCcmParamsSchema(undefined).optional(),
       maxBoostFeeBps: z.number().optional(),
       affiliates: z.array(affiliateBroker).optional(),
       fillOrKillParams: getFokSchema(addressSchema).optional(),
@@ -231,7 +231,9 @@ export const buildExtrinsicPayload = (
     chain: swapRequest.destChain,
   });
 
-  const ccmParams = transformedCcmParamsSchema.nullable().parse(swapRequest.ccmParams ?? null);
+  const ccmParams = transformedCcmParamsSchema('0x')
+    .nullable()
+    .parse(swapRequest.ccmParams ?? null);
 
   const fokParams = getFokSchema(
     z
