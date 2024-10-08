@@ -93,7 +93,7 @@ export const ethereumAddress = hexString.refine(
 );
 
 export const chainflipAddress = string.refine(
-  (address) => ss58.decode(address).ss58Format === chainflipSS58Prefix,
+  (address) => address.startsWith('cF') && ss58.decode(address),
   (address) => ({ message: `${address} is not a valid Chainflip address` }),
 );
 
