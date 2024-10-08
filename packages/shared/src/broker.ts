@@ -2,6 +2,7 @@ import { HttpClient, RpcParams } from '@chainflip/rpc';
 import * as ss58 from '@chainflip/utils/ss58';
 import { z } from 'zod';
 import { Chain, ChainflipNetwork, Asset } from './enums';
+import { assert } from './guards';
 import {
   hexString,
   numericString,
@@ -11,6 +12,7 @@ import {
   assetAndChain,
   solanaAddress,
   polkadotAddress,
+  number,
 } from './parsers';
 import {
   affiliateBroker,
@@ -18,7 +20,6 @@ import {
   CcmParams,
   ccmParamsSchema,
   FillOrKillParamsX128,
-  fillOrKillParams,
   dcaParams,
   DcaParams,
   ensureDcaWithFok,
@@ -50,18 +51,30 @@ const paramOrder = [
   'dcaParams',
 ] as const;
 
-export const validateRequest = (network: ChainflipNetwork, params: unknown) => {
+const getAddressSchema = (network: ChainflipNetwork) =>
+  z.union([
+    numericString,
+    hexString,
+    btcAddress(network),
+    solanaAddress,
+    polkadotAddress.transform(ss58.toPublicKey),
+  ]);
+
+const fillOrKillParams = <Z extends z.ZodTypeAny>(addressSchema: Z) =>
+  z.object({
+    retryDurationBlocks: number,
+    refundAddress: addressSchema,
+    minPriceX128: numericString,
+  });
+
+const validateRequest = (network: ChainflipNetwork, params: unknown) => {
+  const addressSchema = getAddressSchema(network);
+
   const parsed = z
     .object({
       srcAsset: assetAndChain,
       destAsset: assetAndChain,
-      destAddress: z.union([
-        numericString,
-        hexString,
-        btcAddress(network),
-        solanaAddress,
-        polkadotAddress.transform(ss58.toPublicKey),
-      ]),
+      destAddress: addressSchema,
       commissionBps: z.number().optional().default(0),
       ccmParams: ccmParamsSchema
         .transform(({ message, ...rest }) => ({
@@ -72,7 +85,7 @@ export const validateRequest = (network: ChainflipNetwork, params: unknown) => {
         .optional(),
       maxBoostFeeBps: z.number().optional(),
       affiliates: z.array(affiliateBroker).optional(),
-      fillOrKillParams: fillOrKillParams
+      fillOrKillParams: fillOrKillParams(addressSchema)
         .transform(({ retryDurationBlocks, refundAddress, minPriceX128 }) => ({
           retry_duration: retryDurationBlocks,
           refund_address: refundAddress,
@@ -88,6 +101,35 @@ export const validateRequest = (network: ChainflipNetwork, params: unknown) => {
     })
     .superRefine(ensureDcaWithFok)
     .parse(params);
+
+  const evmAddressLength = 20 * 2 + 2;
+
+  if (parsed.destAsset.chain === 'Arbitrum' || parsed.destAsset.chain === 'Ethereum') {
+    assert(parsed.destAddress.length === evmAddressLength, 'Invalid destination address length');
+  }
+
+  const dotAddressLength = 32 * 2 + 2;
+
+  if (parsed.destAsset.chain === 'Polkadot') {
+    assert(parsed.destAddress.length === dotAddressLength, 'Invalid destination address length');
+  }
+
+  if (
+    parsed.fillOrKillParams &&
+    (parsed.srcAsset.chain === 'Arbitrum' || parsed.srcAsset.chain === 'Ethereum')
+  ) {
+    assert(
+      parsed.fillOrKillParams.refund_address.length === evmAddressLength,
+      'Invalid refund address length',
+    );
+  }
+
+  if (parsed.fillOrKillParams && parsed.srcAsset.chain === 'Polkadot') {
+    assert(
+      parsed.fillOrKillParams.refund_address.length === dotAddressLength,
+      'Invalid refund address length',
+    );
+  }
 
   return paramOrder.map((key) => parsed[key]);
 };
