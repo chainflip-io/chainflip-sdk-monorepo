@@ -2,7 +2,6 @@ import { HttpClient, RpcParams } from '@chainflip/rpc';
 import * as ss58 from '@chainflip/utils/ss58';
 import { z } from 'zod';
 import { Chain, ChainflipNetwork, Asset } from './enums';
-import { assert } from './guards';
 import {
   hexString,
   numericString,
@@ -67,6 +66,16 @@ const fillOrKillParams = <Z extends z.ZodTypeAny>(addressSchema: Z) =>
     minPriceX128: numericString,
   });
 
+const validateAddressLength = (chain: Chain, address: string, type: 'destination' | 'refund') => {
+  if ((chain === 'Arbitrum' || chain === 'Ethereum') && address.length !== 42) {
+    throw new Error(`Invalid ${type} address length`);
+  }
+
+  if (chain === 'Polkadot' && address.length !== 66) {
+    throw new Error(`Invalid ${type} address length`);
+  }
+};
+
 const validateRequest = (network: ChainflipNetwork, params: unknown) => {
   const addressSchema = getAddressSchema(network);
 
@@ -102,35 +111,14 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) => {
     .superRefine(ensureDcaWithFok)
     .parse(params);
 
-  const evmAddressLength = 20 * 2 + 2;
-
-  if (parsed.destAsset.chain === 'Arbitrum' || parsed.destAsset.chain === 'Ethereum') {
-    assert(parsed.destAddress.length === evmAddressLength, 'Invalid destination address length');
-  }
-
-  const dotAddressLength = 32 * 2 + 2;
-
-  if (parsed.destAsset.chain === 'Polkadot') {
-    assert(parsed.destAddress.length === dotAddressLength, 'Invalid destination address length');
-  }
-
-  if (
-    parsed.fillOrKillParams &&
-    (parsed.srcAsset.chain === 'Arbitrum' || parsed.srcAsset.chain === 'Ethereum')
-  ) {
-    assert(
-      parsed.fillOrKillParams.refund_address.length === evmAddressLength,
-      'Invalid refund address length',
+  validateAddressLength(parsed.destAsset.chain, parsed.destAddress, 'destination');
+  if (parsed.fillOrKillParams) {
+    validateAddressLength(
+      parsed.srcAsset.chain,
+      parsed.fillOrKillParams.refund_address,
+      'destination',
     );
   }
-
-  if (parsed.fillOrKillParams && parsed.srcAsset.chain === 'Polkadot') {
-    assert(
-      parsed.fillOrKillParams.refund_address.length === dotAddressLength,
-      'Invalid refund address length',
-    );
-  }
-
   return paramOrder.map((key) => parsed[key]);
 };
 
