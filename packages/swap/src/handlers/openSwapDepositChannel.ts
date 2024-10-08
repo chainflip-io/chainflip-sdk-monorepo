@@ -20,7 +20,13 @@ export default async function openSwapDepositChannel(
     );
   }
 
-  if (await disallowChannel(input.destAddress, input.srcAddress)) {
+  if (
+    await disallowChannel(
+      input.destAddress,
+      input.srcAddress,
+      input.fillOrKillParams?.refundAddress,
+    )
+  ) {
     logger.info('blocked address found', { ...input });
     throw ServiceError.internalError('Failed to open deposit channel, please try again later');
   }
