@@ -1,4 +1,4 @@
-import { DOT_ADDRESS, swapEgressScheduledMock } from './utils';
+import { DOT_ADDRESS, ETH_ADDRESS, swapEgressScheduledMock } from './utils';
 import prisma from '../../client';
 import swapEgressScheduled from '../swapEgressScheduled';
 
@@ -47,6 +47,62 @@ describe(swapEgressScheduled, () => {
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
       },
+    });
+  });
+
+  it('uses gas asset for egress fee when CCM', async () => {
+    const ccmEvent = {
+      ...event,
+      args: {
+        ...event.args,
+        asset: { __kind: 'ArbUsdc' },
+        egressId: [{ __kind: 'Arbitrum' }, '1'] as const,
+      },
+    };
+
+    const swapId = BigInt(ccmEvent.args.swapId);
+
+    await prisma.swapRequest.create({
+      data: {
+        nativeId: BigInt(swapId),
+        depositAmount: '1000000',
+        swapInputAmount: '1000000',
+        depositReceivedAt: new Date(block.timestamp - 12000),
+        depositReceivedBlockIndex: `${block.height - 100}-${ccmEvent.indexInBlock}`,
+        srcAsset: 'ArbUsdc',
+        destAsset: 'ArbUsdc',
+        destAddress: ETH_ADDRESS,
+        requestType: 'CCM',
+        originType: 'VAULT',
+        swapRequestedAt: new Date(block.timestamp - 12000),
+        swapRequestedBlockIndex: '92-398',
+      },
+    });
+
+    await swapEgressScheduled({ block, event: ccmEvent, prisma });
+
+    const swapRequest = await prisma.swapRequest.findFirstOrThrow({
+      where: { nativeId: swapId },
+      include: {
+        egress: true,
+        fees: { select: { amount: true, asset: true, type: true } },
+      },
+    });
+
+    expect(swapRequest).toMatchSnapshot({
+      id: expect.any(BigInt),
+      egressId: expect.any(BigInt),
+      egress: {
+        id: expect.any(BigInt),
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+      },
+      fees: [
+        {
+          asset: 'ArbEth',
+          type: 'EGRESS',
+        },
+      ],
     });
   });
 });

@@ -49,3 +49,53 @@ exports[`swapEgressScheduled adds an egress and fee to a swap request 1`] = `
   "swapRequestedBlockIndex": "92-398",
 }
 `;
+
+exports[`swapEgressScheduled uses gas asset for egress fee when CCM 1`] = `
+{
+  "ccmDepositReceivedBlockIndex": null,
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "completedAt": null,
+  "completedBlockIndex": null,
+  "depositAmount": "1000000",
+  "depositBoostedAt": null,
+  "depositBoostedBlockIndex": null,
+  "depositReceivedAt": 2022-12-06T14:31:33.000Z,
+  "depositReceivedBlockIndex": "20-0",
+  "depositTransactionRef": null,
+  "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+  "destAsset": "ArbUsdc",
+  "effectiveBoostFeeBps": null,
+  "egress": {
+    "amount": "10000000000",
+    "broadcastId": null,
+    "chain": "Arbitrum",
+    "createdAt": Any<Date>,
+    "id": Any<BigInt>,
+    "nativeId": 1n,
+    "scheduledAt": 2022-12-06T14:31:45.000Z,
+    "scheduledBlockIndex": "120-0",
+    "updatedAt": Any<Date>,
+  },
+  "egressId": Any<BigInt>,
+  "fees": [
+    {
+      "amount": "1000000000",
+      "asset": "ArbEth",
+      "type": "EGRESS",
+    },
+  ],
+  "id": Any<BigInt>,
+  "nativeId": 9876545n,
+  "originType": "VAULT",
+  "prewitnessedDepositId": null,
+  "refundEgressId": null,
+  "requestType": "CCM",
+  "srcAddress": null,
+  "srcAsset": "ArbUsdc",
+  "swapDepositChannelId": null,
+  "swapInputAmount": "1000000",
+  "swapRequestedAt": 2022-12-06T14:31:33.000Z,
+  "swapRequestedBlockIndex": "92-398",
+}
+`;
