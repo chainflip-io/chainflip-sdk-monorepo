@@ -22,7 +22,7 @@ const getPrice = (
   return output.div(input).toFixed();
 };
 
-export default async function getPoolQuote({
+export default async function getPoolQuote<T extends QuoteType>({
   srcAsset,
   destAsset,
   depositAmount,
@@ -39,8 +39,8 @@ export default async function getPoolQuote({
   limitOrders?: LimitOrders;
   boostFeeBps?: number;
   pools: Pool[];
-  quoteType: QuoteType;
-}): Promise<QuoteQueryResponse> {
+  quoteType: T;
+}): Promise<Extract<QuoteQueryResponse, { type: T }>> {
   const includedFees = [];
   let swapInputAmount = depositAmount;
 
@@ -120,5 +120,5 @@ export default async function getPoolQuote({
     }),
     estimatedPrice: getPrice(swapInputAmount, srcAsset, swapOutputAmount, destAsset),
     type: quoteType,
-  };
+  } as Extract<QuoteQueryResponse, { type: T }>; // a little casteroo because dca params isn't there
 }

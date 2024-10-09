@@ -147,7 +147,9 @@ export type PoolInfo = {
   fee: Omit<PoolFee, 'type'>;
 };
 
-export type QuoteDetails = {
+interface BaseQuoteDetails {
+  srcAsset: AssetAndChain;
+  destAsset: AssetAndChain;
   intermediateAmount?: string;
   egressAmount: string;
   includedFees: SwapFee[];
@@ -155,12 +157,19 @@ export type QuoteDetails = {
   lowLiquidityWarning: boolean | undefined;
   estimatedDurationSeconds: number;
   estimatedPrice: string;
-  dcaParams?: {
-    numberOfChunks: number;
-    chunkIntervalBlocks: number;
-  };
-  type: QuoteType;
-};
+}
+
+export interface RegularQuoteDetails extends BaseQuoteDetails {
+  type: 'REGULAR';
+}
+
+export interface DCAQuoteDetails extends BaseQuoteDetails {
+  type: 'DCA';
+  dcaParams: DcaParams;
+}
+
+export type QuoteDetails = RegularQuoteDetails | DCAQuoteDetails;
+
 export type BoostedQuoteDetails = QuoteDetails & { estimatedBoostFeeBps: number };
 
 export type QuoteQueryResponse = QuoteDetails & {

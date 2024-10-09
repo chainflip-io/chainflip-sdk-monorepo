@@ -1,7 +1,9 @@
+import { SwappingRequestSwapDepositAddressWithAffiliates } from '@chainflip/extrinsics/160/swapping/requestSwapDepositAddressWithAffiliates';
+import { HexString } from '@chainflip/utils/types';
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import { Signer } from 'ethers';
 import superjson from 'superjson';
-import { requestSwapDepositAddress } from '@/shared/broker';
+import { requestSwapDepositAddress, buildExtrinsicPayload } from '@/shared/broker';
 import { TransactionOptions } from '@/shared/contracts';
 import {
   ChainflipNetwork,
@@ -34,6 +36,7 @@ import type { AppRouter } from '@/swap/server';
 import { getAssetData } from './assets';
 import { getChainData } from './chains';
 import { BACKEND_SERVICE_URLS, CF_SDK_VERSION_HEADERS } from './consts';
+import { CcmParams, QuoteQueryResponse } from '../schemas';
 import * as ApiService from './services/ApiService';
 import {
   ChainData,
@@ -399,5 +402,66 @@ export class SwapSDK {
       feeTierBps: depth.tier,
       ...getAssetAndChain(depth.asset),
     }));
+  }
+
+  buildRequestSwapDepositAddressWithAffiliatesParams({
+    quote,
+    destAddress,
+    boost,
+    fillOrKillParams: inputFoKParams,
+    affiliates: inputAffiliates,
+    ccmParams,
+    brokerCommissionBps,
+  }: {
+    quote: QuoteQueryResponse;
+    destAddress: string;
+    boost?: boolean;
+    fillOrKillParams?: {
+      minPrice: string;
+      refundAddress: string;
+      retryDurationBlocks: number;
+    };
+    affiliates?: { account: `cF${string}` | HexString; commissionBps: number }[];
+    ccmParams?: CcmParams;
+    brokerCommissionBps?: number;
+  }): SwappingRequestSwapDepositAddressWithAffiliates {
+    let dcaParams = null;
+    let fillOrKillParams = null;
+
+    if (quote.type === 'DCA') dcaParams = quote.dcaParams;
+
+    assert(
+      quote.type === 'REGULAR' || dcaParams !== null,
+      'failed to find DCA parameters from quote',
+    );
+
+    if (inputFoKParams) {
+      fillOrKillParams = {
+        minPriceX128: getPriceX128FromPrice(
+          inputFoKParams.minPrice,
+          getInternalAsset(quote.srcAsset),
+          getInternalAsset(quote.destAsset),
+        ),
+        refundAddress: inputFoKParams.refundAddress,
+        retryDurationBlocks: inputFoKParams.retryDurationBlocks,
+      };
+    }
+
+    return buildExtrinsicPayload(
+      {
+        srcAsset: quote.srcAsset.asset,
+        srcChain: quote.srcAsset.chain,
+        destAsset: quote.destAsset.asset,
+        destChain: quote.destAsset.chain,
+        destAddress,
+        dcaParams,
+        fillOrKillParams,
+        maxBoostFeeBps: boost ? 30 : 0,
+        commissionBps: brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0,
+        ccmParams: ccmParams ?? null,
+        affiliates: inputAffiliates ?? [],
+      },
+      this.options.network,
+    );
   }
 }

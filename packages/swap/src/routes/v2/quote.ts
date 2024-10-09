@@ -69,8 +69,8 @@ const adjustDcaQuote = ({
   estimatedBoostFeeBps,
 }: {
   dcaQuoteParams: NonNullable<Awaited<ReturnType<typeof getDcaQuoteParams>>>;
-  dcaQuote: QuoteQueryResponse;
-  dcaBoostedQuote?: QuoteQueryResponse | null | 0;
+  dcaQuote: Extract<QuoteQueryResponse, { type: 'DCA' }>;
+  dcaBoostedQuote?: Extract<QuoteQueryResponse, { type: 'DCA' }> | null;
   estimatedBoostFeeBps?: number;
 }) => {
   // eslint-disable-next-line no-param-reassign
@@ -266,14 +266,14 @@ export const generateQuotes = async ({
         depositAmount: dcaQuoteParams.chunkSize + ingressFeeSurcharge,
         quoteType: 'DCA',
       }),
-    dcaQuoteParams &&
-      estimatedBoostFeeBps &&
-      getPoolQuote({
-        ...quoteArgs,
-        boostFeeBps: estimatedBoostFeeBps,
-        depositAmount: dcaQuoteParams.chunkSize + ingressFeeSurcharge,
-        quoteType: 'DCA',
-      }),
+    dcaQuoteParams && estimatedBoostFeeBps
+      ? getPoolQuote({
+          ...quoteArgs,
+          boostFeeBps: estimatedBoostFeeBps,
+          depositAmount: dcaQuoteParams.chunkSize + ingressFeeSurcharge,
+          quoteType: 'DCA',
+        })
+      : null,
   ]);
 
   if (dcaQuoteResult.status === 'rejected') {
