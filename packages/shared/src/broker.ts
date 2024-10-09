@@ -226,8 +226,10 @@ type RemoveOptional<T> = {} & {
   [K in keyof T]-?: undefined extends T[K] ? T[K] | null : T[K];
 };
 
+export type ExtrinsicPayloadParams = RemoveOptional<NewSwapRequest>;
+
 export const buildExtrinsicPayload = (
-  swapRequest: RemoveOptional<NewSwapRequest>,
+  swapRequest: ExtrinsicPayloadParams,
   chainflipNetwork: ChainflipNetwork,
 ): SwappingRequestSwapDepositAddressWithAffiliates => {
   const srcAsset = getInternalAsset({ asset: swapRequest.srcAsset, chain: swapRequest.srcChain });
