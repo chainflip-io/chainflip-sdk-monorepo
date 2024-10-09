@@ -1527,5 +1527,70 @@ describe('server', () => {
       expect(rest.fees.filter((fee: any) => fee.type === 'LIQUIDITY').length).toBe(2);
       expect(rest.fees.filter((fee: any) => fee.type === 'BROKER').length).toBe(1);
     });
+
+    it(`ignores GAS swaps when returning the list of swaps for a ccm single asset swap`, async () => {
+      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.ccmParams = {
+        gasBudget: '50000000',
+        message: '0xd3adc0de',
+      };
+      depositChannelEvent.args.destinationAsset.__kind = 'Usdc';
+      depositChannelEvent.args.sourceAsset.__kind = 'Usdc';
+      const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
+      requestedEvent.args = {
+        ...requestedEvent.args,
+        inputAsset: { __kind: 'Usdc' },
+        outputAsset: { __kind: 'Usdc' },
+        __kind: 'Ccm',
+        outputAddress: {
+          value: '0xbeecf6b29111eb01d309a92fe818ba271b47f2e7',
+          __kind: 'Eth',
+        },
+        ccmDepositMetadata: {
+          sourceChain: {
+            __kind: 'Ethereum',
+          },
+          sourceAddress: {
+            value: '0xbeecf6b29111eb01d309a92fe818ba271b47f2e7',
+            __kind: 'Eth',
+          },
+          channelMetadata: {
+            message:
+              '0x000000000000000000000000000000000000000000000000000000000000004000000000000000000000000067ff09c184d8e9e7b90c5187ed04cbfbdba741c8000000000000000000000000000000000000000000000000000000000000000c6461676f61746973686572650000000000000000000000000000000000000000',
+            gasBudget: '50000000',
+            cfParameters: '0x',
+          },
+        },
+      };
+      const finalizedEvent = clone(swapEventMap['EthereumIngressEgress.DepositFinalised']);
+      finalizedEvent.args.asset.__kind = 'Usdc';
+      const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
+      scheduledEvent.args.swapType.__kind = 'CcmGas';
+      const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
+      executedEvent.args.inputAsset.__kind = 'Usdc';
+      executedEvent.args.outputAsset.__kind = 'Usdc';
+      const egressScheduledEvent = clone(swapEventMap['Swapping.SwapEgressScheduled']);
+      egressScheduledEvent.args = {
+        asset: { __kind: 'Usdc' },
+        amount: '150000000',
+        egressId: [{ __kind: 'Ethereum' }, '220'],
+        egressFee: '6364636424444258',
+        swapRequestId: requestedEvent.args.swapRequestId,
+      };
+
+      await processEvents([
+        depositChannelEvent,
+        requestedEvent,
+        finalizedEvent,
+        scheduledEvent,
+        executedEvent,
+        egressScheduledEvent,
+      ]);
+
+      const { body } = await request(server).get(`/v2/swaps/${channelId}`);
+
+      expect(body.swap).toBeUndefined();
+      expect(body).toMatchSnapshot();
+    });
   });
 });

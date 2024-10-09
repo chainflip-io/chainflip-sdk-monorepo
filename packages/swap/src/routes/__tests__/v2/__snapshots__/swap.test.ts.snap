@@ -1,5 +1,42 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`server GET /v2/swaps/:id ignores gas swaps when returning the list of swaps 1`] = `
+{
+  "deposit": {
+    "amount": "5000000000000000000",
+    "witnessedAt": 552000,
+    "witnessedBlockIndex": "92-400",
+  },
+  "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
+    "createdAt": 516000,
+    "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
+    "estimatedExpiryTime": 1640998260000,
+    "id": "86-Ethereum-85",
+    "isExpired": false,
+    "openedThroughBackend": false,
+    "srcChainExpiryBlock": "265",
+  },
+  "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+  "destAsset": "USDC",
+  "destChain": "Ethereum",
+  "estimatedDurationSeconds": 54,
+  "fees": [],
+  "lastStatechainUpdateAt": 1640995200000,
+  "srcAsset": "USDC",
+  "srcChain": "Ethereum",
+  "srcChainRequiredBlockConfirmations": 2,
+  "state": "SENDING",
+  "swapEgress": {
+    "amount": "150000000",
+    "scheduledAt": 564000,
+    "scheduledBlockIndex": "94-595",
+  },
+  "swapId": "368",
+}
+`;
+
 exports[`server GET /v2/swaps/:id retrieves a swap from a native swap id 1`] = `
 {
   "deposit": {
