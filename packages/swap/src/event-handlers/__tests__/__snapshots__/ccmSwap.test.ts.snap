@@ -79,7 +79,7 @@ exports[`ccm swap flow handles all the deposit channel events 1`] = `
         },
         {
           "amount": "374529689743",
-          "asset": "Flip",
+          "asset": "Eth",
           "type": "EGRESS",
         },
       ],
@@ -228,7 +228,7 @@ exports[`ccm swap flow handles all the vault events 1`] = `
   "fees": [
     {
       "amount": "0",
-      "asset": "Usdc",
+      "asset": "Eth",
       "type": "EGRESS",
     },
   ],
