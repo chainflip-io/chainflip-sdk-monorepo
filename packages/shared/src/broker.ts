@@ -78,7 +78,7 @@ const transformedDcaParamsSchema = dcaParamsSchema.transform(
   }),
 );
 
-const transformedCcmParamsSchema = (defaultValue: HexString | undefined) =>
+const transformedCcmParamsSchema = <T extends HexString | undefined>(defaultValue: T) =>
   ccmParamsSchema.transform(({ message, gasBudget, cfParameters }) => ({
     message,
     gas_budget: gasBudget,
