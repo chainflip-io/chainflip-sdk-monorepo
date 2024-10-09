@@ -64,12 +64,12 @@ exports[`swapEgressScheduled uses gas asset for egress fee when CCM 1`] = `
   "depositReceivedBlockIndex": "20-0",
   "depositTransactionRef": null,
   "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
-  "destAsset": "Usdc",
+  "destAsset": "ArbUsdc",
   "effectiveBoostFeeBps": null,
   "egress": {
     "amount": "10000000000",
     "broadcastId": null,
-    "chain": "Ethereum",
+    "chain": "Arbitrum",
     "createdAt": Any<Date>,
     "id": Any<BigInt>,
     "nativeId": 1n,
@@ -81,7 +81,7 @@ exports[`swapEgressScheduled uses gas asset for egress fee when CCM 1`] = `
   "fees": [
     {
       "amount": "1000000000",
-      "asset": "Eth",
+      "asset": "ArbEth",
       "type": "EGRESS",
     },
   ],
@@ -92,7 +92,7 @@ exports[`swapEgressScheduled uses gas asset for egress fee when CCM 1`] = `
   "refundEgressId": null,
   "requestType": "CCM",
   "srcAddress": null,
-  "srcAsset": "Usdc",
+  "srcAsset": "ArbUsdc",
   "swapDepositChannelId": null,
   "swapInputAmount": "1000000",
   "swapRequestedAt": 2022-12-06T14:31:33.000Z,

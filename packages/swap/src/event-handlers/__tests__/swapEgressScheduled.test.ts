@@ -51,7 +51,16 @@ describe(swapEgressScheduled, () => {
   });
 
   it('uses gas asset for egress fee when CCM', async () => {
-    const swapId = BigInt(event.args.swapId);
+    const ccmEvent = {
+      ...event,
+      args: {
+        ...event.args,
+        asset: { __kind: 'ArbUsdc' },
+        egressId: [{ __kind: 'Arbitrum' }, '1'] as const,
+      },
+    };
+
+    const swapId = BigInt(ccmEvent.args.swapId);
 
     await prisma.swapRequest.create({
       data: {
@@ -59,9 +68,9 @@ describe(swapEgressScheduled, () => {
         depositAmount: '1000000',
         swapInputAmount: '1000000',
         depositReceivedAt: new Date(block.timestamp - 12000),
-        depositReceivedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
-        srcAsset: 'Usdc',
-        destAsset: 'Usdc',
+        depositReceivedBlockIndex: `${block.height - 100}-${ccmEvent.indexInBlock}`,
+        srcAsset: 'ArbUsdc',
+        destAsset: 'ArbUsdc',
         destAddress: ETH_ADDRESS,
         requestType: 'CCM',
         originType: 'VAULT',
@@ -70,7 +79,7 @@ describe(swapEgressScheduled, () => {
       },
     });
 
-    await swapEgressScheduled({ block, event, prisma });
+    await swapEgressScheduled({ block, event: ccmEvent, prisma });
 
     const swapRequest = await prisma.swapRequest.findFirstOrThrow({
       where: { nativeId: swapId },
@@ -90,7 +99,7 @@ describe(swapEgressScheduled, () => {
       },
       fees: [
         {
-          asset: 'Eth',
+          asset: 'ArbEth',
           type: 'EGRESS',
         },
       ],

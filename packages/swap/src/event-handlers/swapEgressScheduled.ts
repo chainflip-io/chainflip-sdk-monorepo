@@ -1,8 +1,6 @@
 import { swappingSwapEgressScheduled } from '@chainflip/processor/160/swapping/swapEgressScheduled';
 import { z } from 'zod';
-import { assetConstants } from '@/shared/enums';
-import { chainConstants } from '../enums';
-import { screamingSnakeToPascalCase } from '../strings';
+import { chainConstants } from '@/shared/enums';
 import type { EventHandlerArgs } from '.';
 
 const eventArgs = swappingSwapEgressScheduled;
@@ -30,10 +28,7 @@ export default async function swapEgressScheduled({
     where: { nativeId: swapRequestId },
   });
 
-  const egressFeeAsset =
-    request.requestType === 'CCM'
-      ? screamingSnakeToPascalCase(chainConstants[chain].gasAsset)
-      : asset;
+  const egressFeeAsset = request.requestType === 'CCM' ? chainConstants[chain].gasAsset : asset;
 
   await prisma.swapRequest.update({
     where: { nativeId: swapRequestId },
