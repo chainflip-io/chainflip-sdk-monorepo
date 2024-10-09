@@ -58,7 +58,7 @@ const paramOrder = [
   'dcaParams',
 ] as const;
 
-const getFokSchema = <Z extends z.ZodTypeAny>(addressSchema: Z) =>
+const getTransformedFokSchema = <Z extends z.ZodTypeAny>(addressSchema: Z) =>
   z
     .object({
       retryDurationBlocks: number,
@@ -113,7 +113,7 @@ const validateRequest = (network: ChainflipNetwork, params: unknown) => {
       ccmParams: transformedCcmParamsSchema(undefined).optional(),
       maxBoostFeeBps: z.number().optional(),
       affiliates: z.array(affiliateBroker).optional(),
-      fillOrKillParams: getFokSchema(addressSchema).optional(),
+      fillOrKillParams: getTransformedFokSchema(addressSchema).optional(),
       dcaParams: transformedDcaParamsSchema.optional(),
     })
     .superRefine(ensureDcaWithFok)
@@ -235,7 +235,7 @@ export const buildExtrinsicPayload = (
     .nullable()
     .parse(swapRequest.ccmParams ?? null);
 
-  const fokParams = getFokSchema(
+  const fokParams = getTransformedFokSchema(
     z
       .string()
       .transform((address) =>
