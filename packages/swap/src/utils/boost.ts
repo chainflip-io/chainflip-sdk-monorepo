@@ -15,7 +15,7 @@ export const getBoostFeeBpsForAmount = async ({
 }: {
   amount: bigint;
   asset: InternalAsset;
-}): Promise<{ estimatedBoostFeeBps: number | undefined; maxBoostFeeBps: number | undefined }> => {
+}): Promise<{ estimatedBoostFeeBps: number | undefined; maxBoostFeeBps: number }> => {
   const assetBoostPoolsDepth = await boostPoolsCache.get(asset);
 
   let remainingAmount = amount;
