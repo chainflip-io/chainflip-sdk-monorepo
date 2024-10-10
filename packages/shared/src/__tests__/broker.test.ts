@@ -624,8 +624,8 @@ describe(broker.buildExtrinsicPayload, () => {
       affiliates: null,
       fillOrKillParams: null,
       dcaParams: null,
-      srcAsset: 'SOL',
-      srcChain: 'Solana',
+      srcAsset: 'BTC',
+      srcChain: 'Bitcoin',
       ...basicSwaps[0][1],
       maxBoostFeeBps: 30,
     } satisfies broker.ExtrinsicPayloadParams;
