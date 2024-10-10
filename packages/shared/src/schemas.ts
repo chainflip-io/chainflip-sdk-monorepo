@@ -147,22 +147,41 @@ export type PoolInfo = {
   fee: Omit<PoolFee, 'type'>;
 };
 
-export type QuoteDetails = {
+export type BoostedQuoteDetails = {
+  estimatedBoostFeeBps: number;
+  maxBoostFeeBps: number;
+};
+
+interface BaseQuoteDetails {
+  srcAsset: AssetAndChain;
+  destAsset: AssetAndChain;
   intermediateAmount?: string;
+  depositAmount: string;
   egressAmount: string;
   includedFees: SwapFee[];
   poolInfo: PoolInfo[];
   lowLiquidityWarning: boolean | undefined;
   estimatedDurationSeconds: number;
   estimatedPrice: string;
-  dcaParams?: {
-    numberOfChunks: number;
-    chunkIntervalBlocks: number;
-  };
-  type: QuoteType;
-};
-export type BoostedQuoteDetails = QuoteDetails & { estimatedBoostFeeBps: number };
+}
 
-export type QuoteQueryResponse = QuoteDetails & {
-  boostQuote?: BoostedQuoteDetails;
-};
+type WithBoostQuote<T> = Omit<T, 'boostQuote'> & BoostedQuoteDetails;
+
+export interface RegularQuoteDetails extends BaseQuoteDetails {
+  type: 'REGULAR';
+  boostQuote?: WithBoostQuote<RegularQuoteDetails>;
+}
+
+export interface DCAQuoteDetails extends BaseQuoteDetails {
+  type: 'DCA';
+  dcaParams: DcaParams;
+  boostQuote?: WithBoostQuote<DCAQuoteDetails>;
+}
+
+export type Quote = RegularQuoteDetails | DCAQuoteDetails;
+
+export type DCABoostQuote = NonNullable<DCAQuoteDetails['boostQuote']>;
+
+export type RegularBoostQuote = NonNullable<RegularQuoteDetails['boostQuote']>;
+
+export type BoostQuote = RegularBoostQuote | DCABoostQuote;

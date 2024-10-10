@@ -1,5 +1,334 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`SwapSDK buildRequestSwapDepositAddressWithAffiliatesParams builds the parameters for a DCA swap 1`] = `
+[
+  "Btc",
+  "Flip",
+  {
+    "Eth": Uint8Array [
+      113,
+      126,
+      21,
+      133,
+      63,
+      213,
+      242,
+      172,
+      97,
+      35,
+      232,
+      68,
+      195,
+      167,
+      199,
+      89,
+      118,
+      234,
+      236,
+      155,
+    ],
+  },
+  0,
+  null,
+  0,
+  [],
+  {
+    "min_price": "0x152d02c7e14af680000000000000000000000000000000000000",
+    "refund_address": {
+      "Btc": {
+        "P2PKH": Uint8Array [
+          36,
+          63,
+          19,
+          148,
+          244,
+          69,
+          84,
+          244,
+          206,
+          63,
+          214,
+          134,
+          73,
+          193,
+          154,
+          220,
+          72,
+          60,
+          233,
+          36,
+        ],
+      },
+    },
+    "retry_duration": 500,
+  },
+  {
+    "chunk_interval": 5,
+    "number_of_chunks": 100,
+  },
+]
+`;
+
+exports[`SwapSDK buildRequestSwapDepositAddressWithAffiliatesParams builds the parameters for a boost swap 1`] = `
+[
+  "Btc",
+  "Flip",
+  {
+    "Eth": Uint8Array [
+      113,
+      126,
+      21,
+      133,
+      63,
+      213,
+      242,
+      172,
+      97,
+      35,
+      232,
+      68,
+      195,
+      167,
+      199,
+      89,
+      118,
+      234,
+      236,
+      155,
+    ],
+  },
+  0,
+  null,
+  420,
+  [],
+  null,
+  null,
+]
+`;
+
+exports[`SwapSDK buildRequestSwapDepositAddressWithAffiliatesParams builds the parameters for a fill or kill swap 1`] = `
+[
+  "Btc",
+  "Flip",
+  {
+    "Eth": Uint8Array [
+      113,
+      126,
+      21,
+      133,
+      63,
+      213,
+      242,
+      172,
+      97,
+      35,
+      232,
+      68,
+      195,
+      167,
+      199,
+      89,
+      118,
+      234,
+      236,
+      155,
+    ],
+  },
+  0,
+  null,
+  0,
+  [],
+  {
+    "min_price": "0x152d02c7e14af680000000000000000000000000000000000000",
+    "refund_address": {
+      "Btc": {
+        "P2PKH": Uint8Array [
+          36,
+          63,
+          19,
+          148,
+          244,
+          69,
+          84,
+          244,
+          206,
+          63,
+          214,
+          134,
+          73,
+          193,
+          154,
+          220,
+          72,
+          60,
+          233,
+          36,
+        ],
+      },
+    },
+    "retry_duration": 500,
+  },
+  null,
+]
+`;
+
+exports[`SwapSDK buildRequestSwapDepositAddressWithAffiliatesParams builds the parameters for a regular swap 1`] = `
+[
+  "Btc",
+  "Flip",
+  {
+    "Eth": Uint8Array [
+      113,
+      126,
+      21,
+      133,
+      63,
+      213,
+      242,
+      172,
+      97,
+      35,
+      232,
+      68,
+      195,
+      167,
+      199,
+      89,
+      118,
+      234,
+      236,
+      155,
+    ],
+  },
+  0,
+  null,
+  0,
+  [],
+  null,
+  null,
+]
+`;
+
+exports[`SwapSDK buildRequestSwapDepositAddressWithAffiliatesParams builds the parameters for a regular swap with affiliates 1`] = `
+[
+  "Btc",
+  "Flip",
+  {
+    "Eth": Uint8Array [
+      113,
+      126,
+      21,
+      133,
+      63,
+      213,
+      242,
+      172,
+      97,
+      35,
+      232,
+      68,
+      195,
+      167,
+      199,
+      89,
+      118,
+      234,
+      236,
+      155,
+    ],
+  },
+  0,
+  null,
+  0,
+  [
+    {
+      "account": "0x7a467c9e1722b35408618a0cffc87c1e8433798e9c5a79339a10d71ede9e9d79",
+      "bps": 10,
+    },
+    {
+      "account": "0x7a4738071f16c71ef3e5d94504d472fdf73228cb6a36e744e0caaf13555c3c01",
+      "bps": 20,
+    },
+  ],
+  null,
+  null,
+]
+`;
+
+exports[`SwapSDK buildRequestSwapDepositAddressWithAffiliatesParams uses the broker commission from the SDK 1`] = `
+[
+  "Btc",
+  "Flip",
+  {
+    "Eth": Uint8Array [
+      113,
+      126,
+      21,
+      133,
+      63,
+      213,
+      242,
+      172,
+      97,
+      35,
+      232,
+      68,
+      195,
+      167,
+      199,
+      89,
+      118,
+      234,
+      236,
+      155,
+    ],
+  },
+  15,
+  null,
+  0,
+  [],
+  null,
+  null,
+]
+`;
+
+exports[`SwapSDK buildRequestSwapDepositAddressWithAffiliatesParams uses the broker commission from the request 1`] = `
+[
+  "Btc",
+  "Flip",
+  {
+    "Eth": Uint8Array [
+      113,
+      126,
+      21,
+      133,
+      63,
+      213,
+      242,
+      172,
+      97,
+      35,
+      232,
+      68,
+      195,
+      167,
+      199,
+      89,
+      118,
+      234,
+      236,
+      155,
+    ],
+  },
+  30,
+  null,
+  0,
+  [],
+  null,
+  null,
+]
+`;
+
 exports[`SwapSDK getAssets returns the assets based on the cf_supported_assets rpc 1`] = `
 [
   {

@@ -221,8 +221,15 @@ const toForeignChainAddress = (
   }
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types
+type RemoveOptional<T> = {} & {
+  [K in keyof T]-?: undefined extends T[K] ? T[K] | null : T[K];
+};
+
+export type ExtrinsicPayloadParams = RemoveOptional<NewSwapRequest>;
+
 export const buildExtrinsicPayload = (
-  swapRequest: NewSwapRequest,
+  swapRequest: ExtrinsicPayloadParams,
   chainflipNetwork: ChainflipNetwork,
 ): SwappingRequestSwapDepositAddressWithAffiliates => {
   const srcAsset = getInternalAsset({ asset: swapRequest.srcAsset, chain: swapRequest.srcChain });
@@ -255,7 +262,7 @@ export const buildExtrinsicPayload = (
     toEncodedAddress(swapRequest.destChain, swapRequest.destAddress), // destination address
     swapRequest.commissionBps ?? 0, // broker commission
     ccmParams, // channel metadata
-    swapRequest.maxBoostFeeBps ?? 0, // boost fee
+    srcAsset === 'Btc' ? swapRequest.maxBoostFeeBps ?? 0 : 0, // boost fee
     (swapRequest.affiliates ?? []).map(({ account, commissionBps }) => ({
       account: isHex(account) ? account : bytesToHex(ss58.decode(account).data),
       bps: commissionBps,

@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { assetConstants, getAssetAndChain, getInternalAsset } from '@/shared/enums';
 import { getPipAmountFromAmount } from '@/shared/functions';
-import { QuoteQueryResponse, QuoteType } from '@/shared/schemas';
+import { Quote, QuoteType } from '@/shared/schemas';
 import { estimateSwapDuration } from '@/swap/utils/swap';
 import { buildFee, getPoolFees } from './fees';
 import { getEgressFee, getMinimumEgressAmount } from './rpc';
@@ -22,7 +22,7 @@ const getPrice = (
   return output.div(input).toFixed();
 };
 
-export default async function getPoolQuote({
+export default async function getPoolQuote<T extends QuoteType>({
   srcAsset,
   destAsset,
   depositAmount,
@@ -39,8 +39,8 @@ export default async function getPoolQuote({
   limitOrders?: LimitOrders;
   boostFeeBps?: number;
   pools: Pool[];
-  quoteType: QuoteType;
-}): Promise<QuoteQueryResponse> {
+  quoteType: T;
+}): Promise<Extract<Quote, { type: T }>> {
   const includedFees = [];
   let swapInputAmount = depositAmount;
 
@@ -120,5 +120,5 @@ export default async function getPoolQuote({
     }),
     estimatedPrice: getPrice(swapInputAmount, srcAsset, swapOutputAmount, destAsset),
     type: quoteType,
-  };
+  } as Extract<Quote, { type: T }>; // a little casteroo because dca params isn't there
 }

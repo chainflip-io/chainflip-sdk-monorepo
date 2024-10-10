@@ -561,6 +561,12 @@ describe(broker.buildExtrinsicPayload, () => {
           srcAsset: 'SOL',
           srcChain: 'Solana',
           ...params,
+          commissionBps: null,
+          ccmParams: null,
+          maxBoostFeeBps: null,
+          affiliates: null,
+          fillOrKillParams: null,
+          dcaParams: null,
         },
         'backspin',
       ),
@@ -571,6 +577,11 @@ describe(broker.buildExtrinsicPayload, () => {
     expect(
       broker.buildExtrinsicPayload(
         {
+          ccmParams: null,
+          maxBoostFeeBps: null,
+          affiliates: null,
+          fillOrKillParams: null,
+          dcaParams: null,
           srcAsset: 'SOL',
           srcChain: 'Solana',
           ...basicSwaps[0][1],
@@ -583,6 +594,11 @@ describe(broker.buildExtrinsicPayload, () => {
 
   it('adds ccm params', () => {
     const params = {
+      commissionBps: null,
+      maxBoostFeeBps: null,
+      affiliates: null,
+      fillOrKillParams: null,
+      dcaParams: null,
       srcAsset: 'SOL',
       srcChain: 'Solana',
       ...basicSwaps[0][1],
@@ -590,7 +606,7 @@ describe(broker.buildExtrinsicPayload, () => {
         message: '0xdeadbeef',
         gasBudget: '123456789',
       },
-    } satisfies broker.NewSwapRequest;
+    } satisfies broker.ExtrinsicPayloadParams;
 
     expect(broker.buildExtrinsicPayload(params, 'backspin')).toMatchSnapshot('dummy cf params');
     expect(
@@ -603,17 +619,27 @@ describe(broker.buildExtrinsicPayload, () => {
 
   it('adds max boost fee', () => {
     const params = {
-      srcAsset: 'SOL',
-      srcChain: 'Solana',
+      commissionBps: null,
+      ccmParams: null,
+      affiliates: null,
+      fillOrKillParams: null,
+      dcaParams: null,
+      srcAsset: 'BTC',
+      srcChain: 'Bitcoin',
       ...basicSwaps[0][1],
       maxBoostFeeBps: 30,
-    } satisfies broker.NewSwapRequest;
+    } satisfies broker.ExtrinsicPayloadParams;
 
     expect(broker.buildExtrinsicPayload(params, 'backspin')).toMatchSnapshot();
   });
 
   it('adds affiliates', () => {
     const params = {
+      commissionBps: null,
+      ccmParams: null,
+      maxBoostFeeBps: null,
+      fillOrKillParams: null,
+      dcaParams: null,
       srcAsset: 'SOL',
       srcChain: 'Solana',
       ...basicSwaps[0][1],
@@ -623,7 +649,7 @@ describe(broker.buildExtrinsicPayload, () => {
           commissionBps: 10,
         },
       ],
-    } satisfies broker.NewSwapRequest;
+    } satisfies broker.ExtrinsicPayloadParams;
 
     expect(broker.buildExtrinsicPayload(params, 'backspin')).toMatchSnapshot();
   });
@@ -642,6 +668,11 @@ describe(broker.buildExtrinsicPayload, () => {
     ['Arbitrum', '', evmAddress],
   ] as const)('adds refund parameters (%s %s)', (chain, addressType, refundAddress) => {
     const params = {
+      commissionBps: null,
+      ccmParams: null,
+      maxBoostFeeBps: null,
+      affiliates: null,
+      dcaParams: null,
       srcAsset: chainConstants[chain].assets[0],
       srcChain: chain,
       ...basicSwaps[0][1],
@@ -650,13 +681,18 @@ describe(broker.buildExtrinsicPayload, () => {
         retryDurationBlocks: 100,
         minPriceX128: '10000000000000',
       },
-    } satisfies broker.NewSwapRequest;
+    } satisfies broker.ExtrinsicPayloadParams;
 
     expect(broker.buildExtrinsicPayload(params, 'mainnet')).toMatchSnapshot();
   });
 
   it('requires FoK for DCA', () => {
     const params = {
+      commissionBps: null,
+      ccmParams: null,
+      maxBoostFeeBps: null,
+      affiliates: null,
+      fillOrKillParams: null,
       srcAsset: 'SOL',
       srcChain: 'Solana',
       ...basicSwaps[0][1],
@@ -664,13 +700,17 @@ describe(broker.buildExtrinsicPayload, () => {
         numberOfChunks: 100,
         chunkIntervalBlocks: 5,
       },
-    } satisfies broker.NewSwapRequest;
+    } satisfies broker.ExtrinsicPayloadParams;
 
     expect(() => broker.buildExtrinsicPayload(params, 'mainnet')).toThrow();
   });
 
   it('adds DCA params', () => {
     const params = {
+      commissionBps: null,
+      ccmParams: null,
+      maxBoostFeeBps: null,
+      affiliates: null,
       srcAsset: 'SOL',
       srcChain: 'Solana',
       ...basicSwaps[0][1],
@@ -683,7 +723,7 @@ describe(broker.buildExtrinsicPayload, () => {
         numberOfChunks: 100,
         chunkIntervalBlocks: 5,
       },
-    } satisfies broker.NewSwapRequest;
+    } satisfies broker.ExtrinsicPayloadParams;
 
     expect(broker.buildExtrinsicPayload(params, 'mainnet')).toMatchSnapshot();
   });
