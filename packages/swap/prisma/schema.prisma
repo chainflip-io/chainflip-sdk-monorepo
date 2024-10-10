@@ -155,6 +155,8 @@ model SwapRequest {
   ignoredEgresses              IgnoredEgress[]
   swaps                        Swap[]
   fees                         SwapFee[]
+  numberOfChunks               Int?
+  chunkIntervalBlocks          Int?
 
   @@index([srcAsset, prewitnessedDepositId])
   @@schema("public")

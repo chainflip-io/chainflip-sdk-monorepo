@@ -30,6 +30,10 @@ const depositChannel = {
       },
     },
   },
+  dcaParameters: {
+    numberOfChunks: 10,
+    chunkInterval: 2,
+  },
   swapRequestId: '2',
 } as const;
 
