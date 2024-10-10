@@ -407,17 +407,19 @@ export class SwapSDK {
     quote,
     destAddress,
     fillOrKillParams: inputFoKParams,
-    affiliates,
+    affiliateBrokers: affiliates,
     ccmParams,
     brokerCommissionBps,
   }: DepositAddressRequestV2) {
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
+    assert(quote.type === 'DCA' || quote.type === 'REGULAR', 'invalid quote type');
 
     let fillOrKillParams;
 
     if (inputFoKParams) {
       fillOrKillParams = {
-        ...inputFoKParams,
+        refundAddress: inputFoKParams.refundAddress,
+        retryDurationBlocks: inputFoKParams.retryDurationBlocks,
         minPriceX128: getPriceX128FromPrice(
           inputFoKParams.minPrice,
           getInternalAsset(quote.srcAsset),
@@ -473,6 +475,7 @@ export class SwapSDK {
       depositChannelExpiryBlock: response.srcChainExpiryBlock as bigint,
       estimatedDepositChannelExpiryTime: response.estimatedExpiryTime,
       channelOpeningFee: response.channelOpeningFee,
+      fillOrKillParams: inputFoKParams,
     };
   }
 
@@ -480,10 +483,12 @@ export class SwapSDK {
     quote,
     destAddress,
     fillOrKillParams: inputFoKParams,
-    affiliates: inputAffiliates,
+    affiliateBrokers,
     ccmParams,
     brokerCommissionBps,
   }: DepositAddressRequestV2): SwappingRequestSwapDepositAddressWithAffiliates {
+    assert(quote.type === 'DCA' || quote.type === 'REGULAR', 'invalid quote type');
+
     let dcaParams = null;
     let fillOrKillParams = null;
 
@@ -518,7 +523,7 @@ export class SwapSDK {
         maxBoostFeeBps: 'maxBoostFeeBps' in quote ? quote.maxBoostFeeBps : null,
         commissionBps: brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0,
         ccmParams: ccmParams ?? null,
-        affiliates: inputAffiliates ?? [],
+        affiliates: affiliateBrokers ?? [],
       },
       this.options.network,
     );

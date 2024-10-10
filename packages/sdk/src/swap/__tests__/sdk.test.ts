@@ -1,5 +1,6 @@
 import { VoidSigner } from 'ethers';
 import { Assets, Chain, ChainflipNetworks, Chains, InternalAssets } from '@/shared/enums';
+import { BoostQuote, Quote } from '@/shared/schemas';
 import {
   boostPoolsDepth,
   environment,
@@ -943,6 +944,673 @@ describe(SwapSDK, () => {
         channelOpeningFee: 0n,
         ccmParams: undefined,
         affiliateBrokers: [],
+      });
+    });
+  });
+
+  describe(SwapSDK.prototype.requestDepositAddressV2, () => {
+    it('calls openSwapDepositChannel', async () => {
+      const rpcSpy = jest
+        // @ts-expect-error - testing private method
+        .spyOn(sdk.trpc.openSwapDepositChannel, 'mutate')
+        .mockResolvedValueOnce({
+          id: 'channel id',
+          depositAddress: 'deposit address',
+          brokerCommissionBps: 0,
+          srcChainExpiryBlock: 123n,
+          estimatedExpiryTime: 1698334470000,
+          channelOpeningFee: 0n,
+          issuedBlock: 1,
+          maxBoostFeeBps: 0,
+        });
+
+      const response = await sdk.requestDepositAddressV2({
+        quote: {
+          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          depositAmount: BigInt(1e18).toString(),
+          type: 'REGULAR',
+        } as Quote,
+        destAddress: '0xcafebabe',
+      });
+      expect(rpcSpy).toHaveBeenLastCalledWith({
+        srcChain: Chains.Bitcoin,
+        srcAsset: Assets.BTC,
+        destChain: Chains.Ethereum,
+        destAsset: Assets.FLIP,
+        destAddress: '0xcafebabe',
+        amount: BigInt(1e18).toString(),
+      });
+      expect(response).toStrictEqual({
+        depositChannelId: 'channel id',
+        depositAddress: 'deposit address',
+        brokerCommissionBps: 0,
+        depositChannelExpiryBlock: 123n,
+        estimatedDepositChannelExpiryTime: 1698334470000,
+        amount: '1000000000000000000',
+        destAddress: '0xcafebabe',
+        destAsset: 'FLIP',
+        destChain: 'Ethereum',
+        srcAsset: 'BTC',
+        srcChain: 'Bitcoin',
+        maxBoostFeeBps: 0,
+        ccmParams: undefined,
+        channelOpeningFee: 0n,
+        affiliateBrokers: [],
+        dcaParams: undefined,
+        fillOrKillParams: undefined,
+      });
+    });
+
+    it('calls openSwapDepositChannel with refund parameters', async () => {
+      const rpcSpy = jest
+        // @ts-expect-error - testing private method
+        .spyOn(sdk.trpc.openSwapDepositChannel, 'mutate')
+        .mockResolvedValueOnce({
+          id: 'channel id',
+          depositAddress: 'deposit address',
+          brokerCommissionBps: 0,
+          srcChainExpiryBlock: 123n,
+          estimatedExpiryTime: 1698334470000,
+          channelOpeningFee: 0n,
+          issuedBlock: 1,
+          maxBoostFeeBps: 0,
+        });
+
+      const response = await sdk.requestDepositAddressV2({
+        quote: {
+          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          depositAmount: BigInt(1e18).toString(),
+          type: 'REGULAR',
+        } as Quote,
+        destAddress: '0xcafebabe',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '10000000000000',
+        },
+      });
+      expect(rpcSpy).toHaveBeenLastCalledWith({
+        srcChain: Chains.Bitcoin,
+        srcAsset: Assets.BTC,
+        destChain: Chains.Ethereum,
+        destAsset: Assets.FLIP,
+        destAddress: '0xcafebabe',
+        dcaParams: undefined,
+        amount: BigInt(1e18).toString(),
+        maxBoostFeeBps: undefined,
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPriceX128: '34028236692093846346337460743176821145600000000000000000000000',
+        },
+      });
+      expect(response).toStrictEqual({
+        depositChannelId: 'channel id',
+        depositAddress: 'deposit address',
+        brokerCommissionBps: 0,
+        depositChannelExpiryBlock: 123n,
+        estimatedDepositChannelExpiryTime: 1698334470000,
+        amount: '1000000000000000000',
+        destAddress: '0xcafebabe',
+        destAsset: 'FLIP',
+        destChain: 'Ethereum',
+        srcAsset: 'BTC',
+        srcChain: 'Bitcoin',
+        maxBoostFeeBps: 0,
+        channelOpeningFee: 0n,
+        ccmParams: undefined,
+        dcaParams: undefined,
+        affiliateBrokers: [],
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '10000000000000',
+        },
+      });
+    });
+
+    it('calls openSwapDepositChannel with dca parameters', async () => {
+      const rpcSpy = jest
+        // @ts-expect-error - testing private method
+        .spyOn(sdk.trpc.openSwapDepositChannel, 'mutate')
+        .mockResolvedValueOnce({
+          id: 'channel id',
+          depositAddress: 'deposit address',
+          brokerCommissionBps: 0,
+          srcChainExpiryBlock: 123n,
+          estimatedExpiryTime: 1698334470000,
+          channelOpeningFee: 0n,
+          issuedBlock: 1,
+          maxBoostFeeBps: 0,
+        });
+
+      const response = await sdk.requestDepositAddressV2({
+        quote: {
+          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          depositAmount: BigInt(1e18).toString(),
+          dcaParams: {
+            numberOfChunks: 100,
+            chunkIntervalBlocks: 5,
+          },
+          type: 'DCA',
+        } as Quote,
+        destAddress: '0xcafebabe',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '10000000000000',
+        },
+      });
+      expect(rpcSpy).toHaveBeenLastCalledWith({
+        srcChain: Chains.Bitcoin,
+        srcAsset: Assets.BTC,
+        destChain: Chains.Ethereum,
+        destAsset: Assets.FLIP,
+        destAddress: '0xcafebabe',
+        amount: BigInt(1e18).toString(),
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        maxBoostFeeBps: undefined,
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPriceX128: '34028236692093846346337460743176821145600000000000000000000000',
+        },
+      });
+      expect(response).toStrictEqual({
+        depositChannelId: 'channel id',
+        depositAddress: 'deposit address',
+        brokerCommissionBps: 0,
+        depositChannelExpiryBlock: 123n,
+        estimatedDepositChannelExpiryTime: 1698334470000,
+        amount: '1000000000000000000',
+        destAddress: '0xcafebabe',
+        destAsset: 'FLIP',
+        destChain: 'Ethereum',
+        srcAsset: 'BTC',
+        srcChain: 'Bitcoin',
+        maxBoostFeeBps: 0,
+        channelOpeningFee: 0n,
+        ccmParams: undefined,
+        affiliateBrokers: [],
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          retryDurationBlocks: 500,
+        },
+      });
+    });
+
+    it('calls the configured broker api', async () => {
+      const postSpy = mockRpcResponse((url, data: any) => {
+        if (data.method === 'broker_requestSwapDepositAddress') {
+          return Promise.resolve({
+            data: {
+              id: '1',
+              jsonrpc: '2.0',
+              result: {
+                address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+                issued_block: 123,
+                channel_id: 15,
+                source_chain_expiry_block: '0x04d2',
+                channel_opening_fee: '0x0',
+              },
+            },
+          });
+        }
+
+        return defaultRpcMocks(url, data);
+      });
+
+      const result = await new SwapSDK({
+        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+      }).requestDepositAddressV2({
+        quote: {
+          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          depositAmount: BigInt(1e18).toString(),
+          type: 'REGULAR',
+        } as Quote,
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+      });
+
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
+        id: '1',
+        jsonrpc: '2.0',
+        method: 'broker_requestSwapDepositAddress',
+        params: [
+          { asset: 'BTC', chain: 'Bitcoin' },
+          { asset: 'FLIP', chain: 'Ethereum' },
+          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          15,
+          null,
+          null,
+          null,
+          null,
+          null,
+        ],
+      });
+      expect(result).toStrictEqual({
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'FLIP',
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        brokerCommissionBps: 15,
+        amount: '1000000000000000000',
+        depositChannelId: '123-Bitcoin-15',
+        depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+        depositChannelExpiryBlock: 1234n,
+        estimatedDepositChannelExpiryTime: undefined,
+        maxBoostFeeBps: 0,
+        channelOpeningFee: 0n,
+        ccmParams: undefined,
+        affiliateBrokers: [],
+        dcaParams: undefined,
+        fillOrKillParams: undefined,
+      });
+    });
+
+    it('calls the configured broker api with the given broker commission', async () => {
+      const postSpy = mockRpcResponse((url, data: any) => {
+        if (data.method === 'broker_requestSwapDepositAddress') {
+          return Promise.resolve({
+            data: {
+              id: '1',
+              jsonrpc: '2.0',
+              result: {
+                address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+                issued_block: 123,
+                channel_id: 15,
+                source_chain_expiry_block: '0x04d2',
+                channel_opening_fee: '0x0',
+              },
+            },
+          });
+        }
+
+        return defaultRpcMocks(url, data);
+      });
+
+      const result = await new SwapSDK({
+        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+      }).requestDepositAddressV2({
+        quote: {
+          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          depositAmount: BigInt(1e18).toString(),
+          type: 'REGULAR',
+        } as Quote,
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        brokerCommissionBps: 125,
+      });
+
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
+        id: '1',
+        jsonrpc: '2.0',
+        method: 'broker_requestSwapDepositAddress',
+        params: [
+          { asset: 'BTC', chain: 'Bitcoin' },
+          { asset: 'FLIP', chain: 'Ethereum' },
+          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          125,
+          null,
+          null,
+          null,
+          null,
+          null,
+        ],
+      });
+      expect(result).toStrictEqual({
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'FLIP',
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        brokerCommissionBps: 15,
+        amount: '1000000000000000000',
+        depositChannelId: '123-Bitcoin-15',
+        depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+        depositChannelExpiryBlock: 1234n,
+        estimatedDepositChannelExpiryTime: undefined,
+        maxBoostFeeBps: 0,
+        channelOpeningFee: 0n,
+        ccmParams: undefined,
+        affiliateBrokers: [],
+        dcaParams: undefined,
+        fillOrKillParams: undefined,
+      });
+    });
+
+    it('calls the configured broker api with the given affiliate brokers', async () => {
+      const postSpy = mockRpcResponse((url, data: any) => {
+        if (data.method === 'broker_requestSwapDepositAddress') {
+          return Promise.resolve({
+            data: {
+              id: '1',
+              jsonrpc: '2.0',
+              result: {
+                address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+                issued_block: 123,
+                channel_id: 15,
+                source_chain_expiry_block: '0x04d2',
+                channel_opening_fee: '0x0',
+              },
+            },
+          });
+        }
+
+        return defaultRpcMocks(url, data);
+      });
+
+      const result = await new SwapSDK({
+        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+      }).requestDepositAddressV2({
+        quote: {
+          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          depositAmount: BigInt(1e18).toString(),
+          type: 'REGULAR',
+        } as Quote,
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        affiliateBrokers: [
+          { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
+        ],
+      });
+
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
+        id: '1',
+        jsonrpc: '2.0',
+        method: 'broker_requestSwapDepositAddress',
+        params: [
+          { asset: 'BTC', chain: 'Bitcoin' },
+          { asset: 'FLIP', chain: 'Ethereum' },
+          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          15,
+          null,
+          null,
+          [{ account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', bps: 10 }],
+          null,
+          null,
+        ],
+      });
+      expect(result).toStrictEqual({
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'FLIP',
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        brokerCommissionBps: 15,
+        amount: '1000000000000000000',
+        depositChannelId: '123-Bitcoin-15',
+        depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+        depositChannelExpiryBlock: 1234n,
+        estimatedDepositChannelExpiryTime: undefined,
+        maxBoostFeeBps: 0,
+        channelOpeningFee: 0n,
+        ccmParams: undefined,
+        affiliateBrokers: [
+          { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
+        ],
+        dcaParams: undefined,
+        fillOrKillParams: undefined,
+      });
+    });
+
+    it('calls the configured broker api with the given refund parameters', async () => {
+      const postSpy = mockRpcResponse((url, data: any) => {
+        if (data.method === 'broker_requestSwapDepositAddress') {
+          return Promise.resolve({
+            data: {
+              id: '1',
+              jsonrpc: '2.0',
+              result: {
+                address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+                issued_block: 123,
+                channel_id: 15,
+                source_chain_expiry_block: '0x04d2',
+                channel_opening_fee: '0x0',
+              },
+            },
+          });
+        }
+
+        return defaultRpcMocks(url, data);
+      });
+
+      const result = await new SwapSDK({
+        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+      }).requestDepositAddressV2({
+        quote: {
+          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          depositAmount: BigInt(1e18).toString(),
+          type: 'REGULAR',
+        } as Quote,
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '2458.206',
+        },
+      });
+
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
+        id: '1',
+        jsonrpc: '2.0',
+        method: 'broker_requestSwapDepositAddress',
+        params: [
+          { asset: 'BTC', chain: 'Bitcoin' },
+          { asset: 'FLIP', chain: 'Ethereum' },
+          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          15,
+          null,
+          null,
+          null,
+          {
+            retry_duration: 500,
+            refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+            min_price: '0x165b74f4430000000000000000000000000000000000',
+          },
+          null,
+        ],
+      });
+      expect(result).toStrictEqual({
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'FLIP',
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        brokerCommissionBps: 15,
+        amount: '1000000000000000000',
+        depositChannelId: '123-Bitcoin-15',
+        depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+        depositChannelExpiryBlock: 1234n,
+        estimatedDepositChannelExpiryTime: undefined,
+        maxBoostFeeBps: 0,
+        channelOpeningFee: 0n,
+        ccmParams: undefined,
+        affiliateBrokers: [],
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '2458.206',
+        },
+        dcaParams: undefined,
+      });
+    });
+
+    it('calls the configured broker api with the given dca parameters', async () => {
+      const postSpy = mockRpcResponse((url, data: any) => {
+        if (data.method === 'broker_requestSwapDepositAddress') {
+          return Promise.resolve({
+            data: {
+              id: '1',
+              jsonrpc: '2.0',
+              result: {
+                address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+                issued_block: 123,
+                channel_id: 15,
+                source_chain_expiry_block: '0x04d2',
+                channel_opening_fee: '0x0',
+              },
+            },
+          });
+        }
+
+        return defaultRpcMocks(url, data);
+      });
+
+      const result = await new SwapSDK({
+        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+      }).requestDepositAddressV2({
+        quote: {
+          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          depositAmount: BigInt(1e18).toString(),
+          dcaParams: {
+            numberOfChunks: 100,
+            chunkIntervalBlocks: 5,
+          },
+          type: 'DCA',
+        } as Quote,
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '10000000000000',
+        },
+      });
+
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
+        id: '1',
+        jsonrpc: '2.0',
+        method: 'broker_requestSwapDepositAddress',
+        params: [
+          { asset: 'BTC', chain: 'Bitcoin' },
+          { asset: 'FLIP', chain: 'Ethereum' },
+          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          15,
+          null,
+          null,
+          null,
+          {
+            min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+            refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+            retry_duration: 500,
+          },
+          {
+            number_of_chunks: 100,
+            chunk_interval: 5,
+          },
+        ],
+      });
+      expect(result).toStrictEqual({
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'FLIP',
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        brokerCommissionBps: 15,
+        amount: '1000000000000000000',
+        depositChannelId: '123-Bitcoin-15',
+        depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+        depositChannelExpiryBlock: 1234n,
+        estimatedDepositChannelExpiryTime: undefined,
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          retryDurationBlocks: 500,
+        },
+        maxBoostFeeBps: 0,
+        channelOpeningFee: 0n,
+        ccmParams: undefined,
+        affiliateBrokers: [],
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+      });
+    });
+
+    it('allows defining boost fee when opening a deposit channel', async () => {
+      const postSpy = mockRpcResponse((url, data: any) => {
+        if (data.method === 'broker_requestSwapDepositAddress') {
+          return Promise.resolve({
+            data: {
+              id: '1',
+              jsonrpc: '2.0',
+              result: {
+                address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+                issued_block: 123,
+                channel_id: 15,
+                source_chain_expiry_block: '0x04d2',
+                channel_opening_fee: '0x0',
+              },
+            },
+          });
+        }
+
+        return defaultRpcMocks(url, data);
+      });
+      const MAX_BOOST_FEE_BPS = 100;
+
+      const result = await new SwapSDK({
+        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+      }).requestDepositAddressV2({
+        quote: {
+          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          depositAmount: BigInt(1e18).toString(),
+          maxBoostFeeBps: MAX_BOOST_FEE_BPS,
+          type: 'REGULAR',
+        } as BoostQuote,
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+      });
+
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
+        id: '1',
+        jsonrpc: '2.0',
+        method: 'broker_requestSwapDepositAddress',
+        params: [
+          { asset: 'BTC', chain: 'Bitcoin' },
+          { asset: 'FLIP', chain: 'Ethereum' },
+          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          15,
+          null,
+          MAX_BOOST_FEE_BPS,
+          null,
+          null,
+          null,
+        ],
+      });
+      expect(result).toStrictEqual({
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'FLIP',
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        brokerCommissionBps: 15,
+        amount: '1000000000000000000',
+        depositChannelId: '123-Bitcoin-15',
+        depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+        depositChannelExpiryBlock: 1234n,
+        estimatedDepositChannelExpiryTime: undefined,
+        maxBoostFeeBps: MAX_BOOST_FEE_BPS,
+        channelOpeningFee: 0n,
+        ccmParams: undefined,
+        affiliateBrokers: [],
+        dcaParams: undefined,
+        fillOrKillParams: undefined,
       });
     });
   });

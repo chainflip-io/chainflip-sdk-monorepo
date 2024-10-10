@@ -176,7 +176,7 @@ export interface DCAQuoteDetails extends BaseQuoteDetails {
   boostQuote?: Omit<DCAQuoteDetails, 'boostQuote'> & BoostedQuoteDetails;
 }
 
-export type QuoteQueryResponse = RegularQuoteDetails | DCAQuoteDetails;
+export type Quote = RegularQuoteDetails | DCAQuoteDetails;
 
 export type DCABoostQuote = NonNullable<DCAQuoteDetails['boostQuote']>;
 

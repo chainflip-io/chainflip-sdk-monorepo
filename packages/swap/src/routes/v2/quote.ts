@@ -3,7 +3,7 @@ import express from 'express';
 import { Query } from 'express-serve-static-core';
 import type { Server } from 'socket.io';
 import { Asset, assetConstants, InternalAsset } from '@/shared/enums';
-import { quoteQuerySchema, QuoteQueryResponse, BoostQuote, DCABoostQuote } from '@/shared/schemas';
+import { quoteQuerySchema, Quote, BoostQuote, DCABoostQuote } from '@/shared/schemas';
 import env from '../../config/env';
 import { getBoostSafeMode } from '../../polkadot/api';
 import { getUsdValue } from '../../pricing/checkPriceWarning';
@@ -70,7 +70,7 @@ const adjustDcaQuote = ({
   maxBoostFeeBps,
 }: {
   dcaQuoteParams: NonNullable<Awaited<ReturnType<typeof getDcaQuoteParams>>>;
-  dcaQuote: Extract<QuoteQueryResponse, { type: 'DCA' }>;
+  dcaQuote: Extract<Quote, { type: 'DCA' }>;
   dcaBoostedQuote?: Extract<BoostQuote, { type: 'DCA' }> | null;
   estimatedBoostFeeBps?: number;
   maxBoostFeeBps?: number;

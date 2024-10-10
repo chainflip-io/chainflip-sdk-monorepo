@@ -3,7 +3,7 @@ import { Chain, Asset, AssetOfChain, InternalAsset } from '@/shared/enums';
 import {
   AffiliateBroker,
   CcmParams,
-  QuoteQueryResponse,
+  Quote,
   FillOrKillParams,
   SwapFee,
   DcaParams,
@@ -50,12 +50,12 @@ export interface QuoteRequest extends ChainsAndAssets {
 
 export interface QuoteResponse
   extends Omit<QuoteRequest, 'brokerCommissionBps' | 'affiliateBrokers'> {
-  quote: QuoteQueryResponse;
+  quote: Quote;
 }
 
 export interface QuoteResponseV2
   extends Omit<QuoteRequest, 'brokerCommissionBps' | 'affiliateBrokers'> {
-  quotes: QuoteQueryResponse[];
+  quotes: Quote[];
 }
 
 export interface DepositAddressRequest extends QuoteRequest {
@@ -71,14 +71,14 @@ export interface DepositAddressRequest extends QuoteRequest {
 }
 
 export interface DepositAddressRequestV2 {
-  quote: QuoteQueryResponse | BoostQuote;
+  quote: Quote | BoostQuote;
   destAddress: string;
   fillOrKillParams?: {
     minPrice: string;
     refundAddress: string;
     retryDurationBlocks: number;
   };
-  affiliates?: { account: `cF${string}` | HexString; commissionBps: number }[];
+  affiliateBrokers?: { account: `cF${string}` | HexString; commissionBps: number }[];
   ccmParams?: CcmParams;
   brokerCommissionBps?: number;
 }
