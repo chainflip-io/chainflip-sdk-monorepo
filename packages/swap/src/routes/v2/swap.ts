@@ -5,6 +5,7 @@ import { assert } from '@/shared/guards';
 import { getLastChainTrackingUpdateTimestamp } from '@/swap/utils/intercept';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
 import {
+  getDcaParams,
   getDepositInfo,
   getEgressStatusFields,
   getLatestSwapForId,
@@ -191,12 +192,7 @@ router.get(
                   ),
                 }
               : undefined,
-            dcaParams: swapDepositChannel.chunkIntervalBlocks
-              ? {
-                  numberOfChunks: swapDepositChannel?.numberOfChunks,
-                  chunkIntervalBlocks: swapDepositChannel?.chunkIntervalBlocks,
-                }
-              : undefined,
+            dcaParams: getDcaParams(swapRequest, swapDepositChannel),
           },
         }),
       ...getDepositInfo(swapRequest, failedSwap, pendingDeposit),
