@@ -344,3 +344,15 @@ export const getSwapState = async (
     pendingDeposit,
   };
 };
+
+export const getDcaParams = (
+  swapRequest: Awaited<ReturnType<typeof getLatestSwapForId>>['swapRequest'],
+  swapDepositChannel: Awaited<ReturnType<typeof getLatestSwapForId>>['swapDepositChannel'],
+) =>
+  swapRequest?.chunkIntervalBlocks || swapDepositChannel?.chunkIntervalBlocks
+    ? {
+        numberOfChunks: swapRequest?.numberOfChunks ?? swapDepositChannel?.numberOfChunks,
+        chunkIntervalBlocks:
+          swapRequest?.chunkIntervalBlocks ?? swapDepositChannel?.chunkIntervalBlocks,
+      }
+    : undefined;
