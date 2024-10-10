@@ -1,11 +1,11 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  treeshake: true,
+  treeshake: 'smallest',
   minify: false,
   dts: true,
-  external: [/^node:!(crypto)/],
   format: ['cjs', 'esm'],
+  skipNodeModulesBundle: true,
   entry: {
     swap: 'src/swap/index.ts',
     funding: 'src/funding/index.ts',
