@@ -12,14 +12,19 @@ export const boostPoolsCache = new AsyncCacheMap({
 export const getBoostFeeBpsForAmount = async ({
   amount,
   asset,
+  boostEnabled,
 }: {
   amount: bigint;
   asset: InternalAsset;
-}): Promise<number | undefined> => {
+  boostEnabled: boolean;
+}): Promise<{ estimatedBoostFeeBps: number | undefined; maxBoostFeeBps: number | undefined }> => {
+  if (!boostEnabled) return { estimatedBoostFeeBps: undefined, maxBoostFeeBps: undefined };
+
   const assetBoostPoolsDepth = await boostPoolsCache.get(asset);
 
   let remainingAmount = amount;
   let feeAmount = 0n;
+  const maxBoostFeeBps = Math.max(...assetBoostPoolsDepth.map((pool) => pool.tier));
 
   for (const poolDepth of assetBoostPoolsDepth) {
     const poolAvailableAmount = poolDepth.availableAmount;
@@ -32,7 +37,10 @@ export const getBoostFeeBpsForAmount = async ({
   }
 
   // Not enough liquidity in the boost pools
-  if (remainingAmount > 0) return undefined;
+  if (remainingAmount > 0) return { estimatedBoostFeeBps: undefined, maxBoostFeeBps };
 
-  return Number((feeAmount * BigInt(ONE_IN_PIP)) / BigInt(amount));
+  return {
+    estimatedBoostFeeBps: Number((feeAmount * BigInt(ONE_IN_PIP)) / BigInt(amount)),
+    maxBoostFeeBps,
+  };
 };

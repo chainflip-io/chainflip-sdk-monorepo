@@ -1,3 +1,4 @@
+import { HexString } from '@chainflip/utils/types';
 import { Chain, Asset, AssetOfChain, InternalAsset } from '@/shared/enums';
 import {
   AffiliateBroker,
@@ -6,6 +7,7 @@ import {
   FillOrKillParams,
   SwapFee,
   DcaParams,
+  BoostQuote,
 } from '@/shared/schemas';
 
 export interface ChainData {
@@ -66,6 +68,19 @@ export interface DepositAddressRequest extends QuoteRequest {
 
   /** @deprecated DEPRECATED(1.5): use ccmParams instead of ccmMetadata */
   ccmMetadata?: CcmParams;
+}
+
+export interface DepositAddressRequestV2 {
+  quote: QuoteQueryResponse | BoostQuote;
+  destAddress: string;
+  fillOrKillParams?: {
+    minPrice: string;
+    refundAddress: string;
+    retryDurationBlocks: number;
+  };
+  affiliates?: { account: `cF${string}` | HexString; commissionBps: number }[];
+  ccmParams?: CcmParams;
+  brokerCommissionBps?: number;
 }
 
 export interface DepositAddressResponse extends DepositAddressRequest {

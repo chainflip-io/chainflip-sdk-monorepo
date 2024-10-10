@@ -1,5 +1,4 @@
 import { SwappingRequestSwapDepositAddressWithAffiliates } from '@chainflip/extrinsics/160/swapping/requestSwapDepositAddressWithAffiliates';
-import { HexString } from '@chainflip/utils/types';
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import { Signer } from 'ethers';
 import superjson from 'superjson';
@@ -30,7 +29,6 @@ import {
   getSupportedAssets,
 } from '@/shared/rpc';
 import { validateSwapAmount } from '@/shared/rpc/utils';
-import type { CcmParams, QuoteQueryResponse } from '@/shared/schemas';
 import { Required } from '@/shared/types';
 import { approveVault, executeSwap, ExecuteSwapParams } from '@/shared/vault';
 import type { AppRouter } from '@/swap/server';
@@ -49,6 +47,7 @@ import {
   BoostPoolDepth,
   SwapStatusResponse,
   QuoteResponseV2,
+  DepositAddressRequestV2,
 } from './types';
 import { type SwapStatusResponseV2 } from './v2/types';
 
@@ -404,27 +403,87 @@ export class SwapSDK {
     }));
   }
 
+  async requestDepositAddressV2({
+    quote,
+    destAddress,
+    fillOrKillParams: inputFoKParams,
+    affiliates,
+    ccmParams,
+    brokerCommissionBps,
+  }: DepositAddressRequestV2) {
+    await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
+
+    let fillOrKillParams;
+
+    if (inputFoKParams) {
+      fillOrKillParams = {
+        ...inputFoKParams,
+        minPriceX128: getPriceX128FromPrice(
+          inputFoKParams.minPrice,
+          getInternalAsset(quote.srcAsset),
+          getInternalAsset(quote.destAsset),
+        ),
+      };
+    }
+
+    const depositAddressRequest = {
+      srcAsset: quote.srcAsset.asset,
+      srcChain: quote.srcAsset.chain,
+      destAsset: quote.destAsset.asset,
+      destChain: quote.destAsset.chain,
+      destAddress,
+      dcaParams: quote.type === 'DCA' ? quote.dcaParams : undefined,
+      fillOrKillParams,
+      maxBoostFeeBps: 'maxBoostFeeBps' in quote ? quote.maxBoostFeeBps : undefined,
+      ccmParams,
+      amount: quote.depositAmount,
+    };
+    let response;
+
+    if (this.options.broker !== undefined) {
+      const result = await requestSwapDepositAddress(
+        {
+          ...depositAddressRequest,
+          commissionBps: brokerCommissionBps ?? this.options.broker.commissionBps,
+          affiliates,
+        },
+        { url: this.options.broker.url },
+        this.options.network,
+      );
+
+      response = {
+        id: `${result.issuedBlock}-${quote.srcAsset.chain}-${result.channelId}`,
+        depositAddress: result.address,
+        brokerCommissionBps: this.options.broker.commissionBps,
+        srcChainExpiryBlock: result.sourceChainExpiryBlock,
+        maxBoostFeeBps: depositAddressRequest.maxBoostFeeBps,
+        channelOpeningFee: result.channelOpeningFee,
+      };
+    } else {
+      response = await this.trpc.openSwapDepositChannel.mutate(depositAddressRequest);
+    }
+
+    return {
+      ...depositAddressRequest,
+      depositChannelId: response.id,
+      depositAddress: response.depositAddress,
+      brokerCommissionBps: response.brokerCommissionBps,
+      affiliateBrokers: affiliates ?? [],
+      maxBoostFeeBps: Number(response.maxBoostFeeBps) || 0,
+      depositChannelExpiryBlock: response.srcChainExpiryBlock as bigint,
+      estimatedDepositChannelExpiryTime: response.estimatedExpiryTime,
+      channelOpeningFee: response.channelOpeningFee,
+    };
+  }
+
   buildRequestSwapDepositAddressWithAffiliatesParams({
     quote,
     destAddress,
-    boost,
     fillOrKillParams: inputFoKParams,
     affiliates: inputAffiliates,
     ccmParams,
     brokerCommissionBps,
-  }: {
-    quote: QuoteQueryResponse;
-    destAddress: string;
-    boost?: boolean;
-    fillOrKillParams?: {
-      minPrice: string;
-      refundAddress: string;
-      retryDurationBlocks: number;
-    };
-    affiliates?: { account: `cF${string}` | HexString; commissionBps: number }[];
-    ccmParams?: CcmParams;
-    brokerCommissionBps?: number;
-  }): SwappingRequestSwapDepositAddressWithAffiliates {
+  }: DepositAddressRequestV2): SwappingRequestSwapDepositAddressWithAffiliates {
     let dcaParams = null;
     let fillOrKillParams = null;
 
@@ -456,7 +515,7 @@ export class SwapSDK {
         destAddress,
         dcaParams,
         fillOrKillParams,
-        maxBoostFeeBps: boost ? 30 : 0,
+        maxBoostFeeBps: 'maxBoostFeeBps' in quote ? quote.maxBoostFeeBps : null,
         commissionBps: brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0,
         ccmParams: ccmParams ?? null,
         affiliates: inputAffiliates ?? [],
