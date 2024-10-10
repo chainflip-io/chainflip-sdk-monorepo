@@ -73,11 +73,7 @@ export interface DepositAddressRequest extends QuoteRequest {
 export interface DepositAddressRequestV2 {
   quote: Quote | BoostQuote;
   destAddress: string;
-  fillOrKillParams?: {
-    minPrice: string;
-    refundAddress: string;
-    retryDurationBlocks: number;
-  };
+  fillOrKillParams?: FillOrKillParams;
   affiliateBrokers?: { account: `cF${string}` | HexString; commissionBps: number }[];
   ccmParams?: CcmParams;
   brokerCommissionBps?: number;
