@@ -51,12 +51,17 @@
     "access": "public"
   },
   "dependencies": {
+    "@chainflip/bitcoin": "^1.1.1",
     "@chainflip/extrinsics": "^1.6.1",
     "@chainflip/rpc": "^1.6.11",
+    "@chainflip/solana": "^1.0.2",
     "@chainflip/utils": "^0.4.0",
+    "@trpc/client": "^10.45.2",
     "axios": "^1.7.7",
     "bignumber.js": "^9.1.2",
-    "ethers": "^6.13.3"
+    "ethers": "^6.13.3",
+    "superjson": "^1.13.3",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "tsup": "^8.3.0"
