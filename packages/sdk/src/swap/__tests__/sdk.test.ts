@@ -1613,6 +1613,202 @@ describe(SwapSDK, () => {
         fillOrKillParams: undefined,
       });
     });
+
+    it("throws for quotes that aren't DCA or REGULAR", async () => {
+      await expect(
+        new SwapSDK({
+          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        }).requestDepositAddressV2({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            dcaParams: {
+              numberOfChunks: 100,
+              chunkIntervalBlocks: 5,
+            },
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        }),
+      ).rejects.toThrow('Invalid quote type');
+    });
+
+    it('throws for missing DCA params', async () => {
+      await expect(
+        new SwapSDK({
+          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        }).requestDepositAddressV2({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            type: 'DCA',
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        }),
+      ).rejects.toThrow('Failed to find DCA parameters from quote');
+    });
+  });
+
+  describe(SwapSDK.prototype.buildRequestSwapDepositAddressWithAffiliatesParams, () => {
+    it("throws for quotes that aren't DCA or REGULAR", () => {
+      expect(() =>
+        sdk.buildRequestSwapDepositAddressWithAffiliatesParams({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            dcaParams: {
+              numberOfChunks: 100,
+              chunkIntervalBlocks: 5,
+            },
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        }),
+      ).toThrow('Invalid quote type');
+    });
+
+    it('throws for missing DCA params', () => {
+      expect(() =>
+        new SwapSDK({
+          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        }).buildRequestSwapDepositAddressWithAffiliatesParams({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            type: 'DCA',
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        }),
+      ).toThrow('Failed to find DCA parameters from quote');
+    });
+
+    it('builds the parameters for a regular swap', () => {
+      expect(
+        sdk.buildRequestSwapDepositAddressWithAffiliatesParams({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            type: 'REGULAR',
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        }),
+      ).toMatchSnapshot();
+    });
+
+    it('builds the parameters for a regular swap with affiliates', () => {
+      expect(
+        sdk.buildRequestSwapDepositAddressWithAffiliatesParams({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            type: 'REGULAR',
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          affiliateBrokers: [
+            { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+            { account: 'cFLdopvNB7LaiBbJoNdNC26e9Gc1FNJKFtvNZjAmXAAVnzCk4', commissionBps: 20 },
+          ],
+        }),
+      ).toMatchSnapshot();
+    });
+
+    it('builds the parameters for a boost swap', () => {
+      expect(
+        sdk.buildRequestSwapDepositAddressWithAffiliatesParams({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            type: 'REGULAR',
+            maxBoostFeeBps: 420,
+          } as BoostQuote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        }),
+      ).toMatchSnapshot();
+    });
+
+    it('builds the parameters for a fill or kill swap', () => {
+      expect(
+        sdk.buildRequestSwapDepositAddressWithAffiliatesParams({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            type: 'REGULAR',
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: 'mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn',
+            minPrice: '10000000000000',
+          },
+        }),
+      ).toMatchSnapshot();
+    });
+
+    it('builds the parameters for a DCA swap', () => {
+      expect(
+        sdk.buildRequestSwapDepositAddressWithAffiliatesParams({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            dcaParams: {
+              numberOfChunks: 100,
+              chunkIntervalBlocks: 5,
+            },
+            type: 'DCA',
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: 'mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn',
+            minPrice: '10000000000000',
+          },
+        }),
+      ).toMatchSnapshot();
+    });
+
+    it('uses the broker commission from the SDK', () => {
+      const brokerSdk = new SwapSDK({
+        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+      });
+
+      expect(
+        brokerSdk.buildRequestSwapDepositAddressWithAffiliatesParams({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            type: 'REGULAR',
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        }),
+      ).toMatchSnapshot();
+    });
+
+    it('uses the broker commission from the request', () => {
+      const brokerSdk = new SwapSDK({
+        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+      });
+
+      expect(
+        brokerSdk.buildRequestSwapDepositAddressWithAffiliatesParams({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            type: 'REGULAR',
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          brokerCommissionBps: 30,
+        }),
+      ).toMatchSnapshot();
+    });
   });
 
   describe(SwapSDK.prototype.getRequiredBlockConfirmations, () => {

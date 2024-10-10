@@ -412,7 +412,12 @@ export class SwapSDK {
     brokerCommissionBps,
   }: DepositAddressRequestV2) {
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
-    assert(quote.type === 'DCA' || quote.type === 'REGULAR', 'invalid quote type');
+    assert(quote.type === 'DCA' || quote.type === 'REGULAR', 'Invalid quote type');
+
+    assert(
+      quote.type === 'REGULAR' || quote.dcaParams != null,
+      'Failed to find DCA parameters from quote',
+    );
 
     let fillOrKillParams;
 
@@ -487,7 +492,7 @@ export class SwapSDK {
     ccmParams,
     brokerCommissionBps,
   }: DepositAddressRequestV2): SwappingRequestSwapDepositAddressWithAffiliates {
-    assert(quote.type === 'DCA' || quote.type === 'REGULAR', 'invalid quote type');
+    assert(quote.type === 'DCA' || quote.type === 'REGULAR', 'Invalid quote type');
 
     let dcaParams = null;
     let fillOrKillParams = null;
@@ -495,8 +500,8 @@ export class SwapSDK {
     if (quote.type === 'DCA') dcaParams = quote.dcaParams;
 
     assert(
-      quote.type === 'REGULAR' || dcaParams !== null,
-      'failed to find DCA parameters from quote',
+      quote.type === 'REGULAR' || dcaParams != null,
+      'Failed to find DCA parameters from quote',
     );
 
     if (inputFoKParams) {
