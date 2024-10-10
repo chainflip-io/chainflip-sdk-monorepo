@@ -86,8 +86,15 @@ export default async function swapRequested({
   event,
   block,
 }: EventHandlerArgs): Promise<void> {
-  const { inputAmount, inputAsset, swapRequestId, outputAsset, origin, requestType } =
-    schema160.parse(event.args);
+  const {
+    inputAmount,
+    inputAsset,
+    swapRequestId,
+    outputAsset,
+    origin,
+    requestType,
+    dcaParameters,
+  } = schema160.parse(event.args);
 
   const { originType, swapDepositChannelId, depositTransactionRef } = await getOriginInfo(
     prisma,
@@ -126,6 +133,8 @@ export default async function swapRequested({
       ...(origin.__kind !== 'Internal' && {
         depositAmount: inputAmount.toString(),
       }),
+      numberOfChunks: dcaParameters?.numberOfChunks,
+      chunkIntervalBlocks: dcaParameters?.chunkInterval,
     },
   });
 }
