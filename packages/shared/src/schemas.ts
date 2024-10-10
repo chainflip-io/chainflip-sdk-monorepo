@@ -165,15 +165,17 @@ interface BaseQuoteDetails {
   estimatedPrice: string;
 }
 
+type WithBoostQuote<T> = Omit<T, 'boostQuote'> & BoostedQuoteDetails;
+
 export interface RegularQuoteDetails extends BaseQuoteDetails {
   type: 'REGULAR';
-  boostQuote?: Omit<RegularQuoteDetails, 'boostQuote'> & BoostedQuoteDetails;
+  boostQuote?: WithBoostQuote<RegularQuoteDetails>;
 }
 
 export interface DCAQuoteDetails extends BaseQuoteDetails {
   type: 'DCA';
   dcaParams: DcaParams;
-  boostQuote?: Omit<DCAQuoteDetails, 'boostQuote'> & BoostedQuoteDetails;
+  boostQuote?: WithBoostQuote<DCAQuoteDetails>;
 }
 
 export type Quote = RegularQuoteDetails | DCAQuoteDetails;
