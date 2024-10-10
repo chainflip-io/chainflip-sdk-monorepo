@@ -46,8 +46,8 @@ describe(getBoostFeeBpsForAmount, () => {
     ],
   ])('calculates boost fee for %s', async (ingressAmount, assetBoostPoolsDepth, boostBps) => {
     mockRpcResponse({ data: { id: '1', jsonrpc: '2.0', result: assetBoostPoolsDepth } });
-    expect(
-      await getBoostFeeBpsForAmount({ amount: ingressAmount, asset: 'Btc', boostEnabled: true }),
-    ).toStrictEqual(boostBps);
+    expect(await getBoostFeeBpsForAmount({ amount: ingressAmount, asset: 'Btc' })).toStrictEqual(
+      boostBps,
+    );
   });
 });
