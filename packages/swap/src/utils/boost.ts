@@ -12,14 +12,10 @@ export const boostPoolsCache = new AsyncCacheMap({
 export const getBoostFeeBpsForAmount = async ({
   amount,
   asset,
-  boostEnabled,
 }: {
   amount: bigint;
   asset: InternalAsset;
-  boostEnabled: boolean;
 }): Promise<{ estimatedBoostFeeBps: number | undefined; maxBoostFeeBps: number | undefined }> => {
-  if (!boostEnabled) return { estimatedBoostFeeBps: undefined, maxBoostFeeBps: undefined };
-
   const assetBoostPoolsDepth = await boostPoolsCache.get(asset);
 
   let remainingAmount = amount;

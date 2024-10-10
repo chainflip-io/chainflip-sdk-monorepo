@@ -227,11 +227,9 @@ export const generateQuotes = async ({
 }) => {
   const [limitOrders, { estimatedBoostFeeBps, maxBoostFeeBps }, pools] = await Promise.all([
     quoter.getLimitOrders(srcAsset, destAsset, amount),
-    getBoostFeeBpsForAmount({
-      amount,
-      asset: srcAsset,
-      boostEnabled: env.DISABLE_BOOST_QUOTING || !boostDepositsEnabled,
-    }),
+    env.DISABLE_BOOST_QUOTING || !boostDepositsEnabled
+      ? { estimatedBoostFeeBps: undefined, maxBoostFeeBps: undefined }
+      : getBoostFeeBpsForAmount({ amount, asset: srcAsset }),
     getPools(srcAsset, destAsset),
   ]);
 
