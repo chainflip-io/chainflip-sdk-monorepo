@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`server GET /v2/swaps/:id ignores GAS swaps when returning the list of swaps for a single asset ccm swap 1`] = `
+exports[`server GET /v2/swaps/:id doesn't include GAS swaps in response for a single asset ccm swap 1`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
