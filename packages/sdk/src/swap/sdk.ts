@@ -29,13 +29,13 @@ import {
   getSupportedAssets,
 } from '@/shared/rpc';
 import { validateSwapAmount } from '@/shared/rpc/utils';
+import { BoostQuote, Quote } from '@/shared/schemas';
 import { Required } from '@/shared/types';
 import { approveVault, executeSwap, ExecuteSwapParams } from '@/shared/vault';
 import type { AppRouter } from '@/swap/server';
 import { getAssetData } from './assets';
 import { getChainData } from './chains';
 import { BACKEND_SERVICE_URLS, CF_SDK_VERSION_HEADERS } from './consts';
-import { BoostQuote, Quote } from '../schemas';
 import * as ApiService from './services/ApiService';
 import {
   ChainData,
