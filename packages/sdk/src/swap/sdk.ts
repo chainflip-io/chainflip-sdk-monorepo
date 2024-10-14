@@ -73,7 +73,7 @@ const assertQuoteValid = (quote: Quote | BoostQuote) => {
     case 'REGULAR':
       break;
     case 'DCA':
-      if (quote.dcaParams == null) throw new Error('Invalid quote type');
+      if (quote.dcaParams == null) throw new Error('Failed to find DCA parameters from quote');
       break;
     default:
       throw new Error('Invalid quote type');
