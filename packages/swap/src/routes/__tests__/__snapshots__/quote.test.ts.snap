@@ -158,6 +158,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
       },
     ],
     "intermediateAmount": "1999500000",
+    "maxBoostFeeBps": 5,
     "poolInfo": [
       {
         "baseAsset": {

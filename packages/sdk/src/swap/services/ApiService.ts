@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { QuoteQueryParams, QuoteQueryResponse } from '@/shared/schemas';
+import type { QuoteQueryParams, Quote } from '@/shared/schemas';
 import { CF_SDK_VERSION_HEADERS } from '../consts';
 import {
   QuoteRequest,
@@ -33,7 +33,7 @@ export const getQuote: BackendQuery<
     dcaEnabled: 'false',
   };
 
-  const { data } = await axios.get<QuoteQueryResponse>('/quote', {
+  const { data } = await axios.get<Quote>('/quote', {
     baseURL: baseUrl,
     params,
     signal,
@@ -60,7 +60,7 @@ export const getQuoteV2: BackendQuery<
     dcaEnabled: String(quoteRequest.dcaEnabled),
   };
 
-  const { data } = await axios.get<QuoteQueryResponse[]>('/v2/quote', {
+  const { data } = await axios.get<Quote[]>('/v2/quote', {
     baseURL: baseUrl,
     params,
     signal,

@@ -3,7 +3,8 @@ import express from 'express';
 import { Query } from 'express-serve-static-core';
 import type { Server } from 'socket.io';
 import { Asset, assetConstants, InternalAsset } from '@/shared/enums';
-import { quoteQuerySchema, QuoteQueryResponse } from '@/shared/schemas';
+import { getFulfilledResult } from '@/shared/promises';
+import { quoteQuerySchema, DCABoostQuote, DCAQuote } from '@/shared/schemas';
 import env from '../../config/env';
 import { getBoostSafeMode } from '../../polkadot/api';
 import { getUsdValue } from '../../pricing/checkPriceWarning';
@@ -67,11 +68,13 @@ const adjustDcaQuote = ({
   dcaQuote,
   dcaBoostedQuote,
   estimatedBoostFeeBps,
+  maxBoostFeeBps,
 }: {
   dcaQuoteParams: NonNullable<Awaited<ReturnType<typeof getDcaQuoteParams>>>;
-  dcaQuote: QuoteQueryResponse;
-  dcaBoostedQuote?: QuoteQueryResponse | null | 0;
+  dcaQuote: DCAQuote;
+  dcaBoostedQuote?: DCABoostQuote | null;
   estimatedBoostFeeBps?: number;
+  maxBoostFeeBps?: number;
 }) => {
   // eslint-disable-next-line no-param-reassign
   dcaQuote.dcaParams = {
@@ -112,7 +115,7 @@ const adjustDcaQuote = ({
   // eslint-disable-next-line no-param-reassign
   dcaQuote.estimatedDurationSeconds += dcaQuoteParams.addedDurationSeconds;
 
-  if (dcaQuoteParams && dcaBoostedQuote && estimatedBoostFeeBps) {
+  if (dcaQuoteParams && dcaBoostedQuote && estimatedBoostFeeBps && maxBoostFeeBps) {
     const boostNetWorkFee = dcaBoostedQuote.includedFees.find((fee) => fee.type === 'NETWORK');
     if (boostNetWorkFee) {
       boostNetWorkFee.amount = new BigNumber(boostNetWorkFee.amount)
@@ -145,6 +148,7 @@ const adjustDcaQuote = ({
       estimatedDurationSeconds:
         dcaBoostedQuote.estimatedDurationSeconds + dcaQuoteParams.addedDurationSeconds,
       dcaParams: dcaQuote.dcaParams,
+      maxBoostFeeBps,
     };
   }
 };
@@ -222,10 +226,10 @@ export const generateQuotes = async ({
   boostDepositsEnabled: boolean;
   quoter: Quoter;
 }) => {
-  const [limitOrders, estimatedBoostFeeBps, pools] = await Promise.all([
+  const [limitOrders, { estimatedBoostFeeBps, maxBoostFeeBps }, pools] = await Promise.all([
     quoter.getLimitOrders(srcAsset, destAsset, amount),
-    env.DISABLE_BOOST_QUOTING || !(await boostDepositsEnabled)
-      ? undefined
+    env.DISABLE_BOOST_QUOTING || !boostDepositsEnabled
+      ? { estimatedBoostFeeBps: undefined, maxBoostFeeBps: undefined }
       : getBoostFeeBpsForAmount({ amount, asset: srcAsset }),
     getPools(srcAsset, destAsset),
   ]);
@@ -244,10 +248,9 @@ export const generateQuotes = async ({
     getPoolQuote(quoteArgs),
     estimatedBoostFeeBps && getPoolQuote({ ...quoteArgs, boostFeeBps: estimatedBoostFeeBps }),
   ]);
-  const ingressFee =
-    quoteResult.status === 'fulfilled'
-      ? quoteResult.value.includedFees.find((fee) => fee.type === 'INGRESS')
-      : undefined;
+  const ingressFee = getFulfilledResult(quoteResult, undefined)?.includedFees.find(
+    (fee) => fee.type === 'INGRESS',
+  );
 
   // the swap_rate rpc will deduct the full ingress fee before simulating the swap
   // as we quote a single chunk, we add a surcharge so that the effective deducted amount is 1/numberOfChunks
@@ -266,14 +269,14 @@ export const generateQuotes = async ({
         depositAmount: dcaQuoteParams.chunkSize + ingressFeeSurcharge,
         quoteType: 'DCA',
       }),
-    dcaQuoteParams &&
-      estimatedBoostFeeBps &&
-      getPoolQuote({
-        ...quoteArgs,
-        boostFeeBps: estimatedBoostFeeBps,
-        depositAmount: dcaQuoteParams.chunkSize + ingressFeeSurcharge,
-        quoteType: 'DCA',
-      }),
+    dcaQuoteParams && estimatedBoostFeeBps
+      ? getPoolQuote({
+          ...quoteArgs,
+          boostFeeBps: estimatedBoostFeeBps,
+          depositAmount: dcaQuoteParams.chunkSize + ingressFeeSurcharge,
+          quoteType: 'DCA',
+        })
+      : null,
   ]);
 
   if (dcaQuoteResult.status === 'rejected') {
@@ -284,10 +287,9 @@ export const generateQuotes = async ({
   }
 
   const dcaQuote = dcaQuoteResult.value;
-  const quote = quoteResult.status === 'fulfilled' ? quoteResult.value : null;
-  const boostedQuote = boostedQuoteResult.status === 'fulfilled' ? boostedQuoteResult.value : null;
-  const dcaBoostedQuote =
-    dcaBoostedQuoteResult.status === 'fulfilled' ? dcaBoostedQuoteResult.value : null;
+  const quote = getFulfilledResult(quoteResult, null);
+  const boostedQuote = getFulfilledResult(boostedQuoteResult, null);
+  const dcaBoostedQuote = getFulfilledResult(dcaBoostedQuoteResult, null) as DCABoostQuote | null;
 
   if (dcaQuoteParams && dcaQuote) {
     // Check liquidity for DCA
@@ -317,8 +319,8 @@ export const generateQuotes = async ({
     });
   }
 
-  if (boostedQuote && estimatedBoostFeeBps && quote && boostedQuote) {
-    quote.boostQuote = { ...boostedQuote, estimatedBoostFeeBps };
+  if (boostedQuote && estimatedBoostFeeBps && quote && boostedQuote && maxBoostFeeBps) {
+    quote.boostQuote = { ...boostedQuote, estimatedBoostFeeBps, maxBoostFeeBps };
   }
 
   const result = [];
