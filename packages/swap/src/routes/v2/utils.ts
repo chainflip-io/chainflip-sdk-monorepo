@@ -175,12 +175,12 @@ export const getDepositInfo = (
       txConfirmations: pendingDeposit?.transactionConfirmations,
       witnessedAt:
         swapRequest?.depositBoostedAt?.valueOf() ??
-        swapRequest?.depositReceivedAt?.valueOf() ??
+        swapRequest?.depositFinalisedAt?.valueOf() ??
         swapRequest?.swapRequestedAt?.valueOf() ??
         undefined,
       witnessedBlockIndex:
         swapRequest?.depositBoostedBlockIndex ??
-        swapRequest?.depositReceivedBlockIndex ??
+        swapRequest?.depositFinalisedBlockIndex ??
         swapRequest?.swapRequestedBlockIndex ??
         undefined,
       ...(failedSwap && {

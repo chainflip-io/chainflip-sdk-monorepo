@@ -104,7 +104,7 @@ router.get(
       state = State.EgressScheduled;
     } else if (swap?.swapExecutedAt) {
       state = State.SwapExecuted;
-    } else if (swapRequest?.depositReceivedAt || swapRequest?.depositBoostedAt) {
+    } else if (swapRequest?.depositFinalisedAt || swapRequest?.depositBoostedAt) {
       state = State.DepositReceived;
     } else {
       state = State.AwaitingDeposit;
@@ -166,8 +166,8 @@ router.get(
       depositTransactionHash: depositTransactionRef, // DEPRECATED(1.5): use depositTransactionRef instead
       depositTransactionRef,
       depositTransactionConfirmations: pendingDeposit?.transactionConfirmations,
-      depositReceivedAt: swapRequest?.depositReceivedAt?.valueOf(),
-      depositReceivedBlockIndex: swapRequest?.depositReceivedBlockIndex ?? undefined,
+      depositReceivedAt: swapRequest?.depositFinalisedAt?.valueOf(),
+      depositReceivedBlockIndex: swapRequest?.depositFinalisedBlockIndex ?? undefined,
       intermediateAmount: swap?.intermediateAmount?.toFixed(),
       swapExecutedAt: swap?.swapExecutedAt?.valueOf(),
       swapExecutedBlockIndex: swap?.swapExecutedBlockIndex ?? undefined,
