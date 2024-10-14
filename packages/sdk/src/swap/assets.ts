@@ -10,7 +10,7 @@ import {
 import type { Environment } from '@/shared/rpc';
 import type { AssetData } from './types';
 
-const isGasAsset = (asset: InternalAsset) => {
+export const isGasAsset = (asset: InternalAsset) => {
   const { chain } = assetConstants[asset];
   return asset === chainConstants[chain].gasAsset;
 };

@@ -34,7 +34,7 @@ import { Required } from '@/shared/types';
 import { approveVault, executeSwap, ExecuteSwapParams } from '@/shared/vault';
 import type { AppRouter } from '@/swap/server';
 import { AsyncCacheMap } from '@/swap/utils/dataStructures';
-import { getAssetData } from './assets';
+import { getAssetData, isGasAsset } from './assets';
 import { getChainData } from './chains';
 import { BACKEND_SERVICE_URLS, CF_SDK_VERSION_HEADERS } from './consts';
 import * as ApiService from './services/ApiService';
@@ -355,6 +355,32 @@ export class SwapSDK {
     const result = validateSwapAmount(stateChainEnv, internalAsset, amount);
 
     if (!result.success) throw new Error(result.reason);
+  }
+
+  async approveAndExecuteSwap(
+    params: ExecuteSwapParams,
+    txOpts: TransactionOptions & { signer?: Signer } = {},
+  ): Promise<{
+    approveTransaction: TransactionHash | null;
+    swapTransaction: TransactionHash | null;
+  }> {
+    const { srcChain, srcAsset } = params;
+    const signer = txOpts.signer ?? this.options.signer;
+    assert(signer, 'No signer provided');
+
+    const internalAsset = getInternalAsset({ chain: srcChain, asset: srcAsset });
+
+    let approveTransaction = null;
+    if (!isGasAsset(internalAsset)) {
+      approveTransaction = await this.approveVault(params, txOpts);
+    }
+
+    const swapTransaction = await this.executeSwap(params, txOpts);
+
+    return {
+      approveTransaction,
+      swapTransaction,
+    };
   }
 
   async getSwapLimits(): Promise<{
