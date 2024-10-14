@@ -3,6 +3,7 @@ import express from 'express';
 import { Query } from 'express-serve-static-core';
 import type { Server } from 'socket.io';
 import { Asset, assetConstants, InternalAsset } from '@/shared/enums';
+import { getFulfilledResult } from '@/shared/promises';
 import { quoteQuerySchema, DCABoostQuote, DCAQuote } from '@/shared/schemas';
 import env from '../../config/env';
 import { getBoostSafeMode } from '../../polkadot/api';
@@ -247,10 +248,9 @@ export const generateQuotes = async ({
     getPoolQuote(quoteArgs),
     estimatedBoostFeeBps && getPoolQuote({ ...quoteArgs, boostFeeBps: estimatedBoostFeeBps }),
   ]);
-  const ingressFee =
-    quoteResult.status === 'fulfilled'
-      ? quoteResult.value.includedFees.find((fee) => fee.type === 'INGRESS')
-      : undefined;
+  const ingressFee = getFulfilledResult(quoteResult, undefined)?.includedFees.find(
+    (fee) => fee.type === 'INGRESS',
+  );
 
   // the swap_rate rpc will deduct the full ingress fee before simulating the swap
   // as we quote a single chunk, we add a surcharge so that the effective deducted amount is 1/numberOfChunks
@@ -287,12 +287,9 @@ export const generateQuotes = async ({
   }
 
   const dcaQuote = dcaQuoteResult.value;
-  const quote = quoteResult.status === 'fulfilled' ? quoteResult.value : null;
-  const boostedQuote = boostedQuoteResult.status === 'fulfilled' ? boostedQuoteResult.value : null;
-  const dcaBoostedQuote =
-    dcaBoostedQuoteResult.status === 'fulfilled'
-      ? (dcaBoostedQuoteResult.value as DCABoostQuote)
-      : null;
+  const quote = getFulfilledResult(quoteResult, null);
+  const boostedQuote = getFulfilledResult(boostedQuoteResult, null);
+  const dcaBoostedQuote = getFulfilledResult(dcaBoostedQuoteResult, null) as DCABoostQuote | null;
 
   if (dcaQuoteParams && dcaQuote) {
     // Check liquidity for DCA
