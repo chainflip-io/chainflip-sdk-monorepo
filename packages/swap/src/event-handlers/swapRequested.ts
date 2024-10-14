@@ -107,8 +107,8 @@ export default async function swapRequested({
   const additionalInfo =
     requestType.__kind === 'Ccm'
       ? {
-          depositReceivedAt: new Date(block.timestamp),
-          depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
+          depositFinalisedAt: new Date(block.timestamp),
+          depositFinalisedBlockIndex: `${block.height}-${event.indexInBlock}`,
           ccmDepositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
         }
       : undefined;
