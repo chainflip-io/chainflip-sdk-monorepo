@@ -1658,5 +1658,56 @@ describe('server', () => {
       expect(body.swap).toBeUndefined();
       expect(body).toMatchSnapshot();
     });
+
+    it(`returns the correct DCA parameters at different stages of the swap`, async () => {
+      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.dcaParameters = {
+        numberOfChunks: 10,
+        chunkInterval: 3,
+      };
+      const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
+      requestedEvent.args.dcaParameters = {
+        numberOfChunks: 1,
+        chunkInterval: 3,
+      };
+
+      const finalizedEvent = clone(swapEventMap['EthereumIngressEgress.DepositFinalised']);
+      const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
+      const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
+
+      const doubleInput = BigInt(scheduledEvent.args.inputAmount) * 2n;
+      requestedEvent.args.inputAmount = doubleInput.toString();
+      finalizedEvent.args.amount = (
+        doubleInput +
+        BigInt(finalizedEvent.args.ingressFee) * 2n
+      ).toString();
+
+      await processEvents([depositChannelEvent]);
+
+      const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
+
+      expect(status).toBe(200);
+      expect(body.depositChannel.dcaParams).toMatchObject({
+        numberOfChunks: 10,
+        chunkIntervalBlocks: 3,
+      });
+
+      await processEvents([
+        requestedEvent,
+        swapEvents[2],
+        finalizedEvent,
+        ...swapEvents.slice(4, 5),
+        incrementId(scheduledEvent),
+        incrementId(executedEvent),
+        ...swapEvents.slice(5, 9),
+      ]);
+
+      const { body: body2 } = await request(server).get(`/v2/swaps/${channelId}`);
+
+      expect(body2.depositChannel.dcaParams).toMatchObject({
+        numberOfChunks: 1,
+        chunkIntervalBlocks: 3,
+      });
+    });
   });
 });
