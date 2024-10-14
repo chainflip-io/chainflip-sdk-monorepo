@@ -35,6 +35,7 @@ import type { AppRouter } from '@/swap/server';
 import { getAssetData } from './assets';
 import { getChainData } from './chains';
 import { BACKEND_SERVICE_URLS, CF_SDK_VERSION_HEADERS } from './consts';
+import { BoostQuote, Quote } from '../schemas';
 import * as ApiService from './services/ApiService';
 import {
   ChainData,
@@ -65,6 +66,18 @@ export type SwapSDKOptions = {
   enabledFeatures?: {
     dca?: boolean;
   };
+};
+
+const assertQuoteValid = (quote: Quote | BoostQuote) => {
+  switch (quote.type) {
+    case 'REGULAR':
+      break;
+    case 'DCA':
+      if (quote.dcaParams == null) throw new Error('Invalid quote type');
+      break;
+    default:
+      throw new Error('Invalid quote type');
+  }
 };
 
 export class SwapSDK {
@@ -412,12 +425,7 @@ export class SwapSDK {
     brokerCommissionBps,
   }: DepositAddressRequestV2) {
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
-    assert(quote.type === 'DCA' || quote.type === 'REGULAR', 'Invalid quote type');
-
-    assert(
-      quote.type === 'REGULAR' || quote.dcaParams != null,
-      'Failed to find DCA parameters from quote',
-    );
+    assertQuoteValid(quote);
 
     let fillOrKillParams;
 
@@ -492,17 +500,12 @@ export class SwapSDK {
     ccmParams,
     brokerCommissionBps,
   }: DepositAddressRequestV2): SwappingRequestSwapDepositAddressWithAffiliates {
-    assert(quote.type === 'DCA' || quote.type === 'REGULAR', 'Invalid quote type');
+    assertQuoteValid(quote);
 
     let dcaParams = null;
     let fillOrKillParams = null;
 
     if (quote.type === 'DCA') dcaParams = quote.dcaParams;
-
-    assert(
-      quote.type === 'REGULAR' || dcaParams != null,
-      'Failed to find DCA parameters from quote',
-    );
 
     if (inputFoKParams) {
       fillOrKillParams = {

@@ -167,21 +167,21 @@ interface BaseQuoteDetails {
 
 type WithBoostQuote<T> = Omit<T, 'boostQuote'> & BoostedQuoteDetails;
 
-export interface RegularQuoteDetails extends BaseQuoteDetails {
+export interface RegularQuote extends BaseQuoteDetails {
   type: 'REGULAR';
-  boostQuote?: WithBoostQuote<RegularQuoteDetails>;
+  boostQuote?: WithBoostQuote<RegularQuote>;
 }
 
-export interface DCAQuoteDetails extends BaseQuoteDetails {
+export interface DCAQuote extends BaseQuoteDetails {
   type: 'DCA';
   dcaParams: DcaParams;
-  boostQuote?: WithBoostQuote<DCAQuoteDetails>;
+  boostQuote?: WithBoostQuote<DCAQuote>;
 }
 
-export type Quote = RegularQuoteDetails | DCAQuoteDetails;
+export type Quote = RegularQuote | DCAQuote;
 
-export type DCABoostQuote = NonNullable<DCAQuoteDetails['boostQuote']>;
+export type DCABoostQuote = NonNullable<DCAQuote['boostQuote']>;
 
-export type RegularBoostQuote = NonNullable<RegularQuoteDetails['boostQuote']>;
+export type RegularBoostQuote = NonNullable<RegularQuote['boostQuote']>;
 
 export type BoostQuote = RegularBoostQuote | DCABoostQuote;
