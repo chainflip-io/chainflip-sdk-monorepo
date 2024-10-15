@@ -1,5 +1,6 @@
 import * as trpcExpress from '@trpc/server/adapters/express';
 import cors from 'cors';
+import { randomUUID } from 'crypto';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -15,6 +16,7 @@ import quoteRouterV2 from './routes/v2/quote';
 import swapV2 from './routes/v2/swap';
 import { publicProcedure, router } from './trpc';
 import { lastUpdateHeader } from './utils/intercept';
+import logger from './utils/logger';
 
 const appRouter = router({
   openSwapDepositChannel: publicProcedure
@@ -27,6 +29,26 @@ export type AppRouter = typeof appRouter;
 const app = express().use(cors());
 const server = createServer(app);
 const io = new Server(server).use(authenticate);
+
+app.use((req, res, next) => {
+  const info = {
+    reqId: randomUUID(),
+    method: req.method,
+    url: req.url,
+    startTime: performance.now(),
+  };
+  logger.info('request received', info);
+
+  res.on('finish', () => {
+    logger.info('request finished', {
+      ...info,
+      endTime: performance.now(),
+      duration: performance.now() - info.startTime,
+    });
+  });
+
+  next();
+});
 
 app.use('/swaps', lastUpdateHeader, express.json(), swap);
 app.use('/v2/swaps', lastUpdateHeader, express.json(), swapV2);
