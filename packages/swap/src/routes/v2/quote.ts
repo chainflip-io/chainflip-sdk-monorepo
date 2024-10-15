@@ -74,7 +74,7 @@ const adjustDcaQuote = ({
   dcaQuote: DCAQuote;
   dcaBoostedQuote?: DCABoostQuote | null;
   estimatedBoostFeeBps?: number;
-  maxBoostFeeBps?: number;
+  maxBoostFeeBps: number | undefined;
 }) => {
   // eslint-disable-next-line no-param-reassign
   dcaQuote.dcaParams = {
@@ -316,6 +316,7 @@ export const generateQuotes = async ({
       dcaQuote,
       dcaBoostedQuote,
       estimatedBoostFeeBps,
+      maxBoostFeeBps,
     });
   }
 
