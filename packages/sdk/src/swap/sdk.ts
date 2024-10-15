@@ -352,7 +352,7 @@ export class SwapSDK {
 
   async approveAndExecuteSwap(
     params: ExecuteSwapParams,
-    txOpts: TransactionOptions & { signer?: Signer } = {},
+    txOpts: Omit<TransactionOptions, 'nonce'> & { signer?: Signer } = {},
   ): Promise<{
     approveTxRef: TransactionHash | null;
     swapTxRef: TransactionHash | null;
@@ -365,10 +365,10 @@ export class SwapSDK {
 
     let approveTxRef = null;
     if (!isGasAsset(internalAsset)) {
-      approveTxRef = await this.approveVault(params, txOpts);
+      approveTxRef = await this.approveVault(params, { ...txOpts, nonce: undefined });
     }
 
-    const swapTxRef = await this.executeSwap(params, txOpts);
+    const swapTxRef = await this.executeSwap(params, { ...txOpts, nonce: undefined });
 
     return {
       approveTxRef,
