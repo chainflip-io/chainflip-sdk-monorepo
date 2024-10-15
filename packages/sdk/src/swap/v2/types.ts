@@ -154,7 +154,7 @@ export type SwapStatusResponseV2 =
       state: 'FAILED';
     } & Sending);
 
-export { Quote, RegularQuote, BoostQuote, DCAQuote, DCABoostQuote } from '@/shared/schemas';
+export type { Quote, RegularQuote, BoostQuote, DCAQuote, DCABoostQuote } from '@/shared/schemas';
 
 export interface DepositAddressRequestV2 {
   quote: Quote | BoostQuote;
