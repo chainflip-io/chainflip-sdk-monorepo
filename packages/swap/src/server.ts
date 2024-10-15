@@ -1,5 +1,6 @@
 import * as trpcExpress from '@trpc/server/adapters/express';
 import cors from 'cors';
+import { randomUUID } from 'crypto';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -15,7 +16,6 @@ import quoteRouterV2 from './routes/v2/quote';
 import swapV2 from './routes/v2/swap';
 import { publicProcedure, router } from './trpc';
 import { lastUpdateHeader } from './utils/intercept';
-import { randomUUID } from 'crypto';
 import logger from './utils/logger';
 
 const appRouter = router({
