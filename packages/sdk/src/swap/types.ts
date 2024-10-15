@@ -1,13 +1,11 @@
-import { HexString } from '@chainflip/utils/types';
 import { Chain, Asset, AssetOfChain, InternalAsset } from '@/shared/enums';
 import {
   AffiliateBroker,
   CcmParams,
   Quote,
-  FillOrKillParams,
+  FillOrKillParamsWithMinPrice,
   SwapFee,
   DcaParams,
-  BoostQuote,
 } from '@/shared/schemas';
 
 export interface ChainData {
@@ -58,25 +56,20 @@ export interface QuoteResponseV2
   quotes: Quote[];
 }
 
+export type FillOrKillParamsWithSlippage = Omit<FillOrKillParamsWithMinPrice, 'minPrice'> & {
+  slippageTolerancePercent: string | number;
+};
+
 export interface DepositAddressRequest extends QuoteRequest {
   destAddress: string;
   ccmParams?: CcmParams;
   maxBoostFeeBps?: number;
   srcAddress?: string;
-  fillOrKillParams?: FillOrKillParams;
+  fillOrKillParams?: FillOrKillParamsWithMinPrice;
   dcaParams?: DcaParams;
 
   /** @deprecated DEPRECATED(1.5): use ccmParams instead of ccmMetadata */
   ccmMetadata?: CcmParams;
-}
-
-export interface DepositAddressRequestV2 {
-  quote: Quote | BoostQuote;
-  destAddress: string;
-  fillOrKillParams?: FillOrKillParams;
-  affiliateBrokers?: { account: `cF${string}` | HexString; commissionBps: number }[];
-  ccmParams?: CcmParams;
-  brokerCommissionBps?: number;
 }
 
 export interface DepositAddressResponse extends DepositAddressRequest {
@@ -125,7 +118,7 @@ interface DepositAddressFields extends SwapStatusResponseCommonFields {
   effectiveBoostFeeBps?: number;
   boostSkippedAt?: number;
   boostSkippedBlockIndex?: string;
-  fillOrKillParams: FillOrKillParams;
+  fillOrKillParams: FillOrKillParamsWithMinPrice;
 }
 
 type EgressScheduled = {

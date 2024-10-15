@@ -1,8 +1,11 @@
+import BigNumber from 'bignumber.js';
+import { assetConstants, getInternalAsset } from '../enums';
 import {
   getHundredthPipAmountFromAmount,
   getPipAmountFromAmount,
   getPriceFromPriceX128,
   getPriceX128FromPrice,
+  parseFoKParams,
 } from '../functions';
 
 describe(getPipAmountFromAmount, () => {
@@ -47,5 +50,137 @@ describe(getPriceFromPriceX128, () => {
     [0n, 'Eth', 'Usdc', '0'] as const,
   ])('calculates price from priceX128', (priceX128, srcAsset, destAsset, result) => {
     expect(getPriceFromPriceX128(priceX128, srcAsset, destAsset)).toBe(result);
+  });
+});
+
+describe(parseFoKParams, () => {
+  const slippageTolerancePercent = 1.5;
+  const quote = {
+    srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+    destAsset: { asset: 'ETH', chain: 'Ethereum' },
+    estimatedPrice: '25.02922538655223706836',
+  } as const;
+
+  it('calculates the minimum price based off the quote and slippage tolerance', () => {
+    expect(
+      parseFoKParams(
+        { slippageTolerancePercent, refundAddress: '0x1234', retryDurationBlocks: 100 },
+        quote,
+      ),
+    ).toStrictEqual({
+      minPriceX128: '83892489958826316385497263710123985244108278726772',
+      refundAddress: '0x1234',
+      retryDurationBlocks: 100,
+    });
+  });
+
+  it('uses the provided minimum price', () => {
+    const minPrice = new BigNumber(quote.estimatedPrice)
+      .times(new BigNumber(100).minus(slippageTolerancePercent).dividedBy(100))
+      .toFixed(assetConstants[getInternalAsset(quote.destAsset)].decimals);
+
+    expect(
+      parseFoKParams({ minPrice, refundAddress: '0x1234', retryDurationBlocks: 100 }, quote),
+    ).toStrictEqual({
+      minPriceX128: '83892489958826316385497263710123985244108278726772',
+      refundAddress: '0x1234',
+      retryDurationBlocks: 100,
+    });
+  });
+
+  it('validates the slippage tolerance range', () => {
+    expect(() => {
+      parseFoKParams(
+        { slippageTolerancePercent: 0, refundAddress: '0x1234', retryDurationBlocks: 100 },
+        quote,
+      );
+    }).not.toThrow();
+
+    expect(() => {
+      parseFoKParams(
+        { slippageTolerancePercent: 100, refundAddress: '0x1234', retryDurationBlocks: 100 },
+        quote,
+      );
+    }).not.toThrow();
+
+    expect(() => {
+      parseFoKParams(
+        { slippageTolerancePercent: -1, refundAddress: '0x1234', retryDurationBlocks: 100 },
+        quote,
+      );
+    }).toThrow(new RangeError('Slippage tolerance must be between 0 and 100 inclusive'));
+    expect(() => {
+      parseFoKParams(
+        { slippageTolerancePercent: 101, refundAddress: '0x1234', retryDurationBlocks: 100 },
+        quote,
+      );
+    }).toThrow(new RangeError('Slippage tolerance must be between 0 and 100 inclusive'));
+  });
+
+  it('accepts a minimum price or slippage tolerance', () => {
+    expect(() => {
+      parseFoKParams(
+        {
+          slippageTolerancePercent: 0,
+          refundAddress: '0x1234',
+          retryDurationBlocks: 100,
+          minPrice: quote.estimatedPrice,
+        },
+        quote,
+      );
+    }).toThrow('Cannot have both minPrice and slippageTolerancePercent');
+  });
+
+  it('returns undefined if no FoK params are provided', () => {
+    expect(parseFoKParams(undefined, quote)).toBeUndefined();
+  });
+
+  it('throws if estimated price is invalid', () => {
+    expect(() => {
+      parseFoKParams(
+        {
+          slippageTolerancePercent,
+          refundAddress: '0x1234',
+          retryDurationBlocks: 100,
+        },
+        { ...quote, estimatedPrice: 'invalid' },
+      );
+    }).toThrow('Invalid estimated price');
+  });
+
+  it('throws if slippageTolerancePercent is invalid', () => {
+    expect(() => {
+      parseFoKParams(
+        {
+          slippageTolerancePercent: 'invalid',
+          refundAddress: '0x1234',
+          retryDurationBlocks: 100,
+        },
+        quote,
+      );
+    }).toThrow('Invalid slippage tolerance');
+    expect(() => {
+      parseFoKParams(
+        {
+          slippageTolerancePercent: NaN,
+          refundAddress: '0x1234',
+          retryDurationBlocks: 100,
+        },
+        quote,
+      );
+    }).toThrow('Invalid slippage tolerance');
+  });
+
+  it('throws if neither minPrice nor slippageTolerancePercent is provided', () => {
+    expect(() => {
+      parseFoKParams(
+        // @ts-expect-error testing
+        {
+          refundAddress: '0x1234',
+          retryDurationBlocks: 100,
+        },
+        quote,
+      );
+    }).toThrow('Either minPrice or slippageTolerancePercent must be provided');
   });
 });

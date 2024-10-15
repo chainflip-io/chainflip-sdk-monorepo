@@ -18,7 +18,7 @@ import {
   getAssetAndChain,
   Asset,
 } from '@/shared/enums';
-import { getPriceX128FromPrice } from '@/shared/functions';
+import { getPriceX128FromPrice, parseFoKParams } from '@/shared/functions';
 import { assert, isNotNullish } from '@/shared/guards';
 import {
   BoostPoolsDepth,
@@ -48,9 +48,8 @@ import {
   BoostPoolDepth,
   SwapStatusResponse,
   QuoteResponseV2,
-  DepositAddressRequestV2,
 } from './types';
-import { type SwapStatusResponseV2 } from './v2/types';
+import { type SwapStatusResponseV2, type DepositAddressRequestV2 } from './v2/types';
 
 type TransactionHash = `0x${string}`;
 
@@ -201,6 +200,7 @@ export class SwapSDK {
     );
   }
 
+  /** @deprecated DEPRECATED(1.6) use requestDepositAddressV2() */
   async requestDepositAddress(
     depositAddressRequest: DepositAddressRequest,
   ): Promise<DepositAddressResponse> {
@@ -427,20 +427,6 @@ export class SwapSDK {
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
 
-    let fillOrKillParams;
-
-    if (inputFoKParams) {
-      fillOrKillParams = {
-        refundAddress: inputFoKParams.refundAddress,
-        retryDurationBlocks: inputFoKParams.retryDurationBlocks,
-        minPriceX128: getPriceX128FromPrice(
-          inputFoKParams.minPrice,
-          getInternalAsset(quote.srcAsset),
-          getInternalAsset(quote.destAsset),
-        ),
-      };
-    }
-
     const depositAddressRequest = {
       srcAsset: quote.srcAsset.asset,
       srcChain: quote.srcAsset.chain,
@@ -448,7 +434,7 @@ export class SwapSDK {
       destChain: quote.destAsset.chain,
       destAddress,
       dcaParams: quote.type === 'DCA' ? quote.dcaParams : undefined,
-      fillOrKillParams,
+      fillOrKillParams: parseFoKParams(inputFoKParams, quote),
       maxBoostFeeBps: 'maxBoostFeeBps' in quote ? quote.maxBoostFeeBps : undefined,
       ccmParams,
       amount: quote.depositAmount,
@@ -503,21 +489,8 @@ export class SwapSDK {
     assertQuoteValid(quote);
 
     let dcaParams = null;
-    let fillOrKillParams = null;
 
     if (quote.type === 'DCA') dcaParams = quote.dcaParams;
-
-    if (inputFoKParams) {
-      fillOrKillParams = {
-        minPriceX128: getPriceX128FromPrice(
-          inputFoKParams.minPrice,
-          getInternalAsset(quote.srcAsset),
-          getInternalAsset(quote.destAsset),
-        ),
-        refundAddress: inputFoKParams.refundAddress,
-        retryDurationBlocks: inputFoKParams.retryDurationBlocks,
-      };
-    }
 
     return buildExtrinsicPayload(
       {
@@ -527,7 +500,7 @@ export class SwapSDK {
         destChain: quote.destAsset.chain,
         destAddress,
         dcaParams,
-        fillOrKillParams,
+        fillOrKillParams: parseFoKParams(inputFoKParams, quote) ?? null,
         maxBoostFeeBps: 'maxBoostFeeBps' in quote ? quote.maxBoostFeeBps : null,
         commissionBps: brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0,
         ccmParams: ccmParams ?? null,
