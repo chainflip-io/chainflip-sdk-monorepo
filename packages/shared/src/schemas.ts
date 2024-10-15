@@ -87,9 +87,10 @@ export const fillOrKillParams = z.object({
 });
 
 export type FillOrKillParamsX128 = z.input<typeof fillOrKillParams>;
-export type FillOrKillParams = Omit<FillOrKillParamsX128, 'minPriceX128'> & {
+export type FillOrKillParamsWithMinPrice = Omit<FillOrKillParamsX128, 'minPriceX128'> & {
   minPrice: string;
 };
+export type FillOrKillParams = FillOrKillParamsWithMinPrice;
 
 export const ensureDcaWithFok = <T extends { dcaParams?: unknown; fillOrKillParams?: unknown }>(
   args: T,

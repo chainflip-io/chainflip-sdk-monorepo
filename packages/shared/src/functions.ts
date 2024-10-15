@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import EventEmitter, { once } from 'events';
 import { assetConstants, getInternalAsset, InternalAsset } from './enums';
 import { assert } from './guards';
-import { FillOrKillParams, FillOrKillParamsWithSlippage, Quote } from './schemas';
+import { FillOrKillParamsWithMinPrice, FillOrKillParamsWithSlippage, Quote } from './schemas';
 
 export const onceWithTimeout = async (
   eventEmitter: EventEmitter,
@@ -53,7 +53,7 @@ export const getPriceFromPriceX128 = (
 export const assertUnreachable = (x: never): never => x;
 
 export const parseFoKParams = (
-  params: FillOrKillParams | FillOrKillParamsWithSlippage | undefined,
+  params: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage | undefined,
   quote: Pick<Quote, 'srcAsset' | 'destAsset' | 'estimatedPrice'>,
 ) => {
   if (!params) return undefined;

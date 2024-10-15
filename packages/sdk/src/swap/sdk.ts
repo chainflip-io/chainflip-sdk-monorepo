@@ -48,9 +48,8 @@ import {
   BoostPoolDepth,
   SwapStatusResponse,
   QuoteResponseV2,
-  DepositAddressRequestV2,
 } from './types';
-import { type SwapStatusResponseV2 } from './v2/types';
+import { type SwapStatusResponseV2, type DepositAddressRequestV2 } from './v2/types';
 
 type TransactionHash = `0x${string}`;
 
