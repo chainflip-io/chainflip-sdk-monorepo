@@ -333,8 +333,8 @@ describe(SwapSDK, () => {
       expect(approveVault).toHaveBeenCalledWith(params, { network: 'sisyphos', signer }, {});
       expect(executeSwap).toHaveBeenCalledWith(params, { network: 'sisyphos', signer }, {});
       expect(result).toEqual({
-        swapTransaction: 'hello world',
-        approveTransaction: 'hello world 2',
+        swapTxRef: 'hello world',
+        approveTxRef: 'hello world 2',
       });
     });
   });
