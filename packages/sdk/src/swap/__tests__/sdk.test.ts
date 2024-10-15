@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import { VoidSigner } from 'ethers';
 import { Assets, Chain, ChainflipNetworks, Chains, InternalAssets } from '@/shared/enums';
 import { BoostQuote, Quote } from '@/shared/schemas';
@@ -1896,6 +1897,26 @@ describe(SwapSDK, () => {
           } as Quote,
           destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
           brokerCommissionBps: 30,
+        }),
+      ).toMatchSnapshot();
+    });
+
+    it('uses the slippage tolerance', () => {
+      expect(
+        sdk.buildRequestSwapDepositAddressWithAffiliatesParams({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            estimatedPrice: new BigNumber('10000000000000').div(0.99).toFixed(18),
+            type: 'REGULAR',
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: 'mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn',
+            slippageTolerancePercent: '1', // equal to 10000000000000
+          },
         }),
       ).toMatchSnapshot();
     });

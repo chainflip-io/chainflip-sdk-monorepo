@@ -172,6 +172,72 @@ exports[`SwapSDK buildRequestSwapDepositAddressWithAffiliatesParams builds the p
 ]
 `;
 
+exports[`SwapSDK buildRequestSwapDepositAddressWithAffiliatesParams builds the parameters for a fill or kill swap 2`] = `
+[
+  "Btc",
+  "Flip",
+  {
+    "Eth": Uint8Array [
+      113,
+      126,
+      21,
+      133,
+      63,
+      213,
+      242,
+      172,
+      97,
+      35,
+      232,
+      68,
+      195,
+      167,
+      199,
+      89,
+      118,
+      234,
+      236,
+      155,
+    ],
+  },
+  0,
+  null,
+  0,
+  [],
+  {
+    "min_price": "0x152d02c7e14af680000000000000000000000000000000000000",
+    "refund_address": {
+      "Btc": {
+        "P2PKH": Uint8Array [
+          36,
+          63,
+          19,
+          148,
+          244,
+          69,
+          84,
+          244,
+          206,
+          63,
+          214,
+          134,
+          73,
+          193,
+          154,
+          220,
+          72,
+          60,
+          233,
+          36,
+        ],
+      },
+    },
+    "retry_duration": 500,
+  },
+  null,
+]
+`;
+
 exports[`SwapSDK buildRequestSwapDepositAddressWithAffiliatesParams builds the parameters for a regular swap 1`] = `
 [
   "Btc",
@@ -325,6 +391,72 @@ exports[`SwapSDK buildRequestSwapDepositAddressWithAffiliatesParams uses the bro
   0,
   [],
   null,
+  null,
+]
+`;
+
+exports[`SwapSDK buildRequestSwapDepositAddressWithAffiliatesParams uses the slippage tolerance 1`] = `
+[
+  "Btc",
+  "Flip",
+  {
+    "Eth": Uint8Array [
+      113,
+      126,
+      21,
+      133,
+      63,
+      213,
+      242,
+      172,
+      97,
+      35,
+      232,
+      68,
+      195,
+      167,
+      199,
+      89,
+      118,
+      234,
+      236,
+      155,
+    ],
+  },
+  0,
+  null,
+  0,
+  [],
+  {
+    "min_price": "0x152d02c7e14af680000000000000000000000000000000000000",
+    "refund_address": {
+      "Btc": {
+        "P2PKH": Uint8Array [
+          36,
+          63,
+          19,
+          148,
+          244,
+          69,
+          84,
+          244,
+          206,
+          63,
+          214,
+          134,
+          73,
+          193,
+          154,
+          220,
+          72,
+          60,
+          233,
+          36,
+        ],
+      },
+    },
+    "retry_duration": 500,
+  },
   null,
 ]
 `;
