@@ -38,7 +38,6 @@ app.use((req, res, next) => {
     startTime: performance.now(),
   };
   logger.info('request received', info);
-  req.headers['x-request-id'] = info.reqId;
 
   res.on('finish', () => {
     logger.info('request finished', {
