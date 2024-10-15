@@ -185,3 +185,7 @@ export type DCABoostQuote = NonNullable<DCAQuote['boostQuote']>;
 export type RegularBoostQuote = NonNullable<RegularQuote['boostQuote']>;
 
 export type BoostQuote = RegularBoostQuote | DCABoostQuote;
+
+export type FillOrKillParamsWithSlippage = Omit<FillOrKillParamsX128, 'minPriceX128'> & {
+  slippageTolerancePercent: string | number;
+};

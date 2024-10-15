@@ -58,6 +58,10 @@ export interface QuoteResponseV2
   quotes: Quote[];
 }
 
+export type FillOrKillParamsWithSlippage = Omit<FillOrKillParams, 'minPrice'> & {
+  slippageTolerancePercent: string | number;
+};
+
 export interface DepositAddressRequest extends QuoteRequest {
   destAddress: string;
   ccmParams?: CcmParams;
@@ -73,7 +77,7 @@ export interface DepositAddressRequest extends QuoteRequest {
 export interface DepositAddressRequestV2 {
   quote: Quote | BoostQuote;
   destAddress: string;
-  fillOrKillParams?: FillOrKillParams;
+  fillOrKillParams?: FillOrKillParams | FillOrKillParamsWithSlippage;
   affiliateBrokers?: { account: `cF${string}` | HexString; commissionBps: number }[];
   ccmParams?: CcmParams;
   brokerCommissionBps?: number;

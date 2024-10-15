@@ -1,6 +1,8 @@
 import BigNumber from 'bignumber.js';
 import EventEmitter, { once } from 'events';
-import { assetConstants, InternalAsset } from './enums';
+import { assetConstants, getInternalAsset, InternalAsset } from './enums';
+import { assert } from './guards';
+import { FillOrKillParams, FillOrKillParamsWithSlippage, Quote } from './schemas';
 
 export const onceWithTimeout = async (
   eventEmitter: EventEmitter,
@@ -49,3 +51,50 @@ export const getPriceFromPriceX128 = (
     .toFixed();
 
 export const assertUnreachable = (x: never): never => x;
+
+export const parseFoKParams = (
+  params: FillOrKillParams | FillOrKillParamsWithSlippage | undefined,
+  quote: Pick<Quote, 'srcAsset' | 'destAsset' | 'estimatedPrice'>,
+) => {
+  if (!params) return undefined;
+
+  const srcAsset = getInternalAsset(quote.srcAsset);
+  const destAsset = getInternalAsset(quote.destAsset);
+
+  let minPrice: string;
+
+  if ('minPrice' in params) {
+    assert(
+      !('slippageTolerancePercent' in params),
+      'Cannot have both minPrice and slippageTolerancePercent',
+    );
+
+    minPrice = params.minPrice;
+  } else if ('slippageTolerancePercent' in params) {
+    const tolerance = new BigNumber(params.slippageTolerancePercent);
+
+    assert(!tolerance.isNaN(), 'Invalid slippage tolerance');
+
+    assert(
+      tolerance.gte(0) && tolerance.lte(100),
+      'Slippage tolerance must be between 0 and 100 inclusive',
+      RangeError,
+    );
+
+    const estimatedPrice = new BigNumber(quote.estimatedPrice);
+
+    assert(!estimatedPrice.isNaN(), 'Invalid estimated price');
+
+    minPrice = estimatedPrice
+      .times(new BigNumber(100).minus(tolerance).dividedBy(100))
+      .toFixed(assetConstants[destAsset].decimals);
+  } else {
+    throw new Error('Either minPrice or slippageTolerancePercent must be provided');
+  }
+
+  return {
+    refundAddress: params.refundAddress,
+    retryDurationBlocks: params.retryDurationBlocks,
+    minPriceX128: getPriceX128FromPrice(minPrice, srcAsset, destAsset),
+  };
+};
