@@ -103,8 +103,8 @@ importers:
         specifier: ^1.6.1
         version: 1.6.1
       '@chainflip/rpc':
-        specifier: ^1.6.7
-        version: 1.6.7
+        specifier: ^1.6.9
+        version: 1.6.9
       '@chainflip/solana':
         specifier: ^1.0.2
         version: 1.0.2
@@ -149,8 +149,8 @@ importers:
         specifier: ^1.6.1
         version: 1.6.1
       '@chainflip/rpc':
-        specifier: ^1.6.7
-        version: 1.6.7
+        specifier: ^1.6.9
+        version: 1.6.9
       '@chainflip/utils':
         specifier: ^0.4.0
         version: 0.4.0
@@ -177,8 +177,8 @@ importers:
         specifier: ^1.6.1
         version: 1.6.1
       '@chainflip/rpc':
-        specifier: ^1.6.7
-        version: 1.6.7
+        specifier: ^1.6.9
+        version: 1.6.9
       '@chainflip/solana':
         specifier: ^1.0.2
         version: 1.0.2
@@ -232,8 +232,8 @@ importers:
         specifier: ^1.5.7
         version: 1.5.7
       '@chainflip/rpc':
-        specifier: ^1.6.7
-        version: 1.6.7
+        specifier: ^1.6.9
+        version: 1.6.9
       '@chainflip/utils':
         specifier: ^0.4.0
         version: 0.4.0
@@ -761,8 +761,8 @@ packages:
   '@chainflip/processor@1.5.7':
     resolution: {integrity: sha512-fN4RwWYu/RukJxHWn1Zc0bEZjoZ2iyncv/DlC6vSApF636B5yVKnBfzkQBvTiz6gZGBYytxBh4F8JMZ5EdnU+g==}
 
-  '@chainflip/rpc@1.6.7':
-    resolution: {integrity: sha512-OIE2cqzDy9Oq9sHuxJKOtbjP438QwMFdc6tuWdAmjjPcHGATI0Ft/lIKeCutD/8uH/CumOzaOoBaT2pI6G78Gg==}
+  '@chainflip/rpc@1.6.9':
+    resolution: {integrity: sha512-FtaoZBey4kIFhWQY5mMMAGXIgzSpZCX0DTnXQqPEn9q5qvt6FoQLDQk9k2IYKOTiIP+XsLy9w/WPPiH7+3BpnQ==}
 
   '@chainflip/solana@1.0.2':
     resolution: {integrity: sha512-8M+z0yjVCZBMpdCTGuBRt/Ns9NBJCNFvnSOjDu/kyaBRvxdUvECJOIseL0ENLBd0J/YmO9TcrZ30M0po3a96BA==}
@@ -6306,11 +6306,11 @@ snapshots:
 
   '@chainflip/processor@1.5.7':
     dependencies:
-      '@chainflip/rpc': 1.6.7
+      '@chainflip/rpc': 1.6.9
       '@chainflip/utils': 0.3.0
       zod: 3.23.8
 
-  '@chainflip/rpc@1.6.7':
+  '@chainflip/rpc@1.6.9':
     dependencies:
       '@chainflip/utils': 0.3.0
       zod: 3.23.8
