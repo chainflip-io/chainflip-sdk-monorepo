@@ -27,9 +27,11 @@ export default async function openSwapDepositChannel(
       input.fillOrKillParams?.refundAddress,
     )
   ) {
-    logger.info('blocked address found', { ...input });
+    logger.info('Blocked address found', input);
     throw ServiceError.internalError('Failed to open deposit channel, please try again later');
   }
+
+  logger.info('Opening swap deposit channel', input);
 
   const { srcAsset, destAsset } = getInternalAssets(input);
   if (env.DISABLED_INTERNAL_ASSETS.includes(srcAsset)) {
@@ -62,16 +64,20 @@ export default async function openSwapDepositChannel(
   // DEPRECATED(1.5): use ccmParams instead of ccmMetadata
   input.ccmParams ??= input.ccmMetadata; // eslint-disable-line no-param-reassign
 
+  const swapDepositAddress = await broker.requestSwapDepositAddress(
+    input,
+    { url: env.RPC_BROKER_HTTPS_URL },
+    env.CHAINFLIP_NETWORK,
+  );
+
+  logger.info('Swap deposit channel opened', swapDepositAddress);
+
   const {
     address: depositAddress,
     sourceChainExpiryBlock: srcChainExpiryBlock,
     channelOpeningFee,
     ...blockInfo
-  } = await broker.requestSwapDepositAddress(
-    input,
-    { url: env.RPC_BROKER_HTTPS_URL },
-    env.CHAINFLIP_NETWORK,
-  );
+  } = swapDepositAddress;
 
   const {
     expectedDepositAmount,
