@@ -5,7 +5,7 @@ import { setTimeout as sleep } from 'timers/promises';
 import prisma from './client';
 import env from './config/env';
 import { getEventHandler, swapEventNames } from './event-handlers';
-import { GetBatchQuery } from './gql/generated/graphql';
+import { GetBatchQuery, GetCallQuery } from './gql/generated/graphql';
 import { GET_BATCH } from './gql/query';
 import preBlock from './preBlock';
 import { handleExit } from './utils/function';
@@ -15,6 +15,7 @@ const client = new GraphQLClient(env.INGEST_GATEWAY_URL);
 
 export type Block = NonNullable<GetBatchQuery['blocks']>['nodes'][number];
 export type Event = Block['events']['nodes'][number];
+export type Call = NonNullable<GetCallQuery['call']>['args'];
 
 const fetchBlocks = async (height: number): Promise<Block[]> => {
   const start = performance.now();

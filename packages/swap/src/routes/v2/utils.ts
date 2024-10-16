@@ -81,7 +81,8 @@ export const getLatestSwapForId = async (id: string) => {
     }
 
     swapRequest = swapDepositChannel.swapRequests.at(0);
-    if (!swapRequest) {
+    // swap request will have no swaps for failed ccm swaps
+    if (!swapRequest || !swapRequest.swaps.length) {
       failedSwap = swapDepositChannel.failedSwaps.at(0);
     }
     if (swapDepositChannel.affiliates.length > 0) {
