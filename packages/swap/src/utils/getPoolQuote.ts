@@ -122,5 +122,6 @@ export default async function getPoolQuote<T extends QuoteType>({
     type: quoteType,
     srcAsset: getAssetAndChain(srcAsset),
     destAsset: getAssetAndChain(destAsset),
+    depositAmount: depositAmount.toString(),
   } as Extract<Quote, { type: T }>;
 }
