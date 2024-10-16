@@ -22,6 +22,7 @@ describe('getFundingEnvironment', () => {
       redemptionTax: 0x4563918244f40000n,
       minimumFundingAmount: 0x8ac7230489e80000n,
     });
+    spy.mock.calls[0][1][0].id = '1';
     expect(spy.mock.calls).toMatchSnapshot();
   });
 });
@@ -59,6 +60,7 @@ describe('getSwappingEnvironment', () => {
       },
       networkFeeHundredthPips: 1000,
     });
+    spy.mock.calls[0][1][0].id = '1';
     expect(spy.mock.calls).toMatchSnapshot();
   });
 });
@@ -175,6 +177,7 @@ describe('getIngressEgressEnvironment', () => {
         Solana: 0,
       },
     });
+    spy.mock.calls[0][1][0].id = '1';
     expect(spy.mock.calls).toMatchSnapshot();
   });
 });
@@ -186,6 +189,7 @@ describe('getAllBoostPoolsDepth', () => {
     expect(await getAllBoostPoolsDepth({ network: 'perseverance' })).toMatchSnapshot(
       'boost pools depth',
     );
+    spy.mock.calls[0][1][0].id = '1';
     expect(spy.mock.calls).toMatchSnapshot();
   });
 });

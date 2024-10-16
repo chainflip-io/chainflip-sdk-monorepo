@@ -38,9 +38,9 @@ describe(broker.requestSwapDepositAddress, () => {
       'perseverance',
     );
     expect(postSpy.mock.calls[0][0]).toBe(brokerConfig.url);
-    const requestObject = postSpy.mock.calls[0][1];
+    const requestObject = postSpy.mock.calls[0][1][0];
     expect(requestObject).toStrictEqual({
-      id: '1',
+      id: requestObject.id,
       jsonrpc: '2.0',
       method: 'broker_requestSwapDepositAddress',
       params: [
@@ -78,9 +78,9 @@ describe(broker.requestSwapDepositAddress, () => {
       'mainnet',
     );
     expect(postSpy.mock.calls[0][0]).toBe(brokerConfig.url);
-    const requestObject = postSpy.mock.calls[0][1];
+    const requestObject = postSpy.mock.calls[0][1][0];
     expect(requestObject).toStrictEqual({
-      id: '1',
+      id: requestObject.id,
       jsonrpc: '2.0',
       method: 'broker_requestSwapDepositAddress',
       params: [
@@ -137,9 +137,9 @@ describe(broker.requestSwapDepositAddress, () => {
       brokerConfig,
       'perseverance',
     );
-    const requestObject = postSpy.mock.calls[0][1];
+    const requestObject = postSpy.mock.calls[0][1][0];
     expect(requestObject).toStrictEqual({
-      id: '1',
+      id: requestObject.id,
       jsonrpc: '2.0',
       method: 'broker_requestSwapDepositAddress',
       params: [
@@ -184,9 +184,9 @@ describe(broker.requestSwapDepositAddress, () => {
       brokerConfig,
       'perseverance',
     );
-    const requestObject = postSpy.mock.calls[0][1];
+    const requestObject = postSpy.mock.calls[0][1][0];
     expect(requestObject).toStrictEqual({
-      id: '1',
+      id: requestObject.id,
       jsonrpc: '2.0',
       method: 'broker_requestSwapDepositAddress',
       params: [
@@ -232,9 +232,9 @@ describe(broker.requestSwapDepositAddress, () => {
       brokerConfig,
       'perseverance',
     );
-    const requestObject = postSpy.mock.calls[0][1];
+    const requestObject = postSpy.mock.calls[0][1][0];
     expect(requestObject).toStrictEqual({
-      id: '1',
+      id: requestObject.id,
       jsonrpc: '2.0',
       method: 'broker_requestSwapDepositAddress',
       params: [
@@ -284,9 +284,9 @@ describe(broker.requestSwapDepositAddress, () => {
       brokerConfig,
       'perseverance',
     );
-    const requestObject = postSpy.mock.calls[0][1];
+    const requestObject = postSpy.mock.calls[0][1][0];
     expect(requestObject).toStrictEqual({
-      id: '1',
+      id: requestObject.id,
       jsonrpc: '2.0',
       method: 'broker_requestSwapDepositAddress',
       params: [
@@ -339,9 +339,9 @@ describe(broker.requestSwapDepositAddress, () => {
       brokerConfig,
       'perseverance',
     );
-    const requestObject = postSpy.mock.calls[0][1];
+    const requestObject = postSpy.mock.calls[0][1][0];
     expect(requestObject).toStrictEqual({
-      id: '1',
+      id: requestObject.id,
       jsonrpc: '2.0',
       method: 'broker_requestSwapDepositAddress',
       params: [
@@ -395,9 +395,9 @@ describe(broker.requestSwapDepositAddress, () => {
       brokerConfig,
       'perseverance',
     );
-    const requestObject = postSpy.mock.calls[0][1];
+    const requestObject = postSpy.mock.calls[0][1][0];
     expect(requestObject).toStrictEqual({
-      id: '1',
+      id: requestObject.id,
       jsonrpc: '2.0',
       method: 'broker_requestSwapDepositAddress',
       params: [
@@ -465,7 +465,7 @@ describe(broker.requestSwapDepositAddress, () => {
       brokerConfig,
       'perseverance',
     );
-    expect(postSpy.mock.calls[0][1].params[2]).toEqual(
+    expect(postSpy.mock.calls[0][1][0].params[2]).toEqual(
       '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
     );
   });
@@ -491,7 +491,7 @@ describe(broker.requestSwapDepositAddress, () => {
       brokerConfig,
       'perseverance',
     );
-    expect(postSpy.mock.calls[0][1].params[7].refund_address).toEqual(
+    expect(postSpy.mock.calls[0][1][0].params[7].refund_address).toEqual(
       '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
     );
   });
