@@ -2,6 +2,11 @@
 
 exports[`server GET /quote doesn't include boost information when disabled 1`] = `
 {
+  "depositAmount": "100000000",
+  "destAsset": {
+    "asset": "ETH",
+    "chain": "Ethereum",
+  },
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 1830,
   "estimatedPrice": "1.001001001001001001",
@@ -58,12 +63,21 @@ exports[`server GET /quote doesn't include boost information when disabled 1`] =
       },
     },
   ],
+  "srcAsset": {
+    "asset": "BTC",
+    "chain": "Bitcoin",
+  },
   "type": "REGULAR",
 }
 `;
 
 exports[`server GET /quote gets the quote for deprecated params without the chain 1`] = `
 {
+  "depositAmount": "1000000000000000000",
+  "destAsset": {
+    "asset": "ETH",
+    "chain": "Ethereum",
+  },
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 54,
   "estimatedPrice": "1.000000000002",
@@ -120,6 +134,10 @@ exports[`server GET /quote gets the quote for deprecated params without the chai
       },
     },
   ],
+  "srcAsset": {
+    "asset": "FLIP",
+    "chain": "Ethereum",
+  },
   "type": "REGULAR",
 }
 `;
@@ -127,6 +145,11 @@ exports[`server GET /quote gets the quote for deprecated params without the chai
 exports[`server GET /quote gets the quote from btc with boost information 1`] = `
 {
   "boostQuote": {
+    "depositAmount": "100000000",
+    "destAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
     "egressAmount": "999999949999975000",
     "estimatedBoostFeeBps": 5,
     "estimatedDurationSeconds": 630,
@@ -191,7 +214,16 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
         },
       },
     ],
+    "srcAsset": {
+      "asset": "BTC",
+      "chain": "Bitcoin",
+    },
     "type": "REGULAR",
+  },
+  "depositAmount": "100000000",
+  "destAsset": {
+    "asset": "ETH",
+    "chain": "Ethereum",
   },
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 1830,
@@ -249,12 +281,21 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
       },
     },
   ],
+  "srcAsset": {
+    "asset": "BTC",
+    "chain": "Bitcoin",
+  },
   "type": "REGULAR",
 }
 `;
 
 exports[`server GET /quote gets the quote with a realistic price 1`] = `
 {
+  "depositAmount": "500000000000000000",
+  "destAsset": {
+    "asset": "USDC",
+    "chain": "Ethereum",
+  },
   "egressAmount": "1229437998",
   "estimatedDurationSeconds": 54,
   "estimatedPrice": "2461.21775330925240818201",
@@ -295,12 +336,21 @@ exports[`server GET /quote gets the quote with a realistic price 1`] = `
       },
     },
   ],
+  "srcAsset": {
+    "asset": "ETH",
+    "chain": "Ethereum",
+  },
   "type": "REGULAR",
 }
 `;
 
 exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
 {
+  "depositAmount": "1000000000000000000",
+  "destAsset": {
+    "asset": "ETH",
+    "chain": "Ethereum",
+  },
   "egressAmount": "1999999999999975000",
   "estimatedDurationSeconds": 54,
   "estimatedPrice": "2.000000000004",
@@ -358,6 +408,10 @@ exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
       },
     },
   ],
+  "srcAsset": {
+    "asset": "FLIP",
+    "chain": "Ethereum",
+  },
   "type": "REGULAR",
 }
 `;

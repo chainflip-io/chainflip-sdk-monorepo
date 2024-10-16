@@ -63,24 +63,28 @@ export const getDcaQuoteParams = async (asset: InternalAsset, amount: bigint) =>
   };
 };
 
+/* eslint-disable no-param-reassign */
 const adjustDcaQuote = ({
   dcaQuoteParams,
   dcaQuote,
   dcaBoostedQuote,
   estimatedBoostFeeBps,
   maxBoostFeeBps,
+  originalDepositAmount,
 }: {
   dcaQuoteParams: NonNullable<Awaited<ReturnType<typeof getDcaQuoteParams>>>;
   dcaQuote: DCAQuote;
   dcaBoostedQuote?: DCABoostQuote | null;
   estimatedBoostFeeBps?: number;
   maxBoostFeeBps: number | undefined;
+  originalDepositAmount: bigint;
 }) => {
-  // eslint-disable-next-line no-param-reassign
   dcaQuote.dcaParams = {
     chunkIntervalBlocks: env.DCA_CHUNK_INTERVAL_BLOCKS,
     numberOfChunks: dcaQuoteParams.numberOfChunks,
   };
+
+  dcaQuote.depositAmount = originalDepositAmount.toString();
 
   const egressFee = dcaQuote.includedFees.find((fee) => fee.type === 'EGRESS');
   // when multiplying the egressAmount with numberOfChunks, we will deduct the egressFee multiple times.
@@ -107,12 +111,11 @@ const adjustDcaQuote = ({
       .toFixed(0);
   }
 
-  // eslint-disable-next-line no-param-reassign
   dcaQuote.egressAmount = new BigNumber(dcaQuote.egressAmount)
     .multipliedBy(dcaQuoteParams.numberOfChunks)
     .plus(duplicatedEgressFeeAmount.toString())
     .toFixed(0);
-  // eslint-disable-next-line no-param-reassign
+
   dcaQuote.estimatedDurationSeconds += dcaQuoteParams.addedDurationSeconds;
 
   if (dcaQuoteParams && dcaBoostedQuote && estimatedBoostFeeBps && maxBoostFeeBps) {
@@ -137,7 +140,6 @@ const adjustDcaQuote = ({
         .toFixed(0);
     }
 
-    // eslint-disable-next-line no-param-reassign
     dcaQuote.boostQuote = {
       ...dcaBoostedQuote,
       estimatedBoostFeeBps,
@@ -149,9 +151,11 @@ const adjustDcaQuote = ({
         dcaBoostedQuote.estimatedDurationSeconds + dcaQuoteParams.addedDurationSeconds,
       dcaParams: dcaQuote.dcaParams,
       maxBoostFeeBps,
+      depositAmount: dcaQuote.depositAmount,
     };
   }
 };
+/* eslint-enable no-param-reassign */
 
 export const validateQuoteQuery = async (query: Query) => {
   // this api did not require the srcChain and destChain param initially
@@ -317,6 +321,7 @@ export const generateQuotes = async ({
       dcaBoostedQuote,
       estimatedBoostFeeBps,
       maxBoostFeeBps,
+      originalDepositAmount: amount,
     });
   }
 

@@ -503,6 +503,11 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body).toEqual([
         {
+          depositAmount: '1000000000000000000',
+          destAsset: {
+            asset: 'USDC',
+            chain: 'Ethereum',
+          },
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
           estimatedPrice: '100.0080000000025002',
@@ -537,9 +542,18 @@ describe('server', () => {
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
+          srcAsset: {
+            asset: 'ETH',
+            chain: 'Ethereum',
+          },
           type: 'REGULAR',
         },
         {
+          depositAmount: '1000000000000000000',
+          destAsset: {
+            asset: 'USDC',
+            chain: 'Ethereum',
+          },
           egressAmount: (400024000).toString(),
           estimatedDurationSeconds: 90,
           estimatedPrice: '400.0320000000100008',
@@ -577,6 +591,10 @@ describe('server', () => {
           dcaParams: {
             chunkIntervalBlocks: 2,
             numberOfChunks: 4,
+          },
+          srcAsset: {
+            asset: 'ETH',
+            chain: 'Ethereum',
           },
           type: 'DCA',
         },
@@ -681,6 +699,11 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body).toEqual([
         {
+          depositAmount: '1000000000000000000',
+          destAsset: {
+            asset: 'USDC',
+            chain: 'Ethereum',
+          },
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
           estimatedPrice: '100.0000000000025',
@@ -715,6 +738,10 @@ describe('server', () => {
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
+          srcAsset: {
+            asset: 'ETH',
+            chain: 'Ethereum',
+          },
           type: 'REGULAR',
         },
       ]);
@@ -801,6 +828,11 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body).toEqual([
         {
+          depositAmount: '1000000000000000000',
+          destAsset: {
+            asset: 'USDC',
+            chain: 'Ethereum',
+          },
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
           estimatedPrice: '100.0000000000025',
@@ -835,6 +867,10 @@ describe('server', () => {
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
+          srcAsset: {
+            asset: 'ETH',
+            chain: 'Ethereum',
+          },
           type: 'REGULAR',
         },
       ]);
@@ -922,6 +958,11 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body).toEqual([
         {
+          depositAmount: '1000000000000000000',
+          destAsset: {
+            asset: 'USDC',
+            chain: 'Ethereum',
+          },
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
           estimatedPrice: '100.0000000000025',
@@ -956,6 +997,10 @@ describe('server', () => {
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
+          srcAsset: {
+            asset: 'ETH',
+            chain: 'Ethereum',
+          },
           type: 'REGULAR',
         },
       ]);
