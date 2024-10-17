@@ -2,6 +2,11 @@
 
 exports[`python integration test replies to a quote request 1`] = `
 {
+  "depositAmount": "1000000000000000000",
+  "destAsset": {
+    "asset": "USDC",
+    "chain": "Ethereum",
+  },
   "egressAmount": "997901209876966295",
   "estimatedDurationSeconds": 54,
   "estimatedPrice": "997901209879.01209741975802419484",
@@ -43,6 +48,10 @@ exports[`python integration test replies to a quote request 1`] = `
       },
     },
   ],
+  "srcAsset": {
+    "asset": "FLIP",
+    "chain": "Ethereum",
+  },
   "type": "REGULAR",
 }
 `;

@@ -120,5 +120,8 @@ export default async function getPoolQuote<T extends QuoteType>({
     }),
     estimatedPrice: getPrice(swapInputAmount, srcAsset, swapOutputAmount, destAsset),
     type: quoteType,
-  } as Extract<Quote, { type: T }>; // a little casteroo because dca params isn't there
+    srcAsset: getAssetAndChain(srcAsset),
+    destAsset: getAssetAndChain(destAsset),
+    depositAmount: depositAmount.toString(),
+  } as Extract<Quote, { type: T }>;
 }

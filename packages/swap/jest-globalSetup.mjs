@@ -9,5 +9,5 @@ process.env.INGEST_GATEWAY_URL = 'https://ingest-gateway.test';
 const execAsync = promisify(exec);
 
 export default async () => {
-  await execAsync('pnpm prisma migrate reset --force --skip-generate');
+  await execAsync('pnpm prisma migrate reset --force');
 };
