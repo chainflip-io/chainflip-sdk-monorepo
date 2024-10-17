@@ -81,8 +81,8 @@ export const getLatestSwapForId = async (id: string) => {
     }
 
     swapRequest = swapDepositChannel.swapRequests.at(0);
-    // swap request will have no swaps for failed ccm swaps
-    if (!swapRequest || !swapRequest.swaps.length) {
+    // swap request will have no swaps for failed ccm swaps: https://scan.chainflip.io/blocks/4716217
+    if (!swapRequest || (swapRequest.completedAt && !swapRequest.swaps.length)) {
       failedSwap = swapDepositChannel.failedSwaps.at(0);
     }
     if (swapDepositChannel.affiliates.length > 0) {

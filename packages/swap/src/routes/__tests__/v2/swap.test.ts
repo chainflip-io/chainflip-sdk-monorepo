@@ -773,6 +773,7 @@ describe('server', () => {
       const finalizedEvent = clone(swapEventMap['EthereumIngressEgress.DepositFinalised']);
       finalizedEvent.args.asset.__kind = 'Usdc';
 
+      // https://scan.chainflip.io/blocks/4716217
       await processEvents(
         [
           depositChannelEvent,
