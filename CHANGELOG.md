@@ -20,7 +20,10 @@ which it is deprecated.
   by the SDK to set the correct assets, DCA parameters, and Boost fee. It
   returns an array of arguments that can be passed directly to the
   `requestSwapDepositAddressWithAffiliates` extrinsic call.
-
+- A new method has been added to the `SwapSDK`, `approveAndExecuteSwap`.
+  This is a convenience method that can be used to skip the manual token
+  allowance approval. Upon calling, the method will make sure there is enough
+  ERC20 token allowance before proceeding with initiating the swap.
 
 ## 1.6.6
 

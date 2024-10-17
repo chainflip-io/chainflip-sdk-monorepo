@@ -320,6 +320,25 @@ describe(SwapSDK, () => {
     });
   });
 
+  describe(SwapSDK.prototype.approveAndExecuteSwap, () => {
+    it('approves token allowance before calling executeSwap with the given signer', async () => {
+      const params = { amount: '1', srcAsset: 'FLIP', srcChain: 'Ethereum' };
+      jest.mocked(executeSwap).mockResolvedValueOnce({ hash: 'hello world' } as any);
+      jest.mocked(approveVault).mockResolvedValueOnce({ hash: 'hello world 2' } as any);
+
+      const result = await sdk.approveAndExecuteSwap(params as any, {
+        signer,
+      });
+
+      expect(approveVault).toHaveBeenCalledWith(params, { network: 'sisyphos', signer }, {});
+      expect(executeSwap).toHaveBeenCalledWith(params, { network: 'sisyphos', signer }, {});
+      expect(result).toEqual({
+        swapTxRef: 'hello world',
+        approveTxRef: 'hello world 2',
+      });
+    });
+  });
+
   describe(SwapSDK.prototype.requestDepositAddress, () => {
     it('calls openSwapDepositChannel', async () => {
       const rpcSpy = jest
