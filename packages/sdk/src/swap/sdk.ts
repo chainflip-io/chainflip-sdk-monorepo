@@ -116,7 +116,7 @@ export class SwapSDK {
     this.dcaEnabled = options.enabledFeatures?.dca ?? false;
     this.stateChainEnvironmentCache = new AsyncCacheMap({
       fetch: (_key) => getEnvironment(this.rpcConfig),
-      ttl: 60_000,
+      ttl: 60_000 * 10,
       resetExpiryOnLookup: false,
     });
   }
