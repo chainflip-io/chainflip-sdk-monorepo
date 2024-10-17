@@ -33,6 +33,7 @@ import { BoostQuote, Quote } from '@/shared/schemas';
 import { Required } from '@/shared/types';
 import { approveVault, executeSwap, ExecuteSwapParams } from '@/shared/vault';
 import type { AppRouter } from '@/swap/server';
+import { AsyncCacheMap } from '@/swap/utils/dataStructures';
 import { getAssetData } from './assets';
 import { getChainData } from './chains';
 import { BACKEND_SERVICE_URLS, CF_SDK_VERSION_HEADERS } from './consts';
@@ -86,7 +87,10 @@ export class SwapSDK {
 
   private readonly trpc;
 
-  private stateChainEnvironment?: Environment;
+  private stateChainEnvironmentCache: AsyncCacheMap<
+    'cf_environment',
+    Awaited<ReturnType<typeof getEnvironment>>
+  >;
 
   private supportedAssets?: InternalAsset[];
 
@@ -110,6 +114,11 @@ export class SwapSDK {
       ],
     });
     this.dcaEnabled = options.enabledFeatures?.dca ?? false;
+    this.stateChainEnvironmentCache = new AsyncCacheMap({
+      fetch: (_key) => getEnvironment(this.rpcConfig),
+      ttl: 60_000 * 10,
+      resetExpiryOnLookup: false,
+    });
   }
 
   async getChains(sourceChain?: Chain): Promise<ChainData[]> {
@@ -128,9 +137,7 @@ export class SwapSDK {
   }
 
   private async getStateChainEnvironment(): Promise<Environment> {
-    this.stateChainEnvironment ??= await getEnvironment(this.rpcConfig);
-
-    return this.stateChainEnvironment;
+    return this.stateChainEnvironmentCache.get('cf_environment');
   }
 
   private async getSupportedAssets(): Promise<InternalAsset[]> {
