@@ -18,8 +18,8 @@ permissions:
 
 jobs:
   check-commit:
-    uses: ./.github/workflows/_utils_check_commit_message.yml
-  get-node-version:
+    uses: ./.github/workflows/_utils_check_release_context.yml
+  get-publish-context:
     needs: [check-commit]
     if: needs.check-commit.outputs.publish-cli == 'true' || needs.check-commit.outputs.publish-sdk == 'true'
     uses: ./.github/workflows/_node_context.yml
@@ -46,14 +46,14 @@ jobs:
       package: cli
     secrets: inherit
   publish-cli:
-    needs: [get-node-version, checks-cli]
+    needs: [get-publish-context, checks-cli]
     uses: ./.github/workflows/_npm_publish.yml
     with:
-      node_version: ${{ needs.get-node-version.outputs.node_version }}
+      node_version: ${{ needs.get-publish-context.outputs.node_version }}
       package_registry: 'https://registry.npmjs.org'
       package_scope: '@chainflip-io'
       build_cmd: pnpm --filter @chainflip/cli build
-      publish_cmd: pnpm --filter @chainflip/cli publish
+      publish_cmd: pnpm --filter @chainflip/cli publish --tag ${{ needs.get-publish-context.outputs.publish-tag }}
     secrets:
       node_auth_token: ${{ secrets.CF_NPM_JS_PACKAGES_READ_WRITE }}
 
@@ -71,13 +71,13 @@ jobs:
       package: sdk
     secrets: inherit
   publish-sdk:
-    needs: [get-node-version, checks-sdk]
+    needs: [get-publish-context, checks-sdk]
     uses: ./.github/workflows/_npm_publish.yml
     with:
-      node_version: ${{ needs.get-node-version.outputs.node_version }}
+      node_version: ${{ needs.get-publish-context.outputs.node_version }}
       package_registry: 'https://registry.npmjs.org'
       package_scope: '@chainflip-io'
       build_cmd: pnpm --filter @chainflip/sdk build
-      publish_cmd: pnpm --filter @chainflip/sdk publish
+      publish_cmd: pnpm --filter @chainflip/sdk publish --tag ${{ needs.get-publish-context.outputs.publish-tag }}
     secrets:
       node_auth_token: ${{ secrets.CF_NPM_JS_PACKAGES_READ_WRITE }}
