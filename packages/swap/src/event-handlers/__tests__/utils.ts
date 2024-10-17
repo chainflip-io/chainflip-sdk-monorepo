@@ -5,7 +5,8 @@ import { GraphQLClient } from 'graphql-request';
 import { z } from 'zod';
 import { InternalAssets, Chain, Chains, assetConstants } from '@/shared/enums';
 import { actionSchema } from '@/shared/parsers';
-import processBlocks, { Event } from '@/swap/processBlocks';
+import { GET_CALL } from '@/swap/gql/query';
+import processBlocks, { Call, Event } from '@/swap/processBlocks';
 import prisma, { SwapDepositChannel } from '../../client';
 import { events as eventNames } from '../index';
 import { networkBroadcastSuccessArgs } from '../networkBroadcastSuccess';
@@ -434,7 +435,11 @@ export const createPools = () => {
   });
 };
 
-export const processEvents = async (events: (Event & { id: string })[], version = '160') => {
+export const processEvents = async (
+  events: (Event & { id: string })[],
+  calls: (Call & { id: string })[] = [],
+  version = '160',
+) => {
   const eventMap = events
     .sort((a, b) => (a.id < b.id ? -1 : 1))
     .reduce((acc, event) => {
@@ -455,7 +460,13 @@ export const processEvents = async (events: (Event & { id: string })[], version 
 
   let previousHeight = startingHeight + 1;
 
-  jest.spyOn(GraphQLClient.prototype, 'request').mockImplementation(async () => {
+  jest.spyOn(GraphQLClient.prototype, 'request').mockImplementation(async (...args) => {
+    if (JSON.stringify(args[0]) === JSON.stringify(GET_CALL)) {
+      const [, vars] = args as unknown as [unknown, Record<string, unknown> | undefined];
+
+      return { call: { args: calls.find((c) => c.id === vars?.id) } };
+    }
+
     const batch = blocksIt.next();
     if (batch.done) throw new Error('done');
     const [height, blockEvents] = batch.value;
