@@ -17,24 +17,24 @@ permissions:
   contents: read
 
 jobs:
-  check-commit:
+  get-release-context:
     uses: ./.github/workflows/_utils_check_release_context.yml
-  get-publish-context:
-    needs: [check-commit]
-    if: needs.check-commit.outputs.publish-cli == 'true' || needs.check-commit.outputs.publish-sdk == 'true'
+  get-node-version:
+    needs: [get-release-context]
+    if: needs.get-release-context.outputs.publish-cli == 'true' || needs.get-release-context.outputs.publish-sdk == 'true'
     uses: ./.github/workflows/_node_context.yml
 
   debug:
-    needs: [check-commit]
+    needs: [get-release-context]
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo "${{ needs.check-commit.outputs.publish-cli }}"
-          echo "${{ needs.check-commit.outputs.publish-sdk }}"
-
+          echo "${{ needs.get-release-context.outputs.publish-cli }}"
+          echo "${{ needs.get-release-context.outputs.publish-sdk }}"
+          echo "${{ needs.get-release-context.outputs.publish-tag }}"
   pre-checks-cli:
-    needs: [check-commit]
-    if: needs.check-commit.outputs.publish-cli == 'true'
+    needs: [get-release-context]
+    if: needs.get-release-context.outputs.publish-cli == 'true'
     uses: ./.github/workflows/_01_pre_checks.yml
     with:
       package: cli
@@ -46,20 +46,20 @@ jobs:
       package: cli
     secrets: inherit
   publish-cli:
-    needs: [get-publish-context, checks-cli]
+    needs: [get-node-version, get-release-context, checks-cli]
     uses: ./.github/workflows/_npm_publish.yml
     with:
-      node_version: ${{ needs.get-publish-context.outputs.node_version }}
+      node_version: ${{ needs.get-node-version.outputs.node_version }}
       package_registry: 'https://registry.npmjs.org'
       package_scope: '@chainflip-io'
       build_cmd: pnpm --filter @chainflip/cli build
-      publish_cmd: pnpm --filter @chainflip/cli publish --tag ${{ needs.get-publish-context.outputs.publish-tag }}
+      publish_cmd: pnpm --filter @chainflip/cli publish
     secrets:
       node_auth_token: ${{ secrets.CF_NPM_JS_PACKAGES_READ_WRITE }}
 
   pre-checks-sdk:
-    needs: [check-commit]
-    if: needs.check-commit.outputs.publish-sdk == 'true'
+    needs: [get-release-context]
+    if: needs.get-release-context.outputs.publish-sdk == 'true'
     uses: ./.github/workflows/_01_pre_checks.yml
     with:
       package: sdk
@@ -71,13 +71,13 @@ jobs:
       package: sdk
     secrets: inherit
   publish-sdk:
-    needs: [get-publish-context, checks-sdk]
+    needs: [get-node-version, get-release-context, checks-sdk]
     uses: ./.github/workflows/_npm_publish.yml
     with:
-      node_version: ${{ needs.get-publish-context.outputs.node_version }}
+      node_version: ${{ needs.get-node-version.outputs.node_version }}
       package_registry: 'https://registry.npmjs.org'
       package_scope: '@chainflip-io'
       build_cmd: pnpm --filter @chainflip/sdk build
-      publish_cmd: pnpm --filter @chainflip/sdk publish --tag ${{ needs.get-publish-context.outputs.publish-tag }}
+      publish_cmd: pnpm --filter @chainflip/sdk publish --tag ${{ needs.get-release-context.outputs.publish-tag }}
     secrets:
       node_auth_token: ${{ secrets.CF_NPM_JS_PACKAGES_READ_WRITE }}
