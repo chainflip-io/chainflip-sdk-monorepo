@@ -531,22 +531,24 @@ describe(SwapSDK, () => {
         amount: BigInt(1e18).toString(),
       });
 
-      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
-        id: '1',
-        jsonrpc: '2.0',
-        method: 'broker_requestSwapDepositAddress',
-        params: [
-          { asset: 'BTC', chain: 'Bitcoin' },
-          { asset: 'FLIP', chain: 'Ethereum' },
-          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-          15,
-          null,
-          null,
-          null,
-          null,
-          null,
-        ],
-      });
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_requestSwapDepositAddress',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            15,
+            null,
+            null,
+            null,
+            null,
+            null,
+          ],
+        },
+      ]);
       expect(result).toStrictEqual({
         srcChain: 'Bitcoin',
         srcAsset: 'BTC',
@@ -599,22 +601,24 @@ describe(SwapSDK, () => {
         brokerCommissionBps: 125,
       });
 
-      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
-        id: '1',
-        jsonrpc: '2.0',
-        method: 'broker_requestSwapDepositAddress',
-        params: [
-          { asset: 'BTC', chain: 'Bitcoin' },
-          { asset: 'FLIP', chain: 'Ethereum' },
-          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-          125,
-          null,
-          null,
-          null,
-          null,
-          null,
-        ],
-      });
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_requestSwapDepositAddress',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            125,
+            null,
+            null,
+            null,
+            null,
+            null,
+          ],
+        },
+      ]);
       expect(result).toStrictEqual({
         srcChain: 'Bitcoin',
         srcAsset: 'BTC',
@@ -669,22 +673,24 @@ describe(SwapSDK, () => {
         ],
       });
 
-      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
-        id: '1',
-        jsonrpc: '2.0',
-        method: 'broker_requestSwapDepositAddress',
-        params: [
-          { asset: 'BTC', chain: 'Bitcoin' },
-          { asset: 'FLIP', chain: 'Ethereum' },
-          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-          15,
-          null,
-          null,
-          [{ account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', bps: 10 }],
-          null,
-          null,
-        ],
-      });
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_requestSwapDepositAddress',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            15,
+            null,
+            null,
+            [{ account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', bps: 10 }],
+            null,
+            null,
+          ],
+        },
+      ]);
       expect(result).toStrictEqual({
         srcChain: 'Bitcoin',
         srcAsset: 'BTC',
@@ -743,26 +749,28 @@ describe(SwapSDK, () => {
         },
       });
 
-      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
-        id: '1',
-        jsonrpc: '2.0',
-        method: 'broker_requestSwapDepositAddress',
-        params: [
-          { asset: 'BTC', chain: 'Bitcoin' },
-          { asset: 'FLIP', chain: 'Ethereum' },
-          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-          15,
-          null,
-          null,
-          null,
-          {
-            retry_duration: 500,
-            refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-            min_price: '0x165b74f4430000000000000000000000000000000000',
-          },
-          null,
-        ],
-      });
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_requestSwapDepositAddress',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            15,
+            null,
+            null,
+            null,
+            {
+              retry_duration: 500,
+              refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+              min_price: '0x165b74f4430000000000000000000000000000000000',
+            },
+            null,
+          ],
+        },
+      ]);
       expect(result).toStrictEqual({
         srcChain: 'Bitcoin',
         srcAsset: 'BTC',
@@ -828,29 +836,31 @@ describe(SwapSDK, () => {
         },
       });
 
-      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
-        id: '1',
-        jsonrpc: '2.0',
-        method: 'broker_requestSwapDepositAddress',
-        params: [
-          { asset: 'BTC', chain: 'Bitcoin' },
-          { asset: 'FLIP', chain: 'Ethereum' },
-          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-          15,
-          null,
-          null,
-          null,
-          {
-            min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
-            refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-            retry_duration: 500,
-          },
-          {
-            number_of_chunks: 100,
-            chunk_interval: 5,
-          },
-        ],
-      });
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_requestSwapDepositAddress',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            15,
+            null,
+            null,
+            null,
+            {
+              min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+              refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+              retry_duration: 500,
+            },
+            {
+              number_of_chunks: 100,
+              chunk_interval: 5,
+            },
+          ],
+        },
+      ]);
       expect(result).toStrictEqual({
         srcChain: 'Bitcoin',
         srcAsset: 'BTC',
@@ -913,22 +923,24 @@ describe(SwapSDK, () => {
         maxBoostFeeBps: MAX_BOOST_FEE_BPS,
       });
 
-      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
-        id: '1',
-        jsonrpc: '2.0',
-        method: 'broker_requestSwapDepositAddress',
-        params: [
-          { asset: 'BTC', chain: 'Bitcoin' },
-          { asset: 'FLIP', chain: 'Ethereum' },
-          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-          15,
-          null,
-          MAX_BOOST_FEE_BPS,
-          null,
-          null,
-          null,
-        ],
-      });
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_requestSwapDepositAddress',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            15,
+            null,
+            MAX_BOOST_FEE_BPS,
+            null,
+            null,
+            null,
+          ],
+        },
+      ]);
       expect(result).toStrictEqual({
         srcChain: 'Bitcoin',
         srcAsset: 'BTC',
@@ -1254,22 +1266,24 @@ describe(SwapSDK, () => {
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
       });
 
-      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
-        id: '1',
-        jsonrpc: '2.0',
-        method: 'broker_requestSwapDepositAddress',
-        params: [
-          { asset: 'BTC', chain: 'Bitcoin' },
-          { asset: 'FLIP', chain: 'Ethereum' },
-          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-          15,
-          null,
-          null,
-          null,
-          null,
-          null,
-        ],
-      });
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_requestSwapDepositAddress',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            15,
+            null,
+            null,
+            null,
+            null,
+            null,
+          ],
+        },
+      ]);
       expect(result).toStrictEqual({
         srcChain: 'Bitcoin',
         srcAsset: 'BTC',
@@ -1325,22 +1339,24 @@ describe(SwapSDK, () => {
         brokerCommissionBps: 125,
       });
 
-      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
-        id: '1',
-        jsonrpc: '2.0',
-        method: 'broker_requestSwapDepositAddress',
-        params: [
-          { asset: 'BTC', chain: 'Bitcoin' },
-          { asset: 'FLIP', chain: 'Ethereum' },
-          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-          125,
-          null,
-          null,
-          null,
-          null,
-          null,
-        ],
-      });
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_requestSwapDepositAddress',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            125,
+            null,
+            null,
+            null,
+            null,
+            null,
+          ],
+        },
+      ]);
       expect(result).toStrictEqual({
         srcChain: 'Bitcoin',
         srcAsset: 'BTC',
@@ -1398,22 +1414,24 @@ describe(SwapSDK, () => {
         ],
       });
 
-      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
-        id: '1',
-        jsonrpc: '2.0',
-        method: 'broker_requestSwapDepositAddress',
-        params: [
-          { asset: 'BTC', chain: 'Bitcoin' },
-          { asset: 'FLIP', chain: 'Ethereum' },
-          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-          15,
-          null,
-          null,
-          [{ account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', bps: 10 }],
-          null,
-          null,
-        ],
-      });
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_requestSwapDepositAddress',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            15,
+            null,
+            null,
+            [{ account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', bps: 10 }],
+            null,
+            null,
+          ],
+        },
+      ]);
       expect(result).toStrictEqual({
         srcChain: 'Bitcoin',
         srcAsset: 'BTC',
@@ -1475,26 +1493,28 @@ describe(SwapSDK, () => {
         },
       });
 
-      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
-        id: '1',
-        jsonrpc: '2.0',
-        method: 'broker_requestSwapDepositAddress',
-        params: [
-          { asset: 'BTC', chain: 'Bitcoin' },
-          { asset: 'FLIP', chain: 'Ethereum' },
-          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-          15,
-          null,
-          null,
-          null,
-          {
-            retry_duration: 500,
-            refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-            min_price: '0x165b74f4430000000000000000000000000000000000',
-          },
-          null,
-        ],
-      });
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_requestSwapDepositAddress',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            15,
+            null,
+            null,
+            null,
+            {
+              retry_duration: 500,
+              refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+              min_price: '0x165b74f4430000000000000000000000000000000000',
+            },
+            null,
+          ],
+        },
+      ]);
       expect(result).toStrictEqual({
         srcChain: 'Bitcoin',
         srcAsset: 'BTC',
@@ -1562,29 +1582,31 @@ describe(SwapSDK, () => {
         },
       });
 
-      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
-        id: '1',
-        jsonrpc: '2.0',
-        method: 'broker_requestSwapDepositAddress',
-        params: [
-          { asset: 'BTC', chain: 'Bitcoin' },
-          { asset: 'FLIP', chain: 'Ethereum' },
-          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-          15,
-          null,
-          null,
-          null,
-          {
-            min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
-            refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-            retry_duration: 500,
-          },
-          {
-            number_of_chunks: 100,
-            chunk_interval: 5,
-          },
-        ],
-      });
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_requestSwapDepositAddress',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            15,
+            null,
+            null,
+            null,
+            {
+              min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+              refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+              retry_duration: 500,
+            },
+            {
+              number_of_chunks: 100,
+              chunk_interval: 5,
+            },
+          ],
+        },
+      ]);
       expect(result).toStrictEqual({
         srcChain: 'Bitcoin',
         srcAsset: 'BTC',
@@ -1648,22 +1670,24 @@ describe(SwapSDK, () => {
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
       });
 
-      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', {
-        id: '1',
-        jsonrpc: '2.0',
-        method: 'broker_requestSwapDepositAddress',
-        params: [
-          { asset: 'BTC', chain: 'Bitcoin' },
-          { asset: 'FLIP', chain: 'Ethereum' },
-          '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-          15,
-          null,
-          MAX_BOOST_FEE_BPS,
-          null,
-          null,
-          null,
-        ],
-      });
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_requestSwapDepositAddress',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            15,
+            null,
+            MAX_BOOST_FEE_BPS,
+            null,
+            null,
+            null,
+          ],
+        },
+      ]);
       expect(result).toStrictEqual({
         srcChain: 'Bitcoin',
         srcAsset: 'BTC',

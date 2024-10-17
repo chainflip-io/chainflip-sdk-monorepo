@@ -19,7 +19,7 @@ describe(openSwapDepositChannel, () => {
 
   beforeAll(async () => {
     jest
-      .useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
+      .useFakeTimers({ doNotFake: ['nextTick', 'setImmediate', 'setTimeout'] })
       .setSystemTime(new Date('2022-01-01'));
 
     await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;

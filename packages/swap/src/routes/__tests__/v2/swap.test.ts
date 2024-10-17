@@ -389,7 +389,9 @@ describe('server', () => {
 
     beforeEach(async () => {
       const time = new Date('2022-01-01');
-      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] }).setSystemTime(time);
+      jest
+        .useFakeTimers({ doNotFake: ['nextTick', 'setImmediate', 'setTimeout'] })
+        .setSystemTime(time);
       await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel", "SwapRequest", "Pool", "ChainTracking" CASCADE`;
       await createChainTrackingInfo(time);
       await createPools();
