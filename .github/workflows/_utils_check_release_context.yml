@@ -7,6 +7,8 @@ on:
         value: ${{ jobs.check-commit-message.outputs.publish_cli }}
       publish-sdk:
         value: ${{ jobs.check-commit-message.outputs.publish_sdk }}
+      publish-tag:
+        value: ${{ jobs.check-commit-message.outputs.publish_tag }}
 
 env:
   FORCE_COLOR: 1
@@ -17,6 +19,7 @@ jobs:
     outputs:
       publish_cli: ${{ steps.check-commit-message.outputs.publish_cli }}
       publish_sdk: ${{ steps.check-commit-message.outputs.publish_sdk }}
+      publish_tag: ${{ steps.check-version.outputs.publish_tag }}
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
@@ -31,12 +34,27 @@ jobs:
             echo "Publishing CLI package"
             echo "publish_cli=true" >> $GITHUB_OUTPUT
             echo "publish_sdk=false" >> $GITHUB_OUTPUT
+            echo "PACKAGE_JSON_PATH=packages/cli/package.json" >> $GITHUB_ENV
           elif  [[ $commit_message =~ @chainflip/sdk/v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
             echo "Publishing SDK package"
             echo "publish_cli=false" >> $GITHUB_OUTPUT
             echo "publish_sdk=true" >> $GITHUB_OUTPUT
+            echo "PACKAGE_JSON_PATH=packages/sdk/package.json" >> $GITHUB_ENV
           else
             echo "No package name found in commit message"
             echo "publish_cli=false" >> $GITHUB_OUTPUT
             echo "publish_sdk=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check version
+        id: check-version
+        if: steps.check-commit-message.outputs.publish_cli == 'true' || steps.check-commit-message.outputs.publish_sdk == 'true'
+        run: |
+          version=$(jq -r .version $PACKAGE_JSON_PATH)
+          if [[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Stable version detected: $version"
+            echo "publish_tag=latest" >> $GITHUB_OUTPUT
+          else
+            echo "Pre-release version detected: $version"
+            echo "publish_tag=pre-release" >> $GITHUB_OUTPUT
           fi
