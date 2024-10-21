@@ -133,7 +133,6 @@ export default class Quoter {
     if (connectedClients === 0) return Promise.resolve([]);
 
     this.inflightRequests.add(request.request_id);
-    this.io.emit('quote_request', request);
 
     let expectedResponses = 0;
 
