@@ -80,11 +80,11 @@ export const vaultSwapCfParametersCodec = Struct({
         Struct({
           retryDurationBlocks: u32,
           refundAddress: Enum({
-            Eth: TsBytes(20),
-            Dot: TsBytes(32),
-            Btc: TsBytes(),
-            Arb: TsBytes(20),
-            Sol: TsBytes(32),
+            Ethereum: TsBytes(20),
+            Polkadot: TsBytes(32),
+            Bitcoin: TsBytes(),
+            Arbitrum: TsBytes(20),
+            Solana: TsBytes(32),
           }),
           minPriceX128: u256,
         }),
@@ -112,12 +112,7 @@ export function encodeCfParameters(
                   refundParams: fillOrKillParams && {
                     retryDurationBlocks: fillOrKillParams.retryDurationBlocks,
                     refundAddress: {
-                      tag: sourceChain.toString().substring(0, 3) as
-                        | 'Eth'
-                        | 'Dot'
-                        | 'Btc'
-                        | 'Arb'
-                        | 'Sol',
+                      tag: sourceChain,
                       value: hexToU8a(fillOrKillParams.refundAddress),
                     },
                     minPriceX128: BigInt(fillOrKillParams.minPriceX128),
