@@ -3,6 +3,8 @@ import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
 import { ContractTransactionResponse } from 'ethers';
+// import { u8aToHex, hexToU8a } from '@polkadot/util';
+// import { u32, Struct, Option, u16, u256, Bytes as TsBytes, Enum } from 'scale-ts';
 import { Vault__factory } from '../abis';
 import {
   checkAllowance,
@@ -23,7 +25,7 @@ import {
 import { assertIsEvmChain, assertIsCCMDestination, assertSignerIsConnectedToChain } from '../evm';
 import { assert } from '../guards';
 import { dotAddress } from '../parsers';
-import { ccmParamsSchema } from '../schemas';
+import { ccmParamsSchema, DcaParams, FillOrKillParamsX128 } from '../schemas';
 import { Required } from '../types';
 import { assertValidAddress } from '../validation/addressValidation';
 import { ExecuteSwapParams, SwapNetworkOptions } from './index';
@@ -70,6 +72,65 @@ const getErc20Address = (asset: InternalAsset, networkOpts: SwapNetworkOptions) 
   return erc20Address;
 };
 
+// export const vaultSwapCfParametersCodec = Struct({
+//   ccmAdditionalData: Option(TsBytes()),
+//   vaultSwapParameters: Option(
+//     Struct({
+//       refundParams: Option(
+//         Struct({
+//           retryDurationBlocks: u32,
+//           refundAddress: Enum({
+//             Eth: TsBytes(20),
+//             Dot: TsBytes(32),
+//             Btc: TsBytes(),
+//             Arb: TsBytes(20),
+//             Sol: TsBytes(32),
+//           }),
+//           minPriceX128: u256,
+//         }),
+//       ),
+//       dcaParams: Option(Struct({ numberOfChunks: u32, chunkIntervalBlocks: u32 })),
+//       boostFee: Option(u16),
+//     }),
+//   ),
+// });
+
+// export function encodeCfParameters(
+//   sourceChain: Chain,
+//   ccmAdditionalData?: string | undefined,
+//   boostFeeBps?: number,
+//   fillOrKillParams?: FillOrKillParamsX128,
+//   dcaParams?: DcaParams,
+// ): string | undefined {
+//   return ccmAdditionalData || fillOrKillParams || dcaParams || boostFeeBps
+//     ? u8aToHex(
+//         vaultSwapCfParametersCodec.enc({
+//           ccmAdditionalData: ccmAdditionalData ? hexToU8a(ccmAdditionalData) : undefined,
+//           vaultSwapParameters:
+//             fillOrKillParams || dcaParams || boostFeeBps
+//               ? {
+//                   refundParams: fillOrKillParams && {
+//                     retryDurationBlocks: fillOrKillParams.retryDurationBlocks,
+//                     refundAddress: {
+//                       tag: sourceChain.toString().substring(0, 3) as
+//                         | 'Eth'
+//                         | 'Dot'
+//                         | 'Btc'
+//                         | 'Arb'
+//                         | 'Sol',
+//                       value: hexToU8a(fillOrKillParams.refundAddress),
+//                     },
+//                     minPriceX128: BigInt(fillOrKillParams.minPriceX128),
+//                   },
+//                   dcaParams,
+//                   boostFee: boostFeeBps,
+//                 }
+//               : undefined,
+//         }),
+//       )
+//     : undefined;
+// }
+
 const swapNative = async (
   params: ExecuteSwapParams,
   networkOpts: SwapNetworkOptions,
@@ -81,11 +142,21 @@ const swapNative = async (
   });
   const { vaultContract: vault } = getVaultContract(params.srcChain, networkOpts);
 
+  // const cfParameters = encodeCfParameters(
+  //   params.srcChain,
+  //   params.ccmParams?.ccmAdditionalData,
+  //   params.maxBoostFeeBps,
+  //   params.fillOrKillParams,
+  //   params.dcaParams,
+  // );
+  // TODO: Temporal until SDK has the encoding
+  const { cfParameters } = params;
+
   const transaction = await vault.xSwapNative(
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
     assetConstants[destAsset].contractId,
-    params.ccmParams?.cfParameters ?? '0x',
+    cfParameters ?? '0x',
     { value: params.amount, ...extractOverrides(txOpts) },
   );
   await transaction.wait(txOpts.wait);
@@ -110,13 +181,23 @@ const swapToken = async (
   );
   assert(hasSufficientAllowance, 'Swap amount exceeds allowance');
 
+  // const cfParameters = encodeCfParameters(
+  //   params.srcChain,
+  //   params.ccmParams?.ccmAdditionalData,
+  //   params.maxBoostFeeBps,
+  //   params.fillOrKillParams,
+  //   params.dcaParams,
+  // );
+  // TODO: Temporal until SDK has the encoding
+  const { cfParameters } = params;
+
   const transaction = await vault.xSwapToken(
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
     assetConstants[destAsset].contractId,
     erc20Address,
     params.amount,
-    params.ccmParams?.cfParameters ?? '0x',
+    cfParameters ?? '0x',
     extractOverrides(txOpts),
   );
   await transaction.wait(txOpts.wait);
@@ -135,13 +216,23 @@ const callNative = async (
   });
   const { vaultContract: vault } = getVaultContract(params.srcChain, networkOpts);
 
+  // const cfParameters = encodeCfParameters(
+  //   params.srcChain,
+  //   params.ccmParams?.ccmAdditionalData,
+  //   params.maxBoostFeeBps,
+  //   params.fillOrKillParams,
+  //   params.dcaParams,
+  // );
+  // TODO: Temporal until SDK has the encoding
+  const { cfParameters } = params;
+
   const transaction = await vault.xCallNative(
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
     assetConstants[destAsset].contractId,
     params.ccmParams.message,
     params.ccmParams.gasBudget,
-    params.ccmParams?.cfParameters ?? '0x',
+    cfParameters ?? '0x',
     { value: params.amount, ...extractOverrides(txOpts) },
   );
   await transaction.wait(txOpts.wait);
@@ -166,6 +257,16 @@ const callToken = async (
   );
   assert(hasSufficientAllowance, 'Swap amount exceeds allowance');
 
+  // const cfParameters = encodeCfParameters(
+  //   params.srcChain,
+  //   params.ccmParams?.ccmAdditionalData,
+  //   params.maxBoostFeeBps,
+  //   params.fillOrKillParams,
+  //   params.dcaParams,
+  // );
+  // TODO: Temporal until SDK has the encoding
+  const { cfParameters } = params;
+
   const transaction = await vault.xCallToken(
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
@@ -174,7 +275,7 @@ const callToken = async (
     params.ccmParams.gasBudget,
     erc20Address,
     params.amount,
-    params.ccmParams?.cfParameters ?? '0x',
+    cfParameters ?? '0x',
     extractOverrides(txOpts),
   );
   await transaction.wait(txOpts.wait);

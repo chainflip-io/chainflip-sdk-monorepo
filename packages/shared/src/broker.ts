@@ -1,6 +1,6 @@
 import * as bitcoin from '@chainflip/bitcoin';
 import type { EncodedAddress, ForeignChainAddress } from '@chainflip/extrinsics/160/common';
-import type { SwappingRequestSwapDepositAddressWithAffiliates } from '@chainflip/extrinsics/160/swapping/requestSwapDepositAddressWithAffiliates';
+// import type { SwappingRequestSwapDepositAddressWithAffiliates } from '@chainflip/extrinsics/160/swapping/requestSwapDepositAddressWithAffiliates';
 import { HttpClient, RpcParams } from '@chainflip/rpc';
 import * as base58 from '@chainflip/utils/base58';
 import { bytesToHex, hexToBytes } from '@chainflip/utils/bytes';
@@ -8,7 +8,7 @@ import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
 import { HexString } from '@chainflip/utils/types';
 import { z } from 'zod';
-import { Chain, ChainflipNetwork, Asset, getInternalAsset } from './enums';
+import { Chain, ChainflipNetwork, Asset, getInternalAsset, InternalAsset } from './enums';
 import { assert } from './guards';
 import {
   hexString,
@@ -79,10 +79,10 @@ const transformedDcaParamsSchema = dcaParamsSchema.transform(
 );
 
 const transformedCcmParamsSchema = <T extends HexString | undefined>(defaultValue: T) =>
-  ccmParamsSchema.transform(({ message, gasBudget, cfParameters }) => ({
+  ccmParamsSchema.transform(({ message, gasBudget, ccmAdditionalData }) => ({
     message,
     gas_budget: gasBudget,
-    cf_parameters: cfParameters ?? defaultValue,
+    ccm_additional_data: ccmAdditionalData ?? defaultValue,
   }));
 
 const validateAddressLength = (chain: Chain, address: string, type: 'destination' | 'refund') => {
@@ -220,6 +220,34 @@ const toForeignChainAddress = (
       throw new Error(`Unsupported chain: ${chain}`);
   }
 };
+
+type SwappingRequestSwapDepositAddressWithAffiliates = [
+  sourceAsset: InternalAsset,
+  destinationAsset: InternalAsset,
+  destinationAddress: EncodedAddress,
+  brokerCommission: number,
+  channelMetadata: {
+    message: Uint8Array | `0x${string}`;
+    gas_budget: `0x${string}`;
+    ccm_additional_data: Uint8Array | `0x${string}`;
+  } | null,
+  boostFee: number,
+  affiliateFees: {
+    account: `0x${string}`;
+    bps: number;
+  }[],
+  refundParameters: {
+    retry_duration: number;
+    refund_address: ForeignChainAddress;
+    min_price: `0x${string}`;
+  } | null,
+  dcaParameters: {
+    number_of_chunks: number;
+    chunk_interval: number;
+  } | null,
+];
+
+export type { SwappingRequestSwapDepositAddressWithAffiliates };
 
 export const buildExtrinsicPayload = (
   swapRequest: NewSwapRequest,

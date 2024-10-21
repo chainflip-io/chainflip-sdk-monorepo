@@ -60,7 +60,7 @@ export const ccmParamsSchema = z.object({
   gasBudget: z.union([numericString, hexString]).transform((n) => hexEncodeNumber(BigInt(n))),
   message: hexStringWithMaxByteSize(1024 * 10),
   // TODO(solana): update max size when it is known
-  cfParameters: hexStringWithMaxByteSize(1024 * 10).optional(),
+  ccmAdditionalData: hexStringWithMaxByteSize(1024 * 10).optional(),
 });
 
 export type CcmParams = z.input<typeof ccmParamsSchema>;
