@@ -139,13 +139,14 @@ export default class Quoter {
     const quotedLegsMap = new Map<string, LegFormatter>();
 
     for (const socket of await this.io.fetchSockets()) {
+      let message: MarketMakerQuoteRequest<LegJson>;
+
       const [first, second] = request.legs;
       const { quotedAssets, marketMaker } = socket.data;
       const quotesFirstLeg = quotedAssets[first.getBaseAsset()];
-      const quotesSecondLeg = !second || quotedAssets[second.getBaseAsset()];
-      let message: MarketMakerQuoteRequest<LegJson>;
+      const quotesEntireSwap = quotesFirstLeg && (!second || quotedAssets[second.getBaseAsset()]);
 
-      if (quotesFirstLeg && quotesSecondLeg) {
+      if (quotesEntireSwap) {
         message = {
           ...request,
           legs: request.legs.map((leg) => leg.toJSON()) as [LegJson] | [LegJson, LegJson],
@@ -154,7 +155,7 @@ export default class Quoter {
       } else if (quotesFirstLeg) {
         message = { ...request, legs: [first.toJSON()] };
         quotedLegsMap.set(marketMaker, padSecondLeg);
-      } else if (second && quotesSecondLeg) {
+      } else if (second && quotedAssets[second.getBaseAsset()]) {
         message = { ...request, legs: [second.toJSON()] };
         quotedLegsMap.set(marketMaker, padFirstLeg);
       } else {
