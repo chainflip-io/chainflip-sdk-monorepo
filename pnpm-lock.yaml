@@ -274,8 +274,8 @@ importers:
         specifier: ^5.4.1
         version: 5.4.1
       pg:
-        specifier: ^8.12.0
-        version: 8.12.0
+        specifier: ^8.13.0
+        version: 8.13.0
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -4622,6 +4622,9 @@ packages:
   pg-connection-string@2.6.4:
     resolution: {integrity: sha512-v+Z7W/0EO707aNMaAEfiGnGL9sxxumwLl2fJvCQtMn9Fxsg+lPpPkdcyBSv/KFgpGdYkMfn+EI1Or2EHjpgLCA==}
 
+  pg-connection-string@2.7.0:
+    resolution: {integrity: sha512-PI2W9mv53rXJQEOb8xNR8lH7Hr+EKa6oJa38zsK0S/ky2er16ios1wLKhZyxzD7jUReiWokc9WK5nxSnC7W1TA==}
+
   pg-int8@1.0.1:
     resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
     engines: {node: '>=4.0.0'}
@@ -4635,8 +4638,16 @@ packages:
     peerDependencies:
       pg: '>=8.0'
 
+  pg-pool@3.7.0:
+    resolution: {integrity: sha512-ZOBQForurqh4zZWjrgSwwAtzJ7QiRX0ovFkZr2klsen3Nm0aoh33Ls0fzfv3imeH/nw/O27cjdz5kzYJfeGp/g==}
+    peerDependencies:
+      pg: '>=8.0'
+
   pg-protocol@1.6.1:
     resolution: {integrity: sha512-jPIlvgoD63hrEuihvIg+tJhoGjUsLPn6poJY9N5CnlPd91c2T18T/9zBtLxZSb1EhYxBRoZJtzScCaWlYLtktg==}
+
+  pg-protocol@1.7.0:
+    resolution: {integrity: sha512-hTK/mE36i8fDDhgDFjy6xNOG+LCorxLG3WO17tku+ij6sVHXh1jQUJ8hYAnRhNla4QVD2H8er/FOjc/+EgC6yQ==}
 
   pg-sql2@4.13.0:
     resolution: {integrity: sha512-9sUlAR+FCuOPezS+2cQCSRUEmnyYrT929DiceZIsINk4R54hCGSh1OTWIP4gbAZeUMTYeEXnwTfnnEOupLYTRQ==}
@@ -4652,8 +4663,8 @@ packages:
     resolution: {integrity: sha512-cRL3JpS3lKMGsKaWndugWQoLOCoP+Cic8oseVcbr0qhPzYD5DWXK+RZ9LY9wxRf7RQia4SCwQlXk0q6FCPrVng==}
     engines: {node: '>=10'}
 
-  pg@8.11.5:
-    resolution: {integrity: sha512-jqgNHSKL5cbDjFlHyYsCXmQDrfIX/3RsNwYqpd4N0Kt8niLuNoRNH+aazv6cOd43gPh9Y4DjQCtb+X0MH0Hvnw==}
+  pg@8.12.0:
+    resolution: {integrity: sha512-A+LHUSnwnxrnL/tZ+OLfqR1SxLN3c/pgDztZ47Rpbsd4jUytsTtwQo/TLPRzPJMp/1pbhYVhH9cuSZLAajNfjQ==}
     engines: {node: '>= 8.0.0'}
     peerDependencies:
       pg-native: '>=3.0.1'
@@ -4661,8 +4672,8 @@ packages:
       pg-native:
         optional: true
 
-  pg@8.12.0:
-    resolution: {integrity: sha512-A+LHUSnwnxrnL/tZ+OLfqR1SxLN3c/pgDztZ47Rpbsd4jUytsTtwQo/TLPRzPJMp/1pbhYVhH9cuSZLAajNfjQ==}
+  pg@8.13.0:
+    resolution: {integrity: sha512-34wkUTh3SxTClfoHB3pQ7bIMvw9dpFU1audQQeZG837fmHfHpr14n/AELVDoOYVDW2h5RDWU78tFjkD+erSBsw==}
     engines: {node: '>= 8.0.0'}
     peerDependencies:
       pg-native: '>=3.0.1'
@@ -9902,7 +9913,7 @@ snapshots:
 
   graphemer@1.4.0: {}
 
-  graphile-build-pg@4.13.0(graphql@15.8.0)(pg@8.11.5):
+  graphile-build-pg@4.13.0(graphql@15.8.0)(pg@8.12.0):
     dependencies:
       '@graphile/lru': 4.11.0
       chalk: 2.4.2
@@ -9911,8 +9922,8 @@ snapshots:
       jsonwebtoken: 9.0.2
       lodash: 4.17.21
       lru-cache: 4.1.5
-      pg: 8.11.5
-      pg-sql2: 4.13.0(pg@8.11.5)
+      pg: 8.12.0
+      pg-sql2: 4.13.0(pg@8.12.0)
     transitivePeerDependencies:
       - graphql
       - supports-color
@@ -9932,11 +9943,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  graphile-utils@4.13.0(graphile-build-pg@4.13.0(graphql@15.8.0)(pg@8.11.5))(graphile-build@4.13.0(graphql@15.8.0)):
+  graphile-utils@4.13.0(graphile-build-pg@4.13.0(graphql@15.8.0)(pg@8.12.0))(graphile-build@4.13.0(graphql@15.8.0)):
     dependencies:
       debug: 4.3.6
       graphile-build: 4.13.0(graphql@15.8.0)
-      graphile-build-pg: 4.13.0(graphql@15.8.0)(pg@8.11.5)
+      graphile-build-pg: 4.13.0(graphql@15.8.0)(pg@8.12.0)
       graphql: 15.8.0
       tslib: 2.7.0
     transitivePeerDependencies:
@@ -11237,26 +11248,30 @@ snapshots:
 
   pg-connection-string@2.6.4: {}
 
+  pg-connection-string@2.7.0: {}
+
   pg-int8@1.0.1: {}
 
   pg-numeric@1.0.2: {}
-
-  pg-pool@3.6.2(pg@8.11.5):
-    dependencies:
-      pg: 8.11.5
 
   pg-pool@3.6.2(pg@8.12.0):
     dependencies:
       pg: 8.12.0
 
+  pg-pool@3.7.0(pg@8.13.0):
+    dependencies:
+      pg: 8.13.0
+
   pg-protocol@1.6.1: {}
 
-  pg-sql2@4.13.0(pg@8.11.5):
+  pg-protocol@1.7.0: {}
+
+  pg-sql2@4.13.0(pg@8.12.0):
     dependencies:
       '@graphile/lru': 4.11.0
       '@types/pg': 8.11.0
       debug: 4.3.6
-      pg: 8.11.5
+      pg: 8.12.0
       tslib: 2.7.0
     transitivePeerDependencies:
       - supports-color
@@ -11279,21 +11294,21 @@ snapshots:
       postgres-interval: 3.0.0
       postgres-range: 1.1.3
 
-  pg@8.11.5:
+  pg@8.12.0:
     dependencies:
       pg-connection-string: 2.6.4
-      pg-pool: 3.6.2(pg@8.11.5)
+      pg-pool: 3.6.2(pg@8.12.0)
       pg-protocol: 1.6.1
       pg-types: 2.2.0
       pgpass: 1.0.5
     optionalDependencies:
       pg-cloudflare: 1.1.1
 
-  pg@8.12.0:
+  pg@8.13.0:
     dependencies:
-      pg-connection-string: 2.6.4
-      pg-pool: 3.6.2(pg@8.12.0)
-      pg-protocol: 1.6.1
+      pg-connection-string: 2.7.0
+      pg-pool: 3.7.0(pg@8.13.0)
+      pg-protocol: 1.7.0
       pg-types: 2.2.0
       pgpass: 1.0.5
     optionalDependencies:
@@ -11335,12 +11350,12 @@ snapshots:
       tsx: 4.16.2
       yaml: 2.5.1
 
-  postgraphile-core@4.13.0(graphql@15.8.0)(pg@8.11.5):
+  postgraphile-core@4.13.0(graphql@15.8.0)(pg@8.12.0):
     dependencies:
       graphile-build: 4.13.0(graphql@15.8.0)
-      graphile-build-pg: 4.13.0(graphql@15.8.0)(pg@8.11.5)
+      graphile-build-pg: 4.13.0(graphql@15.8.0)(pg@8.12.0)
       graphql: 15.8.0
-      pg: 8.11.5
+      pg: 8.12.0
       tslib: 2.7.0
     transitivePeerDependencies:
       - supports-color
@@ -11362,8 +11377,8 @@ snapshots:
       debug: 4.3.4
       finalhandler: 1.2.0
       graphile-build: 4.13.0(graphql@15.8.0)
-      graphile-build-pg: 4.13.0(graphql@15.8.0)(pg@8.11.5)
-      graphile-utils: 4.13.0(graphile-build-pg@4.13.0(graphql@15.8.0)(pg@8.11.5))(graphile-build@4.13.0(graphql@15.8.0))
+      graphile-build-pg: 4.13.0(graphql@15.8.0)(pg@8.12.0)
+      graphile-utils: 4.13.0(graphile-build-pg@4.13.0(graphql@15.8.0)(pg@8.12.0))(graphile-build@4.13.0(graphql@15.8.0))
       graphql: 15.8.0
       graphql-ws: 5.14.3(graphql@15.8.0)
       http-errors: 1.8.1
@@ -11371,10 +11386,10 @@ snapshots:
       json5: 2.2.3
       jsonwebtoken: 9.0.2
       parseurl: 1.3.3
-      pg: 8.11.5
+      pg: 8.12.0
       pg-connection-string: 2.6.2
-      pg-sql2: 4.13.0(pg@8.11.5)
-      postgraphile-core: 4.13.0(graphql@15.8.0)(pg@8.11.5)
+      pg-sql2: 4.13.0(pg@8.12.0)
+      postgraphile-core: 4.13.0(graphql@15.8.0)(pg@8.12.0)
       subscriptions-transport-ws: 0.9.19(bufferutil@4.0.8)(graphql@15.8.0)(utf-8-validate@5.0.10)
       tslib: 2.6.2
       ws: 7.5.9(bufferutil@4.0.8)(utf-8-validate@5.0.10)
