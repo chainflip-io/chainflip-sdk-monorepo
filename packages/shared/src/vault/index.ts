@@ -13,13 +13,11 @@ export interface ExecuteSwapParams {
   amount: string;
   destAddress: string;
   ccmParams?: CcmParams;
-  // TODO: Temporal until SDK has the encoding
-  cfParameters?: string;
-  // TODO: Add affiliates?!
   maxBoostFeeBps?: number;
-  // affiliates?: AffiliateBroker[];
   fillOrKillParams?: FillOrKillParamsX128;
   dcaParams?: DcaParams;
+  // TODO: Add affiliates?!
+  // affiliates?: AffiliateBroker[];
 
   /** @deprecated DEPRECATED(1.5): use ccmParams instead of ccmMetadata */
   ccmMetadata?: CcmParams;

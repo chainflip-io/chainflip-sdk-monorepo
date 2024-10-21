@@ -182,6 +182,9 @@ importers:
       '@chainflip/utils':
         specifier: ^0.4.0
         version: 0.4.0
+      '@polkadot/util':
+        specifier: ^13.2.1
+        version: 13.2.1
       axios:
         specifier: ^1.7.7
         version: 1.7.7
@@ -194,6 +197,9 @@ importers:
       ioredis:
         specifier: ^5.4.1
         version: 5.4.1
+      scale-ts:
+        specifier: ^1.6.0
+        version: 1.6.0
       ws:
         specifier: ^8.18.0
         version: 8.18.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -1660,6 +1666,10 @@ packages:
     resolution: {integrity: sha512-/6bS9sfhJLhs8QuqWaR1eRapzfDdGC5XAQZEPL9NN5sTTA7HxWos8rVleai0UERm8QUMabjZ9rK9KpzbXl7ojg==}
     engines: {node: '>=18'}
 
+  '@polkadot/util@13.2.1':
+    resolution: {integrity: sha512-+zCyQQeW4llWD5yhvPAawekRpdAU3LZPLD0j3v8nJjsG9cAyiYGZjsVxDFPpD0yixS1Hl70937bPR46761NG9g==}
+    engines: {node: '>=18'}
+
   '@polkadot/wasm-bridge@7.3.2':
     resolution: {integrity: sha512-AJEXChcf/nKXd5Q/YLEV5dXQMle3UNT7jcXYmIffZAo/KI394a+/24PaISyQjoNC0fkzS1Q8T5pnGGHmXiVz2g==}
     engines: {node: '>=18'}
@@ -1707,6 +1717,10 @@ packages:
     resolution: {integrity: sha512-h2jKT/UaxiEal8LhQeH6+GCjO7GwEqVAD2SNYteCOXff6yNttqAZYJuHZsndbVjVNwqRNf8D5q/zZkD0HUd6xQ==}
     engines: {node: '>=18'}
 
+  '@polkadot/x-bigint@13.2.1':
+    resolution: {integrity: sha512-NYfH0fKfZFkjE5wOiLmfj+oJFyzSHLJrJt5DmzWwvbhw3dT4Qz2UgBL0i/Ei6REkpOGCXX2DmNbbZBr6sn4f1Q==}
+    engines: {node: '>=18'}
+
   '@polkadot/x-fetch@13.0.2':
     resolution: {integrity: sha512-B/gf9iriUr6za/Ui7zIFBfHz7UBZ68rJEIteWHx1UHRCZPcLqv+hgpev6xIGrkfFljI0/lI7IwtN2qy6HYzFBg==}
     engines: {node: '>=18'}
@@ -1717,6 +1731,10 @@ packages:
 
   '@polkadot/x-global@13.0.2':
     resolution: {integrity: sha512-OoNIXLB5y8vIKpk4R+XmpDPhipNXWSUvEwUnpQT7NAxNLmzgMq1FhbrwBWWPRNHPrQonp7mqxV/X+v5lv1HW/g==}
+    engines: {node: '>=18'}
+
+  '@polkadot/x-global@13.2.1':
+    resolution: {integrity: sha512-Q9PZY+Xw9ffBYcJjwMCQfGgFi5QNv4GJ1ZqIuJMQBAcM21fn8vuFMfGC24R1pAAJAaBMPkQ9xh8R2cpu9SIjRg==}
     engines: {node: '>=18'}
 
   '@polkadot/x-randomvalues@12.6.2':
@@ -1741,12 +1759,20 @@ packages:
     resolution: {integrity: sha512-mauglOkTJxLGmLwLc3J5Jlq/W+SHP53eiy3F8/8JxxfnXrZKgWoQXGpvXYPjFnMZj0MzDSy/6GjyGWnDCgdQFA==}
     engines: {node: '>=18'}
 
+  '@polkadot/x-textdecoder@13.2.1':
+    resolution: {integrity: sha512-cyKv5T48goBEMsb1lnKrXPpAPXkpWwAa+Ob0w2eEzsjBPzWEeIPMKFuE4VpPRoZ/Sn6v3hwz98WS8ueCO5MXyQ==}
+    engines: {node: '>=18'}
+
   '@polkadot/x-textencoder@12.6.2':
     resolution: {integrity: sha512-4N+3UVCpI489tUJ6cv3uf0PjOHvgGp9Dl+SZRLgFGt9mvxnvpW/7+XBADRMtlG4xi5gaRK7bgl5bmY6OMDsNdw==}
     engines: {node: '>=18'}
 
   '@polkadot/x-textencoder@13.0.2':
     resolution: {integrity: sha512-Lq08H2OnVXj97uaOwg7tcmRS7a4VJYkHEeWO4FyEMOk6P6lU6W8OVNjjxG0se9PCEgmyZPUDbJI//1ynzP4cXw==}
+    engines: {node: '>=18'}
+
+  '@polkadot/x-textencoder@13.2.1':
+    resolution: {integrity: sha512-tugNLn/9UbA1n64mMWliWI1j5kAnnNIHgJ8khbMKyrHS5K+m8BP/avUrlg3u5ukM1RB1cCoJB9uWcT4Sovf65Q==}
     engines: {node: '>=18'}
 
   '@polkadot/x-ws@13.0.2':
@@ -2016,6 +2042,9 @@ packages:
 
   '@types/bn.js@5.1.5':
     resolution: {integrity: sha512-V46N0zwKRF5Q00AZ6hWtN0T8gGmDUaUzLWQvHFo5yThtVwK/VCenFY3wXVbOvNfajEpsTfQM4IN9k/d6gUVX3A==}
+
+  '@types/bn.js@5.1.6':
+    resolution: {integrity: sha512-Xh8vSwUeMKeYYrj3cX4lGQgFSF/N03r+tv4AiLl1SucqV+uTQpxRcnM8AkXKHwYP9ZPXOYXRr2KPXpVlIvqh9w==}
 
   '@types/body-parser@1.19.5':
     resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
@@ -5402,6 +5431,9 @@ packages:
   tslib@2.7.0:
     resolution: {integrity: sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==}
 
+  tslib@2.8.0:
+    resolution: {integrity: sha512-jWVzBLplnCmoaTr13V9dYbiQ99wvZRd0vNWaDRg+aVYRcjDF3nDksxFDE/+fkXnKhpnUUkmx5pK/v8mCtLVqZA==}
+
   tsup@8.2.4:
     resolution: {integrity: sha512-akpCPePnBnC/CXgRrcy72ZSntgIEUa1jN0oJbbvpALWKNOz1B7aM+UVDWGRGIO/T/PZugAESWDJUAb5FD48o8Q==}
     engines: {node: '>=18'}
@@ -7659,6 +7691,16 @@ snapshots:
       bn.js: 5.2.1
       tslib: 2.7.0
 
+  '@polkadot/util@13.2.1':
+    dependencies:
+      '@polkadot/x-bigint': 13.2.1
+      '@polkadot/x-global': 13.2.1
+      '@polkadot/x-textdecoder': 13.2.1
+      '@polkadot/x-textencoder': 13.2.1
+      '@types/bn.js': 5.1.6
+      bn.js: 5.2.1
+      tslib: 2.8.0
+
   '@polkadot/wasm-bridge@7.3.2(@polkadot/util@12.6.2)(@polkadot/x-randomvalues@12.6.2(@polkadot/util@12.6.2)(@polkadot/wasm-util@7.3.2(@polkadot/util@12.6.2)))':
     dependencies:
       '@polkadot/util': 12.6.2
@@ -7757,6 +7799,11 @@ snapshots:
       '@polkadot/x-global': 13.0.2
       tslib: 2.7.0
 
+  '@polkadot/x-bigint@13.2.1':
+    dependencies:
+      '@polkadot/x-global': 13.2.1
+      tslib: 2.8.0
+
   '@polkadot/x-fetch@13.0.2':
     dependencies:
       '@polkadot/x-global': 13.0.2
@@ -7770,6 +7817,10 @@ snapshots:
   '@polkadot/x-global@13.0.2':
     dependencies:
       tslib: 2.7.0
+
+  '@polkadot/x-global@13.2.1':
+    dependencies:
+      tslib: 2.8.0
 
   '@polkadot/x-randomvalues@12.6.2(@polkadot/util@12.6.2)(@polkadot/wasm-util@7.3.2(@polkadot/util@12.6.2))':
     dependencies:
@@ -7795,6 +7846,11 @@ snapshots:
       '@polkadot/x-global': 13.0.2
       tslib: 2.7.0
 
+  '@polkadot/x-textdecoder@13.2.1':
+    dependencies:
+      '@polkadot/x-global': 13.2.1
+      tslib: 2.8.0
+
   '@polkadot/x-textencoder@12.6.2':
     dependencies:
       '@polkadot/x-global': 12.6.2
@@ -7804,6 +7860,11 @@ snapshots:
     dependencies:
       '@polkadot/x-global': 13.0.2
       tslib: 2.7.0
+
+  '@polkadot/x-textencoder@13.2.1':
+    dependencies:
+      '@polkadot/x-global': 13.2.1
+      tslib: 2.8.0
 
   '@polkadot/x-ws@13.0.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
@@ -7989,7 +8050,7 @@ snapshots:
 
   '@swc/helpers@0.5.12':
     dependencies:
-      tslib: 2.7.0
+      tslib: 2.8.0
     optional: true
 
   '@swc/jest@0.2.36(@swc/core@1.7.10(@swc/helpers@0.5.12))':
@@ -8046,6 +8107,10 @@ snapshots:
       '@babel/types': 7.24.5
 
   '@types/bn.js@5.1.5':
+    dependencies:
+      '@types/node': 22.7.4
+
+  '@types/bn.js@5.1.6':
     dependencies:
       '@types/node': 22.7.4
 
@@ -11622,8 +11687,7 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  scale-ts@1.6.0:
-    optional: true
+  scale-ts@1.6.0: {}
 
   scuid@1.1.0: {}
 
@@ -12096,6 +12160,8 @@ snapshots:
   tslib@2.6.2: {}
 
   tslib@2.7.0: {}
+
+  tslib@2.8.0: {}
 
   tsup@8.2.4(@swc/core@1.7.10(@swc/helpers@0.5.12))(jiti@1.21.0)(tsx@4.16.2)(typescript@5.6.2)(yaml@2.5.1):
     dependencies:
