@@ -1,5 +1,12 @@
+import BigNumber from 'bignumber.js';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts';
-import { Chains, InternalAsset, chainConstants, getAssetAndChain } from '@/shared/enums';
+import {
+  assetConstants,
+  chainConstants,
+  Chains,
+  getAssetAndChain,
+  InternalAsset,
+} from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
 import { getWitnessSafetyMargin } from '@/swap/utils/rpc';
 import ServiceError from './ServiceError';
@@ -72,3 +79,15 @@ export enum FailureMode {
   RefundEgressIgnored = 'REFUND_OUTPUT_TOO_SMALL',
   BroadcastAborted = 'SENDING_FAILED',
 }
+
+export const getSwapPrice = (
+  inputAsset: InternalAsset,
+  inputAmount: BigNumber.Value,
+  outputAsset: InternalAsset,
+  outputAmount: BigNumber.Value,
+) => {
+  const input = BigNumber(inputAmount).shiftedBy(-assetConstants[inputAsset].decimals);
+  const output = BigNumber(outputAmount).shiftedBy(-assetConstants[outputAsset].decimals);
+
+  return output.div(input).toFixed();
+};

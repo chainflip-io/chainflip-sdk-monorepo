@@ -1,26 +1,13 @@
-import BigNumber from 'bignumber.js';
-import { assetConstants, getAssetAndChain, getInternalAsset } from '@/shared/enums';
+import { getAssetAndChain, getInternalAsset } from '@/shared/enums';
 import { getPipAmountFromAmount } from '@/shared/functions';
 import { Quote, QuoteType } from '@/shared/schemas';
-import { estimateSwapDuration } from '@/swap/utils/swap';
+import { estimateSwapDuration, getSwapPrice } from '@/swap/utils/swap';
 import { buildFee, getPoolFees } from './fees';
 import { getEgressFee, getMinimumEgressAmount } from './rpc';
 import ServiceError from './ServiceError';
-import { LimitOrders, getSwapRateV2 } from './statechain';
+import { getSwapRateV2, LimitOrders } from './statechain';
 import { InternalAsset, Pool } from '../client';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
-
-const getPrice = (
-  inputAmount: bigint,
-  inputAsset: InternalAsset,
-  outputAmount: bigint,
-  outputAsset: InternalAsset,
-) => {
-  const input = BigNumber(String(inputAmount)).shiftedBy(-assetConstants[inputAsset].decimals);
-  const output = BigNumber(String(outputAmount)).shiftedBy(-assetConstants[outputAsset].decimals);
-
-  return output.div(input).toFixed();
-};
 
 export default async function getPoolQuote<T extends QuoteType>({
   srcAsset,
@@ -118,7 +105,12 @@ export default async function getPoolQuote<T extends QuoteType>({
       destAsset,
       boosted: Boolean(boostFeeBps),
     }),
-    estimatedPrice: getPrice(swapInputAmount, srcAsset, swapOutputAmount, destAsset),
+    estimatedPrice: getSwapPrice(
+      srcAsset,
+      String(swapInputAmount),
+      destAsset,
+      String(swapOutputAmount),
+    ),
     type: quoteType,
     srcAsset: getAssetAndChain(srcAsset),
     destAsset: getAssetAndChain(destAsset),
