@@ -119,6 +119,10 @@ describe(openSwapDepositChannel, () => {
       {
         id: expect.any(BigInt),
         createdAt: expect.any(Date),
+        quote: {
+          id: expect.any(Number),
+          swapDepositChannelId: expect.any(BigInt),
+        },
       },
     );
   });
