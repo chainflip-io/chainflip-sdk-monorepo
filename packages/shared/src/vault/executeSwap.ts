@@ -72,7 +72,7 @@ const getErc20Address = (asset: InternalAsset, networkOpts: SwapNetworkOptions) 
   return erc20Address;
 };
 
-export const vaultSwapParameters = Struct({
+const vaultSwapParametersCodec = Struct({
   refundParams: Option(
     Struct({
       retryDurationBlocks: u32,
@@ -90,27 +90,9 @@ export const vaultSwapParameters = Struct({
   boostFee: Option(u16),
 });
 
-export const vaultCfParametersCodec = Struct({
+const vaultCfParametersCodec = Struct({
   ccmAdditionalData: Option(TsBytes()),
-  vaultSwapParameters: Option(
-    Struct({
-      refundParams: Option(
-        Struct({
-          retryDurationBlocks: u32,
-          refundAddress: Enum({
-            Ethereum: TsBytes(20),
-            Polkadot: TsBytes(32),
-            Bitcoin: TsBytes(),
-            Arbitrum: TsBytes(20),
-            Solana: TsBytes(32),
-          }),
-          minPriceX128: u256,
-        }),
-      ),
-      dcaParams: Option(Struct({ numberOfChunks: u32, chunkIntervalBlocks: u32 })),
-      boostFee: Option(u16),
-    }),
-  ),
+  vaultSwapParameters: Option(vaultSwapParametersCodec),
 });
 
 export function encodeSwapParameters(
@@ -121,7 +103,7 @@ export function encodeSwapParameters(
 ): string | undefined {
   return fillOrKillParams || dcaParams || boostFeeBps
     ? u8aToHex(
-        vaultSwapParameters.enc({
+        vaultSwapParametersCodec.enc({
           refundParams: fillOrKillParams && {
             retryDurationBlocks: fillOrKillParams.retryDurationBlocks,
             refundAddress: {
