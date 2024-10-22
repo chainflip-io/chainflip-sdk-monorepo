@@ -58,6 +58,8 @@ exports[`openSwapDepositChannel creates channel and stores channel and quote in 
     "executedSlippagePercentage": null,
     "id": Any<Number>,
     "intermediateAmount": "500",
+    "isBoost": false,
+    "isDca": false,
     "srcAsset": "Flip",
     "swapDepositChannelId": Any<BigInt>,
   },
