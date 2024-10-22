@@ -72,7 +72,25 @@ const getErc20Address = (asset: InternalAsset, networkOpts: SwapNetworkOptions) 
   return erc20Address;
 };
 
-export const vaultSwapCfParametersCodec = Struct({
+export const vaultSwapParameters = Struct({
+  refundParams: Option(
+    Struct({
+      retryDurationBlocks: u32,
+      refundAddress: Enum({
+        Ethereum: TsBytes(20),
+        Polkadot: TsBytes(32),
+        Bitcoin: TsBytes(),
+        Arbitrum: TsBytes(20),
+        Solana: TsBytes(32),
+      }),
+      minPriceX128: u256,
+    }),
+  ),
+  dcaParams: Option(Struct({ numberOfChunks: u32, chunkIntervalBlocks: u32 })),
+  boostFee: Option(u16),
+});
+
+export const vaultCfParametersCodec = Struct({
   ccmAdditionalData: Option(TsBytes()),
   vaultSwapParameters: Option(
     Struct({
@@ -95,6 +113,30 @@ export const vaultSwapCfParametersCodec = Struct({
   ),
 });
 
+export function encodeSwapParameters(
+  sourceChain: Chain,
+  boostFeeBps?: number,
+  fillOrKillParams?: FillOrKillParamsX128,
+  dcaParams?: DcaParams,
+): string | undefined {
+  return fillOrKillParams || dcaParams || boostFeeBps
+    ? u8aToHex(
+        vaultSwapParameters.enc({
+          refundParams: fillOrKillParams && {
+            retryDurationBlocks: fillOrKillParams.retryDurationBlocks,
+            refundAddress: {
+              tag: sourceChain,
+              value: hexToU8a(fillOrKillParams.refundAddress),
+            },
+            minPriceX128: BigInt(fillOrKillParams.minPriceX128),
+          },
+          dcaParams,
+          boostFee: boostFeeBps,
+        }),
+      )
+    : undefined;
+}
+
 export function encodeCfParameters(
   sourceChain: Chain,
   ccmAdditionalData?: string | undefined,
@@ -104,7 +146,7 @@ export function encodeCfParameters(
 ): string | undefined {
   return ccmAdditionalData || fillOrKillParams || dcaParams || boostFeeBps
     ? u8aToHex(
-        vaultSwapCfParametersCodec.enc({
+        vaultCfParametersCodec.enc({
           ccmAdditionalData: ccmAdditionalData ? hexToU8a(ccmAdditionalData) : undefined,
           vaultSwapParameters:
             fillOrKillParams || dcaParams || boostFeeBps
@@ -137,9 +179,8 @@ const swapNative = async (
   });
   const { vaultContract: vault } = getVaultContract(params.srcChain, networkOpts);
 
-  const cfParameters = encodeCfParameters(
+  const cfParameters = encodeSwapParameters(
     params.srcChain,
-    params.ccmParams?.ccmAdditionalData,
     params.maxBoostFeeBps,
     params.fillOrKillParams,
     params.dcaParams,
@@ -174,9 +215,8 @@ const swapToken = async (
   );
   assert(hasSufficientAllowance, 'Swap amount exceeds allowance');
 
-  const cfParameters = encodeCfParameters(
+  const cfParameters = encodeSwapParameters(
     params.srcChain,
-    params.ccmParams?.ccmAdditionalData,
     params.maxBoostFeeBps,
     params.fillOrKillParams,
     params.dcaParams,
