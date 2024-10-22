@@ -72,10 +72,55 @@ describe(openSwapDepositChannel, () => {
       channelOpeningFee: 100n,
     });
     expect(jest.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
-    expect(await prisma.swapDepositChannel.findFirst()).toMatchSnapshot({
-      id: expect.any(BigInt),
-      createdAt: expect.any(Date),
+    expect(await prisma.swapDepositChannel.findFirst({ include: { quote: true } })).toMatchSnapshot(
+      {
+        id: expect.any(BigInt),
+        createdAt: expect.any(Date),
+      },
+    );
+  });
+
+  it('creates channel and stores channel and quote in the database', async () => {
+    mockRpcResponse({ data: environment() });
+    jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+      sourceChainExpiryBlock: BigInt('1000'),
+      address: 'address',
+      channelId: BigInt('888'),
+      issuedBlock: 123,
+      channelOpeningFee: 100n,
     });
+
+    const result = await openSwapDepositChannel({
+      srcAsset: 'FLIP',
+      srcChain: 'Ethereum',
+      destAsset: 'DOT',
+      destChain: 'Polkadot',
+      destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
+      expectedDepositAmount: '1000',
+      quote: {
+        intermediateAmount: '500',
+        egressAmount: '250',
+        estimatedPrice: '0.375',
+      },
+    });
+
+    expect(result).toEqual({
+      maxBoostFeeBps: 0,
+      depositAddress: 'address',
+      brokerCommissionBps: 0,
+      estimatedExpiryTime: 1699534500000,
+      id: '123-Ethereum-888',
+      issuedBlock: 123,
+      srcChainExpiryBlock: 1000n,
+      channelOpeningFee: 100n,
+    });
+    expect(jest.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
+    expect(await prisma.swapDepositChannel.findFirst({ include: { quote: true } })).toMatchSnapshot(
+      {
+        id: expect.any(BigInt),
+        createdAt: expect.any(Date),
+      },
+    );
   });
 
   it('creates channel with ccmParams and stores it in the database', async () => {

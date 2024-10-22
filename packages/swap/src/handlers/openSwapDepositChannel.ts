@@ -127,10 +127,30 @@ export default async function openSwapDepositChannel(
       fokRefundAddress: fillOrKillParams?.refundAddress,
       chunkIntervalBlocks: dcaParams?.chunkIntervalBlocks,
       numberOfChunks: dcaParams?.numberOfChunks,
+      quote: input.quote && {
+        create: {
+          srcAsset,
+          destAsset,
+          depositAmount: input.expectedDepositAmount,
+          intermediateAmount: input.quote.intermediateAmount,
+          egressAmount: input.quote.egressAmount,
+          estimatedPrice: input.quote.estimatedPrice,
+        },
+      },
       ...blockInfo,
     },
     update: {
       openedThroughBackend: true,
+      quote: input.quote && {
+        create: {
+          srcAsset,
+          destAsset,
+          depositAmount: input.expectedDepositAmount,
+          intermediateAmount: input.quote.intermediateAmount,
+          egressAmount: input.quote.egressAmount,
+          estimatedPrice: input.quote.estimatedPrice,
+        },
+      },
     },
   });
 
