@@ -3,18 +3,33 @@ import { toLowerCase } from '@chainflip/utils/string';
 import assert from 'assert';
 import BigNumber from 'bignumber.js';
 import { randomUUID } from 'crypto';
-import { Subject, Subscription, filter } from 'rxjs';
-import { Server } from 'socket.io';
-import { InternalAsset, UncheckedAssetAndChain, assetConstants } from '@/shared/enums';
-import { QuotingSocket } from './authenticate';
+import { Subject, Subscription } from 'rxjs';
+import { Server, Socket } from 'socket.io';
+import {
+  InternalAsset,
+  InternalAssetMap,
+  UncheckedAssetAndChain,
+  assetConstants,
+} from '@/shared/enums';
 import Leg from './Leg';
-import { MarketMakerQuote, MarketMakerQuoteRequest, marketMakerResponseSchema } from './schemas';
+import {
+  LegJson,
+  MarketMakerQuote,
+  MarketMakerQuoteRequest,
+  marketMakerResponseSchema,
+} from './schemas';
 import env from '../config/env';
 import { getAssetPrice } from '../pricing';
 import { handleExit } from '../utils/function';
 import logger from '../utils/logger';
 
 type Quote = { marketMaker: string; quote: MarketMakerQuote };
+
+type LegFormatter = (legs: MarketMakerQuote['legs']) => MarketMakerQuote['legs'];
+
+const padFirstLeg: LegFormatter = ([leg]) => [[], leg];
+const padSecondLeg: LegFormatter = ([leg]) => [leg, []];
+const singleOrBothLegs: LegFormatter = (legs) => legs;
 
 export const approximateIntermediateOutput = async (asset: InternalAsset, amount: string) => {
   const price = await getAssetPrice(asset);
@@ -29,7 +44,7 @@ export const approximateIntermediateOutput = async (asset: InternalAsset, amount
   );
 };
 
-type RpcLimitOrder = {
+export type RpcLimitOrder = {
   LimitOrder: {
     base_asset: UncheckedAssetAndChain;
     quote_asset: UncheckedAssetAndChain;
@@ -41,7 +56,7 @@ type RpcLimitOrder = {
 
 const formatLimitOrders = (
   quotes?: MarketMakerQuote['legs'][number],
-  leg?: MarketMakerQuoteRequest['legs'][number],
+  leg?: MarketMakerQuoteRequest<LegJson>['legs'][number],
 ): RpcLimitOrder[] => {
   if (!quotes || !leg) return [];
 
@@ -56,16 +71,24 @@ const formatLimitOrders = (
   }));
 };
 
+export type SocketData = { marketMaker: string; quotedAssets: InternalAssetMap<boolean> };
+export type ReceivedEventMap = { quote_response: (message: unknown) => void };
+export type SentEventMap = { quote_request: (message: MarketMakerQuoteRequest<LegJson>) => void };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type QuotingServer = Server<ReceivedEventMap, SentEventMap, any, SocketData>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type QuotingSocket = Socket<ReceivedEventMap, SentEventMap, any, SocketData>;
+
 export default class Quoter {
   private readonly quotes$ = new Subject<Quote>();
 
   private readonly inflightRequests = new Set<string>();
 
   constructor(
-    private readonly io: Server,
+    private readonly io: QuotingServer,
     private createId: () => string = randomUUID,
   ) {
-    io.on('connection', (socket: QuotingSocket) => {
+    io.on('connection', (socket) => {
       logger.info(`market maker "${socket.data.marketMaker}" connected`);
 
       const cleanup = handleExit(() => {
@@ -103,12 +126,48 @@ export default class Quoter {
     });
   }
 
-  private async collectMakerQuotes(request: MarketMakerQuoteRequest): Promise<MarketMakerQuote[]> {
+  private async collectMakerQuotes(
+    request: MarketMakerQuoteRequest<Leg>,
+  ): Promise<MarketMakerQuote[]> {
     const connectedClients = this.io.sockets.sockets.size;
     if (connectedClients === 0) return Promise.resolve([]);
 
     this.inflightRequests.add(request.request_id);
-    this.io.emit('quote_request', request);
+
+    let expectedResponses = 0;
+
+    const quotedLegsMap = new Map<string, LegFormatter>();
+
+    for (const socket of await this.io.fetchSockets()) {
+      let message: MarketMakerQuoteRequest<LegJson>;
+
+      const [first, second] = request.legs;
+      const { quotedAssets, marketMaker } = socket.data;
+      const quotesFirstLeg = quotedAssets[first.getBaseAsset()];
+      const quotesEntireSwap = quotesFirstLeg && (!second || quotedAssets[second.getBaseAsset()]);
+
+      if (quotesEntireSwap) {
+        message = {
+          ...request,
+          legs: request.legs.map((leg) => leg.toJSON()) as [LegJson] | [LegJson, LegJson],
+        };
+        quotedLegsMap.set(marketMaker, singleOrBothLegs);
+      } else if (quotesFirstLeg) {
+        message = { ...request, legs: [first.toJSON()] };
+        quotedLegsMap.set(marketMaker, padSecondLeg);
+      } else if (second && quotedAssets[second.getBaseAsset()]) {
+        message = { ...request, legs: [second.toJSON()] };
+        quotedLegsMap.set(marketMaker, padFirstLeg);
+      } else {
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
+      expectedResponses += 1;
+      socket.emit('quote_request', message);
+    }
+
+    if (expectedResponses === 0) return Promise.resolve([]);
 
     const clientsReceivedQuotes = new Map<string, MarketMakerQuote>();
 
@@ -124,22 +183,17 @@ export default class Quoter {
         this.inflightRequests.delete(request.request_id);
       };
 
-      sub = this.quotes$
-        .pipe(
-          filter(
-            ({ quote }) =>
-              quote.request_id === request.request_id && quote.legs.length === request.legs.length,
-          ),
-        )
-        .subscribe(({ marketMaker, quote }) => {
-          clientsReceivedQuotes.set(marketMaker, quote);
-          logger.info('received limit orders from market maker', {
-            marketMaker,
-            legs: quote.legs,
-            requestId: request.request_id,
-          });
-          if (clientsReceivedQuotes.size === connectedClients) complete();
-        });
+      sub = this.quotes$.subscribe(({ marketMaker, quote }) => {
+        const format = quotedLegsMap.get(marketMaker);
+        if (quote.request_id !== request.request_id) return;
+        if (format) {
+          clientsReceivedQuotes.set(marketMaker, { ...quote, legs: format(quote.legs) });
+        } else {
+          logger.error('unexpected missing format function');
+          expectedResponses -= 1;
+        }
+        if (clientsReceivedQuotes.size === expectedResponses) complete();
+      });
 
       timer = setTimeout(complete, env.QUOTE_TIMEOUT);
     });
@@ -150,7 +204,7 @@ export default class Quoter {
     const start = performance.now();
 
     if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
-      legs = [Leg.of(srcAsset, destAsset, swapInputAmount).toJSON()] as const;
+      legs = [Leg.of(srcAsset, destAsset, swapInputAmount)] as const;
     } else {
       const intermediateAmount = await approximateIntermediateOutput(
         srcAsset,
@@ -158,12 +212,12 @@ export default class Quoter {
       );
       assert(intermediateAmount !== null, 'failed to approximate intermediate output');
       legs = [
-        Leg.of(srcAsset, 'Usdc', swapInputAmount).toJSON(),
-        Leg.of('Usdc', destAsset, intermediateAmount).toJSON(),
+        Leg.of(srcAsset, 'Usdc', swapInputAmount),
+        Leg.of('Usdc', destAsset, intermediateAmount),
       ] as const;
     }
 
-    const request: MarketMakerQuoteRequest = { request_id: this.createId(), legs };
+    const request: MarketMakerQuoteRequest<Leg> = { request_id: this.createId(), legs };
 
     logger.info('requesting limit orders from market makers', {
       connectedMarketMakerCount: this.io.sockets.sockets.size,
@@ -178,11 +232,11 @@ export default class Quoter {
     const orders = [
       ...formatLimitOrders(
         quotes.flatMap((quote) => quote.legs[0]),
-        legs[0],
+        legs[0].toJSON(),
       ),
       ...formatLimitOrders(
         quotes.flatMap((quote) => quote.legs[1] ?? []),
-        legs[1],
+        legs[1]?.toJSON(),
       ),
     ];
 

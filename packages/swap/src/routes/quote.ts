@@ -1,11 +1,10 @@
 import BigNumber from 'bignumber.js';
 import express from 'express';
-import type { Server } from 'socket.io';
 import { Asset, assetConstants, Assets, Chain, Chains, InternalAsset } from '@/shared/enums';
 import { asyncHandler } from './common';
 import env from '../config/env';
 import { getUsdValue } from '../pricing/checkPriceWarning';
-import Quoter from '../quoting/Quoter';
+import Quoter, { type QuotingServer } from '../quoting/Quoter';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
 import { generateQuotes, validateQuoteQuery } from './v2/quote';
@@ -43,7 +42,7 @@ export const fallbackChains = {
   [Assets.SOL]: Chains.Solana,
 } satisfies Record<Asset, Chain>;
 
-const quoteRouter = (io: Server) => {
+const quoteRouter = (io: QuotingServer) => {
   const quoter = new Quoter(io);
 
   const router = express.Router().use((req, res, next) => {

@@ -15,14 +15,14 @@ export const marketMakerResponseSchema = z.object({
 export type MarketMakerRawQuote = z.input<typeof marketMakerResponseSchema>;
 export type MarketMakerQuote = z.output<typeof marketMakerResponseSchema>;
 
-export type Leg = {
+export type LegJson = {
   amount: string;
   base_asset: BaseAssetAndChain;
   quote_asset: { chain: 'Ethereum'; asset: 'USDC' };
   side: 'BUY' | 'SELL';
 };
 
-export type MarketMakerQuoteRequest = {
+export type MarketMakerQuoteRequest<T> = {
   request_id: string;
-  legs: readonly [Leg] | readonly [Leg, Leg];
+  legs: readonly [T] | readonly [T, T];
 };

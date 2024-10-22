@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import { promisify } from 'util';
+import { InternalAssetMap, InternalAssets } from '@/shared/enums';
 import prisma from '../../client';
 import authenticate from '../authenticate';
 
@@ -134,7 +135,7 @@ describe(authenticate, () => {
     expect(next).toHaveBeenCalledWith(new Error('invalid signature'));
   });
 
-  it('accepts valid authentication', async () => {
+  it('accepts valid v1 authentication', async () => {
     const timestamp = Date.now();
     const name = 'web_team_whales';
 
@@ -156,6 +157,40 @@ describe(authenticate, () => {
     await authenticate(socket as any, next);
     expect(next).toHaveBeenCalledTimes(1);
     expect(next).toHaveBeenCalledWith();
-    expect((socket as any).data).toStrictEqual({ marketMaker: name });
+    expect((socket as any).data).toStrictEqual({
+      marketMaker: name,
+      quotedAssets: Object.fromEntries(Object.values(InternalAssets).map((asset) => [asset, true])),
+    });
+  });
+
+  it('accepts valid v2 authentication', async () => {
+    const timestamp = Date.now();
+    const name = 'web_team_whales';
+
+    const signature = crypto
+      .sign(null, Buffer.from(`${name}${timestamp}`, 'utf8'), privateKey)
+      .toString('base64');
+
+    const socket = {
+      handshake: {
+        auth: {
+          client_version: '2',
+          market_maker_id: name,
+          timestamp,
+          signature,
+          quoted_assets: [{ chain: 'Ethereum', asset: 'FLIP' }],
+        },
+      },
+    };
+
+    const quotedAssets = Object.fromEntries(
+      Object.values(InternalAssets).map((asset) => [asset, false]),
+    ) as InternalAssetMap<boolean>;
+    quotedAssets.Flip = true;
+
+    await authenticate(socket as any, next);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith();
+    expect((socket as any).data).toStrictEqual({ marketMaker: name, quotedAssets });
   });
 });
