@@ -90,8 +90,9 @@ describe(Quoter, () => {
 
       const socket = io(`http://localhost:${port}`, {
         auth: {
-          client_version: quotedAssets ? '2' : '1',
-          market_maker_id: name,
+          ...(quotedAssets
+            ? { client_version: '2', account_id: name }
+            : { client_version: '1', market_maker_id: name }),
           timestamp,
           signature: crypto
             .sign(null, Buffer.from(`${name}${timestamp}`, 'utf8'), privateKey)

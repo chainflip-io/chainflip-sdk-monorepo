@@ -38,10 +38,14 @@ const authSchema = z.union([
       timestamp: z.number(),
       signature: z.string(),
     })
-    .transform((data) => ({ ...data, quoted_assets: mapAssets(null) })),
+    .transform((data) => ({
+      ...data,
+      quoted_assets: mapAssets(null),
+      account_id: data.market_maker_id,
+    })),
   z.object({
     client_version: z.literal('2'),
-    market_maker_id: z.string(),
+    account_id: z.string(),
     timestamp: z.number(),
     signature: z.string(),
     quoted_assets: z
@@ -73,7 +77,7 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
     logger.info('time elapsed from handshake timestamp', { timeElapsed });
 
     const marketMaker = await prisma.marketMaker.findUnique({
-      where: { name: auth.market_maker_id },
+      where: { name: auth.account_id },
     });
 
     assert(marketMaker, 'market maker not found');
@@ -82,7 +86,7 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
 
     const signaturesMatch = await verifyAsync(
       null,
-      Buffer.from(`${auth.market_maker_id}${auth.timestamp}`, 'utf8'),
+      Buffer.from(`${auth.account_id}${auth.timestamp}`, 'utf8'),
       key,
       Buffer.from(auth.signature, 'base64'),
     );

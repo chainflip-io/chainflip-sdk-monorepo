@@ -43,15 +43,17 @@ class QuotingClient(ABC):
 
     def __init__(
         self,
-        market_maker_id: str,
+        account_id: str,
         private_key_bytes: bytes,
         url: str,
         password: Optional[str] = None,
+        quoted_assets: Optional[List[AssetAndChain]] = None,
     ):
-        self.market_maker_id = market_maker_id
+        self.account_id = account_id
         self.private_key_bytes = private_key_bytes
         self.url = url
         self.password = password
+        self.quoted_assets = quoted_assets
 
     def get_auth_data(self):
         timestamp = round(time.time() * 1000)
@@ -59,15 +61,23 @@ class QuotingClient(ABC):
             self.private_key_bytes, password=self.password
         ).sign(
             b"%b%b"
-            % (bytes(self.market_maker_id, "utf-8"), bytes(str(timestamp), "utf-8"))
+            % (bytes(self.account_id, "utf-8"), bytes(str(timestamp), "utf-8"))
         )
 
-        return {
-            "client_version": "1",
+        auth = {
             "timestamp": timestamp,
-            "market_maker_id": self.market_maker_id,
             "signature": base64.b64encode(signature).decode("utf-8"),
         }
+
+        if self.quoted_assets is None:
+            auth["client_version"] = "1"
+            auth["market_maker_id"] = self.account_id
+        else:
+            auth["client_version"] = "2"
+            auth["quoted_assets"] = self.quoted_assets
+            auth["account_id"] = self.account_id
+
+        return auth
 
     @abstractmethod
     async def on_quote_request(self, quote: QuoteRequest) -> List[List[LimitOrder]]:
