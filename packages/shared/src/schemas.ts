@@ -120,6 +120,13 @@ export const openSwapDepositChannelSchema = z
     srcAddress: z.string().optional(),
     fillOrKillParams: fillOrKillParams.optional(),
     dcaParams: dcaParams.optional(),
+    quote: z
+      .object({
+        intermediateAmount: z.string(),
+        egressAmount: z.string(),
+        estimatedPrice: z.string(),
+      })
+      .optional(),
   })
   .superRefine(ensureDcaWithFok)
   .transform(({ amount, ...rest }) => ({
@@ -156,8 +163,8 @@ export type BoostedQuoteDetails = {
 interface BaseQuoteDetails {
   srcAsset: AssetAndChain;
   destAsset: AssetAndChain;
-  intermediateAmount?: string;
   depositAmount: string;
+  intermediateAmount?: string;
   egressAmount: string;
   includedFees: SwapFee[];
   poolInfo: PoolInfo[];

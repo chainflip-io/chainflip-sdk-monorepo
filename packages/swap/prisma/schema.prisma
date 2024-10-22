@@ -85,6 +85,7 @@ model SwapDepositChannel {
   numberOfChunks         Int?                          @default(1)
   chunkIntervalBlocks    Int?
   swapRequests           SwapRequest[]
+  quote                  Quote?
 
   @@unique([issuedBlock, srcChain, channelId])
   @@index([depositAddress])
@@ -417,23 +418,19 @@ model StateChainError {
   @@schema("public")
 }
 
-model QuoteResult {
-  id                 Int           @id @default(autoincrement())
-  srcAsset           InternalAsset
-  destAsset          InternalAsset
-  depositAmount      Decimal       @db.Decimal(30, 0)
-  quoterIntermediate Decimal?      @db.Decimal(30, 0)
-  quoterOutput       Decimal       @db.Decimal(30, 0)
-  quoterDuration     Int
-  quoterFees         Json?
-  poolIntermediate   Decimal?      @db.Decimal(30, 0)
-  poolOutput         Decimal       @db.Decimal(30, 0)
-  poolDuration       Int?
-  poolFees           Json?
-  createdAt          DateTime      @default(now())
-  version            Int
+model Quote {
+  id                         Int                @id @default(autoincrement())
+  swapDepositChannel         SwapDepositChannel @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId       BigInt             @unique
+  srcAsset                   InternalAsset
+  destAsset                  InternalAsset
+  depositAmount              Decimal            @db.Decimal(30, 0)
+  intermediateAmount         Decimal?           @db.Decimal(30, 0)
+  egressAmount               Decimal            @db.Decimal(30, 0)
+  estimatedPrice             Decimal
+  executedPrice              Decimal?
+  executedSlippagePercentage Decimal?
 
-  @@index([srcAsset, destAsset])
   @@schema("private")
 }
 
