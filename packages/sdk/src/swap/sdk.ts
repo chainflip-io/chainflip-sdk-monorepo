@@ -494,7 +494,7 @@ export class SwapSDK {
         channelOpeningFee: result.channelOpeningFee,
       };
     } else {
-      response = await this.trpc.openSwapDepositChannel.mutate(depositAddressRequest);
+      response = await this.trpc.openSwapDepositChannel.mutate({ ...depositAddressRequest, quote });
     }
 
     return {

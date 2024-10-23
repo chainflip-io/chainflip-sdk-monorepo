@@ -122,7 +122,7 @@ export const openSwapDepositChannelSchema = z
     dcaParams: dcaParams.optional(),
     quote: z
       .object({
-        intermediateAmount: z.string(),
+        intermediateAmount: z.string().optional(),
         egressAmount: z.string(),
         estimatedPrice: z.string(),
       })
