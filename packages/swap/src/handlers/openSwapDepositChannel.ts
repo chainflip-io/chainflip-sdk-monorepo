@@ -98,6 +98,18 @@ export default async function openSwapDepositChannel(
     chainInfo,
     expiryBlock: srcChainExpiryBlock,
   });
+  const quoteParam = input.quote && {
+    create: {
+      srcAsset,
+      destAsset,
+      maxBoostFeeBps,
+      numberOfChunks: dcaParams?.numberOfChunks,
+      depositAmount: input.expectedDepositAmount,
+      intermediateAmount: input.quote.intermediateAmount,
+      egressAmount: input.quote.egressAmount,
+      estimatedPrice: input.quote.estimatedPrice,
+    },
+  };
 
   const channel = await prisma.swapDepositChannel.upsert({
     where: {
@@ -127,30 +139,12 @@ export default async function openSwapDepositChannel(
       fokRefundAddress: fillOrKillParams?.refundAddress,
       chunkIntervalBlocks: dcaParams?.chunkIntervalBlocks,
       numberOfChunks: dcaParams?.numberOfChunks,
-      quote: input.quote && {
-        create: {
-          srcAsset,
-          destAsset,
-          depositAmount: input.expectedDepositAmount,
-          intermediateAmount: input.quote.intermediateAmount,
-          egressAmount: input.quote.egressAmount,
-          estimatedPrice: input.quote.estimatedPrice,
-        },
-      },
+      quote: quoteParam,
       ...blockInfo,
     },
     update: {
       openedThroughBackend: true,
-      quote: input.quote && {
-        create: {
-          srcAsset,
-          destAsset,
-          depositAmount: input.expectedDepositAmount,
-          intermediateAmount: input.quote.intermediateAmount,
-          egressAmount: input.quote.egressAmount,
-          estimatedPrice: input.quote.estimatedPrice,
-        },
-      },
+      quote: quoteParam,
     },
   });
 

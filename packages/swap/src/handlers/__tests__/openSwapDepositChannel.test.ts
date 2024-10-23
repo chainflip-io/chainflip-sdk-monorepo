@@ -127,6 +127,63 @@ describe(openSwapDepositChannel, () => {
     );
   });
 
+  it('creates channel with boost and dca and stores quote in the database', async () => {
+    mockRpcResponse({ data: environment() });
+    jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+      sourceChainExpiryBlock: BigInt('1000'),
+      address: 'address',
+      channelId: BigInt('888'),
+      issuedBlock: 123,
+      channelOpeningFee: 100n,
+    });
+
+    const result = await openSwapDepositChannel({
+      srcAsset: 'FLIP',
+      srcChain: 'Ethereum',
+      destAsset: 'DOT',
+      destChain: 'Polkadot',
+      destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
+      expectedDepositAmount: '1000',
+      maxBoostFeeBps: 100,
+      fillOrKillParams: {
+        retryDurationBlocks: 500,
+        refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        minPriceX128: '10000000000000',
+      },
+      dcaParams: {
+        chunkIntervalBlocks: 2,
+        numberOfChunks: 3,
+      },
+      quote: {
+        intermediateAmount: '500',
+        egressAmount: '250',
+        estimatedPrice: '0.375',
+      },
+    });
+
+    expect(result).toEqual({
+      maxBoostFeeBps: 100,
+      depositAddress: 'address',
+      brokerCommissionBps: 0,
+      estimatedExpiryTime: 1699534500000,
+      id: '123-Ethereum-888',
+      issuedBlock: 123,
+      srcChainExpiryBlock: 1000n,
+      channelOpeningFee: 100n,
+    });
+    expect(jest.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
+    expect(await prisma.swapDepositChannel.findFirst({ include: { quote: true } })).toMatchSnapshot(
+      {
+        id: expect.any(BigInt),
+        createdAt: expect.any(Date),
+        quote: {
+          id: expect.any(Number),
+          swapDepositChannelId: expect.any(BigInt),
+        },
+      },
+    );
+  });
+
   it('creates channel with ccmParams and stores it in the database', async () => {
     mockRpcResponse({ data: environment() });
     jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
