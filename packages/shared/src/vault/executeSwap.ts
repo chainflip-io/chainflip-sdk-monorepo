@@ -2,8 +2,8 @@ import * as base58 from '@chainflip/utils/base58';
 import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
-import { ContractTransactionResponse } from 'ethers';
 import { u8aToHex, hexToU8a } from '@polkadot/util';
+import { ContractTransactionResponse } from 'ethers';
 import { u32, Struct, Option, u16, u256, Bytes as TsBytes, Enum } from 'scale-ts';
 import { Vault__factory } from '../abis';
 import {
