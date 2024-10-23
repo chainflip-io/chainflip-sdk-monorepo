@@ -4,7 +4,7 @@ import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
 import { u8aToHex, hexToU8a } from '@polkadot/util';
 import { ContractTransactionResponse } from 'ethers';
-import { u32, Struct, Option, u16, u256, Bytes as TsBytes, Enum } from 'scale-ts';
+import { u32, Struct, Option, u16, u256, Bytes as TsBytes, Enum, Vector, u8 } from 'scale-ts';
 import { Vault__factory } from '../abis';
 import {
   checkAllowance,
@@ -86,8 +86,8 @@ const vaultSwapParametersCodec = Struct({
   }),
   dcaParams: Option(Struct({ numberOfChunks: u32, chunkIntervalBlocks: u32 })),
   boostFee: Option(u16),
-  // TODO: Set correct type once decided.
-  brokerFees: Option(u16),
+  // TODO: Should broker be mandatory?
+  brokerFees: Option(Vector(Struct({ id: u8, commissionBps: u16 }))),
 });
 
 const vaultCfParametersCodec = Struct({
@@ -115,6 +115,8 @@ export function encodeSwapParameters(
           },
           dcaParams,
           boostFee: boostFeeBps,
+          // For now just hardcode to undefined. The beneficiary's accounts needs
+          // to be converted to a u8 (id).
           brokerFees: undefined,
         }),
       )
@@ -144,7 +146,8 @@ export function encodeCfParameters(
             },
             dcaParams,
             boostFee: boostFeeBps,
-            // For now just hardcode to undefined as we type is not yet set.
+            // For now just hardcode to undefined. The beneficiary's accounts needs
+            // to be converted to a u8 (id).
             brokerFees: undefined,
           },
         }),
