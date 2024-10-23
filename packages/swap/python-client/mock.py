@@ -32,30 +32,30 @@ class MockQuoter(QuotingClient):
 
 async def main(argv):
     try:
-        market_maker_id: Optional[str] = None
+        account_id: Optional[str] = None
         private_key: Optional[str] = None
         url = "http://localhost:8080"
 
         opts, args = getopt.getopt(
-            argv, "", ["market-maker-id=", "private-key=", "url="]
+            argv, "", ["account-id=", "private-key=", "url="]
         )
         for opt, arg in opts:
-            if opt == "--market-maker-id":
-                market_maker_id = arg
+            if opt == "--account-id":
+                account_id = arg
             elif opt == "--private-key":
                 private_key = arg
             elif opt == "--url":
                 url = arg
 
-        if market_maker_id is None:
-            raise Exception("market-maker-id is required")
+        if account_id is None:
+            raise Exception("account-id is required")
 
         if private_key is None:
             raise Exception("private-key is required")
 
         private_key_bytes = bytes(private_key, "utf-8")
 
-        quoter = MockQuoter(market_maker_id, private_key_bytes, url)
+        quoter = MockQuoter(account_id, private_key_bytes, url)
 
         await quoter.connect(wait_timeout=10)
     except Exception as e:

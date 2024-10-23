@@ -29,24 +29,37 @@ function with with the following shape:
 
 ```jsonc
 {
-  // currently always `1`
-  "client_version": "1",
+  "client_version": "2",
   // the current UNIX timestamp in milliseconds
   "timestamp": 1713183254094,
   // your Chainflip Account ID
-  "market_maker_id": "cFNz3kSjvCHubkrtfYtBkzY2WpACDmXqQ9YGxbMgRD2iu1LCc",
+  "account_id": "cFNz3kSjvCHubkrtfYtBkzY2WpACDmXqQ9YGxbMgRD2iu1LCc",
   // explained below
   "signature": "uJ7Caq4w/b1epVBN8yWk51xrPePI0B7mymCYXG2NT8kiDzKBQX7QGJe7yZm5e5ByfP4M1UP5B+++QMuaHBwqAA==",
+  // the assets that you will be providing quotes for
+  "quoted_assets": [
+    { "chain": "Bitcoin", "asset": "BTC": },
+    { "chain": "Solana", "asset": "SOL": },
+    { "chain": "Ethereum", "asset": "ETH": },
+    { "chain": "Ethereum", "asset": "FLIP": }
+  ]
 }
 ```
 
 The `signature` property is a base 64 encoding of the signature of the
-`market_maker_id` property concatenated together with the `timestamp`, e.g.:
+`account_id` property concatenated together with the `timestamp`, e.g.:
 `cFNz3kSjvCHubkrtfYtBkzY2WpACDmXqQ9YGxbMgRD2iu1LCc1713183254094`. This string is
 signed using your private key and verified with the public key you provide.
 
 The `timestamp` should must be at most +/- 30 seconds different from the time of
 the server at time of signature verification.
+
+The `quoted_assets` are a list of assets that you can expect to provide quotes
+for. You will only receive quote requests for assets in this list. You are not
+required to provide quotes for every request. See examples below for more
+information on how to return an empty response. Providing an accurate list of
+quoted assets helps us reduce the latency to the end users by reducing the
+number of requests we make to liquidity providers for limit orders.
 
 An example of this authentication handshake can be found in the
 [sample client](./quoting_client.py).

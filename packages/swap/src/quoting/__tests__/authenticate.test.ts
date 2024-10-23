@@ -175,7 +175,7 @@ describe(authenticate, () => {
       handshake: {
         auth: {
           client_version: '2',
-          market_maker_id: name,
+          account_id: name,
           timestamp,
           signature,
           quoted_assets: [{ chain: 'Ethereum', asset: 'FLIP' }],
