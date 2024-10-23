@@ -102,8 +102,8 @@ export default async function openSwapDepositChannel(
     create: {
       srcAsset,
       destAsset,
-      isBoost: Boolean(maxBoostFeeBps && maxBoostFeeBps > 0),
-      isDca: Boolean(dcaParams && dcaParams.numberOfChunks > 1),
+      maxBoostFeeBps,
+      numberOfChunks: dcaParams?.numberOfChunks,
       depositAmount: input.expectedDepositAmount,
       intermediateAmount: input.quote.intermediateAmount,
       egressAmount: input.quote.egressAmount,
