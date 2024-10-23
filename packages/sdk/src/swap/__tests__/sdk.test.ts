@@ -996,15 +996,17 @@ describe(SwapSDK, () => {
           maxBoostFeeBps: 0,
         });
 
+      const quote = {
+        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        depositAmount: BigInt(1e18).toString(),
+        type: 'REGULAR',
+      } as Quote;
       const response = await sdk.requestDepositAddressV2({
-        quote: {
-          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
-          depositAmount: BigInt(1e18).toString(),
-          type: 'REGULAR',
-        } as Quote,
+        quote,
         destAddress: '0xcafebabe',
       });
+
       expect(rpcSpy).toHaveBeenLastCalledWith({
         srcChain: Chains.Bitcoin,
         srcAsset: Assets.BTC,
@@ -1012,6 +1014,7 @@ describe(SwapSDK, () => {
         destAsset: Assets.FLIP,
         destAddress: '0xcafebabe',
         amount: BigInt(1e18).toString(),
+        quote,
       });
       expect(response).toStrictEqual({
         depositChannelId: 'channel id',
@@ -1049,13 +1052,14 @@ describe(SwapSDK, () => {
           maxBoostFeeBps: 0,
         });
 
+      const quote = {
+        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        depositAmount: BigInt(1e18).toString(),
+        type: 'REGULAR',
+      } as Quote;
       const response = await sdk.requestDepositAddressV2({
-        quote: {
-          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
-          depositAmount: BigInt(1e18).toString(),
-          type: 'REGULAR',
-        } as Quote,
+        quote,
         destAddress: '0xcafebabe',
         fillOrKillParams: {
           retryDurationBlocks: 500,
@@ -1077,6 +1081,7 @@ describe(SwapSDK, () => {
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           minPriceX128: '34028236692093846346337460743176821145600000000000000000000000',
         },
+        quote,
       });
       expect(response).toStrictEqual({
         depositChannelId: 'channel id',
@@ -1118,14 +1123,15 @@ describe(SwapSDK, () => {
           maxBoostFeeBps: 0,
         });
 
+      const quote = {
+        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        depositAmount: BigInt(1e18).toString(),
+        type: 'REGULAR',
+        estimatedPrice: '10000000000000',
+      } as Quote;
       const response = await sdk.requestDepositAddressV2({
-        quote: {
-          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
-          depositAmount: BigInt(1e18).toString(),
-          type: 'REGULAR',
-          estimatedPrice: '10000000000000',
-        } as Quote,
+        quote,
         destAddress: '0xcafebabe',
         fillOrKillParams: {
           retryDurationBlocks: 500,
@@ -1147,6 +1153,7 @@ describe(SwapSDK, () => {
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           minPriceX128: '34028236692093846346337460743176821145600000000000000000000000',
         },
+        quote,
       });
       expect(response).toStrictEqual({
         depositChannelId: 'channel id',
@@ -1188,17 +1195,18 @@ describe(SwapSDK, () => {
           maxBoostFeeBps: 0,
         });
 
+      const quote = {
+        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        depositAmount: BigInt(1e18).toString(),
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        type: 'DCA',
+      } as Quote;
       const response = await sdk.requestDepositAddressV2({
-        quote: {
-          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
-          depositAmount: BigInt(1e18).toString(),
-          dcaParams: {
-            numberOfChunks: 100,
-            chunkIntervalBlocks: 5,
-          },
-          type: 'DCA',
-        } as Quote,
+        quote,
         destAddress: '0xcafebabe',
         fillOrKillParams: {
           retryDurationBlocks: 500,
@@ -1223,6 +1231,7 @@ describe(SwapSDK, () => {
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           minPriceX128: '34028236692093846346337460743176821145600000000000000000000000',
         },
+        quote,
       });
       expect(response).toStrictEqual({
         depositChannelId: 'channel id',
