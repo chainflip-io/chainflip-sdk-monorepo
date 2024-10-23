@@ -29,6 +29,7 @@ exports[`networkDepositFinalised updates swap request for boosted deposit 1`] = 
   "srcAsset": "Btc",
   "swapDepositChannelId": Any<BigInt>,
   "swapInputAmount": "100000000",
+  "swapOutputAmount": null,
   "swapRequestedAt": 2024-08-06T00:00:00.000Z,
   "swapRequestedBlockIndex": null,
 }
@@ -73,6 +74,7 @@ exports[`networkDepositFinalised updates swap request for regular deposit 1`] = 
   "srcAsset": "Btc",
   "swapDepositChannelId": Any<BigInt>,
   "swapInputAmount": "100000000",
+  "swapOutputAmount": null,
   "swapRequestedAt": 2024-08-06T00:00:00.000Z,
   "swapRequestedBlockIndex": null,
 }

@@ -47,6 +47,7 @@ exports[`swapEgressScheduled adds an egress and fee to a swap request 1`] = `
   "srcAsset": "Eth",
   "swapDepositChannelId": null,
   "swapInputAmount": "10000000000",
+  "swapOutputAmount": null,
   "swapRequestedAt": 2022-12-06T14:31:33.000Z,
   "swapRequestedBlockIndex": "92-398",
 }
@@ -99,6 +100,7 @@ exports[`swapEgressScheduled uses gas asset for egress fee when CCM 1`] = `
   "srcAsset": "ArbUsdc",
   "swapDepositChannelId": null,
   "swapInputAmount": "1000000",
+  "swapOutputAmount": null,
   "swapRequestedAt": 2022-12-06T14:31:33.000Z,
   "swapRequestedBlockIndex": "92-398",
 }

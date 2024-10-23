@@ -29,6 +29,7 @@ exports[`swapScheduled creates a swap for a swap request 1`] = `
   "srcAsset": "Btc",
   "swapDepositChannelId": null,
   "swapInputAmount": "100000000",
+  "swapOutputAmount": null,
   "swapRequestedAt": 2024-08-23T13:10:06.000Z,
   "swapRequestedBlockIndex": "92-398",
   "swaps": [

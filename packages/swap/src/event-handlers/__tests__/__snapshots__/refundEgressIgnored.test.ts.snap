@@ -41,6 +41,7 @@ exports[`refundEgressIgnored handles refundEgressIgnored event 1`] = `
   "srcAsset": "Eth",
   "swapDepositChannelId": null,
   "swapInputAmount": "10000000000",
+  "swapOutputAmount": null,
   "swapRequestedAt": 2022-12-06T14:31:33.000Z,
   "swapRequestedBlockIndex": "92-398",
 }
