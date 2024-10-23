@@ -133,6 +133,7 @@ model SwapRequest {
   destAsset                    InternalAsset
   depositAmount                Decimal?            @db.Decimal(30, 0)
   swapInputAmount              Decimal             @db.Decimal(30, 0)
+  swapOutputAmount             Decimal?            @db.Decimal(30, 0)
   requestType                  SwapRequestType
   ccmDepositReceivedBlockIndex String?
   ccmGasBudget                 Decimal?            @db.Decimal(30, 0)
@@ -158,6 +159,7 @@ model SwapRequest {
   fees                         SwapFee[]
   numberOfChunks               Int?
   chunkIntervalBlocks          Int?
+  quote                        Quote?
 
   @@index([srcAsset, prewitnessedDepositId])
   @@schema("public")
@@ -419,19 +421,21 @@ model StateChainError {
 }
 
 model Quote {
-  id                         Int                @id @default(autoincrement())
-  swapDepositChannel         SwapDepositChannel @relation(fields: [swapDepositChannelId], references: [id])
-  swapDepositChannelId       BigInt             @unique
-  srcAsset                   InternalAsset
-  destAsset                  InternalAsset
+  id                      Int                @id @default(autoincrement())
+  swapDepositChannel      SwapDepositChannel @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId    BigInt             @unique
+  swapRequest             SwapRequest?       @relation(fields: [swapRequestId], references: [id])
+  swapRequestId           BigInt?            @unique
+  srcAsset                InternalAsset
+  destAsset               InternalAsset
   maxBoostFeeBps             Int?
   numberOfChunks             Int?
-  depositAmount              Decimal            @db.Decimal(30, 0)
-  intermediateAmount         Decimal?           @db.Decimal(30, 0)
-  egressAmount               Decimal            @db.Decimal(30, 0)
-  estimatedPrice             Decimal
-  executedPrice              Decimal?
-  executedSlippagePercentage Decimal?
+  depositAmount           Decimal            @db.Decimal(30, 0)
+  intermediateAmount      Decimal?           @db.Decimal(30, 0)
+  egressAmount            Decimal            @db.Decimal(30, 0)
+  estimatedPrice          Decimal
+  executedPrice           Decimal?
+  executedSlippagePercent Decimal?
 
   @@schema("private")
 }

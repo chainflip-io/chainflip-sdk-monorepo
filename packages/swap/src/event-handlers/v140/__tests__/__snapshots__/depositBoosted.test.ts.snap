@@ -41,6 +41,7 @@ exports[`depositBoosted updates the values for an existing swap 1`] = `
   "srcAsset": "Btc",
   "swapDepositChannelId": null,
   "swapInputAmount": "1000000",
+  "swapOutputAmount": null,
   "swapRequestedAt": 2023-01-01T00:00:00.000Z,
   "swapRequestedBlockIndex": "92-398",
 }

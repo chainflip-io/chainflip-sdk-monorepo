@@ -41,6 +41,7 @@ exports[`swapEgressIgnored adds an IgnoredEgress record for a egress ignored eve
   "srcAsset": "Btc",
   "swapDepositChannelId": null,
   "swapInputAmount": "100000000",
+  "swapOutputAmount": null,
   "swapRequestedAt": 2024-08-06T00:00:00.000Z,
   "swapRequestedBlockIndex": "92-398",
 }
