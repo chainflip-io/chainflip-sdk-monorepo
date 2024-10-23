@@ -25,7 +25,7 @@ import {
 import { assertIsEvmChain, assertIsCCMDestination, assertSignerIsConnectedToChain } from '../evm';
 import { assert } from '../guards';
 import { dotAddress } from '../parsers';
-import { ccmParamsSchema, DcaParams, FillOrKillParamsX128 } from '../schemas';
+import { AffiliateBroker, ccmParamsSchema, DcaParams, FillOrKillParamsX128 } from '../schemas';
 import { Required } from '../types';
 import { assertValidAddress } from '../validation/addressValidation';
 import { ExecuteSwapParams, SwapNetworkOptions } from './index';
@@ -73,38 +73,39 @@ const getErc20Address = (asset: InternalAsset, networkOpts: SwapNetworkOptions) 
 };
 
 const vaultSwapParametersCodec = Struct({
-  refundParams: Option(
-    Struct({
-      retryDurationBlocks: u32,
-      refundAddress: Enum({
-        Ethereum: TsBytes(20),
-        Polkadot: TsBytes(32),
-        Bitcoin: TsBytes(),
-        Arbitrum: TsBytes(20),
-        Solana: TsBytes(32),
-      }),
-      minPriceX128: u256,
+  refundParams: Struct({
+    retryDurationBlocks: u32,
+    refundAddress: Enum({
+      Ethereum: TsBytes(20),
+      Polkadot: TsBytes(32),
+      Bitcoin: TsBytes(),
+      Arbitrum: TsBytes(20),
+      Solana: TsBytes(32),
     }),
-  ),
+    minPriceX128: u256,
+  }),
   dcaParams: Option(Struct({ numberOfChunks: u32, chunkIntervalBlocks: u32 })),
   boostFee: Option(u16),
+  // TODO: Set correct type once decided.
+  brokerFees: Option(u16),
 });
 
 const vaultCfParametersCodec = Struct({
   ccmAdditionalData: Option(TsBytes()),
-  vaultSwapParameters: Option(vaultSwapParametersCodec),
+  vaultSwapParameters: vaultSwapParametersCodec,
 });
 
 export function encodeSwapParameters(
   sourceChain: Chain,
+  fillOrKillParams: FillOrKillParamsX128,
   boostFeeBps?: number,
-  fillOrKillParams?: FillOrKillParamsX128,
   dcaParams?: DcaParams,
+  _beneficiaries?: AffiliateBroker[],
 ): string | undefined {
   return fillOrKillParams || dcaParams || boostFeeBps
     ? u8aToHex(
         vaultSwapParametersCodec.enc({
-          refundParams: fillOrKillParams && {
+          refundParams: {
             retryDurationBlocks: fillOrKillParams.retryDurationBlocks,
             refundAddress: {
               tag: sourceChain,
@@ -114,6 +115,7 @@ export function encodeSwapParameters(
           },
           dcaParams,
           boostFee: boostFeeBps,
+          brokerFees: undefined,
         }),
       )
     : undefined;
@@ -121,30 +123,30 @@ export function encodeSwapParameters(
 
 export function encodeCfParameters(
   sourceChain: Chain,
+  fillOrKillParams: FillOrKillParamsX128,
   ccmAdditionalData?: string | undefined,
   boostFeeBps?: number,
-  fillOrKillParams?: FillOrKillParamsX128,
   dcaParams?: DcaParams,
+  _beneficiaries?: AffiliateBroker[],
 ): string | undefined {
   return ccmAdditionalData || fillOrKillParams || dcaParams || boostFeeBps
     ? u8aToHex(
         vaultCfParametersCodec.enc({
           ccmAdditionalData: ccmAdditionalData ? hexToU8a(ccmAdditionalData) : undefined,
-          vaultSwapParameters:
-            fillOrKillParams || dcaParams || boostFeeBps
-              ? {
-                  refundParams: fillOrKillParams && {
-                    retryDurationBlocks: fillOrKillParams.retryDurationBlocks,
-                    refundAddress: {
-                      tag: sourceChain,
-                      value: hexToU8a(fillOrKillParams.refundAddress),
-                    },
-                    minPriceX128: BigInt(fillOrKillParams.minPriceX128),
-                  },
-                  dcaParams,
-                  boostFee: boostFeeBps,
-                }
-              : undefined,
+          vaultSwapParameters: {
+            refundParams: {
+              retryDurationBlocks: fillOrKillParams.retryDurationBlocks,
+              refundAddress: {
+                tag: sourceChain,
+                value: hexToU8a(fillOrKillParams.refundAddress),
+              },
+              minPriceX128: BigInt(fillOrKillParams.minPriceX128),
+            },
+            dcaParams,
+            boostFee: boostFeeBps,
+            // For now just hardcode to undefined as we type is not yet set.
+            brokerFees: undefined,
+          },
         }),
       )
     : undefined;
@@ -163,9 +165,10 @@ const swapNative = async (
 
   const cfParameters = encodeSwapParameters(
     params.srcChain,
-    params.maxBoostFeeBps,
     params.fillOrKillParams,
+    params.maxBoostFeeBps,
     params.dcaParams,
+    params.beneficiaries,
   );
 
   const transaction = await vault.xSwapNative(
@@ -199,9 +202,10 @@ const swapToken = async (
 
   const cfParameters = encodeSwapParameters(
     params.srcChain,
-    params.maxBoostFeeBps,
     params.fillOrKillParams,
+    params.maxBoostFeeBps,
     params.dcaParams,
+    params.beneficiaries,
   );
 
   const transaction = await vault.xSwapToken(
@@ -231,10 +235,11 @@ const callNative = async (
 
   const cfParameters = encodeCfParameters(
     params.srcChain,
+    params.fillOrKillParams,
     params.ccmParams?.ccmAdditionalData,
     params.maxBoostFeeBps,
-    params.fillOrKillParams,
     params.dcaParams,
+    params.beneficiaries,
   );
 
   const transaction = await vault.xCallNative(
@@ -270,10 +275,11 @@ const callToken = async (
 
   const cfParameters = encodeCfParameters(
     params.srcChain,
+    params.fillOrKillParams,
     params.ccmParams?.ccmAdditionalData,
     params.maxBoostFeeBps,
-    params.fillOrKillParams,
     params.dcaParams,
+    params.beneficiaries,
   );
 
   const transaction = await vault.xCallToken(

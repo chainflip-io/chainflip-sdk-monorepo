@@ -12,12 +12,12 @@ export interface ExecuteSwapParams {
   destAsset: Asset;
   amount: string;
   destAddress: string;
+  fillOrKillParams: FillOrKillParamsX128;
   ccmParams?: CcmParams;
   maxBoostFeeBps?: number;
-  fillOrKillParams?: FillOrKillParamsX128;
   dcaParams?: DcaParams;
-  // TODO: Add affiliates?!
-  // affiliates?: AffiliateBroker[];
+  // TODO: Should broker be mandatory?
+  beneficiaries?: AffiliateBroker[];
 
   /** @deprecated DEPRECATED(1.5): use ccmParams instead of ccmMetadata */
   ccmMetadata?: CcmParams;
