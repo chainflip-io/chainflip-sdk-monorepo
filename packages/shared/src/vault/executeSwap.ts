@@ -1,8 +1,7 @@
 import * as base58 from '@chainflip/utils/base58';
-import { bytesToHex } from '@chainflip/utils/bytes';
+import { bytesToHex, hexToBytes } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
-import { u8aToHex, hexToU8a } from '@polkadot/util';
 import { ContractTransactionResponse } from 'ethers';
 import { u32, Struct, Option, u16, u256, Bytes as TsBytes, Enum, Vector, u8 } from 'scale-ts';
 import { Vault__factory } from '../abis';
@@ -103,13 +102,13 @@ export function encodeSwapParameters(
   _beneficiaries?: AffiliateBroker[],
 ): string | undefined {
   return fillOrKillParams || dcaParams || boostFeeBps
-    ? u8aToHex(
+    ? bytesToHex(
         vaultSwapParametersCodec.enc({
           refundParams: {
             retryDurationBlocks: fillOrKillParams.retryDurationBlocks,
             refundAddress: {
               tag: sourceChain,
-              value: hexToU8a(fillOrKillParams.refundAddress),
+              value: hexToBytes(fillOrKillParams.refundAddress as `0x${string}`),
             },
             minPriceX128: BigInt(fillOrKillParams.minPriceX128),
           },
@@ -132,15 +131,17 @@ export function encodeCfParameters(
   _beneficiaries?: AffiliateBroker[],
 ): string | undefined {
   return ccmAdditionalData || fillOrKillParams || dcaParams || boostFeeBps
-    ? u8aToHex(
+    ? bytesToHex(
         vaultCfParametersCodec.enc({
-          ccmAdditionalData: ccmAdditionalData ? hexToU8a(ccmAdditionalData) : undefined,
+          ccmAdditionalData: ccmAdditionalData
+            ? hexToBytes(ccmAdditionalData as `0x${string}`)
+            : undefined,
           vaultSwapParameters: {
             refundParams: {
               retryDurationBlocks: fillOrKillParams.retryDurationBlocks,
               refundAddress: {
                 tag: sourceChain,
-                value: hexToU8a(fillOrKillParams.refundAddress),
+                value: hexToBytes(fillOrKillParams.refundAddress as `0x${string}`),
               },
               minPriceX128: BigInt(fillOrKillParams.minPriceX128),
             },

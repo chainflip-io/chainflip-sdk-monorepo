@@ -23,7 +23,6 @@
     "@chainflip/rpc": "^1.6.7",
     "@chainflip/solana": "^1.0.2",
     "@chainflip/utils": "^0.4.0",
-    "@polkadot/util": "^13.2.1",
     "axios": "^1.7.7",
     "bignumber.js": "^9.1.2",
     "ethers": "^6.13.3",
