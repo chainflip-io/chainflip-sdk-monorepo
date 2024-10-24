@@ -148,6 +148,9 @@ router.get(
 
     const fees = (swapRequest?.fees ?? []).concat(swap?.fees ?? []);
 
+    const estimatedDurations =
+      srcAsset && destAsset && (await estimateSwapDuration({ srcAsset, destAsset }));
+
     const response = {
       state,
       type: swap?.type,
@@ -210,7 +213,8 @@ router.get(
       boostSkippedBlockIndex:
         swapDepositChannel?.failedBoosts.at(0)?.failedAtBlockIndex ?? undefined,
       estimatedDefaultDurationSeconds:
-        srcAsset && destAsset && (await estimateSwapDuration({ srcAsset, destAsset })),
+        estimatedDurations &&
+        estimatedDurations.deposit + estimatedDurations.swap + estimatedDurations.egress,
       swapScheduledAt: swap?.swapScheduledAt.valueOf(),
       swapScheduledBlockIndex: swap?.swapScheduledBlockIndex,
       fillOrKillParams: swapDepositChannel?.fokMinPriceX128

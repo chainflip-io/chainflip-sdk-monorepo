@@ -108,6 +108,11 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   ccmParams: CcmParams | undefined;
   boost: Boost | undefined;
   estimatedDurationSeconds: number | null | undefined;
+  estimatedDurations: {
+    deposit: number;
+    swap: number;
+    egress: number;
+  };
   srcChainRequiredBlockConfirmations: number | null;
   fees: PaidFee[];
   lastStatechainUpdateAt: number | undefined;
