@@ -170,6 +170,11 @@ interface BaseQuoteDetails {
   poolInfo: PoolInfo[];
   lowLiquidityWarning: boolean | undefined;
   estimatedDurationSeconds: number;
+  estimatedDurations: {
+    deposit: number;
+    swap: number;
+    egress: number;
+  };
   estimatedPrice: string;
   recommendedSlippageTolerancePercent: number; 
 }
