@@ -8,7 +8,12 @@ exports[`python integration test replies to a quote request 1`] = `
     "chain": "Ethereum",
   },
   "egressAmount": "997901209876966295",
-  "estimatedDurationSeconds": 54,
+  "estimatedDurationSeconds": 48,
+  "estimatedDurations": {
+    "deposit": 24,
+    "egress": 12,
+    "swap": 12,
+  },
   "estimatedPrice": "997901209879.01209741975802419484",
   "includedFees": [
     {
