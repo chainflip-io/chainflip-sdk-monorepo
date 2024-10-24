@@ -455,7 +455,12 @@ describe('server', () => {
         destAsset: 'DOT',
         destChain: 'Polkadot',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
-        estimatedDurationSeconds: 48,
+        estimatedDurationSeconds: 42,
+        estimatedDurations: {
+          deposit: 24,
+          egress: 6,
+          swap: 12,
+        },
         depositChannel: {
           createdAt: 516000,
           brokerCommissionBps: 0,
@@ -483,7 +488,12 @@ describe('server', () => {
         destAsset: 'DOT',
         destChain: 'Polkadot',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
-        estimatedDurationSeconds: 48,
+        estimatedDurationSeconds: 42,
+        estimatedDurations: {
+          deposit: 24,
+          egress: 6,
+          swap: 12,
+        },
         depositChannel: {
           createdAt: 516000,
           brokerCommissionBps: 15,
@@ -575,7 +585,12 @@ describe('server', () => {
         destAsset: 'DOT',
         destChain: 'Polkadot',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
-        estimatedDurationSeconds: 48,
+        estimatedDurationSeconds: 42,
+        estimatedDurations: {
+          deposit: 24,
+          egress: 6,
+          swap: 12,
+        },
         depositChannel: {
           createdAt: 516000,
           brokerCommissionBps: 0,
@@ -1199,7 +1214,12 @@ describe('server', () => {
         destChain: 'Polkadot',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         srcChainRequiredBlockConfirmations: 2,
-        estimatedDurationSeconds: 48,
+        estimatedDurationSeconds: 42,
+        estimatedDurations: {
+          deposit: 24,
+          egress: 6,
+          swap: 12,
+        },
         lastStatechainUpdateAt: 1640995200000,
         fees: [
           {
@@ -1315,7 +1335,12 @@ describe('server', () => {
         destChain: 'Polkadot',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         srcChainRequiredBlockConfirmations: 2,
-        estimatedDurationSeconds: 48,
+        estimatedDurationSeconds: 42,
+        estimatedDurations: {
+          deposit: 24,
+          egress: 6,
+          swap: 12,
+        },
         lastStatechainUpdateAt: 1640995200000,
         fees: [
           {
@@ -1442,7 +1467,12 @@ describe('server', () => {
         destChain: 'Polkadot',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         srcChainRequiredBlockConfirmations: 2,
-        estimatedDurationSeconds: 48,
+        estimatedDurationSeconds: 42,
+        estimatedDurations: {
+          deposit: 24,
+          egress: 6,
+          swap: 12,
+        },
         lastStatechainUpdateAt: 1640995200000,
         fees: [
           {

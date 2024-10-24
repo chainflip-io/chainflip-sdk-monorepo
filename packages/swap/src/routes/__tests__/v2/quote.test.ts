@@ -64,7 +64,7 @@ describe(getDcaQuoteParams, () => {
     const result = await getDcaQuoteParams('Btc', 27180n);
     expect(result).toMatchInlineSnapshot(`
     {
-      "addedDurationSeconds": 36,
+      "additionalSwapDurationSeconds": 36,
       "chunkSize": 6795n,
       "numberOfChunks": 4,
     }
@@ -77,7 +77,7 @@ describe(getDcaQuoteParams, () => {
     const result = await getDcaQuoteParams('Btc', 27900n);
     expect(result).toMatchInlineSnapshot(`
     {
-      "addedDurationSeconds": 36,
+      "additionalSwapDurationSeconds": 36,
       "chunkSize": 6975n,
       "numberOfChunks": 4,
     }
@@ -383,7 +383,12 @@ describe('server', () => {
       expect(body).toMatchObject([
         {
           egressAmount: (100e6).toString(),
-          estimatedDurationSeconds: 54,
+          estimatedDurationSeconds: 48,
+          estimatedDurations: {
+            deposit: 24,
+            egress: 12,
+            swap: 12,
+          },
           estimatedPrice: '100.0000000000025',
           includedFees: [
             {
@@ -508,7 +513,12 @@ describe('server', () => {
             chain: 'Ethereum',
           },
           egressAmount: (100e6).toString(),
-          estimatedDurationSeconds: 54,
+          estimatedDurationSeconds: 48,
+          estimatedDurations: {
+            deposit: 24,
+            egress: 12,
+            swap: 12,
+          },
           estimatedPrice: '100.0080000000025002',
           includedFees: [
             {
@@ -554,7 +564,12 @@ describe('server', () => {
             chain: 'Ethereum',
           },
           egressAmount: (400024000).toString(),
-          estimatedDurationSeconds: 90,
+          estimatedDurationSeconds: 84,
+          estimatedDurations: {
+            deposit: 24,
+            egress: 12,
+            swap: 48,
+          },
           estimatedPrice: '400.0320000000100008',
           includedFees: [
             {
@@ -704,7 +719,12 @@ describe('server', () => {
             chain: 'Ethereum',
           },
           egressAmount: (100e6).toString(),
-          estimatedDurationSeconds: 54,
+          estimatedDurationSeconds: 48,
+          estimatedDurations: {
+            deposit: 24,
+            egress: 12,
+            swap: 12,
+          },
           estimatedPrice: '100.0000000000025',
           includedFees: [
             {
@@ -833,7 +853,12 @@ describe('server', () => {
             chain: 'Ethereum',
           },
           egressAmount: (100e6).toString(),
-          estimatedDurationSeconds: 54,
+          estimatedDurationSeconds: 48,
+          estimatedDurations: {
+            deposit: 24,
+            egress: 12,
+            swap: 12,
+          },
           estimatedPrice: '100.0000000000025',
           includedFees: [
             {
@@ -963,7 +988,12 @@ describe('server', () => {
             chain: 'Ethereum',
           },
           egressAmount: (100e6).toString(),
-          estimatedDurationSeconds: 54,
+          estimatedDurationSeconds: 48,
+          estimatedDurations: {
+            deposit: 24,
+            egress: 12,
+            swap: 12,
+          },
           estimatedPrice: '100.0000000000025',
           includedFees: [
             {
