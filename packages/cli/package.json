@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/cli",
-  "version": "1.8.0-cf-parameters-rename.2",
+  "version": "1.8.0-cf-parameters-rename.3",
   "description": "",
   "main": "./dist/lib.mjs",
   "types": "./dist/lib.d.mts",
