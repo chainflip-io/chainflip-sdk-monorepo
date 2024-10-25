@@ -90,7 +90,11 @@ const vaultSwapParametersCodec = Struct({
 });
 
 const vaultCfParametersCodec = Struct({
-  ccmAdditionalData: Option(TsBytes()),
+  ccmAdditionalData: TsBytes(),
+  vaultSwapParameters: vaultSwapParametersCodec,
+});
+
+const vaultCcmParametersCodec = Struct({
   vaultSwapParameters: vaultSwapParametersCodec,
 });
 
@@ -130,30 +134,46 @@ export function encodeCfParameters(
   dcaParams?: DcaParams,
   _beneficiaries?: AffiliateBroker[],
 ): string | undefined {
-  return ccmAdditionalData || fillOrKillParams || dcaParams || boostFeeBps
-    ? bytesToHex(
-        vaultCfParametersCodec.enc({
-          ccmAdditionalData: ccmAdditionalData
-            ? hexToBytes(ccmAdditionalData as `0x${string}`)
-            : undefined,
-          vaultSwapParameters: {
-            refundParams: {
-              retryDurationBlocks: fillOrKillParams.retryDurationBlocks,
-              refundAddress: {
-                tag: sourceChain,
-                value: hexToBytes(fillOrKillParams.refundAddress as `0x${string}`),
-              },
-              minPriceX128: BigInt(fillOrKillParams.minPriceX128),
-            },
-            dcaParams,
-            boostFee: boostFeeBps,
-            // For now just hardcode to an empty array. The beneficiary's accounts
-            // needs to be converted to a u8 (id).
-            brokerFees: [],
-          },
-        }),
-      )
-    : undefined;
+  function createVaultSwapParameters(
+    srcChain: Chain,
+    refundParams: FillOrKillParamsX128,
+    boostFee?: number,
+    dca?: DcaParams,
+  ) {
+    return {
+      refundParams: {
+        retryDurationBlocks: refundParams.retryDurationBlocks,
+        refundAddress: {
+          tag: srcChain,
+          value: hexToBytes(refundParams.refundAddress as `0x${string}`),
+        },
+        minPriceX128: BigInt(refundParams.minPriceX128),
+      },
+      dcaParams: dca,
+      boostFee,
+      brokerFees: [],
+    };
+  }
+
+  if (ccmAdditionalData || fillOrKillParams || dcaParams || boostFeeBps) {
+    const vaultSwapParameters = createVaultSwapParameters(
+      sourceChain,
+      fillOrKillParams,
+      boostFeeBps,
+      dcaParams,
+    );
+    return bytesToHex(
+      ccmAdditionalData !== undefined
+        ? vaultCfParametersCodec.enc({
+            ccmAdditionalData: hexToBytes(ccmAdditionalData as `0x${string}`),
+            vaultSwapParameters,
+          })
+        : vaultCcmParametersCodec.enc({
+            vaultSwapParameters,
+          }),
+    );
+  }
+  return undefined;
 }
 
 const swapNative = async (
