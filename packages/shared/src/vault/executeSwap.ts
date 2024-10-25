@@ -85,8 +85,8 @@ const vaultSwapParametersCodec = Struct({
   }),
   dcaParams: Option(Struct({ numberOfChunks: u32, chunkIntervalBlocks: u32 })),
   boostFee: Option(u16),
-  // TODO: Should broker be mandatory?
-  brokerFees: Option(Vector(Struct({ id: u8, commissionBps: u16 }))),
+  // TODO: Define this / implement it on the SC and engine - PRO-1743.
+  brokerFees: Vector(Struct({ id: u8, commissionBps: u16 })),
 });
 
 const vaultCfParametersCodec = Struct({
@@ -114,9 +114,9 @@ export function encodeSwapParameters(
           },
           dcaParams,
           boostFee: boostFeeBps,
-          // For now just hardcode to undefined. The beneficiary's accounts needs
-          // to be converted to a u8 (id).
-          brokerFees: undefined,
+          // For now just hardcode to an empty array. The beneficiary's accounts
+          // needs to be converted to a u8 (id).
+          brokerFees: [],
         }),
       )
     : undefined;
@@ -147,9 +147,9 @@ export function encodeCfParameters(
             },
             dcaParams,
             boostFee: boostFeeBps,
-            // For now just hardcode to undefined. The beneficiary's accounts needs
-            // to be converted to a u8 (id).
-            brokerFees: undefined,
+            // For now just hardcode to an empty array. The beneficiary's accounts
+            // needs to be converted to a u8 (id).
+            brokerFees: [],
           },
         }),
       )
