@@ -7,7 +7,7 @@ import { quoteQuerySchema, DCABoostQuote, DCAQuote } from '@/shared/schemas';
 import env from '../../config/env';
 import { getBoostSafeMode } from '../../polkadot/api';
 import { getUsdValue } from '../../pricing/checkPriceWarning';
-import Quoter, { type QuotingServer } from '../../quoting/Quoter';
+import Quoter from '../../quoting/Quoter';
 import { getBoostFeeBpsForAmount } from '../../utils/boost';
 import getPoolQuote from '../../utils/getPoolQuote';
 import logger from '../../utils/logger';
@@ -334,9 +334,7 @@ export const generateQuotes = async ({
   return { quotes: result, limitOrders };
 };
 
-const quoteRouter = (io: QuotingServer) => {
-  const quoter = new Quoter(io);
-
+const quoteRouter = (quoter: Quoter) => {
   const router = express.Router().use((req, res, next) => {
     if (env.DISABLE_QUOTING) {
       next(ServiceError.unavailable('Quoting is currently unavailable due to maintenance'));

@@ -4,7 +4,7 @@ import { Asset, assetConstants, Assets, Chain, Chains, InternalAsset } from '@/s
 import { asyncHandler } from './common';
 import env from '../config/env';
 import { getUsdValue } from '../pricing/checkPriceWarning';
-import Quoter, { type QuotingServer } from '../quoting/Quoter';
+import Quoter from '../quoting/Quoter';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
 import { generateQuotes, validateQuoteQuery } from './v2/quote';
@@ -42,9 +42,7 @@ export const fallbackChains = {
   [Assets.SOL]: Chains.Solana,
 } satisfies Record<Asset, Chain>;
 
-const quoteRouter = (io: QuotingServer) => {
-  const quoter = new Quoter(io);
-
+const quoteRouter = (quoter: Quoter) => {
   const router = express.Router().use((req, res, next) => {
     if (env.DISABLE_QUOTING) {
       next(ServiceError.unavailable('Quoting is currently unavailable due to maintenance'));

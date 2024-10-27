@@ -7,6 +7,7 @@ import { Server } from 'socket.io';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import openSwapDepositChannel from './handlers/openSwapDepositChannel';
 import authenticate from './quoting/authenticate';
+import Quoter from './quoting/Quoter';
 import addresses from './routes/addresses';
 import { handleError, maintenanceMode } from './routes/common';
 import quoteRouter from './routes/quote';
@@ -29,6 +30,7 @@ export type AppRouter = typeof appRouter;
 const app = express().use(cors());
 const server = createServer(app);
 const io = new Server(server).use(authenticate);
+const quoter = new Quoter(io);
 
 app.use((req, res, next) => {
   const info = {
@@ -58,8 +60,8 @@ app.get('/healthcheck', (req, res) => {
   res.status(200).send('OK');
 });
 
-app.use('/quote', quoteRouter(io));
-app.use('/v2/quote', quoteRouterV2(io));
+app.use('/quote', quoteRouter(quoter));
+app.use('/v2/quote', quoteRouterV2(quoter));
 
 app.use('/trpc', maintenanceMode, trpcExpress.createExpressMiddleware({ router: appRouter }));
 
