@@ -158,6 +158,7 @@ export type { Quote, RegularQuote, BoostQuote, DCAQuote, DCABoostQuote } from '@
 
 export interface DepositAddressRequestV2 {
   quote: Quote | BoostQuote;
+  srcAddress: string;
   destAddress: string;
   fillOrKillParams?: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage;
   affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];

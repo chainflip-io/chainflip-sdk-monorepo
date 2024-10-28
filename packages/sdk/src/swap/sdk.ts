@@ -451,6 +451,7 @@ export class SwapSDK {
 
   async requestDepositAddressV2({
     quote,
+    srcAddress,
     destAddress,
     fillOrKillParams: inputFoKParams,
     affiliateBrokers: affiliates,
@@ -465,6 +466,7 @@ export class SwapSDK {
       srcChain: quote.srcAsset.chain,
       destAsset: quote.destAsset.asset,
       destChain: quote.destAsset.chain,
+      srcAddress,
       destAddress,
       dcaParams: quote.type === 'DCA' ? quote.dcaParams : undefined,
       fillOrKillParams: parseFoKParams(inputFoKParams, quote),
