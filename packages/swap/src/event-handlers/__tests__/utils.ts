@@ -158,6 +158,46 @@ export const swapDepositAddressReadyCcmParamsMocked = {
   },
 } as const;
 
+export const swapRequestCompletedMock = {
+  block: {
+    specId: 'test@160',
+    height: 120,
+    timestamp: 1670337105000,
+    hash: '0x123',
+  },
+  event: {
+    args: {
+      swapRequestId: '9876545',
+    },
+    id: '0000012799-000000-c1ea7',
+    indexInBlock: 0,
+    nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
+    name: eventNames.Swapping.SwapRequestCompleted,
+    phase: 'ApplyExtrinsic',
+    pos: 2,
+    extrinsic: {
+      error: null,
+      hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
+      id: '0000012799-000000-c1ea7',
+      indexInBlock: 0,
+      nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
+      pos: 1,
+      success: true,
+      version: 4,
+      call: {
+        args: [null],
+        error: null,
+        id: '0000012799-000000-c1ea7',
+        name: 'Timestamp.set',
+        nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
+        origin: [null],
+        pos: 0,
+        success: true,
+      },
+    },
+  },
+} as const;
+
 export const swapEgressScheduledMock = {
   block: {
     specId: 'test@160',
