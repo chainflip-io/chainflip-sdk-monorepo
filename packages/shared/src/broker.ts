@@ -243,12 +243,9 @@ export const buildExtrinsicPayload = (
     .parse(swapRequest.ccmParams ?? null);
 
   const fokParams = getTransformedFokSchema(
-    z
-      .string()
-      .transform((address) =>
-        toForeignChainAddress(swapRequest.srcChain, address, chainflipNetwork),
-      ),
-  )
+      z
+        .string(),
+    )
     .nullable()
     .parse(swapRequest.fillOrKillParams ?? null);
 
