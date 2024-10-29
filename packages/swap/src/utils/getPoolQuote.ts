@@ -108,9 +108,8 @@ export default async function getPoolQuote<T extends QuoteType>({
     includedFees,
     lowLiquidityWarning,
     poolInfo,
-    estimatedDurations,
-    estimatedDurationSeconds:
-      estimatedDurations.deposit + estimatedDurations.swap + estimatedDurations.egress,
+    estimatedDurations: estimatedDurations.durations,
+    estimatedDurationSeconds: estimatedDurations.total,
     estimatedPrice: getSwapPrice(
       srcAsset,
       String(swapInputAmount),

@@ -166,10 +166,8 @@ router.get(
       ...(internalDestAsset && getAssetAndChain(internalDestAsset, 'dest')),
       destAddress: readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress'),
       srcChainRequiredBlockConfirmations,
-      estimatedDurations,
-      estimatedDurationSeconds:
-        estimatedDurations &&
-        estimatedDurations.deposit + estimatedDurations.swap + estimatedDurations.egress,
+      estimatedDurations: estimatedDurations?.durations,
+      estimatedDurationSeconds: estimatedDurations?.total,
       fees: aggregateFees ?? [],
       ...(showDepositchannel &&
         swapDepositChannel && {

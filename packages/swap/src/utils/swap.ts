@@ -41,9 +41,13 @@ export const estimateSwapDuration = async ({
   const egressInclusionDuration = chainConstants[destChain].blockTimeSeconds;
 
   return {
-    deposit: depositInclusionDuration + depositWitnessDuration,
-    swap: swapDuration,
-    egress: egressInclusionDuration,
+    durations: {
+      deposit: depositInclusionDuration + depositWitnessDuration,
+      swap: swapDuration,
+      egress: egressInclusionDuration,
+    },
+    total:
+      depositInclusionDuration + depositWitnessDuration + swapDuration + egressInclusionDuration,
   };
 };
 

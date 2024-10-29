@@ -101,9 +101,9 @@ const adjustDcaQuote = ({
       )
     : 0n;
 
-  const netWorkFee = dcaQuote.includedFees.find((fee) => fee.type === 'NETWORK');
-  if (netWorkFee) {
-    netWorkFee.amount = new BigNumber(netWorkFee.amount)
+  const networkFee = dcaQuote.includedFees.find((fee) => fee.type === 'NETWORK');
+  if (networkFee) {
+    networkFee.amount = new BigNumber(networkFee.amount)
       .multipliedBy(dcaQuoteParams.numberOfChunks)
       .toFixed(0);
   }

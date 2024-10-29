@@ -20,7 +20,10 @@ describe(estimateSwapDuration, () => {
     ['Eth', 'Dot', { deposit: 12 + 12, swap: 12, egress: 6 }] as const,
     ['Eth', 'Btc', { deposit: 12 + 12, swap: 12, egress: 600 }] as const,
   ])(`estimates time for normal swap from %s to %s`, async (srcAsset, destAsset, expected) => {
-    expect(await estimateSwapDuration({ srcAsset, destAsset })).toStrictEqual(expected);
+    expect(await estimateSwapDuration({ srcAsset, destAsset })).toStrictEqual({
+      durations: expected,
+      total: expected.deposit + expected.swap + expected.egress,
+    });
   });
 
   it.each([
@@ -31,8 +34,9 @@ describe(estimateSwapDuration, () => {
     ['Eth', 'Dot', { deposit: 12, swap: 12, egress: 6 }] as const,
     ['Eth', 'Btc', { deposit: 12, swap: 12, egress: 600 }] as const,
   ])(`estimates time for boosted swap from %s to %s`, async (srcAsset, destAsset, expected) => {
-    expect(await estimateSwapDuration({ srcAsset, destAsset, boosted: true })).toStrictEqual(
-      expected,
-    );
+    expect(await estimateSwapDuration({ srcAsset, destAsset, boosted: true })).toStrictEqual({
+      durations: expected,
+      total: expected.deposit + expected.swap + expected.egress,
+    });
   });
 });
