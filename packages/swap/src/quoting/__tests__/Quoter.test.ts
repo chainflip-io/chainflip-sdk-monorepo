@@ -122,8 +122,8 @@ describe(Quoter, () => {
 
       const errors: string[] = [];
 
-      socket.on('quote_error', ({ error }) => {
-        errors.push(error);
+      socket.on('quote_error', (msg) => {
+        errors.push(msg);
       });
 
       return {
@@ -348,7 +348,9 @@ describe(Quoter, () => {
       mm1.sendQuote({ ...request1, legs: [[[0, '0']]] });
       const quote = mm2.sendQuote({ ...request2, legs: [[[0, '110']]] });
       expect(await limitOrders).toEqual(quote);
-      expect(mm1.errors).toEqual(['sell amount must be positive']);
+      expect(mm1.errors).toEqual([
+        { error: 'sell amount must be positive', request_id: request1.request_id },
+      ]);
     });
 
     it('rejects quotes with too low ticks', async () => {
@@ -359,7 +361,9 @@ describe(Quoter, () => {
       mm1.sendQuote({ ...request1, legs: [[[MIN_TICK - 1, '100']]] });
       const quote = mm2.sendQuote({ ...request2, legs: [[[0, '200']]] });
       expect(await limitOrders).toEqual(quote);
-      expect(mm1.errors).toEqual(['tick provided is too small']);
+      expect(mm1.errors).toEqual([
+        { error: 'tick provided is too small', request_id: request1.request_id },
+      ]);
     });
 
     it('rejects quotes with too high ticks', async () => {
@@ -370,7 +374,9 @@ describe(Quoter, () => {
       mm1.sendQuote({ ...request1, legs: [[[MAX_TICK + 1, '100']]] });
       const quote = mm2.sendQuote({ ...request2, legs: [[[0, '200']]] });
       expect(await limitOrders).toEqual(quote);
-      expect(mm1.errors).toEqual(['tick provided is too big']);
+      expect(mm1.errors).toEqual([
+        { error: 'tick provided is too big', request_id: request1.request_id },
+      ]);
     });
   });
 });

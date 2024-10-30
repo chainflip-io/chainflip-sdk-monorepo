@@ -17,6 +17,7 @@ import {
   MarketMakerQuote,
   MarketMakerQuoteRequest,
   marketMakerResponseSchema,
+  requestIdObj,
 } from './schemas';
 import env from '../config/env';
 import { getAssetPrice } from '../pricing';
@@ -79,7 +80,7 @@ export type SocketData = {
 export type ReceivedEventMap = { quote_response: (message: unknown) => void };
 export type SentEventMap = {
   quote_request: (message: MarketMakerQuoteRequest<LegJson>) => void;
-  quote_error: (message: { error: string }) => void;
+  quote_error: (message: { error: string; request_id: string }) => void;
 };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type QuotingServer = Server<ReceivedEventMap, SentEventMap, any, SocketData>;
@@ -119,12 +120,15 @@ export default class Quoter {
 
           if (socket.data.clientVersion === '2') {
             let error;
+            let requestId = 'unknown';
             try {
               error = JSON.parse(result.error.message)[0].message;
+              const requestIdResult = requestIdObj.safeParse(message);
+              if (requestIdResult.success) requestId = requestIdResult.data.request_id;
             } catch {
               error = result.error.message;
             }
-            socket.emit('quote_error', { error });
+            socket.emit('quote_error', { error, request_id: requestId });
           }
 
           return;
