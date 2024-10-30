@@ -201,26 +201,6 @@ function toEncodedAddress(chain: Chain, address: string): EncodedAddress {
   }
 }
 
-const toForeignChainAddress = (
-  chain: Chain,
-  address: string,
-  network: ChainflipNetwork,
-): ForeignChainAddress => {
-  switch (chain) {
-    case 'Arbitrum':
-    case 'Ethereum':
-    case 'Polkadot':
-    case 'Solana':
-      return toEncodedAddress(chain, address);
-    case 'Bitcoin': {
-      const { type, data } = bitcoin.decodeAddress(address, network);
-      return { Btc: { [type]: data } } as ForeignChainAddress;
-    }
-    default:
-      throw new Error(`Unsupported chain: ${chain}`);
-  }
-};
-
 export type SwappingRequestSwapDepositAddressWithAffiliates = [
   sourceAsset: InternalAsset,
   destinationAsset: InternalAsset,
@@ -238,7 +218,7 @@ export type SwappingRequestSwapDepositAddressWithAffiliates = [
   }[],
   refundParameters: {
     retry_duration: number;
-    refund_address: ForeignChainAddress;
+    refund_address: EncodedAddress;
     min_price: `0x${string}`;
   } | null,
   dcaParameters: {
@@ -267,7 +247,9 @@ export const buildExtrinsicPayload = (
     .nullable()
     .parse(swapRequest.ccmParams ?? null);
 
-  const fokParams = getTransformedFokSchema(z.string())
+  const fokParams = getTransformedFokSchema(
+    z.string().transform((value) => toEncodedAddress(swapRequest.srcChain, value)),
+  )
     .nullable()
     // TODO(1.8): remove any and generate types
     .parse(swapRequest.fillOrKillParams ?? null) as any;
