@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/cli",
-  "version": "1.8.0-encoded-address.1",
+  "version": "1.8.0-encoded-address.2",
   "description": "",
   "main": "./dist/lib.mjs",
   "types": "./dist/lib.d.mts",

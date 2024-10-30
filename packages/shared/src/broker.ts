@@ -241,9 +241,7 @@ export const buildExtrinsicPayload = (
     .nullable()
     .parse(swapRequest.ccmParams ?? null);
 
-  const fokParams = getTransformedFokSchema(
-    z.string().transform((address) => toEncodedAddress(swapRequest.srcChain, address)),
-  )
+  const fokParams = getTransformedFokSchema(z.string())
     .nullable()
     // TODO(1.8): remove any and generate types
     .parse(swapRequest.fillOrKillParams ?? null) as any;
