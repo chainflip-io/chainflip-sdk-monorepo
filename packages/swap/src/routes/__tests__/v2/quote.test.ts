@@ -53,7 +53,6 @@ jest.mock('../../../pricing/checkPriceWarning', () => ({
 describe(getDcaQuoteParams, () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.restoreAllMocks();
     env.DCA_CHUNK_SIZE_USD = { Btc: 3000 };
     env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
     env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
@@ -189,6 +188,7 @@ describe('server', () => {
   afterEach((cb) => {
     Object.assign(env, oldEnv);
     server.close(cb);
+    jest.restoreAllMocks();
   });
 
   describe('GET /v2/quote', () => {
