@@ -52,6 +52,7 @@ export default async function swapRequestCompleted({
     await prisma.quote.update({
       where: { id: channelQuote.id },
       data: {
+        executedAt: new Date(block.timestamp),
         executedPrice,
         executedSlippagePercent,
         swapRequestId: swapRequest.id,
