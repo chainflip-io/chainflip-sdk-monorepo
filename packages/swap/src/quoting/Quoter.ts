@@ -177,7 +177,7 @@ export default class Quoter {
       let timer: ReturnType<typeof setTimeout>;
 
       const complete = () => {
-        resolve([...clientsReceivedQuotes.values()]);
+        resolve(clientsReceivedQuotes.values().toArray());
         sub.unsubscribe();
         clearTimeout(timer);
         this.inflightRequests.delete(request.request_id);

@@ -1,8 +1,17 @@
 import { z } from 'zod';
+import { MAX_TICK, MIN_TICK } from '@/shared/consts';
 import { BaseAssetAndChain } from '@/shared/enums';
 import { numericString } from '@/shared/parsers';
 
-const limitOrder = z.tuple([z.number(), numericString.transform((n) => BigInt(n))]);
+const limitOrder = z.tuple([
+  z
+    .number()
+    .gte(MIN_TICK, { message: 'tick provided is too small' })
+    .lte(MAX_TICK, { message: 'tick provided is too big' }),
+  numericString
+    .transform((n) => BigInt(n))
+    .refine((n) => n > 0n, { message: 'sell amount must be positive' }),
+]);
 
 export const marketMakerResponseSchema = z.object({
   request_id: z.string(),

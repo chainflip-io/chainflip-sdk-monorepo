@@ -68,7 +68,7 @@ export const getSwapRateV2 = async ({
     getAssetAndChain(srcAsset),
     getAssetAndChain(destAsset),
     hexEncodeNumber(amount),
-    limitOrders?.filter((order) => order.LimitOrder.sell_amount !== '0x0'),
+    limitOrders,
   );
 
   const {

@@ -6,6 +6,7 @@ import { Server } from 'socket.io';
 import { io, Socket } from 'socket.io-client';
 import { setTimeout as sleep } from 'timers/promises';
 import { promisify } from 'util';
+import { MAX_TICK, MIN_TICK } from '@/shared/consts';
 import { assetConstants, getAssetAndChain } from '@/shared/enums';
 import env from '@/swap/config/env';
 import prisma, { InternalAsset } from '../../client';
@@ -212,7 +213,7 @@ describe(Quoter, () => {
     });
   });
 
-  describe(Quoter.prototype['collectMakerQuotes'], () => {
+  describe(Quoter.prototype.getLimitOrders, () => {
     const ONE_BTC = toAtomicUnits(1, 'Btc', 'bigint');
 
     it('returns an empty array if expectedQuotes is 0', async () => {
@@ -329,6 +330,36 @@ describe(Quoter, () => {
       expect(mm2.requestCount).toBe(1);
       expect(request1).toMatchSnapshot({ request_id: expect.any(String) }, 'solana');
       expect(request2).toMatchSnapshot({ request_id: expect.any(String) }, 'flip');
+    });
+
+    it('rejects quotes with 0 sell amount', async () => {
+      const mm1 = await connectClient('marketMaker', ['Btc']);
+      const mm2 = await connectClient('marketMaker2', ['Btc']);
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const [request1, request2] = await Promise.all([mm1.waitForRequest(), mm2.waitForRequest()]);
+      mm1.sendQuote({ ...request1, legs: [[[0, '0']]] });
+      const quote = mm2.sendQuote({ ...request2, legs: [[[0, '110']]] });
+      expect(await limitOrders).toEqual(quote);
+    });
+
+    it('rejects quotes with too low ticks', async () => {
+      const mm1 = await connectClient('marketMaker', ['Btc']);
+      const mm2 = await connectClient('marketMaker2', ['Btc']);
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const [request1, request2] = await Promise.all([mm1.waitForRequest(), mm2.waitForRequest()]);
+      mm1.sendQuote({ ...request1, legs: [[[MIN_TICK - 1, '100']]] });
+      const quote = mm2.sendQuote({ ...request2, legs: [[[0, '200']]] });
+      expect(await limitOrders).toEqual(quote);
+    });
+
+    it('rejects quotes with too high ticks', async () => {
+      const mm1 = await connectClient('marketMaker', ['Btc']);
+      const mm2 = await connectClient('marketMaker2', ['Btc']);
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const [request1, request2] = await Promise.all([mm1.waitForRequest(), mm2.waitForRequest()]);
+      mm1.sendQuote({ ...request1, legs: [[[MAX_TICK + 1, '100']]] });
+      const quote = mm2.sendQuote({ ...request2, legs: [[[0, '200']]] });
+      expect(await limitOrders).toEqual(quote);
     });
   });
 });

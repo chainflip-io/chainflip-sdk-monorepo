@@ -188,6 +188,7 @@ describe('server', () => {
   afterEach((cb) => {
     Object.assign(env, oldEnv);
     server.close(cb);
+    jest.restoreAllMocks();
   });
 
   describe('GET /v2/quote', () => {
@@ -1017,22 +1018,13 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      const sendSpy = jest
-        .spyOn(WsClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 0).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
-          intermediary: null,
-          output: BigInt(100e6),
-        })
-        .mockResolvedValueOnce({
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 0).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
-          intermediary: null,
-          output: BigInt(100e6),
-        });
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        ingress_fee: buildFee('Eth', 25000).bigint,
+        egress_fee: buildFee('Usdc', 0).bigint,
+        network_fee: buildFee('Usdc', 100100).bigint,
+        intermediary: null,
+        output: BigInt(100e6),
+      });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -1147,22 +1139,13 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      const sendSpy = jest
-        .spyOn(WsClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 0).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
-          intermediary: null,
-          output: BigInt(100e6),
-        })
-        .mockResolvedValueOnce({
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 0).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
-          intermediary: null,
-          output: BigInt(100e6),
-        });
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        ingress_fee: buildFee('Eth', 25000).bigint,
+        egress_fee: buildFee('Usdc', 0).bigint,
+        network_fee: buildFee('Usdc', 100100).bigint,
+        intermediary: null,
+        output: BigInt(100e6),
+      });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -1277,22 +1260,13 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      const sendSpy = jest
-        .spyOn(WsClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 0).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
-          intermediary: null,
-          output: BigInt(100e6),
-        })
-        .mockResolvedValueOnce({
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 0).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
-          intermediary: null,
-          output: BigInt(100e6),
-        });
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        ingress_fee: buildFee('Eth', 25000).bigint,
+        egress_fee: buildFee('Usdc', 0).bigint,
+        network_fee: buildFee('Usdc', 100100).bigint,
+        intermediary: null,
+        output: BigInt(100e6),
+      });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -1353,6 +1327,73 @@ describe('server', () => {
           type: 'REGULAR',
         },
       ]);
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('handles unexpected upstream errors', async () => {
+      jest.mocked(getUsdValue).mockResolvedValue('9800');
+      env.DISABLE_DCA_QUOTING = true;
+
+      mockRpcResponse((url, data: any) => {
+        if (data.method === 'cf_environment') {
+          return Promise.resolve({
+            data: environment({
+              maxSwapAmount: null,
+              ingressFee: hexEncodeNumber(0x61a8),
+              egressFee: hexEncodeNumber(0x0),
+            }),
+          });
+        }
+
+        if (data.method === 'cf_boost_pools_depth') {
+          return Promise.resolve({
+            data: boostPoolsDepth(),
+          });
+        }
+
+        if (data.method === 'cf_accounts') {
+          return Promise.resolve({
+            data: {
+              id: 1,
+              jsonrpc: '2.0',
+              result: [
+                ['cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH', 'Chainflip Testnet Broker 2'],
+              ],
+            },
+          });
+        }
+
+        if (data.method === 'cf_account_info') {
+          return Promise.resolve({
+            data: cfAccountInfo(),
+          });
+        }
+
+        if (data.method === 'cf_pool_depth') {
+          return Promise.resolve({
+            data: cfPoolDepth(),
+          });
+        }
+
+        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+      });
+
+      const sendSpy = jest
+        .spyOn(WsClient.prototype, 'sendRequest')
+        .mockRejectedValue(new Error('Dispatch Error: did you catch me?'));
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'ETH',
+        destChain: 'Ethereum',
+        destAsset: 'USDC',
+        amount: (1e18).toString(),
+      });
+
+      const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
+
+      expect(status).toBe(500);
+      expect(body).toEqual({ message: 'Dispatch Error: did you catch me?' });
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
   });
