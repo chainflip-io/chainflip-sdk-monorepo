@@ -724,7 +724,6 @@ describe('server', () => {
           egressAmount: '4994992',
           estimatedDurationSeconds: 1830,
           estimatedPrice: '5015.53082706766917293233',
-          recommendedSlippageTolerancePercent: 2,
           includedFees: [
             {
               amount: '5000',
