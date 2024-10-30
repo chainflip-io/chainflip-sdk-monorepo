@@ -1,8 +1,17 @@
 import { z } from 'zod';
+import { MAX_TICK, MIN_TICK } from '@/shared/consts';
 import { BaseAssetAndChain } from '@/shared/enums';
 import { numericString } from '@/shared/parsers';
 
-const limitOrder = z.tuple([z.number(), numericString.transform((n) => BigInt(n))]);
+const limitOrder = z.tuple([
+  z
+    .number()
+    .gte(MIN_TICK, { message: 'tick provided is too small' })
+    .lte(MAX_TICK, { message: 'tick provided is too big' }),
+  numericString
+    .transform((n) => BigInt(n))
+    .refine((n) => n > 0n, { message: 'sell amount must be positive' }),
+]);
 
 export const marketMakerResponseSchema = z.object({
   request_id: z.string(),
@@ -15,14 +24,14 @@ export const marketMakerResponseSchema = z.object({
 export type MarketMakerRawQuote = z.input<typeof marketMakerResponseSchema>;
 export type MarketMakerQuote = z.output<typeof marketMakerResponseSchema>;
 
-export type Leg = {
+export type LegJson = {
   amount: string;
   base_asset: BaseAssetAndChain;
   quote_asset: { chain: 'Ethereum'; asset: 'USDC' };
   side: 'BUY' | 'SELL';
 };
 
-export type MarketMakerQuoteRequest = {
+export type MarketMakerQuoteRequest<T> = {
   request_id: string;
-  legs: readonly [Leg] | readonly [Leg, Leg];
+  legs: readonly [T] | readonly [T, T];
 };

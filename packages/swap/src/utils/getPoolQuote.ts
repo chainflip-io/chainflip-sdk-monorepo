@@ -1,28 +1,15 @@
-import BigNumber from 'bignumber.js';
-import { assetConstants, getAssetAndChain, getInternalAsset } from '@/shared/enums';
+import { getAssetAndChain, getInternalAsset } from '@/shared/enums';
 import { getPipAmountFromAmount } from '@/shared/functions';
-import { QuoteQueryResponse, QuoteType } from '@/shared/schemas';
-import { estimateSwapDuration } from '@/swap/utils/swap';
+import { Quote, QuoteType } from '@/shared/schemas';
+import { estimateSwapDuration, getSwapPrice } from '@/swap/utils/swap';
 import { buildFee, getPoolFees } from './fees';
 import { getEgressFee, getMinimumEgressAmount } from './rpc';
 import ServiceError from './ServiceError';
-import { LimitOrders, getSwapRateV2 } from './statechain';
+import { getSwapRateV2, LimitOrders } from './statechain';
 import { InternalAsset, Pool } from '../client';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 
-const getPrice = (
-  inputAmount: bigint,
-  inputAsset: InternalAsset,
-  outputAmount: bigint,
-  outputAsset: InternalAsset,
-) => {
-  const input = BigNumber(String(inputAmount)).shiftedBy(-assetConstants[inputAsset].decimals);
-  const output = BigNumber(String(outputAmount)).shiftedBy(-assetConstants[outputAsset].decimals);
-
-  return output.div(input).toFixed();
-};
-
-export default async function getPoolQuote({
+export default async function getPoolQuote<T extends QuoteType>({
   srcAsset,
   destAsset,
   depositAmount,
@@ -39,8 +26,8 @@ export default async function getPoolQuote({
   limitOrders?: LimitOrders;
   boostFeeBps?: number;
   pools: Pool[];
-  quoteType: QuoteType;
-}): Promise<QuoteQueryResponse> {
+  quoteType: T;
+}): Promise<Extract<Quote, { type: T }>> {
   const includedFees = [];
   let swapInputAmount = depositAmount;
 
@@ -118,7 +105,15 @@ export default async function getPoolQuote({
       destAsset,
       boosted: Boolean(boostFeeBps),
     }),
-    estimatedPrice: getPrice(swapInputAmount, srcAsset, swapOutputAmount, destAsset),
+    estimatedPrice: getSwapPrice(
+      srcAsset,
+      String(swapInputAmount),
+      destAsset,
+      String(swapOutputAmount),
+    ),
     type: quoteType,
-  };
+    srcAsset: getAssetAndChain(srcAsset),
+    destAsset: getAssetAndChain(destAsset),
+    depositAmount: depositAmount.toString(),
+  } as Extract<Quote, { type: T }>;
 }

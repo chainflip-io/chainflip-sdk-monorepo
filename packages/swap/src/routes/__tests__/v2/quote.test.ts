@@ -178,7 +178,6 @@ describe('server', () => {
 
   beforeEach(async () => {
     jest.mocked(getUsdValue).mockResolvedValue(undefined);
-    await prisma.$queryRaw`TRUNCATE TABLE private."QuoteResult" CASCADE`;
     server = app.listen(0);
     jest.mocked(Quoter.prototype.getLimitOrders).mockResolvedValue([]);
     mockRpcs({ ingressFee: hexEncodeNumber(2000000), egressFee: hexEncodeNumber(50000) });
@@ -189,6 +188,7 @@ describe('server', () => {
   afterEach((cb) => {
     Object.assign(env, oldEnv);
     server.close(cb);
+    jest.restoreAllMocks();
   });
 
   describe('GET /v2/quote', () => {
@@ -503,6 +503,11 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body).toEqual([
         {
+          depositAmount: '1000000000000000000',
+          destAsset: {
+            asset: 'USDC',
+            chain: 'Ethereum',
+          },
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
           estimatedPrice: '100.0080000000025002',
@@ -537,9 +542,18 @@ describe('server', () => {
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
+          srcAsset: {
+            asset: 'ETH',
+            chain: 'Ethereum',
+          },
           type: 'REGULAR',
         },
         {
+          depositAmount: '1000000000000000000',
+          destAsset: {
+            asset: 'USDC',
+            chain: 'Ethereum',
+          },
           egressAmount: (400024000).toString(),
           estimatedDurationSeconds: 90,
           estimatedPrice: '400.0320000000100008',
@@ -578,6 +592,10 @@ describe('server', () => {
             chunkIntervalBlocks: 2,
             numberOfChunks: 4,
           },
+          srcAsset: {
+            asset: 'ETH',
+            chain: 'Ethereum',
+          },
           type: 'DCA',
         },
       ]);
@@ -595,7 +613,357 @@ describe('server', () => {
         'cf_swap_rate_v2',
         { asset: 'ETH', chain: 'Ethereum' },
         { asset: 'USDC', chain: 'Ethereum' },
-        '0x3782dace9d9493e', // 2.5e17 + 3 * 6250 (ingressFee)
+        '0x3782dace9d9493e', // 2.5e17 + 3/4 * 25000 (ingressFee surcharge)
+        [],
+      );
+    });
+
+    it('gets the DCA quote with a boost quote', async () => {
+      env.DCA_CHUNK_SIZE_USD = { Btc: 3000 };
+      env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
+      env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
+      jest.mocked(getUsdValue).mockResolvedValue('9800');
+
+      mockRpcResponse((url, data: any) => {
+        if (data.method === 'cf_environment') {
+          return Promise.resolve({
+            data: environment({
+              maxSwapAmount: null,
+              ingressFee: hexEncodeNumber(0x61a8),
+              egressFee: hexEncodeNumber(0x0),
+            }),
+          });
+        }
+
+        if (data.method === 'cf_boost_pools_depth') {
+          return Promise.resolve({
+            data: boostPoolsDepth(),
+          });
+        }
+
+        if (data.method === 'cf_accounts') {
+          return Promise.resolve({
+            data: {
+              id: 1,
+              jsonrpc: '2.0',
+              result: [
+                ['cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH', 'Chainflip Testnet Broker 2'],
+              ],
+            },
+          });
+        }
+
+        if (data.method === 'cf_account_info') {
+          return Promise.resolve({
+            data: cfAccountInfo(),
+          });
+        }
+
+        if (data.method === 'cf_pool_depth') {
+          return Promise.resolve({
+            data: cfPoolDepth(),
+          });
+        }
+
+        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+      });
+
+      const sendSpy = jest
+        .spyOn(WsClient.prototype, 'sendRequest')
+        .mockResolvedValueOnce({
+          ingress_fee: buildFee('Btc', 250).bigint,
+          egress_fee: buildFee('Usdc', 8000).bigint,
+          network_fee: buildFee('Usdc', 100100).bigint,
+          intermediary: null,
+          output: BigInt(5e6),
+        })
+        .mockResolvedValueOnce({
+          ingress_fee: buildFee('Btc', 250).bigint,
+          egress_fee: buildFee('Usdc', 8000).bigint,
+          network_fee: buildFee('Usdc', 100100).bigint,
+          intermediary: null,
+          output: BigInt(5e6),
+        })
+        .mockResolvedValueOnce({
+          ingress_fee: buildFee('Btc', 250).bigint,
+          egress_fee: buildFee('Usdc', 8000).bigint,
+          network_fee: buildFee('Usdc', 100100).bigint,
+          intermediary: null,
+          output: BigInt(5e6),
+        })
+        .mockResolvedValueOnce({
+          ingress_fee: buildFee('Btc', 250).bigint,
+          egress_fee: buildFee('Usdc', 8000).bigint,
+          network_fee: buildFee('Usdc', 100100).bigint,
+          intermediary: null,
+          output: BigInt(5e6),
+        });
+
+      const params = new URLSearchParams({
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'USDC',
+        amount: (0.001e8).toString(),
+        dcaEnabled: 'true',
+      });
+
+      const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
+
+      expect(status).toBe(200);
+      expect(body).toEqual([
+        {
+          depositAmount: '100000',
+          destAsset: {
+            asset: 'USDC',
+            chain: 'Ethereum',
+          },
+          egressAmount: (5e6).toString(),
+          estimatedDurationSeconds: 1830,
+          estimatedPrice: '5020.55137844611528822055',
+          includedFees: [
+            {
+              amount: '250',
+              asset: 'BTC',
+              chain: 'Bitcoin',
+              type: 'INGRESS',
+            },
+            {
+              amount: '100100',
+              asset: 'USDC',
+              chain: 'Ethereum',
+              type: 'NETWORK',
+            },
+            {
+              amount: '8000',
+              asset: 'USDC',
+              chain: 'Ethereum',
+              type: 'EGRESS',
+            },
+          ],
+          poolInfo: [
+            {
+              baseAsset: { asset: 'BTC', chain: 'Bitcoin' },
+              fee: {
+                amount: '199',
+                asset: 'BTC',
+                chain: 'Bitcoin',
+              },
+              quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
+            },
+          ],
+          srcAsset: {
+            asset: 'BTC',
+            chain: 'Bitcoin',
+          },
+          type: 'REGULAR',
+          boostQuote: {
+            depositAmount: '100000',
+            destAsset: {
+              asset: 'USDC',
+              chain: 'Ethereum',
+            },
+            egressAmount: '5000000',
+            estimatedBoostFeeBps: 10,
+            estimatedDurationSeconds: 630,
+            estimatedPrice: '5025.58956347215253386854',
+            includedFees: [
+              {
+                amount: '100',
+                asset: 'BTC',
+                chain: 'Bitcoin',
+                type: 'BOOST',
+              },
+              {
+                amount: '250',
+                asset: 'BTC',
+                chain: 'Bitcoin',
+                type: 'INGRESS',
+              },
+              {
+                amount: '100100',
+                asset: 'USDC',
+                chain: 'Ethereum',
+                type: 'NETWORK',
+              },
+              {
+                amount: '8000',
+                asset: 'USDC',
+                chain: 'Ethereum',
+                type: 'EGRESS',
+              },
+            ],
+            maxBoostFeeBps: 30,
+            poolInfo: [
+              {
+                baseAsset: {
+                  asset: 'BTC',
+                  chain: 'Bitcoin',
+                },
+                fee: {
+                  amount: '199',
+                  asset: 'BTC',
+                  chain: 'Bitcoin',
+                },
+                quoteAsset: {
+                  asset: 'USDC',
+                  chain: 'Ethereum',
+                },
+              },
+            ],
+            srcAsset: {
+              asset: 'BTC',
+              chain: 'Bitcoin',
+            },
+            type: 'REGULAR',
+          },
+        },
+        {
+          depositAmount: '100000',
+          destAsset: {
+            asset: 'USDC',
+            chain: 'Ethereum',
+          },
+          egressAmount: (20024000).toString(),
+          estimatedDurationSeconds: 1866,
+          estimatedPrice: '20081.80287112037853877616',
+          includedFees: [
+            {
+              amount: '250',
+              asset: 'BTC',
+              chain: 'Bitcoin',
+              type: 'INGRESS',
+            },
+            {
+              amount: '400400',
+              asset: 'USDC',
+              chain: 'Ethereum',
+              type: 'NETWORK',
+            },
+            {
+              amount: '8000',
+              asset: 'USDC',
+              chain: 'Ethereum',
+              type: 'EGRESS',
+            },
+          ],
+          poolInfo: [
+            {
+              baseAsset: { asset: 'BTC', chain: 'Bitcoin' },
+              fee: {
+                amount: '49',
+                asset: 'BTC',
+                chain: 'Bitcoin',
+              },
+              quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
+            },
+          ],
+          dcaParams: {
+            chunkIntervalBlocks: 2,
+            numberOfChunks: 4,
+          },
+          srcAsset: {
+            asset: 'BTC',
+            chain: 'Bitcoin',
+          },
+          type: 'DCA',
+          boostQuote: {
+            dcaParams: {
+              chunkIntervalBlocks: 2,
+              numberOfChunks: 4,
+            },
+            depositAmount: '100000',
+            destAsset: {
+              asset: 'USDC',
+              chain: 'Ethereum',
+            },
+            egressAmount: '20024000',
+            estimatedBoostFeeBps: 10,
+            estimatedDurationSeconds: 666,
+            estimatedPrice: '20101.95480271344278087745',
+            includedFees: [
+              {
+                amount: '100',
+                asset: 'BTC',
+                chain: 'Bitcoin',
+                type: 'BOOST',
+              },
+              {
+                amount: '250',
+                asset: 'BTC',
+                chain: 'Bitcoin',
+                type: 'INGRESS',
+              },
+              {
+                amount: '400400',
+                asset: 'USDC',
+                chain: 'Ethereum',
+                type: 'NETWORK',
+              },
+              {
+                amount: '8000',
+                asset: 'USDC',
+                chain: 'Ethereum',
+                type: 'EGRESS',
+              },
+            ],
+            maxBoostFeeBps: 30,
+            poolInfo: [
+              {
+                baseAsset: {
+                  asset: 'BTC',
+                  chain: 'Bitcoin',
+                },
+                fee: {
+                  amount: '49',
+                  asset: 'BTC',
+                  chain: 'Bitcoin',
+                },
+                quoteAsset: {
+                  asset: 'USDC',
+                  chain: 'Ethereum',
+                },
+              },
+            ],
+            srcAsset: {
+              asset: 'BTC',
+              chain: 'Bitcoin',
+            },
+            type: 'DCA',
+          },
+        },
+      ]);
+      expect(sendSpy).toHaveBeenCalledTimes(4);
+      expect(sendSpy).toHaveBeenNthCalledWith(
+        1,
+        'cf_swap_rate_v2',
+        { asset: 'BTC', chain: 'Bitcoin' },
+        { asset: 'USDC', chain: 'Ethereum' },
+        '0x186a0', // 0.001e8
+        [],
+      );
+      expect(sendSpy).toHaveBeenNthCalledWith(
+        2,
+        'cf_swap_rate_v2',
+        { asset: 'BTC', chain: 'Bitcoin' },
+        { asset: 'USDC', chain: 'Ethereum' },
+        '0x1863c', // 0.001e8 - 100 (boostFee)
+        [],
+      );
+      expect(sendSpy).toHaveBeenNthCalledWith(
+        3,
+        'cf_swap_rate_v2',
+        { asset: 'BTC', chain: 'Bitcoin' },
+        { asset: 'USDC', chain: 'Ethereum' },
+        '0x6264', // 0.00025e8 + 3/4 * 250 (ingressFee surcharge)
+        [],
+      );
+      expect(sendSpy).toHaveBeenNthCalledWith(
+        4,
+        'cf_swap_rate_v2',
+        { asset: 'BTC', chain: 'Bitcoin' },
+        { asset: 'USDC', chain: 'Ethereum' },
+        '0x624b', // 0.00025e8 - 1/4 * 100 (boost fee) + 3/4 * 250 (ingressFee surcharge)
         [],
       );
     });
@@ -650,22 +1018,13 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      const sendSpy = jest
-        .spyOn(WsClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 0).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
-          intermediary: null,
-          output: BigInt(100e6),
-        })
-        .mockResolvedValueOnce({
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 0).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
-          intermediary: null,
-          output: BigInt(100e6),
-        });
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        ingress_fee: buildFee('Eth', 25000).bigint,
+        egress_fee: buildFee('Usdc', 0).bigint,
+        network_fee: buildFee('Usdc', 100100).bigint,
+        intermediary: null,
+        output: BigInt(100e6),
+      });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -681,6 +1040,11 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body).toEqual([
         {
+          depositAmount: '1000000000000000000',
+          destAsset: {
+            asset: 'USDC',
+            chain: 'Ethereum',
+          },
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
           estimatedPrice: '100.0000000000025',
@@ -715,6 +1079,10 @@ describe('server', () => {
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
+          srcAsset: {
+            asset: 'ETH',
+            chain: 'Ethereum',
+          },
           type: 'REGULAR',
         },
       ]);
@@ -771,22 +1139,13 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      const sendSpy = jest
-        .spyOn(WsClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 0).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
-          intermediary: null,
-          output: BigInt(100e6),
-        })
-        .mockResolvedValueOnce({
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 0).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
-          intermediary: null,
-          output: BigInt(100e6),
-        });
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        ingress_fee: buildFee('Eth', 25000).bigint,
+        egress_fee: buildFee('Usdc', 0).bigint,
+        network_fee: buildFee('Usdc', 100100).bigint,
+        intermediary: null,
+        output: BigInt(100e6),
+      });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -801,6 +1160,11 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body).toEqual([
         {
+          depositAmount: '1000000000000000000',
+          destAsset: {
+            asset: 'USDC',
+            chain: 'Ethereum',
+          },
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
           estimatedPrice: '100.0000000000025',
@@ -835,6 +1199,10 @@ describe('server', () => {
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
+          srcAsset: {
+            asset: 'ETH',
+            chain: 'Ethereum',
+          },
           type: 'REGULAR',
         },
       ]);
@@ -892,22 +1260,13 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      const sendSpy = jest
-        .spyOn(WsClient.prototype, 'sendRequest')
-        .mockResolvedValueOnce({
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 0).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
-          intermediary: null,
-          output: BigInt(100e6),
-        })
-        .mockResolvedValueOnce({
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 0).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
-          intermediary: null,
-          output: BigInt(100e6),
-        });
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        ingress_fee: buildFee('Eth', 25000).bigint,
+        egress_fee: buildFee('Usdc', 0).bigint,
+        network_fee: buildFee('Usdc', 100100).bigint,
+        intermediary: null,
+        output: BigInt(100e6),
+      });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -922,6 +1281,11 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body).toEqual([
         {
+          depositAmount: '1000000000000000000',
+          destAsset: {
+            asset: 'USDC',
+            chain: 'Ethereum',
+          },
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
           estimatedPrice: '100.0000000000025',
@@ -956,9 +1320,80 @@ describe('server', () => {
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
+          srcAsset: {
+            asset: 'ETH',
+            chain: 'Ethereum',
+          },
           type: 'REGULAR',
         },
       ]);
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('handles unexpected upstream errors', async () => {
+      jest.mocked(getUsdValue).mockResolvedValue('9800');
+      env.DISABLE_DCA_QUOTING = true;
+
+      mockRpcResponse((url, data: any) => {
+        if (data.method === 'cf_environment') {
+          return Promise.resolve({
+            data: environment({
+              maxSwapAmount: null,
+              ingressFee: hexEncodeNumber(0x61a8),
+              egressFee: hexEncodeNumber(0x0),
+            }),
+          });
+        }
+
+        if (data.method === 'cf_boost_pools_depth') {
+          return Promise.resolve({
+            data: boostPoolsDepth(),
+          });
+        }
+
+        if (data.method === 'cf_accounts') {
+          return Promise.resolve({
+            data: {
+              id: 1,
+              jsonrpc: '2.0',
+              result: [
+                ['cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH', 'Chainflip Testnet Broker 2'],
+              ],
+            },
+          });
+        }
+
+        if (data.method === 'cf_account_info') {
+          return Promise.resolve({
+            data: cfAccountInfo(),
+          });
+        }
+
+        if (data.method === 'cf_pool_depth') {
+          return Promise.resolve({
+            data: cfPoolDepth(),
+          });
+        }
+
+        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+      });
+
+      const sendSpy = jest
+        .spyOn(WsClient.prototype, 'sendRequest')
+        .mockRejectedValue(new Error('Dispatch Error: did you catch me?'));
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'ETH',
+        destChain: 'Ethereum',
+        destAsset: 'USDC',
+        amount: (1e18).toString(),
+      });
+
+      const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
+
+      expect(status).toBe(500);
+      expect(body).toEqual({ message: 'Dispatch Error: did you catch me?' });
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
   });

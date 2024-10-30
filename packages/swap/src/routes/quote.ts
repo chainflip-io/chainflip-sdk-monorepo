@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js';
 import express from 'express';
-import type { Server } from 'socket.io';
 import { Asset, assetConstants, Assets, Chain, Chains, InternalAsset } from '@/shared/enums';
 import { asyncHandler } from './common';
 import env from '../config/env';
@@ -43,9 +42,7 @@ export const fallbackChains = {
   [Assets.SOL]: Chains.Solana,
 } satisfies Record<Asset, Chain>;
 
-const quoteRouter = (io: Server) => {
-  const quoter = new Quoter(io);
-
+const quoteRouter = (quoter: Quoter) => {
   const router = express.Router().use((req, res, next) => {
     if (env.DISABLE_QUOTING) {
       next(ServiceError.unavailable('Quoting is currently unavailable due to maintenance'));

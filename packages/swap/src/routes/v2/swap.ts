@@ -5,6 +5,7 @@ import { assert } from '@/shared/guards';
 import { getLastChainTrackingUpdateTimestamp } from '@/swap/utils/intercept';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
 import {
+  getDcaParams,
   getDepositInfo,
   getEgressStatusFields,
   getLatestSwapForId,
@@ -48,11 +49,13 @@ router.get(
     const internalDestAsset = readField(swapRequest, swapDepositChannel, 'destAsset');
     assert(internalSrcAsset, 'srcAsset must be defined');
 
+    const ccmGasBudget = readField(swapRequest, swapDepositChannel, 'ccmGasBudget');
+    const ccmMessage = readField(swapRequest, swapDepositChannel, 'ccmMessage');
     let ccmParams;
-    if (readField(swapRequest, swapDepositChannel, 'ccmGasBudget')) {
+    if (ccmGasBudget || ccmMessage) {
       ccmParams = {
-        gasBudget: readField(swapRequest, swapDepositChannel, 'ccmGasBudget')?.toFixed(),
-        message: readField(swapRequest, swapDepositChannel, 'ccmMessage'),
+        gasBudget: ccmGasBudget?.toFixed(),
+        message: ccmMessage,
       };
     }
 
@@ -72,37 +75,39 @@ router.get(
 
     const originalInputAmount = swapRequest?.swapInputAmount;
 
-    const swaps = swapRequest?.swaps;
+    const swaps = swapRequest?.swaps.filter((swap) => swap.type !== 'GAS');
 
-    const rolledSwaps = swapRequest?.swaps.reduce(
-      (acc, curr) => {
-        if (curr.swapExecutedAt) {
-          acc.swappedOutputAmount = acc.swappedOutputAmount.plus(curr.swapOutputAmount ?? 0);
-          acc.swappedIntermediateAmount = acc.swappedIntermediateAmount.plus(
-            curr.intermediateAmount ?? 0,
-          );
-          acc.swappedInputAmount = acc.swappedInputAmount.plus(curr.swapInputAmount);
-          acc.lastExecutedChunk = curr;
-          acc.executedChunks += 1;
-          acc.fees = acc.fees.concat(...curr.fees);
-        } else {
-          acc.currentChunk = curr;
-        }
-        return acc;
-      },
-      {
-        swappedOutputAmount: new Prisma.Decimal(0),
-        swappedIntermediateAmount: new Prisma.Decimal(0),
-        swappedInputAmount: new Prisma.Decimal(0),
-        executedChunks: 0,
-        currentChunk: null as null | NonNullable<typeof swaps>[number],
-        lastExecutedChunk: null as null | NonNullable<typeof swaps>[number],
-        isDca: Boolean(
-          swapDepositChannel?.chunkIntervalBlocks && swapDepositChannel.chunkIntervalBlocks > 1,
-        ),
-        fees: [] as SwapFee[],
-      },
-    );
+    const rolledSwaps = swaps?.length
+      ? swaps.reduce(
+          (acc, curr) => {
+            if (curr.swapExecutedAt) {
+              acc.swappedOutputAmount = acc.swappedOutputAmount.plus(curr.swapOutputAmount ?? 0);
+              acc.swappedIntermediateAmount = acc.swappedIntermediateAmount.plus(
+                curr.intermediateAmount ?? 0,
+              );
+              acc.swappedInputAmount = acc.swappedInputAmount.plus(curr.swapInputAmount);
+              acc.lastExecutedChunk = curr;
+              acc.executedChunks += 1;
+              acc.fees = acc.fees.concat(...curr.fees);
+            } else {
+              acc.currentChunk = curr;
+            }
+            return acc;
+          },
+          {
+            swappedOutputAmount: new Prisma.Decimal(0),
+            swappedIntermediateAmount: new Prisma.Decimal(0),
+            swappedInputAmount: new Prisma.Decimal(0),
+            executedChunks: 0,
+            currentChunk: null as null | NonNullable<typeof swaps>[number],
+            lastExecutedChunk: null as null | NonNullable<typeof swaps>[number],
+            isDca: Boolean(
+              swapDepositChannel?.chunkIntervalBlocks && swapDepositChannel.chunkIntervalBlocks > 1,
+            ),
+            fees: [] as SwapFee[],
+          },
+        )
+      : undefined;
 
     const aggregateFees = rolledSwaps?.fees
       .reduce((acc, curr) => {
@@ -151,7 +156,6 @@ router.get(
       getRequiredBlockConfirmations(internalSrcAsset),
     ]);
 
-    const showCcm = Boolean(swapDepositChannel?.ccmGasBudget || swapDepositChannel?.ccmMessage);
     const isVaultSwap = Boolean(swapRequest?.originType === 'VAULT');
     const showDepositchannel = !isVaultSwap;
 
@@ -188,12 +192,7 @@ router.get(
                   ),
                 }
               : undefined,
-            dcaParams: swapDepositChannel.chunkIntervalBlocks
-              ? {
-                  numberOfChunks: swapDepositChannel?.numberOfChunks,
-                  chunkIntervalBlocks: swapDepositChannel?.chunkIntervalBlocks,
-                }
-              : undefined,
+            dcaParams: getDcaParams(swapRequest, swapDepositChannel),
           },
         }),
       ...getDepositInfo(swapRequest, failedSwap, pendingDeposit),
@@ -228,7 +227,7 @@ router.get(
       }),
       ...(swapEgressFields && { swapEgress: { ...swapEgressFields } }),
       ...(refundEgressFields && { refundEgress: { ...refundEgressFields } }),
-      ...(showCcm && { ccmParams }),
+      ...(ccmParams && { ccmParams }),
       ...(showBoost && {
         boost: {
           effectiveBoostFeeBps,

@@ -1,7 +1,8 @@
+import { SwappingRequestSwapDepositAddressWithAffiliates } from '@chainflip/extrinsics/160/swapping/requestSwapDepositAddressWithAffiliates';
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import { Signer } from 'ethers';
 import superjson from 'superjson';
-import { requestSwapDepositAddress } from '@/shared/broker';
+import { requestSwapDepositAddress, buildExtrinsicPayload } from '@/shared/broker';
 import { TransactionOptions } from '@/shared/contracts';
 import {
   ChainflipNetwork,
@@ -17,7 +18,7 @@ import {
   getAssetAndChain,
   Asset,
 } from '@/shared/enums';
-import { getPriceX128FromPrice } from '@/shared/functions';
+import { getPriceX128FromPrice, parseFoKParams } from '@/shared/functions';
 import { assert, isNotNullish } from '@/shared/guards';
 import {
   BoostPoolsDepth,
@@ -28,10 +29,12 @@ import {
   getSupportedAssets,
 } from '@/shared/rpc';
 import { validateSwapAmount } from '@/shared/rpc/utils';
+import { BoostQuote, Quote } from '@/shared/schemas';
 import { Required } from '@/shared/types';
 import { approveVault, executeSwap, ExecuteSwapParams } from '@/shared/vault';
 import type { AppRouter } from '@/swap/server';
-import { getAssetData } from './assets';
+import { AsyncCacheMap } from '@/swap/utils/dataStructures';
+import { getAssetData, isGasAsset } from './assets';
 import { getChainData } from './chains';
 import { BACKEND_SERVICE_URLS, CF_SDK_VERSION_HEADERS } from './consts';
 import * as ApiService from './services/ApiService';
@@ -47,7 +50,7 @@ import {
   SwapStatusResponse,
   QuoteResponseV2,
 } from './types';
-import { type SwapStatusResponseV2 } from './v2/types';
+import { type SwapStatusResponseV2, type DepositAddressRequestV2 } from './v2/types';
 
 type TransactionHash = `0x${string}`;
 
@@ -65,6 +68,18 @@ export type SwapSDKOptions = {
   };
 };
 
+const assertQuoteValid = (quote: Quote | BoostQuote) => {
+  switch (quote.type) {
+    case 'REGULAR':
+      break;
+    case 'DCA':
+      if (quote.dcaParams == null) throw new Error('Failed to find DCA parameters from quote');
+      break;
+    default:
+      throw new Error('Invalid quote type');
+  }
+};
+
 export class SwapSDK {
   private readonly options: Required<SwapSDKOptions, 'network' | 'backendUrl'>;
 
@@ -72,7 +87,10 @@ export class SwapSDK {
 
   private readonly trpc;
 
-  private stateChainEnvironment?: Environment;
+  private stateChainEnvironmentCache: AsyncCacheMap<
+    'cf_environment',
+    Awaited<ReturnType<typeof getEnvironment>>
+  >;
 
   private supportedAssets?: InternalAsset[];
 
@@ -96,6 +114,11 @@ export class SwapSDK {
       ],
     });
     this.dcaEnabled = options.enabledFeatures?.dca ?? false;
+    this.stateChainEnvironmentCache = new AsyncCacheMap({
+      fetch: (_key) => getEnvironment(this.rpcConfig),
+      ttl: 60_000 * 10,
+      resetExpiryOnLookup: false,
+    });
   }
 
   async getChains(sourceChain?: Chain): Promise<ChainData[]> {
@@ -114,9 +137,7 @@ export class SwapSDK {
   }
 
   private async getStateChainEnvironment(): Promise<Environment> {
-    this.stateChainEnvironment ??= await getEnvironment(this.rpcConfig);
-
-    return this.stateChainEnvironment;
+    return this.stateChainEnvironmentCache.get('cf_environment');
   }
 
   private async getSupportedAssets(): Promise<InternalAsset[]> {
@@ -186,6 +207,7 @@ export class SwapSDK {
     );
   }
 
+  /** @deprecated DEPRECATED(1.6) use requestDepositAddressV2() */
   async requestDepositAddress(
     depositAddressRequest: DepositAddressRequest,
   ): Promise<DepositAddressResponse> {
@@ -335,6 +357,32 @@ export class SwapSDK {
     if (!result.success) throw new Error(result.reason);
   }
 
+  async approveAndExecuteSwap(
+    params: ExecuteSwapParams,
+    txOpts: Omit<TransactionOptions, 'nonce'> & { signer?: Signer } = {},
+  ): Promise<{
+    approveTxRef: TransactionHash | null;
+    swapTxRef: TransactionHash | null;
+  }> {
+    const { srcChain, srcAsset } = params;
+    const signer = txOpts.signer ?? this.options.signer;
+    assert(signer, 'No signer provided');
+
+    const internalAsset = getInternalAsset({ chain: srcChain, asset: srcAsset });
+
+    let approveTxRef = null;
+    if (!isGasAsset(internalAsset)) {
+      approveTxRef = await this.approveVault(params, { ...txOpts, nonce: undefined });
+    }
+
+    const swapTxRef = await this.executeSwap(params, { ...txOpts, nonce: undefined });
+
+    return {
+      approveTxRef,
+      swapTxRef,
+    };
+  }
+
   async getSwapLimits(): Promise<{
     minimumSwapAmounts: ChainAssetMap<bigint>;
     maximumSwapAmounts: ChainAssetMap<bigint | null>;
@@ -399,5 +447,101 @@ export class SwapSDK {
       feeTierBps: depth.tier,
       ...getAssetAndChain(depth.asset),
     }));
+  }
+
+  async requestDepositAddressV2({
+    quote,
+    srcAddress,
+    destAddress,
+    fillOrKillParams: inputFoKParams,
+    affiliateBrokers: affiliates,
+    ccmParams,
+    brokerCommissionBps,
+  }: DepositAddressRequestV2) {
+    await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
+    assertQuoteValid(quote);
+
+    const depositAddressRequest = {
+      srcAsset: quote.srcAsset.asset,
+      srcChain: quote.srcAsset.chain,
+      destAsset: quote.destAsset.asset,
+      destChain: quote.destAsset.chain,
+      srcAddress,
+      destAddress,
+      dcaParams: quote.type === 'DCA' ? quote.dcaParams : undefined,
+      fillOrKillParams: parseFoKParams(inputFoKParams, quote),
+      maxBoostFeeBps: 'maxBoostFeeBps' in quote ? quote.maxBoostFeeBps : undefined,
+      ccmParams,
+      amount: quote.depositAmount,
+    };
+    let response;
+
+    if (this.options.broker !== undefined) {
+      const result = await requestSwapDepositAddress(
+        {
+          ...depositAddressRequest,
+          commissionBps: brokerCommissionBps ?? this.options.broker.commissionBps,
+          affiliates,
+        },
+        { url: this.options.broker.url },
+        this.options.network,
+      );
+
+      response = {
+        id: `${result.issuedBlock}-${quote.srcAsset.chain}-${result.channelId}`,
+        depositAddress: result.address,
+        brokerCommissionBps: this.options.broker.commissionBps,
+        srcChainExpiryBlock: result.sourceChainExpiryBlock,
+        maxBoostFeeBps: depositAddressRequest.maxBoostFeeBps,
+        channelOpeningFee: result.channelOpeningFee,
+      };
+    } else {
+      response = await this.trpc.openSwapDepositChannel.mutate({ ...depositAddressRequest, quote });
+    }
+
+    return {
+      ...depositAddressRequest,
+      depositChannelId: response.id,
+      depositAddress: response.depositAddress,
+      brokerCommissionBps: response.brokerCommissionBps,
+      affiliateBrokers: affiliates ?? [],
+      maxBoostFeeBps: Number(response.maxBoostFeeBps) || 0,
+      depositChannelExpiryBlock: response.srcChainExpiryBlock as bigint,
+      estimatedDepositChannelExpiryTime: response.estimatedExpiryTime,
+      channelOpeningFee: response.channelOpeningFee,
+      fillOrKillParams: inputFoKParams,
+    };
+  }
+
+  buildRequestSwapDepositAddressWithAffiliatesParams({
+    quote,
+    destAddress,
+    fillOrKillParams: inputFoKParams,
+    affiliateBrokers,
+    ccmParams,
+    brokerCommissionBps,
+  }: DepositAddressRequestV2): SwappingRequestSwapDepositAddressWithAffiliates {
+    assertQuoteValid(quote);
+
+    let dcaParams = null;
+
+    if (quote.type === 'DCA') dcaParams = quote.dcaParams;
+
+    return buildExtrinsicPayload(
+      {
+        srcAsset: quote.srcAsset.asset,
+        srcChain: quote.srcAsset.chain,
+        destAsset: quote.destAsset.asset,
+        destChain: quote.destAsset.chain,
+        destAddress,
+        dcaParams,
+        fillOrKillParams: parseFoKParams(inputFoKParams, quote) ?? null,
+        maxBoostFeeBps: 'maxBoostFeeBps' in quote ? quote.maxBoostFeeBps : null,
+        commissionBps: brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0,
+        ccmParams: ccmParams ?? null,
+        affiliates: affiliateBrokers ?? [],
+      },
+      this.options.network,
+    );
   }
 }

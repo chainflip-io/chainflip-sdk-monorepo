@@ -1,4 +1,5 @@
 import { swappingSwapRequested as schema160 } from '@chainflip/processor/160/swapping/swapRequested';
+import { swappingSwapRequested as schema170 } from '@chainflip/processor/170/swapping/swapRequested';
 import z from 'zod';
 import { assetConstants, InternalAsset } from '@/shared/enums';
 import { assertNever } from '@/shared/guards';
@@ -7,9 +8,47 @@ import { formatTxHash } from './common';
 import { Prisma } from '../client';
 import type { EventHandlerArgs } from './index';
 
-type RequestType = z.output<typeof schema160>['requestType'];
-type Origin = z.output<typeof schema160>['origin'];
-export type SwapRequestedArgs = z.input<typeof schema160>;
+type RequestType170 = z.output<typeof schema170>['requestType'];
+
+const transformRequestType = (old: z.output<typeof schema160>['requestType']): RequestType170 => {
+  switch (old.__kind) {
+    case 'Regular':
+    case 'NetworkFee':
+    case 'IngressEgressFee':
+      return old;
+    case 'Ccm':
+      return {
+        __kind: 'Ccm',
+        outputAddress: old.outputAddress,
+        ccmSwapMetadata: {
+          depositMetadata: old.ccmDepositMetadata,
+          swapAmounts: {
+            principalSwapAmount: 0n,
+            gasBudget: 0n,
+            otherGasAsset: null,
+          },
+        },
+      };
+    default:
+      throw new Error();
+  }
+};
+
+const transformOldSchema = (data: z.output<typeof schema160>): z.output<typeof schema170> => ({
+  inputAsset: data.inputAsset,
+  inputAmount: data.inputAmount,
+  outputAsset: data.outputAsset,
+  swapRequestId: data.swapRequestId,
+  dcaParameters: data.dcaParameters,
+  origin: data.origin,
+  requestType: transformRequestType(data.requestType),
+});
+
+const schema = z.union([schema170, schema160.transform(transformOldSchema)]);
+
+type RequestType = z.output<typeof schema>['requestType'];
+type Origin = z.output<typeof schema>['origin'];
+export type SwapRequestedArgs = z.input<typeof schema>;
 
 const getRequestInfo = (requestType: RequestType) => {
   let destAddress;
@@ -18,10 +57,7 @@ const getRequestInfo = (requestType: RequestType) => {
   if (requestType.__kind === 'Regular') {
     destAddress = requestType.outputAddress.address;
   } else if (requestType.__kind === 'Ccm') {
-    ccmMetadata = {
-      ...requestType.ccmDepositMetadata,
-      sourceAddress: requestType.ccmDepositMetadata.sourceAddress,
-    };
+    ccmMetadata = requestType.ccmSwapMetadata.depositMetadata;
     destAddress = requestType.outputAddress.address;
   }
 
@@ -86,8 +122,15 @@ export default async function swapRequested({
   event,
   block,
 }: EventHandlerArgs): Promise<void> {
-  const { inputAmount, inputAsset, swapRequestId, outputAsset, origin, requestType } =
-    schema160.parse(event.args);
+  const {
+    inputAmount,
+    inputAsset,
+    swapRequestId,
+    outputAsset,
+    origin,
+    requestType,
+    dcaParameters,
+  } = schema.parse(event.args);
 
   const { originType, swapDepositChannelId, depositTransactionRef } = await getOriginInfo(
     prisma,
@@ -100,8 +143,8 @@ export default async function swapRequested({
   const additionalInfo =
     requestType.__kind === 'Ccm'
       ? {
-          depositReceivedAt: new Date(block.timestamp),
-          depositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
+          depositFinalisedAt: new Date(block.timestamp),
+          depositFinalisedBlockIndex: `${block.height}-${event.indexInBlock}`,
           ccmDepositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
         }
       : undefined;
@@ -126,6 +169,8 @@ export default async function swapRequested({
       ...(origin.__kind !== 'Internal' && {
         depositAmount: inputAmount.toString(),
       }),
+      numberOfChunks: dcaParameters?.numberOfChunks,
+      chunkIntervalBlocks: dcaParameters?.chunkInterval,
     },
   });
 }

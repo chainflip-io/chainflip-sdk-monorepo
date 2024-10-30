@@ -2,195 +2,10 @@
 
 exports[`server GET /quote doesn't include boost information when disabled 1`] = `
 {
-  "egressAmount": "999999999999975000",
-  "estimatedDurationSeconds": 1830,
-  "estimatedPrice": "1.001001001001001001",
-  "includedFees": [
-    {
-      "amount": "100000",
-      "asset": "BTC",
-      "chain": "Bitcoin",
-      "type": "INGRESS",
-    },
-    {
-      "amount": "1999500",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "NETWORK",
-    },
-    {
-      "amount": "25000",
-      "asset": "ETH",
-      "chain": "Ethereum",
-      "type": "EGRESS",
-    },
-  ],
-  "intermediateAmount": "2000000000",
-  "poolInfo": [
-    {
-      "baseAsset": {
-        "asset": "BTC",
-        "chain": "Bitcoin",
-      },
-      "fee": {
-        "amount": "199800",
-        "asset": "BTC",
-        "chain": "Bitcoin",
-      },
-      "quoteAsset": {
-        "asset": "USDC",
-        "chain": "Ethereum",
-      },
-    },
-    {
-      "baseAsset": {
-        "asset": "ETH",
-        "chain": "Ethereum",
-      },
-      "fee": {
-        "amount": "4000000",
-        "asset": "USDC",
-        "chain": "Ethereum",
-      },
-      "quoteAsset": {
-        "asset": "USDC",
-        "chain": "Ethereum",
-      },
-    },
-  ],
-  "type": "REGULAR",
-}
-`;
-
-exports[`server GET /quote gets the quote for deprecated params without the chain 1`] = `
-{
-  "egressAmount": "999999999999975000",
-  "estimatedDurationSeconds": 54,
-  "estimatedPrice": "1.000000000002",
-  "includedFees": [
-    {
-      "amount": "2000000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "INGRESS",
-    },
-    {
-      "amount": "2000000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "NETWORK",
-    },
-    {
-      "amount": "25000",
-      "asset": "ETH",
-      "chain": "Ethereum",
-      "type": "EGRESS",
-    },
-  ],
-  "intermediateAmount": "2000000000",
-  "poolInfo": [
-    {
-      "baseAsset": {
-        "asset": "FLIP",
-        "chain": "Ethereum",
-      },
-      "fee": {
-        "amount": "999999999998000",
-        "asset": "FLIP",
-        "chain": "Ethereum",
-      },
-      "quoteAsset": {
-        "asset": "USDC",
-        "chain": "Ethereum",
-      },
-    },
-    {
-      "baseAsset": {
-        "asset": "ETH",
-        "chain": "Ethereum",
-      },
-      "fee": {
-        "amount": "4000000",
-        "asset": "USDC",
-        "chain": "Ethereum",
-      },
-      "quoteAsset": {
-        "asset": "USDC",
-        "chain": "Ethereum",
-      },
-    },
-  ],
-  "type": "REGULAR",
-}
-`;
-
-exports[`server GET /quote gets the quote from btc with boost information 1`] = `
-{
-  "boostQuote": {
-    "egressAmount": "999999949999975000",
-    "estimatedBoostFeeBps": 5,
-    "estimatedDurationSeconds": 630,
-    "estimatedPrice": "1.00150220330495743615",
-    "includedFees": [
-      {
-        "amount": "50000",
-        "asset": "BTC",
-        "chain": "Bitcoin",
-        "type": "BOOST",
-      },
-      {
-        "amount": "100000",
-        "asset": "BTC",
-        "chain": "Bitcoin",
-        "type": "INGRESS",
-      },
-      {
-        "amount": "1999500",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "NETWORK",
-      },
-      {
-        "amount": "25000",
-        "asset": "ETH",
-        "chain": "Ethereum",
-        "type": "EGRESS",
-      },
-    ],
-    "intermediateAmount": "1999500000",
-    "poolInfo": [
-      {
-        "baseAsset": {
-          "asset": "BTC",
-          "chain": "Bitcoin",
-        },
-        "fee": {
-          "amount": "199700",
-          "asset": "BTC",
-          "chain": "Bitcoin",
-        },
-        "quoteAsset": {
-          "asset": "USDC",
-          "chain": "Ethereum",
-        },
-      },
-      {
-        "baseAsset": {
-          "asset": "ETH",
-          "chain": "Ethereum",
-        },
-        "fee": {
-          "amount": "3999000",
-          "asset": "USDC",
-          "chain": "Ethereum",
-        },
-        "quoteAsset": {
-          "asset": "USDC",
-          "chain": "Ethereum",
-        },
-      },
-    ],
-    "type": "REGULAR",
+  "depositAmount": "100000000",
+  "destAsset": {
+    "asset": "ETH",
+    "chain": "Ethereum",
   },
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 1830,
@@ -248,12 +63,239 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
       },
     },
   ],
+  "srcAsset": {
+    "asset": "BTC",
+    "chain": "Bitcoin",
+  },
+  "type": "REGULAR",
+}
+`;
+
+exports[`server GET /quote gets the quote for deprecated params without the chain 1`] = `
+{
+  "depositAmount": "1000000000000000000",
+  "destAsset": {
+    "asset": "ETH",
+    "chain": "Ethereum",
+  },
+  "egressAmount": "999999999999975000",
+  "estimatedDurationSeconds": 54,
+  "estimatedPrice": "1.000000000002",
+  "includedFees": [
+    {
+      "amount": "2000000",
+      "asset": "FLIP",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "2000000",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "25000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
+  "intermediateAmount": "2000000000",
+  "poolInfo": [
+    {
+      "baseAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
+      "fee": {
+        "amount": "999999999998000",
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
+      "quoteAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+    },
+    {
+      "baseAsset": {
+        "asset": "ETH",
+        "chain": "Ethereum",
+      },
+      "fee": {
+        "amount": "4000000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+      "quoteAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+    },
+  ],
+  "srcAsset": {
+    "asset": "FLIP",
+    "chain": "Ethereum",
+  },
+  "type": "REGULAR",
+}
+`;
+
+exports[`server GET /quote gets the quote from btc with boost information 1`] = `
+{
+  "boostQuote": {
+    "depositAmount": "100000000",
+    "destAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "999999949999975000",
+    "estimatedBoostFeeBps": 5,
+    "estimatedDurationSeconds": 630,
+    "estimatedPrice": "1.00150220330495743615",
+    "includedFees": [
+      {
+        "amount": "50000",
+        "asset": "BTC",
+        "chain": "Bitcoin",
+        "type": "BOOST",
+      },
+      {
+        "amount": "100000",
+        "asset": "BTC",
+        "chain": "Bitcoin",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "1999500",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "intermediateAmount": "1999500000",
+    "maxBoostFeeBps": 5,
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "BTC",
+          "chain": "Bitcoin",
+        },
+        "fee": {
+          "amount": "199700",
+          "asset": "BTC",
+          "chain": "Bitcoin",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "3999000",
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "srcAsset": {
+      "asset": "BTC",
+      "chain": "Bitcoin",
+    },
+    "type": "REGULAR",
+  },
+  "depositAmount": "100000000",
+  "destAsset": {
+    "asset": "ETH",
+    "chain": "Ethereum",
+  },
+  "egressAmount": "999999999999975000",
+  "estimatedDurationSeconds": 1830,
+  "estimatedPrice": "1.001001001001001001",
+  "includedFees": [
+    {
+      "amount": "100000",
+      "asset": "BTC",
+      "chain": "Bitcoin",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "1999500",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "25000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "EGRESS",
+    },
+  ],
+  "intermediateAmount": "2000000000",
+  "poolInfo": [
+    {
+      "baseAsset": {
+        "asset": "BTC",
+        "chain": "Bitcoin",
+      },
+      "fee": {
+        "amount": "199800",
+        "asset": "BTC",
+        "chain": "Bitcoin",
+      },
+      "quoteAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+    },
+    {
+      "baseAsset": {
+        "asset": "ETH",
+        "chain": "Ethereum",
+      },
+      "fee": {
+        "amount": "4000000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+      "quoteAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+    },
+  ],
+  "srcAsset": {
+    "asset": "BTC",
+    "chain": "Bitcoin",
+  },
   "type": "REGULAR",
 }
 `;
 
 exports[`server GET /quote gets the quote with a realistic price 1`] = `
 {
+  "depositAmount": "500000000000000000",
+  "destAsset": {
+    "asset": "USDC",
+    "chain": "Ethereum",
+  },
   "egressAmount": "1229437998",
   "estimatedDurationSeconds": 54,
   "estimatedPrice": "2461.21775330925240818201",
@@ -294,12 +336,21 @@ exports[`server GET /quote gets the quote with a realistic price 1`] = `
       },
     },
   ],
+  "srcAsset": {
+    "asset": "ETH",
+    "chain": "Ethereum",
+  },
   "type": "REGULAR",
 }
 `;
 
 exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
 {
+  "depositAmount": "1000000000000000000",
+  "destAsset": {
+    "asset": "ETH",
+    "chain": "Ethereum",
+  },
   "egressAmount": "1999999999999975000",
   "estimatedDurationSeconds": 54,
   "estimatedPrice": "2.000000000004",
@@ -357,6 +408,10 @@ exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
       },
     },
   ],
+  "srcAsset": {
+    "asset": "FLIP",
+    "chain": "Ethereum",
+  },
   "type": "REGULAR",
 }
 `;

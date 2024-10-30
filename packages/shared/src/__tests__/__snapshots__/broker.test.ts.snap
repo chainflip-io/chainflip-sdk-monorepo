@@ -205,7 +205,7 @@ exports[`buildExtrinsicPayload adds ccm params: with cf params 1`] = `
 
 exports[`buildExtrinsicPayload adds max boost fee 1`] = `
 [
-  "Sol",
+  "Btc",
   "Flip",
   {
     "Eth": Uint8Array [

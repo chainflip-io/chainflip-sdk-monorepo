@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/sdk",
-  "version": "1.6.6",
+  "version": "1.6.7-rc.3",
   "description": "",
   "exports": {
     "./swap": {
@@ -52,12 +52,13 @@
   },
   "dependencies": {
     "@chainflip/extrinsics": "^1.6.1",
-    "@chainflip/rpc": "^1.6.7",
+    "@chainflip/rpc": "^1.6.9",
     "@chainflip/utils": "^0.4.0",
     "axios": "^1.7.7",
+    "bignumber.js": "^9.1.2",
     "ethers": "^6.13.3"
   },
   "devDependencies": {
-    "tsup": "^8.2.4"
+    "tsup": "^8.3.0"
   }
 }

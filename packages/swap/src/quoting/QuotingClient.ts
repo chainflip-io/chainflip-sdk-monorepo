@@ -2,12 +2,15 @@ import * as crypto from 'crypto';
 import { EventEmitter } from 'events';
 import { io, Socket } from 'socket.io-client';
 import { promisify } from 'util';
-import { MarketMakerQuoteRequest, MarketMakerRawQuote } from './schemas';
+import { AssetAndChain } from '@/shared/enums';
+import { LegJson, MarketMakerQuoteRequest, MarketMakerRawQuote } from './schemas';
 import logger from '../utils/logger';
 
 const signAsync = promisify(crypto.sign);
 
-export type QuoteHandler = (quote: MarketMakerQuoteRequest) => Promise<MarketMakerRawQuote>;
+export type QuoteHandler = (
+  quote: MarketMakerQuoteRequest<LegJson>,
+) => Promise<MarketMakerRawQuote>;
 
 /**
  * A reference implementation of a client that connects to the quoting service
@@ -22,8 +25,9 @@ export default class QuotingClient extends EventEmitter {
 
   constructor(
     private readonly url: string,
-    private readonly marketMakerId: string,
+    private readonly accountId: string,
     privateKey: string,
+    private readonly quotedAssets?: AssetAndChain[],
   ) {
     super();
     this.privateKey = crypto.createPrivateKey({
@@ -33,16 +37,21 @@ export default class QuotingClient extends EventEmitter {
     });
   }
 
-  async connect() {
+  private async getAuth() {
     const timestamp = Date.now();
+    return {
+      timestamp,
+      client_version: this.quotedAssets !== undefined ? '2' : '1',
+      account_id: this.accountId,
+      signature: await this.getSignature(timestamp),
+      quoted_assets: this.quotedAssets,
+    };
+  }
+
+  async connect() {
     this.socket = io(this.url, {
       transports: ['websocket'],
-      auth: {
-        timestamp,
-        client_version: '1',
-        market_maker_id: this.marketMakerId,
-        signature: await this.getSignature(timestamp),
-      },
+      auth: await this.getAuth(),
     });
 
     this.socket.on('connect', () => {
@@ -52,7 +61,7 @@ export default class QuotingClient extends EventEmitter {
       this.emit('connected');
     });
 
-    this.socket.on('quote_request', async (quote: MarketMakerQuoteRequest) => {
+    this.socket.on('quote_request', async (quote: MarketMakerQuoteRequest<LegJson>) => {
       const response = await this.quoteHandler(quote);
       this.socket.emit('quote_response', {
         ...response,
@@ -68,7 +77,7 @@ export default class QuotingClient extends EventEmitter {
       this.socket.auth = {
         timestamp: updatedTimestamp,
         client_version: '1',
-        market_maker_id: this.marketMakerId,
+        account_id: this.accountId,
         signature: await this.getSignature(updatedTimestamp),
       };
     });
@@ -81,7 +90,7 @@ export default class QuotingClient extends EventEmitter {
   private async getSignature(timestamp: number): Promise<string> {
     const buffer = await signAsync(
       null,
-      Buffer.from(`${this.marketMakerId}${timestamp}`, 'utf8'),
+      Buffer.from(`${this.accountId}${timestamp}`, 'utf8'),
       this.privateKey,
     );
 

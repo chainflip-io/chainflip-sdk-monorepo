@@ -1,0 +1,93 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Quoter getLimitOrders can mix and match: flip 1`] = `
+{
+  "legs": [
+    {
+      "amount": "15000000",
+      "base_asset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
+      "quote_asset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+      "side": "BUY",
+    },
+  ],
+  "request_id": Any<String>,
+}
+`;
+
+exports[`Quoter getLimitOrders can mix and match: solana 1`] = `
+{
+  "legs": [
+    {
+      "amount": "100000000",
+      "base_asset": {
+        "asset": "SOL",
+        "chain": "Solana",
+      },
+      "quote_asset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+      "side": "SELL",
+    },
+  ],
+  "request_id": Any<String>,
+}
+`;
+
+exports[`Quoter getLimitOrders can quote both legs 1`] = `
+{
+  "legs": [
+    {
+      "amount": "100000000",
+      "base_asset": {
+        "asset": "SOL",
+        "chain": "Solana",
+      },
+      "quote_asset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+      "side": "SELL",
+    },
+    {
+      "amount": "15000000",
+      "base_asset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
+      "quote_asset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+      "side": "BUY",
+    },
+  ],
+  "request_id": Any<String>,
+}
+`;
+
+exports[`Quoter getLimitOrders can quote the first leg only 1`] = `
+{
+  "legs": [
+    {
+      "amount": "100000000",
+      "base_asset": {
+        "asset": "SOL",
+        "chain": "Solana",
+      },
+      "quote_asset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+      "side": "SELL",
+    },
+  ],
+  "request_id": Any<String>,
+}
+`;

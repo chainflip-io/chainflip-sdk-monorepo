@@ -20,7 +20,7 @@
   "dependencies": {
     "@chainflip/bitcoin": "^1.1.1",
     "@chainflip/extrinsics": "^1.6.1",
-    "@chainflip/rpc": "^1.6.7",
+    "@chainflip/rpc": "^1.6.9",
     "@chainflip/solana": "^1.0.2",
     "@chainflip/utils": "^0.4.0",
     "axios": "^1.7.7",
@@ -38,6 +38,6 @@
     "@types/ws": "^8.5.12",
     "eslint-plugin-n": "^17.10.1",
     "typechain": "^8.3.2",
-    "winston": "^3.14.2"
+    "winston": "^3.15.0"
   }
 }

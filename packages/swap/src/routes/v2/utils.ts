@@ -81,7 +81,8 @@ export const getLatestSwapForId = async (id: string) => {
     }
 
     swapRequest = swapDepositChannel.swapRequests.at(0);
-    if (!swapRequest) {
+    // swap request will have no swaps for failed ccm swaps: https://scan.chainflip.io/blocks/4716217
+    if (!swapRequest || (swapRequest.completedAt && !swapRequest.swaps.length)) {
       failedSwap = swapDepositChannel.failedSwaps.at(0);
     }
     if (swapDepositChannel.affiliates.length > 0) {
@@ -175,12 +176,12 @@ export const getDepositInfo = (
       txConfirmations: pendingDeposit?.transactionConfirmations,
       witnessedAt:
         swapRequest?.depositBoostedAt?.valueOf() ??
-        swapRequest?.depositReceivedAt?.valueOf() ??
+        swapRequest?.depositFinalisedAt?.valueOf() ??
         swapRequest?.swapRequestedAt?.valueOf() ??
         undefined,
       witnessedBlockIndex:
         swapRequest?.depositBoostedBlockIndex ??
-        swapRequest?.depositReceivedBlockIndex ??
+        swapRequest?.depositFinalisedBlockIndex ??
         swapRequest?.swapRequestedBlockIndex ??
         undefined,
       ...(failedSwap && {
@@ -344,3 +345,15 @@ export const getSwapState = async (
     pendingDeposit,
   };
 };
+
+export const getDcaParams = (
+  swapRequest: Awaited<ReturnType<typeof getLatestSwapForId>>['swapRequest'],
+  swapDepositChannel: Awaited<ReturnType<typeof getLatestSwapForId>>['swapDepositChannel'],
+) =>
+  swapRequest?.chunkIntervalBlocks || swapDepositChannel?.chunkIntervalBlocks
+    ? {
+        numberOfChunks: swapRequest?.numberOfChunks ?? swapDepositChannel?.numberOfChunks,
+        chunkIntervalBlocks:
+          swapRequest?.chunkIntervalBlocks ?? swapDepositChannel?.chunkIntervalBlocks,
+      }
+    : undefined;

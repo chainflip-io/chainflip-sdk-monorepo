@@ -85,6 +85,7 @@ model SwapDepositChannel {
   numberOfChunks         Int?                          @default(1)
   chunkIntervalBlocks    Int?
   swapRequests           SwapRequest[]
+  quote                  Quote?
 
   @@unique([issuedBlock, srcChain, channelId])
   @@index([depositAddress])
@@ -132,6 +133,7 @@ model SwapRequest {
   destAsset                    InternalAsset
   depositAmount                Decimal?            @db.Decimal(30, 0)
   swapInputAmount              Decimal             @db.Decimal(30, 0)
+  swapOutputAmount             Decimal?            @db.Decimal(30, 0)
   requestType                  SwapRequestType
   ccmDepositReceivedBlockIndex String?
   ccmGasBudget                 Decimal?            @db.Decimal(30, 0)
@@ -140,8 +142,8 @@ model SwapRequest {
   destAddress                  String?
   swapRequestedAt              DateTime
   swapRequestedBlockIndex      String?
-  depositReceivedAt            DateTime?
-  depositReceivedBlockIndex    String?
+  depositFinalisedAt           DateTime?
+  depositFinalisedBlockIndex   String?
   prewitnessedDepositId        BigInt?
   effectiveBoostFeeBps         Int?
   depositBoostedAt             DateTime?
@@ -155,6 +157,9 @@ model SwapRequest {
   ignoredEgresses              IgnoredEgress[]
   swaps                        Swap[]
   fees                         SwapFee[]
+  numberOfChunks               Int?
+  chunkIntervalBlocks          Int?
+  quote                        Quote?
 
   @@index([srcAsset, prewitnessedDepositId])
   @@schema("public")
@@ -415,23 +420,23 @@ model StateChainError {
   @@schema("public")
 }
 
-model QuoteResult {
-  id                 Int           @id @default(autoincrement())
-  srcAsset           InternalAsset
-  destAsset          InternalAsset
-  depositAmount      Decimal       @db.Decimal(30, 0)
-  quoterIntermediate Decimal?      @db.Decimal(30, 0)
-  quoterOutput       Decimal       @db.Decimal(30, 0)
-  quoterDuration     Int
-  quoterFees         Json?
-  poolIntermediate   Decimal?      @db.Decimal(30, 0)
-  poolOutput         Decimal       @db.Decimal(30, 0)
-  poolDuration       Int?
-  poolFees           Json?
-  createdAt          DateTime      @default(now())
-  version            Int
+model Quote {
+  id                      Int                @id @default(autoincrement())
+  swapDepositChannel      SwapDepositChannel @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId    BigInt             @unique
+  swapRequest             SwapRequest?       @relation(fields: [swapRequestId], references: [id])
+  swapRequestId           BigInt?            @unique
+  srcAsset                InternalAsset
+  destAsset               InternalAsset
+  maxBoostFeeBps             Int?
+  numberOfChunks             Int?
+  depositAmount           Decimal            @db.Decimal(30, 0)
+  intermediateAmount      Decimal?           @db.Decimal(30, 0)
+  egressAmount            Decimal            @db.Decimal(30, 0)
+  estimatedPrice          Decimal
+  executedPrice           Decimal?
+  executedSlippagePercent Decimal?
 
-  @@index([srcAsset, destAsset])
   @@schema("private")
 }
 

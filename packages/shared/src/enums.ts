@@ -119,31 +119,31 @@ export const assetConstants = {
 export const chainConstants = {
   [Chains.Ethereum]: {
     assets: [Assets.ETH, Assets.FLIP, Assets.USDC, Assets.USDT],
-    gasAsset: Assets.ETH,
+    gasAsset: InternalAssets.Eth,
     contractId: 1,
     blockTimeSeconds: 12,
   },
   [Chains.Polkadot]: {
     assets: [Assets.DOT],
-    gasAsset: Assets.DOT,
+    gasAsset: InternalAssets.Dot,
     contractId: 2,
     blockTimeSeconds: 6,
   },
   [Chains.Bitcoin]: {
     assets: [Assets.BTC],
-    gasAsset: Assets.BTC,
+    gasAsset: InternalAssets.Btc,
     contractId: 3,
     blockTimeSeconds: 10 * 60,
   },
   [Chains.Arbitrum]: {
     assets: [Assets.ETH, Assets.USDC],
-    gasAsset: Assets.ETH,
+    gasAsset: InternalAssets.ArbEth,
     contractId: 4,
     blockTimeSeconds: 0.26,
   },
   [Chains.Solana]: {
     assets: [Assets.SOL, Assets.USDC],
-    gasAsset: Assets.SOL,
+    gasAsset: InternalAssets.Sol,
     contractId: 5,
     blockTimeSeconds: (400 + 800) / 2 / 1000,
   },
@@ -151,7 +151,7 @@ export const chainConstants = {
   Chain,
   {
     assets: Asset[];
-    gasAsset: Asset;
+    gasAsset: InternalAsset;
     contractId: number;
     blockTimeSeconds: number;
   }
@@ -186,6 +186,10 @@ export type ChainAssetMap<T> = {
 
 export type ChainMap<T> = {
   [C in Chain]: T;
+};
+
+export type InternalAssetMap<T> = {
+  [A in InternalAsset]: T;
 };
 
 export function isValidAssetAndChain(

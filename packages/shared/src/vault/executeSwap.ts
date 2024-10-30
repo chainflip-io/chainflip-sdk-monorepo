@@ -333,17 +333,18 @@ const executeSwap = async (
   await assertSignerIsConnectedToChain(networkOpts, params.srcChain);
 
   const unvalidatedCcmParams = ccmParams || ccmMetadata;
+  const internalSrcAsset = getInternalAsset({ asset: params.srcAsset, chain: params.srcChain });
 
   if (unvalidatedCcmParams) {
     assertIsCCMDestination(params.destChain);
     const validatedCcmParams = ccmParamsSchema.parse(unvalidatedCcmParams);
 
-    return params.srcAsset === chainConstants[params.srcChain].gasAsset
+    return internalSrcAsset === chainConstants[params.srcChain].gasAsset
       ? callNative({ ...params, ccmParams: validatedCcmParams }, networkOpts, txOpts)
       : callToken({ ...params, ccmParams: validatedCcmParams }, networkOpts, txOpts);
   }
 
-  return params.srcAsset === chainConstants[params.srcChain].gasAsset
+  return internalSrcAsset === chainConstants[params.srcChain].gasAsset
     ? swapNative(params, networkOpts, txOpts)
     : swapToken(params, networkOpts, txOpts);
 };

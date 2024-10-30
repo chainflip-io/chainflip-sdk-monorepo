@@ -107,13 +107,16 @@ const depositChannelEvents = [
       requestType: {
         __kind: 'Ccm',
         outputAddress: { value: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0', __kind: 'Eth' },
-        ccmDepositMetadata: {
-          sourceChain: { __kind: 'Polkadot' },
-          channelMetadata: {
-            message:
-              '0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000003f7a000000000000000000000000000000000000000000000000000000000000000074761735465737400000000000000000000000000000000000000000000000000',
-            gasBudget: '360801',
-            cfParameters: '0x8ea88ab41897b921ef36ddd7dfd3e9',
+        ccmSwapMetadata: {
+          swapAmounts: { principalSwapAmount: '499802700000', gasBudget: '360801' },
+          depositMetadata: {
+            sourceChain: { __kind: 'Polkadot' },
+            channelMetadata: {
+              message:
+                '0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000003f7a000000000000000000000000000000000000000000000000000000000000000074761735465737400000000000000000000000000000000000000000000000000',
+              gasBudget: '360801',
+              cfParameters: '0x8ea88ab41897b921ef36ddd7dfd3e9',
+            },
           },
         },
       },

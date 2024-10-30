@@ -87,9 +87,10 @@ export const fillOrKillParams = z.object({
 });
 
 export type FillOrKillParamsX128 = z.input<typeof fillOrKillParams>;
-export type FillOrKillParams = Omit<FillOrKillParamsX128, 'minPriceX128'> & {
+export type FillOrKillParamsWithMinPrice = Omit<FillOrKillParamsX128, 'minPriceX128'> & {
   minPrice: string;
 };
+export type FillOrKillParams = FillOrKillParamsWithMinPrice;
 
 export const ensureDcaWithFok = <T extends { dcaParams?: unknown; fillOrKillParams?: unknown }>(
   args: T,
@@ -119,6 +120,13 @@ export const openSwapDepositChannelSchema = z
     srcAddress: z.string().optional(),
     fillOrKillParams: fillOrKillParams.optional(),
     dcaParams: dcaParams.optional(),
+    quote: z
+      .object({
+        intermediateAmount: z.string().optional(),
+        egressAmount: z.string(),
+        estimatedPrice: z.string(),
+      })
+      .optional(),
   })
   .superRefine(ensureDcaWithFok)
   .transform(({ amount, ...rest }) => ({
@@ -147,7 +155,15 @@ export type PoolInfo = {
   fee: Omit<PoolFee, 'type'>;
 };
 
-export type QuoteDetails = {
+export type BoostedQuoteDetails = {
+  estimatedBoostFeeBps: number;
+  maxBoostFeeBps: number;
+};
+
+interface BaseQuoteDetails {
+  srcAsset: AssetAndChain;
+  destAsset: AssetAndChain;
+  depositAmount: string;
   intermediateAmount?: string;
   egressAmount: string;
   includedFees: SwapFee[];
@@ -155,14 +171,29 @@ export type QuoteDetails = {
   lowLiquidityWarning: boolean | undefined;
   estimatedDurationSeconds: number;
   estimatedPrice: string;
-  dcaParams?: {
-    numberOfChunks: number;
-    chunkIntervalBlocks: number;
-  };
-  type: QuoteType;
-};
-export type BoostedQuoteDetails = QuoteDetails & { estimatedBoostFeeBps: number };
+}
 
-export type QuoteQueryResponse = QuoteDetails & {
-  boostQuote?: BoostedQuoteDetails;
+type WithBoostQuote<T> = Omit<T, 'boostQuote'> & BoostedQuoteDetails;
+
+export interface RegularQuote extends BaseQuoteDetails {
+  type: 'REGULAR';
+  boostQuote?: WithBoostQuote<RegularQuote>;
+}
+
+export interface DCAQuote extends BaseQuoteDetails {
+  type: 'DCA';
+  dcaParams: DcaParams;
+  boostQuote?: WithBoostQuote<DCAQuote>;
+}
+
+export type Quote = RegularQuote | DCAQuote;
+
+export type DCABoostQuote = NonNullable<DCAQuote['boostQuote']>;
+
+export type RegularBoostQuote = NonNullable<RegularQuote['boostQuote']>;
+
+export type BoostQuote = RegularBoostQuote | DCABoostQuote;
+
+export type FillOrKillParamsWithSlippage = Omit<FillOrKillParamsX128, 'minPriceX128'> & {
+  slippageTolerancePercent: string | number;
 };

@@ -5,7 +5,8 @@ import { GraphQLClient } from 'graphql-request';
 import { z } from 'zod';
 import { InternalAssets, Chain, Chains, assetConstants } from '@/shared/enums';
 import { actionSchema } from '@/shared/parsers';
-import processBlocks, { Event } from '@/swap/processBlocks';
+import { GET_CALL } from '@/swap/gql/query';
+import processBlocks, { Call, Event } from '@/swap/processBlocks';
 import prisma, { SwapDepositChannel } from '../../client';
 import { events as eventNames } from '../index';
 import { networkBroadcastSuccessArgs } from '../networkBroadcastSuccess';
@@ -154,6 +155,46 @@ export const swapDepositAddressReadyCcmParamsMocked = {
     } as SwapDepositAddressReadyArgs,
     indexInBlock: 0,
     name: eventNames.Swapping.SwapDepositAddressReady,
+  },
+} as const;
+
+export const swapRequestCompletedMock = {
+  block: {
+    specId: 'test@160',
+    height: 120,
+    timestamp: 1670337105000,
+    hash: '0x123',
+  },
+  event: {
+    args: {
+      swapRequestId: '9876545',
+    },
+    id: '0000012799-000000-c1ea7',
+    indexInBlock: 0,
+    nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
+    name: eventNames.Swapping.SwapRequestCompleted,
+    phase: 'ApplyExtrinsic',
+    pos: 2,
+    extrinsic: {
+      error: null,
+      hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
+      id: '0000012799-000000-c1ea7',
+      indexInBlock: 0,
+      nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
+      pos: 1,
+      success: true,
+      version: 4,
+      call: {
+        args: [null],
+        error: null,
+        id: '0000012799-000000-c1ea7',
+        name: 'Timestamp.set',
+        nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
+        origin: [null],
+        pos: 0,
+        success: true,
+      },
+    },
   },
 } as const;
 
@@ -434,7 +475,11 @@ export const createPools = () => {
   });
 };
 
-export const processEvents = async (events: (Event & { id: string })[], version = '160') => {
+export const processEvents = async (
+  events: (Event & { id: string })[],
+  calls: (Call & { id: string })[] = [],
+  version = '160',
+) => {
   const eventMap = events
     .sort((a, b) => (a.id < b.id ? -1 : 1))
     .reduce((acc, event) => {
@@ -455,7 +500,13 @@ export const processEvents = async (events: (Event & { id: string })[], version 
 
   let previousHeight = startingHeight + 1;
 
-  jest.spyOn(GraphQLClient.prototype, 'request').mockImplementation(async () => {
+  jest.spyOn(GraphQLClient.prototype, 'request').mockImplementation(async (...args) => {
+    if (JSON.stringify(args[0]) === JSON.stringify(GET_CALL)) {
+      const [, vars] = args as unknown as [unknown, Record<string, unknown> | undefined];
+
+      return { call: { args: calls.find((c) => c.id === vars?.id) } };
+    }
+
     const batch = blocksIt.next();
     if (batch.done) throw new Error('done');
     const [height, blockEvents] = batch.value;

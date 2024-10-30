@@ -1,4 +1,13 @@
-import { AffiliateBroker, CcmParams, DcaParams, FillOrKillParams, PaidFee } from '@/shared/schemas';
+import {
+  AffiliateBroker,
+  BoostQuote,
+  CcmParams,
+  DcaParams,
+  FillOrKillParamsWithMinPrice,
+  FillOrKillParamsWithSlippage,
+  PaidFee,
+  Quote,
+} from '@/shared/schemas';
 import { FailureMode } from '@/swap/utils/swap';
 import { ChainsAndAssets } from '../types';
 
@@ -32,7 +41,7 @@ interface DepositChannelFields {
   isExpired: boolean;
   openedThroughBackend: boolean;
   affiliateBrokers: AffiliateBroker[];
-  fillOrKillParams: FillOrKillParams | undefined;
+  fillOrKillParams: FillOrKillParamsWithMinPrice | undefined;
   dcaParams: DcaParams | undefined;
 }
 
@@ -144,3 +153,15 @@ export type SwapStatusResponseV2 =
   | ({
       state: 'FAILED';
     } & Sending);
+
+export type { Quote, RegularQuote, BoostQuote, DCAQuote, DCABoostQuote } from '@/shared/schemas';
+
+export interface DepositAddressRequestV2 {
+  quote: Quote | BoostQuote;
+  srcAddress?: string;
+  destAddress: string;
+  fillOrKillParams?: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage;
+  affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];
+  ccmParams?: CcmParams;
+  brokerCommissionBps?: number;
+}

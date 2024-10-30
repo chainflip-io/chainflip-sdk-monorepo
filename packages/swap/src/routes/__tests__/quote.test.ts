@@ -121,7 +121,6 @@ describe('server', () => {
   });
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE private."QuoteResult" CASCADE`;
     server = app.listen(0);
     jest.mocked(Quoter.prototype.getLimitOrders).mockResolvedValue([]);
     mockRpcs({ ingressFee: hexEncodeNumber(2000000), egressFee: hexEncodeNumber(50000) });

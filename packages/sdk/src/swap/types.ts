@@ -2,8 +2,8 @@ import { Chain, Asset, AssetOfChain, InternalAsset } from '@/shared/enums';
 import {
   AffiliateBroker,
   CcmParams,
-  QuoteQueryResponse,
-  FillOrKillParams,
+  Quote,
+  FillOrKillParamsWithMinPrice,
   SwapFee,
   DcaParams,
 } from '@/shared/schemas';
@@ -48,20 +48,24 @@ export interface QuoteRequest extends ChainsAndAssets {
 
 export interface QuoteResponse
   extends Omit<QuoteRequest, 'brokerCommissionBps' | 'affiliateBrokers'> {
-  quote: QuoteQueryResponse;
+  quote: Quote;
 }
 
 export interface QuoteResponseV2
   extends Omit<QuoteRequest, 'brokerCommissionBps' | 'affiliateBrokers'> {
-  quotes: QuoteQueryResponse[];
+  quotes: Quote[];
 }
+
+export type FillOrKillParamsWithSlippage = Omit<FillOrKillParamsWithMinPrice, 'minPrice'> & {
+  slippageTolerancePercent: string | number;
+};
 
 export interface DepositAddressRequest extends QuoteRequest {
   destAddress: string;
   ccmParams?: CcmParams;
   maxBoostFeeBps?: number;
   srcAddress?: string;
-  fillOrKillParams?: FillOrKillParams;
+  fillOrKillParams?: FillOrKillParamsWithMinPrice;
   dcaParams?: DcaParams;
 
   /** @deprecated DEPRECATED(1.5): use ccmParams instead of ccmMetadata */
@@ -114,7 +118,7 @@ interface DepositAddressFields extends SwapStatusResponseCommonFields {
   effectiveBoostFeeBps?: number;
   boostSkippedAt?: number;
   boostSkippedBlockIndex?: string;
-  fillOrKillParams: FillOrKillParams;
+  fillOrKillParams: FillOrKillParamsWithMinPrice;
 }
 
 type EgressScheduled = {

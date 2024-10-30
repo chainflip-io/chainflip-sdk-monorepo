@@ -28,7 +28,7 @@ describe('python integration test', () => {
   jest.setTimeout(10000);
 
   let privateKey: string;
-  const marketMakerId = 'web_team_whales';
+  const accountId = 'web_team_whales';
   let server: typeof app;
   let child: ChildProcessWithoutNullStreams;
   let stdout$: Observable<string>;
@@ -76,7 +76,7 @@ describe('python integration test', () => {
     privateKey = pair.privateKey.export({ type: 'pkcs8', format: 'pem' }).toString();
     await prisma.marketMaker.create({
       data: {
-        name: marketMakerId,
+        name: accountId,
         publicKey: pair.publicKey.export({ type: 'spki', format: 'pem' }).toString(),
       },
     });
@@ -92,8 +92,8 @@ describe('python integration test', () => {
       path.join(__dirname, '..', '..', 'python-client', 'mock.py'),
       '--private-key',
       privateKey,
-      '--market-maker-id',
-      marketMakerId,
+      '--account-id',
+      accountId,
       '--url',
       serverUrl,
     ]);

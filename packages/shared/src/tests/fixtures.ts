@@ -389,13 +389,21 @@ export const mockRpcResponse = (
   jest.mocked(fetch).mockImplementation(async (url, init) => {
     const body = JSON.parse((init?.body as string | undefined) ?? '{}');
 
-    const res = await (typeof cb === 'function' ? cb(url.toString(), body) : cb);
+    let res;
+    try {
+      res = await (typeof cb === 'function' ? cb(url.toString(), body[0]) : cb);
+    } catch (error) {
+      return {
+        ok: false,
+        json: () => Promise.resolve({ error: (error as Error).message }),
+      } as Response;
+    }
 
     spy(url, body);
 
     return {
       ok: true,
-      json: () => Promise.resolve(res.data),
+      json: () => Promise.resolve([{ ...res.data, id: body[0].id }]),
     } as Response;
   });
 
