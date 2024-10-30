@@ -256,7 +256,6 @@ export type ExtrinsicPayloadParams = RemoveOptional<NewSwapRequest>;
 
 export const buildExtrinsicPayload = (
   swapRequest: ExtrinsicPayloadParams,
-  chainflipNetwork: ChainflipNetwork,
 ): SwappingRequestSwapDepositAddressWithAffiliates => {
   const srcAsset = getInternalAsset({ asset: swapRequest.srcAsset, chain: swapRequest.srcChain });
   const destAsset = getInternalAsset({
@@ -268,15 +267,10 @@ export const buildExtrinsicPayload = (
     .nullable()
     .parse(swapRequest.ccmParams ?? null);
 
-  const fokParams = getTransformedFokSchema(
-    z
-      .string()
-      .transform((address) =>
-        toForeignChainAddress(swapRequest.srcChain, address, chainflipNetwork),
-      ),
-  )
+  const fokParams = getTransformedFokSchema(z.string())
     .nullable()
-    .parse(swapRequest.fillOrKillParams ?? null);
+    // TODO(1.8): remove any and generate types
+    .parse(swapRequest.fillOrKillParams ?? null) as any;
 
   const dcaParams = transformedDcaParamsSchema.nullable().parse(swapRequest.dcaParams ?? null);
 
