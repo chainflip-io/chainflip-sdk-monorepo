@@ -171,6 +171,7 @@ interface BaseQuoteDetails {
   lowLiquidityWarning: boolean | undefined;
   estimatedDurationSeconds: number;
   estimatedPrice: string;
+  recommendedSlippageTolerancePercent: number; 
 }
 
 type WithBoostQuote<T> = Omit<T, 'boostQuote'> & BoostedQuoteDetails;

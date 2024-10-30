@@ -511,6 +511,7 @@ describe('server', () => {
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
           estimatedPrice: '100.0080000000025002',
+          recommendedSlippageTolerancePercent: 2,
           includedFees: [
             {
               amount: '25000',
@@ -557,6 +558,7 @@ describe('server', () => {
           egressAmount: (400024000).toString(),
           estimatedDurationSeconds: 90,
           estimatedPrice: '400.0320000000100008',
+          recommendedSlippageTolerancePercent: 2,
           includedFees: [
             {
               amount: '25000',
@@ -722,6 +724,7 @@ describe('server', () => {
           egressAmount: '4994992',
           estimatedDurationSeconds: 1830,
           estimatedPrice: '5015.53082706766917293233',
+          recommendedSlippageTolerancePercent: 2,
           includedFees: [
             {
               amount: '5000',
@@ -840,6 +843,7 @@ describe('server', () => {
           egressAmount: '20003968',
           estimatedDurationSeconds: 1866,
           estimatedPrice: '20061.72106824925816023739',
+          recommendedSlippageTolerancePercent: 2,
           includedFees: [
             {
               amount: '20000',
@@ -1073,6 +1077,7 @@ describe('server', () => {
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
           estimatedPrice: '100.0000000000025',
+          recommendedSlippageTolerancePercent: 2,
           includedFees: [
             {
               amount: '25000',
@@ -1193,6 +1198,7 @@ describe('server', () => {
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
           estimatedPrice: '100.0000000000025',
+          recommendedSlippageTolerancePercent: 2,
           includedFees: [
             {
               amount: '25000',
@@ -1314,6 +1320,7 @@ describe('server', () => {
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 54,
           estimatedPrice: '100.0000000000025',
+          recommendedSlippageTolerancePercent: 2,
           includedFees: [
             {
               amount: '25000',

@@ -8,6 +8,7 @@ import ServiceError from './ServiceError';
 import { getSwapRateV2, LimitOrders } from './statechain';
 import { InternalAsset, Pool } from '../client';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
+import { RECOMMENDED_SLIPPAGE_TOLERANCE_PERCENTAGE } from '@/shared/consts';
 
 export default async function getPoolQuote<T extends QuoteType>({
   srcAsset,
@@ -97,6 +98,7 @@ export default async function getPoolQuote<T extends QuoteType>({
   return {
     intermediateAmount: intermediateAmount?.toString(),
     egressAmount: egressAmount.toString(),
+    recommendedSlippageTolerancePercent: RECOMMENDED_SLIPPAGE_TOLERANCE_PERCENTAGE,
     includedFees,
     lowLiquidityWarning,
     poolInfo,
