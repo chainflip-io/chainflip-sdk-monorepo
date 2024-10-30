@@ -28,6 +28,7 @@ exports[`swapRequestCompleted updates swap request and associated quote 1`] = `
     "destAsset": "Dot",
     "egressAmount": "2000000",
     "estimatedPrice": "25000",
+    "executedAt": 2022-12-06T14:31:45.000Z,
     "executedPrice": "24800",
     "executedSlippagePercent": "0.8",
     "id": Any<Number>,

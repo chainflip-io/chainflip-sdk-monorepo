@@ -428,12 +428,13 @@ model Quote {
   swapRequestId           BigInt?            @unique
   srcAsset                InternalAsset
   destAsset               InternalAsset
-  maxBoostFeeBps             Int?
-  numberOfChunks             Int?
+  maxBoostFeeBps          Int?
+  numberOfChunks          Int?
   depositAmount           Decimal            @db.Decimal(30, 0)
   intermediateAmount      Decimal?           @db.Decimal(30, 0)
   egressAmount            Decimal            @db.Decimal(30, 0)
   estimatedPrice          Decimal
+  executedAt              DateTime?
   executedPrice           Decimal?
   executedSlippagePercent Decimal?
 
