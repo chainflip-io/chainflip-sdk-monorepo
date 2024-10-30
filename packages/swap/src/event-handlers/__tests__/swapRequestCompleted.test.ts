@@ -262,4 +262,85 @@ describe(swapRequestCompleted, () => {
 
     expect(swapRequest.quote).toBeFalsy();
   });
+
+  it('does not update associated quote if swap was (partially) refunded', async () => {
+    const channel = await createDepositChannel({
+      id: 100n,
+      srcChain: 'Ethereum',
+      srcAsset: 'Eth',
+      depositAddress: ETH_ADDRESS,
+      channelId: 99n,
+      destAsset: 'Dot',
+      destAddress: DOT_ADDRESS,
+      quote: {
+        create: {
+          srcAsset: 'Eth',
+          destAsset: 'Dot',
+          maxBoostFeeBps: 0,
+          depositAmount: '10000000000',
+          egressAmount: '2000000',
+          estimatedPrice: '25000',
+        },
+      },
+    });
+
+    await prisma.swapRequest.create({
+      data: {
+        swapDepositChannelId: channel.id,
+        nativeId: BigInt(event.args.swapRequestId),
+        depositAmount: '10000000000',
+        swapInputAmount: '10000000000',
+        depositFinalisedAt: new Date(block.timestamp - 12000),
+        depositFinalisedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
+        srcAsset: 'Eth',
+        destAsset: 'Dot',
+        destAddress: DOT_ADDRESS,
+        requestType: 'REGULAR',
+        originType: 'VAULT',
+        swapRequestedAt: new Date(block.timestamp - 12000),
+        swapRequestedBlockIndex: '92-398',
+        swaps: {
+          createMany: {
+            data: [
+              {
+                nativeId: 3,
+                srcAsset: 'Btc',
+                destAsset: 'Eth',
+                type: 'SWAP',
+                swapInputAmount: '5000000000',
+                swapOutputAmount: '1240000',
+                swapScheduledAt: new Date('2024-08-06T00:00:00.000Z'),
+                swapScheduledBlockIndex: '1-1',
+              },
+            ],
+          },
+        },
+      },
+    });
+
+    await prisma.swapRequest.update({
+      where: { nativeId: BigInt(event.args.swapRequestId) },
+      data: {
+        refundEgress: {
+          create: {
+            nativeId: 5,
+            chain: 'Ethereum' as const,
+            amount: '5000000000',
+            scheduledAt: new Date(block.timestamp),
+            scheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
+          },
+        },
+      },
+    });
+
+    await swapRequestCompleted({ block, event, prisma });
+
+    const swapRequest = await prisma.swapRequest.findFirstOrThrow({
+      include: {
+        quote: true,
+      },
+    });
+
+    expect(swapRequest.quote).toBeFalsy();
+  });
 });

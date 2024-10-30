@@ -35,7 +35,8 @@ export default async function swapRequestCompleted({
   if (
     channelQuote &&
     channelQuote?.depositAmount.toFixed(0) === swapRequest.depositAmount?.toFixed(0) &&
-    !channelQuote.swapRequestId // do not overwrite data if channel is reused
+    !channelQuote.swapRequestId && // do not overwrite data if channel is reused
+    !swapRequest.refundEgressId // only store execution price if full deposit amount was swapped
   ) {
     const quotedPrice = channelQuote.estimatedPrice.toNumber();
     const executedPrice = Number(
