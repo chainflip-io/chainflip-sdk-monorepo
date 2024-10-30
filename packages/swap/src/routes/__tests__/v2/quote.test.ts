@@ -617,7 +617,7 @@ describe('server', () => {
       );
     });
 
-    it('gets the DCA quote with a boost quote', async () => {
+    it('gets the DCA quote with a boost quote and broker fees', async () => {
       env.DCA_CHUNK_SIZE_USD = { Btc: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
@@ -705,6 +705,7 @@ describe('server', () => {
         destAsset: 'USDC',
         amount: (0.001e8).toString(),
         dcaEnabled: 'true',
+        brokerCommissionBps: '10',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -717,10 +718,16 @@ describe('server', () => {
             asset: 'USDC',
             chain: 'Ethereum',
           },
-          egressAmount: (5e6).toString(),
+          egressAmount: '4994992',
           estimatedDurationSeconds: 1830,
-          estimatedPrice: '5020.55137844611528822055',
+          estimatedPrice: '5015.53082706766917293233',
           includedFees: [
+            {
+              amount: '5000',
+              asset: 'USDC',
+              chain: 'Ethereum',
+              type: 'BROKER',
+            },
             {
               amount: '250',
               asset: 'BTC',
@@ -762,16 +769,22 @@ describe('server', () => {
               asset: 'USDC',
               chain: 'Ethereum',
             },
-            egressAmount: '5000000',
+            egressAmount: '4994992',
             estimatedBoostFeeBps: 10,
             estimatedDurationSeconds: 630,
-            estimatedPrice: '5025.58956347215253386854',
+            estimatedPrice: '5020.56397390868038133467',
             includedFees: [
               {
                 amount: '100',
                 asset: 'BTC',
                 chain: 'Bitcoin',
                 type: 'BOOST',
+              },
+              {
+                amount: '5000',
+                asset: 'USDC',
+                chain: 'Ethereum',
+                type: 'BROKER',
               },
               {
                 amount: '250',
@@ -823,10 +836,16 @@ describe('server', () => {
             asset: 'USDC',
             chain: 'Ethereum',
           },
-          egressAmount: (20024000).toString(),
+          egressAmount: '20003968',
           estimatedDurationSeconds: 1866,
-          estimatedPrice: '20081.80287112037853877616',
+          estimatedPrice: '20061.72106824925816023739',
           includedFees: [
+            {
+              amount: '20000',
+              asset: 'USDC',
+              chain: 'Ethereum',
+              type: 'BROKER',
+            },
             {
               amount: '250',
               asset: 'BTC',
@@ -876,16 +895,22 @@ describe('server', () => {
               asset: 'USDC',
               chain: 'Ethereum',
             },
-            egressAmount: '20024000',
+            egressAmount: '20003968',
             estimatedBoostFeeBps: 10,
             estimatedDurationSeconds: 666,
-            estimatedPrice: '20101.95480271344278087745',
+            estimatedPrice: '20081.85284791072933809658',
             includedFees: [
               {
                 amount: '100',
                 asset: 'BTC',
                 chain: 'Bitcoin',
                 type: 'BOOST',
+              },
+              {
+                amount: '20000',
+                asset: 'USDC',
+                chain: 'Ethereum',
+                type: 'BROKER',
               },
               {
                 amount: '250',
