@@ -17,6 +17,7 @@ import {
   MarketMakerQuote,
   MarketMakerQuoteRequest,
   marketMakerResponseSchema,
+  requestIdObj,
 } from './schemas';
 import env from '../config/env';
 import { getAssetPrice } from '../pricing';
@@ -71,9 +72,16 @@ const formatLimitOrders = (
   }));
 };
 
-export type SocketData = { marketMaker: string; quotedAssets: InternalAssetMap<boolean> };
+export type SocketData = {
+  marketMaker: string;
+  quotedAssets: InternalAssetMap<boolean>;
+  clientVersion: '1' | '2';
+};
 export type ReceivedEventMap = { quote_response: (message: unknown) => void };
-export type SentEventMap = { quote_request: (message: MarketMakerQuoteRequest<LegJson>) => void };
+export type SentEventMap = {
+  quote_request: (message: MarketMakerQuoteRequest<LegJson>) => void;
+  quote_error: (message: { error: string; request_id: string }) => void;
+};
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type QuotingServer = Server<ReceivedEventMap, SentEventMap, any, SocketData>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -109,6 +117,20 @@ export default class Quoter {
             reason: result.error,
             marketMaker: socket.data.marketMaker,
           });
+
+          if (socket.data.clientVersion === '2') {
+            let error;
+            let requestId = 'unknown';
+            try {
+              error = JSON.parse(result.error.message)[0].message;
+              const requestIdResult = requestIdObj.safeParse(message);
+              if (requestIdResult.success) requestId = requestIdResult.data.request_id;
+            } catch {
+              error = result.error.message;
+            }
+            socket.emit('quote_error', { error, request_id: requestId });
+          }
+
           return;
         }
 

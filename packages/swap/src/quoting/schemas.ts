@@ -21,6 +21,8 @@ export const marketMakerResponseSchema = z.object({
   ]),
 });
 
+export const requestIdObj = z.object({ request_id: z.string() });
+
 export type MarketMakerRawQuote = z.input<typeof marketMakerResponseSchema>;
 export type MarketMakerQuote = z.output<typeof marketMakerResponseSchema>;
 

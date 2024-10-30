@@ -160,6 +160,7 @@ describe(authenticate, () => {
     expect((socket as any).data).toStrictEqual({
       marketMaker: name,
       quotedAssets: Object.fromEntries(Object.values(InternalAssets).map((asset) => [asset, true])),
+      clientVersion: '1',
     });
   });
 
@@ -191,6 +192,10 @@ describe(authenticate, () => {
     await authenticate(socket as any, next);
     expect(next).toHaveBeenCalledTimes(1);
     expect(next).toHaveBeenCalledWith();
-    expect((socket as any).data).toStrictEqual({ marketMaker: name, quotedAssets });
+    expect((socket as any).data).toStrictEqual({
+      marketMaker: name,
+      quotedAssets,
+      clientVersion: '2',
+    });
   });
 });
