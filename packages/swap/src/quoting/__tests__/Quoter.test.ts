@@ -50,6 +50,7 @@ describe(Quoter, () => {
     socket: Socket;
     requestCount: number;
     waitForRequest: () => Promise<MarketMakerQuoteRequest<LegJson>>;
+    errors: string[];
   }>;
   let server: Server;
   const sockets: Socket[] = [];
@@ -119,8 +120,15 @@ describe(Quoter, () => {
         onRequest(quoteRequest);
       });
 
+      const errors: string[] = [];
+
+      socket.on('quote_error', ({ error }) => {
+        errors.push(error);
+      });
+
       return {
         socket,
+        errors,
         sendQuote(
           quote: MarketMakerRawQuote,
           srcAsset: InternalAsset = 'Btc',
@@ -340,6 +348,7 @@ describe(Quoter, () => {
       mm1.sendQuote({ ...request1, legs: [[[0, '0']]] });
       const quote = mm2.sendQuote({ ...request2, legs: [[[0, '110']]] });
       expect(await limitOrders).toEqual(quote);
+      expect(mm1.errors).toEqual(['sell amount must be positive']);
     });
 
     it('rejects quotes with too low ticks', async () => {
@@ -350,6 +359,7 @@ describe(Quoter, () => {
       mm1.sendQuote({ ...request1, legs: [[[MIN_TICK - 1, '100']]] });
       const quote = mm2.sendQuote({ ...request2, legs: [[[0, '200']]] });
       expect(await limitOrders).toEqual(quote);
+      expect(mm1.errors).toEqual(['tick provided is too small']);
     });
 
     it('rejects quotes with too high ticks', async () => {
@@ -360,6 +370,7 @@ describe(Quoter, () => {
       mm1.sendQuote({ ...request1, legs: [[[MAX_TICK + 1, '100']]] });
       const quote = mm2.sendQuote({ ...request2, legs: [[[0, '200']]] });
       expect(await limitOrders).toEqual(quote);
+      expect(mm1.errors).toEqual(['tick provided is too big']);
     });
   });
 });
