@@ -25,7 +25,7 @@ type AdditionalInfo = {
   limitOrdersReceived: Awaited<ReturnType<Quoter['getLimitOrders']>> | undefined;
 };
 
-const handleQuotingError = (err: unknown, info: AdditionalInfo) => {
+const handleQuotingError = (res: express.Response, err: unknown, info: AdditionalInfo) => {
   if (err instanceof ServiceError) throw err;
 
   const message = err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';
@@ -37,7 +37,7 @@ const handleQuotingError = (err: unknown, info: AdditionalInfo) => {
 
   logger.error('error while collecting quotes:', err);
 
-  return message;
+  res.status(500).json({ message });
 };
 
 export const getDcaQuoteParams = async (asset: InternalAsset, amount: bigint) => {
@@ -389,7 +389,7 @@ const quoteRouter = (quoter: Quoter) => {
           }),
         });
       } catch (err) {
-        handleQuotingError(err, {
+        handleQuotingError(res, err, {
           srcAsset,
           destAsset,
           amount: new BigNumber(amount.toString())
