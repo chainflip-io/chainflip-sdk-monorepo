@@ -527,21 +527,18 @@ export class SwapSDK {
 
     if (quote.type === 'DCA') dcaParams = quote.dcaParams;
 
-    return buildExtrinsicPayload(
-      {
-        srcAsset: quote.srcAsset.asset,
-        srcChain: quote.srcAsset.chain,
-        destAsset: quote.destAsset.asset,
-        destChain: quote.destAsset.chain,
-        destAddress,
-        dcaParams,
-        fillOrKillParams: parseFoKParams(inputFoKParams, quote) ?? null,
-        maxBoostFeeBps: 'maxBoostFeeBps' in quote ? quote.maxBoostFeeBps : null,
-        commissionBps: brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0,
-        ccmParams: ccmParams ?? null,
-        affiliates: affiliateBrokers ?? [],
-      },
-      this.options.network,
-    );
+    return buildExtrinsicPayload({
+      srcAsset: quote.srcAsset.asset,
+      srcChain: quote.srcAsset.chain,
+      destAsset: quote.destAsset.asset,
+      destChain: quote.destAsset.chain,
+      destAddress,
+      dcaParams,
+      fillOrKillParams: parseFoKParams(inputFoKParams, quote) ?? null,
+      maxBoostFeeBps: 'maxBoostFeeBps' in quote ? quote.maxBoostFeeBps : null,
+      commissionBps: brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0,
+      ccmParams: ccmParams ?? null,
+      affiliates: affiliateBrokers ?? [],
+    });
   }
 }
