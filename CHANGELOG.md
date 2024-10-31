@@ -24,6 +24,7 @@ which it is deprecated.
   This is a convenience method that can be used to skip the manual token
   allowance approval. Upon calling, the method will make sure there is enough
   ERC20 token allowance before proceeding with initiating the swap.
+- A new field `recommendedSlippageTolerancePercent` has been added to the `BaseQuoteDetails` interface. The `getQuoteV2()` method will now return a constant value of 2% for the `recommendedSlippageTolerancePercent`. 
 
 ## 1.6.6
 

@@ -1,3 +1,4 @@
+import { RECOMMENDED_SLIPPAGE_TOLERANCE_PERCENTAGE } from '@/shared/consts';
 import { getAssetAndChain, getInternalAsset } from '@/shared/enums';
 import { getPipAmountFromAmount } from '@/shared/functions';
 import { Quote, QuoteType } from '@/shared/schemas';
@@ -97,6 +98,7 @@ export default async function getPoolQuote<T extends QuoteType>({
   return {
     intermediateAmount: intermediateAmount?.toString(),
     egressAmount: egressAmount.toString(),
+    recommendedSlippageTolerancePercent: RECOMMENDED_SLIPPAGE_TOLERANCE_PERCENTAGE,
     includedFees,
     lowLiquidityWarning,
     poolInfo,

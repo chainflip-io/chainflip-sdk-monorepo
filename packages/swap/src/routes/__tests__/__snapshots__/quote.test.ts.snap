@@ -63,6 +63,7 @@ exports[`server GET /quote doesn't include boost information when disabled 1`] =
       },
     },
   ],
+  "recommendedSlippageTolerancePercent": 2,
   "srcAsset": {
     "asset": "BTC",
     "chain": "Bitcoin",
@@ -134,6 +135,7 @@ exports[`server GET /quote gets the quote for deprecated params without the chai
       },
     },
   ],
+  "recommendedSlippageTolerancePercent": 2,
   "srcAsset": {
     "asset": "FLIP",
     "chain": "Ethereum",
@@ -214,6 +216,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
         },
       },
     ],
+    "recommendedSlippageTolerancePercent": 2,
     "srcAsset": {
       "asset": "BTC",
       "chain": "Bitcoin",
@@ -281,6 +284,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
       },
     },
   ],
+  "recommendedSlippageTolerancePercent": 2,
   "srcAsset": {
     "asset": "BTC",
     "chain": "Bitcoin",
@@ -336,6 +340,7 @@ exports[`server GET /quote gets the quote with a realistic price 1`] = `
       },
     },
   ],
+  "recommendedSlippageTolerancePercent": 2,
   "srcAsset": {
     "asset": "ETH",
     "chain": "Ethereum",
@@ -408,6 +413,7 @@ exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
       },
     },
   ],
+  "recommendedSlippageTolerancePercent": 2,
   "srcAsset": {
     "asset": "FLIP",
     "chain": "Ethereum",
