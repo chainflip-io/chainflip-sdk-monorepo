@@ -71,16 +71,10 @@ export const getDcaQuoteParams = async (asset: InternalAsset, amount: bigint) =>
 const adjustDcaQuote = ({
   dcaQuoteParams,
   dcaQuote,
-  dcaBoostedQuote,
-  estimatedBoostFeeBps,
-  maxBoostFeeBps,
   originalDepositAmount,
 }: {
   dcaQuoteParams: NonNullable<Awaited<ReturnType<typeof getDcaQuoteParams>>>;
-  dcaQuote: DCAQuote;
-  dcaBoostedQuote?: DCABoostQuote | null;
-  estimatedBoostFeeBps?: number;
-  maxBoostFeeBps: number | undefined;
+  dcaQuote: DCAQuote | DCABoostQuote;
   originalDepositAmount: bigint;
 }) => {
   dcaQuote.dcaParams = {
@@ -89,10 +83,15 @@ const adjustDcaQuote = ({
   };
 
   dcaQuote.depositAmount = originalDepositAmount.toString();
+  if (dcaQuote.intermediateAmount) {
+    dcaQuote.intermediateAmount = new BigNumber(dcaQuote.intermediateAmount)
+      .multipliedBy(dcaQuoteParams.numberOfChunks)
+      .toFixed(0);
+  }
 
-  const egressFee = dcaQuote.includedFees.find((fee) => fee.type === 'EGRESS');
   // when multiplying the egressAmount with numberOfChunks, we will deduct the egressFee multiple times.
   // so we should add this fee back to the egress amount
+  const egressFee = dcaQuote.includedFees.find((fee) => fee.type === 'EGRESS');
   const duplicatedEgressFeeAmount = dcaQuoteParams
     ? BigInt(
         new BigNumber(egressFee?.amount ?? 0)
@@ -100,66 +99,20 @@ const adjustDcaQuote = ({
           .toFixed(0),
       )
     : 0n;
-
-  const networkFee = dcaQuote.includedFees.find((fee) => fee.type === 'NETWORK');
-  if (networkFee) {
-    networkFee.amount = new BigNumber(networkFee.amount)
-      .multipliedBy(dcaQuoteParams.numberOfChunks)
-      .toFixed(0);
-  }
-
-  const brokerFee = dcaQuote.includedFees.find((fee) => fee.type === 'BROKER');
-  if (brokerFee) {
-    brokerFee.amount = new BigNumber(brokerFee.amount)
-      .multipliedBy(dcaQuoteParams.numberOfChunks)
-      .toFixed(0);
-  }
-
   dcaQuote.egressAmount = new BigNumber(dcaQuote.egressAmount)
     .multipliedBy(dcaQuoteParams.numberOfChunks)
     .plus(duplicatedEgressFeeAmount.toString())
     .toFixed(0);
 
+  for (const feeType of ['NETWORK', 'BROKER', 'BOOST']) {
+    const fee = dcaQuote.includedFees.find(({ type }) => type === feeType);
+    if (fee) {
+      fee.amount = new BigNumber(fee.amount).multipliedBy(dcaQuoteParams.numberOfChunks).toFixed(0);
+    }
+  }
+
   dcaQuote.estimatedDurations.swap += dcaQuoteParams.additionalSwapDurationSeconds;
   dcaQuote.estimatedDurationSeconds += dcaQuoteParams.additionalSwapDurationSeconds;
-
-  if (dcaQuoteParams && dcaBoostedQuote && estimatedBoostFeeBps && maxBoostFeeBps) {
-    const boostNetworkFee = dcaBoostedQuote.includedFees.find((fee) => fee.type === 'NETWORK');
-    if (boostNetworkFee) {
-      boostNetworkFee.amount = new BigNumber(boostNetworkFee.amount)
-        .multipliedBy(dcaQuoteParams.numberOfChunks)
-        .toFixed(0);
-    }
-
-    const boostBrokerFee = dcaBoostedQuote.includedFees.find((fee) => fee.type === 'BROKER');
-    if (boostBrokerFee) {
-      boostBrokerFee.amount = new BigNumber(boostBrokerFee.amount)
-        .multipliedBy(dcaQuoteParams.numberOfChunks)
-        .toFixed(0);
-    }
-
-    const boostFee = dcaBoostedQuote.includedFees.find((fee) => fee.type === 'BOOST');
-    if (boostFee) {
-      boostFee.amount = new BigNumber(boostFee.amount)
-        .multipliedBy(dcaQuoteParams.numberOfChunks)
-        .toFixed(0);
-    }
-
-    dcaBoostedQuote.estimatedDurations.swap += dcaQuoteParams.additionalSwapDurationSeconds;
-    dcaBoostedQuote.estimatedDurationSeconds += dcaQuoteParams.additionalSwapDurationSeconds;
-
-    dcaQuote.boostQuote = {
-      ...dcaBoostedQuote,
-      estimatedBoostFeeBps,
-      egressAmount: BigNumber(dcaBoostedQuote.egressAmount)
-        .multipliedBy(dcaQuoteParams.numberOfChunks)
-        .plus(duplicatedEgressFeeAmount.toString())
-        .toFixed(0),
-      dcaParams: dcaQuote.dcaParams,
-      maxBoostFeeBps,
-      depositAmount: dcaQuote.depositAmount,
-    };
-  }
 };
 /* eslint-enable no-param-reassign */
 
@@ -302,37 +255,35 @@ export const generateQuotes = async ({
   const dcaBoostedQuote = getFulfilledResult(dcaBoostedQuoteResult, null) as DCABoostQuote | null;
 
   if (dcaQuoteParams && dcaQuote) {
+    // The received quotes are for a single chunk, we need to extrapolate them to the full amount
+    adjustDcaQuote({ dcaQuoteParams, dcaQuote, originalDepositAmount: amount });
+    if (dcaBoostedQuote) {
+      adjustDcaQuote({ dcaQuoteParams, dcaQuote: dcaBoostedQuote, originalDepositAmount: amount });
+    }
+
     // Check liquidity for DCA
     if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
       const totalLiquidity = await getTotalLiquidity(srcAsset, destAsset);
-      if (totalLiquidity < BigInt(dcaQuote.egressAmount) * BigInt(dcaQuoteParams.numberOfChunks)) {
+      if (totalLiquidity < BigInt(dcaQuote.egressAmount)) {
         throw ServiceError.badRequest(`Insufficient liquidity for the requested amount`);
       }
     } else {
       const totalLiquidityLeg1 = await getTotalLiquidity(srcAsset, 'Usdc');
       const totalLiquidityLeg2 = await getTotalLiquidity('Usdc', destAsset);
       if (
-        totalLiquidityLeg1 <
-          BigInt(dcaQuote.intermediateAmount!) * BigInt(dcaQuoteParams.numberOfChunks) ||
-        totalLiquidityLeg2 < BigInt(dcaQuote.egressAmount) * BigInt(dcaQuoteParams.numberOfChunks)
+        totalLiquidityLeg1 < BigInt(dcaQuote.intermediateAmount!) ||
+        totalLiquidityLeg2 < BigInt(dcaQuote.egressAmount)
       ) {
         throw ServiceError.badRequest(`Insufficient liquidity for the requested amount`);
       }
     }
-
-    // The received quotes are for a single chunk, we need to extrapolate them to the full amount
-    adjustDcaQuote({
-      dcaQuoteParams,
-      dcaQuote,
-      dcaBoostedQuote,
-      estimatedBoostFeeBps,
-      maxBoostFeeBps,
-      originalDepositAmount: amount,
-    });
   }
 
-  if (boostedQuote && estimatedBoostFeeBps && quote && boostedQuote && maxBoostFeeBps) {
+  if (quote && boostedQuote && estimatedBoostFeeBps && maxBoostFeeBps) {
     quote.boostQuote = { ...boostedQuote, estimatedBoostFeeBps, maxBoostFeeBps };
+  }
+  if (dcaQuote && dcaBoostedQuote && estimatedBoostFeeBps && maxBoostFeeBps) {
+    dcaQuote.boostQuote = { ...dcaBoostedQuote, estimatedBoostFeeBps, maxBoostFeeBps };
   }
 
   const result = [];
