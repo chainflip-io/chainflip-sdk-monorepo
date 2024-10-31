@@ -135,7 +135,7 @@ router.get(
     const [
       swapEgressFields,
       refundEgressFields,
-      estimatedDurationSeconds,
+      estimatedDurations,
       srcChainRequiredBlockConfirmations,
     ] = await Promise.all([
       getEgressStatusFields(
@@ -166,7 +166,8 @@ router.get(
       ...(internalDestAsset && getAssetAndChain(internalDestAsset, 'dest')),
       destAddress: readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress'),
       srcChainRequiredBlockConfirmations,
-      estimatedDurationSeconds,
+      estimatedDurations: estimatedDurations?.durations,
+      estimatedDurationSeconds: estimatedDurations?.total,
       fees: aggregateFees ?? [],
       ...(showDepositchannel &&
         swapDepositChannel && {

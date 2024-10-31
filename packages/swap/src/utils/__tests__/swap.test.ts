@@ -13,26 +13,30 @@ mockRpcResponse((url, data) => {
 
 describe(estimateSwapDuration, () => {
   it.each([
-    ['Btc', 'Btc', 600 + 2 * 600 + 3 * 6 + 600] as const,
-    ['Btc', 'Eth', 600 + 2 * 600 + 3 * 6 + 12] as const,
-    ['Btc', 'Dot', 600 + 2 * 600 + 3 * 6 + 6] as const,
-    ['Eth', 'Eth', 12 + 12 + 3 * 6 + 12] as const,
-    ['Eth', 'Dot', 12 + 12 + 3 * 6 + 6] as const,
-    ['Eth', 'Btc', 12 + 12 + 3 * 6 + 600] as const,
+    ['Btc', 'Btc', { deposit: 600 + 2 * 600, swap: 12, egress: 600 }] as const,
+    ['Btc', 'Eth', { deposit: 600 + 2 * 600, swap: 12, egress: 12 }] as const,
+    ['Btc', 'Dot', { deposit: 600 + 2 * 600, swap: 12, egress: 6 }] as const,
+    ['Eth', 'Eth', { deposit: 12 + 12, swap: 12, egress: 12 }] as const,
+    ['Eth', 'Dot', { deposit: 12 + 12, swap: 12, egress: 6 }] as const,
+    ['Eth', 'Btc', { deposit: 12 + 12, swap: 12, egress: 600 }] as const,
   ])(`estimates time for normal swap from %s to %s`, async (srcAsset, destAsset, expected) => {
-    expect(await estimateSwapDuration({ srcAsset, destAsset })).toStrictEqual(expected);
+    expect(await estimateSwapDuration({ srcAsset, destAsset })).toStrictEqual({
+      durations: expected,
+      total: expected.deposit + expected.swap + expected.egress,
+    });
   });
 
   it.each([
-    ['Btc', 'Btc', 600 + 3 * 6 + 600] as const,
-    ['Btc', 'Eth', 600 + 3 * 6 + 12] as const,
-    ['Btc', 'Dot', 600 + 3 * 6 + 6] as const,
-    ['Eth', 'Eth', 12 + 3 * 6 + 12] as const,
-    ['Eth', 'Dot', 12 + 3 * 6 + 6] as const,
-    ['Eth', 'Btc', 12 + 3 * 6 + 600] as const,
+    ['Btc', 'Btc', { deposit: 600, swap: 12, egress: 600 }] as const,
+    ['Btc', 'Eth', { deposit: 600, swap: 12, egress: 12 }] as const,
+    ['Btc', 'Dot', { deposit: 600, swap: 12, egress: 6 }] as const,
+    ['Eth', 'Eth', { deposit: 12, swap: 12, egress: 12 }] as const,
+    ['Eth', 'Dot', { deposit: 12, swap: 12, egress: 6 }] as const,
+    ['Eth', 'Btc', { deposit: 12, swap: 12, egress: 600 }] as const,
   ])(`estimates time for boosted swap from %s to %s`, async (srcAsset, destAsset, expected) => {
-    expect(await estimateSwapDuration({ srcAsset, destAsset, boosted: true })).toStrictEqual(
-      expected,
-    );
+    expect(await estimateSwapDuration({ srcAsset, destAsset, boosted: true })).toStrictEqual({
+      durations: expected,
+      total: expected.deposit + expected.swap + expected.egress,
+    });
   });
 });

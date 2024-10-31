@@ -25,24 +25,30 @@ export const estimateSwapDuration = async ({
   const { chain: destChain } = getAssetAndChain(destAsset);
 
   // user transaction must be included before witnessing starts
-  const ingressTransactionDuration = chainConstants[srcChain].blockTimeSeconds;
+  const depositInclusionDuration = chainConstants[srcChain].blockTimeSeconds;
 
   // once transaction is included, state chain validator witness transaction after safety margin is met
   // in case of a boosted swap, the swap occurs at the moment a deposit is prewitnessed (deposit transaction included in a block)
-  const ingressWitnessDuration = boosted
+  const depositWitnessDuration = boosted
     ? 0
     : chainConstants[srcChain].blockTimeSeconds *
       Number((await getWitnessSafetyMargin(srcChain)) ?? 1n);
 
-  // once ingress is witnessed, swap and egress are executed on the state chain
-  const swapDuration = CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS * 3;
+  // once ingress is witnessed, swap will be scheduled and executed after 2 statechain blocks
+  const swapDuration = CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS * 2;
 
   // assets are spendable by the user once the egress is included in a block
-  const egressTransactionDuration = chainConstants[destChain].blockTimeSeconds;
+  const egressInclusionDuration = chainConstants[destChain].blockTimeSeconds;
 
-  return (
-    ingressTransactionDuration + ingressWitnessDuration + egressTransactionDuration + swapDuration
-  );
+  return {
+    durations: {
+      deposit: depositInclusionDuration + depositWitnessDuration,
+      swap: swapDuration,
+      egress: egressInclusionDuration,
+    },
+    total:
+      depositInclusionDuration + depositWitnessDuration + swapDuration + egressInclusionDuration,
+  };
 };
 
 export const isEgressableSwap = (swap: Swap) => {

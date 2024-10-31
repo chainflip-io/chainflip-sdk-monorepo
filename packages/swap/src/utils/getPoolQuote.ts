@@ -95,6 +95,12 @@ export default async function getPoolQuote<T extends QuoteType>({
     }),
   );
 
+  const estimatedDurations = await estimateSwapDuration({
+    srcAsset,
+    destAsset,
+    boosted: Boolean(boostFeeBps),
+  });
+
   return {
     intermediateAmount: intermediateAmount?.toString(),
     egressAmount: egressAmount.toString(),
@@ -102,11 +108,8 @@ export default async function getPoolQuote<T extends QuoteType>({
     includedFees,
     lowLiquidityWarning,
     poolInfo,
-    estimatedDurationSeconds: await estimateSwapDuration({
-      srcAsset,
-      destAsset,
-      boosted: Boolean(boostFeeBps),
-    }),
+    estimatedDurations: estimatedDurations.durations,
+    estimatedDurationSeconds: estimatedDurations.total,
     estimatedPrice: getSwapPrice(
       srcAsset,
       String(swapInputAmount),

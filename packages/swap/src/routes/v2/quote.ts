@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import express from 'express';
 import { Query } from 'express-serve-static-core';
+import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts';
 import { Asset, assetConstants, InternalAsset } from '@/shared/enums';
 import { getFulfilledResult } from '@/shared/promises';
 import { quoteQuerySchema, DCABoostQuote, DCAQuote } from '@/shared/schemas';
@@ -58,7 +59,11 @@ export const getDcaQuoteParams = async (asset: InternalAsset, amount: bigint) =>
   return {
     chunkSize: BigInt(new BigNumber(amount.toString()).dividedBy(numberOfChunks).toFixed(0)),
     numberOfChunks,
-    addedDurationSeconds: Math.ceil(env.DCA_CHUNK_INTERVAL_BLOCKS * 6 * (numberOfChunks - 1)), // we deduct 1 chunk because the first one is already accounted for in the regular quote
+    additionalSwapDurationSeconds: Math.ceil(
+      env.DCA_CHUNK_INTERVAL_BLOCKS *
+        CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS *
+        (numberOfChunks - 1), // we deduct 1 chunk because the first one is already accounted for in the regular quote
+    ),
   };
 };
 
@@ -96,9 +101,9 @@ const adjustDcaQuote = ({
       )
     : 0n;
 
-  const netWorkFee = dcaQuote.includedFees.find((fee) => fee.type === 'NETWORK');
-  if (netWorkFee) {
-    netWorkFee.amount = new BigNumber(netWorkFee.amount)
+  const networkFee = dcaQuote.includedFees.find((fee) => fee.type === 'NETWORK');
+  if (networkFee) {
+    networkFee.amount = new BigNumber(networkFee.amount)
       .multipliedBy(dcaQuoteParams.numberOfChunks)
       .toFixed(0);
   }
@@ -115,12 +120,13 @@ const adjustDcaQuote = ({
     .plus(duplicatedEgressFeeAmount.toString())
     .toFixed(0);
 
-  dcaQuote.estimatedDurationSeconds += dcaQuoteParams.addedDurationSeconds;
+  dcaQuote.estimatedDurations.swap += dcaQuoteParams.additionalSwapDurationSeconds;
+  dcaQuote.estimatedDurationSeconds += dcaQuoteParams.additionalSwapDurationSeconds;
 
   if (dcaQuoteParams && dcaBoostedQuote && estimatedBoostFeeBps && maxBoostFeeBps) {
-    const boostNetWorkFee = dcaBoostedQuote.includedFees.find((fee) => fee.type === 'NETWORK');
-    if (boostNetWorkFee) {
-      boostNetWorkFee.amount = new BigNumber(boostNetWorkFee.amount)
+    const boostNetworkFee = dcaBoostedQuote.includedFees.find((fee) => fee.type === 'NETWORK');
+    if (boostNetworkFee) {
+      boostNetworkFee.amount = new BigNumber(boostNetworkFee.amount)
         .multipliedBy(dcaQuoteParams.numberOfChunks)
         .toFixed(0);
     }
@@ -139,6 +145,9 @@ const adjustDcaQuote = ({
         .toFixed(0);
     }
 
+    dcaBoostedQuote.estimatedDurations.swap += dcaQuoteParams.additionalSwapDurationSeconds;
+    dcaBoostedQuote.estimatedDurationSeconds += dcaQuoteParams.additionalSwapDurationSeconds;
+
     dcaQuote.boostQuote = {
       ...dcaBoostedQuote,
       estimatedBoostFeeBps,
@@ -146,8 +155,6 @@ const adjustDcaQuote = ({
         .multipliedBy(dcaQuoteParams.numberOfChunks)
         .plus(duplicatedEgressFeeAmount.toString())
         .toFixed(0),
-      estimatedDurationSeconds:
-        dcaBoostedQuote.estimatedDurationSeconds + dcaQuoteParams.addedDurationSeconds,
       dcaParams: dcaQuote.dcaParams,
       maxBoostFeeBps,
       depositAmount: dcaQuote.depositAmount,
