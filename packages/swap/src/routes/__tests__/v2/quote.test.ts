@@ -689,38 +689,38 @@ describe('server', () => {
         .spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
           ingress_fee: buildFee('Btc', 250).bigint,
-          egress_fee: buildFee('Usdc', 8000).bigint,
+          egress_fee: buildFee('Eth', 8000).bigint,
           network_fee: buildFee('Usdc', 100100).bigint,
-          intermediary: null,
-          output: BigInt(5e6),
+          intermediary: BigInt(10e6),
+          output: BigInt(0.1e18),
         })
         .mockResolvedValueOnce({
           ingress_fee: buildFee('Btc', 250).bigint,
-          egress_fee: buildFee('Usdc', 8000).bigint,
+          egress_fee: buildFee('Eth', 8000).bigint,
           network_fee: buildFee('Usdc', 100100).bigint,
-          intermediary: null,
-          output: BigInt(5e6),
+          intermediary: BigInt(10e6),
+          output: BigInt(0.1e18),
         })
         .mockResolvedValueOnce({
           ingress_fee: buildFee('Btc', 250).bigint,
-          egress_fee: buildFee('Usdc', 8000).bigint,
+          egress_fee: buildFee('Eth', 8000).bigint,
           network_fee: buildFee('Usdc', 100100).bigint,
-          intermediary: null,
-          output: BigInt(5e6),
+          intermediary: BigInt(10e6),
+          output: BigInt(0.1e18),
         })
         .mockResolvedValueOnce({
           ingress_fee: buildFee('Btc', 250).bigint,
-          egress_fee: buildFee('Usdc', 8000).bigint,
+          egress_fee: buildFee('Eth', 8000).bigint,
           network_fee: buildFee('Usdc', 100100).bigint,
-          intermediary: null,
-          output: BigInt(5e6),
+          intermediary: BigInt(10e6),
+          output: BigInt(0.1e18),
         });
 
       const params = new URLSearchParams({
         srcChain: 'Bitcoin',
         srcAsset: 'BTC',
         destChain: 'Ethereum',
-        destAsset: 'USDC',
+        destAsset: 'ETH',
         amount: (0.001e8).toString(),
         dcaEnabled: 'true',
         brokerCommissionBps: '10',
@@ -733,20 +733,21 @@ describe('server', () => {
         {
           depositAmount: '100000',
           destAsset: {
-            asset: 'USDC',
+            asset: 'ETH',
             chain: 'Ethereum',
           },
-          egressAmount: '4994992',
+          intermediateAmount: '9990000',
+          egressAmount: '99899999999999992',
           estimatedDurationSeconds: 1824,
           estimatedDurations: {
             deposit: 1800,
             egress: 12,
             swap: 12,
           },
-          estimatedPrice: '5015.53082706766917293233',
+          estimatedPrice: '100.15037593985763609023',
           includedFees: [
             {
-              amount: '5000',
+              amount: '10000',
               asset: 'USDC',
               chain: 'Ethereum',
               type: 'BROKER',
@@ -765,7 +766,7 @@ describe('server', () => {
             },
             {
               amount: '8000',
-              asset: 'USDC',
+              asset: 'ETH',
               chain: 'Ethereum',
               type: 'EGRESS',
             },
@@ -780,6 +781,15 @@ describe('server', () => {
               },
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
+            {
+              baseAsset: { asset: 'ETH', chain: 'Ethereum' },
+              fee: {
+                amount: '19980',
+                asset: 'USDC',
+                chain: 'Ethereum',
+              },
+              quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
+            },
           ],
           recommendedSlippageTolerancePercent: 2,
           srcAsset: {
@@ -790,10 +800,11 @@ describe('server', () => {
           boostQuote: {
             depositAmount: '100000',
             destAsset: {
-              asset: 'USDC',
+              asset: 'ETH',
               chain: 'Ethereum',
             },
-            egressAmount: '4994992',
+            intermediateAmount: '9990000',
+            egressAmount: '99899999999999992',
             estimatedBoostFeeBps: 10,
             estimatedDurationSeconds: 624,
             estimatedDurations: {
@@ -801,7 +812,7 @@ describe('server', () => {
               egress: 12,
               swap: 12,
             },
-            estimatedPrice: '5020.56397390868038133467',
+            estimatedPrice: '100.25087807326441746111',
             includedFees: [
               {
                 amount: '100',
@@ -810,7 +821,7 @@ describe('server', () => {
                 type: 'BOOST',
               },
               {
-                amount: '5000',
+                amount: '10000',
                 asset: 'USDC',
                 chain: 'Ethereum',
                 type: 'BROKER',
@@ -829,7 +840,7 @@ describe('server', () => {
               },
               {
                 amount: '8000',
-                asset: 'USDC',
+                asset: 'ETH',
                 chain: 'Ethereum',
                 type: 'EGRESS',
               },
@@ -837,19 +848,22 @@ describe('server', () => {
             maxBoostFeeBps: 30,
             poolInfo: [
               {
-                baseAsset: {
-                  asset: 'BTC',
-                  chain: 'Bitcoin',
-                },
+                baseAsset: { asset: 'BTC', chain: 'Bitcoin' },
                 fee: {
                   amount: '199',
                   asset: 'BTC',
                   chain: 'Bitcoin',
                 },
-                quoteAsset: {
+                quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
+              },
+              {
+                baseAsset: { asset: 'ETH', chain: 'Ethereum' },
+                fee: {
+                  amount: '19980',
                   asset: 'USDC',
                   chain: 'Ethereum',
                 },
+                quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
               },
             ],
             recommendedSlippageTolerancePercent: 2,
@@ -863,21 +877,22 @@ describe('server', () => {
         {
           depositAmount: '100000',
           destAsset: {
-            asset: 'USDC',
+            asset: 'ETH',
             chain: 'Ethereum',
           },
-          egressAmount: '20003968',
+          intermediateAmount: '39960000',
+          egressAmount: '399600000000023968',
           estimatedDurationSeconds: 1860,
           estimatedDurations: {
             deposit: 1800,
             egress: 12,
             swap: 48,
           },
-          estimatedPrice: '20061.72106824925816023739',
+          estimatedPrice: '400.59347181012106824926',
           recommendedSlippageTolerancePercent: 2,
           includedFees: [
             {
-              amount: '20000',
+              amount: '40000',
               asset: 'USDC',
               chain: 'Ethereum',
               type: 'BROKER',
@@ -896,7 +911,7 @@ describe('server', () => {
             },
             {
               amount: '8000',
-              asset: 'USDC',
+              asset: 'ETH',
               chain: 'Ethereum',
               type: 'EGRESS',
             },
@@ -908,6 +923,15 @@ describe('server', () => {
                 amount: '49',
                 asset: 'BTC',
                 chain: 'Bitcoin',
+              },
+              quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
+            },
+            {
+              baseAsset: { asset: 'ETH', chain: 'Ethereum' },
+              fee: {
+                amount: '19980',
+                asset: 'USDC',
+                chain: 'Ethereum',
               },
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
@@ -928,10 +952,11 @@ describe('server', () => {
             },
             depositAmount: '100000',
             destAsset: {
-              asset: 'USDC',
+              asset: 'ETH',
               chain: 'Ethereum',
             },
-            egressAmount: '20003968',
+            egressAmount: '399600000000023968',
+            intermediateAmount: '39960000',
             estimatedBoostFeeBps: 10,
             estimatedDurationSeconds: 660,
             estimatedDurations: {
@@ -939,7 +964,7 @@ describe('server', () => {
               egress: 12,
               swap: 48,
             },
-            estimatedPrice: '20081.85284791072933809658',
+            estimatedPrice: '400.99546421550191466303',
             includedFees: [
               {
                 amount: '100',
@@ -948,7 +973,7 @@ describe('server', () => {
                 type: 'BOOST',
               },
               {
-                amount: '20000',
+                amount: '40000',
                 asset: 'USDC',
                 chain: 'Ethereum',
                 type: 'BROKER',
@@ -967,7 +992,7 @@ describe('server', () => {
               },
               {
                 amount: '8000',
-                asset: 'USDC',
+                asset: 'ETH',
                 chain: 'Ethereum',
                 type: 'EGRESS',
               },
@@ -975,19 +1000,22 @@ describe('server', () => {
             maxBoostFeeBps: 30,
             poolInfo: [
               {
-                baseAsset: {
-                  asset: 'BTC',
-                  chain: 'Bitcoin',
-                },
+                baseAsset: { asset: 'BTC', chain: 'Bitcoin' },
                 fee: {
                   amount: '49',
                   asset: 'BTC',
                   chain: 'Bitcoin',
                 },
-                quoteAsset: {
+                quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
+              },
+              {
+                baseAsset: { asset: 'ETH', chain: 'Ethereum' },
+                fee: {
+                  amount: '19980',
                   asset: 'USDC',
                   chain: 'Ethereum',
                 },
+                quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
               },
             ],
             recommendedSlippageTolerancePercent: 2,
@@ -1004,7 +1032,7 @@ describe('server', () => {
         1,
         'cf_swap_rate_v2',
         { asset: 'BTC', chain: 'Bitcoin' },
-        { asset: 'USDC', chain: 'Ethereum' },
+        { asset: 'ETH', chain: 'Ethereum' },
         '0x186a0', // 0.001e8
         [],
       );
@@ -1012,7 +1040,7 @@ describe('server', () => {
         2,
         'cf_swap_rate_v2',
         { asset: 'BTC', chain: 'Bitcoin' },
-        { asset: 'USDC', chain: 'Ethereum' },
+        { asset: 'ETH', chain: 'Ethereum' },
         '0x1863c', // 0.001e8 - 100 (boostFee)
         [],
       );
@@ -1020,7 +1048,7 @@ describe('server', () => {
         3,
         'cf_swap_rate_v2',
         { asset: 'BTC', chain: 'Bitcoin' },
-        { asset: 'USDC', chain: 'Ethereum' },
+        { asset: 'ETH', chain: 'Ethereum' },
         '0x6264', // 0.00025e8 + 3/4 * 250 (ingressFee surcharge)
         [],
       );
@@ -1028,7 +1056,7 @@ describe('server', () => {
         4,
         'cf_swap_rate_v2',
         { asset: 'BTC', chain: 'Bitcoin' },
-        { asset: 'USDC', chain: 'Ethereum' },
+        { asset: 'ETH', chain: 'Ethereum' },
         '0x624b', // 0.00025e8 - 1/4 * 100 (boost fee) + 3/4 * 250 (ingressFee surcharge)
         [],
       );
