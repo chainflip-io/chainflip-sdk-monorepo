@@ -31,7 +31,7 @@ export const depositBoostedBtcMock = async ({
     },
   };
 
-  if (action.__kind === 'Swap') {
+  if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {
     await prisma.swapRequest.create({
       data: {
         nativeId: BigInt(action.swapRequestId),
@@ -70,6 +70,23 @@ describe('depositBoosted', () => {
 
   it('updates the values for an existing swap', async () => {
     const { event, block } = await depositBoostedBtcMock({ amounts: [[5, '1000000']] });
+
+    await depositBoosted({ prisma, event, block });
+
+    const request = await prisma.swapRequest.findFirstOrThrow({
+      include: { fees: { select: { asset: true, amount: true, type: true } } },
+    });
+
+    expect(request).toMatchSnapshot({
+      id: expect.any(BigInt),
+    });
+  });
+
+  it('updates the values for an existing ccm swap', async () => {
+    const { event, block } = await depositBoostedBtcMock({
+      action: { __kind: 'CcmTransfer', swapRequestId: '1' },
+      amounts: [[5, '1000000']],
+    });
 
     await depositBoosted({ prisma, event, block });
 

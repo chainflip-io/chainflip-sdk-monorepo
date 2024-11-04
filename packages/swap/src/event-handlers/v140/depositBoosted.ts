@@ -48,7 +48,7 @@ export const depositBoosted = async ({ prisma, event, block }: EventHandlerArgs)
 
   const txRef = getDepositTxRef(assetConstants[asset].chain, depositDetails, blockHeight);
 
-  if (action.__kind === 'Swap') {
+  if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {
     const depositAmount = amounts.reduce((acc, [, amount]) => acc + amount, BigInt(0));
     const effectiveBoostFeeBps = (boostFee * BigInt(ONE_IN_PIP)) / BigInt(depositAmount.toString());
 
