@@ -140,6 +140,7 @@ describe(swapRequestCompleted, () => {
           depositAmount: '10000000000',
           egressAmount: '2000000',
           estimatedPrice: '25000',
+          channelOpenedAt: new Date(1690556052834),
         },
       },
     });
@@ -214,6 +215,7 @@ describe(swapRequestCompleted, () => {
           depositAmount: '20000000000',
           egressAmount: '4000000',
           estimatedPrice: '25000',
+          channelOpenedAt: new Date(1690556052834),
         },
       },
     });
@@ -280,6 +282,7 @@ describe(swapRequestCompleted, () => {
           depositAmount: '10000000000',
           egressAmount: '2000000',
           estimatedPrice: '25000',
+          channelOpenedAt: new Date(1690556052834),
         },
       },
     });

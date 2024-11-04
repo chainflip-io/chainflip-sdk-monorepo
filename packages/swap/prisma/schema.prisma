@@ -421,22 +421,25 @@ model StateChainError {
 }
 
 model Quote {
-  id                      Int                @id @default(autoincrement())
-  swapDepositChannel      SwapDepositChannel @relation(fields: [swapDepositChannelId], references: [id])
-  swapDepositChannelId    BigInt             @unique
-  swapRequest             SwapRequest?       @relation(fields: [swapRequestId], references: [id])
-  swapRequestId           BigInt?            @unique
-  srcAsset                InternalAsset
-  destAsset               InternalAsset
-  maxBoostFeeBps          Int?
-  numberOfChunks          Int?
-  depositAmount           Decimal            @db.Decimal(30, 0)
-  intermediateAmount      Decimal?           @db.Decimal(30, 0)
-  egressAmount            Decimal            @db.Decimal(30, 0)
-  estimatedPrice          Decimal
-  executedAt              DateTime?
-  executedPrice           Decimal?
-  executedSlippagePercent Decimal?
+  id                       Int                @id @default(autoincrement())
+  swapDepositChannel       SwapDepositChannel @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId     BigInt             @unique
+  channelOpenedAt          DateTime
+  swapRequest              SwapRequest?       @relation(fields: [swapRequestId], references: [id])
+  swapRequestId            BigInt?            @unique
+  swapRequestNativeId      BigInt?            @unique
+  srcAsset                 InternalAsset
+  destAsset                InternalAsset
+  maxBoostFeeBps           Int?
+  numberOfChunks           Int?
+  depositAmount            Decimal            @db.Decimal(30, 0)
+  intermediateAmount       Decimal?           @db.Decimal(30, 0)
+  egressAmount             Decimal            @db.Decimal(30, 0)
+  estimatedPrice           Decimal
+  slippageTolerancePercent Decimal?
+  executedAt               DateTime?
+  executedPrice            Decimal?
+  executedSlippagePercent  Decimal?
 
   @@schema("private")
 }

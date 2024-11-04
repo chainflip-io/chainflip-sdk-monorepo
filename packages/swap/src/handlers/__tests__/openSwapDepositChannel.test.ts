@@ -148,7 +148,7 @@ describe(openSwapDepositChannel, () => {
       fillOrKillParams: {
         retryDurationBlocks: 500,
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-        minPriceX128: '10000000000000',
+        minPriceX128: '1094494073153147181099038525207',
       },
       dcaParams: {
         chunkIntervalBlocks: 2,
@@ -157,7 +157,7 @@ describe(openSwapDepositChannel, () => {
       quote: {
         intermediateAmount: '500',
         egressAmount: '250',
-        estimatedPrice: '0.375',
+        estimatedPrice: '0.32820704083381790449',
       },
     });
 
