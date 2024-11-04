@@ -385,7 +385,7 @@ describe('server', () => {
         {
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 48,
-          estimatedDurations: {
+          estimatedDurationsSeconds: {
             deposit: 24,
             egress: 12,
             swap: 12,
@@ -515,7 +515,7 @@ describe('server', () => {
           },
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 48,
-          estimatedDurations: {
+          estimatedDurationsSeconds: {
             deposit: 24,
             egress: 12,
             swap: 12,
@@ -567,7 +567,7 @@ describe('server', () => {
           },
           egressAmount: (400024000).toString(),
           estimatedDurationSeconds: 84,
-          estimatedDurations: {
+          estimatedDurationsSeconds: {
             deposit: 24,
             egress: 12,
             swap: 48,
@@ -739,7 +739,7 @@ describe('server', () => {
           intermediateAmount: '9990000',
           egressAmount: '99899999999999992',
           estimatedDurationSeconds: 1824,
-          estimatedDurations: {
+          estimatedDurationsSeconds: {
             deposit: 1800,
             egress: 12,
             swap: 12,
@@ -807,7 +807,7 @@ describe('server', () => {
             egressAmount: '99899999999999992',
             estimatedBoostFeeBps: 10,
             estimatedDurationSeconds: 624,
-            estimatedDurations: {
+            estimatedDurationsSeconds: {
               deposit: 600,
               egress: 12,
               swap: 12,
@@ -883,7 +883,7 @@ describe('server', () => {
           intermediateAmount: '39960000',
           egressAmount: '399600000000023968',
           estimatedDurationSeconds: 1860,
-          estimatedDurations: {
+          estimatedDurationsSeconds: {
             deposit: 1800,
             egress: 12,
             swap: 48,
@@ -959,7 +959,7 @@ describe('server', () => {
             intermediateAmount: '39960000',
             estimatedBoostFeeBps: 10,
             estimatedDurationSeconds: 660,
-            estimatedDurations: {
+            estimatedDurationsSeconds: {
               deposit: 600,
               egress: 12,
               swap: 48,
@@ -1141,7 +1141,7 @@ describe('server', () => {
           },
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 48,
-          estimatedDurations: {
+          estimatedDurationsSeconds: {
             deposit: 24,
             egress: 12,
             swap: 12,
@@ -1267,7 +1267,7 @@ describe('server', () => {
           },
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 48,
-          estimatedDurations: {
+          estimatedDurationsSeconds: {
             deposit: 24,
             egress: 12,
             swap: 12,
@@ -1394,7 +1394,7 @@ describe('server', () => {
           },
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 48,
-          estimatedDurations: {
+          estimatedDurationsSeconds: {
             deposit: 24,
             egress: 12,
             swap: 12,

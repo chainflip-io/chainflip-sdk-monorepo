@@ -456,7 +456,7 @@ describe('server', () => {
         destChain: 'Polkadot',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         estimatedDurationSeconds: 42,
-        estimatedDurations: {
+        estimatedDurationsSeconds: {
           deposit: 24,
           egress: 6,
           swap: 12,
@@ -489,7 +489,7 @@ describe('server', () => {
         destChain: 'Polkadot',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         estimatedDurationSeconds: 42,
-        estimatedDurations: {
+        estimatedDurationsSeconds: {
           deposit: 24,
           egress: 6,
           swap: 12,
@@ -586,7 +586,7 @@ describe('server', () => {
         destChain: 'Polkadot',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         estimatedDurationSeconds: 42,
-        estimatedDurations: {
+        estimatedDurationsSeconds: {
           deposit: 24,
           egress: 6,
           swap: 12,
@@ -1215,7 +1215,7 @@ describe('server', () => {
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         srcChainRequiredBlockConfirmations: 2,
         estimatedDurationSeconds: 42,
-        estimatedDurations: {
+        estimatedDurationsSeconds: {
           deposit: 24,
           egress: 6,
           swap: 12,
@@ -1336,7 +1336,7 @@ describe('server', () => {
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         srcChainRequiredBlockConfirmations: 2,
         estimatedDurationSeconds: 42,
-        estimatedDurations: {
+        estimatedDurationsSeconds: {
           deposit: 24,
           egress: 6,
           swap: 12,
@@ -1468,7 +1468,7 @@ describe('server', () => {
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         srcChainRequiredBlockConfirmations: 2,
         estimatedDurationSeconds: 42,
-        estimatedDurations: {
+        estimatedDurationsSeconds: {
           deposit: 24,
           egress: 6,
           swap: 12,

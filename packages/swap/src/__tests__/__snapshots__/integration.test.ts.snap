@@ -9,7 +9,7 @@ exports[`python integration test replies to a quote request 1`] = `
   },
   "egressAmount": "997901209876966295",
   "estimatedDurationSeconds": 48,
-  "estimatedDurations": {
+  "estimatedDurationsSeconds": {
     "deposit": 24,
     "egress": 12,
     "swap": 12,
