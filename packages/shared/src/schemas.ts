@@ -170,13 +170,13 @@ interface BaseQuoteDetails {
   poolInfo: PoolInfo[];
   lowLiquidityWarning: boolean | undefined;
   estimatedDurationSeconds: number;
-  estimatedDurations: {
+  estimatedDurationsSeconds: {
     deposit: number;
     swap: number;
     egress: number;
   };
   estimatedPrice: string;
-  recommendedSlippageTolerancePercent: number; 
+  recommendedSlippageTolerancePercent: number;
 }
 
 type WithBoostQuote<T> = Omit<T, 'boostQuote'> & BoostedQuoteDetails;
