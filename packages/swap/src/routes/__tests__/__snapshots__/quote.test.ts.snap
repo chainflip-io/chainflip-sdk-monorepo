@@ -9,7 +9,7 @@ exports[`server GET /quote doesn't include boost information when disabled 1`] =
   },
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 1824,
-  "estimatedDurations": {
+  "estimatedDurationsSeconds": {
     "deposit": 1800,
     "egress": 12,
     "swap": 12,
@@ -86,7 +86,7 @@ exports[`server GET /quote gets the quote for deprecated params without the chai
   },
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 48,
-  "estimatedDurations": {
+  "estimatedDurationsSeconds": {
     "deposit": 24,
     "egress": 12,
     "swap": 12,
@@ -165,7 +165,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
     "egressAmount": "999999949999975000",
     "estimatedBoostFeeBps": 5,
     "estimatedDurationSeconds": 624,
-    "estimatedDurations": {
+    "estimatedDurationsSeconds": {
       "deposit": 600,
       "egress": 12,
       "swap": 12,
@@ -245,7 +245,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
   },
   "egressAmount": "999999999999975000",
   "estimatedDurationSeconds": 1824,
-  "estimatedDurations": {
+  "estimatedDurationsSeconds": {
     "deposit": 1800,
     "egress": 12,
     "swap": 12,
@@ -322,7 +322,7 @@ exports[`server GET /quote gets the quote with a realistic price 1`] = `
   },
   "egressAmount": "1229437998",
   "estimatedDurationSeconds": 48,
-  "estimatedDurations": {
+  "estimatedDurationsSeconds": {
     "deposit": 24,
     "egress": 12,
     "swap": 12,
@@ -383,7 +383,7 @@ exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
   },
   "egressAmount": "1999999999999975000",
   "estimatedDurationSeconds": 48,
-  "estimatedDurations": {
+  "estimatedDurationsSeconds": {
     "deposit": 24,
     "egress": 12,
     "swap": 12,

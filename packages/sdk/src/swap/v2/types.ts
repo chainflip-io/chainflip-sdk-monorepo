@@ -108,7 +108,7 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   ccmParams: CcmParams | undefined;
   boost: Boost | undefined;
   estimatedDurationSeconds: number | null | undefined;
-  estimatedDurations: {
+  estimatedDurationsSeconds: {
     deposit: number;
     swap: number;
     egress: number;

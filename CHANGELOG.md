@@ -24,9 +24,9 @@ which it is deprecated.
   This is a convenience method that can be used to skip the manual token
   allowance approval. Upon calling, the method will make sure there is enough
   ERC20 token allowance before proceeding with initiating the swap.
-- A new field `recommendedSlippageTolerancePercent` has been added to the `BaseQuoteDetails` interface. The `getQuoteV2()` method will now return a constant value of 2% for the `recommendedSlippageTolerancePercent`. 
+- A new field `recommendedSlippageTolerancePercent` has been added to the `BaseQuoteDetails` interface. The `getQuoteV2()` method will now return a constant value of 2% for the `recommendedSlippageTolerancePercent`.
 - `SwapSDK.prototype.getStatusV2` and `SwapSDK.prototype.getQuoteV2` return an
-  `estimatedDurations` property now. It includes the estimated time in seconds
+  `estimatedDurationsSeconds` property now. It includes the estimated time in seconds
   different stages of a swap:
   - `deposit`: time for a deposit to be witnessed and the respective swap being scheduled
   - `swap`: time for a swap to be fully executed

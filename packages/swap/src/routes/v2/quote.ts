@@ -111,7 +111,7 @@ const adjustDcaQuote = ({
     }
   }
 
-  dcaQuote.estimatedDurations.swap += dcaQuoteParams.additionalSwapDurationSeconds;
+  dcaQuote.estimatedDurationsSeconds.swap += dcaQuoteParams.additionalSwapDurationSeconds;
   dcaQuote.estimatedDurationSeconds += dcaQuoteParams.additionalSwapDurationSeconds;
 };
 /* eslint-enable no-param-reassign */
