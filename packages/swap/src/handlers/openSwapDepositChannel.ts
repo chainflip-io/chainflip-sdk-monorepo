@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import * as broker from '@/shared/broker';
 import { getInternalAssets } from '@/shared/enums';
+import { getPriceFromPriceX128 } from '@/shared/functions';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';
@@ -10,6 +11,16 @@ import { calculateExpiryTime } from '../utils/function';
 import logger from '../utils/logger';
 import { validateSwapAmount } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
+
+const getSlippageTolerancePercent = (input: z.output<typeof openSwapDepositChannelSchema>) => {
+  const { srcAsset, destAsset } = getInternalAssets(input);
+  const estimatedPrice = Number(input.quote?.estimatedPrice);
+  const fokMinPrice =
+    input.fillOrKillParams &&
+    Number(getPriceFromPriceX128(input.fillOrKillParams.minPriceX128, srcAsset, destAsset));
+
+  return estimatedPrice && fokMinPrice && (100 * (estimatedPrice - fokMinPrice)) / estimatedPrice;
+};
 
 export default async function openSwapDepositChannel(
   input: z.output<typeof openSwapDepositChannelSchema>,
@@ -109,10 +120,7 @@ export default async function openSwapDepositChannel(
       intermediateAmount: input.quote.intermediateAmount,
       egressAmount: input.quote.egressAmount,
       estimatedPrice: input.quote.estimatedPrice,
-      slippageTolerancePercent:
-        fillOrKillParams &&
-        (100 * (Number(input.quote.estimatedPrice) - Number(fillOrKillParams.minPriceX128))) /
-          Number(input.quote.estimatedPrice),
+      slippageTolerancePercent: getSlippageTolerancePercent(input),
     },
   };
 
