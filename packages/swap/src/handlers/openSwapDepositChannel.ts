@@ -100,6 +100,7 @@ export default async function openSwapDepositChannel(
   });
   const quoteParam = input.quote && {
     create: {
+      channelOpenedAt: new Date(),
       srcAsset,
       destAsset,
       maxBoostFeeBps,
@@ -108,6 +109,10 @@ export default async function openSwapDepositChannel(
       intermediateAmount: input.quote.intermediateAmount,
       egressAmount: input.quote.egressAmount,
       estimatedPrice: input.quote.estimatedPrice,
+      slippageTolerancePercent:
+        fillOrKillParams &&
+        (100 * (Number(input.quote.estimatedPrice) - Number(fillOrKillParams.minPriceX128))) /
+          Number(input.quote.estimatedPrice),
     },
   };
 

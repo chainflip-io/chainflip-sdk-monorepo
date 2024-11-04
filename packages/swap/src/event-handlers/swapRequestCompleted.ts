@@ -56,6 +56,7 @@ export default async function swapRequestCompleted({
         executedPrice,
         executedSlippagePercent,
         swapRequestId: swapRequest.id,
+        swapRequestNativeId: swapRequest.nativeId,
       },
     });
   }
