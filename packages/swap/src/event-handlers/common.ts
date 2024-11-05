@@ -172,6 +172,7 @@ export const getDepositTxRef = (
       const details = depositDetails as z.output<
         typeof polkadotIngressEgressDepositFinalised
       >['depositDetails'];
+      if (blockHeight === undefined) return undefined;
       return formatTxHash(chain, `${blockHeight}-${details}`);
     }
     case 'Solana':
