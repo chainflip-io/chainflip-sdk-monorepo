@@ -229,6 +229,7 @@ model SwapFee {
 enum FailedSwapReason {
   BelowMinimumDeposit
   NotEnoughToPayFees // gas price to process deposit is too high
+  TransactionTainted
   UnsupportedForTargetChain // CCM reason
   InsufficientDepositAmount // CCM reason
 

@@ -1,8 +1,9 @@
 import { arbitrumIngressEgressDepositFinalised } from '@chainflip/processor/160/arbitrumIngressEgress/depositFinalised';
-import { bitcoinIngressEgressDepositFinalised } from '@chainflip/processor/160/bitcoinIngressEgress/depositFinalised';
+import { bitcoinIngressEgressDepositFinalised as bitcoinSchema160 } from '@chainflip/processor/160/bitcoinIngressEgress/depositFinalised';
 import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/160/ethereumIngressEgress/depositFinalised';
 import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/160/polkadotIngressEgress/depositFinalised';
 import { solanaIngressEgressDepositFinalised } from '@chainflip/processor/160/solanaIngressEgress/depositFinalised';
+import { bitcoinIngressEgressDepositFinalised as bitcoinSchema170 } from '@chainflip/processor/170/bitcoinIngressEgress/depositFinalised';
 import z from 'zod';
 import { assetConstants } from '@/shared/enums';
 import { getDepositTxRef } from './common';
@@ -15,7 +16,7 @@ const normalizeSchema = <T>(obj: T) => ({
 });
 
 const arbitrumSchema = arbitrumIngressEgressDepositFinalised;
-const bitcoinSchema = bitcoinIngressEgressDepositFinalised;
+const bitcoinSchema = z.union([bitcoinSchema170, bitcoinSchema160]);
 const ethereumSchema = ethereumIngressEgressDepositFinalised;
 const polkadotSchema = polkadotIngressEgressDepositFinalised;
 const solanaSchema = solanaIngressEgressDepositFinalised.transform(normalizeSchema);

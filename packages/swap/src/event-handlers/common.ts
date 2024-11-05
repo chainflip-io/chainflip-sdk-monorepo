@@ -1,6 +1,7 @@
-import { bitcoinIngressEgressDepositFinalised } from '@chainflip/processor/160/bitcoinIngressEgress/depositFinalised';
+import { bitcoinIngressEgressDepositFinalised as bitcoinSchema160 } from '@chainflip/processor/160/bitcoinIngressEgress/depositFinalised';
 import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/160/ethereumIngressEgress/depositFinalised';
 import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/160/polkadotIngressEgress/depositFinalised';
+import { bitcoinIngressEgressDepositFinalised as bitcoinSchema170 } from '@chainflip/processor/170/bitcoinIngressEgress/depositFinalised';
 import * as base58 from '@chainflip/utils/base58';
 import { hexToBytes, reverseBytes } from '@chainflip/utils/bytes';
 import type { HexString } from '@chainflip/utils/types';
@@ -142,7 +143,8 @@ export function formatTxHash(chain: Chain, txHash: string | undefined) {
 export const getDepositTxRef = (
   chain: Chain,
   depositDetails:
-    | z.output<typeof bitcoinIngressEgressDepositFinalised>['depositDetails']
+    | z.output<typeof bitcoinSchema160>['depositDetails']
+    | z.output<typeof bitcoinSchema170>['depositDetails']
     | z.output<typeof ethereumIngressEgressDepositFinalised>['depositDetails']
     | z.output<typeof polkadotIngressEgressDepositFinalised>['depositDetails']
     | undefined,
@@ -161,15 +163,16 @@ export const getDepositTxRef = (
       return formatTxHash(chain, details?.txHashes?.at(0));
     }
     case 'Bitcoin': {
-      const details = depositDetails as z.output<
-        typeof bitcoinIngressEgressDepositFinalised
-      >['depositDetails'];
-      return formatTxHash(chain, details?.txId);
+      const details = depositDetails as
+        | z.output<typeof bitcoinSchema160>['depositDetails']
+        | z.output<typeof bitcoinSchema170>['depositDetails'];
+      return formatTxHash(chain, 'txId' in details ? details.txId : details.id.txId);
     }
     case 'Polkadot': {
       const details = depositDetails as z.output<
         typeof polkadotIngressEgressDepositFinalised
       >['depositDetails'];
+      if (blockHeight === undefined) return undefined;
       return formatTxHash(chain, `${blockHeight}-${details}`);
     }
     case 'Solana':

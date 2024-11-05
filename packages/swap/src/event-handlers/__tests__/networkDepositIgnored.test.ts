@@ -167,6 +167,7 @@ describe(networkDepositIgnored, () => {
         destAddress: ETH_ADDRESS,
         destChain: 'Ethereum',
         depositAmount: btcDepositIgnoredMock.event.args.amount,
+        depositTransactionRef: 'efcdab9078563412efcdab9078563412efcdab9078563412efcdab9078563412',
         srcAsset: 'Btc',
         srcChain: 'Bitcoin',
         swapDepositChannelId: 100n,

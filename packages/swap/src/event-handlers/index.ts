@@ -1,6 +1,7 @@
 import type { Prisma } from '.prisma/client';
 import { Chains } from '@/shared/enums';
 import ccmFailed from './ccmFailed';
+import { depositBoosted } from './depositBoosted';
 import liquidityDepositAddressReady from './liquidityDepositChannelReady';
 import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';
 import networkBroadcastAborted from './networkBroadcastAborted';
@@ -22,7 +23,6 @@ import swapRequested from './swapRequested';
 import swapRescheduled from './swapRescheduled';
 import swapScheduled from './swapScheduled';
 import { boostPoolCreated } from './v140/boostPoolCreated';
-import { depositBoosted } from './v140/depositBoosted';
 import { insufficientBoostLiquidity } from './v140/insufficientBoostLiquidity';
 import type { Block, Event } from '../gql/generated/graphql';
 import { buildHandlerMap, getDispatcher } from '../utils/handlers';
