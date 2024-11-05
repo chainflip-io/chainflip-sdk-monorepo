@@ -1,14 +1,15 @@
 import { arbitrumIngressEgressDepositBoosted } from '@chainflip/processor/160/arbitrumIngressEgress/depositBoosted';
-import { bitcoinIngressEgressDepositBoosted } from '@chainflip/processor/160/bitcoinIngressEgress/depositBoosted';
+import { bitcoinIngressEgressDepositBoosted as bitcoinSchema160 } from '@chainflip/processor/160/bitcoinIngressEgress/depositBoosted';
 import { ethereumIngressEgressDepositBoosted } from '@chainflip/processor/160/ethereumIngressEgress/depositBoosted';
 import { polkadotIngressEgressDepositBoosted } from '@chainflip/processor/160/polkadotIngressEgress/depositBoosted';
 import { solanaIngressEgressDepositBoosted } from '@chainflip/processor/160/solanaIngressEgress/depositBoosted';
+import { bitcoinIngressEgressDepositBoosted as bitcoinSchema170 } from '@chainflip/processor/170/bitcoinIngressEgress/depositBoosted';
 import { z } from 'zod';
 import { assetConstants } from '@/shared/enums';
 import { ONE_IN_PIP } from '@/shared/functions';
 import { SwapFeeType } from '@/swap/client';
 import { getDepositTxRef } from '@/swap/event-handlers/common';
-import { EventHandlerArgs } from '..';
+import { EventHandlerArgs } from '.';
 
 const normalizeSchema = <T>(obj: T) => ({
   ...obj,
@@ -17,7 +18,7 @@ const normalizeSchema = <T>(obj: T) => ({
 });
 
 const arbitrumSchema = arbitrumIngressEgressDepositBoosted;
-const bitcoinSchema = bitcoinIngressEgressDepositBoosted;
+const bitcoinSchema = z.union([bitcoinSchema170, bitcoinSchema160]);
 const ethereumSchema = ethereumIngressEgressDepositBoosted;
 const polkadotSchema = polkadotIngressEgressDepositBoosted;
 const solanaSchema = solanaIngressEgressDepositBoosted.transform(normalizeSchema);

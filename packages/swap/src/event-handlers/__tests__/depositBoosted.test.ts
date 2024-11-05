@@ -1,4 +1,4 @@
-import prisma from '../../../client';
+import prisma from '../../client';
 import { depositBoosted, DepositBoostedArgs } from '../depositBoosted';
 
 export const depositBoostedBtcMock = async ({
