@@ -432,10 +432,10 @@ model Quote {
   destAsset                InternalAsset
   maxBoostFeeBps           Int?
   numberOfChunks           Int?
-  depositAmount            Decimal            @db.Decimal(30, 0)
-  intermediateAmount       Decimal?           @db.Decimal(30, 0)
-  egressAmount             Decimal            @db.Decimal(30, 0)
-  estimatedPrice           Decimal
+  expectedDepositAmount    Decimal            @db.Decimal(30, 0)
+  quotedIntermediateAmount Decimal?           @db.Decimal(30, 0)
+  quotedEgressAmount       Decimal            @db.Decimal(30, 0)
+  quotedPrice              Decimal
   slippageTolerancePercent Decimal?
   executedAt               DateTime?
   executedPrice            Decimal?
