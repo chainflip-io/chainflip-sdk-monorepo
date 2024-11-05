@@ -77,6 +77,7 @@ export const failedSwapMessage: Record<FailedSwapReason, string> = {
   NotEnoughToPayFees: 'The deposited amount was not enough to pay the fees',
   InsufficientDepositAmount: 'The gas budget exceeded the deposit amount',
   UnsupportedForTargetChain: 'The destination chain does not support CCM',
+  TransactionTainted: 'The deposit was rejected by the broker',
 };
 
 export enum FailureMode {
