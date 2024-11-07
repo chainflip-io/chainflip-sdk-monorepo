@@ -1,16 +1,15 @@
-import { RECOMMENDED_SLIPPAGE_TOLERANCE_PERCENTAGE } from '@/shared/consts';
+import BigNumber from 'bignumber.js';
 import { assetConstants, chainConstants, getAssetAndChain, getInternalAsset } from '@/shared/enums';
 import { getPipAmountFromAmount } from '@/shared/functions';
 import { Quote, QuoteType } from '@/shared/schemas';
 import { estimateSwapDuration, getSwapPrice } from '@/swap/utils/swap';
 import { buildFee, getPoolFees } from './fees';
+import { getDeployedLiquidity, undeployedLiquidityCache } from './pools';
 import { getEgressFee, getMinimumEgressAmount, getRequiredBlockConfirmations } from './rpc';
 import ServiceError from './ServiceError';
 import { getSwapRateV2, LimitOrders } from './statechain';
 import { InternalAsset, Pool } from '../client';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
-import { getDeployedLiquidity, getTotalLiquidity, undeployedLiquidityCache } from './pools';
-import BigNumber from 'bignumber.js';
 
 const getLiquidityAutoSlippage = async (
   srcAsset: InternalAsset,
@@ -26,18 +25,17 @@ const getLiquidityAutoSlippage = async (
 };
 
 const getDepositTimeAutoSlippage = async (srcAsset: InternalAsset, isBoosted: boolean) => {
-  const chain = assetConstants[srcAsset].chain;
-  const blockTime = chainConstants[chain].blockTimeSeconds;
+  const { chain } = assetConstants[srcAsset];
+  const { blockTimeSeconds } = chainConstants[chain];
   const blockConfirmations = isBoosted ? 1 : (await getRequiredBlockConfirmations(srcAsset)) ?? 0;
-  const depositTimeMinutes = (blockConfirmations * blockTime) / 60;
+  const depositTimeMinutes = (blockConfirmations * blockTimeSeconds) / 60;
 
   if (['Solana', 'Arbitrum'].includes(chain)) {
     return depositTimeMinutes * 0.01;
   } else if (['Ethereum', 'Polkadot'].includes(chain)) {
     return depositTimeMinutes * 0.05;
-  } else {
-    return depositTimeMinutes * 0.1;
   }
+  return depositTimeMinutes * 0.1;
 };
 
 const getUndeployedLiquidityAutoSlippage = async (

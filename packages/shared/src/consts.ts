@@ -87,5 +87,3 @@ export const MIN_TICK = -887272;
 export const MAX_TICK = -MIN_TICK;
 
 export const FULL_TICK_RANGE = { start: MIN_TICK, end: MAX_TICK };
-
-export const RECOMMENDED_SLIPPAGE_TOLERANCE_PERCENTAGE = 2;
