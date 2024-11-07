@@ -43,7 +43,7 @@ export const getPools = async (
   ]);
 };
 
-export const undeployedLiquidityCache = new AsyncCacheMap({
+const undeployedLiquidityCache = new AsyncCacheMap({
   fetch: async (asset: InternalAsset) => {
     const lpAccounts = await getLpAccounts();
     return lpAccounts.reduce((sum, account) => {
@@ -56,11 +56,14 @@ export const undeployedLiquidityCache = new AsyncCacheMap({
   ttl: 60_000,
 });
 
-export const deployedLiquidityCache = new AsyncCacheMap({
+const deployedLiquidityCache = new AsyncCacheMap({
   fetch: (asset: InternalAsset) => getPoolDepth(asset, InternalAssets.Usdc, FULL_TICK_RANGE),
   resetExpiryOnLookup: false,
   ttl: 60_000,
 });
+
+export const getUndeployedLiquidity = async (asset: InternalAsset) =>
+  undeployedLiquidityCache.get(asset);
 
 export const getDeployedLiquidity = async (fromAsset: InternalAsset, toAsset: InternalAsset) => {
   assert(
@@ -73,6 +76,6 @@ export const getDeployedLiquidity = async (fromAsset: InternalAsset, toAsset: In
 };
 
 export const getTotalLiquidity = async (fromAsset: InternalAsset, toAsset: InternalAsset) => {
-  const undeployedLiquidity = await undeployedLiquidityCache.get(toAsset);
+  const undeployedLiquidity = await getUndeployedLiquidity(toAsset);
   return (await getDeployedLiquidity(fromAsset, toAsset)) + undeployedLiquidity;
 };

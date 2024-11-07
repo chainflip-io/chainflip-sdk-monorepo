@@ -359,6 +359,31 @@ describe('server', () => {
           });
         }
 
+        if (data.method === 'cf_pool_depth') {
+          return Promise.resolve({
+            data: cfPoolDepth(),
+          });
+        }
+
+        if (data.method === 'cf_accounts') {
+          return Promise.resolve({
+            data: {
+              id: 1,
+              jsonrpc: '2.0',
+              result: [
+                ['cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH', 'Chainflip Testnet Broker 2'],
+              ],
+            },
+          });
+        }
+
+        if (data.method === 'cf_account_info') {
+          return Promise.resolve({
+            data: cfAccountInfo(),
+          });
+        }
+
+        console.log(data.method);
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
@@ -521,7 +546,7 @@ describe('server', () => {
             swap: 12,
           },
           estimatedPrice: '100.0080000000025002',
-          recommendedSlippageTolerancePercent: 2,
+          recommendedSlippageTolerancePercent: 1.02,
           includedFees: [
             {
               amount: '25000',
@@ -573,7 +598,7 @@ describe('server', () => {
             swap: 48,
           },
           estimatedPrice: '400.0320000000100008',
-          recommendedSlippageTolerancePercent: 2,
+          recommendedSlippageTolerancePercent: 1.02,
           includedFees: [
             {
               amount: '25000',
@@ -791,7 +816,7 @@ describe('server', () => {
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
-          recommendedSlippageTolerancePercent: 2,
+          recommendedSlippageTolerancePercent: 3.92,
           srcAsset: {
             asset: 'BTC',
             chain: 'Bitcoin',
@@ -866,7 +891,7 @@ describe('server', () => {
                 quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
               },
             ],
-            recommendedSlippageTolerancePercent: 2,
+            recommendedSlippageTolerancePercent: 1.92,
             srcAsset: {
               asset: 'BTC',
               chain: 'Bitcoin',
@@ -889,7 +914,7 @@ describe('server', () => {
             swap: 48,
           },
           estimatedPrice: '400.59347181012106824926',
-          recommendedSlippageTolerancePercent: 2,
+          recommendedSlippageTolerancePercent: 4,
           includedFees: [
             {
               amount: '40000',
@@ -1147,7 +1172,7 @@ describe('server', () => {
             swap: 12,
           },
           estimatedPrice: '100.0000000000025',
-          recommendedSlippageTolerancePercent: 2,
+          recommendedSlippageTolerancePercent: 1.02,
           includedFees: [
             {
               amount: '25000',
@@ -1273,7 +1298,7 @@ describe('server', () => {
             swap: 12,
           },
           estimatedPrice: '100.0000000000025',
-          recommendedSlippageTolerancePercent: 2,
+          recommendedSlippageTolerancePercent: 1.02,
           includedFees: [
             {
               amount: '25000',
@@ -1400,7 +1425,7 @@ describe('server', () => {
             swap: 12,
           },
           estimatedPrice: '100.0000000000025',
-          recommendedSlippageTolerancePercent: 2,
+          recommendedSlippageTolerancePercent: 1.02,
           includedFees: [
             {
               amount: '25000',

@@ -6,6 +6,8 @@ import { getAssetAndChain } from '@/shared/enums';
 import {
   MockedBoostPoolsDepth,
   boostPoolsDepth,
+  cfAccountInfo,
+  cfPoolDepth,
   environment,
   mockRpcResponse,
   swapRate,
@@ -87,6 +89,30 @@ const mockRpcs = ({
     if (data.method === 'cf_boost_pools_depth') {
       return Promise.resolve({
         data: boostPoolsDepth(mockedBoostPoolsDepth),
+      });
+    }
+
+    if (data.method === 'cf_pool_depth') {
+      return Promise.resolve({
+        data: cfPoolDepth(),
+      });
+    }
+
+    if (data.method === 'cf_accounts') {
+      return Promise.resolve({
+        data: {
+          id: 1,
+          jsonrpc: '2.0',
+          result: [
+            ['cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH', 'Chainflip Testnet Broker 2'],
+          ],
+        },
+      });
+    }
+
+    if (data.method === 'cf_account_info') {
+      return Promise.resolve({
+        data: cfAccountInfo(),
       });
     }
 

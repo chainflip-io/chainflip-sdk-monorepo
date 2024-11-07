@@ -205,6 +205,7 @@ export const generateQuotes = async ({
     brokerCommissionBps,
     pools,
     quoteType: 'REGULAR' as const,
+    dcaChunks: 1,
   };
 
   const [quoteResult, boostedQuoteResult] = await Promise.allSettled([
@@ -231,6 +232,7 @@ export const generateQuotes = async ({
         ...quoteArgs,
         depositAmount: dcaQuoteParams.chunkSize + ingressFeeSurcharge,
         quoteType: 'DCA',
+        dcaChunks: dcaQuoteParams.numberOfChunks,
       }),
     dcaQuoteParams && estimatedBoostFeeBps
       ? getPoolQuote({
@@ -238,6 +240,7 @@ export const generateQuotes = async ({
           boostFeeBps: estimatedBoostFeeBps,
           depositAmount: dcaQuoteParams.chunkSize + ingressFeeSurcharge,
           quoteType: 'DCA',
+          dcaChunks: dcaQuoteParams.numberOfChunks,
         })
       : null,
   ]);

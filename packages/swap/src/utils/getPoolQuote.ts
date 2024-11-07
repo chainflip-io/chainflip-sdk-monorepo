@@ -1,82 +1,14 @@
-import BigNumber from 'bignumber.js';
-import { assetConstants, chainConstants, getAssetAndChain, getInternalAsset } from '@/shared/enums';
+import { getAssetAndChain, getInternalAsset } from '@/shared/enums';
 import { getPipAmountFromAmount } from '@/shared/functions';
 import { Quote, QuoteType } from '@/shared/schemas';
 import { estimateSwapDuration, getSwapPrice } from '@/swap/utils/swap';
+import { calculateRecommendedSlippage } from './autoSlippage';
 import { buildFee, getPoolFees } from './fees';
-import { getDeployedLiquidity, undeployedLiquidityCache } from './pools';
-import { getEgressFee, getMinimumEgressAmount, getRequiredBlockConfirmations } from './rpc';
+import { getEgressFee, getMinimumEgressAmount } from './rpc';
 import ServiceError from './ServiceError';
 import { getSwapRateV2, LimitOrders } from './statechain';
 import { InternalAsset, Pool } from '../client';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
-
-const getLiquidityAutoSlippage = async (
-  srcAsset: InternalAsset,
-  destAsset: InternalAsset,
-  depositAmount: bigint,
-) => {
-  const totalLiquidity = await getDeployedLiquidity(srcAsset, destAsset);
-  const liquidityRatio = new BigNumber(depositAmount.toString()).div(totalLiquidity.toString());
-  if (liquidityRatio.isGreaterThan(0.2)) {
-    return liquidityRatio.multipliedBy(2);
-  }
-  return new BigNumber(0);
-};
-
-const getDepositTimeAutoSlippage = async (srcAsset: InternalAsset, isBoosted: boolean) => {
-  const { chain } = assetConstants[srcAsset];
-  const { blockTimeSeconds } = chainConstants[chain];
-  const blockConfirmations = isBoosted ? 1 : (await getRequiredBlockConfirmations(srcAsset)) ?? 0;
-  const depositTimeMinutes = (blockConfirmations * blockTimeSeconds) / 60;
-
-  if (['Solana', 'Arbitrum'].includes(chain)) {
-    return depositTimeMinutes * 0.01;
-  } else if (['Ethereum', 'Polkadot'].includes(chain)) {
-    return depositTimeMinutes * 0.05;
-  }
-  return depositTimeMinutes * 0.1;
-};
-
-const getUndeployedLiquidityAutoSlippage = async (
-  srcAsset: InternalAsset,
-  depositAmount: bigint,
-) => {
-  const undeployedLiquidity = await undeployedLiquidityCache.get(srcAsset);
-  if (undeployedLiquidity >= depositAmount) {
-    return new BigNumber(-0.5);
-  }
-
-  const undeployedRatio = new BigNumber(undeployedLiquidity.toString()).div(
-    depositAmount.toString(),
-  );
-  if (undeployedRatio.gt(0.5)) {
-    return new BigNumber(-undeployedRatio * 0.1);
-  }
-
-  return new BigNumber(0);
-};
-
-const calculateRecommendedSlippage = async ({
-  srcAsset,
-  destAsset,
-  depositAmount,
-  boostFeeBps,
-}: {
-  srcAsset: InternalAsset;
-  destAsset: InternalAsset;
-  depositAmount: bigint;
-  boostFeeBps?: number;
-}) => {
-  const minSlippage = 0.1;
-  const baseSlippage = 1;
-
-  const calculatedSlippage = (await getLiquidityAutoSlippage(srcAsset, destAsset, depositAmount))
-    .plus(await getDepositTimeAutoSlippage(srcAsset, Boolean(boostFeeBps && boostFeeBps > 0)))
-    .plus(await getUndeployedLiquidityAutoSlippage(srcAsset, depositAmount))
-    .plus(baseSlippage);
-  return Math.max(minSlippage, calculatedSlippage.toNumber());
-};
 
 export default async function getPoolQuote<T extends QuoteType>({
   srcAsset,
@@ -87,6 +19,7 @@ export default async function getPoolQuote<T extends QuoteType>({
   brokerCommissionBps,
   pools,
   quoteType,
+  dcaChunks,
 }: {
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
@@ -96,6 +29,7 @@ export default async function getPoolQuote<T extends QuoteType>({
   boostFeeBps?: number;
   pools: Pool[];
   quoteType: T;
+  dcaChunks: number;
 }): Promise<Extract<Quote, { type: T }>> {
   const includedFees = [];
   let swapInputAmount = depositAmount;
@@ -175,8 +109,10 @@ export default async function getPoolQuote<T extends QuoteType>({
     recommendedSlippageTolerancePercent: await calculateRecommendedSlippage({
       srcAsset,
       destAsset,
-      depositAmount,
       boostFeeBps,
+      intermediateAmount,
+      egressAmount,
+      dcaChunks,
     }),
     includedFees,
     lowLiquidityWarning,
