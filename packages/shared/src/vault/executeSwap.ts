@@ -89,42 +89,18 @@ const vaultSwapParametersCodec = Struct({
   brokerFees: Vector(Struct({ id: u8, commissionBps: u16 })),
 });
 
-const vaultCfParametersCodec = Struct({
-  ccmAdditionalData: TsBytes(),
-  vaultSwapParameters: vaultSwapParametersCodec,
+const vaultCcmCfParametersCodec = Enum({
+  V0: Struct({
+    ccmAdditionalData: TsBytes(),
+    vaultSwapParameters: vaultSwapParametersCodec,
+  }),
 });
 
-const vaultCcmParametersCodec = Struct({
-  vaultSwapParameters: vaultSwapParametersCodec,
+const vaultCfParametersCodec = Enum({
+  V0: Struct({
+    vaultSwapParameters: vaultSwapParametersCodec,
+  }),
 });
-
-export function encodeSwapParameters(
-  sourceChain: Chain,
-  fillOrKillParams: FillOrKillParamsX128,
-  boostFeeBps?: number,
-  dcaParams?: DcaParams,
-  _beneficiaries?: AffiliateBroker[],
-): string | undefined {
-  return fillOrKillParams || dcaParams || boostFeeBps
-    ? bytesToHex(
-        vaultSwapParametersCodec.enc({
-          refundParams: {
-            retryDurationBlocks: fillOrKillParams.retryDurationBlocks,
-            refundAddress: {
-              tag: sourceChain,
-              value: hexToBytes(fillOrKillParams.refundAddress as `0x${string}`),
-            },
-            minPriceX128: BigInt(fillOrKillParams.minPriceX128),
-          },
-          dcaParams,
-          boostFee: boostFeeBps,
-          // For now just hardcode to an empty array. The beneficiary's accounts
-          // needs to be converted to a u8 (id).
-          brokerFees: [],
-        }),
-      )
-    : undefined;
-}
 
 export function encodeCfParameters(
   sourceChain: Chain,
@@ -133,47 +109,39 @@ export function encodeCfParameters(
   boostFeeBps?: number,
   dcaParams?: DcaParams,
   _beneficiaries?: AffiliateBroker[],
-): string | undefined {
-  function createVaultSwapParameters(
-    srcChain: Chain,
-    refundParams: FillOrKillParamsX128,
-    boostFee?: number,
-    dca?: DcaParams,
-  ) {
-    return {
-      refundParams: {
-        retryDurationBlocks: refundParams.retryDurationBlocks,
-        refundAddress: {
-          tag: srcChain,
-          value: hexToBytes(refundParams.refundAddress as `0x${string}`),
-        },
-        minPriceX128: BigInt(refundParams.minPriceX128),
+): string {
+  const vaultSwapParameters = {
+    refundParams: {
+      retryDurationBlocks: fillOrKillParams.retryDurationBlocks,
+      refundAddress: {
+        tag: sourceChain,
+        value: hexToBytes(fillOrKillParams.refundAddress as `0x${string}`),
       },
-      dcaParams: dca,
-      boostFee,
-      brokerFees: [],
-    };
-  }
+      minPriceX128: BigInt(fillOrKillParams.minPriceX128),
+    },
+    dcaParams,
+    boostFee: boostFeeBps,
+    // For now just hardcode to an empty array. The beneficiary's accounts
+    // needs to be converted to a u8 (id).
+    brokerFees: [],
+  };
 
-  if (ccmAdditionalData || fillOrKillParams || dcaParams || boostFeeBps) {
-    const vaultSwapParameters = createVaultSwapParameters(
-      sourceChain,
-      fillOrKillParams,
-      boostFeeBps,
-      dcaParams,
-    );
-    return bytesToHex(
-      ccmAdditionalData !== undefined
-        ? vaultCfParametersCodec.enc({
+  return bytesToHex(
+    ccmAdditionalData !== undefined
+      ? vaultCcmCfParametersCodec.enc({
+          tag: 'V0',
+          value: {
             ccmAdditionalData: hexToBytes(ccmAdditionalData as `0x${string}`),
             vaultSwapParameters,
-          })
-        : vaultCcmParametersCodec.enc({
+          },
+        })
+      : vaultCfParametersCodec.enc({
+          tag: 'V0',
+          value: {
             vaultSwapParameters,
-          }),
-    );
-  }
-  return undefined;
+          },
+        }),
+  );
 }
 
 const swapNative = async (
@@ -187,9 +155,10 @@ const swapNative = async (
   });
   const { vaultContract: vault } = getVaultContract(params.srcChain, networkOpts);
 
-  const cfParameters = encodeSwapParameters(
+  const cfParameters = encodeCfParameters(
     params.srcChain,
     params.fillOrKillParams,
+    undefined,
     params.maxBoostFeeBps,
     params.dcaParams,
     params.beneficiaries,
@@ -199,7 +168,7 @@ const swapNative = async (
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
     assetConstants[destAsset].contractId,
-    cfParameters ?? '0x',
+    cfParameters,
     { value: params.amount, ...extractOverrides(txOpts) },
   );
   await transaction.wait(txOpts.wait);
@@ -224,9 +193,10 @@ const swapToken = async (
   );
   assert(hasSufficientAllowance, 'Swap amount exceeds allowance');
 
-  const cfParameters = encodeSwapParameters(
+  const cfParameters = encodeCfParameters(
     params.srcChain,
     params.fillOrKillParams,
+    undefined,
     params.maxBoostFeeBps,
     params.dcaParams,
     params.beneficiaries,
@@ -238,7 +208,7 @@ const swapToken = async (
     assetConstants[destAsset].contractId,
     erc20Address,
     params.amount,
-    cfParameters ?? '0x',
+    cfParameters,
     extractOverrides(txOpts),
   );
   await transaction.wait(txOpts.wait);
