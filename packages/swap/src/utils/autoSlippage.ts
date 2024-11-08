@@ -4,7 +4,7 @@ import { getDeployedLiquidity, getUndeployedLiquidity } from './pools';
 import { getRequiredBlockConfirmations } from './rpc';
 import { InternalAsset } from '../client';
 
-const getLiquidityAutoSlippage = async (
+const getLiquidityAdjustment = async (
   srcAsset: InternalAsset,
   destAsset: InternalAsset,
   amount: bigint,
@@ -18,7 +18,7 @@ const getLiquidityAutoSlippage = async (
   return new BigNumber(0);
 };
 
-const getDepositTimeAutoSlippage = async (srcAsset: InternalAsset, isBoosted: boolean) => {
+const getDepositTimeAdjustment = async (srcAsset: InternalAsset, isBoosted: boolean) => {
   const { chain } = assetConstants[srcAsset];
   const { blockTimeSeconds } = chainConstants[chain];
   const blockConfirmations = isBoosted ? 1 : (await getRequiredBlockConfirmations(srcAsset)) ?? 0;
@@ -33,7 +33,7 @@ const getDepositTimeAutoSlippage = async (srcAsset: InternalAsset, isBoosted: bo
   return depositTimeMinutes * 0.1;
 };
 
-const getUndeployedLiquidityAutoSlippage = async (asset: InternalAsset, amount: bigint) => {
+const getUndeployedLiquidityAdjustment = async (asset: InternalAsset, amount: bigint) => {
   const undeployedLiquidity = await getUndeployedLiquidity(asset);
   if (undeployedLiquidity >= amount) {
     return new BigNumber(-0.5);
@@ -68,13 +68,13 @@ export const calculateRecommendedSlippage = async ({
   const assetTo = srcAsset === 'Usdc' || destAsset === 'Usdc' ? destAsset : 'Usdc';
 
   const [deployedLiquiditySlippage, timeSlippage, undeployedLiquiditySlippage] = await Promise.all([
-    await getLiquidityAutoSlippage(
+    await getLiquidityAdjustment(
       srcAsset,
       assetTo,
       (intermediateAmount ?? egressAmount) * BigInt(dcaChunks),
     ),
-    await getDepositTimeAutoSlippage(srcAsset, Boolean(boostFeeBps && boostFeeBps > 0)),
-    await getUndeployedLiquidityAutoSlippage(
+    await getDepositTimeAdjustment(srcAsset, Boolean(boostFeeBps && boostFeeBps > 0)),
+    await getUndeployedLiquidityAdjustment(
       intermediateAmount ? 'Usdc' : destAsset,
       (intermediateAmount ?? egressAmount) * BigInt(dcaChunks),
     ),
