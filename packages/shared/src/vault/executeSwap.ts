@@ -85,8 +85,8 @@ const vaultSwapParametersCodec = Struct({
   }),
   dcaParams: Option(Struct({ numberOfChunks: u32, chunkIntervalBlocks: u32 })),
   boostFee: Option(u16),
-  // TODO: Define this / implement it on the SC and engine - PRO-1743.
-  brokerFees: Vector(Struct({ id: u8, commissionBps: u16 })),
+  brokerFees: Struct({ account: TsBytes(32), commissionBps: u16 }),
+  affiliateFees: Vector(Struct({ account: u8, commissionBps: u16 })),
 });
 
 const vaultCcmCfParametersCodec = Enum({
@@ -105,10 +105,14 @@ const vaultCfParametersCodec = Enum({
 export function encodeCfParameters(
   sourceChain: Chain,
   fillOrKillParams: FillOrKillParamsX128,
+  brokerFees: AffiliateBroker,
   ccmAdditionalData?: string | undefined,
   boostFeeBps?: number,
   dcaParams?: DcaParams,
-  _beneficiaries?: AffiliateBroker[],
+  affiliateFees?: {
+    account: number;
+    commissionBps: number;
+  }[],
 ): string {
   const vaultSwapParameters = {
     refundParams: {
@@ -121,9 +125,13 @@ export function encodeCfParameters(
     },
     dcaParams,
     boostFee: boostFeeBps,
-    // For now just hardcode to an empty array. The beneficiary's accounts
-    // needs to be converted to a u8 (id).
-    brokerFees: [],
+    brokerFees: {
+      account: isHex(brokerFees.account)
+        ? hexToBytes(brokerFees.account)
+        : ss58.decode(brokerFees.account).data,
+      commissionBps: brokerFees.commissionBps,
+    },
+    affiliateFees: affiliateFees ?? [],
   };
 
   return bytesToHex(
@@ -158,10 +166,11 @@ const swapNative = async (
   const cfParameters = encodeCfParameters(
     params.srcChain,
     params.fillOrKillParams,
+    params.brokerFees,
     undefined,
     params.maxBoostFeeBps,
     params.dcaParams,
-    params.beneficiaries,
+    params.affiliateFees,
   );
 
   const transaction = await vault.xSwapNative(
@@ -196,10 +205,11 @@ const swapToken = async (
   const cfParameters = encodeCfParameters(
     params.srcChain,
     params.fillOrKillParams,
+    params.brokerFees,
     undefined,
     params.maxBoostFeeBps,
     params.dcaParams,
-    params.beneficiaries,
+    params.affiliateFees,
   );
 
   const transaction = await vault.xSwapToken(
@@ -230,10 +240,11 @@ const callNative = async (
   const cfParameters = encodeCfParameters(
     params.srcChain,
     params.fillOrKillParams,
+    params.brokerFees,
     params.ccmParams?.ccmAdditionalData,
     params.maxBoostFeeBps,
     params.dcaParams,
-    params.beneficiaries,
+    params.affiliateFees,
   );
 
   const transaction = await vault.xCallNative(
@@ -270,10 +281,11 @@ const callToken = async (
   const cfParameters = encodeCfParameters(
     params.srcChain,
     params.fillOrKillParams,
+    params.brokerFees,
     params.ccmParams?.ccmAdditionalData,
     params.maxBoostFeeBps,
     params.dcaParams,
-    params.beneficiaries,
+    params.affiliateFees,
   );
 
   const transaction = await vault.xCallToken(

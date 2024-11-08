@@ -13,11 +13,15 @@ export interface ExecuteSwapParams {
   amount: string;
   destAddress: string;
   fillOrKillParams: FillOrKillParamsX128;
+  brokerFees: AffiliateBroker;
   ccmParams?: CcmParams;
   maxBoostFeeBps?: number;
   dcaParams?: DcaParams;
-  // TODO: Should broker be mandatory?
-  beneficiaries?: AffiliateBroker[];
+  // TODO: Define a new typy and/or check AffiliateShortId type?
+  affiliateFees?: {
+    account: number;
+    commissionBps: number;
+  }[];
 
   /** @deprecated DEPRECATED(1.5): use ccmParams instead of ccmMetadata */
   ccmMetadata?: CcmParams;
