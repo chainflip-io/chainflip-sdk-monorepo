@@ -9,7 +9,13 @@ import { Observable, filter, firstValueFrom, from, map, shareReplay, timeout } f
 import { promisify } from 'util';
 import { Assets, Chains } from '@/shared/enums';
 import { QuoteQueryParams } from '@/shared/schemas';
-import { boostPoolsDepth, environment, mockRpcResponse } from '@/shared/tests/fixtures';
+import {
+  boostPoolsDepth,
+  cfAccountInfo,
+  cfPoolDepth,
+  environment,
+  mockRpcResponse,
+} from '@/shared/tests/fixtures';
 import prisma from '../client';
 import app from '../server';
 import { getSwapRateV2 } from '../utils/statechain';
@@ -66,6 +72,30 @@ describe('python integration test', () => {
 
       if (data.method === 'cf_boost_pools_depth') {
         return Promise.resolve({ data: boostPoolsDepth([]) });
+      }
+
+      if (data.method === 'cf_pool_depth') {
+        return Promise.resolve({
+          data: cfPoolDepth(),
+        });
+      }
+
+      if (data.method === 'cf_accounts') {
+        return Promise.resolve({
+          data: {
+            id: 1,
+            jsonrpc: '2.0',
+            result: [
+              ['cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH', 'Chainflip Testnet Broker 2'],
+            ],
+          },
+        });
+      }
+
+      if (data.method === 'cf_account_info') {
+        return Promise.resolve({
+          data: cfAccountInfo(),
+        });
       }
 
       throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
