@@ -383,7 +383,6 @@ describe('server', () => {
           });
         }
 
-        console.log(data.method);
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 

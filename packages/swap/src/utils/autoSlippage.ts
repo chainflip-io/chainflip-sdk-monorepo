@@ -26,7 +26,8 @@ const getDepositTimeAutoSlippage = async (srcAsset: InternalAsset, isBoosted: bo
 
   if (['Solana', 'Arbitrum'].includes(chain)) {
     return depositTimeMinutes * 0.01;
-  } else if (['Ethereum', 'Polkadot'].includes(chain)) {
+  }
+  if (['Ethereum', 'Polkadot'].includes(chain)) {
     return depositTimeMinutes * 0.05;
   }
   return depositTimeMinutes * 0.1;
