@@ -24,13 +24,13 @@ const getDepositTimeAdjustment = async (srcAsset: InternalAsset, isBoosted: bool
   const blockConfirmations = isBoosted ? 1 : (await getRequiredBlockConfirmations(srcAsset)) ?? 0;
   const depositTimeMinutes = (blockConfirmations * blockTimeSeconds) / 60;
 
-  if (['Solana', 'Arbitrum'].includes(chain)) {
-    return depositTimeMinutes * 0.01;
-  }
-  if (['Ethereum', 'Polkadot'].includes(chain)) {
-    return depositTimeMinutes * 0.05;
-  }
-  return depositTimeMinutes * 0.1;
+  // if (['Solana', 'Arbitrum'].includes(chain)) {
+  //   return depositTimeMinutes * 0.01;
+  // }
+  // if (['Ethereum', 'Polkadot'].includes(chain)) {
+  //   return depositTimeMinutes * 0.05;
+  // }
+  return Math.min(depositTimeMinutes * 0.05, 1); // Cap at 1
 };
 
 const getUndeployedLiquidityAdjustment = async (asset: InternalAsset, amount: bigint) => {
@@ -45,6 +45,35 @@ const getUndeployedLiquidityAdjustment = async (asset: InternalAsset, amount: bi
   }
 
   return new BigNumber(0);
+};
+
+const calculateSingleLegSlippage = async ({
+  srcAsset,
+  destAsset,
+  amount,
+  isBoosted,
+  dcaChunks,
+  ignoreDepositTime,
+}: {
+  srcAsset: InternalAsset;
+  destAsset: InternalAsset;
+  amount: bigint;
+  isBoosted: boolean;
+  dcaChunks: bigint;
+  ignoreDepositTime?: boolean;
+}) => {
+  const baseSlippage = 1;
+
+  const [timeSlippage, deployedLiquiditySlippage, undeployedLiquiditySlippage] = await Promise.all([
+    getDepositTimeAdjustment(srcAsset, isBoosted),
+    getLiquidityAdjustment(srcAsset, destAsset, amount * dcaChunks),
+    getUndeployedLiquidityAdjustment(destAsset, amount * dcaChunks),
+  ]);
+
+  return deployedLiquiditySlippage
+    .plus(ignoreDepositTime ? 0 : timeSlippage)
+    .plus(undeployedLiquiditySlippage)
+    .plus(baseSlippage);
 };
 
 export const calculateRecommendedSlippage = async ({
@@ -63,27 +92,37 @@ export const calculateRecommendedSlippage = async ({
   dcaChunks: number;
 }) => {
   const minSlippage = 0.1;
-  const baseSlippage = 1;
 
-  const assetTo = srcAsset === 'Usdc' || destAsset === 'Usdc' ? destAsset : 'Usdc';
-
-  const [deployedLiquiditySlippage, timeSlippage, undeployedLiquiditySlippage] = await Promise.all([
-    await getLiquidityAdjustment(
+  if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
+    // Single leg swap
+    const calculatedSlippage = await calculateSingleLegSlippage({
       srcAsset,
-      assetTo,
-      (intermediateAmount ?? egressAmount) * BigInt(dcaChunks),
-    ),
-    await getDepositTimeAdjustment(srcAsset, Boolean(boostFeeBps && boostFeeBps > 0)),
-    await getUndeployedLiquidityAdjustment(
-      intermediateAmount ? 'Usdc' : destAsset,
-      (intermediateAmount ?? egressAmount) * BigInt(dcaChunks),
-    ),
-  ]);
+      destAsset,
+      amount: egressAmount,
+      isBoosted: !!boostFeeBps,
+      dcaChunks: BigInt(dcaChunks),
+    });
 
-  const calculatedSlippage = deployedLiquiditySlippage
-    .plus(timeSlippage)
-    .plus(undeployedLiquiditySlippage)
-    .plus(baseSlippage);
+    return Math.max(minSlippage, Math.round(calculatedSlippage.toNumber() * 100) / 100);
+  }
 
-  return Math.max(minSlippage, Math.round(calculatedSlippage.toNumber() * 100) / 100);
+  // Two leg swap
+  const calculatedSlippageLeg1 = await calculateSingleLegSlippage({
+    srcAsset,
+    destAsset: 'Usdc',
+    amount: intermediateAmount!,
+    isBoosted: !!boostFeeBps,
+    dcaChunks: BigInt(dcaChunks),
+  });
+  const calculatedSlippageLeg2 = await calculateSingleLegSlippage({
+    srcAsset: 'Usdc',
+    destAsset,
+    amount: egressAmount,
+    isBoosted: !!boostFeeBps,
+    dcaChunks: BigInt(dcaChunks),
+    ignoreDepositTime: true,
+  });
+
+  const avgSlippage = calculatedSlippageLeg1.plus(calculatedSlippageLeg2).div(2).toNumber();
+  return Math.max(minSlippage, Math.round(avgSlippage * 100) / 100);
 };

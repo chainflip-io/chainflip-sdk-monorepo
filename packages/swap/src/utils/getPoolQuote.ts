@@ -20,6 +20,7 @@ export default async function getPoolQuote<T extends QuoteType>({
   pools,
   quoteType,
   dcaChunks,
+  autoSlippageEnabled,
 }: {
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
@@ -30,6 +31,7 @@ export default async function getPoolQuote<T extends QuoteType>({
   pools: Pool[];
   quoteType: T;
   dcaChunks: number;
+  autoSlippageEnabled: boolean;
 }): Promise<Extract<Quote, { type: T }>> {
   const includedFees = [];
   let swapInputAmount = depositAmount;
@@ -106,14 +108,16 @@ export default async function getPoolQuote<T extends QuoteType>({
   return {
     intermediateAmount: intermediateAmount?.toString(),
     egressAmount: egressAmount.toString(),
-    recommendedSlippageTolerancePercent: await calculateRecommendedSlippage({
-      srcAsset,
-      destAsset,
-      boostFeeBps,
-      intermediateAmount,
-      egressAmount,
-      dcaChunks,
-    }),
+    recommendedSlippageTolerancePercent: autoSlippageEnabled
+      ? await calculateRecommendedSlippage({
+          srcAsset,
+          destAsset,
+          boostFeeBps,
+          intermediateAmount,
+          egressAmount,
+          dcaChunks,
+        })
+      : undefined,
     includedFees,
     lowLiquidityWarning,
     poolInfo,

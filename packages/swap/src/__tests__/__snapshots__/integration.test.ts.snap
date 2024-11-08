@@ -53,7 +53,7 @@ exports[`python integration test replies to a quote request 1`] = `
       },
     },
   ],
-  "recommendedSlippageTolerancePercent": 1.02,
+  "recommendedSlippageTolerancePercent": 1.01,
   "srcAsset": {
     "asset": "FLIP",
     "chain": "Ethereum",
