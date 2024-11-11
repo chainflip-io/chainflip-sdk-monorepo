@@ -149,7 +149,7 @@ const depositChannel = {
 
 describe(ccmFailed, () => {
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "FailedSwap", "SwapDepositChannel"  CASCADE;`;
+    await prisma.$queryRaw`TRUNCATE TABLE "FailedSwap", "SwapDepositChannel" CASCADE;`;
   });
 
   it.each([vault, depositChannel])('creates a failed swap', async ({ call, block, ...event }) => {
