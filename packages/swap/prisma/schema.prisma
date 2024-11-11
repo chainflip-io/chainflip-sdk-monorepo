@@ -424,25 +424,26 @@ model StateChainError {
 }
 
 model Quote {
-  id                       Int                @id @default(autoincrement())
-  swapDepositChannel       SwapDepositChannel @relation(fields: [swapDepositChannelId], references: [id])
-  swapDepositChannelId     BigInt             @unique
-  channelOpenedAt          DateTime
-  swapRequest              SwapRequest?       @relation(fields: [swapRequestId], references: [id])
-  swapRequestId            BigInt?            @unique
-  swapRequestNativeId      BigInt?            @unique
-  srcAsset                 InternalAsset
-  destAsset                InternalAsset
-  maxBoostFeeBps           Int?
-  numberOfChunks           Int?
-  expectedDepositAmount    Decimal            @db.Decimal(30, 0)
-  quotedIntermediateAmount Decimal?           @db.Decimal(30, 0)
-  quotedEgressAmount       Decimal            @db.Decimal(30, 0)
-  quotedPrice              Decimal
-  slippageTolerancePercent Decimal?
-  executedAt               DateTime?
-  executedPrice            Decimal?
-  executedSlippagePercent  Decimal?
+  id                                  Int                @id @default(autoincrement())
+  swapDepositChannel                  SwapDepositChannel @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId                BigInt             @unique
+  channelOpenedAt                     DateTime
+  swapRequest                         SwapRequest?       @relation(fields: [swapRequestId], references: [id])
+  swapRequestId                       BigInt?            @unique
+  swapRequestNativeId                 BigInt?            @unique
+  srcAsset                            InternalAsset
+  destAsset                           InternalAsset
+  maxBoostFeeBps                      Int?
+  numberOfChunks                      Int?
+  expectedDepositAmount               Decimal            @db.Decimal(30, 0)
+  quotedIntermediateAmount            Decimal?           @db.Decimal(30, 0)
+  quotedEgressAmount                  Decimal            @db.Decimal(30, 0)
+  quotedPrice                         Decimal
+  slippageTolerancePercent            Decimal?
+  executedAt                          DateTime?
+  executedPrice                       Decimal?
+  executedSlippagePercent             Decimal?
+  recommendedSlippageTolerancePercent Decimal?
 
   @@schema("private")
 }

@@ -36,6 +36,7 @@ exports[`swapRequestCompleted updates swap request and associated quote 1`] = `
     "quotedEgressAmount": "2000000",
     "quotedIntermediateAmount": null,
     "quotedPrice": "25000",
+    "recommendedSlippageTolerancePercent": null,
     "slippageTolerancePercent": null,
     "srcAsset": "Eth",
     "swapDepositChannelId": Any<BigInt>,

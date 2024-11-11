@@ -121,6 +121,7 @@ export default async function openSwapDepositChannel(
       quotedEgressAmount: input.quote.egressAmount,
       quotedPrice: input.quote.estimatedPrice,
       slippageTolerancePercent: getSlippageTolerancePercent(input),
+      recommendedSlippageTolerancePercent: input.quote.recommendedSlippageTolerancePercent,
     },
   };
 

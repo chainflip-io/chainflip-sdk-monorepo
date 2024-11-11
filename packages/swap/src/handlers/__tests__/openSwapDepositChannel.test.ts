@@ -101,6 +101,7 @@ describe(openSwapDepositChannel, () => {
         intermediateAmount: '500',
         egressAmount: '250',
         estimatedPrice: '0.375',
+        recommendedSlippageTolerancePercent: 0.25,
       },
     });
 
