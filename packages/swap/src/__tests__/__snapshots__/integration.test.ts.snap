@@ -53,6 +53,7 @@ exports[`python integration test replies to a quote request 1`] = `
       },
     },
   ],
+  "recommendedSlippageTolerancePercent": 2,
   "srcAsset": {
     "asset": "FLIP",
     "chain": "Ethereum",
@@ -145,7 +146,7 @@ exports[`python integration test replies to a quote request with v2 endpoint 1`]
         },
       },
     ],
-    "recommendedSlippageTolerancePercent": 1992719.3,
+    "recommendedSlippageTolerancePercent": 1992719.25,
     "srcAsset": {
       "asset": "FLIP",
       "chain": "Ethereum",

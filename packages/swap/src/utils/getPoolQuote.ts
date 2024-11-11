@@ -117,7 +117,7 @@ export default async function getPoolQuote<T extends QuoteType>({
           egressAmount,
           dcaChunks,
         })
-      : undefined,
+      : 2, // This is temporary until we remove the request param flag
     includedFees,
     lowLiquidityWarning,
     poolInfo,

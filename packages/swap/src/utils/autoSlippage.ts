@@ -97,7 +97,7 @@ export const calculateRecommendedSlippage = async ({
       dcaChunks: BigInt(dcaChunks),
     });
 
-    return Math.max(minSlippage, Math.round(calculatedSlippage.toNumber() * 100) / 100);
+    return Math.max(minSlippage, Math.round(calculatedSlippage.toNumber() * 4) / 4);
   }
 
   // Two leg swap
@@ -118,5 +118,5 @@ export const calculateRecommendedSlippage = async ({
   });
 
   const avgSlippage = calculatedSlippageLeg1.plus(calculatedSlippageLeg2).div(2).toNumber();
-  return Math.max(minSlippage, Math.round(avgSlippage * 100) / 100);
+  return Math.max(minSlippage, Math.round(avgSlippage * 4) / 4);
 };

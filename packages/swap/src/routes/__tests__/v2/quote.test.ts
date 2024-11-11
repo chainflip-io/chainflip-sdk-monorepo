@@ -554,7 +554,7 @@ describe('server', () => {
             swap: 12,
           },
           estimatedPrice: '100.0080000000025002',
-          recommendedSlippageTolerancePercent: 1.02,
+          recommendedSlippageTolerancePercent: 1,
           includedFees: [
             {
               amount: '25000',
@@ -606,7 +606,7 @@ describe('server', () => {
             swap: 48,
           },
           estimatedPrice: '400.0320000000100008',
-          recommendedSlippageTolerancePercent: 1.02,
+          recommendedSlippageTolerancePercent: 1,
           includedFees: [
             {
               amount: '25000',
@@ -825,7 +825,7 @@ describe('server', () => {
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
-          recommendedSlippageTolerancePercent: 1.21,
+          recommendedSlippageTolerancePercent: 1.25,
           srcAsset: {
             asset: 'BTC',
             chain: 'Bitcoin',
@@ -900,7 +900,7 @@ describe('server', () => {
                 quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
               },
             ],
-            recommendedSlippageTolerancePercent: 0.96,
+            recommendedSlippageTolerancePercent: 1,
             srcAsset: {
               asset: 'BTC',
               chain: 'Bitcoin',
@@ -923,7 +923,7 @@ describe('server', () => {
             swap: 48,
           },
           estimatedPrice: '400.59347181012106824926',
-          recommendedSlippageTolerancePercent: 1.47,
+          recommendedSlippageTolerancePercent: 1.5,
           includedFees: [
             {
               amount: '40000',
@@ -1052,7 +1052,7 @@ describe('server', () => {
                 quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
               },
             ],
-            recommendedSlippageTolerancePercent: 1.22,
+            recommendedSlippageTolerancePercent: 1.25,
             srcAsset: {
               asset: 'BTC',
               chain: 'Bitcoin',
@@ -1182,7 +1182,7 @@ describe('server', () => {
             swap: 12,
           },
           estimatedPrice: '100.0000000000025',
-          recommendedSlippageTolerancePercent: 1.02,
+          recommendedSlippageTolerancePercent: 1,
           includedFees: [
             {
               amount: '25000',
@@ -1309,7 +1309,7 @@ describe('server', () => {
             swap: 12,
           },
           estimatedPrice: '100.0000000000025',
-          recommendedSlippageTolerancePercent: 1.02,
+          recommendedSlippageTolerancePercent: 1,
           includedFees: [
             {
               amount: '25000',
@@ -1437,7 +1437,7 @@ describe('server', () => {
             swap: 12,
           },
           estimatedPrice: '100.0000000000025',
-          recommendedSlippageTolerancePercent: 1.02,
+          recommendedSlippageTolerancePercent: 1,
           includedFees: [
             {
               amount: '25000',

@@ -29,7 +29,7 @@ describe(calculateRecommendedSlippage, () => {
       dcaChunks: 1,
     });
 
-    expect(result).toEqual(0.58);
+    expect(result).toEqual(0.5);
   });
 
   it('should return the correct value for ETH -> USDC for amount >20% of deployed liquidity', async () => {
@@ -49,7 +49,7 @@ describe(calculateRecommendedSlippage, () => {
       dcaChunks: 1,
     });
 
-    expect(result).toEqual(1.18);
+    expect(result).toEqual(1.25);
   });
 
   it('should return the correct value for ETH -> USDC for amount > undeployed liquidity and deployed liquidity', async () => {
@@ -69,7 +69,7 @@ describe(calculateRecommendedSlippage, () => {
       dcaChunks: 1,
     });
 
-    expect(result).toEqual(3.68);
+    expect(result).toEqual(3.75);
   });
 
   it('should return the correct value for ETH -> USDC for amount > undeployed liquidity but less than deployed liquidity', async () => {
@@ -89,7 +89,7 @@ describe(calculateRecommendedSlippage, () => {
       dcaChunks: 1,
     });
 
-    expect(result).toEqual(2.62); // 2.6175 rounded
+    expect(result).toEqual(2.5); // 2.6175 rounded
   });
 
   it('should return the correct value for BTC -> ETH when swapping 5 BTC with 6 BTC deployed and 2 BTC undeployed', async () => {
@@ -120,7 +120,7 @@ describe(calculateRecommendedSlippage, () => {
       dcaChunks: 100,
     });
 
-    expect(result).toEqual(3.17);
+    expect(result).toEqual(3.25);
   });
 
   it('should return the correct value for BTC -> ETH when swapping 5 BTC with 6 BTC deployed and 2 BTC undeployed and BOOSTED', async () => {
@@ -152,6 +152,6 @@ describe(calculateRecommendedSlippage, () => {
       boostFeeBps: 10,
     });
 
-    expect(result).toEqual(2.92);
+    expect(result).toEqual(3);
   });
 });
