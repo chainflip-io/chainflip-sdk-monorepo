@@ -24,12 +24,6 @@ const getDepositTimeAdjustment = async (srcAsset: InternalAsset, isBoosted: bool
   const blockConfirmations = isBoosted ? 1 : (await getRequiredBlockConfirmations(srcAsset)) ?? 0;
   const depositTimeMinutes = (blockConfirmations * blockTimeSeconds) / 60;
 
-  // if (['Solana', 'Arbitrum'].includes(chain)) {
-  //   return depositTimeMinutes * 0.01;
-  // }
-  // if (['Ethereum', 'Polkadot'].includes(chain)) {
-  //   return depositTimeMinutes * 0.05;
-  // }
   return Math.min(depositTimeMinutes * 0.05, 1); // Cap at 1
 };
 
