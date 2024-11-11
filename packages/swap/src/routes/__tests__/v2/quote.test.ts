@@ -208,6 +208,7 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: '50',
+        autoSlippageEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -227,6 +228,7 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: '50',
+        autoSlippageEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -248,6 +250,7 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: '50',
+        autoSlippageEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -267,6 +270,7 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'FLIP',
         amount: '50',
+        autoSlippageEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -284,6 +288,7 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: (1000).toString(),
+        autoSlippageEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -305,6 +310,7 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: (100e6).toString(),
+        autoSlippageEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -330,6 +336,7 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: (100e6).toString(),
+        autoSlippageEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -359,6 +366,30 @@ describe('server', () => {
           });
         }
 
+        if (data.method === 'cf_pool_depth') {
+          return Promise.resolve({
+            data: cfPoolDepth(),
+          });
+        }
+
+        if (data.method === 'cf_accounts') {
+          return Promise.resolve({
+            data: {
+              id: 1,
+              jsonrpc: '2.0',
+              result: [
+                ['cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH', 'Chainflip Testnet Broker 2'],
+              ],
+            },
+          });
+        }
+
+        if (data.method === 'cf_account_info') {
+          return Promise.resolve({
+            data: cfAccountInfo(),
+          });
+        }
+
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
@@ -376,6 +407,7 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'USDC',
         amount: (1e18).toString(),
+        autoSlippageEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -501,6 +533,7 @@ describe('server', () => {
         destAsset: 'USDC',
         amount: (1e18).toString(),
         dcaEnabled: 'true',
+        autoSlippageEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -521,7 +554,7 @@ describe('server', () => {
             swap: 12,
           },
           estimatedPrice: '100.0080000000025002',
-          recommendedSlippageTolerancePercent: 2,
+          recommendedSlippageTolerancePercent: 1,
           includedFees: [
             {
               amount: '25000',
@@ -573,7 +606,7 @@ describe('server', () => {
             swap: 48,
           },
           estimatedPrice: '400.0320000000100008',
-          recommendedSlippageTolerancePercent: 2,
+          recommendedSlippageTolerancePercent: 1,
           includedFees: [
             {
               amount: '25000',
@@ -724,6 +757,7 @@ describe('server', () => {
         amount: (0.001e8).toString(),
         dcaEnabled: 'true',
         brokerCommissionBps: '10',
+        autoSlippageEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -791,7 +825,7 @@ describe('server', () => {
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
-          recommendedSlippageTolerancePercent: 2,
+          recommendedSlippageTolerancePercent: 1.25,
           srcAsset: {
             asset: 'BTC',
             chain: 'Bitcoin',
@@ -866,7 +900,7 @@ describe('server', () => {
                 quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
               },
             ],
-            recommendedSlippageTolerancePercent: 2,
+            recommendedSlippageTolerancePercent: 1,
             srcAsset: {
               asset: 'BTC',
               chain: 'Bitcoin',
@@ -889,7 +923,7 @@ describe('server', () => {
             swap: 48,
           },
           estimatedPrice: '400.59347181012106824926',
-          recommendedSlippageTolerancePercent: 2,
+          recommendedSlippageTolerancePercent: 1.5,
           includedFees: [
             {
               amount: '40000',
@@ -1018,7 +1052,7 @@ describe('server', () => {
                 quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
               },
             ],
-            recommendedSlippageTolerancePercent: 2,
+            recommendedSlippageTolerancePercent: 1.25,
             srcAsset: {
               asset: 'BTC',
               chain: 'Bitcoin',
@@ -1127,6 +1161,7 @@ describe('server', () => {
         destAsset: 'USDC',
         amount: (1e18).toString(),
         dcaEnabled: 'false',
+        autoSlippageEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -1147,7 +1182,7 @@ describe('server', () => {
             swap: 12,
           },
           estimatedPrice: '100.0000000000025',
-          recommendedSlippageTolerancePercent: 2,
+          recommendedSlippageTolerancePercent: 1,
           includedFees: [
             {
               amount: '25000',
@@ -1253,6 +1288,7 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'USDC',
         amount: (1e18).toString(),
+        autoSlippageEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -1273,7 +1309,7 @@ describe('server', () => {
             swap: 12,
           },
           estimatedPrice: '100.0000000000025',
-          recommendedSlippageTolerancePercent: 2,
+          recommendedSlippageTolerancePercent: 1,
           includedFees: [
             {
               amount: '25000',
@@ -1380,6 +1416,7 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'USDC',
         amount: (1e18).toString(),
+        autoSlippageEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -1400,7 +1437,7 @@ describe('server', () => {
             swap: 12,
           },
           estimatedPrice: '100.0000000000025',
-          recommendedSlippageTolerancePercent: 2,
+          recommendedSlippageTolerancePercent: 1,
           includedFees: [
             {
               amount: '25000',

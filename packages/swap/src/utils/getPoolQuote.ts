@@ -1,8 +1,8 @@
-import { RECOMMENDED_SLIPPAGE_TOLERANCE_PERCENTAGE } from '@/shared/consts';
 import { getAssetAndChain, getInternalAsset } from '@/shared/enums';
 import { getPipAmountFromAmount } from '@/shared/functions';
 import { Quote, QuoteType } from '@/shared/schemas';
 import { estimateSwapDuration, getSwapPrice } from '@/swap/utils/swap';
+import { calculateRecommendedSlippage } from './autoSlippage';
 import { buildFee, getPoolFees } from './fees';
 import { getEgressFee, getMinimumEgressAmount } from './rpc';
 import ServiceError from './ServiceError';
@@ -19,6 +19,8 @@ export default async function getPoolQuote<T extends QuoteType>({
   brokerCommissionBps,
   pools,
   quoteType,
+  dcaChunks,
+  autoSlippageEnabled,
 }: {
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
@@ -28,6 +30,8 @@ export default async function getPoolQuote<T extends QuoteType>({
   boostFeeBps?: number;
   pools: Pool[];
   quoteType: T;
+  dcaChunks: number;
+  autoSlippageEnabled: boolean;
 }): Promise<Extract<Quote, { type: T }>> {
   const includedFees = [];
   let swapInputAmount = depositAmount;
@@ -104,7 +108,16 @@ export default async function getPoolQuote<T extends QuoteType>({
   return {
     intermediateAmount: intermediateAmount?.toString(),
     egressAmount: egressAmount.toString(),
-    recommendedSlippageTolerancePercent: RECOMMENDED_SLIPPAGE_TOLERANCE_PERCENTAGE,
+    recommendedSlippageTolerancePercent: autoSlippageEnabled
+      ? await calculateRecommendedSlippage({
+          srcAsset,
+          destAsset,
+          boostFeeBps,
+          intermediateAmount,
+          egressAmount,
+          dcaChunks,
+        })
+      : 2, // This is temporary until we remove the request param flag
     includedFees,
     lowLiquidityWarning,
     poolInfo,

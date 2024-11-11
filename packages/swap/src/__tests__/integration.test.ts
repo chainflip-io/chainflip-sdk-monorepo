@@ -9,7 +9,13 @@ import { Observable, filter, firstValueFrom, from, map, shareReplay, timeout } f
 import { promisify } from 'util';
 import { Assets, Chains } from '@/shared/enums';
 import { QuoteQueryParams } from '@/shared/schemas';
-import { boostPoolsDepth, environment, mockRpcResponse } from '@/shared/tests/fixtures';
+import {
+  boostPoolsDepth,
+  cfAccountInfo,
+  cfPoolDepth,
+  environment,
+  mockRpcResponse,
+} from '@/shared/tests/fixtures';
 import prisma from '../client';
 import app from '../server';
 import { getSwapRateV2 } from '../utils/statechain';
@@ -66,6 +72,30 @@ describe('python integration test', () => {
 
       if (data.method === 'cf_boost_pools_depth') {
         return Promise.resolve({ data: boostPoolsDepth([]) });
+      }
+
+      if (data.method === 'cf_pool_depth') {
+        return Promise.resolve({
+          data: cfPoolDepth(),
+        });
+      }
+
+      if (data.method === 'cf_accounts') {
+        return Promise.resolve({
+          data: {
+            id: 1,
+            jsonrpc: '2.0',
+            result: [
+              ['cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH', 'Chainflip Testnet Broker 2'],
+            ],
+          },
+        });
+      }
+
+      if (data.method === 'cf_account_info') {
+        return Promise.resolve({
+          data: cfAccountInfo(),
+        });
       }
 
       throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
@@ -152,6 +182,34 @@ describe('python integration test', () => {
     });
 
     const response = await axios.get(`${serverUrl}/quote?${params.toString()}`);
+
+    expect(await response.data).toMatchSnapshot();
+    expect(jest.mocked(getSwapRateV2).mock.calls).toMatchSnapshot();
+  });
+
+  it('replies to a quote request with v2 endpoint', async () => {
+    await expectMesage('connected');
+
+    const query = {
+      srcAsset: Assets.FLIP,
+      srcChain: Chains.Ethereum,
+      destAsset: Assets.USDC,
+      destChain: Chains.Ethereum,
+      amount: '1000000000000000000',
+      autoSlippageEnabled: 'true',
+    } as QuoteQueryParams;
+    const params = new URLSearchParams(query as Record<string, any>);
+
+    jest.mocked(getSwapRateV2).mockResolvedValueOnce({
+      ingressFee: { amount: 2000000n, chain: 'Ethereum', asset: 'FLIP' },
+      networkFee: { amount: 998900109987003n, chain: 'Ethereum', asset: 'USDC' },
+      egressFee: { amount: 50000n, chain: 'Ethereum', asset: 'USDC' },
+      intermediateAmount: 2000000000n,
+      egressAmount: 997901209876966295n,
+      brokerFee: 0n,
+    });
+
+    const response = await axios.get(`${serverUrl}/v2/quote?${params.toString()}`);
 
     expect(await response.data).toMatchSnapshot();
     expect(jest.mocked(getSwapRateV2).mock.calls).toMatchSnapshot();

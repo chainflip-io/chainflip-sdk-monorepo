@@ -22,6 +22,7 @@ export const quoteQuerySchema = z
     amount: numericString.transform((n) => BigInt(n)),
     brokerCommissionBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
     dcaEnabled: booleanString,
+    autoSlippageEnabled: booleanString.optional(),
   })
   .transform((args, ctx) => {
     const { srcAsset, destAsset } = getInternalAssets(args, false);
@@ -50,6 +51,7 @@ export const quoteQuerySchema = z
       amount: args.amount,
       brokerCommissionBps: args.brokerCommissionBps,
       dcaEnabled: args.dcaEnabled,
+      autoSlippageEnabled: args.autoSlippageEnabled,
     };
   });
 

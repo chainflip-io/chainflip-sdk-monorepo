@@ -56,22 +56,26 @@ const undeployedLiquidityCache = new AsyncCacheMap({
   ttl: 60_000,
 });
 
-export const deployedLiquidityCache = new AsyncCacheMap({
+const deployedLiquidityCache = new AsyncCacheMap({
   fetch: (asset: InternalAsset) => getPoolDepth(asset, InternalAssets.Usdc, FULL_TICK_RANGE),
   resetExpiryOnLookup: false,
   ttl: 60_000,
 });
 
-export const getTotalLiquidity = async (fromAsset: InternalAsset, toAsset: InternalAsset) => {
+export const getUndeployedLiquidity = async (asset: InternalAsset) =>
+  undeployedLiquidityCache.get(asset);
+
+export const getDeployedLiquidity = async (fromAsset: InternalAsset, toAsset: InternalAsset) => {
   assert(
     (fromAsset === 'Usdc' && toAsset !== 'Usdc') || (fromAsset !== 'Usdc' && toAsset === 'Usdc'),
     'One and only one asset must be USDC',
   );
-  const undeployedLiquidity = await undeployedLiquidityCache.get(toAsset);
-  if (fromAsset === InternalAssets.Usdc) {
-    const deployedLiquidity = await deployedLiquidityCache.get(toAsset);
-    return deployedLiquidity.baseLiquidityAmount + undeployedLiquidity;
-  }
-  const deployedLiquidity = await deployedLiquidityCache.get(fromAsset);
-  return deployedLiquidity.quoteLiquidityAmount + undeployedLiquidity;
+  return fromAsset === InternalAssets.Usdc
+    ? (await deployedLiquidityCache.get(toAsset)).baseLiquidityAmount
+    : (await deployedLiquidityCache.get(fromAsset)).quoteLiquidityAmount;
+};
+
+export const getTotalLiquidity = async (fromAsset: InternalAsset, toAsset: InternalAsset) => {
+  const undeployedLiquidity = await getUndeployedLiquidity(toAsset);
+  return (await getDeployedLiquidity(fromAsset, toAsset)) + undeployedLiquidity;
 };

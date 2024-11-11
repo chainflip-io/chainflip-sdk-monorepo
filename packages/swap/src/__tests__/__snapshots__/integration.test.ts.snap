@@ -91,3 +91,97 @@ exports[`python integration test replies to a quote request 2`] = `
   ],
 ]
 `;
+
+exports[`python integration test replies to a quote request with v2 endpoint 1`] = `
+[
+  {
+    "depositAmount": "1000000000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "997901209876966295",
+    "estimatedDurationSeconds": 48,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 12,
+      "swap": 12,
+    },
+    "estimatedPrice": "997901209879.01209741975802419484",
+    "includedFees": [
+      {
+        "amount": "2000000",
+        "asset": "FLIP",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "998900109987003",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "50000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "intermediateAmount": "2000000000",
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "FLIP",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "999999999998000",
+          "asset": "FLIP",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 1992719.25,
+    "srcAsset": {
+      "asset": "FLIP",
+      "chain": "Ethereum",
+    },
+    "type": "REGULAR",
+  },
+]
+`;
+
+exports[`python integration test replies to a quote request with v2 endpoint 2`] = `
+[
+  [
+    {
+      "amount": 1000000000000000000n,
+      "brokerCommissionBps": undefined,
+      "destAsset": "Usdc",
+      "limitOrders": [
+        {
+          "LimitOrder": {
+            "base_asset": {
+              "asset": "FLIP",
+              "chain": "Ethereum",
+            },
+            "quote_asset": {
+              "asset": "USDC",
+              "chain": "Ethereum",
+            },
+            "sell_amount": "0xde0b6b3a7640000",
+            "side": "sell",
+            "tick": -1,
+          },
+        },
+      ],
+      "srcAsset": "Flip",
+    },
+  ],
+]
+`;
