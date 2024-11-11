@@ -59,13 +59,13 @@ const calculateSingleLegSlippage = async ({
   const baseSlippage = 1;
 
   const [timeSlippage, deployedLiquiditySlippage, undeployedLiquiditySlippage] = await Promise.all([
-    getDepositTimeAdjustment(srcAsset, isBoosted),
+    ignoreDepositTime ? 0 : getDepositTimeAdjustment(srcAsset, isBoosted),
     getLiquidityAdjustment(srcAsset, destAsset, amount * dcaChunks),
     getUndeployedLiquidityAdjustment(destAsset, amount * dcaChunks),
   ]);
 
   return deployedLiquiditySlippage
-    .plus(ignoreDepositTime ? 0 : timeSlippage)
+    .plus(timeSlippage)
     .plus(undeployedLiquiditySlippage)
     .plus(baseSlippage);
 };
@@ -117,6 +117,12 @@ export const calculateRecommendedSlippage = async ({
     ignoreDepositTime: true,
   });
 
-  const avgSlippage = calculatedSlippageLeg1.plus(calculatedSlippageLeg2).div(2).toNumber();
-  return Math.max(minSlippage, Math.round(avgSlippage * 4) / 4);
+  const avgSlippage = calculatedSlippageLeg1
+    .plus(calculatedSlippageLeg2)
+    .div(2)
+    .times(4)
+    .decimalPlaces(0)
+    .div(4) // Rounding to 0.25 steps
+    .toNumber();
+  return Math.max(minSlippage, avgSlippage);
 };
