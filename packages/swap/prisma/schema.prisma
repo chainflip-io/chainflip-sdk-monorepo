@@ -232,6 +232,8 @@ enum FailedSwapReason {
   TransactionTainted
   UnsupportedForTargetChain // CCM reason
   InsufficientDepositAmount // CCM reason
+  InvalidMetadata // CCM reason
+  InvalidDestinationAddress // CCM reason
 
   @@schema("public")
 }
