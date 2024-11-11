@@ -83,7 +83,7 @@ export default async function networkCcmFailed({ prisma, event, block }: EventHa
       })
     ).id;
     if (call.depositWitnesses.length > 1) {
-      logger.warn('more than 1 deposit found, using first deposit for amount and tx ref');
+      logger.warn('more than 1 deposit found, using first deposit for amount');
     }
     depositAmount = call.depositWitnesses[0].amount;
   }
