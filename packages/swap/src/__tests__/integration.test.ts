@@ -186,4 +186,32 @@ describe('python integration test', () => {
     expect(await response.data).toMatchSnapshot();
     expect(jest.mocked(getSwapRateV2).mock.calls).toMatchSnapshot();
   });
+
+  it('replies to a quote request with v2 endpoint', async () => {
+    await expectMesage('connected');
+
+    const query = {
+      srcAsset: Assets.FLIP,
+      srcChain: Chains.Ethereum,
+      destAsset: Assets.USDC,
+      destChain: Chains.Ethereum,
+      amount: '1000000000000000000',
+      autoSlippageEnabled: 'true',
+    } as QuoteQueryParams;
+    const params = new URLSearchParams(query as Record<string, any>);
+
+    jest.mocked(getSwapRateV2).mockResolvedValueOnce({
+      ingressFee: { amount: 2000000n, chain: 'Ethereum', asset: 'FLIP' },
+      networkFee: { amount: 998900109987003n, chain: 'Ethereum', asset: 'USDC' },
+      egressFee: { amount: 50000n, chain: 'Ethereum', asset: 'USDC' },
+      intermediateAmount: 2000000000n,
+      egressAmount: 997901209876966295n,
+      brokerFee: 0n,
+    });
+
+    const response = await axios.get(`${serverUrl}/v2/quote?${params.toString()}`);
+
+    expect(await response.data).toMatchSnapshot();
+    expect(jest.mocked(getSwapRateV2).mock.calls).toMatchSnapshot();
+  });
 });
