@@ -83,6 +83,7 @@ describe('ApiService', () => {
         {
           ...mockRoute,
           dcaEnabled: false,
+          autoSlippageEnabled: false,
         },
         {},
       );
@@ -98,6 +99,7 @@ describe('ApiService', () => {
           ...mockRoute,
           brokerCommissionBps: 15,
           dcaEnabled: false,
+          autoSlippageEnabled: false,
         },
         {},
       );
@@ -112,6 +114,7 @@ describe('ApiService', () => {
         {
           ...mockRoute,
           dcaEnabled: false,
+          autoSlippageEnabled: false,
         },
         {
           signal: new AbortController().signal,

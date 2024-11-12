@@ -127,6 +127,7 @@ export const openSwapDepositChannelSchema = z
         intermediateAmount: z.string().optional(),
         egressAmount: z.string(),
         estimatedPrice: z.string(),
+        recommendedSlippageTolerancePercent: z.number().optional(),
       })
       .optional(),
   })
