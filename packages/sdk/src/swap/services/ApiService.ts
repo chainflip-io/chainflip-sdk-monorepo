@@ -47,7 +47,7 @@ export const getQuoteV2: BackendQuery<
   QuoteRequest & {
     brokerCommissionBps?: number;
     dcaEnabled: boolean;
-    autoSlippageEnabled?: boolean;
+    autoSlippageEnabled: boolean;
   },
   QuoteResponseV2
 > = async (baseUrl, quoteRequest, { signal }) => {
