@@ -28,17 +28,6 @@ which it is deprecated.
   property now. The value is calculated based on current market conditions to prevent
   refunds while protecting against big price movements. It can be passed into
   the `requestDepositAddressV2` method to set the slippage tolerance for a swap.
-- Optional parameter to enable recommended slippage during SDK initialization. The default value
-  for this parameter is `false`.
-  ```ts
-  new ChainflipSDK({
-    ...
-    enabledFeatures: {
-      ...
-      experimentalRecommendedSlippage: true;
-    };
-  });
-  ```
 - `SwapSDK.prototype.getStatusV2` and `SwapSDK.prototype.getQuoteV2` return an
   `estimatedDurationsSeconds` property now. It includes the estimated time in seconds
   different stages of a swap:
