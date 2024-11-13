@@ -84,7 +84,7 @@ const vaultSwapParametersCodec = Struct({
     minPriceX128: u256,
   }),
   dcaParams: Option(Struct({ numberOfChunks: u32, chunkIntervalBlocks: u32 })),
-  boostFee: Option(u16),
+  boostFee: u16,
   brokerFees: Struct({ account: TsBytes(32), commissionBps: u16 }),
   affiliateFees: Vector(Struct({ account: u8, commissionBps: u16 })),
 });
@@ -124,7 +124,7 @@ export function encodeCfParameters(
       minPriceX128: BigInt(fillOrKillParams.minPriceX128),
     },
     dcaParams,
-    boostFee: boostFeeBps,
+    boostFee: boostFeeBps ?? 0,
     brokerFees: {
       account: isHex(brokerFees.account)
         ? hexToBytes(brokerFees.account)
