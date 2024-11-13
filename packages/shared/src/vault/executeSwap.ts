@@ -86,7 +86,7 @@ const vaultSwapParametersCodec = Struct({
   dcaParams: Option(Struct({ numberOfChunks: u32, chunkIntervalBlocks: u32 })),
   boostFee: u16,
   brokerFees: Struct({ account: TsBytes(32), commissionBps: u16 }),
-  affiliateFees: Vector(Struct({ account: u8, commissionBps: u16 })),
+  affiliateFees: Vector(Struct({ account: u8, commissionBps: u8 })),
 });
 
 const vaultCcmCfParametersCodec = Enum({
