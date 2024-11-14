@@ -105,7 +105,7 @@ export const calculateRecommendedSlippage = async ({
       }),
     ]);
 
-    recommendedSlippage += Math.max(leg1Adjustment + leg2Adjustment);
+    recommendedSlippage += Math.max(leg1Adjustment, leg2Adjustment);
   }
 
   // rounding to 0.25 steps
