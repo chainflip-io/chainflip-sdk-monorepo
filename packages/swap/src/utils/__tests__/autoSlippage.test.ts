@@ -93,24 +93,22 @@ describe(calculateRecommendedSlippage, () => {
   });
 
   it('should return the correct value for BTC -> ETH when swapping 5 BTC with 6 BTC deployed and 2 BTC undeployed', async () => {
-    jest.mocked(getUndeployedLiquidity).mockResolvedValueOnce(120_000n).mockResolvedValueOnce(40n);
-    jest.mocked(getDeployedLiquidity).mockResolvedValueOnce(360_000n).mockResolvedValueOnce(120n);
+    jest.mocked(getUndeployedLiquidity).mockResolvedValueOnce(120_000n).mockResolvedValueOnce(75n);
+    jest.mocked(getDeployedLiquidity).mockResolvedValueOnce(500_000n).mockResolvedValueOnce(120n);
     jest.mocked(getRequiredBlockConfirmations).mockResolvedValue(3);
 
     // Leg1
-    // baseSlippage: 1
-    // depositTimeSlippage: Max(600s * 3 / 60 * 0.05, 1) = 1
     // undeployedLiquiditySlippage: 0
-    // deployedLiquiditySlippage: 1.6666666666666
-    // Final: 3.6666666666666
+    // deployedLiquiditySlippage: 1.2
 
     // Leg2
-    // baseSlippage: 1
     // undeployedLiquiditySlippage: 0
     // deployedLiquiditySlippage: 1.6666666666666
-    // Final: 2.6666666666666
 
-    // Avg: 3.1666666666666
+    // baseSlippage: 1
+    // depositTimeSlippage: Max(600s * 3 / 60 * 0.05, 1) = 1
+    // maxLiquiditySlippage: 1.6666666666666
+    // Final: 3.6666666666666
 
     const result = await calculateRecommendedSlippage({
       srcAsset: 'Btc',
@@ -120,28 +118,26 @@ describe(calculateRecommendedSlippage, () => {
       dcaChunks: 100,
     });
 
-    expect(result).toEqual(3.25);
+    expect(result).toEqual(3.5);
   });
 
   it('should return the correct value for BTC -> ETH when swapping 5 BTC with 6 BTC deployed and 2 BTC undeployed and BOOSTED', async () => {
     jest.mocked(getUndeployedLiquidity).mockResolvedValueOnce(120_000n).mockResolvedValueOnce(40n);
-    jest.mocked(getDeployedLiquidity).mockResolvedValueOnce(360_000n).mockResolvedValueOnce(120n);
+    jest.mocked(getDeployedLiquidity).mockResolvedValueOnce(360_000n).mockResolvedValueOnce(200n);
     jest.mocked(getRequiredBlockConfirmations).mockResolvedValue(3);
 
     // Leg1
-    // baseSlippage: 1
-    // depositTimeSlippage: 600s * 1 / 60 * 0.05 = 0.5
     // undeployedLiquiditySlippage: 0
     // deployedLiquiditySlippage: 1.666666666666666
-    // Final: 3.166666666666666
 
     // Leg2
-    // baseSlippage: 1
     // undeployedLiquiditySlippage: 0
-    // deployedLiquiditySlippage: 1.666666666666666
-    // Final: 2.666666666666666
+    // deployedLiquiditySlippage: 1
 
-    // Avg: 2.91666666
+    // baseSlippage: 1
+    // depositTimeSlippage: 600s * 1 / 60 * 0.05 = 0.5
+    // maxLiquiditySlippage: 1.6666666666666
+    // Final: 3.1666666666666
 
     const result = await calculateRecommendedSlippage({
       srcAsset: 'Btc',
@@ -152,6 +148,6 @@ describe(calculateRecommendedSlippage, () => {
       boostFeeBps: 10,
     });
 
-    expect(result).toEqual(3);
+    expect(result).toEqual(3.25);
   });
 });

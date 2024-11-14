@@ -825,7 +825,7 @@ describe('server', () => {
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
-          recommendedSlippageTolerancePercent: 1.25,
+          recommendedSlippageTolerancePercent: 2,
           srcAsset: {
             asset: 'BTC',
             chain: 'Bitcoin',
@@ -900,7 +900,7 @@ describe('server', () => {
                 quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
               },
             ],
-            recommendedSlippageTolerancePercent: 1,
+            recommendedSlippageTolerancePercent: 1.5,
             srcAsset: {
               asset: 'BTC',
               chain: 'Bitcoin',
@@ -923,7 +923,7 @@ describe('server', () => {
             swap: 48,
           },
           estimatedPrice: '400.59347181012106824926',
-          recommendedSlippageTolerancePercent: 1.5,
+          recommendedSlippageTolerancePercent: 2,
           includedFees: [
             {
               amount: '40000',
@@ -1052,7 +1052,7 @@ describe('server', () => {
                 quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
               },
             ],
-            recommendedSlippageTolerancePercent: 1.25,
+            recommendedSlippageTolerancePercent: 1.5,
             srcAsset: {
               asset: 'BTC',
               chain: 'Bitcoin',
