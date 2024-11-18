@@ -1,4 +1,4 @@
-import { CfSwapRateV2, CfSwapRateV2Response, WsClient } from '@chainflip/rpc';
+import { CfSwapRateV3, WsClient } from '@chainflip/rpc';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { Server } from 'http';
 import request from 'supertest';
@@ -70,7 +70,7 @@ const mockRpcs = ({
   ingressFee: string;
   egressFee: string;
   mockedBoostPoolsDepth?: MockedBoostPoolsDepth;
-  swapRate?: CfSwapRateV2Response;
+  swapRate?: CfSwapRateV2Respons3;
 }) =>
   mockRpcResponse((url, data: any) => {
     if (data.method === 'cf_environment') {
@@ -79,7 +79,7 @@ const mockRpcs = ({
       });
     }
 
-    if (data.method === 'cf_swap_rate_v2') {
+    if (data.method === 'cf_swap_rate_v3') {
       return Promise.resolve({
         data: swapRate({ output: hexEncodeNumber(BigInt(data.params[2]) * 2n) }),
         ...swapRate,
@@ -290,7 +290,7 @@ describe('server', () => {
         ingress_fee: buildFee('Usdc', 2000000).bigint,
         intermediary: null,
         output: 0n,
-      } as CfSwapRateV2);
+      } as CfSwapRateV3);
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -316,7 +316,7 @@ describe('server', () => {
         ingress_fee: buildFee('Usdc', 2000000).bigint,
         intermediary: null,
         output: 599n,
-      } as CfSwapRateV2);
+      } as CfSwapRateV3);
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -337,12 +337,13 @@ describe('server', () => {
 
     it('gets the quote from USDC with a broker commission', async () => {
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 100000).bigint,
         egress_fee: buildFee('Eth', 25000).bigint,
         network_fee: buildFee('Usdc', 97902).bigint,
         ingress_fee: buildFee('Usdc', 2000000).bigint,
         intermediary: null,
         output: 999999999999975000n,
-      } as CfSwapRateV2);
+      } as CfSwapRateV3);
 
       mockRpcs({ egressFee: hexEncodeNumber(25000), ingressFee: hexEncodeNumber(2000000) });
 
@@ -360,21 +361,17 @@ describe('server', () => {
       expect(status).toBe(200);
 
       expect(sendSpy).toHaveBeenCalledWith(
-        'cf_swap_rate_v2',
+        'cf_swap_rate_v3',
         { asset: 'USDC', chain: 'Ethereum' },
         { asset: 'ETH', chain: 'Ethereum' },
         hexEncodeNumber(100_000_000), // deposit amount
+        10,
+        undefined,
         [],
       );
       expect(body).toMatchObject({
-        egressAmount: (1e18 - 25000 - 1e18 * 0.001).toString(),
+        egressAmount: (999999999999975000).toString(),
         includedFees: [
-          {
-            amount: '100000',
-            asset: 'USDC',
-            chain: 'Ethereum',
-            type: 'BROKER',
-          },
           {
             amount: '2000000',
             asset: 'USDC',
@@ -386,6 +383,12 @@ describe('server', () => {
             asset: 'USDC',
             chain: 'Ethereum',
             type: 'NETWORK',
+          },
+          {
+            amount: '100000',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'BROKER',
           },
           {
             amount: '25000',
@@ -414,19 +417,21 @@ describe('server', () => {
       const sendSpy = jest
         .spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
+          broker_commission: buildFee('Usdc', 0).bigint,
           ingress_fee: buildFee('Btc', 100000).bigint,
           network_fee: buildFee('Usdc', 1999500).bigint,
           egress_fee: buildFee('Eth', 25000).bigint,
           intermediary: BigInt(2000e6),
           output: 999999999999975000n,
-        } as CfSwapRateV2)
+        } as CfSwapRateV3)
         .mockResolvedValueOnce({
+          broker_commission: buildFee('Usdc', 0).bigint,
           ingress_fee: buildFee('Btc', 100000).bigint,
           network_fee: buildFee('Usdc', 1999500).bigint,
           egress_fee: buildFee('Eth', 25000).bigint,
           intermediary: BigInt(2000e6 - 5e5),
           output: 999999949999975000n,
-        } as CfSwapRateV2);
+        } as CfSwapRateV3);
 
       mockRpcs({
         ingressFee: hexEncodeNumber(100000),
@@ -455,19 +460,23 @@ describe('server', () => {
 
       // Normal swap
       expect(sendSpy).toHaveBeenCalledWith(
-        'cf_swap_rate_v2',
+        'cf_swap_rate_v3',
         { asset: 'BTC', chain: 'Bitcoin' },
         { asset: 'ETH', chain: 'Ethereum' },
         hexEncodeNumber(1e8), // deposit amount
+        undefined,
+        undefined,
         [],
       );
 
       // Boosted swap
       expect(sendSpy).toHaveBeenCalledWith(
-        'cf_swap_rate_v2',
+        'cf_swap_rate_v3',
         { asset: 'BTC', chain: 'Bitcoin' },
         { asset: 'ETH', chain: 'Ethereum' },
         hexEncodeNumber(99950000), // deposit amount - boost fee
+        undefined,
+        undefined,
         [],
       );
 
@@ -479,6 +488,7 @@ describe('server', () => {
       env.CHAINFLIP_NETWORK = 'backspin';
 
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Btc', 100000).bigint,
         network_fee: buildFee('Usdc', 1999500).bigint,
         egress_fee: buildFee('Eth', 25000).bigint,
@@ -514,10 +524,12 @@ describe('server', () => {
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(sendSpy).toHaveBeenNthCalledWith(
         1,
-        'cf_swap_rate_v2',
+        'cf_swap_rate_v3',
         { asset: 'BTC', chain: 'Bitcoin' },
         { asset: 'ETH', chain: 'Ethereum' },
         hexEncodeNumber(1e8), // deposit amount
+        undefined,
+        undefined,
         [],
       );
 
@@ -529,12 +541,13 @@ describe('server', () => {
       env.DISABLE_BOOST_QUOTING = true;
 
       jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Btc', 100000).bigint,
         network_fee: buildFee('Usdc', 1999500).bigint,
         egress_fee: buildFee('Eth', 25000).bigint,
         intermediary: BigInt(2000e6),
         output: 999999999999975000n,
-      } as CfSwapRateV2);
+      } as CfSwapRateV3);
 
       mockRpcs({
         ingressFee: hexEncodeNumber(100000),
@@ -567,6 +580,7 @@ describe('server', () => {
 
     it('gets the quote from USDC from the pools', async () => {
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Usdc', 2000000).bigint,
         network_fee: buildFee('Usdc', 98000).bigint,
         egress_fee: buildFee('Eth', 25000).bigint,
@@ -587,10 +601,12 @@ describe('server', () => {
 
       expect(status).toBe(200);
       expect(sendSpy).toHaveBeenCalledWith(
-        'cf_swap_rate_v2',
+        'cf_swap_rate_v3',
         { asset: 'USDC', chain: 'Ethereum' },
         { asset: 'ETH', chain: 'Ethereum' },
-        hexEncodeNumber(100e6), // deposit amount
+        hexEncodeNumber(100e6), // deposit amount,
+        undefined,
+        undefined,
         [],
       );
       expect(body).toMatchObject({
@@ -647,6 +663,7 @@ describe('server', () => {
       });
 
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Eth', 25000).bigint,
         egress_fee: buildFee('Usdc', 0).bigint,
         network_fee: buildFee('Usdc', 100100).bigint,
@@ -704,12 +721,13 @@ describe('server', () => {
 
     it('gets the quote with intermediate amount', async () => {
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
         intermediary: BigInt(2000e6),
         output: 999999999999975000n,
         egress_fee: buildFee('Eth', 25000).bigint,
         ingress_fee: buildFee('Flip', 2000000).bigint,
         network_fee: buildFee('Usdc', 2000000).bigint,
-      } as CfSwapRateV2);
+      } as CfSwapRateV3);
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -771,7 +789,8 @@ describe('server', () => {
         ingress_fee: buildFee('Eth', 169953533800000).bigint,
         network_fee: buildFee('Usdc', 1231422).bigint,
         egress_fee: buildFee('Usdc', 752586).bigint,
-      } as CfSwapRateV2);
+        broker_commission: buildFee('Usdc', 0).bigint,
+      } as CfSwapRateV3);
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -790,12 +809,13 @@ describe('server', () => {
 
     it('gets the quote with low liquidity warning', async () => {
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Flip', 2000000).bigint,
         network_fee: buildFee('Usdc', 2994000).bigint,
         egress_fee: buildFee('Eth', 25000).bigint,
         intermediary: BigInt(2994e6),
         output: 1999999999999975000n,
-      } as CfSwapRateV2);
+      } as CfSwapRateV3);
 
       mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_environment') {
@@ -808,7 +828,7 @@ describe('server', () => {
           });
         }
 
-        if (data.method === 'cf_swap_rate_v2') {
+        if (data.method === 'cf_swap_rate_v3') {
           return Promise.resolve({
             data: swapRate({
               output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
@@ -856,6 +876,7 @@ describe('server', () => {
 
     it('gets the quote for deprecated params without the chain', async () => {
       jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Flip', 2000000).bigint,
         network_fee: buildFee('Usdc', 2000000).bigint,
         egress_fee: buildFee('Eth', 25000).bigint,

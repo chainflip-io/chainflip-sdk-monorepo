@@ -2,7 +2,7 @@ import { WsClient, RpcParams } from '@chainflip/rpc';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import WebSocket from 'ws';
 import { InternalAsset, getAssetAndChain } from '@/shared/enums';
-import { getPipAmountFromAmount } from '@/shared/functions';
+import { DcaParams } from '@/shared/schemas';
 import { memoize } from './function';
 import env from '../config/env';
 
@@ -11,85 +11,53 @@ const initializeClient = memoize(() => new WsClient(env.RPC_NODE_WSS_URL, WebSoc
 export type SwapRateArgs = {
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
-  amount: bigint;
+  depositAmount: bigint;
   limitOrders?: LimitOrders;
   brokerCommissionBps?: number;
+  dcaParams?: DcaParams;
 };
 
 export type LimitOrders = RpcParams['cf_swap_rate_v2'][3];
 
-export const getDeductedBrokerFeeOutput = ({
-  destAsset,
-  inputAmount,
-  intermediateAmount,
-  egressAmount,
-  brokerCommissionBps = 0,
-  egressFee,
-}: {
-  destAsset: InternalAsset;
-  inputAmount: bigint;
-  intermediateAmount: bigint | null;
-  egressAmount: bigint;
-  brokerCommissionBps?: number;
-  egressFee: bigint;
-}) => {
-  let usdcAmount = intermediateAmount ?? inputAmount;
-  if (destAsset === 'Usdc') {
-    usdcAmount = egressAmount;
-  }
-
-  const brokerFee = BigInt(getPipAmountFromAmount(usdcAmount, brokerCommissionBps));
-
-  return {
-    intermediateAmount: intermediateAmount ? intermediateAmount - brokerFee : undefined,
-    egressAmount:
-      egressAmount - getPipAmountFromAmount(egressAmount + egressFee, brokerCommissionBps),
-    brokerFee,
-  };
-};
-
-export const getSwapRateV2 = async ({
+export const getSwapRateV3 = async ({
   srcAsset,
   destAsset,
-  amount,
+  depositAmount,
   limitOrders,
+  dcaParams,
   brokerCommissionBps,
 }: SwapRateArgs) => {
   const client = initializeClient();
+  const dcaParameters = dcaParams
+    ? {
+        number_of_chunks: dcaParams.numberOfChunks,
+        chunk_interval: dcaParams.chunkIntervalBlocks,
+      }
+    : undefined;
 
   const {
-    intermediary: intermediateAmount,
-    output: egressAmount,
-    egress_fee: egressFee,
     ingress_fee: ingressFee,
     network_fee: networkFee,
+    egress_fee: egressFee,
+    intermediary: intermediateAmount,
+    output: egressAmount,
+    broker_commission: brokerFee,
   } = await client.sendRequest(
-    'cf_swap_rate_v2',
+    'cf_swap_rate_v3',
     getAssetAndChain(srcAsset),
     getAssetAndChain(destAsset),
-    hexEncodeNumber(amount),
+    hexEncodeNumber(depositAmount),
+    brokerCommissionBps,
+    dcaParameters,
     limitOrders,
   );
 
-  const {
-    egressAmount: egressAmountExcludingBrokerFee,
-    intermediateAmount: intermediateAmountExcludingBrokerFee,
-    brokerFee,
-  } = getDeductedBrokerFeeOutput({
-    inputAmount: amount,
-    destAsset,
-    intermediateAmount,
-    egressAmount,
-    brokerCommissionBps,
-    egressFee: egressFee.amount,
-  });
-
   return {
-    intermediateAmount: intermediateAmountExcludingBrokerFee,
-    egressAmount: egressAmountExcludingBrokerFee,
-    egressFee,
     ingressFee,
     networkFee,
     brokerFee,
+    egressFee,
+    intermediateAmount,
+    egressAmount,
   };
 };

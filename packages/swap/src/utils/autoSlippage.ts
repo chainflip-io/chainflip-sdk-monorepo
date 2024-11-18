@@ -70,7 +70,7 @@ export const calculateRecommendedSlippage = async ({
 }: {
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
-  intermediateAmount?: bigint;
+  intermediateAmount?: bigint | null;
   egressAmount: bigint;
   boostFeeBps?: number;
   dcaChunks: number;

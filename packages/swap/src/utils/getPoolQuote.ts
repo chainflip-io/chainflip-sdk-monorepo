@@ -1,12 +1,12 @@
 import { getAssetAndChain, getInternalAsset } from '@/shared/enums';
 import { getPipAmountFromAmount } from '@/shared/functions';
-import { Quote, QuoteType } from '@/shared/schemas';
+import { DcaParams, Quote, QuoteType } from '@/shared/schemas';
 import { estimateSwapDuration, getSwapPrice } from '@/swap/utils/swap';
 import { calculateRecommendedSlippage } from './autoSlippage';
 import { buildFee, getPoolFees } from './fees';
 import { getEgressFee, getMinimumEgressAmount } from './rpc';
 import ServiceError from './ServiceError';
-import { getSwapRateV2, LimitOrders } from './statechain';
+import { getSwapRateV3, LimitOrders } from './statechain';
 import { InternalAsset, Pool } from '../client';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 
@@ -18,8 +18,7 @@ export default async function getPoolQuote<T extends QuoteType>({
   boostFeeBps,
   brokerCommissionBps,
   pools,
-  quoteType,
-  dcaChunks,
+  dcaParams,
   autoSlippageEnabled,
 }: {
   srcAsset: InternalAsset;
@@ -29,34 +28,32 @@ export default async function getPoolQuote<T extends QuoteType>({
   limitOrders?: LimitOrders;
   boostFeeBps?: number;
   pools: Pool[];
-  quoteType: T;
-  dcaChunks: number;
+  dcaParams?: DcaParams;
   autoSlippageEnabled: boolean;
 }): Promise<Extract<Quote, { type: T }>> {
   const includedFees = [];
-  let swapInputAmount = depositAmount;
+  let cfRateInputAmount = depositAmount;
 
+  // After this ticket, boost fee should be included in the response so dont have to calculate it ourselves
+  // https://linear.app/chainflip/issue/PRO-1370/include-boost-fees-in-quote-from-cf-swap-rate-v2
   if (boostFeeBps) {
-    const boostFee = getPipAmountFromAmount(swapInputAmount, boostFeeBps);
+    const boostFee = getPipAmountFromAmount(depositAmount, boostFeeBps);
     includedFees.push(buildFee(srcAsset, 'BOOST', boostFee));
-    swapInputAmount -= boostFee;
+    cfRateInputAmount -= boostFee;
   }
 
   const { egressFee, ingressFee, networkFee, egressAmount, intermediateAmount, brokerFee } =
-    await getSwapRateV2({
+    await getSwapRateV3({
       srcAsset,
       destAsset,
-      amount: swapInputAmount,
+      depositAmount: cfRateInputAmount,
       limitOrders,
       brokerCommissionBps,
+      dcaParams,
     });
 
-  if (ingressFee) {
-    swapInputAmount -= ingressFee.amount;
-  }
-  if (brokerFee) {
-    includedFees.push(buildFee('Usdc', 'BROKER', brokerFee));
-  }
+  const swapInputAmount = cfRateInputAmount - ingressFee.amount;
+  const swapOutputAmount = egressAmount + egressFee.amount;
 
   if (egressAmount === 0n) {
     if (networkFee.amount === 0n) {
@@ -77,7 +74,6 @@ export default async function getPoolQuote<T extends QuoteType>({
     );
   }
 
-  const swapOutputAmount = egressAmount + egressFee.amount;
   const lowLiquidityWarning = await checkPriceWarning({
     srcAsset,
     destAsset,
@@ -88,6 +84,7 @@ export default async function getPoolQuote<T extends QuoteType>({
   includedFees.push(
     buildFee(getInternalAsset(ingressFee), 'INGRESS', ingressFee.amount),
     buildFee('Usdc', 'NETWORK', networkFee.amount),
+    brokerFee.amount > 0n && buildFee('Usdc', 'BROKER', brokerFee.amount),
     buildFee(getInternalAsset(egressFee), 'EGRESS', egressFee.amount),
   );
 
@@ -105,6 +102,9 @@ export default async function getPoolQuote<T extends QuoteType>({
     boosted: Boolean(boostFeeBps),
   });
 
+  const dcaChunks = dcaParams?.numberOfChunks ?? 1;
+  const quoteType = dcaChunks > 1 ? 'DCA' : 'REGULAR';
+
   return {
     intermediateAmount: intermediateAmount?.toString(),
     egressAmount: egressAmount.toString(),
@@ -118,7 +118,7 @@ export default async function getPoolQuote<T extends QuoteType>({
           dcaChunks,
         })
       : 2, // This is temporary until we remove the request param flag
-    includedFees,
+    includedFees: includedFees.filter(Boolean),
     lowLiquidityWarning,
     poolInfo,
     estimatedDurationsSeconds: estimatedDurations.durations,
