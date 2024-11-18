@@ -1,4 +1,4 @@
-import { CfSwapRateV3, WsClient } from '@chainflip/rpc';
+import { CfSwapRateV3, CfSwapRateV3Response, WsClient } from '@chainflip/rpc';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { Server } from 'http';
 import request from 'supertest';
@@ -70,7 +70,7 @@ const mockRpcs = ({
   ingressFee: string;
   egressFee: string;
   mockedBoostPoolsDepth?: MockedBoostPoolsDepth;
-  swapRate?: CfSwapRateV2Respons3;
+  swapRate?: CfSwapRateV3Response;
 }) =>
   mockRpcResponse((url, data: any) => {
     if (data.method === 'cf_environment') {

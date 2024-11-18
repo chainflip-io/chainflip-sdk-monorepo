@@ -1077,7 +1077,7 @@ describe('server', () => {
           },
         },
       ]);
-      // expect(sendSpy).toHaveBeenCalledTimes(4);
+      expect(sendSpy).toHaveBeenCalledTimes(4);
       expect(sendSpy).toHaveBeenNthCalledWith(
         1,
         'cf_swap_rate_v3',
