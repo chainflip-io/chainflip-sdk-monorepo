@@ -84,7 +84,7 @@ export default async function getPoolQuote<T extends QuoteType>({
   includedFees.push(
     buildFee(getInternalAsset(ingressFee), 'INGRESS', ingressFee.amount),
     buildFee('Usdc', 'NETWORK', networkFee.amount),
-    brokerFee.amount > 0n && buildFee('Usdc', 'BROKER', brokerFee.amount),
+    ...[brokerFee.amount > 0n && buildFee('Usdc', 'BROKER', brokerFee.amount)].filter(Boolean),
     buildFee(getInternalAsset(egressFee), 'EGRESS', egressFee.amount),
   );
 
@@ -118,7 +118,7 @@ export default async function getPoolQuote<T extends QuoteType>({
           dcaChunks,
         })
       : 2, // This is temporary until we remove the request param flag
-    includedFees: includedFees.filter(Boolean),
+    includedFees,
     lowLiquidityWarning,
     poolInfo,
     estimatedDurationsSeconds: estimatedDurations.durations,
