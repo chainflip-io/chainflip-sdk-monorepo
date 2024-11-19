@@ -127,13 +127,6 @@ const mockRpcs = ({
       });
     }
 
-    if (data.method === 'cf_swap_rate_v2') {
-      return Promise.resolve({
-        data: swapRate({ output: hexEncodeNumber(BigInt(data.params[2]) * 2n) }),
-        ...swapRate,
-      });
-    }
-
     if (data.method === 'cf_boost_pools_depth') {
       return Promise.resolve({
         data: boostPoolsDepth(mockedBoostPoolsDepth),
