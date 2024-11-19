@@ -10,7 +10,6 @@ import {
   cfPoolDepth,
   environment,
   mockRpcResponse,
-  swapRate,
 } from '@/shared/tests/fixtures';
 import prisma, { InternalAsset } from '../../../client';
 import env from '../../../config/env';
