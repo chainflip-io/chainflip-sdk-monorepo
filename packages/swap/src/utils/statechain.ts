@@ -47,7 +47,7 @@ export const getSwapRateV3 = async ({
     getAssetAndChain(srcAsset),
     getAssetAndChain(destAsset),
     hexEncodeNumber(depositAmount),
-    brokerCommissionBps,
+    brokerCommissionBps ?? 0,
     dcaParameters,
     limitOrders,
   );
