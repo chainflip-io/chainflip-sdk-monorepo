@@ -6,6 +6,7 @@ import { Server } from 'socket.io';
 import { io, Socket } from 'socket.io-client';
 import { setTimeout as sleep } from 'timers/promises';
 import { promisify } from 'util';
+import { AddressInfo } from 'ws';
 import { MAX_TICK, MIN_TICK } from '@/shared/consts';
 import { assetConstants, getAssetAndChain } from '@/shared/enums';
 import env from '@/swap/config/env';
@@ -87,7 +88,7 @@ describe(Quoter, () => {
         },
       });
 
-      const { port } = server['httpServer'].address();
+      const { port } = server['httpServer'].address() as AddressInfo;
       const timestamp = Date.now();
 
       const socket = io(`http://localhost:${port}`, {
