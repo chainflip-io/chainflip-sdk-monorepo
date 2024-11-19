@@ -1,6 +1,6 @@
 import { getAssetAndChain, getInternalAsset } from '@/shared/enums';
 import { getPipAmountFromAmount } from '@/shared/functions';
-import { DcaParams, Quote, QuoteType } from '@/shared/schemas';
+import { DcaParams, Quote } from '@/shared/schemas';
 import { estimateSwapDuration, getSwapPrice } from '@/swap/utils/swap';
 import { calculateRecommendedSlippage } from './autoSlippage';
 import { buildFee, getPoolFees } from './fees';
@@ -10,7 +10,7 @@ import { getSwapRateV3, LimitOrders } from './statechain';
 import { InternalAsset, Pool } from '../client';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 
-export default async function getPoolQuote<T extends QuoteType>({
+export default async function getPoolQuote({
   srcAsset,
   destAsset,
   depositAmount,
@@ -30,7 +30,7 @@ export default async function getPoolQuote<T extends QuoteType>({
   pools: Pool[];
   dcaParams?: DcaParams;
   autoSlippageEnabled: boolean;
-}): Promise<Extract<Quote, { type: T }>> {
+}) {
   const includedFees = [];
   let cfRateInputAmount = depositAmount;
 
@@ -84,9 +84,11 @@ export default async function getPoolQuote<T extends QuoteType>({
   includedFees.push(
     buildFee(getInternalAsset(ingressFee), 'INGRESS', ingressFee.amount),
     buildFee('Usdc', 'NETWORK', networkFee.amount),
-    ...[brokerFee.amount > 0n && buildFee('Usdc', 'BROKER', brokerFee.amount)].filter(Boolean),
-    buildFee(getInternalAsset(egressFee), 'EGRESS', egressFee.amount),
   );
+  if (brokerFee.amount > 0n) {
+    includedFees.push(buildFee('Usdc', 'BROKER', brokerFee.amount));
+  }
+  includedFees.push(buildFee(getInternalAsset(egressFee), 'EGRESS', egressFee.amount));
 
   const poolInfo = getPoolFees(srcAsset, destAsset, swapInputAmount, intermediateAmount, pools).map(
     ({ type, ...fee }, i) => ({
@@ -133,5 +135,5 @@ export default async function getPoolQuote<T extends QuoteType>({
     srcAsset: getAssetAndChain(srcAsset),
     destAsset: getAssetAndChain(destAsset),
     depositAmount: depositAmount.toString(),
-  } as Extract<Quote, { type: T }>;
+  } as Quote;
 }

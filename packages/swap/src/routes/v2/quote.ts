@@ -168,25 +168,17 @@ export const generateQuotes = async ({
     autoSlippageEnabled,
   };
   const dcaQuoteArgs = { dcaParams, ...quoteArgs };
+  const queryDca = dcaParams && dcaParams.numberOfChunks > 1;
 
-  const [quoteResult, boostedQuoteResult] = await Promise.allSettled([
-    getPoolQuote(quoteArgs),
-    estimatedBoostFeeBps && getPoolQuote({ ...quoteArgs, boostFeeBps: estimatedBoostFeeBps }),
-  ]);
-
-  const [dcaQuoteResult, dcaBoostedQuoteResult] = await Promise.allSettled([
-    dcaQuoteParams &&
-      getPoolQuote({
-        ...quoteArgs,
-        dcaParams,
-      }),
-    dcaQuoteParams &&
-      estimatedBoostFeeBps &&
-      getPoolQuote({
-        ...dcaQuoteArgs,
-        boostFeeBps: estimatedBoostFeeBps,
-      }),
-  ]);
+  const [quoteResult, boostedQuoteResult, dcaQuoteResult, dcaBoostedQuoteResult] =
+    await Promise.allSettled([
+      getPoolQuote(quoteArgs),
+      estimatedBoostFeeBps && getPoolQuote({ ...quoteArgs, boostFeeBps: estimatedBoostFeeBps }),
+      queryDca && getPoolQuote(dcaQuoteArgs),
+      queryDca &&
+        estimatedBoostFeeBps &&
+        getPoolQuote({ ...dcaQuoteArgs, boostFeeBps: estimatedBoostFeeBps }),
+    ]);
 
   if (dcaQuoteResult.status === 'rejected') {
     throw dcaQuoteResult.reason;
