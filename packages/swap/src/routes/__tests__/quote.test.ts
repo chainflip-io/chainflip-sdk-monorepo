@@ -464,7 +464,7 @@ describe('server', () => {
         { asset: 'BTC', chain: 'Bitcoin' },
         { asset: 'ETH', chain: 'Ethereum' },
         hexEncodeNumber(1e8), // deposit amount
-        undefined,
+        0,
         undefined,
         [],
       );
@@ -475,7 +475,7 @@ describe('server', () => {
         { asset: 'BTC', chain: 'Bitcoin' },
         { asset: 'ETH', chain: 'Ethereum' },
         hexEncodeNumber(99950000), // deposit amount - boost fee
-        undefined,
+        0,
         undefined,
         [],
       );
@@ -528,7 +528,7 @@ describe('server', () => {
         { asset: 'BTC', chain: 'Bitcoin' },
         { asset: 'ETH', chain: 'Ethereum' },
         hexEncodeNumber(1e8), // deposit amount
-        undefined,
+        0,
         undefined,
         [],
       );
@@ -605,7 +605,7 @@ describe('server', () => {
         { asset: 'USDC', chain: 'Ethereum' },
         { asset: 'ETH', chain: 'Ethereum' },
         hexEncodeNumber(100e6), // deposit amount,
-        undefined,
+        0,
         undefined,
         [],
       );

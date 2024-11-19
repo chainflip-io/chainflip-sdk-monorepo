@@ -653,7 +653,7 @@ describe('server', () => {
         { asset: 'ETH', chain: 'Ethereum' },
         { asset: 'USDC', chain: 'Ethereum' },
         '0xde0b6b3a7640000', // 1e18
-        undefined,
+        0,
         undefined,
         [],
       );
@@ -663,7 +663,7 @@ describe('server', () => {
         { asset: 'ETH', chain: 'Ethereum' },
         { asset: 'USDC', chain: 'Ethereum' },
         '0xde0b6b3a7640000', // 1e18
-        undefined,
+        0,
         {
           number_of_chunks: 4,
           chunk_interval: 2,

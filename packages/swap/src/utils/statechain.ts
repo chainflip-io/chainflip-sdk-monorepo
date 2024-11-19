@@ -17,7 +17,7 @@ export type SwapRateArgs = {
   dcaParams?: DcaParams;
 };
 
-export type LimitOrders = RpcParams['cf_swap_rate_v3'][3];
+export type LimitOrders = RpcParams['cf_swap_rate_v3'][5];
 
 export const getSwapRateV3 = async ({
   srcAsset,
