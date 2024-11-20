@@ -32,20 +32,20 @@ describe(calculateRecommendedSlippage, () => {
     expect(result).toEqual(0.5);
   });
 
-  it('should return the correct value for ETH -> USDC for amount >20% of deployed liquidity', async () => {
+  it('should return the correct value for ETH -> USDC for amount >50% of deployed liquidity', async () => {
     jest.mocked(getUndeployedLiquidity).mockResolvedValue(500n);
     jest.mocked(getDeployedLiquidity).mockResolvedValue(1000n);
     jest.mocked(getRequiredBlockConfirmations).mockResolvedValue(8);
 
     // baseSlippage: 1
     // depositTimeSlippage: 12s * 8 / 60 * 0.05 = 0.08
-    // undeployedLiquiditySlippage: -0.5
-    // deployedLiquiditySlippage: 0.6
+    // undeployedLiquiditySlippage: 0
+    // deployedLiquiditySlippage: 0.275
 
     const result = await calculateRecommendedSlippage({
       srcAsset: 'Eth',
       destAsset: 'Usdc',
-      egressAmount: 300n,
+      egressAmount: 550n,
       dcaChunks: 1,
     });
 
@@ -60,7 +60,7 @@ describe(calculateRecommendedSlippage, () => {
     // baseSlippage: 1
     // depositTimeSlippage: 12s * 8 / 60 * 0.05 = 0.08
     // undeployedLiquiditySlippage: 0
-    // deployedLiquiditySlippage: 2.6
+    // deployedLiquiditySlippage: 0.65
 
     const result = await calculateRecommendedSlippage({
       srcAsset: 'Eth',
@@ -69,7 +69,7 @@ describe(calculateRecommendedSlippage, () => {
       dcaChunks: 1,
     });
 
-    expect(result).toEqual(3.75);
+    expect(result).toEqual(1.75);
   });
 
   it('should return the correct value for ETH -> USDC for amount > undeployed liquidity but less than deployed liquidity', async () => {
@@ -79,8 +79,8 @@ describe(calculateRecommendedSlippage, () => {
 
     // baseSlippage: 1
     // depositTimeSlippage: 12s * 8 / 60 * 0.05 = 0.08
-    // undeployedLiquiditySlippage: -0.0625
-    // deployedLiquiditySlippage: 1.6
+    // undeployedLiquiditySlippage: 0
+    // deployedLiquiditySlippage: 0.4
 
     const result = await calculateRecommendedSlippage({
       srcAsset: 'Eth',
@@ -89,7 +89,7 @@ describe(calculateRecommendedSlippage, () => {
       dcaChunks: 1,
     });
 
-    expect(result).toEqual(2.5); // 2.6175 rounded
+    expect(result).toEqual(1.5); // 1.48 rounded
   });
 
   it('should return the correct value for BTC -> ETH when swapping 5 BTC with 6 BTC deployed and 2 BTC undeployed', async () => {
@@ -99,16 +99,16 @@ describe(calculateRecommendedSlippage, () => {
 
     // Leg1
     // undeployedLiquiditySlippage: 0
-    // deployedLiquiditySlippage: 1.2
+    // deployedLiquiditySlippage: 0.3
 
     // Leg2
     // undeployedLiquiditySlippage: 0
-    // deployedLiquiditySlippage: 1.6666666666666
+    // deployedLiquiditySlippage: 0.4166666666666667
 
     // baseSlippage: 1
     // depositTimeSlippage: Max(600s * 3 / 60 * 0.05, 1) = 1
-    // maxLiquiditySlippage: 1.6666666666666
-    // Final: 3.6666666666666
+    // maxLiquiditySlippage: 0.4166666666666667
+    // Final: 2.4166666666666667
 
     const result = await calculateRecommendedSlippage({
       srcAsset: 'Btc',
@@ -118,7 +118,7 @@ describe(calculateRecommendedSlippage, () => {
       dcaChunks: 100,
     });
 
-    expect(result).toEqual(3.5);
+    expect(result).toEqual(2.5);
   });
 
   it('should return the correct value for BTC -> ETH when swapping 5 BTC with 6 BTC deployed and 2 BTC undeployed and BOOSTED', async () => {
@@ -128,16 +128,16 @@ describe(calculateRecommendedSlippage, () => {
 
     // Leg1
     // undeployedLiquiditySlippage: 0
-    // deployedLiquiditySlippage: 1.666666666666666
+    // deployedLiquiditySlippage: 0.4166666666666667
 
     // Leg2
     // undeployedLiquiditySlippage: 0
-    // deployedLiquiditySlippage: 1
+    // deployedLiquiditySlippage: 0
 
     // baseSlippage: 1
     // depositTimeSlippage: 600s * 1 / 60 * 0.05 = 0.5
-    // maxLiquiditySlippage: 1.6666666666666
-    // Final: 3.1666666666666
+    // maxLiquiditySlippage: 0.4166666666666667
+    // Final: 1.9166666667
 
     const result = await calculateRecommendedSlippage({
       srcAsset: 'Btc',
@@ -148,6 +148,6 @@ describe(calculateRecommendedSlippage, () => {
       boostFeeBps: 10,
     });
 
-    expect(result).toEqual(3.25);
+    expect(result).toEqual(2);
   });
 });
