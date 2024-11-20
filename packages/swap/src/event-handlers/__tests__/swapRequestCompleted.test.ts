@@ -265,7 +265,7 @@ describe(swapRequestCompleted, () => {
     expect(swapRequest.quote).toBeFalsy();
   });
 
-  it('does not update associated quote if swap was (partially) refunded', async () => {
+  it('updates swap request and associated quote if swap was (partially) refunded', async () => {
     const channel = await createDepositChannel({
       id: 100n,
       srcChain: 'Ethereum',
@@ -344,6 +344,15 @@ describe(swapRequestCompleted, () => {
       },
     });
 
-    expect(swapRequest.quote).toBeFalsy();
+    expect(swapRequest).toMatchSnapshot({
+      id: expect.any(BigInt),
+      refundEgressId: expect.any(BigInt),
+      quote: {
+        id: expect.any(Number),
+        swapDepositChannelId: expect.any(BigInt),
+        swapRequestId: expect.any(BigInt),
+      },
+    });
+    expect(swapRequest.quote?.refundedAt).toBeTruthy();
   });
 });
