@@ -444,6 +444,7 @@ model Quote {
   executedPrice                       Decimal?
   executedSlippagePercent             Decimal?
   recommendedSlippageTolerancePercent Decimal?
+  refundedAt                          DateTime?
 
   @@schema("private")
 }
