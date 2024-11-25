@@ -253,6 +253,8 @@ model FailedSwap {
   failedBlockIndex      String
   ccmGasBudget          Decimal?            @db.Decimal(30, 0)
   ccmMessage            String?
+  refundBroadcast       Broadcast?          @relation(fields: [refundBroadcastId], references: [id])
+  refundBroadcastId     BigInt?
 
   @@index([swapDepositChannelId])
   @@schema("public")
@@ -337,6 +339,7 @@ model Broadcast {
   transactionRef      String?       @unique
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @default(now()) @updatedAt
+  failedSwaps         FailedSwap[]
 
   @@unique([nativeId, chain])
   @@schema("public")
