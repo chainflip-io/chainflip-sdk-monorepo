@@ -87,6 +87,7 @@ export enum FailureMode {
   SwapEgressIgnored = 'SWAP_OUTPUT_TOO_SMALL',
   RefundEgressIgnored = 'REFUND_OUTPUT_TOO_SMALL',
   BroadcastAborted = 'SENDING_FAILED',
+  TransactionTainted = 'TRANSACTION_TAINTED',
 }
 
 export const getSwapPrice = (

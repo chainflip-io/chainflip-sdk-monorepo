@@ -684,7 +684,7 @@ describe('server', () => {
     it(`retrieves a swap in ${StateV2.Sent} status`, async () => {
       jest.mocked(getPendingBroadcast).mockResolvedValueOnce({
         tx_ref: '0xdeadbeef',
-      });
+      } as any);
 
       await processEvents(swapEvents.slice(0, 8));
 
@@ -748,6 +748,183 @@ describe('server', () => {
           name: 'BelowMinimumDeposit',
           message: 'The deposited amount was below the minimum required',
         },
+      });
+    });
+
+    it(`retrieves a swap in ${StateV2.Failed} status (deposit ignored w/ refund)`, async () => {
+      await processEvents([
+        {
+          id: '0003614786-000494-09fd9',
+          indexInBlock: 494,
+          callId: '0003614786-000245-09fd9',
+          name: 'Swapping.SwapDepositAddressReady',
+          args: {
+            boostFee: 0,
+            channelId: '875',
+            sourceAsset: { __kind: 'Btc' },
+            affiliateFees: [],
+            depositAddress: {
+              value:
+                '0x74623170757271346b6e32636c38636c746a6d733374776d6c6a706b727563666a78783374687338796e6d736767396e6b78327970796471783965367932',
+              __kind: 'Btc',
+            },
+            destinationAsset: { __kind: 'Eth' },
+            refundParameters: {
+              minPrice: '17490603648355810813658618490882604478133626649690',
+              refundAddress: {
+                value:
+                  '0x746231713738706a6c6c787a6d37303639666a386d773375643064766b3464386e326d7571733771326b',
+                __kind: 'Btc',
+              },
+              retryDuration: 150,
+            },
+            channelOpeningFee: '10000',
+            destinationAddress: {
+              value: '0xac16d8adbd217576a540a625e873448cecdb21e2',
+              __kind: 'Eth',
+            },
+            brokerCommissionRate: 0,
+            sourceChainExpiryBlock: '3485883',
+          },
+        },
+        {
+          id: '0003614958-000465-1d0a6',
+          indexInBlock: 465,
+          callId: '0003614958-000231-1d0a6',
+          name: 'BitcoinIngressEgress.DepositIgnored',
+          args: {
+            asset: { __kind: 'Btc' },
+            amount: '1000000',
+            reason: { __kind: 'TransactionTainted' },
+            depositAddress: {
+              value: '0xe0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
+              __kind: 'Taproot',
+            },
+            depositDetails: {
+              id: {
+                txId: '0x78b3828e63d9300eedcfeaed28e7416764019a62066b945e63624ac27dc5cc9d',
+                vout: 0,
+              },
+              amount: '1000000',
+              depositAddress: {
+                pubkeyX: '0xe9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833',
+                scriptPath: {
+                  salt: 875,
+                  tapleafHash: '0x4f99f5996889dd9d5332ab2be83e0ce478bb03420dbc8cea7aaaa14e5ef77f86',
+                  unlockScript: {
+                    bytes:
+                      '0x026b037520e9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833ac',
+                  },
+                  tweakedPubkeyBytes:
+                    '0x03e0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
+                },
+              },
+            },
+          },
+        },
+        {
+          id: '0003614958-001117-1d0a6',
+          indexInBlock: 1117,
+          callId: null,
+          name: 'BitcoinIngressEgress.TaintedTransactionRejected',
+          args: {
+            txId: {
+              id: {
+                txId: '0x78b3828e63d9300eedcfeaed28e7416764019a62066b945e63624ac27dc5cc9d',
+                vout: 0,
+              },
+              amount: '1000000',
+              depositAddress: {
+                pubkeyX: '0xe9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833',
+                scriptPath: {
+                  salt: 875,
+                  tapleafHash: '0x4f99f5996889dd9d5332ab2be83e0ce478bb03420dbc8cea7aaaa14e5ef77f86',
+                  unlockScript: {
+                    bytes:
+                      '0x026b037520e9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833ac',
+                  },
+                  tweakedPubkeyBytes:
+                    '0x03e0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
+                },
+              },
+            },
+            broadcastId: 1226,
+          },
+        },
+        {
+          id: '0003615072-001060-7ee49',
+          indexInBlock: 1060,
+          callId: '0003615072-000527-7ee49',
+          name: 'BitcoinBroadcaster.BroadcastSuccess',
+          args: {
+            broadcastId: 1226,
+            transactionRef: '0x7732cfb2f61551db38424b34c2bdfcb632eb204199865168f7a2334ed516c67c',
+            transactionOutId: '0x7732cfb2f61551db38424b34c2bdfcb632eb204199865168f7a2334ed516c67c',
+          },
+        },
+      ]);
+
+      const txHash = '0x78b3828e63d9300eedcfeaed28e7416764019a62066b945e63624ac27dc5cc9d'
+        .slice(2)
+        .match(/.{2}/g)
+        ?.reverse()
+        .join('');
+      const { body, status } = await request(server).get(`/v2/swaps/${txHash}`);
+
+      expect(status).toBe(200);
+
+      expect(body).toStrictEqual({
+        deposit: {
+          amount: '1000000',
+          failedAt: 21689748000,
+          failedBlockIndex: '3614958-465',
+          failure: {
+            failedAt: 21689748000,
+            failedBlockIndex: '3614958-465',
+            mode: 'TRANSACTION_TAINTED',
+            reason: {
+              message: 'The deposit was rejected by the broker',
+              name: 'TransactionTainted',
+            },
+          },
+          txRef: '9dccc57dc24a62635e946b06629a01646741e728edeacfed0e30d9638e82b378',
+        },
+        depositChannel: {
+          affiliateBrokers: [],
+          brokerCommissionBps: 0,
+          createdAt: 21688716000,
+          depositAddress: 'tb1purq4kn2cl8cltjms3twmljpkrucfjxx3ths8ynmsgg9nkx2ypydqx9e6y2',
+          estimatedExpiryTime: 3732519000000,
+          fillOrKillParams: {
+            minPrice: '5.140026445278486822',
+            refundAddress: 'tb1q78pjllxzm7069fj8mw3ud0dvk4d8n2muqs7q2k',
+            retryDurationBlocks: 150,
+          },
+          id: '3614786-Bitcoin-875',
+          isExpired: false,
+          openedThroughBackend: false,
+          srcChainExpiryBlock: '3485883',
+        },
+        destAddress: '0xac16d8adbd217576a540a625e873448cecdb21e2',
+        destAsset: 'ETH',
+        destChain: 'Ethereum',
+        estimatedDurationSeconds: 1824,
+        estimatedDurationsSeconds: {
+          deposit: 1800,
+          egress: 12,
+          swap: 12,
+        },
+        fees: [],
+        lastStatechainUpdateAt: 1640995200000,
+        refundEgress: {
+          txRef: '7cc616d54e33a2f7685186994120eb32b6fcbdc2344b4238db5115f6b2cf3277',
+          witnessedAt: 21690432000,
+          witnessedBlockIndex: '3615072-1060',
+        },
+        srcAsset: 'BTC',
+        srcChain: 'Bitcoin',
+        srcChainRequiredBlockConfirmations: 3,
+        state: 'FAILED',
       });
     });
 

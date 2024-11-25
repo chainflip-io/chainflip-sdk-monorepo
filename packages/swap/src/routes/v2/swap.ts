@@ -147,7 +147,7 @@ router.get(
       ),
       getEgressStatusFields(
         refundEgress,
-        refundEgress?.broadcast,
+        refundEgress?.broadcast ?? failedSwap?.refundBroadcast,
         ignoredEgresses,
         'REFUND',
         refundEgressTrackerTxRef,
