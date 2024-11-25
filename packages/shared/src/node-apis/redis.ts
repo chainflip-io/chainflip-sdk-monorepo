@@ -78,15 +78,14 @@ const broadcastParsers = {
         .optional(), // TODO: remove once Arbitrum is fully supported
     })
     .optional(), // TODO: remove once Arbitrum is available on all networks
-  Solana: z.any(),
 };
 
-type ChainBroadcast<C extends Chain> = z.infer<(typeof broadcastParsers)[C]>;
+type ChainBroadcast<C extends Exclude<Chain, 'Solana'>> = z.infer<(typeof broadcastParsers)[C]>;
 
 type EthereumBroadcast = ChainBroadcast<'Ethereum'>;
 type PolkadotBroadcast = ChainBroadcast<'Polkadot'>;
 type BitcoinBroadcast = ChainBroadcast<'Bitcoin'>;
-type Broadcast = ChainBroadcast<Chain>;
+type Broadcast = ChainBroadcast<Exclude<Chain, 'Solana'>>;
 
 const mempoolTransaction = jsonString.pipe(
   z.object({
@@ -122,6 +121,7 @@ export default class RedisClient {
   ): Promise<EthereumBroadcast | null>;
   async getBroadcast(chain: Chain, broadcastId: number | bigint): Promise<Broadcast | null>;
   async getBroadcast(chain: Chain, broadcastId: number | bigint): Promise<Broadcast | null> {
+    if (chain === 'Solana') return null;
     const key = `broadcast:${chain}:${broadcastId}`;
     const value = await this.client.get(key);
     return value ? broadcastParsers[chain].parse(JSON.parse(value)) : null;
