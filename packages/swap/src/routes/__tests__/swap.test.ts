@@ -1574,6 +1574,11 @@ describe('server', () => {
       destChain: 'Polkadot',
       destAddress: DOT_ADDRESS,
       amount: '1000000000',
+      fillOrKillParams: {
+        retryDurationBlocks: 2,
+        refundAddress: ETH_ADDRESS,
+        minPriceX128: '1',
+      },
     } as const;
     const dotToEthSwapRequestBody = {
       srcAsset: Assets.DOT,
@@ -1582,6 +1587,11 @@ describe('server', () => {
       destChain: 'Ethereum',
       destAddress: ETH_ADDRESS,
       amount: '1000000000',
+      fillOrKillParams: {
+        retryDurationBlocks: 2,
+        refundAddress: DOT_ADDRESS,
+        minPriceX128: '1',
+      },
     } as const;
 
     it.each([
@@ -1665,6 +1675,11 @@ describe('server', () => {
         destAsset: Assets.DOT,
         destAddress: DOT_ADDRESS,
         [key]: value,
+        fillOrKillParams: {
+          retryDurationBlocks: 2,
+          refundAddress: ETH_ADDRESS,
+          minPriceX128: '1',
+        },
       };
 
       const { body, status } = await request(app).post('/swaps').send(requestBody);
@@ -1691,7 +1706,16 @@ describe('server', () => {
         amount: '1000000000',
       },
     ])('throws on bad addresses (%s)', async (requestBody) => {
-      const { body, status } = await request(app).post('/swaps').send(requestBody);
+      const { body, status } = await request(app)
+        .post('/swaps')
+        .send({
+          ...requestBody,
+          fillOrKillParams: {
+            retryDurationBlocks: 2,
+            refundAddress: requestBody.srcAsset === 'ETH' ? ETH_ADDRESS : DOT_ADDRESS,
+            minPriceX128: '1',
+          },
+        });
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
@@ -1704,14 +1728,21 @@ describe('server', () => {
         data: environment({ minDepositAmount: '0xffffff' }),
       });
 
-      const { body, status } = await request(app).post('/swaps').send({
-        srcAsset: Assets.DOT,
-        destAsset: Assets.ETH,
-        srcChain: 'Polkadot',
-        destChain: 'Ethereum',
-        destAddress: ETH_ADDRESS,
-        amount: '5',
-      });
+      const { body, status } = await request(app)
+        .post('/swaps')
+        .send({
+          srcAsset: Assets.DOT,
+          destAsset: Assets.ETH,
+          srcChain: 'Polkadot',
+          destChain: 'Ethereum',
+          destAddress: ETH_ADDRESS,
+          amount: '5',
+          fillOrKillParams: {
+            retryDurationBlocks: 2,
+            refundAddress: DOT_ADDRESS,
+            minPriceX128: '1',
+          },
+        });
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
@@ -1722,14 +1753,21 @@ describe('server', () => {
     it('rejects if amount is higher than maximum swap amount', async () => {
       mockRpcResponse({ data: environment({ maxSwapAmount: '0x1' }) });
 
-      const { body, status } = await request(app).post('/swaps').send({
-        srcAsset: Assets.USDC,
-        destAsset: Assets.ETH,
-        srcChain: 'Ethereum',
-        destChain: 'Ethereum',
-        destAddress: ETH_ADDRESS,
-        amount: '5',
-      });
+      const { body, status } = await request(app)
+        .post('/swaps')
+        .send({
+          srcAsset: Assets.USDC,
+          destAsset: Assets.ETH,
+          srcChain: 'Ethereum',
+          destChain: 'Ethereum',
+          destAddress: ETH_ADDRESS,
+          amount: '5',
+          fillOrKillParams: {
+            retryDurationBlocks: 2,
+            refundAddress: ETH_ADDRESS,
+            minPriceX128: '1',
+          },
+        });
 
       expect(status).toBe(400);
       expect(body).toMatchObject({

@@ -7,6 +7,11 @@ const swapBody = {
   destChain: 'Ethereum',
   destAddress: '0x123',
   amount: '123',
+  fillOrKillParams: {
+    retryDurationBlocks: 2,
+    refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+    minPriceX128: '1',
+  },
 };
 
 describe('postSwapSchema', () => {
@@ -90,32 +95,6 @@ describe('postSwapSchema', () => {
         },
       }),
     ).toThrow();
-  });
-
-  it('only allows DCA params with FoK params', () => {
-    expect(() =>
-      openSwapDepositChannelSchema.parse({
-        ...swapBody,
-        dcaParams: {
-          numberOfChunks: 1,
-          chunkIntervalBlocks: 2,
-        },
-      }),
-    ).toThrow();
-    expect(() =>
-      openSwapDepositChannelSchema.parse({
-        ...swapBody,
-        dcaParams: {
-          numberOfChunks: 1,
-          chunkIntervalBlocks: 2,
-        },
-        fillOrKillParams: {
-          retryDurationBlocks: 10,
-          refundAddress: '0x1234',
-          minPriceX128: '1',
-        },
-      }),
-    ).not.toThrow();
   });
 
   it('allows FoK params without DCA params', () => {

@@ -120,7 +120,7 @@ export const openSwapDepositChannelSchema = z
     ccmParams: ccmParamsSchema.optional(),
     maxBoostFeeBps: z.number().optional(),
     srcAddress: z.string().optional(),
-    fillOrKillParams: fillOrKillParams.optional(),
+    fillOrKillParams,
     dcaParams: dcaParams.optional(),
     quote: z
       .object({

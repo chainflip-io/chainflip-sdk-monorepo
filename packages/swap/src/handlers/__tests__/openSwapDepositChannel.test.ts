@@ -59,6 +59,11 @@ describe(openSwapDepositChannel, () => {
       destChain: 'Polkadot',
       destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
       expectedDepositAmount: '777',
+      fillOrKillParams: {
+        refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        retryDurationBlocks: 2,
+        minPriceX128: '1',
+      },
     });
 
     expect(result).toEqual({
@@ -102,6 +107,11 @@ describe(openSwapDepositChannel, () => {
         egressAmount: '250',
         estimatedPrice: '0.375',
         recommendedSlippageTolerancePercent: 0.25,
+      },
+      fillOrKillParams: {
+        refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        retryDurationBlocks: 2,
+        minPriceX128: '1',
       },
     });
 
@@ -206,6 +216,11 @@ describe(openSwapDepositChannel, () => {
         message: '0xdeadc0de',
         gasBudget: `0x${(125000).toString(16)}`,
       },
+      fillOrKillParams: {
+        refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        retryDurationBlocks: 2,
+        minPriceX128: '1',
+      },
     });
 
     expect(result).toEqual({
@@ -288,6 +303,11 @@ describe(openSwapDepositChannel, () => {
       destAddress: '0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754',
       expectedDepositAmount: '10101010',
       maxBoostFeeBps: 100,
+      fillOrKillParams: {
+        refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        retryDurationBlocks: 2,
+        minPriceX128: '1',
+      },
     });
 
     expect(result).toEqual({
@@ -319,6 +339,11 @@ describe(openSwapDepositChannel, () => {
         destChain: 'Polkadot',
         destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
         expectedDepositAmount: '777',
+        fillOrKillParams: {
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          retryDurationBlocks: 2,
+          minPriceX128: '1',
+        },
       }),
     ).rejects.toThrow('Failed to open deposit channel, please try again later');
   });
@@ -334,6 +359,11 @@ describe(openSwapDepositChannel, () => {
         destChain: 'Polkadot',
         destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
         expectedDepositAmount: '777',
+        fillOrKillParams: {
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          retryDurationBlocks: 2,
+          minPriceX128: '1',
+        },
       }),
     ).rejects.toThrow('Asset Flip is disabled');
   });
@@ -349,6 +379,11 @@ describe(openSwapDepositChannel, () => {
         destChain: 'Polkadot',
         destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
         expectedDepositAmount: '777',
+        fillOrKillParams: {
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          retryDurationBlocks: 2,
+          minPriceX128: '1',
+        },
       }),
     ).rejects.toThrow('Asset Dot is disabled');
   });
@@ -363,6 +398,11 @@ describe(openSwapDepositChannel, () => {
       destChain: 'Ethereum',
       destAddress: '0x72a5843cc08275C8171E582972Aa4fDa8C397B2A',
       expectedDepositAmount: '777',
+      fillOrKillParams: {
+        refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        retryDurationBlocks: 2,
+        minPriceX128: '1',
+      },
     } as const;
 
     mockRpcResponse({ data: environment() });
