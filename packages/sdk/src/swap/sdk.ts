@@ -273,6 +273,7 @@ export class SwapSDK {
         !depositAddressRequest.affiliateBrokers?.length,
         'Affiliate brokers are supported only when initializing the SDK with a brokerUrl',
       );
+      assert(fillOrKillParams, 'Fill or kill parameters are required');
       response = await this.trpc.openSwapDepositChannel.mutate({
         ...depositAddressRequest,
         fillOrKillParams,
@@ -501,7 +502,12 @@ export class SwapSDK {
         channelOpeningFee: result.channelOpeningFee,
       };
     } else {
-      response = await this.trpc.openSwapDepositChannel.mutate({ ...depositAddressRequest, quote });
+      assert(depositAddressRequest.fillOrKillParams, 'fill or kill params are required');
+      response = await this.trpc.openSwapDepositChannel.mutate({
+        ...depositAddressRequest,
+        fillOrKillParams: depositAddressRequest.fillOrKillParams,
+        quote,
+      });
     }
 
     return {

@@ -341,56 +341,6 @@ describe(SwapSDK, () => {
   });
 
   describe(SwapSDK.prototype.requestDepositAddress, () => {
-    it('calls openSwapDepositChannel', async () => {
-      const rpcSpy = jest
-        // @ts-expect-error - testing private method
-        .spyOn(sdk.trpc.openSwapDepositChannel, 'mutate')
-        .mockResolvedValueOnce({
-          id: 'channel id',
-          depositAddress: 'deposit address',
-          brokerCommissionBps: 0,
-          srcChainExpiryBlock: 123n,
-          estimatedExpiryTime: 1698334470000,
-          channelOpeningFee: 0n,
-          issuedBlock: 1,
-          maxBoostFeeBps: 0,
-        });
-
-      const response = await sdk.requestDepositAddress({
-        srcChain: Chains.Bitcoin,
-        srcAsset: Assets.BTC,
-        destChain: Chains.Ethereum,
-        destAsset: Assets.FLIP,
-        destAddress: '0xcafebabe',
-        amount: BigInt(1e18).toString(),
-      });
-      expect(rpcSpy).toHaveBeenLastCalledWith({
-        srcChain: Chains.Bitcoin,
-        srcAsset: Assets.BTC,
-        destChain: Chains.Ethereum,
-        destAsset: Assets.FLIP,
-        destAddress: '0xcafebabe',
-        amount: BigInt(1e18).toString(),
-      });
-      expect(response).toStrictEqual({
-        depositChannelId: 'channel id',
-        depositAddress: 'deposit address',
-        brokerCommissionBps: 0,
-        depositChannelExpiryBlock: 123n,
-        estimatedDepositChannelExpiryTime: 1698334470000,
-        amount: '1000000000000000000',
-        destAddress: '0xcafebabe',
-        destAsset: 'FLIP',
-        destChain: 'Ethereum',
-        srcAsset: 'BTC',
-        srcChain: 'Bitcoin',
-        maxBoostFeeBps: 0,
-        ccmParams: undefined,
-        channelOpeningFee: 0n,
-        affiliateBrokers: [],
-      });
-    });
-
     it('calls openSwapDepositChannel with refund parameters', async () => {
       const rpcSpy = jest
         // @ts-expect-error - testing private method
@@ -457,7 +407,7 @@ describe(SwapSDK, () => {
       });
     });
 
-    it('calls openSwapDepositChannel with dca parameters', async () => {
+    it('calls openSwapDepositChannel with dca and refund parameters', async () => {
       const rpcSpy = jest
         // @ts-expect-error - testing private method
         .spyOn(sdk.trpc.openSwapDepositChannel, 'mutate')
@@ -483,6 +433,11 @@ describe(SwapSDK, () => {
           numberOfChunks: 100,
           chunkIntervalBlocks: 5,
         },
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '10000000000000',
+        },
       });
       expect(rpcSpy).toHaveBeenLastCalledWith({
         srcChain: Chains.Bitcoin,
@@ -494,6 +449,12 @@ describe(SwapSDK, () => {
         dcaParams: {
           numberOfChunks: 100,
           chunkIntervalBlocks: 5,
+        },
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          minPriceX128: '34028236692093846346337460743176821145600000000000000000000000',
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          retryDurationBlocks: 500,
         },
       });
       expect(response).toStrictEqual({
@@ -515,6 +476,11 @@ describe(SwapSDK, () => {
         dcaParams: {
           numberOfChunks: 100,
           chunkIntervalBlocks: 5,
+        },
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          retryDurationBlocks: 500,
         },
       });
     });
@@ -982,65 +948,6 @@ describe(SwapSDK, () => {
   });
 
   describe(SwapSDK.prototype.requestDepositAddressV2, () => {
-    it('calls openSwapDepositChannel', async () => {
-      const rpcSpy = jest
-        // @ts-expect-error - testing private method
-        .spyOn(sdk.trpc.openSwapDepositChannel, 'mutate')
-        .mockResolvedValueOnce({
-          id: 'channel id',
-          depositAddress: 'deposit address',
-          brokerCommissionBps: 0,
-          srcChainExpiryBlock: 123n,
-          estimatedExpiryTime: 1698334470000,
-          channelOpeningFee: 0n,
-          issuedBlock: 1,
-          maxBoostFeeBps: 0,
-        });
-
-      const quote = {
-        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
-        depositAmount: BigInt(1e18).toString(),
-        type: 'REGULAR',
-      } as Quote;
-      const response = await sdk.requestDepositAddressV2({
-        quote,
-        srcAddress: '0xbadc0de',
-        destAddress: '0xcafebabe',
-      });
-
-      expect(rpcSpy).toHaveBeenLastCalledWith({
-        srcChain: Chains.Bitcoin,
-        srcAsset: Assets.BTC,
-        destChain: Chains.Ethereum,
-        destAsset: Assets.FLIP,
-        srcAddress: '0xbadc0de',
-        destAddress: '0xcafebabe',
-        amount: BigInt(1e18).toString(),
-        quote,
-      });
-      expect(response).toStrictEqual({
-        depositChannelId: 'channel id',
-        depositAddress: 'deposit address',
-        brokerCommissionBps: 0,
-        depositChannelExpiryBlock: 123n,
-        estimatedDepositChannelExpiryTime: 1698334470000,
-        amount: '1000000000000000000',
-        srcAddress: '0xbadc0de',
-        destAddress: '0xcafebabe',
-        destAsset: 'FLIP',
-        destChain: 'Ethereum',
-        srcAsset: 'BTC',
-        srcChain: 'Bitcoin',
-        maxBoostFeeBps: 0,
-        ccmParams: undefined,
-        channelOpeningFee: 0n,
-        affiliateBrokers: [],
-        dcaParams: undefined,
-        fillOrKillParams: undefined,
-      });
-    });
-
     it('calls openSwapDepositChannel with refund parameters', async () => {
       const rpcSpy = jest
         // @ts-expect-error - testing private method
