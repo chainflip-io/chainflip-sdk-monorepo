@@ -62,7 +62,7 @@ describe(networkTaintedTransactionRejected, () => {
         include: { failedSwaps: true },
       });
 
-    expect(failedSwaps.map(({ id: _, ...rest }) => rest)).toMatchSnapshot();
+    expect(failedSwaps.map(({ id: _, refundBroadcastId, ...rest }) => rest)).toMatchSnapshot();
     expect(broadcast).toMatchSnapshot();
   });
 });

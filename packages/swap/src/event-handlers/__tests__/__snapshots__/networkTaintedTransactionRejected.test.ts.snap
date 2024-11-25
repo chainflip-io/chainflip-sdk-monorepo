@@ -12,7 +12,6 @@ exports[`networkTaintedTransactionRejected adds a broadcast to a failed swap 1`]
     "failedAt": 2023-04-01T08:18:19.000Z,
     "failedBlockIndex": "419-1",
     "reason": "TransactionTainted",
-    "refundBroadcastId": 1n,
     "srcAsset": "Btc",
     "srcChain": "Bitcoin",
     "swapDepositChannelId": null,
