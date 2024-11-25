@@ -684,7 +684,7 @@ describe('server', () => {
     it(`retrieves a swap in ${StateV2.Sent} status`, async () => {
       jest.mocked(getPendingBroadcast).mockResolvedValueOnce({
         tx_ref: '0xdeadbeef',
-      });
+      } as any);
 
       await processEvents(swapEvents.slice(0, 8));
 
