@@ -56,6 +56,18 @@ export default z
         return undefined;
       }
     }),
+    DCA_CHUNK_PRICE_IMPACT_PERCENT: optionalString('{ "Flip": 0.25 }').transform((string) => {
+      try {
+        return z.record(z.nativeEnum(InternalAssets), z.number()).parse(JSON.parse(string));
+      } catch (err) {
+        const error = err as Error;
+        // eslint-disable-next-line no-console
+        console.warn({
+          message: `Could not parse DCA_CHUNK_PRICE_IMPACT_BPS variable. error: "${error?.message}"`,
+        });
+        return undefined;
+      }
+    }),
     DCA_CHUNK_INTERVAL_BLOCKS: optionalNumber(2),
     DISABLED_INTERNAL_ASSETS: optionalString('').transform((string) =>
       string.split(',').map((asset) => {
