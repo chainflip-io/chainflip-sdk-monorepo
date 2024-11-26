@@ -89,8 +89,8 @@ export const calculateRecommendedSlippage = async ({
 
   // use different limits for flip swaps because chainflip is the primary market for the flip token
   // because of this, lps cannot easily source liquidity from other markets (cex, dex) when filling a flip swap
-  const MIN_SLIPPAGE = srcAsset === 'Flip' || destAsset === 'Flip' ? 1.5 : 0.5;
-  const MAX_SLIPPAGE = srcAsset === 'Flip' || destAsset === 'Flip' ? 7.5 : 2.5;
+  const MIN_SLIPPAGE = srcAsset === 'Flip' || destAsset === 'Flip' ? 1 : 0.5;
+  const MAX_SLIPPAGE = srcAsset === 'Flip' || destAsset === 'Flip' ? 5 : 2.5;
 
   let recommendedSlippage = BASE_SLIPPAGE;
   recommendedSlippage += await getDepositTimeAdjustment(srcAsset, Boolean(boostFeeBps));
