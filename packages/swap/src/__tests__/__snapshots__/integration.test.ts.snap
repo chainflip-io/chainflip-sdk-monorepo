@@ -66,8 +66,9 @@ exports[`python integration test replies to a quote request 2`] = `
 [
   [
     {
-      "amount": 1000000000000000000n,
       "brokerCommissionBps": undefined,
+      "dcaParams": undefined,
+      "depositAmount": 1000000000000000000n,
       "destAsset": "Usdc",
       "limitOrders": [
         {
@@ -160,8 +161,9 @@ exports[`python integration test replies to a quote request with v2 endpoint 2`]
 [
   [
     {
-      "amount": 1000000000000000000n,
       "brokerCommissionBps": undefined,
+      "dcaParams": undefined,
+      "depositAmount": 1000000000000000000n,
       "destAsset": "Usdc",
       "limitOrders": [
         {

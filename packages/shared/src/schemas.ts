@@ -21,7 +21,7 @@ export const quoteQuerySchema = z
     destAsset: asset,
     amount: numericString.transform((n) => BigInt(n)),
     brokerCommissionBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
-    dcaEnabled: booleanString,
+    dcaEnabled: booleanString.default('false'),
     autoSlippageEnabled: booleanString.optional(),
   })
   .transform((args, ctx) => {
