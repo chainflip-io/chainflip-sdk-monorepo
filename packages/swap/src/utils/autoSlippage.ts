@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { assetConstants, chainConstants } from '@/shared/enums';
+import env from '@/swap/config/env';
 import { getDeployedLiquidity, getUndeployedLiquidity } from './pools';
 import { getRequiredBlockConfirmations } from './rpc';
 import { InternalAsset } from '../client';
@@ -42,6 +43,12 @@ const getUndeployedLiquidityAdjustment = async (asset: InternalAsset, amount: bi
   return 0;
 };
 
+const getPriceImpactAdjustment = async (asset: InternalAsset, dcaChunks: number) => {
+  const priceImpactPercent = env.DCA_CHUNK_PRICE_IMPACT_PERCENT?.[asset] ?? 0;
+
+  return priceImpactPercent * (dcaChunks - 1);
+};
+
 const getLiquidityAdjustment = async ({
   srcAsset,
   destAsset,
@@ -51,14 +58,16 @@ const getLiquidityAdjustment = async ({
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
   amount: bigint;
-  dcaChunks: bigint;
+  dcaChunks: number;
 }) => {
-  const [deployedLiquiditySlippage, undeployedLiquiditySlippage] = await Promise.all([
-    getDeployedLiquidityAdjustment(srcAsset, destAsset, amount * dcaChunks),
-    getUndeployedLiquidityAdjustment(destAsset, amount * dcaChunks),
-  ]);
+  const [deployedLiquidityAdjustment, undeployedLiquidityAdjustment, priceImpactAdjustment] =
+    await Promise.all([
+      getDeployedLiquidityAdjustment(srcAsset, destAsset, amount * BigInt(dcaChunks)),
+      getUndeployedLiquidityAdjustment(destAsset, amount * BigInt(dcaChunks)),
+      getPriceImpactAdjustment(srcAsset !== 'Usdc' ? srcAsset : destAsset, dcaChunks),
+    ]);
 
-  return deployedLiquiditySlippage + undeployedLiquiditySlippage;
+  return deployedLiquidityAdjustment + undeployedLiquidityAdjustment + priceImpactAdjustment;
 };
 
 export const calculateRecommendedSlippage = async ({
@@ -81,7 +90,7 @@ export const calculateRecommendedSlippage = async ({
   // use different limits for flip swaps because chainflip is the primary market for the flip token
   // because of this, lps cannot easily source liquidity from other markets (cex, dex) when filling a flip swap
   const MIN_SLIPPAGE = srcAsset === 'Flip' || destAsset === 'Flip' ? 1.5 : 0.5;
-  const MAX_SLIPPAGE = srcAsset === 'Flip' || destAsset === 'Flip' ? 5 : 2.5;
+  const MAX_SLIPPAGE = srcAsset === 'Flip' || destAsset === 'Flip' ? 7.5 : 2.5;
 
   let recommendedSlippage = BASE_SLIPPAGE;
   recommendedSlippage += await getDepositTimeAdjustment(srcAsset, Boolean(boostFeeBps));
@@ -91,7 +100,7 @@ export const calculateRecommendedSlippage = async ({
       srcAsset,
       destAsset,
       amount: egressAmount,
-      dcaChunks: BigInt(dcaChunks),
+      dcaChunks,
     });
   } else {
     const [leg1Adjustment, leg2Adjustment] = await Promise.all([
@@ -99,13 +108,13 @@ export const calculateRecommendedSlippage = async ({
         srcAsset,
         destAsset: 'Usdc',
         amount: intermediateAmount!,
-        dcaChunks: BigInt(dcaChunks),
+        dcaChunks,
       }),
       getLiquidityAdjustment({
         srcAsset: 'Usdc',
         destAsset,
         amount: egressAmount,
-        dcaChunks: BigInt(dcaChunks),
+        dcaChunks,
       }),
     ]);
 
