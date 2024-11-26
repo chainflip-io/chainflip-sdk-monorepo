@@ -43,10 +43,10 @@ const getUndeployedLiquidityAdjustment = async (asset: InternalAsset, amount: bi
   return 0;
 };
 
-const getPriceImpactAdjustment = async (asset: InternalAsset, dcaChunks: bigint) => {
+const getPriceImpactAdjustment = async (asset: InternalAsset, dcaChunks: number) => {
   const priceImpactPercent = env.DCA_CHUNK_PRICE_IMPACT_PERCENT?.[asset] ?? 0;
 
-  return priceImpactPercent * Number(dcaChunks);
+  return priceImpactPercent * dcaChunks;
 };
 
 const getLiquidityAdjustment = async ({
@@ -58,13 +58,13 @@ const getLiquidityAdjustment = async ({
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
   amount: bigint;
-  dcaChunks: bigint;
+  dcaChunks: number;
 }) => {
   const [deployedLiquidityAdjustment, undeployedLiquidityAdjustment, priceImpactAdjustment] =
     await Promise.all([
-      getDeployedLiquidityAdjustment(srcAsset, destAsset, amount * dcaChunks),
-      getUndeployedLiquidityAdjustment(destAsset, amount * dcaChunks),
-      getPriceImpactAdjustment(destAsset, dcaChunks),
+      getDeployedLiquidityAdjustment(srcAsset, destAsset, amount * BigInt(dcaChunks)),
+      getUndeployedLiquidityAdjustment(destAsset, amount * BigInt(dcaChunks)),
+      getPriceImpactAdjustment(srcAsset !== 'Usdc' ? srcAsset : destAsset, dcaChunks),
     ]);
 
   return deployedLiquidityAdjustment + undeployedLiquidityAdjustment + priceImpactAdjustment;
@@ -100,7 +100,7 @@ export const calculateRecommendedSlippage = async ({
       srcAsset,
       destAsset,
       amount: egressAmount,
-      dcaChunks: BigInt(dcaChunks),
+      dcaChunks,
     });
   } else {
     const [leg1Adjustment, leg2Adjustment] = await Promise.all([
@@ -108,13 +108,13 @@ export const calculateRecommendedSlippage = async ({
         srcAsset,
         destAsset: 'Usdc',
         amount: intermediateAmount!,
-        dcaChunks: BigInt(dcaChunks),
+        dcaChunks,
       }),
       getLiquidityAdjustment({
         srcAsset: 'Usdc',
         destAsset,
         amount: egressAmount,
-        dcaChunks: BigInt(dcaChunks),
+        dcaChunks,
       }),
     ]);
 

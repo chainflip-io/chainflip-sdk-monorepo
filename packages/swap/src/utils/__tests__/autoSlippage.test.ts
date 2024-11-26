@@ -1,3 +1,4 @@
+import env from '@/swap/config/env';
 import { calculateRecommendedSlippage } from '../autoSlippage';
 import { getDeployedLiquidity, getUndeployedLiquidity } from '../pools';
 import { getRequiredBlockConfirmations } from '../rpc';
@@ -12,6 +13,10 @@ jest.mock('../rpc', () => ({
 }));
 
 describe(calculateRecommendedSlippage, () => {
+  beforeEach(() => {
+    env.DCA_CHUNK_PRICE_IMPACT_PERCENT = {};
+  });
+
   it('should return the correct value for ETH -> USDC for small amount', async () => {
     jest.mocked(getUndeployedLiquidity).mockResolvedValue(500n);
     jest.mocked(getDeployedLiquidity).mockResolvedValue(1000n);
@@ -30,6 +35,28 @@ describe(calculateRecommendedSlippage, () => {
     });
 
     expect(result).toEqual(0.5);
+  });
+
+  it('should return the correct value for ETH -> USDC for dca chunks', async () => {
+    jest.mocked(getUndeployedLiquidity).mockResolvedValue(500n);
+    jest.mocked(getDeployedLiquidity).mockResolvedValue(1000n);
+    jest.mocked(getRequiredBlockConfirmations).mockResolvedValue(8);
+    env.DCA_CHUNK_PRICE_IMPACT_PERCENT = { Eth: 0.2 };
+
+    // baseSlippage: 1
+    // depositTimeSlippage: 12s * 8 / 60 * 0.05 = 0.08
+    // undeployedLiquiditySlippage: -0.5
+    // deployedLiquiditySlippage: 0
+    // priceImpactAdjustment: 2
+
+    const result = await calculateRecommendedSlippage({
+      srcAsset: 'Eth',
+      destAsset: 'Usdc',
+      egressAmount: 10n,
+      dcaChunks: 10,
+    });
+
+    expect(result).toEqual(2.5);
   });
 
   it('should return the correct value for ETH -> USDC for amount >50% of deployed liquidity', async () => {
