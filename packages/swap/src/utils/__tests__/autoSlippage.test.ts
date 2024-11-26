@@ -53,7 +53,7 @@ describe(calculateRecommendedSlippage, () => {
       srcAsset: 'Eth',
       destAsset: 'Usdc',
       egressAmount: 10n,
-      dcaChunks: 10,
+      dcaChunks: 11,
     });
 
     expect(result).toEqual(2.5);

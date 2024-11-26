@@ -46,7 +46,7 @@ const getUndeployedLiquidityAdjustment = async (asset: InternalAsset, amount: bi
 const getPriceImpactAdjustment = async (asset: InternalAsset, dcaChunks: number) => {
   const priceImpactPercent = env.DCA_CHUNK_PRICE_IMPACT_PERCENT?.[asset] ?? 0;
 
-  return priceImpactPercent * dcaChunks;
+  return priceImpactPercent * (dcaChunks - 1);
 };
 
 const getLiquidityAdjustment = async ({

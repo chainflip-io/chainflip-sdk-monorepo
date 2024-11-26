@@ -63,7 +63,7 @@ export default z
         const error = err as Error;
         // eslint-disable-next-line no-console
         console.warn({
-          message: `Could not parse DCA_CHUNK_PRICE_IMPACT_BPS variable. error: "${error?.message}"`,
+          message: `Could not parse DCA_CHUNK_PRICE_IMPACT_PERCENT variable. error: "${error?.message}"`,
         });
         return undefined;
       }
