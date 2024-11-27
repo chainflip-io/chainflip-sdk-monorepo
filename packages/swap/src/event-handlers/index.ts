@@ -10,7 +10,7 @@ import networkCcmBroadcastRequested from './networkCcmBroadcastRequested';
 import chainStateUpdated from './networkChainStateUpdated';
 import { networkDepositFinalised } from './networkDepositFinalised';
 import networkDepositIgnored from './networkDepositIgnored';
-import networkTaintedTransactionRejected from './networkTaintedTransactionRejected';
+import networkTransactionRejectedByBroker from './networkTransactionRejectedByBroker';
 import newPoolCreated from './newPoolCreated';
 import poolFeeSet from './poolFeeSet';
 import refundEgressIgnored from './refundEgressIgnored';
@@ -57,7 +57,7 @@ export const events = {
     BoostPoolCreated: 'BitcoinIngressEgress.BoostPoolCreated',
     DepositBoosted: 'BitcoinIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'BitcoinIngressEgress.InsufficientBoostLiquidity',
-    TaintedTransactionRejected: 'BitcoinIngressEgress.TaintedTransactionRejected',
+    TransactionRejectedByBroker: 'BitcoinIngressEgress.TransactionRejectedByBroker',
   },
   EthereumIngressEgress: {
     BatchBroadcastRequested: 'EthereumIngressEgress.BatchBroadcastRequested',
@@ -67,7 +67,7 @@ export const events = {
     BoostPoolCreated: 'EthereumIngressEgress.BoostPoolCreated',
     DepositBoosted: 'EthereumIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'EthereumIngressEgress.InsufficientBoostLiquidity',
-    TaintedTransactionRejected: 'EthereumIngressEgress.TaintedTransactionRejected',
+    TransactionRejectedByBroker: 'EthereumIngressEgress.TransactionRejectedByBroker',
   },
   ArbitrumIngressEgress: {
     BatchBroadcastRequested: 'ArbitrumIngressEgress.BatchBroadcastRequested',
@@ -77,7 +77,7 @@ export const events = {
     BoostPoolCreated: 'ArbitrumIngressEgress.BoostPoolCreated',
     DepositBoosted: 'ArbitrumIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'ArbitrumIngressEgress.InsufficientBoostLiquidity',
-    TaintedTransactionRejected: 'ArbitrumIngressEgress.TaintedTransactionRejected',
+    TransactionRejectedByBroker: 'ArbitrumIngressEgress.TransactionRejectedByBroker',
   },
   PolkadotIngressEgress: {
     BatchBroadcastRequested: 'PolkadotIngressEgress.BatchBroadcastRequested',
@@ -87,7 +87,7 @@ export const events = {
     BoostPoolCreated: 'PolkadotIngressEgress.BoostPoolCreated',
     DepositBoosted: 'PolkadotIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'PolkadotIngressEgress.InsufficientBoostLiquidity',
-    TaintedTransactionRejected: 'PolkadotIngressEgress.TaintedTransactionRejected',
+    TransactionRejectedByBroker: 'PolkadotIngressEgress.TransactionRejectedByBroker',
   },
   SolanaIngressEgress: {
     BatchBroadcastRequested: 'SolanaIngressEgress.BatchBroadcastRequested',
@@ -97,7 +97,7 @@ export const events = {
     BoostPoolCreated: 'SolanaIngressEgress.BoostPoolCreated',
     DepositBoosted: 'SolanaIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'SolanaIngressEgress.InsufficientBoostLiquidity',
-    TaintedTransactionRejected: 'SolanaIngressEgress.TaintedTransactionRejected',
+    TransactionRejectedByBroker: 'SolanaIngressEgress.TransactionRejectedByBroker',
   },
   BitcoinBroadcaster: {
     BroadcastSuccess: 'BitcoinBroadcaster.BroadcastSuccess',
@@ -228,8 +228,8 @@ const handlers = [
     handlers: [
       ...Object.values(Chains).flatMap((chain) => [
         {
-          name: events[`${chain}IngressEgress`].TaintedTransactionRejected,
-          handler: networkTaintedTransactionRejected(chain),
+          name: events[`${chain}IngressEgress`].TransactionRejectedByBroker,
+          handler: networkTransactionRejectedByBroker(chain),
         },
       ]),
     ],

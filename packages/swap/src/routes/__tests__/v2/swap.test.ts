@@ -795,7 +795,7 @@ describe('server', () => {
           args: {
             asset: { __kind: 'Btc' },
             amount: '1000000',
-            reason: { __kind: 'TransactionTainted' },
+            reason: { __kind: 'TransactionRejectedByBroker' },
             depositAddress: {
               value: '0xe0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
               __kind: 'Taproot',
@@ -826,7 +826,7 @@ describe('server', () => {
           id: '0003614958-001117-1d0a6',
           indexInBlock: 1117,
           callId: null,
-          name: 'BitcoinIngressEgress.TaintedTransactionRejected',
+          name: 'BitcoinIngressEgress.TransactionRejectedByBroker',
           args: {
             txId: {
               id: {
@@ -881,10 +881,10 @@ describe('server', () => {
           failure: {
             failedAt: 21689748000,
             failedBlockIndex: '3614958-465',
-            mode: 'TRANSACTION_TAINTED',
+            mode: 'TRANSACTION_REJECTED',
             reason: {
               message: 'The deposit was rejected by the broker',
-              name: 'TransactionTainted',
+              name: 'TransactionRejectedByBroker',
             },
           },
           txRef: '9dccc57dc24a62635e946b06629a01646741e728edeacfed0e30d9638e82b378',

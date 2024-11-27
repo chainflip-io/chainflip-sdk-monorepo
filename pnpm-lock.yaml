@@ -229,8 +229,8 @@ importers:
   packages/swap:
     dependencies:
       '@chainflip/processor':
-        specifier: ^1.7.1
-        version: 1.7.1
+        specifier: ^1.7.2
+        version: 1.7.2
       '@chainflip/rpc':
         specifier: ^1.6.9
         version: 1.6.9
@@ -754,8 +754,8 @@ packages:
   '@chainflip/extrinsics@1.6.1':
     resolution: {integrity: sha512-sm3v2QguNW4/RiIZYHd+VRSxup2q4cVBY0VjbQJw6xYqhNCzZlt+Hl38Kni+TCHQu3hP/WgIF72yvvSs7/PBdg==}
 
-  '@chainflip/processor@1.7.1':
-    resolution: {integrity: sha512-EN8w/cFK58gbN/5CTImxyK4pMPIjh28DqscCA46xIS0VEzk4X8/H3Dva8g10sQKvuYuA1F42DJ5vu49A7K2D0w==}
+  '@chainflip/processor@1.7.2':
+    resolution: {integrity: sha512-ZQvN6/FhD8af/37O02ikvXucdBTv0/BbRon7c55LIzYTWLX7vijZoJu2Ie0mDrzj4rpuzpsvlW+Jd9j0nxkV0A==}
 
   '@chainflip/rpc@1.6.9':
     resolution: {integrity: sha512-FtaoZBey4kIFhWQY5mMMAGXIgzSpZCX0DTnXQqPEn9q5qvt6FoQLDQk9k2IYKOTiIP+XsLy9w/WPPiH7+3BpnQ==}
@@ -6200,7 +6200,7 @@ snapshots:
 
   '@chainflip/extrinsics@1.6.1': {}
 
-  '@chainflip/processor@1.7.1':
+  '@chainflip/processor@1.7.2':
     dependencies:
       '@chainflip/utils': 0.4.0
       zod: 3.23.8
