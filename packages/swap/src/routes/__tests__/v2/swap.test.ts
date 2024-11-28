@@ -881,7 +881,7 @@ describe('server', () => {
           failure: {
             failedAt: 21689748000,
             failedBlockIndex: '3614958-465',
-            mode: 'TRANSACTION_REJECTED',
+            mode: 'DEPOSIT_REJECTED',
             reason: {
               message: 'The deposit was rejected by the broker',
               name: 'TransactionRejectedByBroker',
