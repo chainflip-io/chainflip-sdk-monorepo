@@ -1,8 +1,8 @@
 import prisma from '../../client';
 import { formatTxHash } from '../common';
-import networkTaintedTransactionRejected from '../networkTaintedTransactionRejected';
+import networkTransactionRejectedByBroker from '../networkTransactionRejectedByBroker';
 
-describe(networkTaintedTransactionRejected, () => {
+describe(networkTransactionRejectedByBroker, () => {
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "FailedSwap" CASCADE`;
   });
@@ -41,14 +41,14 @@ describe(networkTaintedTransactionRejected, () => {
         srcChain: 'Bitcoin',
         destChain: 'Ethereum',
         destAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-        reason: 'TransactionTainted',
+        reason: 'TransactionRejectedByBroker',
         failedAt: new Date(timestamp - 6000),
         failedBlockIndex: '419-1',
         depositTransactionRef: formatTxHash('Bitcoin', args.txId.id.txId),
       },
     });
 
-    await networkTaintedTransactionRejected('Bitcoin')({
+    await networkTransactionRejectedByBroker('Bitcoin')({
       block: { specId: 'test@170', height: 420, timestamp } as any,
       event: { indexInBlock: 1, args } as any,
       prisma,

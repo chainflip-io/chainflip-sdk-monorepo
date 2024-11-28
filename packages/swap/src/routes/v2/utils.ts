@@ -152,7 +152,9 @@ export const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
 const getDepositIgnoredFailedState = (failedSwap: FailedSwap) => ({
   failedAt: failedSwap.failedAt.valueOf(),
   failedBlockIndex: failedSwap.failedBlockIndex,
-  mode: failedSwap.refundBroadcastId ? FailureMode.TransactionTainted : FailureMode.IngressIgnored,
+  mode: failedSwap.refundBroadcastId
+    ? FailureMode.TransactionRejectedByBroker
+    : FailureMode.IngressIgnored,
   reason: {
     name: failedSwap.reason,
     message: failedSwapMessage[failedSwap.reason],
