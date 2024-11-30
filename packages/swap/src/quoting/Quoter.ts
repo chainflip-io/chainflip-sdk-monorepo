@@ -272,12 +272,6 @@ export default class Quoter {
       ),
     ];
 
-    logger.info('received limit orders from market makers', {
-      orders,
-      requestId: request.request_id,
-      duration: performance.now() - start,
-    });
-
     return orders;
   }
 }
