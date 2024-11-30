@@ -253,8 +253,6 @@ export default class Quoter {
 
     const quotes = await this.collectMakerQuotes(request);
 
-    if (!quotes) return [];
-
     logger.info('received limit orders from market makers', {
       quotes,
       requestId: request.request_id,
