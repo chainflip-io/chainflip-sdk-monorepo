@@ -135,10 +135,10 @@ describe(RedisClient, () => {
             chain: 'Bitcoin',
           },
           deposit_chain_block_height: 1234,
-          deposit_details: { 
-            tx_id: '0x1234', 
-            vout: 1
-          }
+          deposit_details: {
+            tx_id: '0x1234',
+            vout: 1,
+          },
         }),
       ]);
       const client = new RedisClient(url);
@@ -148,10 +148,10 @@ describe(RedisClient, () => {
           amount: 0x8000n,
           asset: 'BTC',
           deposit_chain_block_height: 1234,
-          deposit_details: { 
-            tx_id: '0x1234', 
-            vout: 1
-          }
+          deposit_details: {
+            tx_id: '0x1234',
+            vout: 1,
+          },
         },
       ]);
       expect(mock).toHaveBeenCalledWith('deposit:Bitcoin:0x1234', 0, -1);

@@ -30,18 +30,12 @@ const ArbitrumDeposit = z.object({
   tx_hashes: z.array(hexString),
 });
 
-
 const depositSchema = jsonString.pipe(
   z.object({
     amount: u128,
     asset: z.union([string, chainAsset]),
     deposit_chain_block_height: number,
-    deposit_details: z.union([
-      BitcoinDeposit,
-      EthereumDeposit,
-      PolkadotDeposit,
-      ArbitrumDeposit,
-    ])
+    deposit_details: z.union([BitcoinDeposit, EthereumDeposit, PolkadotDeposit, ArbitrumDeposit]),
   }),
 );
 
