@@ -144,16 +144,16 @@ describe(Quoter, () => {
 
               if (srcAsset === 'Usdc') {
                 baseAsset = destAsset;
-                side = 'buy';
+                side = 'sell';
               } else if (destAsset === 'Usdc') {
                 baseAsset = srcAsset;
-                side = 'sell';
+                side = 'buy';
               } else if (i === 0) {
                 baseAsset = srcAsset;
-                side = 'sell';
+                side = 'buy';
               } else if (i === 1) {
                 baseAsset = destAsset;
-                side = 'buy';
+                side = 'sell';
               } else {
                 throw new Error('unexpected leg index');
               }

@@ -1,5 +1,4 @@
 import { hexEncodeNumber } from '@chainflip/utils/number';
-import { toLowerCase } from '@chainflip/utils/string';
 import assert from 'assert';
 import BigNumber from 'bignumber.js';
 import { randomUUID } from 'crypto';
@@ -65,7 +64,7 @@ const formatLimitOrders = (
 
   return quotes.map(([tick, amount]) => ({
     LimitOrder: {
-      side: toLowerCase(leg.side),
+      side: leg.side === 'BUY' ? 'sell' : 'buy',
       base_asset: leg.base_asset,
       quote_asset: leg.quote_asset,
       tick,
@@ -253,12 +252,6 @@ export default class Quoter {
 
     const quotes = await this.collectMakerQuotes(request);
 
-    logger.info('received limit orders from market makers', {
-      quotes,
-      requestId: request.request_id,
-      duration: performance.now() - start,
-    });
-
     const orders = [
       ...formatLimitOrders(
         quotes.flatMap(([, quote]) => quote.legs[0]),
@@ -269,6 +262,16 @@ export default class Quoter {
         legs[1]?.toJSON(),
       ),
     ];
+
+    logger.info('received limit orders from market makers', {
+      quotes,
+      orders,
+      srcAsset,
+      destAsset,
+      swapInputAmount: swapInputAmount.toString(),
+      requestId: request.request_id,
+      duration: performance.now() - start,
+    });
 
     return orders;
   }
