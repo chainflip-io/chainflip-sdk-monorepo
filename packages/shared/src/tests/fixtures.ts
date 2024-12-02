@@ -34,6 +34,7 @@ export const swappingEnvironment = ({
       Bitcoin: { BTC: maxSwapAmount },
       Ethereum: { ETH: null, USDC: maxSwapAmount, FLIP: null, USDT: null },
       Arbitrum: { ETH: null, USDC: null },
+      Assethub: { DOT: null, USDC: null, USDT: null },
     },
     network_fee_hundredth_pips: 1000,
   },
@@ -77,18 +78,33 @@ export const ingressEgressEnvironment = ({
         ETH: minDepositAmount,
         USDC: minDepositAmount,
       },
+      Assethub: {
+        DOT: minDepositAmount,
+        USDC: minDepositAmount,
+        USDT: minDepositAmount,
+      },
     },
     ingress_fees: {
       Bitcoin: { BTC: ingressFee },
       Polkadot: { DOT: ingressFee },
       Ethereum: { ETH: ingressFee, FLIP: ingressFee, USDC: ingressFee, USDT: ingressFee },
       Arbitrum: { ETH: ingressFee, USDC: ingressFee },
+      Assethub: {
+        DOT: ingressFee,
+        USDC: ingressFee,
+        USDT: ingressFee,
+      },
     },
     egress_fees: {
       Bitcoin: { BTC: egressFee },
       Polkadot: { DOT: egressFee },
       Ethereum: { ETH: egressFee, FLIP: egressFee, USDC: egressFee, USDT: egressFee },
       Arbitrum: { ETH: egressFee, USDC: egressFee },
+      Assethub: {
+        DOT: ingressFee,
+        USDC: ingressFee,
+        USDT: ingressFee,
+      },
     },
     witness_safety_margins: {
       Ethereum: 1,
@@ -109,18 +125,25 @@ export const ingressEgressEnvironment = ({
       },
       Polkadot: { DOT: minEgressAmount },
       Bitcoin: { BTC: '0x258' },
+      Assethub: {
+        DOT: minEgressAmount,
+        USDC: minEgressAmount,
+        USDT: minEgressAmount,
+      },
     },
     channel_opening_fees: {
       Bitcoin: channelOpeningFee ?? '0x0',
       Ethereum: channelOpeningFee ?? '0x10',
       Polkadot: channelOpeningFee ?? '0x0',
       Arbitrum: channelOpeningFee ?? '0x0',
+      Assethub: channelOpeningFee ?? '0x0',
     },
     max_swap_retry_duration_blocks: {
       Ethereum: 10,
       Polkadot: 20,
       Bitcoin: 30,
       Arbitrum: 40,
+      Assethub: 50,
     },
   },
 });
@@ -160,6 +183,7 @@ const poolsEnvironment = (): RpcResponse<CfPoolsEnvironmentResponse> => {
         Ethereum: { ETH: fees, FLIP: fees, USDT: fees },
         Polkadot: { DOT: fees },
         Arbitrum: { ETH: fees, USDC: fees },
+        Assethub: { DOT: fees, USDC: fees, USDT: fees },
       },
     },
   };
