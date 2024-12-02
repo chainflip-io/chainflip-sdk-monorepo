@@ -102,6 +102,7 @@ describe('ingress-egress-tracking', () => {
       );
 
       const deposit = await getPendingDeposit('Btc', 'tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf');
+
       expect(logger.error).not.toHaveBeenCalled();
       expect(deposit).toEqual({
         amount: '36864',
@@ -133,6 +134,7 @@ describe('ingress-egress-tracking', () => {
       ]);
 
       const deposit = await getPendingDeposit('Btc', 'tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf');
+
       expect(logger.error).not.toHaveBeenCalled();
       expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 4 });
     });
