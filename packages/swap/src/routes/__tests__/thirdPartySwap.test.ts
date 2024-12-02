@@ -58,14 +58,10 @@ describe('server', () => {
       },
     ])('throws when request body has missing info', async (requestBody) => {
       const { status } = await request(app).post('/third-party-swap').send(requestBody);
-      try {
-        await prisma.thirdPartySwap.findFirstOrThrow({
-          where: { uuid: requestBody.uuid },
-        });
-      } catch (e) {
-        expect(e).toBeInstanceOf(Error);
-        expect((e as Error).message).toBe('No ThirdPartySwap found');
-      }
+      const swap = await prisma.thirdPartySwap.findFirst({
+        where: { uuid: requestBody.uuid },
+      });
+      expect(swap).toBeNull();
       expect(status).not.toBe(201);
     });
 

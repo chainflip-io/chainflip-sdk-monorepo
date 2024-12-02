@@ -193,7 +193,7 @@ describe(Quoter, () => {
           }),
       ),
     );
-    await promisify(server.close.bind(server))();
+    await server.close();
   });
 
   describe('constructor', () => {

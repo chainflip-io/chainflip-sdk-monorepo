@@ -61,8 +61,7 @@ export const isEgressableSwap = (swap: Swap) => {
     case 'INGRESS_EGRESS_FEE':
       return false;
     default:
-      assertUnreachable(swap.type);
-      return false;
+      return assertUnreachable(swap.type);
   }
 };
 
