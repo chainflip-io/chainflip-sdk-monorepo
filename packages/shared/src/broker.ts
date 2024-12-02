@@ -1,5 +1,9 @@
 import * as bitcoin from '@chainflip/bitcoin';
-import type { EncodedAddress, ForeignChainAddress } from '@chainflip/extrinsics/160/common';
+import type {
+  EncodedAddress,
+  ForeignChainAddress,
+  ChainflipAsset,
+} from '@chainflip/extrinsics/160/common';
 import type { SwappingRequestSwapDepositAddressWithAffiliates } from '@chainflip/extrinsics/160/swapping/requestSwapDepositAddressWithAffiliates';
 import { HttpClient, RpcParams } from '@chainflip/rpc';
 import * as base58 from '@chainflip/utils/base58';
@@ -232,11 +236,14 @@ export const buildExtrinsicPayload = (
   swapRequest: ExtrinsicPayloadParams,
   chainflipNetwork: ChainflipNetwork,
 ): SwappingRequestSwapDepositAddressWithAffiliates => {
-  const srcAsset = getInternalAsset({ asset: swapRequest.srcAsset, chain: swapRequest.srcChain });
+  const srcAsset = getInternalAsset({
+    asset: swapRequest.srcAsset,
+    chain: swapRequest.srcChain,
+  }) as ChainflipAsset; // TODO: remove cast when asset hub assets (AssetHub, Asset Hub) are added to extrinsic package
   const destAsset = getInternalAsset({
     asset: swapRequest.destAsset,
     chain: swapRequest.destChain,
-  });
+  }) as ChainflipAsset; // TODO: remove cast when asset hub assets (AssetHub, Asset Hub) are added to extrinsic package
 
   const ccmParams = transformedCcmParamsSchema('0x')
     .nullable()
