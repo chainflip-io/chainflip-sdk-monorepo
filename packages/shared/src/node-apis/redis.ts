@@ -12,11 +12,36 @@ const jsonString = string.transform((value) => JSON.parse(value));
 
 const chainAsset = uncheckedAssetAndChain.transform(({ asset }) => asset);
 
+const PolkadotExtrinsicIndex = z.number();
+
+const BitcoinDeposit = z.object({
+  tx_id: hexString,
+  vout: z.number().int(),
+});
+
+const EthereumDeposit = z.object({
+  tx_hashes: z.array(hexString),
+});
+const PolkadotDeposit = z.object({
+  extrinsic_index: PolkadotExtrinsicIndex,
+});
+
+const ArbitrumDeposit = z.object({
+  tx_hashes: z.array(hexString),
+});
+
+
 const depositSchema = jsonString.pipe(
   z.object({
     amount: u128,
     asset: z.union([string, chainAsset]),
     deposit_chain_block_height: number,
+    deposit_details: z.union([
+      BitcoinDeposit,
+      EthereumDeposit,
+      PolkadotDeposit,
+      ArbitrumDeposit,
+    ])
   }),
 );
 

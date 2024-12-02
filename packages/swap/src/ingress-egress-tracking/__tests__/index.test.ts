@@ -51,6 +51,9 @@ describe('ingress-egress-tracking', () => {
           amount: '0x9000',
           asset: 'FLIP',
           deposit_chain_block_height: 1234567890,
+          deposit_details: { 
+            tx_hashes: ["0x1234"]
+          }
         }),
       );
 
@@ -68,6 +71,9 @@ describe('ingress-egress-tracking', () => {
           amount: '0x9000',
           asset: 'FLIP',
           deposit_chain_block_height: 1234567890,
+          deposit_details: { 
+            tx_hashes: ["0x1234"]
+          }
         }),
       );
 
@@ -121,13 +127,13 @@ describe('ingress-egress-tracking', () => {
             amount: '0x9000',
             asset: 'BTC',
             deposit_chain_block_height: 1234567890,
+            deposit_details: { tx_id: '0x1234', vout: 1, }
           }),
         ),
         updateChainTracking({ chain: 'Bitcoin', height: 1234567894n }),
       ]);
 
       const deposit = await getPendingDeposit('Btc', 'tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf');
-
       expect(logger.error).not.toHaveBeenCalled();
       expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 4 });
     });

@@ -100,6 +100,12 @@ describe(RedisClient, () => {
           amount: '0x8000',
           asset: 'ETH',
           deposit_chain_block_height: 1234,
+          deposit_details: {
+            tx_hashes: [
+              '0x6e1bb8a886326085d5fc9f8aa3e0e3fd0076e1035f43399052c3917f7380fbc9',
+              '0x4abb22dbe369911543c51c48ff7967e331b552a461db2b5c39fd46ddbd1e400d',
+            ],
+          },
         }),
       ]);
       const client = new RedisClient(url);
@@ -109,6 +115,12 @@ describe(RedisClient, () => {
           amount: 0x8000n,
           asset: 'ETH',
           deposit_chain_block_height: 1234,
+          deposit_details: {
+            tx_hashes: [
+              '0x6e1bb8a886326085d5fc9f8aa3e0e3fd0076e1035f43399052c3917f7380fbc9',
+              '0x4abb22dbe369911543c51c48ff7967e331b552a461db2b5c39fd46ddbd1e400d',
+            ],
+          },
         },
       ]);
       expect(mock).toHaveBeenCalledWith('deposit:Ethereum:0x1234', 0, -1);
@@ -123,6 +135,10 @@ describe(RedisClient, () => {
             chain: 'Bitcoin',
           },
           deposit_chain_block_height: 1234,
+          deposit_details: { 
+            tx_id: '0x1234', 
+            vout: 1
+          }
         }),
       ]);
       const client = new RedisClient(url);
@@ -132,6 +148,10 @@ describe(RedisClient, () => {
           amount: 0x8000n,
           asset: 'BTC',
           deposit_chain_block_height: 1234,
+          deposit_details: { 
+            tx_id: '0x1234', 
+            vout: 1
+          }
         },
       ]);
       expect(mock).toHaveBeenCalledWith('deposit:Bitcoin:0x1234', 0, -1);
@@ -143,6 +163,12 @@ describe(RedisClient, () => {
           amount: '0x8000',
           asset: 'FLIP',
           deposit_chain_block_height: 1234,
+          deposit_details: {
+            tx_hashes: [
+              '0x6e1bb8a886326085d5fc9f8aa3e0e3fd0076e1035f43399052c3917f7380fbc9',
+              '0x4abb22dbe369911543c51c48ff7967e331b552a461db2b5c39fd46ddbd1e400d',
+            ],
+          },
         }),
       ]);
       const client = new RedisClient(url);
