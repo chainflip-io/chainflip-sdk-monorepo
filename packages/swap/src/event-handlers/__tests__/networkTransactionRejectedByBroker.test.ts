@@ -1,5 +1,5 @@
+import { formatTxHash } from '@/shared/common'
 import prisma from '../../client';
-import { formatTxHash } from '../common';
 import networkTransactionRejectedByBroker from '../networkTransactionRejectedByBroker';
 
 describe(networkTransactionRejectedByBroker, () => {

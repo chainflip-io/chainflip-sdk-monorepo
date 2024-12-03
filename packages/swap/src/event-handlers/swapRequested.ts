@@ -1,10 +1,10 @@
 import { swappingSwapRequested as schema160 } from '@chainflip/processor/160/swapping/swapRequested';
 import { swappingSwapRequested as schema170 } from '@chainflip/processor/170/swapping/swapRequested';
 import z from 'zod';
+import { formatTxHash } from '@/shared/common';
 import { assetConstants, InternalAsset } from '@/shared/enums';
 import { assertNever } from '@/shared/guards';
 import { pascalCaseToScreamingSnakeCase } from '@/shared/strings';
-import { formatTxHash } from './common';
 import { Prisma } from '../client';
 import type { EventHandlerArgs } from './index';
 
