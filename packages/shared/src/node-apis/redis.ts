@@ -13,31 +13,31 @@ const jsonString = string.transform((value) => JSON.parse(value));
 
 const chainAsset = uncheckedAssetAndChain.transform(({ asset }) => asset);
 
-const BitcoinDeposit = z.object({
+const bitcoinDeposit = z.object({
   tx_id: hexString.transform((value) => formatTxHash('Bitcoin', value)),
   vout: z.number().int(),
 });
 
-type BitcoinDepositType = z.infer<typeof BitcoinDeposit>;
+type BitcoinDepositType = z.infer<typeof bitcoinDeposit>;
 
-const EVMDeposit = z.object({
+const evmDeposit = z.object({
   tx_hashes: z.array(hexString),
 });
 
-type EVMDepositType = z.infer<typeof EVMDeposit>;
+type EvmDepositType = z.infer<typeof evmDeposit>;
 
-const PolkadotDeposit = z.object({
+const polkadotDeposit = z.object({
   extrinsic_index: z.number(),
 });
 
-type PolkadotDepositType = z.infer<typeof PolkadotDeposit>;
+type PolkadotDepositType = z.infer<typeof polkadotDeposit>;
 
 const depositSchema = jsonString.pipe(
   z.object({
     amount: u128,
     asset: z.union([string, chainAsset]),
     deposit_chain_block_height: number,
-    deposit_details: z.union([EVMDeposit, BitcoinDeposit, PolkadotDeposit]).optional(),
+    deposit_details: z.union([evmDeposit, bitcoinDeposit, polkadotDeposit]).optional(),
   }),
 );
 
@@ -171,7 +171,7 @@ export default class RedisClient {
         switch (chain) {
           case 'Ethereum':
           case 'Arbitrum':
-            return { ...baseDeposit, tx_refs: (deposit_details as EVMDepositType).tx_hashes };
+            return { ...baseDeposit, tx_refs: (deposit_details as EvmDepositType).tx_hashes };
           case 'Bitcoin':
             return { ...baseDeposit, tx_refs: [(deposit_details as BitcoinDepositType).tx_id] };
           case 'Polkadot': {
