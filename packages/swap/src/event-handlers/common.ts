@@ -6,7 +6,7 @@ import { bitcoinIngressEgressDepositFinalised as bitcoinSchema170 } from '@chain
 import { Metadata, TypeRegistry } from '@polkadot/types';
 import assert from 'assert';
 import { z } from 'zod';
-import { formatTxHash } from "@/shared/common"; 
+import { formatTxHash } from '@/shared/common';
 import { Chain } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
 import {
