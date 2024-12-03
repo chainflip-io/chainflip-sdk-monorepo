@@ -101,10 +101,7 @@ describe(RedisClient, () => {
           asset: 'ETH',
           deposit_chain_block_height: 1234,
           deposit_details: {
-            tx_hashes: [
-              '0x6e1bb8a886326085d5fc9f8aa3e0e3fd0076e1035f43399052c3917f7380fbc9',
-              '0x4abb22dbe369911543c51c48ff7967e331b552a461db2b5c39fd46ddbd1e400d',
-            ],
+            tx_hashes: ["0xdeadc0de"]
           },
         }),
       ]);
@@ -113,16 +110,11 @@ describe(RedisClient, () => {
       const deposits = await client.getDeposits('Ethereum', 'ETH', '0x1234');
       expect(deposits).toEqual([
         {
-          amount: 0x8000n,
+          amount: 32768n,
           asset: 'ETH',
           deposit_chain_block_height: 1234,
-          deposit_details: {
-            tx_hashes: [
-              '0x6e1bb8a886326085d5fc9f8aa3e0e3fd0076e1035f43399052c3917f7380fbc9',
-              '0x4abb22dbe369911543c51c48ff7967e331b552a461db2b5c39fd46ddbd1e400d',
-            ],
-          },
-        },
+          tx_refs: [ '0xdeadc0de' ]
+        }
       ]);
       expect(mock).toHaveBeenCalledWith('deposit:Ethereum:0x1234', 0, -1);
     });
@@ -136,9 +128,9 @@ describe(RedisClient, () => {
             chain: 'Bitcoin',
           },
           deposit_chain_block_height: 1234,
-          deposit_details: { 
-            tx_id: '0x1234', 
-            vout: 1
+          deposit_details: {
+            tx_id: '0x1234',
+            vout: 1,
           }
         }),
       ]);
@@ -149,10 +141,7 @@ describe(RedisClient, () => {
           amount: 0x8000n,
           asset: 'BTC',
           deposit_chain_block_height: 1234,
-          deposit_details: { 
-            tx_id: '3412', 
-            vout: 1
-          }
+          tx_refs: ['3412'],
         },
       ]);
       expect(mock).toHaveBeenCalledWith('deposit:Bitcoin:0x1234', 0, -1);
@@ -164,12 +153,7 @@ describe(RedisClient, () => {
           amount: '0x8000',
           asset: 'FLIP',
           deposit_chain_block_height: 1234,
-          deposit_details: {
-            tx_hashes: [
-              '0x6e1bb8a886326085d5fc9f8aa3e0e3fd0076e1035f43399052c3917f7380fbc9',
-              '0x4abb22dbe369911543c51c48ff7967e331b552a461db2b5c39fd46ddbd1e400d',
-            ],
-          },
+          tx_refs: ['0x65f4c6ba793815c4d1a9e4f0fd43c0f6f26ff5f1678a621d543a8928c1c2e978'],
         }),
       ]);
       const client = new RedisClient(url);

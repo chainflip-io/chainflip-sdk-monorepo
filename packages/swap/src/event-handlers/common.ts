@@ -2,13 +2,11 @@ import { bitcoinIngressEgressDepositFinalised as bitcoinSchema160 } from '@chain
 import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/160/ethereumIngressEgress/depositFinalised';
 import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/160/polkadotIngressEgress/depositFinalised';
 import { bitcoinIngressEgressDepositFinalised as bitcoinSchema170 } from '@chainflip/processor/170/bitcoinIngressEgress/depositFinalised';
-import * as base58 from '@chainflip/utils/base58';
-import { hexToBytes, reverseBytes } from '@chainflip/utils/bytes';
-import type { HexString } from '@chainflip/utils/types';
 // @ts-expect-error should still work
 import { Metadata, TypeRegistry } from '@polkadot/types';
 import assert from 'assert';
 import { z } from 'zod';
+import { formatTxHash } from "@/shared/common"; 
 import { Chain } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
 import {
@@ -124,21 +122,6 @@ export const getStateChainError = async (
     },
   });
 };
-
-export function formatTxHash(chain: Chain, txHash: string): string;
-export function formatTxHash(chain: Chain, txHash: string | undefined): string | undefined;
-export function formatTxHash(chain: Chain, txHash: string | undefined) {
-  if (!txHash) return txHash;
-
-  switch (chain) {
-    case 'Bitcoin':
-      return reverseBytes(txHash.slice(2));
-    case 'Solana':
-      return base58.encode(hexToBytes(txHash as HexString));
-    default:
-      return txHash;
-  }
-}
 
 export const getDepositTxRef = (
   chain: Chain,
