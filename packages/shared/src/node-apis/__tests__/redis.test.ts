@@ -101,22 +101,54 @@ describe(RedisClient, () => {
           asset: 'ETH',
           deposit_chain_block_height: 1234,
           deposit_details: {
-            tx_hashes: ["0xdeadc0de"]
+            tx_hashes: ['0xdeadc0de'],
           },
         }),
       ]);
-      
       const client = new RedisClient(url);
       const deposits = await client.getDeposits('Ethereum', 'ETH', '0x1234');
       expect(deposits).toEqual([
         {
-          amount: 32768n,
+          amount: 0x8000n,
           asset: 'ETH',
           deposit_chain_block_height: 1234,
-          tx_refs: [ '0xdeadc0de' ]
-        }
+          tx_refs: ['0xdeadc0de'],
+        },
       ]);
       expect(mock).toHaveBeenCalledWith('deposit:Ethereum:0x1234', 0, -1);
+    });
+
+    it('returns the deposits if found - Polkadot', async () => {
+      const mock = jest.mocked(Redis.prototype.lrange).mockResolvedValueOnce([
+        JSON.stringify({
+          amount: '0x8000',
+          asset: 'DOT',
+          deposit_chain_block_height: 100,
+          deposit_details: {
+            extrinsic_index: 20,
+          },
+        }),
+      ]);
+
+      const client = new RedisClient(url);
+      const deposits = await client.getDeposits(
+        'Polkadot',
+        'DOT',
+        '121LWHo3TJYdvSuDVhdCY6P9Bk6Cd5wMkkvMnU5joWJfuWBJ',
+      );
+      expect(deposits).toEqual([
+        {
+          amount: 0x8000n,
+          asset: 'DOT',
+          deposit_chain_block_height: 100,
+          tx_refs: ['100-20'],
+        },
+      ]);
+      expect(mock).toHaveBeenCalledWith(
+        'deposit:Polkadot:0x2c7de4a2d760264b29f2033b67aa882f300e1785bc7d130fbf67f5b127202169',
+        0,
+        -1,
+      );
     });
 
     it('>V120 returns the deposits if found', async () => {
@@ -131,7 +163,7 @@ describe(RedisClient, () => {
           deposit_details: {
             tx_id: '0x1234',
             vout: 1,
-          }
+          },
         }),
       ]);
       const client = new RedisClient(url);

@@ -5,7 +5,7 @@ import { sorter } from '../arrays';
 import { formatTxHash } from '../common';
 import { type Asset, type Chain } from '../enums';
 import { number, u128, string, uncheckedAssetAndChain, hexString } from '../parsers';
- 
+
 const ss58ToHex = (address: string) =>
   `0x${Buffer.from(ss58.decode(address).data).toString('hex')}`;
 
@@ -14,7 +14,7 @@ const jsonString = string.transform((value) => JSON.parse(value));
 const chainAsset = uncheckedAssetAndChain.transform(({ asset }) => asset);
 
 const BitcoinDeposit = z.object({
-  tx_id: hexString.transform((value) => formatTxHash("Bitcoin", value)),
+  tx_id: hexString.transform((value) => formatTxHash('Bitcoin', value)),
   vout: z.number().int(),
 });
 
@@ -27,7 +27,7 @@ const EVMDeposit = z.object({
 type EVMDepositType = z.infer<typeof EVMDeposit>;
 
 const PolkadotDeposit = z.object({
-  extrinsic_index: z.string(),
+  extrinsic_index: z.number(),
 });
 
 type PolkadotDepositType = z.infer<typeof PolkadotDeposit>;
@@ -41,7 +41,9 @@ const depositSchema = jsonString.pipe(
   }),
 );
 
-type PendingDeposit = Omit<z.output<typeof depositSchema>, 'deposit_details'> & { tx_refs: string[] };
+type PendingDeposit = Omit<z.output<typeof depositSchema>, 'deposit_details'> & {
+  tx_refs: string[];
+};
 
 type Deposit = z.infer<typeof depositSchema>;
 
@@ -149,43 +151,41 @@ export default class RedisClient {
     const value = await this.client.get(key);
     return value ? broadcastParsers[chain].parse(JSON.parse(value)) : null;
   }
-  
+
   async getDeposits(chain: Chain, asset: Asset, address: string): Promise<PendingDeposit[]> {
     const parsedAddress = chain === 'Polkadot' ? ss58ToHex(address) : address;
     const key = `deposit:${chain}:${parsedAddress}`;
     const deposits = await this.client.lrange(key, 0, -1);
-  
     return deposits
       .map((deposit) => {
-        const parsedDeposit = depositSchema.parse(deposit);  
-        const { deposit_details, deposit_chain_block_height } = parsedDeposit;  
-  
+        const parsedDeposit = depositSchema.parse(deposit);
         const baseDeposit = {
           amount: parsedDeposit.amount,
           asset: parsedDeposit.asset,
           deposit_chain_block_height: parsedDeposit.deposit_chain_block_height,
         };
-  
+        const { deposit_details, deposit_chain_block_height } = parsedDeposit;
+
         if (!deposit_details) return { ...baseDeposit, tx_refs: [] };
-  
+
         switch (chain) {
           case 'Ethereum':
           case 'Arbitrum':
             return { ...baseDeposit, tx_refs: (deposit_details as EVMDepositType).tx_hashes };
           case 'Bitcoin':
-            return { ...baseDeposit, tx_refs: [(deposit_details as BitcoinDepositType).tx_id]  };
+            return { ...baseDeposit, tx_refs: [(deposit_details as BitcoinDepositType).tx_id] };
           case 'Polkadot': {
             const extrinsicIndex = `${deposit_chain_block_height}-${(deposit_details as PolkadotDepositType).extrinsic_index || ''}`;
             return { ...baseDeposit, tx_refs: [extrinsicIndex] };
           }
           default:
-            return { ...baseDeposit, tx_refs: [] };  
+            return { ...baseDeposit, tx_refs: [] };
         }
       })
-      .filter((deposit) => deposit.asset === asset) 
-      .sort(sortDepositAscending);  
+      .filter((deposit) => deposit.asset === asset)
+      .sort(sortDepositAscending);
   }
-  
+
   async getMempoolTransaction(chain: 'Bitcoin', address: string) {
     const key = `mempool:${chain}:${address}`;
     const value = await this.client.get(key);
