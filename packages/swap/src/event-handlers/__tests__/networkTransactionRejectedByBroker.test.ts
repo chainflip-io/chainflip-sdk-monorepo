@@ -1,4 +1,4 @@
-import { formatTxHash } from '@/shared/common'
+import { formatTxHash } from '@/shared/common';
 import prisma from '../../client';
 import networkTransactionRejectedByBroker from '../networkTransactionRejectedByBroker';
 
