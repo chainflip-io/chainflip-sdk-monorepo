@@ -64,6 +64,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@trpc/server": "^10.45.2",
     "tsup": "^8.3.0"
   }
 }
