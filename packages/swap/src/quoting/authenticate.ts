@@ -106,7 +106,7 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
 
     next();
   } catch (error) {
-    logger.error('authentication error', { error: (error as Error).message });
+    logger.warn('authentication error', { error: (error as Error).message });
     next(error as Error);
   }
 };

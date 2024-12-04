@@ -137,6 +137,7 @@ router.get(
       refundEgressFields,
       estimatedDurations,
       srcChainRequiredBlockConfirmations,
+      lastStateChainUpdate,
     ] = await Promise.all([
       getEgressStatusFields(
         swapEgress,
@@ -154,6 +155,7 @@ router.get(
       ),
       srcAsset && destAsset && estimateSwapDuration({ srcAsset, destAsset }),
       getRequiredBlockConfirmations(internalSrcAsset),
+      getLastChainTrackingUpdateTimestamp(),
     ]);
 
     const isVaultSwap = Boolean(swapRequest?.originType === 'VAULT');
@@ -240,7 +242,7 @@ router.get(
             swapDepositChannel?.failedBoosts.at(0)?.failedAtBlockIndex ?? undefined,
         },
       }),
-      lastStatechainUpdateAt: (await getLastChainTrackingUpdateTimestamp())?.valueOf(),
+      lastStatechainUpdateAt: lastStateChainUpdate?.valueOf(),
     };
 
     logger.info('sending response for swap request', { id, response });
