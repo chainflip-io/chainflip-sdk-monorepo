@@ -47,7 +47,6 @@ export const getQuoteV2: BackendQuery<
   QuoteRequest & {
     brokerCommissionBps?: number;
     dcaEnabled: boolean;
-    autoSlippageEnabled: boolean;
   },
   QuoteResponseV2
 > = async (baseUrl, quoteRequest, { signal }) => {
@@ -62,7 +61,6 @@ export const getQuoteV2: BackendQuery<
       brokerCommissionBps: String(brokerCommissionBps),
     }),
     dcaEnabled: String(quoteRequest.dcaEnabled),
-    autoSlippageEnabled: String(quoteRequest.autoSlippageEnabled),
   };
 
   const { data } = await axios.get<Quote[]>('/v2/quote', {

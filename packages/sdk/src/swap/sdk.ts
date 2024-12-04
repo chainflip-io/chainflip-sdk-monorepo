@@ -65,7 +65,6 @@ export type SwapSDKOptions = {
   rpcUrl?: string;
   enabledFeatures?: {
     dca?: boolean;
-    experimentalRecommendedSlippage?: boolean;
   };
 };
 
@@ -97,8 +96,6 @@ export class SwapSDK {
 
   private dcaEnabled = false;
 
-  private autoSlippageEnabled = false;
-
   constructor(options: SwapSDKOptions = {}) {
     const network = options.network ?? ChainflipNetworks.perseverance;
     this.options = {
@@ -117,7 +114,6 @@ export class SwapSDK {
       ],
     });
     this.dcaEnabled = options.enabledFeatures?.dca ?? false;
-    this.autoSlippageEnabled = options.enabledFeatures?.experimentalRecommendedSlippage ?? false;
     this.stateChainEnvironmentCache = new AsyncCacheMap({
       fetch: (_key) => getEnvironment(this.rpcConfig),
       ttl: 60_000 * 10,
@@ -206,7 +202,6 @@ export class SwapSDK {
         ...remainingRequest,
         brokerCommissionBps: submitterBrokerCommissionBps + affiliateBrokerCommissionBps,
         dcaEnabled: this.dcaEnabled,
-        autoSlippageEnabled: this.autoSlippageEnabled,
       },
       options,
     );
