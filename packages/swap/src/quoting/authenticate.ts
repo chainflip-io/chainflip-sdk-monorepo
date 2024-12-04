@@ -65,12 +65,16 @@ const parseKey = (key: string) => {
 };
 
 const authenticate = async (socket: QuotingSocket, next: Next) => {
+  let accountId: string | undefined;
+
   try {
     const result = authSchema.safeParse(socket.handshake.auth);
 
     logger.info('received auth', { auth: result.data, error: result.error?.message });
 
     assert(result.success, 'invalid auth');
+
+    accountId = result.data.account_id;
 
     const auth = result.data;
     const timeElapsed = Date.now() - auth.timestamp;
@@ -106,7 +110,7 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
 
     next();
   } catch (error) {
-    logger.error('authentication error', { error: (error as Error).message });
+    logger.warn('authentication error', { error: (error as Error).message, accountId });
     next(error as Error);
   }
 };
