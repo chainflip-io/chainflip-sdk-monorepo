@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { assetConstants, chainConstants } from '@/shared/enums';
+import { Asset, assetConstants, chainConstants } from '@/shared/enums';
 import env from '@/swap/config/env';
 import { getDeployedLiquidity, getUndeployedLiquidity } from './pools';
 import { getRequiredBlockConfirmations } from './rpc';
@@ -85,6 +85,15 @@ export const calculateRecommendedSlippage = async ({
   boostFeeBps?: number;
   dcaChunks: number;
 }) => {
+  // do not accept significant price movements for stable assets independently of available liquidity
+  const stableAssets: Asset[] = ['USDC', 'USDT'];
+  if (
+    stableAssets.includes(assetConstants[srcAsset].asset) &&
+    stableAssets.includes(assetConstants[destAsset].asset)
+  ) {
+    return 0.5;
+  }
+
   const BASE_SLIPPAGE = 1;
 
   // use different limits for flip swaps because chainflip is the primary market for the flip token
