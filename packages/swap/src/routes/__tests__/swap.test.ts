@@ -478,10 +478,6 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body).toMatchInlineSnapshot(`
         {
-          "ccmMetadata": {
-            "gasBudget": "100000",
-            "message": "0xdeadbeef",
-          },
           "ccmParams": {
             "gasBudget": "100000",
             "message": "0xdeadbeef",
@@ -629,7 +625,6 @@ describe('server', () => {
           "depositChannelOpenedThroughBackend": false,
           "depositReceivedAt": 552000,
           "depositReceivedBlockIndex": "92-400",
-          "depositTransactionHash": "0xa2d5df86c6ec123283eb052c598a0f4b650367a81ad141b9ff3adb0286a86c17",
           "depositTransactionRef": "0xa2d5df86c6ec123283eb052c598a0f4b650367a81ad141b9ff3adb0286a86c17",
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
@@ -1307,7 +1302,6 @@ describe('server', () => {
           "depositAmount": "5000000000000000000",
           "depositReceivedAt": 552000,
           "depositReceivedBlockIndex": "92-400",
-          "depositTransactionHash": "0xb2dcb9ce8d50f0ab869995fee8482bcf304ffcfe5681ca748f90e34c0ad7b241",
           "depositTransactionRef": "0xb2dcb9ce8d50f0ab869995fee8482bcf304ffcfe5681ca748f90e34c0ad7b241",
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",

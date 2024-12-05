@@ -166,7 +166,6 @@ router.get(
       swapId: swapRequest?.nativeId.toString(),
       depositAmount:
         readField(swapRequest, failedSwap, 'depositAmount')?.toFixed() ?? pendingDeposit?.amount,
-      depositTransactionHash: depositTransactionRef, // DEPRECATED(1.5): use depositTransactionRef instead
       depositTransactionRef,
       depositTransactionConfirmations: pendingDeposit?.transactionConfirmations,
       depositReceivedAt: swapRequest?.depositFinalisedAt?.valueOf(),
@@ -196,7 +195,6 @@ router.get(
       estimatedDepositChannelExpiryTime: swapDepositChannel?.estimatedExpiryAt?.valueOf(),
       isDepositChannelExpired: swapDepositChannel?.isExpired,
       ccmDepositReceivedBlockIndex: swapRequest?.ccmDepositReceivedBlockIndex ?? undefined,
-      ccmMetadata: ccmParams, // DEPRECATED(1.5): use ccmParams instead
       ccmParams,
       depositChannelOpenedThroughBackend: swapDepositChannel?.openedThroughBackend,
       broadcastTransactionRef: egress?.broadcast?.transactionRef ?? egressTrackerTxRef,

@@ -114,7 +114,6 @@ export const openSwapDepositChannelSchema = z
     destChain: chain,
     destAddress: z.string(),
     amount: numericString,
-    ccmMetadata: ccmParamsSchema.optional(), // DEPRECATED(1.5): use ccmParams instead of ccmMetadata
     ccmParams: ccmParamsSchema.optional(),
     maxBoostFeeBps: z.number().optional(),
     srcAddress: z.string().optional(),
