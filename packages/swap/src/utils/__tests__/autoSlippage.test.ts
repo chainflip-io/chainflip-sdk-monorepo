@@ -177,4 +177,33 @@ describe(calculateRecommendedSlippage, () => {
 
     expect(result).toEqual(2);
   });
+
+  it('should return the correct value for swaps between stable assets', async () => {
+    expect(
+      await calculateRecommendedSlippage({
+        srcAsset: 'Usdc',
+        destAsset: 'Usdt',
+        egressAmount: 10n,
+        dcaChunks: 11,
+      }),
+    ).toEqual(0.5);
+
+    expect(
+      await calculateRecommendedSlippage({
+        srcAsset: 'Usdt',
+        destAsset: 'Usdc',
+        egressAmount: 10n,
+        dcaChunks: 11,
+      }),
+    ).toEqual(0.5);
+
+    expect(
+      await calculateRecommendedSlippage({
+        srcAsset: 'ArbUsdc',
+        destAsset: 'SolUsdc',
+        egressAmount: 10n,
+        dcaChunks: 11,
+      }),
+    ).toEqual(0.5);
+  });
 });
