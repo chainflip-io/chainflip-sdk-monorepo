@@ -203,7 +203,7 @@ describe(SwapSDK, () => {
       const result = await sdk.getQuoteV2(params);
       expect(getQuoteV2).toHaveBeenCalledWith(
         'https://chainflip-swap.staging/',
-        { ...params, brokerCommissionBps: 0, dcaEnabled: false, autoSlippageEnabled: false },
+        { ...params, brokerCommissionBps: 0, dcaEnabled: false },
         {},
       );
       expect(result).toEqual({ quote: 1234 });
@@ -235,7 +235,6 @@ describe(SwapSDK, () => {
           amount: '1',
           brokerCommissionBps: 130,
           dcaEnabled: false,
-          autoSlippageEnabled: false,
         },
         {},
       );
