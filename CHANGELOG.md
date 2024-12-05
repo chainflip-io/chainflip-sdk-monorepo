@@ -35,6 +35,12 @@ which it is deprecated.
   - `swap`: time for a swap to be fully executed
   - `egress`: time until the output transaction is included in a block
 
+### Changed
+
+- Fill or Kill parameters are now mandatory when opening a deposit channel through
+  the default broker endpoint. If you are using your own broker, the parameters are
+  still optional for now.
+
 ## 1.6.6
 
 ### Fixed
