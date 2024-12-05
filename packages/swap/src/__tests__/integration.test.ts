@@ -196,7 +196,6 @@ describe('python integration test', () => {
       destAsset: Assets.USDC,
       destChain: Chains.Ethereum,
       amount: '1000000000000000000',
-      autoSlippageEnabled: 'true',
     } as QuoteQueryParams;
     const params = new URLSearchParams(query as Record<string, any>);
 
