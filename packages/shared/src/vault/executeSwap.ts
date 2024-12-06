@@ -30,7 +30,7 @@ import { assertValidAddress } from '../validation/addressValidation';
 import { ExecuteSwapParams, SwapNetworkOptions } from './index';
 
 const encodeAddress = (chain: Chain, address: string) => {
-  if (chain === Chains.Polkadot) return bytesToHex(ss58.decode(dotAddress.parse(address)).data);
+  if (chain === Chains.Polkadot || chain === Chains.Assethub) return bytesToHex(ss58.decode(dotAddress.parse(address)).data);
   if (chain === Chains.Bitcoin) return `0x${Buffer.from(address).toString('hex')}`;
   if (chain === Chains.Ethereum || chain === Chains.Arbitrum) return address;
   if (chain === Chains.Solana) {
