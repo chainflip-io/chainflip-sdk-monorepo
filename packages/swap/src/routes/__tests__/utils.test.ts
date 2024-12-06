@@ -1,4 +1,4 @@
-import { Prisma } from '.prisma/client';
+import { Prisma } from '../../client';
 import { getSwapFields } from '../v2/utils';
 
 describe(getSwapFields, () => {
