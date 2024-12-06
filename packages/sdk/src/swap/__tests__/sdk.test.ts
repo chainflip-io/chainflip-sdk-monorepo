@@ -396,7 +396,6 @@ describe(SwapSDK, () => {
         srcChain: 'Bitcoin',
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
-        ccmParams: undefined,
         affiliateBrokers: [],
         fillOrKillParams: {
           retryDurationBlocks: 500,
@@ -470,7 +469,6 @@ describe(SwapSDK, () => {
         srcChain: 'Bitcoin',
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
-        ccmParams: undefined,
         affiliateBrokers: [],
         dcaParams: {
           numberOfChunks: 100,
@@ -548,7 +546,6 @@ describe(SwapSDK, () => {
         estimatedDepositChannelExpiryTime: undefined,
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
-        ccmParams: undefined,
         affiliateBrokers: [],
       });
     });
@@ -618,7 +615,6 @@ describe(SwapSDK, () => {
         estimatedDepositChannelExpiryTime: undefined,
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
-        ccmParams: undefined,
         affiliateBrokers: [],
       });
     });
@@ -690,7 +686,6 @@ describe(SwapSDK, () => {
         estimatedDepositChannelExpiryTime: undefined,
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
-        ccmParams: undefined,
         affiliateBrokers: [
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
         ],
@@ -770,7 +765,6 @@ describe(SwapSDK, () => {
         estimatedDepositChannelExpiryTime: undefined,
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
-        ccmParams: undefined,
         affiliateBrokers: [],
         fillOrKillParams: {
           retryDurationBlocks: 500,
@@ -865,7 +859,6 @@ describe(SwapSDK, () => {
         },
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
-        ccmParams: undefined,
         affiliateBrokers: [],
         dcaParams: {
           numberOfChunks: 100,
@@ -940,7 +933,6 @@ describe(SwapSDK, () => {
         estimatedDepositChannelExpiryTime: undefined,
         maxBoostFeeBps: MAX_BOOST_FEE_BPS,
         channelOpeningFee: 0n,
-        ccmParams: undefined,
         affiliateBrokers: [],
       });
     });
@@ -998,6 +990,7 @@ describe(SwapSDK, () => {
         depositChannelId: 'channel id',
         depositAddress: 'deposit address',
         brokerCommissionBps: 0,
+        ccmParams: undefined,
         depositChannelExpiryBlock: 123n,
         estimatedDepositChannelExpiryTime: 1698334470000,
         amount: '1000000000000000000',
@@ -1009,7 +1002,6 @@ describe(SwapSDK, () => {
         srcChain: 'Bitcoin',
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
-        ccmParams: undefined,
         dcaParams: undefined,
         affiliateBrokers: [],
         fillOrKillParams: {
@@ -1072,6 +1064,7 @@ describe(SwapSDK, () => {
         depositChannelId: 'channel id',
         depositAddress: 'deposit address',
         brokerCommissionBps: 0,
+        ccmParams: undefined,
         depositChannelExpiryBlock: 123n,
         estimatedDepositChannelExpiryTime: 1698334470000,
         amount: '1000000000000000000',
@@ -1083,7 +1076,6 @@ describe(SwapSDK, () => {
         srcChain: 'Bitcoin',
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
-        ccmParams: undefined,
         dcaParams: undefined,
         affiliateBrokers: [],
         fillOrKillParams: {
@@ -1152,6 +1144,7 @@ describe(SwapSDK, () => {
         depositChannelId: 'channel id',
         depositAddress: 'deposit address',
         brokerCommissionBps: 0,
+        ccmParams: undefined,
         depositChannelExpiryBlock: 123n,
         estimatedDepositChannelExpiryTime: 1698334470000,
         amount: '1000000000000000000',
@@ -1163,7 +1156,6 @@ describe(SwapSDK, () => {
         srcChain: 'Bitcoin',
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
-        ccmParams: undefined,
         affiliateBrokers: [],
         dcaParams: {
           numberOfChunks: 100,
@@ -1237,6 +1229,7 @@ describe(SwapSDK, () => {
         srcAddress: 'mrV3ee4J3jipspCNPofzB2UbaVu7qgf9Ex',
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         brokerCommissionBps: 15,
+        ccmParams: undefined,
         amount: '1000000000000000000',
         depositChannelId: '123-Bitcoin-15',
         depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
@@ -1244,7 +1237,6 @@ describe(SwapSDK, () => {
         estimatedDepositChannelExpiryTime: undefined,
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
-        ccmParams: undefined,
         affiliateBrokers: [],
         dcaParams: undefined,
         fillOrKillParams: undefined,
@@ -1311,6 +1303,7 @@ describe(SwapSDK, () => {
         srcAddress: undefined,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         brokerCommissionBps: 15,
+        ccmParams: undefined,
         amount: '1000000000000000000',
         depositChannelId: '123-Bitcoin-15',
         depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
@@ -1318,7 +1311,6 @@ describe(SwapSDK, () => {
         estimatedDepositChannelExpiryTime: undefined,
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
-        ccmParams: undefined,
         affiliateBrokers: [],
         dcaParams: undefined,
         fillOrKillParams: undefined,
@@ -1387,6 +1379,7 @@ describe(SwapSDK, () => {
         srcAddress: undefined,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         brokerCommissionBps: 15,
+        ccmParams: undefined,
         amount: '1000000000000000000',
         depositChannelId: '123-Bitcoin-15',
         depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
@@ -1394,7 +1387,6 @@ describe(SwapSDK, () => {
         estimatedDepositChannelExpiryTime: undefined,
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
-        ccmParams: undefined,
         affiliateBrokers: [
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
         ],
@@ -1471,6 +1463,7 @@ describe(SwapSDK, () => {
         srcAddress: undefined,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         brokerCommissionBps: 15,
+        ccmParams: undefined,
         amount: '1000000000000000000',
         depositChannelId: '123-Bitcoin-15',
         depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
@@ -1478,7 +1471,6 @@ describe(SwapSDK, () => {
         estimatedDepositChannelExpiryTime: undefined,
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
-        ccmParams: undefined,
         affiliateBrokers: [],
         fillOrKillParams: {
           retryDurationBlocks: 500,
@@ -1564,6 +1556,7 @@ describe(SwapSDK, () => {
         srcAddress: undefined,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         brokerCommissionBps: 15,
+        ccmParams: undefined,
         amount: '1000000000000000000',
         depositChannelId: '123-Bitcoin-15',
         depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
@@ -1576,7 +1569,6 @@ describe(SwapSDK, () => {
         },
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
-        ccmParams: undefined,
         affiliateBrokers: [],
         dcaParams: {
           numberOfChunks: 100,
@@ -1646,6 +1638,7 @@ describe(SwapSDK, () => {
         srcAddress: undefined,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         brokerCommissionBps: 15,
+        ccmParams: undefined,
         amount: '1000000000000000000',
         depositChannelId: '123-Bitcoin-15',
         depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
@@ -1653,7 +1646,6 @@ describe(SwapSDK, () => {
         estimatedDepositChannelExpiryTime: undefined,
         maxBoostFeeBps: MAX_BOOST_FEE_BPS,
         channelOpeningFee: 0n,
-        ccmParams: undefined,
         affiliateBrokers: [],
         dcaParams: undefined,
         fillOrKillParams: undefined,

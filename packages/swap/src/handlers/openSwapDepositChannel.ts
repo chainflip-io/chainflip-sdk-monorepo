@@ -72,9 +72,6 @@ export default async function openSwapDepositChannel(
     throw ServiceError.badRequest('too many channels');
   }
 
-  // DEPRECATED(1.5): use ccmParams instead of ccmMetadata
-  input.ccmParams ??= input.ccmMetadata; // eslint-disable-line no-param-reassign
-
   const swapDepositAddress = await broker.requestSwapDepositAddress(
     input,
     { url: env.RPC_BROKER_HTTPS_URL },
