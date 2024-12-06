@@ -90,9 +90,6 @@ export const getLatestSwapForId = async (id: string) => {
     if (!swapRequest || (swapRequest.completedAt && !swapRequest.swaps.length)) {
       failedSwap = swapDepositChannel.failedSwaps.at(0);
     }
-    if (swapDepositChannel.affiliates.length > 0) {
-      affiliateBrokers = swapDepositChannel.affiliates;
-    }
   } else if (swapRequestId.test(id)) {
     swapRequest = await prisma.swapRequest.findUnique({
       where: { nativeId: BigInt(id) },
@@ -115,6 +112,9 @@ export const getLatestSwapForId = async (id: string) => {
   }
 
   swapDepositChannel ??= swapRequest?.swapDepositChannel ?? failedSwap?.swapDepositChannel;
+  if (swapDepositChannel && swapDepositChannel.affiliates.length > 0) {
+    affiliateBrokers = swapDepositChannel.affiliates;
+  }
 
   ServiceError.assert(
     swapDepositChannel || swapRequest || failedSwap,
