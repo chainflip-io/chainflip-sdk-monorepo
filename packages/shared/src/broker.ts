@@ -94,7 +94,7 @@ const validateAddressLength = (chain: Chain, address: string, type: 'destination
     throw new Error(`Invalid ${type} address length`);
   }
 
-  if (chain === 'Polkadot' && address.length !== 66) {
+  if ((chain === 'Polkadot' || chain === 'Assethub') && address.length !== 66) {
     throw new Error(`Invalid ${type} address length`);
   }
 };
