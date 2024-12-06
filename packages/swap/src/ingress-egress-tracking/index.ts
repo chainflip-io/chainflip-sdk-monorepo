@@ -13,7 +13,6 @@ export type PendingDeposit = {
   amount: string;
   transactionHash?: string;
   transactionConfirmations: number;
-  transactionRef?: string[];
 };
 
 const getMempoolTransaction = async (
@@ -74,7 +73,7 @@ export const getPendingDeposit = async (
     return {
       amount: deposits[0].amount.toString(),
       transactionConfirmations: confirmations,
-      transactionRef: deposits[0].tx_refs
+      transactionHash: deposits[0].tx_refs[0],
     };
   } catch (error) {
     logger.error('error while looking up deposit in redis', { error });
