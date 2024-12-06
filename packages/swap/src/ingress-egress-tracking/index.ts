@@ -73,7 +73,7 @@ export const getPendingDeposit = async (
     return {
       amount: deposits[0].amount.toString(),
       transactionConfirmations: confirmations,
-      transactionHash: deposits[0].tx_refs[0],
+      transactionHash: deposits[0].tx_refs?.[0],
     };
   } catch (error) {
     logger.error('error while looking up deposit in redis', { error });
