@@ -40,6 +40,14 @@ which it is deprecated.
 - Fill or Kill parameters are now mandatory when opening a deposit channel through
   the default broker endpoint. If you are using your own broker, the parameters are
   still optional for now.
+- `SwapSDK.prototype.getStatus`: deprecated `depositTransactionHash` was removed.
+  Use `depositTransactionRef` instead.
+- `SwapSDK.prototype.getStatus`: deprecated `ccmMetadata` was removed.
+  Use `ccmParams` instead.
+- `SwapSDK.prototype.requestDepositAddress`: deprecated `ccmMetadata` was removed.
+  Use `ccmParams` instead.
+- `SwapSDK.prototype.executeSwap`: deprecated `ccmMetadata` was removed.
+  Use `ccmParams` instead.
 
 ## 1.6.6
 

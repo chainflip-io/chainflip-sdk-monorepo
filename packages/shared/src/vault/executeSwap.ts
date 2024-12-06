@@ -125,7 +125,7 @@ const swapToken = async (
 };
 
 const callNative = async (
-  params: Required<Omit<ExecuteSwapParams, 'ccmMetadata'>, 'ccmParams'>,
+  params: Required<ExecuteSwapParams, 'ccmParams'>,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
@@ -150,7 +150,7 @@ const callNative = async (
 };
 
 const callToken = async (
-  params: Required<Omit<ExecuteSwapParams, 'ccmMetadata'>, 'ccmParams'>,
+  params: Required<ExecuteSwapParams, 'ccmParams'>,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
@@ -183,7 +183,7 @@ const callToken = async (
 };
 
 const executeSwap = async (
-  { ccmParams, ccmMetadata, ...params }: ExecuteSwapParams,
+  { ccmParams: unvalidatedCcmParams, ...params }: ExecuteSwapParams,
   networkOpts: SwapNetworkOptions,
   txOpts: TransactionOptions,
 ): Promise<ContractTransactionResponse> => {
@@ -192,7 +192,6 @@ const executeSwap = async (
   assertValidAddress(params.destChain, params.destAddress, networkOpts.network);
   await assertSignerIsConnectedToChain(networkOpts, params.srcChain);
 
-  const unvalidatedCcmParams = ccmParams || ccmMetadata;
   const internalSrcAsset = getInternalAsset({ asset: params.srcAsset, chain: params.srcChain });
 
   if (unvalidatedCcmParams) {
