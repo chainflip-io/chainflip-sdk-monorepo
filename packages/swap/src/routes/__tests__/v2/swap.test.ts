@@ -571,6 +571,7 @@ describe('server', () => {
       jest.mocked(getPendingDeposit).mockResolvedValueOnce({
         amount: '1500000000000000000',
         transactionConfirmations: 2,
+        transactionHash: '0x1234',
       });
 
       await processEvents(swapEvents.slice(0, 1));
@@ -601,6 +602,11 @@ describe('server', () => {
           openedThroughBackend: false,
         },
         deposit: {},
+      });
+      expect(body.deposit).toMatchObject({
+        amount: '1500000000000000000',
+        txConfirmations: 2,
+        txRef: '0x1234',
       });
       expect(getPendingDeposit).toBeCalledWith('Eth', '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2');
     });
