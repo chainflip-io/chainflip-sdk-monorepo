@@ -137,9 +137,9 @@ type FailedSwapData = NonNullable<LatestSwapData['failedSwap']>;
 type SwapChannelData = NonNullable<LatestSwapData['swapDepositChannel']>;
 
 export const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
-  inputAmount: swap.swapInputAmount.toString(),
-  intermediateAmount: swap.intermediateAmount?.toString(),
-  outputAmount: swap.swapOutputAmount?.toString(),
+  inputAmount: swap.swapInputAmount.toFixed(),
+  intermediateAmount: swap.intermediateAmount?.toFixed(),
+  outputAmount: swap.swapOutputAmount?.toFixed(),
   scheduledAt: swap.swapScheduledAt.valueOf(),
   scheduledBlockIndex: swap.swapScheduledBlockIndex ?? undefined,
   executedAt: swap.swapExecutedAt?.valueOf(),
