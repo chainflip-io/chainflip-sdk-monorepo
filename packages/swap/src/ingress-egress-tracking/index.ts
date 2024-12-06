@@ -13,6 +13,7 @@ export type PendingDeposit = {
   amount: string;
   transactionHash?: string;
   transactionConfirmations: number;
+  transactionRef?: string[];
 };
 
 const getMempoolTransaction = async (
@@ -59,7 +60,7 @@ export const getPendingDeposit = async (
 
     const currentHeight = (await prisma.state.findFirstOrThrow()).height;
 
-    const stateChainBlocksSinceTracking = currentHeight - (tracking?.eventWitnessedBlock ?? 0);
+    const stateChainBlocksSinceTracking = currentHeight - (tracking.eventWitnessedBlock ?? 0);
     const lastWitnessedBlockHeight =
       stateChainBlocksSinceTracking > 0 ? tracking.height : tracking.previousHeight;
 
@@ -73,6 +74,7 @@ export const getPendingDeposit = async (
     return {
       amount: deposits[0].amount.toString(),
       transactionConfirmations: confirmations,
+      transactionRef: deposits[0].tx_refs
     };
   } catch (error) {
     logger.error('error while looking up deposit in redis', { error });

@@ -571,6 +571,7 @@ describe('server', () => {
       jest.mocked(getPendingDeposit).mockResolvedValueOnce({
         amount: '1500000000000000000',
         transactionConfirmations: 2,
+        transactionRef: ["0x1234"]
       });
 
       await processEvents(swapEvents.slice(0, 1));
