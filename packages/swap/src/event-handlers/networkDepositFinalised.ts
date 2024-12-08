@@ -6,13 +6,13 @@ import { solanaIngressEgressDepositFinalised } from '@chainflip/processor/160/so
 import { bitcoinIngressEgressDepositFinalised as bitcoinSchema170 } from '@chainflip/processor/170/bitcoinIngressEgress/depositFinalised';
 import z from 'zod';
 import { assetConstants } from '@/shared/enums';
+import { tryFindSolanaDepositTxRef } from '@/swap/utils/solana';
 import { getDepositTxRef } from './common';
 import { EventHandlerArgs } from '.';
 
-const normalizeSchema = <T>(obj: T) => ({
+const normalizeSchema = <T>(obj: T): T & { depositDetails: undefined } => ({
   ...obj,
   depositDetails: undefined,
-  blockHeight: undefined,
 });
 
 const arbitrumSchema = arbitrumIngressEgressDepositFinalised;
@@ -30,10 +30,13 @@ const depositFinalisedSchema = z.union([
 ]);
 
 export const networkDepositFinalised = async ({ prisma, event, block }: EventHandlerArgs) => {
-  const { asset, amount, action, ingressFee, depositDetails, blockHeight } =
+  const { asset, amount, action, ingressFee, depositDetails, blockHeight, depositAddress } =
     depositFinalisedSchema.parse(event.args);
 
-  const txRef = getDepositTxRef(assetConstants[asset].chain, depositDetails, blockHeight);
+  let txRef = getDepositTxRef(assetConstants[asset].chain, depositDetails, blockHeight);
+  if (!txRef && assetConstants[asset].chain === 'Solana') {
+    txRef = await tryFindSolanaDepositTxRef(asset, amount, depositAddress as string, blockHeight);
+  }
 
   if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {
     const { swapRequestId } = action;
