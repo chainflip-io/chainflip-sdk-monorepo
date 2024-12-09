@@ -21,8 +21,8 @@ export const InternalAssets = arrayToMap([
   'ArbEth',
   // asset hub
   'HubDot',
-  'HubUsdc',
   'HubUsdt',
+  'HubUsdc',
 ]);
 export type InternalAsset = (typeof InternalAssets)[keyof typeof InternalAssets];
 
@@ -125,17 +125,17 @@ export const assetConstants = {
     decimals: 10,
     contractId: 11,
   },
-  [InternalAssets.HubUsdc]: {
-    chain: Chains.Assethub,
-    asset: Assets.USDC,
-    name: 'AssetHub USDC',
-    decimals: 6,
-    contractId: 12,
-  },
   [InternalAssets.HubUsdt]: {
     chain: Chains.Assethub,
     asset: Assets.USDT,
     name: 'AssetHub USDT',
+    decimals: 6,
+    contractId: 12,
+  },
+  [InternalAssets.HubUsdc]: {
+    chain: Chains.Assethub,
+    asset: Assets.USDC,
+    name: 'AssetHub USDC',
     decimals: 6,
     contractId: 13,
   },
@@ -183,7 +183,7 @@ export const chainConstants = {
     blockTimeSeconds: (400 + 800) / 2 / 1000,
   },
   [Chains.Assethub]: {
-    assets: [Assets.DOT, Assets.USDC, Assets.USDT],
+    assets: [Assets.DOT, Assets.USDT, Assets.USDC],
     gasAsset: InternalAssets.HubDot,
     contractId: 6,
     blockTimeSeconds: 12,
@@ -287,8 +287,8 @@ export function getInternalAsset(asset: UncheckedAssetAndChain, assert = true) {
     },
     [Chains.Assethub]: {
       [Assets.DOT]: InternalAssets.HubDot,
-      [Assets.USDC]: InternalAssets.HubUsdc,
       [Assets.USDT]: InternalAssets.HubUsdt,
+      [Assets.USDC]: InternalAssets.HubUsdc,
     },
   };
 
