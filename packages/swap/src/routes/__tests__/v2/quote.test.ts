@@ -1,4 +1,4 @@
-import { CfSwapRateV2, CfSwapRateV2Response, WsClient } from '@chainflip/rpc';
+import { CfSwapRateV3Response, CfSwapRateV3, WsClient } from '@chainflip/rpc';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { Server } from 'http';
 import request from 'supertest';
@@ -10,7 +10,6 @@ import {
   cfPoolDepth,
   environment,
   mockRpcResponse,
-  swapRate,
 } from '@/shared/tests/fixtures';
 import prisma, { InternalAsset } from '../../../client';
 import env from '../../../config/env';
@@ -118,19 +117,12 @@ const mockRpcs = ({
   ingressFee: string;
   egressFee: string;
   mockedBoostPoolsDepth?: MockedBoostPoolsDepth;
-  swapRate?: CfSwapRateV2Response;
+  swapRate?: CfSwapRateV3Response;
 }) =>
   mockRpcResponse((url, data: any) => {
     if (data.method === 'cf_environment') {
       return Promise.resolve({
         data: environment({ maxSwapAmount: null, ingressFee, egressFee }),
-      });
-    }
-
-    if (data.method === 'cf_swap_rate_v2') {
-      return Promise.resolve({
-        data: swapRate({ output: hexEncodeNumber(BigInt(data.params[2]) * 2n) }),
-        ...swapRate,
       });
     }
 
@@ -317,12 +309,13 @@ describe('server', () => {
 
     it('rejects when the egress amount is smaller than the egress fee', async () => {
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
         egress_fee: buildFee('Eth', 25000).bigint,
         network_fee: buildFee('Usdc', 2000000).bigint,
         ingress_fee: buildFee('Usdc', 2000000).bigint,
         intermediary: null,
         output: 0n,
-      } as CfSwapRateV2);
+      } as CfSwapRateV3);
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -387,6 +380,7 @@ describe('server', () => {
       });
 
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Eth', 25000).bigint,
         egress_fee: buildFee('Usdc', 0).bigint,
         network_fee: buildFee('Usdc', 100100).bigint,
@@ -504,6 +498,7 @@ describe('server', () => {
       const sendSpy = jest
         .spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
+          broker_commission: buildFee('Usdc', 0).bigint,
           ingress_fee: buildFee('Eth', 25000).bigint,
           egress_fee: buildFee('Usdc', 8000).bigint,
           network_fee: buildFee('Usdc', 100100).bigint,
@@ -511,6 +506,7 @@ describe('server', () => {
           output: BigInt(100e6),
         })
         .mockResolvedValueOnce({
+          broker_commission: buildFee('Usdc', 0).bigint,
           ingress_fee: buildFee('Eth', 25000).bigint,
           egress_fee: buildFee('Usdc', 8000).bigint,
           network_fee: buildFee('Usdc', 100100).bigint,
@@ -589,14 +585,14 @@ describe('server', () => {
             asset: 'USDC',
             chain: 'Ethereum',
           },
-          egressAmount: (400024000).toString(),
+          egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 84,
           estimatedDurationsSeconds: {
             deposit: 24,
             egress: 12,
             swap: 48,
           },
-          estimatedPrice: '400.0320000000100008',
+          estimatedPrice: '100.0080000000025002',
           recommendedSlippageTolerancePercent: 1,
           includedFees: [
             {
@@ -606,7 +602,7 @@ describe('server', () => {
               type: 'INGRESS',
             },
             {
-              amount: '400400',
+              amount: '100100',
               asset: 'USDC',
               chain: 'Ethereum',
               type: 'NETWORK',
@@ -622,7 +618,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '499999999999987',
+                amount: '1999999999999950',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
@@ -640,21 +636,29 @@ describe('server', () => {
           type: 'DCA',
         },
       ]);
+
       expect(sendSpy).toHaveBeenCalledTimes(2);
       expect(sendSpy).toHaveBeenNthCalledWith(
         1,
-        'cf_swap_rate_v2',
+        'cf_swap_rate_v3',
         { asset: 'ETH', chain: 'Ethereum' },
         { asset: 'USDC', chain: 'Ethereum' },
         '0xde0b6b3a7640000', // 1e18
+        0,
+        undefined,
         [],
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         2,
-        'cf_swap_rate_v2',
+        'cf_swap_rate_v3',
         { asset: 'ETH', chain: 'Ethereum' },
         { asset: 'USDC', chain: 'Ethereum' },
-        '0x3782dace9d9493e', // 2.5e17 + 3/4 * 25000 (ingressFee surcharge)
+        '0xde0b6b3a7640000', // 1e18
+        0,
+        {
+          number_of_chunks: 4,
+          chunk_interval: 2,
+        },
         [],
       );
     });
@@ -712,6 +716,7 @@ describe('server', () => {
       const sendSpy = jest
         .spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
+          broker_commission: buildFee('Usdc', 1000000).bigint,
           ingress_fee: buildFee('Btc', 250).bigint,
           egress_fee: buildFee('Eth', 8000).bigint,
           network_fee: buildFee('Usdc', 100100).bigint,
@@ -719,6 +724,7 @@ describe('server', () => {
           output: BigInt(0.1e18),
         })
         .mockResolvedValueOnce({
+          broker_commission: buildFee('Usdc', 1000000).bigint,
           ingress_fee: buildFee('Btc', 250).bigint,
           egress_fee: buildFee('Eth', 8000).bigint,
           network_fee: buildFee('Usdc', 100100).bigint,
@@ -726,6 +732,7 @@ describe('server', () => {
           output: BigInt(0.1e18),
         })
         .mockResolvedValueOnce({
+          broker_commission: buildFee('Usdc', 1000000).bigint,
           ingress_fee: buildFee('Btc', 250).bigint,
           egress_fee: buildFee('Eth', 8000).bigint,
           network_fee: buildFee('Usdc', 100100).bigint,
@@ -733,6 +740,7 @@ describe('server', () => {
           output: BigInt(0.1e18),
         })
         .mockResolvedValueOnce({
+          broker_commission: buildFee('Usdc', 1000000).bigint,
           ingress_fee: buildFee('Btc', 250).bigint,
           egress_fee: buildFee('Eth', 8000).bigint,
           network_fee: buildFee('Usdc', 100100).bigint,
@@ -760,22 +768,16 @@ describe('server', () => {
             asset: 'ETH',
             chain: 'Ethereum',
           },
-          intermediateAmount: '9990000',
-          egressAmount: '99899999999999992',
+          intermediateAmount: '10000000',
+          egressAmount: '100000000000000000',
           estimatedDurationSeconds: 1824,
           estimatedDurationsSeconds: {
             deposit: 1800,
             egress: 12,
             swap: 12,
           },
-          estimatedPrice: '100.15037593985763609023',
+          estimatedPrice: '100.25062656642406015038',
           includedFees: [
-            {
-              amount: '10000',
-              asset: 'USDC',
-              chain: 'Ethereum',
-              type: 'BROKER',
-            },
             {
               amount: '250',
               asset: 'BTC',
@@ -787,6 +789,12 @@ describe('server', () => {
               asset: 'USDC',
               chain: 'Ethereum',
               type: 'NETWORK',
+            },
+            {
+              amount: '1000000',
+              asset: 'USDC',
+              chain: 'Ethereum',
+              type: 'BROKER',
             },
             {
               amount: '8000',
@@ -808,7 +816,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '19980',
+                amount: '20000',
                 asset: 'USDC',
                 chain: 'Ethereum',
               },
@@ -827,8 +835,8 @@ describe('server', () => {
               asset: 'ETH',
               chain: 'Ethereum',
             },
-            intermediateAmount: '9990000',
-            egressAmount: '99899999999999992',
+            intermediateAmount: '10000000',
+            egressAmount: '100000000000000000',
             estimatedBoostFeeBps: 10,
             estimatedDurationSeconds: 624,
             estimatedDurationsSeconds: {
@@ -836,19 +844,13 @@ describe('server', () => {
               egress: 12,
               swap: 12,
             },
-            estimatedPrice: '100.25087807326441746111',
+            estimatedPrice: '100.35122930256698444556',
             includedFees: [
               {
                 amount: '100',
                 asset: 'BTC',
                 chain: 'Bitcoin',
                 type: 'BOOST',
-              },
-              {
-                amount: '10000',
-                asset: 'USDC',
-                chain: 'Ethereum',
-                type: 'BROKER',
               },
               {
                 amount: '250',
@@ -861,6 +863,12 @@ describe('server', () => {
                 asset: 'USDC',
                 chain: 'Ethereum',
                 type: 'NETWORK',
+              },
+              {
+                amount: '1000000',
+                asset: 'USDC',
+                chain: 'Ethereum',
+                type: 'BROKER',
               },
               {
                 amount: '8000',
@@ -883,7 +891,7 @@ describe('server', () => {
               {
                 baseAsset: { asset: 'ETH', chain: 'Ethereum' },
                 fee: {
-                  amount: '19980',
+                  amount: '20000',
                   asset: 'USDC',
                   chain: 'Ethereum',
                 },
@@ -904,23 +912,17 @@ describe('server', () => {
             asset: 'ETH',
             chain: 'Ethereum',
           },
-          intermediateAmount: '39960000',
-          egressAmount: '399600000000023968',
+          intermediateAmount: '10000000',
+          egressAmount: '100000000000000000',
           estimatedDurationSeconds: 1860,
           estimatedDurationsSeconds: {
             deposit: 1800,
             egress: 12,
             swap: 48,
           },
-          estimatedPrice: '400.59347181012106824926',
+          estimatedPrice: '100.25062656642406015038',
           recommendedSlippageTolerancePercent: 2,
           includedFees: [
-            {
-              amount: '40000',
-              asset: 'USDC',
-              chain: 'Ethereum',
-              type: 'BROKER',
-            },
             {
               amount: '250',
               asset: 'BTC',
@@ -928,10 +930,16 @@ describe('server', () => {
               type: 'INGRESS',
             },
             {
-              amount: '400400',
+              amount: '100100',
               asset: 'USDC',
               chain: 'Ethereum',
               type: 'NETWORK',
+            },
+            {
+              amount: '1000000',
+              asset: 'USDC',
+              chain: 'Ethereum',
+              type: 'BROKER',
             },
             {
               amount: '8000',
@@ -944,7 +952,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'BTC', chain: 'Bitcoin' },
               fee: {
-                amount: '49',
+                amount: '199',
                 asset: 'BTC',
                 chain: 'Bitcoin',
               },
@@ -953,7 +961,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '19980',
+                amount: '20000',
                 asset: 'USDC',
                 chain: 'Ethereum',
               },
@@ -979,8 +987,8 @@ describe('server', () => {
               asset: 'ETH',
               chain: 'Ethereum',
             },
-            egressAmount: '399600000000023968',
-            intermediateAmount: '39960000',
+            egressAmount: '100000000000000000',
+            intermediateAmount: '10000000',
             estimatedBoostFeeBps: 10,
             estimatedDurationSeconds: 660,
             estimatedDurationsSeconds: {
@@ -988,7 +996,7 @@ describe('server', () => {
               egress: 12,
               swap: 48,
             },
-            estimatedPrice: '400.99546421550191466303',
+            estimatedPrice: '100.35122930256698444556',
             includedFees: [
               {
                 amount: '100',
@@ -997,22 +1005,22 @@ describe('server', () => {
                 type: 'BOOST',
               },
               {
-                amount: '40000',
-                asset: 'USDC',
-                chain: 'Ethereum',
-                type: 'BROKER',
-              },
-              {
                 amount: '250',
                 asset: 'BTC',
                 chain: 'Bitcoin',
                 type: 'INGRESS',
               },
               {
-                amount: '400400',
+                amount: '100100',
                 asset: 'USDC',
                 chain: 'Ethereum',
                 type: 'NETWORK',
+              },
+              {
+                amount: '1000000',
+                asset: 'USDC',
+                chain: 'Ethereum',
+                type: 'BROKER',
               },
               {
                 amount: '8000',
@@ -1026,7 +1034,7 @@ describe('server', () => {
               {
                 baseAsset: { asset: 'BTC', chain: 'Bitcoin' },
                 fee: {
-                  amount: '49',
+                  amount: '199',
                   asset: 'BTC',
                   chain: 'Bitcoin',
                 },
@@ -1035,7 +1043,7 @@ describe('server', () => {
               {
                 baseAsset: { asset: 'ETH', chain: 'Ethereum' },
                 fee: {
-                  amount: '19980',
+                  amount: '20000',
                   asset: 'USDC',
                   chain: 'Ethereum',
                 },
@@ -1054,34 +1062,48 @@ describe('server', () => {
       expect(sendSpy).toHaveBeenCalledTimes(4);
       expect(sendSpy).toHaveBeenNthCalledWith(
         1,
-        'cf_swap_rate_v2',
+        'cf_swap_rate_v3',
         { asset: 'BTC', chain: 'Bitcoin' },
         { asset: 'ETH', chain: 'Ethereum' },
-        '0x186a0', // 0.001e8
+        '0x186a0', // 0.001e8,
+        10,
+        undefined,
         [],
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         2,
-        'cf_swap_rate_v2',
+        'cf_swap_rate_v3',
         { asset: 'BTC', chain: 'Bitcoin' },
         { asset: 'ETH', chain: 'Ethereum' },
-        '0x1863c', // 0.001e8 - 100 (boostFee)
+        '0x1863c', // 0.001e8 - 100 (boostFee),
+        10,
+        undefined,
         [],
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         3,
-        'cf_swap_rate_v2',
+        'cf_swap_rate_v3',
         { asset: 'BTC', chain: 'Bitcoin' },
         { asset: 'ETH', chain: 'Ethereum' },
-        '0x6264', // 0.00025e8 + 3/4 * 250 (ingressFee surcharge)
+        '0x186a0',
+        10,
+        {
+          number_of_chunks: 4,
+          chunk_interval: 2,
+        },
         [],
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         4,
-        'cf_swap_rate_v2',
+        'cf_swap_rate_v3',
         { asset: 'BTC', chain: 'Bitcoin' },
         { asset: 'ETH', chain: 'Ethereum' },
-        '0x624b', // 0.00025e8 - 1/4 * 100 (boost fee) + 3/4 * 250 (ingressFee surcharge)
+        '0x1863c', // 0.001e8 - 100 (boostFee),
+        10,
+        {
+          number_of_chunks: 4,
+          chunk_interval: 2,
+        },
         [],
       );
     });
@@ -1137,6 +1159,7 @@ describe('server', () => {
       });
 
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Eth', 25000).bigint,
         egress_fee: buildFee('Usdc', 0).bigint,
         network_fee: buildFee('Usdc', 100100).bigint,
@@ -1264,6 +1287,7 @@ describe('server', () => {
       });
 
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Eth', 25000).bigint,
         egress_fee: buildFee('Usdc', 0).bigint,
         network_fee: buildFee('Usdc', 100100).bigint,
@@ -1391,6 +1415,7 @@ describe('server', () => {
       });
 
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Eth', 25000).bigint,
         egress_fee: buildFee('Usdc', 0).bigint,
         network_fee: buildFee('Usdc', 100100).bigint,
