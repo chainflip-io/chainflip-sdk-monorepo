@@ -7,19 +7,13 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
-## Unreleased
+## 1.7.0
 
 ### Added
 
 - A new method has been added to the `SwapSDK`, `requestDepositAddressV2`. This
   event simplifies deposit channel creation by accepting the quote that is
   returned by the SDK to set the correct assets, DCA parameters, and Boost fee.
-- A new method has been added to the `SwapSDK`,
-  `buildRequestSwapDepositAddressWithAffiliatesParams`. This method is intended
-  for use with the Polkadot API. This method accepts the quote that is returned
-  by the SDK to set the correct assets, DCA parameters, and Boost fee. It
-  returns an array of arguments that can be passed directly to the
-  `requestSwapDepositAddressWithAffiliates` extrinsic call.
 - A new method has been added to the `SwapSDK`, `approveAndExecuteSwap`.
   This is a convenience method that can be used to skip the manual token
   allowance approval. Upon calling, the method will make sure there is enough

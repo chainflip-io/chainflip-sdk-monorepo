@@ -1,8 +1,7 @@
-import { SwappingRequestSwapDepositAddressWithAffiliates } from '@chainflip/extrinsics/160/swapping/requestSwapDepositAddressWithAffiliates';
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import { Signer } from 'ethers';
 import superjson from 'superjson';
-import { requestSwapDepositAddress, buildExtrinsicPayload } from '@/shared/broker';
+import { requestSwapDepositAddress } from '@/shared/broker';
 import { TransactionOptions } from '@/shared/contracts';
 import {
   ChainflipNetwork,
@@ -511,37 +510,5 @@ export class SwapSDK {
       channelOpeningFee: response.channelOpeningFee,
       fillOrKillParams: inputFoKParams,
     };
-  }
-
-  buildRequestSwapDepositAddressWithAffiliatesParams({
-    quote,
-    destAddress,
-    fillOrKillParams: inputFoKParams,
-    affiliateBrokers,
-    ccmParams,
-    brokerCommissionBps,
-  }: DepositAddressRequestV2): SwappingRequestSwapDepositAddressWithAffiliates {
-    assertQuoteValid(quote);
-
-    let dcaParams = null;
-
-    if (quote.type === 'DCA') dcaParams = quote.dcaParams;
-
-    return buildExtrinsicPayload(
-      {
-        srcAsset: quote.srcAsset.asset,
-        srcChain: quote.srcAsset.chain,
-        destAsset: quote.destAsset.asset,
-        destChain: quote.destAsset.chain,
-        destAddress,
-        dcaParams,
-        fillOrKillParams: parseFoKParams(inputFoKParams, quote) ?? null,
-        maxBoostFeeBps: 'maxBoostFeeBps' in quote ? quote.maxBoostFeeBps : null,
-        commissionBps: brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0,
-        ccmParams: ccmParams ?? null,
-        affiliates: affiliateBrokers ?? [],
-      },
-      this.options.network,
-    );
   }
 }

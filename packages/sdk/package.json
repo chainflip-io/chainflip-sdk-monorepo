@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/sdk",
-  "version": "1.7.0-rc.0",
+  "version": "1.7.0",
   "description": "",
   "exports": {
     "./swap": {
@@ -52,7 +52,6 @@
   },
   "dependencies": {
     "@chainflip/bitcoin": "^1.1.1",
-    "@chainflip/extrinsics": "^1.6.1",
     "@chainflip/rpc": "^1.6.11",
     "@chainflip/solana": "^1.0.2",
     "@chainflip/utils": "^0.4.0",
