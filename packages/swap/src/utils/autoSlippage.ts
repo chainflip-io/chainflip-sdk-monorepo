@@ -26,7 +26,7 @@ const getDeployedLiquidityAdjustment = async (
 const getDepositTimeAdjustment = async (srcAsset: InternalAsset, isBoosted: boolean) => {
   const { chain } = assetConstants[srcAsset];
   const { blockTimeSeconds } = chainConstants[chain];
-  const blockConfirmations = isBoosted ? 1 : (await getRequiredBlockConfirmations(srcAsset)) ?? 0;
+  const blockConfirmations = isBoosted ? 1 : ((await getRequiredBlockConfirmations(srcAsset)) ?? 0);
   const depositTimeMinutes = (blockConfirmations * blockTimeSeconds) / 60;
 
   return Math.min(depositTimeMinutes / 20, 1); // Cap at 1
