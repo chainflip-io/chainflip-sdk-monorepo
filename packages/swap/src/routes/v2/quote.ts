@@ -120,7 +120,6 @@ export const validateQuoteQuery = async (query: Query) => {
     brokerCommissionBps,
     boostDepositsEnabled,
     dcaEnabled: queryResult.data.dcaEnabled,
-    autoSlippageEnabled: queryResult.data.autoSlippageEnabled,
   };
 };
 
@@ -132,7 +131,6 @@ export const generateQuotes = async ({
   brokerCommissionBps,
   boostDepositsEnabled,
   quoter,
-  autoSlippageEnabled = false,
 }: {
   dcaQuoteParams?: Awaited<ReturnType<typeof getDcaQuoteParams>>;
   srcAsset: InternalAsset;
@@ -141,7 +139,6 @@ export const generateQuotes = async ({
   brokerCommissionBps?: number;
   boostDepositsEnabled: boolean;
   quoter: Quoter;
-  autoSlippageEnabled?: boolean;
 }) => {
   const [limitOrders, { estimatedBoostFeeBps, maxBoostFeeBps }, pools] = await Promise.all([
     quoter.getLimitOrders(srcAsset, destAsset, depositAmount),
@@ -165,7 +162,6 @@ export const generateQuotes = async ({
     limitOrders,
     brokerCommissionBps,
     pools,
-    autoSlippageEnabled,
   };
   const dcaQuoteArgs = { dcaParams, ...quoteArgs };
   const queryDca = dcaParams && dcaParams.numberOfChunks > 1;
@@ -264,7 +260,6 @@ const quoteRouter = (quoter: Quoter) => {
         brokerCommissionBps,
         boostDepositsEnabled,
         dcaEnabled,
-        autoSlippageEnabled,
       } = await validateQuoteQuery(req.query);
 
       let limitOrdersReceived: Awaited<ReturnType<Quoter['getLimitOrders']>> | undefined;
@@ -281,7 +276,6 @@ const quoteRouter = (quoter: Quoter) => {
           brokerCommissionBps,
           boostDepositsEnabled,
           quoter,
-          autoSlippageEnabled,
           dcaQuoteParams,
         });
         const quote = quotes[0];

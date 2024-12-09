@@ -474,40 +474,6 @@ describe(executeSwap, () => {
       destAddress: ETH_ADDRESS,
       ccmParams: { message: '0xdeadc0de', gasBudget: '101' },
     },
-    {
-      srcAsset: Assets.ETH,
-      srcChain: Chains.Ethereum,
-      destAsset: Assets.FLIP,
-      destChain: Chains.Ethereum,
-      destAddress: ETH_ADDRESS,
-      ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
-    },
-    {
-      srcAsset: Assets.ETH,
-      srcChain: Chains.Ethereum,
-      destAsset: Assets.USDC,
-      destChain: Chains.Ethereum,
-      destAddress: ETH_ADDRESS,
-      ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
-    },
-    {
-      srcAsset: Assets.ETH,
-      srcChain: Chains.Ethereum,
-      destAsset: Assets.FLIP,
-      destChain: Chains.Ethereum,
-      destAddress: ETH_ADDRESS,
-      ccmParams: { message: '0xcafebeef', gasBudget: '102' },
-      ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
-    },
-    {
-      srcAsset: Assets.ETH,
-      srcChain: Chains.Ethereum,
-      destAsset: Assets.USDC,
-      destChain: Chains.Ethereum,
-      destAddress: ETH_ADDRESS,
-      ccmParams: { message: '0xcafebeef', gasBudget: '102' },
-      ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
-    },
   ])('submits a native call (%O)', async (params) => {
     const wait = jest.fn().mockResolvedValue({ status: 1 });
     const callSpy = jest.spyOn(MockVault.prototype, 'xCallNative').mockResolvedValue({
@@ -546,28 +512,6 @@ describe(executeSwap, () => {
           srcAsset: Assets.USDC,
           srcChain: Chains.Ethereum,
           ccmParams: { message: '0xdeadc0de', gasBudget: '101' },
-        },
-        {
-          srcAsset: Assets.FLIP,
-          srcChain: Chains.Ethereum,
-          ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
-        },
-        {
-          srcAsset: Assets.USDC,
-          srcChain: Chains.Ethereum,
-          ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
-        },
-        {
-          srcAsset: Assets.FLIP,
-          srcChain: Chains.Ethereum,
-          ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
-          ccmParams: { message: '0xcafebeef', gasBudget: '102' },
-        },
-        {
-          srcAsset: Assets.USDC,
-          srcChain: Chains.Ethereum,
-          ccmMetadata: { message: '0xdeadc0de', gasBudget: '101' },
-          ccmParams: { message: '0xcafebeef', gasBudget: '102' },
         },
       ] as const
     ).flatMap(

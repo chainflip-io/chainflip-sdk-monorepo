@@ -7,7 +7,9 @@ import { isNotNullish } from '@/shared/guards';
 import { assetAndChain } from '@/shared/parsers';
 import prisma from '../client';
 import { type QuotingSocket } from './Quoter';
-import logger from '../utils/logger';
+import baseLogger from '../utils/logger';
+
+const logger = baseLogger.child({ module: 'quoter' });
 
 const verifyAsync = promisify(crypto.verify);
 
@@ -63,6 +65,8 @@ const parseKey = (key: string) => {
 };
 
 const authenticate = async (socket: QuotingSocket, next: Next) => {
+  let accountId: string | undefined;
+
   try {
     const result = authSchema.safeParse(socket.handshake.auth);
 
@@ -70,11 +74,14 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
 
     assert(result.success, 'invalid auth');
 
+    accountId = result.data.account_id;
+
     const auth = result.data;
     const timeElapsed = Date.now() - auth.timestamp;
-    assert(timeElapsed < 30_000 && timeElapsed >= -30_000, 'invalid timestamp');
 
     logger.info('time elapsed from handshake timestamp', { timeElapsed });
+
+    assert(timeElapsed < 30_000 && timeElapsed >= -30_000, 'invalid timestamp');
 
     const marketMaker = await prisma.marketMaker.findUnique({
       where: { name: auth.account_id },
@@ -103,6 +110,7 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
 
     next();
   } catch (error) {
+    logger.warn('authentication error', { error: (error as Error).message, accountId });
     next(error as Error);
   }
 };

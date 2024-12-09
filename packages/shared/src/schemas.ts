@@ -21,8 +21,7 @@ export const quoteQuerySchema = z
     destAsset: asset,
     amount: numericString.transform((n) => BigInt(n)),
     brokerCommissionBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
-    dcaEnabled: booleanString.default('false'),
-    autoSlippageEnabled: booleanString.optional(),
+    dcaEnabled: booleanString,
   })
   .transform((args, ctx) => {
     const { srcAsset, destAsset } = getInternalAssets(args, false);
@@ -51,7 +50,6 @@ export const quoteQuerySchema = z
       amount: args.amount,
       brokerCommissionBps: args.brokerCommissionBps,
       dcaEnabled: args.dcaEnabled,
-      autoSlippageEnabled: args.autoSlippageEnabled,
     };
   });
 
@@ -116,11 +114,10 @@ export const openSwapDepositChannelSchema = z
     destChain: chain,
     destAddress: z.string(),
     amount: numericString,
-    ccmMetadata: ccmParamsSchema.optional(), // DEPRECATED(1.5): use ccmParams instead of ccmMetadata
     ccmParams: ccmParamsSchema.optional(),
     maxBoostFeeBps: z.number().optional(),
     srcAddress: z.string().optional(),
-    fillOrKillParams: fillOrKillParams.optional(),
+    fillOrKillParams,
     dcaParams: dcaParams.optional(),
     quote: z
       .object({

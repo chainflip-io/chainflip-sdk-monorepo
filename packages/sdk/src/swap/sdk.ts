@@ -1,8 +1,7 @@
-import { SwappingRequestSwapDepositAddressWithAffiliates } from '@chainflip/extrinsics/160/swapping/requestSwapDepositAddressWithAffiliates';
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import { Signer } from 'ethers';
 import superjson from 'superjson';
-import { requestSwapDepositAddress, buildExtrinsicPayload } from '@/shared/broker';
+import { requestSwapDepositAddress } from '@/shared/broker';
 import { TransactionOptions } from '@/shared/contracts';
 import {
   ChainflipNetwork,
@@ -65,7 +64,6 @@ export type SwapSDKOptions = {
   rpcUrl?: string;
   enabledFeatures?: {
     dca?: boolean;
-    experimentalRecommendedSlippage?: boolean;
   };
 };
 
@@ -97,8 +95,6 @@ export class SwapSDK {
 
   private dcaEnabled = false;
 
-  private autoSlippageEnabled = false;
-
   constructor(options: SwapSDKOptions = {}) {
     const network = options.network ?? ChainflipNetworks.perseverance;
     this.options = {
@@ -117,7 +113,6 @@ export class SwapSDK {
       ],
     });
     this.dcaEnabled = options.enabledFeatures?.dca ?? false;
-    this.autoSlippageEnabled = options.enabledFeatures?.experimentalRecommendedSlippage ?? false;
     this.stateChainEnvironmentCache = new AsyncCacheMap({
       fetch: (_key) => getEnvironment(this.rpcConfig),
       ttl: 60_000 * 10,
@@ -206,7 +201,6 @@ export class SwapSDK {
         ...remainingRequest,
         brokerCommissionBps: submitterBrokerCommissionBps + affiliateBrokerCommissionBps,
         dcaEnabled: this.dcaEnabled,
-        autoSlippageEnabled: this.autoSlippageEnabled,
       },
       options,
     );
@@ -239,9 +233,6 @@ export class SwapSDK {
         }
       : undefined;
 
-    // DEPRECATED(1.5): use ccmParams instead of ccmMetadata
-    depositAddressRequest.ccmParams ??= depositAddressRequest.ccmMetadata; // eslint-disable-line no-param-reassign
-
     let response;
 
     if (this.options.broker !== undefined) {
@@ -273,6 +264,7 @@ export class SwapSDK {
         !depositAddressRequest.affiliateBrokers?.length,
         'Affiliate brokers are supported only when initializing the SDK with a brokerUrl',
       );
+      assert(fillOrKillParams, 'Fill or kill parameters are required');
       response = await this.trpc.openSwapDepositChannel.mutate({
         ...depositAddressRequest,
         fillOrKillParams,
@@ -318,9 +310,6 @@ export class SwapSDK {
     assert(signer, 'No signer provided');
 
     await this.validateSwapAmount({ chain: srcChain, asset: srcAsset }, BigInt(amount));
-
-    // DEPRECATED(1.5): use ccmParams instead of ccmMetadata
-    params.ccmParams ??= params.ccmMetadata; // eslint-disable-line no-param-reassign
 
     const tx = await executeSwap(
       params,
@@ -501,7 +490,12 @@ export class SwapSDK {
         channelOpeningFee: result.channelOpeningFee,
       };
     } else {
-      response = await this.trpc.openSwapDepositChannel.mutate({ ...depositAddressRequest, quote });
+      assert(depositAddressRequest.fillOrKillParams, 'fill or kill params are required');
+      response = await this.trpc.openSwapDepositChannel.mutate({
+        ...depositAddressRequest,
+        fillOrKillParams: depositAddressRequest.fillOrKillParams,
+        quote,
+      });
     }
 
     return {
@@ -516,37 +510,5 @@ export class SwapSDK {
       channelOpeningFee: response.channelOpeningFee,
       fillOrKillParams: inputFoKParams,
     };
-  }
-
-  buildRequestSwapDepositAddressWithAffiliatesParams({
-    quote,
-    destAddress,
-    fillOrKillParams: inputFoKParams,
-    affiliateBrokers,
-    ccmParams,
-    brokerCommissionBps,
-  }: DepositAddressRequestV2): SwappingRequestSwapDepositAddressWithAffiliates {
-    assertQuoteValid(quote);
-
-    let dcaParams = null;
-
-    if (quote.type === 'DCA') dcaParams = quote.dcaParams;
-
-    return buildExtrinsicPayload(
-      {
-        srcAsset: quote.srcAsset.asset,
-        srcChain: quote.srcAsset.chain,
-        destAsset: quote.destAsset.asset,
-        destChain: quote.destAsset.chain,
-        destAddress,
-        dcaParams,
-        fillOrKillParams: parseFoKParams(inputFoKParams, quote) ?? null,
-        maxBoostFeeBps: 'maxBoostFeeBps' in quote ? quote.maxBoostFeeBps : null,
-        commissionBps: brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0,
-        ccmParams: ccmParams ?? null,
-        affiliates: affiliateBrokers ?? [],
-      },
-      this.options.network,
-    );
   }
 }

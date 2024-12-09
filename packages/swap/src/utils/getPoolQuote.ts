@@ -19,7 +19,6 @@ export default async function getPoolQuote({
   brokerCommissionBps,
   pools,
   dcaParams,
-  autoSlippageEnabled,
 }: {
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
@@ -29,7 +28,6 @@ export default async function getPoolQuote({
   boostFeeBps?: number;
   pools: Pool[];
   dcaParams?: DcaParams;
-  autoSlippageEnabled: boolean;
 }) {
   const includedFees = [];
   let cfRateInputAmount = depositAmount;
@@ -110,16 +108,14 @@ export default async function getPoolQuote({
   return {
     intermediateAmount: intermediateAmount?.toString(),
     egressAmount: egressAmount.toString(),
-    recommendedSlippageTolerancePercent: autoSlippageEnabled
-      ? await calculateRecommendedSlippage({
-          srcAsset,
-          destAsset,
-          boostFeeBps,
-          intermediateAmount,
-          egressAmount,
-          dcaChunks,
-        })
-      : 2, // This is temporary until we remove the request param flag
+    recommendedSlippageTolerancePercent: await calculateRecommendedSlippage({
+      srcAsset,
+      destAsset,
+      boostFeeBps,
+      intermediateAmount,
+      egressAmount,
+      dcaChunks,
+    }),
     includedFees,
     lowLiquidityWarning,
     poolInfo,

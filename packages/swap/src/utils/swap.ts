@@ -61,8 +61,7 @@ export const isEgressableSwap = (swap: Swap) => {
     case 'INGRESS_EGRESS_FEE':
       return false;
     default:
-      assertUnreachable(swap.type);
-      return false;
+      return assertUnreachable(swap.type);
   }
 };
 
@@ -77,7 +76,7 @@ export const failedSwapMessage: Record<FailedSwapReason, string> = {
   NotEnoughToPayFees: 'The deposited amount was not enough to pay the fees',
   InsufficientDepositAmount: 'The gas budget exceeded the deposit amount',
   UnsupportedForTargetChain: 'The destination chain does not support CCM',
-  TransactionTainted: 'The deposit was rejected by the broker',
+  TransactionRejectedByBroker: 'The deposit was rejected by the broker',
   InvalidMetadata: 'The provided metadata could not be decoded',
   InvalidDestinationAddress: 'The provided destination address could not be decoded',
 };
@@ -87,6 +86,7 @@ export enum FailureMode {
   SwapEgressIgnored = 'SWAP_OUTPUT_TOO_SMALL',
   RefundEgressIgnored = 'REFUND_OUTPUT_TOO_SMALL',
   BroadcastAborted = 'SENDING_FAILED',
+  TransactionRejectedByBroker = 'DEPOSIT_REJECTED',
 }
 
 export const getSwapPrice = (

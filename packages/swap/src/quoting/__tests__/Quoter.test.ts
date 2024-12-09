@@ -6,6 +6,7 @@ import { Server } from 'socket.io';
 import { io, Socket } from 'socket.io-client';
 import { setTimeout as sleep } from 'timers/promises';
 import { promisify } from 'util';
+import { AddressInfo } from 'ws';
 import { MAX_TICK, MIN_TICK } from '@/shared/consts';
 import { assetConstants, getAssetAndChain } from '@/shared/enums';
 import env from '@/swap/config/env';
@@ -87,7 +88,7 @@ describe(Quoter, () => {
         },
       });
 
-      const { port } = server['httpServer'].address();
+      const { port } = server['httpServer'].address() as AddressInfo;
       const timestamp = Date.now();
 
       const socket = io(`http://localhost:${port}`, {
@@ -143,16 +144,16 @@ describe(Quoter, () => {
 
               if (srcAsset === 'Usdc') {
                 baseAsset = destAsset;
-                side = 'buy';
+                side = 'sell';
               } else if (destAsset === 'Usdc') {
                 baseAsset = srcAsset;
-                side = 'sell';
+                side = 'buy';
               } else if (i === 0) {
                 baseAsset = srcAsset;
-                side = 'sell';
+                side = 'buy';
               } else if (i === 1) {
                 baseAsset = destAsset;
-                side = 'buy';
+                side = 'sell';
               } else {
                 throw new Error('unexpected leg index');
               }
@@ -192,7 +193,7 @@ describe(Quoter, () => {
           }),
       ),
     );
-    await promisify(server.close.bind(server))();
+    await server.close();
   });
 
   describe('constructor', () => {

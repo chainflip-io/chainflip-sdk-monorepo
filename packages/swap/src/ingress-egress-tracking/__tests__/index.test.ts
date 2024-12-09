@@ -51,12 +51,19 @@ describe('ingress-egress-tracking', () => {
           amount: '0x9000',
           asset: 'FLIP',
           deposit_chain_block_height: 1234567890,
+          deposit_details: {
+            tx_hashes: ['0x1234'],
+          },
         }),
       );
 
       const deposit = await getPendingDeposit('Flip', '0x1234');
 
-      expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 3 });
+      expect(deposit).toEqual({
+        amount: '36864',
+        transactionConfirmations: 3,
+        transactionHash: '0x1234',
+      });
     });
 
     it('ensures foreign block height is used only after 1 extra state chain block', async () => {
@@ -68,12 +75,19 @@ describe('ingress-egress-tracking', () => {
           amount: '0x9000',
           asset: 'FLIP',
           deposit_chain_block_height: 1234567890,
+          deposit_details: {
+            tx_hashes: ['0x1234'],
+          },
         }),
       );
 
       const deposit = await getPendingDeposit('Flip', '0x1234');
 
-      expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 4 });
+      expect(deposit).toEqual({
+        amount: '36864',
+        transactionConfirmations: 4,
+        transactionHash: '0x1234',
+      });
     });
 
     it('returns null if the non-bitcoin deposit is not found', async () => {
@@ -121,6 +135,7 @@ describe('ingress-egress-tracking', () => {
             amount: '0x9000',
             asset: 'BTC',
             deposit_chain_block_height: 1234567890,
+            deposit_details: { tx_id: '0x1234', vout: 1 },
           }),
         ),
         updateChainTracking({ chain: 'Bitcoin', height: 1234567894n }),
@@ -129,7 +144,11 @@ describe('ingress-egress-tracking', () => {
       const deposit = await getPendingDeposit('Btc', 'tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf');
 
       expect(logger.error).not.toHaveBeenCalled();
-      expect(deposit).toEqual({ amount: '36864', transactionConfirmations: 4 });
+      expect(deposit).toEqual({
+        amount: '36864',
+        transactionConfirmations: 4,
+        transactionHash: '3412',
+      });
     });
 
     it('returns null if the non-bitcoin deposit is not found', async () => {

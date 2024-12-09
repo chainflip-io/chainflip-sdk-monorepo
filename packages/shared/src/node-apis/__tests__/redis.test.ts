@@ -100,6 +100,9 @@ describe(RedisClient, () => {
           amount: '0x8000',
           asset: 'ETH',
           deposit_chain_block_height: 1234,
+          deposit_details: {
+            tx_hashes: ['0xdeadc0de'],
+          },
         }),
       ]);
       const client = new RedisClient(url);
@@ -109,9 +112,43 @@ describe(RedisClient, () => {
           amount: 0x8000n,
           asset: 'ETH',
           deposit_chain_block_height: 1234,
+          tx_refs: ['0xdeadc0de'],
         },
       ]);
       expect(mock).toHaveBeenCalledWith('deposit:Ethereum:0x1234', 0, -1);
+    });
+
+    it('returns the deposits if found - Polkadot', async () => {
+      const mock = jest.mocked(Redis.prototype.lrange).mockResolvedValueOnce([
+        JSON.stringify({
+          amount: '0x8000',
+          asset: 'DOT',
+          deposit_chain_block_height: 100,
+          deposit_details: {
+            extrinsic_index: 20,
+          },
+        }),
+      ]);
+
+      const client = new RedisClient(url);
+      const deposits = await client.getDeposits(
+        'Polkadot',
+        'DOT',
+        '121LWHo3TJYdvSuDVhdCY6P9Bk6Cd5wMkkvMnU5joWJfuWBJ',
+      );
+      expect(deposits).toEqual([
+        {
+          amount: 0x8000n,
+          asset: 'DOT',
+          deposit_chain_block_height: 100,
+          tx_refs: ['100-20'],
+        },
+      ]);
+      expect(mock).toHaveBeenCalledWith(
+        'deposit:Polkadot:0x2c7de4a2d760264b29f2033b67aa882f300e1785bc7d130fbf67f5b127202169',
+        0,
+        -1,
+      );
     });
 
     it('>V120 returns the deposits if found', async () => {
@@ -123,6 +160,10 @@ describe(RedisClient, () => {
             chain: 'Bitcoin',
           },
           deposit_chain_block_height: 1234,
+          deposit_details: {
+            tx_id: '0x1234',
+            vout: 1,
+          },
         }),
       ]);
       const client = new RedisClient(url);
@@ -132,6 +173,7 @@ describe(RedisClient, () => {
           amount: 0x8000n,
           asset: 'BTC',
           deposit_chain_block_height: 1234,
+          tx_refs: ['3412'],
         },
       ]);
       expect(mock).toHaveBeenCalledWith('deposit:Bitcoin:0x1234', 0, -1);
@@ -143,6 +185,7 @@ describe(RedisClient, () => {
           amount: '0x8000',
           asset: 'FLIP',
           deposit_chain_block_height: 1234,
+          tx_refs: ['0x65f4c6ba793815c4d1a9e4f0fd43c0f6f26ff5f1678a621d543a8928c1c2e978'],
         }),
       ]);
       const client = new RedisClient(url);

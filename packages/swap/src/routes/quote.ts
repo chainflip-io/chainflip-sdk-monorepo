@@ -5,9 +5,11 @@ import { asyncHandler } from './common';
 import env from '../config/env';
 import { getUsdValue } from '../pricing/checkPriceWarning';
 import Quoter from '../quoting/Quoter';
-import logger from '../utils/logger';
+import baseLogger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
 import { generateQuotes, validateQuoteQuery } from './v2/quote';
+
+const logger = baseLogger.child({ module: 'quoter' });
 
 type AdditionalInfo = {
   srcAsset: InternalAsset;

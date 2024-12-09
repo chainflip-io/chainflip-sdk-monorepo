@@ -1,5 +1,4 @@
 import { hexEncodeNumber } from '@chainflip/utils/number';
-import { toLowerCase } from '@chainflip/utils/string';
 import assert from 'assert';
 import BigNumber from 'bignumber.js';
 import { randomUUID } from 'crypto';
@@ -22,7 +21,9 @@ import {
 import env from '../config/env';
 import { getAssetPrice } from '../pricing';
 import { handleExit } from '../utils/function';
-import logger from '../utils/logger';
+import baseLogger from '../utils/logger';
+
+const logger = baseLogger.child({ module: 'quoter' });
 
 type Quote = { marketMaker: string; quote: MarketMakerQuote };
 
@@ -63,7 +64,7 @@ const formatLimitOrders = (
 
   return quotes.map(([tick, amount]) => ({
     LimitOrder: {
-      side: toLowerCase(leg.side),
+      side: leg.side === 'BUY' ? 'sell' : 'buy',
       base_asset: leg.base_asset,
       quote_asset: leg.quote_asset,
       tick,
@@ -150,9 +151,9 @@ export default class Quoter {
 
   private async collectMakerQuotes(
     request: MarketMakerQuoteRequest<Leg>,
-  ): Promise<MarketMakerQuote[]> {
+  ): Promise<[string, MarketMakerQuote][]> {
     const connectedClients = this.io.sockets.sockets.size;
-    if (connectedClients === 0) return Promise.resolve([]);
+    if (connectedClients === 0) return [];
 
     this.inflightRequests.add(request.request_id);
 
@@ -189,7 +190,7 @@ export default class Quoter {
       socket.emit('quote_request', message);
     }
 
-    if (expectedResponses === 0) return Promise.resolve([]);
+    if (expectedResponses === 0) return [];
 
     const clientsReceivedQuotes = new Map<string, MarketMakerQuote>();
 
@@ -199,7 +200,7 @@ export default class Quoter {
       let timer: ReturnType<typeof setTimeout>;
 
       const complete = () => {
-        resolve(clientsReceivedQuotes.values().toArray());
+        resolve(clientsReceivedQuotes.entries().toArray());
         sub.unsubscribe();
         clearTimeout(timer);
         this.inflightRequests.delete(request.request_id);
@@ -253,17 +254,21 @@ export default class Quoter {
 
     const orders = [
       ...formatLimitOrders(
-        quotes.flatMap((quote) => quote.legs[0]),
+        quotes.flatMap(([, quote]) => quote.legs[0]),
         legs[0].toJSON(),
       ),
       ...formatLimitOrders(
-        quotes.flatMap((quote) => quote.legs[1] ?? []),
+        quotes.flatMap(([, quote]) => quote.legs[1] ?? []),
         legs[1]?.toJSON(),
       ),
     ];
 
     logger.info('received limit orders from market makers', {
+      quotes,
       orders,
+      srcAsset,
+      destAsset,
+      swapInputAmount: swapInputAmount.toString(),
       requestId: request.request_id,
       duration: performance.now() - start,
     });

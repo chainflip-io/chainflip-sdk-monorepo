@@ -43,7 +43,7 @@ const swapRequestInclude = {
 
 const channelIdRegex = /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
 const swapRequestId = /^\d+$/i;
-const txHashRegex = /^0x[a-f\d]+$/i;
+const txHashRegex = /^(0x)?[a-f\d]+$/i;
 
 export const getLatestSwapForId = async (id: string) => {
   let swapRequest;
@@ -64,7 +64,12 @@ export const getLatestSwapForId = async (id: string) => {
       },
       include: {
         swapRequests: { include: swapRequestInclude, orderBy: { nativeId: 'desc' } },
-        failedSwaps: { include: { swapDepositChannel: { include: depositChannelInclude } } },
+        failedSwaps: {
+          include: {
+            swapDepositChannel: { include: depositChannelInclude },
+            refundBroadcast: true,
+          },
+        },
         failedBoosts: true,
         affiliates: {
           select: {
@@ -85,9 +90,6 @@ export const getLatestSwapForId = async (id: string) => {
     if (!swapRequest || (swapRequest.completedAt && !swapRequest.swaps.length)) {
       failedSwap = swapDepositChannel.failedSwaps.at(0);
     }
-    if (swapDepositChannel.affiliates.length > 0) {
-      affiliateBrokers = swapDepositChannel.affiliates;
-    }
   } else if (swapRequestId.test(id)) {
     swapRequest = await prisma.swapRequest.findUnique({
       where: { nativeId: BigInt(id) },
@@ -104,12 +106,15 @@ export const getLatestSwapForId = async (id: string) => {
     if (!swapRequest) {
       failedSwap = await prisma.failedSwap.findFirst({
         where: { depositTransactionRef: id },
-        include: { swapDepositChannel: { include: depositChannelInclude } },
+        include: { swapDepositChannel: { include: depositChannelInclude }, refundBroadcast: true },
       });
     }
   }
 
   swapDepositChannel ??= swapRequest?.swapDepositChannel ?? failedSwap?.swapDepositChannel;
+  if (swapDepositChannel && swapDepositChannel.affiliates.length > 0) {
+    affiliateBrokers = swapDepositChannel.affiliates;
+  }
 
   ServiceError.assert(
     swapDepositChannel || swapRequest || failedSwap,
@@ -132,9 +137,9 @@ type FailedSwapData = NonNullable<LatestSwapData['failedSwap']>;
 type SwapChannelData = NonNullable<LatestSwapData['swapDepositChannel']>;
 
 export const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
-  inputAmount: swap.swapInputAmount.toString(),
-  intermediateAmount: swap.intermediateAmount?.toString(),
-  outputAmount: swap.swapOutputAmount?.toString(),
+  inputAmount: swap.swapInputAmount.toFixed(),
+  intermediateAmount: swap.intermediateAmount?.toFixed(),
+  outputAmount: swap.swapOutputAmount?.toFixed(),
   scheduledAt: swap.swapScheduledAt.valueOf(),
   scheduledBlockIndex: swap.swapScheduledBlockIndex ?? undefined,
   executedAt: swap.swapExecutedAt?.valueOf(),
@@ -147,7 +152,9 @@ export const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
 const getDepositIgnoredFailedState = (failedSwap: FailedSwap) => ({
   failedAt: failedSwap.failedAt.valueOf(),
   failedBlockIndex: failedSwap.failedBlockIndex,
-  mode: FailureMode.IngressIgnored,
+  mode: failedSwap.refundBroadcastId
+    ? FailureMode.TransactionRejectedByBroker
+    : FailureMode.IngressIgnored,
   reason: {
     name: failedSwap.reason,
     message: failedSwapMessage[failedSwap.reason],
@@ -300,11 +307,13 @@ export const getSwapState = async (
   const refundEgress = swapRequest?.refundEgress;
   const egress = swapEgress ?? refundEgress;
 
-  if (
-    failedSwap ||
-    (ignoredEgresses && ignoredEgresses.length > 0) ||
-    egress?.broadcast?.abortedAt
-  ) {
+  if (failedSwap) {
+    state = StateV2.Failed;
+    if (failedSwap.refundBroadcast) {
+      const pendingRefundBroadcast = await getPendingBroadcast(failedSwap.refundBroadcast);
+      refundEgressTrackerTxRef = pendingRefundBroadcast?.tx_ref;
+    }
+  } else if ((ignoredEgresses && ignoredEgresses.length > 0) || egress?.broadcast?.abortedAt) {
     state = StateV2.Failed;
   } else if (egress?.broadcast?.succeededAt) {
     state = StateV2.Completed;

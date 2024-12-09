@@ -229,7 +229,7 @@ model SwapFee {
 enum FailedSwapReason {
   BelowMinimumDeposit
   NotEnoughToPayFees // gas price to process deposit is too high
-  TransactionTainted
+  TransactionRejectedByBroker
   UnsupportedForTargetChain // CCM reason
   InsufficientDepositAmount // CCM reason
   InvalidMetadata // CCM reason
@@ -253,6 +253,8 @@ model FailedSwap {
   failedBlockIndex      String
   ccmGasBudget          Decimal?            @db.Decimal(30, 0)
   ccmMessage            String?
+  refundBroadcast       Broadcast?          @relation(fields: [refundBroadcastId], references: [id])
+  refundBroadcastId     BigInt?
 
   @@index([swapDepositChannelId])
   @@schema("public")
@@ -337,6 +339,7 @@ model Broadcast {
   transactionRef      String?       @unique
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @default(now()) @updatedAt
+  failedSwaps         FailedSwap[]
 
   @@unique([nativeId, chain])
   @@schema("public")
@@ -444,6 +447,7 @@ model Quote {
   executedPrice                       Decimal?
   executedSlippagePercent             Decimal?
   recommendedSlippageTolerancePercent Decimal?
+  refundedAt                          DateTime?
 
   @@schema("private")
 }

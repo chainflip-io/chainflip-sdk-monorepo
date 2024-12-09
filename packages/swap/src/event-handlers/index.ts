@@ -10,6 +10,7 @@ import networkCcmBroadcastRequested from './networkCcmBroadcastRequested';
 import chainStateUpdated from './networkChainStateUpdated';
 import { networkDepositFinalised } from './networkDepositFinalised';
 import networkDepositIgnored from './networkDepositIgnored';
+import networkTransactionRejectedByBroker from './networkTransactionRejectedByBroker';
 import newPoolCreated from './newPoolCreated';
 import poolFeeSet from './poolFeeSet';
 import refundEgressIgnored from './refundEgressIgnored';
@@ -56,6 +57,7 @@ export const events = {
     BoostPoolCreated: 'BitcoinIngressEgress.BoostPoolCreated',
     DepositBoosted: 'BitcoinIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'BitcoinIngressEgress.InsufficientBoostLiquidity',
+    TransactionRejectedByBroker: 'BitcoinIngressEgress.TransactionRejectedByBroker',
   },
   EthereumIngressEgress: {
     BatchBroadcastRequested: 'EthereumIngressEgress.BatchBroadcastRequested',
@@ -65,6 +67,7 @@ export const events = {
     BoostPoolCreated: 'EthereumIngressEgress.BoostPoolCreated',
     DepositBoosted: 'EthereumIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'EthereumIngressEgress.InsufficientBoostLiquidity',
+    TransactionRejectedByBroker: 'EthereumIngressEgress.TransactionRejectedByBroker',
   },
   ArbitrumIngressEgress: {
     BatchBroadcastRequested: 'ArbitrumIngressEgress.BatchBroadcastRequested',
@@ -74,6 +77,7 @@ export const events = {
     BoostPoolCreated: 'ArbitrumIngressEgress.BoostPoolCreated',
     DepositBoosted: 'ArbitrumIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'ArbitrumIngressEgress.InsufficientBoostLiquidity',
+    TransactionRejectedByBroker: 'ArbitrumIngressEgress.TransactionRejectedByBroker',
   },
   PolkadotIngressEgress: {
     BatchBroadcastRequested: 'PolkadotIngressEgress.BatchBroadcastRequested',
@@ -83,6 +87,7 @@ export const events = {
     BoostPoolCreated: 'PolkadotIngressEgress.BoostPoolCreated',
     DepositBoosted: 'PolkadotIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'PolkadotIngressEgress.InsufficientBoostLiquidity',
+    TransactionRejectedByBroker: 'PolkadotIngressEgress.TransactionRejectedByBroker',
   },
   SolanaIngressEgress: {
     BatchBroadcastRequested: 'SolanaIngressEgress.BatchBroadcastRequested',
@@ -92,6 +97,7 @@ export const events = {
     BoostPoolCreated: 'SolanaIngressEgress.BoostPoolCreated',
     DepositBoosted: 'SolanaIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'SolanaIngressEgress.InsufficientBoostLiquidity',
+    TransactionRejectedByBroker: 'SolanaIngressEgress.TransactionRejectedByBroker',
   },
   BitcoinBroadcaster: {
     BroadcastSuccess: 'BitcoinBroadcaster.BroadcastSuccess',
@@ -213,6 +219,17 @@ const handlers = [
         {
           name: events[`${chain}IngressEgress`].DepositBoosted,
           handler: depositBoosted,
+        },
+      ]),
+    ],
+  },
+  {
+    spec: 170,
+    handlers: [
+      ...Object.values(Chains).flatMap((chain) => [
+        {
+          name: events[`${chain}IngressEgress`].TransactionRejectedByBroker,
+          handler: networkTransactionRejectedByBroker(chain),
         },
       ]),
     ],

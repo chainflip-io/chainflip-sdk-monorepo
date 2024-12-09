@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
-import { assetConstants, chainConstants } from '@/shared/enums';
+import { Asset, assetConstants, chainConstants } from '@/shared/enums';
+import env from '@/swap/config/env';
 import { getDeployedLiquidity, getUndeployedLiquidity } from './pools';
 import { getRequiredBlockConfirmations } from './rpc';
 import { InternalAsset } from '../client';
@@ -10,35 +11,42 @@ const getDeployedLiquidityAdjustment = async (
   amount: bigint,
 ) => {
   const deployedLiquidity = await getDeployedLiquidity(srcAsset, destAsset);
-  const liquidityRatio = new BigNumber(amount.toString()).div(deployedLiquidity.toString());
+  const liquidityRatio = new BigNumber(amount.toString())
+    .div(deployedLiquidity.toString())
+    .toNumber();
 
-  if (liquidityRatio.isGreaterThan(0.2)) {
-    return liquidityRatio.multipliedBy(2);
+  // if swap will use more than 50% of deployed liquidity, increase recommended tolerance
+  if (liquidityRatio > 0.5) {
+    return liquidityRatio / 2;
   }
-  return new BigNumber(0);
+
+  return 0;
 };
 
 const getDepositTimeAdjustment = async (srcAsset: InternalAsset, isBoosted: boolean) => {
   const { chain } = assetConstants[srcAsset];
   const { blockTimeSeconds } = chainConstants[chain];
-  const blockConfirmations = isBoosted ? 1 : (await getRequiredBlockConfirmations(srcAsset)) ?? 0;
+  const blockConfirmations = isBoosted ? 1 : ((await getRequiredBlockConfirmations(srcAsset)) ?? 0);
   const depositTimeMinutes = (blockConfirmations * blockTimeSeconds) / 60;
 
-  return Math.min(depositTimeMinutes * 0.05, 1); // Cap at 1
+  return Math.min(depositTimeMinutes / 20, 1); // Cap at 1
 };
 
 const getUndeployedLiquidityAdjustment = async (asset: InternalAsset, amount: bigint) => {
   const undeployedLiquidity = await getUndeployedLiquidity(asset);
-  if (undeployedLiquidity >= amount) {
-    return new BigNumber(-0.5);
+
+  // if swap can be filled with jit liquidity only, decrease recommended tolerance
+  if (amount < undeployedLiquidity / 2n) {
+    return -0.5;
   }
 
-  const undeployedRatio = new BigNumber(undeployedLiquidity.toString()).div(amount.toString());
-  if (undeployedRatio.gt(0.5)) {
-    return new BigNumber(-undeployedRatio * 0.1);
-  }
+  return 0;
+};
 
-  return new BigNumber(0);
+const getPriceImpactAdjustment = async (asset: InternalAsset, dcaChunks: number) => {
+  const priceImpactPercent = env.DCA_CHUNK_PRICE_IMPACT_PERCENT?.[asset] ?? 0;
+
+  return priceImpactPercent * (dcaChunks - 1);
 };
 
 const getLiquidityAdjustment = async ({
@@ -50,14 +58,16 @@ const getLiquidityAdjustment = async ({
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
   amount: bigint;
-  dcaChunks: bigint;
+  dcaChunks: number;
 }) => {
-  const [deployedLiquiditySlippage, undeployedLiquiditySlippage] = await Promise.all([
-    getDeployedLiquidityAdjustment(srcAsset, destAsset, amount * dcaChunks),
-    getUndeployedLiquidityAdjustment(destAsset, amount * dcaChunks),
-  ]);
+  const [deployedLiquidityAdjustment, undeployedLiquidityAdjustment, priceImpactAdjustment] =
+    await Promise.all([
+      getDeployedLiquidityAdjustment(srcAsset, destAsset, amount * BigInt(dcaChunks)),
+      getUndeployedLiquidityAdjustment(destAsset, amount * BigInt(dcaChunks)),
+      getPriceImpactAdjustment(srcAsset !== 'Usdc' ? srcAsset : destAsset, dcaChunks),
+    ]);
 
-  return deployedLiquiditySlippage.plus(undeployedLiquiditySlippage).toNumber();
+  return deployedLiquidityAdjustment + undeployedLiquidityAdjustment + priceImpactAdjustment;
 };
 
 export const calculateRecommendedSlippage = async ({
@@ -75,9 +85,21 @@ export const calculateRecommendedSlippage = async ({
   boostFeeBps?: number;
   dcaChunks: number;
 }) => {
-  const MIN_SLIPPAGE = 0.1;
-  const MAX_SLIPPAGE = 5;
+  // do not accept significant price movements for stable assets independently of available liquidity
+  const stableAssets: Asset[] = ['USDC', 'USDT'];
+  if (
+    stableAssets.includes(assetConstants[srcAsset].asset) &&
+    stableAssets.includes(assetConstants[destAsset].asset)
+  ) {
+    return 0.5;
+  }
+
   const BASE_SLIPPAGE = 1;
+
+  // use different limits for flip swaps because chainflip is the primary market for the flip token
+  // because of this, lps cannot easily source liquidity from other markets (cex, dex) when filling a flip swap
+  const MIN_SLIPPAGE = srcAsset === 'Flip' || destAsset === 'Flip' ? 1 : 0.5;
+  const MAX_SLIPPAGE = srcAsset === 'Flip' || destAsset === 'Flip' ? 5 : 2.5;
 
   let recommendedSlippage = BASE_SLIPPAGE;
   recommendedSlippage += await getDepositTimeAdjustment(srcAsset, Boolean(boostFeeBps));
@@ -87,7 +109,7 @@ export const calculateRecommendedSlippage = async ({
       srcAsset,
       destAsset,
       amount: egressAmount,
-      dcaChunks: BigInt(dcaChunks),
+      dcaChunks,
     });
   } else {
     const [leg1Adjustment, leg2Adjustment] = await Promise.all([
@@ -95,13 +117,13 @@ export const calculateRecommendedSlippage = async ({
         srcAsset,
         destAsset: 'Usdc',
         amount: intermediateAmount!,
-        dcaChunks: BigInt(dcaChunks),
+        dcaChunks,
       }),
       getLiquidityAdjustment({
         srcAsset: 'Usdc',
         destAsset,
         amount: egressAmount,
-        dcaChunks: BigInt(dcaChunks),
+        dcaChunks,
       }),
     ]);
 

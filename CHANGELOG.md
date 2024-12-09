@@ -7,19 +7,13 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
-## Unreleased
+## 1.7.0
 
 ### Added
 
 - A new method has been added to the `SwapSDK`, `requestDepositAddressV2`. This
   event simplifies deposit channel creation by accepting the quote that is
   returned by the SDK to set the correct assets, DCA parameters, and Boost fee.
-- A new method has been added to the `SwapSDK`,
-  `buildRequestSwapDepositAddressWithAffiliatesParams`. This method is intended
-  for use with the Polkadot API. This method accepts the quote that is returned
-  by the SDK to set the correct assets, DCA parameters, and Boost fee. It
-  returns an array of arguments that can be passed directly to the
-  `requestSwapDepositAddressWithAffiliates` extrinsic call.
 - A new method has been added to the `SwapSDK`, `approveAndExecuteSwap`.
   This is a convenience method that can be used to skip the manual token
   allowance approval. Upon calling, the method will make sure there is enough
@@ -34,6 +28,20 @@ which it is deprecated.
   - `deposit`: time for a deposit to be witnessed and the respective swap being scheduled
   - `swap`: time for a swap to be fully executed
   - `egress`: time until the output transaction is included in a block
+
+### Changed
+
+- Fill or Kill parameters are now mandatory when opening a deposit channel through
+  the default broker endpoint. If you are using your own broker, the parameters are
+  still optional for now.
+- `SwapSDK.prototype.getStatus`: deprecated `depositTransactionHash` was removed.
+  Use `depositTransactionRef` instead.
+- `SwapSDK.prototype.getStatus`: deprecated `ccmMetadata` was removed.
+  Use `ccmParams` instead.
+- `SwapSDK.prototype.requestDepositAddress`: deprecated `ccmMetadata` was removed.
+  Use `ccmParams` instead.
+- `SwapSDK.prototype.executeSwap`: deprecated `ccmMetadata` was removed.
+  Use `ccmParams` instead.
 
 ## 1.6.6
 

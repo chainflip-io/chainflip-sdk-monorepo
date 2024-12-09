@@ -67,9 +67,6 @@ export interface DepositAddressRequest extends QuoteRequest {
   srcAddress?: string;
   fillOrKillParams?: FillOrKillParamsWithMinPrice;
   dcaParams?: DcaParams;
-
-  /** @deprecated DEPRECATED(1.5): use ccmParams instead of ccmMetadata */
-  ccmMetadata?: CcmParams;
 }
 
 export interface DepositAddressResponse extends DepositAddressRequest {
@@ -97,11 +94,6 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   swapScheduledAt: number | undefined;
   swapScheduledBlockIndex: string | undefined;
   lastStatechainUpdateAt: number | undefined;
-
-  /** @deprecated DEPRECATED(1.5): use depositTransactionRef instead */
-  depositTransactionHash: string | undefined;
-  /** @deprecated DEPRECATED(1.5): use ccmParams instead of ccmMetadata */
-  ccmMetadata?: CcmParams;
 }
 
 interface DepositAddressFields extends SwapStatusResponseCommonFields {
