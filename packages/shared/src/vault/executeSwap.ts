@@ -1,8 +1,9 @@
 import * as base58 from '@chainflip/utils/base58';
-import { bytesToHex } from '@chainflip/utils/bytes';
+import { bytesToHex, hexToBytes } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
 import { ContractTransactionResponse } from 'ethers';
+import { u32, Struct, Option, u16, u256, Bytes as TsBytes, Enum, Vector, u8 } from 'scale-ts';
 import { Vault__factory } from '../abis';
 import {
   checkAllowance,
@@ -23,13 +24,14 @@ import {
 import { assertIsEvmChain, assertIsCCMDestination, assertSignerIsConnectedToChain } from '../evm';
 import { assert } from '../guards';
 import { dotAddress } from '../parsers';
-import { ccmParamsSchema } from '../schemas';
+import { AffiliateBroker, ccmParamsSchema, DcaParams, FillOrKillParamsX128 } from '../schemas';
 import { Required } from '../types';
 import { assertValidAddress } from '../validation/addressValidation';
 import { ExecuteSwapParams, SwapNetworkOptions } from './index';
 
 const encodeAddress = (chain: Chain, address: string) => {
-  if (chain === Chains.Polkadot || chain === Chains.Assethub) return bytesToHex(ss58.decode(dotAddress.parse(address)).data);
+  if (chain === Chains.Polkadot || chain === Chains.Assethub)
+    return bytesToHex(ss58.decode(dotAddress.parse(address)).data);
   if (chain === Chains.Bitcoin) return `0x${Buffer.from(address).toString('hex')}`;
   if (chain === Chains.Ethereum || chain === Chains.Arbitrum) return address;
   if (chain === Chains.Solana) {
@@ -70,6 +72,88 @@ const getErc20Address = (asset: InternalAsset, networkOpts: SwapNetworkOptions) 
   return erc20Address;
 };
 
+const vaultSwapParametersCodec = Struct({
+  refundParams: Struct({
+    retryDurationBlocks: u32,
+    refundAddress: Enum({
+      Ethereum: TsBytes(20),
+      Polkadot: TsBytes(32),
+      Assethub: TsBytes(32),
+      Bitcoin: TsBytes(),
+      Arbitrum: TsBytes(20),
+      Solana: TsBytes(32),
+    }),
+    minPriceX128: u256,
+  }),
+  dcaParams: Option(Struct({ numberOfChunks: u32, chunkIntervalBlocks: u32 })),
+  boostFee: u8,
+  brokerFees: Struct({ account: TsBytes(32), commissionBps: u16 }),
+  affiliateFees: Vector(Struct({ account: u8, commissionBps: u8 })),
+});
+
+const vaultCcmCfParametersCodec = Enum({
+  V0: Struct({
+    ccmAdditionalData: TsBytes(),
+    vaultSwapParameters: vaultSwapParametersCodec,
+  }),
+});
+
+const vaultCfParametersCodec = Enum({
+  V0: Struct({
+    vaultSwapParameters: vaultSwapParametersCodec,
+  }),
+});
+
+export function encodeCfParameters(
+  sourceChain: Chain,
+  fillOrKillParams: FillOrKillParamsX128,
+  brokerFees: AffiliateBroker,
+  ccmAdditionalData?: string | undefined,
+  boostFeeBps?: number,
+  dcaParams?: DcaParams,
+  affiliateFees?: {
+    account: number;
+    commissionBps: number;
+  }[],
+): string {
+  const vaultSwapParameters = {
+    refundParams: {
+      retryDurationBlocks: fillOrKillParams.retryDurationBlocks,
+      refundAddress: {
+        tag: sourceChain,
+        value: hexToBytes(fillOrKillParams.refundAddress as `0x${string}`),
+      },
+      minPriceX128: BigInt(fillOrKillParams.minPriceX128),
+    },
+    dcaParams,
+    boostFee: boostFeeBps ?? 0,
+    brokerFees: {
+      account: isHex(brokerFees.account)
+        ? hexToBytes(brokerFees.account)
+        : ss58.decode(brokerFees.account).data,
+      commissionBps: brokerFees.commissionBps,
+    },
+    affiliateFees: affiliateFees ?? [],
+  };
+
+  return bytesToHex(
+    ccmAdditionalData !== undefined
+      ? vaultCcmCfParametersCodec.enc({
+          tag: 'V0',
+          value: {
+            ccmAdditionalData: hexToBytes(ccmAdditionalData as `0x${string}`),
+            vaultSwapParameters,
+          },
+        })
+      : vaultCfParametersCodec.enc({
+          tag: 'V0',
+          value: {
+            vaultSwapParameters,
+          },
+        }),
+  );
+}
+
 const swapNative = async (
   params: ExecuteSwapParams,
   networkOpts: SwapNetworkOptions,
@@ -81,11 +165,21 @@ const swapNative = async (
   });
   const { vaultContract: vault } = getVaultContract(params.srcChain, networkOpts);
 
+  const cfParameters = encodeCfParameters(
+    params.srcChain,
+    params.fillOrKillParams,
+    params.brokerFees,
+    undefined,
+    params.maxBoostFeeBps,
+    params.dcaParams,
+    params.affiliateFees,
+  );
+
   const transaction = await vault.xSwapNative(
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
     assetConstants[destAsset].contractId,
-    params.ccmParams?.cfParameters ?? '0x',
+    cfParameters,
     { value: params.amount, ...extractOverrides(txOpts) },
   );
   await transaction.wait(txOpts.wait);
@@ -110,13 +204,23 @@ const swapToken = async (
   );
   assert(hasSufficientAllowance, 'Swap amount exceeds allowance');
 
+  const cfParameters = encodeCfParameters(
+    params.srcChain,
+    params.fillOrKillParams,
+    params.brokerFees,
+    undefined,
+    params.maxBoostFeeBps,
+    params.dcaParams,
+    params.affiliateFees,
+  );
+
   const transaction = await vault.xSwapToken(
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
     assetConstants[destAsset].contractId,
     erc20Address,
     params.amount,
-    params.ccmParams?.cfParameters ?? '0x',
+    cfParameters,
     extractOverrides(txOpts),
   );
   await transaction.wait(txOpts.wait);
@@ -135,13 +239,23 @@ const callNative = async (
   });
   const { vaultContract: vault } = getVaultContract(params.srcChain, networkOpts);
 
+  const cfParameters = encodeCfParameters(
+    params.srcChain,
+    params.fillOrKillParams,
+    params.brokerFees,
+    params.ccmParams?.ccmAdditionalData,
+    params.maxBoostFeeBps,
+    params.dcaParams,
+    params.affiliateFees,
+  );
+
   const transaction = await vault.xCallNative(
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
     assetConstants[destAsset].contractId,
     params.ccmParams.message,
     params.ccmParams.gasBudget,
-    params.ccmParams?.cfParameters ?? '0x',
+    cfParameters ?? '0x',
     { value: params.amount, ...extractOverrides(txOpts) },
   );
   await transaction.wait(txOpts.wait);
@@ -166,6 +280,16 @@ const callToken = async (
   );
   assert(hasSufficientAllowance, 'Swap amount exceeds allowance');
 
+  const cfParameters = encodeCfParameters(
+    params.srcChain,
+    params.fillOrKillParams,
+    params.brokerFees,
+    params.ccmParams?.ccmAdditionalData,
+    params.maxBoostFeeBps,
+    params.dcaParams,
+    params.affiliateFees,
+  );
+
   const transaction = await vault.xCallToken(
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
@@ -174,7 +298,7 @@ const callToken = async (
     params.ccmParams.gasBudget,
     erc20Address,
     params.amount,
-    params.ccmParams?.cfParameters ?? '0x',
+    cfParameters ?? '0x',
     extractOverrides(txOpts),
   );
   await transaction.wait(txOpts.wait);

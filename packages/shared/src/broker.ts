@@ -1,18 +1,14 @@
-import * as bitcoin from '@chainflip/bitcoin';
-import type {
-  EncodedAddress,
-  ForeignChainAddress,
-  ChainflipAsset,
-} from '@chainflip/extrinsics/160/common';
-import type { SwappingRequestSwapDepositAddressWithAffiliates } from '@chainflip/extrinsics/160/swapping/requestSwapDepositAddressWithAffiliates';
+import type { EncodedAddress } from '@chainflip/extrinsics/160/common';
+// import type { SwappingRequestSwapDepositAddressWithAffiliates } from '@chainflip/extrinsics/160/swapping/requestSwapDepositAddressWithAffiliates';
 import { HttpClient, RpcParams } from '@chainflip/rpc';
 import * as base58 from '@chainflip/utils/base58';
 import { bytesToHex, hexToBytes } from '@chainflip/utils/bytes';
+import { type ChainflipAsset } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
 import { HexString } from '@chainflip/utils/types';
 import { z } from 'zod';
-import { Chain, ChainflipNetwork, Asset, getInternalAsset } from './enums';
+import { Chain, ChainflipNetwork, Asset, getInternalAsset, InternalAsset } from './enums';
 import { assert } from './guards';
 import {
   hexString,
@@ -83,10 +79,10 @@ const transformedDcaParamsSchema = dcaParamsSchema.transform(
 );
 
 const transformedCcmParamsSchema = <T extends HexString | undefined>(defaultValue: T) =>
-  ccmParamsSchema.transform(({ message, gasBudget, cfParameters }) => ({
+  ccmParamsSchema.transform(({ message, gasBudget, ccmAdditionalData }) => ({
     message,
     gas_budget: gasBudget,
-    cf_parameters: cfParameters ?? defaultValue,
+    ccm_additional_data: ccmAdditionalData ?? defaultValue,
   }));
 
 const validateAddressLength = (chain: Chain, address: string, type: 'destination' | 'refund') => {
@@ -205,25 +201,31 @@ function toEncodedAddress(chain: Chain, address: string): EncodedAddress {
   }
 }
 
-const toForeignChainAddress = (
-  chain: Chain,
-  address: string,
-  network: ChainflipNetwork,
-): ForeignChainAddress => {
-  switch (chain) {
-    case 'Arbitrum':
-    case 'Ethereum':
-    case 'Polkadot':
-    case 'Solana':
-      return toEncodedAddress(chain, address);
-    case 'Bitcoin': {
-      const { type, data } = bitcoin.decodeAddress(address, network);
-      return { Btc: { [type]: data } } as ForeignChainAddress;
-    }
-    default:
-      throw new Error(`Unsupported chain: ${chain}`);
-  }
-};
+export type SwappingRequestSwapDepositAddressWithAffiliates = [
+  sourceAsset: InternalAsset,
+  destinationAsset: InternalAsset,
+  destinationAddress: EncodedAddress,
+  brokerCommission: number,
+  channelMetadata: {
+    message: Uint8Array | `0x${string}`;
+    gas_budget: `0x${string}`;
+    ccm_additional_data: Uint8Array | `0x${string}`;
+  } | null,
+  boostFee: number,
+  affiliateFees: {
+    account: `0x${string}`;
+    bps: number;
+  }[],
+  refundParameters: {
+    retry_duration: number;
+    refund_address: EncodedAddress;
+    min_price: `0x${string}`;
+  } | null,
+  dcaParameters: {
+    number_of_chunks: number;
+    chunk_interval: number;
+  } | null,
+];
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type RemoveOptional<T> = {} & {
@@ -234,7 +236,6 @@ export type ExtrinsicPayloadParams = RemoveOptional<NewSwapRequest>;
 
 export const buildExtrinsicPayload = (
   swapRequest: ExtrinsicPayloadParams,
-  chainflipNetwork: ChainflipNetwork,
 ): SwappingRequestSwapDepositAddressWithAffiliates => {
   const srcAsset = getInternalAsset({
     asset: swapRequest.srcAsset,
@@ -250,14 +251,12 @@ export const buildExtrinsicPayload = (
     .parse(swapRequest.ccmParams ?? null);
 
   const fokParams = getTransformedFokSchema(
-    z
-      .string()
-      .transform((address) =>
-        toForeignChainAddress(swapRequest.srcChain, address, chainflipNetwork),
-      ),
+    z.string().transform((value) => toEncodedAddress(swapRequest.srcChain, value)),
   )
     .nullable()
-    .parse(swapRequest.fillOrKillParams ?? null);
+    // TODO(1.8): remove any and generate types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .parse(swapRequest.fillOrKillParams ?? null) as any;
 
   const dcaParams = transformedDcaParamsSchema.nullable().parse(swapRequest.dcaParams ?? null);
 

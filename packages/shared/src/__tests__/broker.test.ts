@@ -556,39 +556,33 @@ describe(broker.buildExtrinsicPayload, () => {
 
   it.each(basicSwaps)('builds basic swap params %s', (label, params) => {
     expect(
-      broker.buildExtrinsicPayload(
-        {
-          srcAsset: 'SOL',
-          srcChain: 'Solana',
-          ...params,
-          commissionBps: null,
-          ccmParams: null,
-          maxBoostFeeBps: null,
-          affiliates: null,
-          fillOrKillParams: null,
-          dcaParams: null,
-        },
-        'backspin',
-      ),
+      broker.buildExtrinsicPayload({
+        srcAsset: 'SOL',
+        srcChain: 'Solana',
+        ...params,
+        commissionBps: null,
+        ccmParams: null,
+        maxBoostFeeBps: null,
+        affiliates: null,
+        fillOrKillParams: null,
+        dcaParams: null,
+      }),
     ).toMatchSnapshot(label);
   });
 
   it('adds the broker commission', () => {
     expect(
-      broker.buildExtrinsicPayload(
-        {
-          ccmParams: null,
-          maxBoostFeeBps: null,
-          affiliates: null,
-          fillOrKillParams: null,
-          dcaParams: null,
-          srcAsset: 'SOL',
-          srcChain: 'Solana',
-          ...basicSwaps[0][1],
-          commissionBps: 100,
-        },
-        'backspin',
-      ),
+      broker.buildExtrinsicPayload({
+        ccmParams: null,
+        maxBoostFeeBps: null,
+        affiliates: null,
+        fillOrKillParams: null,
+        dcaParams: null,
+        srcAsset: 'SOL',
+        srcChain: 'Solana',
+        ...basicSwaps[0][1],
+        commissionBps: 100,
+      }),
     ).toMatchSnapshot();
   });
 
@@ -608,12 +602,12 @@ describe(broker.buildExtrinsicPayload, () => {
       },
     } satisfies broker.ExtrinsicPayloadParams;
 
-    expect(broker.buildExtrinsicPayload(params, 'backspin')).toMatchSnapshot('dummy cf params');
+    expect(broker.buildExtrinsicPayload(params)).toMatchSnapshot('dummy cf params');
     expect(
-      broker.buildExtrinsicPayload(
-        { ...params, ccmParams: { ...params.ccmParams, cfParameters: '0x1234' } },
-        'backspin',
-      ),
+      broker.buildExtrinsicPayload({
+        ...params,
+        ccmParams: { ...params.ccmParams, cfParameters: '0x1234' },
+      }),
     ).toMatchSnapshot('with cf params');
   });
 
@@ -630,7 +624,7 @@ describe(broker.buildExtrinsicPayload, () => {
       maxBoostFeeBps: 30,
     } satisfies broker.ExtrinsicPayloadParams;
 
-    expect(broker.buildExtrinsicPayload(params, 'backspin')).toMatchSnapshot();
+    expect(broker.buildExtrinsicPayload(params)).toMatchSnapshot();
   });
 
   it('adds affiliates', () => {
@@ -651,7 +645,7 @@ describe(broker.buildExtrinsicPayload, () => {
       ],
     } satisfies broker.ExtrinsicPayloadParams;
 
-    expect(broker.buildExtrinsicPayload(params, 'backspin')).toMatchSnapshot();
+    expect(broker.buildExtrinsicPayload(params)).toMatchSnapshot();
   });
 
   it.each([
@@ -683,7 +677,7 @@ describe(broker.buildExtrinsicPayload, () => {
       },
     } satisfies broker.ExtrinsicPayloadParams;
 
-    expect(broker.buildExtrinsicPayload(params, 'mainnet')).toMatchSnapshot();
+    expect(broker.buildExtrinsicPayload(params)).toMatchSnapshot();
   });
 
   it('requires FoK for DCA', () => {
@@ -702,7 +696,7 @@ describe(broker.buildExtrinsicPayload, () => {
       },
     } satisfies broker.ExtrinsicPayloadParams;
 
-    expect(() => broker.buildExtrinsicPayload(params, 'mainnet')).toThrow();
+    expect(() => broker.buildExtrinsicPayload(params)).toThrow();
   });
 
   it('adds DCA params', () => {
@@ -725,6 +719,6 @@ describe(broker.buildExtrinsicPayload, () => {
       },
     } satisfies broker.ExtrinsicPayloadParams;
 
-    expect(broker.buildExtrinsicPayload(params, 'mainnet')).toMatchSnapshot();
+    expect(broker.buildExtrinsicPayload(params)).toMatchSnapshot();
   });
 });
