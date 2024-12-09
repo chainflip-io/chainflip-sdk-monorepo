@@ -1,15 +1,8 @@
-import * as bitcoin from '@chainflip/bitcoin';
-import type { EncodedAddress, ForeignChainAddress } from '@chainflip/extrinsics/160/common';
-import type { SwappingRequestSwapDepositAddressWithAffiliates } from '@chainflip/extrinsics/160/swapping/requestSwapDepositAddressWithAffiliates';
 import { HttpClient, RpcParams } from '@chainflip/rpc';
-import * as base58 from '@chainflip/utils/base58';
-import { bytesToHex, hexToBytes } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
-import { isHex } from '@chainflip/utils/string';
 import { HexString } from '@chainflip/utils/types';
 import { z } from 'zod';
-import { Chain, ChainflipNetwork, Asset, getInternalAsset } from './enums';
-import { assert } from './guards';
+import { Chain, ChainflipNetwork, Asset } from './enums';
 import {
   hexString,
   numericString,
@@ -172,102 +165,3 @@ export async function requestSwapDepositAddress(
 
   return validateResponse(chainflipNetwork, response);
 }
-
-type NonBitcoinEncodedAddress = Exclude<EncodedAddress, { Btc: unknown }>;
-type BitcoinEncodedAddress = Extract<EncodedAddress, { Btc: unknown }>;
-
-function toEncodedAddress(
-  chain: Exclude<Chain, 'Bitcoin'>,
-  address: string,
-): NonBitcoinEncodedAddress;
-function toEncodedAddress(chain: 'Bitcoin', address: string): BitcoinEncodedAddress;
-function toEncodedAddress(chain: Chain, address: string): EncodedAddress;
-function toEncodedAddress(chain: Chain, address: string): EncodedAddress {
-  switch (chain) {
-    case 'Arbitrum':
-      assert(isHex(address), 'Expected hex-encoded EVM address');
-      return { Arb: hexToBytes(address) };
-    case 'Ethereum':
-      assert(isHex(address), 'Expected hex-encoded EVM address');
-      return { Eth: hexToBytes(address) } as EncodedAddress;
-    case 'Polkadot':
-      return { Dot: isHex(address) ? hexToBytes(address) : ss58.decode(address).data };
-    case 'Solana':
-      return { Sol: isHex(address) ? hexToBytes(address) : base58.decode(address) };
-    case 'Bitcoin':
-      return { Btc: bytesToHex(new TextEncoder().encode(address)) };
-    default:
-      throw new Error(`Unsupported chain: ${chain}`);
-  }
-}
-
-const toForeignChainAddress = (
-  chain: Chain,
-  address: string,
-  network: ChainflipNetwork,
-): ForeignChainAddress => {
-  switch (chain) {
-    case 'Arbitrum':
-    case 'Ethereum':
-    case 'Polkadot':
-    case 'Solana':
-      return toEncodedAddress(chain, address);
-    case 'Bitcoin': {
-      const { type, data } = bitcoin.decodeAddress(address, network);
-      return { Btc: { [type]: data } } as ForeignChainAddress;
-    }
-    default:
-      throw new Error(`Unsupported chain: ${chain}`);
-  }
-};
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-type RemoveOptional<T> = {} & {
-  [K in keyof T]-?: undefined extends T[K] ? T[K] | null : T[K];
-};
-
-export type ExtrinsicPayloadParams = RemoveOptional<NewSwapRequest>;
-
-export const buildExtrinsicPayload = (
-  swapRequest: ExtrinsicPayloadParams,
-  chainflipNetwork: ChainflipNetwork,
-): SwappingRequestSwapDepositAddressWithAffiliates => {
-  const srcAsset = getInternalAsset({ asset: swapRequest.srcAsset, chain: swapRequest.srcChain });
-  const destAsset = getInternalAsset({
-    asset: swapRequest.destAsset,
-    chain: swapRequest.destChain,
-  });
-
-  const ccmParams = transformedCcmParamsSchema('0x')
-    .nullable()
-    .parse(swapRequest.ccmParams ?? null);
-
-  const fokParams = getTransformedFokSchema(
-    z
-      .string()
-      .transform((address) =>
-        toForeignChainAddress(swapRequest.srcChain, address, chainflipNetwork),
-      ),
-  )
-    .nullable()
-    .parse(swapRequest.fillOrKillParams ?? null);
-
-  const dcaParams = transformedDcaParamsSchema.nullable().parse(swapRequest.dcaParams ?? null);
-
-  assert(!dcaParams || fokParams, 'Fill or kill parameters are required for DCA');
-
-  return [
-    srcAsset,
-    destAsset,
-    toEncodedAddress(swapRequest.destChain, swapRequest.destAddress), // destination address
-    swapRequest.commissionBps ?? 0, // broker commission
-    ccmParams, // channel metadata
-    srcAsset === 'Btc' ? swapRequest.maxBoostFeeBps ?? 0 : 0, // boost fee
-    (swapRequest.affiliates ?? []).map(({ account, commissionBps }) => ({
-      account: isHex(account) ? account : bytesToHex(ss58.decode(account).data),
-      bps: commissionBps,
-    })), // affiliate fees
-    fokParams, // refund parameters
-    dcaParams, // dca parameters
-  ];
-};
