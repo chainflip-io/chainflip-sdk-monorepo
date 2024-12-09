@@ -863,6 +863,7 @@ describe('server', () => {
 
     it(`retrieves a swap in ${State.Broadcasted} status`, async () => {
       jest.mocked(getPendingBroadcast).mockResolvedValueOnce({
+        tx_ref: '0x123',
         tx_out_id: { hash: '0xdeadbeef' },
       });
 
@@ -876,6 +877,7 @@ describe('server', () => {
         {
           "broadcastRequestedAt": 564000,
           "broadcastRequestedBlockIndex": "94-843",
+          "broadcastTransactionRef": "0x123",
           "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
           "depositAmount": "5000000000000000000",
           "depositChannelBrokerCommissionBps": 0,

@@ -158,6 +158,13 @@ export const getDepositTxRef = (
       if (blockHeight === undefined) return undefined;
       return formatTxHash(chain, `${blockHeight}-${details}`);
     }
+    case 'Assethub': {
+      const details = depositDetails as z.output<
+        typeof polkadotIngressEgressDepositFinalised // TODO: update to assethub schema
+      >['depositDetails'];
+      if (blockHeight === undefined) return undefined;
+      return formatTxHash(chain, `${blockHeight}-${details}`);
+    }
     case 'Solana':
       assert(depositDetails == null);
       return undefined;

@@ -13,6 +13,7 @@ const schemaMap = {
   Bitcoin: bitcoinIngressEgressTransactionRejectedByBroker,
   Ethereum: ethereumIngressEgressTransactionRejectedByBroker,
   Polkadot: polkadotIngressEgressTransactionRejectedByBroker,
+  Assethub: polkadotIngressEgressTransactionRejectedByBroker, // TODO: add Assethub schema
   Solana: solanaIngressEgressTransactionRejectedByBroker.transform(({ broadcastId }) => ({
     broadcastId,
     txId: undefined,

@@ -18,6 +18,9 @@ export const coinGeckoIdMap = {
   ArbUsdc: 'usd-coin',
   Sol: 'solana',
   SolUsdc: 'usd-coin',
+  HubDot: 'polkadot', // TODO: double check
+  HubUsdc: 'usd-coin', // TODO: double check
+  HubUsdt: 'tether', // TODO: double check
 } as const satisfies Record<InternalAsset, string>;
 
 type CoingeckoId = (typeof coinGeckoIdMap)[InternalAsset];

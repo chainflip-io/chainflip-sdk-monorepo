@@ -89,6 +89,16 @@ export const events = {
     InsufficientBoostLiquidity: 'PolkadotIngressEgress.InsufficientBoostLiquidity',
     TransactionRejectedByBroker: 'PolkadotIngressEgress.TransactionRejectedByBroker',
   },
+  AssethubIngressEgress: {
+    BatchBroadcastRequested: 'AssetHub.BatchBroadcastRequested',
+    CcmBroadcastRequested: 'AssetHub.CcmBroadcastRequested',
+    DepositFinalised: 'AssetHub.DepositFinalised',
+    DepositIgnored: 'AssetHub.DepositIgnored',
+    BoostPoolCreated: 'AssetHub.BoostPoolCreated',
+    DepositBoosted: 'AssetHub.DepositBoosted',
+    InsufficientBoostLiquidity: 'AssetHub.InsufficientBoostLiquidity',
+    TransactionRejectedByBroker: 'AssetHub.TransactionRejectedByBroker',
+  },
   SolanaIngressEgress: {
     BatchBroadcastRequested: 'SolanaIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'SolanaIngressEgress.CcmBroadcastRequested',
@@ -115,6 +125,10 @@ export const events = {
     BroadcastSuccess: 'PolkadotBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'PolkadotBroadcaster.BroadcastAborted',
   },
+  AssethubBroadcaster: {
+    BroadcastSuccess: 'AssethubBroadcaster.BroadcastSuccess',
+    BroadcastAborted: 'AssethubBroadcaster.BroadcastAborted',
+  },
   SolanaBroadcaster: {
     BroadcastSuccess: 'SolanaBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'SolanaBroadcaster.BroadcastAborted',
@@ -130,6 +144,9 @@ export const events = {
   },
   PolkadotChainTracking: {
     ChainStateUpdated: 'PolkadotChainTracking.ChainStateUpdated',
+  },
+  AssethubChainTracking: {
+    ChainStateUpdated: 'AssethubChainTracking.ChainStateUpdated',
   },
   SolanaChainTracking: {
     ChainStateUpdated: 'SolanaChainTracking.ChainStateUpdated',
