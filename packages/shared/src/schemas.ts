@@ -21,7 +21,7 @@ export const quoteQuerySchema = z
     destAsset: asset,
     amount: numericString.transform((n) => BigInt(n)),
     brokerCommissionBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
-    dcaEnabled: booleanString,
+    dcaEnabled: booleanString.default('false'),
   })
   .transform((args, ctx) => {
     const { srcAsset, destAsset } = getInternalAssets(args, false);
