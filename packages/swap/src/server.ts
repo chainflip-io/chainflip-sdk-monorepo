@@ -60,8 +60,8 @@ app.get('/healthcheck', (req, res) => {
   res.status(200).send('OK');
 });
 
-app.use('/quote', quoteRouter(quoter));
-app.use('/v2/quote', quoteRouterV2(quoter));
+app.use('/quote', maintenanceMode, quoteRouter(quoter));
+app.use('/v2/quote', maintenanceMode, quoteRouterV2(quoter));
 
 app.use('/trpc', maintenanceMode, trpcExpress.createExpressMiddleware({ router: appRouter }));
 
