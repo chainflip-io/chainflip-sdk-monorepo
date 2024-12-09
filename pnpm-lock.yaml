@@ -87,17 +87,20 @@ importers:
       '@chainflip/bitcoin':
         specifier: ^1.2.4
         version: 1.2.4(typescript@5.7.3)
+      '@chainflip/extrinsics':
+        specifier: ^1.6.1
+        version: 1.6.1
       '@chainflip/rpc':
-        specifier: ^1.8.8
-        version: 1.8.8
+        specifier: ^1.8.0-assethub.1
+        version: 1.8.7
       '@chainflip/solana':
         specifier: ^2.1.4
         version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.5.0
-        version: 0.5.0
+        specifier: ^1.8.0-assethub.1
+        version: 1.8.0-assethub.1
       axios:
-        specifier: ^1.7.7
+        specifier: ^1.x
         version: 1.7.9
       ethers:
         specifier: ^6.13.3
@@ -160,15 +163,18 @@ importers:
       '@chainflip/bitcoin':
         specifier: ^1.2.4
         version: 1.2.4(typescript@5.7.3)
+      '@chainflip/extrinsics':
+        specifier: ^1.6.1
+        version: 1.6.1
       '@chainflip/rpc':
-        specifier: ^1.8.8
-        version: 1.8.8
+        specifier: ^1.8.0-assethub.1
+        version: 1.8.7
       '@chainflip/solana':
         specifier: ^2.1.4
         version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.5.0
-        version: 0.5.0
+        specifier: ^1.8.0-assethub.1
+        version: 1.8.0-assethub.1
       '@trpc/client':
         specifier: ^10.45.2
         version: 10.45.2(@trpc/server@10.45.2)
@@ -201,14 +207,14 @@ importers:
         specifier: ^1.2.4
         version: 1.2.4(typescript@5.7.3)
       '@chainflip/rpc':
-        specifier: ^1.8.8
-        version: 1.8.8
+        specifier: ^1.8.0-assethub.1
+        version: 1.8.7
       '@chainflip/solana':
         specifier: ^2.1.4
         version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.5.0
-        version: 0.5.0
+        specifier: ^1.8.0-assethub.1
+        version: 1.8.0-assethub.1
       axios:
         specifier: ^1.7.7
         version: 1.7.9
@@ -259,14 +265,14 @@ importers:
         specifier: ^1.8.4
         version: 1.8.6
       '@chainflip/rpc':
-        specifier: ^1.8.8
-        version: 1.8.8
+        specifier: ^1.8.0-assethub.1
+        version: 1.8.7
       '@chainflip/solana':
         specifier: ^2.1.4
         version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.5.0
-        version: 0.5.0
+        specifier: ^1.8.0-assethub.1
+        version: 1.8.0-assethub.1
       '@polkadot/api':
         specifier: ^15.5.2
         version: 15.6.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -478,11 +484,14 @@ packages:
   '@chainflip/bitcoin@1.2.4':
     resolution: {integrity: sha512-bAVP4GSPnAOLWc0XVMXV4Mn5bsOlaa2KKhQCd7XKCYy4+e8JawZFxECywGQFCg8ZVeJMqy54RFGyLsMIx74+Iw==}
 
+  '@chainflip/extrinsics@1.6.1':
+    resolution: {integrity: sha512-sm3v2QguNW4/RiIZYHd+VRSxup2q4cVBY0VjbQJw6xYqhNCzZlt+Hl38Kni+TCHQu3hP/WgIF72yvvSs7/PBdg==}
+
   '@chainflip/processor@1.8.6':
     resolution: {integrity: sha512-rJ3Dw4fnsRYgi8ioQSKJMkseaT+kw+ZL7dU1ZEtVz23w28HZ+999uJnoMf2BDg26S/hS5p2ZdsZwECda/76h4A==}
 
-  '@chainflip/rpc@1.8.8':
-    resolution: {integrity: sha512-jEYq8980+gKZv8pI49vNmoUCNFU6KLFXRBDf4PX0ZqGzXU3lXpX2Z2hz4j3W3/WWgswHYcaJufwTWPqEVpzAyw==}
+  '@chainflip/rpc@1.8.7':
+    resolution: {integrity: sha512-ixvNrK9IHGZpajcJW4P5r1v3prSVLDHgTdzfE2wKTFekidL2pYk7duAW2windW/OXPG63ii6cmHqLQ8IGlF7dg==}
 
   '@chainflip/scale@1.8.0':
     resolution: {integrity: sha512-66bT2DQi0kNFZRva0phBuMWCWKamOyfROlKovxcBd6wzZVGFxVqgi73iG1nExaUPlOLJnYc8gQ/blwHidgjvrg==}
@@ -493,17 +502,14 @@ packages:
   '@chainflip/utils@0.4.0':
     resolution: {integrity: sha512-OuMFlgbIbyJ1Kt39zytfGh4HZ5dVY25/a3qb0c1K137+QmhdOuF+R7QSkFPqYAfDG4KhGRqo0rgUtEpaEEcSKA==}
 
-  '@chainflip/utils@0.5.0':
-    resolution: {integrity: sha512-rmvGttu+Pc7rsCNQ4gemg8G9PLPTjRsbuvLLF9By9pADFVWTp18UyKbvLVt5H00LOty41fhvlln2FerNl98/MQ==}
-
   '@chainflip/utils@0.6.0':
     resolution: {integrity: sha512-ZwyNKv3FVVJw5aOcRf/4rTxCclP+prerxPnTGBrFcBYEYSrPlyx4eI1dc7J35xmKD2yq+vQgwNjCx1h6oJuoPA==}
 
-  '@chainflip/utils@0.7.0':
-    resolution: {integrity: sha512-aTrtmpPkbqojP5wsrpfCgx8uskv9SD1gmq7hWwjfRQT1ucwYGAuUzL9LdREBtiMNB4pfS/J42dRWjbbLmx0j5w==}
-
   '@chainflip/utils@0.7.2':
     resolution: {integrity: sha512-DJ37gbbNVEy/YFcK9oQ19Ro83hUwCFyP2fA//Vatit1Z4nWPKgBmyQtYQLdjfcwrOhvQeYi7DcxfVU0YwOaP2g==}
+
+  '@chainflip/utils@1.8.0-assethub.1':
+    resolution: {integrity: sha512-htxgXa4sfqho9OJC8fcZ4+/zl/EzPEodzYn222AVf3iEwpBT9zJTdUd3YH7oOWknrEztscRu2EWCYelLx+9Clw==}
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -5901,14 +5907,16 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
+  '@chainflip/extrinsics@1.6.1': {}
+
   '@chainflip/processor@1.8.6':
     dependencies:
       '@chainflip/utils': 0.4.0
       zod: 3.24.2
 
-  '@chainflip/rpc@1.8.8':
+  '@chainflip/rpc@1.8.7':
     dependencies:
-      '@chainflip/utils': 0.7.0
+      '@chainflip/utils': 0.6.0
       zod: 3.24.2
 
   '@chainflip/scale@1.8.0':
@@ -5932,25 +5940,19 @@ snapshots:
 
   '@chainflip/utils@0.4.0': {}
 
-  '@chainflip/utils@0.5.0':
-    dependencies:
-      '@date-fns/utc': 2.1.0
-      bignumber.js: 9.1.2
-      date-fns: 4.1.0
-
   '@chainflip/utils@0.6.0':
     dependencies:
       '@date-fns/utc': 2.1.0
       bignumber.js: 9.1.2
       date-fns: 4.1.0
 
-  '@chainflip/utils@0.7.0':
+  '@chainflip/utils@0.7.2':
     dependencies:
       '@date-fns/utc': 2.1.0
       bignumber.js: 9.1.2
       date-fns: 4.1.0
 
-  '@chainflip/utils@0.7.2':
+  '@chainflip/utils@1.8.0-assethub.1':
     dependencies:
       '@date-fns/utc': 2.1.0
       bignumber.js: 9.1.2
@@ -6621,7 +6623,7 @@ snapshots:
     dependencies:
       graphql: 16.10.0
       lodash.sortby: 4.7.0
-      tslib: 2.8.1
+      tslib: 2.6.3
 
   '@graphql-tools/executor-common@0.0.2(graphql@16.10.0)':
     dependencies:
@@ -8274,7 +8276,7 @@ snapshots:
 
   chalk-template@1.1.0:
     dependencies:
-      chalk: 5.4.1
+      chalk: 5.3.0
 
   chalk@2.4.2:
     dependencies:
@@ -8317,7 +8319,7 @@ snapshots:
       path-case: 3.0.4
       sentence-case: 3.0.4
       snake-case: 3.0.4
-      tslib: 2.8.1
+      tslib: 2.6.3
 
   chardet@0.7.0: {}
 
@@ -9821,7 +9823,7 @@ snapshots:
 
   is-lower-case@2.0.2:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.6.3
 
   is-map@2.0.3: {}
 
@@ -9884,7 +9886,7 @@ snapshots:
 
   is-upper-case@2.0.2:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.6.3
 
   is-weakmap@2.0.2: {}
 
@@ -10139,7 +10141,7 @@ snapshots:
 
   log-symbols@6.0.0:
     dependencies:
-      chalk: 5.4.1
+      chalk: 5.3.0
       is-unicode-supported: 1.3.0
 
   log-update@4.0.0:
@@ -10176,11 +10178,11 @@ snapshots:
 
   lower-case-first@2.0.2:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.6.3
 
   lower-case@2.0.2:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.6.3
 
   lru-cache@10.4.3: {}
 
@@ -10357,7 +10359,7 @@ snapshots:
     dependencies:
       hosted-git-info: 7.0.2
       proc-log: 4.2.0
-      semver: 7.7.1
+      semver: 7.6.3
       validate-npm-package-name: 5.0.1
 
   npm-run-path@5.3.0:
@@ -10458,7 +10460,7 @@ snapshots:
 
   ora@8.0.1:
     dependencies:
-      chalk: 5.4.1
+      chalk: 5.3.0
       cli-cursor: 4.0.0
       cli-spinners: 2.9.2
       is-interactive: 2.0.0
@@ -11205,7 +11207,7 @@ snapshots:
 
   sponge-case@1.0.1:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.6.3
 
   sshpk@1.18.0:
     dependencies:
@@ -11367,7 +11369,7 @@ snapshots:
 
   swap-case@2.0.2:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.6.3
 
   symbol-observable@1.2.0: {}
 
@@ -11455,7 +11457,7 @@ snapshots:
 
   title-case@3.0.3:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.6.3
 
   tmp@0.0.33:
     dependencies:
@@ -11685,11 +11687,11 @@ snapshots:
 
   upper-case-first@2.0.2:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.6.3
 
   upper-case@2.0.2:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.6.3
 
   uri-js@4.4.1:
     dependencies:

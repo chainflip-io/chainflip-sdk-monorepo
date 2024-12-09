@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/sdk",
-  "version": "1.8.0",
+  "version": "1.8.0-assethub.1",
   "description": "",
   "exports": {
     "./swap": {
@@ -52,10 +52,11 @@
   },
   "dependencies": {
     "@chainflip/bitcoin": "^1.2.4",
-    "@chainflip/rpc": "^1.8.8",
+    "@chainflip/rpc": "^1.8.0-assethub.1",
     "@chainflip/solana": "^2.1.4",
-    "@chainflip/utils": "^0.5.0",
+    "@chainflip/utils": "^1.8.0-assethub.1",
     "@trpc/client": "^10.45.2",
+    "@chainflip/extrinsics": "^1.6.1",
     "axios": "^1.7.7",
     "bignumber.js": "^9.1.2",
     "ethers": "^6.13.3",

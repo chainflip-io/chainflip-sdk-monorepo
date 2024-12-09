@@ -36,6 +36,7 @@ export const swappingEnvironment = ({
       Ethereum: { ETH: null, USDC: maxSwapAmount, FLIP: null, USDT: null },
       Arbitrum: { ETH: null, USDC: null },
       Solana: { SOL: null, USDC: null },
+      Assethub: { DOT: null, USDC: null, USDT: null },
     },
     network_fee_hundredth_pips: 1000,
   },
@@ -83,6 +84,11 @@ export const ingressEgressEnvironment = ({
         SOL: minDepositAmount,
         USDC: minDepositAmount,
       },
+      Assethub: {
+        DOT: minDepositAmount,
+        USDC: minDepositAmount,
+        USDT: minDepositAmount,
+      },
     },
     ingress_fees: {
       Bitcoin: { BTC: ingressFee },
@@ -90,6 +96,11 @@ export const ingressEgressEnvironment = ({
       Ethereum: { ETH: ingressFee, FLIP: ingressFee, USDC: ingressFee, USDT: ingressFee },
       Arbitrum: { ETH: ingressFee, USDC: ingressFee },
       Solana: { SOL: ingressFee, USDC: ingressFee },
+      Assethub: {
+        DOT: ingressFee,
+        USDC: ingressFee,
+        USDT: ingressFee,
+      },
     },
     egress_fees: {
       Bitcoin: { BTC: egressFee },
@@ -97,6 +108,11 @@ export const ingressEgressEnvironment = ({
       Ethereum: { ETH: egressFee, FLIP: egressFee, USDC: egressFee, USDT: egressFee },
       Arbitrum: { ETH: egressFee, USDC: egressFee },
       Solana: { SOL: egressFee, USDC: egressFee },
+      Assethub: {
+        DOT: ingressFee,
+        USDC: ingressFee,
+        USDT: ingressFee,
+      },
     },
     witness_safety_margins: {
       Ethereum: 1,
@@ -116,6 +132,11 @@ export const ingressEgressEnvironment = ({
       Solana: { SOL: minEgressAmount, USDC: minEgressAmount },
       Polkadot: { DOT: minEgressAmount },
       Bitcoin: { BTC: '0x258' },
+      Assethub: {
+        DOT: minEgressAmount,
+        USDC: minEgressAmount,
+        USDT: minEgressAmount,
+      },
     },
     channel_opening_fees: {
       Bitcoin: channelOpeningFee ?? '0x0',
@@ -123,6 +144,7 @@ export const ingressEgressEnvironment = ({
       Polkadot: channelOpeningFee ?? '0x0',
       Arbitrum: channelOpeningFee ?? '0x0',
       Solana: channelOpeningFee ?? '0x0',
+      Assethub: channelOpeningFee ?? '0x0',
     },
     max_swap_retry_duration_blocks: {
       Ethereum: 10,
@@ -130,6 +152,7 @@ export const ingressEgressEnvironment = ({
       Bitcoin: 30,
       Arbitrum: 40,
       Solana: 50,
+      Assethub: 50,
     },
   },
 });
@@ -170,6 +193,7 @@ const poolsEnvironment = (): RpcResponse<CfPoolsEnvironmentResponse> => {
         Polkadot: { DOT: fees },
         Arbitrum: { ETH: fees, USDC: fees },
         Solana: { SOL: fees, USDC: fees },
+        Assethub: { DOT: fees, USDC: fees, USDT: fees },
       },
     },
   };

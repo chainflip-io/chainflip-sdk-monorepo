@@ -198,7 +198,7 @@ export async function requestSwapDepositAddress(
   const params = getDepositAddressRequestSchema(chainflipNetwork).parse(request);
 
   const response = await client.sendRequest(
-    'broker_request_swap_deposit_address',
+    'broker_requestSwapDepositAddress',
     params.srcAsset,
     params.destAsset,
     params.destAddress,
