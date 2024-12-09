@@ -6,20 +6,34 @@ const arrayToMap = <const T extends readonly string[]>(array: T): ArrayToMap<T> 
   Object.fromEntries(array.map((key) => [key, key])) as ArrayToMap<T>;
 
 export const InternalAssets = arrayToMap([
-  'Flip',
-  'Usdc',
-  'Dot',
-  'Eth',
   'Btc',
+  'Dot',
+  // ethereum
+  'Eth',
+  'Usdc',
+  'Flip',
   'Usdt',
-  'ArbUsdc',
-  'ArbEth',
+  // solana
   'Sol',
   'SolUsdc',
+  // arbitrum
+  'ArbUsdc',
+  'ArbEth',
+  // asset hub
+  'HubDot',
+  'HubUsdc',
+  'HubUsdt',
 ]);
 export type InternalAsset = (typeof InternalAssets)[keyof typeof InternalAssets];
 
-export const Chains = arrayToMap(['Bitcoin', 'Ethereum', 'Polkadot', 'Arbitrum', 'Solana']);
+export const Chains = arrayToMap([
+  'Bitcoin',
+  'Ethereum',
+  'Polkadot',
+  'Arbitrum',
+  'Solana',
+  'Assethub',
+]);
 export type Chain = (typeof Chains)[keyof typeof Chains];
 
 export const Assets = arrayToMap(['FLIP', 'USDC', 'DOT', 'ETH', 'BTC', 'USDT', 'SOL']);
@@ -104,6 +118,27 @@ export const assetConstants = {
     decimals: 6,
     contractId: 10,
   },
+  [InternalAssets.HubDot]: {
+    chain: Chains.Assethub,
+    asset: Assets.DOT,
+    name: 'AssetHub DOT',
+    decimals: 10,
+    contractId: 11,
+  },
+  [InternalAssets.HubUsdc]: {
+    chain: Chains.Assethub,
+    asset: Assets.USDC,
+    name: 'AssetHub USDC',
+    decimals: 6,
+    contractId: 12,
+  },
+  [InternalAssets.HubUsdt]: {
+    chain: Chains.Assethub,
+    asset: Assets.USDT,
+    name: 'AssetHub USDT',
+    decimals: 6,
+    contractId: 13,
+  },
 } as const satisfies Record<
   InternalAsset,
   {
@@ -146,6 +181,12 @@ export const chainConstants = {
     gasAsset: InternalAssets.Sol,
     contractId: 5,
     blockTimeSeconds: (400 + 800) / 2 / 1000,
+  },
+  [Chains.Assethub]: {
+    assets: [Assets.DOT, Assets.USDC, Assets.USDT],
+    gasAsset: InternalAssets.HubDot,
+    contractId: 6,
+    blockTimeSeconds: 12,
   },
 } as const satisfies Record<
   Chain,
@@ -243,6 +284,11 @@ export function getInternalAsset(asset: UncheckedAssetAndChain, assert = true) {
     [Chains.Solana]: {
       [Assets.SOL]: InternalAssets.Sol,
       [Assets.USDC]: InternalAssets.SolUsdc,
+    },
+    [Chains.Assethub]: {
+      [Assets.DOT]: InternalAssets.HubDot,
+      [Assets.USDC]: InternalAssets.HubUsdc,
+      [Assets.USDT]: InternalAssets.HubUsdt,
     },
   };
 

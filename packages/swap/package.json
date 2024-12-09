@@ -54,9 +54,9 @@
     "pnpm": ">=9"
   },
   "dependencies": {
-    "@chainflip/processor": "^1.7.0",
-    "@chainflip/rpc": "^1.6.9",
-    "@chainflip/utils": "^0.4.0",
+    "@chainflip/processor": "^1.7.2",
+    "@chainflip/rpc": "^1.8.0-assethub.1",
+    "@chainflip/utils": "^1.8.0-assethub.1",
     "@polkadot/api": "^12.2.3",
     "@polkadot/types": "^11.0.2",
     "@prisma/client": "^5.21.1",

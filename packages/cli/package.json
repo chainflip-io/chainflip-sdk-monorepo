@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/cli",
-  "version": "1.8.0-rc.6",
+  "version": "1.8.0-assethub.1",
   "description": "",
   "main": "./dist/lib.mjs",
   "types": "./dist/lib.d.mts",
@@ -36,9 +36,9 @@
   "dependencies": {
     "@chainflip/bitcoin": "^1.1.1",
     "@chainflip/extrinsics": "^1.6.1",
-    "@chainflip/rpc": "^1.6.9",
+    "@chainflip/rpc": "^1.8.0-assethub.1",
     "@chainflip/solana": "^1.0.2",
-    "@chainflip/utils": "^0.4.0",
+    "@chainflip/utils": "^1.8.0-assethub.1",
     "ioredis": "^5.4.1",
     "ws": "^8.18.0",
     "yargs": "^17.7.2"
@@ -49,7 +49,7 @@
   },
   "peerDependencies": {
     "axios": "^1.x",
-    "ethers": "^6.13.2"
+    "ethers": "^6.13.3"
   },
   "repository": "https://github.com/chainflip-io/chainflip-sdk-monorepo.git",
   "publishConfig": {

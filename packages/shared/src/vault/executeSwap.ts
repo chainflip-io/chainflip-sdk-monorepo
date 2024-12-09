@@ -80,6 +80,7 @@ const vaultSwapParametersCodec = Struct({
       Bitcoin: TsBytes(),
       Arbitrum: TsBytes(20),
       Solana: TsBytes(32),
+      Assethub: TsBytes(32),
     }),
     minPriceX128: u256,
   }),

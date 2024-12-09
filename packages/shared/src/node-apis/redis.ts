@@ -36,8 +36,7 @@ const broadcastParsers = {
       .object({
         hash: hexString,
       })
-      .transform(({ hash }) => hash)
-      .optional(), // TODO: V130 -- remove optional after v130
+      .transform(({ hash }) => hash),
   }),
   Polkadot: z.object({
     tx_out_id: z.object({ signature: string }),
@@ -50,8 +49,7 @@ const broadcastParsers = {
       })
       .transform(
         ({ transaction_id }) => `${transaction_id.block_number}-${transaction_id.extrinsic_index}`,
-      )
-      .optional(), // TODO: V130 -- remove optional after v130
+      ),
   }),
   Bitcoin: z.object({
     tx_out_id: z.object({ hash: string }),
@@ -59,26 +57,35 @@ const broadcastParsers = {
       .object({
         hash: string.transform((value) => (value.startsWith('0x') ? value.slice(2) : value)),
       })
-      .transform(({ hash }) => hash)
-      .optional(), // TODO: V130 -- remove optional after v130
+      .transform(({ hash }) => hash),
   }),
-  Arbitrum: z
-    .object({
-      tx_out_id: z.object({
-        signature: z.object({
-          k_times_g_address: z.array(number),
-          s: z.array(number),
-        }),
+  Arbitrum: z.object({
+    tx_out_id: z.object({
+      signature: z.object({
+        k_times_g_address: z.array(number),
+        s: z.array(number),
       }),
-      tx_ref: z
-        .object({
-          hash: hexString,
-        })
-        .transform(({ hash }) => hash)
-        .optional(), // TODO: remove once Arbitrum is fully supported
-    })
-    .optional(), // TODO: remove once Arbitrum is available on all networks
+    }),
+    tx_ref: z
+      .object({
+        hash: hexString,
+      })
+      .transform(({ hash }) => hash),
+  }),
   Solana: z.any(),
+  Assethub: z.object({
+    tx_out_id: z.object({ signature: string }),
+    tx_ref: z
+      .object({
+        transaction_id: z.object({
+          block_number: number,
+          extrinsic_index: number,
+        }),
+      })
+      .transform(
+        ({ transaction_id }) => `${transaction_id.block_number}-${transaction_id.extrinsic_index}`,
+      ),
+  }),
 };
 
 type ChainBroadcast<C extends Chain> = z.infer<(typeof broadcastParsers)[C]>;
