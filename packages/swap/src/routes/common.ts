@@ -66,7 +66,7 @@ export const handleQuotingError = (res: express.Response, err: unknown, info: Ad
     throw ServiceError.badRequest('insufficient liquidity for requested amount');
   }
 
-  logger.error('error while collecting quotes:', err);
+  logger.error('error while collecting quotes:', { error: err, info });
 
   res.status(500).json({ message });
 };
