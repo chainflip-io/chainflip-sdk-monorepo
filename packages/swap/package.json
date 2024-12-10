@@ -56,11 +56,11 @@
   "dependencies": {
     "@chainflip/processor": "^1.7.2",
     "@chainflip/rpc": "^1.6.11",
+    "@chainflip/solana": "^1.0.3",
     "@chainflip/utils": "^0.4.0",
     "@polkadot/api": "^12.2.3",
     "@polkadot/types": "^11.0.2",
     "@prisma/client": "^6.0.1",
-    "@solana/web3.js": "^1.95.6",
     "@trpc/server": "^10.45.2",
     "axios": "^1.7.7",
     "bignumber.js": "^9.1.2",

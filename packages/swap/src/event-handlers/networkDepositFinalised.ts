@@ -4,9 +4,12 @@ import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/160/
 import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/160/polkadotIngressEgress/depositFinalised';
 import { solanaIngressEgressDepositFinalised } from '@chainflip/processor/160/solanaIngressEgress/depositFinalised';
 import { bitcoinIngressEgressDepositFinalised as bitcoinSchema170 } from '@chainflip/processor/170/bitcoinIngressEgress/depositFinalised';
+import { findSolanaDepositSignature } from '@chainflip/solana';
 import z from 'zod';
+import { getTokenContractAddress } from '@/shared/contracts';
 import { assetConstants } from '@/shared/enums';
-import { tryFindSolanaDepositTxRef } from '@/swap/utils/solana';
+import env from '@/swap/config/env';
+import logger from '@/swap/utils/logger';
 import { getDepositTxRef } from './common';
 import { EventHandlerArgs } from '.';
 
@@ -34,8 +37,22 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
     depositFinalisedSchema.parse(event.args);
 
   let txRef = getDepositTxRef(assetConstants[asset].chain, depositDetails, blockHeight);
-  if (!txRef && assetConstants[asset].chain === 'Solana') {
-    txRef = await tryFindSolanaDepositTxRef(asset, amount, depositAddress as string, blockHeight);
+  if (!txRef && assetConstants[asset].chain === 'Solana' && typeof depositAddress === 'string') {
+    const tokenAddress =
+      asset === 'SolUsdc' ? getTokenContractAddress('SolUsdc', env.CHAINFLIP_NETWORK) : null;
+
+    try {
+      txRef = await findSolanaDepositSignature(
+        env.SOLANA_RPC_HTTP_URL,
+        tokenAddress,
+        depositAddress,
+        amount,
+        0,
+        Number(blockHeight),
+      );
+    } catch (e) {
+      logger.error('error while finding solana deposit signature', { error: e });
+    }
   }
 
   if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {
