@@ -15,31 +15,8 @@ import logger from '../../utils/logger';
 import { getPools, getTotalLiquidity } from '../../utils/pools';
 import { getIngressFee, validateSwapAmount } from '../../utils/rpc';
 import ServiceError from '../../utils/ServiceError';
-import { asyncHandler } from '../common';
+import { asyncHandler, handleQuotingError } from '../common';
 import { fallbackChains } from '../quote';
-
-type AdditionalInfo = {
-  srcAsset: InternalAsset;
-  destAsset: InternalAsset;
-  amount: string;
-  usdValue: string | undefined;
-  limitOrdersReceived: Awaited<ReturnType<Quoter['getLimitOrders']>> | undefined;
-};
-
-const handleQuotingError = (res: express.Response, err: unknown, info: AdditionalInfo) => {
-  if (err instanceof ServiceError) throw err;
-
-  const message = err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';
-
-  if (message.includes('InsufficientLiquidity') || message.includes('-32603')) {
-    logger.info('insufficient liquidity received', info);
-    throw ServiceError.badRequest('insufficient liquidity for requested amount');
-  }
-
-  logger.error('error while collecting quotes:', err);
-
-  res.status(500).json({ message });
-};
 
 export const getDcaQuoteParams = async (asset: InternalAsset, amount: bigint) => {
   const usdChunkSize = env.DCA_CHUNK_SIZE_USD?.[asset] ?? env.DCA_DEFAULT_CHUNK_SIZE_USD;
