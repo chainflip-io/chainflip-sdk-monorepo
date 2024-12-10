@@ -42,6 +42,11 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
     const tokenAddress =
       asset === 'SolUsdc' ? getTokenContractAddress('SolUsdc', env.CHAINFLIP_NETWORK) : null;
 
+    // somehow the blockHeight on the event can be lower than the slot of the actual deposit
+    // alberd recommended to add a buffer of 30 slots for now, but we hope to be able to remove this in the future
+    // https://discord.com/channels/775961728608895008/1316092875447992431/1316092878442987611
+    const maxDepositSlot = Number(blockHeight) + 30;
+
     try {
       txRef = await findSolanaDepositSignature(
         env.SOLANA_RPC_HTTP_URL,
@@ -49,7 +54,7 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
         depositAddress,
         amount,
         0,
-        Number(blockHeight),
+        maxDepositSlot,
       );
     } catch (e) {
       logger.error('error while finding solana deposit signature', { error: e });
