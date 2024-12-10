@@ -1,6 +1,9 @@
 import { RequestHandler, ErrorRequestHandler } from 'express';
+import * as express from 'express';
 import type { RouteParameters } from 'express-serve-static-core';
+import { InternalAsset } from '@/shared/enums';
 import env from '../config/env';
+import type Quoter from '../quoting/Quoter';
 import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
 
@@ -44,3 +47,26 @@ export const asyncHandler = <
     }
   }) as RequestHandler<P, ResBody, ReqBody, ReqQuery, Locals>;
 /* eslint-enable @typescript-eslint/no-explicit-any */
+
+type AdditionalInfo = {
+  srcAsset: InternalAsset;
+  destAsset: InternalAsset;
+  amount: string;
+  usdValue: string | undefined;
+  limitOrdersReceived: Awaited<ReturnType<Quoter['getLimitOrders']>> | undefined;
+};
+
+export const handleQuotingError = (res: express.Response, err: unknown, info: AdditionalInfo) => {
+  if (err instanceof ServiceError) throw err;
+
+  const message = err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';
+
+  if (message.includes('InsufficientLiquidity') || message.includes('-32603')) {
+    logger.info('insufficient liquidity received', info);
+    throw ServiceError.badRequest('insufficient liquidity for requested amount');
+  }
+
+  logger.error('error while collecting quotes:', { error: err, info });
+
+  res.status(500).json({ message });
+};
