@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import express from 'express';
-import { Asset, assetConstants, Assets, Chain, Chains, InternalAsset } from '@/shared/enums';
-import { asyncHandler } from './common';
+import { Asset, assetConstants, Assets, Chain, Chains } from '@/shared/enums';
+import { asyncHandler, handleQuotingError } from './common';
 import env from '../config/env';
 import { getUsdValue } from '../pricing/checkPriceWarning';
 import Quoter from '../quoting/Quoter';
@@ -10,29 +10,6 @@ import ServiceError from '../utils/ServiceError';
 import { generateQuotes, validateQuoteQuery } from './v2/quote';
 
 const logger = baseLogger.child({ module: 'quoter' });
-
-type AdditionalInfo = {
-  srcAsset: InternalAsset;
-  destAsset: InternalAsset;
-  amount: string;
-  usdValue: string | undefined;
-  limitOrdersReceived: Awaited<ReturnType<Quoter['getLimitOrders']>> | undefined;
-};
-
-const handleQuotingError = (res: express.Response, err: unknown, info: AdditionalInfo) => {
-  if (err instanceof ServiceError) throw err;
-
-  const message = err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';
-
-  if (message.includes('InsufficientLiquidity')) {
-    logger.info('insufficient liquidity received', info);
-    throw ServiceError.badRequest('insufficient liquidity for requested amount');
-  }
-
-  logger.error('error while collecting quotes:', err);
-
-  res.status(500).json({ message });
-};
 
 export const fallbackChains = {
   [Assets.ETH]: Chains.Ethereum,
