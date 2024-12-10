@@ -1,5 +1,40 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`networkDepositFinalised tries to find tx ref for solana swap request 1`] = `
+{
+  "ccmDepositReceivedBlockIndex": null,
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "chunkIntervalBlocks": null,
+  "completedAt": null,
+  "completedBlockIndex": null,
+  "depositAmount": "15571565420",
+  "depositBoostedAt": null,
+  "depositBoostedBlockIndex": null,
+  "depositFinalisedAt": 2024-08-06T00:00:06.000Z,
+  "depositFinalisedBlockIndex": "10-7",
+  "depositTransactionRef": "4tpsjS1WFhamaRBfYdEHdadHFs58Ppq8jrv26xwkquVjA5BfP7wGjBbwVrDCECDpxRgfCnqXfCK4way9BPutAyRS",
+  "destAddress": "0x41ad2bc63a2059f9b623533d87fe99887d794847",
+  "destAsset": "Eth",
+  "effectiveBoostFeeBps": null,
+  "egressId": null,
+  "id": Any<BigInt>,
+  "nativeId": 57034n,
+  "numberOfChunks": null,
+  "originType": "DEPOSIT_CHANNEL",
+  "prewitnessedDepositId": null,
+  "refundEgressId": null,
+  "requestType": "REGULAR",
+  "srcAddress": null,
+  "srcAsset": "Btc",
+  "swapDepositChannelId": Any<BigInt>,
+  "swapInputAmount": "100000000",
+  "swapOutputAmount": null,
+  "swapRequestedAt": 2024-08-06T00:00:00.000Z,
+  "swapRequestedBlockIndex": null,
+}
+`;
+
 exports[`networkDepositFinalised updates swap request for boosted deposit 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,

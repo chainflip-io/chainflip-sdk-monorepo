@@ -5,6 +5,8 @@ import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/160/
 import { solanaIngressEgressDepositFinalised } from '@chainflip/processor/160/solanaIngressEgress/depositFinalised';
 import { bitcoinIngressEgressDepositFinalised as bitcoinSchema170 } from '@chainflip/processor/170/bitcoinIngressEgress/depositFinalised';
 import { findSolanaDepositSignature } from '@chainflip/solana';
+import * as base58 from '@chainflip/utils/base58';
+import { hexToBytes } from '@chainflip/utils/bytes';
 import z from 'zod';
 import { getTokenContractAddress } from '@/shared/contracts';
 import { assetConstants } from '@/shared/enums';
@@ -13,16 +15,15 @@ import logger from '@/swap/utils/logger';
 import { getDepositTxRef } from './common';
 import { EventHandlerArgs } from '.';
 
-const normalizeSchema = <T>(obj: T): T & { depositDetails: undefined } => ({
-  ...obj,
-  depositDetails: undefined,
-});
-
 const arbitrumSchema = arbitrumIngressEgressDepositFinalised;
 const bitcoinSchema = z.union([bitcoinSchema170, bitcoinSchema160]);
 const ethereumSchema = ethereumIngressEgressDepositFinalised;
 const polkadotSchema = polkadotIngressEgressDepositFinalised;
-const solanaSchema = solanaIngressEgressDepositFinalised.transform(normalizeSchema);
+const solanaSchema = solanaIngressEgressDepositFinalised.transform((obj) => ({
+  ...obj,
+  depositAddress: base58.encode(hexToBytes(obj.depositAddress)),
+  depositDetails: undefined,
+}));
 
 const depositFinalisedSchema = z.union([
   solanaSchema,
