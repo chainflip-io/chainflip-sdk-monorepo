@@ -131,9 +131,9 @@ to $USDC:
 }
 ```
 
-The response should contain orders for the opposite direction. For `SELL`
-orders, you should respond with `BUY` orders. The client receives the reponse
-and emits the following `quote_response` event:
+The response should contain orders for the opposite direction. For `SELL swaps,
+you should respond with `BUY` orders. The client receives the response and emits
+the following `quote_response` event:
 
 ```jsonc
 {
@@ -148,8 +148,8 @@ and emits the following `quote_response` event:
 ```
 
 This response means you intend to open two `BUY` orders in response to the
-`SELL` request. These orders will buy approximately 0.5 $FLIP each, thus filling
-the order.
+`SELL` swap. These orders will buy approximately 0.5 $FLIP each, thus filling
+the entire swap.
 
 #### Double leg
 
