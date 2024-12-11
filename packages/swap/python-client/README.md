@@ -114,8 +114,8 @@ Malformed responses are ignored.
 
 #### Single leg
 
-Quoting server emits the following `quote_request` event to sell $FLIP for
-\$USDC:
+Quoting server emits the following `quote_request` event for a swap from $FLIP
+to $USDC:
 
 ```jsonc
 {
