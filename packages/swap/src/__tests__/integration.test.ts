@@ -23,6 +23,10 @@ import { getSwapRateV2 } from '../utils/statechain';
 const execAsync = promisify(exec);
 
 jest.mock('../pricing');
+jest.mock('../utils/pools', () => ({
+  ...jest.requireActual('../utils/pools'),
+  getTotalLiquidity: jest.fn(),
+}));
 
 jest.mock('../utils/statechain', () => ({
   getSwapRateV2: jest.fn().mockImplementation(() => Promise.reject(new Error('unexpected call'))),
@@ -181,7 +185,9 @@ describe('python integration test', () => {
       brokerFee: 0n,
     });
 
-    const response = await axios.get(`${serverUrl}/quote?${params.toString()}`);
+    const response = await axios.get(`${serverUrl}/quote?${params.toString()}`, {
+      validateStatus: () => true,
+    });
 
     expect(await response.data).toMatchSnapshot();
     expect(jest.mocked(getSwapRateV2).mock.calls).toMatchSnapshot();
@@ -208,7 +214,9 @@ describe('python integration test', () => {
       brokerFee: 0n,
     });
 
-    const response = await axios.get(`${serverUrl}/v2/quote?${params.toString()}`);
+    const response = await axios.get(`${serverUrl}/v2/quote?${params.toString()}`, {
+      validateStatus: () => true,
+    });
 
     expect(await response.data).toMatchSnapshot();
     expect(jest.mocked(getSwapRateV2).mock.calls).toMatchSnapshot();
