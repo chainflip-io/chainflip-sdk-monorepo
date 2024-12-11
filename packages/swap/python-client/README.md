@@ -131,7 +131,7 @@ to $USDC:
 }
 ```
 
-The response should contain orders for the opposite direction. For `SELL swaps,
+The response should contain orders for the opposite direction. For `SELL` swaps,
 you should respond with `BUY` orders. The client receives the response and emits
 the following `quote_response` event:
 
