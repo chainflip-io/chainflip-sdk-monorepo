@@ -12,7 +12,7 @@ import Quoter from '../../quoting/Quoter';
 import { getBoostFeeBpsForAmount } from '../../utils/boost';
 import getPoolQuote from '../../utils/getPoolQuote';
 import logger from '../../utils/logger';
-import { getDeployedLiquidity, getPools, getTotalLiquidity } from '../../utils/pools';
+import { getPools, getTotalLiquidity } from '../../utils/pools';
 import { getIngressFee, validateSwapAmount } from '../../utils/rpc';
 import ServiceError from '../../utils/ServiceError';
 import { asyncHandler, handleQuotingError } from '../common';
