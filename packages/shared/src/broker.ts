@@ -195,6 +195,8 @@ function toEncodedAddress(chain: Chain, address: string): EncodedAddress {
       return { Sol: isHex(address) ? hexToBytes(address) : base58.decode(address) };
     case 'Bitcoin':
       return { Btc: bytesToHex(new TextEncoder().encode(address)) };
+    case 'Assethub':
+      return { Hub: isHex(address) ? hexToBytes(address) : ss58.decode(address).data } as unknown as EncodedAddress;
     default:
       throw new Error(`Unsupported chain: ${chain}`);
   }
