@@ -18,6 +18,7 @@ import {
 } from '@/shared/tests/fixtures';
 import prisma from '../client';
 import app from '../server';
+import { getTotalLiquidity } from '../utils/pools';
 import { getSwapRateV2 } from '../utils/statechain';
 
 const execAsync = promisify(exec);
@@ -176,6 +177,11 @@ describe('python integration test', () => {
     } as QuoteQueryParams;
     const params = new URLSearchParams(query as Record<string, any>);
 
+    jest
+      .mocked(getTotalLiquidity)
+      .mockResolvedValueOnce(9997901209876966295n)
+      .mockResolvedValueOnce(9997901209876966295n);
+
     jest.mocked(getSwapRateV2).mockResolvedValueOnce({
       ingressFee: { amount: 2000000n, chain: 'Ethereum', asset: 'FLIP' },
       networkFee: { amount: 998900109987003n, chain: 'Ethereum', asset: 'USDC' },
@@ -204,6 +210,11 @@ describe('python integration test', () => {
       amount: '1000000000000000000',
     } as QuoteQueryParams;
     const params = new URLSearchParams(query as Record<string, any>);
+
+    jest
+      .mocked(getTotalLiquidity)
+      .mockResolvedValueOnce(9997901209876966295n)
+      .mockResolvedValueOnce(9997901209876966295n);
 
     jest.mocked(getSwapRateV2).mockResolvedValueOnce({
       ingressFee: { amount: 2000000n, chain: 'Ethereum', asset: 'FLIP' },
