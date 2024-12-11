@@ -42,9 +42,8 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
     const tokenAddress =
       asset === 'SolUsdc' ? getTokenContractAddress('SolUsdc', env.CHAINFLIP_NETWORK) : null;
 
-    // somehow the blockHeight on the event can be lower than the slot of the actual deposit
-    // alberd recommended to add a buffer of 30 slots for now, but we hope to be able to remove this in the future
-    // https://discord.com/channels/775961728608895008/1316092875447992431/1316092878442987611
+    // somehow the blockHeight on the event can be slightly lower than the slot of the actual deposit
+    // https://linear.app/chainflip/issue/PRO-1893/look-into-solana-ingress-block-height
     const maxDepositSlot = Number(blockHeight) + 30;
 
     try {
