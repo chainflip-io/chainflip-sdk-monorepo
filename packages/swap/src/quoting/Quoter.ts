@@ -10,6 +10,7 @@ import {
   InternalAssetMap,
   UncheckedAssetAndChain,
   assetConstants,
+  getInternalAsset,
 } from '@/shared/enums';
 import Leg from './Leg';
 import {
@@ -92,7 +93,13 @@ const formatLimitOrders = (
         base_asset: leg.base_asset,
         quote_asset: leg.quote_asset,
         tick,
-        sell_amount: formatAmount(tick, amount, quotes.base_asset, leg.side, clientVersion),
+        sell_amount: formatAmount(
+          tick,
+          amount,
+          getInternalAsset(leg.base_asset),
+          leg.side,
+          clientVersion,
+        ),
       },
     })),
   );
