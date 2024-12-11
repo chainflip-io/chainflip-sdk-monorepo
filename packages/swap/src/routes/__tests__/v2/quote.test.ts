@@ -186,6 +186,7 @@ describe('server', () => {
     jest.mocked(getUsdValue).mockResolvedValue(undefined);
     server = app.listen(0);
     jest.mocked(Quoter.prototype.getLimitOrders).mockResolvedValue([]);
+    jest.mocked(getTotalLiquidity).mockResolvedValue(BigInt(200e6));
     mockRpcs({ ingressFee: hexEncodeNumber(2000000), egressFee: hexEncodeNumber(50000) });
     // eslint-disable-next-line dot-notation
     boostPoolsCache['store'].clear();
@@ -606,6 +607,10 @@ describe('server', () => {
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
       jest.mocked(getUsdValue).mockResolvedValue('9800');
+      jest
+        .mocked(getTotalLiquidity)
+        .mockResolvedValueOnce(BigInt(500e6))
+        .mockResolvedValueOnce(BigInt(200e6));
 
       mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_environment') {
@@ -1007,6 +1012,12 @@ describe('server', () => {
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
       jest.mocked(getUsdValue).mockResolvedValue('9800');
+      jest
+        .mocked(getTotalLiquidity)
+        .mockResolvedValueOnce(BigInt(1e18))
+        .mockResolvedValueOnce(BigInt(1e18))
+        .mockResolvedValueOnce(BigInt(1e18))
+        .mockResolvedValueOnce(BigInt(1e18));
 
       mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_environment') {

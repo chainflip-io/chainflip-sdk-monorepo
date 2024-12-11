@@ -261,6 +261,7 @@ export const generateQuotes = async ({
     if (dcaBoostedQuote) {
       adjustDcaQuote({ dcaQuoteParams, dcaQuote: dcaBoostedQuote, originalDepositAmount: amount });
     }
+
     dcaEagerLiquidityExists = await eagerLiquidityExists(
       srcAsset,
       destAsset,

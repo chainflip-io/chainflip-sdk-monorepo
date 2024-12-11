@@ -155,6 +155,7 @@ describe('server', () => {
   beforeEach(async () => {
     server = app.listen(0);
     jest.mocked(Quoter.prototype.getLimitOrders).mockResolvedValue([]);
+    jest.mocked(getTotalLiquidity).mockResolvedValue(BigInt(100e18));
     mockRpcs({ ingressFee: hexEncodeNumber(2000000), egressFee: hexEncodeNumber(50000) });
     // eslint-disable-next-line dot-notation
     boostPoolsCache['store'].clear();
@@ -775,7 +776,10 @@ describe('server', () => {
     });
 
     it('throws 400 if totalLiquidity is lower than egressAmount', async () => {
-      jest.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(899999999999975000n));
+      jest
+        .mocked(getTotalLiquidity)
+        .mockResolvedValueOnce(BigInt(0n))
+        .mockResolvedValueOnce(BigInt(0n));
 
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         intermediary: BigInt(2000e6),
