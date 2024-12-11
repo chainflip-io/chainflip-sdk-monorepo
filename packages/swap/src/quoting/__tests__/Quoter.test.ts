@@ -91,6 +91,8 @@ describe(Quoter, () => {
       const { port } = server['httpServer'].address() as AddressInfo;
       const timestamp = Date.now();
 
+      const version = quotedAssets ? '2' : '1';
+
       const socket = io(`http://localhost:${port}`, {
         auth: {
           ...(quotedAssets
@@ -140,7 +142,7 @@ describe(Quoter, () => {
           return quote.legs.flatMap((leg, i) =>
             leg.map(([tick, amount]) => {
               let baseAsset;
-              let side;
+              let side: 'buy' | 'sell';
 
               if (srcAsset === 'Usdc') {
                 baseAsset = destAsset;
@@ -156,6 +158,10 @@ describe(Quoter, () => {
                 side = 'sell';
               } else {
                 throw new Error('unexpected leg index');
+              }
+
+              if (version === '1') {
+                side = side === 'buy' ? 'sell' : 'buy';
               }
 
               return {

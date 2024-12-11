@@ -1,4 +1,5 @@
 import { hexEncodeNumber } from '@chainflip/utils/number';
+import { toLowerCase } from '@chainflip/utils/string';
 import { HexString } from '@chainflip/utils/types';
 import assert from 'assert';
 import BigNumber from 'bignumber.js';
@@ -80,6 +81,11 @@ export const formatAmount = (
   }
 };
 
+const getSide = (side: 'BUY' | 'SELL', clientVersion: ClientVersion) => {
+  if (clientVersion === '1') return toLowerCase(side);
+  return side === 'BUY' ? 'sell' : 'buy';
+};
+
 const formatLimitOrders = (
   quotes: { orders: MarketMakerQuote['legs'][number]; clientVersion: ClientVersion }[],
   leg?: MarketMakerQuoteRequest<LegJson>['legs'][number],
@@ -89,7 +95,7 @@ const formatLimitOrders = (
   return quotes.flatMap(({ orders, clientVersion }) =>
     orders.map(([tick, amount]) => ({
       LimitOrder: {
-        side: leg.side === 'BUY' ? 'sell' : 'buy',
+        side: getSide(leg.side, clientVersion),
         base_asset: leg.base_asset,
         quote_asset: leg.quote_asset,
         tick,
