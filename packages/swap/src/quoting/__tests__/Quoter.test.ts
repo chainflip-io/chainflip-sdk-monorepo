@@ -13,7 +13,7 @@ import env from '@/swap/config/env';
 import prisma, { InternalAsset } from '../../client';
 import { getAssetPrice } from '../../pricing';
 import authenticate from '../authenticate';
-import Quoter, { approximateIntermediateOutput, type RpcLimitOrder } from '../Quoter';
+import Quoter, { approximateIntermediateOutput, formatAmount, type RpcLimitOrder } from '../Quoter';
 import { LegJson, MarketMakerQuoteRequest, MarketMakerRawQuote } from '../schemas';
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
@@ -403,4 +403,21 @@ describe('approximateIntermediateOutput', () => {
       expect(actual).toEqual(expected);
     },
   );
+});
+
+describe(formatAmount, () => {
+  it('throws for unexpected versions', () => {
+    expect(() => formatAmount(0, BigInt(100), 'Usdt', 'BUY', 'asdf' as '2')).toThrow();
+  });
+
+  it('hex encodes for client version 2', () => {
+    expect(formatAmount(0, BigInt(100), 'Usdt', 'BUY', '2')).toEqual('0x64');
+  });
+
+  it('calculates the sell amount for client version 1', () => {
+    expect(formatAmount(0, BigInt(100), 'Usdt', 'BUY', '1')).toEqual('0x64');
+    expect(formatAmount(0, BigInt(100), 'Usdt', 'SELL', '1')).toEqual('0x64');
+    expect(formatAmount(-268166, BigInt(1e18), 'Flip', 'SELL', '1')).toEqual('0x227fa1'); // 2.260897 USDC
+    expect(formatAmount(-268166, BigInt(2.2e6), 'Flip', 'BUY', '1')).toEqual('0xd81055f6ab25a91'); // 0.97 FLIP
+  });
 });

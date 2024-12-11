@@ -114,14 +114,15 @@ Malformed responses are ignored.
 
 #### Single leg
 
-Quoting server emits the following `quote_request` event to sell $FLIP for $USDC:
+Quoting server emits the following `quote_request` event to sell $FLIP for
+\$USDC:
 
 ```jsonc
 {
   "request_id": "018ee1c7-b949-71f2-889e-a2284cee7712",
   "legs": [
     {
-      "amount": "1000000000000000000", // 1 FLIP
+      "amount": "1000000000000000000", // 1 $FLIP
       "base_asset": { "chain": "Ethereum", "asset": "FLIP" },
       "quote_asset": { "chain": "Ethereum", "asset": "USDC" },
       "side": "SELL",
@@ -130,19 +131,25 @@ Quoting server emits the following `quote_request` event to sell $FLIP for $USDC
 }
 ```
 
-The client receives the reponse and emits the following `quote_response` event:
+The response should contain orders for the opposite direction. For `SELL`
+orders, you should respond with `BUY` orders. The client receives the reponse
+and emits the following `quote_response` event:
 
 ```jsonc
 {
   "request_id": "018ee1c7-b949-71f2-889e-a2284cee7712",
   "legs": [
     [
-      [-261406, "500000000000000000"],
-      [-261405, "500000000000000000"],
+      [-268100, "1137934"],
+      [-268000, "1149370"],
     ],
   ],
 }
 ```
+
+This response means you intend to open two `BUY` orders in response to the
+`SELL` request. These orders will buy approximately 0.5 $FLIP each, thus filling
+the order.
 
 #### Double leg
 
