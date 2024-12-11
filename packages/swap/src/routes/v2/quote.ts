@@ -162,7 +162,7 @@ export const eagerLiquidityExists = async (
   const totalLiquidityLeg1 = await getTotalLiquidity(srcAsset, 'Usdc');
   const totalLiquidityLeg2 = await getTotalLiquidity('Usdc', destAsset);
   return (
-    BigInt(totalLiquidityLeg1) > BigInt(intermediateAmount!) &&
+    BigInt(totalLiquidityLeg1) > BigInt(intermediateAmount ?? 0) &&
     BigInt(totalLiquidityLeg2) > BigInt(egressAmount)
   );
 };
