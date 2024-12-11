@@ -12,7 +12,7 @@ import Quoter from '../../quoting/Quoter';
 import { getBoostFeeBpsForAmount } from '../../utils/boost';
 import getPoolQuote from '../../utils/getPoolQuote';
 import logger from '../../utils/logger';
-import { getPools, getTotalLiquidity } from '../../utils/pools';
+import { getDeployedLiquidity, getPools, getTotalLiquidity } from '../../utils/pools';
 import { getIngressFee, validateSwapAmount } from '../../utils/rpc';
 import ServiceError from '../../utils/ServiceError';
 import { asyncHandler, handleQuotingError } from '../common';
@@ -234,6 +234,24 @@ export const generateQuotes = async ({
   const boostedQuote = getFulfilledResult(boostedQuoteResult, null);
   const dcaBoostedQuote = getFulfilledResult(dcaBoostedQuoteResult, null) as DCABoostQuote | null;
 
+  const validateLiquidity = async (egressAmount: string, intermediateAmount?: string) => {
+    if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
+      const totalLiquidity = await getTotalLiquidity(srcAsset, destAsset);
+      if (totalLiquidity < BigInt(egressAmount)) {
+        throw ServiceError.badRequest(`Insufficient liquidity for the requested amount`);
+      }
+    } else {
+      const totalLiquidityLeg1 = await getTotalLiquidity(srcAsset, 'Usdc');
+      const totalLiquidityLeg2 = await getTotalLiquidity('Usdc', destAsset);
+      if (
+        totalLiquidityLeg1 < BigInt(intermediateAmount!) ||
+        totalLiquidityLeg2 < BigInt(egressAmount)
+      ) {
+        throw ServiceError.badRequest(`Insufficient liquidity for the requested amount`);
+      }
+    }
+  };
+
   if (dcaQuoteParams && dcaQuote) {
     // The received quotes are for a single chunk, we need to extrapolate them to the full amount
     adjustDcaQuote({ dcaQuoteParams, dcaQuote, originalDepositAmount: amount });
@@ -242,21 +260,11 @@ export const generateQuotes = async ({
     }
 
     // Check liquidity for DCA
-    if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
-      const totalLiquidity = await getTotalLiquidity(srcAsset, destAsset);
-      if (totalLiquidity < BigInt(dcaQuote.egressAmount)) {
-        throw ServiceError.badRequest(`Insufficient liquidity for the requested amount`);
-      }
-    } else {
-      const totalLiquidityLeg1 = await getTotalLiquidity(srcAsset, 'Usdc');
-      const totalLiquidityLeg2 = await getTotalLiquidity('Usdc', destAsset);
-      if (
-        totalLiquidityLeg1 < BigInt(dcaQuote.intermediateAmount!) ||
-        totalLiquidityLeg2 < BigInt(dcaQuote.egressAmount)
-      ) {
-        throw ServiceError.badRequest(`Insufficient liquidity for the requested amount`);
-      }
-    }
+    await validateLiquidity(dcaQuote.egressAmount, dcaQuote.intermediateAmount);
+  } else if (quote) {
+    await validateLiquidity(quote.egressAmount, quote.intermediateAmount);
+  } else {
+    throw ServiceError.internalError('could not generate quotes');
   }
 
   if (quote && boostedQuote && estimatedBoostFeeBps && maxBoostFeeBps) {
