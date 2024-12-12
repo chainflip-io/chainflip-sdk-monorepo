@@ -18,6 +18,8 @@ import ServiceError from '../../utils/ServiceError';
 import { asyncHandler, handleQuotingError } from '../common';
 import { fallbackChains } from '../quote';
 
+const router = express.Router();
+
 export const getDcaQuoteParams = async (asset: InternalAsset, amount: bigint) => {
   const usdChunkSize = env.DCA_CHUNK_SIZE_USD?.[asset] ?? env.DCA_DEFAULT_CHUNK_SIZE_USD;
 
@@ -135,8 +137,8 @@ export const generateQuotes = async ({
   boostDepositsEnabled: boolean;
   quoter: Quoter;
 }) => {
-  let regularEagerLiquidityExists;
-  let dcaEagerLiquidityExists;
+  let regularEagerLiquidityExists = false;
+  let dcaEagerLiquidityExists = false;
 
   const [limitOrders, { estimatedBoostFeeBps, maxBoostFeeBps }, pools] = await Promise.all([
     quoter.getLimitOrders(srcAsset, destAsset, depositAmount),
@@ -199,7 +201,6 @@ export const generateQuotes = async ({
         dcaQuoteParams.additionalSwapDurationSeconds;
       dcaBoostedQuote.estimatedDurationSeconds += dcaQuoteParams.additionalSwapDurationSeconds;
     }
-
     dcaEagerLiquidityExists = await eagerLiquidityExists(
       srcAsset,
       destAsset,
@@ -237,16 +238,6 @@ export const generateQuotes = async ({
 };
 
 const quoteRouter = (quoter: Quoter) => {
-  const router = express.Router().use((req, res, next) => {
-    if (env.DISABLE_QUOTING) {
-      next(ServiceError.unavailable('Quoting is currently unavailable due to maintenance'));
-
-      return;
-    }
-
-    next();
-  });
-
   router.get(
     '/',
     asyncHandler(async (req, res) => {
@@ -309,7 +300,6 @@ const quoteRouter = (quoter: Quoter) => {
       }
     }),
   );
-
   return router;
 };
 

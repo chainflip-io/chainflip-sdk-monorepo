@@ -27,6 +27,14 @@ export const maintenanceMode: RequestHandler = (req, res, next) => {
   next();
 };
 
+export const quoteMiddleware: RequestHandler = (req, res, next) => {
+  if (env.DISABLE_QUOTING) {
+    next(ServiceError.unavailable('Quoting is currently unavailable due to maintenance'));
+    return;
+  }
+  next();
+};
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const asyncHandler = <
   Route extends string,
