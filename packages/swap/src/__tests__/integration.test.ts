@@ -18,11 +18,16 @@ import {
 } from '@/shared/tests/fixtures';
 import prisma from '../client';
 import app from '../server';
+import { getTotalLiquidity } from '../utils/pools';
 import { getSwapRateV3 } from '../utils/statechain';
 
 const execAsync = promisify(exec);
 
 jest.mock('../pricing');
+jest.mock('../utils/pools', () => ({
+  ...jest.requireActual('../utils/pools'),
+  getTotalLiquidity: jest.fn(),
+}));
 
 jest.mock('../utils/statechain', () => ({
   getSwapRateV3: jest.fn().mockImplementation(() => Promise.reject(new Error('unexpected call'))),
@@ -171,7 +176,10 @@ describe('python integration test', () => {
       amount: '1000000000000000000',
     } as QuoteQueryParams;
     const params = new URLSearchParams(query as Record<string, any>);
-
+    jest
+      .mocked(getTotalLiquidity)
+      .mockResolvedValueOnce(9997901209876966295n)
+      .mockResolvedValueOnce(9997901209876966295n);
     jest.mocked(getSwapRateV3).mockResolvedValueOnce({
       ingressFee: { amount: 2000000n, chain: 'Ethereum', asset: 'FLIP' },
       networkFee: { amount: 998900109987003n, chain: 'Ethereum', asset: 'USDC' },
@@ -185,7 +193,9 @@ describe('python integration test', () => {
       },
     });
 
-    const response = await axios.get(`${serverUrl}/quote?${params.toString()}`);
+    const response = await axios.get(`${serverUrl}/quote?${params.toString()}`, {
+      validateStatus: () => true,
+    });
 
     expect(await response.data).toMatchSnapshot();
     expect(jest.mocked(getSwapRateV3).mock.calls).toMatchSnapshot();
@@ -203,6 +213,11 @@ describe('python integration test', () => {
     } as QuoteQueryParams;
     const params = new URLSearchParams(query as Record<string, any>);
 
+    jest
+      .mocked(getTotalLiquidity)
+      .mockResolvedValueOnce(9997901209876966295n)
+      .mockResolvedValueOnce(9997901209876966295n);
+
     jest.mocked(getSwapRateV3).mockResolvedValueOnce({
       ingressFee: { amount: 2000000n, chain: 'Ethereum', asset: 'FLIP' },
       networkFee: { amount: 998900109987003n, chain: 'Ethereum', asset: 'USDC' },
@@ -216,7 +231,9 @@ describe('python integration test', () => {
       },
     });
 
-    const response = await axios.get(`${serverUrl}/v2/quote?${params.toString()}`);
+    const response = await axios.get(`${serverUrl}/v2/quote?${params.toString()}`, {
+      validateStatus: () => true,
+    });
 
     expect(await response.data).toMatchSnapshot();
     expect(jest.mocked(getSwapRateV3).mock.calls).toMatchSnapshot();

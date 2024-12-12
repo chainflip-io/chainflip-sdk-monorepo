@@ -1,4 +1,5 @@
 import { hexEncodeNumber } from '@chainflip/utils/number';
+import { HexString } from '@chainflip/utils/types';
 import assert from 'assert';
 import BigNumber from 'bignumber.js';
 import { randomUUID } from 'crypto';
@@ -9,6 +10,7 @@ import {
   InternalAssetMap,
   UncheckedAssetAndChain,
   assetConstants,
+  getInternalAsset,
 } from '@/shared/enums';
 import Leg from './Leg';
 import {
@@ -20,7 +22,7 @@ import {
 } from './schemas';
 import env from '../config/env';
 import { getAssetPrice } from '../pricing';
-import { handleExit } from '../utils/function';
+import { assertUnreachable, handleExit } from '../utils/function';
 import baseLogger from '../utils/logger';
 
 const logger = baseLogger.child({ module: 'quoter' });
@@ -56,27 +58,58 @@ export type RpcLimitOrder = {
   };
 };
 
-const formatLimitOrders = (
-  quotes?: MarketMakerQuote['legs'][number],
-  leg?: MarketMakerQuoteRequest<LegJson>['legs'][number],
-): RpcLimitOrder[] => {
-  if (!quotes || !leg) return [];
-
-  return quotes.map(([tick, amount]) => ({
-    LimitOrder: {
-      side: leg.side === 'BUY' ? 'sell' : 'buy',
-      base_asset: leg.base_asset,
-      quote_asset: leg.quote_asset,
-      tick,
-      sell_amount: hexEncodeNumber(amount),
-    },
-  }));
+export const formatAmount = (
+  tick: number,
+  amount: bigint,
+  baseAsset: InternalAsset,
+  side: 'BUY' | 'SELL',
+  clientVersion: ClientVersion,
+): HexString => {
+  switch (clientVersion) {
+    case '1': {
+      const price = 1.0001 ** tick; // quote/base
+      const op = side === 'BUY' ? 'div' : 'times';
+      const sellAmount = new BigNumber(amount.toString())[op](price);
+      // .shiftedBy(assetConstants[baseAsset].decimals - assetConstants.Usdc.decimals);
+      return `0x${sellAmount.decimalPlaces(0).toString(16)}`;
+    }
+    case '2':
+      return hexEncodeNumber(amount);
+    default:
+      return assertUnreachable(clientVersion);
+  }
 };
 
+const formatLimitOrders = (
+  quotes: { orders: MarketMakerQuote['legs'][number]; clientVersion: ClientVersion }[],
+  leg?: MarketMakerQuoteRequest<LegJson>['legs'][number],
+): RpcLimitOrder[] => {
+  if (!leg) return [];
+
+  return quotes.flatMap(({ orders, clientVersion }) =>
+    orders.map(([tick, amount]) => ({
+      LimitOrder: {
+        side: leg.side === 'BUY' ? 'sell' : 'buy',
+        base_asset: leg.base_asset,
+        quote_asset: leg.quote_asset,
+        tick,
+        sell_amount: formatAmount(
+          tick,
+          amount,
+          getInternalAsset(leg.base_asset),
+          leg.side,
+          clientVersion,
+        ),
+      },
+    })),
+  );
+};
+
+type ClientVersion = '1' | '2';
 export type SocketData = {
   marketMaker: string;
   quotedAssets: InternalAssetMap<boolean>;
-  clientVersion: '1' | '2';
+  clientVersion: ClientVersion;
 };
 export type ReceivedEventMap = { quote_response: (message: unknown) => void };
 export type SentEventMap = {
@@ -151,7 +184,7 @@ export default class Quoter {
 
   private async collectMakerQuotes(
     request: MarketMakerQuoteRequest<Leg>,
-  ): Promise<[string, MarketMakerQuote][]> {
+  ): Promise<[string, MarketMakerQuote & { clientVersion: ClientVersion }][]> {
     const connectedClients = this.io.sockets.sockets.size;
     if (connectedClients === 0) return [];
 
@@ -159,13 +192,13 @@ export default class Quoter {
 
     let expectedResponses = 0;
 
-    const quotedLegsMap = new Map<string, LegFormatter>();
+    const quotedLegsMap = new Map<string, { format: LegFormatter; clientVersion: ClientVersion }>();
 
     for (const socket of await this.io.fetchSockets()) {
       let message: MarketMakerQuoteRequest<LegJson>;
 
       const [first, second] = request.legs;
-      const { quotedAssets, marketMaker } = socket.data;
+      const { quotedAssets, marketMaker, clientVersion } = socket.data;
       const quotesFirstLeg = quotedAssets[first.getBaseAsset()];
       const quotesEntireSwap = quotesFirstLeg && (!second || quotedAssets[second.getBaseAsset()]);
 
@@ -174,13 +207,13 @@ export default class Quoter {
           ...request,
           legs: request.legs.map((leg) => leg.toJSON()) as [LegJson] | [LegJson, LegJson],
         };
-        quotedLegsMap.set(marketMaker, singleOrBothLegs);
+        quotedLegsMap.set(marketMaker, { format: singleOrBothLegs, clientVersion });
       } else if (quotesFirstLeg) {
         message = { ...request, legs: [first.toJSON()] };
-        quotedLegsMap.set(marketMaker, padSecondLeg);
+        quotedLegsMap.set(marketMaker, { format: padSecondLeg, clientVersion });
       } else if (second && quotedAssets[second.getBaseAsset()]) {
         message = { ...request, legs: [second.toJSON()] };
-        quotedLegsMap.set(marketMaker, padFirstLeg);
+        quotedLegsMap.set(marketMaker, { format: padFirstLeg, clientVersion });
       } else {
         // eslint-disable-next-line no-continue
         continue;
@@ -192,7 +225,10 @@ export default class Quoter {
 
     if (expectedResponses === 0) return [];
 
-    const clientsReceivedQuotes = new Map<string, MarketMakerQuote>();
+    const clientsReceivedQuotes = new Map<
+      string,
+      MarketMakerQuote & { clientVersion: ClientVersion }
+    >();
 
     return new Promise((resolve) => {
       let sub: Subscription;
@@ -207,10 +243,14 @@ export default class Quoter {
       };
 
       sub = this.quotes$.subscribe(({ marketMaker, quote }) => {
-        const format = quotedLegsMap.get(marketMaker);
+        const { format, clientVersion } = quotedLegsMap.get(marketMaker) ?? {};
         if (quote.request_id !== request.request_id) return;
-        if (format) {
-          clientsReceivedQuotes.set(marketMaker, { ...quote, legs: format(quote.legs) });
+        if (format && clientVersion) {
+          clientsReceivedQuotes.set(marketMaker, {
+            ...quote,
+            legs: format(quote.legs),
+            clientVersion,
+          });
         } else {
           logger.error('unexpected missing format function');
           expectedResponses -= 1;
@@ -254,11 +294,17 @@ export default class Quoter {
 
     const orders = [
       ...formatLimitOrders(
-        quotes.flatMap(([, quote]) => quote.legs[0]),
+        quotes.map(([, quote]) => ({
+          orders: quote.legs[0],
+          clientVersion: quote.clientVersion,
+        })),
         legs[0].toJSON(),
       ),
       ...formatLimitOrders(
-        quotes.flatMap(([, quote]) => quote.legs[1] ?? []),
+        quotes.map(([, quote]) => ({
+          orders: quote.legs[1] ?? [],
+          clientVersion: quote.clientVersion,
+        })),
         legs[1]?.toJSON(),
       ),
     ];
