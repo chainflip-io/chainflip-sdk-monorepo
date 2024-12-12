@@ -62,6 +62,7 @@ describe(Quoter, () => {
     oldEnv = { ...env };
     server = new Server().use(authenticate).listen(0);
     quoter = new Quoter(server);
+    keyMap.clear();
 
     jest.mocked(getAssetPrice).mockImplementation((asset) =>
       Promise.resolve(
