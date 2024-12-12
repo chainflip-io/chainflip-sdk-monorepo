@@ -213,7 +213,7 @@ describe(Quoter, () => {
 
       const handler = fakeServer.on.mock.calls[0][1];
 
-      const socket = { on: jest.fn(), data: { marketMaker: 'MM' } };
+      const socket = { on: jest.fn(), data: { accountId: 'MM' } };
       const next = jest.fn();
       mockQuoter['quotes$'].subscribe(next);
 
