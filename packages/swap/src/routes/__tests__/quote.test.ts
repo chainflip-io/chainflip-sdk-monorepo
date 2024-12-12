@@ -800,12 +800,13 @@ describe('server', () => {
         .mockResolvedValueOnce(BigInt(0n));
 
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
         intermediary: BigInt(2000e6),
         output: 999999999999975000n,
         egress_fee: buildFee('Eth', 25000).bigint,
         ingress_fee: buildFee('Flip', 2000000).bigint,
         network_fee: buildFee('Usdc', 2000000).bigint,
-      } as CfSwapRateV2);
+      } as CfSwapRateV3);
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -829,12 +830,13 @@ describe('server', () => {
         .mockResolvedValueOnce(BigInt(99999999999975000n));
 
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
         intermediary: BigInt(2000e6),
         output: 999999999999975000n,
         egress_fee: buildFee('Eth', 25000).bigint,
         ingress_fee: buildFee('Flip', 2000000).bigint,
         network_fee: buildFee('Usdc', 2000000).bigint,
-      } as CfSwapRateV2);
+      } as CfSwapRateV3);
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -858,12 +860,13 @@ describe('server', () => {
         .mockResolvedValueOnce(BigInt(999999999999975001n));
 
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
         intermediary: BigInt(2000e6),
         output: 999999999999975000n,
         egress_fee: buildFee('Eth', 25000).bigint,
         ingress_fee: buildFee('Flip', 2000000).bigint,
         network_fee: buildFee('Usdc', 2000000).bigint,
-      } as CfSwapRateV2);
+      } as CfSwapRateV3);
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
