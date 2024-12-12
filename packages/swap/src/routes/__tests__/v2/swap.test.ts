@@ -1168,6 +1168,25 @@ describe('server', () => {
       expect(rest).toMatchSnapshot();
     });
 
+    it('retrieves a swap from a solana case-insensitive tx ref', async () => {
+      const solanaTxRef =
+        'qRPnr195EppRTtmjiTUu94VDANaY2UtveuyBeyR5hMTjbqzDAtdNv8N4miayUNhkbQdgzn8TfYhEXHJ8xHjkHYp';
+
+      await processEvents(swapEvents.slice(0, 4));
+      await prisma.swapRequest.update({
+        where: { nativeId: Number(swapRequestId) },
+        data: {
+          depositTransactionRef: solanaTxRef,
+        },
+      });
+
+      const { body, status } = await request(server).get(`/v2/swaps/${solanaTxRef.toLowerCase()}`);
+      expect(status).toBe(200);
+      const { swapId, ...rest } = body;
+
+      expect(rest).toMatchSnapshot();
+    });
+
     it('works in maintenance mode', async () => {
       env.MAINTENANCE_MODE = true;
 

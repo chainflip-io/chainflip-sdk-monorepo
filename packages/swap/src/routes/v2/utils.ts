@@ -42,8 +42,7 @@ const swapRequestInclude = {
 } as const;
 
 const channelIdRegex = /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
-const swapRequestId = /^\d+$/i;
-const txHashRegex = /^(0x)?[a-f\d]+$/i;
+const swapRequestIdRegex = /^\d+$/i;
 
 export const getLatestSwapForId = async (id: string) => {
   let swapRequest;
@@ -90,14 +89,14 @@ export const getLatestSwapForId = async (id: string) => {
     if (!swapRequest || (swapRequest.completedAt && !swapRequest.swaps.length)) {
       failedSwap = swapDepositChannel.failedSwaps.at(0);
     }
-  } else if (swapRequestId.test(id)) {
+  } else if (swapRequestIdRegex.test(id)) {
     swapRequest = await prisma.swapRequest.findUnique({
       where: { nativeId: BigInt(id) },
       include: swapRequestInclude,
     });
-  } else if (txHashRegex.test(id)) {
+  } else if (id) {
     swapRequest = await prisma.swapRequest.findFirst({
-      where: { depositTransactionRef: id },
+      where: { depositTransactionRef: { equals: id, mode: 'insensitive' } },
       include: swapRequestInclude,
       // just get the last one for now
       orderBy: { nativeId: 'desc' },
@@ -105,7 +104,7 @@ export const getLatestSwapForId = async (id: string) => {
     });
     if (!swapRequest) {
       failedSwap = await prisma.failedSwap.findFirst({
-        where: { depositTransactionRef: id },
+        where: { depositTransactionRef: { equals: id, mode: 'insensitive' } },
         include: { swapDepositChannel: { include: depositChannelInclude }, refundBroadcast: true },
       });
     }
