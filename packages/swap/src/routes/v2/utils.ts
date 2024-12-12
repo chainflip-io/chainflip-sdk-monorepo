@@ -46,6 +46,10 @@ const channelIdRegex = /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d
 const swapRequestIdRegex = /^\d+$/i;
 const hexRegex = /^(0x)?[a-f0-9]+$/i;
 const base58Regex = new RegExp(`^[${CHARSET}]+$`);
+const dotRegex = /^\d+-\d+$/;
+
+const isTransactionRef = (id: string) =>
+  hexRegex.test(id) || base58Regex.test(id) || dotRegex.test(id);
 
 export const getLatestSwapForId = async (id: string) => {
   let swapRequest;
@@ -97,7 +101,7 @@ export const getLatestSwapForId = async (id: string) => {
       where: { nativeId: BigInt(id) },
       include: swapRequestInclude,
     });
-  } else if (hexRegex.test(id) || base58Regex.test(id)) {
+  } else if (isTransactionRef(id)) {
     swapRequest = await prisma.swapRequest.findFirst({
       where: { depositTransactionRef: id },
       include: swapRequestInclude,
