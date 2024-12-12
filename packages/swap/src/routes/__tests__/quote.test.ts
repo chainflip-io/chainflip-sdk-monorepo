@@ -18,6 +18,12 @@ import { checkPriceWarning } from '../../pricing/checkPriceWarning';
 import Quoter from '../../quoting/Quoter';
 import app from '../../server';
 import { boostPoolsCache } from '../../utils/boost';
+import { getTotalLiquidity } from '../../utils/pools';
+
+jest.mock('../../utils/pools', () => ({
+  ...jest.requireActual('../../utils/pools'),
+  getTotalLiquidity: jest.fn(),
+}));
 
 jest.mock('../../utils/function', () => ({
   ...jest.requireActual('../../utils/function'),
@@ -149,6 +155,7 @@ describe('server', () => {
   beforeEach(async () => {
     server = app.listen(0);
     jest.mocked(Quoter.prototype.getLimitOrders).mockResolvedValue([]);
+    jest.mocked(getTotalLiquidity).mockResolvedValue(BigInt(100e18));
     mockRpcs({ ingressFee: hexEncodeNumber(2000000), egressFee: hexEncodeNumber(50000) });
     // eslint-disable-next-line dot-notation
     boostPoolsCache['store'].clear();
@@ -157,6 +164,7 @@ describe('server', () => {
   afterEach((cb) => {
     Object.assign(env, oldEnv);
     server.close(cb);
+    jest.clearAllMocks();
   });
 
   describe('GET /quote', () => {
@@ -703,6 +711,8 @@ describe('server', () => {
     });
 
     it('gets the quote with intermediate amount', async () => {
+      jest.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(1e18));
+
       const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         intermediary: BigInt(2000e6),
         output: 999999999999975000n,
@@ -762,6 +772,90 @@ describe('server', () => {
           },
         ],
       });
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('throws 400 if totalLiquidity is lower than egressAmount', async () => {
+      jest
+        .mocked(getTotalLiquidity)
+        .mockResolvedValueOnce(BigInt(0n))
+        .mockResolvedValueOnce(BigInt(0n));
+
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        intermediary: BigInt(2000e6),
+        output: 999999999999975000n,
+        egress_fee: buildFee('Eth', 25000).bigint,
+        ingress_fee: buildFee('Flip', 2000000).bigint,
+        network_fee: buildFee('Usdc', 2000000).bigint,
+      } as CfSwapRateV2);
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'FLIP',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: (1e18).toString(),
+      });
+
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
+
+      expect(status).toBe(400);
+      expect(body.message).toBe('Insufficient liquidity for the requested amount');
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('throws 400 if totalLiquidity is higher in the intermediate amount but lower for egressAmount', async () => {
+      jest
+        .mocked(getTotalLiquidity)
+        .mockResolvedValueOnce(BigInt(3000e6))
+        .mockResolvedValueOnce(BigInt(99999999999975000n));
+
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        intermediary: BigInt(2000e6),
+        output: 999999999999975000n,
+        egress_fee: buildFee('Eth', 25000).bigint,
+        ingress_fee: buildFee('Flip', 2000000).bigint,
+        network_fee: buildFee('Usdc', 2000000).bigint,
+      } as CfSwapRateV2);
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'FLIP',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: (1e18).toString(),
+      });
+
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
+
+      expect(status).toBe(400);
+      expect(body.message).toBe('Insufficient liquidity for the requested amount');
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not throw if totalLiquidity is higher than egressAmount', async () => {
+      jest
+        .mocked(getTotalLiquidity)
+        .mockResolvedValueOnce(BigInt(999999999999975001n))
+        .mockResolvedValueOnce(BigInt(999999999999975001n));
+
+      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        intermediary: BigInt(2000e6),
+        output: 999999999999975000n,
+        egress_fee: buildFee('Eth', 25000).bigint,
+        ingress_fee: buildFee('Flip', 2000000).bigint,
+        network_fee: buildFee('Usdc', 2000000).bigint,
+      } as CfSwapRateV2);
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'FLIP',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: (1e18).toString(),
+      });
+      const { status } = await request(server).get(`/quote?${params.toString()}`);
+      expect(status).toBe(200);
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 

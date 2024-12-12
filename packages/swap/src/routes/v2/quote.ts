@@ -149,6 +149,24 @@ export const validateQuoteQuery = async (query: Query) => {
   };
 };
 
+export const eagerLiquidityExists = async (
+  srcAsset: InternalAsset,
+  destAsset: InternalAsset,
+  egressAmount: string,
+  intermediateAmount?: string,
+) => {
+  if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
+    const totalLiquidity = await getTotalLiquidity(srcAsset, destAsset);
+    return BigInt(totalLiquidity) > BigInt(egressAmount);
+  }
+  const totalLiquidityLeg1 = await getTotalLiquidity(srcAsset, 'Usdc');
+  const totalLiquidityLeg2 = await getTotalLiquidity('Usdc', destAsset);
+  return (
+    BigInt(totalLiquidityLeg1) > BigInt(intermediateAmount!) &&
+    BigInt(totalLiquidityLeg2) > BigInt(egressAmount)
+  );
+};
+
 export const generateQuotes = async ({
   dcaQuoteParams,
   amount,
@@ -166,6 +184,9 @@ export const generateQuotes = async ({
   boostDepositsEnabled: boolean;
   quoter: Quoter;
 }) => {
+  let regularEagerLiquidityExists;
+  let dcaEagerLiquidityExists;
+
   const [limitOrders, { estimatedBoostFeeBps, maxBoostFeeBps }, pools] = await Promise.all([
     quoter.getLimitOrders(srcAsset, destAsset, amount),
     env.DISABLE_BOOST_QUOTING || !boostDepositsEnabled
@@ -241,23 +262,24 @@ export const generateQuotes = async ({
       adjustDcaQuote({ dcaQuoteParams, dcaQuote: dcaBoostedQuote, originalDepositAmount: amount });
     }
 
-    // Check liquidity for DCA
-    if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
-      const totalLiquidity = await getTotalLiquidity(srcAsset, destAsset);
-      if (totalLiquidity < BigInt(dcaQuote.egressAmount)) {
-        throw ServiceError.badRequest(`Insufficient liquidity for the requested amount`);
-      }
-    } else {
-      const totalLiquidityLeg1 = await getTotalLiquidity(srcAsset, 'Usdc');
-      const totalLiquidityLeg2 = await getTotalLiquidity('Usdc', destAsset);
-      if (
-        totalLiquidityLeg1 < BigInt(dcaQuote.intermediateAmount!) ||
-        totalLiquidityLeg2 < BigInt(dcaQuote.egressAmount)
-      ) {
-        throw ServiceError.badRequest(`Insufficient liquidity for the requested amount`);
-      }
-    }
+    dcaEagerLiquidityExists = await eagerLiquidityExists(
+      srcAsset,
+      destAsset,
+      dcaQuote.egressAmount,
+      dcaQuote.intermediateAmount,
+    );
   }
+  if (quote) {
+    regularEagerLiquidityExists = await eagerLiquidityExists(
+      srcAsset,
+      destAsset,
+      quote.egressAmount,
+      quote.intermediateAmount,
+    );
+  }
+
+  if (!regularEagerLiquidityExists && !dcaEagerLiquidityExists)
+    throw ServiceError.badRequest(`Insufficient liquidity for the requested amount`);
 
   if (quote && boostedQuote && estimatedBoostFeeBps && maxBoostFeeBps) {
     quote.boostQuote = { ...boostedQuote, estimatedBoostFeeBps, maxBoostFeeBps };
@@ -267,8 +289,8 @@ export const generateQuotes = async ({
   }
 
   const result = [];
-  if (quote) result.push(quote);
-  if (dcaQuote) result.push(dcaQuote);
+  if (quote && regularEagerLiquidityExists) result.push(quote);
+  if (dcaQuote && dcaEagerLiquidityExists) result.push(dcaQuote);
   return { quotes: result, limitOrders };
 };
 
