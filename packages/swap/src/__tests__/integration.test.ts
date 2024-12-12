@@ -19,7 +19,7 @@ import {
 import prisma from '../client';
 import app from '../server';
 import { getTotalLiquidity } from '../utils/pools';
-import { getSwapRateV2 } from '../utils/statechain';
+import { getSwapRateV3 } from '../utils/statechain';
 
 const execAsync = promisify(exec);
 
@@ -30,7 +30,7 @@ jest.mock('../utils/pools', () => ({
 }));
 
 jest.mock('../utils/statechain', () => ({
-  getSwapRateV2: jest.fn().mockImplementation(() => Promise.reject(new Error('unexpected call'))),
+  getSwapRateV3: jest.fn().mockImplementation(() => Promise.reject(new Error('unexpected call'))),
 }));
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
@@ -176,19 +176,21 @@ describe('python integration test', () => {
       amount: '1000000000000000000',
     } as QuoteQueryParams;
     const params = new URLSearchParams(query as Record<string, any>);
-
     jest
       .mocked(getTotalLiquidity)
       .mockResolvedValueOnce(9997901209876966295n)
       .mockResolvedValueOnce(9997901209876966295n);
-
-    jest.mocked(getSwapRateV2).mockResolvedValueOnce({
+    jest.mocked(getSwapRateV3).mockResolvedValueOnce({
       ingressFee: { amount: 2000000n, chain: 'Ethereum', asset: 'FLIP' },
       networkFee: { amount: 998900109987003n, chain: 'Ethereum', asset: 'USDC' },
       egressFee: { amount: 50000n, chain: 'Ethereum', asset: 'USDC' },
       intermediateAmount: 2000000000n,
       egressAmount: 997901209876966295n,
-      brokerFee: 0n,
+      brokerFee: {
+        chain: 'Ethereum',
+        asset: 'USDC',
+        amount: 0n,
+      },
     });
 
     const response = await axios.get(`${serverUrl}/quote?${params.toString()}`, {
@@ -196,7 +198,7 @@ describe('python integration test', () => {
     });
 
     expect(await response.data).toMatchSnapshot();
-    expect(jest.mocked(getSwapRateV2).mock.calls).toMatchSnapshot();
+    expect(jest.mocked(getSwapRateV3).mock.calls).toMatchSnapshot();
   });
 
   it('replies to a quote request with v2 endpoint', async () => {
@@ -216,13 +218,17 @@ describe('python integration test', () => {
       .mockResolvedValueOnce(9997901209876966295n)
       .mockResolvedValueOnce(9997901209876966295n);
 
-    jest.mocked(getSwapRateV2).mockResolvedValueOnce({
+    jest.mocked(getSwapRateV3).mockResolvedValueOnce({
       ingressFee: { amount: 2000000n, chain: 'Ethereum', asset: 'FLIP' },
       networkFee: { amount: 998900109987003n, chain: 'Ethereum', asset: 'USDC' },
       egressFee: { amount: 50000n, chain: 'Ethereum', asset: 'USDC' },
       intermediateAmount: 2000000000n,
       egressAmount: 997901209876966295n,
-      brokerFee: 0n,
+      brokerFee: {
+        chain: 'Ethereum',
+        asset: 'USDC',
+        amount: 0n,
+      },
     });
 
     const response = await axios.get(`${serverUrl}/v2/quote?${params.toString()}`, {
@@ -230,6 +236,6 @@ describe('python integration test', () => {
     });
 
     expect(await response.data).toMatchSnapshot();
-    expect(jest.mocked(getSwapRateV2).mock.calls).toMatchSnapshot();
+    expect(jest.mocked(getSwapRateV3).mock.calls).toMatchSnapshot();
   });
 });

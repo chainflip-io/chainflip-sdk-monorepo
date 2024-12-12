@@ -44,7 +44,7 @@ const quoteRouter = (quoter: Quoter) => {
       try {
         const { quotes, limitOrders } = await generateQuotes({
           srcAsset,
-          amount,
+          depositAmount: amount,
           destAsset,
           brokerCommissionBps,
           boostDepositsEnabled,

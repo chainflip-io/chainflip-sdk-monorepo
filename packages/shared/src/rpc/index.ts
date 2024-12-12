@@ -93,4 +93,4 @@ export const getAllBoostPoolsDepth = transform(createRequest('cf_boost_pools_dep
 
 export type BoostPoolsDepth = Awaited<ReturnType<typeof getAllBoostPoolsDepth>>;
 
-export const getSwapRateV2 = createRequest('cf_swap_rate_v2');
+export const getSwapRateV3 = createRequest('cf_swap_rate_v3');
