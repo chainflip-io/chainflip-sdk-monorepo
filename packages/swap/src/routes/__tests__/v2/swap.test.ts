@@ -1180,7 +1180,7 @@ describe('server', () => {
         },
       });
 
-      const { body, status } = await request(server).get(`/v2/swaps/${solanaTxRef.toLowerCase()}`);
+      const { body, status } = await request(server).get(`/v2/swaps/${solanaTxRef}`);
       expect(status).toBe(200);
       const { swapId, ...rest } = body;
 
