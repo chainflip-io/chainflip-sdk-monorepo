@@ -1,8 +1,10 @@
 import { swappingSwapRequested as schema160 } from '@chainflip/processor/160/swapping/swapRequested';
 import { swappingSwapRequested as schema170 } from '@chainflip/processor/170/swapping/swapRequested';
+import { swappingSwapRequested as schema180 } from '@chainflip/processor/180/swapping/swapRequested';
 import z from 'zod';
-import { formatTxHash } from '@/shared/common';
-import { assetConstants, InternalAsset } from '@/shared/enums';
+import { formatTxRef } from '@/shared/common';
+import { assetConstants, Chain, InternalAsset } from '@/shared/enums';
+import { assertUnreachable } from '@/shared/functions';
 import { assertNever } from '@/shared/guards';
 import { pascalCaseToScreamingSnakeCase } from '@/shared/strings';
 import { Prisma } from '../client';
@@ -34,7 +36,7 @@ const transformRequestType = (old: z.output<typeof schema160>['requestType']): R
   }
 };
 
-const transformOldSchema = (data: z.output<typeof schema160>): z.output<typeof schema170> => ({
+const transform160Schema = (data: z.output<typeof schema160>): z.output<typeof schema170> => ({
   inputAsset: data.inputAsset,
   inputAmount: data.inputAmount,
   outputAsset: data.outputAsset,
@@ -44,7 +46,57 @@ const transformOldSchema = (data: z.output<typeof schema160>): z.output<typeof s
   requestType: transformRequestType(data.requestType),
 });
 
-const schema = z.union([schema170, schema160.transform(transformOldSchema)]);
+const transform170Schema = (data: z.output<typeof schema170>): z.output<typeof schema180> => {
+  let requestType;
+  if (data.requestType.__kind === 'Ccm') {
+    requestType = {
+      ...data.requestType,
+      ccmSwapMetadata: {
+        ...data.requestType.ccmSwapMetadata,
+        depositMetadata: {
+          ...data.requestType.ccmSwapMetadata.depositMetadata,
+          channelMetadata: {
+            ...data.requestType.ccmSwapMetadata.depositMetadata.channelMetadata,
+            ccmAdditionalData:
+              data.requestType.ccmSwapMetadata.depositMetadata.channelMetadata.cfParameters,
+          },
+        },
+      },
+    };
+  } else {
+    requestType = data.requestType;
+  }
+
+  let origin;
+  if (data.origin.__kind === 'Vault') {
+    origin = {
+      __kind: 'Vault' as const,
+      txId: {
+        __kind: 'Evm' as const, // protocol supported evm vault swaps < 1.8
+        value: data.origin.txHash,
+      },
+    };
+  } else {
+    origin = data.origin;
+  }
+
+  return {
+    inputAsset: data.inputAsset,
+    inputAmount: data.inputAmount,
+    outputAsset: data.outputAsset,
+    swapRequestId: data.swapRequestId,
+    dcaParameters: data.dcaParameters,
+    requestType,
+    origin,
+    brokerFees: [],
+  };
+};
+
+const schema = z.union([
+  schema180,
+  schema170.transform(transform170Schema),
+  schema160.transform(transform160Schema).transform(transform170Schema),
+]);
 
 type RequestType = z.output<typeof schema>['requestType'];
 type Origin = z.output<typeof schema>['origin'];
@@ -70,6 +122,37 @@ const getRequestInfo = (requestType: RequestType) => {
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return assertNever(requestType, `unexpected request type: ${(requestType as any).__kind}`);
+};
+
+export const getVaultOriginTxRef = (
+  chain: Chain,
+  origin: Extract<z.output<typeof schema180>['origin'], { __kind: 'Vault' }>,
+) => {
+  const kind = origin.txId.__kind;
+
+  switch (kind) {
+    case 'Evm': {
+      return formatTxRef(chain, origin.txId.value);
+    }
+    case 'Bitcoin': {
+      return formatTxRef(chain, origin.txId.value);
+    }
+    case 'Polkadot': {
+      return formatTxRef(
+        chain,
+        `${origin.txId.value.blockNumber}-${origin.txId.value.extrinsicIndex}`,
+      );
+    }
+    case 'Solana': {
+      // TODO: get signature by account and slot
+      return undefined;
+    }
+    case 'None': {
+      return undefined;
+    }
+    default:
+      return assertUnreachable(kind);
+  }
 };
 
 export const getOriginInfo = async (
@@ -101,7 +184,7 @@ export const getOriginInfo = async (
     return {
       originType: 'VAULT' as const,
       swapDepositChannelId: undefined,
-      depositTransactionRef: formatTxHash(assetConstants[srcAsset].chain, origin.txHash),
+      depositTransactionRef: getVaultOriginTxRef(assetConstants[srcAsset].chain, origin),
     };
   }
 
