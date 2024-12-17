@@ -64,6 +64,7 @@ export default async function openSwapDepositChannel(
       },
       srcAsset,
       destAsset,
+      ccmMessage: input.ccmParams?.message, // aggregators like squid use their router as destination address
       isExpired: false,
     },
   });
