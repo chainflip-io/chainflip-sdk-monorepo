@@ -60,7 +60,7 @@
     "bignumber.js": "^9.1.2",
     "ethers": "^6.13.3",
     "superjson": "^1.13.3",
-    "zod": "^3.23.8"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@trpc/server": "^10.45.2",
