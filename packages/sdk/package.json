@@ -56,7 +56,7 @@
     "@chainflip/solana": "^1.0.3",
     "@chainflip/utils": "^0.4.13",
     "@trpc/client": "^10.45.2",
-    "axios": "^1.7.7",
+    "axios": "^1.7.9",
     "bignumber.js": "^9.1.2",
     "ethers": "^6.13.3",
     "superjson": "^1.13.3",
