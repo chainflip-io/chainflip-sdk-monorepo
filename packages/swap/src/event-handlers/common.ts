@@ -6,7 +6,7 @@ import { bitcoinIngressEgressDepositFinalised as bitcoinSchema170 } from '@chain
 import { Metadata, TypeRegistry } from '@polkadot/types';
 import assert from 'assert';
 import { z } from 'zod';
-import { formatTxHash } from '@/shared/common';
+import { formatTxRef } from '@/shared/common';
 import { Chain } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
 import {
@@ -143,20 +143,20 @@ export const getDepositTxRef = (
       const details = depositDetails as z.output<
         typeof ethereumIngressEgressDepositFinalised
       >['depositDetails'];
-      return formatTxHash(chain, details?.txHashes?.at(0));
+      return formatTxRef(chain, details?.txHashes?.at(0));
     }
     case 'Bitcoin': {
       const details = depositDetails as
         | z.output<typeof bitcoinSchema160>['depositDetails']
         | z.output<typeof bitcoinSchema170>['depositDetails'];
-      return formatTxHash(chain, 'txId' in details ? details.txId : details.id.txId);
+      return formatTxRef(chain, 'txId' in details ? details.txId : details.id.txId);
     }
     case 'Polkadot': {
       const details = depositDetails as z.output<
         typeof polkadotIngressEgressDepositFinalised
       >['depositDetails'];
       if (blockHeight === undefined) return undefined;
-      return formatTxHash(chain, `${blockHeight}-${details}`);
+      return formatTxRef(chain, `${blockHeight}-${details}`);
     }
     case 'Solana':
       assert(depositDetails == null);

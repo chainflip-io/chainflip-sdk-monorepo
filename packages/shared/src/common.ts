@@ -3,17 +3,17 @@ import { hexToBytes, reverseBytes } from '@chainflip/utils/bytes';
 import type { HexString } from '@chainflip/utils/types';
 import { Chain } from './enums';
 
-export function formatTxHash(chain: Chain, txHash: string): string;
-export function formatTxHash(chain: Chain, txHash: string | undefined): string | undefined;
-export function formatTxHash(chain: Chain, txHash: string | undefined) {
-  if (!txHash) return txHash;
+export function formatTxRef(chain: Chain, txRef: string): string;
+export function formatTxRef(chain: Chain, txRef: string | undefined): string | undefined;
+export function formatTxRef(chain: Chain, txRef: string | undefined) {
+  if (!txRef) return txRef;
 
   switch (chain) {
     case 'Bitcoin':
-      return reverseBytes(txHash.slice(2));
+      return reverseBytes(txRef.slice(2));
     case 'Solana':
-      return base58.encode(hexToBytes(txHash as HexString));
+      return base58.encode(hexToBytes(txRef as HexString));
     default:
-      return txHash;
+      return txRef;
   }
 }
