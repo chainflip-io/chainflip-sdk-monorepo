@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/cli",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "",
   "main": "./dist/lib.mjs",
   "types": "./dist/lib.d.mts",
@@ -48,7 +48,7 @@
   },
   "peerDependencies": {
     "axios": "^1.x",
-    "ethers": "^6.13.2"
+    "ethers": "^6.13.3"
   },
   "repository": "https://github.com/chainflip-io/chainflip-sdk-monorepo.git",
   "publishConfig": {
