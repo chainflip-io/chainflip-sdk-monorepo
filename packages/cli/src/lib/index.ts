@@ -6,6 +6,11 @@ export {
   checkVaultAllowance,
 } from '@/shared/vault';
 export {
+  getTokenContractAddress,
+  getStateChainGatewayContractAddress,
+  getVaultContractAddress,
+} from '@/shared/contracts';
+export {
   fundStateChainAccount,
   type FundingNetworkOptions,
   executeRedemption,
