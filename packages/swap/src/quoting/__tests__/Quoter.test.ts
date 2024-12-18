@@ -55,12 +55,14 @@ describe(Quoter, () => {
   }>;
   let server: Server;
   const sockets: Socket[] = [];
+  const keyMap = new Map<string, crypto.KeyObject>();
 
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE private."MarketMaker" CASCADE`;
     oldEnv = { ...env };
     server = new Server().use(authenticate).listen(0);
     quoter = new Quoter(server);
+    keyMap.clear();
 
     jest.mocked(getAssetPrice).mockImplementation((asset) =>
       Promise.resolve(
@@ -80,13 +82,17 @@ describe(Quoter, () => {
     );
 
     connectClient = async (name: string, quotedAssets?: InternalAsset[]) => {
-      const { publicKey, privateKey } = await generateKeyPairAsync('ed25519');
-      await prisma.marketMaker.create({
-        data: {
-          name,
-          publicKey: publicKey.export({ format: 'pem', type: 'spki' }).toString(),
-        },
-      });
+      let privateKey = keyMap.get(name);
+      if (privateKey === undefined) {
+        const keyPair = await generateKeyPairAsync('ed25519');
+        await prisma.marketMaker.create({
+          data: {
+            name,
+            publicKey: keyPair.publicKey.export({ format: 'pem', type: 'spki' }).toString(),
+          },
+        });
+        privateKey = keyPair.privateKey;
+      }
 
       const { port } = server['httpServer'].address() as AddressInfo;
       const timestamp = Date.now();
@@ -207,7 +213,7 @@ describe(Quoter, () => {
 
       const handler = fakeServer.on.mock.calls[0][1];
 
-      const socket = { on: jest.fn(), data: { marketMaker: 'MM' } };
+      const socket = { on: jest.fn(), data: { accountId: 'MM' } };
       const next = jest.fn();
       mockQuoter['quotes$'].subscribe(next);
 
@@ -219,6 +225,12 @@ describe(Quoter, () => {
       callback({ request_id: 'string', range_orders: [] });
 
       expect(next).toHaveBeenCalledTimes(1);
+    });
+
+    it('disconnects duplicate connections', async () => {
+      await expect(connectClient('marketMaker')).resolves.not.toThrow();
+      await expect(connectClient('marketMaker')).rejects.toThrow();
+      await expect(connectClient('marketMaker2')).resolves.not.toThrow();
     });
   });
 
