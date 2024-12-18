@@ -12,7 +12,9 @@ import type { EventHandlerArgs } from './index';
 
 type RequestType170 = z.output<typeof schema170>['requestType'];
 
-const transformRequestType = (old: z.output<typeof schema160>['requestType']): RequestType170 => {
+const transform160RequestType = (
+  old: z.output<typeof schema160>['requestType'],
+): RequestType170 => {
   switch (old.__kind) {
     case 'Regular':
     case 'NetworkFee':
@@ -43,7 +45,7 @@ const transform160Schema = (data: z.output<typeof schema160>): z.output<typeof s
   swapRequestId: data.swapRequestId,
   dcaParameters: data.dcaParameters,
   origin: data.origin,
-  requestType: transformRequestType(data.requestType),
+  requestType: transform160RequestType(data.requestType),
 });
 
 const transform170Schema = (data: z.output<typeof schema170>): z.output<typeof schema180> => {
