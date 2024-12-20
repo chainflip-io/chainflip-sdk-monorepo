@@ -41,14 +41,14 @@ export const estimateSwapDuration = async ({
   const swapDuration = CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS * 2;
 
   // time to sign and broadcast the egress transaction by the validators (avg. taken from grafana metrics)
-  const egressBroadcastSigningDuration = 90;
+  const EGRESS_BROADCAST_SIGNING_DURATION = 90;
 
   // assets are spendable by the user once the egress is included in a block
   const egressInclusionDuration = chainConstants[destChain].blockTimeSeconds;
 
   const depositDuration =
     depositInclusionDuration + depositWitnessDuration + depositWitnessSubmissionDuration;
-  const egressDuration = egressBroadcastSigningDuration + egressInclusionDuration;
+  const egressDuration = EGRESS_BROADCAST_SIGNING_DURATION + egressInclusionDuration;
 
   return {
     durations: {
