@@ -44,7 +44,7 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
 
     // somehow the blockHeight on the event can be slightly lower than the slot of the actual deposit
     // https://linear.app/chainflip/issue/PRO-1893/look-into-solana-ingress-block-height
-    const maxDepositSlot = Number(blockHeight) + 30;
+    const maxDepositSlot = Number(blockHeight) + 50;
 
     try {
       txRef = await findSolanaDepositSignature(
