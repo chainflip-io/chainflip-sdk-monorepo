@@ -1,14 +1,11 @@
 import Redis from 'ioredis';
+import { vi, describe, expect, beforeAll, beforeEach, afterAll, it } from 'vitest';
 import { Chain } from '@/shared/enums';
 import { getPendingBroadcast, getPendingDeposit } from '..';
 import prisma, { Broadcast } from '../../client';
 import logger from '../../utils/logger';
 
-jest.mock('../../config/env', () => ({
-  REDIS_URL: 'redis://localhost:6379',
-}));
-
-jest.mock('../../utils/logger');
+vi.mock('../../utils/logger');
 
 const updateChainTracking = async (data: {
   chain: Chain;
@@ -35,6 +32,7 @@ describe('ingress-egress-tracking', () => {
     await redis.flushall();
     await prisma.chainTracking.deleteMany();
     await prisma.state.deleteMany();
+    vi.resetAllMocks();
   });
 
   afterAll(async () => {
@@ -159,7 +157,7 @@ describe('ingress-egress-tracking', () => {
     });
 
     it('returns null if the redis client throws (non-bitcoin)', async () => {
-      jest.spyOn(Redis.prototype, 'lrange').mockRejectedValueOnce(new Error());
+      vi.spyOn(Redis.prototype, 'lrange').mockRejectedValueOnce(new Error());
       await updateChainTracking({ chain: 'Ethereum', height: 1234567893n });
 
       const deposit = await getPendingDeposit('Flip', '0x1234');
@@ -169,7 +167,7 @@ describe('ingress-egress-tracking', () => {
     });
 
     it('returns null if the redis client throws (bitcoin)', async () => {
-      jest.spyOn(Redis.prototype, 'lrange').mockRejectedValueOnce(new Error());
+      vi.spyOn(Redis.prototype, 'lrange').mockRejectedValueOnce(new Error());
 
       const deposit = await getPendingDeposit('Btc', '');
 
@@ -202,7 +200,7 @@ describe('ingress-egress-tracking', () => {
     });
 
     it('returns null if the client throws an error', async () => {
-      jest.spyOn(Redis.prototype, 'get').mockRejectedValueOnce(new Error());
+      vi.spyOn(Redis.prototype, 'get').mockRejectedValueOnce(new Error());
 
       expect(await getPendingBroadcast(broadcast)).toBeNull();
       expect(logger.error).toHaveBeenCalled();

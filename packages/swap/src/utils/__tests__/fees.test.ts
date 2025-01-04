@@ -1,34 +1,38 @@
+import { describe, it, beforeAll, expect, vi } from 'vitest';
 import { environment, mockRpcResponse, swapRate } from '@/shared/tests/fixtures';
 import { calculateIncludedSwapFees } from '@/swap/utils/fees';
 import prisma from '../../client';
 
-jest.mock('@/shared/consts', () => ({
-  ...jest.requireActual('@/shared/consts'),
-  getPoolsNetworkFeeHundredthPips: jest.fn().mockReturnValue(1000),
-}));
+vi.mock('@/shared/consts', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    getPoolsNetworkFeeHundredthPips: vi.fn().mockReturnValue(1000),
+  };
+});
 
 const INGRESS_FEE = 10;
-mockRpcResponse((url, data) => {
-  if (data.method === 'cf_swap_rate') {
-    return Promise.resolve({
-      data: swapRate({
-        output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
-      }),
-    });
-  }
-  if (data.method === 'cf_environment') {
-    return Promise.resolve({
-      data: environment({
-        ingressFee: `0x${BigInt(INGRESS_FEE).toString(16)}`,
-      }),
-    });
-  }
-
-  throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
-});
 
 describe(calculateIncludedSwapFees, () => {
   beforeAll(async () => {
+    mockRpcResponse((url, data) => {
+      if (data.method === 'cf_swap_rate') {
+        return Promise.resolve({
+          data: swapRate({
+            output: `0x${(BigInt(data.params[2]) * 2n).toString(16)}`,
+          }),
+        });
+      }
+      if (data.method === 'cf_environment') {
+        return Promise.resolve({
+          data: environment({
+            ingressFee: `0x${BigInt(INGRESS_FEE).toString(16)}`,
+          }),
+        });
+      }
+
+      throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+    });
     await prisma.$queryRaw`TRUNCATE TABLE public."Pool" CASCADE`;
     await prisma.pool.createMany({
       data: [

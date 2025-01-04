@@ -1,5 +1,6 @@
 import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   BTC_ADDRESS,
   DOT_ADDRESS,
@@ -48,7 +49,7 @@ describe(networkDepositIgnored, () => {
   });
 
   afterEach(async () => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('handles ignored eth deposits', async () => {
@@ -61,8 +62,8 @@ describe(networkDepositIgnored, () => {
       destAddress: DOT_ADDRESS,
     });
 
-    prisma.swapDepositChannel.findFirst = jest.fn().mockResolvedValueOnce(channel);
-    prisma.failedSwap.create = jest.fn();
+    prisma.swapDepositChannel.findFirst = vi.fn().mockResolvedValueOnce(channel);
+    prisma.failedSwap.create = vi.fn();
 
     await networkDepositIgnored('Ethereum')({
       prisma,
@@ -103,8 +104,8 @@ describe(networkDepositIgnored, () => {
       destAddress: ETH_ADDRESS,
     });
 
-    prisma.swapDepositChannel.findFirst = jest.fn().mockResolvedValueOnce(channel);
-    prisma.failedSwap.create = jest.fn();
+    prisma.swapDepositChannel.findFirst = vi.fn().mockResolvedValueOnce(channel);
+    prisma.failedSwap.create = vi.fn();
 
     await networkDepositIgnored('Polkadot')({
       prisma,
@@ -145,8 +146,8 @@ describe(networkDepositIgnored, () => {
       destAddress: ETH_ADDRESS,
     });
 
-    prisma.swapDepositChannel.findFirst = jest.fn().mockResolvedValueOnce(channel);
-    prisma.failedSwap.create = jest.fn();
+    prisma.swapDepositChannel.findFirst = vi.fn().mockResolvedValueOnce(channel);
+    prisma.failedSwap.create = vi.fn();
 
     await networkDepositIgnored('Bitcoin')({
       prisma,

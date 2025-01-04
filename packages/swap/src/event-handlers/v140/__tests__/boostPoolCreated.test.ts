@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from 'vitest';
 import prisma from '@/swap/client';
 import { boostPoolCreated } from '../boostPoolCreated';
 

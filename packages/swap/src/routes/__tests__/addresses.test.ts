@@ -1,18 +1,22 @@
 import { Server } from 'http';
 import request from 'supertest';
+import { describe, it, beforeEach, expect, beforeAll, afterAll } from 'vitest';
 import prisma from '../../client';
 import app from '../../server';
 
 describe('server', () => {
   let server: Server;
 
-  beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE private."BlockedAddress"`;
+  beforeAll(() => {
     server = app.listen(0);
   });
 
-  afterEach((cb) => {
-    server.close(cb);
+  beforeEach(async () => {
+    await prisma.$queryRaw`TRUNCATE TABLE private."BlockedAddress"`;
+  });
+
+  afterAll(async () => {
+    server.close();
   });
 
   describe('GET /addresses/blocked', () => {

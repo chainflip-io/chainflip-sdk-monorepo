@@ -2,9 +2,12 @@
   "compilerOptions": {
     "baseUrl": ".",
     "esModuleInterop": true,
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
     "paths": {
       "@/shared/*": ["./packages/shared/src/*"],
-      "@/swap/*": ["./packages/swap/src/*"]
+      "@/swap/*": ["./packages/swap/src/*"],
+      "vite": ["node_modules/vite"]
     }
   }
 }

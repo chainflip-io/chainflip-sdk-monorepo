@@ -1,15 +1,20 @@
 import { deferredPromise } from '@chainflip/utils/async';
 import axios from 'axios';
+import { vi, describe, expect, it, beforeEach } from 'vitest';
 import { InternalAsset } from '@/shared/enums';
 import { coinGeckoIdMap, PriceCache } from '..';
 import logger from '../../utils/logger';
 
-jest.mock('axios', () => ({
-  create() {
-    return this;
+vi.mock('axios', async () => ({
+  default: {
+    create() {
+      return this;
+    },
+    get: vi.fn(),
+    post: vi.fn(),
   },
-  get: jest.fn(),
 }));
+
 const NOW = 1711457574588;
 
 const priceMap = {
@@ -26,10 +31,14 @@ const priceMap = {
 } as const satisfies Record<InternalAsset, number>;
 
 describe(PriceCache, () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('fetches all the assets at once', async () => {
     const cache = new PriceCache();
 
-    const getSpy = jest.mocked(axios.get).mockRejectedValue(Error('unhandled mock'));
+    const getSpy = vi.mocked(axios.get).mockRejectedValue(Error('unhandled mock'));
 
     getSpy.mockResolvedValueOnce({
       data: Object.fromEntries(
@@ -47,8 +56,8 @@ describe(PriceCache, () => {
 
   it('caches the prices for 30 seconds', async () => {
     const cache = new PriceCache();
-    const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(NOW);
-    const getSpy = jest.mocked(axios.get).mockRejectedValue(Error('unhandled mock'));
+    const nowSpy = vi.spyOn(Date, 'now').mockReturnValue(NOW);
+    const getSpy = vi.mocked(axios.get).mockRejectedValue(Error('unhandled mock'));
 
     getSpy.mockResolvedValueOnce({
       data: Object.fromEntries(
@@ -69,18 +78,20 @@ describe(PriceCache, () => {
   it('only allows one request to refetch at a time', async () => {
     const cache = new PriceCache();
 
-    const getSpy = jest.mocked(axios.get).mockRejectedValue(Error('unhandled mock'));
+    const getSpy = vi.mocked(axios.get).mockRejectedValue(Error('unhandled mock'));
 
     const { promise, resolve } = deferredPromise<void>();
 
+    const data = Object.fromEntries(
+      Object.entries(coinGeckoIdMap).map(([asset, id]) => [
+        id,
+        { usd: priceMap[asset as InternalAsset] as number | undefined },
+      ]),
+    );
+
     getSpy.mockReturnValueOnce(
       promise.then(() => ({
-        data: Object.fromEntries(
-          Object.entries(coinGeckoIdMap).map(([asset, id]) => [
-            id,
-            { usd: priceMap[asset as InternalAsset] },
-          ]),
-        ),
+        data,
       })),
     );
 
@@ -97,10 +108,10 @@ describe(PriceCache, () => {
   });
 
   it('logs an error when a price is missing', async () => {
-    const errorSpy = jest.spyOn(logger, 'error');
+    const errorSpy = vi.spyOn(logger, 'error');
     const cache = new PriceCache();
 
-    const getSpy = jest.mocked(axios.get).mockRejectedValue(Error('unhandled mock'));
+    const getSpy = vi.mocked(axios.get).mockRejectedValue(Error('unhandled mock'));
 
     const data = Object.fromEntries(
       Object.entries(coinGeckoIdMap).map(([asset, id]) => [
@@ -119,8 +130,8 @@ describe(PriceCache, () => {
 
   it('refetches prices', async () => {
     const cache = new PriceCache();
-    const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(NOW);
-    const getSpy = jest.mocked(axios.get).mockRejectedValue(Error('unhandled mock'));
+    const nowSpy = vi.spyOn(Date, 'now').mockReturnValue(NOW);
+    const getSpy = vi.mocked(axios.get).mockRejectedValue(Error('unhandled mock'));
 
     const data = Object.fromEntries(
       Object.entries(coinGeckoIdMap).map(([asset, id]) => [

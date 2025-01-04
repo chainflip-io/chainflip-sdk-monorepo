@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import { processEvents } from './utils';
 import prisma from '../../client';
 

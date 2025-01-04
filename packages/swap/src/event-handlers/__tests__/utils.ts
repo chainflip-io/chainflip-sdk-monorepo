@@ -2,6 +2,7 @@ import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import assert from 'assert';
 import { GraphQLClient } from 'graphql-request';
+import { vi, expect } from 'vitest';
 import { z } from 'zod';
 import { InternalAssets, Chain, Chains, assetConstants } from '@/shared/enums';
 import { actionSchema } from '@/shared/parsers';
@@ -500,7 +501,7 @@ export const processEvents = async (
 
   let previousHeight = startingHeight + 1;
 
-  jest.spyOn(GraphQLClient.prototype, 'request').mockImplementation(async (...args) => {
+  vi.spyOn(GraphQLClient.prototype, 'request').mockImplementation(async (...args) => {
     if (JSON.stringify(args[0]) === JSON.stringify(GET_CALL)) {
       const [, vars] = args as unknown as [unknown, Record<string, unknown> | undefined];
 

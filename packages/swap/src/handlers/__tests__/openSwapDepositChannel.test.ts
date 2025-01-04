@@ -1,3 +1,4 @@
+import { vi, describe, it, beforeAll, beforeEach, afterEach, expect } from 'vitest';
 import * as broker from '@/shared/broker';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
@@ -5,23 +6,19 @@ import prisma from '../../client';
 import disallowChannel from '../../utils/disallowChannel';
 import openSwapDepositChannel from '../openSwapDepositChannel';
 
-jest.mock('@/shared/broker', () => ({
-  requestSwapDepositAddress: jest.fn(),
+vi.mock('@/shared/broker', () => ({
+  requestSwapDepositAddress: vi.fn(),
 }));
 
-jest.mock('../../utils/disallowChannel', () => ({
-  __esModule: true,
-  default: jest.fn().mockResolvedValue(false),
+vi.mock('../../utils/disallowChannel', () => ({
+  default: vi.fn().mockResolvedValue(false),
 }));
 
 describe(openSwapDepositChannel, () => {
   let oldEnv: typeof env;
 
   beforeAll(async () => {
-    jest
-      .useFakeTimers({ doNotFake: ['nextTick', 'setImmediate', 'setTimeout'] })
-      .setSystemTime(new Date('2022-01-01'));
-
+    vi.useFakeTimers({ toFake: ['performance', 'Date'] }).setSystemTime(new Date('2022-01-01'));
     await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;
     await prisma.chainTracking.create({
       data: {
@@ -44,7 +41,7 @@ describe(openSwapDepositChannel, () => {
 
   it('creates channel and stores it in the database', async () => {
     mockRpcResponse({ data: environment() });
-    jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+    vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
       channelId: BigInt('888'),
@@ -76,7 +73,7 @@ describe(openSwapDepositChannel, () => {
       srcChainExpiryBlock: 1000n,
       channelOpeningFee: 100n,
     });
-    expect(jest.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
+    expect(vi.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
     expect(await prisma.swapDepositChannel.findFirst({ include: { quote: true } })).toMatchSnapshot(
       {
         id: expect.any(BigInt),
@@ -87,7 +84,7 @@ describe(openSwapDepositChannel, () => {
 
   it('creates channel and stores channel and quote in the database', async () => {
     mockRpcResponse({ data: environment() });
-    jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+    vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
       channelId: BigInt('888'),
@@ -125,7 +122,7 @@ describe(openSwapDepositChannel, () => {
       srcChainExpiryBlock: 1000n,
       channelOpeningFee: 100n,
     });
-    expect(jest.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
+    expect(vi.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
     expect(await prisma.swapDepositChannel.findFirst({ include: { quote: true } })).toMatchSnapshot(
       {
         id: expect.any(BigInt),
@@ -140,7 +137,7 @@ describe(openSwapDepositChannel, () => {
 
   it('creates channel with boost and dca and stores quote in the database', async () => {
     mockRpcResponse({ data: environment() });
-    jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+    vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
       channelId: BigInt('888'),
@@ -182,7 +179,7 @@ describe(openSwapDepositChannel, () => {
       srcChainExpiryBlock: 1000n,
       channelOpeningFee: 100n,
     });
-    expect(jest.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
+    expect(vi.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
     expect(await prisma.swapDepositChannel.findFirst({ include: { quote: true } })).toMatchSnapshot(
       {
         id: expect.any(BigInt),
@@ -197,7 +194,7 @@ describe(openSwapDepositChannel, () => {
 
   it('creates channel with ccmParams and stores it in the database', async () => {
     mockRpcResponse({ data: environment() });
-    jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+    vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
       channelId: BigInt('909'),
@@ -233,7 +230,7 @@ describe(openSwapDepositChannel, () => {
       srcChainExpiryBlock: 1000n,
       channelOpeningFee: 10n,
     });
-    expect(jest.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
+    expect(vi.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
     expect(await prisma.swapDepositChannel.findFirst()).toMatchSnapshot({
       id: expect.any(BigInt),
       createdAt: expect.any(Date),
@@ -242,7 +239,7 @@ describe(openSwapDepositChannel, () => {
 
   it('creates channel with fill or kill params and stores it in the database', async () => {
     mockRpcResponse({ data: environment() });
-    jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+    vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
       channelId: BigInt('909'),
@@ -278,7 +275,7 @@ describe(openSwapDepositChannel, () => {
       srcChainExpiryBlock: 1000n,
       channelOpeningFee: 10n,
     });
-    expect(jest.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
+    expect(vi.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
     expect(await prisma.swapDepositChannel.findFirst()).toMatchSnapshot({
       id: expect.any(BigInt),
       createdAt: expect.any(Date),
@@ -287,7 +284,7 @@ describe(openSwapDepositChannel, () => {
 
   it('creates channel with boost fee and stores it in the database', async () => {
     mockRpcResponse({ data: environment() });
-    jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+    vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
       channelId: BigInt('909'),
@@ -320,7 +317,7 @@ describe(openSwapDepositChannel, () => {
       srcChainExpiryBlock: 1000n,
       channelOpeningFee: 0n,
     });
-    expect(jest.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
+    expect(vi.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
     expect(await prisma.swapDepositChannel.findFirst()).toMatchSnapshot({
       id: expect.any(BigInt),
       createdAt: expect.any(Date),
@@ -329,7 +326,7 @@ describe(openSwapDepositChannel, () => {
   });
 
   it('rejects sanctioned addresses', async () => {
-    jest.mocked(disallowChannel).mockResolvedValueOnce(true);
+    vi.mocked(disallowChannel).mockResolvedValueOnce(true);
 
     await expect(
       openSwapDepositChannel({
@@ -407,7 +404,7 @@ describe(openSwapDepositChannel, () => {
 
     mockRpcResponse({ data: environment() });
     for (let i = 0; i < 5; i += 1) {
-      jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+      vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
         sourceChainExpiryBlock: BigInt('1000'),
         address: `address${i}`,
         channelId: BigInt('888'),
@@ -417,7 +414,7 @@ describe(openSwapDepositChannel, () => {
       await expect(openSwapDepositChannel(opts)).resolves.not.toThrow();
     }
 
-    jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+    vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
       channelId: BigInt('888'),

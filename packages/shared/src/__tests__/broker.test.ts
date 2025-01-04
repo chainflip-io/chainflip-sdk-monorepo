@@ -1,8 +1,6 @@
-import * as base58 from '@chainflip/utils/base58';
-import { bytesToHex } from '@chainflip/utils/bytes';
-import * as ss58 from '@chainflip/utils/ss58';
+import { describe, it, expect } from 'vitest';
 import * as broker from '../broker';
-import { Assets, chainConstants } from '../enums';
+import { Assets } from '../enums';
 import { mockRpcResponse } from '../tests/fixtures';
 
 describe(broker.requestSwapDepositAddress, () => {

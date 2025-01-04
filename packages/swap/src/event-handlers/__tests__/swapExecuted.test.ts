@@ -1,11 +1,15 @@
+import { vi, describe, it, expect, beforeEach, beforeAll } from 'vitest';
 import { InternalAssets } from '@/shared/enums';
 import prisma from '../../client';
 import swapExecuted, { SwapExecutedArgs } from '../swapExecuted';
 
-jest.mock('@/shared/consts', () => ({
-  ...jest.requireActual('@/shared/consts'),
-  getPoolsNetworkFeeHundredthPips: jest.fn().mockReturnValue(1000),
-}));
+vi.mock('@/shared/consts', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    getPoolsNetworkFeeHundredthPips: vi.fn().mockReturnValue(1000),
+  };
+});
 
 const solArgs: SwapExecutedArgs = {
   swapId: '641',

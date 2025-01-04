@@ -1,17 +1,20 @@
+import { describe, it, expect, beforeAll } from 'vitest';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import { estimateSwapDuration } from '@/swap/utils/swap';
 
-mockRpcResponse((url, data) => {
-  if (data.method === 'cf_environment') {
-    return Promise.resolve({
-      data: environment(),
-    });
-  }
-
-  throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
-});
-
 describe(estimateSwapDuration, () => {
+  beforeAll(() => {
+    mockRpcResponse((url, data) => {
+      if (data.method === 'cf_environment') {
+        return Promise.resolve({
+          data: environment(),
+        });
+      }
+
+      throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+    });
+  });
+
   it.each([
     ['Btc', 'Btc', { deposit: 600 + 2 * 600, swap: 12, egress: 600 }] as const,
     ['Btc', 'Eth', { deposit: 600 + 2 * 600, swap: 12, egress: 12 }] as const,

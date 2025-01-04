@@ -1,12 +1,16 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import metadataMock from './metadata.json';
 import { DOT_ADDRESS, swapEgressIgnoredMock } from './utils';
 import prisma from '../../client';
 import swapEgressIgnored from '../swapEgressIgnored';
 
-jest.mock('@/shared/rpc', () => ({
-  getMetadata: jest.fn().mockResolvedValue(metadataMock.result),
-}));
-
+vi.mock('@/shared/rpc', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    getMetadata: vi.fn().mockResolvedValue(metadataMock.result),
+  };
+});
 const { event, block } = swapEgressIgnoredMock;
 
 describe(swapEgressIgnored, () => {

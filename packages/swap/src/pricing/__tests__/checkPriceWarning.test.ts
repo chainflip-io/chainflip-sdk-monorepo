@@ -1,9 +1,10 @@
+import { vi, describe, expect, it } from 'vitest';
 import { getAssetPrice } from '..';
 import env from '../../config/env';
 import { checkPriceWarning } from '../checkPriceWarning';
 
-jest.mock('../index.ts', () => ({
-  getAssetPrice: jest.fn(),
+vi.mock('../index.ts', () => ({
+  getAssetPrice: vi.fn(),
 }));
 
 describe('checkPriceWarning', () => {
@@ -15,8 +16,7 @@ describe('checkPriceWarning', () => {
     const srcAmount = BigInt(1e18); // 1 eth
     const destAmount = BigInt(0.06e8); // 0.06 btc
 
-    jest
-      .mocked(getAssetPrice)
+    vi.mocked(getAssetPrice)
       .mockResolvedValueOnce(3048) // eth price
       .mockResolvedValueOnce(51000); // btc price
 
@@ -37,8 +37,7 @@ describe('checkPriceWarning', () => {
     const srcAmount = BigInt(1e18); // 1 eth
     const destAmount = BigInt(0.053e8); // 0.053 btc
 
-    jest
-      .mocked(getAssetPrice)
+    vi.mocked(getAssetPrice)
       .mockResolvedValueOnce(3048) // eth price
       .mockResolvedValueOnce(51000); // btc price
 

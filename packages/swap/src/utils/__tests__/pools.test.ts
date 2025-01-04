@@ -1,11 +1,15 @@
+import { describe, it, beforeAll, expect, vi } from 'vitest';
 import { InternalAssets } from '@/shared/enums';
 import { getPools } from '@/swap/utils/pools';
 import prisma from '../../client';
 
-jest.mock('@/shared/consts', () => ({
-  ...jest.requireActual('@/shared/consts'),
-  getPoolsNetworkFeeHundredthPips: jest.fn().mockReturnValue(1000),
-}));
+vi.mock('@/shared/consts', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    getPoolsNetworkFeeHundredthPips: vi.fn().mockReturnValue(1000),
+  };
+});
 
 describe('pools', () => {
   describe(getPools, () => {

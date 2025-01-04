@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 /* eslint-disable max-classes-per-file */
 import { VoidSigner } from 'ethers';
+import { describe, it, expect, vi } from 'vitest';
 import { Assets, ChainflipNetworks, Chains } from '../../enums';
 import executeSwap from '../executeSwap';
 import { ExecuteSwapParams } from '../index';
@@ -27,7 +28,7 @@ class MockERC20 {
   }
 }
 
-jest.mock('../../abis/factories/Vault__factory', () => ({
+vi.mock('../../abis/factories/Vault__factory', () => ({
   Vault__factory: class {
     static connect(address: string) {
       return new MockVault(address);
@@ -35,7 +36,7 @@ jest.mock('../../abis/factories/Vault__factory', () => ({
   },
 }));
 
-jest.mock('../../abis/factories/ERC20__factory', () => ({
+vi.mock('../../abis/factories/ERC20__factory', () => ({
   ERC20__factory: class {
     static connect() {
       return new MockERC20();
@@ -81,8 +82,8 @@ describe(executeSwap, () => {
       srcChain: Chains.Ethereum,
     },
   ] as Omit<ExecuteSwapParams, 'amount'>[])('submits a native swap (%O)', async (params) => {
-    const wait = jest.fn().mockResolvedValue({ status: 1 });
-    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapNative').mockResolvedValue({
+    const wait = vi.fn().mockResolvedValue({ status: 1 });
+    const swapSpy = vi.spyOn(MockVault.prototype, 'xSwapNative').mockResolvedValue({
       hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
       wait,
     });
@@ -134,16 +135,16 @@ describe(executeSwap, () => {
       },
     ]),
   ] as Omit<ExecuteSwapParams, 'amount'>[])('submits a token swap (%O)', async (params) => {
-    const wait = jest.fn().mockResolvedValue({ status: 1 });
-    const approveSpy = jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({
+    const wait = vi.fn().mockResolvedValue({ status: 1 });
+    const approveSpy = vi.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({
       hash: '0x69e038ca41d2c7902c00f708afa52c1c8d8f9a779003979c814809d39fa6b9db',
       wait,
     });
-    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapToken').mockResolvedValue({
+    const swapSpy = vi.spyOn(MockVault.prototype, 'xSwapToken').mockResolvedValue({
       hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
       wait,
     });
-    const allowanceSpy = jest
+    const allowanceSpy = vi
       .spyOn(MockERC20.prototype, 'allowance')
       .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
 
@@ -166,15 +167,15 @@ describe(executeSwap, () => {
   });
 
   it('submits a token swap with sufficient approval', async () => {
-    const wait = jest.fn().mockResolvedValue({ status: 1 });
-    const approveSpy = jest
+    const wait = vi.fn().mockResolvedValue({ status: 1 });
+    const approveSpy = vi
       .spyOn(MockERC20.prototype, 'approve')
       .mockRejectedValue(Error('unmocked call'));
-    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapToken').mockResolvedValue({
+    const swapSpy = vi.spyOn(MockVault.prototype, 'xSwapToken').mockResolvedValue({
       hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
       wait,
     });
-    const allowanceSpy = jest
+    const allowanceSpy = vi
       .spyOn(MockERC20.prototype, 'allowance')
       .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
 
@@ -204,16 +205,16 @@ describe(executeSwap, () => {
   });
 
   it('can be invoked with localnet options', async () => {
-    const wait = jest.fn().mockResolvedValue({ status: 1 });
-    const approveSpy = jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({
+    const wait = vi.fn().mockResolvedValue({ status: 1 });
+    const approveSpy = vi.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({
       hash: '0x69e038ca41d2c7902c00f708afa52c1c8d8f9a779003979c814809d39fa6b9db',
       wait,
     });
-    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapToken').mockResolvedValue({
+    const swapSpy = vi.spyOn(MockVault.prototype, 'xSwapToken').mockResolvedValue({
       hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
       wait,
     });
-    const allowanceSpy = jest
+    const allowanceSpy = vi
       .spyOn(MockERC20.prototype, 'allowance')
       .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
 
@@ -243,8 +244,8 @@ describe(executeSwap, () => {
   });
 
   it('accepts a nonce', async () => {
-    const wait = jest.fn().mockResolvedValue({ status: 1 });
-    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapNative').mockResolvedValue({
+    const wait = vi.fn().mockResolvedValue({ status: 1 });
+    const swapSpy = vi.spyOn(MockVault.prototype, 'xSwapNative').mockResolvedValue({
       hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
       wait,
     });
@@ -273,8 +274,8 @@ describe(executeSwap, () => {
   });
 
   it('allows to not wait for transaction inclusion', async () => {
-    const wait = jest.fn().mockResolvedValue(null);
-    const swapSpy = jest.spyOn(MockVault.prototype, 'xSwapNative').mockResolvedValue({
+    const wait = vi.fn().mockResolvedValue(null);
+    const swapSpy = vi.spyOn(MockVault.prototype, 'xSwapNative').mockResolvedValue({
       hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
       wait,
     });
@@ -475,8 +476,8 @@ describe(executeSwap, () => {
       ccmParams: { message: '0xdeadc0de', gasBudget: '101' },
     },
   ])('submits a native call (%O)', async (params) => {
-    const wait = jest.fn().mockResolvedValue({ status: 1 });
-    const callSpy = jest.spyOn(MockVault.prototype, 'xCallNative').mockResolvedValue({
+    const wait = vi.fn().mockResolvedValue({ status: 1 });
+    const callSpy = vi.spyOn(MockVault.prototype, 'xCallNative').mockResolvedValue({
       hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
       wait,
     });
@@ -526,16 +527,16 @@ describe(executeSwap, () => {
         ] as const,
     ),
   ])('submits a token call (%O)', async (params) => {
-    const wait = jest.fn().mockResolvedValue({ status: 1 });
-    const approveSpy = jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({
+    const wait = vi.fn().mockResolvedValue({ status: 1 });
+    const approveSpy = vi.spyOn(MockERC20.prototype, 'approve').mockResolvedValue({
       hash: '0x69e038ca41d2c7902c00f708afa52c1c8d8f9a779003979c814809d39fa6b9db',
       wait,
     });
-    const callSpy = jest.spyOn(MockVault.prototype, 'xCallToken').mockResolvedValue({
+    const callSpy = vi.spyOn(MockVault.prototype, 'xCallToken').mockResolvedValue({
       hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
       wait,
     });
-    const allowanceSpy = jest
+    const allowanceSpy = vi
       .spyOn(MockERC20.prototype, 'allowance')
       .mockResolvedValueOnce(BigInt(Number.MAX_SAFE_INTEGER - 1));
 

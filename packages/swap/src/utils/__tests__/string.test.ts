@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { compareNumericStrings, Comparison } from '../string';
 
 describe(compareNumericStrings, () => {

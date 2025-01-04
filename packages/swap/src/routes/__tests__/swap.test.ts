@@ -1,6 +1,7 @@
 import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
 import request from 'supertest';
+import { describe, it, beforeEach, afterEach, expect, vi, beforeAll, afterAll } from 'vitest';
 import * as broker from '@/shared/broker';
 import { Assets, getInternalAssets } from '@/shared/enums';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
@@ -20,27 +21,27 @@ import { getPendingBroadcast } from '../../ingress-egress-tracking';
 import app from '../../server';
 import { State } from '../swap';
 
-jest.mock('@/shared/rpc', () => ({
-  ...jest.requireActual('@/shared/rpc'),
-  getMetadata: jest.fn().mockResolvedValue(metadata.result),
+vi.mock('@/shared/rpc', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    getMetadata: vi.fn().mockResolvedValue(metadata.result),
+  };
+});
+
+vi.mock('../../utils/disallowChannel', () => ({
+  default: vi.fn().mockResolvedValue(false),
 }));
 
-jest.mock('../../utils/disallowChannel', () => ({
-  __esModule: true,
-  default: jest.fn().mockResolvedValue(false),
+vi.mock('timers/promises', () => ({
+  setTimeout: vi.fn().mockResolvedValue(undefined),
 }));
 
-jest.mock('timers/promises', () => ({
-  setTimeout: jest.fn().mockResolvedValue(undefined),
+vi.mock('../../ingress-egress-tracking');
+
+vi.mock('@/shared/broker', () => ({
+  requestSwapDepositAddress: vi.fn().mockRejectedValue(Error('unhandled mock')),
 }));
-
-jest.mock('../../ingress-egress-tracking');
-
-jest.mock('@/shared/broker', () => ({
-  requestSwapDepositAddress: jest.fn().mockRejectedValue(Error('unhandled mock')),
-}));
-
-mockRpcResponse({ data: environment() });
 
 type Mutable<T> = {
   -readonly [K in keyof T]: Mutable<T[K]> extends infer O
@@ -364,34 +365,35 @@ const { swapRequestId } = swapEventMap['Swapping.SwapRequested'].args;
 
 describe('server', () => {
   let server: Server;
-  jest.setTimeout(1000);
+  vi.setConfig({ testTimeout: 1000 });
 
-  beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", private."DepositChannel", "SwapRequest", "Swap", "Egress", "Broadcast", "FailedSwap", "StateChainError", "IgnoredEgress" CASCADE`;
-    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;
+  beforeAll(() => {
+    mockRpcResponse({ data: environment() });
     server = app.listen(0);
   });
 
-  afterEach((cb) => {
-    server.close(cb);
-  });
+  afterAll(
+    async () =>
+      new Promise<void>((done) => {
+        server.close();
+        done();
+      }),
+  );
 
   describe('GET /swaps/:id', () => {
     let oldEnv: typeof env;
 
     beforeEach(async () => {
       const time = new Date('2022-01-01');
-      jest
-        .useFakeTimers({ doNotFake: ['nextTick', 'setImmediate', 'setTimeout'] })
-        .setSystemTime(time);
-      await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel", "SwapRequest", "Pool", "ChainTracking" CASCADE`;
+      vi.useFakeTimers({ toFake: ['performance'] }).setSystemTime(time);
+      await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", private."DepositChannel", "SwapRequest", "Swap", "Egress", "Broadcast", "FailedSwap", "StateChainError", "IgnoredEgress" , "ChainTracking", "Pool" CASCADE`;
       await createChainTrackingInfo(time);
       await createPools();
       oldEnv = { ...env };
     });
 
     afterEach(() => {
-      jest.clearAllTimers();
+      vi.clearAllTimers();
       Object.assign(env, oldEnv);
     });
 
@@ -862,7 +864,7 @@ describe('server', () => {
     });
 
     it(`retrieves a swap in ${State.Broadcasted} status`, async () => {
-      jest.mocked(getPendingBroadcast).mockResolvedValueOnce({
+      vi.mocked(getPendingBroadcast).mockResolvedValueOnce({
         tx_out_id: { hash: '0xdeadbeef' },
       });
 
@@ -1561,6 +1563,9 @@ describe('server', () => {
   });
 
   describe('POST /swaps', () => {
+    beforeEach(async () => {
+      await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", private."DepositChannel", "SwapRequest", "Swap", "Egress", "Broadcast", "FailedSwap", "StateChainError", "IgnoredEgress" , "ChainTracking", "Pool" CASCADE`;
+    });
     const ethToDotSwapRequestBody = {
       srcAsset: Assets.ETH,
       srcChain: 'Ethereum',
@@ -1596,7 +1601,7 @@ describe('server', () => {
       const channelNativeId = 200n;
       const address = 'THE_INGRESS_ADDRESS';
       const sourceChainExpiryBlock = 1_000_000n;
-      jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+      vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
         address,
         issuedBlock,
         channelId: channelNativeId,
@@ -1643,7 +1648,7 @@ describe('server', () => {
         depositAddress: oldAddress,
       });
 
-      jest.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+      vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
         address: newAddress,
         issuedBlock,
         channelId: channelNativeId,

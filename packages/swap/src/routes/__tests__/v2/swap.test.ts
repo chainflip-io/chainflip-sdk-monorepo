@@ -1,6 +1,7 @@
 import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
 import request from 'supertest';
+import { vi, describe, it, beforeEach, afterEach, expect, beforeAll, afterAll } from 'vitest';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
 import { SwapEgressIgnoredArgs } from '@/swap/event-handlers/swapEgressIgnored';
@@ -28,27 +29,27 @@ const incrementId = (obj: Mutable<(typeof swapEventMap)[keyof typeof swapEventMa
   throw new Error('no incremental id in event');
 };
 
-jest.mock('@/shared/rpc', () => ({
-  ...jest.requireActual('@/shared/rpc'),
-  getMetadata: jest.fn().mockResolvedValue(metadata.result),
+vi.mock('@/shared/rpc', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    getMetadata: vi.fn().mockResolvedValue(metadata.result),
+  };
+});
+
+vi.mock('../../../utils/disallowChannel', () => ({
+  default: vi.fn().mockResolvedValue(false),
 }));
 
-jest.mock('../../../utils/disallowChannel', () => ({
-  __esModule: true,
-  default: jest.fn().mockResolvedValue(false),
+vi.mock('timers/promises', () => ({
+  setTimeout: vi.fn().mockResolvedValue(undefined),
 }));
 
-jest.mock('timers/promises', () => ({
-  setTimeout: jest.fn().mockResolvedValue(undefined),
+vi.mock('../../../ingress-egress-tracking');
+
+vi.mock('@/shared/broker', () => ({
+  requestSwapDepositAddress: vi.fn().mockRejectedValue(Error('unhandled mock')),
 }));
-
-jest.mock('../../../ingress-egress-tracking');
-
-jest.mock('@/shared/broker', () => ({
-  requestSwapDepositAddress: jest.fn().mockRejectedValue(Error('unhandled mock')),
-}));
-
-mockRpcResponse({ data: environment() });
 
 type Mutable<T> = {
   -readonly [K in keyof T]: Mutable<T[K]> extends infer O
@@ -404,34 +405,35 @@ const { swapRequestId } = swapEventMap['Swapping.SwapRequested'].args;
 
 describe('server', () => {
   let server: Server;
-  jest.setTimeout(1000);
+  vi.setConfig({ testTimeout: 5000 });
 
-  beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", private."DepositChannel", "SwapRequest", "Swap", "Egress", "Broadcast", "FailedSwap", "StateChainError", "IgnoredEgress" CASCADE`;
-    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;
+  beforeAll(async () => {
+    mockRpcResponse({ data: environment() });
     server = app.listen(0);
   });
 
-  afterEach((cb) => {
-    server.close(cb);
-  });
+  afterAll(
+    async () =>
+      new Promise<void>((done) => {
+        server.close();
+        done();
+      }),
+  );
 
   describe('GET /v2/swaps/:id', () => {
     let oldEnv: typeof env;
 
     beforeEach(async () => {
       const time = new Date('2022-01-01');
-      jest
-        .useFakeTimers({ doNotFake: ['nextTick', 'setImmediate', 'setTimeout'] })
-        .setSystemTime(time);
-      await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel", "SwapRequest", "Pool", "ChainTracking" CASCADE`;
+      vi.useFakeTimers({ toFake: ['performance'] }).setSystemTime(time);
+      await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel", private."DepositChannel", "Swap", "FailedSwap", "IgnoredEgress", "StateChainError", "SwapRequest", "Pool", "ChainTracking" CASCADE`;
       await createChainTrackingInfo(time);
       await createPools();
       oldEnv = { ...env };
     });
 
     afterEach(() => {
-      jest.clearAllTimers();
+      vi.clearAllTimers();
       Object.assign(env, oldEnv);
     });
 
@@ -568,7 +570,7 @@ describe('server', () => {
     });
 
     it(`retrieves a swap in ${StateV2.Receiving} status`, async () => {
-      jest.mocked(getPendingDeposit).mockResolvedValueOnce({
+      vi.mocked(getPendingDeposit).mockResolvedValueOnce({
         amount: '1500000000000000000',
         transactionConfirmations: 2,
         transactionHash: '0x1234',
@@ -688,7 +690,7 @@ describe('server', () => {
     });
 
     it(`retrieves a swap in ${StateV2.Sent} status`, async () => {
-      jest.mocked(getPendingBroadcast).mockResolvedValueOnce({
+      vi.mocked(getPendingBroadcast).mockResolvedValueOnce({
         tx_ref: '0xdeadbeef',
       } as any);
 
@@ -875,6 +877,7 @@ describe('server', () => {
         .match(/.{2}/g)
         ?.reverse()
         .join('');
+
       const { body, status } = await request(server).get(`/v2/swaps/${txHash}`);
 
       expect(status).toBe(200);

@@ -1,4 +1,5 @@
 import { VoidSigner } from 'ethers';
+import { describe, it, expect } from 'vitest';
 import { ADDRESSES } from '../../consts';
 import { getStateChainGateway } from '../utils';
 

@@ -1,4 +1,5 @@
 import { GraphQLClient } from 'graphql-request';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import prisma from '../client';
 import { DOT_ADDRESS } from '../event-handlers/__tests__/utils';
 import { GetBatchQuery } from '../gql/generated/graphql';
@@ -32,7 +33,7 @@ describe(processBlocks, () => {
       update: { height: 1 },
     });
 
-    const requestSpy = jest
+    const requestSpy = vi
       .spyOn(GraphQLClient.prototype, 'request')
       .mockResolvedValueOnce({
         blocks: {

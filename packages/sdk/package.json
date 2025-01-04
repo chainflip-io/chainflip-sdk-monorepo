@@ -4,14 +4,14 @@
   "description": "",
   "exports": {
     "./swap": {
+      "types": "./dist/swap.d.ts",
       "import": "./dist/swap.mjs",
-      "require": "./dist/swap.js",
-      "types": "./dist/swap.d.ts"
+      "require": "./dist/swap.js"
     },
     "./funding": {
+      "types": "./dist/funding.d.ts",
       "import": "./dist/funding.mjs",
-      "require": "./dist/funding.js",
-      "types": "./dist/funding.d.ts"
+      "require": "./dist/funding.js"
     }
   },
   "typesVersions": {
@@ -29,7 +29,7 @@
     "README.md"
   ],
   "scripts": {
-    "test": "jest --forceExit",
+    "test": "vitest",
     "test:ci": "CI=1 jest --forceExit",
     "build": "rm -rf dist && tsup",
     "eslint:check": "pnpm eslint --max-warnings 0 './**/*.ts'",

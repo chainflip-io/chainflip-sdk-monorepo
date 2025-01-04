@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from 'vitest';
 import { newPoolCreatedMock, poolFeeSetMock } from './utils';
 import prisma from '../../client';
 import newPoolCreated from '../newPoolCreated';

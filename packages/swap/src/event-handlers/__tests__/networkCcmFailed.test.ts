@@ -1,8 +1,9 @@
 import { GraphQLClient } from 'graphql-request';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import prisma from '@/swap/client';
 import ccmFailed from '../ccmFailed';
 
-jest.mock('graphql-request', () => ({
+vi.mock('graphql-request', () => ({
   GraphQLClient: class {
     request() {
       throw new Error('unmocked request');
@@ -153,7 +154,7 @@ describe(ccmFailed, () => {
   });
 
   it.each([vault, depositChannel])('creates a failed swap', async ({ call, block, ...event }) => {
-    jest.spyOn(GraphQLClient.prototype, 'request').mockResolvedValue({ call });
+    vi.spyOn(GraphQLClient.prototype, 'request').mockResolvedValue({ call });
 
     if (event.args.origin.__kind === 'DepositChannel') {
       await prisma.swapDepositChannel.create({

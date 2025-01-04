@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from 'vitest';
 import { createDepositChannel } from './utils';
 import prisma, { SwapDepositChannel } from '../../client';
 import swapRescheduled, { SwapRescheduledEvent as SwapRescheduledArgs } from '../swapRescheduled';

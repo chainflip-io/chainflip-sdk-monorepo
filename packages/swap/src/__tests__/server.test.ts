@@ -6,6 +6,7 @@ import { Socket, io } from 'socket.io-client';
 import request from 'supertest';
 import { setTimeout as sleep } from 'timers/promises';
 import { promisify } from 'util';
+import { describe, it, beforeEach, afterEach, expect, beforeAll, afterAll } from 'vitest';
 import prisma from '../client';
 import app from '../server';
 
@@ -14,13 +15,17 @@ const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 describe('server', () => {
   let server: Server;
 
-  beforeEach(() => {
+  beforeAll(() => {
     server = app.listen(0);
   });
 
-  afterEach((cb) => {
-    server.close(cb);
-  });
+  afterAll(
+    async () =>
+      new Promise<void>((done) => {
+        server.close();
+        done();
+      }),
+  );
 
   describe('GET /healthcheck', () => {
     it('gets the fees', async () => {

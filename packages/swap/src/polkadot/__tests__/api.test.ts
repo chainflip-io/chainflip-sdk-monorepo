@@ -1,14 +1,15 @@
+import { vi, describe, it, expect } from 'vitest';
 import { getBoostSafeMode } from '../api';
 
-jest.mock('@polkadot/api', () => ({
-  WsProvider: jest.fn(),
+vi.mock('@polkadot/api', () => ({
+  WsProvider: vi.fn(),
   ApiPromise: {
-    create: jest.fn().mockResolvedValue({
+    create: vi.fn().mockResolvedValue({
       isReady: Promise.resolve({
         query: {
           environment: {
-            runtimeSafeMode: jest.fn().mockResolvedValue({
-              toJSON: jest.fn().mockReturnValue({
+            runtimeSafeMode: vi.fn().mockResolvedValue({
+              toJSON: vi.fn().mockReturnValue({
                 ingressEgressEthereum: { boostDepositsEnabled: false },
                 ingressEgressBitcoin: { boostDepositsEnabled: true },
                 ingressEgressPolkadot: { boostDepositsEnabled: false },

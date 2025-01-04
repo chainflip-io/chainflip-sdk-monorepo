@@ -1,15 +1,18 @@
 import axios from 'axios';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { Assets, Chains } from '@/shared/enums';
 import { QuoteRequest } from '../../types';
 import { getQuote, getQuoteV2, getStatus, getStatusV2 } from '../ApiService';
 
-jest.mock('../../../../package.json', () => ({
+vi.mock('../../../../package.json', () => ({
   version: '1.0-test',
 }));
 
-jest.mock('axios', () => ({
-  get: jest.fn(),
-  post: jest.fn(),
+vi.mock('axios', async () => ({
+  default: {
+    get: vi.fn(),
+    post: vi.fn(),
+  },
 }));
 
 describe('ApiService', () => {
@@ -22,7 +25,7 @@ describe('ApiService', () => {
   } satisfies QuoteRequest;
 
   describe(getQuote, () => {
-    const mockedGet = jest.mocked(axios.get);
+    const mockedGet = vi.mocked(axios.get);
     beforeEach(() => {
       mockedGet.mockResolvedValueOnce({
         data: {
@@ -64,7 +67,7 @@ describe('ApiService', () => {
   });
 
   describe(getQuoteV2, () => {
-    const mockedGet = jest.mocked(axios.get);
+    const mockedGet = vi.mocked(axios.get);
     beforeEach(() => {
       mockedGet.mockResolvedValueOnce({
         data: [
@@ -124,7 +127,7 @@ describe('ApiService', () => {
 
   describe(getStatus, () => {
     it('forwards whatever response it gets from the swap service', async () => {
-      const mockedGet = jest.mocked(axios.get);
+      const mockedGet = vi.mocked(axios.get);
       mockedGet.mockResolvedValueOnce({ data: 'hello darkness' });
       mockedGet.mockResolvedValueOnce({ data: 'my old friend' });
 
@@ -137,7 +140,7 @@ describe('ApiService', () => {
     });
 
     it('passes the signal to axios', async () => {
-      const mockedGet = jest.mocked(axios.get);
+      const mockedGet = vi.mocked(axios.get);
       mockedGet.mockResolvedValueOnce({ data: null });
 
       await getStatus(
@@ -152,7 +155,7 @@ describe('ApiService', () => {
 
   describe(getStatusV2, () => {
     it('forwards whatever response it gets from the swap service', async () => {
-      const mockedGet = jest.mocked(axios.get);
+      const mockedGet = vi.mocked(axios.get);
       mockedGet.mockResolvedValueOnce({ data: 'hello darkness' });
       mockedGet.mockResolvedValueOnce({ data: 'my old friend' });
 
@@ -165,7 +168,7 @@ describe('ApiService', () => {
     });
 
     it('passes the signal to axios', async () => {
-      const mockedGet = jest.mocked(axios.get);
+      const mockedGet = vi.mocked(axios.get);
       mockedGet.mockResolvedValueOnce({ data: null });
 
       await getStatusV2(

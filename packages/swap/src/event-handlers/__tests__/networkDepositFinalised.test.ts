@@ -1,10 +1,11 @@
 import { findSolanaDepositSignature } from '@chainflip/solana';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import env from '@/swap/config/env';
 import { networkDepositFinalised } from '@/swap/event-handlers/networkDepositFinalised';
 import { createDepositChannel } from './utils';
 import prisma from '../../client';
 
-jest.mock('@chainflip/solana');
+vi.mock('@chainflip/solana');
 
 describe(networkDepositFinalised, () => {
   beforeEach(async () => {
@@ -128,11 +129,9 @@ describe(networkDepositFinalised, () => {
 
   it('tries to find tx ref for solana swap request', async () => {
     env.SOLANA_RPC_HTTP_URL = 'https://rpc.devnet.solana.chainflip.io:443';
-    jest
-      .mocked(findSolanaDepositSignature)
-      .mockResolvedValue(
-        '4tpsjS1WFhamaRBfYdEHdadHFs58Ppq8jrv26xwkquVjA5BfP7wGjBbwVrDCECDpxRgfCnqXfCK4way9BPutAyRS',
-      );
+    vi.mocked(findSolanaDepositSignature).mockResolvedValue(
+      '4tpsjS1WFhamaRBfYdEHdadHFs58Ppq8jrv26xwkquVjA5BfP7wGjBbwVrDCECDpxRgfCnqXfCK4way9BPutAyRS',
+    );
 
     await networkDepositFinalised({
       prisma,
@@ -165,6 +164,7 @@ describe(networkDepositFinalised, () => {
       id: expect.any(BigInt),
       swapDepositChannelId: expect.any(BigInt),
     });
+
     expect(findSolanaDepositSignature).toBeCalledWith(
       'https://rpc.devnet.solana.chainflip.io:443',
       '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',

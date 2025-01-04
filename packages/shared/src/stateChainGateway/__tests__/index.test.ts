@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 /* eslint-disable max-classes-per-file */
 import { BytesLike, VoidSigner } from 'ethers';
+import { describe, it, expect, vi } from 'vitest';
 import { ERC20 } from '../../abis';
 import { checkAllowance } from '../../contracts';
 import {
@@ -24,7 +25,7 @@ class MockGateway {
   async REDEMPTION_DELAY(): Promise<any> {}
 }
 
-jest.mock('../../abis/factories/StateChainGateway__factory', () => ({
+vi.mock('../../abis/factories/StateChainGateway__factory', () => ({
   StateChainGateway__factory: class {
     static connect(address: string) {
       return new MockGateway(address);
@@ -32,10 +33,13 @@ jest.mock('../../abis/factories/StateChainGateway__factory', () => ({
   },
 }));
 
-jest.mock('../../contracts', () => ({
-  ...jest.requireActual('../../contracts'),
-  checkAllowance: jest.fn(),
-}));
+vi.mock('../../contracts', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    checkAllowance: vi.fn(),
+  };
+});
 
 const signerOptions = {
   network: 'sisyphos',
@@ -44,13 +48,13 @@ const signerOptions = {
 
 describe(fundStateChainAccount, () => {
   it('approves the gateway and funds the account', async () => {
-    const checkSpy = jest.mocked(checkAllowance).mockResolvedValue({
+    const checkSpy = vi.mocked(checkAllowance).mockResolvedValue({
       allowance: 100000n,
       hasSufficientAllowance: true,
       erc20: {} as unknown as ERC20,
     });
-    const waitMock = jest.fn().mockResolvedValue({ status: 1 });
-    const fundSpy = jest.spyOn(MockGateway.prototype, 'fundStateChainAccount').mockResolvedValue({
+    const waitMock = vi.fn().mockResolvedValue({ status: 1 });
+    const fundSpy = vi.spyOn(MockGateway.prototype, 'fundStateChainAccount').mockResolvedValue({
       hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
       wait: waitMock,
     });
@@ -69,8 +73,8 @@ describe(fundStateChainAccount, () => {
 
 describe(executeRedemption, () => {
   it('executes the redemption', async () => {
-    const waitMock = jest.fn().mockResolvedValue({ status: 1 });
-    const executeSpy = jest.spyOn(MockGateway.prototype, 'executeRedemption').mockResolvedValue({
+    const waitMock = vi.fn().mockResolvedValue({ status: 1 });
+    const executeSpy = vi.spyOn(MockGateway.prototype, 'executeRedemption').mockResolvedValue({
       hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
       wait: waitMock,
     });
@@ -85,14 +89,14 @@ describe(executeRedemption, () => {
 
 describe(getMinimumFunding, () => {
   it('retrieves minimum funding amount', async () => {
-    jest.spyOn(MockGateway.prototype, 'getMinimumFunding').mockResolvedValue(1234n);
+    vi.spyOn(MockGateway.prototype, 'getMinimumFunding').mockResolvedValue(1234n);
     expect(await getMinimumFunding(signerOptions)).toEqual(1234n);
   });
 });
 
 describe(getRedemptionDelay, () => {
   it('retrieves the redemption delay', async () => {
-    jest.spyOn(MockGateway.prototype, 'REDEMPTION_DELAY').mockResolvedValue(1234);
+    vi.spyOn(MockGateway.prototype, 'REDEMPTION_DELAY').mockResolvedValue(1234);
     expect(await getRedemptionDelay(signerOptions)).toEqual(1234);
   });
 });
@@ -105,7 +109,7 @@ describe(getPendingRedemption, () => {
       startTime: 1695126000n,
       expiryTime: 1695129600n,
     };
-    const spy = jest
+    const spy = vi
       .spyOn(MockGateway.prototype, 'getPendingRedemption')
       .mockResolvedValue(redemption);
 
@@ -119,7 +123,7 @@ describe(getPendingRedemption, () => {
       startTime: 0n,
       expiryTime: 0n,
     };
-    const spy = jest
+    const spy = vi
       .spyOn(MockGateway.prototype, 'getPendingRedemption')
       .mockResolvedValue(redemption);
 
