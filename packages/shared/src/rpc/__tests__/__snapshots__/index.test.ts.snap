@@ -1,22 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`getAllBoostPoolsDepth retrieves the boost pools depth balance 1`] = `
-[
-  [
-    "https://archive.perseverance.chainflip.io",
-    [
-      {
-        "id": "1",
-        "jsonrpc": "2.0",
-        "method": "cf_boost_pools_depth",
-        "params": [],
-      },
-    ],
-  ],
-]
-`;
-
-exports[`getAllBoostPoolsDepth retrieves the boost pools depth balance: boost pools depth 1`] = `
+exports[`getAllBoostPoolsDepth > retrieves the boost pools depth balance > boost pools depth 1`] = `
 [
   {
     "asset": "ArbEth",
@@ -171,7 +155,23 @@ exports[`getAllBoostPoolsDepth retrieves the boost pools depth balance: boost po
 ]
 `;
 
-exports[`getFundingEnvironment retrieves the funding environment 1`] = `
+exports[`getAllBoostPoolsDepth > retrieves the boost pools depth balance 1`] = `
+[
+  [
+    "https://archive.perseverance.chainflip.io",
+    [
+      {
+        "id": "1",
+        "jsonrpc": "2.0",
+        "method": "cf_boost_pools_depth",
+        "params": [],
+      },
+    ],
+  ],
+]
+`;
+
+exports[`getFundingEnvironment > retrieves the funding environment 1`] = `
 [
   [
     "https://archive.perseverance.chainflip.io",
@@ -187,7 +187,7 @@ exports[`getFundingEnvironment retrieves the funding environment 1`] = `
 ]
 `;
 
-exports[`getIngressEgressEnvironment retrieves the ingress egress environment 1`] = `
+exports[`getIngressEgressEnvironment > retrieves the ingress egress environment 1`] = `
 [
   [
     "https://archive.perseverance.chainflip.io",
@@ -203,7 +203,7 @@ exports[`getIngressEgressEnvironment retrieves the ingress egress environment 1`
 ]
 `;
 
-exports[`getSwappingEnvironment retrieves the swapping environment 1`] = `
+exports[`getSwappingEnvironment > retrieves the swapping environment 1`] = `
 [
   [
     "https://archive.perseverance.chainflip.io",
