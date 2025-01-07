@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`newPoolCreated updates the pool fee correctly 1`] = `
+exports[`newPoolCreated > updates the pool fee correctly 1`] = `
 {
   "baseAsset": "Btc",
   "id": Any<Number>,
@@ -9,7 +9,7 @@ exports[`newPoolCreated updates the pool fee correctly 1`] = `
 }
 `;
 
-exports[`newPoolCreated updates the pool fee correctly 2`] = `
+exports[`newPoolCreated > updates the pool fee correctly 2`] = `
 {
   "baseAsset": "Btc",
   "id": Any<Number>,

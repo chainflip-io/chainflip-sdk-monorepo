@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`server GET /v2/quote rejects malformed requests 1`] = `
+exports[`server > GET /v2/quote > rejects malformed requests 1`] = `
 {
   "message": "invalid request",
 }

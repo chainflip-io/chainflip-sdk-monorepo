@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`swapRequested creates a new swap request (DEPOSIT_CHANNEL 160) 1`] = `
+exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL 160) 1`] = `
 {
   "ccmDepositReceivedBlockIndex": "87-13",
   "ccmGasBudget": "2",
@@ -35,7 +35,7 @@ exports[`swapRequested creates a new swap request (DEPOSIT_CHANNEL 160) 1`] = `
 }
 `;
 
-exports[`swapRequested creates a new swap request (DEPOSIT_CHANNEL) 1`] = `
+exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL) 1`] = `
 {
   "ccmDepositReceivedBlockIndex": "87-13",
   "ccmGasBudget": "2",
@@ -70,7 +70,7 @@ exports[`swapRequested creates a new swap request (DEPOSIT_CHANNEL) 1`] = `
 }
 `;
 
-exports[`swapRequested creates a new swap request (INGRESS_EGRESS_FEE) 1`] = `
+exports[`swapRequested > creates a new swap request (INGRESS_EGRESS_FEE) 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
@@ -105,7 +105,7 @@ exports[`swapRequested creates a new swap request (INGRESS_EGRESS_FEE) 1`] = `
 }
 `;
 
-exports[`swapRequested creates a new swap request (VAULT) 1`] = `
+exports[`swapRequested > creates a new swap request (VAULT) 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,

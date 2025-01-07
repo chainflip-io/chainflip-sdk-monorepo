@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`ccmFailed creates a failed swap 1`] = `
+exports[`ccmFailed > creates a failed swap 1`] = `
 {
   "ccmGasBudget": "10000000000",
   "ccmMessage": "0x776173737570",
@@ -19,7 +19,7 @@ exports[`ccmFailed creates a failed swap 1`] = `
 }
 `;
 
-exports[`ccmFailed creates a failed swap 2`] = `
+exports[`ccmFailed > creates a failed swap 2`] = `
 {
   "ccmGasBudget": "72057594113783296",
   "ccmMessage": "0xdeadc0de",

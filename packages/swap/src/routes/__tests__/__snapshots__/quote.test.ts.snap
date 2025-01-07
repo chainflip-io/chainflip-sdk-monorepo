@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`server GET /quote doesn't include boost information when disabled 1`] = `
+exports[`server > GET /quote > doesn't include boost information when disabled 1`] = `
 {
   "depositAmount": "100000000",
   "destAsset": {
@@ -77,7 +77,7 @@ exports[`server GET /quote doesn't include boost information when disabled 1`] =
 }
 `;
 
-exports[`server GET /quote gets the quote for deprecated params without the chain 1`] = `
+exports[`server > GET /quote > gets the quote for deprecated params without the chain 1`] = `
 {
   "depositAmount": "1000000000000000000",
   "destAsset": {
@@ -154,7 +154,7 @@ exports[`server GET /quote gets the quote for deprecated params without the chai
 }
 `;
 
-exports[`server GET /quote gets the quote from btc with boost information 1`] = `
+exports[`server > GET /quote > gets the quote from btc with boost information 1`] = `
 {
   "boostQuote": {
     "depositAmount": "100000000",
@@ -313,7 +313,7 @@ exports[`server GET /quote gets the quote from btc with boost information 1`] = 
 }
 `;
 
-exports[`server GET /quote gets the quote with a realistic price 1`] = `
+exports[`server > GET /quote > gets the quote with a realistic price 1`] = `
 {
   "depositAmount": "500000000000000000",
   "destAsset": {
@@ -374,7 +374,7 @@ exports[`server GET /quote gets the quote with a realistic price 1`] = `
 }
 `;
 
-exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
+exports[`server > GET /quote > gets the quote with low liquidity warning 1`] = `
 {
   "depositAmount": "1000000000000000000",
   "destAsset": {
@@ -452,7 +452,7 @@ exports[`server GET /quote gets the quote with low liquidity warning 1`] = `
 }
 `;
 
-exports[`server GET /quote rejects malformed requests 1`] = `
+exports[`server > GET /quote > rejects malformed requests 1`] = `
 {
   "message": "invalid request",
 }

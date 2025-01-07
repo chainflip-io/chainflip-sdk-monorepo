@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`swapRequestCompleted updates swap request and associated quote 1`] = `
+exports[`swapRequestCompleted > updates swap request and associated quote 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
@@ -56,7 +56,7 @@ exports[`swapRequestCompleted updates swap request and associated quote 1`] = `
 }
 `;
 
-exports[`swapRequestCompleted updates swap request and associated quote if swap was (partially) refunded 1`] = `
+exports[`swapRequestCompleted > updates swap request and associated quote if swap was (partially) refunded 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
@@ -112,7 +112,7 @@ exports[`swapRequestCompleted updates swap request and associated quote if swap 
 }
 `;
 
-exports[`swapRequestCompleted updates swap request with multiple swaps 1`] = `
+exports[`swapRequestCompleted > updates swap request with multiple swaps 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
@@ -148,7 +148,7 @@ exports[`swapRequestCompleted updates swap request with multiple swaps 1`] = `
 }
 `;
 
-exports[`swapRequestCompleted updates swap request with single swap 1`] = `
+exports[`swapRequestCompleted > updates swap request with single swap 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,

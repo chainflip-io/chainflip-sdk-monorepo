@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`refundEgressIgnored handles refundEgressIgnored event 1`] = `
+exports[`refundEgressIgnored > handles refundEgressIgnored event 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,

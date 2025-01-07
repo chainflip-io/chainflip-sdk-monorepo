@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`server GET /v2/swaps/:id doesn't include GAS swaps in response for a single asset ccm swap 1`] = `
+exports[`server > GET /v2/swaps/:id > doesn't include GAS swaps in response for a single asset ccm swap 1`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
@@ -42,7 +42,7 @@ exports[`server GET /v2/swaps/:id doesn't include GAS swaps in response for a si
 }
 `;
 
-exports[`server GET /v2/swaps/:id retrieves a swap from a native swap id 1`] = `
+exports[`server > GET /v2/swaps/:id > retrieves a swap from a native swap id 1`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
@@ -98,7 +98,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a native swap id 1`] = `
 }
 `;
 
-exports[`server GET /v2/swaps/:id retrieves a swap from a solana case-insensitive tx ref 1`] = `
+exports[`server > GET /v2/swaps/:id > retrieves a swap from a solana case-insensitive tx ref 1`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
@@ -155,7 +155,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a solana case-insensitiv
 }
 `;
 
-exports[`server GET /v2/swaps/:id retrieves a swap from a vault origin 1`] = `
+exports[`server > GET /v2/swaps/:id > retrieves a swap from a vault origin 1`] = `
 {
   "deposit": {
     "amount": "4999949999999650000",
@@ -223,7 +223,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a vault origin 1`] = `
 }
 `;
 
-exports[`server GET /v2/swaps/:id retrieves a swap from a vault origin in COMPLETED 1`] = `
+exports[`server > GET /v2/swaps/:id > retrieves a swap from a vault origin in COMPLETED 1`] = `
 {
   "deposit": {
     "amount": "4999949999999650000",
@@ -305,7 +305,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap from a vault origin in COMPLE
 }
 `;
 
-exports[`server GET /v2/swaps/:id retrieves a swap in COMPLETED status 1`] = `
+exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status 1`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
@@ -403,7 +403,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in COMPLETED status 1`] = `
 }
 `;
 
-exports[`server GET /v2/swaps/:id retrieves a swap in SENDING status 1`] = `
+exports[`server > GET /v2/swaps/:id > retrieves a swap in SENDING status 1`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
@@ -498,7 +498,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENDING status 1`] = `
 }
 `;
 
-exports[`server GET /v2/swaps/:id retrieves a swap in SENT status 1`] = `
+exports[`server > GET /v2/swaps/:id > retrieves a swap in SENT status 1`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
@@ -594,7 +594,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SENT status 1`] = `
 }
 `;
 
-exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status 1`] = `
+exports[`server > GET /v2/swaps/:id > retrieves a swap in SWAPPING status 1`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
@@ -650,7 +650,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status 1`] = `
 }
 `;
 
-exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status 2`] = `
+exports[`server > GET /v2/swaps/:id > retrieves a swap in SWAPPING status 2`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
@@ -734,7 +734,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status 2`] = `
 }
 `;
 
-exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status with a tx ref 1`] = `
+exports[`server > GET /v2/swaps/:id > retrieves a swap in SWAPPING status with a tx ref 1`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
@@ -791,7 +791,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap in SWAPPING status with a tx 
 }
 `;
 
-exports[`server GET /v2/swaps/:id retrieves a swap with FillOrKillParams in COMPLETED 1`] = `
+exports[`server > GET /v2/swaps/:id > retrieves a swap with FillOrKillParams in COMPLETED 1`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
@@ -867,7 +867,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap with FillOrKillParams in COMP
 }
 `;
 
-exports[`server GET /v2/swaps/:id retrieves a swap with a refund in SENDING status 1`] = `
+exports[`server > GET /v2/swaps/:id > retrieves a swap with a refund in SENDING status 1`] = `
 {
   "deposit": {
     "amount": "5000000000000000000",
@@ -939,7 +939,7 @@ exports[`server GET /v2/swaps/:id retrieves a swap with a refund in SENDING stat
 }
 `;
 
-exports[`server GET /v2/swaps/:id retrieves multiple DCA swaps in FAILED status if refund egress fails but swap completes 1`] = `
+exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in FAILED status if refund egress fails but swap completes 1`] = `
 {
   "deposit": {
     "amount": "10000000000000000000",
@@ -1073,7 +1073,7 @@ exports[`server GET /v2/swaps/:id retrieves multiple DCA swaps in FAILED status 
 }
 `;
 
-exports[`server GET /v2/swaps/:id returns ccmParams for swaps initiated via smart contract 1`] = `
+exports[`server > GET /v2/swaps/:id > returns ccmParams for swaps initiated via smart contract 1`] = `
 {
   "ccmParams": {
     "gasBudget": "200000000000000",

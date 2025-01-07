@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`executeRedemption executes the redemption 1`] = `
+exports[`executeRedemption > executes the redemption 1`] = `
 [
   "0x1234",
   {

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`SwapSDK getAssets returns the assets based on the cf_supported_assets rpc 1`] = `
+exports[`SwapSDK > getAssets > returns the assets based on the cf_supported_assets rpc 1`] = `
 [
   {
     "asset": "BTC",
@@ -31,7 +31,7 @@ exports[`SwapSDK getAssets returns the assets based on the cf_supported_assets r
 ]
 `;
 
-exports[`SwapSDK getAssets returns the correct values for backspin 1`] = `
+exports[`SwapSDK > getAssets > returns the correct values for backspin 1`] = `
 [
   {
     "asset": "FLIP",
@@ -166,7 +166,7 @@ exports[`SwapSDK getAssets returns the correct values for backspin 1`] = `
 ]
 `;
 
-exports[`SwapSDK getAssets returns the correct values for mainnet 1`] = `
+exports[`SwapSDK > getAssets > returns the correct values for mainnet 1`] = `
 [
   {
     "asset": "FLIP",
@@ -301,7 +301,7 @@ exports[`SwapSDK getAssets returns the correct values for mainnet 1`] = `
 ]
 `;
 
-exports[`SwapSDK getAssets returns the correct values for perseverance 1`] = `
+exports[`SwapSDK > getAssets > returns the correct values for perseverance 1`] = `
 [
   {
     "asset": "FLIP",
@@ -436,7 +436,7 @@ exports[`SwapSDK getAssets returns the correct values for perseverance 1`] = `
 ]
 `;
 
-exports[`SwapSDK getAssets returns the correct values for sisyphos 1`] = `
+exports[`SwapSDK > getAssets > returns the correct values for sisyphos 1`] = `
 [
   {
     "asset": "FLIP",
@@ -571,7 +571,7 @@ exports[`SwapSDK getAssets returns the correct values for sisyphos 1`] = `
 ]
 `;
 
-exports[`SwapSDK getAssets returns the filtered assets for the chain 1`] = `
+exports[`SwapSDK > getAssets > returns the filtered assets for the chain 1`] = `
 [
   {
     "asset": "BTC",
@@ -589,9 +589,9 @@ exports[`SwapSDK getAssets returns the filtered assets for the chain 1`] = `
 ]
 `;
 
-exports[`SwapSDK getAssets throws when requesting an unsupported chain 1`] = `[Error: unsupported source chain "Dogecoin"]`;
+exports[`SwapSDK > getAssets > throws when requesting an unsupported chain 1`] = `[Error: unsupported source chain "Dogecoin"]`;
 
-exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc 1`] = `
+exports[`SwapSDK > getBoostLiquidity > returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc 1`] = `
 [
   {
     "asset": "BTC",
@@ -602,7 +602,7 @@ exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based
 ]
 `;
 
-exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by asset and sorted descending 1`] = `
+exports[`SwapSDK > getBoostLiquidity > returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by asset and sorted descending 1`] = `
 [
   {
     "asset": "BTC",
@@ -619,7 +619,7 @@ exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based
 ]
 `;
 
-exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by tier & asset 1`] = `
+exports[`SwapSDK > getBoostLiquidity > returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by tier & asset 1`] = `
 [
   {
     "asset": "ETH",
@@ -630,7 +630,7 @@ exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based
 ]
 `;
 
-exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by tier 1`] = `
+exports[`SwapSDK > getBoostLiquidity > returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by tier 1`] = `
 [
   {
     "asset": "BTC",
@@ -647,7 +647,7 @@ exports[`SwapSDK getBoostLiquidity returns the boost pools liquidity depth based
 ]
 `;
 
-exports[`SwapSDK getChains returns the chains based on the cf_supported_assets rpc 1`] = `
+exports[`SwapSDK > getChains > returns the chains based on the cf_supported_assets rpc 1`] = `
 [
   {
     "asset": "BTC",
@@ -678,7 +678,7 @@ exports[`SwapSDK getChains returns the chains based on the cf_supported_assets r
 ]
 `;
 
-exports[`SwapSDK getChains returns the correct values for backspin 1`] = `
+exports[`SwapSDK > getChains > returns the correct values for backspin 1`] = `
 [
   {
     "chain": "Ethereum",
@@ -723,7 +723,7 @@ exports[`SwapSDK getChains returns the correct values for backspin 1`] = `
 ]
 `;
 
-exports[`SwapSDK getChains returns the correct values for mainnet 1`] = `
+exports[`SwapSDK > getChains > returns the correct values for mainnet 1`] = `
 [
   {
     "chain": "Ethereum",
@@ -768,7 +768,7 @@ exports[`SwapSDK getChains returns the correct values for mainnet 1`] = `
 ]
 `;
 
-exports[`SwapSDK getChains returns the correct values for perseverance 1`] = `
+exports[`SwapSDK > getChains > returns the correct values for perseverance 1`] = `
 [
   {
     "chain": "Ethereum",
@@ -813,7 +813,7 @@ exports[`SwapSDK getChains returns the correct values for perseverance 1`] = `
 ]
 `;
 
-exports[`SwapSDK getChains returns the correct values for sisyphos 1`] = `
+exports[`SwapSDK > getChains > returns the correct values for sisyphos 1`] = `
 [
   {
     "chain": "Ethereum",
@@ -858,7 +858,7 @@ exports[`SwapSDK getChains returns the correct values for sisyphos 1`] = `
 ]
 `;
 
-exports[`SwapSDK getChains returns the filtered destination chains for the chain 1`] = `
+exports[`SwapSDK > getChains > returns the filtered destination chains for the chain 1`] = `
 [
   {
     "chain": "Polkadot",
@@ -895,4 +895,4 @@ exports[`SwapSDK getChains returns the filtered destination chains for the chain
 ]
 `;
 
-exports[`SwapSDK getChains throws when requesting an unsupported chain 1`] = `[Error: unsupported source chain "Dogecoin"]`;
+exports[`SwapSDK > getChains > throws when requesting an unsupported chain 1`] = `[Error: unsupported source chain "Dogecoin"]`;

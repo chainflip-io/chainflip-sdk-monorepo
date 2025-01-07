@@ -1,7 +1,26 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`openSwapDepositChannel creates channel and stores channel and quote in the database 1`] = `
+exports[`openSwapDepositChannel > creates channel and stores channel and quote in the database 1`] = `
 [
+  [
+    {
+      "destAddress": "5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd",
+      "destAsset": "DOT",
+      "destChain": "Polkadot",
+      "expectedDepositAmount": "777",
+      "fillOrKillParams": {
+        "minPriceX128": "1",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "retryDurationBlocks": 2,
+      },
+      "srcAsset": "FLIP",
+      "srcChain": "Ethereum",
+    },
+    {
+      "url": "https://broker.backspin.staging",
+    },
+    "perseverance",
+  ],
   [
     {
       "destAddress": "5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd",
@@ -23,14 +42,14 @@ exports[`openSwapDepositChannel creates channel and stores channel and quote in 
       "srcChain": "Ethereum",
     },
     {
-      "url": "",
+      "url": "https://broker.backspin.staging",
     },
     "perseverance",
   ],
 ]
 `;
 
-exports[`openSwapDepositChannel creates channel and stores channel and quote in the database 2`] = `
+exports[`openSwapDepositChannel > creates channel and stores channel and quote in the database 2`] = `
 {
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
@@ -81,7 +100,7 @@ exports[`openSwapDepositChannel creates channel and stores channel and quote in 
 }
 `;
 
-exports[`openSwapDepositChannel creates channel and stores it in the database 1`] = `
+exports[`openSwapDepositChannel > creates channel and stores it in the database 1`] = `
 [
   [
     {
@@ -98,14 +117,14 @@ exports[`openSwapDepositChannel creates channel and stores it in the database 1`
       "srcChain": "Ethereum",
     },
     {
-      "url": "",
+      "url": "https://broker.backspin.staging",
     },
     "perseverance",
   ],
 ]
 `;
 
-exports[`openSwapDepositChannel creates channel and stores it in the database 2`] = `
+exports[`openSwapDepositChannel > creates channel and stores it in the database 2`] = `
 {
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
@@ -136,8 +155,52 @@ exports[`openSwapDepositChannel creates channel and stores it in the database 2`
 }
 `;
 
-exports[`openSwapDepositChannel creates channel with boost and dca and stores quote in the database 1`] = `
+exports[`openSwapDepositChannel > creates channel with boost and dca and stores quote in the database 1`] = `
 [
+  [
+    {
+      "destAddress": "5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd",
+      "destAsset": "DOT",
+      "destChain": "Polkadot",
+      "expectedDepositAmount": "777",
+      "fillOrKillParams": {
+        "minPriceX128": "1",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "retryDurationBlocks": 2,
+      },
+      "srcAsset": "FLIP",
+      "srcChain": "Ethereum",
+    },
+    {
+      "url": "https://broker.backspin.staging",
+    },
+    "perseverance",
+  ],
+  [
+    {
+      "destAddress": "5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd",
+      "destAsset": "DOT",
+      "destChain": "Polkadot",
+      "expectedDepositAmount": "1000",
+      "fillOrKillParams": {
+        "minPriceX128": "1",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "retryDurationBlocks": 2,
+      },
+      "quote": {
+        "egressAmount": "250",
+        "estimatedPrice": "0.375",
+        "intermediateAmount": "500",
+        "recommendedSlippageTolerancePercent": 0.25,
+      },
+      "srcAsset": "FLIP",
+      "srcChain": "Ethereum",
+    },
+    {
+      "url": "https://broker.backspin.staging",
+    },
+    "perseverance",
+  ],
   [
     {
       "dcaParams": {
@@ -163,14 +226,14 @@ exports[`openSwapDepositChannel creates channel with boost and dca and stores qu
       "srcChain": "Ethereum",
     },
     {
-      "url": "",
+      "url": "https://broker.backspin.staging",
     },
     "perseverance",
   ],
 ]
 `;
 
-exports[`openSwapDepositChannel creates channel with boost and dca and stores quote in the database 2`] = `
+exports[`openSwapDepositChannel > creates channel with boost and dca and stores quote in the database 2`] = `
 {
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
@@ -221,8 +284,127 @@ exports[`openSwapDepositChannel creates channel with boost and dca and stores qu
 }
 `;
 
-exports[`openSwapDepositChannel creates channel with boost fee and stores it in the database 1`] = `
+exports[`openSwapDepositChannel > creates channel with boost fee and stores it in the database 1`] = `
 [
+  [
+    {
+      "destAddress": "5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd",
+      "destAsset": "DOT",
+      "destChain": "Polkadot",
+      "expectedDepositAmount": "777",
+      "fillOrKillParams": {
+        "minPriceX128": "1",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "retryDurationBlocks": 2,
+      },
+      "srcAsset": "FLIP",
+      "srcChain": "Ethereum",
+    },
+    {
+      "url": "https://broker.backspin.staging",
+    },
+    "perseverance",
+  ],
+  [
+    {
+      "destAddress": "5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd",
+      "destAsset": "DOT",
+      "destChain": "Polkadot",
+      "expectedDepositAmount": "1000",
+      "fillOrKillParams": {
+        "minPriceX128": "1",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "retryDurationBlocks": 2,
+      },
+      "quote": {
+        "egressAmount": "250",
+        "estimatedPrice": "0.375",
+        "intermediateAmount": "500",
+        "recommendedSlippageTolerancePercent": 0.25,
+      },
+      "srcAsset": "FLIP",
+      "srcChain": "Ethereum",
+    },
+    {
+      "url": "https://broker.backspin.staging",
+    },
+    "perseverance",
+  ],
+  [
+    {
+      "dcaParams": {
+        "chunkIntervalBlocks": 2,
+        "numberOfChunks": 3,
+      },
+      "destAddress": "5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd",
+      "destAsset": "DOT",
+      "destChain": "Polkadot",
+      "expectedDepositAmount": "1000",
+      "fillOrKillParams": {
+        "minPriceX128": "1094494073153147181099038525207",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "retryDurationBlocks": 500,
+      },
+      "maxBoostFeeBps": 100,
+      "quote": {
+        "egressAmount": "250",
+        "estimatedPrice": "0.32820704083381790449",
+        "intermediateAmount": "500",
+      },
+      "srcAsset": "FLIP",
+      "srcChain": "Ethereum",
+    },
+    {
+      "url": "https://broker.backspin.staging",
+    },
+    "perseverance",
+  ],
+  [
+    {
+      "ccmParams": {
+        "gasBudget": "0x1e848",
+        "message": "0xdeadc0de",
+      },
+      "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
+      "destAsset": "USDC",
+      "destChain": "Ethereum",
+      "expectedDepositAmount": "10101010",
+      "fillOrKillParams": {
+        "minPriceX128": "1",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "retryDurationBlocks": 2,
+      },
+      "srcAsset": "FLIP",
+      "srcChain": "Ethereum",
+    },
+    {
+      "url": "https://broker.backspin.staging",
+    },
+    "perseverance",
+  ],
+  [
+    {
+      "dcaParams": {
+        "chunkIntervalBlocks": 2,
+        "numberOfChunks": 3,
+      },
+      "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
+      "destAsset": "USDC",
+      "destChain": "Ethereum",
+      "expectedDepositAmount": "10101010",
+      "fillOrKillParams": {
+        "minPriceX128": "10000000000000",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "retryDurationBlocks": 500,
+      },
+      "srcAsset": "FLIP",
+      "srcChain": "Ethereum",
+    },
+    {
+      "url": "https://broker.backspin.staging",
+    },
+    "perseverance",
+  ],
   [
     {
       "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
@@ -239,14 +421,14 @@ exports[`openSwapDepositChannel creates channel with boost fee and stores it in 
       "srcChain": "Ethereum",
     },
     {
-      "url": "",
+      "url": "https://broker.backspin.staging",
     },
     "perseverance",
   ],
 ]
 `;
 
-exports[`openSwapDepositChannel creates channel with boost fee and stores it in the database 2`] = `
+exports[`openSwapDepositChannel > creates channel with boost fee and stores it in the database 2`] = `
 {
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
@@ -276,8 +458,81 @@ exports[`openSwapDepositChannel creates channel with boost fee and stores it in 
 }
 `;
 
-exports[`openSwapDepositChannel creates channel with ccmParams and stores it in the database 1`] = `
+exports[`openSwapDepositChannel > creates channel with ccmParams and stores it in the database 1`] = `
 [
+  [
+    {
+      "destAddress": "5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd",
+      "destAsset": "DOT",
+      "destChain": "Polkadot",
+      "expectedDepositAmount": "777",
+      "fillOrKillParams": {
+        "minPriceX128": "1",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "retryDurationBlocks": 2,
+      },
+      "srcAsset": "FLIP",
+      "srcChain": "Ethereum",
+    },
+    {
+      "url": "https://broker.backspin.staging",
+    },
+    "perseverance",
+  ],
+  [
+    {
+      "destAddress": "5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd",
+      "destAsset": "DOT",
+      "destChain": "Polkadot",
+      "expectedDepositAmount": "1000",
+      "fillOrKillParams": {
+        "minPriceX128": "1",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "retryDurationBlocks": 2,
+      },
+      "quote": {
+        "egressAmount": "250",
+        "estimatedPrice": "0.375",
+        "intermediateAmount": "500",
+        "recommendedSlippageTolerancePercent": 0.25,
+      },
+      "srcAsset": "FLIP",
+      "srcChain": "Ethereum",
+    },
+    {
+      "url": "https://broker.backspin.staging",
+    },
+    "perseverance",
+  ],
+  [
+    {
+      "dcaParams": {
+        "chunkIntervalBlocks": 2,
+        "numberOfChunks": 3,
+      },
+      "destAddress": "5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd",
+      "destAsset": "DOT",
+      "destChain": "Polkadot",
+      "expectedDepositAmount": "1000",
+      "fillOrKillParams": {
+        "minPriceX128": "1094494073153147181099038525207",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "retryDurationBlocks": 500,
+      },
+      "maxBoostFeeBps": 100,
+      "quote": {
+        "egressAmount": "250",
+        "estimatedPrice": "0.32820704083381790449",
+        "intermediateAmount": "500",
+      },
+      "srcAsset": "FLIP",
+      "srcChain": "Ethereum",
+    },
+    {
+      "url": "https://broker.backspin.staging",
+    },
+    "perseverance",
+  ],
   [
     {
       "ccmParams": {
@@ -297,14 +552,14 @@ exports[`openSwapDepositChannel creates channel with ccmParams and stores it in 
       "srcChain": "Ethereum",
     },
     {
-      "url": "",
+      "url": "https://broker.backspin.staging",
     },
     "perseverance",
   ],
 ]
 `;
 
-exports[`openSwapDepositChannel creates channel with ccmParams and stores it in the database 2`] = `
+exports[`openSwapDepositChannel > creates channel with ccmParams and stores it in the database 2`] = `
 {
   "brokerCommissionBps": 0,
   "ccmGasBudget": "125000",
@@ -334,8 +589,104 @@ exports[`openSwapDepositChannel creates channel with ccmParams and stores it in 
 }
 `;
 
-exports[`openSwapDepositChannel creates channel with fill or kill params and stores it in the database 1`] = `
+exports[`openSwapDepositChannel > creates channel with fill or kill params and stores it in the database 1`] = `
 [
+  [
+    {
+      "destAddress": "5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd",
+      "destAsset": "DOT",
+      "destChain": "Polkadot",
+      "expectedDepositAmount": "777",
+      "fillOrKillParams": {
+        "minPriceX128": "1",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "retryDurationBlocks": 2,
+      },
+      "srcAsset": "FLIP",
+      "srcChain": "Ethereum",
+    },
+    {
+      "url": "https://broker.backspin.staging",
+    },
+    "perseverance",
+  ],
+  [
+    {
+      "destAddress": "5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd",
+      "destAsset": "DOT",
+      "destChain": "Polkadot",
+      "expectedDepositAmount": "1000",
+      "fillOrKillParams": {
+        "minPriceX128": "1",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "retryDurationBlocks": 2,
+      },
+      "quote": {
+        "egressAmount": "250",
+        "estimatedPrice": "0.375",
+        "intermediateAmount": "500",
+        "recommendedSlippageTolerancePercent": 0.25,
+      },
+      "srcAsset": "FLIP",
+      "srcChain": "Ethereum",
+    },
+    {
+      "url": "https://broker.backspin.staging",
+    },
+    "perseverance",
+  ],
+  [
+    {
+      "dcaParams": {
+        "chunkIntervalBlocks": 2,
+        "numberOfChunks": 3,
+      },
+      "destAddress": "5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd",
+      "destAsset": "DOT",
+      "destChain": "Polkadot",
+      "expectedDepositAmount": "1000",
+      "fillOrKillParams": {
+        "minPriceX128": "1094494073153147181099038525207",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "retryDurationBlocks": 500,
+      },
+      "maxBoostFeeBps": 100,
+      "quote": {
+        "egressAmount": "250",
+        "estimatedPrice": "0.32820704083381790449",
+        "intermediateAmount": "500",
+      },
+      "srcAsset": "FLIP",
+      "srcChain": "Ethereum",
+    },
+    {
+      "url": "https://broker.backspin.staging",
+    },
+    "perseverance",
+  ],
+  [
+    {
+      "ccmParams": {
+        "gasBudget": "0x1e848",
+        "message": "0xdeadc0de",
+      },
+      "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
+      "destAsset": "USDC",
+      "destChain": "Ethereum",
+      "expectedDepositAmount": "10101010",
+      "fillOrKillParams": {
+        "minPriceX128": "1",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "retryDurationBlocks": 2,
+      },
+      "srcAsset": "FLIP",
+      "srcChain": "Ethereum",
+    },
+    {
+      "url": "https://broker.backspin.staging",
+    },
+    "perseverance",
+  ],
   [
     {
       "dcaParams": {
@@ -355,14 +706,14 @@ exports[`openSwapDepositChannel creates channel with fill or kill params and sto
       "srcChain": "Ethereum",
     },
     {
-      "url": "",
+      "url": "https://broker.backspin.staging",
     },
     "perseverance",
   ],
 ]
 `;
 
-exports[`openSwapDepositChannel creates channel with fill or kill params and stores it in the database 2`] = `
+exports[`openSwapDepositChannel > creates channel with fill or kill params and stores it in the database 2`] = `
 {
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,

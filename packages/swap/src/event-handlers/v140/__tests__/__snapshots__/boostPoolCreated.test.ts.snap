@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`boostPoolCreated handles event by creating a boost pool entry 1`] = `
+exports[`boostPoolCreated > handles event by creating a boost pool entry 1`] = `
 {
   "asset": "Btc",
   "boostEnabled": true,

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`networkDepositFinalised tries to find tx ref for solana swap request 1`] = `
+exports[`networkDepositFinalised > tries to find tx ref for solana swap request 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
@@ -35,7 +35,7 @@ exports[`networkDepositFinalised tries to find tx ref for solana swap request 1`
 }
 `;
 
-exports[`networkDepositFinalised updates swap request for boosted deposit 1`] = `
+exports[`networkDepositFinalised > updates swap request for boosted deposit 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
@@ -70,7 +70,7 @@ exports[`networkDepositFinalised updates swap request for boosted deposit 1`] = 
 }
 `;
 
-exports[`networkDepositFinalised updates swap request for regular deposit 1`] = `
+exports[`networkDepositFinalised > updates swap request for regular deposit 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,

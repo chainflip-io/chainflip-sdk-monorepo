@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`newPoolCreated creates a pool with the correct data 1`] = `
+exports[`newPoolCreated > creates a pool with the correct data 1`] = `
 {
   "baseAsset": "Btc",
   "id": Any<Number>,

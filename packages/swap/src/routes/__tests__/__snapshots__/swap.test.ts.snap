@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`server GET /swaps/:id retrieves a swap in FAILED status (egress ignored) 1`] = `
+exports[`server > GET /swaps/:id > retrieves a swap in FAILED status (egress ignored) 1`] = `
 {
   "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
   "depositAmount": "5000000000000000000",
@@ -72,7 +72,7 @@ exports[`server GET /swaps/:id retrieves a swap in FAILED status (egress ignored
 }
 `;
 
-exports[`server GET /swaps/:id retrieves a swap in FAILED status (refund egress ignored) 1`] = `
+exports[`server > GET /swaps/:id > retrieves a swap in FAILED status (refund egress ignored) 1`] = `
 {
   "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
   "depositAmount": "5000000000000000000",
@@ -127,7 +127,7 @@ exports[`server GET /swaps/:id retrieves a swap in FAILED status (refund egress 
 }
 `;
 
-exports[`server GET /swaps/:id retrieves boost details when swap was boosted 1`] = `
+exports[`server > GET /swaps/:id > retrieves boost details when swap was boosted 1`] = `
 {
   "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
   "depositAmount": "4999949999999650000",

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`depositIgnored parses solana addresses 1`] = `
+exports[`depositIgnored > parses solana addresses 1`] = `
 {
   "amount": 1000000000n,
   "asset": "Sol",

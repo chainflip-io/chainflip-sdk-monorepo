@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`swapEgressScheduled adds an egress and fee to a swap request 1`] = `
+exports[`swapEgressScheduled > adds an egress and fee to a swap request 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
@@ -53,7 +53,7 @@ exports[`swapEgressScheduled adds an egress and fee to a swap request 1`] = `
 }
 `;
 
-exports[`swapEgressScheduled uses gas asset for egress fee when CCM 1`] = `
+exports[`swapEgressScheduled > uses gas asset for egress fee when CCM 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`ccm swap flow handles all the deposit channel events 1`] = `
+exports[`ccm swap flow > handles all the deposit channel events 1`] = `
 {
   "brokerCommissionBps": 100,
   "ccmGasBudget": "360801",
@@ -184,7 +184,7 @@ exports[`ccm swap flow handles all the deposit channel events 1`] = `
 }
 `;
 
-exports[`ccm swap flow handles all the vault events 1`] = `
+exports[`ccm swap flow > handles all the vault events 1`] = `
 {
   "ccmDepositReceivedBlockIndex": "2504899-772",
   "ccmGasBudget": "0",
