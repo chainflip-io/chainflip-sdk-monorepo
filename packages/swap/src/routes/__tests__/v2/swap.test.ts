@@ -1,7 +1,7 @@
 import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
 import request from 'supertest';
-import { vi, describe, it, beforeEach, afterEach, expect, beforeAll, afterAll } from 'vitest';
+import { vi, describe, it, beforeEach, afterEach, expect, beforeAll } from 'vitest';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
 import { SwapEgressIgnoredArgs } from '@/swap/event-handlers/swapEgressIgnored';
@@ -410,15 +410,11 @@ describe('server', () => {
   beforeAll(async () => {
     mockRpcResponse({ data: environment() });
     server = app.listen(0);
-  });
 
-  afterAll(
-    async () =>
-      new Promise<void>((done) => {
-        server.close();
-        done();
-      }),
-  );
+    return () => {
+      server.close();
+    };
+  });
 
   describe('GET /v2/swaps/:id', () => {
     let oldEnv: typeof env;

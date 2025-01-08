@@ -6,7 +6,7 @@ import { Socket, io } from 'socket.io-client';
 import request from 'supertest';
 import { setTimeout as sleep } from 'timers/promises';
 import { promisify } from 'util';
-import { describe, it, beforeEach, afterEach, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, beforeEach, afterEach, expect, beforeAll } from 'vitest';
 import prisma from '../client';
 import app from '../server';
 
@@ -17,15 +17,10 @@ describe('server', () => {
 
   beforeAll(() => {
     server = app.listen(0);
+    return () => {
+      server.close();
+    };
   });
-
-  afterAll(
-    async () =>
-      new Promise<void>((done) => {
-        server.close();
-        done();
-      }),
-  );
 
   describe('GET /healthcheck', () => {
     it('gets the fees', async () => {

@@ -1,7 +1,7 @@
 import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
 import request from 'supertest';
-import { describe, it, beforeEach, afterEach, expect, vi, beforeAll, afterAll } from 'vitest';
+import { describe, it, beforeEach, afterEach, expect, vi, beforeAll } from 'vitest';
 import * as broker from '@/shared/broker';
 import { Assets, getInternalAssets } from '@/shared/enums';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
@@ -370,15 +370,11 @@ describe('server', () => {
   beforeAll(() => {
     mockRpcResponse({ data: environment() });
     server = app.listen(0);
-  });
 
-  afterAll(
-    async () =>
-      new Promise<void>((done) => {
-        server.close();
-        done();
-      }),
-  );
+    return () => {
+      server.close();
+    };
+  });
 
   describe('GET /swaps/:id', () => {
     let oldEnv: typeof env;

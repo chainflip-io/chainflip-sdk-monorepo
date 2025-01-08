@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import { Server } from 'http';
 import request from 'supertest';
-import { describe, it, beforeEach, afterEach, expect } from 'vitest';
+import { describe, it, beforeEach, expect } from 'vitest';
 import env from '@/swap/config/env';
 import prisma from '../../client';
 import app from '../../server';
@@ -15,16 +15,12 @@ describe('server', () => {
     oldEnv = { ...env };
     await prisma.$queryRaw`TRUNCATE TABLE "ThirdPartySwap" CASCADE`;
     server = app.listen(0);
-  });
 
-  afterEach(
-    async () =>
-      new Promise<void>((done) => {
-        Object.assign(env, oldEnv);
-        server.close();
-        done();
-      }),
-  );
+    return () => {
+      Object.assign(env, oldEnv);
+      server.close();
+    };
+  });
 
   describe('POST /third-party-swap', () => {
     it('saves the third party swap information', async () => {

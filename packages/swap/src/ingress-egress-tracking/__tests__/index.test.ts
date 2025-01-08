@@ -1,5 +1,5 @@
 import Redis from 'ioredis';
-import { vi, describe, expect, beforeAll, beforeEach, afterAll, it } from 'vitest';
+import { vi, describe, expect, beforeAll, beforeEach, it } from 'vitest';
 import { Chain } from '@/shared/enums';
 import { getPendingBroadcast, getPendingDeposit } from '..';
 import prisma, { Broadcast } from '../../client';
@@ -26,6 +26,10 @@ describe('ingress-egress-tracking', () => {
 
   beforeAll(() => {
     redis = new Redis();
+
+    return async () => {
+      await redis.quit();
+    };
   });
 
   beforeEach(async () => {
@@ -33,10 +37,6 @@ describe('ingress-egress-tracking', () => {
     await prisma.chainTracking.deleteMany();
     await prisma.state.deleteMany();
     vi.resetAllMocks();
-  });
-
-  afterAll(async () => {
-    await redis.quit();
   });
 
   describe(getPendingDeposit, () => {

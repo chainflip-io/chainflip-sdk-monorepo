@@ -51,11 +51,13 @@ const transformedLogger = (
   return loggerFn(message, { metadata: customMeta, ...meta });
 };
 
-const customMessageFormat = format.printf(
-  (info) =>
-    // TODO: check and improve the format for dev environments - old format broken by unexpected breaking change
-    `[${info.timestamp}] ${info.level}: ${info.message}  ${stringify(info.metadata)}`,
-);
+const customMessageFormat = format.printf((info) => {
+  const { timestamp, level, component, message, error, metadata, ...meta } = info;
+
+  return `${timestamp} ${level} [${component}]: ${message} ${
+    error ? `${error.name} ${error.message} ${error.stack ?? ''}` : ''
+  } ${metadata ? stringify({ metadata }) : ''} ${Object.keys(meta).length ? stringify(meta) : ''}`;
+});
 
 const createLoggerFunc = (label: string) => {
   const logger = createLogger({

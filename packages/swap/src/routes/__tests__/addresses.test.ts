@@ -1,6 +1,6 @@
 import { Server } from 'http';
 import request from 'supertest';
-import { describe, it, beforeEach, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, beforeEach, expect, beforeAll } from 'vitest';
 import prisma from '../../client';
 import app from '../../server';
 
@@ -9,14 +9,14 @@ describe('server', () => {
 
   beforeAll(() => {
     server = app.listen(0);
+
+    return async () => {
+      server.close();
+    };
   });
 
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE private."BlockedAddress"`;
-  });
-
-  afterAll(async () => {
-    server.close();
   });
 
   describe('GET /addresses/blocked', () => {
