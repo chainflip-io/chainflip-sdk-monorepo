@@ -37,7 +37,7 @@ function toAtomicUnits(amount: number, asset: InternalAsset, output: string | bi
   return output === 'string' ? amt : BigInt(amt);
 }
 
-describe.todo(Quoter, () => {
+describe(Quoter, () => {
   let oldEnv: typeof env;
   let quoter: Quoter;
   let connectClient: (
@@ -208,7 +208,7 @@ describe.todo(Quoter, () => {
 
       const handler = fakeServer.on.mock.calls[0][1];
 
-      const socket = { on: vi.fn(), data: { marketMaker: 'MM' } };
+      const socket = { on: vi.fn(), data: { marketMaker: 'MM' }, disconnect: vi.fn() };
       const next = vi.fn();
       mockQuoter['quotes$'].subscribe(next);
 

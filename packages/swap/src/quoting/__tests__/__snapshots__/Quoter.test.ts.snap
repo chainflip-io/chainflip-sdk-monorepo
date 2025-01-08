@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Quoter getLimitOrders can mix and match: flip 1`] = `
+exports[`Quoter > getLimitOrders > can mix and match > flip 1`] = `
 {
   "legs": [
     {
@@ -20,7 +20,7 @@ exports[`Quoter getLimitOrders can mix and match: flip 1`] = `
 }
 `;
 
-exports[`Quoter getLimitOrders can mix and match: solana 1`] = `
+exports[`Quoter > getLimitOrders > can mix and match > solana 1`] = `
 {
   "legs": [
     {
@@ -40,7 +40,7 @@ exports[`Quoter getLimitOrders can mix and match: solana 1`] = `
 }
 `;
 
-exports[`Quoter getLimitOrders can quote both legs 1`] = `
+exports[`Quoter > getLimitOrders > can quote both legs 1`] = `
 {
   "legs": [
     {
@@ -72,7 +72,7 @@ exports[`Quoter getLimitOrders can quote both legs 1`] = `
 }
 `;
 
-exports[`Quoter getLimitOrders can quote the first leg only 1`] = `
+exports[`Quoter > getLimitOrders > can quote the first leg only 1`] = `
 {
   "legs": [
     {
