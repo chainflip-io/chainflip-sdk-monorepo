@@ -54,7 +54,7 @@
     "pnpm": ">=9"
   },
   "dependencies": {
-    "@chainflip/processor": "^1.8.0",
+    "@chainflip/processor": "^1.8.1",
     "@chainflip/rpc": "^1.6.11",
     "@chainflip/solana": "^1.0.3",
     "@chainflip/utils": "^0.4.13",

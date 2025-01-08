@@ -18,6 +18,59 @@ exports[`swapEgressScheduled adds an egress and fee to a swap request 1`] = `
   "destAsset": "Dot",
   "effectiveBoostFeeBps": null,
   "egress": {
+    "amount": "4945198948008612506",
+    "broadcastId": null,
+    "chain": "Ethereum",
+    "createdAt": Any<Date>,
+    "id": Any<BigInt>,
+    "nativeId": 1n,
+    "scheduledAt": 2022-12-06T14:31:45.000Z,
+    "scheduledBlockIndex": "120-0",
+    "updatedAt": Any<Date>,
+  },
+  "egressId": Any<BigInt>,
+  "fees": [
+    {
+      "amount": "167509500781711",
+      "asset": "Eth",
+      "type": "EGRESS",
+    },
+  ],
+  "id": Any<BigInt>,
+  "nativeId": 9876545n,
+  "numberOfChunks": null,
+  "originType": "VAULT",
+  "prewitnessedDepositId": null,
+  "refundEgressId": null,
+  "requestType": "LEGACY_SWAP",
+  "srcAddress": null,
+  "srcAsset": "Eth",
+  "swapDepositChannelId": null,
+  "swapInputAmount": "10000000000",
+  "swapOutputAmount": null,
+  "swapRequestedAt": 2022-12-06T14:31:33.000Z,
+  "swapRequestedBlockIndex": "92-398",
+}
+`;
+
+exports[`swapEgressScheduled adds an egress and fee to a swap request for 160 schema 1`] = `
+{
+  "ccmDepositReceivedBlockIndex": null,
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "chunkIntervalBlocks": null,
+  "completedAt": null,
+  "completedBlockIndex": null,
+  "depositAmount": "10000000000",
+  "depositBoostedAt": null,
+  "depositBoostedBlockIndex": null,
+  "depositFinalisedAt": 2022-12-06T14:31:33.000Z,
+  "depositFinalisedBlockIndex": "20-0",
+  "depositTransactionRef": null,
+  "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+  "destAsset": "Dot",
+  "effectiveBoostFeeBps": null,
+  "egress": {
     "amount": "10000000000",
     "broadcastId": null,
     "chain": "Ethereum",
@@ -53,7 +106,7 @@ exports[`swapEgressScheduled adds an egress and fee to a swap request 1`] = `
 }
 `;
 
-exports[`swapEgressScheduled uses gas asset for egress fee when CCM 1`] = `
+exports[`swapEgressScheduled uses gas asset for egress fee when CCM for 160 schema 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,

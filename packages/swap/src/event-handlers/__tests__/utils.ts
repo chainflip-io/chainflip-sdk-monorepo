@@ -207,18 +207,11 @@ export const swapEgressScheduledMock = {
   },
   event: {
     args: {
-      dispatchInfo: {
-        class: [null],
-        weight: '101978000',
-        paysFee: [null],
-      },
-      swapId: '9876545',
-      swapRequestId: '9876545',
-      fee: '1000000000',
-      egressFee: '1000000000',
       asset: { __kind: 'Eth' },
-      amount: '10000000000',
-      egressId: [{ __kind: 'Ethereum' }, '1'] as const,
+      amount: '4945198948008612506',
+      egressId: [{ __kind: 'Ethereum' }, '1'],
+      egressFee: ['167509500781711', { __kind: 'Eth' }],
+      swapRequestId: '9876545',
     },
     id: '0000012799-000000-c1ea7',
     indexInBlock: 0,
