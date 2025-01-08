@@ -8,7 +8,3 @@ const execAsync = promisify(exec);
 export async function setup({ provide: _provide }: GlobalSetupContext) {
   await execAsync('pnpm prisma migrate reset --force');
 }
-
-//  export async function teardown() {
-//   console.log('teardown servers etc.');
-//  }

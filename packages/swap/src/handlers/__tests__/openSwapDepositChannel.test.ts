@@ -31,6 +31,7 @@ describe(openSwapDepositChannel, () => {
   });
 
   beforeEach(async () => {
+    vi.resetAllMocks();
     oldEnv = structuredClone(env);
     await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", private."DepositChannel" CASCADE`;
   });
