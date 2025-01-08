@@ -2,7 +2,7 @@ import * as ss58 from '@chainflip/utils/ss58';
 import Redis from 'ioredis';
 import { z } from 'zod';
 import { sorter } from '../arrays';
-import { formatTxHash } from '../common';
+import { formatTxRef } from '../common';
 import { type Asset, type Chain } from '../enums';
 import { number, u128, string, uncheckedAssetAndChain, hexString } from '../parsers';
 
@@ -14,7 +14,7 @@ const jsonString = string.transform((value) => JSON.parse(value));
 const chainAsset = uncheckedAssetAndChain.transform(({ asset }) => asset);
 
 const bitcoinDeposit = z.object({
-  tx_id: hexString.transform((value) => formatTxHash('Bitcoin', value)),
+  tx_id: hexString.transform((value) => formatTxRef('Bitcoin', value)),
   vout: z.number().int(),
 });
 

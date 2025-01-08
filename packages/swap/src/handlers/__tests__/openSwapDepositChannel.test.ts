@@ -403,27 +403,75 @@ describe(openSwapDepositChannel, () => {
     } as const;
 
     mockRpcResponse({ data: environment() });
-    for (let i = 0; i < 5; i += 1) {
-      vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+
+    let channelId = 0;
+    vi.mocked(broker.requestSwapDepositAddress).mockImplementation(async () =>
+      Promise.resolve({
         sourceChainExpiryBlock: BigInt('1000'),
-        address: `address${i}`,
+        address: `address${++channelId}`, // eslint-disable-line no-plusplus
         channelId: BigInt('888'),
-        issuedBlock: 123 + i,
+        issuedBlock: 123 + channelId,
         channelOpeningFee: 100n,
-      });
+      }),
+    );
+
+    for (let i = 0; i < 5; i += 1) {
       await expect(openSwapDepositChannel(opts)).resolves.not.toThrow();
     }
 
-    vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
-      sourceChainExpiryBlock: BigInt('1000'),
-      address: 'address',
-      channelId: BigInt('888'),
-      issuedBlock: 123,
-      channelOpeningFee: 100n,
-    });
+    await expect(openSwapDepositChannel({ ...opts })).rejects.toThrow('too many channels');
 
     await expect(
       openSwapDepositChannel({ ...opts, destAddress: opts.destAddress.toLowerCase() }),
     ).rejects.toThrow('too many channels');
+  });
+
+  it('rejects if too many channels with same ccm message are open', async () => {
+    env.MAX_CHANNELS_OPEN_PER_ADDRESS = 5;
+
+    const opts = {
+      srcAsset: 'FLIP',
+      srcChain: 'Ethereum',
+      destAsset: 'ETH',
+      destChain: 'Ethereum',
+      destAddress: '0x72a5843cc08275C8171E582972Aa4fDa8C397B2A',
+      expectedDepositAmount: '777',
+      fillOrKillParams: {
+        refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        retryDurationBlocks: 2,
+        minPriceX128: '1',
+      },
+      ccmParams: {
+        message: '0xdeadbeef',
+        gasBudget: '0x1000',
+      },
+    } as const;
+
+    mockRpcResponse({ data: environment() });
+
+    let channelId = 0;
+    vi.mocked(broker.requestSwapDepositAddress).mockImplementation(async () =>
+      Promise.resolve({
+        sourceChainExpiryBlock: BigInt('1000'),
+        address: `address${++channelId}`, // eslint-disable-line no-plusplus
+        channelId: BigInt('888'),
+        issuedBlock: 123 + channelId,
+        channelOpeningFee: 100n,
+      }),
+    );
+
+    for (let i = 0; i < 5; i += 1) {
+      await expect(openSwapDepositChannel(opts)).resolves.not.toThrow();
+    }
+
+    await expect(openSwapDepositChannel({ ...opts })).rejects.toThrow('too many channels');
+
+    // accepts channel with different message
+    await expect(
+      openSwapDepositChannel({
+        ...opts,
+        ccmParams: { ...opts.ccmParams, message: `0xc0ffee` },
+      }),
+    ).resolves.not.toThrow();
   });
 });

@@ -54,7 +54,7 @@
     "@chainflip/bitcoin": "^1.1.1",
     "@chainflip/rpc": "^1.6.11",
     "@chainflip/solana": "^1.0.3",
-    "@chainflip/utils": "^0.4.0",
+    "@chainflip/utils": "^0.4.13",
     "@trpc/client": "^10.45.2",
     "axios": "^1.7.7",
     "bignumber.js": "^9.1.2",

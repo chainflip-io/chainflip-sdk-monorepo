@@ -105,6 +105,41 @@ exports[`swapRequested > creates a new swap request (INGRESS_EGRESS_FEE) 1`] = `
 }
 `;
 
+exports[`swapRequested > creates a new swap request (VAULT 180) 1`] = `
+{
+  "ccmDepositReceivedBlockIndex": null,
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "chunkIntervalBlocks": 2,
+  "completedAt": null,
+  "completedBlockIndex": null,
+  "depositAmount": "10000000",
+  "depositBoostedAt": null,
+  "depositBoostedBlockIndex": null,
+  "depositFinalisedAt": null,
+  "depositFinalisedBlockIndex": null,
+  "depositTransactionRef": "2f1e9acbef4360ad0063ad7d3f7f6527a5caccbbee20097f4e045c1482a67aad",
+  "destAddress": "0xb2806f8993e01460bc2f6e50fab466b5525dbe3a",
+  "destAsset": "Flip",
+  "effectiveBoostFeeBps": null,
+  "egressId": null,
+  "id": Any<BigInt>,
+  "nativeId": 1n,
+  "numberOfChunks": 1,
+  "originType": "VAULT",
+  "prewitnessedDepositId": null,
+  "refundEgressId": null,
+  "requestType": "REGULAR",
+  "srcAddress": null,
+  "srcAsset": "Btc",
+  "swapDepositChannelId": null,
+  "swapInputAmount": "10000000",
+  "swapOutputAmount": null,
+  "swapRequestedAt": 2024-08-23T13:13:12.002Z,
+  "swapRequestedBlockIndex": "87-13",
+}
+`;
+
 exports[`swapRequested > creates a new swap request (VAULT) 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,

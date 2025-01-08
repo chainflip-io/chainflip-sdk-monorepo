@@ -457,10 +457,10 @@ describe('server', () => {
         destAsset: 'DOT',
         destChain: 'Polkadot',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
-        estimatedDurationSeconds: 42,
+        estimatedDurationSeconds: 138,
         estimatedDurationsSeconds: {
-          deposit: 24,
-          egress: 6,
+          deposit: 30,
+          egress: 96,
           swap: 12,
         },
         depositChannel: {
@@ -490,10 +490,10 @@ describe('server', () => {
         destAsset: 'DOT',
         destChain: 'Polkadot',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
-        estimatedDurationSeconds: 42,
+        estimatedDurationSeconds: 138,
         estimatedDurationsSeconds: {
-          deposit: 24,
-          egress: 6,
+          deposit: 30,
+          egress: 96,
           swap: 12,
         },
         depositChannel: {
@@ -588,10 +588,10 @@ describe('server', () => {
         destAsset: 'DOT',
         destChain: 'Polkadot',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
-        estimatedDurationSeconds: 42,
+        estimatedDurationSeconds: 138,
         estimatedDurationsSeconds: {
-          deposit: 24,
-          egress: 6,
+          deposit: 30,
+          egress: 96,
           swap: 12,
         },
         depositChannel: {
@@ -917,10 +917,10 @@ describe('server', () => {
         destAddress: '0xac16d8adbd217576a540a625e873448cecdb21e2',
         destAsset: 'ETH',
         destChain: 'Ethereum',
-        estimatedDurationSeconds: 1824,
+        estimatedDurationSeconds: 1920,
         estimatedDurationsSeconds: {
-          deposit: 1800,
-          egress: 12,
+          deposit: 1806,
+          egress: 102,
           swap: 12,
         },
         fees: [],
@@ -1183,7 +1183,7 @@ describe('server', () => {
         },
       });
 
-      const { body, status } = await request(server).get(`/v2/swaps/${solanaTxRef.toLowerCase()}`);
+      const { body, status } = await request(server).get(`/v2/swaps/${solanaTxRef}`);
       expect(status).toBe(200);
       const { swapId, ...rest } = body;
 
@@ -1419,10 +1419,10 @@ describe('server', () => {
         destChain: 'Polkadot',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         srcChainRequiredBlockConfirmations: 2,
-        estimatedDurationSeconds: 42,
+        estimatedDurationSeconds: 138,
         estimatedDurationsSeconds: {
-          deposit: 24,
-          egress: 6,
+          deposit: 30,
+          egress: 96,
           swap: 12,
         },
         lastStatechainUpdateAt: 1640995200000,
@@ -1540,10 +1540,10 @@ describe('server', () => {
         destChain: 'Polkadot',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         srcChainRequiredBlockConfirmations: 2,
-        estimatedDurationSeconds: 42,
+        estimatedDurationSeconds: 138,
         estimatedDurationsSeconds: {
-          deposit: 24,
-          egress: 6,
+          deposit: 30,
+          egress: 96,
           swap: 12,
         },
         lastStatechainUpdateAt: 1640995200000,
@@ -1672,10 +1672,10 @@ describe('server', () => {
         destChain: 'Polkadot',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         srcChainRequiredBlockConfirmations: 2,
-        estimatedDurationSeconds: 42,
+        estimatedDurationSeconds: 138,
         estimatedDurationsSeconds: {
-          deposit: 24,
-          egress: 6,
+          deposit: 30,
+          egress: 96,
           swap: 12,
         },
         lastStatechainUpdateAt: 1640995200000,

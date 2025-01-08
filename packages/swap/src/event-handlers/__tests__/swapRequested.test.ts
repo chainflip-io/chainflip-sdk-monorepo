@@ -3,6 +3,43 @@ import { assetConstants } from '@/shared/enums';
 import prisma from '../../client';
 import swapRequested from '../swapRequested';
 
+const vault180 = {
+  origin: {
+    txId: {
+      value: '0xad7aa682145c044e7f0920eebbcccaa527657f3f7dad6300ad6043efcb9a1e2f',
+      __kind: 'Bitcoin',
+    },
+    __kind: 'Vault',
+  },
+  brokerFees: [
+    {
+      bps: 100,
+      account: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
+    },
+    {
+      bps: 100,
+      account: '0xa27ef1c721066568cc4d3483f680fbad02e0b999ace3347393bd7ab82bef4f2e',
+    },
+  ],
+  inputAsset: { __kind: 'Btc' },
+  inputAmount: '10000000',
+  outputAsset: { __kind: 'Flip' },
+  requestType: {
+    __kind: 'Regular',
+    outputAddress: { value: '0xb2806f8993e01460bc2f6e50fab466b5525dbe3a', __kind: 'Eth' },
+  },
+  dcaParameters: { chunkInterval: 2, numberOfChunks: 1 },
+  swapRequestId: '1',
+  refundParameters: {
+    minPrice: '1',
+    refundAddress: {
+      value: '0x6d76426367686f7345506973675338336963696e6a48696735346250635058457761',
+      __kind: 'Btc',
+    },
+    retryDuration: 0,
+  },
+} as const;
+
 const depositChannel160 = {
   origin: {
     __kind: 'DepositChannel',
@@ -208,6 +245,16 @@ describe(swapRequested, () => {
     expect(request).toMatchSnapshot({
       id: expect.any(BigInt),
       swapDepositChannelId: expect.any(BigInt),
+    });
+  });
+
+  it('creates a new swap request (VAULT 180)', async () => {
+    await swapRequested({ prisma, event: { ...event, args: vault180 }, block });
+
+    const request = await prisma.swapRequest.findFirstOrThrow();
+
+    expect(request).toMatchSnapshot({
+      id: expect.any(BigInt),
     });
   });
 });

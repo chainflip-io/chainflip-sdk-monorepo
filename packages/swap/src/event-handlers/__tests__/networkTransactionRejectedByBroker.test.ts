@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { formatTxHash } from '@/shared/common';
+import { formatTxRef } from '@/shared/common';
 import prisma from '../../client';
 import networkTransactionRejectedByBroker from '../networkTransactionRejectedByBroker';
 
@@ -45,7 +45,7 @@ describe(networkTransactionRejectedByBroker, () => {
         reason: 'TransactionRejectedByBroker',
         failedAt: new Date(timestamp - 6000),
         failedBlockIndex: '419-1',
-        depositTransactionRef: formatTxHash('Bitcoin', args.txId.id.txId),
+        depositTransactionRef: formatTxRef('Bitcoin', args.txId.id.txId),
       },
     });
 

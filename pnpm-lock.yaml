@@ -94,7 +94,7 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.4.0
+        specifier: ^0.4.13
         version: 0.4.13
       axios:
         specifier: ^1.7.7
@@ -140,7 +140,7 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.4.0
+        specifier: ^0.4.13
         version: 0.4.13
       '@trpc/client':
         specifier: ^10.45.2
@@ -180,7 +180,7 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.4.0
+        specifier: ^0.4.13
         version: 0.4.13
       axios:
         specifier: ^1.7.7
@@ -226,8 +226,8 @@ importers:
   packages/swap:
     dependencies:
       '@chainflip/processor':
-        specifier: ^1.7.2
-        version: 1.7.2
+        specifier: ^1.8.0
+        version: 1.8.1
       '@chainflip/rpc':
         specifier: ^1.6.11
         version: 1.6.11
@@ -235,7 +235,7 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.4.0
+        specifier: ^0.4.13
         version: 0.4.13
       '@polkadot/api':
         specifier: ^12.2.3
@@ -630,8 +630,8 @@ packages:
   '@chainflip/bitcoin@1.1.1':
     resolution: {integrity: sha512-Jr6X/0QTSFYpTp23ZPhyioL6wL9x3Xpj6OGjadQKZyhobRN4BZkhLogv20HDYTJcRzVphzrTJArbEaNie04XVA==}
 
-  '@chainflip/processor@1.7.2':
-    resolution: {integrity: sha512-ZQvN6/FhD8af/37O02ikvXucdBTv0/BbRon7c55LIzYTWLX7vijZoJu2Ie0mDrzj4rpuzpsvlW+Jd9j0nxkV0A==}
+  '@chainflip/processor@1.8.1':
+    resolution: {integrity: sha512-pUujVi/y8Q2UviNZLACnkQwGMOnFVmWjW5KC+pubf1azOtgE6VrdJ1gwzMnCVFMXByroMfy0zv4BGWdyhwGomA==}
 
   '@chainflip/rpc@1.6.11':
     resolution: {integrity: sha512-K4I1wOGrXkhjvRfYFUrv4OMtYCFIxYVkQkFr+mZvbf+ftzZAjKoFPMAIboSuZUDu4m8vjfOd7cVohYLtUyF32g==}
@@ -6067,7 +6067,7 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@chainflip/processor@1.7.2':
+  '@chainflip/processor@1.8.1':
     dependencies:
       '@chainflip/utils': 0.4.0
       zod: 3.24.1

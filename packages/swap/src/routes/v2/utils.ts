@@ -1,3 +1,4 @@
+import { CHARSET } from '@chainflip/utils/base58';
 import { assertUnreachable } from '@/shared/functions';
 import { readField } from '@/swap/utils/function';
 import logger from '@/swap/utils/logger';
@@ -43,6 +44,12 @@ const swapRequestInclude = {
 
 const channelIdRegex = /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
 const swapRequestIdRegex = /^\d+$/i;
+const hexRegex = /^(0x)?[a-f0-9]+$/i;
+const base58Regex = new RegExp(`^[${CHARSET}]+$`);
+const dotRegex = /^\d+-\d+$/;
+
+const isTransactionRef = (id: string) =>
+  hexRegex.test(id) || base58Regex.test(id) || dotRegex.test(id);
 
 export const getLatestSwapForId = async (id: string) => {
   let swapRequest;
@@ -94,9 +101,9 @@ export const getLatestSwapForId = async (id: string) => {
       where: { nativeId: BigInt(id) },
       include: swapRequestInclude,
     });
-  } else if (id) {
+  } else if (isTransactionRef(id)) {
     swapRequest = await prisma.swapRequest.findFirst({
-      where: { depositTransactionRef: { equals: id, mode: 'insensitive' } },
+      where: { depositTransactionRef: id },
       include: swapRequestInclude,
       // just get the last one for now
       orderBy: { nativeId: 'desc' },
@@ -104,7 +111,7 @@ export const getLatestSwapForId = async (id: string) => {
     });
     if (!swapRequest) {
       failedSwap = await prisma.failedSwap.findFirst({
-        where: { depositTransactionRef: { equals: id, mode: 'insensitive' } },
+        where: { depositTransactionRef: id },
         include: { swapDepositChannel: { include: depositChannelInclude }, refundBroadcast: true },
       });
     }
