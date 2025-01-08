@@ -12,8 +12,12 @@ export default mergeConfig(
       setupFiles: ['./setupFile.ts'],
       env: {
         CHAINFLIP_NETWORK: 'perseverance',
-        REDIS_URL: 'redis://localhost:6379',
         INGEST_GATEWAY_URL: 'https://ingest-gateway.test',
+        RPC_NODE_HTTP_URL: 'http://rpc-node.test',
+        RPC_BROKER_HTTPS_URL: 'https://rpc-broker.test',
+        RPC_NODE_WSS_URL: 'ws://rpc-node.test',
+        SOLANA_RPC_HTTP_URL: 'http://solana-rpc.test',
+        REDIS_URL: 'redis://localhost:6379',
       },
       exclude: ['**/*/Quoter.test.ts', '**/*/integration.test.ts'], // TODO: fix these two tests
     },
