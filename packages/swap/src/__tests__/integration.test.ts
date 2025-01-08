@@ -40,7 +40,7 @@ vi.mock('../utils/statechain', () => ({
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
-describe.todo('python integration test', () => {
+describe('python integration test', () => {
   vi.setConfig({
     testTimeout: 10000,
   });
