@@ -149,7 +149,7 @@ describe('ingress-egress-tracking', () => {
       });
     });
 
-    it('returns null if the non-bitcoin deposit is not found', async () => {
+    it('returns null if the bitcoin deposit is not found', async () => {
       const deposit = await getPendingDeposit('Btc', 'tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf');
 
       expect(logger.error).not.toHaveBeenCalled();

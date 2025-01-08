@@ -37,7 +37,7 @@ function toAtomicUnits(amount: number, asset: InternalAsset, output: string | bi
   return output === 'string' ? amt : BigInt(amt);
 }
 
-describe.skip(Quoter, () => {
+describe.todo(Quoter, () => {
   let oldEnv: typeof env;
   let quoter: Quoter;
   let connectClient: (
@@ -278,14 +278,6 @@ describe.skip(Quoter, () => {
       const quote2 = mm2.sendQuote({ ...request, legs: [[[0, '200']]] });
       // no need to advance timers because setTimeout is cleared
       expect(await limitOrders).toEqual([...quote2, ...quote1]);
-    });
-
-    it("respects the market makers's quoted assets", async () => {
-      env.QUOTE_TIMEOUT = 10_000;
-      const mm = await connectClient('marketMaker', ['Flip']);
-      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
-      expect(await limitOrders).toEqual([]);
-      expect(mm.requestCount).toBe(0);
     });
 
     it("respects the market makers's quoted assets", async () => {

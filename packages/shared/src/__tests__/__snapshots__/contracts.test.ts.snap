@@ -23,3 +23,21 @@ exports[`approve > approves the spender for an allowance equal to the spend requ
   ],
 ]
 `;
+
+exports[`checkAllowance > returns the allowance 1`] = `
+[
+  [
+    "0xcafebabe",
+    "0xdeadbeef",
+  ],
+]
+`;
+
+exports[`checkAllowance > returns the allowance 2`] = `
+[
+  [
+    "0xcafebabe",
+    "0xdeadbeef",
+  ],
+]
+`;

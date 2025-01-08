@@ -60,7 +60,7 @@ describe('postSwapSchema', () => {
     ).toThrow();
   });
 
-  it('handles missing ccm params', () => {
+  it('handles other missing ccm params', () => {
     expect(() =>
       openSwapDepositChannelSchema.parse({
         ...swapBody,

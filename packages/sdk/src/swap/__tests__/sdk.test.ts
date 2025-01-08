@@ -164,7 +164,7 @@ describe(SwapSDK, () => {
       expect(result).toEqual({ quote: 1234 });
     });
 
-    it('calls api with broker commission ', async () => {
+    it('calls api with broker commission', async () => {
       const params: QuoteRequest = {
         srcChain: 'Ethereum',
         srcAsset: 'ETH',
@@ -216,7 +216,7 @@ describe(SwapSDK, () => {
       expect(result).toEqual({ quote: 1234 });
     });
 
-    it('calls api with broker commission ', async () => {
+    it('calls api with broker commission', async () => {
       const params: QuoteRequest = {
         srcChain: 'Ethereum',
         srcAsset: 'ETH',
@@ -1009,78 +1009,6 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           minPrice: '10000000000000',
-        },
-      });
-    });
-
-    it('calls openSwapDepositChannel with refund parameters', async () => {
-      // @ts-expect-error - private method
-      const rpcSpy = vi.spyOn(sdk.trpc.openSwapDepositChannel, 'mutate').mockResolvedValueOnce({
-        id: 'channel id',
-        depositAddress: 'deposit address',
-        brokerCommissionBps: 0,
-        srcChainExpiryBlock: 123n,
-        estimatedExpiryTime: 1698334470000,
-        channelOpeningFee: 0n,
-        issuedBlock: 1,
-        maxBoostFeeBps: 0,
-      });
-
-      const quote = {
-        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
-        depositAmount: BigInt(1e18).toString(),
-        type: 'REGULAR',
-        estimatedPrice: '10000000000000',
-      } as Quote;
-      const response = await sdk.requestDepositAddressV2({
-        quote,
-        destAddress: '0xcafebabe',
-        fillOrKillParams: {
-          retryDurationBlocks: 500,
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-          slippageTolerancePercent: '0',
-        },
-      });
-      expect(rpcSpy).toHaveBeenLastCalledWith({
-        srcChain: Chains.Bitcoin,
-        srcAsset: Assets.BTC,
-        destChain: Chains.Ethereum,
-        destAsset: Assets.FLIP,
-        srcAddress: undefined,
-        destAddress: '0xcafebabe',
-        dcaParams: undefined,
-        amount: BigInt(1e18).toString(),
-        maxBoostFeeBps: undefined,
-        fillOrKillParams: {
-          retryDurationBlocks: 500,
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-          minPriceX128: '34028236692093846346337460743176821145600000000000000000000000',
-        },
-        quote,
-      });
-      expect(response).toStrictEqual({
-        depositChannelId: 'channel id',
-        depositAddress: 'deposit address',
-        brokerCommissionBps: 0,
-        ccmParams: undefined,
-        depositChannelExpiryBlock: 123n,
-        estimatedDepositChannelExpiryTime: 1698334470000,
-        amount: '1000000000000000000',
-        srcAddress: undefined,
-        destAddress: '0xcafebabe',
-        destAsset: 'FLIP',
-        destChain: 'Ethereum',
-        srcAsset: 'BTC',
-        srcChain: 'Bitcoin',
-        maxBoostFeeBps: 0,
-        channelOpeningFee: 0n,
-        dcaParams: undefined,
-        affiliateBrokers: [],
-        fillOrKillParams: {
-          retryDurationBlocks: 500,
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-          slippageTolerancePercent: '0',
         },
       });
     });

@@ -1,4 +1,6 @@
-jest.mock('../config/env', () => ({
+import vi from 'vitest';
+
+vi.mock('../config/env', () => ({
   RPC_NODE_HTTP_URL: '',
   START_HTTP_SERVICE: false,
   START_PROCESSOR: false,
