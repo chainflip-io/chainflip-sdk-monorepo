@@ -216,7 +216,7 @@ export default async function swapRequested({
 
   const { destAddress, ccmMetadata } = getRequestInfo(requestType);
 
-  // TODO(1.8): remove this because all external swaps have a DepositFinalised event now
+  // TODO(1.9): remove this because all external swaps have a DepositFinalised event from 1.8
   const additionalInfo = ccmMetadata
     ? {
         depositFinalisedAt: new Date(block.timestamp),
