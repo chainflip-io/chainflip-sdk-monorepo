@@ -50,7 +50,7 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
   let txRef = getDepositTxRef(assetConstants[asset].chain, depositDetails, blockHeight);
   if (!txRef && assetConstants[asset].chain === 'Solana' && typeof depositAddress === 'string') {
     const tokenAddress =
-      asset === 'SolUsdc' ? getTokenContractAddress('SolUsdc', env.CHAINFLIP_NETWORK) : null;
+      asset !== 'Sol' ? getTokenContractAddress(asset, env.CHAINFLIP_NETWORK) : null;
 
     // somehow the blockHeight on the event can be slightly lower than the slot of the actual deposit
     // https://linear.app/chainflip/issue/PRO-1893/look-into-solana-ingress-block-height
