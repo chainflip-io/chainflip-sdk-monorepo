@@ -174,3 +174,38 @@ exports[`swapRequested > creates a new swap request (VAULT) 1`] = `
   "swapRequestedBlockIndex": "87-13",
 }
 `;
+
+exports[`swapRequested > creates a new swap request and gets the solana tx ref (VAULT 180) 1`] = `
+{
+  "ccmDepositReceivedBlockIndex": null,
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "chunkIntervalBlocks": null,
+  "completedAt": null,
+  "completedBlockIndex": null,
+  "depositAmount": "100000000000",
+  "depositBoostedAt": null,
+  "depositBoostedBlockIndex": null,
+  "depositFinalisedAt": null,
+  "depositFinalisedBlockIndex": null,
+  "depositTransactionRef": "4tpsjS1WFhamaRBfYdEHdadHFs58Ppq8jrv26xwkquVjA5BfP7wGjBbwVrDCECDpxRgfCnqXfCK4way9BPutAyRS",
+  "destAddress": "0xf4640a7c3c20969f40c7e2b62d8a5e4f19e6c106",
+  "destAsset": "Eth",
+  "effectiveBoostFeeBps": null,
+  "egressId": null,
+  "id": Any<BigInt>,
+  "nativeId": 158n,
+  "numberOfChunks": null,
+  "originType": "VAULT",
+  "prewitnessedDepositId": null,
+  "refundEgressId": null,
+  "requestType": "REGULAR",
+  "srcAddress": null,
+  "srcAsset": "Sol",
+  "swapDepositChannelId": null,
+  "swapInputAmount": "100000000000",
+  "swapOutputAmount": null,
+  "swapRequestedAt": 2024-08-23T13:13:12.002Z,
+  "swapRequestedBlockIndex": "87-13",
+}
+`;

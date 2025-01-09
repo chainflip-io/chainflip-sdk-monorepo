@@ -1,9 +1,11 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { findSolanaDepositSignature } from '@chainflip/solana';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { assetConstants } from '@/shared/enums';
+import env from '@/swap/config/env';
 import prisma from '../../client';
 import swapRequested from '../swapRequested';
 
-const vault180 = {
+const vaultBitcoin180 = {
   origin: {
     txId: {
       value: '0xad7aa682145c044e7f0920eebbcccaa527657f3f7dad6300ad6043efcb9a1e2f',
@@ -35,6 +37,45 @@ const vault180 = {
     refundAddress: {
       value: '0x6d76426367686f7345506973675338336963696e6a48696735346250635058457761',
       __kind: 'Btc',
+    },
+    retryDuration: 0,
+  },
+} as const;
+
+const vaultSolana180 = {
+  origin: {
+    txId: {
+      value: ['0xf5fa1e491da884a02d57d62323ea5a9754cf2cca03cb4064bf44016c7c3bc99b', '413006'],
+      __kind: 'Solana',
+    },
+    __kind: 'Vault',
+  },
+  brokerFees: [
+    {
+      bps: 0,
+      account: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
+    },
+  ],
+  inputAsset: {
+    __kind: 'Sol',
+  },
+  inputAmount: '100000000000',
+  outputAsset: {
+    __kind: 'Eth',
+  },
+  requestType: {
+    __kind: 'Regular',
+    outputAddress: {
+      value: '0xf4640a7c3c20969f40c7e2b62d8a5e4f19e6c106',
+      __kind: 'Eth',
+    },
+  },
+  swapRequestId: '158',
+  refundParameters: {
+    minPrice: '0',
+    refundAddress: {
+      value: '0xf79d5e026f12edc6443a534b2cdd5072233989b415d7596573e743f3e5b386fb',
+      __kind: 'Sol',
     },
     retryDuration: 0,
   },
@@ -163,6 +204,8 @@ const ingressEgressFee = {
   swapRequestId: '8',
 };
 
+vi.mock('@chainflip/solana');
+
 describe(swapRequested, () => {
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "SwapRequest", "SwapDepositChannel" CASCADE;`;
@@ -249,12 +292,35 @@ describe(swapRequested, () => {
   });
 
   it('creates a new swap request (VAULT 180)', async () => {
-    await swapRequested({ prisma, event: { ...event, args: vault180 }, block });
+    await swapRequested({ prisma, event: { ...event, args: vaultBitcoin180 }, block });
 
     const request = await prisma.swapRequest.findFirstOrThrow();
 
     expect(request).toMatchSnapshot({
       id: expect.any(BigInt),
     });
+  });
+
+  it('creates a new swap request and gets the solana tx ref (VAULT 180)', async () => {
+    env.SOLANA_RPC_HTTP_URL = 'https://rpc.devnet.solana.chainflip.io:443';
+    vi.mocked(findSolanaDepositSignature).mockResolvedValue(
+      '4tpsjS1WFhamaRBfYdEHdadHFs58Ppq8jrv26xwkquVjA5BfP7wGjBbwVrDCECDpxRgfCnqXfCK4way9BPutAyRS',
+    );
+
+    await swapRequested({ prisma, event: { ...event, args: vaultSolana180 }, block });
+
+    const request = await prisma.swapRequest.findFirstOrThrow();
+
+    expect(request).toMatchSnapshot({
+      id: expect.any(BigInt),
+    });
+    expect(findSolanaDepositSignature).toBeCalledWith(
+      'https://rpc.devnet.solana.chainflip.io:443',
+      null,
+      'HZC6KyQYbxbKGiyWbBrwhxrPPecFi2yKG9jMwFqwNEtJ',
+      1n,
+      413006,
+      413006,
+    );
   });
 });
