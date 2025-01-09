@@ -1,4 +1,5 @@
 import { VoidSigner } from 'ethers';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { Assets, Chain, ChainflipNetworks, Chains, InternalAssets } from '@/shared/enums';
 import { BoostQuote, Quote } from '@/shared/schemas';
 import {
@@ -12,26 +13,31 @@ import { SwapSDK } from '../sdk';
 import { getQuote, getQuoteV2, getStatus, getStatusV2 } from '../services/ApiService';
 import { QuoteRequest } from '../types';
 
-jest.mock('@/shared/vault', () => ({
-  executeSwap: jest.fn(),
-  approveVault: jest.fn(),
+vi.mock('@/shared/vault', () => ({
+  executeSwap: vi.fn(),
+  approveVault: vi.fn(),
 }));
 
-jest.mock('../services/ApiService', () => ({
-  getQuote: jest.fn(),
-  getQuoteV2: jest.fn(),
-  getStatus: jest.fn(),
-  getStatusV2: jest.fn(),
+vi.mock('../services/ApiService', () => ({
+  getQuote: vi.fn(),
+  getQuoteV2: vi.fn(),
+  getStatus: vi.fn(),
+  getStatusV2: vi.fn(),
 }));
 
-jest.mock('@trpc/client', () => ({
-  ...jest.requireActual('@trpc/client'),
-  createTRPCProxyClient: () => ({
-    openSwapDepositChannel: {
-      mutate: jest.fn(),
-    },
-  }),
-}));
+vi.mock('@trpc/client', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    createTRPCProxyClient: () => ({
+      openSwapDepositChannel: {
+        mutate: vi.fn(),
+      },
+    }),
+  };
+});
+
+global.fetch = vi.fn();
 
 describe(SwapSDK, () => {
   const signer = new VoidSigner('0x0');
@@ -60,6 +66,8 @@ describe(SwapSDK, () => {
   };
 
   beforeEach(() => {
+    // @ts-expect-error - global mock
+    global.fetch.mockReset();
     mockRpcResponse(defaultRpcMocks);
   });
 
@@ -145,7 +153,7 @@ describe(SwapSDK, () => {
         destAsset: 'USDC',
         amount: '1',
       };
-      jest.mocked(getQuote).mockResolvedValueOnce({ quote: 1234 } as any);
+      vi.mocked(getQuote).mockResolvedValueOnce({ quote: 1234 } as any);
 
       const result = await sdk.getQuote(params);
       expect(getQuote).toHaveBeenCalledWith(
@@ -156,7 +164,7 @@ describe(SwapSDK, () => {
       expect(result).toEqual({ quote: 1234 });
     });
 
-    it('calls api with broker commission ', async () => {
+    it('calls api with broker commission', async () => {
       const params: QuoteRequest = {
         srcChain: 'Ethereum',
         srcAsset: 'ETH',
@@ -169,7 +177,7 @@ describe(SwapSDK, () => {
           { account: 'cFLdopvNB7LaiBbJoNdNC26e9Gc1FNJKFtvNZjAmXAAVnzCk4', commissionBps: 20 },
         ],
       };
-      jest.mocked(getQuote).mockResolvedValueOnce({ quote: 1234 } as any);
+      vi.mocked(getQuote).mockResolvedValueOnce({ quote: 1234 } as any);
 
       const result = await sdk.getQuote(params);
       expect(getQuote).toHaveBeenCalledWith(
@@ -197,7 +205,7 @@ describe(SwapSDK, () => {
         destAsset: 'USDC',
         amount: '1',
       };
-      jest.mocked(getQuoteV2).mockResolvedValueOnce({ quote: 1234 } as any);
+      vi.mocked(getQuoteV2).mockResolvedValueOnce({ quote: 1234 } as any);
 
       const result = await sdk.getQuoteV2(params);
       expect(getQuoteV2).toHaveBeenCalledWith(
@@ -208,7 +216,7 @@ describe(SwapSDK, () => {
       expect(result).toEqual({ quote: 1234 });
     });
 
-    it('calls api with broker commission ', async () => {
+    it('calls api with broker commission', async () => {
       const params: QuoteRequest = {
         srcChain: 'Ethereum',
         srcAsset: 'ETH',
@@ -221,7 +229,7 @@ describe(SwapSDK, () => {
           { account: 'cFLdopvNB7LaiBbJoNdNC26e9Gc1FNJKFtvNZjAmXAAVnzCk4', commissionBps: 20 },
         ],
       };
-      jest.mocked(getQuoteV2).mockResolvedValueOnce({ quote: 1234 } as any);
+      vi.mocked(getQuoteV2).mockResolvedValueOnce({ quote: 1234 } as any);
 
       const result = await sdk.getQuoteV2(params);
       expect(getQuoteV2).toHaveBeenCalledWith(
@@ -243,7 +251,7 @@ describe(SwapSDK, () => {
 
   describe(SwapSDK.prototype.getStatus, () => {
     it('calls api', async () => {
-      jest.mocked(getStatus).mockResolvedValueOnce({ status: 1234 } as any);
+      vi.mocked(getStatus).mockResolvedValueOnce({ status: 1234 } as any);
 
       const result = await sdk.getStatus({ id: '1234' });
       expect(getStatus).toHaveBeenCalledWith('https://chainflip-swap.staging/', { id: '1234' }, {});
@@ -253,7 +261,7 @@ describe(SwapSDK, () => {
 
   describe(SwapSDK.prototype.getStatusV2, () => {
     it('calls api', async () => {
-      jest.mocked(getStatusV2).mockResolvedValueOnce({ status: 1234 } as any);
+      vi.mocked(getStatusV2).mockResolvedValueOnce({ status: 1234 } as any);
 
       const result = await sdk.getStatusV2({ id: '1234' });
       expect(getStatusV2).toHaveBeenCalledWith(
@@ -268,7 +276,7 @@ describe(SwapSDK, () => {
   describe(SwapSDK.prototype.executeSwap, () => {
     it('calls executeSwap', async () => {
       const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
-      jest.mocked(executeSwap).mockResolvedValueOnce({ hash: 'hello world' } as any);
+      vi.mocked(executeSwap).mockResolvedValueOnce({ hash: 'hello world' } as any);
 
       const result = await sdk.executeSwap(params as any);
       expect(executeSwap).toHaveBeenCalledWith(params, { network: 'sisyphos', signer }, {});
@@ -278,7 +286,7 @@ describe(SwapSDK, () => {
     it('calls executeSwap with the given signer', async () => {
       const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
       const otherSigner = new VoidSigner('0x1');
-      jest.mocked(executeSwap).mockResolvedValueOnce({ hash: 'hello world' } as any);
+      vi.mocked(executeSwap).mockResolvedValueOnce({ hash: 'hello world' } as any);
 
       const result = await sdk.executeSwap(params as any, {
         signer: otherSigner,
@@ -295,7 +303,7 @@ describe(SwapSDK, () => {
   describe(SwapSDK.prototype.approveVault, () => {
     it('calls approveVault', async () => {
       const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
-      jest.mocked(approveVault).mockResolvedValueOnce({ hash: 'hello world' } as any);
+      vi.mocked(approveVault).mockResolvedValueOnce({ hash: 'hello world' } as any);
 
       const result = await sdk.approveVault(params as any);
       expect(approveVault).toHaveBeenCalledWith(params, { network: 'sisyphos', signer }, {});
@@ -305,7 +313,7 @@ describe(SwapSDK, () => {
     it('calls approveVault with given signer', async () => {
       const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
       const otherSigner = new VoidSigner('0x1');
-      jest.mocked(approveVault).mockResolvedValueOnce({ hash: 'hello world' } as any);
+      vi.mocked(approveVault).mockResolvedValueOnce({ hash: 'hello world' } as any);
 
       const result = await sdk.approveVault(params as any, {
         signer: otherSigner,
@@ -322,8 +330,8 @@ describe(SwapSDK, () => {
   describe(SwapSDK.prototype.approveAndExecuteSwap, () => {
     it('approves token allowance before calling executeSwap with the given signer', async () => {
       const params = { amount: '1', srcAsset: 'FLIP', srcChain: 'Ethereum' };
-      jest.mocked(executeSwap).mockResolvedValueOnce({ hash: 'hello world' } as any);
-      jest.mocked(approveVault).mockResolvedValueOnce({ hash: 'hello world 2' } as any);
+      vi.mocked(executeSwap).mockResolvedValueOnce({ hash: 'hello world' } as any);
+      vi.mocked(approveVault).mockResolvedValueOnce({ hash: 'hello world 2' } as any);
 
       const result = await sdk.approveAndExecuteSwap(params as any, {
         signer,
@@ -340,19 +348,17 @@ describe(SwapSDK, () => {
 
   describe(SwapSDK.prototype.requestDepositAddress, () => {
     it('calls openSwapDepositChannel with refund parameters', async () => {
-      const rpcSpy = jest
-        // @ts-expect-error - testing private method
-        .spyOn(sdk.trpc.openSwapDepositChannel, 'mutate')
-        .mockResolvedValueOnce({
-          id: 'channel id',
-          depositAddress: 'deposit address',
-          brokerCommissionBps: 0,
-          srcChainExpiryBlock: 123n,
-          estimatedExpiryTime: 1698334470000,
-          channelOpeningFee: 0n,
-          issuedBlock: 1,
-          maxBoostFeeBps: 0,
-        });
+      // @ts-expect-error - private method
+      const rpcSpy = vi.spyOn(sdk.trpc.openSwapDepositChannel, 'mutate').mockResolvedValueOnce({
+        id: 'channel id',
+        depositAddress: 'deposit address',
+        brokerCommissionBps: 0,
+        srcChainExpiryBlock: 123n,
+        estimatedExpiryTime: 1698334470000,
+        channelOpeningFee: 0n,
+        issuedBlock: 1,
+        maxBoostFeeBps: 0,
+      });
 
       const response = await sdk.requestDepositAddress({
         srcChain: Chains.Bitcoin,
@@ -405,19 +411,17 @@ describe(SwapSDK, () => {
     });
 
     it('calls openSwapDepositChannel with dca and refund parameters', async () => {
-      const rpcSpy = jest
-        // @ts-expect-error - testing private method
-        .spyOn(sdk.trpc.openSwapDepositChannel, 'mutate')
-        .mockResolvedValueOnce({
-          id: 'channel id',
-          depositAddress: 'deposit address',
-          brokerCommissionBps: 0,
-          srcChainExpiryBlock: 123n,
-          estimatedExpiryTime: 1698334470000,
-          channelOpeningFee: 0n,
-          issuedBlock: 1,
-          maxBoostFeeBps: 0,
-        });
+      // @ts-expect-error - private method
+      const rpcSpy = vi.spyOn(sdk.trpc.openSwapDepositChannel, 'mutate').mockResolvedValueOnce({
+        id: 'channel id',
+        depositAddress: 'deposit address',
+        brokerCommissionBps: 0,
+        srcChainExpiryBlock: 123n,
+        estimatedExpiryTime: 1698334470000,
+        channelOpeningFee: 0n,
+        issuedBlock: 1,
+        maxBoostFeeBps: 0,
+      });
 
       const response = await sdk.requestDepositAddress({
         srcChain: Chains.Bitcoin,
@@ -939,19 +943,17 @@ describe(SwapSDK, () => {
 
   describe(SwapSDK.prototype.requestDepositAddressV2, () => {
     it('calls openSwapDepositChannel with refund parameters', async () => {
-      const rpcSpy = jest
-        // @ts-expect-error - testing private method
-        .spyOn(sdk.trpc.openSwapDepositChannel, 'mutate')
-        .mockResolvedValueOnce({
-          id: 'channel id',
-          depositAddress: 'deposit address',
-          brokerCommissionBps: 0,
-          srcChainExpiryBlock: 123n,
-          estimatedExpiryTime: 1698334470000,
-          channelOpeningFee: 0n,
-          issuedBlock: 1,
-          maxBoostFeeBps: 0,
-        });
+      // @ts-expect-error - private method
+      const rpcSpy = vi.spyOn(sdk.trpc.openSwapDepositChannel, 'mutate').mockResolvedValueOnce({
+        id: 'channel id',
+        depositAddress: 'deposit address',
+        brokerCommissionBps: 0,
+        srcChainExpiryBlock: 123n,
+        estimatedExpiryTime: 1698334470000,
+        channelOpeningFee: 0n,
+        issuedBlock: 1,
+        maxBoostFeeBps: 0,
+      });
 
       const quote = {
         srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
@@ -1007,98 +1009,22 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           minPrice: '10000000000000',
-        },
-      });
-    });
-
-    it('calls openSwapDepositChannel with refund parameters', async () => {
-      const rpcSpy = jest
-        // @ts-expect-error - testing private method
-        .spyOn(sdk.trpc.openSwapDepositChannel, 'mutate')
-        .mockResolvedValueOnce({
-          id: 'channel id',
-          depositAddress: 'deposit address',
-          brokerCommissionBps: 0,
-          srcChainExpiryBlock: 123n,
-          estimatedExpiryTime: 1698334470000,
-          channelOpeningFee: 0n,
-          issuedBlock: 1,
-          maxBoostFeeBps: 0,
-        });
-
-      const quote = {
-        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
-        depositAmount: BigInt(1e18).toString(),
-        type: 'REGULAR',
-        estimatedPrice: '10000000000000',
-      } as Quote;
-      const response = await sdk.requestDepositAddressV2({
-        quote,
-        destAddress: '0xcafebabe',
-        fillOrKillParams: {
-          retryDurationBlocks: 500,
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-          slippageTolerancePercent: '0',
-        },
-      });
-      expect(rpcSpy).toHaveBeenLastCalledWith({
-        srcChain: Chains.Bitcoin,
-        srcAsset: Assets.BTC,
-        destChain: Chains.Ethereum,
-        destAsset: Assets.FLIP,
-        srcAddress: undefined,
-        destAddress: '0xcafebabe',
-        dcaParams: undefined,
-        amount: BigInt(1e18).toString(),
-        maxBoostFeeBps: undefined,
-        fillOrKillParams: {
-          retryDurationBlocks: 500,
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-          minPriceX128: '34028236692093846346337460743176821145600000000000000000000000',
-        },
-        quote,
-      });
-      expect(response).toStrictEqual({
-        depositChannelId: 'channel id',
-        depositAddress: 'deposit address',
-        brokerCommissionBps: 0,
-        ccmParams: undefined,
-        depositChannelExpiryBlock: 123n,
-        estimatedDepositChannelExpiryTime: 1698334470000,
-        amount: '1000000000000000000',
-        srcAddress: undefined,
-        destAddress: '0xcafebabe',
-        destAsset: 'FLIP',
-        destChain: 'Ethereum',
-        srcAsset: 'BTC',
-        srcChain: 'Bitcoin',
-        maxBoostFeeBps: 0,
-        channelOpeningFee: 0n,
-        dcaParams: undefined,
-        affiliateBrokers: [],
-        fillOrKillParams: {
-          retryDurationBlocks: 500,
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-          slippageTolerancePercent: '0',
         },
       });
     });
 
     it('calls openSwapDepositChannel with dca parameters', async () => {
-      const rpcSpy = jest
-        // @ts-expect-error - testing private method
-        .spyOn(sdk.trpc.openSwapDepositChannel, 'mutate')
-        .mockResolvedValueOnce({
-          id: 'channel id',
-          depositAddress: 'deposit address',
-          brokerCommissionBps: 0,
-          srcChainExpiryBlock: 123n,
-          estimatedExpiryTime: 1698334470000,
-          channelOpeningFee: 0n,
-          issuedBlock: 1,
-          maxBoostFeeBps: 0,
-        });
+      // @ts-expect-error - private method
+      const rpcSpy = vi.spyOn(sdk.trpc.openSwapDepositChannel, 'mutate').mockResolvedValueOnce({
+        id: 'channel id',
+        depositAddress: 'deposit address',
+        brokerCommissionBps: 0,
+        srcChainExpiryBlock: 123n,
+        estimatedExpiryTime: 1698334470000,
+        channelOpeningFee: 0n,
+        issuedBlock: 1,
+        maxBoostFeeBps: 0,
+      });
 
       const quote = {
         srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },

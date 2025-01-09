@@ -1,22 +1,16 @@
-import axios from 'axios';
+import { AML } from 'elliptic-sdk';
+import { describe, it, beforeEach, expect, vi } from 'vitest';
 import prisma from '../../client';
 import env from '../../config/env';
 import disallowChannel from '../disallowChannel';
 
-jest.mock('axios', () => ({
-  __esModule: true,
-  default: {
-    create() {
-      return this;
-    },
-    post: jest.fn(),
-    interceptors: {
-      request: {
-        use: jest.fn(),
-      },
-    },
-  },
-}));
+vi.mock('elliptic-sdk', () => {
+  const _AML = vi.fn();
+  _AML.prototype.client = {
+    post: vi.fn(),
+  };
+  return { AML: _AML };
+});
 
 describe(disallowChannel, () => {
   const address = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
@@ -46,52 +40,51 @@ describe(disallowChannel, () => {
 
     it.each([8.9, null])('allows not too risky destination addresses', async (score) => {
       env.ELLIPTIC_RISK_SCORE_TOLERANCE = 9;
-      jest.mocked(axios.post).mockResolvedValueOnce({ data: { risk_score: score } });
+      vi.mocked(AML.prototype.client.post).mockResolvedValueOnce({ data: { risk_score: score } });
       const result = await disallowChannel(address, undefined, undefined);
 
       expect(result).toBe(false);
     });
 
-    it('disallows too risky destination addresses', async () => {
+    it('disallows to risky destination addresses', async () => {
       env.ELLIPTIC_RISK_SCORE_TOLERANCE = 9;
-      jest.mocked(axios.post).mockResolvedValueOnce({ data: { risk_score: 9 } });
+      vi.mocked(AML.prototype.client.post).mockResolvedValueOnce({ data: { risk_score: 9 } });
       const result = await disallowChannel(address, undefined, undefined);
-
       expect(result).toBe(true);
     });
 
-    it('disallows too risky source addresses', async () => {
+    it('disallows to risky source addresses', async () => {
       env.ELLIPTIC_RISK_SCORE_TOLERANCE = 9;
-      jest.mocked(axios.post).mockImplementation(
-        (url, data: any) =>
-          ({
-            data: {
-              risk_score: data.subject.hash === address ? 10 : null,
-            },
-          }) as any,
+      vi.mocked(AML.prototype.client.post).mockImplementation((_, data: any) =>
+        Promise.resolve({
+          data: {
+            risk_score: data.subject.hash === address ? 10 : null,
+          },
+        }),
       );
+
       const result = await disallowChannel('0xokaddress', address, undefined);
 
       expect(result).toBe(true);
     });
 
-    it('disallows too risky refund addresses', async () => {
+    it('disallows to risky refund addresses', async () => {
       env.ELLIPTIC_RISK_SCORE_TOLERANCE = 9;
-      jest.mocked(axios.post).mockImplementation(
-        (url, data: any) =>
-          ({
-            data: {
-              risk_score: data.subject.hash === address ? 10 : null,
-            },
-          }) as any,
+      vi.mocked(AML.prototype.client.post).mockImplementation((_, data: any) =>
+        Promise.resolve({
+          data: {
+            risk_score: data.subject.hash === address ? 10 : null,
+          },
+        }),
       );
+
       const result = await disallowChannel('0xokaddress', '0xokaddress', address);
 
       expect(result).toBe(true);
     });
 
     it('returns false if the axios request rejects', async () => {
-      jest.mocked(axios.post).mockRejectedValueOnce(Error('test'));
+      vi.mocked(AML.prototype.client.post).mockRejectedValueOnce(Error('test'));
       const result = await disallowChannel(address, undefined, undefined);
       expect(result).toBe(false);
     });

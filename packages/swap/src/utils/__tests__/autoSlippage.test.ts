@@ -1,15 +1,16 @@
+import { describe, it, beforeEach, expect, vi } from 'vitest';
 import env from '@/swap/config/env';
 import { calculateRecommendedSlippage } from '../autoSlippage';
 import { getDeployedLiquidity, getUndeployedLiquidity } from '../pools';
 import { getRequiredBlockConfirmations } from '../rpc';
 
-jest.mock('../pools', () => ({
-  getDeployedLiquidity: jest.fn(),
-  getUndeployedLiquidity: jest.fn(),
+vi.mock('../pools', () => ({
+  getDeployedLiquidity: vi.fn(),
+  getUndeployedLiquidity: vi.fn(),
 }));
 
-jest.mock('../rpc', () => ({
-  getRequiredBlockConfirmations: jest.fn(),
+vi.mock('../rpc', () => ({
+  getRequiredBlockConfirmations: vi.fn(),
 }));
 
 describe(calculateRecommendedSlippage, () => {
@@ -18,9 +19,9 @@ describe(calculateRecommendedSlippage, () => {
   });
 
   it('should return the correct value for ETH -> USDC for small amount', async () => {
-    jest.mocked(getUndeployedLiquidity).mockResolvedValue(500n);
-    jest.mocked(getDeployedLiquidity).mockResolvedValue(1000n);
-    jest.mocked(getRequiredBlockConfirmations).mockResolvedValue(8);
+    vi.mocked(getUndeployedLiquidity).mockResolvedValue(500n);
+    vi.mocked(getDeployedLiquidity).mockResolvedValue(1000n);
+    vi.mocked(getRequiredBlockConfirmations).mockResolvedValue(8);
 
     // baseSlippage: 1
     // depositTimeSlippage: 12s * 8 / 60 * 0.05 = 0.08
@@ -38,9 +39,9 @@ describe(calculateRecommendedSlippage, () => {
   });
 
   it('should return the correct value for ETH -> USDC for dca chunks', async () => {
-    jest.mocked(getUndeployedLiquidity).mockResolvedValue(500n);
-    jest.mocked(getDeployedLiquidity).mockResolvedValue(1000n);
-    jest.mocked(getRequiredBlockConfirmations).mockResolvedValue(8);
+    vi.mocked(getUndeployedLiquidity).mockResolvedValue(500n);
+    vi.mocked(getDeployedLiquidity).mockResolvedValue(1000n);
+    vi.mocked(getRequiredBlockConfirmations).mockResolvedValue(8);
     env.DCA_CHUNK_PRICE_IMPACT_PERCENT = { Eth: 0.2 };
 
     // baseSlippage: 1
@@ -60,9 +61,9 @@ describe(calculateRecommendedSlippage, () => {
   });
 
   it('should return the correct value for ETH -> USDC for amount >50% of deployed liquidity', async () => {
-    jest.mocked(getUndeployedLiquidity).mockResolvedValue(500n);
-    jest.mocked(getDeployedLiquidity).mockResolvedValue(1000n);
-    jest.mocked(getRequiredBlockConfirmations).mockResolvedValue(8);
+    vi.mocked(getUndeployedLiquidity).mockResolvedValue(500n);
+    vi.mocked(getDeployedLiquidity).mockResolvedValue(1000n);
+    vi.mocked(getRequiredBlockConfirmations).mockResolvedValue(8);
 
     // baseSlippage: 1
     // depositTimeSlippage: 12s * 8 / 60 * 0.05 = 0.08
@@ -80,9 +81,9 @@ describe(calculateRecommendedSlippage, () => {
   });
 
   it('should return the correct value for ETH -> USDC for amount > undeployed liquidity and deployed liquidity', async () => {
-    jest.mocked(getUndeployedLiquidity).mockResolvedValue(500n);
-    jest.mocked(getDeployedLiquidity).mockResolvedValue(1000n);
-    jest.mocked(getRequiredBlockConfirmations).mockResolvedValue(8);
+    vi.mocked(getUndeployedLiquidity).mockResolvedValue(500n);
+    vi.mocked(getDeployedLiquidity).mockResolvedValue(1000n);
+    vi.mocked(getRequiredBlockConfirmations).mockResolvedValue(8);
 
     // baseSlippage: 1
     // depositTimeSlippage: 12s * 8 / 60 * 0.05 = 0.08
@@ -100,9 +101,9 @@ describe(calculateRecommendedSlippage, () => {
   });
 
   it('should return the correct value for ETH -> USDC for amount > undeployed liquidity but less than deployed liquidity', async () => {
-    jest.mocked(getUndeployedLiquidity).mockResolvedValue(500n);
-    jest.mocked(getDeployedLiquidity).mockResolvedValue(1000n);
-    jest.mocked(getRequiredBlockConfirmations).mockResolvedValue(8);
+    vi.mocked(getUndeployedLiquidity).mockResolvedValue(500n);
+    vi.mocked(getDeployedLiquidity).mockResolvedValue(1000n);
+    vi.mocked(getRequiredBlockConfirmations).mockResolvedValue(8);
 
     // baseSlippage: 1
     // depositTimeSlippage: 12s * 8 / 60 * 0.05 = 0.08
@@ -120,9 +121,9 @@ describe(calculateRecommendedSlippage, () => {
   });
 
   it('should return the correct value for BTC -> ETH when swapping 5 BTC with 6 BTC deployed and 2 BTC undeployed', async () => {
-    jest.mocked(getUndeployedLiquidity).mockResolvedValueOnce(120_000n).mockResolvedValueOnce(75n);
-    jest.mocked(getDeployedLiquidity).mockResolvedValueOnce(500_000n).mockResolvedValueOnce(120n);
-    jest.mocked(getRequiredBlockConfirmations).mockResolvedValue(3);
+    vi.mocked(getUndeployedLiquidity).mockResolvedValueOnce(120_000n).mockResolvedValueOnce(75n);
+    vi.mocked(getDeployedLiquidity).mockResolvedValueOnce(500_000n).mockResolvedValueOnce(120n);
+    vi.mocked(getRequiredBlockConfirmations).mockResolvedValue(3);
 
     // Leg1
     // undeployedLiquiditySlippage: 0
@@ -149,9 +150,9 @@ describe(calculateRecommendedSlippage, () => {
   });
 
   it('should return the correct value for BTC -> ETH when swapping 5 BTC with 6 BTC deployed and 2 BTC undeployed and BOOSTED', async () => {
-    jest.mocked(getUndeployedLiquidity).mockResolvedValueOnce(120_000n).mockResolvedValueOnce(40n);
-    jest.mocked(getDeployedLiquidity).mockResolvedValueOnce(360_000n).mockResolvedValueOnce(200n);
-    jest.mocked(getRequiredBlockConfirmations).mockResolvedValue(3);
+    vi.mocked(getUndeployedLiquidity).mockResolvedValueOnce(120_000n).mockResolvedValueOnce(40n);
+    vi.mocked(getDeployedLiquidity).mockResolvedValueOnce(360_000n).mockResolvedValueOnce(200n);
+    vi.mocked(getRequiredBlockConfirmations).mockResolvedValue(3);
 
     // Leg1
     // undeployedLiquiditySlippage: 0

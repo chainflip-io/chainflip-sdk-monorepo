@@ -1,9 +1,13 @@
 {
   "parser": "@typescript-eslint/parser",
-  "extends": ["airbnb-base", "plugin:@typescript-eslint/recommended", "prettier"],
+  "extends": [
+    "airbnb-base",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "plugin:@vitest/legacy-recommended"
+  ],
   "plugins": ["@typescript-eslint"],
   "parserOptions": { "sourceType": "module", "ecmaVersion": "latest" },
-  "env": { "jest": true },
   "rules": {
     "no-underscore-dangle": "off",
     "@typescript-eslint/array-type": "error",
@@ -59,12 +63,21 @@
   "overrides": [
     {
       "files": ["*.test.ts"],
-      "plugins": ["jest"],
+      "plugins": ["@vitest"],
       "rules": {
-        "jest/no-disabled-tests": "error",
-        "jest/no-focused-tests": "error",
         "@typescript-eslint/no-explicit-any": "off",
-        "class-methods-use-this": "off"
+        "class-methods-use-this": "off",
+        "@vitest/no-disabled-tests": "error",
+        "@vitest/prefer-each": "error",
+        "@vitest/consistent-test-it": "error",
+        "@vitest/valid-title": [
+          "error",
+          {
+            "ignoreTypeOfDescribeName": true,
+            "allowArguments": false,
+            "disallowedWords": ["skip"]
+          }
+        ]
       }
     }
   ],

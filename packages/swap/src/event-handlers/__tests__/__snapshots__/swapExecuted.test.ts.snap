@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`swapExecuted updates an existing swap 1`] = `
+exports[`swapExecuted > updates an existing swap 1`] = `
 {
   "createdAt": Any<Date>,
   "destAsset": "Usdc",
@@ -40,7 +40,7 @@ exports[`swapExecuted updates an existing swap 1`] = `
 }
 `;
 
-exports[`swapExecuted updates an existing swap with intermediate amount 1`] = `
+exports[`swapExecuted > updates an existing swap with intermediate amount 1`] = `
 {
   "createdAt": Any<Date>,
   "destAsset": "Sol",

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`getBoostPoolsDepth allows filtering by asset through all the boost pools and sorts the result 1`] = `
+exports[`getBoostPoolsDepth > allows filtering by asset through all the boost pools and sorts the result 1`] = `
 [
   {
     "asset": "Btc",

@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { openSwapDepositChannelSchema } from '../schemas';
 
 const swapBody = {
@@ -59,7 +60,7 @@ describe('postSwapSchema', () => {
     ).toThrow();
   });
 
-  it('handles missing ccm params', () => {
+  it('handles other missing ccm params', () => {
     expect(() =>
       openSwapDepositChannelSchema.parse({
         ...swapBody,

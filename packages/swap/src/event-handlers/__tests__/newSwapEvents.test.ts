@@ -1,4 +1,5 @@
 import { GraphQLClient } from 'graphql-request';
+import { describe, it, expect, beforeEach, vi, beforeAll } from 'vitest';
 import { InternalAssets } from '@/shared/enums';
 import { Event } from '@/swap/gql/generated/graphql';
 import processBlocks from '@/swap/processBlocks';
@@ -60,7 +61,7 @@ describe('new swap events flow', () => {
 
     const blocksIt = batchEvents.entries();
 
-    jest.spyOn(GraphQLClient.prototype, 'request').mockImplementation(async () => {
+    vi.spyOn(GraphQLClient.prototype, 'request').mockImplementation(async () => {
       const batch = blocksIt.next();
       if (batch.done) throw new Error('done');
       const [blockId, events] = batch.value;

@@ -1,9 +1,10 @@
 import { CfBoostPoolsDepthResponse } from '@chainflip/rpc/types';
 import { hexEncodeNumber } from '@chainflip/utils/number';
+import { describe, it, beforeEach, expect, vi } from 'vitest';
 import { mockRpcResponse } from '@/shared/tests/fixtures';
 import { boostPoolsCache, getBoostFeeBpsForAmount } from '../boost';
 
-jest.mock('axios');
+vi.mock('axios');
 
 describe(getBoostFeeBpsForAmount, () => {
   beforeEach(() => {

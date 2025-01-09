@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`depositBoosted updates the values for an existing ccm swap 1`] = `
+exports[`depositBoosted > updates the values for an existing ccm swap 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
@@ -47,7 +47,7 @@ exports[`depositBoosted updates the values for an existing ccm swap 1`] = `
 }
 `;
 
-exports[`depositBoosted updates the values for an existing swap 1`] = `
+exports[`depositBoosted > updates the values for an existing swap 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,

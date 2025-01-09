@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`ApiService getQuote gets a quote 1`] = `
+exports[`ApiService > getQuote > gets a quote 1`] = `
 {
   "amount": "10000",
   "destAsset": "ETH",
@@ -15,7 +15,7 @@ exports[`ApiService getQuote gets a quote 1`] = `
 }
 `;
 
-exports[`ApiService getQuote gets a quote 2`] = `
+exports[`ApiService > getQuote > gets a quote 2`] = `
 [
   "/quote",
   {
@@ -36,7 +36,7 @@ exports[`ApiService getQuote gets a quote 2`] = `
 ]
 `;
 
-exports[`ApiService getQuote gets a quote with a broker commission 1`] = `
+exports[`ApiService > getQuote > gets a quote with a broker commission 1`] = `
 {
   "amount": "10000",
   "destAsset": "ETH",
@@ -51,7 +51,7 @@ exports[`ApiService getQuote gets a quote with a broker commission 1`] = `
 }
 `;
 
-exports[`ApiService getQuote gets a quote with a broker commission 2`] = `
+exports[`ApiService > getQuote > gets a quote with a broker commission 2`] = `
 [
   "/quote",
   {
@@ -73,7 +73,7 @@ exports[`ApiService getQuote gets a quote with a broker commission 2`] = `
 ]
 `;
 
-exports[`ApiService getQuoteV2 gets a quote 1`] = `
+exports[`ApiService > getQuoteV2 > gets a quote 1`] = `
 {
   "amount": "10000",
   "dcaEnabled": false,
@@ -91,7 +91,7 @@ exports[`ApiService getQuoteV2 gets a quote 1`] = `
 }
 `;
 
-exports[`ApiService getQuoteV2 gets a quote 2`] = `
+exports[`ApiService > getQuoteV2 > gets a quote 2`] = `
 [
   "/v2/quote",
   {
@@ -112,7 +112,7 @@ exports[`ApiService getQuoteV2 gets a quote 2`] = `
 ]
 `;
 
-exports[`ApiService getQuoteV2 gets a quote with a broker commission 1`] = `
+exports[`ApiService > getQuoteV2 > gets a quote with a broker commission 1`] = `
 {
   "amount": "10000",
   "dcaEnabled": false,
@@ -130,7 +130,7 @@ exports[`ApiService getQuoteV2 gets a quote with a broker commission 1`] = `
 }
 `;
 
-exports[`ApiService getQuoteV2 gets a quote with a broker commission 2`] = `
+exports[`ApiService > getQuoteV2 > gets a quote with a broker commission 2`] = `
 [
   "/v2/quote",
   {

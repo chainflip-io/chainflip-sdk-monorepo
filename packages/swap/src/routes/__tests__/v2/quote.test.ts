@@ -2,6 +2,7 @@ import { CfSwapRateV3Response, CfSwapRateV3, WsClient } from '@chainflip/rpc';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { Server } from 'http';
 import request from 'supertest';
+import { describe, it, beforeEach, beforeAll, afterEach, expect, vi } from 'vitest';
 import { getAssetAndChain } from '@/shared/enums';
 import {
   MockedBoostPoolsDepth,
@@ -20,51 +21,67 @@ import { boostPoolsCache } from '../../../utils/boost';
 import { getTotalLiquidity } from '../../../utils/pools';
 import { getDcaQuoteParams } from '../../v2/quote';
 
-jest.mock('../../../utils/function', () => ({
-  ...jest.requireActual('../../../utils/function'),
-  isAfterSpecVersion: jest.fn().mockResolvedValue(true),
+vi.mock('../../../utils/function', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    isAfterSpecVersion: vi.fn().mockResolvedValue(true),
+  };
+});
+
+vi.mock('../../../utils/pools', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    getTotalLiquidity: vi.fn(),
+  };
+});
+
+vi.mock('../../../quoting/Quoter');
+
+vi.mock('@chainflip/rpc', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    WsClient: class {
+      async connect() {
+        return this;
+      }
+
+      sendRequest(method: string) {
+        throw new Error(`unmocked request: "${method}"`);
+      }
+    },
+  };
+});
+
+vi.mock('@/shared/consts', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    getPoolsNetworkFeeHundredthPips: vi.fn().mockReturnValue(1000),
+  };
+});
+vi.mock('../../../pricing/index');
+vi.mock('../../../pricing/checkPriceWarning', () => ({
+  checkPriceWarning: vi.fn(),
+  getUsdValue: vi.fn().mockResolvedValue(undefined),
 }));
 
-jest.mock('../../../utils/pools', () => ({
-  ...jest.requireActual('../../../utils/pools'),
-  getTotalLiquidity: jest.fn(),
-}));
-
-jest.mock('../../../quoting/Quoter');
-
-jest.mock('@chainflip/rpc', () => ({
-  ...jest.requireActual('@chainflip/rpc'),
-  WsClient: class {
-    async connect() {
-      return this;
-    }
-
-    sendRequest(method: string) {
-      throw new Error(`unmocked request: "${method}"`);
-    }
-  },
-}));
-
-jest.mock('@/shared/consts', () => ({
-  ...jest.requireActual('@/shared/consts'),
-  getPoolsNetworkFeeHundredthPips: jest.fn().mockReturnValue(1000),
-}));
-jest.mock('../../../pricing/index');
-jest.mock('../../../pricing/checkPriceWarning', () => ({
-  checkPriceWarning: jest.fn(),
-  getUsdValue: jest.fn().mockResolvedValue(undefined),
+vi.mock('../../../polkadot/api', () => ({
+  getBoostSafeMode: vi.fn().mockResolvedValue(true),
 }));
 
 describe(getDcaQuoteParams, () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     env.DCA_CHUNK_SIZE_USD = { Btc: 3000 };
     env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
     env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
   });
 
   it('should correctly return 9060 usd worth of btc', async () => {
-    jest.mocked(getUsdValue).mockResolvedValue('9060');
+    vi.mocked(getUsdValue).mockResolvedValue('9060');
 
     const result = await getDcaQuoteParams('Btc', 27180n);
     expect(result).toMatchInlineSnapshot(`
@@ -77,7 +94,7 @@ describe(getDcaQuoteParams, () => {
   });
 
   it('should correctly return 9300 usd worth of btc', async () => {
-    jest.mocked(getUsdValue).mockResolvedValue('9300');
+    vi.mocked(getUsdValue).mockResolvedValue('9300');
 
     const result = await getDcaQuoteParams('Btc', 27900n);
     expect(result).toMatchInlineSnapshot(`
@@ -90,14 +107,14 @@ describe(getDcaQuoteParams, () => {
   });
 
   it('should correctly handle 300 usd worth of btc', async () => {
-    jest.mocked(getUsdValue).mockResolvedValue('300');
+    vi.mocked(getUsdValue).mockResolvedValue('300');
 
     const result = await getDcaQuoteParams('Btc', 900n);
     expect(result).toEqual(null);
   });
 
   it('should correctly handle 30 usd worth of btc', async () => {
-    jest.mocked(getUsdValue).mockResolvedValue('30');
+    vi.mocked(getUsdValue).mockResolvedValue('30');
 
     const result = await getDcaQuoteParams('Btc', 90n);
     expect(result).toEqual(null);
@@ -175,19 +192,19 @@ describe('server', () => {
   });
 
   beforeEach(async () => {
-    jest.mocked(getUsdValue).mockResolvedValue(undefined);
+    vi.mocked(getUsdValue).mockResolvedValue(undefined);
     server = app.listen(0);
-    jest.mocked(Quoter.prototype.getLimitOrders).mockResolvedValue([]);
-    jest.mocked(getTotalLiquidity).mockResolvedValue(BigInt(200e6));
+    vi.mocked(Quoter.prototype.getLimitOrders).mockResolvedValue([]);
+    vi.mocked(getTotalLiquidity).mockResolvedValue(BigInt(200e6));
     mockRpcs({ ingressFee: hexEncodeNumber(2000000), egressFee: hexEncodeNumber(50000) });
     // eslint-disable-next-line dot-notation
     boostPoolsCache['store'].clear();
   });
 
-  afterEach((cb) => {
+  afterEach(() => {
     Object.assign(env, oldEnv);
-    server.close(cb);
-    jest.restoreAllMocks();
+    server.close();
+    vi.clearAllMocks();
   });
 
   describe('GET /v2/quote', () => {
@@ -315,7 +332,7 @@ describe('server', () => {
     });
 
     it('rejects when the egress amount is smaller than the egress fee', async () => {
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         egress_fee: buildFee('Eth', 25000).bigint,
         network_fee: buildFee('Usdc', 2000000).bigint,
@@ -342,7 +359,7 @@ describe('server', () => {
     });
 
     it('throws 400 if totalLiquidity is lower than egressAmount', async () => {
-      jest.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(0));
+      vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(0));
 
       mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_environment') {
@@ -388,7 +405,7 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Eth', 25000).bigint,
         egress_fee: buildFee('Usdc', 0).bigint,
@@ -413,7 +430,7 @@ describe('server', () => {
     });
 
     it('does not throw if totalLiquidity is higher than egressAmount', async () => {
-      jest.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(200e6));
+      vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(200e6));
       mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_environment') {
           return Promise.resolve({
@@ -457,7 +474,7 @@ describe('server', () => {
 
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
-      jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Eth', 25000).bigint,
         egress_fee: buildFee('Usdc', 0).bigint,
@@ -549,7 +566,7 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Eth', 25000).bigint,
         egress_fee: buildFee('Usdc', 0).bigint,
@@ -619,9 +636,8 @@ describe('server', () => {
       env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
-      jest.mocked(getUsdValue).mockResolvedValue('9800');
-      jest
-        .mocked(getTotalLiquidity)
+      vi.mocked(getUsdValue).mockResolvedValue('9800');
+      vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(500e6))
         .mockResolvedValueOnce(BigInt(200e6));
 
@@ -669,7 +685,7 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      const sendSpy = jest
+      const sendSpy = vi
         .spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
           broker_commission: buildFee('Usdc', 0).bigint,
@@ -841,9 +857,8 @@ describe('server', () => {
       env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
-      jest.mocked(getUsdValue).mockResolvedValue('9800');
-      jest
-        .mocked(getTotalLiquidity)
+      vi.mocked(getUsdValue).mockResolvedValue('9800');
+      vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(0))
         .mockResolvedValueOnce(BigInt(0));
 
@@ -890,8 +905,7 @@ describe('server', () => {
 
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
-      jest
-        .spyOn(WsClient.prototype, 'sendRequest')
+      vi.spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
           broker_commission: buildFee('Usdc', 0).bigint,
           ingress_fee: buildFee('Eth', 25000).bigint,
@@ -928,9 +942,8 @@ describe('server', () => {
       env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
-      jest.mocked(getUsdValue).mockResolvedValue('9800');
-      jest
-        .mocked(getTotalLiquidity)
+      vi.mocked(getUsdValue).mockResolvedValue('9800');
+      vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(0))
         .mockResolvedValueOnce(BigInt(200e6));
 
@@ -977,8 +990,7 @@ describe('server', () => {
 
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
-      jest
-        .spyOn(WsClient.prototype, 'sendRequest')
+      vi.spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
           broker_commission: buildFee('Usdc', 0).bigint,
           ingress_fee: buildFee('Eth', 25000).bigint,
@@ -1037,9 +1049,8 @@ describe('server', () => {
       env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
-      jest.mocked(getUsdValue).mockResolvedValue('9800');
-      jest
-        .mocked(getTotalLiquidity)
+      vi.mocked(getUsdValue).mockResolvedValue('9800');
+      vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(200e6))
         .mockResolvedValueOnce(BigInt(0));
 
@@ -1081,8 +1092,7 @@ describe('server', () => {
         }
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
-      jest
-        .spyOn(WsClient.prototype, 'sendRequest')
+      vi.spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
           broker_commission: buildFee('Usdc', 0).bigint,
           ingress_fee: buildFee('Eth', 25000).bigint,
@@ -1144,9 +1154,8 @@ describe('server', () => {
       env.DCA_CHUNK_SIZE_USD = { Btc: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
-      jest.mocked(getUsdValue).mockResolvedValue('9800');
-      jest
-        .mocked(getTotalLiquidity)
+      vi.mocked(getUsdValue).mockResolvedValue('9800');
+      vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(1e18))
         .mockResolvedValueOnce(BigInt(1e18))
         .mockResolvedValueOnce(BigInt(1e18))
@@ -1196,7 +1205,7 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      const sendSpy = jest
+      const sendSpy = vi
         .spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
           broker_commission: buildFee('Usdc', 1000000).bigint,
@@ -1595,7 +1604,7 @@ describe('server', () => {
       env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
-      jest.mocked(getUsdValue).mockResolvedValue('9800');
+      vi.mocked(getUsdValue).mockResolvedValue('9800');
 
       mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_environment') {
@@ -1641,7 +1650,7 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Eth', 25000).bigint,
         egress_fee: buildFee('Usdc', 0).bigint,
@@ -1723,7 +1732,7 @@ describe('server', () => {
       env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
-      jest.mocked(getUsdValue).mockResolvedValue('2000');
+      vi.mocked(getUsdValue).mockResolvedValue('2000');
 
       mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_environment') {
@@ -1769,7 +1778,7 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Eth', 25000).bigint,
         egress_fee: buildFee('Usdc', 0).bigint,
@@ -1850,7 +1859,7 @@ describe('server', () => {
       env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
-      jest.mocked(getUsdValue).mockResolvedValue('9800');
+      vi.mocked(getUsdValue).mockResolvedValue('9800');
       env.DISABLE_DCA_QUOTING = true;
 
       mockRpcResponse((url, data: any) => {
@@ -1897,7 +1906,7 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Eth', 25000).bigint,
         egress_fee: buildFee('Usdc', 0).bigint,
@@ -1975,7 +1984,7 @@ describe('server', () => {
     });
 
     it('handles unexpected upstream errors', async () => {
-      jest.mocked(getUsdValue).mockResolvedValue('9800');
+      vi.mocked(getUsdValue).mockResolvedValue('9800');
       env.DISABLE_DCA_QUOTING = true;
 
       mockRpcResponse((url, data: any) => {
@@ -2022,7 +2031,7 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      const sendSpy = jest
+      const sendSpy = vi
         .spyOn(WsClient.prototype, 'sendRequest')
         .mockRejectedValue(new Error('Dispatch Error: did you catch me?'));
 

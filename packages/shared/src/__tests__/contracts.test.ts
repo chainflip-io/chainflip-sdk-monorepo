@@ -1,5 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { ContractTransaction, VoidSigner } from 'ethers';
+import { describe, it, expect, vi } from 'vitest';
 import { ERC20__factory } from '../abis';
 import { approve, checkAllowance } from '../contracts';
 
@@ -13,7 +14,7 @@ class MockERC20 {
   }
 }
 
-jest.mock('@/shared/abis/factories/ERC20__factory', () => ({
+vi.mock('@/shared/abis/factories/ERC20__factory', () => ({
   ERC20__factory: class {
     static connect() {
       return new MockERC20();
@@ -27,7 +28,7 @@ describe(checkAllowance, () => {
     { allowance: 1000n, spend: 100n, expected: true },
     { allowance: 1000n, spend: 1500n, expected: false },
   ])('returns the allowance', async ({ allowance, spend, expected }) => {
-    const allowanceSpy = jest
+    const allowanceSpy = vi
       .spyOn(MockERC20.prototype, 'allowance')
       .mockResolvedValueOnce(BigInt(allowance));
     const signer = new VoidSigner('0xcafebabe');
@@ -47,9 +48,9 @@ describe(approve, () => {
   ])(
     'approves the spender for an allowance equal to the spend request',
     async ({ allowance, spend }) => {
-      const approveSpy = jest.spyOn(MockERC20.prototype, 'approve').mockResolvedValueOnce({
+      const approveSpy = vi.spyOn(MockERC20.prototype, 'approve').mockResolvedValueOnce({
         hash: '0x522acf618f67b097672cbcd5f1d0051cf352b7b4dfec4d51b647ce81b33461e4',
-        wait: jest.fn().mockResolvedValue({ status: 1 }),
+        wait: vi.fn().mockResolvedValue({ status: 1 }),
       } as unknown as ContractTransaction);
 
       const tx = await approve(

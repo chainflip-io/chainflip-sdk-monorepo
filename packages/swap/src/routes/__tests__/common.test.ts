@@ -1,4 +1,5 @@
 import * as express from 'express';
+import { describe, it, expect } from 'vitest';
 import { handleQuotingError } from '../common';
 
 describe(handleQuotingError, () => {

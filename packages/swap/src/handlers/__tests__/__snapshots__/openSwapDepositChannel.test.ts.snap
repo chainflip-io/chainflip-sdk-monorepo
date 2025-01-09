@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`openSwapDepositChannel creates channel and stores channel and quote in the database 1`] = `
+exports[`openSwapDepositChannel > creates channel and stores channel and quote in the database 1`] = `
 [
   [
     {
@@ -23,14 +23,14 @@ exports[`openSwapDepositChannel creates channel and stores channel and quote in 
       "srcChain": "Ethereum",
     },
     {
-      "url": "",
+      "url": "https://rpc-broker.test",
     },
     "perseverance",
   ],
 ]
 `;
 
-exports[`openSwapDepositChannel creates channel and stores channel and quote in the database 2`] = `
+exports[`openSwapDepositChannel > creates channel and stores channel and quote in the database 2`] = `
 {
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
@@ -81,7 +81,7 @@ exports[`openSwapDepositChannel creates channel and stores channel and quote in 
 }
 `;
 
-exports[`openSwapDepositChannel creates channel and stores it in the database 1`] = `
+exports[`openSwapDepositChannel > creates channel and stores it in the database 1`] = `
 [
   [
     {
@@ -98,14 +98,14 @@ exports[`openSwapDepositChannel creates channel and stores it in the database 1`
       "srcChain": "Ethereum",
     },
     {
-      "url": "",
+      "url": "https://rpc-broker.test",
     },
     "perseverance",
   ],
 ]
 `;
 
-exports[`openSwapDepositChannel creates channel and stores it in the database 2`] = `
+exports[`openSwapDepositChannel > creates channel and stores it in the database 2`] = `
 {
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
@@ -136,7 +136,7 @@ exports[`openSwapDepositChannel creates channel and stores it in the database 2`
 }
 `;
 
-exports[`openSwapDepositChannel creates channel with boost and dca and stores quote in the database 1`] = `
+exports[`openSwapDepositChannel > creates channel with boost and dca and stores quote in the database 1`] = `
 [
   [
     {
@@ -163,14 +163,14 @@ exports[`openSwapDepositChannel creates channel with boost and dca and stores qu
       "srcChain": "Ethereum",
     },
     {
-      "url": "",
+      "url": "https://rpc-broker.test",
     },
     "perseverance",
   ],
 ]
 `;
 
-exports[`openSwapDepositChannel creates channel with boost and dca and stores quote in the database 2`] = `
+exports[`openSwapDepositChannel > creates channel with boost and dca and stores quote in the database 2`] = `
 {
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
@@ -221,7 +221,7 @@ exports[`openSwapDepositChannel creates channel with boost and dca and stores qu
 }
 `;
 
-exports[`openSwapDepositChannel creates channel with boost fee and stores it in the database 1`] = `
+exports[`openSwapDepositChannel > creates channel with boost fee and stores it in the database 1`] = `
 [
   [
     {
@@ -239,14 +239,14 @@ exports[`openSwapDepositChannel creates channel with boost fee and stores it in 
       "srcChain": "Ethereum",
     },
     {
-      "url": "",
+      "url": "https://rpc-broker.test",
     },
     "perseverance",
   ],
 ]
 `;
 
-exports[`openSwapDepositChannel creates channel with boost fee and stores it in the database 2`] = `
+exports[`openSwapDepositChannel > creates channel with boost fee and stores it in the database 2`] = `
 {
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,
@@ -276,7 +276,7 @@ exports[`openSwapDepositChannel creates channel with boost fee and stores it in 
 }
 `;
 
-exports[`openSwapDepositChannel creates channel with ccmParams and stores it in the database 1`] = `
+exports[`openSwapDepositChannel > creates channel with ccmParams and stores it in the database 1`] = `
 [
   [
     {
@@ -297,14 +297,14 @@ exports[`openSwapDepositChannel creates channel with ccmParams and stores it in 
       "srcChain": "Ethereum",
     },
     {
-      "url": "",
+      "url": "https://rpc-broker.test",
     },
     "perseverance",
   ],
 ]
 `;
 
-exports[`openSwapDepositChannel creates channel with ccmParams and stores it in the database 2`] = `
+exports[`openSwapDepositChannel > creates channel with ccmParams and stores it in the database 2`] = `
 {
   "brokerCommissionBps": 0,
   "ccmGasBudget": "125000",
@@ -334,7 +334,7 @@ exports[`openSwapDepositChannel creates channel with ccmParams and stores it in 
 }
 `;
 
-exports[`openSwapDepositChannel creates channel with fill or kill params and stores it in the database 1`] = `
+exports[`openSwapDepositChannel > creates channel with fill or kill params and stores it in the database 1`] = `
 [
   [
     {
@@ -355,14 +355,14 @@ exports[`openSwapDepositChannel creates channel with fill or kill params and sto
       "srcChain": "Ethereum",
     },
     {
-      "url": "",
+      "url": "https://rpc-broker.test",
     },
     "perseverance",
   ],
 ]
 `;
 
-exports[`openSwapDepositChannel creates channel with fill or kill params and stores it in the database 2`] = `
+exports[`openSwapDepositChannel > creates channel with fill or kill params and stores it in the database 2`] = `
 {
   "brokerCommissionBps": 0,
   "ccmGasBudget": null,

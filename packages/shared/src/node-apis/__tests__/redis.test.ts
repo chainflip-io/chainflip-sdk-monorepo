@@ -1,7 +1,8 @@
 import Redis from 'ioredis';
+import { describe, it, expect, vi } from 'vitest';
 import RedisClient from '../redis';
 
-jest.mock('ioredis');
+vi.mock('ioredis');
 const url = 'redis://localhost:6379';
 
 describe(RedisClient, () => {
@@ -15,7 +16,7 @@ describe(RedisClient, () => {
 
   describe(RedisClient.prototype.getBroadcast, () => {
     it('returns null if the broadcast does not exist', async () => {
-      const mock = jest.mocked(Redis.prototype.get).mockResolvedValueOnce(null);
+      const mock = vi.mocked(Redis.prototype.get).mockResolvedValueOnce(null);
       const client = new RedisClient(url);
       const broadcast = await client.getBroadcast('Ethereum', 1);
       expect(broadcast).toBeNull();
@@ -35,7 +36,7 @@ describe(RedisClient, () => {
         { hash: '0xdeadc0de' },
       ],
     ])('parses a %s broadcast', async (chain, txOutId, txRef) => {
-      const mock = jest
+      const mock = vi
         .mocked(Redis.prototype.get)
         .mockResolvedValueOnce(JSON.stringify({ tx_out_id: txOutId, tx_ref: txRef }));
       const client = new RedisClient(url);
@@ -47,7 +48,7 @@ describe(RedisClient, () => {
 
   describe(RedisClient.prototype.getMempoolTransaction, () => {
     it('returns null if no tx is found for the address', async () => {
-      const mock = jest.mocked(Redis.prototype.get).mockResolvedValueOnce(null);
+      const mock = vi.mocked(Redis.prototype.get).mockResolvedValueOnce(null);
       const client = new RedisClient(url);
       const broadcast = await client.getMempoolTransaction(
         'Bitcoin',
@@ -60,7 +61,7 @@ describe(RedisClient, () => {
     });
 
     it('returns the tx if found', async () => {
-      const mock = jest.mocked(Redis.prototype.get).mockResolvedValueOnce(
+      const mock = vi.mocked(Redis.prototype.get).mockResolvedValueOnce(
         JSON.stringify({
           confirmations: 4,
           value: '0x12b74280',
@@ -87,7 +88,7 @@ describe(RedisClient, () => {
 
   describe(RedisClient.prototype.getDeposits, () => {
     it('returns an empty array if no deposits are found', async () => {
-      const mock = jest.mocked(Redis.prototype.lrange).mockResolvedValueOnce([]);
+      const mock = vi.mocked(Redis.prototype.lrange).mockResolvedValueOnce([]);
       const client = new RedisClient(url);
       const deposits = await client.getDeposits('Ethereum', 'ETH', '0x1234');
       expect(deposits).toEqual([]);
@@ -95,7 +96,7 @@ describe(RedisClient, () => {
     });
 
     it('returns the deposits if found', async () => {
-      const mock = jest.mocked(Redis.prototype.lrange).mockResolvedValueOnce([
+      const mock = vi.mocked(Redis.prototype.lrange).mockResolvedValueOnce([
         JSON.stringify({
           amount: '0x8000',
           asset: 'ETH',
@@ -119,7 +120,7 @@ describe(RedisClient, () => {
     });
 
     it('returns the deposits if found - Polkadot', async () => {
-      const mock = jest.mocked(Redis.prototype.lrange).mockResolvedValueOnce([
+      const mock = vi.mocked(Redis.prototype.lrange).mockResolvedValueOnce([
         JSON.stringify({
           amount: '0x8000',
           asset: 'DOT',
@@ -152,7 +153,7 @@ describe(RedisClient, () => {
     });
 
     it('>V120 returns the deposits if found', async () => {
-      const mock = jest.mocked(Redis.prototype.lrange).mockResolvedValueOnce([
+      const mock = vi.mocked(Redis.prototype.lrange).mockResolvedValueOnce([
         JSON.stringify({
           amount: '0x8000',
           asset: {
@@ -180,7 +181,7 @@ describe(RedisClient, () => {
     });
 
     it('filters out other assets for the same chain', async () => {
-      const mock = jest.mocked(Redis.prototype.lrange).mockResolvedValueOnce([
+      const mock = vi.mocked(Redis.prototype.lrange).mockResolvedValueOnce([
         JSON.stringify({
           amount: '0x8000',
           asset: 'FLIP',

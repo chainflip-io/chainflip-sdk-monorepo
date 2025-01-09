@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`swapRescheduled increments the retry count 1`] = `
+exports[`swapRescheduled > increments the retry count 1`] = `
 {
   "createdAt": Any<Date>,
   "destAsset": "Eth",

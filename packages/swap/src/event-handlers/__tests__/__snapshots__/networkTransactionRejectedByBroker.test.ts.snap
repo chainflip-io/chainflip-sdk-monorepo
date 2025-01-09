@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`networkTransactionRejectedByBroker adds a broadcast to a failed swap 1`] = `
+exports[`networkTransactionRejectedByBroker > adds a broadcast to a failed swap 1`] = `
 [
   {
     "ccmGasBudget": null,
@@ -19,7 +19,7 @@ exports[`networkTransactionRejectedByBroker adds a broadcast to a failed swap 1`
 ]
 `;
 
-exports[`networkTransactionRejectedByBroker adds a broadcast to a failed swap 2`] = `
+exports[`networkTransactionRejectedByBroker > adds a broadcast to a failed swap 2`] = `
 {
   "abortedAt": null,
   "abortedBlockIndex": null,

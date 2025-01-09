@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { ChainflipNetwork } from '../enums';
 import {
   btcAddress,
@@ -52,7 +53,7 @@ describe('dotAddress', () => {
   });
 });
 
-describe('dotAddress', () => {
+describe('chainflipAddress', () => {
   it.each([
     'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n',
     'cFJ4sqrg4FnrLPsGdt5w85XExGYxVLHLYLci28PnqcVVb8r8a',

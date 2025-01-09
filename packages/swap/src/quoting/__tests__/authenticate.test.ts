@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import { promisify } from 'util';
+import { vi, describe, it, beforeEach, expect, Mock } from 'vitest';
 import { InternalAssetMap, InternalAssets } from '@/shared/enums';
 import prisma from '../../client';
 import authenticate from '../authenticate';
@@ -7,12 +8,12 @@ import authenticate from '../authenticate';
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
 describe(authenticate, () => {
-  let next: jest.Mock;
+  let next: Mock;
   let privateKey: crypto.KeyObject;
 
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE private."MarketMaker" CASCADE`;
-    next = jest.fn();
+    next = vi.fn();
     const pair = await generateKeyPairAsync('ed25519');
     await prisma.marketMaker.create({
       data: {

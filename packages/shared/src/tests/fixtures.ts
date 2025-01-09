@@ -8,6 +8,7 @@ import {
   CfSwapRateResponse,
   CfSwappingEnvironmentResponse,
 } from '@chainflip/rpc/types';
+import { vi } from 'vitest';
 import {
   Asset,
   AssetAndChain,
@@ -384,9 +385,9 @@ export const mockRpcResponse = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   cb: ((url: string, data: any) => Promise<{ data: any }>) | Promise<{ data: any }> | { data: any },
 ) => {
-  const spy = jest.fn();
+  const spy = vi.fn();
 
-  jest.mocked(fetch).mockImplementation(async (url, init) => {
+  vi.mocked(fetch).mockImplementation(async (url, init) => {
     const body = JSON.parse((init?.body as string | undefined) ?? '{}');
 
     let res;

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`networkThresholdSignatureInvalid handles the replacement of an invalid broadcast 1`] = `
+exports[`networkThresholdSignatureInvalid > handles the replacement of an invalid broadcast 1`] = `
 {
   "abortedAt": null,
   "abortedBlockIndex": null,
@@ -20,7 +20,7 @@ exports[`networkThresholdSignatureInvalid handles the replacement of an invalid 
 }
 `;
 
-exports[`networkThresholdSignatureInvalid handles the replacement of an invalid broadcast 2`] = `
+exports[`networkThresholdSignatureInvalid > handles the replacement of an invalid broadcast 2`] = `
 {
   "abortedAt": null,
   "abortedBlockIndex": null,

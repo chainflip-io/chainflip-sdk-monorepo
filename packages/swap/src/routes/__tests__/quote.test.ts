@@ -2,6 +2,7 @@ import { CfSwapRateV3, CfSwapRateV3Response, WsClient } from '@chainflip/rpc';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { Server } from 'http';
 import request from 'supertest';
+import { describe, it, beforeEach, beforeAll, afterEach, expect, vi } from 'vitest';
 import { getAssetAndChain } from '@/shared/enums';
 import {
   MockedBoostPoolsDepth,
@@ -20,42 +21,58 @@ import app from '../../server';
 import { boostPoolsCache } from '../../utils/boost';
 import { getTotalLiquidity } from '../../utils/pools';
 
-jest.mock('../../utils/pools', () => ({
-  ...jest.requireActual('../../utils/pools'),
-  getTotalLiquidity: jest.fn(),
+vi.mock('../../utils/pools', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    getTotalLiquidity: vi.fn(),
+  };
+});
+
+vi.mock('../../utils/function', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    isAfterSpecVersion: vi.fn().mockResolvedValue(true),
+  };
+});
+
+vi.mock('../../quoting/Quoter');
+
+vi.mock('@chainflip/rpc', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    WsClient: class {
+      async connect() {
+        return this;
+      }
+
+      sendRequest(method: string) {
+        throw new Error(`unmocked request: "${method}"`);
+      }
+    },
+  };
+});
+
+vi.mock('@/shared/consts', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    getPoolsNetworkFeeHundredthPips: vi.fn().mockReturnValue(1000),
+  };
+});
+
+vi.mock('../../pricing/checkPriceWarning', () => ({
+  checkPriceWarning: vi.fn(),
+  getUsdValue: vi.fn().mockResolvedValue(undefined),
 }));
 
-jest.mock('../../utils/function', () => ({
-  ...jest.requireActual('../../utils/function'),
-  isAfterSpecVersion: jest.fn().mockResolvedValue(true),
+vi.mock('../../polkadot/api', () => ({
+  getBoostSafeMode: vi.fn().mockResolvedValue(true),
 }));
 
-jest.mock('../../quoting/Quoter');
-
-jest.mock('@chainflip/rpc', () => ({
-  ...jest.requireActual('@chainflip/rpc'),
-  WsClient: class {
-    async connect() {
-      return this;
-    }
-
-    sendRequest(method: string) {
-      throw new Error(`unmocked request: "${method}"`);
-    }
-  },
-}));
-
-jest.mock('@/shared/consts', () => ({
-  ...jest.requireActual('@/shared/consts'),
-  getPoolsNetworkFeeHundredthPips: jest.fn().mockReturnValue(1000),
-}));
-
-jest.mock('../../pricing/checkPriceWarning', () => ({
-  checkPriceWarning: jest.fn(),
-  getUsdValue: jest.fn().mockResolvedValue(undefined),
-}));
-
-jest.mock('../../pricing/index');
+vi.mock('../../pricing/index');
 
 const buildFee = (asset: InternalAsset, amount: bigint | number) => ({
   bigint: {
@@ -154,17 +171,17 @@ describe('server', () => {
 
   beforeEach(async () => {
     server = app.listen(0);
-    jest.mocked(Quoter.prototype.getLimitOrders).mockResolvedValue([]);
-    jest.mocked(getTotalLiquidity).mockResolvedValue(BigInt(100e18));
+    vi.mocked(Quoter.prototype.getLimitOrders).mockResolvedValue([]);
+    vi.mocked(getTotalLiquidity).mockResolvedValue(BigInt(100e18));
     mockRpcs({ ingressFee: hexEncodeNumber(2000000), egressFee: hexEncodeNumber(50000) });
     // eslint-disable-next-line dot-notation
     boostPoolsCache['store'].clear();
   });
 
-  afterEach((cb) => {
+  afterEach(() => {
     Object.assign(env, oldEnv);
-    server.close(cb);
-    jest.clearAllMocks();
+    server.close();
+    vi.clearAllMocks();
   });
 
   describe('GET /quote', () => {
@@ -292,7 +309,7 @@ describe('server', () => {
     });
 
     it('rejects when the egress amount is smaller than the egress fee', async () => {
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         egress_fee: buildFee('Eth', 25000).bigint,
         network_fee: buildFee('Usdc', 2000000).bigint,
         ingress_fee: buildFee('Usdc', 2000000).bigint,
@@ -318,7 +335,7 @@ describe('server', () => {
     });
 
     it('rejects when the egress amount is smaller than the minimum egress amount', async () => {
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         egress_fee: buildFee('Eth', 25000).bigint,
         network_fee: buildFee('Usdc', 2000000).bigint,
         ingress_fee: buildFee('Usdc', 2000000).bigint,
@@ -344,7 +361,7 @@ describe('server', () => {
     });
 
     it('gets the quote from USDC with a broker commission', async () => {
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 100000).bigint,
         egress_fee: buildFee('Eth', 25000).bigint,
         network_fee: buildFee('Usdc', 97902).bigint,
@@ -422,7 +439,7 @@ describe('server', () => {
     it('gets the quote from btc with boost information', async () => {
       env.CHAINFLIP_NETWORK = 'backspin';
 
-      const sendSpy = jest
+      const sendSpy = vi
         .spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
           broker_commission: buildFee('Usdc', 0).bigint,
@@ -495,7 +512,7 @@ describe('server', () => {
     it("doesn't include boost information inside quote when there is no liquidity to fill the provided amount", async () => {
       env.CHAINFLIP_NETWORK = 'backspin';
 
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Btc', 100000).bigint,
         network_fee: buildFee('Usdc', 1999500).bigint,
@@ -548,7 +565,7 @@ describe('server', () => {
       env.CHAINFLIP_NETWORK = 'backspin';
       env.DISABLE_BOOST_QUOTING = true;
 
-      jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Btc', 100000).bigint,
         network_fee: buildFee('Usdc', 1999500).bigint,
@@ -587,7 +604,7 @@ describe('server', () => {
     });
 
     it('gets the quote from USDC from the pools', async () => {
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Usdc', 2000000).bigint,
         network_fee: buildFee('Usdc', 98000).bigint,
@@ -670,7 +687,7 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Eth', 25000).bigint,
         egress_fee: buildFee('Usdc', 0).bigint,
@@ -728,9 +745,9 @@ describe('server', () => {
     });
 
     it('gets the quote with intermediate amount', async () => {
-      jest.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(1e18));
+      vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(1e18));
 
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         intermediary: BigInt(2000e6),
         output: 999999999999975000n,
@@ -794,12 +811,11 @@ describe('server', () => {
     });
 
     it('throws 400 if totalLiquidity is lower than egressAmount', async () => {
-      jest
-        .mocked(getTotalLiquidity)
+      vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(0n))
         .mockResolvedValueOnce(BigInt(0n));
 
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         intermediary: BigInt(2000e6),
         output: 999999999999975000n,
@@ -824,12 +840,11 @@ describe('server', () => {
     });
 
     it('throws 400 if totalLiquidity is higher in the intermediate amount but lower for egressAmount', async () => {
-      jest
-        .mocked(getTotalLiquidity)
+      vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(3000e6))
         .mockResolvedValueOnce(BigInt(99999999999975000n));
 
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         intermediary: BigInt(2000e6),
         output: 999999999999975000n,
@@ -854,12 +869,11 @@ describe('server', () => {
     });
 
     it('does not throw if totalLiquidity is higher than egressAmount', async () => {
-      jest
-        .mocked(getTotalLiquidity)
+      vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(999999999999975001n))
         .mockResolvedValueOnce(BigInt(999999999999975001n));
 
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         intermediary: BigInt(2000e6),
         output: 999999999999975000n,
@@ -881,7 +895,7 @@ describe('server', () => {
     });
 
     it('gets the quote with a realistic price', async () => {
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         output: 1229437998n,
         ingress_fee: buildFee('Eth', 169953533800000).bigint,
         network_fee: buildFee('Usdc', 1231422).bigint,
@@ -905,7 +919,7 @@ describe('server', () => {
     });
 
     it('gets the quote with low liquidity warning', async () => {
-      const sendSpy = jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Flip', 2000000).bigint,
         network_fee: buildFee('Usdc', 2994000).bigint,
@@ -950,7 +964,7 @@ describe('server', () => {
         amount: (1e18).toString(),
       });
 
-      jest.mocked(checkPriceWarning).mockResolvedValueOnce(true);
+      vi.mocked(checkPriceWarning).mockResolvedValueOnce(true);
 
       const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
@@ -972,7 +986,7 @@ describe('server', () => {
     });
 
     it('gets the quote for deprecated params without the chain', async () => {
-      jest.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Flip', 2000000).bigint,
         network_fee: buildFee('Usdc', 2000000).bigint,

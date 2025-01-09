@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { bitcoinAddresses } from './bitcoinAddresses';
 import { Chains } from '../../enums';
 import {

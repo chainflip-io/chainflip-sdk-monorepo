@@ -6,6 +6,7 @@ import { Server } from 'socket.io';
 import { io, Socket } from 'socket.io-client';
 import { setTimeout as sleep } from 'timers/promises';
 import { promisify } from 'util';
+import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest';
 import { AddressInfo } from 'ws';
 import { MAX_TICK, MIN_TICK } from '@/shared/consts';
 import { assetConstants, getAssetAndChain } from '@/shared/enums';
@@ -20,13 +21,13 @@ const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
 const serializeBigInt = (k: string, v: unknown) => (typeof v === 'bigint' ? v.toString() : v);
 
-jest.mock('../../utils/statechain', () => ({
-  getSwapRate: jest.fn((args) =>
+vi.mock('../../utils/statechain', () => ({
+  getSwapRate: vi.fn((args) =>
     Promise.reject(new Error(`unhandled getSwapRate(${JSON.stringify(args, serializeBigInt)})`)),
   ),
 }));
 
-jest.mock('../../pricing');
+vi.mock('../../pricing');
 
 function toAtomicUnits(amount: number, asset: InternalAsset, output?: 'string'): string;
 function toAtomicUnits(amount: number, asset: InternalAsset, output: 'bigint'): bigint;
@@ -62,7 +63,7 @@ describe(Quoter, () => {
     server = new Server().use(authenticate).listen(0);
     quoter = new Quoter(server);
 
-    jest.mocked(getAssetPrice).mockImplementation((asset) =>
+    vi.mocked(getAssetPrice).mockImplementation((asset) =>
       Promise.resolve(
         {
           Dot: 6.5,
@@ -198,7 +199,7 @@ describe(Quoter, () => {
 
   describe('constructor', () => {
     it('ignores malformed quote responses', () => {
-      const fakeServer = { on: jest.fn() };
+      const fakeServer = { on: vi.fn() };
 
       const mockQuoter = new Quoter(fakeServer as unknown as Server);
       mockQuoter['inflightRequests'].add('string');
@@ -207,8 +208,8 @@ describe(Quoter, () => {
 
       const handler = fakeServer.on.mock.calls[0][1];
 
-      const socket = { on: jest.fn(), data: { marketMaker: 'MM' } };
-      const next = jest.fn();
+      const socket = { on: vi.fn(), data: { marketMaker: 'MM' }, disconnect: vi.fn() };
+      const next = vi.fn();
       mockQuoter['quotes$'].subscribe(next);
 
       handler(socket as any);
@@ -232,6 +233,7 @@ describe(Quoter, () => {
     it('returns an empty array if no quotes are received', async () => {
       env.QUOTE_TIMEOUT = 10;
       await connectClient('marketMaker');
+
       const orders = await quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
       expect(orders).toEqual([]);
     });
@@ -276,14 +278,6 @@ describe(Quoter, () => {
       const quote2 = mm2.sendQuote({ ...request, legs: [[[0, '200']]] });
       // no need to advance timers because setTimeout is cleared
       expect(await limitOrders).toEqual([...quote2, ...quote1]);
-    });
-
-    it("respects the market makers's quoted assets", async () => {
-      env.QUOTE_TIMEOUT = 10_000;
-      const mm = await connectClient('marketMaker', ['Flip']);
-      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
-      expect(await limitOrders).toEqual([]);
-      expect(mm.requestCount).toBe(0);
     });
 
     it("respects the market makers's quoted assets", async () => {
@@ -392,7 +386,7 @@ describe('approximateIntermediateOutput', () => {
   ] as [InternalAsset, number][])(
     'correctly approximates the USD value of %s',
     async (asset, price) => {
-      jest.mocked(getAssetPrice).mockResolvedValueOnce(price);
+      vi.mocked(getAssetPrice).mockResolvedValueOnce(price);
 
       const oneInAtomicUnits = toAtomicUnits(1, asset);
 

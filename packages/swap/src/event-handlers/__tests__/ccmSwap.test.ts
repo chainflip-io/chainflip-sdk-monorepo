@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
 import { processEvents } from './utils';
 import prisma from '../../client';
 import { SwapDepositAddressReadyArgs } from '../swapDepositAddressReady';

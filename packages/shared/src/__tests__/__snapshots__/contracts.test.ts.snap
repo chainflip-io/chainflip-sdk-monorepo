@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`approve approves the spender for an allowance equal to the spend request 1`] = `
+exports[`approve > approves the spender for an allowance equal to the spend request 1`] = `
 [
   [
     "0xdeadbeef",
@@ -12,7 +12,7 @@ exports[`approve approves the spender for an allowance equal to the spend reques
 ]
 `;
 
-exports[`approve approves the spender for an allowance equal to the spend request 2`] = `
+exports[`approve > approves the spender for an allowance equal to the spend request 2`] = `
 [
   [
     "0xdeadbeef",
@@ -24,7 +24,7 @@ exports[`approve approves the spender for an allowance equal to the spend reques
 ]
 `;
 
-exports[`checkAllowance returns the allowance 1`] = `
+exports[`checkAllowance > returns the allowance 1`] = `
 [
   [
     "0xcafebabe",
@@ -33,7 +33,7 @@ exports[`checkAllowance returns the allowance 1`] = `
 ]
 `;
 
-exports[`checkAllowance returns the allowance 2`] = `
+exports[`checkAllowance > returns the allowance 2`] = `
 [
   [
     "0xcafebabe",

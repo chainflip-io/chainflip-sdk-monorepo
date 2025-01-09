@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { boostPoolsDepth, mockRpcResponse } from '@/shared/tests/fixtures';
 import { getBoostPoolsDepth } from '../rpc';
 
