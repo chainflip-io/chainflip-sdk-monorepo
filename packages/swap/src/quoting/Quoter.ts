@@ -27,7 +27,7 @@ import baseLogger from '../utils/logger';
 
 const logger = baseLogger.child({ module: 'quoter' });
 
-type Quote = { marketMaker: string; quote: MarketMakerQuote };
+type Quote = { accountId: string; quote: MarketMakerQuote };
 
 type LegFormatter = (legs: MarketMakerQuote['legs']) => MarketMakerQuote['legs'];
 
@@ -107,7 +107,7 @@ const formatLimitOrders = (
 
 type ClientVersion = '1' | '2';
 export type SocketData = {
-  marketMaker: string;
+  accountId: string;
   quotedAssets: InternalAssetMap<boolean>;
   clientVersion: ClientVersion;
 };
@@ -126,19 +126,30 @@ export default class Quoter {
 
   private readonly inflightRequests = new Set<string>();
 
+  private connectedAccounts = new Set<string>();
+
   constructor(
     private readonly io: QuotingServer,
     private createId: () => string = randomUUID,
   ) {
     io.on('connection', (socket) => {
-      logger.info(`market maker "${socket.data.marketMaker}" connected`);
+      logger.info('market maker connected', { accountId: socket.data.accountId });
+
+      if (this.connectedAccounts.has(socket.data.accountId)) {
+        logger.warn('duplicate market maker connection', { accountId: socket.data.accountId });
+        socket.disconnect(true);
+        return;
+      }
+
+      this.connectedAccounts.add(socket.data.accountId);
 
       const cleanup = handleExit(() => {
-        socket.disconnect();
+        socket.disconnect(true);
       });
 
       socket.on('disconnect', () => {
-        logger.info(`market maker "${socket.data.marketMaker}" disconnected`);
+        this.connectedAccounts.delete(socket.data.accountId);
+        logger.info('market maker disconnected', { accountId: socket.data.accountId });
         cleanup();
       });
 
@@ -149,7 +160,7 @@ export default class Quoter {
           logger.warn('received invalid quote response', {
             quoteResponse: message,
             reason: result.error,
-            marketMaker: socket.data.marketMaker,
+            accountId: socket.data.accountId,
           });
 
           if (socket.data.clientVersion === '2') {
@@ -172,12 +183,12 @@ export default class Quoter {
           logger.warn('received quote for unknown request', {
             legs: result.data.legs,
             requestId: result.data.request_id,
-            marketMaker: socket.data.marketMaker,
+            accountId: socket.data.accountId,
           });
           return;
         }
 
-        this.quotes$.next({ marketMaker: socket.data.marketMaker, quote: result.data });
+        this.quotes$.next({ accountId: socket.data.accountId, quote: result.data });
       });
     });
   }
@@ -198,7 +209,7 @@ export default class Quoter {
       let message: MarketMakerQuoteRequest<LegJson>;
 
       const [first, second] = request.legs;
-      const { quotedAssets, marketMaker, clientVersion } = socket.data;
+      const { quotedAssets, accountId, clientVersion } = socket.data;
       const quotesFirstLeg = quotedAssets[first.getBaseAsset()];
       const quotesEntireSwap = quotesFirstLeg && (!second || quotedAssets[second.getBaseAsset()]);
 
@@ -207,13 +218,13 @@ export default class Quoter {
           ...request,
           legs: request.legs.map((leg) => leg.toJSON()) as [LegJson] | [LegJson, LegJson],
         };
-        quotedLegsMap.set(marketMaker, { format: singleOrBothLegs, clientVersion });
+        quotedLegsMap.set(accountId, { format: singleOrBothLegs, clientVersion });
       } else if (quotesFirstLeg) {
         message = { ...request, legs: [first.toJSON()] };
-        quotedLegsMap.set(marketMaker, { format: padSecondLeg, clientVersion });
+        quotedLegsMap.set(accountId, { format: padSecondLeg, clientVersion });
       } else if (second && quotedAssets[second.getBaseAsset()]) {
         message = { ...request, legs: [second.toJSON()] };
-        quotedLegsMap.set(marketMaker, { format: padFirstLeg, clientVersion });
+        quotedLegsMap.set(accountId, { format: padFirstLeg, clientVersion });
       } else {
         // eslint-disable-next-line no-continue
         continue;
@@ -242,11 +253,11 @@ export default class Quoter {
         this.inflightRequests.delete(request.request_id);
       };
 
-      sub = this.quotes$.subscribe(({ marketMaker, quote }) => {
-        const { format, clientVersion } = quotedLegsMap.get(marketMaker) ?? {};
+      sub = this.quotes$.subscribe(({ accountId, quote }) => {
+        const { format, clientVersion } = quotedLegsMap.get(accountId) ?? {};
         if (quote.request_id !== request.request_id) return;
         if (format && clientVersion) {
-          clientsReceivedQuotes.set(marketMaker, {
+          clientsReceivedQuotes.set(accountId, {
             ...quote,
             legs: format(quote.legs),
             clientVersion,
