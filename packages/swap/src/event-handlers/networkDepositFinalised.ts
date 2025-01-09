@@ -1,9 +1,14 @@
-import { arbitrumIngressEgressDepositFinalised } from '@chainflip/processor/160/arbitrumIngressEgress/depositFinalised';
+import { arbitrumIngressEgressDepositFinalised as arbitrumSchema160 } from '@chainflip/processor/160/arbitrumIngressEgress/depositFinalised';
 import { bitcoinIngressEgressDepositFinalised as bitcoinSchema160 } from '@chainflip/processor/160/bitcoinIngressEgress/depositFinalised';
-import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/160/ethereumIngressEgress/depositFinalised';
-import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/160/polkadotIngressEgress/depositFinalised';
-import { solanaIngressEgressDepositFinalised } from '@chainflip/processor/160/solanaIngressEgress/depositFinalised';
+import { ethereumIngressEgressDepositFinalised as ethereumSchema160 } from '@chainflip/processor/160/ethereumIngressEgress/depositFinalised';
+import { polkadotIngressEgressDepositFinalised as polkadotSchema160 } from '@chainflip/processor/160/polkadotIngressEgress/depositFinalised';
+import { solanaIngressEgressDepositFinalised as solanaSchema160 } from '@chainflip/processor/160/solanaIngressEgress/depositFinalised';
 import { bitcoinIngressEgressDepositFinalised as bitcoinSchema170 } from '@chainflip/processor/170/bitcoinIngressEgress/depositFinalised';
+import { arbitrumIngressEgressDepositFinalised as arbitrumSchema180 } from '@chainflip/processor/180/arbitrumIngressEgress/depositFinalised';
+import { bitcoinIngressEgressDepositFinalised as bitcoinSchema180 } from '@chainflip/processor/180/bitcoinIngressEgress/depositFinalised';
+import { ethereumIngressEgressDepositFinalised as ethereumSchema180 } from '@chainflip/processor/180/ethereumIngressEgress/depositFinalised';
+import { polkadotIngressEgressDepositFinalised as polkadotSchema180 } from '@chainflip/processor/180/polkadotIngressEgress/depositFinalised';
+import { solanaIngressEgressDepositFinalised as solanaSchema180 } from '@chainflip/processor/180/solanaIngressEgress/depositFinalised';
 import { findSolanaDepositSignature } from '@chainflip/solana';
 import * as base58 from '@chainflip/utils/base58';
 import { hexToBytes } from '@chainflip/utils/bytes';
@@ -15,13 +20,13 @@ import logger from '@/swap/utils/logger';
 import { getDepositTxRef } from './common';
 import { EventHandlerArgs } from '.';
 
-const arbitrumSchema = arbitrumIngressEgressDepositFinalised;
-const bitcoinSchema = z.union([bitcoinSchema170, bitcoinSchema160]);
-const ethereumSchema = ethereumIngressEgressDepositFinalised;
-const polkadotSchema = polkadotIngressEgressDepositFinalised;
-const solanaSchema = solanaIngressEgressDepositFinalised.transform((obj) => ({
+const arbitrumSchema = z.union([arbitrumSchema160, arbitrumSchema180]);
+const bitcoinSchema = z.union([bitcoinSchema160, bitcoinSchema170, bitcoinSchema180]);
+const ethereumSchema = z.union([ethereumSchema160, ethereumSchema180]);
+const polkadotSchema = z.union([polkadotSchema160, polkadotSchema180]);
+const solanaSchema = z.union([solanaSchema160, solanaSchema180]).transform((obj) => ({
   ...obj,
-  depositAddress: base58.encode(hexToBytes(obj.depositAddress)),
+  depositAddress: obj.depositAddress && base58.encode(hexToBytes(obj.depositAddress)),
   depositDetails: undefined,
 }));
 
@@ -36,6 +41,11 @@ const depositFinalisedSchema = z.union([
 export const networkDepositFinalised = async ({ prisma, event, block }: EventHandlerArgs) => {
   const { asset, amount, action, ingressFee, depositDetails, blockHeight, depositAddress } =
     depositFinalisedSchema.parse(event.args);
+
+  if (!depositAddress) {
+    // TODO(1.8): https://linear.app/chainflip/issue/WEB-1764/handle-changes-in-depositboosted-and-depositfinalised-in-swap
+    return;
+  }
 
   let txRef = getDepositTxRef(assetConstants[asset].chain, depositDetails, blockHeight);
   if (!txRef && assetConstants[asset].chain === 'Solana' && typeof depositAddress === 'string') {

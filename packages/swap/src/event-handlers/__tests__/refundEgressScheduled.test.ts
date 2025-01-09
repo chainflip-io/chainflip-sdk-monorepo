@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { DOT_ADDRESS, swapEgressScheduledMock } from './utils';
+import { DOT_ADDRESS, refundEgressScheduledMock } from './utils';
 import prisma from '../../client';
 import refundEgressScheduled from '../refundEgressScheduled';
 
-const { event, block } = swapEgressScheduledMock;
+const { event, block } = refundEgressScheduledMock;
 
 describe(refundEgressScheduled, () => {
   beforeEach(async () => {

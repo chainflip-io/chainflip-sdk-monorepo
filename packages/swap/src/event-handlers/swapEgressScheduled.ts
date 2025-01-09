@@ -1,9 +1,16 @@
-import { swappingSwapEgressScheduled } from '@chainflip/processor/160/swapping/swapEgressScheduled';
+import { swappingSwapEgressScheduled as swappingSwapEgressScheduled160 } from '@chainflip/processor/160/swapping/swapEgressScheduled';
+import { swappingSwapEgressScheduled as swappingSwapEgressScheduled180 } from '@chainflip/processor/180/swapping/swapEgressScheduled';
 import { z } from 'zod';
 import { chainConstants } from '@/shared/enums';
 import type { EventHandlerArgs } from '.';
 
-const eventArgs = swappingSwapEgressScheduled;
+const eventArgs = z.union([
+  swappingSwapEgressScheduled160.transform((result) => ({
+    ...result,
+    egressFee: [result.egressFee, undefined] as const,
+  })),
+  swappingSwapEgressScheduled180,
+]);
 
 export type SwapEgressScheduledArgs = z.input<typeof eventArgs>;
 
@@ -28,7 +35,8 @@ export default async function swapEgressScheduled({
     where: { nativeId: swapRequestId },
   });
 
-  const egressFeeAsset = request.requestType === 'CCM' ? chainConstants[chain].gasAsset : asset;
+  const egressFeeAsset =
+    egressFee[1] ?? (request.requestType === 'CCM' ? chainConstants[chain].gasAsset : asset);
 
   await prisma.swapRequest.update({
     where: { nativeId: swapRequestId },
@@ -46,7 +54,7 @@ export default async function swapEgressScheduled({
         create: {
           type: 'EGRESS',
           asset: egressFeeAsset,
-          amount: egressFee.toString(),
+          amount: egressFee[0].toString(),
         },
       },
     },

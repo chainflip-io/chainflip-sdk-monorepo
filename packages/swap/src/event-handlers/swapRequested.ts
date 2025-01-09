@@ -53,15 +53,13 @@ const transform170Schema = (data: z.output<typeof schema170>): z.output<typeof s
   if (data.requestType.__kind === 'Ccm') {
     requestType = {
       ...data.requestType,
-      ccmSwapMetadata: {
-        ...data.requestType.ccmSwapMetadata,
-        depositMetadata: {
-          ...data.requestType.ccmSwapMetadata.depositMetadata,
-          channelMetadata: {
-            ...data.requestType.ccmSwapMetadata.depositMetadata.channelMetadata,
-            ccmAdditionalData:
-              data.requestType.ccmSwapMetadata.depositMetadata.channelMetadata.cfParameters,
-          },
+      __kind: 'Regular' as const,
+      ccmDepositMetadata: {
+        ...data.requestType.ccmSwapMetadata.depositMetadata,
+        channelMetadata: {
+          ...data.requestType.ccmSwapMetadata.depositMetadata.channelMetadata,
+          ccmAdditionalData:
+            data.requestType.ccmSwapMetadata.depositMetadata.channelMetadata.cfParameters,
         },
       },
     };
@@ -105,18 +103,11 @@ type Origin = z.output<typeof schema>['origin'];
 export type SwapRequestedArgs = z.input<typeof schema>;
 
 const getRequestInfo = (requestType: RequestType) => {
-  let destAddress;
-  let ccmMetadata;
-
   if (requestType.__kind === 'Regular') {
-    destAddress = requestType.outputAddress.address;
-  } else if (requestType.__kind === 'Ccm') {
-    ccmMetadata = requestType.ccmSwapMetadata.depositMetadata;
-    destAddress = requestType.outputAddress.address;
-  }
-
-  if (requestType.__kind === 'Regular' || requestType.__kind === 'Ccm') {
-    return { destAddress, ccmMetadata };
+    return {
+      destAddress: requestType.outputAddress.address,
+      ccmMetadata: requestType.ccmDepositMetadata,
+    };
   }
 
   if (requestType.__kind === 'IngressEgressFee' || requestType.__kind === 'NetworkFee') {
@@ -146,7 +137,7 @@ export const getVaultOriginTxRef = (
       );
     }
     case 'Solana': {
-      // TODO: get signature by account and slot
+      // TODO(1.8): https://linear.app/chainflip/issue/WEB-1677/store-transaction-ref-for-solana-swaps-in-sdk-and-explorer
       return undefined;
     }
     case 'None': {
@@ -225,14 +216,14 @@ export default async function swapRequested({
 
   const { destAddress, ccmMetadata } = getRequestInfo(requestType);
 
-  const additionalInfo =
-    requestType.__kind === 'Ccm'
-      ? {
-          depositFinalisedAt: new Date(block.timestamp),
-          depositFinalisedBlockIndex: `${block.height}-${event.indexInBlock}`,
-          ccmDepositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
-        }
-      : undefined;
+  // TODO(1.9): remove this because all external swaps have a DepositFinalised event from 1.8
+  const additionalInfo = ccmMetadata
+    ? {
+        depositFinalisedAt: new Date(block.timestamp),
+        depositFinalisedBlockIndex: `${block.height}-${event.indexInBlock}`,
+        ccmDepositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
+      }
+    : undefined;
 
   await prisma.swapRequest.create({
     data: {
@@ -242,7 +233,7 @@ export default async function swapRequested({
       swapDepositChannelId,
       srcAsset: inputAsset,
       destAsset: outputAsset,
-      requestType: pascalCaseToScreamingSnakeCase(requestType.__kind),
+      requestType: ccmMetadata ? 'CCM' : pascalCaseToScreamingSnakeCase(requestType.__kind),
       ccmGasBudget: ccmMetadata?.channelMetadata.gasBudget.toString(),
       ccmMessage: ccmMetadata?.channelMetadata.message,
       srcAddress: ccmMetadata?.sourceAddress?.address,

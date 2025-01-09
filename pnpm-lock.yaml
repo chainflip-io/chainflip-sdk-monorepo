@@ -226,8 +226,8 @@ importers:
   packages/swap:
     dependencies:
       '@chainflip/processor':
-        specifier: ^1.8.0
-        version: 1.8.0
+        specifier: ^1.8.1
+        version: 1.8.1
       '@chainflip/rpc':
         specifier: ^1.6.11
         version: 1.6.11
@@ -701,8 +701,8 @@ packages:
   '@chainflip/bitcoin@1.1.1':
     resolution: {integrity: sha512-Jr6X/0QTSFYpTp23ZPhyioL6wL9x3Xpj6OGjadQKZyhobRN4BZkhLogv20HDYTJcRzVphzrTJArbEaNie04XVA==}
 
-  '@chainflip/processor@1.8.0':
-    resolution: {integrity: sha512-Ht+ZQxLXOwyGrp5dJLoY9OeHyFHPRSzN0MrM+yqXFFhrMEdby6MhHyrkK9Ryex+2Cj8x6pgfPdcEeG5l1tp6FQ==}
+  '@chainflip/processor@1.8.1':
+    resolution: {integrity: sha512-pUujVi/y8Q2UviNZLACnkQwGMOnFVmWjW5KC+pubf1azOtgE6VrdJ1gwzMnCVFMXByroMfy0zv4BGWdyhwGomA==}
 
   '@chainflip/rpc@1.6.11':
     resolution: {integrity: sha512-K4I1wOGrXkhjvRfYFUrv4OMtYCFIxYVkQkFr+mZvbf+ftzZAjKoFPMAIboSuZUDu4m8vjfOd7cVohYLtUyF32g==}
@@ -5909,6 +5909,9 @@ packages:
   zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
+  zod@3.24.1:
+    resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
+
 snapshots:
 
   '@1password/op-js@0.1.12':
@@ -6374,10 +6377,10 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@chainflip/processor@1.8.0':
+  '@chainflip/processor@1.8.1':
     dependencies:
       '@chainflip/utils': 0.4.0
-      zod: 3.23.8
+      zod: 3.24.1
 
   '@chainflip/rpc@1.6.11':
     dependencies:
@@ -12305,3 +12308,5 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   zod@3.23.8: {}
+
+  zod@3.24.1: {}

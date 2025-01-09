@@ -208,6 +208,50 @@ export const swapEgressScheduledMock = {
   },
   event: {
     args: {
+      asset: { __kind: 'Eth' },
+      amount: '4945198948008612506',
+      egressId: [{ __kind: 'Ethereum' }, '1'],
+      egressFee: ['167509500781711', { __kind: 'Eth' }],
+      swapRequestId: '9876545',
+    },
+    id: '0000012799-000000-c1ea7',
+    indexInBlock: 0,
+    nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
+    name: eventNames.Swapping.SwapEgressScheduled,
+    phase: 'ApplyExtrinsic',
+    pos: 2,
+    extrinsic: {
+      error: null,
+      hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
+      id: '0000012799-000000-c1ea7',
+      indexInBlock: 0,
+      nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
+      pos: 1,
+      success: true,
+      version: 4,
+      call: {
+        args: [null],
+        error: null,
+        id: '0000012799-000000-c1ea7',
+        name: 'Timestamp.set',
+        nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
+        origin: [null],
+        pos: 0,
+        success: true,
+      },
+    },
+  },
+} as const;
+
+export const refundEgressScheduledMock = {
+  block: {
+    specId: 'test@160',
+    height: 120,
+    timestamp: 1670337105000,
+    hash: '0x123',
+  },
+  event: {
+    args: {
       dispatchInfo: {
         class: [null],
         weight: '101978000',
