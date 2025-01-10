@@ -20,11 +20,11 @@ import logger from '@/swap/utils/logger';
 import { getDepositTxRef } from './common';
 import { EventHandlerArgs } from '.';
 
-const arbitrumSchema = z.union([arbitrumSchema160, arbitrumSchema180]);
-const bitcoinSchema = z.union([bitcoinSchema160, bitcoinSchema170, bitcoinSchema180]);
-const ethereumSchema = z.union([ethereumSchema160, ethereumSchema180]);
-const polkadotSchema = z.union([polkadotSchema160, polkadotSchema180]);
-const solanaSchema = z.union([solanaSchema160, solanaSchema180]).transform((obj) => ({
+const arbitrumSchema = z.union([arbitrumSchema180, arbitrumSchema160]);
+const bitcoinSchema = z.union([bitcoinSchema180, bitcoinSchema170, bitcoinSchema160]);
+const ethereumSchema = z.union([ethereumSchema180, ethereumSchema160]);
+const polkadotSchema = z.union([polkadotSchema180, polkadotSchema160]);
+const solanaSchema = z.union([solanaSchema180, solanaSchema160]).transform((obj) => ({
   ...obj,
   depositAddress: obj.depositAddress && base58.encode(hexToBytes(obj.depositAddress)),
 }));

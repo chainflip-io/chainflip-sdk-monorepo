@@ -76,6 +76,68 @@ describe(networkDepositFinalised, () => {
     });
   });
 
+  it('updates swap request for regular deposit with 180 schema', async () => {
+    await networkDepositFinalised({
+      prisma,
+      block: {
+        height: 10,
+        specId: 'test@150',
+        timestamp: '2024-08-06T00:00:06.000Z',
+        hash: '0x123',
+      },
+      event: {
+        args: {
+          asset: {
+            __kind: 'Btc',
+          },
+          action: {
+            __kind: 'Swap',
+            swapRequestId: '57034',
+          },
+          amount: '10000000',
+          channelId: '7',
+          ingressFee: '2500',
+          originType: {
+            __kind: 'DepositChannel',
+          },
+          blockHeight: '49020',
+          depositAddress: {
+            value: '0x6637a004f3e8536158ee981490b559d6ea0ae92f086d4911454ab88fdbc2c523',
+            __kind: 'Taproot',
+          },
+          depositDetails: {
+            id: {
+              txId: '0xcc76691987ad74f75e247bf86549d643f281ff1bd2256e994c899a549d6809a6',
+              vout: 0,
+            },
+            amount: '10000000',
+            depositAddress: {
+              pubkeyX: '0xd02106f2d8b619bc95b662340f904af6d67bd0efebd1692a839cbc172bbd8a07',
+              scriptPath: {
+                salt: 7,
+                tapleafHash: '0x5c2c1bf4030a5249bb8911aa6ee785f4969764ed6f1752adfbf643ffd011808d',
+                unlockScript: {
+                  bytes:
+                    '0x577520d02106f2d8b619bc95b662340f904af6d67bd0efebd1692a839cbc172bbd8a07ac',
+                },
+                tweakedPubkeyBytes:
+                  '0x026637a004f3e8536158ee981490b559d6ea0ae92f086d4911454ab88fdbc2c523',
+              },
+            },
+          },
+          maxBoostFeeBps: 4,
+        },
+        indexInBlock: 7,
+      } as any,
+    });
+
+    expect(await prisma.swapRequest.findFirstOrThrow({ include: { fees: true } })).toMatchSnapshot({
+      id: expect.any(BigInt),
+      swapDepositChannelId: expect.any(BigInt),
+      fees: [{ id: expect.any(BigInt), swapRequestId: expect.any(BigInt) }],
+    });
+  });
+
   it('updates swap request for boosted deposit', async () => {
     await prisma.swapRequest.update({
       where: {
