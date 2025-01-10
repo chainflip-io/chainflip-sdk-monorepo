@@ -82,11 +82,7 @@ export const validateQuoteQuery = async (query: Query) => {
     throw ServiceError.badRequest(amountResult.reason);
   }
 
-  const ingressFee = await getIngressFee(srcAsset);
-
-  if (ingressFee === null) {
-    throw ServiceError.internalError(`could not determine ingress fee for ${srcAsset}`);
-  }
+  const ingressFee = (await getIngressFee(srcAsset)) ?? 0n; // when the protocol can't estimate the fee, that means they won't charge one so we fallback to 0
 
   if (ingressFee > amount) {
     throw ServiceError.badRequest(`amount is lower than estimated ingress fee (${ingressFee})`);

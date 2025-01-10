@@ -310,27 +310,6 @@ describe('server', () => {
       });
     });
 
-    it('returns an error if backend cannot estimate ingress fee', async () => {
-      const rpcEnvironment = environment({ maxSwapAmount: null });
-      rpcEnvironment.result.ingress_egress.ingress_fees.Ethereum.USDC = null;
-      mockRpcResponse({ data: rpcEnvironment });
-
-      const params = new URLSearchParams({
-        srcChain: 'Ethereum',
-        srcAsset: 'USDC',
-        destChain: 'Ethereum',
-        destAsset: 'ETH',
-        amount: (100e6).toString(),
-      });
-
-      const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
-
-      expect(status).toBe(500);
-      expect(body).toMatchObject({
-        message: 'could not determine ingress fee for Usdc',
-      });
-    });
-
     it('rejects when the egress amount is smaller than the egress fee', async () => {
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
@@ -427,6 +406,96 @@ describe('server', () => {
       expect(status).toBe(400);
       expect(body.message).toBe('Insufficient liquidity for the requested amount');
       expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it("uses 0 as ingress fee when the protocol can't estimate it", async () => {
+      vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2e18));
+      const rpcEnvironment = environment({ maxSwapAmount: null });
+      rpcEnvironment.result.ingress_egress.ingress_fees.Ethereum.USDC = null;
+      mockRpcResponse((url, data: any) => {
+        if (data.method === 'cf_environment') {
+          return Promise.resolve({
+            data: rpcEnvironment,
+          });
+        }
+
+        if (data.method === 'cf_boost_pools_depth') {
+          return Promise.resolve({
+            data: boostPoolsDepth(),
+          });
+        }
+
+        if (data.method === 'cf_pool_depth') {
+          return Promise.resolve({
+            data: cfPoolDepth(),
+          });
+        }
+
+        if (data.method === 'cf_accounts') {
+          return Promise.resolve({
+            data: {
+              id: 1,
+              jsonrpc: '2.0',
+              result: [
+                ['cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH', 'Chainflip Testnet Broker 2'],
+              ],
+            },
+          });
+        }
+
+        if (data.method === 'cf_account_info') {
+          return Promise.resolve({
+            data: cfAccountInfo(),
+          });
+        }
+
+        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+      });
+      vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
+        ingress_fee: buildFee('Usdc', 0).bigint,
+        egress_fee: buildFee('Eth', 0).bigint,
+        network_fee: buildFee('Usdc', 100100).bigint,
+        intermediary: null,
+        output: BigInt(1e18),
+      });
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'USDC',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: (100e6).toString(),
+      });
+
+      const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
+
+      expect(status).toBe(200);
+      expect(body).toMatchObject([
+        {
+          egressAmount: '1000000000000000000',
+          recommendedSlippageTolerancePercent: 1,
+          includedFees: [
+            { type: 'INGRESS', chain: 'Ethereum', asset: 'USDC', amount: '0' },
+            { type: 'NETWORK', chain: 'Ethereum', asset: 'USDC', amount: '100100' },
+            { type: 'EGRESS', chain: 'Ethereum', asset: 'ETH', amount: '0' },
+          ],
+          poolInfo: [
+            {
+              baseAsset: { chain: 'Ethereum', asset: 'ETH' },
+              quoteAsset: { chain: 'Ethereum', asset: 'USDC' },
+              fee: { chain: 'Ethereum', asset: 'USDC', amount: '200000' },
+            },
+          ],
+          estimatedDurationsSeconds: { deposit: 30, swap: 12, egress: 102 },
+          estimatedDurationSeconds: 144,
+          estimatedPrice: '0.01',
+          type: 'REGULAR',
+          srcAsset: { chain: 'Ethereum', asset: 'USDC' },
+          destAsset: { chain: 'Ethereum', asset: 'ETH' },
+          depositAmount: '100000000',
+        },
+      ]);
     });
 
     it('does not throw if totalLiquidity is higher than egressAmount', async () => {

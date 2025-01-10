@@ -287,10 +287,57 @@ describe('server', () => {
       });
     });
 
-    it('returns an error if backend cannot estimate ingress fee', async () => {
+    it("uses 0 as ingress fee when the protocol can't estimate it", async () => {
+      vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2e18));
       const rpcEnvironment = environment({ maxSwapAmount: null });
       rpcEnvironment.result.ingress_egress.ingress_fees.Ethereum.USDC = null;
-      mockRpcResponse({ data: rpcEnvironment });
+      mockRpcResponse((url, data: any) => {
+        if (data.method === 'cf_environment') {
+          return Promise.resolve({
+            data: rpcEnvironment,
+          });
+        }
+
+        if (data.method === 'cf_boost_pools_depth') {
+          return Promise.resolve({
+            data: boostPoolsDepth(),
+          });
+        }
+
+        if (data.method === 'cf_pool_depth') {
+          return Promise.resolve({
+            data: cfPoolDepth(),
+          });
+        }
+
+        if (data.method === 'cf_accounts') {
+          return Promise.resolve({
+            data: {
+              id: 1,
+              jsonrpc: '2.0',
+              result: [
+                ['cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH', 'Chainflip Testnet Broker 2'],
+              ],
+            },
+          });
+        }
+
+        if (data.method === 'cf_account_info') {
+          return Promise.resolve({
+            data: cfAccountInfo(),
+          });
+        }
+
+        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+      });
+      vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
+        ingress_fee: buildFee('Usdc', 0).bigint,
+        egress_fee: buildFee('Eth', 0).bigint,
+        network_fee: buildFee('Usdc', 100100).bigint,
+        intermediary: null,
+        output: BigInt(1e18),
+      });
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -302,9 +349,64 @@ describe('server', () => {
 
       const { body, status } = await request(server).get(`/quote?${params.toString()}`);
 
-      expect(status).toBe(500);
+      expect(status).toBe(200);
       expect(body).toMatchObject({
-        message: 'could not determine ingress fee for Usdc',
+        depositAmount: '100000000',
+        destAsset: {
+          asset: 'ETH',
+          chain: 'Ethereum',
+        },
+        egressAmount: '1000000000000000000',
+        estimatedDurationSeconds: 144,
+        estimatedDurationsSeconds: {
+          deposit: 30,
+          egress: 102,
+          swap: 12,
+        },
+        estimatedPrice: '0.01',
+        includedFees: [
+          {
+            amount: '0',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'INGRESS',
+          },
+          {
+            amount: '100100',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'NETWORK',
+          },
+          {
+            amount: '0',
+            asset: 'ETH',
+            chain: 'Ethereum',
+            type: 'EGRESS',
+          },
+        ],
+        poolInfo: [
+          {
+            baseAsset: {
+              asset: 'ETH',
+              chain: 'Ethereum',
+            },
+            fee: {
+              amount: '200000',
+              asset: 'USDC',
+              chain: 'Ethereum',
+            },
+            quoteAsset: {
+              asset: 'USDC',
+              chain: 'Ethereum',
+            },
+          },
+        ],
+        recommendedSlippageTolerancePercent: 1,
+        srcAsset: {
+          asset: 'USDC',
+          chain: 'Ethereum',
+        },
+        type: 'REGULAR',
       });
     });
 
