@@ -1,7 +1,6 @@
 import { findSolanaDepositSignature } from '@chainflip/solana';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { assetConstants } from '@/shared/enums';
-import env from '@/swap/config/env';
 import prisma from '../../client';
 import swapRequested from '../swapRequested';
 
@@ -302,7 +301,6 @@ describe(swapRequested, () => {
   });
 
   it('creates a new swap request and gets the solana tx ref (VAULT 180)', async () => {
-    env.SOLANA_RPC_HTTP_URL = 'https://rpc.devnet.solana.chainflip.io:443';
     vi.mocked(findSolanaDepositSignature).mockResolvedValue(
       '4tpsjS1WFhamaRBfYdEHdadHFs58Ppq8jrv26xwkquVjA5BfP7wGjBbwVrDCECDpxRgfCnqXfCK4way9BPutAyRS',
     );
@@ -315,7 +313,7 @@ describe(swapRequested, () => {
       id: expect.any(BigInt),
     });
     expect(findSolanaDepositSignature).toBeCalledWith(
-      'https://rpc.devnet.solana.chainflip.io:443',
+      'http://solana-rpc.test',
       null,
       'HZC6KyQYbxbKGiyWbBrwhxrPPecFi2yKG9jMwFqwNEtJ',
       1n,
