@@ -1,12 +1,16 @@
 import { swappingSwapRequested as schema160 } from '@chainflip/processor/160/swapping/swapRequested';
 import { swappingSwapRequested as schema170 } from '@chainflip/processor/170/swapping/swapRequested';
 import { swappingSwapRequested as schema180 } from '@chainflip/processor/180/swapping/swapRequested';
+import { findSolanaDepositSignature } from '@chainflip/solana';
+import * as base58 from '@chainflip/utils/base58';
+import { hexToBytes } from '@chainflip/utils/bytes';
 import z from 'zod';
 import { formatTxRef } from '@/shared/common';
 import { assetConstants, Chain, InternalAsset } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
 import { assertNever } from '@/shared/guards';
 import { pascalCaseToScreamingSnakeCase } from '@/shared/strings';
+import env from '@/swap/config/env';
 import { Prisma } from '../client';
 import type { EventHandlerArgs } from './index';
 
@@ -117,7 +121,7 @@ const getRequestInfo = (requestType: RequestType) => {
   return assertNever(requestType, `unexpected request type: ${(requestType as any).__kind}`);
 };
 
-export const getVaultOriginTxRef = (
+export const getVaultOriginTxRef = async (
   chain: Chain,
   origin: Extract<z.output<typeof schema180>['origin'], { __kind: 'Vault' }>,
 ) => {
@@ -137,8 +141,16 @@ export const getVaultOriginTxRef = (
       );
     }
     case 'Solana': {
-      // TODO(1.8): https://linear.app/chainflip/issue/WEB-1677/store-transaction-ref-for-solana-swaps-in-sdk-and-explorer
-      return undefined;
+      // vault swap tx pays rent to vault swap account
+      const [vaultSwapAccount, slot] = origin.txId.value;
+      return findSolanaDepositSignature(
+        env.SOLANA_RPC_HTTP_URL,
+        null,
+        base58.encode(hexToBytes(vaultSwapAccount)),
+        1n, // dummy amount to detect rent payment
+        Number(slot),
+        Number(slot),
+      );
     }
     case 'None': {
       return undefined;
@@ -177,7 +189,7 @@ export const getOriginInfo = async (
     return {
       originType: 'VAULT' as const,
       swapDepositChannelId: undefined,
-      depositTransactionRef: getVaultOriginTxRef(assetConstants[srcAsset].chain, origin),
+      depositTransactionRef: await getVaultOriginTxRef(assetConstants[srcAsset].chain, origin),
     };
   }
 
