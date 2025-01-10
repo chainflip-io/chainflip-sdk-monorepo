@@ -127,11 +127,10 @@ router.get(
     }
 
     let effectiveBoostFeeBps;
-
-    if (swapDepositChannel && swapDepositChannel.maxBoostFeeBps > 0) {
+    if (swapRequest?.maxBoostFeeBps || swapDepositChannel?.maxBoostFeeBps) {
       if (swapRequest) {
         effectiveBoostFeeBps = swapRequest.effectiveBoostFeeBps ?? undefined;
-      } else if (swapDepositChannel.failedBoosts.length > 0) {
+      } else if (swapDepositChannel?.failedBoosts.length) {
         effectiveBoostFeeBps = 0;
       }
     }
@@ -203,7 +202,8 @@ router.get(
       failedAt: failedSwap?.failedAt,
       failedBlockIndex: failedSwap?.failedBlockIndex ?? undefined,
       depositChannelAffiliateBrokers: affiliateBrokers,
-      depositChannelMaxBoostFeeBps: swapDepositChannel?.maxBoostFeeBps,
+      depositChannelMaxBoostFeeBps:
+        swapRequest?.maxBoostFeeBps ?? swapDepositChannel?.maxBoostFeeBps,
       effectiveBoostFeeBps,
       depositBoostedAt: swapRequest?.depositBoostedAt?.valueOf(),
       depositBoostedBlockIndex: swapRequest?.depositBoostedBlockIndex ?? undefined,

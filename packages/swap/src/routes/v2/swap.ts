@@ -59,12 +59,13 @@ router.get(
       };
     }
 
-    let effectiveBoostFeeBps;
+    const showBoost = Boolean(swapRequest?.maxBoostFeeBps || swapDepositChannel?.maxBoostFeeBps);
 
-    if (swapDepositChannel && swapDepositChannel.maxBoostFeeBps > 0) {
+    let effectiveBoostFeeBps;
+    if (showBoost) {
       if (swapRequest) {
         effectiveBoostFeeBps = swapRequest.effectiveBoostFeeBps ?? undefined;
-      } else if (swapDepositChannel.failedBoosts.length > 0) {
+      } else if (swapDepositChannel?.failedBoosts.length) {
         effectiveBoostFeeBps = 0;
       }
     }
@@ -127,10 +128,6 @@ router.get(
         ...getAssetAndChain(fee.asset),
         amount: fee.amount.toFixed(),
       }));
-
-    const showBoost = Boolean(
-      swapDepositChannel?.maxBoostFeeBps && swapDepositChannel.maxBoostFeeBps > 0,
-    );
 
     const [
       swapEgressFields,
@@ -234,7 +231,7 @@ router.get(
       ...(showBoost && {
         boost: {
           effectiveBoostFeeBps,
-          maxBoostFeeBps: swapDepositChannel?.maxBoostFeeBps,
+          maxBoostFeeBps: swapRequest?.maxBoostFeeBps ?? swapDepositChannel?.maxBoostFeeBps,
           boostedAt: swapRequest?.depositBoostedAt?.valueOf(),
           boostedBlockIndex: swapRequest?.depositBoostedBlockIndex ?? undefined,
           skippedAt: swapDepositChannel?.failedBoosts.at(0)?.failedAtTimestamp.valueOf(),

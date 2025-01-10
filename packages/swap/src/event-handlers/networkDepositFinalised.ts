@@ -27,7 +27,6 @@ const polkadotSchema = z.union([polkadotSchema160, polkadotSchema180]);
 const solanaSchema = z.union([solanaSchema160, solanaSchema180]).transform((obj) => ({
   ...obj,
   depositAddress: obj.depositAddress && base58.encode(hexToBytes(obj.depositAddress)),
-  depositDetails: undefined,
 }));
 
 const depositFinalisedSchema = z.union([
@@ -39,13 +38,10 @@ const depositFinalisedSchema = z.union([
 ]);
 
 export const networkDepositFinalised = async ({ prisma, event, block }: EventHandlerArgs) => {
-  const { asset, amount, action, ingressFee, depositDetails, blockHeight, depositAddress } =
+  const { asset, amount, action, ingressFee, blockHeight, depositAddress, ...rest } =
     depositFinalisedSchema.parse(event.args);
-
-  if (!depositAddress) {
-    // TODO(1.8): https://linear.app/chainflip/issue/WEB-1764/handle-changes-in-depositboosted-and-depositfinalised-in-swap
-    return;
-  }
+  const depositDetails = 'depositDetails' in rest ? rest.depositDetails : undefined;
+  const maxBoostFeeBps = 'maxBoostFeeBps' in rest ? rest.maxBoostFeeBps : undefined;
 
   let txRef = getDepositTxRef(assetConstants[asset].chain, depositDetails, blockHeight);
   if (!txRef && assetConstants[asset].chain === 'Solana' && typeof depositAddress === 'string') {
@@ -86,6 +82,7 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
         fees: {
           create: { amount: ingressFee.toString(), type: 'INGRESS', asset },
         },
+        maxBoostFeeBps,
       },
     });
   } else if (action.__kind === 'BoostersCredited') {
