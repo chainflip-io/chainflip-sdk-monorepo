@@ -1243,7 +1243,7 @@ describe('server', () => {
       });
       expect(body.boost).toMatchObject({
         effectiveBoostFeeBps: 5,
-        maxBoostFeeBps: 30,
+        maxBoostFeeBps: 7,
         boostedAt: 552000,
         boostedBlockIndex: '92-400',
       });

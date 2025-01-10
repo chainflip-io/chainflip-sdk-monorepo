@@ -136,7 +136,7 @@ exports[`server > GET /swaps/:id > retrieves boost details when channel swap was
   "depositChannelBrokerCommissionBps": 0,
   "depositChannelCreatedAt": 516000,
   "depositChannelExpiryBlock": "265",
-  "depositChannelMaxBoostFeeBps": 30,
+  "depositChannelMaxBoostFeeBps": 7,
   "depositChannelOpenedThroughBackend": false,
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",

@@ -19,6 +19,7 @@ exports[`swapScheduled > creates a swap for a swap request 1`] = `
   "effectiveBoostFeeBps": null,
   "egressId": null,
   "id": Any<BigInt>,
+  "maxBoostFeeBps": null,
   "nativeId": 12n,
   "numberOfChunks": null,
   "originType": "VAULT",
