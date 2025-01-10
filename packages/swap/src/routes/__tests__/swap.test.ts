@@ -150,6 +150,9 @@ const swapEventMap = {
     callId: '0000000092-000010-77afe',
     name: 'EthereumIngressEgress.DepositBoosted',
     args: {
+      originType: {
+        __kind: 'DepositChannel',
+      },
       asset: { __kind: 'Eth' },
       action: { __kind: 'Swap', swapRequestId: '368' },
       amounts: [[4, '5000000000000000000']],
@@ -159,6 +162,7 @@ const swapEventMap = {
       blockHeight: '222',
       depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
       depositDetails: {},
+      maxBoostFeeBps: 7,
       prewitnessedDepositId: '27',
     },
   },
@@ -1401,7 +1405,7 @@ describe('server', () => {
       ]);
     });
 
-    it('retrieves boost details when swap was boosted', async () => {
+    it('retrieves boost details when channel swap was boosted', async () => {
       const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositChannelEvent.args.boostFee = 30;
       await processEvents([
@@ -1411,6 +1415,27 @@ describe('server', () => {
       ]);
 
       const { status, body } = await request(server).get(`/swaps/${swapRequestId}`);
+
+      expect(status).toBe(200);
+      expect(body).toMatchSnapshot();
+    });
+
+    it('retrieves boost details when vault swap was boosted', async () => {
+      const txHash = '0xb2dcb9ce8d50f0ab869995fee8482bcf304ffcfe5681ca748f90e34c0ad7b241';
+
+      const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
+      (requestedEvent.args.origin as any) = {
+        __kind: 'Vault',
+        txHash,
+      };
+
+      await processEvents([
+        requestedEvent,
+        swapEventMap['Swapping.SwapScheduled'],
+        swapEventMap['EthereumIngressEgress.DepositBoosted'],
+      ]);
+
+      const { body, status } = await request(server).get(`/swaps/${txHash}`);
 
       expect(status).toBe(200);
       expect(body).toMatchSnapshot();
