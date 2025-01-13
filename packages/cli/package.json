@@ -35,13 +35,8 @@
   "license": "ISC",
   "dependencies": {
     "@chainflip/bitcoin": "^1.1.1",
-<<<<<<< Updated upstream
-    "@chainflip/rpc": "^1.6.11",
-    "@chainflip/solana": "^1.0.5",
-=======
     "@chainflip/rpc": "^1.6.12",
     "@chainflip/solana": "^1.0.3",
->>>>>>> Stashed changes
     "@chainflip/utils": "^0.4.13",
     "ioredis": "^5.4.1",
     "ws": "^8.18.0",
