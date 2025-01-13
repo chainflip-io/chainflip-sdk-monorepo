@@ -82,7 +82,19 @@ export const validateQuoteQuery = async (query: Query) => {
     throw ServiceError.badRequest(amountResult.reason);
   }
 
+<<<<<<< Updated upstream
   const ingressFee = (await getIngressFee(srcAsset)) ?? 0n; // when the protocol can't estimate the fee, that means they won't charge one so we fallback to 0
+=======
+  if(query.isVaultSwap && query.srcChain === 'Polkadot'){
+    throw ServiceError.badRequest(`Polkadot does not support vault swaps`);
+  }
+
+  const ingressFee = await getIngressFee(srcAsset);
+
+  if (ingressFee === null) {
+    throw ServiceError.internalError(`could not determine ingress fee for ${srcAsset}`);
+  }
+>>>>>>> Stashed changes
 
   if (ingressFee > amount) {
     throw ServiceError.badRequest(`amount is lower than estimated ingress fee (${ingressFee})`);
@@ -95,6 +107,7 @@ export const validateQuoteQuery = async (query: Query) => {
     brokerCommissionBps,
     boostDepositsEnabled,
     dcaEnabled: queryResult.data.dcaEnabled,
+    isVaultSwap: queryResult.data.isVaultSwap
   };
 };
 
@@ -124,6 +137,7 @@ export const generateQuotes = async ({
   brokerCommissionBps,
   boostDepositsEnabled,
   quoter,
+  isVaultSwap,
 }: {
   dcaQuoteParams?: Awaited<ReturnType<typeof getDcaQuoteParams>>;
   srcAsset: InternalAsset;
@@ -132,6 +146,7 @@ export const generateQuotes = async ({
   brokerCommissionBps?: number;
   boostDepositsEnabled: boolean;
   quoter: Quoter;
+  isVaultSwap?: boolean;
 }) => {
   let regularEagerLiquidityExists = false;
   let dcaEagerLiquidityExists = false;
@@ -158,6 +173,7 @@ export const generateQuotes = async ({
     limitOrders,
     brokerCommissionBps,
     pools,
+    isVaultSwap
   };
   const dcaQuoteArgs = { dcaParams, ...quoteArgs };
   const queryDca = dcaParams && dcaParams.numberOfChunks > 1;
@@ -246,6 +262,7 @@ const quoteRouter = (quoter: Quoter) => {
         brokerCommissionBps,
         boostDepositsEnabled,
         dcaEnabled,
+        isVaultSwap
       } = await validateQuoteQuery(req.query);
 
       let limitOrdersReceived: Awaited<ReturnType<Quoter['getLimitOrders']>> | undefined;
@@ -256,14 +273,16 @@ const quoteRouter = (quoter: Quoter) => {
             : await getDcaQuoteParams(srcAsset, depositAmount);
 
         const { quotes, limitOrders } = await generateQuotes({
+          dcaQuoteParams,
           srcAsset,
           depositAmount,
           destAsset,
           brokerCommissionBps,
           boostDepositsEnabled,
           quoter,
-          dcaQuoteParams,
+          isVaultSwap
         });
+
         const quote = quotes[0];
         limitOrdersReceived = limitOrders;
 

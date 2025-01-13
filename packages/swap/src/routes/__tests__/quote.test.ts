@@ -494,7 +494,8 @@ describe('server', () => {
         hexEncodeNumber(100_000_000), // deposit amount
         10,
         undefined,
-        [],
+        null,
+        undefined,
       );
       expect(body).toMatchObject({
         egressAmount: (999999999999975000).toString(),
@@ -593,7 +594,8 @@ describe('server', () => {
         hexEncodeNumber(1e8), // deposit amount
         0,
         undefined,
-        [],
+        null,
+        undefined,
       );
 
       // Boosted swap
@@ -604,7 +606,8 @@ describe('server', () => {
         hexEncodeNumber(99950000), // deposit amount - boost fee
         0,
         undefined,
-        [],
+        null,
+        undefined,
       );
 
       expect(body).toMatchSnapshot();
@@ -657,7 +660,8 @@ describe('server', () => {
         hexEncodeNumber(1e8), // deposit amount
         0,
         undefined,
-        [],
+        null,
+        undefined,
       );
 
       expect(body.boostQuote).toBe(undefined);
@@ -734,7 +738,8 @@ describe('server', () => {
         hexEncodeNumber(100e6), // deposit amount,
         0,
         undefined,
-        [],
+        null,
+        undefined
       );
       expect(body).toMatchObject({
         egressAmount: (1e18 - 25000).toString(),

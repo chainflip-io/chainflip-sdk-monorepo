@@ -55,8 +55,13 @@
   },
   "dependencies": {
     "@chainflip/processor": "^1.8.1",
+<<<<<<< Updated upstream
     "@chainflip/rpc": "^1.6.11",
     "@chainflip/solana": "^1.0.5",
+=======
+    "@chainflip/rpc": "^1.6.12",
+    "@chainflip/solana": "^1.0.3",
+>>>>>>> Stashed changes
     "@chainflip/utils": "^0.4.13",
     "@polkadot/api": "^12.2.3",
     "@polkadot/types": "^11.0.2",

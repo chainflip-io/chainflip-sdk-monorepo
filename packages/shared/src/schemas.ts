@@ -22,6 +22,7 @@ export const quoteQuerySchema = z
     amount: numericString.transform((n) => BigInt(n)),
     brokerCommissionBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
     dcaEnabled: booleanString.default('false'),
+    isVaultSwap: booleanString.default('false'),
   })
   .transform((args, ctx) => {
     const { srcAsset, destAsset } = getInternalAssets(args, false);
@@ -50,6 +51,7 @@ export const quoteQuerySchema = z
       amount: args.amount,
       brokerCommissionBps: args.brokerCommissionBps,
       dcaEnabled: args.dcaEnabled,
+      isVaultSwap: args.isVaultSwap
     };
   });
 
@@ -79,6 +81,8 @@ export const dcaParams = z.object({
   chunkIntervalBlocks: number,
 });
 export type DcaParams = z.input<typeof dcaParams>;
+
+export type SwapFeeType = 'Network' | 'Ingress' | 'Egress'; 
 
 export const fillOrKillParams = z.object({
   retryDurationBlocks: number,

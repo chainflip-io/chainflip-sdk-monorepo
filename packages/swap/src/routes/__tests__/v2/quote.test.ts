@@ -905,7 +905,8 @@ describe('server', () => {
         '0xde0b6b3a7640000', // 1e18
         0,
         undefined,
-        [],
+        null,
+        undefined
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         2,
@@ -918,7 +919,8 @@ describe('server', () => {
           number_of_chunks: 4,
           chunk_interval: 2,
         },
-        [],
+        null,
+        undefined,
       );
     });
 
@@ -1629,7 +1631,8 @@ describe('server', () => {
         '0x186a0', // 0.001e8,
         10,
         undefined,
-        [],
+        null,
+        undefined
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         2,
@@ -1639,7 +1642,8 @@ describe('server', () => {
         '0x1863c', // 0.001e8 - 100 (boostFee),
         10,
         undefined,
-        [],
+        null,
+        undefined
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         3,
@@ -1652,7 +1656,8 @@ describe('server', () => {
           number_of_chunks: 4,
           chunk_interval: 2,
         },
-        [],
+        null,
+        undefined
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         4,
@@ -1665,7 +1670,8 @@ describe('server', () => {
           number_of_chunks: 4,
           chunk_interval: 2,
         },
-        [],
+        null,
+        undefined,
       );
     });
 
