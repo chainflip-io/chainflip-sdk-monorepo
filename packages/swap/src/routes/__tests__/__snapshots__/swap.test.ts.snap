@@ -127,7 +127,7 @@ exports[`server > GET /swaps/:id > retrieves a swap in FAILED status (refund egr
 }
 `;
 
-exports[`server > GET /swaps/:id > retrieves boost details when swap was boosted 1`] = `
+exports[`server > GET /swaps/:id > retrieves boost details when channel swap was boosted 1`] = `
 {
   "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
   "depositAmount": "4999949999999650000",
@@ -159,6 +159,43 @@ exports[`server > GET /swaps/:id > retrieves boost details when swap was boosted
     },
   ],
   "isDepositChannelExpired": false,
+  "lastStatechainUpdateAt": 1640995200000,
+  "srcAsset": "ETH",
+  "srcChain": "Ethereum",
+  "srcChainRequiredBlockConfirmations": 2,
+  "state": "DEPOSIT_RECEIVED",
+  "swapId": "368",
+  "swapScheduledAt": 552000,
+  "swapScheduledBlockIndex": "92-399",
+  "type": "SWAP",
+}
+`;
+
+exports[`server > GET /swaps/:id > retrieves boost details when vault swap was boosted 1`] = `
+{
+  "depositAmount": "4999949999999650000",
+  "depositBoostedAt": 552000,
+  "depositBoostedBlockIndex": "92-400",
+  "depositTransactionRef": "0xb2dcb9ce8d50f0ab869995fee8482bcf304ffcfe5681ca748f90e34c0ad7b241",
+  "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+  "destAsset": "DOT",
+  "destChain": "Polkadot",
+  "effectiveBoostFeeBps": 5,
+  "estimatedDefaultDurationSeconds": 138,
+  "feesPaid": [
+    {
+      "amount": "2500000000000000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "BOOST",
+    },
+    {
+      "amount": "50000000350000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+  ],
   "lastStatechainUpdateAt": 1640995200000,
   "srcAsset": "ETH",
   "srcChain": "Ethereum",

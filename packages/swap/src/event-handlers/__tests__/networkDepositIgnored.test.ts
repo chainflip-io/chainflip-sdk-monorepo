@@ -37,8 +37,22 @@ const btcDepositIgnoredMock = buildDepositIgnoredEvent({
   },
   reason: { __kind: 'BelowMinimumDeposit' },
   depositDetails: {
-    txId: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
-    vout: 0,
+    id: {
+      txId: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+      vout: 0,
+    },
+    amount: '255548712',
+    depositAddress: {
+      pubkeyX: '0x04c3c844e48ea19973666e17e70d7ee33ebbec90c88cbd272b0997771827780b',
+      scriptPath: {
+        salt: 27377,
+        tapleafHash: '0x9d6db76a5217b39fabbb7fa04dc9c64a8ae8a721f0201a6bf09f2f4f6f057f7a',
+        unlockScript: {
+          bytes: '0x02f16a752004c3c844e48ea19973666e17e70d7ee33ebbec90c88cbd272b0997771827780bac',
+        },
+        tweakedPubkeyBytes: '0x02c17b73da6f7f3d6b98bf2adafc2a040ac06d88203d63d6f9ca62bb0ac6190597',
+      },
+    },
   },
 });
 

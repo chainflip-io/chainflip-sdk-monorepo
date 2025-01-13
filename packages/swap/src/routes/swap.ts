@@ -127,11 +127,10 @@ router.get(
     }
 
     let effectiveBoostFeeBps;
-
-    if (swapDepositChannel && swapDepositChannel.maxBoostFeeBps > 0) {
+    if (swapRequest?.maxBoostFeeBps || swapDepositChannel?.maxBoostFeeBps) {
       if (swapRequest) {
         effectiveBoostFeeBps = swapRequest.effectiveBoostFeeBps ?? undefined;
-      } else if (swapDepositChannel.failedBoosts.length > 0) {
+      } else if (swapDepositChannel?.failedBoosts.length) {
         effectiveBoostFeeBps = 0;
       }
     }

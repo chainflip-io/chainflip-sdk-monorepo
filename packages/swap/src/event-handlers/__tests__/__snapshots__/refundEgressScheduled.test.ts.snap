@@ -26,6 +26,7 @@ exports[`refundEgressScheduled > creates egress for refund on an existing swap 1
     },
   ],
   "id": Any<BigInt>,
+  "maxBoostFeeBps": 0,
   "nativeId": 9876545n,
   "numberOfChunks": null,
   "originType": "VAULT",

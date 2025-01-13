@@ -1,5 +1,4 @@
 import { arbitrumIngressEgressDepositFinalised as arbitrumSchema160 } from '@chainflip/processor/160/arbitrumIngressEgress/depositFinalised';
-import { bitcoinIngressEgressDepositFinalised as bitcoinSchema160 } from '@chainflip/processor/160/bitcoinIngressEgress/depositFinalised';
 import { ethereumIngressEgressDepositFinalised as ethereumSchema160 } from '@chainflip/processor/160/ethereumIngressEgress/depositFinalised';
 import { polkadotIngressEgressDepositFinalised as polkadotSchema160 } from '@chainflip/processor/160/polkadotIngressEgress/depositFinalised';
 import { solanaIngressEgressDepositFinalised as solanaSchema160 } from '@chainflip/processor/160/solanaIngressEgress/depositFinalised';
@@ -20,14 +19,13 @@ import logger from '@/swap/utils/logger';
 import { getDepositTxRef } from './common';
 import { EventHandlerArgs } from '.';
 
-const arbitrumSchema = z.union([arbitrumSchema160, arbitrumSchema180]);
-const bitcoinSchema = z.union([bitcoinSchema160, bitcoinSchema170, bitcoinSchema180]);
-const ethereumSchema = z.union([ethereumSchema160, ethereumSchema180]);
-const polkadotSchema = z.union([polkadotSchema160, polkadotSchema180]);
-const solanaSchema = z.union([solanaSchema160, solanaSchema180]).transform((obj) => ({
+const arbitrumSchema = z.union([arbitrumSchema180, arbitrumSchema160]);
+const bitcoinSchema = z.union([bitcoinSchema180, bitcoinSchema170]);
+const ethereumSchema = z.union([ethereumSchema180, ethereumSchema160]);
+const polkadotSchema = z.union([polkadotSchema180, polkadotSchema160]);
+const solanaSchema = z.union([solanaSchema180, solanaSchema160]).transform((obj) => ({
   ...obj,
   depositAddress: obj.depositAddress && base58.encode(hexToBytes(obj.depositAddress)),
-  depositDetails: undefined,
 }));
 
 const depositFinalisedSchema = z.union([
@@ -39,13 +37,10 @@ const depositFinalisedSchema = z.union([
 ]);
 
 export const networkDepositFinalised = async ({ prisma, event, block }: EventHandlerArgs) => {
-  const { asset, amount, action, ingressFee, depositDetails, blockHeight, depositAddress } =
+  const { asset, amount, action, ingressFee, blockHeight, depositAddress, ...rest } =
     depositFinalisedSchema.parse(event.args);
-
-  if (!depositAddress) {
-    // TODO(1.8): https://linear.app/chainflip/issue/WEB-1764/handle-changes-in-depositboosted-and-depositfinalised-in-swap
-    return;
-  }
+  const depositDetails = 'depositDetails' in rest ? rest.depositDetails : undefined;
+  const maxBoostFeeBps = 'maxBoostFeeBps' in rest ? rest.maxBoostFeeBps : undefined;
 
   let txRef = getDepositTxRef(assetConstants[asset].chain, depositDetails, blockHeight);
   if (!txRef && assetConstants[asset].chain === 'Solana' && typeof depositAddress === 'string') {
@@ -86,6 +81,7 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
         fees: {
           create: { amount: ingressFee.toString(), type: 'INGRESS', asset },
         },
+        maxBoostFeeBps,
       },
     });
   } else if (action.__kind === 'BoostersCredited') {

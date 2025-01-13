@@ -60,10 +60,88 @@ describe(networkDepositFinalised, () => {
             __kind: 'Taproot',
           },
           depositDetails: {
-            txId: '0x2f5fb94313817636321d9091465215f6fd353c8ab7d19c8a07e10a9b5c892108',
-            vout: 0,
+            id: {
+              txId: '0x2f5fb94313817636321d9091465215f6fd353c8ab7d19c8a07e10a9b5c892108',
+              vout: 0,
+            },
+            amount: '255548712',
+            depositAddress: {
+              pubkeyX: '0x04c3c844e48ea19973666e17e70d7ee33ebbec90c88cbd272b0997771827780b',
+              scriptPath: {
+                salt: 27377,
+                tapleafHash: '0x9d6db76a5217b39fabbb7fa04dc9c64a8ae8a721f0201a6bf09f2f4f6f057f7a',
+                unlockScript: {
+                  bytes:
+                    '0x02f16a752004c3c844e48ea19973666e17e70d7ee33ebbec90c88cbd272b0997771827780bac',
+                },
+                tweakedPubkeyBytes:
+                  '0x02c17b73da6f7f3d6b98bf2adafc2a040ac06d88203d63d6f9ca62bb0ac6190597',
+              },
+            },
           },
           blockHeight: '128',
+        },
+        indexInBlock: 7,
+      } as any,
+    });
+
+    expect(await prisma.swapRequest.findFirstOrThrow({ include: { fees: true } })).toMatchSnapshot({
+      id: expect.any(BigInt),
+      swapDepositChannelId: expect.any(BigInt),
+      fees: [{ id: expect.any(BigInt), swapRequestId: expect.any(BigInt) }],
+    });
+  });
+
+  it('updates swap request for regular deposit with 180 schema', async () => {
+    await networkDepositFinalised({
+      prisma,
+      block: {
+        height: 10,
+        specId: 'test@150',
+        timestamp: '2024-08-06T00:00:06.000Z',
+        hash: '0x123',
+      },
+      event: {
+        args: {
+          asset: {
+            __kind: 'Btc',
+          },
+          action: {
+            __kind: 'Swap',
+            swapRequestId: '57034',
+          },
+          amount: '10000000',
+          channelId: '7',
+          ingressFee: '2500',
+          originType: {
+            __kind: 'DepositChannel',
+          },
+          blockHeight: '49020',
+          depositAddress: {
+            value: '0x6637a004f3e8536158ee981490b559d6ea0ae92f086d4911454ab88fdbc2c523',
+            __kind: 'Taproot',
+          },
+          depositDetails: {
+            id: {
+              txId: '0xcc76691987ad74f75e247bf86549d643f281ff1bd2256e994c899a549d6809a6',
+              vout: 0,
+            },
+            amount: '10000000',
+            depositAddress: {
+              pubkeyX: '0xd02106f2d8b619bc95b662340f904af6d67bd0efebd1692a839cbc172bbd8a07',
+              scriptPath: {
+                salt: 7,
+                tapleafHash: '0x5c2c1bf4030a5249bb8911aa6ee785f4969764ed6f1752adfbf643ffd011808d',
+                unlockScript: {
+                  bytes:
+                    '0x577520d02106f2d8b619bc95b662340f904af6d67bd0efebd1692a839cbc172bbd8a07ac',
+                },
+                tweakedPubkeyBytes:
+                  '0x026637a004f3e8536158ee981490b559d6ea0ae92f086d4911454ab88fdbc2c523',
+              },
+            },
+          },
+          maxBoostFeeBps: 4,
         },
         indexInBlock: 7,
       } as any,
@@ -111,8 +189,24 @@ describe(networkDepositFinalised, () => {
             __kind: 'Taproot',
           },
           depositDetails: {
-            txId: '0x2f5fb94313817636321d9091465215f6fd353c8ab7d19c8a07e10a9b5c892108',
-            vout: 0,
+            id: {
+              txId: '0x2f5fb94313817636321d9091465215f6fd353c8ab7d19c8a07e10a9b5c892108',
+              vout: 0,
+            },
+            amount: '255548712',
+            depositAddress: {
+              pubkeyX: '0x04c3c844e48ea19973666e17e70d7ee33ebbec90c88cbd272b0997771827780b',
+              scriptPath: {
+                salt: 27377,
+                tapleafHash: '0x9d6db76a5217b39fabbb7fa04dc9c64a8ae8a721f0201a6bf09f2f4f6f057f7a',
+                unlockScript: {
+                  bytes:
+                    '0x02f16a752004c3c844e48ea19973666e17e70d7ee33ebbec90c88cbd272b0997771827780bac',
+                },
+                tweakedPubkeyBytes:
+                  '0x02c17b73da6f7f3d6b98bf2adafc2a040ac06d88203d63d6f9ca62bb0ac6190597',
+              },
+            },
           },
           blockHeight: '128',
         },
