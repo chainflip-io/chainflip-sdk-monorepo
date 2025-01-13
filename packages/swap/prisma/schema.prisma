@@ -145,7 +145,7 @@ model SwapRequest {
   depositFinalisedAt           DateTime?
   depositFinalisedBlockIndex   String?
   prewitnessedDepositId        BigInt?
-  maxBoostFeeBps               Int?
+  maxBoostFeeBps               Int                 @default(0)
   effectiveBoostFeeBps         Int?
   depositBoostedAt             DateTime?
   depositBoostedBlockIndex     String?
