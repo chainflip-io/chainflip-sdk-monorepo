@@ -66,7 +66,7 @@
     "bignumber.js": "^9.1.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "elliptic-sdk": "^0.7.2",
+    "elliptic-sdk": "^0.9.0",
     "ethers": "^6.13.3",
     "express": "^4.21.1",
     "graphql-request": "^6.1.0",
