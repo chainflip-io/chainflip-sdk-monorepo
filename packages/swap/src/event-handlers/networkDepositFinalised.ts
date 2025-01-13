@@ -1,5 +1,4 @@
 import { arbitrumIngressEgressDepositFinalised as arbitrumSchema160 } from '@chainflip/processor/160/arbitrumIngressEgress/depositFinalised';
-import { bitcoinIngressEgressDepositFinalised as bitcoinSchema160 } from '@chainflip/processor/160/bitcoinIngressEgress/depositFinalised';
 import { ethereumIngressEgressDepositFinalised as ethereumSchema160 } from '@chainflip/processor/160/ethereumIngressEgress/depositFinalised';
 import { polkadotIngressEgressDepositFinalised as polkadotSchema160 } from '@chainflip/processor/160/polkadotIngressEgress/depositFinalised';
 import { solanaIngressEgressDepositFinalised as solanaSchema160 } from '@chainflip/processor/160/solanaIngressEgress/depositFinalised';
@@ -21,7 +20,7 @@ import { getDepositTxRef } from './common';
 import { EventHandlerArgs } from '.';
 
 const arbitrumSchema = z.union([arbitrumSchema180, arbitrumSchema160]);
-const bitcoinSchema = z.union([bitcoinSchema180, bitcoinSchema170, bitcoinSchema160]);
+const bitcoinSchema = z.union([bitcoinSchema180, bitcoinSchema170]);
 const ethereumSchema = z.union([ethereumSchema180, ethereumSchema160]);
 const polkadotSchema = z.union([polkadotSchema180, polkadotSchema160]);
 const solanaSchema = z.union([solanaSchema180, solanaSchema160]).transform((obj) => ({

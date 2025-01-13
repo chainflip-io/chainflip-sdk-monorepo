@@ -1,4 +1,3 @@
-import { bitcoinIngressEgressDepositFinalised as bitcoinSchema160 } from '@chainflip/processor/160/bitcoinIngressEgress/depositFinalised';
 import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/160/ethereumIngressEgress/depositFinalised';
 import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/160/polkadotIngressEgress/depositFinalised';
 import { bitcoinIngressEgressDepositFinalised as bitcoinSchema170 } from '@chainflip/processor/170/bitcoinIngressEgress/depositFinalised';
@@ -126,7 +125,6 @@ export const getStateChainError = async (
 export const getDepositTxRef = (
   chain: Chain,
   depositDetails:
-    | z.output<typeof bitcoinSchema160>['depositDetails']
     | z.output<typeof bitcoinSchema170>['depositDetails']
     | z.output<typeof ethereumIngressEgressDepositFinalised>['depositDetails']
     | z.output<typeof polkadotIngressEgressDepositFinalised>['depositDetails']
@@ -146,10 +144,8 @@ export const getDepositTxRef = (
       return formatTxRef(chain, details?.txHashes?.at(0));
     }
     case 'Bitcoin': {
-      const details = depositDetails as
-        | z.output<typeof bitcoinSchema160>['depositDetails']
-        | z.output<typeof bitcoinSchema170>['depositDetails'];
-      return formatTxRef(chain, 'txId' in details ? details.txId : details.id.txId);
+      const details = depositDetails as z.output<typeof bitcoinSchema170>['depositDetails'];
+      return formatTxRef(chain, details.id.txId);
     }
     case 'Polkadot': {
       const details = depositDetails as z.output<

@@ -1,5 +1,4 @@
 import { arbitrumIngressEgressDepositBoosted as arbitrumSchema160 } from '@chainflip/processor/160/arbitrumIngressEgress/depositBoosted';
-import { bitcoinIngressEgressDepositBoosted as bitcoinSchema160 } from '@chainflip/processor/160/bitcoinIngressEgress/depositBoosted';
 import { ethereumIngressEgressDepositBoosted as ethereumSchema160 } from '@chainflip/processor/160/ethereumIngressEgress/depositBoosted';
 import { polkadotIngressEgressDepositBoosted as polkadotSchema160 } from '@chainflip/processor/160/polkadotIngressEgress/depositBoosted';
 import { solanaIngressEgressDepositBoosted as solanaSchema160 } from '@chainflip/processor/160/solanaIngressEgress/depositBoosted';
@@ -17,7 +16,7 @@ import { getDepositTxRef } from '@/swap/event-handlers/common';
 import { EventHandlerArgs } from '.';
 
 const arbitrumSchema = z.union([arbitrumSchema180, arbitrumSchema160]);
-const bitcoinSchema = z.union([bitcoinSchema180, bitcoinSchema170, bitcoinSchema160]);
+const bitcoinSchema = z.union([bitcoinSchema180, bitcoinSchema170]);
 const ethereumSchema = z.union([ethereumSchema180, ethereumSchema160]);
 const polkadotSchema = z.union([polkadotSchema180, polkadotSchema160]);
 const solanaSchema = z.union([solanaSchema180, solanaSchema160]);

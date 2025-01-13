@@ -1,9 +1,4 @@
 import { type Chain } from '.prisma/client';
-import { bitcoinIngressEgressDepositIgnored as bitcoinSchema131 } from '@chainflip/processor/131/bitcoinIngressEgress/depositIgnored';
-import { arbitrumIngressEgressDepositIgnored as arbitrumSchema150 } from '@chainflip/processor/150/arbitrumIngressEgress/depositIgnored';
-import { ethereumIngressEgressDepositIgnored as ethereumSchema150 } from '@chainflip/processor/150/ethereumIngressEgress/depositIgnored';
-import { polkadotIngressEgressDepositIgnored as polkadotSchema150 } from '@chainflip/processor/150/polkadotIngressEgress/depositIgnored';
-import { solanaIngressEgressDepositIgnored as solanaSchema160 } from '@chainflip/processor/160/solanaIngressEgress/depositIgnored';
 import { arbitrumIngressEgressDepositIgnored as arbitrumSchema170 } from '@chainflip/processor/170/arbitrumIngressEgress/depositIgnored';
 import { bitcoinIngressEgressDepositIgnored as bitcoinSchema170 } from '@chainflip/processor/170/bitcoinIngressEgress/depositIgnored';
 import { ethereumIngressEgressDepositIgnored as ethereumSchema170 } from '@chainflip/processor/170/ethereumIngressEgress/depositIgnored';
@@ -22,11 +17,11 @@ import type { EventHandlerArgs } from './index';
 
 const bitcoinScriptPubKeySchema = bitcoinScriptPubKey(env.CHAINFLIP_NETWORK);
 
-const bitcoinIngressEgressDepositIgnored = z.union([bitcoinSchema170, bitcoinSchema131]);
-const arbitrumIngressEgressDepositIgnored = z.union([arbitrumSchema170, arbitrumSchema150]);
-const ethereumIngressEgressDepositIgnored = z.union([ethereumSchema170, ethereumSchema150]);
-const polkadotIngressEgressDepositIgnored = z.union([polkadotSchema170, polkadotSchema150]);
-const solanaIngressEgressDepositIgnored = z.union([solanaSchema170, solanaSchema160]);
+const bitcoinIngressEgressDepositIgnored = bitcoinSchema170;
+const arbitrumIngressEgressDepositIgnored = arbitrumSchema170;
+const ethereumIngressEgressDepositIgnored = ethereumSchema170;
+const polkadotIngressEgressDepositIgnored = polkadotSchema170;
+const solanaIngressEgressDepositIgnored = solanaSchema170;
 
 export const depositIgnoredArgs = z.union([
   bitcoinIngressEgressDepositIgnored.transform(({ depositAddress, ...rest }) => ({
