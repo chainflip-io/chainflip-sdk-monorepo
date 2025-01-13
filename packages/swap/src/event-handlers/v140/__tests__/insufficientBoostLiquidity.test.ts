@@ -95,6 +95,26 @@ describe('insufficientBoostLiquidity', () => {
     await expect(prisma.failedBoost.count()).resolves.toBe(0);
   });
 
+  it('does nothing for vault swaps', async () => {
+    const eventData = insufficientBoostLiquidityMock({
+      amountAttempted: '1000000',
+      channelId: '1',
+    }) as any;
+    eventData.event.args.originType = { __kind: 'Vault' };
+    const event = eventData.event as any;
+    const block = eventData.block as any;
+
+    await prisma.$transaction(async (txClient) => {
+      await insufficientBoostLiquidity({
+        prisma: txClient,
+        event,
+        block,
+      });
+    });
+
+    await expect(prisma.failedBoost.count()).resolves.toBe(0);
+  });
+
   it('asserts that a channel exist', async () => {
     const eventData = insufficientBoostLiquidityMock({
       amountAttempted: '1000000',

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { assetConstants } from '@/shared/enums';
-import { internalAssetEnum, u128 } from '@/shared/parsers';
+import { internalAssetEnum, rustEnum, u128 } from '@/shared/parsers';
 import { EventHandlerArgs } from '..';
 
 export const insufficientBoostLiquiditySchema = z.object({
@@ -8,10 +8,17 @@ export const insufficientBoostLiquiditySchema = z.object({
   asset: internalAssetEnum,
   amountAttempted: u128,
   channelId: u128,
+  originType: rustEnum(['Vault', 'DepositChannel']).optional(),
 });
-
 export const insufficientBoostLiquidity = async ({ prisma, event, block }: EventHandlerArgs) => {
-  const { channelId, asset, amountAttempted } = insufficientBoostLiquiditySchema.parse(event.args);
+  const { channelId, asset, amountAttempted, originType } = insufficientBoostLiquiditySchema.parse(
+    event.args,
+  );
+
+  // no deposit channel to look up failed boosts for vault swaps
+  if (originType === 'Vault') {
+    return;
+  }
 
   const depositChannel = await prisma.depositChannel.findFirst({
     where: { channelId, srcChain: assetConstants[asset].chain },
