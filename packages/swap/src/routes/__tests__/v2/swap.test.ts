@@ -140,6 +140,9 @@ const swapEventMap = {
     callId: '0000000092-000010-77afe',
     name: 'EthereumIngressEgress.DepositFinalised',
     args: {
+      originType: {
+        __kind: 'DepositChannel',
+      },
       asset: { __kind: 'Eth' },
       action: { __kind: 'Swap', swapRequestId: '368' },
       amount: '5000000000000000000',
@@ -1294,10 +1297,15 @@ describe('server', () => {
     it('retrieves boost skipped properties when there was a failed boost attempt for the swap', async () => {
       const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
       depositChannelEvent.args.boostFee = 30;
+
+      const finalizedEvent = clone(swapEventMap['EthereumIngressEgress.DepositFinalised']);
+      finalizedEvent.args.maxBoostFeeBps = 30;
+
       await processEvents([
         depositChannelEvent,
         swapEventMap['EthereumIngressEgress.InsufficientBoostLiquidity'],
-        ...swapEvents.slice(1, 4),
+        ...swapEvents.slice(1, 3),
+        finalizedEvent,
       ]);
 
       const { status, body } = await request(server).get(`/v2/swaps/${channelId}`);

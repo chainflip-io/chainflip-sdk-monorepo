@@ -31,7 +31,7 @@ exports[`swapEgressIgnored > adds an IgnoredEgress record for a egress ignored e
       "type": "SWAP",
     },
   ],
-  "maxBoostFeeBps": null,
+  "maxBoostFeeBps": 0,
   "nativeId": 2n,
   "numberOfChunks": null,
   "originType": "VAULT",

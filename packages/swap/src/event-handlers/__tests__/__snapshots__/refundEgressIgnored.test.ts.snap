@@ -31,7 +31,7 @@ exports[`refundEgressIgnored > handles refundEgressIgnored event 1`] = `
       "type": "REFUND",
     },
   ],
-  "maxBoostFeeBps": null,
+  "maxBoostFeeBps": 0,
   "nativeId": 377n,
   "numberOfChunks": null,
   "originType": "DEPOSIT_CHANNEL",

@@ -85,7 +85,7 @@ exports[`batch swap flow > handles all the events 1`] = `
         },
       ],
       "id": Any<BigInt>,
-      "maxBoostFeeBps": null,
+      "maxBoostFeeBps": 0,
       "nativeId": 287n,
       "numberOfChunks": null,
       "originType": "DEPOSIT_CHANNEL",

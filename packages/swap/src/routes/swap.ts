@@ -202,8 +202,7 @@ router.get(
       failedAt: failedSwap?.failedAt,
       failedBlockIndex: failedSwap?.failedBlockIndex ?? undefined,
       depositChannelAffiliateBrokers: affiliateBrokers,
-      depositChannelMaxBoostFeeBps:
-        swapRequest?.maxBoostFeeBps ?? swapDepositChannel?.maxBoostFeeBps,
+      depositChannelMaxBoostFeeBps: swapDepositChannel?.maxBoostFeeBps,
       effectiveBoostFeeBps,
       depositBoostedAt: swapRequest?.depositBoostedAt?.valueOf(),
       depositBoostedBlockIndex: swapRequest?.depositBoostedBlockIndex ?? undefined,
