@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`python integration test replies to a quote request 1`] = `
+exports[`python integration test > replies to a quote request 1`] = `
 {
   "depositAmount": "1000000000000000000",
   "destAsset": {
@@ -62,7 +62,7 @@ exports[`python integration test replies to a quote request 1`] = `
 }
 `;
 
-exports[`python integration test replies to a quote request 2`] = `
+exports[`python integration test > replies to a quote request 2`] = `
 [
   [
     {
@@ -93,7 +93,7 @@ exports[`python integration test replies to a quote request 2`] = `
 ]
 `;
 
-exports[`python integration test replies to a quote request with v2 endpoint 1`] = `
+exports[`python integration test > replies to a quote request with v2 endpoint 1`] = `
 [
   {
     "depositAmount": "1000000000000000000",
@@ -157,8 +157,34 @@ exports[`python integration test replies to a quote request with v2 endpoint 1`]
 ]
 `;
 
-exports[`python integration test replies to a quote request with v2 endpoint 2`] = `
+exports[`python integration test > replies to a quote request with v2 endpoint 2`] = `
 [
+  [
+    {
+      "brokerCommissionBps": undefined,
+      "dcaParams": undefined,
+      "depositAmount": 1000000000000000000n,
+      "destAsset": "Usdc",
+      "limitOrders": [
+        {
+          "LimitOrder": {
+            "base_asset": {
+              "asset": "FLIP",
+              "chain": "Ethereum",
+            },
+            "quote_asset": {
+              "asset": "USDC",
+              "chain": "Ethereum",
+            },
+            "sell_amount": "0xde05bc2eae66224",
+            "side": "buy",
+            "tick": -1,
+          },
+        },
+      ],
+      "srcAsset": "Flip",
+    },
+  ],
   [
     {
       "brokerCommissionBps": undefined,

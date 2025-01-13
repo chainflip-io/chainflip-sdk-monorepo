@@ -19,7 +19,6 @@ export default mergeConfig(
         SOLANA_RPC_HTTP_URL: 'http://solana-rpc.test',
         REDIS_URL: 'redis://localhost:6379',
       },
-      exclude: ['**/*/integration.test.ts'], // TODO: fix this test
     },
     resolve: {
       alias: {

@@ -37,10 +37,13 @@ vi.mock('../utils/pools', async (importOriginal) => {
 vi.mock('../utils/statechain', () => ({
   getSwapRateV3: vi.fn().mockImplementation(() => Promise.reject(new Error('unexpected call'))),
 }));
+vi.mock('../polkadot/api', () => ({
+  getBoostSafeMode: vi.fn().mockResolvedValue(true),
+}));
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
-describe.todo('python integration test', () => {
+describe('python integration test', () => {
   vi.setConfig({
     testTimeout: 10000,
   });
