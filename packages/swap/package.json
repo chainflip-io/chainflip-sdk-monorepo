@@ -56,7 +56,7 @@
   "dependencies": {
     "@chainflip/processor": "^1.8.1",
     "@chainflip/rpc": "^1.6.12",
-    "@chainflip/solana": "^1.0.3",
+    "@chainflip/solana": "^1.0.5",
     "@chainflip/utils": "^0.4.13",
     "@polkadot/api": "^12.2.3",
     "@polkadot/types": "^11.0.2",
