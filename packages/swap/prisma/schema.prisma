@@ -262,12 +262,14 @@ model FailedSwap {
 }
 
 model FailedBoost {
-  id                   Int                 @id @default(autoincrement())
-  swapDepositChannel   SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
-  swapDepositChannelId BigInt?
-  amount               Decimal             @db.Decimal(30, 0)
-  failedAtTimestamp    DateTime
-  failedAtBlockIndex   String
+  id                    Int                 @id @default(autoincrement())
+  prewitnessedDepositId BigInt
+  asset                 InternalAsset
+  amount                Decimal             @db.Decimal(30, 0)
+  swapDepositChannel    SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId  BigInt?
+  failedAtTimestamp     DateTime
+  failedAtBlockIndex    String
 
   @@index([swapDepositChannelId])
   @@schema("public")

@@ -61,8 +61,32 @@ describe('insufficientBoostLiquidity', () => {
       {
         id: expect.any(Number),
         swapDepositChannelId: expect.any(BigInt),
-        failedAtTimestamp: expect.any(Date),
-        failedAtBlockIndex: expect.any(String),
+      },
+    ]);
+  });
+
+  it('creates a failed boost record for vault swaps', async () => {
+    const eventData = insufficientBoostLiquidityMock({
+      amountAttempted: '1000000',
+      channelId: '1',
+    }) as any;
+    eventData.event.args.originType = { __kind: 'Vault' };
+    const event = eventData.event as any;
+    const block = eventData.block as any;
+
+    await prisma.$transaction(async (txClient) => {
+      await insufficientBoostLiquidity({
+        prisma: txClient,
+        event,
+        block,
+      });
+    });
+
+    const failedBoosts = await prisma.failedBoost.findMany();
+    expect(failedBoosts).toHaveLength(1);
+    expect(failedBoosts).toMatchSnapshot([
+      {
+        id: expect.any(Number),
       },
     ]);
   });
@@ -81,26 +105,6 @@ describe('insufficientBoostLiquidity', () => {
       amountAttempted: '1000000',
       channelId: '1',
     }) as any;
-    const event = eventData.event as any;
-    const block = eventData.block as any;
-
-    await prisma.$transaction(async (txClient) => {
-      await insufficientBoostLiquidity({
-        prisma: txClient,
-        event,
-        block,
-      });
-    });
-
-    await expect(prisma.failedBoost.count()).resolves.toBe(0);
-  });
-
-  it('does nothing for vault swaps', async () => {
-    const eventData = insufficientBoostLiquidityMock({
-      amountAttempted: '1000000',
-      channelId: '1',
-    }) as any;
-    eventData.event.args.originType = { __kind: 'Vault' };
     const event = eventData.event as any;
     const block = eventData.block as any;
 
