@@ -244,7 +244,7 @@ describe(swapRequested, () => {
         srcAsset: depositChannel.inputAsset.__kind,
         destAsset: depositChannel.outputAsset.__kind,
         destAddress: depositChannel.requestType.outputAddress.value,
-        brokerCommissionBps: 0,
+        totalBrokerCommissionBps: 0,
         openingFeePaid: 0,
       },
     });
@@ -274,7 +274,7 @@ describe(swapRequested, () => {
         srcAsset: depositChannel160.inputAsset.__kind,
         destAsset: depositChannel160.outputAsset.__kind,
         destAddress: depositChannel160.requestType.outputAddress.value,
-        brokerCommissionBps: 0,
+        totalBrokerCommissionBps: 0,
         openingFeePaid: 0,
       },
     });

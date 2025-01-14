@@ -145,6 +145,10 @@ router.get(
       failedSwap?.depositTransactionRef ??
       undefined;
 
+    const affiliates = beneficiaries
+      ?.filter(({ type }) => type === 'AFFILIATE')
+      .map(({ account, commissionBps }) => ({ account, commissionBps }));
+
     const fees = (swapRequest?.fees ?? []).concat(swap?.fees ?? []);
 
     const estimatedDurations =
@@ -204,11 +208,7 @@ router.get(
       failedAt: failedSwap?.failedAt,
       failedBlockIndex: failedSwap?.failedBlockIndex ?? undefined,
       depositChannelAffiliateBrokers:
-        swapDepositChannel &&
-        (beneficiaries
-          ?.filter(({ type }) => type === 'AFFILIATE')
-          .map(({ account, commissionBps }) => ({ account, commissionBps })) ??
-          []),
+        swapDepositChannel && affiliates?.length ? affiliates : undefined,
       depositChannelMaxBoostFeeBps: swapDepositChannel?.maxBoostFeeBps,
       effectiveBoostFeeBps,
       depositBoostedAt: swapRequest?.depositBoostedAt?.valueOf(),

@@ -167,7 +167,7 @@ describe(ccmFailed, () => {
           destAsset: 'ArbUsdc',
           destAddress: '0x5df6ac4b4e84d9af2867d994f54096982927f67a',
           openingFeePaid: 0,
-          brokerCommissionBps: 0,
+          totalBrokerCommissionBps: 0,
         },
       });
     }
