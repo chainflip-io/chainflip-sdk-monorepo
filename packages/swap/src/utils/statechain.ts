@@ -44,7 +44,7 @@ export const getSwapRateV3 = async ({
     UncheckedAssetAndChain,
     `0x${string}`,
     number,
-    { number_of_chunks: number; chunk_interval: number } | undefined,
+    { number_of_chunks: number; chunk_interval: number } | undefined, 
   ] = [
     getAssetAndChain(srcAsset),
     getAssetAndChain(destAsset),

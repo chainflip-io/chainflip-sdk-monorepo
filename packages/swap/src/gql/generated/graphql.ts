@@ -5,30 +5,26 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = {
-  [_ in K]?: never;
-};
-export type Incremental<T> =
-  | T
-  | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
   /** A floating point number that requires more precision than IEEE 754 binary 64 */
-  BigFloat: { input: any; output: any };
+  BigFloat: { input: any; output: any; }
   /** A location in a connection that can be used for resuming pagination. */
-  Cursor: { input: any; output: any };
+  Cursor: { input: any; output: any; }
   /**
    * A point in time as described by the [ISO
    * 8601](https://en.wikipedia.org/wiki/ISO_8601) standard. May or may not include a timezone.
    */
-  Datetime: { input: any; output: any };
+  Datetime: { input: any; output: any; }
   /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
-  JSON: { input: any; output: any };
+  JSON: { input: any; output: any; }
 };
 
 export type AcalaEvmExecuted = Node & {
@@ -430,6 +426,7 @@ export type Block = Node & {
   validator?: Maybe<Scalars['String']['output']>;
 };
 
+
 export type BlockCallsByBlockIdArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
   before?: InputMaybe<Scalars['Cursor']['input']>;
@@ -441,6 +438,7 @@ export type BlockCallsByBlockIdArgs = {
   orderBy?: InputMaybe<Array<CallsOrderBy>>;
 };
 
+
 export type BlockEventsByBlockIdArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
   before?: InputMaybe<Scalars['Cursor']['input']>;
@@ -451,6 +449,7 @@ export type BlockEventsByBlockIdArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<EventsOrderBy>>;
 };
+
 
 export type BlockExtrinsicsByBlockIdArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
@@ -618,6 +617,7 @@ export type Call = Node & {
   success: Scalars['Boolean']['output'];
 };
 
+
 export type CallCallsByParentIdArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
   before?: InputMaybe<Scalars['Cursor']['input']>;
@@ -629,6 +629,7 @@ export type CallCallsByParentIdArgs = {
   orderBy?: InputMaybe<Array<CallsOrderBy>>;
 };
 
+
 export type CallEventsByCallIdArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
   before?: InputMaybe<Scalars['Cursor']['input']>;
@@ -639,6 +640,7 @@ export type CallEventsByCallIdArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<EventsOrderBy>>;
 };
+
 
 export type CallFrontierEthereumTransactionsByCallIdArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
@@ -913,6 +915,7 @@ export type Event = Node & {
   pos: Scalars['Int']['output'];
 };
 
+
 export type EventAcalaEvmExecutedFailedLogsByEventIdArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
   before?: InputMaybe<Scalars['Cursor']['input']>;
@@ -923,6 +926,7 @@ export type EventAcalaEvmExecutedFailedLogsByEventIdArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<AcalaEvmExecutedFailedLogsOrderBy>>;
 };
+
 
 export type EventAcalaEvmExecutedFailedsByEventIdArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
@@ -935,6 +939,7 @@ export type EventAcalaEvmExecutedFailedsByEventIdArgs = {
   orderBy?: InputMaybe<Array<AcalaEvmExecutedFailedsOrderBy>>;
 };
 
+
 export type EventAcalaEvmExecutedLogsByEventIdArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
   before?: InputMaybe<Scalars['Cursor']['input']>;
@@ -945,6 +950,7 @@ export type EventAcalaEvmExecutedLogsByEventIdArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<AcalaEvmExecutedLogsOrderBy>>;
 };
+
 
 export type EventAcalaEvmExecutedsByEventIdArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
@@ -957,6 +963,7 @@ export type EventAcalaEvmExecutedsByEventIdArgs = {
   orderBy?: InputMaybe<Array<AcalaEvmExecutedsOrderBy>>;
 };
 
+
 export type EventContractsContractEmittedsByEventIdArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
   before?: InputMaybe<Scalars['Cursor']['input']>;
@@ -967,6 +974,7 @@ export type EventContractsContractEmittedsByEventIdArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<ContractsContractEmittedsOrderBy>>;
 };
+
 
 export type EventFrontierEvmLogsByEventIdArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
@@ -979,6 +987,7 @@ export type EventFrontierEvmLogsByEventIdArgs = {
   orderBy?: InputMaybe<Array<FrontierEvmLogsOrderBy>>;
 };
 
+
 export type EventGearMessageEnqueuedsByEventIdArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
   before?: InputMaybe<Scalars['Cursor']['input']>;
@@ -989,6 +998,7 @@ export type EventGearMessageEnqueuedsByEventIdArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<GearMessageEnqueuedsOrderBy>>;
 };
+
 
 export type EventGearUserMessageSentsByEventIdArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
@@ -1121,6 +1131,7 @@ export type Extrinsic = Node & {
   version: Scalars['Int']['output'];
 };
 
+
 export type ExtrinsicCallsByExtrinsicIdArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
   before?: InputMaybe<Scalars['Cursor']['input']>;
@@ -1131,6 +1142,7 @@ export type ExtrinsicCallsByExtrinsicIdArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<CallsOrderBy>>;
 };
+
 
 export type ExtrinsicEventsByExtrinsicIdArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
@@ -1908,45 +1920,54 @@ export type Query = Node & {
   query: Query;
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryAcalaEvmExecutedArgs = {
   nodeId: Scalars['ID']['input'];
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryAcalaEvmExecutedByEventIdArgs = {
   eventId: Scalars['String']['input'];
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryAcalaEvmExecutedFailedArgs = {
   nodeId: Scalars['ID']['input'];
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryAcalaEvmExecutedFailedByEventIdArgs = {
   eventId: Scalars['String']['input'];
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryAcalaEvmExecutedFailedLogArgs = {
   nodeId: Scalars['ID']['input'];
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryAcalaEvmExecutedFailedLogByIdArgs = {
   id: Scalars['String']['input'];
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryAcalaEvmExecutedLogArgs = {
   nodeId: Scalars['ID']['input'];
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryAcalaEvmExecutedLogByIdArgs = {
   id: Scalars['String']['input'];
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryAllAcalaEvmExecutedFailedLogsArgs = {
@@ -1960,6 +1981,7 @@ export type QueryAllAcalaEvmExecutedFailedLogsArgs = {
   orderBy?: InputMaybe<Array<AcalaEvmExecutedFailedLogsOrderBy>>;
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryAllAcalaEvmExecutedFailedsArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
@@ -1971,6 +1993,7 @@ export type QueryAllAcalaEvmExecutedFailedsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<AcalaEvmExecutedFailedsOrderBy>>;
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryAllAcalaEvmExecutedLogsArgs = {
@@ -1984,6 +2007,7 @@ export type QueryAllAcalaEvmExecutedLogsArgs = {
   orderBy?: InputMaybe<Array<AcalaEvmExecutedLogsOrderBy>>;
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryAllAcalaEvmExecutedsArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
@@ -1995,6 +2019,7 @@ export type QueryAllAcalaEvmExecutedsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<AcalaEvmExecutedsOrderBy>>;
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryAllBlocksArgs = {
@@ -2008,6 +2033,7 @@ export type QueryAllBlocksArgs = {
   orderBy?: InputMaybe<Array<BlocksOrderBy>>;
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryAllCallsArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
@@ -2019,6 +2045,7 @@ export type QueryAllCallsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<CallsOrderBy>>;
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryAllContractsContractEmittedsArgs = {
@@ -2032,6 +2059,7 @@ export type QueryAllContractsContractEmittedsArgs = {
   orderBy?: InputMaybe<Array<ContractsContractEmittedsOrderBy>>;
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryAllEventsArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
@@ -2043,6 +2071,7 @@ export type QueryAllEventsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<EventsOrderBy>>;
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryAllExtrinsicsArgs = {
@@ -2056,6 +2085,7 @@ export type QueryAllExtrinsicsArgs = {
   orderBy?: InputMaybe<Array<ExtrinsicsOrderBy>>;
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryAllFrontierEthereumTransactionsArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
@@ -2067,6 +2097,7 @@ export type QueryAllFrontierEthereumTransactionsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<FrontierEthereumTransactionsOrderBy>>;
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryAllFrontierEvmLogsArgs = {
@@ -2080,6 +2111,7 @@ export type QueryAllFrontierEvmLogsArgs = {
   orderBy?: InputMaybe<Array<FrontierEvmLogsOrderBy>>;
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryAllGearMessageEnqueuedsArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
@@ -2091,6 +2123,7 @@ export type QueryAllGearMessageEnqueuedsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<GearMessageEnqueuedsOrderBy>>;
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryAllGearUserMessageSentsArgs = {
@@ -2104,6 +2137,7 @@ export type QueryAllGearUserMessageSentsArgs = {
   orderBy?: InputMaybe<Array<GearUserMessageSentsOrderBy>>;
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryAllMetadataArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
@@ -2115,6 +2149,7 @@ export type QueryAllMetadataArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<MetadataOrderBy>>;
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryAllMigrationsArgs = {
@@ -2128,6 +2163,7 @@ export type QueryAllMigrationsArgs = {
   orderBy?: InputMaybe<Array<MigrationsOrderBy>>;
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryAllWarningsArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
@@ -2140,120 +2176,144 @@ export type QueryAllWarningsArgs = {
   orderBy?: InputMaybe<Array<WarningsOrderBy>>;
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryBlockArgs = {
   nodeId: Scalars['ID']['input'];
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryBlockByIdArgs = {
   id: Scalars['String']['input'];
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryCallArgs = {
   nodeId: Scalars['ID']['input'];
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryCallByIdArgs = {
   id: Scalars['String']['input'];
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryContractsContractEmittedArgs = {
   nodeId: Scalars['ID']['input'];
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryContractsContractEmittedByEventIdArgs = {
   eventId: Scalars['String']['input'];
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryEventArgs = {
   nodeId: Scalars['ID']['input'];
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryEventByIdArgs = {
   id: Scalars['String']['input'];
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryExtrinsicArgs = {
   nodeId: Scalars['ID']['input'];
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryExtrinsicByIdArgs = {
   id: Scalars['String']['input'];
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryFrontierEthereumTransactionArgs = {
   nodeId: Scalars['ID']['input'];
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryFrontierEthereumTransactionByCallIdArgs = {
   callId: Scalars['String']['input'];
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryFrontierEvmLogArgs = {
   nodeId: Scalars['ID']['input'];
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryFrontierEvmLogByEventIdArgs = {
   eventId: Scalars['String']['input'];
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryGearMessageEnqueuedArgs = {
   nodeId: Scalars['ID']['input'];
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryGearMessageEnqueuedByEventIdArgs = {
   eventId: Scalars['String']['input'];
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryGearUserMessageSentArgs = {
   nodeId: Scalars['ID']['input'];
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryGearUserMessageSentByEventIdArgs = {
   eventId: Scalars['String']['input'];
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryMetadatumArgs = {
   nodeId: Scalars['ID']['input'];
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryMetadatumByIdArgs = {
   id: Scalars['String']['input'];
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryMigrationArgs = {
   nodeId: Scalars['ID']['input'];
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryMigrationByIdArgs = {
   id: Scalars['Int']['input'];
 };
 
+
 /** The root query type which gives access points into the data universe. */
 export type QueryMigrationByNameArgs = {
   name: Scalars['String']['input'];
 };
+
 
 /** The root query type which gives access points into the data universe. */
 export type QueryNodeArgs = {
@@ -2402,233 +2462,16 @@ export type GetBatchQueryVariables = Exact<{
   swapEvents: Array<Scalars['String']['input']> | Scalars['String']['input'];
 }>;
 
-export type GetBatchQuery = {
-  __typename?: 'Query';
-  blocks?: {
-    __typename?: 'BlocksConnection';
-    nodes: Array<{
-      __typename?: 'Block';
-      height: number;
-      hash: string;
-      timestamp: any;
-      specId: string;
-      events: {
-        __typename?: 'EventsConnection';
-        nodes: Array<{
-          __typename?: 'Event';
-          args?: any | null;
-          name: string;
-          indexInBlock: number;
-          callId?: string | null;
-        }>;
-      };
-    }>;
-  } | null;
-};
+
+export type GetBatchQuery = { __typename?: 'Query', blocks?: { __typename?: 'BlocksConnection', nodes: Array<{ __typename?: 'Block', height: number, hash: string, timestamp: any, specId: string, events: { __typename?: 'EventsConnection', nodes: Array<{ __typename?: 'Event', args?: any | null, name: string, indexInBlock: number, callId?: string | null }> } }> } | null };
 
 export type GetCallQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
-export type GetCallQuery = {
-  __typename?: 'Query';
-  call?: { __typename?: 'Call'; args?: any | null } | null;
-};
 
-export const GetBatchDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'GetBatch' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'height' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'limit' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'swapEvents' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'ListType',
-              type: {
-                kind: 'NonNullType',
-                type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-              },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            alias: { kind: 'Name', value: 'blocks' },
-            name: { kind: 'Name', value: 'allBlocks' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'filter' },
-                value: {
-                  kind: 'ObjectValue',
-                  fields: [
-                    {
-                      kind: 'ObjectField',
-                      name: { kind: 'Name', value: 'height' },
-                      value: {
-                        kind: 'ObjectValue',
-                        fields: [
-                          {
-                            kind: 'ObjectField',
-                            name: { kind: 'Name', value: 'greaterThanOrEqualTo' },
-                            value: { kind: 'Variable', name: { kind: 'Name', value: 'height' } },
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'first' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'limit' } },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'orderBy' },
-                value: { kind: 'EnumValue', value: 'HEIGHT_ASC' },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'nodes' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'height' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'hash' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'timestamp' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'specId' } },
-                      {
-                        kind: 'Field',
-                        alias: { kind: 'Name', value: 'events' },
-                        name: { kind: 'Name', value: 'eventsByBlockId' },
-                        arguments: [
-                          {
-                            kind: 'Argument',
-                            name: { kind: 'Name', value: 'filter' },
-                            value: {
-                              kind: 'ObjectValue',
-                              fields: [
-                                {
-                                  kind: 'ObjectField',
-                                  name: { kind: 'Name', value: 'name' },
-                                  value: {
-                                    kind: 'ObjectValue',
-                                    fields: [
-                                      {
-                                        kind: 'ObjectField',
-                                        name: { kind: 'Name', value: 'in' },
-                                        value: {
-                                          kind: 'Variable',
-                                          name: { kind: 'Name', value: 'swapEvents' },
-                                        },
-                                      },
-                                    ],
-                                  },
-                                },
-                              ],
-                            },
-                          },
-                        ],
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'nodes' },
-                              selectionSet: {
-                                kind: 'SelectionSet',
-                                selections: [
-                                  { kind: 'Field', name: { kind: 'Name', value: 'args' } },
-                                  { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                                  { kind: 'Field', name: { kind: 'Name', value: 'indexInBlock' } },
-                                  { kind: 'Field', name: { kind: 'Name', value: 'callId' } },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<GetBatchQuery, GetBatchQueryVariables>;
-export const GetCallDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'GetCall' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            alias: { kind: 'Name', value: 'call' },
-            name: { kind: 'Name', value: 'callById' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'args' } }],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<GetCallQuery, GetCallQueryVariables>;
+export type GetCallQuery = { __typename?: 'Query', call?: { __typename?: 'Call', args?: any | null } | null };
+
+
+export const GetBatchDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBatch"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"height"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"swapEvents"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"blocks"},"name":{"kind":"Name","value":"allBlocks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"height"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"greaterThanOrEqualTo"},"value":{"kind":"Variable","name":{"kind":"Name","value":"height"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"EnumValue","value":"HEIGHT_ASC"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"hash"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"specId"}},{"kind":"Field","alias":{"kind":"Name","value":"events"},"name":{"kind":"Name","value":"eventsByBlockId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"in"},"value":{"kind":"Variable","name":{"kind":"Name","value":"swapEvents"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"args"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"indexInBlock"}},{"kind":"Field","name":{"kind":"Name","value":"callId"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetBatchQuery, GetBatchQueryVariables>;
+export const GetCallDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCall"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"call"},"name":{"kind":"Name","value":"callById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"args"}}]}}]}}]} as unknown as DocumentNode<GetCallQuery, GetCallQueryVariables>;
