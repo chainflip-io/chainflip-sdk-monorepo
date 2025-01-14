@@ -179,6 +179,7 @@ describe(swapDepositAddressReady, () => {
         ...eventMock.event,
         args: {
           ...eventMock.event.args,
+          brokerCommissionRate: 25,
           affiliateFees: [
             {
               account: '0x7cf56f93db22f45007bbfa2e2ee89551365b2ebaece029fb006d5ad1b3756c3c',
@@ -201,6 +202,10 @@ describe(swapDepositAddressReady, () => {
       id: expect.any(BigInt),
       createdAt: expect.any(Date),
       beneficiaries: [
+        {
+          id: expect.any(BigInt),
+          channelId: expect.any(BigInt),
+        },
         {
           id: expect.any(BigInt),
           channelId: expect.any(BigInt),

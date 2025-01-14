@@ -2,7 +2,6 @@
 
 exports[`batch swap flow > handles all the events 1`] = `
 {
-  "brokerCommissionBps": 100,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "channelId": 49n,
@@ -145,5 +144,6 @@ exports[`batch swap flow > handles all the events 1`] = `
       ],
     },
   ],
+  "totalBrokerCommissionBps": 100,
 }
 `;
