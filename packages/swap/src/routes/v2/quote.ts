@@ -83,6 +83,7 @@ export const validateQuoteQuery = async (query: Query) => {
   }
 
   if (query.isVaultSwap && query.srcChain === 'Polkadot') {
+    console.log('here');
     throw ServiceError.badRequest(`Polkadot does not support vault swaps`);
   }
 
