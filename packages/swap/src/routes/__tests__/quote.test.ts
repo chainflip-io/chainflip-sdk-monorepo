@@ -739,7 +739,7 @@ describe('server', () => {
         0,
         undefined,
         null,
-        undefined
+        undefined,
       );
       expect(body).toMatchObject({
         egressAmount: (1e18 - 25000).toString(),
