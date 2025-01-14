@@ -56,48 +56,56 @@ enum InternalAsset {
 }
 
 model SwapDepositChannel {
-  id                     BigInt                        @id @default(autoincrement())
-  channelId              BigInt
-  srcChain               Chain
-  srcAsset               InternalAsset
-  depositAddress         String
-  expectedDepositAmount  Decimal?                      @db.Decimal(30, 0)
-  destAsset              InternalAsset
-  destAddress            String
-  ccmGasBudget           Decimal?                      @db.Decimal(30, 0)
-  ccmMessage             String?
-  issuedBlock            Int
-  expiryBlock            Int? // TODO(mainnet): remove this column
-  srcChainExpiryBlock    BigInt?
-  brokerCommissionBps    Int
-  maxBoostFeeBps         Int                           @default(0)
-  isExpired              Boolean                       @default(false)
-  createdAt              DateTime                      @default(now())
-  failedSwaps            FailedSwap[]
-  estimatedExpiryAt      DateTime?
-  openedThroughBackend   Boolean                       @default(false)
-  openingFeePaid         Decimal                       @db.Decimal(30, 0)
-  affiliates             SwapDepositChannelAffiliate[]
-  failedBoosts           FailedBoost[]
-  fokMinPriceX128        Decimal?                      @db.Decimal(78, 0)
-  fokRefundAddress       String?
-  fokRetryDurationBlocks Int?
-  numberOfChunks         Int?                          @default(1)
-  chunkIntervalBlocks    Int?
-  swapRequests           SwapRequest[]
-  quote                  Quote?
+  id                       BigInt            @id @default(autoincrement())
+  channelId                BigInt
+  srcChain                 Chain
+  srcAsset                 InternalAsset
+  depositAddress           String
+  expectedDepositAmount    Decimal?          @db.Decimal(30, 0)
+  destAsset                InternalAsset
+  destAddress              String
+  ccmGasBudget             Decimal?          @db.Decimal(30, 0)
+  ccmMessage               String?
+  issuedBlock              Int
+  expiryBlock              Int? // TODO(mainnet): remove this column
+  srcChainExpiryBlock      BigInt?
+  totalBrokerCommissionBps Int
+  maxBoostFeeBps           Int               @default(0)
+  isExpired                Boolean           @default(false)
+  createdAt                DateTime          @default(now())
+  failedSwaps              FailedSwap[]
+  estimatedExpiryAt        DateTime?
+  openedThroughBackend     Boolean           @default(false)
+  openingFeePaid           Decimal           @db.Decimal(30, 0)
+  beneficiaries            SwapBeneficiary[]
+  failedBoosts             FailedBoost[]
+  fokMinPriceX128          Decimal?          @db.Decimal(78, 0)
+  fokRefundAddress         String?
+  fokRetryDurationBlocks   Int?
+  numberOfChunks           Int?              @default(1)
+  chunkIntervalBlocks      Int?
+  swapRequests             SwapRequest[]
+  quote                    Quote?
 
   @@unique([issuedBlock, srcChain, channelId])
   @@index([depositAddress])
   @@schema("public")
 }
 
-model SwapDepositChannelAffiliate {
-  id            BigInt             @id @default(autoincrement())
+enum BrokerType {
+  SUBMITTER
+  AFFILIATE
+
+  @@schema("public")
+}
+
+model SwapBeneficiary {
+  id            BigInt              @id @default(autoincrement())
   account       String
   commissionBps Int
-  channel       SwapDepositChannel @relation(fields: [channelId], references: [id])
-  channelId     BigInt
+  type          BrokerType
+  channel       SwapDepositChannel? @relation(fields: [channelId], references: [id])
+  channelId     BigInt?
 
   @@index([channelId])
   @@schema("public")
