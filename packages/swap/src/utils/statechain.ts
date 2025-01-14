@@ -49,7 +49,7 @@ export const getSwapRateV3 = async ({
     hexEncodeNumber(depositAmount),
     brokerCommissionBps ?? 0,
     dcaParameters,
-    limitOrders,
+    limitOrders?.filter((order) => order.LimitOrder.sell_amount !== '0x0'),
   );
 
   return {
