@@ -12,6 +12,7 @@ import {
   environment,
   mockRpcResponse,
 } from '@/shared/tests/fixtures';
+import { isAfterSpecVersion } from '@/swap/utils/function';
 import prisma, { InternalAsset } from '../../../client';
 import env from '../../../config/env';
 import { getUsdValue } from '../../../pricing/checkPriceWarning';
@@ -516,6 +517,79 @@ describe('server', () => {
       ]);
     });
 
+    it('can get swap rate with excludeFees param for version >= 180', async () => {
+      vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2e18));
+
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
+        ingress_fee: buildFee('Usdc', 0).bigint,
+        egress_fee: buildFee('Eth', 0).bigint,
+        network_fee: buildFee('Usdc', 100100).bigint,
+        intermediary: null,
+        output: BigInt(1e18),
+      });
+
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'USDC',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: (100e6).toString(),
+        isVaultSwap: 'true'
+      });
+
+      const { status } = await request(server).get(`/v2/quote?${params.toString()}`);
+      expect(status).toBe(200);
+      expect(sendSpy).toHaveBeenNthCalledWith(
+        1,
+        'cf_swap_rate_v3',
+        { asset: 'USDC', chain: 'Ethereum' },
+        { asset: 'ETH', chain: 'Ethereum' },
+        '0x5f5e100', 
+        0,
+        undefined,
+        null,
+        ['Ingress'],
+      );
+    });
+
+    it('can get swap rate param for version < 180 (passing different params for older version)', async () => {
+      vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2e18));
+      vi.mocked(isAfterSpecVersion).mockResolvedValueOnce(false);
+      
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
+        ingress_fee: buildFee('Usdc', 0).bigint,
+        egress_fee: buildFee('Eth', 0).bigint,
+        network_fee: buildFee('Usdc', 100100).bigint,
+        intermediary: null,
+        output: BigInt(1e18),
+      });
+    
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'USDC',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: (100e6).toString(),
+      });
+    
+      const { status } = await request(server).get(`/v2/quote?${params.toString()}`);
+      expect(status).toBe(200);
+      expect(sendSpy).toHaveBeenNthCalledWith(
+        1,
+        'cf_swap_rate_v3',
+        { asset: 'USDC', chain: 'Ethereum' },
+        { asset: 'ETH', chain: 'Ethereum' },
+        '0x5f5e100',
+        0,
+        undefined,
+        [],
+      ); 
+    });
+    
+
     it('does not throw if totalLiquidity is higher than egressAmount', async () => {
       vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(200e6));
       mockRpcResponse((url, data: any) => {
@@ -924,7 +998,7 @@ describe('server', () => {
         0,
         undefined,
         null,
-        undefined,
+        [],
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         2,
@@ -938,7 +1012,7 @@ describe('server', () => {
           chunk_interval: 2,
         },
         null,
-        undefined,
+        [],
       );
     });
 
@@ -1650,7 +1724,7 @@ describe('server', () => {
         10,
         undefined,
         null,
-        undefined,
+        [],
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         2,
@@ -1661,7 +1735,7 @@ describe('server', () => {
         10,
         undefined,
         null,
-        undefined,
+        [],
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         3,
@@ -1675,7 +1749,7 @@ describe('server', () => {
           chunk_interval: 2,
         },
         null,
-        undefined,
+        [],
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         4,
@@ -1689,7 +1763,7 @@ describe('server', () => {
           chunk_interval: 2,
         },
         null,
-        undefined,
+        [],
       );
     });
 
