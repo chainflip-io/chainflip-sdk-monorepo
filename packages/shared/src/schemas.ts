@@ -51,7 +51,7 @@ export const quoteQuerySchema = z
       amount: args.amount,
       brokerCommissionBps: args.brokerCommissionBps,
       dcaEnabled: args.dcaEnabled,
-      isVaultSwap: args.isVaultSwap
+      isVaultSwap: args.isVaultSwap,
     };
   });
 
@@ -82,7 +82,7 @@ export const dcaParams = z.object({
 });
 export type DcaParams = z.input<typeof dcaParams>;
 
-export type SwapFeeType = 'Network' | 'Ingress' | 'Egress'; 
+export type SwapFeeType = 'Network' | 'Ingress' | 'Egress';
 
 export const fillOrKillParams = z.object({
   retryDurationBlocks: number,

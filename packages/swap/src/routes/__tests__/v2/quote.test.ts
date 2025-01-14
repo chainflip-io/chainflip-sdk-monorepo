@@ -310,6 +310,24 @@ describe('server', () => {
       });
     });
 
+    it('rejects if it is a vault swap quote on Polkadot source chain', async () => {
+      const params = new URLSearchParams({
+        srcChain: 'Polkadot',
+        srcAsset: 'DOT',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: (1000).toString(),
+        isVaultSwap: 'true',
+      });
+
+      const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
+
+      expect(status).toBe(400);
+      expect(body).toMatchObject({
+        message: 'Polkadot does not support vault swaps',
+      });
+    });
+
     it('rejects when the egress amount is smaller than the egress fee', async () => {
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
@@ -906,7 +924,7 @@ describe('server', () => {
         0,
         undefined,
         null,
-        undefined
+        undefined,
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         2,
@@ -1632,7 +1650,7 @@ describe('server', () => {
         10,
         undefined,
         null,
-        undefined
+        undefined,
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         2,
@@ -1643,7 +1661,7 @@ describe('server', () => {
         10,
         undefined,
         null,
-        undefined
+        undefined,
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         3,
@@ -1657,7 +1675,7 @@ describe('server', () => {
           chunk_interval: 2,
         },
         null,
-        undefined
+        undefined,
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         4,
