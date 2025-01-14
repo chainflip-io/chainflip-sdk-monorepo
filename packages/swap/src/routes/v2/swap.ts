@@ -35,7 +35,7 @@ router.get(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    const { swapRequest, failedSwap, swapDepositChannel, affiliateBrokers } =
+    const { swapRequest, failedSwap, swapDepositChannel, beneficiaries } =
       await getLatestSwapForId(id);
 
     const swapEgress = swapRequest?.egress;
@@ -173,14 +173,18 @@ router.get(
           depositChannel: {
             id: `${swapDepositChannel.issuedBlock}-${swapDepositChannel.srcChain}-${swapDepositChannel.channelId}`,
             createdAt: swapDepositChannel.createdAt.valueOf(),
-            brokerCommissionBps: swapDepositChannel.brokerCommissionBps,
+            brokerCommissionBps:
+              beneficiaries?.find(({ type }) => type === 'SUBMITTER')?.commissionBps ?? 0,
             depositAddress: swapDepositChannel.depositAddress,
             srcChainExpiryBlock: swapDepositChannel.srcChainExpiryBlock?.toString(),
             estimatedExpiryTime: swapDepositChannel.estimatedExpiryAt?.valueOf(),
             expectedDepositAmount: swapDepositChannel.expectedDepositAmount?.toFixed(),
             isExpired: swapDepositChannel.isExpired,
             openedThroughBackend: swapDepositChannel.openedThroughBackend,
-            affiliateBrokers: affiliateBrokers ?? [],
+            affiliateBrokers:
+              beneficiaries
+                ?.filter(({ type }) => type === 'AFFILIATE')
+                .map(({ account, commissionBps }) => ({ account, commissionBps })) ?? [],
             fillOrKillParams: swapDepositChannel.fokMinPriceX128
               ? {
                   retryDurationBlocks: swapDepositChannel.fokRetryDurationBlocks,
