@@ -32,29 +32,15 @@ const mapAssets = (quotedAssets: InternalAsset[] | null): InternalAssetMap<boole
   ) as InternalAssetMap<boolean>;
 };
 
-const authSchema = z.union([
-  z
-    .object({
-      client_version: z.literal('1'),
-      market_maker_id: z.string(),
-      timestamp: z.number(),
-      signature: z.string(),
-    })
-    .transform((data) => ({
-      ...data,
-      quoted_assets: mapAssets(null),
-      account_id: data.market_maker_id,
-    })),
-  z.object({
-    client_version: z.literal('2'),
-    account_id: z.string(),
-    timestamp: z.number(),
-    signature: z.string(),
-    quoted_assets: z
-      .array(assetAndChain.transform(getInternalAsset))
-      .transform((assets) => mapAssets(assets.filter(isNotNullish))),
-  }),
-]);
+const authSchema = z.object({
+  client_version: z.literal('2'),
+  account_id: z.string(),
+  timestamp: z.number(),
+  signature: z.string(),
+  quoted_assets: z
+    .array(assetAndChain.transform(getInternalAsset))
+    .transform((assets) => mapAssets(assets.filter(isNotNullish))),
+});
 
 const parseKey = (key: string) => {
   try {

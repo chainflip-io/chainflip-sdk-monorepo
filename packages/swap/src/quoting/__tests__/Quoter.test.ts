@@ -14,7 +14,7 @@ import env from '@/swap/config/env';
 import prisma, { InternalAsset } from '../../client';
 import { getAssetPrice } from '../../pricing';
 import authenticate from '../authenticate';
-import Quoter, { approximateIntermediateOutput, formatAmount, type RpcLimitOrder } from '../Quoter';
+import Quoter, { approximateIntermediateOutput, type RpcLimitOrder } from '../Quoter';
 import { LegJson, MarketMakerQuoteRequest, MarketMakerRawQuote } from '../schemas';
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
@@ -42,7 +42,7 @@ describe(Quoter, () => {
   let quoter: Quoter;
   let connectClient: (
     name: string,
-    quotedAssets?: InternalAsset[],
+    quotedAssets: InternalAsset[],
   ) => Promise<{
     sendQuote: (
       quote: MarketMakerRawQuote,
@@ -80,7 +80,7 @@ describe(Quoter, () => {
       ),
     );
 
-    connectClient = async (name: string, quotedAssets?: InternalAsset[]) => {
+    connectClient = async (name: string, quotedAssets: InternalAsset[]) => {
       const { publicKey, privateKey } = await generateKeyPairAsync('ed25519');
       await prisma.marketMaker.create({
         data: {
@@ -94,9 +94,8 @@ describe(Quoter, () => {
 
       const socket = io(`http://localhost:${port}`, {
         auth: {
-          ...(quotedAssets
-            ? { client_version: '2', account_id: name }
-            : { client_version: '1', market_maker_id: name }),
+          client_version: '2',
+          account_id: name,
           timestamp,
           signature: crypto
             .sign(null, Buffer.from(`${name}${timestamp}`, 'utf8'), privateKey)
@@ -208,7 +207,8 @@ describe(Quoter, () => {
 
       const handler = fakeServer.on.mock.calls[0][1];
 
-      const socket = { on: vi.fn(), data: { marketMaker: 'MM' }, disconnect: vi.fn() };
+      const emit = vi.fn();
+      const socket = { on: vi.fn(), data: { marketMaker: 'MM' }, disconnect: vi.fn(), emit };
       const next = vi.fn();
       mockQuoter['quotes$'].subscribe(next);
 
@@ -220,6 +220,17 @@ describe(Quoter, () => {
       callback({ request_id: 'string', range_orders: [] });
 
       expect(next).toHaveBeenCalledTimes(1);
+      expect(emit.mock.calls).toMatchInlineSnapshot(`
+        [
+          [
+            "quote_error",
+            {
+              "error": "Invalid input",
+              "request_id": "string",
+            },
+          ],
+        ]
+      `);
     });
   });
 
@@ -232,7 +243,7 @@ describe(Quoter, () => {
 
     it('returns an empty array if no quotes are received', async () => {
       env.QUOTE_TIMEOUT = 10;
-      await connectClient('marketMaker');
+      await connectClient('marketMaker', ['Btc']);
 
       const orders = await quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
       expect(orders).toEqual([]);
@@ -240,7 +251,7 @@ describe(Quoter, () => {
 
     it('returns an array of quotes if expectedQuotes is received', async () => {
       env.QUOTE_TIMEOUT = 10_000;
-      const { sendQuote, waitForRequest } = await connectClient('marketMaker');
+      const { sendQuote, waitForRequest } = await connectClient('marketMaker', ['Btc']);
       const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
       const request = await waitForRequest();
       const quote = sendQuote({ ...request, legs: [[[0, '100']]] });
@@ -249,8 +260,8 @@ describe(Quoter, () => {
 
     it('accepts the most recent quote from each market maker', async () => {
       env.QUOTE_TIMEOUT = 10;
-      const { sendQuote, waitForRequest } = await connectClient('marketMaker');
-      await connectClient('marketMaker2');
+      const { sendQuote, waitForRequest } = await connectClient('marketMaker', ['Btc']);
+      await connectClient('marketMaker2', ['Btc']);
       const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
       const request = await waitForRequest();
       sendQuote({ ...request, legs: [[[0, '100']]] });
@@ -260,7 +271,7 @@ describe(Quoter, () => {
 
     it.each([10, 50, 100])('can be configured with QUOTE_TIMEOUT', async (timeout) => {
       env.QUOTE_TIMEOUT = timeout;
-      const { sendQuote, waitForRequest } = await connectClient('marketMaker');
+      const { sendQuote, waitForRequest } = await connectClient('marketMaker', ['Btc']);
       const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
       const request = await waitForRequest();
       await sleep(timeout + 1);
@@ -270,8 +281,8 @@ describe(Quoter, () => {
 
     it('eagerly returns after all expected quotes are received', async () => {
       env.QUOTE_TIMEOUT = 10_000;
-      const mm1 = await connectClient('marketMaker');
-      const mm2 = await connectClient('marketMaker2');
+      const mm1 = await connectClient('marketMaker', ['Btc']);
+      const mm2 = await connectClient('marketMaker2', ['Btc']);
       const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
       const request = await mm1.waitForRequest();
       const quote1 = mm1.sendQuote({ ...request, legs: [[[0, '100']]] });
@@ -397,21 +408,4 @@ describe('approximateIntermediateOutput', () => {
       expect(actual).toEqual(expected);
     },
   );
-});
-
-describe(formatAmount, () => {
-  it('throws for unexpected versions', () => {
-    expect(() => formatAmount(0, BigInt(100), 'Usdt', 'BUY', 'asdf' as '2')).toThrow();
-  });
-
-  it('hex encodes for client version 2', () => {
-    expect(formatAmount(0, BigInt(100), 'Usdt', 'BUY', '2')).toEqual('0x64');
-  });
-
-  it('calculates the sell amount for client version 1', () => {
-    expect(formatAmount(0, BigInt(100), 'Usdt', 'BUY', '1')).toEqual('0x64');
-    expect(formatAmount(0, BigInt(100), 'Usdt', 'SELL', '1')).toEqual('0x64');
-    expect(formatAmount(-268166, BigInt(1e18), 'Flip', 'SELL', '1')).toEqual('0x227fa1'); // 2.260897 USDC
-    expect(formatAmount(-268166, BigInt(2.2e6), 'Flip', 'BUY', '1')).toEqual('0xd81055f6ab25a91'); // 0.97 FLIP
-  });
 });
