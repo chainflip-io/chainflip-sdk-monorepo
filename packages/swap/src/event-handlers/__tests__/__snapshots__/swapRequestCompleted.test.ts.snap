@@ -54,6 +54,7 @@ exports[`swapRequestCompleted > updates swap request and associated quote 1`] = 
   "swapOutputAmount": "2480000",
   "swapRequestedAt": 2022-12-06T14:31:33.000Z,
   "swapRequestedBlockIndex": "92-398",
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
@@ -111,6 +112,7 @@ exports[`swapRequestCompleted > updates swap request and associated quote if swa
   "swapOutputAmount": "1240000",
   "swapRequestedAt": 2022-12-06T14:31:33.000Z,
   "swapRequestedBlockIndex": "92-398",
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
@@ -148,6 +150,7 @@ exports[`swapRequestCompleted > updates swap request with multiple swaps 1`] = `
   "swapOutputAmount": "7000000",
   "swapRequestedAt": 2022-12-06T14:31:33.000Z,
   "swapRequestedBlockIndex": "92-398",
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
@@ -185,5 +188,6 @@ exports[`swapRequestCompleted > updates swap request with single swap 1`] = `
   "swapOutputAmount": "2500000",
   "swapRequestedAt": 2022-12-06T14:31:33.000Z,
   "swapRequestedBlockIndex": "92-398",
+  "totalBrokerCommissionBps": 0,
 }
 `;

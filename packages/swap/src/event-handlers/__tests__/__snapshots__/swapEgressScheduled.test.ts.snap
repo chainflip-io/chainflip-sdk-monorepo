@@ -51,6 +51,7 @@ exports[`swapEgressScheduled > adds an egress and fee to a swap request 1`] = `
   "swapOutputAmount": null,
   "swapRequestedAt": 2022-12-06T14:31:33.000Z,
   "swapRequestedBlockIndex": "92-398",
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
@@ -105,6 +106,7 @@ exports[`swapEgressScheduled > adds an egress and fee to a swap request for 160 
   "swapOutputAmount": null,
   "swapRequestedAt": 2022-12-06T14:31:33.000Z,
   "swapRequestedBlockIndex": "92-398",
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
@@ -159,5 +161,6 @@ exports[`swapEgressScheduled > uses gas asset for egress fee when CCM for 160 sc
   "swapOutputAmount": null,
   "swapRequestedAt": 2022-12-06T14:31:33.000Z,
   "swapRequestedBlockIndex": "92-398",
+  "totalBrokerCommissionBps": 0,
 }
 `;

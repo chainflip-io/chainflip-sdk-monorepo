@@ -69,6 +69,7 @@ exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL) 1`] = `
   "swapOutputAmount": null,
   "swapRequestedAt": 2024-08-23T13:13:12.002Z,
   "swapRequestedBlockIndex": "87-13",
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
@@ -105,6 +106,44 @@ exports[`swapRequested > creates a new swap request (INGRESS_EGRESS_FEE) 1`] = `
   "swapOutputAmount": null,
   "swapRequestedAt": 2024-08-23T13:13:12.002Z,
   "swapRequestedBlockIndex": "87-13",
+  "totalBrokerCommissionBps": 0,
+}
+`;
+
+exports[`swapRequested > creates a new swap request (LEGACY VAULT 180) 1`] = `
+{
+  "ccmDepositReceivedBlockIndex": null,
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "chunkIntervalBlocks": null,
+  "completedAt": null,
+  "completedBlockIndex": null,
+  "depositAmount": "500000000",
+  "depositBoostedAt": null,
+  "depositBoostedBlockIndex": null,
+  "depositFinalisedAt": null,
+  "depositFinalisedBlockIndex": null,
+  "depositTransactionRef": "0x9c617e12f6ddd5c7cff2236b32970bc2bd168799c90f907269348e6ca8c7be18",
+  "destAddress": "0x16988558ad8ef084dbe0016c9ffdae908e480621",
+  "destAsset": "Usdt",
+  "effectiveBoostFeeBps": null,
+  "egressId": null,
+  "id": Any<BigInt>,
+  "maxBoostFeeBps": 0,
+  "nativeId": 162n,
+  "numberOfChunks": null,
+  "originType": "VAULT",
+  "prewitnessedDepositId": null,
+  "refundEgressId": null,
+  "requestType": "REGULAR",
+  "srcAddress": null,
+  "srcAsset": "ArbUsdc",
+  "swapDepositChannelId": null,
+  "swapInputAmount": "500000000",
+  "swapOutputAmount": null,
+  "swapRequestedAt": 2024-08-23T13:13:12.002Z,
+  "swapRequestedBlockIndex": "87-13",
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
@@ -141,6 +180,7 @@ exports[`swapRequested > creates a new swap request (VAULT 180) 1`] = `
   "swapOutputAmount": null,
   "swapRequestedAt": 2024-08-23T13:13:12.002Z,
   "swapRequestedBlockIndex": "87-13",
+  "totalBrokerCommissionBps": 250,
 }
 `;
 
@@ -177,6 +217,7 @@ exports[`swapRequested > creates a new swap request (VAULT) 1`] = `
   "swapOutputAmount": null,
   "swapRequestedAt": 2024-08-23T13:13:12.002Z,
   "swapRequestedBlockIndex": "87-13",
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
@@ -213,5 +254,6 @@ exports[`swapRequested > creates a new swap request and gets the solana tx ref (
   "swapOutputAmount": null,
   "swapRequestedAt": 2024-08-23T13:13:12.002Z,
   "swapRequestedBlockIndex": "87-13",
+  "totalBrokerCommissionBps": 0,
 }
 `;

@@ -175,6 +175,7 @@ export default async function swapRequested({
     origin,
     requestType,
     dcaParameters,
+    brokerFees,
   } = schema.parse(event.args);
 
   const { originType, swapDepositChannelId, depositTransactionRef } = await getOriginInfo(
@@ -216,6 +217,7 @@ export default async function swapRequested({
       }),
       numberOfChunks: dcaParameters?.numberOfChunks,
       chunkIntervalBlocks: dcaParameters?.chunkInterval,
+      totalBrokerCommissionBps: brokerFees.reduce((acc, { bps }) => acc + bps, 0),
     },
   });
 }
