@@ -1,6 +1,6 @@
 import { getAssetAndChain, getInternalAsset } from '@/shared/enums';
 import { getPipAmountFromAmount } from '@/shared/functions';
-import { DcaParams, Quote } from '@/shared/schemas';
+import { DcaParams, Quote, SwapFeeType } from '@/shared/schemas';
 import { estimateSwapDuration, getSwapPrice } from '@/swap/utils/swap';
 import { calculateRecommendedSlippage } from './autoSlippage';
 import { buildFee, getPoolFees } from './fees';
@@ -19,6 +19,7 @@ export default async function getPoolQuote({
   brokerCommissionBps,
   pools,
   dcaParams,
+  isVaultSwap,
 }: {
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
@@ -28,8 +29,10 @@ export default async function getPoolQuote({
   boostFeeBps?: number;
   pools: Pool[];
   dcaParams?: DcaParams;
+  isVaultSwap?: boolean;
 }) {
   const includedFees = [];
+  const excludeFees: SwapFeeType[] = [];
   let cfRateInputAmount = depositAmount;
 
   // After this ticket, boost fee should be included in the response so dont have to calculate it ourselves
@@ -40,6 +43,10 @@ export default async function getPoolQuote({
     cfRateInputAmount -= boostFee;
   }
 
+  if (isVaultSwap) {
+    excludeFees.push('Ingress');
+  }
+
   const { egressFee, ingressFee, networkFee, egressAmount, intermediateAmount, brokerFee } =
     await getSwapRateV3({
       srcAsset,
@@ -48,6 +55,7 @@ export default async function getPoolQuote({
       limitOrders,
       brokerCommissionBps,
       dcaParams,
+      excludeFees,
     });
 
   const swapInputAmount = cfRateInputAmount - ingressFee.amount;

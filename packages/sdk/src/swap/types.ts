@@ -44,6 +44,7 @@ export interface QuoteRequest extends ChainsAndAssets {
   amount: string;
   brokerCommissionBps?: number;
   affiliateBrokers?: AffiliateBroker[];
+  isVaultSwap?: boolean;
 }
 
 export interface QuoteResponse
