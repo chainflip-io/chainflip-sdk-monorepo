@@ -42,6 +42,7 @@ const quoteRouter = (quoter: Quoter) => {
         amount,
         brokerCommissionBps,
         boostDepositsEnabled,
+        isVaultSwap
       } = await validateQuoteQuery(req.query);
 
       let limitOrdersReceived;
@@ -53,6 +54,7 @@ const quoteRouter = (quoter: Quoter) => {
           brokerCommissionBps,
           boostDepositsEnabled,
           quoter,
+          isVaultSwap
         });
         const quote = quotes[0];
         limitOrdersReceived = limitOrders;
