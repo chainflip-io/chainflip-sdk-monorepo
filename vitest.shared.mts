@@ -12,6 +12,7 @@ export default defineConfig({
   ],
   test: {
     exclude: [...configDefaults.exclude],
+    coverage: { enabled: true, provider: 'v8' },
   },
   resolve: {
     alias: {

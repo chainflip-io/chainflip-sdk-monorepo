@@ -80,6 +80,42 @@ const vaultSolana180 = {
   },
 } as const;
 
+const depositChannel170 = {
+  origin: {
+    __kind: 'DepositChannel',
+    channelId: '6',
+    depositAddress: {
+      value:
+        '0x626372743170676a326e327071616b6c7a726466613377796d716d646e3235336d3368346c787366756d616a366136683767756d656474763573637665783266',
+      __kind: 'Btc',
+    },
+    depositBlockHeight: '167',
+  },
+  brokerFees: [],
+  inputAsset: { __kind: 'Btc' },
+  inputAmount: '4999922',
+  outputAsset: { __kind: 'Eth' },
+  requestType: {
+    __kind: 'Regular',
+    outputAddress: { value: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0', __kind: 'Eth' },
+    ccmDepositMetadata: {
+      sourceChain: { __kind: 'Bitcoin' },
+      channelMetadata: {
+        message:
+          '0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000003f7a400000000000000000000000000000000000000000000000000000000000000074761735465737400000000000000000000000000000000000000000000000000',
+        gasBudget: '2',
+        ccmAdditionalData:
+          '0x7ae79240f09d236433572d970077360c2fb1af40f30a2463907f39ff189c49e602c459e18eb2391a1bf0ddc69201fce27ddd0f0f11c2f2b6e1b041c1300667d9fe583721a4b4aad88885a0f2881db68f6a12e385ad1b9ca3',
+      },
+    },
+  },
+  dcaParameters: {
+    numberOfChunks: 10,
+    chunkInterval: 2,
+  },
+  swapRequestId: '2',
+} as const;
+
 const depositChannel = {
   origin: {
     __kind: 'DepositChannel',
@@ -215,6 +251,36 @@ describe(swapRequested, () => {
     });
 
     await swapRequested({ prisma, event: { ...event, args: depositChannel }, block });
+
+    const request = await prisma.swapRequest.findFirstOrThrow();
+
+    expect(request.swapDepositChannelId).toBe(channel.id);
+    expect(request).toMatchSnapshot({
+      id: expect.any(BigInt),
+      swapDepositChannelId: expect.any(BigInt),
+    });
+  });
+
+  it('creates a new swap request (DEPOSIT_CHANNEL 170)', async () => {
+    const channel = await prisma.swapDepositChannel.create({
+      data: {
+        srcChain: assetConstants[depositChannel170.inputAsset.__kind].chain,
+        depositAddress: Buffer.from(
+          depositChannel170.origin.depositAddress.value.slice(2),
+          'hex',
+        ).toString(),
+        issuedBlock: 1,
+        channelId: BigInt(depositChannel170.origin.channelId),
+        isExpired: false,
+        srcAsset: depositChannel170.inputAsset.__kind,
+        destAsset: depositChannel170.outputAsset.__kind,
+        destAddress: depositChannel170.requestType.outputAddress.value,
+        totalBrokerCommissionBps: 0,
+        openingFeePaid: 0,
+      },
+    });
+
+    await swapRequested({ prisma, event: { ...event, args: depositChannel170 }, block });
 
     const request = await prisma.swapRequest.findFirstOrThrow();
 
