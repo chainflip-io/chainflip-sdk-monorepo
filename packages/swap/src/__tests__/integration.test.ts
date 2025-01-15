@@ -23,7 +23,6 @@ import { getTotalLiquidity } from '../utils/pools';
 import { getSwapRateV3 } from '../utils/statechain';
 
 const execAsync = promisify(exec);
-global.fetch = vi.fn().mockRejectedValue(new Error('fetch is not implemented in this environment'));
 
 vi.mock('../pricing');
 vi.mock('../utils/pools', async (importOriginal) => {
