@@ -32,6 +32,7 @@ describe(swapRescheduled, () => {
         originType: 'DEPOSIT_CHANNEL',
         requestType: 'REGULAR',
         swapRequestedAt: new Date('2024-08-06T00:00:00.000Z'),
+        totalBrokerCommissionBps: 0,
       },
     });
 

@@ -106,6 +106,8 @@ model SwapBeneficiary {
   type          BrokerType
   channel       SwapDepositChannel? @relation(fields: [channelId], references: [id])
   channelId     BigInt?
+  swapRequest   SwapRequest?        @relation(fields: [swapRequestId], references: [id])
+  swapRequestId BigInt?
 
   @@index([channelId])
   @@schema("public")
@@ -169,6 +171,8 @@ model SwapRequest {
   numberOfChunks               Int?
   chunkIntervalBlocks          Int?
   quote                        Quote?
+  totalBrokerCommissionBps     Int
+  beneficiaries                SwapBeneficiary[]
 
   @@index([srcAsset, prewitnessedDepositId])
   @@schema("public")

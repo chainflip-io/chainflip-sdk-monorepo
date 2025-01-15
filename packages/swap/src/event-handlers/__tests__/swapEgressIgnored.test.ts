@@ -35,6 +35,7 @@ describe(swapEgressIgnored, () => {
         requestType: 'LEGACY_SWAP',
         swapRequestedAt: new Date('2024-08-06T00:00:00.000Z'),
         swapRequestedBlockIndex: '92-398',
+        totalBrokerCommissionBps: 0,
       },
     });
 

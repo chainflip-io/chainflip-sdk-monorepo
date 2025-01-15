@@ -175,6 +175,7 @@ export default async function swapRequested({
     origin,
     requestType,
     dcaParameters,
+    brokerFees,
   } = schema.parse(event.args);
 
   const { originType, swapDepositChannelId, depositTransactionRef } = await getOriginInfo(
@@ -184,6 +185,21 @@ export default async function swapRequested({
   );
 
   const { destAddress, ccmMetadata } = getRequestInfo(requestType);
+
+  const beneficiaries = brokerFees
+    .map((fee, index) => ({
+      // first broker on the event is the main broker, the rest are affiliates
+      // https://linear.app/chainflip/issue/PRO-1951/swaprequested-event-does-not-expose-main-broker-of-the-swap
+      type: index === 0 ? ('SUBMITTER' as const) : ('AFFILIATE' as const),
+      account: fee.account,
+      commissionBps: fee.bps,
+    }))
+    .filter(({ commissionBps }) => commissionBps > 0);
+
+  const totalCommissionBps = beneficiaries.reduce(
+    (acc, { commissionBps }) => acc + commissionBps,
+    0,
+  );
 
   // TODO(1.9): remove this because all external swaps have a DepositFinalised event from 1.8
   const additionalInfo = ccmMetadata
@@ -216,6 +232,12 @@ export default async function swapRequested({
       }),
       numberOfChunks: dcaParameters?.numberOfChunks,
       chunkIntervalBlocks: dcaParameters?.chunkInterval,
+      totalBrokerCommissionBps: totalCommissionBps,
+      beneficiaries: {
+        createMany: {
+          data: beneficiaries,
+        },
+      },
     },
   });
 }

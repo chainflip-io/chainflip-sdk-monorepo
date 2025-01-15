@@ -27,6 +27,7 @@ describe(swapEgressScheduled, () => {
         originType: 'VAULT',
         swapRequestedAt: new Date(block.timestamp - 12000),
         swapRequestedBlockIndex: '92-398',
+        totalBrokerCommissionBps: 0,
       },
     });
 
@@ -88,6 +89,7 @@ describe(swapEgressScheduled, () => {
         originType: 'VAULT',
         swapRequestedAt: new Date(block.timestamp - 12000),
         swapRequestedBlockIndex: '92-398',
+        totalBrokerCommissionBps: 0,
       },
     });
 
@@ -141,6 +143,7 @@ describe(swapEgressScheduled, () => {
         originType: 'VAULT',
         swapRequestedAt: new Date(block.timestamp - 12000),
         swapRequestedBlockIndex: '92-398',
+        totalBrokerCommissionBps: 0,
       },
     });
 
