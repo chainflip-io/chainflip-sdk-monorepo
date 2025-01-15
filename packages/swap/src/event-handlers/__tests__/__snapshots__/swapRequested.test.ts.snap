@@ -33,6 +33,7 @@ exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL 170) 1`] = 
   "swapOutputAmount": null,
   "swapRequestedAt": 2024-08-23T13:13:12.002Z,
   "swapRequestedBlockIndex": "87-13",
+  "totalBrokerCommissionBps": 0,
 }
 `;
 

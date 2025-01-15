@@ -26,6 +26,7 @@ describe(refundEgressScheduled, () => {
         originType: 'VAULT',
         swapRequestedAt: new Date(block.timestamp - 12000),
         swapRequestedBlockIndex: '92-398',
+        totalBrokerCommissionBps: 0,
       },
     });
 
