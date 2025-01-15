@@ -32,6 +32,7 @@ exports[`swapDepositAddressReady > can handle empty ccm messages 1`] = `
 
 exports[`swapDepositAddressReady > creates a swap deposit channel entry 1`] = `
 {
+  "beneficiaries": [],
   "ccmGasBudget": null,
   "ccmMessage": null,
   "channelId": 1n,
