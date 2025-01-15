@@ -179,6 +179,7 @@ exports[`ccm swap flow > handles all the deposit channel events 1`] = `
           "updatedAt": Any<Date>,
         },
       ],
+      "totalBrokerCommissionBps": 0,
     },
   ],
   "totalBrokerCommissionBps": 100,
@@ -286,5 +287,6 @@ exports[`ccm swap flow > handles all the vault events 1`] = `
       "updatedAt": Any<Date>,
     },
   ],
+  "totalBrokerCommissionBps": 0,
 }
 `;

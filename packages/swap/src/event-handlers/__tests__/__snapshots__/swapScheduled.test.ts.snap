@@ -55,5 +55,6 @@ exports[`swapScheduled > creates a swap for a swap request 1`] = `
       "updatedAt": Any<Date>,
     },
   ],
+  "totalBrokerCommissionBps": 0,
 }
 `;

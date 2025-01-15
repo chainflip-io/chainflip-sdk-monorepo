@@ -189,6 +189,7 @@ exports[`swapDepositAddressReady > inserts affiliates 1`] = `
       "channelId": Any<BigInt>,
       "commissionBps": 25,
       "id": Any<BigInt>,
+      "swapRequestId": null,
       "type": "SUBMITTER",
     },
     {
@@ -196,6 +197,7 @@ exports[`swapDepositAddressReady > inserts affiliates 1`] = `
       "channelId": Any<BigInt>,
       "commissionBps": 100,
       "id": Any<BigInt>,
+      "swapRequestId": null,
       "type": "AFFILIATE",
     },
   ],

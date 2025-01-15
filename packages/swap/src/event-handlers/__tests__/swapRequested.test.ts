@@ -18,7 +18,7 @@ const vaultBitcoin180 = {
       account: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
     },
     {
-      bps: 100,
+      bps: 150,
       account: '0xa27ef1c721066568cc4d3483f680fbad02e0b999ace3347393bd7ab82bef4f2e',
     },
   ],
@@ -78,6 +78,67 @@ const vaultSolana180 = {
     },
     retryDuration: 0,
   },
+} as const;
+
+const legacyVaultArbitrum180 = {
+  origin: {
+    txId: {
+      value: '0x9c617e12f6ddd5c7cff2236b32970bc2bd168799c90f907269348e6ca8c7be18',
+      __kind: 'Evm',
+    },
+    __kind: 'Vault',
+  },
+  brokerFees: [],
+  inputAsset: {
+    __kind: 'ArbUsdc',
+  },
+  inputAmount: '500000000',
+  outputAsset: {
+    __kind: 'Usdt',
+  },
+  requestType: {
+    __kind: 'Regular',
+    outputAddress: {
+      value: '0x16988558ad8ef084dbe0016c9ffdae908e480621',
+      __kind: 'Eth',
+    },
+  },
+  swapRequestId: '162',
+} as const;
+
+const depositChannel160 = {
+  origin: {
+    __kind: 'DepositChannel',
+    channelId: '6',
+    depositAddress: {
+      value:
+        '0x626372743170676a326e327071616b6c7a726466613377796d716d646e3235336d3368346c787366756d616a366136683767756d656474763573637665783266',
+      __kind: 'Btc',
+    },
+    depositBlockHeight: '167',
+  },
+  inputAsset: { __kind: 'Btc' },
+  inputAmount: '4999922',
+  outputAsset: { __kind: 'Eth' },
+  requestType: {
+    __kind: 'Ccm',
+    outputAddress: { value: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0', __kind: 'Eth' },
+    ccmDepositMetadata: {
+      sourceChain: { __kind: 'Bitcoin' },
+      channelMetadata: {
+        message:
+          '0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000003f7a400000000000000000000000000000000000000000000000000000000000000074761735465737400000000000000000000000000000000000000000000000000',
+        gasBudget: '2',
+        cfParameters:
+          '0x7ae79240f09d236433572d970077360c2fb1af40f30a2463907f39ff189c49e602c459e18eb2391a1bf0ddc69201fce27ddd0f0f11c2f2b6e1b041c1300667d9fe583721a4b4aad88885a0f2881db68f6a12e385ad1b9ca3',
+      },
+    },
+  },
+  dcaParameters: {
+    numberOfChunks: 10,
+    chunkInterval: 2,
+  },
+  swapRequestId: '2',
 } as const;
 
 const depositChannel = {
@@ -227,6 +288,16 @@ describe(swapRequested, () => {
 
   it('creates a new swap request (VAULT 180)', async () => {
     await swapRequested({ prisma, event: { ...event, args: vaultBitcoin180 }, block });
+
+    const request = await prisma.swapRequest.findFirstOrThrow();
+
+    expect(request).toMatchSnapshot({
+      id: expect.any(BigInt),
+    });
+  });
+
+  it('creates a new swap request (LEGACY VAULT 180)', async () => {
+    await swapRequested({ prisma, event: { ...event, args: legacyVaultArbitrum180 }, block });
 
     const request = await prisma.swapRequest.findFirstOrThrow();
 

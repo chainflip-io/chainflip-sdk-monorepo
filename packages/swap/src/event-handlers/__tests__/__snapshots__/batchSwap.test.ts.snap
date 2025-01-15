@@ -142,6 +142,7 @@ exports[`batch swap flow > handles all the events 1`] = `
           "updatedAt": Any<Date>,
         },
       ],
+      "totalBrokerCommissionBps": 0,
     },
   ],
   "totalBrokerCommissionBps": 100,
