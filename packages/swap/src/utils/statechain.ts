@@ -54,7 +54,7 @@ export const getSwapRateV3 = async ({
   ];
 
   const additionalOrders = limitOrders?.filter((order) => order.LimitOrder.sell_amount !== '0x0');
-  
+
   const params: RpcParams['cf_swap_rate_v3'] = (await isAfterSpecVersion(180))
     ? [...commonParams, null, excludeFees]
     : [...commonParams, additionalOrders];

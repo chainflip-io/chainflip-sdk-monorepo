@@ -529,14 +529,13 @@ describe('server', () => {
         output: BigInt(1e18),
       });
 
-
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
         srcAsset: 'USDC',
         destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: (100e6).toString(),
-        isVaultSwap: 'true'
+        isVaultSwap: 'true',
       });
 
       const { status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -546,7 +545,7 @@ describe('server', () => {
         'cf_swap_rate_v3',
         { asset: 'USDC', chain: 'Ethereum' },
         { asset: 'ETH', chain: 'Ethereum' },
-        '0x5f5e100', 
+        '0x5f5e100',
         0,
         undefined,
         null,
@@ -557,7 +556,7 @@ describe('server', () => {
     it('can get swap rate param for version < 180 (passing different params for older version)', async () => {
       vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2e18));
       vi.mocked(isAfterSpecVersion).mockResolvedValueOnce(false);
-      
+
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Usdc', 0).bigint,
@@ -566,7 +565,7 @@ describe('server', () => {
         intermediary: null,
         output: BigInt(1e18),
       });
-    
+
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
         srcAsset: 'USDC',
@@ -574,7 +573,7 @@ describe('server', () => {
         destAsset: 'ETH',
         amount: (100e6).toString(),
       });
-    
+
       const { status } = await request(server).get(`/v2/quote?${params.toString()}`);
       expect(status).toBe(200);
       expect(sendSpy).toHaveBeenNthCalledWith(
@@ -586,9 +585,8 @@ describe('server', () => {
         0,
         undefined,
         [],
-      ); 
+      );
     });
-    
 
     it('does not throw if totalLiquidity is higher than egressAmount', async () => {
       vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(200e6));

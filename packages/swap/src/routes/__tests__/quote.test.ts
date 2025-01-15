@@ -603,7 +603,7 @@ describe('server', () => {
               chain: 'Ethereum',
             },
             fee: {
-              amount: '200000', 
+              amount: '200000',
               asset: 'USDC',
               chain: 'Ethereum',
             },
