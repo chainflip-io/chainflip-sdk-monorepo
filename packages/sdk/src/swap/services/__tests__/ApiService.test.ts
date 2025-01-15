@@ -86,7 +86,7 @@ describe('ApiService', () => {
         {
           ...mockRoute,
           dcaEnabled: false,
-          isVaultSwap: true
+          isVaultSwap: true,
         },
         {},
       );
