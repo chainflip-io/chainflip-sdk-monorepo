@@ -523,7 +523,7 @@ export const createPools = () => {
 export const processEvents = async (
   events: (Event & { id: string })[],
   calls: (Call & { id: string })[] = [],
-  version = '160',
+  version = '180',
 ) => {
   const eventMap = events
     .sort((a, b) => (a.id < b.id ? -1 : 1))

@@ -1,7 +1,9 @@
-import { swappingRefundEgressScheduled } from '@chainflip/processor/160/swapping/refundEgressScheduled';
+import { swappingRefundEgressScheduled as schema160 } from '@chainflip/processor/160/swapping/refundEgressScheduled';
+import { swappingRefundEgressScheduled as schema180 } from '@chainflip/processor/180/swapping/refundEgressScheduled';
+import z from 'zod';
 import type { EventHandlerArgs } from '.';
 
-const eventArgs = swappingRefundEgressScheduled;
+const eventArgs = z.union([schema180, schema160]);
 
 export default async function refundEgressScheduled({
   prisma,

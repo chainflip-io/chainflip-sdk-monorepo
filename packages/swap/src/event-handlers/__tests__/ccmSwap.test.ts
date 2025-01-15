@@ -296,13 +296,17 @@ const vaultOriginCcmEvents = [
     args: {
       origin: {
         __kind: 'Vault',
-        txHash: '0x0ea0bc075d5d972ba6469bc651d2966b312085b8f7a4c55e340986c43e73abc7',
+        txId: {
+          value: '0x0ea0bc075d5d972ba6469bc651d2966b312085b8f7a4c55e340986c43e73abc7',
+          __kind: 'Evm',
+        },
       },
+      brokerFees: [],
       inputAsset: { __kind: 'Eth' },
       inputAmount: '1',
       outputAsset: { __kind: 'Usdc' },
       requestType: {
-        __kind: 'Ccm',
+        __kind: 'Regular',
         outputAddress: { value: '0x28ac2744fff7e772e6450a34d68d661a7b35c660', __kind: 'Eth' },
         ccmDepositMetadata: {
           sourceChain: { __kind: 'Ethereum' },
@@ -311,7 +315,7 @@ const vaultOriginCcmEvents = [
             message:
               '0x000000000000000000000000000000000000000000000000000000000000004000000000000000000000000067ff09c184d8e9e7b90c5187ed04cbfbdba741c8000000000000000000000000000000000000000000000000000000000000000c6461676f61746973686572650000000000000000000000000000000000000000',
             gasBudget: '0',
-            cfParameters: '0x',
+            ccmAdditionalData: '0x',
           },
         },
       },

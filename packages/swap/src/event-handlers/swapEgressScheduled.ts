@@ -5,11 +5,11 @@ import { chainConstants } from '@/shared/enums';
 import type { EventHandlerArgs } from '.';
 
 const eventArgs = z.union([
+  swappingSwapEgressScheduled180,
   swappingSwapEgressScheduled160.transform((result) => ({
     ...result,
     egressFee: [result.egressFee, undefined] as const,
   })),
-  swappingSwapEgressScheduled180,
 ]);
 
 export type SwapEgressScheduledArgs = z.input<typeof eventArgs>;

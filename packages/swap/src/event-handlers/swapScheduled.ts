@@ -1,7 +1,9 @@
-import { swappingSwapScheduled } from '@chainflip/processor/160/swapping/swapScheduled';
+import { swappingSwapScheduled as schema160 } from '@chainflip/processor/160/swapping/swapScheduled';
+import { swappingSwapScheduled as schema180 } from '@chainflip/processor/180/swapping/swapScheduled';
 import { z } from 'zod';
 import type { EventHandlerArgs } from '.';
 
+const swappingSwapScheduled = z.union([schema180, schema160]);
 export type SwapScheduledArgs = z.input<typeof swappingSwapScheduled>;
 
 const swapTypeMap = {
