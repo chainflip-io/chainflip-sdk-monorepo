@@ -52,7 +52,7 @@ export const swapDepositAddressReady = async ({
       account: affiliate.account,
       commissionBps: affiliate.bps,
     })),
-  ];
+  ].filter(({ commissionBps }) => commissionBps > 0);
 
   const data = {
     srcChain: depositAddress.chain,
