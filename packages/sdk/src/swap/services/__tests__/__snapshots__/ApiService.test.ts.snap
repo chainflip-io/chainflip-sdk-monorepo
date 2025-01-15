@@ -79,6 +79,7 @@ exports[`ApiService > getQuoteV2 > gets a quote 1`] = `
   "dcaEnabled": false,
   "destAsset": "ETH",
   "destChain": "Ethereum",
+  "isVaultSwap": true,
   "quotes": [
     {
       "egressAmount": "2",
