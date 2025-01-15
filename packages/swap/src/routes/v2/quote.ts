@@ -88,10 +88,6 @@ export const validateQuoteQuery = async (query: Query) => {
 
   const ingressFee = (await getIngressFee(srcAsset)) ?? 0n; // when the protocol can't estimate the fee, that means they won't charge one so we fallback to 0
 
-  if (ingressFee === null) {
-    throw ServiceError.internalError(`could not determine ingress fee for ${srcAsset}`);
-  }
-
   if (ingressFee > amount) {
     throw ServiceError.badRequest(`amount is lower than estimated ingress fee (${ingressFee})`);
   }
@@ -146,7 +142,7 @@ export const generateQuotes = async ({
 }) => {
   let regularEagerLiquidityExists = false;
   let dcaEagerLiquidityExists = false;
-
+  
   const [limitOrders, { estimatedBoostFeeBps, maxBoostFeeBps }, pools] = await Promise.all([
     quoter.getLimitOrders(srcAsset, destAsset, depositAmount),
     env.DISABLE_BOOST_QUOTING || !boostDepositsEnabled
