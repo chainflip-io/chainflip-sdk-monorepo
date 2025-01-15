@@ -204,10 +204,11 @@ describe(SwapSDK, () => {
         destChain: 'Ethereum',
         destAsset: 'USDC',
         amount: '1',
+        isVaultSwap: true,
       };
       vi.mocked(getQuoteV2).mockResolvedValueOnce({ quote: 1234 } as any);
 
-      const result = await sdk.getQuoteV2(params);
+      const result = await sdk.getQuoteV2(params);      
       expect(getQuoteV2).toHaveBeenCalledWith(
         'https://chainflip-swap.staging/',
         { ...params, brokerCommissionBps: 0, dcaEnabled: false },
