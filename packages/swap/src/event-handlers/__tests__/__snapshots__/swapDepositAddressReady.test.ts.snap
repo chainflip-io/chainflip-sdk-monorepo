@@ -2,7 +2,6 @@
 
 exports[`swapDepositAddressReady > can handle empty ccm messages 1`] = `
 {
-  "brokerCommissionBps": 0,
   "ccmGasBudget": "0",
   "ccmMessage": "0x",
   "channelId": 1n,
@@ -27,12 +26,12 @@ exports[`swapDepositAddressReady > can handle empty ccm messages 1`] = `
   "srcAsset": "Eth",
   "srcChain": "Ethereum",
   "srcChainExpiryBlock": 256n,
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
 exports[`swapDepositAddressReady > creates a swap deposit channel entry 1`] = `
 {
-  "brokerCommissionBps": 0,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "channelId": 1n,
@@ -57,12 +56,12 @@ exports[`swapDepositAddressReady > creates a swap deposit channel entry 1`] = `
   "srcAsset": "Eth",
   "srcChain": "Ethereum",
   "srcChainExpiryBlock": 256n,
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
 exports[`swapDepositAddressReady > creates a swap deposit channel entry with a broker commission 1`] = `
 {
-  "brokerCommissionBps": 25,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "channelId": 1n,
@@ -87,12 +86,12 @@ exports[`swapDepositAddressReady > creates a swap deposit channel entry with a b
   "srcAsset": "Eth",
   "srcChain": "Ethereum",
   "srcChainExpiryBlock": 256n,
+  "totalBrokerCommissionBps": 25,
 }
 `;
 
 exports[`swapDepositAddressReady > creates a swap deposit channel entry with a channel opening fee 1`] = `
 {
-  "brokerCommissionBps": 0,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "channelId": 1n,
@@ -117,12 +116,12 @@ exports[`swapDepositAddressReady > creates a swap deposit channel entry with a c
   "srcAsset": "Eth",
   "srcChain": "Ethereum",
   "srcChainExpiryBlock": 256n,
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
 exports[`swapDepositAddressReady > creates a swap deposit channel entry with ccm metadata 1`] = `
 {
-  "brokerCommissionBps": 0,
   "ccmGasBudget": "125000",
   "ccmMessage": "0xdeadc0de",
   "channelId": 8249n,
@@ -147,12 +146,12 @@ exports[`swapDepositAddressReady > creates a swap deposit channel entry with ccm
   "srcAsset": "Btc",
   "srcChain": "Bitcoin",
   "srcChainExpiryBlock": 2573643n,
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
 exports[`swapDepositAddressReady > does not overwrite expectedDepositAmount with zero 1`] = `
 {
-  "brokerCommissionBps": 0,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "channelId": 1n,
@@ -177,20 +176,28 @@ exports[`swapDepositAddressReady > does not overwrite expectedDepositAmount with
   "srcAsset": "Eth",
   "srcChain": "Ethereum",
   "srcChainExpiryBlock": 256n,
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
 exports[`swapDepositAddressReady > inserts affiliates 1`] = `
 {
-  "affiliates": [
+  "beneficiaries": [
+    {
+      "account": "",
+      "channelId": Any<BigInt>,
+      "commissionBps": 25,
+      "id": Any<BigInt>,
+      "type": "SUBMITTER",
+    },
     {
       "account": "cFLhKgAVKDYQiyPXLH6yuvsWMXebn214VzKZEyXvEgcB9WT4T",
       "channelId": Any<BigInt>,
       "commissionBps": 100,
       "id": Any<BigInt>,
+      "type": "AFFILIATE",
     },
   ],
-  "brokerCommissionBps": 0,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "channelId": 1n,
@@ -215,5 +222,6 @@ exports[`swapDepositAddressReady > inserts affiliates 1`] = `
   "srcAsset": "Eth",
   "srcChain": "Ethereum",
   "srcChainExpiryBlock": 256n,
+  "totalBrokerCommissionBps": 125,
 }
 `;

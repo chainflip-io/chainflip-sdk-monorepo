@@ -38,7 +38,7 @@ router.get(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    const { swapRequest, failedSwap, swapDepositChannel, affiliateBrokers } =
+    const { swapRequest, failedSwap, swapDepositChannel, beneficiaries } =
       await getLatestSwapForId(id);
 
     let state: State;
@@ -145,6 +145,10 @@ router.get(
       failedSwap?.depositTransactionRef ??
       undefined;
 
+    const affiliates = beneficiaries
+      ?.filter(({ type }) => type === 'AFFILIATE')
+      .map(({ account, commissionBps }) => ({ account, commissionBps }));
+
     const fees = (swapRequest?.fees ?? []).concat(swap?.fees ?? []);
 
     const estimatedDurations =
@@ -157,7 +161,9 @@ router.get(
       ...(internalDestAsset && getAssetAndChain(internalDestAsset, 'dest')),
       destAddress: readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress'),
       depositChannelCreatedAt: swapDepositChannel?.createdAt.valueOf(),
-      depositChannelBrokerCommissionBps: swapDepositChannel?.brokerCommissionBps,
+      depositChannelBrokerCommissionBps:
+        swapDepositChannel &&
+        (beneficiaries?.find(({ type }) => type === 'SUBMITTER')?.commissionBps ?? 0),
       depositAddress: swapDepositChannel?.depositAddress,
       expectedDepositAmount: swapDepositChannel?.expectedDepositAmount?.toFixed(),
       srcChainRequiredBlockConfirmations:
@@ -201,7 +207,8 @@ router.get(
       failure: failureMode,
       failedAt: failedSwap?.failedAt,
       failedBlockIndex: failedSwap?.failedBlockIndex ?? undefined,
-      depositChannelAffiliateBrokers: affiliateBrokers,
+      depositChannelAffiliateBrokers:
+        swapDepositChannel && affiliates?.length ? affiliates : undefined,
       depositChannelMaxBoostFeeBps: swapDepositChannel?.maxBoostFeeBps,
       effectiveBoostFeeBps,
       depositBoostedAt: swapRequest?.depositBoostedAt?.valueOf(),

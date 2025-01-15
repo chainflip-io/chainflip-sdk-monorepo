@@ -41,6 +41,19 @@ export const swapDepositAddressReady = async ({
     expiryBlock: sourceChainExpiryBlock,
   });
 
+  const beneficiaries = [
+    {
+      type: 'SUBMITTER' as const,
+      account: '', // https://linear.app/chainflip/issue/PRO-1948/expose-broker-on-swapdepositaddressready-event
+      commissionBps: brokerCommissionRate,
+    },
+    ...affiliateFees.map((affiliate) => ({
+      type: 'AFFILIATE' as const,
+      account: affiliate.account,
+      commissionBps: affiliate.bps,
+    })),
+  ];
+
   const data = {
     srcChain: depositAddress.chain,
     srcAsset: sourceAsset,
@@ -48,7 +61,7 @@ export const swapDepositAddressReady = async ({
     destAsset: destinationAsset,
     destAddress: destinationAddress.address,
     srcChainExpiryBlock: sourceChainExpiryBlock,
-    brokerCommissionBps: brokerCommissionRate,
+    totalBrokerCommissionBps: beneficiaries.reduce((acc, b) => acc + b.commissionBps, 0),
     maxBoostFeeBps: boostFee,
     issuedBlock,
     channelId,
@@ -80,12 +93,9 @@ export const swapDepositAddressReady = async ({
         },
       },
       create: {
-        affiliates: {
+        beneficiaries: {
           createMany: {
-            data: affiliateFees.map((affiliate) => ({
-              account: affiliate.account,
-              commissionBps: affiliate.bps,
-            })),
+            data: beneficiaries,
           },
         },
         estimatedExpiryAt: estimatedExpiryTime,

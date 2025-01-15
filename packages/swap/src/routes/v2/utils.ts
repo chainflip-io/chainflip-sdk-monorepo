@@ -23,8 +23,9 @@ import { coerceChain, failedSwapMessage, FailureMode } from '../../utils/swap';
 const depositChannelInclude = {
   failedBoosts: true,
   failedSwaps: true,
-  affiliates: {
+  beneficiaries: {
     select: {
+      type: true,
       account: true,
       commissionBps: true,
     },
@@ -55,7 +56,7 @@ export const getLatestSwapForId = async (id: string) => {
   let swapRequest;
   let failedSwap;
   let swapDepositChannel;
-  let affiliateBrokers;
+  let beneficiaries;
 
   if (channelIdRegex.test(id)) {
     const { issuedBlock, srcChain, channelId } = channelIdRegex.exec(id)!.groups!;
@@ -77,8 +78,9 @@ export const getLatestSwapForId = async (id: string) => {
           },
         },
         failedBoosts: true,
-        affiliates: {
+        beneficiaries: {
           select: {
+            type: true,
             account: true,
             commissionBps: true,
           },
@@ -118,8 +120,8 @@ export const getLatestSwapForId = async (id: string) => {
   }
 
   swapDepositChannel ??= swapRequest?.swapDepositChannel ?? failedSwap?.swapDepositChannel;
-  if (swapDepositChannel && swapDepositChannel.affiliates.length > 0) {
-    affiliateBrokers = swapDepositChannel.affiliates;
+  if (swapDepositChannel && swapDepositChannel.beneficiaries.length > 0) {
+    beneficiaries = swapDepositChannel.beneficiaries;
   }
 
   ServiceError.assert(
@@ -132,7 +134,7 @@ export const getLatestSwapForId = async (id: string) => {
     swapRequest,
     failedSwap,
     swapDepositChannel,
-    affiliateBrokers,
+    beneficiaries,
   };
 };
 

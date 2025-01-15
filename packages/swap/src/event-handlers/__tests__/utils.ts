@@ -31,7 +31,7 @@ export const createDepositChannel = (
       destAsset: InternalAssets.Dot,
       depositAddress: ETH_ADDRESS,
       destAddress: DOT_ADDRESS,
-      brokerCommissionBps: 0,
+      totalBrokerCommissionBps: 0,
       expectedDepositAmount: '10000000000',
       issuedBlock: 100,
       estimatedExpiryAt: new Date('2023-11-09T11:05:00.000Z'),

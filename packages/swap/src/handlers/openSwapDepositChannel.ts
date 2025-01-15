@@ -142,7 +142,7 @@ export default async function openSwapDepositChannel(
       estimatedExpiryAt: estimatedExpiryTime,
       ccmGasBudget: ccmParams?.gasBudget && BigInt(ccmParams.gasBudget).toString(),
       ccmMessage: ccmParams?.message,
-      brokerCommissionBps: 0,
+      totalBrokerCommissionBps: 0,
       maxBoostFeeBps: Number(maxBoostFeeBps) || 0,
       openedThroughBackend: true,
       openingFeePaid: channelOpeningFee.toString(),
@@ -163,7 +163,7 @@ export default async function openSwapDepositChannel(
   return {
     id: `${channel.issuedBlock}-${channel.srcChain}-${channel.channelId}`,
     depositAddress: channel.depositAddress,
-    brokerCommissionBps: channel.brokerCommissionBps,
+    brokerCommissionBps: channel.totalBrokerCommissionBps,
     maxBoostFeeBps: channel.maxBoostFeeBps,
     issuedBlock: channel.issuedBlock,
     srcChainExpiryBlock,
