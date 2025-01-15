@@ -36,7 +36,6 @@ const quoteRouter = (quoter: Quoter) => {
     '/',
     asyncHandler(async (req, res) => {
       const start = performance.now();
-      
       const {
         srcAsset,
         destAsset,

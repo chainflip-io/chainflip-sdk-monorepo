@@ -141,8 +141,7 @@ export const generateQuotes = async ({
   isVaultSwap?: boolean;
 }) => {
   let regularEagerLiquidityExists = false;
-  let dcaEagerLiquidityExists = false;
-  
+  let dcaEagerLiquidityExists = false;  
   const [limitOrders, { estimatedBoostFeeBps, maxBoostFeeBps }, pools] = await Promise.all([
     quoter.getLimitOrders(srcAsset, destAsset, depositAmount),
     env.DISABLE_BOOST_QUOTING || !boostDepositsEnabled
