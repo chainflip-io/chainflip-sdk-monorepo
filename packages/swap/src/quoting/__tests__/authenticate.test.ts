@@ -1,11 +1,12 @@
 import * as crypto from 'crypto';
 import { promisify } from 'util';
 import { vi, describe, it, beforeEach, expect, Mock } from 'vitest';
-import { InternalAssetMap, InternalAssets } from '@/shared/enums';
+import { assetConstants, InternalAssetMap, InternalAssets } from '@/shared/enums';
 import prisma from '../../client';
 import authenticate from '../authenticate';
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
+const allAssets = Object.values(assetConstants).map((a) => ({ chain: a.chain, asset: a.asset }));
 
 describe(authenticate, () => {
   let next: Mock;
@@ -26,19 +27,19 @@ describe(authenticate, () => {
 
   it.each([
     {},
-    { client_version: '1' },
-    { market_maker_id: 'web_team_whales' },
+    { client_version: '2' },
+    { account_id: 'web_team_whales' },
     { timestamp: Date.now() },
     { signature: 'deadbeef' },
-    { client_version: '1', market_maker_id: 'web_team_whales' },
-    { client_version: '1', timestamp: Date.now() },
-    { client_version: '1', signature: 'deadbeef' },
-    { market_maker_id: 'web_team_whales', timestamp: Date.now() },
-    { market_maker_id: 'web_team_whales', signature: 'deadbeef' },
+    { client_version: '2', account_id: 'web_team_whales' },
+    { client_version: '2', timestamp: Date.now() },
+    { client_version: '2', signature: 'deadbeef' },
+    { account_id: 'web_team_whales', timestamp: Date.now() },
+    { account_id: 'web_team_whales', signature: 'deadbeef' },
     { timestamp: Date.now(), signature: 'deadbeef' },
     {
-      client_version: '1',
-      market_maker_id: 'web_team_whales',
+      client_version: '2',
+      account_id: 'web_team_whales',
       timestamp: Date.now(),
     },
   ])('rejects invalid auth shape', async (auth) => {
@@ -52,10 +53,11 @@ describe(authenticate, () => {
       {
         handshake: {
           auth: {
-            client_version: '1',
-            market_maker_id: 'web_team_whales',
+            client_version: '2',
+            account_id: 'web_team_whales',
             timestamp: Date.now() + diff,
             signature: 'deadbeef',
+            quoted_assets: allAssets,
           },
         },
       } as any,
@@ -70,10 +72,11 @@ describe(authenticate, () => {
       {
         handshake: {
           auth: {
-            client_version: '1',
-            market_maker_id: 'unknown',
+            client_version: '2',
+            account_id: 'unknown',
             timestamp: Date.now(),
             signature: 'deadbeef',
+            quoted_assets: allAssets,
           },
         },
       } as any,
@@ -93,11 +96,12 @@ describe(authenticate, () => {
       {
         handshake: {
           auth: {
-            client_version: '1',
-            market_maker_id: 'web_team_whales',
+            client_version: '2',
+            account_id: 'web_team_whales',
             timestamp: Date.now(),
             // test different lengths
             signature: 'deadbeef',
+            quoted_assets: allAssets,
           },
         },
       } as any,
@@ -110,18 +114,20 @@ describe(authenticate, () => {
 
   it.each([
     {
-      client_version: '1',
-      market_maker_id: 'web_team_whales',
+      client_version: '2',
+      account_id: 'web_team_whales',
       timestamp: Date.now(),
       // test different lengths
       signature: 'deadbeef',
+      quoted_assets: allAssets,
     },
     {
-      client_version: '1',
-      market_maker_id: 'web_team_whales',
+      client_version: '2',
+      account_id: 'web_team_whales',
       timestamp: Date.now(),
       // test same lengths
       signature: 'deadbeefdeadbeefdeadbeefdeadbeef',
+      quoted_assets: allAssets,
     },
   ])('rejects invalid signature', async (auth) => {
     await authenticate(
@@ -134,35 +140,6 @@ describe(authenticate, () => {
     );
     expect(next).toHaveBeenCalledTimes(1);
     expect(next).toHaveBeenCalledWith(new Error('invalid signature'));
-  });
-
-  it('accepts valid v1 authentication', async () => {
-    const timestamp = Date.now();
-    const name = 'web_team_whales';
-
-    const signature = crypto
-      .sign(null, Buffer.from(`${name}${timestamp}`, 'utf8'), privateKey)
-      .toString('base64');
-
-    const socket = {
-      handshake: {
-        auth: {
-          client_version: '1',
-          market_maker_id: name,
-          timestamp,
-          signature,
-        },
-      },
-    };
-
-    await authenticate(socket as any, next);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith();
-    expect((socket as any).data).toStrictEqual({
-      marketMaker: name,
-      quotedAssets: Object.fromEntries(Object.values(InternalAssets).map((asset) => [asset, true])),
-      clientVersion: '1',
-    });
   });
 
   it('accepts valid v2 authentication', async () => {

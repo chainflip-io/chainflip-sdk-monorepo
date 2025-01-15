@@ -27,7 +27,7 @@ export default class QuotingClient extends EventEmitter {
     private readonly url: string,
     private readonly accountId: string,
     privateKey: string,
-    private readonly quotedAssets?: AssetAndChain[],
+    private readonly quotedAssets: AssetAndChain[],
   ) {
     super();
     this.privateKey = crypto.createPrivateKey({
@@ -41,7 +41,7 @@ export default class QuotingClient extends EventEmitter {
     const timestamp = Date.now();
     return {
       timestamp,
-      client_version: this.quotedAssets !== undefined ? '2' : '1',
+      client_version: '2',
       account_id: this.accountId,
       signature: await this.getSignature(timestamp),
       quoted_assets: this.quotedAssets,
