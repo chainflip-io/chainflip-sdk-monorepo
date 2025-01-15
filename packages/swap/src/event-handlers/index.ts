@@ -195,7 +195,7 @@ const handlers = [
     ],
   },
   {
-    spec: 160,
+    spec: 170,
     handlers: [
       { name: events.Swapping.SwapRequested, handler: swapRequested },
       { name: events.Swapping.SwapRequestCompleted, handler: swapRequestCompleted },
@@ -221,11 +221,6 @@ const handlers = [
           handler: depositBoosted,
         },
       ]),
-    ],
-  },
-  {
-    spec: 170,
-    handlers: [
       ...Object.values(Chains).flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].TransactionRejectedByBroker,

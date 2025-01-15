@@ -1,4 +1,3 @@
-import { swappingSwapRequested as schema160 } from '@chainflip/processor/160/swapping/swapRequested';
 import { swappingSwapRequested as schema170 } from '@chainflip/processor/170/swapping/swapRequested';
 import { swappingSwapRequested as schema180 } from '@chainflip/processor/180/swapping/swapRequested';
 import { findSolanaDepositSignature } from '@chainflip/solana';
@@ -13,44 +12,6 @@ import { pascalCaseToScreamingSnakeCase } from '@/shared/strings';
 import env from '@/swap/config/env';
 import { Prisma } from '../client';
 import type { EventHandlerArgs } from './index';
-
-type RequestType170 = z.output<typeof schema170>['requestType'];
-
-const transform160RequestType = (
-  old: z.output<typeof schema160>['requestType'],
-): RequestType170 => {
-  switch (old.__kind) {
-    case 'Regular':
-    case 'NetworkFee':
-    case 'IngressEgressFee':
-      return old;
-    case 'Ccm':
-      return {
-        __kind: 'Ccm',
-        outputAddress: old.outputAddress,
-        ccmSwapMetadata: {
-          depositMetadata: old.ccmDepositMetadata,
-          swapAmounts: {
-            principalSwapAmount: 0n,
-            gasBudget: 0n,
-            otherGasAsset: null,
-          },
-        },
-      };
-    default:
-      throw new Error();
-  }
-};
-
-const transform160Schema = (data: z.output<typeof schema160>): z.output<typeof schema170> => ({
-  inputAsset: data.inputAsset,
-  inputAmount: data.inputAmount,
-  outputAsset: data.outputAsset,
-  swapRequestId: data.swapRequestId,
-  dcaParameters: data.dcaParameters,
-  origin: data.origin,
-  requestType: transform160RequestType(data.requestType),
-});
 
 const transform170Schema = (data: z.output<typeof schema170>): z.output<typeof schema180> => {
   let requestType;
@@ -96,11 +57,7 @@ const transform170Schema = (data: z.output<typeof schema170>): z.output<typeof s
   };
 };
 
-const schema = z.union([
-  schema180,
-  schema170.transform(transform170Schema),
-  schema160.transform(transform160Schema).transform(transform170Schema),
-]);
+const schema = z.union([schema180, schema170.transform(transform170Schema)]);
 
 type RequestType = z.output<typeof schema>['requestType'];
 type Origin = z.output<typeof schema>['origin'];

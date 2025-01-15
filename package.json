@@ -20,8 +20,7 @@
     "syncpack:list": "pnpm syncpack list-mismatches",
     "syncpack:fix": "pnpm syncpack fix-mismatches",
     "typecheck": "pnpm -r typecheck",
-    "postinstall": "pnpm syncpack:list",
-    "prepare": "husky install"
+    "postinstall": "pnpm syncpack:list"
   },
   "keywords": [],
   "author": "",

@@ -1938,9 +1938,13 @@ describe('server', () => {
         name: 'Swapping.SwapRequested',
         args: {
           origin: {
+            txId: {
+              value: '0x574cfc9a2173fa110a849d0871752587c710b55a5a3e7a6513a8a6118e4e3b00',
+              __kind: 'Evm',
+            },
             __kind: 'Vault',
-            txHash: '0x574cfc9a2173fa110a849d0871752587c710b55a5a3e7a6513a8a6118e4e3b00',
           },
+          brokerFees: [],
           inputAsset: {
             __kind: 'ArbEth',
           },
@@ -1949,7 +1953,7 @@ describe('server', () => {
             __kind: 'ArbUsdc',
           },
           requestType: {
-            __kind: 'Ccm',
+            __kind: 'Regular',
             outputAddress: {
               value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
               __kind: 'Arb',
@@ -1966,7 +1970,7 @@ describe('server', () => {
                 message:
                   '0x000000000000000000000000000000000000000000000000000000000000004000000000000000000000000067ff09c184d8e9e7b90c5187ed04cbfbdba741c8000000000000000000000000000000000000000000000000000000000000000c6461676f61746973686572650000000000000000000000000000000000000000',
                 gasBudget: '200000000000000',
-                cfParameters: '0x',
+                ccmAdditionalData: '0x',
               },
             },
           },
@@ -1988,7 +1992,9 @@ describe('server', () => {
 
       await processEvents([requestedEvent, scheduledEvent, executedEvent, egressScheduledEvent]);
 
-      const { body } = await request(server).get(`/v2/swaps/${requestedEvent.args.origin.txHash}`);
+      const { body } = await request(server).get(
+        `/v2/swaps/${requestedEvent.args.origin.txId.value}`,
+      );
 
       expect(body.ccmParams).not.toBeUndefined();
       expect(body).toMatchSnapshot();

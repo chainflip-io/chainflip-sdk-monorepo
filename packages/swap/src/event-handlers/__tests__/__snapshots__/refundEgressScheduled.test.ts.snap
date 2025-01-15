@@ -1,5 +1,59 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`refundEgressScheduled > creates egress for refund on an existing swap (160/170) 1`] = `
+{
+  "ccmDepositReceivedBlockIndex": null,
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "chunkIntervalBlocks": null,
+  "completedAt": null,
+  "completedBlockIndex": null,
+  "depositAmount": "10000000000",
+  "depositBoostedAt": null,
+  "depositBoostedBlockIndex": null,
+  "depositFinalisedAt": 2022-12-06T14:31:33.000Z,
+  "depositFinalisedBlockIndex": "20-0",
+  "depositTransactionRef": null,
+  "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+  "destAsset": "Dot",
+  "effectiveBoostFeeBps": null,
+  "egressId": null,
+  "fees": [
+    {
+      "amount": "1000000000",
+      "asset": "Eth",
+      "type": "EGRESS",
+    },
+  ],
+  "id": Any<BigInt>,
+  "maxBoostFeeBps": 0,
+  "nativeId": 9876545n,
+  "numberOfChunks": null,
+  "originType": "VAULT",
+  "prewitnessedDepositId": null,
+  "refundEgress": {
+    "amount": "10000000000",
+    "broadcastId": null,
+    "chain": "Ethereum",
+    "createdAt": Any<Date>,
+    "id": Any<BigInt>,
+    "nativeId": 1n,
+    "scheduledAt": 2022-12-06T14:31:45.000Z,
+    "scheduledBlockIndex": "120-0",
+    "updatedAt": Any<Date>,
+  },
+  "refundEgressId": Any<BigInt>,
+  "requestType": "LEGACY_SWAP",
+  "srcAddress": null,
+  "srcAsset": "Eth",
+  "swapDepositChannelId": null,
+  "swapInputAmount": "10000000000",
+  "swapOutputAmount": null,
+  "swapRequestedAt": 2022-12-06T14:31:33.000Z,
+  "swapRequestedBlockIndex": "92-398",
+}
+`;
+
 exports[`refundEgressScheduled > creates egress for refund on an existing swap 1`] = `
 {
   "ccmDepositReceivedBlockIndex": null,

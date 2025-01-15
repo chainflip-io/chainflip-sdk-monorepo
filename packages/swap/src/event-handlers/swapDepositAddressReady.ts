@@ -1,9 +1,10 @@
-import { swappingSwapDepositAddressReady } from '@chainflip/processor/160/swapping/swapDepositAddressReady';
+import { swappingSwapDepositAddressReady as schema160 } from '@chainflip/processor/160/swapping/swapDepositAddressReady';
+import { swappingSwapDepositAddressReady as schema180 } from '@chainflip/processor/180/swapping/swapDepositAddressReady';
 import { z } from 'zod';
 import { calculateExpiryTime } from '../utils/function';
 import { EventHandlerArgs } from './index';
 
-const swapDepositAddressReadyArgs = swappingSwapDepositAddressReady;
+const swapDepositAddressReadyArgs = z.union([schema180, schema160]);
 
 export type SwapDepositAddressReadyArgs = z.input<typeof swapDepositAddressReadyArgs>;
 
