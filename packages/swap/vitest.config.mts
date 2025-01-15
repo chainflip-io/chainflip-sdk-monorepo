@@ -10,6 +10,7 @@ export default mergeConfig(
       include: ['**/*.test.ts'],
       globalSetup: ['./globalSetup.ts'],
       setupFiles: ['./setupFile.ts'],
+      pool: 'vmForks',
     },
     resolve: {
       alias: {

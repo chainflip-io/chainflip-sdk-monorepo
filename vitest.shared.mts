@@ -12,7 +12,6 @@ export default defineConfig({
   ],
   test: {
     exclude: [...configDefaults.exclude],
-    pool: 'vmForks',
   },
   resolve: {
     alias: {
