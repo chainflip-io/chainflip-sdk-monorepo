@@ -18,7 +18,7 @@ const vaultBitcoin180 = {
       account: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
     },
     {
-      bps: 100,
+      bps: 150,
       account: '0xa27ef1c721066568cc4d3483f680fbad02e0b999ace3347393bd7ab82bef4f2e',
     },
   ],
@@ -78,6 +78,32 @@ const vaultSolana180 = {
     },
     retryDuration: 0,
   },
+} as const;
+
+const legacyVaultArbitrum180 = {
+  origin: {
+    txId: {
+      value: '0x9c617e12f6ddd5c7cff2236b32970bc2bd168799c90f907269348e6ca8c7be18',
+      __kind: 'Evm',
+    },
+    __kind: 'Vault',
+  },
+  brokerFees: [],
+  inputAsset: {
+    __kind: 'ArbUsdc',
+  },
+  inputAmount: '500000000',
+  outputAsset: {
+    __kind: 'Usdt',
+  },
+  requestType: {
+    __kind: 'Regular',
+    outputAddress: {
+      value: '0x16988558ad8ef084dbe0016c9ffdae908e480621',
+      __kind: 'Eth',
+    },
+  },
+  swapRequestId: '162',
 } as const;
 
 const depositChannel170 = {
@@ -214,7 +240,7 @@ describe(swapRequested, () => {
   it('creates a new swap request (VAULT)', async () => {
     await swapRequested({ prisma, event: { ...event, args: vault }, block });
 
-    const request = await prisma.swapRequest.findFirstOrThrow();
+    const request = await prisma.swapRequest.findFirstOrThrow({ include: { beneficiaries: true } });
 
     expect(request).toMatchSnapshot({
       id: expect.any(BigInt),
@@ -252,7 +278,7 @@ describe(swapRequested, () => {
 
     await swapRequested({ prisma, event: { ...event, args: depositChannel }, block });
 
-    const request = await prisma.swapRequest.findFirstOrThrow();
+    const request = await prisma.swapRequest.findFirstOrThrow({ include: { beneficiaries: true } });
 
     expect(request.swapDepositChannelId).toBe(channel.id);
     expect(request).toMatchSnapshot({
@@ -294,7 +320,21 @@ describe(swapRequested, () => {
   it('creates a new swap request (VAULT 180)', async () => {
     await swapRequested({ prisma, event: { ...event, args: vaultBitcoin180 }, block });
 
-    const request = await prisma.swapRequest.findFirstOrThrow();
+    const request = await prisma.swapRequest.findFirstOrThrow({ include: { beneficiaries: true } });
+
+    expect(request).toMatchSnapshot({
+      id: expect.any(BigInt),
+      beneficiaries: [
+        { id: expect.any(BigInt), swapRequestId: expect.any(BigInt) },
+        { id: expect.any(BigInt), swapRequestId: expect.any(BigInt) },
+      ],
+    });
+  });
+
+  it('creates a new swap request (LEGACY VAULT 180)', async () => {
+    await swapRequested({ prisma, event: { ...event, args: legacyVaultArbitrum180 }, block });
+
+    const request = await prisma.swapRequest.findFirstOrThrow({ include: { beneficiaries: true } });
 
     expect(request).toMatchSnapshot({
       id: expect.any(BigInt),

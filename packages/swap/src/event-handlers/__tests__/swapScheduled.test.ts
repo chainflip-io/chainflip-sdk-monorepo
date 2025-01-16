@@ -20,6 +20,7 @@ describe(swapScheduled, () => {
           requestType: 'REGULAR',
           swapRequestedAt: new Date('2024-08-23 13:10:06.000+00'),
           swapRequestedBlockIndex: '92-398',
+          totalBrokerCommissionBps: 0,
         },
       })
     ).id;

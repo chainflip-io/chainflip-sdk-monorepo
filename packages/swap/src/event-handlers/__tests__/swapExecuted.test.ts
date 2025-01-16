@@ -54,6 +54,7 @@ const runEvent = async (args: SwapExecutedArgs) => {
           swapInputAmount: args.inputAmount,
           swapRequestedAt: new Date('2024-08-23 13:14:06.000+00'),
           requestType: 'REGULAR',
+          totalBrokerCommissionBps: 0,
         },
       },
     },

@@ -51,6 +51,7 @@ exports[`refundEgressScheduled > creates egress for refund on an existing swap (
   "swapOutputAmount": null,
   "swapRequestedAt": 2022-12-06T14:31:33.000Z,
   "swapRequestedBlockIndex": "92-398",
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
@@ -105,5 +106,6 @@ exports[`refundEgressScheduled > creates egress for refund on an existing swap 1
   "swapOutputAmount": null,
   "swapRequestedAt": 2022-12-06T14:31:33.000Z,
   "swapRequestedBlockIndex": "92-398",
+  "totalBrokerCommissionBps": 0,
 }
 `;

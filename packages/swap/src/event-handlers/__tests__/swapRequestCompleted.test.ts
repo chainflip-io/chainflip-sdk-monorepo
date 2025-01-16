@@ -41,6 +41,7 @@ describe(swapRequestCompleted, () => {
             ],
           },
         },
+        totalBrokerCommissionBps: 0,
       },
     });
 
@@ -108,6 +109,7 @@ describe(swapRequestCompleted, () => {
             ],
           },
         },
+        totalBrokerCommissionBps: 0,
       },
     });
 
@@ -177,6 +179,7 @@ describe(swapRequestCompleted, () => {
             ],
           },
         },
+        totalBrokerCommissionBps: 0,
       },
     });
 
@@ -252,6 +255,7 @@ describe(swapRequestCompleted, () => {
             ],
           },
         },
+        totalBrokerCommissionBps: 0,
       },
     });
 
@@ -319,6 +323,7 @@ describe(swapRequestCompleted, () => {
             ],
           },
         },
+        totalBrokerCommissionBps: 0,
       },
     });
 

@@ -33,11 +33,13 @@ exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL 170) 1`] = 
   "swapOutputAmount": null,
   "swapRequestedAt": 2024-08-23T13:13:12.002Z,
   "swapRequestedBlockIndex": "87-13",
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
 exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL) 1`] = `
 {
+  "beneficiaries": [],
   "ccmDepositReceivedBlockIndex": "87-13",
   "ccmGasBudget": "2",
   "ccmMessage": "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000003f7a400000000000000000000000000000000000000000000000000000000000000074761735465737400000000000000000000000000000000000000000000000000",
@@ -69,6 +71,7 @@ exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL) 1`] = `
   "swapOutputAmount": null,
   "swapRequestedAt": 2024-08-23T13:13:12.002Z,
   "swapRequestedBlockIndex": "87-13",
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
@@ -105,11 +108,68 @@ exports[`swapRequested > creates a new swap request (INGRESS_EGRESS_FEE) 1`] = `
   "swapOutputAmount": null,
   "swapRequestedAt": 2024-08-23T13:13:12.002Z,
   "swapRequestedBlockIndex": "87-13",
+  "totalBrokerCommissionBps": 0,
+}
+`;
+
+exports[`swapRequested > creates a new swap request (LEGACY VAULT 180) 1`] = `
+{
+  "beneficiaries": [],
+  "ccmDepositReceivedBlockIndex": null,
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "chunkIntervalBlocks": null,
+  "completedAt": null,
+  "completedBlockIndex": null,
+  "depositAmount": "500000000",
+  "depositBoostedAt": null,
+  "depositBoostedBlockIndex": null,
+  "depositFinalisedAt": null,
+  "depositFinalisedBlockIndex": null,
+  "depositTransactionRef": "0x9c617e12f6ddd5c7cff2236b32970bc2bd168799c90f907269348e6ca8c7be18",
+  "destAddress": "0x16988558ad8ef084dbe0016c9ffdae908e480621",
+  "destAsset": "Usdt",
+  "effectiveBoostFeeBps": null,
+  "egressId": null,
+  "id": Any<BigInt>,
+  "maxBoostFeeBps": 0,
+  "nativeId": 162n,
+  "numberOfChunks": null,
+  "originType": "VAULT",
+  "prewitnessedDepositId": null,
+  "refundEgressId": null,
+  "requestType": "REGULAR",
+  "srcAddress": null,
+  "srcAsset": "ArbUsdc",
+  "swapDepositChannelId": null,
+  "swapInputAmount": "500000000",
+  "swapOutputAmount": null,
+  "swapRequestedAt": 2024-08-23T13:13:12.002Z,
+  "swapRequestedBlockIndex": "87-13",
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
 exports[`swapRequested > creates a new swap request (VAULT 180) 1`] = `
 {
+  "beneficiaries": [
+    {
+      "account": "cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy",
+      "channelId": null,
+      "commissionBps": 100,
+      "id": Any<BigInt>,
+      "swapRequestId": Any<BigInt>,
+      "type": "SUBMITTER",
+    },
+    {
+      "account": "cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH",
+      "channelId": null,
+      "commissionBps": 150,
+      "id": Any<BigInt>,
+      "swapRequestId": Any<BigInt>,
+      "type": "AFFILIATE",
+    },
+  ],
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
@@ -141,11 +201,13 @@ exports[`swapRequested > creates a new swap request (VAULT 180) 1`] = `
   "swapOutputAmount": null,
   "swapRequestedAt": 2024-08-23T13:13:12.002Z,
   "swapRequestedBlockIndex": "87-13",
+  "totalBrokerCommissionBps": 250,
 }
 `;
 
 exports[`swapRequested > creates a new swap request (VAULT) 1`] = `
 {
+  "beneficiaries": [],
   "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
@@ -177,6 +239,7 @@ exports[`swapRequested > creates a new swap request (VAULT) 1`] = `
   "swapOutputAmount": null,
   "swapRequestedAt": 2024-08-23T13:13:12.002Z,
   "swapRequestedBlockIndex": "87-13",
+  "totalBrokerCommissionBps": 0,
 }
 `;
 
@@ -213,5 +276,6 @@ exports[`swapRequested > creates a new swap request and gets the solana tx ref (
   "swapOutputAmount": null,
   "swapRequestedAt": 2024-08-23T13:13:12.002Z,
   "swapRequestedBlockIndex": "87-13",
+  "totalBrokerCommissionBps": 0,
 }
 `;
