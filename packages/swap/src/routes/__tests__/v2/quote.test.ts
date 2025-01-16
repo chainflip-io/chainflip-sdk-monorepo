@@ -4,7 +4,6 @@ import { Server } from 'http';
 import request from 'supertest';
 import { describe, it, beforeEach, beforeAll, afterEach, expect, vi } from 'vitest';
 import { getAssetAndChain } from '@/shared/enums';
-import { SwapFeeType as RpcSwapFeeType } from '@/shared/schemas';
 import {
   MockedBoostPoolsDepth,
   boostPoolsDepth,
@@ -21,7 +20,6 @@ import Quoter from '../../../quoting/Quoter';
 import app from '../../../server';
 import { boostPoolsCache } from '../../../utils/boost';
 import { getTotalLiquidity } from '../../../utils/pools';
-import { getSwapRateV3 } from '../../../utils/statechain';
 import { getDcaQuoteParams } from '../../v2/quote';
 
 vi.mock('../../../utils/function', async (importOriginal) => {
@@ -519,42 +517,7 @@ describe('server', () => {
       ]);
     });
 
-    it('can get swap rate with excludeFees param', async () => {
-      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Usdc', 0).bigint,
-        egress_fee: buildFee('Eth', 0).bigint,
-        network_fee: buildFee('Usdc', 100100).bigint,
-        intermediary: null,
-        output: BigInt(1e18),
-      });
-
-      const getSwapRateV3Params = {
-        srcAsset: 'Usdc' as InternalAsset,
-        destAsset: 'Eth' as InternalAsset,
-        depositAmount: 1000n,
-        limitOrders: undefined,
-        dcaParams: undefined,
-        excludeFees: ['Ingress'] as RpcSwapFeeType[],
-        brokerCommissionBps: 0,
-      };
-
-      await getSwapRateV3(getSwapRateV3Params);
-
-      expect(sendSpy).toHaveBeenNthCalledWith(
-        1,
-        'cf_swap_rate_v3',
-        { asset: 'USDC', chain: 'Ethereum' },
-        { asset: 'ETH', chain: 'Ethereum' },
-        '0x3e8',
-        0,
-        undefined,
-        null,
-        ['Ingress'],
-      );
-    });
-
-    it('can get swap rate with excludeFees param for version >= 180', async () => {
+    it('excludes the ingress fee for vault swaps', async () => {
       vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2e18));
 
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
@@ -587,10 +550,11 @@ describe('server', () => {
         undefined,
         null,
         ['Ingress'],
+        [],
       );
     });
 
-    it('can get swap rate param for version < 180 (passing different params for older version)', async () => {
+    it('does not pass excluded fees and ccm params to the rpc for version < 180', async () => {
       vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2e18));
       vi.mocked(isAfterSpecVersion).mockResolvedValueOnce(false);
 
@@ -1034,6 +998,7 @@ describe('server', () => {
         undefined,
         null,
         [],
+        [],
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         2,
@@ -1047,6 +1012,7 @@ describe('server', () => {
           chunk_interval: 2,
         },
         null,
+        [],
         [],
       );
     });
@@ -1760,6 +1726,7 @@ describe('server', () => {
         undefined,
         null,
         [],
+        [],
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         2,
@@ -1770,6 +1737,7 @@ describe('server', () => {
         10,
         undefined,
         null,
+        [],
         [],
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
@@ -1785,6 +1753,7 @@ describe('server', () => {
         },
         null,
         [],
+        [],
       );
       expect(sendSpy).toHaveBeenNthCalledWith(
         4,
@@ -1798,6 +1767,7 @@ describe('server', () => {
           chunk_interval: 2,
         },
         null,
+        [],
         [],
       );
     });

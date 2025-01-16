@@ -496,6 +496,7 @@ describe('server', () => {
         undefined,
         null,
         [],
+        [],
       );
       expect(body).toMatchObject({
         egressAmount: (999999999999975000).toString(),
@@ -539,7 +540,7 @@ describe('server', () => {
       });
     });
 
-    it('should return quote for vault swap for version >= 180 with zero ingress fee', async () => {
+    it('should return quote for vault swap with excluded ingress fee', async () => {
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
         ingress_fee: buildFee('Usdc', 0).bigint,
@@ -572,6 +573,7 @@ describe('server', () => {
         undefined,
         null,
         ['Ingress'],
+        [],
       );
 
       expect(body).toMatchObject({
@@ -673,6 +675,7 @@ describe('server', () => {
         undefined,
         null,
         [],
+        [],
       );
 
       // Boosted swap
@@ -684,6 +687,7 @@ describe('server', () => {
         0,
         undefined,
         null,
+        [],
         [],
       );
 
@@ -738,6 +742,7 @@ describe('server', () => {
         0,
         undefined,
         null,
+        [],
         [],
       );
 
@@ -816,6 +821,7 @@ describe('server', () => {
         0,
         undefined,
         null,
+        [],
         [],
       );
       expect(body).toMatchObject({

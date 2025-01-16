@@ -7,7 +7,9 @@ import { isAfterSpecVersion } from '@/swap/utils/function';
 import { memoize } from './function';
 import env from '../config/env';
 
-const initializeClient = memoize(() => new WsClient(env.RPC_NODE_WSS_URL, WebSocket as never));
+export const initializeClient = memoize(
+  () => new WsClient(env.RPC_NODE_WSS_URL, WebSocket as never),
+);
 type ExtractArray<T> = T extends unknown[] ? T : never;
 export type LimitOrders = ExtractArray<RpcParams['cf_swap_rate_v3'][5]>;
 
@@ -56,7 +58,7 @@ export const getSwapRateV3 = async ({
   const additionalOrders = limitOrders?.filter((order) => order.LimitOrder.sell_amount !== '0x0');
 
   const params: RpcParams['cf_swap_rate_v3'] = (await isAfterSpecVersion(180))
-    ? [...commonParams, null, excludeFees]
+    ? [...commonParams, null, excludeFees, additionalOrders]
     : [...commonParams, additionalOrders];
 
   const {
