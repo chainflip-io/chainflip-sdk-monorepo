@@ -287,7 +287,7 @@ describe(swapDepositAddressReady, () => {
       '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
     );
     expect(swapDepositChannel.fokRetryDurationBlocks).toEqual(15);
-    expect(swapDepositChannel.numberOfChunks).toEqual(100);
-    expect(swapDepositChannel.chunkIntervalBlocks).toEqual(5);
+    expect(swapDepositChannel.dcaNumberOfChunks).toEqual(100);
+    expect(swapDepositChannel.dcaChunkIntervalBlocks).toEqual(5);
   });
 });

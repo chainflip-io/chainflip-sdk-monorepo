@@ -82,8 +82,8 @@ model SwapDepositChannel {
   fokMinPriceX128          Decimal?          @db.Decimal(78, 0)
   fokRefundAddress         String?
   fokRetryDurationBlocks   Int?
-  numberOfChunks           Int?              @default(1)
-  chunkIntervalBlocks      Int?
+  dcaNumberOfChunks        Int?              @default(1)
+  dcaChunkIntervalBlocks   Int?
   swapRequests             SwapRequest[]
   quote                    Quote?
 
@@ -168,8 +168,8 @@ model SwapRequest {
   ignoredEgresses              IgnoredEgress[]
   swaps                        Swap[]
   fees                         SwapFee[]
-  numberOfChunks               Int?
-  chunkIntervalBlocks          Int?
+  dcaNumberOfChunks            Int?
+  dcaChunkIntervalBlocks       Int?
   fokMinPriceX128              Decimal?            @db.Decimal(78, 0)
   fokRefundAddress             String?
   fokRetryDurationBlocks       Int?
