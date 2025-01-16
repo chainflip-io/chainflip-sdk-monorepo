@@ -170,6 +170,9 @@ model SwapRequest {
   fees                         SwapFee[]
   numberOfChunks               Int?
   chunkIntervalBlocks          Int?
+  fokMinPriceX128              Decimal?            @db.Decimal(78, 0)
+  fokRefundAddress             String?
+  fokRetryDurationBlocks       Int?
   quote                        Quote?
   totalBrokerCommissionBps     Int
   beneficiaries                SwapBeneficiary[]

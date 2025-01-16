@@ -32,12 +32,12 @@ const vaultBitcoin180 = {
   dcaParameters: { chunkInterval: 2, numberOfChunks: 1 },
   swapRequestId: '1',
   refundParameters: {
-    minPrice: '1',
+    minPrice: '326183663919595400739649677085384465302843',
     refundAddress: {
       value: '0x6d76426367686f7345506973675338336963696e6a48696735346250635058457761',
       __kind: 'Btc',
     },
-    retryDuration: 0,
+    retryDuration: 150,
   },
 } as const;
 
@@ -71,12 +71,12 @@ const vaultSolana180 = {
   },
   swapRequestId: '158',
   refundParameters: {
-    minPrice: '0',
+    minPrice: '20330053335568424557569281615685057460598557419',
     refundAddress: {
       value: '0xf79d5e026f12edc6443a534b2cdd5072233989b415d7596573e743f3e5b386fb',
       __kind: 'Sol',
     },
-    retryDuration: 0,
+    retryDuration: 10,
   },
 } as const;
 
