@@ -30,18 +30,31 @@ interface Boost {
   skippedBlockIndex: string | undefined;
 }
 
+interface Broker {
+  account: string;
+  commissionBps: string;
+}
+
 interface DepositChannelFields {
   id: string;
   createdAt: number;
-  brokerCommissionBps: number;
   depositAddress: string;
   srcChainExpiryBlock: string;
   estimatedExpiryTime: number;
   expectedDepositAmount: string | undefined;
   isExpired: boolean;
   openedThroughBackend: boolean;
+
+  /** @deprecated DEPRECATED(1.8) use SwapStatusResponseV2['brokers'] instead */
+  brokerCommissionBps: number;
+
+  /** @deprecated DEPRECATED(1.8) use SwapStatusResponseV2['brokers'] instead */
   affiliateBrokers: AffiliateBroker[];
+
+  /** @deprecated DEPRECATED(1.8) use SwapStatusResponseV2['fillOrKillParams'] instead */
   fillOrKillParams: FillOrKillParamsWithMinPrice | undefined;
+
+  /** @deprecated DEPRECATED(1.8) use SwapStatusResponseV2['dcaParams'] instead */
   dcaParams: DcaParams | undefined;
 }
 
@@ -106,7 +119,10 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   destAddress: string;
   depositChannel: DepositChannelFields | undefined;
   ccmParams: CcmParams | undefined;
+  fillOrKillParams: FillOrKillParamsWithMinPrice | undefined;
+  dcaParams: DcaParams | undefined;
   boost: Boost | undefined;
+  brokers: Broker[];
   estimatedDurationSeconds: number | null | undefined;
   estimatedDurationsSeconds: {
     deposit: number;
