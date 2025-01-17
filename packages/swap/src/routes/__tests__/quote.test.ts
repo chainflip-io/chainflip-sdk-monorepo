@@ -494,6 +494,8 @@ describe('server', () => {
         hexEncodeNumber(100_000_000), // deposit amount
         10,
         undefined,
+        null,
+        [],
         [],
       );
       expect(body).toMatchObject({
@@ -533,6 +535,84 @@ describe('server', () => {
             },
             baseAsset: { asset: 'ETH', chain: 'Ethereum' },
             quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
+          },
+        ],
+      });
+    });
+
+    it('should return quote for vault swap with excluded ingress fee', async () => {
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
+        ingress_fee: buildFee('Usdc', 0).bigint,
+        network_fee: buildFee('Usdc', 98000).bigint,
+        egress_fee: buildFee('Eth', 25000).bigint,
+        intermediary: null,
+        output: 999999999999975000n,
+      });
+      mockRpcs({ ingressFee: hexEncodeNumber(2000000), egressFee: hexEncodeNumber(25000) });
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'USDC',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: (100e6).toString(),
+        isVaultSwap: 'true',
+      });
+
+      const { body, status } = await request(server).get(`/quote?${params.toString()}`);
+
+      expect(status).toBe(200);
+
+      expect(sendSpy).toHaveBeenCalledWith(
+        'cf_swap_rate_v3',
+        { asset: 'USDC', chain: 'Ethereum' },
+        { asset: 'ETH', chain: 'Ethereum' },
+        hexEncodeNumber(100_000_000), // deposit amount
+        0,
+        undefined,
+        null,
+        ['Ingress'],
+        [],
+      );
+
+      expect(body).toMatchObject({
+        egressAmount: '999999999999975000',
+        includedFees: [
+          {
+            amount: '0', // ingress still returns 0
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'INGRESS',
+          },
+          {
+            amount: '98000',
+            asset: 'USDC',
+            chain: 'Ethereum',
+            type: 'NETWORK',
+          },
+          {
+            amount: '25000',
+            asset: 'ETH',
+            chain: 'Ethereum',
+            type: 'EGRESS',
+          },
+        ],
+        poolInfo: [
+          {
+            baseAsset: {
+              asset: 'ETH',
+              chain: 'Ethereum',
+            },
+            fee: {
+              amount: '200000',
+              asset: 'USDC',
+              chain: 'Ethereum',
+            },
+            quoteAsset: {
+              asset: 'USDC',
+              chain: 'Ethereum',
+            },
           },
         ],
       });
@@ -593,6 +673,8 @@ describe('server', () => {
         hexEncodeNumber(1e8), // deposit amount
         0,
         undefined,
+        null,
+        [],
         [],
       );
 
@@ -604,6 +686,8 @@ describe('server', () => {
         hexEncodeNumber(99950000), // deposit amount - boost fee
         0,
         undefined,
+        null,
+        [],
         [],
       );
 
@@ -657,6 +741,8 @@ describe('server', () => {
         hexEncodeNumber(1e8), // deposit amount
         0,
         undefined,
+        null,
+        [],
         [],
       );
 
@@ -734,6 +820,8 @@ describe('server', () => {
         hexEncodeNumber(100e6), // deposit amount,
         0,
         undefined,
+        null,
+        [],
         [],
       );
       expect(body).toMatchObject({

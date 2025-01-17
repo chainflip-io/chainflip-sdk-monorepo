@@ -204,6 +204,7 @@ describe(SwapSDK, () => {
         destChain: 'Ethereum',
         destAsset: 'USDC',
         amount: '1',
+        isVaultSwap: true,
       };
       vi.mocked(getQuoteV2).mockResolvedValueOnce({ quote: 1234 } as any);
 

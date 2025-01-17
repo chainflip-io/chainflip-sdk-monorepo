@@ -36,9 +36,14 @@ const quoteRouter = (quoter: Quoter) => {
     '/',
     asyncHandler(async (req, res) => {
       const start = performance.now();
-
-      const { srcAsset, destAsset, amount, brokerCommissionBps, boostDepositsEnabled } =
-        await validateQuoteQuery(req.query);
+      const {
+        srcAsset,
+        destAsset,
+        amount,
+        brokerCommissionBps,
+        boostDepositsEnabled,
+        isVaultSwap,
+      } = await validateQuoteQuery(req.query);
 
       let limitOrdersReceived;
       try {
@@ -49,6 +54,7 @@ const quoteRouter = (quoter: Quoter) => {
           brokerCommissionBps,
           boostDepositsEnabled,
           quoter,
+          isVaultSwap,
         });
         const quote = quotes[0];
         limitOrdersReceived = limitOrders;

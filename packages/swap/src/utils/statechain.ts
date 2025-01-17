@@ -1,12 +1,17 @@
 import { WsClient, RpcParams } from '@chainflip/rpc';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import WebSocket from 'ws';
-import { InternalAsset, getAssetAndChain } from '@/shared/enums';
-import { DcaParams } from '@/shared/schemas';
+import { InternalAsset, getAssetAndChain, UncheckedAssetAndChain } from '@/shared/enums';
+import { DcaParams, SwapFeeType } from '@/shared/schemas';
+import { isAfterSpecVersion } from '@/swap/utils/function';
 import { memoize } from './function';
 import env from '../config/env';
 
-const initializeClient = memoize(() => new WsClient(env.RPC_NODE_WSS_URL, WebSocket as never));
+export const initializeClient = memoize(
+  () => new WsClient(env.RPC_NODE_WSS_URL, WebSocket as never),
+);
+type ExtractArray<T> = T extends unknown[] ? T : never;
+export type LimitOrders = ExtractArray<RpcParams['cf_swap_rate_v3'][5]>;
 
 export type SwapRateArgs = {
   srcAsset: InternalAsset;
@@ -15,9 +20,9 @@ export type SwapRateArgs = {
   limitOrders?: LimitOrders;
   brokerCommissionBps?: number;
   dcaParams?: DcaParams;
+  ccmParams?: undefined; // TODO: change the type https://linear.app/chainflip/issue/PRO-1889/update-product-side-after-changes-in-the-protocol-related-to-ccm
+  excludeFees?: SwapFeeType[];
 };
-
-export type LimitOrders = RpcParams['cf_swap_rate_v3'][5];
 
 export const getSwapRateV3 = async ({
   srcAsset,
@@ -25,6 +30,7 @@ export const getSwapRateV3 = async ({
   depositAmount,
   limitOrders,
   dcaParams,
+  excludeFees,
   brokerCommissionBps,
 }: SwapRateArgs) => {
   const client = initializeClient();
@@ -35,6 +41,26 @@ export const getSwapRateV3 = async ({
       }
     : undefined;
 
+  const commonParams: [
+    UncheckedAssetAndChain,
+    UncheckedAssetAndChain,
+    `0x${string}`,
+    number,
+    { number_of_chunks: number; chunk_interval: number } | undefined,
+  ] = [
+    getAssetAndChain(srcAsset),
+    getAssetAndChain(destAsset),
+    hexEncodeNumber(depositAmount),
+    brokerCommissionBps ?? 0,
+    dcaParameters,
+  ];
+
+  const additionalOrders = limitOrders?.filter((order) => order.LimitOrder.sell_amount !== '0x0');
+
+  const params: RpcParams['cf_swap_rate_v3'] = (await isAfterSpecVersion(180))
+    ? [...commonParams, null, excludeFees, additionalOrders]
+    : [...commonParams, additionalOrders];
+
   const {
     ingress_fee: ingressFee,
     network_fee: networkFee,
@@ -42,15 +68,7 @@ export const getSwapRateV3 = async ({
     intermediary: intermediateAmount,
     output: egressAmount,
     broker_commission: brokerFee,
-  } = await client.sendRequest(
-    'cf_swap_rate_v3',
-    getAssetAndChain(srcAsset),
-    getAssetAndChain(destAsset),
-    hexEncodeNumber(depositAmount),
-    brokerCommissionBps ?? 0,
-    dcaParameters,
-    limitOrders?.filter((order) => order.LimitOrder.sell_amount !== '0x0'),
-  );
+  } = await client.sendRequest('cf_swap_rate_v3', ...params);
 
   return {
     ingressFee,
