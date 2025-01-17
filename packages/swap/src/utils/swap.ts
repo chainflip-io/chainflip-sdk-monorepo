@@ -88,6 +88,10 @@ export const failedSwapMessage: Record<FailedSwapReason, string> = {
   TransactionRejectedByBroker: 'The deposit was rejected by the broker',
   InvalidMetadata: 'The provided metadata could not be decoded',
   InvalidDestinationAddress: 'The provided destination address could not be decoded',
+  DepositWitnessRejected: 'An error occurred while witnessing the deposit',
+  InvalidBrokerFees: 'The broker fees were improperly formatted',
+  InvalidDcaParameters: 'The DCA parameters were improperly formatted',
+  InvalidRefundParameters: 'The refund parameters were improperly formatted',
 };
 
 export enum FailureMode {
