@@ -40,7 +40,10 @@ const transform170Schema = (data: z.output<typeof schema170>): z.output<typeof s
         __kind: 'Evm' as const, // protocol supported evm vault swaps < 1.8
         value: data.origin.txHash,
       },
+      brokerId: undefined,
     };
+  } else if (data.origin.__kind === 'DepositChannel') {
+    origin = { ...data.origin, brokerId: '' };
   } else {
     origin = data.origin;
   }
@@ -139,6 +142,7 @@ export const getOriginInfo = async (
       originType: 'DEPOSIT_CHANNEL' as const,
       swapDepositChannelId: depositChannel.id,
       depositTransactionRef: undefined,
+      brokerId: origin.brokerId,
     };
   }
 
@@ -147,6 +151,7 @@ export const getOriginInfo = async (
       originType: 'VAULT' as const,
       swapDepositChannelId: undefined,
       depositTransactionRef: await getVaultOriginTxRef(assetConstants[srcAsset].chain, origin),
+      brokerId: origin.brokerId,
     };
   }
 
@@ -155,6 +160,7 @@ export const getOriginInfo = async (
       originType: 'INTERNAL' as const,
       swapDepositChannelId: undefined,
       depositTransactionRef: undefined,
+      brokerId: undefined,
     };
   }
 
@@ -179,7 +185,7 @@ export default async function swapRequested({
     brokerFees,
   } = schema.parse(event.args);
 
-  const { originType, swapDepositChannelId, depositTransactionRef } = await getOriginInfo(
+  const { originType, swapDepositChannelId, depositTransactionRef, brokerId } = await getOriginInfo(
     prisma,
     inputAsset,
     origin,
@@ -188,12 +194,10 @@ export default async function swapRequested({
   const { destAddress, ccmMetadata } = getRequestInfo(requestType);
 
   const beneficiaries = brokerFees
-    .map((fee, index) => ({
-      // first broker on the event is the main broker, the rest are affiliates
-      // https://linear.app/chainflip/issue/PRO-1951/swaprequested-event-does-not-expose-main-broker-of-the-swap
-      type: index === 0 ? ('SUBMITTER' as const) : ('AFFILIATE' as const),
-      account: fee.account,
-      commissionBps: fee.bps,
+    .map(({ account, bps: commissionBps }) => ({
+      type: account === brokerId ? ('SUBMITTER' as const) : ('AFFILIATE' as const),
+      account,
+      commissionBps,
     }))
     .filter(({ commissionBps }) => commissionBps > 0);
 

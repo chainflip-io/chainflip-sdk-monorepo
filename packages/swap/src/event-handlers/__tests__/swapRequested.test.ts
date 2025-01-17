@@ -11,6 +11,7 @@ const vaultBitcoin180 = {
       __kind: 'Bitcoin',
     },
     __kind: 'Vault',
+    brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
   },
   brokerFees: [
     {
@@ -48,6 +49,7 @@ const vaultSolana180 = {
       __kind: 'Solana',
     },
     __kind: 'Vault',
+    brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
   },
   brokerFees: [
     {
@@ -87,6 +89,7 @@ const legacyVaultArbitrum180 = {
       __kind: 'Evm',
     },
     __kind: 'Vault',
+    brokerId: undefined,
   },
   brokerFees: [],
   inputAsset: {
@@ -106,7 +109,7 @@ const legacyVaultArbitrum180 = {
   swapRequestId: '162',
 } as const;
 
-const depositChannel170 = {
+const depositChannel180 = {
   origin: {
     __kind: 'DepositChannel',
     channelId: '6',
@@ -116,6 +119,7 @@ const depositChannel170 = {
       __kind: 'Btc',
     },
     depositBlockHeight: '167',
+    brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
   },
   brokerFees: [],
   inputAsset: { __kind: 'Btc' },
@@ -287,26 +291,26 @@ describe(swapRequested, () => {
     });
   });
 
-  it('creates a new swap request (DEPOSIT_CHANNEL 170)', async () => {
+  it('creates a new swap request (DEPOSIT_CHANNEL 180)', async () => {
     const channel = await prisma.swapDepositChannel.create({
       data: {
-        srcChain: assetConstants[depositChannel170.inputAsset.__kind].chain,
+        srcChain: assetConstants[depositChannel180.inputAsset.__kind].chain,
         depositAddress: Buffer.from(
-          depositChannel170.origin.depositAddress.value.slice(2),
+          depositChannel180.origin.depositAddress.value.slice(2),
           'hex',
         ).toString(),
         issuedBlock: 1,
-        channelId: BigInt(depositChannel170.origin.channelId),
+        channelId: BigInt(depositChannel180.origin.channelId),
         isExpired: false,
-        srcAsset: depositChannel170.inputAsset.__kind,
-        destAsset: depositChannel170.outputAsset.__kind,
-        destAddress: depositChannel170.requestType.outputAddress.value,
+        srcAsset: depositChannel180.inputAsset.__kind,
+        destAsset: depositChannel180.outputAsset.__kind,
+        destAddress: depositChannel180.requestType.outputAddress.value,
         totalBrokerCommissionBps: 0,
         openingFeePaid: 0,
       },
     });
 
-    await swapRequested({ prisma, event: { ...event, args: depositChannel170 }, block });
+    await swapRequested({ prisma, event: { ...event, args: depositChannel180 }, block });
 
     const request = await prisma.swapRequest.findFirstOrThrow();
 

@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL 170) 1`] = `
+exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL 180) 1`] = `
 {
   "ccmDepositReceivedBlockIndex": "87-13",
   "ccmGasBudget": "2",

@@ -185,7 +185,7 @@ exports[`swapDepositAddressReady > inserts affiliates 1`] = `
 {
   "beneficiaries": [
     {
-      "account": "",
+      "account": "cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy",
       "channelId": Any<BigInt>,
       "commissionBps": 25,
       "id": Any<BigInt>,
