@@ -367,10 +367,10 @@ export const getDcaParams = (
   swapRequest: Awaited<ReturnType<typeof getLatestSwapForId>>['swapRequest'],
   swapDepositChannel: Awaited<ReturnType<typeof getLatestSwapForId>>['swapDepositChannel'],
 ) =>
-  swapRequest?.chunkIntervalBlocks || swapDepositChannel?.chunkIntervalBlocks
+  swapRequest?.dcaChunkIntervalBlocks || swapDepositChannel?.dcaChunkIntervalBlocks
     ? {
-        numberOfChunks: swapRequest?.numberOfChunks ?? swapDepositChannel?.numberOfChunks,
+        numberOfChunks: swapRequest?.dcaNumberOfChunks ?? swapDepositChannel?.dcaNumberOfChunks,
         chunkIntervalBlocks:
-          swapRequest?.chunkIntervalBlocks ?? swapDepositChannel?.chunkIntervalBlocks,
+          swapRequest?.dcaChunkIntervalBlocks ?? swapDepositChannel?.dcaChunkIntervalBlocks,
       }
     : undefined;

@@ -103,7 +103,8 @@ router.get(
             currentChunk: null as null | NonNullable<typeof swaps>[number],
             lastExecutedChunk: null as null | NonNullable<typeof swaps>[number],
             isDca: Boolean(
-              swapDepositChannel?.chunkIntervalBlocks && swapDepositChannel.chunkIntervalBlocks > 1,
+              swapDepositChannel?.dcaChunkIntervalBlocks &&
+                swapDepositChannel.dcaChunkIntervalBlocks > 1,
             ),
             fees: [] as SwapFee[],
           },
@@ -217,7 +218,7 @@ router.get(
                   currentChunk: rolledSwaps.currentChunk && getSwapFields(rolledSwaps.currentChunk),
                   executedChunks: rolledSwaps.executedChunks,
                   remainingChunks:
-                    (swapDepositChannel?.numberOfChunks ?? 1) - rolledSwaps.executedChunks,
+                    (swapDepositChannel?.dcaNumberOfChunks ?? 1) - rolledSwaps.executedChunks,
                 },
               }
             : {

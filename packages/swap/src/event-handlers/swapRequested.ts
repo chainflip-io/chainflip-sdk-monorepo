@@ -175,6 +175,7 @@ export default async function swapRequested({
     origin,
     requestType,
     dcaParameters,
+    refundParameters,
     brokerFees,
   } = schema.parse(event.args);
 
@@ -230,8 +231,11 @@ export default async function swapRequested({
       ...(origin.__kind !== 'Internal' && {
         depositAmount: inputAmount.toString(),
       }),
-      numberOfChunks: dcaParameters?.numberOfChunks,
-      chunkIntervalBlocks: dcaParameters?.chunkInterval,
+      dcaNumberOfChunks: dcaParameters?.numberOfChunks,
+      dcaChunkIntervalBlocks: dcaParameters?.chunkInterval,
+      fokMinPriceX128: refundParameters?.minPrice?.toString(),
+      fokRefundAddress: refundParameters?.refundAddress.address,
+      fokRetryDurationBlocks: refundParameters?.retryDuration,
       totalBrokerCommissionBps: totalCommissionBps,
       beneficiaries: {
         createMany: {
