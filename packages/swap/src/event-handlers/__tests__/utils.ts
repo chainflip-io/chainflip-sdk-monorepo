@@ -116,6 +116,7 @@ export const swapDepositAddressReadyMocked = {
       boostFee: 0,
       channelOpeningFee: 0,
       affiliateFees: [],
+      brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
     } as SwapDepositAddressReadyArgs,
     indexInBlock: 0,
     name: eventNames.Swapping.SwapDepositAddressReady,

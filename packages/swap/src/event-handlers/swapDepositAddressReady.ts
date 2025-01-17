@@ -4,7 +4,10 @@ import { z } from 'zod';
 import { calculateExpiryTime } from '../utils/function';
 import { EventHandlerArgs } from './index';
 
-const swapDepositAddressReadyArgs = z.union([schema180, schema160]);
+const swapDepositAddressReadyArgs = z.union([
+  schema180,
+  schema160.transform((args) => ({ ...args, brokerId: undefined })),
+]);
 
 export type SwapDepositAddressReadyArgs = z.input<typeof swapDepositAddressReadyArgs>;
 
@@ -29,6 +32,7 @@ export const swapDepositAddressReady = async ({
     affiliateFees,
     refundParameters,
     dcaParameters,
+    brokerId,
   } = swapDepositAddressReadyArgs.parse(event.args);
 
   const chainInfo = await prisma.chainTracking.findFirst({
@@ -45,7 +49,7 @@ export const swapDepositAddressReady = async ({
   const beneficiaries = [
     {
       type: 'SUBMITTER' as const,
-      account: '', // https://linear.app/chainflip/issue/PRO-1948/expose-broker-on-swapdepositaddressready-event
+      account: brokerId ?? '', // broker id was added to event in 180
       commissionBps: brokerCommissionRate,
     },
     ...affiliateFees.map((affiliate) => ({
