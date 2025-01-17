@@ -42,6 +42,7 @@ export const depositIgnoredArgs = z.union([
 
 export type DepositIgnoredArgs = z.input<typeof depositIgnoredArgs>;
 
+/** @deprecated can be removed when 1.8 is on mainnet */
 export const depositIgnored =
   (chain: Chain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {

@@ -11,6 +11,7 @@ import processBlocks, { Call, Event } from '@/swap/processBlocks';
 import prisma, { SwapDepositChannel } from '../../client';
 import { events as eventNames } from '../index';
 import { networkBroadcastSuccessArgs } from '../networkBroadcastSuccess';
+import { DepositFailedArgs } from '../networkDepositFailed';
 import { DepositIgnoredArgs } from '../networkDepositIgnored';
 import { SwapDepositAddressReadyArgs } from '../swapDepositAddressReady';
 
@@ -538,6 +539,19 @@ export const buildDepositIgnoredEvent = <T extends DepositIgnoredArgs>(args: T) 
 
   return {
     block: { specId: 'test@160', timestamp: 1670337093000, height: 100, hash: '0x123' },
+    event: { args, indexInBlock: 0, name: `${chain}IngressEgress.DepositIgnored` },
+  };
+};
+
+export const buildDepositFailedEvent = <T extends DepositFailedArgs>(args: T) => {
+  const asset =
+    args.details.__kind === 'DepositChannel'
+      ? args.details.depositWitness.asset.__kind
+      : args.details.vaultWitness.inputAsset.__kind;
+  const { chain } = assetConstants[asset];
+
+  return {
+    block: { specId: 'test@180', timestamp: 1670337093000, height: 100, hash: '0x123' },
     event: { args, indexInBlock: 0, name: `${chain}IngressEgress.DepositIgnored` },
   };
 };
