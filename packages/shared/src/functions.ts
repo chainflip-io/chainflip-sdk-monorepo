@@ -50,7 +50,9 @@ export const getPriceFromPriceX128 = (
     .shiftedBy(assetConstants[srcAsset].decimals - assetConstants[destAsset].decimals)
     .toFixed();
 
-export const assertUnreachable = (x: never): never => x;
+export const assertUnreachable = (_: never, message = 'unreachable'): never => {
+  throw new Error(message);
+};
 
 export const parseFoKParams = (
   params: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage | undefined,

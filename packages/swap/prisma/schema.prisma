@@ -250,6 +250,10 @@ enum FailedSwapReason {
   InsufficientDepositAmount // CCM reason
   InvalidMetadata // CCM reason
   InvalidDestinationAddress // CCM reason
+  DepositWitnessRejected
+  InvalidBrokerFees
+  InvalidDcaParameters
+  InvalidRefundParameters
 
   @@schema("public")
 }
@@ -259,6 +263,7 @@ model FailedSwap {
   reason                FailedSwapReason
   destAddress           String
   destChain             Chain
+  destAsset             InternalAsset?
   depositAmount         Decimal             @db.Decimal(30, 0)
   srcChain              Chain
   srcAsset              InternalAsset
@@ -269,6 +274,7 @@ model FailedSwap {
   failedBlockIndex      String
   ccmGasBudget          Decimal?            @db.Decimal(30, 0)
   ccmMessage            String?
+  ccmAdditionalData     String?
   refundBroadcast       Broadcast?          @relation(fields: [refundBroadcastId], references: [id])
   refundBroadcastId     BigInt?
 

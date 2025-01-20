@@ -1,12 +1,12 @@
 import type { Prisma } from '.prisma/client';
 import { Chains } from '@/shared/enums';
-import ccmFailed from './ccmFailed';
 import { depositBoosted } from './depositBoosted';
 import liquidityDepositAddressReady from './liquidityDepositChannelReady';
 import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';
 import networkBroadcastAborted from './networkBroadcastAborted';
 import networkBroadcastSuccess from './networkBroadcastSuccess';
 import networkCcmBroadcastRequested from './networkCcmBroadcastRequested';
+import networkCcmFailed from './networkCcmFailed';
 import chainStateUpdated from './networkChainStateUpdated';
 import { networkDepositFinalised } from './networkDepositFinalised';
 import networkDepositIgnored from './networkDepositIgnored';
@@ -47,7 +47,6 @@ export const events = {
     SwapDepositAddressReady: 'Swapping.SwapDepositAddressReady',
     SwapRequested: 'Swapping.SwapRequested',
     SwapRequestCompleted: 'Swapping.SwapRequestCompleted',
-    CcmFailed: 'Swapping.CcmFailed',
   },
   BitcoinIngressEgress: {
     BatchBroadcastRequested: 'BitcoinIngressEgress.BatchBroadcastRequested',
@@ -58,6 +57,7 @@ export const events = {
     DepositBoosted: 'BitcoinIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'BitcoinIngressEgress.InsufficientBoostLiquidity',
     TransactionRejectedByBroker: 'BitcoinIngressEgress.TransactionRejectedByBroker',
+    CcmFailed: 'BitcoinIngressEgress.CcmFailed',
   },
   EthereumIngressEgress: {
     BatchBroadcastRequested: 'EthereumIngressEgress.BatchBroadcastRequested',
@@ -68,6 +68,7 @@ export const events = {
     DepositBoosted: 'EthereumIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'EthereumIngressEgress.InsufficientBoostLiquidity',
     TransactionRejectedByBroker: 'EthereumIngressEgress.TransactionRejectedByBroker',
+    CcmFailed: 'EthereumIngressEgress.CcmFailed',
   },
   ArbitrumIngressEgress: {
     BatchBroadcastRequested: 'ArbitrumIngressEgress.BatchBroadcastRequested',
@@ -78,6 +79,7 @@ export const events = {
     DepositBoosted: 'ArbitrumIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'ArbitrumIngressEgress.InsufficientBoostLiquidity',
     TransactionRejectedByBroker: 'ArbitrumIngressEgress.TransactionRejectedByBroker',
+    CcmFailed: 'ArbitrumIngressEgress.CcmFailed',
   },
   PolkadotIngressEgress: {
     BatchBroadcastRequested: 'PolkadotIngressEgress.BatchBroadcastRequested',
@@ -88,6 +90,7 @@ export const events = {
     DepositBoosted: 'PolkadotIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'PolkadotIngressEgress.InsufficientBoostLiquidity',
     TransactionRejectedByBroker: 'PolkadotIngressEgress.TransactionRejectedByBroker',
+    CcmFailed: 'PolkadotIngressEgress.CcmFailed',
   },
   SolanaIngressEgress: {
     BatchBroadcastRequested: 'SolanaIngressEgress.BatchBroadcastRequested',
@@ -98,6 +101,7 @@ export const events = {
     DepositBoosted: 'SolanaIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'SolanaIngressEgress.InsufficientBoostLiquidity',
     TransactionRejectedByBroker: 'SolanaIngressEgress.TransactionRejectedByBroker',
+    CcmFailed: 'SolanaIngressEgress.CcmFailed',
   },
   BitcoinBroadcaster: {
     BroadcastSuccess: 'BitcoinBroadcaster.BroadcastSuccess',
@@ -206,12 +210,15 @@ const handlers = [
       { name: events.Swapping.SwapEgressIgnored, handler: swapEgressIgnored },
       { name: events.Swapping.SwapEgressScheduled, handler: swapEgressScheduled },
       { name: events.Swapping.SwapScheduled, handler: swapScheduled },
-      { name: events.Swapping.CcmFailed, handler: ccmFailed },
       {
         name: events.LiquidityProvider.LiquidityDepositAddressReady,
         handler: liquidityDepositAddressReady,
       },
       ...Object.values(Chains).flatMap((chain) => [
+        {
+          name: events[`${chain}IngressEgress`].CcmFailed,
+          handler: networkCcmFailed,
+        },
         {
           name: events[`${chain}IngressEgress`].DepositFinalised,
           handler: networkDepositFinalised,

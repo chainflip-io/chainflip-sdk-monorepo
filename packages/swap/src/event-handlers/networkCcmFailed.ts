@@ -45,6 +45,7 @@ const callSchema = z
   })
   .transform((data) => data.call.value);
 
+/** @deprecated can be removed when 1.8 is on mainnet */
 export default async function networkCcmFailed({ prisma, event, block }: EventHandlerArgs) {
   const { reason, origin, destinationAddress, depositMetadata } = eventArgs.parse(event.args);
 

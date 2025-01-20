@@ -351,10 +351,10 @@ const swapEventMap = {
       swapRequestId: '368',
     },
   },
-  'Swapping.CcmFailed': {
+  'EthereumIngressEgress.CcmFailed': {
     id: '0000000092-000399-23afe',
     indexInBlock: 1,
-    name: 'Swapping.CcmFailed',
+    name: 'EthereumIngressEgress.CcmFailed',
     callId: '0000000092-000399-02fea',
     args: {
       origin: {
@@ -984,7 +984,7 @@ describe('server', () => {
         [
           depositChannelEvent,
           requestedEvent,
-          swapEventMap['Swapping.CcmFailed'],
+          swapEventMap['EthereumIngressEgress.CcmFailed'],
           finalizedEvent,
           swapEventMap['Swapping.SwapRequestCompleted'],
         ],
@@ -1015,6 +1015,7 @@ describe('server', () => {
             epochIndex: 246,
           },
         ],
+        '170',
       );
 
       const { body } = await request(server).get(`/v2/swaps/${channelId}`);
