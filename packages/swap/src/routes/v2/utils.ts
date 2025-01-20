@@ -12,6 +12,7 @@ import prisma, {
   IgnoredEgress,
   FailedSwap,
   SwapRequest,
+  Prisma,
 } from '../../client';
 import {
   getPendingBroadcast,
@@ -20,9 +21,11 @@ import {
 } from '../../ingress-egress-tracking';
 import { coerceChain, failedSwapMessage, FailureMode } from '../../utils/swap';
 
+const failedSwapInclude = { refundBroadcast: true } as const;
+
 const depositChannelInclude = {
   failedBoosts: true,
-  failedSwaps: true,
+  failedSwaps: { select: failedSwapInclude },
   beneficiaries: {
     select: {
       type: true,
@@ -57,6 +60,9 @@ export const getLatestSwapForId = async (id: string) => {
   let failedSwap;
   let swapDepositChannel;
   let beneficiaries;
+  let swapEgress;
+  let refundEgress;
+  let ignoredEgresses;
 
   if (channelIdRegex.test(id)) {
     const { issuedBlock, srcChain, channelId } = channelIdRegex.exec(id)!.groups!;
@@ -74,7 +80,7 @@ export const getLatestSwapForId = async (id: string) => {
         failedSwaps: {
           include: {
             swapDepositChannel: { include: depositChannelInclude },
-            refundBroadcast: true,
+            ...failedSwapInclude,
           },
         },
         failedBoosts: true,
@@ -114,7 +120,7 @@ export const getLatestSwapForId = async (id: string) => {
     if (!swapRequest) {
       failedSwap = await prisma.failedSwap.findFirst({
         where: { depositTransactionRef: id },
-        include: { swapDepositChannel: { include: depositChannelInclude }, refundBroadcast: true },
+        include: { swapDepositChannel: { include: depositChannelInclude }, ...failedSwapInclude },
       });
     }
   }
@@ -122,6 +128,27 @@ export const getLatestSwapForId = async (id: string) => {
   swapDepositChannel ??= swapRequest?.swapDepositChannel ?? failedSwap?.swapDepositChannel;
   if (swapDepositChannel && swapDepositChannel.beneficiaries.length > 0) {
     beneficiaries = swapDepositChannel.beneficiaries;
+  }
+
+  if (swapRequest) {
+    swapEgress = swapRequest?.egress;
+    refundEgress = swapRequest?.refundEgress;
+    ignoredEgresses = swapRequest?.ignoredEgresses;
+  } else if (failedSwap?.refundBroadcast) {
+    // rejected deposits don't have an egress, but the downstream logic is simplified
+    // if it has a fake egress
+    refundEgress = {
+      amount: failedSwap.depositAmount,
+      scheduledAt: failedSwap.refundBroadcast.requestedAt,
+      scheduledBlockIndex: failedSwap.refundBroadcast.requestedBlockIndex,
+      broadcastId: failedSwap.refundBroadcast.nativeId,
+      broadcast: failedSwap.refundBroadcast,
+      chain: failedSwap.srcChain,
+      nativeId: 0n,
+      id: 0n,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
   }
 
   ServiceError.assert(
@@ -135,6 +162,9 @@ export const getLatestSwapForId = async (id: string) => {
     failedSwap,
     swapDepositChannel,
     beneficiaries,
+    swapEgress,
+    refundEgress,
+    ignoredEgresses,
   };
 };
 
@@ -265,12 +295,12 @@ export const getEgressFailureState = async (
 };
 
 export const getEgressStatusFields = async (
-  egress: Egress | null | undefined,
-  broadcast: Broadcast | null | undefined,
+  egress: (Egress & { broadcast: Broadcast | null }) | null | undefined,
   ignoredEgresses: IgnoredEgress[] | undefined,
   type: IgnoredEgress['type'] | undefined,
   egressTrackerTxRef: string | null | undefined,
 ) => {
+  const broadcast = egress?.broadcast;
   const ignoredEgress = ignoredEgresses?.find((e) => e.type === type);
   const failureState = await getEgressFailureState(ignoredEgress, broadcast, type);
   if (!egress && !broadcast && !failureState && !ignoredEgress) return null;
@@ -374,3 +404,18 @@ export const getDcaParams = (
           swapRequest?.dcaChunkIntervalBlocks ?? swapDepositChannel?.dcaChunkIntervalBlocks,
       }
     : undefined;
+
+export const getRolledSwapsInitialData = (
+  swapDepositChannel: SwapChannelData | null | undefined,
+) => ({
+  swappedOutputAmount: new Prisma.Decimal(0),
+  swappedIntermediateAmount: new Prisma.Decimal(0),
+  swappedInputAmount: new Prisma.Decimal(0),
+  executedChunks: 0,
+  currentChunk: null as null | NonNullable<SwapRequestData['swaps']>[number],
+  lastExecutedChunk: null as null | NonNullable<SwapRequestData['swaps']>[number],
+  isDca: Boolean(
+    swapDepositChannel?.dcaChunkIntervalBlocks && swapDepositChannel.dcaChunkIntervalBlocks > 1,
+  ),
+  fees: [] as SwapFee[],
+});

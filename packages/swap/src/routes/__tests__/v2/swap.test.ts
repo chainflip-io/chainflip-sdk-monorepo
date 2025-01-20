@@ -929,6 +929,9 @@ describe('server', () => {
         fees: [],
         lastStatechainUpdateAt: 1640995200000,
         refundEgress: {
+          amount: '1000000',
+          scheduledAt: 21689748000,
+          scheduledBlockIndex: '3614958-1117',
           txRef: '7cc616d54e33a2f7685186994120eb32b6fcbdc2344b4238db5115f6b2cf3277',
           witnessedAt: 21690432000,
           witnessedBlockIndex: '3615072-1060',
@@ -937,6 +940,13 @@ describe('server', () => {
         srcChain: 'Bitcoin',
         srcChainRequiredBlockConfirmations: 3,
         state: 'FAILED',
+        swap: {
+          originalInputAmount: '1000000',
+          remainingInputAmount: '1000000',
+          swappedInputAmount: '0',
+          swappedIntermediateAmount: '0',
+          swappedOutputAmount: '0',
+        },
       });
     });
 

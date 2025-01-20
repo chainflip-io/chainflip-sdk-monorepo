@@ -9,10 +9,11 @@ import {
   getDepositInfo,
   getEgressStatusFields,
   getLatestSwapForId,
+  getRolledSwapsInitialData,
   getSwapFields,
   getSwapState,
 } from './utils';
-import { Prisma, SwapFee } from '../../client';
+import { SwapFee } from '../../client';
 import { readField } from '../../utils/function';
 import logger from '../../utils/logger';
 import { estimateSwapDuration } from '../../utils/swap';
@@ -35,18 +36,21 @@ router.get(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    const { swapRequest, failedSwap, swapDepositChannel, beneficiaries } =
-      await getLatestSwapForId(id);
-
-    const swapEgress = swapRequest?.egress;
-    const refundEgress = swapRequest?.refundEgress;
-    const ignoredEgresses = swapRequest?.ignoredEgresses;
+    const {
+      swapRequest,
+      failedSwap,
+      swapDepositChannel,
+      beneficiaries,
+      swapEgress,
+      refundEgress,
+      ignoredEgresses,
+    } = await getLatestSwapForId(id);
 
     const { state, swapEgressTrackerTxRef, refundEgressTrackerTxRef, pendingDeposit } =
       await getSwapState(failedSwap, ignoredEgresses, swapRequest, swapDepositChannel);
 
     const internalSrcAsset = readField(swapRequest, swapDepositChannel, failedSwap, 'srcAsset');
-    const internalDestAsset = readField(swapRequest, swapDepositChannel, 'destAsset');
+    const internalDestAsset = readField(swapRequest, swapDepositChannel, failedSwap, 'destAsset');
     assert(internalSrcAsset, 'srcAsset must be defined');
 
     const ccmGasBudget = readField(swapRequest, swapDepositChannel, 'ccmGasBudget');
@@ -74,42 +78,31 @@ router.get(
       destAsset: swapDepositChannel?.destAsset || swapRequest?.destAsset,
     };
 
-    const originalInputAmount = swapRequest?.swapInputAmount;
-
     const swaps = swapRequest?.swaps.filter((swap) => swap.type !== 'GAS');
 
-    const rolledSwaps = swaps?.length
-      ? swaps.reduce(
-          (acc, curr) => {
-            if (curr.swapExecutedAt) {
-              acc.swappedOutputAmount = acc.swappedOutputAmount.plus(curr.swapOutputAmount ?? 0);
-              acc.swappedIntermediateAmount = acc.swappedIntermediateAmount.plus(
-                curr.intermediateAmount ?? 0,
-              );
-              acc.swappedInputAmount = acc.swappedInputAmount.plus(curr.swapInputAmount);
-              acc.lastExecutedChunk = curr;
-              acc.executedChunks += 1;
-              acc.fees = acc.fees.concat(...curr.fees);
-            } else {
-              acc.currentChunk = curr;
-            }
-            return acc;
-          },
-          {
-            swappedOutputAmount: new Prisma.Decimal(0),
-            swappedIntermediateAmount: new Prisma.Decimal(0),
-            swappedInputAmount: new Prisma.Decimal(0),
-            executedChunks: 0,
-            currentChunk: null as null | NonNullable<typeof swaps>[number],
-            lastExecutedChunk: null as null | NonNullable<typeof swaps>[number],
-            isDca: Boolean(
-              swapDepositChannel?.dcaChunkIntervalBlocks &&
-                swapDepositChannel.dcaChunkIntervalBlocks > 1,
-            ),
-            fees: [] as SwapFee[],
-          },
-        )
-      : undefined;
+    let originalInputAmount = swapRequest?.swapInputAmount;
+    let rolledSwaps;
+
+    if (swaps?.length) {
+      rolledSwaps = swaps.reduce((acc, curr) => {
+        if (curr.swapExecutedAt) {
+          acc.swappedOutputAmount = acc.swappedOutputAmount.plus(curr.swapOutputAmount ?? 0);
+          acc.swappedIntermediateAmount = acc.swappedIntermediateAmount.plus(
+            curr.intermediateAmount ?? 0,
+          );
+          acc.swappedInputAmount = acc.swappedInputAmount.plus(curr.swapInputAmount);
+          acc.lastExecutedChunk = curr;
+          acc.executedChunks += 1;
+          acc.fees = acc.fees.concat(...curr.fees);
+        } else {
+          acc.currentChunk = curr;
+        }
+        return acc;
+      }, getRolledSwapsInitialData(swapDepositChannel));
+    } else if (failedSwap) {
+      rolledSwaps = getRolledSwapsInitialData(swapDepositChannel);
+      originalInputAmount = failedSwap.depositAmount;
+    }
 
     const aggregateFees = rolledSwaps?.fees
       .reduce((acc, curr) => {
@@ -137,20 +130,8 @@ router.get(
       srcChainRequiredBlockConfirmations,
       lastStateChainUpdate,
     ] = await Promise.all([
-      getEgressStatusFields(
-        swapEgress,
-        swapEgress?.broadcast,
-        ignoredEgresses,
-        'SWAP',
-        swapEgressTrackerTxRef,
-      ),
-      getEgressStatusFields(
-        refundEgress,
-        refundEgress?.broadcast ?? failedSwap?.refundBroadcast,
-        ignoredEgresses,
-        'REFUND',
-        refundEgressTrackerTxRef,
-      ),
+      getEgressStatusFields(swapEgress, ignoredEgresses, 'SWAP', swapEgressTrackerTxRef),
+      getEgressStatusFields(refundEgress, ignoredEgresses, 'REFUND', refundEgressTrackerTxRef),
       srcAsset && destAsset && estimateSwapDuration({ srcAsset, destAsset }),
       getRequiredBlockConfirmations(internalSrcAsset),
       getLastChainTrackingUpdateTimestamp(),
