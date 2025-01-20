@@ -1,13 +1,14 @@
 import express from 'express';
 import { getAssetAndChain } from '@/shared/enums';
-import { getPriceFromPriceX128 } from '@/shared/functions';
 import { assert } from '@/shared/guards';
 import { getLastChainTrackingUpdateTimestamp } from '@/swap/utils/intercept';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
 import {
+  getCcmParams,
   getDcaParams,
   getDepositInfo,
   getEgressStatusFields,
+  getFillOrKillParams,
   getLatestSwapForId,
   getRolledSwapsInitialData,
   getSwapFields,
@@ -52,16 +53,6 @@ router.get(
     const internalSrcAsset = readField(swapRequest, swapDepositChannel, failedSwap, 'srcAsset');
     const internalDestAsset = readField(swapRequest, swapDepositChannel, failedSwap, 'destAsset');
     assert(internalSrcAsset, 'srcAsset must be defined');
-
-    const ccmGasBudget = readField(swapRequest, swapDepositChannel, 'ccmGasBudget');
-    const ccmMessage = readField(swapRequest, swapDepositChannel, 'ccmMessage');
-    let ccmParams;
-    if (ccmGasBudget || ccmMessage) {
-      ccmParams = {
-        gasBudget: ccmGasBudget?.toFixed(),
-        message: ccmMessage,
-      };
-    }
 
     const showBoost = Boolean(swapRequest?.maxBoostFeeBps || swapDepositChannel?.maxBoostFeeBps);
 
@@ -149,6 +140,8 @@ router.get(
       srcChainRequiredBlockConfirmations,
       estimatedDurationsSeconds: estimatedDurations?.durations,
       estimatedDurationSeconds: estimatedDurations?.total,
+      brokers:
+        beneficiaries?.map(({ account, commissionBps }) => ({ account, commissionBps })) ?? [],
       fees: aggregateFees ?? [],
       ...(showDepositchannel &&
         swapDepositChannel && {
@@ -167,17 +160,7 @@ router.get(
               beneficiaries
                 ?.filter(({ type }) => type === 'AFFILIATE')
                 .map(({ account, commissionBps }) => ({ account, commissionBps })) ?? [],
-            fillOrKillParams: swapDepositChannel.fokMinPriceX128
-              ? {
-                  retryDurationBlocks: swapDepositChannel.fokRetryDurationBlocks,
-                  refundAddress: swapDepositChannel.fokRefundAddress,
-                  minPrice: getPriceFromPriceX128(
-                    swapDepositChannel.fokMinPriceX128.toFixed(),
-                    swapDepositChannel.srcAsset,
-                    swapDepositChannel.destAsset,
-                  ),
-                }
-              : undefined,
+            fillOrKillParams: getFillOrKillParams(swapRequest, swapDepositChannel),
             dcaParams: getDcaParams(swapRequest, swapDepositChannel),
           },
         }),
@@ -213,7 +196,9 @@ router.get(
       }),
       ...(swapEgressFields && { swapEgress: { ...swapEgressFields } }),
       ...(refundEgressFields && { refundEgress: { ...refundEgressFields } }),
-      ...(ccmParams && { ccmParams }),
+      ccmParams: getCcmParams(swapRequest, swapDepositChannel),
+      fillOrKillParams: getFillOrKillParams(swapRequest, swapDepositChannel),
+      dcaParams: getDcaParams(swapRequest, swapDepositChannel),
       ...(showBoost && {
         boost: {
           effectiveBoostFeeBps,

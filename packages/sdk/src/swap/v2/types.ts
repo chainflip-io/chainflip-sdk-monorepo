@@ -122,7 +122,6 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   fillOrKillParams: FillOrKillParamsWithMinPrice | undefined;
   dcaParams: DcaParams | undefined;
   boost: Boost | undefined;
-  brokers: Broker[];
   estimatedDurationSeconds: number | null | undefined;
   estimatedDurationsSeconds: {
     deposit: number;
@@ -130,6 +129,7 @@ interface SwapStatusResponseCommonFields extends ChainsAndAssets {
     egress: number;
   };
   srcChainRequiredBlockConfirmations: number | null;
+  brokers: Broker[];
   fees: PaidFee[];
   lastStatechainUpdateAt: number | undefined;
 }
