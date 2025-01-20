@@ -7,6 +7,17 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## Unreleased
+
+### Deprecated
+
+- `SwapSDK.prototype.getStatusV2`: `depositChannel.brokerCommissionBps` is deprecated and will
+  be removed in a future release. Use `brokers` on the root level of the return value instead.
+- `SwapSDK.prototype.getStatusV2`: `depositChannel.fillOrKillParams` is deprecated and will
+  be removed in a future release. Use `fillOrKillParams` on the root level of the return value instead.
+- `SwapSDK.prototype.getStatusV2`: `depositChannel.dcaParams` is deprecated and will
+  be removed in a future release. Use `dcaParams` on the root level of the return value instead.
+
 ## 1.7.0
 
 ### Added
