@@ -399,11 +399,15 @@ export const getFillOrKillParams = (
 ) => {
   const srcAsset = readField(swapRequest, swapDepositChannel, 'srcAsset');
   const destAsset = readField(swapRequest, swapDepositChannel, 'destAsset');
-  const fokRefundAddress = readField(swapRequest, swapDepositChannel, 'ccmMessage');
-  const fokMinPriceX128 = readField(swapRequest, swapDepositChannel, 'ccmGasBudget');
-  const fokRetryDurationBlocks = readField(swapRequest, swapDepositChannel, 'ccmMessage');
+  const fokRefundAddress = readField(swapRequest, swapDepositChannel, 'fokRefundAddress');
+  const fokMinPriceX128 = readField(swapRequest, swapDepositChannel, 'fokMinPriceX128');
+  const fokRetryDurationBlocks = readField(
+    swapRequest,
+    swapDepositChannel,
+    'fokRetryDurationBlocks',
+  );
 
-  return fokMinPriceX128 && srcAsset && destAsset
+  return srcAsset && destAsset && fokMinPriceX128
     ? {
         refundAddress: fokRefundAddress,
         minPrice: getPriceFromPriceX128(fokMinPriceX128.toFixed(), srcAsset, destAsset),
