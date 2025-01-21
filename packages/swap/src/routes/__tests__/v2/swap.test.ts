@@ -480,6 +480,8 @@ describe('server', () => {
 
     it(`retrieves a swap with a broker commission in ${StateV2.Waiting} status`, async () => {
       const depositAddressEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositAddressEvent.args.brokerId =
+        '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125';
       depositAddressEvent.args.brokerCommissionRate = 15;
       await processEvents([depositAddressEvent]);
 
@@ -508,6 +510,12 @@ describe('server', () => {
           isExpired: false,
           openedThroughBackend: false,
         },
+        brokers: [
+          {
+            account: 'cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy',
+            commissionBps: 15,
+          },
+        ],
       });
     });
 
@@ -947,6 +955,12 @@ describe('server', () => {
           swappedIntermediateAmount: '0',
           swappedOutputAmount: '0',
         },
+        fillOrKillParams: {
+          minPrice: '5.140026445278486822',
+          refundAddress: 'tb1q78pjllxzm7069fj8mw3ud0dvk4d8n2muqs7q2k',
+          retryDurationBlocks: 150,
+        },
+        brokers: [],
       });
     });
 
@@ -1216,10 +1230,17 @@ describe('server', () => {
 
     it('retrieves a channel with affiliates', async () => {
       const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
+      depositChannelEvent.args.brokerId =
+        '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125';
+      depositChannelEvent.args.brokerCommissionRate = 15;
       (depositChannelEvent.args.affiliateFees as any) = [
         {
           account: ss58.toPublicKey('cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy'),
           bps: 100,
+        },
+        {
+          account: ss58.toPublicKey('cFJvHp55aSUWL88R7N5G4StdsWcCv3d3rfDx8pgAkZdG4ew7e'),
+          bps: 150,
         },
       ];
 
@@ -1229,10 +1250,28 @@ describe('server', () => {
 
       expect(status).toBe(200);
 
+      expect(body.brokers).toStrictEqual([
+        {
+          account: 'cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy',
+          commissionBps: 15,
+        },
+        {
+          account: 'cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy',
+          commissionBps: 100,
+        },
+        {
+          account: 'cFJvHp55aSUWL88R7N5G4StdsWcCv3d3rfDx8pgAkZdG4ew7e',
+          commissionBps: 150,
+        },
+      ]);
       expect(body.depositChannel.affiliateBrokers).toStrictEqual([
         {
           account: 'cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy',
           commissionBps: 100,
+        },
+        {
+          account: 'cFJvHp55aSUWL88R7N5G4StdsWcCv3d3rfDx8pgAkZdG4ew7e',
+          commissionBps: 150,
         },
       ]);
     });
@@ -1344,6 +1383,11 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
 
       expect(status).toBe(200);
+      expect(body.fillOrKillParams).toMatchObject({
+        minPrice: '29387358770557187699218413430556141945466.638919302188',
+        refundAddress: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
+        retryDurationBlocks: 15,
+      });
       expect(body.depositChannel.fillOrKillParams).toMatchObject({
         minPrice: '29387358770557187699218413430556141945466.638919302188',
         refundAddress: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
@@ -1374,6 +1418,11 @@ describe('server', () => {
 
       expect(status).toBe(200);
       expect(body.state).toBe('FAILED');
+      expect(body.fillOrKillParams).toMatchObject({
+        minPrice: expect.any(String),
+        refundAddress: expect.any(String),
+        retryDurationBlocks: expect.any(Number),
+      });
       expect(body.depositChannel.fillOrKillParams).toMatchObject({
         minPrice: expect.any(String),
         refundAddress: expect.any(String),
@@ -1548,6 +1597,8 @@ describe('server', () => {
             remainingChunks: 8,
           },
         },
+        dcaParams: { numberOfChunks: 10, chunkIntervalBlocks: 3 },
+        brokers: [],
       });
     });
 
@@ -1680,6 +1731,8 @@ describe('server', () => {
           scheduledAt: 564000,
           scheduledBlockIndex: '94-595',
         },
+        dcaParams: { numberOfChunks: 10, chunkIntervalBlocks: 3 },
+        brokers: [],
       });
     });
 
@@ -1812,6 +1865,8 @@ describe('server', () => {
           witnessedBlockIndex: '104-7',
           txRef: '104-2',
         },
+        dcaParams: { numberOfChunks: 10, chunkIntervalBlocks: 3 },
+        brokers: [],
       });
     });
 

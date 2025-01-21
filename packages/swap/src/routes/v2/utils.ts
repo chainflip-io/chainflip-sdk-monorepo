@@ -1,5 +1,5 @@
 import { CHARSET } from '@chainflip/utils/base58';
-import { assertUnreachable } from '@/shared/functions';
+import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
 import { readField } from '@/swap/utils/function';
 import logger from '@/swap/utils/logger';
 import ServiceError from '@/swap/utils/ServiceError';
@@ -393,6 +393,29 @@ export const getSwapState = async (
   };
 };
 
+export const getFillOrKillParams = (
+  swapRequest: Awaited<ReturnType<typeof getLatestSwapForId>>['swapRequest'],
+  swapDepositChannel: Awaited<ReturnType<typeof getLatestSwapForId>>['swapDepositChannel'],
+) => {
+  const srcAsset = readField(swapRequest, swapDepositChannel, 'srcAsset');
+  const destAsset = readField(swapRequest, swapDepositChannel, 'destAsset');
+  const fokRefundAddress = readField(swapRequest, swapDepositChannel, 'fokRefundAddress');
+  const fokMinPriceX128 = readField(swapRequest, swapDepositChannel, 'fokMinPriceX128');
+  const fokRetryDurationBlocks = readField(
+    swapRequest,
+    swapDepositChannel,
+    'fokRetryDurationBlocks',
+  );
+
+  return srcAsset && destAsset && fokMinPriceX128
+    ? {
+        refundAddress: fokRefundAddress,
+        minPrice: getPriceFromPriceX128(fokMinPriceX128.toFixed(), srcAsset, destAsset),
+        retryDurationBlocks: fokRetryDurationBlocks,
+      }
+    : undefined;
+};
+
 export const getDcaParams = (
   swapRequest: Awaited<ReturnType<typeof getLatestSwapForId>>['swapRequest'],
   swapDepositChannel: Awaited<ReturnType<typeof getLatestSwapForId>>['swapDepositChannel'],
@@ -404,6 +427,21 @@ export const getDcaParams = (
           swapRequest?.dcaChunkIntervalBlocks ?? swapDepositChannel?.dcaChunkIntervalBlocks,
       }
     : undefined;
+
+export const getCcmParams = (
+  swapRequest: Awaited<ReturnType<typeof getLatestSwapForId>>['swapRequest'],
+  swapDepositChannel: Awaited<ReturnType<typeof getLatestSwapForId>>['swapDepositChannel'],
+) => {
+  const ccmGasBudget = readField(swapRequest, swapDepositChannel, 'ccmGasBudget');
+  const ccmMessage = readField(swapRequest, swapDepositChannel, 'ccmMessage');
+
+  return ccmGasBudget || ccmMessage
+    ? {
+        gasBudget: ccmGasBudget?.toFixed(),
+        message: ccmMessage,
+      }
+    : undefined;
+};
 
 export const getRolledSwapsInitialData = (
   swapDepositChannel: SwapChannelData | null | undefined,
