@@ -11,7 +11,7 @@ import assert from 'assert';
 import { z } from 'zod';
 import { assetConstants } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
-import { FailedSwapReason, Chain } from '../client';
+import { FailedSwapReason, type Chain } from '../client';
 import { getDepositTxRef } from './common';
 import env from '../config/env';
 import logger from '../utils/logger';
