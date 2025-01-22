@@ -8,8 +8,10 @@ import networkBroadcastSuccess from './networkBroadcastSuccess';
 import networkCcmBroadcastRequested from './networkCcmBroadcastRequested';
 import networkCcmFailed from './networkCcmFailed';
 import chainStateUpdated from './networkChainStateUpdated';
+import networkDepositFailed from './networkDepositFailed';
 import { networkDepositFinalised } from './networkDepositFinalised';
 import networkDepositIgnored from './networkDepositIgnored';
+import networkThresholdSignatureInvalid from './networkThresholdSignatureInvalid';
 import networkTransactionRejectedByBroker from './networkTransactionRejectedByBroker';
 import newPoolCreated from './newPoolCreated';
 import poolFeeSet from './poolFeeSet';
@@ -58,6 +60,7 @@ export const events = {
     InsufficientBoostLiquidity: 'BitcoinIngressEgress.InsufficientBoostLiquidity',
     TransactionRejectedByBroker: 'BitcoinIngressEgress.TransactionRejectedByBroker',
     CcmFailed: 'BitcoinIngressEgress.CcmFailed',
+    DepositFailed: 'BitcoinIngressEgress.DepositFailed',
   },
   EthereumIngressEgress: {
     BatchBroadcastRequested: 'EthereumIngressEgress.BatchBroadcastRequested',
@@ -69,6 +72,7 @@ export const events = {
     InsufficientBoostLiquidity: 'EthereumIngressEgress.InsufficientBoostLiquidity',
     TransactionRejectedByBroker: 'EthereumIngressEgress.TransactionRejectedByBroker',
     CcmFailed: 'EthereumIngressEgress.CcmFailed',
+    DepositFailed: 'EthereumIngressEgress.DepositFailed',
   },
   ArbitrumIngressEgress: {
     BatchBroadcastRequested: 'ArbitrumIngressEgress.BatchBroadcastRequested',
@@ -80,6 +84,7 @@ export const events = {
     InsufficientBoostLiquidity: 'ArbitrumIngressEgress.InsufficientBoostLiquidity',
     TransactionRejectedByBroker: 'ArbitrumIngressEgress.TransactionRejectedByBroker',
     CcmFailed: 'ArbitrumIngressEgress.CcmFailed',
+    DepositFailed: 'ArbitrumIngressEgress.DepositFailed',
   },
   PolkadotIngressEgress: {
     BatchBroadcastRequested: 'PolkadotIngressEgress.BatchBroadcastRequested',
@@ -91,6 +96,7 @@ export const events = {
     InsufficientBoostLiquidity: 'PolkadotIngressEgress.InsufficientBoostLiquidity',
     TransactionRejectedByBroker: 'PolkadotIngressEgress.TransactionRejectedByBroker',
     CcmFailed: 'PolkadotIngressEgress.CcmFailed',
+    DepositFailed: 'PolkadotIngressEgress.DepositFailed',
   },
   SolanaIngressEgress: {
     BatchBroadcastRequested: 'SolanaIngressEgress.BatchBroadcastRequested',
@@ -102,26 +108,32 @@ export const events = {
     InsufficientBoostLiquidity: 'SolanaIngressEgress.InsufficientBoostLiquidity',
     TransactionRejectedByBroker: 'SolanaIngressEgress.TransactionRejectedByBroker',
     CcmFailed: 'SolanaIngressEgress.CcmFailed',
+    DepositFailed: 'SolanaIngressEgress.DepositFailed',
   },
   BitcoinBroadcaster: {
     BroadcastSuccess: 'BitcoinBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'BitcoinBroadcaster.BroadcastAborted',
+    ThresholdSignatureInvalid: 'BitcoinBroadcaster.ThresholdSignatureInvalid',
   },
   EthereumBroadcaster: {
     BroadcastSuccess: 'EthereumBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'EthereumBroadcaster.BroadcastAborted',
+    ThresholdSignatureInvalid: 'EthereumBroadcaster.ThresholdSignatureInvalid',
   },
   ArbitrumBroadcaster: {
     BroadcastSuccess: 'ArbitrumBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'ArbitrumBroadcaster.BroadcastAborted',
+    ThresholdSignatureInvalid: 'ArbitrumBroadcaster.ThresholdSignatureInvalid',
   },
   PolkadotBroadcaster: {
     BroadcastSuccess: 'PolkadotBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'PolkadotBroadcaster.BroadcastAborted',
+    ThresholdSignatureInvalid: 'PolkadotBroadcaster.ThresholdSignatureInvalid',
   },
   SolanaBroadcaster: {
     BroadcastSuccess: 'SolanaBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'SolanaBroadcaster.BroadcastAborted',
+    ThresholdSignatureInvalid: 'SolanaBroadcaster.ThresholdSignatureInvalid',
   },
   BitcoinChainTracking: {
     ChainStateUpdated: 'BitcoinChainTracking.ChainStateUpdated',
@@ -232,6 +244,21 @@ const handlers = [
         {
           name: events[`${chain}IngressEgress`].TransactionRejectedByBroker,
           handler: networkTransactionRejectedByBroker(chain),
+        },
+      ]),
+    ],
+  },
+  {
+    spec: 180,
+    handlers: [
+      ...Object.values(Chains).flatMap((chain) => [
+        {
+          name: events[`${chain}IngressEgress`].DepositFailed,
+          handler: networkDepositFailed(chain),
+        },
+        {
+          name: events[`${chain}Broadcaster`].ThresholdSignatureInvalid,
+          handler: networkThresholdSignatureInvalid(chain),
         },
       ]),
     ],
