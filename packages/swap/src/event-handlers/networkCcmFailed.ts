@@ -25,7 +25,7 @@ const client = new GraphQLClient(env.INGEST_GATEWAY_URL);
 const callSchema = z
   .object({
     call: z.object({
-      value: z.union([
+      value: z.discriminatedUnion('__kind', [
         z.object({
           __kind: z.literal('ccm_deposit'),
           sourceAsset: internalAssetEnum,
@@ -39,6 +39,11 @@ const callSchema = z
               amount: numericString,
             }),
           ),
+        }),
+        z.object({
+          __kind: z.literal('contract_ccm_swap_request'),
+          sourceAsset: internalAssetEnum,
+          depositAmount: numericString,
         }),
       ]),
     }),
