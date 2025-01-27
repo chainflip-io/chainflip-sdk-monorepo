@@ -95,11 +95,11 @@ export const failedSwapMessage: Record<FailedSwapReason, string> = {
 };
 
 export enum FailureMode {
-  IngressIgnored = 'DEPOSIT_TOO_SMALL',
+  IngressIgnored = 'DEPOSIT_IGNORED',
   SwapEgressIgnored = 'SWAP_OUTPUT_TOO_SMALL',
   RefundEgressIgnored = 'REFUND_OUTPUT_TOO_SMALL',
   BroadcastAborted = 'SENDING_FAILED',
-  TransactionRejectedByBroker = 'DEPOSIT_REJECTED',
+  DepositRejected = 'DEPOSIT_REJECTED',
 }
 
 export const getSwapPrice = (
