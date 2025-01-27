@@ -187,12 +187,10 @@ export const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
   latestSwapRescheduledBlockIndex: swap.latestSwapRescheduledBlockIndex ?? undefined,
 });
 
-const getDepositIgnoredFailedState = (failedSwap: FailedSwap) => ({
+const getDepositFailedState = (failedSwap: FailedSwap) => ({
   failedAt: failedSwap.failedAt.valueOf(),
   failedBlockIndex: failedSwap.failedBlockIndex,
-  mode: failedSwap.refundBroadcastId
-    ? FailureMode.TransactionRejectedByBroker
-    : FailureMode.IngressIgnored,
+  mode: failedSwap.refundBroadcastId ? FailureMode.DepositRejected : FailureMode.IngressIgnored,
   reason: {
     name: failedSwap.reason,
     message: failedSwapMessage[failedSwap.reason],
@@ -230,7 +228,7 @@ export const getDepositInfo = (
         swapRequest?.swapRequestedBlockIndex ??
         undefined,
       ...(failedSwap && {
-        failure: getDepositIgnoredFailedState(failedSwap),
+        failure: getDepositFailedState(failedSwap),
         failedAt: failedSwap.failedAt.valueOf(),
         failedBlockIndex: failedSwap.failedBlockIndex,
       }),

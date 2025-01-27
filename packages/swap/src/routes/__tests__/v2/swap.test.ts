@@ -1,7 +1,9 @@
+import { ethereumIngressEgressDepositFailed } from '@chainflip/processor/180/ethereumIngressEgress/depositFailed';
 import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
 import request from 'supertest';
 import { vi, describe, it, beforeEach, afterEach, expect, beforeAll } from 'vitest';
+import { z } from 'zod';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
 import { SwapEgressIgnoredArgs } from '@/swap/event-handlers/swapEgressIgnored';
@@ -383,6 +385,55 @@ const swapEventMap = {
       },
     },
   },
+  'EthereumIngressEgress.DepositFailed': {
+    id: '0000000092-000399-24afe',
+    indexInBlock: 1,
+    name: 'EthereumIngressEgress.DepositFailed',
+    callId: '0000000092-000399-04fea',
+    args: {
+      reason: { __kind: 'InvalidDcaParameters' },
+      details: {
+        __kind: 'DepositChannel',
+        depositWitness: {
+          asset: { __kind: 'Eth' },
+          amount: '100000000000000',
+          depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
+          depositDetails: {
+            txHashes: ['0xfae1ed'],
+          },
+        },
+      },
+      blockHeight: 1234,
+    },
+  },
+  'EthereumIngressEgress.DepositFailed.Vault': {
+    id: '0000000092-000399-24afe',
+    indexInBlock: 1,
+    name: 'EthereumIngressEgress.DepositFailed',
+    callId: '0000000092-000399-04fea',
+    args: {
+      reason: { __kind: 'InvalidRefundParameters' },
+      details: {
+        __kind: 'Vault',
+        vaultWitness: {
+          txId: '0xcafebabe',
+          inputAsset: { __kind: 'Eth' },
+          outputAsset: { __kind: 'Dot' },
+          depositAmount: '100000000000000',
+          depositDetails: {
+            txHashes: ['0xfae1ed'],
+          },
+          destinationAddress: {
+            __kind: 'Dot',
+            value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
+          },
+          boostFee: 0,
+          affiliateFees: [],
+        },
+      } as z.input<typeof ethereumIngressEgressDepositFailed>['details'],
+      blockHeight: 1234,
+    },
+  },
 } as const;
 
 const swapEvents = [
@@ -762,10 +813,49 @@ describe('server', () => {
       expect(body.deposit.failure).toMatchObject({
         failedAt: 552000,
         failedBlockIndex: '92-400',
-        mode: 'DEPOSIT_TOO_SMALL',
+        mode: 'DEPOSIT_IGNORED',
         reason: {
           name: 'BelowMinimumDeposit',
           message: 'The deposited amount was below the minimum required',
+        },
+      });
+    });
+
+    it(`retrieves a swap in ${StateV2.Failed} status (invalid dca parameters)`, async () => {
+      await processEvents([
+        swapEventMap['Swapping.SwapDepositAddressReady'],
+        swapEventMap['EthereumIngressEgress.DepositFailed'],
+      ]);
+
+      const failedTxHash = '0xfae1ed';
+      const { body } = await request(server).get(`/v2/swaps/${failedTxHash}`);
+
+      expect(body.state).toBe('FAILED');
+      expect(body.deposit.failure).toMatchObject({
+        failedAt: 552000,
+        failedBlockIndex: '92-1',
+        mode: 'DEPOSIT_IGNORED',
+        reason: {
+          name: 'InvalidDcaParameters',
+          message: 'The DCA parameters were improperly formatted',
+        },
+      });
+    });
+
+    it(`retrieves a vault swap in ${StateV2.Failed} status (invalid refund parameters)`, async () => {
+      await processEvents([swapEventMap['EthereumIngressEgress.DepositFailed.Vault']]);
+
+      const failedTxHash = '0xfae1ed';
+      const { body } = await request(server).get(`/v2/swaps/${failedTxHash}`);
+
+      expect(body.state).toBe('FAILED');
+      expect(body.deposit.failure).toMatchObject({
+        failedAt: 552000,
+        failedBlockIndex: '92-1',
+        mode: 'DEPOSIT_IGNORED',
+        reason: {
+          name: 'InvalidRefundParameters',
+          message: 'The refund parameters were improperly formatted',
         },
       });
     });
@@ -1048,7 +1138,7 @@ describe('server', () => {
       expect(body.deposit.failure).toMatchObject({
         failedAt: 552000,
         failedBlockIndex: '92-1',
-        mode: 'DEPOSIT_TOO_SMALL',
+        mode: 'DEPOSIT_IGNORED',
         reason: {
           name: 'InsufficientDepositAmount',
           message: 'The gas budget exceeded the deposit amount',
