@@ -9,6 +9,8 @@ which it is deprecated.
 
 ## Unreleased
 
+- Swap status failure mode `DEPOSIT_TOO_SMALL` has been renamed to `DEPOSIT_IGNORED`
+
 ### Deprecated
 
 - `SwapSDK.prototype.getStatusV2`: `depositChannel.brokerCommissionBps` is deprecated and will
