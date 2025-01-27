@@ -28,7 +28,7 @@
   "devDependencies": {
     "@types/node": "^22.10.7",
     "@types/yargs": "^17.0.33",
-    "@typescript-eslint/eslint-plugin": "^7.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "@vitest/eslint-plugin": "^1.1.25",
     "envlocker": "^0.2.0",
