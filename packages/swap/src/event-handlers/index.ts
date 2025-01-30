@@ -12,6 +12,7 @@ import networkDepositFailed from './networkDepositFailed';
 import { networkDepositFinalised } from './networkDepositFinalised';
 import networkDepositIgnored from './networkDepositIgnored';
 import networkThresholdSignatureInvalid from './networkThresholdSignatureInvalid';
+import networkTransactionBroadcastRequest from './networkTransactionBroadcastRequest';
 import networkTransactionRejectedByBroker from './networkTransactionRejectedByBroker';
 import newPoolCreated from './newPoolCreated';
 import poolFeeSet from './poolFeeSet';
@@ -29,7 +30,6 @@ import { boostPoolCreated } from './v140/boostPoolCreated';
 import { insufficientBoostLiquidity } from './v140/insufficientBoostLiquidity';
 import type { Block, Event } from '../gql/generated/graphql';
 import { buildHandlerMap, getDispatcher } from '../utils/handlers';
-import networkTransactionBroadcastRequest from './networkTransactionBroadcastRequest';
 
 export const events = {
   LiquidityPools: {

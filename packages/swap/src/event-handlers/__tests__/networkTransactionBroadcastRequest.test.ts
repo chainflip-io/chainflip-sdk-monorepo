@@ -1,3 +1,4 @@
+/* eslint-disable @vitest/expect-expect */
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   networkTransactionBroadcastRequestBtcMock,
