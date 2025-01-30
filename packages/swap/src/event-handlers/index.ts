@@ -12,6 +12,7 @@ import networkDepositFailed from './networkDepositFailed';
 import { networkDepositFinalised } from './networkDepositFinalised';
 import networkDepositIgnored from './networkDepositIgnored';
 import networkThresholdSignatureInvalid from './networkThresholdSignatureInvalid';
+import networkTransactionBroadcastRequest from './networkTransactionBroadcastRequest';
 import networkTransactionRejectedByBroker from './networkTransactionRejectedByBroker';
 import newPoolCreated from './newPoolCreated';
 import poolFeeSet from './poolFeeSet';
@@ -114,26 +115,31 @@ export const events = {
     BroadcastSuccess: 'BitcoinBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'BitcoinBroadcaster.BroadcastAborted',
     ThresholdSignatureInvalid: 'BitcoinBroadcaster.ThresholdSignatureInvalid',
+    TransactionBroadcastRequest: 'BitcoinBroadcaster.TransactionBroadcastRequest',
   },
   EthereumBroadcaster: {
     BroadcastSuccess: 'EthereumBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'EthereumBroadcaster.BroadcastAborted',
     ThresholdSignatureInvalid: 'EthereumBroadcaster.ThresholdSignatureInvalid',
+    TransactionBroadcastRequest: 'EthereumBroadcaster.TransactionBroadcastRequest',
   },
   ArbitrumBroadcaster: {
     BroadcastSuccess: 'ArbitrumBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'ArbitrumBroadcaster.BroadcastAborted',
     ThresholdSignatureInvalid: 'ArbitrumBroadcaster.ThresholdSignatureInvalid',
+    TransactionBroadcastRequest: 'ArbitrumBroadcaster.TransactionBroadcastRequest',
   },
   PolkadotBroadcaster: {
     BroadcastSuccess: 'PolkadotBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'PolkadotBroadcaster.BroadcastAborted',
     ThresholdSignatureInvalid: 'PolkadotBroadcaster.ThresholdSignatureInvalid',
+    TransactionBroadcastRequest: 'PolkadotBroadcaster.TransactionBroadcastRequest',
   },
   SolanaBroadcaster: {
     BroadcastSuccess: 'SolanaBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'SolanaBroadcaster.BroadcastAborted',
     ThresholdSignatureInvalid: 'SolanaBroadcaster.ThresholdSignatureInvalid',
+    TransactionBroadcastRequest: 'SolanaBroadcaster.TransactionBroadcastRequest',
   },
   BitcoinChainTracking: {
     ChainStateUpdated: 'BitcoinChainTracking.ChainStateUpdated',
@@ -182,6 +188,10 @@ const handlers = [
         {
           name: events[`${chain}Broadcaster`].BroadcastAborted,
           handler: networkBroadcastAborted(chain),
+        },
+        {
+          name: events[`${chain}Broadcaster`].TransactionBroadcastRequest,
+          handler: networkTransactionBroadcastRequest(chain),
         },
         {
           name: events[`${chain}ChainTracking`].ChainStateUpdated,

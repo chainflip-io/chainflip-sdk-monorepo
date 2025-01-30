@@ -58,6 +58,7 @@ exports[`batch swap flow > handles all the events 1`] = `
           "requestedBlockIndex": "110-119",
           "succeededAt": 1970-01-01T00:12:24.000Z,
           "succeededBlockIndex": "124-21",
+          "transactionPayload": null,
           "transactionRef": "sfEH1MJjP5S7suL7Nsajkw112SwHaucR9LBaAhvq4oGAnM943zd4ze6uzGm6gNoVb7QRa6T3ogL2J71e2QDy8sV",
           "type": "BATCH",
           "updatedAt": Any<Date>,

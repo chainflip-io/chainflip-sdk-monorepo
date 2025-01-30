@@ -357,6 +357,7 @@ model Broadcast {
   succeededBlockIndex String?
   abortedAt           DateTime?
   abortedBlockIndex   String?
+  transactionPayload  String?
   replacedBy          Broadcast?    @relation("replacedBy", fields: [replacedById], references: [id])
   replaces            Broadcast?    @relation("replacedBy")
   replacedById        BigInt?       @unique
