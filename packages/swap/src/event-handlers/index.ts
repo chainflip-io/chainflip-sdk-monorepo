@@ -29,6 +29,7 @@ import { boostPoolCreated } from './v140/boostPoolCreated';
 import { insufficientBoostLiquidity } from './v140/insufficientBoostLiquidity';
 import type { Block, Event } from '../gql/generated/graphql';
 import { buildHandlerMap, getDispatcher } from '../utils/handlers';
+import networkTransactionBroadcastRequest from './networkTransactionBroadcastRequest';
 
 export const events = {
   LiquidityPools: {
@@ -126,17 +127,19 @@ export const events = {
     BroadcastSuccess: 'ArbitrumBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'ArbitrumBroadcaster.BroadcastAborted',
     ThresholdSignatureInvalid: 'ArbitrumBroadcaster.ThresholdSignatureInvalid',
+    TransactionBroadcastRequest: 'ArbitrumBroadcaster.TransactionBroadcastRequest',
   },
   PolkadotBroadcaster: {
     BroadcastSuccess: 'PolkadotBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'PolkadotBroadcaster.BroadcastAborted',
     ThresholdSignatureInvalid: 'PolkadotBroadcaster.ThresholdSignatureInvalid',
+    TransactionBroadcastRequest: 'PolkadotBroadcaster.TransactionBroadcastRequest',
   },
   SolanaBroadcaster: {
     BroadcastSuccess: 'SolanaBroadcaster.BroadcastSuccess',
     BroadcastAborted: 'SolanaBroadcaster.BroadcastAborted',
     ThresholdSignatureInvalid: 'SolanaBroadcaster.ThresholdSignatureInvalid',
-    TransactionBroadcastRequest: 'PolkadotBroadcaster.TransactionBroadcastRequest',
+    TransactionBroadcastRequest: 'SolanaBroadcaster.TransactionBroadcastRequest',
   },
   BitcoinChainTracking: {
     ChainStateUpdated: 'BitcoinChainTracking.ChainStateUpdated',
@@ -185,6 +188,10 @@ const handlers = [
         {
           name: events[`${chain}Broadcaster`].BroadcastAborted,
           handler: networkBroadcastAborted(chain),
+        },
+        {
+          name: events[`${chain}Broadcaster`].TransactionBroadcastRequest,
+          handler: networkTransactionBroadcastRequest(chain),
         },
         {
           name: events[`${chain}ChainTracking`].ChainStateUpdated,
