@@ -24,15 +24,12 @@ const transactionBroadcastRequestArgs = z
     transactionPayload: JSON.stringify(args.transactionPayload),
   }));
 
-export type TransactionBroadcastRequestArgs = z.input<
-  typeof transactionBroadcastRequestArgs
->;
+export type TransactionBroadcastRequestArgs = z.input<typeof transactionBroadcastRequestArgs>;
 
 const networkTransactionBroadcastRequest =
   (chain: Chain) =>
   async ({ prisma, event }: EventHandlerArgs) => {
-    const { broadcastId, transactionPayload } =
-      transactionBroadcastRequestArgs.parse(event.args);
+    const { broadcastId, transactionPayload } = transactionBroadcastRequestArgs.parse(event.args);
     await prisma.broadcast.updateMany({
       where: {
         chain,

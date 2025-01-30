@@ -210,10 +210,8 @@ export const networkTransactionBroadcastRequestBtcMock = {
     kind: 'event',
     event: {
       args: {
-        nominee:
-          '0xfca6cd155fe8c31495d7da47b72fccd3f16d0d85bd0a1ffcd33d3f7a04314531',
-        transactionOutId:
-          '0xaef9c86539f194f617f45d495823789d3da082745d4a6e3b602ac00d815ed6e3',
+        nominee: '0xfca6cd155fe8c31495d7da47b72fccd3f16d0d85bd0a1ffcd33d3f7a04314531',
+        transactionOutId: '0xaef9c86539f194f617f45d495823789d3da082745d4a6e3b602ac00d815ed6e3',
         broadcastAttemptId: { broadcastId: 1, attemptCount: 0 },
         transactionPayload: {
           encodedTransaction:
@@ -235,10 +233,8 @@ export const networkTransactionBroadcastRequestBtcMockV2 = {
     kind: 'event',
     event: {
       args: {
-        nominee:
-          '0xfca6cd155fe8c31495d7da47b72fccd3f16d0d85bd0a1ffcd33d3f7a04314531',
-        transactionOutId:
-          '0xaef9c86539f194f617f45d495823789d3da082745d4a6e3b602ac00d815ed6e3',
+        nominee: '0xfca6cd155fe8c31495d7da47b72fccd3f16d0d85bd0a1ffcd33d3f7a04314531',
+        transactionOutId: '0xaef9c86539f194f617f45d495823789d3da082745d4a6e3b602ac00d815ed6e3',
         broadcastId: 1,
         transactionPayload: {
           encodedTransaction:
