@@ -66,13 +66,13 @@ describe(networkTransactionBroadcastRequest, () => {
     await genericTest('Polkadot', 1);
   });
 
-  it('handles Bitcoin event', async () => {
+  it('handles Bitcoin event with shape 2', async () => {
     await genericTest('Bitcoin', 2);
   });
-  it('handles Ethereum event', async () => {
+  it('handles Ethereum event with shape 2', async () => {
     await genericTest('Ethereum', 2);
   });
-  it('handles Polkadot event', async () => {
+  it('handles Polkadot event with shape 2', async () => {
     await genericTest('Polkadot', 2);
   });
 });
