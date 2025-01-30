@@ -88,99 +88,6 @@ export const networkDepositReceivedBtcMockV120 = (action?: z.input<typeof action
     },
   }) as const;
 
-export const networkTransactionBroadcastRequestBtcMock = {
-  block: {
-    height: 120,
-    timestamp: 1670337105000,
-  },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        nominee: '0xfca6cd155fe8c31495d7da47b72fccd3f16d0d85bd0a1ffcd33d3f7a04314531',
-        transactionOutId: '0xaef9c86539f194f617f45d495823789d3da082745d4a6e3b602ac00d815ed6e3',
-        broadcastAttemptId: { broadcastId: 1, attemptCount: 0 },
-        transactionPayload: {
-          encodedTransaction:
-            '0x020000000001012f9fa5bb631cc20b2ee53988549db06369188977a759eeee0e95fe4d9089518b0100000000fdffffff0202ac0e0000000000160014605a08f510309c0aeb52554c288cc8a81e773f0c0c2feb02000000002251203d30a261d370dc764140a8f222bda1d003a403d8a24648470fb2e4fc2978f2ae0340b036f7c1cb7a0cfc00e1984cd49daba01fa7a69eeda00e71c14d7f262668ff72e8b29aa02899df429ca1e304482a7c9f86d6448bc5da3c7da567cef4053d3d92245175206a4d5e4829cf59df788c48223c71abb1c3c57a12bfc9b7d389786c4aca4ba5f7ac21c0eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000',
-        },
-      },
-      name: 'BitcoinBroadcaster.TransactionBroadcastRequest',
-      indexInBlock: 7,
-    },
-  },
-} as const;
-
-export const networkTransactionBroadcastRequestBtcMockV2 = {
-  block: {
-    height: 120,
-    timestamp: 1670337105000,
-  },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        nominee: '0xfca6cd155fe8c31495d7da47b72fccd3f16d0d85bd0a1ffcd33d3f7a04314531',
-        transactionOutId: '0xaef9c86539f194f617f45d495823789d3da082745d4a6e3b602ac00d815ed6e3',
-        broadcastId: 1,
-        transactionPayload: {
-          encodedTransaction:
-            '0x020000000001012f9fa5bb631cc20b2ee53988549db06369188977a759eeee0e95fe4d9089518b0100000000fdffffff0202ac0e0000000000160014605a08f510309c0aeb52554c288cc8a81e773f0c0c2feb02000000002251203d30a261d370dc764140a8f222bda1d003a403d8a24648470fb2e4fc2978f2ae0340b036f7c1cb7a0cfc00e1984cd49daba01fa7a69eeda00e71c14d7f262668ff72e8b29aa02899df429ca1e304482a7c9f86d6448bc5da3c7da567cef4053d3d92245175206a4d5e4829cf59df788c48223c71abb1c3c57a12bfc9b7d389786c4aca4ba5f7ac21c0eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000',
-        },
-      },
-      name: 'BitcoinBroadcaster.TransactionBroadcastRequest',
-      indexInBlock: 7,
-    },
-  },
-} as const;
-
-export const buildSwapExecutedMock = (args: SwapExecutedEvent) => ({
-  block: {
-    specId: 'test@1',
-    height: 100,
-    timestamp: 1670337099000,
-  },
-  eventContext: {
-    kind: 'event',
-    event: {
-      args: {
-        dispatchInfo: {
-          class: [null],
-          weight: '101978000',
-          paysFee: [null],
-        },
-        ...args,
-      },
-      id: '0000012799-000000-c1ea7',
-      indexInBlock: 0,
-      nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-      name: events.Swapping.SwapExecuted,
-      phase: 'ApplyExtrinsic',
-      pos: 2,
-      extrinsic: {
-        error: null,
-        hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
-        id: '0000012799-000000-c1ea7',
-        indexInBlock: 0,
-        nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
-        pos: 1,
-        success: true,
-        version: 4,
-        call: {
-          args: [null],
-          error: null,
-          id: '0000012799-000000-c1ea7',
-          name: 'Timestamp.set',
-          nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
-          origin: [null],
-          pos: 0,
-          success: true,
-        },
-      },
-    },
-  },
-});
-
 export const swapDepositAddressReadyMocked = {
   block: {
     specId: 'test@160',
@@ -290,6 +197,56 @@ export const swapRequestCompletedMock = {
         pos: 0,
         success: true,
       },
+    },
+  },
+} as const;
+
+export const networkTransactionBroadcastRequestBtcMock = {
+  block: {
+    height: 120,
+    timestamp: 1670337105000,
+  },
+  eventContext: {
+    kind: 'event',
+    event: {
+      args: {
+        nominee:
+          '0xfca6cd155fe8c31495d7da47b72fccd3f16d0d85bd0a1ffcd33d3f7a04314531',
+        transactionOutId:
+          '0xaef9c86539f194f617f45d495823789d3da082745d4a6e3b602ac00d815ed6e3',
+        broadcastAttemptId: { broadcastId: 1, attemptCount: 0 },
+        transactionPayload: {
+          encodedTransaction:
+            '0x020000000001012f9fa5bb631cc20b2ee53988549db06369188977a759eeee0e95fe4d9089518b0100000000fdffffff0202ac0e0000000000160014605a08f510309c0aeb52554c288cc8a81e773f0c0c2feb02000000002251203d30a261d370dc764140a8f222bda1d003a403d8a24648470fb2e4fc2978f2ae0340b036f7c1cb7a0cfc00e1984cd49daba01fa7a69eeda00e71c14d7f262668ff72e8b29aa02899df429ca1e304482a7c9f86d6448bc5da3c7da567cef4053d3d92245175206a4d5e4829cf59df788c48223c71abb1c3c57a12bfc9b7d389786c4aca4ba5f7ac21c0eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000',
+        },
+      },
+      name: 'BitcoinBroadcaster.TransactionBroadcastRequest',
+      indexInBlock: 7,
+    },
+  },
+} as const;
+
+export const networkTransactionBroadcastRequestBtcMockV2 = {
+  block: {
+    height: 120,
+    timestamp: 1670337105000,
+  },
+  eventContext: {
+    kind: 'event',
+    event: {
+      args: {
+        nominee:
+          '0xfca6cd155fe8c31495d7da47b72fccd3f16d0d85bd0a1ffcd33d3f7a04314531',
+        transactionOutId:
+          '0xaef9c86539f194f617f45d495823789d3da082745d4a6e3b602ac00d815ed6e3',
+        broadcastId: 1,
+        transactionPayload: {
+          encodedTransaction:
+            '0x020000000001012f9fa5bb631cc20b2ee53988549db06369188977a759eeee0e95fe4d9089518b0100000000fdffffff0202ac0e0000000000160014605a08f510309c0aeb52554c288cc8a81e773f0c0c2feb02000000002251203d30a261d370dc764140a8f222bda1d003a403d8a24648470fb2e4fc2978f2ae0340b036f7c1cb7a0cfc00e1984cd49daba01fa7a69eeda00e71c14d7f262668ff72e8b29aa02899df429ca1e304482a7c9f86d6448bc5da3c7da567cef4053d3d92245175206a4d5e4829cf59df788c48223c71abb1c3c57a12bfc9b7d389786c4aca4ba5f7ac21c0eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000',
+        },
+      },
+      name: 'BitcoinBroadcaster.TransactionBroadcastRequest',
+      indexInBlock: 7,
     },
   },
 } as const;

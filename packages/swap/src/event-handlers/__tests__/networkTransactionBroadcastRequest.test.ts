@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from 'vitest';
 import {
   networkTransactionBroadcastRequestBtcMock,
   networkTransactionBroadcastRequestBtcMockV2,
@@ -15,10 +16,9 @@ const genericTest = async (chain: Chain, eventType: number) => {
 
   const broadcastId =
     eventType === 1
-      ? networkTransactionBroadcastRequestBtcMock.eventContext.event.args
-          .broadcastAttemptId.broadcastId
-      : networkTransactionBroadcastRequestBtcMockV2.eventContext.event.args
-          .broadcastId;
+      ? networkTransactionBroadcastRequestBtcMock.eventContext.event.args.broadcastAttemptId
+          .broadcastId
+      : networkTransactionBroadcastRequestBtcMockV2.eventContext.event.args.broadcastId;
 
   await prisma.broadcast.create({
     data: {
