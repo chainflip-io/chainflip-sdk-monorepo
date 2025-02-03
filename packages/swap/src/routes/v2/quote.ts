@@ -274,7 +274,6 @@ const quoteRouter = (quoter: Quoter) => {
           isVaultSwap,
         });
 
-        const quote = quotes[0];
         limitOrdersReceived = limitOrders;
 
         const duration = performance.now() - start;
@@ -283,10 +282,11 @@ const quoteRouter = (quoter: Quoter) => {
 
         logger.info('quote request completed', {
           duration: duration.toFixed(2),
-          quote,
+          regularQuote: quotes.find((q) => q.type === 'REGULAR') ?? null,
+          dcaQuote: quotes.find((q) => q.type === 'DCA') ?? null,
           srcAsset,
           destAsset,
-          ...(quote?.lowLiquidityWarning && {
+          ...(quotes[0]?.lowLiquidityWarning && {
             inputAmount: new BigNumber(depositAmount.toString())
               .shiftedBy(-assetConstants[srcAsset].decimals)
               .toFixed(),
