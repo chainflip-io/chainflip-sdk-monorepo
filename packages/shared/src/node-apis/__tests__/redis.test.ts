@@ -186,7 +186,9 @@ describe(RedisClient, () => {
           amount: '0x8000',
           asset: 'FLIP',
           deposit_chain_block_height: 1234,
-          tx_refs: ['0x65f4c6ba793815c4d1a9e4f0fd43c0f6f26ff5f1678a621d543a8928c1c2e978'],
+          deposit_details: {
+            tx_hashes: ['0x65f4c6ba793815c4d1a9e4f0fd43c0f6f26ff5f1678a621d543a8928c1c2e978'],
+          },
         }),
       ]);
       const client = new RedisClient(url);
