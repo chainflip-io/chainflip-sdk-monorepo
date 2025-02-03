@@ -1,9 +1,16 @@
+export type ToCamelCase<S extends string> = S extends `${infer P}_${infer Rest}`
+  ? `${Lowercase<P>}${Capitalize<ToCamelCase<Rest>>}`
+  : S;
+
 export type CamelCaseToSnakeCase<S extends string> = S extends `${infer T}${infer U}`
   ? `${T extends Capitalize<T> ? '_' : ''}${Lowercase<T>}${CamelCaseToSnakeCase<U>}`
   : S;
 
 export const camelToSnakeCase = <const T extends string>(str: T): CamelCaseToSnakeCase<T> =>
   str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`) as CamelCaseToSnakeCase<T>;
+
+export const toCamelCase = <T extends string>(str: T): ToCamelCase<T> =>
+  str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()) as ToCamelCase<T>;
 
 export const toUpperCase = <const T extends string>(value: T) =>
   value.toUpperCase() as Uppercase<T>;
