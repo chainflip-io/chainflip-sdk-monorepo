@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { sorter } from '../arrays';
 import { formatTxRef } from '../common';
 import { type Asset, type Chain } from '../enums';
-import { assertNull } from '../guards';
+import { assertNever } from '../guards';
 import { number, u128, string, uncheckedAssetAndChain, hexString } from '../parsers';
 
 const ss58ToHex = (address: string) =>
@@ -172,8 +172,8 @@ export default class RedisClient {
               tx_refs: [`${deposit_chain_block_height}-${deposit_details.extrinsic_index}`],
             };
           default:
-            assertNull(deposit_details, 'Invalid deposit details');
-            return { ...deposit, tx_refs: [] };
+            if (deposit_details === null) return { ...deposit, tx_refs: [] };
+            return assertNever(deposit_details, 'Invalid deposit details');
         }
       })
       .filter((deposit) => deposit.asset === asset)
