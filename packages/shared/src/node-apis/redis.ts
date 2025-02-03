@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { sorter } from '../arrays';
 import { formatTxRef } from '../common';
 import { type Asset, type Chain } from '../enums';
+import { assertNull } from '../guards';
 import { number, u128, string, uncheckedAssetAndChain, hexString } from '../parsers';
 
 const ss58ToHex = (address: string) =>
@@ -13,31 +14,27 @@ const jsonString = string.transform((value) => JSON.parse(value));
 
 const chainAsset = uncheckedAssetAndChain.transform(({ asset }) => asset);
 
-const bitcoinDeposit = z.object({
-  tx_id: hexString.transform((value) => formatTxRef('Bitcoin', value)),
-  vout: z.number().int(),
-});
+const bitcoinDeposit = z
+  .object({
+    tx_id: hexString.transform((value) => formatTxRef('Bitcoin', value)),
+    vout: z.number().int(),
+  })
+  .transform((obj) => ({ ...obj, type: 'Bitcoin' as const }));
 
-type BitcoinDepositType = z.infer<typeof bitcoinDeposit>;
+const evmDeposit = z
+  .object({ tx_hashes: z.array(hexString) })
+  .transform((obj) => ({ ...obj, type: 'EVM' as const }));
 
-const evmDeposit = z.object({
-  tx_hashes: z.array(hexString),
-});
-
-type EvmDepositType = z.infer<typeof evmDeposit>;
-
-const polkadotDeposit = z.object({
-  extrinsic_index: z.number(),
-});
-
-type PolkadotDepositType = z.infer<typeof polkadotDeposit>;
+const polkadotDeposit = z
+  .object({ extrinsic_index: z.number() })
+  .transform((obj) => ({ ...obj, type: 'Polkadot' as const }));
 
 const depositSchema = jsonString.pipe(
   z.object({
     amount: u128,
     asset: z.union([string, chainAsset]),
     deposit_chain_block_height: number,
-    deposit_details: z.union([evmDeposit, bitcoinDeposit, polkadotDeposit]).optional(),
+    deposit_details: z.union([evmDeposit, bitcoinDeposit, polkadotDeposit]).nullable(),
   }),
 );
 
@@ -45,9 +42,7 @@ type PendingDeposit = Omit<z.output<typeof depositSchema>, 'deposit_details'> & 
   tx_refs: string[];
 };
 
-type Deposit = z.infer<typeof depositSchema>;
-
-const sortDepositAscending = sorter<Deposit>('deposit_chain_block_height');
+const sortDepositAscending = sorter<PendingDeposit>('deposit_chain_block_height');
 
 const broadcastParsers = {
   Ethereum: z.object({
@@ -157,29 +152,28 @@ export default class RedisClient {
     const key = `deposit:${chain}:${parsedAddress}`;
     const deposits = await this.client.lrange(key, 0, -1);
     return deposits
-      .map((deposit) => {
-        const parsedDeposit = depositSchema.parse(deposit);
-        const baseDeposit = {
+      .map((depositString) => {
+        const parsedDeposit = depositSchema.parse(depositString);
+        const deposit = {
           amount: parsedDeposit.amount,
           asset: parsedDeposit.asset,
           deposit_chain_block_height: parsedDeposit.deposit_chain_block_height,
         };
         const { deposit_details, deposit_chain_block_height } = parsedDeposit;
 
-        if (!deposit_details) return { ...baseDeposit, tx_refs: [] };
-
-        switch (chain) {
-          case 'Ethereum':
-          case 'Arbitrum':
-            return { ...baseDeposit, tx_refs: (deposit_details as EvmDepositType).tx_hashes };
+        switch (deposit_details?.type) {
+          case 'EVM':
+            return { ...deposit, tx_refs: deposit_details.tx_hashes };
           case 'Bitcoin':
-            return { ...baseDeposit, tx_refs: [(deposit_details as BitcoinDepositType).tx_id] };
-          case 'Polkadot': {
-            const extrinsicIndex = `${deposit_chain_block_height}-${(deposit_details as PolkadotDepositType).extrinsic_index || ''}`;
-            return { ...baseDeposit, tx_refs: [extrinsicIndex] };
-          }
+            return { ...deposit, tx_refs: [deposit_details.tx_id] };
+          case 'Polkadot':
+            return {
+              ...deposit,
+              tx_refs: [`${deposit_chain_block_height}-${deposit_details.extrinsic_index}`],
+            };
           default:
-            return { ...baseDeposit, tx_refs: [] };
+            assertNull(deposit_details, 'Invalid deposit details');
+            return { ...deposit, tx_refs: [] };
         }
       })
       .filter((deposit) => deposit.asset === asset)

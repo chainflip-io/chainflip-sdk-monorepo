@@ -24,3 +24,7 @@ export function assert(
 export function assertNever(x: never, message: string): never {
   throw new Error(message);
 }
+
+export function assertNull(x: null, message: string): asserts x is null {
+  if (x !== null) throw new Error(message);
+}
