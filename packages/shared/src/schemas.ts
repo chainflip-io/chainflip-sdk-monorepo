@@ -59,7 +59,7 @@ export type ParsedQuoteParams = z.output<typeof quoteQuerySchema>;
 export const ccmParamsSchema = z.object({
   gasBudget: z.union([numericString, hexString]).transform((n) => hexEncodeNumber(BigInt(n))),
   message: hexStringWithMaxByteSize(15000),
-  ccmAdditionalData: hexStringWithMaxByteSize(1000).optional(),
+  ccmAdditionalData: hexStringWithMaxByteSize(3000).optional(),
 });
 
 export type CcmParams = z.input<typeof ccmParamsSchema>;
