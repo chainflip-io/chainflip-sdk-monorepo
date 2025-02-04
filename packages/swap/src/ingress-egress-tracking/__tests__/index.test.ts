@@ -188,6 +188,9 @@ describe('ingress-egress-tracking', () => {
         'broadcast:Ethereum:1',
         JSON.stringify({
           tx_out_id: { signature: { s: [], k_times_g_address: [] } },
+          tx_ref: {
+            hash: '0xcafebabe',
+          },
         }),
       );
 
