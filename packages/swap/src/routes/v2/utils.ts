@@ -213,7 +213,7 @@ export const getDepositInfo = (
   const amount =
     readField(swapRequest, failedSwap, 'depositAmount')?.toFixed() ??
     pendingDeposit?.amount ??
-    (vaultSwap?.amount && vaultSwap.amount.toString());
+    (isNotNullish(vaultSwap?.amount) ? vaultSwap.amount.toString() : undefined);
 
   const depositTransactionRef =
     swapRequest?.depositTransactionRef ??
