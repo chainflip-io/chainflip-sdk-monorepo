@@ -866,7 +866,7 @@ describe('server', () => {
     it(`retrieves a swap in ${State.Broadcasted} status`, async () => {
       vi.mocked(getPendingBroadcast).mockResolvedValueOnce({
         tx_out_id: { hash: '0xdeadbeef' },
-      });
+      } as any);
 
       await processEvents(swapEvents.slice(0, 8));
 

@@ -2333,7 +2333,16 @@ describe('server', () => {
           "boost": {
             "maxBoostFeeBps": 5,
           },
-          "brokers": [],
+          "brokers": [
+            {
+              "account": "cFHsUq1uK5opJudRDczhdPVj6LGoVTqYsfj71tbHfKsTAzkJJ",
+              "bps": 10,
+            },
+            {
+              "account": "cFHtoB6DrnqUVY4DwMHCVCtgCLsiHvv98oGw8k66tazF2ToFv",
+              "bps": 10,
+            },
+          ],
           "ccmParams": {
             "ccmAdditionalData": "4d4f5245",
             "gasBudget": "12345",

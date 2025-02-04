@@ -150,7 +150,8 @@ router.get(
       estimatedDurationsSeconds: estimatedDurations?.durations,
       estimatedDurationSeconds: estimatedDurations?.total,
       brokers:
-        beneficiaries?.map(({ account, commissionBps }) => ({ account, commissionBps })) ?? [],
+        beneficiaries?.map(({ account, commissionBps }) => ({ account, commissionBps })) ??
+        [vaultSwap?.brokerFee].concat(vaultSwap?.affiliateFees).filter(Boolean),
       fees: aggregateFees ?? [],
       ...(showDepositchannel &&
         swapDepositChannel && {

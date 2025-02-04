@@ -73,8 +73,7 @@ const broadcastParsers = {
       .object({
         hash: hexString,
       })
-      .transform(({ hash }) => hash)
-      .optional(), // TODO: V130 -- remove optional after v130
+      .transform(({ hash }) => hash),
   }),
   Polkadot: z.object({
     tx_out_id: z.object({ signature: string }),
@@ -87,8 +86,7 @@ const broadcastParsers = {
       })
       .transform(
         ({ transaction_id }) => `${transaction_id.block_number}-${transaction_id.extrinsic_index}`,
-      )
-      .optional(), // TODO: V130 -- remove optional after v130
+      ),
   }),
   Bitcoin: z.object({
     tx_out_id: z.object({ hash: string }),
@@ -96,42 +94,42 @@ const broadcastParsers = {
       .object({
         hash: string.transform((value) => (value.startsWith('0x') ? value.slice(2) : value)),
       })
-      .transform(({ hash }) => hash)
-      .optional(), // TODO: V130 -- remove optional after v130
+      .transform(({ hash }) => hash),
   }),
-  Arbitrum: z
-    .object({
-      tx_out_id: z.object({
-        signature: z.object({
-          k_times_g_address: z.array(number),
-          s: z.array(number),
-        }),
+  Arbitrum: z.object({
+    tx_out_id: z.object({
+      signature: z.object({
+        k_times_g_address: z.array(number),
+        s: z.array(number),
       }),
-      tx_ref: z
-        .object({
-          hash: hexString,
-        })
-        .transform(({ hash }) => hash)
-        .optional(), // TODO: remove once Arbitrum is fully supported
-    })
-    .optional(), // TODO: remove once Arbitrum is available on all networks
+    }),
+    tx_ref: z
+      .object({
+        hash: hexString,
+      })
+      .transform(({ hash }) => hash),
+  }),
 };
 
-type CamelCaseKeys<T> = T extends object
-  ? {
-      [K in keyof T as ToCamelCase<string & K>]: CamelCaseKeys<T[K]>;
-    }
-  : T;
+type CamelCaseKeys<T> = T extends (infer U)[]
+  ? U extends object
+    ? CamelCaseKeys<U>[] // If it's an array of objects, transform the objects
+    : T // If it's an array of primitives, leave it unchanged
+  : T extends object
+    ? {
+        [K in keyof T as ToCamelCase<string & K>]: CamelCaseKeys<T[K]>;
+      }
+    : T;
 
-const transformKeys = <T extends Record<string, unknown>>(obj: T): CamelCaseKeys<T> => {
+const transformKeysToCamelCase = <T extends Record<string, unknown>>(obj: T): CamelCaseKeys<T> => {
   if (Array.isArray(obj)) {
-    return obj.map((item) => transformKeys(item)) as unknown as CamelCaseKeys<T>;
+    return obj.map(transformKeysToCamelCase) as unknown as CamelCaseKeys<T>;
   }
   if (obj !== null && typeof obj === 'object') {
     return Object.fromEntries(
       Object.entries(obj).map(([key, value]) => [
         toCamelCase(key),
-        transformKeys(value as Record<string, unknown>),
+        transformKeysToCamelCase(value as Record<string, unknown>),
       ]),
     ) as CamelCaseKeys<T>;
   }
@@ -152,7 +150,7 @@ const vaultDepositSchema = (network: ChainflipNetwork) =>
         input_asset: assetAndChain,
         output_asset: assetAndChain,
         deposit_chain_block_height: number,
-        affiliate_fees: z.array(accountFee.optional()),
+        affiliate_fees: z.array(accountFee),
         broker_fee: accountFee.optional(),
         max_boost_fee: z.number().optional(),
         dca_params: z
@@ -188,7 +186,7 @@ const vaultDepositSchema = (network: ChainflipNetwork) =>
             }),
         }),
       })
-      .transform(transformKeys),
+      .transform(transformKeysToCamelCase),
   );
 
 type ChainBroadcast<C extends Exclude<Chain, 'Solana'>> = z.infer<(typeof broadcastParsers)[C]>;
