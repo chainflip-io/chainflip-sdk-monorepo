@@ -25,7 +25,9 @@ import baseLogger from '../utils/logger';
 
 const logger = baseLogger.child({ module: 'quoter' });
 
-type Quote = { marketMaker: string; quote: MarketMakerQuote };
+type Quote = { marketMaker: string; quote: MarketMakerQuote; beta: boolean };
+
+type BetaQuote = MarketMakerQuote & { beta: boolean };
 
 type LegFormatter = (legs: MarketMakerQuote['legs']) => MarketMakerQuote['legs'];
 
@@ -80,6 +82,7 @@ export type SocketData = {
   marketMaker: string;
   quotedAssets: InternalAssetMap<boolean>;
   clientVersion: ClientVersion;
+  beta: boolean;
 };
 export type ReceivedEventMap = { quote_response: (message: unknown) => void };
 export type SentEventMap = {
@@ -145,14 +148,18 @@ export default class Quoter {
           return;
         }
 
-        this.quotes$.next({ marketMaker: socket.data.marketMaker, quote: result.data });
+        this.quotes$.next({
+          marketMaker: socket.data.marketMaker,
+          beta: socket.data.beta,
+          quote: result.data,
+        });
       });
     });
   }
 
   private async collectMakerQuotes(
     request: MarketMakerQuoteRequest<Leg>,
-  ): Promise<[string, MarketMakerQuote][]> {
+  ): Promise<[string, BetaQuote][]> {
     const connectedClients = this.io.sockets.sockets.size;
     if (connectedClients === 0) return [];
 
@@ -193,7 +200,7 @@ export default class Quoter {
 
     if (expectedResponses === 0) return [];
 
-    const clientsReceivedQuotes = new Map<string, MarketMakerQuote>();
+    const clientsReceivedQuotes = new Map<string, BetaQuote>();
 
     return new Promise((resolve) => {
       let sub: Subscription;
@@ -207,11 +214,11 @@ export default class Quoter {
         this.inflightRequests.delete(request.request_id);
       };
 
-      sub = this.quotes$.subscribe(({ marketMaker, quote }) => {
+      sub = this.quotes$.subscribe(({ marketMaker, quote, beta }) => {
         const { format } = quotedLegsMap.get(marketMaker) ?? {};
         if (quote.request_id !== request.request_id) return;
         if (format) {
-          clientsReceivedQuotes.set(marketMaker, { ...quote, legs: format(quote.legs) });
+          clientsReceivedQuotes.set(marketMaker, { ...quote, beta, legs: format(quote.legs) });
         } else {
           logger.error('unexpected missing format function');
           expectedResponses -= 1;
@@ -255,11 +262,11 @@ export default class Quoter {
 
     const orders = [
       ...formatLimitOrders(
-        quotes.map(([, quote]) => ({ orders: quote.legs[0] })),
+        quotes.filter(([, q]) => !q.beta).map(([, quote]) => ({ orders: quote.legs[0] })),
         legs[0].toJSON(),
       ),
       ...formatLimitOrders(
-        quotes.map(([, quote]) => ({ orders: quote.legs[1] ?? [] })),
+        quotes.filter(([, q]) => !q.beta).map(([, quote]) => ({ orders: quote.legs[1] ?? [] })),
         legs[1]?.toJSON(),
       ),
     ];
