@@ -142,9 +142,11 @@ describe(authenticate, () => {
     expect(next).toHaveBeenCalledWith(new Error('invalid signature'));
   });
 
-  it('accepts valid v2 authentication', async () => {
+  it.each([true, false])('accepts valid v2 authentication', async (beta) => {
     const timestamp = Date.now();
     const name = 'web_team_whales';
+
+    await prisma.marketMaker.update({ where: { name }, data: { beta } });
 
     const signature = crypto
       .sign(null, Buffer.from(`${name}${timestamp}`, 'utf8'), privateKey)
@@ -171,6 +173,7 @@ describe(authenticate, () => {
     expect(next).toHaveBeenCalledTimes(1);
     expect(next).toHaveBeenCalledWith();
     expect((socket as any).data).toStrictEqual({
+      beta,
       marketMaker: name,
       quotedAssets,
       clientVersion: '2',
