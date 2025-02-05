@@ -92,6 +92,7 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
       marketMaker: marketMaker.name,
       quotedAssets: auth.quoted_assets,
       clientVersion: auth.client_version,
+      beta: marketMaker.beta,
     };
 
     next();

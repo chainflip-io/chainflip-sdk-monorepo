@@ -43,6 +43,7 @@ describe(Quoter, () => {
   let connectClient: (
     name: string,
     quotedAssets: InternalAsset[],
+    beta?: boolean,
   ) => Promise<{
     sendQuote: (
       quote: MarketMakerRawQuote,
@@ -80,11 +81,12 @@ describe(Quoter, () => {
       ),
     );
 
-    connectClient = async (name: string, quotedAssets: InternalAsset[]) => {
+    connectClient = async (name: string, quotedAssets: InternalAsset[], beta = false) => {
       const { publicKey, privateKey } = await generateKeyPairAsync('ed25519');
       await prisma.marketMaker.create({
         data: {
           name,
+          beta,
           publicKey: publicKey.export({ format: 'pem', type: 'spki' }).toString(),
         },
       });
@@ -297,6 +299,17 @@ describe(Quoter, () => {
       const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
       expect(await limitOrders).toEqual([]);
       expect(mm.requestCount).toBe(0);
+    });
+
+    it('filters beta quotes', async () => {
+      env.QUOTE_TIMEOUT = 10_000;
+      const mm = await connectClient('marketMaker', ['Sol'], true);
+      const limitOrders = quoter.getLimitOrders('Sol', 'Flip', ONE_BTC);
+      const request = await mm.waitForRequest();
+      mm.sendQuote({ ...request, legs: [[[0, '100']]] }, 'Sol', 'Usdc');
+      expect(await limitOrders).toEqual([]);
+      expect(mm.requestCount).toBe(1);
+      expect(request).toMatchSnapshot({ request_id: expect.any(String) });
     });
 
     it('can quote the first leg only', async () => {

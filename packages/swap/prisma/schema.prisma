@@ -378,9 +378,10 @@ model State {
 }
 
 model MarketMaker {
-  id        Int    @id @default(autoincrement())
-  name      String @unique
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
   publicKey String
+  beta      Boolean @default(false)
 
   @@schema("private")
 }
