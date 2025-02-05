@@ -143,8 +143,8 @@ router.get(
       getLastChainTrackingUpdateTimestamp(),
     ]);
 
-    const ispendingVaultSwap = Boolean(swapRequest?.originType === 'VAULT');
-    const showDepositchannel = !ispendingVaultSwap;
+    const isVaultSwap = Boolean(swapRequest?.originType === 'VAULT');
+    const showDepositchannel = !isVaultSwap;
 
     const response = {
       state,
