@@ -91,14 +91,17 @@ export const getPendingBroadcast = async (broadcast: Broadcast) => {
   }
 };
 
-export const getVaultSwapDetails = async (network: ChainflipNetwork, txId: string) => {
+export const getPendingVaultSwap = async (network: ChainflipNetwork, txId: string) => {
   if (!redis) return null;
   try {
-    const vaultSwap = await redis.getVaultSwapDetails(network, txId);
-    return {
-      txId,
-      ...vaultSwap,
-    };
+    const vaultSwap = await redis.getPendingVaultSwap(network, txId);
+    if (vaultSwap) {
+      return {
+        txId,
+        ...vaultSwap,
+      };
+    }
+    return null;
   } catch (error) {
     logger.error('error while looking up vault swap in redis', { error });
     return null;

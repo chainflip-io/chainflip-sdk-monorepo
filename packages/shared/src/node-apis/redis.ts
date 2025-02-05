@@ -6,7 +6,7 @@ import Redis from 'ioredis';
 import { z } from 'zod';
 import { sorter } from '../arrays';
 import { formatTxRef } from '../common';
-import { type Asset, type Chain } from '../enums';
+import { getInternalAsset, type Asset, type Chain } from '../enums';
 import { assertNever } from '../guards';
 import {
   number,
@@ -147,8 +147,8 @@ const vaultDepositSchema = (network: ChainflipNetwork) =>
       .object({
         amount: u128,
         destination_address: z.union([ethereumAddress, solanaAddress, btcAddress(network)]),
-        input_asset: assetAndChain,
-        output_asset: assetAndChain,
+        input_asset: assetAndChain.transform((obj) => getInternalAsset(obj)),
+        output_asset: assetAndChain.transform((obj) => getInternalAsset(obj)),
         deposit_chain_block_height: number,
         affiliate_fees: z.array(accountFee),
         broker_fee: accountFee.optional(),
@@ -275,7 +275,7 @@ export default class RedisClient {
     return value ? mempoolTransaction.parse(value) : null;
   }
 
-  async getVaultSwapDetails(network: ChainflipNetwork, txId: string) {
+  async getPendingVaultSwap(network: ChainflipNetwork, txId: string) {
     const vaultSwapDisabledChains = ['Polkadot'];
 
     const responses = await Promise.all(

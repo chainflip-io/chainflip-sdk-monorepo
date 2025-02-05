@@ -198,16 +198,17 @@ describe(RedisClient, () => {
     });
   });
 
-  describe(RedisClient.prototype.getVaultSwapDetails, () => {
+  describe(RedisClient.prototype.getPendingVaultSwap, () => {
     it('returns if no vault swaps are found', async () => {
       const mock = vi.mocked(Redis.prototype.get).mockResolvedValue(null);
       const client = new RedisClient(url);
-      const deposits = await client.getVaultSwapDetails('mainnet', '0x1234');
+      const deposits = await client.getPendingVaultSwap('mainnet', '0x1234');
       expect(deposits).toEqual(null);
       expect(mock).toHaveBeenCalledWith('vault_deposit:Ethereum:0x1234');
       expect(mock).toHaveBeenCalledWith('vault_deposit:Bitcoin:0x1234');
       expect(mock).toHaveBeenCalledWith('vault_deposit:Solana:0x1234');
       expect(mock).toHaveBeenCalledWith('vault_deposit:Arbitrum:0x1234');
+      expect(mock).not.toHaveBeenCalledWith('vault_deposit:Polkadot:0x1234');
     });
 
     it('returns the vault swaps if found', async () => {
@@ -243,7 +244,7 @@ describe(RedisClient, () => {
       );
 
       const client = new RedisClient(url);
-      const vaultDeposit = await client.getVaultSwapDetails('mainnet', '0x1234');
+      const vaultDeposit = await client.getPendingVaultSwap('mainnet', '0x1234');
 
       expect(vaultDeposit).toMatchInlineSnapshot(`
         {
@@ -275,15 +276,9 @@ describe(RedisClient, () => {
           },
           "depositChainBlockHeight": 1,
           "destinationAddress": "0xcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf",
-          "inputAsset": {
-            "asset": "ETH",
-            "chain": "Ethereum",
-          },
+          "inputAsset": "Eth",
           "maxBoostFee": 5,
-          "outputAsset": {
-            "asset": "FLIP",
-            "chain": "Ethereum",
-          },
+          "outputAsset": "Flip",
           "refundParams": {
             "minPrice": 0n,
             "refundAddress": "0x541f563237a309b3a61e33bdf07a8930bdba8d99",

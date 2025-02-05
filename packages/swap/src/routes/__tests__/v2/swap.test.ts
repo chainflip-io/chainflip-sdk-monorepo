@@ -17,7 +17,7 @@ import {
 import {
   getPendingBroadcast,
   getPendingDeposit,
-  getVaultSwapDetails,
+  getPendingVaultSwap,
 } from '../../../ingress-egress-tracking';
 import app from '../../../server';
 import { StateV2 } from '../../v2/swap';
@@ -2279,7 +2279,7 @@ describe('server', () => {
     it(`returns the vault swap details in ${StateV2.Receiving} status`, async () => {
       const txId = '0x1234';
       env.CHAINFLIP_NETWORK = 'mainnet';
-      vi.mocked(getVaultSwapDetails).mockResolvedValue({
+      vi.mocked(getPendingVaultSwap).mockResolvedValue({
         txId,
         affiliateFees: [
           {
@@ -2309,15 +2309,9 @@ describe('server', () => {
         },
         depositChainBlockHeight: 1,
         destinationAddress: '0xcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf',
-        inputAsset: {
-          asset: 'ETH',
-          chain: 'Ethereum',
-        },
+        inputAsset: 'Eth',
         maxBoostFee: 5,
-        outputAsset: {
-          asset: 'FLIP',
-          chain: 'Ethereum',
-        },
+        outputAsset: 'Flip',
         refundParams: {
           minPrice: 0n,
           refundAddress: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
@@ -2344,13 +2338,8 @@ describe('server', () => {
             },
           ],
           "ccmParams": {
-            "ccmAdditionalData": "4d4f5245",
             "gasBudget": "12345",
             "message": "48454c4c4f",
-            "sourceAddress": {
-              "Eth": "0xcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf",
-            },
-            "sourceChain": "Ethereum",
           },
           "dcaParams": {
             "chunkIntervalBlocks": 100,

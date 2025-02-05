@@ -1,5 +1,4 @@
 import { CHARSET } from '@chainflip/utils/base58';
-import { getInternalAsset, UncheckedAssetAndChain } from '@/shared/enums';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
 import { isNotNullish } from '@/shared/guards';
 import { readField } from '@/swap/utils/function';
@@ -20,7 +19,7 @@ import env from '../../config/env';
 import {
   getPendingBroadcast,
   getPendingDeposit,
-  getVaultSwapDetails,
+  getPendingVaultSwap,
   PendingDeposit,
 } from '../../ingress-egress-tracking';
 import { coerceChain, failedSwapMessage, FailureMode } from '../../utils/swap';
@@ -67,7 +66,7 @@ export const getLatestSwapForId = async (id: string) => {
   let swapEgress;
   let refundEgress;
   let ignoredEgresses;
-  let vaultSwap;
+  let pendingVaultSwap;
 
   if (channelIdRegex.test(id)) {
     const { issuedBlock, srcChain, channelId } = channelIdRegex.exec(id)!.groups!;
@@ -128,7 +127,7 @@ export const getLatestSwapForId = async (id: string) => {
         include: { swapDepositChannel: { include: depositChannelInclude }, ...failedSwapInclude },
       });
     }
-    vaultSwap = await getVaultSwapDetails(env.CHAINFLIP_NETWORK, id);
+    pendingVaultSwap = await getPendingVaultSwap(env.CHAINFLIP_NETWORK, id);
   }
 
   swapDepositChannel ??= swapRequest?.swapDepositChannel ?? failedSwap?.swapDepositChannel;
@@ -158,7 +157,7 @@ export const getLatestSwapForId = async (id: string) => {
   }
 
   ServiceError.assert(
-    swapDepositChannel || swapRequest || failedSwap || vaultSwap,
+    swapDepositChannel || swapRequest || failedSwap || pendingVaultSwap,
     'notFound',
     'resource not found',
   );
@@ -171,7 +170,7 @@ export const getLatestSwapForId = async (id: string) => {
     swapEgress,
     refundEgress,
     ignoredEgresses,
-    vaultSwap,
+    pendingVaultSwap,
   };
 };
 
@@ -208,18 +207,18 @@ export const getDepositInfo = (
   swapRequest: SwapRequest | null | undefined,
   failedSwap: FailedSwap | null | undefined,
   pendingDeposit: PendingDeposit | null | undefined,
-  vaultSwap: Awaited<ReturnType<typeof getLatestSwapForId>>['vaultSwap'],
+  pendingVaultSwap: Awaited<ReturnType<typeof getLatestSwapForId>>['pendingVaultSwap'],
 ) => {
   const amount =
     readField(swapRequest, failedSwap, 'depositAmount')?.toFixed() ??
     pendingDeposit?.amount ??
-    (isNotNullish(vaultSwap?.amount) ? vaultSwap.amount.toString() : undefined);
+    (isNotNullish(pendingVaultSwap?.amount) ? pendingVaultSwap.amount.toString() : undefined);
 
   const depositTransactionRef =
     swapRequest?.depositTransactionRef ??
     pendingDeposit?.transactionHash ??
     failedSwap?.depositTransactionRef ??
-    vaultSwap?.txId ??
+    pendingVaultSwap?.txId ??
     undefined;
 
   if (!amount) return null;
@@ -341,7 +340,7 @@ export const getSwapState = async (
   ignoredEgresses: IgnoredEgress[] | undefined,
   swapRequest: SwapRequestData | undefined | null,
   depositChannel: SwapChannelData | null | undefined,
-  vaultSwap: Awaited<ReturnType<typeof getLatestSwapForId>>['vaultSwap'],
+  pendingVaultSwap: Awaited<ReturnType<typeof getLatestSwapForId>>['pendingVaultSwap'],
 ): Promise<{
   state: StateV2;
   swapEgressTrackerTxRef: string | null | undefined;
@@ -394,7 +393,7 @@ export const getSwapState = async (
       );
       if (pendingDeposit) state = StateV2.Receiving;
     }
-    if (vaultSwap) state = StateV2.Receiving;
+    if (pendingVaultSwap) state = StateV2.Receiving;
   }
 
   return {
@@ -408,26 +407,24 @@ export const getSwapState = async (
 export const getFillOrKillParams = (
   swapRequest: Awaited<ReturnType<typeof getLatestSwapForId>>['swapRequest'],
   swapDepositChannel: Awaited<ReturnType<typeof getLatestSwapForId>>['swapDepositChannel'],
-  vaultSwap?: Awaited<ReturnType<typeof getLatestSwapForId>>['vaultSwap'],
+  pendingVaultSwap?: Awaited<ReturnType<typeof getLatestSwapForId>>['pendingVaultSwap'],
 ) => {
   const srcAsset =
-    readField(swapRequest, swapDepositChannel, 'srcAsset') ??
-    (vaultSwap && getInternalAsset(vaultSwap.inputAsset as UncheckedAssetAndChain));
+    readField(swapRequest, swapDepositChannel, 'srcAsset') ?? pendingVaultSwap?.inputAsset;
   const destAsset =
-    readField(swapRequest, swapDepositChannel, 'destAsset') ??
-    (vaultSwap && getInternalAsset(vaultSwap.outputAsset as UncheckedAssetAndChain));
+    readField(swapRequest, swapDepositChannel, 'destAsset') ?? pendingVaultSwap?.outputAsset;
   const fokRefundAddress =
     readField(swapRequest, swapDepositChannel, 'fokRefundAddress') ??
-    vaultSwap?.refundParams?.refundAddress;
+    pendingVaultSwap?.refundParams?.refundAddress;
   const fokMinPriceX128 =
     readField(swapRequest, swapDepositChannel, 'fokMinPriceX128') ??
-    (isNotNullish(vaultSwap?.refundParams?.minPrice)
-      ? new Prisma.Decimal(vaultSwap.refundParams.minPrice.toString())
+    (isNotNullish(pendingVaultSwap?.refundParams?.minPrice)
+      ? new Prisma.Decimal(pendingVaultSwap.refundParams.minPrice.toString())
       : undefined);
 
   const fokRetryDurationBlocks =
     readField(swapRequest, swapDepositChannel, 'fokRetryDurationBlocks') ??
-    vaultSwap?.refundParams?.retryDuration;
+    pendingVaultSwap?.refundParams?.retryDuration;
 
   return srcAsset && destAsset && isNotNullish(fokMinPriceX128)
     ? {
@@ -441,49 +438,42 @@ export const getFillOrKillParams = (
 export const getDcaParams = (
   swapRequest: Awaited<ReturnType<typeof getLatestSwapForId>>['swapRequest'],
   swapDepositChannel: Awaited<ReturnType<typeof getLatestSwapForId>>['swapDepositChannel'],
-  vaultSwap?: Awaited<ReturnType<typeof getLatestSwapForId>>['vaultSwap'],
+  pendingVaultSwap?: Awaited<ReturnType<typeof getLatestSwapForId>>['pendingVaultSwap'],
 ) =>
   swapRequest?.dcaChunkIntervalBlocks ||
   swapDepositChannel?.dcaChunkIntervalBlocks ||
-  vaultSwap?.dcaParams
+  pendingVaultSwap?.dcaParams
     ? {
         numberOfChunks:
           swapRequest?.dcaNumberOfChunks ??
           swapDepositChannel?.dcaNumberOfChunks ??
-          vaultSwap?.dcaParams?.numberOfChunks,
+          pendingVaultSwap?.dcaParams?.numberOfChunks,
         chunkIntervalBlocks:
           swapRequest?.dcaChunkIntervalBlocks ??
           swapDepositChannel?.dcaChunkIntervalBlocks ??
-          vaultSwap?.dcaParams?.chunkInterval,
+          pendingVaultSwap?.dcaParams?.chunkInterval,
       }
     : undefined;
 
 export const getCcmParams = (
   swapRequest: Awaited<ReturnType<typeof getLatestSwapForId>>['swapRequest'],
   swapDepositChannel: Awaited<ReturnType<typeof getLatestSwapForId>>['swapDepositChannel'],
-  vaultSwap: Awaited<ReturnType<typeof getLatestSwapForId>>['vaultSwap'],
+  pendingVaultSwap: Awaited<ReturnType<typeof getLatestSwapForId>>['pendingVaultSwap'],
 ) => {
   const ccmGasBudget =
     readField(swapRequest, swapDepositChannel, 'ccmGasBudget') ??
-    (isNotNullish(vaultSwap?.ccmDepositMetadata?.channelMetadata.gasBudget)
-      ? new Prisma.Decimal(vaultSwap.ccmDepositMetadata.channelMetadata.gasBudget.toString())
+    (isNotNullish(pendingVaultSwap?.ccmDepositMetadata?.channelMetadata.gasBudget)
+      ? new Prisma.Decimal(pendingVaultSwap.ccmDepositMetadata.channelMetadata.gasBudget.toString())
       : undefined);
 
   const ccmMessage =
     readField(swapRequest, swapDepositChannel, 'ccmMessage') ??
-    vaultSwap?.ccmDepositMetadata?.channelMetadata.message;
-
-  const sourceChain = vaultSwap?.ccmDepositMetadata?.sourceChain;
-  const sourceAddress = vaultSwap?.ccmDepositMetadata?.sourceAddress;
-  const ccmAdditionalData = vaultSwap?.ccmDepositMetadata?.channelMetadata.ccmAdditionalData;
+    pendingVaultSwap?.ccmDepositMetadata?.channelMetadata.message;
 
   return ccmGasBudget || ccmMessage
     ? {
         gasBudget: ccmGasBudget?.toFixed(),
         message: ccmMessage,
-        sourceChain,
-        sourceAddress,
-        ccmAdditionalData,
       }
     : undefined;
 };

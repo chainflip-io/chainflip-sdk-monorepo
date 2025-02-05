@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAssetAndChain, getInternalAsset, UncheckedAssetAndChain } from '@/shared/enums';
+import { getAssetAndChain } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { getLastChainTrackingUpdateTimestamp } from '@/swap/utils/intercept';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
@@ -45,22 +45,30 @@ router.get(
       swapEgress,
       refundEgress,
       ignoredEgresses,
-      vaultSwap,
+      pendingVaultSwap,
     } = await getLatestSwapForId(id);
 
     const { state, swapEgressTrackerTxRef, refundEgressTrackerTxRef, pendingDeposit } =
-      await getSwapState(failedSwap, ignoredEgresses, swapRequest, swapDepositChannel, vaultSwap);
+      await getSwapState(
+        failedSwap,
+        ignoredEgresses,
+        swapRequest,
+        swapDepositChannel,
+        pendingVaultSwap,
+      );
 
     const internalSrcAsset =
       readField(swapRequest, swapDepositChannel, failedSwap, 'srcAsset') ??
-      (vaultSwap && getInternalAsset(vaultSwap.inputAsset as UncheckedAssetAndChain));
+      pendingVaultSwap?.inputAsset;
     const internalDestAsset =
       readField(swapRequest, swapDepositChannel, failedSwap, 'destAsset') ??
-      (vaultSwap && getInternalAsset(vaultSwap.outputAsset as UncheckedAssetAndChain));
+      pendingVaultSwap?.outputAsset;
     assert(internalSrcAsset, 'srcAsset must be defined');
 
     const showBoost = Boolean(
-      swapRequest?.maxBoostFeeBps || swapDepositChannel?.maxBoostFeeBps || vaultSwap?.maxBoostFee,
+      swapRequest?.maxBoostFeeBps ||
+        swapDepositChannel?.maxBoostFeeBps ||
+        pendingVaultSwap?.maxBoostFee,
     );
 
     let effectiveBoostFeeBps;
@@ -135,8 +143,8 @@ router.get(
       getLastChainTrackingUpdateTimestamp(),
     ]);
 
-    const isVaultSwap = Boolean(swapRequest?.originType === 'VAULT');
-    const showDepositchannel = !isVaultSwap;
+    const ispendingVaultSwap = Boolean(swapRequest?.originType === 'VAULT');
+    const showDepositchannel = !ispendingVaultSwap;
 
     const response = {
       state,
@@ -145,13 +153,13 @@ router.get(
       ...(internalDestAsset && getAssetAndChain(internalDestAsset, 'dest')),
       destAddress:
         readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress') ??
-        vaultSwap?.destinationAddress,
+        pendingVaultSwap?.destinationAddress,
       srcChainRequiredBlockConfirmations,
       estimatedDurationsSeconds: estimatedDurations?.durations,
       estimatedDurationSeconds: estimatedDurations?.total,
       brokers:
         beneficiaries?.map(({ account, commissionBps }) => ({ account, commissionBps })) ??
-        [vaultSwap?.brokerFee].concat(vaultSwap?.affiliateFees).filter(Boolean),
+        [pendingVaultSwap?.brokerFee].concat(pendingVaultSwap?.affiliateFees).filter(Boolean),
       fees: aggregateFees ?? [],
       ...(showDepositchannel &&
         swapDepositChannel && {
@@ -174,7 +182,7 @@ router.get(
             dcaParams: getDcaParams(swapRequest, swapDepositChannel),
           },
         }),
-      ...getDepositInfo(swapRequest, failedSwap, pendingDeposit, vaultSwap),
+      ...getDepositInfo(swapRequest, failedSwap, pendingDeposit, pendingVaultSwap),
       ...(rolledSwaps && {
         swap: {
           originalInputAmount: originalInputAmount?.toFixed(),
@@ -206,16 +214,16 @@ router.get(
       }),
       ...(swapEgressFields && { swapEgress: { ...swapEgressFields } }),
       ...(refundEgressFields && { refundEgress: { ...refundEgressFields } }),
-      ccmParams: getCcmParams(swapRequest, swapDepositChannel, vaultSwap),
-      fillOrKillParams: getFillOrKillParams(swapRequest, swapDepositChannel, vaultSwap),
-      dcaParams: getDcaParams(swapRequest, swapDepositChannel, vaultSwap),
+      ccmParams: getCcmParams(swapRequest, swapDepositChannel, pendingVaultSwap),
+      fillOrKillParams: getFillOrKillParams(swapRequest, swapDepositChannel, pendingVaultSwap),
+      dcaParams: getDcaParams(swapRequest, swapDepositChannel, pendingVaultSwap),
       ...(showBoost && {
         boost: {
           effectiveBoostFeeBps,
           maxBoostFeeBps:
             swapRequest?.maxBoostFeeBps ??
             swapDepositChannel?.maxBoostFeeBps ??
-            vaultSwap?.maxBoostFee,
+            pendingVaultSwap?.maxBoostFee,
           boostedAt: swapRequest?.depositBoostedAt?.valueOf(),
           boostedBlockIndex: swapRequest?.depositBoostedBlockIndex ?? undefined,
           skippedAt: swapDepositChannel?.failedBoosts.at(0)?.failedAtTimestamp.valueOf(),
