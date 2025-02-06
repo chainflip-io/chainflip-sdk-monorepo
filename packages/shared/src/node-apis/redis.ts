@@ -136,10 +136,12 @@ const transformKeysToCamelCase = <T extends Record<string, unknown>>(obj: T): Ca
   return obj;
 };
 
-const accountFee = z.object({
-  account: chainflipAddress,
-  bps: number,
-});
+const accountFee = z
+  .object({
+    account: chainflipAddress,
+    bps: number,
+  })
+  .transform(({ account, bps }) => ({ account, commissionBps: bps }));
 
 const vaultDepositSchema = (network: ChainflipNetwork) =>
   jsonString.pipe(
