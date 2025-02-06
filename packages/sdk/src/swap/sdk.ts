@@ -1,7 +1,7 @@
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import { Signer } from 'ethers';
 import superjson from 'superjson';
-import { requestSwapDepositAddress } from '@/shared/broker';
+import { requestSwapDepositAddress, requestSwapParameterEncoding } from '@/shared/broker';
 import { TransactionOptions } from '@/shared/contracts';
 import {
   ChainflipNetwork,
@@ -49,7 +49,11 @@ import {
   SwapStatusResponse,
   QuoteResponseV2,
 } from './types';
-import { type SwapStatusResponseV2, type DepositAddressRequestV2 } from './v2/types';
+import {
+  type SwapStatusResponseV2,
+  type DepositAddressRequestV2,
+  type VaultSwapRequest,
+} from './v2/types';
 
 type TransactionHash = `0x${string}`;
 
@@ -235,7 +239,7 @@ export class SwapSDK {
 
     let response;
 
-    if (this.options.broker !== undefined) {
+    if (this.options.broker) {
       const result = await requestSwapDepositAddress(
         {
           ...depositAddressRequest,
@@ -470,7 +474,7 @@ export class SwapSDK {
     };
     let response;
 
-    if (this.options.broker !== undefined) {
+    if (this.options.broker) {
       const result = await requestSwapDepositAddress(
         {
           ...depositAddressRequest,
@@ -491,6 +495,15 @@ export class SwapSDK {
       };
     } else {
       assert(depositAddressRequest.fillOrKillParams, 'fill or kill params are required');
+      assert(
+        !affiliates?.length,
+        'Broker commission is only supported only when initializing the SDK with a brokerUrl',
+      );
+      assert(
+        !brokerCommissionBps,
+        'Affiliate brokers are supported only when initializing the SDK with a brokerUrl',
+      );
+
       response = await this.trpc.openSwapDepositChannel.mutate({
         ...depositAddressRequest,
         fillOrKillParams: depositAddressRequest.fillOrKillParams,
@@ -510,5 +523,56 @@ export class SwapSDK {
       channelOpeningFee: response.channelOpeningFee,
       fillOrKillParams: inputFoKParams,
     };
+  }
+
+  async getVaultSwapData({
+    quote,
+    srcAddress,
+    destAddress,
+    fillOrKillParams: inputFoKParams,
+    affiliateBrokers: affiliates,
+    ccmParams,
+    brokerCommissionBps,
+    extraParams,
+  }: VaultSwapRequest) {
+    await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
+    assertQuoteValid(quote);
+
+    const vaultSwapRequest = {
+      srcAsset: quote.srcAsset,
+      destAsset: quote.destAsset,
+      srcAddress,
+      destAddress,
+      amount: quote.depositAmount,
+      ccmParams,
+      maxBoostFeeBps: 'maxBoostFeeBps' in quote ? quote.maxBoostFeeBps : undefined,
+      fillOrKillParams: parseFoKParams(inputFoKParams, quote)!,
+      dcaParams: quote.type === 'DCA' ? quote.dcaParams : undefined,
+      extraParams,
+    };
+
+    if (this.options.broker) {
+      return requestSwapParameterEncoding(
+        {
+          ...vaultSwapRequest,
+          commissionBps: brokerCommissionBps ?? this.options.broker.commissionBps,
+          affiliates,
+        },
+        { url: this.options.broker.url },
+        this.options.network,
+      );
+    }
+
+    assert(vaultSwapRequest.fillOrKillParams, 'fill or kill params are required');
+    assert(
+      !affiliates?.length,
+      'Broker commission is only supported only when initializing the SDK with a brokerUrl',
+    );
+    assert(
+      !brokerCommissionBps,
+      'Affiliate brokers are supported only when initializing the SDK with a brokerUrl',
+    );
+
+    return this.trpc.getVaultSwapData.mutate(vaultSwapRequest);
   }
 }

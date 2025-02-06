@@ -186,3 +186,14 @@ export interface DepositAddressRequestV2 {
   ccmParams?: CcmParams;
   brokerCommissionBps?: number;
 }
+
+export interface VaultSwapRequest {
+  quote: Quote | BoostQuote;
+  srcAddress?: string;
+  destAddress: string;
+  fillOrKillParams: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage;
+  affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];
+  ccmParams?: CcmParams;
+  brokerCommissionBps?: number;
+  extraParams?: { solanaDataAccount?: string };
+}

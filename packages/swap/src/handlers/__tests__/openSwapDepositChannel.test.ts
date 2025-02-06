@@ -4,7 +4,7 @@ import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
 import prisma from '../../client';
 import disallowChannel from '../../utils/disallowChannel';
-import openSwapDepositChannel from '../openSwapDepositChannel';
+import { openSwapDepositChannel } from '../openSwapDepositChannel';
 
 vi.mock('@/shared/broker', () => ({
   requestSwapDepositAddress: vi.fn(),

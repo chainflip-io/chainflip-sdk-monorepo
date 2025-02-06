@@ -22,9 +22,9 @@ const getSlippageTolerancePercent = (input: z.output<typeof openSwapDepositChann
   return estimatedPrice && fokMinPrice && (100 * (estimatedPrice - fokMinPrice)) / estimatedPrice;
 };
 
-export default async function openSwapDepositChannel(
+export const openSwapDepositChannel = async (
   input: z.output<typeof openSwapDepositChannelSchema>,
-) {
+) => {
   if (!validateAddress(input.destChain, input.destAddress, env.CHAINFLIP_NETWORK)) {
     throw ServiceError.badRequest(
       `Address "${input.destAddress}" is not a valid "${input.destChain}" address`,
@@ -38,7 +38,7 @@ export default async function openSwapDepositChannel(
       input.fillOrKillParams?.refundAddress,
     )
   ) {
-    logger.info('Blocked address found', input);
+    logger.info('Blocked address found for deposit channel', input);
     throw ServiceError.internalError('Failed to open deposit channel, please try again later');
   }
 
@@ -170,4 +170,4 @@ export default async function openSwapDepositChannel(
     estimatedExpiryTime: estimatedExpiryTime?.valueOf(),
     channelOpeningFee,
   };
-}
+};

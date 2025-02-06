@@ -4,8 +4,11 @@ import { randomUUID } from 'crypto';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import { getParameterEncodingRequestSchema } from '@/shared/broker';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
-import openSwapDepositChannel from './handlers/openSwapDepositChannel';
+import env from '@/swap/config/env';
+import { getVaultSwapData } from '@/swap/handlers/getVaultSwapData';
+import { openSwapDepositChannel } from './handlers/openSwapDepositChannel';
 import authenticate from './quoting/authenticate';
 import Quoter from './quoting/Quoter';
 import addresses from './routes/addresses';
@@ -23,6 +26,9 @@ const appRouter = router({
   openSwapDepositChannel: publicProcedure
     .input(openSwapDepositChannelSchema)
     .mutation((v) => openSwapDepositChannel(v.input)),
+  getVaultSwapData: publicProcedure
+    .input(getParameterEncodingRequestSchema(env.CHAINFLIP_NETWORK))
+    .mutation((v) => getVaultSwapData(v.input)),
 });
 
 export type AppRouter = typeof appRouter;
