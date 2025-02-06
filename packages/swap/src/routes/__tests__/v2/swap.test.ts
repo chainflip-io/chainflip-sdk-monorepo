@@ -14,7 +14,11 @@ import {
   createPools,
   processEvents,
 } from '../../../event-handlers/__tests__/utils';
-import { getPendingBroadcast, getPendingDeposit } from '../../../ingress-egress-tracking';
+import {
+  getPendingBroadcast,
+  getPendingDeposit,
+  getPendingVaultSwap,
+} from '../../../ingress-egress-tracking';
 import app from '../../../server';
 import { StateV2 } from '../../v2/swap';
 
@@ -2270,6 +2274,97 @@ describe('server', () => {
         numberOfChunks: 1,
         chunkIntervalBlocks: 3,
       });
+    });
+
+    it(`returns the vault swap details in ${StateV2.Receiving} status`, async () => {
+      const txId = '0x1234';
+      env.CHAINFLIP_NETWORK = 'mainnet';
+      vi.mocked(getPendingVaultSwap).mockResolvedValue({
+        txId,
+        affiliateFees: [
+          {
+            account: 'cFHtoB6DrnqUVY4DwMHCVCtgCLsiHvv98oGw8k66tazF2ToFv',
+            bps: 10,
+          },
+        ],
+        amount: 100n,
+        brokerFee: {
+          account: 'cFHsUq1uK5opJudRDczhdPVj6LGoVTqYsfj71tbHfKsTAzkJJ',
+          bps: 10,
+        },
+        ccmDepositMetadata: {
+          channelMetadata: {
+            ccmAdditionalData: '4d4f5245',
+            gasBudget: '0x3039',
+            message: '48454c4c4f',
+          },
+          sourceAddress: {
+            Eth: '0xcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf',
+          },
+          sourceChain: 'Ethereum',
+        },
+        dcaParams: {
+          chunkInterval: 100,
+          numberOfChunks: 5,
+        },
+        depositChainBlockHeight: 1,
+        destinationAddress: '0xcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf',
+        inputAsset: 'Eth',
+        maxBoostFee: 5,
+        outputAsset: 'Flip',
+        refundParams: {
+          minPrice: 0n,
+          refundAddress: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
+          retryDuration: 3,
+        },
+      });
+      const { body, status } = await request(server).get(`/v2/swaps/${txId}`);
+
+      expect(status).toBe(200);
+      expect(body.state).toBe('RECEIVING');
+      expect(body).toMatchInlineSnapshot(`
+        {
+          "boost": {
+            "maxBoostFeeBps": 5,
+          },
+          "brokers": [
+            {
+              "account": "cFHsUq1uK5opJudRDczhdPVj6LGoVTqYsfj71tbHfKsTAzkJJ",
+              "bps": 10,
+            },
+            {
+              "account": "cFHtoB6DrnqUVY4DwMHCVCtgCLsiHvv98oGw8k66tazF2ToFv",
+              "bps": 10,
+            },
+          ],
+          "ccmParams": {
+            "gasBudget": "12345",
+            "message": "48454c4c4f",
+          },
+          "dcaParams": {
+            "chunkIntervalBlocks": 100,
+            "numberOfChunks": 5,
+          },
+          "deposit": {
+            "amount": "100",
+            "txRef": "0x1234",
+          },
+          "destAddress": "0xcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf",
+          "destAsset": "FLIP",
+          "destChain": "Ethereum",
+          "fees": [],
+          "fillOrKillParams": {
+            "minPrice": "0",
+            "refundAddress": "0x541f563237a309b3a61e33bdf07a8930bdba8d99",
+            "retryDurationBlocks": 3,
+          },
+          "lastStatechainUpdateAt": 1640995200000,
+          "srcAsset": "ETH",
+          "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
+          "state": "RECEIVING",
+        }
+      `);
     });
   });
 });

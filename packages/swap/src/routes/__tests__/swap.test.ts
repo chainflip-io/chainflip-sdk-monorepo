@@ -866,6 +866,7 @@ describe('server', () => {
     it(`retrieves a swap in ${State.Broadcasted} status`, async () => {
       vi.mocked(getPendingBroadcast).mockResolvedValueOnce({
         tx_out_id: { hash: '0xdeadbeef' },
+        tx_ref: '100-3',
       });
 
       await processEvents(swapEvents.slice(0, 8));
@@ -878,6 +879,7 @@ describe('server', () => {
         {
           "broadcastRequestedAt": 564000,
           "broadcastRequestedBlockIndex": "94-843",
+          "broadcastTransactionRef": "100-3",
           "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
           "depositAmount": "5000000000000000000",
           "depositChannelBrokerCommissionBps": 0,

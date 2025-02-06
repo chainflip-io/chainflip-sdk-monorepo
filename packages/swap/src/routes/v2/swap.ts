@@ -45,16 +45,31 @@ router.get(
       swapEgress,
       refundEgress,
       ignoredEgresses,
+      pendingVaultSwap,
     } = await getLatestSwapForId(id);
 
     const { state, swapEgressTrackerTxRef, refundEgressTrackerTxRef, pendingDeposit } =
-      await getSwapState(failedSwap, ignoredEgresses, swapRequest, swapDepositChannel);
+      await getSwapState(
+        failedSwap,
+        ignoredEgresses,
+        swapRequest,
+        swapDepositChannel,
+        pendingVaultSwap,
+      );
 
-    const internalSrcAsset = readField(swapRequest, swapDepositChannel, failedSwap, 'srcAsset');
-    const internalDestAsset = readField(swapRequest, swapDepositChannel, failedSwap, 'destAsset');
+    const internalSrcAsset =
+      readField(swapRequest, swapDepositChannel, failedSwap, 'srcAsset') ??
+      pendingVaultSwap?.inputAsset;
+    const internalDestAsset =
+      readField(swapRequest, swapDepositChannel, failedSwap, 'destAsset') ??
+      pendingVaultSwap?.outputAsset;
     assert(internalSrcAsset, 'srcAsset must be defined');
 
-    const showBoost = Boolean(swapRequest?.maxBoostFeeBps || swapDepositChannel?.maxBoostFeeBps);
+    const showBoost = Boolean(
+      swapRequest?.maxBoostFeeBps ||
+        swapDepositChannel?.maxBoostFeeBps ||
+        pendingVaultSwap?.maxBoostFee,
+    );
 
     let effectiveBoostFeeBps;
     if (showBoost) {
@@ -136,12 +151,15 @@ router.get(
       swapId: swapRequest?.nativeId.toString(),
       ...getAssetAndChain(internalSrcAsset, 'src'),
       ...(internalDestAsset && getAssetAndChain(internalDestAsset, 'dest')),
-      destAddress: readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress'),
+      destAddress:
+        readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress') ??
+        pendingVaultSwap?.destinationAddress,
       srcChainRequiredBlockConfirmations,
       estimatedDurationsSeconds: estimatedDurations?.durations,
       estimatedDurationSeconds: estimatedDurations?.total,
       brokers:
-        beneficiaries?.map(({ account, commissionBps }) => ({ account, commissionBps })) ?? [],
+        beneficiaries?.map(({ account, commissionBps }) => ({ account, commissionBps })) ??
+        [pendingVaultSwap?.brokerFee].concat(pendingVaultSwap?.affiliateFees).filter(Boolean),
       fees: aggregateFees ?? [],
       ...(showDepositchannel &&
         swapDepositChannel && {
@@ -164,7 +182,7 @@ router.get(
             dcaParams: getDcaParams(swapRequest, swapDepositChannel),
           },
         }),
-      ...getDepositInfo(swapRequest, failedSwap, pendingDeposit),
+      ...getDepositInfo(swapRequest, failedSwap, pendingDeposit, pendingVaultSwap),
       ...(rolledSwaps && {
         swap: {
           originalInputAmount: originalInputAmount?.toFixed(),
@@ -196,13 +214,16 @@ router.get(
       }),
       ...(swapEgressFields && { swapEgress: { ...swapEgressFields } }),
       ...(refundEgressFields && { refundEgress: { ...refundEgressFields } }),
-      ccmParams: getCcmParams(swapRequest, swapDepositChannel),
-      fillOrKillParams: getFillOrKillParams(swapRequest, swapDepositChannel),
-      dcaParams: getDcaParams(swapRequest, swapDepositChannel),
+      ccmParams: getCcmParams(swapRequest, swapDepositChannel, pendingVaultSwap),
+      fillOrKillParams: getFillOrKillParams(swapRequest, swapDepositChannel, pendingVaultSwap),
+      dcaParams: getDcaParams(swapRequest, swapDepositChannel, pendingVaultSwap),
       ...(showBoost && {
         boost: {
           effectiveBoostFeeBps,
-          maxBoostFeeBps: swapRequest?.maxBoostFeeBps ?? swapDepositChannel?.maxBoostFeeBps,
+          maxBoostFeeBps:
+            swapRequest?.maxBoostFeeBps ??
+            swapDepositChannel?.maxBoostFeeBps ??
+            pendingVaultSwap?.maxBoostFee,
           boostedAt: swapRequest?.depositBoostedAt?.valueOf(),
           boostedBlockIndex: swapRequest?.depositBoostedBlockIndex ?? undefined,
           skippedAt: swapDepositChannel?.failedBoosts.at(0)?.failedAtTimestamp.valueOf(),

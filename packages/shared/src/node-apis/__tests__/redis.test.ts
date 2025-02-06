@@ -197,4 +197,100 @@ describe(RedisClient, () => {
       expect(mock).toHaveBeenCalledWith('deposit:Ethereum:0x1234', 0, -1);
     });
   });
+
+  describe(RedisClient.prototype.getPendingVaultSwap, () => {
+    it('returns if no vault swaps are found', async () => {
+      const mock = vi.mocked(Redis.prototype.get).mockResolvedValue(null);
+      const client = new RedisClient(url);
+      const deposits = await client.getPendingVaultSwap('mainnet', '0x1234');
+      expect(deposits).toEqual(null);
+      expect(mock).toHaveBeenCalledWith('vault_deposit:Ethereum:0x1234');
+      expect(mock).toHaveBeenCalledWith('vault_deposit:Bitcoin:0x1234');
+      expect(mock).toHaveBeenCalledWith('vault_deposit:Solana:0x1234');
+      expect(mock).toHaveBeenCalledWith('vault_deposit:Arbitrum:0x1234');
+      expect(mock).not.toHaveBeenCalledWith('vault_deposit:Polkadot:0x1234');
+    });
+
+    it('returns the vault swaps if found', async () => {
+      const mock = vi.mocked(Redis.prototype.get).mockResolvedValue(
+        JSON.stringify({
+          affiliate_fees: [
+            { account: 'cFHtoB6DrnqUVY4DwMHCVCtgCLsiHvv98oGw8k66tazF2ToFv', bps: 10 },
+          ],
+          amount: '0x64',
+          broker_fee: { account: 'cFHsUq1uK5opJudRDczhdPVj6LGoVTqYsfj71tbHfKsTAzkJJ', bps: 10 },
+          ccm_deposit_metadata: {
+            channel_metadata: {
+              ccm_additional_data: '4d4f5245',
+              gas_budget: '0x3039',
+              message: '48454c4c4f',
+            },
+            source_address: { Eth: '0xcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf' },
+            source_chain: 'Ethereum',
+          },
+          dca_params: { chunk_interval: 100, number_of_chunks: 5 },
+          deposit_chain_block_height: 1,
+          deposit_details: null,
+          destination_address: '0xcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf',
+          input_asset: { asset: 'ETH', chain: 'Ethereum' },
+          max_boost_fee: 5,
+          output_asset: { asset: 'FLIP', chain: 'Ethereum' },
+          refund_params: {
+            min_price: '0x0',
+            refund_address: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
+            retry_duration: 0,
+          },
+        }),
+      );
+
+      const client = new RedisClient(url);
+      const vaultDeposit = await client.getPendingVaultSwap('mainnet', '0x1234');
+
+      expect(vaultDeposit).toMatchInlineSnapshot(`
+        {
+          "affiliateFees": [
+            {
+              "account": "cFHtoB6DrnqUVY4DwMHCVCtgCLsiHvv98oGw8k66tazF2ToFv",
+              "bps": 10,
+            },
+          ],
+          "amount": 100n,
+          "brokerFee": {
+            "account": "cFHsUq1uK5opJudRDczhdPVj6LGoVTqYsfj71tbHfKsTAzkJJ",
+            "bps": 10,
+          },
+          "ccmDepositMetadata": {
+            "channelMetadata": {
+              "ccmAdditionalData": "4d4f5245",
+              "gasBudget": "0x3039",
+              "message": "48454c4c4f",
+            },
+            "sourceAddress": {
+              "Eth": "0xcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf",
+            },
+            "sourceChain": "Ethereum",
+          },
+          "dcaParams": {
+            "chunkInterval": 100,
+            "numberOfChunks": 5,
+          },
+          "depositChainBlockHeight": 1,
+          "destinationAddress": "0xcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf",
+          "inputAsset": "Eth",
+          "maxBoostFee": 5,
+          "outputAsset": "Flip",
+          "refundParams": {
+            "minPrice": 0n,
+            "refundAddress": "0x541f563237a309b3a61e33bdf07a8930bdba8d99",
+            "retryDuration": 0,
+          },
+        }
+      `);
+
+      expect(mock).toHaveBeenCalledWith('vault_deposit:Ethereum:0x1234');
+      expect(mock).toHaveBeenCalledWith('vault_deposit:Bitcoin:0x1234');
+      expect(mock).toHaveBeenCalledWith('vault_deposit:Solana:0x1234');
+      expect(mock).toHaveBeenCalledWith('vault_deposit:Arbitrum:0x1234');
+    });
+  });
 });

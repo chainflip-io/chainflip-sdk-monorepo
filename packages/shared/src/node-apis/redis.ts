@@ -1,11 +1,28 @@
+import { ChainflipNetwork } from '@chainflip/bitcoin';
+import { chainflipChains } from '@chainflip/utils/chainflip';
+import { hexEncodeNumber } from '@chainflip/utils/number';
 import * as ss58 from '@chainflip/utils/ss58';
 import Redis from 'ioredis';
 import { z } from 'zod';
 import { sorter } from '../arrays';
 import { formatTxRef } from '../common';
-import { type Asset, type Chain } from '../enums';
+import { getInternalAsset, type Asset, type Chain } from '../enums';
 import { assertNever } from '../guards';
-import { number, u128, string, uncheckedAssetAndChain, hexString } from '../parsers';
+import {
+  number,
+  u128,
+  string,
+  uncheckedAssetAndChain,
+  hexString,
+  ethereumAddress,
+  numericString,
+  solanaAddress,
+  btcAddress,
+  chainflipAddress,
+  chain as chainflipChain,
+  assetAndChain,
+} from '../parsers';
+import { toCamelCase, ToCamelCase } from '../strings';
 
 const ss58ToHex = (address: string) =>
   `0x${Buffer.from(ss58.decode(address).data).toString('hex')}`;
@@ -56,8 +73,7 @@ const broadcastParsers = {
       .object({
         hash: hexString,
       })
-      .transform(({ hash }) => hash)
-      .optional(), // TODO: V130 -- remove optional after v130
+      .transform(({ hash }) => hash),
   }),
   Polkadot: z.object({
     tx_out_id: z.object({ signature: string }),
@@ -70,8 +86,7 @@ const broadcastParsers = {
       })
       .transform(
         ({ transaction_id }) => `${transaction_id.block_number}-${transaction_id.extrinsic_index}`,
-      )
-      .optional(), // TODO: V130 -- remove optional after v130
+      ),
   }),
   Bitcoin: z.object({
     tx_out_id: z.object({ hash: string }),
@@ -79,26 +94,100 @@ const broadcastParsers = {
       .object({
         hash: string.transform((value) => (value.startsWith('0x') ? value.slice(2) : value)),
       })
-      .transform(({ hash }) => hash)
-      .optional(), // TODO: V130 -- remove optional after v130
+      .transform(({ hash }) => hash),
   }),
-  Arbitrum: z
-    .object({
-      tx_out_id: z.object({
-        signature: z.object({
-          k_times_g_address: z.array(number),
-          s: z.array(number),
-        }),
+  Arbitrum: z.object({
+    tx_out_id: z.object({
+      signature: z.object({
+        k_times_g_address: z.array(number),
+        s: z.array(number),
       }),
-      tx_ref: z
-        .object({
-          hash: hexString,
-        })
-        .transform(({ hash }) => hash)
-        .optional(), // TODO: remove once Arbitrum is fully supported
-    })
-    .optional(), // TODO: remove once Arbitrum is available on all networks
+    }),
+    tx_ref: z
+      .object({
+        hash: hexString,
+      })
+      .transform(({ hash }) => hash),
+  }),
 };
+
+type CamelCaseKeys<T> = T extends (infer U)[]
+  ? U extends object
+    ? CamelCaseKeys<U>[] // If it's an array of objects, transform the objects
+    : T // If it's an array of primitives, leave it unchanged
+  : T extends object
+    ? {
+        [K in keyof T as ToCamelCase<string & K>]: CamelCaseKeys<T[K]>;
+      }
+    : T;
+
+const transformKeysToCamelCase = <T extends Record<string, unknown>>(obj: T): CamelCaseKeys<T> => {
+  if (Array.isArray(obj)) {
+    return obj.map(transformKeysToCamelCase) as unknown as CamelCaseKeys<T>;
+  }
+  if (obj !== null && typeof obj === 'object') {
+    return Object.fromEntries(
+      Object.entries(obj).map(([key, value]) => [
+        toCamelCase(key),
+        transformKeysToCamelCase(value as Record<string, unknown>),
+      ]),
+    ) as CamelCaseKeys<T>;
+  }
+  return obj;
+};
+
+const accountFee = z.object({
+  account: chainflipAddress,
+  bps: number,
+});
+
+const vaultDepositSchema = (network: ChainflipNetwork) =>
+  jsonString.pipe(
+    z
+      .object({
+        amount: u128,
+        destination_address: z.union([ethereumAddress, solanaAddress, btcAddress(network)]),
+        input_asset: assetAndChain.transform((obj) => getInternalAsset(obj)),
+        output_asset: assetAndChain.transform((obj) => getInternalAsset(obj)),
+        deposit_chain_block_height: number,
+        affiliate_fees: z.array(accountFee),
+        broker_fee: accountFee.optional(),
+        max_boost_fee: z.number().optional(),
+        dca_params: z
+          .object({
+            chunk_interval: number,
+            number_of_chunks: number,
+          })
+          .optional(),
+        refund_params: z
+          .object({
+            min_price: u128,
+            retry_duration: number,
+            refund_address: z.union([ethereumAddress, solanaAddress, btcAddress(network)]),
+          })
+          .optional(),
+        ccm_deposit_metadata: z.object({
+          channel_metadata: z.object({
+            ccm_additional_data: z.any(),
+            message: z.string(),
+            gas_budget: z
+              .union([numericString, hexString])
+              .transform((n) => hexEncodeNumber(BigInt(n))),
+          }),
+          source_chain: chainflipChain,
+          source_address: z
+            .object({
+              Eth: ethereumAddress.optional(),
+              Sol: solanaAddress.optional(),
+              Btc: btcAddress(network).optional(),
+            })
+            .refine((obj) => Object.keys(obj).length === 1, {
+              message: 'source_address must be one of Eth, Sol, or Btc',
+            }),
+        }),
+      })
+      .transform(transformKeysToCamelCase),
+  );
 
 type ChainBroadcast<C extends Exclude<Chain, 'Solana'>> = z.infer<(typeof broadcastParsers)[C]>;
 
@@ -184,6 +273,19 @@ export default class RedisClient {
     const key = `mempool:${chain}:${address}`;
     const value = await this.client.get(key);
     return value ? mempoolTransaction.parse(value) : null;
+  }
+
+  async getPendingVaultSwap(network: ChainflipNetwork, txId: string) {
+    const vaultSwapDisabledChains = ['Polkadot'];
+
+    const responses = await Promise.all(
+      chainflipChains
+        .filter((chain) => !vaultSwapDisabledChains.includes(chain))
+        .map((chain) => this.client.get(`vault_deposit:${chain}:${txId}`)),
+    );
+    const value = responses.find(Boolean);
+
+    return value ? vaultDepositSchema(network).parse(value) : null;
   }
 
   quit() {

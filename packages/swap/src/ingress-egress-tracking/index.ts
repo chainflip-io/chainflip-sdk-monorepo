@@ -1,4 +1,4 @@
-import { Chain, Chains, InternalAsset, assetConstants } from '@/shared/enums';
+import { Chain, ChainflipNetwork, Chains, InternalAsset, assetConstants } from '@/shared/enums';
 import RedisClient from '@/shared/node-apis/redis';
 import prisma, { Broadcast } from '../client';
 import env from '../config/env';
@@ -87,6 +87,23 @@ export const getPendingBroadcast = async (broadcast: Broadcast) => {
     return await redis.getBroadcast(broadcast.chain, broadcast.nativeId);
   } catch (error) {
     logger.error('error while looking up broadcast in redis', { error });
+    return null;
+  }
+};
+
+export const getPendingVaultSwap = async (network: ChainflipNetwork, txId: string) => {
+  if (!redis) return null;
+  try {
+    const vaultSwap = await redis.getPendingVaultSwap(network, txId);
+    if (vaultSwap) {
+      return {
+        txId,
+        ...vaultSwap,
+      };
+    }
+    return null;
+  } catch (error) {
+    logger.error('error while looking up vault swap in redis', { error });
     return null;
   }
 };
