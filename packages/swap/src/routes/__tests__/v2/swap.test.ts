@@ -2276,7 +2276,7 @@ describe('server', () => {
       });
     });
 
-    it.only(`returns the vault swap details in ${StateV2.Receiving} status`, async () => {
+    it(`returns the vault swap details in ${StateV2.Receiving} status`, async () => {
       const txId = '0x1234';
       env.CHAINFLIP_NETWORK = 'mainnet';
       vi.mocked(getPendingVaultSwap).mockResolvedValue({
