@@ -251,13 +251,13 @@ describe(RedisClient, () => {
           "affiliateFees": [
             {
               "account": "cFHtoB6DrnqUVY4DwMHCVCtgCLsiHvv98oGw8k66tazF2ToFv",
-              "bps": 10,
+              "commissionBps": 10,
             },
           ],
           "amount": 100n,
           "brokerFee": {
             "account": "cFHsUq1uK5opJudRDczhdPVj6LGoVTqYsfj71tbHfKsTAzkJJ",
-            "bps": 10,
+            "commissionBps": 10,
           },
           "ccmDepositMetadata": {
             "channelMetadata": {
