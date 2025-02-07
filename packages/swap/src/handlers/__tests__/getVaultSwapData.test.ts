@@ -96,7 +96,7 @@ describe(getVaultSwapData, () => {
             chain: 'Ethereum',
           },
           '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
-          0,
+          0, // ignores commission
           {
             chain: 'Bitcoin',
             min_output_amount: '0xfc6f7c40458122964d0000000',
@@ -107,7 +107,7 @@ describe(getVaultSwapData, () => {
             message: '0xdeadc0de',
           },
           35,
-          null,
+          null, // ignores affiliates
           {
             chunk_interval: 5,
             number_of_chunks: 100,

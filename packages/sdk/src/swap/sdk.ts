@@ -262,7 +262,7 @@ export class SwapSDK {
     } else {
       assert(
         !depositAddressRequest.brokerCommissionBps,
-        'Broker commission is only supported only when initializing the SDK with a brokerUrl',
+        'Broker commission is supported only when initializing the SDK with a brokerUrl',
       );
       assert(
         !depositAddressRequest.affiliateBrokers?.length,
@@ -496,11 +496,11 @@ export class SwapSDK {
     } else {
       assert(depositAddressRequest.fillOrKillParams, 'fill or kill params are required');
       assert(
-        !affiliates?.length,
-        'Broker commission is only supported only when initializing the SDK with a brokerUrl',
+        !brokerCommissionBps,
+        'Broker commission is supported only when initializing the SDK with a brokerUrl',
       );
       assert(
-        !brokerCommissionBps,
+        !affiliates?.length,
         'Affiliate brokers are supported only when initializing the SDK with a brokerUrl',
       );
 
@@ -563,13 +563,12 @@ export class SwapSDK {
       );
     }
 
-    assert(vaultSwapRequest.fillOrKillParams, 'fill or kill params are required');
-    assert(
-      !affiliates?.length,
-      'Broker commission is only supported only when initializing the SDK with a brokerUrl',
-    );
     assert(
       !brokerCommissionBps,
+      'Broker commission is supported only when initializing the SDK with a brokerUrl',
+    );
+    assert(
+      !affiliates?.length,
       'Affiliate brokers are supported only when initializing the SDK with a brokerUrl',
     );
 

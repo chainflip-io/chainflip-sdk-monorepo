@@ -1618,7 +1618,7 @@ describe(SwapSDK, () => {
   });
 
   describe(SwapSDK.prototype.getVaultSwapData, () => {
-    it('calls getVaultSwapData with refund parameters', async () => {
+    it('calls getVaultSwapData with refund parameters for slippage', async () => {
       // @ts-expect-error - private method
       const rpcSpy = vi.spyOn(sdk.trpc.getVaultSwapData, 'mutate').mockResolvedValueOnce({
         chain: 'Bitcoin',
@@ -1631,6 +1631,7 @@ describe(SwapSDK, () => {
         srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
         destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
         depositAmount: BigInt(1e18).toString(),
+        estimatedPrice: '2500',
         type: 'REGULAR',
       } as Quote;
       const response = await sdk.getVaultSwapData({
@@ -1639,7 +1640,7 @@ describe(SwapSDK, () => {
         fillOrKillParams: {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-          minPrice: '10000000000000',
+          slippageTolerancePercent: '1.5',
         },
       });
       expect(rpcSpy).toHaveBeenLastCalledWith({
@@ -1653,7 +1654,7 @@ describe(SwapSDK, () => {
         fillOrKillParams: {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-          minPriceX128: '34028236692093846346337460743176821145600000000000000000000000',
+          minPriceX128: '8379453285428109662785599708007292207104000000000000',
         },
       });
       expect(response).toStrictEqual({
@@ -1715,6 +1716,64 @@ describe(SwapSDK, () => {
           '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
         depositAddress: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
       });
+    });
+
+    it('rejects commission if no broker url is configured', async () => {
+      const quote = {
+        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        depositAmount: BigInt(1e18).toString(),
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        type: 'DCA',
+      } as Quote;
+
+      await expect(
+        sdk.getVaultSwapData({
+          quote,
+          destAddress: '0xcafebabe',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+            minPrice: '10000000000000',
+          },
+          brokerCommissionBps: 10,
+        }),
+      ).rejects.toThrow(
+        'Broker commission is supported only when initializing the SDK with a brokerUrl',
+      );
+    });
+
+    it('rejects affiliates if no broker url is configured', async () => {
+      const quote = {
+        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        depositAmount: BigInt(1e18).toString(),
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        type: 'DCA',
+      } as Quote;
+
+      await expect(
+        sdk.getVaultSwapData({
+          quote,
+          destAddress: '0xcafebabe',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+            minPrice: '10000000000000',
+          },
+          affiliateBrokers: [
+            { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+          ],
+        }),
+      ).rejects.toThrow(
+        'Affiliate brokers are supported only when initializing the SDK with a brokerUrl',
+      );
     });
 
     it('calls the configured broker api with the given affiliate brokers', async () => {

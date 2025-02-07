@@ -731,7 +731,51 @@ describe(broker.requestSwapParameterEncoding, () => {
         brokerConfig,
         'mainnet',
       ),
-    ).rejects.toThrow();
+    ).rejects.toThrow(/2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm/);
+  });
+
+  it('rejects testnet source addresses for swap from bitcoin', async () => {
+    mockResponse(MOCKED_BTC_RESPONSE);
+    await expect(
+      broker.requestSwapParameterEncoding(
+        {
+          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          amount: '12500000',
+          destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
+          srcAddress: '2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
+            minPriceX128: '10000000',
+          },
+        },
+        brokerConfig,
+        'mainnet',
+      ),
+    ).rejects.toThrow(/2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm/);
+  });
+
+  it('rejects testnet destination addresses for swap to bitcoin', async () => {
+    mockResponse(MOCKED_BTC_RESPONSE);
+    await expect(
+      broker.requestSwapParameterEncoding(
+        {
+          srcAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          destAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          amount: '12500000',
+          destAddress: '2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm',
+          srcAddress: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
+            minPriceX128: '10000000',
+          },
+        },
+        brokerConfig,
+        'mainnet',
+      ),
+    ).rejects.toThrow(/2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm/);
   });
 
   it('submits ccm data', async () => {
