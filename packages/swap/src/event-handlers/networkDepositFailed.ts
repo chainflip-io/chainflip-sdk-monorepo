@@ -124,7 +124,9 @@ export const depositFailed =
         txRef = await findSolanaTxHash(asset, blockHeight, depositAddress, amount);
       }
     } else {
-      txRef = getDepositTxRef(chain, details.vaultWitness.depositDetails, blockHeight);
+      if ('depositDetails' in details.vaultWitness) {
+        txRef = getDepositTxRef(chain, details.vaultWitness.depositDetails, blockHeight);
+      }
       amount = details.vaultWitness.depositAmount;
       asset = details.vaultWitness.inputAsset;
       channelMetadata = details.vaultWitness.depositMetadata?.channelMetadata;
