@@ -11,7 +11,7 @@ RUN apt-get -y install curl build-essential
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN npm install -g pnpm@9
+RUN npm install -g pnpm@10
 
 RUN pnpm install --frozen-lockfile
 
@@ -24,7 +24,7 @@ FROM node:22.3.0-bullseye-slim
 
 WORKDIR /app
 
-RUN npm install -g pnpm@9
+RUN npm install -g pnpm@10
 
 COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app/package.json /app/package.json
