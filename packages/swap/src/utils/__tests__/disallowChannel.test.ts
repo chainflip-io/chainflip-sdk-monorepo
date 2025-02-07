@@ -1,8 +1,10 @@
+import { AxiosError } from 'axios';
 import { AML } from 'elliptic-sdk';
 import { describe, it, beforeEach, expect, vi } from 'vitest';
 import prisma from '../../client';
 import env from '../../config/env';
 import disallowChannel from '../disallowChannel';
+import logger from '../logger';
 
 vi.mock('elliptic-sdk', () => {
   const _AML = vi.fn();
@@ -11,6 +13,8 @@ vi.mock('elliptic-sdk', () => {
   };
   return { AML: _AML };
 });
+
+vi.mock('../logger');
 
 describe(disallowChannel, () => {
   const address = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
@@ -106,5 +110,14 @@ describe(disallowChannel, () => {
     await prisma.blockedAddress.create({ data: { address } });
 
     expect(await disallowChannel('0xokaddress', '0xokaddress', address)).toBe(true);
+  });
+
+  it("doesn't log 404s as errors", async () => {
+    const error = new AxiosError('', '404');
+    error.status = 404;
+    vi.mocked(AML.prototype.client.post).mockRejectedValueOnce(error);
+    await disallowChannel(address, undefined, undefined);
+
+    expect(logger.warn).toHaveBeenCalled();
   });
 });
