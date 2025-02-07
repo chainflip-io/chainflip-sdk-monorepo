@@ -2,6 +2,7 @@ import { HttpClient } from '@chainflip/rpc';
 import { z } from 'zod';
 import { getParameterEncodingRequestSchema } from '@/shared/broker';
 import { getInternalAsset } from '@/shared/enums';
+import { transformKeysToCamelCase } from '@/shared/objects';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import env from '../config/env';
 import disallowChannel from '../utils/disallowChannel';
@@ -61,5 +62,5 @@ export const getVaultSwapData = async (
 
   logger.info('Vault swap data fetched', response);
 
-  return response;
+  return transformKeysToCamelCase(response);
 };
