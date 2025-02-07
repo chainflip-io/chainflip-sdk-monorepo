@@ -1,5 +1,4 @@
 import { HttpClient } from '@chainflip/rpc';
-import * as ss58 from '@chainflip/utils/ss58';
 import { priceX128ToPrice } from '@chainflip/utils/tickMath';
 import { HexString } from '@chainflip/utils/types';
 import BigNumber from 'bignumber.js';
@@ -7,16 +6,7 @@ import { z } from 'zod';
 import { Asset, Chain, ChainflipNetwork, UncheckedAssetAndChain } from './enums';
 import { assert } from './guards';
 import { transformKeysToCamelCase } from './objects';
-import {
-  hexString,
-  numericString,
-  btcAddress,
-  assetAndChain,
-  solanaAddress,
-  polkadotAddress,
-  number,
-  unsignedInteger,
-} from './parsers';
+import { numericString, assetAndChain, solanaAddress, number, unsignedInteger } from './parsers';
 import {
   affiliateBroker,
   AffiliateBroker,
@@ -46,18 +36,17 @@ type DepositAddressRequest = {
   destChain?: Chain;
 };
 
-const getTransformedFokSchema = <Z extends z.ZodTypeAny>(addressSchema: Z) =>
-  z
-    .object({
-      retryDurationBlocks: number,
-      refundAddress: addressSchema,
-      minPriceX128: numericString,
-    })
-    .transform(({ retryDurationBlocks, refundAddress, minPriceX128 }) => ({
-      retry_duration: retryDurationBlocks,
-      refund_address: refundAddress!,
-      min_price: `0x${BigInt(minPriceX128).toString(16)}` as const,
-    }));
+const transformedFokSchema = z
+  .object({
+    retryDurationBlocks: number,
+    refundAddress: z.string(),
+    minPriceX128: numericString,
+  })
+  .transform(({ retryDurationBlocks, refundAddress, minPriceX128 }) => ({
+    retry_duration: retryDurationBlocks,
+    refund_address: refundAddress!,
+    min_price: `0x${BigInt(minPriceX128).toString(16)}` as const,
+  }));
 
 const transformedDcaParamsSchema = dcaParamsSchema.transform(
   ({ numberOfChunks, chunkIntervalBlocks }) => ({
@@ -73,28 +62,17 @@ const transformedCcmParamsSchema = <T extends HexString | undefined>(defaultValu
     cf_parameters: cfParameters ?? defaultValue,
   }));
 
-const getAddressSchema = (network: ChainflipNetwork) =>
-  z.union([
-    numericString,
-    hexString,
-    btcAddress(network),
-    solanaAddress,
-    polkadotAddress.transform(ss58.toPublicKey),
-  ]);
-
-const getDepositAddressRequestSchema = (network: ChainflipNetwork) => {
-  const addressSchema = getAddressSchema(network);
-
-  return z
+const getDepositAddressRequestSchema = (network: ChainflipNetwork) =>
+  z
     .object({
       srcAsset: assetAndChain,
       destAsset: assetAndChain,
-      destAddress: addressSchema,
+      destAddress: z.string(),
       commissionBps: z.number().optional().default(0),
       ccmParams: transformedCcmParamsSchema(undefined).optional(),
       maxBoostFeeBps: z.number().optional(),
       affiliates: z.array(affiliateBroker).optional(),
-      fillOrKillParams: getTransformedFokSchema(addressSchema).optional(),
+      fillOrKillParams: transformedFokSchema.optional(),
       dcaParams: transformedDcaParamsSchema.optional(),
     })
     .superRefine((val, ctx) => {
@@ -117,25 +95,30 @@ const getDepositAddressRequestSchema = (network: ChainflipNetwork) => {
       }
     })
     .superRefine(ensureDcaWithFok);
-};
 
-export const getParameterEncodingRequestSchema = (network: ChainflipNetwork) => {
-  const addressSchema = getAddressSchema(network);
-
-  return z
+export const getParameterEncodingRequestSchema = (network: ChainflipNetwork) =>
+  z
     .object({
       srcAsset: assetAndChain,
-      srcAddress: addressSchema.optional(),
+      srcAddress: z.string().optional(),
       destAsset: assetAndChain,
-      destAddress: addressSchema,
+      destAddress: z.string(),
       amount: unsignedInteger,
       commissionBps: z.number().optional().default(0),
       ccmParams: transformedCcmParamsSchema(undefined).optional(),
       maxBoostFeeBps: z.number().optional(),
       affiliates: z.array(affiliateBroker).optional(),
-      fillOrKillParams: getTransformedFokSchema(addressSchema),
+      fillOrKillParams: transformedFokSchema,
       dcaParams: transformedDcaParamsSchema.optional(),
       extraParams: z.object({ solanaDataAccount: solanaAddress.optional() }).optional(),
+    })
+    .superRefine((val, ctx) => {
+      if (val.srcAddress && !validateAddress(val.srcAsset.chain, val.srcAddress, network)) {
+        ctx.addIssue({
+          message: `Address "${val.srcAddress}" is not a valid "${val.srcAsset.chain}" address for "${network}"`,
+          code: z.ZodIssueCode.custom,
+        });
+      }
     })
     .superRefine((val, ctx) => {
       if (!validateAddress(val.destAsset.chain, val.destAddress, network)) {
@@ -156,7 +139,6 @@ export const getParameterEncodingRequestSchema = (network: ChainflipNetwork) => 
         });
       }
     })
-    .superRefine(ensureDcaWithFok)
     .transform((data) => {
       let extraParams;
       if (data.srcAsset.chain === 'Bitcoin') {
@@ -192,7 +174,6 @@ export const getParameterEncodingRequestSchema = (network: ChainflipNetwork) => 
 
       return { ...data, extraParams };
     });
-};
 
 export async function requestSwapDepositAddress(
   request: DepositAddressRequest,

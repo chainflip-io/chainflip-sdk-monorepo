@@ -9,7 +9,11 @@ export type AddressValidator = (address: string) => boolean;
 
 export const validatePolkadotAddress: AddressValidator = (address) => {
   try {
-    ss58.decode(address);
+    const encodedAddress = address.startsWith('0x')
+      ? ss58.encode({ data: address as `0x${string}`, ss58Format: 1 })
+      : address;
+
+    ss58.decode(encodedAddress);
     return true;
   } catch {
     return false;

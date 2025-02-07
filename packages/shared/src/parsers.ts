@@ -101,11 +101,6 @@ export const solanaAddress = string.refine(isValidSolanaAddress, (address) => ({
   message: `${address} is not a valid Solana address`,
 }));
 
-export const polkadotAddress = string.refine(
-  (address) => ss58.decode(address),
-  (address) => ({ message: `${address} is not a valid polkadot address` }),
-);
-
 export const u64 = numericString.transform((arg) => BigInt(arg));
 
 export const u128 = z.union([number, numericString, hexString]).transform((arg) => BigInt(arg));

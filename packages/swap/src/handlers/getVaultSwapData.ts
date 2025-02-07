@@ -51,11 +51,11 @@ export const getVaultSwapData = async (
     input.srcAsset,
     input.destAsset,
     input.destAddress,
-    input.commissionBps,
+    0, // use fixed commission for default broker
     input.extraParams,
     input.ccmParams,
     input.maxBoostFeeBps,
-    input.affiliates,
+    undefined, // use fixed affiliates for default broker
     input.dcaParams,
   );
 

@@ -56,7 +56,7 @@ describe(broker.requestSwapDepositAddress, () => {
     expect(result).toStrictEqual({
       address: '0x31E9b3373F2AD5d964CAd0fd01332d6550cBBdE6',
       issuedBlock: 50,
-      channelId: 200n,
+      channelId: 200,
       sourceChainExpiryBlock: 1_000_000n,
       channelOpeningFee: 0n,
     });
@@ -96,7 +96,7 @@ describe(broker.requestSwapDepositAddress, () => {
     expect(result).toStrictEqual({
       address: '0x31E9b3373F2AD5d964CAd0fd01332d6550cBBdE6',
       issuedBlock: 50,
-      channelId: 200n,
+      channelId: 200,
       sourceChainExpiryBlock: 1_000_000n,
       channelOpeningFee: 0n,
     });
@@ -158,7 +158,7 @@ describe(broker.requestSwapDepositAddress, () => {
     expect(result).toStrictEqual({
       address: '0x31E9b3373F2AD5d964CAd0fd01332d6550cBBdE6',
       issuedBlock: 50,
-      channelId: 200n,
+      channelId: 200,
       sourceChainExpiryBlock: 1_000_000n,
       channelOpeningFee: 0n,
     });
@@ -205,7 +205,7 @@ describe(broker.requestSwapDepositAddress, () => {
     expect(result).toStrictEqual({
       address: '0x31E9b3373F2AD5d964CAd0fd01332d6550cBBdE6',
       issuedBlock: 50,
-      channelId: 200n,
+      channelId: 200,
       sourceChainExpiryBlock: 1_000_000n,
       channelOpeningFee: 0n,
     });
@@ -253,7 +253,7 @@ describe(broker.requestSwapDepositAddress, () => {
     expect(result).toStrictEqual({
       address: '0x31E9b3373F2AD5d964CAd0fd01332d6550cBBdE6',
       issuedBlock: 50,
-      channelId: 200n,
+      channelId: 200,
       sourceChainExpiryBlock: 1_000_000n,
       channelOpeningFee: 0n,
     });
@@ -308,7 +308,7 @@ describe(broker.requestSwapDepositAddress, () => {
     expect(result).toStrictEqual({
       address: '0x31E9b3373F2AD5d964CAd0fd01332d6550cBBdE6',
       issuedBlock: 50,
-      channelId: 200n,
+      channelId: 200,
       sourceChainExpiryBlock: 1_000_000n,
       channelOpeningFee: 0n,
     });
@@ -364,7 +364,7 @@ describe(broker.requestSwapDepositAddress, () => {
     expect(result).toStrictEqual({
       address: '0x31E9b3373F2AD5d964CAd0fd01332d6550cBBdE6',
       issuedBlock: 50,
-      channelId: 200n,
+      channelId: 200,
       sourceChainExpiryBlock: 1_000_000n,
       channelOpeningFee: 0n,
     });
@@ -420,7 +420,7 @@ describe(broker.requestSwapDepositAddress, () => {
     expect(result).toStrictEqual({
       address: '0x31E9b3373F2AD5d964CAd0fd01332d6550cBBdE6',
       issuedBlock: 50,
-      channelId: 200n,
+      channelId: 200,
       sourceChainExpiryBlock: 1_000_000n,
       channelOpeningFee: 0n,
     });
@@ -463,9 +463,7 @@ describe(broker.requestSwapDepositAddress, () => {
       brokerConfig,
       'perseverance',
     );
-    expect(postSpy.mock.calls[0][1][0].params[2]).toEqual(
-      '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-    );
+    expect(postSpy.mock.calls[0][1][0].params[2]).toEqual(destAddress);
   });
 
   it.each([
@@ -489,8 +487,6 @@ describe(broker.requestSwapDepositAddress, () => {
       brokerConfig,
       'perseverance',
     );
-    expect(postSpy.mock.calls[0][1][0].params[7].refund_address).toEqual(
-      '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-    );
+    expect(postSpy.mock.calls[0][1][0].params[7].refund_address).toEqual(refundAddress);
   });
 });

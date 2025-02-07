@@ -728,7 +728,7 @@ describe(SwapSDK, () => {
         amount: BigInt(1e18).toString(),
         fillOrKillParams: {
           retryDurationBlocks: 500,
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '2458.206',
         },
       });
@@ -748,7 +748,7 @@ describe(SwapSDK, () => {
             null,
             {
               retry_duration: 500,
-              refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+              refund_address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
               min_price: '0x165b74f4430000000000000000000000000000000000',
             },
             null,
@@ -772,7 +772,7 @@ describe(SwapSDK, () => {
         affiliateBrokers: [],
         fillOrKillParams: {
           retryDurationBlocks: 500,
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '2458.206',
         },
       });
@@ -814,7 +814,7 @@ describe(SwapSDK, () => {
         },
         fillOrKillParams: {
           retryDurationBlocks: 500,
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '10000000000000',
         },
       });
@@ -834,7 +834,7 @@ describe(SwapSDK, () => {
             null,
             {
               min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
-              refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+              refund_address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
               retry_duration: 500,
             },
             {
@@ -858,7 +858,7 @@ describe(SwapSDK, () => {
         estimatedDepositChannelExpiryTime: undefined,
         fillOrKillParams: {
           minPrice: '10000000000000',
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           retryDurationBlocks: 500,
         },
         maxBoostFeeBps: 0,
@@ -1354,7 +1354,7 @@ describe(SwapSDK, () => {
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         fillOrKillParams: {
           retryDurationBlocks: 500,
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '2458.206',
         },
       });
@@ -1374,7 +1374,7 @@ describe(SwapSDK, () => {
             null,
             {
               retry_duration: 500,
-              refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+              refund_address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
               min_price: '0x165b74f4430000000000000000000000000000000000',
             },
             null,
@@ -1400,7 +1400,7 @@ describe(SwapSDK, () => {
         affiliateBrokers: [],
         fillOrKillParams: {
           retryDurationBlocks: 500,
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '2458.206',
         },
         dcaParams: undefined,
@@ -1444,7 +1444,7 @@ describe(SwapSDK, () => {
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         fillOrKillParams: {
           retryDurationBlocks: 500,
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '10000000000000',
         },
       });
@@ -1464,7 +1464,7 @@ describe(SwapSDK, () => {
             null,
             {
               min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
-              refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+              refund_address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
               retry_duration: 500,
             },
             {
@@ -1490,7 +1490,7 @@ describe(SwapSDK, () => {
         estimatedDepositChannelExpiryTime: undefined,
         fillOrKillParams: {
           minPrice: '10000000000000',
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           retryDurationBlocks: 500,
         },
         maxBoostFeeBps: 0,
