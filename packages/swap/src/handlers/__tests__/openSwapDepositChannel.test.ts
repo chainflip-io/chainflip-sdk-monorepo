@@ -3,14 +3,14 @@ import * as broker from '@/shared/broker';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
 import prisma from '../../client';
-import disallowChannel from '../../utils/disallowChannel';
+import disallowSwap from '../../utils/disallowSwap';
 import { openSwapDepositChannel } from '../openSwapDepositChannel';
 
 vi.mock('@/shared/broker', () => ({
   requestSwapDepositAddress: vi.fn(),
 }));
 
-vi.mock('../../utils/disallowChannel', () => ({
+vi.mock('../../utils/disallowSwap', () => ({
   default: vi.fn().mockResolvedValue(false),
 }));
 
@@ -327,7 +327,7 @@ describe(openSwapDepositChannel, () => {
   });
 
   it('rejects sanctioned addresses', async () => {
-    vi.mocked(disallowChannel).mockResolvedValueOnce(true);
+    vi.mocked(disallowSwap).mockResolvedValueOnce(true);
 
     await expect(
       openSwapDepositChannel({
@@ -344,6 +344,7 @@ describe(openSwapDepositChannel, () => {
         },
       }),
     ).rejects.toThrow('Failed to open deposit channel, please try again later');
+    expect(vi.mocked(disallowSwap).mock.calls).toMatchSnapshot();
   });
 
   it('rejects if source asset is disabled', async () => {

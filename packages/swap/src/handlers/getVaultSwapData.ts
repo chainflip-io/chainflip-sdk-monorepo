@@ -3,9 +3,8 @@ import { z } from 'zod';
 import { getParameterEncodingRequestSchema } from '@/shared/broker';
 import { getInternalAsset } from '@/shared/enums';
 import { transformKeysToCamelCase } from '@/shared/objects';
-import { validateAddress } from '@/shared/validation/addressValidation';
 import env from '../config/env';
-import disallowChannel from '../utils/disallowChannel';
+import disallowSwap from '../utils/disallowSwap';
 import logger from '../utils/logger';
 import { validateSwapAmount } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
@@ -15,30 +14,21 @@ const client = new HttpClient(env.RPC_BROKER_HTTPS_URL);
 export const getVaultSwapData = async (
   input: z.output<ReturnType<typeof getParameterEncodingRequestSchema>>,
 ) => {
-  if (!validateAddress(input.destAsset.chain, input.destAddress, env.CHAINFLIP_NETWORK)) {
-    throw ServiceError.badRequest(
-      `Address "${input.destAddress}" is not a valid "${input.destAsset.chain}" address`,
-    );
-  }
+  logger.info('Fetching vault swap data', input);
 
   if (
-    await disallowChannel(
-      input.destAddress,
-      input.srcAddress,
-      input.fillOrKillParams?.refund_address,
-    )
+    await disallowSwap(input.destAddress, input.srcAddress, input.fillOrKillParams?.refund_address)
   ) {
     logger.info('Blocked address found for vault swap data', input);
     throw ServiceError.internalError('Failed to get vault swap data, please try again later');
   }
 
-  logger.info('Fetching vault swap data', input);
-
   const srcAsset = getInternalAsset(input.srcAsset);
-  const destAsset = getInternalAsset(input.destAsset);
   if (env.DISABLED_INTERNAL_ASSETS.includes(srcAsset)) {
     throw ServiceError.unavailable(`Asset ${srcAsset} is disabled`);
   }
+
+  const destAsset = getInternalAsset(input.destAsset);
   if (env.DISABLED_INTERNAL_ASSETS.includes(destAsset)) {
     throw ServiceError.unavailable(`Asset ${destAsset} is disabled`);
   }
@@ -52,11 +42,11 @@ export const getVaultSwapData = async (
     input.srcAsset,
     input.destAsset,
     input.destAddress,
-    0, // use fixed commission for default broker
+    0, // default broker does not support commission
     input.extraParams,
     input.ccmParams,
     input.maxBoostFeeBps,
-    undefined, // use fixed affiliates for default broker
+    undefined, // default broker does not support affiliates
     input.dcaParams,
   );
 
