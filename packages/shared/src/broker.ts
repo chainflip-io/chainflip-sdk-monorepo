@@ -218,7 +218,7 @@ type ParameterEncodingRequest = {
   ccmParams?: CcmParams;
   maxBoostFeeBps?: number;
   affiliates?: AffiliateBroker[];
-  fillOrKillParams?: FillOrKillParamsX128;
+  fillOrKillParams: FillOrKillParamsX128;
   dcaParams?: DcaParams;
   extraParams?: { solanaDataAccount?: string };
 };
