@@ -58,7 +58,7 @@ export const validateQuoteQuery = async (query: Query) => {
   if (!queryResult.success) {
     logger.info('received invalid quote request', {
       query,
-      error: queryResult.error,
+      error: queryResult.error.message,
     });
     throw ServiceError.badRequest('invalid request');
   }

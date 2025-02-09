@@ -19,7 +19,10 @@ export const quoteQuerySchema = z
     srcAsset: asset,
     destChain: chain,
     destAsset: asset,
-    amount: numericString.transform((n) => BigInt(n)),
+    amount: numericString
+      .transform((v) => BigInt(v))
+      .refine((v) => v > 0n, { message: 'swap input amount must be greater than 0' })
+      .refine((v) => v < 2n ** 128n, { message: 'swap input amount must be less than 2^128' }),
     brokerCommissionBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
     dcaEnabled: booleanString.default('false'),
     isVaultSwap: booleanString.default('false'),
