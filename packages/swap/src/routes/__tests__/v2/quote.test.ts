@@ -254,6 +254,40 @@ describe('server', () => {
       });
     });
 
+    it('rejects if the amount is 0', async () => {
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'FLIP',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: '0',
+      });
+
+      const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
+
+      expect(status).toBe(400);
+      expect(body).toMatchObject({
+        message: 'invalid request',
+      });
+    });
+
+    it('rejects if the amount is greater than 2**128', async () => {
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'FLIP',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: String(2n ** 128n + 1n),
+      });
+
+      const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
+
+      expect(status).toBe(400);
+      expect(body).toMatchObject({
+        message: 'invalid request',
+      });
+    });
+
     it('rejects if amount is lower than minimum swap amount', async () => {
       mockRpcResponse({
         data: environment({ minDepositAmount: '0xffffff' }),
