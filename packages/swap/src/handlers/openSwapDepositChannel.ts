@@ -6,8 +6,8 @@ import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';
 import env from '../config/env';
-import disallowSwap from '../utils/disallowSwap';
 import { calculateExpiryTime } from '../utils/function';
+import isDisallowedSwap from '../utils/isDisallowedSwap';
 import logger from '../utils/logger';
 import { validateSwapAmount } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
@@ -32,7 +32,11 @@ export const openSwapDepositChannel = async (
   }
 
   if (
-    await disallowSwap(input.destAddress, input.srcAddress, input.fillOrKillParams?.refundAddress)
+    await isDisallowedSwap(
+      input.destAddress,
+      input.srcAddress,
+      input.fillOrKillParams?.refundAddress,
+    )
   ) {
     logger.info('Blocked address found for deposit channel', input);
     throw ServiceError.internalError('Failed to open deposit channel, please try again later');

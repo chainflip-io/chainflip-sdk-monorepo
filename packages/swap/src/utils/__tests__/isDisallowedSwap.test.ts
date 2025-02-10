@@ -3,7 +3,7 @@ import { AML } from 'elliptic-sdk';
 import { describe, it, beforeEach, expect, vi } from 'vitest';
 import prisma from '../../client';
 import env from '../../config/env';
-import disallowSwap from '../disallowSwap';
+import isDisallowedSwap from '../isDisallowedSwap';
 import logger from '../logger';
 
 vi.mock('elliptic-sdk', () => {
@@ -16,7 +16,7 @@ vi.mock('elliptic-sdk', () => {
 
 vi.mock('../logger');
 
-describe(disallowSwap, () => {
+describe(isDisallowedSwap, () => {
   const address = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
 
   beforeEach(async () => {
@@ -31,7 +31,7 @@ describe(disallowSwap, () => {
     env.ELLIPTIC_API_KEY = key;
     env.ELLIPTIC_API_SECRET = secret;
 
-    const result = await disallowSwap(address, undefined, undefined);
+    const result = await isDisallowedSwap(address, undefined, undefined);
 
     expect(result).toBe(false);
   });
@@ -45,7 +45,7 @@ describe(disallowSwap, () => {
     it.each([8.9, null])('allows not too risky destination addresses', async (score) => {
       env.ELLIPTIC_RISK_SCORE_TOLERANCE = 9;
       vi.mocked(AML.prototype.client.post).mockResolvedValueOnce({ data: { risk_score: score } });
-      const result = await disallowSwap(address, undefined, undefined);
+      const result = await isDisallowedSwap(address, undefined, undefined);
 
       expect(result).toBe(false);
     });
@@ -53,7 +53,7 @@ describe(disallowSwap, () => {
     it('disallows to risky destination addresses', async () => {
       env.ELLIPTIC_RISK_SCORE_TOLERANCE = 9;
       vi.mocked(AML.prototype.client.post).mockResolvedValueOnce({ data: { risk_score: 9 } });
-      const result = await disallowSwap(address, undefined, undefined);
+      const result = await isDisallowedSwap(address, undefined, undefined);
       expect(result).toBe(true);
     });
 
@@ -67,7 +67,7 @@ describe(disallowSwap, () => {
         }),
       );
 
-      const result = await disallowSwap('0xokaddress', address, undefined);
+      const result = await isDisallowedSwap('0xokaddress', address, undefined);
 
       expect(result).toBe(true);
     });
@@ -82,14 +82,14 @@ describe(disallowSwap, () => {
         }),
       );
 
-      const result = await disallowSwap('0xokaddress', '0xokaddress', address);
+      const result = await isDisallowedSwap('0xokaddress', '0xokaddress', address);
 
       expect(result).toBe(true);
     });
 
     it('returns false if the axios request rejects', async () => {
       vi.mocked(AML.prototype.client.post).mockRejectedValueOnce(Error('test'));
-      const result = await disallowSwap(address, undefined, undefined);
+      const result = await isDisallowedSwap(address, undefined, undefined);
       expect(result).toBe(false);
     });
   });
@@ -97,26 +97,26 @@ describe(disallowSwap, () => {
   it('disallows blocklist dest addresses', async () => {
     await prisma.blockedAddress.create({ data: { address } });
 
-    expect(await disallowSwap(address, undefined, undefined)).toBe(true);
+    expect(await isDisallowedSwap(address, undefined, undefined)).toBe(true);
   });
 
   it('disallows blocklist src addresses', async () => {
     await prisma.blockedAddress.create({ data: { address } });
 
-    expect(await disallowSwap('0xokaddress', address, undefined)).toBe(true);
+    expect(await isDisallowedSwap('0xokaddress', address, undefined)).toBe(true);
   });
 
   it('disallows blocklist refund addresses', async () => {
     await prisma.blockedAddress.create({ data: { address } });
 
-    expect(await disallowSwap('0xokaddress', '0xokaddress', address)).toBe(true);
+    expect(await isDisallowedSwap('0xokaddress', '0xokaddress', address)).toBe(true);
   });
 
   it("doesn't log 404s as errors", async () => {
     const error = new AxiosError('', '404');
     error.status = 404;
     vi.mocked(AML.prototype.client.post).mockRejectedValueOnce(error);
-    await disallowSwap(address, undefined, undefined);
+    await isDisallowedSwap(address, undefined, undefined);
 
     expect(logger.warn).toHaveBeenCalled();
   });

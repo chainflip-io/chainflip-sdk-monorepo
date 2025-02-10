@@ -1,14 +1,14 @@
 import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
-import disallowSwap from '../../utils/disallowSwap';
+import isDisallowedSwap from '../../utils/isDisallowedSwap';
 import { getVaultSwapData } from '../getVaultSwapData';
 
 vi.mock('@/shared/broker', () => ({
   requestSwapParameterEncoding: vi.fn(),
 }));
 
-vi.mock('../../utils/disallowSwap', () => ({
+vi.mock('../../utils/isDisallowedSwap', () => ({
   default: vi.fn().mockResolvedValue(false),
 }));
 
@@ -124,7 +124,7 @@ describe(getVaultSwapData, () => {
   });
 
   it('rejects sanctioned addresses', async () => {
-    vi.mocked(disallowSwap).mockResolvedValueOnce(true);
+    vi.mocked(isDisallowedSwap).mockResolvedValueOnce(true);
 
     await expect(
       getVaultSwapData({
@@ -146,7 +146,7 @@ describe(getVaultSwapData, () => {
         },
       }),
     ).rejects.toThrow('Failed to get vault swap data, please try again later');
-    expect(vi.mocked(disallowSwap).mock.calls).toMatchSnapshot();
+    expect(vi.mocked(isDisallowedSwap).mock.calls).toMatchSnapshot();
   });
 
   it('rejects if source asset is disabled', async () => {

@@ -4,7 +4,7 @@ import { getParameterEncodingRequestSchema } from '@/shared/broker';
 import { getInternalAsset } from '@/shared/enums';
 import { transformKeysToCamelCase } from '@/shared/objects';
 import env from '../config/env';
-import disallowSwap from '../utils/disallowSwap';
+import isDisallowedSwap from '../utils/isDisallowedSwap';
 import logger from '../utils/logger';
 import { validateSwapAmount } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
@@ -17,7 +17,11 @@ export const getVaultSwapData = async (
   logger.info('Fetching vault swap data', input);
 
   if (
-    await disallowSwap(input.destAddress, input.srcAddress, input.fillOrKillParams?.refund_address)
+    await isDisallowedSwap(
+      input.destAddress,
+      input.srcAddress,
+      input.fillOrKillParams?.refund_address,
+    )
   ) {
     logger.info('Blocked address found for vault swap data', input);
     throw ServiceError.internalError('Failed to get vault swap data, please try again later');
