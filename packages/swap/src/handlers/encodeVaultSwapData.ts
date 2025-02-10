@@ -11,7 +11,7 @@ import ServiceError from '../utils/ServiceError';
 
 const client = new HttpClient(env.RPC_BROKER_HTTPS_URL);
 
-export const getVaultSwapData = async (
+export const encodeVaultSwapData = async (
   input: z.output<ReturnType<typeof getParameterEncodingRequestSchema>>,
 ) => {
   logger.info('Fetching vault swap data', input);

@@ -2,7 +2,7 @@ import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
 import isDisallowedSwap from '../../utils/isDisallowedSwap';
-import { getVaultSwapData } from '../getVaultSwapData';
+import { encodeVaultSwapData } from '../encodeVaultSwapData';
 
 vi.mock('@/shared/broker', () => ({
   requestSwapParameterEncoding: vi.fn(),
@@ -12,7 +12,7 @@ vi.mock('../../utils/isDisallowedSwap', () => ({
   default: vi.fn().mockResolvedValue(false),
 }));
 
-describe(getVaultSwapData, () => {
+describe(encodeVaultSwapData, () => {
   let oldEnv: typeof env;
 
   beforeEach(async () => {
@@ -47,7 +47,7 @@ describe(getVaultSwapData, () => {
       throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
     });
 
-    const result = await getVaultSwapData({
+    const result = await encodeVaultSwapData({
       srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
       destAsset: { asset: 'ETH', chain: 'Ethereum' },
       destAddress: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
@@ -127,7 +127,7 @@ describe(getVaultSwapData, () => {
     vi.mocked(isDisallowedSwap).mockResolvedValueOnce(true);
 
     await expect(
-      getVaultSwapData({
+      encodeVaultSwapData({
         srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
         destAsset: { asset: 'ETH', chain: 'Ethereum' },
         srcAddress: 'bc1qqwykx04uenc842d3sf50cjtehtj9tenugk808w',
@@ -153,7 +153,7 @@ describe(getVaultSwapData, () => {
     env.DISABLED_INTERNAL_ASSETS = ['Flip', 'Btc'];
 
     await expect(
-      getVaultSwapData({
+      encodeVaultSwapData({
         srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
         destAsset: { asset: 'ETH', chain: 'Ethereum' },
         destAddress: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
@@ -177,7 +177,7 @@ describe(getVaultSwapData, () => {
     env.DISABLED_INTERNAL_ASSETS = ['Btc', 'Dot'];
 
     await expect(
-      getVaultSwapData({
+      encodeVaultSwapData({
         srcAsset: { asset: 'ETH', chain: 'Ethereum' },
         destAsset: { asset: 'DOT', chain: 'Polkadot' },
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',

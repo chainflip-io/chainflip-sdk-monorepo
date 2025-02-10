@@ -525,7 +525,7 @@ export class SwapSDK {
     };
   }
 
-  async getVaultSwapData({
+  async encodeVaultSwapData({
     quote,
     srcAddress,
     destAddress,
@@ -572,6 +572,6 @@ export class SwapSDK {
       'Affiliate brokers are supported only when initializing the SDK with a brokerUrl',
     );
 
-    return this.trpc.getVaultSwapData.mutate(vaultSwapRequest);
+    return this.trpc.encodeVaultSwapData.mutate(vaultSwapRequest);
   }
 }

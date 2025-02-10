@@ -33,7 +33,7 @@ vi.mock('@trpc/client', async (importOriginal) => {
       openSwapDepositChannel: {
         mutate: vi.fn(),
       },
-      getVaultSwapData: {
+      encodeVaultSwapData: {
         mutate: vi.fn(),
       },
     }),
@@ -1617,10 +1617,10 @@ describe(SwapSDK, () => {
     });
   });
 
-  describe(SwapSDK.prototype.getVaultSwapData, () => {
-    it('calls getVaultSwapData with refund parameters for slippage', async () => {
+  describe(SwapSDK.prototype.encodeVaultSwapData, () => {
+    it('calls encodeVaultSwapData with refund parameters for slippage', async () => {
       // @ts-expect-error - private method
-      const rpcSpy = vi.spyOn(sdk.trpc.getVaultSwapData, 'mutate').mockResolvedValueOnce({
+      const rpcSpy = vi.spyOn(sdk.trpc.encodeVaultSwapData, 'mutate').mockResolvedValueOnce({
         chain: 'Bitcoin',
         nulldataPayload:
           '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
@@ -1634,7 +1634,7 @@ describe(SwapSDK, () => {
         estimatedPrice: '2500',
         type: 'REGULAR',
       } as Quote;
-      const response = await sdk.getVaultSwapData({
+      const response = await sdk.encodeVaultSwapData({
         quote,
         destAddress: '0xcafebabe',
         fillOrKillParams: {
@@ -1665,9 +1665,9 @@ describe(SwapSDK, () => {
       });
     });
 
-    it('calls getVaultSwapData with dca parameters', async () => {
+    it('calls encodeVaultSwapData with dca parameters', async () => {
       // @ts-expect-error - private method
-      const rpcSpy = vi.spyOn(sdk.trpc.getVaultSwapData, 'mutate').mockResolvedValueOnce({
+      const rpcSpy = vi.spyOn(sdk.trpc.encodeVaultSwapData, 'mutate').mockResolvedValueOnce({
         chain: 'Bitcoin',
         nulldataPayload:
           '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
@@ -1684,7 +1684,7 @@ describe(SwapSDK, () => {
         },
         type: 'DCA',
       } as Quote;
-      const response = await sdk.getVaultSwapData({
+      const response = await sdk.encodeVaultSwapData({
         quote,
         destAddress: '0xcafebabe',
         fillOrKillParams: {
@@ -1731,7 +1731,7 @@ describe(SwapSDK, () => {
       } as Quote;
 
       await expect(
-        sdk.getVaultSwapData({
+        sdk.encodeVaultSwapData({
           quote,
           destAddress: '0xcafebabe',
           fillOrKillParams: {
@@ -1759,7 +1759,7 @@ describe(SwapSDK, () => {
       } as Quote;
 
       await expect(
-        sdk.getVaultSwapData({
+        sdk.encodeVaultSwapData({
           quote,
           destAddress: '0xcafebabe',
           fillOrKillParams: {
@@ -1798,7 +1798,7 @@ describe(SwapSDK, () => {
 
       const result = await new SwapSDK({
         broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
-      }).getVaultSwapData({
+      }).encodeVaultSwapData({
         quote: {
           srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
           destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
@@ -1868,7 +1868,7 @@ describe(SwapSDK, () => {
 
       const result = await new SwapSDK({
         broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
-      }).getVaultSwapData({
+      }).encodeVaultSwapData({
         quote: {
           srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
           destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
@@ -1943,7 +1943,7 @@ describe(SwapSDK, () => {
 
       const result = await new SwapSDK({
         broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
-      }).getVaultSwapData({
+      }).encodeVaultSwapData({
         quote: {
           srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
           destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
@@ -1993,7 +1993,7 @@ describe(SwapSDK, () => {
       await expect(
         new SwapSDK({
           broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
-        }).getVaultSwapData({
+        }).encodeVaultSwapData({
           quote: {
             srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
             destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
@@ -2017,7 +2017,7 @@ describe(SwapSDK, () => {
       await expect(
         new SwapSDK({
           broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
-        }).getVaultSwapData({
+        }).encodeVaultSwapData({
           quote: {
             srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
             destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },

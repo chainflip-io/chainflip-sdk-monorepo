@@ -42,7 +42,7 @@ export const yargsOptions = {
   },
 } as const satisfies { [key: string]: Options };
 
-export default async function cliGetVaultSwapData(
+export default async function cliEncodeVaultSwapData(
   args: ArgumentsCamelCase<InferredOptionTypes<typeof yargsOptions>>,
 ) {
   const result = await broker.requestSwapParameterEncoding(

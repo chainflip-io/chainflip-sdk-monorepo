@@ -7,7 +7,7 @@ import { Server } from 'socket.io';
 import { getParameterEncodingRequestSchema } from '@/shared/broker';
 import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import env from '@/swap/config/env';
-import { getVaultSwapData } from '@/swap/handlers/getVaultSwapData';
+import { encodeVaultSwapData } from '@/swap/handlers/encodeVaultSwapData';
 import { openSwapDepositChannel } from './handlers/openSwapDepositChannel';
 import authenticate from './quoting/authenticate';
 import Quoter from './quoting/Quoter';
@@ -26,9 +26,9 @@ const appRouter = router({
   openSwapDepositChannel: publicProcedure
     .input(openSwapDepositChannelSchema)
     .mutation((v) => openSwapDepositChannel(v.input)),
-  getVaultSwapData: publicProcedure
+  encodeVaultSwapData: publicProcedure
     .input(getParameterEncodingRequestSchema(env.CHAINFLIP_NETWORK))
-    .mutation((v) => getVaultSwapData(v.input)),
+    .mutation((v) => encodeVaultSwapData(v.input)),
 });
 
 export type AppRouter = typeof appRouter;
