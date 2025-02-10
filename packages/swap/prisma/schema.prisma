@@ -86,7 +86,7 @@ model SwapDepositChannel {
   dcaChunkIntervalBlocks   Int?
   swapRequests             SwapRequest[]
   quote                    Quote?
-  SolanaPendingTxRef       SolanaPendingTxRef[]
+  solanaPendingTxRef       SolanaPendingTxRef[]
 
   @@unique([issuedBlock, srcChain, channelId])
   @@index([depositAddress])
@@ -177,7 +177,7 @@ model SwapRequest {
   quote                        Quote?
   totalBrokerCommissionBps     Int
   beneficiaries                SwapBeneficiary[]
-  SolanaPendingTxRef           SolanaPendingTxRef[]
+  solanaPendingTxRef           SolanaPendingTxRef[]
 
   @@index([srcAsset, prewitnessedDepositId])
   @@schema("public")
@@ -279,7 +279,7 @@ model FailedSwap {
   ccmAdditionalData     String?
   refundBroadcast       Broadcast?           @relation(fields: [refundBroadcastId], references: [id])
   refundBroadcastId     BigInt?
-  SolanaPendingTxRef    SolanaPendingTxRef[]
+  solanaPendingTxRef    SolanaPendingTxRef[]
 
   @@index([swapDepositChannelId])
   @@schema("public")

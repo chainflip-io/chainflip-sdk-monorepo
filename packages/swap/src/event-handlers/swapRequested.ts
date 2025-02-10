@@ -1,6 +1,7 @@
 import { swappingSwapRequested as schema170 } from '@chainflip/processor/170/swapping/swapRequested';
 import { swappingSwapRequested as schema180 } from '@chainflip/processor/180/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
+import assert from 'assert';
 import z from 'zod';
 import { formatTxRef } from '@/shared/common';
 import { assetConstants, Chain, InternalAsset } from '@/shared/enums';
@@ -196,19 +197,6 @@ export default async function swapRequested({
       }
     : undefined;
 
-  let pendingTxRefInfo;
-  if (assetConstants[inputAsset].chain === 'Solana') {
-    if (origin.__kind === 'DepositChannel') {
-      pendingTxRefInfo = { swapDepositChannelId };
-    } else if (origin.__kind === 'Vault' && origin.txId.__kind === 'Solana') {
-      pendingTxRefInfo = {
-        address: base58.encode(origin.txId.value[0]),
-        slot: origin.txId.value[1],
-        vaultSwapRequestId: undefined as bigint | undefined,
-      };
-    }
-  }
-
   const swapRequest = await prisma.swapRequest.create({
     data: {
       nativeId: swapRequestId,
@@ -243,10 +231,22 @@ export default async function swapRequested({
     },
   });
 
-  if (pendingTxRefInfo) {
-    if ('vaultSwapRequestId' in pendingTxRefInfo) {
-      pendingTxRefInfo.vaultSwapRequestId = swapRequest.id;
+  if (assetConstants[inputAsset].chain === 'Solana') {
+    let pendingTxRefInfo;
+    if (origin.__kind === 'DepositChannel') {
+      pendingTxRefInfo = { swapDepositChannelId };
+    } else if (origin.__kind === 'Vault') {
+      assert(origin.txId.__kind === 'Solana');
+      pendingTxRefInfo = {
+        address: base58.encode(origin.txId.value[0]),
+        slot: origin.txId.value[1],
+        vaultSwapRequestId: swapRequest.id,
+      };
+    } else if (origin.__kind !== 'Internal') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      assertUnreachable(origin, `unexpected origin: ${(origin as any).__kind}`);
     }
+
     await prisma.solanaPendingTxRef.create({ data: pendingTxRefInfo });
   }
 }

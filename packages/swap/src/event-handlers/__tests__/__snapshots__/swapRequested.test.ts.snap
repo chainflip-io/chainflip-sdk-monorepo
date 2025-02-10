@@ -1,5 +1,16 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`swapRequested > creates a new deposit channel swap request and creates a pending tx ref record 1`] = `
+{
+  "address": null,
+  "failedVaultSwapId": null,
+  "id": Any<Number>,
+  "slot": null,
+  "swapDepositChannelId": Any<BigInt>,
+  "vaultSwapRequestId": null,
+}
+`;
+
 exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL 180) 1`] = `
 {
   "ccmDepositReceivedBlockIndex": "87-13",
@@ -261,42 +272,15 @@ exports[`swapRequested > creates a new swap request (VAULT) 1`] = `
 }
 `;
 
-exports[`swapRequested > creates a new swap request and gets the solana tx ref (VAULT 180) 1`] = `
-{
-  "ccmDepositReceivedBlockIndex": null,
-  "ccmGasBudget": null,
-  "ccmMessage": null,
-  "completedAt": null,
-  "completedBlockIndex": null,
-  "dcaChunkIntervalBlocks": null,
-  "dcaNumberOfChunks": null,
-  "depositAmount": "100000000000",
-  "depositBoostedAt": null,
-  "depositBoostedBlockIndex": null,
-  "depositFinalisedAt": null,
-  "depositFinalisedBlockIndex": null,
-  "depositTransactionRef": "4tpsjS1WFhamaRBfYdEHdadHFs58Ppq8jrv26xwkquVjA5BfP7wGjBbwVrDCECDpxRgfCnqXfCK4way9BPutAyRS",
-  "destAddress": "0xf4640a7c3c20969f40c7e2b62d8a5e4f19e6c106",
-  "destAsset": "Eth",
-  "effectiveBoostFeeBps": null,
-  "egressId": null,
-  "fokMinPriceX128": "2.0330053335568424557569281615685057460598557419e+46",
-  "fokRefundAddress": "HfasueN6RNPjSM6rKGH5dga6kS2oUF8siGH3m4MXPURp",
-  "fokRetryDurationBlocks": 10,
-  "id": Any<BigInt>,
-  "maxBoostFeeBps": 0,
-  "nativeId": 158n,
-  "originType": "VAULT",
-  "prewitnessedDepositId": null,
-  "refundEgressId": null,
-  "requestType": "REGULAR",
-  "srcAddress": null,
-  "srcAsset": "Sol",
-  "swapDepositChannelId": null,
-  "swapInputAmount": "100000000000",
-  "swapOutputAmount": null,
-  "swapRequestedAt": 2024-08-23T13:13:12.002Z,
-  "swapRequestedBlockIndex": "87-13",
-  "totalBrokerCommissionBps": 0,
-}
+exports[`swapRequested > creates a new vault swap request and creates a pending tx ref record 1`] = `
+[
+  {
+    "address": "HZC6KyQYbxbKGiyWbBrwhxrPPecFi2yKG9jMwFqwNEtJ",
+    "failedVaultSwapId": null,
+    "id": Any<Number>,
+    "slot": 413006n,
+    "swapDepositChannelId": null,
+    "vaultSwapRequestId": Any<BigInt>,
+  },
+]
 `;

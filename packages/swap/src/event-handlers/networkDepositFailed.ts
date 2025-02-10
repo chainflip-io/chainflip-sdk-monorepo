@@ -27,11 +27,9 @@ const argsMap = {
 
 export type DepositFailedArgs = z.input<(typeof argsMap)[Chain]>;
 
-type ExtractKind<T, K> = T extends { __kind: K } ? T : never;
-
-type DepositWitness = ExtractKind<
+type DepositWitness = Extract<
   z.output<(typeof argsMap)[Chain]>['details'],
-  'DepositChannel'
+  { __kind: 'DepositChannel' }
 >['depositWitness'];
 
 type FailureReason = z.output<(typeof argsMap)[Chain]>['reason']['__kind'];
@@ -160,8 +158,10 @@ export const depositFailed =
     });
 
     if (pendingTxRefInfo) {
-      if ('failedSwapId' in pendingTxRefInfo) pendingTxRefInfo.failedSwapId = failedSwap.id;
-      prisma.solanaPendingTxRef.create({ data: pendingTxRefInfo });
+      if ('failedVaultSwapId' in pendingTxRefInfo) {
+        pendingTxRefInfo.failedVaultSwapId = failedSwap.id;
+      }
+      await prisma.solanaPendingTxRef.create({ data: pendingTxRefInfo });
     }
   };
 
