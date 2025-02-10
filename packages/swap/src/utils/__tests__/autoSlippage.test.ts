@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import { describe, it, beforeEach, expect, vi } from 'vitest';
 import env from '@/swap/config/env';
 import { calculateRecommendedSlippage } from '../autoSlippage';
@@ -16,6 +17,7 @@ vi.mock('../rpc', () => ({
 describe(calculateRecommendedSlippage, () => {
   beforeEach(() => {
     env.DCA_CHUNK_PRICE_IMPACT_PERCENT = {};
+    env.STABLE_COIN_SLIPPAGE_MIN_PRICE = 0.995;
   });
 
   it('should return the correct value for ETH -> USDC for small amount', async () => {
@@ -33,6 +35,7 @@ describe(calculateRecommendedSlippage, () => {
       destAsset: 'Usdc',
       egressAmount: 10n,
       dcaChunks: 1,
+      estimatedPrice: new BigNumber(10),
     });
 
     expect(result).toEqual(0.5);
@@ -55,6 +58,7 @@ describe(calculateRecommendedSlippage, () => {
       destAsset: 'Usdc',
       egressAmount: 10n,
       dcaChunks: 11,
+      estimatedPrice: new BigNumber(10),
     });
 
     expect(result).toEqual(2.5);
@@ -75,6 +79,7 @@ describe(calculateRecommendedSlippage, () => {
       destAsset: 'Usdc',
       egressAmount: 550n,
       dcaChunks: 1,
+      estimatedPrice: new BigNumber(550),
     });
 
     expect(result).toEqual(1.25);
@@ -95,6 +100,7 @@ describe(calculateRecommendedSlippage, () => {
       destAsset: 'Usdc',
       egressAmount: 1300n,
       dcaChunks: 1,
+      estimatedPrice: new BigNumber(1300),
     });
 
     expect(result).toEqual(1.75);
@@ -115,6 +121,7 @@ describe(calculateRecommendedSlippage, () => {
       destAsset: 'Usdc',
       egressAmount: 800n,
       dcaChunks: 1,
+      estimatedPrice: new BigNumber(800),
     });
 
     expect(result).toEqual(1.5); // 1.48 rounded
@@ -144,6 +151,7 @@ describe(calculateRecommendedSlippage, () => {
       intermediateAmount: 3000n,
       egressAmount: 1n,
       dcaChunks: 100,
+      estimatedPrice: new BigNumber(3000),
     });
 
     expect(result).toEqual(2.5);
@@ -174,37 +182,49 @@ describe(calculateRecommendedSlippage, () => {
       egressAmount: 1n,
       dcaChunks: 100,
       boostFeeBps: 10,
+      estimatedPrice: new BigNumber(3000),
     });
 
     expect(result).toEqual(2);
   });
 
-  it('should return the correct value for swaps between stable assets', async () => {
-    expect(
-      await calculateRecommendedSlippage({
-        srcAsset: 'Usdc',
-        destAsset: 'Usdt',
-        egressAmount: 10n,
-        dcaChunks: 11,
-      }),
-    ).toEqual(0.5);
+  describe.each([
+    ['Usdt', 'Usdc'],
+    ['ArbUsdc', 'SolUsdc'],
+  ] as const)('between %s and %s', (srcAsset, destAsset) => {
+    it.each([
+      [new BigNumber('1.0018176621030249'), 0.68, 0.995],
+      [new BigNumber('1.0333685749993480'), 3.71, 0.995],
+      [new BigNumber('1'), 0.5, 0.995],
+      // if it's less than the targeted rate
+      [new BigNumber('0.97445870289259320468'), 0.5, 0.97],
+    ])(
+      'should return the correct value for swaps between stable assets',
+      async (estimatedPrice, recommendedSlippage, expected) => {
+        const rate = await calculateRecommendedSlippage({
+          srcAsset,
+          destAsset,
+          egressAmount: 10n,
+          dcaChunks: 11,
+          estimatedPrice,
+        });
+        expect(rate).toEqual(recommendedSlippage);
+        expect(estimatedPrice.times(1 - rate / 100).toNumber()).toBeCloseTo(expected, 3);
+      },
+    );
+  });
 
-    expect(
-      await calculateRecommendedSlippage({
-        srcAsset: 'Usdt',
-        destAsset: 'Usdc',
-        egressAmount: 10n,
-        dcaChunks: 11,
-      }),
-    ).toEqual(0.5);
-
-    expect(
-      await calculateRecommendedSlippage({
-        srcAsset: 'ArbUsdc',
-        destAsset: 'SolUsdc',
-        egressAmount: 10n,
-        dcaChunks: 11,
-      }),
-    ).toEqual(0.5);
+  it('is configurable for stable coin slippage', async () => {
+    env.STABLE_COIN_SLIPPAGE_MIN_PRICE = 0.99;
+    const estimatedPrice = new BigNumber(1);
+    const rate = await calculateRecommendedSlippage({
+      srcAsset: 'Usdc',
+      destAsset: 'Usdt',
+      egressAmount: 10n,
+      dcaChunks: 11,
+      estimatedPrice,
+    });
+    expect(rate).toEqual(1);
+    expect(estimatedPrice.times(1 - rate / 100).toNumber()).toBeCloseTo(0.99, 3);
   });
 });

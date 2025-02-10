@@ -89,6 +89,9 @@ export default z
     ELLIPTIC_API_KEY: z.string().optional(),
     ELLIPTIC_API_SECRET: z.string().optional(),
     ELLIPTIC_RISK_SCORE_TOLERANCE: optionalNumber(9),
+    STABLE_COIN_SLIPPAGE_MIN_PRICE: optionalNumber(0.995).describe(
+      'The targeted minimum price for stable coin swaps when providing a slippage recommendation',
+    ),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);

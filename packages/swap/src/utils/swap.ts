@@ -111,5 +111,5 @@ export const getSwapPrice = (
   const input = BigNumber(inputAmount).shiftedBy(-assetConstants[inputAsset].decimals);
   const output = BigNumber(outputAmount).shiftedBy(-assetConstants[outputAsset].decimals);
 
-  return output.div(input).toFixed();
+  return output.div(input);
 };
