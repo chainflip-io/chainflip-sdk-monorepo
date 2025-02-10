@@ -15,7 +15,6 @@ import { FailedSwapReason, type Chain } from '../client';
 import { getDepositTxRef } from './common';
 import env from '../config/env';
 import logger from '../utils/logger';
-import { findSolanaTxHash } from '../utils/solana';
 import type { EventHandlerArgs } from './index';
 
 const argsMap = {
@@ -91,6 +90,7 @@ export const depositFailed =
     let channelMetadata;
     let destinationAddress;
     let destinationAsset;
+    let pendingTxRefInfo;
 
     if (details.__kind === 'DepositChannel') {
       const depositAddress = extractDepositAddress(details.depositWitness);
@@ -121,11 +121,17 @@ export const depositFailed =
       amount = details.depositWitness.amount;
 
       if (!txRef && (asset === 'Sol' || asset === 'SolUsdc')) {
-        txRef = await findSolanaTxHash(asset, blockHeight, depositAddress, amount);
+        pendingTxRefInfo = { swapDepositChannelId };
       }
     } else {
       if ('depositDetails' in details.vaultWitness) {
         txRef = getDepositTxRef(chain, details.vaultWitness.depositDetails, blockHeight);
+      } else {
+        pendingTxRefInfo = {
+          address: base58.encode(details.vaultWitness.txId[0]),
+          slot: details.vaultWitness.txId[1],
+          failedVaultSwapId: undefined as number | undefined,
+        };
       }
       amount = details.vaultWitness.depositAmount;
       asset = details.vaultWitness.inputAsset;
@@ -134,7 +140,7 @@ export const depositFailed =
       destinationAsset = details.vaultWitness.outputAsset;
     }
 
-    await prisma.failedSwap.create({
+    const failedSwap = await prisma.failedSwap.create({
       data: {
         reason,
         swapDepositChannelId,
@@ -152,6 +158,11 @@ export const depositFailed =
         ccmAdditionalData: channelMetadata?.ccmAdditionalData,
       },
     });
+
+    if (pendingTxRefInfo) {
+      if ('failedSwapId' in pendingTxRefInfo) pendingTxRefInfo.failedSwapId = failedSwap.id;
+      prisma.solanaPendingTxRef.create({ data: pendingTxRefInfo });
+    }
   };
 
 export default depositFailed;

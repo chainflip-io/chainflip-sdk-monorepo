@@ -56,36 +56,37 @@ enum InternalAsset {
 }
 
 model SwapDepositChannel {
-  id                       BigInt            @id @default(autoincrement())
+  id                       BigInt               @id @default(autoincrement())
   channelId                BigInt
   srcChain                 Chain
   srcAsset                 InternalAsset
   depositAddress           String
-  expectedDepositAmount    Decimal?          @db.Decimal(30, 0)
+  expectedDepositAmount    Decimal?             @db.Decimal(30, 0)
   destAsset                InternalAsset
   destAddress              String
-  ccmGasBudget             Decimal?          @db.Decimal(30, 0)
+  ccmGasBudget             Decimal?             @db.Decimal(30, 0)
   ccmMessage               String?
   issuedBlock              Int
   expiryBlock              Int? // TODO(mainnet): remove this column
   srcChainExpiryBlock      BigInt?
   totalBrokerCommissionBps Int
-  maxBoostFeeBps           Int               @default(0)
-  isExpired                Boolean           @default(false)
-  createdAt                DateTime          @default(now())
+  maxBoostFeeBps           Int                  @default(0)
+  isExpired                Boolean              @default(false)
+  createdAt                DateTime             @default(now())
   failedSwaps              FailedSwap[]
   estimatedExpiryAt        DateTime?
-  openedThroughBackend     Boolean           @default(false)
-  openingFeePaid           Decimal           @db.Decimal(30, 0)
+  openedThroughBackend     Boolean              @default(false)
+  openingFeePaid           Decimal              @db.Decimal(30, 0)
   beneficiaries            SwapBeneficiary[]
   failedBoosts             FailedBoost[]
-  fokMinPriceX128          Decimal?          @db.Decimal(78, 0)
+  fokMinPriceX128          Decimal?             @db.Decimal(78, 0)
   fokRefundAddress         String?
   fokRetryDurationBlocks   Int?
-  dcaNumberOfChunks        Int?              @default(1)
+  dcaNumberOfChunks        Int?                 @default(1)
   dcaChunkIntervalBlocks   Int?
   swapRequests             SwapRequest[]
   quote                    Quote?
+  SolanaPendingTxRef       SolanaPendingTxRef[]
 
   @@unique([issuedBlock, srcChain, channelId])
   @@index([depositAddress])
@@ -132,50 +133,51 @@ enum SwapRequestType {
 }
 
 model SwapRequest {
-  id                           BigInt              @id @default(autoincrement())
+  id                           BigInt               @id @default(autoincrement())
   /// the swap request id on the state chain
-  nativeId                     BigInt              @unique
+  nativeId                     BigInt               @unique
   originType                   SwapRequestOrigin
-  swapDepositChannel           SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannel           SwapDepositChannel?  @relation(fields: [swapDepositChannelId], references: [id])
   swapDepositChannelId         BigInt?
   depositTransactionRef        String?
   srcAsset                     InternalAsset
   destAsset                    InternalAsset
-  depositAmount                Decimal?            @db.Decimal(30, 0)
-  swapInputAmount              Decimal             @db.Decimal(30, 0)
-  swapOutputAmount             Decimal?            @db.Decimal(30, 0)
+  depositAmount                Decimal?             @db.Decimal(30, 0)
+  swapInputAmount              Decimal              @db.Decimal(30, 0)
+  swapOutputAmount             Decimal?             @db.Decimal(30, 0)
   requestType                  SwapRequestType
   ccmDepositReceivedBlockIndex String?
-  ccmGasBudget                 Decimal?            @db.Decimal(30, 0)
+  ccmGasBudget                 Decimal?             @db.Decimal(30, 0)
   ccmMessage                   String?
   srcAddress                   String?
   destAddress                  String?
   swapRequestedAt              DateTime
-  swapRequestedBlockIndex      String?
+  swapRequestedBlockIndex      String
   depositFinalisedAt           DateTime?
   depositFinalisedBlockIndex   String?
   prewitnessedDepositId        BigInt?
-  maxBoostFeeBps               Int                 @default(0)
+  maxBoostFeeBps               Int                  @default(0)
   effectiveBoostFeeBps         Int?
   depositBoostedAt             DateTime?
   depositBoostedBlockIndex     String?
   completedAt                  DateTime?
   completedBlockIndex          String?
-  egress                       Egress?             @relation("egress", fields: [egressId], references: [id])
+  egress                       Egress?              @relation("egress", fields: [egressId], references: [id])
   egressId                     BigInt?
-  refundEgress                 Egress?             @relation("refundEgress", fields: [refundEgressId], references: [id])
+  refundEgress                 Egress?              @relation("refundEgress", fields: [refundEgressId], references: [id])
   refundEgressId               BigInt?
   ignoredEgresses              IgnoredEgress[]
   swaps                        Swap[]
   fees                         SwapFee[]
   dcaNumberOfChunks            Int?
   dcaChunkIntervalBlocks       Int?
-  fokMinPriceX128              Decimal?            @db.Decimal(78, 0)
+  fokMinPriceX128              Decimal?             @db.Decimal(78, 0)
   fokRefundAddress             String?
   fokRetryDurationBlocks       Int?
   quote                        Quote?
   totalBrokerCommissionBps     Int
   beneficiaries                SwapBeneficiary[]
+  SolanaPendingTxRef           SolanaPendingTxRef[]
 
   @@index([srcAsset, prewitnessedDepositId])
   @@schema("public")
@@ -259,24 +261,25 @@ enum FailedSwapReason {
 }
 
 model FailedSwap {
-  id                    Int                 @id @default(autoincrement())
+  id                    Int                  @id @default(autoincrement())
   reason                FailedSwapReason
   destAddress           String
   destChain             Chain
   destAsset             InternalAsset?
-  depositAmount         Decimal             @db.Decimal(30, 0)
+  depositAmount         Decimal              @db.Decimal(30, 0)
   srcChain              Chain
   srcAsset              InternalAsset
-  swapDepositChannel    SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannel    SwapDepositChannel?  @relation(fields: [swapDepositChannelId], references: [id])
   swapDepositChannelId  BigInt?
   depositTransactionRef String?
   failedAt              DateTime
   failedBlockIndex      String
-  ccmGasBudget          Decimal?            @db.Decimal(30, 0)
+  ccmGasBudget          Decimal?             @db.Decimal(30, 0)
   ccmMessage            String?
   ccmAdditionalData     String?
-  refundBroadcast       Broadcast?          @relation(fields: [refundBroadcastId], references: [id])
+  refundBroadcast       Broadcast?           @relation(fields: [refundBroadcastId], references: [id])
   refundBroadcastId     BigInt?
+  SolanaPendingTxRef    SolanaPendingTxRef[]
 
   @@index([swapDepositChannelId])
   @@schema("public")
@@ -484,53 +487,16 @@ model BlockedAddress {
   @@schema("private")
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-model backup_swap_fees {
-  id     BigInt?
-  swapId BigInt?
-  type   SwapFeeType?
-  asset  InternalAsset?
-  amount Decimal?       @db.Decimal(30, 0)
+model SolanaPendingTxRef {
+  id                   Int                 @id @default(autoincrement())
+  address              String?
+  slot                 BigInt?
+  swapDepositChannel   SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId BigInt?
+  vaultSwapRequest     SwapRequest?        @relation(fields: [vaultSwapRequestId], references: [id])
+  vaultSwapRequestId   BigInt?
+  failedVaultSwap      FailedSwap?         @relation(fields: [failedVaultSwapId], references: [id])
+  failedVaultSwapId    Int?
 
-  @@ignore
-  @@schema("private")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-model backup_swaps {
-  id                              BigInt?
-  nativeId                        BigInt?
-  swapExecutedAt                  DateTime?
-  createdAt                       DateTime?
-  updatedAt                       DateTime?
-  depositAmount                   Decimal?       @db.Decimal(30, 0)
-  depositReceivedAt               DateTime?
-  swapDepositChannelId            BigInt?
-  destAddress                     String?
-  depositReceivedBlockIndex       String?
-  swapExecutedBlockIndex          String?
-  srcAsset                        InternalAsset?
-  destAsset                       InternalAsset?
-  intermediateAmount              Decimal?       @db.Decimal(30, 0)
-  egressId                        BigInt?
-  type                            SwapType?
-  ccmDepositReceivedBlockIndex    String?
-  ccmGasBudget                    Decimal?       @db.Decimal(30, 0)
-  ccmMessage                      String?
-  swapOutputAmount                Decimal?       @db.Decimal(30, 0)
-  swapInputAmount                 Decimal?       @db.Decimal(30, 0)
-  effectiveBoostFeeBps            Int?
-  depositBoostedAt                DateTime?
-  depositBoostedBlockIndex        String?
-  depositTransactionRef           String?
-  prewitnessedDepositId           BigInt?
-  swapScheduledAt                 DateTime?
-  swapScheduledBlockIndex         String?
-  retryCount                      Int?
-  refundEgressId                  BigInt?
-  latestSwapRescheduledAt         DateTime?
-  latestSwapRescheduledBlockIndex String?
-
-  @@ignore
   @@schema("private")
 }

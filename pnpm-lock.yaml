@@ -91,11 +91,11 @@ importers:
         specifier: ^1.6.12
         version: 1.6.12
       '@chainflip/solana':
-        specifier: ^1.0.5
-        version: 1.0.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^2.0.1
+        version: 2.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.4.13
-        version: 0.4.14
+        specifier: ^0.5.0
+        version: 0.5.0
       axios:
         specifier: ^1.7.7
         version: 1.7.9
@@ -137,11 +137,11 @@ importers:
         specifier: ^1.6.12
         version: 1.6.12
       '@chainflip/solana':
-        specifier: ^1.0.5
-        version: 1.0.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^2.0.1
+        version: 2.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.4.13
-        version: 0.4.14
+        specifier: ^0.5.0
+        version: 0.5.0
       '@trpc/client':
         specifier: ^10.45.2
         version: 10.45.2(@trpc/server@10.45.2)
@@ -177,11 +177,11 @@ importers:
         specifier: ^1.6.12
         version: 1.6.12
       '@chainflip/solana':
-        specifier: ^1.0.5
-        version: 1.0.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^2.0.1
+        version: 2.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.4.13
-        version: 0.4.14
+        specifier: ^0.5.0
+        version: 0.5.0
       axios:
         specifier: ^1.7.7
         version: 1.7.9
@@ -235,11 +235,11 @@ importers:
         specifier: ^1.6.12
         version: 1.6.12
       '@chainflip/solana':
-        specifier: ^1.0.5
-        version: 1.0.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^2.0.1
+        version: 2.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.4.13
-        version: 0.4.14
+        specifier: ^0.5.0
+        version: 0.5.0
       '@polkadot/api':
         specifier: ^15.5.2
         version: 15.5.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -645,14 +645,17 @@ packages:
   '@chainflip/rpc@1.6.12':
     resolution: {integrity: sha512-cZM05jcOVijtxutN3ini5R52lYu7vbmszi5n5PEwGi2ueNn4pyikRDlIg6zSwtpMcCDYk17l3HK88Iam1w5/BA==}
 
-  '@chainflip/solana@1.0.5':
-    resolution: {integrity: sha512-QoDOLHeB1MllgMkt52F5wQrKvoD57vGljRcsOCrPX27CdjppAXvLhc2JiHAxxwgiZwqYxb1PRGw5nm3nwyAqDw==}
+  '@chainflip/solana@2.0.1':
+    resolution: {integrity: sha512-hUz2vgGSEZ6OKDB0s7uATDOmAthwPf71c5vTUIoBaA7E9iQLt60C8uLkB0ZRZO1Ie0oHQuSIS8YBIvjuyvhVxQ==}
 
   '@chainflip/utils@0.4.0':
     resolution: {integrity: sha512-OuMFlgbIbyJ1Kt39zytfGh4HZ5dVY25/a3qb0c1K137+QmhdOuF+R7QSkFPqYAfDG4KhGRqo0rgUtEpaEEcSKA==}
 
   '@chainflip/utils@0.4.14':
     resolution: {integrity: sha512-Us0IDaaBPWCoEgiYBLi4JKO+x5H58D0ZD+ljJ/mXskSGKxZ+u+uG/LHBxdRbIMX3LnrTEziKCbvT0bCa9vXJ+Q==}
+
+  '@chainflip/utils@0.5.0':
+    resolution: {integrity: sha512-rmvGttu+Pc7rsCNQ4gemg8G9PLPTjRsbuvLLF9By9pADFVWTp18UyKbvLVt5H00LOty41fhvlln2FerNl98/MQ==}
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -6153,7 +6156,7 @@ snapshots:
       '@chainflip/utils': 0.4.0
       zod: 3.24.1
 
-  '@chainflip/solana@1.0.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+  '@chainflip/solana@2.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
       '@chainflip/utils': 0.4.0
       '@solana/web3.js': 1.98.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -6165,6 +6168,12 @@ snapshots:
   '@chainflip/utils@0.4.0': {}
 
   '@chainflip/utils@0.4.14':
+    dependencies:
+      '@date-fns/utc': 2.1.0
+      bignumber.js: 9.1.2
+      date-fns: 4.1.0
+
+  '@chainflip/utils@0.5.0':
     dependencies:
       '@date-fns/utc': 2.1.0
       bignumber.js: 9.1.2

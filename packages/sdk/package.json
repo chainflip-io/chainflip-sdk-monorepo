@@ -53,8 +53,8 @@
   "dependencies": {
     "@chainflip/bitcoin": "^1.1.1",
     "@chainflip/rpc": "^1.6.12",
-    "@chainflip/solana": "^1.0.5",
-    "@chainflip/utils": "^0.4.13",
+    "@chainflip/solana": "^2.0.1",
+    "@chainflip/utils": "^0.5.0",
     "@trpc/client": "^10.45.2",
     "axios": "^1.7.7",
     "bignumber.js": "^9.1.2",

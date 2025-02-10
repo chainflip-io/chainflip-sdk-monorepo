@@ -1,15 +1,12 @@
 import { swappingSwapRequested as schema170 } from '@chainflip/processor/170/swapping/swapRequested';
 import { swappingSwapRequested as schema180 } from '@chainflip/processor/180/swapping/swapRequested';
-import { findSolanaDepositSignature } from '@chainflip/solana';
 import * as base58 from '@chainflip/utils/base58';
-import { hexToBytes } from '@chainflip/utils/bytes';
 import z from 'zod';
 import { formatTxRef } from '@/shared/common';
 import { assetConstants, Chain, InternalAsset } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
 import { assertNever } from '@/shared/guards';
 import { pascalCaseToScreamingSnakeCase } from '@/shared/strings';
-import env from '@/swap/config/env';
 import { Prisma } from '../client';
 import type { EventHandlerArgs } from './index';
 
@@ -81,40 +78,24 @@ const getRequestInfo = (requestType: RequestType) => {
   return assertNever(requestType, `unexpected request type: ${(requestType as any).__kind}`);
 };
 
-export const getVaultOriginTxRef = async (
+export const getVaultOriginTxRef = (
   chain: Chain,
   origin: Extract<z.output<typeof schema180>['origin'], { __kind: 'Vault' }>,
 ) => {
   const kind = origin.txId.__kind;
 
   switch (kind) {
-    case 'Evm': {
+    case 'Evm':
+    case 'Bitcoin':
       return formatTxRef(chain, origin.txId.value);
-    }
-    case 'Bitcoin': {
-      return formatTxRef(chain, origin.txId.value);
-    }
-    case 'Polkadot': {
+    case 'Polkadot':
       return formatTxRef(
         chain,
         `${origin.txId.value.blockNumber}-${origin.txId.value.extrinsicIndex}`,
       );
-    }
-    case 'Solana': {
-      // vault swap tx pays rent to vault swap account
-      const [vaultSwapAccount, slot] = origin.txId.value;
-      return findSolanaDepositSignature(
-        env.SOLANA_RPC_HTTP_URL,
-        null,
-        base58.encode(hexToBytes(vaultSwapAccount)),
-        1n, // dummy amount to detect rent payment
-        Number(slot),
-        Number(slot),
-      );
-    }
-    case 'None': {
+    case 'Solana':
+    case 'None':
       return undefined;
-    }
     default:
       return assertUnreachable(kind);
   }
@@ -150,7 +131,7 @@ export const getOriginInfo = async (
     return {
       originType: 'VAULT' as const,
       swapDepositChannelId: undefined,
-      depositTransactionRef: await getVaultOriginTxRef(assetConstants[srcAsset].chain, origin),
+      depositTransactionRef: getVaultOriginTxRef(assetConstants[srcAsset].chain, origin),
       brokerId: origin.brokerId,
     };
   }
@@ -215,7 +196,20 @@ export default async function swapRequested({
       }
     : undefined;
 
-  await prisma.swapRequest.create({
+  let pendingTxRefInfo;
+  if (assetConstants[inputAsset].chain === 'Solana') {
+    if (origin.__kind === 'DepositChannel') {
+      pendingTxRefInfo = { swapDepositChannelId };
+    } else if (origin.__kind === 'Vault' && origin.txId.__kind === 'Solana') {
+      pendingTxRefInfo = {
+        address: base58.encode(origin.txId.value[0]),
+        slot: origin.txId.value[1],
+        vaultSwapRequestId: undefined as bigint | undefined,
+      };
+    }
+  }
+
+  const swapRequest = await prisma.swapRequest.create({
     data: {
       nativeId: swapRequestId,
       originType,
@@ -248,4 +242,11 @@ export default async function swapRequested({
       },
     },
   });
+
+  if (pendingTxRefInfo) {
+    if ('vaultSwapRequestId' in pendingTxRefInfo) {
+      pendingTxRefInfo.vaultSwapRequestId = swapRequest.id;
+    }
+    await prisma.solanaPendingTxRef.create({ data: pendingTxRefInfo });
+  }
 }
