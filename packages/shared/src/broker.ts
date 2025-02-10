@@ -30,9 +30,9 @@ type DepositAddressRequest = {
   fillOrKillParams?: FillOrKillParamsX128;
   dcaParams?: DcaParams;
 
-  /** @deprecated pass the chain in the srcAsset object instead */
+  /** @deprecated DEPRECATED(1.8) pass the chain in the srcAsset object instead */
   srcChain?: Chain;
-  /** @deprecated pass the chain in the destAsset object instead */
+  /** @deprecated DEPRECATED(1.8) pass the chain in the destAsset object instead */
   destChain?: Chain;
 };
 
