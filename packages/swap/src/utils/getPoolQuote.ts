@@ -113,6 +113,13 @@ export default async function getPoolQuote({
   const dcaChunks = dcaParams?.numberOfChunks ?? 1;
   const quoteType = dcaChunks > 1 ? 'DCA' : 'REGULAR';
 
+  const estimatedPrice = getSwapPrice(
+    srcAsset,
+    String(swapInputAmount),
+    destAsset,
+    String(swapOutputAmount),
+  );
+
   return {
     intermediateAmount: intermediateAmount?.toString(),
     egressAmount: egressAmount.toString(),
@@ -123,18 +130,14 @@ export default async function getPoolQuote({
       intermediateAmount,
       egressAmount,
       dcaChunks,
+      estimatedPrice,
     }),
     includedFees,
     lowLiquidityWarning,
     poolInfo,
     estimatedDurationsSeconds: estimatedDurations.durations,
     estimatedDurationSeconds: estimatedDurations.total,
-    estimatedPrice: getSwapPrice(
-      srcAsset,
-      String(swapInputAmount),
-      destAsset,
-      String(swapOutputAmount),
-    ),
+    estimatedPrice: estimatedPrice.toFixed(),
     type: quoteType,
     srcAsset: getAssetAndChain(srcAsset),
     destAsset: getAssetAndChain(destAsset),

@@ -77,6 +77,7 @@ export const calculateRecommendedSlippage = async ({
   egressAmount,
   boostFeeBps,
   dcaChunks,
+  estimatedPrice,
 }: {
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
@@ -84,14 +85,23 @@ export const calculateRecommendedSlippage = async ({
   egressAmount: bigint;
   boostFeeBps?: number;
   dcaChunks: number;
-}) => {
+  estimatedPrice: BigNumber;
+}): Promise<number> => {
   // do not accept significant price movements for stable assets independently of available liquidity
   const stableAssets: Asset[] = ['USDC', 'USDT'];
   if (
     stableAssets.includes(assetConstants[srcAsset].asset) &&
     stableAssets.includes(assetConstants[destAsset].asset)
   ) {
-    return 0.5;
+    if (estimatedPrice.lt(env.STABLE_COIN_SLIPPAGE_MIN_PRICE)) {
+      return 0.5;
+    }
+
+    return new BigNumber(1)
+      .minus(new BigNumber(env.STABLE_COIN_SLIPPAGE_MIN_PRICE).dividedBy(estimatedPrice))
+      .times(100)
+      .decimalPlaces(2)
+      .toNumber();
   }
 
   const BASE_SLIPPAGE = 1;

@@ -19,4 +19,5 @@ export default {
   MAX_CHANNELS_OPEN_PER_ADDRESS: 10,
   DISABLE_QUOTING: false,
   SOLANA_RPC_HTTP_URL: 'http://solana-rpc.test',
+  STABLE_COIN_SLIPPAGE_MIN_PRICE: 0.995,
 };
