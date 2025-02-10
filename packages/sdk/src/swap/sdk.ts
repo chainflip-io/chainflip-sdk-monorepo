@@ -572,6 +572,6 @@ export class SwapSDK {
       'Affiliate brokers are supported only when initializing the SDK with a brokerUrl',
     );
 
-    return this.trpc.encodeVaultSwapData.mutate(vaultSwapRequest);
+    return this.trpc.encodeVaultSwapData.query(vaultSwapRequest);
   }
 }

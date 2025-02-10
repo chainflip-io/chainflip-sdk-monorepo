@@ -28,7 +28,7 @@ const appRouter = router({
     .mutation((v) => openSwapDepositChannel(v.input)),
   encodeVaultSwapData: publicProcedure
     .input(getParameterEncodingRequestSchema(env.CHAINFLIP_NETWORK))
-    .mutation((v) => encodeVaultSwapData(v.input)),
+    .query((v) => encodeVaultSwapData(v.input)),
 });
 
 export type AppRouter = typeof appRouter;
