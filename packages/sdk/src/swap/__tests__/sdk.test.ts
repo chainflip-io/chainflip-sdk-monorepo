@@ -34,7 +34,7 @@ vi.mock('@trpc/client', async (importOriginal) => {
         mutate: vi.fn(),
       },
       encodeVaultSwapData: {
-        mutate: vi.fn(),
+        query: vi.fn(),
       },
     }),
   };
@@ -1620,7 +1620,7 @@ describe(SwapSDK, () => {
   describe(SwapSDK.prototype.encodeVaultSwapData, () => {
     it('calls encodeVaultSwapData with refund parameters for slippage', async () => {
       // @ts-expect-error - private method
-      const rpcSpy = vi.spyOn(sdk.trpc.encodeVaultSwapData, 'mutate').mockResolvedValueOnce({
+      const rpcSpy = vi.spyOn(sdk.trpc.encodeVaultSwapData, 'query').mockResolvedValueOnce({
         chain: 'Bitcoin',
         nulldataPayload:
           '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
@@ -1667,7 +1667,7 @@ describe(SwapSDK, () => {
 
     it('calls encodeVaultSwapData with dca parameters', async () => {
       // @ts-expect-error - private method
-      const rpcSpy = vi.spyOn(sdk.trpc.encodeVaultSwapData, 'mutate').mockResolvedValueOnce({
+      const rpcSpy = vi.spyOn(sdk.trpc.encodeVaultSwapData, 'query').mockResolvedValueOnce({
         chain: 'Bitcoin',
         nulldataPayload:
           '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
