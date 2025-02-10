@@ -134,17 +134,14 @@ const updateVaultSwap = async (data: VaultSwapPendingTxRef) => {
 };
 
 export const start = async () => {
-  let run = true;
-
   const controller = new AbortController();
   const clean = handleExit(() => {
-    run = false;
     controller.abort();
   });
 
   logger.info('starting solana tx ref queue');
 
-  while (run) {
+  while (!controller.signal.aborted) {
     try {
       await sleep(env.SOLANA_TX_REF_QUEUE_INTERVAL, { signal: controller.signal });
     } catch {
