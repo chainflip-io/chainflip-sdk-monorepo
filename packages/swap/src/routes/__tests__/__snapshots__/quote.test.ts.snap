@@ -36,6 +36,7 @@ exports[`server > GET /quote > doesn't include boost information when disabled 1
     },
   ],
   "intermediateAmount": "2000000000",
+  "isVaultSwap": false,
   "poolInfo": [
     {
       "baseAsset": {
@@ -113,6 +114,7 @@ exports[`server > GET /quote > gets the quote for deprecated params without the 
     },
   ],
   "intermediateAmount": "2000000000",
+  "isVaultSwap": false,
   "poolInfo": [
     {
       "baseAsset": {
@@ -198,6 +200,7 @@ exports[`server > GET /quote > gets the quote from btc with boost information 1`
       },
     ],
     "intermediateAmount": "1999500000",
+    "isVaultSwap": false,
     "maxBoostFeeBps": 5,
     "poolInfo": [
       {
@@ -272,6 +275,7 @@ exports[`server > GET /quote > gets the quote from btc with boost information 1`
     },
   ],
   "intermediateAmount": "2000000000",
+  "isVaultSwap": false,
   "poolInfo": [
     {
       "baseAsset": {
@@ -348,6 +352,7 @@ exports[`server > GET /quote > gets the quote with a realistic price 1`] = `
       "type": "EGRESS",
     },
   ],
+  "isVaultSwap": false,
   "poolInfo": [
     {
       "baseAsset": {
@@ -410,6 +415,7 @@ exports[`server > GET /quote > gets the quote with low liquidity warning 1`] = `
     },
   ],
   "intermediateAmount": "2994000000",
+  "isVaultSwap": false,
   "lowLiquidityWarning": true,
   "poolInfo": [
     {
