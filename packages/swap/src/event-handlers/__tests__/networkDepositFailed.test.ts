@@ -1,3 +1,4 @@
+import * as base58 from '@chainflip/utils/base58';
 import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
@@ -70,6 +71,36 @@ const btcDepositFailedMock = buildDepositFailedEvent({
   },
   blockHeight: 1234,
 });
+const SOL_ADDRESS = 'HZC6KyQYbxbKGiyWbBrwhxrPPecFi2yKG9jMwFqwNEtJ';
+const solDepositFailedMock = buildDepositFailedEvent({
+  reason: { __kind: 'BelowMinimumDeposit' },
+  details: {
+    __kind: 'DepositChannel',
+    depositWitness: {
+      asset: { __kind: 'Sol' },
+      amount: '1000000000',
+      depositAddress: bytesToHex(base58.decode(SOL_ADDRESS)),
+    },
+  },
+  blockHeight: 1234,
+});
+const solVaultDepositFailedMock = buildDepositFailedEvent({
+  reason: { __kind: 'BelowMinimumDeposit' },
+  details: {
+    __kind: 'Vault',
+    vaultWitness: {
+      inputAsset: { __kind: 'Sol' },
+      outputAsset: { __kind: 'Eth' },
+      depositAmount: '1000000000',
+      destinationAddress: { __kind: 'Eth', value: ETH_ADDRESS },
+      depositAddress: bytesToHex(base58.decode(SOL_ADDRESS)),
+      txId: [bytesToHex(base58.decode(SOL_ADDRESS)), '1234'],
+      affiliateFees: [],
+      boostFee: 0,
+    },
+  },
+  blockHeight: 1234,
+});
 
 const createGenericChannel = async (channel: SwapDepositChannel) =>
   prisma.depositChannel.create({
@@ -84,7 +115,7 @@ const createGenericChannel = async (channel: SwapDepositChannel) =>
 
 describe(networkDepositFailed, () => {
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", private."DepositChannel", "Swap" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", private."DepositChannel", private."SolanaPendingTxRef" CASCADE`;
     await prisma.$queryRaw`TRUNCATE TABLE "FailedSwap", "Swap" CASCADE`;
   });
 
@@ -207,5 +238,108 @@ describe(networkDepositFailed, () => {
         "srcChain": "Bitcoin",
       }
     `);
+  });
+
+  it('handles failed sol channel deposits', async () => {
+    const channel = await createDepositChannel({
+      id: 100n,
+      srcChain: 'Solana',
+      srcAsset: 'Sol',
+      depositAddress: SOL_ADDRESS,
+      channelId: 99n,
+      destAsset: 'Eth',
+      destAddress: ETH_ADDRESS,
+    });
+
+    await createGenericChannel(channel);
+
+    await networkDepositFailed('Solana')({
+      prisma,
+      ...solDepositFailedMock,
+    });
+
+    const { id, swapDepositChannelId, ...failedSwap } = await prisma.failedSwap.findFirstOrThrow();
+    expect(swapDepositChannelId).toBe(channel.id);
+    expect(failedSwap).toMatchInlineSnapshot(`
+      {
+        "ccmAdditionalData": null,
+        "ccmGasBudget": null,
+        "ccmMessage": null,
+        "depositAmount": "1000000000",
+        "depositTransactionRef": null,
+        "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+        "destAsset": "Eth",
+        "destChain": "Solana",
+        "failedAt": 2022-12-06T14:31:33.000Z,
+        "failedBlockIndex": "100-0",
+        "reason": "BelowMinimumDeposit",
+        "refundBroadcastId": null,
+        "srcAsset": "Sol",
+        "srcChain": "Solana",
+      }
+    `);
+    const pendingSolanaTxRef = await prisma.solanaPendingTxRef.findFirstOrThrow({
+      where: { swapDepositChannelId: channel.id },
+    });
+    expect(pendingSolanaTxRef).toMatchInlineSnapshot(
+      {
+        id: expect.any(Number),
+        swapDepositChannelId: expect.any(BigInt),
+      },
+      `
+      {
+        "address": null,
+        "failedVaultSwapId": null,
+        "id": Any<Number>,
+        "slot": null,
+        "swapDepositChannelId": Any<BigInt>,
+        "vaultSwapRequestId": null,
+      }
+    `,
+    );
+  });
+
+  it('handles failed sol vault deposits', async () => {
+    await networkDepositFailed('Solana')({ prisma, ...solVaultDepositFailedMock });
+
+    const { id, ...failedSwap } = await prisma.failedSwap.findFirstOrThrow();
+    expect(failedSwap).toMatchInlineSnapshot(`
+      {
+        "ccmAdditionalData": null,
+        "ccmGasBudget": null,
+        "ccmMessage": null,
+        "depositAmount": "1000000000",
+        "depositTransactionRef": null,
+        "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+        "destAsset": "Eth",
+        "destChain": "Solana",
+        "failedAt": 2022-12-06T14:31:33.000Z,
+        "failedBlockIndex": "100-0",
+        "reason": "BelowMinimumDeposit",
+        "refundBroadcastId": null,
+        "srcAsset": "Sol",
+        "srcChain": "Solana",
+        "swapDepositChannelId": null,
+      }
+    `);
+    const pendingSolanaTxRef = await prisma.solanaPendingTxRef.findFirstOrThrow({
+      where: { failedVaultSwapId: id },
+    });
+    expect(pendingSolanaTxRef).toMatchInlineSnapshot(
+      {
+        id: expect.any(Number),
+        failedVaultSwapId: expect.any(Number),
+      },
+      `
+      {
+        "address": "HZC6KyQYbxbKGiyWbBrwhxrPPecFi2yKG9jMwFqwNEtJ",
+        "failedVaultSwapId": Any<Number>,
+        "id": Any<Number>,
+        "slot": 1234n,
+        "swapDepositChannelId": null,
+        "vaultSwapRequestId": null,
+      }
+    `,
+    );
   });
 });

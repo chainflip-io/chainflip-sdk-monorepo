@@ -127,6 +127,7 @@ describe('depositBoosted', () => {
         originType: 'VAULT',
         requestType: 'REGULAR',
         swapRequestedAt: new Date('2024-08-06T00:00:00.000Z'),
+        swapRequestedBlockIndex: '1-1',
         totalBrokerCommissionBps: 0,
       },
     });

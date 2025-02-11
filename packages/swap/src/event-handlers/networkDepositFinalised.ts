@@ -13,7 +13,6 @@ import { hexToBytes } from '@chainflip/utils/bytes';
 import z from 'zod';
 import { assetConstants } from '@/shared/enums';
 import { getDepositTxRef } from './common';
-import { findSolanaTxHash } from '../utils/solana';
 import { EventHandlerArgs } from '.';
 
 const arbitrumSchema = z.union([arbitrumSchema180, arbitrumSchema160]);
@@ -39,10 +38,7 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
   const depositDetails = 'depositDetails' in rest ? rest.depositDetails : undefined;
   const maxBoostFeeBps = 'maxBoostFeeBps' in rest ? rest.maxBoostFeeBps : undefined;
 
-  let txRef = getDepositTxRef(assetConstants[asset].chain, depositDetails, blockHeight);
-  if (!txRef && (asset === 'Sol' || asset === 'SolUsdc') && typeof depositAddress === 'string') {
-    txRef = await findSolanaTxHash(asset, blockHeight, depositAddress, BigInt(amount));
-  }
+  const txRef = getDepositTxRef(assetConstants[asset].chain, depositDetails, blockHeight);
 
   if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {
     const { swapRequestId } = action;

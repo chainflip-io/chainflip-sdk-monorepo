@@ -1,4 +1,4 @@
-import { findSolanaDepositSignature } from '@chainflip/solana';
+import * as base58 from '@chainflip/utils/base58';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { assetConstants } from '@/shared/enums';
 import prisma from '../../client';
@@ -145,6 +145,32 @@ const depositChannel180 = {
   },
   swapRequestId: '2',
 } as const;
+const solDepositChannel180 = {
+  origin: {
+    __kind: 'DepositChannel',
+    brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
+    channelId: '11',
+    depositAddress: {
+      value: '0xe59df1dc66dfb4b54d8eee93b6f9608789c251f3d773ad868fb90834b2b74f41',
+      __kind: 'Sol',
+    },
+    depositBlockHeight: '3165343',
+  },
+  brokerFees: [
+    { bps: 100, account: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125' },
+  ],
+  inputAsset: { __kind: 'Sol' },
+  inputAmount: '99999994999',
+  outputAsset: { __kind: 'Dot' },
+  requestType: {
+    __kind: 'Regular',
+    outputAddress: {
+      value: '0x02581a69b66b34f0d684f2249f7f45a4ef2c9d2f61c4fb82ed95c37e07850675',
+      __kind: 'Dot',
+    },
+  },
+  swapRequestId: '92',
+} as const;
 
 const depositChannel = {
   origin: {
@@ -238,7 +264,7 @@ vi.mock('@chainflip/solana');
 
 describe(swapRequested, () => {
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapRequest", "SwapDepositChannel" CASCADE;`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapRequest", "SwapDepositChannel", private."SolanaPendingTxRef" CASCADE;`;
   });
 
   it('creates a new swap request (VAULT)', async () => {
@@ -345,25 +371,44 @@ describe(swapRequested, () => {
     });
   });
 
-  it('creates a new swap request and gets the solana tx ref (VAULT 180)', async () => {
-    vi.mocked(findSolanaDepositSignature).mockResolvedValue(
-      '4tpsjS1WFhamaRBfYdEHdadHFs58Ppq8jrv26xwkquVjA5BfP7wGjBbwVrDCECDpxRgfCnqXfCK4way9BPutAyRS',
-    );
-
+  it('creates a new vault swap request and creates a pending tx ref record', async () => {
     await swapRequested({ prisma, event: { ...event, args: vaultSolana180 }, block });
 
-    const request = await prisma.swapRequest.findFirstOrThrow();
-
-    expect(request).toMatchSnapshot({
-      id: expect.any(BigInt),
+    const request = await prisma.swapRequest.findFirstOrThrow({
+      include: { solanaPendingTxRef: true },
     });
-    expect(findSolanaDepositSignature).toBeCalledWith(
-      'http://solana-rpc.test',
-      null,
-      'HZC6KyQYbxbKGiyWbBrwhxrPPecFi2yKG9jMwFqwNEtJ',
-      1n,
-      413006,
-      413006,
-    );
+    expect(request.solanaPendingTxRef).toMatchSnapshot([
+      {
+        id: expect.any(Number),
+        vaultSwapRequestId: expect.any(BigInt),
+      },
+    ]);
+  });
+
+  it('creates a new deposit channel swap request and creates a pending tx ref record', async () => {
+    const channel = await prisma.swapDepositChannel.create({
+      data: {
+        srcChain: assetConstants[solDepositChannel180.inputAsset.__kind].chain,
+        depositAddress: base58.encode(solDepositChannel180.origin.depositAddress.value),
+        issuedBlock: 1,
+        channelId: BigInt(solDepositChannel180.origin.channelId),
+        isExpired: false,
+        srcAsset: solDepositChannel180.inputAsset.__kind,
+        destAsset: solDepositChannel180.outputAsset.__kind,
+        destAddress: solDepositChannel180.requestType.outputAddress.value,
+        totalBrokerCommissionBps: 0,
+        openingFeePaid: 0,
+      },
+    });
+
+    await swapRequested({ prisma, event: { ...event, args: solDepositChannel180 }, block });
+
+    const solanaPendingTxRef = await prisma.solanaPendingTxRef.findFirstOrThrow({
+      where: { swapDepositChannelId: channel.id },
+    });
+    expect(solanaPendingTxRef).toMatchSnapshot({
+      id: expect.any(Number),
+      swapDepositChannelId: expect.any(BigInt),
+    });
   });
 });

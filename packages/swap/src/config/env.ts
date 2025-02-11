@@ -92,6 +92,7 @@ export default z
     STABLE_COIN_SLIPPAGE_MIN_PRICE: optionalNumber(0.995).describe(
       'The targeted minimum price for stable coin swaps when providing a slippage recommendation',
     ),
+    SOLANA_TX_REF_QUEUE_INTERVAL: optionalNumber(1000),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);
