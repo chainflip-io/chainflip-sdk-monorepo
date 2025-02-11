@@ -93,15 +93,14 @@ export const calculateRecommendedSlippage = async ({
     stableAssets.includes(assetConstants[srcAsset].asset) &&
     stableAssets.includes(assetConstants[destAsset].asset)
   ) {
-    if (estimatedPrice.lt(env.STABLE_COIN_SLIPPAGE_MIN_PRICE)) {
-      return 0.5;
-    }
-
-    return new BigNumber(1)
-      .minus(new BigNumber(env.STABLE_COIN_SLIPPAGE_MIN_PRICE).dividedBy(estimatedPrice))
-      .times(100)
-      .decimalPlaces(2)
-      .toNumber();
+    return Math.max(
+      0.5,
+      new BigNumber(1)
+        .minus(new BigNumber(env.STABLE_COIN_SLIPPAGE_MIN_PRICE).dividedBy(estimatedPrice))
+        .times(100)
+        .decimalPlaces(2)
+        .toNumber(),
+    );
   }
 
   const BASE_SLIPPAGE = 1;

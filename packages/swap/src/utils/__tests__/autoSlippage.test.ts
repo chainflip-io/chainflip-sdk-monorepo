@@ -198,6 +198,7 @@ describe(calculateRecommendedSlippage, () => {
       [new BigNumber('1'), 0.5, 0.995],
       // if it's less than the targeted rate
       [new BigNumber('0.97445870289259320468'), 0.5, 0.97],
+      [new BigNumber('0.9'), 0.5, 0.895],
     ])(
       'should return the correct value for swaps between stable assets',
       async (estimatedPrice, recommendedSlippage, expected) => {
