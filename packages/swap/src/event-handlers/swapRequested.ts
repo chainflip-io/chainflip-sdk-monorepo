@@ -9,6 +9,8 @@ import { assertUnreachable } from '@/shared/functions';
 import { assertNever } from '@/shared/guards';
 import { pascalCaseToScreamingSnakeCase } from '@/shared/strings';
 import { Prisma } from '../client';
+import { enqueuePendingTxRef } from '../queues/solanaTxRefs';
+import logger from '../utils/logger';
 import type { EventHandlerArgs } from './index';
 
 const transform170Schema = (data: z.output<typeof schema170>): z.output<typeof schema180> => {
@@ -121,29 +123,29 @@ export const getOriginInfo = async (
     });
 
     return {
-      originType: 'DEPOSIT_CHANNEL' as const,
+      originType: 'DEPOSIT_CHANNEL',
       swapDepositChannelId: depositChannel.id,
       depositTransactionRef: undefined,
       brokerId: origin.brokerId,
-    };
+    } as const;
   }
 
   if (origin.__kind === 'Vault') {
     return {
-      originType: 'VAULT' as const,
+      originType: 'VAULT',
       swapDepositChannelId: undefined,
       depositTransactionRef: getVaultOriginTxRef(assetConstants[srcAsset].chain, origin),
       brokerId: origin.brokerId,
-    };
+    } as const;
   }
 
   if (origin.__kind === 'Internal') {
     return {
-      originType: 'INTERNAL' as const,
+      originType: 'INTERNAL',
       swapDepositChannelId: undefined,
       depositTransactionRef: undefined,
       brokerId: undefined,
-    };
+    } as const;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -233,20 +235,25 @@ export default async function swapRequested({
 
   if (assetConstants[inputAsset].chain === 'Solana') {
     let pendingTxRefInfo;
-    if (origin.__kind === 'DepositChannel') {
+    if (originType === 'DEPOSIT_CHANNEL') {
       pendingTxRefInfo = { swapDepositChannelId };
-    } else if (origin.__kind === 'Vault') {
-      assert(origin.txId.__kind === 'Solana');
+    } else if (originType === 'VAULT') {
+      assert(origin.__kind === 'Vault' && origin.txId.__kind === 'Solana');
       pendingTxRefInfo = {
         address: base58.encode(origin.txId.value[0]),
         slot: origin.txId.value[1],
         vaultSwapRequestId: swapRequest.id,
       };
-    } else if (origin.__kind !== 'Internal') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      assertUnreachable(origin, `unexpected origin: ${(origin as any).__kind}`);
+    } else if (originType !== 'INTERNAL') {
+      assertUnreachable(originType, `unexpected origin: ${originType}`);
     }
 
-    await prisma.solanaPendingTxRef.create({ data: pendingTxRefInfo });
+    if (!(await enqueuePendingTxRef(prisma, pendingTxRefInfo!))) {
+      logger.error('failed to enqueue pending tx ref', {
+        pendingTxRefInfo,
+        blockId: block.height,
+        eventIndex: event.indexInBlock,
+      });
+    }
   }
 }
