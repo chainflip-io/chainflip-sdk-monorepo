@@ -12,6 +12,7 @@ import { assetConstants } from '@/shared/enums';
 import { bitcoinScriptPubKey } from '@/shared/parsers';
 import { getDepositTxRef } from './common';
 import env from '../config/env';
+import { enqueuePendingTxRef } from '../queues/solanaTxRefs';
 import logger from '../utils/logger';
 import type { EventHandlerArgs } from './index';
 
@@ -61,21 +62,24 @@ export const depositIgnored =
       return;
     }
 
-    await prisma.failedSwap.create({
-      data: {
-        reason,
-        swapDepositChannelId: channel.id,
-        srcChain: chain,
-        srcAsset: asset,
-        destAddress: channel.destAddress,
-        destChain: assetConstants[channel.destAsset].chain,
-        depositAmount: amount.toString(),
-        failedAt: new Date(block.timestamp),
-        failedBlockIndex: `${block.height}-${event.indexInBlock}`,
-        depositTransactionRef:
-          'depositDetails' in rest ? getDepositTxRef(chain, rest.depositDetails) : undefined,
-      },
-    });
+    await Promise.all([
+      prisma.failedSwap.create({
+        data: {
+          reason,
+          swapDepositChannelId: channel.id,
+          srcChain: chain,
+          srcAsset: asset,
+          destAddress: channel.destAddress,
+          destChain: assetConstants[channel.destAsset].chain,
+          depositAmount: amount.toString(),
+          failedAt: new Date(block.timestamp),
+          failedBlockIndex: `${block.height}-${event.indexInBlock}`,
+          depositTransactionRef:
+            'depositDetails' in rest ? getDepositTxRef(chain, rest.depositDetails) : undefined,
+        },
+      }),
+      enqueuePendingTxRef(prisma, { swapDepositChannelId: channel.id }),
+    ]);
   };
 
 export default depositIgnored;

@@ -2,12 +2,14 @@ import 'dotenv/config';
 import { Server, createServer } from 'http';
 import env from './config/env';
 import start from './processor';
+import * as solanaTxRefsQueue from './queues/solanaTxRefs';
 import server from './server';
 import { handleExit } from './utils/function';
 import logger from './utils/logger';
 
 if (env.START_PROCESSOR) {
   start();
+  solanaTxRefsQueue.start();
 
   if (!env.START_HTTP_SERVICE) {
     const healthServer = createServer((req, res) => {
