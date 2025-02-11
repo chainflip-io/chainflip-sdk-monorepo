@@ -175,6 +175,8 @@ export const start = async () => {
           error: error.toJSON(),
           pendingTxRef,
         });
+        // eslint-disable-next-line no-continue
+        continue;
       }
       logger.error('error processing solana tx ref', { error, pendingTxRef, parsed });
       break;
