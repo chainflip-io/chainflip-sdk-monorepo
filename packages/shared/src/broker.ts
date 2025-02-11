@@ -1,19 +1,12 @@
-import { HttpClient, RpcParams } from '@chainflip/rpc';
-import * as ss58 from '@chainflip/utils/ss58';
+import { HttpClient } from '@chainflip/rpc';
+import { priceX128ToPrice } from '@chainflip/utils/tickMath';
 import { HexString } from '@chainflip/utils/types';
+import BigNumber from 'bignumber.js';
 import { z } from 'zod';
-import { Chain, ChainflipNetwork, Asset } from './enums';
-import {
-  hexString,
-  numericString,
-  btcAddress,
-  dotAddress,
-  ethereumAddress,
-  assetAndChain,
-  solanaAddress,
-  polkadotAddress,
-  number,
-} from './parsers';
+import { Asset, Chain, ChainflipNetwork, UncheckedAssetAndChain } from './enums';
+import { assert } from './guards';
+import { transformKeysToCamelCase } from './objects';
+import { numericString, assetAndChain, solanaAddress, number, unsignedInteger } from './parsers';
 import {
   affiliateBroker,
   AffiliateBroker,
@@ -24,12 +17,11 @@ import {
   DcaParams,
   ensureDcaWithFok,
 } from './schemas';
+import { validateAddress } from './validation/addressValidation';
 
-export type NewSwapRequest = {
-  srcAsset: Asset;
-  destAsset: Asset;
-  srcChain: Chain;
-  destChain: Chain;
+type DepositAddressRequest = {
+  srcAsset: UncheckedAssetAndChain | Asset;
+  destAsset: UncheckedAssetAndChain | Asset;
   destAddress: string;
   commissionBps?: number;
   ccmParams?: CcmParams;
@@ -37,32 +29,24 @@ export type NewSwapRequest = {
   affiliates?: AffiliateBroker[];
   fillOrKillParams?: FillOrKillParamsX128;
   dcaParams?: DcaParams;
+
+  /** @deprecated DEPRECATED(1.8) pass the chain in the srcAsset object instead */
+  srcChain?: Chain;
+  /** @deprecated DEPRECATED(1.8) pass the chain in the destAsset object instead */
+  destChain?: Chain;
 };
 
-const paramOrder = [
-  'srcAsset',
-  'destAsset',
-  'destAddress',
-  'commissionBps',
-  'ccmParams',
-  'maxBoostFeeBps',
-  'affiliates',
-  'fillOrKillParams',
-  'dcaParams',
-] as const;
-
-const getTransformedFokSchema = <Z extends z.ZodTypeAny>(addressSchema: Z) =>
-  z
-    .object({
-      retryDurationBlocks: number,
-      refundAddress: addressSchema,
-      minPriceX128: numericString,
-    })
-    .transform(({ retryDurationBlocks, refundAddress, minPriceX128 }) => ({
-      retry_duration: retryDurationBlocks,
-      refund_address: refundAddress!,
-      min_price: `0x${BigInt(minPriceX128).toString(16)}` as const,
-    }));
+const transformedFokSchema = z
+  .object({
+    retryDurationBlocks: number,
+    refundAddress: z.string(),
+    minPriceX128: numericString,
+  })
+  .transform(({ retryDurationBlocks, refundAddress, minPriceX128 }) => ({
+    retry_duration: retryDurationBlocks,
+    refund_address: refundAddress!,
+    min_price: `0x${BigInt(minPriceX128).toString(16)}` as const,
+  }));
 
 const transformedDcaParamsSchema = dcaParamsSchema.transform(
   ({ numberOfChunks, chunkIntervalBlocks }) => ({
@@ -78,90 +62,188 @@ const transformedCcmParamsSchema = <T extends HexString | undefined>(defaultValu
     cf_parameters: cfParameters ?? defaultValue,
   }));
 
-const validateAddressLength = (chain: Chain, address: string, type: 'destination' | 'refund') => {
-  if ((chain === 'Arbitrum' || chain === 'Ethereum') && address.length !== 42) {
-    throw new Error(`Invalid ${type} address length`);
-  }
-
-  if (chain === 'Polkadot' && address.length !== 66) {
-    throw new Error(`Invalid ${type} address length`);
-  }
-};
-
-const validateRequest = (network: ChainflipNetwork, params: unknown) => {
-  const addressSchema = z.union([
-    numericString,
-    hexString,
-    btcAddress(network),
-    solanaAddress,
-    polkadotAddress.transform(ss58.toPublicKey),
-  ]);
-
-  const parsed = z
+const getDepositAddressRequestSchema = (network: ChainflipNetwork) =>
+  z
     .object({
       srcAsset: assetAndChain,
       destAsset: assetAndChain,
-      destAddress: addressSchema,
+      destAddress: z.string(),
       commissionBps: z.number().optional().default(0),
       ccmParams: transformedCcmParamsSchema(undefined).optional(),
       maxBoostFeeBps: z.number().optional(),
       affiliates: z.array(affiliateBroker).optional(),
-      fillOrKillParams: getTransformedFokSchema(addressSchema).optional(),
+      fillOrKillParams: transformedFokSchema.optional(),
       dcaParams: transformedDcaParamsSchema.optional(),
     })
-    .superRefine(ensureDcaWithFok)
-    .parse(params);
+    .superRefine((val, ctx) => {
+      if (!validateAddress(val.destAsset.chain, val.destAddress, network)) {
+        ctx.addIssue({
+          message: `Address "${val.destAddress}" is not a valid "${val.destAsset.chain}" address for "${network}"`,
+          code: z.ZodIssueCode.custom,
+        });
+      }
+    })
+    .superRefine((val, ctx) => {
+      if (
+        val.fillOrKillParams &&
+        !validateAddress(val.srcAsset.chain, val.fillOrKillParams.refund_address, network)
+      ) {
+        ctx.addIssue({
+          message: `Address "${val.fillOrKillParams.refund_address}" is not a valid "${val.srcAsset.chain}" address for "${network}"`,
+          code: z.ZodIssueCode.custom,
+        });
+      }
+    })
+    .superRefine(ensureDcaWithFok);
 
-  validateAddressLength(parsed.destAsset.chain, parsed.destAddress, 'destination');
-  if (parsed.fillOrKillParams) {
-    validateAddressLength(
-      parsed.srcAsset.chain,
-      parsed.fillOrKillParams.refund_address,
-      'destination',
-    );
-  }
-  return paramOrder.map((key) => parsed[key]);
-};
-
-const validateResponse = (network: ChainflipNetwork, response: unknown) =>
+export const getParameterEncodingRequestSchema = (network: ChainflipNetwork) =>
   z
     .object({
-      address: z.union([dotAddress, ethereumAddress, btcAddress(network), solanaAddress]),
-      issued_block: z.number(),
-      channel_id: z.number(),
-      source_chain_expiry_block: z.bigint(),
-      channel_opening_fee: z.bigint(),
+      srcAsset: assetAndChain,
+      srcAddress: z.string().optional(),
+      destAsset: assetAndChain,
+      destAddress: z.string(),
+      amount: unsignedInteger,
+      commissionBps: z.number().optional().default(0),
+      ccmParams: transformedCcmParamsSchema(undefined).optional(),
+      maxBoostFeeBps: z.number().optional(),
+      affiliates: z.array(affiliateBroker).optional(),
+      fillOrKillParams: transformedFokSchema,
+      dcaParams: transformedDcaParamsSchema.optional(),
+      extraParams: z.object({ solanaDataAccount: solanaAddress.optional() }).optional(),
     })
-    .transform(
-      ({ address, issued_block, channel_id, source_chain_expiry_block, channel_opening_fee }) => ({
-        address,
-        issuedBlock: issued_block,
-        channelId: BigInt(channel_id),
-        sourceChainExpiryBlock: source_chain_expiry_block,
-        channelOpeningFee: channel_opening_fee,
-      }),
-    )
-    .parse(response);
+    .superRefine((val, ctx) => {
+      if (val.srcAddress && !validateAddress(val.srcAsset.chain, val.srcAddress, network)) {
+        ctx.addIssue({
+          message: `Address "${val.srcAddress}" is not a valid "${val.srcAsset.chain}" address for "${network}"`,
+          code: z.ZodIssueCode.custom,
+        });
+      }
+    })
+    .superRefine((val, ctx) => {
+      if (!validateAddress(val.destAsset.chain, val.destAddress, network)) {
+        ctx.addIssue({
+          message: `Address "${val.destAddress}" is not a valid "${val.destAsset.chain}" address for "${network}"`,
+          code: z.ZodIssueCode.custom,
+        });
+      }
+    })
+    .superRefine((val, ctx) => {
+      if (
+        val.fillOrKillParams &&
+        !validateAddress(val.srcAsset.chain, val.fillOrKillParams.refund_address, network)
+      ) {
+        ctx.addIssue({
+          message: `Address "${val.fillOrKillParams.refund_address}" is not a valid "${val.srcAsset.chain}" address for "${network}"`,
+          code: z.ZodIssueCode.custom,
+        });
+      }
+    })
+    .transform((data) => {
+      let extraParams;
+      if (data.srcAsset.chain === 'Bitcoin') {
+        const minOutputAmount = BigNumber(data.amount.toString())
+          .multipliedBy(priceX128ToPrice(data.fillOrKillParams.min_price))
+          .toFixed(0);
 
-export type DepositChannelResponse = ReturnType<typeof validateResponse>;
+        extraParams = {
+          chain: 'Bitcoin',
+          min_output_amount: `0x${BigInt(minOutputAmount).toString(16)}`,
+          retry_duration: data.fillOrKillParams.retry_duration,
+        } as const;
+      } else if (data.srcAsset.chain === 'Ethereum' || data.srcAsset.chain === 'Arbitrum') {
+        extraParams = {
+          chain: data.srcAsset.chain,
+          input_amount: `0x${BigInt(data.amount).toString(16)}`,
+          refund_parameters: data.fillOrKillParams,
+        } as const;
+      } else if (data.srcAsset.chain === 'Solana') {
+        assert(data.srcAddress, 'srcAddress is required for Solana');
+        assert(data.extraParams?.solanaDataAccount, 'solanaDataAccount is required for Solana');
+
+        extraParams = {
+          chain: 'Solana',
+          from: data.srcAddress,
+          event_data_account: data.extraParams!.solanaDataAccount!,
+          input_amount: `0x${BigInt(data.amount).toString(16)}`,
+          refund_parameters: data.fillOrKillParams,
+        } as const;
+      } else {
+        throw new Error(`parameter encoding is not supported for ${data.srcAsset.chain}`);
+      }
+
+      return { ...data, extraParams };
+    });
 
 export async function requestSwapDepositAddress(
-  swapRequest: NewSwapRequest,
+  request: DepositAddressRequest,
   opts: { url: string },
   chainflipNetwork: ChainflipNetwork,
-): Promise<DepositChannelResponse> {
+) {
   const client = new HttpClient(opts.url);
 
-  const params = validateRequest(chainflipNetwork, {
-    ...swapRequest,
-    srcAsset: { asset: swapRequest.srcAsset, chain: swapRequest.srcChain },
-    destAsset: { asset: swapRequest.destAsset, chain: swapRequest.destChain },
-  });
+  /** @deprecated pass the chain in the srcAsset and destAsset object instead */
+  if (request.srcChain && typeof request.srcAsset === 'string') {
+    request.srcAsset = { asset: request.srcAsset, chain: request.srcChain };
+  }
+  if (request.destChain && typeof request.destAsset === 'string') {
+    request.destAsset = { asset: request.destAsset, chain: request.destChain };
+  }
+
+  const params = getDepositAddressRequestSchema(chainflipNetwork).parse(request);
 
   const response = await client.sendRequest(
     'broker_requestSwapDepositAddress',
-    ...(params as RpcParams['broker_requestSwapDepositAddress']),
+    params.srcAsset,
+    params.destAsset,
+    params.destAddress,
+    params.commissionBps,
+    params.ccmParams,
+    params.maxBoostFeeBps,
+    params.affiliates,
+    params.fillOrKillParams,
+    params.dcaParams,
   );
 
-  return validateResponse(chainflipNetwork, response);
+  return transformKeysToCamelCase(response);
+}
+
+type ParameterEncodingRequest = {
+  srcAsset: UncheckedAssetAndChain;
+  srcAddress?: string;
+  destAsset: UncheckedAssetAndChain;
+  destAddress: string;
+  amount: string;
+  commissionBps?: number;
+  ccmParams?: CcmParams;
+  maxBoostFeeBps?: number;
+  affiliates?: AffiliateBroker[];
+  fillOrKillParams: FillOrKillParamsX128;
+  dcaParams?: DcaParams;
+  extraParams?: { solanaDataAccount?: string };
+};
+
+export async function requestSwapParameterEncoding(
+  request: ParameterEncodingRequest,
+  opts: { url: string },
+  chainflipNetwork: ChainflipNetwork,
+) {
+  const client = new HttpClient(opts.url);
+
+  const params = getParameterEncodingRequestSchema(chainflipNetwork).parse(request);
+
+  const response = await client.sendRequest(
+    'broker_request_swap_parameter_encoding',
+    params.srcAsset,
+    params.destAsset,
+    params.destAddress,
+    params.commissionBps,
+    params.extraParams,
+    params.ccmParams,
+    params.maxBoostFeeBps,
+    params.affiliates,
+    params.dcaParams,
+  );
+
+  return transformKeysToCamelCase(response);
 }

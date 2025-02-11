@@ -1,6 +1,7 @@
 import * as bitcoin from '@chainflip/bitcoin';
 import { isValidSolanaAddress } from '@chainflip/solana/address';
 import * as ss58 from '@chainflip/utils/ss58';
+import { isHex } from '@chainflip/utils/string';
 import * as ethers from 'ethers';
 import { Chain, ChainflipNetwork } from '../enums';
 import { assert } from '../guards';
@@ -8,6 +9,8 @@ import { assert } from '../guards';
 export type AddressValidator = (address: string) => boolean;
 
 export const validatePolkadotAddress: AddressValidator = (address) => {
+  if (isHex(address)) return address.length === 66;
+
   try {
     ss58.decode(address);
     return true;

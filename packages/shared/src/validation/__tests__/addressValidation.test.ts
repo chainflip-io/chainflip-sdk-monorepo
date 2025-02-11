@@ -14,8 +14,20 @@ describe(validatePolkadotAddress, () => {
     expect(validatePolkadotAddress('1exaAg2VJRQbyUBAeXcktChCAqjVP9TUxF3zo23R2T6EGdE')).toBe(true);
   });
 
+  it('validates valid pubkey', () => {
+    expect(
+      validatePolkadotAddress('0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972'),
+    ).toBe(true);
+  });
+
   it('rejects invalid addresses', () => {
     expect(validatePolkadotAddress('1exaAg2VJRQbyUBAeXcktChCAqjVP9TUxF3zo23R2T6EGde')).toBe(false);
+  });
+
+  it('rejects invalid pubkey', () => {
+    expect(
+      validatePolkadotAddress('0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8'),
+    ).toBe(false);
   });
 });
 

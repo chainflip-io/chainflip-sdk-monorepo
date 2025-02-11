@@ -1,4 +1,7 @@
 import yargs from 'yargs/yargs';
+import cliEncodeVaultSwapData, {
+  yargsOptions as cliEncodeVaultSwapDataOptions,
+} from './commands/cliEncodeVaultSwapData';
 import cliExecuteSwap, { yargsOptions as cliExecuteSwapOptions } from './commands/cliExecuteSwap';
 import cliFundStateChainAccount, {
   yargsOptions as cliFundStateChainAccountOptions,
@@ -24,6 +27,7 @@ export default async function cli(args: string[]) {
       cliRequestSwapDepositAddressOptions,
       cliRequestSwapDepositAddress,
     )
+    .command('get-vault-swap-data', '', cliEncodeVaultSwapDataOptions, cliEncodeVaultSwapData)
     .wrap(0)
     .strict()
     .help()

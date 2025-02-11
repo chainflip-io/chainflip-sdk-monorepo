@@ -53,9 +53,13 @@ vi.mock('timers/promises', () => ({
 
 vi.mock('../../../ingress-egress-tracking');
 
-vi.mock('@/shared/broker', () => ({
-  requestSwapDepositAddress: vi.fn().mockRejectedValue(Error('unhandled mock')),
-}));
+vi.mock('@/shared/broker', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    requestSwapDepositAddress: vi.fn().mockRejectedValue(Error('unhandled mock')),
+  };
+});
 
 type Mutable<T> = {
   -readonly [K in keyof T]: Mutable<T[K]> extends infer O

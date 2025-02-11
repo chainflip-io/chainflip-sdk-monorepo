@@ -39,9 +39,13 @@ vi.mock('timers/promises', () => ({
 
 vi.mock('../../ingress-egress-tracking');
 
-vi.mock('@/shared/broker', () => ({
-  requestSwapDepositAddress: vi.fn().mockRejectedValue(Error('unhandled mock')),
-}));
+vi.mock('@/shared/broker', async (importOriginal) => {
+  const original = (await importOriginal()) as object;
+  return {
+    ...original,
+    requestSwapDepositAddress: vi.fn().mockRejectedValue(Error('unhandled mock')),
+  };
+});
 
 type Mutable<T> = {
   -readonly [K in keyof T]: Mutable<T[K]> extends infer O
@@ -1621,7 +1625,7 @@ describe('server', () => {
       [dotToEthSwapRequestBody],
     ])('creates a new swap deposit channel', async (requestBody) => {
       const issuedBlock = 123;
-      const channelNativeId = 200n;
+      const channelNativeId = 200;
       const address = 'THE_INGRESS_ADDRESS';
       const sourceChainExpiryBlock = 1_000_000n;
       vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
@@ -1651,14 +1655,14 @@ describe('server', () => {
         depositAddress: address,
         destAddress: requestBody.destAddress,
         issuedBlock,
-        channelId: channelNativeId,
+        channelId: BigInt(channelNativeId),
         createdAt: expect.any(Date),
       });
     });
 
     it('does not update the already existing deposit channel', async () => {
       const requestBody = ethToDotSwapRequestBody;
-      const channelNativeId = 200n;
+      const channelNativeId = 200;
       const oldAddress = 'THE_INGRESS_ADDRESS';
       const newAddress = 'THE_NEW_INGRESS_ADDRESS';
       const issuedBlock = 123;

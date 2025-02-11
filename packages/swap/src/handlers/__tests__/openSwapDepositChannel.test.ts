@@ -3,14 +3,14 @@ import * as broker from '@/shared/broker';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
 import prisma from '../../client';
-import disallowChannel from '../../utils/disallowChannel';
-import openSwapDepositChannel from '../openSwapDepositChannel';
+import isDisallowedSwap from '../../utils/isDisallowedSwap';
+import { openSwapDepositChannel } from '../openSwapDepositChannel';
 
 vi.mock('@/shared/broker', () => ({
   requestSwapDepositAddress: vi.fn(),
 }));
 
-vi.mock('../../utils/disallowChannel', () => ({
+vi.mock('../../utils/isDisallowedSwap', () => ({
   default: vi.fn().mockResolvedValue(false),
 }));
 
@@ -45,7 +45,7 @@ describe(openSwapDepositChannel, () => {
     vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
-      channelId: BigInt('888'),
+      channelId: 888,
       issuedBlock: 123,
       channelOpeningFee: 100n,
     });
@@ -88,7 +88,7 @@ describe(openSwapDepositChannel, () => {
     vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
-      channelId: BigInt('888'),
+      channelId: 888,
       issuedBlock: 123,
       channelOpeningFee: 100n,
     });
@@ -141,7 +141,7 @@ describe(openSwapDepositChannel, () => {
     vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
-      channelId: BigInt('888'),
+      channelId: 888,
       issuedBlock: 123,
       channelOpeningFee: 100n,
     });
@@ -198,7 +198,7 @@ describe(openSwapDepositChannel, () => {
     vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
-      channelId: BigInt('909'),
+      channelId: 909,
       issuedBlock: 123,
       channelOpeningFee: 10n,
     });
@@ -243,7 +243,7 @@ describe(openSwapDepositChannel, () => {
     vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
-      channelId: BigInt('909'),
+      channelId: 909,
       issuedBlock: 123,
       channelOpeningFee: 10n,
     });
@@ -288,7 +288,7 @@ describe(openSwapDepositChannel, () => {
     vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
-      channelId: BigInt('909'),
+      channelId: 909,
       issuedBlock: 123,
       channelOpeningFee: 0n,
     });
@@ -327,7 +327,7 @@ describe(openSwapDepositChannel, () => {
   });
 
   it('rejects sanctioned addresses', async () => {
-    vi.mocked(disallowChannel).mockResolvedValueOnce(true);
+    vi.mocked(isDisallowedSwap).mockResolvedValueOnce(true);
 
     await expect(
       openSwapDepositChannel({
@@ -344,6 +344,7 @@ describe(openSwapDepositChannel, () => {
         },
       }),
     ).rejects.toThrow('Failed to open deposit channel, please try again later');
+    expect(vi.mocked(isDisallowedSwap).mock.calls).toMatchSnapshot();
   });
 
   it('rejects if source asset is disabled', async () => {
@@ -410,7 +411,7 @@ describe(openSwapDepositChannel, () => {
       Promise.resolve({
         sourceChainExpiryBlock: BigInt('1000'),
         address: `address${++channelId}`, // eslint-disable-line no-plusplus
-        channelId: BigInt('888'),
+        channelId: 888,
         issuedBlock: 123 + channelId,
         channelOpeningFee: 100n,
       }),
@@ -455,7 +456,7 @@ describe(openSwapDepositChannel, () => {
       Promise.resolve({
         sourceChainExpiryBlock: BigInt('1000'),
         address: `address${++channelId}`, // eslint-disable-line no-plusplus
-        channelId: BigInt('888'),
+        channelId: 888,
         issuedBlock: 123 + channelId,
         channelOpeningFee: 100n,
       }),

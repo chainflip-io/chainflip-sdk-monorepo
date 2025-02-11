@@ -52,7 +52,7 @@ const isOnBlocklist = async (address: string | undefined): Promise<boolean> => {
   return result !== null;
 };
 
-export default async function disallowChannel(
+export default async function isDisallowedSwap(
   destAddress: string,
   srcAddress: string | undefined,
   refundAddress: string | undefined,
