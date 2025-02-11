@@ -11,7 +11,9 @@ import { assertUnreachable } from '@/shared/functions';
 import prisma from '../client';
 import env from '../config/env';
 import { handleExit } from '../utils/function';
-import logger from '../utils/logger';
+import baseLogger from '../utils/logger';
+
+const logger = baseLogger.child({ module: 'solana-queue' });
 
 const pendingTxRefSchema = z.union([
   z
