@@ -964,6 +964,7 @@ describe(SwapSDK, () => {
         destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
         depositAmount: BigInt(1e18).toString(),
         type: 'REGULAR',
+        isVaultSwap: false,
       } as Quote;
       const response = await sdk.requestDepositAddressV2({
         quote,
@@ -1039,6 +1040,7 @@ describe(SwapSDK, () => {
           chunkIntervalBlocks: 5,
         },
         type: 'DCA',
+        isVaultSwap: false,
       } as Quote;
       const response = await sdk.requestDepositAddressV2({
         quote,
@@ -1127,6 +1129,7 @@ describe(SwapSDK, () => {
           destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
           depositAmount: BigInt(1e18).toString(),
           type: 'REGULAR',
+          isVaultSwap: false,
         } as Quote,
         srcAddress: 'mrV3ee4J3jipspCNPofzB2UbaVu7qgf9Ex',
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
@@ -1201,6 +1204,7 @@ describe(SwapSDK, () => {
           destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
           depositAmount: BigInt(1e18).toString(),
           type: 'REGULAR',
+          isVaultSwap: false,
         } as Quote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         brokerCommissionBps: 125,
@@ -1275,6 +1279,7 @@ describe(SwapSDK, () => {
           destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
           depositAmount: BigInt(1e18).toString(),
           type: 'REGULAR',
+          isVaultSwap: false,
         } as Quote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         affiliateBrokers: [
@@ -1353,6 +1358,7 @@ describe(SwapSDK, () => {
           destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
           depositAmount: BigInt(1e18).toString(),
           type: 'REGULAR',
+          isVaultSwap: false,
         } as Quote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         fillOrKillParams: {
@@ -1443,6 +1449,7 @@ describe(SwapSDK, () => {
             chunkIntervalBlocks: 5,
           },
           type: 'DCA',
+          isVaultSwap: false,
         } as Quote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         fillOrKillParams: {
@@ -1537,6 +1544,7 @@ describe(SwapSDK, () => {
           depositAmount: BigInt(1e18).toString(),
           maxBoostFeeBps: MAX_BOOST_FEE_BPS,
           type: 'REGULAR',
+          isVaultSwap: false,
         } as BoostQuote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
       });
@@ -1594,6 +1602,7 @@ describe(SwapSDK, () => {
               numberOfChunks: 100,
               chunkIntervalBlocks: 5,
             },
+            isVaultSwap: false,
           } as Quote,
           destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         }),
@@ -1610,10 +1619,28 @@ describe(SwapSDK, () => {
             destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
             depositAmount: BigInt(1e18).toString(),
             type: 'DCA',
+            isVaultSwap: false,
           } as Quote,
           destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         }),
       ).rejects.toThrow('Failed to find DCA parameters from quote');
+    });
+
+    it('throws for vault swap quote', async () => {
+      await expect(
+        new SwapSDK({
+          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        }).requestDepositAddressV2({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            type: 'REGULAR',
+            isVaultSwap: true,
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        }),
+      ).rejects.toThrow('Cannot open a deposit channel for a vault swap quote');
     });
   });
 
@@ -1633,6 +1660,7 @@ describe(SwapSDK, () => {
         depositAmount: BigInt(1e18).toString(),
         estimatedPrice: '2500',
         type: 'REGULAR',
+        isVaultSwap: true,
       } as Quote;
       const response = await sdk.encodeVaultSwapData({
         quote,
@@ -1683,6 +1711,7 @@ describe(SwapSDK, () => {
           chunkIntervalBlocks: 5,
         },
         type: 'DCA',
+        isVaultSwap: true,
       } as Quote;
       const response = await sdk.encodeVaultSwapData({
         quote,
@@ -1728,6 +1757,7 @@ describe(SwapSDK, () => {
           chunkIntervalBlocks: 5,
         },
         type: 'DCA',
+        isVaultSwap: true,
       } as Quote;
 
       await expect(
@@ -1756,6 +1786,7 @@ describe(SwapSDK, () => {
           chunkIntervalBlocks: 5,
         },
         type: 'DCA',
+        isVaultSwap: true,
       } as Quote;
 
       await expect(
@@ -1804,6 +1835,7 @@ describe(SwapSDK, () => {
           destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
           depositAmount: BigInt(1e18).toString(),
           type: 'REGULAR',
+          isVaultSwap: true,
         } as Quote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         fillOrKillParams: {
@@ -1878,6 +1910,7 @@ describe(SwapSDK, () => {
             chunkIntervalBlocks: 5,
           },
           type: 'DCA',
+          isVaultSwap: true,
         } as Quote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         fillOrKillParams: {
@@ -1950,6 +1983,7 @@ describe(SwapSDK, () => {
           depositAmount: BigInt(1e18).toString(),
           maxBoostFeeBps: MAX_BOOST_FEE_BPS,
           type: 'REGULAR',
+          isVaultSwap: true,
         } as BoostQuote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         fillOrKillParams: {
@@ -2002,6 +2036,7 @@ describe(SwapSDK, () => {
               numberOfChunks: 100,
               chunkIntervalBlocks: 5,
             },
+            isVaultSwap: true,
           } as Quote,
           destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
           fillOrKillParams: {
@@ -2023,6 +2058,7 @@ describe(SwapSDK, () => {
             destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
             depositAmount: BigInt(1e18).toString(),
             type: 'DCA',
+            isVaultSwap: true,
           } as Quote,
           destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
           fillOrKillParams: {
@@ -2032,6 +2068,28 @@ describe(SwapSDK, () => {
           },
         }),
       ).rejects.toThrow('Failed to find DCA parameters from quote');
+    });
+
+    it('throws for deposit channel quote', async () => {
+      await expect(
+        new SwapSDK({
+          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        }).encodeVaultSwapData({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            type: 'REGULAR',
+            isVaultSwap: false,
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+            minPrice: '10000000000000',
+          },
+        }),
+      ).rejects.toThrow('Cannot encode vault swap data for a deposit channel quote');
     });
   });
 
