@@ -5,6 +5,7 @@ import {
 } from '@chainflip/solana/deposit';
 import { sleep } from '@chainflip/utils/async';
 import assert from 'assert';
+import { isAxiosError } from 'axios';
 import { z } from 'zod';
 import { assertUnreachable } from '@/shared/functions';
 import prisma from '../client';
@@ -169,6 +170,12 @@ export const start = async () => {
           assertUnreachable(parsed, 'unexpected pending tx ref type');
       }
     } catch (error) {
+      if (isAxiosError(error)) {
+        logger.warn('network error while processing solana tx ref', {
+          error: error.toJSON(),
+          pendingTxRef,
+        });
+      }
       logger.error('error processing solana tx ref', { error, pendingTxRef, parsed });
       break;
     }
