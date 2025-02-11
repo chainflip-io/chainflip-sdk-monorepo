@@ -18,6 +18,8 @@ import ServiceError from '../../utils/ServiceError';
 import { asyncHandler, handleQuotingError } from '../common';
 import { fallbackChains } from '../quote';
 
+export const MAX_NUMBER_OF_CHUNKS = 2n ** 32n - 1n;
+
 const router = express.Router();
 
 export const getDcaQuoteParams = async (asset: InternalAsset, amount: bigint) => {
@@ -34,6 +36,11 @@ export const getDcaQuoteParams = async (asset: InternalAsset, amount: bigint) =>
     return null;
   }
   const numberOfChunks = Math.ceil(Number(usdValue) / usdChunkSize);
+
+  if (numberOfChunks > MAX_NUMBER_OF_CHUNKS) {
+    logger.error(`number of chunks does not fit u32 type`);
+    return null;
+  }
 
   return {
     chunkSize: BigInt(new BigNumber(amount.toString()).dividedBy(numberOfChunks).toFixed(0)),

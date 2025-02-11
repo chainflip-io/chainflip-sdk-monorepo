@@ -20,7 +20,7 @@ import Quoter from '../../../quoting/Quoter';
 import app from '../../../server';
 import { boostPoolsCache } from '../../../utils/boost';
 import { getTotalLiquidity } from '../../../utils/pools';
-import { getDcaQuoteParams } from '../../v2/quote';
+import { getDcaQuoteParams, MAX_NUMBER_OF_CHUNKS } from '../../v2/quote';
 
 vi.mock('../../../utils/function', async (importOriginal) => {
   const original = (await importOriginal()) as object;
@@ -118,6 +118,15 @@ describe(getDcaQuoteParams, () => {
     vi.mocked(getUsdValue).mockResolvedValue('30');
 
     const result = await getDcaQuoteParams('Btc', 90n);
+    expect(result).toEqual(null);
+  });
+
+  it('should correctly handle number of chunks bigger than max', async () => {
+    const chunkSizeUsd = BigInt(env.DCA_CHUNK_SIZE_USD?.Btc ?? env.DCA_DEFAULT_CHUNK_SIZE_USD);
+    const maxUsdValue = MAX_NUMBER_OF_CHUNKS * chunkSizeUsd + 1n;
+    vi.mocked(getUsdValue).mockResolvedValue(maxUsdValue.toString());
+
+    const result = await getDcaQuoteParams('Btc', 1n);
     expect(result).toEqual(null);
   });
 });
