@@ -78,7 +78,7 @@ export const depositIgnored =
             'depositDetails' in rest ? getDepositTxRef(chain, rest.depositDetails) : undefined,
         },
       }),
-      enqueuePendingTxRef(prisma, { swapDepositChannelId: channel.id }),
+      chain === 'Solana' && enqueuePendingTxRef(prisma, { swapDepositChannelId: channel.id }),
     ]);
   };
 
