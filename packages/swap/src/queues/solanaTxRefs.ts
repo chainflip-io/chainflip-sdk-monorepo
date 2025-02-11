@@ -8,7 +8,7 @@ import assert from 'assert';
 import { isAxiosError } from 'axios';
 import { z } from 'zod';
 import { assertUnreachable } from '@/shared/functions';
-import prisma from '../client';
+import prisma, { Prisma } from '../client';
 import env from '../config/env';
 import { handleExit } from '../utils/function';
 import baseLogger from '../utils/logger';
@@ -36,6 +36,21 @@ const pendingTxRefSchema = z.union([
       ...args,
     })),
 ]);
+
+export const enqueuePendingTxRef = async (
+  txClient: Prisma.TransactionClient,
+  pendingTxRef: z.input<typeof pendingTxRefSchema>,
+) => {
+  const result = pendingTxRefSchema.safeParse(pendingTxRef);
+
+  if (result.success) {
+    await txClient.solanaPendingTxRef.create({ data: pendingTxRef });
+  } else {
+    logger.error('invalid pending tx ref', { pendingTxRef, errors: result.error.errors });
+  }
+
+  return result.success;
+};
 
 type PendingTxRef = z.output<typeof pendingTxRefSchema>;
 type PendingChannelTxRef = Extract<PendingTxRef, { type: 'CHANNEL' }>;
