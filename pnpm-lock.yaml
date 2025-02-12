@@ -232,8 +232,8 @@ importers:
         specifier: ^1.8.4
         version: 1.8.4
       '@chainflip/rpc':
-        specifier: ^1.8.0
-        version: 1.8.0
+        specifier: ^1.8.2
+        version: 1.8.2
       '@chainflip/solana':
         specifier: ^2.0.1
         version: 2.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -641,9 +641,6 @@ packages:
 
   '@chainflip/processor@1.8.4':
     resolution: {integrity: sha512-sGX25FnLAm32V4RdhIrja4BO67FG2C2iujiiwPcbL/nUW3OyTg/lpXuox0uBVO8bGp1IJ4l/uGcTz83MQfNn0w==}
-
-  '@chainflip/rpc@1.8.0':
-    resolution: {integrity: sha512-5XWXyrR5ld7IdW2Lk3Rl8P2oPOE28967CqskaqJgsyLdE8S7j/wao1He66zfFDgmRTClLhPNHKjDw7olVAEPCg==}
 
   '@chainflip/rpc@1.8.2':
     resolution: {integrity: sha512-qvfjWOR03mF5s2tRJZFMjUwA3CjdUjVcHjtMVCWanUx6riL9Dh5GkSG4e0f8SLhrdib/l8NCqzedX8ydu4k9aw==}
@@ -6150,11 +6147,6 @@ snapshots:
       - typescript
 
   '@chainflip/processor@1.8.4':
-    dependencies:
-      '@chainflip/utils': 0.4.0
-      zod: 3.24.1
-
-  '@chainflip/rpc@1.8.0':
     dependencies:
       '@chainflip/utils': 0.4.0
       zod: 3.24.1
