@@ -12,7 +12,6 @@ import { assetConstants } from '@/shared/enums';
 import { bitcoinScriptPubKey } from '@/shared/parsers';
 import { getDepositTxRef } from './common';
 import env from '../config/env';
-import { enqueuePendingTxRef } from '../queues/solanaTxRefs';
 import logger from '../utils/logger';
 import type { EventHandlerArgs } from './index';
 
@@ -78,7 +77,8 @@ export const depositIgnored =
             'depositDetails' in rest ? getDepositTxRef(chain, rest.depositDetails) : undefined,
         },
       }),
-      chain === 'Solana' && enqueuePendingTxRef(prisma, { swapDepositChannelId: channel.id }),
+      chain === 'Solana' &&
+        prisma.solanaPendingTxRef.create({ data: { swapDepositChannelId: channel.id } }),
     ]);
   };
 

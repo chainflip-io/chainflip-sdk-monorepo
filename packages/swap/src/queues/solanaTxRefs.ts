@@ -6,9 +6,10 @@ import {
 import { sleep } from '@chainflip/utils/async';
 import assert from 'assert';
 import { isAxiosError } from 'axios';
+import * as util from 'util';
 import { z } from 'zod';
 import { assertUnreachable } from '@/shared/functions';
-import prisma, { Prisma } from '../client';
+import prisma from '../client';
 import env from '../config/env';
 import { handleExit } from '../utils/function';
 import baseLogger from '../utils/logger';
@@ -36,21 +37,6 @@ const pendingTxRefSchema = z.union([
       ...args,
     })),
 ]);
-
-export const enqueuePendingTxRef = async (
-  txClient: Prisma.TransactionClient,
-  pendingTxRef: z.input<typeof pendingTxRefSchema>,
-) => {
-  const result = pendingTxRefSchema.safeParse(pendingTxRef);
-
-  if (result.success) {
-    await txClient.solanaPendingTxRef.create({ data: pendingTxRef });
-  } else {
-    logger.error('invalid pending tx ref', { pendingTxRef, errors: result.error.errors });
-  }
-
-  return result.success;
-};
 
 type PendingTxRef = z.output<typeof pendingTxRefSchema>;
 type PendingChannelTxRef = Extract<PendingTxRef, { type: 'CHANNEL' }>;
@@ -101,28 +87,40 @@ const updateChannel = async (data: PendingChannelTxRef) => {
     })),
   ].sort(sortBlockIndexDesc);
 
-  const txRefs = await findTransactionSignatures(
-    env.SOLANA_RPC_HTTP_URL,
-    channel.depositAddress,
-    channel.srcAsset,
-    deposits,
-  );
+  let txRefs;
+
+  try {
+    txRefs = await findTransactionSignatures(
+      env.SOLANA_RPC_HTTP_URL,
+      channel.depositAddress,
+      channel.srcAsset,
+      deposits,
+    );
+  } catch (error) {
+    logger.error('failed to find transaction signatures', {
+      error,
+      channel: { address: channel.depositAddress, asset: channel.srcAsset },
+      deposits,
+    });
+
+    throw error;
+  }
 
   await prisma.$transaction(async (txClient) =>
     Promise.all(
-      deposits.map((d, i) =>
-        d.type === 'SWAP_REQUEST'
-          ? txClient.swapRequest.update({
-              where: { id: d.id },
-              // the last element is the oldest transaction signature
-              data: { depositTransactionRef: txRefs[i].at(-1) },
-            })
-          : txClient.failedSwap.update({
-              where: { id: d.id },
-              // the last element is the oldest transaction signature
-              data: { depositTransactionRef: txRefs[i].at(-1) },
-            }),
-      ),
+      deposits.map((d, i) => {
+        // the last element is the oldest transaction signature
+        const newData = { depositTransactionRef: txRefs[i].at(-1) };
+
+        switch (d.type) {
+          case 'FAILED_SWAP':
+            return txClient.failedSwap.update({ where: { id: d.id }, data: newData });
+          case 'SWAP_REQUEST':
+            return txClient.swapRequest.update({ where: { id: d.id }, data: newData });
+          default:
+            return assertUnreachable(d, 'unexpected deposit type');
+        }
+      }),
     ),
   );
 };
@@ -195,7 +193,11 @@ export const start = async () => {
         // eslint-disable-next-line no-continue
         continue;
       }
-      logger.error('error processing solana tx ref', { error, pendingTxRef, parsed });
+      logger.error('error processing solana tx ref', {
+        error: util.inspect(error),
+        pendingTxRef,
+        parsed,
+      });
       break;
     }
   }
