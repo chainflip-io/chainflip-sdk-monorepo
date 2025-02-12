@@ -9,8 +9,6 @@ import { assertUnreachable } from '@/shared/functions';
 import { assertNever } from '@/shared/guards';
 import { pascalCaseToScreamingSnakeCase } from '@/shared/strings';
 import { Prisma } from '../client';
-import { enqueuePendingTxRef } from '../queues/solanaTxRefs';
-import logger from '../utils/logger';
 import type { EventHandlerArgs } from './index';
 
 const transform170Schema = (data: z.output<typeof schema170>): z.output<typeof schema180> => {
@@ -233,7 +231,7 @@ export default async function swapRequested({
     },
   });
 
-  if (assetConstants[inputAsset].chain === 'Solana') {
+  if (assetConstants[inputAsset].chain === 'Solana' && originType !== 'INTERNAL') {
     let pendingTxRefInfo;
     if (originType === 'DEPOSIT_CHANNEL') {
       pendingTxRefInfo = { swapDepositChannelId };
@@ -244,16 +242,10 @@ export default async function swapRequested({
         slot: origin.txId.value[1],
         vaultSwapRequestId: swapRequest.id,
       };
-    } else if (originType !== 'INTERNAL') {
+    } else {
       assertUnreachable(originType, `unexpected origin: ${originType}`);
     }
 
-    if (!(await enqueuePendingTxRef(prisma, pendingTxRefInfo!))) {
-      logger.error('failed to enqueue pending tx ref', {
-        pendingTxRefInfo,
-        blockId: block.height,
-        eventIndex: event.indexInBlock,
-      });
-    }
+    await prisma.solanaPendingTxRef.create({ data: pendingTxRefInfo });
   }
 }

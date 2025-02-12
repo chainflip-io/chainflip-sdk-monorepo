@@ -14,7 +14,6 @@ import { assertUnreachable } from '@/shared/functions';
 import { FailedSwapReason, type Chain } from '../client';
 import { getDepositTxRef } from './common';
 import env from '../config/env';
-import { enqueuePendingTxRef } from '../queues/solanaTxRefs';
 import logger from '../utils/logger';
 import type { EventHandlerArgs } from './index';
 
@@ -162,13 +161,7 @@ export const depositFailed =
       if ('failedVaultSwapId' in pendingTxRefInfo) {
         pendingTxRefInfo = { ...pendingTxRefInfo, failedVaultSwapId: failedSwap.id };
       }
-      if (!(await enqueuePendingTxRef(prisma, pendingTxRefInfo))) {
-        logger.error('failed to enqueue pending tx ref', {
-          pendingTxRefInfo,
-          blockId: block.height,
-          eventIndex: event.indexInBlock,
-        });
-      }
+      await prisma.solanaPendingTxRef.create({ data: pendingTxRefInfo });
     }
   };
 
