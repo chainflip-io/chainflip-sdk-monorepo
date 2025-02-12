@@ -1,11 +1,13 @@
 import express from 'express';
 import { getAssetAndChain } from '@/shared/enums';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
-import { openSwapDepositChannelSchema } from '@/shared/schemas';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
 import { asyncHandler, maintenanceMode } from './common';
 import prisma from '../client';
-import { openSwapDepositChannel } from '../handlers/openSwapDepositChannel';
+import {
+  openSwapDepositChannel,
+  openSwapDepositChannelSchema,
+} from '../handlers/openSwapDepositChannel';
 import { getPendingBroadcast, getPendingDeposit } from '../ingress-egress-tracking';
 import { readField } from '../utils/function';
 import logger from '../utils/logger';

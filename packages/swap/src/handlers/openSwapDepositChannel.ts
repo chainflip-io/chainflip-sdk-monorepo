@@ -2,7 +2,8 @@ import { z } from 'zod';
 import * as broker from '@/shared/broker';
 import { getInternalAssets } from '@/shared/enums';
 import { getPriceFromPriceX128 } from '@/shared/functions';
-import { openSwapDepositChannelSchema } from '@/shared/schemas';
+import { asset, chain, numericString } from '@/shared/parsers';
+import { ccmParamsSchema, dcaParams, ensureDcaWithFok, fillOrKillParams } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';
 import env from '../config/env';
@@ -11,6 +12,34 @@ import isDisallowedSwap from '../utils/isDisallowedSwap';
 import logger from '../utils/logger';
 import { validateSwapAmount } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
+
+export const openSwapDepositChannelSchema = z
+  .object({
+    srcAsset: asset,
+    destAsset: asset,
+    srcChain: chain,
+    destChain: chain,
+    destAddress: z.string(),
+    amount: numericString,
+    ccmParams: ccmParamsSchema.optional(),
+    maxBoostFeeBps: z.number().optional(),
+    srcAddress: z.string().optional(),
+    fillOrKillParams,
+    dcaParams: dcaParams.optional(),
+    quote: z
+      .object({
+        intermediateAmount: z.string().optional(),
+        egressAmount: z.string(),
+        estimatedPrice: z.string(),
+        recommendedSlippageTolerancePercent: z.number().optional(),
+      })
+      .optional(),
+  })
+  .superRefine(ensureDcaWithFok)
+  .transform(({ amount, ...rest }) => ({
+    ...rest,
+    expectedDepositAmount: amount,
+  }));
 
 const getSlippageTolerancePercent = (input: z.output<typeof openSwapDepositChannelSchema>) => {
   const { srcAsset, destAsset } = getInternalAssets(input);

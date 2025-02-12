@@ -3,17 +3,25 @@ import { z } from 'zod';
 import { getParameterEncodingRequestSchema } from '@/shared/broker';
 import { getInternalAsset } from '@/shared/enums';
 import { transformKeysToCamelCase } from '@/shared/objects';
+import { chainflipAddress } from '@/shared/parsers';
 import env from '../config/env';
 import isDisallowedSwap from '../utils/isDisallowedSwap';
 import logger from '../utils/logger';
 import { validateSwapAmount } from '../utils/rpc';
 import ServiceError from '../utils/ServiceError';
 
-const client = new HttpClient(env.RPC_BROKER_HTTPS_URL);
+const brokerClient = new HttpClient(env.RPC_BROKER_HTTPS_URL);
+const nodeClient = new HttpClient(env.RPC_NODE_HTTP_URL);
 
-export const encodeVaultSwapData = async (
-  input: z.output<ReturnType<typeof getParameterEncodingRequestSchema>>,
-) => {
+export const encodeVaultSwapDataSchema = getParameterEncodingRequestSchema(
+  env.CHAINFLIP_NETWORK,
+).and(
+  z.object({
+    brokerAccount: chainflipAddress.optional(),
+  }),
+);
+
+export const encodeVaultSwapData = async (input: z.output<typeof encodeVaultSwapDataSchema>) => {
   logger.info('Fetching vault swap data', input);
 
   if (
@@ -41,18 +49,32 @@ export const encodeVaultSwapData = async (
 
   if (!result.success) throw ServiceError.badRequest(result.reason);
 
-  const response = await client.sendRequest(
-    'broker_request_swap_parameter_encoding',
-    input.srcAsset,
-    input.destAsset,
-    input.destAddress,
-    0, // default broker does not support commission
-    input.extraParams,
-    input.ccmParams,
-    input.maxBoostFeeBps,
-    undefined, // default broker does not support affiliates
-    input.dcaParams,
-  );
+  const response = input.brokerAccount
+    ? await nodeClient.sendRequest(
+        'cf_request_swap_parameter_encoding',
+        input.brokerAccount,
+        input.srcAsset,
+        input.destAsset,
+        input.destAddress,
+        input.commissionBps,
+        input.extraParams,
+        input.ccmParams,
+        input.maxBoostFeeBps,
+        input.affiliates,
+        input.dcaParams,
+      )
+    : await brokerClient.sendRequest(
+        'broker_request_swap_parameter_encoding',
+        input.srcAsset,
+        input.destAsset,
+        input.destAddress,
+        0, // default broker account does not support commission
+        input.extraParams,
+        input.ccmParams,
+        input.maxBoostFeeBps,
+        undefined, // default broker account does not support affiliates
+        input.dcaParams,
+      );
 
   logger.info('Vault swap data fetched', response);
 
