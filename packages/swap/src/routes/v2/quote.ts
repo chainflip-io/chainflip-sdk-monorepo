@@ -18,7 +18,12 @@ import ServiceError from '../../utils/ServiceError';
 import { asyncHandler, handleQuotingError } from '../common';
 import { fallbackChains } from '../quote';
 
-export const MAX_NUMBER_OF_CHUNKS = 2n ** 32n - 1n;
+const MAX_DCA_DURATION_SECONDS = 24 * 60 * 60;
+export const MAX_NUMBER_OF_CHUNKS = Math.ceil(
+  MAX_DCA_DURATION_SECONDS /
+    CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS /
+    env.DCA_CHUNK_INTERVAL_BLOCKS,
+);
 
 const router = express.Router();
 
@@ -38,7 +43,9 @@ export const getDcaQuoteParams = async (asset: InternalAsset, amount: bigint) =>
   const numberOfChunks = Math.ceil(Number(usdValue) / usdChunkSize);
 
   if (numberOfChunks > MAX_NUMBER_OF_CHUNKS) {
-    logger.error(`number of chunks does not fit u32 type`);
+    logger.error(
+      `number of chunks (${numberOfChunks}) is bigger than max (${MAX_NUMBER_OF_CHUNKS})`,
+    );
     return null;
   }
 

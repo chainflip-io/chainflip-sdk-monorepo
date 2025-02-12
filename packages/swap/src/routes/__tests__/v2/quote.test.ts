@@ -123,7 +123,7 @@ describe(getDcaQuoteParams, () => {
 
   it('should correctly handle number of chunks bigger than max', async () => {
     const chunkSizeUsd = BigInt(env.DCA_CHUNK_SIZE_USD?.Btc ?? env.DCA_DEFAULT_CHUNK_SIZE_USD);
-    const maxUsdValue = MAX_NUMBER_OF_CHUNKS * chunkSizeUsd + 1n;
+    const maxUsdValue = BigInt(MAX_NUMBER_OF_CHUNKS) * chunkSizeUsd + 1n;
     vi.mocked(getUsdValue).mockResolvedValue(maxUsdValue.toString());
 
     const result = await getDcaQuoteParams('Btc', 1n);
