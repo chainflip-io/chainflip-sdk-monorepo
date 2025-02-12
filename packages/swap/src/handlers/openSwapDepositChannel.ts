@@ -3,7 +3,12 @@ import * as broker from '@/shared/broker';
 import { getInternalAssets } from '@/shared/enums';
 import { getPriceFromPriceX128 } from '@/shared/functions';
 import { asset, chain, numericString } from '@/shared/parsers';
-import { ccmParamsSchema, dcaParams, ensureDcaWithFok, fillOrKillParams } from '@/shared/schemas';
+import {
+  ccmParamsSchema,
+  dcaParams as dcaParamsSchema,
+  ensureDcaWithFok,
+  fillOrKillParams as fillOrKillParamsSchema,
+} from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';
 import env from '../config/env';
@@ -24,8 +29,8 @@ export const openSwapDepositChannelSchema = z
     ccmParams: ccmParamsSchema.optional(),
     maxBoostFeeBps: z.number().optional(),
     srcAddress: z.string().optional(),
-    fillOrKillParams,
-    dcaParams: dcaParams.optional(),
+    fillOrKillParams: fillOrKillParamsSchema,
+    dcaParams: dcaParamsSchema.optional(),
     quote: z
       .object({
         intermediateAmount: z.string().optional(),
