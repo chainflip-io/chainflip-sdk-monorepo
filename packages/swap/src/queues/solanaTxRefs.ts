@@ -174,6 +174,8 @@ export const start = async () => {
     try {
       parsed = pendingTxRefSchema.parse(pendingTxRef);
 
+      logger.info('processing solana tx ref', parsed);
+
       switch (parsed.type) {
         case 'CHANNEL':
           await updateChannel(parsed);
@@ -184,6 +186,8 @@ export const start = async () => {
         default:
           assertUnreachable(parsed, 'unexpected pending tx ref type');
       }
+
+      await prisma.solanaPendingTxRef.delete({ where: { id: pendingTxRef.id } });
     } catch (error) {
       if (isAxiosError(error)) {
         logger.warn('network error while processing solana tx ref', {
