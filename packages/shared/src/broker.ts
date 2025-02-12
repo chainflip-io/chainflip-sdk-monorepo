@@ -184,10 +184,12 @@ export async function requestSwapDepositAddress(
 
   /** @deprecated pass the chain in the srcAsset and destAsset object instead */
   if (request.srcChain && typeof request.srcAsset === 'string') {
-    request.srcAsset = { asset: request.srcAsset, chain: request.srcChain };
+    // eslint-disable-next-line no-param-reassign
+    request = { ...request, srcAsset: { asset: request.srcAsset, chain: request.srcChain } };
   }
   if (request.destChain && typeof request.destAsset === 'string') {
-    request.destAsset = { asset: request.destAsset, chain: request.destChain };
+    // eslint-disable-next-line no-param-reassign
+    request = { ...request, destAsset: { asset: request.destAsset, chain: request.destChain } };
   }
 
   const params = getDepositAddressRequestSchema(chainflipNetwork).parse(request);
