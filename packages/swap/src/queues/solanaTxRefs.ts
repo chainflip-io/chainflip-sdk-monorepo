@@ -160,6 +160,8 @@ export const start = async () => {
 
   logger.info('starting solana tx ref queue');
 
+  let retries = 0;
+
   while (!controller.signal.aborted) {
     try {
       await sleep(env.SOLANA_TX_REF_QUEUE_INTERVAL, { signal: controller.signal });
@@ -190,6 +192,8 @@ export const start = async () => {
           assertUnreachable(parsed, 'unexpected pending tx ref type');
       }
 
+      retries = 0;
+
       await prisma.solanaPendingTxRef.delete({ where: { id: pendingTxRef.id } });
     } catch (error) {
       if (isAxiosError(error)) {
@@ -200,11 +204,20 @@ export const start = async () => {
         // eslint-disable-next-line no-continue
         continue;
       }
+
       logger.error('error processing solana tx ref', {
         error: util.inspect(error),
         pendingTxRef,
         parsed,
       });
+
+      if (retries < 5) {
+        retries += 1;
+        logger.info('retrying request');
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
       break;
     }
   }
