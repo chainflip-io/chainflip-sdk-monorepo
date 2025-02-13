@@ -20,4 +20,5 @@ export default {
   DISABLE_QUOTING: false,
   SOLANA_RPC_HTTP_URL: 'http://solana-rpc.test',
   STABLE_COIN_SLIPPAGE_MIN_PRICE: 0.995,
+  DCA_CHUNK_INTERVAL_BLOCKS: 2,
 };
