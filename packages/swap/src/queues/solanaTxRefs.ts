@@ -62,7 +62,7 @@ type Deposit = {
   } & DepositInfo;
 }[DepositType];
 
-const updateChannel = async (data: PendingChannelTxRef) => {
+const updateChannel = async (url: string, data: PendingChannelTxRef) => {
   const channel = await prisma.swapDepositChannel.findUniqueOrThrow({
     where: { id: data.channelId },
     include: { failedSwaps: true, swapRequests: true },
@@ -91,7 +91,7 @@ const updateChannel = async (data: PendingChannelTxRef) => {
 
   try {
     txRefs = await findTransactionSignatures(
-      env.SOLANA_RPC_HTTP_URL,
+      url,
       channel.depositAddress,
       channel.srcAsset,
       deposits,
@@ -127,12 +127,8 @@ const updateChannel = async (data: PendingChannelTxRef) => {
 
 type VaultSwapPendingTxRef = Extract<PendingTxRef, { type: 'VAULT_SWAP' }>;
 
-const updateVaultSwap = async (data: VaultSwapPendingTxRef) => {
-  const signature = await findVaultSwapSignature(
-    env.SOLANA_RPC_HTTP_URL,
-    data.address,
-    Number(data.slot),
-  );
+const updateVaultSwap = async (url: string, data: VaultSwapPendingTxRef) => {
+  const signature = await findVaultSwapSignature(url, data.address, Number(data.slot));
 
   if (data.status === 'SUCCESS') {
     await prisma.swapRequest.update({
@@ -150,6 +146,13 @@ const updateVaultSwap = async (data: VaultSwapPendingTxRef) => {
 };
 
 export const start = async () => {
+  const url = env.SOLANA_RPC_HTTP_URL;
+
+  if (!url) {
+    logger.info('no solana rpc url present');
+    return;
+  }
+
   const controller = new AbortController();
   const clean = handleExit(() => {
     controller.abort();
@@ -174,16 +177,20 @@ export const start = async () => {
     try {
       parsed = pendingTxRefSchema.parse(pendingTxRef);
 
+      logger.info('processing solana tx ref', parsed);
+
       switch (parsed.type) {
         case 'CHANNEL':
-          await updateChannel(parsed);
+          await updateChannel(url, parsed);
           break;
         case 'VAULT_SWAP':
-          await updateVaultSwap(parsed);
+          await updateVaultSwap(url, parsed);
           break;
         default:
           assertUnreachable(parsed, 'unexpected pending tx ref type');
       }
+
+      await prisma.solanaPendingTxRef.delete({ where: { id: pendingTxRef.id } });
     } catch (error) {
       if (isAxiosError(error)) {
         logger.warn('network error while processing solana tx ref', {

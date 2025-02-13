@@ -33,7 +33,7 @@ export default z
     SWAPPING_APP_PORT: optionalNumber(8080),
     RPC_BROKER_HTTPS_URL: httpUrl,
     RPC_NODE_WSS_URL: wsUrl,
-    SOLANA_RPC_HTTP_URL: httpUrl,
+    SOLANA_RPC_HTTP_URL: httpUrl.optional(),
     CHAINFLIP_NETWORK: chainflipNetwork,
     QUOTE_TIMEOUT: optionalNumber(1000),
     NODE_ENV: nodeEnv.default('production'),
