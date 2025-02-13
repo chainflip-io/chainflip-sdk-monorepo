@@ -43,9 +43,7 @@ export const getDcaQuoteParams = async (asset: InternalAsset, amount: bigint) =>
   const numberOfChunks = Math.ceil(Number(usdValue) / usdChunkSize);
 
   if (numberOfChunks > MAX_NUMBER_OF_CHUNKS) {
-    logger.error(
-      `number of chunks (${numberOfChunks}) is bigger than max (${MAX_NUMBER_OF_CHUNKS})`,
-    );
+    logger.info('number of chunks is bigger than max', { numberOfChunks, MAX_NUMBER_OF_CHUNKS });
     return null;
   }
 
