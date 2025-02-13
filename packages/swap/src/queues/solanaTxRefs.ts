@@ -192,6 +192,8 @@ export const start = async () => {
           assertUnreachable(parsed, 'unexpected pending tx ref type');
       }
 
+      retries = 0;
+
       await prisma.solanaPendingTxRef.delete({ where: { id: pendingTxRef.id } });
     } catch (error) {
       if (isAxiosError(error)) {
