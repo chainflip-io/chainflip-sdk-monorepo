@@ -41,24 +41,3 @@ export const GET_EXTRINSIC = gql(/* GraphQL */ `
     }
   }
 `);
-
-export const GET_BLOCK = gql(/* GraphQL */ `
-  query GetBlock($height: Int!, $swapEvents: [String!]!) {
-    blocks: allBlocks(filter: { height: { equalTo: $height } }) {
-      nodes {
-        height
-        hash
-        timestamp
-        specId
-        events: eventsByBlockId(filter: { name: { in: $swapEvents } }) {
-          nodes {
-            args
-            extrinsic: extrinsicByExtrinsicId {
-              signature
-            }
-          }
-        }
-      }
-    }
-  }
-`);

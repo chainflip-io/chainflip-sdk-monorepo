@@ -17,7 +17,6 @@ const documents = {
     "\n  query GetBatch($height: Int!, $limit: Int!, $swapEvents: [String!]!) {\n    blocks: allBlocks(\n      filter: { height: { greaterThanOrEqualTo: $height } }\n      first: $limit\n      orderBy: HEIGHT_ASC\n    ) {\n      nodes {\n        height\n        hash\n        timestamp\n        specId\n        events: eventsByBlockId(filter: { name: { in: $swapEvents } }) {\n          nodes {\n            args\n            name\n            indexInBlock\n            callId\n            extrinsicId\n          }\n        }\n      }\n    }\n  }\n": types.GetBatchDocument,
     "\n  query GetCall($id: String!) {\n    call: callById(id: $id) {\n      args\n    }\n  }\n": types.GetCallDocument,
     "\n  query GetExtrinsic($id: String!) {\n    extrinsic: extrinsicById(id: $id) {\n      signature\n    }\n  }\n": types.GetExtrinsicDocument,
-    "\n  query GetBlock($height: Int!, $swapEvents: [String!]!) {\n    blocks: allBlocks(filter: { height: { equalTo: $height } }) {\n      nodes {\n        height\n        hash\n        timestamp\n        specId\n        events: eventsByBlockId(filter: { name: { in: $swapEvents } }) {\n          nodes {\n            args\n            extrinsic: extrinsicByExtrinsicId {\n              signature\n            }\n          }\n        }\n      }\n    }\n  }\n": types.GetBlockDocument,
 };
 
 /**
@@ -46,10 +45,6 @@ export function gql(source: "\n  query GetCall($id: String!) {\n    call: callBy
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n  query GetExtrinsic($id: String!) {\n    extrinsic: extrinsicById(id: $id) {\n      signature\n    }\n  }\n"): (typeof documents)["\n  query GetExtrinsic($id: String!) {\n    extrinsic: extrinsicById(id: $id) {\n      signature\n    }\n  }\n"];
-/**
- * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function gql(source: "\n  query GetBlock($height: Int!, $swapEvents: [String!]!) {\n    blocks: allBlocks(filter: { height: { equalTo: $height } }) {\n      nodes {\n        height\n        hash\n        timestamp\n        specId\n        events: eventsByBlockId(filter: { name: { in: $swapEvents } }) {\n          nodes {\n            args\n            extrinsic: extrinsicByExtrinsicId {\n              signature\n            }\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetBlock($height: Int!, $swapEvents: [String!]!) {\n    blocks: allBlocks(filter: { height: { equalTo: $height } }) {\n      nodes {\n        height\n        hash\n        timestamp\n        specId\n        events: eventsByBlockId(filter: { name: { in: $swapEvents } }) {\n          nodes {\n            args\n            extrinsic: extrinsicByExtrinsicId {\n              signature\n            }\n          }\n        }\n      }\n    }\n  }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

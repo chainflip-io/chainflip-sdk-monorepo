@@ -1,5 +1,3 @@
-import * as util from 'util';
-import backfillBeneficiaries from './backfilling/backfillBeneficiaries';
 import processBlocks from './processBlocks';
 import logger from './utils/logger';
 
@@ -9,14 +7,6 @@ const start = () => {
     logger.error('error processing blocks', { error });
     process.exit(1);
   });
-
-  backfillBeneficiaries()
-    .catch((error) => {
-      logger.error('error backfilling beneficiaries', { error: util.inspect(error) });
-    })
-    .finally(() => {
-      logger.info('beneficiary backfill exited');
-    });
 };
 
 export default start;
