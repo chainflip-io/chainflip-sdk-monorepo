@@ -47,6 +47,8 @@ export default async function backfillBeneficiaries() {
 
   logger.info('got batch of beneficiaries to backfill', { count: beneficiaries.length });
 
+  if (beneficiaries.length === 0) return;
+
   const channelsByBlock = Map.groupBy(
     beneficiaries.map((b) => ({ ...b.channel!, submitterId: b.id })),
     (channel) => channel.issuedBlock,
