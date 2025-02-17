@@ -39,58 +39,61 @@ export default async function backfillBeneficiaries() {
     return;
   }
 
-  const beneficiaries = await prisma.swapBeneficiary.findMany({
-    where: { account: '', type: 'SUBMITTER', channelId: { not: null } },
-    take: 100,
-    include: { channel: true },
-  });
-
-  logger.info('got batch of beneficiaries to backfill', { count: beneficiaries.length });
-
-  if (beneficiaries.length === 0) return;
-
-  const channelsByBlock = Map.groupBy(
-    beneficiaries.map((b) => {
-      assert(b.channel, 'channel not found on beneficiary');
-      return {
-        channelId: b.channel.channelId,
-        issuedBlock: b.channel.issuedBlock,
-        srcChain: b.channel.srcChain,
-        submitterId: b.id,
-      };
-    }),
-    (channel) => channel.issuedBlock,
-  );
-
-  for (const [issuedBlock, channels] of channelsByBlock.entries()) {
-    logger.info('backfilling beneficiaries for block', {
-      block: issuedBlock,
-      count: channels.length,
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const beneficiaries = await prisma.swapBeneficiary.findMany({
+      where: { account: '', type: 'SUBMITTER', channelId: { not: null } },
+      take: 100,
+      include: { channel: true },
     });
 
-    const batch = await client.request(GET_BLOCK, {
-      height: issuedBlock,
-      swapEvents: ['Swapping.SwapDepositAddressReady'],
-    });
+    logger.info('got batch of beneficiaries to backfill', { count: beneficiaries.length });
 
-    const block = batch.blocks?.nodes[0];
-    assert(block, 'block not found');
+    if (beneficiaries.length === 0) return;
 
-    const parsed = parseChannelArgs(block.events.nodes);
+    const channelsByBlock = Map.groupBy(
+      beneficiaries.map((b) => {
+        assert(b.channel, 'channel not found on beneficiary');
+        return {
+          channelId: b.channel.channelId,
+          issuedBlock: b.channel.issuedBlock,
+          srcChain: b.channel.srcChain,
+          submitterId: b.id,
+        };
+      }),
+      (channel) => channel.issuedBlock,
+    );
 
-    for (const channel of channels) {
-      const data = parsed.find(
-        (d) => d.channelId === channel.channelId && d.sourceChain === channel.srcChain,
-      );
-
-      assert(data, 'data not found for channel');
-
-      await prisma.swapBeneficiary.update({
-        where: { id: channel.submitterId },
-        data: { account: data.submitter },
+    for (const [issuedBlock, channels] of channelsByBlock.entries()) {
+      logger.info('backfilling beneficiaries for block', {
+        block: issuedBlock,
+        count: channels.length,
       });
-    }
-  }
 
-  await sleep(env.BACKFILL_BENEFICIARIES_INTERVAL);
+      const batch = await client.request(GET_BLOCK, {
+        height: issuedBlock,
+        swapEvents: ['Swapping.SwapDepositAddressReady'],
+      });
+
+      const block = batch.blocks?.nodes[0];
+      assert(block, 'block not found');
+
+      const parsed = parseChannelArgs(block.events.nodes);
+
+      for (const channel of channels) {
+        const data = parsed.find(
+          (d) => d.channelId === channel.channelId && d.sourceChain === channel.srcChain,
+        );
+
+        assert(data, 'data not found for channel');
+
+        await prisma.swapBeneficiary.update({
+          where: { id: channel.submitterId },
+          data: { account: data.submitter },
+        });
+      }
+    }
+
+    await sleep(env.BACKFILL_BENEFICIARIES_INTERVAL);
+  }
 }
