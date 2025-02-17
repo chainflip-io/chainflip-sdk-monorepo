@@ -85,7 +85,7 @@ const swapNative = async (
     chainConstants[params.destChain].contractId,
     encodeAddress(params.destChain, params.destAddress),
     assetConstants[destAsset].contractId,
-    params.ccmParams?.cfParameters ?? '0x',
+    params.ccmParams?.additionalData ?? params.ccmParams?.cfParameters ?? '0x',
     { value: params.amount, ...extractOverrides(txOpts) },
   );
   await transaction.wait(txOpts.wait);
@@ -116,7 +116,7 @@ const swapToken = async (
     assetConstants[destAsset].contractId,
     erc20Address,
     params.amount,
-    params.ccmParams?.cfParameters ?? '0x',
+    params.ccmParams?.additionalData ?? params.ccmParams?.cfParameters ?? '0x',
     extractOverrides(txOpts),
   );
   await transaction.wait(txOpts.wait);
@@ -141,7 +141,7 @@ const callNative = async (
     assetConstants[destAsset].contractId,
     params.ccmParams.message,
     params.ccmParams.gasBudget,
-    params.ccmParams?.cfParameters ?? '0x',
+    params.ccmParams?.additionalData ?? params.ccmParams?.cfParameters ?? '0x',
     { value: params.amount, ...extractOverrides(txOpts) },
   );
   await transaction.wait(txOpts.wait);
@@ -174,7 +174,7 @@ const callToken = async (
     params.ccmParams.gasBudget,
     erc20Address,
     params.amount,
-    params.ccmParams?.cfParameters ?? '0x',
+    params.ccmParams?.additionalData ?? params.ccmParams?.cfParameters ?? '0x',
     extractOverrides(txOpts),
   );
   await transaction.wait(txOpts.wait);

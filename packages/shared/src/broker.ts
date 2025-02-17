@@ -55,12 +55,15 @@ const transformedDcaParamsSchema = dcaParamsSchema.transform(
   }),
 );
 
-const transformedCcmParamsSchema = <T extends HexString | undefined>(defaultValue: T) =>
-  ccmParamsSchema.transform(({ message, gasBudget, cfParameters }) => ({
+const transformedCcmParamsSchema = ccmParamsSchema.transform(
+  ({ message, gasBudget, additionalData }) => ({
     message,
     gas_budget: gasBudget,
-    cf_parameters: cfParameters ?? defaultValue,
-  }));
+    ccm_additional_data: additionalData,
+    /** @deprecated DEPRECATED(1.8) we still need to pass cf_parameters until 1.8 is deployed to all networks */
+    cf_parameters: additionalData,
+  }),
+);
 
 const getDepositAddressRequestSchema = (network: ChainflipNetwork) =>
   z
@@ -69,7 +72,7 @@ const getDepositAddressRequestSchema = (network: ChainflipNetwork) =>
       destAsset: assetAndChain,
       destAddress: z.string(),
       commissionBps: z.number().optional().default(0),
-      ccmParams: transformedCcmParamsSchema(undefined).optional(),
+      ccmParams: transformedCcmParamsSchema.optional(),
       maxBoostFeeBps: z.number().optional(),
       affiliates: z.array(affiliateBroker).optional(),
       fillOrKillParams: transformedFokSchema.optional(),
@@ -105,7 +108,7 @@ export const getParameterEncodingRequestSchema = (network: ChainflipNetwork) =>
       destAddress: z.string(),
       amount: unsignedInteger,
       commissionBps: z.number().optional().default(0),
-      ccmParams: transformedCcmParamsSchema(undefined).optional(),
+      ccmParams: transformedCcmParamsSchema.optional(),
       maxBoostFeeBps: z.number().optional(),
       affiliates: z.array(affiliateBroker).optional(),
       fillOrKillParams: transformedFokSchema,

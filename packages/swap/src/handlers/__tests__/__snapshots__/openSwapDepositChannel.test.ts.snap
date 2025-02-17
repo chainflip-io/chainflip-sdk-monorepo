@@ -281,6 +281,7 @@ exports[`openSwapDepositChannel > creates channel with ccmParams and stores it i
   [
     {
       "ccmParams": {
+        "additionalData": undefined,
         "gasBudget": "0x1e848",
         "message": "0xdeadc0de",
       },

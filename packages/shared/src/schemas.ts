@@ -61,14 +61,26 @@ export const quoteQuerySchema = z
 export type QuoteQueryParams = z.input<typeof quoteQuerySchema>;
 export type ParsedQuoteParams = z.output<typeof quoteQuerySchema>;
 
-export const ccmParamsSchema = z.object({
-  gasBudget: z.union([numericString, hexString]).transform((n) => hexEncodeNumber(BigInt(n))),
-  message: hexStringWithMaxByteSize(1024 * 10),
-  // TODO(solana): update max size when it is known
-  cfParameters: hexStringWithMaxByteSize(1024 * 10).optional(),
-});
+export const ccmParamsSchema = z
+  .object({
+    gasBudget: z.union([numericString, hexString]).transform((n) => hexEncodeNumber(BigInt(n))),
+    // https://github.com/chainflip-io/chainflip-backend/blob/415aa9e20ec4046c68892cd34798e5d831c5b83f/state-chain/chains/src/lib.rs#L709
+    message: hexStringWithMaxByteSize(15_000),
+    // https://github.com/chainflip-io/chainflip-backend/blob/415aa9e20ec4046c68892cd34798e5d831c5b83f/state-chain/chains/src/lib.rs#L710
+    additionalData: hexStringWithMaxByteSize(3_000).optional(),
+    /** @deprecated DEPRECATED(1.8) pass additionalData instead */
+    cfParameters: hexStringWithMaxByteSize(3_000).optional(),
+  })
+  .transform(({ gasBudget, message, additionalData, cfParameters }) => ({
+    gasBudget,
+    message,
+    additionalData: additionalData ?? cfParameters,
+  }));
 
-export type CcmParams = z.input<typeof ccmParamsSchema>;
+export type CcmParams = Omit<z.input<typeof ccmParamsSchema>, 'cfParameters'> & {
+  /** @deprecated DEPRECATED(1.8) pass additionalData instead */
+  cfParameters?: string;
+};
 
 export const affiliateBroker = z
   .object({
