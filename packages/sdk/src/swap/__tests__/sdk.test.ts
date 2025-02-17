@@ -1506,6 +1506,93 @@ describe(SwapSDK, () => {
       });
     });
 
+    it('calls the configured broker api with the given ccm parameters', async () => {
+      const postSpy = mockRpcResponse((url, data: any) => {
+        if (data.method === 'broker_requestSwapDepositAddress') {
+          return Promise.resolve({
+            data: {
+              id: '1',
+              jsonrpc: '2.0',
+              result: {
+                address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+                issued_block: 123,
+                channel_id: 15,
+                source_chain_expiry_block: '0x04d2',
+                channel_opening_fee: '0x0',
+              },
+            },
+          });
+        }
+
+        return defaultRpcMocks(url, data);
+      });
+
+      const result = await new SwapSDK({
+        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+      }).requestDepositAddressV2({
+        quote: {
+          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          depositAmount: BigInt(1e18).toString(),
+          type: 'REGULAR',
+        } as Quote,
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        ccmParams: {
+          gasBudget: '123456789',
+          message: '0xdeadc0de',
+          additionalData: '0xc0ffee',
+        },
+      });
+
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_requestSwapDepositAddress',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            15,
+            {
+              ccm_additional_data: '0xc0ffee',
+              cf_parameters: '0xc0ffee',
+              gas_budget: '0x75bcd15',
+              message: '0xdeadc0de',
+            },
+            null,
+            null,
+            null,
+            null,
+          ],
+        },
+      ]);
+      expect(result).toStrictEqual({
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'FLIP',
+        srcAddress: undefined,
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        brokerCommissionBps: 15,
+        ccmParams: {
+          gasBudget: '123456789',
+          message: '0xdeadc0de',
+          additionalData: '0xc0ffee',
+        },
+        amount: '1000000000000000000',
+        depositChannelId: '123-Bitcoin-15',
+        depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+        depositChannelExpiryBlock: 1234n,
+        estimatedDepositChannelExpiryTime: undefined,
+        fillOrKillParams: undefined,
+        maxBoostFeeBps: 0,
+        channelOpeningFee: 0n,
+        affiliateBrokers: [],
+        dcaParams: undefined,
+      });
+    });
+
     it('calls the configured broker api with the given boost fee', async () => {
       const postSpy = mockRpcResponse((url, data: any) => {
         if (data.method === 'broker_requestSwapDepositAddress') {
@@ -1914,6 +2001,83 @@ describe(SwapSDK, () => {
               number_of_chunks: 100,
               chunk_interval: 5,
             },
+          ],
+        },
+      ]);
+      expect(result).toStrictEqual({
+        chain: 'Bitcoin',
+        nulldataPayload:
+          '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+        depositAddress: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+      });
+    });
+
+    it('calls the configured broker api with the given ccm parameters', async () => {
+      const postSpy = mockRpcResponse((url, data: any) => {
+        if (data.method === 'broker_request_swap_parameter_encoding') {
+          return Promise.resolve({
+            data: {
+              id: '1',
+              jsonrpc: '2.0',
+              result: {
+                chain: 'Bitcoin',
+                nulldata_payload:
+                  '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+                deposit_address: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+              },
+            },
+          });
+        }
+
+        return defaultRpcMocks(url, data);
+      });
+
+      const result = await new SwapSDK({
+        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+      }).encodeVaultSwapData({
+        quote: {
+          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          depositAmount: BigInt(1e18).toString(),
+          type: 'REGULAR',
+        } as Quote,
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          minPrice: '10000000000000',
+        },
+        ccmParams: {
+          gasBudget: '123456789',
+          message: '0xdeadc0de',
+          additionalData: '0xc0ffee',
+        },
+      });
+
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_request_swap_parameter_encoding',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            15,
+            {
+              chain: 'Bitcoin',
+              min_output_amount: '0x125dfa371a19e6f7cb54395ca0000000000',
+              retry_duration: 500,
+            },
+            {
+              gas_budget: '0x75bcd15',
+              message: '0xdeadc0de',
+              ccm_additional_data: '0xc0ffee',
+              cf_parameters: '0xc0ffee',
+            },
+            null,
+            null,
+            null,
           ],
         },
       ]);
