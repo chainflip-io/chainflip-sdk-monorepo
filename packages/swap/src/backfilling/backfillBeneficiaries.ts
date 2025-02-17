@@ -53,7 +53,7 @@ export default async function backfillBeneficiaries() {
     beneficiaries.map((b) => {
       assert(b.channel, 'channel not found on beneficiary');
       return {
-        channelId: b.channel.id,
+        channelId: b.channel.channelId,
         issuedBlock: b.channel.issuedBlock,
         srcChain: b.channel.srcChain,
         submitterId: b.id,
