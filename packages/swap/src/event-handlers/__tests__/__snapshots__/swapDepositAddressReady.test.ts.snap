@@ -91,6 +91,17 @@ exports[`swapDepositAddressReady > creates a swap deposit channel entry with a b
 }
 `;
 
+exports[`swapDepositAddressReady > creates a swap deposit channel entry with a broker commission 2`] = `
+{
+  "account": "cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy",
+  "channelId": Any<BigInt>,
+  "commissionBps": 25,
+  "id": Any<BigInt>,
+  "swapRequestId": null,
+  "type": "SUBMITTER",
+}
+`;
+
 exports[`swapDepositAddressReady > creates a swap deposit channel entry with a channel opening fee 1`] = `
 {
   "ccmGasBudget": null,

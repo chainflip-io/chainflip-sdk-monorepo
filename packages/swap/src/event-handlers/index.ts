@@ -162,7 +162,7 @@ export const swapEventNames = Object.values(events).flatMap((pallets) => Object.
 
 export type EventHandlerArgs = {
   prisma: Prisma.TransactionClient;
-  event: Pick<Event, 'args' | 'name' | 'indexInBlock' | 'callId'>;
+  event: Pick<Event, 'args' | 'name' | 'indexInBlock' | 'callId' | 'extrinsicId'>;
   block: Pick<Block, 'height' | 'hash' | 'timestamp' | 'specId'>;
 };
 
