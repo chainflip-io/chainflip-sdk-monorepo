@@ -1,5 +1,5 @@
+import { assert } from '@chainflip/utils/assertion';
 import { sleep } from '@chainflip/utils/async';
-import assert from 'assert';
 import { GraphQLClient } from 'graphql-request';
 import z from 'zod';
 import { assetConstants } from '@/shared/enums';
@@ -50,7 +50,15 @@ export default async function backfillBeneficiaries() {
   if (beneficiaries.length === 0) return;
 
   const channelsByBlock = Map.groupBy(
-    beneficiaries.map((b) => ({ ...b.channel!, submitterId: b.id })),
+    beneficiaries.map((b) => {
+      assert(b.channel, 'channel not found on beneficiary');
+      return {
+        channelId: b.channel.id,
+        issuedBlock: b.channel.issuedBlock,
+        srcChain: b.channel.srcChain,
+        submitterId: b.id,
+      };
+    }),
     (channel) => channel.issuedBlock,
   );
 
@@ -70,11 +78,12 @@ export default async function backfillBeneficiaries() {
 
     const parsed = parseChannelArgs(block.events.nodes);
 
-    for (const data of parsed) {
-      const channel = channels.find(
-        (c) => c.channelId === data.channelId && c.srcChain === data.sourceChain,
+    for (const channel of channels) {
+      const data = parsed.find(
+        (d) => d.channelId === channel.channelId && d.sourceChain === channel.srcChain,
       );
-      assert(channel, 'channel not found');
+
+      assert(data, 'data not found for channel');
 
       await prisma.swapBeneficiary.update({
         where: { id: channel.submitterId },
