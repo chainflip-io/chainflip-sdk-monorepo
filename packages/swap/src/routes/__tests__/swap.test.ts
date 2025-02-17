@@ -84,6 +84,7 @@ const swapEventMap = {
       },
       brokerCommissionRate: 0,
       sourceChainExpiryBlock: '265',
+      brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
     },
   },
   'Swapping.SwapRequested': {
@@ -475,7 +476,7 @@ describe('server', () => {
       depositAddressEvent.args.channelMetadata = {
         message: '0xdeadbeef',
         gasBudget: '100000',
-        cfParameters: '0x8ea88ab41897b921ef36ddd7dfd3e9',
+        ccmAdditionalData: '0x8ea88ab41897b921ef36ddd7dfd3e9',
       };
       await processEvents([depositAddressEvent]);
 

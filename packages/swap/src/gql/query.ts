@@ -18,6 +18,7 @@ export const GET_BATCH = gql(/* GraphQL */ `
             name
             indexInBlock
             callId
+            extrinsicId
           }
         }
       }
@@ -29,6 +30,14 @@ export const GET_CALL = gql(/* GraphQL */ `
   query GetCall($id: String!) {
     call: callById(id: $id) {
       args
+    }
+  }
+`);
+
+export const GET_EXTRINSIC = gql(/* GraphQL */ `
+  query GetExtrinsic($id: String!) {
+    extrinsic: extrinsicById(id: $id) {
+      signature
     }
   }
 `);

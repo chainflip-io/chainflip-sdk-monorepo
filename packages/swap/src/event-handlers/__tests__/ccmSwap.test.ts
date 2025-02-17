@@ -76,13 +76,14 @@ const depositChannelEvents = [
         message:
           '0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000003f7a000000000000000000000000000000000000000000000000000000000000000074761735465737400000000000000000000000000000000000000000000000000',
         gasBudget: '360801',
-        cfParameters: '0x8ea88ab41897b921ef36ddd7dfd3e9',
+        ccmAdditionalData: '0x8ea88ab41897b921ef36ddd7dfd3e9',
       },
       destinationAsset: { __kind: 'Flip' },
       channelOpeningFee: '0',
       destinationAddress: { value: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0', __kind: 'Eth' },
       brokerCommissionRate: 100,
       sourceChainExpiryBlock: '157',
+      brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
     } as SwapDepositAddressReadyArgs,
   },
   {

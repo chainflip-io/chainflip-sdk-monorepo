@@ -96,6 +96,7 @@ export const swapDepositAddressReadyMocked = {
     hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
   },
   event: {
+    extrinsicId: '1',
     args: {
       depositAddress: {
         __kind: 'Eth',
@@ -126,7 +127,7 @@ export const swapDepositAddressReadyMocked = {
 
 export const swapDepositAddressReadyCcmParamsMocked = {
   block: {
-    specId: 'test@160',
+    specId: 'test@180',
     height: 120,
     timestamp: 1670337105000,
     hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
@@ -143,7 +144,7 @@ export const swapDepositAddressReadyCcmParamsMocked = {
       channelMetadata: {
         message: '0xdeadc0de',
         gasBudget: '125000',
-        cfParameters: '0x',
+        ccmAdditionalData: '0x',
       },
       destinationAsset: { __kind: 'Eth' },
       destinationAddress: {
@@ -155,6 +156,7 @@ export const swapDepositAddressReadyCcmParamsMocked = {
       boostFee: 0,
       channelOpeningFee: 0,
       affiliateFees: [],
+      brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
     } as SwapDepositAddressReadyArgs,
     indexInBlock: 0,
     name: eventNames.Swapping.SwapDepositAddressReady,
