@@ -532,6 +532,7 @@ export class SwapSDK {
     fillOrKillParams: inputFoKParams,
     affiliateBrokers: affiliates,
     ccmParams,
+    brokerAccount,
     brokerCommissionBps,
     extraParams,
   }: VaultSwapRequest) {
@@ -549,14 +550,21 @@ export class SwapSDK {
       fillOrKillParams: parseFoKParams(inputFoKParams, quote)!,
       dcaParams: quote.type === 'DCA' ? quote.dcaParams : undefined,
       extraParams,
+      brokerAccount,
+      brokerCommissionBps,
+      affiliates,
     };
 
     if (this.options.broker) {
+      assert(
+        !vaultSwapRequest.brokerAccount,
+        'Cannot overwrite broker account when initializing the SDK with a brokerUrl',
+      );
+
       return requestSwapParameterEncoding(
         {
           ...vaultSwapRequest,
-          commissionBps: brokerCommissionBps ?? this.options.broker.commissionBps,
-          affiliates,
+          commissionBps: vaultSwapRequest.brokerCommissionBps ?? this.options.broker.commissionBps,
         },
         { url: this.options.broker.url },
         this.options.network,
@@ -564,12 +572,12 @@ export class SwapSDK {
     }
 
     assert(
-      !brokerCommissionBps,
-      'Broker commission is supported only when initializing the SDK with a brokerUrl',
+      !vaultSwapRequest.brokerCommissionBps || vaultSwapRequest.brokerAccount,
+      'Broker commission is supported only when setting a broker account',
     );
     assert(
-      !affiliates?.length,
-      'Affiliate brokers are supported only when initializing the SDK with a brokerUrl',
+      !vaultSwapRequest.affiliates?.length || vaultSwapRequest.brokerAccount,
+      'Affiliate brokers are supported only when setting a broker account',
     );
 
     return this.trpc.encodeVaultSwapData.query(vaultSwapRequest);

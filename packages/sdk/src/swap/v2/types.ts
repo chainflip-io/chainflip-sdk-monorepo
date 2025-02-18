@@ -194,6 +194,7 @@ export interface VaultSwapRequest {
   fillOrKillParams: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage;
   affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];
   ccmParams?: CcmParams;
+  brokerAccount?: `cF${string}`;
   brokerCommissionBps?: number;
   extraParams?: { solanaDataAccount?: string };
 }

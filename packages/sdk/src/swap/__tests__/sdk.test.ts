@@ -1665,7 +1665,7 @@ describe(SwapSDK, () => {
       });
     });
 
-    it('calls encodeVaultSwapData with dca parameters', async () => {
+    it('calls encodeVaultSwapData with commission and dca parameters', async () => {
       // @ts-expect-error - private method
       const rpcSpy = vi.spyOn(sdk.trpc.encodeVaultSwapData, 'query').mockResolvedValueOnce({
         chain: 'Bitcoin',
@@ -1687,6 +1687,11 @@ describe(SwapSDK, () => {
       const response = await sdk.encodeVaultSwapData({
         quote,
         destAddress: '0xcafebabe',
+        brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+        brokerCommissionBps: 15,
+        affiliateBrokers: [
+          { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+        ],
         fillOrKillParams: {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
@@ -1703,7 +1708,11 @@ describe(SwapSDK, () => {
           numberOfChunks: 100,
           chunkIntervalBlocks: 5,
         },
-        maxBoostFeeBps: undefined,
+        brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+        brokerCommissionBps: 15,
+        affiliates: [
+          { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+        ],
         fillOrKillParams: {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
@@ -1718,7 +1727,7 @@ describe(SwapSDK, () => {
       });
     });
 
-    it('rejects commission if no broker url is configured', async () => {
+    it('rejects commission if no broker account is given and no broker url is configured', async () => {
       const quote = {
         srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
         destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
@@ -1741,12 +1750,10 @@ describe(SwapSDK, () => {
           },
           brokerCommissionBps: 10,
         }),
-      ).rejects.toThrow(
-        'Broker commission is supported only when initializing the SDK with a brokerUrl',
-      );
+      ).rejects.toThrow('Broker commission is supported only when setting a broker account');
     });
 
-    it('rejects affiliates if no broker url is configured', async () => {
+    it('rejects affiliates if no broker account is given and no broker url is configured', async () => {
       const quote = {
         srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
         destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
@@ -1771,9 +1778,7 @@ describe(SwapSDK, () => {
             { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
           ],
         }),
-      ).rejects.toThrow(
-        'Affiliate brokers are supported only when initializing the SDK with a brokerUrl',
-      );
+      ).rejects.toThrow('Affiliate brokers are supported only when setting a broker account');
     });
 
     it('calls the configured broker api with the given affiliate brokers', async () => {
@@ -1987,6 +1992,37 @@ describe(SwapSDK, () => {
           '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
         depositAddress: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
       });
+    });
+
+    it('rejects request with broker account if broker url is configured', async () => {
+      const quote = {
+        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        depositAmount: BigInt(1e18).toString(),
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        type: 'DCA',
+      } as Quote;
+
+      await expect(
+        new SwapSDK({
+          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        }).encodeVaultSwapData({
+          quote,
+          destAddress: '0xcafebabe',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+            minPrice: '10000000000000',
+          },
+          brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+          brokerCommissionBps: 15,
+        }),
+      ).rejects.toThrow(
+        'Cannot overwrite broker account when initializing the SDK with a brokerUrl',
+      );
     });
 
     it("throws for quotes that aren't DCA or REGULAR", async () => {

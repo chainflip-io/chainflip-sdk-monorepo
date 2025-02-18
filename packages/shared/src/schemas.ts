@@ -113,34 +113,6 @@ export const ensureDcaWithFok = <T extends { dcaParams?: unknown; fillOrKillPara
   }
 };
 
-export const openSwapDepositChannelSchema = z
-  .object({
-    srcAsset: asset,
-    destAsset: asset,
-    srcChain: chain,
-    destChain: chain,
-    destAddress: z.string(),
-    amount: numericString,
-    ccmParams: ccmParamsSchema.optional(),
-    maxBoostFeeBps: z.number().optional(),
-    srcAddress: z.string().optional(),
-    fillOrKillParams,
-    dcaParams: dcaParams.optional(),
-    quote: z
-      .object({
-        intermediateAmount: z.string().optional(),
-        egressAmount: z.string(),
-        estimatedPrice: z.string(),
-        recommendedSlippageTolerancePercent: z.number().optional(),
-      })
-      .optional(),
-  })
-  .superRefine(ensureDcaWithFok)
-  .transform(({ amount, ...rest }) => ({
-    ...rest,
-    expectedDepositAmount: amount,
-  }));
-
 type Fee<T> = {
   type: T;
   chain: Chain;
