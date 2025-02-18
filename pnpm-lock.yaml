@@ -88,8 +88,8 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(typescript@5.7.3)
       '@chainflip/rpc':
-        specifier: ^1.8.2
-        version: 1.8.2
+        specifier: ^1.8.5
+        version: 1.8.5
       '@chainflip/solana':
         specifier: ^2.0.1
         version: 2.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -134,8 +134,8 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(typescript@5.7.3)
       '@chainflip/rpc':
-        specifier: ^1.8.2
-        version: 1.8.2
+        specifier: ^1.8.5
+        version: 1.8.5
       '@chainflip/solana':
         specifier: ^2.0.1
         version: 2.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -174,8 +174,8 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(typescript@5.7.3)
       '@chainflip/rpc':
-        specifier: ^1.8.2
-        version: 1.8.2
+        specifier: ^1.8.5
+        version: 1.8.5
       '@chainflip/solana':
         specifier: ^2.0.1
         version: 2.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -232,8 +232,8 @@ importers:
         specifier: ^1.8.4
         version: 1.8.4
       '@chainflip/rpc':
-        specifier: ^1.8.2
-        version: 1.8.2
+        specifier: ^1.8.5
+        version: 1.8.5
       '@chainflip/solana':
         specifier: ^2.0.1
         version: 2.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -642,8 +642,8 @@ packages:
   '@chainflip/processor@1.8.4':
     resolution: {integrity: sha512-sGX25FnLAm32V4RdhIrja4BO67FG2C2iujiiwPcbL/nUW3OyTg/lpXuox0uBVO8bGp1IJ4l/uGcTz83MQfNn0w==}
 
-  '@chainflip/rpc@1.8.2':
-    resolution: {integrity: sha512-qvfjWOR03mF5s2tRJZFMjUwA3CjdUjVcHjtMVCWanUx6riL9Dh5GkSG4e0f8SLhrdib/l8NCqzedX8ydu4k9aw==}
+  '@chainflip/rpc@1.8.5':
+    resolution: {integrity: sha512-5s1jsadc1wzOu/eoExxk3u7bsyKviBsqJaikANDJbuytaURgS9NtPuB3Ks0qjvxjqLyWlhfU28Rf/NWEUsGyNg==}
 
   '@chainflip/solana@2.0.1':
     resolution: {integrity: sha512-hUz2vgGSEZ6OKDB0s7uATDOmAthwPf71c5vTUIoBaA7E9iQLt60C8uLkB0ZRZO1Ie0oHQuSIS8YBIvjuyvhVxQ==}
@@ -5772,6 +5772,9 @@ packages:
   zod@3.24.1:
     resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
 
+  zod@3.24.2:
+    resolution: {integrity: sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==}
+
 snapshots:
 
   '@1password/op-js@0.1.13':
@@ -6151,10 +6154,10 @@ snapshots:
       '@chainflip/utils': 0.4.0
       zod: 3.24.1
 
-  '@chainflip/rpc@1.8.2':
+  '@chainflip/rpc@1.8.5':
     dependencies:
       '@chainflip/utils': 0.4.0
-      zod: 3.24.1
+      zod: 3.24.2
 
   '@chainflip/solana@2.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
@@ -12082,3 +12085,5 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   zod@3.24.1: {}
+
+  zod@3.24.2: {}
