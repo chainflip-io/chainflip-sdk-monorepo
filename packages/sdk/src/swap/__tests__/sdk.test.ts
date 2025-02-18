@@ -1753,7 +1753,7 @@ describe(SwapSDK, () => {
       ).rejects.toThrow('Broker commission is supported only when setting a broker account');
     });
 
-    it('rejects affiliates if no borker account is given and no broker url is configured', async () => {
+    it('rejects affiliates if no broker account is given and no broker url is configured', async () => {
       const quote = {
         srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
         destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
