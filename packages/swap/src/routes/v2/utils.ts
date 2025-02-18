@@ -314,20 +314,24 @@ export const getEgressStatusFields = async (
   const ignoredEgress = ignoredEgresses?.find((e) => e.type === type);
   const failureState = await getEgressFailureState(ignoredEgress, broadcast, type);
 
-  let transactionPayload = broadcast?.transactionPayload;
+  let transactionPayload;
 
   if (broadcast?.abortedBlockIndex) {
     const broadcastPayloadObj = JSON.parse(broadcast?.transactionPayload ?? '{}');
     const broadcastPayloadObjParsed = cfChainsEvmTransaction.safeParse(broadcastPayloadObj);
-    if (broadcastPayloadObjParsed.success) {
+
+    if (broadcastPayloadObjParsed.error) {
+      console.warn({
+        message: `Could not parse broadcast payload. error: "${broadcastPayloadObjParsed.error.message}"`,
+      });
+    } else {
       const { data, value, chainId, contract } = broadcastPayloadObjParsed.data;
-      const stringifiedFields = {
+      transactionPayload = {
         data,
         value: value.toString(),
         chainId: chainId.toString(),
         contract,
       };
-      transactionPayload = JSON.stringify(stringifiedFields);
     }
   }
 
