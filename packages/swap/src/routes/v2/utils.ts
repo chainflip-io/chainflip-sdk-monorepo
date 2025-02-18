@@ -23,6 +23,7 @@ import {
   PendingDeposit,
 } from '../../ingress-egress-tracking';
 import { coerceChain, failedSwapMessage, FailureMode } from '../../utils/swap';
+import { cfChainsEvmTransaction } from '@chainflip/processor/141/common';
 
 const failedSwapInclude = { refundBroadcast: true } as const;
 
@@ -312,6 +313,24 @@ export const getEgressStatusFields = async (
   const broadcast = egress?.broadcast;
   const ignoredEgress = ignoredEgresses?.find((e) => e.type === type);
   const failureState = await getEgressFailureState(ignoredEgress, broadcast, type);
+
+  let transactionPayload = broadcast?.transactionPayload;
+
+  if (broadcast?.abortedBlockIndex) {
+    const broadcastPayloadObj = JSON.parse(broadcast?.transactionPayload ?? '{}');
+    const broadcastPayloadObjParsed = cfChainsEvmTransaction.safeParse(broadcastPayloadObj);
+    if (broadcastPayloadObjParsed.success) {
+      const { data, value, chainId, contract } = broadcastPayloadObjParsed.data;
+      const stringifiedFields = {
+        data,
+        value: value.toString(),
+        chainId: chainId.toString(),
+        contract,
+      };
+      transactionPayload = JSON.stringify(stringifiedFields);
+    }
+  }
+
   if (!egress && !broadcast && !failureState && !ignoredEgress) return null;
   return {
     ...(egress && {
@@ -325,6 +344,7 @@ export const getEgressStatusFields = async (
       txRef: broadcast?.transactionRef ?? egressTrackerTxRef,
       failedAt: broadcast?.abortedAt?.valueOf(),
       failedBlockIndex: broadcast?.abortedBlockIndex ?? undefined,
+      transactionPayload,
     }),
     ...(failureState && { failure: failureState }),
     ...(ignoredEgress && {
