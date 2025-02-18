@@ -60,7 +60,6 @@ type TransactionHash = `0x${string}`;
 export type SwapSDKOptions = {
   network?: ChainflipNetwork;
   backendUrl?: string;
-  signer?: Signer;
   broker?: {
     url: string;
     commissionBps: number;
@@ -69,6 +68,8 @@ export type SwapSDKOptions = {
   enabledFeatures?: {
     dca?: boolean;
   };
+  /** @deprecated DEPRECATED(1.8) use encodeVaultSwapData to get the unsigned transaction data instead of executeSwap */
+  signer?: Signer;
 };
 
 const assertQuoteValid = (quote: Quote | BoostQuote) => {
