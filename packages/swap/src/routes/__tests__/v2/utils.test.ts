@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
-import { getEgressStatusFields } from '../../v2/utils';
+import { describe, it, expect } from 'vitest';
 import { Chain } from '@/shared/enums';
 import { BroadcastType } from '@/swap/client';
+import { getEgressStatusFields } from '../../v2/utils';
 import { Prisma } from '../../../client';
 
 describe(getEgressStatusFields, () => {

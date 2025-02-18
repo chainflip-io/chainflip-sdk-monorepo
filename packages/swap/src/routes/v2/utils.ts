@@ -1,3 +1,4 @@
+import { cfChainsEvmTransaction } from '@chainflip/processor/141/common';
 import { CHARSET } from '@chainflip/utils/base58';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
 import { isNotNullish } from '@/shared/guards';
@@ -23,7 +24,6 @@ import {
   PendingDeposit,
 } from '../../ingress-egress-tracking';
 import { coerceChain, failedSwapMessage, FailureMode } from '../../utils/swap';
-import { cfChainsEvmTransaction } from '@chainflip/processor/141/common';
 
 const failedSwapInclude = { refundBroadcast: true } as const;
 
