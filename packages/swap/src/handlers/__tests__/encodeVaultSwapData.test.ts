@@ -71,6 +71,7 @@ describe(encodeVaultSwapData, () => {
         gas_budget: '0x75bcd15',
         message: '0xdeadc0de',
         cf_parameters: undefined,
+        ccm_additional_data: undefined,
       },
       maxBoostFeeBps: 35,
       affiliates: [
@@ -172,6 +173,7 @@ describe(encodeVaultSwapData, () => {
         gas_budget: '0x75bcd15',
         message: '0xdeadc0de',
         cf_parameters: undefined,
+        ccm_additional_data: undefined,
       },
       maxBoostFeeBps: 35,
       affiliates: [

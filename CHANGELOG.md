@@ -19,6 +19,12 @@ which it is deprecated.
   be removed in a future release. Use `fillOrKillParams` on the root level of the return value instead.
 - `SwapSDK.prototype.getStatusV2`: `depositChannel.dcaParams` is deprecated and will
   be removed in a future release. Use `dcaParams` on the root level of the return value instead.
+- `SwapSDK.prototype.requestDepositAddress`: The `ccmParams.cfParameters` property of the `DepositAddressRequest`
+  type is deprecated and will be removed in a future release. Set `ccmParams.additionalData` instead.
+- `SwapSDK.prototype.requestDepositAddressV2`: The `ccmParams.cfParameters` property of the `DepositAddressRequestV2`
+  type is deprecated and will be removed in a future release. Set `ccmParams.additionalData` instead.
+- `SwapSDK.prototype.executeSwap`: The `ccmParams.cfParameters` property of the `ExecuteSwapParams`
+  type is deprecated and will be removed in a future release. Set `ccmParams.additionalData` instead.
 
 ## 1.7.0
 
