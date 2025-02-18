@@ -321,8 +321,8 @@ export const getEgressStatusFields = async (
     const broadcastPayloadObjParsed = cfChainsEvmTransaction.safeParse(broadcastPayloadObj);
 
     if (broadcastPayloadObjParsed.error) {
-      console.warn({
-        message: `Could not parse broadcast payload. error: "${broadcastPayloadObjParsed.error.message}"`,
+      logger.warn('Could not parse broadcast payload', {
+        error: broadcastPayloadObjParsed.error.message,
       });
     } else {
       const { data, value, chainId, contract } = broadcastPayloadObjParsed.data;
