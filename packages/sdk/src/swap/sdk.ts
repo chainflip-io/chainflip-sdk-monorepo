@@ -303,6 +303,7 @@ export class SwapSDK {
     return ApiService.getStatusV2(this.options.backendUrl, swapStatusRequest, options);
   }
 
+  /** @deprecated DEPRECATED(1.8) use encodeVaultSwapData to get the unsigned transaction data instead */
   async executeSwap(
     params: ExecuteSwapParams,
     txOpts: TransactionOptions & { signer?: Signer } = {},
@@ -326,6 +327,7 @@ export class SwapSDK {
     return tx.hash as `0x${string}`;
   }
 
+  /** @deprecated DEPRECATED(1.8) approve the vault address and source token returned from encodeVaultSwapData instead */
   async approveVault(
     params: Pick<ExecuteSwapParams, 'srcChain' | 'srcAsset' | 'amount'>,
     txOpts: TransactionOptions & { signer?: Signer } = {},
@@ -355,6 +357,7 @@ export class SwapSDK {
     if (!result.success) throw new Error(result.reason);
   }
 
+  /** @deprecated DEPRECATED(1.8) use encodeVaultSwapData to get the unsigned transaction data instead */
   async approveAndExecuteSwap(
     params: ExecuteSwapParams,
     txOpts: Omit<TransactionOptions, 'nonce'> & { signer?: Signer } = {},
