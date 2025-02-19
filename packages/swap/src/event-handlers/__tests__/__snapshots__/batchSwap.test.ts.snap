@@ -28,7 +28,6 @@ exports[`batch swap flow > handles all the events 1`] = `
   "srcChainExpiryBlock": 265n,
   "swapRequests": [
     {
-      "ccmDepositReceivedBlockIndex": null,
       "ccmGasBudget": null,
       "ccmMessage": null,
       "completedAt": 1970-01-01T00:09:24.000Z,

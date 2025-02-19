@@ -13,7 +13,6 @@ exports[`swapRequested > creates a new deposit channel swap request and creates 
 
 exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL 180) 1`] = `
 {
-  "ccmDepositReceivedBlockIndex": "87-13",
   "ccmGasBudget": "2",
   "ccmMessage": "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000003f7a400000000000000000000000000000000000000000000000000000000000000074761735465737400000000000000000000000000000000000000000000000000",
   "completedAt": null,
@@ -39,7 +38,7 @@ exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL 180) 1`] = 
   "originType": "DEPOSIT_CHANNEL",
   "prewitnessedDepositId": null,
   "refundEgressId": null,
-  "requestType": "CCM",
+  "requestType": "REGULAR",
   "srcAddress": null,
   "srcAsset": "Btc",
   "swapDepositChannelId": Any<BigInt>,
@@ -54,7 +53,6 @@ exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL 180) 1`] = 
 exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL) 1`] = `
 {
   "beneficiaries": [],
-  "ccmDepositReceivedBlockIndex": "87-13",
   "ccmGasBudget": "2",
   "ccmMessage": "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000003f7a400000000000000000000000000000000000000000000000000000000000000074761735465737400000000000000000000000000000000000000000000000000",
   "completedAt": null,
@@ -80,7 +78,7 @@ exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL) 1`] = `
   "originType": "DEPOSIT_CHANNEL",
   "prewitnessedDepositId": null,
   "refundEgressId": null,
-  "requestType": "CCM",
+  "requestType": "LEGACY_CCM",
   "srcAddress": null,
   "srcAsset": "Btc",
   "swapDepositChannelId": Any<BigInt>,
@@ -94,7 +92,6 @@ exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL) 1`] = `
 
 exports[`swapRequested > creates a new swap request (INGRESS_EGRESS_FEE) 1`] = `
 {
-  "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,
@@ -135,7 +132,6 @@ exports[`swapRequested > creates a new swap request (INGRESS_EGRESS_FEE) 1`] = `
 exports[`swapRequested > creates a new swap request (LEGACY VAULT 180) 1`] = `
 {
   "beneficiaries": [],
-  "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,
@@ -193,7 +189,6 @@ exports[`swapRequested > creates a new swap request (VAULT 180) 1`] = `
       "type": "AFFILIATE",
     },
   ],
-  "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,
@@ -234,7 +229,6 @@ exports[`swapRequested > creates a new swap request (VAULT 180) 1`] = `
 exports[`swapRequested > creates a new swap request (VAULT) 1`] = `
 {
   "beneficiaries": [],
-  "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,

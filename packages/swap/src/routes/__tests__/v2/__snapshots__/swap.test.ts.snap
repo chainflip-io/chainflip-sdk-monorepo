@@ -1155,7 +1155,7 @@ exports[`server > GET /v2/swaps/:id > returns ccmParams for swaps initiated via 
     },
     {
       "amount": "6364636424444258",
-      "asset": "ETH",
+      "asset": "USDC",
       "chain": "Arbitrum",
       "type": "EGRESS",
     },
