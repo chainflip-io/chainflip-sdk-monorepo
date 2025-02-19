@@ -139,7 +139,7 @@ describe(swapEgressScheduled, () => {
         srcAsset: 'ArbUsdc',
         destAsset: 'ArbUsdc',
         destAddress: ETH_ADDRESS,
-        requestType: 'CCM',
+        requestType: 'LEGACY_CCM',
         originType: 'VAULT',
         swapRequestedAt: new Date(block.timestamp - 12000),
         swapRequestedBlockIndex: '92-398',
