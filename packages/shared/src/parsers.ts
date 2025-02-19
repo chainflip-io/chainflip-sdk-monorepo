@@ -126,6 +126,7 @@ export const assetAndChain = uncheckedAssetAndChain.refine((value): value is Ass
   isValidAssetAndChain(value as UncheckedAssetAndChain),
 );
 
+// TODO: remove this
 export const swapType = z.union([
   z
     .object({ __kind: z.literal('CcmPrincipal'), value: unsignedInteger })
