@@ -32,7 +32,7 @@ which it is deprecated.
   use the new `SwapSDK.prototype.encodeVaultSwapData` method to get the unsigned transaction data for a swap.
   This data can be signed and submitted to the source chain with your preferred web3 library (eg ethers.js or viem).
   Examples are available in the Chainflip SDK documentation: https://docs.chainflip.io/swapping/integrations/javascript-sdk/introduction
-- `SwapSDK.prototype.approveVault`: The method was deprecated because it is compatible the ethers.js library only.
+- `SwapSDK.prototype.approveVault`: The method was deprecated because it is only compatible with the ethers.js library.
   Use your preferred web3 library (eg ethers.js or viem) to approve the vault address and source token returned from
   the `SwapSDK.prototype.encodeVaultSwapData` method instead.
 
