@@ -54,6 +54,7 @@ import {
   type DepositAddressRequestV2,
   type VaultSwapRequest,
   DepositAddressResponseV2,
+  VaultSwapResponse,
 } from './v2/types';
 
 type TransactionHash = `0x${string}`;
@@ -541,7 +542,7 @@ export class SwapSDK {
     brokerAccount,
     brokerCommissionBps,
     extraParams,
-  }: VaultSwapRequest) {
+  }: VaultSwapRequest): Promise<VaultSwapResponse> {
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
     assert(quote.isVaultSwap, 'Cannot encode vault swap data for a deposit channel quote');
