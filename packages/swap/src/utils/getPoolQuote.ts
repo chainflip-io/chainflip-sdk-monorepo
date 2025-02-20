@@ -142,5 +142,6 @@ export default async function getPoolQuote({
     srcAsset: getAssetAndChain(srcAsset),
     destAsset: getAssetAndChain(destAsset),
     depositAmount: depositAmount.toString(),
+    isVaultSwap,
   } as Quote;
 }

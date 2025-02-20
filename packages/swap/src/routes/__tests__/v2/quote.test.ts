@@ -581,8 +581,15 @@ describe('server', () => {
         isVaultSwap: 'true',
       });
 
-      const { status } = await request(server).get(`/v2/quote?${params.toString()}`);
+      const { status, body } = await request(server).get(`/v2/quote?${params.toString()}`);
       expect(status).toBe(200);
+      expect(body).toMatchObject([
+        {
+          srcAsset: { chain: 'Ethereum', asset: 'USDC' },
+          destAsset: { chain: 'Ethereum', asset: 'ETH' },
+          isVaultSwap: true,
+        },
+      ]);
       expect(sendSpy).toHaveBeenNthCalledWith(
         1,
         'cf_swap_rate_v3',
@@ -971,6 +978,7 @@ describe('server', () => {
             chain: 'Ethereum',
           },
           type: 'REGULAR',
+          isVaultSwap: false,
         },
         {
           depositAmount: '1000000000000000000',
@@ -1027,6 +1035,7 @@ describe('server', () => {
             chain: 'Ethereum',
           },
           type: 'DCA',
+          isVaultSwap: false,
         },
       ]);
 
@@ -1248,6 +1257,7 @@ describe('server', () => {
           srcAsset: { chain: 'Ethereum', asset: 'ETH' },
           destAsset: { chain: 'Ethereum', asset: 'USDC' },
           depositAmount: '1000000000000000000',
+          isVaultSwap: false,
         },
       ]);
     });
@@ -1353,6 +1363,7 @@ describe('server', () => {
           destAsset: { chain: 'Ethereum', asset: 'USDC' },
           depositAmount: '1000000000000000000',
           dcaParams: { numberOfChunks: 4, chunkIntervalBlocks: 2 },
+          isVaultSwap: false,
         },
       ]);
     });
@@ -1528,6 +1539,7 @@ describe('server', () => {
             chain: 'Bitcoin',
           },
           type: 'REGULAR',
+          isVaultSwap: false,
           boostQuote: {
             depositAmount: '100000',
             destAsset: {
@@ -1603,6 +1615,7 @@ describe('server', () => {
               chain: 'Bitcoin',
             },
             type: 'REGULAR',
+            isVaultSwap: false,
           },
         },
         {
@@ -1676,6 +1689,7 @@ describe('server', () => {
             chain: 'Bitcoin',
           },
           type: 'DCA',
+          isVaultSwap: false,
           boostQuote: {
             dcaParams: {
               chunkIntervalBlocks: 2,
@@ -1755,6 +1769,7 @@ describe('server', () => {
               chain: 'Bitcoin',
             },
             type: 'DCA',
+            isVaultSwap: false,
           },
         },
       ]);
@@ -1938,6 +1953,7 @@ describe('server', () => {
             chain: 'Ethereum',
           },
           type: 'REGULAR',
+          isVaultSwap: false,
         },
       ]);
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -2065,6 +2081,7 @@ describe('server', () => {
             chain: 'Ethereum',
           },
           type: 'REGULAR',
+          isVaultSwap: false,
         },
       ]);
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -2193,6 +2210,7 @@ describe('server', () => {
             chain: 'Ethereum',
           },
           type: 'REGULAR',
+          isVaultSwap: false,
         },
       ]);
       expect(sendSpy).toHaveBeenCalledTimes(1);

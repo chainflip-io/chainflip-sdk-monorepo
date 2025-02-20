@@ -458,6 +458,7 @@ export class SwapSDK {
   }: DepositAddressRequestV2) {
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
+    assert(!quote.isVaultSwap, 'Cannot open a deposit channel for a vault swap quote');
 
     const depositAddressRequest = {
       srcAsset: quote.srcAsset.asset,
@@ -538,6 +539,7 @@ export class SwapSDK {
   }: VaultSwapRequest) {
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
+    assert(quote.isVaultSwap, 'Cannot encode vault swap data for a deposit channel quote');
 
     const vaultSwapRequest = {
       srcAsset: quote.srcAsset,

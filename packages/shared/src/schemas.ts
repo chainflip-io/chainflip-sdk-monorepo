@@ -154,6 +154,7 @@ export type BoostedQuoteDetails = {
 interface BaseQuoteDetails {
   srcAsset: AssetAndChain;
   destAsset: AssetAndChain;
+  isVaultSwap: boolean;
   depositAmount: string;
   intermediateAmount?: string;
   egressAmount: string;
