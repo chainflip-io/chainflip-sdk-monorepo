@@ -97,7 +97,7 @@ export const dcaParams = z.object({
 });
 export type DcaParams = z.input<typeof dcaParams>;
 
-export type SwapFeeType = 'Network' | 'Ingress' | 'Egress';
+export type SwapFeeType = 'IngressDepositChannel' | 'IngressVaultSwap' | 'Network' | 'Egress';
 
 export const fillOrKillParams = z.object({
   retryDurationBlocks: number,
