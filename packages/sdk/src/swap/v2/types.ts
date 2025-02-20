@@ -112,12 +112,14 @@ interface EgressFields {
   failure: Failure | undefined;
   failedAt: number | undefined;
   failedBlockIndex: string | undefined;
-  transactionPayload: {
-    contract: `0x${string}`, 
-    value: string, 
-    chainId: string,
-    data: `0x${string}`
-  } | undefined;
+  transactionPayload:
+    | {
+        contract: `0x${string}`;
+        value: string;
+        chainId: string;
+        data: `0x${string}`;
+      }
+    | undefined;
 }
 
 interface SwapStatusResponseCommonFields extends ChainsAndAssets {
