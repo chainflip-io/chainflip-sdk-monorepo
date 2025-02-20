@@ -1,5 +1,3 @@
-import { cfChainsEvmTransaction } from '@chainflip/processor/141/common';
-import { z } from 'zod';
 import {
   AffiliateBroker,
   BoostQuote,
@@ -114,7 +112,12 @@ interface EgressFields {
   failure: Failure | undefined;
   failedAt: number | undefined;
   failedBlockIndex: string | undefined;
-  transactionPayload: z.infer<typeof cfChainsEvmTransaction> | undefined;
+  transactionPayload: {
+    contract: `0x${string}`, 
+    value: string, 
+    chainId: string,
+    data: `0x${string}`
+  } | undefined;
 }
 
 interface SwapStatusResponseCommonFields extends ChainsAndAssets {
