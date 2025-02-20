@@ -10,6 +10,8 @@ import {
 } from '@/shared/schemas';
 import { FailureMode } from '@/swap/utils/swap';
 import { ChainsAndAssets, DepositAddressRequest } from '../types';
+import { cfChainsEvmTransaction } from '@chainflip/processor/141/common';
+import { z } from 'zod';
 
 interface Failure {
   failedAt: number;
@@ -112,6 +114,7 @@ interface EgressFields {
   failure: Failure | undefined;
   failedAt: number | undefined;
   failedBlockIndex: string | undefined;
+  transactionPayload: z.infer<typeof cfChainsEvmTransaction> | undefined;
 }
 
 interface SwapStatusResponseCommonFields extends ChainsAndAssets {
