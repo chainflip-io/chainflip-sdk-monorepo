@@ -53,6 +53,7 @@ import {
   type SwapStatusResponseV2,
   type DepositAddressRequestV2,
   type VaultSwapRequest,
+  DepositAddressResponseV2,
 } from './v2/types';
 
 type TransactionHash = `0x${string}`;
@@ -459,7 +460,7 @@ export class SwapSDK {
     affiliateBrokers: affiliates,
     ccmParams,
     brokerCommissionBps,
-  }: DepositAddressRequestV2) {
+  }: DepositAddressRequestV2): Promise<DepositAddressResponseV2> {
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
     assert(!quote.isVaultSwap, 'Cannot open a deposit channel for a vault swap quote');
