@@ -2,7 +2,6 @@ import { WsClient } from '@chainflip/rpc';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { describe, it, expect, vi } from 'vitest';
 import { getAssetAndChain } from '@/shared/enums';
-import { SwapFeeType } from '@/shared/schemas';
 import { InternalAsset } from '@/swap/client';
 import { getSwapRateV3 } from '../statechain';
 
@@ -58,7 +57,7 @@ describe(getSwapRateV3, () => {
       depositAmount: 1000n,
       limitOrders: undefined,
       dcaParams: undefined,
-      excludeFees: ['Ingress'] as SwapFeeType[],
+      excludeFees: ['IngressDepositChannel' as const],
       brokerCommissionBps: 0,
     };
 
@@ -73,7 +72,7 @@ describe(getSwapRateV3, () => {
       0,
       undefined,
       null,
-      ['Ingress'],
+      ['IngressDepositChannel'],
       undefined,
     );
   });

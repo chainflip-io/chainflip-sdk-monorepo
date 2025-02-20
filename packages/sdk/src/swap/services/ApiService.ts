@@ -27,6 +27,7 @@ export const getQuote: BackendQuery<
     srcAsset: returnedRequestData.srcAsset,
     destChain: returnedRequestData.destChain,
     destAsset: returnedRequestData.destAsset,
+    isVaultSwap: String(Boolean(quoteRequest.isVaultSwap)),
     ...(brokerCommissionBps && {
       brokerCommissionBps: String(brokerCommissionBps),
     }),
@@ -57,10 +58,11 @@ export const getQuoteV2: BackendQuery<
     srcAsset: returnedRequestData.srcAsset,
     destChain: returnedRequestData.destChain,
     destAsset: returnedRequestData.destAsset,
+    isVaultSwap: String(Boolean(quoteRequest.isVaultSwap)),
     ...(brokerCommissionBps && {
       brokerCommissionBps: String(brokerCommissionBps),
     }),
-    dcaEnabled: String(quoteRequest.dcaEnabled),
+    dcaEnabled: String(Boolean(quoteRequest.dcaEnabled)),
   };
 
   const { data } = await axios.get<Quote[]>('/v2/quote', {

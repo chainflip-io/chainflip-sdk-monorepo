@@ -572,7 +572,7 @@ describe('server', () => {
         0,
         undefined,
         null,
-        ['Ingress'],
+        ['IngressDepositChannel'],
         [],
       );
 

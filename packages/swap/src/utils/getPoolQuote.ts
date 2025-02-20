@@ -44,7 +44,7 @@ export default async function getPoolQuote({
   }
 
   if (isVaultSwap) {
-    excludeFees.push('Ingress');
+    excludeFees.push('IngressDepositChannel');
   }
 
   const { egressFee, ingressFee, networkFee, egressAmount, intermediateAmount, brokerFee } =
