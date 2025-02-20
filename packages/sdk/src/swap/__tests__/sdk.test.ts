@@ -2073,6 +2073,7 @@ describe(SwapSDK, () => {
           destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
           depositAmount: BigInt(1e18).toString(),
           type: 'REGULAR',
+          isVaultSwap: true,
         } as Quote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         fillOrKillParams: {
@@ -2202,6 +2203,7 @@ describe(SwapSDK, () => {
           chunkIntervalBlocks: 5,
         },
         type: 'DCA',
+        isVaultSwap: true,
       } as Quote;
 
       await expect(
