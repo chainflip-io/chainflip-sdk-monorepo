@@ -209,3 +209,27 @@ export interface VaultSwapRequest {
   brokerCommissionBps?: number;
   extraParams?: { solanaDataAccount?: string };
 }
+
+export type VaultSwapResponse =
+  | {
+      chain: 'Bitcoin';
+      nulldataPayload: string;
+      depositAddress: string;
+    }
+  | {
+      chain: 'Ethereum' | 'Arbitrum';
+      calldata: string;
+      value: bigint;
+      to: string;
+      sourceTokenAddress?: string | undefined;
+    }
+  | {
+      chain: 'Solana';
+      programId: string;
+      accounts: {
+        pubkey: string;
+        isSigner: boolean;
+        isWritable: boolean;
+      }[];
+      data: string;
+    };
