@@ -9,7 +9,7 @@ import {
   Quote,
 } from '@/shared/schemas';
 import { FailureMode } from '@/swap/utils/swap';
-import { ChainsAndAssets } from '../types';
+import { ChainsAndAssets, DepositAddressRequest } from '../types';
 
 interface Failure {
   failedAt: number;
@@ -185,6 +185,17 @@ export interface DepositAddressRequestV2 {
   affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];
   ccmParams?: CcmParams;
   brokerCommissionBps?: number;
+}
+
+export interface DepositAddressResponseV2 extends Omit<DepositAddressRequest, 'fillOrKillParams'> {
+  fillOrKillParams?: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage;
+  depositChannelId: string;
+  depositAddress: string;
+  brokerCommissionBps: number;
+  affiliateBrokers: AffiliateBroker[];
+  depositChannelExpiryBlock: bigint;
+  estimatedDepositChannelExpiryTime: number | undefined;
+  channelOpeningFee: bigint;
 }
 
 export interface VaultSwapRequest {

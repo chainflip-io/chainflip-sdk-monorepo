@@ -182,6 +182,7 @@ const callToken = async (
   return transaction;
 };
 
+/** @deprecated DEPRECATED(1.8) use SwapSDK.prototype.encodeVaultSwapData to get the unsigned transaction data instead */
 const executeSwap = async (
   { ccmParams: unvalidatedCcmParams, ...params }: ExecuteSwapParams,
   networkOpts: SwapNetworkOptions,

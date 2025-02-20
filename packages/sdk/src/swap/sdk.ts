@@ -53,6 +53,7 @@ import {
   type SwapStatusResponseV2,
   type DepositAddressRequestV2,
   type VaultSwapRequest,
+  DepositAddressResponseV2,
 } from './v2/types';
 
 type TransactionHash = `0x${string}`;
@@ -60,7 +61,6 @@ type TransactionHash = `0x${string}`;
 export type SwapSDKOptions = {
   network?: ChainflipNetwork;
   backendUrl?: string;
-  signer?: Signer;
   broker?: {
     url: string;
     commissionBps: number;
@@ -69,6 +69,8 @@ export type SwapSDKOptions = {
   enabledFeatures?: {
     dca?: boolean;
   };
+  /** @deprecated DEPRECATED(1.8) use encodeVaultSwapData to get the unsigned transaction data instead of executeSwap */
+  signer?: Signer;
 };
 
 const assertQuoteValid = (quote: Quote | BoostQuote) => {
@@ -303,6 +305,7 @@ export class SwapSDK {
     return ApiService.getStatusV2(this.options.backendUrl, swapStatusRequest, options);
   }
 
+  /** @deprecated DEPRECATED(1.8) use encodeVaultSwapData to get the unsigned transaction data instead */
   async executeSwap(
     params: ExecuteSwapParams,
     txOpts: TransactionOptions & { signer?: Signer } = {},
@@ -326,6 +329,7 @@ export class SwapSDK {
     return tx.hash as `0x${string}`;
   }
 
+  /** @deprecated DEPRECATED(1.8) approve the vault address and source token returned from encodeVaultSwapData instead */
   async approveVault(
     params: Pick<ExecuteSwapParams, 'srcChain' | 'srcAsset' | 'amount'>,
     txOpts: TransactionOptions & { signer?: Signer } = {},
@@ -355,6 +359,7 @@ export class SwapSDK {
     if (!result.success) throw new Error(result.reason);
   }
 
+  /** @deprecated DEPRECATED(1.8) use encodeVaultSwapData to get the unsigned transaction data instead */
   async approveAndExecuteSwap(
     params: ExecuteSwapParams,
     txOpts: Omit<TransactionOptions, 'nonce'> & { signer?: Signer } = {},
@@ -455,7 +460,7 @@ export class SwapSDK {
     affiliateBrokers: affiliates,
     ccmParams,
     brokerCommissionBps,
-  }: DepositAddressRequestV2) {
+  }: DepositAddressRequestV2): Promise<DepositAddressResponseV2> {
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
     assert(!quote.isVaultSwap, 'Cannot open a deposit channel for a vault swap quote');

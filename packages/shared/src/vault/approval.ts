@@ -38,6 +38,7 @@ export const checkVaultAllowance = (
   );
 };
 
+/** @deprecated DEPRECATED(1.8) approve the vault address and source token returned from SwapSDK.prototype.encodeVaultSwapData instead */
 export const approveVault = async (
   params: Pick<ExecuteSwapParams, 'srcChain' | 'srcAsset' | 'amount'>,
   networkOpts: SwapNetworkOptions,
