@@ -1,3 +1,5 @@
+import { z } from 'zod';
+import { cfChainsEvmTransaction } from '@chainflip/processor/141/common';
 import {
   AffiliateBroker,
   BoostQuote,
@@ -10,8 +12,6 @@ import {
 } from '@/shared/schemas';
 import { FailureMode } from '@/swap/utils/swap';
 import { ChainsAndAssets, DepositAddressRequest } from '../types';
-import { cfChainsEvmTransaction } from '@chainflip/processor/141/common';
-import { z } from 'zod';
 
 interface Failure {
   failedAt: number;
