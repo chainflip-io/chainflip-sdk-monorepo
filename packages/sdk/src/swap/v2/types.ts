@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { cfChainsEvmTransaction } from '@chainflip/processor/141/common';
+import { z } from 'zod';
 import {
   AffiliateBroker,
   BoostQuote,
