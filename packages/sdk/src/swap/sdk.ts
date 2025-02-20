@@ -65,7 +65,7 @@ export type SwapSDKOptions = {
   broker?: {
     url: string;
     /** @deprecated DEPRECATED(1.8) set the brokerCommissionBps param of the requestDepositAddress and encodeVaultSwapData method instead */
-    commissionBps: number;
+    commissionBps?: number;
   };
   rpcUrl?: string;
   enabledFeatures?: {
@@ -258,7 +258,7 @@ export class SwapSDK {
       response = {
         id: `${result.issuedBlock}-${depositAddressRequest.srcChain}-${result.channelId}`,
         depositAddress: result.address,
-        brokerCommissionBps: brokerCommissionBps ?? this.options.broker.commissionBps,
+        brokerCommissionBps: brokerCommissionBps ?? this.options.broker.commissionBps ?? 0,
         srcChainExpiryBlock: result.sourceChainExpiryBlock,
         maxBoostFeeBps: depositAddressRequest.maxBoostFeeBps,
         channelOpeningFee: result.channelOpeningFee,
@@ -496,7 +496,7 @@ export class SwapSDK {
       response = {
         id: `${result.issuedBlock}-${quote.srcAsset.chain}-${result.channelId}`,
         depositAddress: result.address,
-        brokerCommissionBps: brokerCommissionBps ?? this.options.broker.commissionBps,
+        brokerCommissionBps: brokerCommissionBps ?? this.options.broker.commissionBps ?? 0,
         srcChainExpiryBlock: result.sourceChainExpiryBlock,
         maxBoostFeeBps: depositAddressRequest.maxBoostFeeBps,
         channelOpeningFee: result.channelOpeningFee,
