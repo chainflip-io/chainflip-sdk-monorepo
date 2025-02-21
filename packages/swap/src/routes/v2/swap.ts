@@ -79,10 +79,6 @@ router.get(
         effectiveBoostFeeBps = 0;
       }
     }
-    const { srcAsset, destAsset } = {
-      srcAsset: swapDepositChannel?.srcAsset || swapRequest?.srcAsset,
-      destAsset: swapDepositChannel?.destAsset || swapRequest?.destAsset,
-    };
 
     const swaps = swapRequest?.swaps.filter((swap) => swap.type !== 'GAS');
 
@@ -138,7 +134,8 @@ router.get(
     ] = await Promise.all([
       getEgressStatusFields(swapEgress, ignoredEgresses, 'SWAP', swapEgressTrackerTxRef),
       getEgressStatusFields(refundEgress, ignoredEgresses, 'REFUND', refundEgressTrackerTxRef),
-      srcAsset && destAsset && estimateSwapDuration({ srcAsset, destAsset }),
+      internalDestAsset &&
+        estimateSwapDuration({ srcAsset: internalSrcAsset, destAsset: internalDestAsset }),
       getRequiredBlockConfirmations(internalSrcAsset),
       getLastChainTrackingUpdateTimestamp(),
     ]);

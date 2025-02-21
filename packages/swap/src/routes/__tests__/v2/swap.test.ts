@@ -2358,6 +2358,12 @@ describe('server', () => {
           "destAddress": "0xcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf",
           "destAsset": "FLIP",
           "destChain": "Ethereum",
+          "estimatedDurationSeconds": 144,
+          "estimatedDurationsSeconds": {
+            "deposit": 30,
+            "egress": 102,
+            "swap": 12,
+          },
           "fees": [],
           "fillOrKillParams": {
             "minPrice": "0",
