@@ -211,8 +211,64 @@ describe(RedisClient, () => {
       expect(mock).not.toHaveBeenCalledWith('vault_deposit:Polkadot:0x1234');
     });
 
-    it('returns the vault swaps if found', async () => {
+    it('returns vault swap', async () => {
       const mock = vi.mocked(Redis.prototype.get).mockResolvedValue(
+        JSON.stringify({
+          deposit_chain_block_height: 7755386,
+          input_asset: { chain: 'Ethereum', asset: 'ETH' },
+          output_asset: { chain: 'Ethereum', asset: 'FLIP' },
+          amount: '0x16345785d8a0000',
+          destination_address: '0xcb583c817964a2c527608f8b813a4c9bddb559a9',
+          ccm_deposit_metadata: null,
+          deposit_details: {
+            tx_hashes: ['0x5775a3ac8821d3d13bf965eb29668bec1df4f4af66e6722367ceca1171406c37'],
+          },
+          broker_fee: { account: 'cFMTNSQQVfBo2HqtekvhLPfZY764kuJDVFG1EvnnDGYxc3LRW', bps: 0 },
+          affiliate_fees: [],
+          refund_params: {
+            retry_duration: 100,
+            refund_address: '0xcb583c817964a2c527608f8b813a4c9bddb559a9',
+            min_price: '0x21761648d2de3b0ed1ca19f03005d76248',
+          },
+          dca_params: null,
+          max_boost_fee: 0,
+        }),
+      );
+
+      const client = new RedisClient(url);
+      const vaultDeposit = await client.getPendingVaultSwap('mainnet', '0x1234');
+
+      expect(vaultDeposit).toMatchInlineSnapshot(`
+        {
+          "affiliateFees": [],
+          "amount": 100000000000000000n,
+          "brokerFee": {
+            "account": "cFMTNSQQVfBo2HqtekvhLPfZY764kuJDVFG1EvnnDGYxc3LRW",
+            "commissionBps": 0,
+          },
+          "ccmDepositMetadata": null,
+          "dcaParams": null,
+          "depositChainBlockHeight": 7755386,
+          "destinationAddress": "0xcb583c817964a2c527608f8b813a4c9bddb559a9",
+          "inputAsset": "Eth",
+          "maxBoostFee": 0,
+          "outputAsset": "Flip",
+          "refundParams": {
+            "minPrice": 11386282719464659793204379443044661289544n,
+            "refundAddress": "0xcb583c817964a2c527608f8b813a4c9bddb559a9",
+            "retryDuration": 100,
+          },
+        }
+      `);
+
+      expect(mock).toHaveBeenCalledWith('vault_deposit:Ethereum:0x1234');
+      expect(mock).toHaveBeenCalledWith('vault_deposit:Bitcoin:0x1234');
+      expect(mock).toHaveBeenCalledWith('vault_deposit:Solana:0x1234');
+      expect(mock).toHaveBeenCalledWith('vault_deposit:Arbitrum:0x1234');
+    });
+
+    it('returns vault swap with dca params and ccm params', async () => {
+      vi.mocked(Redis.prototype.get).mockResolvedValue(
         JSON.stringify({
           affiliate_fees: [
             { account: 'cFHtoB6DrnqUVY4DwMHCVCtgCLsiHvv98oGw8k66tazF2ToFv', bps: 10 },
@@ -286,11 +342,6 @@ describe(RedisClient, () => {
           },
         }
       `);
-
-      expect(mock).toHaveBeenCalledWith('vault_deposit:Ethereum:0x1234');
-      expect(mock).toHaveBeenCalledWith('vault_deposit:Bitcoin:0x1234');
-      expect(mock).toHaveBeenCalledWith('vault_deposit:Solana:0x1234');
-      expect(mock).toHaveBeenCalledWith('vault_deposit:Arbitrum:0x1234');
     });
   });
 });

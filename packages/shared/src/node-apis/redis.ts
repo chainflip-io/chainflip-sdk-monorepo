@@ -136,6 +136,7 @@ const vaultDepositSchema = (network: ChainflipNetwork) =>
             chunk_interval: number,
             number_of_chunks: number,
           })
+          .nullable()
           .optional(),
         refund_params: z
           .object({
@@ -143,26 +144,30 @@ const vaultDepositSchema = (network: ChainflipNetwork) =>
             retry_duration: number,
             refund_address: z.union([ethereumAddress, solanaAddress, btcAddress(network)]),
           })
+          .nullable()
           .optional(),
-        ccm_deposit_metadata: z.object({
-          channel_metadata: z.object({
-            ccm_additional_data: z.any(),
-            message: z.string(),
-            gas_budget: z
-              .union([numericString, hexString])
-              .transform((n) => hexEncodeNumber(BigInt(n))),
-          }),
-          source_chain: chainflipChain,
-          source_address: z
-            .object({
-              Eth: ethereumAddress.optional(),
-              Sol: solanaAddress.optional(),
-              Btc: btcAddress(network).optional(),
-            })
-            .refine((obj) => Object.keys(obj).length === 1, {
-              message: 'source_address must be one of Eth, Sol, or Btc',
+        ccm_deposit_metadata: z
+          .object({
+            channel_metadata: z.object({
+              ccm_additional_data: z.any(),
+              message: z.string(),
+              gas_budget: z
+                .union([numericString, hexString])
+                .transform((n) => hexEncodeNumber(BigInt(n))),
             }),
-        }),
+            source_chain: chainflipChain,
+            source_address: z
+              .object({
+                Eth: ethereumAddress.optional(),
+                Sol: solanaAddress.optional(),
+                Btc: btcAddress(network).optional(),
+              })
+              .refine((obj) => Object.keys(obj).length === 1, {
+                message: 'source_address must be one of Eth, Sol, or Btc',
+              }),
+          })
+          .nullable()
+          .optional(),
       })
       .transform(transformKeysToCamelCase),
   );
