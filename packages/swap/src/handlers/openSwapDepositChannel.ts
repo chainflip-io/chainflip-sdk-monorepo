@@ -12,6 +12,7 @@ import {
 import { validateAddress } from '@/shared/validation/addressValidation';
 import prisma from '../client';
 import env from '../config/env';
+import { assertRouteEnabled } from '../utils/env';
 import { calculateExpiryTime } from '../utils/function';
 import isDisallowedSwap from '../utils/isDisallowedSwap';
 import logger from '../utils/logger';
@@ -79,12 +80,7 @@ export const openSwapDepositChannel = async (
   logger.info('Opening swap deposit channel', input);
 
   const { srcAsset, destAsset } = getInternalAssets(input);
-  if (env.DISABLED_INTERNAL_ASSETS.includes(srcAsset)) {
-    throw ServiceError.unavailable(`Asset ${srcAsset} is disabled`);
-  }
-  if (env.DISABLED_INTERNAL_ASSETS.includes(destAsset)) {
-    throw ServiceError.unavailable(`Asset ${destAsset} is disabled`);
-  }
+  assertRouteEnabled({ srcAsset, destAsset });
 
   const result = await validateSwapAmount(srcAsset, BigInt(input.expectedDepositAmount));
 

@@ -5,6 +5,7 @@ import { getInternalAsset } from '@/shared/enums';
 import { transformKeysToCamelCase } from '@/shared/objects';
 import { chainflipAddress } from '@/shared/parsers';
 import env from '../config/env';
+import { assertRouteEnabled } from '../utils/env';
 import isDisallowedSwap from '../utils/isDisallowedSwap';
 import logger from '../utils/logger';
 import { validateSwapAmount } from '../utils/rpc';
@@ -36,14 +37,8 @@ export const encodeVaultSwapData = async (input: z.output<typeof encodeVaultSwap
   }
 
   const srcAsset = getInternalAsset(input.srcAsset);
-  if (env.DISABLED_INTERNAL_ASSETS.includes(srcAsset)) {
-    throw ServiceError.unavailable(`Asset ${srcAsset} is disabled`);
-  }
-
   const destAsset = getInternalAsset(input.destAsset);
-  if (env.DISABLED_INTERNAL_ASSETS.includes(destAsset)) {
-    throw ServiceError.unavailable(`Asset ${destAsset} is disabled`);
-  }
+  assertRouteEnabled({ srcAsset, destAsset });
 
   const result = await validateSwapAmount(srcAsset, BigInt(input.amount));
 

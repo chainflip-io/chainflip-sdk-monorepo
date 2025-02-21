@@ -25,6 +25,19 @@ const chainflipNetwork = z.enum(['backspin', 'sisyphos', 'perseverance', 'mainne
 
 const nodeEnv = z.enum(['development', 'production', 'test']);
 
+const internalAssetCsv = (name: string) =>
+  optionalString('').transform((string) =>
+    string.split(',').map((asset) => {
+      if (asset && !(asset in InternalAssets)) {
+        // eslint-disable-next-line no-console
+        console.warn({
+          message: `unexpected value in ${name} variable: "${asset}"`,
+        });
+      }
+      return asset;
+    }),
+  );
+
 export default z
   .object({
     RPC_NODE_HTTP_URL: httpUrl,
@@ -70,17 +83,9 @@ export default z
       }
     }),
     DCA_CHUNK_INTERVAL_BLOCKS: optionalNumber(2),
-    DISABLED_INTERNAL_ASSETS: optionalString('').transform((string) =>
-      string.split(',').map((asset) => {
-        if (asset && !(asset in InternalAssets)) {
-          // eslint-disable-next-line no-console
-          console.warn({
-            message: `unexpected value in DISABLED_INTERNAL_ASSETS variable: "${asset}"`,
-          });
-        }
-        return asset;
-      }),
-    ),
+    FULLY_DISABLED_INTERNAL_ASSETS: internalAssetCsv('FULLY_DISABLED_INTERNAL_ASSETS'),
+    DISABLED_DEPOSIT_INTERNAL_ASSETS: internalAssetCsv('DISABLED_DEPOSIT_INTERNAL_ASSETS'),
+    DISABLED_DESTINATION_INTERNAL_ASSETS: internalAssetCsv('DISABLED_DESTINATION_INTERNAL_ASSETS'),
     MAX_CHANNELS_OPEN_PER_ADDRESS: optionalNumber(25),
     DISABLE_DCA_QUOTING: optionalBoolean,
     // in case we want to disable quoting as a part of maintenance mode
