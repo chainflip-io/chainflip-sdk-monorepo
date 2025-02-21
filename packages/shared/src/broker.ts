@@ -1,12 +1,20 @@
 import { HttpClient } from '@chainflip/rpc';
+import * as ss58 from '@chainflip/utils/ss58';
+import { isHex } from '@chainflip/utils/string';
 import { priceX128ToPrice } from '@chainflip/utils/tickMath';
-import { HexString } from '@chainflip/utils/types';
 import BigNumber from 'bignumber.js';
 import { z } from 'zod';
 import { Asset, Chain, ChainflipNetwork, UncheckedAssetAndChain } from './enums';
 import { assert } from './guards';
 import { transformKeysToCamelCase } from './objects';
-import { numericString, assetAndChain, solanaAddress, number, unsignedInteger } from './parsers';
+import {
+  numericString,
+  assetAndChain,
+  solanaAddress,
+  number,
+  unsignedInteger,
+  DOT_PREFIX,
+} from './parsers';
 import {
   affiliateBroker,
   AffiliateBroker,
@@ -209,6 +217,10 @@ export async function requestSwapDepositAddress(
     params.fillOrKillParams,
     params.dcaParams,
   );
+
+  if (params.srcAsset.chain === 'Polkadot' && isHex(response.address)) {
+    response.address = ss58.encode({ data: response.address, ss58Format: DOT_PREFIX });
+  }
 
   return transformKeysToCamelCase(response);
 }
