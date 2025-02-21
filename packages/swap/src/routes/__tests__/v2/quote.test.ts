@@ -226,7 +226,7 @@ describe('server', () => {
     });
 
     it('rejects if source asset is disabled', async () => {
-      env.DISABLED_INTERNAL_ASSETS = ['Flip', 'Btc'];
+      env.FULLY_DISABLED_INTERNAL_ASSETS = ['Flip', 'Btc'];
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',
@@ -245,7 +245,7 @@ describe('server', () => {
     });
 
     it('rejects if destination asset is disabled', async () => {
-      env.DISABLED_INTERNAL_ASSETS = ['Btc', 'Eth'];
+      env.FULLY_DISABLED_INTERNAL_ASSETS = ['Btc', 'Eth'];
 
       const params = new URLSearchParams({
         srcChain: 'Ethereum',

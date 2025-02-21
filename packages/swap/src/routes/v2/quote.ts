@@ -5,6 +5,7 @@ import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts';
 import { Asset, assetConstants, InternalAsset } from '@/shared/enums';
 import { getFulfilledResult } from '@/shared/promises';
 import { quoteQuerySchema, DCABoostQuote, DcaParams, DCAQuote } from '@/shared/schemas';
+import { assertRouteEnabled } from '@/swap/utils/env';
 import env from '../../config/env';
 import { getBoostSafeMode } from '../../polkadot/api';
 import { getUsdValue } from '../../pricing/checkPriceWarning';
@@ -81,12 +82,7 @@ export const validateQuoteQuery = async (query: Query) => {
   const { srcAsset, destAsset, amount, brokerCommissionBps } = queryResult.data;
   const boostDepositsEnabled = await getBoostSafeMode(srcAsset).catch(() => true);
 
-  if (env.DISABLED_INTERNAL_ASSETS.includes(srcAsset)) {
-    throw ServiceError.unavailable(`Asset ${srcAsset} is disabled`);
-  }
-  if (env.DISABLED_INTERNAL_ASSETS.includes(destAsset)) {
-    throw ServiceError.unavailable(`Asset ${destAsset} is disabled`);
-  }
+  assertRouteEnabled({ srcAsset, destAsset });
 
   const amountResult = await validateSwapAmount(srcAsset, BigInt(parsedQuery.amount));
 
