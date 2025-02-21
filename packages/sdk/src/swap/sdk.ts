@@ -589,6 +589,6 @@ export class SwapSDK {
       'Affiliate brokers are supported only when setting a broker account',
     );
 
-    return this.trpc.encodeVaultSwapData.query(vaultSwapRequest);
+    return this.trpc.encodeVaultSwapData.mutate(vaultSwapRequest);
   }
 }
