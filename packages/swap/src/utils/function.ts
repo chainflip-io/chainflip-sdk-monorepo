@@ -105,11 +105,7 @@ export const isAtLeastSpecVersion = async (specVersion: `${string}.${string}.${s
   if (currentSpecVersion.toString().match(doublePatchRegex)) regex = doublePatchRegex;
 
   if (!regex) throw new Error('unexpected spec version');
-  const [major, minor, patch] = currentSpecVersion
-    .toString()
-    .replace(regex, '$1.$2.$3')
-    .split('.')
-    .map(Number);
+  const [major, minor, patch] = regex.exec(currentSpecVersion.toString())!.slice(1).map(Number);
 
   return (
     major > maxMajor ||
