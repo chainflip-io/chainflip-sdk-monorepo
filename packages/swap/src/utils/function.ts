@@ -93,10 +93,29 @@ const cachedGetSpecVersion = memoize(
   6_000,
 );
 
-export const isAfterSpecVersion = async (specVersion: number) => {
+// TODO(1.8): undo this commit, it assumes 4 digits will be a double patch and not double minor or major
+export const isAtLeastSpecVersion = async (specVersion: `${string}.${string}.${string}`) => {
   const { specVersion: currentSpecVersion } = await cachedGetSpecVersion();
 
-  return currentSpecVersion >= specVersion;
+  const [maxMajor, maxMinor, maxPatch] = specVersion.toString().split('.').map(Number);
+  const simpleRegex = /^(\d)(\d)(\d)$/;
+  const doublePatchRegex = /^(\d)(\d)(\d\d)$/;
+  let regex;
+  if (currentSpecVersion.toString().match(simpleRegex)) regex = simpleRegex;
+  if (currentSpecVersion.toString().match(doublePatchRegex)) regex = doublePatchRegex;
+
+  if (!regex) throw new Error('unexpected spec version');
+  const [major, minor, patch] = currentSpecVersion
+    .toString()
+    .replace(regex, '$1.$2.$3')
+    .split('.')
+    .map(Number);
+
+  return (
+    major > maxMajor ||
+    (major === maxMajor && minor > maxMinor) ||
+    (major === maxMajor && minor === maxMinor && patch >= maxPatch)
+  );
 };
 
 export const assertUnreachable = (message: string): never => {
