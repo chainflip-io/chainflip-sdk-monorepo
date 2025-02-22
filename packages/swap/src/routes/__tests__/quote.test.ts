@@ -33,7 +33,7 @@ vi.mock('../../utils/function', async (importOriginal) => {
   const original = (await importOriginal()) as object;
   return {
     ...original,
-    isAfterSpecVersion: vi.fn().mockResolvedValue(true),
+    isAtLeastSpecVersion: vi.fn().mockResolvedValue(true),
   };
 });
 

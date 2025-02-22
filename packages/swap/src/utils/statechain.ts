@@ -3,7 +3,7 @@ import { hexEncodeNumber } from '@chainflip/utils/number';
 import WebSocket from 'ws';
 import { InternalAsset, getAssetAndChain, UncheckedAssetAndChain } from '@/shared/enums';
 import { DcaParams, SwapFeeType } from '@/shared/schemas';
-import { isAfterSpecVersion } from '@/swap/utils/function';
+import { isAtLeastSpecVersion } from '@/swap/utils/function';
 import { memoize } from './function';
 import env from '../config/env';
 
@@ -57,7 +57,7 @@ export const getSwapRateV3 = async ({
 
   const additionalOrders = limitOrders?.filter((order) => order.LimitOrder.sell_amount !== '0x0');
 
-  const params: RpcParams['cf_swap_rate_v3'] = (await isAfterSpecVersion(180))
+  const params: RpcParams['cf_swap_rate_v3'] = (await isAtLeastSpecVersion('1.8.0'))
     ? [...commonParams, null, excludeFees, additionalOrders]
     : [...commonParams, additionalOrders];
 

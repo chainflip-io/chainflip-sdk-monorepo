@@ -12,7 +12,7 @@ import {
   environment,
   mockRpcResponse,
 } from '@/shared/tests/fixtures';
-import { isAfterSpecVersion } from '@/swap/utils/function';
+import { isAtLeastSpecVersion } from '@/swap/utils/function';
 import prisma, { InternalAsset } from '../../../client';
 import env from '../../../config/env';
 import { getUsdValue } from '../../../pricing/checkPriceWarning';
@@ -26,7 +26,7 @@ vi.mock('../../../utils/function', async (importOriginal) => {
   const original = (await importOriginal()) as object;
   return {
     ...original,
-    isAfterSpecVersion: vi.fn().mockResolvedValue(true),
+    isAtLeastSpecVersion: vi.fn().mockResolvedValue(true),
   };
 });
 
@@ -606,7 +606,7 @@ describe('server', () => {
 
     it('does not pass excluded fees and ccm params to the rpc for version < 180', async () => {
       vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2e18));
-      vi.mocked(isAfterSpecVersion).mockResolvedValueOnce(false);
+      vi.mocked(isAtLeastSpecVersion).mockResolvedValueOnce(false);
 
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         broker_commission: buildFee('Usdc', 0).bigint,
