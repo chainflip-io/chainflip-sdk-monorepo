@@ -1,3 +1,4 @@
+import { cfChainsEvmTransaction } from '@chainflip/processor/141/common';
 import { CHARSET } from '@chainflip/utils/base58';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
 import { isNotNullish } from '@/shared/guards';
@@ -312,6 +313,28 @@ export const getEgressStatusFields = async (
   const broadcast = egress?.broadcast;
   const ignoredEgress = ignoredEgresses?.find((e) => e.type === type);
   const failureState = await getEgressFailureState(ignoredEgress, broadcast, type);
+
+  let transactionPayload;
+
+  if (broadcast?.abortedBlockIndex) {
+    const broadcastPayloadObj = JSON.parse(broadcast?.transactionPayload ?? '{}');
+    const broadcastPayloadObjParsed = cfChainsEvmTransaction.safeParse(broadcastPayloadObj);
+
+    if (broadcastPayloadObjParsed.error) {
+      logger.warn('Could not parse broadcast payload', {
+        error: broadcastPayloadObjParsed.error.message,
+      });
+    } else {
+      const { data, value, chainId, contract } = broadcastPayloadObjParsed.data;
+      transactionPayload = {
+        data,
+        value: value.toString(),
+        chainId: chainId.toString(),
+        contract,
+      };
+    }
+  }
+
   if (!egress && !broadcast && !failureState && !ignoredEgress) return null;
   return {
     ...(egress && {
@@ -325,6 +348,7 @@ export const getEgressStatusFields = async (
       txRef: broadcast?.transactionRef ?? egressTrackerTxRef,
       failedAt: broadcast?.abortedAt?.valueOf(),
       failedBlockIndex: broadcast?.abortedBlockIndex ?? undefined,
+      transactionPayload,
     }),
     ...(failureState && { failure: failureState }),
     ...(ignoredEgress && {
