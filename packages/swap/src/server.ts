@@ -23,7 +23,7 @@ import quoteRouterV2 from './routes/v2/quote';
 import swapV2 from './routes/v2/swap';
 import { publicProcedure, router } from './trpc';
 import { lastUpdateHeader } from './utils/intercept';
-import logger from './utils/logger';
+import logger, { logStorage } from './utils/logger';
 
 const appRouter = router({
   openSwapDepositChannel: publicProcedure
@@ -58,7 +58,7 @@ app.use((req, res, next) => {
     });
   });
 
-  next();
+  logStorage.run(info.reqId, next);
 });
 
 app.use('/swaps', lastUpdateHeader, express.json(), swap);
