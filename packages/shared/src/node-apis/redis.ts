@@ -1,7 +1,9 @@
 import { ChainflipNetwork } from '@chainflip/bitcoin';
+import { reverseBytes } from '@chainflip/utils/bytes';
 import { chainflipChains } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import * as ss58 from '@chainflip/utils/ss58';
+import { isHex } from '@chainflip/utils/string';
 import Redis from 'ioredis';
 import { z } from 'zod';
 import { sorter } from '../arrays';
@@ -23,7 +25,6 @@ import {
   chain as chainflipChain,
   assetAndChain,
 } from '../parsers';
-import { toCamelCase, ToCamelCase } from '../strings';
 
 const ss58ToHex = (address: string) =>
   `0x${Buffer.from(ss58.decode(address).data).toString('hex')}`;
@@ -264,7 +265,11 @@ export default class RedisClient {
     const responses = await Promise.all(
       chainflipChains
         .filter((chain) => !vaultSwapDisabledChains.includes(chain))
-        .map((chain) => this.client.get(`vault_deposit:${chain}:${txId}`)),
+        .map((chain) => {
+          const redisTxId =
+            chain === 'Bitcoin' && isHex(`0x${txId}`) ? reverseBytes(`0x${txId}`) : txId;
+          return this.client.get(`vault_deposit:${chain}:${redisTxId}`);
+        }),
     );
     const value = responses.find(Boolean);
 

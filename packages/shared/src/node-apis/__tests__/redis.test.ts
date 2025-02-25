@@ -211,6 +211,31 @@ describe(RedisClient, () => {
       expect(mock).not.toHaveBeenCalledWith('vault_deposit:Polkadot:0x1234');
     });
 
+    it('looks up bitcoin swap with hex transaction id', async () => {
+      const mock = vi.mocked(Redis.prototype.get).mockResolvedValue(null);
+      const client = new RedisClient(url);
+      await client.getPendingVaultSwap(
+        'mainnet',
+        'df8f78afe35ee28d52748e964b1de73ddb96b85091dd387ab1835b398a65b642',
+      );
+
+      expect(mock).toHaveBeenCalledWith(
+        'vault_deposit:Ethereum:df8f78afe35ee28d52748e964b1de73ddb96b85091dd387ab1835b398a65b642',
+      );
+      expect(mock).toHaveBeenCalledWith(
+        'vault_deposit:Bitcoin:0x42b6658a395b83b17a38dd9150b896db3de71d4b968e74528de25ee3af788fdf',
+      );
+      expect(mock).toHaveBeenCalledWith(
+        'vault_deposit:Solana:df8f78afe35ee28d52748e964b1de73ddb96b85091dd387ab1835b398a65b642',
+      );
+      expect(mock).toHaveBeenCalledWith(
+        'vault_deposit:Arbitrum:df8f78afe35ee28d52748e964b1de73ddb96b85091dd387ab1835b398a65b642',
+      );
+      expect(mock).not.toHaveBeenCalledWith(
+        'vault_deposit:Polkadot:df8f78afe35ee28d52748e964b1de73ddb96b85091dd387ab1835b398a65b642',
+      );
+    });
+
     it('returns vault swap', async () => {
       const mock = vi.mocked(Redis.prototype.get).mockResolvedValue(
         JSON.stringify({
