@@ -1,4 +1,6 @@
 import 'dotenv/config';
+import { AsyncLocalStorage } from 'async_hooks';
+import type { UUID } from 'crypto';
 import stringify from 'safe-stable-stringify';
 import { createLogger, format, LeveledLogMethod, transports, type Logger } from 'winston';
 import env from '../config/env';
@@ -57,9 +59,14 @@ const customMessageFormat = format.printf(
     `[${info.timestamp}] ${info.level}: ${info.message}  ${stringify(info.metadata)}`,
 );
 
+export const logStorage = new AsyncLocalStorage<UUID>();
+
+const addReqId = format((info) => ({ ...info, reqId: logStorage.getStore() }));
+
 const createLoggerFunc = (label: string) => {
   const logger = createLogger({
     format: format.combine(
+      addReqId(),
       format.errors({ stack: true }),
       format.timestamp({
         format: 'YY-MM-DD HH:mm:ss',
