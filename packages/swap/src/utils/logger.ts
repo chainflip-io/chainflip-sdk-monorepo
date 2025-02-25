@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import { AsyncLocalStorage } from 'async_hooks';
-import { UUID } from 'crypto';
+import type { UUID } from 'crypto';
 import stringify from 'safe-stable-stringify';
-import { createLogger, format, LeveledLogMethod, Logger, transports } from 'winston';
+import { createLogger, format, LeveledLogMethod, transports, type Logger } from 'winston';
 import env from '../config/env';
 
 type CommonAlertCode = 'DbReadError' | 'DbWriteError';
