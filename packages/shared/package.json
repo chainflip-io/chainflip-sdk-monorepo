@@ -12,7 +12,7 @@
     "build": "tsc",
     "build:abis": "typechain --target=ethers-v6 --out-dir=./src/abis ./abis/**",
     "test": "vitest",
-    "test:ci": "CI=1 pnpm vitest run"
+    "test:ci": "CI=1 pnpm test"
   },
   "keywords": [],
   "author": "",
