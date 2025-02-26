@@ -41,7 +41,7 @@ const vaultSwapData = await swapSDK.encodeVaultSwapData({
   destAddress: wallet.address,
   fillOrKillParams: {
     slippageTolerancePercent: quote.recommendedSlippageTolerancePercent, // use recommended slippage tolerance from quote
-    refundAddress: '0xCB583C817964a2c527608f8b813a4c9BdDb559a9', // address to which assets are refunded
+    refundAddress: wallet.address, // address to which assets are refunded
     retryDurationBlocks: 100, // 100 blocks * 6 seconds = 10 minutes before deposits are refunded
   },
 });

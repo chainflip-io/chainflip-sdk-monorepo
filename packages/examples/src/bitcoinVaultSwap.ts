@@ -36,17 +36,17 @@ const { quotes } = await swapSDK.getQuoteV2({
   isVaultSwap: true,
   amount: (0.005e8).toString(), // 0.005 BTC
 });
-const quote = quotes.find((q) => q.type === 'REGULAR');
+const quote = quotes.find((q) => q.type === 'REGULAR')?.boostQuote;
 if (!quote) throw new Error('No quote');
 console.log('quote', quote);
 
 const vaultSwapRequest = {
   quote,
-  srcAddress: 'tb1p8p3xsgaeltylmvyrskt3mup5x7lznyrh7vu2jvvk7mn8mhm6clksl5k0sm',
+  srcAddress: walletAddress,
   destAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
   fillOrKillParams: {
     slippageTolerancePercent: quote.recommendedSlippageTolerancePercent,
-    refundAddress: 'tb1p8p3xsgaeltylmvyrskt3mup5x7lznyrh7vu2jvvk7mn8mhm6clksl5k0sm',
+    refundAddress: walletAddress,
     retryDurationBlocks: 100,
   },
 };
@@ -56,13 +56,13 @@ if (vaultSwapData.chain !== 'Bitcoin') throw new Error('Invalid chain');
 
 export const rpcClient = new Client({ host: 'https://bitcoin-testnet-rpc.publicnode.com' });
 const inputUxto = {
-  txId: 'df8f78afe35ee28d52748e964b1de73ddb96b85091dd387ab1835b398a65b642',
+  txId: '80dd9e9264eb2ffa8a1dcaacf733355453bc6bdebc1fae9152605e21db6af0bc',
   outIndex: 2,
 };
 const inputTx = bitcoin.Transaction.fromHex(
   await rpcClient.command('getrawtransaction', inputUxto.txId),
 );
-const txFeeSats = 50000;
+const txFeeSats = 5000;
 
 const tx = new bitcoin.Psbt({ network })
   .addInput({
