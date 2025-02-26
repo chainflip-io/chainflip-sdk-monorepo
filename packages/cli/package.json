@@ -28,7 +28,11 @@
   "scripts": {
     "prepublish": "pnpm build",
     "build": "rm -rf dist && tsup",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "eslint:check": "pnpm eslint --max-warnings 0 './**/*.ts'",
+    "prettier:base": "prettier ./** --ignore-path=../../.prettierignore",
+    "prettier:check": "pnpm prettier:base --check",
+    "prettier:write": "pnpm prettier:base --write"
   },
   "keywords": [],
   "author": "",

@@ -1,4 +1,3 @@
-import { SwapSDK, Chains, Assets } from '@chainflip/sdk/swap';
 import {
   PublicKey,
   Keypair,
@@ -9,6 +8,7 @@ import {
   clusterApiUrl,
 } from '@solana/web3.js';
 import bs58 from 'bs58';
+import { SwapSDK, Chains, Assets } from '@/sdk/swap/index.js';
 import 'dotenv/config';
 
 if (!process.env.SOLANA_SECRET_KEY_BASE58) {
@@ -19,7 +19,6 @@ if (!process.env.SOLANA_SECRET_KEY_BASE58) {
   console.log('generated secret key', process.env.SOLANA_SECRET_KEY_BASE58);
 }
 
-// Initialize SDK
 const swapSDK = new SwapSDK({
   network: 'perseverance',
   enabledFeatures: { dca: true },

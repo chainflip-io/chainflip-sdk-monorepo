@@ -1,8 +1,8 @@
-import { SwapSDK, Chains, Assets } from '@chainflip/sdk/swap';
 import Client from 'bitcoin-core';
 import * as bitcoin from 'bitcoinjs-lib';
 import ECPairFactory from 'ecpair';
 import * as secp256k1 from 'tiny-secp256k1';
+import { SwapSDK, Chains, Assets } from '@/sdk/swap/index.js';
 import 'dotenv/config';
 
 if (!process.env.BITCOIN_WALLET_WIF) {
@@ -13,7 +13,6 @@ if (!process.env.BITCOIN_WALLET_WIF) {
   console.log('generated wif', process.env.BITCOIN_WALLET_WIF);
 }
 
-// Initialize SDK
 const swapSDK = new SwapSDK({
   network: 'perseverance',
   enabledFeatures: { dca: true },
@@ -34,7 +33,7 @@ const { quotes } = await swapSDK.getQuoteV2({
   destChain: Chains.Ethereum,
   destAsset: Assets.ETH,
   isVaultSwap: true,
-  amount: (0.005e8).toString(), // 0.005 BTC
+  amount: (0.005e8).toString(),
 });
 const quote = quotes.find((q) => q.type === 'REGULAR')?.boostQuote;
 if (!quote) throw new Error('No quote');

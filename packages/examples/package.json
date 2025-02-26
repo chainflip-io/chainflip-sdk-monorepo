@@ -1,13 +1,16 @@
 {
-  "name": "chainflip-sdk-examples",
+  "name": "examples",
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "eslint:check": "pnpm eslint --max-warnings 0 './**/*.ts'",
+    "prettier:base": "prettier ./** --ignore-path=../../.prettierignore",
+    "prettier:check": "pnpm prettier:base --check",
+    "prettier:write": "pnpm prettier:base --write"
   },
   "license": "ISC",
   "dependencies": {
-    "@chainflip/sdk": "file:../sdk",
     "@solana/web3.js": "^1.98.0",
     "bitcoin-core": "^5.0.0",
     "bitcoinjs-lib": "^6.1.7",

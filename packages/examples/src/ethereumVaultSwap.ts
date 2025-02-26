@@ -1,5 +1,5 @@
-import { SwapSDK, Chains, Assets } from '@chainflip/sdk/swap';
 import { getDefaultProvider, Wallet, Contract } from 'ethers';
+import { SwapSDK, Chains, Assets } from '@/sdk/swap/index.js';
 import 'dotenv/config';
 
 if (!process.env.ETHEREUM_SECRET_KEY) {
@@ -10,7 +10,6 @@ if (!process.env.ETHEREUM_SECRET_KEY) {
   console.log('generated secret key', process.env.ETHEREUM_SECRET_KEY);
 }
 
-// Initialize SDK
 const swapSDK = new SwapSDK({
   network: 'perseverance',
   enabledFeatures: { dca: true },
@@ -20,29 +19,26 @@ const swapSDK = new SwapSDK({
 const wallet = new Wallet(process.env.ETHEREUM_SECRET_KEY as string, getDefaultProvider('sepolia'));
 console.log('wallet address', wallet.address);
 
-// Fetch quote for swap
 const { quotes } = await swapSDK.getQuoteV2({
   srcChain: Chains.Ethereum,
   srcAsset: Assets.USDC,
   destChain: Chains.Ethereum,
   destAsset: Assets.FLIP,
-  amount: (500e6).toString(), // 500 USDC
+  amount: (500e6).toString(),
   isVaultSwap: true,
 });
 
-// Find regular quote
 const quote = quotes.find((q) => q.type === 'REGULAR');
 if (!quote) throw new Error('No quote');
 console.log('quote', quote);
 
-// Encode vault swap transaction data
 const vaultSwapData = await swapSDK.encodeVaultSwapData({
   quote,
   destAddress: wallet.address,
   fillOrKillParams: {
-    slippageTolerancePercent: quote.recommendedSlippageTolerancePercent, // use recommended slippage tolerance from quote
-    refundAddress: wallet.address, // address to which assets are refunded
-    retryDurationBlocks: 100, // 100 blocks * 6 seconds = 10 minutes before deposits are refunded
+    slippageTolerancePercent: quote.recommendedSlippageTolerancePercent,
+    refundAddress: wallet.address,
+    retryDurationBlocks: 100,
   },
 });
 console.log('transactionData', vaultSwapData);
@@ -58,12 +54,11 @@ if (vaultSwapData.sourceTokenAddress) {
   await approvalTx.wait();
 }
 
-// Sign and submit transaction
 const swapTx = await wallet.sendTransaction({
   to: vaultSwapData.to,
   data: vaultSwapData.calldata,
   value: vaultSwapData.value,
 });
-const receipt = await swapTx.wait(); // wait for transaction to be included in a block
+const receipt = await swapTx.wait();
 
 console.log(receipt?.hash);
