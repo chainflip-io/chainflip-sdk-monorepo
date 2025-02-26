@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { Chain } from '@/shared/enums';
-import { BroadcastType } from '@/swap/client';
 import { Prisma } from '../../../client';
 import { getEgressStatusFields } from '../../v2/utils';
 
@@ -28,7 +27,6 @@ describe(getEgressStatusFields, () => {
       id: 727n,
       nativeId: 7n,
       chain: 'Ethereum' as Chain,
-      type: 'BATCH' as BroadcastType,
       requestedAt: new Date('1970-01-01T00:09:24.000Z'),
       requestedBlockIndex: '94-843',
       succeededAt: null,

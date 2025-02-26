@@ -340,19 +340,11 @@ model Egress {
   @@schema("public")
 }
 
-enum BroadcastType {
-  BATCH
-  CCM
-
-  @@schema("public")
-}
-
 model Broadcast {
-  id                  BigInt        @id @default(autoincrement())
+  id                  BigInt       @id @default(autoincrement())
   /// the broadcast id on the state chain
   nativeId            BigInt
   chain               Chain
-  type                BroadcastType @default(BATCH)
   egresses            Egress[]
   requestedAt         DateTime
   requestedBlockIndex String
@@ -361,12 +353,12 @@ model Broadcast {
   abortedAt           DateTime?
   abortedBlockIndex   String?
   transactionPayload  String?
-  replacedBy          Broadcast?    @relation("replacedBy", fields: [replacedById], references: [id])
-  replaces            Broadcast?    @relation("replacedBy")
-  replacedById        BigInt?       @unique
-  transactionRef      String?       @unique
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @default(now()) @updatedAt
+  replacedBy          Broadcast?   @relation("replacedBy", fields: [replacedById], references: [id])
+  replaces            Broadcast?   @relation("replacedBy")
+  replacedById        BigInt?      @unique
+  transactionRef      String?      @unique
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @default(now()) @updatedAt
   failedSwaps         FailedSwap[]
 
   @@unique([nativeId, chain])
