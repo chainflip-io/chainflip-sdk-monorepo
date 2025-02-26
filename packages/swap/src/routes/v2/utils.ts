@@ -217,9 +217,9 @@ export const getDepositInfo = (
 
   const depositTransactionRef =
     swapRequest?.depositTransactionRef ??
-    pendingDeposit?.transactionHash ??
+    pendingDeposit?.txRef ??
     failedSwap?.depositTransactionRef ??
-    pendingVaultSwap?.txId ??
+    pendingVaultSwap?.txRef ??
     undefined;
 
   if (!amount) return null;
@@ -228,7 +228,7 @@ export const getDepositInfo = (
     deposit: {
       amount,
       txRef: depositTransactionRef,
-      txConfirmations: pendingDeposit?.transactionConfirmations,
+      txConfirmations: pendingDeposit?.txConfirmations ?? pendingVaultSwap?.txConfirmations,
       witnessedAt:
         swapRequest?.depositBoostedAt?.valueOf() ??
         swapRequest?.depositFinalisedAt?.valueOf() ??

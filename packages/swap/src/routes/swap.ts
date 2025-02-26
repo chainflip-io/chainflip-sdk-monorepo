@@ -143,7 +143,7 @@ router.get(
 
     const depositTransactionRef =
       swapRequest?.depositTransactionRef ??
-      pendingDeposit?.transactionHash ??
+      pendingDeposit?.txRef ??
       failedSwap?.depositTransactionRef ??
       undefined;
 
@@ -174,7 +174,7 @@ router.get(
       depositAmount:
         readField(swapRequest, failedSwap, 'depositAmount')?.toFixed() ?? pendingDeposit?.amount,
       depositTransactionRef,
-      depositTransactionConfirmations: pendingDeposit?.transactionConfirmations,
+      depositTransactionConfirmations: pendingDeposit?.txConfirmations,
       depositReceivedAt: swapRequest?.depositFinalisedAt?.valueOf(),
       depositReceivedBlockIndex: swapRequest?.depositFinalisedBlockIndex ?? undefined,
       intermediateAmount: swap?.intermediateAmount?.toFixed(),

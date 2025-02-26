@@ -59,8 +59,8 @@ describe('ingress-egress-tracking', () => {
 
       expect(deposit).toEqual({
         amount: '36864',
-        transactionConfirmations: 3,
-        transactionHash: '0x1234',
+        txConfirmations: 3,
+        txRef: '0x1234',
       });
     });
 
@@ -83,8 +83,8 @@ describe('ingress-egress-tracking', () => {
 
       expect(deposit).toEqual({
         amount: '36864',
-        transactionConfirmations: 4,
-        transactionHash: '0x1234',
+        txConfirmations: 4,
+        txRef: '0x1234',
       });
     });
 
@@ -112,8 +112,8 @@ describe('ingress-egress-tracking', () => {
       expect(logger.error).not.toHaveBeenCalled();
       expect(deposit).toEqual({
         amount: '36864',
-        transactionConfirmations: 0,
-        transactionHash: 'deadc0de',
+        txConfirmations: 0,
+        txRef: 'deadc0de',
       });
     });
 
@@ -144,8 +144,8 @@ describe('ingress-egress-tracking', () => {
       expect(logger.error).not.toHaveBeenCalled();
       expect(deposit).toEqual({
         amount: '36864',
-        transactionConfirmations: 4,
-        transactionHash: '3412',
+        txConfirmations: 4,
+        txRef: '3412',
       });
     });
 

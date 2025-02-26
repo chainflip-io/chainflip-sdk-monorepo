@@ -11,8 +11,8 @@ if (redis) handleExit(() => redis.quit());
 
 export type PendingDeposit = {
   amount: string;
-  transactionHash?: string;
-  transactionConfirmations: number;
+  txRef?: string;
+  txConfirmations: number;
 };
 
 const getMempoolTransaction = async (
@@ -27,14 +27,30 @@ const getMempoolTransaction = async (
     if (tx) {
       return {
         amount: tx.value.toString(),
-        transactionConfirmations: tx.confirmations,
-        transactionHash: tx.tx_hash,
+        txConfirmations: tx.confirmations,
+        txRef: tx.tx_hash,
       };
     }
   }
 
   return null;
 };
+
+async function getDepositConfirmationCount(depositChain: Chain, depositBlockHeight: number) {
+  const [tracking, state] = await Promise.all([
+    prisma.chainTracking.findFirst({ where: { chain: depositChain } }),
+    prisma.state.findFirstOrThrow(),
+  ]);
+  if (!tracking) return 0;
+
+  // deposits in an external block will be witnessed (and boosted) one stateChain block after chain tracking is updated
+  // to prevent jumping from "1 confirmation" to "checking boost liquidity", we need to calculate confirmations based on the last witnessed block
+  const stateChainBlocksSinceTracking = state.height - (tracking.eventWitnessedBlock ?? 0);
+  const lastWitnessedBlockHeight =
+    stateChainBlocksSinceTracking > 0 ? tracking.height : tracking.previousHeight;
+
+  return Math.max(0, Number(lastWitnessedBlockHeight) - depositBlockHeight + 1);
+}
 
 export const getPendingDeposit = async (
   internalAsset: InternalAsset,
@@ -54,26 +70,18 @@ export const getPendingDeposit = async (
       // there is a delay between the tx getting included and the ingress egress tracker detecting the pending deposit
       // to prevent jumping confirmation numbers, we use 0 until the ingress egress tracker detects the pending deposit
       const mempoolTx = await getMempoolTransaction(chain, address);
-      return mempoolTx && { ...mempoolTx, transactionConfirmations: 0 };
+      return mempoolTx && { ...mempoolTx, txConfirmations: 0 };
     }
 
-    const currentHeight = (await prisma.state.findFirstOrThrow()).height;
-
-    const stateChainBlocksSinceTracking = currentHeight - (tracking.eventWitnessedBlock ?? 0);
-    const lastWitnessedBlockHeight =
-      stateChainBlocksSinceTracking > 0 ? tracking.height : tracking.previousHeight;
-
-    // deposits in an external block will be witnessed (and boosted) one stateChain block after chain tracking is updated
-    // to prevent jumping from "1 confirmation" to "checking boost liquidity", we need to calculate confirmations based on the last witnessed block
-    const confirmations = Math.max(
-      0,
-      Number(lastWitnessedBlockHeight) - deposits[0].deposit_chain_block_height + 1,
+    const txConfirmations = await getDepositConfirmationCount(
+      chain,
+      deposits[0].deposit_chain_block_height,
     );
 
     return {
       amount: deposits[0].amount.toString(),
-      transactionConfirmations: confirmations,
-      transactionHash: deposits[0].tx_refs?.[0],
+      txConfirmations,
+      txRef: deposits[0].tx_refs?.[0],
     };
   } catch (error) {
     logger.error('error while looking up deposit in redis', { error });
@@ -91,13 +99,19 @@ export const getPendingBroadcast = async (broadcast: Broadcast) => {
   }
 };
 
-export const getPendingVaultSwap = async (network: ChainflipNetwork, txId: string) => {
+export const getPendingVaultSwap = async (network: ChainflipNetwork, txRef: string) => {
   if (!redis) return null;
   try {
-    const vaultSwap = await redis.getPendingVaultSwap(network, txId);
+    const vaultSwap = await redis.getPendingVaultSwap(network, txRef);
     if (vaultSwap) {
+      const txConfirmations = await getDepositConfirmationCount(
+        assetConstants[vaultSwap.inputAsset].chain,
+        vaultSwap.depositChainBlockHeight,
+      );
+
       return {
-        txId,
+        txRef,
+        txConfirmations,
         ...vaultSwap,
       };
     }

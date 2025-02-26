@@ -643,8 +643,8 @@ describe('server', () => {
     it(`retrieves a swap in ${StateV2.Receiving} status`, async () => {
       vi.mocked(getPendingDeposit).mockResolvedValueOnce({
         amount: '1500000000000000000',
-        transactionConfirmations: 2,
-        transactionHash: '0x1234',
+        txConfirmations: 2,
+        txRef: '0x1234',
       });
 
       await processEvents(swapEvents.slice(0, 1));
@@ -2283,10 +2283,11 @@ describe('server', () => {
     });
 
     it(`returns the vault swap details in ${StateV2.Receiving} status`, async () => {
-      const txId = '0x1234';
+      const txRef = '0x1234';
       env.CHAINFLIP_NETWORK = 'mainnet';
       vi.mocked(getPendingVaultSwap).mockResolvedValue({
-        txId,
+        txRef,
+        txConfirmations: 1,
         affiliateFees: [
           {
             account: 'cFHtoB6DrnqUVY4DwMHCVCtgCLsiHvv98oGw8k66tazF2ToFv',
@@ -2324,7 +2325,7 @@ describe('server', () => {
           retryDuration: 3,
         },
       });
-      const { body, status } = await request(server).get(`/v2/swaps/${txId}`);
+      const { body, status } = await request(server).get(`/v2/swaps/${txRef}`);
 
       expect(status).toBe(200);
       expect(body.state).toBe('RECEIVING');
