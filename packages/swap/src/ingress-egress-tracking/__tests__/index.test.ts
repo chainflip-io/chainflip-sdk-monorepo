@@ -1,7 +1,7 @@
 import Redis from 'ioredis';
 import { vi, describe, expect, beforeAll, beforeEach, it } from 'vitest';
 import { Chain } from '@/shared/enums';
-import { getPendingBroadcast, getPendingDeposit } from '..';
+import { getPendingBroadcast, getPendingDeposit, getPendingVaultSwap } from '..';
 import prisma, { Broadcast } from '../../client';
 import logger from '../../utils/logger';
 
@@ -36,7 +36,7 @@ describe('ingress-egress-tracking', () => {
     await redis.flushall();
     await prisma.chainTracking.deleteMany();
     await prisma.state.deleteMany();
-    vi.resetAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe(getPendingDeposit, () => {
@@ -206,6 +206,128 @@ describe('ingress-egress-tracking', () => {
       vi.spyOn(Redis.prototype, 'get').mockRejectedValueOnce(new Error());
 
       expect(await getPendingBroadcast(broadcast)).toBeNull();
+      expect(logger.error).toHaveBeenCalled();
+    });
+  });
+
+  describe(getPendingVaultSwap, () => {
+    it('gets pending vault swap from redis', async () => {
+      await updateChainTracking({ chain: 'Bitcoin', height: 1234567893n });
+
+      await redis.set(
+        'vault_deposit:Bitcoin:0x396255c0153a4af5f2b7f07adbdb60ff41c7eaff6e6137e5d48c8d11dadca477',
+        JSON.stringify({
+          deposit_chain_block_height: 1234567890,
+          input_asset: { chain: 'Bitcoin', asset: 'BTC' },
+          output_asset: { chain: 'Ethereum', asset: 'ETH' },
+          amount: '0x7a120',
+          destination_address: '0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff',
+          ccm_deposit_metadata: null,
+          deposit_details: {
+            tx_id: '0x396255c0153a4af5f2b7f07adbdb60ff41c7eaff6e6137e5d48c8d11dadca477',
+            vout: 0,
+          },
+          broker_fee: { account: 'cFMTNSQQVfBo2HqtekvhLPfZY764kuJDVFG1EvnnDGYxc3LRW', bps: 0 },
+          affiliate_fees: [],
+          refund_params: {
+            retry_duration: 100,
+            refund_address: 'tb1qhjurnfz4qah4rg7ntue6x287ehdvded20rj9vh',
+            min_price: '0x31c3c809255ce9e5e2478854cdb79e2c85e29c4ec',
+          },
+          dca_params: { number_of_chunks: 1, chunk_interval: 2 },
+          max_boost_fee: 30,
+        }),
+      );
+
+      const swap = await getPendingVaultSwap(
+        'perseverance',
+        '77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239',
+      );
+
+      expect(swap).toMatchInlineSnapshot(`
+        {
+          "affiliateFees": [],
+          "amount": 500000n,
+          "brokerFee": {
+            "account": "cFMTNSQQVfBo2HqtekvhLPfZY764kuJDVFG1EvnnDGYxc3LRW",
+            "commissionBps": 0,
+          },
+          "ccmDepositMetadata": null,
+          "dcaParams": {
+            "chunkInterval": 2,
+            "numberOfChunks": 1,
+          },
+          "depositChainBlockHeight": 1234567890,
+          "destinationAddress": "0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff",
+          "inputAsset": "Btc",
+          "maxBoostFee": 30,
+          "outputAsset": "Eth",
+          "refundParams": {
+            "minPrice": 4545705898455570139320688941272887895134904632556n,
+            "refundAddress": "tb1qhjurnfz4qah4rg7ntue6x287ehdvded20rj9vh",
+            "retryDuration": 100,
+          },
+          "txConfirmations": 3,
+          "txRef": "77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239",
+        }
+      `);
+    });
+
+    it('ensures foreign block height is used only after 1 extra state chain block', async () => {
+      await updateChainTracking({ chain: 'Bitcoin', height: 1234567893n, stateChainHeight: 2 });
+
+      await redis.set(
+        'vault_deposit:Bitcoin:0x396255c0153a4af5f2b7f07adbdb60ff41c7eaff6e6137e5d48c8d11dadca477',
+        JSON.stringify({
+          deposit_chain_block_height: 1234567890,
+          input_asset: { chain: 'Bitcoin', asset: 'BTC' },
+          output_asset: { chain: 'Ethereum', asset: 'ETH' },
+          amount: '0x7a120',
+          destination_address: '0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff',
+          ccm_deposit_metadata: null,
+          deposit_details: {
+            tx_id: '0x396255c0153a4af5f2b7f07adbdb60ff41c7eaff6e6137e5d48c8d11dadca477',
+            vout: 0,
+          },
+          broker_fee: { account: 'cFMTNSQQVfBo2HqtekvhLPfZY764kuJDVFG1EvnnDGYxc3LRW', bps: 0 },
+          affiliate_fees: [],
+          refund_params: {
+            retry_duration: 100,
+            refund_address: 'tb1qhjurnfz4qah4rg7ntue6x287ehdvded20rj9vh',
+            min_price: '0x31c3c809255ce9e5e2478854cdb79e2c85e29c4ec',
+          },
+          dca_params: { number_of_chunks: 1, chunk_interval: 2 },
+          max_boost_fee: 30,
+        }),
+      );
+
+      const swap = await getPendingVaultSwap(
+        'perseverance',
+        '77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239',
+      );
+
+      expect(swap?.txConfirmations).toEqual(4);
+    });
+
+    it('returns null swap is not found', async () => {
+      const swap = await getPendingVaultSwap(
+        'perseverance',
+        '77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239',
+      );
+
+      expect(swap).toBeNull();
+      expect(logger.error).not.toHaveBeenCalled();
+    });
+
+    it('returns null if the redis client throws (bitcoin)', async () => {
+      vi.spyOn(Redis.prototype, 'get').mockRejectedValueOnce(new Error());
+
+      const swap = await getPendingVaultSwap(
+        'perseverance',
+        '77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239',
+      );
+
+      expect(swap).toBeNull();
       expect(logger.error).toHaveBeenCalled();
     });
   });

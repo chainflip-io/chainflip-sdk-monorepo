@@ -2354,6 +2354,7 @@ describe('server', () => {
           },
           "deposit": {
             "amount": "100",
+            "txConfirmations": 1,
             "txRef": "0x1234",
           },
           "destAddress": "0xcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf",
