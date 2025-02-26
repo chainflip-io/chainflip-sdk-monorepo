@@ -1,7 +1,7 @@
 import { getEvmChainId } from '@/shared/consts';
 import { ChainflipNetwork, Chain, isTestnet } from '@/shared/enums';
 import { isNotNullish } from '@/shared/guards';
-import { Environment } from '../rpc';
+import { Environment } from '@/shared/rpc';
 
 export const getChainData = (
   chain: Chain,
