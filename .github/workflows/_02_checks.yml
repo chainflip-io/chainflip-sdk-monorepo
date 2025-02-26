@@ -69,10 +69,10 @@ jobs:
 
       - name: Migrate database 🗃️
         if: matrix.package == 'swap'
-        run: pnpm --filter swap exec pnpm prisma migrate dev
+        run: pnpm run --dir=packages/${{ matrix.package }} migrate:deploy
 
       - name: Run Test ${{ matrix.package }} 🧪
-        run: pnpm run test:ci:${{ matrix.package }}
+        run: pnpm run --dir=packages/${{ matrix.package }} test:ci
 
       - name: Upload coverage to Codecov ☂️
         uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
@@ -113,4 +113,4 @@ jobs:
           done
 
       - name: Run build ${{ matrix.package }} 🏗️
-        run: pnpm run build:${{ matrix.package }}
+        run: pnpm run --dir=packages/${{ matrix.package }} build

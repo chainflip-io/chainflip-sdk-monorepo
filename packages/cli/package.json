@@ -28,6 +28,7 @@
   "scripts": {
     "prepublish": "pnpm build",
     "build": "rm -rf dist && tsup",
+    "test:ci": "exit 0",
     "typecheck": "tsc --noEmit",
     "eslint:check": "pnpm eslint --max-warnings 0 './**/*.ts'",
     "prettier:base": "prettier ./** --ignore-path=../../.prettierignore",
