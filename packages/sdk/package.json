@@ -30,7 +30,7 @@
   ],
   "scripts": {
     "test": "vitest",
-    "test:ci": "CI=1 pnpm vitest run",
+    "test:ci": "CI=1 pnpm test",
     "build": "rm -rf dist && tsup",
     "eslint:check": "pnpm eslint --max-warnings 0 './**/*.ts'",
     "prettier:base": "prettier ./** --ignore-path=../../.prettierignore",
