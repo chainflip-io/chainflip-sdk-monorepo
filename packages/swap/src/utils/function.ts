@@ -93,19 +93,13 @@ const cachedGetSpecVersion = memoize(
   6_000,
 );
 
-// TODO(1.8): undo this commit, it assumes 4 digit versions will be a double digit patch
 export const isAtLeastSpecVersion = async (specVersion: `${string}.${string}.${string}`) => {
   const { specVersion: currentSpecVersion } = await cachedGetSpecVersion();
-
   const [maxMajor, maxMinor, maxPatch] = specVersion.toString().split('.').map(Number);
-  const simpleRegex = /^(\d)(\d)(\d)$/;
-  const doublePatchRegex = /^(\d)(\d)(\d\d)$/;
-  let regex;
-  if (simpleRegex.test(currentSpecVersion.toString())) regex = simpleRegex;
-  if (doublePatchRegex.test(currentSpecVersion.toString())) regex = doublePatchRegex;
-
-  if (!regex) throw new Error('unexpected spec version');
-  const [major, minor, patch] = regex.exec(currentSpecVersion.toString())!.slice(1).map(Number);
+  const regex = /^(\d?\d)(\d\d)(\d\d)$/;
+  const match = regex.exec(currentSpecVersion.toString());
+  if (!match) throw new Error(`unexpected spec version: ${currentSpecVersion}`);
+  const [major, minor, patch] = match.slice(1).map(Number);
 
   return (
     major > maxMajor ||
