@@ -2,7 +2,6 @@
 
 exports[`networkDepositFinalised > updates swap request for boosted deposit 1`] = `
 {
-  "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,
@@ -42,7 +41,6 @@ exports[`networkDepositFinalised > updates swap request for boosted deposit 1`] 
 
 exports[`networkDepositFinalised > updates swap request for regular deposit 1`] = `
 {
-  "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,
@@ -92,7 +90,6 @@ exports[`networkDepositFinalised > updates swap request for regular deposit 1`] 
 
 exports[`networkDepositFinalised > updates swap request for regular deposit with 180 schema 1`] = `
 {
-  "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,

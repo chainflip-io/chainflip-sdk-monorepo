@@ -11,7 +11,9 @@ import { pascalCaseToScreamingSnakeCase } from '@/shared/strings';
 import { Prisma } from '../client';
 import type { EventHandlerArgs } from './index';
 
-const transform170Schema = (data: z.output<typeof schema170>): z.output<typeof schema180> => {
+const transform170Schema = (
+  data: z.output<typeof schema170>,
+): z.output<typeof schema180> & { is170Schema: true } => {
   let requestType;
   if (data.requestType.__kind === 'Ccm') {
     requestType = {
@@ -55,6 +57,7 @@ const transform170Schema = (data: z.output<typeof schema170>): z.output<typeof s
     requestType,
     origin,
     brokerFees: [],
+    is170Schema: true, // TODO(1.9): remove this
   };
 };
 
@@ -165,7 +168,10 @@ export default async function swapRequested({
     dcaParameters,
     refundParameters,
     brokerFees,
+    ...rest
   } = schema.parse(event.args);
+
+  const is170Schema = 'is170Schema' in rest && rest.is170Schema;
 
   const { originType, swapDepositChannelId, depositTransactionRef, brokerId } = await getOriginInfo(
     prisma,
@@ -193,7 +199,6 @@ export default async function swapRequested({
     ? {
         depositFinalisedAt: new Date(block.timestamp),
         depositFinalisedBlockIndex: `${block.height}-${event.indexInBlock}`,
-        ccmDepositReceivedBlockIndex: `${block.height}-${event.indexInBlock}`,
       }
     : undefined;
 
@@ -205,7 +210,10 @@ export default async function swapRequested({
       swapDepositChannelId,
       srcAsset: inputAsset,
       destAsset: outputAsset,
-      requestType: ccmMetadata ? 'CCM' : pascalCaseToScreamingSnakeCase(requestType.__kind),
+      requestType:
+        is170Schema && ccmMetadata
+          ? 'LEGACY_CCM'
+          : pascalCaseToScreamingSnakeCase(requestType.__kind), // TODO(1.9): keep only pascalCaseToScreamingSnakeCase(requestType.__kind) for a requestType
       ccmGasBudget: ccmMetadata?.channelMetadata.gasBudget.toString(),
       ccmMessage: ccmMetadata?.channelMetadata.message,
       srcAddress: ccmMetadata?.sourceAddress?.address,

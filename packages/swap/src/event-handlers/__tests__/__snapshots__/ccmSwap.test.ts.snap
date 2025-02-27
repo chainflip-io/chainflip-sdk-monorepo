@@ -28,7 +28,6 @@ exports[`ccm swap flow > handles all the deposit channel events 1`] = `
   "srcChainExpiryBlock": 157n,
   "swapRequests": [
     {
-      "ccmDepositReceivedBlockIndex": "57-12",
       "ccmGasBudget": "360801",
       "ccmMessage": "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000003f7a000000000000000000000000000000000000000000000000000000000000000074761735465737400000000000000000000000000000000000000000000000000",
       "completedAt": 1970-01-01T00:06:06.000Z,
@@ -94,7 +93,7 @@ exports[`ccm swap flow > handles all the deposit channel events 1`] = `
       "originType": "DEPOSIT_CHANNEL",
       "prewitnessedDepositId": null,
       "refundEgressId": null,
-      "requestType": "CCM",
+      "requestType": "LEGACY_CCM",
       "srcAddress": null,
       "srcAsset": "Dot",
       "swapDepositChannelId": Any<BigInt>,
@@ -192,7 +191,6 @@ exports[`ccm swap flow > handles all the deposit channel events 1`] = `
 
 exports[`ccm swap flow > handles all the vault events 1`] = `
 {
-  "ccmDepositReceivedBlockIndex": "2504899-772",
   "ccmGasBudget": "0",
   "ccmMessage": "0x000000000000000000000000000000000000000000000000000000000000004000000000000000000000000067ff09c184d8e9e7b90c5187ed04cbfbdba741c8000000000000000000000000000000000000000000000000000000000000000c6461676f61746973686572650000000000000000000000000000000000000000",
   "completedAt": 1970-06-23T22:50:06.000Z,
@@ -240,7 +238,7 @@ exports[`ccm swap flow > handles all the vault events 1`] = `
   "fees": [
     {
       "amount": "0",
-      "asset": "Eth",
+      "asset": "Usdc",
       "type": "EGRESS",
     },
   ],
@@ -253,7 +251,7 @@ exports[`ccm swap flow > handles all the vault events 1`] = `
   "originType": "VAULT",
   "prewitnessedDepositId": null,
   "refundEgressId": null,
-  "requestType": "CCM",
+  "requestType": "REGULAR",
   "srcAddress": "0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff",
   "srcAsset": "Eth",
   "swapDepositChannelId": null,

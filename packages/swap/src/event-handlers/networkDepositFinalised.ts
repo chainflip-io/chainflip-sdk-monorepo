@@ -50,9 +50,6 @@ export const networkDepositFinalised = async ({ prisma, event, block }: EventHan
         depositFinalisedAt: new Date(block.timestamp),
         depositFinalisedBlockIndex: `${block.height}-${event.indexInBlock}`,
         depositTransactionRef: txRef,
-        ccmDepositReceivedBlockIndex:
-          // the dedicated ccm deposit received event is removed in 1.6
-          action.__kind === 'CcmTransfer' ? `${block.height}-${event.indexInBlock}` : undefined,
         fees: {
           create: { amount: ingressFee.toString(), type: 'INGRESS', asset },
         },

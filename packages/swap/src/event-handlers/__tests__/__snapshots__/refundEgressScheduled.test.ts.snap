@@ -2,7 +2,6 @@
 
 exports[`refundEgressScheduled > creates egress for refund on an existing swap (160/170) 1`] = `
 {
-  "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,
@@ -60,7 +59,6 @@ exports[`refundEgressScheduled > creates egress for refund on an existing swap (
 
 exports[`refundEgressScheduled > creates egress for refund on an existing swap 1`] = `
 {
-  "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,

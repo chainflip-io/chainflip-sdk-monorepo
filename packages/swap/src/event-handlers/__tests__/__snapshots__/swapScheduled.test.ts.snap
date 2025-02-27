@@ -2,7 +2,6 @@
 
 exports[`swapScheduled > creates a swap for a swap request 1`] = `
 {
-  "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,

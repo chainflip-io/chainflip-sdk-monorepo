@@ -36,7 +36,7 @@ export default async function swapEgressScheduled({
   });
 
   const egressFeeAsset =
-    egressFee[1] ?? (request.requestType === 'CCM' ? chainConstants[chain].gasAsset : asset);
+    egressFee[1] ?? (request.requestType === 'LEGACY_CCM' ? chainConstants[chain].gasAsset : asset);
 
   await prisma.swapRequest.update({
     where: { nativeId: swapRequestId },

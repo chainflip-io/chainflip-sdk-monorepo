@@ -2,7 +2,6 @@
 
 exports[`refundEgressIgnored > handles refundEgressIgnored event 1`] = `
 {
-  "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,

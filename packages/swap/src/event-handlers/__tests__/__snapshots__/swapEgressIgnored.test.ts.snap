@@ -2,7 +2,6 @@
 
 exports[`swapEgressIgnored > adds an IgnoredEgress record for a egress ignored event 1`] = `
 {
-  "ccmDepositReceivedBlockIndex": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,
