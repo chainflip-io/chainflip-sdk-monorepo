@@ -34,6 +34,5 @@ exports[`networkTransactionRejectedByBroker > adds a broadcast to a failed swap 
   "succeededBlockIndex": null,
   "transactionPayload": null,
   "transactionRef": null,
-  "type": "BATCH",
 }
 `;
