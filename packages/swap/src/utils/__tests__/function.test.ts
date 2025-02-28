@@ -26,4 +26,10 @@ describe(isAtLeastSpecVersion, () => {
 
     expect(await isAtLeastSpecVersion('1.8.0')).toBe(true);
   });
+
+  it('handles 1.7.9 (3 digits)', async () => {
+    vi.mocked(rpc.getRuntimeVersion).mockResolvedValueOnce({ specVersion: 179 } as any);
+
+    expect(await isAtLeastSpecVersion('1.8.0')).toBe(false);
+  });
 });

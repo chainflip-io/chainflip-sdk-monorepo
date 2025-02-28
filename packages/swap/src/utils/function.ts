@@ -94,12 +94,15 @@ const cachedGetSpecVersion = memoize(
 );
 
 export const isAtLeastSpecVersion = async (specVersion: `${string}.${string}.${string}`) => {
+  const [maxMajor, maxMinor, maxPatch] = specVersion.split('.').map(Number);
+
   const { specVersion: currentSpecVersion } = await cachedGetSpecVersion();
-  const [maxMajor, maxMinor, maxPatch] = specVersion.toString().split('.').map(Number);
-  const regex = /^(\d?\d)(\d\d)(\d\d)$/;
-  const match = regex.exec(currentSpecVersion.toString());
-  if (!match) throw new Error(`unexpected spec version: ${currentSpecVersion}`);
-  const [major, minor, patch] = match.slice(1).map(Number);
+  const stringVersion = currentSpecVersion.toString();
+  const digitCount = Math.ceil(stringVersion.length / 3);
+  const paddedVersion = stringVersion.padStart(digitCount * 3, '0');
+  const major = Number.parseInt(paddedVersion.slice(0, digitCount), 10);
+  const minor = Number.parseInt(paddedVersion.slice(digitCount, digitCount * 2), 10);
+  const patch = Number.parseInt(paddedVersion.slice(digitCount * 2, digitCount * 3), 10);
 
   return (
     major > maxMajor ||
