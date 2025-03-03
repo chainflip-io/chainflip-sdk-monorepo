@@ -2,11 +2,10 @@ import { ContractTransactionResponse } from 'ethers';
 import {
   checkAllowance,
   getStateChainGatewayContractAddress,
-  getTokenContractAddress,
   approve,
   TransactionOptions,
+  getFlipContractAddress,
 } from '../contracts';
-import { InternalAssets } from '../enums';
 import { FundingNetworkOptions } from './index';
 
 export const checkStateChainGatewayAllowance = async (
@@ -16,7 +15,7 @@ export const checkStateChainGatewayAllowance = async (
   const flipContractAddress =
     networkOpts.network === 'localnet'
       ? networkOpts.flipContractAddress
-      : getTokenContractAddress(InternalAssets.Flip, networkOpts.network);
+      : getFlipContractAddress(networkOpts.network);
 
   const stateChainGatewayContractAddress =
     networkOpts.network === 'localnet'

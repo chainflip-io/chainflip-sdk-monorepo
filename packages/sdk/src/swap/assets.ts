@@ -1,18 +1,26 @@
-import { getTokenContractAddress } from '@/shared/contracts';
+import { toUpperCase } from '@chainflip/utils/string';
+import { ADDRESSES } from '@/shared/consts';
 import {
   InternalAsset,
   ChainflipNetwork,
   isTestnet,
   readChainAssetValue,
   assetConstants,
-  chainConstants,
 } from '@/shared/enums';
 import type { Environment } from '@/shared/rpc';
 import type { AssetData } from './types';
 
-export const isGasAsset = (asset: InternalAsset) => {
-  const { chain } = assetConstants[asset];
-  return asset === chainConstants[chain].gasAsset;
+const getTokenContractAddress = (asset: InternalAsset, network: ChainflipNetwork) => {
+  switch (asset) {
+    case 'Btc':
+    case 'Dot':
+    case 'Eth':
+    case 'ArbEth':
+    case 'Sol':
+      return undefined;
+    default:
+      return ADDRESSES[network][`${toUpperCase(asset)}_CONTRACT_ADDRESS`];
+  }
 };
 
 export const getAssetData = (
@@ -26,7 +34,7 @@ export const getAssetData = (
     chainflipId: asset,
     asset: assetConstant.asset,
     chain: assetConstant.chain,
-    contractAddress: !isGasAsset(asset) ? getTokenContractAddress(asset, network) : undefined,
+    contractAddress: getTokenContractAddress(asset, network),
     decimals: assetConstant.decimals,
     name: assetConstant.name,
     symbol: assetConstant.asset,
