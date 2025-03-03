@@ -1,4 +1,3 @@
-import { VoidSigner } from 'ethers';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { Assets, Chain, ChainflipNetworks, Chains, InternalAssets } from '@/shared/enums';
 import { BoostQuote, Quote } from '@/shared/schemas';
@@ -8,15 +7,9 @@ import {
   mockRpcResponse,
   supportedAssets,
 } from '@/shared/tests/fixtures';
-import { approveVault, executeSwap } from '@/shared/vault';
 import { SwapSDK } from '../sdk';
 import { getQuote, getQuoteV2, getStatus, getStatusV2 } from '../services/ApiService';
 import { QuoteRequest } from '../types';
-
-vi.mock('@/shared/vault', () => ({
-  executeSwap: vi.fn(),
-  approveVault: vi.fn(),
-}));
 
 vi.mock('../services/ApiService', () => ({
   getQuote: vi.fn(),
@@ -43,8 +36,7 @@ vi.mock('@trpc/client', async (importOriginal) => {
 global.fetch = vi.fn();
 
 describe(SwapSDK, () => {
-  const signer = new VoidSigner('0x0');
-  const sdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
+  const sdk = new SwapSDK({ network: ChainflipNetworks.sisyphos });
 
   const defaultRpcMocks = (url: string, data: any) => {
     if (data.method === 'cf_environment') {
@@ -86,7 +78,7 @@ describe(SwapSDK, () => {
         return defaultRpcMocks(url, data);
       });
 
-      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
+      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos });
       expect(await freshSdk.getAssets()).toMatchSnapshot();
     });
 
@@ -126,7 +118,7 @@ describe(SwapSDK, () => {
         return defaultRpcMocks(url, data);
       });
 
-      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
+      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos });
       expect(await freshSdk.getAssets()).toMatchSnapshot();
     });
 
@@ -274,79 +266,6 @@ describe(SwapSDK, () => {
         {},
       );
       expect(result).toEqual({ status: 1234 });
-    });
-  });
-
-  describe(SwapSDK.prototype.executeSwap, () => {
-    it('calls executeSwap', async () => {
-      const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
-      vi.mocked(executeSwap).mockResolvedValueOnce({ hash: 'hello world' } as any);
-
-      const result = await sdk.executeSwap(params as any);
-      expect(executeSwap).toHaveBeenCalledWith(params, { network: 'sisyphos', signer }, {});
-      expect(result).toEqual('hello world');
-    });
-
-    it('calls executeSwap with the given signer', async () => {
-      const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
-      const otherSigner = new VoidSigner('0x1');
-      vi.mocked(executeSwap).mockResolvedValueOnce({ hash: 'hello world' } as any);
-
-      const result = await sdk.executeSwap(params as any, {
-        signer: otherSigner,
-      });
-      expect(executeSwap).toHaveBeenCalledWith(
-        params,
-        { network: 'sisyphos', signer: otherSigner },
-        {},
-      );
-      expect(result).toEqual('hello world');
-    });
-  });
-
-  describe(SwapSDK.prototype.approveVault, () => {
-    it('calls approveVault', async () => {
-      const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
-      vi.mocked(approveVault).mockResolvedValueOnce({ hash: 'hello world' } as any);
-
-      const result = await sdk.approveVault(params as any);
-      expect(approveVault).toHaveBeenCalledWith(params, { network: 'sisyphos', signer }, {});
-      expect(result).toEqual('hello world');
-    });
-
-    it('calls approveVault with given signer', async () => {
-      const params = { amount: '1', srcAsset: 'ETH', srcChain: 'Ethereum' };
-      const otherSigner = new VoidSigner('0x1');
-      vi.mocked(approveVault).mockResolvedValueOnce({ hash: 'hello world' } as any);
-
-      const result = await sdk.approveVault(params as any, {
-        signer: otherSigner,
-      });
-      expect(approveVault).toHaveBeenCalledWith(
-        params,
-        { network: 'sisyphos', signer: otherSigner },
-        {},
-      );
-      expect(result).toEqual('hello world');
-    });
-  });
-
-  describe(SwapSDK.prototype.approveAndExecuteSwap, () => {
-    it('approves token allowance before calling executeSwap with the given signer', async () => {
-      const params = { amount: '1', srcAsset: 'FLIP', srcChain: 'Ethereum' };
-      vi.mocked(executeSwap).mockResolvedValueOnce({ hash: 'hello world' } as any);
-      vi.mocked(approveVault).mockResolvedValueOnce({ hash: 'hello world 2' } as any);
-
-      const result = await sdk.approveAndExecuteSwap(params as any, {
-        signer,
-      });
-
-      expect(approveVault).toHaveBeenCalledWith(params, { network: 'sisyphos', signer }, {});
-      expect(executeSwap).toHaveBeenCalledWith(params, { network: 'sisyphos', signer }, {});
-      expect(result).toEqual({
-        swapTxRef: 'hello world',
-        approveTxRef: 'hello world 2',
-      });
     });
   });
 
@@ -2346,7 +2265,7 @@ describe(SwapSDK, () => {
         return defaultRpcMocks(url, data);
       });
 
-      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
+      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos });
       expect(
         await freshSdk.getBoostLiquidity({
           feeTierBps: 10,
@@ -2383,7 +2302,7 @@ describe(SwapSDK, () => {
         return defaultRpcMocks(url, data);
       });
 
-      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
+      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos });
       expect(
         await freshSdk.getBoostLiquidity({
           feeTierBps: 10,
@@ -2410,7 +2329,7 @@ describe(SwapSDK, () => {
         return defaultRpcMocks(url, data);
       });
 
-      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
+      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos });
       expect(await freshSdk.getBoostLiquidity()).toMatchSnapshot();
     });
 
@@ -2444,7 +2363,7 @@ describe(SwapSDK, () => {
         return defaultRpcMocks(url, data);
       });
 
-      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos, signer });
+      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos });
       expect(
         await freshSdk.getBoostLiquidity({
           asset: 'BTC',
