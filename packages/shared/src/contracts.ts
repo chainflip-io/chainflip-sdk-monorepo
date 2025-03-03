@@ -1,7 +1,7 @@
 import { Signer, Overrides, ContractTransactionResponse } from 'ethers';
 import { ERC20, ERC20__factory } from './abis';
 import { ADDRESSES } from './consts';
-import { Chain, type ChainflipNetwork, Chains, InternalAsset, InternalAssets } from './enums';
+import { type ChainflipNetwork } from './enums';
 
 export type TransactionOptions = {
   gasLimit?: bigint;
@@ -18,15 +18,8 @@ export const extractOverrides = (transactionOverrides: TransactionOptions): Over
   return ethersOverrides;
 };
 
-export function getTokenContractAddress(asset: InternalAsset, network: ChainflipNetwork) {
-  if (asset === InternalAssets.Flip) return ADDRESSES[network].FLIP_CONTRACT_ADDRESS;
-  if (asset === InternalAssets.Usdc) return ADDRESSES[network].USDC_CONTRACT_ADDRESS;
-  if (asset === InternalAssets.Usdt) return ADDRESSES[network].USDT_CONTRACT_ADDRESS;
-  if (asset === InternalAssets.ArbUsdc) return ADDRESSES[network].ARBUSDC_CONTRACT_ADDRESS;
-  if (asset === InternalAssets.SolUsdc) return ADDRESSES[network].SOLUSDC_CONTRACT_ADDRESS;
-
-  throw new Error(`No contract address for ${asset} on ${network}`);
-}
+export const getFlipContractAddress = (network: ChainflipNetwork): string =>
+  ADDRESSES[network].FLIP_CONTRACT_ADDRESS;
 
 export const getStateChainGatewayContractAddress = (network: ChainflipNetwork): string =>
   ADDRESSES[network].STATE_CHAIN_GATEWAY_ADDRESS;
@@ -61,18 +54,11 @@ export const approve = async (
   return transaction;
 };
 
-export const getVaultContractAddress = (chain: Chain, network: ChainflipNetwork): string => {
-  if (chain === Chains.Ethereum) return ADDRESSES[network].VAULT_CONTRACT_ADDRESS;
-  if (chain === Chains.Arbitrum) return ADDRESSES[network].ARB_VAULT_CONTRACT_ADDRESS;
-
-  throw new Error(`No vault contract address for ${chain} on ${network}`);
-};
-
 export const getFlipBalance = async (
   network: ChainflipNetwork,
   signer: Signer,
 ): Promise<bigint> => {
-  const flipAddress = getTokenContractAddress(InternalAssets.Flip, network);
+  const flipAddress = getFlipContractAddress(network);
   const flip = ERC20__factory.connect(flipAddress, signer);
   return flip.balanceOf(await signer.getAddress());
 };

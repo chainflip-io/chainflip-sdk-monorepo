@@ -1,8 +1,6 @@
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
-import { Signer } from 'ethers';
 import superjson from 'superjson';
 import { requestSwapDepositAddress, requestSwapParameterEncoding } from '@/shared/broker';
-import { TransactionOptions } from '@/shared/contracts';
 import {
   ChainflipNetwork,
   Chain,
@@ -30,10 +28,9 @@ import {
 import { validateSwapAmount } from '@/shared/rpc/utils';
 import { BoostQuote, Quote } from '@/shared/schemas';
 import { Required } from '@/shared/types';
-import { approveVault, executeSwap, ExecuteSwapParams } from '@/shared/vault';
 import type { AppRouter } from '@/swap/server';
 import { AsyncCacheMap } from '@/swap/utils/dataStructures';
-import { getAssetData, isGasAsset } from './assets';
+import { getAssetData } from './assets';
 import { getChainData } from './chains';
 import { BACKEND_SERVICE_URLS, CF_SDK_VERSION_HEADERS } from './consts';
 import * as ApiService from './services/ApiService';
@@ -57,8 +54,6 @@ import {
   VaultSwapResponse,
 } from './v2/types';
 
-type TransactionHash = `0x${string}`;
-
 export type SwapSDKOptions = {
   network?: ChainflipNetwork;
   backendUrl?: string;
@@ -71,8 +66,6 @@ export type SwapSDKOptions = {
   enabledFeatures?: {
     dca?: boolean;
   };
-  /** @deprecated DEPRECATED(1.8) use encodeVaultSwapData to get the unsigned transaction data instead of executeSwap */
-  signer?: Signer;
 };
 
 const assertQuoteValid = (quote: Quote | BoostQuote) => {
@@ -307,50 +300,6 @@ export class SwapSDK {
     return ApiService.getStatusV2(this.options.backendUrl, swapStatusRequest, options);
   }
 
-  /** @deprecated DEPRECATED(1.8) use encodeVaultSwapData to get the unsigned transaction data instead */
-  async executeSwap(
-    params: ExecuteSwapParams,
-    txOpts: TransactionOptions & { signer?: Signer } = {},
-  ): Promise<TransactionHash> {
-    const { srcChain, srcAsset, amount } = params;
-
-    const { signer: optsSigner, ...remainingTxOpts } = txOpts;
-    const signer = optsSigner ?? this.options.signer;
-    assert(signer, 'No signer provided');
-
-    await this.validateSwapAmount({ chain: srcChain, asset: srcAsset }, BigInt(amount));
-
-    const tx = await executeSwap(
-      params,
-      {
-        network: this.options.network,
-        signer,
-      },
-      remainingTxOpts,
-    );
-    return tx.hash as `0x${string}`;
-  }
-
-  /** @deprecated DEPRECATED(1.8) approve the vault address and source token returned from encodeVaultSwapData instead */
-  async approveVault(
-    params: Pick<ExecuteSwapParams, 'srcChain' | 'srcAsset' | 'amount'>,
-    txOpts: TransactionOptions & { signer?: Signer } = {},
-  ): Promise<TransactionHash | null> {
-    const { signer: optsSigner, ...remainingTxOpts } = txOpts;
-    const signer = optsSigner ?? this.options.signer;
-    assert(signer, 'No signer provided');
-
-    const tx = await approveVault(
-      params,
-      {
-        signer,
-        network: this.options.network,
-      },
-      remainingTxOpts,
-    );
-    return tx ? (tx.hash as `0x${string}`) : null;
-  }
-
   private async validateSwapAmount(asset: UncheckedAssetAndChain, amount: bigint): Promise<void> {
     const stateChainEnv = await this.getStateChainEnvironment();
 
@@ -359,33 +308,6 @@ export class SwapSDK {
     const result = validateSwapAmount(stateChainEnv, internalAsset, amount);
 
     if (!result.success) throw new Error(result.reason);
-  }
-
-  /** @deprecated DEPRECATED(1.8) use encodeVaultSwapData to get the unsigned transaction data instead */
-  async approveAndExecuteSwap(
-    params: ExecuteSwapParams,
-    txOpts: Omit<TransactionOptions, 'nonce'> & { signer?: Signer } = {},
-  ): Promise<{
-    approveTxRef: TransactionHash | null;
-    swapTxRef: TransactionHash | null;
-  }> {
-    const { srcChain, srcAsset } = params;
-    const signer = txOpts.signer ?? this.options.signer;
-    assert(signer, 'No signer provided');
-
-    const internalAsset = getInternalAsset({ chain: srcChain, asset: srcAsset });
-
-    let approveTxRef = null;
-    if (!isGasAsset(internalAsset)) {
-      approveTxRef = await this.approveVault(params, { ...txOpts, nonce: undefined });
-    }
-
-    const swapTxRef = await this.executeSwap(params, { ...txOpts, nonce: undefined });
-
-    return {
-      approveTxRef,
-      swapTxRef,
-    };
   }
 
   async getSwapLimits(): Promise<{
