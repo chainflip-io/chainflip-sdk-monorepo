@@ -61,39 +61,60 @@ export default async function networkCcmFailed({ prisma, event, block }: EventHa
     'unexpected source chain for ccmFailed event',
   );
 
-  const call = callSchema.parse(
-    (await client.request(GET_CALL, { id: event.callId as string })).call?.args,
-  );
+  let call;
+  if (event.callId) {
+    call = callSchema.parse(
+      (await client.request(GET_CALL, { id: event.callId as string })).call?.args,
+    );
+  }
 
   let srcAsset;
   let swapDepositChannelId;
   let txRef;
   let depositAmount;
-  if ('sourceAsset' in call) {
-    assert(origin.__kind === 'Vault', 'unexpected origin kind for `ccm_deposit` call');
-    txRef = origin.txHash;
-    srcAsset = call.sourceAsset;
-    depositAmount = call.depositAmount;
+  if (call) {
+    if ('sourceAsset' in call) {
+      assert(origin.__kind === 'Vault', 'unexpected origin kind for `ccm_deposit` call');
+      txRef = origin.txHash;
+      srcAsset = call.sourceAsset;
+      depositAmount = call.depositAmount;
+    } else {
+      assert(call.depositWitnesses.length > 0, 'unexpected number of depositWitnesses');
+      assert(
+        origin.__kind === 'DepositChannel',
+        'unexpected origin kind for `process_deposits` call',
+      );
+      srcAsset = call.depositWitnesses[0].asset;
+      swapDepositChannelId = (
+        await prisma.swapDepositChannel.findFirstOrThrow({
+          where: {
+            depositAddress: origin.depositAddress.address,
+            srcChain: origin.depositAddress.chain,
+          },
+          orderBy: { issuedBlock: 'desc' },
+        })
+      ).id;
+
+      if (call.depositWitnesses.length > 1) {
+        logger.warn('more than 1 deposit found, using first deposit for amount');
+      }
+      depositAmount = call.depositWitnesses[0].amount;
+    }
   } else {
-    assert(call.depositWitnesses.length > 0, 'unexpected number of depositWitnesses');
     assert(
       origin.__kind === 'DepositChannel',
       'unexpected origin kind for `process_deposits` call',
     );
-    srcAsset = call.depositWitnesses[0].asset;
-    swapDepositChannelId = (
-      await prisma.swapDepositChannel.findFirstOrThrow({
-        where: {
-          depositAddress: origin.depositAddress.address,
-          srcChain: origin.depositAddress.chain,
-        },
-        orderBy: { issuedBlock: 'desc' },
-      })
-    ).id;
-    if (call.depositWitnesses.length > 1) {
-      logger.warn('more than 1 deposit found, using first deposit for amount');
-    }
-    depositAmount = call.depositWitnesses[0].amount;
+    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
+      where: {
+        depositAddress: origin.depositAddress.address,
+        srcChain: origin.depositAddress.chain,
+      },
+      orderBy: { issuedBlock: 'desc' },
+    });
+    srcAsset = swapDepositChannel.srcAsset;
+    swapDepositChannelId = swapDepositChannel.id;
+    depositAmount = 0; // unknown
   }
 
   await prisma.failedSwap.create({
