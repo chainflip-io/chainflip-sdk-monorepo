@@ -55,7 +55,9 @@ export default async function networkCcmFailed({ prisma, event, block }: EventHa
   const { reason, origin, destinationAddress, depositMetadata } = eventArgs.parse(event.args);
 
   assert(
-    depositMetadata.sourceChain === 'Ethereum' || depositMetadata.sourceChain === 'Arbitrum',
+    depositMetadata.sourceChain === 'Ethereum' ||
+      depositMetadata.sourceChain === 'Arbitrum' ||
+      depositMetadata.sourceChain === 'Solana',
     'unexpected source chain for ccmFailed event',
   );
 
