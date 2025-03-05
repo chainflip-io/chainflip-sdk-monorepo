@@ -29,7 +29,6 @@ const ccmBroadcastRequested = async ({ event, prisma, block }: EventHandlerArgs)
       nativeId: broadcastId,
       requestedAt: new Date(block.timestamp),
       requestedBlockIndex: `${block.height}-${event.indexInBlock}`,
-      type: 'CCM',
     },
   });
 
