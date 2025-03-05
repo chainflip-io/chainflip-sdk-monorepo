@@ -126,16 +126,6 @@ export const assetAndChain = uncheckedAssetAndChain.refine((value): value is Ass
   isValidAssetAndChain(value as UncheckedAssetAndChain),
 );
 
-export const swapType = z.union([
-  z
-    .object({ __kind: z.literal('CcmPrincipal'), value: unsignedInteger })
-    .transform(({ value: ccmId }) => ({ type: 'PRINCIPAL' as const, ccmId })),
-  z
-    .object({ __kind: z.literal('CcmGas'), value: unsignedInteger })
-    .transform(({ value: ccmId }) => ({ type: 'GAS' as const, ccmId })),
-  z.object({ __kind: z.literal('Swap') }).transform(() => ({ type: 'SWAP' as const })),
-]);
-
 export const accountId = z
   .union([
     hexString, //

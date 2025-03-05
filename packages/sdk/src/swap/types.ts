@@ -86,7 +86,6 @@ export interface SwapStatusRequest {
 
 interface SwapStatusResponseCommonFields extends ChainsAndAssets {
   destAddress: string;
-  ccmDepositReceivedBlockIndex: string | undefined;
   ccmParams: CcmParams | undefined;
   feesPaid: SwapFee[];
   estimatedDefaultDurationSeconds: number | undefined;
