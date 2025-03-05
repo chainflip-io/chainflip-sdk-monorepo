@@ -200,7 +200,7 @@ describe(Quoter, () => {
           }),
       ),
     );
-    await Promise.all([server.close(), quoter.stop()]);
+    await server.close();
   });
 
   describe('constructor', () => {
