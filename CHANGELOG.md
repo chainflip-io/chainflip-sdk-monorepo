@@ -9,6 +9,18 @@ which it is deprecated.
 
 ## Unreleased
 
+### Important!
+
+Vault swaps have been completely revamped for the 1.8 release. The old methods
+`executeSwap` and `approveAndExecuteSwap` have been removed and can no longer be
+safely used. CONTINUING TO USE THEM WILL RESULT IN A LOSS OF FUNDS.
+
+As a replacement, you should use the new `SwapSDK.prototype.encodeVaultSwapData`
+method to get the unsigned transaction data for a swap. This data can be signed
+and submitted to the source chain with your preferred web3 library (e.g.
+ethers.js or viem). Examples are available in the Chainflip SDK documentation:
+https://docs.chainflip.io/swapping/integrations/javascript-sdk/introduction
+
 ### Changed
 
 - Swap status failure mode `DEPOSIT_TOO_SMALL` has been renamed to `DEPOSIT_IGNORED`
@@ -25,16 +37,15 @@ which it is deprecated.
   type is deprecated and will be removed in a future release. Set `ccmParams.additionalData` instead.
 - `SwapSDK.prototype.requestDepositAddressV2`: The `ccmParams.cfParameters` property of the `DepositAddressRequestV2`
   type is deprecated and will be removed in a future release. Set `ccmParams.additionalData` instead.
-- `SwapSDK.prototype.executeSwap`: The `ccmParams.cfParameters` property of the `ExecuteSwapParams`
-  type is deprecated and will be removed in a future release. Set `ccmParams.additionalData` instead.
-- `SwapSDK.prototype.executeSwap` and `SwapSDK.prototype.approveAndExecuteSwap`: The methods were deprecated
-  because they are compatible with EVM chains and the ethers.js library only. As a replacement, you should
-  use the new `SwapSDK.prototype.encodeVaultSwapData` method to get the unsigned transaction data for a swap.
-  This data can be signed and submitted to the source chain with your preferred web3 library (eg ethers.js or viem).
-  Examples are available in the Chainflip SDK documentation: https://docs.chainflip.io/swapping/integrations/javascript-sdk/introduction
-- `SwapSDK.prototype.approveVault`: The method was deprecated because it is only compatible with the ethers.js library.
-  Use your preferred web3 library (eg ethers.js or viem) to approve the vault address and source token returned from
-  the `SwapSDK.prototype.encodeVaultSwapData` method instead.
+
+### Removed
+
+- `SwapSDK.prototype.executeSwap` and `SwapSDK.prototype.approveAndExecuteSwap`:
+  The methods were removed because they will no longer be supported by the State
+  Chain in their current form after the network is upgraded to 1.8.
+- `SwapSDK.prototype.approveVault`: The method was removed because vault swaps
+  have been fundamentally changed in the 1.8 release and are no longer
+  executable via the Swapping SDK.
 
 ## 1.7.0
 

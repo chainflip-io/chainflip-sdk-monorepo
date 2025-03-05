@@ -1,16 +1,4 @@
 export {
-  executeSwap,
-  type SwapNetworkOptions,
-  type ExecuteSwapParams,
-  approveVault,
-  checkVaultAllowance,
-} from '@/shared/vault';
-export {
-  getTokenContractAddress,
-  getStateChainGatewayContractAddress,
-  getVaultContractAddress,
-} from '@/shared/contracts';
-export {
   fundStateChainAccount,
   type FundingNetworkOptions,
   executeRedemption,
