@@ -1,5 +1,4 @@
 /* eslint-disable dot-notation */
-import { deferredPromise } from '@chainflip/utils/async';
 import BigNumber from 'bignumber.js';
 import * as crypto from 'crypto';
 import { Server } from 'socket.io';
@@ -53,7 +52,7 @@ describe(Quoter, () => {
     socket: Socket;
     requestCount: number;
     waitForRequest: () => Promise<MarketMakerQuoteRequest<LegJson>>;
-    errors: string[];
+    waitForError: () => Promise<any>;
   }>;
   let server: Server;
   const sockets: Socket[] = [];
@@ -123,15 +122,16 @@ describe(Quoter, () => {
         onRequest(quoteRequest);
       });
 
-      const errors: string[] = [];
+      let onError = (_msg: string) => {
+        // noop
+      };
 
       socket.on('quote_error', (msg) => {
-        errors.push(msg);
+        onError(msg);
       });
 
       return {
         socket,
-        errors,
         sendQuote(
           quote: MarketMakerRawQuote,
           srcAsset: InternalAsset = 'Btc',
@@ -176,8 +176,13 @@ describe(Quoter, () => {
           return requestCount;
         },
         waitForRequest() {
-          const { resolve, promise } = deferredPromise<MarketMakerQuoteRequest<LegJson>>();
+          const { resolve, promise } = Promise.withResolvers<MarketMakerQuoteRequest<LegJson>>();
           onRequest = resolve;
+          return promise;
+        },
+        waitForError() {
+          const { resolve, promise } = Promise.withResolvers<any>();
+          onError = resolve;
           return promise;
         },
       };
@@ -221,7 +226,7 @@ describe(Quoter, () => {
       callback({ request_id: 'string', legs: [[[-1, '123456']]] });
       callback({ request_id: 'string', range_orders: [] });
 
-      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledTimes(2);
       expect(emit.mock.calls).toMatchInlineSnapshot(`
         [
           [
@@ -367,9 +372,10 @@ describe(Quoter, () => {
       mm1.sendQuote({ ...request1, legs: [[[0, '0']]] });
       const quote = mm2.sendQuote({ ...request2, legs: [[[0, '110']]] });
       expect(await limitOrders).toEqual(quote);
-      expect(mm1.errors).toEqual([
-        { error: 'sell amount must be positive', request_id: request1.request_id },
-      ]);
+      expect(await mm1.waitForError()).toEqual({
+        error: 'sell amount must be positive',
+        request_id: request1.request_id,
+      });
     });
 
     it('rejects quotes with too low ticks', async () => {
@@ -380,9 +386,10 @@ describe(Quoter, () => {
       mm1.sendQuote({ ...request1, legs: [[[MIN_TICK - 1, '100']]] });
       const quote = mm2.sendQuote({ ...request2, legs: [[[0, '200']]] });
       expect(await limitOrders).toEqual(quote);
-      expect(mm1.errors).toEqual([
-        { error: 'tick provided is too small', request_id: request1.request_id },
-      ]);
+      expect(await mm1.waitForError()).toEqual({
+        error: 'tick provided is too small',
+        request_id: request1.request_id,
+      });
     });
 
     it('rejects quotes with too high ticks', async () => {
@@ -393,9 +400,10 @@ describe(Quoter, () => {
       mm1.sendQuote({ ...request1, legs: [[[MAX_TICK + 1, '100']]] });
       const quote = mm2.sendQuote({ ...request2, legs: [[[0, '200']]] });
       expect(await limitOrders).toEqual(quote);
-      expect(mm1.errors).toEqual([
-        { error: 'tick provided is too big', request_id: request1.request_id },
-      ]);
+      expect(await mm1.waitForError()).toEqual({
+        error: 'tick provided is too big',
+        request_id: request1.request_id,
+      });
     });
   });
 });

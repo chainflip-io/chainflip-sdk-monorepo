@@ -25,7 +25,7 @@ import baseLogger from '../utils/logger';
 
 const logger = baseLogger.child({ module: 'quoter' });
 
-type Quote = { marketMaker: string; quote: MarketMakerQuote; beta: boolean };
+type Quote = { marketMaker: string; quote: MarketMakerQuote | null; beta: boolean };
 
 type BetaQuote = MarketMakerQuote & { beta: boolean };
 
@@ -104,14 +104,14 @@ export default class Quoter {
     private createId: () => string = randomUUID,
   ) {
     io.on('connection', (socket) => {
-      logger.info(`market maker "${socket.data.marketMaker}" connected`);
+      logger.info('market maker connected', { marketMaker: socket.data.marketMaker });
 
       const cleanup = handleExit(() => {
         socket.disconnect();
       });
 
       socket.on('disconnect', () => {
-        logger.info(`market maker "${socket.data.marketMaker}" disconnected`);
+        logger.info('market maker disconnected', { marketMaker: socket.data.marketMaker });
         cleanup();
       });
 
@@ -135,11 +135,9 @@ export default class Quoter {
             error = result.error.message;
           }
           socket.emit('quote_error', { error, request_id: requestId });
-
-          return;
         }
 
-        if (!this.inflightRequests.has(result.data.request_id)) {
+        if (result.success && !this.inflightRequests.has(result.data.request_id)) {
           logger.warn('received quote for unknown request', {
             legs: result.data.legs,
             requestId: result.data.request_id,
@@ -151,7 +149,7 @@ export default class Quoter {
         this.quotes$.next({
           marketMaker: socket.data.marketMaker,
           beta: socket.data.beta,
-          quote: result.data,
+          quote: result.data ?? null,
         });
       });
     });
@@ -215,6 +213,10 @@ export default class Quoter {
       };
 
       sub = this.quotes$.subscribe(({ marketMaker, quote, beta }) => {
+        if (!quote) {
+          expectedResponses -= 1;
+          return;
+        }
         const { format } = quotedLegsMap.get(marketMaker) ?? {};
         if (quote.request_id !== request.request_id) return;
         if (format) {
