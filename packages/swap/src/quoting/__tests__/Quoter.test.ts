@@ -8,13 +8,16 @@ import { promisify } from 'util';
 import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest';
 import { AddressInfo } from 'ws';
 import { MAX_TICK, MIN_TICK } from '@/shared/consts';
-import { assetConstants, getAssetAndChain } from '@/shared/enums';
+import { assetConstants, getAssetAndChain, InternalAssetMap } from '@/shared/enums';
 import env from '@/swap/config/env';
 import prisma, { InternalAsset } from '../../client';
 import { getAssetPrice } from '../../pricing';
+import { getLpBalances } from '../../utils/rpc';
 import authenticate from '../authenticate';
 import Quoter, { approximateIntermediateOutput, type RpcLimitOrder } from '../Quoter';
 import { LegJson, MarketMakerQuoteRequest, MarketMakerRawQuote } from '../schemas';
+
+vi.mock('../../utils/rpc', () => ({ getLpBalances: vi.fn().mockResolvedValue([]) }));
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
@@ -404,6 +407,20 @@ describe(Quoter, () => {
         error: 'tick provided is too big',
         request_id: request1.request_id,
       });
+    });
+
+    it('filters quotes with insufficient balances', async () => {
+      vi.mocked(getLpBalances).mockResolvedValue([
+        ['marketMaker', { Usdc: 99n } as InternalAssetMap<bigint>],
+        ['marketMaker2', { Usdc: 3000n } as InternalAssetMap<bigint>],
+      ]);
+      const mm1 = await connectClient('marketMaker', ['Btc']);
+      const mm2 = await connectClient('marketMaker2', ['Btc']);
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const [request1, request2] = await Promise.all([mm1.waitForRequest(), mm2.waitForRequest()]);
+      mm1.sendQuote({ ...request1, legs: [[[0, '100']]] });
+      const quote = mm2.sendQuote({ ...request2, legs: [[[0, '200']]] });
+      expect(await limitOrders).toEqual(quote);
     });
   });
 });
