@@ -165,7 +165,7 @@ export class SwapSDK {
       .filter((asset) => !chain || asset.chain === chain);
   }
 
-  /** @deprecated DEPRECATED(1.6) use getQuoteV2() */
+  /** @deprecated DEPRECATED(1.7) use getQuoteV2() */
   getQuote(
     quoteRequest: QuoteRequest,
     options: ApiService.RequestOptions = {},
@@ -207,7 +207,7 @@ export class SwapSDK {
     );
   }
 
-  /** @deprecated DEPRECATED(1.6) use requestDepositAddressV2() */
+  /** @deprecated DEPRECATED(1.7) use requestDepositAddressV2() */
   async requestDepositAddress(
     depositAddressRequest: DepositAddressRequest,
   ): Promise<DepositAddressResponse> {
@@ -285,7 +285,7 @@ export class SwapSDK {
     };
   }
 
-  /** @deprecated DEPRECATED(1.6) use getStatusV2() */
+  /** @deprecated DEPRECATED(1.7) use getStatusV2() */
   getStatus(
     swapStatusRequest: SwapStatusRequest,
     options: ApiService.RequestOptions = {},
