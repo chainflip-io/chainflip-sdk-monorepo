@@ -165,11 +165,16 @@ export class SwapSDK {
       .filter((asset) => !chain || asset.chain === chain);
   }
 
-  /** @deprecated DEPRECATED(1.6) use getQuoteV2() */
+  /** @deprecated DEPRECATED(1.7) use getQuoteV2() */
   getQuote(
     quoteRequest: QuoteRequest,
     options: ApiService.RequestOptions = {},
   ): Promise<QuoteResponse> {
+    // eslint-disable-next-line no-console
+    console.error(
+      '[@chainflip/sdk] The getQuote method is deprecated and will be removed in the 1.9 release. Use the getQuoteV2 method instead.',
+    );
+
     const { brokerCommissionBps, affiliateBrokers, ...remainingRequest } = quoteRequest;
     const submitterBrokerCommissionBps =
       brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0;
@@ -207,10 +212,15 @@ export class SwapSDK {
     );
   }
 
-  /** @deprecated DEPRECATED(1.6) use requestDepositAddressV2() */
+  /** @deprecated DEPRECATED(1.7) use requestDepositAddressV2() */
   async requestDepositAddress(
     depositAddressRequest: DepositAddressRequest,
   ): Promise<DepositAddressResponse> {
+    // eslint-disable-next-line no-console
+    console.error(
+      '[@chainflip/sdk] The requestDepositAddress method is deprecated and will be removed in the 1.9 release. Use the requestDepositAddressV2 method instead.',
+    );
+
     const {
       srcChain,
       srcAsset,
@@ -285,11 +295,16 @@ export class SwapSDK {
     };
   }
 
-  /** @deprecated DEPRECATED(1.6) use getStatusV2() */
+  /** @deprecated DEPRECATED(1.7) use getStatusV2() */
   getStatus(
     swapStatusRequest: SwapStatusRequest,
     options: ApiService.RequestOptions = {},
   ): Promise<SwapStatusResponse> {
+    // eslint-disable-next-line no-console
+    console.error(
+      '[@chainflip/sdk] The getStatus method is deprecated and will be removed in the 1.9 release. Use the getStatusV2 method instead.',
+    );
+
     return ApiService.getStatus(this.options.backendUrl, swapStatusRequest, options);
   }
 
