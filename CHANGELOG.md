@@ -21,6 +21,24 @@ and submitted to the source chain with your preferred web3 library (e.g.
 ethers.js or viem). Examples are available in the Chainflip SDK documentation:
 https://docs.chainflip.io/swapping/integrations/javascript-sdk/introduction
 
+### Added
+
+- `SwapSDK.prototype.encodeVaultSwapData`: The new method returns the unsigned
+  transaction data for initiating a vault swap. The data can be signed and submitted to the
+  source chain with your preferred web3 library (e.g. ethers.js or viem).
+  This replaces the removed `executeSwap`, `approveAndExecuteSwap` and `approveVault` methods.
+  Learn more about vault swaps in the Chainflip SDK documentation:
+  https://docs.chainflip.io/swapping/integrations/javascript-sdk/introduction
+- `SwapSDK.prototype.getStatusV2` returns a `fillOrKillParams` property that exposes the
+  fill-or-kill parameters of the swap. This replaces the deprecated `depositChannel.fillOrKillParams`
+  property.
+- `SwapSDK.prototype.getStatusV2` returns a `dcaParams` property that exposes the
+  fill-or-kill parameters of the swap. This replaces the deprecated `depositChannel.dcaParams`
+  property.
+- `SwapSDK.prototype.getStatusV2` returns a `brokers` property that exposes the broker and
+  affiliate brokers of the swap. This replaces the deprecated `depositChannel.brokerCommissionBps`
+  and `depositChannel.affiliateBrokers` properties.
+
 ### Changed
 
 - Swap status failure mode `DEPOSIT_TOO_SMALL` has been renamed to `DEPOSIT_IGNORED`
@@ -28,6 +46,8 @@ https://docs.chainflip.io/swapping/integrations/javascript-sdk/introduction
 ### Deprecated
 
 - `SwapSDK.prototype.getStatusV2`: `depositChannel.brokerCommissionBps` is deprecated and will
+  be removed in a future release. Use `brokers` on the root level of the return value instead.
+- `SwapSDK.prototype.getStatusV2`: `depositChannel.affiliateBrokers` is deprecated and will
   be removed in a future release. Use `brokers` on the root level of the return value instead.
 - `SwapSDK.prototype.getStatusV2`: `depositChannel.fillOrKillParams` is deprecated and will
   be removed in a future release. Use `fillOrKillParams` on the root level of the return value instead.
@@ -37,15 +57,20 @@ https://docs.chainflip.io/swapping/integrations/javascript-sdk/introduction
   type is deprecated and will be removed in a future release. Set `ccmParams.additionalData` instead.
 - `SwapSDK.prototype.requestDepositAddressV2`: The `ccmParams.cfParameters` property of the `DepositAddressRequestV2`
   type is deprecated and will be removed in a future release. Set `ccmParams.additionalData` instead.
+- `SwapSDKOptions`: The `broker.commissionBps` option in the global `SwapSDKOptions` object is deprecated and will
+  be removed in a future release. Set the `brokerCommissionBps` param of the `SwapSDK.prototype.encodeVaultSwapData`
+  method and `SwapSDK.prototype.requestDepositAddressV2` method instead.
 
 ### Removed
 
 - `SwapSDK.prototype.executeSwap` and `SwapSDK.prototype.approveAndExecuteSwap`:
   The methods were removed because they will no longer be supported by the State
   Chain in their current form after the network is upgraded to 1.8.
+  Use the new `SwapSDK.prototype.encodeVaultSwapData` method instead.
 - `SwapSDK.prototype.approveVault`: The method was removed because vault swaps
   have been fundamentally changed in the 1.8 release and are no longer
   executable via the Swapping SDK.
+  Use the new `SwapSDK.prototype.encodeVaultSwapData` method instead.
 
 ## 1.7.0
 
