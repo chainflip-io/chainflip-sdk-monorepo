@@ -1,4 +1,15 @@
-import { Chain, readChainAssetValue, InternalAsset, assetConstants } from '@/shared/enums';
+import HttpClient from '@chainflip/rpc/HttpClient';
+import { ChainAssetMap } from '@chainflip/utils/chainflip';
+import {
+  Chain,
+  readChainAssetValue,
+  InternalAsset,
+  assetConstants,
+  getInternalAsset,
+  InternalAssetMap,
+  Asset,
+} from '@/shared/enums';
+import { isNotNullish } from '@/shared/guards';
 import {
   BoostPoolsDepth,
   getAllBoostPoolsDepth,
@@ -112,4 +123,31 @@ export const getBoostPoolsDepth = async ({
   }
 
   return allBoostPoolsDepth;
+};
+
+export const getLpBalances = async <T extends string>(
+  accountIds: Set<T> | T[],
+): Promise<(readonly [T, InternalAssetMap<bigint>])[]> => {
+  const client = new HttpClient(env.RPC_NODE_HTTP_URL);
+  const accounts = await Promise.all(
+    accountIds.values().map(async (id) => {
+      const balances = Object.fromEntries(
+        (
+          Object.entries(await client.sendRequest('lp_total_balances', id)) as [
+            Chain,
+            ChainAssetMap<bigint>[Chain],
+          ][]
+        ).flatMap(([chain, assetMap]) =>
+          (Object.entries(assetMap) as [Asset, bigint][]).map(([asset, amount]) => [
+            getInternalAsset({ chain, asset }),
+            amount,
+          ]),
+        ),
+      ) as InternalAssetMap<bigint>;
+
+      return [id, balances] as const;
+    }),
+  );
+
+  return accounts.filter(isNotNullish);
 };
