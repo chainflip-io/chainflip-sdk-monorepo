@@ -110,7 +110,7 @@ export default class Quoter {
 
   private readonly inflightRequests = new Set<string>();
 
-  private balanceTracker = new BalanceTracker();
+  private balanceTracker = new BalanceTracker(env.QUOTER_BALANCE_TRACKER_ACTIVE);
 
   constructor(
     private readonly io: QuotingServer,

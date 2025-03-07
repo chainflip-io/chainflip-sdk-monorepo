@@ -15,7 +15,10 @@ export default class BalanceTracker {
 
   private inflightCount = 0;
 
+  constructor(private readonly active: boolean = true) {}
+
   add(account: AccountId) {
+    if (!this.active) return;
     this.monitoredAccounts.add(account);
     this.refresh();
   }
