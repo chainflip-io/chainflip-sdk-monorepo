@@ -15,7 +15,6 @@ exports[`networkBroadcastSuccess > updates an existing broadcast entity with the
   "succeededBlockIndex": "120-12",
   "transactionPayload": null,
   "transactionRef": null,
-  "type": "BATCH",
   "updatedAt": Any<Date>,
 }
 `;
@@ -35,7 +34,6 @@ exports[`networkBroadcastSuccess > updates an existing broadcast with the tx_ref
   "succeededBlockIndex": "120-12",
   "transactionPayload": null,
   "transactionRef": "923028b229dcd91eb95d0b1a0d5a273b2a2d2545f8f959c60f76d13cd771655a",
-  "type": "BATCH",
   "updatedAt": Any<Date>,
 }
 `;
@@ -55,7 +53,6 @@ exports[`networkBroadcastSuccess > updates an existing broadcast with the tx_ref
   "succeededBlockIndex": "120-12",
   "transactionPayload": null,
   "transactionRef": "100-21",
-  "type": "BATCH",
   "updatedAt": Any<Date>,
 }
 `;
@@ -75,7 +72,6 @@ exports[`networkBroadcastSuccess > updates an existing broadcast with the tx_ref
   "succeededBlockIndex": "120-12",
   "transactionPayload": null,
   "transactionRef": "0x1234",
-  "type": "BATCH",
   "updatedAt": Any<Date>,
 }
 `;
