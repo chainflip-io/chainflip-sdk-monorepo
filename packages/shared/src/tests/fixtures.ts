@@ -319,6 +319,7 @@ export const cfAccountInfo = () => ({
       },
       Solana: {
         SOL: '0x0',
+        USDC: '0x0',
       },
     },
     refund_addresses: {
@@ -348,6 +349,7 @@ export const cfAccountInfo = () => ({
       },
       Solana: {
         SOL: '0x0',
+        USDC: '0x0',
       },
     },
     boost_balances: {
@@ -384,6 +386,7 @@ export const cfAccountInfo = () => ({
       },
       Solana: {
         SOL: [],
+        USDC: [],
       },
     },
   },

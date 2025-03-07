@@ -2,64 +2,105 @@
 
 exports[`python integration test > replies to a quote request 1`] = `
 {
-  "depositAmount": "1000000000000000000",
-  "destAsset": {
-    "asset": "USDC",
-    "chain": "Ethereum",
-  },
-  "egressAmount": "997901209876966295",
-  "estimatedDurationSeconds": 144,
-  "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 102,
-    "swap": 12,
-  },
-  "estimatedPrice": "997901209879.01209741975802419484",
-  "includedFees": [
-    {
-      "amount": "2000000",
-      "asset": "FLIP",
-      "chain": "Ethereum",
-      "type": "INGRESS",
-    },
-    {
-      "amount": "998900109987003",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "NETWORK",
-    },
-    {
-      "amount": "50000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "EGRESS",
-    },
-  ],
-  "intermediateAmount": "2000000000",
-  "isVaultSwap": false,
-  "poolInfo": [
-    {
-      "baseAsset": {
-        "asset": "FLIP",
-        "chain": "Ethereum",
+  "message": "[
+  {
+    "code": "invalid_union",
+    "unionErrors": [
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined",
+            "path": [
+              "balances",
+              "Solana",
+              "USDC"
+            ],
+            "message": "Required"
+          }
+        ],
+        "name": "ZodError"
       },
-      "fee": {
-        "amount": "999999999998000",
-        "asset": "FLIP",
-        "chain": "Ethereum",
-      },
-      "quoteAsset": {
-        "asset": "USDC",
-        "chain": "Ethereum",
-      },
-    },
-  ],
-  "recommendedSlippageTolerancePercent": 5,
-  "srcAsset": {
-    "asset": "FLIP",
-    "chain": "Ethereum",
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined",
+            "path": [
+              "balances",
+              "Solana",
+              "USDC"
+            ],
+            "message": "Required"
+          }
+        ],
+        "name": "ZodError"
+      }
+    ],
+    "path": [
+      "balances",
+      "Solana",
+      "USDC"
+    ],
+    "message": "Invalid input"
   },
-  "type": "REGULAR",
+  {
+    "code": "invalid_union",
+    "unionErrors": [
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined",
+            "path": [
+              "earned_fees",
+              "Solana",
+              "USDC"
+            ],
+            "message": "Required"
+          }
+        ],
+        "name": "ZodError"
+      },
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined",
+            "path": [
+              "earned_fees",
+              "Solana",
+              "USDC"
+            ],
+            "message": "Required"
+          }
+        ],
+        "name": "ZodError"
+      }
+    ],
+    "path": [
+      "earned_fees",
+      "Solana",
+      "USDC"
+    ],
+    "message": "Invalid input"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "array",
+    "received": "undefined",
+    "path": [
+      "boost_balances",
+      "Solana",
+      "USDC"
+    ],
+    "message": "Required"
+  }
+]",
 }
 `;
 
@@ -96,68 +137,107 @@ exports[`python integration test > replies to a quote request 2`] = `
 `;
 
 exports[`python integration test > replies to a quote request with v2 endpoint 1`] = `
-[
+{
+  "message": "[
   {
-    "depositAmount": "1000000000000000000",
-    "destAsset": {
-      "asset": "USDC",
-      "chain": "Ethereum",
-    },
-    "egressAmount": "997901209876966295",
-    "estimatedDurationSeconds": 144,
-    "estimatedDurationsSeconds": {
-      "deposit": 30,
-      "egress": 102,
-      "swap": 12,
-    },
-    "estimatedPrice": "997901209879.01209741975802419484",
-    "includedFees": [
+    "code": "invalid_union",
+    "unionErrors": [
       {
-        "amount": "2000000",
-        "asset": "FLIP",
-        "chain": "Ethereum",
-        "type": "INGRESS",
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined",
+            "path": [
+              "balances",
+              "Solana",
+              "USDC"
+            ],
+            "message": "Required"
+          }
+        ],
+        "name": "ZodError"
       },
       {
-        "amount": "998900109987003",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "NETWORK",
-      },
-      {
-        "amount": "50000",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "EGRESS",
-      },
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined",
+            "path": [
+              "balances",
+              "Solana",
+              "USDC"
+            ],
+            "message": "Required"
+          }
+        ],
+        "name": "ZodError"
+      }
     ],
-    "intermediateAmount": "2000000000",
-    "isVaultSwap": false,
-    "poolInfo": [
-      {
-        "baseAsset": {
-          "asset": "FLIP",
-          "chain": "Ethereum",
-        },
-        "fee": {
-          "amount": "999999999998000",
-          "asset": "FLIP",
-          "chain": "Ethereum",
-        },
-        "quoteAsset": {
-          "asset": "USDC",
-          "chain": "Ethereum",
-        },
-      },
+    "path": [
+      "balances",
+      "Solana",
+      "USDC"
     ],
-    "recommendedSlippageTolerancePercent": 5,
-    "srcAsset": {
-      "asset": "FLIP",
-      "chain": "Ethereum",
-    },
-    "type": "REGULAR",
+    "message": "Invalid input"
   },
-]
+  {
+    "code": "invalid_union",
+    "unionErrors": [
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined",
+            "path": [
+              "earned_fees",
+              "Solana",
+              "USDC"
+            ],
+            "message": "Required"
+          }
+        ],
+        "name": "ZodError"
+      },
+      {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined",
+            "path": [
+              "earned_fees",
+              "Solana",
+              "USDC"
+            ],
+            "message": "Required"
+          }
+        ],
+        "name": "ZodError"
+      }
+    ],
+    "path": [
+      "earned_fees",
+      "Solana",
+      "USDC"
+    ],
+    "message": "Invalid input"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "array",
+    "received": "undefined",
+    "path": [
+      "boost_balances",
+      "Solana",
+      "USDC"
+    ],
+    "message": "Required"
+  }
+]",
+}
 `;
 
 exports[`python integration test > replies to a quote request with v2 endpoint 2`] = `
