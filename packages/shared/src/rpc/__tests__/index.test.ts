@@ -90,8 +90,8 @@ describe('getIngressEgressEnvironment', () => {
         },
         Polkadot: { DOT: 0x4563918244f40000n },
         Solana: {
-          SOL: 0n,
-          USDC: 0n,
+          SOL: 0x4563918244f40000n,
+          USDC: 0x4563918244f40000n,
         },
       },
       ingressFees: {
@@ -108,8 +108,8 @@ describe('getIngressEgressEnvironment', () => {
         },
         Polkadot: { DOT: 0x4563918244f40000n },
         Solana: {
-          SOL: null,
-          USDC: null,
+          SOL: 0x4563918244f40000n,
+          USDC: 0x4563918244f40000n,
         },
       },
       egressFees: {
@@ -130,8 +130,8 @@ describe('getIngressEgressEnvironment', () => {
           DOT: 0n,
         },
         Solana: {
-          SOL: null,
-          USDC: null,
+          SOL: 0n,
+          USDC: 0n,
         },
       },
       minimumEgressAmounts: {
@@ -152,8 +152,8 @@ describe('getIngressEgressEnvironment', () => {
           DOT: 1n,
         },
         Solana: {
-          SOL: 0n,
-          USDC: 0n,
+          SOL: 1n,
+          USDC: 1n,
         },
       },
       witnessSafetyMargins: {
@@ -161,7 +161,7 @@ describe('getIngressEgressEnvironment', () => {
         Bitcoin: 2,
         Ethereum: 1,
         Polkadot: null,
-        Solana: null,
+        Solana: 1,
       },
       channelOpeningFees: {
         Arbitrum: 0n,
@@ -175,7 +175,7 @@ describe('getIngressEgressEnvironment', () => {
         Polkadot: 20,
         Bitcoin: 30,
         Arbitrum: 40,
-        Solana: 0,
+        Solana: 50,
       },
     });
     spy.mock.calls[0][1][0].id = '1';

@@ -35,6 +35,7 @@ export const swappingEnvironment = ({
       Bitcoin: { BTC: maxSwapAmount },
       Ethereum: { ETH: null, USDC: maxSwapAmount, FLIP: null, USDT: null },
       Arbitrum: { ETH: null, USDC: null },
+      Solana: { SOL: null, USDC: null },
     },
     network_fee_hundredth_pips: 1000,
   },
@@ -78,24 +79,31 @@ export const ingressEgressEnvironment = ({
         ETH: minDepositAmount,
         USDC: minDepositAmount,
       },
+      Solana: {
+        SOL: minDepositAmount,
+        USDC: minDepositAmount,
+      },
     },
     ingress_fees: {
       Bitcoin: { BTC: ingressFee },
       Polkadot: { DOT: ingressFee },
       Ethereum: { ETH: ingressFee, FLIP: ingressFee, USDC: ingressFee, USDT: ingressFee },
       Arbitrum: { ETH: ingressFee, USDC: ingressFee },
+      Solana: { SOL: ingressFee, USDC: ingressFee },
     },
     egress_fees: {
       Bitcoin: { BTC: egressFee },
       Polkadot: { DOT: egressFee },
       Ethereum: { ETH: egressFee, FLIP: egressFee, USDC: egressFee, USDT: egressFee },
       Arbitrum: { ETH: egressFee, USDC: egressFee },
+      Solana: { SOL: egressFee, USDC: egressFee },
     },
     witness_safety_margins: {
       Ethereum: 1,
       Polkadot: null,
       Bitcoin: 2,
       Arbitrum: 1,
+      Solana: 1,
     },
     egress_dust_limits: {
       Ethereum: {
@@ -104,10 +112,8 @@ export const ingressEgressEnvironment = ({
         FLIP: minEgressAmount,
         USDT: minEgressAmount,
       },
-      Arbitrum: {
-        ETH: minEgressAmount,
-        USDC: minEgressAmount,
-      },
+      Arbitrum: { ETH: minEgressAmount, USDC: minEgressAmount },
+      Solana: { SOL: minEgressAmount, USDC: minEgressAmount },
       Polkadot: { DOT: minEgressAmount },
       Bitcoin: { BTC: '0x258' },
     },
@@ -116,12 +122,14 @@ export const ingressEgressEnvironment = ({
       Ethereum: channelOpeningFee ?? '0x10',
       Polkadot: channelOpeningFee ?? '0x0',
       Arbitrum: channelOpeningFee ?? '0x0',
+      Solana: channelOpeningFee ?? '0x0',
     },
     max_swap_retry_duration_blocks: {
       Ethereum: 10,
       Polkadot: 20,
       Bitcoin: 30,
       Arbitrum: 40,
+      Solana: 50,
     },
   },
 });
@@ -161,6 +169,7 @@ const poolsEnvironment = (): RpcResponse<CfPoolsEnvironmentResponse> => {
         Ethereum: { ETH: fees, FLIP: fees, USDT: fees },
         Polkadot: { DOT: fees },
         Arbitrum: { ETH: fees, USDC: fees },
+        Solana: { SOL: fees, USDC: fees },
       },
     },
   };
@@ -310,6 +319,7 @@ export const cfAccountInfo = () => ({
       },
       Solana: {
         SOL: '0x0',
+        USDC: '0x0',
       },
     },
     refund_addresses: {
@@ -339,6 +349,7 @@ export const cfAccountInfo = () => ({
       },
       Solana: {
         SOL: '0x0',
+        USDC: '0x0',
       },
     },
     boost_balances: {
@@ -375,6 +386,7 @@ export const cfAccountInfo = () => ({
       },
       Solana: {
         SOL: [],
+        USDC: [],
       },
     },
   },
