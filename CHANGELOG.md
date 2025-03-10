@@ -54,9 +54,9 @@ https://docs.chainflip.io/swapping/integrations/javascript-sdk/introduction
 - `SwapSDK.prototype.getStatusV2`: `depositChannel.dcaParams` is deprecated and will
   be removed in a future release. Use `dcaParams` on the root level of the return value instead.
 - `SwapSDK.prototype.requestDepositAddress`: The `ccmParams.cfParameters` property of the `DepositAddressRequest`
-  type is deprecated and will be removed in a future release. Set `ccmParams.additionalData` instead.
+  type is deprecated and will be removed in a future release. Set `ccmParams.ccmAdditionalData` instead.
 - `SwapSDK.prototype.requestDepositAddressV2`: The `ccmParams.cfParameters` property of the `DepositAddressRequestV2`
-  type is deprecated and will be removed in a future release. Set `ccmParams.additionalData` instead.
+  type is deprecated and will be removed in a future release. Set `ccmParams.ccmAdditionalData` instead.
 - `SwapSDKOptions`: The `broker.commissionBps` option in the global `SwapSDKOptions` object is deprecated and will
   be removed in a future release. Set the `brokerCommissionBps` param of the `SwapSDK.prototype.encodeVaultSwapData`
   method and `SwapSDK.prototype.requestDepositAddressV2` method instead.

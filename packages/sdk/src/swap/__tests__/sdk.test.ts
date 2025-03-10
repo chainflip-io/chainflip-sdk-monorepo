@@ -1466,7 +1466,7 @@ describe(SwapSDK, () => {
         ccmParams: {
           gasBudget: '123456789',
           message: '0xdeadc0de',
-          additionalData: '0xc0ffee',
+          ccmAdditionalData: '0xc0ffee',
         },
       });
 
@@ -1504,7 +1504,7 @@ describe(SwapSDK, () => {
         ccmParams: {
           gasBudget: '123456789',
           message: '0xdeadc0de',
-          additionalData: '0xc0ffee',
+          ccmAdditionalData: '0xc0ffee',
         },
         amount: '1000000000000000000',
         depositChannelId: '123-Bitcoin-15',
@@ -2003,7 +2003,7 @@ describe(SwapSDK, () => {
         ccmParams: {
           gasBudget: '123456789',
           message: '0xdeadc0de',
-          additionalData: '0xc0ffee',
+          ccmAdditionalData: '0xc0ffee',
         },
       });
 
