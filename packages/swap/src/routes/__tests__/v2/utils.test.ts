@@ -44,7 +44,12 @@ describe(getEgressStatusFields, () => {
   };
 
   it('parses the payload params if the swap is aborted', async () => {
-    const egressStatus = await getEgressStatusFields(mockEgress, undefined, undefined, undefined);
+    const egressStatus = await getEgressStatusFields(
+      { egress: mockEgress } as any,
+      undefined,
+      'SWAP',
+      undefined,
+    );
 
     expect(egressStatus).toMatchInlineSnapshot(`
       {
@@ -56,7 +61,7 @@ describe(getEgressStatusFields, () => {
           "failedBlockIndex": "104-7",
           "mode": "SENDING_FAILED",
           "reason": {
-            "message": "The refund broadcast was aborted",
+            "message": "The swap broadcast was aborted",
             "name": "BroadcastAborted",
           },
         },
@@ -88,9 +93,9 @@ describe(getEgressStatusFields, () => {
     };
 
     const egressStatus = await getEgressStatusFields(
-      successfulEgress,
+      { egress: successfulEgress } as any,
       undefined,
-      undefined,
+      'SWAP',
       undefined,
     );
     expect(egressStatus?.transactionPayload).toBeUndefined();

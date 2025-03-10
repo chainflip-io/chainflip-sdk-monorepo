@@ -4,6 +4,7 @@ import { assert } from '@/shared/guards';
 import { getLastChainTrackingUpdateTimestamp } from '@/swap/utils/intercept';
 import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
 import {
+  getBeneficiaries,
   getCcmParams,
   getDcaParams,
   getDepositInfo,
@@ -37,25 +38,11 @@ router.get(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    const {
-      swapRequest,
-      failedSwap,
-      swapDepositChannel,
-      beneficiaries,
-      swapEgress,
-      refundEgress,
-      ignoredEgresses,
-      pendingVaultSwap,
-    } = await getLatestSwapForId(id);
+    const { swapRequest, failedSwap, swapDepositChannel, pendingVaultSwap } =
+      await getLatestSwapForId(id);
 
     const { state, swapEgressTrackerTxRef, refundEgressTrackerTxRef, pendingDeposit } =
-      await getSwapState(
-        failedSwap,
-        ignoredEgresses,
-        swapRequest,
-        swapDepositChannel,
-        pendingVaultSwap,
-      );
+      await getSwapState(failedSwap, swapRequest, swapDepositChannel, pendingVaultSwap);
 
     const internalSrcAsset = readField(
       swapRequest,
@@ -64,6 +51,8 @@ router.get(
       pendingVaultSwap,
       'srcAsset',
     );
+    assert(internalSrcAsset, 'srcAsset must be defined');
+
     const internalDestAsset = readField(
       swapRequest,
       swapDepositChannel,
@@ -71,8 +60,6 @@ router.get(
       pendingVaultSwap,
       'destAsset',
     );
-    assert(internalSrcAsset, 'srcAsset must be defined');
-
     const maxBoostFeeBps = readField(
       swapRequest,
       swapDepositChannel,
@@ -142,14 +129,15 @@ router.get(
       srcChainRequiredBlockConfirmations,
       lastStateChainUpdate,
     ] = await Promise.all([
-      getEgressStatusFields(swapEgress, ignoredEgresses, 'SWAP', swapEgressTrackerTxRef),
-      getEgressStatusFields(refundEgress, ignoredEgresses, 'REFUND', refundEgressTrackerTxRef),
+      getEgressStatusFields(swapRequest, failedSwap, 'SWAP', swapEgressTrackerTxRef),
+      getEgressStatusFields(swapRequest, failedSwap, 'REFUND', refundEgressTrackerTxRef),
       internalDestAsset &&
         estimateSwapDuration({ srcAsset: internalSrcAsset, destAsset: internalDestAsset }),
       getRequiredBlockConfirmations(internalSrcAsset),
       getLastChainTrackingUpdateTimestamp(),
     ]);
 
+    const beneficiaries = getBeneficiaries(swapRequest, swapDepositChannel, pendingVaultSwap);
     const isVaultSwap = Boolean(swapRequest?.originType === 'VAULT');
     const showDepositchannel = !isVaultSwap;
 
@@ -168,9 +156,7 @@ router.get(
       srcChainRequiredBlockConfirmations,
       estimatedDurationsSeconds: estimatedDurations?.durations,
       estimatedDurationSeconds: estimatedDurations?.total,
-      brokers:
-        beneficiaries?.map(({ account, commissionBps }) => ({ account, commissionBps })) ??
-        [pendingVaultSwap?.brokerFee].concat(pendingVaultSwap?.affiliateFees).filter(Boolean),
+      brokers: beneficiaries?.map(({ account, commissionBps }) => ({ account, commissionBps })),
       fees: aggregateFees ?? [],
       ...(showDepositchannel &&
         swapDepositChannel && {

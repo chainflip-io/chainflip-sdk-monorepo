@@ -1,5 +1,6 @@
 import { cfChainsEvmTransaction } from '@chainflip/processor/141/common';
 import { CHARSET } from '@chainflip/utils/base58';
+import { isTruthy } from '@chainflip/utils/guard';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
 import { isNotNullish } from '@/shared/guards';
 import { readField } from '@/swap/utils/function';
@@ -8,7 +9,6 @@ import ServiceError from '@/swap/utils/ServiceError';
 import { StateV2 } from './swap';
 import prisma, {
   Swap,
-  Egress,
   Broadcast,
   SwapFee,
   IgnoredEgress,
@@ -26,17 +26,12 @@ import {
 import { coerceChain, failedSwapMessage, FailureMode } from '../../utils/swap';
 
 const failedSwapInclude = { refundBroadcast: true } as const;
+const beneficiaryInclude = { type: true, account: true, commissionBps: true } as const;
 
 const depositChannelInclude = {
   failedBoosts: true,
   failedSwaps: { select: failedSwapInclude },
-  beneficiaries: {
-    select: {
-      type: true,
-      account: true,
-      commissionBps: true,
-    },
-  },
+  beneficiaries: { select: beneficiaryInclude },
 } as const;
 
 const swapRequestInclude = {
@@ -48,6 +43,7 @@ const swapRequestInclude = {
   swapDepositChannel: {
     include: depositChannelInclude,
   },
+  beneficiaries: { select: beneficiaryInclude },
 } as const;
 
 const channelIdRegex = /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
@@ -63,10 +59,6 @@ export const getLatestSwapForId = async (id: string) => {
   let swapRequest;
   let failedSwap;
   let swapDepositChannel;
-  let beneficiaries;
-  let swapEgress;
-  let refundEgress;
-  let ignoredEgresses;
   let pendingVaultSwap;
 
   if (channelIdRegex.test(id)) {
@@ -132,30 +124,6 @@ export const getLatestSwapForId = async (id: string) => {
   }
 
   swapDepositChannel ??= swapRequest?.swapDepositChannel ?? failedSwap?.swapDepositChannel;
-  if (swapDepositChannel && swapDepositChannel.beneficiaries.length > 0) {
-    beneficiaries = swapDepositChannel.beneficiaries;
-  }
-
-  if (swapRequest) {
-    swapEgress = swapRequest?.egress;
-    refundEgress = swapRequest?.refundEgress;
-    ignoredEgresses = swapRequest?.ignoredEgresses;
-  } else if (failedSwap?.refundBroadcast) {
-    // rejected deposits don't have an egress, but the downstream logic is simplified
-    // if it has a fake egress
-    refundEgress = {
-      amount: failedSwap.depositAmount,
-      scheduledAt: failedSwap.refundBroadcast.requestedAt,
-      scheduledBlockIndex: failedSwap.refundBroadcast.requestedBlockIndex,
-      broadcastId: failedSwap.refundBroadcast.nativeId,
-      broadcast: failedSwap.refundBroadcast,
-      chain: failedSwap.srcChain,
-      nativeId: 0n,
-      id: 0n,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-  }
 
   ServiceError.assert(
     swapDepositChannel || swapRequest || failedSwap || pendingVaultSwap,
@@ -167,10 +135,6 @@ export const getLatestSwapForId = async (id: string) => {
     swapRequest,
     failedSwap,
     swapDepositChannel,
-    beneficiaries,
-    swapEgress,
-    refundEgress,
-    ignoredEgresses,
     pendingVaultSwap,
   };
 };
@@ -306,13 +270,31 @@ export const getEgressFailureState = async (
 };
 
 export const getEgressStatusFields = async (
-  egress: (Egress & { broadcast: Broadcast | null }) | null | undefined,
-  ignoredEgresses: IgnoredEgress[] | undefined,
+  swapRequest: SwapRequestData | undefined | null,
+  failedSwap: FailedSwapData | null | undefined,
   type: IgnoredEgress['type'] | undefined,
   egressTrackerTxRef: string | null | undefined,
 ) => {
+  let egress = type === 'SWAP' ? swapRequest?.egress : swapRequest?.refundEgress;
+  if (!egress && type === 'REFUND' && failedSwap?.refundBroadcast) {
+    // rejected deposits don't have an egress, but the downstream logic is simplified
+    // if it has a fake egress
+    egress = {
+      amount: failedSwap.depositAmount,
+      scheduledAt: failedSwap.refundBroadcast.requestedAt,
+      scheduledBlockIndex: failedSwap.refundBroadcast.requestedBlockIndex,
+      broadcastId: failedSwap.refundBroadcast.nativeId,
+      broadcast: failedSwap.refundBroadcast,
+      chain: failedSwap.srcChain,
+      nativeId: 0n,
+      id: 0n,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+  }
+
   const broadcast = egress?.broadcast;
-  const ignoredEgress = ignoredEgresses?.find((e) => e.type === type);
+  const ignoredEgress = swapRequest?.ignoredEgresses?.find((e) => e.type === type);
   const failureState = await getEgressFailureState(ignoredEgress, broadcast, type);
 
   let transactionPayload;
@@ -362,7 +344,6 @@ export const getEgressStatusFields = async (
 
 export const getSwapState = async (
   failedSwap: FailedSwapData | null | undefined,
-  ignoredEgresses: IgnoredEgress[] | undefined,
   swapRequest: SwapRequestData | undefined | null,
   depositChannel: SwapChannelData | null | undefined,
   pendingVaultSwap: PendingVaultSwapData | null | undefined,
@@ -386,7 +367,7 @@ export const getSwapState = async (
       const pendingRefundBroadcast = await getPendingBroadcast(failedSwap.refundBroadcast);
       refundEgressTrackerTxRef = pendingRefundBroadcast?.tx_ref;
     }
-  } else if ((ignoredEgresses && ignoredEgresses.length > 0) || egress?.broadcast?.abortedAt) {
+  } else if (swapRequest?.ignoredEgresses?.length || egress?.broadcast?.abortedAt) {
     state = StateV2.Failed;
   } else if (egress?.broadcast?.succeededAt) {
     state = StateV2.Completed;
@@ -428,6 +409,27 @@ export const getSwapState = async (
     pendingDeposit,
   };
 };
+
+export const getBeneficiaries = (
+  swapRequest: SwapRequestData | null | undefined,
+  swapDepositChannel: SwapChannelData | null | undefined,
+  pendingVaultSwap?: PendingVaultSwapData | null | undefined,
+) =>
+  swapRequest?.beneficiaries ??
+  swapDepositChannel?.beneficiaries ??
+  (pendingVaultSwap &&
+    [
+      pendingVaultSwap.brokerFee && {
+        type: 'SUBMITTER' as const,
+        account: pendingVaultSwap.brokerFee.account,
+        commissionBps: pendingVaultSwap.brokerFee.commissionBps,
+      },
+      ...pendingVaultSwap.affiliateFees.map((fee) => ({
+        type: 'AFFILIATE' as const,
+        account: fee.account,
+        commissionBps: fee.commissionBps,
+      })),
+    ].filter(isTruthy));
 
 export const getFillOrKillParams = (
   swapRequest: SwapRequestData | null | undefined,
