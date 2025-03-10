@@ -180,6 +180,7 @@ type LatestSwapData = Awaited<ReturnType<typeof getLatestSwapForId>>;
 type SwapRequestData = NonNullable<LatestSwapData['swapRequest']>;
 type FailedSwapData = NonNullable<LatestSwapData['failedSwap']>;
 type SwapChannelData = NonNullable<LatestSwapData['swapDepositChannel']>;
+type PendingVaultSwapData = NonNullable<LatestSwapData['pendingVaultSwap']>;
 
 export const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
   inputAmount: swap.swapInputAmount.toFixed(),
@@ -208,7 +209,7 @@ export const getDepositInfo = (
   swapRequest: SwapRequest | null | undefined,
   failedSwap: FailedSwap | null | undefined,
   pendingDeposit: PendingDeposit | null | undefined,
-  pendingVaultSwap: Awaited<ReturnType<typeof getLatestSwapForId>>['pendingVaultSwap'],
+  pendingVaultSwap: PendingVaultSwapData | null | undefined,
 ) => {
   const amount =
     readField(swapRequest, failedSwap, 'depositAmount')?.toFixed() ??
@@ -364,7 +365,7 @@ export const getSwapState = async (
   ignoredEgresses: IgnoredEgress[] | undefined,
   swapRequest: SwapRequestData | undefined | null,
   depositChannel: SwapChannelData | null | undefined,
-  pendingVaultSwap: Awaited<ReturnType<typeof getLatestSwapForId>>['pendingVaultSwap'],
+  pendingVaultSwap: PendingVaultSwapData | null | undefined,
 ): Promise<{
   state: StateV2;
   swapEgressTrackerTxRef: string | null | undefined;
@@ -429,14 +430,12 @@ export const getSwapState = async (
 };
 
 export const getFillOrKillParams = (
-  swapRequest: Awaited<ReturnType<typeof getLatestSwapForId>>['swapRequest'],
-  swapDepositChannel: Awaited<ReturnType<typeof getLatestSwapForId>>['swapDepositChannel'],
-  pendingVaultSwap?: Awaited<ReturnType<typeof getLatestSwapForId>>['pendingVaultSwap'],
+  swapRequest: SwapRequestData | null | undefined,
+  swapDepositChannel: SwapChannelData | null | undefined,
+  pendingVaultSwap?: PendingVaultSwapData | null | undefined,
 ) => {
-  const srcAsset =
-    readField(swapRequest, swapDepositChannel, 'srcAsset') ?? pendingVaultSwap?.inputAsset;
-  const destAsset =
-    readField(swapRequest, swapDepositChannel, 'destAsset') ?? pendingVaultSwap?.outputAsset;
+  const srcAsset = readField(swapRequest, swapDepositChannel, pendingVaultSwap, 'srcAsset');
+  const destAsset = readField(swapRequest, swapDepositChannel, pendingVaultSwap, 'destAsset');
   const fokRefundAddress =
     readField(swapRequest, swapDepositChannel, 'fokRefundAddress') ??
     pendingVaultSwap?.refundParams?.refundAddress;
@@ -460,9 +459,9 @@ export const getFillOrKillParams = (
 };
 
 export const getDcaParams = (
-  swapRequest: Awaited<ReturnType<typeof getLatestSwapForId>>['swapRequest'],
-  swapDepositChannel: Awaited<ReturnType<typeof getLatestSwapForId>>['swapDepositChannel'],
-  pendingVaultSwap?: Awaited<ReturnType<typeof getLatestSwapForId>>['pendingVaultSwap'],
+  swapRequest: SwapRequestData | null | undefined,
+  swapDepositChannel: SwapChannelData | null | undefined,
+  pendingVaultSwap?: PendingVaultSwapData | null | undefined,
 ) =>
   swapRequest?.dcaChunkIntervalBlocks ||
   swapDepositChannel?.dcaChunkIntervalBlocks ||
@@ -480,9 +479,9 @@ export const getDcaParams = (
     : undefined;
 
 export const getCcmParams = (
-  swapRequest: Awaited<ReturnType<typeof getLatestSwapForId>>['swapRequest'],
-  swapDepositChannel: Awaited<ReturnType<typeof getLatestSwapForId>>['swapDepositChannel'],
-  pendingVaultSwap: Awaited<ReturnType<typeof getLatestSwapForId>>['pendingVaultSwap'],
+  swapRequest: SwapRequestData | null | undefined,
+  swapDepositChannel: SwapChannelData | null | undefined,
+  pendingVaultSwap?: PendingVaultSwapData | null | undefined,
 ) => {
   const ccmGasBudget =
     readField(swapRequest, swapDepositChannel, 'ccmGasBudget') ??

@@ -57,19 +57,29 @@ router.get(
         pendingVaultSwap,
       );
 
-    const internalSrcAsset =
-      readField(swapRequest, swapDepositChannel, failedSwap, 'srcAsset') ??
-      pendingVaultSwap?.inputAsset;
-    const internalDestAsset =
-      readField(swapRequest, swapDepositChannel, failedSwap, 'destAsset') ??
-      pendingVaultSwap?.outputAsset;
+    const internalSrcAsset = readField(
+      swapRequest,
+      swapDepositChannel,
+      failedSwap,
+      pendingVaultSwap,
+      'srcAsset',
+    );
+    const internalDestAsset = readField(
+      swapRequest,
+      swapDepositChannel,
+      failedSwap,
+      pendingVaultSwap,
+      'destAsset',
+    );
     assert(internalSrcAsset, 'srcAsset must be defined');
 
-    const showBoost = Boolean(
-      swapRequest?.maxBoostFeeBps ||
-        swapDepositChannel?.maxBoostFeeBps ||
-        pendingVaultSwap?.maxBoostFee,
+    const maxBoostFeeBps = readField(
+      swapRequest,
+      swapDepositChannel,
+      pendingVaultSwap,
+      'maxBoostFeeBps',
     );
+    const showBoost = Boolean(maxBoostFeeBps);
 
     let effectiveBoostFeeBps;
     if (showBoost) {
@@ -148,9 +158,13 @@ router.get(
       swapId: swapRequest?.nativeId.toString(),
       ...getAssetAndChain(internalSrcAsset, 'src'),
       ...(internalDestAsset && getAssetAndChain(internalDestAsset, 'dest')),
-      destAddress:
-        readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress') ??
-        pendingVaultSwap?.destinationAddress,
+      destAddress: readField(
+        swapRequest,
+        swapDepositChannel,
+        failedSwap,
+        pendingVaultSwap,
+        'destAddress',
+      ),
       srcChainRequiredBlockConfirmations,
       estimatedDurationsSeconds: estimatedDurations?.durations,
       estimatedDurationSeconds: estimatedDurations?.total,
@@ -217,10 +231,7 @@ router.get(
       ...(showBoost && {
         boost: {
           effectiveBoostFeeBps,
-          maxBoostFeeBps:
-            swapRequest?.maxBoostFeeBps ??
-            swapDepositChannel?.maxBoostFeeBps ??
-            pendingVaultSwap?.maxBoostFee,
+          maxBoostFeeBps,
           boostedAt: swapRequest?.depositBoostedAt?.valueOf(),
           boostedBlockIndex: swapRequest?.depositBoostedBlockIndex ?? undefined,
           skippedAt: swapDepositChannel?.failedBoosts.at(0)?.failedAtTimestamp.valueOf(),

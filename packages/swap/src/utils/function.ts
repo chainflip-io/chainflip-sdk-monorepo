@@ -81,6 +81,19 @@ export function readField<
   c: C | null | undefined,
   key: K,
 ): A[K] | B[K] | C[K] | undefined;
+export function readField<
+  A extends {},
+  B extends {},
+  C extends {},
+  D extends {},
+  K extends keyof A & keyof B & keyof C & keyof D,
+>(
+  a: A | null | undefined,
+  b: B | null | undefined,
+  c: C | null | undefined,
+  d: D | null | undefined,
+  key: K,
+): A[K] | B[K] | C[K] | D[K] | undefined;
 export function readField(...args: any[]) {
   const key = args.pop();
   return args.reduce((acc, obj) => acc ?? obj?.[key], undefined) ?? undefined;
