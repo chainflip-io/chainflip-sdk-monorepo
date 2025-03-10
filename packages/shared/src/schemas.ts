@@ -67,14 +67,14 @@ export const ccmParamsSchema = z
     // https://github.com/chainflip-io/chainflip-backend/blob/415aa9e20ec4046c68892cd34798e5d831c5b83f/state-chain/chains/src/lib.rs#L709
     message: hexStringWithMaxByteSize(15_000),
     // https://github.com/chainflip-io/chainflip-backend/blob/415aa9e20ec4046c68892cd34798e5d831c5b83f/state-chain/chains/src/lib.rs#L710
-    additionalData: hexStringWithMaxByteSize(3_000).optional(),
+    ccmAdditionalData: hexStringWithMaxByteSize(3_000).optional(),
     /** @deprecated DEPRECATED(1.8) pass additionalData instead */
     cfParameters: hexStringWithMaxByteSize(3_000).optional(),
   })
-  .transform(({ gasBudget, message, additionalData, cfParameters }) => ({
+  .transform(({ gasBudget, message, ccmAdditionalData, cfParameters }) => ({
     gasBudget,
     message,
-    additionalData: additionalData ?? cfParameters,
+    ccmAdditionalData: ccmAdditionalData ?? cfParameters,
   }));
 
 export type CcmParams = Omit<z.input<typeof ccmParamsSchema>, 'cfParameters'> & {

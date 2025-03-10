@@ -64,12 +64,12 @@ const transformedDcaParamsSchema = dcaParamsSchema.transform(
 );
 
 const transformedCcmParamsSchema = ccmParamsSchema.transform(
-  ({ message, gasBudget, additionalData }) => ({
+  ({ message, gasBudget, ccmAdditionalData }) => ({
     message,
     gas_budget: gasBudget,
-    ccm_additional_data: additionalData,
+    ccm_additional_data: ccmAdditionalData,
     /** @deprecated DEPRECATED(1.8) we still need to pass cf_parameters until 1.8 is deployed to all networks */
-    cf_parameters: additionalData,
+    cf_parameters: ccmAdditionalData,
   }),
 );
 
