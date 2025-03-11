@@ -1248,9 +1248,22 @@ describe('server', () => {
       const txHash = '0xb2dcb9ce8d50f0ab869995fee8482bcf304ffcfe5681ca748f90e34c0ad7b241';
 
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
-      (requestedEvent.args.origin as any) = {
-        __kind: 'Vault',
-        txHash,
+      requestedEvent.args = {
+        ...requestedEvent.args,
+        origin: {
+          __kind: 'Vault',
+          txId: {
+            value: txHash,
+            __kind: 'Evm',
+          },
+          brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
+        } as any,
+        brokerFees: [
+          {
+            bps: 10,
+            account: '0x9e8d88ae895c9b37b2dead9757a3452f7c2299704d91ddfa444d87723f94fe0c',
+          },
+        ],
       };
 
       await processEvents([
