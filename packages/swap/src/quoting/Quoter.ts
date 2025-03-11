@@ -22,6 +22,7 @@ import {
 import env from '../config/env';
 import { getAssetPrice } from '../pricing';
 import BalanceTracker from './BalanceTracker';
+import { Brand } from '../utils/brands';
 import { handleExit } from '../utils/function';
 import baseLogger from '../utils/logger';
 
@@ -68,7 +69,7 @@ const isBalanceWithinTolerance = (balance: bigint, amount: bigint) => {
 };
 
 type ClientVersion = '2';
-export type AccountId = string & { __brand: 'AccountId' };
+export type AccountId = Brand<string, 'AccountId'>;
 export type SocketData = {
   marketMaker: AccountId;
   quotedAssets: InternalAssetMap<boolean>;

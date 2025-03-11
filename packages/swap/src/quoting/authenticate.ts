@@ -6,7 +6,7 @@ import { InternalAssetMap, getInternalAsset, InternalAsset, InternalAssets } fro
 import { isNotNullish } from '@/shared/guards';
 import { assetAndChain } from '@/shared/parsers';
 import prisma from '../client';
-import { type AccountId, type QuotingSocket } from './Quoter';
+import { AccountId, type QuotingSocket } from './Quoter';
 import baseLogger from '../utils/logger';
 
 const logger = baseLogger.child({ module: 'quoter' });
