@@ -18,7 +18,7 @@ import {
   FailureMode,
   isEgressableSwap,
 } from '../utils/swap';
-import { getLatestSwapForId } from './v2/utils';
+import { getBeneficiaries, getLatestSwapForId } from './v2/utils';
 import { getLastChainTrackingUpdateTimestamp } from '../utils/intercept';
 
 const router = express.Router();
@@ -40,8 +40,7 @@ router.get(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    const { swapRequest, failedSwap, swapDepositChannel, beneficiaries } =
-      await getLatestSwapForId(id);
+    const { swapRequest, failedSwap, swapDepositChannel } = await getLatestSwapForId(id);
 
     let state: State;
     let failureMode;
@@ -147,6 +146,7 @@ router.get(
       failedSwap?.depositTransactionRef ??
       undefined;
 
+    const beneficiaries = getBeneficiaries(swapRequest, swapDepositChannel);
     const affiliates = beneficiaries
       ?.filter(({ type }) => type === 'AFFILIATE')
       .map(({ account, commissionBps }) => ({ account, commissionBps }));

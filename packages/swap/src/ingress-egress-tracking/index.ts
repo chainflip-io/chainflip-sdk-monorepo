@@ -108,11 +108,17 @@ export const getPendingVaultSwap = async (network: ChainflipNetwork, txRef: stri
         assetConstants[vaultSwap.inputAsset].chain,
         vaultSwap.depositChainBlockHeight,
       );
+      const { inputAsset, outputAsset, destinationAddress, maxBoostFee, ...remainingData } =
+        vaultSwap;
 
       return {
         txRef,
         txConfirmations,
-        ...vaultSwap,
+        srcAsset: inputAsset,
+        destAsset: outputAsset,
+        destAddress: destinationAddress,
+        maxBoostFeeBps: maxBoostFee,
+        ...remainingData,
       };
     }
     return null;

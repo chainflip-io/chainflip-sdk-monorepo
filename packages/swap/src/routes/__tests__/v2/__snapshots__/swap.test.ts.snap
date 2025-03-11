@@ -160,7 +160,12 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a solana case-insens
 
 exports[`server > GET /v2/swaps/:id > retrieves a swap from a vault origin 1`] = `
 {
-  "brokers": [],
+  "brokers": [
+    {
+      "account": "cFMTNSQQVfBo2HqtekvhLPfZY764kuJDVFG1EvnnDGYxc3LRW",
+      "commissionBps": 10,
+    },
+  ],
   "deposit": {
     "amount": "4999949999999650000",
     "txRef": "0xb2dcb9ce8d50f0ab869995fee8482bcf304ffcfe5681ca748f90e34c0ad7b241",
