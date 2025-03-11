@@ -60,6 +60,13 @@ export type RpcLimitOrder = {
   };
 };
 
+const isBalanceWithinTolerance = (balance: bigint, amount: bigint) => {
+  const tolerance = BigInt(env.QUOTER_BALANCE_TOLERANCE_PERCENT);
+  let paddedBalance = balance;
+  if (tolerance > 0n) paddedBalance += (balance * tolerance) / 100n;
+  return paddedBalance >= amount;
+};
+
 function* formatLimitOrders(
   quotes: { orders: MarketMakerQuote['legs'][number]; balances?: InternalAssetMap<bigint> }[],
   leg?: MarketMakerQuoteRequest<LegJson>['legs'][number],
@@ -72,7 +79,7 @@ function* formatLimitOrders(
     const balance = balances?.[sellAsset];
 
     for (const [tick, amount] of orders) {
-      if (!balance || balance >= amount) {
+      if (balance === undefined || isBalanceWithinTolerance(balance, amount)) {
         yield {
           LimitOrder: {
             side: leg.side === 'BUY' ? 'sell' : 'buy',

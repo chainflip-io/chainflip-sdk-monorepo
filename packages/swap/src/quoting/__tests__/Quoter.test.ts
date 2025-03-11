@@ -410,17 +410,49 @@ describe(Quoter, () => {
     });
 
     it('filters quotes with insufficient balances', async () => {
+      env.QUOTER_BALANCE_TOLERANCE_PERCENT = 0;
       vi.mocked(getLpBalances).mockResolvedValue([
         ['marketMaker', { Usdc: 99n } as InternalAssetMap<bigint>],
         ['marketMaker2', { Usdc: 3000n } as InternalAssetMap<bigint>],
+        // falsiness test
+        ['marketMaker3', { Usdc: 0n } as InternalAssetMap<bigint>],
       ]);
       const mm1 = await connectClient('marketMaker', ['Btc']);
       const mm2 = await connectClient('marketMaker2', ['Btc']);
+      const mm3 = await connectClient('marketMaker3', ['Btc']);
       const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
-      const [request1, request2] = await Promise.all([mm1.waitForRequest(), mm2.waitForRequest()]);
+      const [request1, request2] = await Promise.all([
+        mm1.waitForRequest(),
+        mm2.waitForRequest(),
+        mm3.waitForRequest(),
+      ]);
       mm1.sendQuote({ ...request1, legs: [[[0, '100']]] });
       const quote = mm2.sendQuote({ ...request2, legs: [[[0, '200']]] });
+      mm3.sendQuote({ ...request1, legs: [[[0, '300']]] });
       expect(await limitOrders).toEqual(quote);
+    });
+
+    it('allows quotes with insufficient balances that are within the threshold', async () => {
+      env.QUOTER_BALANCE_TOLERANCE_PERCENT = 10;
+      vi.mocked(getLpBalances).mockResolvedValue([
+        ['marketMaker', { Usdc: 99n } as InternalAssetMap<bigint>],
+        ['marketMaker2', { Usdc: 3000n } as InternalAssetMap<bigint>],
+        // falsiness test
+        ['marketMaker3', { Usdc: 0n } as InternalAssetMap<bigint>],
+      ]);
+      const mm1 = await connectClient('marketMaker', ['Btc']);
+      const mm2 = await connectClient('marketMaker2', ['Btc']);
+      const mm3 = await connectClient('marketMaker3', ['Btc']);
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const [request1, request2] = await Promise.all([
+        mm1.waitForRequest(),
+        mm2.waitForRequest(),
+        mm3.waitForRequest(),
+      ]);
+      const quote1 = mm1.sendQuote({ ...request1, legs: [[[0, '100']]] });
+      const quote2 = mm2.sendQuote({ ...request2, legs: [[[0, '200']]] });
+      mm3.sendQuote({ ...request1, legs: [[[0, '300']]] });
+      expect(await limitOrders).toEqual([...quote1, ...quote2]);
     });
   });
 });
