@@ -119,7 +119,7 @@ describe(BalanceTracker, () => {
     expect(getLpBalances).toHaveBeenCalledTimes(5);
   });
 
-  it('aborts and refetches if two lps are added around the same time', async () => {
+  it('refetches if two lps are added around the same time', async () => {
     const { promise, resolve } = Promise.withResolvers<[string, InternalAssetMap<bigint>][]>();
     vi.mocked(getLpBalances)
       .mockReturnValueOnce(promise)
