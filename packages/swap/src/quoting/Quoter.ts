@@ -9,6 +9,7 @@ import {
   InternalAssetMap,
   UncheckedAssetAndChain,
   assetConstants,
+  getInternalAsset,
 } from '@/shared/enums';
 import Leg from './Leg';
 import {
@@ -20,12 +21,14 @@ import {
 } from './schemas';
 import env from '../config/env';
 import { getAssetPrice } from '../pricing';
+import BalanceTracker from './BalanceTracker';
+import { Brand } from '../utils/brands';
 import { handleExit } from '../utils/function';
 import baseLogger from '../utils/logger';
 
 const logger = baseLogger.child({ module: 'quoter' });
 
-type Quote = { marketMaker: string; quote: MarketMakerQuote | null; beta: boolean };
+type Quote = { marketMaker: AccountId; quote: MarketMakerQuote | null; beta: boolean };
 
 type BetaQuote = MarketMakerQuote & { beta: boolean };
 
@@ -58,28 +61,17 @@ export type RpcLimitOrder = {
   };
 };
 
-const formatLimitOrders = (
-  quotes: { orders: MarketMakerQuote['legs'][number] }[],
-  leg?: MarketMakerQuoteRequest<LegJson>['legs'][number],
-): RpcLimitOrder[] => {
-  if (!leg) return [];
-
-  return quotes.flatMap(({ orders }) =>
-    orders.map(([tick, amount]) => ({
-      LimitOrder: {
-        side: leg.side === 'BUY' ? 'sell' : 'buy',
-        base_asset: leg.base_asset,
-        quote_asset: leg.quote_asset,
-        tick,
-        sell_amount: hexEncodeNumber(amount),
-      },
-    })),
-  );
+const isBalanceWithinTolerance = (balance: bigint, amount: bigint) => {
+  const tolerance = BigInt(env.QUOTER_BALANCE_TOLERANCE_PERCENT);
+  let paddedBalance = balance;
+  if (tolerance > 0n) paddedBalance += (balance * tolerance) / 100n;
+  return paddedBalance >= amount;
 };
 
 type ClientVersion = '2';
+export type AccountId = Brand<string, 'AccountId'>;
 export type SocketData = {
-  marketMaker: string;
+  marketMaker: AccountId;
   quotedAssets: InternalAssetMap<boolean>;
   clientVersion: ClientVersion;
   beta: boolean;
@@ -99,12 +91,24 @@ export default class Quoter {
 
   private readonly inflightRequests = new Set<string>();
 
+  private balanceTracker = new BalanceTracker(env.QUOTER_BALANCE_TRACKER_ACTIVE);
+
+  private accountIdToSocket = new Map<AccountId, QuotingSocket>();
+
   constructor(
     private readonly io: QuotingServer,
     private createId: () => string = randomUUID,
   ) {
     io.on('connection', (socket) => {
+      if (this.accountIdToSocket.has(socket.data.marketMaker)) {
+        logger.warn('market maker already connected', { marketMaker: socket.data.marketMaker });
+        socket.disconnect();
+        return;
+      }
+
       logger.info('market maker connected', { marketMaker: socket.data.marketMaker });
+      this.balanceTracker.add(socket.data.marketMaker);
+      this.accountIdToSocket.set(socket.data.marketMaker, socket);
 
       const cleanup = handleExit(() => {
         socket.disconnect();
@@ -112,6 +116,8 @@ export default class Quoter {
 
       socket.on('disconnect', () => {
         logger.info('market maker disconnected', { marketMaker: socket.data.marketMaker });
+        this.balanceTracker.remove(socket.data.marketMaker);
+        this.accountIdToSocket.delete(socket.data.marketMaker);
         cleanup();
       });
 
@@ -157,7 +163,7 @@ export default class Quoter {
 
   private async collectMakerQuotes(
     request: MarketMakerQuoteRequest<Leg>,
-  ): Promise<[string, BetaQuote][]> {
+  ): Promise<[AccountId, BetaQuote][]> {
     const connectedClients = this.io.sockets.sockets.size;
     if (connectedClients === 0) return [];
 
@@ -165,7 +171,7 @@ export default class Quoter {
 
     let expectedResponses = 0;
 
-    const quotedLegsMap = new Map<string, { format: LegFormatter }>();
+    const quotedLegsMap = new Map<AccountId, { format: LegFormatter }>();
 
     for (const socket of await this.io.fetchSockets()) {
       let message: MarketMakerQuoteRequest<LegJson>;
@@ -198,7 +204,7 @@ export default class Quoter {
 
     if (expectedResponses === 0) return [];
 
-    const clientsReceivedQuotes = new Map<string, BetaQuote>();
+    const clientsReceivedQuotes = new Map<AccountId, BetaQuote>();
 
     return new Promise((resolve) => {
       let sub: Subscription;
@@ -232,6 +238,43 @@ export default class Quoter {
     });
   }
 
+  private *formatLimitOrders(
+    quotes: {
+      orders: MarketMakerQuote['legs'][number];
+      accountId: AccountId;
+    }[],
+    leg: MarketMakerQuoteRequest<LegJson>['legs'][number] | undefined,
+    balances: Map<AccountId, InternalAssetMap<bigint>>,
+    requestId: string,
+  ): IteratorObject<RpcLimitOrder> {
+    if (!leg) return;
+
+    const sellAsset = getInternalAsset(leg.side === 'BUY' ? leg.base_asset : leg.quote_asset);
+
+    for (const { orders, accountId } of quotes) {
+      const balance = balances.get(accountId)?.[sellAsset];
+
+      for (const [tick, amount] of orders) {
+        if (balance === undefined || isBalanceWithinTolerance(balance, amount)) {
+          yield {
+            LimitOrder: {
+              side: leg.side === 'BUY' ? 'sell' : 'buy',
+              base_asset: leg.base_asset,
+              quote_asset: leg.quote_asset,
+              tick,
+              sell_amount: hexEncodeNumber(amount),
+            },
+          };
+        } else {
+          this.accountIdToSocket.get(accountId)?.emit('quote_error', {
+            error: 'insufficient balance',
+            request_id: requestId,
+          });
+        }
+      }
+    }
+  }
+
   async getLimitOrders(srcAsset: InternalAsset, destAsset: InternalAsset, swapInputAmount: bigint) {
     let legs;
     const start = performance.now();
@@ -260,16 +303,27 @@ export default class Quoter {
       requestId: request.request_id,
     });
 
-    const quotes = await this.collectMakerQuotes(request);
+    const [quotes, balances] = await Promise.all([
+      this.collectMakerQuotes(request),
+      this.balanceTracker.getBalances(),
+    ]);
 
     const orders = [
-      ...formatLimitOrders(
-        quotes.filter(([, q]) => !q.beta).map(([, quote]) => ({ orders: quote.legs[0] })),
+      ...this.formatLimitOrders(
+        quotes
+          .filter(([, q]) => !q.beta)
+          .map(([accountId, quote]) => ({ orders: quote.legs[0], accountId })),
         legs[0].toJSON(),
+        balances,
+        request.request_id,
       ),
-      ...formatLimitOrders(
-        quotes.filter(([, q]) => !q.beta).map(([, quote]) => ({ orders: quote.legs[1] ?? [] })),
+      ...this.formatLimitOrders(
+        quotes
+          .filter(([, q]) => !q.beta)
+          .map(([accountId, quote]) => ({ orders: quote.legs[1] ?? [], accountId })),
         legs[1]?.toJSON(),
+        balances,
+        request.request_id,
       ),
     ];
 
