@@ -1,13 +1,11 @@
 import HttpClient from '@chainflip/rpc/HttpClient';
-import { ChainAssetMap } from '@chainflip/utils/chainflip';
 import {
   Chain,
   readChainAssetValue,
   InternalAsset,
   assetConstants,
-  getInternalAsset,
   InternalAssetMap,
-  Asset,
+  InternalAssets,
 } from '@/shared/enums';
 import { isNotNullish } from '@/shared/guards';
 import {
@@ -131,21 +129,16 @@ export const getLpBalances = async <T extends string>(
   const client = new HttpClient(env.RPC_NODE_HTTP_URL);
   const accounts = await Promise.all(
     accountIds.values().map(async (id) => {
-      const balances = Object.fromEntries(
-        (
-          Object.entries(await client.sendRequest('lp_total_balances', id)) as [
-            Chain,
-            ChainAssetMap<bigint>[Chain],
-          ][]
-        ).flatMap(([chain, assetMap]) =>
-          (Object.entries(assetMap) as [Asset, bigint][]).map(([asset, amount]) => [
-            getInternalAsset({ chain, asset }),
-            amount,
-          ]),
-        ),
+      const totalBalances = await client.sendRequest('lp_total_balances', id);
+
+      const internalAssetMapBalances = Object.fromEntries(
+        Object.values(InternalAssets).map((asset) => [
+          asset,
+          readChainAssetValue(totalBalances, asset),
+        ]),
       ) as InternalAssetMap<bigint>;
 
-      return [id, balances] as const;
+      return [id, internalAssetMapBalances] as const;
     }),
   );
 
