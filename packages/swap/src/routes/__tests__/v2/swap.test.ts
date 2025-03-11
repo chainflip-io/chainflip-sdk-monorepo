@@ -2318,10 +2318,6 @@ describe('server', () => {
             gasBudget: '0x3039',
             message: '48454c4c4f',
           },
-          sourceAddress: {
-            Eth: '0xcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf',
-          },
-          sourceChain: 'Ethereum',
         },
         dcaParams: {
           chunkInterval: 100,
