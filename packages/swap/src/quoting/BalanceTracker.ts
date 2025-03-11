@@ -1,5 +1,5 @@
 import { inspect } from 'util';
-import { InternalAssetMap } from '../enums';
+import { InternalAssetMap } from '@/shared/enums';
 import type { AccountId } from './Quoter';
 import baseLogger from '../utils/logger';
 import { getLpBalances } from '../utils/rpc';
