@@ -101,7 +101,7 @@ export const getPendingBroadcast = async (broadcast: Broadcast) => {
   }
 };
 
-export const getPendingVaultSwap = async (network: ChainflipNetwork, txRef: string) => {
+export const getPendingVaultSwap = async (txRef: string) => {
   const resultPromises = getTransactionRefChains(txRef).map(async (chain) => {
     let result = redis ? await redis.getPendingVaultSwap(chain, txRef) : null;
 

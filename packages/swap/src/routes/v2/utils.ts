@@ -114,7 +114,7 @@ export const getLatestSwapForId = async (id: string) => {
           where: { depositTransactionRef: id },
           include: { swapDepositChannel: { include: depositChannelInclude }, ...failedSwapInclude },
         }),
-        getPendingVaultSwap(env.CHAINFLIP_NETWORK, id),
+        getPendingVaultSwap(id),
       ]);
     }
   }

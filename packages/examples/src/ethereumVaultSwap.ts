@@ -1,3 +1,5 @@
+#!/usr/bin/env node --import=tsx --trace-uncaught --no-warnings
+
 import { getDefaultProvider, Wallet, Contract } from 'ethers';
 import { SwapSDK, Chains, Assets } from '@/sdk/swap/index.js';
 import 'dotenv/config';
