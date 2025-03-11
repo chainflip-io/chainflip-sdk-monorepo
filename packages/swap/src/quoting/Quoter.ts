@@ -67,33 +67,6 @@ const isBalanceWithinTolerance = (balance: bigint, amount: bigint) => {
   return paddedBalance >= amount;
 };
 
-function* formatLimitOrders(
-  quotes: { orders: MarketMakerQuote['legs'][number]; balances?: InternalAssetMap<bigint> }[],
-  leg?: MarketMakerQuoteRequest<LegJson>['legs'][number],
-): IteratorObject<RpcLimitOrder> {
-  if (!leg) return;
-
-  const sellAsset = getInternalAsset(leg.side === 'BUY' ? leg.base_asset : leg.quote_asset);
-
-  for (const { orders, balances } of quotes) {
-    const balance = balances?.[sellAsset];
-
-    for (const [tick, amount] of orders) {
-      if (balance === undefined || isBalanceWithinTolerance(balance, amount)) {
-        yield {
-          LimitOrder: {
-            side: leg.side === 'BUY' ? 'sell' : 'buy',
-            base_asset: leg.base_asset,
-            quote_asset: leg.quote_asset,
-            tick,
-            sell_amount: hexEncodeNumber(amount),
-          },
-        };
-      }
-    }
-  }
-}
-
 type ClientVersion = '2';
 export type AccountId = string & { __brand: 'AccountId' };
 export type SocketData = {
@@ -119,13 +92,22 @@ export default class Quoter {
 
   private balanceTracker = new BalanceTracker(env.QUOTER_BALANCE_TRACKER_ACTIVE);
 
+  private accountIdToSocket = new Map<AccountId, QuotingSocket>();
+
   constructor(
     private readonly io: QuotingServer,
     private createId: () => string = randomUUID,
   ) {
     io.on('connection', (socket) => {
+      if (this.accountIdToSocket.has(socket.data.marketMaker)) {
+        logger.warn('market maker already connected', { marketMaker: socket.data.marketMaker });
+        socket.disconnect();
+        return;
+      }
+
       logger.info('market maker connected', { marketMaker: socket.data.marketMaker });
       this.balanceTracker.add(socket.data.marketMaker);
+      this.accountIdToSocket.set(socket.data.marketMaker, socket);
 
       const cleanup = handleExit(() => {
         socket.disconnect();
@@ -134,6 +116,7 @@ export default class Quoter {
       socket.on('disconnect', () => {
         logger.info('market maker disconnected', { marketMaker: socket.data.marketMaker });
         this.balanceTracker.remove(socket.data.marketMaker);
+        this.accountIdToSocket.delete(socket.data.marketMaker);
         cleanup();
       });
 
@@ -254,6 +237,43 @@ export default class Quoter {
     });
   }
 
+  private *formatLimitOrders(
+    quotes: {
+      orders: MarketMakerQuote['legs'][number];
+      accountId: AccountId;
+    }[],
+    leg: MarketMakerQuoteRequest<LegJson>['legs'][number] | undefined,
+    balances: Map<AccountId, InternalAssetMap<bigint>>,
+    requestId: string,
+  ): IteratorObject<RpcLimitOrder> {
+    if (!leg) return;
+
+    const sellAsset = getInternalAsset(leg.side === 'BUY' ? leg.base_asset : leg.quote_asset);
+
+    for (const { orders, accountId } of quotes) {
+      const balance = balances.get(accountId)?.[sellAsset];
+
+      for (const [tick, amount] of orders) {
+        if (balance === undefined || isBalanceWithinTolerance(balance, amount)) {
+          yield {
+            LimitOrder: {
+              side: leg.side === 'BUY' ? 'sell' : 'buy',
+              base_asset: leg.base_asset,
+              quote_asset: leg.quote_asset,
+              tick,
+              sell_amount: hexEncodeNumber(amount),
+            },
+          };
+        } else {
+          this.accountIdToSocket.get(accountId)?.emit('quote_error', {
+            error: 'insufficient balance',
+            request_id: requestId,
+          });
+        }
+      }
+    }
+  }
+
   async getLimitOrders(srcAsset: InternalAsset, destAsset: InternalAsset, swapInputAmount: bigint) {
     let legs;
     const start = performance.now();
@@ -288,23 +308,21 @@ export default class Quoter {
     ]);
 
     const orders = [
-      ...formatLimitOrders(
+      ...this.formatLimitOrders(
         quotes
           .filter(([, q]) => !q.beta)
-          .map(([accountId, quote]) => ({
-            orders: quote.legs[0],
-            balances: balances.get(accountId),
-          })),
+          .map(([accountId, quote]) => ({ orders: quote.legs[0], accountId })),
         legs[0].toJSON(),
+        balances,
+        request.request_id,
       ),
-      ...formatLimitOrders(
+      ...this.formatLimitOrders(
         quotes
           .filter(([, q]) => !q.beta)
-          .map(([accountId, quote]) => ({
-            orders: quote.legs[1] ?? [],
-            balances: balances.get(accountId),
-          })),
+          .map(([accountId, quote]) => ({ orders: quote.legs[1] ?? [], accountId })),
         legs[1]?.toJSON(),
+        balances,
+        request.request_id,
       ),
     ];
 
