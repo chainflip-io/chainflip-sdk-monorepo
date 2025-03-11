@@ -444,6 +444,7 @@ describe(Quoter, () => {
       const mm2 = await connectClient('marketMaker2', ['Btc']);
       const mm3 = await connectClient('marketMaker3', ['Btc']);
       const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const error = mm3.waitForError();
       const [request1, request2] = await Promise.all([
         mm1.waitForRequest(),
         mm2.waitForRequest(),
@@ -453,6 +454,10 @@ describe(Quoter, () => {
       const quote2 = mm2.sendQuote({ ...request2, legs: [[[0, '200']]] });
       mm3.sendQuote({ ...request1, legs: [[[0, '300']]] });
       expect(await limitOrders).toEqual([...quote1, ...quote2]);
+      await expect(error).resolves.toEqual({
+        error: 'insufficient balance',
+        request_id: request1.request_id,
+      });
     });
   });
 });
