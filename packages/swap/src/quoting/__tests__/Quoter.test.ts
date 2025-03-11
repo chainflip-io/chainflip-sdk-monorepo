@@ -83,15 +83,22 @@ describe(Quoter, () => {
       ),
     );
 
+    const cachedKeys = new Map<string, crypto.KeyObject>();
+
     connectClient = async (name: string, quotedAssets: InternalAsset[], beta = false) => {
-      const { publicKey, privateKey } = await generateKeyPairAsync('ed25519');
-      await prisma.marketMaker.create({
-        data: {
-          name,
-          beta,
-          publicKey: publicKey.export({ format: 'pem', type: 'spki' }).toString(),
-        },
-      });
+      let privateKey = cachedKeys.get(name);
+      if (!privateKey) {
+        const keys = await generateKeyPairAsync('ed25519');
+        privateKey = keys.privateKey;
+        cachedKeys.set(name, privateKey);
+        await prisma.marketMaker.create({
+          data: {
+            name,
+            beta,
+            publicKey: keys.publicKey.export({ format: 'pem', type: 'spki' }).toString(),
+          },
+        });
+      }
 
       const { port } = server['httpServer'].address() as AddressInfo;
       const timestamp = Date.now();
@@ -198,8 +205,12 @@ describe(Quoter, () => {
       sockets.splice(0).map(
         (socket) =>
           new Promise<unknown>((resolve) => {
-            socket.on('disconnect', resolve);
-            socket.disconnect();
+            if (socket.disconnected) {
+              resolve(null);
+            } else {
+              socket.on('disconnect', resolve);
+              socket.disconnect();
+            }
           }),
       ),
     );
@@ -458,6 +469,19 @@ describe(Quoter, () => {
         error: 'insufficient balance',
         request_id: request1.request_id,
       });
+    });
+
+    it('disconnects duplicate sockets', async () => {
+      const mm = await connectClient('marketMaker', ['Btc']);
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const request = await mm.waitForRequest();
+      const quote = mm.sendQuote({ ...request, legs: [[[0, '100']]] });
+      expect(await limitOrders).toEqual(quote);
+      const mm2 = await connectClient('marketMaker', ['Btc']);
+      expect(mm2.socket.connected).toBe(true);
+      await sleep(10);
+      expect(mm2.socket.connected).toBe(false);
+      expect(mm.socket.connected).toBe(true);
     });
   });
 });
