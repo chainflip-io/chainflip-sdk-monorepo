@@ -1,6 +1,4 @@
-import { ChainflipNetwork } from '@chainflip/bitcoin';
 import { reverseBytes } from '@chainflip/utils/bytes';
-import { chainflipChains } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
@@ -17,12 +15,8 @@ import {
   string,
   uncheckedAssetAndChain,
   hexString,
-  ethereumAddress,
   numericString,
-  solanaAddress,
-  btcAddress,
   chainflipAddress,
-  chain as chainflipChain,
   assetAndChain,
 } from '../parsers';
 
@@ -120,58 +114,47 @@ const accountFee = z
   })
   .transform(({ account, bps }) => ({ account, commissionBps: bps }));
 
-const vaultDepositSchema = (network: ChainflipNetwork) =>
-  jsonString.pipe(
-    z
-      .object({
-        amount: u128,
-        destination_address: z.union([ethereumAddress, solanaAddress, btcAddress(network)]),
-        input_asset: assetAndChain.transform((obj) => getInternalAsset(obj)),
-        output_asset: assetAndChain.transform((obj) => getInternalAsset(obj)),
-        deposit_chain_block_height: number,
-        affiliate_fees: z.array(accountFee),
-        broker_fee: accountFee.optional(),
-        max_boost_fee: z.number().optional(),
-        dca_params: z
-          .object({
-            chunk_interval: number,
-            number_of_chunks: number,
-          })
-          .nullable()
-          .optional(),
-        refund_params: z
-          .object({
-            min_price: u128,
-            retry_duration: number,
-            refund_address: z.union([ethereumAddress, solanaAddress, btcAddress(network)]),
-          })
-          .nullable()
-          .optional(),
-        ccm_deposit_metadata: z
-          .object({
-            channel_metadata: z.object({
-              ccm_additional_data: z.any(),
-              message: z.string(),
-              gas_budget: z
-                .union([numericString, hexString])
-                .transform((n) => hexEncodeNumber(BigInt(n))),
-            }),
-            source_chain: chainflipChain,
-            source_address: z
-              .object({
-                Eth: ethereumAddress.optional(),
-                Sol: solanaAddress.optional(),
-                Btc: btcAddress(network).optional(),
-              })
-              .refine((obj) => Object.keys(obj).length === 1, {
-                message: 'source_address must be one of Eth, Sol, or Btc',
-              }),
-          })
-          .nullable()
-          .optional(),
-      })
-      .transform(transformKeysToCamelCase),
-  );
+const vaultDepositSchema = jsonString.pipe(
+  z
+    .object({
+      amount: u128,
+      destination_address: z.string(),
+      input_asset: assetAndChain.transform((obj) => getInternalAsset(obj)),
+      output_asset: assetAndChain.transform((obj) => getInternalAsset(obj)),
+      deposit_chain_block_height: number,
+      affiliate_fees: z.array(accountFee),
+      broker_fee: accountFee.optional(),
+      max_boost_fee: z.number().optional(),
+      dca_params: z
+        .object({
+          chunk_interval: number,
+          number_of_chunks: number,
+        })
+        .nullable()
+        .optional(),
+      refund_params: z
+        .object({
+          min_price: u128,
+          retry_duration: number,
+          refund_address: z.string(),
+        })
+        .nullable()
+        .optional(),
+      ccm_deposit_metadata: z
+        .object({
+          channel_metadata: z.object({
+            ccm_additional_data: z.any(),
+            message: z.string(),
+            gas_budget: z
+              .union([numericString, hexString])
+              .transform((n) => hexEncodeNumber(BigInt(n))),
+          }),
+        })
+        .nullable()
+        .optional(),
+    })
+    .transform(transformKeysToCamelCase),
+);
 
 type ChainBroadcast<C extends Exclude<Chain, 'Solana'>> = z.infer<(typeof broadcastParsers)[C]>;
 
@@ -259,21 +242,13 @@ export default class RedisClient {
     return value ? mempoolTransaction.parse(value) : null;
   }
 
-  async getPendingVaultSwap(network: ChainflipNetwork, txId: string) {
-    const vaultSwapDisabledChains = ['Polkadot'];
+  async getPendingVaultSwap(chain: Chain, txId: string) {
+    const unavailableChains: Chain[] = ['Solana', 'Polkadot'];
+    if (unavailableChains.includes(chain)) return null;
 
-    const responses = await Promise.all(
-      chainflipChains
-        .filter((chain) => !vaultSwapDisabledChains.includes(chain))
-        .map((chain) => {
-          const redisTxId =
-            chain === 'Bitcoin' && isHex(`0x${txId}`) ? reverseBytes(`0x${txId}`) : txId;
-          return this.client.get(`vault_deposit:${chain}:${redisTxId}`);
-        }),
-    );
-    const value = responses.find(Boolean);
-
-    return value ? vaultDepositSchema(network).parse(value) : null;
+    const redisTxId = chain === 'Bitcoin' && isHex(`0x${txId}`) ? reverseBytes(`0x${txId}`) : txId;
+    const value = await this.client.get(`vault_deposit:${chain}:${redisTxId}`);
+    return value ? vaultDepositSchema.parse(value) : null;
   }
 
   quit() {

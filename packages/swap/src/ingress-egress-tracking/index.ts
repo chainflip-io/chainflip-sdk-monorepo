@@ -1,5 +1,7 @@
+import { isTruthy } from '@chainflip/utils/guard';
 import { Chain, ChainflipNetwork, Chains, InternalAsset, assetConstants } from '@/shared/enums';
 import RedisClient from '@/shared/node-apis/redis';
+import { getTransactionRefChains } from '@/swap/utils/transactionRef';
 import prisma, { Broadcast } from '../client';
 import env from '../config/env';
 import { handleExit } from '../utils/function';
@@ -100,28 +102,37 @@ export const getPendingBroadcast = async (broadcast: Broadcast) => {
 };
 
 export const getPendingVaultSwap = async (network: ChainflipNetwork, txRef: string) => {
-  if (!redis) return null;
-  try {
-    const vaultSwap = await redis.getPendingVaultSwap(network, txRef);
-    if (vaultSwap) {
-      const txConfirmations = await getDepositConfirmationCount(
-        assetConstants[vaultSwap.inputAsset].chain,
-        vaultSwap.depositChainBlockHeight,
-      );
-      const { inputAsset, outputAsset, destinationAddress, maxBoostFee, ...remainingData } =
-        vaultSwap;
+  const resultPromises = getTransactionRefChains(txRef).map(async (chain) => {
+    let result = redis ? await redis.getPendingVaultSwap(chain, txRef) : null;
 
-      return {
-        txRef,
-        txConfirmations,
-        srcAsset: inputAsset,
-        destAsset: outputAsset,
-        destAddress: destinationAddress,
-        maxBoostFeeBps: maxBoostFee,
-        ...remainingData,
-      };
+    if (!result && chain === 'Solana') {
+      result = null;
     }
-    return null;
+
+    return result;
+  });
+
+  try {
+    const results = await Promise.all(resultPromises);
+    const vaultSwap = results.find(isTruthy);
+    if (!vaultSwap) return null;
+
+    const txConfirmations = await getDepositConfirmationCount(
+      assetConstants[vaultSwap.inputAsset].chain,
+      vaultSwap.depositChainBlockHeight,
+    );
+    const { inputAsset, outputAsset, destinationAddress, maxBoostFee, ...remainingData } =
+      vaultSwap;
+
+    return {
+      txRef,
+      txConfirmations,
+      srcAsset: inputAsset,
+      destAsset: outputAsset,
+      destAddress: destinationAddress,
+      maxBoostFeeBps: maxBoostFee,
+      ...remainingData,
+    };
   } catch (error) {
     logger.error('error while looking up vault swap in redis', { error });
     return null;
