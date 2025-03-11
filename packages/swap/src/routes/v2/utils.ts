@@ -16,7 +16,6 @@ import prisma, {
   SwapRequest,
   Prisma,
 } from '../../client';
-import env from '../../config/env';
 import {
   getPendingBroadcast,
   getPendingDeposit,

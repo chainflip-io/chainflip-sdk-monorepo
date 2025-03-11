@@ -121,7 +121,7 @@ const vaultDepositSchema = jsonString.pipe(
       destination_address: z.string(),
       input_asset: assetAndChain.transform((obj) => getInternalAsset(obj)),
       output_asset: assetAndChain.transform((obj) => getInternalAsset(obj)),
-      deposit_chain_block_height: number,
+      deposit_chain_block_height: number.nullable().optional(),
       affiliate_fees: z.array(accountFee),
       broker_fee: accountFee.optional(),
       max_boost_fee: z.number().optional(),
