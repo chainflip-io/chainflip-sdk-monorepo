@@ -1,11 +1,11 @@
 import { cfChainsEvmTransaction } from '@chainflip/processor/141/common';
-import { CHARSET } from '@chainflip/utils/base58';
 import { isTruthy } from '@chainflip/utils/guard';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
 import { isNotNullish } from '@/shared/guards';
 import { readField } from '@/swap/utils/function';
 import logger from '@/swap/utils/logger';
 import ServiceError from '@/swap/utils/ServiceError';
+import { isTransactionRef } from '@/swap/utils/transactionRef';
 import { StateV2 } from './swap';
 import prisma, {
   Swap,
@@ -16,7 +16,6 @@ import prisma, {
   SwapRequest,
   Prisma,
 } from '../../client';
-import env from '../../config/env';
 import {
   getPendingBroadcast,
   getPendingDeposit,
@@ -48,12 +47,6 @@ const swapRequestInclude = {
 
 const channelIdRegex = /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
 const swapRequestIdRegex = /^\d+$/i;
-const hexRegex = /^(0x)?[a-f0-9]+$/i;
-const base58Regex = new RegExp(`^[${CHARSET}]+$`);
-const dotRegex = /^\d+-\d+$/;
-
-const isTransactionRef = (id: string) =>
-  hexRegex.test(id) || base58Regex.test(id) || dotRegex.test(id);
 
 export const getLatestSwapForId = async (id: string) => {
   let swapRequest;
@@ -115,12 +108,14 @@ export const getLatestSwapForId = async (id: string) => {
       take: 1,
     });
     if (!swapRequest) {
-      failedSwap = await prisma.failedSwap.findFirst({
-        where: { depositTransactionRef: id },
-        include: { swapDepositChannel: { include: depositChannelInclude }, ...failedSwapInclude },
-      });
+      [failedSwap, pendingVaultSwap] = await Promise.all([
+        prisma.failedSwap.findFirst({
+          where: { depositTransactionRef: id },
+          include: { swapDepositChannel: { include: depositChannelInclude }, ...failedSwapInclude },
+        }),
+        getPendingVaultSwap(id),
+      ]);
     }
-    pendingVaultSwap = await getPendingVaultSwap(env.CHAINFLIP_NETWORK, id);
   }
 
   swapDepositChannel ??= swapRequest?.swapDepositChannel ?? failedSwap?.swapDepositChannel;

@@ -58,7 +58,7 @@
     "@chainflip/bitcoin": "^1.1.1",
     "@chainflip/processor": "^1.8.4",
     "@chainflip/rpc": "^1.8.7",
-    "@chainflip/solana": "^2.0.1",
+    "@chainflip/solana": "^2.1.1",
     "@chainflip/utils": "^0.5.0",
     "@polkadot/api": "^15.5.2",
     "@polkadot/types": "^11.0.2",

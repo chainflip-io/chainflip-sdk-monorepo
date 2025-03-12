@@ -1,3 +1,5 @@
+#!/usr/bin/env node --import=tsx --trace-uncaught --no-warnings
+
 import {
   PublicKey,
   Keypair,

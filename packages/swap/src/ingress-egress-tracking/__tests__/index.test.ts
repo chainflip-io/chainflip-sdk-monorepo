@@ -1,3 +1,4 @@
+import { findVaultSwapData } from '@chainflip/solana/deposit';
 import Redis from 'ioredis';
 import { vi, describe, expect, beforeAll, beforeEach, it } from 'vitest';
 import { Chain } from '@/shared/enums';
@@ -6,6 +7,7 @@ import prisma, { Broadcast } from '../../client';
 import logger from '../../utils/logger';
 
 vi.mock('../../utils/logger');
+vi.mock('@chainflip/solana/deposit');
 
 const updateChainTracking = async (data: {
   chain: Chain;
@@ -211,7 +213,8 @@ describe('ingress-egress-tracking', () => {
   });
 
   describe(getPendingVaultSwap, () => {
-    it('gets pending vault swap from redis', async () => {
+    it('gets pending vault swap from redis for bitcoin', async () => {
+      const redisSpy = vi.spyOn(Redis.prototype, 'get');
       await updateChainTracking({ chain: 'Bitcoin', height: 1234567893n });
 
       await redis.set(
@@ -240,7 +243,6 @@ describe('ingress-egress-tracking', () => {
       );
 
       const swap = await getPendingVaultSwap(
-        'perseverance',
         '77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239',
       );
 
@@ -271,6 +273,140 @@ describe('ingress-egress-tracking', () => {
           "txRef": "77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239",
         }
       `);
+      expect(redisSpy).toHaveBeenCalledTimes(1);
+      expect(redisSpy).toHaveBeenCalledWith(
+        'vault_deposit:Bitcoin:0x396255c0153a4af5f2b7f07adbdb60ff41c7eaff6e6137e5d48c8d11dadca477',
+      );
+    });
+
+    it('gets pending vault swap from redis for ethereum', async () => {
+      const redisSpy = vi.spyOn(Redis.prototype, 'get');
+      await updateChainTracking({ chain: 'Ethereum', height: 1234567893n });
+
+      await redis.set(
+        'vault_deposit:Ethereum:0x648b916f4aef7dbae2d74ee8f0f4d498b2468151cd2f83d4a3f8a1d80f27f9f6',
+        JSON.stringify({
+          deposit_chain_block_height: 7881101,
+          input_asset: { chain: 'Ethereum', asset: 'USDC' },
+          output_asset: { chain: 'Ethereum', asset: 'FLIP' },
+          amount: '0x1dcd6500',
+          destination_address: '0xcb583c817964a2c527608f8b813a4c9bddb559a9',
+          ccm_deposit_metadata: null,
+          deposit_details: {
+            tx_hashes: ['0x648b916f4aef7dbae2d74ee8f0f4d498b2468151cd2f83d4a3f8a1d80f27f9f6'],
+          },
+          broker_fee: { account: 'cFMTNSQQVfBo2HqtekvhLPfZY764kuJDVFG1EvnnDGYxc3LRW', bps: 0 },
+          affiliate_fees: [],
+          refund_params: {
+            retry_duration: 100,
+            refund_address: '0xcb583c817964a2c527608f8b813a4c9bddb559a9',
+            min_price: '0x10cd34f57ffac0c62e4d1a650614163779e9d0e992',
+          },
+          dca_params: null,
+          max_boost_fee: 0,
+        }),
+      );
+
+      const swap = await getPendingVaultSwap(
+        '0x648b916f4aef7dbae2d74ee8f0f4d498b2468151cd2f83d4a3f8a1d80f27f9f6',
+      );
+
+      expect(swap).toMatchInlineSnapshot(`
+        {
+          "affiliateFees": [],
+          "amount": 500000000n,
+          "brokerFee": {
+            "account": "cFMTNSQQVfBo2HqtekvhLPfZY764kuJDVFG1EvnnDGYxc3LRW",
+            "commissionBps": 0,
+          },
+          "ccmDepositMetadata": null,
+          "dcaParams": null,
+          "depositChainBlockHeight": 7881101,
+          "destAddress": "0xcb583c817964a2c527608f8b813a4c9bddb559a9",
+          "destAsset": "Flip",
+          "maxBoostFeeBps": 0,
+          "refundParams": {
+            "minPrice": 24555550330122879205878251867179474586941715966354n,
+            "refundAddress": "0xcb583c817964a2c527608f8b813a4c9bddb559a9",
+            "retryDuration": 100,
+          },
+          "srcAsset": "Usdc",
+          "txConfirmations": 1226686792,
+          "txRef": "0x648b916f4aef7dbae2d74ee8f0f4d498b2468151cd2f83d4a3f8a1d80f27f9f6",
+        }
+      `);
+      expect(redisSpy).toHaveBeenCalledTimes(2);
+      expect(redisSpy).toHaveBeenCalledWith(
+        'vault_deposit:Ethereum:0x648b916f4aef7dbae2d74ee8f0f4d498b2468151cd2f83d4a3f8a1d80f27f9f6',
+      );
+      expect(redisSpy).toHaveBeenCalledWith(
+        'vault_deposit:Arbitrum:0x648b916f4aef7dbae2d74ee8f0f4d498b2468151cd2f83d4a3f8a1d80f27f9f6',
+      );
+    });
+
+    it('gets pending vault swap from toolkit for solana', async () => {
+      const redisSpy = vi.spyOn(Redis.prototype, 'get');
+      await updateChainTracking({ chain: 'Solana', height: 1234567893n });
+
+      vi.mocked(findVaultSwapData).mockResolvedValueOnce({
+        sourceChain: 'Solana',
+        sourceAsset: 'Sol',
+        depositAmount: '1500000000',
+        destinationAddress: '0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff',
+        destinationChain: 'Ethereum',
+        destinationAsset: 'Eth',
+        ccmParams: null,
+        cfParams: {
+          ccmAdditionalData: null,
+          refundParams: {
+            retryDurationBlocks: 100,
+            refundAddress: 'EeZzXuKNsaYHTLwbRZspvym89wuEar1V2LuoGbffonTe',
+            minPriceX128: '3071330626886068140327341989949900729308836351',
+          },
+          dcaParams: null,
+          boostFee: 0,
+          brokerFees: {
+            account: 'cFMTNSQQVfBo2HqtekvhLPfZY764kuJDVFG1EvnnDGYxc3LRW',
+            commissionBps: 0,
+          },
+          affiliateFees: [],
+        },
+      });
+
+      const swap = await getPendingVaultSwap(
+        '4C8eMMsbpworHSTqDoqd31HnTFF4dJdG5mJVEJaK7Vjjeu7fC99ZDkDakiMHRNRsiWqcaQzyavoTrnH6gSkQR3Xj',
+      );
+
+      expect(swap).toMatchInlineSnapshot(`
+        {
+          "affiliateFees": [],
+          "amount": 1500000000n,
+          "brokerFee": {
+            "account": "cFMTNSQQVfBo2HqtekvhLPfZY764kuJDVFG1EvnnDGYxc3LRW",
+            "commissionBps": 0,
+          },
+          "ccmDepositMetadata": null,
+          "dcaParams": null,
+          "depositChainBlockHeight": null,
+          "destAddress": "0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff",
+          "destAsset": "Eth",
+          "maxBoostFeeBps": 0,
+          "refundParams": {
+            "minPrice": 3071330626886068140327341989949900729308836351n,
+            "refundAddress": "EeZzXuKNsaYHTLwbRZspvym89wuEar1V2LuoGbffonTe",
+            "retryDuration": 100,
+          },
+          "srcAsset": "Sol",
+          "txConfirmations": null,
+          "txRef": "4C8eMMsbpworHSTqDoqd31HnTFF4dJdG5mJVEJaK7Vjjeu7fC99ZDkDakiMHRNRsiWqcaQzyavoTrnH6gSkQR3Xj",
+        }
+      `);
+      expect(redisSpy).not.toHaveBeenCalled();
+      expect(findVaultSwapData).toHaveBeenCalledTimes(1);
+      expect(findVaultSwapData).toHaveBeenCalledWith(
+        'http://solana-rpc.test',
+        '4C8eMMsbpworHSTqDoqd31HnTFF4dJdG5mJVEJaK7Vjjeu7fC99ZDkDakiMHRNRsiWqcaQzyavoTrnH6gSkQR3Xj',
+      );
     });
 
     it('ensures foreign block height is used only after 1 extra state chain block', async () => {
@@ -302,7 +438,6 @@ describe('ingress-egress-tracking', () => {
       );
 
       const swap = await getPendingVaultSwap(
-        'perseverance',
         '77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239',
       );
 
@@ -311,7 +446,6 @@ describe('ingress-egress-tracking', () => {
 
     it('returns null swap is not found', async () => {
       const swap = await getPendingVaultSwap(
-        'perseverance',
         '77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239',
       );
 
@@ -319,11 +453,10 @@ describe('ingress-egress-tracking', () => {
       expect(logger.error).not.toHaveBeenCalled();
     });
 
-    it('returns null if the redis client throws (bitcoin)', async () => {
+    it('returns null if the redis client throws', async () => {
       vi.spyOn(Redis.prototype, 'get').mockRejectedValueOnce(new Error());
 
       const swap = await getPendingVaultSwap(
-        'perseverance',
         '77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239',
       );
 
