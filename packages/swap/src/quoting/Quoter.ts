@@ -266,6 +266,12 @@ export default class Quoter {
             },
           };
         } else {
+          logger.warn('insufficient balance', {
+            accountId,
+            balance: balance.toString(),
+            amount: amount.toString(),
+            requestId,
+          });
           this.accountIdToSocket.get(accountId)?.emit('quote_error', {
             error: 'insufficient balance',
             request_id: requestId,
