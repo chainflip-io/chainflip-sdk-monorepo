@@ -47,6 +47,7 @@ export default z
     RPC_BROKER_HTTPS_URL: httpUrl,
     RPC_NODE_WSS_URL: wsUrl,
     SOLANA_RPC_HTTP_URL: httpUrl.optional(),
+    BITCOIN_RPC_HTTP_URL: httpUrl.optional(),
     CHAINFLIP_NETWORK: chainflipNetwork,
     QUOTE_TIMEOUT: optionalNumber(1000),
     NODE_ENV: nodeEnv.default('production'),

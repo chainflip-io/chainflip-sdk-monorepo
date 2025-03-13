@@ -459,21 +459,18 @@ export const getDcaParams = (
   swapRequest: SwapRequestData | null | undefined,
   swapDepositChannel: SwapChannelData | null | undefined,
   pendingVaultSwap?: PendingVaultSwapData | null | undefined,
-) =>
-  swapRequest?.dcaChunkIntervalBlocks ||
-  swapDepositChannel?.dcaChunkIntervalBlocks ||
-  pendingVaultSwap?.dcaParams
-    ? {
-        numberOfChunks:
-          swapRequest?.dcaNumberOfChunks ??
-          swapDepositChannel?.dcaNumberOfChunks ??
-          pendingVaultSwap?.dcaParams?.numberOfChunks,
-        chunkIntervalBlocks:
-          swapRequest?.dcaChunkIntervalBlocks ??
-          swapDepositChannel?.dcaChunkIntervalBlocks ??
-          pendingVaultSwap?.dcaParams?.chunkInterval,
-      }
-    : undefined;
+) => {
+  const numberOfChunks =
+    swapRequest?.dcaNumberOfChunks ??
+    swapDepositChannel?.dcaNumberOfChunks ??
+    pendingVaultSwap?.dcaParams?.numberOfChunks;
+  const chunkIntervalBlocks =
+    swapRequest?.dcaChunkIntervalBlocks ??
+    swapDepositChannel?.dcaChunkIntervalBlocks ??
+    pendingVaultSwap?.dcaParams?.chunkInterval;
+
+  return numberOfChunks && numberOfChunks > 1 ? { numberOfChunks, chunkIntervalBlocks } : undefined;
+};
 
 export const getCcmParams = (
   swapRequest: SwapRequestData | null | undefined,

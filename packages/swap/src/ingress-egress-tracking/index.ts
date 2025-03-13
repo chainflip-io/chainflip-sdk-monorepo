@@ -1,6 +1,6 @@
-import { findVaultSwapData } from '@chainflip/solana/deposit';
+import { findVaultSwapData as findBitcoinVaultSwapData } from '@chainflip/bitcoin';
+import { findVaultSwapData as findSolanaVaultSwapData } from '@chainflip/solana/deposit';
 import { isTruthy } from '@chainflip/utils/guard';
-import { hexEncodeNumber } from '@chainflip/utils/number';
 import { Chain, Chains, InternalAsset, assetConstants } from '@/shared/enums';
 import RedisClient from '@/shared/node-apis/redis';
 import { getTransactionRefChains } from '@/swap/utils/transactionRef';
@@ -107,34 +107,23 @@ export const getPendingVaultSwap = async (txRef: string) => {
   const resultPromises = getTransactionRefChains(txRef).map(async (chain) => {
     let result = redis ? await redis.getPendingVaultSwap(chain, txRef) : null;
 
-    if (!result && chain === 'Solana' && env.SOLANA_RPC_HTTP_URL) {
-      const txData = await findVaultSwapData(env.SOLANA_RPC_HTTP_URL, txRef);
+    if (!result) {
+      let txData = null;
+      if (chain === 'Solana' && env.SOLANA_RPC_HTTP_URL) {
+        txData = await findSolanaVaultSwapData(env.SOLANA_RPC_HTTP_URL, txRef);
+      } else if (chain === 'Bitcoin' && env.BITCOIN_RPC_HTTP_URL) {
+        txData = await findBitcoinVaultSwapData(env.BITCOIN_RPC_HTTP_URL, txRef);
+      }
+
       result = txData && {
-        amount: BigInt(txData.depositAmount),
-        destinationAddress: txData.destinationAddress,
-        inputAsset: txData.sourceAsset as InternalAsset,
-        outputAsset: txData.destinationAsset as InternalAsset,
-        depositChainBlockHeight: null,
-        brokerFee: txData.cfParams.brokerFees,
-        affiliateFees: txData.cfParams.affiliateFees.map((fee) => ({
+        ...txData,
+        affiliateFees: txData.affiliateFees.map((fee) => ({
           account: '', // transaction data includes registration id only
           commissionBps: fee.commissionBps,
         })),
-        maxBoostFee: txData.cfParams.boostFee,
-        dcaParams: txData.cfParams.dcaParams && {
-          chunkInterval: txData.cfParams.dcaParams.chunkIntervalBlocks,
-          numberOfChunks: txData.cfParams.dcaParams.numberOfChunks,
-        },
-        refundParams: txData.cfParams.refundParams && {
-          refundAddress: txData.cfParams.refundParams.refundAddress,
-          minPrice: BigInt(txData.cfParams.refundParams.minPriceX128),
-          retryDuration: txData.cfParams.refundParams.retryDurationBlocks,
-        },
-        ccmDepositMetadata: txData.ccmParams && {
-          channelMetadata: {
-            message: txData.ccmParams.message,
-            gasBudget: hexEncodeNumber(BigInt(txData.ccmParams.gasAmount)),
-          },
+        brokerFee: {
+          account: txData.brokerFee.account ?? '', // bitcoin transaction data does not include broker account
+          commissionBps: txData.brokerFee.commissionBps,
         },
       };
     }
@@ -147,12 +136,12 @@ export const getPendingVaultSwap = async (txRef: string) => {
     const vaultSwap = results.find(isTruthy);
     if (!vaultSwap) return null;
 
-    const txConfirmations =
-      vaultSwap.depositChainBlockHeight &&
-      (await getDepositConfirmationCount(
-        assetConstants[vaultSwap.inputAsset].chain,
-        vaultSwap.depositChainBlockHeight,
-      ));
+    const txConfirmations = vaultSwap.depositChainBlockHeight
+      ? await getDepositConfirmationCount(
+          assetConstants[vaultSwap.inputAsset].chain,
+          vaultSwap.depositChainBlockHeight,
+        )
+      : 0;
     const { inputAsset, outputAsset, destinationAddress, maxBoostFee, ...remainingData } =
       vaultSwap;
 

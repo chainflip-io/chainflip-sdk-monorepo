@@ -2252,7 +2252,7 @@ describe('server', () => {
       };
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
       requestedEvent.args.dcaParameters = {
-        numberOfChunks: 1,
+        numberOfChunks: 2,
         chunkInterval: 3,
       };
 
@@ -2290,7 +2290,7 @@ describe('server', () => {
       const { body: body2 } = await request(server).get(`/v2/swaps/${channelId}`);
 
       expect(body2.depositChannel.dcaParams).toMatchObject({
-        numberOfChunks: 1,
+        numberOfChunks: 2,
         chunkIntervalBlocks: 3,
       });
     });
