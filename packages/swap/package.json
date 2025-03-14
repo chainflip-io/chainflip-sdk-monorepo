@@ -15,7 +15,7 @@
     "postinstall": "prisma generate",
     "start": "node dist/swap/src/index.js",
     "test:ci": "CI=1 pnpm test",
-    "test": "vitest --no-file-parallelism",
+    "test": "vitest",
     "eslint:check": "pnpm eslint --max-warnings 0 './**/*.ts'",
     "prettier:base": "prettier ./** --ignore-path=../../.prettierignore",
     "prettier:check": "pnpm prettier:base --check",

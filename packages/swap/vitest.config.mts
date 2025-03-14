@@ -7,9 +7,10 @@ export default mergeConfig(
   configShared,
   defineProject({
     test: {
+      environment: path.join(import.meta.dirname, 'vitest.environment.mts'),
       include: ['**/*.test.ts'],
-      globalSetup: ['./globalSetup.ts'],
-      setupFiles: ['./setupFile.ts'],
+      // globalSetup: ['./globalSetup.ts'],
+      // setupFiles: ['./setupFile.ts'],
     },
     resolve: {
       alias: {

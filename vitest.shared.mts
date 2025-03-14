@@ -11,6 +11,7 @@ export default defineConfig({
     }),
   ],
   test: {
+    environment: path.join(import.meta.dirname, 'vitest.env.mts'),
     exclude: [...configDefaults.exclude],
     coverage: { enabled: true, provider: 'v8' },
   },

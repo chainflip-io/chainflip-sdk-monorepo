@@ -376,6 +376,11 @@ importers:
       supertest:
         specifier: ^7.0.0
         version: 7.0.0
+      vitest-environment-prisma:
+        specifier: workspace:vitest-environment-prisma
+        version: link:../vitest-environment-prisma
+
+  packages/vitest-environment-prisma: {}
 
 packages:
 
