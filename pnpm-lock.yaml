@@ -85,8 +85,8 @@ importers:
   packages/cli:
     dependencies:
       '@chainflip/bitcoin':
-        specifier: ^1.2.3
-        version: 1.2.3(typescript@5.7.3)
+        specifier: ^1.2.4
+        version: 1.2.4(typescript@5.7.3)
       '@chainflip/rpc':
         specifier: ^1.8.7
         version: 1.8.7
@@ -158,8 +158,8 @@ importers:
   packages/sdk:
     dependencies:
       '@chainflip/bitcoin':
-        specifier: ^1.2.3
-        version: 1.2.3(typescript@5.7.3)
+        specifier: ^1.2.4
+        version: 1.2.4(typescript@5.7.3)
       '@chainflip/rpc':
         specifier: ^1.8.7
         version: 1.8.7
@@ -198,8 +198,8 @@ importers:
   packages/shared:
     dependencies:
       '@chainflip/bitcoin':
-        specifier: ^1.2.3
-        version: 1.2.3(typescript@5.7.3)
+        specifier: ^1.2.4
+        version: 1.2.4(typescript@5.7.3)
       '@chainflip/rpc':
         specifier: ^1.8.7
         version: 1.8.7
@@ -253,8 +253,8 @@ importers:
   packages/swap:
     dependencies:
       '@chainflip/bitcoin':
-        specifier: ^1.2.3
-        version: 1.2.3(typescript@5.7.3)
+        specifier: ^1.2.4
+        version: 1.2.4(typescript@5.7.3)
       '@chainflip/processor':
         specifier: ^1.8.4
         version: 1.8.6
@@ -475,8 +475,8 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@chainflip/bitcoin@1.2.3':
-    resolution: {integrity: sha512-z5ve1687aNKRPXmBpq1lwN+RUtRIDNXn9d7oGl+02XieEez5GqmXwMHFyaalAE3VG1AcJ/1mKK6UlbGnGjWhoQ==}
+  '@chainflip/bitcoin@1.2.4':
+    resolution: {integrity: sha512-bAVP4GSPnAOLWc0XVMXV4Mn5bsOlaa2KKhQCd7XKCYy4+e8JawZFxECywGQFCg8ZVeJMqy54RFGyLsMIx74+Iw==}
 
   '@chainflip/processor@1.8.6':
     resolution: {integrity: sha512-rJ3Dw4fnsRYgi8ioQSKJMkseaT+kw+ZL7dU1ZEtVz23w28HZ+999uJnoMf2BDg26S/hS5p2ZdsZwECda/76h4A==}
@@ -5891,7 +5891,7 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@chainflip/bitcoin@1.2.3(typescript@5.7.3)':
+  '@chainflip/bitcoin@1.2.4(typescript@5.7.3)':
     dependencies:
       '@chainflip/utils': 0.7.2
       bignumber.js: 9.1.2
