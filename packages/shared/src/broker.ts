@@ -94,10 +94,7 @@ const getDepositAddressRequestSchema = (network: ChainflipNetwork) =>
       }
     })
     .superRefine((val, ctx) => {
-      if (
-        val.fillOrKillParams &&
-        !validateAddress(val.srcAsset.chain, val.fillOrKillParams.refund_address, network)
-      ) {
+      if (!validateAddress(val.srcAsset.chain, val.fillOrKillParams.refund_address, network)) {
         ctx.addIssue({
           message: `Address "${val.fillOrKillParams.refund_address}" is not a valid "${val.srcAsset.chain}" address for "${network}"`,
           code: z.ZodIssueCode.custom,
@@ -138,10 +135,7 @@ export const getParameterEncodingRequestSchema = (network: ChainflipNetwork) =>
       }
     })
     .superRefine((val, ctx) => {
-      if (
-        val.fillOrKillParams &&
-        !validateAddress(val.srcAsset.chain, val.fillOrKillParams.refund_address, network)
-      ) {
+      if (!validateAddress(val.srcAsset.chain, val.fillOrKillParams.refund_address, network)) {
         ctx.addIssue({
           message: `Address "${val.fillOrKillParams.refund_address}" is not a valid "${val.srcAsset.chain}" address for "${network}"`,
           code: z.ZodIssueCode.custom,

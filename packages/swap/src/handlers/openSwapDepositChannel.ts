@@ -48,9 +48,9 @@ export const openSwapDepositChannelSchema = z
 const getSlippageTolerancePercent = (input: z.output<typeof openSwapDepositChannelSchema>) => {
   const { srcAsset, destAsset } = getInternalAssets(input);
   const estimatedPrice = Number(input.quote?.estimatedPrice);
-  const fokMinPrice =
-    input.fillOrKillParams &&
-    Number(getPriceFromPriceX128(input.fillOrKillParams.minPriceX128, srcAsset, destAsset));
+  const fokMinPrice = Number(
+    getPriceFromPriceX128(input.fillOrKillParams.minPriceX128, srcAsset, destAsset),
+  );
 
   return estimatedPrice && fokMinPrice && (100 * (estimatedPrice - fokMinPrice)) / estimatedPrice;
 };
