@@ -233,16 +233,14 @@ export class SwapSDK {
 
     await this.validateSwapAmount({ chain: srcChain, asset: srcAsset }, BigInt(amount));
 
-    const fillOrKillParams = depositAddressRequest.fillOrKillParams
-      ? {
-          ...depositAddressRequest.fillOrKillParams,
-          minPriceX128: getPriceX128FromPrice(
-            depositAddressRequest.fillOrKillParams.minPrice,
-            getInternalAsset({ chain: srcChain, asset: srcAsset }),
-            getInternalAsset({ chain: destChain, asset: destAsset }),
-          ),
-        }
-      : undefined;
+    const fillOrKillParams = {
+      ...depositAddressRequest.fillOrKillParams,
+      minPriceX128: getPriceX128FromPrice(
+        depositAddressRequest.fillOrKillParams.minPrice,
+        getInternalAsset({ chain: srcChain, asset: srcAsset }),
+        getInternalAsset({ chain: destChain, asset: destAsset }),
+      ),
+    };
 
     let response;
 
@@ -439,7 +437,6 @@ export class SwapSDK {
         channelOpeningFee: result.channelOpeningFee,
       };
     } else {
-      assert(depositAddressRequest.fillOrKillParams, 'fill or kill params are required');
       assert(
         !brokerCommissionBps,
         'Broker commission is supported only when initializing the SDK with a brokerUrl',
@@ -451,7 +448,6 @@ export class SwapSDK {
 
       response = await this.trpc.openSwapDepositChannel.mutate({
         ...depositAddressRequest,
-        fillOrKillParams: depositAddressRequest.fillOrKillParams,
         quote,
       });
     }

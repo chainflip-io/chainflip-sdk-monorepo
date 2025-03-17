@@ -6,7 +6,6 @@ import { asset, chain, numericString } from '@/shared/parsers';
 import {
   ccmParamsSchema,
   dcaParams as dcaParamsSchema,
-  ensureDcaWithFok,
   fillOrKillParams as fillOrKillParamsSchema,
 } from '@/shared/schemas';
 import { validateAddress } from '@/shared/validation/addressValidation';
@@ -41,7 +40,6 @@ export const openSwapDepositChannelSchema = z
       })
       .optional(),
   })
-  .superRefine(ensureDcaWithFok)
   .transform(({ amount, ...rest }) => ({
     ...rest,
     expectedDepositAmount: amount,
@@ -70,7 +68,7 @@ export const openSwapDepositChannel = async (
     await isDisallowedSwap(
       input.destAddress,
       input.srcAddress,
-      input.fillOrKillParams?.refundAddress,
+      input.fillOrKillParams.refundAddress,
     )
   ) {
     logger.info('Blocked address found for deposit channel', input);
@@ -176,9 +174,9 @@ export const openSwapDepositChannel = async (
       maxBoostFeeBps: Number(maxBoostFeeBps) || 0,
       openedThroughBackend: true,
       openingFeePaid: channelOpeningFee.toString(),
-      fokMinPriceX128: fillOrKillParams?.minPriceX128,
-      fokRetryDurationBlocks: fillOrKillParams?.retryDurationBlocks,
-      fokRefundAddress: fillOrKillParams?.refundAddress,
+      fokMinPriceX128: fillOrKillParams.minPriceX128,
+      fokRetryDurationBlocks: fillOrKillParams.retryDurationBlocks,
+      fokRefundAddress: fillOrKillParams.refundAddress,
       dcaChunkIntervalBlocks: dcaParams?.chunkIntervalBlocks,
       dcaNumberOfChunks: dcaParams?.numberOfChunks,
       quote: quoteParam,
