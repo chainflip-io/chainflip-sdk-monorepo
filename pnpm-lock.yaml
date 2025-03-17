@@ -91,8 +91,8 @@ importers:
         specifier: ^1.8.7
         version: 1.8.7
       '@chainflip/solana':
-        specifier: ^2.1.3
-        version: 2.1.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^2.1.4
+        version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: ^0.5.0
         version: 0.5.0
@@ -164,8 +164,8 @@ importers:
         specifier: ^1.8.7
         version: 1.8.7
       '@chainflip/solana':
-        specifier: ^2.1.3
-        version: 2.1.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^2.1.4
+        version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: ^0.5.0
         version: 0.5.0
@@ -204,8 +204,8 @@ importers:
         specifier: ^1.8.7
         version: 1.8.7
       '@chainflip/solana':
-        specifier: ^2.1.3
-        version: 2.1.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^2.1.4
+        version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: ^0.5.0
         version: 0.5.0
@@ -262,8 +262,8 @@ importers:
         specifier: ^1.8.7
         version: 1.8.7
       '@chainflip/solana':
-        specifier: ^2.1.3
-        version: 2.1.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^2.1.4
+        version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: ^0.5.0
         version: 0.5.0
@@ -487,8 +487,8 @@ packages:
   '@chainflip/scale@1.8.0':
     resolution: {integrity: sha512-66bT2DQi0kNFZRva0phBuMWCWKamOyfROlKovxcBd6wzZVGFxVqgi73iG1nExaUPlOLJnYc8gQ/blwHidgjvrg==}
 
-  '@chainflip/solana@2.1.3':
-    resolution: {integrity: sha512-G6jfW5rcLawQYgjziuHl9ZnRwDTDTyCMbIbh4f6xDkYpC1YrDfkYY0EziYP4XEmZjU5ckQqbygIF/8Sw33ZAtQ==}
+  '@chainflip/solana@2.1.4':
+    resolution: {integrity: sha512-v1ccjDPDci9QvtZeiBxf0Z8VIUFBWK6OC8eTA7AGibAYhOVB7FusmLl+dkCB5qdrpI8PfBz8gcwqgFFvkMDXTw==}
 
   '@chainflip/utils@0.4.0':
     resolution: {integrity: sha512-OuMFlgbIbyJ1Kt39zytfGh4HZ5dVY25/a3qb0c1K137+QmhdOuF+R7QSkFPqYAfDG4KhGRqo0rgUtEpaEEcSKA==}
@@ -498,9 +498,6 @@ packages:
 
   '@chainflip/utils@0.6.0':
     resolution: {integrity: sha512-ZwyNKv3FVVJw5aOcRf/4rTxCclP+prerxPnTGBrFcBYEYSrPlyx4eI1dc7J35xmKD2yq+vQgwNjCx1h6oJuoPA==}
-
-  '@chainflip/utils@0.7.1':
-    resolution: {integrity: sha512-hrIcdlNTF0PKZvdDuSPUNY1ftkIuIFWDaXWDaDAK9dFB0+QRjxO4IAjAupZT0Id1RhbfGekvMt+EVckrC+gv/w==}
 
   '@chainflip/utils@0.7.2':
     resolution: {integrity: sha512-DJ37gbbNVEy/YFcK9oQ19Ro83hUwCFyP2fA//Vatit1Z4nWPKgBmyQtYQLdjfcwrOhvQeYi7DcxfVU0YwOaP2g==}
@@ -5916,10 +5913,10 @@ snapshots:
       '@chainflip/utils': 0.6.0
       scale-ts: 1.6.1
 
-  '@chainflip/solana@2.1.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+  '@chainflip/solana@2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
       '@chainflip/scale': 1.8.0
-      '@chainflip/utils': 0.7.1
+      '@chainflip/utils': 0.7.2
       '@coral-xyz/anchor': 0.31.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@solana/web3.js': 1.98.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       bn.js: 5.2.1
@@ -5939,12 +5936,6 @@ snapshots:
       date-fns: 4.1.0
 
   '@chainflip/utils@0.6.0':
-    dependencies:
-      '@date-fns/utc': 2.1.0
-      bignumber.js: 9.1.2
-      date-fns: 4.1.0
-
-  '@chainflip/utils@0.7.1':
     dependencies:
       '@date-fns/utc': 2.1.0
       bignumber.js: 9.1.2
