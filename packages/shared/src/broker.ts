@@ -214,7 +214,7 @@ export async function requestSwapDepositAddress(
     params.ccmParams,
     params.maxBoostFeeBps,
     params.affiliates,
-    params.fillOrKillParams,
+    params.fillOrKillParams!,
     params.dcaParams,
   );
 
