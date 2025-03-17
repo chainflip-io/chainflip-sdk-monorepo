@@ -51,7 +51,7 @@ describe(broker.requestSwapDepositAddress, () => {
     expect(requestObject).toStrictEqual({
       id: requestObject.id,
       jsonrpc: '2.0',
-      method: 'broker_requestSwapDepositAddress',
+      method: 'broker_request_swap_deposit_address',
       params: [
         { asset: 'FLIP', chain: 'Ethereum' },
         { asset: 'USDC', chain: 'Ethereum' },
@@ -91,7 +91,7 @@ describe(broker.requestSwapDepositAddress, () => {
     expect(requestObject).toStrictEqual({
       id: requestObject.id,
       jsonrpc: '2.0',
-      method: 'broker_requestSwapDepositAddress',
+      method: 'broker_request_swap_deposit_address',
       params: [
         { asset: 'FLIP', chain: 'Ethereum' },
         { asset: 'BTC', chain: 'Bitcoin' },
@@ -150,7 +150,7 @@ describe(broker.requestSwapDepositAddress, () => {
     expect(requestObject).toStrictEqual({
       id: requestObject.id,
       jsonrpc: '2.0',
-      method: 'broker_requestSwapDepositAddress',
+      method: 'broker_request_swap_deposit_address',
       params: [
         { asset: 'FLIP', chain: 'Ethereum' },
         { asset: 'USDC', chain: 'Ethereum' },
@@ -197,7 +197,7 @@ describe(broker.requestSwapDepositAddress, () => {
     expect(requestObject).toStrictEqual({
       id: requestObject.id,
       jsonrpc: '2.0',
-      method: 'broker_requestSwapDepositAddress',
+      method: 'broker_request_swap_deposit_address',
       params: [
         { asset: 'FLIP', chain: 'Ethereum' },
         { asset: 'USDC', chain: 'Ethereum' },
@@ -245,7 +245,7 @@ describe(broker.requestSwapDepositAddress, () => {
     expect(requestObject).toStrictEqual({
       id: requestObject.id,
       jsonrpc: '2.0',
-      method: 'broker_requestSwapDepositAddress',
+      method: 'broker_request_swap_deposit_address',
       params: [
         { asset: 'FLIP', chain: 'Ethereum' },
         { asset: 'USDC', chain: 'Ethereum' },
@@ -297,7 +297,7 @@ describe(broker.requestSwapDepositAddress, () => {
     expect(requestObject).toStrictEqual({
       id: requestObject.id,
       jsonrpc: '2.0',
-      method: 'broker_requestSwapDepositAddress',
+      method: 'broker_request_swap_deposit_address',
       params: [
         { asset: 'FLIP', chain: 'Ethereum' },
         { asset: 'USDC', chain: 'Ethereum' },
@@ -352,7 +352,7 @@ describe(broker.requestSwapDepositAddress, () => {
     expect(requestObject).toStrictEqual({
       id: requestObject.id,
       jsonrpc: '2.0',
-      method: 'broker_requestSwapDepositAddress',
+      method: 'broker_request_swap_deposit_address',
       params: [
         { asset: 'FLIP', chain: 'Ethereum' },
         { asset: 'USDC', chain: 'Ethereum' },
@@ -408,7 +408,7 @@ describe(broker.requestSwapDepositAddress, () => {
     expect(requestObject).toStrictEqual({
       id: requestObject.id,
       jsonrpc: '2.0',
-      method: 'broker_requestSwapDepositAddress',
+      method: 'broker_request_swap_deposit_address',
       params: [
         { asset: 'FLIP', chain: 'Ethereum' },
         { asset: 'USDC', chain: 'Ethereum' },

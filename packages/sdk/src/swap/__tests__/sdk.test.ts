@@ -410,7 +410,7 @@ describe(SwapSDK, () => {
 
     it('calls the configured broker api', async () => {
       const postSpy = mockRpcResponse((url, data: any) => {
-        if (data.method === 'broker_requestSwapDepositAddress') {
+        if (data.method === 'broker_request_swap_deposit_address') {
           return Promise.resolve({
             data: {
               id: '1',
@@ -444,7 +444,7 @@ describe(SwapSDK, () => {
         {
           id: expect.any(String),
           jsonrpc: '2.0',
-          method: 'broker_requestSwapDepositAddress',
+          method: 'broker_request_swap_deposit_address',
           params: [
             { asset: 'BTC', chain: 'Bitcoin' },
             { asset: 'FLIP', chain: 'Ethereum' },
@@ -478,7 +478,7 @@ describe(SwapSDK, () => {
 
     it('calls the configured broker api with the given broker commission', async () => {
       const postSpy = mockRpcResponse((url, data: any) => {
-        if (data.method === 'broker_requestSwapDepositAddress') {
+        if (data.method === 'broker_request_swap_deposit_address') {
           return Promise.resolve({
             data: {
               id: '1',
@@ -513,7 +513,7 @@ describe(SwapSDK, () => {
         {
           id: expect.any(String),
           jsonrpc: '2.0',
-          method: 'broker_requestSwapDepositAddress',
+          method: 'broker_request_swap_deposit_address',
           params: [
             { asset: 'BTC', chain: 'Bitcoin' },
             { asset: 'FLIP', chain: 'Ethereum' },
@@ -547,7 +547,7 @@ describe(SwapSDK, () => {
 
     it('calls the configured broker api with the given affiliate brokers', async () => {
       const postSpy = mockRpcResponse((url, data: any) => {
-        if (data.method === 'broker_requestSwapDepositAddress') {
+        if (data.method === 'broker_request_swap_deposit_address') {
           return Promise.resolve({
             data: {
               id: '1',
@@ -584,7 +584,7 @@ describe(SwapSDK, () => {
         {
           id: expect.any(String),
           jsonrpc: '2.0',
-          method: 'broker_requestSwapDepositAddress',
+          method: 'broker_request_swap_deposit_address',
           params: [
             { asset: 'BTC', chain: 'Bitcoin' },
             { asset: 'FLIP', chain: 'Ethereum' },
@@ -620,7 +620,7 @@ describe(SwapSDK, () => {
 
     it('calls the configured broker api with the given refund parameters', async () => {
       const postSpy = mockRpcResponse((url, data: any) => {
-        if (data.method === 'broker_requestSwapDepositAddress') {
+        if (data.method === 'broker_request_swap_deposit_address') {
           return Promise.resolve({
             data: {
               id: '1',
@@ -659,7 +659,7 @@ describe(SwapSDK, () => {
         {
           id: expect.any(String),
           jsonrpc: '2.0',
-          method: 'broker_requestSwapDepositAddress',
+          method: 'broker_request_swap_deposit_address',
           params: [
             { asset: 'BTC', chain: 'Bitcoin' },
             { asset: 'FLIP', chain: 'Ethereum' },
@@ -702,7 +702,7 @@ describe(SwapSDK, () => {
 
     it('calls the configured broker api with the given dca parameters', async () => {
       const postSpy = mockRpcResponse((url, data: any) => {
-        if (data.method === 'broker_requestSwapDepositAddress') {
+        if (data.method === 'broker_request_swap_deposit_address') {
           return Promise.resolve({
             data: {
               id: '1',
@@ -745,7 +745,7 @@ describe(SwapSDK, () => {
         {
           id: expect.any(String),
           jsonrpc: '2.0',
-          method: 'broker_requestSwapDepositAddress',
+          method: 'broker_request_swap_deposit_address',
           params: [
             { asset: 'BTC', chain: 'Bitcoin' },
             { asset: 'FLIP', chain: 'Ethereum' },
@@ -795,7 +795,7 @@ describe(SwapSDK, () => {
 
     it('allows defining boost fee when opening a deposit channel', async () => {
       const postSpy = mockRpcResponse((url, data: any) => {
-        if (data.method === 'broker_requestSwapDepositAddress') {
+        if (data.method === 'broker_request_swap_deposit_address') {
           return Promise.resolve({
             data: {
               id: '1',
@@ -831,7 +831,7 @@ describe(SwapSDK, () => {
         {
           id: expect.any(String),
           jsonrpc: '2.0',
-          method: 'broker_requestSwapDepositAddress',
+          method: 'broker_request_swap_deposit_address',
           params: [
             { asset: 'BTC', chain: 'Bitcoin' },
             { asset: 'FLIP', chain: 'Ethereum' },
@@ -1021,7 +1021,7 @@ describe(SwapSDK, () => {
 
     it('calls the configured broker api', async () => {
       const postSpy = mockRpcResponse((url, data: any) => {
-        if (data.method === 'broker_requestSwapDepositAddress') {
+        if (data.method === 'broker_request_swap_deposit_address') {
           return Promise.resolve({
             data: {
               id: '1',
@@ -1058,7 +1058,7 @@ describe(SwapSDK, () => {
         {
           id: expect.any(String),
           jsonrpc: '2.0',
-          method: 'broker_requestSwapDepositAddress',
+          method: 'broker_request_swap_deposit_address',
           params: [
             { asset: 'BTC', chain: 'Bitcoin' },
             { asset: 'FLIP', chain: 'Ethereum' },
@@ -1096,7 +1096,7 @@ describe(SwapSDK, () => {
 
     it('calls the configured broker api with the given broker commission', async () => {
       const postSpy = mockRpcResponse((url, data: any) => {
-        if (data.method === 'broker_requestSwapDepositAddress') {
+        if (data.method === 'broker_request_swap_deposit_address') {
           return Promise.resolve({
             data: {
               id: '1',
@@ -1133,7 +1133,7 @@ describe(SwapSDK, () => {
         {
           id: expect.any(String),
           jsonrpc: '2.0',
-          method: 'broker_requestSwapDepositAddress',
+          method: 'broker_request_swap_deposit_address',
           params: [
             { asset: 'BTC', chain: 'Bitcoin' },
             { asset: 'FLIP', chain: 'Ethereum' },
@@ -1171,7 +1171,7 @@ describe(SwapSDK, () => {
 
     it('calls the configured broker api with the given affiliate brokers', async () => {
       const postSpy = mockRpcResponse((url, data: any) => {
-        if (data.method === 'broker_requestSwapDepositAddress') {
+        if (data.method === 'broker_request_swap_deposit_address') {
           return Promise.resolve({
             data: {
               id: '1',
@@ -1210,7 +1210,7 @@ describe(SwapSDK, () => {
         {
           id: expect.any(String),
           jsonrpc: '2.0',
-          method: 'broker_requestSwapDepositAddress',
+          method: 'broker_request_swap_deposit_address',
           params: [
             { asset: 'BTC', chain: 'Bitcoin' },
             { asset: 'FLIP', chain: 'Ethereum' },
@@ -1250,7 +1250,7 @@ describe(SwapSDK, () => {
 
     it('calls the configured broker api with the given refund parameters', async () => {
       const postSpy = mockRpcResponse((url, data: any) => {
-        if (data.method === 'broker_requestSwapDepositAddress') {
+        if (data.method === 'broker_request_swap_deposit_address') {
           return Promise.resolve({
             data: {
               id: '1',
@@ -1291,7 +1291,7 @@ describe(SwapSDK, () => {
         {
           id: expect.any(String),
           jsonrpc: '2.0',
-          method: 'broker_requestSwapDepositAddress',
+          method: 'broker_request_swap_deposit_address',
           params: [
             { asset: 'BTC', chain: 'Bitcoin' },
             { asset: 'FLIP', chain: 'Ethereum' },
@@ -1337,7 +1337,7 @@ describe(SwapSDK, () => {
 
     it('calls the configured broker api with the given dca parameters', async () => {
       const postSpy = mockRpcResponse((url, data: any) => {
-        if (data.method === 'broker_requestSwapDepositAddress') {
+        if (data.method === 'broker_request_swap_deposit_address') {
           return Promise.resolve({
             data: {
               id: '1',
@@ -1382,7 +1382,7 @@ describe(SwapSDK, () => {
         {
           id: expect.any(String),
           jsonrpc: '2.0',
-          method: 'broker_requestSwapDepositAddress',
+          method: 'broker_request_swap_deposit_address',
           params: [
             { asset: 'BTC', chain: 'Bitcoin' },
             { asset: 'FLIP', chain: 'Ethereum' },
@@ -1434,7 +1434,7 @@ describe(SwapSDK, () => {
 
     it('calls the configured broker api with the given ccm parameters', async () => {
       const postSpy = mockRpcResponse((url, data: any) => {
-        if (data.method === 'broker_requestSwapDepositAddress') {
+        if (data.method === 'broker_request_swap_deposit_address') {
           return Promise.resolve({
             data: {
               id: '1',
@@ -1474,7 +1474,7 @@ describe(SwapSDK, () => {
         {
           id: expect.any(String),
           jsonrpc: '2.0',
-          method: 'broker_requestSwapDepositAddress',
+          method: 'broker_request_swap_deposit_address',
           params: [
             { asset: 'BTC', chain: 'Bitcoin' },
             { asset: 'FLIP', chain: 'Ethereum' },
@@ -1521,7 +1521,7 @@ describe(SwapSDK, () => {
 
     it('calls the configured broker api with the given boost fee', async () => {
       const postSpy = mockRpcResponse((url, data: any) => {
-        if (data.method === 'broker_requestSwapDepositAddress') {
+        if (data.method === 'broker_request_swap_deposit_address') {
           return Promise.resolve({
             data: {
               id: '1',
@@ -1559,7 +1559,7 @@ describe(SwapSDK, () => {
         {
           id: expect.any(String),
           jsonrpc: '2.0',
-          method: 'broker_requestSwapDepositAddress',
+          method: 'broker_request_swap_deposit_address',
           params: [
             { asset: 'BTC', chain: 'Bitcoin' },
             { asset: 'FLIP', chain: 'Ethereum' },

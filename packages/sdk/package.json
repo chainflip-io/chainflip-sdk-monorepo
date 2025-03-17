@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@chainflip/bitcoin": "^1.2.4",
-    "@chainflip/rpc": "^1.8.7",
+    "@chainflip/rpc": "^1.8.8",
     "@chainflip/solana": "^2.1.4",
     "@chainflip/utils": "^0.5.0",
     "@trpc/client": "^10.45.2",
