@@ -69,6 +69,11 @@ export default async function cliRequestSwapDepositAddress(
       ccmParams,
       commissionBps: args.commission ?? 0,
       affiliates: [],
+      fillOrKillParams: {
+        retryDurationBlocks: 500,
+        refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+        minPriceX128: '1',
+      },
     },
     {
       url: args.brokerUrl,

@@ -132,10 +132,6 @@ describe(parseFoKParams, () => {
     }).toThrow('Cannot have both minPrice and slippageTolerancePercent');
   });
 
-  it('returns undefined if no FoK params are provided', () => {
-    expect(parseFoKParams(undefined, quote)).toBeUndefined();
-  });
-
   it('throws if estimated price is invalid', () => {
     expect(() => {
       parseFoKParams(

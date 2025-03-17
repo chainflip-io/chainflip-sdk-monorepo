@@ -23,7 +23,6 @@ import {
   FillOrKillParamsX128,
   dcaParams as dcaParamsSchema,
   DcaParams,
-  ensureDcaWithFok,
 } from './schemas';
 import { validateAddress } from './validation/addressValidation';
 
@@ -35,7 +34,7 @@ type DepositAddressRequest = {
   ccmParams?: CcmParams;
   maxBoostFeeBps?: number;
   affiliates?: AffiliateBroker[];
-  fillOrKillParams?: FillOrKillParamsX128;
+  fillOrKillParams: FillOrKillParamsX128;
   dcaParams?: DcaParams;
 
   /** @deprecated DEPRECATED(1.8) pass the chain in the srcAsset object instead */
@@ -83,7 +82,7 @@ const getDepositAddressRequestSchema = (network: ChainflipNetwork) =>
       ccmParams: transformedCcmParamsSchema.optional(),
       maxBoostFeeBps: z.number().optional(),
       affiliates: z.array(affiliateBroker).optional(),
-      fillOrKillParams: transformedFokSchema.optional(),
+      fillOrKillParams: transformedFokSchema,
       dcaParams: transformedDcaParamsSchema.optional(),
     })
     .superRefine((val, ctx) => {
@@ -95,17 +94,13 @@ const getDepositAddressRequestSchema = (network: ChainflipNetwork) =>
       }
     })
     .superRefine((val, ctx) => {
-      if (
-        val.fillOrKillParams &&
-        !validateAddress(val.srcAsset.chain, val.fillOrKillParams.refund_address, network)
-      ) {
+      if (!validateAddress(val.srcAsset.chain, val.fillOrKillParams.refund_address, network)) {
         ctx.addIssue({
           message: `Address "${val.fillOrKillParams.refund_address}" is not a valid "${val.srcAsset.chain}" address for "${network}"`,
           code: z.ZodIssueCode.custom,
         });
       }
-    })
-    .superRefine(ensureDcaWithFok);
+    });
 
 export const getParameterEncodingRequestSchema = (network: ChainflipNetwork) =>
   z
@@ -140,10 +135,7 @@ export const getParameterEncodingRequestSchema = (network: ChainflipNetwork) =>
       }
     })
     .superRefine((val, ctx) => {
-      if (
-        val.fillOrKillParams &&
-        !validateAddress(val.srcAsset.chain, val.fillOrKillParams.refund_address, network)
-      ) {
+      if (!validateAddress(val.srcAsset.chain, val.fillOrKillParams.refund_address, network)) {
         ctx.addIssue({
           message: `Address "${val.fillOrKillParams.refund_address}" is not a valid "${val.srcAsset.chain}" address for "${network}"`,
           code: z.ZodIssueCode.custom,
@@ -214,7 +206,7 @@ export async function requestSwapDepositAddress(
     params.ccmParams,
     params.maxBoostFeeBps,
     params.affiliates,
-    params.fillOrKillParams!,
+    params.fillOrKillParams,
     params.dcaParams,
   );
 

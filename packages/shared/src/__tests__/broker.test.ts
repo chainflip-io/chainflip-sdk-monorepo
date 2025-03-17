@@ -42,6 +42,11 @@ describe(broker.requestSwapDepositAddress, () => {
         srcChain: 'Ethereum',
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPriceX128: '10000000000000',
+        },
       },
       brokerConfig,
       'perseverance',
@@ -60,7 +65,11 @@ describe(broker.requestSwapDepositAddress, () => {
         null,
         null,
         null,
-        null,
+        {
+          retry_duration: 500,
+          refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          min_price: '0x9184e72a000',
+        },
         null,
       ],
     });
@@ -82,6 +91,11 @@ describe(broker.requestSwapDepositAddress, () => {
         srcChain: 'Ethereum',
         destAddress: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
         destChain: 'Bitcoin',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPriceX128: '10000000000000',
+        },
       },
       brokerConfig,
       'mainnet',
@@ -100,7 +114,11 @@ describe(broker.requestSwapDepositAddress, () => {
         null,
         null,
         null,
-        null,
+        {
+          retry_duration: 500,
+          refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          min_price: '0x9184e72a000',
+        },
         null,
       ],
     });
@@ -122,6 +140,11 @@ describe(broker.requestSwapDepositAddress, () => {
           srcChain: 'Ethereum',
           destAddress: '2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm',
           destChain: 'Bitcoin',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+            minPriceX128: '10000000000000',
+          },
         },
         brokerConfig,
         'mainnet',
@@ -138,6 +161,11 @@ describe(broker.requestSwapDepositAddress, () => {
         srcChain: 'Ethereum',
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPriceX128: '10000000000000',
+        },
         ccmParams: {
           gasBudget: '123456789',
           message: '0xdeadc0de',
@@ -162,7 +190,11 @@ describe(broker.requestSwapDepositAddress, () => {
         },
         null,
         null,
-        null,
+        {
+          retry_duration: 500,
+          refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          min_price: '0x9184e72a000',
+        },
         null,
       ],
     });
@@ -184,6 +216,11 @@ describe(broker.requestSwapDepositAddress, () => {
         srcChain: 'Ethereum',
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPriceX128: '10000000000000',
+        },
         ccmParams: {
           gasBudget: '123456789',
           message: '0xdeadc0de',
@@ -209,7 +246,11 @@ describe(broker.requestSwapDepositAddress, () => {
         },
         100,
         null,
-        null,
+        {
+          retry_duration: 500,
+          refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          min_price: '0x9184e72a000',
+        },
         null,
       ],
     });
@@ -231,6 +272,11 @@ describe(broker.requestSwapDepositAddress, () => {
         srcChain: 'Ethereum',
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPriceX128: '10000000000000',
+        },
         ccmParams: {
           gasBudget: '123456789',
           message: '0xdeadc0de',
@@ -257,7 +303,11 @@ describe(broker.requestSwapDepositAddress, () => {
         },
         100,
         null,
-        null,
+        {
+          retry_duration: 500,
+          refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          min_price: '0x9184e72a000',
+        },
         null,
       ],
     });
@@ -279,6 +329,11 @@ describe(broker.requestSwapDepositAddress, () => {
         srcChain: 'Ethereum',
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPriceX128: '10000000000000',
+        },
         ccmParams: {
           gasBudget: '123456789',
           message: '0xdeadc0de',
@@ -312,62 +367,10 @@ describe(broker.requestSwapDepositAddress, () => {
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', bps: 10 },
           { account: 'cFJ4sqrg4FnrLPsGdt5w85XExGYxVLHLYLci28PnqcVVb8r8a', bps: 20 },
         ],
-        null,
-        null,
-      ],
-    });
-    expect(result).toStrictEqual({
-      address: '0x31E9b3373F2AD5d964CAd0fd01332d6550cBBdE6',
-      issuedBlock: 50,
-      channelId: 200,
-      sourceChainExpiryBlock: 1_000_000n,
-      channelOpeningFee: 0n,
-    });
-  });
-
-  it('submits refund parameters', async () => {
-    const postSpy = mockResponse();
-    const result = await broker.requestSwapDepositAddress(
-      {
-        srcAsset: Assets.FLIP,
-        destAsset: Assets.USDC,
-        srcChain: 'Ethereum',
-        destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
-        destChain: 'Ethereum',
-        ccmParams: {
-          gasBudget: '123456789',
-          message: '0xdeadc0de',
-        },
-        maxBoostFeeBps: 100,
-        fillOrKillParams: {
-          retryDurationBlocks: 500,
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-          minPriceX128: '10000000000000',
-        },
-      },
-      brokerConfig,
-      'perseverance',
-    );
-    const requestObject = postSpy.mock.calls[0][1][0];
-    expect(requestObject).toStrictEqual({
-      id: requestObject.id,
-      jsonrpc: '2.0',
-      method: 'broker_request_swap_deposit_address',
-      params: [
-        { asset: 'FLIP', chain: 'Ethereum' },
-        { asset: 'USDC', chain: 'Ethereum' },
-        '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
-        0,
         {
-          gas_budget: '0x75bcd15',
-          message: '0xdeadc0de',
-        },
-        100,
-        null,
-        {
-          min_price: '0x9184e72a000',
-          refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           retry_duration: 500,
+          refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          min_price: '0x9184e72a000',
         },
         null,
       ],
@@ -437,27 +440,6 @@ describe(broker.requestSwapDepositAddress, () => {
     });
   });
 
-  it("can't submit dca parameters without fok parameters", async () => {
-    await expect(
-      broker.requestSwapDepositAddress(
-        {
-          srcAsset: Assets.FLIP,
-          destAsset: Assets.USDC,
-          srcChain: 'Ethereum',
-          destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
-          destChain: 'Ethereum',
-          maxBoostFeeBps: 100,
-          dcaParams: {
-            numberOfChunks: 100,
-            chunkIntervalBlocks: 5,
-          },
-        },
-        brokerConfig,
-        'perseverance',
-      ),
-    ).rejects.toThrow('dcaParams requires fillOrKillParams');
-  });
-
   it.each([
     '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
     '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
@@ -470,6 +452,11 @@ describe(broker.requestSwapDepositAddress, () => {
         destAsset: Assets.DOT,
         destChain: 'Polkadot',
         destAddress,
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPriceX128: '10000000000000',
+        },
       },
       brokerConfig,
       'perseverance',

@@ -437,6 +437,11 @@ describe(SwapSDK, () => {
         destChain: 'Ethereum',
         destAsset: 'FLIP',
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          minPrice: '2458.206',
+        },
         amount: BigInt(1e18).toString(),
       });
 
@@ -453,7 +458,11 @@ describe(SwapSDK, () => {
             null,
             null,
             null,
-            null,
+            {
+              min_price: '0x165b74f4430000000000000000000000000000000000',
+              refund_address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+              retry_duration: 500,
+            },
             null,
           ],
         },
@@ -464,6 +473,11 @@ describe(SwapSDK, () => {
         destChain: 'Ethereum',
         destAsset: 'FLIP',
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          minPrice: '2458.206',
+        },
         brokerCommissionBps: 15,
         amount: '1000000000000000000',
         depositChannelId: '123-Bitcoin-15',
@@ -505,6 +519,11 @@ describe(SwapSDK, () => {
         destChain: 'Ethereum',
         destAsset: 'FLIP',
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          minPrice: '2458.206',
+        },
         amount: BigInt(1e18).toString(),
         brokerCommissionBps: 125,
       });
@@ -522,7 +541,11 @@ describe(SwapSDK, () => {
             null,
             null,
             null,
-            null,
+            {
+              min_price: '0x165b74f4430000000000000000000000000000000000',
+              refund_address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+              retry_duration: 500,
+            },
             null,
           ],
         },
@@ -533,6 +556,11 @@ describe(SwapSDK, () => {
         destChain: 'Ethereum',
         destAsset: 'FLIP',
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          minPrice: '2458.206',
+        },
         brokerCommissionBps: 125,
         amount: '1000000000000000000',
         depositChannelId: '123-Bitcoin-15',
@@ -574,6 +602,11 @@ describe(SwapSDK, () => {
         destChain: 'Ethereum',
         destAsset: 'FLIP',
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          minPrice: '2458.206',
+        },
         amount: BigInt(1e18).toString(),
         affiliateBrokers: [
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
@@ -593,7 +626,11 @@ describe(SwapSDK, () => {
             null,
             null,
             [{ account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', bps: 10 }],
-            null,
+            {
+              min_price: '0x165b74f4430000000000000000000000000000000000',
+              refund_address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+              retry_duration: 500,
+            },
             null,
           ],
         },
@@ -604,6 +641,11 @@ describe(SwapSDK, () => {
         destChain: 'Ethereum',
         destAsset: 'FLIP',
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          minPrice: '2458.206',
+        },
         brokerCommissionBps: 15,
         amount: '1000000000000000000',
         depositChannelId: '123-Bitcoin-15',
@@ -615,88 +657,6 @@ describe(SwapSDK, () => {
         affiliateBrokers: [
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
         ],
-      });
-    });
-
-    it('calls the configured broker api with the given refund parameters', async () => {
-      const postSpy = mockRpcResponse((url, data: any) => {
-        if (data.method === 'broker_request_swap_deposit_address') {
-          return Promise.resolve({
-            data: {
-              id: '1',
-              jsonrpc: '2.0',
-              result: {
-                address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
-                issued_block: 123,
-                channel_id: 15,
-                source_chain_expiry_block: '0x04d2',
-                channel_opening_fee: '0x0',
-              },
-            },
-          });
-        }
-
-        return defaultRpcMocks(url, data);
-      });
-
-      const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
-      }).requestDepositAddress({
-        srcChain: 'Bitcoin',
-        srcAsset: 'BTC',
-        destChain: 'Ethereum',
-        destAsset: 'FLIP',
-        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-        amount: BigInt(1e18).toString(),
-        fillOrKillParams: {
-          retryDurationBlocks: 500,
-          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
-          minPrice: '2458.206',
-        },
-      });
-
-      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
-        {
-          id: expect.any(String),
-          jsonrpc: '2.0',
-          method: 'broker_request_swap_deposit_address',
-          params: [
-            { asset: 'BTC', chain: 'Bitcoin' },
-            { asset: 'FLIP', chain: 'Ethereum' },
-            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-            15,
-            null,
-            null,
-            null,
-            {
-              retry_duration: 500,
-              refund_address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
-              min_price: '0x165b74f4430000000000000000000000000000000000',
-            },
-            null,
-          ],
-        },
-      ]);
-      expect(result).toStrictEqual({
-        srcChain: 'Bitcoin',
-        srcAsset: 'BTC',
-        destChain: 'Ethereum',
-        destAsset: 'FLIP',
-        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-        brokerCommissionBps: 15,
-        amount: '1000000000000000000',
-        depositChannelId: '123-Bitcoin-15',
-        depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
-        depositChannelExpiryBlock: 1234n,
-        estimatedDepositChannelExpiryTime: undefined,
-        maxBoostFeeBps: 0,
-        channelOpeningFee: 0n,
-        affiliateBrokers: [],
-        fillOrKillParams: {
-          retryDurationBlocks: 500,
-          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
-          minPrice: '2458.206',
-        },
       });
     });
 
@@ -823,6 +783,11 @@ describe(SwapSDK, () => {
         destChain: 'Ethereum',
         destAsset: 'FLIP',
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          retryDurationBlocks: 500,
+        },
         amount: BigInt(1e18).toString(),
         maxBoostFeeBps: MAX_BOOST_FEE_BPS,
       });
@@ -840,7 +805,11 @@ describe(SwapSDK, () => {
             null,
             MAX_BOOST_FEE_BPS,
             null,
-            null,
+            {
+              min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+              refund_address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+              retry_duration: 500,
+            },
             null,
           ],
         },
@@ -851,6 +820,11 @@ describe(SwapSDK, () => {
         destChain: 'Ethereum',
         destAsset: 'FLIP',
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          retryDurationBlocks: 500,
+        },
         brokerCommissionBps: 15,
         amount: '1000000000000000000',
         depositChannelId: '123-Bitcoin-15',
@@ -1052,6 +1026,11 @@ describe(SwapSDK, () => {
         } as Quote,
         srcAddress: 'mrV3ee4J3jipspCNPofzB2UbaVu7qgf9Ex',
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          retryDurationBlocks: 500,
+        },
       });
 
       expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
@@ -1067,7 +1046,11 @@ describe(SwapSDK, () => {
             null,
             null,
             null,
-            null,
+            {
+              min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+              refund_address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+              retry_duration: 500,
+            },
             null,
           ],
         },
@@ -1079,6 +1062,11 @@ describe(SwapSDK, () => {
         destAsset: 'FLIP',
         srcAddress: 'mrV3ee4J3jipspCNPofzB2UbaVu7qgf9Ex',
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          retryDurationBlocks: 500,
+        },
         brokerCommissionBps: 15,
         ccmParams: undefined,
         amount: '1000000000000000000',
@@ -1090,7 +1078,6 @@ describe(SwapSDK, () => {
         channelOpeningFee: 0n,
         affiliateBrokers: [],
         dcaParams: undefined,
-        fillOrKillParams: undefined,
       });
     });
 
@@ -1126,6 +1113,11 @@ describe(SwapSDK, () => {
           isVaultSwap: false,
         } as Quote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          retryDurationBlocks: 500,
+        },
         brokerCommissionBps: 125,
       });
 
@@ -1142,7 +1134,11 @@ describe(SwapSDK, () => {
             null,
             null,
             null,
-            null,
+            {
+              min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+              refund_address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+              retry_duration: 500,
+            },
             null,
           ],
         },
@@ -1154,6 +1150,11 @@ describe(SwapSDK, () => {
         destAsset: 'FLIP',
         srcAddress: undefined,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          retryDurationBlocks: 500,
+        },
         brokerCommissionBps: 125,
         ccmParams: undefined,
         amount: '1000000000000000000',
@@ -1165,7 +1166,6 @@ describe(SwapSDK, () => {
         channelOpeningFee: 0n,
         affiliateBrokers: [],
         dcaParams: undefined,
-        fillOrKillParams: undefined,
       });
     });
 
@@ -1201,6 +1201,11 @@ describe(SwapSDK, () => {
           isVaultSwap: false,
         } as Quote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          retryDurationBlocks: 500,
+        },
         affiliateBrokers: [
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
         ],
@@ -1219,7 +1224,11 @@ describe(SwapSDK, () => {
             null,
             null,
             [{ account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', bps: 10 }],
-            null,
+            {
+              min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+              refund_address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+              retry_duration: 500,
+            },
             null,
           ],
         },
@@ -1231,6 +1240,11 @@ describe(SwapSDK, () => {
         destAsset: 'FLIP',
         srcAddress: undefined,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          retryDurationBlocks: 500,
+        },
         brokerCommissionBps: 15,
         ccmParams: undefined,
         amount: '1000000000000000000',
@@ -1243,94 +1257,6 @@ describe(SwapSDK, () => {
         affiliateBrokers: [
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
         ],
-        dcaParams: undefined,
-        fillOrKillParams: undefined,
-      });
-    });
-
-    it('calls the configured broker api with the given refund parameters', async () => {
-      const postSpy = mockRpcResponse((url, data: any) => {
-        if (data.method === 'broker_request_swap_deposit_address') {
-          return Promise.resolve({
-            data: {
-              id: '1',
-              jsonrpc: '2.0',
-              result: {
-                address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
-                issued_block: 123,
-                channel_id: 15,
-                source_chain_expiry_block: '0x04d2',
-                channel_opening_fee: '0x0',
-              },
-            },
-          });
-        }
-
-        return defaultRpcMocks(url, data);
-      });
-
-      const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
-      }).requestDepositAddressV2({
-        quote: {
-          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
-          depositAmount: BigInt(1e18).toString(),
-          type: 'REGULAR',
-          isVaultSwap: false,
-        } as Quote,
-        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-        fillOrKillParams: {
-          retryDurationBlocks: 500,
-          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
-          minPrice: '2458.206',
-        },
-      });
-
-      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
-        {
-          id: expect.any(String),
-          jsonrpc: '2.0',
-          method: 'broker_request_swap_deposit_address',
-          params: [
-            { asset: 'BTC', chain: 'Bitcoin' },
-            { asset: 'FLIP', chain: 'Ethereum' },
-            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-            15,
-            null,
-            null,
-            null,
-            {
-              retry_duration: 500,
-              refund_address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
-              min_price: '0x165b74f4430000000000000000000000000000000000',
-            },
-            null,
-          ],
-        },
-      ]);
-      expect(result).toStrictEqual({
-        srcChain: 'Bitcoin',
-        srcAsset: 'BTC',
-        destChain: 'Ethereum',
-        destAsset: 'FLIP',
-        srcAddress: undefined,
-        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
-        brokerCommissionBps: 15,
-        ccmParams: undefined,
-        amount: '1000000000000000000',
-        depositChannelId: '123-Bitcoin-15',
-        depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
-        depositChannelExpiryBlock: 1234n,
-        estimatedDepositChannelExpiryTime: undefined,
-        maxBoostFeeBps: 0,
-        channelOpeningFee: 0n,
-        affiliateBrokers: [],
-        fillOrKillParams: {
-          retryDurationBlocks: 500,
-          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
-          minPrice: '2458.206',
-        },
         dcaParams: undefined,
       });
     });
@@ -1463,6 +1389,11 @@ describe(SwapSDK, () => {
           type: 'REGULAR',
         } as Quote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          retryDurationBlocks: 500,
+        },
         ccmParams: {
           gasBudget: '123456789',
           message: '0xdeadc0de',
@@ -1488,7 +1419,11 @@ describe(SwapSDK, () => {
             },
             null,
             null,
-            null,
+            {
+              min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+              refund_address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+              retry_duration: 500,
+            },
             null,
           ],
         },
@@ -1500,6 +1435,11 @@ describe(SwapSDK, () => {
         destAsset: 'FLIP',
         srcAddress: undefined,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          retryDurationBlocks: 500,
+        },
         brokerCommissionBps: 15,
         ccmParams: {
           gasBudget: '123456789',
@@ -1511,7 +1451,6 @@ describe(SwapSDK, () => {
         depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
         depositChannelExpiryBlock: 1234n,
         estimatedDepositChannelExpiryTime: undefined,
-        fillOrKillParams: undefined,
         maxBoostFeeBps: 0,
         channelOpeningFee: 0n,
         affiliateBrokers: [],
@@ -1553,6 +1492,11 @@ describe(SwapSDK, () => {
           isVaultSwap: false,
         } as BoostQuote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          retryDurationBlocks: 500,
+        },
       });
 
       expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
@@ -1568,7 +1512,11 @@ describe(SwapSDK, () => {
             null,
             MAX_BOOST_FEE_BPS,
             null,
-            null,
+            {
+              min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+              refund_address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+              retry_duration: 500,
+            },
             null,
           ],
         },
@@ -1580,6 +1528,11 @@ describe(SwapSDK, () => {
         destAsset: 'FLIP',
         srcAddress: undefined,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          retryDurationBlocks: 500,
+        },
         brokerCommissionBps: 15,
         ccmParams: undefined,
         amount: '1000000000000000000',
@@ -1591,7 +1544,6 @@ describe(SwapSDK, () => {
         channelOpeningFee: 0n,
         affiliateBrokers: [],
         dcaParams: undefined,
-        fillOrKillParams: undefined,
       });
     });
 
@@ -1611,6 +1563,11 @@ describe(SwapSDK, () => {
             isVaultSwap: false,
           } as Quote,
           destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          fillOrKillParams: {
+            minPrice: '10000000000000',
+            refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+            retryDurationBlocks: 500,
+          },
         }),
       ).rejects.toThrow('Invalid quote type');
     });
@@ -1628,6 +1585,11 @@ describe(SwapSDK, () => {
             isVaultSwap: false,
           } as Quote,
           destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          fillOrKillParams: {
+            minPrice: '10000000000000',
+            refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+            retryDurationBlocks: 500,
+          },
         }),
       ).rejects.toThrow('Failed to find DCA parameters from quote');
     });
@@ -1645,6 +1607,11 @@ describe(SwapSDK, () => {
             isVaultSwap: true,
           } as Quote,
           destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          fillOrKillParams: {
+            minPrice: '10000000000000',
+            refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+            retryDurationBlocks: 500,
+          },
         }),
       ).rejects.toThrow('Cannot open a deposit channel for a vault swap quote');
     });
