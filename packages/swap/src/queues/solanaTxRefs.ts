@@ -2,7 +2,7 @@ import {
   findVaultSwapSignature,
   findTransactionSignatures,
   type DepositInfo,
-} from '@chainflip/solana/deposit';
+} from '@chainflip/solana';
 import { sleep } from '@chainflip/utils/async';
 import assert from 'assert';
 import { isAxiosError } from 'axios';

@@ -1,5 +1,5 @@
 import { findVaultSwapData as findBitcoinVaultSwapData } from '@chainflip/bitcoin';
-import { findVaultSwapData as findSolanaVaultSwapData } from '@chainflip/solana/deposit';
+import { findVaultSwapData as findSolanaVaultSwapData } from '@chainflip/solana';
 import { isTruthy } from '@chainflip/utils/guard';
 import { Chain, Chains, InternalAsset, assetConstants } from '@/shared/enums';
 import RedisClient from '@/shared/node-apis/redis';

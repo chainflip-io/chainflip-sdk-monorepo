@@ -1,5 +1,5 @@
 import { findVaultSwapData as findBitcoinVaultSwapData } from '@chainflip/bitcoin';
-import { findVaultSwapData as findSolanaVaultSwapData } from '@chainflip/solana/deposit';
+import { findVaultSwapData as findSolanaVaultSwapData } from '@chainflip/solana';
 import Redis from 'ioredis';
 import { vi, describe, expect, beforeAll, beforeEach, it } from 'vitest';
 import { Chain } from '@/shared/enums';
@@ -8,7 +8,7 @@ import prisma, { Broadcast } from '../../client';
 import logger from '../../utils/logger';
 
 vi.mock('../../utils/logger');
-vi.mock('@chainflip/solana/deposit');
+vi.mock('@chainflip/solana');
 vi.mock('@chainflip/bitcoin');
 
 const updateChainTracking = async (data: {
