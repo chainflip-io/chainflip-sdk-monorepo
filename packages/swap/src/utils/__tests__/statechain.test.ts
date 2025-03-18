@@ -111,7 +111,7 @@ describe(getSwapRateV3, () => {
       0,
       undefined,
       {
-        gas_budget: '0x2775',
+        gas_budget: 10101,
         message_length: 202,
       },
       undefined,

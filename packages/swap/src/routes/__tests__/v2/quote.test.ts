@@ -965,7 +965,7 @@ describe('server', () => {
         0,
         undefined,
         {
-          gas_budget: '0x3039',
+          gas_budget: 12345,
           message_length: 321,
         },
         [],
