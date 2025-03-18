@@ -25,6 +25,8 @@ exports[`ApiService > getQuote > gets a quote 2`] = `
     },
     "params": {
       "amount": "10000",
+      "ccmGasBudget": "undefined",
+      "ccmMessageLengthBytes": "undefined",
       "dcaEnabled": "false",
       "destAsset": "ETH",
       "destChain": "Ethereum",
@@ -63,6 +65,8 @@ exports[`ApiService > getQuote > gets a quote for a vault swap 2`] = `
     },
     "params": {
       "amount": "10000",
+      "ccmGasBudget": "undefined",
+      "ccmMessageLengthBytes": "undefined",
       "dcaEnabled": "false",
       "destAsset": "ETH",
       "destChain": "Ethereum",
@@ -101,6 +105,8 @@ exports[`ApiService > getQuote > gets a quote with a broker commission 2`] = `
     "params": {
       "amount": "10000",
       "brokerCommissionBps": "15",
+      "ccmGasBudget": "undefined",
+      "ccmMessageLengthBytes": "undefined",
       "dcaEnabled": "false",
       "destAsset": "ETH",
       "destChain": "Ethereum",
@@ -142,6 +148,8 @@ exports[`ApiService > getQuoteV2 > gets a quote 2`] = `
     },
     "params": {
       "amount": "10000",
+      "ccmGasBudget": "undefined",
+      "ccmMessageLengthBytes": "undefined",
       "dcaEnabled": "false",
       "destAsset": "ETH",
       "destChain": "Ethereum",
@@ -183,6 +191,8 @@ exports[`ApiService > getQuoteV2 > gets a quote for a vault swap 2`] = `
     },
     "params": {
       "amount": "10000",
+      "ccmGasBudget": "undefined",
+      "ccmMessageLengthBytes": "undefined",
       "dcaEnabled": "true",
       "destAsset": "ETH",
       "destChain": "Ethereum",
@@ -224,6 +234,8 @@ exports[`ApiService > getQuoteV2 > gets a quote with a broker commission 2`] = `
     "params": {
       "amount": "10000",
       "brokerCommissionBps": "15",
+      "ccmGasBudget": "undefined",
+      "ccmMessageLengthBytes": "undefined",
       "dcaEnabled": "false",
       "destAsset": "ETH",
       "destChain": "Ethereum",
