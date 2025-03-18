@@ -46,7 +46,7 @@ export const getSwapRateV3 = async ({
     : undefined;
   const ccmParams = _ccmParams
     ? {
-        gas_budget: hexEncodeNumber(_ccmParams.gasBudget),
+        gas_budget: Number(_ccmParams.gasBudget), //
         message_length: _ccmParams.messageLengthBytes,
       }
     : undefined;

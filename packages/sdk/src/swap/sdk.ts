@@ -406,6 +406,12 @@ export class SwapSDK {
     assertQuoteValid(quote);
     assert(!quote.isVaultSwap, 'Cannot open a deposit channel for a vault swap quote');
 
+    if (ccmParams) {
+      assert(quote.ccmParams, 'Cannot open CCM channel for quote without CCM params');
+    } else {
+      assert(!quote.ccmParams, 'Cannot open regular channel for quote with CCM params');
+    }
+
     const depositAddressRequest = {
       srcAsset: quote.srcAsset.asset,
       srcChain: quote.srcAsset.chain,
@@ -484,6 +490,12 @@ export class SwapSDK {
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
     assert(quote.isVaultSwap, 'Cannot encode vault swap data for a deposit channel quote');
+
+    if (ccmParams) {
+      assert(quote.ccmParams, 'Cannot encode CCM swap for quote without CCM params');
+    } else {
+      assert(!quote.ccmParams, 'Cannot encode regular swap for quote with CCM params');
+    }
 
     const vaultSwapRequest = {
       srcAsset: quote.srcAsset,
