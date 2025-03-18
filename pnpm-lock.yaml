@@ -91,14 +91,14 @@ importers:
         specifier: ^1.6.1
         version: 1.6.1
       '@chainflip/rpc':
-        specifier: ^1.8.0-assethub.1
-        version: 1.8.7
+        specifier: ^1.9.0-assethub.2
+        version: 1.9.0-assethub.2
       '@chainflip/solana':
         specifier: ^2.1.4
         version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^1.8.0-assethub.1
-        version: 1.8.0-assethub.1
+        specifier: ^0.7.2-assethub.1
+        version: 0.7.2
       axios:
         specifier: ^1.x
         version: 1.7.9
@@ -167,14 +167,14 @@ importers:
         specifier: ^1.6.1
         version: 1.6.1
       '@chainflip/rpc':
-        specifier: ^1.8.0-assethub.1
-        version: 1.8.7
+        specifier: ^1.9.0-assethub.2
+        version: 1.9.0-assethub.2
       '@chainflip/solana':
         specifier: ^2.1.4
         version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^1.8.0-assethub.1
-        version: 1.8.0-assethub.1
+        specifier: ^0.7.2-assethub.1
+        version: 0.7.2
       '@trpc/client':
         specifier: ^10.45.2
         version: 10.45.2(@trpc/server@10.45.2)
@@ -207,14 +207,14 @@ importers:
         specifier: ^1.2.4
         version: 1.2.4(typescript@5.7.3)
       '@chainflip/rpc':
-        specifier: ^1.8.0-assethub.1
-        version: 1.8.7
+        specifier: ^1.9.0-assethub.2
+        version: 1.9.0-assethub.2
       '@chainflip/solana':
         specifier: ^2.1.4
         version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^1.8.0-assethub.1
-        version: 1.8.0-assethub.1
+        specifier: ^0.7.2-assethub.1
+        version: 0.7.2
       axios:
         specifier: ^1.7.7
         version: 1.7.9
@@ -265,14 +265,14 @@ importers:
         specifier: ^1.8.4
         version: 1.8.6
       '@chainflip/rpc':
-        specifier: ^1.8.0-assethub.1
-        version: 1.8.7
+        specifier: ^1.9.0-assethub.2
+        version: 1.9.0-assethub.2
       '@chainflip/solana':
         specifier: ^2.1.4
         version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^1.8.0-assethub.1
-        version: 1.8.0-assethub.1
+        specifier: ^0.7.2-assethub.1
+        version: 0.7.2
       '@polkadot/api':
         specifier: ^15.5.2
         version: 15.6.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -490,8 +490,8 @@ packages:
   '@chainflip/processor@1.8.6':
     resolution: {integrity: sha512-rJ3Dw4fnsRYgi8ioQSKJMkseaT+kw+ZL7dU1ZEtVz23w28HZ+999uJnoMf2BDg26S/hS5p2ZdsZwECda/76h4A==}
 
-  '@chainflip/rpc@1.8.7':
-    resolution: {integrity: sha512-ixvNrK9IHGZpajcJW4P5r1v3prSVLDHgTdzfE2wKTFekidL2pYk7duAW2windW/OXPG63ii6cmHqLQ8IGlF7dg==}
+  '@chainflip/rpc@1.9.0-assethub.2':
+    resolution: {integrity: sha512-mQNOBwjeY/DIABrDLjcUsYS6kyYnfZjP+EnuLGpmyPmluJap+tkWNqg+NBkPiKewShD7qjTpDdSautP4NXCaEg==}
 
   '@chainflip/scale@1.8.0':
     resolution: {integrity: sha512-66bT2DQi0kNFZRva0phBuMWCWKamOyfROlKovxcBd6wzZVGFxVqgi73iG1nExaUPlOLJnYc8gQ/blwHidgjvrg==}
@@ -505,11 +505,11 @@ packages:
   '@chainflip/utils@0.6.0':
     resolution: {integrity: sha512-ZwyNKv3FVVJw5aOcRf/4rTxCclP+prerxPnTGBrFcBYEYSrPlyx4eI1dc7J35xmKD2yq+vQgwNjCx1h6oJuoPA==}
 
+  '@chainflip/utils@0.7.0':
+    resolution: {integrity: sha512-aTrtmpPkbqojP5wsrpfCgx8uskv9SD1gmq7hWwjfRQT1ucwYGAuUzL9LdREBtiMNB4pfS/J42dRWjbbLmx0j5w==}
+
   '@chainflip/utils@0.7.2':
     resolution: {integrity: sha512-DJ37gbbNVEy/YFcK9oQ19Ro83hUwCFyP2fA//Vatit1Z4nWPKgBmyQtYQLdjfcwrOhvQeYi7DcxfVU0YwOaP2g==}
-
-  '@chainflip/utils@1.8.0-assethub.1':
-    resolution: {integrity: sha512-htxgXa4sfqho9OJC8fcZ4+/zl/EzPEodzYn222AVf3iEwpBT9zJTdUd3YH7oOWknrEztscRu2EWCYelLx+9Clw==}
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -5914,9 +5914,9 @@ snapshots:
       '@chainflip/utils': 0.4.0
       zod: 3.24.2
 
-  '@chainflip/rpc@1.8.7':
+  '@chainflip/rpc@1.9.0-assethub.2':
     dependencies:
-      '@chainflip/utils': 0.6.0
+      '@chainflip/utils': 0.7.0
       zod: 3.24.2
 
   '@chainflip/scale@1.8.0':
@@ -5946,13 +5946,13 @@ snapshots:
       bignumber.js: 9.1.2
       date-fns: 4.1.0
 
-  '@chainflip/utils@0.7.2':
+  '@chainflip/utils@0.7.0':
     dependencies:
       '@date-fns/utc': 2.1.0
       bignumber.js: 9.1.2
       date-fns: 4.1.0
 
-  '@chainflip/utils@1.8.0-assethub.1':
+  '@chainflip/utils@0.7.2':
     dependencies:
       '@date-fns/utc': 2.1.0
       bignumber.js: 9.1.2

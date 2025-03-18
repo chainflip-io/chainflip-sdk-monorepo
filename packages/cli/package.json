@@ -40,9 +40,9 @@
   "license": "ISC",
   "dependencies": {
     "@chainflip/bitcoin": "^1.2.4",
-    "@chainflip/rpc": "^1.8.0-assethub.1",
+    "@chainflip/rpc": "^1.9.0-assethub.2",
     "@chainflip/solana": "^2.1.4",
-    "@chainflip/utils": "^1.8.0-assethub.1",
+    "@chainflip/utils": "^0.7.2-assethub.1",
     "@chainflip/extrinsics": "^1.6.1",
     "ioredis": "^5.4.1",
     "ws": "^8.18.0",

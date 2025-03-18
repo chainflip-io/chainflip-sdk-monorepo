@@ -79,6 +79,9 @@ describe(Quoter, () => {
           Flip: 4,
           Eth: 2_000,
           ArbEth: 2_000,
+          HubDot: 6.5,
+          HubUsdc: 1,
+          HubUsdt: 2_000,
         }[asset],
       ),
     );
