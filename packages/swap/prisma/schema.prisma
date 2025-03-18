@@ -36,6 +36,7 @@ enum Chain {
   Bitcoin
   Arbitrum
   Solana
+  Assethub
 
   @@schema("public")
 }

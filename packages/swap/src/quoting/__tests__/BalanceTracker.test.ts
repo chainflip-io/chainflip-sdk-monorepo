@@ -19,6 +19,9 @@ const mockInternalAssetMap = (values?: InternalAssetMap<bigint>): InternalAssetM
   SolUsdc: 0n,
   Usdc: 0n,
   Usdt: 0n,
+  HubDot: 0n,
+  HubUsdc: 0n,
+  HubUsdt: 0n,
 });
 
 describe(BalanceTracker, () => {

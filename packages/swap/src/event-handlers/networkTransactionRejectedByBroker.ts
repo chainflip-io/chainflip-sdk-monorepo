@@ -22,6 +22,8 @@ const schemaMap = {
 export const networkTransactionRejectedByBroker =
   (chain: Chain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
+    // TODO(1.9): handle assethub
+    if (chain === 'Assethub') return;
     const { broadcastId, ...rest } = schemaMap[chain].parse(event.args);
     const txRef = getDepositTxRef(chain, rest.txId);
 

@@ -97,8 +97,8 @@ importers:
         specifier: ^2.1.4
         version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.7.2-assethub.1
-        version: 0.7.2
+        specifier: 0.7.2-assethub.2
+        version: 0.7.2-assethub.2
       axios:
         specifier: ^1.x
         version: 1.7.9
@@ -173,8 +173,8 @@ importers:
         specifier: ^2.1.4
         version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.7.2-assethub.1
-        version: 0.7.2
+        specifier: 0.7.2-assethub.2
+        version: 0.7.2-assethub.2
       '@trpc/client':
         specifier: ^10.45.2
         version: 10.45.2(@trpc/server@10.45.2)
@@ -213,8 +213,8 @@ importers:
         specifier: ^2.1.4
         version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.7.2-assethub.1
-        version: 0.7.2
+        specifier: 0.7.2-assethub.2
+        version: 0.7.2-assethub.2
       axios:
         specifier: ^1.7.7
         version: 1.7.9
@@ -271,8 +271,8 @@ importers:
         specifier: ^2.1.4
         version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.7.2-assethub.1
-        version: 0.7.2
+        specifier: 0.7.2-assethub.2
+        version: 0.7.2-assethub.2
       '@polkadot/api':
         specifier: ^15.5.2
         version: 15.6.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -510,6 +510,9 @@ packages:
 
   '@chainflip/utils@0.7.2':
     resolution: {integrity: sha512-DJ37gbbNVEy/YFcK9oQ19Ro83hUwCFyP2fA//Vatit1Z4nWPKgBmyQtYQLdjfcwrOhvQeYi7DcxfVU0YwOaP2g==}
+
+  '@chainflip/utils@0.7.2-assethub.2':
+    resolution: {integrity: sha512-x6AvEPx8hmZ5niWo/j+bt2PWL+Tyou6MeYoUZnydp6DmzVTXV6KCTOMfwTDd5i28TTaSVULdCaLyOMrFdthiGw==}
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -5953,6 +5956,12 @@ snapshots:
       date-fns: 4.1.0
 
   '@chainflip/utils@0.7.2':
+    dependencies:
+      '@date-fns/utc': 2.1.0
+      bignumber.js: 9.1.2
+      date-fns: 4.1.0
+
+  '@chainflip/utils@0.7.2-assethub.2':
     dependencies:
       '@date-fns/utc': 2.1.0
       bignumber.js: 9.1.2

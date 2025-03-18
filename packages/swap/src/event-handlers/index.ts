@@ -31,6 +31,10 @@ import { insufficientBoostLiquidity } from './v140/insufficientBoostLiquidity';
 import type { Block, Event } from '../gql/generated/graphql';
 import { buildHandlerMap, getDispatcher } from '../utils/handlers';
 
+const liveChains = Object.values(Chains)
+  // TODO(1.9): handle assethub
+  .filter((c) => c !== 'Assethub');
+
 export const events = {
   LiquidityPools: {
     NewPoolCreated: 'LiquidityPools.NewPoolCreated',
@@ -172,7 +176,7 @@ const handlers = [
     handlers: [
       { name: events.LiquidityPools.NewPoolCreated, handler: newPoolCreated },
       { name: events.LiquidityPools.PoolFeeSet, handler: poolFeeSet },
-      ...Object.values(Chains).flatMap((chain) => [
+      ...liveChains.flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].BatchBroadcastRequested,
           handler: networkBatchBroadcastRequested,
@@ -204,7 +208,7 @@ const handlers = [
     spec: 150,
     handlers: [
       { name: events.Swapping.SwapRescheduled, handler: swapRescheduled },
-      ...Object.values(Chains).flatMap((chain) => [
+      ...liveChains.flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].BoostPoolCreated,
           handler: boostPoolCreated,
@@ -236,7 +240,7 @@ const handlers = [
         name: events.LiquidityProvider.LiquidityDepositAddressReady,
         handler: liquidityDepositAddressReady,
       },
-      ...Object.values(Chains).flatMap((chain) => [
+      ...liveChains.flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].CcmFailed,
           handler: networkCcmFailed,
@@ -250,7 +254,7 @@ const handlers = [
           handler: depositBoosted,
         },
       ]),
-      ...Object.values(Chains).flatMap((chain) => [
+      ...liveChains.flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].TransactionRejectedByBroker,
           handler: networkTransactionRejectedByBroker(chain),
@@ -261,7 +265,7 @@ const handlers = [
   {
     spec: 180,
     handlers: [
-      ...Object.values(Chains).flatMap((chain) => [
+      ...liveChains.flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].DepositFailed,
           handler: networkDepositFailed(chain),
