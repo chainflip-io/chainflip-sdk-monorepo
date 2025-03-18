@@ -17,10 +17,14 @@ export type RequestOptions = {
 type BackendQuery<T, U> = (baseUrl: string, args: T, options: RequestOptions) => Promise<U>;
 
 export const getQuote: BackendQuery<
-  QuoteRequest & { brokerCommissionBps?: number },
+  Omit<QuoteRequest, 'affiliateBrokers'> & {
+    ccmGasBudget?: number;
+    ccmMessageLengthBytes?: number;
+  },
   QuoteResponse
 > = async (baseUrl, quoteRequest, { signal }) => {
-  const { brokerCommissionBps, ...returnedRequestData } = quoteRequest;
+  const { brokerCommissionBps, ccmGasBudget, ccmMessageLengthBytes, ...returnedRequestData } =
+    quoteRequest;
   const params: QuoteQueryParams = {
     amount: returnedRequestData.amount,
     srcChain: returnedRequestData.srcChain,
@@ -28,6 +32,8 @@ export const getQuote: BackendQuery<
     destChain: returnedRequestData.destChain,
     destAsset: returnedRequestData.destAsset,
     isVaultSwap: String(Boolean(quoteRequest.isVaultSwap)),
+    ccmGasBudget: String(ccmGasBudget),
+    ccmMessageLengthBytes: String(ccmMessageLengthBytes),
     ...(brokerCommissionBps && {
       brokerCommissionBps: String(brokerCommissionBps),
     }),
@@ -45,13 +51,15 @@ export const getQuote: BackendQuery<
 };
 
 export const getQuoteV2: BackendQuery<
-  QuoteRequest & {
-    brokerCommissionBps?: number;
+  Omit<QuoteRequest, 'affiliateBrokers'> & {
+    ccmGasBudget?: number;
+    ccmMessageLengthBytes?: number;
     dcaEnabled: boolean;
   },
   QuoteResponseV2
 > = async (baseUrl, quoteRequest, { signal }) => {
-  const { brokerCommissionBps, ...returnedRequestData } = quoteRequest;
+  const { brokerCommissionBps, ccmGasBudget, ccmMessageLengthBytes, ...returnedRequestData } =
+    quoteRequest;
   const params: QuoteQueryParams = {
     amount: returnedRequestData.amount,
     srcChain: returnedRequestData.srcChain,
@@ -59,6 +67,8 @@ export const getQuoteV2: BackendQuery<
     destChain: returnedRequestData.destChain,
     destAsset: returnedRequestData.destAsset,
     isVaultSwap: String(Boolean(quoteRequest.isVaultSwap)),
+    ccmGasBudget: String(ccmGasBudget),
+    ccmMessageLengthBytes: String(ccmMessageLengthBytes),
     ...(brokerCommissionBps && {
       brokerCommissionBps: String(brokerCommissionBps),
     }),

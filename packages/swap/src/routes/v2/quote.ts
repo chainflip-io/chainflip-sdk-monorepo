@@ -79,7 +79,7 @@ export const validateQuoteQuery = async (query: Query) => {
   logger.info('received a quote request', { query });
   const parsedQuery = queryResult.data;
 
-  const { srcAsset, destAsset, amount, brokerCommissionBps } = queryResult.data;
+  const { srcAsset, destAsset, amount } = queryResult.data;
   const boostDepositsEnabled = await getBoostSafeMode(srcAsset).catch(() => true);
 
   assertRouteEnabled({ srcAsset, destAsset });
@@ -104,8 +104,10 @@ export const validateQuoteQuery = async (query: Query) => {
     srcAsset,
     destAsset,
     amount,
-    brokerCommissionBps,
     boostDepositsEnabled,
+    brokerCommissionBps: queryResult.data.brokerCommissionBps,
+    ccmGasBudget: queryResult.data.ccmGasBudget,
+    ccmMessageLengthBytes: queryResult.data.ccmMessageLengthBytes,
     dcaEnabled: queryResult.data.dcaEnabled,
     isVaultSwap: queryResult.data.isVaultSwap,
   };
@@ -135,6 +137,8 @@ export const generateQuotes = async ({
   srcAsset,
   destAsset,
   brokerCommissionBps,
+  ccmGasBudget,
+  ccmMessageLengthBytes,
   boostDepositsEnabled,
   quoter,
   isVaultSwap,
@@ -144,6 +148,8 @@ export const generateQuotes = async ({
   depositAmount: bigint;
   destAsset: InternalAsset;
   brokerCommissionBps?: number;
+  ccmGasBudget?: number;
+  ccmMessageLengthBytes?: number;
   boostDepositsEnabled: boolean;
   quoter: Quoter;
   isVaultSwap?: boolean;
@@ -171,6 +177,8 @@ export const generateQuotes = async ({
     depositAmount,
     limitOrders,
     brokerCommissionBps,
+    ccmGasBudget,
+    ccmMessageLengthBytes,
     pools,
     isVaultSwap,
   };
@@ -259,6 +267,8 @@ const quoteRouter = (quoter: Quoter) => {
         destAsset,
         amount: depositAmount,
         brokerCommissionBps,
+        ccmGasBudget,
+        ccmMessageLengthBytes,
         boostDepositsEnabled,
         dcaEnabled,
         isVaultSwap,
@@ -277,6 +287,8 @@ const quoteRouter = (quoter: Quoter) => {
           depositAmount,
           destAsset,
           brokerCommissionBps,
+          ccmGasBudget,
+          ccmMessageLengthBytes,
           boostDepositsEnabled,
           quoter,
           isVaultSwap,

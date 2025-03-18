@@ -24,6 +24,8 @@ export const quoteQuerySchema = z
       .refine((v) => v > 0n, { message: 'swap input amount must be greater than 0' })
       .refine((v) => v < 2n ** 128n, { message: 'swap input amount must be less than 2^128' }),
     brokerCommissionBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
+    ccmGasBudget: numericString.transform((v) => Number(v)).optional(),
+    ccmMessageLengthBytes: numericString.transform((v) => Number(v)).optional(),
     dcaEnabled: booleanString.default('false'),
     isVaultSwap: booleanString.default('false'),
   })
@@ -53,6 +55,8 @@ export const quoteQuerySchema = z
       destAsset,
       amount: args.amount,
       brokerCommissionBps: args.brokerCommissionBps,
+      ccmGasBudget: args.ccmGasBudget,
+      ccmMessageLengthBytes: args.ccmMessageLengthBytes,
       dcaEnabled: args.dcaEnabled,
       isVaultSwap: args.isVaultSwap,
     };

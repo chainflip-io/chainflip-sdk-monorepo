@@ -17,6 +17,8 @@ export default async function getPoolQuote({
   limitOrders,
   boostFeeBps,
   brokerCommissionBps,
+  ccmGasBudget,
+  ccmMessageLengthBytes,
   pools,
   dcaParams,
   isVaultSwap,
@@ -25,6 +27,8 @@ export default async function getPoolQuote({
   destAsset: InternalAsset;
   depositAmount: bigint;
   brokerCommissionBps?: number;
+  ccmGasBudget?: number;
+  ccmMessageLengthBytes?: number;
   limitOrders?: LimitOrders;
   boostFeeBps?: number;
   pools: Pool[];
@@ -54,6 +58,13 @@ export default async function getPoolQuote({
       depositAmount: cfRateInputAmount,
       limitOrders,
       brokerCommissionBps,
+      ccmParams:
+        ccmGasBudget && ccmMessageLengthBytes
+          ? {
+              gasBudget: ccmGasBudget,
+              messageLengthBytes: ccmMessageLengthBytes,
+            }
+          : undefined,
       dcaParams,
       excludeFees,
     });

@@ -45,6 +45,10 @@ export interface QuoteRequest extends ChainsAndAssets {
   brokerCommissionBps?: number;
   affiliateBrokers?: AffiliateBroker[];
   isVaultSwap?: boolean;
+  ccmParams?: {
+    gasBudget: number;
+    messageLengthBytes: number;
+  };
 }
 
 export interface QuoteResponse
@@ -61,7 +65,7 @@ export type FillOrKillParamsWithSlippage = Omit<FillOrKillParamsWithMinPrice, 'm
   slippageTolerancePercent: string | number;
 };
 
-export interface DepositAddressRequest extends QuoteRequest {
+export interface DepositAddressRequest extends Omit<QuoteRequest, 'ccmParams'> {
   destAddress: string;
   ccmParams?: CcmParams;
   maxBoostFeeBps?: number;
