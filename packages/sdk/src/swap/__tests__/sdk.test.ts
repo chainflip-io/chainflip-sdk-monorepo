@@ -1594,6 +1594,593 @@ describe(SwapSDK, () => {
       ).rejects.toThrow('Failed to find DCA parameters from quote');
     });
 
+    it('throws for vault swap quote', async () => {
+      await expect(
+        new SwapSDK({
+          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        }).requestDepositAddressV2({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            type: 'REGULAR',
+            isVaultSwap: true,
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          fillOrKillParams: {
+            minPrice: '10000000000000',
+            refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+            retryDurationBlocks: 500,
+          },
+        }),
+      ).rejects.toThrow('Cannot open a deposit channel for a vault swap quote');
+    });
+  });
+
+  describe(SwapSDK.prototype.encodeVaultSwapData, () => {
+    it('calls encodeVaultSwapData with refund parameters for slippage', async () => {
+      // @ts-expect-error - private method
+      const rpcSpy = vi.spyOn(sdk.trpc.encodeVaultSwapData, 'mutate').mockResolvedValueOnce({
+        chain: 'Bitcoin',
+        nulldataPayload:
+          '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+        depositAddress: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+      });
+
+      const quote = {
+        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        depositAmount: BigInt(1e18).toString(),
+        estimatedPrice: '2500',
+        type: 'REGULAR',
+        isVaultSwap: true,
+      } as Quote;
+      const response = await sdk.encodeVaultSwapData({
+        quote,
+        destAddress: '0xcafebabe',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          slippageTolerancePercent: '1.5',
+        },
+      });
+      expect(rpcSpy).toHaveBeenLastCalledWith({
+        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        srcAddress: undefined,
+        destAddress: '0xcafebabe',
+        dcaParams: undefined,
+        amount: BigInt(1e18).toString(),
+        maxBoostFeeBps: undefined,
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPriceX128: '8379453285428109662785599708007292207104000000000000',
+        },
+      });
+      expect(response).toStrictEqual({
+        chain: 'Bitcoin',
+        nulldataPayload:
+          '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+        depositAddress: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+      });
+    });
+
+    it('calls encodeVaultSwapData with commission and dca parameters', async () => {
+      // @ts-expect-error - private method
+      const rpcSpy = vi.spyOn(sdk.trpc.encodeVaultSwapData, 'mutate').mockResolvedValueOnce({
+        chain: 'Bitcoin',
+        nulldataPayload:
+          '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+        depositAddress: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+      });
+
+      const quote = {
+        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        depositAmount: BigInt(1e18).toString(),
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        type: 'DCA',
+        isVaultSwap: true,
+      } as Quote;
+      const response = await sdk.encodeVaultSwapData({
+        quote,
+        destAddress: '0xcafebabe',
+        brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+        brokerCommissionBps: 15,
+        affiliateBrokers: [
+          { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+        ],
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '10000000000000',
+        },
+      });
+      expect(rpcSpy).toHaveBeenLastCalledWith({
+        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        srcAddress: undefined,
+        destAddress: '0xcafebabe',
+        amount: BigInt(1e18).toString(),
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+        brokerCommissionBps: 15,
+        affiliates: [
+          { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+        ],
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPriceX128: '34028236692093846346337460743176821145600000000000000000000000',
+        },
+      });
+      expect(response).toStrictEqual({
+        chain: 'Bitcoin',
+        nulldataPayload:
+          '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+        depositAddress: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+      });
+    });
+
+    it('rejects commission if no broker account is given and no broker url is configured', async () => {
+      const quote = {
+        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        depositAmount: BigInt(1e18).toString(),
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        type: 'DCA',
+        isVaultSwap: true,
+      } as Quote;
+
+      await expect(
+        sdk.encodeVaultSwapData({
+          quote,
+          destAddress: '0xcafebabe',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+            minPrice: '10000000000000',
+          },
+          brokerCommissionBps: 10,
+        }),
+      ).rejects.toThrow('Broker commission is supported only when setting a broker account');
+    });
+
+    it('rejects affiliates if no broker account is given and no broker url is configured', async () => {
+      const quote = {
+        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        depositAmount: BigInt(1e18).toString(),
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        type: 'DCA',
+        isVaultSwap: true,
+      } as Quote;
+
+      await expect(
+        sdk.encodeVaultSwapData({
+          quote,
+          destAddress: '0xcafebabe',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+            minPrice: '10000000000000',
+          },
+          affiliateBrokers: [
+            { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+          ],
+        }),
+      ).rejects.toThrow('Affiliate brokers are supported only when setting a broker account');
+    });
+
+    it('calls the configured broker api with the given affiliate brokers', async () => {
+      const postSpy = mockRpcResponse((url, data: any) => {
+        if (data.method === 'broker_request_swap_parameter_encoding') {
+          return Promise.resolve({
+            data: {
+              id: '1',
+              jsonrpc: '2.0',
+              result: {
+                chain: 'Bitcoin',
+                nulldata_payload:
+                  '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+                deposit_address: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+              },
+            },
+          });
+        }
+
+        return defaultRpcMocks(url, data);
+      });
+
+      const result = await new SwapSDK({
+        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+      }).encodeVaultSwapData({
+        quote: {
+          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          depositAmount: BigInt(1e18).toString(),
+          type: 'REGULAR',
+          isVaultSwap: true,
+        } as Quote,
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          minPrice: '10000000000000',
+        },
+        affiliateBrokers: [
+          { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
+        ],
+      });
+
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_request_swap_parameter_encoding',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            15,
+            {
+              chain: 'Bitcoin',
+              min_output_amount: '0x125dfa371a19e6f7cb54395ca0000000000',
+              retry_duration: 500,
+            },
+            null,
+            null,
+            [{ account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', bps: 10 }],
+            null,
+          ],
+        },
+      ]);
+      expect(result).toStrictEqual({
+        chain: 'Bitcoin',
+        nulldataPayload:
+          '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+        depositAddress: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+      });
+    });
+
+    it('calls the configured broker api with the given dca parameters', async () => {
+      const postSpy = mockRpcResponse((url, data: any) => {
+        if (data.method === 'broker_request_swap_parameter_encoding') {
+          return Promise.resolve({
+            data: {
+              id: '1',
+              jsonrpc: '2.0',
+              result: {
+                chain: 'Bitcoin',
+                nulldata_payload:
+                  '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+                deposit_address: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+              },
+            },
+          });
+        }
+
+        return defaultRpcMocks(url, data);
+      });
+
+      const result = await new SwapSDK({
+        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+      }).encodeVaultSwapData({
+        quote: {
+          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          depositAmount: BigInt(1e18).toString(),
+          dcaParams: {
+            numberOfChunks: 100,
+            chunkIntervalBlocks: 5,
+          },
+          type: 'DCA',
+          isVaultSwap: true,
+        } as Quote,
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          minPrice: '10000000000000',
+        },
+      });
+
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_request_swap_parameter_encoding',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            15,
+            {
+              chain: 'Bitcoin',
+              min_output_amount: '0x125dfa371a19e6f7cb54395ca0000000000',
+              retry_duration: 500,
+            },
+            null,
+            null,
+            null,
+            {
+              number_of_chunks: 100,
+              chunk_interval: 5,
+            },
+          ],
+        },
+      ]);
+      expect(result).toStrictEqual({
+        chain: 'Bitcoin',
+        nulldataPayload:
+          '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+        depositAddress: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+      });
+    });
+
+    it('calls the configured broker api with the given ccm parameters', async () => {
+      const postSpy = mockRpcResponse((url, data: any) => {
+        if (data.method === 'broker_request_swap_parameter_encoding') {
+          return Promise.resolve({
+            data: {
+              id: '1',
+              jsonrpc: '2.0',
+              result: {
+                chain: 'Bitcoin',
+                nulldata_payload:
+                  '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+                deposit_address: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+              },
+            },
+          });
+        }
+
+        return defaultRpcMocks(url, data);
+      });
+
+      const result = await new SwapSDK({
+        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+      }).encodeVaultSwapData({
+        quote: {
+          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          depositAmount: BigInt(1e18).toString(),
+          type: 'REGULAR',
+          isVaultSwap: true,
+        } as Quote,
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          minPrice: '10000000000000',
+        },
+        ccmParams: {
+          gasBudget: '123456789',
+          message: '0xdeadc0de',
+          ccmAdditionalData: '0xc0ffee',
+        },
+      });
+
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_request_swap_parameter_encoding',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            15,
+            {
+              chain: 'Bitcoin',
+              min_output_amount: '0x125dfa371a19e6f7cb54395ca0000000000',
+              retry_duration: 500,
+            },
+            {
+              gas_budget: '0x75bcd15',
+              message: '0xdeadc0de',
+              ccm_additional_data: '0xc0ffee',
+              cf_parameters: '0xc0ffee',
+            },
+            null,
+            null,
+            null,
+          ],
+        },
+      ]);
+      expect(result).toStrictEqual({
+        chain: 'Bitcoin',
+        nulldataPayload:
+          '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+        depositAddress: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+      });
+    });
+
+    it('calls the configured broker api with the given boost fee', async () => {
+      const postSpy = mockRpcResponse((url, data: any) => {
+        if (data.method === 'broker_request_swap_parameter_encoding') {
+          return Promise.resolve({
+            data: {
+              id: '1',
+              jsonrpc: '2.0',
+              result: {
+                chain: 'Bitcoin',
+                nulldata_payload:
+                  '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+                deposit_address: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+              },
+            },
+          });
+        }
+
+        return defaultRpcMocks(url, data);
+      });
+      const MAX_BOOST_FEE_BPS = 100;
+
+      const result = await new SwapSDK({
+        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+      }).encodeVaultSwapData({
+        quote: {
+          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          depositAmount: BigInt(1e18).toString(),
+          maxBoostFeeBps: MAX_BOOST_FEE_BPS,
+          type: 'REGULAR',
+          isVaultSwap: true,
+        } as BoostQuote,
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          minPrice: '10000000000000',
+        },
+      });
+
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_request_swap_parameter_encoding',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            15,
+            {
+              chain: 'Bitcoin',
+              min_output_amount: '0x125dfa371a19e6f7cb54395ca0000000000',
+              retry_duration: 500,
+            },
+            null,
+            MAX_BOOST_FEE_BPS,
+            null,
+            null,
+          ],
+        },
+      ]);
+      expect(result).toStrictEqual({
+        chain: 'Bitcoin',
+        nulldataPayload:
+          '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+        depositAddress: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+      });
+    });
+
+    it('rejects request with broker account if broker url is configured', async () => {
+      const quote = {
+        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        depositAmount: BigInt(1e18).toString(),
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        type: 'DCA',
+        isVaultSwap: true,
+      } as Quote;
+
+      await expect(
+        new SwapSDK({
+          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        }).encodeVaultSwapData({
+          quote,
+          destAddress: '0xcafebabe',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+            minPrice: '10000000000000',
+          },
+          brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+          brokerCommissionBps: 15,
+        }),
+      ).rejects.toThrow(
+        'Cannot overwrite broker account when initializing the SDK with a brokerUrl',
+      );
+    });
+
+    it("throws for quotes that aren't DCA or REGULAR", async () => {
+      await expect(
+        new SwapSDK({
+          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        }).encodeVaultSwapData({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            dcaParams: {
+              numberOfChunks: 100,
+              chunkIntervalBlocks: 5,
+            },
+            isVaultSwap: true,
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+            minPrice: '10000000000000',
+          },
+        }),
+      ).rejects.toThrow('Invalid quote type');
+    });
+
+    it('throws for missing DCA params', async () => {
+      await expect(
+        new SwapSDK({
+          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        }).encodeVaultSwapData({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            type: 'DCA',
+            isVaultSwap: true,
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+            minPrice: '10000000000000',
+          },
+        }),
+      ).rejects.toThrow('Failed to find DCA parameters from quote');
+    });
+
+    it('throws for deposit channel quote', async () => {
+      await expect(
+        new SwapSDK({
+          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        }).encodeVaultSwapData({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            type: 'REGULAR',
+            isVaultSwap: false,
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+            minPrice: '10000000000000',
+          },
+        }),
+      ).rejects.toThrow('Cannot encode vault swap data for a deposit channel quote');
+    });
+  });
+
   describe(SwapSDK.prototype.getRequiredBlockConfirmations, () => {
     it('should return correct value for each chain', async () => {
       expect((await sdk.getRequiredBlockConfirmations()).Ethereum).toStrictEqual(2);
