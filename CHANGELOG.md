@@ -7,12 +7,14 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
-## 1.8.1
+## Unreleased
 
 ### Added
 
 - `SwapSDK.prototype.getQuoteV2` accepts a `ccmParams` property now. The optional property allows to
   estimate the broadcast fee and egress amount for CCM swaps.
+
+## 1.8.1
 
 ### Changed
 
