@@ -17,22 +17,25 @@ import env from '../config/env';
 import logger from '../utils/logger';
 import type { EventHandlerArgs } from './index';
 
+// TODO(1.9): handle assethub
+type LiveChain = Exclude<Chain, 'Assethub'>;
+
 const argsMap = {
   Arbitrum: arbitrumIngressEgressDepositFailed,
   Bitcoin: bitcoinIngressEgressDepositFailed,
   Ethereum: ethereumIngressEgressDepositFailed,
   Polkadot: polkadotIngressEgressDepositFailed,
   Solana: solanaIngressEgressDepositFailed,
-} as const satisfies Record<Chain, z.ZodTypeAny>;
+} as const satisfies Record<LiveChain, z.ZodTypeAny>;
 
-export type DepositFailedArgs = z.input<(typeof argsMap)[Chain]>;
+export type DepositFailedArgs = z.input<(typeof argsMap)[LiveChain]>;
 
 type DepositWitness = Extract<
-  z.output<(typeof argsMap)[Chain]>['details'],
+  z.output<(typeof argsMap)[LiveChain]>['details'],
   { __kind: 'DepositChannel' }
 >['depositWitness'];
 
-type FailureReason = z.output<(typeof argsMap)[Chain]>['reason']['__kind'];
+type FailureReason = z.output<(typeof argsMap)[LiveChain]>['reason']['__kind'];
 
 const extractDepositAddress = (depositWitness: DepositWitness) => {
   switch (depositWitness.asset) {
@@ -79,6 +82,8 @@ const reasonMap: Record<FailureReason, FailedSwapReason> = {
 export const depositFailed =
   (chain: Chain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
+    // TODO(1.9): handle assethub
+    if (chain === 'Assethub') return;
     const { details, blockHeight, ...rest } = argsMap[chain].parse(event.args);
     const reason = reasonMap[rest.reason.__kind];
     let txRef;

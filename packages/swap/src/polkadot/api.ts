@@ -10,7 +10,8 @@ export const boostSafeModeSchema = z.object({
   ingressEgressBitcoin: boostFlagsSchema,
   ingressEgressPolkadot: boostFlagsSchema,
   ingressEgressArbitrum: boostFlagsSchema,
-  ingressEgressSolana: boostFlagsSchema.optional(),
+  ingressEgressSolana: boostFlagsSchema,
+  ingressEgressAssethub: boostFlagsSchema.optional(),
 });
 
 const getApi = memoize(async () => {

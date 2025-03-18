@@ -105,6 +105,20 @@ const broadcastParsers = {
       })
       .transform(({ hash }) => hash),
   }),
+  Solana: z.any(),
+  Assethub: z.object({
+    tx_out_id: z.object({ signature: string }),
+    tx_ref: z
+      .object({
+        transaction_id: z.object({
+          block_number: number,
+          extrinsic_index: number,
+        }),
+      })
+      .transform(
+        ({ transaction_id }) => `${transaction_id.block_number}-${transaction_id.extrinsic_index}`,
+      ),
+  }),
 };
 
 const accountFee = z
@@ -243,7 +257,7 @@ export default class RedisClient {
   }
 
   async getPendingVaultSwap(chain: Chain, txId: string) {
-    const unavailableChains: Chain[] = ['Solana', 'Polkadot'];
+    const unavailableChains: Chain[] = ['Solana', 'Polkadot', 'Assethub'];
     if (unavailableChains.includes(chain)) return null;
 
     const redisTxId = chain === 'Bitcoin' && isHex(`0x${txId}`) ? reverseBytes(`0x${txId}`) : txId;

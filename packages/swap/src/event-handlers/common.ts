@@ -157,6 +157,9 @@ export const getDepositTxRef = (
     case 'Solana':
       assert(depositDetails == null);
       return undefined;
+    // TODO(1.9): handle assethub
+    case 'Assethub':
+      return undefined;
     default:
       return assertUnreachable(chain);
   }

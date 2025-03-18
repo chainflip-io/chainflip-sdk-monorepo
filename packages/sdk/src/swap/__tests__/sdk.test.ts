@@ -2193,6 +2193,7 @@ describe(SwapSDK, () => {
     it('returns the correct fees', async () => {
       expect(await sdk.getChannelOpeningFees()).toEqual({
         Arbitrum: 0x0n,
+        Assethub: 0x0n,
         Bitcoin: 0x0n,
         Ethereum: 0x10n,
         Polkadot: 0x0n,

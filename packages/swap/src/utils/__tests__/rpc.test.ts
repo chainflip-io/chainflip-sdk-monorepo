@@ -1,5 +1,4 @@
 import HttpClient from '@chainflip/rpc/HttpClient';
-import { ChainAssetMap } from '@chainflip/utils/chainflip';
 import { describe, it, expect, vi } from 'vitest';
 import { boostPoolsDepth, mockRpcResponse } from '@/shared/tests/fixtures';
 import { getBoostPoolsDepth, getLpBalances } from '../rpc';
@@ -22,7 +21,8 @@ describe(getLpBalances, () => {
       Arbitrum: { ETH: 6n, USDC: 7n },
       Polkadot: { DOT: 8n },
       Solana: { SOL: 9n, USDC: 10n },
-    } as ChainAssetMap<bigint>);
+      Assethub: { DOT: 11n, USDT: 12n, USDC: 13n },
+    } as Awaited<ReturnType<typeof HttpClient.prototype.sendRequest<'lp_total_balances'>>>);
 
     const balances = await getLpBalances(new Set(['lp1']));
 
