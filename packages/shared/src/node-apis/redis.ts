@@ -257,7 +257,7 @@ export default class RedisClient {
   }
 
   async getPendingVaultSwap(chain: Chain, txId: string) {
-    const unavailableChains: Chain[] = ['Solana', 'Polkadot'];
+    const unavailableChains: Chain[] = ['Solana', 'Polkadot', 'Assethub'];
     if (unavailableChains.includes(chain)) return null;
 
     const redisTxId = chain === 'Bitcoin' && isHex(`0x${txId}`) ? reverseBytes(`0x${txId}`) : txId;
