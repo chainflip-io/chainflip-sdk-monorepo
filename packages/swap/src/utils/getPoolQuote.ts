@@ -6,7 +6,7 @@ import { calculateRecommendedSlippage } from './autoSlippage';
 import { buildFee, getPoolFees } from './fees';
 import { getEgressFee, getMinimumEgressAmount } from './rpc';
 import ServiceError from './ServiceError';
-import { getSwapRateV3, LimitOrders } from './statechain';
+import { getSwapRateV3, QuoteLimitOrders, QuoteCcmParams } from './statechain';
 import { InternalAsset, Pool } from '../client';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 
@@ -17,6 +17,7 @@ export default async function getPoolQuote({
   limitOrders,
   boostFeeBps,
   brokerCommissionBps,
+  ccmParams,
   pools,
   dcaParams,
   isVaultSwap,
@@ -25,11 +26,12 @@ export default async function getPoolQuote({
   destAsset: InternalAsset;
   depositAmount: bigint;
   brokerCommissionBps?: number;
-  limitOrders?: LimitOrders;
+  ccmParams?: QuoteCcmParams;
+  limitOrders?: QuoteLimitOrders;
   boostFeeBps?: number;
   pools: Pool[];
   dcaParams?: DcaParams;
-  isVaultSwap?: boolean;
+  isVaultSwap: boolean;
 }) {
   const includedFees = [];
   const excludeFees: SwapFeeType[] = [];
@@ -54,6 +56,7 @@ export default async function getPoolQuote({
       depositAmount: cfRateInputAmount,
       limitOrders,
       brokerCommissionBps,
+      ccmParams,
       dcaParams,
       excludeFees,
     });
@@ -143,5 +146,9 @@ export default async function getPoolQuote({
     destAsset: getAssetAndChain(destAsset),
     depositAmount: depositAmount.toString(),
     isVaultSwap,
+    ccmParams: ccmParams && {
+      gasBudget: String(ccmParams.gasBudget),
+      messageLengthBytes: ccmParams.messageLengthBytes,
+    },
   } as Quote;
 }

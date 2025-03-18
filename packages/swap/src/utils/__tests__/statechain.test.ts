@@ -41,7 +41,7 @@ vi.mock('@chainflip/rpc', async (importOriginal) => {
 });
 
 describe(getSwapRateV3, () => {
-  it('calls sendRequest with correct params including excludeFees', async () => {
+  it('calls sendRequest with excludeFees', async () => {
     const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
       broker_commission: buildFee('Usdc', 0).bigint,
       ingress_fee: buildFee('Usdc', 0).bigint,
@@ -71,8 +71,50 @@ describe(getSwapRateV3, () => {
       '0x3e8',
       0,
       undefined,
-      null,
+      undefined,
       ['IngressDepositChannel'],
+      undefined,
+    );
+  });
+
+  it('calls sendRequest with ccm params', async () => {
+    const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      broker_commission: buildFee('Usdc', 0).bigint,
+      ingress_fee: buildFee('Usdc', 0).bigint,
+      egress_fee: buildFee('Eth', 0).bigint,
+      network_fee: buildFee('Usdc', 100100).bigint,
+      intermediary: null,
+      output: BigInt(1e18),
+    });
+
+    const getSwapRateV3Params = {
+      srcAsset: 'Usdc' as InternalAsset,
+      destAsset: 'Eth' as InternalAsset,
+      depositAmount: 1000n,
+      limitOrders: undefined,
+      dcaParams: undefined,
+      ccmParams: {
+        gasBudget: 10101n,
+        messageLengthBytes: 202,
+      },
+      brokerCommissionBps: 0,
+    };
+
+    await getSwapRateV3(getSwapRateV3Params);
+
+    expect(sendSpy).toHaveBeenNthCalledWith(
+      1,
+      'cf_swap_rate_v3',
+      { asset: 'USDC', chain: 'Ethereum' },
+      { asset: 'ETH', chain: 'Ethereum' },
+      '0x3e8',
+      0,
+      undefined,
+      {
+        gas_budget: 10101,
+        message_length: 202,
+      },
+      undefined,
       undefined,
     );
   });

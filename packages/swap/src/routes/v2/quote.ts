@@ -6,6 +6,7 @@ import { Asset, assetConstants, InternalAsset } from '@/shared/enums';
 import { getFulfilledResult } from '@/shared/promises';
 import { quoteQuerySchema, DCABoostQuote, DcaParams, DCAQuote } from '@/shared/schemas';
 import { assertRouteEnabled } from '@/swap/utils/env';
+import { QuoteCcmParams } from '@/swap/utils/statechain';
 import env from '../../config/env';
 import { getBoostSafeMode } from '../../polkadot/api';
 import { getUsdValue } from '../../pricing/checkPriceWarning';
@@ -79,7 +80,7 @@ export const validateQuoteQuery = async (query: Query) => {
   logger.info('received a quote request', { query });
   const parsedQuery = queryResult.data;
 
-  const { srcAsset, destAsset, amount, brokerCommissionBps } = queryResult.data;
+  const { srcAsset, destAsset, amount } = queryResult.data;
   const boostDepositsEnabled = await getBoostSafeMode(srcAsset).catch(() => true);
 
   assertRouteEnabled({ srcAsset, destAsset });
@@ -104,8 +105,9 @@ export const validateQuoteQuery = async (query: Query) => {
     srcAsset,
     destAsset,
     amount,
-    brokerCommissionBps,
     boostDepositsEnabled,
+    brokerCommissionBps: queryResult.data.brokerCommissionBps,
+    ccmParams: queryResult.data.ccmParams,
     dcaEnabled: queryResult.data.dcaEnabled,
     isVaultSwap: queryResult.data.isVaultSwap,
   };
@@ -135,6 +137,7 @@ export const generateQuotes = async ({
   srcAsset,
   destAsset,
   brokerCommissionBps,
+  ccmParams,
   boostDepositsEnabled,
   quoter,
   isVaultSwap,
@@ -144,9 +147,10 @@ export const generateQuotes = async ({
   depositAmount: bigint;
   destAsset: InternalAsset;
   brokerCommissionBps?: number;
+  ccmParams?: QuoteCcmParams;
   boostDepositsEnabled: boolean;
   quoter: Quoter;
-  isVaultSwap?: boolean;
+  isVaultSwap: boolean;
 }) => {
   let regularEagerLiquidityExists = false;
   let dcaEagerLiquidityExists = false;
@@ -171,6 +175,7 @@ export const generateQuotes = async ({
     depositAmount,
     limitOrders,
     brokerCommissionBps,
+    ccmParams,
     pools,
     isVaultSwap,
   };
@@ -259,6 +264,7 @@ const quoteRouter = (quoter: Quoter) => {
         destAsset,
         amount: depositAmount,
         brokerCommissionBps,
+        ccmParams,
         boostDepositsEnabled,
         dcaEnabled,
         isVaultSwap,
@@ -277,6 +283,7 @@ const quoteRouter = (quoter: Quoter) => {
           depositAmount,
           destAsset,
           brokerCommissionBps,
+          ccmParams,
           boostDepositsEnabled,
           quoter,
           isVaultSwap,

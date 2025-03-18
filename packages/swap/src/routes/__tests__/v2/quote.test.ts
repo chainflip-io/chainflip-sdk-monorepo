@@ -598,7 +598,7 @@ describe('server', () => {
         '0x5f5e100',
         0,
         undefined,
-        null,
+        undefined,
         ['IngressDepositChannel'],
         [],
       );
@@ -842,6 +842,137 @@ describe('server', () => {
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 
+    it('gets the quote with ccm params', async () => {
+      mockRpcResponse((url, data: any) => {
+        if (data.method === 'cf_environment') {
+          return Promise.resolve({
+            data: environment({
+              maxSwapAmount: null,
+              ingressFee: hexEncodeNumber(0x61a8),
+              egressFee: hexEncodeNumber(0x0),
+            }),
+          });
+        }
+
+        if (data.method === 'cf_boost_pools_depth') {
+          return Promise.resolve({
+            data: boostPoolsDepth(),
+          });
+        }
+
+        if (data.method === 'cf_pool_depth') {
+          return Promise.resolve({
+            data: cfPoolDepth(),
+          });
+        }
+
+        if (data.method === 'cf_accounts') {
+          return Promise.resolve({
+            data: {
+              id: 1,
+              jsonrpc: '2.0',
+              result: [
+                ['cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH', 'Chainflip Testnet Broker 2'],
+              ],
+            },
+          });
+        }
+
+        if (data.method === 'cf_account_info') {
+          return Promise.resolve({
+            data: cfAccountInfo(),
+          });
+        }
+
+        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+      });
+
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0).bigint,
+        ingress_fee: buildFee('Eth', 25000).bigint,
+        egress_fee: buildFee('Usdc', 0).bigint,
+        network_fee: buildFee('Usdc', 100100).bigint,
+        intermediary: null,
+        output: BigInt(100e6),
+      });
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'ETH',
+        destChain: 'Ethereum',
+        destAsset: 'USDC',
+        ccmGasBudget: '12345',
+        ccmMessageLengthBytes: '321',
+        amount: (1e18).toString(),
+      });
+
+      const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
+
+      expect(status).toBe(200);
+      expect(body).toMatchObject([
+        {
+          egressAmount: (100e6).toString(),
+          estimatedDurationSeconds: 144,
+          estimatedDurationsSeconds: {
+            deposit: 30,
+            egress: 102,
+            swap: 12,
+          },
+          ccmParams: {
+            gasBudget: '12345',
+            messageLengthBytes: 321,
+          },
+          estimatedPrice: '100.0000000000025',
+          includedFees: [
+            {
+              amount: '25000',
+              asset: 'ETH',
+              chain: 'Ethereum',
+              type: 'INGRESS',
+            },
+            {
+              amount: '100100',
+              asset: 'USDC',
+              chain: 'Ethereum',
+              type: 'NETWORK',
+            },
+            {
+              amount: '0',
+              asset: 'USDC',
+              chain: 'Ethereum',
+              type: 'EGRESS',
+            },
+          ],
+          poolInfo: [
+            {
+              baseAsset: { asset: 'ETH', chain: 'Ethereum' },
+              fee: {
+                amount: '1999999999999950',
+                asset: 'ETH',
+                chain: 'Ethereum',
+              },
+              quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
+            },
+          ],
+        },
+      ]);
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+      expect(sendSpy).toHaveBeenCalledWith(
+        'cf_swap_rate_v3',
+        { asset: 'ETH', chain: 'Ethereum' },
+        { asset: 'USDC', chain: 'Ethereum' },
+        '0xde0b6b3a7640000', // 1e18
+        0,
+        undefined,
+        {
+          gas_budget: 12345,
+          message_length: 321,
+        },
+        [],
+        [],
+      );
+    });
+
     it('gets the DCA quote to USDC', async () => {
       env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
@@ -1048,7 +1179,7 @@ describe('server', () => {
         '0xde0b6b3a7640000', // 1e18
         0,
         undefined,
-        null,
+        undefined,
         [],
         [],
       );
@@ -1063,7 +1194,7 @@ describe('server', () => {
           number_of_chunks: 4,
           chunk_interval: 2,
         },
-        null,
+        undefined,
         [],
         [],
       );
@@ -1782,7 +1913,7 @@ describe('server', () => {
         '0x186a0', // 0.001e8,
         10,
         undefined,
-        null,
+        undefined,
         [],
         [],
       );
@@ -1794,7 +1925,7 @@ describe('server', () => {
         '0x1863c', // 0.001e8 - 100 (boostFee),
         10,
         undefined,
-        null,
+        undefined,
         [],
         [],
       );
@@ -1809,7 +1940,7 @@ describe('server', () => {
           number_of_chunks: 4,
           chunk_interval: 2,
         },
-        null,
+        undefined,
         [],
         [],
       );
@@ -1824,7 +1955,7 @@ describe('server', () => {
           number_of_chunks: 4,
           chunk_interval: 2,
         },
-        null,
+        undefined,
         [],
         [],
       );

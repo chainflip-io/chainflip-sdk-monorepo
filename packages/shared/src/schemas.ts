@@ -24,6 +24,8 @@ export const quoteQuerySchema = z
       .refine((v) => v > 0n, { message: 'swap input amount must be greater than 0' })
       .refine((v) => v < 2n ** 128n, { message: 'swap input amount must be less than 2^128' }),
     brokerCommissionBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
+    ccmGasBudget: numericString.transform((v) => BigInt(v)).optional(),
+    ccmMessageLengthBytes: numericString.transform((v) => Number(v)).optional(),
     dcaEnabled: booleanString.default('false'),
     isVaultSwap: booleanString.default('false'),
   })
@@ -48,11 +50,35 @@ export const quoteQuerySchema = z
       return z.NEVER;
     }
 
+    if (args.ccmGasBudget !== undefined && args.ccmMessageLengthBytes === undefined) {
+      ctx.addIssue({
+        message: `ccmMessageLengthBytes must be set if ccmGasBudget is set`,
+        code: z.ZodIssueCode.custom,
+      });
+
+      return z.NEVER;
+    }
+
+    if (args.ccmGasBudget === undefined && args.ccmMessageLengthBytes !== undefined) {
+      ctx.addIssue({
+        message: `ccmGasBudget must be set if ccmMessageLengthBytes is set`,
+        code: z.ZodIssueCode.custom,
+      });
+
+      return z.NEVER;
+    }
+
+    const ccmParams =
+      args.ccmGasBudget !== undefined && args.ccmMessageLengthBytes !== undefined
+        ? { gasBudget: args.ccmGasBudget, messageLengthBytes: args.ccmMessageLengthBytes }
+        : undefined;
+
     return {
       srcAsset,
       destAsset,
       amount: args.amount,
       brokerCommissionBps: args.brokerCommissionBps,
+      ccmParams,
       dcaEnabled: args.dcaEnabled,
       isVaultSwap: args.isVaultSwap,
     };
@@ -140,6 +166,10 @@ interface BaseQuoteDetails {
   srcAsset: AssetAndChain;
   destAsset: AssetAndChain;
   isVaultSwap: boolean;
+  ccmParams?: {
+    gasBudget: string;
+    messageLengthBytes: number;
+  };
   depositAmount: string;
   intermediateAmount?: string;
   egressAmount: string;

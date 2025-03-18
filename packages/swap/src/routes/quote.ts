@@ -41,6 +41,7 @@ const quoteRouter = (quoter: Quoter) => {
         destAsset,
         amount,
         brokerCommissionBps,
+        ccmParams,
         boostDepositsEnabled,
         isVaultSwap,
       } = await validateQuoteQuery(req.query);
@@ -52,6 +53,7 @@ const quoteRouter = (quoter: Quoter) => {
           depositAmount: amount,
           destAsset,
           brokerCommissionBps,
+          ccmParams,
           boostDepositsEnabled,
           quoter,
           isVaultSwap,

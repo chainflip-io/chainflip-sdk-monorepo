@@ -10,17 +10,20 @@ import env from '../config/env';
 export const initializeClient = memoize(
   () => new WsClient(env.RPC_NODE_WSS_URL, WebSocket as never),
 );
-type ExtractArray<T> = T extends unknown[] ? T : never;
-export type LimitOrders = ExtractArray<RpcParams['cf_swap_rate_v3'][5]>;
+export type QuoteLimitOrders = NonNullable<RpcParams['cf_swap_rate_v3'][7]>;
+export type QuoteCcmParams = {
+  gasBudget: bigint;
+  messageLengthBytes: number;
+};
 
 export type SwapRateArgs = {
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
   depositAmount: bigint;
-  limitOrders?: LimitOrders;
+  limitOrders?: QuoteLimitOrders;
   brokerCommissionBps?: number;
   dcaParams?: DcaParams;
-  ccmParams?: undefined; // TODO: change the type https://linear.app/chainflip/issue/PRO-1889/update-product-side-after-changes-in-the-protocol-related-to-ccm
+  ccmParams?: QuoteCcmParams;
   excludeFees?: SwapFeeType[];
 };
 
@@ -29,15 +32,23 @@ export const getSwapRateV3 = async ({
   destAsset,
   depositAmount,
   limitOrders,
-  dcaParams,
+  dcaParams: _dcaParams,
+  ccmParams: _ccmParams,
   excludeFees,
   brokerCommissionBps,
 }: SwapRateArgs) => {
   const client = initializeClient();
-  const dcaParameters = dcaParams
+  const dcaParams = _dcaParams
     ? {
-        number_of_chunks: dcaParams.numberOfChunks,
-        chunk_interval: dcaParams.chunkIntervalBlocks,
+        number_of_chunks: _dcaParams.numberOfChunks,
+        chunk_interval: _dcaParams.chunkIntervalBlocks,
+      }
+    : undefined;
+  const ccmParams = _ccmParams
+    ? {
+        // TODO: remove cast once https://github.com/chainflip-io/chainflip-product-toolkit/pull/325 is merged
+        gas_budget: Number(_ccmParams.gasBudget) as unknown as `0x${string}`,
+        message_length: _ccmParams.messageLengthBytes,
       }
     : undefined;
 
@@ -52,13 +63,13 @@ export const getSwapRateV3 = async ({
     getAssetAndChain(destAsset),
     hexEncodeNumber(depositAmount),
     brokerCommissionBps ?? 0,
-    dcaParameters,
+    dcaParams,
   ];
 
   const additionalOrders = limitOrders?.filter((order) => order.LimitOrder.sell_amount !== '0x0');
 
   const params: RpcParams['cf_swap_rate_v3'] = (await isAtLeastSpecVersion('1.8.0'))
-    ? [...commonParams, null, excludeFees, additionalOrders]
+    ? [...commonParams, ccmParams, excludeFees, additionalOrders]
     : [...commonParams, additionalOrders];
 
   const {

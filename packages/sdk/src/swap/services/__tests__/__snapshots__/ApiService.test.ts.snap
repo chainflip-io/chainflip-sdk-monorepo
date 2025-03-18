@@ -25,6 +25,8 @@ exports[`ApiService > getQuote > gets a quote 2`] = `
     },
     "params": {
       "amount": "10000",
+      "ccmGasBudget": "undefined",
+      "ccmMessageLengthBytes": "undefined",
       "dcaEnabled": "false",
       "destAsset": "ETH",
       "destChain": "Ethereum",
@@ -63,6 +65,8 @@ exports[`ApiService > getQuote > gets a quote for a vault swap 2`] = `
     },
     "params": {
       "amount": "10000",
+      "ccmGasBudget": "undefined",
+      "ccmMessageLengthBytes": "undefined",
       "dcaEnabled": "false",
       "destAsset": "ETH",
       "destChain": "Ethereum",
@@ -101,6 +105,47 @@ exports[`ApiService > getQuote > gets a quote with a broker commission 2`] = `
     "params": {
       "amount": "10000",
       "brokerCommissionBps": "15",
+      "ccmGasBudget": "undefined",
+      "ccmMessageLengthBytes": "undefined",
+      "dcaEnabled": "false",
+      "destAsset": "ETH",
+      "destChain": "Ethereum",
+      "isVaultSwap": "false",
+      "srcAsset": "BTC",
+      "srcChain": "Bitcoin",
+    },
+    "signal": undefined,
+  },
+]
+`;
+
+exports[`ApiService > getQuote > gets a quote with ccm params 1`] = `
+{
+  "amount": "10000",
+  "destAsset": "ETH",
+  "destChain": "Ethereum",
+  "quote": {
+    "egressAmount": "2",
+    "id": "string",
+    "intermediateAmount": "1",
+  },
+  "srcAsset": "BTC",
+  "srcChain": "Bitcoin",
+}
+`;
+
+exports[`ApiService > getQuote > gets a quote with ccm params 2`] = `
+[
+  "/quote",
+  {
+    "baseURL": "https://swapperoo.org",
+    "headers": {
+      "X-Chainflip-Sdk-Version": "1.0-test",
+    },
+    "params": {
+      "amount": "10000",
+      "ccmGasBudget": "12345",
+      "ccmMessageLengthBytes": "100",
       "dcaEnabled": "false",
       "destAsset": "ETH",
       "destChain": "Ethereum",
@@ -142,6 +187,8 @@ exports[`ApiService > getQuoteV2 > gets a quote 2`] = `
     },
     "params": {
       "amount": "10000",
+      "ccmGasBudget": "undefined",
+      "ccmMessageLengthBytes": "undefined",
       "dcaEnabled": "false",
       "destAsset": "ETH",
       "destChain": "Ethereum",
@@ -183,6 +230,8 @@ exports[`ApiService > getQuoteV2 > gets a quote for a vault swap 2`] = `
     },
     "params": {
       "amount": "10000",
+      "ccmGasBudget": "undefined",
+      "ccmMessageLengthBytes": "undefined",
       "dcaEnabled": "true",
       "destAsset": "ETH",
       "destChain": "Ethereum",
@@ -224,7 +273,51 @@ exports[`ApiService > getQuoteV2 > gets a quote with a broker commission 2`] = `
     "params": {
       "amount": "10000",
       "brokerCommissionBps": "15",
+      "ccmGasBudget": "undefined",
+      "ccmMessageLengthBytes": "undefined",
       "dcaEnabled": "false",
+      "destAsset": "ETH",
+      "destChain": "Ethereum",
+      "isVaultSwap": "false",
+      "srcAsset": "BTC",
+      "srcChain": "Bitcoin",
+    },
+    "signal": undefined,
+  },
+]
+`;
+
+exports[`ApiService > getQuoteV2 > gets a quote with ccm params 1`] = `
+{
+  "amount": "10000",
+  "dcaEnabled": true,
+  "destAsset": "ETH",
+  "destChain": "Ethereum",
+  "quotes": [
+    {
+      "egressAmount": "2",
+      "id": "string",
+      "intermediateAmount": "1",
+    },
+  ],
+  "srcAsset": "BTC",
+  "srcChain": "Bitcoin",
+}
+`;
+
+exports[`ApiService > getQuoteV2 > gets a quote with ccm params 2`] = `
+[
+  "/v2/quote",
+  {
+    "baseURL": "https://swapperoo.org",
+    "headers": {
+      "X-Chainflip-Sdk-Version": "1.0-test",
+    },
+    "params": {
+      "amount": "10000",
+      "ccmGasBudget": "12345",
+      "ccmMessageLengthBytes": "100",
+      "dcaEnabled": "true",
       "destAsset": "ETH",
       "destChain": "Ethereum",
       "isVaultSwap": "false",

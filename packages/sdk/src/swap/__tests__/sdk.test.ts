@@ -61,8 +61,7 @@ describe(SwapSDK, () => {
   };
 
   beforeEach(() => {
-    // @ts-expect-error - global mock
-    global.fetch.mockReset();
+    vi.resetAllMocks();
     mockRpcResponse(defaultRpcMocks);
   });
 
@@ -189,6 +188,38 @@ describe(SwapSDK, () => {
       );
       expect(result).toEqual({ quote: 1234 });
     });
+
+    it('calls api with ccm params', async () => {
+      const params: QuoteRequest = {
+        srcChain: 'Ethereum',
+        srcAsset: 'ETH',
+        destChain: 'Ethereum',
+        destAsset: 'USDC',
+        amount: '1',
+        ccmParams: {
+          gasBudget: '12345',
+          messageLengthBytes: 100,
+        },
+      };
+      vi.mocked(getQuote).mockResolvedValueOnce({ quote: 1234 } as any);
+
+      const result = await sdk.getQuote(params);
+      expect(getQuote).toHaveBeenCalledWith(
+        'https://chainflip-swap.staging/',
+        {
+          srcChain: 'Ethereum',
+          srcAsset: 'ETH',
+          destChain: 'Ethereum',
+          destAsset: 'USDC',
+          amount: '1',
+          brokerCommissionBps: 0,
+          ccmGasBudget: '12345',
+          ccmMessageLengthBytes: 100,
+        },
+        {},
+      );
+      expect(result).toEqual({ quote: 1234 });
+    });
   });
 
   describe(SwapSDK.prototype.getQuoteV2, () => {
@@ -237,6 +268,39 @@ describe(SwapSDK, () => {
           destAsset: 'USDC',
           amount: '1',
           brokerCommissionBps: 130,
+          dcaEnabled: false,
+        },
+        {},
+      );
+      expect(result).toEqual({ quote: 1234 });
+    });
+
+    it('calls api with ccm params', async () => {
+      const params: QuoteRequest = {
+        srcChain: 'Ethereum',
+        srcAsset: 'ETH',
+        destChain: 'Ethereum',
+        destAsset: 'USDC',
+        amount: '1',
+        ccmParams: {
+          gasBudget: '12345',
+          messageLengthBytes: 100,
+        },
+      };
+      vi.mocked(getQuoteV2).mockResolvedValueOnce({ quote: 1234 } as any);
+
+      const result = await sdk.getQuoteV2(params);
+      expect(getQuoteV2).toHaveBeenCalledWith(
+        'https://chainflip-swap.staging/',
+        {
+          srcChain: 'Ethereum',
+          srcAsset: 'ETH',
+          destChain: 'Ethereum',
+          destAsset: 'USDC',
+          amount: '1',
+          brokerCommissionBps: 0,
+          ccmGasBudget: '12345',
+          ccmMessageLengthBytes: 100,
           dcaEnabled: false,
         },
         {},
@@ -1387,6 +1451,10 @@ describe(SwapSDK, () => {
           destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
           depositAmount: BigInt(1e18).toString(),
           type: 'REGULAR',
+          ccmParams: {
+            gasBudget: '123456789',
+            messageLengthBytes: 10,
+          },
         } as Quote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         fillOrKillParams: {
@@ -1614,6 +1682,59 @@ describe(SwapSDK, () => {
           },
         }),
       ).rejects.toThrow('Cannot open a deposit channel for a vault swap quote');
+    });
+
+    it('throws for ccm params with regular quote', async () => {
+      await expect(
+        new SwapSDK({
+          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        }).requestDepositAddressV2({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            type: 'REGULAR',
+            isVaultSwap: false,
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          fillOrKillParams: {
+            minPrice: '10000000000000',
+            refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+            retryDurationBlocks: 500,
+          },
+          ccmParams: {
+            gasBudget: '123456789',
+            message: '0xdeadc0de',
+            ccmAdditionalData: '0xc0ffee',
+          },
+        }),
+      ).rejects.toThrow('Cannot open CCM channel for quote without CCM params');
+    });
+
+    it('throws if ccm params are missing for ccm quote', async () => {
+      await expect(
+        new SwapSDK({
+          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        }).requestDepositAddressV2({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            type: 'REGULAR',
+            ccmParams: {
+              gasBudget: '123456789',
+              messageLengthBytes: 10,
+            },
+            isVaultSwap: false,
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          fillOrKillParams: {
+            minPrice: '10000000000000',
+            refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+            retryDurationBlocks: 500,
+          },
+        }),
+      ).rejects.toThrow('Cannot open regular channel for quote with CCM params');
     });
   });
 
@@ -1959,6 +2080,10 @@ describe(SwapSDK, () => {
           destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
           depositAmount: BigInt(1e18).toString(),
           type: 'REGULAR',
+          ccmParams: {
+            gasBudget: '123456789',
+            messageLengthBytes: 10,
+          },
           isVaultSwap: true,
         } as Quote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
@@ -2178,6 +2303,59 @@ describe(SwapSDK, () => {
           },
         }),
       ).rejects.toThrow('Cannot encode vault swap data for a deposit channel quote');
+    });
+
+    it('throws for ccm params with regular quote', async () => {
+      await expect(
+        new SwapSDK({
+          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        }).encodeVaultSwapData({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            type: 'REGULAR',
+            isVaultSwap: true,
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+            minPrice: '10000000000000',
+          },
+          ccmParams: {
+            gasBudget: '123456789',
+            message: '0xdeadc0de',
+            ccmAdditionalData: '0xc0ffee',
+          },
+        }),
+      ).rejects.toThrow('Cannot encode CCM swap for quote without CCM params');
+    });
+
+    it('throws if ccm params are missing for ccm quote', async () => {
+      await expect(
+        new SwapSDK({
+          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        }).encodeVaultSwapData({
+          quote: {
+            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            depositAmount: BigInt(1e18).toString(),
+            type: 'REGULAR',
+            ccmParams: {
+              gasBudget: '123456789',
+              messageLengthBytes: 10,
+            },
+            isVaultSwap: true,
+          } as Quote,
+          destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+            minPrice: '10000000000000',
+          },
+        }),
+      ).rejects.toThrow('Cannot encode regular swap for quote with CCM params');
     });
   });
 
