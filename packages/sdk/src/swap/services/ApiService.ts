@@ -18,7 +18,7 @@ type BackendQuery<T, U> = (baseUrl: string, args: T, options: RequestOptions) =>
 
 export const getQuote: BackendQuery<
   Omit<QuoteRequest, 'affiliateBrokers' | 'ccmParams'> & {
-    ccmGasBudget?: number;
+    ccmGasBudget?: string;
     ccmMessageLengthBytes?: number;
   },
   QuoteResponse
@@ -52,7 +52,7 @@ export const getQuote: BackendQuery<
 
 export const getQuoteV2: BackendQuery<
   Omit<QuoteRequest, 'affiliateBrokers' | 'ccmParams'> & {
-    ccmGasBudget?: number;
+    ccmGasBudget?: string;
     ccmMessageLengthBytes?: number;
     dcaEnabled: boolean;
   },

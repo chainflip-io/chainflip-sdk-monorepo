@@ -185,6 +185,8 @@ export class SwapSDK {
       this.options.backendUrl,
       {
         ...remainingRequest,
+        ccmGasBudget: quoteRequest.ccmParams?.gasBudget,
+        ccmMessageLengthBytes: quoteRequest.ccmParams?.messageLengthBytes,
         brokerCommissionBps: submitterBrokerCommissionBps + affiliateBrokerCommissionBps,
       },
       options,
@@ -206,6 +208,8 @@ export class SwapSDK {
       {
         ...remainingRequest,
         brokerCommissionBps: submitterBrokerCommissionBps + affiliateBrokerCommissionBps,
+        ccmGasBudget: quoteRequest.ccmParams?.gasBudget,
+        ccmMessageLengthBytes: quoteRequest.ccmParams?.messageLengthBytes,
         dcaEnabled: this.dcaEnabled,
       },
       options,
