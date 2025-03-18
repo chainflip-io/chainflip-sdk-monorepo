@@ -17,7 +17,7 @@ export type RequestOptions = {
 type BackendQuery<T, U> = (baseUrl: string, args: T, options: RequestOptions) => Promise<U>;
 
 export const getQuote: BackendQuery<
-  Omit<QuoteRequest, 'affiliateBrokers'> & {
+  Omit<QuoteRequest, 'affiliateBrokers' | 'ccmParams'> & {
     ccmGasBudget?: number;
     ccmMessageLengthBytes?: number;
   },
@@ -51,7 +51,7 @@ export const getQuote: BackendQuery<
 };
 
 export const getQuoteV2: BackendQuery<
-  Omit<QuoteRequest, 'affiliateBrokers'> & {
+  Omit<QuoteRequest, 'affiliateBrokers' | 'ccmParams'> & {
     ccmGasBudget?: number;
     ccmMessageLengthBytes?: number;
     dcaEnabled: boolean;

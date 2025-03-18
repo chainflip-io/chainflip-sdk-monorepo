@@ -6,7 +6,7 @@ import { calculateRecommendedSlippage } from './autoSlippage';
 import { buildFee, getPoolFees } from './fees';
 import { getEgressFee, getMinimumEgressAmount } from './rpc';
 import ServiceError from './ServiceError';
-import { getSwapRateV3, LimitOrders } from './statechain';
+import { getSwapRateV3, QuoteLimitOrders, QuoteCcmParams } from './statechain';
 import { InternalAsset, Pool } from '../client';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 
@@ -17,8 +17,7 @@ export default async function getPoolQuote({
   limitOrders,
   boostFeeBps,
   brokerCommissionBps,
-  ccmGasBudget,
-  ccmMessageLengthBytes,
+  ccmParams,
   pools,
   dcaParams,
   isVaultSwap,
@@ -27,9 +26,8 @@ export default async function getPoolQuote({
   destAsset: InternalAsset;
   depositAmount: bigint;
   brokerCommissionBps?: number;
-  ccmGasBudget?: number;
-  ccmMessageLengthBytes?: number;
-  limitOrders?: LimitOrders;
+  ccmParams?: QuoteCcmParams;
+  limitOrders?: QuoteLimitOrders;
   boostFeeBps?: number;
   pools: Pool[];
   dcaParams?: DcaParams;
@@ -58,13 +56,7 @@ export default async function getPoolQuote({
       depositAmount: cfRateInputAmount,
       limitOrders,
       brokerCommissionBps,
-      ccmParams:
-        ccmGasBudget && ccmMessageLengthBytes
-          ? {
-              gasBudget: ccmGasBudget,
-              messageLengthBytes: ccmMessageLengthBytes,
-            }
-          : undefined,
+      ccmParams,
       dcaParams,
       excludeFees,
     });

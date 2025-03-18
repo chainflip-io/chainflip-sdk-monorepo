@@ -10,20 +10,20 @@ import env from '../config/env';
 export const initializeClient = memoize(
   () => new WsClient(env.RPC_NODE_WSS_URL, WebSocket as never),
 );
-export type LimitOrders = NonNullable<RpcParams['cf_swap_rate_v3'][7]>;
-export type CcmParams = RpcParams['cf_swap_rate_v3'][9];
+export type QuoteLimitOrders = NonNullable<RpcParams['cf_swap_rate_v3'][7]>;
+export type QuoteCcmParams = {
+  gasBudget: bigint;
+  messageLengthBytes: number;
+};
 
 export type SwapRateArgs = {
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
   depositAmount: bigint;
-  limitOrders?: LimitOrders;
+  limitOrders?: QuoteLimitOrders;
   brokerCommissionBps?: number;
   dcaParams?: DcaParams;
-  ccmParams?: {
-    gasBudget: number;
-    messageLengthBytes: number;
-  };
+  ccmParams?: QuoteCcmParams;
   excludeFees?: SwapFeeType[];
 };
 
@@ -46,7 +46,7 @@ export const getSwapRateV3 = async ({
     : undefined;
   const ccmParams = _ccmParams
     ? {
-        gas_budget: _ccmParams.gasBudget,
+        gas_budget: hexEncodeNumber(_ccmParams.gasBudget),
         message_length: _ccmParams.messageLengthBytes,
       }
     : undefined;

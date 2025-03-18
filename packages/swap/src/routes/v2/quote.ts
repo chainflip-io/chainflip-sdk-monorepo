@@ -6,6 +6,7 @@ import { Asset, assetConstants, InternalAsset } from '@/shared/enums';
 import { getFulfilledResult } from '@/shared/promises';
 import { quoteQuerySchema, DCABoostQuote, DcaParams, DCAQuote } from '@/shared/schemas';
 import { assertRouteEnabled } from '@/swap/utils/env';
+import { QuoteCcmParams } from '@/swap/utils/statechain';
 import env from '../../config/env';
 import { getBoostSafeMode } from '../../polkadot/api';
 import { getUsdValue } from '../../pricing/checkPriceWarning';
@@ -106,8 +107,7 @@ export const validateQuoteQuery = async (query: Query) => {
     amount,
     boostDepositsEnabled,
     brokerCommissionBps: queryResult.data.brokerCommissionBps,
-    ccmGasBudget: queryResult.data.ccmGasBudget,
-    ccmMessageLengthBytes: queryResult.data.ccmMessageLengthBytes,
+    ccmParams: queryResult.data.ccmParams,
     dcaEnabled: queryResult.data.dcaEnabled,
     isVaultSwap: queryResult.data.isVaultSwap,
   };
@@ -137,8 +137,7 @@ export const generateQuotes = async ({
   srcAsset,
   destAsset,
   brokerCommissionBps,
-  ccmGasBudget,
-  ccmMessageLengthBytes,
+  ccmParams,
   boostDepositsEnabled,
   quoter,
   isVaultSwap,
@@ -148,8 +147,7 @@ export const generateQuotes = async ({
   depositAmount: bigint;
   destAsset: InternalAsset;
   brokerCommissionBps?: number;
-  ccmGasBudget?: number;
-  ccmMessageLengthBytes?: number;
+  ccmParams?: QuoteCcmParams;
   boostDepositsEnabled: boolean;
   quoter: Quoter;
   isVaultSwap?: boolean;
@@ -177,8 +175,7 @@ export const generateQuotes = async ({
     depositAmount,
     limitOrders,
     brokerCommissionBps,
-    ccmGasBudget,
-    ccmMessageLengthBytes,
+    ccmParams,
     pools,
     isVaultSwap,
   };
@@ -267,8 +264,7 @@ const quoteRouter = (quoter: Quoter) => {
         destAsset,
         amount: depositAmount,
         brokerCommissionBps,
-        ccmGasBudget,
-        ccmMessageLengthBytes,
+        ccmParams,
         boostDepositsEnabled,
         dcaEnabled,
         isVaultSwap,
@@ -287,8 +283,7 @@ const quoteRouter = (quoter: Quoter) => {
           depositAmount,
           destAsset,
           brokerCommissionBps,
-          ccmGasBudget,
-          ccmMessageLengthBytes,
+          ccmParams,
           boostDepositsEnabled,
           quoter,
           isVaultSwap,

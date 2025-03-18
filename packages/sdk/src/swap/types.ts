@@ -46,18 +46,18 @@ export interface QuoteRequest extends ChainsAndAssets {
   affiliateBrokers?: AffiliateBroker[];
   isVaultSwap?: boolean;
   ccmParams?: {
-    gasBudget: number;
+    gasBudget: string;
     messageLengthBytes: number;
   };
 }
 
 export interface QuoteResponse
-  extends Omit<QuoteRequest, 'brokerCommissionBps' | 'affiliateBrokers'> {
+  extends Omit<QuoteRequest, 'brokerCommissionBps' | 'affiliateBrokers' | 'ccmParams'> {
   quote: Quote;
 }
 
 export interface QuoteResponseV2
-  extends Omit<QuoteRequest, 'brokerCommissionBps' | 'affiliateBrokers'> {
+  extends Omit<QuoteRequest, 'brokerCommissionBps' | 'affiliateBrokers' | 'ccmParams'> {
   quotes: Quote[];
 }
 
