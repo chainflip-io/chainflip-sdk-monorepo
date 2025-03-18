@@ -31,7 +31,7 @@ export default async function getPoolQuote({
   boostFeeBps?: number;
   pools: Pool[];
   dcaParams?: DcaParams;
-  isVaultSwap?: boolean;
+  isVaultSwap: boolean;
 }) {
   const includedFees = [];
   const excludeFees: SwapFeeType[] = [];
@@ -146,5 +146,9 @@ export default async function getPoolQuote({
     destAsset: getAssetAndChain(destAsset),
     depositAmount: depositAmount.toString(),
     isVaultSwap,
+    ccmParams: ccmParams && {
+      gasBudget: String(ccmParams.gasBudget),
+      messageLengthBytes: ccmParams.messageLengthBytes,
+    },
   } as Quote;
 }

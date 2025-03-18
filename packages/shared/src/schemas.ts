@@ -157,6 +157,10 @@ interface BaseQuoteDetails {
   srcAsset: AssetAndChain;
   destAsset: AssetAndChain;
   isVaultSwap: boolean;
+  ccmParams?: {
+    gasBudget: string;
+    messageLengthBytes: number;
+  };
   depositAmount: string;
   intermediateAmount?: string;
   egressAmount: string;

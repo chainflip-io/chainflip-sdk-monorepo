@@ -918,6 +918,10 @@ describe('server', () => {
             egress: 102,
             swap: 12,
           },
+          ccmParams: {
+            gasBudget: '12345',
+            messageLengthBytes: 321,
+          },
           estimatedPrice: '100.0000000000025',
           includedFees: [
             {

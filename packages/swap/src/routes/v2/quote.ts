@@ -150,7 +150,7 @@ export const generateQuotes = async ({
   ccmParams?: QuoteCcmParams;
   boostDepositsEnabled: boolean;
   quoter: Quoter;
-  isVaultSwap?: boolean;
+  isVaultSwap: boolean;
 }) => {
   let regularEagerLiquidityExists = false;
   let dcaEagerLiquidityExists = false;
