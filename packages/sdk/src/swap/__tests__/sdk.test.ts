@@ -2332,7 +2332,7 @@ describe(SwapSDK, () => {
       ).rejects.toThrow('Cannot encode CCM swap for quote without CCM params');
     });
 
-    it('throws for ccm params with regular quote', async () => {
+    it('throws if ccm params are missing for ccm quote', async () => {
       await expect(
         new SwapSDK({
           broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
