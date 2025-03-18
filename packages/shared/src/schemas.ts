@@ -59,6 +59,15 @@ export const quoteQuerySchema = z
       return z.NEVER;
     }
 
+    if (args.ccmGasBudget === undefined && args.ccmMessageLengthBytes !== undefined) {
+      ctx.addIssue({
+        message: `ccmGasBudget must be set if ccmMessageLengthBytes is set`,
+        code: z.ZodIssueCode.custom,
+      });
+
+      return z.NEVER;
+    }
+
     const ccmParams =
       args.ccmGasBudget !== undefined && args.ccmMessageLengthBytes !== undefined
         ? { gasBudget: args.ccmGasBudget, messageLengthBytes: args.ccmMessageLengthBytes }
