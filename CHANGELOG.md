@@ -9,6 +9,11 @@ which it is deprecated.
 
 ## 1.8.1
 
+### Added
+
+- `SwapSDK.prototype.getQuoteV2` accepts a `ccmParams` property now. The optional property allows to
+  estimate the broadcast fee and egress amount for CCM swaps.
+
 ### Changed
 
 - `SwapSDK.prototype.requestDepositAddress`: The `fillOrKillParams` property is now mandatory when opening a
