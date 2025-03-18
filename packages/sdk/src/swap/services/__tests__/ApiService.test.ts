@@ -71,6 +71,21 @@ describe('ApiService', () => {
       expect(mockedGet.mock.lastCall).toMatchSnapshot();
     });
 
+    it('gets a quote with ccm params', async () => {
+      const route = await getQuote(
+        'https://swapperoo.org',
+        {
+          ...mockRoute,
+          ccmGasBudget: '12345',
+          ccmMessageLengthBytes: 100,
+        },
+        {},
+      );
+
+      expect(route).toMatchSnapshot();
+      expect(mockedGet.mock.lastCall).toMatchSnapshot();
+    });
+
     it('passes the signal to fetch', async () => {
       await getQuote('https://swapperoo.org', mockRoute, {
         signal: new AbortController().signal,
@@ -130,6 +145,22 @@ describe('ApiService', () => {
         {
           ...mockRoute,
           isVaultSwap: true,
+          dcaEnabled: true,
+        },
+        {},
+      );
+
+      expect(route).toMatchSnapshot();
+      expect(mockedGet.mock.lastCall).toMatchSnapshot();
+    });
+
+    it('gets a quote with ccm params', async () => {
+      const route = await getQuoteV2(
+        'https://swapperoo.org',
+        {
+          ...mockRoute,
+          ccmGasBudget: '12345',
+          ccmMessageLengthBytes: 100,
           dcaEnabled: true,
         },
         {},

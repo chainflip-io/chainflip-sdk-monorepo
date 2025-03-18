@@ -61,8 +61,7 @@ describe(SwapSDK, () => {
   };
 
   beforeEach(() => {
-    // @ts-expect-error - global mock
-    global.fetch.mockReset();
+    vi.resetAllMocks();
     mockRpcResponse(defaultRpcMocks);
   });
 
@@ -189,6 +188,38 @@ describe(SwapSDK, () => {
       );
       expect(result).toEqual({ quote: 1234 });
     });
+
+    it('calls api with ccm params', async () => {
+      const params: QuoteRequest = {
+        srcChain: 'Ethereum',
+        srcAsset: 'ETH',
+        destChain: 'Ethereum',
+        destAsset: 'USDC',
+        amount: '1',
+        ccmParams: {
+          gasBudget: '12345',
+          messageLengthBytes: 100,
+        },
+      };
+      vi.mocked(getQuote).mockResolvedValueOnce({ quote: 1234 } as any);
+
+      const result = await sdk.getQuote(params);
+      expect(getQuote).toHaveBeenCalledWith(
+        'https://chainflip-swap.staging/',
+        {
+          srcChain: 'Ethereum',
+          srcAsset: 'ETH',
+          destChain: 'Ethereum',
+          destAsset: 'USDC',
+          amount: '1',
+          brokerCommissionBps: 0,
+          ccmGasBudget: '12345',
+          ccmMessageLengthBytes: 100,
+        },
+        {},
+      );
+      expect(result).toEqual({ quote: 1234 });
+    });
   });
 
   describe(SwapSDK.prototype.getQuoteV2, () => {
@@ -237,6 +268,39 @@ describe(SwapSDK, () => {
           destAsset: 'USDC',
           amount: '1',
           brokerCommissionBps: 130,
+          dcaEnabled: false,
+        },
+        {},
+      );
+      expect(result).toEqual({ quote: 1234 });
+    });
+
+    it('calls api with ccm params', async () => {
+      const params: QuoteRequest = {
+        srcChain: 'Ethereum',
+        srcAsset: 'ETH',
+        destChain: 'Ethereum',
+        destAsset: 'USDC',
+        amount: '1',
+        ccmParams: {
+          gasBudget: '12345',
+          messageLengthBytes: 100,
+        },
+      };
+      vi.mocked(getQuoteV2).mockResolvedValueOnce({ quote: 1234 } as any);
+
+      const result = await sdk.getQuoteV2(params);
+      expect(getQuoteV2).toHaveBeenCalledWith(
+        'https://chainflip-swap.staging/',
+        {
+          srcChain: 'Ethereum',
+          srcAsset: 'ETH',
+          destChain: 'Ethereum',
+          destAsset: 'USDC',
+          amount: '1',
+          brokerCommissionBps: 0,
+          ccmGasBudget: '12345',
+          ccmMessageLengthBytes: 100,
           dcaEnabled: false,
         },
         {},

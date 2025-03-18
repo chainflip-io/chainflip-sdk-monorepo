@@ -175,7 +175,7 @@ export class SwapSDK {
       '[@chainflip/sdk] The getQuote method is deprecated and will be removed in the 1.9 release. Use the getQuoteV2 method instead.',
     );
 
-    const { brokerCommissionBps, affiliateBrokers, ...remainingRequest } = quoteRequest;
+    const { brokerCommissionBps, affiliateBrokers, ccmParams, ...remainingRequest } = quoteRequest;
     const submitterBrokerCommissionBps =
       brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0;
     const affiliateBrokerCommissionBps =
@@ -185,8 +185,8 @@ export class SwapSDK {
       this.options.backendUrl,
       {
         ...remainingRequest,
-        ccmGasBudget: quoteRequest.ccmParams?.gasBudget,
-        ccmMessageLengthBytes: quoteRequest.ccmParams?.messageLengthBytes,
+        ccmGasBudget: ccmParams?.gasBudget,
+        ccmMessageLengthBytes: ccmParams?.messageLengthBytes,
         brokerCommissionBps: submitterBrokerCommissionBps + affiliateBrokerCommissionBps,
       },
       options,
@@ -197,7 +197,7 @@ export class SwapSDK {
     quoteRequest: QuoteRequest,
     options: ApiService.RequestOptions = {},
   ): Promise<QuoteResponseV2> {
-    const { brokerCommissionBps, affiliateBrokers, ...remainingRequest } = quoteRequest;
+    const { brokerCommissionBps, affiliateBrokers, ccmParams, ...remainingRequest } = quoteRequest;
     const submitterBrokerCommissionBps =
       brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0;
     const affiliateBrokerCommissionBps =
@@ -208,8 +208,8 @@ export class SwapSDK {
       {
         ...remainingRequest,
         brokerCommissionBps: submitterBrokerCommissionBps + affiliateBrokerCommissionBps,
-        ccmGasBudget: quoteRequest.ccmParams?.gasBudget,
-        ccmMessageLengthBytes: quoteRequest.ccmParams?.messageLengthBytes,
+        ccmGasBudget: ccmParams?.gasBudget,
+        ccmMessageLengthBytes: ccmParams?.messageLengthBytes,
         dcaEnabled: this.dcaEnabled,
       },
       options,
