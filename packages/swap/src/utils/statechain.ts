@@ -46,7 +46,8 @@ export const getSwapRateV3 = async ({
     : undefined;
   const ccmParams = _ccmParams
     ? {
-        gas_budget: Number(_ccmParams.gasBudget), //
+        // TODO: remove cast once https://github.com/chainflip-io/chainflip-product-toolkit/pull/325 is merged
+        gas_budget: Number(_ccmParams.gasBudget) as unknown as `0x${string}`,
         message_length: _ccmParams.messageLengthBytes,
       }
     : undefined;
