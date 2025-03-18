@@ -71,7 +71,7 @@ describe(getSwapRateV3, () => {
       '0x3e8',
       0,
       undefined,
-      null,
+      undefined,
       ['IngressDepositChannel'],
       undefined,
     );
