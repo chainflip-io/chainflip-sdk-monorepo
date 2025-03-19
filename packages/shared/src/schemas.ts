@@ -24,8 +24,18 @@ export const quoteQuerySchema = z
       .refine((v) => v > 0n, { message: 'swap input amount must be greater than 0' })
       .refine((v) => v < 2n ** 128n, { message: 'swap input amount must be less than 2^128' }),
     brokerCommissionBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
-    ccmGasBudget: numericString.transform((v) => BigInt(v)).optional(),
-    ccmMessageLengthBytes: numericString.transform((v) => Number(v)).optional(),
+    ccmGasBudget: z
+      .union([
+        numericString.transform((v) => BigInt(v)),
+        z.literal('undefined').transform(() => undefined), // sdk version 1.8.2 sends undefined string if not set
+      ])
+      .optional(),
+    ccmMessageLengthBytes: z
+      .union([
+        numericString.transform((v) => Number(v)),
+        z.literal('undefined').transform(() => undefined), // sdk version 1.8.2 sends undefined string if not set
+      ])
+      .optional(),
     dcaEnabled: booleanString.default('false'),
     isVaultSwap: booleanString.default('false'),
   })
