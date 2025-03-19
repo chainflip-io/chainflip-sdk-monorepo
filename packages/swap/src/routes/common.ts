@@ -1,6 +1,7 @@
 import { RequestHandler, ErrorRequestHandler } from 'express';
 import * as express from 'express';
 import type { RouteParameters } from 'express-serve-static-core';
+import { inspect } from 'util';
 import { InternalAsset } from '@/shared/enums';
 import env from '../config/env';
 import type Quoter from '../quoting/Quoter';
@@ -8,12 +9,16 @@ import logger from '../utils/logger';
 import ServiceError from '../utils/ServiceError';
 
 export const handleError: ErrorRequestHandler = (error, req, res, _next) => {
-  logger.customInfo('received error', {}, { error });
+  logger.customInfo('received error', {}, { error: inspect(error) });
 
   if (error instanceof ServiceError) {
     res.status(error.code).json(error.toJSON());
   } else {
-    logger.customError('unknown error occurred', { alertCode: 'UnknownError' }, { error });
+    logger.customError(
+      'unknown error occurred',
+      { alertCode: 'UnknownError' },
+      { error: inspect(error) },
+    );
     res.status(500).json({ message: 'unknown error' });
   }
 };

@@ -1,5 +1,6 @@
 import { AxiosInstance, isAxiosError } from 'axios';
 import { AML } from 'elliptic-sdk';
+import { inspect } from 'util';
 import { z } from 'zod';
 import logger from './logger';
 import prisma from '../client';
@@ -32,7 +33,7 @@ const isTooRisky = async (address: string | undefined): Promise<boolean> => {
     return parsed.risk_score !== null && parsed.risk_score >= env.ELLIPTIC_RISK_SCORE_TOLERANCE;
   } catch (error) {
     const level = isAxiosError(error) && error.status === 404 ? 'warn' : 'error';
-    logger[level]('failed to request risk score from elliptic', { error });
+    logger[level]('failed to request risk score from elliptic', { error: inspect(error) });
     return false;
   }
 };
