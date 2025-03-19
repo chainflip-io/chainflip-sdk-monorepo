@@ -2,6 +2,7 @@ import assert from 'assert';
 import { GraphQLClient } from 'graphql-request';
 import { performance } from 'perf_hooks';
 import { setTimeout as sleep } from 'timers/promises';
+import { inspect } from 'util';
 import prisma from './client';
 import env from './config/env';
 import { getEventHandler, swapEventNames } from './event-handlers';
@@ -40,7 +41,7 @@ const fetchBlocks = async (height: number): Promise<Block[]> => {
 
       return blocks;
     } catch (error) {
-      logger.error('failed to fetch batch', { error });
+      logger.error('failed to fetch batch', { error: inspect(error) });
       if (i === 4) throw error;
     }
   }

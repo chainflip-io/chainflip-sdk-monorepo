@@ -1,6 +1,7 @@
 import { findVaultSwapData as findBitcoinVaultSwapData } from '@chainflip/bitcoin';
 import { findVaultSwapData as findSolanaVaultSwapData } from '@chainflip/solana';
 import { isTruthy } from '@chainflip/utils/guard';
+import { inspect } from 'util';
 import { Chain, Chains, InternalAsset, assetConstants } from '@/shared/enums';
 import RedisClient from '@/shared/node-apis/redis';
 import { getTransactionRefChains } from '@/swap/utils/transactionRef';
@@ -88,7 +89,7 @@ export const getPendingDeposit = async (
       txRef: deposits[0].tx_refs?.[0],
     };
   } catch (error) {
-    logger.error('error while looking up deposit in redis', { error });
+    logger.error('error while looking up deposit in redis', { error: inspect(error) });
     return null;
   }
 };
@@ -98,7 +99,7 @@ export const getPendingBroadcast = async (broadcast: Broadcast) => {
   try {
     return await redis.getBroadcast(broadcast.chain, broadcast.nativeId);
   } catch (error) {
-    logger.error('error while looking up broadcast in redis', { error });
+    logger.error('error while looking up broadcast in redis', { error: inspect(error) });
     return null;
   }
 };
@@ -155,7 +156,7 @@ export const getPendingVaultSwap = async (txRef: string) => {
       ...remainingData,
     };
   } catch (error) {
-    logger.error('error while looking up vault swap in redis', { error });
+    logger.error('error while looking up vault swap in redis', { error: inspect(error) });
     return null;
   }
 };
