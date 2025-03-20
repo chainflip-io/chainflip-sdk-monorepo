@@ -51,13 +51,11 @@ export interface QuoteRequest extends ChainsAndAssets {
   };
 }
 
-export interface QuoteResponse
-  extends Omit<QuoteRequest, 'brokerCommissionBps' | 'affiliateBrokers' | 'ccmParams'> {
+export interface QuoteResponse extends QuoteRequest {
   quote: Quote;
 }
 
-export interface QuoteResponseV2
-  extends Omit<QuoteRequest, 'brokerCommissionBps' | 'affiliateBrokers' | 'ccmParams'> {
+export interface QuoteResponseV2 extends QuoteRequest {
   quotes: Quote[];
 }
 

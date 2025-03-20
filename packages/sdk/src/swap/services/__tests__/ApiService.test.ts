@@ -76,8 +76,10 @@ describe('ApiService', () => {
         'https://swapperoo.org',
         {
           ...mockRoute,
-          ccmGasBudget: '12345',
-          ccmMessageLengthBytes: 100,
+          ccmParams: {
+            gasBudget: '12345',
+            messageLengthBytes: 100,
+          },
         },
         {},
       );
@@ -159,8 +161,10 @@ describe('ApiService', () => {
         'https://swapperoo.org',
         {
           ...mockRoute,
-          ccmGasBudget: '12345',
-          ccmMessageLengthBytes: 100,
+          ccmParams: {
+            gasBudget: '12345',
+            messageLengthBytes: 100,
+          },
           dcaEnabled: true,
         },
         {},

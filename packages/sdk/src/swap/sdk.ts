@@ -175,19 +175,14 @@ export class SwapSDK {
       '[@chainflip/sdk] The getQuote method is deprecated and will be removed in the 1.9 release. Use the getQuoteV2 method instead.',
     );
 
-    const { brokerCommissionBps, affiliateBrokers, ccmParams, ...remainingRequest } = quoteRequest;
     const submitterBrokerCommissionBps =
-      brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0;
-    const affiliateBrokerCommissionBps =
-      affiliateBrokers?.reduce((acc, affiliate) => acc + affiliate.commissionBps, 0) ?? 0;
+      quoteRequest.brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0;
 
     return ApiService.getQuote(
       this.options.backendUrl,
       {
-        ...remainingRequest,
-        ccmGasBudget: ccmParams?.gasBudget,
-        ccmMessageLengthBytes: ccmParams?.messageLengthBytes,
-        brokerCommissionBps: submitterBrokerCommissionBps + affiliateBrokerCommissionBps,
+        ...quoteRequest,
+        brokerCommissionBps: submitterBrokerCommissionBps,
       },
       options,
     );
@@ -197,19 +192,14 @@ export class SwapSDK {
     quoteRequest: QuoteRequest,
     options: ApiService.RequestOptions = {},
   ): Promise<QuoteResponseV2> {
-    const { brokerCommissionBps, affiliateBrokers, ccmParams, ...remainingRequest } = quoteRequest;
     const submitterBrokerCommissionBps =
-      brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0;
-    const affiliateBrokerCommissionBps =
-      affiliateBrokers?.reduce((acc, affiliate) => acc + affiliate.commissionBps, 0) ?? 0;
+      quoteRequest.brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0;
 
     return ApiService.getQuoteV2(
       this.options.backendUrl,
       {
-        ...remainingRequest,
-        brokerCommissionBps: submitterBrokerCommissionBps + affiliateBrokerCommissionBps,
-        ccmGasBudget: ccmParams?.gasBudget,
-        ccmMessageLengthBytes: ccmParams?.messageLengthBytes,
+        ...quoteRequest,
+        brokerCommissionBps: submitterBrokerCommissionBps,
         dcaEnabled: this.dcaEnabled,
       },
       options,
