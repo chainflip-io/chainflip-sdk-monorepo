@@ -7,6 +7,15 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## 1.8.3
+
+### Added
+
+- `SwapSDK.prototype.getQuoteV2` returns a `isVaultSwap`, `brokerCommissionBps`, `affiliateBrokers`
+  and `ccmParams` property now.
+- `SwapSDK.prototype.getQuote` returns a `isVaultSwap`, `brokerCommissionBps`, `affiliateBrokers`
+  and `ccmParams` property now.
+
 ## 1.8.2
 
 ### Added
