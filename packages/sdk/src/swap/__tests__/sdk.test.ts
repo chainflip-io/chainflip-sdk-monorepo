@@ -182,7 +182,11 @@ describe(SwapSDK, () => {
           destChain: 'Ethereum',
           destAsset: 'USDC',
           amount: '1',
-          brokerCommissionBps: 130,
+          brokerCommissionBps: 100,
+          affiliateBrokers: [
+            { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+            { account: 'cFLdopvNB7LaiBbJoNdNC26e9Gc1FNJKFtvNZjAmXAAVnzCk4', commissionBps: 20 },
+          ],
         },
         {},
       );
@@ -213,8 +217,10 @@ describe(SwapSDK, () => {
           destAsset: 'USDC',
           amount: '1',
           brokerCommissionBps: 0,
-          ccmGasBudget: '12345',
-          ccmMessageLengthBytes: 100,
+          ccmParams: {
+            gasBudget: '12345',
+            messageLengthBytes: 100,
+          },
         },
         {},
       );
@@ -267,7 +273,11 @@ describe(SwapSDK, () => {
           destChain: 'Ethereum',
           destAsset: 'USDC',
           amount: '1',
-          brokerCommissionBps: 130,
+          brokerCommissionBps: 100,
+          affiliateBrokers: [
+            { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+            { account: 'cFLdopvNB7LaiBbJoNdNC26e9Gc1FNJKFtvNZjAmXAAVnzCk4', commissionBps: 20 },
+          ],
           dcaEnabled: false,
         },
         {},
@@ -299,8 +309,10 @@ describe(SwapSDK, () => {
           destAsset: 'USDC',
           amount: '1',
           brokerCommissionBps: 0,
-          ccmGasBudget: '12345',
-          ccmMessageLengthBytes: 100,
+          ccmParams: {
+            gasBudget: '12345',
+            messageLengthBytes: 100,
+          },
           dcaEnabled: false,
         },
         {},
