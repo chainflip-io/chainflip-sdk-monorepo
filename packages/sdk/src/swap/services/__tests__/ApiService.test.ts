@@ -57,6 +57,24 @@ describe('ApiService', () => {
       expect(mockedGet.mock.lastCall).toMatchSnapshot();
     });
 
+    it('gets a quote with a broker commission and affiliate brokers', async () => {
+      const route = await getQuote(
+        'https://swapperoo.org',
+        {
+          ...mockRoute,
+          brokerCommissionBps: 15,
+          affiliateBrokers: [
+            { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+            { account: 'cFLdopvNB7LaiBbJoNdNC26e9Gc1FNJKFtvNZjAmXAAVnzCk4', commissionBps: 20 },
+          ],
+        },
+        {},
+      );
+
+      expect(route).toMatchSnapshot();
+      expect(mockedGet.mock.lastCall).toMatchSnapshot();
+    });
+
     it('gets a quote for a vault swap', async () => {
       const route = await getQuote(
         'https://swapperoo.org',
@@ -132,6 +150,25 @@ describe('ApiService', () => {
         {
           ...mockRoute,
           brokerCommissionBps: 15,
+          dcaEnabled: false,
+        },
+        {},
+      );
+
+      expect(route).toMatchSnapshot();
+      expect(mockedGet.mock.lastCall).toMatchSnapshot();
+    });
+
+    it('gets a quote with a broker commission and affiliate brokers', async () => {
+      const route = await getQuoteV2(
+        'https://swapperoo.org',
+        {
+          ...mockRoute,
+          brokerCommissionBps: 15,
+          affiliateBrokers: [
+            { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+            { account: 'cFLdopvNB7LaiBbJoNdNC26e9Gc1FNJKFtvNZjAmXAAVnzCk4', commissionBps: 20 },
+          ],
           dcaEnabled: false,
         },
         {},
