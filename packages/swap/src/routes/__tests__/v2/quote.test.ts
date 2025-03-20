@@ -12,7 +12,6 @@ import {
   environment,
   mockRpcResponse,
 } from '@/shared/tests/fixtures';
-import { isAtLeastSpecVersion } from '@/swap/utils/function';
 import prisma, { InternalAsset } from '../../../client';
 import env from '../../../config/env';
 import { getUsdValue } from '../../../pricing/checkPriceWarning';
@@ -21,14 +20,6 @@ import app from '../../../server';
 import { boostPoolsCache } from '../../../utils/boost';
 import { getTotalLiquidity } from '../../../utils/pools';
 import { getDcaQuoteParams, MAX_NUMBER_OF_CHUNKS } from '../../v2/quote';
-
-vi.mock('../../../utils/function', async (importOriginal) => {
-  const original = (await importOriginal()) as object;
-  return {
-    ...original,
-    isAtLeastSpecVersion: vi.fn().mockResolvedValue(true),
-  };
-});
 
 vi.mock('../../../utils/pools', async (importOriginal) => {
   const original = (await importOriginal()) as object;
@@ -600,41 +591,6 @@ describe('server', () => {
         undefined,
         undefined,
         ['IngressDepositChannel'],
-        [],
-      );
-    });
-
-    it('does not pass excluded fees and ccm params to the rpc for version < 180', async () => {
-      vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2e18));
-      vi.mocked(isAtLeastSpecVersion).mockResolvedValueOnce(false);
-
-      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Usdc', 0).bigint,
-        egress_fee: buildFee('Eth', 0).bigint,
-        network_fee: buildFee('Usdc', 100100).bigint,
-        intermediary: null,
-        output: BigInt(1e18),
-      });
-
-      const params = new URLSearchParams({
-        srcChain: 'Ethereum',
-        srcAsset: 'USDC',
-        destChain: 'Ethereum',
-        destAsset: 'ETH',
-        amount: (100e6).toString(),
-      });
-
-      const { status } = await request(server).get(`/v2/quote?${params.toString()}`);
-      expect(status).toBe(200);
-      expect(sendSpy).toHaveBeenNthCalledWith(
-        1,
-        'cf_swap_rate_v3',
-        { asset: 'USDC', chain: 'Ethereum' },
-        { asset: 'ETH', chain: 'Ethereum' },
-        '0x5f5e100',
-        0,
-        undefined,
         [],
       );
     });

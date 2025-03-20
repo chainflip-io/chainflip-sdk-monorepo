@@ -57,7 +57,7 @@
   "dependencies": {
     "@chainflip/bitcoin": "^1.2.4",
     "@chainflip/processor": "^1.8.4",
-    "@chainflip/rpc": "^1.8.8",
+    "@chainflip/rpc": "^1.8.9",
     "@chainflip/solana": "^2.1.4",
     "@chainflip/utils": "^0.5.0",
     "@polkadot/api": "^15.5.2",

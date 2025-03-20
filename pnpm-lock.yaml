@@ -88,8 +88,8 @@ importers:
         specifier: ^1.2.4
         version: 1.2.4(typescript@5.7.3)
       '@chainflip/rpc':
-        specifier: ^1.8.8
-        version: 1.8.8
+        specifier: ^1.8.9
+        version: 1.8.9
       '@chainflip/solana':
         specifier: ^2.1.4
         version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -161,8 +161,8 @@ importers:
         specifier: ^1.2.4
         version: 1.2.4(typescript@5.7.3)
       '@chainflip/rpc':
-        specifier: ^1.8.8
-        version: 1.8.8
+        specifier: ^1.8.9
+        version: 1.8.9
       '@chainflip/solana':
         specifier: ^2.1.4
         version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -201,8 +201,8 @@ importers:
         specifier: ^1.2.4
         version: 1.2.4(typescript@5.7.3)
       '@chainflip/rpc':
-        specifier: ^1.8.8
-        version: 1.8.8
+        specifier: ^1.8.9
+        version: 1.8.9
       '@chainflip/solana':
         specifier: ^2.1.4
         version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -259,8 +259,8 @@ importers:
         specifier: ^1.8.4
         version: 1.8.6
       '@chainflip/rpc':
-        specifier: ^1.8.8
-        version: 1.8.8
+        specifier: ^1.8.9
+        version: 1.8.9
       '@chainflip/solana':
         specifier: ^2.1.4
         version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -481,8 +481,8 @@ packages:
   '@chainflip/processor@1.8.6':
     resolution: {integrity: sha512-rJ3Dw4fnsRYgi8ioQSKJMkseaT+kw+ZL7dU1ZEtVz23w28HZ+999uJnoMf2BDg26S/hS5p2ZdsZwECda/76h4A==}
 
-  '@chainflip/rpc@1.8.8':
-    resolution: {integrity: sha512-jEYq8980+gKZv8pI49vNmoUCNFU6KLFXRBDf4PX0ZqGzXU3lXpX2Z2hz4j3W3/WWgswHYcaJufwTWPqEVpzAyw==}
+  '@chainflip/rpc@1.8.9':
+    resolution: {integrity: sha512-M6KMKuGarxtZTsliYOke+1Kl7hcJzY0lvbLd+aVlLfEWRYtZyRXzYYLbHqZNsEMzdExlU8xeD9eS0m2Of2IJpg==}
 
   '@chainflip/scale@1.8.0':
     resolution: {integrity: sha512-66bT2DQi0kNFZRva0phBuMWCWKamOyfROlKovxcBd6wzZVGFxVqgi73iG1nExaUPlOLJnYc8gQ/blwHidgjvrg==}
@@ -5906,7 +5906,7 @@ snapshots:
       '@chainflip/utils': 0.4.0
       zod: 3.24.2
 
-  '@chainflip/rpc@1.8.8':
+  '@chainflip/rpc@1.8.9':
     dependencies:
       '@chainflip/utils': 0.7.0
       zod: 3.24.2
