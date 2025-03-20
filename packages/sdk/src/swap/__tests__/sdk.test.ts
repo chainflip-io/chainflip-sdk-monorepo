@@ -155,7 +155,7 @@ describe(SwapSDK, () => {
         { ...params, brokerCommissionBps: 0 },
         {},
       );
-      expect(result).toEqual({ quote: 1234 });
+      expect(result).toStrictEqual({ quote: 1234 });
     });
 
     it('calls api with broker commission', async () => {
@@ -182,11 +182,15 @@ describe(SwapSDK, () => {
           destChain: 'Ethereum',
           destAsset: 'USDC',
           amount: '1',
-          brokerCommissionBps: 130,
+          brokerCommissionBps: 100,
+          affiliateBrokers: [
+            { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+            { account: 'cFLdopvNB7LaiBbJoNdNC26e9Gc1FNJKFtvNZjAmXAAVnzCk4', commissionBps: 20 },
+          ],
         },
         {},
       );
-      expect(result).toEqual({ quote: 1234 });
+      expect(result).toStrictEqual({ quote: 1234 });
     });
 
     it('calls api with ccm params', async () => {
@@ -213,12 +217,14 @@ describe(SwapSDK, () => {
           destAsset: 'USDC',
           amount: '1',
           brokerCommissionBps: 0,
-          ccmGasBudget: '12345',
-          ccmMessageLengthBytes: 100,
+          ccmParams: {
+            gasBudget: '12345',
+            messageLengthBytes: 100,
+          },
         },
         {},
       );
-      expect(result).toEqual({ quote: 1234 });
+      expect(result).toStrictEqual({ quote: 1234 });
     });
   });
 
@@ -232,7 +238,7 @@ describe(SwapSDK, () => {
         amount: '1',
         isVaultSwap: true,
       };
-      vi.mocked(getQuoteV2).mockResolvedValueOnce({ quote: 1234 } as any);
+      vi.mocked(getQuoteV2).mockResolvedValueOnce([{ quote: 1234 }] as any);
 
       const result = await sdk.getQuoteV2(params);
       expect(getQuoteV2).toHaveBeenCalledWith(
@@ -240,7 +246,7 @@ describe(SwapSDK, () => {
         { ...params, brokerCommissionBps: 0, dcaEnabled: false },
         {},
       );
-      expect(result).toEqual({ quote: 1234 });
+      expect(result).toStrictEqual([{ quote: 1234 }]);
     });
 
     it('calls api with broker commission', async () => {
@@ -256,7 +262,7 @@ describe(SwapSDK, () => {
           { account: 'cFLdopvNB7LaiBbJoNdNC26e9Gc1FNJKFtvNZjAmXAAVnzCk4', commissionBps: 20 },
         ],
       };
-      vi.mocked(getQuoteV2).mockResolvedValueOnce({ quote: 1234 } as any);
+      vi.mocked(getQuoteV2).mockResolvedValueOnce([{ quote: 1234 }] as any);
 
       const result = await sdk.getQuoteV2(params);
       expect(getQuoteV2).toHaveBeenCalledWith(
@@ -267,12 +273,16 @@ describe(SwapSDK, () => {
           destChain: 'Ethereum',
           destAsset: 'USDC',
           amount: '1',
-          brokerCommissionBps: 130,
+          brokerCommissionBps: 100,
+          affiliateBrokers: [
+            { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+            { account: 'cFLdopvNB7LaiBbJoNdNC26e9Gc1FNJKFtvNZjAmXAAVnzCk4', commissionBps: 20 },
+          ],
           dcaEnabled: false,
         },
         {},
       );
-      expect(result).toEqual({ quote: 1234 });
+      expect(result).toStrictEqual([{ quote: 1234 }]);
     });
 
     it('calls api with ccm params', async () => {
@@ -287,7 +297,7 @@ describe(SwapSDK, () => {
           messageLengthBytes: 100,
         },
       };
-      vi.mocked(getQuoteV2).mockResolvedValueOnce({ quote: 1234 } as any);
+      vi.mocked(getQuoteV2).mockResolvedValueOnce([{ quote: 1234 }] as any);
 
       const result = await sdk.getQuoteV2(params);
       expect(getQuoteV2).toHaveBeenCalledWith(
@@ -299,13 +309,15 @@ describe(SwapSDK, () => {
           destAsset: 'USDC',
           amount: '1',
           brokerCommissionBps: 0,
-          ccmGasBudget: '12345',
-          ccmMessageLengthBytes: 100,
+          ccmParams: {
+            gasBudget: '12345',
+            messageLengthBytes: 100,
+          },
           dcaEnabled: false,
         },
         {},
       );
-      expect(result).toEqual({ quote: 1234 });
+      expect(result).toStrictEqual([{ quote: 1234 }]);
     });
   });
 
@@ -315,7 +327,7 @@ describe(SwapSDK, () => {
 
       const result = await sdk.getStatus({ id: '1234' });
       expect(getStatus).toHaveBeenCalledWith('https://chainflip-swap.staging/', { id: '1234' }, {});
-      expect(result).toEqual({ status: 1234 });
+      expect(result).toStrictEqual({ status: 1234 });
     });
   });
 
@@ -329,7 +341,7 @@ describe(SwapSDK, () => {
         { id: '1234' },
         {},
       );
-      expect(result).toEqual({ status: 1234 });
+      expect(result).toStrictEqual({ status: 1234 });
     });
   });
 

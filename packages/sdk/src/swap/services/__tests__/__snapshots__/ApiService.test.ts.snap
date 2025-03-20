@@ -25,8 +25,6 @@ exports[`ApiService > getQuote > gets a quote 2`] = `
     },
     "params": {
       "amount": "10000",
-      "ccmGasBudget": "undefined",
-      "ccmMessageLengthBytes": "undefined",
       "dcaEnabled": "false",
       "destAsset": "ETH",
       "destChain": "Ethereum",
@@ -65,8 +63,6 @@ exports[`ApiService > getQuote > gets a quote for a vault swap 2`] = `
     },
     "params": {
       "amount": "10000",
-      "ccmGasBudget": "undefined",
-      "ccmMessageLengthBytes": "undefined",
       "dcaEnabled": "false",
       "destAsset": "ETH",
       "destChain": "Ethereum",
@@ -82,6 +78,7 @@ exports[`ApiService > getQuote > gets a quote for a vault swap 2`] = `
 exports[`ApiService > getQuote > gets a quote with a broker commission 1`] = `
 {
   "amount": "10000",
+  "brokerCommissionBps": 15,
   "destAsset": "ETH",
   "destChain": "Ethereum",
   "quote": {
@@ -105,8 +102,55 @@ exports[`ApiService > getQuote > gets a quote with a broker commission 2`] = `
     "params": {
       "amount": "10000",
       "brokerCommissionBps": "15",
-      "ccmGasBudget": "undefined",
-      "ccmMessageLengthBytes": "undefined",
+      "dcaEnabled": "false",
+      "destAsset": "ETH",
+      "destChain": "Ethereum",
+      "isVaultSwap": "false",
+      "srcAsset": "BTC",
+      "srcChain": "Bitcoin",
+    },
+    "signal": undefined,
+  },
+]
+`;
+
+exports[`ApiService > getQuote > gets a quote with a broker commission and affiliate brokers 1`] = `
+{
+  "affiliateBrokers": [
+    {
+      "account": "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
+      "commissionBps": 10,
+    },
+    {
+      "account": "cFLdopvNB7LaiBbJoNdNC26e9Gc1FNJKFtvNZjAmXAAVnzCk4",
+      "commissionBps": 20,
+    },
+  ],
+  "amount": "10000",
+  "brokerCommissionBps": 15,
+  "destAsset": "ETH",
+  "destChain": "Ethereum",
+  "quote": {
+    "egressAmount": "2",
+    "id": "string",
+    "intermediateAmount": "1",
+  },
+  "srcAsset": "BTC",
+  "srcChain": "Bitcoin",
+}
+`;
+
+exports[`ApiService > getQuote > gets a quote with a broker commission and affiliate brokers 2`] = `
+[
+  "/quote",
+  {
+    "baseURL": "https://swapperoo.org",
+    "headers": {
+      "X-Chainflip-Sdk-Version": "1.0-test",
+    },
+    "params": {
+      "amount": "10000",
+      "brokerCommissionBps": "45",
       "dcaEnabled": "false",
       "destAsset": "ETH",
       "destChain": "Ethereum",
@@ -122,6 +166,10 @@ exports[`ApiService > getQuote > gets a quote with a broker commission 2`] = `
 exports[`ApiService > getQuote > gets a quote with ccm params 1`] = `
 {
   "amount": "10000",
+  "ccmParams": {
+    "gasBudget": "12345",
+    "messageLengthBytes": 100,
+  },
   "destAsset": "ETH",
   "destChain": "Ethereum",
   "quote": {
@@ -187,8 +235,6 @@ exports[`ApiService > getQuoteV2 > gets a quote 2`] = `
     },
     "params": {
       "amount": "10000",
-      "ccmGasBudget": "undefined",
-      "ccmMessageLengthBytes": "undefined",
       "dcaEnabled": "false",
       "destAsset": "ETH",
       "destChain": "Ethereum",
@@ -230,8 +276,6 @@ exports[`ApiService > getQuoteV2 > gets a quote for a vault swap 2`] = `
     },
     "params": {
       "amount": "10000",
-      "ccmGasBudget": "undefined",
-      "ccmMessageLengthBytes": "undefined",
       "dcaEnabled": "true",
       "destAsset": "ETH",
       "destChain": "Ethereum",
@@ -247,6 +291,7 @@ exports[`ApiService > getQuoteV2 > gets a quote for a vault swap 2`] = `
 exports[`ApiService > getQuoteV2 > gets a quote with a broker commission 1`] = `
 {
   "amount": "10000",
+  "brokerCommissionBps": 15,
   "dcaEnabled": false,
   "destAsset": "ETH",
   "destChain": "Ethereum",
@@ -273,8 +318,58 @@ exports[`ApiService > getQuoteV2 > gets a quote with a broker commission 2`] = `
     "params": {
       "amount": "10000",
       "brokerCommissionBps": "15",
-      "ccmGasBudget": "undefined",
-      "ccmMessageLengthBytes": "undefined",
+      "dcaEnabled": "false",
+      "destAsset": "ETH",
+      "destChain": "Ethereum",
+      "isVaultSwap": "false",
+      "srcAsset": "BTC",
+      "srcChain": "Bitcoin",
+    },
+    "signal": undefined,
+  },
+]
+`;
+
+exports[`ApiService > getQuoteV2 > gets a quote with a broker commission and affiliate brokers 1`] = `
+{
+  "affiliateBrokers": [
+    {
+      "account": "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
+      "commissionBps": 10,
+    },
+    {
+      "account": "cFLdopvNB7LaiBbJoNdNC26e9Gc1FNJKFtvNZjAmXAAVnzCk4",
+      "commissionBps": 20,
+    },
+  ],
+  "amount": "10000",
+  "brokerCommissionBps": 15,
+  "dcaEnabled": false,
+  "destAsset": "ETH",
+  "destChain": "Ethereum",
+  "quotes": [
+    {
+      "egressAmount": "2",
+      "id": "string",
+      "intermediateAmount": "1",
+    },
+  ],
+  "srcAsset": "BTC",
+  "srcChain": "Bitcoin",
+}
+`;
+
+exports[`ApiService > getQuoteV2 > gets a quote with a broker commission and affiliate brokers 2`] = `
+[
+  "/v2/quote",
+  {
+    "baseURL": "https://swapperoo.org",
+    "headers": {
+      "X-Chainflip-Sdk-Version": "1.0-test",
+    },
+    "params": {
+      "amount": "10000",
+      "brokerCommissionBps": "45",
       "dcaEnabled": "false",
       "destAsset": "ETH",
       "destChain": "Ethereum",
@@ -290,6 +385,10 @@ exports[`ApiService > getQuoteV2 > gets a quote with a broker commission 2`] = `
 exports[`ApiService > getQuoteV2 > gets a quote with ccm params 1`] = `
 {
   "amount": "10000",
+  "ccmParams": {
+    "gasBudget": "12345",
+    "messageLengthBytes": 100,
+  },
   "dcaEnabled": true,
   "destAsset": "ETH",
   "destChain": "Ethereum",

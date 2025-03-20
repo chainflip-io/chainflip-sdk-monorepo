@@ -16,26 +16,29 @@ export type RequestOptions = {
 
 type BackendQuery<T, U> = (baseUrl: string, args: T, options: RequestOptions) => Promise<U>;
 
-export const getQuote: BackendQuery<
-  Omit<QuoteRequest, 'affiliateBrokers' | 'ccmParams'> & {
-    ccmGasBudget?: string;
-    ccmMessageLengthBytes?: number;
-  },
-  QuoteResponse
-> = async (baseUrl, quoteRequest, { signal }) => {
-  const { brokerCommissionBps, ccmGasBudget, ccmMessageLengthBytes, ...returnedRequestData } =
-    quoteRequest;
+export const getQuote: BackendQuery<QuoteRequest, QuoteResponse> = async (
+  baseUrl,
+  quoteRequest,
+  { signal },
+) => {
+  const affiliateCommissionBps =
+    quoteRequest.affiliateBrokers?.reduce((acc, affiliate) => acc + affiliate.commissionBps, 0) ??
+    0;
+  const totalBrokerCommissionBps = (quoteRequest.brokerCommissionBps ?? 0) + affiliateCommissionBps;
+
   const params: QuoteQueryParams = {
-    amount: returnedRequestData.amount,
-    srcChain: returnedRequestData.srcChain,
-    srcAsset: returnedRequestData.srcAsset,
-    destChain: returnedRequestData.destChain,
-    destAsset: returnedRequestData.destAsset,
+    amount: quoteRequest.amount,
+    srcChain: quoteRequest.srcChain,
+    srcAsset: quoteRequest.srcAsset,
+    destChain: quoteRequest.destChain,
+    destAsset: quoteRequest.destAsset,
     isVaultSwap: String(Boolean(quoteRequest.isVaultSwap)),
-    ccmGasBudget: String(ccmGasBudget),
-    ccmMessageLengthBytes: String(ccmMessageLengthBytes),
-    ...(brokerCommissionBps && {
-      brokerCommissionBps: String(brokerCommissionBps),
+    ...(totalBrokerCommissionBps && {
+      brokerCommissionBps: String(totalBrokerCommissionBps),
+    }),
+    ...(quoteRequest.ccmParams && {
+      ccmGasBudget: quoteRequest.ccmParams.gasBudget,
+      ccmMessageLengthBytes: String(quoteRequest.ccmParams.messageLengthBytes),
     }),
     dcaEnabled: 'false',
   };
@@ -47,30 +50,33 @@ export const getQuote: BackendQuery<
     headers: CF_SDK_VERSION_HEADERS,
   });
 
-  return { ...returnedRequestData, quote: data };
+  return { ...quoteRequest, quote: data };
 };
 
 export const getQuoteV2: BackendQuery<
-  Omit<QuoteRequest, 'affiliateBrokers' | 'ccmParams'> & {
-    ccmGasBudget?: string;
-    ccmMessageLengthBytes?: number;
+  QuoteRequest & {
     dcaEnabled: boolean;
   },
   QuoteResponseV2
 > = async (baseUrl, quoteRequest, { signal }) => {
-  const { brokerCommissionBps, ccmGasBudget, ccmMessageLengthBytes, ...returnedRequestData } =
-    quoteRequest;
+  const affiliateCommissionBps =
+    quoteRequest.affiliateBrokers?.reduce((acc, affiliate) => acc + affiliate.commissionBps, 0) ??
+    0;
+  const totalBrokerCommissionBps = (quoteRequest.brokerCommissionBps ?? 0) + affiliateCommissionBps;
+
   const params: QuoteQueryParams = {
-    amount: returnedRequestData.amount,
-    srcChain: returnedRequestData.srcChain,
-    srcAsset: returnedRequestData.srcAsset,
-    destChain: returnedRequestData.destChain,
-    destAsset: returnedRequestData.destAsset,
+    amount: quoteRequest.amount,
+    srcChain: quoteRequest.srcChain,
+    srcAsset: quoteRequest.srcAsset,
+    destChain: quoteRequest.destChain,
+    destAsset: quoteRequest.destAsset,
     isVaultSwap: String(Boolean(quoteRequest.isVaultSwap)),
-    ccmGasBudget: String(ccmGasBudget),
-    ccmMessageLengthBytes: String(ccmMessageLengthBytes),
-    ...(brokerCommissionBps && {
-      brokerCommissionBps: String(brokerCommissionBps),
+    ...(totalBrokerCommissionBps && {
+      brokerCommissionBps: String(totalBrokerCommissionBps),
+    }),
+    ...(quoteRequest.ccmParams && {
+      ccmGasBudget: quoteRequest.ccmParams.gasBudget,
+      ccmMessageLengthBytes: String(quoteRequest.ccmParams.messageLengthBytes),
     }),
     dcaEnabled: String(Boolean(quoteRequest.dcaEnabled)),
   };
@@ -82,7 +88,7 @@ export const getQuoteV2: BackendQuery<
     headers: CF_SDK_VERSION_HEADERS,
   });
 
-  return { ...returnedRequestData, quotes: data };
+  return { ...quoteRequest, quotes: data };
 };
 
 export const getStatus: BackendQuery<SwapStatusRequest, SwapStatusResponse> = async (
