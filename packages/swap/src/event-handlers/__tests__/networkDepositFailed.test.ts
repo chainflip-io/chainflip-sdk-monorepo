@@ -97,6 +97,11 @@ const solVaultDepositFailedMock = buildDepositFailedEvent({
       txId: [bytesToHex(base58.decode(SOL_ADDRESS)), '1234'],
       affiliateFees: [],
       boostFee: 0,
+      refundParams: {
+        minPrice: '0',
+        refundAddress: ETH_ADDRESS,
+        retryDuration: 100,
+      },
     },
   },
   blockHeight: 1234,

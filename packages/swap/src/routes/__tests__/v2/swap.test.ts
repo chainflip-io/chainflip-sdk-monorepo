@@ -6,6 +6,7 @@ import { vi, describe, it, beforeEach, afterEach, expect, beforeAll } from 'vite
 import { z } from 'zod';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
+import { DepositFailedArgs } from '@/swap/event-handlers/networkDepositFailed';
 import type { SwapDepositAddressReadyArgs } from '@/swap/event-handlers/swapDepositAddressReady';
 import { SwapEgressIgnoredArgs } from '@/swap/event-handlers/swapEgressIgnored';
 import { SwapRequestedArgs190 } from '@/swap/event-handlers/swapRequested';
@@ -351,20 +352,26 @@ const swapEventMap = {
       broadcastId: 7,
     },
   },
-  'EthereumIngressEgress.DepositIgnored': {
+  'EthereumIngressEgress.DepositFailed': {
     id: '0000000092-000400-77afe',
     blockId: '0000000092-77afe',
     indexInBlock: 400,
     extrinsicId: '0000000092-000010-77afe',
     callId: '0000000092-000010-77afe',
-    name: 'EthereumIngressEgress.DepositIgnored',
+    name: 'EthereumIngressEgress.DepositFailed',
     args: {
-      asset: { __kind: 'Eth' },
-      amount: '1000000',
       reason: { __kind: 'BelowMinimumDeposit' },
-      depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
-      depositDetails: {},
-    },
+      blockHeight: 1234,
+      details: {
+        __kind: 'DepositChannel',
+        depositWitness: {
+          asset: { __kind: 'Eth' },
+          amount: '100000000000000',
+          depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
+          depositDetails: {},
+        },
+      },
+    } as DepositFailedArgs,
   },
   'Swapping.RefundEgressIgnored': {
     id: '0000000104-000594-75b12',
@@ -905,36 +912,40 @@ describe('server', () => {
           id: '0003614958-000465-1d0a6',
           indexInBlock: 465,
           callId: '0003614958-000231-1d0a6',
-          name: 'BitcoinIngressEgress.DepositIgnored',
+          name: 'BitcoinIngressEgress.DepositFailed',
           args: {
-            asset: { __kind: 'Btc' },
-            amount: '1000000',
             reason: { __kind: 'TransactionRejectedByBroker' },
             depositAddress: {
               value: '0xe0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
               __kind: 'Taproot',
             },
-            depositDetails: {
-              id: {
-                txId: '0x78b3828e63d9300eedcfeaed28e7416764019a62066b945e63624ac27dc5cc9d',
-                vout: 0,
-              },
-              amount: '1000000',
-              depositAddress: {
-                pubkeyX: '0xe9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833',
-                scriptPath: {
-                  salt: 875,
-                  tapleafHash: '0x4f99f5996889dd9d5332ab2be83e0ce478bb03420dbc8cea7aaaa14e5ef77f86',
-                  unlockScript: {
-                    bytes:
-                      '0x026b037520e9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833ac',
+            blockHeight: 1234,
+            details: {
+              __kind: 'DepositChannel',
+              depositWitness: {
+                id: {
+                  txId: '0x78b3828e63d9300eedcfeaed28e7416764019a62066b945e63624ac27dc5cc9d',
+                  vout: 0,
+                },
+                asset: { __kind: 'Btc' },
+                amount: '1000000',
+                depositAddress: {
+                  pubkeyX: '0xe9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833',
+                  scriptPath: {
+                    salt: 875,
+                    tapleafHash:
+                      '0x4f99f5996889dd9d5332ab2be83e0ce478bb03420dbc8cea7aaaa14e5ef77f86',
+                    unlockScript: {
+                      bytes:
+                        '0x026b037520e9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833ac',
+                    },
+                    tweakedPubkeyBytes:
+                      '0x03e0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
                   },
-                  tweakedPubkeyBytes:
-                    '0x03e0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
                 },
               },
             },
-          },
+          } as DepositFailedArgs,
         },
         {
           id: '0003614958-001117-1d0a6',

@@ -12,7 +12,30 @@ import { pascalCaseToScreamingSnakeCase } from '@/shared/strings';
 import { Prisma } from '../client';
 import type { EventHandlerArgs } from './index';
 
-const schema = z.union([schema190, schema180]);
+const transformSchema = (args: z.output<typeof schema180>): z.output<typeof schema190> => ({
+  ...args,
+  requestType:
+    args.requestType.__kind === 'Regular'
+      ? {
+          ...args.requestType,
+          __kind: 'Regular',
+          outputAction: {
+            __kind: 'Egress',
+            outputAddress: args.requestType.outputAddress,
+            ccmDepositMetadata: args.requestType.ccmDepositMetadata,
+          },
+        }
+      : args.requestType,
+  refundParameters: args.refundParameters && {
+    ...args.refundParameters,
+    refundDestination: {
+      __kind: 'ExternalAddress',
+      value: args.refundParameters.refundAddress,
+    },
+  },
+});
+
+const schema = z.union([schema190, schema180.transform(transformSchema)]);
 
 type RequestType = z.output<typeof schema>['requestType'];
 type Origin = z.output<typeof schema>['origin'];
@@ -26,14 +49,6 @@ const getRequestInfo = (requestType: RequestType) => {
   }
 
   if (requestType.__kind === 'Regular') {
-    if ('outputAddress' in requestType) {
-      return {
-        type: 'EGRESS' as const,
-        destAddress: requestType.outputAddress.address,
-        ccmMetadata: requestType.ccmDepositMetadata,
-      };
-    }
-
     if (requestType.outputAction.__kind === 'Egress') {
       return {
         type: 'EGRESS' as const,
@@ -147,22 +162,19 @@ export const getOriginInfo = async (
 
 const extractRefundParameters = (refundParameters: z.output<typeof schema>['refundParameters']) => {
   if (!refundParameters) return null;
+
   let refundAddress;
 
-  if ('refundDestination' in refundParameters) {
-    if (refundParameters.refundDestination.__kind === 'InternalAccount') {
-      refundAddress = refundParameters.refundDestination.value;
-    } else if (refundParameters.refundDestination.__kind === 'ExternalAddress') {
-      refundAddress = refundParameters.refundDestination.value.address;
-    } else {
-      return assertNever(
-        refundParameters.refundDestination,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        `unexpected refund destination: ${(refundParameters.refundDestination as any).__kind}`,
-      );
-    }
+  if (refundParameters.refundDestination.__kind === 'InternalAccount') {
+    refundAddress = refundParameters.refundDestination.value;
+  } else if (refundParameters.refundDestination.__kind === 'ExternalAddress') {
+    refundAddress = refundParameters.refundDestination.value.address;
   } else {
-    refundAddress = refundParameters.refundAddress.address;
+    return assertNever(
+      refundParameters.refundDestination,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      `unexpected refund destination: ${(refundParameters.refundDestination as any).__kind}`,
+    );
   }
 
   return {
