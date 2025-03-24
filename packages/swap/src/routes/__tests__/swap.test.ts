@@ -659,7 +659,8 @@ describe('server', () => {
       expect(body).toMatchInlineSnapshot(
         {
           lastStatechainUpdateAt: expect.any(Number),
-        }, `
+        },
+        `
         {
           "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
           "depositChannelBrokerCommissionBps": 0,
@@ -685,7 +686,8 @@ describe('server', () => {
           "srcChainRequiredBlockConfirmations": 2,
           "state": "AWAITING_DEPOSIT",
         }
-      `);
+      `,
+      );
     });
 
     it(`retrieves a swap in ${State.DepositReceived} status`, async () => {
