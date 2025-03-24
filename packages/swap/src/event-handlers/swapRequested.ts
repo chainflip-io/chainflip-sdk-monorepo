@@ -17,6 +17,7 @@ const schema = z.union([schema190, schema180]);
 type RequestType = z.output<typeof schema>['requestType'];
 type Origin = z.output<typeof schema>['origin'];
 export type SwapRequestedArgs = z.input<typeof schema>;
+export type SwapRequestedArgs180 = z.input<typeof schema180>;
 export type SwapRequestedArgs190 = z.input<typeof schema190>;
 
 const getRequestInfo = (requestType: RequestType) => {

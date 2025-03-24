@@ -4,7 +4,7 @@ import prisma from '../../client';
 import { SwapDepositAddressReadyArgs } from '../swapDepositAddressReady';
 import { SwapEgressScheduledArgs } from '../swapEgressScheduled';
 import { SwapExecutedArgs } from '../swapExecuted';
-import { SwapRequestedArgs } from '../swapRequested';
+import { SwapRequestedArgs180 } from '../swapRequested';
 import { SwapScheduledArgs } from '../swapScheduled';
 
 const depositChannelEvents = [
@@ -84,6 +84,14 @@ const depositChannelEvents = [
       brokerCommissionRate: 100,
       sourceChainExpiryBlock: '157',
       brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
+      refundParameters: {
+        minPrice: '0',
+        refundAddress: {
+          __kind: 'Dot',
+          value: '0x7b42c78a80b6e72e1ec500cfb88a064959dfae5fe8b09f366444d35878364513',
+        },
+        retryDuration: 100,
+      },
     } as SwapDepositAddressReadyArgs,
   },
   {
@@ -102,12 +110,13 @@ const depositChannelEvents = [
           __kind: 'Dot',
         },
         depositBlockHeight: '57',
+        brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
       },
       inputAsset: { __kind: 'Dot' },
       inputAmount: '499802700000',
       outputAsset: { __kind: 'Flip' },
       requestType: {
-        __kind: 'Ccm',
+        __kind: 'Regular',
         outputAddress: { value: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0', __kind: 'Eth' },
         ccmSwapMetadata: {
           swapAmounts: { principalSwapAmount: '499802700000', gasBudget: '360801' },
@@ -123,7 +132,8 @@ const depositChannelEvents = [
         },
       },
       swapRequestId: '28',
-    } as SwapRequestedArgs,
+      brokerFees: [],
+    } as SwapRequestedArgs180,
   },
   {
     id: '0000000057-000011-29eb0',
