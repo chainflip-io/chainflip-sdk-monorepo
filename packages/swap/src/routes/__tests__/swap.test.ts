@@ -1,12 +1,16 @@
+import { ethereumIngressEgressDepositFailed } from '@chainflip/processor/180/ethereumIngressEgress/depositFailed';
 import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
 import request from 'supertest';
 import { describe, it, beforeEach, afterEach, expect, vi, beforeAll } from 'vitest';
+import z from 'zod';
 import * as broker from '@/shared/broker';
 import { Assets, getInternalAssets } from '@/shared/enums';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
+import { SwapDepositAddressReadyArgs } from '@/swap/event-handlers/swapDepositAddressReady';
 import { SwapEgressIgnoredArgs } from '@/swap/event-handlers/swapEgressIgnored';
+import { SwapRequestedArgs190 } from '@/swap/event-handlers/swapRequested';
 import prisma from '../../client';
 import metadata from '../../event-handlers/__tests__/metadata.json';
 import {
@@ -85,7 +89,15 @@ const swapEventMap = {
       brokerCommissionRate: 0,
       sourceChainExpiryBlock: '265',
       brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
-    },
+      refundParameters: {
+        minPrice: '0',
+        refundAddress: {
+          __kind: 'Eth',
+          value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
+        },
+        retryDuration: 100,
+      },
+    } as SwapDepositAddressReadyArgs,
   },
   'Swapping.SwapRequested': {
     id: '0000000092-000398-77afe',
@@ -100,19 +112,24 @@ const swapEventMap = {
         channelId: '85',
         depositAddress: { value: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2', __kind: 'Eth' },
         depositBlockHeight: '222',
+        brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
       },
+      brokerFees: [],
       inputAsset: { __kind: 'Eth' },
       inputAmount: '4999949999999650000',
       outputAsset: { __kind: 'Dot' },
       requestType: {
         __kind: 'Regular',
-        outputAddress: {
-          value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-          __kind: 'Dot',
+        outputAction: {
+          __kind: 'Egress',
+          outputAddress: {
+            value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
+            __kind: 'Dot',
+          },
         },
       },
       swapRequestId: '368',
-    },
+    } satisfies SwapRequestedArgs190,
   },
   'Swapping.SwapScheduled': {
     id: '0000000092-000399-77afe',
@@ -137,6 +154,9 @@ const swapEventMap = {
     callId: '0000000092-000010-77afe',
     name: 'EthereumIngressEgress.DepositFinalised',
     args: {
+      originType: {
+        __kind: 'DepositChannel',
+      },
       asset: { __kind: 'Eth' },
       action: { __kind: 'Swap', swapRequestId: '368' },
       amount: '5000000000000000000',
@@ -345,6 +365,92 @@ const swapEventMap = {
       swapRequestId: '368',
     },
   },
+  'EthereumIngressEgress.CcmFailed': {
+    id: '0000000092-000399-23afe',
+    indexInBlock: 1,
+    name: 'EthereumIngressEgress.CcmFailed',
+    callId: '0000000092-000399-02fea',
+    args: {
+      origin: {
+        __kind: 'DepositChannel',
+        channelId: '85',
+        depositAddress: { value: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2', __kind: 'Eth' },
+        depositBlockHeight: '222',
+      },
+      reason: {
+        __kind: 'InsufficientDepositAmount',
+      },
+      depositMetadata: {
+        sourceChain: {
+          __kind: 'Ethereum',
+        },
+        channelMetadata: {
+          message:
+            '0x000000000000000000000000000000000000000000000000000000000000004000000000000000000000000067ff09c184d8e9e7b90c5187ed04cbfbdba741c8000000000000000000000000000000000000000000000000000000000000000c6461676f61746973686572650000000000000000000000000000000000000000',
+          gasBudget: '50000000',
+          cfParameters: '0x',
+        },
+      },
+      destinationAddress: {
+        value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
+        __kind: 'Eth',
+      },
+    },
+  },
+  'EthereumIngressEgress.DepositFailed': {
+    id: '0000000092-000399-24afe',
+    indexInBlock: 1,
+    name: 'EthereumIngressEgress.DepositFailed',
+    callId: '0000000092-000399-04fea',
+    args: {
+      reason: { __kind: 'InvalidDcaParameters' },
+      details: {
+        __kind: 'DepositChannel',
+        depositWitness: {
+          asset: { __kind: 'Eth' },
+          amount: '100000000000000',
+          depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
+          depositDetails: {
+            txHashes: ['0xfae1ed'],
+          },
+        },
+      },
+      blockHeight: 1234,
+    },
+  },
+  'EthereumIngressEgress.DepositFailed.Vault': {
+    id: '0000000092-000399-24afe',
+    indexInBlock: 1,
+    name: 'EthereumIngressEgress.DepositFailed',
+    callId: '0000000092-000399-04fea',
+    args: {
+      reason: { __kind: 'InvalidRefundParameters' },
+      details: {
+        __kind: 'Vault',
+        vaultWitness: {
+          txId: '0xcafebabe',
+          inputAsset: { __kind: 'Eth' },
+          outputAsset: { __kind: 'Dot' },
+          depositAmount: '100000000000000',
+          depositDetails: {
+            txHashes: ['0xfae1ed'],
+          },
+          destinationAddress: {
+            __kind: 'Dot',
+            value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
+          },
+          boostFee: 0,
+          affiliateFees: [],
+          refundParams: {
+            minPrice: '0',
+            refundAddress: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
+            retryDuration: 100,
+          },
+        },
+      } as z.input<typeof ethereumIngressEgressDepositFailed>['details'],
+      blockHeight: 1234,
+    },
+  },
 } as const;
 
 const swapEvents = [
@@ -429,6 +535,11 @@ describe('server', () => {
           "estimatedDefaultDurationSeconds": 138,
           "estimatedDepositChannelExpiryTime": 1640998260000,
           "feesPaid": [],
+          "fillOrKillParams": {
+            "minPrice": "0",
+            "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+            "retryDurationBlocks": 100,
+          },
           "isDepositChannelExpired": false,
           "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
@@ -461,6 +572,11 @@ describe('server', () => {
           "estimatedDefaultDurationSeconds": 138,
           "estimatedDepositChannelExpiryTime": 1640998260000,
           "feesPaid": [],
+          "fillOrKillParams": {
+            "minPrice": "0",
+            "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+            "retryDurationBlocks": 100,
+          },
           "isDepositChannelExpired": false,
           "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
@@ -501,6 +617,11 @@ describe('server', () => {
           "estimatedDefaultDurationSeconds": 138,
           "estimatedDepositChannelExpiryTime": 1640998260000,
           "feesPaid": [],
+          "fillOrKillParams": {
+            "minPrice": "0",
+            "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+            "retryDurationBlocks": 100,
+          },
           "isDepositChannelExpired": false,
           "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
@@ -538,8 +659,7 @@ describe('server', () => {
       expect(body).toMatchInlineSnapshot(
         {
           lastStatechainUpdateAt: expect.any(Number),
-        },
-        `
+        }, `
         {
           "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
           "depositChannelBrokerCommissionBps": 0,
@@ -553,6 +673,11 @@ describe('server', () => {
           "estimatedDefaultDurationSeconds": 138,
           "estimatedDepositChannelExpiryTime": 1640995092000,
           "feesPaid": [],
+          "fillOrKillParams": {
+            "minPrice": "0",
+            "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+            "retryDurationBlocks": 100,
+          },
           "isDepositChannelExpired": true,
           "lastStatechainUpdateAt": Any<Number>,
           "srcAsset": "ETH",
@@ -560,8 +685,7 @@ describe('server', () => {
           "srcChainRequiredBlockConfirmations": 2,
           "state": "AWAITING_DEPOSIT",
         }
-      `,
-      );
+      `);
     });
 
     it(`retrieves a swap in ${State.DepositReceived} status`, async () => {
@@ -596,6 +720,11 @@ describe('server', () => {
               "type": "INGRESS",
             },
           ],
+          "fillOrKillParams": {
+            "minPrice": "0",
+            "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+            "retryDurationBlocks": 100,
+          },
           "isDepositChannelExpired": false,
           "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
@@ -646,6 +775,11 @@ describe('server', () => {
               "type": "INGRESS",
             },
           ],
+          "fillOrKillParams": {
+            "minPrice": "0",
+            "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+            "retryDurationBlocks": 100,
+          },
           "isDepositChannelExpired": false,
           "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
@@ -714,6 +848,11 @@ describe('server', () => {
               "type": "BROKER",
             },
           ],
+          "fillOrKillParams": {
+            "minPrice": "0",
+            "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+            "retryDurationBlocks": 100,
+          },
           "intermediateAmount": "4506169140",
           "isDepositChannelExpired": false,
           "lastStatechainUpdateAt": 1640995200000,
@@ -795,6 +934,11 @@ describe('server', () => {
               "type": "BROKER",
             },
           ],
+          "fillOrKillParams": {
+            "minPrice": "0",
+            "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+            "retryDurationBlocks": 100,
+          },
           "intermediateAmount": "4506169140",
           "isDepositChannelExpired": false,
           "lastStatechainUpdateAt": 1640995200000,
@@ -855,6 +999,11 @@ describe('server', () => {
               "type": "EGRESS",
             },
           ],
+          "fillOrKillParams": {
+            "minPrice": "0",
+            "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+            "retryDurationBlocks": 100,
+          },
           "isDepositChannelExpired": false,
           "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
@@ -941,6 +1090,11 @@ describe('server', () => {
               "type": "BROKER",
             },
           ],
+          "fillOrKillParams": {
+            "minPrice": "0",
+            "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+            "retryDurationBlocks": 100,
+          },
           "intermediateAmount": "4506169140",
           "isDepositChannelExpired": false,
           "lastStatechainUpdateAt": 1640995200000,
@@ -1024,6 +1178,11 @@ describe('server', () => {
               "type": "BROKER",
             },
           ],
+          "fillOrKillParams": {
+            "minPrice": "0",
+            "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+            "retryDurationBlocks": 100,
+          },
           "intermediateAmount": "4506169140",
           "isDepositChannelExpired": false,
           "lastStatechainUpdateAt": 1640995200000,
@@ -1112,6 +1271,11 @@ describe('server', () => {
               "type": "BROKER",
             },
           ],
+          "fillOrKillParams": {
+            "minPrice": "0",
+            "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+            "retryDurationBlocks": 100,
+          },
           "intermediateAmount": "4506169140",
           "isDepositChannelExpired": false,
           "lastStatechainUpdateAt": 1640995200000,
@@ -1198,6 +1362,11 @@ describe('server', () => {
               "type": "BROKER",
             },
           ],
+          "fillOrKillParams": {
+            "minPrice": "0",
+            "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+            "retryDurationBlocks": 100,
+          },
           "intermediateAmount": "4506169140",
           "isDepositChannelExpired": false,
           "lastStatechainUpdateAt": 1640995200000,
@@ -1298,8 +1467,11 @@ describe('server', () => {
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
       (requestedEvent.args.origin as any) = {
         __kind: 'Vault',
-        txHash,
-      };
+        txId: {
+          __kind: 'Evm',
+          value: txHash,
+        },
+      } as Extract<SwapRequestedArgs190['origin'], { __kind: 'Vault' }>;
 
       await processEvents([requestedEvent, ...swapEvents.slice(2, 4)]);
 
@@ -1366,6 +1538,11 @@ describe('server', () => {
               "type": "INGRESS",
             },
           ],
+          "fillOrKillParams": {
+            "minPrice": "0",
+            "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+            "retryDurationBlocks": 100,
+          },
           "isDepositChannelExpired": false,
           "lastStatechainUpdateAt": 1640995200000,
           "srcAsset": "ETH",
@@ -1433,8 +1610,11 @@ describe('server', () => {
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
       (requestedEvent.args.origin as any) = {
         __kind: 'Vault',
-        txHash,
-      };
+        txId: {
+          __kind: 'Bitcoin',
+          value: txHash,
+        },
+      } as Extract<SwapRequestedArgs190['origin'], { __kind: 'Vault' }>;
 
       await processEvents([
         requestedEvent,

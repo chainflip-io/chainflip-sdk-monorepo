@@ -119,7 +119,15 @@ export const swapDepositAddressReadyMocked = {
       channelOpeningFee: 0,
       affiliateFees: [],
       brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
-    } as SwapDepositAddressReadyArgs,
+      refundParameters: {
+        minPrice: '0',
+        refundAddress: {
+          __kind: 'Eth',
+          value: ETH_ADDRESS,
+        },
+        retryDuration: 100,
+      },
+    } satisfies SwapDepositAddressReadyArgs,
     indexInBlock: 0,
     name: eventNames.Swapping.SwapDepositAddressReady,
   },
@@ -157,6 +165,14 @@ export const swapDepositAddressReadyCcmParamsMocked = {
       channelOpeningFee: 0,
       affiliateFees: [],
       brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
+      refundParameters: {
+        minPrice: '0',
+        refundAddress: {
+          value: '0xfcd3c82b154cb4717ac98718d0fd13eeba3d2754',
+          __kind: 'Eth',
+        },
+        retryDuration: 100,
+      },
     } as SwapDepositAddressReadyArgs,
     indexInBlock: 0,
     name: eventNames.Swapping.SwapDepositAddressReady,

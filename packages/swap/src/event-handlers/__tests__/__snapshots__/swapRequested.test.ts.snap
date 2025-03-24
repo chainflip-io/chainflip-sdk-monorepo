@@ -137,7 +137,7 @@ exports[`swapRequested > creates a new swap request (ON_CHAIN 190) 1`] = `
   "completedBlockIndex": null,
   "dcaChunkIntervalBlocks": 2,
   "dcaNumberOfChunks": 10,
-  "depositAmount": "99999994999",
+  "depositAmount": null,
   "depositBoostedAt": null,
   "depositBoostedBlockIndex": null,
   "depositFinalisedAt": null,

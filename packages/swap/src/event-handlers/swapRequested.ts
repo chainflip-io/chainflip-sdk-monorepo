@@ -250,9 +250,10 @@ export default async function swapRequested({
       swapRequestedAt: new Date(block.timestamp),
       swapRequestedBlockIndex: `${block.height}-${event.indexInBlock}`,
       swapInputAmount: inputAmount.toString(),
-      ...(origin.__kind !== 'Internal' && {
-        depositAmount: inputAmount.toString(),
-      }),
+      ...(origin.__kind !== 'Internal' &&
+        origin.__kind !== 'OnChainAccount' && {
+          depositAmount: inputAmount.toString(),
+        }),
       dcaNumberOfChunks: dcaParameters?.numberOfChunks,
       dcaChunkIntervalBlocks: dcaParameters?.chunkInterval,
       ...fokParams,
