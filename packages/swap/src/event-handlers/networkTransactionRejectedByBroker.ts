@@ -3,6 +3,7 @@ import { bitcoinIngressEgressTransactionRejectedByBroker } from '@chainflip/proc
 import { ethereumIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/170/ethereumIngressEgress/transactionRejectedByBroker';
 import { polkadotIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/170/polkadotIngressEgress/transactionRejectedByBroker';
 import { solanaIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/170/solanaIngressEgress/transactionRejectedByBroker';
+import z from 'zod';
 import { Chain } from '../client';
 import { getDepositTxRef } from './common';
 import logger from '../utils/logger';
@@ -18,6 +19,8 @@ const schemaMap = {
     txId: undefined,
   })),
 };
+
+export type TransactionRejectedByBrokerArgs = z.input<(typeof schemaMap)[Chain]>;
 
 export const networkTransactionRejectedByBroker =
   (chain: Chain) =>

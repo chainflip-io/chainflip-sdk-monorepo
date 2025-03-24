@@ -6,7 +6,11 @@ import { vi, describe, it, beforeEach, afterEach, expect, beforeAll } from 'vite
 import { z } from 'zod';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
-import { DepositFailedArgs } from '@/swap/event-handlers/networkDepositFailed';
+import {
+  BitcoinDepositFailedArgs,
+  DepositFailedArgs,
+} from '@/swap/event-handlers/networkDepositFailed';
+import { TransactionRejectedByBrokerArgs } from '@/swap/event-handlers/networkTransactionRejectedByBroker';
 import type { SwapDepositAddressReadyArgs } from '@/swap/event-handlers/swapDepositAddressReady';
 import { SwapEgressIgnoredArgs } from '@/swap/event-handlers/swapEgressIgnored';
 import { SwapRequestedArgs190 } from '@/swap/event-handlers/swapRequested';
@@ -799,16 +803,69 @@ describe('server', () => {
 
       const { body } = await request(server).get(`/v2/swaps/${channelId}`);
 
-      expect(body.state).toBe('FAILED');
-      expect(body.deposit.failure).toMatchObject({
-        failedAt: 552000,
-        failedBlockIndex: '92-400',
-        mode: 'DEPOSIT_IGNORED',
-        reason: {
-          name: 'BelowMinimumDeposit',
-          message: 'The deposited amount was below the minimum required',
-        },
-      });
+      expect(body).toMatchInlineSnapshot(`
+        {
+          "brokers": [],
+          "deposit": {
+            "amount": "100000000000000",
+            "failedAt": 552000,
+            "failedBlockIndex": "92-1",
+            "failure": {
+              "failedAt": 552000,
+              "failedBlockIndex": "92-1",
+              "mode": "DEPOSIT_IGNORED",
+              "reason": {
+                "message": "The DCA parameters were improperly formatted",
+                "name": "InvalidDcaParameters",
+              },
+            },
+            "txRef": "0xfae1ed",
+          },
+          "depositChannel": {
+            "affiliateBrokers": [],
+            "brokerCommissionBps": 0,
+            "createdAt": 516000,
+            "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
+            "estimatedExpiryTime": 1640998260000,
+            "fillOrKillParams": {
+              "minPrice": "0",
+              "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+              "retryDurationBlocks": 100,
+            },
+            "id": "86-Ethereum-85",
+            "isExpired": false,
+            "openedThroughBackend": false,
+            "srcChainExpiryBlock": "265",
+          },
+          "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+          "destAsset": "DOT",
+          "destChain": "Polkadot",
+          "estimatedDurationSeconds": 138,
+          "estimatedDurationsSeconds": {
+            "deposit": 30,
+            "egress": 96,
+            "swap": 12,
+          },
+          "fees": [],
+          "fillOrKillParams": {
+            "minPrice": "0",
+            "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+            "retryDurationBlocks": 100,
+          },
+          "lastStatechainUpdateAt": 1640995200000,
+          "srcAsset": "ETH",
+          "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
+          "state": "FAILED",
+          "swap": {
+            "originalInputAmount": "100000000000000",
+            "remainingInputAmount": "100000000000000",
+            "swappedInputAmount": "0",
+            "swappedIntermediateAmount": "0",
+            "swappedOutputAmount": "0",
+          },
+        }
+      `);
     });
 
     it(`retrieves a swap in ${StateV2.Failed} status (invalid dca parameters)`, async () => {
@@ -850,7 +907,7 @@ describe('server', () => {
       });
     });
 
-    it(`retrieves a swap in ${StateV2.Failed} status (deposit ignored w/ refund)`, async () => {
+    it(`retrieves a swap in ${StateV2.Failed} status (deposit failed w/ refund)`, async () => {
       await processEvents([
         {
           id: '0003614786-000494-09fd9',
@@ -902,35 +959,38 @@ describe('server', () => {
             details: {
               __kind: 'DepositChannel',
               depositWitness: {
-                id: {
-                  txId: '0x78b3828e63d9300eedcfeaed28e7416764019a62066b945e63624ac27dc5cc9d',
-                  vout: 0,
-                },
                 asset: { __kind: 'Btc' },
                 amount: '1000000',
                 depositAddress: {
-                  pubkeyX: '0xe9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833',
-                  scriptPath: {
-                    salt: 875,
-                    tapleafHash:
-                      '0x4f99f5996889dd9d5332ab2be83e0ce478bb03420dbc8cea7aaaa14e5ef77f86',
-                    unlockScript: {
-                      bytes:
-                        '0x026b037520e9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833ac',
+                  __kind: 'Taproot',
+                  value: '0xe0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
+                },
+
+                depositDetails: {
+                  asset: { __kind: 'Btc' },
+                  amount: '1000000',
+                  depositAddress: {
+                    pubkeyX: '0xe9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833',
+                    scriptPath: {
+                      salt: 875,
+                      tapleafHash:
+                        '0x4f99f5996889dd9d5332ab2be83e0ce478bb03420dbc8cea7aaaa14e5ef77f86',
+                      unlockScript: {
+                        bytes:
+                          '0x026b037520e9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833ac',
+                      },
+                      tweakedPubkeyBytes:
+                        '0x03e0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
                     },
-                    tweakedPubkeyBytes:
-                      '0x03e0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
+                  },
+                  id: {
+                    txId: '0x78b3828e63d9300eedcfeaed28e7416764019a62066b945e63624ac27dc5cc9d',
+                    vout: 0,
                   },
                 },
               },
             },
-          } as Extract<
-            DepositFailedArgs,
-            {
-              reason: { __kind: 'TransactionRejectedByBroker' };
-              details: { asset: { __kind: 'Btc' } };
-            }
-          >,
+          } as BitcoinDepositFailedArgs,
         },
         {
           id: '0003614958-001117-1d0a6',
@@ -959,7 +1019,7 @@ describe('server', () => {
               },
             },
             broadcastId: 1226,
-          },
+          } as TransactionRejectedByBrokerArgs,
         },
         {
           id: '0003615072-001060-7ee49',
@@ -1620,9 +1680,8 @@ describe('server', () => {
       ]);
 
       const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
-      const { swapId, ...rest } = body;
       expect(status).toBe(200);
-      expect(rest).toMatchInlineSnapshot(`
+      expect(body).toMatchInlineSnapshot(`
         {
           "brokers": [],
           "dcaParams": {
@@ -1727,6 +1786,7 @@ describe('server', () => {
             "swappedIntermediateAmount": "9012338280",
             "swappedOutputAmount": "8385809332068",
           },
+          "swapId": "368",
         }
       `);
     });
