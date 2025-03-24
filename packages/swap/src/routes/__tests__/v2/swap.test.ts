@@ -1239,7 +1239,7 @@ describe('server', () => {
       const txHash = '0xb2dcb9ce8d50f0ab869995fee8482bcf304ffcfe5681ca748f90e34c0ad7b241';
 
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
-      requestedEvent.args = {
+      (requestedEvent.args as SwapRequestedArgs190) = {
         ...requestedEvent.args,
         origin: {
           __kind: 'Vault',
@@ -1255,7 +1255,7 @@ describe('server', () => {
             account: '0x9e8d88ae895c9b37b2dead9757a3452f7c2299704d91ddfa444d87723f94fe0c',
           },
         ],
-      };
+      } as SwapRequestedArgs190;
 
       await processEvents([
         requestedEvent,
