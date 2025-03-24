@@ -256,8 +256,8 @@ importers:
         specifier: ^1.2.4
         version: 1.2.4(typescript@5.7.3)
       '@chainflip/processor':
-        specifier: ^1.8.4
-        version: 1.8.6
+        specifier: ^1.9.0
+        version: 1.9.0
       '@chainflip/rpc':
         specifier: ^1.8.9
         version: 1.8.9
@@ -478,8 +478,8 @@ packages:
   '@chainflip/bitcoin@1.2.4':
     resolution: {integrity: sha512-bAVP4GSPnAOLWc0XVMXV4Mn5bsOlaa2KKhQCd7XKCYy4+e8JawZFxECywGQFCg8ZVeJMqy54RFGyLsMIx74+Iw==}
 
-  '@chainflip/processor@1.8.6':
-    resolution: {integrity: sha512-rJ3Dw4fnsRYgi8ioQSKJMkseaT+kw+ZL7dU1ZEtVz23w28HZ+999uJnoMf2BDg26S/hS5p2ZdsZwECda/76h4A==}
+  '@chainflip/processor@1.9.0':
+    resolution: {integrity: sha512-kWHKE93CodqjuiWhLSmaGeQU5Z0iXt08AwtXyU4HV5h9AOHMMoIfD0RW6LhZeWI8VvJ7Z6pSra51zmij26gbrQ==}
 
   '@chainflip/rpc@1.8.9':
     resolution: {integrity: sha512-M6KMKuGarxtZTsliYOke+1Kl7hcJzY0lvbLd+aVlLfEWRYtZyRXzYYLbHqZNsEMzdExlU8xeD9eS0m2Of2IJpg==}
@@ -489,9 +489,6 @@ packages:
 
   '@chainflip/solana@2.1.4':
     resolution: {integrity: sha512-v1ccjDPDci9QvtZeiBxf0Z8VIUFBWK6OC8eTA7AGibAYhOVB7FusmLl+dkCB5qdrpI8PfBz8gcwqgFFvkMDXTw==}
-
-  '@chainflip/utils@0.4.0':
-    resolution: {integrity: sha512-OuMFlgbIbyJ1Kt39zytfGh4HZ5dVY25/a3qb0c1K137+QmhdOuF+R7QSkFPqYAfDG4KhGRqo0rgUtEpaEEcSKA==}
 
   '@chainflip/utils@0.5.0':
     resolution: {integrity: sha512-rmvGttu+Pc7rsCNQ4gemg8G9PLPTjRsbuvLLF9By9pADFVWTp18UyKbvLVt5H00LOty41fhvlln2FerNl98/MQ==}
@@ -5901,9 +5898,9 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@chainflip/processor@1.8.6':
+  '@chainflip/processor@1.9.0':
     dependencies:
-      '@chainflip/utils': 0.4.0
+      '@chainflip/utils': 0.7.0
       zod: 3.24.2
 
   '@chainflip/rpc@1.8.9':
@@ -5929,8 +5926,6 @@ snapshots:
       - bufferutil
       - encoding
       - utf-8-validate
-
-  '@chainflip/utils@0.4.0': {}
 
   '@chainflip/utils@0.5.0':
     dependencies:

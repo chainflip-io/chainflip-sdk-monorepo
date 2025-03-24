@@ -118,6 +118,21 @@ enum SwapRequestOrigin {
   DEPOSIT_CHANNEL
   VAULT
   INTERNAL
+  ON_CHAIN
+
+  @@schema("public")
+}
+
+model OnChainSwapInfo {
+  id Int @id @default(autoincrement())
+
+  swapRequest   SwapRequest @relation(fields: [swapRequestId], references: [id])
+  swapRequestId BigInt      @unique
+
+  outputAmount Decimal? @db.Decimal(30, 0)
+  refundAmount Decimal? @db.Decimal(30, 0)
+
+  accountId String
 
   @@schema("public")
 }
@@ -177,6 +192,7 @@ model SwapRequest {
   totalBrokerCommissionBps   Int
   beneficiaries              SwapBeneficiary[]
   solanaPendingTxRef         SolanaPendingTxRef[]
+  onChainSwapInfo            OnChainSwapInfo?
 
   @@index([srcAsset, prewitnessedDepositId])
   @@schema("public")
