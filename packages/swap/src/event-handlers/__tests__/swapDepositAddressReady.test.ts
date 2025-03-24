@@ -1,5 +1,4 @@
-import request from 'graphql-request';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { Chains } from '@/shared/enums';
 import {
   createChainTrackingInfo,
@@ -9,8 +8,6 @@ import {
 } from './utils';
 import prisma from '../../client';
 import swapDepositAddressReady from '../swapDepositAddressReady';
-
-vi.mock('graphql-request');
 
 const eventMock = swapDepositAddressReadyMocked;
 const ccmEventMock = swapDepositAddressReadyCcmParamsMocked;
@@ -44,30 +41,6 @@ describe(swapDepositAddressReady, () => {
   });
 
   it('creates a swap deposit channel entry with a broker commission', async () => {
-    vi.mocked(request).mockResolvedValueOnce({
-      extrinsic: {
-        signature: {
-          address: {
-            value: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
-            __kind: 'Id',
-          },
-          signature: {
-            value:
-              '0xec3b72bd8c5ae7d1f397596379ab58c73c41e1d0ec4925f3a565374869728778500a695259fc9a2c0b2b63d78d580ed51e0dfb4cd50d6b783bb37f3b9c00de8a',
-            __kind: 'Sr25519',
-          },
-          signedExtensions: {
-            CheckNonce: 55276,
-            CheckMortality: {
-              value: 7,
-              __kind: 'Mortal214',
-            },
-            ChargeTransactionPayment: '0',
-          },
-        },
-      },
-    });
-
     await prisma.$transaction(async (txClient) => {
       await swapDepositAddressReady({
         prisma: txClient,
@@ -76,7 +49,6 @@ describe(swapDepositAddressReady, () => {
           args: {
             ...eventMock.event.args,
             brokerCommissionRate: 25,
-            brokerId: undefined,
           },
         },
         block: { ...eventMock.block, height: 121 },

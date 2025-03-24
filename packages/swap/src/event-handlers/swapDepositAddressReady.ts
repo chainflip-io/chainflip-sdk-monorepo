@@ -1,27 +1,9 @@
 import { swappingSwapDepositAddressReady as schema180 } from '@chainflip/processor/180/swapping/swapDepositAddressReady';
-import assert from 'assert';
-import request from 'graphql-request';
 import { z } from 'zod';
-import { accountId } from '@/shared/parsers';
-import env from '../config/env';
-import { GET_EXTRINSIC } from '../gql/query';
 import { calculateExpiryTime } from '../utils/function';
 import { EventHandlerArgs } from './index';
 
 const swapDepositAddressReadyArgs = schema180;
-
-const signatureSchema = z.object({
-  address: z.object({
-    value: accountId,
-    __kind: z.literal('Id'),
-  }),
-});
-
-const getSubmitterFromExtrinsic = async (event: EventHandlerArgs['event']) => {
-  assert(typeof event.extrinsicId === 'string', 'extrinsicId must be defined');
-  const data = await request(env.INGEST_GATEWAY_URL, GET_EXTRINSIC, { id: event.extrinsicId });
-  return signatureSchema.parse(data.extrinsic?.signature).address.value;
-};
 
 export type SwapDepositAddressReadyArgs = z.input<typeof swapDepositAddressReadyArgs>;
 
@@ -30,9 +12,6 @@ export const swapDepositAddressReady = async ({
   event,
   block,
 }: EventHandlerArgs): Promise<void> => {
-  console.log(event.args);
-  console.log(swapDepositAddressReadyArgs.parse(event.args));
-
   const issuedBlock = block.height;
 
   const {
@@ -66,7 +45,7 @@ export const swapDepositAddressReady = async ({
   const beneficiaries = [
     {
       type: 'SUBMITTER' as const,
-      account: brokerId ?? (await getSubmitterFromExtrinsic(event)), // broker id was added to event in 180
+      account: brokerId,
       commissionBps: brokerCommissionRate,
     },
     ...affiliateFees.map((affiliate) => ({
