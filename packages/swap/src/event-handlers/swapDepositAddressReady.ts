@@ -1,4 +1,3 @@
-import { swappingSwapDepositAddressReady as schema160 } from '@chainflip/processor/160/swapping/swapDepositAddressReady';
 import { swappingSwapDepositAddressReady as schema180 } from '@chainflip/processor/180/swapping/swapDepositAddressReady';
 import assert from 'assert';
 import request from 'graphql-request';
@@ -9,10 +8,7 @@ import { GET_EXTRINSIC } from '../gql/query';
 import { calculateExpiryTime } from '../utils/function';
 import { EventHandlerArgs } from './index';
 
-const swapDepositAddressReadyArgs = z.union([
-  schema180,
-  schema160.transform((args) => ({ ...args, brokerId: undefined })),
-]);
+const swapDepositAddressReadyArgs = schema180;
 
 const signatureSchema = z.object({
   address: z.object({
@@ -34,6 +30,9 @@ export const swapDepositAddressReady = async ({
   event,
   block,
 }: EventHandlerArgs): Promise<void> => {
+  console.log(event.args);
+  console.log(swapDepositAddressReadyArgs.parse(event.args));
+
   const issuedBlock = block.height;
 
   const {

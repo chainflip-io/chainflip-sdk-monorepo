@@ -6,10 +6,7 @@ import { vi, describe, it, beforeEach, afterEach, expect, beforeAll } from 'vite
 import { z } from 'zod';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import env from '@/swap/config/env';
-import {
-  BitcoinDepositFailedArgs,
-  DepositFailedArgs,
-} from '@/swap/event-handlers/networkDepositFailed';
+import { BitcoinDepositFailedArgs } from '@/swap/event-handlers/networkDepositFailed';
 import { TransactionRejectedByBrokerArgs } from '@/swap/event-handlers/networkTransactionRejectedByBroker';
 import type { SwapDepositAddressReadyArgs } from '@/swap/event-handlers/swapDepositAddressReady';
 import { SwapEgressIgnoredArgs } from '@/swap/event-handlers/swapEgressIgnored';

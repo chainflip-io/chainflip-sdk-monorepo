@@ -1395,13 +1395,42 @@ describe('server', () => {
 
       expect(status).toBe(200);
 
-      expect(body).toMatchObject({
-        error: {
-          message: 'The deposited amount was below the minimum required',
-          name: 'BelowMinimumDeposit',
-        },
-        state: 'FAILED',
-      });
+      expect(body).toMatchInlineSnapshot(`
+        {
+          "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
+          "depositAmount": "100000000000000",
+          "depositChannelBrokerCommissionBps": 0,
+          "depositChannelCreatedAt": 516000,
+          "depositChannelExpiryBlock": "265",
+          "depositChannelMaxBoostFeeBps": 0,
+          "depositChannelOpenedThroughBackend": false,
+          "depositTransactionRef": "0xfae1ed",
+          "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+          "destAsset": "DOT",
+          "destChain": "Polkadot",
+          "error": {
+            "message": "The DCA parameters were improperly formatted",
+            "name": "InvalidDcaParameters",
+          },
+          "estimatedDefaultDurationSeconds": 138,
+          "estimatedDepositChannelExpiryTime": 1640998260000,
+          "failedAt": "1970-01-01T00:09:12.000Z",
+          "failedBlockIndex": "92-1",
+          "failure": "DEPOSIT_IGNORED",
+          "feesPaid": [],
+          "fillOrKillParams": {
+            "minPrice": "0",
+            "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+            "retryDurationBlocks": 100,
+          },
+          "isDepositChannelExpired": false,
+          "lastStatechainUpdateAt": 1640995200000,
+          "srcAsset": "ETH",
+          "srcChain": "Ethereum",
+          "srcChainRequiredBlockConfirmations": 2,
+          "state": "FAILED",
+        }
+      `);
     });
 
     it(`retrieves a swap in ${State.Failed} status (egress ignored)`, async () => {
