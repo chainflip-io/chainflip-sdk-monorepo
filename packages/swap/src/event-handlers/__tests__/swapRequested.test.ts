@@ -303,6 +303,26 @@ const onChain190 = {
   },
 } as const satisfies SwapRequestedArgs190;
 
+const ingressEgressFee = {
+  origin: { __kind: 'Internal' },
+  brokerFees: [],
+  inputAsset: { __kind: 'Usdc' },
+  inputAmount: '209443',
+  outputAsset: { __kind: 'Eth' },
+  requestType: { __kind: 'IngressEgressFee' },
+  swapRequestId: '388319',
+};
+
+const networkFee = {
+  origin: { __kind: 'Internal' },
+  brokerFees: [],
+  inputAsset: { __kind: 'Usdc' },
+  inputAmount: '209',
+  outputAsset: { __kind: 'Flip' },
+  requestType: { __kind: 'NetworkFee' },
+  swapRequestId: '388320',
+};
+
 const block = {
   id: '0000000087-3abaf',
   height: 87,
@@ -444,6 +464,30 @@ describe(swapRequested, () => {
         id: expect.any(Number),
         swapRequestId: expect.any(BigInt),
       },
+    });
+  });
+
+  it('handles network fees', async () => {
+    await swapRequested({ prisma, event: { ...event, args: networkFee }, block });
+
+    const request = await prisma.swapRequest.findFirstOrThrow({
+      include: { onChainSwapInfo: true },
+    });
+
+    expect(request).toMatchSnapshot({
+      id: expect.any(BigInt),
+    });
+  });
+
+  it('handles ingress/egress fees', async () => {
+    await swapRequested({ prisma, event: { ...event, args: ingressEgressFee }, block });
+
+    const request = await prisma.swapRequest.findFirstOrThrow({
+      include: { onChainSwapInfo: true },
+    });
+
+    expect(request).toMatchSnapshot({
+      id: expect.any(BigInt),
     });
   });
 
