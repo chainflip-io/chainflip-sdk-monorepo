@@ -352,27 +352,6 @@ const swapEventMap = {
       broadcastId: 7,
     },
   },
-  'EthereumIngressEgress.DepositFailed': {
-    id: '0000000092-000400-77afe',
-    blockId: '0000000092-77afe',
-    indexInBlock: 400,
-    extrinsicId: '0000000092-000010-77afe',
-    callId: '0000000092-000010-77afe',
-    name: 'EthereumIngressEgress.DepositFailed',
-    args: {
-      reason: { __kind: 'BelowMinimumDeposit' },
-      blockHeight: 1234,
-      details: {
-        __kind: 'DepositChannel',
-        depositWitness: {
-          asset: { __kind: 'Eth' },
-          amount: '100000000000000',
-          depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
-          depositDetails: {},
-        },
-      },
-    } as DepositFailedArgs,
-  },
   'Swapping.RefundEgressIgnored': {
     id: '0000000104-000594-75b12',
     indexInBlock: 1,
@@ -812,10 +791,10 @@ describe('server', () => {
       });
     });
 
-    it(`retrieves a swap in ${StateV2.Failed} status (deposit ignored)`, async () => {
+    it(`retrieves a swap in ${StateV2.Failed} status (deposit failed)`, async () => {
       await processEvents([
         swapEventMap['Swapping.SwapDepositAddressReady'],
-        swapEventMap['EthereumIngressEgress.DepositIgnored'],
+        swapEventMap['EthereumIngressEgress.DepositFailed'],
       ]);
 
       const { body } = await request(server).get(`/v2/swaps/${channelId}`);
@@ -945,7 +924,13 @@ describe('server', () => {
                 },
               },
             },
-          } as DepositFailedArgs,
+          } as Extract<
+            DepositFailedArgs,
+            {
+              reason: { __kind: 'TransactionRejectedByBroker' };
+              details: { asset: { __kind: 'Btc' } };
+            }
+          >,
         },
         {
           id: '0003614958-001117-1d0a6',

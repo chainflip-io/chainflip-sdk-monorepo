@@ -1385,10 +1385,10 @@ describe('server', () => {
       `);
     });
 
-    it(`retrieves a swap in ${State.Failed} status (deposit ignored)`, async () => {
+    it(`retrieves a swap in ${State.Failed} status (deposit failed)`, async () => {
       await processEvents([
         swapEventMap['Swapping.SwapDepositAddressReady'],
-        swapEventMap['EthereumIngressEgress.DepositIgnored'],
+        swapEventMap['EthereumIngressEgress.DepositFailed'],
       ]);
 
       const { body, status } = await request(server).get(`/swaps/${channelId}`);
