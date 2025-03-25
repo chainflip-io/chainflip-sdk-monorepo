@@ -18,9 +18,9 @@ import {
   createPools,
   processEvents,
 } from '../../event-handlers/__tests__/utils';
-import { SwapDepositAddressReadyArgs } from '../../event-handlers/swapDepositAddressReady';
-import { SwapEgressIgnoredArgs } from '../../event-handlers/swapEgressIgnored';
-import { SwapRequestedArgs190 } from '../../event-handlers/swapRequested';
+import { SwapDepositAddressReadyArgs } from '../../event-handlers/swapping/swapDepositAddressReady';
+import { SwapEgressIgnoredArgs } from '../../event-handlers/swapping/swapEgressIgnored';
+import { SwapRequestedArgs190 } from '../../event-handlers/swapping/swapRequested';
 import { getPendingBroadcast } from '../../ingress-egress-tracking';
 import app from '../../server';
 import { State } from '../swap';
@@ -363,38 +363,6 @@ const swapEventMap = {
       amount: '999844999999160000',
       reason: { value: { error: '0x06000000', index: 32 }, __kind: 'Module' },
       swapRequestId: '368',
-    },
-  },
-  'EthereumIngressEgress.CcmFailed': {
-    id: '0000000092-000399-23afe',
-    indexInBlock: 1,
-    name: 'EthereumIngressEgress.CcmFailed',
-    callId: '0000000092-000399-02fea',
-    args: {
-      origin: {
-        __kind: 'DepositChannel',
-        channelId: '85',
-        depositAddress: { value: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2', __kind: 'Eth' },
-        depositBlockHeight: '222',
-      },
-      reason: {
-        __kind: 'InsufficientDepositAmount',
-      },
-      depositMetadata: {
-        sourceChain: {
-          __kind: 'Ethereum',
-        },
-        channelMetadata: {
-          message:
-            '0x000000000000000000000000000000000000000000000000000000000000004000000000000000000000000067ff09c184d8e9e7b90c5187ed04cbfbdba741c8000000000000000000000000000000000000000000000000000000000000000c6461676f61746973686572650000000000000000000000000000000000000000',
-          gasBudget: '50000000',
-          cfParameters: '0x',
-        },
-      },
-      destinationAddress: {
-        value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-        __kind: 'Eth',
-      },
     },
   },
   'EthereumIngressEgress.DepositFailed': {

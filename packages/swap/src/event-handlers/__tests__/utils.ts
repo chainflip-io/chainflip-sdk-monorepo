@@ -9,10 +9,10 @@ import { actionSchema } from '@/shared/parsers';
 import prisma, { SwapDepositChannel } from '../../client';
 import { GET_CALL } from '../../gql/query';
 import processBlocks, { Call, Event } from '../../processBlocks';
+import { networkBroadcastSuccessArgs } from '../broadcaster/broadcastSuccess';
 import { events as eventNames } from '../index';
-import { networkBroadcastSuccessArgs } from '../networkBroadcastSuccess';
-import { DepositFailedArgs } from '../networkDepositFailed';
-import { SwapDepositAddressReadyArgs } from '../swapDepositAddressReady';
+import { DepositFailedArgs } from '../ingress-egress/depositFailed';
+import { SwapDepositAddressReadyArgs } from '../swapping/swapDepositAddressReady';
 
 export const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
 export const DOT_ADDRESS = '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo'; // 0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972

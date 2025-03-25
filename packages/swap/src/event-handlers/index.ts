@@ -1,32 +1,31 @@
 import type { Prisma } from '.prisma/client';
 import { Chains } from '@/shared/enums';
-import { depositBoosted } from './depositBoosted';
-import liquidityDepositAddressReady from './liquidityDepositChannelReady';
-import networkBatchBroadcastRequested from './networkBatchBroadcastRequested';
-import networkBroadcastAborted from './networkBroadcastAborted';
-import networkBroadcastSuccess from './networkBroadcastSuccess';
-import networkCcmBroadcastRequested from './networkCcmBroadcastRequested';
-import networkCcmFailed from './networkCcmFailed';
-import chainStateUpdated from './networkChainStateUpdated';
-import networkDepositFailed from './networkDepositFailed';
-import { networkDepositFinalised } from './networkDepositFinalised';
-import networkThresholdSignatureInvalid from './networkThresholdSignatureInvalid';
-import networkTransactionBroadcastRequest from './networkTransactionBroadcastRequest';
-import networkTransactionRejectedByBroker from './networkTransactionRejectedByBroker';
-import newPoolCreated from './newPoolCreated';
-import poolFeeSet from './poolFeeSet';
-import refundEgressIgnored from './refundEgressIgnored';
-import refundEgressScheduled from './refundEgressScheduled';
-import swapDepositAddressReady from './swapDepositAddressReady';
-import swapEgressIgnored from './swapEgressIgnored';
-import swapEgressScheduled from './swapEgressScheduled';
-import swapExecuted from './swapExecuted';
-import swapRequestCompleted from './swapRequestCompleted';
-import swapRequested from './swapRequested';
-import swapRescheduled from './swapRescheduled';
-import swapScheduled from './swapScheduled';
-import { boostPoolCreated } from './v140/boostPoolCreated';
-import { insufficientBoostLiquidity } from './v140/insufficientBoostLiquidity';
+import networkBroadcastAborted from './broadcaster/broadcastAborted';
+import networkBroadcastSuccess from './broadcaster/broadcastSuccess';
+import networkThresholdSignatureInvalid from './broadcaster/thresholdSignatureInvalid';
+import networkTransactionBroadcastRequest from './broadcaster/transactionBroadcastRequest';
+import networkBatchBroadcastRequested from './ingress-egress/batchBroadcastRequested';
+import { boostPoolCreated } from './ingress-egress/boostPoolCreated';
+import networkCcmBroadcastRequested from './ingress-egress/ccmBroadcastRequested';
+import { depositBoosted } from './ingress-egress/depositBoosted';
+import networkDepositFailed from './ingress-egress/depositFailed';
+import { networkDepositFinalised } from './ingress-egress/depositFinalised';
+import { insufficientBoostLiquidity } from './ingress-egress/insufficientBoostLiquidity';
+import networkTransactionRejectedByBroker from './ingress-egress/transactionRejectedByBroker';
+import newPoolCreated from './liquidity-pools/newPoolCreated';
+import poolFeeSet from './liquidity-pools/poolFeeSet';
+import liquidityDepositAddressReady from './liquidity-provider/liquidityDepositAddressReady';
+import refundEgressIgnored from './swapping/refundEgressIgnored';
+import refundEgressScheduled from './swapping/refundEgressScheduled';
+import swapDepositAddressReady from './swapping/swapDepositAddressReady';
+import swapEgressIgnored from './swapping/swapEgressIgnored';
+import swapEgressScheduled from './swapping/swapEgressScheduled';
+import swapExecuted from './swapping/swapExecuted';
+import swapRequestCompleted from './swapping/swapRequestCompleted';
+import swapRequested from './swapping/swapRequested';
+import swapRescheduled from './swapping/swapRescheduled';
+import swapScheduled from './swapping/swapScheduled';
+import chainStateUpdated from './tracking/chainStateUpdated';
 import type { Block, Event } from '../gql/generated/graphql';
 import { buildHandlerMap, getDispatcher } from '../utils/handlers';
 
@@ -58,7 +57,6 @@ export const events = {
     DepositBoosted: 'BitcoinIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'BitcoinIngressEgress.InsufficientBoostLiquidity',
     TransactionRejectedByBroker: 'BitcoinIngressEgress.TransactionRejectedByBroker',
-    CcmFailed: 'BitcoinIngressEgress.CcmFailed',
     DepositFailed: 'BitcoinIngressEgress.DepositFailed',
   },
   EthereumIngressEgress: {
@@ -69,7 +67,6 @@ export const events = {
     DepositBoosted: 'EthereumIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'EthereumIngressEgress.InsufficientBoostLiquidity',
     TransactionRejectedByBroker: 'EthereumIngressEgress.TransactionRejectedByBroker',
-    CcmFailed: 'EthereumIngressEgress.CcmFailed',
     DepositFailed: 'EthereumIngressEgress.DepositFailed',
   },
   ArbitrumIngressEgress: {
@@ -80,7 +77,6 @@ export const events = {
     DepositBoosted: 'ArbitrumIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'ArbitrumIngressEgress.InsufficientBoostLiquidity',
     TransactionRejectedByBroker: 'ArbitrumIngressEgress.TransactionRejectedByBroker',
-    CcmFailed: 'ArbitrumIngressEgress.CcmFailed',
     DepositFailed: 'ArbitrumIngressEgress.DepositFailed',
   },
   PolkadotIngressEgress: {
@@ -91,7 +87,6 @@ export const events = {
     DepositBoosted: 'PolkadotIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'PolkadotIngressEgress.InsufficientBoostLiquidity',
     TransactionRejectedByBroker: 'PolkadotIngressEgress.TransactionRejectedByBroker',
-    CcmFailed: 'PolkadotIngressEgress.CcmFailed',
     DepositFailed: 'PolkadotIngressEgress.DepositFailed',
   },
   SolanaIngressEgress: {
@@ -102,7 +97,6 @@ export const events = {
     DepositBoosted: 'SolanaIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'SolanaIngressEgress.InsufficientBoostLiquidity',
     TransactionRejectedByBroker: 'SolanaIngressEgress.TransactionRejectedByBroker',
-    CcmFailed: 'SolanaIngressEgress.CcmFailed',
     DepositFailed: 'SolanaIngressEgress.DepositFailed',
   },
   BitcoinBroadcaster: {
@@ -227,10 +221,6 @@ const handlers = [
         handler: liquidityDepositAddressReady,
       },
       ...Object.values(Chains).flatMap((chain) => [
-        {
-          name: events[`${chain}IngressEgress`].CcmFailed,
-          handler: networkCcmFailed,
-        },
         {
           name: events[`${chain}IngressEgress`].DepositFinalised,
           handler: networkDepositFinalised,

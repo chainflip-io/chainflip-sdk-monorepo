@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import { processEvents } from './utils';
 import prisma from '../../client';
-import { SwapDepositAddressReadyArgs } from '../swapDepositAddressReady';
-import { SwapRequestedArgs } from '../swapRequested';
+import { SwapDepositAddressReadyArgs } from '../swapping/swapDepositAddressReady';
+import { SwapRequestedArgs } from '../swapping/swapRequested';
 
 const check = <T>(value: T): T => value;
 
