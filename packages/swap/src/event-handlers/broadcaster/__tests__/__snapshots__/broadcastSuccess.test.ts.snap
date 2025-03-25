@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`networkBroadcastSuccess > updates an existing broadcast entity with the succeeded timestamp 1`] = `
+exports[`broadcastSuccess > updates an existing broadcast entity with the succeeded timestamp 1`] = `
 {
   "abortedAt": null,
   "abortedBlockIndex": null,
@@ -19,7 +19,7 @@ exports[`networkBroadcastSuccess > updates an existing broadcast entity with the
 }
 `;
 
-exports[`networkBroadcastSuccess > updates an existing broadcast with the tx_ref for bitcoin 1`] = `
+exports[`broadcastSuccess > updates an existing broadcast with the tx_ref for bitcoin 1`] = `
 {
   "abortedAt": null,
   "abortedBlockIndex": null,
@@ -38,7 +38,7 @@ exports[`networkBroadcastSuccess > updates an existing broadcast with the tx_ref
 }
 `;
 
-exports[`networkBroadcastSuccess > updates an existing broadcast with the tx_ref for polkadot 1`] = `
+exports[`broadcastSuccess > updates an existing broadcast with the tx_ref for polkadot 1`] = `
 {
   "abortedAt": null,
   "abortedBlockIndex": null,
@@ -57,7 +57,7 @@ exports[`networkBroadcastSuccess > updates an existing broadcast with the tx_ref
 }
 `;
 
-exports[`networkBroadcastSuccess > updates an existing broadcast with the tx_ref if it exists 1`] = `
+exports[`broadcastSuccess > updates an existing broadcast with the tx_ref if it exists 1`] = `
 {
   "abortedAt": null,
   "abortedBlockIndex": null,

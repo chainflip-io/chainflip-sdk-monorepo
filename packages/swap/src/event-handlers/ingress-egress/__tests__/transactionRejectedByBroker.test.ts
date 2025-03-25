@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { formatTxRef } from '@/shared/common';
 import prisma from '../../../client';
-import networkTransactionRejectedByBroker from '../transactionRejectedByBroker';
+import transactionRejectedByBroker from '../transactionRejectedByBroker';
 
-describe(networkTransactionRejectedByBroker, () => {
+describe(transactionRejectedByBroker, () => {
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "FailedSwap" CASCADE`;
   });
@@ -49,7 +49,7 @@ describe(networkTransactionRejectedByBroker, () => {
       },
     });
 
-    await networkTransactionRejectedByBroker('Bitcoin')({
+    await transactionRejectedByBroker('Bitcoin')({
       block: { specId: 'test@170', height: 420, timestamp } as any,
       event: { indexInBlock: 1, args } as any,
       prisma,

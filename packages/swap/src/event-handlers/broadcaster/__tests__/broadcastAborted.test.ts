@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import prisma from '../../../client';
-import { networkBroadcastAbortedMock } from '../../__tests__/utils';
-import networkBroadcastAborted from '../broadcastAborted';
+import { broadcastAbortedMock } from '../../__tests__/utils';
+import broadcastAborted from '../broadcastAborted';
 
-describe(networkBroadcastAborted, () => {
+describe(broadcastAborted, () => {
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap" CASCADE`;
   });
 
   it('updates an existing broadcast entity with the succeeded timestamp', async () => {
-    const { block, event } = networkBroadcastAbortedMock;
+    const { block, event } = broadcastAbortedMock;
 
     await prisma.broadcast.create({
       data: {
@@ -21,7 +21,7 @@ describe(networkBroadcastAborted, () => {
     });
 
     await prisma.$transaction((tx) =>
-      networkBroadcastAborted('Ethereum')({
+      broadcastAborted('Ethereum')({
         block: block as any,
         event: event as any,
         prisma: tx,

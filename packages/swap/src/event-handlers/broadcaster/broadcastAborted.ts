@@ -23,8 +23,6 @@ export async function handleEvent(
   });
 }
 
-export default function networkBroadcastAborted(
-  chain: Chain,
-): (args: EventHandlerArgs) => Promise<void> {
+export default function broadcastAborted(chain: Chain): (args: EventHandlerArgs) => Promise<void> {
   return (args: EventHandlerArgs) => handleEvent(chain, args);
 }

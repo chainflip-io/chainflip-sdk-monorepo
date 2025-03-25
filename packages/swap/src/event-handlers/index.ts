@@ -1,17 +1,17 @@
 import type { Prisma } from '.prisma/client';
 import { Chains } from '@/shared/enums';
-import networkBroadcastAborted from './broadcaster/broadcastAborted';
-import networkBroadcastSuccess from './broadcaster/broadcastSuccess';
-import networkThresholdSignatureInvalid from './broadcaster/thresholdSignatureInvalid';
-import networkTransactionBroadcastRequest from './broadcaster/transactionBroadcastRequest';
-import networkBatchBroadcastRequested from './ingress-egress/batchBroadcastRequested';
+import broadcastAborted from './broadcaster/broadcastAborted';
+import broadcastSuccess from './broadcaster/broadcastSuccess';
+import thresholdSignatureInvalid from './broadcaster/thresholdSignatureInvalid';
+import transactionBroadcastRequest from './broadcaster/transactionBroadcastRequest';
+import batchBroadcastRequested from './ingress-egress/batchBroadcastRequested';
 import { boostPoolCreated } from './ingress-egress/boostPoolCreated';
 import networkCcmBroadcastRequested from './ingress-egress/ccmBroadcastRequested';
 import { depositBoosted } from './ingress-egress/depositBoosted';
 import networkDepositFailed from './ingress-egress/depositFailed';
-import { networkDepositFinalised } from './ingress-egress/depositFinalised';
+import { depositFinalised } from './ingress-egress/depositFinalised';
 import { insufficientBoostLiquidity } from './ingress-egress/insufficientBoostLiquidity';
-import networkTransactionRejectedByBroker from './ingress-egress/transactionRejectedByBroker';
+import transactionRejectedByBroker from './ingress-egress/transactionRejectedByBroker';
 import newPoolCreated from './liquidity-pools/newPoolCreated';
 import poolFeeSet from './liquidity-pools/poolFeeSet';
 import liquidityDepositAddressReady from './liquidity-provider/liquidityDepositAddressReady';
@@ -163,7 +163,7 @@ const handlers = [
       ...Object.values(Chains).flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].BatchBroadcastRequested,
-          handler: networkBatchBroadcastRequested,
+          handler: batchBroadcastRequested,
         },
         {
           name: events[`${chain}IngressEgress`].CcmBroadcastRequested,
@@ -171,15 +171,15 @@ const handlers = [
         },
         {
           name: events[`${chain}Broadcaster`].BroadcastSuccess,
-          handler: networkBroadcastSuccess(chain),
+          handler: broadcastSuccess(chain),
         },
         {
           name: events[`${chain}Broadcaster`].BroadcastAborted,
-          handler: networkBroadcastAborted(chain),
+          handler: broadcastAborted(chain),
         },
         {
           name: events[`${chain}Broadcaster`].TransactionBroadcastRequest,
-          handler: networkTransactionBroadcastRequest(chain),
+          handler: transactionBroadcastRequest(chain),
         },
         {
           name: events[`${chain}ChainTracking`].ChainStateUpdated,
@@ -223,7 +223,7 @@ const handlers = [
       ...Object.values(Chains).flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].DepositFinalised,
-          handler: networkDepositFinalised,
+          handler: depositFinalised,
         },
         {
           name: events[`${chain}IngressEgress`].DepositBoosted,
@@ -233,7 +233,7 @@ const handlers = [
       ...Object.values(Chains).flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].TransactionRejectedByBroker,
-          handler: networkTransactionRejectedByBroker(chain),
+          handler: transactionRejectedByBroker(chain),
         },
       ]),
     ],
@@ -248,7 +248,7 @@ const handlers = [
         },
         {
           name: events[`${chain}Broadcaster`].ThresholdSignatureInvalid,
-          handler: networkThresholdSignatureInvalid(chain),
+          handler: thresholdSignatureInvalid(chain),
         },
       ]),
     ],

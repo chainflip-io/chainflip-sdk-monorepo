@@ -26,7 +26,7 @@ const transactionBroadcastRequestArgs = z
 
 export type TransactionBroadcastRequestArgs = z.input<typeof transactionBroadcastRequestArgs>;
 
-const networkTransactionBroadcastRequest =
+const transactionBroadcastRequest =
   (chain: Chain) =>
   async ({ prisma, event }: EventHandlerArgs) => {
     const { broadcastId, transactionPayload } = transactionBroadcastRequestArgs.parse(event.args);
@@ -41,4 +41,4 @@ const networkTransactionBroadcastRequest =
     });
   };
 
-export default networkTransactionBroadcastRequest;
+export default transactionBroadcastRequest;

@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import prisma from '../../../client';
-import { networkBroadcastSuccessMock } from '../../__tests__/utils';
-import networkBroadcastSuccess from '../broadcastSuccess';
+import { broadcastSuccessMock } from '../../__tests__/utils';
+import broadcastSuccess from '../broadcastSuccess';
 
-describe(networkBroadcastSuccess, () => {
+describe(broadcastSuccess, () => {
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "Broadcast" CASCADE`;
   });
 
   it('updates an existing broadcast entity with the succeeded timestamp', async () => {
-    const { block, event } = networkBroadcastSuccessMock();
+    const { block, event } = broadcastSuccessMock();
 
     await prisma.broadcast.create({
       data: {
@@ -21,7 +21,7 @@ describe(networkBroadcastSuccess, () => {
     });
 
     await prisma.$transaction((tx) =>
-      networkBroadcastSuccess('Ethereum')({
+      broadcastSuccess('Ethereum')({
         block: block as any,
         event: event as any,
         prisma: tx,
@@ -40,8 +40,8 @@ describe(networkBroadcastSuccess, () => {
   });
 
   it('updates an existing broadcast with the tx_ref if it exists', async () => {
-    const { block } = networkBroadcastSuccessMock();
-    const { event } = networkBroadcastSuccessMock({
+    const { block } = broadcastSuccessMock();
+    const { event } = broadcastSuccessMock({
       transactionRef: '0x1234',
     });
 
@@ -55,7 +55,7 @@ describe(networkBroadcastSuccess, () => {
     });
 
     await prisma.$transaction((tx) =>
-      networkBroadcastSuccess('Ethereum')({
+      broadcastSuccess('Ethereum')({
         block: block as any,
         event: event as any,
         prisma: tx,
@@ -75,8 +75,8 @@ describe(networkBroadcastSuccess, () => {
   });
 
   it('updates an existing broadcast with the tx_ref for polkadot', async () => {
-    const { block } = networkBroadcastSuccessMock();
-    const { event } = networkBroadcastSuccessMock({
+    const { block } = broadcastSuccessMock();
+    const { event } = broadcastSuccessMock({
       transactionRef: {
         blockNumber: 100,
         extrinsicIndex: 21,
@@ -93,7 +93,7 @@ describe(networkBroadcastSuccess, () => {
     });
 
     await prisma.$transaction((tx) =>
-      networkBroadcastSuccess('Polkadot')({
+      broadcastSuccess('Polkadot')({
         block: block as any,
         event: event as any,
         prisma: tx,
@@ -114,8 +114,8 @@ describe(networkBroadcastSuccess, () => {
   });
 
   it('updates an existing broadcast with the tx_ref for bitcoin', async () => {
-    const { block } = networkBroadcastSuccessMock();
-    const { event } = networkBroadcastSuccessMock({
+    const { block } = broadcastSuccessMock();
+    const { event } = broadcastSuccessMock({
       transactionRef: '0x5a6571d73cd1760fc659f9f845252d2a3b275a0d1a0b5db91ed9dc29b2283092',
     });
 
@@ -129,7 +129,7 @@ describe(networkBroadcastSuccess, () => {
     });
 
     await prisma.$transaction((tx) =>
-      networkBroadcastSuccess('Bitcoin')({
+      broadcastSuccess('Bitcoin')({
         block: block as any,
         event: event as any,
         prisma: tx,

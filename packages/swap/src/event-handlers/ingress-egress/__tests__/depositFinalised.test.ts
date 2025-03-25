@@ -1,11 +1,11 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import prisma from '../../../client';
 import { createDepositChannel } from '../../__tests__/utils';
-import { networkDepositFinalised } from '../depositFinalised';
+import { depositFinalised } from '../depositFinalised';
 
 vi.mock('@chainflip/solana');
 
-describe(networkDepositFinalised, () => {
+describe(depositFinalised, () => {
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "SwapRequest" CASCADE`;
 
@@ -36,7 +36,7 @@ describe(networkDepositFinalised, () => {
   });
 
   it('updates swap request for regular deposit', async () => {
-    await networkDepositFinalised({
+    await depositFinalised({
       prisma,
       block: {
         height: 10,
@@ -94,7 +94,7 @@ describe(networkDepositFinalised, () => {
   });
 
   it('updates swap request for regular deposit with 180 schema', async () => {
-    await networkDepositFinalised({
+    await depositFinalised({
       prisma,
       block: {
         height: 10,
@@ -165,7 +165,7 @@ describe(networkDepositFinalised, () => {
       },
     });
 
-    await networkDepositFinalised({
+    await depositFinalised({
       prisma,
       block: {
         height: 10,

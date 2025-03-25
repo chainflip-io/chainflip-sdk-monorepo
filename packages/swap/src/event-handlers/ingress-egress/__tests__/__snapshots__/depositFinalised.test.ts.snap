@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`networkDepositFinalised > updates swap request for boosted deposit 1`] = `
+exports[`depositFinalised > updates swap request for boosted deposit 1`] = `
 {
   "ccmGasBudget": null,
   "ccmMessage": null,
@@ -39,7 +39,7 @@ exports[`networkDepositFinalised > updates swap request for boosted deposit 1`] 
 }
 `;
 
-exports[`networkDepositFinalised > updates swap request for regular deposit 1`] = `
+exports[`depositFinalised > updates swap request for regular deposit 1`] = `
 {
   "ccmGasBudget": null,
   "ccmMessage": null,
@@ -88,7 +88,7 @@ exports[`networkDepositFinalised > updates swap request for regular deposit 1`] 
 }
 `;
 
-exports[`networkDepositFinalised > updates swap request for regular deposit with 180 schema 1`] = `
+exports[`depositFinalised > updates swap request for regular deposit with 180 schema 1`] = `
 {
   "ccmGasBudget": null,
   "ccmMessage": null,

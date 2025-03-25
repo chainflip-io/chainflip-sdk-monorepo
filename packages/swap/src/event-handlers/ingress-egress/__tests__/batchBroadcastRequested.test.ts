@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import prisma from '../../../client';
-import { networkBatchBroadcastRequestedMock } from '../../__tests__/utils';
-import networkBatchBroadcastRequested from '../batchBroadcastRequested';
+import { batchBroadcastRequestedMock } from '../../__tests__/utils';
+import batchBroadcastRequested from '../batchBroadcastRequested';
 
-describe(networkBatchBroadcastRequested, () => {
+describe(batchBroadcastRequested, () => {
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast" CASCADE`;
   });
 
   it('creates a broadcast entity and updates the relevant egress entities', async () => {
-    const { block, event } = networkBatchBroadcastRequestedMock;
+    const { block, event } = batchBroadcastRequestedMock;
 
     await prisma.egress.create({
       data: {
@@ -31,7 +31,7 @@ describe(networkBatchBroadcastRequested, () => {
     });
 
     await prisma.$transaction((tx) =>
-      networkBatchBroadcastRequested({
+      batchBroadcastRequested({
         block: block as any,
         event: event as any,
         prisma: tx,
@@ -59,10 +59,10 @@ describe(networkBatchBroadcastRequested, () => {
   });
 
   it('does not create a broadcast entity if egresses are not tracked', async () => {
-    const { block, event } = networkBatchBroadcastRequestedMock;
+    const { block, event } = batchBroadcastRequestedMock;
 
     await prisma.$transaction((tx) =>
-      networkBatchBroadcastRequested({
+      batchBroadcastRequested({
         block: block as any,
         event: event as any,
         prisma: tx,

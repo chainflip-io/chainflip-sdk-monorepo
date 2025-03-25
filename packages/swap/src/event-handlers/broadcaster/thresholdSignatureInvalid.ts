@@ -8,7 +8,7 @@ const thresholdSignatureInvalidArgs = z.object({
   retryBroadcastId: number.optional(),
 });
 
-const networkThresholdSignatureInvalid =
+const thresholdSignatureInvalid =
   (chain: Chain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
     const { broadcastId, retryBroadcastId } = thresholdSignatureInvalidArgs.parse(event.args);
@@ -47,4 +47,4 @@ const networkThresholdSignatureInvalid =
     ]);
   };
 
-export default networkThresholdSignatureInvalid;
+export default thresholdSignatureInvalid;

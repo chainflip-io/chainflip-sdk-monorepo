@@ -6,7 +6,7 @@ import { Chain } from '@/shared/enums';
 import { hexString, unsignedInteger } from '@/shared/parsers';
 import type { EventHandlerArgs } from '../index';
 
-export const networkBroadcastSuccessArgs = (chain: Chain) =>
+export const broadcastSuccessArgs = (chain: Chain) =>
   z.object({
     broadcastId: unsignedInteger,
     transactionRef: z // v130+
@@ -24,10 +24,8 @@ export const networkBroadcastSuccessArgs = (chain: Chain) =>
       .optional(),
   });
 
-export default function networkBroadcastSuccess(
-  chain: Chain,
-): (args: EventHandlerArgs) => Promise<void> {
-  const parser = networkBroadcastSuccessArgs(chain);
+export default function broadcastSuccess(chain: Chain): (args: EventHandlerArgs) => Promise<void> {
+  const parser = broadcastSuccessArgs(chain);
 
   return async ({ prisma, block, event }: EventHandlerArgs): Promise<void> => {
     const args = parser.parse(event.args);

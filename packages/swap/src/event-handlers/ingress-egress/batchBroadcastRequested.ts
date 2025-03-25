@@ -14,7 +14,7 @@ const eventArgs = z.object({
  * egress. the broadcast success event will be emitted with this id when all
  * of the egresses are successful
  */
-export default async function networkBatchBroadcastRequested({
+export default async function batchBroadcastRequested({
   prisma,
   block,
   event,

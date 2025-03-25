@@ -2,24 +2,21 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import prisma, { Chain } from '../../../client';
 import {
-  networkTransactionBroadcastRequestBtcMock,
-  networkTransactionBroadcastRequestBtcMockV2,
+  transactionBroadcastRequestBtcMock,
+  transactionBroadcastRequestBtcMockV2,
 } from '../../__tests__/utils';
-import networkTransactionBroadcastRequest from '../transactionBroadcastRequest';
+import transactionBroadcastRequest from '../transactionBroadcastRequest';
 
 const genericTest = async (chain: Chain, eventType: number) => {
   const mock =
-    eventType === 1
-      ? networkTransactionBroadcastRequestBtcMock
-      : networkTransactionBroadcastRequestBtcMockV2;
+    eventType === 1 ? transactionBroadcastRequestBtcMock : transactionBroadcastRequestBtcMockV2;
   const { block } = mock;
   const { event } = mock.eventContext;
 
   const broadcastId =
     eventType === 1
-      ? networkTransactionBroadcastRequestBtcMock.eventContext.event.args.broadcastAttemptId
-          .broadcastId
-      : networkTransactionBroadcastRequestBtcMockV2.eventContext.event.args.broadcastId;
+      ? transactionBroadcastRequestBtcMock.eventContext.event.args.broadcastAttemptId.broadcastId
+      : transactionBroadcastRequestBtcMockV2.eventContext.event.args.broadcastId;
 
   await prisma.broadcast.create({
     data: {
@@ -31,7 +28,7 @@ const genericTest = async (chain: Chain, eventType: number) => {
   });
 
   await prisma.$transaction(async (txClient) => {
-    await networkTransactionBroadcastRequest(chain)({
+    await transactionBroadcastRequest(chain)({
       prisma: txClient,
       block: block as any,
       event: event as any,
@@ -51,7 +48,7 @@ const genericTest = async (chain: Chain, eventType: number) => {
   expect(await prisma.broadcast.count()).toEqual(1);
 };
 
-describe(networkTransactionBroadcastRequest, () => {
+describe(transactionBroadcastRequest, () => {
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "Broadcast" CASCADE`;
   });

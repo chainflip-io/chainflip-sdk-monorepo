@@ -22,7 +22,7 @@ const schemaMap = {
 
 export type TransactionRejectedByBrokerArgs = z.input<(typeof schemaMap)[Chain]>;
 
-export const networkTransactionRejectedByBroker =
+export const transactionRejectedByBroker =
   (chain: Chain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
     const { broadcastId, ...rest } = schemaMap[chain].parse(event.args);
@@ -51,4 +51,4 @@ export const networkTransactionRejectedByBroker =
     });
   };
 
-export default networkTransactionRejectedByBroker;
+export default transactionRejectedByBroker;

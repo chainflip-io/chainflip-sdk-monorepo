@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import prisma from '../../../client';
 import { thresholdSignatureInvalidMock } from '../../__tests__/utils';
-import networkThresholdSignatureInvalid from '../thresholdSignatureInvalid';
+import thresholdSignatureInvalid from '../thresholdSignatureInvalid';
 
-describe(networkThresholdSignatureInvalid, () => {
+describe(thresholdSignatureInvalid, () => {
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast" CASCADE`;
   });
@@ -41,7 +41,7 @@ describe(networkThresholdSignatureInvalid, () => {
     });
 
     await prisma.$transaction((tx) =>
-      networkThresholdSignatureInvalid('Ethereum')({
+      thresholdSignatureInvalid('Ethereum')({
         block: block as any,
         event: event as any,
         prisma: tx,

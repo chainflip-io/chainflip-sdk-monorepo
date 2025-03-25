@@ -32,7 +32,7 @@ const depositFinalisedSchema = z.union([
   polkadotSchema,
 ]);
 
-export const networkDepositFinalised = async ({ prisma, event, block }: EventHandlerArgs) => {
+export const depositFinalised = async ({ prisma, event, block }: EventHandlerArgs) => {
   const { asset, amount, action, ingressFee, blockHeight, depositAddress, ...rest } =
     depositFinalisedSchema.parse(event.args);
   const depositDetails = 'depositDetails' in rest ? rest.depositDetails : undefined;
