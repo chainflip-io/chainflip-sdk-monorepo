@@ -10,7 +10,6 @@ import networkCcmFailed from './networkCcmFailed';
 import chainStateUpdated from './networkChainStateUpdated';
 import networkDepositFailed from './networkDepositFailed';
 import { networkDepositFinalised } from './networkDepositFinalised';
-import networkDepositIgnored from './networkDepositIgnored';
 import networkThresholdSignatureInvalid from './networkThresholdSignatureInvalid';
 import networkTransactionBroadcastRequest from './networkTransactionBroadcastRequest';
 import networkTransactionRejectedByBroker from './networkTransactionRejectedByBroker';
@@ -55,7 +54,6 @@ export const events = {
     BatchBroadcastRequested: 'BitcoinIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'BitcoinIngressEgress.CcmBroadcastRequested',
     DepositFinalised: 'BitcoinIngressEgress.DepositFinalised',
-    DepositIgnored: 'BitcoinIngressEgress.DepositIgnored',
     BoostPoolCreated: 'BitcoinIngressEgress.BoostPoolCreated',
     DepositBoosted: 'BitcoinIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'BitcoinIngressEgress.InsufficientBoostLiquidity',
@@ -67,7 +65,6 @@ export const events = {
     BatchBroadcastRequested: 'EthereumIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'EthereumIngressEgress.CcmBroadcastRequested',
     DepositFinalised: 'EthereumIngressEgress.DepositFinalised',
-    DepositIgnored: 'EthereumIngressEgress.DepositIgnored',
     BoostPoolCreated: 'EthereumIngressEgress.BoostPoolCreated',
     DepositBoosted: 'EthereumIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'EthereumIngressEgress.InsufficientBoostLiquidity',
@@ -79,7 +76,6 @@ export const events = {
     BatchBroadcastRequested: 'ArbitrumIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'ArbitrumIngressEgress.CcmBroadcastRequested',
     DepositFinalised: 'ArbitrumIngressEgress.DepositFinalised',
-    DepositIgnored: 'ArbitrumIngressEgress.DepositIgnored',
     BoostPoolCreated: 'ArbitrumIngressEgress.BoostPoolCreated',
     DepositBoosted: 'ArbitrumIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'ArbitrumIngressEgress.InsufficientBoostLiquidity',
@@ -91,7 +87,6 @@ export const events = {
     BatchBroadcastRequested: 'PolkadotIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'PolkadotIngressEgress.CcmBroadcastRequested',
     DepositFinalised: 'PolkadotIngressEgress.DepositFinalised',
-    DepositIgnored: 'PolkadotIngressEgress.DepositIgnored',
     BoostPoolCreated: 'PolkadotIngressEgress.BoostPoolCreated',
     DepositBoosted: 'PolkadotIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'PolkadotIngressEgress.InsufficientBoostLiquidity',
@@ -103,7 +98,6 @@ export const events = {
     BatchBroadcastRequested: 'SolanaIngressEgress.BatchBroadcastRequested',
     CcmBroadcastRequested: 'SolanaIngressEgress.CcmBroadcastRequested',
     DepositFinalised: 'SolanaIngressEgress.DepositFinalised',
-    DepositIgnored: 'SolanaIngressEgress.DepositIgnored',
     BoostPoolCreated: 'SolanaIngressEgress.BoostPoolCreated',
     DepositBoosted: 'SolanaIngressEgress.DepositBoosted',
     InsufficientBoostLiquidity: 'SolanaIngressEgress.InsufficientBoostLiquidity',
@@ -212,10 +206,6 @@ const handlers = [
         {
           name: events[`${chain}IngressEgress`].InsufficientBoostLiquidity,
           handler: insufficientBoostLiquidity,
-        },
-        {
-          name: events[`${chain}IngressEgress`].DepositIgnored,
-          handler: networkDepositIgnored(chain),
         },
       ]),
     ],

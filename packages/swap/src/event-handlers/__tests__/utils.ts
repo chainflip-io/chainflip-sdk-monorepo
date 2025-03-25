@@ -12,7 +12,6 @@ import prisma, { SwapDepositChannel } from '../../client';
 import { events as eventNames } from '../index';
 import { networkBroadcastSuccessArgs } from '../networkBroadcastSuccess';
 import { DepositFailedArgs } from '../networkDepositFailed';
-import { DepositIgnoredArgs } from '../networkDepositIgnored';
 import { SwapDepositAddressReadyArgs } from '../swapDepositAddressReady';
 
 export const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
@@ -119,7 +118,15 @@ export const swapDepositAddressReadyMocked = {
       channelOpeningFee: 0,
       affiliateFees: [],
       brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
-    } as SwapDepositAddressReadyArgs,
+      refundParameters: {
+        minPrice: '0',
+        refundAddress: {
+          __kind: 'Eth',
+          value: ETH_ADDRESS,
+        },
+        retryDuration: 100,
+      },
+    } satisfies SwapDepositAddressReadyArgs,
     indexInBlock: 0,
     name: eventNames.Swapping.SwapDepositAddressReady,
   },
@@ -157,6 +164,14 @@ export const swapDepositAddressReadyCcmParamsMocked = {
       channelOpeningFee: 0,
       affiliateFees: [],
       brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
+      refundParameters: {
+        minPrice: '0',
+        refundAddress: {
+          value: '0xfcd3c82b154cb4717ac98718d0fd13eeba3d2754',
+          __kind: 'Eth',
+        },
+        retryDuration: 100,
+      },
     } as SwapDepositAddressReadyArgs,
     indexInBlock: 0,
     name: eventNames.Swapping.SwapDepositAddressReady,
@@ -582,15 +597,6 @@ export const thresholdSignatureInvalidMock = {
   },
 } as const;
 
-export const buildDepositIgnoredEvent = <T extends DepositIgnoredArgs>(args: T) => {
-  const { chain } = assetConstants[args.asset.__kind];
-
-  return {
-    block: { specId: 'test@160', timestamp: 1670337093000, height: 100, hash: '0x123' },
-    event: { args, indexInBlock: 0, name: `${chain}IngressEgress.DepositIgnored` },
-  };
-};
-
 export const buildDepositFailedEvent = <T extends DepositFailedArgs>(args: T) => {
   const asset =
     args.details.__kind === 'DepositChannel'
@@ -600,7 +606,7 @@ export const buildDepositFailedEvent = <T extends DepositFailedArgs>(args: T) =>
 
   return {
     block: { specId: 'test@180', timestamp: 1670337093000, height: 100, hash: '0x123' },
-    event: { args, indexInBlock: 0, name: `${chain}IngressEgress.DepositIgnored` },
+    event: { args, indexInBlock: 0, name: `${chain}IngressEgress.DepositFailed` },
   };
 };
 

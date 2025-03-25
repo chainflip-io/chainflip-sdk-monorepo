@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import { processEvents } from './utils';
 import prisma from '../../client';
+import { SwapDepositAddressReadyArgs } from '../swapDepositAddressReady';
+import { SwapRequestedArgs } from '../swapRequested';
+
+const check = <T>(value: T): T => value;
 
 const batchEvents = [
   {
@@ -55,7 +59,7 @@ const batchEvents = [
     extrinsicId: '0000000086-000067-f8e73',
     callId: '0000000086-000067-f8e73',
     name: 'Swapping.SwapDepositAddressReady',
-    args: {
+    args: check<SwapDepositAddressReadyArgs>({
       boostFee: 0,
       channelId: '49',
       sourceAsset: { __kind: 'Flip' },
@@ -73,7 +77,15 @@ const batchEvents = [
       brokerCommissionRate: 100,
       sourceChainExpiryBlock: '265',
       brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
-    },
+      refundParameters: {
+        refundAddress: {
+          __kind: 'Eth',
+          value: '0xe89e5fe04b8db0f5b3cd87295fd8331260d656f2',
+        },
+        minPrice: '0',
+        retryDuration: 100,
+      },
+    }),
   },
   {
     id: '0000000092-000138-77afe',
@@ -82,12 +94,13 @@ const batchEvents = [
     extrinsicId: '0000000092-000008-77afe',
     callId: '0000000092-000008-77afe',
     name: 'Swapping.SwapRequested',
-    args: {
+    args: check<SwapRequestedArgs>({
       origin: {
         __kind: 'DepositChannel',
         channelId: '49',
         depositAddress: { value: '0xe89e5fe04b8db0f5b3cd87295fd8331260d656f2', __kind: 'Eth' },
         depositBlockHeight: '222',
+        brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
       },
       inputAsset: { __kind: 'Flip' },
       inputAmount: '499992015299453626516',
@@ -100,7 +113,8 @@ const batchEvents = [
         },
       },
       swapRequestId: '287',
-    },
+      brokerFees: [],
+    }),
   },
   {
     id: '0000000092-000139-77afe',

@@ -26,6 +26,7 @@ const argsMap = {
 } as const satisfies Record<Chain, z.ZodTypeAny>;
 
 export type DepositFailedArgs = z.input<(typeof argsMap)[Chain]>;
+export type BitcoinDepositFailedArgs = z.input<typeof bitcoinIngressEgressDepositFailed>;
 
 type DepositWitness = Extract<
   z.output<(typeof argsMap)[Chain]>['details'],
