@@ -8,7 +8,7 @@ export default mergeConfig(
   defineProject({
     test: {
       include: ['**/*.test.ts'],
-      globalSetup: ['./globalSetup.ts'],
+      globalSetup: ['./globalSetup.mts'],
       setupFiles: ['./setupFile.ts'],
     },
     resolve: {
