@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { describe, it, beforeEach, expect, vi } from 'vitest';
-import env from '@/swap/config/env';
+import env from '../../config/env';
 import { calculateRecommendedSlippage } from '../autoSlippage';
 import { getDeployedLiquidity, getUndeployedLiquidity } from '../pools';
 import { getRequiredBlockConfirmations } from '../rpc';

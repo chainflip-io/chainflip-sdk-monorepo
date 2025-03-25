@@ -1,8 +1,8 @@
 import { vi, describe, it, beforeAll, beforeEach, afterEach, expect } from 'vitest';
 import * as broker from '@/shared/broker';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
-import env from '@/swap/config/env';
 import prisma from '../../client';
+import env from '../../config/env';
 import isDisallowedSwap from '../../utils/isDisallowedSwap';
 import { openSwapDepositChannel, openSwapDepositChannelSchema } from '../openSwapDepositChannel';
 

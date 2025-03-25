@@ -1,5 +1,5 @@
 import { describe, it, beforeEach, afterEach, expect, vi } from 'vitest';
-import { AsyncCacheMap, CacheMap } from '../dataStructures';
+import { AsyncCacheMap, CacheMap } from '@/shared/dataStructures';
 
 describe(CacheMap, () => {
   beforeEach(() => {

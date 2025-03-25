@@ -2,7 +2,7 @@ import { WsClient } from '@chainflip/rpc';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { describe, it, expect, vi } from 'vitest';
 import { getAssetAndChain } from '@/shared/enums';
-import { InternalAsset } from '@/swap/client';
+import { InternalAsset } from '../../client';
 import { getSwapRateV3 } from '../statechain';
 
 vi.mock('../function', async (importOriginal) => {

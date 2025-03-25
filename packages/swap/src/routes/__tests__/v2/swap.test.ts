@@ -5,19 +5,19 @@ import request from 'supertest';
 import { vi, describe, it, beforeEach, afterEach, expect, beforeAll } from 'vitest';
 import { z } from 'zod';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
-import env from '@/swap/config/env';
-import { BitcoinDepositFailedArgs } from '@/swap/event-handlers/networkDepositFailed';
-import { TransactionRejectedByBrokerArgs } from '@/swap/event-handlers/networkTransactionRejectedByBroker';
-import type { SwapDepositAddressReadyArgs } from '@/swap/event-handlers/swapDepositAddressReady';
-import { SwapEgressIgnoredArgs } from '@/swap/event-handlers/swapEgressIgnored';
-import { SwapRequestedArgs190 } from '@/swap/event-handlers/swapRequested';
 import prisma from '../../../client';
+import env from '../../../config/env';
 import metadata from '../../../event-handlers/__tests__/metadata.json';
 import {
   createChainTrackingInfo,
   createPools,
   processEvents,
 } from '../../../event-handlers/__tests__/utils';
+import { BitcoinDepositFailedArgs } from '../../../event-handlers/networkDepositFailed';
+import { TransactionRejectedByBrokerArgs } from '../../../event-handlers/networkTransactionRejectedByBroker';
+import type { SwapDepositAddressReadyArgs } from '../../../event-handlers/swapDepositAddressReady';
+import { SwapEgressIgnoredArgs } from '../../../event-handlers/swapEgressIgnored';
+import { SwapRequestedArgs190 } from '../../../event-handlers/swapRequested';
 import {
   getPendingBroadcast,
   getPendingDeposit,

@@ -1,6 +1,7 @@
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import superjson from 'superjson';
 import { requestSwapDepositAddress, requestSwapParameterEncoding } from '@/shared/broker';
+import { AsyncCacheMap } from '@/shared/dataStructures';
 import {
   ChainflipNetwork,
   Chain,
@@ -28,8 +29,7 @@ import {
 import { validateSwapAmount } from '@/shared/rpc/utils';
 import { BoostQuote, Quote } from '@/shared/schemas';
 import { Required } from '@/shared/types';
-import type { AppRouter } from '@/swap/server';
-import { AsyncCacheMap } from '@/swap/utils/dataStructures';
+import type { AppRouter } from '@/swap/trpc';
 import { getAssetData } from './assets';
 import { getChainData } from './chains';
 import { BACKEND_SERVICE_URLS, CF_SDK_VERSION_HEADERS } from './consts';

@@ -8,13 +8,12 @@ import {
   PaidFee,
   Quote,
 } from '@/shared/schemas';
-import { FailureMode } from '@/swap/utils/swap';
 import { ChainsAndAssets, DepositAddressRequest } from '../types';
 
 interface Failure {
   failedAt: number;
   failedBlockIndex: string;
-  mode: FailureMode;
+  mode: string;
   reason: {
     code: string;
     message: string;

@@ -8,9 +8,9 @@ import {
   InternalAsset,
 } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
-import { getWitnessSafetyMargin } from '@/swap/utils/rpc';
 import ServiceError from './ServiceError';
 import { FailedSwapReason, Swap } from '../client';
+import { getWitnessSafetyMargin } from './rpc';
 
 export const estimateSwapDuration = async ({
   srcAsset,

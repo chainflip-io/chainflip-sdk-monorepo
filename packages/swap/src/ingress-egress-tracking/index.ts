@@ -4,11 +4,11 @@ import { isTruthy } from '@chainflip/utils/guard';
 import { inspect } from 'util';
 import { Chain, Chains, InternalAsset, assetConstants } from '@/shared/enums';
 import RedisClient from '@/shared/node-apis/redis';
-import { getTransactionRefChains } from '@/swap/utils/transactionRef';
 import prisma, { Broadcast } from '../client';
 import env from '../config/env';
 import { handleExit } from '../utils/function';
 import logger from '../utils/logger';
+import { getTransactionRefChains } from '../utils/transactionRef';
 
 const redis = env.REDIS_URL ? new RedisClient(env.REDIS_URL) : undefined;
 

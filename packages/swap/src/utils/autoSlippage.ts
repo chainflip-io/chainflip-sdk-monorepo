@@ -1,9 +1,9 @@
 import BigNumber from 'bignumber.js';
 import { Asset, assetConstants, chainConstants } from '@/shared/enums';
-import env from '@/swap/config/env';
 import { getDeployedLiquidity, getUndeployedLiquidity } from './pools';
 import { getRequiredBlockConfirmations } from './rpc';
 import { InternalAsset } from '../client';
+import env from '../config/env';
 
 const getDeployedLiquidityAdjustment = async (
   srcAsset: InternalAsset,

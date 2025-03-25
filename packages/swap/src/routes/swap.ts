@@ -1,7 +1,6 @@
 import express from 'express';
 import { getAssetAndChain } from '@/shared/enums';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
-import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
 import { asyncHandler, maintenanceMode } from './common';
 import prisma from '../client';
 import {
@@ -20,6 +19,7 @@ import {
 } from '../utils/swap';
 import { getBeneficiaries, getLatestSwapForId } from './v2/utils';
 import { getLastChainTrackingUpdateTimestamp } from '../utils/intercept';
+import { getRequiredBlockConfirmations } from '../utils/rpc';
 
 const router = express.Router();
 

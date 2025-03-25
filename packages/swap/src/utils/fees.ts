@@ -3,8 +3,8 @@ import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
 import { InternalAsset, InternalAssets, assetConstants } from '@/shared/enums';
 import { getHundredthPipAmountFromAmount, ONE_IN_HUNDREDTH_PIPS } from '@/shared/functions';
 import { PoolFee, SwapFee } from '@/shared/schemas';
-import { getPools } from '@/swap/utils/pools';
 import { Pool } from '../client';
+import { getPools } from './pools';
 import env from '../config/env';
 
 export function buildFee(

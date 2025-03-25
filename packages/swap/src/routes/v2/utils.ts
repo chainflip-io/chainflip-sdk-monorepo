@@ -2,10 +2,6 @@ import { cfChainsEvmTransaction } from '@chainflip/processor/141/common';
 import { isTruthy } from '@chainflip/utils/guard';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
 import { isNotNullish } from '@/shared/guards';
-import { readField } from '@/swap/utils/function';
-import logger from '@/swap/utils/logger';
-import ServiceError from '@/swap/utils/ServiceError';
-import { isTransactionRef } from '@/swap/utils/transactionRef';
 import { StateV2 } from './swap';
 import prisma, {
   Swap,
@@ -22,7 +18,11 @@ import {
   getPendingVaultSwap,
   PendingDeposit,
 } from '../../ingress-egress-tracking';
+import { readField } from '../../utils/function';
+import logger from '../../utils/logger';
+import ServiceError from '../../utils/ServiceError';
 import { coerceChain, failedSwapMessage, FailureMode } from '../../utils/swap';
+import { isTransactionRef } from '../../utils/transactionRef';
 
 const failedSwapInclude = { refundBroadcast: true } as const;
 const beneficiaryInclude = { type: true, account: true, commissionBps: true } as const;
