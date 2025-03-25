@@ -1,13 +1,13 @@
 import { getAssetAndChain, getInternalAsset } from '@/shared/enums';
 import { getPipAmountFromAmount } from '@/shared/functions';
 import { DcaParams, Quote, SwapFeeType } from '@/shared/schemas';
-import { estimateSwapDuration, getSwapPrice } from '@/swap/utils/swap';
 import { calculateRecommendedSlippage } from './autoSlippage';
 import { buildFee, getPoolFees } from './fees';
 import { getEgressFee, getMinimumEgressAmount } from './rpc';
 import ServiceError from './ServiceError';
 import { getSwapRateV3, QuoteLimitOrders, QuoteCcmParams } from './statechain';
 import { InternalAsset, Pool } from '../client';
+import { estimateSwapDuration, getSwapPrice } from './swap';
 import { checkPriceWarning } from '../pricing/checkPriceWarning';
 
 export default async function getPoolQuote({

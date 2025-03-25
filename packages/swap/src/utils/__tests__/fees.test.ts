@@ -1,7 +1,7 @@
 import { describe, it, beforeAll, expect, vi } from 'vitest';
 import { environment, mockRpcResponse, swapRate } from '@/shared/tests/fixtures';
-import { calculateIncludedSwapFees } from '@/swap/utils/fees';
 import prisma from '../../client';
+import { calculateIncludedSwapFees } from '../fees';
 
 vi.mock('@/shared/consts', async (importOriginal) => {
   const original = (await importOriginal()) as object;

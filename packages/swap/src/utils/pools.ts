@@ -1,10 +1,10 @@
 import { FULL_TICK_RANGE } from '@/shared/consts';
+import { AsyncCacheMap } from '@/shared/dataStructures';
 import { InternalAsset, InternalAssets, readChainAssetValue } from '@/shared/enums';
 import { assert } from '@/shared/guards';
-import prisma, { Pool } from '@/swap/client';
-import { AsyncCacheMap } from './dataStructures';
 import { getLpAccounts } from './lp';
 import { getPoolDepth } from './rpc';
+import prisma, { Pool } from '../client';
 
 export const getPools = async (
   srcAsset: InternalAsset,

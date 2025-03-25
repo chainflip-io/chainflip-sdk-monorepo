@@ -1,7 +1,7 @@
 import { swappingSwapExecuted } from '@chainflip/processor/160/swapping/swapExecuted';
 import { z } from 'zod';
 import { getInternalAsset } from '@/shared/enums';
-import { calculateIncludedSwapFees } from '@/swap/utils/fees';
+import { calculateIncludedSwapFees } from '../utils/fees';
 import type { EventHandlerArgs } from '.';
 
 const swapExecutedArgs = swappingSwapExecuted;

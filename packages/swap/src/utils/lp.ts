@@ -1,4 +1,4 @@
-import { AsyncCacheMap } from './dataStructures';
+import { AsyncCacheMap } from '@/shared/dataStructures';
 import { getAccountInfo, getAccounts } from './rpc';
 
 const accountInfo = new AsyncCacheMap({

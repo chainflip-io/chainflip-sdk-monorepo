@@ -1,8 +1,6 @@
 import express from 'express';
 import { getAssetAndChain } from '@/shared/enums';
 import { assert } from '@/shared/guards';
-import { getLastChainTrackingUpdateTimestamp } from '@/swap/utils/intercept';
-import { getRequiredBlockConfirmations } from '@/swap/utils/rpc';
 import {
   getBeneficiaries,
   getCcmParams,
@@ -17,7 +15,9 @@ import {
 } from './utils';
 import { SwapFee } from '../../client';
 import { readField } from '../../utils/function';
+import { getLastChainTrackingUpdateTimestamp } from '../../utils/intercept';
 import logger from '../../utils/logger';
+import { getRequiredBlockConfirmations } from '../../utils/rpc';
 import { estimateSwapDuration } from '../../utils/swap';
 import { asyncHandler } from '../common';
 

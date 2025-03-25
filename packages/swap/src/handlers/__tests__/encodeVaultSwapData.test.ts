@@ -1,6 +1,6 @@
 import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
-import env from '@/swap/config/env';
+import env from '../../config/env';
 import isDisallowedSwap from '../../utils/isDisallowedSwap';
 import { encodeVaultSwapData } from '../encodeVaultSwapData';
 

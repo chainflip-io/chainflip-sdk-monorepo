@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import env from '@/swap/config/env';
+import env from '../../config/env';
 import { assertRouteEnabled } from '../env';
 
 describe(assertRouteEnabled, () => {

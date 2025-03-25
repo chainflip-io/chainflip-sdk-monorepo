@@ -7,11 +7,8 @@ import z from 'zod';
 import * as broker from '@/shared/broker';
 import { Assets, getInternalAssets } from '@/shared/enums';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
-import env from '@/swap/config/env';
-import { SwapDepositAddressReadyArgs } from '@/swap/event-handlers/swapDepositAddressReady';
-import { SwapEgressIgnoredArgs } from '@/swap/event-handlers/swapEgressIgnored';
-import { SwapRequestedArgs190 } from '@/swap/event-handlers/swapRequested';
 import prisma from '../../client';
+import env from '../../config/env';
 import metadata from '../../event-handlers/__tests__/metadata.json';
 import {
   DOT_ADDRESS,
@@ -21,6 +18,9 @@ import {
   createPools,
   processEvents,
 } from '../../event-handlers/__tests__/utils';
+import { SwapDepositAddressReadyArgs } from '../../event-handlers/swapDepositAddressReady';
+import { SwapEgressIgnoredArgs } from '../../event-handlers/swapEgressIgnored';
+import { SwapRequestedArgs190 } from '../../event-handlers/swapRequested';
 import { getPendingBroadcast } from '../../ingress-egress-tracking';
 import app from '../../server';
 import { State } from '../swap';

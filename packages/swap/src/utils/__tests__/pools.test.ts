@@ -1,7 +1,7 @@
 import { describe, it, beforeAll, expect, vi } from 'vitest';
 import { InternalAssets } from '@/shared/enums';
-import { getPools } from '@/swap/utils/pools';
 import prisma from '../../client';
+import { getPools } from '../pools';
 
 vi.mock('@/shared/consts', async (importOriginal) => {
   const original = (await importOriginal()) as object;

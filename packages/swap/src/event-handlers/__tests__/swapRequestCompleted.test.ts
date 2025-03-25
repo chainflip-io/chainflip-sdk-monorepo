@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import swapRequestCompleted from '@/swap/event-handlers/swapRequestCompleted';
 import { createDepositChannel, DOT_ADDRESS, ETH_ADDRESS, swapRequestCompletedMock } from './utils';
 import prisma from '../../client';
+import swapRequestCompleted from '../swapRequestCompleted';
 
 const { event, block } = swapRequestCompletedMock;
 

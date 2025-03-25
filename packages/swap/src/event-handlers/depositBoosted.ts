@@ -11,8 +11,8 @@ import { solanaIngressEgressDepositBoosted as solanaSchema180 } from '@chainflip
 import { z } from 'zod';
 import { assetConstants } from '@/shared/enums';
 import { ONE_IN_PIP } from '@/shared/functions';
-import { SwapFeeType } from '@/swap/client';
-import { getDepositTxRef } from '@/swap/event-handlers/common';
+import { SwapFeeType } from '../client';
+import { getDepositTxRef } from './common';
 import { EventHandlerArgs } from '.';
 
 const arbitrumSchema = z.union([arbitrumSchema180, arbitrumSchema160]);

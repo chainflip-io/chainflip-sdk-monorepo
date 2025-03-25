@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
-import { estimateSwapDuration } from '@/swap/utils/swap';
+import { estimateSwapDuration } from '../swap';
 
 describe(estimateSwapDuration, () => {
   beforeAll(() => {

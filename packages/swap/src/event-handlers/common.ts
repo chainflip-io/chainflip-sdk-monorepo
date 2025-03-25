@@ -6,6 +6,7 @@ import { Metadata, TypeRegistry } from '@polkadot/types';
 import assert from 'assert';
 import { z } from 'zod';
 import { formatTxRef } from '@/shared/common';
+import { CacheMap } from '@/shared/dataStructures';
 import { Chain } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
 import {
@@ -19,7 +20,6 @@ import {
 import * as rpc from '@/shared/rpc';
 import { Prisma } from '../client';
 import env from '../config/env';
-import { CacheMap } from '../utils/dataStructures';
 import type { EventHandlerArgs } from '.';
 
 export const egressId = z.tuple([chainEnum, unsignedInteger]);

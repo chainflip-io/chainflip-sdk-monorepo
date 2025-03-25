@@ -4,14 +4,6 @@ import { randomUUID } from 'crypto';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import {
-  encodeVaultSwapData,
-  encodeVaultSwapDataSchema,
-} from '@/swap/handlers/encodeVaultSwapData';
-import {
-  openSwapDepositChannel,
-  openSwapDepositChannelSchema,
-} from './handlers/openSwapDepositChannel';
 import authenticate from './quoting/authenticate';
 import Quoter from './quoting/Quoter';
 import addresses from './routes/addresses';
@@ -21,20 +13,9 @@ import swap from './routes/swap';
 import thirdPartySwap from './routes/thirdPartySwap';
 import quoteRouterV2 from './routes/v2/quote';
 import swapV2 from './routes/v2/swap';
-import { publicProcedure, router } from './trpc';
+import { appRouter } from './trpc';
 import { lastUpdateHeader } from './utils/intercept';
 import logger, { logStorage } from './utils/logger';
-
-const appRouter = router({
-  openSwapDepositChannel: publicProcedure
-    .input(openSwapDepositChannelSchema)
-    .mutation((v) => openSwapDepositChannel(v.input)),
-  encodeVaultSwapData: publicProcedure
-    .input(encodeVaultSwapDataSchema)
-    .mutation((v) => encodeVaultSwapData(v.input)),
-});
-
-export type AppRouter = typeof appRouter;
 
 const app = express().use(cors());
 const server = createServer(app);

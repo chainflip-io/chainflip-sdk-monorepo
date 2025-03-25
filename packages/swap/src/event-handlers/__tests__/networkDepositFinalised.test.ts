@@ -1,7 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { networkDepositFinalised } from '@/swap/event-handlers/networkDepositFinalised';
 import { createDepositChannel } from './utils';
 import prisma from '../../client';
+import { networkDepositFinalised } from '../networkDepositFinalised';
 
 vi.mock('@chainflip/solana');
 
