@@ -9,10 +9,10 @@ import { actionSchema } from '@/shared/parsers';
 import prisma, { SwapDepositChannel } from '../../client';
 import { GET_CALL } from '../../gql/query';
 import processBlocks, { Call, Event } from '../../processBlocks';
+import { broadcastSuccessArgs } from '../broadcaster/broadcastSuccess';
 import { events as eventNames } from '../index';
-import { networkBroadcastSuccessArgs } from '../networkBroadcastSuccess';
-import { DepositFailedArgs } from '../networkDepositFailed';
-import { SwapDepositAddressReadyArgs } from '../swapDepositAddressReady';
+import { DepositFailedArgs } from '../ingress-egress/depositFailed';
+import { SwapDepositAddressReadyArgs } from '../swapping/swapDepositAddressReady';
 
 export const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
 export const DOT_ADDRESS = '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo'; // 0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972
@@ -218,7 +218,7 @@ export const swapRequestCompletedMock = {
   },
 } as const;
 
-export const networkTransactionBroadcastRequestBtcMock = {
+export const transactionBroadcastRequestBtcMock = {
   block: {
     height: 120,
     timestamp: 1670337105000,
@@ -241,7 +241,7 @@ export const networkTransactionBroadcastRequestBtcMock = {
   },
 } as const;
 
-export const networkTransactionBroadcastRequestBtcMockV2 = {
+export const transactionBroadcastRequestBtcMockV2 = {
   block: {
     height: 120,
     timestamp: 1670337105000,
@@ -474,7 +474,7 @@ export const refundEgressIgnoredMock = {
   },
 } as const;
 
-export const networkBatchBroadcastRequestedMock = {
+export const batchBroadcastRequestedMock = {
   block: {
     specId: 'test@160',
     height: 120,
@@ -509,8 +509,8 @@ export const networkBatchBroadcastRequestedMock = {
   },
 } as const;
 
-export const networkBroadcastSuccessMock = (
-  args?: Partial<z.input<ReturnType<typeof networkBroadcastSuccessArgs>>>,
+export const broadcastSuccessMock = (
+  args?: Partial<z.input<ReturnType<typeof broadcastSuccessArgs>>>,
 ) =>
   ({
     block: {
@@ -532,7 +532,7 @@ export const networkBroadcastSuccessMock = (
     },
   }) as const;
 
-export const networkBroadcastAbortedMock = {
+export const broadcastAbortedMock = {
   block: {
     specId: 'test@160',
     height: 120,

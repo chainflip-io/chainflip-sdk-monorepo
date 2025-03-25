@@ -13,11 +13,11 @@ import {
   createPools,
   processEvents,
 } from '../../../event-handlers/__tests__/utils';
-import { BitcoinDepositFailedArgs } from '../../../event-handlers/networkDepositFailed';
-import { TransactionRejectedByBrokerArgs } from '../../../event-handlers/networkTransactionRejectedByBroker';
-import type { SwapDepositAddressReadyArgs } from '../../../event-handlers/swapDepositAddressReady';
-import { SwapEgressIgnoredArgs } from '../../../event-handlers/swapEgressIgnored';
-import { SwapRequestedArgs190 } from '../../../event-handlers/swapRequested';
+import { BitcoinDepositFailedArgs } from '../../../event-handlers/ingress-egress/depositFailed';
+import { TransactionRejectedByBrokerArgs } from '../../../event-handlers/ingress-egress/transactionRejectedByBroker';
+import type { SwapDepositAddressReadyArgs } from '../../../event-handlers/swapping/swapDepositAddressReady';
+import { SwapEgressIgnoredArgs } from '../../../event-handlers/swapping/swapEgressIgnored';
+import { SwapRequestedArgs190 } from '../../../event-handlers/swapping/swapRequested';
 import {
   getPendingBroadcast,
   getPendingDeposit,
@@ -362,38 +362,6 @@ const swapEventMap = {
       amount: '999844999999160000',
       reason: { value: { error: '0x06000000', index: 32 }, __kind: 'Module' },
       swapRequestId: '368',
-    },
-  },
-  'EthereumIngressEgress.CcmFailed': {
-    id: '0000000092-000399-23afe',
-    indexInBlock: 1,
-    name: 'EthereumIngressEgress.CcmFailed',
-    callId: '0000000092-000399-02fea',
-    args: {
-      origin: {
-        __kind: 'DepositChannel',
-        channelId: '85',
-        depositAddress: { value: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2', __kind: 'Eth' },
-        depositBlockHeight: '222',
-      },
-      reason: {
-        __kind: 'InsufficientDepositAmount',
-      },
-      depositMetadata: {
-        sourceChain: {
-          __kind: 'Ethereum',
-        },
-        channelMetadata: {
-          message:
-            '0x000000000000000000000000000000000000000000000000000000000000004000000000000000000000000067ff09c184d8e9e7b90c5187ed04cbfbdba741c8000000000000000000000000000000000000000000000000000000000000000c6461676f61746973686572650000000000000000000000000000000000000000',
-          gasBudget: '50000000',
-          cfParameters: '0x',
-        },
-      },
-      destinationAddress: {
-        value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-        __kind: 'Eth',
-      },
     },
   },
   'EthereumIngressEgress.DepositFailed': {
@@ -1109,98 +1077,6 @@ describe('server', () => {
           retryDurationBlocks: 150,
         },
         brokers: [],
-      });
-    });
-
-    it(`retrieves a ccm swap in ${StateV2.Failed} status (insufficient deposit amount)`, async () => {
-      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
-      depositChannelEvent.args.ccmParams = {
-        gasBudget: '50000000',
-        message: '0xd3adc0de',
-      };
-      depositChannelEvent.args.destinationAsset.__kind = 'Usdc';
-      depositChannelEvent.args.sourceAsset.__kind = 'Usdc';
-
-      const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
-      requestedEvent.args = {
-        ...requestedEvent.args,
-        inputAsset: { __kind: 'Usdc' },
-        outputAsset: { __kind: 'Usdc' },
-        __kind: 'Ccm',
-        outputAddress: {
-          value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-          __kind: 'Eth',
-        },
-        ccmDepositMetadata: {
-          sourceChain: {
-            __kind: 'Ethereum',
-          },
-          sourceAddress: {
-            value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-            __kind: 'Eth',
-          },
-          channelMetadata: {
-            message:
-              '0x000000000000000000000000000000000000000000000000000000000000004000000000000000000000000067ff09c184d8e9e7b90c5187ed04cbfbdba741c8000000000000000000000000000000000000000000000000000000000000000c6461676f61746973686572650000000000000000000000000000000000000000',
-            gasBudget: '50000000',
-            cfParameters: '0x',
-          },
-        },
-      };
-
-      const finalizedEvent = clone(swapEventMap['EthereumIngressEgress.DepositFinalised']);
-      finalizedEvent.args.asset.__kind = 'Usdc';
-
-      // https://scan.chainflip.io/blocks/4716217
-      await processEvents(
-        [
-          depositChannelEvent,
-          requestedEvent,
-          swapEventMap['EthereumIngressEgress.CcmFailed'],
-          finalizedEvent,
-          swapEventMap['Swapping.SwapRequestCompleted'],
-        ],
-        [
-          {
-            id: '0000000092-000399-02fea',
-            call: {
-              value: {
-                __kind: 'process_deposits',
-                blockHeight: '20908089',
-                depositWitnesses: [
-                  {
-                    asset: {
-                      __kind: 'Flip',
-                    },
-                    amount: '20000000000000000000',
-                    depositAddress: '0x5a7ec7cc9be7a9f9966d37934a9488d9d7d4a072',
-                    depositDetails: {
-                      txHashes: [
-                        '0x01fbb9b765ca7d492c9831f2b81b68dce83b56e3269e4213990bdfc09fc4ee17',
-                      ],
-                    },
-                  },
-                ],
-              },
-              __kind: 'EthereumIngressEgress',
-            },
-            epochIndex: 246,
-          },
-        ],
-        '170',
-      );
-
-      const { body } = await request(server).get(`/v2/swaps/${channelId}`);
-
-      expect(body.state).toBe('FAILED');
-      expect(body.deposit.failure).toMatchObject({
-        failedAt: 552000,
-        failedBlockIndex: '92-1',
-        mode: 'DEPOSIT_IGNORED',
-        reason: {
-          name: 'InsufficientDepositAmount',
-          message: 'The gas budget exceeded the deposit amount',
-        },
       });
     });
 

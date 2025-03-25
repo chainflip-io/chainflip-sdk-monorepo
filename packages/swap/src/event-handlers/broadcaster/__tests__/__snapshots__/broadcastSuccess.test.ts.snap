@@ -1,0 +1,77 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`broadcastSuccess > updates an existing broadcast entity with the succeeded timestamp 1`] = `
+{
+  "abortedAt": null,
+  "abortedBlockIndex": null,
+  "chain": "Ethereum",
+  "createdAt": Any<Date>,
+  "id": Any<BigInt>,
+  "nativeId": 12n,
+  "replacedById": null,
+  "requestedAt": 2022-12-06T14:31:45.000Z,
+  "requestedBlockIndex": "119-1",
+  "succeededAt": 2022-12-06T14:31:45.000Z,
+  "succeededBlockIndex": "120-12",
+  "transactionPayload": null,
+  "transactionRef": null,
+  "updatedAt": Any<Date>,
+}
+`;
+
+exports[`broadcastSuccess > updates an existing broadcast with the tx_ref for bitcoin 1`] = `
+{
+  "abortedAt": null,
+  "abortedBlockIndex": null,
+  "chain": "Bitcoin",
+  "createdAt": Any<Date>,
+  "id": Any<BigInt>,
+  "nativeId": 12n,
+  "replacedById": null,
+  "requestedAt": 2022-12-06T14:31:45.000Z,
+  "requestedBlockIndex": "119-1",
+  "succeededAt": 2022-12-06T14:31:45.000Z,
+  "succeededBlockIndex": "120-12",
+  "transactionPayload": null,
+  "transactionRef": "923028b229dcd91eb95d0b1a0d5a273b2a2d2545f8f959c60f76d13cd771655a",
+  "updatedAt": Any<Date>,
+}
+`;
+
+exports[`broadcastSuccess > updates an existing broadcast with the tx_ref for polkadot 1`] = `
+{
+  "abortedAt": null,
+  "abortedBlockIndex": null,
+  "chain": "Polkadot",
+  "createdAt": Any<Date>,
+  "id": Any<BigInt>,
+  "nativeId": 12n,
+  "replacedById": null,
+  "requestedAt": 2022-12-06T14:31:45.000Z,
+  "requestedBlockIndex": "119-1",
+  "succeededAt": 2022-12-06T14:31:45.000Z,
+  "succeededBlockIndex": "120-12",
+  "transactionPayload": null,
+  "transactionRef": "100-21",
+  "updatedAt": Any<Date>,
+}
+`;
+
+exports[`broadcastSuccess > updates an existing broadcast with the tx_ref if it exists 1`] = `
+{
+  "abortedAt": null,
+  "abortedBlockIndex": null,
+  "chain": "Ethereum",
+  "createdAt": Any<Date>,
+  "id": Any<BigInt>,
+  "nativeId": 12n,
+  "replacedById": null,
+  "requestedAt": 2022-12-06T14:31:45.000Z,
+  "requestedBlockIndex": "119-1",
+  "succeededAt": 2022-12-06T14:31:45.000Z,
+  "succeededBlockIndex": "120-12",
+  "transactionPayload": null,
+  "transactionRef": "0x1234",
+  "updatedAt": Any<Date>,
+}
+`;

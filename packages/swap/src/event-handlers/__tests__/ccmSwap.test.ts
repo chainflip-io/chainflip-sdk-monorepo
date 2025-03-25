@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
 import { processEvents } from './utils';
 import prisma from '../../client';
-import { SwapDepositAddressReadyArgs } from '../swapDepositAddressReady';
-import { SwapEgressScheduledArgs } from '../swapEgressScheduled';
-import { SwapExecutedArgs } from '../swapExecuted';
-import { SwapRequestedArgs180 } from '../swapRequested';
-import { SwapScheduledArgs } from '../swapScheduled';
+import { SwapDepositAddressReadyArgs } from '../swapping/swapDepositAddressReady';
+import { SwapEgressScheduledArgs } from '../swapping/swapEgressScheduled';
+import { SwapExecutedArgs } from '../swapping/swapExecuted';
+import { SwapRequestedArgs180 } from '../swapping/swapRequested';
+import { SwapScheduledArgs } from '../swapping/swapScheduled';
 
 const depositChannelEvents = [
   {
