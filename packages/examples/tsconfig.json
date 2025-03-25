@@ -1,23 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src/**/*"],
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "resolveJsonModule": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "noImplicitThis": true,
-    "useUnknownInCatchVariables": true,
-    "alwaysStrict": true,
-    "noImplicitOverride": true,
-    "skipLibCheck": true,
     "paths": {
       "@/sdk/*": ["./packages/sdk/src/*"],
       "@/shared/*": ["./packages/shared/src/*"],
