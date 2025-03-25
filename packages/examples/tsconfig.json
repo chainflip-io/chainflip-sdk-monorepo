@@ -17,6 +17,11 @@
     "useUnknownInCatchVariables": true,
     "alwaysStrict": true,
     "noImplicitOverride": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@/sdk/*": ["./packages/sdk/src/*"],
+      "@/shared/*": ["./packages/shared/src/*"],
+      "@/swap/trpc": ["./packages/swap/src/trpc"]
+    }
   }
 }

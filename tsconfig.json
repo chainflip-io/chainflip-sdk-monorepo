@@ -6,8 +6,7 @@
     "moduleResolution": "Bundler",
     "paths": {
       "@/shared/*": ["./packages/shared/src/*"],
-      "@/swap/trpc": ["./packages/swap/src/trpc"],
-      "@/sdk/*": ["./packages/sdk/src/*"]
+      "@/swap/trpc": ["./packages/swap/src/trpc"]
     }
   }
 }
