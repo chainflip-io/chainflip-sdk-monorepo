@@ -7,10 +7,7 @@
     "paths": {
       "@/shared/*": ["./packages/shared/src/*"],
       "@/swap/*": ["./packages/swap/src/*"],
-      "@/sdk/*": ["./packages/sdk/src/*"],
-      // This hack is because I was getting a type error in `vitest.shared` because ts used the wrong vite version.
-      // Possibly due to an outdated pnpm.lock? I can't refresh pnpm.lock at this time due to other issues so we can try to remove this when that becomes possible
-      "vite": ["node_modules/vite"]
+      "@/sdk/*": ["./packages/sdk/src/*"]
     }
   }
 }
