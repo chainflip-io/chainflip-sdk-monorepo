@@ -701,3 +701,5 @@ export const processEvents = async (
 
   await expect(processBlocks()).rejects.toThrow('done');
 };
+
+export const check = <T>(value: T): T => value;
