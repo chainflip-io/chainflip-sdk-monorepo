@@ -1,7 +1,7 @@
 import { z } from 'zod';
+import { Chain } from '@/shared/enums';
 import { u128 } from '@/shared/parsers';
 import { EventHandlerArgs } from '..';
-import { Chain } from '../../enums';
 
 const numberOrHex = z.union([u128, z.number().transform((n) => BigInt(n))]);
 

@@ -10,4 +10,5 @@ export default defineConfig({
     swap: 'src/swap/index.ts',
     funding: 'src/funding/index.ts',
   },
+  target: 'es2022',
 });
