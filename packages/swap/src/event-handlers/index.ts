@@ -15,6 +15,8 @@ import transactionRejectedByBroker from './ingress-egress/transactionRejectedByB
 import newPoolCreated from './liquidity-pools/newPoolCreated';
 import poolFeeSet from './liquidity-pools/poolFeeSet';
 import liquidityDepositAddressReady from './liquidity-provider/liquidityDepositAddressReady';
+import creditedOnChain from './swapping/creditedOnChain';
+import refundedOnChain from './swapping/refundedOnChain';
 import refundEgressIgnored from './swapping/refundEgressIgnored';
 import refundEgressScheduled from './swapping/refundEgressScheduled';
 import swapDepositAddressReady from './swapping/swapDepositAddressReady';
@@ -48,6 +50,8 @@ export const events = {
     SwapDepositAddressReady: 'Swapping.SwapDepositAddressReady',
     SwapRequested: 'Swapping.SwapRequested',
     SwapRequestCompleted: 'Swapping.SwapRequestCompleted',
+    CreditedOnChain: 'Swapping.CreditedOnChain',
+    RefundedOnChain: 'Swapping.RefundedOnChain',
   },
   BitcoinIngressEgress: {
     BatchBroadcastRequested: 'BitcoinIngressEgress.BatchBroadcastRequested',
@@ -251,6 +255,19 @@ const handlers = [
           handler: thresholdSignatureInvalid(chain),
         },
       ]),
+    ],
+  },
+  {
+    spec: 190,
+    handlers: [
+      {
+        name: 'Swapping.CreditedOnChain',
+        handler: creditedOnChain,
+      },
+      {
+        name: 'Swapping.RefundedOnChain',
+        handler: refundedOnChain,
+      },
     ],
   },
 ];
