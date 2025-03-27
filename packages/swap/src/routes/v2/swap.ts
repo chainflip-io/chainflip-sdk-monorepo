@@ -41,6 +41,8 @@ router.get(
     const { swapRequest, failedSwap, swapDepositChannel, pendingVaultSwap } =
       await getLatestSwapForId(id);
 
+    console.log('swapRequest type', swapRequest?.originType);
+
     const { state, swapEgressTrackerTxRef, refundEgressTrackerTxRef, pendingDeposit } =
       await getSwapState(failedSwap, swapRequest, swapDepositChannel, pendingVaultSwap);
 
@@ -67,6 +69,7 @@ router.get(
       'maxBoostFeeBps',
     );
     const showBoost = Boolean(maxBoostFeeBps);
+    const isExternal = swapRequest?.originType !== 'ON_CHAIN';
 
     let effectiveBoostFeeBps;
     if (showBoost) {
@@ -132,8 +135,12 @@ router.get(
       getEgressStatusFields(swapRequest, failedSwap, 'SWAP', swapEgressTrackerTxRef),
       getEgressStatusFields(swapRequest, failedSwap, 'REFUND', refundEgressTrackerTxRef),
       internalDestAsset &&
-        estimateSwapDuration({ srcAsset: internalSrcAsset, destAsset: internalDestAsset }),
-      getRequiredBlockConfirmations(internalSrcAsset),
+        estimateSwapDuration({
+          srcAsset: internalSrcAsset,
+          destAsset: internalDestAsset,
+          isExternal,
+        }),
+      isExternal ? getRequiredBlockConfirmations(internalSrcAsset) : Promise.resolve(undefined),
       getLastChainTrackingUpdateTimestamp(),
     ]);
 
@@ -153,7 +160,7 @@ router.get(
         pendingVaultSwap,
         'destAddress',
       ),
-      srcChainRequiredBlockConfirmations,
+      ...(isExternal && { srcChainRequiredBlockConfirmations }),
       estimatedDurationsSeconds: estimatedDurations?.durations,
       estimatedDurationSeconds: estimatedDurations?.total,
       brokers: beneficiaries?.map(({ account, commissionBps }) => ({ account, commissionBps })),
@@ -227,6 +234,7 @@ router.get(
       }),
       lastStatechainUpdateAt: lastStateChainUpdate?.valueOf(),
     };
+    console.log('response', response);
 
     logger.info('sending response for swap request', { id, response });
 

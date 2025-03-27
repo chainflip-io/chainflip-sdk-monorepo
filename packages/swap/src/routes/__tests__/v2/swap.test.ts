@@ -1,4 +1,6 @@
 import { ethereumIngressEgressDepositFailed } from '@chainflip/processor/180/ethereumIngressEgress/depositFailed';
+import { bytesToHex } from '@chainflip/utils/bytes';
+import { ChainflipAsset } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
 import request from 'supertest';
@@ -1201,6 +1203,42 @@ describe('server', () => {
       const { swapId, ...rest } = body;
 
       expect(rest).toMatchSnapshot();
+    });
+
+    it.only('retrieves a swap from an onChain origin', async () => {
+      const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
+
+      const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
+      (requestedEvent.args as SwapRequestedArgs190) = {
+        ...requestedEvent.args,
+        origin: {
+          __kind: 'OnChainAccount',
+          value: bytesToHex(ss58.decode(accountId).data),
+        },
+        requestType: {
+          __kind: 'Regular',
+          outputAction: {
+            __kind: 'CreditOnChain',
+            accountId: bytesToHex(ss58.decode(accountId).data),
+          },
+        },
+        refundParameters: {
+          refundDestination: {
+            __kind: 'InternalAccount',
+            value: bytesToHex(ss58.decode(accountId).data),
+          },
+          minPrice: '99999994999',
+          retryDuration: 100,
+        },
+      };
+
+      await processEvents([requestedEvent, swapEventMap['Swapping.SwapScheduled']]);
+
+      const { body, status } = await request(server).get(
+        `/v2/swaps/${requestedEvent.args.swapRequestId}`,
+      );
+      expect(status).toBe(200);
+      expect(body).toMatchSnapshot();
     });
 
     it(`retrieves a swap from a vault origin in ${StateV2.Completed}`, async () => {

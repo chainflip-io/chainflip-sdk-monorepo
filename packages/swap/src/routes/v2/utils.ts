@@ -354,6 +354,7 @@ export const getSwapState = async (
   let pendingDeposit = null;
   const swapEgress = swapRequest?.egress;
   const refundEgress = swapRequest?.refundEgress;
+
   const egress = swapEgress ?? refundEgress;
 
   if (failedSwap) {
