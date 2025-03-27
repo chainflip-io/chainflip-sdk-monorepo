@@ -33,4 +33,5 @@ COPY --from=builder /app/packages/swap /app/packages/swap
 
 WORKDIR /app/packages/swap
 
-CMD ["pnpm", "--filter", "swap", "start"]
+# using ENTRYPOINT causes signals (SIGINT) to be passed onto the node process
+ENTRYPOINT ["pnpm", "--filter", "swap", "start"]
