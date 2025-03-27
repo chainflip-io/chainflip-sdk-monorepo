@@ -1205,7 +1205,7 @@ describe('server', () => {
       expect(rest).toMatchSnapshot();
     });
 
-    it.only('retrieves a swap from an onChain origin', async () => {
+    it('retrieves a swap from an onChain origin', async () => {
       const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
 
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);

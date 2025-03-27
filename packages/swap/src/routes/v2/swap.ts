@@ -41,8 +41,6 @@ router.get(
     const { swapRequest, failedSwap, swapDepositChannel, pendingVaultSwap } =
       await getLatestSwapForId(id);
 
-    console.log('swapRequest type', swapRequest?.originType);
-
     const { state, swapEgressTrackerTxRef, refundEgressTrackerTxRef, pendingDeposit } =
       await getSwapState(failedSwap, swapRequest, swapDepositChannel, pendingVaultSwap);
 
@@ -234,7 +232,6 @@ router.get(
       }),
       lastStatechainUpdateAt: lastStateChainUpdate?.valueOf(),
     };
-    console.log('response', response);
 
     logger.info('sending response for swap request', { id, response });
 
