@@ -1169,42 +1169,8 @@ describe('server', () => {
       expect(req1.body).toStrictEqual(req2.body);
     });
 
-    it('retrieves a swap from a vault origin', async () => {
-      const txHash = '0xb2dcb9ce8d50f0ab869995fee8482bcf304ffcfe5681ca748f90e34c0ad7b241';
-
-      const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
-      (requestedEvent.args as SwapRequestedArgs190) = {
-        ...requestedEvent.args,
-        origin: {
-          __kind: 'Vault',
-          txId: {
-            value: txHash,
-            __kind: 'Evm',
-          },
-          brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
-        } as any,
-        brokerFees: [
-          {
-            bps: 10,
-            account: '0x9e8d88ae895c9b37b2dead9757a3452f7c2299704d91ddfa444d87723f94fe0c',
-          },
-        ],
-      } as SwapRequestedArgs190;
-
-      await processEvents([
-        requestedEvent,
-        swapEventMap['Swapping.SwapScheduled'],
-        swapEventMap['Swapping.SwapExecuted'],
-      ]);
-
-      const { body, status } = await request(server).get(`/v2/swaps/${txHash}`);
-      expect(status).toBe(200);
-      const { swapId, ...rest } = body;
-
-      expect(rest).toMatchSnapshot();
-    });
-
     it(`retrieves a swap from an onChain origin in ${StateV2.Swapping}`, async () => {
+      // swapping
       const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
 
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
@@ -1237,10 +1203,11 @@ describe('server', () => {
         `/v2/swaps/${requestedEvent.args.swapRequestId}`,
       );
       expect(status).toBe(200);
+      expect(body.state).toBe('SWAPPING');
       expect(body).toMatchSnapshot();
     });
 
-    it.only('retrieves a swap from an onChain origin (SwapExecuted)', async () => {
+    it(`retrieves a swap from an onChain origin in ${StateV2.Completed}`, async () => {
       const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
 
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
@@ -1269,24 +1236,184 @@ describe('server', () => {
 
       const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
       executedEvent.args = {
-        // FIX
         ...executedEvent.args,
         brokerFee: '0',
       };
 
-      await processEvents([requestedEvent, swapEventMap['Swapping.SwapScheduled'], executedEvent]);
+      await processEvents([
+        requestedEvent,
+        swapEventMap['Swapping.SwapScheduled'],
+        executedEvent,
+        swapEventMap['Swapping.SwapRequestCompleted'],
+      ]);
 
       const { body, status } = await request(server).get(
         `/v2/swaps/${requestedEvent.args.swapRequestId}`,
       );
 
-      console.log('body', body);
-
       expect(status).toBe(200);
-      expect(body).toMatchSnapshot();
+      const { swapId, ...rest } = body;
+      expect(body.state).toBe('COMPLETED');
+      expect(rest).toMatchSnapshot();
     });
 
-    it.only(`retrieves a swap from an onChain origin ${StateV2.Failed}`, async () => {
+    it.only(`retrieves a DCA swap from an onChain origin in ${StateV2.Completed}`, async () => {
+      const accountId = '0x640dfbca7473dd212d3c9b9815cd32dcc83b2a9a099c91369110609199b0f374';
+
+      // requested
+      const requestedEvent = {
+        name: 'Swapping.SwapRequested',
+        id: '0000004123-000984-b7c4d',
+        blockId: '0000015161-d719c',
+        indexInBlock: 21,
+        args: {
+          origin: {
+            value: accountId,
+            __kind: 'OnChainAccount',
+          },
+          brokerFees: [],
+          inputAsset: {
+            __kind: 'Usdc',
+          },
+          inputAmount: '5000000000',
+          outputAsset: {
+            __kind: 'Usdt',
+          },
+          requestType: {
+            __kind: 'Regular',
+            outputAction: {
+              __kind: 'CreditOnChain',
+              accountId,
+            },
+          },
+          dcaParameters: {
+            chunkInterval: 2,
+            numberOfChunks: 2,
+          },
+          swapRequestId: '4',
+          refundParameters: {
+            minPrice: '0',
+            retryDuration: 100,
+            refundDestination: {
+              value: accountId,
+              __kind: 'InternalAccount',
+            },
+          },
+        },
+      };
+
+      // scheduled 1
+      const legOneScheduled = {
+        name: 'Swapping.SwapScheduled',
+        id: '0000004123-000984-b7c4d',
+        blockId: '0000015161-d719c',
+        indexInBlock: 22,
+        args: {
+          swapId: '23',
+          swapType: {
+            __kind: 'Swap',
+          },
+          executeAt: 15163,
+          inputAmount: '2500000000',
+          swapRequestId: '4',
+        },
+      };
+      // executed 1
+      const legOneExecuted = {
+        name: 'Swapping.SwapExecuted',
+        id: '0000004123-000984-b7c4d',
+        blockId: '0000015163-e6f80',
+        indexInBlock: 22,
+        args: {
+          swapId: '23',
+          brokerFee: '0',
+          inputAsset: {
+            __kind: 'Usdc',
+          },
+          networkFee: '2500000',
+          inputAmount: '2497500000',
+          outputAsset: {
+            __kind: 'Usdt',
+          },
+          outputAmount: '2491227710',
+          swapRequestId: '4',
+        },
+      };
+
+      // scheduled 2
+      const legTwoScheduled = {
+        ...legOneScheduled,
+        id: '0000004123-000984-b7c4d',
+        args: {
+          ...legOneScheduled.args,
+          swapId: '24',
+          executeAt: 15165,
+        },
+      };
+
+      // executed 2
+      const legTwoExecuted = {
+        ...legOneExecuted,
+        id: '0000004123-000984-b7c4d',
+        args: {
+          ...legOneExecuted.args,
+          swapId: '24',
+          outputAmount: '2478844890',
+        },
+      };
+
+      // credited on chain
+      const creditedOnChainEvent = {
+        name: 'Swapping.CreditedOnChain',
+        id: '0000004123-001234-ab9d3',
+        blockId: '0000015165-942fa',
+        indexInBlock: 23,
+        args: {
+          asset: {
+            __kind: 'Usdt',
+          },
+          amount: '4970072600',
+          accountId,
+          swapRequestId: '4',
+        },
+      };
+
+      // completed
+      const completedEvent = {
+        name: 'Swapping.SwapRequestCompleted',
+        id: '0000004123-001234-ab9d3',
+        blockId: '0000015165-942fa',
+        indexInBlock: 25,
+        args: {
+          swapRequestId: '4',
+        },
+      };
+      await processEvents(
+        [
+          requestedEvent,
+          legOneScheduled,
+          legOneExecuted,
+          legTwoScheduled,
+          legTwoExecuted,
+          creditedOnChainEvent,
+          completedEvent,
+        ],
+        [],
+        '190',
+      );
+
+      const { body, status } = await request(server).get(
+        `/v2/swaps/${requestedEvent.args.swapRequestId}`,
+      );
+
+      expect(status).toBe(200);
+      const { swapId, ...rest } = body;
+      expect(body.state).toBe('COMPLETED');
+      expect(rest).toMatchSnapshot();
+    });
+
+    it(`retrieves a swap from an onChain origin ${StateV2.Failed}`, async () => {
+      // refunded on chain
       const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
 
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
@@ -1337,6 +1464,7 @@ describe('server', () => {
       );
 
       expect(status).toBe(200);
+      expect(body.state).toBe('FAILED');
       expect(body).toMatchSnapshot();
     });
 

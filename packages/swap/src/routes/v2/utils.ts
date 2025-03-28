@@ -349,6 +349,7 @@ export const getSwapState = async (
   refundEgressTrackerTxRef: string | null | undefined;
   pendingDeposit: PendingDeposit | null;
 }> => {
+  console.log("swapRequest", swapRequest)
   let state: StateV2 | undefined;
   let swapEgressTrackerTxRef: string | null | undefined;
   let refundEgressTrackerTxRef: string | null | undefined;
@@ -370,6 +371,9 @@ export const getSwapState = async (
     // probable just if refund amount not null
     state = StateV2.Failed;
   } else if (egress?.broadcast?.succeededAt) {
+    state = StateV2.Completed;
+  } 
+  else if(!egress && swapRequest?.completedAt){ // CHECK: in case of internal swap, there's no egress
     state = StateV2.Completed;
   } else if (egress) {
     state = StateV2.Sending;
