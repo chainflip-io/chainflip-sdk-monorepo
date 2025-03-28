@@ -43,6 +43,7 @@ const swapRequestInclude = {
     include: depositChannelInclude,
   },
   beneficiaries: { select: beneficiaryInclude },
+  onChainSwapInfo: true,
 } as const;
 
 const channelIdRegex = /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
@@ -364,6 +365,9 @@ export const getSwapState = async (
       refundEgressTrackerTxRef = pendingRefundBroadcast?.tx_ref;
     }
   } else if (swapRequest?.ignoredEgresses?.length || egress?.broadcast?.abortedAt) {
+    state = StateV2.Failed;
+  } else if (swapRequest?.onChainSwapInfo?.refundAmount) {
+    // probable just if refund amount not null
     state = StateV2.Failed;
   } else if (egress?.broadcast?.succeededAt) {
     state = StateV2.Completed;

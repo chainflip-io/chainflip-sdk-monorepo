@@ -1,6 +1,5 @@
 import { ethereumIngressEgressDepositFailed } from '@chainflip/processor/180/ethereumIngressEgress/depositFailed';
 import { bytesToHex } from '@chainflip/utils/bytes';
-import { ChainflipAsset } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
 import request from 'supertest';
@@ -1205,7 +1204,7 @@ describe('server', () => {
       expect(rest).toMatchSnapshot();
     });
 
-    it('retrieves a swap from an onChain origin', async () => {
+    it(`retrieves a swap from an onChain origin in ${StateV2.Swapping}`, async () => {
       const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
 
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
@@ -1237,6 +1236,106 @@ describe('server', () => {
       const { body, status } = await request(server).get(
         `/v2/swaps/${requestedEvent.args.swapRequestId}`,
       );
+      expect(status).toBe(200);
+      expect(body).toMatchSnapshot();
+    });
+
+    it.only('retrieves a swap from an onChain origin (SwapExecuted)', async () => {
+      const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
+
+      const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
+      (requestedEvent.args as SwapRequestedArgs190) = {
+        ...requestedEvent.args,
+        origin: {
+          __kind: 'OnChainAccount',
+          value: bytesToHex(ss58.decode(accountId).data),
+        },
+        requestType: {
+          __kind: 'Regular',
+          outputAction: {
+            __kind: 'CreditOnChain',
+            accountId: bytesToHex(ss58.decode(accountId).data),
+          },
+        },
+        refundParameters: {
+          refundDestination: {
+            __kind: 'InternalAccount',
+            value: bytesToHex(ss58.decode(accountId).data),
+          },
+          minPrice: '99999994999',
+          retryDuration: 100,
+        },
+      };
+
+      const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
+      executedEvent.args = {
+        // FIX
+        ...executedEvent.args,
+        brokerFee: '0',
+      };
+
+      await processEvents([requestedEvent, swapEventMap['Swapping.SwapScheduled'], executedEvent]);
+
+      const { body, status } = await request(server).get(
+        `/v2/swaps/${requestedEvent.args.swapRequestId}`,
+      );
+
+      console.log('body', body);
+
+      expect(status).toBe(200);
+      expect(body).toMatchSnapshot();
+    });
+
+    it.only(`retrieves a swap from an onChain origin ${StateV2.Failed}`, async () => {
+      const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
+
+      const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
+      (requestedEvent.args as SwapRequestedArgs190) = {
+        ...requestedEvent.args,
+        origin: {
+          __kind: 'OnChainAccount',
+          value: bytesToHex(ss58.decode(accountId).data),
+        },
+        requestType: {
+          __kind: 'Regular',
+          outputAction: {
+            __kind: 'CreditOnChain',
+            accountId: bytesToHex(ss58.decode(accountId).data),
+          },
+        },
+        refundParameters: {
+          refundDestination: {
+            __kind: 'InternalAccount',
+            value: bytesToHex(ss58.decode(accountId).data),
+          },
+          minPrice: '99999994999',
+          retryDuration: 100,
+        },
+      };
+
+      const refundedOnChain = {
+        id: requestedEvent.id,
+        indexInBlock: requestedEvent.indexInBlock,
+        callId: requestedEvent.callId,
+        name: 'Swapping.RefundedOnChain',
+        args: {
+          asset: { __kind: 'Eth' },
+          amount: '99798295526091993961',
+          accountId: bytesToHex(ss58.decode(accountId).data),
+          swapRequestId: requestedEvent.args.swapRequestId,
+        },
+      };
+
+      await processEvents([
+        requestedEvent,
+        swapEventMap['Swapping.SwapScheduled'],
+        refundedOnChain,
+      ]);
+
+      const { body, status } = await request(server).get(
+        `/v2/swaps/${requestedEvent.args.swapRequestId}`,
+      );
+
       expect(status).toBe(200);
       expect(body).toMatchSnapshot();
     });
