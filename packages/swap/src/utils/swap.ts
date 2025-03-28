@@ -15,10 +15,12 @@ import { getWitnessSafetyMargin } from './rpc';
 export const estimateSwapDuration = async ({
   srcAsset,
   destAsset,
+  isExternal = true, // CHECK
   boosted = false,
 }: {
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
+  isExternal?: boolean;
   boosted?: boolean;
 }) => {
   const { chain: srcChain } = getAssetAndChain(srcAsset);
@@ -46,16 +48,23 @@ export const estimateSwapDuration = async ({
   // assets are spendable by the user once the egress is included in a block
   const egressInclusionDuration = chainConstants[destChain].blockTimeSeconds;
 
-  const depositDuration =
-    depositInclusionDuration + depositWitnessDuration + depositWitnessSubmissionDuration;
-  const egressDuration = EGRESS_BROADCAST_SIGNING_DURATION + egressInclusionDuration;
+  const depositDuration = isExternal
+    ? depositInclusionDuration + depositWitnessDuration + depositWitnessSubmissionDuration
+    : 0;
+  const egressDuration = isExternal
+    ? EGRESS_BROADCAST_SIGNING_DURATION + egressInclusionDuration
+    : 0;
+
+  const durations = {
+    swap: swapDuration,
+    ...(isExternal && {
+      deposit: depositDuration,
+      egress: egressDuration,
+    }),
+  };
 
   return {
-    durations: {
-      deposit: depositDuration,
-      swap: swapDuration,
-      egress: egressDuration,
-    },
+    durations,
     total: depositDuration + swapDuration + egressDuration,
   };
 };
