@@ -1170,11 +1170,10 @@ describe('server', () => {
     });
 
     it(`retrieves a swap from an onChain origin in ${StateV2.Swapping}`, async () => {
-      // swapping
       const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
 
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
-      (requestedEvent.args as SwapRequestedArgs190) = {
+      (requestedEvent.args as any) = {
         ...requestedEvent.args,
         origin: {
           __kind: 'OnChainAccount',
@@ -1211,7 +1210,7 @@ describe('server', () => {
       const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
 
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
-      (requestedEvent.args as SwapRequestedArgs190) = {
+      (requestedEvent.args as any) = {
         ...requestedEvent.args,
         origin: {
           __kind: 'OnChainAccount',
@@ -1417,7 +1416,7 @@ describe('server', () => {
       const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
 
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
-      (requestedEvent.args as SwapRequestedArgs190) = {
+      (requestedEvent.args as any) = {
         ...requestedEvent.args,
         origin: {
           __kind: 'OnChainAccount',
