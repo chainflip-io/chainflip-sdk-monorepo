@@ -1251,9 +1251,8 @@ describe('server', () => {
       );
 
       expect(status).toBe(200);
-      const { swapId, ...rest } = body;
       expect(body.state).toBe('COMPLETED');
-      expect(rest).toMatchSnapshot();
+      expect(body).toMatchSnapshot();
     });
 
     it(`retrieves a DCA swap from an onChain origin in ${StateV2.Completed}`, async () => {
@@ -1404,11 +1403,9 @@ describe('server', () => {
       const { body, status } = await request(server).get(
         `/v2/swaps/${requestedEvent.args.swapRequestId}`,
       );
-
       expect(status).toBe(200);
-      const { swapId, ...rest } = body;
       expect(body.state).toBe('COMPLETED');
-      expect(rest).toMatchSnapshot();
+      expect(body).toMatchSnapshot();
     });
 
     it(`retrieves a swap from an onChain origin ${StateV2.Failed}`, async () => {
