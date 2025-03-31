@@ -446,6 +446,36 @@ const swapEvents = [
 const channelId = '86-Ethereum-85';
 const { swapRequestId } = swapEventMap['Swapping.SwapRequested'].args;
 
+const createOnChainSwapRequestedEvent = (accountId: string) => {
+  const decoded = bytesToHex(ss58.decode(accountId).data);
+  const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
+
+  (requestedEvent.args as any) = {
+    ...requestedEvent.args,
+    origin: {
+      __kind: 'OnChainAccount',
+      value: decoded,
+    },
+    requestType: {
+      __kind: 'Regular',
+      outputAction: {
+        __kind: 'CreditOnChain',
+        accountId: decoded,
+      },
+    },
+    refundParameters: {
+      refundDestination: {
+        __kind: 'InternalAccount',
+        value: decoded,
+      },
+      minPrice: '99999994999',
+      retryDuration: 100,
+    },
+  };
+
+  return requestedEvent;
+};
+
 describe('server', () => {
   let server: Server;
   vi.setConfig({ testTimeout: 5000 });
@@ -1171,30 +1201,7 @@ describe('server', () => {
 
     it(`retrieves a swap from an onChain origin in ${StateV2.Swapping}`, async () => {
       const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
-
-      const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
-      (requestedEvent.args as any) = {
-        ...requestedEvent.args,
-        origin: {
-          __kind: 'OnChainAccount',
-          value: bytesToHex(ss58.decode(accountId).data),
-        },
-        requestType: {
-          __kind: 'Regular',
-          outputAction: {
-            __kind: 'CreditOnChain',
-            accountId: bytesToHex(ss58.decode(accountId).data),
-          },
-        },
-        refundParameters: {
-          refundDestination: {
-            __kind: 'InternalAccount',
-            value: bytesToHex(ss58.decode(accountId).data),
-          },
-          minPrice: '99999994999',
-          retryDuration: 100,
-        },
-      };
+      const requestedEvent = createOnChainSwapRequestedEvent(accountId);
 
       await processEvents([requestedEvent, swapEventMap['Swapping.SwapScheduled']]);
 
@@ -1202,36 +1209,12 @@ describe('server', () => {
         `/v2/swaps/${requestedEvent.args.swapRequestId}`,
       );
       expect(status).toBe(200);
-      expect(body.state).toBe('SWAPPING');
       expect(body).toMatchSnapshot();
     });
 
     it(`retrieves a swap from an onChain origin in ${StateV2.Completed}`, async () => {
       const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
-
-      const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
-      (requestedEvent.args as any) = {
-        ...requestedEvent.args,
-        origin: {
-          __kind: 'OnChainAccount',
-          value: bytesToHex(ss58.decode(accountId).data),
-        },
-        requestType: {
-          __kind: 'Regular',
-          outputAction: {
-            __kind: 'CreditOnChain',
-            accountId: bytesToHex(ss58.decode(accountId).data),
-          },
-        },
-        refundParameters: {
-          refundDestination: {
-            __kind: 'InternalAccount',
-            value: bytesToHex(ss58.decode(accountId).data),
-          },
-          minPrice: '99999994999',
-          retryDuration: 100,
-        },
-      };
+      const requestedEvent = createOnChainSwapRequestedEvent(accountId);
 
       const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
       executedEvent.args = {
@@ -1251,7 +1234,6 @@ describe('server', () => {
       );
 
       expect(status).toBe(200);
-      expect(body.state).toBe('COMPLETED');
       expect(body).toMatchSnapshot();
     });
 
@@ -1404,37 +1386,12 @@ describe('server', () => {
         `/v2/swaps/${requestedEvent.args.swapRequestId}`,
       );
       expect(status).toBe(200);
-      expect(body.state).toBe('COMPLETED');
       expect(body).toMatchSnapshot();
     });
 
     it(`retrieves a swap from an onChain origin ${StateV2.Failed}`, async () => {
-      // refunded on chain
       const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
-
-      const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
-      (requestedEvent.args as any) = {
-        ...requestedEvent.args,
-        origin: {
-          __kind: 'OnChainAccount',
-          value: bytesToHex(ss58.decode(accountId).data),
-        },
-        requestType: {
-          __kind: 'Regular',
-          outputAction: {
-            __kind: 'CreditOnChain',
-            accountId: bytesToHex(ss58.decode(accountId).data),
-          },
-        },
-        refundParameters: {
-          refundDestination: {
-            __kind: 'InternalAccount',
-            value: bytesToHex(ss58.decode(accountId).data),
-          },
-          minPrice: '99999994999',
-          retryDuration: 100,
-        },
-      };
+      const requestedEvent = createOnChainSwapRequestedEvent(accountId);
 
       const refundedOnChain = {
         id: requestedEvent.id,
@@ -1460,7 +1417,6 @@ describe('server', () => {
       );
 
       expect(status).toBe(200);
-      expect(body.state).toBe('FAILED');
       expect(body).toMatchSnapshot();
     });
 

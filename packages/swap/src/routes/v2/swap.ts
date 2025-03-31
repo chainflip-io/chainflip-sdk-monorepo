@@ -67,7 +67,8 @@ router.get(
       'maxBoostFeeBps',
     );
     const showBoost = Boolean(maxBoostFeeBps);
-    const isExternal = swapRequest?.originType !== 'ON_CHAIN';
+    const isExternal =
+      swapRequest?.originType !== 'ON_CHAIN' && swapRequest?.originType !== 'INTERNAL';
 
     let effectiveBoostFeeBps;
     if (showBoost) {

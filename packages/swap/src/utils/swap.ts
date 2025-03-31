@@ -48,12 +48,9 @@ export const estimateSwapDuration = async ({
   // assets are spendable by the user once the egress is included in a block
   const egressInclusionDuration = chainConstants[destChain].blockTimeSeconds;
 
-  const depositDuration = isExternal
-    ? depositInclusionDuration + depositWitnessDuration + depositWitnessSubmissionDuration
-    : 0;
-  const egressDuration = isExternal
-    ? EGRESS_BROADCAST_SIGNING_DURATION + egressInclusionDuration
-    : 0;
+  const depositDuration =
+    depositInclusionDuration + depositWitnessDuration + depositWitnessSubmissionDuration;
+  const egressDuration = EGRESS_BROADCAST_SIGNING_DURATION + egressInclusionDuration;
 
   const durations = {
     swap: swapDuration,
@@ -65,7 +62,7 @@ export const estimateSwapDuration = async ({
 
   return {
     durations,
-    total: depositDuration + swapDuration + egressDuration,
+    total: Object.values(durations).reduce((a, b) => a + b),
   };
 };
 
