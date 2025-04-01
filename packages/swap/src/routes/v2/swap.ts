@@ -44,6 +44,7 @@ router.get(
     const { state, swapEgressTrackerTxRef, refundEgressTrackerTxRef, pendingDeposit } =
       await getSwapState(failedSwap, swapRequest, swapDepositChannel, pendingVaultSwap);
 
+    console.log('swapDepositChannel', swapDepositChannel);
     const internalSrcAsset = readField(
       swapRequest,
       swapDepositChannel,
@@ -80,30 +81,36 @@ router.get(
     }
 
     const swaps = swapRequest?.swaps.filter((swap) => swap.type !== 'GAS');
+    console.log('swaps', swaps);
 
     let originalInputAmount = swapRequest?.swapInputAmount;
     let rolledSwaps;
 
     if (swaps?.length) {
-      rolledSwaps = swaps.reduce((acc, curr) => {
-        if (curr.swapExecutedAt) {
-          acc.swappedOutputAmount = acc.swappedOutputAmount.plus(curr.swapOutputAmount ?? 0);
-          acc.swappedIntermediateAmount = acc.swappedIntermediateAmount.plus(
-            curr.intermediateAmount ?? 0,
-          );
-          acc.swappedInputAmount = acc.swappedInputAmount.plus(curr.swapInputAmount);
-          acc.lastExecutedChunk = curr;
-          acc.executedChunks += 1;
-          acc.fees = acc.fees.concat(...curr.fees);
-        } else {
-          acc.currentChunk = curr;
-        }
-        return acc;
-      }, getRolledSwapsInitialData(swapDepositChannel));
+      rolledSwaps = swaps.reduce(
+        (acc, curr) => {
+          if (curr.swapExecutedAt) {
+            acc.swappedOutputAmount = acc.swappedOutputAmount.plus(curr.swapOutputAmount ?? 0);
+            acc.swappedIntermediateAmount = acc.swappedIntermediateAmount.plus(
+              curr.intermediateAmount ?? 0,
+            );
+            acc.swappedInputAmount = acc.swappedInputAmount.plus(curr.swapInputAmount);
+            acc.lastExecutedChunk = curr;
+            acc.executedChunks += 1;
+            acc.fees = acc.fees.concat(...curr.fees);
+          } else {
+            acc.currentChunk = curr;
+          }
+          return acc;
+        },
+        getRolledSwapsInitialData(swapDepositChannel, swapRequest?.dcaNumberOfChunks),
+      );
     } else if (failedSwap) {
-      rolledSwaps = getRolledSwapsInitialData(swapDepositChannel);
+      rolledSwaps = getRolledSwapsInitialData(swapDepositChannel, swapRequest?.dcaNumberOfChunks);
       originalInputAmount = failedSwap.depositAmount;
     }
+
+    console.log('rolledSwaps', rolledSwaps);
 
     const aggregateFees = rolledSwaps?.fees
       .reduce((acc, curr) => {
@@ -202,8 +209,9 @@ router.get(
                     rolledSwaps.lastExecutedChunk && getSwapFields(rolledSwaps.lastExecutedChunk),
                   currentChunk: rolledSwaps.currentChunk && getSwapFields(rolledSwaps.currentChunk),
                   executedChunks: rolledSwaps.executedChunks,
-                  remainingChunks:
-                    (swapDepositChannel?.dcaNumberOfChunks ?? 1) - rolledSwaps.executedChunks,
+                  remainingChunks: isExternal
+                    ? (swapDepositChannel?.dcaNumberOfChunks ?? 1) - rolledSwaps.executedChunks
+                    : (swapRequest?.dcaNumberOfChunks ?? 1) - rolledSwaps.executedChunks,
                 },
               }
             : {

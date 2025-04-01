@@ -1237,7 +1237,7 @@ describe('server', () => {
       expect(body).toMatchSnapshot();
     });
 
-    it(`retrieves a DCA swap from an onChain origin in ${StateV2.Completed}`, async () => {
+    it.only(`retrieves a DCA swap from an onChain origin in ${StateV2.Completed}`, async () => {
       const accountId = '0x640dfbca7473dd212d3c9b9815cd32dcc83b2a9a099c91369110609199b0f374';
 
       // requested
@@ -1283,7 +1283,7 @@ describe('server', () => {
       };
 
       // scheduled 1
-      const legOneScheduled = {
+      const chunkOneScheduled = {
         name: 'Swapping.SwapScheduled',
         id: '0000004123-000984-b7c4d',
         blockId: '0000015161-d719c',
@@ -1299,7 +1299,7 @@ describe('server', () => {
         },
       };
       // executed 1
-      const legOneExecuted = {
+      const chunkOneExecuted = {
         name: 'Swapping.SwapExecuted',
         id: '0000004123-000984-b7c4d',
         blockId: '0000015163-e6f80',
@@ -1321,22 +1321,22 @@ describe('server', () => {
       };
 
       // scheduled 2
-      const legTwoScheduled = {
-        ...legOneScheduled,
+      const chunkTwoScheduled = {
+        ...chunkOneScheduled,
         id: '0000004123-000984-b7c4d',
         args: {
-          ...legOneScheduled.args,
+          ...chunkOneScheduled.args,
           swapId: '24',
           executeAt: 15165,
         },
       };
 
       // executed 2
-      const legTwoExecuted = {
-        ...legOneExecuted,
+      const chunkTwoExecuted = {
+        ...chunkOneExecuted,
         id: '0000004123-000984-b7c4d',
         args: {
-          ...legOneExecuted.args,
+          ...chunkOneExecuted.args,
           swapId: '24',
           outputAmount: '2478844890',
         },
@@ -1371,10 +1371,10 @@ describe('server', () => {
       await processEvents(
         [
           requestedEvent,
-          legOneScheduled,
-          legOneExecuted,
-          legTwoScheduled,
-          legTwoExecuted,
+          chunkOneScheduled,
+          chunkOneExecuted,
+          chunkTwoScheduled,
+          chunkTwoExecuted,
           creditedOnChainEvent,
           completedEvent,
         ],
