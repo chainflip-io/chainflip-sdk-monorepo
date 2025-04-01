@@ -20,6 +20,7 @@ describe(encodeVaultSwapData, () => {
   let oldEnv: typeof env;
 
   beforeEach(async () => {
+    vi.resetAllMocks();
     oldEnv = structuredClone(env);
   });
 
@@ -234,6 +235,72 @@ describe(encodeVaultSwapData, () => {
         '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
       depositAddress: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
     });
+  });
+
+  it('calls the node rpc with the broker commission if client passes brokerCommissionBps (sdk version 1.8.2)', async () => {
+    const postSpy = mockRpcResponse((url, data: any) => {
+      if (data.method === 'cf_environment') {
+        return Promise.resolve({ data: environment({ maxSwapAmount: '0x10000000000' }) });
+      }
+
+      if (data.method === 'cf_request_swap_parameter_encoding') {
+        return Promise.resolve({
+          data: {
+            id: '1',
+            jsonrpc: '2.0',
+            result: {
+              chain: 'Bitcoin',
+              nulldata_payload:
+                '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+              deposit_address: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+            },
+          },
+        });
+      }
+
+      throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+    });
+
+    await encodeVaultSwapData({
+      srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+      destAsset: { asset: 'ETH', chain: 'Ethereum' },
+      destAddress: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
+      amount: 175000000n,
+      brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+      commissionBps: 0,
+      brokerCommissionBps: 15,
+      extraParams: {
+        chain: 'Bitcoin',
+        min_output_amount: '0xfc6f7c40458122964d0000000',
+        retry_duration: 500,
+      },
+      fillOrKillParams: {
+        retry_duration: 500,
+        refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+      },
+      maxBoostFeeBps: 35,
+    });
+
+    expect(postSpy).toHaveBeenCalledWith('http://rpc-node.test', [
+      {
+        id: expect.any(String),
+        jsonrpc: '2.0',
+        method: 'cf_request_swap_parameter_encoding',
+        params: [
+          expect.anything(),
+          expect.anything(),
+          expect.anything(),
+          '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
+          15,
+          expect.anything(),
+          null,
+          expect.anything(),
+          null,
+          null,
+        ],
+      },
+    ]);
   });
 
   it('rejects sanctioned addresses', async () => {
