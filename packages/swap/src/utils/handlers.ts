@@ -1,46 +1,91 @@
+export type Semver = `${string}.${string}.${string}`;
+
 type Handler<T extends string, U> = {
   name: T;
   handler: U;
 };
 
-type NameWithSpec<T extends string> = `${T}-${number}`;
+enum Cmp {
+  Lt = -1,
+  Eq = 0,
+  Gt = 1,
+}
 
-type HandlerMap<T extends string, U> = Record<T | NameWithSpec<T>, U>;
+const compareSemver = (a: Semver, b: Semver) => {
+  const aParts = a.split('.').map(Number);
+  const bParts = b.split('.').map(Number);
 
-/**
- * It's difficult to fully capture all this simple function does in words. See
- * the test for a visual representation of how this function works. The gist is
- * it takes an array of specs and handlers and creates a map of handlers for
- * each possible spec to ensure O(1) lookup time at runtime
- */
-export const buildHandlerMap = <T extends string, U>(
-  specs: { spec: number; handlers: Handler<T, U>[] }[],
-): HandlerMap<T, U> => {
-  const maxSpec = Math.max(...specs.map(({ spec }) => spec));
-
-  const sorted = specs.slice().sort((a, b) => a.spec - b.spec);
-
-  const result = {} as HandlerMap<T, U>;
-
-  for (const { spec, handlers } of sorted) {
-    for (const { name, handler } of handlers) {
-      for (let i = spec; i <= maxSpec; i += 1) {
-        result[`${name}-${i}`] = handler;
-        result[name] = handler;
-      }
-    }
+  for (let i = 0; i < 3; i += 1) {
+    if (aParts[i] > bParts[i]) return Cmp.Gt;
+    if (aParts[i] < bParts[i]) return Cmp.Lt;
   }
 
-  return result;
+  return Cmp.Eq;
 };
 
-export const getDispatcher =
-  <T extends string, U>(map: HandlerMap<T, U>) =>
-  (name: string, specId: string) => {
-    // the specId is in the format of "chainflip-node@<specId>"
-    const specNumber = specId.split('@')[1];
+const cache = new Map<string, Semver>();
 
-    const handlerName = `${name}-${specNumber}` as `${T}-${number}`;
+export const parseSemver = (specId: string): Semver => {
+  // the specId is in the format of "chainflip-node@<specId>"
+  const cached = cache.get(specId);
+  if (cached) return cached;
+  const specNumber = Number.parseInt(specId.split('@')[1], 10);
+  if (Number.isNaN(specNumber)) throw new Error('Invalid specId');
+  const n = specNumber.toString();
+  const desiredLenPerPart = Math.ceil(n.length / 3);
+  const padded = n.padStart(desiredLenPerPart * 3, '0');
+  const major = padded.slice(0, desiredLenPerPart);
+  const minor = padded.slice(desiredLenPerPart, desiredLenPerPart * 2);
+  const patch = padded.slice(desiredLenPerPart * 2, desiredLenPerPart * 3);
+  const semver = `${Number(major)}.${Number(minor)}.${Number(patch)}` as const;
+  cache.set(specId, semver);
+  return semver;
+};
 
-    return map[handlerName] ?? map[name as T] ?? null;
-  };
+export class HandlerMap<T extends string, U> {
+  private cache = new Map<`${T}-${Semver}`, U | null>();
+
+  private handlersByName: Record<T, { spec: Semver; handler: U }[]>;
+
+  constructor(
+    specs: {
+      spec: Semver;
+      handlers: Handler<T, U>[];
+    }[],
+  ) {
+    this.handlersByName = specs
+      .toSorted((a, b) => compareSemver(b.spec, a.spec))
+      .flatMap(({ spec, handlers }) =>
+        handlers.map(({ name, handler }) => ({ spec, name, handler })),
+      )
+      .reduce(
+        (acc, { spec, name, handler }) => {
+          acc[name] ??= [];
+          acc[name].push({ spec, handler });
+
+          return acc;
+        },
+        {} as HandlerMap<T, U>['handlersByName'],
+      );
+  }
+
+  getHandler(name: T, specId: string): U | null {
+    const specNumber = parseSemver(specId);
+
+    const handlerName = `${name}-${specNumber}` as const;
+
+    let handler: U | null | undefined = this.cache.get(handlerName);
+
+    if (handler !== undefined) return handler;
+
+    const handlers = this.handlersByName[name] ?? [];
+
+    const index = handlers.findIndex(({ spec }) => compareSemver(spec, specNumber) !== Cmp.Gt);
+
+    handler = index === -1 ? null : handlers[index].handler;
+
+    this.cache.set(handlerName, handler);
+
+    return handler;
+  }
+}

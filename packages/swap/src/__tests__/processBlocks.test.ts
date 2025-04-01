@@ -7,7 +7,7 @@ import processBlocks from '../processBlocks';
 
 describe(processBlocks, () => {
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking", private."State" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking", "SwapDepositChannel", private."State" CASCADE`;
   });
 
   it('dispatches a SwapScheduled event', async () => {
@@ -42,7 +42,7 @@ describe(processBlocks, () => {
               height: 150,
               timestamp: '2024-08-26T00:00:00.000Z',
               hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
-              specId: 'chainflip-node@0',
+              specId: 'chainflip-node@100',
               events: {
                 nodes: [
                   {
