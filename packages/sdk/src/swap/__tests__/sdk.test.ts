@@ -1844,7 +1844,7 @@ describe(SwapSDK, () => {
           chunkIntervalBlocks: 5,
         },
         brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
-        brokerCommissionBps: 15,
+        commissionBps: 15,
         affiliates: [
           { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
         ],
