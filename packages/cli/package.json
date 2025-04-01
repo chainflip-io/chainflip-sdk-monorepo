@@ -42,7 +42,7 @@
     "@chainflip/bitcoin": "^1.2.4",
     "@chainflip/rpc": "^1.8.9",
     "@chainflip/solana": "^2.1.5",
-    "@chainflip/utils": "^0.5.0",
+    "@chainflip/utils": "^0.8.0",
     "ioredis": "^5.4.1",
     "ws": "^8.18.0",
     "yargs": "^17.7.2"
