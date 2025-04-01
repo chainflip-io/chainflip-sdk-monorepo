@@ -1,4 +1,6 @@
 import type { Prisma } from '.prisma/client';
+import { HandlerMap } from '@chainflip/processor';
+import type { Semver } from '@chainflip/processor/types';
 import { Chains } from '@/shared/enums';
 import broadcastAborted from './broadcaster/broadcastAborted';
 import broadcastSuccess from './broadcaster/broadcastSuccess';
@@ -29,7 +31,6 @@ import swapRescheduled from './swapping/swapRescheduled';
 import swapScheduled from './swapping/swapScheduled';
 import chainStateUpdated from './tracking/chainStateUpdated';
 import type { Block, Event } from '../gql/generated/graphql';
-import { HandlerMap, type Semver } from '../utils/handlers';
 
 export const events = {
   LiquidityPools: {
@@ -272,4 +273,4 @@ const handlers = [
   },
 ];
 
-export const handlerMap = new HandlerMap(handlers);
+export const handlerMap = HandlerMap.fromGroupedHandlers(handlers);
