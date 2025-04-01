@@ -19,6 +19,7 @@ export const encodeVaultSwapDataSchema = getParameterEncodingRequestSchema(
 ).and(
   z.object({
     brokerAccount: chainflipAddress.optional(),
+    brokerCommissionBps: z.number().optional(), // sdk version 1.8.3 sends brokerCommissionBps instead of commissionBps
   }),
 );
 
@@ -51,7 +52,7 @@ export const encodeVaultSwapData = async (input: z.output<typeof encodeVaultSwap
         input.srcAsset,
         input.destAsset,
         input.destAddress,
-        input.commissionBps,
+        input.commissionBps || input.brokerCommissionBps || 0,
         input.extraParams,
         input.ccmParams,
         input.maxBoostFeeBps,

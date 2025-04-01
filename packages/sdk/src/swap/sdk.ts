@@ -499,7 +499,7 @@ export class SwapSDK {
       dcaParams: quote.type === 'DCA' ? quote.dcaParams : undefined,
       extraParams,
       brokerAccount,
-      brokerCommissionBps,
+      commissionBps: brokerCommissionBps,
       affiliates,
     };
 
@@ -512,7 +512,7 @@ export class SwapSDK {
       return requestSwapParameterEncoding(
         {
           ...vaultSwapRequest,
-          commissionBps: vaultSwapRequest.brokerCommissionBps ?? this.options.broker.commissionBps,
+          commissionBps: vaultSwapRequest.commissionBps ?? this.options.broker.commissionBps,
         },
         { url: this.options.broker.url },
         this.options.network,
@@ -520,7 +520,7 @@ export class SwapSDK {
     }
 
     assert(
-      !vaultSwapRequest.brokerCommissionBps || vaultSwapRequest.brokerAccount,
+      !vaultSwapRequest.commissionBps || vaultSwapRequest.brokerAccount,
       'Broker commission is supported only when setting a broker account',
     );
     assert(
