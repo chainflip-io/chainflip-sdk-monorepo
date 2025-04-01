@@ -5,7 +5,6 @@ import { GraphQLClient } from 'graphql-request';
 import { vi, expect } from 'vitest';
 import { z } from 'zod';
 import { InternalAssets, Chain, Chains, assetConstants } from '@/shared/enums';
-import { actionSchema } from '@/shared/parsers';
 import prisma, { SwapDepositChannel } from '../../client';
 import { GET_CALL } from '../../gql/query';
 import processBlocks, { Call, Event } from '../../processBlocks';
@@ -62,30 +61,6 @@ export const networkDepositReceivedBtcMock = {
     indexInBlock: 7,
   },
 } as const;
-
-export const networkDepositReceivedBtcMockV120 = (action?: z.input<typeof actionSchema>) =>
-  ({
-    block: {
-      height: 120,
-      timestamp: 1670337105000,
-    },
-    event: {
-      args: {
-        asset: {
-          __kind: 'Btc',
-        },
-        amount: '110000',
-        depositAddress: {
-          value: '0x68a3db628eea903d159131fcb4a1f6ed0be6980c4ff42b80d5229ea26a38439e',
-          __kind: 'Taproot',
-        },
-        ingressFee: '1000',
-        action: action || { __kind: 'Swap', swapId: '1' },
-      },
-      name: 'BitcoinIngressEgress.DepositReceived',
-      indexInBlock: 7,
-    },
-  }) as const;
 
 export const swapDepositAddressReadyMocked = {
   block: {

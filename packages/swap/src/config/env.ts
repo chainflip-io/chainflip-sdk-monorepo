@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { InternalAssets } from '@/shared/enums';
+import { chainflipNetwork } from '@/shared/parsers';
 
 const envVar = z.string().trim();
 
@@ -20,8 +21,6 @@ const optionalNumber = (defaultValue: number) =>
   envVar.optional().transform((n) => Number(n) || defaultValue);
 
 const optionalString = (defaultValue: string) => envVar.default(defaultValue);
-
-const chainflipNetwork = z.enum(['backspin', 'sisyphos', 'perseverance', 'mainnet']);
 
 const nodeEnv = z.enum(['development', 'production', 'test']);
 

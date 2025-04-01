@@ -1,17 +1,7 @@
-import { encodeAddress } from '@chainflip/bitcoin';
 import { isValidSolanaAddress } from '@chainflip/solana';
-import * as base58 from '@chainflip/utils/base58';
-import { hexToBytes } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
-import { isHex } from '@chainflip/utils/string';
-import { HexString } from '@chainflip/utils/types';
-import assert from 'assert';
-import * as ethers from 'ethers';
 import { z, ZodErrorMap } from 'zod';
 import {
-  ChainflipNetwork,
-  ChainflipNetworks,
-  InternalAsset,
   InternalAssets,
   Chains,
   Assets,
@@ -19,14 +9,6 @@ import {
   UncheckedAssetAndChain,
   AssetAndChain,
 } from './enums';
-import { isString } from './guards';
-import {
-  validateBitcoinMainnetAddress,
-  validateBitcoinRegtestAddress,
-  validateBitcoinTestnetAddress,
-} from './validation/addressValidation';
-
-const chainflipSS58Prefix = 2112;
 
 const enumValues = Object.values as <T>(
   obj: T,
@@ -51,46 +33,7 @@ export const hexStringWithMaxByteSize = (maxByteSize: number) =>
     message: `String must be less than or equal to ${maxByteSize} bytes`,
   });
 
-export const btcAddress = (network: ChainflipNetwork | 'localnet') => {
-  if (network === 'mainnet') {
-    return string.regex(/^(1|3|bc1)/).refine(validateBitcoinMainnetAddress, (address) => ({
-      message: `"${address}" is not a valid Bitcoin mainnet address`,
-    }));
-  }
-
-  return z.union([
-    string.regex(/^(m|n|2|tb1)/).refine(validateBitcoinTestnetAddress, (address) => ({
-      message: `"${address}" is not a valid Bitcoin testnet address`,
-    })),
-    string.regex(/^bcrt1/).refine(validateBitcoinRegtestAddress, (address) => ({
-      message: `"${address}" is not a valid Bitcoin regtest address`,
-    })),
-  ]);
-};
-
 export const DOT_PREFIX = 0;
-
-export const dotAddress = z
-  .union([string, hexString])
-  .transform((arg) => {
-    try {
-      if (arg.startsWith('0x')) {
-        return ss58.encode({ data: arg as HexString, ss58Format: DOT_PREFIX });
-      }
-      // if substrate encoded, then decode and re-encode to dot format
-      return ss58.encode({ data: ss58.decode(arg).data, ss58Format: DOT_PREFIX });
-    } catch {
-      return null;
-    }
-  })
-  .refine(isString, {
-    message: `address is not a valid polkadot address`,
-  });
-
-export const ethereumAddress = hexString.refine(
-  (address) => ethers.isAddress(address),
-  (address) => ({ message: `${address} is not a valid Ethereum address` }),
-);
 
 export const chainflipAddress = string.refine(
   (address) => address.startsWith('cF') && ss58.decode(address),
@@ -115,7 +58,6 @@ export const chainEnum = rustEnum(enumValues(Chains));
 
 export const chain = z.nativeEnum(Chains);
 export const asset = z.nativeEnum(Assets);
-export const chainflipNetwork = z.nativeEnum(ChainflipNetworks);
 
 export const uncheckedAssetAndChain = z.object({
   asset: z.string(),
@@ -126,80 +68,4 @@ export const assetAndChain = uncheckedAssetAndChain.refine((value): value is Ass
   isValidAssetAndChain(value as UncheckedAssetAndChain),
 );
 
-export const accountId = z
-  .union([
-    hexString, //
-    string.regex(/^[a-f\d]$/i).transform<`0x${string}`>((value) => `0x${value}`),
-  ])
-  .transform(
-    (value) => ss58.encode({ data: value, ss58Format: chainflipSS58Prefix }) as `cF${string}`,
-  );
-
-export const actionSchema = z.union([
-  z.object({ __kind: z.literal('Swap'), swapId: u128 }),
-  z.object({ __kind: z.literal('LiquidityProvision'), lpAccount: hexString }),
-  z.object({
-    __kind: z.literal('CcmTransfer'),
-    principalSwapId: u128.nullable().optional(),
-    gasSwapId: u128.nullable().optional(),
-  }),
-  z.object({
-    __kind: z.literal('NoAction'),
-  }),
-  z.object({
-    __kind: z.literal('BoostersCredited'),
-    prewitnessedDepositId: u128,
-  }),
-]);
-
-export const bitcoinScriptPubKey = (network: ChainflipNetwork) =>
-  z
-    .union([
-      z.object({ __kind: z.literal('P2PKH'), value: hexString }),
-      z.object({ __kind: z.literal('P2SH'), value: hexString }),
-      z.object({ __kind: z.literal('P2WPKH'), value: hexString }),
-      z.object({ __kind: z.literal('P2WSH'), value: hexString }),
-      z.object({ __kind: z.literal('Taproot'), value: hexString }),
-      z.object({ __kind: z.literal('OtherSegwit'), version: z.number(), program: hexString }),
-    ])
-    .transform((script) => {
-      if (script.__kind === 'OtherSegwit') {
-        throw new Error('OtherSegwit scriptPubKey not supported');
-      }
-
-      return encodeAddress(script.value, script.__kind, network);
-    });
-
-export const depositAddressSchema = (network: ChainflipNetwork) =>
-  z.union([hexString, bitcoinScriptPubKey(network)]);
-
-export const encodeDotAddress = <T extends { asset: InternalAsset; depositAddress: string }>(
-  args: T,
-): T => {
-  if (args.asset === 'Dot') {
-    assert(isHex(args.depositAddress));
-    return {
-      ...args,
-      depositAddress: ss58.encode({ data: args.depositAddress, ss58Format: DOT_PREFIX }),
-    };
-  }
-  return args;
-};
-
-const hexEncodedBase58Address = hexString.transform((value) => base58.encode(hexToBytes(value)));
-const extractAddress = <T extends { value: string }>({ value }: T) => value;
-
-export const foreignChainAddress = (network: ChainflipNetwork) =>
-  z.union([
-    z.object({ __kind: z.literal('Eth'), value: hexString }).transform(extractAddress),
-    z
-      .object({ __kind: z.literal('Dot'), value: hexString })
-      .transform(({ value }) => ss58.encode({ data: value, ss58Format: 0 })),
-    z
-      .object({ __kind: z.literal('Btc'), value: bitcoinScriptPubKey(network) })
-      .transform(extractAddress),
-    z.object({ __kind: z.literal('Arb'), value: hexString }).transform(extractAddress),
-    z
-      .object({ __kind: z.literal('Sol'), value: hexEncodedBase58Address })
-      .transform(extractAddress),
-  ]);
+export const chainflipNetwork = z.enum(['backspin', 'sisyphos', 'perseverance', 'mainnet']);
