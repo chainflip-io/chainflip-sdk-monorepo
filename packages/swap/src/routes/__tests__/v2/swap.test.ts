@@ -1237,7 +1237,7 @@ describe('server', () => {
       expect(body).toMatchSnapshot();
     });
 
-    it.only(`retrieves a DCA swap from an onChain origin in ${StateV2.Completed}`, async () => {
+    it(`retrieves a DCA swap from an onChain origin in ${StateV2.Completed}`, async () => {
       const accountId = '0x640dfbca7473dd212d3c9b9815cd32dcc83b2a9a099c91369110609199b0f374';
 
       // requested
