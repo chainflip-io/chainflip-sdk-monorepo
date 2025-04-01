@@ -1,57 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ChainflipNetwork } from '../enums';
-import {
-  btcAddress,
-  chainflipAddress,
-  dotAddress,
-  hexStringWithMaxByteSize,
-  u128,
-  unsignedInteger,
-} from '../parsers';
-import { bitcoinAddresses } from '../validation/__tests__/bitcoinAddresses';
-
-describe('btc parser', () => {
-  it.each([
-    [Object.values(bitcoinAddresses.mainnet).flat(), 'mainnet', 'sisyphos'],
-    [Object.values(bitcoinAddresses.testnet).flat(), 'sisyphos', 'mainnet'],
-    [Object.values(bitcoinAddresses.testnet).flat(), 'perseverance', 'mainnet'],
-    [Object.values(bitcoinAddresses.regtest).flat(), 'sisyphos', 'mainnet'],
-    [Object.values(bitcoinAddresses.regtest).flat(), 'perseverance', 'mainnet'],
-    [Object.values(bitcoinAddresses.regtest).flat(), 'backspin', 'mainnet'],
-    [Object.values(bitcoinAddresses.regtest).flat(), undefined, 'mainnet'],
-  ])(
-    'validates btc address %s to be true for the right network',
-    (address, network, wrongNetwork) => {
-      address.forEach((addr) =>
-        expect(btcAddress(network as ChainflipNetwork).safeParse(addr).success).toBeTruthy(),
-      );
-      address.forEach((addr) =>
-        expect(btcAddress(wrongNetwork as ChainflipNetwork).safeParse(addr).success).toBeFalsy(),
-      );
-    },
-  );
-  const wrongAddresses = [
-    'br1qxy2kgdygjrsqtzq2n0yrf249',
-    '',
-    '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-    '5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX',
-  ];
-  it.each([
-    [wrongAddresses, 'mainnet'],
-    [wrongAddresses, 'sisyphos'],
-    [wrongAddresses, 'perseverance'],
-  ])(`validates btc address %s to be false`, (address, network) => {
-    expect(btcAddress(network as ChainflipNetwork).safeParse(address).success).toBeFalsy();
-  });
-});
-
-describe('dotAddress', () => {
-  it('validates dot address and transforms a dot address', async () => {
-    expect(
-      dotAddress.parse('0x9999999999999999999999999999999999999999999999999999999999999999'),
-    ).toBe('14UPxPveENj36SF5YX8R2YMrb6HaS7Nuuxw5a1aysuxVZyDu');
-  });
-});
+import { chainflipAddress, hexStringWithMaxByteSize, u128, unsignedInteger } from '../parsers';
 
 describe('chainflipAddress', () => {
   it.each([

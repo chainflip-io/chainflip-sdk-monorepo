@@ -9,57 +9,13 @@ import { formatTxRef } from '@/shared/common';
 import { CacheMap } from '@/shared/dataStructures';
 import { Chain } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
-import {
-  btcAddress,
-  chainEnum,
-  dotAddress,
-  ethereumAddress,
-  hexString,
-  unsignedInteger,
-} from '@/shared/parsers';
+import { chainEnum, unsignedInteger } from '@/shared/parsers';
 import * as rpc from '@/shared/rpc';
 import { Prisma } from '../client';
 import env from '../config/env';
 import type { EventHandlerArgs } from '.';
 
 export const egressId = z.tuple([chainEnum, unsignedInteger]);
-
-const ethChainAddress = z
-  .object({
-    __kind: z.literal('Eth'),
-    value: ethereumAddress,
-  })
-  .transform(({ value }) => ({ chain: 'Ethereum', address: value }) as const);
-
-const dotChainAddress = z
-  .object({
-    __kind: z.literal('Dot'),
-    value: dotAddress,
-  })
-  .transform(({ value }) => ({ chain: 'Polkadot', address: value }) as const);
-
-const btcChainAddress = z
-  .object({
-    __kind: z.literal('Btc'),
-    value: hexString
-      .transform((v) => Buffer.from(v.slice(2), 'hex').toString())
-      .pipe(btcAddress(env.CHAINFLIP_NETWORK)),
-  })
-  .transform(({ value }) => ({ chain: 'Bitcoin', address: value }) as const);
-
-const arbChainAddress = z
-  .object({
-    __kind: z.literal('Arb'),
-    value: ethereumAddress,
-  })
-  .transform(({ value }) => ({ chain: 'Arbitrum', address: value }) as const);
-
-export const encodedAddress = z.union([
-  ethChainAddress,
-  dotChainAddress,
-  btcChainAddress,
-  arbChainAddress,
-]);
 
 const metadataCache = new CacheMap<string, Metadata>(60_000 * 60);
 
