@@ -67,3 +67,5 @@ export const uncheckedAssetAndChain = z.object({
 export const assetAndChain = uncheckedAssetAndChain.refine((value): value is AssetAndChain =>
   isValidAssetAndChain(value as UncheckedAssetAndChain),
 );
+
+export const chainflipNetwork = z.enum(['backspin', 'sisyphos', 'perseverance', 'mainnet']);
