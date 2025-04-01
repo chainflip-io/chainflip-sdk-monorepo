@@ -44,7 +44,6 @@ router.get(
     const { state, swapEgressTrackerTxRef, refundEgressTrackerTxRef, pendingDeposit } =
       await getSwapState(failedSwap, swapRequest, swapDepositChannel, pendingVaultSwap);
 
-    console.log('swapDepositChannel', swapDepositChannel);
     const internalSrcAsset = readField(
       swapRequest,
       swapDepositChannel,
@@ -81,7 +80,6 @@ router.get(
     }
 
     const swaps = swapRequest?.swaps.filter((swap) => swap.type !== 'GAS');
-    console.log('swaps', swaps);
 
     let originalInputAmount = swapRequest?.swapInputAmount;
     let rolledSwaps;
@@ -109,8 +107,6 @@ router.get(
       rolledSwaps = getRolledSwapsInitialData(swapDepositChannel, swapRequest?.dcaNumberOfChunks);
       originalInputAmount = failedSwap.depositAmount;
     }
-
-    console.log('rolledSwaps', rolledSwaps);
 
     const aggregateFees = rolledSwaps?.fees
       .reduce((acc, curr) => {
