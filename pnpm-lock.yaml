@@ -91,8 +91,8 @@ importers:
         specifier: ^1.8.9
         version: 1.8.9
       '@chainflip/solana':
-        specifier: ^2.1.4
-        version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^2.1.5
+        version: 2.1.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: ^0.5.0
         version: 0.5.0
@@ -164,8 +164,8 @@ importers:
         specifier: ^1.8.9
         version: 1.8.9
       '@chainflip/solana':
-        specifier: ^2.1.4
-        version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^2.1.5
+        version: 2.1.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: ^0.5.0
         version: 0.5.0
@@ -204,8 +204,8 @@ importers:
         specifier: ^1.8.9
         version: 1.8.9
       '@chainflip/solana':
-        specifier: ^2.1.4
-        version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^2.1.5
+        version: 2.1.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: ^0.5.0
         version: 0.5.0
@@ -262,8 +262,8 @@ importers:
         specifier: ^1.8.9
         version: 1.8.9
       '@chainflip/solana':
-        specifier: ^2.1.4
-        version: 2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^2.1.5
+        version: 2.1.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: ^0.5.0
         version: 0.5.0
@@ -487,8 +487,8 @@ packages:
   '@chainflip/scale@1.8.0':
     resolution: {integrity: sha512-66bT2DQi0kNFZRva0phBuMWCWKamOyfROlKovxcBd6wzZVGFxVqgi73iG1nExaUPlOLJnYc8gQ/blwHidgjvrg==}
 
-  '@chainflip/solana@2.1.4':
-    resolution: {integrity: sha512-v1ccjDPDci9QvtZeiBxf0Z8VIUFBWK6OC8eTA7AGibAYhOVB7FusmLl+dkCB5qdrpI8PfBz8gcwqgFFvkMDXTw==}
+  '@chainflip/solana@2.1.5':
+    resolution: {integrity: sha512-iha803Wvv/Uo5CdY9fzuajZOIYnqyF9BK60rhhIdpWaBCuunCRrBvYHF5YWHKzeQoZ3pM6pEwC+19RRBbJS2mg==}
 
   '@chainflip/utils@0.5.0':
     resolution: {integrity: sha512-rmvGttu+Pc7rsCNQ4gemg8G9PLPTjRsbuvLLF9By9pADFVWTp18UyKbvLVt5H00LOty41fhvlln2FerNl98/MQ==}
@@ -5746,7 +5746,7 @@ snapshots:
       '@chainflip/utils': 0.6.0
       scale-ts: 1.6.1
 
-  '@chainflip/solana@2.1.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+  '@chainflip/solana@2.1.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
       '@chainflip/scale': 1.8.0
       '@chainflip/utils': 0.7.2

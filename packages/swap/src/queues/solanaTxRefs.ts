@@ -62,7 +62,9 @@ type Deposit = {
   } & DepositInfo;
 }[DepositType];
 
-const updateChannel = async (url: string, data: PendingChannelTxRef) => {
+type SolanaNetwork = Parameters<typeof findTransactionSignatures>[4];
+
+const updateChannel = async (url: string, data: PendingChannelTxRef, network: SolanaNetwork) => {
   const channel = await prisma.swapDepositChannel.findUniqueOrThrow({
     where: { id: data.channelId },
     include: { failedSwaps: true, swapRequests: true },
@@ -95,6 +97,7 @@ const updateChannel = async (url: string, data: PendingChannelTxRef) => {
       channel.depositAddress,
       channel.srcAsset,
       deposits,
+      network,
     );
   } catch (error) {
     logger.error('failed to find transaction signatures', {
@@ -153,6 +156,18 @@ export const start = async () => {
     return;
   }
 
+  let network: SolanaNetwork | undefined;
+  if (env.CHAINFLIP_NETWORK === 'mainnet') {
+    network = 'mainnet';
+  } else if (env.CHAINFLIP_NETWORK === 'perseverance') {
+    network = 'devnet';
+  }
+
+  if (!network) {
+    logger.info('no solana network present');
+    return;
+  }
+
   const controller = new AbortController();
   const clean = handleExit(() => {
     controller.abort();
@@ -183,7 +198,7 @@ export const start = async () => {
 
       switch (parsed.type) {
         case 'CHANNEL':
-          await updateChannel(url, parsed);
+          await updateChannel(url, parsed, network);
           break;
         case 'VAULT_SWAP':
           await updateVaultSwap(url, parsed);
