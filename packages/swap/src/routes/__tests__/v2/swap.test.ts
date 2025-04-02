@@ -1406,11 +1406,11 @@ describe('server', () => {
         },
       };
 
-      await processEvents([
-        requestedEvent,
-        swapEventMap['Swapping.SwapScheduled'],
-        refundedOnChain,
-      ]);
+      await processEvents(
+        [requestedEvent, swapEventMap['Swapping.SwapScheduled'], refundedOnChain],
+        [],
+        '190',
+      );
 
       const { body, status } = await request(server).get(
         `/v2/swaps/${requestedEvent.args.swapRequestId}`,
