@@ -1,4 +1,6 @@
 import type { Prisma } from '.prisma/client';
+import { HandlerMap } from '@chainflip/processor';
+import type { Semver } from '@chainflip/processor/types';
 import { Chains } from '@/shared/enums';
 import broadcastAborted from './broadcaster/broadcastAborted';
 import broadcastSuccess from './broadcaster/broadcastSuccess';
@@ -29,7 +31,6 @@ import swapRescheduled from './swapping/swapRescheduled';
 import swapScheduled from './swapping/swapScheduled';
 import chainStateUpdated from './tracking/chainStateUpdated';
 import type { Block, Event } from '../gql/generated/graphql';
-import { buildHandlerMap, getDispatcher } from '../utils/handlers';
 
 export const events = {
   LiquidityPools: {
@@ -160,7 +161,7 @@ export type EventHandlerArgs = {
 
 const handlers = [
   {
-    spec: 0,
+    spec: '1.0.0' as Semver,
     handlers: [
       { name: events.LiquidityPools.NewPoolCreated, handler: newPoolCreated },
       { name: events.LiquidityPools.PoolFeeSet, handler: poolFeeSet },
@@ -193,7 +194,7 @@ const handlers = [
     ],
   },
   {
-    spec: 150,
+    spec: '1.5.0' as Semver,
     handlers: [
       { name: events.Swapping.SwapRescheduled, handler: swapRescheduled },
       ...Object.values(Chains).flatMap((chain) => [
@@ -209,7 +210,7 @@ const handlers = [
     ],
   },
   {
-    spec: 170,
+    spec: '1.7.0' as Semver,
     handlers: [
       { name: events.Swapping.SwapRequested, handler: swapRequested },
       { name: events.Swapping.SwapRequestCompleted, handler: swapRequestCompleted },
@@ -243,7 +244,7 @@ const handlers = [
     ],
   },
   {
-    spec: 180,
+    spec: '1.8.0' as Semver,
     handlers: [
       ...Object.values(Chains).flatMap((chain) => [
         {
@@ -258,7 +259,7 @@ const handlers = [
     ],
   },
   {
-    spec: 190,
+    spec: '1.9.0' as Semver,
     handlers: [
       {
         name: 'Swapping.CreditedOnChain',
@@ -272,6 +273,4 @@ const handlers = [
   },
 ];
 
-const eventHandlerMap = buildHandlerMap(handlers);
-
-export const getEventHandler = getDispatcher(eventHandlerMap);
+export const handlerMap = HandlerMap.fromGroupedHandlers(handlers);

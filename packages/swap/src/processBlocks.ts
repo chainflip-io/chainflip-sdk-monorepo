@@ -5,7 +5,7 @@ import { setTimeout as sleep } from 'timers/promises';
 import { inspect } from 'util';
 import prisma from './client';
 import env from './config/env';
-import { getEventHandler, swapEventNames } from './event-handlers';
+import { handlerMap, swapEventNames } from './event-handlers';
 import { GetBatchQuery, GetCallQuery } from './gql/generated/graphql';
 import { GET_BATCH } from './gql/query';
 import preBlock from './preBlock';
@@ -105,7 +105,7 @@ export default async function processBlocks() {
           await preBlock(txClient, block);
 
           for (const event of block.events.nodes) {
-            const eventHandler = getEventHandler(event.name, block.specId);
+            const eventHandler = handlerMap.getHandler(event.name, block.specId);
             if (!eventHandler) {
               throw new Error(`unexpected event: "${event.name}" for specId: "${block.specId}"`);
             }
