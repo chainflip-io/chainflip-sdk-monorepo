@@ -355,7 +355,6 @@ export const getSwapState = async (
   let pendingDeposit = null;
   const swapEgress = swapRequest?.egress;
   const refundEgress = swapRequest?.refundEgress;
-
   const egress = swapEgress ?? refundEgress;
 
   if (failedSwap) {
@@ -367,12 +366,10 @@ export const getSwapState = async (
   } else if (swapRequest?.ignoredEgresses?.length || egress?.broadcast?.abortedAt) {
     state = StateV2.Failed;
   } else if (swapRequest?.onChainSwapInfo?.refundAmount) {
-    // probable just if refund amount not null
     state = StateV2.Failed;
   } else if (egress?.broadcast?.succeededAt) {
     state = StateV2.Completed;
   } else if (!egress && swapRequest?.completedAt) {
-    // CHECK: in case of internal swap, there's no egress
     state = StateV2.Completed;
   } else if (egress) {
     state = StateV2.Sending;
@@ -503,15 +500,11 @@ export const getCcmParams = (
     : undefined;
 };
 
-export const getRolledSwapsInitialData = (
-  swapDepositChannel: SwapChannelData | null | undefined,
-  dcaNumberOfChunks: number | null | undefined,
-) => {
+export const getRolledSwapsInitialData = (swapRequest: SwapRequestData | undefined | null) => {
   const isDca =
-    dcaNumberOfChunks != null
-      ? dcaNumberOfChunks > 1
-      : (swapDepositChannel?.dcaChunkIntervalBlocks ?? 0) > 1;
-
+    swapRequest?.dcaNumberOfChunks != null
+      ? swapRequest?.dcaNumberOfChunks > 1
+      : (swapRequest?.swapDepositChannel?.dcaChunkIntervalBlocks ?? 0) > 1;
   return {
     swappedOutputAmount: new Prisma.Decimal(0),
     swappedIntermediateAmount: new Prisma.Decimal(0),

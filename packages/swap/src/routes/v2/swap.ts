@@ -85,29 +85,25 @@ router.get(
     let rolledSwaps;
 
     if (swaps?.length) {
-      rolledSwaps = swaps.reduce(
-        (acc, curr) => {
-          if (curr.swapExecutedAt) {
-            acc.swappedOutputAmount = acc.swappedOutputAmount.plus(curr.swapOutputAmount ?? 0);
-            acc.swappedIntermediateAmount = acc.swappedIntermediateAmount.plus(
-              curr.intermediateAmount ?? 0,
-            );
-            acc.swappedInputAmount = acc.swappedInputAmount.plus(curr.swapInputAmount);
-            acc.lastExecutedChunk = curr;
-            acc.executedChunks += 1;
-            acc.fees = acc.fees.concat(...curr.fees);
-          } else {
-            acc.currentChunk = curr;
-          }
-          return acc;
-        },
-        getRolledSwapsInitialData(swapDepositChannel, swapRequest?.dcaNumberOfChunks),
-      );
+      rolledSwaps = swaps.reduce((acc, curr) => {
+        if (curr.swapExecutedAt) {
+          acc.swappedOutputAmount = acc.swappedOutputAmount.plus(curr.swapOutputAmount ?? 0);
+          acc.swappedIntermediateAmount = acc.swappedIntermediateAmount.plus(
+            curr.intermediateAmount ?? 0,
+          );
+          acc.swappedInputAmount = acc.swappedInputAmount.plus(curr.swapInputAmount);
+          acc.lastExecutedChunk = curr;
+          acc.executedChunks += 1;
+          acc.fees = acc.fees.concat(...curr.fees);
+        } else {
+          acc.currentChunk = curr;
+        }
+        return acc;
+      }, getRolledSwapsInitialData(swapRequest));
     } else if (failedSwap) {
-      rolledSwaps = getRolledSwapsInitialData(swapDepositChannel, swapRequest?.dcaNumberOfChunks);
+      rolledSwaps = getRolledSwapsInitialData(swapRequest);
       originalInputAmount = failedSwap.depositAmount;
     }
-
     const aggregateFees = rolledSwaps?.fees
       .reduce((acc, curr) => {
         const { type, asset, amount } = curr;
