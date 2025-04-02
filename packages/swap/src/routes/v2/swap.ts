@@ -138,7 +138,7 @@ router.get(
           destAsset: internalDestAsset,
           isExternal,
         }),
-      isExternal ? getRequiredBlockConfirmations(internalSrcAsset) : Promise.resolve(undefined),
+      isExternal ? getRequiredBlockConfirmations(internalSrcAsset) : undefined,
       getLastChainTrackingUpdateTimestamp(),
     ]);
 
@@ -201,9 +201,8 @@ router.get(
                     rolledSwaps.lastExecutedChunk && getSwapFields(rolledSwaps.lastExecutedChunk),
                   currentChunk: rolledSwaps.currentChunk && getSwapFields(rolledSwaps.currentChunk),
                   executedChunks: rolledSwaps.executedChunks,
-                  remainingChunks: isExternal
-                    ? (swapDepositChannel?.dcaNumberOfChunks ?? 1) - rolledSwaps.executedChunks
-                    : (swapRequest?.dcaNumberOfChunks ?? 1) - rolledSwaps.executedChunks,
+                  remainingChunks:
+                    (swapRequest?.dcaNumberOfChunks ?? 1) - rolledSwaps.executedChunks,
                 },
               }
             : {

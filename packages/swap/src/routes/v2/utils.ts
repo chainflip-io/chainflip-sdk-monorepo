@@ -500,19 +500,13 @@ export const getCcmParams = (
     : undefined;
 };
 
-export const getRolledSwapsInitialData = (swapRequest: SwapRequestData | undefined | null) => {
-  const isDca =
-    swapRequest?.dcaNumberOfChunks != null
-      ? swapRequest?.dcaNumberOfChunks > 1
-      : (swapRequest?.swapDepositChannel?.dcaChunkIntervalBlocks ?? 0) > 1;
-  return {
-    swappedOutputAmount: new Prisma.Decimal(0),
-    swappedIntermediateAmount: new Prisma.Decimal(0),
-    swappedInputAmount: new Prisma.Decimal(0),
-    executedChunks: 0,
-    currentChunk: null as null | NonNullable<SwapRequestData['swaps']>[number],
-    lastExecutedChunk: null as null | NonNullable<SwapRequestData['swaps']>[number],
-    isDca,
-    fees: [] as SwapFee[],
-  };
-};
+export const getRolledSwapsInitialData = (swapRequest: SwapRequestData | undefined | null) => ({
+  swappedOutputAmount: new Prisma.Decimal(0),
+  swappedIntermediateAmount: new Prisma.Decimal(0),
+  swappedInputAmount: new Prisma.Decimal(0),
+  executedChunks: 0,
+  currentChunk: null as null | NonNullable<SwapRequestData['swaps']>[number],
+  lastExecutedChunk: null as null | NonNullable<SwapRequestData['swaps']>[number],
+  isDca: (swapRequest?.dcaNumberOfChunks ?? 1) > 1,
+  fees: [] as SwapFee[],
+});
