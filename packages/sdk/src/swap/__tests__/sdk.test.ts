@@ -128,7 +128,7 @@ describe(SwapSDK, () => {
 
     it.each(chainflipNetworks)('returns the correct values for %s', async (network) => {
       const networkSdk = new SwapSDK({ network });
-      await expect(await networkSdk.getAssets()).toMatchSnapshot();
+      expect(await networkSdk.getAssets()).toMatchSnapshot();
     });
   });
 
@@ -2375,13 +2375,16 @@ describe(SwapSDK, () => {
 
   describe(SwapSDK.prototype.getChannelOpeningFees, () => {
     it('returns the correct fees', async () => {
-      expect(await sdk.getChannelOpeningFees()).toEqual({
-        Arbitrum: 0x0n,
-        Bitcoin: 0x0n,
-        Ethereum: 0x10n,
-        Polkadot: 0x0n,
-        Solana: 0x0n,
-      });
+      expect(await sdk.getChannelOpeningFees()).toMatchInlineSnapshot(`
+        {
+          "Arbitrum": 0n,
+          "Assethub": 0n,
+          "Bitcoin": 0n,
+          "Ethereum": 16n,
+          "Polkadot": 0n,
+          "Solana": 0n,
+        }
+      `);
     });
   });
 

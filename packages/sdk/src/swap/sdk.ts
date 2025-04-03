@@ -119,7 +119,7 @@ export class SwapSDK {
   }
 
   async getChains(sourceChain?: ChainflipChain): Promise<ChainData[]> {
-    if (sourceChain && !sourceChain.includes(sourceChain))
+    if (sourceChain && !chainflipChains.includes(sourceChain))
       throw new Error(`unsupported source chain "${sourceChain}"`);
 
     const [env, supportedAssets] = await Promise.all([
