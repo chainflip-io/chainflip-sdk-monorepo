@@ -1,5 +1,5 @@
+import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { Chain } from '@/shared/enums';
 import { u128 } from '@/shared/parsers';
 import { EventHandlerArgs } from '..';
 
@@ -12,7 +12,7 @@ const chainStateUpdatedArgs = z.object({
 });
 
 const chainStateUpdated =
-  (chain: Chain) =>
+  (chain: ChainflipChain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
     const { blockHeight } = chainStateUpdatedArgs.parse(event.args).newChainState;
     const currentTracking = await prisma.chainTracking.findFirst({ where: { chain } });

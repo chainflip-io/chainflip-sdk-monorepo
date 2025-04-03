@@ -1,7 +1,8 @@
 import { WsClient, RpcParams } from '@chainflip/rpc';
+import { ChainflipAsset } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import WebSocket from 'ws';
-import { InternalAsset, getAssetAndChain } from '@/shared/enums';
+import { getAssetAndChain } from '@/shared/enums';
 import { DcaParams, SwapFeeType } from '@/shared/schemas';
 import { memoize } from './function';
 import env from '../config/env';
@@ -16,8 +17,8 @@ export type QuoteCcmParams = {
 };
 
 export type SwapRateArgs = {
-  srcAsset: InternalAsset;
-  destAsset: InternalAsset;
+  srcAsset: ChainflipAsset;
+  destAsset: ChainflipAsset;
   depositAmount: bigint;
   limitOrders?: QuoteLimitOrders;
   brokerCommissionBps?: number;

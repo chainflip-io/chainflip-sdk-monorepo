@@ -1,43 +1,55 @@
+import { arbitrumIngressEgressCcmBroadcastRequested } from '@chainflip/processor/190/arbitrumIngressEgress/ccmBroadcastRequested';
+import { assethubIngressEgressCcmBroadcastRequested } from '@chainflip/processor/190/assethubIngressEgress/ccmBroadcastRequested';
+import { bitcoinIngressEgressCcmBroadcastRequested } from '@chainflip/processor/190/bitcoinIngressEgress/ccmBroadcastRequested';
+import { ethereumIngressEgressCcmBroadcastRequested } from '@chainflip/processor/190/ethereumIngressEgress/ccmBroadcastRequested';
+import { polkadotIngressEgressCcmBroadcastRequested } from '@chainflip/processor/190/polkadotIngressEgress/ccmBroadcastRequested';
+import { solanaIngressEgressCcmBroadcastRequested } from '@chainflip/processor/190/solanaIngressEgress/ccmBroadcastRequested';
+import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { unsignedInteger } from '@/shared/parsers';
 import type { EventHandlerArgs } from '..';
 import logger from '../../utils/logger';
-import { egressId as egressIdSchema } from '../common';
 
-const ccmBroadcastRequestArgs = z.object({
-  egressId: egressIdSchema,
-  broadcastId: unsignedInteger,
-});
+const schemas = {
+  Arbitrum: arbitrumIngressEgressCcmBroadcastRequested,
+  Assethub: assethubIngressEgressCcmBroadcastRequested,
+  Bitcoin: bitcoinIngressEgressCcmBroadcastRequested,
+  Ethereum: ethereumIngressEgressCcmBroadcastRequested,
+  Polkadot: polkadotIngressEgressCcmBroadcastRequested,
+  Solana: solanaIngressEgressCcmBroadcastRequested,
+} as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
-const ccmBroadcastRequested = async ({ event, prisma, block }: EventHandlerArgs) => {
-  const { broadcastId, egressId } = ccmBroadcastRequestArgs.parse(event.args);
+const ccmBroadcastRequested =
+  (chain: ChainflipChain) =>
+  async ({ event, prisma, block }: EventHandlerArgs) => {
+    const {
+      broadcastId,
+      egressId: [, nativeId],
+    } = schemas[chain].parse(event.args);
 
-  const [chain, nativeId] = egressId;
+    const egresses = await prisma.egress.findMany({
+      where: { chain, nativeId },
+    });
 
-  const egresses = await prisma.egress.findMany({
-    where: { chain, nativeId },
-  });
+    if (egresses.length === 0) {
+      logger.customInfo('no egresses found, skipping', {}, { broadcastId });
+      return;
+    }
 
-  if (egresses.length === 0) {
-    logger.customInfo('no egresses found, skipping', {}, { broadcastId });
-    return;
-  }
+    const broadcast = await prisma.broadcast.create({
+      data: {
+        chain,
+        nativeId: broadcastId,
+        requestedAt: new Date(block.timestamp),
+        requestedBlockIndex: `${block.height}-${event.indexInBlock}`,
+      },
+    });
 
-  const broadcast = await prisma.broadcast.create({
-    data: {
-      chain,
-      nativeId: broadcastId,
-      requestedAt: new Date(block.timestamp),
-      requestedBlockIndex: `${block.height}-${event.indexInBlock}`,
-    },
-  });
-
-  await prisma.egress.updateMany({
-    where: {
-      id: { in: egresses.map((egress) => egress.id) },
-    },
-    data: { broadcastId: broadcast.id },
-  });
-};
+    await prisma.egress.updateMany({
+      where: {
+        id: { in: egresses.map((egress) => egress.id) },
+      },
+      data: { broadcastId: broadcast.id },
+    });
+  };
 
 export default ccmBroadcastRequested;

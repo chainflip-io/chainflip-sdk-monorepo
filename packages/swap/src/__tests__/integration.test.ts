@@ -8,7 +8,6 @@ import * as path from 'path';
 import { Observable, filter, firstValueFrom, from, map, shareReplay, timeout } from 'rxjs';
 import { promisify } from 'util';
 import { vi, describe, it, beforeAll, beforeEach, afterEach, expect } from 'vitest';
-import { Assets, Chains } from '@/shared/enums';
 import { QuoteQueryParams } from '@/shared/schemas';
 import {
   boostPoolsDepth,
@@ -179,10 +178,10 @@ describe('python integration test', () => {
     await expectMesage('connected');
 
     const query = {
-      srcAsset: Assets.FLIP,
-      srcChain: Chains.Ethereum,
-      destAsset: Assets.USDC,
-      destChain: Chains.Ethereum,
+      srcAsset: 'FLIP',
+      srcChain: 'Ethereum',
+      destAsset: 'USDC',
+      destChain: 'Ethereum',
       amount: '1000000000000000000',
     } as QuoteQueryParams;
     const params = new URLSearchParams(query as Record<string, any>);
@@ -214,10 +213,10 @@ describe('python integration test', () => {
     await expectMesage('connected');
 
     const query = {
-      srcAsset: Assets.FLIP,
-      srcChain: Chains.Ethereum,
-      destAsset: Assets.USDC,
-      destChain: Chains.Ethereum,
+      srcAsset: 'FLIP',
+      srcChain: 'Ethereum',
+      destAsset: 'USDC',
+      destChain: 'Ethereum',
       amount: '1000000000000000000',
     } as QuoteQueryParams;
     const params = new URLSearchParams(query as Record<string, any>);

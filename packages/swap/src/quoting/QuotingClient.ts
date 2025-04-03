@@ -1,8 +1,8 @@
+import { AssetAndChain } from '@chainflip/utils/chainflip';
 import * as crypto from 'crypto';
 import { EventEmitter } from 'events';
 import { io, Socket } from 'socket.io-client';
 import { promisify } from 'util';
-import { AssetAndChain } from '@/shared/enums';
 import { LegJson, MarketMakerQuoteRequest, MarketMakerRawQuote } from './schemas';
 import logger from '../utils/logger';
 

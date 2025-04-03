@@ -1,5 +1,9 @@
+import {
+  ChainflipChain,
+  chainflipNetworks,
+  internalAssetToRpcAsset,
+} from '@chainflip/utils/chainflip';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { Assets, Chain, ChainflipNetworks, Chains, InternalAssets } from '@/shared/enums';
 import { BoostQuote, Quote } from '@/shared/schemas';
 import {
   boostPoolsDepth,
@@ -36,7 +40,7 @@ vi.mock('@trpc/client', async (importOriginal) => {
 global.fetch = vi.fn();
 
 describe(SwapSDK, () => {
-  const sdk = new SwapSDK({ network: ChainflipNetworks.sisyphos });
+  const sdk = new SwapSDK({ network: 'sisyphos' });
 
   const defaultRpcMocks = (url: string, data: any) => {
     if (data.method === 'cf_environment') {
@@ -47,7 +51,7 @@ describe(SwapSDK, () => {
 
     if (data.method === 'cf_supported_assets') {
       return Promise.resolve({
-        data: supportedAssets({ assets: Object.values(InternalAssets) }),
+        data: supportedAssets({ assets: Object.values(internalAssetToRpcAsset) }),
       });
     }
 
@@ -77,7 +81,7 @@ describe(SwapSDK, () => {
         return defaultRpcMocks(url, data);
       });
 
-      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos });
+      const freshSdk = new SwapSDK({ network: 'sisyphos' });
       expect(await freshSdk.getAssets()).toMatchSnapshot();
     });
 
@@ -93,16 +97,13 @@ describe(SwapSDK, () => {
     });
 
     it('throws when requesting an unsupported chain', async () => {
-      await expect(sdk.getChains('Dogecoin' as Chain)).rejects.toMatchSnapshot();
+      await expect(sdk.getChains('Dogecoin' as ChainflipChain)).rejects.toMatchSnapshot();
     });
 
-    it.each(Object.values(ChainflipNetworks))(
-      'returns the correct values for %s',
-      async (network) => {
-        const networkSdk = new SwapSDK({ network });
-        expect(await networkSdk.getChains()).toMatchSnapshot();
-      },
-    );
+    it.each(chainflipNetworks)('returns the correct values for %s', async (network) => {
+      const networkSdk = new SwapSDK({ network });
+      expect(await networkSdk.getChains()).toMatchSnapshot();
+    });
   });
 
   describe(SwapSDK.prototype.getAssets, () => {
@@ -117,7 +118,7 @@ describe(SwapSDK, () => {
         return defaultRpcMocks(url, data);
       });
 
-      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos });
+      const freshSdk = new SwapSDK({ network: 'sisyphos' });
       expect(await freshSdk.getAssets()).toMatchSnapshot();
     });
 
@@ -126,16 +127,13 @@ describe(SwapSDK, () => {
     });
 
     it('throws when requesting an unsupported chain', async () => {
-      await expect(sdk.getChains('Dogecoin' as Chain)).rejects.toMatchSnapshot();
+      await expect(sdk.getChains('Dogecoin' as ChainflipChain)).rejects.toMatchSnapshot();
     });
 
-    it.each(Object.values(ChainflipNetworks))(
-      'returns the correct values for %s',
-      async (network) => {
-        const networkSdk = new SwapSDK({ network });
-        await expect(await networkSdk.getAssets()).toMatchSnapshot();
-      },
-    );
+    it.each(chainflipNetworks)('returns the correct values for %s', async (network) => {
+      const networkSdk = new SwapSDK({ network });
+      await expect(await networkSdk.getAssets()).toMatchSnapshot();
+    });
   });
 
   describe(SwapSDK.prototype.getQuote, () => {
@@ -360,10 +358,10 @@ describe(SwapSDK, () => {
       });
 
       const response = await sdk.requestDepositAddress({
-        srcChain: Chains.Bitcoin,
-        srcAsset: Assets.BTC,
-        destChain: Chains.Ethereum,
-        destAsset: Assets.FLIP,
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'FLIP',
         destAddress: '0xcafebabe',
         amount: BigInt(1e18).toString(),
         fillOrKillParams: {
@@ -373,10 +371,10 @@ describe(SwapSDK, () => {
         },
       });
       expect(rpcSpy).toHaveBeenLastCalledWith({
-        srcChain: Chains.Bitcoin,
-        srcAsset: Assets.BTC,
-        destChain: Chains.Ethereum,
-        destAsset: Assets.FLIP,
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'FLIP',
         destAddress: '0xcafebabe',
         amount: BigInt(1e18).toString(),
         fillOrKillParams: {
@@ -423,10 +421,10 @@ describe(SwapSDK, () => {
       });
 
       const response = await sdk.requestDepositAddress({
-        srcChain: Chains.Bitcoin,
-        srcAsset: Assets.BTC,
-        destChain: Chains.Ethereum,
-        destAsset: Assets.FLIP,
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'FLIP',
         destAddress: '0xcafebabe',
         amount: BigInt(1e18).toString(),
         dcaParams: {
@@ -440,10 +438,10 @@ describe(SwapSDK, () => {
         },
       });
       expect(rpcSpy).toHaveBeenLastCalledWith({
-        srcChain: Chains.Bitcoin,
-        srcAsset: Assets.BTC,
-        destChain: Chains.Ethereum,
-        destAsset: Assets.FLIP,
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'FLIP',
         destAddress: '0xcafebabe',
         amount: BigInt(1e18).toString(),
         dcaParams: {
@@ -929,8 +927,8 @@ describe(SwapSDK, () => {
       });
 
       const quote = {
-        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
         depositAmount: BigInt(1e18).toString(),
         type: 'REGULAR',
         isVaultSwap: false,
@@ -945,10 +943,10 @@ describe(SwapSDK, () => {
         },
       });
       expect(rpcSpy).toHaveBeenLastCalledWith({
-        srcChain: Chains.Bitcoin,
-        srcAsset: Assets.BTC,
-        destChain: Chains.Ethereum,
-        destAsset: Assets.FLIP,
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'FLIP',
         srcAddress: undefined,
         destAddress: '0xcafebabe',
         dcaParams: undefined,
@@ -1001,8 +999,8 @@ describe(SwapSDK, () => {
       });
 
       const quote = {
-        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
         depositAmount: BigInt(1e18).toString(),
         dcaParams: {
           numberOfChunks: 100,
@@ -1021,10 +1019,10 @@ describe(SwapSDK, () => {
         },
       });
       expect(rpcSpy).toHaveBeenLastCalledWith({
-        srcChain: Chains.Bitcoin,
-        srcAsset: Assets.BTC,
-        destChain: Chains.Ethereum,
-        destAsset: Assets.FLIP,
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'FLIP',
         srcAddress: undefined,
         destAddress: '0xcafebabe',
         amount: BigInt(1e18).toString(),
@@ -1094,8 +1092,8 @@ describe(SwapSDK, () => {
         broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
       }).requestDepositAddressV2({
         quote: {
-          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
           depositAmount: BigInt(1e18).toString(),
           type: 'REGULAR',
           isVaultSwap: false,
@@ -1182,8 +1180,8 @@ describe(SwapSDK, () => {
         broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
       }).requestDepositAddressV2({
         quote: {
-          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
           depositAmount: BigInt(1e18).toString(),
           type: 'REGULAR',
           isVaultSwap: false,
@@ -1270,8 +1268,8 @@ describe(SwapSDK, () => {
         broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
       }).requestDepositAddressV2({
         quote: {
-          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
           depositAmount: BigInt(1e18).toString(),
           type: 'REGULAR',
           isVaultSwap: false,
@@ -1362,8 +1360,8 @@ describe(SwapSDK, () => {
         broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
       }).requestDepositAddressV2({
         quote: {
-          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
           depositAmount: BigInt(1e18).toString(),
           dcaParams: {
             numberOfChunks: 100,
@@ -1459,8 +1457,8 @@ describe(SwapSDK, () => {
         broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
       }).requestDepositAddressV2({
         quote: {
-          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
           depositAmount: BigInt(1e18).toString(),
           type: 'REGULAR',
           ccmParams: {
@@ -1564,8 +1562,8 @@ describe(SwapSDK, () => {
         broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
       }).requestDepositAddressV2({
         quote: {
-          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
           depositAmount: BigInt(1e18).toString(),
           maxBoostFeeBps: MAX_BOOST_FEE_BPS,
           type: 'REGULAR',
@@ -1633,8 +1631,8 @@ describe(SwapSDK, () => {
           broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
         }).requestDepositAddressV2({
           quote: {
-            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+            destAsset: { asset: 'FLIP', chain: 'Ethereum' },
             depositAmount: BigInt(1e18).toString(),
             dcaParams: {
               numberOfChunks: 100,
@@ -1658,8 +1656,8 @@ describe(SwapSDK, () => {
           broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
         }).requestDepositAddressV2({
           quote: {
-            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+            destAsset: { asset: 'FLIP', chain: 'Ethereum' },
             depositAmount: BigInt(1e18).toString(),
             type: 'DCA',
             isVaultSwap: false,
@@ -1680,8 +1678,8 @@ describe(SwapSDK, () => {
           broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
         }).requestDepositAddressV2({
           quote: {
-            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+            destAsset: { asset: 'FLIP', chain: 'Ethereum' },
             depositAmount: BigInt(1e18).toString(),
             type: 'REGULAR',
             isVaultSwap: true,
@@ -1702,8 +1700,8 @@ describe(SwapSDK, () => {
           broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
         }).requestDepositAddressV2({
           quote: {
-            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+            destAsset: { asset: 'FLIP', chain: 'Ethereum' },
             depositAmount: BigInt(1e18).toString(),
             type: 'REGULAR',
             isVaultSwap: false,
@@ -1729,8 +1727,8 @@ describe(SwapSDK, () => {
           broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
         }).requestDepositAddressV2({
           quote: {
-            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+            destAsset: { asset: 'FLIP', chain: 'Ethereum' },
             depositAmount: BigInt(1e18).toString(),
             type: 'REGULAR',
             ccmParams: {
@@ -1761,8 +1759,8 @@ describe(SwapSDK, () => {
       });
 
       const quote = {
-        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
         depositAmount: BigInt(1e18).toString(),
         estimatedPrice: '2500',
         type: 'REGULAR',
@@ -1778,8 +1776,8 @@ describe(SwapSDK, () => {
         },
       });
       expect(rpcSpy).toHaveBeenLastCalledWith({
-        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
         srcAddress: undefined,
         destAddress: '0xcafebabe',
         dcaParams: undefined,
@@ -1809,8 +1807,8 @@ describe(SwapSDK, () => {
       });
 
       const quote = {
-        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
         depositAmount: BigInt(1e18).toString(),
         dcaParams: {
           numberOfChunks: 100,
@@ -1834,8 +1832,8 @@ describe(SwapSDK, () => {
         },
       });
       expect(rpcSpy).toHaveBeenLastCalledWith({
-        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
         srcAddress: undefined,
         destAddress: '0xcafebabe',
         amount: BigInt(1e18).toString(),
@@ -1864,8 +1862,8 @@ describe(SwapSDK, () => {
 
     it('rejects commission if no broker account is given and no broker url is configured', async () => {
       const quote = {
-        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
         depositAmount: BigInt(1e18).toString(),
         dcaParams: {
           numberOfChunks: 100,
@@ -1891,8 +1889,8 @@ describe(SwapSDK, () => {
 
     it('rejects affiliates if no broker account is given and no broker url is configured', async () => {
       const quote = {
-        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
         depositAmount: BigInt(1e18).toString(),
         dcaParams: {
           numberOfChunks: 100,
@@ -1942,8 +1940,8 @@ describe(SwapSDK, () => {
         broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
       }).encodeVaultSwapData({
         quote: {
-          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
           depositAmount: BigInt(1e18).toString(),
           type: 'REGULAR',
           isVaultSwap: true,
@@ -2013,8 +2011,8 @@ describe(SwapSDK, () => {
         broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
       }).encodeVaultSwapData({
         quote: {
-          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
           depositAmount: BigInt(1e18).toString(),
           dcaParams: {
             numberOfChunks: 100,
@@ -2088,8 +2086,8 @@ describe(SwapSDK, () => {
         broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
       }).encodeVaultSwapData({
         quote: {
-          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
           depositAmount: BigInt(1e18).toString(),
           type: 'REGULAR',
           ccmParams: {
@@ -2171,8 +2169,8 @@ describe(SwapSDK, () => {
         broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
       }).encodeVaultSwapData({
         quote: {
-          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
           depositAmount: BigInt(1e18).toString(),
           maxBoostFeeBps: MAX_BOOST_FEE_BPS,
           type: 'REGULAR',
@@ -2218,8 +2216,8 @@ describe(SwapSDK, () => {
 
     it('rejects request with broker account if broker url is configured', async () => {
       const quote = {
-        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
         depositAmount: BigInt(1e18).toString(),
         dcaParams: {
           numberOfChunks: 100,
@@ -2254,8 +2252,8 @@ describe(SwapSDK, () => {
           broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
         }).encodeVaultSwapData({
           quote: {
-            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+            destAsset: { asset: 'FLIP', chain: 'Ethereum' },
             depositAmount: BigInt(1e18).toString(),
             dcaParams: {
               numberOfChunks: 100,
@@ -2279,8 +2277,8 @@ describe(SwapSDK, () => {
           broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
         }).encodeVaultSwapData({
           quote: {
-            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+            destAsset: { asset: 'FLIP', chain: 'Ethereum' },
             depositAmount: BigInt(1e18).toString(),
             type: 'DCA',
             isVaultSwap: true,
@@ -2301,8 +2299,8 @@ describe(SwapSDK, () => {
           broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
         }).encodeVaultSwapData({
           quote: {
-            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+            destAsset: { asset: 'FLIP', chain: 'Ethereum' },
             depositAmount: BigInt(1e18).toString(),
             type: 'REGULAR',
             isVaultSwap: false,
@@ -2323,8 +2321,8 @@ describe(SwapSDK, () => {
           broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
         }).encodeVaultSwapData({
           quote: {
-            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+            destAsset: { asset: 'FLIP', chain: 'Ethereum' },
             depositAmount: BigInt(1e18).toString(),
             type: 'REGULAR',
             isVaultSwap: true,
@@ -2350,8 +2348,8 @@ describe(SwapSDK, () => {
           broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
         }).encodeVaultSwapData({
           quote: {
-            srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-            destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+            srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+            destAsset: { asset: 'FLIP', chain: 'Ethereum' },
             depositAmount: BigInt(1e18).toString(),
             type: 'REGULAR',
             ccmParams: {
@@ -2422,7 +2420,7 @@ describe(SwapSDK, () => {
         return defaultRpcMocks(url, data);
       });
 
-      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos });
+      const freshSdk = new SwapSDK({ network: 'sisyphos' });
       expect(
         await freshSdk.getBoostLiquidity({
           feeTierBps: 10,
@@ -2459,7 +2457,7 @@ describe(SwapSDK, () => {
         return defaultRpcMocks(url, data);
       });
 
-      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos });
+      const freshSdk = new SwapSDK({ network: 'sisyphos' });
       expect(
         await freshSdk.getBoostLiquidity({
           feeTierBps: 10,
@@ -2486,7 +2484,7 @@ describe(SwapSDK, () => {
         return defaultRpcMocks(url, data);
       });
 
-      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos });
+      const freshSdk = new SwapSDK({ network: 'sisyphos' });
       expect(await freshSdk.getBoostLiquidity()).toMatchSnapshot();
     });
 
@@ -2520,7 +2518,7 @@ describe(SwapSDK, () => {
         return defaultRpcMocks(url, data);
       });
 
-      const freshSdk = new SwapSDK({ network: ChainflipNetworks.sisyphos });
+      const freshSdk = new SwapSDK({ network: 'sisyphos' });
       expect(
         await freshSdk.getBoostLiquidity({
           asset: 'BTC',

@@ -1,10 +1,10 @@
+import { ChainflipAsset } from '@chainflip/utils/chainflip';
 import { AsyncCacheMap } from '@/shared/dataStructures';
-import { InternalAsset } from '@/shared/enums';
 import { ONE_IN_PIP, bigintMin, getPipAmountFromAmount } from '@/shared/functions';
 import { getBoostPoolsDepth } from './rpc';
 
 export const boostPoolsCache = new AsyncCacheMap({
-  fetch: (asset: InternalAsset) => getBoostPoolsDepth({ asset }),
+  fetch: (asset: ChainflipAsset) => getBoostPoolsDepth({ asset }),
   resetExpiryOnLookup: false,
   ttl: 6_000,
 });
@@ -14,7 +14,7 @@ export const getBoostFeeBpsForAmount = async ({
   asset,
 }: {
   amount: bigint;
-  asset: InternalAsset;
+  asset: ChainflipAsset;
 }): Promise<{ estimatedBoostFeeBps: number | undefined; maxBoostFeeBps: number }> => {
   const assetBoostPoolsDepth = await boostPoolsCache.get(asset);
 

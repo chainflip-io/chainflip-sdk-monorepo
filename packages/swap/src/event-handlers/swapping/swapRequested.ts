@@ -1,11 +1,11 @@
 import { swappingSwapRequested as schema180 } from '@chainflip/processor/180/swapping/swapRequested';
 import { swappingSwapRequested as schema190 } from '@chainflip/processor/190/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
+import { assetConstants, ChainflipAsset, ChainflipChain } from '@chainflip/utils/chainflip';
 import { isNullish } from '@chainflip/utils/guard';
 import assert from 'assert';
 import z from 'zod';
 import { formatTxRef } from '@/shared/common';
-import { assetConstants, Chain, InternalAsset } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
 import { assertNever } from '@/shared/guards';
 import { pascalCaseToScreamingSnakeCase } from '@/shared/strings';
@@ -78,7 +78,7 @@ const getRequestInfo = (requestType: RequestType) => {
 };
 
 export const getVaultOriginTxRef = (
-  chain: Chain,
+  chain: ChainflipChain,
   origin: Extract<z.output<typeof schema180>['origin'], { __kind: 'Vault' }>,
 ) => {
   const kind = origin.txId.__kind;
@@ -102,7 +102,7 @@ export const getVaultOriginTxRef = (
 
 export const getOriginInfo = async (
   prisma: Prisma.TransactionClient,
-  srcAsset: InternalAsset,
+  srcAsset: ChainflipAsset,
   origin: Origin,
 ) => {
   if (origin.__kind === 'DepositChannel') {

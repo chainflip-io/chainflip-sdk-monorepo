@@ -14,6 +14,8 @@ vi.mock('@polkadot/api', () => ({
                 ingressEgressBitcoin: { boostDepositsEnabled: true },
                 ingressEgressPolkadot: { boostDepositsEnabled: false },
                 ingressEgressArbitrum: { boostDepositsEnabled: false },
+                ingressEgressSolana: { boostDepositsEnabled: false },
+                ingressEgressAssethub: { boostDepositsEnabled: false },
               }),
             }),
           },

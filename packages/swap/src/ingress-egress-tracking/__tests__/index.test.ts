@@ -1,8 +1,9 @@
 import { findVaultSwapData as findBitcoinVaultSwapData } from '@chainflip/bitcoin';
+import RedisClient from '@chainflip/redis';
 import { findVaultSwapData as findSolanaVaultSwapData } from '@chainflip/solana';
+import { ChainflipChain } from '@chainflip/utils/chainflip';
 import Redis from 'ioredis';
 import { vi, describe, expect, beforeAll, beforeEach, it } from 'vitest';
-import { Chain } from '@/shared/enums';
 import { getPendingBroadcast, getPendingDeposit, getPendingVaultSwap } from '..';
 import prisma, { Broadcast } from '../../client';
 import logger from '../../utils/logger';
@@ -12,7 +13,7 @@ vi.mock('@chainflip/solana');
 vi.mock('@chainflip/bitcoin');
 
 const updateChainTracking = async (data: {
-  chain: Chain;
+  chain: ChainflipChain;
   height: bigint;
   stateChainHeight?: number;
 }) => {
@@ -51,7 +52,7 @@ describe('ingress-egress-tracking', () => {
         'deposit:Ethereum:0x1234',
         JSON.stringify({
           amount: '0x9000',
-          asset: 'FLIP',
+          asset: { asset: 'FLIP', chain: 'Ethereum' },
           deposit_chain_block_height: 1234567890,
           deposit_details: {
             tx_hashes: ['0x1234'],
@@ -75,7 +76,7 @@ describe('ingress-egress-tracking', () => {
         'deposit:Ethereum:0x1234',
         JSON.stringify({
           amount: '0x9000',
-          asset: 'FLIP',
+          asset: { asset: 'FLIP', chain: 'Ethereum' },
           deposit_chain_block_height: 1234567890,
           deposit_details: {
             tx_hashes: ['0x1234'],
@@ -135,7 +136,7 @@ describe('ingress-egress-tracking', () => {
           'deposit:Bitcoin:tb1q8uzv43phxxsndlxglj74ryc6umxuzuz22u7erf',
           JSON.stringify({
             amount: '0x9000',
-            asset: 'BTC',
+            asset: { asset: 'BTC', chain: 'Bitcoin' },
             deposit_chain_block_height: 1234567890,
             deposit_details: { tx_id: '0x1234', vout: 1 },
           }),
@@ -161,7 +162,7 @@ describe('ingress-egress-tracking', () => {
     });
 
     it('returns null if the redis client throws (non-bitcoin)', async () => {
-      vi.spyOn(Redis.prototype, 'lrange').mockRejectedValueOnce(new Error());
+      vi.spyOn(RedisClient.prototype, 'getDeposits').mockRejectedValueOnce(new Error());
       await updateChainTracking({ chain: 'Ethereum', height: 1234567893n });
 
       const deposit = await getPendingDeposit('Flip', '0x1234');
@@ -171,7 +172,7 @@ describe('ingress-egress-tracking', () => {
     });
 
     it('returns null if the redis client throws (bitcoin)', async () => {
-      vi.spyOn(Redis.prototype, 'lrange').mockRejectedValueOnce(new Error());
+      vi.spyOn(RedisClient.prototype, 'getDeposits').mockRejectedValueOnce(new Error());
 
       const deposit = await getPendingDeposit('Btc', '');
 
@@ -207,7 +208,7 @@ describe('ingress-egress-tracking', () => {
     });
 
     it('returns null if the client throws an error', async () => {
-      vi.spyOn(Redis.prototype, 'get').mockRejectedValueOnce(new Error());
+      vi.spyOn(RedisClient.prototype, 'getBroadcast').mockRejectedValueOnce(new Error());
 
       expect(await getPendingBroadcast(broadcast)).toBeNull();
       expect(logger.error).toHaveBeenCalled();
@@ -216,7 +217,6 @@ describe('ingress-egress-tracking', () => {
 
   describe(getPendingVaultSwap, () => {
     it('gets pending vault swap from redis for bitcoin', async () => {
-      const redisSpy = vi.spyOn(Redis.prototype, 'get');
       await updateChainTracking({ chain: 'Bitcoin', height: 1234567893n });
 
       await redis.set(
@@ -275,14 +275,9 @@ describe('ingress-egress-tracking', () => {
           "txRef": "77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239",
         }
       `);
-      expect(redisSpy).toHaveBeenCalledTimes(1);
-      expect(redisSpy).toHaveBeenCalledWith(
-        'vault_deposit:Bitcoin:0x396255c0153a4af5f2b7f07adbdb60ff41c7eaff6e6137e5d48c8d11dadca477',
-      );
     });
 
     it('gets pending vault swap from redis for ethereum', async () => {
-      const redisSpy = vi.spyOn(Redis.prototype, 'get');
       await updateChainTracking({ chain: 'Ethereum', height: 1234567893n });
 
       await redis.set(
@@ -337,17 +332,9 @@ describe('ingress-egress-tracking', () => {
           "txRef": "0x648b916f4aef7dbae2d74ee8f0f4d498b2468151cd2f83d4a3f8a1d80f27f9f6",
         }
       `);
-      expect(redisSpy).toHaveBeenCalledTimes(2);
-      expect(redisSpy).toHaveBeenCalledWith(
-        'vault_deposit:Ethereum:0x648b916f4aef7dbae2d74ee8f0f4d498b2468151cd2f83d4a3f8a1d80f27f9f6',
-      );
-      expect(redisSpy).toHaveBeenCalledWith(
-        'vault_deposit:Arbitrum:0x648b916f4aef7dbae2d74ee8f0f4d498b2468151cd2f83d4a3f8a1d80f27f9f6',
-      );
     });
 
     it('gets pending vault swap from toolkit for solana', async () => {
-      const redisSpy = vi.spyOn(Redis.prototype, 'get');
       await updateChainTracking({ chain: 'Solana', height: 1234567893n });
 
       vi.mocked(findSolanaVaultSwapData).mockResolvedValueOnce({
@@ -399,7 +386,6 @@ describe('ingress-egress-tracking', () => {
           "txRef": "4C8eMMsbpworHSTqDoqd31HnTFF4dJdG5mJVEJaK7Vjjeu7fC99ZDkDakiMHRNRsiWqcaQzyavoTrnH6gSkQR3Xj",
         }
       `);
-      expect(redisSpy).not.toHaveBeenCalled();
       expect(findSolanaVaultSwapData).toHaveBeenCalledTimes(1);
       expect(findSolanaVaultSwapData).toHaveBeenCalledWith(
         'http://solana-rpc.test',
@@ -408,7 +394,6 @@ describe('ingress-egress-tracking', () => {
     });
 
     it('gets pending vault swap from toolkit for bitcoin', async () => {
-      const redisSpy = vi.spyOn(Redis.prototype, 'get');
       await updateChainTracking({ chain: 'Bitcoin', height: 1234567893n });
 
       vi.mocked(findBitcoinVaultSwapData).mockResolvedValueOnce({
@@ -462,10 +447,6 @@ describe('ingress-egress-tracking', () => {
           "txRef": "91d7edcdca97558e74d3d69205402026e3bb70158ec9d8cc063a5072fcbc5024",
         }
       `);
-      expect(redisSpy).toHaveBeenCalledTimes(1);
-      expect(redisSpy).toHaveBeenCalledWith(
-        'vault_deposit:Bitcoin:0x2450bcfc72503a06ccd8c98e1570bbe32620400592d6d3748e5597cacdedd791',
-      );
       expect(findBitcoinVaultSwapData).toHaveBeenCalledTimes(1);
       expect(findBitcoinVaultSwapData).toHaveBeenCalledWith(
         'http://bitcoin-rpc.test',
@@ -518,7 +499,7 @@ describe('ingress-egress-tracking', () => {
     });
 
     it('returns null if the redis client throws', async () => {
-      vi.spyOn(Redis.prototype, 'get').mockRejectedValueOnce(new Error());
+      vi.spyOn(RedisClient.prototype, 'getPendingVaultSwap').mockRejectedValueOnce(new Error());
 
       const swap = await getPendingVaultSwap(
         '0x6187fbe7da29b6ca48f02fe1f07fa7f02b5570cc2d8950c53f4f427ced57db72',

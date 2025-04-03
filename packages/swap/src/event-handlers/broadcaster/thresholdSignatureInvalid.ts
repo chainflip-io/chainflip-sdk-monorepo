@@ -1,5 +1,5 @@
+import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { Chain } from '@/shared/enums';
 import { number } from '@/shared/parsers';
 import { EventHandlerArgs } from '..';
 
@@ -9,7 +9,7 @@ const thresholdSignatureInvalidArgs = z.object({
 });
 
 const thresholdSignatureInvalid =
-  (chain: Chain) =>
+  (chain: ChainflipChain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
     const { broadcastId, retryBroadcastId } = thresholdSignatureInvalidArgs.parse(event.args);
     if (retryBroadcastId === undefined) return;

@@ -1,5 +1,5 @@
+import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { describe, it, expect } from 'vitest';
-import { Chain } from '@/shared/enums';
 import { Prisma } from '../../../client';
 import { getEgressStatusFields } from '../../v2/utils';
 
@@ -16,7 +16,7 @@ describe(getEgressStatusFields, () => {
   const mockEgress = {
     id: 1009n,
     nativeId: 19n,
-    chain: 'Ethereum' as Chain,
+    chain: 'Ethereum' as ChainflipChain,
     amount: new Prisma.Decimal(4192707216034),
     scheduledAt: new Date('1970-01-01T00:09:24.000Z'),
     scheduledBlockIndex: '94-595',
@@ -26,7 +26,7 @@ describe(getEgressStatusFields, () => {
     broadcast: {
       id: 727n,
       nativeId: 7n,
-      chain: 'Ethereum' as Chain,
+      chain: 'Ethereum' as ChainflipChain,
       requestedAt: new Date('1970-01-01T00:09:24.000Z'),
       requestedBlockIndex: '94-843',
       succeededAt: null,

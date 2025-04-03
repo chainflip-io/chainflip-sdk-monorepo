@@ -1,7 +1,7 @@
 import type { Prisma } from '.prisma/client';
 import { HandlerMap } from '@chainflip/processor';
 import type { Semver } from '@chainflip/processor/types';
-import { Chains } from '@/shared/enums';
+import { ChainflipChain, chainflipChains } from '@chainflip/utils/chainflip';
 import broadcastAborted from './broadcaster/broadcastAborted';
 import broadcastSuccess from './broadcaster/broadcastSuccess';
 import thresholdSignatureInvalid from './broadcaster/thresholdSignatureInvalid';
@@ -32,6 +32,24 @@ import swapScheduled from './swapping/swapScheduled';
 import chainStateUpdated from './tracking/chainStateUpdated';
 import type { Block, Event } from '../gql/generated/graphql';
 
+// eslint-disable-next-line @typescript-eslint/no-shadow, @typescript-eslint/ban-types
+type GenericPalletEventMap<Pallet extends string, Event extends string> = {} & {
+  [C in ChainflipChain as `${C}${Pallet}`]: {
+    [E in Event]: `${C}${Pallet}.${E}`;
+  };
+};
+
+const genericPalletEvents = <const P extends string, const E extends string>(
+  pallet: P,
+  events: E[],
+) =>
+  Object.fromEntries(
+    chainflipChains.map((c) => [
+      [`${c}${pallet}`],
+      Object.fromEntries(events.map((e) => [e, `${c}${pallet}.${e}`])),
+    ]),
+  ) as GenericPalletEventMap<P, E>;
+
 export const events = {
   LiquidityPools: {
     NewPoolCreated: 'LiquidityPools.NewPoolCreated',
@@ -54,101 +72,23 @@ export const events = {
     CreditedOnChain: 'Swapping.CreditedOnChain',
     RefundedOnChain: 'Swapping.RefundedOnChain',
   },
-  BitcoinIngressEgress: {
-    BatchBroadcastRequested: 'BitcoinIngressEgress.BatchBroadcastRequested',
-    CcmBroadcastRequested: 'BitcoinIngressEgress.CcmBroadcastRequested',
-    DepositFinalised: 'BitcoinIngressEgress.DepositFinalised',
-    BoostPoolCreated: 'BitcoinIngressEgress.BoostPoolCreated',
-    DepositBoosted: 'BitcoinIngressEgress.DepositBoosted',
-    InsufficientBoostLiquidity: 'BitcoinIngressEgress.InsufficientBoostLiquidity',
-    TransactionRejectedByBroker: 'BitcoinIngressEgress.TransactionRejectedByBroker',
-    DepositFailed: 'BitcoinIngressEgress.DepositFailed',
-  },
-  EthereumIngressEgress: {
-    BatchBroadcastRequested: 'EthereumIngressEgress.BatchBroadcastRequested',
-    CcmBroadcastRequested: 'EthereumIngressEgress.CcmBroadcastRequested',
-    DepositFinalised: 'EthereumIngressEgress.DepositFinalised',
-    BoostPoolCreated: 'EthereumIngressEgress.BoostPoolCreated',
-    DepositBoosted: 'EthereumIngressEgress.DepositBoosted',
-    InsufficientBoostLiquidity: 'EthereumIngressEgress.InsufficientBoostLiquidity',
-    TransactionRejectedByBroker: 'EthereumIngressEgress.TransactionRejectedByBroker',
-    DepositFailed: 'EthereumIngressEgress.DepositFailed',
-  },
-  ArbitrumIngressEgress: {
-    BatchBroadcastRequested: 'ArbitrumIngressEgress.BatchBroadcastRequested',
-    CcmBroadcastRequested: 'ArbitrumIngressEgress.CcmBroadcastRequested',
-    DepositFinalised: 'ArbitrumIngressEgress.DepositFinalised',
-    BoostPoolCreated: 'ArbitrumIngressEgress.BoostPoolCreated',
-    DepositBoosted: 'ArbitrumIngressEgress.DepositBoosted',
-    InsufficientBoostLiquidity: 'ArbitrumIngressEgress.InsufficientBoostLiquidity',
-    TransactionRejectedByBroker: 'ArbitrumIngressEgress.TransactionRejectedByBroker',
-    DepositFailed: 'ArbitrumIngressEgress.DepositFailed',
-  },
-  PolkadotIngressEgress: {
-    BatchBroadcastRequested: 'PolkadotIngressEgress.BatchBroadcastRequested',
-    CcmBroadcastRequested: 'PolkadotIngressEgress.CcmBroadcastRequested',
-    DepositFinalised: 'PolkadotIngressEgress.DepositFinalised',
-    BoostPoolCreated: 'PolkadotIngressEgress.BoostPoolCreated',
-    DepositBoosted: 'PolkadotIngressEgress.DepositBoosted',
-    InsufficientBoostLiquidity: 'PolkadotIngressEgress.InsufficientBoostLiquidity',
-    TransactionRejectedByBroker: 'PolkadotIngressEgress.TransactionRejectedByBroker',
-    DepositFailed: 'PolkadotIngressEgress.DepositFailed',
-  },
-  SolanaIngressEgress: {
-    BatchBroadcastRequested: 'SolanaIngressEgress.BatchBroadcastRequested',
-    CcmBroadcastRequested: 'SolanaIngressEgress.CcmBroadcastRequested',
-    DepositFinalised: 'SolanaIngressEgress.DepositFinalised',
-    BoostPoolCreated: 'SolanaIngressEgress.BoostPoolCreated',
-    DepositBoosted: 'SolanaIngressEgress.DepositBoosted',
-    InsufficientBoostLiquidity: 'SolanaIngressEgress.InsufficientBoostLiquidity',
-    TransactionRejectedByBroker: 'SolanaIngressEgress.TransactionRejectedByBroker',
-    DepositFailed: 'SolanaIngressEgress.DepositFailed',
-  },
-  BitcoinBroadcaster: {
-    BroadcastSuccess: 'BitcoinBroadcaster.BroadcastSuccess',
-    BroadcastAborted: 'BitcoinBroadcaster.BroadcastAborted',
-    ThresholdSignatureInvalid: 'BitcoinBroadcaster.ThresholdSignatureInvalid',
-    TransactionBroadcastRequest: 'BitcoinBroadcaster.TransactionBroadcastRequest',
-  },
-  EthereumBroadcaster: {
-    BroadcastSuccess: 'EthereumBroadcaster.BroadcastSuccess',
-    BroadcastAborted: 'EthereumBroadcaster.BroadcastAborted',
-    ThresholdSignatureInvalid: 'EthereumBroadcaster.ThresholdSignatureInvalid',
-    TransactionBroadcastRequest: 'EthereumBroadcaster.TransactionBroadcastRequest',
-  },
-  ArbitrumBroadcaster: {
-    BroadcastSuccess: 'ArbitrumBroadcaster.BroadcastSuccess',
-    BroadcastAborted: 'ArbitrumBroadcaster.BroadcastAborted',
-    ThresholdSignatureInvalid: 'ArbitrumBroadcaster.ThresholdSignatureInvalid',
-    TransactionBroadcastRequest: 'ArbitrumBroadcaster.TransactionBroadcastRequest',
-  },
-  PolkadotBroadcaster: {
-    BroadcastSuccess: 'PolkadotBroadcaster.BroadcastSuccess',
-    BroadcastAborted: 'PolkadotBroadcaster.BroadcastAborted',
-    ThresholdSignatureInvalid: 'PolkadotBroadcaster.ThresholdSignatureInvalid',
-    TransactionBroadcastRequest: 'PolkadotBroadcaster.TransactionBroadcastRequest',
-  },
-  SolanaBroadcaster: {
-    BroadcastSuccess: 'SolanaBroadcaster.BroadcastSuccess',
-    BroadcastAborted: 'SolanaBroadcaster.BroadcastAborted',
-    ThresholdSignatureInvalid: 'SolanaBroadcaster.ThresholdSignatureInvalid',
-    TransactionBroadcastRequest: 'SolanaBroadcaster.TransactionBroadcastRequest',
-  },
-  BitcoinChainTracking: {
-    ChainStateUpdated: 'BitcoinChainTracking.ChainStateUpdated',
-  },
-  EthereumChainTracking: {
-    ChainStateUpdated: 'EthereumChainTracking.ChainStateUpdated',
-  },
-  ArbitrumChainTracking: {
-    ChainStateUpdated: 'ArbitrumChainTracking.ChainStateUpdated',
-  },
-  PolkadotChainTracking: {
-    ChainStateUpdated: 'PolkadotChainTracking.ChainStateUpdated',
-  },
-  SolanaChainTracking: {
-    ChainStateUpdated: 'SolanaChainTracking.ChainStateUpdated',
-  },
+  ...genericPalletEvents('IngressEgress', [
+    'BatchBroadcastRequested',
+    'CcmBroadcastRequested',
+    'DepositFinalised',
+    'BoostPoolCreated',
+    'DepositBoosted',
+    'InsufficientBoostLiquidity',
+    'TransactionRejectedByBroker',
+    'DepositFailed',
+  ]),
+  ...genericPalletEvents('Broadcaster', [
+    'BroadcastSuccess',
+    'BroadcastAborted',
+    'ThresholdSignatureInvalid',
+    'TransactionBroadcastRequest',
+  ]),
+  ...genericPalletEvents('ChainTracking', ['ChainStateUpdated']),
 } as const;
 
 export const swapEventNames = Object.values(events).flatMap((pallets) => Object.values(pallets));
@@ -165,14 +105,14 @@ const handlers = [
     handlers: [
       { name: events.LiquidityPools.NewPoolCreated, handler: newPoolCreated },
       { name: events.LiquidityPools.PoolFeeSet, handler: poolFeeSet },
-      ...Object.values(Chains).flatMap((chain) => [
+      ...chainflipChains.flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].BatchBroadcastRequested,
-          handler: batchBroadcastRequested,
+          handler: batchBroadcastRequested(chain),
         },
         {
           name: events[`${chain}IngressEgress`].CcmBroadcastRequested,
-          handler: networkCcmBroadcastRequested,
+          handler: networkCcmBroadcastRequested(chain),
         },
         {
           name: events[`${chain}Broadcaster`].BroadcastSuccess,
@@ -197,7 +137,7 @@ const handlers = [
     spec: '1.5.0' as Semver,
     handlers: [
       { name: events.Swapping.SwapRescheduled, handler: swapRescheduled },
-      ...Object.values(Chains).flatMap((chain) => [
+      ...chainflipChains.flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].BoostPoolCreated,
           handler: boostPoolCreated,
@@ -225,17 +165,17 @@ const handlers = [
         name: events.LiquidityProvider.LiquidityDepositAddressReady,
         handler: liquidityDepositAddressReady,
       },
-      ...Object.values(Chains).flatMap((chain) => [
+      ...chainflipChains.flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].DepositFinalised,
-          handler: depositFinalised,
+          handler: depositFinalised(chain),
         },
         {
           name: events[`${chain}IngressEgress`].DepositBoosted,
-          handler: depositBoosted,
+          handler: depositBoosted(chain),
         },
       ]),
-      ...Object.values(Chains).flatMap((chain) => [
+      ...chainflipChains.flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].TransactionRejectedByBroker,
           handler: transactionRejectedByBroker(chain),
@@ -246,7 +186,7 @@ const handlers = [
   {
     spec: '1.8.0' as Semver,
     handlers: [
-      ...Object.values(Chains).flatMap((chain) => [
+      ...chainflipChains.flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].DepositFailed,
           handler: networkDepositFailed(chain),

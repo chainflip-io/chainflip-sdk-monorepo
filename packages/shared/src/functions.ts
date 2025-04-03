@@ -1,6 +1,6 @@
+import { assetConstants, ChainflipAsset, getInternalAsset } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import EventEmitter, { once } from 'events';
-import { assetConstants, getInternalAsset, InternalAsset } from './enums';
 import { assert } from './guards';
 import { FillOrKillParamsWithMinPrice, FillOrKillParamsWithSlippage, Quote } from './schemas';
 
@@ -32,8 +32,8 @@ export const getHundredthPipAmountFromAmount = (amount: bigint, hundredthPips: n
 
 export const getPriceX128FromPrice = (
   price: number | string,
-  srcAsset: InternalAsset,
-  destAsset: InternalAsset,
+  srcAsset: ChainflipAsset,
+  destAsset: ChainflipAsset,
 ) =>
   BigNumber(price)
     .multipliedBy(new BigNumber(2).pow(128))
@@ -42,8 +42,8 @@ export const getPriceX128FromPrice = (
 
 export const getPriceFromPriceX128 = (
   priceX128: bigint | string,
-  srcAsset: InternalAsset,
-  destAsset: InternalAsset,
+  srcAsset: ChainflipAsset,
+  destAsset: ChainflipAsset,
 ) =>
   BigNumber(priceX128.toString())
     .dividedBy(new BigNumber(2).pow(128))

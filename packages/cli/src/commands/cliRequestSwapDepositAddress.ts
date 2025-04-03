@@ -1,17 +1,17 @@
+import { chainflipAssets, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
-import { InternalAssets, assetConstants } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { CcmParams } from '@/shared/schemas';
 import { broker } from '../lib';
 
 export const yargsOptions = {
   'src-asset': {
-    choices: Object.values(InternalAssets),
+    choices: chainflipAssets,
     demandOption: true,
     describe: 'The asset to swap from',
   },
   'dest-asset': {
-    choices: Object.values(InternalAssets),
+    choices: chainflipAssets,
     demandOption: true,
     describe: 'The asset to swap to',
   },
@@ -61,10 +61,10 @@ export default async function cliRequestSwapDepositAddress(
   }
   const result = await broker.requestSwapDepositAddress(
     {
-      srcChain: assetConstants[args.srcAsset].chain,
-      srcAsset: assetConstants[args.srcAsset].asset,
-      destChain: assetConstants[args.destAsset].chain,
-      destAsset: assetConstants[args.destAsset].asset,
+      srcChain: internalAssetToRpcAsset[args.srcAsset].chain,
+      srcAsset: internalAssetToRpcAsset[args.srcAsset].asset,
+      destChain: internalAssetToRpcAsset[args.destAsset].chain,
+      destAsset: internalAssetToRpcAsset[args.destAsset].asset,
       destAddress: args.destAddress,
       ccmParams,
       commissionBps: args.commission ?? 0,

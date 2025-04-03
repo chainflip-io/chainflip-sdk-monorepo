@@ -1,8 +1,9 @@
+import { ChainflipAsset, chainflipAssets, getInternalAsset } from '@chainflip/utils/chainflip';
 import * as crypto from 'crypto';
 import type { Server } from 'socket.io';
 import { promisify } from 'util';
 import { z } from 'zod';
-import { InternalAssetMap, getInternalAsset, InternalAsset, InternalAssets } from '@/shared/enums';
+import { InternalAssetMap } from '@/shared/enums';
 import { isNotNullish } from '@/shared/guards';
 import { assetAndChain } from '@/shared/parsers';
 import prisma from '../client';
@@ -22,11 +23,11 @@ function assert(condition: unknown, message: string): asserts condition {
   }
 }
 
-const mapAssets = (quotedAssets: InternalAsset[] | null): InternalAssetMap<boolean> => {
+const mapAssets = (quotedAssets: ChainflipAsset[] | null): InternalAssetMap<boolean> => {
   assert(quotedAssets === null || quotedAssets.length !== 0, 'no assets quoted');
 
   return Object.fromEntries(
-    Object.values(InternalAssets).map(
+    chainflipAssets.map(
       (asset) => [asset, quotedAssets === null || quotedAssets.includes(asset)] as const,
     ),
   ) as InternalAssetMap<boolean>;

@@ -1,11 +1,11 @@
 import { ethereumIngressEgressDepositFailed } from '@chainflip/processor/180/ethereumIngressEgress/depositFailed';
+import { getInternalAssets } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
 import request from 'supertest';
 import { describe, it, beforeEach, afterEach, expect, vi, beforeAll } from 'vitest';
 import z from 'zod';
 import * as broker from '@/shared/broker';
-import { Assets, getInternalAssets } from '@/shared/enums';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import prisma from '../../client';
 import env from '../../config/env';
@@ -19,9 +19,12 @@ import {
   createPools,
   processEvents,
 } from '../../event-handlers/__tests__/utils';
+import { DepositBoostedArgsMap } from '../../event-handlers/ingress-egress/depositBoosted';
+import { DepositFinalisedArgsMap } from '../../event-handlers/ingress-egress/depositFinalised';
 import { InsufficientBoostLiquidityArgsMap } from '../../event-handlers/ingress-egress/insufficientBoostLiquidity';
 import { SwapDepositAddressReadyArgs } from '../../event-handlers/swapping/swapDepositAddressReady';
 import { SwapEgressIgnoredArgs } from '../../event-handlers/swapping/swapEgressIgnored';
+import { SwapEgressScheduledArgs } from '../../event-handlers/swapping/swapEgressScheduled';
 import { SwapRequestedArgs190 } from '../../event-handlers/swapping/swapRequested';
 import { getPendingBroadcast } from '../../ingress-egress-tracking';
 import app from '../../server';
@@ -155,7 +158,7 @@ const swapEventMap = {
     extrinsicId: '0000000092-000010-77afe',
     callId: '0000000092-000010-77afe',
     name: 'EthereumIngressEgress.DepositFinalised',
-    args: {
+    args: check<DepositFinalisedArgsMap['Ethereum']>({
       originType: {
         __kind: 'DepositChannel',
       },
@@ -167,7 +170,8 @@ const swapEventMap = {
       blockHeight: '222',
       depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
       depositDetails: {},
-    },
+      maxBoostFeeBps: 0,
+    }),
   },
   'EthereumIngressEgress.DepositBoosted': {
     id: '0000000092-000400-77afe',
@@ -176,7 +180,7 @@ const swapEventMap = {
     extrinsicId: '0000000092-000010-77afe',
     callId: '0000000092-000010-77afe',
     name: 'EthereumIngressEgress.DepositBoosted',
-    args: {
+    args: check<DepositBoostedArgsMap['Ethereum']>({
       originType: {
         __kind: 'DepositChannel',
       },
@@ -191,7 +195,7 @@ const swapEventMap = {
       depositDetails: {},
       maxBoostFeeBps: 7,
       prewitnessedDepositId: '27',
-    },
+    }),
   },
   'EthereumIngressEgress.InsufficientBoostLiquidity': {
     id: '0000000092-000400-77afe',
@@ -234,13 +238,13 @@ const swapEventMap = {
     extrinsicId: null,
     callId: null,
     name: 'Swapping.SwapEgressScheduled',
-    args: {
+    args: check<SwapEgressScheduledArgs>({
       asset: { __kind: 'Dot' },
       amount: '4192707216034',
       egressId: [{ __kind: 'Polkadot' }, '19'],
-      egressFee: '197450000',
+      egressFee: ['197450000', { __kind: 'Dot' }],
       swapRequestId: '368',
-    },
+    }),
   },
   'Swapping.SwapRequestCompleted': {
     id: '0000000094-000596-75b12',
@@ -282,13 +286,13 @@ const swapEventMap = {
     extrinsicId: null,
     callId: null,
     name: 'Swapping.RefundEgressScheduled',
-    args: {
+    args: check<SwapEgressScheduledArgs>({
       asset: { __kind: 'Eth' },
       amount: '999844999999160000',
       egressId: [{ __kind: 'Ethereum' }, '71'],
-      egressFee: '105000000490000',
+      egressFee: ['105000000490000', { __kind: 'Eth' }],
       swapRequestId: '368',
-    },
+    }),
   },
   'PolkadotBroadcaster.BroadcastSuccess': {
     id: '0000000104-000007-5dbb8',
@@ -1777,9 +1781,9 @@ describe('server', () => {
       await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", private."DepositChannel", "SwapRequest", "Swap", "Egress", "Broadcast", "FailedSwap", "StateChainError", "IgnoredEgress" , "ChainTracking", "Pool" CASCADE`;
     });
     const ethToDotSwapRequestBody = {
-      srcAsset: Assets.ETH,
+      srcAsset: 'ETH',
       srcChain: 'Ethereum',
-      destAsset: Assets.DOT,
+      destAsset: 'DOT',
       destChain: 'Polkadot',
       destAddress: DOT_ADDRESS,
       amount: '1000000000',
@@ -1790,9 +1794,9 @@ describe('server', () => {
       },
     } as const;
     const dotToEthSwapRequestBody = {
-      srcAsset: Assets.DOT,
+      srcAsset: 'DOT',
       srcChain: 'Polkadot',
-      destAsset: Assets.ETH,
+      destAsset: 'ETH',
       destChain: 'Ethereum',
       destAddress: ETH_ADDRESS,
       amount: '1000000000',
@@ -1880,8 +1884,8 @@ describe('server', () => {
       ['destAsset', 'SHIB'],
     ])('rejects an invalid %s', async (key, value) => {
       const requestBody = {
-        srcAsset: Assets.ETH,
-        destAsset: Assets.DOT,
+        srcAsset: 'ETH',
+        destAsset: 'DOT',
         destAddress: DOT_ADDRESS,
         [key]: value,
         fillOrKillParams: {
@@ -1899,16 +1903,16 @@ describe('server', () => {
 
     it.each([
       {
-        srcAsset: Assets.DOT,
-        destAsset: Assets.ETH,
+        srcAsset: 'DOT',
+        destAsset: 'ETH',
         srcChain: 'Polkadot',
         destChain: 'Ethereum',
         destAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFf',
         amount: '1000000000',
       },
       {
-        srcAsset: Assets.ETH,
-        destAsset: Assets.DOT,
+        srcAsset: 'ETH',
+        destAsset: 'DOT',
         srcChain: 'Ethereum',
         destChain: 'Polkadot',
         destAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
@@ -1940,8 +1944,8 @@ describe('server', () => {
       const { body, status } = await request(app)
         .post('/swaps')
         .send({
-          srcAsset: Assets.DOT,
-          destAsset: Assets.ETH,
+          srcAsset: 'DOT',
+          destAsset: 'ETH',
           srcChain: 'Polkadot',
           destChain: 'Ethereum',
           destAddress: ETH_ADDRESS,
@@ -1965,8 +1969,8 @@ describe('server', () => {
       const { body, status } = await request(app)
         .post('/swaps')
         .send({
-          srcAsset: Assets.USDC,
-          destAsset: Assets.ETH,
+          srcAsset: 'USDC',
+          destAsset: 'ETH',
           srcChain: 'Ethereum',
           destChain: 'Ethereum',
           destAddress: ETH_ADDRESS,
@@ -1989,8 +1993,8 @@ describe('server', () => {
     env.MAINTENANCE_MODE = true;
 
     const { status } = await request(app).post('/swaps').send({
-      srcAsset: Assets.USDC,
-      destAsset: Assets.ETH,
+      srcAsset: 'USDC',
+      destAsset: 'ETH',
       srcChain: 'Ethereum',
       destChain: 'Ethereum',
       destAddress: ETH_ADDRESS,

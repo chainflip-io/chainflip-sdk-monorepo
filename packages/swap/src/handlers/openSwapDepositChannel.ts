@@ -1,6 +1,6 @@
+import { getInternalAssets } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import * as broker from '@/shared/broker';
-import { getInternalAssets } from '@/shared/enums';
 import { getPriceFromPriceX128 } from '@/shared/functions';
 import { asset, chain, numericString } from '@/shared/parsers';
 import {

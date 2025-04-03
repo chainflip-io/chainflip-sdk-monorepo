@@ -1,13 +1,13 @@
+import { ChainflipAsset, assetConstants, chainConstants } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
-import { Asset, assetConstants, chainConstants } from '@/shared/enums';
+import { AssetSymbol } from '@/shared/schemas';
 import { getDeployedLiquidity, getUndeployedLiquidity } from './pools';
 import { getRequiredBlockConfirmations } from './rpc';
-import { InternalAsset } from '../client';
 import env from '../config/env';
 
 const getDeployedLiquidityAdjustment = async (
-  srcAsset: InternalAsset,
-  destAsset: InternalAsset,
+  srcAsset: ChainflipAsset,
+  destAsset: ChainflipAsset,
   amount: bigint,
 ) => {
   const deployedLiquidity = await getDeployedLiquidity(srcAsset, destAsset);
@@ -23,7 +23,7 @@ const getDeployedLiquidityAdjustment = async (
   return 0;
 };
 
-const getDepositTimeAdjustment = async (srcAsset: InternalAsset, isBoosted: boolean) => {
+const getDepositTimeAdjustment = async (srcAsset: ChainflipAsset, isBoosted: boolean) => {
   const { chain } = assetConstants[srcAsset];
   const { blockTimeSeconds } = chainConstants[chain];
   const blockConfirmations = isBoosted ? 1 : ((await getRequiredBlockConfirmations(srcAsset)) ?? 0);
@@ -32,7 +32,7 @@ const getDepositTimeAdjustment = async (srcAsset: InternalAsset, isBoosted: bool
   return Math.min(depositTimeMinutes / 20, 1); // Cap at 1
 };
 
-const getUndeployedLiquidityAdjustment = async (asset: InternalAsset, amount: bigint) => {
+const getUndeployedLiquidityAdjustment = async (asset: ChainflipAsset, amount: bigint) => {
   const undeployedLiquidity = await getUndeployedLiquidity(asset);
 
   // if swap can be filled with jit liquidity only, decrease recommended tolerance
@@ -43,7 +43,7 @@ const getUndeployedLiquidityAdjustment = async (asset: InternalAsset, amount: bi
   return 0;
 };
 
-const getPriceImpactAdjustment = async (asset: InternalAsset, dcaChunks: number) => {
+const getPriceImpactAdjustment = async (asset: ChainflipAsset, dcaChunks: number) => {
   const priceImpactPercent = env.DCA_CHUNK_PRICE_IMPACT_PERCENT?.[asset] ?? 0;
 
   return priceImpactPercent * (dcaChunks - 1);
@@ -55,8 +55,8 @@ const getLiquidityAdjustment = async ({
   amount,
   dcaChunks,
 }: {
-  srcAsset: InternalAsset;
-  destAsset: InternalAsset;
+  srcAsset: ChainflipAsset;
+  destAsset: ChainflipAsset;
   amount: bigint;
   dcaChunks: number;
 }) => {
@@ -79,8 +79,8 @@ export const calculateRecommendedSlippage = async ({
   dcaChunks,
   estimatedPrice,
 }: {
-  srcAsset: InternalAsset;
-  destAsset: InternalAsset;
+  srcAsset: ChainflipAsset;
+  destAsset: ChainflipAsset;
   intermediateAmount?: bigint | null;
   egressAmount: bigint;
   boostFeeBps?: number;
@@ -88,10 +88,10 @@ export const calculateRecommendedSlippage = async ({
   estimatedPrice: BigNumber;
 }): Promise<number> => {
   // do not accept significant price movements for stable assets independently of available liquidity
-  const stableAssets: Asset[] = ['USDC', 'USDT'];
+  const stableAssets: AssetSymbol[] = ['USDC', 'USDT'];
   if (
-    stableAssets.includes(assetConstants[srcAsset].asset) &&
-    stableAssets.includes(assetConstants[destAsset].asset)
+    stableAssets.includes(assetConstants[srcAsset].rpcAsset) &&
+    stableAssets.includes(assetConstants[destAsset].rpcAsset)
   ) {
     return Math.max(
       0.5,

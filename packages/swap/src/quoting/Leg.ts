@@ -1,11 +1,12 @@
+import { ChainflipAsset } from '@chainflip/utils/chainflip';
 import assert from 'assert';
-import { InternalAsset, getAssetAndChain } from '@/shared/enums';
+import { getAssetAndChain } from '@/shared/enums';
 import { LegJson } from './schemas';
 
 export default class Leg {
-  static of(srcAsset: InternalAsset, destAsset: InternalAsset, amount: bigint): Leg;
-  static of(srcAsset: InternalAsset, destAsset: InternalAsset, amount: bigint | null): Leg | null;
-  static of(srcAsset: InternalAsset, destAsset: InternalAsset, amount: bigint | null) {
+  static of(srcAsset: ChainflipAsset, destAsset: ChainflipAsset, amount: bigint): Leg;
+  static of(srcAsset: ChainflipAsset, destAsset: ChainflipAsset, amount: bigint | null): Leg | null;
+  static of(srcAsset: ChainflipAsset, destAsset: ChainflipAsset, amount: bigint | null) {
     if (amount === null) return null;
     assert(srcAsset !== destAsset, 'srcAsset and destAsset must be different');
     assert(srcAsset === 'Usdc' || destAsset === 'Usdc', 'one of the assets must be Usdc');
@@ -13,8 +14,8 @@ export default class Leg {
   }
 
   private constructor(
-    private readonly srcAsset: InternalAsset,
-    private readonly destAsset: InternalAsset,
+    private readonly srcAsset: ChainflipAsset,
+    private readonly destAsset: ChainflipAsset,
     public amount: bigint,
   ) {}
 
@@ -22,7 +23,7 @@ export default class Leg {
     return this.destAsset !== 'Usdc' ? 'BUY' : 'SELL';
   }
 
-  getBaseAsset(): Exclude<InternalAsset, 'Usdc'> {
+  getBaseAsset(): Exclude<ChainflipAsset, 'Usdc'> {
     if (this.destAsset !== 'Usdc') return this.destAsset;
 
     if (this.srcAsset !== 'Usdc') return this.srcAsset;
@@ -32,7 +33,7 @@ export default class Leg {
 
   toJSON(): LegJson {
     const side = this.getSide();
-    let baseAsset: Exclude<InternalAsset, 'Usdc'>;
+    let baseAsset: Exclude<ChainflipAsset, 'Usdc'>;
 
     if (this.destAsset !== 'Usdc') {
       baseAsset = this.destAsset;

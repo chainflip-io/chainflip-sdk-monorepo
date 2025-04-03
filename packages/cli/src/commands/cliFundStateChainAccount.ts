@@ -1,7 +1,6 @@
 import { Wallet, getDefaultProvider } from 'ethers';
 import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
 import { getEvmChainId } from '@/shared/consts';
-import { ChainflipNetworks } from '@/shared/enums';
 import { FundingNetworkOptions, fundStateChainAccount } from '../lib';
 import { askForPrivateKey, cliNetworks } from '../utils';
 
@@ -14,7 +13,7 @@ export const yargsOptions = {
   'chainflip-network': {
     choices: cliNetworks,
     describe: 'The Chainflip network to execute the swap on',
-    default: ChainflipNetworks.sisyphos,
+    default: 'sisyphos',
   },
   amount: {
     type: 'string',

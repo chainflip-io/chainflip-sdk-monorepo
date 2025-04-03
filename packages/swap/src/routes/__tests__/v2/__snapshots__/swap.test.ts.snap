@@ -1,58 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`server > GET /v2/swaps/:id > doesn't include GAS swaps in response for a single asset ccm swap 1`] = `
-{
-  "brokers": [],
-  "deposit": {
-    "amount": "5000000000000000000",
-    "witnessedAt": 552000,
-    "witnessedBlockIndex": "92-400",
-  },
-  "depositChannel": {
-    "affiliateBrokers": [],
-    "brokerCommissionBps": 0,
-    "createdAt": 516000,
-    "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
-    "estimatedExpiryTime": 1640998260000,
-    "fillOrKillParams": {
-      "minPrice": "0",
-      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
-      "retryDurationBlocks": 100,
-    },
-    "id": "86-Ethereum-85",
-    "isExpired": false,
-    "openedThroughBackend": false,
-    "srcChainExpiryBlock": "265",
-  },
-  "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
-  "destAsset": "USDC",
-  "destChain": "Ethereum",
-  "estimatedDurationSeconds": 144,
-  "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 102,
-    "swap": 12,
-  },
-  "fees": [],
-  "fillOrKillParams": {
-    "minPrice": "0",
-    "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
-    "retryDurationBlocks": 100,
-  },
-  "lastStatechainUpdateAt": 1640995200000,
-  "srcAsset": "USDC",
-  "srcChain": "Ethereum",
-  "srcChainRequiredBlockConfirmations": 2,
-  "state": "SENDING",
-  "swapEgress": {
-    "amount": "150000000",
-    "scheduledAt": 564000,
-    "scheduledBlockIndex": "94-595",
-  },
-  "swapId": "368",
-}
-`;
-
 exports[`server > GET /v2/swaps/:id > retrieves a DCA swap from an onChain origin in COMPLETED 1`] = `
 {
   "brokers": [],
@@ -1368,7 +1315,7 @@ exports[`server > GET /v2/swaps/:id > returns ccmParams for swaps initiated via 
     },
     {
       "amount": "6364636424444258",
-      "asset": "USDC",
+      "asset": "ETH",
       "chain": "Arbitrum",
       "type": "EGRESS",
     },

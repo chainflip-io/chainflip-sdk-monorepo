@@ -1,18 +1,14 @@
 import { isValidSolanaAddress } from '@chainflip/solana';
+import {
+  isValidAssetAndChain,
+  AssetAndChain,
+  UncheckedAssetAndChain,
+  chainflipAssets,
+  chainflipChains,
+  rpcAssets,
+} from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import { z, ZodErrorMap } from 'zod';
-import {
-  InternalAssets,
-  Chains,
-  Assets,
-  isValidAssetAndChain,
-  UncheckedAssetAndChain,
-  AssetAndChain,
-} from './enums';
-
-const enumValues = Object.values as <T>(
-  obj: T,
-) => T extends Record<string, never> ? never : [T[keyof T], ...T[keyof T][]];
 
 const safeStringify = (obj: unknown) =>
   JSON.stringify(obj, (key, value) => (typeof value === 'bigint' ? value.toString() : value));
@@ -53,11 +49,11 @@ export const unsignedInteger = z.union([u128, z.number().transform((n) => BigInt
 export const rustEnum = <U extends string, T extends readonly [U, ...U[]]>(values: T) =>
   z.object({ __kind: z.enum(values) }).transform(({ __kind }) => __kind!);
 
-export const internalAssetEnum = rustEnum(enumValues(InternalAssets));
-export const chainEnum = rustEnum(enumValues(Chains));
+export const internalAssetEnum = rustEnum(chainflipAssets);
+export const chainEnum = rustEnum(chainflipChains);
 
-export const chain = z.nativeEnum(Chains);
-export const asset = z.nativeEnum(Assets);
+export const chain = z.enum(chainflipChains);
+export const asset = z.enum(rpcAssets);
 
 export const uncheckedAssetAndChain = z.object({
   asset: z.string(),

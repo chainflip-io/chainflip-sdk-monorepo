@@ -1,12 +1,12 @@
 import * as base58 from '@chainflip/utils/base58';
 import { reverseBytes, hexToBytes } from '@chainflip/utils/bytes';
+import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { HexString } from '@chainflip/utils/types';
 import { z } from 'zod';
-import { Chain } from '@/shared/enums';
 import { hexString, unsignedInteger } from '@/shared/parsers';
 import type { EventHandlerArgs } from '../index';
 
-export const broadcastSuccessArgs = (chain: Chain) =>
+export const broadcastSuccessArgs = (chain: ChainflipChain) =>
   z.object({
     broadcastId: unsignedInteger,
     transactionRef: z // v130+
@@ -24,7 +24,9 @@ export const broadcastSuccessArgs = (chain: Chain) =>
       .optional(),
   });
 
-export default function broadcastSuccess(chain: Chain): (args: EventHandlerArgs) => Promise<void> {
+export default function broadcastSuccess(
+  chain: ChainflipChain,
+): (args: EventHandlerArgs) => Promise<void> {
   const parser = broadcastSuccessArgs(chain);
 
   return async ({ prisma, block, event }: EventHandlerArgs): Promise<void> => {

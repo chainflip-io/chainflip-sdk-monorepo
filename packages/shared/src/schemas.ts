@@ -1,6 +1,12 @@
+import { AssetAndChain } from '@chainflip/rpc/parsers';
+import {
+  ChainflipAsset,
+  ChainflipChain,
+  getInternalAssets,
+  assetConstants,
+} from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { z } from 'zod';
-import { Chain, Asset, getInternalAssets, AssetAndChain } from './enums';
 import {
   chain,
   hexStringWithMaxByteSize,
@@ -146,10 +152,12 @@ export type FillOrKillParamsWithMinPrice = Omit<FillOrKillParamsX128, 'minPriceX
   minPrice: string;
 };
 
+export type AssetSymbol = (typeof assetConstants)[ChainflipAsset]['rpcAsset'];
+
 type Fee<T> = {
   type: T;
-  chain: Chain;
-  asset: Asset;
+  chain: ChainflipChain;
+  asset: AssetSymbol;
   amount: string;
 };
 

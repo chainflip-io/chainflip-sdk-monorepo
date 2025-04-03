@@ -1,7 +1,7 @@
 import { HttpClient } from '@chainflip/rpc';
+import { getInternalAsset } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { getParameterEncodingRequestSchema } from '@/shared/broker';
-import { getInternalAsset } from '@/shared/enums';
 import { transformKeysToCamelCase } from '@/shared/objects';
 import { chainflipAddress } from '@/shared/parsers';
 import env from '../config/env';

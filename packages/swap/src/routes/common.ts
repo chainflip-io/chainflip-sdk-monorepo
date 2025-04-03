@@ -1,8 +1,8 @@
+import { ChainflipAsset } from '@chainflip/utils/chainflip';
 import { RequestHandler, ErrorRequestHandler } from 'express';
 import * as express from 'express';
 import type { RouteParameters } from 'express-serve-static-core';
 import { inspect } from 'util';
-import { InternalAsset } from '@/shared/enums';
 import env from '../config/env';
 import type Quoter from '../quoting/Quoter';
 import logger from '../utils/logger';
@@ -62,8 +62,8 @@ export const asyncHandler = <
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 type AdditionalInfo = {
-  srcAsset: InternalAsset;
-  destAsset: InternalAsset;
+  srcAsset: ChainflipAsset;
+  destAsset: ChainflipAsset;
   amount: string;
   usdValue: string | undefined;
   limitOrdersReceived: Awaited<ReturnType<Quoter['getLimitOrders']>> | undefined;

@@ -4,12 +4,13 @@ import { bitcoinIngressEgressDepositFailed } from '@chainflip/processor/180/bitc
 import { ethereumIngressEgressDepositFailed } from '@chainflip/processor/180/ethereumIngressEgress/depositFailed';
 import { polkadotIngressEgressDepositFailed } from '@chainflip/processor/180/polkadotIngressEgress/depositFailed';
 import { solanaIngressEgressDepositFailed } from '@chainflip/processor/180/solanaIngressEgress/depositFailed';
+import { assethubIngressEgressDepositFailed } from '@chainflip/processor/190/assethubIngressEgress/depositFailed';
 import * as base58 from '@chainflip/utils/base58';
 import { hexToBytes } from '@chainflip/utils/bytes';
+import { assetConstants } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import assert from 'assert';
 import { z } from 'zod';
-import { assetConstants } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
 import { FailedSwapReason, type Chain } from '../../client';
 import env from '../../config/env';
@@ -23,6 +24,7 @@ const argsMap = {
   Ethereum: ethereumIngressEgressDepositFailed,
   Polkadot: polkadotIngressEgressDepositFailed,
   Solana: solanaIngressEgressDepositFailed,
+  Assethub: assethubIngressEgressDepositFailed,
 } as const satisfies Record<Chain, z.ZodTypeAny>;
 
 export type DepositFailedArgs = z.input<(typeof argsMap)[Chain]>;
@@ -54,6 +56,9 @@ const extractDepositAddress = (depositWitness: DepositWitness) => {
     case 'Usdc':
     case 'Usdt':
       return depositWitness.depositAddress;
+    case 'HubDot':
+    case 'HubUsdc':
+    case 'HubUsdt':
     case 'Dot':
       return ss58.encode({ data: depositWitness.depositAddress, ss58Format: 0 });
     case 'Sol':

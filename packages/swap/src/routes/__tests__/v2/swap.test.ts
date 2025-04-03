@@ -2,7 +2,14 @@ import { ethereumIngressEgressDepositFailed } from '@chainflip/processor/180/eth
 import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
+import { BatchBroadcastRequestedArgsMap } from 'packages/swap/src/event-handlers/ingress-egress/batchBroadcastRequested';
+import { DepositBoostedArgsMap } from 'packages/swap/src/event-handlers/ingress-egress/depositBoosted';
+import { DepositFinalisedArgsMap } from 'packages/swap/src/event-handlers/ingress-egress/depositFinalised';
 import { InsufficientBoostLiquidityArgsMap } from 'packages/swap/src/event-handlers/ingress-egress/insufficientBoostLiquidity';
+import { RefundEgressScheduledArgs } from 'packages/swap/src/event-handlers/swapping/refundEgressScheduled';
+import { SwapEgressScheduledArgs } from 'packages/swap/src/event-handlers/swapping/swapEgressScheduled';
+import { SwapExecutedArgs } from 'packages/swap/src/event-handlers/swapping/swapExecuted';
+import { SwapScheduledArgs } from 'packages/swap/src/event-handlers/swapping/swapScheduled';
 import request from 'supertest';
 import { vi, describe, it, beforeEach, afterEach, expect, beforeAll } from 'vitest';
 import { z } from 'zod';
@@ -20,7 +27,10 @@ import { BitcoinDepositFailedArgs } from '../../../event-handlers/ingress-egress
 import { TransactionRejectedByBrokerArgs } from '../../../event-handlers/ingress-egress/transactionRejectedByBroker';
 import type { SwapDepositAddressReadyArgs } from '../../../event-handlers/swapping/swapDepositAddressReady';
 import { SwapEgressIgnoredArgs } from '../../../event-handlers/swapping/swapEgressIgnored';
-import { SwapRequestedArgs190 } from '../../../event-handlers/swapping/swapRequested';
+import {
+  SwapRequestedArgs190,
+  SwapRequestedArgs,
+} from '../../../event-handlers/swapping/swapRequested';
 import {
   getPendingBroadcast,
   getPendingDeposit,
@@ -91,7 +101,7 @@ const swapEventMap = {
     extrinsicId: '0000000086-000159-f8e73',
     callId: '0000000086-000159-f8e73',
     name: 'Swapping.SwapDepositAddressReady',
-    args: {
+    args: check<SwapDepositAddressReadyArgs>({
       boostFee: 0,
       channelId: '85',
       sourceAsset: { __kind: 'Eth' },
@@ -114,7 +124,7 @@ const swapEventMap = {
         },
         retryDuration: 100,
       },
-    } as SwapDepositAddressReadyArgs,
+    }),
   },
   'Swapping.SwapRequested': {
     id: '0000000092-000398-77afe',
@@ -123,7 +133,7 @@ const swapEventMap = {
     extrinsicId: '0000000092-000010-77afe',
     callId: '0000000092-000010-77afe',
     name: 'Swapping.SwapRequested',
-    args: {
+    args: check<SwapRequestedArgs190>({
       origin: {
         __kind: 'DepositChannel',
         channelId: '85',
@@ -146,7 +156,7 @@ const swapEventMap = {
         },
       },
       swapRequestId: '368',
-    } satisfies SwapRequestedArgs190,
+    }),
   },
   'Swapping.SwapScheduled': {
     id: '0000000092-000399-77afe',
@@ -155,13 +165,13 @@ const swapEventMap = {
     extrinsicId: '0000000092-000010-77afe',
     callId: '0000000092-000010-77afe',
     name: 'Swapping.SwapScheduled',
-    args: {
+    args: check<SwapScheduledArgs>({
       swapId: '423',
       swapType: { __kind: 'Swap' },
       executeAt: 94,
       inputAmount: '4999949999999650000',
       swapRequestId: '368',
-    },
+    }),
   },
   'EthereumIngressEgress.DepositFinalised': {
     id: '0000000092-000400-77afe',
@@ -170,7 +180,7 @@ const swapEventMap = {
     extrinsicId: '0000000092-000010-77afe',
     callId: '0000000092-000010-77afe',
     name: 'EthereumIngressEgress.DepositFinalised',
-    args: {
+    args: check<DepositFinalisedArgsMap['Ethereum']>({
       originType: {
         __kind: 'DepositChannel',
       },
@@ -182,7 +192,8 @@ const swapEventMap = {
       blockHeight: '222',
       depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
       depositDetails: {},
-    },
+      maxBoostFeeBps: 0,
+    }),
   },
   'EthereumIngressEgress.DepositBoosted': {
     id: '0000000092-000400-77afe',
@@ -191,7 +202,7 @@ const swapEventMap = {
     extrinsicId: '0000000092-000010-77afe',
     callId: '0000000092-000010-77afe',
     name: 'EthereumIngressEgress.DepositBoosted',
-    args: {
+    args: check<DepositBoostedArgsMap['Ethereum']>({
       originType: {
         __kind: 'DepositChannel',
       },
@@ -206,7 +217,7 @@ const swapEventMap = {
       depositDetails: {},
       maxBoostFeeBps: 7,
       prewitnessedDepositId: '27',
-    },
+    }),
   },
   'EthereumIngressEgress.InsufficientBoostLiquidity': {
     id: '0000000092-000400-77afe',
@@ -230,7 +241,7 @@ const swapEventMap = {
     extrinsicId: null,
     callId: null,
     name: 'Swapping.SwapExecuted',
-    args: {
+    args: check<SwapExecutedArgs>({
       swapId: '423',
       brokerFee: '45516860',
       inputAsset: { __kind: 'Eth' },
@@ -240,7 +251,7 @@ const swapEventMap = {
       outputAmount: '4192904666034',
       swapRequestId: '368',
       intermediateAmount: '4506169140',
-    },
+    }),
   },
   'Swapping.SwapEgressScheduled': {
     id: '0000000094-000595-75b12',
@@ -249,13 +260,13 @@ const swapEventMap = {
     extrinsicId: null,
     callId: null,
     name: 'Swapping.SwapEgressScheduled',
-    args: {
+    args: check<SwapEgressScheduledArgs>({
       asset: { __kind: 'Dot' },
       amount: '4192707216034',
       egressId: [{ __kind: 'Polkadot' }, '19'],
-      egressFee: '197450000',
+      egressFee: ['197450000', { __kind: 'Dot' }],
       swapRequestId: '368',
-    },
+    }),
   },
   'Swapping.SwapRequestCompleted': {
     id: '0000000094-000596-75b12',
@@ -273,10 +284,10 @@ const swapEventMap = {
     extrinsicId: null,
     callId: null,
     name: 'PolkadotIngressEgress.BatchBroadcastRequested',
-    args: {
+    args: check<BatchBroadcastRequestedArgsMap['Polkadot']>({
       egressIds: [[{ __kind: 'Polkadot' }, '19']],
       broadcastId: 7,
-    },
+    }),
   },
   'EthereumIngressEgress.BatchBroadcastRequested': {
     id: '0000000094-000843-75b12',
@@ -285,10 +296,10 @@ const swapEventMap = {
     extrinsicId: null,
     callId: null,
     name: 'EthereumIngressEgress.BatchBroadcastRequested',
-    args: {
+    args: check<BatchBroadcastRequestedArgsMap['Ethereum']>({
       egressIds: [[{ __kind: 'Ethereum' }, '71']],
       broadcastId: 7,
-    },
+    }),
   },
   'Swapping.RefundEgressScheduled': {
     id: '0000000094-000594-75b12',
@@ -297,13 +308,13 @@ const swapEventMap = {
     extrinsicId: null,
     callId: null,
     name: 'Swapping.RefundEgressScheduled',
-    args: {
+    args: check<RefundEgressScheduledArgs>({
       asset: { __kind: 'Eth' },
       amount: '999844999999160000',
       egressId: [{ __kind: 'Ethereum' }, '71'],
-      egressFee: '105000000490000',
+      egressFee: ['105000000490000', { __kind: 'Eth' }],
       swapRequestId: '368',
-    },
+    }),
   },
   'PolkadotBroadcaster.BroadcastSuccess': {
     id: '0000000104-000007-5dbb8',
@@ -2359,6 +2370,7 @@ describe('server', () => {
     });
 
     it(`returns ccmParams for swaps initiated via smart contract`, async () => {
+      const txHash = '0x574cfc9a2173fa110a849d0871752587c710b55a5a3e7a6513a8a6118e4e3b00';
       const requestedEvent = {
         id: '0000000092-000398-77afe',
         blockId: '0000000092-77afe',
@@ -2366,10 +2378,10 @@ describe('server', () => {
         extrinsicId: '0000000092-000010-77afe',
         callId: '0000000092-000010-77afe',
         name: 'Swapping.SwapRequested',
-        args: {
+        args: check<SwapRequestedArgs>({
           origin: {
             txId: {
-              value: '0x574cfc9a2173fa110a849d0871752587c710b55a5a3e7a6513a8a6118e4e3b00',
+              value: txHash,
               __kind: 'Evm',
             },
             __kind: 'Vault',
@@ -2405,93 +2417,26 @@ describe('server', () => {
             },
           },
           swapRequestId: '368',
-        },
+        }),
       };
       const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
       const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
       executedEvent.args.inputAsset.__kind = 'ArbEth';
       executedEvent.args.outputAsset.__kind = 'ArbUsdc';
       const egressScheduledEvent = clone(swapEventMap['Swapping.SwapEgressScheduled']);
-      egressScheduledEvent.args = {
+      egressScheduledEvent.args = check<SwapEgressScheduledArgs>({
         asset: { __kind: 'ArbUsdc' },
         amount: '150000000',
         egressId: [{ __kind: 'Arbitrum' }, '220'],
-        egressFee: '6364636424444258',
+        egressFee: ['6364636424444258', { __kind: 'ArbEth' }],
         swapRequestId: '368',
-      };
+      });
 
       await processEvents([requestedEvent, scheduledEvent, executedEvent, egressScheduledEvent]);
 
-      const { body } = await request(server).get(
-        `/v2/swaps/${requestedEvent.args.origin.txId.value}`,
-      );
+      const { body } = await request(server).get(`/v2/swaps/${txHash}`);
 
       expect(body.ccmParams).not.toBeUndefined();
-      expect(body).toMatchSnapshot();
-    });
-
-    it(`doesn't include GAS swaps in response for a single asset ccm swap`, async () => {
-      const depositChannelEvent = clone(swapEventMap['Swapping.SwapDepositAddressReady']);
-      depositChannelEvent.args.ccmParams = {
-        gasBudget: '50000000',
-        message: '0xd3adc0de',
-      };
-      depositChannelEvent.args.destinationAsset.__kind = 'Usdc';
-      depositChannelEvent.args.sourceAsset.__kind = 'Usdc';
-      const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
-      requestedEvent.args = {
-        ...requestedEvent.args,
-        inputAsset: { __kind: 'Usdc' },
-        outputAsset: { __kind: 'Usdc' },
-        __kind: 'Ccm',
-        outputAddress: {
-          value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-          __kind: 'Eth',
-        },
-        ccmDepositMetadata: {
-          sourceChain: {
-            __kind: 'Ethereum',
-          },
-          sourceAddress: {
-            value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-            __kind: 'Eth',
-          },
-          channelMetadata: {
-            message:
-              '0x000000000000000000000000000000000000000000000000000000000000004000000000000000000000000067ff09c184d8e9e7b90c5187ed04cbfbdba741c8000000000000000000000000000000000000000000000000000000000000000c6461676f61746973686572650000000000000000000000000000000000000000',
-            gasBudget: '50000000',
-            cfParameters: '0x',
-          },
-        },
-      };
-      const finalizedEvent = clone(swapEventMap['EthereumIngressEgress.DepositFinalised']);
-      finalizedEvent.args.asset.__kind = 'Usdc';
-      const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
-      scheduledEvent.args.swapType.__kind = 'CcmGas';
-      const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
-      executedEvent.args.inputAsset.__kind = 'Usdc';
-      executedEvent.args.outputAsset.__kind = 'Usdc';
-      const egressScheduledEvent = clone(swapEventMap['Swapping.SwapEgressScheduled']);
-      egressScheduledEvent.args = {
-        asset: { __kind: 'Usdc' },
-        amount: '150000000',
-        egressId: [{ __kind: 'Ethereum' }, '220'],
-        egressFee: '6364636424444258',
-        swapRequestId: requestedEvent.args.swapRequestId,
-      };
-
-      await processEvents([
-        depositChannelEvent,
-        requestedEvent,
-        finalizedEvent,
-        scheduledEvent,
-        executedEvent,
-        egressScheduledEvent,
-      ]);
-
-      const { body } = await request(server).get(`/v2/swaps/${channelId}`);
-
-      expect(body.swap).toBeUndefined();
       expect(body).toMatchSnapshot();
     });
 

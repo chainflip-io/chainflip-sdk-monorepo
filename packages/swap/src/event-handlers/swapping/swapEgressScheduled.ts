@@ -1,16 +1,10 @@
-import { swappingSwapEgressScheduled as swappingSwapEgressScheduled160 } from '@chainflip/processor/160/swapping/swapEgressScheduled';
-import { swappingSwapEgressScheduled as swappingSwapEgressScheduled180 } from '@chainflip/processor/180/swapping/swapEgressScheduled';
+import { swappingSwapEgressScheduled as schema180 } from '@chainflip/processor/180/swapping/swapEgressScheduled';
+import { swappingSwapEgressScheduled as schema190 } from '@chainflip/processor/190/swapping/swapEgressScheduled';
+import { chainConstants } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { chainConstants } from '@/shared/enums';
 import type { EventHandlerArgs } from '..';
 
-const eventArgs = z.union([
-  swappingSwapEgressScheduled180,
-  swappingSwapEgressScheduled160.transform((result) => ({
-    ...result,
-    egressFee: [result.egressFee, undefined] as const,
-  })),
-]);
+const eventArgs = z.union([schema190, schema180]);
 
 export type SwapEgressScheduledArgs = z.input<typeof eventArgs>;
 

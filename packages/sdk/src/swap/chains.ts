@@ -1,10 +1,11 @@
+import { ChainflipChain, ChainflipNetwork } from '@chainflip/utils/chainflip';
 import { getEvmChainId } from '@/shared/consts';
-import { ChainflipNetwork, Chain, isTestnet } from '@/shared/enums';
+import { isTestnet } from '@/shared/enums';
 import { isNotNullish } from '@/shared/guards';
 import { Environment } from '@/shared/rpc';
 
 export const getChainData = (
-  chain: Chain,
+  chain: ChainflipChain,
   network: ChainflipNetwork,
   env: Pick<Environment, 'ingressEgress'>,
 ) => ({

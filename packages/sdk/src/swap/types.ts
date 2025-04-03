@@ -1,4 +1,5 @@
-import { Chain, Asset, AssetOfChain, InternalAsset } from '@/shared/enums';
+import { ChainflipAsset, ChainflipChain } from '@chainflip/utils/chainflip';
+import { AssetOfChain } from '@/shared/enums';
 import {
   AffiliateBroker,
   CcmParams,
@@ -6,10 +7,11 @@ import {
   FillOrKillParamsWithMinPrice,
   SwapFee,
   DcaParams,
+  AssetSymbol,
 } from '@/shared/schemas';
 
 export interface ChainData {
-  chain: Chain;
+  chain: ChainflipChain;
   name: string;
   evmChainId: number | undefined;
   isMainnet: boolean;
@@ -18,26 +20,26 @@ export interface ChainData {
 }
 
 export type AssetData = {
-  [C in Chain]: {
-    chainflipId: InternalAsset;
+  [C in ChainflipChain]: {
+    chainflipId: ChainflipAsset;
     asset: AssetOfChain<C>;
     chain: C;
     contractAddress: string | undefined;
     decimals: number;
     name: string;
-    symbol: string;
+    symbol: AssetSymbol;
     isMainnet: boolean;
     minimumSwapAmount: string;
     maximumSwapAmount: string | null;
     minimumEgressAmount: string;
   };
-}[Chain];
+}[ChainflipChain];
 
 export interface ChainsAndAssets {
-  srcChain: Chain;
-  srcAsset: Asset;
-  destChain: Chain;
-  destAsset: Asset;
+  srcChain: ChainflipChain;
+  srcAsset: AssetSymbol;
+  destChain: ChainflipChain;
+  destAsset: AssetSymbol;
 }
 
 export interface QuoteRequest extends ChainsAndAssets {
@@ -149,8 +151,8 @@ export type FailedVaultSwapStatusResponse = CopyFields<
     failedBlockIndex: string;
     failure: string;
     feesPaid: [];
-    srcAsset: Asset;
-    srcChain: Chain;
+    srcAsset: AssetSymbol;
+    srcChain: ChainflipChain;
     state: 'FAILED';
     depositAddress: undefined;
   }
@@ -258,6 +260,6 @@ export type SwapStatusResponse =
 export type BoostPoolDepth = {
   feeTierBps: number;
   availableAmount: bigint;
-  asset: Asset;
-  chain: Chain;
+  asset: AssetSymbol;
+  chain: ChainflipChain;
 };

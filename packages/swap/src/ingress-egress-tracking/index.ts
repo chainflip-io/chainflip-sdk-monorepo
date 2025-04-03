@@ -1,9 +1,9 @@
 import { findVaultSwapData as findBitcoinVaultSwapData } from '@chainflip/bitcoin';
+import RedisClient from '@chainflip/redis';
 import { findVaultSwapData as findSolanaVaultSwapData } from '@chainflip/solana';
+import { assetConstants, ChainflipAsset, ChainflipChain } from '@chainflip/utils/chainflip';
 import { isTruthy } from '@chainflip/utils/guard';
 import { inspect } from 'util';
-import { Chain, Chains, InternalAsset, assetConstants } from '@/shared/enums';
-import RedisClient from '@/shared/node-apis/redis';
 import prisma, { Broadcast } from '../client';
 import env from '../config/env';
 import { handleExit } from '../utils/function';
@@ -21,12 +21,12 @@ export type PendingDeposit = {
 };
 
 const getMempoolTransaction = async (
-  chain: Chain,
+  chain: ChainflipChain,
   address: string,
 ): Promise<PendingDeposit | null> => {
   if (!redis) return null;
 
-  if (chain === Chains.Bitcoin) {
+  if (chain === 'Bitcoin') {
     const tx = await redis.getMempoolTransaction('Bitcoin', address);
 
     if (tx) {
@@ -41,7 +41,10 @@ const getMempoolTransaction = async (
   return null;
 };
 
-async function getDepositConfirmationCount(depositChain: Chain, depositBlockHeight: number) {
+async function getDepositConfirmationCount(
+  depositChain: ChainflipChain,
+  depositBlockHeight: number,
+) {
   const [tracking, state] = await Promise.all([
     prisma.chainTracking.findFirst({ where: { chain: depositChain } }),
     prisma.state.findFirstOrThrow(),
@@ -58,16 +61,16 @@ async function getDepositConfirmationCount(depositChain: Chain, depositBlockHeig
 }
 
 export const getPendingDeposit = async (
-  internalAsset: InternalAsset,
+  internalAsset: ChainflipAsset,
   address: string,
 ): Promise<PendingDeposit | null> => {
   if (!redis) return null;
 
-  const { chain, asset } = assetConstants[internalAsset];
+  const { chain } = assetConstants[internalAsset];
 
   try {
     const [deposits, tracking] = await Promise.all([
-      redis.getDeposits(chain, asset, address),
+      redis.getDeposits(internalAsset, address),
       prisma.chainTracking.findFirst({ where: { chain } }),
     ]);
 

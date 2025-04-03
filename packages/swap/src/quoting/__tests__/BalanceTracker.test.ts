@@ -8,7 +8,6 @@ import type { AccountId } from '../Quoter';
 vi.mock('../../utils/rpc');
 
 const mockInternalAssetMap = (values?: InternalAssetMap<bigint>): InternalAssetMap<bigint> => ({
-  ...values,
   ArbEth: 0n,
   ArbUsdc: 0n,
   Btc: 0n,
@@ -19,6 +18,10 @@ const mockInternalAssetMap = (values?: InternalAssetMap<bigint>): InternalAssetM
   SolUsdc: 0n,
   Usdc: 0n,
   Usdt: 0n,
+  HubDot: 0n,
+  HubUsdc: 0n,
+  HubUsdt: 0n,
+  ...values,
 });
 
 describe(BalanceTracker, () => {

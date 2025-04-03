@@ -3,9 +3,10 @@ import { bitcoinIngressEgressTransactionRejectedByBroker } from '@chainflip/proc
 import { ethereumIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/170/ethereumIngressEgress/transactionRejectedByBroker';
 import { polkadotIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/170/polkadotIngressEgress/transactionRejectedByBroker';
 import { solanaIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/170/solanaIngressEgress/transactionRejectedByBroker';
+import { assethubIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/190/assethubIngressEgress/transactionRejectedByBroker';
+import { ChainflipChain } from '@chainflip/utils/chainflip';
 import z from 'zod';
 import { EventHandlerArgs } from '..';
-import { Chain } from '../../client';
 import logger from '../../utils/logger';
 import { getDepositTxRef } from '../common';
 
@@ -18,12 +19,13 @@ const schemaMap = {
     broadcastId,
     txId: undefined,
   })),
-};
+  Assethub: assethubIngressEgressTransactionRejectedByBroker,
+} as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
-export type TransactionRejectedByBrokerArgs = z.input<(typeof schemaMap)[Chain]>;
+export type TransactionRejectedByBrokerArgs = z.input<(typeof schemaMap)[ChainflipChain]>;
 
 export const transactionRejectedByBroker =
-  (chain: Chain) =>
+  (chain: ChainflipChain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
     const { broadcastId, ...rest } = schemaMap[chain].parse(event.args);
     const txRef = getDepositTxRef(chain, rest.txId);

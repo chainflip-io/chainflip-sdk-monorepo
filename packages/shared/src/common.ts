@@ -1,11 +1,11 @@
 import * as base58 from '@chainflip/utils/base58';
 import { hexToBytes, reverseBytes } from '@chainflip/utils/bytes';
+import { ChainflipChain } from '@chainflip/utils/chainflip';
 import type { HexString } from '@chainflip/utils/types';
-import { Chain } from './enums';
 
-export function formatTxRef(chain: Chain, txRef: string): string;
-export function formatTxRef(chain: Chain, txRef: string | undefined): string | undefined;
-export function formatTxRef(chain: Chain, txRef: string | undefined) {
+export function formatTxRef(chain: ChainflipChain, txRef: string): string;
+export function formatTxRef(chain: ChainflipChain, txRef: string | undefined): string | undefined;
+export function formatTxRef(chain: ChainflipChain, txRef: string | undefined) {
   if (!txRef) return txRef;
 
   switch (chain) {

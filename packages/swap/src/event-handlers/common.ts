@@ -1,13 +1,14 @@
 import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/160/ethereumIngressEgress/depositFinalised';
 import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/160/polkadotIngressEgress/depositFinalised';
-import { bitcoinIngressEgressDepositFinalised as bitcoinSchema170 } from '@chainflip/processor/170/bitcoinIngressEgress/depositFinalised';
+import { bitcoinIngressEgressDepositFinalised } from '@chainflip/processor/170/bitcoinIngressEgress/depositFinalised';
+import { assethubIngressEgressDepositFinalised } from '@chainflip/processor/190/assethubIngressEgress/depositFinalised';
+import { ChainflipChain } from '@chainflip/utils/chainflip';
 // @ts-expect-error should still work
 import { Metadata, TypeRegistry } from '@polkadot/types';
 import assert from 'assert';
 import { z } from 'zod';
 import { formatTxRef } from '@/shared/common';
 import { CacheMap } from '@/shared/dataStructures';
-import { Chain } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
 import { chainEnum, unsignedInteger } from '@/shared/parsers';
 import * as rpc from '@/shared/rpc';
@@ -79,11 +80,12 @@ export const getStateChainError = async (
 };
 
 export const getDepositTxRef = (
-  chain: Chain,
+  chain: ChainflipChain,
   depositDetails:
-    | z.output<typeof bitcoinSchema170>['depositDetails']
+    | z.output<typeof bitcoinIngressEgressDepositFinalised>['depositDetails']
     | z.output<typeof ethereumIngressEgressDepositFinalised>['depositDetails']
     | z.output<typeof polkadotIngressEgressDepositFinalised>['depositDetails']
+    | z.output<typeof assethubIngressEgressDepositFinalised>['depositDetails']
     | undefined,
   blockHeight?: bigint | number,
 ) => {
@@ -100,12 +102,15 @@ export const getDepositTxRef = (
       return formatTxRef(chain, details?.txHashes?.at(0));
     }
     case 'Bitcoin': {
-      const details = depositDetails as z.output<typeof bitcoinSchema170>['depositDetails'];
+      const details = depositDetails as z.output<
+        typeof bitcoinIngressEgressDepositFinalised
+      >['depositDetails'];
       return formatTxRef(chain, details.id.txId);
     }
+    case 'Assethub':
     case 'Polkadot': {
       const details = depositDetails as z.output<
-        typeof polkadotIngressEgressDepositFinalised
+        typeof polkadotIngressEgressDepositFinalised | typeof assethubIngressEgressDepositFinalised
       >['depositDetails'];
       if (blockHeight === undefined) return undefined;
       return formatTxRef(chain, `${blockHeight}-${details}`);

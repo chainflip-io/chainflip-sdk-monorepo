@@ -1,4 +1,4 @@
-import { InternalAsset, readChainAssetValue } from '../enums';
+import { ChainflipAsset, readAssetValue } from '@chainflip/utils/chainflip';
 import { Environment } from './index';
 
 type Result = { success: true } | { success: false; reason: string };
@@ -7,10 +7,10 @@ const MAX_SWAP_AMOUNT = 2n ** 128n - 1n;
 
 export const validateSwapAmount = (
   env: Environment,
-  asset: InternalAsset,
+  asset: ChainflipAsset,
   amount: bigint,
 ): Result => {
-  const minimumAmount = readChainAssetValue(env.ingressEgress.minimumDepositAmounts, asset);
+  const minimumAmount = readAssetValue(env.ingressEgress.minimumDepositAmounts, asset);
 
   if (amount < minimumAmount) {
     return {
@@ -19,7 +19,7 @@ export const validateSwapAmount = (
     };
   }
 
-  const maxAmount = readChainAssetValue(env.swapping.maximumSwapAmounts, asset) ?? MAX_SWAP_AMOUNT;
+  const maxAmount = readAssetValue(env.swapping.maximumSwapAmounts, asset) ?? MAX_SWAP_AMOUNT;
 
   if (maxAmount != null && amount > maxAmount) {
     return {

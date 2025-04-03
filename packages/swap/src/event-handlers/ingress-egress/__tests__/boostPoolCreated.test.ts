@@ -29,6 +29,8 @@ describe(boostPoolCreated, () => {
       });
     });
 
-    expect(await prisma.boostPool.findFirst()).toMatchSnapshot();
+    expect(await prisma.boostPool.findFirst()).toMatchSnapshot({
+      id: expect.any(Number),
+    });
   });
 });

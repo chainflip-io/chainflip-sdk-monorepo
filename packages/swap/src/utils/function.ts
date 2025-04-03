@@ -1,4 +1,4 @@
-import { Chain, chainConstants } from '@/shared/enums';
+import { chainConstants, ChainflipChain } from '@chainflip/utils/chainflip';
 import * as rpc from '@/shared/rpc';
 import logger from './logger';
 import ServiceError from './ServiceError';
@@ -45,7 +45,7 @@ export const handleExit = (cb: AnyFunction) => {
 
 export function calculateExpiryTime(args: {
   chainInfo?: {
-    chain: Chain;
+    chain: ChainflipChain;
     height: bigint;
     blockTrackedAt: Date;
   } | null;

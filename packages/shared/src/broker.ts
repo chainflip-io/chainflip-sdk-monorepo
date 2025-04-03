@@ -1,10 +1,14 @@
 import { HttpClient } from '@chainflip/rpc';
+import {
+  ChainflipChain,
+  ChainflipNetwork,
+  UncheckedAssetAndChain,
+} from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
 import { priceX128ToPrice } from '@chainflip/utils/tickMath';
 import BigNumber from 'bignumber.js';
 import { z } from 'zod';
-import { Asset, Chain, ChainflipNetwork, UncheckedAssetAndChain } from './enums';
 import { assert } from './guards';
 import { transformKeysToCamelCase } from './objects';
 import {
@@ -23,12 +27,13 @@ import {
   FillOrKillParamsX128,
   dcaParams as dcaParamsSchema,
   DcaParams,
+  AssetSymbol,
 } from './schemas';
 import { validateAddress } from './validation/addressValidation';
 
 type DepositAddressRequest = {
-  srcAsset: UncheckedAssetAndChain | Asset;
-  destAsset: UncheckedAssetAndChain | Asset;
+  srcAsset: UncheckedAssetAndChain | AssetSymbol;
+  destAsset: UncheckedAssetAndChain | AssetSymbol;
   destAddress: string;
   commissionBps?: number;
   ccmParams?: CcmParams;
@@ -38,9 +43,9 @@ type DepositAddressRequest = {
   dcaParams?: DcaParams;
 
   /** @deprecated DEPRECATED(1.8) pass the chain in the srcAsset object instead */
-  srcChain?: Chain;
+  srcChain?: ChainflipChain;
   /** @deprecated DEPRECATED(1.8) pass the chain in the destAsset object instead */
-  destChain?: Chain;
+  destChain?: ChainflipChain;
 };
 
 const transformedFokSchema = z

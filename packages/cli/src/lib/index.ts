@@ -8,17 +8,16 @@ export {
   checkStateChainGatewayAllowance,
 } from '@/shared/stateChainGateway';
 export {
-  type Chain,
-  type Asset,
-  type InternalAsset,
-  type ChainflipNetwork,
-  Chains,
-  Assets,
-  InternalAssets,
-  ChainflipNetworks,
-  assetConstants,
-  chainConstants,
+  type ChainflipAsset as InternalAsset,
   getInternalAsset,
-} from '@/shared/enums';
+  type ChainflipChain as Chain,
+  type ChainflipNetwork,
+  chainConstants,
+  assetConstants,
+  chainflipChains,
+  chainflipAssets,
+  rpcAssets,
+  chainflipNetworks,
+} from '@chainflip/utils/chainflip';
 export * as broker from '@/shared/broker';
-export { default as RedisClient } from '@/shared/node-apis/redis';
+export { type AssetSymbol as Asset } from '@/shared/schemas';

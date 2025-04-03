@@ -1,5 +1,5 @@
+import { ChainflipAsset, chainflipAssets } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { InternalAssets } from '@/shared/enums';
 import { chainflipNetwork } from '@/shared/parsers';
 
 const envVar = z.string().trim();
@@ -27,7 +27,7 @@ const nodeEnv = z.enum(['development', 'production', 'test']);
 const internalAssetCsv = (name: string) =>
   optionalString('').transform((string) =>
     string.split(',').map((asset) => {
-      if (asset && !(asset in InternalAssets)) {
+      if (asset && !chainflipAssets.includes(asset as ChainflipAsset)) {
         // eslint-disable-next-line no-console
         console.warn({
           message: `unexpected value in ${name} variable: "${asset}"`,
@@ -60,7 +60,7 @@ export default z
     DCA_DEFAULT_CHUNK_SIZE_USD: optionalNumber(3000),
     DCA_CHUNK_SIZE_USD: optionalString('{}').transform((string) => {
       try {
-        return z.record(z.nativeEnum(InternalAssets), z.number()).parse(JSON.parse(string));
+        return z.record(z.enum(chainflipAssets), z.number()).parse(JSON.parse(string));
       } catch (err) {
         const error = err as Error;
         // eslint-disable-next-line no-console
@@ -72,7 +72,7 @@ export default z
     }),
     DCA_CHUNK_PRICE_IMPACT_PERCENT: optionalString('{ "Flip": 0.25 }').transform((string) => {
       try {
-        return z.record(z.nativeEnum(InternalAssets), z.number()).parse(JSON.parse(string));
+        return z.record(z.enum(chainflipAssets), z.number()).parse(JSON.parse(string));
       } catch (err) {
         const error = err as Error;
         // eslint-disable-next-line no-console

@@ -1,16 +1,16 @@
+import {
+  assetConstants,
+  ChainflipAsset,
+  getInternalAsset,
+  UncheckedAssetAndChain,
+} from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import assert from 'assert';
 import BigNumber from 'bignumber.js';
 import { randomUUID } from 'crypto';
 import { Subject, Subscription } from 'rxjs';
 import { Server, Socket } from 'socket.io';
-import {
-  InternalAsset,
-  InternalAssetMap,
-  UncheckedAssetAndChain,
-  assetConstants,
-  getInternalAsset,
-} from '@/shared/enums';
+import { InternalAssetMap } from '@/shared/enums';
 import Leg from './Leg';
 import {
   LegJson,
@@ -38,7 +38,7 @@ const padFirstLeg: LegFormatter = ([leg]) => [[], leg];
 const padSecondLeg: LegFormatter = ([leg]) => [leg, []];
 const singleOrBothLegs: LegFormatter = (legs) => legs;
 
-export const approximateIntermediateOutput = async (asset: InternalAsset, amount: string) => {
+export const approximateIntermediateOutput = async (asset: ChainflipAsset, amount: string) => {
   const price = await getAssetPrice(asset);
 
   if (typeof price !== 'number') return null;
@@ -281,7 +281,11 @@ export default class Quoter {
     }
   }
 
-  async getLimitOrders(srcAsset: InternalAsset, destAsset: InternalAsset, swapInputAmount: bigint) {
+  async getLimitOrders(
+    srcAsset: ChainflipAsset,
+    destAsset: ChainflipAsset,
+    swapInputAmount: bigint,
+  ) {
     let legs;
     const start = performance.now();
 

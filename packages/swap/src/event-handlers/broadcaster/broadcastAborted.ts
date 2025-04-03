@@ -1,5 +1,5 @@
+import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { Chain } from '@/shared/enums';
 import { unsignedInteger } from '@/shared/parsers';
 import { EventHandlerArgs } from '../index';
 
@@ -8,7 +8,7 @@ const eventArgs = z.object({
 });
 
 export async function handleEvent(
-  chain: Chain,
+  chain: ChainflipChain,
   { prisma, block, event }: EventHandlerArgs,
 ): Promise<void> {
   const { broadcastId } = eventArgs.parse(event.args);
@@ -23,6 +23,8 @@ export async function handleEvent(
   });
 }
 
-export default function broadcastAborted(chain: Chain): (args: EventHandlerArgs) => Promise<void> {
+export default function broadcastAborted(
+  chain: ChainflipChain,
+): (args: EventHandlerArgs) => Promise<void> {
   return (args: EventHandlerArgs) => handleEvent(chain, args);
 }

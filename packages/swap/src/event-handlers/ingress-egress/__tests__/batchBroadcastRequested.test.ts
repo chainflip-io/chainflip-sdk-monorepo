@@ -31,7 +31,7 @@ describe(batchBroadcastRequested, () => {
     });
 
     await prisma.$transaction((tx) =>
-      batchBroadcastRequested({
+      batchBroadcastRequested('Ethereum')({
         block: block as any,
         event: event as any,
         prisma: tx,
@@ -62,7 +62,7 @@ describe(batchBroadcastRequested, () => {
     const { block, event } = batchBroadcastRequestedMock;
 
     await prisma.$transaction((tx) =>
-      batchBroadcastRequested({
+      batchBroadcastRequested('Ethereum')({
         block: block as any,
         event: event as any,
         prisma: tx,

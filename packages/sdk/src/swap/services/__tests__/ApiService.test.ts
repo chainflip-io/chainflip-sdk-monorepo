@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { Assets, Chains } from '@/shared/enums';
 import { QuoteRequest } from '../../types';
 import { getQuote, getQuoteV2, getStatus, getStatusV2 } from '../ApiService';
 
@@ -18,10 +17,10 @@ vi.mock('axios', async () => ({
 describe('ApiService', () => {
   const mockRoute = {
     amount: '10000',
-    srcChain: Chains.Bitcoin,
-    srcAsset: Assets.BTC,
-    destChain: Chains.Ethereum,
-    destAsset: Assets.ETH,
+    srcChain: 'Bitcoin',
+    srcAsset: 'BTC',
+    destChain: 'Ethereum',
+    destAsset: 'ETH',
   } satisfies QuoteRequest;
 
   describe(getQuote, () => {

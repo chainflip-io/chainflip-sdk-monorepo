@@ -1,12 +1,13 @@
+import { chainflipAssets, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import * as crypto from 'crypto';
 import { promisify } from 'util';
 import { vi, describe, it, beforeEach, expect, Mock } from 'vitest';
-import { assetConstants, InternalAssetMap, InternalAssets } from '@/shared/enums';
+import { InternalAssetMap } from '@/shared/enums';
 import prisma from '../../client';
 import authenticate from '../authenticate';
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
-const allAssets = Object.values(assetConstants).map((a) => ({ chain: a.chain, asset: a.asset }));
+const allAssets = Object.values(internalAssetToRpcAsset);
 
 describe(authenticate, () => {
   let next: Mock;
@@ -165,7 +166,7 @@ describe(authenticate, () => {
     };
 
     const quotedAssets = Object.fromEntries(
-      Object.values(InternalAssets).map((asset) => [asset, false]),
+      chainflipAssets.map((asset) => [asset, false]),
     ) as InternalAssetMap<boolean>;
     quotedAssets.Flip = true;
 

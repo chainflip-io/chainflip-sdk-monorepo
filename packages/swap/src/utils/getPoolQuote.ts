@@ -1,4 +1,5 @@
-import { getAssetAndChain, getInternalAsset } from '@/shared/enums';
+import { getInternalAsset } from '@chainflip/utils/chainflip';
+import { getAssetAndChain } from '@/shared/enums';
 import { getPipAmountFromAmount } from '@/shared/functions';
 import { DcaParams, Quote, SwapFeeType } from '@/shared/schemas';
 import { calculateRecommendedSlippage } from './autoSlippage';

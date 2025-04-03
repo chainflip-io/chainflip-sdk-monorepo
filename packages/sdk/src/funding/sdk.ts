@@ -1,6 +1,6 @@
+import { ChainflipNetwork } from '@chainflip/utils/chainflip';
 import type { Signer } from 'ethers';
 import { getFlipBalance, TransactionOptions } from '@/shared/contracts';
-import { ChainflipNetwork, ChainflipNetworks } from '@/shared/enums';
 import { getFundingEnvironment, RpcConfig } from '@/shared/rpc';
 import {
   approveStateChainGateway,
@@ -29,7 +29,7 @@ export class FundingSDK {
   private redemptionTax?: bigint;
 
   constructor(options: FundingSDKOption) {
-    const network = options.network ?? ChainflipNetworks.perseverance;
+    const network = options.network ?? 'perseverance';
     this.options = {
       ...options,
       network,
