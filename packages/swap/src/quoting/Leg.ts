@@ -1,6 +1,5 @@
-import { ChainflipAsset } from '@chainflip/utils/chainflip';
+import { ChainflipAsset, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import assert from 'assert';
-import { getAssetAndChain } from '@/shared/enums';
 import { LegJson } from './schemas';
 
 export default class Leg {
@@ -42,8 +41,8 @@ export default class Leg {
     }
 
     return {
-      base_asset: getAssetAndChain(baseAsset!),
-      quote_asset: getAssetAndChain('Usdc'),
+      base_asset: internalAssetToRpcAsset[baseAsset!],
+      quote_asset: internalAssetToRpcAsset.Usdc as LegJson['quote_asset'],
       amount: this.amount.toString(),
       side,
     };

@@ -1,5 +1,5 @@
 /* eslint-disable dot-notation */
-import { assetConstants } from '@chainflip/utils/chainflip';
+import { assetConstants, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import * as crypto from 'crypto';
 import { Server } from 'socket.io';
@@ -9,7 +9,7 @@ import { promisify } from 'util';
 import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest';
 import { AddressInfo } from 'ws';
 import { MAX_TICK, MIN_TICK } from '@/shared/consts';
-import { getAssetAndChain, InternalAssetMap } from '@/shared/enums';
+import { InternalAssetMap } from '@/shared/enums';
 import prisma, { InternalAsset } from '../../client';
 import env from '../../config/env';
 import { getAssetPrice } from '../../pricing';
@@ -113,7 +113,7 @@ describe(Quoter, () => {
           signature: crypto
             .sign(null, Buffer.from(`${name}${timestamp}`, 'utf8'), privateKey)
             .toString('base64'),
-          quoted_assets: quotedAssets?.map((a) => getAssetAndChain(a)),
+          quoted_assets: quotedAssets?.map((a) => internalAssetToRpcAsset[a]),
         },
       });
 
@@ -174,7 +174,7 @@ describe(Quoter, () => {
 
               return {
                 LimitOrder: {
-                  base_asset: getAssetAndChain(baseAsset),
+                  base_asset: internalAssetToRpcAsset[baseAsset],
                   quote_asset: { asset: 'USDC', chain: 'Ethereum' },
                   side,
                   sell_amount: `0x${BigInt(amount).toString(16)}`,

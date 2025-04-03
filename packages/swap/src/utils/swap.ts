@@ -3,10 +3,10 @@ import {
   chainConstants,
   ChainflipAsset,
   chainflipChains,
+  internalAssetToRpcAsset,
 } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts';
-import { getAssetAndChain } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
 import ServiceError from './ServiceError';
 import { FailedSwapReason, Swap } from '../client';
@@ -23,8 +23,8 @@ export const estimateSwapDuration = async ({
   isExternal?: boolean;
   boosted?: boolean;
 }) => {
-  const { chain: srcChain } = getAssetAndChain(srcAsset);
-  const { chain: destChain } = getAssetAndChain(destAsset);
+  const { chain: srcChain } = internalAssetToRpcAsset[srcAsset];
+  const { chain: destChain } = internalAssetToRpcAsset[destAsset];
 
   // user transaction must be included before witnessing starts
   const depositInclusionDuration = chainConstants[srcChain].blockTimeSeconds;

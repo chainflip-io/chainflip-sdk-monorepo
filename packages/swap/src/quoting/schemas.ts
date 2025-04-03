@@ -1,6 +1,6 @@
+import { AssetAndChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { MAX_TICK, MIN_TICK } from '@/shared/consts';
-import { BaseAssetAndChain } from '@/shared/enums';
 import { numericString } from '@/shared/parsers';
 
 const limitOrder = z.tuple([
@@ -28,7 +28,7 @@ export type MarketMakerQuote = z.output<typeof marketMakerResponseSchema>;
 
 export type LegJson = {
   amount: string;
-  base_asset: BaseAssetAndChain;
+  base_asset: Exclude<AssetAndChain, { chain: 'Ethereum'; asset: 'USDC' }>;
   quote_asset: { chain: 'Ethereum'; asset: 'USDC' };
   side: 'BUY' | 'SELL';
 };

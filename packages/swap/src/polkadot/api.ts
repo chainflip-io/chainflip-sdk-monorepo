@@ -1,6 +1,5 @@
-import { ChainflipAsset } from '@chainflip/utils/chainflip';
+import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { getAssetAndChain } from '@/shared/enums';
 import env from '../config/env';
 import { memoize } from '../utils/function';
 
@@ -29,6 +28,6 @@ const getFlags = memoize(async () => {
 
 export const getBoostSafeMode = async (asset: ChainflipAsset) => {
   const flags = await getFlags();
-  const { chain } = getAssetAndChain(asset);
+  const { chain } = assetConstants[asset];
   return flags[`ingressEgress${chain}`]?.boostDepositsEnabled ?? false;
 };
