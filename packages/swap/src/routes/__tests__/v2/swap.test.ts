@@ -1783,6 +1783,7 @@ describe('server', () => {
         chunkInterval: 3,
       };
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
+      requestedEvent.args.dcaParameters = depositChannelEvent.args.dcaParameters;
       const finalizedEvent = clone(swapEventMap['EthereumIngressEgress.DepositFinalised']);
       const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
       const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
@@ -1890,17 +1891,22 @@ describe('server', () => {
           "srcChainRequiredBlockConfirmations": 2,
           "state": "SWAPPING",
           "swap": {
-            "originalInputAmount": "9999899999999300000",
-            "regular": {
-              "executedAt": 564000,
-              "executedBlockIndex": "94-594",
-              "inputAmount": "4999949999999650000",
-              "intermediateAmount": "4506169140",
-              "outputAmount": "4192904666034",
-              "retryCount": 0,
-              "scheduledAt": 552000,
-              "scheduledBlockIndex": "92-399",
+            "dca": {
+              "currentChunk": null,
+              "executedChunks": 2,
+              "lastExecutedChunk": {
+                "executedAt": 564000,
+                "executedBlockIndex": "94-594",
+                "inputAmount": "4999949999999650000",
+                "intermediateAmount": "4506169140",
+                "outputAmount": "4192904666034",
+                "retryCount": 0,
+                "scheduledAt": 552000,
+                "scheduledBlockIndex": "92-399",
+              },
+              "remainingChunks": 8,
             },
+            "originalInputAmount": "9999899999999300000",
             "remainingInputAmount": "0",
             "swappedInputAmount": "9999899999999300000",
             "swappedIntermediateAmount": "9012338280",
@@ -1918,6 +1924,7 @@ describe('server', () => {
         chunkInterval: 3,
       };
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
+      requestedEvent.args.dcaParameters = depositChannelEvent.args.dcaParameters;
       const finalizedEvent = clone(swapEventMap['EthereumIngressEgress.DepositFinalised']);
       const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
       const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
@@ -2033,17 +2040,22 @@ describe('server', () => {
           "srcChainRequiredBlockConfirmations": 2,
           "state": "SENDING",
           "swap": {
-            "originalInputAmount": "9999899999999300000",
-            "regular": {
-              "executedAt": 564000,
-              "executedBlockIndex": "94-594",
-              "inputAmount": "4999949999999650000",
-              "intermediateAmount": "4506169140",
-              "outputAmount": "4192904666034",
-              "retryCount": 0,
-              "scheduledAt": 552000,
-              "scheduledBlockIndex": "92-399",
+            "dca": {
+              "currentChunk": null,
+              "executedChunks": 2,
+              "lastExecutedChunk": {
+                "executedAt": 564000,
+                "executedBlockIndex": "94-594",
+                "inputAmount": "4999949999999650000",
+                "intermediateAmount": "4506169140",
+                "outputAmount": "4192904666034",
+                "retryCount": 0,
+                "scheduledAt": 552000,
+                "scheduledBlockIndex": "92-399",
+              },
+              "remainingChunks": 8,
             },
+            "originalInputAmount": "9999899999999300000",
             "remainingInputAmount": "0",
             "swappedInputAmount": "9999899999999300000",
             "swappedIntermediateAmount": "9012338280",
@@ -2065,6 +2077,7 @@ describe('server', () => {
         chunkInterval: 3,
       };
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
+      requestedEvent.args.dcaParameters = depositChannelEvent.args.dcaParameters;
       const finalizedEvent = clone(swapEventMap['EthereumIngressEgress.DepositFinalised']);
       const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
       const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
@@ -2180,17 +2193,22 @@ describe('server', () => {
           "srcChainRequiredBlockConfirmations": 2,
           "state": "COMPLETED",
           "swap": {
-            "originalInputAmount": "9999899999999300000",
-            "regular": {
-              "executedAt": 564000,
-              "executedBlockIndex": "94-594",
-              "inputAmount": "4999949999999650000",
-              "intermediateAmount": "4506169140",
-              "outputAmount": "4192904666034",
-              "retryCount": 0,
-              "scheduledAt": 552000,
-              "scheduledBlockIndex": "92-399",
+            "dca": {
+              "currentChunk": null,
+              "executedChunks": 2,
+              "lastExecutedChunk": {
+                "executedAt": 564000,
+                "executedBlockIndex": "94-594",
+                "inputAmount": "4999949999999650000",
+                "intermediateAmount": "4506169140",
+                "outputAmount": "4192904666034",
+                "retryCount": 0,
+                "scheduledAt": 552000,
+                "scheduledBlockIndex": "92-399",
+              },
+              "remainingChunks": 8,
             },
+            "originalInputAmount": "9999899999999300000",
             "remainingInputAmount": "0",
             "swappedInputAmount": "9999899999999300000",
             "swappedIntermediateAmount": "9012338280",
@@ -2214,12 +2232,15 @@ describe('server', () => {
         numberOfChunks: 10,
         chunkInterval: 3,
       };
+      const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
+      requestedEvent.args.dcaParameters = depositChannelEvent.args.dcaParameters;
       const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
       const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
 
       await processEvents([
         depositChannelEvent,
-        ...swapEvents.slice(1, 5),
+        requestedEvent,
+        ...swapEvents.slice(2, 5),
         incrementId(scheduledEvent),
         incrementId(executedEvent),
         ...swapEvents.slice(5, 8),
@@ -2257,6 +2278,7 @@ describe('server', () => {
       };
 
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
+      requestedEvent.args.dcaParameters = depositChannelEvent.args.dcaParameters;
       const finalizedEvent = clone(swapEventMap['EthereumIngressEgress.DepositFinalised']);
       const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
       const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
@@ -2296,6 +2318,7 @@ describe('server', () => {
         chunkInterval: 3,
       };
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
+      requestedEvent.args.dcaParameters = depositChannelEvent.args.dcaParameters;
       const finalizedEvent = clone(swapEventMap['EthereumIngressEgress.DepositFinalised']);
       const scheduledEvent = clone(swapEventMap['Swapping.SwapScheduled']);
       const executedEvent = clone(swapEventMap['Swapping.SwapExecuted']);
