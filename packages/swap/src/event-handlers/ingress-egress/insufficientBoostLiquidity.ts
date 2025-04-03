@@ -1,27 +1,26 @@
-import { z } from 'zod';
-import { assetConstants } from '@/shared/enums';
-import { internalAssetEnum, rustEnum, u128 } from '@/shared/parsers';
+import { bitcoinIngressEgressInsufficientBoostLiquidity } from '@chainflip/processor/180/bitcoinIngressEgress/insufficientBoostLiquidity';
+import { assetConstants } from '@chainflip/utils/chainflip';
+import assert from 'assert';
 import { EventHandlerArgs } from '..';
 
-export const insufficientBoostLiquiditySchema = z.object({
-  prewitnessedDepositId: u128,
-  asset: internalAssetEnum,
-  amountAttempted: u128,
-  channelId: u128,
-  originType: rustEnum(['Vault', 'DepositChannel']).default({ __kind: 'DepositChannel' }),
-});
+export const insufficientBoostLiquiditySchema = bitcoinIngressEgressInsufficientBoostLiquidity;
+
 export const insufficientBoostLiquidity = async ({ prisma, event, block }: EventHandlerArgs) => {
   const { channelId, asset, amountAttempted, originType, prewitnessedDepositId } =
     insufficientBoostLiquiditySchema.parse(event.args);
 
-  const depositChannel = await prisma.depositChannel.findFirst({
-    where: { channelId, srcChain: assetConstants[asset].chain },
-    orderBy: {
-      issuedBlock: 'desc',
-    },
-  });
+  let depositChannel;
 
   if (originType === 'DepositChannel') {
+    assert(channelId != null, 'expected channel id for deposit channel origin');
+
+    depositChannel = await prisma.depositChannel.findFirst({
+      where: { channelId, srcChain: assetConstants[asset].chain },
+      orderBy: {
+        issuedBlock: 'desc',
+      },
+    });
+
     if (!depositChannel) {
       throw new Error(
         `InsufficientBoostLiquidity: Deposit channel not found for asset ${asset} and channelId ${channelId}`,
@@ -37,7 +36,7 @@ export const insufficientBoostLiquidity = async ({ prisma, event, block }: Event
   const swapDepositChannel =
     depositChannel &&
     (await prisma.swapDepositChannel.findFirstOrThrow({
-      where: { channelId, srcAsset: asset },
+      where: { channelId: depositChannel.channelId, srcAsset: asset },
       orderBy: {
         issuedBlock: 'desc',
       },
