@@ -1,3 +1,4 @@
+import { ChainflipNetwork } from '@chainflip/utils/chainflip';
 import { ContractTransactionResponse, Signer } from 'ethers';
 import { getStateChainGateway } from './utils';
 import {
@@ -6,7 +7,6 @@ import {
   getFlipContractAddress,
   TransactionOptions,
 } from '../contracts';
-import { ChainflipNetwork } from '../enums';
 import { assert } from '../guards';
 
 export type FundingNetworkOptions =

@@ -1,6 +1,6 @@
+import { assetConstants, getInternalAsset } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import { describe, it, expect } from 'vitest';
-import { assetConstants, getInternalAsset } from '../enums';
 import {
   getHundredthPipAmountFromAmount,
   getPipAmountFromAmount,

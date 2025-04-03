@@ -1,7 +1,7 @@
+import { ChainflipNetwork } from '@chainflip/bitcoin';
 import { Signer, Overrides, ContractTransactionResponse } from 'ethers';
 import { ERC20, ERC20__factory } from './abis';
 import { ADDRESSES } from './consts';
-import { type ChainflipNetwork } from './enums';
 
 export type TransactionOptions = {
   gasLimit?: bigint;
