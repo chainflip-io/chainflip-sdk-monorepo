@@ -9,8 +9,8 @@ import {
   rpcAssets,
 } from '@chainflip/utils/chainflip';
 
-const arrayToMap = <T>(array: readonly T[]): Map<T, T> =>
-  Object.fromEntries(array.map((item) => [item, item])) as Map<T, T>;
+const arrayToMap = <T extends string>(array: readonly T[]): { [K in T]: K } =>
+  Object.fromEntries(array.map((item) => [item, item])) as { [K in T]: K };
 
 export const ChainflipNetworks = arrayToMap(chainflipNetworks);
 export const InternalAssets = arrayToMap(chainflipAssets);

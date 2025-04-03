@@ -1,8 +1,4 @@
-import {
-  ChainflipChain,
-  chainflipNetworks,
-  internalAssetToRpcAsset,
-} from '@chainflip/utils/chainflip';
+import { chainflipAssets, ChainflipChain, chainflipNetworks } from '@chainflip/utils/chainflip';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { BoostQuote, Quote } from '@/shared/schemas';
 import {
@@ -51,7 +47,7 @@ describe(SwapSDK, () => {
 
     if (data.method === 'cf_supported_assets') {
       return Promise.resolve({
-        data: supportedAssets({ assets: Object.values(internalAssetToRpcAsset) }),
+        data: supportedAssets({ assets: chainflipAssets }),
       });
     }
 
