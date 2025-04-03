@@ -1,36 +1,49 @@
-import * as base58 from '@chainflip/utils/base58';
-import { reverseBytes, hexToBytes } from '@chainflip/utils/bytes';
+import { bitcoinBroadcasterBroadcastSuccess } from '@chainflip/processor/131/bitcoinBroadcaster/broadcastSuccess';
+import { ethereumBroadcasterBroadcastSuccess } from '@chainflip/processor/131/ethereumBroadcaster/broadcastSuccess';
+import { polkadotBroadcasterBroadcastSuccess } from '@chainflip/processor/131/polkadotBroadcaster/broadcastSuccess';
+import { arbitrumBroadcasterBroadcastSuccess } from '@chainflip/processor/141/arbitrumBroadcaster/broadcastSuccess';
+import { solanaBroadcasterBroadcastSuccess } from '@chainflip/processor/160/solanaBroadcaster/broadcastSuccess';
+import { assethubBroadcasterBroadcastSuccess } from '@chainflip/processor/190/assethubBroadcaster/broadcastSuccess';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
-import { HexString } from '@chainflip/utils/types';
 import { z } from 'zod';
-import { hexString, unsignedInteger } from '@/shared/parsers';
+import { formatTxRef } from '@/shared/common';
 import type { EventHandlerArgs } from '../index';
 
-export const broadcastSuccessArgs = (chain: ChainflipChain) =>
-  z.object({
-    broadcastId: unsignedInteger,
-    transactionRef: z // v130+
-      .union([
-        z
-          .object({ blockNumber: z.number(), extrinsicIndex: z.number() })
-          .transform((v) => `${v.blockNumber}-${v.extrinsicIndex}`),
-        hexString,
-      ])
-      .transform((v) => {
-        if (chain === 'Bitcoin') return reverseBytes(v.slice(2));
-        if (chain === 'Solana') return base58.encode(hexToBytes(v as HexString));
-        return v;
-      })
-      .optional(),
-  });
+const schemas = {
+  Arbitrum: arbitrumBroadcasterBroadcastSuccess.transform((args) => ({
+    ...args,
+    transactionRef: formatTxRef({ chain: 'Arbitrum' as const, data: args.transactionRef }),
+  })),
+  Bitcoin: bitcoinBroadcasterBroadcastSuccess.transform((args) => ({
+    ...args,
+    transactionRef: formatTxRef({ chain: 'Bitcoin' as const, data: args.transactionRef }),
+  })),
+  Ethereum: ethereumBroadcasterBroadcastSuccess.transform((args) => ({
+    ...args,
+    transactionRef: formatTxRef({ chain: 'Ethereum' as const, data: args.transactionRef }),
+  })),
+  Polkadot: polkadotBroadcasterBroadcastSuccess.transform((args) => ({
+    ...args,
+    transactionRef: formatTxRef({ chain: 'Polkadot' as const, data: args.transactionRef }),
+  })),
+  Solana: solanaBroadcasterBroadcastSuccess.transform((args) => ({
+    ...args,
+    transactionRef: formatTxRef({ chain: 'Solana' as const, data: args.transactionRef }),
+  })),
+  Assethub: assethubBroadcasterBroadcastSuccess.transform((args) => ({
+    ...args,
+    transactionRef: formatTxRef({ chain: 'Assethub' as const, data: args.transactionRef }),
+  })),
+} as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
-export default function broadcastSuccess(
-  chain: ChainflipChain,
-): (args: EventHandlerArgs) => Promise<void> {
-  const parser = broadcastSuccessArgs(chain);
+export type BroadcastSuccessArgsMap = {
+  [C in ChainflipChain]: z.input<(typeof schemas)[C]>;
+};
 
-  return async ({ prisma, block, event }: EventHandlerArgs): Promise<void> => {
-    const args = parser.parse(event.args);
+const broadcastSuccess =
+  (chain: ChainflipChain): ((args: EventHandlerArgs) => Promise<void>) =>
+  async ({ prisma, block, event }: EventHandlerArgs): Promise<void> => {
+    const args = schemas[chain].parse(event.args);
 
     // use updateMany to skip update if broadcast does not include any swap
     await prisma.broadcast.updateMany({
@@ -42,4 +55,5 @@ export default function broadcastSuccess(
       },
     });
   };
-}
+
+export default broadcastSuccess;

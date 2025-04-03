@@ -4,11 +4,11 @@ import * as ss58 from '@chainflip/utils/ss58';
 import assert from 'assert';
 import { GraphQLClient } from 'graphql-request';
 import { vi, expect } from 'vitest';
-import { z } from 'zod';
 import prisma, { SwapDepositChannel } from '../../client';
 import { GET_CALL } from '../../gql/query';
 import processBlocks, { Call, Event } from '../../processBlocks';
-import { broadcastSuccessArgs } from '../broadcaster/broadcastSuccess';
+import { BroadcastSuccessArgsMap } from '../broadcaster/broadcastSuccess';
+import { TransactionBroadcastRequestArgsMap } from '../broadcaster/transactionBroadcastRequest';
 import { events as eventNames } from '../index';
 import { BatchBroadcastRequestedArgsMap } from '../ingress-egress/batchBroadcastRequested';
 import { DepositFailedArgs } from '../ingress-egress/depositFailed';
@@ -229,7 +229,7 @@ export const transactionBroadcastRequestBtcMockV2 = {
   eventContext: {
     kind: 'event',
     event: {
-      args: {
+      args: check<TransactionBroadcastRequestArgsMap['Bitcoin']>({
         nominee: '0xfca6cd155fe8c31495d7da47b72fccd3f16d0d85bd0a1ffcd33d3f7a04314531',
         transactionOutId: '0xaef9c86539f194f617f45d495823789d3da082745d4a6e3b602ac00d815ed6e3',
         broadcastId: 1,
@@ -237,7 +237,7 @@ export const transactionBroadcastRequestBtcMockV2 = {
           encodedTransaction:
             '0x020000000001012f9fa5bb631cc20b2ee53988549db06369188977a759eeee0e95fe4d9089518b0100000000fdffffff0202ac0e0000000000160014605a08f510309c0aeb52554c288cc8a81e773f0c0c2feb02000000002251203d30a261d370dc764140a8f222bda1d003a403d8a24648470fb2e4fc2978f2ae0340b036f7c1cb7a0cfc00e1984cd49daba01fa7a69eeda00e71c14d7f262668ff72e8b29aa02899df429ca1e304482a7c9f86d6448bc5da3c7da567cef4053d3d92245175206a4d5e4829cf59df788c48223c71abb1c3c57a12bfc9b7d389786c4aca4ba5f7ac21c0eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000',
         },
-      },
+      }),
       name: 'BitcoinBroadcaster.TransactionBroadcastRequest',
       indexInBlock: 7,
     },
@@ -431,8 +431,9 @@ export const batchBroadcastRequestedMock = {
   },
 } as const;
 
-export const broadcastSuccessMock = (
-  args?: Partial<z.input<ReturnType<typeof broadcastSuccessArgs>>>,
+export const broadcastSuccessMock = <C extends ChainflipChain>(
+  chain: C,
+  args?: Omit<BroadcastSuccessArgsMap[C], 'broadcastId'>,
 ) =>
   ({
     block: {
@@ -443,13 +444,9 @@ export const broadcastSuccessMock = (
     event: {
       args: {
         broadcastId: 12,
-        transactionOutId: {
-          s: '0x689c4add3e14ea8243a1966fc2cea3baea692ca52fd7ef464e1cc74e608bf262',
-          kTimesGAddress: '0x972c9f07cc7a847b29003655faf265c12e193f09',
-        },
         ...args,
       },
-      name: 'EthereumBroadcaster.BroadcastSuccess',
+      name: `${chain}Broadcaster.BroadcastSuccess`,
       indexInBlock: 12,
     },
   }) as const;
@@ -499,22 +496,6 @@ export const poolFeeSetMock = {
       feeHundredthPips: 2000,
     },
     name: 'LiquidityPools.PoolFeeSet',
-    indexInBlock: 7,
-  },
-} as const;
-
-export const thresholdSignatureInvalidMock = {
-  block: {
-    specId: 'test@160',
-    height: 420,
-    timestamp: 1680337105000,
-  },
-  event: {
-    args: {
-      broadcastId: 1,
-      retryBroadcastId: 10,
-    },
-    name: 'EthereumBroadcaster.ThresholdSignatureInvalid',
     indexInBlock: 7,
   },
 } as const;

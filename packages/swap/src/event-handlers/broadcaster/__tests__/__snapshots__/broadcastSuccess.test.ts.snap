@@ -38,6 +38,25 @@ exports[`broadcastSuccess > updates an existing broadcast with the tx_ref for bi
 }
 `;
 
+exports[`broadcastSuccess > updates an existing broadcast with the tx_ref for ethereum 1`] = `
+{
+  "abortedAt": null,
+  "abortedBlockIndex": null,
+  "chain": "Ethereum",
+  "createdAt": Any<Date>,
+  "id": Any<BigInt>,
+  "nativeId": 12n,
+  "replacedById": null,
+  "requestedAt": 2022-12-06T14:31:45.000Z,
+  "requestedBlockIndex": "119-1",
+  "succeededAt": 2022-12-06T14:31:45.000Z,
+  "succeededBlockIndex": "120-12",
+  "transactionPayload": null,
+  "transactionRef": "0x1234",
+  "updatedAt": Any<Date>,
+}
+`;
+
 exports[`broadcastSuccess > updates an existing broadcast with the tx_ref for polkadot 1`] = `
 {
   "abortedAt": null,

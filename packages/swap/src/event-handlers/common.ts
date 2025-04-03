@@ -1,6 +1,7 @@
-import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/160/ethereumIngressEgress/depositFinalised';
-import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/160/polkadotIngressEgress/depositFinalised';
-import { bitcoinIngressEgressDepositFinalised } from '@chainflip/processor/170/bitcoinIngressEgress/depositFinalised';
+import { arbitrumIngressEgressDepositFinalised } from '@chainflip/processor/180/arbitrumIngressEgress/depositFinalised';
+import { bitcoinIngressEgressDepositFinalised } from '@chainflip/processor/180/bitcoinIngressEgress/depositFinalised';
+import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/180/ethereumIngressEgress/depositFinalised';
+import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/180/polkadotIngressEgress/depositFinalised';
 import { assethubIngressEgressDepositFinalised } from '@chainflip/processor/190/assethubIngressEgress/depositFinalised';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 // @ts-expect-error should still work
@@ -79,46 +80,49 @@ export const getStateChainError = async (
   });
 };
 
+export type DepositDetailsData = {
+  [C in ChainflipChain]: {
+    chain: C;
+    data: {
+      Bitcoin: z.output<typeof bitcoinIngressEgressDepositFinalised>;
+      Ethereum: z.output<typeof ethereumIngressEgressDepositFinalised>;
+      Polkadot: z.output<typeof polkadotIngressEgressDepositFinalised>;
+      Arbitrum: z.output<typeof arbitrumIngressEgressDepositFinalised>;
+      Solana: { depositDetails: undefined };
+      Assethub: z.output<typeof assethubIngressEgressDepositFinalised>;
+    }[C]['depositDetails'];
+  };
+}[ChainflipChain];
+
 export const getDepositTxRef = (
-  chain: ChainflipChain,
-  depositDetails:
-    | z.output<typeof bitcoinIngressEgressDepositFinalised>['depositDetails']
-    | z.output<typeof ethereumIngressEgressDepositFinalised>['depositDetails']
-    | z.output<typeof polkadotIngressEgressDepositFinalised>['depositDetails']
-    | z.output<typeof assethubIngressEgressDepositFinalised>['depositDetails']
-    | undefined,
+  depositDetails: DepositDetailsData,
   blockHeight?: bigint | number,
 ) => {
   if (depositDetails === undefined) {
     return undefined;
   }
 
-  switch (chain) {
+  switch (depositDetails.chain) {
     case 'Arbitrum':
     case 'Ethereum': {
-      const details = depositDetails as z.output<
-        typeof ethereumIngressEgressDepositFinalised
-      >['depositDetails'];
-      return formatTxRef(chain, details?.txHashes?.at(0));
+      const hash = depositDetails.data?.txHashes?.at(0);
+      if (!hash) return undefined;
+      return formatTxRef({ chain: depositDetails.chain, data: hash });
     }
-    case 'Bitcoin': {
-      const details = depositDetails as z.output<
-        typeof bitcoinIngressEgressDepositFinalised
-      >['depositDetails'];
-      return formatTxRef(chain, details.id.txId);
-    }
+    case 'Bitcoin':
+      return formatTxRef({ chain: depositDetails.chain, data: depositDetails.data.id.txId });
     case 'Assethub':
-    case 'Polkadot': {
-      const details = depositDetails as z.output<
-        typeof polkadotIngressEgressDepositFinalised | typeof assethubIngressEgressDepositFinalised
-      >['depositDetails'];
+    case 'Polkadot':
       if (blockHeight === undefined) return undefined;
-      return formatTxRef(chain, `${blockHeight}-${details}`);
-    }
+      return formatTxRef({
+        chain: depositDetails.chain,
+        data: { blockNumber: Number(blockHeight), extrinsicIndex: depositDetails.data },
+      });
+
     case 'Solana':
       assert(depositDetails == null);
       return undefined;
     default:
-      return assertUnreachable(chain);
+      return assertUnreachable(depositDetails);
   }
 };

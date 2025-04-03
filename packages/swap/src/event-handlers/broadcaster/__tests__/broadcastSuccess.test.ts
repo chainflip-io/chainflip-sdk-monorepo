@@ -8,46 +8,19 @@ describe(broadcastSuccess, () => {
     await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "Broadcast" CASCADE`;
   });
 
-  it('updates an existing broadcast entity with the succeeded timestamp', async () => {
-    const { block, event } = broadcastSuccessMock();
-
-    await prisma.broadcast.create({
-      data: {
-        chain: 'Ethereum',
-        nativeId: event.args.broadcastId as number,
-        requestedAt: new Date(block.timestamp),
-        requestedBlockIndex: `${block.height - 1}-1`,
+  it('updates an existing broadcast with the tx_ref for ethereum', async () => {
+    const chain = 'Ethereum';
+    const { block, event } = broadcastSuccessMock(chain, {
+      transactionOutId: {
+        kTimesGAddress: '0x',
+        s: '0x',
       },
-    });
-
-    await prisma.$transaction((tx) =>
-      broadcastSuccess('Ethereum')({
-        block: block as any,
-        event: event as any,
-        prisma: tx,
-      }),
-    );
-
-    const broadcast = await prisma.broadcast.findFirstOrThrow({
-      where: { nativeId: event.args.broadcastId as number },
-    });
-
-    expect(broadcast).toMatchSnapshot({
-      id: expect.any(BigInt),
-      createdAt: expect.any(Date),
-      updatedAt: expect.any(Date),
-    });
-  });
-
-  it('updates an existing broadcast with the tx_ref if it exists', async () => {
-    const { block } = broadcastSuccessMock();
-    const { event } = broadcastSuccessMock({
       transactionRef: '0x1234',
     });
 
     await prisma.broadcast.create({
       data: {
-        chain: 'Ethereum',
+        chain,
         nativeId: event.args.broadcastId as number,
         requestedAt: new Date(block.timestamp),
         requestedBlockIndex: `${block.height - 1}-1`,
@@ -55,7 +28,7 @@ describe(broadcastSuccess, () => {
     });
 
     await prisma.$transaction((tx) =>
-      broadcastSuccess('Ethereum')({
+      broadcastSuccess(chain)({
         block: block as any,
         event: event as any,
         prisma: tx,
@@ -68,15 +41,15 @@ describe(broadcastSuccess, () => {
 
     expect(broadcast).toMatchSnapshot({
       id: expect.any(BigInt),
-      transactionRef: broadcast.transactionRef,
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
     });
   });
 
   it('updates an existing broadcast with the tx_ref for polkadot', async () => {
-    const { block } = broadcastSuccessMock();
-    const { event } = broadcastSuccessMock({
+    const chain = 'Polkadot';
+    const { block, event } = broadcastSuccessMock(chain, {
+      transactionOutId: '0x',
       transactionRef: {
         blockNumber: 100,
         extrinsicIndex: 21,
@@ -85,7 +58,7 @@ describe(broadcastSuccess, () => {
 
     await prisma.broadcast.create({
       data: {
-        chain: 'Polkadot',
+        chain,
         nativeId: event.args.broadcastId as number,
         requestedAt: new Date(block.timestamp),
         requestedBlockIndex: `${block.height - 1}-1`,
@@ -93,7 +66,7 @@ describe(broadcastSuccess, () => {
     });
 
     await prisma.$transaction((tx) =>
-      broadcastSuccess('Polkadot')({
+      broadcastSuccess(chain)({
         block: block as any,
         event: event as any,
         prisma: tx,
@@ -106,7 +79,6 @@ describe(broadcastSuccess, () => {
 
     expect(broadcast).toMatchSnapshot({
       id: expect.any(BigInt),
-      transactionRef: broadcast.transactionRef,
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
     });
@@ -114,14 +86,15 @@ describe(broadcastSuccess, () => {
   });
 
   it('updates an existing broadcast with the tx_ref for bitcoin', async () => {
-    const { block } = broadcastSuccessMock();
-    const { event } = broadcastSuccessMock({
+    const chain = 'Bitcoin';
+    const { block, event } = broadcastSuccessMock(chain, {
+      transactionOutId: '0x',
       transactionRef: '0x5a6571d73cd1760fc659f9f845252d2a3b275a0d1a0b5db91ed9dc29b2283092',
     });
 
     await prisma.broadcast.create({
       data: {
-        chain: 'Bitcoin',
+        chain,
         nativeId: event.args.broadcastId as number,
         requestedAt: new Date(block.timestamp),
         requestedBlockIndex: `${block.height - 1}-1`,
@@ -129,7 +102,7 @@ describe(broadcastSuccess, () => {
     });
 
     await prisma.$transaction((tx) =>
-      broadcastSuccess('Bitcoin')({
+      broadcastSuccess(chain)({
         block: block as any,
         event: event as any,
         prisma: tx,
@@ -142,7 +115,6 @@ describe(broadcastSuccess, () => {
 
     expect(broadcast).toMatchSnapshot({
       id: expect.any(BigInt),
-      transactionRef: broadcast.transactionRef,
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
     });

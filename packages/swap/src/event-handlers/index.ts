@@ -4,7 +4,6 @@ import type { Semver } from '@chainflip/processor/types';
 import { ChainflipChain, chainflipChains } from '@chainflip/utils/chainflip';
 import broadcastAborted from './broadcaster/broadcastAborted';
 import broadcastSuccess from './broadcaster/broadcastSuccess';
-import thresholdSignatureInvalid from './broadcaster/thresholdSignatureInvalid';
 import transactionBroadcastRequest from './broadcaster/transactionBroadcastRequest';
 import batchBroadcastRequested from './ingress-egress/batchBroadcastRequested';
 import { boostPoolCreated } from './ingress-egress/boostPoolCreated';
@@ -85,7 +84,6 @@ export const events = {
   ...genericPalletEvents('Broadcaster', [
     'BroadcastSuccess',
     'BroadcastAborted',
-    'ThresholdSignatureInvalid',
     'TransactionBroadcastRequest',
   ]),
   ...genericPalletEvents('ChainTracking', ['ChainStateUpdated']),
@@ -190,10 +188,6 @@ const handlers = [
         {
           name: events[`${chain}IngressEgress`].DepositFailed,
           handler: networkDepositFailed(chain),
-        },
-        {
-          name: events[`${chain}Broadcaster`].ThresholdSignatureInvalid,
-          handler: thresholdSignatureInvalid(chain),
         },
       ]),
     ],

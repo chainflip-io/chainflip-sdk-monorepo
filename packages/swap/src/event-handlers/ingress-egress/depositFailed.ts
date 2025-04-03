@@ -15,7 +15,7 @@ import { assertUnreachable } from '@/shared/functions';
 import { FailedSwapReason, type Chain } from '../../client';
 import env from '../../config/env';
 import logger from '../../utils/logger';
-import { getDepositTxRef } from '../common';
+import { DepositDetailsData, getDepositTxRef } from '../common';
 import type { EventHandlerArgs } from '../index';
 
 const argsMap = {
@@ -27,6 +27,9 @@ const argsMap = {
   Assethub: assethubIngressEgressDepositFailed,
 } as const satisfies Record<Chain, z.ZodTypeAny>;
 
+export type DepositFailedArgsMap = {
+  [C in Chain]: z.input<(typeof argsMap)[C]>;
+};
 export type DepositFailedArgs = z.input<(typeof argsMap)[Chain]>;
 export type BitcoinDepositFailedArgs = z.input<typeof bitcoinIngressEgressDepositFailed>;
 
@@ -120,7 +123,10 @@ export const depositFailed =
       }));
 
       if ('depositDetails' in details.depositWitness) {
-        txRef = getDepositTxRef(chain, details.depositWitness.depositDetails, blockHeight);
+        txRef = getDepositTxRef(
+          { chain, data: details.depositWitness.depositDetails } as DepositDetailsData,
+          blockHeight,
+        );
       }
       amount = details.depositWitness.amount;
 
@@ -129,7 +135,10 @@ export const depositFailed =
       }
     } else {
       if ('depositDetails' in details.vaultWitness) {
-        txRef = getDepositTxRef(chain, details.vaultWitness.depositDetails, blockHeight);
+        txRef = getDepositTxRef(
+          { chain, data: details.vaultWitness.depositDetails } as DepositDetailsData,
+          blockHeight,
+        );
       } else {
         pendingTxRefInfo = {
           address: base58.encode(details.vaultWitness.txId[0]),

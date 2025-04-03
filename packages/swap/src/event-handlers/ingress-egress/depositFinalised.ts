@@ -4,16 +4,35 @@ import { ethereumIngressEgressDepositFinalised as ethereumSchema180 } from '@cha
 import { polkadotIngressEgressDepositFinalised as polkadotSchema180 } from '@chainflip/processor/180/polkadotIngressEgress/depositFinalised';
 import { solanaIngressEgressDepositFinalised as solanaSchema180 } from '@chainflip/processor/180/solanaIngressEgress/depositFinalised';
 import { assethubIngressEgressDepositFinalised as assethubSchema190 } from '@chainflip/processor/190/assethubIngressEgress/depositFinalised';
-import { assetConstants, ChainflipChain } from '@chainflip/utils/chainflip';
+import { ChainflipChain } from '@chainflip/utils/chainflip';
 import z from 'zod';
 import { EventHandlerArgs } from '..';
 import { getDepositTxRef } from '../common';
 
-const arbitrumSchema = arbitrumSchema180;
-const bitcoinSchema = bitcoinSchema180;
-const ethereumSchema = ethereumSchema180;
-const polkadotSchema = polkadotSchema180;
-const solanaSchema = solanaSchema180;
+const arbitrumSchema = arbitrumSchema180.transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Arbitrum' as const, data: args.depositDetails },
+}));
+const bitcoinSchema = bitcoinSchema180.transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Bitcoin' as const, data: args.depositDetails },
+}));
+const ethereumSchema = ethereumSchema180.transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Ethereum' as const, data: args.depositDetails },
+}));
+const polkadotSchema = polkadotSchema180.transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Polkadot' as const, data: args.depositDetails },
+}));
+const solanaSchema = solanaSchema180.transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Solana' as const, data: undefined },
+}));
+const assethubSchema = assethubSchema190.transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Assethub' as const, data: args.depositDetails },
+}));
 
 const depositFinalisedSchema = {
   Solana: solanaSchema,
@@ -21,7 +40,7 @@ const depositFinalisedSchema = {
   Bitcoin: bitcoinSchema,
   Ethereum: ethereumSchema,
   Polkadot: polkadotSchema,
-  Assethub: assethubSchema190,
+  Assethub: assethubSchema,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
 export type DepositFinalisedArgsMap = {
@@ -31,12 +50,10 @@ export type DepositFinalisedArgsMap = {
 export const depositFinalised =
   (chain: ChainflipChain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
-    const { asset, amount, action, ingressFee, blockHeight, depositAddress, ...rest } =
+    const { asset, amount, action, ingressFee, blockHeight, maxBoostFeeBps, depositDetails } =
       depositFinalisedSchema[chain].parse(event.args);
-    const depositDetails = 'depositDetails' in rest ? rest.depositDetails : undefined;
-    const maxBoostFeeBps = 'maxBoostFeeBps' in rest ? rest.maxBoostFeeBps : undefined;
 
-    const txRef = getDepositTxRef(assetConstants[asset].chain, depositDetails, blockHeight);
+    const txRef = getDepositTxRef(depositDetails, blockHeight);
 
     if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {
       const { swapRequestId } = action;

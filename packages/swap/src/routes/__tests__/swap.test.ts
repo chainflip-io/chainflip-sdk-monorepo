@@ -1,4 +1,5 @@
 import { ethereumIngressEgressDepositFailed } from '@chainflip/processor/180/ethereumIngressEgress/depositFailed';
+import { reverseBytes } from '@chainflip/utils/bytes';
 import { getInternalAssets } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
@@ -26,6 +27,7 @@ import { SwapDepositAddressReadyArgs } from '../../event-handlers/swapping/swapD
 import { SwapEgressIgnoredArgs } from '../../event-handlers/swapping/swapEgressIgnored';
 import { SwapEgressScheduledArgs } from '../../event-handlers/swapping/swapEgressScheduled';
 import { SwapRequestedArgs190 } from '../../event-handlers/swapping/swapRequested';
+import { SwapScheduledArgs } from '../../event-handlers/swapping/swapScheduled';
 import { getPendingBroadcast } from '../../ingress-egress-tracking';
 import app from '../../server';
 import { State } from '../swap';
@@ -143,13 +145,13 @@ const swapEventMap = {
     extrinsicId: '0000000092-000010-77afe',
     callId: '0000000092-000010-77afe',
     name: 'Swapping.SwapScheduled',
-    args: {
+    args: check<SwapScheduledArgs>({
       swapId: '423',
       swapType: { __kind: 'Swap' },
       executeAt: 94,
       inputAmount: '4999949999999650000',
       swapRequestId: '368',
-    },
+    }),
   },
   'EthereumIngressEgress.DepositFinalised': {
     id: '0000000092-000400-77afe',
@@ -1614,13 +1616,15 @@ describe('server', () => {
       const txHash = '0xb2dcb9ce8d50f0ab869995fee8482bcf304ffcfe5681ca748f90e34c0ad7b241';
 
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
-      (requestedEvent.args.origin as any) = {
+      (requestedEvent.args.origin as any) = check<
+        Extract<SwapRequestedArgs190['origin'], { __kind: 'Vault' }>
+      >({
         __kind: 'Vault',
         txId: {
           __kind: 'Bitcoin',
           value: txHash,
         },
-      } as Extract<SwapRequestedArgs190['origin'], { __kind: 'Vault' }>;
+      });
 
       await processEvents([
         requestedEvent,
@@ -1628,7 +1632,7 @@ describe('server', () => {
         swapEventMap['EthereumIngressEgress.DepositBoosted'],
       ]);
 
-      const { body, status } = await request(server).get(`/swaps/${txHash}`);
+      const { body, status } = await request(server).get(`/swaps/${reverseBytes(txHash.slice(2))}`);
 
       expect(status).toBe(200);
       expect(body).toMatchSnapshot();

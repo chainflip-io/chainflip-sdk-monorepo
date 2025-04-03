@@ -1,20 +1,30 @@
+import { ethereumChainTrackingChainStateUpdated } from '@chainflip/processor/100/ethereumChainTracking/chainStateUpdated';
+import { polkadotChainTrackingChainStateUpdated } from '@chainflip/processor/100/polkadotChainTracking/chainStateUpdated';
+import { bitcoinChainTrackingChainStateUpdated } from '@chainflip/processor/120/bitcoinChainTracking/chainStateUpdated';
+import { solanaChainTrackingChainStateUpdated } from '@chainflip/processor/160/solanaChainTracking/chainStateUpdated';
+import { arbitrumChainTrackingChainStateUpdated } from '@chainflip/processor/180/arbitrumChainTracking/chainStateUpdated';
+import { assethubChainTrackingChainStateUpdated } from '@chainflip/processor/190/assethubChainTracking/chainStateUpdated';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { u128 } from '@/shared/parsers';
 import { EventHandlerArgs } from '..';
 
-const numberOrHex = z.union([u128, z.number().transform((n) => BigInt(n))]);
+const schemas = {
+  Arbitrum: arbitrumChainTrackingChainStateUpdated,
+  Bitcoin: bitcoinChainTrackingChainStateUpdated,
+  Ethereum: ethereumChainTrackingChainStateUpdated,
+  Polkadot: polkadotChainTrackingChainStateUpdated,
+  Solana: solanaChainTrackingChainStateUpdated,
+  Assethub: assethubChainTrackingChainStateUpdated,
+} as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
-const chainStateUpdatedArgs = z.object({
-  newChainState: z.object({
-    blockHeight: numberOrHex,
-  }),
-});
+export type ChainStateUpdatedArgsMap = {
+  [C in ChainflipChain]: z.input<(typeof schemas)[C]>;
+};
 
 const chainStateUpdated =
   (chain: ChainflipChain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
-    const { blockHeight } = chainStateUpdatedArgs.parse(event.args).newChainState;
+    const blockHeight = BigInt(schemas[chain].parse(event.args).newChainState.blockHeight);
     const currentTracking = await prisma.chainTracking.findFirst({ where: { chain } });
 
     // We may receive multiple chain state updates for the same stateChain block,

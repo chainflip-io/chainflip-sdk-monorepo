@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import prisma from '../../../client';
-import chainStateUpdated from '../chainStateUpdated';
+import { check } from '../../__tests__/utils';
+import chainStateUpdated, { ChainStateUpdatedArgsMap } from '../chainStateUpdated';
 
 describe(chainStateUpdated, () => {
   beforeEach(async () => {
@@ -12,11 +13,16 @@ describe(chainStateUpdated, () => {
       prisma,
       block: { height: 1, timestamp: new Date(1718105922000) } as any,
       event: {
-        args: {
+        args: check<ChainStateUpdatedArgsMap['Bitcoin']>({
           newChainState: {
             blockHeight: 1,
+            trackedData: {
+              btcFeeInfo: {
+                satsPerKilobyte: 10,
+              },
+            },
           },
-        },
+        }),
       } as any,
     });
 
@@ -56,11 +62,16 @@ describe(chainStateUpdated, () => {
       prisma,
       block: { height: 10, timestamp: new Date(1718105922000) } as any,
       event: {
-        args: {
+        args: check<ChainStateUpdatedArgsMap['Bitcoin']>({
           newChainState: {
             blockHeight: 101,
+            trackedData: {
+              btcFeeInfo: {
+                satsPerKilobyte: 10,
+              },
+            },
           },
-        },
+        }),
       } as any,
     });
 

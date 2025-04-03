@@ -14,7 +14,7 @@ describe(transactionRejectedByBroker, () => {
     const args = {
       txId: {
         id: {
-          txId: '0x78b3828e63d9300eedcfeaed28e7416764019a62066b945e63624ac27dc5cc9d',
+          txId: '0x78b3828e63d9300eedcfeaed28e7416764019a62066b945e63624ac27dc5cc9d' as const,
           vout: 0,
         },
         amount: '1000000',
@@ -45,7 +45,7 @@ describe(transactionRejectedByBroker, () => {
         reason: 'TransactionRejectedByBroker',
         failedAt: new Date(timestamp - 6000),
         failedBlockIndex: '419-1',
-        depositTransactionRef: formatTxRef('Bitcoin', args.txId.id.txId),
+        depositTransactionRef: formatTxRef({ chain: 'Bitcoin', data: args.txId.id.txId }),
       },
     });
 

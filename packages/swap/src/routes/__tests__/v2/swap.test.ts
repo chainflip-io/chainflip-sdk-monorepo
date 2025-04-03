@@ -1,5 +1,4 @@
-import { ethereumIngressEgressDepositFailed } from '@chainflip/processor/180/ethereumIngressEgress/depositFailed';
-import { bytesToHex } from '@chainflip/utils/bytes';
+import { bytesToHex, reverseBytes } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
 import { BatchBroadcastRequestedArgsMap } from 'packages/swap/src/event-handlers/ingress-egress/batchBroadcastRequested';
@@ -12,7 +11,6 @@ import { SwapExecutedArgs } from 'packages/swap/src/event-handlers/swapping/swap
 import { SwapScheduledArgs } from 'packages/swap/src/event-handlers/swapping/swapScheduled';
 import request from 'supertest';
 import { vi, describe, it, beforeEach, afterEach, expect, beforeAll } from 'vitest';
-import { z } from 'zod';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
 import prisma from '../../../client';
 import env from '../../../config/env';
@@ -23,7 +21,10 @@ import {
   createPools,
   processEvents,
 } from '../../../event-handlers/__tests__/utils';
-import { BitcoinDepositFailedArgs } from '../../../event-handlers/ingress-egress/depositFailed';
+import {
+  BitcoinDepositFailedArgs,
+  DepositFailedArgsMap,
+} from '../../../event-handlers/ingress-egress/depositFailed';
 import { TransactionRejectedByBrokerArgs } from '../../../event-handlers/ingress-egress/transactionRejectedByBroker';
 import type { SwapDepositAddressReadyArgs } from '../../../event-handlers/swapping/swapDepositAddressReady';
 import { SwapEgressIgnoredArgs } from '../../../event-handlers/swapping/swapEgressIgnored';
@@ -384,7 +385,7 @@ const swapEventMap = {
     indexInBlock: 1,
     name: 'EthereumIngressEgress.DepositFailed',
     callId: '0000000092-000399-04fea',
-    args: {
+    args: check<DepositFailedArgsMap['Ethereum']>({
       reason: { __kind: 'InvalidDcaParameters' },
       details: {
         __kind: 'DepositChannel',
@@ -398,14 +399,14 @@ const swapEventMap = {
         },
       },
       blockHeight: 1234,
-    },
+    }),
   },
   'EthereumIngressEgress.DepositFailed.Vault': {
     id: '0000000092-000399-24afe',
     indexInBlock: 1,
     name: 'EthereumIngressEgress.DepositFailed',
     callId: '0000000092-000399-04fea',
-    args: {
+    args: check<DepositFailedArgsMap['Ethereum']>({
       reason: { __kind: 'InvalidRefundParameters' },
       details: {
         __kind: 'Vault',
@@ -429,9 +430,9 @@ const swapEventMap = {
             retryDuration: 100,
           },
         },
-      } as z.input<typeof ethereumIngressEgressDepositFailed>['details'],
+      },
       blockHeight: 1234,
-    },
+    }),
   },
 } as const;
 
@@ -1627,7 +1628,9 @@ describe('server', () => {
         swapEventMap['EthereumIngressEgress.DepositBoosted'],
       ]);
 
-      const { status, body } = await request(server).get(`/v2/swaps/${txHash}`);
+      const { status, body } = await request(server).get(
+        `/v2/swaps/${reverseBytes(txHash.slice(2))}`,
+      );
 
       expect(status).toBe(200);
       expect(body.state).toBe('SWAPPING');

@@ -1,42 +1,39 @@
-import { type Chain } from '.prisma/client';
+import { ethereumBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/120/ethereumBroadcaster/transactionBroadcastRequest';
+import { polkadotBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/120/polkadotBroadcaster/transactionBroadcastRequest';
+import { bitcoinBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/131/bitcoinBroadcaster/transactionBroadcastRequest';
+import { arbitrumBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/141/arbitrumBroadcaster/transactionBroadcastRequest';
+import { solanaBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/160/solanaBroadcaster/transactionBroadcastRequest';
+import { assethubBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/190/assethubBroadcaster/transactionBroadcastRequest';
+import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { EventHandlerArgs } from '../index';
 
-const transactionBroadcastRequestArgs = z
-  .union([
-    z
-      .object({
-        broadcastAttemptId: z.object({ broadcastId: z.number() }),
-        transactionPayload: z.any(),
-      })
-      .transform((args) => ({
-        ...args,
-        broadcastId: args.broadcastAttemptId.broadcastId,
-      })),
-    z.object({
-      broadcastId: z.number(),
-      transactionPayload: z.any(),
-    }),
-  ])
+const schemas = {
+  Arbitrum: arbitrumBroadcasterTransactionBroadcastRequest,
+  Bitcoin: bitcoinBroadcasterTransactionBroadcastRequest,
+  Ethereum: ethereumBroadcasterTransactionBroadcastRequest,
+  Polkadot: polkadotBroadcasterTransactionBroadcastRequest,
+  Solana: solanaBroadcasterTransactionBroadcastRequest,
+  Assethub: assethubBroadcasterTransactionBroadcastRequest,
+} as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
-  .transform((args) => ({
-    ...args,
-    transactionPayload: JSON.stringify(args.transactionPayload),
-  }));
-
-export type TransactionBroadcastRequestArgs = z.input<typeof transactionBroadcastRequestArgs>;
+export type TransactionBroadcastRequestArgsMap = {
+  [C in ChainflipChain]: z.input<(typeof schemas)[C]>;
+};
 
 const transactionBroadcastRequest =
-  (chain: Chain) =>
+  (chain: ChainflipChain) =>
   async ({ prisma, event }: EventHandlerArgs) => {
-    const { broadcastId, transactionPayload } = transactionBroadcastRequestArgs.parse(event.args);
+    const { broadcastId, transactionPayload } = schemas[chain].parse(event.args);
     await prisma.broadcast.updateMany({
       where: {
         chain,
         nativeId: broadcastId,
       },
       data: {
-        transactionPayload,
+        transactionPayload: JSON.stringify(transactionPayload, (key, value) =>
+          typeof value === 'bigint' ? value.toString() : value,
+        ),
       },
     });
   };

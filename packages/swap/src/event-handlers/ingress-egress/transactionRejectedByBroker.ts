@@ -11,15 +11,30 @@ import logger from '../../utils/logger';
 import { getDepositTxRef } from '../common';
 
 const schemaMap = {
-  Arbitrum: arbitrumIngressEgressTransactionRejectedByBroker,
-  Bitcoin: bitcoinIngressEgressTransactionRejectedByBroker,
-  Ethereum: ethereumIngressEgressTransactionRejectedByBroker,
-  Polkadot: polkadotIngressEgressTransactionRejectedByBroker,
+  Arbitrum: arbitrumIngressEgressTransactionRejectedByBroker.transform((args) => ({
+    ...args,
+    txId: { chain: 'Arbitrum' as const, data: args.txId },
+  })),
+  Bitcoin: bitcoinIngressEgressTransactionRejectedByBroker.transform((args) => ({
+    ...args,
+    txId: { chain: 'Bitcoin' as const, data: args.txId },
+  })),
+  Ethereum: ethereumIngressEgressTransactionRejectedByBroker.transform((args) => ({
+    ...args,
+    txId: { chain: 'Ethereum' as const, data: args.txId },
+  })),
+  Polkadot: polkadotIngressEgressTransactionRejectedByBroker.transform((args) => ({
+    ...args,
+    txId: { chain: 'Polkadot' as const, data: args.txId },
+  })),
   Solana: solanaIngressEgressTransactionRejectedByBroker.transform(({ broadcastId }) => ({
     broadcastId,
-    txId: undefined,
+    txId: { chain: 'Solana' as const, data: undefined },
   })),
-  Assethub: assethubIngressEgressTransactionRejectedByBroker,
+  Assethub: assethubIngressEgressTransactionRejectedByBroker.transform((args) => ({
+    ...args,
+    txId: { chain: 'Assethub' as const, data: args.txId },
+  })),
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
 export type TransactionRejectedByBrokerArgs = z.input<(typeof schemaMap)[ChainflipChain]>;
@@ -27,8 +42,8 @@ export type TransactionRejectedByBrokerArgs = z.input<(typeof schemaMap)[Chainfl
 export const transactionRejectedByBroker =
   (chain: ChainflipChain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
-    const { broadcastId, ...rest } = schemaMap[chain].parse(event.args);
-    const txRef = getDepositTxRef(chain, rest.txId);
+    const { broadcastId, txId } = schemaMap[chain].parse(event.args);
+    const txRef = getDepositTxRef(txId);
 
     if (!txRef) {
       logger.warn('failed to find txRef for rejected tx', {

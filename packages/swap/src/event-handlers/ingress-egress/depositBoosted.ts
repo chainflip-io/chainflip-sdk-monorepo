@@ -3,20 +3,38 @@ import { bitcoinIngressEgressDepositBoosted as bitcoinSchema180 } from '@chainfl
 import { ethereumIngressEgressDepositBoosted as ethereumSchema180 } from '@chainflip/processor/180/ethereumIngressEgress/depositBoosted';
 import { polkadotIngressEgressDepositBoosted as polkadotSchema180 } from '@chainflip/processor/180/polkadotIngressEgress/depositBoosted';
 import { solanaIngressEgressDepositBoosted as solanaSchema180 } from '@chainflip/processor/180/solanaIngressEgress/depositBoosted';
-import { assethubIngressEgressDepositBoosted as assethubSchema180 } from '@chainflip/processor/190/assethubIngressEgress/depositBoosted';
-import { assetConstants, ChainflipChain } from '@chainflip/utils/chainflip';
+import { assethubIngressEgressDepositBoosted as assethubSchema190 } from '@chainflip/processor/190/assethubIngressEgress/depositBoosted';
+import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { ONE_IN_PIP } from '@/shared/functions';
 import { SwapFeeType } from '../../client';
 import { getDepositTxRef } from '../common';
 import { EventHandlerArgs } from '../index';
 
-const arbitrumSchema = arbitrumSchema180;
-const bitcoinSchema = bitcoinSchema180;
-const ethereumSchema = ethereumSchema180;
-const polkadotSchema = polkadotSchema180;
-const solanaSchema = solanaSchema180;
-const assethubSchema = assethubSchema180;
+const arbitrumSchema = arbitrumSchema180.transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Arbitrum' as const, data: args.depositDetails },
+}));
+const bitcoinSchema = bitcoinSchema180.transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Bitcoin' as const, data: args.depositDetails },
+}));
+const ethereumSchema = ethereumSchema180.transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Ethereum' as const, data: args.depositDetails },
+}));
+const polkadotSchema = polkadotSchema180.transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Polkadot' as const, data: args.depositDetails },
+}));
+const solanaSchema = solanaSchema180.transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Solana' as const, data: undefined },
+}));
+const assethubSchema = assethubSchema190.transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Assethub' as const, data: args.depositDetails },
+}));
 
 const schemas = {
   Arbitrum: arbitrumSchema,
@@ -44,12 +62,11 @@ export const depositBoosted =
       amounts,
       prewitnessedDepositId,
       blockHeight,
-      ...rest
+      depositDetails,
+      maxBoostFeeBps,
     } = schemas[chain].parse(event.args);
-    const depositDetails = 'depositDetails' in rest ? rest.depositDetails : undefined;
-    const maxBoostFeeBps = 'maxBoostFeeBps' in rest ? rest.maxBoostFeeBps : undefined;
 
-    const txRef = getDepositTxRef(assetConstants[asset].chain, depositDetails, blockHeight);
+    const txRef = getDepositTxRef(depositDetails, blockHeight);
 
     if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {
       const depositAmount = amounts.reduce((acc, [, amount]) => acc + amount, BigInt(0));
