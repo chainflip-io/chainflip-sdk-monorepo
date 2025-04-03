@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import prisma from '../../../client';
-import { insufficientBoostLiquidity } from '../insufficientBoostLiquidity';
+import { check } from '../../__tests__/utils';
+import {
+  insufficientBoostLiquidity,
+  InsufficientBoostLiquidityArgs,
+} from '../insufficientBoostLiquidity';
 
 export const insufficientBoostLiquidityMock = ({
   amountAttempted,
@@ -15,14 +19,15 @@ export const insufficientBoostLiquidityMock = ({
       timestamp: 1670337105000,
     },
     event: {
-      args: {
+      args: check<InsufficientBoostLiquidityArgs>({
         prewitnessedDepositId: '1',
         asset: {
           __kind: 'Btc',
         },
         amountAttempted: amountAttempted ?? '1000000',
         channelId: channelId ?? '1',
-      },
+        originType: { __kind: 'DepositChannel' },
+      }),
       name: 'BitcoinIngressEgress.InsufficientBoostLiquidity',
       indexInBlock: 7,
     },

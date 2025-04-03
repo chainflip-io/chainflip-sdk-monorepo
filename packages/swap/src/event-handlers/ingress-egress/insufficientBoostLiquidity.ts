@@ -1,13 +1,16 @@
 import { bitcoinIngressEgressInsufficientBoostLiquidity } from '@chainflip/processor/180/bitcoinIngressEgress/insufficientBoostLiquidity';
 import { assetConstants } from '@chainflip/utils/chainflip';
 import assert from 'assert';
+import z from 'zod';
 import { EventHandlerArgs } from '..';
 
-export const insufficientBoostLiquiditySchema = bitcoinIngressEgressInsufficientBoostLiquidity;
+export type InsufficientBoostLiquidityArgs = z.input<
+  typeof bitcoinIngressEgressInsufficientBoostLiquidity
+>;
 
 export const insufficientBoostLiquidity = async ({ prisma, event, block }: EventHandlerArgs) => {
   const { channelId, asset, amountAttempted, originType, prewitnessedDepositId } =
-    insufficientBoostLiquiditySchema.parse(event.args);
+    bitcoinIngressEgressInsufficientBoostLiquidity.parse(event.args);
 
   let depositChannel;
 
