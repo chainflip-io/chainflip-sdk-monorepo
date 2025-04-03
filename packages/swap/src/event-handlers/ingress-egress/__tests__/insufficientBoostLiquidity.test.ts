@@ -3,8 +3,10 @@ import prisma from '../../../client';
 import { check } from '../../__tests__/utils';
 import {
   insufficientBoostLiquidity,
-  InsufficientBoostLiquidityArgs,
+  InsufficientBoostLiquidityArgsMap,
 } from '../insufficientBoostLiquidity';
+
+const chain = 'Bitcoin';
 
 export const insufficientBoostLiquidityMock = ({
   amountAttempted,
@@ -19,7 +21,7 @@ export const insufficientBoostLiquidityMock = ({
       timestamp: 1670337105000,
     },
     event: {
-      args: check<InsufficientBoostLiquidityArgs>({
+      args: check<InsufficientBoostLiquidityArgsMap[typeof chain]>({
         prewitnessedDepositId: '1',
         asset: {
           __kind: 'Btc',
@@ -81,7 +83,7 @@ describe('insufficientBoostLiquidity', () => {
     const block = eventData.block as any;
 
     await prisma.$transaction(async (txClient) => {
-      await insufficientBoostLiquidity({
+      await insufficientBoostLiquidity(chain)({
         prisma: txClient,
         event,
         block,
@@ -111,7 +113,7 @@ describe('insufficientBoostLiquidity', () => {
     const block = eventData.block as any;
 
     await prisma.$transaction(async (txClient) => {
-      await insufficientBoostLiquidity({
+      await insufficientBoostLiquidity(chain)({
         prisma: txClient,
         event,
         block,
@@ -145,7 +147,7 @@ describe('insufficientBoostLiquidity', () => {
     const block = eventData.block as any;
 
     await prisma.$transaction(async (txClient) => {
-      await insufficientBoostLiquidity({
+      await insufficientBoostLiquidity(chain)({
         prisma: txClient,
         event,
         block,
@@ -165,7 +167,7 @@ describe('insufficientBoostLiquidity', () => {
 
     await prisma.$transaction(async (txClient) => {
       await expect(
-        insufficientBoostLiquidity({
+        insufficientBoostLiquidity(chain)({
           prisma: txClient,
           event,
           block,
