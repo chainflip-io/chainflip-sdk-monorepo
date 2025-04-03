@@ -43,6 +43,7 @@ const swapRequestInclude = {
     include: depositChannelInclude,
   },
   beneficiaries: { select: beneficiaryInclude },
+  onChainSwapInfo: true,
 } as const;
 
 const channelIdRegex = /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
@@ -364,7 +365,11 @@ export const getSwapState = async (
     }
   } else if (swapRequest?.ignoredEgresses?.length || egress?.broadcast?.abortedAt) {
     state = StateV2.Failed;
+  } else if (swapRequest?.onChainSwapInfo?.refundAmount) {
+    state = StateV2.Failed;
   } else if (egress?.broadcast?.succeededAt) {
+    state = StateV2.Completed;
+  } else if (!egress && swapRequest?.completedAt) {
     state = StateV2.Completed;
   } else if (egress) {
     state = StateV2.Sending;
@@ -495,17 +500,13 @@ export const getCcmParams = (
     : undefined;
 };
 
-export const getRolledSwapsInitialData = (
-  swapDepositChannel: SwapChannelData | null | undefined,
-) => ({
+export const getRolledSwapsInitialData = (swapRequest: SwapRequestData | undefined | null) => ({
   swappedOutputAmount: new Prisma.Decimal(0),
   swappedIntermediateAmount: new Prisma.Decimal(0),
   swappedInputAmount: new Prisma.Decimal(0),
   executedChunks: 0,
   currentChunk: null as null | NonNullable<SwapRequestData['swaps']>[number],
   lastExecutedChunk: null as null | NonNullable<SwapRequestData['swaps']>[number],
-  isDca: Boolean(
-    swapDepositChannel?.dcaChunkIntervalBlocks && swapDepositChannel.dcaChunkIntervalBlocks > 1,
-  ),
+  isDca: (swapRequest?.dcaNumberOfChunks ?? 1) > 1,
   fees: [] as SwapFee[],
 });

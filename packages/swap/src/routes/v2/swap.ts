@@ -67,6 +67,8 @@ router.get(
       'maxBoostFeeBps',
     );
     const showBoost = Boolean(maxBoostFeeBps);
+    const isExternal =
+      swapRequest?.originType !== 'ON_CHAIN' && swapRequest?.originType !== 'INTERNAL';
 
     let effectiveBoostFeeBps;
     if (showBoost) {
@@ -97,12 +99,11 @@ router.get(
           acc.currentChunk = curr;
         }
         return acc;
-      }, getRolledSwapsInitialData(swapDepositChannel));
+      }, getRolledSwapsInitialData(swapRequest));
     } else if (failedSwap) {
-      rolledSwaps = getRolledSwapsInitialData(swapDepositChannel);
+      rolledSwaps = getRolledSwapsInitialData(swapRequest);
       originalInputAmount = failedSwap.depositAmount;
     }
-
     const aggregateFees = rolledSwaps?.fees
       .reduce((acc, curr) => {
         const { type, asset, amount } = curr;
@@ -132,8 +133,12 @@ router.get(
       getEgressStatusFields(swapRequest, failedSwap, 'SWAP', swapEgressTrackerTxRef),
       getEgressStatusFields(swapRequest, failedSwap, 'REFUND', refundEgressTrackerTxRef),
       internalDestAsset &&
-        estimateSwapDuration({ srcAsset: internalSrcAsset, destAsset: internalDestAsset }),
-      getRequiredBlockConfirmations(internalSrcAsset),
+        estimateSwapDuration({
+          srcAsset: internalSrcAsset,
+          destAsset: internalDestAsset,
+          isExternal,
+        }),
+      isExternal ? getRequiredBlockConfirmations(internalSrcAsset) : undefined,
       getLastChainTrackingUpdateTimestamp(),
     ]);
 
@@ -153,7 +158,7 @@ router.get(
         pendingVaultSwap,
         'destAddress',
       ),
-      srcChainRequiredBlockConfirmations,
+      ...(isExternal && { srcChainRequiredBlockConfirmations }),
       estimatedDurationsSeconds: estimatedDurations?.durations,
       estimatedDurationSeconds: estimatedDurations?.total,
       brokers: beneficiaries?.map(({ account, commissionBps }) => ({ account, commissionBps })),
@@ -197,7 +202,7 @@ router.get(
                   currentChunk: rolledSwaps.currentChunk && getSwapFields(rolledSwaps.currentChunk),
                   executedChunks: rolledSwaps.executedChunks,
                   remainingChunks:
-                    (swapDepositChannel?.dcaNumberOfChunks ?? 1) - rolledSwaps.executedChunks,
+                    (swapRequest?.dcaNumberOfChunks ?? 1) - rolledSwaps.executedChunks,
                 },
               }
             : {

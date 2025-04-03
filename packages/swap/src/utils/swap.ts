@@ -15,10 +15,12 @@ import { getWitnessSafetyMargin } from './rpc';
 export const estimateSwapDuration = async ({
   srcAsset,
   destAsset,
+  isExternal = true, // CHECK
   boosted = false,
 }: {
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
+  isExternal?: boolean;
   boosted?: boolean;
 }) => {
   const { chain: srcChain } = getAssetAndChain(srcAsset);
@@ -50,13 +52,17 @@ export const estimateSwapDuration = async ({
     depositInclusionDuration + depositWitnessDuration + depositWitnessSubmissionDuration;
   const egressDuration = EGRESS_BROADCAST_SIGNING_DURATION + egressInclusionDuration;
 
-  return {
-    durations: {
+  const durations = {
+    swap: swapDuration,
+    ...(isExternal && {
       deposit: depositDuration,
-      swap: swapDuration,
       egress: egressDuration,
-    },
-    total: depositDuration + swapDuration + egressDuration,
+    }),
+  };
+
+  return {
+    durations,
+    total: Object.values(durations).reduce((a, b) => a + b),
   };
 };
 
