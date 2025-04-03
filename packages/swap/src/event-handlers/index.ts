@@ -204,7 +204,7 @@ const handlers = [
         },
         {
           name: events[`${chain}IngressEgress`].InsufficientBoostLiquidity,
-          handler: insufficientBoostLiquidity,
+          handler: insufficientBoostLiquidity(chain),
         },
       ]),
     ],

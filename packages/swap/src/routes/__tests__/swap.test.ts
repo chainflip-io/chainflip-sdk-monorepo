@@ -13,11 +13,13 @@ import metadata from '../../event-handlers/__tests__/metadata.json';
 import {
   DOT_ADDRESS,
   ETH_ADDRESS,
+  check,
   createChainTrackingInfo,
   createDepositChannel,
   createPools,
   processEvents,
 } from '../../event-handlers/__tests__/utils';
+import { InsufficientBoostLiquidityArgsMap } from '../../event-handlers/ingress-egress/insufficientBoostLiquidity';
 import { SwapDepositAddressReadyArgs } from '../../event-handlers/swapping/swapDepositAddressReady';
 import { SwapEgressIgnoredArgs } from '../../event-handlers/swapping/swapEgressIgnored';
 import { SwapRequestedArgs190 } from '../../event-handlers/swapping/swapRequested';
@@ -198,12 +200,13 @@ const swapEventMap = {
     extrinsicId: '0000000092-000010-77afe',
     callId: '0000000092-000010-77afe',
     name: 'EthereumIngressEgress.InsufficientBoostLiquidity',
-    args: {
+    args: check<InsufficientBoostLiquidityArgsMap['Ethereum']>({
       prewitnessedDepositId: '27',
       asset: { __kind: 'Eth' },
       amountAttempted: '5000000000000000000',
       channelId: '85',
-    },
+      originType: { __kind: 'DepositChannel' },
+    }),
   },
   'Swapping.SwapExecuted': {
     id: '0000000094-000594-75b12',

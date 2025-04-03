@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import prisma from '../../../client';
-import { insufficientBoostLiquidity } from '../insufficientBoostLiquidity';
+import { check } from '../../__tests__/utils';
+import {
+  insufficientBoostLiquidity,
+  InsufficientBoostLiquidityArgsMap,
+} from '../insufficientBoostLiquidity';
+
+const chain = 'Bitcoin';
 
 export const insufficientBoostLiquidityMock = ({
   amountAttempted,
@@ -15,14 +21,15 @@ export const insufficientBoostLiquidityMock = ({
       timestamp: 1670337105000,
     },
     event: {
-      args: {
+      args: check<InsufficientBoostLiquidityArgsMap[typeof chain]>({
         prewitnessedDepositId: '1',
         asset: {
           __kind: 'Btc',
         },
         amountAttempted: amountAttempted ?? '1000000',
         channelId: channelId ?? '1',
-      },
+        originType: { __kind: 'DepositChannel' },
+      }),
       name: 'BitcoinIngressEgress.InsufficientBoostLiquidity',
       indexInBlock: 7,
     },
@@ -76,7 +83,7 @@ describe('insufficientBoostLiquidity', () => {
     const block = eventData.block as any;
 
     await prisma.$transaction(async (txClient) => {
-      await insufficientBoostLiquidity({
+      await insufficientBoostLiquidity(chain)({
         prisma: txClient,
         event,
         block,
@@ -106,7 +113,7 @@ describe('insufficientBoostLiquidity', () => {
     const block = eventData.block as any;
 
     await prisma.$transaction(async (txClient) => {
-      await insufficientBoostLiquidity({
+      await insufficientBoostLiquidity(chain)({
         prisma: txClient,
         event,
         block,
@@ -140,7 +147,7 @@ describe('insufficientBoostLiquidity', () => {
     const block = eventData.block as any;
 
     await prisma.$transaction(async (txClient) => {
-      await insufficientBoostLiquidity({
+      await insufficientBoostLiquidity(chain)({
         prisma: txClient,
         event,
         block,
@@ -160,7 +167,7 @@ describe('insufficientBoostLiquidity', () => {
 
     await prisma.$transaction(async (txClient) => {
       await expect(
-        insufficientBoostLiquidity({
+        insufficientBoostLiquidity(chain)({
           prisma: txClient,
           event,
           block,

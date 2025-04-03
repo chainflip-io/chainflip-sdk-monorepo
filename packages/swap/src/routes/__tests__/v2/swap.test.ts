@@ -2,6 +2,7 @@ import { ethereumIngressEgressDepositFailed } from '@chainflip/processor/180/eth
 import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
+import { InsufficientBoostLiquidityArgsMap } from 'packages/swap/src/event-handlers/ingress-egress/insufficientBoostLiquidity';
 import request from 'supertest';
 import { vi, describe, it, beforeEach, afterEach, expect, beforeAll } from 'vitest';
 import { z } from 'zod';
@@ -10,6 +11,7 @@ import prisma from '../../../client';
 import env from '../../../config/env';
 import metadata from '../../../event-handlers/__tests__/metadata.json';
 import {
+  check,
   createChainTrackingInfo,
   createPools,
   processEvents,
@@ -213,12 +215,13 @@ const swapEventMap = {
     extrinsicId: '0000000092-000010-77afe',
     callId: '0000000092-000010-77afe',
     name: 'EthereumIngressEgress.InsufficientBoostLiquidity',
-    args: {
+    args: check<InsufficientBoostLiquidityArgsMap['Ethereum']>({
       prewitnessedDepositId: '27',
       asset: { __kind: 'Eth' },
       amountAttempted: '5000000000000000000',
       channelId: '85',
-    },
+      originType: { __kind: 'DepositChannel' },
+    }),
   },
   'Swapping.SwapExecuted': {
     id: '0000000094-000594-75b12',
