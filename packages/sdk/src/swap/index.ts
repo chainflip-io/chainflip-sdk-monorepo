@@ -12,4 +12,4 @@ export {
   InternalAssets as ChainflipIds,
   ChainflipNetworks,
   getInternalAsset as getChainflipId,
-} from '@/shared/enums';
+} from './legacy';

@@ -1,42 +1,14 @@
+import { liquidityPoolsNewPoolCreated as schema160 } from '@chainflip/processor/160/liquidityPools/newPoolCreated';
+import { liquidityPoolsNewPoolCreated as schema190 } from '@chainflip/processor/190/liquidityPools/newPoolCreated';
 import { z } from 'zod';
-import { internalAssetEnum, unsignedInteger } from '@/shared/parsers';
 import type { EventHandlerArgs } from '../index';
 
-const eventArgs = z.union([
-  z.object({
-    baseAsset: internalAssetEnum,
-    quoteAsset: internalAssetEnum,
-    feeHundredthPips: unsignedInteger,
-  }),
-  // support 1.0 event shape used on sisyphos
-  z
-    .object({
-      baseAsset: internalAssetEnum,
-      pairAsset: internalAssetEnum,
-      feeHundredthPips: unsignedInteger,
-    })
-    .transform(({ baseAsset, pairAsset, feeHundredthPips }) => ({
-      baseAsset,
-      quoteAsset: pairAsset,
-      feeHundredthPips,
-    })),
-  // support 0.9 event shape used on sisyphos
-  z
-    .object({
-      unstableAsset: internalAssetEnum,
-      feeHundredthPips: unsignedInteger,
-    })
-    .transform(({ unstableAsset, feeHundredthPips }) => ({
-      baseAsset: unstableAsset,
-      quoteAsset: 'Usdc' as const,
-      feeHundredthPips,
-    })),
-]);
+const eventArgs = z.union([schema190, schema160]);
 
 export default async function newPoolCreated({ prisma, event }: EventHandlerArgs): Promise<void> {
   const { baseAsset, quoteAsset, feeHundredthPips } = eventArgs.parse(event.args);
 
-  // handle pools that were created with USDC as base asset on sisyphos: https://blocks.staging/events/384977-0
+  // handle pools that were created with USDC as base asset on sisyphos: https://scan.sisyphos.staging/events/384977-0
   const stableAsset = baseAsset === 'Usdc' ? baseAsset : quoteAsset;
   const unstableAsset = baseAsset === 'Usdc' ? quoteAsset : baseAsset;
 

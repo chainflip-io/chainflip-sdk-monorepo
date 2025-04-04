@@ -6,7 +6,7 @@ const liquidityDepositAddressReadyArgs = liquidityProviderLiquidityDepositAddres
 
 export type LiquidityDepositAddressReadyArgs = z.input<typeof liquidityDepositAddressReadyArgs>;
 
-export const liquidityDepositAddressReady = async ({ prisma, event, block }: EventHandlerArgs) => {
+const liquidityDepositAddressReady = async ({ prisma, event, block }: EventHandlerArgs) => {
   const { depositAddress, channelId } = liquidityDepositAddressReadyArgs.parse(event.args);
 
   await prisma.depositChannel.create({

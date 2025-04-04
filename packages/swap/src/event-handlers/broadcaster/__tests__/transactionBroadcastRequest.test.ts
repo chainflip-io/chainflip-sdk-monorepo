@@ -1,22 +1,20 @@
 /* eslint-disable @vitest/expect-expect */
 import { describe, it, expect, beforeEach } from 'vitest';
 import prisma, { Chain } from '../../../client';
-import {
-  transactionBroadcastRequestBtcMock,
-  transactionBroadcastRequestBtcMockV2,
-} from '../../__tests__/utils';
-import transactionBroadcastRequest from '../transactionBroadcastRequest';
+import { transactionBroadcastRequestBtcMockV2 } from '../../__tests__/utils';
+import transactionBroadcastRequest, {
+  type TransactionBroadcastRequestArgsMap,
+} from '../transactionBroadcastRequest';
 
-const genericTest = async (chain: Chain, eventType: number) => {
-  const mock =
-    eventType === 1 ? transactionBroadcastRequestBtcMock : transactionBroadcastRequestBtcMockV2;
+const genericTest = async <const C extends Chain>(
+  chain: C,
+  args: TransactionBroadcastRequestArgsMap[C],
+) => {
+  const mock = transactionBroadcastRequestBtcMockV2;
   const { block } = mock;
   const { event } = mock.eventContext;
 
-  const broadcastId =
-    eventType === 1
-      ? transactionBroadcastRequestBtcMock.eventContext.event.args.broadcastAttemptId.broadcastId
-      : transactionBroadcastRequestBtcMockV2.eventContext.event.args.broadcastId;
+  const { broadcastId } = transactionBroadcastRequestBtcMockV2.eventContext.event.args;
 
   await prisma.broadcast.create({
     data: {
@@ -31,7 +29,7 @@ const genericTest = async (chain: Chain, eventType: number) => {
     await transactionBroadcastRequest(chain)({
       prisma: txClient,
       block: block as any,
-      event: event as any,
+      event: { ...event, args },
     });
   });
 
@@ -39,12 +37,11 @@ const genericTest = async (chain: Chain, eventType: number) => {
     where: { nativeId: broadcastId, chain },
   });
 
-  expect(broadcast.transactionPayload).toEqual(
-    JSON.stringify({
-      encodedTransaction:
-        '0x020000000001012f9fa5bb631cc20b2ee53988549db06369188977a759eeee0e95fe4d9089518b0100000000fdffffff0202ac0e0000000000160014605a08f510309c0aeb52554c288cc8a81e773f0c0c2feb02000000002251203d30a261d370dc764140a8f222bda1d003a403d8a24648470fb2e4fc2978f2ae0340b036f7c1cb7a0cfc00e1984cd49daba01fa7a69eeda00e71c14d7f262668ff72e8b29aa02899df429ca1e304482a7c9f86d6448bc5da3c7da567cef4053d3d92245175206a4d5e4829cf59df788c48223c71abb1c3c57a12bfc9b7d389786c4aca4ba5f7ac21c0eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000',
-    }),
-  );
+  expect(broadcast).toMatchSnapshot({
+    id: expect.any(BigInt),
+    createdAt: expect.any(Date),
+    updatedAt: expect.any(Date),
+  });
   expect(await prisma.broadcast.count()).toEqual(1);
 };
 
@@ -54,22 +51,43 @@ describe(transactionBroadcastRequest, () => {
   });
 
   it('handles Bitcoin event', async () => {
-    await genericTest('Bitcoin', 1);
-  });
-  it('handles Ethereum event', async () => {
-    await genericTest('Ethereum', 1);
-  });
-  it('handles Polkadot event', async () => {
-    await genericTest('Polkadot', 1);
+    await genericTest('Bitcoin', {
+      nominee: '0x78ce2b0a2754e8b13b0785bb73675406648a53e1e442b72f7f105f4e28b7697c',
+      transactionOutId: '0x6d40ae184678785c43304a28267b85e0bbd8cec9d66f4832607e92bb660d954c',
+      broadcastId: 1,
+      transactionPayload: {
+        encodedTransaction:
+          '0x02000000000101cadd87785ee27e64170e60ed6ac4111a6696ea7f84c79ea419918b4e5b4ebc910100000000fdffffff015602c8120000000022512038ebafad5f3105608104b26d7d71a7eb91be8fc97e24a8a9ca96acfe4ce24c4c0340604e0d08924a89a69eb7c6dd1b632f8e18a07b8e4b02a1a74ae5ba167d2b85f0a04af814a06bf27a41cd87918daa27a8048c8926d3ceb922003931e6cdc6eb3e240075201f7866c3ad904ef2c76c4bd337996a21709c13da8abbb615dce5e2e369ade04fac21c0eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000',
+      },
+    });
   });
 
-  it('handles Bitcoin event with shape 2', async () => {
-    await genericTest('Bitcoin', 2);
+  it('handles Ethereum event', async () => {
+    await genericTest('Ethereum', {
+      nominee: '0x78ce2b0a2754e8b13b0785bb73675406648a53e1e442b72f7f105f4e28b7697c',
+      transactionOutId: {
+        s: '0x',
+        kTimesGAddress: '0x6d40ae184678785c43304a28267b85e0bbd8cec9d66f4832607e92bb660d954c',
+      },
+      broadcastId: 1,
+      transactionPayload: {
+        chainId: 1,
+        contract: '0x1234',
+        value: 0,
+        data: '0x02000000000101cadd87785ee27e64170e60ed6ac4111a6696ea7f84c79ea419918b4e5b4ebc910100000000fdffffff015602c8120000000022512038ebafad5f3105608104b26d7d71a7eb91be8fc97e24a8a9ca96acfe4ce24c4c0340604e0d08924a89a69eb7c6dd1b632f8e18a07b8e4b02a1a74ae5ba167d2b85f0a04af814a06bf27a41cd87918daa27a8048c8926d3ceb922003931e6cdc6eb3e240075201f7866c3ad904ef2c76c4bd337996a21709c13da8abbb615dce5e2e369ade04fac21c0eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000',
+      },
+    });
   });
-  it('handles Ethereum event with shape 2', async () => {
-    await genericTest('Ethereum', 2);
-  });
-  it('handles Polkadot event with shape 2', async () => {
-    await genericTest('Polkadot', 2);
+
+  it('handles Polkadot event', async () => {
+    await genericTest('Polkadot', {
+      nominee: '0x78ce2b0a2754e8b13b0785bb73675406648a53e1e442b72f7f105f4e28b7697c',
+      transactionOutId: '0x6d40ae184678785c43304a28267b85e0bbd8cec9d66f4832607e92bb660d954c',
+      broadcastId: 1,
+      transactionPayload: {
+        encodedExtrinsic:
+          '0x02000000000101cadd87785ee27e64170e60ed6ac4111a6696ea7f84c79ea419918b4e5b4ebc910100000000fdffffff015602c8120000000022512038ebafad5f3105608104b26d7d71a7eb91be8fc97e24a8a9ca96acfe4ce24c4c0340604e0d08924a89a69eb7c6dd1b632f8e18a07b8e4b02a1a74ae5ba167d2b85f0a04af814a06bf27a41cd87918daa27a8048c8926d3ceb922003931e6cdc6eb3e240075201f7866c3ad904ef2c76c4bd337996a21709c13da8abbb615dce5e2e369ade04fac21c0eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000',
+      },
+    });
   });
 });

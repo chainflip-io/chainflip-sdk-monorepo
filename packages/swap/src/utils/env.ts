@@ -1,4 +1,4 @@
-import { InternalAsset } from '@/shared/enums';
+import { ChainflipAsset } from '@chainflip/utils/chainflip';
 import ServiceError from './ServiceError';
 import env from '../config/env';
 
@@ -8,8 +8,8 @@ export const assertRouteEnabled = ({
   srcAsset,
   destAsset,
 }: {
-  srcAsset: InternalAsset;
-  destAsset: InternalAsset;
+  srcAsset: ChainflipAsset;
+  destAsset: ChainflipAsset;
 }) => {
   if (
     env.FULLY_DISABLED_INTERNAL_ASSETS.includes(srcAsset) ||

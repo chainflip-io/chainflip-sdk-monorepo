@@ -1,6 +1,6 @@
 import { deferredPromise } from '@chainflip/utils/async';
+import { ChainflipAsset } from '@chainflip/utils/chainflip';
 import axios from 'axios';
-import { InternalAsset } from '@/shared/enums';
 import env from '../config/env';
 import logger from '../utils/logger';
 
@@ -18,9 +18,12 @@ export const coinGeckoIdMap = {
   ArbUsdc: 'usd-coin',
   Sol: 'solana',
   SolUsdc: 'usd-coin',
-} as const satisfies Record<InternalAsset, string>;
+  HubDot: 'polkadot',
+  HubUsdc: 'usd-coin',
+  HubUsdt: 'tether',
+} as const satisfies Record<ChainflipAsset, string>;
 
-type CoingeckoId = (typeof coinGeckoIdMap)[InternalAsset];
+type CoingeckoId = (typeof coinGeckoIdMap)[ChainflipAsset];
 
 type CoingeckoPriceResponse = Record<CoingeckoId, Record<typeof COINGECKO_VS_CURRENCY, number>>;
 
@@ -38,7 +41,7 @@ const coingeckoAxios = env.COINGECKO_API_KEY
 export class PriceCache {
   static TTL = 30_000;
 
-  cache: { [A in InternalAsset]?: number } = {};
+  cache: { [A in ChainflipAsset]?: number } = {};
 
   lastCacheSet = 0;
 
@@ -48,7 +51,7 @@ export class PriceCache {
     return Date.now() - this.lastCacheSet < PriceCache.TTL;
   }
 
-  async getAssetPrice(asset: InternalAsset): Promise<number | undefined> {
+  async getAssetPrice(asset: ChainflipAsset): Promise<number | undefined> {
     logger.debug(`getting asset price for "${asset}"`);
 
     if (this.freshEnough()) {
@@ -74,8 +77,8 @@ export class PriceCache {
       );
 
       const entries = Object.entries(coinGeckoIdMap) as {
-        [A in InternalAsset]: [A, (typeof coinGeckoIdMap)[A]];
-      }[InternalAsset][];
+        [A in ChainflipAsset]: [A, (typeof coinGeckoIdMap)[A]];
+      }[ChainflipAsset][];
 
       const coinData = response.data as CoingeckoPriceResponse;
 

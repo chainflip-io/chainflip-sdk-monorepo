@@ -1,4 +1,9 @@
 /* eslint-disable dot-notation */
+import {
+  assetConstants,
+  internalAssetToRpcAsset,
+  InternalAssetMap,
+} from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import * as crypto from 'crypto';
 import { Server } from 'socket.io';
@@ -8,7 +13,6 @@ import { promisify } from 'util';
 import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest';
 import { AddressInfo } from 'ws';
 import { MAX_TICK, MIN_TICK } from '@/shared/consts';
-import { assetConstants, getAssetAndChain, InternalAssetMap } from '@/shared/enums';
 import prisma, { InternalAsset } from '../../client';
 import env from '../../config/env';
 import { getAssetPrice } from '../../pricing';
@@ -66,22 +70,23 @@ describe(Quoter, () => {
     server = new Server().use(authenticate).listen(0);
     quoter = new Quoter(server);
 
-    vi.mocked(getAssetPrice).mockImplementation((asset) =>
-      Promise.resolve(
-        {
-          Dot: 6.5,
-          Usdt: 1,
-          Usdc: 1,
-          ArbUsdc: 1,
-          SolUsdc: 1,
-          Sol: 150,
-          Btc: 65_000,
-          Flip: 4,
-          Eth: 2_000,
-          ArbEth: 2_000,
-        }[asset],
-      ),
-    );
+    const prices: InternalAssetMap<number> = {
+      Dot: 6.5,
+      Usdt: 1,
+      Usdc: 1,
+      ArbUsdc: 1,
+      SolUsdc: 1,
+      Sol: 150,
+      Btc: 65_000,
+      Flip: 4,
+      Eth: 2_000,
+      ArbEth: 2_000,
+      HubDot: 6.5,
+      HubUsdc: 1,
+      HubUsdt: 1,
+    };
+
+    vi.mocked(getAssetPrice).mockImplementation((asset) => Promise.resolve(prices[asset]));
 
     const cachedKeys = new Map<string, crypto.KeyObject>();
 
@@ -111,7 +116,7 @@ describe(Quoter, () => {
           signature: crypto
             .sign(null, Buffer.from(`${name}${timestamp}`, 'utf8'), privateKey)
             .toString('base64'),
-          quoted_assets: quotedAssets?.map((a) => getAssetAndChain(a)),
+          quoted_assets: quotedAssets?.map((a) => internalAssetToRpcAsset[a]),
         },
       });
 
@@ -172,7 +177,7 @@ describe(Quoter, () => {
 
               return {
                 LimitOrder: {
-                  base_asset: getAssetAndChain(baseAsset),
+                  base_asset: internalAssetToRpcAsset[baseAsset],
                   quote_asset: { asset: 'USDC', chain: 'Ethereum' },
                   side,
                   sell_amount: `0x${BigInt(amount).toString(16)}`,

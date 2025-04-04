@@ -1,7 +1,8 @@
 import { GraphQLClient } from 'graphql-request';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import prisma from '../client';
-import { DOT_ADDRESS } from '../event-handlers/__tests__/utils';
+import { check, DOT_ADDRESS } from '../event-handlers/__tests__/utils';
+import { ChainStateUpdatedArgsMap } from '../event-handlers/tracking/chainStateUpdated';
 import { GetBatchQuery } from '../gql/generated/graphql';
 import processBlocks from '../processBlocks';
 
@@ -47,11 +48,16 @@ describe(processBlocks, () => {
                 nodes: [
                   {
                     name: 'BitcoinChainTracking.ChainStateUpdated',
-                    args: {
+                    args: check<ChainStateUpdatedArgsMap['Bitcoin']>({
                       newChainState: {
                         blockHeight: 1000,
+                        trackedData: {
+                          btcFeeInfo: {
+                            satsPerKilobyte: 10,
+                          },
+                        },
                       },
-                    },
+                    }),
                   },
                 ],
               },

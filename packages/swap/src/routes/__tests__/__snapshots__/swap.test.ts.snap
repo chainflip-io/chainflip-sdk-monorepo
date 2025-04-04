@@ -191,7 +191,7 @@ exports[`server > GET /swaps/:id > retrieves boost details when vault swap was b
   "depositAmount": "4999949999999650000",
   "depositBoostedAt": 552000,
   "depositBoostedBlockIndex": "92-400",
-  "depositTransactionRef": "0xb2dcb9ce8d50f0ab869995fee8482bcf304ffcfe5681ca748f90e34c0ad7b241",
+  "depositTransactionRef": "41b2d70a4ce3908f74ca8156fefc4f30cf2b48e8fe959986abf0508dceb9dcb2",
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",

@@ -1,4 +1,4 @@
-import { getAssetAndChain, getInternalAsset } from '@/shared/enums';
+import { getInternalAsset, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { getPipAmountFromAmount } from '@/shared/functions';
 import { DcaParams, Quote, SwapFeeType } from '@/shared/schemas';
 import { calculateRecommendedSlippage } from './autoSlippage';
@@ -101,8 +101,8 @@ export default async function getPoolQuote({
 
   const poolInfo = getPoolFees(srcAsset, destAsset, swapInputAmount, intermediateAmount, pools).map(
     ({ type, ...fee }, i) => ({
-      baseAsset: getAssetAndChain(pools[i].baseAsset),
-      quoteAsset: getAssetAndChain(pools[i].quoteAsset),
+      baseAsset: internalAssetToRpcAsset[pools[i].baseAsset],
+      quoteAsset: internalAssetToRpcAsset[pools[i].quoteAsset],
       fee,
     }),
   );
@@ -142,8 +142,8 @@ export default async function getPoolQuote({
     estimatedDurationSeconds: estimatedDurations.total,
     estimatedPrice: estimatedPrice.toFixed(),
     type: quoteType,
-    srcAsset: getAssetAndChain(srcAsset),
-    destAsset: getAssetAndChain(destAsset),
+    srcAsset: internalAssetToRpcAsset[srcAsset],
+    destAsset: internalAssetToRpcAsset[destAsset],
     depositAmount: depositAmount.toString(),
     isVaultSwap,
     ccmParams: ccmParams && {

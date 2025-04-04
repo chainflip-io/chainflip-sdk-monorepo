@@ -1,32 +1,32 @@
-import { Chain, ChainflipNetwork, ChainflipNetworks, Chains } from './enums';
+import { ChainflipChain, ChainflipNetwork } from '@chainflip/utils/chainflip';
 
 // TODO: read this value via rpc once there is an appropriate rpc method
 const POOLS_NETWORK_FEE_HUNDREDTH_PIPS: Record<ChainflipNetwork, number> = {
-  [ChainflipNetworks.backspin]: 1000,
-  [ChainflipNetworks.sisyphos]: 1000,
-  [ChainflipNetworks.perseverance]: 1000,
-  [ChainflipNetworks.mainnet]: 1000,
+  backspin: 1000,
+  sisyphos: 1000,
+  perseverance: 1000,
+  mainnet: 1000,
 };
 export const getPoolsNetworkFeeHundredthPips = (network: ChainflipNetwork) =>
   POOLS_NETWORK_FEE_HUNDREDTH_PIPS[network];
 
 const ETHEREUM_EVM_CHAIN_ID: Record<ChainflipNetwork, number> = {
-  [ChainflipNetworks.backspin]: 10997, // backspin ethereum
-  [ChainflipNetworks.sisyphos]: 11155111, // sepolia
-  [ChainflipNetworks.perseverance]: 11155111, // sepolia
-  [ChainflipNetworks.mainnet]: 1, // mainnet
+  backspin: 10997, // backspin ethereum
+  sisyphos: 11155111, // sepolia
+  perseverance: 11155111, // sepolia
+  mainnet: 1, // mainnet
 };
 const ARBITRUM_EVM_CHAIN_ID: Record<ChainflipNetwork, number> = {
-  [ChainflipNetworks.backspin]: 412346, // backspin arbitrum
-  [ChainflipNetworks.sisyphos]: 421614, // arb-sepolia
-  [ChainflipNetworks.perseverance]: 421614, // arb-sepolia
-  [ChainflipNetworks.mainnet]: 42161, // mainnet
+  backspin: 412346, // backspin arbitrum
+  sisyphos: 421614, // arb-sepolia
+  perseverance: 421614, // arb-sepolia
+  mainnet: 42161, // mainnet
 };
-export const getEvmChainId = (chain: Chain, network: ChainflipNetwork) => {
+export const getEvmChainId = (chain: ChainflipChain, network: ChainflipNetwork) => {
   switch (chain) {
-    case Chains.Ethereum:
+    case 'Ethereum':
       return ETHEREUM_EVM_CHAIN_ID[network];
-    case Chains.Arbitrum:
+    case 'Arbitrum':
       return ARBITRUM_EVM_CHAIN_ID[network];
     default:
       return undefined;
@@ -37,8 +37,17 @@ export const getEvmChainId = (chain: Chain, network: ChainflipNetwork) => {
 const SEPOLIA_USDC_CONTRACT_ADDRESS = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238';
 const SEPOLIA_USDT_CONTRACT_ADDRESS = '0x27CEA6Eb8a21Aae05Eb29C91c5CA10592892F584';
 
-export const ADDRESSES = {
-  [ChainflipNetworks.backspin]: {
+type AddressMap = {
+  FLIP_CONTRACT_ADDRESS: string;
+  USDC_CONTRACT_ADDRESS: string;
+  USDT_CONTRACT_ADDRESS: string;
+  ARBUSDC_CONTRACT_ADDRESS: string;
+  STATE_CHAIN_GATEWAY_ADDRESS: string;
+  SOLUSDC_CONTRACT_ADDRESS: string;
+};
+
+export const ADDRESSES: Record<ChainflipNetwork, AddressMap> = {
+  backspin: {
     FLIP_CONTRACT_ADDRESS: '0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26',
     USDC_CONTRACT_ADDRESS: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
     USDT_CONTRACT_ADDRESS: '0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82',
@@ -46,7 +55,7 @@ export const ADDRESSES = {
     STATE_CHAIN_GATEWAY_ADDRESS: '0xeEBe00Ac0756308ac4AaBfD76c05c4F3088B8883',
     SOLUSDC_CONTRACT_ADDRESS: '24PNhTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p',
   },
-  [ChainflipNetworks.sisyphos]: {
+  sisyphos: {
     FLIP_CONTRACT_ADDRESS: '0xcD079EAB6B5443b545788Fd210C8800FEADd87fa',
     USDC_CONTRACT_ADDRESS: SEPOLIA_USDC_CONTRACT_ADDRESS,
     USDT_CONTRACT_ADDRESS: SEPOLIA_USDT_CONTRACT_ADDRESS,
@@ -54,7 +63,7 @@ export const ADDRESSES = {
     STATE_CHAIN_GATEWAY_ADDRESS: '0x1F7fE41C798cc7b1D34BdC8de2dDDA4a4bE744D9',
     SOLUSDC_CONTRACT_ADDRESS: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
   },
-  [ChainflipNetworks.perseverance]: {
+  perseverance: {
     FLIP_CONTRACT_ADDRESS: '0xdC27c60956cB065D19F08bb69a707E37b36d8086',
     USDC_CONTRACT_ADDRESS: SEPOLIA_USDC_CONTRACT_ADDRESS,
     USDT_CONTRACT_ADDRESS: SEPOLIA_USDT_CONTRACT_ADDRESS,
@@ -62,7 +71,7 @@ export const ADDRESSES = {
     STATE_CHAIN_GATEWAY_ADDRESS: '0xA34a967197Ee90BB7fb28e928388a573c5CFd099',
     SOLUSDC_CONTRACT_ADDRESS: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
   },
-  [ChainflipNetworks.mainnet]: {
+  mainnet: {
     FLIP_CONTRACT_ADDRESS: '0x826180541412D574cf1336d22c0C0a287822678A',
     USDC_CONTRACT_ADDRESS: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
     USDT_CONTRACT_ADDRESS: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
@@ -70,7 +79,7 @@ export const ADDRESSES = {
     STATE_CHAIN_GATEWAY_ADDRESS: '0x6995Ab7c4D7F4B03f467Cf4c8E920427d9621DBd',
     SOLUSDC_CONTRACT_ADDRESS: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
   },
-} as const;
+};
 
 export const CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS = 6;
 

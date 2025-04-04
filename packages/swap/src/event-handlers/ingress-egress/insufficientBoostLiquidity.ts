@@ -3,6 +3,7 @@ import { bitcoinIngressEgressInsufficientBoostLiquidity } from '@chainflip/proce
 import { ethereumIngressEgressInsufficientBoostLiquidity } from '@chainflip/processor/180/ethereumIngressEgress/insufficientBoostLiquidity';
 import { polkadotIngressEgressInsufficientBoostLiquidity } from '@chainflip/processor/180/polkadotIngressEgress/insufficientBoostLiquidity';
 import { solanaIngressEgressInsufficientBoostLiquidity } from '@chainflip/processor/180/solanaIngressEgress/insufficientBoostLiquidity';
+import { assethubIngressEgressInsufficientBoostLiquidity } from '@chainflip/processor/190/assethubIngressEgress/insufficientBoostLiquidity';
 import { assetConstants } from '@chainflip/utils/chainflip';
 import assert from 'assert';
 import z from 'zod';
@@ -15,6 +16,7 @@ const schemas = {
   Ethereum: ethereumIngressEgressInsufficientBoostLiquidity,
   Polkadot: polkadotIngressEgressInsufficientBoostLiquidity,
   Solana: solanaIngressEgressInsufficientBoostLiquidity,
+  Assethub: assethubIngressEgressInsufficientBoostLiquidity,
 } as const satisfies Record<Chain, z.ZodTypeAny>;
 
 export type InsufficientBoostLiquidityArgsMap = {

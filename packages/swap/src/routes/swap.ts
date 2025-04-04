@@ -1,5 +1,5 @@
+import { internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import express from 'express';
-import { getAssetAndChain } from '@/shared/enums';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
 import { asyncHandler, maintenanceMode } from './common';
 import prisma from '../client';
@@ -159,8 +159,14 @@ router.get(
     const response = {
       state,
       type: swap?.type,
-      ...(internalSrcAsset && getAssetAndChain(internalSrcAsset, 'src')),
-      ...(internalDestAsset && getAssetAndChain(internalDestAsset, 'dest')),
+      ...(internalSrcAsset && {
+        srcAsset: internalAssetToRpcAsset[internalSrcAsset].asset,
+        srcChain: internalAssetToRpcAsset[internalSrcAsset].chain,
+      }),
+      ...(internalDestAsset && {
+        destAsset: internalAssetToRpcAsset[internalDestAsset].asset,
+        destChain: internalAssetToRpcAsset[internalDestAsset].chain,
+      }),
       destAddress: readField(swapRequest, swapDepositChannel, failedSwap, 'destAddress'),
       depositChannelCreatedAt: swapDepositChannel?.createdAt.valueOf(),
       depositChannelBrokerCommissionBps:
@@ -189,7 +195,7 @@ router.get(
       egressIgnoredBlockIndex: swapRequest?.ignoredEgresses?.at(0)?.ignoredBlockIndex ?? undefined,
       feesPaid: fees.map((fee) => ({
         type: fee.type,
-        ...getAssetAndChain(fee.asset),
+        ...internalAssetToRpcAsset[fee.asset],
         amount: fee.amount.toFixed(),
       })),
       broadcastRequestedAt: egress?.broadcast?.requestedAt?.valueOf(),

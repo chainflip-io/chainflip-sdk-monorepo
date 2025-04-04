@@ -1,9 +1,9 @@
 import { CfSwapRateV3, CfSwapRateV3Response, WsClient } from '@chainflip/rpc';
+import { internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { Server } from 'http';
 import request from 'supertest';
 import { describe, it, beforeEach, beforeAll, afterEach, expect, vi } from 'vitest';
-import { getAssetAndChain } from '@/shared/enums';
 import {
   MockedBoostPoolsDepth,
   boostPoolsDepth,
@@ -77,11 +77,11 @@ vi.mock('../../pricing/index');
 const buildFee = (asset: InternalAsset, amount: bigint | number) => ({
   bigint: {
     amount: BigInt(amount),
-    ...getAssetAndChain(asset),
+    ...internalAssetToRpcAsset[asset],
   },
   string: {
     amount: hexEncodeNumber(amount),
-    ...getAssetAndChain(asset),
+    ...internalAssetToRpcAsset[asset],
   },
 });
 

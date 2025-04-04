@@ -1,26 +1,9 @@
+import { liquidityPoolsPoolFeeSet as schema160 } from '@chainflip/processor/160/liquidityPools/poolFeeSet';
+import { liquidityPoolsPoolFeeSet as schema190 } from '@chainflip/processor/190/liquidityPools/poolFeeSet';
 import { z } from 'zod';
-import { internalAssetEnum, unsignedInteger } from '@/shared/parsers';
 import type { EventHandlerArgs } from '../index';
 
-const eventArgs = z.union([
-  z.object({
-    baseAsset: internalAssetEnum,
-    quoteAsset: internalAssetEnum,
-    feeHundredthPips: unsignedInteger,
-  }),
-  // support 1.0 event shape used on perseverance
-  z
-    .object({
-      baseAsset: internalAssetEnum,
-      pairAsset: internalAssetEnum,
-      feeHundredthPips: unsignedInteger,
-    })
-    .transform(({ baseAsset, pairAsset, feeHundredthPips }) => ({
-      baseAsset,
-      quoteAsset: pairAsset,
-      feeHundredthPips,
-    })),
-]);
+const eventArgs = z.union([schema190, schema160]);
 
 export default async function poolFeeSet({ prisma, event }: EventHandlerArgs): Promise<void> {
   const { baseAsset, quoteAsset, feeHundredthPips } = eventArgs.parse(event.args);

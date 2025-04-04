@@ -1,5 +1,5 @@
+import { chainflipNetworks } from '@chainflip/utils/chainflip';
 import { createInterface } from 'node:readline/promises';
-import { chainflipNetwork } from '@/shared/parsers';
 
 export const askForPrivateKey = async () => {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
@@ -11,4 +11,4 @@ export const askForPrivateKey = async () => {
   }
 };
 
-export const cliNetworks = [...Object.values(chainflipNetwork.enum), 'localnet'] as const;
+export const cliNetworks = [...chainflipNetworks, 'localnet'] as const;

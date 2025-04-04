@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { Chains } from '@/shared/enums';
 import prisma from '../../../client';
 import {
   createChainTrackingInfo,
@@ -123,7 +122,7 @@ describe(swapDepositAddressReady, () => {
   it('does not overwrite expectedDepositAmount with zero', async () => {
     await createDepositChannel({
       channelId: BigInt(eventMock.event.args.channelId),
-      srcChain: Chains.Ethereum,
+      srcChain: 'Ethereum',
       issuedBlock: 10,
       expectedDepositAmount: 650,
     });

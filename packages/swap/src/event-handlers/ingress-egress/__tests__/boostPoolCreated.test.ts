@@ -8,7 +8,7 @@ describe(boostPoolCreated, () => {
   });
   it('handles event by creating a boost pool entry', async () => {
     await prisma.$transaction(async (txClient) => {
-      await boostPoolCreated({
+      await boostPoolCreated('Bitcoin')({
         prisma: txClient,
         block: {
           height: 120,
@@ -29,6 +29,8 @@ describe(boostPoolCreated, () => {
       });
     });
 
-    expect(await prisma.boostPool.findFirst()).toMatchSnapshot();
+    expect(await prisma.boostPool.findFirst()).toMatchSnapshot({
+      id: expect.any(Number),
+    });
   });
 });

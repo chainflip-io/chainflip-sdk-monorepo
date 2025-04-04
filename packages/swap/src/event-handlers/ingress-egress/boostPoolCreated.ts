@@ -1,34 +1,44 @@
+import { arbitrumIngressEgressBoostPoolCreated } from '@chainflip/processor/141/arbitrumIngressEgress/boostPoolCreated';
+import { bitcoinIngressEgressBoostPoolCreated } from '@chainflip/processor/141/bitcoinIngressEgress/boostPoolCreated';
+import { ethereumIngressEgressBoostPoolCreated } from '@chainflip/processor/141/ethereumIngressEgress/boostPoolCreated';
+import { polkadotIngressEgressBoostPoolCreated } from '@chainflip/processor/141/polkadotIngressEgress/boostPoolCreated';
+import { solanaIngressEgressBoostPoolCreated } from '@chainflip/processor/160/solanaIngressEgress/boostPoolCreated';
+import { assethubIngressEgressBoostPoolCreated } from '@chainflip/processor/190/assethubIngressEgress/boostPoolCreated';
+import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { internalAssetEnum, number } from '@/shared/parsers';
 import { EventHandlerArgs } from '..';
 
-const boostPoolCreatedEventSchema = z.object({
-  boostPool: z.object({
-    asset: internalAssetEnum,
-    tier: number,
-  }),
-});
+const schemas = {
+  Arbitrum: arbitrumIngressEgressBoostPoolCreated,
+  Bitcoin: bitcoinIngressEgressBoostPoolCreated,
+  Ethereum: ethereumIngressEgressBoostPoolCreated,
+  Polkadot: polkadotIngressEgressBoostPoolCreated,
+  Solana: solanaIngressEgressBoostPoolCreated,
+  Assethub: assethubIngressEgressBoostPoolCreated,
+} as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
-export const boostPoolCreated = async ({ prisma, event }: EventHandlerArgs) => {
-  const {
-    boostPool: { asset, tier },
-  } = boostPoolCreatedEventSchema.parse(event.args);
+export const boostPoolCreated =
+  (chain: ChainflipChain) =>
+  async ({ prisma, event }: EventHandlerArgs) => {
+    const {
+      boostPool: { asset, tier },
+    } = schemas[chain].parse(event.args);
 
-  await prisma.boostPool.upsert({
-    create: {
-      asset,
-      feeTierPips: tier,
-      // safe mode is disabled by default which means pools are active
-      boostEnabled: true,
-      depositEnabled: true,
-      withdrawEnabled: true,
-    },
-    where: {
-      asset_feeTierPips: {
+    await prisma.boostPool.upsert({
+      create: {
         asset,
         feeTierPips: tier,
+        // safe mode is disabled by default which means pools are active
+        boostEnabled: true,
+        depositEnabled: true,
+        withdrawEnabled: true,
       },
-    },
-    update: {},
-  });
-};
+      where: {
+        asset_feeTierPips: {
+          asset,
+          feeTierPips: tier,
+        },
+      },
+      update: {},
+    });
+  };

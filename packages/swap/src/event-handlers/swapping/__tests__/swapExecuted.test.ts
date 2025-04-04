@@ -1,5 +1,5 @@
+import { baseChainflipAssets } from '@chainflip/utils/chainflip';
 import { vi, describe, it, expect, beforeEach, beforeAll } from 'vitest';
-import { InternalAssets } from '@/shared/enums';
 import prisma from '../../../client';
 import swapExecuted, { SwapExecutedArgs } from '../swapExecuted';
 
@@ -86,7 +86,7 @@ describe(swapExecuted, () => {
   beforeAll(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE public."Pool" CASCADE`;
     await prisma.pool.createMany({
-      data: Object.values(InternalAssets).map((asset) => ({
+      data: baseChainflipAssets.map((asset) => ({
         baseAsset: asset,
         quoteAsset: 'Usdc',
         liquidityFeeHundredthPips: 1000,

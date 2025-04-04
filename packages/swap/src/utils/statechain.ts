@@ -1,14 +1,12 @@
 import { WsClient, RpcParams } from '@chainflip/rpc';
+import { ChainflipAsset, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import WebSocket from 'ws';
-import { InternalAsset, getAssetAndChain } from '@/shared/enums';
 import { DcaParams, SwapFeeType } from '@/shared/schemas';
 import { memoize } from './function';
 import env from '../config/env';
 
-export const initializeClient = memoize(
-  () => new WsClient(env.RPC_NODE_WSS_URL, WebSocket as never),
-);
+const initializeClient = memoize(() => new WsClient(env.RPC_NODE_WSS_URL, WebSocket as never));
 export type QuoteLimitOrders = NonNullable<RpcParams['cf_swap_rate_v3'][7]>;
 export type QuoteCcmParams = {
   gasBudget: bigint;
@@ -16,8 +14,8 @@ export type QuoteCcmParams = {
 };
 
 export type SwapRateArgs = {
-  srcAsset: InternalAsset;
-  destAsset: InternalAsset;
+  srcAsset: ChainflipAsset;
+  destAsset: ChainflipAsset;
   depositAmount: bigint;
   limitOrders?: QuoteLimitOrders;
   brokerCommissionBps?: number;
@@ -61,8 +59,8 @@ export const getSwapRateV3 = async ({
     broker_commission: brokerFee,
   } = await client.sendRequest(
     'cf_swap_rate_v3',
-    getAssetAndChain(srcAsset),
-    getAssetAndChain(destAsset),
+    internalAssetToRpcAsset[srcAsset],
+    internalAssetToRpcAsset[destAsset],
     hexEncodeNumber(depositAmount),
     brokerCommissionBps ?? 0,
     dcaParams,

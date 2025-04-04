@@ -1,12 +1,12 @@
-import BigNumber from 'bignumber.js';
-import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts';
 import {
   assetConstants,
   chainConstants,
-  Chains,
-  getAssetAndChain,
-  InternalAsset,
-} from '@/shared/enums';
+  ChainflipAsset,
+  chainflipChains,
+  internalAssetToRpcAsset,
+} from '@chainflip/utils/chainflip';
+import BigNumber from 'bignumber.js';
+import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts';
 import { assertUnreachable } from '@/shared/functions';
 import ServiceError from './ServiceError';
 import { FailedSwapReason, Swap } from '../client';
@@ -15,16 +15,16 @@ import { getWitnessSafetyMargin } from './rpc';
 export const estimateSwapDuration = async ({
   srcAsset,
   destAsset,
-  isExternal = true, // CHECK
+  isExternal = true,
   boosted = false,
 }: {
-  srcAsset: InternalAsset;
-  destAsset: InternalAsset;
+  srcAsset: ChainflipAsset;
+  destAsset: ChainflipAsset;
   isExternal?: boolean;
   boosted?: boolean;
 }) => {
-  const { chain: srcChain } = getAssetAndChain(srcAsset);
-  const { chain: destChain } = getAssetAndChain(destAsset);
+  const { chain: srcChain } = internalAssetToRpcAsset[srcAsset];
+  const { chain: destChain } = internalAssetToRpcAsset[destAsset];
 
   // user transaction must be included before witnessing starts
   const depositInclusionDuration = chainConstants[srcChain].blockTimeSeconds;
@@ -81,7 +81,7 @@ export const isEgressableSwap = (swap: Swap) => {
 };
 
 export const coerceChain = (maybeChain: string) => {
-  const chain = Object.values(Chains).find((c) => c.toLowerCase() === maybeChain.toLowerCase());
+  const chain = chainflipChains.find((c) => c.toLowerCase() === maybeChain.toLowerCase());
   if (!chain) throw ServiceError.badRequest(`Invalid chain: ${maybeChain}`);
   return chain;
 };
@@ -109,9 +109,9 @@ export enum FailureMode {
 }
 
 export const getSwapPrice = (
-  inputAsset: InternalAsset,
+  inputAsset: ChainflipAsset,
   inputAmount: BigNumber.Value,
-  outputAsset: InternalAsset,
+  outputAsset: ChainflipAsset,
   outputAmount: BigNumber.Value,
 ) => {
   const input = BigNumber(inputAmount).shiftedBy(-assetConstants[inputAsset].decimals);

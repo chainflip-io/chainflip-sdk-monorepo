@@ -1,3 +1,4 @@
+import { AssetAndChain } from '@chainflip/rpc/parsers';
 import {
   CfBoostPoolsDepthResponse,
   CfEnvironmentResponse,
@@ -8,17 +9,16 @@ import {
   CfSwapRateResponse,
   CfSwappingEnvironmentResponse,
 } from '@chainflip/rpc/types';
-import { vi } from 'vitest';
 import {
-  Asset,
-  AssetAndChain,
   assetConstants,
   AssetOfChain,
-  Chain,
   chainConstants,
-  InternalAsset,
-  InternalAssets,
-} from '../enums';
+  ChainflipAsset,
+  chainflipAssets,
+  ChainflipChain,
+  UncheckedAssetAndChain,
+} from '@chainflip/utils/chainflip';
+import { vi } from 'vitest';
 
 type RpcResponse<T> = { id: number; jsonrpc: '2.0'; result: T };
 
@@ -217,24 +217,22 @@ export const swapRate = ({
 });
 
 export const supportedAssets = ({
-  assets = Object.values(InternalAssets),
+  assets = chainflipAssets,
 }: {
-  assets?: InternalAsset[];
+  assets?: readonly ChainflipAsset[] | ChainflipAsset[];
 } = {}): RpcResponse<CfSupportedAssetsResponse> => ({
   id: 1,
   jsonrpc: '2.0',
   result: assets.map((asset) => ({
-    asset: assetConstants[asset].asset,
+    asset: assetConstants[asset].symbol,
     chain: assetConstants[asset].chain,
   })) as AssetAndChain[],
 });
 
-type BoostPool = {
-  chain: Chain;
-  asset: Asset;
+interface BoostPool extends UncheckedAssetAndChain {
   tier: number;
   available_amount: string;
-};
+}
 
 export type MockedBoostPoolsDepth = CfBoostPoolsDepthResponse;
 
@@ -255,7 +253,7 @@ export const boostPoolsDepth = (
           ),
         ),
       ) as {
-        [C in Chain as `${C}-${AssetOfChain<C>}-${number}`]: BoostPool;
+        [C in ChainflipChain as `${C}-${AssetOfChain<C>}-${number}`]: BoostPool;
       }),
       'Bitcoin-BTC-10': {
         chain: 'Bitcoin',

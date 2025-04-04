@@ -1,21 +1,19 @@
+import {
+  assetConstants,
+  getInternalAsset,
+  type ChainflipAsset,
+  type ChainAssetMap,
+  type ChainflipNetwork,
+  type UncheckedAssetAndChain,
+  ChainflipChain,
+  chainflipChains,
+  internalAssetToRpcAsset,
+  ChainMap,
+} from '@chainflip/utils/chainflip';
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import superjson from 'superjson';
 import { requestSwapDepositAddress, requestSwapParameterEncoding } from '@/shared/broker';
 import { AsyncCacheMap } from '@/shared/dataStructures';
-import {
-  ChainflipNetwork,
-  Chain,
-  ChainflipNetworks,
-  UncheckedAssetAndChain,
-  ChainAssetMap,
-  Chains,
-  ChainMap,
-  InternalAsset,
-  assetConstants,
-  getInternalAsset,
-  getAssetAndChain,
-  Asset,
-} from '@/shared/enums';
 import { getPriceX128FromPrice, parseFoKParams } from '@/shared/functions';
 import { assert, isNotNullish } from '@/shared/guards';
 import {
@@ -92,12 +90,12 @@ export class SwapSDK {
     Awaited<ReturnType<typeof getEnvironment>>
   >;
 
-  private supportedAssets?: InternalAsset[];
+  private supportedAssets?: ChainflipAsset[];
 
   private dcaEnabled = false;
 
   constructor(options: SwapSDKOptions = {}) {
-    const network = options.network ?? ChainflipNetworks.perseverance;
+    const network = options.network ?? 'perseverance';
     this.options = {
       ...options,
       network,
@@ -121,8 +119,8 @@ export class SwapSDK {
     });
   }
 
-  async getChains(sourceChain?: Chain): Promise<ChainData[]> {
-    if (sourceChain && !(sourceChain in Chains))
+  async getChains(sourceChain?: ChainflipChain): Promise<ChainData[]> {
+    if (sourceChain && !chainflipChains.includes(sourceChain))
       throw new Error(`unsupported source chain "${sourceChain}"`);
 
     const [env, supportedAssets] = await Promise.all([
@@ -140,7 +138,7 @@ export class SwapSDK {
     return this.stateChainEnvironmentCache.get('cf_environment');
   }
 
-  private async getSupportedAssets(): Promise<InternalAsset[]> {
+  private async getSupportedAssets(): Promise<ChainflipAsset[]> {
     this.supportedAssets ??= (await getSupportedAssets(this.rpcConfig))
       .map((asset) => getInternalAsset(asset as UncheckedAssetAndChain, false))
       .filter(isNotNullish);
@@ -152,8 +150,8 @@ export class SwapSDK {
     return getAllBoostPoolsDepth(this.rpcConfig);
   }
 
-  async getAssets(chain?: Chain): Promise<AssetData[]> {
-    if (chain && !(chain in Chains)) throw new Error(`unsupported chain "${chain}"`);
+  async getAssets(chain?: ChainflipChain): Promise<AssetData[]> {
+    if (chain && !chainflipChains.includes(chain)) throw new Error(`unsupported chain "${chain}"`);
 
     const [env, supportedAssets] = await Promise.all([
       this.getStateChainEnvironment(),
@@ -334,11 +332,9 @@ export class SwapSDK {
       ingressEgress: { witnessSafetyMargins },
     } = await this.getStateChainEnvironment();
 
-    return Object.keys(Chains).reduce(
+    return chainflipChains.reduce(
       (acc, chain) => {
-        acc[chain as Chain] = witnessSafetyMargins[chain as Chain]
-          ? Number(witnessSafetyMargins[chain as Chain]) + 1
-          : null;
+        acc[chain] = witnessSafetyMargins[chain] ? Number(witnessSafetyMargins[chain]) + 1 : null;
         return acc;
       },
       {} as ChainMap<number | null>,
@@ -354,13 +350,7 @@ export class SwapSDK {
   }
 
   async getBoostLiquidity(
-    params:
-      | { feeTierBps?: number }
-      | {
-          feeTierBps?: number;
-          asset: Asset;
-          chain: Chain;
-        } = {},
+    params: { feeTierBps?: number } | ({ feeTierBps?: number } & UncheckedAssetAndChain) = {},
   ): Promise<BoostPoolDepth[]> {
     let poolsDepth = await this.getBoostPoolsDepth();
 
@@ -379,7 +369,7 @@ export class SwapSDK {
     return poolsDepth.map((depth) => ({
       availableAmount: depth.availableAmount,
       feeTierBps: depth.tier,
-      ...getAssetAndChain(depth.asset),
+      ...internalAssetToRpcAsset[depth.asset],
     }));
   }
 

@@ -1,4 +1,4 @@
-import { swappingSwapEgressIgnored } from '@chainflip/processor/160/swapping/swapEgressIgnored';
+import { swappingSwapEgressIgnored } from '@chainflip/processor/190/swapping/swapEgressIgnored';
 import { z } from 'zod';
 import { getStateChainError } from '../common';
 import { EventHandlerArgs } from '../index';

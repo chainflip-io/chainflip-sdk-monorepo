@@ -88,14 +88,14 @@ importers:
         specifier: ^1.2.4
         version: 1.2.4(typescript@5.7.3)
       '@chainflip/rpc':
-        specifier: ^1.8.9
-        version: 1.8.9
+        specifier: ^1.9.2
+        version: 1.9.2
       '@chainflip/solana':
-        specifier: ^2.1.5
-        version: 2.1.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^2.1.6
+        version: 2.1.6(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.8.0
-        version: 0.8.0
+        specifier: ^0.8.3
+        version: 0.8.3
       axios:
         specifier: ^1.7.7
         version: 1.7.9
@@ -161,14 +161,14 @@ importers:
         specifier: ^1.2.4
         version: 1.2.4(typescript@5.7.3)
       '@chainflip/rpc':
-        specifier: ^1.8.9
-        version: 1.8.9
+        specifier: ^1.9.2
+        version: 1.9.2
       '@chainflip/solana':
-        specifier: ^2.1.5
-        version: 2.1.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^2.1.6
+        version: 2.1.6(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.8.0
-        version: 0.8.0
+        specifier: ^0.8.3
+        version: 0.8.3
       '@trpc/client':
         specifier: ^10.45.2
         version: 10.45.2(@trpc/server@10.45.2)
@@ -201,14 +201,14 @@ importers:
         specifier: ^1.2.4
         version: 1.2.4(typescript@5.7.3)
       '@chainflip/rpc':
-        specifier: ^1.8.9
-        version: 1.8.9
+        specifier: ^1.9.2
+        version: 1.9.2
       '@chainflip/solana':
-        specifier: ^2.1.5
-        version: 2.1.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^2.1.6
+        version: 2.1.6(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.8.0
-        version: 0.8.0
+        specifier: ^0.8.3
+        version: 0.8.3
       axios:
         specifier: ^1.7.7
         version: 1.7.9
@@ -258,15 +258,18 @@ importers:
       '@chainflip/processor':
         specifier: ^1.9.1
         version: 1.9.1
+      '@chainflip/redis':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@chainflip/rpc':
-        specifier: ^1.8.9
-        version: 1.8.9
+        specifier: ^1.9.2
+        version: 1.9.2
       '@chainflip/solana':
-        specifier: ^2.1.5
-        version: 2.1.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^2.1.6
+        version: 2.1.6(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.8.0
-        version: 0.8.0
+        specifier: ^0.8.3
+        version: 0.8.3
       '@polkadot/api':
         specifier: ^15.5.2
         version: 15.6.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -482,14 +485,17 @@ packages:
   '@chainflip/processor@1.9.1':
     resolution: {integrity: sha512-4Xqzd8WMkmqEpfTfLlQluPCxRfzEHWbAxKc7LZHvNsOuVZXXTXgGwvc4NJe2FdAYwsd7r9KcJN6ABAxDR2FDUw==}
 
-  '@chainflip/rpc@1.8.9':
-    resolution: {integrity: sha512-M6KMKuGarxtZTsliYOke+1Kl7hcJzY0lvbLd+aVlLfEWRYtZyRXzYYLbHqZNsEMzdExlU8xeD9eS0m2Of2IJpg==}
+  '@chainflip/redis@1.0.0':
+    resolution: {integrity: sha512-rrkbOEAPAFTgz7Rp9qCKbd5wS9BHCV8RY+/OcyJuZxWKY9Rny+sJsbdUdxJnmv+lRk6TeganxCPnxtDOU9izDg==}
+
+  '@chainflip/rpc@1.9.2':
+    resolution: {integrity: sha512-2lIFZRJWYzm9BQS7bBtZRjmxEAvZ0YAzg/R0zNyc9TM+9nn+cstLRdZR5OI/LxH4/Los3uwzDSbR+wzE6HGMqw==}
 
   '@chainflip/scale@1.8.0':
     resolution: {integrity: sha512-66bT2DQi0kNFZRva0phBuMWCWKamOyfROlKovxcBd6wzZVGFxVqgi73iG1nExaUPlOLJnYc8gQ/blwHidgjvrg==}
 
-  '@chainflip/solana@2.1.5':
-    resolution: {integrity: sha512-iha803Wvv/Uo5CdY9fzuajZOIYnqyF9BK60rhhIdpWaBCuunCRrBvYHF5YWHKzeQoZ3pM6pEwC+19RRBbJS2mg==}
+  '@chainflip/solana@2.1.6':
+    resolution: {integrity: sha512-CgeI0S7KoFp6depbxNqKHO2ROVo0B1IVasTD7lmh9UXlguPZtkRuNFgAJCmLfMLMfFE3F5yJsDloybxwmCQBfA==}
 
   '@chainflip/utils@0.6.0':
     resolution: {integrity: sha512-ZwyNKv3FVVJw5aOcRf/4rTxCclP+prerxPnTGBrFcBYEYSrPlyx4eI1dc7J35xmKD2yq+vQgwNjCx1h6oJuoPA==}
@@ -500,8 +506,11 @@ packages:
   '@chainflip/utils@0.7.2':
     resolution: {integrity: sha512-DJ37gbbNVEy/YFcK9oQ19Ro83hUwCFyP2fA//Vatit1Z4nWPKgBmyQtYQLdjfcwrOhvQeYi7DcxfVU0YwOaP2g==}
 
-  '@chainflip/utils@0.8.0':
-    resolution: {integrity: sha512-lz2zHppKkf7nI8kw8m4bUk3exjOsDK9kFPKzUnUVUNQMQRElxFZcXZoZcyS+5rCPO01KNgwJQHS1PuYr2QJ8+Q==}
+  '@chainflip/utils@0.8.2':
+    resolution: {integrity: sha512-wVWSdd1i8+RY4IPqCLdsr/b2Y5cGTzSv6kE/nKhFhcUPELUO0YTRoVote/mUQ/Kd9MiQFaDiS1AEtcPZ0H2W6w==}
+
+  '@chainflip/utils@0.8.3':
+    resolution: {integrity: sha512-MGj22hZ6IIBe5sUYnsLcnvNgPSyOR4PjzWRlyBPDXbtkNwW52NPSMmGo1LfoXbH3GB2BClFOTX3qU3kXN8e9Nw==}
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -529,6 +538,7 @@ packages:
 
   '@effect/schema@0.69.0':
     resolution: {integrity: sha512-dqVnriWqM8TT8d+5vgg1pH4ZOXfs7tQBVAY5N7PALzIOlZamsBKQCdwvMMqremjSkKITckF8/cIj1eQZHQeg7Q==}
+    deprecated: this package has been merged into the main effect package
     peerDependencies:
       effect: ^3.5.7
 
@@ -3416,6 +3426,10 @@ packages:
     resolution: {integrity: sha512-7CutT89g23FfSa8MDoIFs2GYYa0PaNiW/OrT+nRyjRXHDZd17HmIgy+reOQ/yhh72NznNjGuS8kbCAcA4Ro4mw==}
     engines: {node: '>=12.22.0'}
 
+  ioredis@5.6.0:
+    resolution: {integrity: sha512-tBZlIIWbndeWBWCXWZiqtOF/yxf6yZX3tAlTJ7nfo5jhd6dctNxF7QnYlZLZ1a0o0pDoen7CgZqO+zjNaFbJAg==}
+    engines: {node: '>=12.22.0'}
+
   ipaddr.js@1.9.1:
     resolution: {integrity: sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==}
     engines: {node: '>= 0.10'}
@@ -5733,7 +5747,16 @@ snapshots:
       '@chainflip/utils': 0.7.0
       zod: 3.24.2
 
-  '@chainflip/rpc@1.8.9':
+  '@chainflip/redis@1.0.0':
+    dependencies:
+      '@chainflip/utils': 0.8.2
+      bignumber.js: 9.1.2
+      ioredis: 5.6.0
+      zod: 3.24.2
+    transitivePeerDependencies:
+      - supports-color
+
+  '@chainflip/rpc@1.9.2':
     dependencies:
       '@chainflip/utils': 0.7.0
       zod: 3.24.2
@@ -5743,10 +5766,10 @@ snapshots:
       '@chainflip/utils': 0.6.0
       scale-ts: 1.6.1
 
-  '@chainflip/solana@2.1.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+  '@chainflip/solana@2.1.6(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
       '@chainflip/scale': 1.8.0
-      '@chainflip/utils': 0.7.2
+      '@chainflip/utils': 0.8.2
       '@coral-xyz/anchor': 0.31.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@solana/web3.js': 1.98.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       bn.js: 5.2.1
@@ -5775,7 +5798,13 @@ snapshots:
       bignumber.js: 9.1.2
       date-fns: 4.1.0
 
-  '@chainflip/utils@0.8.0':
+  '@chainflip/utils@0.8.2':
+    dependencies:
+      '@date-fns/utc': 2.1.0
+      bignumber.js: 9.1.2
+      date-fns: 4.1.0
+
+  '@chainflip/utils@0.8.3':
     dependencies:
       '@date-fns/utc': 2.1.0
       bignumber.js: 9.1.2
@@ -9452,6 +9481,20 @@ snapshots:
       loose-envify: 1.4.0
 
   ioredis@5.5.0:
+    dependencies:
+      '@ioredis/commands': 1.2.0
+      cluster-key-slot: 1.1.2
+      debug: 4.4.0
+      denque: 2.1.0
+      lodash.defaults: 4.2.0
+      lodash.isarguments: 3.1.0
+      redis-errors: 1.2.0
+      redis-parser: 3.0.0
+      standard-as-callback: 2.1.0
+    transitivePeerDependencies:
+      - supports-color
+
+  ioredis@5.6.0:
     dependencies:
       '@ioredis/commands': 1.2.0
       cluster-key-slot: 1.1.2

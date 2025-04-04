@@ -1,6 +1,10 @@
+import {
+  getInternalAssets,
+  UncheckedAssetAndChain,
+  AssetAndChain,
+} from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { z } from 'zod';
-import { Chain, Asset, getInternalAssets, AssetAndChain } from './enums';
 import {
   chain,
   hexStringWithMaxByteSize,
@@ -8,7 +12,6 @@ import {
   numericString,
   asset,
   chainflipAddress,
-  number,
   hexString,
   booleanString,
 } from './parsers';
@@ -121,22 +124,22 @@ export type CcmParams = Omit<z.input<typeof ccmParamsSchema>, 'cfParameters'> & 
 export const affiliateBroker = z
   .object({
     account: chainflipAddress,
-    commissionBps: number,
+    commissionBps: z.number(),
   })
   .transform(({ account, commissionBps: bps }) => ({ account, bps }));
 
 export type AffiliateBroker = z.input<typeof affiliateBroker>;
 
 export const dcaParams = z.object({
-  numberOfChunks: number,
-  chunkIntervalBlocks: number,
+  numberOfChunks: z.number(),
+  chunkIntervalBlocks: z.number(),
 });
 export type DcaParams = z.input<typeof dcaParams>;
 
 export type SwapFeeType = 'IngressDepositChannel' | 'IngressVaultSwap' | 'Network' | 'Egress';
 
 export const fillOrKillParams = z.object({
-  retryDurationBlocks: number,
+  retryDurationBlocks: z.number(),
   refundAddress: z.string(),
   minPriceX128: numericString,
 });
@@ -146,12 +149,10 @@ export type FillOrKillParamsWithMinPrice = Omit<FillOrKillParamsX128, 'minPriceX
   minPrice: string;
 };
 
-type Fee<T> = {
+interface Fee<T> extends UncheckedAssetAndChain {
   type: T;
-  chain: Chain;
-  asset: Asset;
   amount: string;
-};
+}
 
 export type SwapFee = Fee<'NETWORK' | 'INGRESS' | 'EGRESS' | 'BROKER' | 'BOOST'>;
 

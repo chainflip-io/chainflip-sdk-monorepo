@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { bitcoinAddresses } from './bitcoinAddresses';
-import { Chains } from '../../enums';
 import {
   validateBitcoinMainnetAddress,
   validateBitcoinTestnetAddress,
@@ -75,9 +74,9 @@ describe(validateBitcoinRegtestAddress, () => {
 
 describe(validateAddress, () => {
   it.each([
-    [Chains.Polkadot, '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
     ['Polkadot', '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
-    [Chains.Ethereum, '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
+    ['Polkadot', '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
+    ['Ethereum', '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
   ] as const)('returns true for valid supportedAssets %s', (chain, address) => {
     expect(validateAddress(chain, address, 'mainnet')).toBeTruthy();
     expect(validateAddress(chain, address, 'perseverance')).toBeTruthy();
@@ -85,9 +84,9 @@ describe(validateAddress, () => {
   });
 
   it.each([
-    [Chains.Bitcoin, '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
     ['Bitcoin', '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
-    [Chains.Bitcoin, '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
+    ['Bitcoin', '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
+    ['Bitcoin', '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
     ['Bitcoin', '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
   ] as const)('returns false for invalid bitcoin addresses %s', (chain, address) => {
     expect(validateAddress(chain, address, 'mainnet')).toBeFalsy();
@@ -96,30 +95,22 @@ describe(validateAddress, () => {
   });
 
   it.each([
-    [Chains.Bitcoin, 'mkPuLFihuytSjmdqLztCXXESD7vrjnTiTP', 'perseverance'],
+    ['Bitcoin', 'mkPuLFihuytSjmdqLztCXXESD7vrjnTiTP', 'perseverance'],
     ['Bitcoin', 'miEfvT7iYiEJxS69uq9MMeBfcLpKjDMpWS', 'perseverance'],
-    [
-      Chains.Bitcoin,
-      'tb1pk5vhse48d90a5pdpgwpm9aegqv5h2p79hxjtknlqusjnc08yklas8xtf35',
-      'perseverance',
-    ],
-    [Chains.Bitcoin, '2NBtZHa1TSuX7xXej8Z63npiHji3y43znRu', 'sisyphos'],
-    [Chains.Bitcoin, 'tb1pk5vhse48d90a5pdpgwpm9aegqv5h2p79hxjtknlqusjnc08yklas8xtf35', 'sisyphos'],
-    [Chains.Bitcoin, 'mx7Kg1cDpiWUm1Ru3ogECsFvzrTWjAWMyE', 'backspin'],
-    [
-      Chains.Bitcoin,
-      'bcrt1p785mga8djc3r5f7afaechlth4laxaty2rt08ncgydw4j7zv8np5suf7etv',
-      'backspin',
-    ],
-    [Chains.Bitcoin, 'bc1qvwmuc3pjhwju287sjs5vg7467t2jlymnmjyatp', 'mainnet'],
-    [Chains.Bitcoin, 'bc1p7jc7jx0z32gcm5k3dewpqra2vv303jnnhurhrwl384kgnnhsp73qf9a9c3', 'mainnet'],
+    ['Bitcoin', 'tb1pk5vhse48d90a5pdpgwpm9aegqv5h2p79hxjtknlqusjnc08yklas8xtf35', 'perseverance'],
+    ['Bitcoin', '2NBtZHa1TSuX7xXej8Z63npiHji3y43znRu', 'sisyphos'],
+    ['Bitcoin', 'tb1pk5vhse48d90a5pdpgwpm9aegqv5h2p79hxjtknlqusjnc08yklas8xtf35', 'sisyphos'],
+    ['Bitcoin', 'mx7Kg1cDpiWUm1Ru3ogECsFvzrTWjAWMyE', 'backspin'],
+    ['Bitcoin', 'bcrt1p785mga8djc3r5f7afaechlth4laxaty2rt08ncgydw4j7zv8np5suf7etv', 'backspin'],
+    ['Bitcoin', 'bc1qvwmuc3pjhwju287sjs5vg7467t2jlymnmjyatp', 'mainnet'],
+    ['Bitcoin', 'bc1p7jc7jx0z32gcm5k3dewpqra2vv303jnnhurhrwl384kgnnhsp73qf9a9c3', 'mainnet'],
   ] as const)('returns true for valid %s addresses %s on %s', (chain, address, network) => {
     expect(validateAddress(chain, address, network)).toBeTruthy();
   });
 
   it.each([
-    [Chains.Polkadot, '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
-    [Chains.Ethereum, '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
+    ['Polkadot', '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
+    ['Ethereum', '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
   ] as const)('returns false for invalid address %s', (chain, address) => {
     expect(validateAddress(chain, address, 'mainnet')).toBeFalsy();
   });

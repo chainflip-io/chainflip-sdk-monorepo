@@ -1,22 +1,22 @@
+import { ChainflipAsset, readAssetValue } from '@chainflip/utils/chainflip';
 import { FULL_TICK_RANGE } from '@/shared/consts';
 import { AsyncCacheMap } from '@/shared/dataStructures';
-import { InternalAsset, InternalAssets, readChainAssetValue } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import { getLpAccounts } from './lp';
 import { getPoolDepth } from './rpc';
 import prisma, { Pool } from '../client';
 
 export const getPools = async (
-  srcAsset: InternalAsset,
-  destAsset: InternalAsset,
+  srcAsset: ChainflipAsset,
+  destAsset: ChainflipAsset,
 ): Promise<Pool[]> => {
-  if (srcAsset === InternalAssets.Usdc || destAsset === InternalAssets.Usdc) {
+  if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
     return [
       await prisma.pool.findUniqueOrThrow({
         where: {
           baseAsset_quoteAsset: {
-            baseAsset: srcAsset === InternalAssets.Usdc ? destAsset : srcAsset,
-            quoteAsset: srcAsset === InternalAssets.Usdc ? srcAsset : destAsset,
+            baseAsset: srcAsset === 'Usdc' ? destAsset : srcAsset,
+            quoteAsset: srcAsset === 'Usdc' ? srcAsset : destAsset,
           },
         },
       }),
@@ -28,7 +28,7 @@ export const getPools = async (
       where: {
         baseAsset_quoteAsset: {
           baseAsset: srcAsset,
-          quoteAsset: InternalAssets.Usdc,
+          quoteAsset: 'Usdc',
         },
       },
     }),
@@ -36,7 +36,7 @@ export const getPools = async (
       where: {
         baseAsset_quoteAsset: {
           baseAsset: destAsset,
-          quoteAsset: InternalAssets.Usdc,
+          quoteAsset: 'Usdc',
         },
       },
     }),
@@ -44,12 +44,12 @@ export const getPools = async (
 };
 
 const undeployedLiquidityCache = new AsyncCacheMap({
-  fetch: async (asset: InternalAsset) => {
+  fetch: async (asset: ChainflipAsset) => {
     const lpAccounts = await getLpAccounts();
     return lpAccounts.reduce((sum, account) => {
       assert(account.role === 'liquidity_provider', 'Account should be liquidity provider');
 
-      return sum + readChainAssetValue(account.balances, asset);
+      return sum + readAssetValue(account.balances, asset);
     }, 0n);
   },
   resetExpiryOnLookup: false,
@@ -57,25 +57,25 @@ const undeployedLiquidityCache = new AsyncCacheMap({
 });
 
 const deployedLiquidityCache = new AsyncCacheMap({
-  fetch: (asset: InternalAsset) => getPoolDepth(asset, InternalAssets.Usdc, FULL_TICK_RANGE),
+  fetch: (asset: ChainflipAsset) => getPoolDepth(asset, 'Usdc', FULL_TICK_RANGE),
   resetExpiryOnLookup: false,
   ttl: 60_000,
 });
 
-export const getUndeployedLiquidity = async (asset: InternalAsset) =>
+export const getUndeployedLiquidity = async (asset: ChainflipAsset) =>
   undeployedLiquidityCache.get(asset);
 
-export const getDeployedLiquidity = async (fromAsset: InternalAsset, toAsset: InternalAsset) => {
+export const getDeployedLiquidity = async (fromAsset: ChainflipAsset, toAsset: ChainflipAsset) => {
   assert(
     (fromAsset === 'Usdc' && toAsset !== 'Usdc') || (fromAsset !== 'Usdc' && toAsset === 'Usdc'),
     'One and only one asset must be USDC',
   );
-  return fromAsset === InternalAssets.Usdc
+  return fromAsset === 'Usdc'
     ? (await deployedLiquidityCache.get(toAsset)).baseLiquidityAmount
     : (await deployedLiquidityCache.get(fromAsset)).quoteLiquidityAmount;
 };
 
-export const getTotalLiquidity = async (fromAsset: InternalAsset, toAsset: InternalAsset) => {
+export const getTotalLiquidity = async (fromAsset: ChainflipAsset, toAsset: ChainflipAsset) => {
   const undeployedLiquidity = await getUndeployedLiquidity(toAsset);
   return (await getDeployedLiquidity(fromAsset, toAsset)) + undeployedLiquidity;
 };

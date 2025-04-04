@@ -1,17 +1,25 @@
 import { bytesToHex } from '@chainflip/utils/bytes';
+import {
+  assetConstants,
+  chainflipAssets,
+  ChainflipChain,
+  chainflipChains,
+} from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import assert from 'assert';
 import { GraphQLClient } from 'graphql-request';
 import { vi, expect } from 'vitest';
-import { z } from 'zod';
-import { InternalAssets, Chain, Chains, assetConstants } from '@/shared/enums';
 import prisma, { SwapDepositChannel } from '../../client';
 import { GET_CALL } from '../../gql/query';
 import processBlocks, { Call, Event } from '../../processBlocks';
-import { broadcastSuccessArgs } from '../broadcaster/broadcastSuccess';
+import { BroadcastSuccessArgsMap } from '../broadcaster/broadcastSuccess';
+import { TransactionBroadcastRequestArgsMap } from '../broadcaster/transactionBroadcastRequest';
 import { events as eventNames } from '../index';
+import { BatchBroadcastRequestedArgsMap } from '../ingress-egress/batchBroadcastRequested';
 import { DepositFailedArgs } from '../ingress-egress/depositFailed';
+import { RefundEgressScheduledArgs } from '../swapping/refundEgressScheduled';
 import { SwapDepositAddressReadyArgs } from '../swapping/swapDepositAddressReady';
+import { SwapEgressScheduledArgs } from '../swapping/swapEgressScheduled';
 
 export const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
 export const DOT_ADDRESS = '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo'; // 0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972
@@ -19,15 +27,17 @@ export const BTC_ADDRESS = 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63c
 
 type SwapChannelData = Parameters<(typeof prisma)['swapDepositChannel']['create']>[0]['data'];
 
+export const check = <T>(value: T): T => value;
+
 export const createDepositChannel = (
   data: Partial<SwapChannelData> = {},
 ): Promise<SwapDepositChannel> =>
   prisma.swapDepositChannel.create({
     data: {
       channelId: 1n,
-      srcChain: Chains.Ethereum,
-      srcAsset: InternalAssets.Eth,
-      destAsset: InternalAssets.Dot,
+      srcChain: 'Ethereum',
+      srcAsset: 'Eth',
+      destAsset: 'Dot',
       depositAddress: ETH_ADDRESS,
       destAddress: DOT_ADDRESS,
       totalBrokerCommissionBps: 0,
@@ -224,7 +234,7 @@ export const transactionBroadcastRequestBtcMockV2 = {
   eventContext: {
     kind: 'event',
     event: {
-      args: {
+      args: check<TransactionBroadcastRequestArgsMap['Bitcoin']>({
         nominee: '0xfca6cd155fe8c31495d7da47b72fccd3f16d0d85bd0a1ffcd33d3f7a04314531',
         transactionOutId: '0xaef9c86539f194f617f45d495823789d3da082745d4a6e3b602ac00d815ed6e3',
         broadcastId: 1,
@@ -232,7 +242,7 @@ export const transactionBroadcastRequestBtcMockV2 = {
           encodedTransaction:
             '0x020000000001012f9fa5bb631cc20b2ee53988549db06369188977a759eeee0e95fe4d9089518b0100000000fdffffff0202ac0e0000000000160014605a08f510309c0aeb52554c288cc8a81e773f0c0c2feb02000000002251203d30a261d370dc764140a8f222bda1d003a403d8a24648470fb2e4fc2978f2ae0340b036f7c1cb7a0cfc00e1984cd49daba01fa7a69eeda00e71c14d7f262668ff72e8b29aa02899df429ca1e304482a7c9f86d6448bc5da3c7da567cef4053d3d92245175206a4d5e4829cf59df788c48223c71abb1c3c57a12bfc9b7d389786c4aca4ba5f7ac21c0eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000',
         },
-      },
+      }),
       name: 'BitcoinBroadcaster.TransactionBroadcastRequest',
       indexInBlock: 7,
     },
@@ -247,64 +257,13 @@ export const swapEgressScheduledMock = {
     hash: '0x123',
   },
   event: {
-    args: {
+    args: check<SwapEgressScheduledArgs>({
       asset: { __kind: 'Eth' },
       amount: '4945198948008612506',
       egressId: [{ __kind: 'Ethereum' }, '1'],
       egressFee: ['167509500781711', { __kind: 'Eth' }],
       swapRequestId: '9876545',
-    },
-    id: '0000012799-000000-c1ea7',
-    indexInBlock: 0,
-    nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-    name: eventNames.Swapping.SwapEgressScheduled,
-    phase: 'ApplyExtrinsic',
-    pos: 2,
-    extrinsic: {
-      error: null,
-      hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
-      id: '0000012799-000000-c1ea7',
-      indexInBlock: 0,
-      nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
-      pos: 1,
-      success: true,
-      version: 4,
-      call: {
-        args: [null],
-        error: null,
-        id: '0000012799-000000-c1ea7',
-        name: 'Timestamp.set',
-        nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
-        origin: [null],
-        pos: 0,
-        success: true,
-      },
-    },
-  },
-} as const;
-
-export const refundEgressScheduledMock160 = {
-  block: {
-    specId: 'test@160',
-    height: 120,
-    timestamp: 1670337105000,
-    hash: '0x123',
-  },
-  event: {
-    args: {
-      dispatchInfo: {
-        class: [null],
-        weight: '101978000',
-        paysFee: [null],
-      },
-      swapId: '9876545',
-      swapRequestId: '9876545',
-      fee: '1000000000',
-      egressFee: '1000000000',
-      asset: { __kind: 'Eth' },
-      amount: '10000000000',
-      egressId: [{ __kind: 'Ethereum' }, '1'] as const,
-    },
+    }),
     id: '0000012799-000000-c1ea7',
     indexInBlock: 0,
     nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
@@ -342,20 +301,13 @@ export const refundEgressScheduledMock = {
     hash: '0x123',
   },
   event: {
-    args: {
-      dispatchInfo: {
-        class: [null],
-        weight: '101978000',
-        paysFee: [null],
-      },
-      swapId: '9876545',
+    args: check<RefundEgressScheduledArgs>({
       swapRequestId: '9876545',
-      fee: '1000000000',
       egressFee: ['1000000000', { __kind: 'Eth' }],
       asset: { __kind: 'Eth' },
       amount: '10000000000',
       egressId: [{ __kind: 'Ethereum' }, '1'] as const,
-    },
+    }),
     id: '0000012799-000000-c1ea7',
     indexInBlock: 0,
     nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
@@ -456,7 +408,7 @@ export const batchBroadcastRequestedMock = {
     timestamp: 1670337105000,
   },
   event: {
-    args: {
+    args: check<BatchBroadcastRequestedArgsMap['Ethereum']>({
       egressIds: [
         [
           {
@@ -478,14 +430,15 @@ export const batchBroadcastRequestedMock = {
         ],
       ],
       broadcastId: 9,
-    },
+    }),
     name: 'EthereumIngressEgress.BatchBroadcastRequested',
     indexInBlock: 135,
   },
 } as const;
 
-export const broadcastSuccessMock = (
-  args?: Partial<z.input<ReturnType<typeof broadcastSuccessArgs>>>,
+export const broadcastSuccessMock = <C extends ChainflipChain>(
+  chain: C,
+  args?: Omit<BroadcastSuccessArgsMap[C], 'broadcastId'>,
 ) =>
   ({
     block: {
@@ -496,13 +449,9 @@ export const broadcastSuccessMock = (
     event: {
       args: {
         broadcastId: 12,
-        transactionOutId: {
-          s: '0x689c4add3e14ea8243a1966fc2cea3baea692ca52fd7ef464e1cc74e608bf262',
-          kTimesGAddress: '0x972c9f07cc7a847b29003655faf265c12e193f09',
-        },
         ...args,
       },
-      name: 'EthereumBroadcaster.BroadcastSuccess',
+      name: `${chain}Broadcaster.BroadcastSuccess`,
       indexInBlock: 12,
     },
   }) as const;
@@ -556,22 +505,6 @@ export const poolFeeSetMock = {
   },
 } as const;
 
-export const thresholdSignatureInvalidMock = {
-  block: {
-    specId: 'test@160',
-    height: 420,
-    timestamp: 1680337105000,
-  },
-  event: {
-    args: {
-      broadcastId: 1,
-      retryBroadcastId: 10,
-    },
-    name: 'EthereumBroadcaster.ThresholdSignatureInvalid',
-    indexInBlock: 7,
-  },
-} as const;
-
 export const buildDepositFailedEvent = <T extends DepositFailedArgs>(args: T) => {
   const asset =
     args.details.__kind === 'DepositChannel'
@@ -585,10 +518,9 @@ export const buildDepositFailedEvent = <T extends DepositFailedArgs>(args: T) =>
   };
 };
 
-export const createChainTrackingInfo = (date?: Date) => {
-  const chains: Chain[] = ['Bitcoin', 'Ethereum', 'Polkadot', 'Solana'];
-  return Promise.all(
-    chains.map((chain) =>
+export const createChainTrackingInfo = (date?: Date) =>
+  Promise.all(
+    chainflipChains.map((chain) =>
       prisma.chainTracking.upsert({
         where: { chain },
         create: {
@@ -602,10 +534,9 @@ export const createChainTrackingInfo = (date?: Date) => {
       }),
     ),
   );
-};
 
 export const createPools = () => {
-  const assets = Object.values(InternalAssets).filter((asset) => asset !== 'Usdc');
+  const assets = chainflipAssets.filter((asset) => asset !== 'Usdc');
   return prisma.pool.createMany({
     data: assets.map((baseAsset) => ({
       baseAsset,
@@ -676,5 +607,3 @@ export const processEvents = async (
 
   await expect(processBlocks()).rejects.toThrow('done');
 };
-
-export const check = <T>(value: T): T => value;

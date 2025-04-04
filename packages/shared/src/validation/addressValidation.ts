@@ -1,9 +1,9 @@
 import * as bitcoin from '@chainflip/bitcoin';
 import { isValidSolanaAddress } from '@chainflip/solana';
+import { ChainflipChain, ChainflipNetwork } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
 import * as ethers from 'ethers';
-import { Chain, ChainflipNetwork } from '../enums';
 import { assert } from '../guards';
 
 export type AddressValidator = (address: string) => boolean;
@@ -32,13 +32,17 @@ export const validateBitcoinRegtestAddress: AddressValidator = (address: string)
 
 export const validateSolanaAddress = isValidSolanaAddress;
 
-const validators: Record<ChainflipNetwork | 'localnet', Record<Chain, AddressValidator>> = {
+const validators: Record<
+  ChainflipNetwork | 'localnet',
+  Record<ChainflipChain, AddressValidator>
+> = {
   mainnet: {
     Bitcoin: validateBitcoinMainnetAddress,
     Ethereum: validateEvmAddress,
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
+    Assethub: validatePolkadotAddress,
   },
   perseverance: {
     Bitcoin: validateBitcoinTestnetAddress,
@@ -46,6 +50,7 @@ const validators: Record<ChainflipNetwork | 'localnet', Record<Chain, AddressVal
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
+    Assethub: validatePolkadotAddress,
   },
   sisyphos: {
     Bitcoin: validateBitcoinTestnetAddress,
@@ -53,6 +58,7 @@ const validators: Record<ChainflipNetwork | 'localnet', Record<Chain, AddressVal
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
+    Assethub: validatePolkadotAddress,
   },
   backspin: {
     Bitcoin: validateBitcoinRegtestAddress,
@@ -60,6 +66,7 @@ const validators: Record<ChainflipNetwork | 'localnet', Record<Chain, AddressVal
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
+    Assethub: validatePolkadotAddress,
   },
   localnet: {
     Bitcoin: validateBitcoinRegtestAddress,
@@ -67,17 +74,18 @@ const validators: Record<ChainflipNetwork | 'localnet', Record<Chain, AddressVal
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
+    Assethub: validatePolkadotAddress,
   },
 };
 
 export const validateAddress = (
-  chain: Chain,
+  chain: ChainflipChain,
   address: string,
   network: ChainflipNetwork | 'localnet',
 ): boolean => validators[network][chain](address);
 
 export const assertValidAddress = (
-  chain: Chain,
+  chain: ChainflipChain,
   address: string,
   network: ChainflipNetwork | 'localnet',
 ) =>

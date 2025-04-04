@@ -1,19 +1,44 @@
+import { type bitcoinBroadcasterBroadcastSuccess } from '@chainflip/processor/131/bitcoinBroadcaster/broadcastSuccess';
+import { type ethereumBroadcasterBroadcastSuccess } from '@chainflip/processor/131/ethereumBroadcaster/broadcastSuccess';
+import { type polkadotBroadcasterBroadcastSuccess } from '@chainflip/processor/131/polkadotBroadcaster/broadcastSuccess';
+import { type arbitrumBroadcasterBroadcastSuccess } from '@chainflip/processor/141/arbitrumBroadcaster/broadcastSuccess';
+import { type solanaBroadcasterBroadcastSuccess } from '@chainflip/processor/160/solanaBroadcaster/broadcastSuccess';
+import { type assethubBroadcasterBroadcastSuccess } from '@chainflip/processor/190/assethubBroadcaster/broadcastSuccess';
+import { unreachable } from '@chainflip/utils/assertion';
 import * as base58 from '@chainflip/utils/base58';
 import { hexToBytes, reverseBytes } from '@chainflip/utils/bytes';
-import type { HexString } from '@chainflip/utils/types';
-import { Chain } from './enums';
+import { ChainflipChain } from '@chainflip/utils/chainflip';
+import z from 'zod';
 
-export function formatTxRef(chain: Chain, txRef: string): string;
-export function formatTxRef(chain: Chain, txRef: string | undefined): string | undefined;
-export function formatTxRef(chain: Chain, txRef: string | undefined) {
-  if (!txRef) return txRef;
+type TxRefData = {
+  [C in ChainflipChain]: {
+    chain: C;
+    data: z.output<
+      {
+        Bitcoin: typeof bitcoinBroadcasterBroadcastSuccess;
+        Ethereum: typeof ethereumBroadcasterBroadcastSuccess;
+        Polkadot: typeof polkadotBroadcasterBroadcastSuccess;
+        Arbitrum: typeof arbitrumBroadcasterBroadcastSuccess;
+        Solana: typeof solanaBroadcasterBroadcastSuccess;
+        Assethub: typeof assethubBroadcasterBroadcastSuccess;
+      }[C]
+    >['transactionRef'];
+  };
+}[ChainflipChain];
 
-  switch (chain) {
+export const formatTxRef = (txRef: TxRefData): string => {
+  switch (txRef.chain) {
+    case 'Arbitrum':
+    case 'Ethereum':
+      return txRef.data;
     case 'Bitcoin':
-      return reverseBytes(txRef.slice(2));
+      return reverseBytes(txRef.data.slice(2));
+    case 'Polkadot':
+    case 'Assethub':
+      return `${txRef.data.blockNumber}-${txRef.data.extrinsicIndex}`;
     case 'Solana':
-      return base58.encode(hexToBytes(txRef as HexString));
+      return base58.encode(hexToBytes(txRef.data));
     default:
-      return txRef;
+      return unreachable(txRef, `unexpected chain: ${JSON.stringify(txRef)}`);
   }
-}
+};

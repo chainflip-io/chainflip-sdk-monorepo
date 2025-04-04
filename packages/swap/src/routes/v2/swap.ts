@@ -1,5 +1,5 @@
+import { internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import express from 'express';
-import { getAssetAndChain } from '@/shared/enums';
 import { assert } from '@/shared/guards';
 import {
   getBeneficiaries,
@@ -119,7 +119,7 @@ router.get(
       .concat(swapRequest?.fees ?? [])
       .map((fee) => ({
         type: fee.type,
-        ...getAssetAndChain(fee.asset),
+        ...internalAssetToRpcAsset[fee.asset],
         amount: fee.amount.toFixed(),
       }));
 
@@ -149,8 +149,12 @@ router.get(
     const response = {
       state,
       swapId: swapRequest?.nativeId.toString(),
-      ...getAssetAndChain(internalSrcAsset, 'src'),
-      ...(internalDestAsset && getAssetAndChain(internalDestAsset, 'dest')),
+      srcAsset: internalAssetToRpcAsset[internalSrcAsset].asset,
+      srcChain: internalAssetToRpcAsset[internalSrcAsset].chain,
+      ...(internalDestAsset && {
+        destAsset: internalAssetToRpcAsset[internalDestAsset].asset,
+        destChain: internalAssetToRpcAsset[internalDestAsset].chain,
+      }),
       destAddress: readField(
         swapRequest,
         swapDepositChannel,

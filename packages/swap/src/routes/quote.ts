@@ -1,6 +1,6 @@
+import { assetConstants, AssetSymbol, ChainflipChain } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import express from 'express';
-import { Asset, assetConstants, Assets, Chain, Chains } from '@/shared/enums';
 import { asyncHandler, handleQuotingError } from './common';
 import env from '../config/env';
 import { getUsdValue } from '../pricing/checkPriceWarning';
@@ -12,14 +12,14 @@ import { generateQuotes, validateQuoteQuery } from './v2/quote';
 const logger = baseLogger.child({ module: 'quoter' });
 
 export const fallbackChains = {
-  [Assets.ETH]: Chains.Ethereum,
-  [Assets.USDC]: Chains.Ethereum,
-  [Assets.FLIP]: Chains.Ethereum,
-  [Assets.BTC]: Chains.Bitcoin,
-  [Assets.DOT]: Chains.Polkadot,
-  [Assets.USDT]: Chains.Ethereum,
-  [Assets.SOL]: Chains.Solana,
-} satisfies Record<Asset, Chain>;
+  ETH: 'Ethereum',
+  USDC: 'Ethereum',
+  FLIP: 'Ethereum',
+  BTC: 'Bitcoin',
+  DOT: 'Polkadot',
+  USDT: 'Ethereum',
+  SOL: 'Solana',
+} satisfies Record<AssetSymbol, ChainflipChain>;
 
 const quoteRouter = (quoter: Quoter) => {
   const router = express.Router().use((req, res, next) => {

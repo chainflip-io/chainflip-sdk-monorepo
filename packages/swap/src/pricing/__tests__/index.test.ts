@@ -1,7 +1,7 @@
 import { deferredPromise } from '@chainflip/utils/async';
+import { ChainflipAsset } from '@chainflip/utils/chainflip';
 import axios from 'axios';
 import { vi, describe, expect, it, beforeEach } from 'vitest';
-import { InternalAsset } from '@/shared/enums';
 import { coinGeckoIdMap, PriceCache } from '..';
 import logger from '../../utils/logger';
 
@@ -28,7 +28,10 @@ const priceMap = {
   ArbUsdc: 0.9989897393887496,
   Sol: 150.1234,
   SolUsdc: 0.9989897393887496,
-} as const satisfies Record<InternalAsset, number>;
+  HubDot: 9.914487887030168,
+  HubUsdc: 0.9989897393887496,
+  HubUsdt: 0.9996396835618839,
+} as const satisfies Record<ChainflipAsset, number>;
 
 describe(PriceCache, () => {
   beforeEach(() => {
@@ -44,12 +47,12 @@ describe(PriceCache, () => {
       data: Object.fromEntries(
         Object.entries(coinGeckoIdMap).map(([asset, id]) => [
           id,
-          { usd: priceMap[asset as InternalAsset] },
+          { usd: priceMap[asset as ChainflipAsset] },
         ]),
       ),
     });
 
-    for (const asset of Object.keys(coinGeckoIdMap) as InternalAsset[]) {
+    for (const asset of Object.keys(coinGeckoIdMap) as ChainflipAsset[]) {
       expect(await cache.getAssetPrice(asset)).toEqual(priceMap[asset]);
     }
   });
@@ -63,7 +66,7 @@ describe(PriceCache, () => {
       data: Object.fromEntries(
         Object.entries(coinGeckoIdMap).map(([asset, id]) => [
           id,
-          { usd: priceMap[asset as InternalAsset] },
+          { usd: priceMap[asset as ChainflipAsset] },
         ]),
       ),
     });
@@ -85,7 +88,7 @@ describe(PriceCache, () => {
     const data = Object.fromEntries(
       Object.entries(coinGeckoIdMap).map(([asset, id]) => [
         id,
-        { usd: priceMap[asset as InternalAsset] as number | undefined },
+        { usd: priceMap[asset as ChainflipAsset] as number | undefined },
       ]),
     );
 
@@ -116,7 +119,7 @@ describe(PriceCache, () => {
     const data = Object.fromEntries(
       Object.entries(coinGeckoIdMap).map(([asset, id]) => [
         id,
-        { usd: priceMap[asset as InternalAsset] as number | undefined },
+        { usd: priceMap[asset as ChainflipAsset] as number | undefined },
       ]),
     );
 
@@ -136,7 +139,7 @@ describe(PriceCache, () => {
     const data = Object.fromEntries(
       Object.entries(coinGeckoIdMap).map(([asset, id]) => [
         id,
-        { usd: priceMap[asset as InternalAsset] as number | undefined },
+        { usd: priceMap[asset as ChainflipAsset] as number | undefined },
       ]),
     );
 

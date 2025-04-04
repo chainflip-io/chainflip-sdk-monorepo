@@ -1,10 +1,11 @@
-import { swappingSwapExecuted } from '@chainflip/processor/160/swapping/swapExecuted';
+import { swappingSwapExecuted as schema160 } from '@chainflip/processor/160/swapping/swapExecuted';
+import { swappingSwapExecuted as schema190 } from '@chainflip/processor/190/swapping/swapExecuted';
+import { getInternalAsset } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { getInternalAsset } from '@/shared/enums';
 import { calculateIncludedSwapFees } from '../../utils/fees';
 import type { EventHandlerArgs } from '../index';
 
-const swapExecutedArgs = swappingSwapExecuted;
+const swapExecutedArgs = z.union([schema190, schema160]);
 
 export type SwapExecutedArgs = z.input<typeof swapExecutedArgs>;
 

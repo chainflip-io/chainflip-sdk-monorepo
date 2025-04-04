@@ -1,6 +1,6 @@
+import { type ChainflipAsset, assetConstants } from '@chainflip/utils/chainflip';
 import assert from 'assert';
 import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
-import { InternalAsset, InternalAssets, assetConstants } from '@/shared/enums';
 import { getHundredthPipAmountFromAmount, ONE_IN_HUNDREDTH_PIPS } from '@/shared/functions';
 import { PoolFee, SwapFee } from '@/shared/schemas';
 import { Pool } from '../client';
@@ -8,38 +8,38 @@ import { getPools } from './pools';
 import env from '../config/env';
 
 export function buildFee(
-  internalAsset: InternalAsset,
+  internalAsset: ChainflipAsset,
   type: SwapFee['type'],
   amount: bigint,
 ): SwapFee;
 export function buildFee(
-  internalAsset: InternalAsset,
+  internalAsset: ChainflipAsset,
   type: PoolFee['type'],
   amount: bigint,
 ): PoolFee;
 export function buildFee(
-  internalAsset: InternalAsset,
+  internalAsset: ChainflipAsset,
   type: SwapFee['type'] | PoolFee['type'],
   amount: bigint,
 ): SwapFee | PoolFee;
 export function buildFee(
-  internalAsset: InternalAsset,
+  internalAsset: ChainflipAsset,
   type: SwapFee['type'] | PoolFee['type'],
   amount: bigint,
 ): SwapFee | PoolFee {
-  const { asset, chain } = assetConstants[internalAsset];
+  const { symbol: asset, chain } = assetConstants[internalAsset];
 
   return { type, chain, asset, amount: amount.toString() };
 }
 
 export const getPoolFees = (
-  srcAsset: InternalAsset,
-  destAsset: InternalAsset,
+  srcAsset: ChainflipAsset,
+  destAsset: ChainflipAsset,
   swapInputAmount: bigint,
   intermediateAmount: bigint | null | undefined,
   pools: Pool[],
 ): [PoolFee] | [PoolFee, PoolFee] => {
-  if (srcAsset === InternalAssets.Usdc || destAsset === InternalAssets.Usdc) {
+  if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
     return [
       buildFee(
         srcAsset,
@@ -69,8 +69,8 @@ const buildNetworkFee = (usdcAmount: bigint, networkFeeHundredthPips: number) =>
   buildFee('Usdc', 'NETWORK', getHundredthPipAmountFromAmount(usdcAmount, networkFeeHundredthPips));
 
 export const calculateIncludedSwapFees = async (
-  srcAsset: InternalAsset,
-  destAsset: InternalAsset,
+  srcAsset: ChainflipAsset,
+  destAsset: ChainflipAsset,
   swapInputAmount: bigint,
   intermediateAmount: bigint | null | undefined,
   swapOutputAmount: bigint,
@@ -83,13 +83,13 @@ export const calculateIncludedSwapFees = async (
   const pools = await getPools(srcAsset, destAsset);
   const lpFees = getPoolFees(srcAsset, destAsset, swapInputAmount, intermediateAmount, pools);
 
-  if (srcAsset === InternalAssets.Usdc) {
+  if (srcAsset === 'Usdc') {
     return [buildNetworkFee(swapInputAmount, networkFeeHundredthPips), ...lpFees];
   }
 
   let usdcAmount;
 
-  if (destAsset === InternalAssets.Usdc) {
+  if (destAsset === 'Usdc') {
     usdcAmount =
       (swapOutputAmount * BigInt(ONE_IN_HUNDREDTH_PIPS)) /
       BigInt(ONE_IN_HUNDREDTH_PIPS - networkFeeHundredthPips);

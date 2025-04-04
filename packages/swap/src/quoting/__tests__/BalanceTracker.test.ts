@@ -1,6 +1,6 @@
 /* eslint-disable dot-notation */
+import { InternalAssetMap } from '@chainflip/utils/chainflip';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { InternalAssetMap } from '@/shared/enums';
 import { getLpBalances } from '../../utils/rpc';
 import BalanceTracker from '../BalanceTracker';
 import type { AccountId } from '../Quoter';
@@ -8,7 +8,6 @@ import type { AccountId } from '../Quoter';
 vi.mock('../../utils/rpc');
 
 const mockInternalAssetMap = (values?: InternalAssetMap<bigint>): InternalAssetMap<bigint> => ({
-  ...values,
   ArbEth: 0n,
   ArbUsdc: 0n,
   Btc: 0n,
@@ -19,6 +18,10 @@ const mockInternalAssetMap = (values?: InternalAssetMap<bigint>): InternalAssetM
   SolUsdc: 0n,
   Usdc: 0n,
   Usdt: 0n,
+  HubDot: 0n,
+  HubUsdc: 0n,
+  HubUsdt: 0n,
+  ...values,
 });
 
 describe(BalanceTracker, () => {

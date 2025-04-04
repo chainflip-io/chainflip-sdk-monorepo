@@ -1,13 +1,13 @@
+import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
-import { InternalAsset, assetConstants } from '@/shared/enums';
 import env from '../config/env';
 import logger from '../utils/logger';
 import { getAssetPrice } from './index';
 
-const toTokenAmount = (amount: bigint, asset: InternalAsset) =>
+const toTokenAmount = (amount: bigint, asset: ChainflipAsset) =>
   new BigNumber(amount.toString()).shiftedBy(-assetConstants[asset].decimals);
 
-export const getUsdValue = async (amount: bigint, asset: InternalAsset) => {
+export const getUsdValue = async (amount: bigint, asset: ChainflipAsset) => {
   const price = await getAssetPrice(asset);
   if (price === undefined) return undefined;
   return toTokenAmount(amount, asset).times(price).toFixed(2);
@@ -19,8 +19,8 @@ export const checkPriceWarning = async ({
   srcAmount,
   destAmount,
 }: {
-  srcAsset: InternalAsset;
-  destAsset: InternalAsset;
+  srcAsset: ChainflipAsset;
+  destAsset: ChainflipAsset;
   srcAmount: bigint;
   destAmount: bigint;
 }): Promise<boolean | undefined> => {

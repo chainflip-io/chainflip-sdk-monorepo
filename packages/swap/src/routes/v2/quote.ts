@@ -1,8 +1,8 @@
+import { assetConstants, AssetSymbol, ChainflipAsset } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import express from 'express';
 import { Query } from 'express-serve-static-core';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts';
-import { Asset, assetConstants, InternalAsset } from '@/shared/enums';
 import { getFulfilledResult } from '@/shared/promises';
 import { quoteQuerySchema, DCABoostQuote, DcaParams, DCAQuote } from '@/shared/schemas';
 import env from '../../config/env';
@@ -29,7 +29,7 @@ export const MAX_NUMBER_OF_CHUNKS = Math.ceil(
 
 const router = express.Router();
 
-export const getDcaQuoteParams = async (asset: InternalAsset, amount: bigint) => {
+export const getDcaQuoteParams = async (asset: ChainflipAsset, amount: bigint) => {
   const usdChunkSize = env.DCA_CHUNK_SIZE_USD?.[asset] ?? env.DCA_DEFAULT_CHUNK_SIZE_USD;
 
   const usdValue = await getUsdValue(amount, asset).catch(() => undefined);
@@ -64,9 +64,9 @@ export const validateQuoteQuery = async (query: Query) => {
   // this api did not require the srcChain and destChain param initially
   // to keep it compatible with clients that do not include these params, we fall back to set them based on the asset
   // eslint-disable-next-line no-param-reassign
-  query.srcChain ??= fallbackChains[query.srcAsset as Asset];
+  query.srcChain ??= fallbackChains[query.srcAsset as AssetSymbol];
   // eslint-disable-next-line no-param-reassign
-  query.destChain ??= fallbackChains[query.destAsset as Asset];
+  query.destChain ??= fallbackChains[query.destAsset as AssetSymbol];
   const queryResult = quoteQuerySchema.safeParse(query);
 
   if (!queryResult.success) {
@@ -114,8 +114,8 @@ export const validateQuoteQuery = async (query: Query) => {
 };
 
 export const eagerLiquidityExists = async (
-  srcAsset: InternalAsset,
-  destAsset: InternalAsset,
+  srcAsset: ChainflipAsset,
+  destAsset: ChainflipAsset,
   egressAmount: string,
   intermediateAmount?: string,
 ) => {
@@ -143,9 +143,9 @@ export const generateQuotes = async ({
   isVaultSwap,
 }: {
   dcaQuoteParams?: Awaited<ReturnType<typeof getDcaQuoteParams>>;
-  srcAsset: InternalAsset;
+  srcAsset: ChainflipAsset;
   depositAmount: bigint;
-  destAsset: InternalAsset;
+  destAsset: ChainflipAsset;
   brokerCommissionBps?: number;
   ccmParams?: QuoteCcmParams;
   boostDepositsEnabled: boolean;

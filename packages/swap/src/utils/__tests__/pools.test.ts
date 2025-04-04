@@ -1,5 +1,4 @@
 import { describe, it, beforeAll, expect, vi } from 'vitest';
-import { InternalAssets } from '@/shared/enums';
 import prisma from '../../client';
 import { getPools } from '../pools';
 
@@ -36,12 +35,12 @@ describe('pools', () => {
 
       expect(pools).toHaveLength(2);
       expect(pools[0]).toMatchObject({
-        baseAsset: InternalAssets.Flip,
-        quoteAsset: InternalAssets.Usdc,
+        baseAsset: 'Flip',
+        quoteAsset: 'Usdc',
       });
       expect(pools[1]).toMatchObject({
-        baseAsset: InternalAssets.Eth,
-        quoteAsset: InternalAssets.Usdc,
+        baseAsset: 'Eth',
+        quoteAsset: 'Usdc',
       });
     });
 
@@ -50,8 +49,8 @@ describe('pools', () => {
 
       expect(pools).toHaveLength(1);
       expect(pools[0]).toMatchObject({
-        baseAsset: InternalAssets.Eth,
-        quoteAsset: InternalAssets.Usdc,
+        baseAsset: 'Eth',
+        quoteAsset: 'Usdc',
       });
     });
 
@@ -60,8 +59,8 @@ describe('pools', () => {
 
       expect(pools).toHaveLength(1);
       expect(pools[0]).toMatchObject({
-        baseAsset: InternalAssets.Flip,
-        quoteAsset: InternalAssets.Usdc,
+        baseAsset: 'Flip',
+        quoteAsset: 'Usdc',
       });
     });
   });

@@ -1,8 +1,8 @@
 import * as base58 from '@chainflip/utils/base58';
 import { bytesToHex } from '@chainflip/utils/bytes';
+import { assetConstants } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { assetConstants } from '@/shared/enums';
 import prisma from '../../../client';
 import swapRequested, { SwapRequestedArgs, SwapRequestedArgs190 } from '../swapRequested';
 

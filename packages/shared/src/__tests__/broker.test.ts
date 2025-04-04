@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import * as broker from '../broker';
-import { Assets, Chains } from '../enums';
 import { mockRpcResponse } from '../tests/fixtures';
 
 describe(broker.requestSwapDepositAddress, () => {
@@ -37,8 +36,8 @@ describe(broker.requestSwapDepositAddress, () => {
     const postSpy = mockResponse();
     const result = await broker.requestSwapDepositAddress(
       {
-        srcAsset: Assets.FLIP,
-        destAsset: Assets.USDC,
+        srcAsset: 'FLIP',
+        destAsset: 'USDC',
         srcChain: 'Ethereum',
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
@@ -86,8 +85,8 @@ describe(broker.requestSwapDepositAddress, () => {
     const postSpy = mockResponse();
     const result = await broker.requestSwapDepositAddress(
       {
-        srcAsset: Assets.FLIP,
-        destAsset: Assets.BTC,
+        srcAsset: 'FLIP',
+        destAsset: 'BTC',
         srcChain: 'Ethereum',
         destAddress: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
         destChain: 'Bitcoin',
@@ -135,8 +134,8 @@ describe(broker.requestSwapDepositAddress, () => {
     await expect(
       broker.requestSwapDepositAddress(
         {
-          srcAsset: Assets.FLIP,
-          destAsset: Assets.BTC,
+          srcAsset: 'FLIP',
+          destAsset: 'BTC',
           srcChain: 'Ethereum',
           destAddress: '2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm',
           destChain: 'Bitcoin',
@@ -156,8 +155,8 @@ describe(broker.requestSwapDepositAddress, () => {
     const postSpy = mockResponse();
     const result = await broker.requestSwapDepositAddress(
       {
-        srcAsset: Assets.FLIP,
-        destAsset: Assets.USDC,
+        srcAsset: 'FLIP',
+        destAsset: 'USDC',
         srcChain: 'Ethereum',
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
@@ -211,8 +210,8 @@ describe(broker.requestSwapDepositAddress, () => {
     const postSpy = mockResponse();
     const result = await broker.requestSwapDepositAddress(
       {
-        srcAsset: Assets.FLIP,
-        destAsset: Assets.USDC,
+        srcAsset: 'FLIP',
+        destAsset: 'USDC',
         srcChain: 'Ethereum',
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
@@ -267,8 +266,8 @@ describe(broker.requestSwapDepositAddress, () => {
     const postSpy = mockResponse();
     const result = await broker.requestSwapDepositAddress(
       {
-        srcAsset: Assets.FLIP,
-        destAsset: Assets.USDC,
+        srcAsset: 'FLIP',
+        destAsset: 'USDC',
         srcChain: 'Ethereum',
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
@@ -324,8 +323,8 @@ describe(broker.requestSwapDepositAddress, () => {
     const postSpy = mockResponse();
     const result = await broker.requestSwapDepositAddress(
       {
-        srcAsset: Assets.FLIP,
-        destAsset: Assets.USDC,
+        srcAsset: 'FLIP',
+        destAsset: 'USDC',
         srcChain: 'Ethereum',
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
@@ -388,8 +387,8 @@ describe(broker.requestSwapDepositAddress, () => {
     const postSpy = mockResponse();
     const result = await broker.requestSwapDepositAddress(
       {
-        srcAsset: Assets.FLIP,
-        destAsset: Assets.USDC,
+        srcAsset: 'FLIP',
+        destAsset: 'USDC',
         srcChain: 'Ethereum',
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         destChain: 'Ethereum',
@@ -447,9 +446,9 @@ describe(broker.requestSwapDepositAddress, () => {
     const postSpy = mockResponse();
     await broker.requestSwapDepositAddress(
       {
-        srcAsset: Assets.ETH,
+        srcAsset: 'ETH',
         srcChain: 'Ethereum',
-        destAsset: Assets.DOT,
+        destAsset: 'DOT',
         destChain: 'Polkadot',
         destAddress,
         fillOrKillParams: {
@@ -471,9 +470,9 @@ describe(broker.requestSwapDepositAddress, () => {
     const postSpy = mockResponse(MOCKED_DOT_RESPONSE);
     const result = await broker.requestSwapDepositAddress(
       {
-        srcAsset: Assets.DOT,
+        srcAsset: 'DOT',
         srcChain: 'Polkadot',
-        destAsset: Assets.ETH,
+        destAsset: 'ETH',
         destChain: 'Ethereum',
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
         fillOrKillParams: {
@@ -562,8 +561,8 @@ describe(broker.requestSwapParameterEncoding, () => {
     const postSpy = mockResponse(MOCKED_BTC_RESPONSE);
     const result = await broker.requestSwapParameterEncoding(
       {
-        srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
         amount: '12500000',
         destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
         fillOrKillParams: {
@@ -609,8 +608,8 @@ describe(broker.requestSwapParameterEncoding, () => {
     const postSpy = mockResponse(MOCKED_ETH_NATIVE_RESPONSE);
     const result = await broker.requestSwapParameterEncoding(
       {
-        srcAsset: { asset: Assets.ETH, chain: Chains.Ethereum },
-        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        srcAsset: { asset: 'ETH', chain: 'Ethereum' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
         amount: '12500000',
         destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
         fillOrKillParams: {
@@ -661,8 +660,8 @@ describe(broker.requestSwapParameterEncoding, () => {
     const postSpy = mockResponse(MOCKED_SOL_RESPONSE);
     const result = await broker.requestSwapParameterEncoding(
       {
-        srcAsset: { asset: Assets.SOL, chain: Chains.Solana },
-        destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+        srcAsset: { asset: 'SOL', chain: 'Solana' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
         amount: '12500000',
         srcAddress: 'oQPnhXAbLbMuKHESaGrbXT17CyvWCpLyERSJA9HCYd7',
         destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
@@ -733,8 +732,8 @@ describe(broker.requestSwapParameterEncoding, () => {
     await expect(
       broker.requestSwapParameterEncoding(
         {
-          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
           amount: '12500000',
           destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
           fillOrKillParams: {
@@ -754,8 +753,8 @@ describe(broker.requestSwapParameterEncoding, () => {
     await expect(
       broker.requestSwapParameterEncoding(
         {
-          srcAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
-          destAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
+          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
           amount: '12500000',
           destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
           srcAddress: '2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm',
@@ -776,8 +775,8 @@ describe(broker.requestSwapParameterEncoding, () => {
     await expect(
       broker.requestSwapParameterEncoding(
         {
-          srcAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
-          destAsset: { asset: Assets.BTC, chain: Chains.Bitcoin },
+          srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+          destAsset: { asset: 'BTC', chain: 'Bitcoin' },
           amount: '12500000',
           destAddress: '2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm',
           srcAddress: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
@@ -797,8 +796,8 @@ describe(broker.requestSwapParameterEncoding, () => {
     const postSpy = mockResponse(MOCKED_ETH_NATIVE_RESPONSE);
     const result = await broker.requestSwapParameterEncoding(
       {
-        srcAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
-        destAsset: { asset: Assets.ETH, chain: Chains.Ethereum },
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'ETH', chain: 'Ethereum' },
         amount: '12500000',
         destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
         fillOrKillParams: {
@@ -855,8 +854,8 @@ describe(broker.requestSwapParameterEncoding, () => {
     const postSpy = mockResponse(MOCKED_ETH_NATIVE_RESPONSE);
     const result = await broker.requestSwapParameterEncoding(
       {
-        srcAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
-        destAsset: { asset: Assets.ETH, chain: Chains.Ethereum },
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'ETH', chain: 'Ethereum' },
         amount: '12500000',
         destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
         fillOrKillParams: {
@@ -907,8 +906,8 @@ describe(broker.requestSwapParameterEncoding, () => {
     const postSpy = mockResponse(MOCKED_ETH_NATIVE_RESPONSE);
     const result = await broker.requestSwapParameterEncoding(
       {
-        srcAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
-        destAsset: { asset: Assets.ETH, chain: Chains.Ethereum },
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'ETH', chain: 'Ethereum' },
         amount: '12500000',
         destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
         fillOrKillParams: {
@@ -960,8 +959,8 @@ describe(broker.requestSwapParameterEncoding, () => {
     const postSpy = mockResponse(MOCKED_ETH_TOKEN_RESPONSE);
     const result = await broker.requestSwapParameterEncoding(
       {
-        srcAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
-        destAsset: { asset: Assets.ETH, chain: Chains.Ethereum },
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'ETH', chain: 'Ethereum' },
         amount: '12500000',
         destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
         fillOrKillParams: {
@@ -1027,8 +1026,8 @@ describe(broker.requestSwapParameterEncoding, () => {
     const postSpy = mockResponse(MOCKED_ETH_TOKEN_RESPONSE);
     const result = await broker.requestSwapParameterEncoding(
       {
-        srcAsset: { asset: Assets.FLIP, chain: Chains.Ethereum },
-        destAsset: { asset: Assets.ETH, chain: Chains.Ethereum },
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'ETH', chain: 'Ethereum' },
         amount: '12500000',
         destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
         fillOrKillParams: {

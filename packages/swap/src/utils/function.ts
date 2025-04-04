@@ -1,7 +1,6 @@
-import { Chain, chainConstants } from '@/shared/enums';
+import { chainConstants, ChainflipChain } from '@chainflip/utils/chainflip';
 import * as rpc from '@/shared/rpc';
 import logger from './logger';
-import ServiceError from './ServiceError';
 import env from '../config/env';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,7 +44,7 @@ export const handleExit = (cb: AnyFunction) => {
 
 export function calculateExpiryTime(args: {
   chainInfo?: {
-    chain: Chain;
+    chain: ChainflipChain;
     height: bigint;
     blockTrackedAt: Date;
   } | null;
@@ -122,8 +121,4 @@ export const isAtLeastSpecVersion = async (specVersion: `${string}.${string}.${s
     (major === maxMajor && minor > maxMinor) ||
     (major === maxMajor && minor === maxMinor && patch >= maxPatch)
   );
-};
-
-export const assertUnreachable = (message: string): never => {
-  throw ServiceError.internalError(message);
 };

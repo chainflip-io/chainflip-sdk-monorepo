@@ -1,17 +1,27 @@
+import { bitcoinBroadcasterBroadcastAborted } from '@chainflip/processor/100/bitcoinBroadcaster/broadcastAborted';
+import { ethereumBroadcasterBroadcastAborted } from '@chainflip/processor/100/ethereumBroadcaster/broadcastAborted';
+import { polkadotBroadcasterBroadcastAborted } from '@chainflip/processor/100/polkadotBroadcaster/broadcastAborted';
+import { arbitrumBroadcasterBroadcastAborted } from '@chainflip/processor/141/arbitrumBroadcaster/broadcastAborted';
+import { solanaBroadcasterBroadcastAborted } from '@chainflip/processor/150/solanaBroadcaster/broadcastAborted';
+import { assethubBroadcasterBroadcastAborted } from '@chainflip/processor/190/assethubBroadcaster/broadcastAborted';
+import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { Chain } from '@/shared/enums';
-import { unsignedInteger } from '@/shared/parsers';
 import { EventHandlerArgs } from '../index';
 
-const eventArgs = z.object({
-  broadcastId: unsignedInteger,
-});
+const schemas = {
+  Arbitrum: arbitrumBroadcasterBroadcastAborted,
+  Bitcoin: bitcoinBroadcasterBroadcastAborted,
+  Ethereum: ethereumBroadcasterBroadcastAborted,
+  Polkadot: polkadotBroadcasterBroadcastAborted,
+  Solana: solanaBroadcasterBroadcastAborted,
+  Assethub: assethubBroadcasterBroadcastAborted,
+} as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
-export async function handleEvent(
-  chain: Chain,
+async function handleEvent(
+  chain: ChainflipChain,
   { prisma, block, event }: EventHandlerArgs,
 ): Promise<void> {
-  const { broadcastId } = eventArgs.parse(event.args);
+  const { broadcastId } = schemas[chain].parse(event.args);
 
   // use updateMany to skip update if broadcast does not include any swap
   await prisma.broadcast.updateMany({
@@ -23,6 +33,8 @@ export async function handleEvent(
   });
 }
 
-export default function broadcastAborted(chain: Chain): (args: EventHandlerArgs) => Promise<void> {
+export default function broadcastAborted(
+  chain: ChainflipChain,
+): (args: EventHandlerArgs) => Promise<void> {
   return (args: EventHandlerArgs) => handleEvent(chain, args);
 }

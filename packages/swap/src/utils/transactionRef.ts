@@ -1,5 +1,5 @@
 import { CHARSET as BASE58_CHARSET } from '@chainflip/utils/base58';
-import { Chain } from '@/shared/enums';
+import { ChainflipChain } from '@chainflip/utils/chainflip';
 
 const hexNoPrefixRegex = /^[a-f0-9]+$/i;
 const hexWithPrefixRegex = /^0x[a-f0-9]+$/i;
@@ -12,7 +12,7 @@ export const isTransactionRef = (txRef: string) =>
   base58Regex.test(txRef) ||
   dotRegex.test(txRef);
 
-export const getTransactionRefChains = (txRef: string): Chain[] => {
+export const getTransactionRefChains = (txRef: string): ChainflipChain[] => {
   if (hexNoPrefixRegex.test(txRef)) {
     return ['Bitcoin'];
   }

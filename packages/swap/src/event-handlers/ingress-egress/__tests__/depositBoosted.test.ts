@@ -1,17 +1,18 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import prisma from '../../../client';
-import { depositBoosted, DepositBoostedArgs } from '../depositBoosted';
+import { check } from '../../__tests__/utils';
+import { depositBoosted, DepositBoostedArgsMap } from '../depositBoosted';
 
 export const depositBoostedBtcMock = async ({
   action = { __kind: 'Swap', swapRequestId: '1' },
   amounts,
   channelId,
 }: {
-  action?: DepositBoostedArgs['action'];
+  action?: DepositBoostedArgsMap['Bitcoin']['action'];
   amounts?: [[number, string]];
   channelId?: string;
 } = {}) => {
-  const args: DepositBoostedArgs = {
+  const args: DepositBoostedArgsMap['Bitcoin'] = {
     blockHeight: 120,
     asset: {
       __kind: 'Btc',
@@ -45,6 +46,8 @@ export const depositBoostedBtcMock = async ({
         },
       },
     },
+    maxBoostFeeBps: 0,
+    originType: { __kind: 'DepositChannel' },
   };
 
   if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {
@@ -88,7 +91,7 @@ describe('depositBoosted', () => {
   it('updates the values for an existing swap', async () => {
     const { event, block } = await depositBoostedBtcMock({ amounts: [[5, '1000000']] });
 
-    await depositBoosted({ prisma, event, block });
+    await depositBoosted('Bitcoin')({ prisma, event, block });
 
     const request = await prisma.swapRequest.findFirstOrThrow({
       include: { fees: { select: { asset: true, amount: true, type: true } } },
@@ -105,7 +108,7 @@ describe('depositBoosted', () => {
       amounts: [[5, '1000000']],
     });
 
-    await depositBoosted({ prisma, event, block });
+    await depositBoosted('Bitcoin')({ prisma, event, block });
 
     const request = await prisma.swapRequest.findFirstOrThrow({
       include: { fees: { select: { asset: true, amount: true, type: true } } },
@@ -132,7 +135,7 @@ describe('depositBoosted', () => {
       },
     });
 
-    await depositBoosted({
+    await depositBoosted('Bitcoin')({
       prisma,
       block: {
         height: 120,
@@ -141,7 +144,7 @@ describe('depositBoosted', () => {
         specId: 'test@150',
       },
       event: {
-        args: {
+        args: check<DepositBoostedArgsMap['Bitcoin']>({
           asset: {
             __kind: 'Btc',
           },
@@ -183,7 +186,7 @@ describe('depositBoosted', () => {
           },
           maxBoostFeeBps: 7,
           prewitnessedDepositId: '6',
-        },
+        }),
         name: 'BitcoinIngressEgress.DepositBoosted',
         indexInBlock: 7,
       },

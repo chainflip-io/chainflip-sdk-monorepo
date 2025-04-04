@@ -1,10 +1,10 @@
+import { chainflipAssets, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
-import { InternalAssets, assetConstants } from '@/shared/enums';
 import { broker } from '../lib';
 
 export const yargsOptions = {
   'src-asset': {
-    choices: Object.values(InternalAssets),
+    choices: chainflipAssets,
     demandOption: true,
     describe: 'The asset to swap from',
   },
@@ -14,7 +14,7 @@ export const yargsOptions = {
     describe: 'The address that sends the assets to Chainflip',
   },
   'dest-asset': {
-    choices: Object.values(InternalAssets),
+    choices: chainflipAssets,
     demandOption: true,
     describe: 'The asset to swap to',
   },
@@ -45,9 +45,9 @@ export default async function cliEncodeVaultSwapData(
 ) {
   const result = await broker.requestSwapParameterEncoding(
     {
-      srcAsset: assetConstants[args.srcAsset],
+      srcAsset: internalAssetToRpcAsset[args.srcAsset],
       srcAddress: args.srcAddress,
-      destAsset: assetConstants[args.destAsset],
+      destAsset: internalAssetToRpcAsset[args.destAsset],
       destAddress: args.destAddress,
       amount: args.amount,
       fillOrKillParams: {

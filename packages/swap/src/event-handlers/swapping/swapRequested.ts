@@ -1,11 +1,11 @@
 import { swappingSwapRequested as schema180 } from '@chainflip/processor/180/swapping/swapRequested';
 import { swappingSwapRequested as schema190 } from '@chainflip/processor/190/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
+import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
 import { isNullish } from '@chainflip/utils/guard';
 import assert from 'assert';
 import z from 'zod';
 import { formatTxRef } from '@/shared/common';
-import { assetConstants, Chain, InternalAsset } from '@/shared/enums';
 import { assertUnreachable } from '@/shared/functions';
 import { assertNever } from '@/shared/guards';
 import { pascalCaseToScreamingSnakeCase } from '@/shared/strings';
@@ -78,20 +78,17 @@ const getRequestInfo = (requestType: RequestType) => {
 };
 
 export const getVaultOriginTxRef = (
-  chain: Chain,
-  origin: Extract<z.output<typeof schema180>['origin'], { __kind: 'Vault' }>,
+  origin: Extract<z.output<typeof schema190>['origin'], { __kind: 'Vault' }>,
 ) => {
   const kind = origin.txId.__kind;
 
   switch (kind) {
     case 'Evm':
+      return formatTxRef({ chain: 'Ethereum', data: origin.txId.value });
     case 'Bitcoin':
-      return formatTxRef(chain, origin.txId.value);
+      return formatTxRef({ chain: 'Bitcoin', data: origin.txId.value });
     case 'Polkadot':
-      return formatTxRef(
-        chain,
-        `${origin.txId.value.blockNumber}-${origin.txId.value.extrinsicIndex}`,
-      );
+      return formatTxRef({ chain: 'Polkadot', data: origin.txId.value });
     case 'Solana':
     case 'None':
       return undefined;
@@ -102,7 +99,7 @@ export const getVaultOriginTxRef = (
 
 export const getOriginInfo = async (
   prisma: Prisma.TransactionClient,
-  srcAsset: InternalAsset,
+  srcAsset: ChainflipAsset,
   origin: Origin,
 ) => {
   if (origin.__kind === 'DepositChannel') {
@@ -131,7 +128,7 @@ export const getOriginInfo = async (
     return {
       originType: 'VAULT',
       swapDepositChannelId: undefined,
-      depositTransactionRef: getVaultOriginTxRef(assetConstants[srcAsset].chain, origin),
+      depositTransactionRef: getVaultOriginTxRef(origin),
       brokerId: origin.brokerId,
       accountId: undefined,
     } as const;

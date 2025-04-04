@@ -1,7 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import prisma from '../../../client';
-import { createDepositChannel } from '../../__tests__/utils';
-import { depositFinalised } from '../depositFinalised';
+import { check, createDepositChannel } from '../../__tests__/utils';
+import { depositFinalised, DepositFinalisedArgsMap } from '../depositFinalised';
 
 vi.mock('@chainflip/solana');
 
@@ -36,7 +36,7 @@ describe(depositFinalised, () => {
   });
 
   it('updates swap request for regular deposit', async () => {
-    await depositFinalised({
+    await depositFinalised('Bitcoin')({
       prisma,
       block: {
         height: 10,
@@ -81,6 +81,8 @@ describe(depositFinalised, () => {
             },
           },
           blockHeight: '128',
+          maxBoostFeeBps: 0,
+          originType: { __kind: 'DepositChannel' },
         },
         indexInBlock: 7,
       } as any,
@@ -94,7 +96,7 @@ describe(depositFinalised, () => {
   });
 
   it('updates swap request for regular deposit with 180 schema', async () => {
-    await depositFinalised({
+    await depositFinalised('Bitcoin')({
       prisma,
       block: {
         height: 10,
@@ -103,7 +105,7 @@ describe(depositFinalised, () => {
         hash: '0x123',
       },
       event: {
-        args: {
+        args: check<DepositFinalisedArgsMap['Bitcoin']>({
           asset: {
             __kind: 'Btc',
           },
@@ -143,7 +145,7 @@ describe(depositFinalised, () => {
             },
           },
           maxBoostFeeBps: 4,
-        },
+        }),
         indexInBlock: 7,
       } as any,
     });
@@ -165,7 +167,7 @@ describe(depositFinalised, () => {
       },
     });
 
-    await depositFinalised({
+    await depositFinalised('Bitcoin')({
       prisma,
       block: {
         height: 10,
@@ -174,13 +176,14 @@ describe(depositFinalised, () => {
         hash: '0x123',
       },
       event: {
-        args: {
+        args: check<DepositFinalisedArgsMap['Bitcoin']>({
           asset: {
             __kind: 'Btc',
           },
           action: {
             __kind: 'BoostersCredited',
             prewitnessedDepositId: '5265',
+            networkFeeFromBoost: '0',
           },
           amount: '1000000',
           channelId: '0',
@@ -210,7 +213,9 @@ describe(depositFinalised, () => {
             },
           },
           blockHeight: '128',
-        },
+          maxBoostFeeBps: 0,
+          originType: { __kind: 'DepositChannel' },
+        }),
         indexInBlock: 7,
       } as any,
     });
