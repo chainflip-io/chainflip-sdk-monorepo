@@ -4,7 +4,7 @@ import {
   AssetAndChain,
   UncheckedAssetAndChain,
   chainflipChains,
-  rpcAssets,
+  assetSymbols,
 } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import { z } from 'zod';
@@ -37,7 +37,7 @@ export const u128 = z.union([z.number(), numericString, hexString]).transform((a
 export const unsignedInteger = z.union([u128, z.number().transform((n) => BigInt(n))]);
 
 export const chain = z.enum(chainflipChains);
-export const asset = z.enum(rpcAssets);
+export const asset = z.enum(assetSymbols);
 
 export const uncheckedAssetAndChain = z.object({
   asset: z.string(),

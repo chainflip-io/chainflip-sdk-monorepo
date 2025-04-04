@@ -1,6 +1,10 @@
-import { ChainflipAsset, assetConstants, chainConstants } from '@chainflip/utils/chainflip';
+import {
+  AssetSymbol,
+  ChainflipAsset,
+  assetConstants,
+  chainConstants,
+} from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
-import { AssetSymbol } from '@/shared/schemas';
 import { getDeployedLiquidity, getUndeployedLiquidity } from './pools';
 import { getRequiredBlockConfirmations } from './rpc';
 import env from '../config/env';
@@ -90,8 +94,8 @@ export const calculateRecommendedSlippage = async ({
   // do not accept significant price movements for stable assets independently of available liquidity
   const stableAssets: AssetSymbol[] = ['USDC', 'USDT'];
   if (
-    stableAssets.includes(assetConstants[srcAsset].rpcAsset) &&
-    stableAssets.includes(assetConstants[destAsset].rpcAsset)
+    stableAssets.includes(assetConstants[srcAsset].symbol) &&
+    stableAssets.includes(assetConstants[destAsset].symbol)
   ) {
     return Math.max(
       0.5,

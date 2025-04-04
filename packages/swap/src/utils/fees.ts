@@ -27,7 +27,7 @@ export function buildFee(
   type: SwapFee['type'] | PoolFee['type'],
   amount: bigint,
 ): SwapFee | PoolFee {
-  const { rpcAsset: asset, chain } = assetConstants[internalAsset];
+  const { symbol: asset, chain } = assetConstants[internalAsset];
 
   return { type, chain, asset, amount: amount.toString() };
 }

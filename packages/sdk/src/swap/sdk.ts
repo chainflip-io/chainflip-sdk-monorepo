@@ -25,7 +25,7 @@ import {
   getSupportedAssets,
 } from '@/shared/rpc';
 import { validateSwapAmount } from '@/shared/rpc/utils';
-import { BoostQuote, Quote, AssetSymbol } from '@/shared/schemas';
+import { BoostQuote, Quote } from '@/shared/schemas';
 import { Required } from '@/shared/types';
 import type { AppRouter } from '@/swap/trpc';
 import { getAssetData } from './assets';
@@ -350,13 +350,7 @@ export class SwapSDK {
   }
 
   async getBoostLiquidity(
-    params:
-      | { feeTierBps?: number }
-      | {
-          feeTierBps?: number;
-          asset: AssetSymbol;
-          chain: ChainflipChain;
-        } = {},
+    params: { feeTierBps?: number } | ({ feeTierBps?: number } & UncheckedAssetAndChain) = {},
   ): Promise<BoostPoolDepth[]> {
     let poolsDepth = await this.getBoostPoolsDepth();
 

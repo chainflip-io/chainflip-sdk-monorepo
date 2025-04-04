@@ -1,5 +1,6 @@
 import { HttpClient } from '@chainflip/rpc';
 import {
+  AssetSymbol,
   ChainflipChain,
   ChainflipNetwork,
   UncheckedAssetAndChain,
@@ -26,7 +27,6 @@ import {
   FillOrKillParamsX128,
   dcaParams as dcaParamsSchema,
   DcaParams,
-  AssetSymbol,
 } from './schemas';
 import { validateAddress } from './validation/addressValidation';
 

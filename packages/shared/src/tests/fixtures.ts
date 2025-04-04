@@ -16,9 +16,9 @@ import {
   ChainflipAsset,
   chainflipAssets,
   ChainflipChain,
+  UncheckedAssetAndChain,
 } from '@chainflip/utils/chainflip';
 import { vi } from 'vitest';
-import { AssetSymbol } from '../schemas';
 
 type RpcResponse<T> = { id: number; jsonrpc: '2.0'; result: T };
 
@@ -224,17 +224,15 @@ export const supportedAssets = ({
   id: 1,
   jsonrpc: '2.0',
   result: assets.map((asset) => ({
-    asset: assetConstants[asset].rpcAsset,
+    asset: assetConstants[asset].symbol,
     chain: assetConstants[asset].chain,
   })) as AssetAndChain[],
 });
 
-type BoostPool = {
-  chain: ChainflipChain;
-  asset: AssetSymbol;
+interface BoostPool extends UncheckedAssetAndChain {
   tier: number;
   available_amount: string;
-};
+}
 
 export type MockedBoostPoolsDepth = CfBoostPoolsDepthResponse;
 
@@ -246,7 +244,7 @@ export const boostPoolsDepth = (
     mockedBoostPoolsDepth ??
     (Object.entries({
       ...(Object.fromEntries(
-        Object.entries(chainConstants).flatMap(([chain, { rpcAssets: assets }]) =>
+        Object.entries(chainConstants).flatMap(([chain, { assets }]) =>
           assets.flatMap((asset) =>
             [5, 10, 30].map((tier) => [
               `${chain}-${asset}-${tier.toString().padStart(2, '0')}`,

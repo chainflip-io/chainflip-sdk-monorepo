@@ -1,9 +1,7 @@
-import { AssetAndChain } from '@chainflip/rpc/parsers';
 import {
-  ChainflipAsset,
-  ChainflipChain,
   getInternalAssets,
-  assetConstants,
+  UncheckedAssetAndChain,
+  AssetAndChain,
 } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { z } from 'zod';
@@ -151,14 +149,10 @@ export type FillOrKillParamsWithMinPrice = Omit<FillOrKillParamsX128, 'minPriceX
   minPrice: string;
 };
 
-export type AssetSymbol = (typeof assetConstants)[ChainflipAsset]['rpcAsset'];
-
-type Fee<T> = {
+interface Fee<T> extends UncheckedAssetAndChain {
   type: T;
-  chain: ChainflipChain;
-  asset: AssetSymbol;
   amount: string;
-};
+}
 
 export type SwapFee = Fee<'NETWORK' | 'INGRESS' | 'EGRESS' | 'BROKER' | 'BOOST'>;
 

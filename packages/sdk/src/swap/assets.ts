@@ -51,12 +51,12 @@ export const getAssetData = (
 
   return {
     chainflipId: asset,
-    asset: assetConstant.rpcAsset,
+    asset: assetConstant.symbol,
     chain: assetConstant.chain,
     contractAddress: getTokenContractAddress(asset, network),
     decimals: assetConstant.decimals,
     name: assetNames[asset],
-    symbol: assetConstant.rpcAsset,
+    symbol: assetConstant.symbol,
     isMainnet: !isTestnet(network),
     minimumSwapAmount: readAssetValue(env.ingressEgress.minimumDepositAmounts, asset).toString(),
     maximumSwapAmount: readAssetValue(env.swapping.maximumSwapAmounts, asset)?.toString() ?? null,

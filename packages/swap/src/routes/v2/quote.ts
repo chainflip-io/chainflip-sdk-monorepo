@@ -1,16 +1,10 @@
-import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
+import { assetConstants, AssetSymbol, ChainflipAsset } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import express from 'express';
 import { Query } from 'express-serve-static-core';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts';
 import { getFulfilledResult } from '@/shared/promises';
-import {
-  quoteQuerySchema,
-  DCABoostQuote,
-  DcaParams,
-  DCAQuote,
-  AssetSymbol,
-} from '@/shared/schemas';
+import { quoteQuerySchema, DCABoostQuote, DcaParams, DCAQuote } from '@/shared/schemas';
 import env from '../../config/env';
 import { getBoostSafeMode } from '../../polkadot/api';
 import { getUsdValue } from '../../pricing/checkPriceWarning';

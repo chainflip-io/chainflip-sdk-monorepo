@@ -6,7 +6,7 @@ import {
   chainflipAssets,
   chainflipChains,
   chainflipNetworks,
-  rpcAssets,
+  assetSymbols,
 } from '@chainflip/utils/chainflip';
 
 const arrayToMap = <T extends string>(array: readonly T[]): { [K in T]: K } =>
@@ -15,8 +15,8 @@ const arrayToMap = <T extends string>(array: readonly T[]): { [K in T]: K } =>
 export const ChainflipNetworks = arrayToMap(chainflipNetworks);
 export const InternalAssets = arrayToMap(chainflipAssets);
 export const Chains = arrayToMap(chainflipChains);
-export const Assets = arrayToMap(rpcAssets);
-export type Asset = (typeof rpcAssets)[number];
+export const Assets = arrayToMap(assetSymbols);
+export type Asset = (typeof assetSymbols)[number];
 
 export {
   type ChainflipAsset as InternalAsset,

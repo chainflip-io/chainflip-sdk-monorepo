@@ -1,7 +1,6 @@
-import { assetConstants, ChainflipChain } from '@chainflip/utils/chainflip';
+import { assetConstants, AssetSymbol, ChainflipChain } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import express from 'express';
-import { AssetSymbol } from '@/shared/schemas';
 import { asyncHandler, handleQuotingError } from './common';
 import env from '../config/env';
 import { getUsdValue } from '../pricing/checkPriceWarning';

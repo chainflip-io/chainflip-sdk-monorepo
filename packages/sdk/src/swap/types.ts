@@ -1,4 +1,9 @@
-import { AssetOfChain, ChainflipAsset, ChainflipChain } from '@chainflip/utils/chainflip';
+import {
+  AssetOfChain,
+  AssetSymbol,
+  ChainflipAsset,
+  ChainflipChain,
+} from '@chainflip/utils/chainflip';
 import {
   AffiliateBroker,
   CcmParams,
@@ -6,7 +11,6 @@ import {
   FillOrKillParamsWithMinPrice,
   SwapFee,
   DcaParams,
-  AssetSymbol,
 } from '@/shared/schemas';
 
 export interface ChainData {

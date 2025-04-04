@@ -16,8 +16,8 @@ export {
   assetConstants,
   chainflipChains,
   chainflipAssets,
-  rpcAssets,
+  assetSymbols,
   chainflipNetworks,
+  type AssetSymbol as Asset,
 } from '@chainflip/utils/chainflip';
 export * as broker from '@/shared/broker';
-export { type AssetSymbol as Asset } from '@/shared/schemas';
