@@ -38,6 +38,8 @@ describe('getSwappingEnvironment', () => {
 
     expect(await getSwappingEnvironment({ network: 'perseverance' })).toMatchInlineSnapshot(`
       {
+        "maxSwapRequestDurationBlocks": 10,
+        "maxSwapRetryDurationBlocks": 10,
         "maximumSwapAmounts": {
           "Arbitrum": {
             "ETH": null,
@@ -63,6 +65,33 @@ describe('getSwappingEnvironment', () => {
           "Solana": {
             "SOL": null,
             "USDC": null,
+          },
+        },
+        "minimumChunkSize": {
+          "Arbitrum": {
+            "ETH": 0n,
+            "USDC": 0n,
+          },
+          "Assethub": {
+            "DOT": 0n,
+            "USDC": 0n,
+            "USDT": 0n,
+          },
+          "Bitcoin": {
+            "BTC": 0n,
+          },
+          "Ethereum": {
+            "ETH": 0n,
+            "FLIP": 0n,
+            "USDC": 0n,
+            "USDT": 0n,
+          },
+          "Polkadot": {
+            "DOT": 0n,
+          },
+          "Solana": {
+            "SOL": 0n,
+            "USDC": 0n,
           },
         },
         "networkFeeHundredthPips": 1000,
@@ -98,9 +127,9 @@ describe('getIngressEgressEnvironment', () => {
             "USDC": 0n,
           },
           "Assethub": {
-            "DOT": null,
-            "USDC": null,
-            "USDT": null,
+            "DOT": 0n,
+            "USDC": 0n,
+            "USDT": 0n,
           },
           "Bitcoin": {
             "BTC": 0n,
@@ -125,9 +154,9 @@ describe('getIngressEgressEnvironment', () => {
             "USDC": 5000000000000000000n,
           },
           "Assethub": {
-            "DOT": null,
-            "USDC": null,
-            "USDT": null,
+            "DOT": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
           },
           "Bitcoin": {
             "BTC": 5000000000000000000n,
@@ -146,23 +175,15 @@ describe('getIngressEgressEnvironment', () => {
             "USDC": 5000000000000000000n,
           },
         },
-        "maxSwapRetryDurationBlocks": {
-          "Arbitrum": 40,
-          "Assethub": 0,
-          "Bitcoin": 30,
-          "Ethereum": 10,
-          "Polkadot": 20,
-          "Solana": 50,
-        },
         "minimumDepositAmounts": {
           "Arbitrum": {
             "ETH": 5000000000000000000n,
             "USDC": 5000000000000000000n,
           },
           "Assethub": {
-            "DOT": 0n,
-            "USDC": 0n,
-            "USDT": 0n,
+            "DOT": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
           },
           "Bitcoin": {
             "BTC": 5000000000000000000n,
@@ -187,9 +208,9 @@ describe('getIngressEgressEnvironment', () => {
             "USDC": 1n,
           },
           "Assethub": {
-            "DOT": 0n,
-            "USDC": 0n,
-            "USDT": 0n,
+            "DOT": 1n,
+            "USDC": 1n,
+            "USDT": 1n,
           },
           "Bitcoin": {
             "BTC": 600n,
