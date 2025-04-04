@@ -85,7 +85,7 @@ const reasonMap: Record<FailureReason, FailedSwapReason> = {
   TransactionRejectedByBroker: 'TransactionRejectedByBroker',
 };
 
-export const depositFailed =
+const depositFailed =
   (chain: Chain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
     const { details, blockHeight, ...rest } = argsMap[chain].parse(event.args);

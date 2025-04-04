@@ -6,9 +6,7 @@ import { DcaParams, SwapFeeType } from '@/shared/schemas';
 import { memoize } from './function';
 import env from '../config/env';
 
-export const initializeClient = memoize(
-  () => new WsClient(env.RPC_NODE_WSS_URL, WebSocket as never),
-);
+const initializeClient = memoize(() => new WsClient(env.RPC_NODE_WSS_URL, WebSocket as never));
 export type QuoteLimitOrders = NonNullable<RpcParams['cf_swap_rate_v3'][7]>;
 export type QuoteCcmParams = {
   gasBudget: bigint;

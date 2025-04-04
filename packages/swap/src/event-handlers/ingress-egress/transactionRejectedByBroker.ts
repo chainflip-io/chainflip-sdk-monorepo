@@ -39,7 +39,7 @@ const schemaMap = {
 
 export type TransactionRejectedByBrokerArgs = z.input<(typeof schemaMap)[ChainflipChain]>;
 
-export const transactionRejectedByBroker =
+const transactionRejectedByBroker =
   (chain: ChainflipChain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
     const { broadcastId, txId } = schemaMap[chain].parse(event.args);

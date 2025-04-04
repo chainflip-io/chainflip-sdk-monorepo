@@ -17,7 +17,7 @@ const schemas = {
   Assethub: assethubBroadcasterBroadcastAborted,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
-export async function handleEvent(
+async function handleEvent(
   chain: ChainflipChain,
   { prisma, block, event }: EventHandlerArgs,
 ): Promise<void> {

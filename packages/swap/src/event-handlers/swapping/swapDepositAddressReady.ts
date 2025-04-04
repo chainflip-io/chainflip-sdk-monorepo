@@ -8,7 +8,7 @@ const swapDepositAddressReadyArgs = z.union([schema190, schema180]);
 
 export type SwapDepositAddressReadyArgs = z.input<typeof swapDepositAddressReadyArgs>;
 
-export const swapDepositAddressReady = async ({
+const swapDepositAddressReady = async ({
   prisma,
   event,
   block,
