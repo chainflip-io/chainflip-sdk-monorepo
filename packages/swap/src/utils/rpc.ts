@@ -6,8 +6,8 @@ import {
   ChainflipChain,
   internalAssetToRpcAsset,
   readAssetValue,
+  InternalAssetMap,
 } from '@chainflip/utils/chainflip';
-import { InternalAssetMap } from '@/shared/enums';
 import { isNotNullish } from '@/shared/guards';
 import {
   BoostPoolsDepth,

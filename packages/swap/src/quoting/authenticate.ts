@@ -1,9 +1,13 @@
-import { ChainflipAsset, chainflipAssets, getInternalAsset } from '@chainflip/utils/chainflip';
+import {
+  ChainflipAsset,
+  chainflipAssets,
+  getInternalAsset,
+  InternalAssetMap,
+} from '@chainflip/utils/chainflip';
 import * as crypto from 'crypto';
 import type { Server } from 'socket.io';
 import { promisify } from 'util';
 import { z } from 'zod';
-import { InternalAssetMap } from '@/shared/enums';
 import { isNotNullish } from '@/shared/guards';
 import { assetAndChain } from '@/shared/parsers';
 import prisma from '../client';

@@ -1,6 +1,6 @@
 import { ChainflipChain, ChainflipNetwork } from '@chainflip/utils/chainflip';
 import { getEvmChainId } from '@/shared/consts';
-import { isTestnet } from '@/shared/enums';
+import { isTestnet } from '@/shared/functions';
 import { isNotNullish } from '@/shared/guards';
 import { Environment } from '@/shared/rpc';
 

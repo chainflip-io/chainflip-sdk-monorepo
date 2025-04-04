@@ -1,6 +1,6 @@
 /* eslint-disable dot-notation */
+import { InternalAssetMap } from '@chainflip/utils/chainflip';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { InternalAssetMap } from '@/shared/enums';
 import { getLpBalances } from '../../utils/rpc';
 import BalanceTracker from '../BalanceTracker';
 import type { AccountId } from '../Quoter';

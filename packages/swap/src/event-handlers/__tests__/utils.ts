@@ -1,5 +1,10 @@
 import { bytesToHex } from '@chainflip/utils/bytes';
-import { assetConstants, chainflipAssets, ChainflipChain } from '@chainflip/utils/chainflip';
+import {
+  assetConstants,
+  chainflipAssets,
+  ChainflipChain,
+  chainflipChains,
+} from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import assert from 'assert';
 import { GraphQLClient } from 'graphql-request';
@@ -513,10 +518,9 @@ export const buildDepositFailedEvent = <T extends DepositFailedArgs>(args: T) =>
   };
 };
 
-export const createChainTrackingInfo = (date?: Date) => {
-  const chains: ChainflipChain[] = ['Bitcoin', 'Ethereum', 'Polkadot', 'Solana'];
-  return Promise.all(
-    chains.map((chain) =>
+export const createChainTrackingInfo = (date?: Date) =>
+  Promise.all(
+    chainflipChains.map((chain) =>
       prisma.chainTracking.upsert({
         where: { chain },
         create: {
@@ -530,7 +534,6 @@ export const createChainTrackingInfo = (date?: Date) => {
       }),
     ),
   );
-};
 
 export const createPools = () => {
   const assets = chainflipAssets.filter((asset) => asset !== 'Usdc');

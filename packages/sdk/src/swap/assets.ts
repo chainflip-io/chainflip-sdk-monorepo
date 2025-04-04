@@ -6,7 +6,7 @@ import {
 } from '@chainflip/utils/chainflip';
 import { toUpperCase } from '@chainflip/utils/string';
 import { ADDRESSES } from '@/shared/consts';
-import { isTestnet } from '@/shared/enums';
+import { isTestnet } from '@/shared/functions';
 import type { Environment } from '@/shared/rpc';
 import type { AssetData } from './types';
 

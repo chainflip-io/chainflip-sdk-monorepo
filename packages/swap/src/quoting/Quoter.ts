@@ -2,6 +2,7 @@ import {
   assetConstants,
   ChainflipAsset,
   getInternalAsset,
+  InternalAssetMap,
   UncheckedAssetAndChain,
 } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
@@ -10,7 +11,6 @@ import BigNumber from 'bignumber.js';
 import { randomUUID } from 'crypto';
 import { Subject, Subscription } from 'rxjs';
 import { Server, Socket } from 'socket.io';
-import { InternalAssetMap } from '@/shared/enums';
 import Leg from './Leg';
 import {
   LegJson,

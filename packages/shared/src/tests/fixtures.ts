@@ -11,13 +11,13 @@ import {
 } from '@chainflip/rpc/types';
 import {
   assetConstants,
+  AssetOfChain,
   chainConstants,
   ChainflipAsset,
   chainflipAssets,
   ChainflipChain,
 } from '@chainflip/utils/chainflip';
 import { vi } from 'vitest';
-import { AssetOfChain } from '../enums';
 import { AssetSymbol } from '../schemas';
 
 type RpcResponse<T> = { id: number; jsonrpc: '2.0'; result: T };

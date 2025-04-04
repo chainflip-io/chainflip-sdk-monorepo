@@ -8,12 +8,12 @@ import {
   ChainflipChain,
   chainflipChains,
   internalAssetToRpcAsset,
+  ChainMap,
 } from '@chainflip/utils/chainflip';
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import superjson from 'superjson';
 import { requestSwapDepositAddress, requestSwapParameterEncoding } from '@/shared/broker';
 import { AsyncCacheMap } from '@/shared/dataStructures';
-import { ChainMap } from '@/shared/enums';
 import { getPriceX128FromPrice, parseFoKParams } from '@/shared/functions';
 import { assert, isNotNullish } from '@/shared/guards';
 import {

@@ -1,5 +1,9 @@
 /* eslint-disable dot-notation */
-import { assetConstants, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
+import {
+  assetConstants,
+  internalAssetToRpcAsset,
+  InternalAssetMap,
+} from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import * as crypto from 'crypto';
 import { Server } from 'socket.io';
@@ -9,7 +13,6 @@ import { promisify } from 'util';
 import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest';
 import { AddressInfo } from 'ws';
 import { MAX_TICK, MIN_TICK } from '@/shared/consts';
-import { InternalAssetMap } from '@/shared/enums';
 import prisma, { InternalAsset } from '../../client';
 import env from '../../config/env';
 import { getAssetPrice } from '../../pricing';

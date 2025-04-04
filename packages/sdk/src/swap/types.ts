@@ -1,5 +1,4 @@
-import { ChainflipAsset, ChainflipChain } from '@chainflip/utils/chainflip';
-import { AssetOfChain } from '@/shared/enums';
+import { AssetOfChain, ChainflipAsset, ChainflipChain } from '@chainflip/utils/chainflip';
 import {
   AffiliateBroker,
   CcmParams,

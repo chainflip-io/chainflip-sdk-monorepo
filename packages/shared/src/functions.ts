@@ -1,4 +1,9 @@
-import { assetConstants, ChainflipAsset, getInternalAsset } from '@chainflip/utils/chainflip';
+import {
+  assetConstants,
+  ChainflipAsset,
+  getInternalAsset,
+  ChainflipNetwork,
+} from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import EventEmitter, { once } from 'events';
 import { assert } from './guards';
@@ -101,3 +106,5 @@ export const parseFoKParams = (
 
 export const safeStringify = (obj: unknown) =>
   JSON.stringify(obj, (key, value) => (typeof value === 'bigint' ? value.toString() : value));
+
+export const isTestnet = (network: ChainflipNetwork): boolean => network !== 'mainnet';

@@ -1,8 +1,11 @@
-import { chainflipAssets, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
+import {
+  chainflipAssets,
+  InternalAssetMap,
+  internalAssetToRpcAsset,
+} from '@chainflip/utils/chainflip';
 import * as crypto from 'crypto';
 import { promisify } from 'util';
 import { vi, describe, it, beforeEach, expect, Mock } from 'vitest';
-import { InternalAssetMap } from '@/shared/enums';
 import prisma from '../../client';
 import authenticate from '../authenticate';
 

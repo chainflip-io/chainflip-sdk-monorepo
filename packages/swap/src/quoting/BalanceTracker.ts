@@ -1,5 +1,5 @@
+import { InternalAssetMap } from '@chainflip/utils/chainflip';
 import { inspect } from 'util';
-import { InternalAssetMap } from '@/shared/enums';
 import type { AccountId } from './Quoter';
 import baseLogger from '../utils/logger';
 import { getLpBalances } from '../utils/rpc';
