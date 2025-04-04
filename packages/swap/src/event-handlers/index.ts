@@ -138,7 +138,7 @@ const handlers = [
       ...chainflipChains.flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].BoostPoolCreated,
-          handler: boostPoolCreated,
+          handler: boostPoolCreated(chain),
         },
         {
           name: events[`${chain}IngressEgress`].InsufficientBoostLiquidity,

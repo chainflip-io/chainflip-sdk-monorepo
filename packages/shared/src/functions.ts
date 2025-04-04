@@ -98,3 +98,6 @@ export const parseFoKParams = (
     minPriceX128: getPriceX128FromPrice(minPrice, srcAsset, destAsset),
   };
 };
+
+export const safeStringify = (obj: unknown) =>
+  JSON.stringify(obj, (key, value) => (typeof value === 'bigint' ? value.toString() : value));

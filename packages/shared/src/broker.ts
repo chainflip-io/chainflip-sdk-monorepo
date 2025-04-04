@@ -15,7 +15,6 @@ import {
   numericString,
   assetAndChain,
   solanaAddress,
-  number,
   unsignedInteger,
   DOT_PREFIX,
 } from './parsers';
@@ -50,7 +49,7 @@ type DepositAddressRequest = {
 
 const transformedFokSchema = z
   .object({
-    retryDurationBlocks: number,
+    retryDurationBlocks: z.number(),
     refundAddress: z.string(),
     minPriceX128: numericString,
   })

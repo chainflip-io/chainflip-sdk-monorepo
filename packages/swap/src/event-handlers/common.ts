@@ -11,13 +11,10 @@ import { z } from 'zod';
 import { formatTxRef } from '@/shared/common';
 import { CacheMap } from '@/shared/dataStructures';
 import { assertUnreachable } from '@/shared/functions';
-import { chainEnum, unsignedInteger } from '@/shared/parsers';
 import * as rpc from '@/shared/rpc';
 import { Prisma } from '../client';
 import env from '../config/env';
 import type { EventHandlerArgs } from '.';
-
-export const egressId = z.tuple([chainEnum, unsignedInteger]);
 
 const metadataCache = new CacheMap<string, Metadata>(60_000 * 60);
 

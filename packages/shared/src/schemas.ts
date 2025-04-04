@@ -14,7 +14,6 @@ import {
   numericString,
   asset,
   chainflipAddress,
-  number,
   hexString,
   booleanString,
 } from './parsers';
@@ -127,22 +126,22 @@ export type CcmParams = Omit<z.input<typeof ccmParamsSchema>, 'cfParameters'> & 
 export const affiliateBroker = z
   .object({
     account: chainflipAddress,
-    commissionBps: number,
+    commissionBps: z.number(),
   })
   .transform(({ account, commissionBps: bps }) => ({ account, bps }));
 
 export type AffiliateBroker = z.input<typeof affiliateBroker>;
 
 export const dcaParams = z.object({
-  numberOfChunks: number,
-  chunkIntervalBlocks: number,
+  numberOfChunks: z.number(),
+  chunkIntervalBlocks: z.number(),
 });
 export type DcaParams = z.input<typeof dcaParams>;
 
 export type SwapFeeType = 'IngressDepositChannel' | 'IngressVaultSwap' | 'Network' | 'Egress';
 
 export const fillOrKillParams = z.object({
-  retryDurationBlocks: number,
+  retryDurationBlocks: z.number(),
   refundAddress: z.string(),
   minPriceX128: numericString,
 });

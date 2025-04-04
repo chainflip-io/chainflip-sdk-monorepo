@@ -6,6 +6,7 @@ import { solanaBroadcasterTransactionBroadcastRequest } from '@chainflip/process
 import { assethubBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/190/assethubBroadcaster/transactionBroadcastRequest';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
+import { safeStringify } from '@/shared/functions';
 import { EventHandlerArgs } from '../index';
 
 const schemas = {
@@ -31,9 +32,7 @@ const transactionBroadcastRequest =
         nativeId: broadcastId,
       },
       data: {
-        transactionPayload: JSON.stringify(transactionPayload, (key, value) =>
-          typeof value === 'bigint' ? value.toString() : value,
-        ),
+        transactionPayload: safeStringify(transactionPayload),
       },
     });
   };

@@ -1,6 +1,7 @@
-import { ChainflipAsset, chainflipAssets } from '@chainflip/utils/chainflip';
+import { ChainflipAsset, chainflipAssets, chainflipNetworks } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { chainflipNetwork } from '@/shared/parsers';
+
+const chainflipNetwork = z.enum(chainflipNetworks);
 
 const envVar = z.string().trim();
 
