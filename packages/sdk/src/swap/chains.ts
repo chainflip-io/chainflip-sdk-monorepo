@@ -7,7 +7,7 @@ import { Environment } from '@/shared/rpc';
 export const getChainData = (
   chain: ChainflipChain,
   network: ChainflipNetwork,
-  env: Pick<Environment, 'ingressEgress'>,
+  env: Pick<Environment, 'ingressEgress' | 'swapping'>,
 ) => ({
   chain,
   name: chain,
@@ -16,5 +16,5 @@ export const getChainData = (
   requiredBlockConfirmations: isNotNullish(env.ingressEgress.witnessSafetyMargins[chain])
     ? Number(env.ingressEgress.witnessSafetyMargins[chain]) + 1
     : undefined,
-  maxRetryDurationBlocks: env.ingressEgress.maxSwapRetryDurationBlocks[chain],
+  maxRetryDurationBlocks: env.swapping.maxSwapRetryDurationBlocks,
 });
