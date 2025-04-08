@@ -16,7 +16,6 @@ export const ChainflipNetworks = arrayToMap(chainflipNetworks);
 export const InternalAssets = arrayToMap(chainflipAssets);
 export const Chains = arrayToMap(chainflipChains);
 export const Assets = arrayToMap(assetSymbols);
-export type Asset = (typeof assetSymbols)[number];
 
 export {
   type ChainflipAsset as InternalAsset,
@@ -24,4 +23,5 @@ export {
   type UncheckedAssetAndChain,
   getInternalAsset,
   type ChainflipNetwork,
+  type AssetSymbol as Asset,
 } from '@chainflip/utils/chainflip';
