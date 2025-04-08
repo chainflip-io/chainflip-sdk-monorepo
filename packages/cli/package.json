@@ -39,10 +39,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@chainflip/bitcoin": "^1.2.4",
-    "@chainflip/rpc": "^1.9.2",
-    "@chainflip/solana": "^2.1.6",
-    "@chainflip/utils": "^0.8.3",
+    "@chainflip/bitcoin": "^1.2.5",
+    "@chainflip/rpc": "^1.9.3",
+    "@chainflip/solana": "^2.1.7",
+    "@chainflip/utils": "^0.8.4",
     "ioredis": "^5.4.1",
     "ws": "^8.18.0",
     "yargs": "^17.7.2"

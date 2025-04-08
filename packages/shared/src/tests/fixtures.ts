@@ -1,4 +1,3 @@
-import { AssetAndChain } from '@chainflip/rpc/parsers';
 import {
   CfBoostPoolsDepthResponse,
   CfEnvironmentResponse,
@@ -10,17 +9,50 @@ import {
   CfSwappingEnvironmentResponse,
 } from '@chainflip/rpc/types';
 import {
-  assetConstants,
   AssetOfChain,
   chainConstants,
   ChainflipAsset,
   chainflipAssets,
   ChainflipChain,
+  InternalAssetMap,
+  ChainAssetMap,
   UncheckedAssetAndChain,
+  ChainMap,
+  internalAssetToRpcAsset,
 } from '@chainflip/utils/chainflip';
 import { vi } from 'vitest';
 
 type RpcResponse<T> = { id: number; jsonrpc: '2.0'; result: T };
+
+const createChainAssetMap = <T>(
+  defaultValue: T,
+  overrides?: Partial<InternalAssetMap<T>>,
+): ChainAssetMap<T> => ({
+  Bitcoin: { BTC: overrides?.Btc ?? defaultValue },
+  Polkadot: { DOT: overrides?.Dot ?? defaultValue },
+  Ethereum: {
+    ETH: overrides?.Eth ?? defaultValue,
+    FLIP: overrides?.Flip ?? defaultValue,
+    USDC: overrides?.Usdc ?? defaultValue,
+    USDT: overrides?.Usdt ?? defaultValue,
+  },
+  Arbitrum: { ETH: overrides?.ArbEth ?? defaultValue, USDC: overrides?.ArbUsdc ?? defaultValue },
+  Solana: { SOL: overrides?.Sol ?? defaultValue, USDC: overrides?.SolUsdc ?? defaultValue },
+  Assethub: {
+    DOT: overrides?.HubDot ?? defaultValue,
+    USDC: overrides?.HubUsdc ?? defaultValue,
+    USDT: overrides?.HubUsdt ?? defaultValue,
+  },
+});
+
+const createChainMap = <T>(defaultValue: T, overrides?: Partial<ChainMap<T>>): ChainMap<T> => ({
+  Bitcoin: overrides?.Bitcoin ?? defaultValue,
+  Polkadot: overrides?.Polkadot ?? defaultValue,
+  Ethereum: overrides?.Ethereum ?? defaultValue,
+  Arbitrum: overrides?.Arbitrum ?? defaultValue,
+  Solana: overrides?.Solana ?? defaultValue,
+  Assethub: overrides?.Assethub ?? defaultValue,
+});
 
 export const swappingEnvironment = ({
   maxSwapAmount = null as string | null,
@@ -30,14 +62,14 @@ export const swappingEnvironment = ({
   id: 1,
   jsonrpc: '2.0',
   result: {
-    maximum_swap_amounts: {
-      Polkadot: { DOT: null },
-      Bitcoin: { BTC: maxSwapAmount },
-      Ethereum: { ETH: null, USDC: maxSwapAmount, FLIP: null, USDT: null },
-      Arbitrum: { ETH: null, USDC: null },
-      Solana: { SOL: null, USDC: null },
-    },
+    maximum_swap_amounts: createChainAssetMap(null, {
+      Btc: maxSwapAmount,
+      Usdc: maxSwapAmount,
+    }),
     network_fee_hundredth_pips: 1000,
+    max_swap_retry_duration_blocks: 10,
+    max_swap_request_duration_blocks: 10,
+    minimum_chunk_size: createChainAssetMap(0),
   },
 });
 
@@ -66,71 +98,19 @@ export const ingressEgressEnvironment = ({
   id: 1,
   jsonrpc: '2.0',
   result: {
-    minimum_deposit_amounts: {
-      Bitcoin: { BTC: minDepositAmount },
-      Polkadot: { DOT: minDepositAmount },
-      Ethereum: {
-        ETH: minDepositAmount,
-        FLIP: minDepositAmount,
-        USDC: minDepositAmount,
-        USDT: minDepositAmount,
-      },
-      Arbitrum: {
-        ETH: minDepositAmount,
-        USDC: minDepositAmount,
-      },
-      Solana: {
-        SOL: minDepositAmount,
-        USDC: minDepositAmount,
-      },
-    },
-    ingress_fees: {
-      Bitcoin: { BTC: ingressFee },
-      Polkadot: { DOT: ingressFee },
-      Ethereum: { ETH: ingressFee, FLIP: ingressFee, USDC: ingressFee, USDT: ingressFee },
-      Arbitrum: { ETH: ingressFee, USDC: ingressFee },
-      Solana: { SOL: ingressFee, USDC: ingressFee },
-    },
-    egress_fees: {
-      Bitcoin: { BTC: egressFee },
-      Polkadot: { DOT: egressFee },
-      Ethereum: { ETH: egressFee, FLIP: egressFee, USDC: egressFee, USDT: egressFee },
-      Arbitrum: { ETH: egressFee, USDC: egressFee },
-      Solana: { SOL: egressFee, USDC: egressFee },
-    },
-    witness_safety_margins: {
+    minimum_deposit_amounts: createChainAssetMap(minDepositAmount),
+    ingress_fees: createChainAssetMap(ingressFee),
+    egress_fees: createChainAssetMap(egressFee),
+    witness_safety_margins: createChainMap(null, {
       Ethereum: 1,
-      Polkadot: null,
       Bitcoin: 2,
       Arbitrum: 1,
       Solana: 1,
-    },
-    egress_dust_limits: {
-      Ethereum: {
-        ETH: minEgressAmount,
-        USDC: minEgressAmount,
-        FLIP: minEgressAmount,
-        USDT: minEgressAmount,
-      },
-      Arbitrum: { ETH: minEgressAmount, USDC: minEgressAmount },
-      Solana: { SOL: minEgressAmount, USDC: minEgressAmount },
-      Polkadot: { DOT: minEgressAmount },
-      Bitcoin: { BTC: '0x258' },
-    },
-    channel_opening_fees: {
-      Bitcoin: channelOpeningFee ?? '0x0',
-      Ethereum: channelOpeningFee ?? '0x10',
-      Polkadot: channelOpeningFee ?? '0x0',
-      Arbitrum: channelOpeningFee ?? '0x0',
-      Solana: channelOpeningFee ?? '0x0',
-    },
-    max_swap_retry_duration_blocks: {
-      Ethereum: 10,
-      Polkadot: 20,
-      Bitcoin: 30,
-      Arbitrum: 40,
-      Solana: 50,
-    },
+    }),
+    egress_dust_limits: createChainAssetMap(minEgressAmount, { Btc: '0x258' }),
+    channel_opening_fees: createChainMap(channelOpeningFee ?? '0x0', {
+      Ethereum: '0x10',
+    }),
   },
 });
 
@@ -164,13 +144,7 @@ const poolsEnvironment = (): RpcResponse<CfPoolsEnvironmentResponse> => {
     id: 1,
     jsonrpc: '2.0',
     result: {
-      fees: {
-        Bitcoin: { BTC: fees },
-        Ethereum: { ETH: fees, FLIP: fees, USDT: fees },
-        Polkadot: { DOT: fees },
-        Arbitrum: { ETH: fees, USDC: fees },
-        Solana: { SOL: fees, USDC: fees },
-      },
+      fees: createChainAssetMap(fees),
     },
   };
 };
@@ -223,10 +197,7 @@ export const supportedAssets = ({
 } = {}): RpcResponse<CfSupportedAssetsResponse> => ({
   id: 1,
   jsonrpc: '2.0',
-  result: assets.map((asset) => ({
-    asset: assetConstants[asset].symbol,
-    chain: assetConstants[asset].chain,
-  })) as AssetAndChain[],
+  result: assets.map((asset) => internalAssetToRpcAsset[asset]),
 });
 
 interface BoostPool extends UncheckedAssetAndChain {
@@ -298,95 +269,45 @@ export const cfAccountInfo = () => ({
   jsonrpc: '2.0',
   result: {
     role: 'liquidity_provider',
-    balances: {
-      Ethereum: {
-        ETH: '0x3c32edbbd8c4c54',
-        FLIP: '0xa2ac1bc07ee724bc6',
-        USDC: '0x79db7c',
-        USDT: '0x7c0a99',
-      },
-      Polkadot: {
-        DOT: '0x0',
-      },
-      Bitcoin: {
-        BTC: '0x0',
-      },
-      Arbitrum: {
-        ETH: '0x0',
-        USDC: '0x14db3632',
-      },
-      Solana: {
-        SOL: '0x0',
-        USDC: '0x0',
-      },
-    },
-    refund_addresses: {
-      Polkadot: null,
+    balances: createChainAssetMap('0x0', {
+      Eth: '0x3c32edbbd8c4c54',
+      Flip: '0xa2ac1bc07ee724bc6',
+      Usdc: '0x79db7c',
+      Usdt: '0x7c0a99',
+      ArbUsdc: '0x14db3632',
+    }),
+    refund_addresses: createChainMap(null, {
       Arbitrum: '0x7a9fc530cbeef967d212337cc5d47edf701550cc',
       Ethereum: '0x7a9fc530cbeef967d212337cc5d47edf701550cc',
-      Solana: null,
       Bitcoin: 'bc1qstvpcgprgdh38q9xggwx4y04a537cr0p7qdz3g',
-    },
+    }),
     flip_balance: '0x8ac2b439ff488240',
-    earned_fees: {
-      Ethereum: {
-        ETH: '0x2703bfd2fe559',
-        FLIP: '0xe14bbc24d86251c',
-        USDC: '0x21082cc',
-        USDT: '0x14ed1f3',
-      },
-      Polkadot: {
-        DOT: '0x0',
-      },
-      Bitcoin: {
-        BTC: '0x9ed',
-      },
-      Arbitrum: {
-        ETH: '0x0',
-        USDC: '0x561984',
-      },
-      Solana: {
-        SOL: '0x0',
-        USDC: '0x0',
-      },
-    },
-    boost_balances: {
-      Ethereum: {
-        ETH: [],
-        FLIP: [],
-        USDC: [],
-        USDT: [],
-      },
-      Polkadot: {
-        DOT: [],
-      },
-      Bitcoin: {
-        BTC: [
-          {
-            fee_tier: 5,
-            total_balance: '0xf731c',
-            available_balance: '0xf731c',
-            in_use_balance: '0x0',
-            is_withdrawing: false,
-          },
-          {
-            fee_tier: 10,
-            total_balance: '0x2f371',
-            available_balance: '0x2f371',
-            in_use_balance: '0x0',
-            is_withdrawing: false,
-          },
-        ],
-      },
-      Arbitrum: {
-        ETH: [],
-        USDC: [],
-      },
-      Solana: {
-        SOL: [],
-        USDC: [],
-      },
-    },
+    earned_fees: createChainAssetMap('0x0', {
+      Eth: '0x2703bfd2fe559',
+      Flip: '0xe14bbc24d86251c',
+      Usdc: '0x21082cc',
+      Usdt: '0x14ed1f3',
+      Btc: '0x9ed',
+      ArbUsdc: '0x561984',
+    }),
+    boost_balances: createChainAssetMap([], {
+      Btc: [
+        {
+          fee_tier: 5,
+          total_balance: '0xf731c',
+          available_balance: '0xf731c',
+          in_use_balance: '0x0',
+          is_withdrawing: false,
+        },
+        {
+          fee_tier: 10,
+          total_balance: '0x2f371',
+          available_balance: '0x2f371',
+          in_use_balance: '0x0',
+          is_withdrawing: false,
+        },
+      ],
+    }),
   },
   id: 'some-id',
 });
