@@ -2489,6 +2489,10 @@ describe('server', () => {
       const { body: body2 } = await request(server).get(`/v2/swaps/${channelId}`);
 
       expect(body2.depositChannel.dcaParams).toMatchObject({
+        numberOfChunks: 10,
+        chunkIntervalBlocks: 3,
+      });
+      expect(body2.dcaParams).toMatchObject({
         numberOfChunks: 2,
         chunkIntervalBlocks: 3,
       });

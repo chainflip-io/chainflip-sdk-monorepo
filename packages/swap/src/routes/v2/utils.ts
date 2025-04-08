@@ -1,4 +1,5 @@
 import { cfChainsEvmTransaction } from '@chainflip/processor/141/common';
+import { AssetSymbol, ChainflipChain, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { isTruthy } from '@chainflip/utils/guard';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
 import { isNotNullish } from '@/shared/guards';
@@ -461,18 +462,13 @@ export const getFillOrKillParams = (
 };
 
 export const getDcaParams = (
-  swapRequest: SwapRequestData | null | undefined,
-  swapDepositChannel: SwapChannelData | null | undefined,
+  requestOrChannel: SwapRequestData | SwapChannelData | null | undefined,
   pendingVaultSwap?: PendingVaultSwapData | null | undefined,
 ) => {
   const numberOfChunks =
-    swapRequest?.dcaNumberOfChunks ??
-    swapDepositChannel?.dcaNumberOfChunks ??
-    pendingVaultSwap?.dcaParams?.numberOfChunks;
+    requestOrChannel?.dcaNumberOfChunks ?? pendingVaultSwap?.dcaParams?.numberOfChunks;
   const chunkIntervalBlocks =
-    swapRequest?.dcaChunkIntervalBlocks ??
-    swapDepositChannel?.dcaChunkIntervalBlocks ??
-    pendingVaultSwap?.dcaParams?.chunkInterval;
+    requestOrChannel?.dcaChunkIntervalBlocks ?? pendingVaultSwap?.dcaParams?.chunkInterval;
 
   return numberOfChunks && numberOfChunks > 1 ? { numberOfChunks, chunkIntervalBlocks } : undefined;
 };
@@ -500,6 +496,27 @@ export const getCcmParams = (
     : undefined;
 };
 
+type FeeAggregate = Map<
+  `${SwapFee['type']}-${SwapFee['asset']}`,
+  { asset: AssetSymbol; chain: ChainflipChain; type: SwapFee['type']; amount: Prisma.Decimal }
+>;
+
+export const rollupFees = (fees: SwapFee[], init: FeeAggregate) =>
+  fees.reduce<FeeAggregate>((acc, fee) => {
+    const key = `${fee.type}-${fee.asset}` as const;
+    let agg = acc.get(key);
+    if (!agg) {
+      agg = {
+        ...internalAssetToRpcAsset[fee.asset],
+        type: fee.type,
+        amount: new Prisma.Decimal(0),
+      };
+      acc.set(key, agg);
+    }
+    agg.amount = agg.amount.plus(fee.amount);
+    return acc;
+  }, init);
+
 export const getRolledSwapsInitialData = (swapRequest: SwapRequestData | undefined | null) => ({
   swappedOutputAmount: new Prisma.Decimal(0),
   swappedIntermediateAmount: new Prisma.Decimal(0),
@@ -508,5 +525,5 @@ export const getRolledSwapsInitialData = (swapRequest: SwapRequestData | undefin
   currentChunk: null as null | NonNullable<SwapRequestData['swaps']>[number],
   lastExecutedChunk: null as null | NonNullable<SwapRequestData['swaps']>[number],
   isDca: (swapRequest?.dcaNumberOfChunks ?? 1) > 1,
-  fees: [] as SwapFee[],
+  fees: new Map() as FeeAggregate,
 });

@@ -120,16 +120,19 @@ export class SwapSDK {
   }
 
   async getChains(sourceChain?: ChainflipChain): Promise<ChainData[]> {
-    if (sourceChain && !chainflipChains.includes(sourceChain))
+    if (sourceChain && !chainflipChains.includes(sourceChain)) {
       throw new Error(`unsupported source chain "${sourceChain}"`);
+    }
 
     const [env, supportedAssets] = await Promise.all([
       this.getStateChainEnvironment(),
       this.getSupportedAssets(),
     ]);
-    const supportedChains = [...new Set(supportedAssets.map((a) => assetConstants[a].chain))];
 
-    return supportedChains
+    const supportedChains = new Set(supportedAssets.map((a) => assetConstants[a].chain));
+    if (sourceChain && !supportedChains.has(sourceChain)) return [];
+
+    return [...supportedChains]
       .map((chain) => getChainData(chain, this.options.network, env))
       .filter((chain) => chain.chain !== sourceChain);
   }

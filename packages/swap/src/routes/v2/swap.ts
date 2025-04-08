@@ -12,8 +12,8 @@ import {
   getRolledSwapsInitialData,
   getSwapFields,
   getSwapState,
+  rollupFees,
 } from './utils';
-import { SwapFee } from '../../client';
 import { readField } from '../../utils/function';
 import { getLastChainTrackingUpdateTimestamp } from '../../utils/intercept';
 import logger from '../../utils/logger';
@@ -94,7 +94,7 @@ router.get(
           acc.swappedInputAmount = acc.swappedInputAmount.plus(curr.swapInputAmount);
           acc.lastExecutedChunk = curr;
           acc.executedChunks += 1;
-          acc.fees = acc.fees.concat(...curr.fees);
+          acc.fees = rollupFees(curr.fees, acc.fees);
         } else {
           acc.currentChunk = curr;
         }
@@ -104,24 +104,9 @@ router.get(
       rolledSwaps = getRolledSwapsInitialData(swapRequest);
       originalInputAmount = failedSwap.depositAmount;
     }
-    const aggregateFees = rolledSwaps?.fees
-      .reduce((acc, curr) => {
-        const { type, asset, amount } = curr;
-        const index = acc.findIndex((fee) => fee.type === type && fee.asset === asset);
-
-        if (index !== -1) {
-          acc[index].amount = acc[index].amount.plus(amount);
-        } else {
-          acc.push(curr);
-        }
-        return acc;
-      }, [] as SwapFee[])
-      .concat(swapRequest?.fees ?? [])
-      .map((fee) => ({
-        type: fee.type,
-        ...internalAssetToRpcAsset[fee.asset],
-        amount: fee.amount.toFixed(),
-      }));
+    const aggregateFees = rollupFees(swapRequest?.fees ?? [], rolledSwaps?.fees ?? new Map())
+      .values()
+      .toArray();
 
     const [
       swapEgressFields,
@@ -185,7 +170,7 @@ router.get(
                 ?.filter(({ type }) => type === 'AFFILIATE')
                 .map(({ account, commissionBps }) => ({ account, commissionBps })) ?? [],
             fillOrKillParams: getFillOrKillParams(swapRequest, swapDepositChannel),
-            dcaParams: getDcaParams(swapRequest, swapDepositChannel),
+            dcaParams: getDcaParams(swapDepositChannel),
           },
         }),
       ...getDepositInfo(swapRequest, failedSwap, pendingDeposit, pendingVaultSwap),
@@ -222,7 +207,7 @@ router.get(
       ...(refundEgressFields && { refundEgress: { ...refundEgressFields } }),
       ccmParams: getCcmParams(swapRequest, swapDepositChannel, pendingVaultSwap),
       fillOrKillParams: getFillOrKillParams(swapRequest, swapDepositChannel, pendingVaultSwap),
-      dcaParams: getDcaParams(swapRequest, swapDepositChannel, pendingVaultSwap),
+      dcaParams: getDcaParams(swapRequest, pendingVaultSwap),
       ...(showBoost && {
         boost: {
           effectiveBoostFeeBps,
