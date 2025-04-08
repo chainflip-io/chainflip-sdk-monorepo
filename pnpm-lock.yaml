@@ -94,8 +94,8 @@ importers:
         specifier: ^2.1.7
         version: 2.1.7(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.8.3
-        version: 0.8.3
+        specifier: ^0.8.4
+        version: 0.8.4
       axios:
         specifier: ^1.7.7
         version: 1.7.9
@@ -167,8 +167,8 @@ importers:
         specifier: ^2.1.7
         version: 2.1.7(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.8.3
-        version: 0.8.3
+        specifier: ^0.8.4
+        version: 0.8.4
       '@trpc/client':
         specifier: ^10.45.2
         version: 10.45.2(@trpc/server@10.45.2)
@@ -207,8 +207,8 @@ importers:
         specifier: ^2.1.7
         version: 2.1.7(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.8.3
-        version: 0.8.3
+        specifier: ^0.8.4
+        version: 0.8.4
       axios:
         specifier: ^1.7.7
         version: 1.7.9
@@ -268,8 +268,8 @@ importers:
         specifier: ^2.1.7
         version: 2.1.7(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.8.3
-        version: 0.8.3
+        specifier: ^0.8.4
+        version: 0.8.4
       '@polkadot/api':
         specifier: ^15.5.2
         version: 15.6.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -508,6 +508,9 @@ packages:
 
   '@chainflip/utils@0.8.3':
     resolution: {integrity: sha512-MGj22hZ6IIBe5sUYnsLcnvNgPSyOR4PjzWRlyBPDXbtkNwW52NPSMmGo1LfoXbH3GB2BClFOTX3qU3kXN8e9Nw==}
+
+  '@chainflip/utils@0.8.4':
+    resolution: {integrity: sha512-XRYcVh0Bu4uIWEMWdBDsJek5C6rd64U7EFT2X4zeE2MP8WWOTZHQgaqWAQflXRjbPAltoeT1WjW59D+IM9ea5w==}
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -5801,7 +5804,13 @@ snapshots:
   '@chainflip/utils@0.8.3':
     dependencies:
       '@date-fns/utc': 2.1.0
-      bignumber.js: 9.1.2
+      bignumber.js: 9.2.0
+      date-fns: 4.1.0
+
+  '@chainflip/utils@0.8.4':
+    dependencies:
+      '@date-fns/utc': 2.1.0
+      bignumber.js: 9.2.0
       date-fns: 4.1.0
 
   '@colors/colors@1.6.0': {}

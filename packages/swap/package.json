@@ -60,7 +60,7 @@
     "@chainflip/redis": "^1.0.0",
     "@chainflip/rpc": "^1.9.3",
     "@chainflip/solana": "^2.1.7",
-    "@chainflip/utils": "^0.8.3",
+    "@chainflip/utils": "^0.8.4",
     "@polkadot/api": "^15.5.2",
     "@polkadot/types": "^11.0.2",
     "@prisma/client": "^6.3.1",
