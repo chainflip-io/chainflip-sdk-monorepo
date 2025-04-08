@@ -124,13 +124,6 @@ export const ingressEgressEnvironment = ({
       Arbitrum: channelOpeningFee ?? '0x0',
       Solana: channelOpeningFee ?? '0x0',
     },
-    max_swap_retry_duration_blocks: {
-      Ethereum: 10,
-      Polkadot: 20,
-      Bitcoin: 30,
-      Arbitrum: 40,
-      Solana: 50,
-    },
   },
 });
 
