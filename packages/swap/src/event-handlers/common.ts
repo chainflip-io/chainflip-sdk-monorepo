@@ -3,6 +3,7 @@ import { bitcoinIngressEgressDepositFinalised } from '@chainflip/processor/180/b
 import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/180/ethereumIngressEgress/depositFinalised';
 import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/180/polkadotIngressEgress/depositFinalised';
 import { assethubIngressEgressDepositFinalised } from '@chainflip/processor/190/assethubIngressEgress/depositFinalised';
+import { assertUndefined } from '@chainflip/utils/assertion';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 // @ts-expect-error should still work
 import { Metadata, TypeRegistry } from '@polkadot/types';
@@ -117,7 +118,7 @@ export const getDepositTxRef = (
       });
 
     case 'Solana':
-      assert(depositDetails == null);
+      assertUndefined(depositDetails.data, 'Solana deposit details should be undefined');
       return undefined;
     default:
       return assertUnreachable(depositDetails);
