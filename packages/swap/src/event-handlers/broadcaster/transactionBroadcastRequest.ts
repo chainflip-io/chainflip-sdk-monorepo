@@ -2,7 +2,7 @@ import { ethereumBroadcasterTransactionBroadcastRequest } from '@chainflip/proce
 import { polkadotBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/120/polkadotBroadcaster/transactionBroadcastRequest';
 import { bitcoinBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/131/bitcoinBroadcaster/transactionBroadcastRequest';
 import { arbitrumBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/141/arbitrumBroadcaster/transactionBroadcastRequest';
-import { solanaBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/160/solanaBroadcaster/transactionBroadcastRequest';
+import { solanaBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/180/solanaBroadcaster/transactionBroadcastRequest';
 import { assethubBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/190/assethubBroadcaster/transactionBroadcastRequest';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
