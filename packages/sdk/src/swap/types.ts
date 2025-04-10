@@ -19,6 +19,7 @@ export interface ChainData {
   evmChainId: number | undefined;
   isMainnet: boolean;
   requiredBlockConfirmations: number | undefined;
+  /** @deprecated DEPRECATED(1.9): this value has been moved to SwapSDK.getSwapLimits */
   maxRetryDurationBlocks: number | undefined;
 }
 

@@ -8,8 +8,6 @@ import authenticate from './quoting/authenticate';
 import Quoter from './quoting/Quoter';
 import addresses from './routes/addresses';
 import { handleError, maintenanceMode, quoteMiddleware } from './routes/common';
-import quoteRouter from './routes/quote';
-import swap from './routes/swap';
 import thirdPartySwap from './routes/thirdPartySwap';
 import quoteRouterV2 from './routes/v2/quote';
 import swapV2 from './routes/v2/swap';
@@ -42,7 +40,6 @@ app.use((req, res, next) => {
   logStorage.run(info.reqId, next);
 });
 
-app.use('/swaps', lastUpdateHeader, express.json(), swap);
 app.use('/v2/swaps', lastUpdateHeader, express.json(), swapV2);
 app.use('/third-party-swap', maintenanceMode, express.json(), thirdPartySwap);
 
@@ -50,7 +47,6 @@ app.get('/healthcheck', (req, res) => {
   res.status(200).send('OK');
 });
 
-app.use('/quote', quoteMiddleware, quoteRouter(quoter));
 app.use('/v2/quote', quoteMiddleware, quoteRouterV2(quoter));
 
 app.use('/trpc', maintenanceMode, trpcExpress.createExpressMiddleware({ router: appRouter }));

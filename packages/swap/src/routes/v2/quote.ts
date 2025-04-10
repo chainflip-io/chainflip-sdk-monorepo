@@ -1,4 +1,4 @@
-import { assetConstants, AssetSymbol, ChainflipAsset } from '@chainflip/utils/chainflip';
+import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import express from 'express';
 import { Query } from 'express-serve-static-core';
@@ -18,7 +18,6 @@ import { getIngressFee, validateSwapAmount } from '../../utils/rpc';
 import ServiceError from '../../utils/ServiceError';
 import { QuoteCcmParams } from '../../utils/statechain';
 import { asyncHandler, handleQuotingError } from '../common';
-import { fallbackChains } from '../quote';
 
 const MAX_DCA_DURATION_SECONDS = 24 * 60 * 60;
 export const MAX_NUMBER_OF_CHUNKS = Math.ceil(
@@ -61,12 +60,6 @@ export const getDcaQuoteParams = async (asset: ChainflipAsset, amount: bigint) =
 };
 
 export const validateQuoteQuery = async (query: Query) => {
-  // this api did not require the srcChain and destChain param initially
-  // to keep it compatible with clients that do not include these params, we fall back to set them based on the asset
-  // eslint-disable-next-line no-param-reassign
-  query.srcChain ??= fallbackChains[query.srcAsset as AssetSymbol];
-  // eslint-disable-next-line no-param-reassign
-  query.destChain ??= fallbackChains[query.destAsset as AssetSymbol];
   const queryResult = quoteQuerySchema.safeParse(query);
 
   if (!queryResult.success) {
