@@ -235,8 +235,6 @@ describe(depositFinalised, () => {
   });
 
   it('extracts deposit details for Solana', async () => {
-    console.log(await prisma.swapRequest.findMany());
-
     const request = await prisma.swapRequest.create({
       data: {
         nativeId: 57034,
