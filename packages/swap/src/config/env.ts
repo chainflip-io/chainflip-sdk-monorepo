@@ -1,6 +1,11 @@
+import { ChainflipAsset, chainflipAssets } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { InternalAssets } from '@/shared/enums';
 import { chainflipNetwork } from '@/shared/parsers';
+
+export type InternalAssetMap<T> = {
+  [A in ChainflipAsset]: T;
+};
 
 const envVar = z.string().trim();
 
@@ -37,6 +42,24 @@ const internalAssetCsv = (name: string) =>
     }),
   );
 
+const internalAssetMap = <Z extends z.ZodTypeAny>(
+  name: string,
+  defaultValue: Partial<InternalAssetMap<z.output<Z>>>,
+  valueSchema: Z,
+) =>
+  optionalString(JSON.stringify(defaultValue)).transform((string) => {
+    try {
+      return z.record(z.enum(chainflipAssets), valueSchema).parse(JSON.parse(string));
+    } catch (err) {
+      const error = err as Error;
+      // eslint-disable-next-line no-console
+      console.warn({
+        message: `Could not parse ${name} variable. error: "${error?.message}"`,
+      });
+      return {};
+    }
+  });
+
 export default z
   .object({
     RPC_NODE_HTTP_URL: httpUrl,
@@ -58,30 +81,13 @@ export default z
     LIQUIDITY_WARNING_THRESHOLD: optionalNumber(-5),
     COINGECKO_API_KEY: z.string().optional(),
     DCA_DEFAULT_CHUNK_SIZE_USD: optionalNumber(3000),
-    DCA_CHUNK_SIZE_USD: optionalString('{}').transform((string) => {
-      try {
-        return z.record(z.nativeEnum(InternalAssets), z.number()).parse(JSON.parse(string));
-      } catch (err) {
-        const error = err as Error;
-        // eslint-disable-next-line no-console
-        console.warn({
-          message: `Could not parse DCA_USD_CHUNK_SIZE variable. error: "${error?.message}"`,
-        });
-        return undefined;
-      }
-    }),
-    DCA_CHUNK_PRICE_IMPACT_PERCENT: optionalString('{ "Flip": 0.25 }').transform((string) => {
-      try {
-        return z.record(z.nativeEnum(InternalAssets), z.number()).parse(JSON.parse(string));
-      } catch (err) {
-        const error = err as Error;
-        // eslint-disable-next-line no-console
-        console.warn({
-          message: `Could not parse DCA_CHUNK_PRICE_IMPACT_PERCENT variable. error: "${error?.message}"`,
-        });
-        return undefined;
-      }
-    }),
+    DCA_CHUNK_SIZE_USD: internalAssetMap('DCA_CHUNK_SIZE_USD', {}, z.number()),
+    DCA_CHUNK_PRICE_IMPACT_PERCENT: internalAssetMap(
+      'DCA_CHUNK_PRICE_IMPACT_PERCENT',
+      { Flip: 0.25 },
+      z.number(),
+    ),
+    QUOTING_BASE_SLIPPAGE: internalAssetMap('QUOTING_BASE_SLIPPAGE', {}, z.number()),
     DCA_CHUNK_INTERVAL_BLOCKS: optionalNumber(2),
     FULLY_DISABLED_INTERNAL_ASSETS: internalAssetCsv('FULLY_DISABLED_INTERNAL_ASSETS'),
     DISABLED_DEPOSIT_INTERNAL_ASSETS: internalAssetCsv('DISABLED_DEPOSIT_INTERNAL_ASSETS'),
