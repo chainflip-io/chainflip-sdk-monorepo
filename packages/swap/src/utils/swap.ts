@@ -98,6 +98,8 @@ export const failedSwapMessage: Record<FailedSwapReason, string> = {
   InvalidBrokerFees: 'The broker fees were improperly formatted',
   InvalidDcaParameters: 'The DCA parameters were improperly formatted',
   InvalidRefundParameters: 'The refund parameters were improperly formatted',
+  CcmInvalidMetadata: 'The provided metadata could not be decoded',
+  CcmUnsupportedForTargetChain: 'The destination chain does not support CCM',
 };
 
 export enum FailureMode {

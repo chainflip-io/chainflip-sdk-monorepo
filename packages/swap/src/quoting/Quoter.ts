@@ -246,6 +246,7 @@ export default class Quoter {
     leg: MarketMakerQuoteRequest<LegJson>['legs'][number] | undefined,
     balances: Map<AccountId, InternalAssetMap<bigint>>,
     requestId: string,
+    // @ts-expect-error -- not sure why it triggers
   ): IteratorObject<RpcLimitOrder> {
     if (!leg) return;
 

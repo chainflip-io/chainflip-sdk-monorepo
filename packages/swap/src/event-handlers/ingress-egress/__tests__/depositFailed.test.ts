@@ -161,6 +161,7 @@ describe(networkDepositFailed, () => {
         "failedBlockIndex": "100-0",
         "reason": "BelowMinimumDeposit",
         "refundBroadcastId": null,
+        "refundEgressId": null,
         "srcAsset": "Eth",
         "srcChain": "Ethereum",
       }
@@ -200,6 +201,7 @@ describe(networkDepositFailed, () => {
         "failedBlockIndex": "100-0",
         "reason": "BelowMinimumDeposit",
         "refundBroadcastId": null,
+        "refundEgressId": null,
         "srcAsset": "Eth",
         "srcChain": "Polkadot",
       }
@@ -239,6 +241,7 @@ describe(networkDepositFailed, () => {
         "failedBlockIndex": "100-0",
         "reason": "BelowMinimumDeposit",
         "refundBroadcastId": null,
+        "refundEgressId": null,
         "srcAsset": "Eth",
         "srcChain": "Bitcoin",
       }
@@ -279,6 +282,7 @@ describe(networkDepositFailed, () => {
         "failedBlockIndex": "100-0",
         "reason": "BelowMinimumDeposit",
         "refundBroadcastId": null,
+        "refundEgressId": null,
         "srcAsset": "Sol",
         "srcChain": "Solana",
       }
@@ -322,6 +326,7 @@ describe(networkDepositFailed, () => {
         "failedBlockIndex": "100-0",
         "reason": "BelowMinimumDeposit",
         "refundBroadcastId": null,
+        "refundEgressId": null,
         "srcAsset": "Sol",
         "srcChain": "Solana",
         "swapDepositChannelId": null,
