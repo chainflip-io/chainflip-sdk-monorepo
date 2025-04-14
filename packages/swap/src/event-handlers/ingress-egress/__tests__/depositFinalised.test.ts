@@ -325,7 +325,8 @@ describe(depositFinalised, () => {
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),
         },
-      }, `
+      },
+      `
       {
         "ccmAdditionalData": null,
         "ccmGasBudget": null,
@@ -366,6 +367,7 @@ describe(depositFinalised, () => {
         "srcChain": "Solana",
         "swapDepositChannelId": null,
       }
-    `);
+    `,
+    );
   });
 });
