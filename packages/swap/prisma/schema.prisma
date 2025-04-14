@@ -275,6 +275,8 @@ enum FailedSwapReason {
   InvalidBrokerFees
   InvalidDcaParameters
   InvalidRefundParameters
+  CcmUnsupportedForTargetChain
+  CcmInvalidMetadata
 
   @@schema("public")
 }
@@ -282,8 +284,8 @@ enum FailedSwapReason {
 model FailedSwap {
   id                    Int                  @id @default(autoincrement())
   reason                FailedSwapReason
-  destAddress           String
-  destChain             Chain
+  destAddress           String?
+  destChain             Chain?
   destAsset             InternalAsset?
   depositAmount         Decimal              @db.Decimal(30, 0)
   srcChain              Chain
@@ -298,6 +300,8 @@ model FailedSwap {
   ccmAdditionalData     String?
   refundBroadcast       Broadcast?           @relation(fields: [refundBroadcastId], references: [id])
   refundBroadcastId     BigInt?
+  refundEgress          Egress?              @relation(fields: [refundEgressId], references: [id])
+  refundEgressId        BigInt?
   solanaPendingTxRef    SolanaPendingTxRef[]
 
   @@index([swapDepositChannelId])
@@ -354,6 +358,7 @@ model Egress {
   updatedAt            DateTime      @default(now()) @updatedAt
   swapRequests         SwapRequest[] @relation("egress")
   refundedSwapRequests SwapRequest[] @relation("refundEgress")
+  failedSwaps          FailedSwap[]
 
   @@unique([nativeId, chain])
   @@schema("public")
