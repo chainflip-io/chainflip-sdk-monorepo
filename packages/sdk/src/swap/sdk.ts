@@ -74,7 +74,7 @@ const assertQuoteValid = (quote: Quote | BoostQuote) => {
   }
 };
 
-export type NetworkStatus = inferRouterOutputs<AppRouter>['networkStatus'];
+type NetworkStatus = inferRouterOutputs<AppRouter>['networkStatus'];
 
 export class SwapSDK {
   private readonly options: Required<SwapSDKOptions, 'network' | 'backendUrl'>;
