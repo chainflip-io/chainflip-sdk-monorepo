@@ -10,7 +10,6 @@ import { assertUnreachable } from '@/shared/functions';
 import { assertNever } from '@/shared/guards';
 import { pascalCaseToScreamingSnakeCase } from '@/shared/strings';
 import { Prisma } from '../../client';
-import { isAssetHub } from '../../utils/asset';
 import type { EventHandlerArgs } from '../index';
 
 const transformSchema = (args: z.output<typeof schema180>): z.output<typeof schema190> => ({
@@ -221,9 +220,6 @@ export default async function swapRequested({
     refundParameters,
     brokerFees,
   } = schema.parse(event.args);
-
-  // TODO(assethub): handle it
-  if (isAssetHub(inputAsset) || isAssetHub(outputAsset)) return;
 
   const originInfo = await getOriginInfo(prisma, inputAsset, origin);
 
