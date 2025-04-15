@@ -14,6 +14,7 @@ exports[`transactionRejectedByBroker > adds a broadcast to a failed swap 1`] = `
     "failedAt": 2023-04-01T08:18:19.000Z,
     "failedBlockIndex": "419-1",
     "reason": "TransactionRejectedByBroker",
+    "refundEgressId": null,
     "srcAsset": "Btc",
     "srcChain": "Bitcoin",
     "swapDepositChannelId": null,

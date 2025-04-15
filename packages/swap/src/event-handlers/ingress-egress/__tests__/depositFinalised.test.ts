@@ -275,4 +275,99 @@ describe(depositFinalised, () => {
       }),
     ).resolves.not.toThrow();
   });
+
+  it('handles vault swap refunds', async () => {
+    await depositFinalised('Solana')({
+      prisma,
+      block: {
+        height: 10,
+        specId: 'test@190',
+        timestamp: '2024-08-06T00:00:06.000Z',
+        hash: '0x123',
+      },
+      event: {
+        name: 'SolanaIngressEgress.DepositFinalised',
+        args: check<DepositFinalisedArgsMap['Solana']>({
+          action: {
+            __kind: 'Refund',
+            amount: '99999999',
+            reason: { __kind: 'CcmInvalidMetadata' },
+            egressId: [{ __kind: 'Solana' }, 1],
+          },
+          amount: '100000000',
+          asset: { __kind: 'Sol' },
+          blockHeight: '128',
+          ingressFee: '0',
+          maxBoostFeeBps: 0,
+          originType: { __kind: 'Vault' },
+          depositAddress: '0x8275ca5db8b35bfe42ce5a53a27bf794d99cc0f33dfb97a96cb6f88e9b2a536a',
+        }),
+        indexInBlock: 7,
+      },
+    });
+
+    const fs = await prisma.failedSwap.findFirstOrThrow({
+      include: { refundEgress: true, solanaPendingTxRef: true },
+    });
+
+    expect(fs).toMatchInlineSnapshot(
+      {
+        id: expect.any(Number),
+        refundEgressId: expect.any(BigInt),
+        solanaPendingTxRef: [
+          {
+            id: expect.any(Number),
+            failedVaultSwapId: expect.any(Number),
+          },
+        ],
+        refundEgress: {
+          id: expect.any(BigInt),
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+        },
+      },
+      `
+      {
+        "ccmAdditionalData": null,
+        "ccmGasBudget": null,
+        "ccmMessage": null,
+        "depositAmount": "100000000",
+        "depositTransactionRef": null,
+        "destAddress": null,
+        "destAsset": null,
+        "destChain": null,
+        "failedAt": 2024-08-06T00:00:06.000Z,
+        "failedBlockIndex": "10-7",
+        "id": Any<Number>,
+        "reason": "CcmInvalidMetadata",
+        "refundBroadcastId": null,
+        "refundEgress": {
+          "amount": "99999999",
+          "broadcastId": null,
+          "chain": "Solana",
+          "createdAt": Any<Date>,
+          "id": Any<BigInt>,
+          "nativeId": 1n,
+          "scheduledAt": 2024-08-06T00:00:06.000Z,
+          "scheduledBlockIndex": "10-7",
+          "updatedAt": Any<Date>,
+        },
+        "refundEgressId": Any<BigInt>,
+        "solanaPendingTxRef": [
+          {
+            "address": "9nGBAS5eSSYLak3QgsmPTEsJtpquXdCCXrSGU5ffMC1X",
+            "failedVaultSwapId": Any<Number>,
+            "id": Any<Number>,
+            "slot": 128n,
+            "swapDepositChannelId": null,
+            "vaultSwapRequestId": null,
+          },
+        ],
+        "srcAsset": "Sol",
+        "srcChain": "Solana",
+        "swapDepositChannelId": null,
+      }
+    `,
+    );
+  });
 });
