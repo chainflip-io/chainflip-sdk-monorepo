@@ -14,6 +14,7 @@ import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import type { inferRouterOutputs } from '@trpc/server';
 import superjson from 'superjson';
 import { requestSwapDepositAddress, requestSwapParameterEncoding } from '@/shared/broker';
+import { Cache } from '@/shared/dataStructures';
 import { parseFoKParams } from '@/shared/functions';
 import { assert } from '@/shared/guards';
 import {
@@ -28,7 +29,6 @@ import { BoostQuote, Quote } from '@/shared/schemas';
 import { Required } from '@/shared/types';
 import type { AppRouter } from '@/swap/trpc';
 import { getAssetData } from './assets';
-import Cache from './Cache';
 import { getChainData } from './chains';
 import { BACKEND_SERVICE_URLS, CF_SDK_VERSION_HEADERS } from './consts';
 import * as ApiService from './services/ApiService';
@@ -74,7 +74,7 @@ const assertQuoteValid = (quote: Quote | BoostQuote) => {
   }
 };
 
-export type SupportedAssets = inferRouterOutputs<AppRouter>['supportedAssets'];
+export type NetworkStatus = inferRouterOutputs<AppRouter>['networkStatus'];
 
 export class SwapSDK {
   private readonly options: Required<SwapSDKOptions, 'network' | 'backendUrl'>;
@@ -110,8 +110,8 @@ export class SwapSDK {
         fetch: () => getEnvironment(this.rpcConfig),
         ttl: 60_000,
       },
-      supportedAssets: {
-        fetch: () => this.trpc.supportedAssets.query(),
+      networkStatus: {
+        fetch: () => this.trpc.networkStatus.query(),
         ttl: 60_000,
       },
     });
@@ -119,7 +119,7 @@ export class SwapSDK {
 
   async getChains(
     sourceChain?: ChainflipChain,
-    type: keyof SupportedAssets = 'all',
+    type: keyof NetworkStatus['assets'] = 'all',
   ): Promise<ChainData[]> {
     if (sourceChain && !chainflipChains.includes(sourceChain)) {
       throw new Error(`unsupported source chain "${sourceChain}"`);
@@ -142,10 +142,10 @@ export class SwapSDK {
     return this.cache.read('environment');
   }
 
-  private async getSupportedAssets(type: keyof SupportedAssets): Promise<ChainflipAsset[]> {
-    const assets = await this.cache.read('supportedAssets');
+  private async getSupportedAssets(type: keyof NetworkStatus['assets']): Promise<ChainflipAsset[]> {
+    const assets = await this.cache.read('networkStatus');
 
-    return assets[type];
+    return assets.assets[type];
   }
 
   private async getBoostPoolsDepth(): Promise<BoostPoolsDepth> {
@@ -154,7 +154,7 @@ export class SwapSDK {
 
   async getAssets(
     chain?: ChainflipChain,
-    type: keyof SupportedAssets = 'all',
+    type: keyof NetworkStatus['assets'] = 'all',
   ): Promise<AssetData[]> {
     if (chain && !chainflipChains.includes(chain)) throw new Error(`unsupported chain "${chain}"`);
 
@@ -407,5 +407,10 @@ export class SwapSDK {
     );
 
     return this.trpc.encodeVaultSwapData.mutate(vaultSwapRequest);
+  }
+
+  async checkBoostEnabled(): Promise<boolean> {
+    const { boostDepositsEnabled } = await this.cache.read('networkStatus');
+    return boostDepositsEnabled;
   }
 }

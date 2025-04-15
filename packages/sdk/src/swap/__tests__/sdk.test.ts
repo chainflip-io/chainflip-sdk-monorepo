@@ -23,12 +23,15 @@ vi.mock('@trpc/client', async (importOriginal) => {
       encodeVaultSwapData: {
         mutate: vi.fn(),
       },
-      supportedAssets: {
+      networkStatus: {
         query: vi.fn(() =>
           Promise.resolve({
-            all: chainflipAssets,
-            deposit: chainflipAssets,
-            destination: chainflipAssets,
+            assets: {
+              all: chainflipAssets,
+              deposit: chainflipAssets,
+              destination: chainflipAssets,
+            },
+            boostDepositsEnabled: true,
           }),
         ),
       },
@@ -38,12 +41,15 @@ vi.mock('@trpc/client', async (importOriginal) => {
 
 global.fetch = vi.fn();
 
-const mockAssets = () => {
+const mockNetworkStatus = (boostDepositsEnabled = true) => {
   const sdk = new SwapSDK({ network: 'sisyphos' });
-  vi.mocked(sdk['trpc'].supportedAssets.query).mockResolvedValueOnce({
-    all: ['Eth', 'Btc', 'Flip', 'Usdc', 'Sol', 'SolUsdc'],
-    deposit: ['Eth', 'Flip', 'Usdc', 'Sol', 'SolUsdc'],
-    destination: ['Eth', 'Btc', 'Flip', 'Usdc'],
+  vi.mocked(sdk['trpc'].networkStatus.query).mockResolvedValueOnce({
+    assets: {
+      all: ['Eth', 'Btc', 'Flip', 'Usdc', 'Sol', 'SolUsdc'],
+      deposit: ['Eth', 'Flip', 'Usdc', 'Sol', 'SolUsdc'],
+      destination: ['Eth', 'Btc', 'Flip', 'Usdc'],
+    },
+    boostDepositsEnabled,
   });
   return sdk;
 };
@@ -75,27 +81,27 @@ describe(SwapSDK, () => {
 
   describe(SwapSDK.prototype.getChains, () => {
     it('returns the chains based on the supportedAsset tRPC endpoint', async () => {
-      sdk = mockAssets();
+      sdk = mockNetworkStatus();
       expect(await sdk.getChains()).toMatchSnapshot();
     });
 
     it('returns the deposit chains based on the supportedAsset tRPC endpoint', async () => {
-      sdk = mockAssets();
+      sdk = mockNetworkStatus();
       expect(await sdk.getChains(undefined, 'deposit')).toMatchSnapshot();
     });
 
     it('returns the destination chains based on the supportedAsset tRPC endpoint', async () => {
-      sdk = mockAssets();
+      sdk = mockNetworkStatus();
       expect(await sdk.getChains(undefined, 'destination')).toMatchSnapshot();
     });
 
     it('returns all filtered destination chains for the chain', async () => {
-      sdk = mockAssets();
+      sdk = mockNetworkStatus();
       expect(await sdk.getChains('Ethereum', 'all')).toMatchSnapshot();
     });
 
     it('returns filtered destination destination chains for the chain', async () => {
-      sdk = mockAssets();
+      sdk = mockNetworkStatus();
       expect(await sdk.getChains('Ethereum', 'destination')).toMatchSnapshot();
     });
 
@@ -121,38 +127,38 @@ describe(SwapSDK, () => {
   });
 
   describe(SwapSDK.prototype.getAssets, () => {
-    it('returns the assets based on the supportedAssets tRPC method', async () => {
-      sdk = mockAssets();
+    it('returns the assets based on the networkStatus tRPC method', async () => {
+      sdk = mockNetworkStatus();
       expect(await sdk.getAssets()).toMatchSnapshot();
     });
 
-    it('returns the deposit assets based on the supportedAssets tRPC method', async () => {
-      sdk = mockAssets();
+    it('returns the deposit assets based on the networkStatus tRPC method', async () => {
+      sdk = mockNetworkStatus();
       expect(await sdk.getAssets(undefined, 'deposit')).toMatchSnapshot();
     });
 
-    it('returns the destination assets based on the supportedAssets tRPC method', async () => {
-      sdk = mockAssets();
+    it('returns the destination assets based on the networkStatus tRPC method', async () => {
+      sdk = mockNetworkStatus();
       expect(await sdk.getAssets(undefined, 'destination')).toMatchSnapshot();
     });
 
     it('returns the filtered assets for the chain', async () => {
-      sdk = mockAssets();
+      sdk = mockNetworkStatus();
       expect(await sdk.getAssets('Bitcoin')).toMatchSnapshot();
     });
 
     it('returns the filtered deposit assets for the chain', async () => {
-      sdk = mockAssets();
+      sdk = mockNetworkStatus();
       expect(await sdk.getAssets('Bitcoin', 'deposit')).toEqual([]);
     });
 
     it('returns the filtered destination assets for the chain', async () => {
-      sdk = mockAssets();
+      sdk = mockNetworkStatus();
       expect(await sdk.getAssets('Bitcoin', 'destination')).toMatchSnapshot();
     });
 
     it('returns empty array if no assets are available', async () => {
-      sdk = mockAssets();
+      sdk = mockNetworkStatus();
       expect(await sdk.getAssets('Solana', 'destination')).toEqual([]);
     });
 
@@ -1891,6 +1897,18 @@ describe(SwapSDK, () => {
   describe(SwapSDK.prototype.getSwapLimits, () => {
     it('returns the swap limits based on the environment rpc', async () => {
       expect(await sdk.getSwapLimits()).toMatchSnapshot();
+    });
+  });
+
+  describe(SwapSDK.prototype.checkBoostEnabled, () => {
+    it('returns that boost is enabled', async () => {
+      sdk = mockNetworkStatus();
+      expect(await sdk.checkBoostEnabled()).toBe(true);
+    });
+
+    it('returns that boost is disabled', async () => {
+      sdk = mockNetworkStatus(false);
+      expect(await sdk.checkBoostEnabled()).toBe(false);
     });
   });
 });

@@ -1,11 +1,11 @@
 import { initTRPC } from '@trpc/server';
 import superjson from 'superjson';
 import { encodeVaultSwapData, encodeVaultSwapDataSchema } from './handlers/encodeVaultSwapData';
+import networkStatus from './handlers/networkStatus';
 import {
   openSwapDepositChannel,
   openSwapDepositChannelSchema,
 } from './handlers/openSwapDepositChannel';
-import supportedAssets from './handlers/supportedAssets';
 
 /**
  * Initialization of tRPC backend
@@ -26,7 +26,7 @@ export const appRouter = router({
   encodeVaultSwapData: publicProcedure
     .input(encodeVaultSwapDataSchema)
     .mutation((v) => encodeVaultSwapData(v.input)),
-  supportedAssets: publicProcedure.query(supportedAssets),
+  networkStatus: publicProcedure.query(networkStatus),
 });
 
 export type AppRouter = typeof appRouter;

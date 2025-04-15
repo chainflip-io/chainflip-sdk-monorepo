@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`SwapSDK > getAssets > returns the assets based on the supportedAssets tRPC method 1`] = `
+exports[`SwapSDK > getAssets > returns the assets based on the networkStatus tRPC method 1`] = `
 [
   {
     "asset": "ETH",
@@ -779,7 +779,7 @@ exports[`SwapSDK > getAssets > returns the correct values for sisyphos 1`] = `
 ]
 `;
 
-exports[`SwapSDK > getAssets > returns the deposit assets based on the supportedAssets tRPC method 1`] = `
+exports[`SwapSDK > getAssets > returns the deposit assets based on the networkStatus tRPC method 1`] = `
 [
   {
     "asset": "ETH",
@@ -849,7 +849,7 @@ exports[`SwapSDK > getAssets > returns the deposit assets based on the supported
 ]
 `;
 
-exports[`SwapSDK > getAssets > returns the destination assets based on the supportedAssets tRPC method 1`] = `
+exports[`SwapSDK > getAssets > returns the destination assets based on the networkStatus tRPC method 1`] = `
 [
   {
     "asset": "ETH",
