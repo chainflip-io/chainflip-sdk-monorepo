@@ -17,6 +17,8 @@ which it is deprecated.
 - `SwapSDK.prototype.getChains` now accepts a second optional parameter to
   to retrieve `all` chains, `deposit` chains, or `destination` chains
   respectively.
+- `SwapSDK.prototype.checkBoostEnabled` has been added. It returns a `boolean`
+  that says whether or not boosting deposits is enabled.
 
 ### Removed
 
