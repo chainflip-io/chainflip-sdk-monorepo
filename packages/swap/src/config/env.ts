@@ -31,16 +31,19 @@ const optionalString = (defaultValue: string) => envVar.default(defaultValue);
 const nodeEnv = z.enum(['development', 'production', 'test']);
 
 const internalAssetCsv = (name: string) =>
-  optionalString('').transform((string) =>
-    string.split(',').map((asset) => {
-      if (asset && !chainflipAssets.includes(asset as ChainflipAsset)) {
-        // eslint-disable-next-line no-console
-        console.warn({
-          message: `unexpected value in ${name} variable: "${asset}"`,
-        });
-      }
-      return asset;
-    }),
+  optionalString('').transform(
+    (string) =>
+      new Set(
+        string.split(',').filter((asset): asset is ChainflipAsset => {
+          if (!asset) return false;
+          const isValid = chainflipAssets.includes(asset as ChainflipAsset);
+          if (!isValid) {
+            // eslint-disable-next-line no-console -- prevents a circular dependency
+            console.warn({ message: `unexpected value in ${name} variable: "${asset}"` });
+          }
+          return isValid;
+        }),
+      ),
   );
 
 const internalAssetMap = <Z extends z.ZodTypeAny>(

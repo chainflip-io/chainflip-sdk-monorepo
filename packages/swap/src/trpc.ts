@@ -5,6 +5,7 @@ import {
   openSwapDepositChannel,
   openSwapDepositChannelSchema,
 } from './handlers/openSwapDepositChannel';
+import supportedAssets from './handlers/supportedAssets';
 
 /**
  * Initialization of tRPC backend
@@ -25,6 +26,7 @@ export const appRouter = router({
   encodeVaultSwapData: publicProcedure
     .input(encodeVaultSwapDataSchema)
     .mutation((v) => encodeVaultSwapData(v.input)),
+  supportedAssets: publicProcedure.query(supportedAssets),
 });
 
 export type AppRouter = typeof appRouter;

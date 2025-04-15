@@ -8,7 +8,7 @@ import {
   PaidFee,
   Quote,
 } from '@/shared/schemas';
-import { ChainsAndAssets, DepositAddressRequest } from '../types';
+import { ChainsAndAssets, QuoteRequest } from '../types';
 
 interface Failure {
   failedAt: number;
@@ -194,7 +194,12 @@ export interface DepositAddressRequestV2 {
   brokerCommissionBps?: number;
 }
 
-export interface DepositAddressResponseV2 extends Omit<DepositAddressRequest, 'fillOrKillParams'> {
+export interface DepositAddressResponseV2 extends Omit<QuoteRequest, 'ccmParams'> {
+  destAddress: string;
+  ccmParams?: CcmParams;
+  maxBoostFeeBps?: number;
+  srcAddress?: string;
+  dcaParams?: DcaParams;
   fillOrKillParams: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage;
   depositChannelId: string;
   depositAddress: string;
