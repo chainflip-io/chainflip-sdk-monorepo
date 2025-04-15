@@ -16,28 +16,19 @@ export default async function swapExecuted({
 }: EventHandlerArgs): Promise<void> {
   const {
     swapId,
-    swapRequestId,
     inputAmount,
     intermediateAmount,
     outputAmount,
     networkFee,
     brokerFee,
+    inputAsset,
+    outputAsset,
   } = swapExecutedArgs.parse(event.args);
-
-  const swap = await prisma.swap.findUnique({
-    where: { nativeId: swapId },
-  });
-
-  if (!swap) {
-    throw new Error(
-      `swapExecuted: No existing swap entity for swap "${swapId}", swapRequest "${swapRequestId}".`,
-    );
-  }
 
   const fees = (
     await calculateIncludedSwapFees(
-      swap.srcAsset,
-      swap.destAsset,
+      inputAsset,
+      outputAsset,
       inputAmount,
       intermediateAmount,
       outputAmount,
