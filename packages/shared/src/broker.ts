@@ -49,11 +49,13 @@ const transformedFokSchema = z
     retryDurationBlocks: number,
     refundAddress: z.string(),
     minPriceX128: numericString,
+    refundCcmMetadata: ccmParamsSchema.optional(),
   })
-  .transform(({ retryDurationBlocks, refundAddress, minPriceX128 }) => ({
+  .transform(({ retryDurationBlocks, refundAddress, minPriceX128, refundCcmMetadata }) => ({
     retry_duration: retryDurationBlocks,
     refund_address: refundAddress!,
     min_price: `0x${BigInt(minPriceX128).toString(16)}` as const,
+      refund_ccm_metadata: refundCcmMetadata ? transformedCcmParamsSchema.parse(refundCcmMetadata) : undefined,
   }));
 
 const transformedDcaParamsSchema = dcaParamsSchema.transform(
