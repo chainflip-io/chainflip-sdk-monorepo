@@ -16,7 +16,6 @@ exports[`networkThresholdSignatureInvalid > handles the replacement of an invali
   "succeededBlockIndex": null,
   "transactionPayload": null,
   "transactionRef": null,
-  "type": "BATCH",
   "updatedAt": Any<Date>,
 }
 `;
@@ -48,7 +47,6 @@ exports[`networkThresholdSignatureInvalid > handles the replacement of an invali
   "succeededBlockIndex": null,
   "transactionPayload": null,
   "transactionRef": null,
-  "type": "BATCH",
   "updatedAt": Any<Date>,
 }
 `;

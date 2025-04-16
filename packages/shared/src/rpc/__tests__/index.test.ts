@@ -36,31 +36,38 @@ describe('getSwappingEnvironment', () => {
       }),
     );
 
-    expect(await getSwappingEnvironment({ network: 'perseverance' })).toEqual({
-      maximumSwapAmounts: {
-        Arbitrum: {
-          ETH: null,
-          USDC: null,
+    expect(await getSwappingEnvironment({ network: 'perseverance' })).toMatchInlineSnapshot(`
+      {
+        "maximumSwapAmounts": {
+          "Arbitrum": {
+            "ETH": null,
+            "USDC": null,
+          },
+          "Assethub": {
+            "DOT": null,
+            "USDC": null,
+            "USDT": null,
+          },
+          "Bitcoin": {
+            "BTC": 5000000000000000000n,
+          },
+          "Ethereum": {
+            "ETH": null,
+            "FLIP": null,
+            "USDC": 5000000000000000000n,
+            "USDT": null,
+          },
+          "Polkadot": {
+            "DOT": null,
+          },
+          "Solana": {
+            "SOL": null,
+            "USDC": null,
+          },
         },
-        Bitcoin: {
-          BTC: 0x4563918244f40000n,
-        },
-        Ethereum: {
-          ETH: null,
-          FLIP: null,
-          USDC: 0x4563918244f40000n,
-          USDT: null,
-        },
-        Polkadot: {
-          DOT: null,
-        },
-        Solana: {
-          SOL: null,
-          USDC: null,
-        },
-      },
-      networkFeeHundredthPips: 1000,
-    });
+        "networkFeeHundredthPips": 1000,
+      }
+    `);
     spy.mock.calls[0][1][0].id = '1';
     expect(spy.mock.calls).toMatchSnapshot();
   });
@@ -75,109 +82,142 @@ describe('getIngressEgressEnvironment', () => {
       }),
     );
 
-    expect(await getIngressEgressEnvironment({ network: 'perseverance' })).toEqual({
-      minimumDepositAmounts: {
-        Arbitrum: {
-          ETH: 0x4563918244f40000n,
-          USDC: 0x4563918244f40000n,
+    expect(await getIngressEgressEnvironment({ network: 'perseverance' })).toMatchInlineSnapshot(`
+      {
+        "channelOpeningFees": {
+          "Arbitrum": 0n,
+          "Assethub": 0n,
+          "Bitcoin": 0n,
+          "Ethereum": 16n,
+          "Polkadot": 0n,
+          "Solana": 0n,
         },
-        Bitcoin: { BTC: 0x4563918244f40000n },
-        Ethereum: {
-          ETH: 0x4563918244f40000n,
-          USDC: 0x4563918244f40000n,
-          FLIP: 0x4563918244f40000n,
-          USDT: 0x4563918244f40000n,
+        "egressFees": {
+          "Arbitrum": {
+            "ETH": 0n,
+            "USDC": 0n,
+          },
+          "Assethub": {
+            "DOT": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
+          },
+          "Bitcoin": {
+            "BTC": 0n,
+          },
+          "Ethereum": {
+            "ETH": 0n,
+            "FLIP": 0n,
+            "USDC": 0n,
+            "USDT": 0n,
+          },
+          "Polkadot": {
+            "DOT": 0n,
+          },
+          "Solana": {
+            "SOL": 0n,
+            "USDC": 0n,
+          },
         },
-        Polkadot: { DOT: 0x4563918244f40000n },
-        Solana: {
-          SOL: 0x4563918244f40000n,
-          USDC: 0x4563918244f40000n,
+        "ingressFees": {
+          "Arbitrum": {
+            "ETH": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+          },
+          "Assethub": {
+            "DOT": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
+          },
+          "Bitcoin": {
+            "BTC": 5000000000000000000n,
+          },
+          "Ethereum": {
+            "ETH": 5000000000000000000n,
+            "FLIP": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
+          },
+          "Polkadot": {
+            "DOT": 5000000000000000000n,
+          },
+          "Solana": {
+            "SOL": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+          },
         },
-      },
-      ingressFees: {
-        Arbitrum: {
-          ETH: 0x4563918244f40000n,
-          USDC: 0x4563918244f40000n,
+        "maxSwapRetryDurationBlocks": {
+          "Arbitrum": 40,
+          "Assethub": 50,
+          "Bitcoin": 30,
+          "Ethereum": 10,
+          "Polkadot": 20,
+          "Solana": 50,
         },
-        Bitcoin: { BTC: 0x4563918244f40000n },
-        Ethereum: {
-          ETH: 0x4563918244f40000n,
-          USDC: 0x4563918244f40000n,
-          FLIP: 0x4563918244f40000n,
-          USDT: 0x4563918244f40000n,
+        "minimumDepositAmounts": {
+          "Arbitrum": {
+            "ETH": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+          },
+          "Assethub": {
+            "DOT": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
+          },
+          "Bitcoin": {
+            "BTC": 5000000000000000000n,
+          },
+          "Ethereum": {
+            "ETH": 5000000000000000000n,
+            "FLIP": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
+          },
+          "Polkadot": {
+            "DOT": 5000000000000000000n,
+          },
+          "Solana": {
+            "SOL": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+          },
         },
-        Polkadot: { DOT: 0x4563918244f40000n },
-        Solana: {
-          SOL: 0x4563918244f40000n,
-          USDC: 0x4563918244f40000n,
+        "minimumEgressAmounts": {
+          "Arbitrum": {
+            "ETH": 1n,
+            "USDC": 1n,
+          },
+          "Assethub": {
+            "DOT": 1n,
+            "USDC": 1n,
+            "USDT": 1n,
+          },
+          "Bitcoin": {
+            "BTC": 600n,
+          },
+          "Ethereum": {
+            "ETH": 1n,
+            "FLIP": 1n,
+            "USDC": 1n,
+            "USDT": 1n,
+          },
+          "Polkadot": {
+            "DOT": 1n,
+          },
+          "Solana": {
+            "SOL": 1n,
+            "USDC": 1n,
+          },
         },
-      },
-      egressFees: {
-        Arbitrum: {
-          ETH: 0n,
-          USDC: 0n,
+        "witnessSafetyMargins": {
+          "Arbitrum": 1,
+          "Assethub": null,
+          "Bitcoin": 2,
+          "Ethereum": 1,
+          "Polkadot": null,
+          "Solana": 1,
         },
-        Bitcoin: {
-          BTC: 0n,
-        },
-        Ethereum: {
-          ETH: 0n,
-          FLIP: 0n,
-          USDC: 0n,
-          USDT: 0n,
-        },
-        Polkadot: {
-          DOT: 0n,
-        },
-        Solana: {
-          SOL: 0n,
-          USDC: 0n,
-        },
-      },
-      minimumEgressAmounts: {
-        Arbitrum: {
-          ETH: 1n,
-          USDC: 1n,
-        },
-        Bitcoin: {
-          BTC: 0x258n,
-        },
-        Ethereum: {
-          ETH: 1n,
-          USDC: 1n,
-          FLIP: 1n,
-          USDT: 1n,
-        },
-        Polkadot: {
-          DOT: 1n,
-        },
-        Solana: {
-          SOL: 1n,
-          USDC: 1n,
-        },
-      },
-      witnessSafetyMargins: {
-        Arbitrum: 1,
-        Bitcoin: 2,
-        Ethereum: 1,
-        Polkadot: null,
-        Solana: 1,
-      },
-      channelOpeningFees: {
-        Arbitrum: 0n,
-        Bitcoin: 0n,
-        Ethereum: 16n,
-        Polkadot: 0n,
-        Solana: 0n,
-      },
-      maxSwapRetryDurationBlocks: {
-        Ethereum: 10,
-        Polkadot: 20,
-        Bitcoin: 30,
-        Arbitrum: 40,
-        Solana: 50,
-      },
-    });
+      }
+    `);
     spy.mock.calls[0][1][0].id = '1';
     expect(spy.mock.calls).toMatchSnapshot();
   });

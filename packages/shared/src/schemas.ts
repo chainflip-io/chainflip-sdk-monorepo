@@ -1,5 +1,5 @@
 import { hexEncodeNumber } from '@chainflip/utils/number';
-import { RefinementCtx, z } from 'zod';
+import { z } from 'zod';
 import { Chain, Asset, getInternalAssets, AssetAndChain } from './enums';
 import {
   chain,
@@ -109,21 +109,6 @@ export const fillOrKillParams = z.object({
 export type FillOrKillParamsX128 = z.input<typeof fillOrKillParams>;
 export type FillOrKillParamsWithMinPrice = Omit<FillOrKillParamsX128, 'minPriceX128'> & {
   minPrice: string;
-};
-export type FillOrKillParams = FillOrKillParamsWithMinPrice;
-
-export const ensureDcaWithFok = <T extends { dcaParams?: unknown; fillOrKillParams?: unknown }>(
-  args: T,
-  ctx: RefinementCtx,
-  // eslint-disable-next-line consistent-return
-) => {
-  if (args.dcaParams && !args.fillOrKillParams) {
-    ctx.addIssue({
-      code: 'custom',
-      message: 'dcaParams requires fillOrKillParams',
-    });
-    return z.NEVER;
-  }
 };
 
 type Fee<T> = {

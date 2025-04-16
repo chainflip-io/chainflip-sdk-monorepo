@@ -1,3 +1,5 @@
+#!/usr/bin/env node --import=tsx --trace-uncaught --no-warnings
+
 import Client from 'bitcoin-core';
 import * as bitcoin from 'bitcoinjs-lib';
 import ECPairFactory from 'ecpair';

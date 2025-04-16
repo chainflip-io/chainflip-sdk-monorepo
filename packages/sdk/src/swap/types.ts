@@ -66,7 +66,7 @@ export interface DepositAddressRequest extends QuoteRequest {
   ccmParams?: CcmParams;
   maxBoostFeeBps?: number;
   srcAddress?: string;
-  fillOrKillParams?: FillOrKillParamsWithMinPrice;
+  fillOrKillParams: FillOrKillParamsWithMinPrice;
   dcaParams?: DcaParams;
 }
 

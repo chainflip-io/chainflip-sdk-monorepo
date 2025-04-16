@@ -8,13 +8,16 @@ import { promisify } from 'util';
 import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest';
 import { AddressInfo } from 'ws';
 import { MAX_TICK, MIN_TICK } from '@/shared/consts';
-import { assetConstants, getAssetAndChain } from '@/shared/enums';
+import { assetConstants, getAssetAndChain, InternalAssetMap } from '@/shared/enums';
 import env from '@/swap/config/env';
 import prisma, { InternalAsset } from '../../client';
 import { getAssetPrice } from '../../pricing';
+import { getLpBalances } from '../../utils/rpc';
 import authenticate from '../authenticate';
 import Quoter, { approximateIntermediateOutput, type RpcLimitOrder } from '../Quoter';
 import { LegJson, MarketMakerQuoteRequest, MarketMakerRawQuote } from '../schemas';
+
+vi.mock('../../utils/rpc', () => ({ getLpBalances: vi.fn().mockResolvedValue([]) }));
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
@@ -76,19 +79,29 @@ describe(Quoter, () => {
           Flip: 4,
           Eth: 2_000,
           ArbEth: 2_000,
+          HubDot: 6.5,
+          HubUsdc: 1,
+          HubUsdt: 2_000,
         }[asset],
       ),
     );
 
+    const cachedKeys = new Map<string, crypto.KeyObject>();
+
     connectClient = async (name: string, quotedAssets: InternalAsset[], beta = false) => {
-      const { publicKey, privateKey } = await generateKeyPairAsync('ed25519');
-      await prisma.marketMaker.create({
-        data: {
-          name,
-          beta,
-          publicKey: publicKey.export({ format: 'pem', type: 'spki' }).toString(),
-        },
-      });
+      let privateKey = cachedKeys.get(name);
+      if (!privateKey) {
+        const keys = await generateKeyPairAsync('ed25519');
+        privateKey = keys.privateKey;
+        cachedKeys.set(name, privateKey);
+        await prisma.marketMaker.create({
+          data: {
+            name,
+            beta,
+            publicKey: keys.publicKey.export({ format: 'pem', type: 'spki' }).toString(),
+          },
+        });
+      }
 
       const { port } = server['httpServer'].address() as AddressInfo;
       const timestamp = Date.now();
@@ -195,8 +208,12 @@ describe(Quoter, () => {
       sockets.splice(0).map(
         (socket) =>
           new Promise<unknown>((resolve) => {
-            socket.on('disconnect', resolve);
-            socket.disconnect();
+            if (socket.disconnected) {
+              resolve(null);
+            } else {
+              socket.on('disconnect', resolve);
+              socket.disconnect();
+            }
           }),
       ),
     );
@@ -404,6 +421,70 @@ describe(Quoter, () => {
         error: 'tick provided is too big',
         request_id: request1.request_id,
       });
+    });
+
+    it('filters quotes with insufficient balances', async () => {
+      env.QUOTER_BALANCE_TOLERANCE_PERCENT = 0;
+      vi.mocked(getLpBalances).mockResolvedValue([
+        ['marketMaker', { Usdc: 99n } as InternalAssetMap<bigint>],
+        ['marketMaker2', { Usdc: 3000n } as InternalAssetMap<bigint>],
+        // falsiness test
+        ['marketMaker3', { Usdc: 0n } as InternalAssetMap<bigint>],
+      ]);
+      const mm1 = await connectClient('marketMaker', ['Btc']);
+      const mm2 = await connectClient('marketMaker2', ['Btc']);
+      const mm3 = await connectClient('marketMaker3', ['Btc']);
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const [request1, request2] = await Promise.all([
+        mm1.waitForRequest(),
+        mm2.waitForRequest(),
+        mm3.waitForRequest(),
+      ]);
+      mm1.sendQuote({ ...request1, legs: [[[0, '100']]] });
+      const quote = mm2.sendQuote({ ...request2, legs: [[[0, '200']]] });
+      mm3.sendQuote({ ...request1, legs: [[[0, '300']]] });
+      expect(await limitOrders).toEqual(quote);
+    });
+
+    it('allows quotes with insufficient balances that are within the threshold', async () => {
+      env.QUOTER_BALANCE_TOLERANCE_PERCENT = 10;
+      vi.mocked(getLpBalances).mockResolvedValue([
+        ['marketMaker', { Usdc: 99n } as InternalAssetMap<bigint>],
+        ['marketMaker2', { Usdc: 3000n } as InternalAssetMap<bigint>],
+        // falsiness test
+        ['marketMaker3', { Usdc: 0n } as InternalAssetMap<bigint>],
+      ]);
+      const mm1 = await connectClient('marketMaker', ['Btc']);
+      const mm2 = await connectClient('marketMaker2', ['Btc']);
+      const mm3 = await connectClient('marketMaker3', ['Btc']);
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const error = mm3.waitForError();
+      const [request1, request2] = await Promise.all([
+        mm1.waitForRequest(),
+        mm2.waitForRequest(),
+        mm3.waitForRequest(),
+      ]);
+      const quote1 = mm1.sendQuote({ ...request1, legs: [[[0, '100']]] });
+      const quote2 = mm2.sendQuote({ ...request2, legs: [[[0, '200']]] });
+      mm3.sendQuote({ ...request1, legs: [[[0, '300']]] });
+      expect(await limitOrders).toEqual([...quote1, ...quote2]);
+      await expect(error).resolves.toEqual({
+        error: 'insufficient balance',
+        request_id: request1.request_id,
+      });
+    });
+
+    it('disconnects duplicate sockets', async () => {
+      const mm = await connectClient('marketMaker', ['Btc']);
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const request = await mm.waitForRequest();
+      const quote = mm.sendQuote({ ...request, legs: [[[0, '100']]] });
+      expect(await limitOrders).toEqual(quote);
+      const mm2 = await connectClient('marketMaker', ['Btc']);
+      expect(mm2.socket.connected).toBe(true);
+      await sleep(10);
+      expect(mm2.socket.connected).toBe(false);
+      expect(mm.socket.connected).toBe(true);
     });
   });
 });

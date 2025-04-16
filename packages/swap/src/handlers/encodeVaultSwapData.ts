@@ -29,7 +29,7 @@ export const encodeVaultSwapData = async (input: z.output<typeof encodeVaultSwap
     await isDisallowedSwap(
       input.destAddress,
       input.srcAddress,
-      input.fillOrKillParams?.refund_address,
+      input.fillOrKillParams.refund_address,
     )
   ) {
     logger.info('Blocked address found for vault swap data', input);

@@ -1,11 +1,15 @@
 import Redis from 'ioredis';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import RedisClient from '../redis';
 
 vi.mock('ioredis');
 const url = 'redis://localhost:6379';
 
 describe(RedisClient, () => {
+  beforeEach(async () => {
+    vi.resetAllMocks();
+  });
+
   describe(RedisClient.prototype.constructor, () => {
     it('creates a new Redis client', () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -199,40 +203,42 @@ describe(RedisClient, () => {
   });
 
   describe(RedisClient.prototype.getPendingVaultSwap, () => {
-    it('returns if no vault swaps are found', async () => {
+    it('returns null if no vault swaps are found', async () => {
       const mock = vi.mocked(Redis.prototype.get).mockResolvedValue(null);
       const client = new RedisClient(url);
-      const deposits = await client.getPendingVaultSwap('mainnet', '0x1234');
-      expect(deposits).toEqual(null);
-      expect(mock).toHaveBeenCalledWith('vault_deposit:Ethereum:0x1234');
-      expect(mock).toHaveBeenCalledWith('vault_deposit:Bitcoin:0x1234');
-      expect(mock).toHaveBeenCalledWith('vault_deposit:Solana:0x1234');
-      expect(mock).toHaveBeenCalledWith('vault_deposit:Arbitrum:0x1234');
-      expect(mock).not.toHaveBeenCalledWith('vault_deposit:Polkadot:0x1234');
+      const swap = await client.getPendingVaultSwap(
+        'Ethereum',
+        '0x15248bdd0db4299e54d999f447f588a2325a505446fa8b4c57a1cf66f9bc9239',
+      );
+      expect(swap).toEqual(null);
+      expect(mock).toHaveBeenCalledWith(
+        'vault_deposit:Ethereum:0x15248bdd0db4299e54d999f447f588a2325a505446fa8b4c57a1cf66f9bc9239',
+      );
+    });
+
+    it('returns null for chains where vault swaps are not available in redis', async () => {
+      const mock = vi.mocked(Redis.prototype.get);
+      const client = new RedisClient(url);
+
+      const polkadotSwap = await client.getPendingVaultSwap('Polkadot', '134422-43');
+      expect(polkadotSwap).toEqual(null);
+      expect(mock).not.toHaveBeenCalled();
+
+      const solanaSwap = await client.getPendingVaultSwap('Solana', '134422-43');
+      expect(solanaSwap).toEqual(null);
+      expect(mock).not.toHaveBeenCalled();
     });
 
     it('looks up bitcoin swap with hex transaction id', async () => {
       const mock = vi.mocked(Redis.prototype.get).mockResolvedValue(null);
       const client = new RedisClient(url);
       await client.getPendingVaultSwap(
-        'mainnet',
+        'Bitcoin',
         'df8f78afe35ee28d52748e964b1de73ddb96b85091dd387ab1835b398a65b642',
       );
 
       expect(mock).toHaveBeenCalledWith(
-        'vault_deposit:Ethereum:df8f78afe35ee28d52748e964b1de73ddb96b85091dd387ab1835b398a65b642',
-      );
-      expect(mock).toHaveBeenCalledWith(
         'vault_deposit:Bitcoin:0x42b6658a395b83b17a38dd9150b896db3de71d4b968e74528de25ee3af788fdf',
-      );
-      expect(mock).toHaveBeenCalledWith(
-        'vault_deposit:Solana:df8f78afe35ee28d52748e964b1de73ddb96b85091dd387ab1835b398a65b642',
-      );
-      expect(mock).toHaveBeenCalledWith(
-        'vault_deposit:Arbitrum:df8f78afe35ee28d52748e964b1de73ddb96b85091dd387ab1835b398a65b642',
-      );
-      expect(mock).not.toHaveBeenCalledWith(
-        'vault_deposit:Polkadot:df8f78afe35ee28d52748e964b1de73ddb96b85091dd387ab1835b398a65b642',
       );
     });
 
@@ -261,9 +267,12 @@ describe(RedisClient, () => {
       );
 
       const client = new RedisClient(url);
-      const vaultDeposit = await client.getPendingVaultSwap('mainnet', '0x1234');
+      const swap = await client.getPendingVaultSwap(
+        'Arbitrum',
+        '0x08aca142611325c4eb96f52dc9b9843d4773d3a80c066cfa8de2102f34763654',
+      );
 
-      expect(vaultDeposit).toMatchInlineSnapshot(`
+      expect(swap).toMatchInlineSnapshot(`
         {
           "affiliateFees": [],
           "amount": 100000000000000000n,
@@ -286,10 +295,9 @@ describe(RedisClient, () => {
         }
       `);
 
-      expect(mock).toHaveBeenCalledWith('vault_deposit:Ethereum:0x1234');
-      expect(mock).toHaveBeenCalledWith('vault_deposit:Bitcoin:0x1234');
-      expect(mock).toHaveBeenCalledWith('vault_deposit:Solana:0x1234');
-      expect(mock).toHaveBeenCalledWith('vault_deposit:Arbitrum:0x1234');
+      expect(mock).toHaveBeenCalledWith(
+        'vault_deposit:Arbitrum:0x08aca142611325c4eb96f52dc9b9843d4773d3a80c066cfa8de2102f34763654',
+      );
     });
 
     it('returns vault swap with dca params and ccm params', async () => {
@@ -325,9 +333,12 @@ describe(RedisClient, () => {
       );
 
       const client = new RedisClient(url);
-      const vaultDeposit = await client.getPendingVaultSwap('mainnet', '0x1234');
+      const swap = await client.getPendingVaultSwap(
+        'Ethereum',
+        '0x08aca142611325c4eb96f52dc9b9843d4773d3a80c066cfa8de2102f34763654',
+      );
 
-      expect(vaultDeposit).toMatchInlineSnapshot(`
+      expect(swap).toMatchInlineSnapshot(`
         {
           "affiliateFees": [
             {
@@ -346,10 +357,6 @@ describe(RedisClient, () => {
               "gasBudget": "0x3039",
               "message": "48454c4c4f",
             },
-            "sourceAddress": {
-              "Eth": "0xcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf",
-            },
-            "sourceChain": "Ethereum",
           },
           "dcaParams": {
             "chunkInterval": 100,

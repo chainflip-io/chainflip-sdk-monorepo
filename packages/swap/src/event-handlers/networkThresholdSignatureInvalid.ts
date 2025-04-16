@@ -29,7 +29,6 @@ const networkThresholdSignatureInvalid =
       data: {
         nativeId: retryBroadcastId,
         chain: broadcast.chain,
-        type: broadcast.type,
         requestedBlockIndex: `${block.height}-${event.indexInBlock}`,
         requestedAt: new Date(block.timestamp),
       },

@@ -1,5 +1,9 @@
-import { Chain, ChainflipNetwork, Chains, InternalAsset, assetConstants } from '@/shared/enums';
+import { findVaultSwapData as findBitcoinVaultSwapData } from '@chainflip/bitcoin';
+import { findVaultSwapData as findSolanaVaultSwapData } from '@chainflip/solana';
+import { isTruthy } from '@chainflip/utils/guard';
+import { Chain, Chains, InternalAsset, assetConstants } from '@/shared/enums';
 import RedisClient from '@/shared/node-apis/redis';
+import { getTransactionRefChains } from '@/swap/utils/transactionRef';
 import prisma, { Broadcast } from '../client';
 import env from '../config/env';
 import { handleExit } from '../utils/function';
@@ -99,23 +103,57 @@ export const getPendingBroadcast = async (broadcast: Broadcast) => {
   }
 };
 
-export const getPendingVaultSwap = async (network: ChainflipNetwork, txRef: string) => {
-  if (!redis) return null;
-  try {
-    const vaultSwap = await redis.getPendingVaultSwap(network, txRef);
-    if (vaultSwap) {
-      const txConfirmations = await getDepositConfirmationCount(
-        assetConstants[vaultSwap.inputAsset].chain,
-        vaultSwap.depositChainBlockHeight,
-      );
+export const getPendingVaultSwap = async (txRef: string) => {
+  const resultPromises = getTransactionRefChains(txRef).map(async (chain) => {
+    let result = redis ? await redis.getPendingVaultSwap(chain, txRef) : null;
 
-      return {
-        txRef,
-        txConfirmations,
-        ...vaultSwap,
+    if (!result) {
+      let txData = null;
+      if (chain === 'Solana' && env.SOLANA_RPC_HTTP_URL) {
+        txData = await findSolanaVaultSwapData(env.SOLANA_RPC_HTTP_URL, txRef);
+      } else if (chain === 'Bitcoin' && env.BITCOIN_RPC_HTTP_URL) {
+        txData = await findBitcoinVaultSwapData(env.BITCOIN_RPC_HTTP_URL, txRef);
+      }
+
+      result = txData && {
+        ...txData,
+        affiliateFees: txData.affiliateFees.map((fee) => ({
+          account: '', // transaction data includes registration id only
+          commissionBps: fee.commissionBps,
+        })),
+        brokerFee: {
+          account: txData.brokerFee.account ?? '', // bitcoin transaction data does not include broker account
+          commissionBps: txData.brokerFee.commissionBps,
+        },
       };
     }
-    return null;
+
+    return result;
+  });
+
+  try {
+    const results = await Promise.all(resultPromises);
+    const vaultSwap = results.find(isTruthy);
+    if (!vaultSwap) return null;
+
+    const txConfirmations = vaultSwap.depositChainBlockHeight
+      ? await getDepositConfirmationCount(
+          assetConstants[vaultSwap.inputAsset].chain,
+          vaultSwap.depositChainBlockHeight,
+        )
+      : 0;
+    const { inputAsset, outputAsset, destinationAddress, maxBoostFee, ...remainingData } =
+      vaultSwap;
+
+    return {
+      txRef,
+      txConfirmations,
+      srcAsset: inputAsset,
+      destAsset: outputAsset,
+      destAddress: destinationAddress,
+      maxBoostFeeBps: maxBoostFee,
+      ...remainingData,
+    };
   } catch (error) {
     logger.error('error while looking up vault swap in redis', { error });
     return null;

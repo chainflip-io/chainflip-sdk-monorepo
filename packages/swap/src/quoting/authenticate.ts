@@ -6,7 +6,7 @@ import { InternalAssetMap, getInternalAsset, InternalAsset, InternalAssets } fro
 import { isNotNullish } from '@/shared/guards';
 import { assetAndChain } from '@/shared/parsers';
 import prisma from '../client';
-import { type QuotingSocket } from './Quoter';
+import { AccountId, type QuotingSocket } from './Quoter';
 import baseLogger from '../utils/logger';
 
 const logger = baseLogger.child({ module: 'quoter' });
@@ -89,7 +89,7 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
     // https://socket.io/docs/v4/server-socket-instance/#socketdata
     // eslint-disable-next-line no-param-reassign
     socket.data = {
-      marketMaker: marketMaker.name,
+      marketMaker: marketMaker.name as AccountId,
       quotedAssets: auth.quoted_assets,
       clientVersion: auth.client_version,
       beta: marketMaker.beta,

@@ -47,6 +47,7 @@ export default z
     RPC_BROKER_HTTPS_URL: httpUrl,
     RPC_NODE_WSS_URL: wsUrl,
     SOLANA_RPC_HTTP_URL: httpUrl.optional(),
+    BITCOIN_RPC_HTTP_URL: httpUrl.optional(),
     CHAINFLIP_NETWORK: chainflipNetwork,
     QUOTE_TIMEOUT: optionalNumber(1000),
     NODE_ENV: nodeEnv.default('production'),
@@ -98,6 +99,8 @@ export default z
       'The targeted minimum price for stable coin swaps when providing a slippage recommendation',
     ),
     SOLANA_TX_REF_QUEUE_INTERVAL: optionalNumber(1000),
+    QUOTER_BALANCE_TRACKER_ACTIVE: optionalBoolean.default('true'),
+    QUOTER_BALANCE_TOLERANCE_PERCENT: optionalNumber(10),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);

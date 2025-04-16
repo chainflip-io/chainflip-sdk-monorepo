@@ -189,14 +189,14 @@ export interface DepositAddressRequestV2 {
   quote: Quote | BoostQuote;
   srcAddress?: string;
   destAddress: string;
-  fillOrKillParams?: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage;
+  fillOrKillParams: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage;
   affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];
   ccmParams?: CcmParams;
   brokerCommissionBps?: number;
 }
 
 export interface DepositAddressResponseV2 extends Omit<DepositAddressRequest, 'fillOrKillParams'> {
-  fillOrKillParams?: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage;
+  fillOrKillParams: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage;
   depositChannelId: string;
   depositAddress: string;
   brokerCommissionBps: number;

@@ -1,5 +1,5 @@
 import * as bitcoin from '@chainflip/bitcoin';
-import { isValidSolanaAddress } from '@chainflip/solana/address';
+import { isValidSolanaAddress } from '@chainflip/solana';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
 import * as ethers from 'ethers';
@@ -39,6 +39,7 @@ const validators: Record<ChainflipNetwork | 'localnet', Record<Chain, AddressVal
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
+    Assethub: validatePolkadotAddress,
   },
   perseverance: {
     Bitcoin: validateBitcoinTestnetAddress,
@@ -46,6 +47,7 @@ const validators: Record<ChainflipNetwork | 'localnet', Record<Chain, AddressVal
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
+    Assethub: validatePolkadotAddress,
   },
   sisyphos: {
     Bitcoin: validateBitcoinTestnetAddress,
@@ -53,6 +55,7 @@ const validators: Record<ChainflipNetwork | 'localnet', Record<Chain, AddressVal
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
+    Assethub: validatePolkadotAddress,
   },
   backspin: {
     Bitcoin: validateBitcoinRegtestAddress,
@@ -60,6 +63,7 @@ const validators: Record<ChainflipNetwork | 'localnet', Record<Chain, AddressVal
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
+    Assethub: validatePolkadotAddress,
   },
   localnet: {
     Bitcoin: validateBitcoinRegtestAddress,
@@ -67,6 +71,7 @@ const validators: Record<ChainflipNetwork | 'localnet', Record<Chain, AddressVal
     Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
+    Assethub: validatePolkadotAddress,
   },
 };
 

@@ -55,11 +55,9 @@ export const assertUnreachable = (_: never, message = 'unreachable'): never => {
 };
 
 export const parseFoKParams = (
-  params: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage | undefined,
+  params: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage,
   quote: Pick<Quote, 'srcAsset' | 'destAsset' | 'estimatedPrice'>,
 ) => {
-  if (!params) return undefined;
-
   const srcAsset = getInternalAsset(quote.srcAsset);
   const destAsset = getInternalAsset(quote.destAsset);
 

@@ -9,6 +9,15 @@ which it is deprecated.
 
 ## Unreleased
 
+### Changed
+
+- `SwapSDK.prototype.requestDepositAddress`: The `fillOrKillParams` property is now mandatory when opening a
+  deposit channel. This information is mandatory on the protocol level since version 1.8.
+- `SwapSDK.prototype.requestDepositAddressV2`: The `fillOrKillParams` property is now mandatory when opening a
+  deposit channel. This information is mandatory on the protocol level since version 1.8.
+
+## 1.8.0
+
 ### Important!
 
 Vault swaps have been completely revamped for the 1.8 release. The old methods

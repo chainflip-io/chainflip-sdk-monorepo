@@ -33,6 +33,51 @@ exports[`getAllBoostPoolsDepth > retrieves the boost pools depth balance > boost
     "tier": 30,
   },
   {
+    "asset": "HubDot",
+    "availableAmount": 0n,
+    "tier": 5,
+  },
+  {
+    "asset": "HubDot",
+    "availableAmount": 0n,
+    "tier": 10,
+  },
+  {
+    "asset": "HubDot",
+    "availableAmount": 0n,
+    "tier": 30,
+  },
+  {
+    "asset": "HubUsdc",
+    "availableAmount": 0n,
+    "tier": 5,
+  },
+  {
+    "asset": "HubUsdc",
+    "availableAmount": 0n,
+    "tier": 10,
+  },
+  {
+    "asset": "HubUsdc",
+    "availableAmount": 0n,
+    "tier": 30,
+  },
+  {
+    "asset": "HubUsdt",
+    "availableAmount": 0n,
+    "tier": 5,
+  },
+  {
+    "asset": "HubUsdt",
+    "availableAmount": 0n,
+    "tier": 10,
+  },
+  {
+    "asset": "HubUsdt",
+    "availableAmount": 0n,
+    "tier": 30,
+  },
+  {
     "asset": "Btc",
     "availableAmount": 0n,
     "tier": 5,
@@ -187,7 +232,7 @@ exports[`getFundingEnvironment > retrieves the funding environment 1`] = `
 ]
 `;
 
-exports[`getIngressEgressEnvironment > retrieves the ingress egress environment 1`] = `
+exports[`getIngressEgressEnvironment > retrieves the ingress egress environment 2`] = `
 [
   [
     "https://archive.perseverance.chainflip.io",
@@ -203,7 +248,7 @@ exports[`getIngressEgressEnvironment > retrieves the ingress egress environment 
 ]
 `;
 
-exports[`getSwappingEnvironment > retrieves the swapping environment 1`] = `
+exports[`getSwappingEnvironment > retrieves the swapping environment 2`] = `
 [
   [
     "https://archive.perseverance.chainflip.io",
