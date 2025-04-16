@@ -7,6 +7,28 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## Unreleased
+
+### Added
+
+- `SwapSDK.prototype.getAssets` now accepts a second optional parameter to
+  to retrieve `all` assets, `deposit` assets, or `destination` assets
+  respectively.
+- `SwapSDK.prototype.getChains` now accepts a second optional parameter to
+  to retrieve `all` chains, `deposit` chains, or `destination` chains
+  respectively.
+- `SwapSDK.prototype.checkBoostEnabled` has been added. It returns a `boolean`
+  that says whether or not boosting deposits is enabled.
+
+### Removed
+
+- `SwapSDK.prototype.getQuote` was removed. You should instead use
+  `SwapSDK.prototype.getQuoteV2`.
+- `SwapSDK.prototype.getStatus` was removed. You should instead use
+  `SwapSDK.prototype.getStatusV2`.
+- `SwapSDK.prototype.requestDepositAddress` was removed. You should instead use
+  `SwapSDK.prototype.requestDepositAddressV2`.
+
 ## 1.8.3
 
 ### Added

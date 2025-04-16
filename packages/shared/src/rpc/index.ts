@@ -72,8 +72,6 @@ export const getSwapRate = createRequest('cf_swap_rate');
 
 export const getMetadata = createRequest('state_getMetadata');
 
-export const getSupportedAssets = createRequest('cf_supported_assets');
-
 export const getRuntimeVersion = createRequest('state_getRuntimeVersion');
 
 export const getBlockHash = createRequest('chain_getBlockHash');

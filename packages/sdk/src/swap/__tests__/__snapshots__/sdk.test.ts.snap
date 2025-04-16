@@ -1,7 +1,20 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`SwapSDK > getAssets > returns the assets based on the cf_supported_assets rpc 1`] = `
+exports[`SwapSDK > getAssets > returns the assets based on the networkStatus tRPC method 1`] = `
 [
+  {
+    "asset": "ETH",
+    "chain": "Ethereum",
+    "chainflipId": "Eth",
+    "contractAddress": undefined,
+    "decimals": 18,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Ether",
+    "symbol": "ETH",
+  },
   {
     "asset": "BTC",
     "chain": "Bitcoin",
@@ -16,16 +29,55 @@ exports[`SwapSDK > getAssets > returns the assets based on the cf_supported_asse
     "symbol": "BTC",
   },
   {
+    "asset": "FLIP",
+    "chain": "Ethereum",
+    "chainflipId": "Flip",
+    "contractAddress": "0xcD079EAB6B5443b545788Fd210C8800FEADd87fa",
+    "decimals": 18,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "FLIP",
+    "symbol": "FLIP",
+  },
+  {
     "asset": "USDC",
-    "chain": "Arbitrum",
-    "chainflipId": "ArbUsdc",
-    "contractAddress": "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d",
+    "chain": "Ethereum",
+    "chainflipId": "Usdc",
+    "contractAddress": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+    "decimals": 6,
+    "isMainnet": false,
+    "maximumSwapAmount": "1152921504606846976",
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "USDC",
+    "symbol": "USDC",
+  },
+  {
+    "asset": "SOL",
+    "chain": "Solana",
+    "chainflipId": "Sol",
+    "contractAddress": undefined,
+    "decimals": 9,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Solana",
+    "symbol": "SOL",
+  },
+  {
+    "asset": "USDC",
+    "chain": "Solana",
+    "chainflipId": "SolUsdc",
+    "contractAddress": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
     "decimals": 6,
     "isMainnet": false,
     "maximumSwapAmount": null,
     "minimumEgressAmount": "1",
     "minimumSwapAmount": "0",
-    "name": "Arbitrum USDC",
+    "name": "Solana USDC",
     "symbol": "USDC",
   },
 ]
@@ -727,7 +779,152 @@ exports[`SwapSDK > getAssets > returns the correct values for sisyphos 1`] = `
 ]
 `;
 
+exports[`SwapSDK > getAssets > returns the deposit assets based on the networkStatus tRPC method 1`] = `
+[
+  {
+    "asset": "ETH",
+    "chain": "Ethereum",
+    "chainflipId": "Eth",
+    "contractAddress": undefined,
+    "decimals": 18,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Ether",
+    "symbol": "ETH",
+  },
+  {
+    "asset": "FLIP",
+    "chain": "Ethereum",
+    "chainflipId": "Flip",
+    "contractAddress": "0xcD079EAB6B5443b545788Fd210C8800FEADd87fa",
+    "decimals": 18,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "FLIP",
+    "symbol": "FLIP",
+  },
+  {
+    "asset": "USDC",
+    "chain": "Ethereum",
+    "chainflipId": "Usdc",
+    "contractAddress": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+    "decimals": 6,
+    "isMainnet": false,
+    "maximumSwapAmount": "1152921504606846976",
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "USDC",
+    "symbol": "USDC",
+  },
+  {
+    "asset": "SOL",
+    "chain": "Solana",
+    "chainflipId": "Sol",
+    "contractAddress": undefined,
+    "decimals": 9,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Solana",
+    "symbol": "SOL",
+  },
+  {
+    "asset": "USDC",
+    "chain": "Solana",
+    "chainflipId": "SolUsdc",
+    "contractAddress": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+    "decimals": 6,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Solana USDC",
+    "symbol": "USDC",
+  },
+]
+`;
+
+exports[`SwapSDK > getAssets > returns the destination assets based on the networkStatus tRPC method 1`] = `
+[
+  {
+    "asset": "ETH",
+    "chain": "Ethereum",
+    "chainflipId": "Eth",
+    "contractAddress": undefined,
+    "decimals": 18,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Ether",
+    "symbol": "ETH",
+  },
+  {
+    "asset": "BTC",
+    "chain": "Bitcoin",
+    "chainflipId": "Btc",
+    "contractAddress": undefined,
+    "decimals": 8,
+    "isMainnet": false,
+    "maximumSwapAmount": "1152921504606846976",
+    "minimumEgressAmount": "600",
+    "minimumSwapAmount": "0",
+    "name": "Bitcoin",
+    "symbol": "BTC",
+  },
+  {
+    "asset": "FLIP",
+    "chain": "Ethereum",
+    "chainflipId": "Flip",
+    "contractAddress": "0xcD079EAB6B5443b545788Fd210C8800FEADd87fa",
+    "decimals": 18,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "FLIP",
+    "symbol": "FLIP",
+  },
+  {
+    "asset": "USDC",
+    "chain": "Ethereum",
+    "chainflipId": "Usdc",
+    "contractAddress": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+    "decimals": 6,
+    "isMainnet": false,
+    "maximumSwapAmount": "1152921504606846976",
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "USDC",
+    "symbol": "USDC",
+  },
+]
+`;
+
 exports[`SwapSDK > getAssets > returns the filtered assets for the chain 1`] = `
+[
+  {
+    "asset": "BTC",
+    "chain": "Bitcoin",
+    "chainflipId": "Btc",
+    "contractAddress": undefined,
+    "decimals": 8,
+    "isMainnet": false,
+    "maximumSwapAmount": "1152921504606846976",
+    "minimumEgressAmount": "600",
+    "minimumSwapAmount": "0",
+    "name": "Bitcoin",
+    "symbol": "BTC",
+  },
+]
+`;
+
+exports[`SwapSDK > getAssets > returns the filtered destination assets for the chain 1`] = `
 [
   {
     "asset": "BTC",
@@ -803,33 +1000,65 @@ exports[`SwapSDK > getBoostLiquidity > returns the boost pools liquidity depth b
 ]
 `;
 
-exports[`SwapSDK > getChains > returns the chains based on the cf_supported_assets rpc 1`] = `
+exports[`SwapSDK > getChains > returns all filtered destination chains for the chain 1`] = `
 [
   {
-    "asset": "BTC",
     "chain": "Bitcoin",
-    "chainflipId": "Btc",
-    "contractAddress": undefined,
-    "decimals": 8,
+    "evmChainId": undefined,
     "isMainnet": false,
-    "maximumSwapAmount": "1152921504606846976",
-    "minimumEgressAmount": "600",
-    "minimumSwapAmount": "0",
+    "maxRetryDurationBlocks": 10,
     "name": "Bitcoin",
-    "symbol": "BTC",
+    "requiredBlockConfirmations": 3,
   },
   {
-    "asset": "USDC",
-    "chain": "Arbitrum",
-    "chainflipId": "ArbUsdc",
-    "contractAddress": "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d",
-    "decimals": 6,
+    "chain": "Solana",
+    "evmChainId": undefined,
     "isMainnet": false,
-    "maximumSwapAmount": null,
-    "minimumEgressAmount": "1",
-    "minimumSwapAmount": "0",
-    "name": "Arbitrum USDC",
-    "symbol": "USDC",
+    "maxRetryDurationBlocks": 10,
+    "name": "Solana",
+    "requiredBlockConfirmations": 2,
+  },
+]
+`;
+
+exports[`SwapSDK > getChains > returns filtered destination destination chains for the chain 1`] = `
+[
+  {
+    "chain": "Bitcoin",
+    "evmChainId": undefined,
+    "isMainnet": false,
+    "maxRetryDurationBlocks": 10,
+    "name": "Bitcoin",
+    "requiredBlockConfirmations": 3,
+  },
+]
+`;
+
+exports[`SwapSDK > getChains > returns the chains based on the supportedAsset tRPC endpoint 1`] = `
+[
+  {
+    "chain": "Ethereum",
+    "evmChainId": 11155111,
+    "isMainnet": false,
+    "maxRetryDurationBlocks": 10,
+    "name": "Ethereum",
+    "requiredBlockConfirmations": 2,
+  },
+  {
+    "chain": "Bitcoin",
+    "evmChainId": undefined,
+    "isMainnet": false,
+    "maxRetryDurationBlocks": 10,
+    "name": "Bitcoin",
+    "requiredBlockConfirmations": 3,
+  },
+  {
+    "chain": "Solana",
+    "evmChainId": undefined,
+    "isMainnet": false,
+    "maxRetryDurationBlocks": 10,
+    "name": "Solana",
+    "requiredBlockConfirmations": 2,
   },
 ]
 `;
@@ -1046,6 +1275,48 @@ exports[`SwapSDK > getChains > returns the correct values for sisyphos 1`] = `
 ]
 `;
 
+exports[`SwapSDK > getChains > returns the deposit chains based on the supportedAsset tRPC endpoint 1`] = `
+[
+  {
+    "chain": "Ethereum",
+    "evmChainId": 11155111,
+    "isMainnet": false,
+    "maxRetryDurationBlocks": 10,
+    "name": "Ethereum",
+    "requiredBlockConfirmations": 2,
+  },
+  {
+    "chain": "Solana",
+    "evmChainId": undefined,
+    "isMainnet": false,
+    "maxRetryDurationBlocks": 10,
+    "name": "Solana",
+    "requiredBlockConfirmations": 2,
+  },
+]
+`;
+
+exports[`SwapSDK > getChains > returns the destination chains based on the supportedAsset tRPC endpoint 1`] = `
+[
+  {
+    "chain": "Ethereum",
+    "evmChainId": 11155111,
+    "isMainnet": false,
+    "maxRetryDurationBlocks": 10,
+    "name": "Ethereum",
+    "requiredBlockConfirmations": 2,
+  },
+  {
+    "chain": "Bitcoin",
+    "evmChainId": undefined,
+    "isMainnet": false,
+    "maxRetryDurationBlocks": 10,
+    "name": "Bitcoin",
+    "requiredBlockConfirmations": 3,
+  },
+]
+`;
+
 exports[`SwapSDK > getChains > returns the filtered destination chains for the chain 1`] = `
 [
   {
@@ -1092,3 +1363,62 @@ exports[`SwapSDK > getChains > returns the filtered destination chains for the c
 `;
 
 exports[`SwapSDK > getChains > throws when requesting an unsupported chain 1`] = `[Error: unsupported source chain "Dogecoin"]`;
+
+exports[`SwapSDK > getSwapLimits > returns the swap limits based on the environment rpc 1`] = `
+{
+  "maximumSwapAmounts": {
+    "Arbitrum": {
+      "ETH": null,
+      "USDC": null,
+    },
+    "Assethub": {
+      "DOT": null,
+      "USDC": null,
+      "USDT": null,
+    },
+    "Bitcoin": {
+      "BTC": 1152921504606846976n,
+    },
+    "Ethereum": {
+      "ETH": null,
+      "FLIP": null,
+      "USDC": 1152921504606846976n,
+      "USDT": null,
+    },
+    "Polkadot": {
+      "DOT": null,
+    },
+    "Solana": {
+      "SOL": null,
+      "USDC": null,
+    },
+  },
+  "minimumSwapAmounts": {
+    "Arbitrum": {
+      "ETH": 0n,
+      "USDC": 0n,
+    },
+    "Assethub": {
+      "DOT": 0n,
+      "USDC": 0n,
+      "USDT": 0n,
+    },
+    "Bitcoin": {
+      "BTC": 0n,
+    },
+    "Ethereum": {
+      "ETH": 0n,
+      "FLIP": 0n,
+      "USDC": 0n,
+      "USDT": 0n,
+    },
+    "Polkadot": {
+      "DOT": 0n,
+    },
+    "Solana": {
+      "SOL": 0n,
+      "USDC": 0n,
+    },
+  },
+}
+`;

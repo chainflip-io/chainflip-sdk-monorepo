@@ -4,13 +4,13 @@ import { assertRouteEnabled } from '../env';
 
 describe(assertRouteEnabled, () => {
   beforeEach(() => {
-    env.FULLY_DISABLED_INTERNAL_ASSETS = [];
-    env.DISABLED_DEPOSIT_INTERNAL_ASSETS = [];
-    env.DISABLED_DESTINATION_INTERNAL_ASSETS = [];
+    env.FULLY_DISABLED_INTERNAL_ASSETS = new Set([]);
+    env.DISABLED_DEPOSIT_INTERNAL_ASSETS = new Set([]);
+    env.DISABLED_DESTINATION_INTERNAL_ASSETS = new Set([]);
   });
 
   it('throws if srcAsset is fully disabled', () => {
-    env.FULLY_DISABLED_INTERNAL_ASSETS = ['Flip'];
+    env.FULLY_DISABLED_INTERNAL_ASSETS = new Set(['Flip']);
 
     expect(() => assertRouteEnabled({ srcAsset: 'Flip', destAsset: 'Sol' })).toThrowError(
       'Asset Flip is disabled',
@@ -18,7 +18,7 @@ describe(assertRouteEnabled, () => {
   });
 
   it('throws if destAsset is fully disabled', () => {
-    env.FULLY_DISABLED_INTERNAL_ASSETS = ['Flip'];
+    env.FULLY_DISABLED_INTERNAL_ASSETS = new Set(['Flip']);
 
     expect(() => assertRouteEnabled({ srcAsset: 'Sol', destAsset: 'Flip' })).toThrowError(
       'Asset Flip is disabled',
@@ -26,7 +26,7 @@ describe(assertRouteEnabled, () => {
   });
 
   it('throws only if srcAsset is disabled', () => {
-    env.DISABLED_DEPOSIT_INTERNAL_ASSETS = ['Flip'];
+    env.DISABLED_DEPOSIT_INTERNAL_ASSETS = new Set(['Flip']);
 
     expect(() => assertRouteEnabled({ srcAsset: 'Flip', destAsset: 'Sol' })).toThrowError(
       'Asset Flip is disabled',
@@ -36,7 +36,7 @@ describe(assertRouteEnabled, () => {
   });
 
   it('throws only if destAsset is disabled', () => {
-    env.DISABLED_DESTINATION_INTERNAL_ASSETS = ['Flip'];
+    env.DISABLED_DESTINATION_INTERNAL_ASSETS = new Set(['Flip']);
 
     expect(() => assertRouteEnabled({ srcAsset: 'Flip', destAsset: 'Sol' })).not.toThrowError();
     expect(() => assertRouteEnabled({ destAsset: 'Flip', srcAsset: 'Sol' })).toThrowError(

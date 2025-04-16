@@ -5,7 +5,6 @@ import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/180/
 import { assethubIngressEgressDepositFinalised } from '@chainflip/processor/190/assethubIngressEgress/depositFinalised';
 import { assertUndefined } from '@chainflip/utils/assertion';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
-// @ts-expect-error should still work
 import { Metadata, TypeRegistry } from '@polkadot/types';
 import assert from 'assert';
 import { z } from 'zod';

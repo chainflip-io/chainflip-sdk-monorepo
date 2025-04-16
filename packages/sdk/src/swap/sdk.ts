@@ -11,18 +11,18 @@ import {
   ChainMap,
 } from '@chainflip/utils/chainflip';
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
+import type { inferRouterOutputs } from '@trpc/server';
 import superjson from 'superjson';
 import { requestSwapDepositAddress, requestSwapParameterEncoding } from '@/shared/broker';
-import { AsyncCacheMap } from '@/shared/dataStructures';
-import { getPriceX128FromPrice, parseFoKParams } from '@/shared/functions';
-import { assert, isNotNullish } from '@/shared/guards';
+import { Cache } from '@/shared/dataStructures';
+import { parseFoKParams } from '@/shared/functions';
+import { assert } from '@/shared/guards';
 import {
   BoostPoolsDepth,
   Environment,
   RpcConfig,
   getAllBoostPoolsDepth,
   getEnvironment,
-  getSupportedAssets,
 } from '@/shared/rpc';
 import { validateSwapAmount } from '@/shared/rpc/utils';
 import { BoostQuote, Quote } from '@/shared/schemas';
@@ -36,12 +36,8 @@ import {
   ChainData,
   AssetData,
   QuoteRequest,
-  DepositAddressResponse,
-  QuoteResponse,
   SwapStatusRequest,
-  DepositAddressRequest,
   BoostPoolDepth,
-  SwapStatusResponse,
   QuoteResponseV2,
 } from './types';
 import {
@@ -78,6 +74,8 @@ const assertQuoteValid = (quote: Quote | BoostQuote) => {
   }
 };
 
+type NetworkStatus = inferRouterOutputs<AppRouter>['networkStatus'];
+
 export class SwapSDK {
   private readonly options: Required<SwapSDKOptions, 'network' | 'backendUrl'>;
 
@@ -85,12 +83,7 @@ export class SwapSDK {
 
   private readonly trpc;
 
-  private stateChainEnvironmentCache: AsyncCacheMap<
-    'cf_environment',
-    Awaited<ReturnType<typeof getEnvironment>>
-  >;
-
-  private supportedAssets?: ChainflipAsset[];
+  private cache;
 
   private dcaEnabled = false;
 
@@ -112,21 +105,29 @@ export class SwapSDK {
       ],
     });
     this.dcaEnabled = options.enabledFeatures?.dca ?? false;
-    this.stateChainEnvironmentCache = new AsyncCacheMap({
-      fetch: (_key) => getEnvironment(this.rpcConfig),
-      ttl: 60_000 * 10,
-      resetExpiryOnLookup: false,
+    this.cache = new Cache({
+      environment: {
+        fetch: () => getEnvironment(this.rpcConfig),
+        ttl: 60_000,
+      },
+      networkStatus: {
+        fetch: () => this.trpc.networkStatus.query(),
+        ttl: 60_000,
+      },
     });
   }
 
-  async getChains(sourceChain?: ChainflipChain): Promise<ChainData[]> {
+  async getChains(
+    sourceChain?: ChainflipChain,
+    type: keyof NetworkStatus['assets'] = 'all',
+  ): Promise<ChainData[]> {
     if (sourceChain && !chainflipChains.includes(sourceChain)) {
       throw new Error(`unsupported source chain "${sourceChain}"`);
     }
 
     const [env, supportedAssets] = await Promise.all([
       this.getStateChainEnvironment(),
-      this.getSupportedAssets(),
+      this.getSupportedAssets(type),
     ]);
 
     const supportedChains = new Set(supportedAssets.map((a) => assetConstants[a].chain));
@@ -138,55 +139,33 @@ export class SwapSDK {
   }
 
   private async getStateChainEnvironment(): Promise<Environment> {
-    return this.stateChainEnvironmentCache.get('cf_environment');
+    return this.cache.read('environment');
   }
 
-  private async getSupportedAssets(): Promise<ChainflipAsset[]> {
-    this.supportedAssets ??= (await getSupportedAssets(this.rpcConfig))
-      .map((asset) => getInternalAsset(asset as UncheckedAssetAndChain, false))
-      .filter(isNotNullish);
+  private async getSupportedAssets(type: keyof NetworkStatus['assets']): Promise<ChainflipAsset[]> {
+    const assets = await this.cache.read('networkStatus');
 
-    return this.supportedAssets;
+    return assets.assets[type];
   }
 
   private async getBoostPoolsDepth(): Promise<BoostPoolsDepth> {
     return getAllBoostPoolsDepth(this.rpcConfig);
   }
 
-  async getAssets(chain?: ChainflipChain): Promise<AssetData[]> {
+  async getAssets(
+    chain?: ChainflipChain,
+    type: keyof NetworkStatus['assets'] = 'all',
+  ): Promise<AssetData[]> {
     if (chain && !chainflipChains.includes(chain)) throw new Error(`unsupported chain "${chain}"`);
 
     const [env, supportedAssets] = await Promise.all([
       this.getStateChainEnvironment(),
-      this.getSupportedAssets(),
+      this.getSupportedAssets(type),
     ]);
 
     return supportedAssets
       .map((asset) => getAssetData(asset, this.options.network, env))
       .filter((asset) => !chain || asset.chain === chain);
-  }
-
-  /** @deprecated DEPRECATED(1.7) use getQuoteV2() */
-  getQuote(
-    quoteRequest: QuoteRequest,
-    options: ApiService.RequestOptions = {},
-  ): Promise<QuoteResponse> {
-    // eslint-disable-next-line no-console
-    console.error(
-      '[@chainflip/sdk] The getQuote method is deprecated and will be removed in the 1.9 release. Use the getQuoteV2 method instead.',
-    );
-
-    const submitterBrokerCommissionBps =
-      quoteRequest.brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0;
-
-    return ApiService.getQuote(
-      this.options.backendUrl,
-      {
-        ...quoteRequest,
-        brokerCommissionBps: submitterBrokerCommissionBps,
-      },
-      options,
-    );
   }
 
   getQuoteV2(
@@ -205,100 +184,6 @@ export class SwapSDK {
       },
       options,
     );
-  }
-
-  /** @deprecated DEPRECATED(1.7) use requestDepositAddressV2() */
-  async requestDepositAddress(
-    depositAddressRequest: DepositAddressRequest,
-  ): Promise<DepositAddressResponse> {
-    // eslint-disable-next-line no-console
-    console.error(
-      '[@chainflip/sdk] The requestDepositAddress method is deprecated and will be removed in the 1.9 release. Use the requestDepositAddressV2 method instead.',
-    );
-
-    const {
-      srcChain,
-      srcAsset,
-      amount,
-      destChain,
-      destAsset,
-      brokerCommissionBps,
-      affiliateBrokers,
-    } = depositAddressRequest;
-
-    await this.validateSwapAmount({ chain: srcChain, asset: srcAsset }, BigInt(amount));
-
-    const fillOrKillParams = {
-      ...depositAddressRequest.fillOrKillParams,
-      minPriceX128: getPriceX128FromPrice(
-        depositAddressRequest.fillOrKillParams.minPrice,
-        getInternalAsset({ chain: srcChain, asset: srcAsset }),
-        getInternalAsset({ chain: destChain, asset: destAsset }),
-      ),
-    };
-
-    let response;
-
-    if (this.options.broker) {
-      const result = await requestSwapDepositAddress(
-        {
-          ...depositAddressRequest,
-          commissionBps: brokerCommissionBps ?? this.options.broker.commissionBps,
-          affiliates: affiliateBrokers,
-          fillOrKillParams,
-        },
-        { url: this.options.broker.url },
-        this.options.network,
-      );
-
-      response = {
-        id: `${result.issuedBlock}-${depositAddressRequest.srcChain}-${result.channelId}`,
-        depositAddress: result.address,
-        brokerCommissionBps: brokerCommissionBps ?? this.options.broker.commissionBps ?? 0,
-        srcChainExpiryBlock: result.sourceChainExpiryBlock,
-        maxBoostFeeBps: depositAddressRequest.maxBoostFeeBps,
-        channelOpeningFee: result.channelOpeningFee,
-      };
-    } else {
-      assert(
-        !depositAddressRequest.brokerCommissionBps,
-        'Broker commission is supported only when initializing the SDK with a brokerUrl',
-      );
-      assert(
-        !depositAddressRequest.affiliateBrokers?.length,
-        'Affiliate brokers are supported only when initializing the SDK with a brokerUrl',
-      );
-      assert(fillOrKillParams, 'Fill or kill parameters are required');
-      response = await this.trpc.openSwapDepositChannel.mutate({
-        ...depositAddressRequest,
-        fillOrKillParams,
-      });
-    }
-
-    return {
-      ...depositAddressRequest,
-      depositChannelId: response.id,
-      depositAddress: response.depositAddress,
-      brokerCommissionBps: response.brokerCommissionBps,
-      affiliateBrokers: depositAddressRequest.affiliateBrokers ?? [],
-      maxBoostFeeBps: Number(response.maxBoostFeeBps) || 0,
-      depositChannelExpiryBlock: response.srcChainExpiryBlock as bigint,
-      estimatedDepositChannelExpiryTime: response.estimatedExpiryTime,
-      channelOpeningFee: response.channelOpeningFee,
-    };
-  }
-
-  /** @deprecated DEPRECATED(1.7) use getStatusV2() */
-  getStatus(
-    swapStatusRequest: SwapStatusRequest,
-    options: ApiService.RequestOptions = {},
-  ): Promise<SwapStatusResponse> {
-    // eslint-disable-next-line no-console
-    console.error(
-      '[@chainflip/sdk] The getStatus method is deprecated and will be removed in the 1.9 release. Use the getStatusV2 method instead.',
-    );
-
-    return ApiService.getStatus(this.options.backendUrl, swapStatusRequest, options);
   }
 
   getStatusV2(
@@ -522,5 +407,10 @@ export class SwapSDK {
     );
 
     return this.trpc.encodeVaultSwapData.mutate(vaultSwapRequest);
+  }
+
+  async checkBoostEnabled(): Promise<boolean> {
+    const { boostDepositsEnabled } = await this.cache.read('networkStatus');
+    return boostDepositsEnabled;
   }
 }

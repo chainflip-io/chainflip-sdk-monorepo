@@ -349,7 +349,7 @@ describe(openSwapDepositChannel, () => {
   });
 
   it('rejects if source asset is disabled', async () => {
-    env.FULLY_DISABLED_INTERNAL_ASSETS = ['Flip', 'Btc'];
+    env.FULLY_DISABLED_INTERNAL_ASSETS = new Set(['Flip', 'Btc']);
 
     await expect(
       openSwapDepositChannel({
@@ -369,7 +369,7 @@ describe(openSwapDepositChannel, () => {
   });
 
   it('rejects if destination asset is disabled', async () => {
-    env.FULLY_DISABLED_INTERNAL_ASSETS = ['Btc', 'Dot'];
+    env.FULLY_DISABLED_INTERNAL_ASSETS = new Set(['Btc', 'Dot']);
 
     await expect(
       openSwapDepositChannel({
