@@ -168,12 +168,17 @@ export class SwapSDK {
       .filter((asset) => !chain || asset.chain === chain);
   }
 
-  getQuoteV2(
+  async getQuoteV2(
     quoteRequest: QuoteRequest,
     options: ApiService.RequestOptions = {},
   ): Promise<QuoteResponseV2> {
-    const submitterBrokerCommissionBps =
-      quoteRequest.brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0;
+    let submitterBrokerCommissionBps;
+    if (this.options.broker) {
+      submitterBrokerCommissionBps =
+        quoteRequest.brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0;
+    } else {
+      submitterBrokerCommissionBps = (await this.cache.read('networkStatus')).cfBrokerCommissionBps;
+    }
 
     return ApiService.getQuoteV2(
       this.options.backendUrl,

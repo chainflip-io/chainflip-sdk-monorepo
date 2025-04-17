@@ -110,6 +110,7 @@ export default z
     SOLANA_TX_REF_QUEUE_INTERVAL: optionalNumber(1000),
     QUOTER_BALANCE_TRACKER_ACTIVE: optionalBoolean.default('true'),
     QUOTER_BALANCE_TOLERANCE_PERCENT: optionalNumber(10),
+    BROKER_COMMISSION_BPS: optionalNumber(0),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);
