@@ -102,7 +102,10 @@ export const openSwapDepositChannel = async (
   }
 
   const swapDepositAddress = await broker.requestSwapDepositAddress(
-    input,
+    {
+      ...input,
+      commissionBps: env.BROKER_COMMISSION_BPS,
+    },
     { url: env.RPC_BROKER_HTTPS_URL },
     env.CHAINFLIP_NETWORK,
   );

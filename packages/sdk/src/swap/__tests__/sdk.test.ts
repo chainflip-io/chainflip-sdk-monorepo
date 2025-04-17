@@ -41,7 +41,7 @@ vi.mock('@trpc/client', async (importOriginal) => {
 
 global.fetch = vi.fn();
 
-const mockNetworkStatus = (boostDepositsEnabled = true) => {
+const mockNetworkStatus = (boostDepositsEnabled = true, cfBrokerCommissionBps = 0) => {
   const sdk = new SwapSDK({ network: 'sisyphos' });
   vi.mocked(sdk['trpc'].networkStatus.query).mockResolvedValueOnce({
     assets: {
@@ -50,6 +50,7 @@ const mockNetworkStatus = (boostDepositsEnabled = true) => {
       destination: ['Eth', 'Btc', 'Flip', 'Usdc'],
     },
     boostDepositsEnabled,
+    cfBrokerCommissionBps,
   });
   return sdk;
 };

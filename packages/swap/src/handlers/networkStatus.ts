@@ -44,6 +44,7 @@ const networkStatus = async (): Promise<{
     all: ChainflipAsset[];
   };
   boostDepositsEnabled: boolean;
+  cfBrokerCommissionBps: number;
 }> => {
   const [assets, safeModeStatuses] = await Promise.all([
     cache.read('cf_supported_assets'),
@@ -73,6 +74,7 @@ const networkStatus = async (): Promise<{
       all: enabledAssets,
     },
     boostDepositsEnabled: safeModeStatuses.ingress_egress_bitcoin.boost_deposits_enabled,
+    cfBrokerCommissionBps: env.BROKER_COMMISSION_BPS,
   };
 };
 
