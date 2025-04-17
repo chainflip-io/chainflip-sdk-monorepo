@@ -77,6 +77,15 @@ describe(SwapSDK, () => {
   beforeEach(() => {
     sdk = new SwapSDK({ network: 'sisyphos' });
     vi.resetAllMocks();
+    vi.mocked(sdk['trpc'].networkStatus.query).mockResolvedValueOnce({
+      assets: {
+        all: [...chainflipAssets],
+        deposit: [...chainflipAssets],
+        destination: [...chainflipAssets],
+      },
+      boostDepositsEnabled: true,
+      cfBrokerCommissionBps: 0,
+    });
     mockRpcResponse(defaultRpcMocks);
   });
 
@@ -194,7 +203,29 @@ describe(SwapSDK, () => {
       expect(result).toStrictEqual([{ quote: 1234 }]);
     });
 
+    it('calls api with commission', async () => {
+      sdk = mockNetworkStatus(true, 15);
+      const params: QuoteRequest = {
+        srcChain: 'Ethereum',
+        srcAsset: 'ETH',
+        destChain: 'Ethereum',
+        destAsset: 'USDC',
+        amount: '1',
+        isVaultSwap: true,
+      };
+      vi.mocked(getQuoteV2).mockResolvedValueOnce([{ quote: 1234 }] as any);
+
+      const result = await sdk.getQuoteV2(params);
+      expect(getQuoteV2).toHaveBeenCalledWith(
+        'https://chainflip-swap.staging/',
+        { ...params, brokerCommissionBps: 15, dcaEnabled: false },
+        {},
+      );
+      expect(result).toStrictEqual([{ quote: 1234 }]);
+    });
+
     it('calls api with broker commission', async () => {
+      sdk = new SwapSDK({ broker: { url: 'https://other.broker' }, network: 'sisyphos' });
       const params: QuoteRequest = {
         srcChain: 'Ethereum',
         srcAsset: 'ETH',
