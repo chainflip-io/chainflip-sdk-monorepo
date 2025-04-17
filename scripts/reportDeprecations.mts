@@ -8,7 +8,6 @@ import { createInterface } from 'readline';
 import * as url from 'url';
 import { ls, enumerate } from './utils.mjs';
 
-// @ts-expect-error -- .mts file
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..');
 const majorMinorRegex = /^\d+\.\d+$/;
@@ -69,5 +68,4 @@ const main = async () => {
   return 1;
 };
 
-// @ts-expect-error -- .mts file
 process.exit(await main());
