@@ -132,6 +132,7 @@ describe('networkStatus', () => {
           ],
         },
         "boostDepositsEnabled": true,
+        "cfBrokerCommissionBps": 0,
       }
     `);
   });
@@ -147,6 +148,7 @@ describe('networkStatus', () => {
           "destination": [],
         },
         "boostDepositsEnabled": true,
+        "cfBrokerCommissionBps": 0,
       }
     `);
   });
@@ -170,6 +172,7 @@ describe('networkStatus', () => {
           ],
         },
         "boostDepositsEnabled": true,
+        "cfBrokerCommissionBps": 0,
       }
     `);
   });
@@ -192,6 +195,7 @@ describe('networkStatus', () => {
           "destination": [],
         },
         "boostDepositsEnabled": true,
+        "cfBrokerCommissionBps": 0,
       }
     `);
   });
@@ -214,6 +218,7 @@ describe('networkStatus', () => {
           ],
         },
         "boostDepositsEnabled": true,
+        "cfBrokerCommissionBps": 0,
       }
     `);
   });
@@ -235,6 +240,7 @@ describe('networkStatus', () => {
           ],
         },
         "boostDepositsEnabled": true,
+        "cfBrokerCommissionBps": 0,
       }
     `);
   });
@@ -256,6 +262,7 @@ describe('networkStatus', () => {
           "destination": [],
         },
         "boostDepositsEnabled": true,
+        "cfBrokerCommissionBps": 0,
       }
     `);
   });
@@ -276,6 +283,7 @@ describe('networkStatus', () => {
           "destination": [],
         },
         "boostDepositsEnabled": false,
+        "cfBrokerCommissionBps": 0,
       }
     `);
   });
