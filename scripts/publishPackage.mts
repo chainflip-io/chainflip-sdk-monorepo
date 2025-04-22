@@ -5,14 +5,13 @@ import { exec } from 'child_process';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as prettier from 'prettier';
-import { createInterface } from 'readline';
+import { createInterface } from 'readline/promises';
 import * as url from 'url';
 import * as util from 'util';
 import yargs from 'yargs/yargs';
 
 const execAsync = util.promisify(exec);
 
-// @ts-expect-error -- .mts file
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 const root = path.join(__dirname, '..');
@@ -38,7 +37,7 @@ const args = yargs(process.argv)
   })
   .option('dry-run', {
     demandOption: false,
-    default: !['0', 'false'].includes(process.env.DRY_RUN?.toLowerCase()),
+    default: !['0', 'false'].includes(process.env.DRY_RUN?.toLowerCase() as string),
     boolean: true,
     description:
       'whether the script should run in dry run mode, can be disabled with `DRY_RUN=false` or `--no-dry-run`. ' +
@@ -47,9 +46,7 @@ const args = yargs(process.argv)
   .help()
   .parseSync();
 
-const onMain =
-  // @ts-expect-error -- .mts file
-  (await execAsync('git branch --show-current')).stdout.trim() === 'main';
+const onMain = (await execAsync('git branch --show-current')).stdout.trim() === 'main';
 
 if (!onMain) {
   console.error('please switch to branch "main"');
@@ -57,7 +54,6 @@ if (!onMain) {
 }
 
 const workingDirectoryDirty =
-  // @ts-expect-error -- .mts file
   (await execAsync('git status --porcelain=v2')).stdout
     .trim()
     .split('\n')
@@ -70,7 +66,6 @@ if (workingDirectoryDirty) {
 }
 
 try {
-  // @ts-expect-error -- .mts file
   await execAsync('git pull origin main --ff-only');
 } catch {
   console.error('failed to pull latest changes from main, perhaps your branch has diverged?');
@@ -79,10 +74,7 @@ try {
 
 let newVersion = args['new-version'];
 const packageRoot = path.join(root, 'packages', args.package);
-const packageJSON = JSON.parse(
-  // @ts-expect-error -- .mts file
-  await fs.readFile(path.join(packageRoot, 'package.json'), 'utf-8'),
-);
+const packageJSON = JSON.parse(await fs.readFile(path.join(packageRoot, 'package.json'), 'utf-8'));
 
 if (!newVersion) {
   const currentVersion = packageJSON.version;
@@ -92,7 +84,7 @@ if (!newVersion) {
     process.exit(1);
   }
 
-  const [, major, minor, patch] = /^(\d+)\.(\d+)\.(\d+)/.exec(currentVersion);
+  const [, major, minor, patch] = /^(\d+)\.(\d+)\.(\d+)/.exec(currentVersion)!;
 
   if (args.minor) {
     newVersion = `${major}.${Number(minor) + 1}.0`;
@@ -131,7 +123,6 @@ const updateReleases = async () => {
   if (!isDryRun) {
     await fs.writeFile(
       path.join(scripts, 'releases.json'),
-      // @ts-expect-error -- it works
       await prettier.format(JSON.stringify([...versions]), { parser: 'json' }),
     );
   }
@@ -149,24 +140,19 @@ const openVersionPR = async () => {
   await execCommand(`gh pr create --title "${message}" --body ""`);
 };
 
-// @ts-expect-error -- .mts file
 await openVersionPR();
 
 if (isDryRun) {
   console.log('END DRY RUN MODE');
   const rl = createInterface({ input: process.stdin, output: process.stdout });
 
-  const questionAsync = util.promisify(rl.question).bind(rl);
-
-  // @ts-expect-error -- .mts file
-  const runAgain = await questionAsync('would you like to run again without dry run?\n(y/N)> ');
+  const runAgain = await rl.question('would you like to run again without dry run?\n(y/N)> ');
 
   rl.close();
 
   if (runAgain?.trim().toLowerCase() === 'y') {
     isDryRun = false;
     console.log('running without dry run mode');
-    // @ts-expect-error -- .mts file
     await openVersionPR();
   }
 }

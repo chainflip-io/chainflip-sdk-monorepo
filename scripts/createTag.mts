@@ -43,8 +43,7 @@ const args = yargs(process.argv)
   .help()
   .parseSync();
 
-const currentBranch = // @ts-expect-error -- .mts file
-  (await execAsync('git branch --show-current')).stdout.trim();
+const currentBranch = (await execAsync('git branch --show-current')).stdout.trim();
 
 const releaseVersion = /^release\/(\d\.\d)/.exec(currentBranch)?.[1];
 
@@ -53,7 +52,6 @@ if (!releaseVersion) {
   process.exit(1);
 }
 
-// @ts-expect-error -- .mts file
 const { stdout: lastTag } = await execAsync(
   `git tag | grep "${args.package}/v${releaseVersion}" | sort -V | tail -n 1`,
 );
@@ -94,19 +92,16 @@ const tagPackage = async () => {
   await execCommand(`git push origin refs/tags/${newTag}`);
 };
 
-// @ts-expect-error -- .mts file
 await tagPackage();
 
 if (dryRun) {
   console.log('END DRY RUN MODE');
 
-  // @ts-expect-error -- .mts file
   const runAgain = await ask('would you like to run again without dry run?\n(y/N)> ');
 
   if (runAgain.toLowerCase() === 'y') {
     dryRun = false;
     console.log('running without dry run mode');
-    // @ts-expect-error -- .mts file
     await tagPackage();
   }
 }
