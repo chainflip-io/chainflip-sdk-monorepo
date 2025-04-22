@@ -6,8 +6,8 @@ import { polkadotIngressEgressCcmBroadcastRequested } from '@chainflip/processor
 import { solanaIngressEgressCcmBroadcastRequested } from '@chainflip/processor/190/solanaIngressEgress/ccmBroadcastRequested';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import type { EventHandlerArgs } from '..';
-import logger from '../../utils/logger';
+import logger from '../../utils/logger.js';
+import type { EventHandlerArgs } from '../index.js';
 
 const schemas = {
   Arbitrum: arbitrumIngressEgressCcmBroadcastRequested,

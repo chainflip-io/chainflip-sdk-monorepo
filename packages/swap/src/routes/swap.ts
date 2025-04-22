@@ -1,25 +1,25 @@
 import { internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import express from 'express';
-import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
-import { asyncHandler, maintenanceMode } from './common';
-import prisma from '../client';
+import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions.js';
+import { asyncHandler, maintenanceMode } from './common.js';
+import prisma from '../client.js';
 import {
   openSwapDepositChannel,
   openSwapDepositChannelSchema,
-} from '../handlers/openSwapDepositChannel';
-import { getPendingBroadcast, getPendingDeposit } from '../ingress-egress-tracking';
-import { readField } from '../utils/function';
-import logger from '../utils/logger';
-import ServiceError from '../utils/ServiceError';
+} from '../handlers/openSwapDepositChannel.js';
+import { getPendingBroadcast, getPendingDeposit } from '../ingress-egress-tracking/index.js';
+import { readField } from '../utils/function.js';
+import logger from '../utils/logger.js';
+import ServiceError from '../utils/ServiceError.js';
 import {
   estimateSwapDuration,
   failedSwapMessage,
   FailureMode,
   isEgressableSwap,
-} from '../utils/swap';
-import { getBeneficiaries, getLatestSwapForId } from './v2/utils';
-import { getLastChainTrackingUpdateTimestamp } from '../utils/intercept';
-import { getRequiredBlockConfirmations } from '../utils/rpc';
+} from '../utils/swap.js';
+import { getBeneficiaries, getLatestSwapForId } from './v2/utils.js';
+import { getLastChainTrackingUpdateTimestamp } from '../utils/intercept.js';
+import { getRequiredBlockConfirmations } from '../utils/rpc.js';
 
 const router = express.Router();
 

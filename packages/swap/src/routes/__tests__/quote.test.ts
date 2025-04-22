@@ -12,14 +12,14 @@ import {
   environment,
   mockRpcResponse,
   swapRate,
-} from '@/shared/tests/fixtures';
-import prisma, { InternalAsset } from '../../client';
-import env from '../../config/env';
-import { checkPriceWarning } from '../../pricing/checkPriceWarning';
-import Quoter from '../../quoting/Quoter';
-import app from '../../server';
-import { boostPoolsCache } from '../../utils/boost';
-import { getTotalLiquidity } from '../../utils/pools';
+} from '@/shared/tests/fixtures.js';
+import prisma, { InternalAsset } from '../../client.js';
+import env from '../../config/env.js';
+import { checkPriceWarning } from '../../pricing/checkPriceWarning.js';
+import Quoter from '../../quoting/Quoter.js';
+import app from '../../server.js';
+import { boostPoolsCache } from '../../utils/boost.js';
+import { getTotalLiquidity } from '../../utils/pools.js';
 
 vi.mock('../../utils/pools', async (importOriginal) => {
   const original = (await importOriginal()) as object;
@@ -55,7 +55,7 @@ vi.mock('@chainflip/rpc', async (importOriginal) => {
   };
 });
 
-vi.mock('@/shared/consts', async (importOriginal) => {
+vi.mock('@/shared/consts.js', async (importOriginal) => {
   const original = (await importOriginal()) as object;
   return {
     ...original,

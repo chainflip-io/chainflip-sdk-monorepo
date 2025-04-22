@@ -1,4 +1,4 @@
-import { gql } from './generated';
+import { gql } from './generated/index.js';
 
 export const GET_BATCH = gql(/* GraphQL */ `
   query GetBatch($height: Int!, $limit: Int!, $swapEvents: [String!]!) {

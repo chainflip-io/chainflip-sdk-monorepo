@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import * as broker from '../broker';
-import { mockRpcResponse } from '../tests/fixtures';
+import * as broker from '../broker.js';
+import { mockRpcResponse } from '../tests/fixtures.js';
 
 describe(broker.requestSwapDepositAddress, () => {
   const brokerConfig = { url: 'https://example.com' };

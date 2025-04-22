@@ -8,7 +8,7 @@ import {
   readAssetValue,
   InternalAssetMap,
 } from '@chainflip/utils/chainflip';
-import { isNotNullish } from '@/shared/guards';
+import { isNotNullish } from '@/shared/guards.js';
 import {
   BoostPoolsDepth,
   getAllBoostPoolsDepth,
@@ -16,10 +16,10 @@ import {
   getPoolDepth as getPoolDepthRpc,
   getAccounts as getAccountsRpc,
   getAccountInfo as getAccountInfoRpc,
-} from '@/shared/rpc';
-import { validateSwapAmount as validateAmount } from '@/shared/rpc/utils';
-import { memoize } from './function';
-import env from '../config/env';
+} from '@/shared/rpc/index.js';
+import { validateSwapAmount as validateAmount } from '@/shared/rpc/utils.js';
+import { memoize } from './function.js';
+import env from '../config/env.js';
 
 const cachedGetEnvironment = memoize(getEnvironment, 6_000);
 

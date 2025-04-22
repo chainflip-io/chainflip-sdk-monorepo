@@ -1,8 +1,8 @@
 import { describe, it, beforeAll, expect, vi } from 'vitest';
-import prisma from '../../client';
-import { getPools } from '../pools';
+import prisma from '../../client.js';
+import { getPools } from '../pools.js';
 
-vi.mock('@/shared/consts', async (importOriginal) => {
+vi.mock('@/shared/consts.js', async (importOriginal) => {
   const original = (await importOriginal()) as object;
   return {
     ...original,

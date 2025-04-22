@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import prisma from '../../../client';
-import { DOT_ADDRESS, refundEgressScheduledMock } from '../../__tests__/utils';
-import refundEgressScheduled from '../refundEgressScheduled';
+import prisma from '../../../client.js';
+import { DOT_ADDRESS, refundEgressScheduledMock } from '../../__tests__/utils.js';
+import refundEgressScheduled from '../refundEgressScheduled.js';
 
 describe(refundEgressScheduled, () => {
   beforeEach(async () => {

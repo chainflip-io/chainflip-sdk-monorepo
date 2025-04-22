@@ -6,7 +6,7 @@ import { solanaIngressEgressBoostPoolCreated } from '@chainflip/processor/160/so
 import { assethubIngressEgressBoostPoolCreated } from '@chainflip/processor/190/assethubIngressEgress/boostPoolCreated';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { EventHandlerArgs } from '..';
+import { EventHandlerArgs } from '../index.js';
 
 const schemas = {
   Arbitrum: arbitrumIngressEgressBoostPoolCreated,

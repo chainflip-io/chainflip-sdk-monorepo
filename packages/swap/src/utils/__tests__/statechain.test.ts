@@ -2,8 +2,8 @@ import { WsClient } from '@chainflip/rpc';
 import { internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { describe, it, expect, vi } from 'vitest';
-import { InternalAsset } from '../../client';
-import { getSwapRateV3 } from '../statechain';
+import { InternalAsset } from '../../client.js';
+import { getSwapRateV3 } from '../statechain.js';
 
 vi.mock('../function', async (importOriginal) => {
   const original = (await importOriginal()) as object;

@@ -1,6 +1,6 @@
 import { swappingSwapScheduled } from '@chainflip/processor/180/swapping/swapScheduled';
 import { z } from 'zod';
-import type { EventHandlerArgs } from '..';
+import type { EventHandlerArgs } from '../index.js';
 
 export type SwapScheduledArgs = z.input<typeof swappingSwapScheduled>;
 

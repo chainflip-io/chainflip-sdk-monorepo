@@ -1,6 +1,6 @@
 import { ChainflipAsset } from '@chainflip/utils/chainflip';
-import ServiceError from './ServiceError';
-import env from '../config/env';
+import ServiceError from './ServiceError.js';
+import env from '../config/env.js';
 
 export const isLocalnet = () => env.CHAINFLIP_NETWORK === 'backspin';
 

@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import prisma from '../../../client';
-import { check } from '../../__tests__/utils';
+import prisma from '../../../client.js';
+import { check } from '../../__tests__/utils.js';
 import {
   insufficientBoostLiquidity,
   InsufficientBoostLiquidityArgsMap,
-} from '../insufficientBoostLiquidity';
+} from '../insufficientBoostLiquidity.js';
 
 const chain = 'Bitcoin';
 

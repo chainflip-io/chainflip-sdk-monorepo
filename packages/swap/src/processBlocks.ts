@@ -3,14 +3,14 @@ import { GraphQLClient } from 'graphql-request';
 import { performance } from 'perf_hooks';
 import { setTimeout as sleep } from 'timers/promises';
 import { inspect } from 'util';
-import prisma from './client';
-import env from './config/env';
-import { handlerMap, swapEventNames } from './event-handlers';
-import { GetBatchQuery, GetCallQuery } from './gql/generated/graphql';
-import { GET_BATCH } from './gql/query';
-import preBlock from './preBlock';
-import { handleExit } from './utils/function';
-import logger from './utils/logger';
+import prisma from './client.js';
+import env from './config/env.js';
+import { handlerMap, swapEventNames } from './event-handlers/index.js';
+import { GetBatchQuery, GetCallQuery } from './gql/generated/graphql.js';
+import { GET_BATCH } from './gql/query.js';
+import preBlock from './preBlock.js';
+import { handleExit } from './utils/function.js';
+import logger from './utils/logger.js';
 
 const client = new GraphQLClient(env.INGEST_GATEWAY_URL);
 

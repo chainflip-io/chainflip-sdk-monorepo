@@ -1,44 +1,44 @@
 import { bytesToHex, reverseBytes } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
-import { BatchBroadcastRequestedArgsMap } from 'packages/swap/src/event-handlers/ingress-egress/batchBroadcastRequested';
-import { DepositBoostedArgsMap } from 'packages/swap/src/event-handlers/ingress-egress/depositBoosted';
-import { DepositFinalisedArgsMap } from 'packages/swap/src/event-handlers/ingress-egress/depositFinalised';
-import { InsufficientBoostLiquidityArgsMap } from 'packages/swap/src/event-handlers/ingress-egress/insufficientBoostLiquidity';
-import { RefundEgressScheduledArgs } from 'packages/swap/src/event-handlers/swapping/refundEgressScheduled';
-import { SwapEgressScheduledArgs } from 'packages/swap/src/event-handlers/swapping/swapEgressScheduled';
-import { SwapExecutedArgs } from 'packages/swap/src/event-handlers/swapping/swapExecuted';
-import { SwapScheduledArgs } from 'packages/swap/src/event-handlers/swapping/swapScheduled';
 import request from 'supertest';
 import { vi, describe, it, beforeEach, afterEach, expect, beforeAll } from 'vitest';
-import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
-import prisma from '../../../client';
-import env from '../../../config/env';
-import metadata from '../../../event-handlers/__tests__/metadata.json';
+import { environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
+import prisma from '../../../client.js';
+import env from '../../../config/env.js';
+import metadata from '../../../event-handlers/__tests__/metadata.json' with { type: 'json' };
 import {
   check,
   createChainTrackingInfo,
   createPools,
   processEvents,
-} from '../../../event-handlers/__tests__/utils';
+} from '../../../event-handlers/__tests__/utils.js';
+import { BatchBroadcastRequestedArgsMap } from '../../../event-handlers/ingress-egress/batchBroadcastRequested.js';
+import { DepositBoostedArgsMap } from '../../../event-handlers/ingress-egress/depositBoosted.js';
 import {
   BitcoinDepositFailedArgs,
   DepositFailedArgsMap,
-} from '../../../event-handlers/ingress-egress/depositFailed';
-import { TransactionRejectedByBrokerArgs } from '../../../event-handlers/ingress-egress/transactionRejectedByBroker';
-import type { SwapDepositAddressReadyArgs } from '../../../event-handlers/swapping/swapDepositAddressReady';
-import { SwapEgressIgnoredArgs } from '../../../event-handlers/swapping/swapEgressIgnored';
+} from '../../../event-handlers/ingress-egress/depositFailed.js';
+import { DepositFinalisedArgsMap } from '../../../event-handlers/ingress-egress/depositFinalised.js';
+import { InsufficientBoostLiquidityArgsMap } from '../../../event-handlers/ingress-egress/insufficientBoostLiquidity.js';
+import { TransactionRejectedByBrokerArgs } from '../../../event-handlers/ingress-egress/transactionRejectedByBroker.js';
+import { RefundEgressScheduledArgs } from '../../../event-handlers/swapping/refundEgressScheduled.js';
+import type { SwapDepositAddressReadyArgs } from '../../../event-handlers/swapping/swapDepositAddressReady.js';
+import { SwapEgressIgnoredArgs } from '../../../event-handlers/swapping/swapEgressIgnored.js';
+import { SwapEgressScheduledArgs } from '../../../event-handlers/swapping/swapEgressScheduled.js';
+import { SwapExecutedArgs } from '../../../event-handlers/swapping/swapExecuted.js';
 import {
   SwapRequestedArgs190,
   SwapRequestedArgs,
-} from '../../../event-handlers/swapping/swapRequested';
+} from '../../../event-handlers/swapping/swapRequested.js';
+import { SwapScheduledArgs } from '../../../event-handlers/swapping/swapScheduled.js';
 import {
   getPendingBroadcast,
   getPendingDeposit,
   getPendingVaultSwap,
-} from '../../../ingress-egress-tracking';
-import app from '../../../server';
-import { StateV2 } from '../../v2/swap';
+} from '../../../ingress-egress-tracking/index.js';
+import app from '../../../server.js';
+import { StateV2 } from '../../v2/swap.js';
 
 const incrementId = (obj: Mutable<(typeof swapEventMap)[keyof typeof swapEventMap]>, def = 1) => {
   if ('swapId' in obj.args) {
@@ -53,7 +53,7 @@ const incrementId = (obj: Mutable<(typeof swapEventMap)[keyof typeof swapEventMa
   throw new Error('no incremental id in event');
 };
 
-vi.mock('@/shared/rpc', async (importOriginal) => {
+vi.mock('@/shared/rpc/index.js', async (importOriginal) => {
   const original = (await importOriginal()) as object;
   return {
     ...original,
@@ -71,7 +71,7 @@ vi.mock('timers/promises', () => ({
 
 vi.mock('../../../ingress-egress-tracking');
 
-vi.mock('@/shared/broker', async (importOriginal) => {
+vi.mock('@/shared/broker.js', async (importOriginal) => {
   const original = (await importOriginal()) as object;
   return {
     ...original,

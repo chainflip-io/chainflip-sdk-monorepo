@@ -11,10 +11,10 @@ import { polkadotIngressEgressDepositBoosted as polkadotSchema190 } from '@chain
 import { solanaIngressEgressDepositBoosted as solanaSchema190 } from '@chainflip/processor/190/solanaIngressEgress/depositBoosted';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { ONE_IN_PIP } from '@/shared/functions';
-import { SwapFeeType } from '../../client';
-import { getDepositTxRef } from '../common';
-import { EventHandlerArgs } from '../index';
+import { ONE_IN_PIP } from '@/shared/functions.js';
+import { SwapFeeType } from '../../client.js';
+import { getDepositTxRef } from '../common.js';
+import { EventHandlerArgs } from '../index.js';
 
 const arbitrumSchema = z.union([arbitrumSchema190, arbitrumSchema180]).transform((args) => ({
   ...args,

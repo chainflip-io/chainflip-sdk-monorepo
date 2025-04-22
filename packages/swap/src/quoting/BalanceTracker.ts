@@ -1,8 +1,8 @@
 import { InternalAssetMap } from '@chainflip/utils/chainflip';
 import { inspect } from 'util';
-import type { AccountId } from './Quoter';
-import baseLogger from '../utils/logger';
-import { getLpBalances } from '../utils/rpc';
+import type { AccountId } from './Quoter.js';
+import baseLogger from '../utils/logger.js';
+import { getLpBalances } from '../utils/rpc.js';
 
 const logger = baseLogger.child({ module: 'balance-tracker' });
 

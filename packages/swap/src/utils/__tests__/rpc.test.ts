@@ -1,8 +1,8 @@
 import HttpClient from '@chainflip/rpc/HttpClient';
 import { ChainAssetMap } from '@chainflip/utils/chainflip';
 import { describe, it, expect, vi } from 'vitest';
-import { boostPoolsDepth, mockRpcResponse } from '@/shared/tests/fixtures';
-import { getBoostPoolsDepth, getLpBalances } from '../rpc';
+import { boostPoolsDepth, mockRpcResponse } from '@/shared/tests/fixtures.js';
+import { getBoostPoolsDepth, getLpBalances } from '../rpc.js';
 
 describe(getBoostPoolsDepth, () => {
   it('allows filtering by asset through all the boost pools and sorts the result', async () => {

@@ -1,7 +1,7 @@
 import { ChainflipAsset } from '@chainflip/utils/chainflip';
-import { AsyncCacheMap } from '@/shared/dataStructures';
-import { ONE_IN_PIP, bigintMin, getPipAmountFromAmount } from '@/shared/functions';
-import { getBoostPoolsDepth } from './rpc';
+import { AsyncCacheMap } from '@/shared/dataStructures.js';
+import { ONE_IN_PIP, bigintMin, getPipAmountFromAmount } from '@/shared/functions.js';
+import { getBoostPoolsDepth } from './rpc.js';
 
 export const boostPoolsCache = new AsyncCacheMap({
   fetch: (asset: ChainflipAsset) => getBoostPoolsDepth({ asset }),

@@ -1,9 +1,9 @@
 import { baseChainflipAssets } from '@chainflip/utils/chainflip';
 import { vi, describe, it, expect, beforeEach, beforeAll } from 'vitest';
-import prisma from '../../../client';
-import swapExecuted, { SwapExecutedArgs } from '../swapExecuted';
+import prisma from '../../../client.js';
+import swapExecuted, { SwapExecutedArgs } from '../swapExecuted.js';
 
-vi.mock('@/shared/consts', async (importOriginal) => {
+vi.mock('@/shared/consts.js', async (importOriginal) => {
   const original = (await importOriginal()) as object;
   return {
     ...original,

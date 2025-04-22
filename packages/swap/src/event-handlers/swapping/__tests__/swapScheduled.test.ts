@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import prisma from '../../../client';
-import swapScheduled from '../swapScheduled';
+import prisma from '../../../client.js';
+import swapScheduled from '../swapScheduled.js';
 
 describe(swapScheduled, () => {
   beforeEach(async () => {

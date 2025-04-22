@@ -2,8 +2,8 @@ import { HttpClient } from '@chainflip/rpc';
 import { RpcMethod, RpcRequest, RpcResult } from '@chainflip/rpc/common';
 import { assetConstants, ChainflipAsset, getInternalAsset } from '@chainflip/utils/chainflip';
 import { uncapitalize } from '@chainflip/utils/string';
-import { Cache, Fetcher } from '@/shared/dataStructures';
-import env from '../config/env';
+import { Cache, Fetcher } from '@/shared/dataStructures.js';
+import env from '../config/env.js';
 
 const httpClient = new HttpClient(env.RPC_NODE_HTTP_URL);
 

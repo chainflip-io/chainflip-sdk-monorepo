@@ -1,6 +1,6 @@
 import express from 'express';
-import { asyncHandler } from './common';
-import prisma from '../client';
+import { asyncHandler } from './common.js';
+import prisma from '../client.js';
 
 const router = express.Router();
 

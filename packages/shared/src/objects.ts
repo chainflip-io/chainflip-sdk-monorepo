@@ -1,4 +1,4 @@
-import { ToCamelCase, toCamelCase } from './strings';
+import { ToCamelCase, toCamelCase } from './strings.js';
 
 type CamelCaseKeys<T> = T extends (infer U)[]
   ? U extends object

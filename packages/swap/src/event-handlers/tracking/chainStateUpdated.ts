@@ -6,7 +6,7 @@ import { arbitrumChainTrackingChainStateUpdated } from '@chainflip/processor/180
 import { assethubChainTrackingChainStateUpdated } from '@chainflip/processor/190/assethubChainTracking/chainStateUpdated';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { EventHandlerArgs } from '..';
+import { EventHandlerArgs } from '../index.js';
 
 const schemas = {
   Arbitrum: arbitrumChainTrackingChainStateUpdated,

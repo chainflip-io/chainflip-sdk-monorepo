@@ -6,7 +6,7 @@ import { solanaBroadcasterBroadcastAborted } from '@chainflip/processor/150/sola
 import { assethubBroadcasterBroadcastAborted } from '@chainflip/processor/190/assethubBroadcaster/broadcastAborted';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { EventHandlerArgs } from '../index';
+import { EventHandlerArgs } from '../index.js';
 
 const schemas = {
   Arbitrum: arbitrumBroadcasterBroadcastAborted,

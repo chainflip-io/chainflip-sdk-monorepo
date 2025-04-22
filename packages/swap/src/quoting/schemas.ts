@@ -1,7 +1,7 @@
 import { BaseAssetAndChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { MAX_TICK, MIN_TICK } from '@/shared/consts';
-import { numericString } from '@/shared/parsers';
+import { MAX_TICK, MIN_TICK } from '@/shared/consts.js';
+import { numericString } from '@/shared/parsers.js';
 
 const limitOrder = z.tuple([
   z

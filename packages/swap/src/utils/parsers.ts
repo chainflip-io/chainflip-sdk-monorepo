@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { hexString } from '@/shared/parsers';
+import { hexString } from '@/shared/parsers.js';
 
 export const thirdPartySwapSchema = z.object({
   uuid: z.string(),

@@ -8,24 +8,24 @@ import * as path from 'path';
 import { Observable, filter, firstValueFrom, from, map, shareReplay, timeout } from 'rxjs';
 import { promisify } from 'util';
 import { vi, describe, it, beforeAll, beforeEach, afterEach, expect } from 'vitest';
-import { QuoteQueryParams } from '@/shared/schemas';
+import { QuoteQueryParams } from '@/shared/schemas.js';
 import {
   boostPoolsDepth,
   cfAccountInfo,
   cfPoolDepth,
   environment,
   mockRpcResponse,
-} from '@/shared/tests/fixtures';
-import prisma from '../client';
-import app from '../server';
-import { getTotalLiquidity } from '../utils/pools';
-import { getSwapRateV3 } from '../utils/statechain';
+} from '@/shared/tests/fixtures.js';
+import prisma from '../client.js';
+import app from '../server.js';
+import { getTotalLiquidity } from '../utils/pools.js';
+import { getSwapRateV3 } from '../utils/statechain.js';
 
 const execAsync = promisify(exec);
 global.fetch = vi.fn().mockRejectedValue(new Error('fetch is not implemented in this environment'));
 
-vi.mock('../pricing');
-vi.mock('../utils/pools', async (importOriginal) => {
+vi.mock('../pricing.js');
+vi.mock('../utils/pools.js', async (importOriginal) => {
   const original = (await importOriginal()) as object;
   return {
     ...original,
@@ -33,10 +33,10 @@ vi.mock('../utils/pools', async (importOriginal) => {
   };
 });
 
-vi.mock('../utils/statechain', () => ({
+vi.mock('../utils/statechain.js', () => ({
   getSwapRateV3: vi.fn().mockImplementation(() => Promise.reject(new Error('unexpected call'))),
 }));
-vi.mock('../polkadot/api', () => ({
+vi.mock('../polkadot/api.js', () => ({
   getBoostSafeMode: vi.fn().mockResolvedValue(true),
 }));
 
@@ -73,6 +73,7 @@ describe('python integration test', () => {
   });
 
   beforeEach(async () => {
+    vi.clearAllMocks();
     mockRpcResponse((url, data) => {
       if (data.method === 'cf_environment') {
         return Promise.resolve({

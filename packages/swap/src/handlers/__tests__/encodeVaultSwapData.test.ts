@@ -1,10 +1,10 @@
 import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest';
-import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
-import env from '../../config/env';
-import isDisallowedSwap from '../../utils/isDisallowedSwap';
-import { encodeVaultSwapData } from '../encodeVaultSwapData';
+import { environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
+import env from '../../config/env.js';
+import isDisallowedSwap from '../../utils/isDisallowedSwap.js';
+import { encodeVaultSwapData } from '../encodeVaultSwapData.js';
 
-vi.mock('@/shared/broker', async (importOriginal) => {
+vi.mock('@/shared/broker.js', async (importOriginal) => {
   const original = (await importOriginal()) as object;
   return {
     ...original,
@@ -12,7 +12,7 @@ vi.mock('@/shared/broker', async (importOriginal) => {
   };
 });
 
-vi.mock('../../utils/isDisallowedSwap', () => ({
+vi.mock('../../utils/isDisallowedSwap.js', () => ({
   default: vi.fn().mockResolvedValue(false),
 }));
 

@@ -1,8 +1,8 @@
 /* eslint-disable max-classes-per-file */
 import { ContractTransaction, VoidSigner } from 'ethers';
 import { describe, it, expect, vi } from 'vitest';
-import { ERC20__factory } from '../abis';
-import { approve, checkAllowance } from '../contracts';
+import { ERC20__factory } from '../abis/index.js';
+import { approve, checkAllowance } from '../contracts.js';
 
 class MockERC20 {
   async allowance(_owner: string, _spender: string): Promise<bigint> {

@@ -2,8 +2,8 @@ import { deferredPromise } from '@chainflip/utils/async';
 import { ChainflipAsset } from '@chainflip/utils/chainflip';
 import axios from 'axios';
 import { vi, describe, expect, it, beforeEach } from 'vitest';
-import { coinGeckoIdMap, PriceCache } from '..';
-import logger from '../../utils/logger';
+import logger from '../../utils/logger.js';
+import { coinGeckoIdMap, PriceCache } from '../index.js';
 
 vi.mock('axios', async () => ({
   default: {

@@ -5,12 +5,12 @@ import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
 import { isNullish } from '@chainflip/utils/guard';
 import assert from 'assert';
 import z from 'zod';
-import { formatTxRef } from '@/shared/common';
-import { assertUnreachable } from '@/shared/functions';
-import { assertNever } from '@/shared/guards';
-import { pascalCaseToScreamingSnakeCase } from '@/shared/strings';
-import { Prisma } from '../../client';
-import type { EventHandlerArgs } from '../index';
+import { formatTxRef } from '@/shared/common.js';
+import { assertUnreachable } from '@/shared/functions.js';
+import { assertNever } from '@/shared/guards.js';
+import { pascalCaseToScreamingSnakeCase } from '@/shared/strings.js';
+import { Prisma } from '../../client.js';
+import type { EventHandlerArgs } from '../index.js';
 
 const transformSchema = (args: z.output<typeof schema180>): z.output<typeof schema190> => ({
   ...args,

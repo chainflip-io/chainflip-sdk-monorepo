@@ -1,9 +1,9 @@
 import express from 'express';
-import { asyncHandler } from './common';
-import prisma from '../client';
-import logger from '../utils/logger';
-import { thirdPartySwapSchema } from '../utils/parsers';
-import ServiceError from '../utils/ServiceError';
+import { asyncHandler } from './common.js';
+import prisma from '../client.js';
+import logger from '../utils/logger.js';
+import { thirdPartySwapSchema } from '../utils/parsers.js';
+import ServiceError from '../utils/ServiceError.js';
 
 const router = express.Router();
 

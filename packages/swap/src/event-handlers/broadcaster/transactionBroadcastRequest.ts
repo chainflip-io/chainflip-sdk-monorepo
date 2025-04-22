@@ -6,8 +6,8 @@ import { solanaBroadcasterTransactionBroadcastRequest } from '@chainflip/process
 import { assethubBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/190/assethubBroadcaster/transactionBroadcastRequest';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { safeStringify } from '@/shared/functions';
-import { EventHandlerArgs } from '../index';
+import { safeStringify } from '@/shared/functions.js';
+import { EventHandlerArgs } from '../index.js';
 
 const schemas = {
   Arbitrum: arbitrumBroadcasterTransactionBroadcastRequest,

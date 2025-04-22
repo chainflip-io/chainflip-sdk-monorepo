@@ -1,5 +1,5 @@
-import { Prisma } from './client';
-import type { Block } from './processBlocks';
+import { Prisma } from './client.js';
+import type { Block } from './processBlocks.js';
 
 const preBlock = async (txClient: Prisma.TransactionClient, block: Block) => {
   await txClient.swapDepositChannel.updateMany({

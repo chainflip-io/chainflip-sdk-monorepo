@@ -2,9 +2,9 @@ import { WsClient, RpcParams } from '@chainflip/rpc';
 import { ChainflipAsset, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import WebSocket from 'ws';
-import { DcaParams, SwapFeeType } from '@/shared/schemas';
-import { memoize } from './function';
-import env from '../config/env';
+import { DcaParams, SwapFeeType } from '@/shared/schemas.js';
+import { memoize } from './function.js';
+import env from '../config/env.js';
 
 const initializeClient = memoize(() => new WsClient(env.RPC_NODE_WSS_URL, WebSocket as never));
 export type QuoteLimitOrders = NonNullable<RpcParams['cf_swap_rate_v3'][7]>;

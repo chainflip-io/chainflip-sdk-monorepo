@@ -1,8 +1,8 @@
 import axios from 'axios';
-import type { QuoteQueryParams, Quote } from '@/shared/schemas';
-import { CF_SDK_VERSION_HEADERS } from '../consts';
-import { QuoteRequest, QuoteResponseV2, SwapStatusRequest } from '../types';
-import { SwapStatusResponseV2 } from '../v2/types';
+import type { QuoteQueryParams, Quote } from '@/shared/schemas.js';
+import { CF_SDK_VERSION_HEADERS } from '../consts.js';
+import { QuoteRequest, QuoteResponseV2, SwapStatusRequest } from '../types.js';
+import { SwapStatusResponseV2 } from '../v2/types.js';
 
 export type RequestOptions = {
   signal?: AbortSignal;

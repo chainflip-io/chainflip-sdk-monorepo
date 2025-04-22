@@ -1,15 +1,15 @@
 import { HttpClient } from '@chainflip/rpc';
 import { getInternalAsset } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { getParameterEncodingRequestSchema } from '@/shared/broker';
-import { transformKeysToCamelCase } from '@/shared/objects';
-import { chainflipAddress } from '@/shared/parsers';
-import env from '../config/env';
-import { assertRouteEnabled } from '../utils/env';
-import isDisallowedSwap from '../utils/isDisallowedSwap';
-import logger from '../utils/logger';
-import { validateSwapAmount } from '../utils/rpc';
-import ServiceError from '../utils/ServiceError';
+import { getParameterEncodingRequestSchema } from '@/shared/broker.js';
+import { transformKeysToCamelCase } from '@/shared/objects.js';
+import { chainflipAddress } from '@/shared/parsers.js';
+import env from '../config/env.js';
+import { assertRouteEnabled } from '../utils/env.js';
+import isDisallowedSwap from '../utils/isDisallowedSwap.js';
+import logger from '../utils/logger.js';
+import { validateSwapAmount } from '../utils/rpc.js';
+import ServiceError from '../utils/ServiceError.js';
 
 const brokerClient = new HttpClient(env.RPC_BROKER_HTTPS_URL);
 const nodeClient = new HttpClient(env.RPC_NODE_HTTP_URL);

@@ -12,14 +12,14 @@ import { setTimeout as sleep } from 'timers/promises';
 import { promisify } from 'util';
 import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest';
 import { AddressInfo } from 'ws';
-import { MAX_TICK, MIN_TICK } from '@/shared/consts';
-import prisma, { InternalAsset } from '../../client';
-import env from '../../config/env';
-import { getAssetPrice } from '../../pricing';
-import { getLpBalances } from '../../utils/rpc';
-import authenticate from '../authenticate';
-import Quoter, { approximateIntermediateOutput, type RpcLimitOrder } from '../Quoter';
-import { LegJson, MarketMakerQuoteRequest, MarketMakerRawQuote } from '../schemas';
+import { MAX_TICK, MIN_TICK } from '@/shared/consts.js';
+import prisma, { InternalAsset } from '../../client.js';
+import env from '../../config/env.js';
+import { getAssetPrice } from '../../pricing/index.js';
+import { getLpBalances } from '../../utils/rpc.js';
+import authenticate from '../authenticate.js';
+import Quoter, { approximateIntermediateOutput, type RpcLimitOrder } from '../Quoter.js';
+import { LegJson, MarketMakerQuoteRequest, MarketMakerRawQuote } from '../schemas.js';
 
 vi.mock('../../utils/rpc', () => ({ getLpBalances: vi.fn().mockResolvedValue([]) }));
 

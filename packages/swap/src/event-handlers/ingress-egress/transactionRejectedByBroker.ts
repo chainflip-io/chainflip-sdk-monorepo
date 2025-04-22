@@ -6,9 +6,9 @@ import { solanaIngressEgressTransactionRejectedByBroker } from '@chainflip/proce
 import { assethubIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/190/assethubIngressEgress/transactionRejectedByBroker';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import z from 'zod';
-import { EventHandlerArgs } from '..';
-import logger from '../../utils/logger';
-import { getDepositTxRef } from '../common';
+import logger from '../../utils/logger.js';
+import { getDepositTxRef } from '../common.js';
+import { EventHandlerArgs } from '../index.js';
 
 const schemaMap = {
   Arbitrum: arbitrumIngressEgressTransactionRejectedByBroker.transform((args) => ({

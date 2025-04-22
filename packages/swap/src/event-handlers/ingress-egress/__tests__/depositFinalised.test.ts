@@ -1,7 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import prisma from '../../../client';
-import { check, createDepositChannel } from '../../__tests__/utils';
-import { depositFinalised, DepositFinalisedArgsMap } from '../depositFinalised';
+import prisma from '../../../client.js';
+import { check, createDepositChannel } from '../../__tests__/utils.js';
+import { depositFinalised, DepositFinalisedArgsMap } from '../depositFinalised.js';
 
 vi.mock('@chainflip/solana');
 

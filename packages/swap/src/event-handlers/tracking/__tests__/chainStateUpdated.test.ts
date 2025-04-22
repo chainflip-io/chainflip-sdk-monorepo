@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import prisma from '../../../client';
-import { check } from '../../__tests__/utils';
-import chainStateUpdated, { ChainStateUpdatedArgsMap } from '../chainStateUpdated';
+import prisma from '../../../client.js';
+import { check } from '../../__tests__/utils.js';
+import chainStateUpdated, { ChainStateUpdatedArgsMap } from '../chainStateUpdated.js';
 
 describe(chainStateUpdated, () => {
   beforeEach(async () => {

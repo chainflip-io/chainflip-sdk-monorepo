@@ -1,7 +1,7 @@
 import { vi, describe, expect, it } from 'vitest';
-import { getAssetPrice } from '..';
-import env from '../../config/env';
-import { checkPriceWarning } from '../checkPriceWarning';
+import env from '../../config/env.js';
+import { checkPriceWarning } from '../checkPriceWarning.js';
+import { getAssetPrice } from '../index.js';
 
 vi.mock('../index.ts', () => ({
   getAssetPrice: vi.fn(),

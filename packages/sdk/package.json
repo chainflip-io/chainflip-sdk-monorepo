@@ -28,6 +28,7 @@
     "dist",
     "README.md"
   ],
+  "type": "module",
   "scripts": {
     "test": "vitest",
     "test:ci": "CI=1 pnpm test",
@@ -57,10 +58,10 @@
     "@chainflip/utils": "^0.8.6",
     "@trpc/client": "^10.45.2",
     "axios": "^1.7.7",
-    "bignumber.js": "^9.1.2",
+    "bignumber.js": "^9.3.0",
     "ethers": "^6.13.3",
     "superjson": "^1.13.3",
-    "zod": "^3.23.8"
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@trpc/server": "^10.45.2",

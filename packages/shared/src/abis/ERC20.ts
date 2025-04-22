@@ -19,7 +19,7 @@ import type {
   TypedEventLog,
   TypedListener,
   TypedContractMethod,
-} from "./common";
+} from "./common.js";
 
 export interface ERC20Interface extends Interface {
   getFunction(

@@ -6,8 +6,8 @@ import {
 import * as crypto from 'crypto';
 import { promisify } from 'util';
 import { vi, describe, it, beforeEach, expect, Mock } from 'vitest';
-import prisma from '../../client';
-import authenticate from '../authenticate';
+import prisma from '../../client.js';
+import authenticate from '../authenticate.js';
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 const allAssets = Object.values(internalAssetToRpcAsset);

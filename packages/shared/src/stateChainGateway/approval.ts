@@ -5,8 +5,8 @@ import {
   approve,
   TransactionOptions,
   getFlipContractAddress,
-} from '../contracts';
-import { FundingNetworkOptions } from './index';
+} from '../contracts.js';
+import { FundingNetworkOptions } from './index.js';
 
 export const checkStateChainGatewayAllowance = async (
   amount: bigint,

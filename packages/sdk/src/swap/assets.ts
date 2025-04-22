@@ -5,10 +5,10 @@ import {
   ChainflipNetwork,
 } from '@chainflip/utils/chainflip';
 import { toUpperCase } from '@chainflip/utils/string';
-import { ADDRESSES } from '@/shared/consts';
-import { isTestnet } from '@/shared/functions';
-import type { Environment } from '@/shared/rpc';
-import type { AssetData } from './types';
+import { ADDRESSES } from '@/shared/consts.js';
+import { isTestnet } from '@/shared/functions.js';
+import type { Environment } from '@/shared/rpc/index.js';
+import type { AssetData } from './types.js';
 
 const getTokenContractAddress = (asset: ChainflipAsset, network: ChainflipNetwork) => {
   switch (asset) {

@@ -1,7 +1,7 @@
 import { VoidSigner } from 'ethers';
 import { describe, it, expect } from 'vitest';
-import { ADDRESSES } from '../../consts';
-import { getStateChainGateway } from '../utils';
+import { ADDRESSES } from '../../consts.js';
+import { getStateChainGateway } from '../utils.js';
 
 describe(getStateChainGateway, () => {
   it.each(['sisyphos'] as const)('returns the correct gateway for %s', (network) => {

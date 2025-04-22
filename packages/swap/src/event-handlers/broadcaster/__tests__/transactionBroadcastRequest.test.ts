@@ -1,10 +1,10 @@
 /* eslint-disable @vitest/expect-expect */
 import { describe, it, expect, beforeEach } from 'vitest';
-import prisma, { Chain } from '../../../client';
-import { transactionBroadcastRequestBtcMockV2 } from '../../__tests__/utils';
+import prisma, { Chain } from '../../../client.js';
+import { transactionBroadcastRequestBtcMockV2 } from '../../__tests__/utils.js';
 import transactionBroadcastRequest, {
   type TransactionBroadcastRequestArgsMap,
-} from '../transactionBroadcastRequest';
+} from '../transactionBroadcastRequest.js';
 
 const genericTest = async <const C extends Chain>(
   chain: C,

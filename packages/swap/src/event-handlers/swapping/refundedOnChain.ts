@@ -1,6 +1,6 @@
 import { swappingRefundedOnChain } from '@chainflip/processor/190/swapping/refundedOnChain';
 import z from 'zod';
-import { EventHandlerArgs } from '..';
+import { EventHandlerArgs } from '../index.js';
 
 export type SwappingRefundedOnChainArgs = z.input<typeof swappingRefundedOnChain>;
 

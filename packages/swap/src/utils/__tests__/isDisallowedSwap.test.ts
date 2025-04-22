@@ -1,10 +1,10 @@
 import { AxiosError } from 'axios';
 import { AML } from 'elliptic-sdk';
 import { describe, it, beforeEach, expect, vi } from 'vitest';
-import prisma from '../../client';
-import env from '../../config/env';
-import isDisallowedSwap from '../isDisallowedSwap';
-import logger from '../logger';
+import prisma from '../../client.js';
+import env from '../../config/env.js';
+import isDisallowedSwap from '../isDisallowedSwap.js';
+import logger from '../logger.js';
 
 vi.mock('elliptic-sdk', () => {
   const _AML = vi.fn();

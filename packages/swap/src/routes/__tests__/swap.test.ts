@@ -6,11 +6,11 @@ import { Server } from 'http';
 import request from 'supertest';
 import { describe, it, beforeEach, afterEach, expect, vi, beforeAll } from 'vitest';
 import z from 'zod';
-import * as broker from '@/shared/broker';
-import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
-import prisma from '../../client';
-import env from '../../config/env';
-import metadata from '../../event-handlers/__tests__/metadata.json';
+import * as broker from '@/shared/broker.js';
+import { environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
+import prisma from '../../client.js';
+import env from '../../config/env.js';
+import metadata from '../../event-handlers/__tests__/metadata.json' with { type: 'json' };
 import {
   DOT_ADDRESS,
   ETH_ADDRESS,
@@ -19,20 +19,20 @@ import {
   createDepositChannel,
   createPools,
   processEvents,
-} from '../../event-handlers/__tests__/utils';
-import { DepositBoostedArgsMap } from '../../event-handlers/ingress-egress/depositBoosted';
-import { DepositFinalisedArgsMap } from '../../event-handlers/ingress-egress/depositFinalised';
-import { InsufficientBoostLiquidityArgsMap } from '../../event-handlers/ingress-egress/insufficientBoostLiquidity';
-import { SwapDepositAddressReadyArgs } from '../../event-handlers/swapping/swapDepositAddressReady';
-import { SwapEgressIgnoredArgs } from '../../event-handlers/swapping/swapEgressIgnored';
-import { SwapEgressScheduledArgs } from '../../event-handlers/swapping/swapEgressScheduled';
-import { SwapRequestedArgs190 } from '../../event-handlers/swapping/swapRequested';
-import { SwapScheduledArgs } from '../../event-handlers/swapping/swapScheduled';
-import { getPendingBroadcast } from '../../ingress-egress-tracking';
-import app from '../../server';
-import { State } from '../swap';
+} from '../../event-handlers/__tests__/utils.js';
+import { DepositBoostedArgsMap } from '../../event-handlers/ingress-egress/depositBoosted.js';
+import { DepositFinalisedArgsMap } from '../../event-handlers/ingress-egress/depositFinalised.js';
+import { InsufficientBoostLiquidityArgsMap } from '../../event-handlers/ingress-egress/insufficientBoostLiquidity.js';
+import { SwapDepositAddressReadyArgs } from '../../event-handlers/swapping/swapDepositAddressReady.js';
+import { SwapEgressIgnoredArgs } from '../../event-handlers/swapping/swapEgressIgnored.js';
+import { SwapEgressScheduledArgs } from '../../event-handlers/swapping/swapEgressScheduled.js';
+import { SwapRequestedArgs190 } from '../../event-handlers/swapping/swapRequested.js';
+import { SwapScheduledArgs } from '../../event-handlers/swapping/swapScheduled.js';
+import { getPendingBroadcast } from '../../ingress-egress-tracking/index.js';
+import app from '../../server.js';
+import { State } from '../swap.js';
 
-vi.mock('@/shared/rpc', async (importOriginal) => {
+vi.mock('@/shared/rpc/index.js', async (importOriginal) => {
   const original = (await importOriginal()) as object;
   return {
     ...original,
@@ -50,7 +50,7 @@ vi.mock('timers/promises', () => ({
 
 vi.mock('../../ingress-egress-tracking');
 
-vi.mock('@/shared/broker', async (importOriginal) => {
+vi.mock('@/shared/broker.js', async (importOriginal) => {
   const original = (await importOriginal()) as object;
   return {
     ...original,

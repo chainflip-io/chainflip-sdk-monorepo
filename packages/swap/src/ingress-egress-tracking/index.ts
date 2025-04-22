@@ -4,11 +4,11 @@ import { findVaultSwapData as findSolanaVaultSwapData } from '@chainflip/solana'
 import { assetConstants, ChainflipAsset, ChainflipChain } from '@chainflip/utils/chainflip';
 import { isTruthy } from '@chainflip/utils/guard';
 import { inspect } from 'util';
-import prisma, { Broadcast } from '../client';
-import env from '../config/env';
-import { handleExit } from '../utils/function';
-import logger from '../utils/logger';
-import { getTransactionRefChains } from '../utils/transactionRef';
+import prisma, { Broadcast } from '../client.js';
+import env from '../config/env.js';
+import { handleExit } from '../utils/function.js';
+import logger from '../utils/logger.js';
+import { getTransactionRefChains } from '../utils/transactionRef.js';
 
 const redis = env.REDIS_URL ? new RedisClient(env.REDIS_URL) : undefined;
 

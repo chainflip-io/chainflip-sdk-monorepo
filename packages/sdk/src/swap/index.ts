@@ -1,6 +1,6 @@
-export { SwapSDK, type SwapSDKOptions } from './sdk';
-export * from './types';
-export * from './v2/types';
+export { SwapSDK, type SwapSDKOptions } from './sdk.js';
+export * from './types.js';
+export * from './v2/types.js';
 export {
   type Chain,
   type Asset,
@@ -12,4 +12,4 @@ export {
   InternalAssets as ChainflipIds,
   ChainflipNetworks,
   getInternalAsset as getChainflipId,
-} from './legacy';
+} from './legacy.js';

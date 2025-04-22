@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import prisma from '../../../client';
-import { broadcastSuccessMock } from '../../__tests__/utils';
-import broadcastSuccess from '../broadcastSuccess';
+import prisma from '../../../client.js';
+import { broadcastSuccessMock } from '../../__tests__/utils.js';
+import broadcastSuccess from '../broadcastSuccess.js';
 
 describe(broadcastSuccess, () => {
   beforeEach(async () => {

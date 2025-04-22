@@ -16,12 +16,12 @@ import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { POLKADOT_SS58_PREFIX } from '@chainflip/utils/consts';
 import * as ss58 from '@chainflip/utils/ss58';
 import z from 'zod';
-import { assertUnreachable } from '@/shared/functions';
-import { assert } from '@/shared/guards';
-import { EventHandlerArgs } from '..';
-import env from '../../config/env';
-import logger from '../../utils/logger';
-import { getDepositTxRef } from '../common';
+import { assertUnreachable } from '@/shared/functions.js';
+import { assert } from '@/shared/guards.js';
+import env from '../../config/env.js';
+import logger from '../../utils/logger.js';
+import { getDepositTxRef } from '../common.js';
+import { EventHandlerArgs } from '../index.js';
 
 const formatForeignChainAddress = (
   address: z.output<typeof cfChainsAddressForeignChainAddress>,

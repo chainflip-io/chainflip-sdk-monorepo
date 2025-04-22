@@ -3,15 +3,15 @@
 /* eslint-disable max-classes-per-file */
 import { BytesLike, VoidSigner } from 'ethers';
 import { describe, it, expect, vi } from 'vitest';
-import { ERC20 } from '../../abis';
-import { checkAllowance } from '../../contracts';
+import { ERC20 } from '../../abis/index.js';
+import { checkAllowance } from '../../contracts.js';
 import {
   executeRedemption,
   fundStateChainAccount,
   getMinimumFunding,
   getPendingRedemption,
   getRedemptionDelay,
-} from '../index';
+} from '../index.js';
 
 class MockGateway {
   constructor(readonly address: string) {}

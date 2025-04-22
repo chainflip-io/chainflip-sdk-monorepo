@@ -7,7 +7,7 @@ generator client {
   provider        = "prisma-client-js"
   // https://github.com/prisma/prisma/issues/2584#issuecomment-646414549
   // https://github.com/prisma/prisma/issues/6603#issuecomment-849979849
-  output          = "../node_modules/.prisma/client"
+  output          = "../node_modules/@prisma/swapping"
   previewFeatures = ["multiSchema"]
 }
 

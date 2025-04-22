@@ -2,8 +2,8 @@ import { swappingSwapExecuted as schema160 } from '@chainflip/processor/160/swap
 import { swappingSwapExecuted as schema190 } from '@chainflip/processor/190/swapping/swapExecuted';
 import { getInternalAsset } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { calculateIncludedSwapFees } from '../../utils/fees';
-import type { EventHandlerArgs } from '../index';
+import { calculateIncludedSwapFees } from '../../utils/fees.js';
+import type { EventHandlerArgs } from '../index.js';
 
 const swapExecutedArgs = z.union([schema190, schema160]);
 

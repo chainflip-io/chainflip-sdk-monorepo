@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { compareNumericStrings, Comparison } from '../string';
+import { compareNumericStrings, Comparison } from '../string.js';
 
 describe(compareNumericStrings, () => {
   it.each([

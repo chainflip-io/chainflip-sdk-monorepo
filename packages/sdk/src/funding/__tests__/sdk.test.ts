@@ -8,10 +8,10 @@ import {
   getRedemptionDelay,
   getPendingRedemption,
   approveStateChainGateway,
-} from '@/shared/stateChainGateway';
-import { FundingSDK } from '../index';
+} from '@/shared/stateChainGateway/index.js';
+import { FundingSDK } from '../index.js';
 
-vi.mock('@/shared/stateChainGateway');
+vi.mock('@/shared/stateChainGateway/index.js');
 
 class MockERC20 {
   async balanceOf(): Promise<bigint> {

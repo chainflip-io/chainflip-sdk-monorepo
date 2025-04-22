@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { QuoteRequest } from '../../types';
-import { getQuoteV2, getStatusV2 } from '../ApiService';
+import { QuoteRequest } from '../../types.js';
+import { getQuoteV2, getStatusV2 } from '../ApiService.js';
 
 vi.mock('../../../../package.json', () => ({
-  version: '1.0-test',
+  default: {
+    version: '1.0-test',
+  },
 }));
 
 vi.mock('axios', async () => ({

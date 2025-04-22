@@ -9,17 +9,17 @@ import * as ss58 from '@chainflip/utils/ss58';
 import assert from 'assert';
 import { GraphQLClient } from 'graphql-request';
 import { vi, expect } from 'vitest';
-import prisma, { SwapDepositChannel } from '../../client';
-import { GET_CALL } from '../../gql/query';
-import processBlocks, { Call, Event } from '../../processBlocks';
-import { BroadcastSuccessArgsMap } from '../broadcaster/broadcastSuccess';
-import { TransactionBroadcastRequestArgsMap } from '../broadcaster/transactionBroadcastRequest';
-import { events as eventNames } from '../index';
-import { BatchBroadcastRequestedArgsMap } from '../ingress-egress/batchBroadcastRequested';
-import { DepositFailedArgs } from '../ingress-egress/depositFailed';
-import { RefundEgressScheduledArgs } from '../swapping/refundEgressScheduled';
-import { SwapDepositAddressReadyArgs } from '../swapping/swapDepositAddressReady';
-import { SwapEgressScheduledArgs } from '../swapping/swapEgressScheduled';
+import prisma, { SwapDepositChannel } from '../../client.js';
+import { GET_CALL } from '../../gql/query.js';
+import processBlocks, { Call, Event } from '../../processBlocks.js';
+import { BroadcastSuccessArgsMap } from '../broadcaster/broadcastSuccess.js';
+import { TransactionBroadcastRequestArgsMap } from '../broadcaster/transactionBroadcastRequest.js';
+import { events as eventNames } from '../index.js';
+import { BatchBroadcastRequestedArgsMap } from '../ingress-egress/batchBroadcastRequested.js';
+import { DepositFailedArgs } from '../ingress-egress/depositFailed.js';
+import { RefundEgressScheduledArgs } from '../swapping/refundEgressScheduled.js';
+import { SwapDepositAddressReadyArgs } from '../swapping/swapDepositAddressReady.js';
+import { SwapEgressScheduledArgs } from '../swapping/swapEgressScheduled.js';
 
 export const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
 export const DOT_ADDRESS = '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo'; // 0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972

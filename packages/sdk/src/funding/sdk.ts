@@ -1,7 +1,7 @@
 import { ChainflipNetwork } from '@chainflip/utils/chainflip';
 import type { Signer } from 'ethers';
-import { getFlipBalance, TransactionOptions } from '@/shared/contracts';
-import { getFundingEnvironment, RpcConfig } from '@/shared/rpc';
+import { getFlipBalance, TransactionOptions } from '@/shared/contracts.js';
+import { getFundingEnvironment, RpcConfig } from '@/shared/rpc/index.js';
 import {
   approveStateChainGateway,
   executeRedemption,
@@ -10,8 +10,8 @@ import {
   getPendingRedemption,
   getRedemptionDelay,
   PendingRedemption,
-} from '@/shared/stateChainGateway';
-import { Required } from '@/shared/types';
+} from '@/shared/stateChainGateway/index.js';
+import { Required } from '@/shared/types.js';
 
 export type FundingSDKOption = {
   network?: ChainflipNetwork;

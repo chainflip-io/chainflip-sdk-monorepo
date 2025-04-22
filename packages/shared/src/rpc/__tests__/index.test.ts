@@ -5,13 +5,13 @@ import {
   ingressEgressEnvironment,
   mockRpcResponse,
   swappingEnvironment,
-} from '../../tests/fixtures';
+} from '../../tests/fixtures.js';
 import {
   getFundingEnvironment,
   getSwappingEnvironment,
   getIngressEgressEnvironment,
   getAllBoostPoolsDepth,
-} from '../index';
+} from '../index.js';
 
 const mockResponse = (data: any) => mockRpcResponse({ data });
 

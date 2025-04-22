@@ -1,8 +1,8 @@
 import { ChainflipChain, ChainflipNetwork } from '@chainflip/utils/chainflip';
-import { getEvmChainId } from '@/shared/consts';
-import { isTestnet } from '@/shared/functions';
-import { isNotNullish } from '@/shared/guards';
-import { Environment } from '@/shared/rpc';
+import { getEvmChainId } from '@/shared/consts.js';
+import { isTestnet } from '@/shared/functions.js';
+import { isNotNullish } from '@/shared/guards.js';
+import { Environment } from '@/shared/rpc/index.js';
 
 export const getChainData = (
   chain: ChainflipChain,

@@ -6,11 +6,11 @@ import {
   internalAssetToRpcAsset,
 } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
-import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts';
-import { assertUnreachable } from '@/shared/functions';
-import ServiceError from './ServiceError';
-import { FailedSwapReason, Swap } from '../client';
-import { getWitnessSafetyMargin } from './rpc';
+import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts.js';
+import { assertUnreachable } from '@/shared/functions.js';
+import ServiceError from './ServiceError.js';
+import { FailedSwapReason, Swap } from '../client.js';
+import { getWitnessSafetyMargin } from './rpc.js';
 
 export const estimateSwapDuration = async ({
   srcAsset,

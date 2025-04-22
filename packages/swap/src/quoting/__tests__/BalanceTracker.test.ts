@@ -1,11 +1,11 @@
 /* eslint-disable dot-notation */
 import { InternalAssetMap } from '@chainflip/utils/chainflip';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { getLpBalances } from '../../utils/rpc';
-import BalanceTracker from '../BalanceTracker';
-import type { AccountId } from '../Quoter';
+import { getLpBalances } from '../../utils/rpc.js';
+import BalanceTracker from '../BalanceTracker.js';
+import type { AccountId } from '../Quoter.js';
 
-vi.mock('../../utils/rpc');
+vi.mock('../../utils/rpc.js');
 
 const mockInternalAssetMap = (values?: InternalAssetMap<bigint>): InternalAssetMap<bigint> => ({
   ArbEth: 0n,

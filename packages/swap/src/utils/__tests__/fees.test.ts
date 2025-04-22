@@ -1,9 +1,9 @@
 import { describe, it, beforeAll, expect, vi } from 'vitest';
-import { environment, mockRpcResponse, swapRate } from '@/shared/tests/fixtures';
-import prisma from '../../client';
-import { calculateIncludedSwapFees } from '../fees';
+import { environment, mockRpcResponse, swapRate } from '@/shared/tests/fixtures.js';
+import prisma from '../../client.js';
+import { calculateIncludedSwapFees } from '../fees.js';
 
-vi.mock('@/shared/consts', async (importOriginal) => {
+vi.mock('@/shared/consts.js', async (importOriginal) => {
   const original = (await importOriginal()) as object;
   return {
     ...original,

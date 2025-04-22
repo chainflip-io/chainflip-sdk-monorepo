@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import prisma from '../../../client';
-import metadataMock from '../../__tests__/metadata.json';
-import { DOT_ADDRESS, swapEgressIgnoredMock } from '../../__tests__/utils';
-import swapEgressIgnored from '../swapEgressIgnored';
+import prisma from '../../../client.js';
+import metadataMock from '../../__tests__/metadata.json' with { type: 'json' };
+import { DOT_ADDRESS, swapEgressIgnoredMock } from '../../__tests__/utils.js';
+import swapEgressIgnored from '../swapEgressIgnored.js';
 
-vi.mock('@/shared/rpc', async (importOriginal) => {
+vi.mock('@/shared/rpc/index.js', async (importOriginal) => {
   const original = (await importOriginal()) as object;
   return {
     ...original,

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import prisma from '../../../client';
-import { newPoolCreatedMock } from '../../__tests__/utils';
-import newPoolCreated from '../newPoolCreated';
+import prisma from '../../../client.js';
+import { newPoolCreatedMock } from '../../__tests__/utils.js';
+import newPoolCreated from '../newPoolCreated.js';
 
 describe(newPoolCreated, () => {
   beforeEach(async () => {

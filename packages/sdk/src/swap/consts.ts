@@ -1,7 +1,7 @@
 import { ChainflipNetwork } from '@chainflip/utils/chainflip';
-import { version } from '../../package.json';
+import pkg from '../../package.json' with { type: 'json' };
 
-export const CF_SDK_VERSION_HEADERS = { 'X-Chainflip-Sdk-Version': version };
+export const CF_SDK_VERSION_HEADERS = { 'X-Chainflip-Sdk-Version': pkg.version };
 
 export const BACKEND_SERVICE_URLS: Record<ChainflipNetwork, string> = {
   backspin: 'https://chainflip-swap-backspin.staging/',

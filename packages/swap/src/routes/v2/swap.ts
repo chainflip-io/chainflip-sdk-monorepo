@@ -1,6 +1,6 @@
 import { internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import express from 'express';
-import { assert } from '@/shared/guards';
+import { assert } from '@/shared/guards.js';
 import {
   getBeneficiaries,
   getCcmParams,
@@ -13,13 +13,13 @@ import {
   getSwapFields,
   getSwapState,
   rollupFees,
-} from './utils';
-import { readField } from '../../utils/function';
-import { getLastChainTrackingUpdateTimestamp } from '../../utils/intercept';
-import logger from '../../utils/logger';
-import { getRequiredBlockConfirmations } from '../../utils/rpc';
-import { estimateSwapDuration } from '../../utils/swap';
-import { asyncHandler } from '../common';
+} from './utils.js';
+import { readField } from '../../utils/function.js';
+import { getLastChainTrackingUpdateTimestamp } from '../../utils/intercept.js';
+import logger from '../../utils/logger.js';
+import { getRequiredBlockConfirmations } from '../../utils/rpc.js';
+import { estimateSwapDuration } from '../../utils/swap.js';
+import { asyncHandler } from '../common.js';
 
 const router = express.Router();
 

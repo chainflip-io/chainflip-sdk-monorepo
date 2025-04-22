@@ -4,7 +4,7 @@ import {
   ChainflipAsset,
   ChainflipChain,
 } from '@chainflip/utils/chainflip';
-import { AffiliateBroker, Quote, FillOrKillParamsWithMinPrice } from '@/shared/schemas';
+import { AffiliateBroker, Quote, FillOrKillParamsWithMinPrice } from '@/shared/schemas.js';
 
 export interface ChainData {
   chain: ChainflipChain;
