@@ -4,24 +4,24 @@
   "description": "",
   "exports": {
     "./swap": {
-      "types": "./dist/swap.d.ts",
-      "import": "./dist/swap.mjs",
-      "require": "./dist/swap.js"
+      "require": {
+        "types": "./dist/swap.d.cts",
+        "default": "./dist/swap.cjs"
+      },
+      "import": {
+        "types": "./dist/swap.d.ts",
+        "default": "./dist/swap.js"
+      }
     },
     "./funding": {
-      "types": "./dist/funding.d.ts",
-      "import": "./dist/funding.mjs",
-      "require": "./dist/funding.js"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "swap": [
-        "dist/swap.d.ts"
-      ],
-      "funding": [
-        "dist/funding.d.ts"
-      ]
+      "require": {
+        "types": "./dist/funding.d.cts",
+        "default": "./dist/funding.cjs"
+      },
+      "import": {
+        "types": "./dist/funding.d.ts",
+        "default": "./dist/funding.js"
+      }
     }
   },
   "files": [
