@@ -589,4 +589,50 @@ describe('openSwapDepositChannelSchema', () => {
       }),
     ).not.toThrow();
   });
+
+  it('creates channel with a commission', async () => {
+    mockRpcResponse({ data: environment() });
+    env.BROKER_COMMISSION_BPS = 100;
+    vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+      sourceChainExpiryBlock: BigInt('1000'),
+      address: 'address',
+      channelId: 888,
+      issuedBlock: 123,
+      channelOpeningFee: 100n,
+    });
+
+    const result = await openSwapDepositChannel({
+      srcAsset: 'FLIP',
+      srcChain: 'Ethereum',
+      destAsset: 'DOT',
+      destChain: 'Polkadot',
+      destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
+      expectedDepositAmount: '777',
+      fillOrKillParams: {
+        refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        retryDurationBlocks: 2,
+        minPriceX128: '1',
+      },
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "brokerCommissionBps": 100,
+        "channelOpeningFee": 100n,
+        "depositAddress": "address",
+        "estimatedExpiryTime": 1699534500000,
+        "id": "123-Ethereum-888",
+        "issuedBlock": 123,
+        "maxBoostFeeBps": 0,
+        "srcChainExpiryBlock": 1000n,
+      }
+    `);
+    expect(vi.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
+    expect(await prisma.swapDepositChannel.findFirst({ include: { quote: true } })).toMatchSnapshot(
+      {
+        id: expect.any(BigInt),
+        createdAt: expect.any(Date),
+      },
+    );
+  });
 });

@@ -102,7 +102,10 @@ export const openSwapDepositChannel = async (
   }
 
   const swapDepositAddress = await broker.requestSwapDepositAddress(
-    input,
+    {
+      ...input,
+      commissionBps: env.BROKER_COMMISSION_BPS,
+    },
     { url: env.RPC_BROKER_HTTPS_URL },
     env.CHAINFLIP_NETWORK,
   );
@@ -170,7 +173,7 @@ export const openSwapDepositChannel = async (
       estimatedExpiryAt: estimatedExpiryTime,
       ccmGasBudget: ccmParams?.gasBudget && BigInt(ccmParams.gasBudget).toString(),
       ccmMessage: ccmParams?.message,
-      totalBrokerCommissionBps: 0,
+      totalBrokerCommissionBps: env.BROKER_COMMISSION_BPS,
       maxBoostFeeBps: Number(maxBoostFeeBps) || 0,
       openedThroughBackend: true,
       openingFeePaid: channelOpeningFee.toString(),
