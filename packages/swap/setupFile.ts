@@ -1,6 +1,6 @@
 import { beforeAll, vi } from 'vitest';
 
-vi.mock('./src/config/env');
+vi.mock('./src/config/env.js');
 
 beforeAll(() => {
   global.fetch = vi

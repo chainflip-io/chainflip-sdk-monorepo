@@ -1,10 +1,10 @@
 import { GraphQLClient } from 'graphql-request';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import prisma from '../client';
-import { check, DOT_ADDRESS } from '../event-handlers/__tests__/utils';
-import { ChainStateUpdatedArgsMap } from '../event-handlers/tracking/chainStateUpdated';
-import { GetBatchQuery } from '../gql/generated/graphql';
-import processBlocks from '../processBlocks';
+import prisma from '../client.js';
+import { check, DOT_ADDRESS } from '../event-handlers/__tests__/utils.js';
+import { ChainStateUpdatedArgsMap } from '../event-handlers/tracking/chainStateUpdated.js';
+import { GetBatchQuery } from '../gql/generated/graphql.js';
+import processBlocks from '../processBlocks.js';
 
 describe(processBlocks, () => {
   beforeEach(async () => {

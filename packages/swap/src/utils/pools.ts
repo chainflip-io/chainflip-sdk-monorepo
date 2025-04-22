@@ -1,10 +1,10 @@
 import { ChainflipAsset, readAssetValue } from '@chainflip/utils/chainflip';
-import { FULL_TICK_RANGE } from '@/shared/consts';
-import { AsyncCacheMap } from '@/shared/dataStructures';
-import { assert } from '@/shared/guards';
-import { getLpAccounts } from './lp';
-import { getPoolDepth } from './rpc';
-import prisma, { Pool } from '../client';
+import { FULL_TICK_RANGE } from '@/shared/consts.js';
+import { AsyncCacheMap } from '@/shared/dataStructures.js';
+import { assert } from '@/shared/guards.js';
+import { getLpAccounts } from './lp.js';
+import { getPoolDepth } from './rpc.js';
+import prisma, { Pool } from '../client.js';
 
 export const getPools = async (
   srcAsset: ChainflipAsset,

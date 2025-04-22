@@ -1,5 +1,5 @@
 import { vi, describe, it, expect } from 'vitest';
-import { getBoostSafeMode } from '../api';
+import { getBoostSafeMode } from '../api.js';
 
 vi.mock('@polkadot/api', () => ({
   WsProvider: vi.fn(),

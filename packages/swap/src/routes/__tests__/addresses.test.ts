@@ -1,8 +1,8 @@
 import { Server } from 'http';
 import request from 'supertest';
 import { describe, it, beforeEach, expect, beforeAll } from 'vitest';
-import prisma from '../../client';
-import app from '../../server';
+import prisma from '../../client.js';
+import app from '../../server.js';
 
 describe('server', () => {
   let server: Server;

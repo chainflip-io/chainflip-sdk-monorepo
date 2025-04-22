@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { pascalCaseToScreamingSnakeCase, screamingSnakeToPascalCase } from '../strings';
+import { pascalCaseToScreamingSnakeCase, screamingSnakeToPascalCase } from '../strings.js';
 
 describe(screamingSnakeToPascalCase, () => {
   it.each([

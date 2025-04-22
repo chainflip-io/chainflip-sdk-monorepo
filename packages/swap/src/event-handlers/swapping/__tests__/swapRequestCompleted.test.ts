@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import prisma from '../../../client';
+import prisma from '../../../client.js';
 import {
   createDepositChannel,
   DOT_ADDRESS,
   ETH_ADDRESS,
   swapRequestCompletedMock,
-} from '../../__tests__/utils';
-import swapRequestCompleted from '../swapRequestCompleted';
+} from '../../__tests__/utils.js';
+import swapRequestCompleted from '../swapRequestCompleted.js';
 
 const { event, block } = swapRequestCompletedMock;
 

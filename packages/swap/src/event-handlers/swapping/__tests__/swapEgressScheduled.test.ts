@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import prisma from '../../../client';
-import { DOT_ADDRESS, swapEgressScheduledMock } from '../../__tests__/utils';
-import swapEgressScheduled from '../swapEgressScheduled';
+import prisma from '../../../client.js';
+import { DOT_ADDRESS, swapEgressScheduledMock } from '../../__tests__/utils.js';
+import swapEgressScheduled from '../swapEgressScheduled.js';
 
 const { event, block } = swapEgressScheduledMock;
 

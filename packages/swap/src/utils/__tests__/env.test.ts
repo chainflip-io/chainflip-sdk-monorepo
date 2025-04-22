@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import env from '../../config/env';
-import { assertRouteEnabled } from '../env';
+import env from '../../config/env.js';
+import { assertRouteEnabled } from '../env.js';
 
 describe(assertRouteEnabled, () => {
   beforeEach(() => {

@@ -7,8 +7,8 @@ import {
   FillOrKillParamsWithSlippage,
   PaidFee,
   Quote,
-} from '@/shared/schemas';
-import { ChainsAndAssets, QuoteRequest } from '../types';
+} from '@/shared/schemas.js';
+import { ChainsAndAssets, QuoteRequest } from '../types.js';
 
 interface Failure {
   failedAt: number;
@@ -182,7 +182,7 @@ export type SwapStatusResponseV2 =
       state: 'FAILED';
     } & Sending);
 
-export type { Quote, RegularQuote, BoostQuote, DCAQuote, DCABoostQuote } from '@/shared/schemas';
+export type { Quote, RegularQuote, BoostQuote, DCAQuote, DCABoostQuote } from '@/shared/schemas.js';
 
 export interface DepositAddressRequestV2 {
   quote: Quote | BoostQuote;

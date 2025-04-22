@@ -4,6 +4,7 @@
   "description": "",
   "main": "./dist/lib.mjs",
   "types": "./dist/lib.d.mts",
+  "type": "module",
   "bin": {
     "chainflip": "./dist/cli.mjs"
   },

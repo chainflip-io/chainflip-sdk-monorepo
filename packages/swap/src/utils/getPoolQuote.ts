@@ -1,14 +1,14 @@
 import { getInternalAsset, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
-import { getPipAmountFromAmount } from '@/shared/functions';
-import { DcaParams, Quote, SwapFeeType } from '@/shared/schemas';
-import { calculateRecommendedSlippage } from './autoSlippage';
-import { buildFee, getPoolFees } from './fees';
-import { getEgressFee, getMinimumEgressAmount } from './rpc';
-import ServiceError from './ServiceError';
-import { getSwapRateV3, QuoteLimitOrders, QuoteCcmParams } from './statechain';
-import { InternalAsset, Pool } from '../client';
-import { estimateSwapDuration, getSwapPrice } from './swap';
-import { checkPriceWarning } from '../pricing/checkPriceWarning';
+import { getPipAmountFromAmount } from '@/shared/functions.js';
+import { DcaParams, Quote, SwapFeeType } from '@/shared/schemas.js';
+import { calculateRecommendedSlippage } from './autoSlippage.js';
+import { buildFee, getPoolFees } from './fees.js';
+import { getEgressFee, getMinimumEgressAmount } from './rpc.js';
+import ServiceError from './ServiceError.js';
+import { getSwapRateV3, QuoteLimitOrders, QuoteCcmParams } from './statechain.js';
+import { InternalAsset, Pool } from '../client.js';
+import { estimateSwapDuration, getSwapPrice } from './swap.js';
+import { checkPriceWarning } from '../pricing/checkPriceWarning.js';
 
 export default async function getPoolQuote({
   srcAsset,

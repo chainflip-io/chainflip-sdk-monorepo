@@ -1,7 +1,7 @@
 import { chainConstants, ChainflipChain } from '@chainflip/utils/chainflip';
-import * as rpc from '@/shared/rpc';
-import logger from './logger';
-import env from '../config/env';
+import * as rpc from '@/shared/rpc/index.js';
+import logger from './logger.js';
+import env from '../config/env.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyFunction = (...args: any[]) => any;

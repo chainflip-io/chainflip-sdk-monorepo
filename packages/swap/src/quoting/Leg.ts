@@ -4,7 +4,7 @@ import {
   internalAssetToRpcAsset,
 } from '@chainflip/utils/chainflip';
 import assert from 'assert';
-import { LegJson } from './schemas';
+import { LegJson } from './schemas.js';
 
 export default class Leg {
   static of(srcAsset: ChainflipAsset, destAsset: ChainflipAsset, amount: bigint): Leg;

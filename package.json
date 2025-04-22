@@ -2,6 +2,7 @@
   "name": "@chainflip-io/chainflip-sdk-monorepo",
   "version": "0.0.16",
   "description": "",
+  "type": "module",
   "scripts": {
     "prettier:check": "pnpm -r prettier:check",
     "prettier:write": "pnpm -r prettier:write",
@@ -46,6 +47,6 @@
     "pnpm": ">=10"
   },
   "dependencies": {
-    "zod": "^3.23.8"
+    "zod": "^3.24.3"
   }
 }

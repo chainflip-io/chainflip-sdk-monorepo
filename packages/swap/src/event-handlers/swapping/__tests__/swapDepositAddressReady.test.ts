@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import prisma from '../../../client';
+import prisma from '../../../client.js';
 import {
   createChainTrackingInfo,
   createDepositChannel,
   swapDepositAddressReadyCcmParamsMocked,
   swapDepositAddressReadyMocked,
-} from '../../__tests__/utils';
-import swapDepositAddressReady from '../swapDepositAddressReady';
+} from '../../__tests__/utils.js';
+import swapDepositAddressReady from '../swapDepositAddressReady.js';
 
 const eventMock = swapDepositAddressReadyMocked;
 const ccmEventMock = swapDepositAddressReadyCcmParamsMocked;

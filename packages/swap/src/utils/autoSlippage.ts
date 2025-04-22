@@ -5,9 +5,9 @@ import {
   chainConstants,
 } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
-import { getDeployedLiquidity, getUndeployedLiquidity } from './pools';
-import { getRequiredBlockConfirmations } from './rpc';
-import env from '../config/env';
+import { getDeployedLiquidity, getUndeployedLiquidity } from './pools.js';
+import { getRequiredBlockConfirmations } from './rpc.js';
+import env from '../config/env.js';
 
 const getDeployedLiquidityAdjustment = async (
   srcAsset: ChainflipAsset,

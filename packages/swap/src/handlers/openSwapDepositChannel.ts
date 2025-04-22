@@ -1,22 +1,22 @@
 import { getInternalAssets } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import * as broker from '@/shared/broker';
-import { getPriceFromPriceX128 } from '@/shared/functions';
-import { asset, chain, numericString } from '@/shared/parsers';
+import * as broker from '@/shared/broker.js';
+import { getPriceFromPriceX128 } from '@/shared/functions.js';
+import { asset, chain, numericString } from '@/shared/parsers.js';
 import {
   ccmParamsSchema,
   dcaParams as dcaParamsSchema,
   fillOrKillParams as fillOrKillParamsSchema,
-} from '@/shared/schemas';
-import { validateAddress } from '@/shared/validation/addressValidation';
-import prisma from '../client';
-import env from '../config/env';
-import { assertRouteEnabled } from '../utils/env';
-import { calculateExpiryTime } from '../utils/function';
-import isDisallowedSwap from '../utils/isDisallowedSwap';
-import logger from '../utils/logger';
-import { validateSwapAmount } from '../utils/rpc';
-import ServiceError from '../utils/ServiceError';
+} from '@/shared/schemas.js';
+import { validateAddress } from '@/shared/validation/addressValidation.js';
+import prisma from '../client.js';
+import env from '../config/env.js';
+import { assertRouteEnabled } from '../utils/env.js';
+import { calculateExpiryTime } from '../utils/function.js';
+import isDisallowedSwap from '../utils/isDisallowedSwap.js';
+import logger from '../utils/logger.js';
+import { validateSwapAmount } from '../utils/rpc.js';
+import ServiceError from '../utils/ServiceError.js';
 
 export const openSwapDepositChannelSchema = z
   .object({

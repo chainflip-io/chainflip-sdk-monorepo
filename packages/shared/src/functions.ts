@@ -6,8 +6,8 @@ import {
 } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import EventEmitter, { once } from 'events';
-import { assert } from './guards';
-import { FillOrKillParamsWithMinPrice, FillOrKillParamsWithSlippage, Quote } from './schemas';
+import { assert } from './guards.js';
+import { FillOrKillParamsWithMinPrice, FillOrKillParamsWithSlippage, Quote } from './schemas.js';
 
 export const onceWithTimeout = async (
   eventEmitter: EventEmitter,

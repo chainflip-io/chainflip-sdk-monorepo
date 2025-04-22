@@ -1,5 +1,5 @@
 import { ChainflipAsset, readAssetValue } from '@chainflip/utils/chainflip';
-import { Environment } from './index';
+import { Environment } from './index.js';
 
 type Result = { success: true } | { success: false; reason: string };
 

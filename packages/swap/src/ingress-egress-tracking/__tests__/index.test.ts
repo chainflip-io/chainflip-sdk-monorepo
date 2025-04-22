@@ -2,13 +2,13 @@ import { findVaultSwapData as findBitcoinVaultSwapData } from '@chainflip/bitcoi
 import RedisClient from '@chainflip/redis';
 import { findVaultSwapData as findSolanaVaultSwapData } from '@chainflip/solana';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 import { vi, describe, expect, beforeAll, beforeEach, it } from 'vitest';
-import { getPendingBroadcast, getPendingDeposit, getPendingVaultSwap } from '..';
-import prisma, { Broadcast } from '../../client';
-import logger from '../../utils/logger';
+import prisma, { Broadcast } from '../../client.js';
+import logger from '../../utils/logger.js';
+import { getPendingBroadcast, getPendingDeposit, getPendingVaultSwap } from '../index.js';
 
-vi.mock('../../utils/logger');
+vi.mock('../../utils/logger.js');
 vi.mock('@chainflip/solana');
 vi.mock('@chainflip/bitcoin');
 

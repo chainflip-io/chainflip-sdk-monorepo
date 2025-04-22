@@ -10,15 +10,15 @@ import { isHex } from '@chainflip/utils/string';
 import { priceX128ToPrice } from '@chainflip/utils/tickMath';
 import BigNumber from 'bignumber.js';
 import { z } from 'zod';
-import { assert } from './guards';
-import { transformKeysToCamelCase } from './objects';
+import { assert } from './guards.js';
+import { transformKeysToCamelCase } from './objects.js';
 import {
   numericString,
   assetAndChain,
   solanaAddress,
   unsignedInteger,
   DOT_PREFIX,
-} from './parsers';
+} from './parsers.js';
 import {
   affiliateBroker,
   AffiliateBroker,
@@ -27,8 +27,8 @@ import {
   FillOrKillParamsX128,
   dcaParams as dcaParamsSchema,
   DcaParams,
-} from './schemas';
-import { validateAddress } from './validation/addressValidation';
+} from './schemas.js';
+import { validateAddress } from './validation/addressValidation.js';
 
 type DepositAddressRequest = {
   srcAsset: UncheckedAssetAndChain | AssetSymbol;

@@ -1,9 +1,9 @@
 import { cfChainsEvmTransaction } from '@chainflip/processor/141/common';
 import { AssetSymbol, ChainflipChain, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { isTruthy } from '@chainflip/utils/guard';
-import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions';
-import { isNotNullish } from '@/shared/guards';
-import { StateV2 } from './swap';
+import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions.js';
+import { isNotNullish } from '@/shared/guards.js';
+import { StateV2 } from './swap.js';
 import prisma, {
   Swap,
   Broadcast,
@@ -12,18 +12,18 @@ import prisma, {
   FailedSwap,
   SwapRequest,
   Prisma,
-} from '../../client';
+} from '../../client.js';
 import {
   getPendingBroadcast,
   getPendingDeposit,
   getPendingVaultSwap,
   PendingDeposit,
-} from '../../ingress-egress-tracking';
-import { readField } from '../../utils/function';
-import logger from '../../utils/logger';
-import ServiceError from '../../utils/ServiceError';
-import { coerceChain, failedSwapMessage, FailureMode } from '../../utils/swap';
-import { isTransactionRef } from '../../utils/transactionRef';
+} from '../../ingress-egress-tracking/index.js';
+import { readField } from '../../utils/function.js';
+import logger from '../../utils/logger.js';
+import ServiceError from '../../utils/ServiceError.js';
+import { coerceChain, failedSwapMessage, FailureMode } from '../../utils/swap.js';
+import { isTransactionRef } from '../../utils/transactionRef.js';
 
 const failedSwapInclude = { refundBroadcast: true } as const;
 const beneficiaryInclude = { type: true, account: true, commissionBps: true } as const;

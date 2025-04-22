@@ -3,10 +3,10 @@ import { RequestHandler, ErrorRequestHandler } from 'express';
 import * as express from 'express';
 import type { RouteParameters } from 'express-serve-static-core';
 import { inspect } from 'util';
-import env from '../config/env';
-import type Quoter from '../quoting/Quoter';
-import logger from '../utils/logger';
-import ServiceError from '../utils/ServiceError';
+import env from '../config/env.js';
+import type Quoter from '../quoting/Quoter.js';
+import logger from '../utils/logger.js';
+import ServiceError from '../utils/ServiceError.js';
 
 export const handleError: ErrorRequestHandler = (error, req, res, _next) => {
   logger.customInfo('received error', {}, { error: inspect(error) });

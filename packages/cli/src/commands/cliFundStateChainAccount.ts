@@ -1,8 +1,8 @@
 import { Wallet, getDefaultProvider } from 'ethers';
 import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
-import { getEvmChainId } from '@/shared/consts';
-import { FundingNetworkOptions, fundStateChainAccount } from '../lib';
-import { askForPrivateKey, cliNetworks } from '../utils';
+import { getEvmChainId } from '@/shared/consts.js';
+import { FundingNetworkOptions, fundStateChainAccount } from '../lib/index.js';
+import { askForPrivateKey, cliNetworks } from '../utils.js';
 
 export const yargsOptions = {
   'src-account-id': {

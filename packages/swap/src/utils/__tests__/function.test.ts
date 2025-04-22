@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
-import * as rpc from '@/shared/rpc';
-import { isAtLeastSpecVersion } from '../function';
+import * as rpc from '@/shared/rpc/index.js';
+import { isAtLeastSpecVersion } from '../function.js';
 
-vi.mock('@/shared/rpc');
+vi.mock('@/shared/rpc/index.js');
 
 describe(isAtLeastSpecVersion, () => {
   it('handles 1.7.10', async () => {

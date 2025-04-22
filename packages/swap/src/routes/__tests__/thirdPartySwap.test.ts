@@ -2,9 +2,9 @@ import * as crypto from 'crypto';
 import { Server } from 'http';
 import request from 'supertest';
 import { describe, it, beforeEach, expect } from 'vitest';
-import prisma from '../../client';
-import env from '../../config/env';
-import app from '../../server';
+import prisma from '../../client.js';
+import env from '../../config/env.js';
+import app from '../../server.js';
 
 describe('server', () => {
   let server: Server;

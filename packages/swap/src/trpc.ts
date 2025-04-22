@@ -1,11 +1,11 @@
 import { initTRPC } from '@trpc/server';
 import superjson from 'superjson';
-import { encodeVaultSwapData, encodeVaultSwapDataSchema } from './handlers/encodeVaultSwapData';
-import networkStatus from './handlers/networkStatus';
+import { encodeVaultSwapData, encodeVaultSwapDataSchema } from './handlers/encodeVaultSwapData.js';
+import networkStatus from './handlers/networkStatus.js';
 import {
   openSwapDepositChannel,
   openSwapDepositChannelSchema,
-} from './handlers/openSwapDepositChannel';
+} from './handlers/openSwapDepositChannel.js';
 
 /**
  * Initialization of tRPC backend

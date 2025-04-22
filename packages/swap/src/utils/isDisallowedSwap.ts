@@ -1,12 +1,12 @@
-import { AxiosInstance, isAxiosError } from 'axios';
+import { isAxiosError } from 'axios';
 import { AML } from 'elliptic-sdk';
 import { inspect } from 'util';
 import { z } from 'zod';
-import logger from './logger';
-import prisma from '../client';
-import env from '../config/env';
+import logger from './logger.js';
+import prisma from '../client.js';
+import env from '../config/env.js';
 
-let elliptic: AxiosInstance | undefined;
+let elliptic: (typeof AML.prototype)['client'] | undefined;
 
 const exposureSchema = z.object({ risk_score: z.number().nullable() });
 

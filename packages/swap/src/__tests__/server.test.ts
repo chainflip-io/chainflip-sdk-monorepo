@@ -7,8 +7,8 @@ import request from 'supertest';
 import { setTimeout as sleep } from 'timers/promises';
 import { promisify } from 'util';
 import { describe, it, beforeEach, afterEach, expect, beforeAll } from 'vitest';
-import prisma from '../client';
-import app from '../server';
+import prisma from '../client.js';
+import app from '../server.js';
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 

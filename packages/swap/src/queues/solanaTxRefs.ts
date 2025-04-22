@@ -8,11 +8,11 @@ import assert from 'assert';
 import { isAxiosError } from 'axios';
 import * as util from 'util';
 import { z } from 'zod';
-import { assertUnreachable } from '@/shared/functions';
-import prisma from '../client';
-import env from '../config/env';
-import { handleExit } from '../utils/function';
-import baseLogger from '../utils/logger';
+import { assertUnreachable } from '@/shared/functions.js';
+import prisma from '../client.js';
+import env from '../config/env.js';
+import { handleExit } from '../utils/function.js';
+import baseLogger from '../utils/logger.js';
 
 const logger = baseLogger.child({ module: 'solana-queue' });
 

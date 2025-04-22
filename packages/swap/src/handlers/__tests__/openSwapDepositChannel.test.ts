@@ -1,16 +1,16 @@
 import { vi, describe, it, beforeAll, beforeEach, afterEach, expect } from 'vitest';
-import * as broker from '@/shared/broker';
-import { environment, mockRpcResponse } from '@/shared/tests/fixtures';
-import prisma from '../../client';
-import env from '../../config/env';
-import isDisallowedSwap from '../../utils/isDisallowedSwap';
-import { openSwapDepositChannel, openSwapDepositChannelSchema } from '../openSwapDepositChannel';
+import * as broker from '@/shared/broker.js';
+import { environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
+import prisma from '../../client.js';
+import env from '../../config/env.js';
+import isDisallowedSwap from '../../utils/isDisallowedSwap.js';
+import { openSwapDepositChannel, openSwapDepositChannelSchema } from '../openSwapDepositChannel.js';
 
-vi.mock('@/shared/broker', () => ({
+vi.mock('@/shared/broker.js', () => ({
   requestSwapDepositAddress: vi.fn(),
 }));
 
-vi.mock('../../utils/isDisallowedSwap', () => ({
+vi.mock('../../utils/isDisallowedSwap.js', () => ({
   default: vi.fn().mockResolvedValue(false),
 }));
 

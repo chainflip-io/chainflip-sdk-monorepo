@@ -8,11 +8,11 @@ import * as crypto from 'crypto';
 import type { Server } from 'socket.io';
 import { promisify } from 'util';
 import { z } from 'zod';
-import { isNotNullish } from '@/shared/guards';
-import { assetAndChain } from '@/shared/parsers';
-import prisma from '../client';
-import { AccountId, type QuotingSocket } from './Quoter';
-import baseLogger from '../utils/logger';
+import { isNotNullish } from '@/shared/guards.js';
+import { assetAndChain } from '@/shared/parsers.js';
+import prisma from '../client.js';
+import { AccountId, type QuotingSocket } from './Quoter.js';
+import baseLogger from '../utils/logger.js';
 
 const logger = baseLogger.child({ module: 'quoter' });
 

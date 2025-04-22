@@ -8,13 +8,13 @@ import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { Metadata, TypeRegistry } from '@polkadot/types';
 import assert from 'assert';
 import { z } from 'zod';
-import { formatTxRef } from '@/shared/common';
-import { CacheMap } from '@/shared/dataStructures';
-import { assertUnreachable } from '@/shared/functions';
-import * as rpc from '@/shared/rpc';
-import { Prisma } from '../client';
-import env from '../config/env';
-import type { EventHandlerArgs } from '.';
+import { formatTxRef } from '@/shared/common.js';
+import { CacheMap } from '@/shared/dataStructures.js';
+import { assertUnreachable } from '@/shared/functions.js';
+import * as rpc from '@/shared/rpc/index.js';
+import { Prisma } from '../client.js';
+import env from '../config/env.js';
+import type { EventHandlerArgs } from './index.js';
 
 const metadataCache = new CacheMap<string, Metadata>(60_000 * 60);
 

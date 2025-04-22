@@ -1,11 +1,11 @@
 import 'dotenv/config';
 import { Server, createServer } from 'http';
-import env from './config/env';
-import start from './processor';
-import * as solanaTxRefsQueue from './queues/solanaTxRefs';
-import server from './server';
-import { handleExit } from './utils/function';
-import logger from './utils/logger';
+import env from './config/env.js';
+import start from './processor.js';
+import * as solanaTxRefsQueue from './queues/solanaTxRefs.js';
+import server from './server.js';
+import { handleExit } from './utils/function.js';
+import logger from './utils/logger.js';
 
 if (env.START_PROCESSOR) {
   start();

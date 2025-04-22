@@ -1,8 +1,8 @@
 import { deferredPromise } from '@chainflip/utils/async';
 import { ChainflipAsset } from '@chainflip/utils/chainflip';
 import axios from 'axios';
-import env from '../config/env';
-import logger from '../utils/logger';
+import env from '../config/env.js';
+import logger from '../utils/logger.js';
 
 const COINGECKO_VS_CURRENCY = 'usd';
 

@@ -14,7 +14,7 @@ import {
   chainflipAddress,
   hexString,
   booleanString,
-} from './parsers';
+} from './parsers.js';
 
 export const quoteQuerySchema = z
   .object({

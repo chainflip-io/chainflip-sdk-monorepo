@@ -3,6 +3,7 @@
   "version": "0.0.21",
   "description": "Swap service backend",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "pnpm clean && prisma generate && tsc && tsc-alias",
     "clean": "rm -rf dist",
@@ -26,7 +27,7 @@
     "migrate:dev": "prisma migrate dev",
     "migrate:reset": "prisma migrate reset",
     "migrate": "prisma migrate",
-    "graphql:codegen": "graphql-codegen --config .graphqlrc.js"
+    "graphql:codegen": "graphql-codegen --config .graphqlrc.ts"
   },
   "keywords": [
     "typescript"
@@ -56,8 +57,8 @@
   },
   "dependencies": {
     "@chainflip/bitcoin": "^1.2.5",
-    "@chainflip/processor": "~1.9.2",
-    "@chainflip/redis": "^1.0.0",
+    "@chainflip/processor": "~1.9.3",
+    "@chainflip/redis": "^1.0.2",
     "@chainflip/rpc": "~1.9.5",
     "@chainflip/solana": "^2.1.7",
     "@chainflip/utils": "^0.8.6",
@@ -66,7 +67,7 @@
     "@prisma/client": "^6.3.1",
     "@trpc/server": "^10.45.2",
     "axios": "^1.7.7",
-    "bignumber.js": "^9.1.2",
+    "bignumber.js": "^9.3.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "elliptic-sdk": "^0.9.0",

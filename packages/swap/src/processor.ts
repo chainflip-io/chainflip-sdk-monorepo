@@ -1,6 +1,6 @@
 import { inspect } from 'util';
-import processBlocks from './processBlocks';
-import logger from './utils/logger';
+import processBlocks from './processBlocks.js';
+import logger from './utils/logger.js';
 
 // start
 const start = () => {

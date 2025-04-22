@@ -1,13 +1,13 @@
 import { ChainflipNetwork } from '@chainflip/utils/chainflip';
 import { ContractTransactionResponse, Signer } from 'ethers';
-import { getStateChainGateway } from './utils';
+import { getStateChainGateway } from './utils.js';
 import {
   checkAllowance,
   extractOverrides,
   getFlipContractAddress,
   TransactionOptions,
-} from '../contracts';
-import { assert } from '../guards';
+} from '../contracts.js';
+import { assert } from '../guards.js';
 
 export type FundingNetworkOptions =
   | { network: ChainflipNetwork; signer: Signer }
@@ -98,4 +98,4 @@ export const getPendingRedemption = async (
     : undefined;
 };
 
-export * from './approval';
+export * from './approval.js';

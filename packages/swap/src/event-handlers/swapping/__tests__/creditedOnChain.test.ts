@@ -1,10 +1,10 @@
 import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { beforeEach, describe, it, expect } from 'vitest';
-import { EventHandlerArgs } from '../..';
-import prisma from '../../../client';
-import { check } from '../../__tests__/utils';
-import creditedOnChain, { SwappingCreditedOnChainArgs } from '../creditedOnChain';
+import prisma from '../../../client.js';
+import { check } from '../../__tests__/utils.js';
+import { EventHandlerArgs } from '../../index.js';
+import creditedOnChain, { SwappingCreditedOnChainArgs } from '../creditedOnChain.js';
 
 describe(creditedOnChain, () => {
   beforeEach(async () => {

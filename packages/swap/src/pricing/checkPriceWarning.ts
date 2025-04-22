@@ -1,8 +1,8 @@
 import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
-import env from '../config/env';
-import logger from '../utils/logger';
-import { getAssetPrice } from './index';
+import env from '../config/env.js';
+import logger from '../utils/logger.js';
+import { getAssetPrice } from './index.js';
 
 const toTokenAmount = (amount: bigint, asset: ChainflipAsset) =>
   new BigNumber(amount.toString()).shiftedBy(-assetConstants[asset].decimals);

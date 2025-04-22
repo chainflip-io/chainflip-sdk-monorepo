@@ -2,15 +2,15 @@ import * as base58 from '@chainflip/utils/base58';
 import { bytesToHex } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-import prisma, { SwapDepositChannel } from '../../../client';
+import prisma, { SwapDepositChannel } from '../../../client.js';
 import {
   BTC_ADDRESS,
   DOT_ADDRESS,
   ETH_ADDRESS,
   buildDepositFailedEvent,
   createDepositChannel,
-} from '../../__tests__/utils';
-import networkDepositFailed from '../depositFailed';
+} from '../../__tests__/utils.js';
+import networkDepositFailed from '../depositFailed.js';
 
 const ethDepositFailedMock = buildDepositFailedEvent({
   reason: { __kind: 'BelowMinimumDeposit' },

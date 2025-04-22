@@ -1,7 +1,7 @@
 import { liquidityProviderLiquidityDepositAddressReady as schema160 } from '@chainflip/processor/160/liquidityProvider/liquidityDepositAddressReady';
 import { liquidityProviderLiquidityDepositAddressReady as schema190 } from '@chainflip/processor/190/liquidityProvider/liquidityDepositAddressReady';
 import { z } from 'zod';
-import type { EventHandlerArgs } from '../index';
+import type { EventHandlerArgs } from '../index.js';
 
 const liquidityProviderLiquidityDepositAddressReady = z.union([schema190, schema160]);
 

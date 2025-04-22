@@ -13,25 +13,25 @@ import {
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import type { inferRouterOutputs } from '@trpc/server';
 import superjson from 'superjson';
-import { requestSwapDepositAddress, requestSwapParameterEncoding } from '@/shared/broker';
-import { Cache } from '@/shared/dataStructures';
-import { parseFoKParams } from '@/shared/functions';
-import { assert } from '@/shared/guards';
+import { requestSwapDepositAddress, requestSwapParameterEncoding } from '@/shared/broker.js';
+import { Cache } from '@/shared/dataStructures.js';
+import { parseFoKParams } from '@/shared/functions.js';
+import { assert } from '@/shared/guards.js';
 import {
   BoostPoolsDepth,
   Environment,
   RpcConfig,
   getAllBoostPoolsDepth,
   getEnvironment,
-} from '@/shared/rpc';
-import { validateSwapAmount } from '@/shared/rpc/utils';
-import { BoostQuote, Quote } from '@/shared/schemas';
-import { Required } from '@/shared/types';
-import type { AppRouter } from '@/swap/trpc';
-import { getAssetData } from './assets';
-import { getChainData } from './chains';
-import { BACKEND_SERVICE_URLS, CF_SDK_VERSION_HEADERS } from './consts';
-import * as ApiService from './services/ApiService';
+} from '@/shared/rpc/index.js';
+import { validateSwapAmount } from '@/shared/rpc/utils.js';
+import { BoostQuote, Quote } from '@/shared/schemas.js';
+import { Required } from '@/shared/types.js';
+import type { AppRouter } from '@/swap/trpc.js';
+import { getAssetData } from './assets.js';
+import { getChainData } from './chains.js';
+import { BACKEND_SERVICE_URLS, CF_SDK_VERSION_HEADERS } from './consts.js';
+import * as ApiService from './services/ApiService.js';
 import {
   ChainData,
   AssetData,
@@ -39,14 +39,14 @@ import {
   SwapStatusRequest,
   BoostPoolDepth,
   QuoteResponseV2,
-} from './types';
+} from './types.js';
 import {
   type SwapStatusResponseV2,
   type DepositAddressRequestV2,
   type VaultSwapRequest,
   DepositAddressResponseV2,
   VaultSwapResponse,
-} from './v2/types';
+} from './v2/types.js';
 
 export type SwapSDKOptions = {
   network?: ChainflipNetwork;

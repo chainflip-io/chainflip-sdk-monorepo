@@ -7,8 +7,8 @@ import { assethubIngressEgressInsufficientBoostLiquidity } from '@chainflip/proc
 import { assetConstants } from '@chainflip/utils/chainflip';
 import assert from 'assert';
 import z from 'zod';
-import { EventHandlerArgs } from '..';
-import { Chain } from '../../client';
+import { Chain } from '../../client.js';
+import { EventHandlerArgs } from '../index.js';
 
 const schemas = {
   Arbitrum: arbitrumIngressEgressInsufficientBoostLiquidity,

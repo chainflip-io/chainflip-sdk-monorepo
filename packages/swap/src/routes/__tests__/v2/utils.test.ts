@@ -1,7 +1,7 @@
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { describe, it, expect } from 'vitest';
-import { Prisma } from '../../../client';
-import { getEgressStatusFields } from '../../v2/utils';
+import { Prisma } from '../../../client.js';
+import { getEgressStatusFields } from '../../v2/utils.js';
 
 describe(getEgressStatusFields, () => {
   const mockTransactionPayload = JSON.stringify({

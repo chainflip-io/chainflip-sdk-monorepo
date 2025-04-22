@@ -1,7 +1,7 @@
 import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import env from '../config/env';
-import { memoize } from '../utils/function';
+import env from '../config/env.js';
+import { memoize } from '../utils/function.js';
 
 const boostFlagsSchema = z.object({ boostDepositsEnabled: z.boolean() });
 

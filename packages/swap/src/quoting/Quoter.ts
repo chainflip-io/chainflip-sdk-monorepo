@@ -11,20 +11,20 @@ import BigNumber from 'bignumber.js';
 import { randomUUID } from 'crypto';
 import { Subject, Subscription } from 'rxjs';
 import { Server, Socket } from 'socket.io';
-import Leg from './Leg';
+import BalanceTracker from './BalanceTracker.js';
+import Leg from './Leg.js';
 import {
   LegJson,
   MarketMakerQuote,
   MarketMakerQuoteRequest,
   marketMakerResponseSchema,
   requestIdObj,
-} from './schemas';
-import env from '../config/env';
-import { getAssetPrice } from '../pricing';
-import BalanceTracker from './BalanceTracker';
-import { Brand } from '../utils/brands';
-import { handleExit } from '../utils/function';
-import baseLogger from '../utils/logger';
+} from './schemas.js';
+import env from '../config/env.js';
+import { getAssetPrice } from '../pricing/index.js';
+import { Brand } from '../utils/brands.js';
+import { handleExit } from '../utils/function.js';
+import baseLogger from '../utils/logger.js';
 
 const logger = baseLogger.child({ module: 'quoter' });
 

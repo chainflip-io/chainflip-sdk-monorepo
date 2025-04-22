@@ -1,11 +1,11 @@
 import { type ChainflipAsset, assetConstants } from '@chainflip/utils/chainflip';
 import assert from 'assert';
-import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts';
-import { getHundredthPipAmountFromAmount, ONE_IN_HUNDREDTH_PIPS } from '@/shared/functions';
-import { PoolFee, SwapFee } from '@/shared/schemas';
-import { Pool } from '../client';
-import { getPools } from './pools';
-import env from '../config/env';
+import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts.js';
+import { getHundredthPipAmountFromAmount, ONE_IN_HUNDREDTH_PIPS } from '@/shared/functions.js';
+import { PoolFee, SwapFee } from '@/shared/schemas.js';
+import { Pool } from '../client.js';
+import { getPools } from './pools.js';
+import env from '../config/env.js';
 
 export function buildFee(
   internalAsset: ChainflipAsset,

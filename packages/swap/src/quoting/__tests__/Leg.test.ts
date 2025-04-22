@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import Leg from '../Leg';
+import Leg from '../Leg.js';
 
 describe(Leg, () => {
   describe(Leg.of, () => {

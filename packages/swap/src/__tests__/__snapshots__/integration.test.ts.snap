@@ -37,6 +37,7 @@ exports[`python integration test > replies to a quote request 1`] = `
   ],
   "intermediateAmount": "2000000000",
   "isVaultSwap": false,
+  "lowLiquidityWarning": false,
   "poolInfo": [
     {
       "baseAsset": {
@@ -134,6 +135,7 @@ exports[`python integration test > replies to a quote request with v2 endpoint 1
     ],
     "intermediateAmount": "2000000000",
     "isVaultSwap": false,
+    "lowLiquidityWarning": false,
     "poolInfo": [
       {
         "baseAsset": {
@@ -163,34 +165,6 @@ exports[`python integration test > replies to a quote request with v2 endpoint 1
 
 exports[`python integration test > replies to a quote request with v2 endpoint 2`] = `
 [
-  [
-    {
-      "brokerCommissionBps": undefined,
-      "ccmParams": undefined,
-      "dcaParams": undefined,
-      "depositAmount": 1000000000000000000n,
-      "destAsset": "Usdc",
-      "excludeFees": [],
-      "limitOrders": [
-        {
-          "LimitOrder": {
-            "base_asset": {
-              "asset": "FLIP",
-              "chain": "Ethereum",
-            },
-            "quote_asset": {
-              "asset": "USDC",
-              "chain": "Ethereum",
-            },
-            "sell_amount": "0xde0b6b3a7640000",
-            "side": "buy",
-            "tick": -1,
-          },
-        },
-      ],
-      "srcAsset": "Flip",
-    },
-  ],
   [
     {
       "brokerCommissionBps": undefined,

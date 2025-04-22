@@ -1,5 +1,5 @@
-import { AsyncCacheMap } from '@/shared/dataStructures';
-import { getAccountInfo, getAccounts } from './rpc';
+import { AsyncCacheMap } from '@/shared/dataStructures.js';
+import { getAccountInfo, getAccounts } from './rpc.js';
 
 const accountInfo = new AsyncCacheMap({
   fetch: (idSs58: string) => getAccountInfo(idSs58),

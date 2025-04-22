@@ -16,12 +16,12 @@ import { assetConstants, ChainflipChain } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import assert from 'assert';
 import { z } from 'zod';
-import { assertUnreachable } from '@/shared/functions';
-import { FailedSwapReason, type Chain } from '../../client';
-import env from '../../config/env';
-import logger from '../../utils/logger';
-import { DepositDetailsData, getDepositTxRef } from '../common';
-import type { EventHandlerArgs } from '../index';
+import { assertUnreachable } from '@/shared/functions.js';
+import { FailedSwapReason, type Chain } from '../../client.js';
+import env from '../../config/env.js';
+import logger from '../../utils/logger.js';
+import { DepositDetailsData, getDepositTxRef } from '../common.js';
+import type { EventHandlerArgs } from '../index.js';
 
 const arbitrumIngressEgressDepositFailed = z.union([arbitrumSchema190, arbitrumSchema180]);
 const bitcoinIngressEgressDepositFailed = z.union([bitcoinSchema190, bitcoinSchema180]);

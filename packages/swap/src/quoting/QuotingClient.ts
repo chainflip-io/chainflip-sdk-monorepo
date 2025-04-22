@@ -3,8 +3,8 @@ import * as crypto from 'crypto';
 import { EventEmitter } from 'events';
 import { io, Socket } from 'socket.io-client';
 import { promisify } from 'util';
-import { LegJson, MarketMakerQuoteRequest, MarketMakerRawQuote } from './schemas';
-import logger from '../utils/logger';
+import { LegJson, MarketMakerQuoteRequest, MarketMakerRawQuote } from './schemas.js';
+import logger from '../utils/logger.js';
 
 const signAsync = promisify(crypto.sign);
 

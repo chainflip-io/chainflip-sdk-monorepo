@@ -1,13 +1,13 @@
 import { assetConstants, AssetSymbol, ChainflipChain } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import express from 'express';
-import { asyncHandler, handleQuotingError } from './common';
-import env from '../config/env';
-import { getUsdValue } from '../pricing/checkPriceWarning';
-import Quoter from '../quoting/Quoter';
-import baseLogger from '../utils/logger';
-import ServiceError from '../utils/ServiceError';
-import { generateQuotes, validateQuoteQuery } from './v2/quote';
+import { asyncHandler, handleQuotingError } from './common.js';
+import env from '../config/env.js';
+import { getUsdValue } from '../pricing/checkPriceWarning.js';
+import Quoter from '../quoting/Quoter.js';
+import baseLogger from '../utils/logger.js';
+import ServiceError from '../utils/ServiceError.js';
+import { generateQuotes, validateQuoteQuery } from './v2/quote.js';
 
 const logger = baseLogger.child({ module: 'quoter' });
 

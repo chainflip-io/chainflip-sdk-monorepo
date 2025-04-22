@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateSwapAmount } from '../utils';
+import { validateSwapAmount } from '../utils.js';
 
 const env = {
   swapping: {

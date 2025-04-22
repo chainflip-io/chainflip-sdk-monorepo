@@ -1,7 +1,7 @@
 import { liquidityPoolsPoolFeeSet as schema160 } from '@chainflip/processor/160/liquidityPools/poolFeeSet';
 import { liquidityPoolsPoolFeeSet as schema190 } from '@chainflip/processor/190/liquidityPools/poolFeeSet';
 import { z } from 'zod';
-import type { EventHandlerArgs } from '../index';
+import type { EventHandlerArgs } from '../index.js';
 
 const eventArgs = z.union([schema190, schema160]);
 

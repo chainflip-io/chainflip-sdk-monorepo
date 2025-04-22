@@ -1,7 +1,7 @@
 import { swappingSwapRequestCompleted } from '@chainflip/processor/160/swapping/swapRequestCompleted';
-import { Prisma } from '../../client';
-import { getSwapPrice } from '../../utils/swap';
-import { EventHandlerArgs } from '../index';
+import { Prisma } from '../../client.js';
+import { getSwapPrice } from '../../utils/swap.js';
+import { EventHandlerArgs } from '../index.js';
 
 export default async function swapRequestCompleted({
   prisma,

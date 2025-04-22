@@ -4,7 +4,7 @@ import { ChainflipChain, ChainflipNetwork } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
 import * as ethers from 'ethers';
-import { assert } from '../guards';
+import { assert } from '../guards.js';
 
 export type AddressValidator = (address: string) => boolean;
 

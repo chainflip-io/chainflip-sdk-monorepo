@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { describe, it, expect } from 'vitest';
-import { handleQuotingError } from '../common';
+import { handleQuotingError } from '../common.js';
 
 describe(handleQuotingError, () => {
   it('handles internal error message', () => {

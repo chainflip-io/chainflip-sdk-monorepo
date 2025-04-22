@@ -11,15 +11,15 @@ import {
   cfPoolDepth,
   environment,
   mockRpcResponse,
-} from '@/shared/tests/fixtures';
-import prisma, { InternalAsset } from '../../../client';
-import env from '../../../config/env';
-import { getUsdValue } from '../../../pricing/checkPriceWarning';
-import Quoter from '../../../quoting/Quoter';
-import app from '../../../server';
-import { boostPoolsCache } from '../../../utils/boost';
-import { getTotalLiquidity } from '../../../utils/pools';
-import { getDcaQuoteParams, MAX_NUMBER_OF_CHUNKS } from '../../v2/quote';
+} from '@/shared/tests/fixtures.js';
+import prisma, { InternalAsset } from '../../../client.js';
+import env from '../../../config/env.js';
+import { getUsdValue } from '../../../pricing/checkPriceWarning.js';
+import Quoter from '../../../quoting/Quoter.js';
+import app from '../../../server.js';
+import { boostPoolsCache } from '../../../utils/boost.js';
+import { getTotalLiquidity } from '../../../utils/pools.js';
+import { getDcaQuoteParams, MAX_NUMBER_OF_CHUNKS } from '../../v2/quote.js';
 
 vi.mock('../../../utils/pools', async (importOriginal) => {
   const original = (await importOriginal()) as object;
@@ -47,7 +47,7 @@ vi.mock('@chainflip/rpc', async (importOriginal) => {
   };
 });
 
-vi.mock('@/shared/consts', async (importOriginal) => {
+vi.mock('@/shared/consts.js', async (importOriginal) => {
   const original = (await importOriginal()) as object;
   return {
     ...original,

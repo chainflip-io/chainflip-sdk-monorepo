@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import prisma from '../../../client';
-import { batchBroadcastRequestedMock } from '../../__tests__/utils';
-import batchBroadcastRequested from '../batchBroadcastRequested';
+import prisma from '../../../client.js';
+import { batchBroadcastRequestedMock } from '../../__tests__/utils.js';
+import batchBroadcastRequested from '../batchBroadcastRequested.js';
 
 describe(batchBroadcastRequested, () => {
   beforeEach(async () => {

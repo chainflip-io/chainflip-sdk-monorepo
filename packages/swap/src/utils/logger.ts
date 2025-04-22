@@ -3,7 +3,7 @@ import { AsyncLocalStorage } from 'async_hooks';
 import type { UUID } from 'crypto';
 import stringify from 'safe-stable-stringify';
 import { createLogger, format, LeveledLogMethod, transports, type Logger } from 'winston';
-import env from '../config/env';
+import env from '../config/env.js';
 
 type CommonAlertCode = 'DbReadError' | 'DbWriteError';
 

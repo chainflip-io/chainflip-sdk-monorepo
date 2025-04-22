@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { formatTxRef } from '@/shared/common';
-import prisma from '../../../client';
-import transactionRejectedByBroker from '../transactionRejectedByBroker';
+import { formatTxRef } from '@/shared/common.js';
+import prisma from '../../../client.js';
+import transactionRejectedByBroker from '../transactionRejectedByBroker.js';
 
 describe(transactionRejectedByBroker, () => {
   beforeEach(async () => {

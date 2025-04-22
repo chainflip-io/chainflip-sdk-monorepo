@@ -1,9 +1,9 @@
 import BigNumber from 'bignumber.js';
 import { describe, it, beforeEach, expect, vi } from 'vitest';
-import env from '../../config/env';
-import { calculateRecommendedSlippage } from '../autoSlippage';
-import { getDeployedLiquidity, getUndeployedLiquidity } from '../pools';
-import { getRequiredBlockConfirmations } from '../rpc';
+import env from '../../config/env.js';
+import { calculateRecommendedSlippage } from '../autoSlippage.js';
+import { getDeployedLiquidity, getUndeployedLiquidity } from '../pools.js';
+import { getRequiredBlockConfirmations } from '../rpc.js';
 
 vi.mock('../pools', () => ({
   getDeployedLiquidity: vi.fn(),

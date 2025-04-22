@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { Prisma } from '../../client';
-import { getSwapFields } from '../v2/utils';
+import { Prisma } from '../../client.js';
+import { getSwapFields } from '../v2/utils.js';
 
 describe(getSwapFields, () => {
   it('uses toFixed on decimals', () => {

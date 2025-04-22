@@ -1,11 +1,11 @@
 /* eslint-disable dot-notation */
 import { chainflipAssets, ChainflipChain, chainflipNetworks } from '@chainflip/utils/chainflip';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { BoostQuote, Quote } from '@/shared/schemas';
-import { boostPoolsDepth, environment, mockRpcResponse } from '@/shared/tests/fixtures';
-import { SwapSDK } from '../sdk';
-import { getQuoteV2, getStatusV2 } from '../services/ApiService';
-import { QuoteRequest } from '../types';
+import { BoostQuote, Quote } from '@/shared/schemas.js';
+import { boostPoolsDepth, environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
+import { SwapSDK } from '../sdk.js';
+import { getQuoteV2, getStatusV2 } from '../services/ApiService.js';
+import { QuoteRequest } from '../types.js';
 
 vi.mock('../services/ApiService', () => ({
   getQuoteV2: vi.fn(),

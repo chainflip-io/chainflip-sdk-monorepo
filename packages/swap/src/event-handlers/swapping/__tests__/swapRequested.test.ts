@@ -3,8 +3,8 @@ import { bytesToHex } from '@chainflip/utils/bytes';
 import { assetConstants } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import prisma from '../../../client';
-import swapRequested, { SwapRequestedArgs, SwapRequestedArgs190 } from '../swapRequested';
+import prisma from '../../../client.js';
+import swapRequested, { SwapRequestedArgs, SwapRequestedArgs190 } from '../swapRequested.js';
 
 const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { chainflipAddress, hexStringWithMaxByteSize, u128, unsignedInteger } from '../parsers';
+import { chainflipAddress, hexStringWithMaxByteSize, u128, unsignedInteger } from '../parsers.js';
 
 describe('chainflipAddress', () => {
   it.each([

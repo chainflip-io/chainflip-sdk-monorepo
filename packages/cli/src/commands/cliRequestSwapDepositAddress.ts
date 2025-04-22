@@ -1,8 +1,8 @@
 import { chainflipAssets, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { ArgumentsCamelCase, InferredOptionTypes, Options } from 'yargs';
-import { assert } from '@/shared/guards';
-import { CcmParams } from '@/shared/schemas';
-import { broker } from '../lib';
+import { assert } from '@/shared/guards.js';
+import { CcmParams } from '@/shared/schemas.js';
+import { broker } from '../lib/index.js';
 
 export const yargsOptions = {
   'src-asset': {

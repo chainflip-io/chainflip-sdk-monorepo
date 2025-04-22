@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import prisma from '../../../client';
-import { check } from '../../__tests__/utils';
-import { depositBoosted, DepositBoostedArgsMap } from '../depositBoosted';
+import prisma from '../../../client.js';
+import { check } from '../../__tests__/utils.js';
+import { depositBoosted, DepositBoostedArgsMap } from '../depositBoosted.js';
 
 export const depositBoostedBtcMock = async ({
   action = { __kind: 'Swap', swapRequestId: '1' },

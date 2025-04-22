@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { bitcoinAddresses } from './bitcoinAddresses';
+import { bitcoinAddresses } from './bitcoinAddresses.js';
 import {
   validateBitcoinMainnetAddress,
   validateBitcoinTestnetAddress,
   validateBitcoinRegtestAddress,
   validatePolkadotAddress,
   validateAddress,
-} from '../addressValidation';
+} from '../addressValidation.js';
 
 describe(validatePolkadotAddress, () => {
   it('validates valid addresses', () => {

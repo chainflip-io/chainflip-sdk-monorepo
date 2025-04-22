@@ -7,7 +7,7 @@ import {
   getPriceFromPriceX128,
   getPriceX128FromPrice,
   parseFoKParams,
-} from '../functions';
+} from '../functions.js';
 
 describe(getPipAmountFromAmount, () => {
   it.each([

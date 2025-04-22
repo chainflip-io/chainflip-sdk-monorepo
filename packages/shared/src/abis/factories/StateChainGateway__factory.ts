@@ -6,7 +6,7 @@ import { Contract, Interface, type ContractRunner } from "ethers";
 import type {
   StateChainGateway,
   StateChainGatewayInterface,
-} from "../StateChainGateway";
+} from "../StateChainGateway.js";
 
 const _abi = [
   {

@@ -6,8 +6,8 @@ import { solanaBroadcasterBroadcastSuccess } from '@chainflip/processor/160/sola
 import { assethubBroadcasterBroadcastSuccess } from '@chainflip/processor/190/assethubBroadcaster/broadcastSuccess';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { formatTxRef } from '@/shared/common';
-import type { EventHandlerArgs } from '../index';
+import { formatTxRef } from '@/shared/common.js';
+import type { EventHandlerArgs } from '../index.js';
 
 const schemas = {
   Arbitrum: arbitrumBroadcasterBroadcastSuccess.transform((args) => ({

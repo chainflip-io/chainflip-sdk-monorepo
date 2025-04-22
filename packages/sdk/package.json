@@ -4,30 +4,31 @@
   "description": "",
   "exports": {
     "./swap": {
-      "types": "./dist/swap.d.ts",
-      "import": "./dist/swap.mjs",
-      "require": "./dist/swap.js"
+      "require": {
+        "types": "./dist/swap.d.cts",
+        "default": "./dist/swap.cjs"
+      },
+      "import": {
+        "types": "./dist/swap.d.ts",
+        "default": "./dist/swap.js"
+      }
     },
     "./funding": {
-      "types": "./dist/funding.d.ts",
-      "import": "./dist/funding.mjs",
-      "require": "./dist/funding.js"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "swap": [
-        "dist/swap.d.ts"
-      ],
-      "funding": [
-        "dist/funding.d.ts"
-      ]
+      "require": {
+        "types": "./dist/funding.d.cts",
+        "default": "./dist/funding.cjs"
+      },
+      "import": {
+        "types": "./dist/funding.d.ts",
+        "default": "./dist/funding.js"
+      }
     }
   },
   "files": [
     "dist",
     "README.md"
   ],
+  "type": "module",
   "scripts": {
     "test": "vitest",
     "test:ci": "CI=1 pnpm test",
@@ -57,10 +58,10 @@
     "@chainflip/utils": "^0.8.6",
     "@trpc/client": "^10.45.2",
     "axios": "^1.7.7",
-    "bignumber.js": "^9.1.2",
+    "bignumber.js": "^9.3.0",
     "ethers": "^6.13.3",
     "superjson": "^1.13.3",
-    "zod": "^3.23.8"
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@trpc/server": "^10.45.2",

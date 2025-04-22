@@ -1,6 +1,6 @@
 import { swappingCreditedOnChain } from '@chainflip/processor/190/swapping/creditedOnChain';
 import z from 'zod';
-import { EventHandlerArgs } from '..';
+import { EventHandlerArgs } from '../index.js';
 
 export type SwappingCreditedOnChainArgs = z.input<typeof swappingCreditedOnChain>;
 
