@@ -6,7 +6,7 @@ export {
   getRedemptionDelay,
   approveStateChainGateway,
   checkStateChainGatewayAllowance,
-} from '@/shared/stateChainGateway';
+} from '@/shared/stateChainGateway/index.js';
 export {
   type ChainflipAsset as InternalAsset,
   getInternalAsset,
@@ -20,4 +20,4 @@ export {
   chainflipNetworks,
   type AssetSymbol as Asset,
 } from '@chainflip/utils/chainflip';
-export * as broker from '@/shared/broker';
+export * as broker from '@/shared/broker.js';

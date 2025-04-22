@@ -1,13 +1,13 @@
 import yargs from 'yargs/yargs';
 import cliEncodeVaultSwapData, {
   yargsOptions as cliEncodeVaultSwapDataOptions,
-} from './commands/cliEncodeVaultSwapData';
+} from './commands/cliEncodeVaultSwapData.js';
 import cliFundStateChainAccount, {
   yargsOptions as cliFundStateChainAccountOptions,
-} from './commands/cliFundStateChainAccount';
+} from './commands/cliFundStateChainAccount.js';
 import cliRequestSwapDepositAddress, {
   yargsOptions as cliRequestSwapDepositAddressOptions,
-} from './commands/cliRequestSwapDepositAddress';
+} from './commands/cliRequestSwapDepositAddress.js';
 
 export default async function cli(args: string[]) {
   return yargs(args)
