@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/cli",
-  "version": "1.9.0-assethub.0",
+  "version": "1.9.0-assethub.0-ccm-refunds",
   "description": "",
   "main": "./dist/lib.mjs",
   "types": "./dist/lib.d.mts",
