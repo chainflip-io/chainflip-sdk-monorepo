@@ -1,4 +1,5 @@
 import { HttpClient } from '@chainflip/rpc';
+import { unreachable } from '@chainflip/utils/assertion';
 import {
   AssetSymbol,
   ChainflipChain,
@@ -214,8 +215,21 @@ export async function requestSwapDepositAddress(
     params.dcaParams,
   );
 
-  if (params.srcAsset.chain === 'Polkadot' && isHex(response.address)) {
-    response.address = ss58.encode({ data: response.address, ss58Format: DOT_PREFIX });
+  switch (params.srcAsset.chain) {
+    case 'Polkadot':
+    case 'Assethub':
+      if (isHex(response.address)) {
+        response.address = ss58.encode({ data: response.address, ss58Format: DOT_PREFIX });
+      }
+      break;
+    case 'Ethereum':
+    case 'Arbitrum':
+    case 'Bitcoin':
+    case 'Solana':
+      // these addresses come properly formatted
+      break;
+    default:
+      return unreachable(params.srcAsset, 'unexpected chain');
   }
 
   return transformKeysToCamelCase(response);
