@@ -10,7 +10,7 @@ import {
   internalAssetToRpcAsset,
   ChainMap,
 } from '@chainflip/utils/chainflip';
-import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
+import { createTRPCProxyClient, httpLink } from '@trpc/client';
 import type { inferRouterOutputs } from '@trpc/server';
 import superjson from 'superjson';
 import { requestSwapDepositAddress, requestSwapParameterEncoding } from '@/shared/broker.js';
@@ -98,7 +98,7 @@ export class SwapSDK {
     this.trpc = createTRPCProxyClient<AppRouter>({
       transformer: superjson,
       links: [
-        httpBatchLink({
+        httpLink({
           url: new URL('/trpc', this.options.backendUrl),
           headers: CF_SDK_VERSION_HEADERS,
         }),
