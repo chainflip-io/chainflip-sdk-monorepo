@@ -57,7 +57,7 @@
     "@chainflip/solana": "^2.1.7",
     "@chainflip/utils": "^0.8.6",
     "@trpc/client": "^10.45.2",
-    "axios": "^1.7.7",
+    "axios": "^1.8.4",
     "bignumber.js": "^9.3.0",
     "ethers": "^6.13.3",
     "superjson": "^1.13.3",
@@ -65,6 +65,6 @@
   },
   "devDependencies": {
     "@trpc/server": "^10.45.2",
-    "tsup": "^8.3.6"
+    "tsup": "^8.4.0"
   }
 }

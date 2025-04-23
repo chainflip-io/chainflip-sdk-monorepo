@@ -44,13 +44,13 @@
     "@chainflip/rpc": "~1.9.5",
     "@chainflip/solana": "^2.1.7",
     "@chainflip/utils": "^0.8.6",
-    "ioredis": "^5.4.1",
-    "ws": "^8.18.0",
+    "ioredis": "^5.6.1",
+    "ws": "^8.18.1",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@types/yargs": "^17.0.33",
-    "tsup": "^8.3.6"
+    "tsup": "^8.4.0"
   },
   "peerDependencies": {
     "axios": "^1.7.7",
