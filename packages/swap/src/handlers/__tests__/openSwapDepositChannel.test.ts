@@ -593,6 +593,7 @@ describe('openSwapDepositChannelSchema', () => {
   it('creates channel with a commission', async () => {
     mockRpcResponse({ data: environment() });
     env.BROKER_COMMISSION_BPS = 100;
+    env.RPC_COMMISSION_BROKER_HTTPS_URL = 'https://broker-2.test';
     vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
@@ -613,6 +614,7 @@ describe('openSwapDepositChannelSchema', () => {
         retryDurationBlocks: 2,
         minPriceX128: '1',
       },
+      takeCommission: true,
     });
 
     expect(result).toMatchInlineSnapshot(`

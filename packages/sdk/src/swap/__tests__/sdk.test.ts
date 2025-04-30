@@ -41,8 +41,12 @@ vi.mock('@trpc/client', async (importOriginal) => {
 
 global.fetch = vi.fn();
 
-const mockNetworkStatus = (boostDepositsEnabled = true, cfBrokerCommissionBps = 0) => {
-  const sdk = new SwapSDK({ network: 'sisyphos' });
+const mockNetworkStatus = (
+  boostDepositsEnabled = true,
+  cfBrokerCommissionBps = 0,
+  SwapSDKClass = SwapSDK,
+) => {
+  const sdk = new SwapSDKClass({ network: 'sisyphos' });
   vi.mocked(sdk['trpc'].networkStatus.query).mockResolvedValueOnce({
     assets: {
       all: ['Eth', 'Btc', 'Flip', 'Usdc', 'Sol', 'SolUsdc'],
@@ -204,7 +208,15 @@ describe(SwapSDK, () => {
     });
 
     it('calls api with commission', async () => {
-      sdk = mockNetworkStatus(true, 15);
+      sdk = mockNetworkStatus(
+        true,
+        15,
+        class extends SwapSDK {
+          protected override shouldTakeCommission(): boolean {
+            return true;
+          }
+        },
+      );
       const params: QuoteRequest = {
         srcChain: 'Ethereum',
         srcAsset: 'ETH',
@@ -356,6 +368,7 @@ describe(SwapSDK, () => {
           minPriceX128: '34028236692093846346337460743176821145600000000000000000000000',
         },
         quote,
+        takeCommission: false,
       });
       expect(response).toStrictEqual({
         depositChannelId: 'channel id',
@@ -434,6 +447,7 @@ describe(SwapSDK, () => {
           minPriceX128: '34028236692093846346337460743176821145600000000000000000000000',
         },
         quote,
+        takeCommission: false,
       });
       expect(response).toStrictEqual({
         depositChannelId: 'channel id',
@@ -1184,6 +1198,7 @@ describe(SwapSDK, () => {
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           minPriceX128: '8379453285428109662785599708007292207104000000000000',
         },
+        commissionBps: 0,
       });
       expect(response).toStrictEqual({
         chain: 'Bitcoin',
