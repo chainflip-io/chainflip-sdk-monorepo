@@ -111,6 +111,7 @@ export default z
     QUOTER_BALANCE_TRACKER_ACTIVE: optionalBoolean.default('true'),
     QUOTER_BALANCE_TOLERANCE_PERCENT: optionalNumber(10),
     BROKER_COMMISSION_BPS: optionalNumber(0),
+    RPC_COMMISSION_BROKER_HTTPS_URL: httpUrl.optional(),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);

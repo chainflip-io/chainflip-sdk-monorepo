@@ -110,7 +110,7 @@ type CacheValue<T> = T extends Fetcher<infer U> ? U : never;
  * practice unless you expose some way of clearing all the timers. this also
  * allows for multiple types of values to be cached and read in safe way
  */
-export class Cache<T extends FetchMap> {
+export class MultiCache<T extends FetchMap> {
   private readonly values: {
     [K in keyof T]?: {
       timestamp: number;

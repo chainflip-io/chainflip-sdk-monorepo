@@ -1,5 +1,5 @@
 import { describe, it, beforeEach, afterEach, expect, vi } from 'vitest';
-import { AsyncCacheMap, Cache, CacheMap } from '@/shared/dataStructures.js';
+import { AsyncCacheMap, MultiCache, CacheMap } from '@/shared/dataStructures.js';
 
 describe(CacheMap, () => {
   beforeEach(() => {
@@ -121,7 +121,7 @@ describe(AsyncCacheMap, () => {
   });
 });
 
-describe(Cache, () => {
+describe(MultiCache, () => {
   afterEach(() => {
     vi.useRealTimers();
   });
@@ -131,7 +131,7 @@ describe(Cache, () => {
 
     let n = 0;
 
-    const cache = new Cache({
+    const cache = new MultiCache({
       inc: {
         async fetch() {
           n += 1;
@@ -153,7 +153,7 @@ describe(Cache, () => {
   it('fetches fresh if the fetch fails', async () => {
     let n = 0;
 
-    const cache = new Cache({
+    const cache = new MultiCache({
       inc: {
         async fetch() {
           n += 1;

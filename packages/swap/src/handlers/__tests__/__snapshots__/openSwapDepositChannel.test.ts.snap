@@ -577,7 +577,7 @@ exports[`openSwapDepositChannelSchema > creates channel with a commission 2`] = 
       "srcChain": "Ethereum",
     },
     {
-      "url": "https://rpc-broker.test",
+      "url": "https://broker-2.test",
     },
     "perseverance",
   ],

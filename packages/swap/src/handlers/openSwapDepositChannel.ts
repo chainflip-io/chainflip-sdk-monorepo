@@ -39,6 +39,7 @@ export const openSwapDepositChannelSchema = z
         recommendedSlippageTolerancePercent: z.number().optional(),
       })
       .optional(),
+    takeCommission: z.boolean().optional(),
   })
   .transform(({ amount, ...rest }) => ({
     ...rest,
@@ -55,9 +56,10 @@ const getSlippageTolerancePercent = (input: z.output<typeof openSwapDepositChann
   return estimatedPrice && fokMinPrice && (100 * (estimatedPrice - fokMinPrice)) / estimatedPrice;
 };
 
-export const openSwapDepositChannel = async (
-  input: z.output<typeof openSwapDepositChannelSchema>,
-) => {
+export const openSwapDepositChannel = async ({
+  takeCommission,
+  ...input
+}: z.output<typeof openSwapDepositChannelSchema>) => {
   if (!validateAddress(input.destChain, input.destAddress, env.CHAINFLIP_NETWORK)) {
     throw ServiceError.badRequest(
       `Address "${input.destAddress}" is not a valid "${input.destChain}" address`,
@@ -101,12 +103,16 @@ export const openSwapDepositChannel = async (
     throw ServiceError.badRequest('too many channels');
   }
 
+  let commissionBps = 0;
+  let brokerUrl = env.RPC_BROKER_HTTPS_URL;
+  if (takeCommission && env.RPC_COMMISSION_BROKER_HTTPS_URL) {
+    commissionBps = env.BROKER_COMMISSION_BPS;
+    brokerUrl = env.RPC_COMMISSION_BROKER_HTTPS_URL;
+  }
+
   const swapDepositAddress = await broker.requestSwapDepositAddress(
-    {
-      ...input,
-      commissionBps: env.BROKER_COMMISSION_BPS,
-    },
-    { url: env.RPC_BROKER_HTTPS_URL },
+    { ...input, commissionBps },
+    { url: brokerUrl },
     env.CHAINFLIP_NETWORK,
   );
 
@@ -173,7 +179,7 @@ export const openSwapDepositChannel = async (
       estimatedExpiryAt: estimatedExpiryTime,
       ccmGasBudget: ccmParams?.gasBudget && BigInt(ccmParams.gasBudget).toString(),
       ccmMessage: ccmParams?.message,
-      totalBrokerCommissionBps: env.BROKER_COMMISSION_BPS,
+      totalBrokerCommissionBps: commissionBps,
       maxBoostFeeBps: Number(maxBoostFeeBps) || 0,
       openedThroughBackend: true,
       openingFeePaid: channelOpeningFee.toString(),

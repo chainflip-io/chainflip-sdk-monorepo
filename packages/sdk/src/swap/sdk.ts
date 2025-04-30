@@ -14,7 +14,7 @@ import { createTRPCProxyClient, httpLink } from '@trpc/client';
 import type { inferRouterOutputs } from '@trpc/server';
 import superjson from 'superjson';
 import { requestSwapDepositAddress, requestSwapParameterEncoding } from '@/shared/broker.js';
-import { Cache } from '@/shared/dataStructures.js';
+import { MultiCache } from '@/shared/dataStructures.js';
 import { parseFoKParams } from '@/shared/functions.js';
 import { assert } from '@/shared/guards.js';
 import {
@@ -105,7 +105,7 @@ export class SwapSDK {
       ],
     });
     this.dcaEnabled = options.enabledFeatures?.dca ?? false;
-    this.cache = new Cache({
+    this.cache = new MultiCache({
       environment: {
         fetch: () => getEnvironment(this.rpcConfig),
         ttl: 60_000,
@@ -168,17 +168,25 @@ export class SwapSDK {
       .filter((asset) => !chain || asset.chain === chain);
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  protected shouldTakeCommission(): boolean {
+    return false;
+  }
+
+  private async getCommissionBps(brokerCommissionBps: number | undefined): Promise<number> {
+    if (this.shouldTakeCommission()) {
+      return (await this.cache.read('networkStatus')).cfBrokerCommissionBps;
+    }
+    return brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0;
+  }
+
   async getQuoteV2(
     quoteRequest: QuoteRequest,
     options: ApiService.RequestOptions = {},
   ): Promise<QuoteResponseV2> {
-    let submitterBrokerCommissionBps;
-    if (this.options.broker) {
-      submitterBrokerCommissionBps =
-        quoteRequest.brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0;
-    } else {
-      submitterBrokerCommissionBps = (await this.cache.read('networkStatus')).cfBrokerCommissionBps;
-    }
+    const submitterBrokerCommissionBps = await this.getCommissionBps(
+      quoteRequest.brokerCommissionBps,
+    );
 
     return ApiService.getQuoteV2(
       this.options.backendUrl,
@@ -273,7 +281,7 @@ export class SwapSDK {
     fillOrKillParams: inputFoKParams,
     affiliateBrokers: affiliates,
     ccmParams,
-    brokerCommissionBps,
+    brokerCommissionBps: brokerCommissionBpsParam,
   }: DepositAddressRequestV2): Promise<DepositAddressResponseV2> {
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
@@ -284,6 +292,8 @@ export class SwapSDK {
     } else {
       assert(!quote.ccmParams, 'Cannot open regular channel for quote with CCM params');
     }
+
+    const brokerCommissionBps = await this.getCommissionBps(brokerCommissionBpsParam);
 
     const depositAddressRequest = {
       srcAsset: quote.srcAsset.asset,
@@ -304,7 +314,7 @@ export class SwapSDK {
       const result = await requestSwapDepositAddress(
         {
           ...depositAddressRequest,
-          commissionBps: brokerCommissionBps ?? this.options.broker.commissionBps,
+          commissionBps: brokerCommissionBps,
           affiliates,
         },
         { url: this.options.broker.url },
@@ -314,14 +324,14 @@ export class SwapSDK {
       response = {
         id: `${result.issuedBlock}-${quote.srcAsset.chain}-${result.channelId}`,
         depositAddress: result.address,
-        brokerCommissionBps: brokerCommissionBps ?? this.options.broker.commissionBps ?? 0,
+        brokerCommissionBps,
         srcChainExpiryBlock: result.sourceChainExpiryBlock,
         maxBoostFeeBps: depositAddressRequest.maxBoostFeeBps,
         channelOpeningFee: result.channelOpeningFee,
       };
     } else {
       assert(
-        !brokerCommissionBps,
+        !brokerCommissionBps || this.shouldTakeCommission(),
         'Broker commission is supported only when initializing the SDK with a brokerUrl',
       );
       assert(
@@ -332,6 +342,7 @@ export class SwapSDK {
       response = await this.trpc.openSwapDepositChannel.mutate({
         ...depositAddressRequest,
         quote,
+        takeCommission: this.shouldTakeCommission(),
       });
     }
 
@@ -357,7 +368,7 @@ export class SwapSDK {
     affiliateBrokers: affiliates,
     ccmParams,
     brokerAccount,
-    brokerCommissionBps,
+    brokerCommissionBps: brokerCommissionBpsParam,
     extraParams,
   }: VaultSwapRequest): Promise<VaultSwapResponse> {
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
@@ -369,6 +380,8 @@ export class SwapSDK {
     } else {
       assert(!quote.ccmParams, 'Cannot encode regular swap for quote with CCM params');
     }
+
+    const brokerCommissionBps = await this.getCommissionBps(brokerCommissionBpsParam);
 
     const vaultSwapRequest = {
       srcAsset: quote.srcAsset,
@@ -393,17 +406,16 @@ export class SwapSDK {
       );
 
       return requestSwapParameterEncoding(
-        {
-          ...vaultSwapRequest,
-          commissionBps: vaultSwapRequest.commissionBps ?? this.options.broker.commissionBps,
-        },
+        vaultSwapRequest,
         { url: this.options.broker.url },
         this.options.network,
       );
     }
 
     assert(
-      !vaultSwapRequest.commissionBps || vaultSwapRequest.brokerAccount,
+      !vaultSwapRequest.commissionBps ||
+        vaultSwapRequest.brokerAccount ||
+        this.shouldTakeCommission(),
       'Broker commission is supported only when setting a broker account',
     );
     assert(
