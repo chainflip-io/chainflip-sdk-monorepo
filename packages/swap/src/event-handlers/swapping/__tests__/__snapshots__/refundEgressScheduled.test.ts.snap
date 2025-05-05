@@ -18,6 +18,7 @@ exports[`refundEgressScheduled > creates egress for refund on an existing swap 1
   "destAsset": "Dot",
   "effectiveBoostFeeBps": null,
   "egressId": null,
+  "fallbackEgressId": null,
   "fees": [
     {
       "amount": "1000000000",
@@ -37,12 +38,11 @@ exports[`refundEgressScheduled > creates egress for refund on an existing swap 1
     "amount": "10000000000",
     "broadcastId": null,
     "chain": "Ethereum",
-    "createdAt": Any<Date>,
+    "fallbackDestinationAddress": null,
     "id": Any<BigInt>,
     "nativeId": 1n,
     "scheduledAt": 2022-12-06T14:31:45.000Z,
     "scheduledBlockIndex": "120-0",
-    "updatedAt": Any<Date>,
   },
   "refundEgressId": Any<BigInt>,
   "requestType": "LEGACY_SWAP",

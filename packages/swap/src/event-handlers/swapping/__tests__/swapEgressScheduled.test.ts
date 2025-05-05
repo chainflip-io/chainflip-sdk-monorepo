@@ -46,8 +46,6 @@ describe(swapEgressScheduled, () => {
       egressId: expect.any(BigInt),
       egress: {
         id: expect.any(BigInt),
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date),
       },
     });
   });

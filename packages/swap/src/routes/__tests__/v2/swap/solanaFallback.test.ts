@@ -30,7 +30,7 @@ describe('solana fallback requested', () => {
   });
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", private."DepositChannel", "Pool", "Egress", "Broadcast" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", private."DepositChannel", "Pool", "Egress", "Broadcast", "ChainTracking" CASCADE`;
     await createPools();
   });
 

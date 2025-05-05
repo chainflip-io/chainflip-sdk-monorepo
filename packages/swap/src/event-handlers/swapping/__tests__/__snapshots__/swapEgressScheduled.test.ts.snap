@@ -21,14 +21,14 @@ exports[`swapEgressScheduled > adds an egress and fee to a swap request 1`] = `
     "amount": "4945198948008612506",
     "broadcastId": null,
     "chain": "Ethereum",
-    "createdAt": Any<Date>,
+    "fallbackDestinationAddress": null,
     "id": Any<BigInt>,
     "nativeId": 1n,
     "scheduledAt": 2022-12-06T14:31:45.000Z,
     "scheduledBlockIndex": "120-0",
-    "updatedAt": Any<Date>,
   },
   "egressId": Any<BigInt>,
+  "fallbackEgressId": null,
   "fees": [
     {
       "amount": "167509500781711",

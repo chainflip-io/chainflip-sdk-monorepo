@@ -18,6 +18,7 @@ exports[`swapScheduled > creates a swap for a swap request 1`] = `
   "destAsset": "Flip",
   "effectiveBoostFeeBps": null,
   "egressId": null,
+  "fallbackEgressId": null,
   "fokMinPriceX128": null,
   "fokRefundAddress": null,
   "fokRetryDurationBlocks": null,
