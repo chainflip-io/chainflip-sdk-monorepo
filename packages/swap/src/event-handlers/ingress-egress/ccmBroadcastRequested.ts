@@ -18,6 +18,10 @@ const schemas = {
   Solana: solanaIngressEgressCcmBroadcastRequested,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
+export type CcmBroadcastRequestedArgsMap = {
+  [chain in ChainflipChain]: z.input<(typeof schemas)[chain]>;
+};
+
 const ccmBroadcastRequested =
   (chain: ChainflipChain) =>
   async ({ event, prisma, block }: EventHandlerArgs) => {

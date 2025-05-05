@@ -157,6 +157,7 @@ interface Sending extends Receiving {
   swap: SwapFields;
   swapEgress: EgressFields | undefined;
   refundEgress: EgressFields | undefined;
+  fallbackEgress: EgressFields | undefined;
 }
 
 export type SwapStatusResponseV2 =

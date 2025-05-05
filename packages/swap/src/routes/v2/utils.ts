@@ -37,6 +37,7 @@ const depositChannelInclude = {
 const swapRequestInclude = {
   swaps: { include: { fees: true }, orderBy: { nativeId: 'asc' } },
   egress: { include: { broadcast: true } },
+  fallbackEgress: { include: { broadcast: true } },
   refundEgress: { include: { broadcast: true } },
   fees: true,
   ignoredEgresses: true,
@@ -266,13 +267,25 @@ export const getEgressFailureState = async (
   return undefined;
 };
 
+type EgressField = {
+  [K in keyof SwapRequestData]: SwapRequestData[K] extends SwapRequestData['egress'] ? K : never;
+}[keyof SwapRequestData];
+
 export const getEgressStatusFields = async (
   swapRequest: SwapRequestData | undefined | null,
   failedSwap: FailedSwapData | null | undefined,
-  type: IgnoredEgress['type'] | undefined,
+  egressField: EgressField,
   egressTrackerTxRef: string | null | undefined,
 ) => {
-  let egress = type === 'SWAP' ? swapRequest?.egress : swapRequest?.refundEgress;
+  let egress = swapRequest?.[egressField];
+
+  let type;
+  if (egressField === 'egress') {
+    type = 'SWAP' as const;
+  } else if (egressField === 'refundEgress') {
+    type = 'REFUND' as const;
+  }
+
   if (!egress && type === 'REFUND' && failedSwap?.refundBroadcast) {
     // rejected deposits don't have an egress, but the downstream logic is simplified
     // if it has a fake egress
@@ -285,14 +298,13 @@ export const getEgressStatusFields = async (
       chain: failedSwap.srcChain,
       nativeId: 0n,
       id: 0n,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      fallbackDestinationAddress: null,
     };
   }
 
   const broadcast = egress?.broadcast;
-  const ignoredEgress = swapRequest?.ignoredEgresses?.find((e) => e.type === type);
-  const failureState = await getEgressFailureState(ignoredEgress, broadcast, type);
+  const ignoredEgress = type && swapRequest?.ignoredEgresses?.find((e) => e.type === type);
+  const failureState = type && (await getEgressFailureState(ignoredEgress, broadcast, type));
 
   let transactionPayload;
 
@@ -321,6 +333,7 @@ export const getEgressStatusFields = async (
       amount: egress.amount?.toFixed(),
       scheduledAt: egress.scheduledAt?.valueOf(),
       scheduledBlockIndex: egress.scheduledBlockIndex ?? undefined,
+      destinationAddress: egress.fallbackDestinationAddress ?? undefined,
     }),
     ...(broadcast && {
       witnessedAt: broadcast?.succeededAt?.valueOf(),
@@ -348,15 +361,18 @@ export const getSwapState = async (
   state: StateV2;
   swapEgressTrackerTxRef: string | null | undefined;
   refundEgressTrackerTxRef: string | null | undefined;
+  fallbackEgressTrackerTxRef: string | null | undefined;
   pendingDeposit: PendingDeposit | null;
 }> => {
   let state: StateV2 | undefined;
   let swapEgressTrackerTxRef: string | null | undefined;
   let refundEgressTrackerTxRef: string | null | undefined;
+  let fallbackEgressTrackerTxRef: string | null | undefined;
   let pendingDeposit = null;
   const swapEgress = swapRequest?.egress;
   const refundEgress = swapRequest?.refundEgress;
-  const egress = swapEgress ?? refundEgress;
+  const fallbackEgress = swapRequest?.fallbackEgress;
+  const egress = fallbackEgress ?? swapEgress ?? refundEgress;
 
   if (failedSwap) {
     state = StateV2.Failed;
@@ -364,9 +380,13 @@ export const getSwapState = async (
       const pendingRefundBroadcast = await getPendingBroadcast(failedSwap.refundBroadcast);
       refundEgressTrackerTxRef = pendingRefundBroadcast?.tx_ref;
     }
-  } else if (swapRequest?.ignoredEgresses?.length || egress?.broadcast?.abortedAt) {
-    state = StateV2.Failed;
-  } else if (swapRequest?.onChainSwapInfo?.refundAmount) {
+  } else if (
+    swapRequest?.ignoredEgresses?.length ||
+    egress?.broadcast?.abortedAt ||
+    swapRequest?.onChainSwapInfo?.refundAmount ||
+    swapRequest?.fallbackEgress?.broadcast?.succeededAt ||
+    swapRequest?.fallbackEgress?.broadcast?.abortedAt
+  ) {
     state = StateV2.Failed;
   } else if (egress?.broadcast?.succeededAt) {
     state = StateV2.Completed;
@@ -388,6 +408,13 @@ export const getSwapState = async (
         refundEgressTrackerTxRef = pendingRefundBroadcast.tx_ref;
       }
     }
+    if (fallbackEgress?.broadcast) {
+      const pendingFallbackBroadcast = await getPendingBroadcast(fallbackEgress.broadcast);
+      if (pendingFallbackBroadcast) {
+        state = StateV2.Failed;
+        fallbackEgressTrackerTxRef = pendingFallbackBroadcast.tx_ref;
+      }
+    }
   } else if (swapRequest?.swaps.some((s) => s.swapScheduledAt)) {
     state = StateV2.Swapping;
   } else {
@@ -407,6 +434,7 @@ export const getSwapState = async (
     state,
     swapEgressTrackerTxRef,
     refundEgressTrackerTxRef,
+    fallbackEgressTrackerTxRef,
     pendingDeposit,
   };
 };
