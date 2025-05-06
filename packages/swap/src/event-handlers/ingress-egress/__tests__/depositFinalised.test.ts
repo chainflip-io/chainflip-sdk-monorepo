@@ -322,8 +322,6 @@ describe(depositFinalised, () => {
         ],
         refundEgress: {
           id: expect.any(BigInt),
-          createdAt: expect.any(Date),
-          updatedAt: expect.any(Date),
         },
       },
       `
@@ -345,12 +343,11 @@ describe(depositFinalised, () => {
           "amount": "99999999",
           "broadcastId": null,
           "chain": "Solana",
-          "createdAt": Any<Date>,
+          "fallbackDestinationAddress": null,
           "id": Any<BigInt>,
           "nativeId": 1n,
           "scheduledAt": 2024-08-06T00:00:06.000Z,
           "scheduledBlockIndex": "10-7",
-          "updatedAt": Any<Date>,
         },
         "refundEgressId": Any<BigInt>,
         "solanaPendingTxRef": [

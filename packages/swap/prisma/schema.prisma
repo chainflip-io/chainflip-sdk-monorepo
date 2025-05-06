@@ -184,6 +184,8 @@ model SwapRequest {
   egressId                   BigInt?
   refundEgress               Egress?              @relation("refundEgress", fields: [refundEgressId], references: [id])
   refundEgressId             BigInt?
+  fallbackEgress             Egress?              @relation("fallbackEgress", fields: [fallbackEgressId], references: [id])
+  fallbackEgressId           BigInt?
   ignoredEgresses            IgnoredEgress[]
   swaps                      Swap[]
   fees                       SwapFee[]
@@ -345,20 +347,20 @@ model IgnoredEgress {
 }
 
 model Egress {
-  id                   BigInt        @id @default(autoincrement())
+  id                            BigInt        @id @default(autoincrement())
   /// the egress id on the state chain
-  nativeId             BigInt
-  chain                Chain
-  amount               Decimal       @db.Decimal(30, 0)
-  scheduledAt          DateTime
-  scheduledBlockIndex  String
-  broadcast            Broadcast?    @relation(fields: [broadcastId], references: [id])
-  broadcastId          BigInt?
-  createdAt            DateTime      @default(now())
-  updatedAt            DateTime      @default(now()) @updatedAt
-  swapRequests         SwapRequest[] @relation("egress")
-  refundedSwapRequests SwapRequest[] @relation("refundEgress")
-  failedSwaps          FailedSwap[]
+  nativeId                      BigInt
+  chain                         Chain
+  amount                        Decimal       @db.Decimal(30, 0)
+  scheduledAt                   DateTime
+  scheduledBlockIndex           String
+  fallbackDestinationAddress    String?
+  broadcast                     Broadcast?    @relation(fields: [broadcastId], references: [id])
+  broadcastId                   BigInt?
+  swapRequests                  SwapRequest[] @relation("egress")
+  refundedSwapRequests          SwapRequest[] @relation("refundEgress")
+  failedSwaps                   FailedSwap[]
+  fallbackRequestedSwapRequests SwapRequest[] @relation("fallbackEgress")
 
   @@unique([nativeId, chain])
   @@schema("public")

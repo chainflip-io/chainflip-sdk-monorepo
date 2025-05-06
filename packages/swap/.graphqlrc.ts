@@ -2,7 +2,7 @@ import { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
   schema: ['https://indexer.staging/graphql'],
-  documents: ['**/*.ts', '**/*.tsx'],
+  documents: ['**/*.ts'],
   emitLegacyCommonJSImports: false,
   generates: {
     'src/gql/generated/': {

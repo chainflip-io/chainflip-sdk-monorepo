@@ -45,8 +45,6 @@ describe(refundEgressScheduled, () => {
       refundEgressId: expect.any(BigInt),
       refundEgress: {
         id: expect.any(BigInt),
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date),
       },
     });
   });

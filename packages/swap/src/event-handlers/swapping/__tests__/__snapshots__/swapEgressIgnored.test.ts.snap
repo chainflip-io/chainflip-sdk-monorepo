@@ -18,6 +18,7 @@ exports[`swapEgressIgnored > adds an IgnoredEgress record for a egress ignored e
   "destAsset": "Eth",
   "effectiveBoostFeeBps": null,
   "egressId": null,
+  "fallbackEgressId": null,
   "fokMinPriceX128": null,
   "fokRefundAddress": null,
   "fokRetryDurationBlocks": null,

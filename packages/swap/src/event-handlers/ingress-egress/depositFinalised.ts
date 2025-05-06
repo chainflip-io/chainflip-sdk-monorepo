@@ -1,4 +1,3 @@
-import * as bitcoin from '@chainflip/bitcoin';
 import { arbitrumIngressEgressDepositFinalised as arbitrumSchema180 } from '@chainflip/processor/180/arbitrumIngressEgress/depositFinalised';
 import { bitcoinIngressEgressDepositFinalised as bitcoinSchema180 } from '@chainflip/processor/180/bitcoinIngressEgress/depositFinalised';
 import { ethereumIngressEgressDepositFinalised as ethereumSchema180 } from '@chainflip/processor/180/ethereumIngressEgress/depositFinalised';
@@ -7,48 +6,16 @@ import { solanaIngressEgressDepositFinalised as solanaSchema180 } from '@chainfl
 import { arbitrumIngressEgressDepositFinalised as arbitrumSchema190 } from '@chainflip/processor/190/arbitrumIngressEgress/depositFinalised';
 import { assethubIngressEgressDepositFinalised as assethubSchema190 } from '@chainflip/processor/190/assethubIngressEgress/depositFinalised';
 import { bitcoinIngressEgressDepositFinalised as bitcoinSchema190 } from '@chainflip/processor/190/bitcoinIngressEgress/depositFinalised';
-import { cfChainsAddressForeignChainAddress } from '@chainflip/processor/190/common';
 import { ethereumIngressEgressDepositFinalised as ethereumSchema190 } from '@chainflip/processor/190/ethereumIngressEgress/depositFinalised';
 import { polkadotIngressEgressDepositFinalised as polkadotSchema190 } from '@chainflip/processor/190/polkadotIngressEgress/depositFinalised';
 import { solanaIngressEgressDepositFinalised as solanaSchema190 } from '@chainflip/processor/190/solanaIngressEgress/depositFinalised';
-import * as base58 from '@chainflip/utils/base58';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
-import { POLKADOT_SS58_PREFIX } from '@chainflip/utils/consts';
-import * as ss58 from '@chainflip/utils/ss58';
 import z from 'zod';
 import { assertUnreachable } from '@/shared/functions.js';
 import { assert } from '@/shared/guards.js';
-import env from '../../config/env.js';
 import logger from '../../utils/logger.js';
-import { getDepositTxRef } from '../common.js';
+import { formatForeignChainAddress, getDepositTxRef } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
-
-const formatForeignChainAddress = (
-  address: z.output<typeof cfChainsAddressForeignChainAddress>,
-): string => {
-  switch (address.__kind) {
-    case 'Eth':
-    case 'Arb':
-      return address.value;
-    case 'Sol':
-      return base58.encode(address.value);
-    case 'Hub':
-    case 'Dot':
-      return ss58.encode({ data: address.value, ss58Format: POLKADOT_SS58_PREFIX });
-    case 'Btc':
-      if (address.value.__kind === 'OtherSegwit') {
-        throw new Error('OtherSegwit scriptPubKey not supported');
-      }
-
-      return bitcoin.encodeAddress(
-        address.value.value,
-        address.value.__kind,
-        env.CHAINFLIP_NETWORK,
-      );
-    default:
-      return assertUnreachable(address, 'unexpected address');
-  }
-};
 
 const arbitrumSchema = z.union([arbitrumSchema190, arbitrumSchema180]).transform((args) => ({
   ...args,

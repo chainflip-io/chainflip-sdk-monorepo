@@ -45,13 +45,14 @@ describe(getEgressStatusFields, () => {
     const egressStatus = await getEgressStatusFields(
       { egress: mockEgress } as any,
       undefined,
-      'SWAP',
+      'egress',
       undefined,
     );
 
     expect(egressStatus).toMatchInlineSnapshot(`
       {
         "amount": "4192707216034",
+        "destinationAddress": undefined,
         "failedAt": 624000,
         "failedBlockIndex": "104-7",
         "failure": {
@@ -93,7 +94,7 @@ describe(getEgressStatusFields, () => {
     const egressStatus = await getEgressStatusFields(
       { egress: successfulEgress } as any,
       undefined,
-      'SWAP',
+      'egress',
       undefined,
     );
     expect(egressStatus?.transactionPayload).toBeUndefined();

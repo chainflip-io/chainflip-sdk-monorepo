@@ -1,10 +1,15 @@
+import * as bitcoin from '@chainflip/bitcoin';
 import { arbitrumIngressEgressDepositFinalised } from '@chainflip/processor/180/arbitrumIngressEgress/depositFinalised';
 import { bitcoinIngressEgressDepositFinalised } from '@chainflip/processor/180/bitcoinIngressEgress/depositFinalised';
 import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/180/ethereumIngressEgress/depositFinalised';
 import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/180/polkadotIngressEgress/depositFinalised';
 import { assethubIngressEgressDepositFinalised } from '@chainflip/processor/190/assethubIngressEgress/depositFinalised';
+import { cfChainsAddressForeignChainAddress } from '@chainflip/processor/190/common';
 import { assertUndefined } from '@chainflip/utils/assertion';
+import * as base58 from '@chainflip/utils/base58';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
+import { POLKADOT_SS58_PREFIX } from '@chainflip/utils/consts';
+import * as ss58 from '@chainflip/utils/ss58';
 import { Metadata, TypeRegistry } from '@polkadot/types';
 import assert from 'assert';
 import { z } from 'zod';
@@ -121,5 +126,32 @@ export const getDepositTxRef = (
       return undefined;
     default:
       return assertUnreachable(depositDetails);
+  }
+};
+
+type ForeignChainAddress = z.output<typeof cfChainsAddressForeignChainAddress>;
+
+export const formatForeignChainAddress = (address: ForeignChainAddress): string => {
+  switch (address.__kind) {
+    case 'Eth':
+    case 'Arb':
+      return address.value;
+    case 'Sol':
+      return base58.encode(address.value);
+    case 'Hub':
+    case 'Dot':
+      return ss58.encode({ data: address.value, ss58Format: POLKADOT_SS58_PREFIX });
+    case 'Btc':
+      if (address.value.__kind === 'OtherSegwit') {
+        throw new Error('OtherSegwit scriptPubKey not supported');
+      }
+
+      return bitcoin.encodeAddress(
+        address.value.value,
+        address.value.__kind,
+        env.CHAINFLIP_NETWORK,
+      );
+    default:
+      return assertUnreachable(address, 'unexpected address');
   }
 };

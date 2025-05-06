@@ -41,8 +41,13 @@ router.get(
     const { swapRequest, failedSwap, swapDepositChannel, pendingVaultSwap } =
       await getLatestSwapForId(id);
 
-    const { state, swapEgressTrackerTxRef, refundEgressTrackerTxRef, pendingDeposit } =
-      await getSwapState(failedSwap, swapRequest, swapDepositChannel, pendingVaultSwap);
+    const {
+      state,
+      swapEgressTrackerTxRef,
+      refundEgressTrackerTxRef,
+      fallbackEgressTrackerTxRef,
+      pendingDeposit,
+    } = await getSwapState(failedSwap, swapRequest, swapDepositChannel, pendingVaultSwap);
 
     const internalSrcAsset = readField(
       swapRequest,
@@ -111,12 +116,14 @@ router.get(
     const [
       swapEgressFields,
       refundEgressFields,
+      fallbackEgressFields,
       estimatedDurations,
       srcChainRequiredBlockConfirmations,
       lastStateChainUpdate,
     ] = await Promise.all([
-      getEgressStatusFields(swapRequest, failedSwap, 'SWAP', swapEgressTrackerTxRef),
-      getEgressStatusFields(swapRequest, failedSwap, 'REFUND', refundEgressTrackerTxRef),
+      getEgressStatusFields(swapRequest, failedSwap, 'egress', swapEgressTrackerTxRef),
+      getEgressStatusFields(swapRequest, failedSwap, 'refundEgress', refundEgressTrackerTxRef),
+      getEgressStatusFields(swapRequest, null, 'fallbackEgress', fallbackEgressTrackerTxRef),
       internalDestAsset &&
         estimateSwapDuration({
           srcAsset: internalSrcAsset,
@@ -205,6 +212,7 @@ router.get(
       }),
       ...(swapEgressFields && { swapEgress: { ...swapEgressFields } }),
       ...(refundEgressFields && { refundEgress: { ...refundEgressFields } }),
+      ...(fallbackEgressFields && { fallbackEgress: { ...fallbackEgressFields } }),
       ccmParams: getCcmParams(swapRequest, swapDepositChannel, pendingVaultSwap),
       fillOrKillParams: getFillOrKillParams(swapRequest, swapDepositChannel, pendingVaultSwap),
       dcaParams: getDcaParams(swapRequest, pendingVaultSwap),
