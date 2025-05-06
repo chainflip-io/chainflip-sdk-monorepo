@@ -6,7 +6,7 @@ import assert from 'assert';
 import request from 'graphql-request';
 import { z } from 'zod';
 import { formatTxRef } from '@/shared/common.js';
-import prisma from './client.js';
+import client, { Prisma } from './client.js';
 import env from './config/env.js';
 import { gql } from './gql/generated/gql.js';
 import { FallbackQueryQuery } from './gql/generated/graphql.js';
@@ -69,6 +69,7 @@ const findBroadcastSuccess = async (initialId: string, broadcastId: number) => {
 };
 
 const backfillEvents = async (
+  prisma: Prisma.TransactionClient,
   event: NonNullable<FallbackQueryQuery['events']>['nodes'][number],
 ) => {
   const args = z.union([solana190, solana180]).parse(event.args);
@@ -98,7 +99,7 @@ const backfillEvents = async (
   }
 
   // find the broadcast success event and data
-  const broadcastSuccess = await findBroadcastSuccess(event.id, args.broadcastId);
+  const broadcastSuccess = await findBroadcastSuccess(event.id, broadcastArgs.broadcastId);
 
   const egresses = await prisma.broadcast
     .findUnique({
@@ -210,10 +211,15 @@ const backfillFallbacks = async () => {
   // finds every transfer fallback requested event for Solana
   const result = await request(env.INGEST_GATEWAY_URL, solanaTransferFallbackQuery);
 
-  for (const event of result.events?.nodes ?? []) {
-    // backfill them one at a time
-    await backfillEvents(event);
-  }
+  await client.$transaction(
+    async (prisma) => {
+      for (const event of result.events?.nodes ?? []) {
+        // backfill them one at a time
+        await backfillEvents(prisma, event);
+      }
+    },
+    { timeout: 60_000 },
+  );
 };
 
 export default backfillFallbacks;
