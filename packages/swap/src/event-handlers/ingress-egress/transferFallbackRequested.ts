@@ -76,7 +76,7 @@ const transferFallbackRequested =
       .egresses({ include: { swapRequests: true } });
 
     if (egresses?.length !== 1) {
-      logger.warn('incorrect numbr of egresses found for transferFallbackRequested', {
+      logger.warn('incorrect number of egresses found for transferFallbackRequested', {
         block: block.height,
         indexInBlock: event.indexInBlock,
         name: event.name,
