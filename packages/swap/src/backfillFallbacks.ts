@@ -98,7 +98,7 @@ const backfillEvents = async (
   }
 
   // find the broadcast success event and data
-  const broadcastSuccess = await findBroadcastSuccess(event.id, args.broadcastId);
+  const broadcastSuccess = await findBroadcastSuccess(event.id, broadcastArgs.broadcastId);
 
   const egresses = await prisma.broadcast
     .findUnique({
