@@ -42,6 +42,14 @@ const quote = quotes.find((q) => q.type === 'REGULAR');
 if (!quote) throw new Error('No quote');
 console.log('quote', quote);
 
+const generateSeed = (): `0x${string}` => {
+  const bytes = crypto.getRandomValues(new Uint8Array(32));
+
+  return `0x${Array.from(bytes)
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('')}`;
+};
+
 const vaultSwapRequest = {
   quote,
   srcAddress: keypair.publicKey.toBase58(),
@@ -52,7 +60,7 @@ const vaultSwapRequest = {
     retryDurationBlocks: 100,
   },
   extraParams: {
-    seed: '0x000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f' as const,
+    seed: generateSeed(),
   },
 };
 const vaultSwapData = await swapSDK.encodeVaultSwapData(vaultSwapRequest);
