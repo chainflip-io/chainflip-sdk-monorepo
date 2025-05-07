@@ -220,7 +220,7 @@ export interface VaultSwapRequest {
   ccmParams?: CcmParams;
   brokerAccount?: `cF${string}`;
   brokerCommissionBps?: number;
-  extraParams?: { solanaDataAccount?: string };
+  extraParams?: { seed?: `0x${string}` };
 }
 
 export type VaultSwapResponse =

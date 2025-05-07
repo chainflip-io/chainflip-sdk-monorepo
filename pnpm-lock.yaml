@@ -85,8 +85,8 @@ importers:
         specifier: ^1.2.5
         version: 1.2.5(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~1.9.5
-        version: 1.9.5
+        specifier: ~1.9.7
+        version: 1.9.7
       '@chainflip/solana':
         specifier: ^2.1.7
         version: 2.1.7(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -158,8 +158,8 @@ importers:
         specifier: ^1.2.5
         version: 1.2.5(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~1.9.5
-        version: 1.9.5
+        specifier: ~1.9.7
+        version: 1.9.7
       '@chainflip/solana':
         specifier: ^2.1.7
         version: 2.1.7(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -198,8 +198,8 @@ importers:
         specifier: ^1.2.5
         version: 1.2.5(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~1.9.5
-        version: 1.9.5
+        specifier: ~1.9.7
+        version: 1.9.7
       '@chainflip/solana':
         specifier: ^2.1.7
         version: 2.1.7(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -259,8 +259,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2
       '@chainflip/rpc':
-        specifier: ~1.9.5
-        version: 1.9.5
+        specifier: ~1.9.7
+        version: 1.9.7
       '@chainflip/solana':
         specifier: ^2.1.7
         version: 2.1.7(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -493,8 +493,8 @@ packages:
   '@chainflip/redis@1.0.2':
     resolution: {integrity: sha512-ahkz+xKt5pX1gx4QikphdvTpZX8fjNgi/84q1WLXaAOoUop4pWdUw/boXv7rzg2xIqIdvDFk82/zz1g0OmiySQ==}
 
-  '@chainflip/rpc@1.9.5':
-    resolution: {integrity: sha512-d9YsqM2Rzvc56kC9+owF2nn7uwQcA2609CLWum49Fe1jOS5+uuxXPzGStM3jZTupaVNhLlHyhxTCi+OaYyo1Jw==}
+  '@chainflip/rpc@1.9.7':
+    resolution: {integrity: sha512-e62W0qzucb9lrxS+c4EQluGbzxmJdqMPKemHzENHGqD0ZgsZLxhCc8RcIXZrspBujXO8jeCHyBY34jYGF0IVpg==}
 
   '@chainflip/scale@1.8.0':
     resolution: {integrity: sha512-66bT2DQi0kNFZRva0phBuMWCWKamOyfROlKovxcBd6wzZVGFxVqgi73iG1nExaUPlOLJnYc8gQ/blwHidgjvrg==}
@@ -5704,6 +5704,9 @@ packages:
   zod@3.24.3:
     resolution: {integrity: sha512-HhY1oqzWCQWuUqvBFnsyrtZRhyPeR7SUGv+C4+MsisMuVfSPx8HpwWqH8tRahSlt6M3PiFAcoeFhZAqIXTxoSg==}
 
+  zod@3.24.4:
+    resolution: {integrity: sha512-OdqJE9UDRPwWsrHjLN2F8bPxvwJBK22EHLWtanu0LSYr5YqzsaaW3RMgmjwr8Rypg5k+meEJdSPXJZXE/yqOMg==}
+
 snapshots:
 
   '@1password/op-js@0.1.13':
@@ -5879,10 +5882,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@chainflip/rpc@1.9.5':
+  '@chainflip/rpc@1.9.7':
     dependencies:
       '@chainflip/utils': 0.8.6
-      zod: 3.24.3
+      zod: 3.24.4
 
   '@chainflip/scale@1.8.0':
     dependencies:
@@ -11910,3 +11913,5 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   zod@3.24.3: {}
+
+  zod@3.24.4: {}

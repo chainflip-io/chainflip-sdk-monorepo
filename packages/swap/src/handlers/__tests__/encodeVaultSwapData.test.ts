@@ -1,8 +1,9 @@
 import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest';
+import { z } from 'zod';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
 import env from '../../config/env.js';
 import isDisallowedSwap from '../../utils/isDisallowedSwap.js';
-import { encodeVaultSwapData } from '../encodeVaultSwapData.js';
+import { encodeVaultSwapData, encodeVaultSwapDataSchema } from '../encodeVaultSwapData.js';
 
 vi.mock('@/shared/broker.js', async (importOriginal) => {
   const original = (await importOriginal()) as object;
@@ -375,5 +376,65 @@ describe(encodeVaultSwapData, () => {
         },
       }),
     ).rejects.toThrow('Asset Dot is disabled');
+  });
+});
+
+describe('encodeVaultSwapDataSchema', () => {
+  it('adds a seed if none is provided', () => {
+    const spy = vi.spyOn(crypto, 'getRandomValues').mockImplementationOnce(() => {
+      const array = new Uint8Array(32);
+
+      for (let i = 0; i < array!.byteLength; i += 1) {
+        array[i] = i;
+      }
+      return array;
+    });
+
+    const data: z.input<typeof encodeVaultSwapDataSchema> = {
+      amount: '1',
+      destAddress: '0x1234567890123456789012345678901234567890',
+      srcAsset: { chain: 'Solana', asset: 'SOL' },
+      destAsset: { chain: 'Ethereum', asset: 'ETH' },
+      srcAddress: '3yKDHJgzS2GbZB9qruoadRYtq8597HZifnRju7fHpdRC',
+      fillOrKillParams: {
+        refundAddress: '3yKDHJgzS2GbZB9qruoadRYtq8597HZifnRju7fHpdRC',
+        minPriceX128: '1',
+        retryDurationBlocks: 100,
+      },
+    };
+
+    expect(encodeVaultSwapDataSchema.parse(data)).toMatchInlineSnapshot(`
+      {
+        "amount": 1n,
+        "commissionBps": 0,
+        "destAddress": "0x1234567890123456789012345678901234567890",
+        "destAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "extraParams": {
+          "chain": "Solana",
+          "from": "3yKDHJgzS2GbZB9qruoadRYtq8597HZifnRju7fHpdRC",
+          "input_amount": "0x1",
+          "refund_parameters": {
+            "min_price": "0x1",
+            "refund_address": "3yKDHJgzS2GbZB9qruoadRYtq8597HZifnRju7fHpdRC",
+            "retry_duration": 100,
+          },
+          "seed": "0x000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+        },
+        "fillOrKillParams": {
+          "min_price": "0x1",
+          "refund_address": "3yKDHJgzS2GbZB9qruoadRYtq8597HZifnRju7fHpdRC",
+          "retry_duration": 100,
+        },
+        "srcAddress": "3yKDHJgzS2GbZB9qruoadRYtq8597HZifnRju7fHpdRC",
+        "srcAsset": {
+          "asset": "SOL",
+          "chain": "Solana",
+        },
+      }
+    `);
+    expect(spy).toHaveBeenCalled();
   });
 });
