@@ -1,5 +1,6 @@
 import { HttpClient } from '@chainflip/rpc';
 import { unreachable } from '@chainflip/utils/assertion';
+import { bytesToHex } from '@chainflip/utils/bytes';
 import {
   AssetSymbol,
   ChainflipChain,
@@ -9,17 +10,12 @@ import {
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
 import { priceX128ToPrice } from '@chainflip/utils/tickMath';
+import { HexString } from '@chainflip/utils/types';
 import BigNumber from 'bignumber.js';
 import { z } from 'zod';
 import { assert } from './guards.js';
 import { transformKeysToCamelCase } from './objects.js';
-import {
-  numericString,
-  assetAndChain,
-  solanaAddress,
-  unsignedInteger,
-  DOT_PREFIX,
-} from './parsers.js';
+import { numericString, assetAndChain, unsignedInteger, DOT_PREFIX, hexString } from './parsers.js';
 import {
   affiliateBroker,
   AffiliateBroker,
@@ -121,7 +117,7 @@ export const getParameterEncodingRequestSchema = (network: ChainflipNetwork) =>
       affiliates: z.array(affiliateBroker).optional(),
       fillOrKillParams: transformedFokSchema,
       dcaParams: transformedDcaParamsSchema.optional(),
-      extraParams: z.object({ solanaDataAccount: solanaAddress.optional() }).optional(),
+      extraParams: z.object({ seed: hexString.optional() }).optional(),
     })
     .superRefine((val, ctx) => {
       if (val.srcAddress && !validateAddress(val.srcAsset.chain, val.srcAddress, network)) {
@@ -130,21 +126,23 @@ export const getParameterEncodingRequestSchema = (network: ChainflipNetwork) =>
           code: z.ZodIssueCode.custom,
         });
       }
-    })
-    .superRefine((val, ctx) => {
+
       if (!validateAddress(val.destAsset.chain, val.destAddress, network)) {
         ctx.addIssue({
           message: `Address "${val.destAddress}" is not a valid "${val.destAsset.chain}" address for "${network}"`,
           code: z.ZodIssueCode.custom,
         });
       }
-    })
-    .superRefine((val, ctx) => {
+
       if (!validateAddress(val.srcAsset.chain, val.fillOrKillParams.refund_address, network)) {
         ctx.addIssue({
           message: `Address "${val.fillOrKillParams.refund_address}" is not a valid "${val.srcAsset.chain}" address for "${network}"`,
           code: z.ZodIssueCode.custom,
         });
+      }
+
+      if (val.extraParams?.seed && val.extraParams.seed.length !== 66) {
+        ctx.addIssue({ message: 'Seed must be 32 bytes', code: z.ZodIssueCode.custom });
       }
     })
     .transform((data) => {
@@ -162,18 +160,17 @@ export const getParameterEncodingRequestSchema = (network: ChainflipNetwork) =>
       } else if (data.srcAsset.chain === 'Ethereum' || data.srcAsset.chain === 'Arbitrum') {
         extraParams = {
           chain: data.srcAsset.chain,
-          input_amount: `0x${BigInt(data.amount).toString(16)}`,
+          input_amount: `0x${data.amount.toString(16)}`,
           refund_parameters: data.fillOrKillParams,
         } as const;
       } else if (data.srcAsset.chain === 'Solana') {
         assert(data.srcAddress, 'srcAddress is required for Solana');
-        assert(data.extraParams?.solanaDataAccount, 'solanaDataAccount is required for Solana');
 
         extraParams = {
           chain: 'Solana',
           from: data.srcAddress,
-          event_data_account: data.extraParams!.solanaDataAccount!,
-          input_amount: `0x${BigInt(data.amount).toString(16)}`,
+          seed: data.extraParams?.seed ?? bytesToHex(crypto.getRandomValues(new Uint8Array(32))),
+          input_amount: `0x${data.amount.toString(16)}`,
           refund_parameters: data.fillOrKillParams,
         } as const;
       } else {
@@ -247,7 +244,7 @@ type ParameterEncodingRequest = {
   affiliates?: AffiliateBroker[];
   fillOrKillParams: FillOrKillParamsX128;
   dcaParams?: DcaParams;
-  extraParams?: { solanaDataAccount?: string };
+  extraParams?: { seed?: HexString };
 };
 
 export async function requestSwapParameterEncoding(

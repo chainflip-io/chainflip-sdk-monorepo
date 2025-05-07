@@ -20,7 +20,7 @@
   "license": "ISC",
   "dependencies": {
     "@chainflip/bitcoin": "^1.2.5",
-    "@chainflip/rpc": "~1.9.5",
+    "@chainflip/rpc": "~1.9.7",
     "@chainflip/solana": "^2.1.7",
     "@chainflip/utils": "^0.8.6",
     "axios": "^1.8.4",

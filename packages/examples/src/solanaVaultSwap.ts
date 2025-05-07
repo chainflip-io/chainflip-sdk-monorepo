@@ -52,7 +52,7 @@ const vaultSwapRequest = {
     retryDurationBlocks: 100,
   },
   extraParams: {
-    solanaDataAccount: dataAccountKeypair.publicKey.toBase58(),
+    seed: '0x000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f' as const,
   },
 };
 const vaultSwapData = await swapSDK.encodeVaultSwapData(vaultSwapRequest);

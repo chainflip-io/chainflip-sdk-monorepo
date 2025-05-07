@@ -670,7 +670,7 @@ describe(broker.requestSwapParameterEncoding, () => {
           refundAddress: 'oQPnhXAbLbMuKHESaGrbXT17CyvWCpLyERSJA9HCYd7',
           minPriceX128: '10000000',
         },
-        extraParams: { solanaDataAccount: 'updtkJ8HAhh3rSkBCd3p9Z1Q74yJW4rMhSbScRskDPM' },
+        extraParams: { seed: '0x511353fe6f12ae8193a1c6a48b34cb8f5c642ce77747b8612cbd85674b1b8fdc' },
       },
       brokerConfig,
       'mainnet',
@@ -688,7 +688,7 @@ describe(broker.requestSwapParameterEncoding, () => {
         0,
         {
           chain: 'Solana',
-          event_data_account: 'updtkJ8HAhh3rSkBCd3p9Z1Q74yJW4rMhSbScRskDPM',
+          seed: '0x511353fe6f12ae8193a1c6a48b34cb8f5c642ce77747b8612cbd85674b1b8fdc',
           from: 'oQPnhXAbLbMuKHESaGrbXT17CyvWCpLyERSJA9HCYd7',
           input_amount: '0xbebc20',
           refund_parameters: {
