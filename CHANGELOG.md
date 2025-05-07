@@ -7,7 +7,7 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
-## Unreleased
+## 1.9.0
 
 ### Added
 
@@ -19,6 +19,10 @@ which it is deprecated.
   respectively.
 - `SwapSDK.prototype.checkBoostEnabled` has been added. It returns a `boolean`
   that says whether or not boosting deposits is enabled.
+- `SwapSDK.prototype.getChains` will return Assethub as a possible chain when
+  after the network is upgraded to version 1.9.
+- `SwapSDK.prototype.getAssets` will return Assethub assets (DOT, USDC, and
+  USDT) after the network is upgraded to version 1.9.
 
 ### Removed
 
