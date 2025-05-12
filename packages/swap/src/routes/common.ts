@@ -1,10 +1,8 @@
-import { ChainflipAsset } from '@chainflip/utils/chainflip';
 import { RequestHandler, ErrorRequestHandler } from 'express';
 import * as express from 'express';
 import type { RouteParameters } from 'express-serve-static-core';
 import { inspect } from 'util';
 import env from '../config/env.js';
-import type Quoter from '../quoting/Quoter.js';
 import logger from '../utils/logger.js';
 import ServiceError from '../utils/ServiceError.js';
 
@@ -61,25 +59,16 @@ export const asyncHandler = <
   }) as RequestHandler<P, ResBody, ReqBody, ReqQuery, Locals>;
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-type AdditionalInfo = {
-  srcAsset: ChainflipAsset;
-  destAsset: ChainflipAsset;
-  amount: string;
-  usdValue: string | undefined;
-  limitOrdersReceived: Awaited<ReturnType<Quoter['getLimitOrders']>> | undefined;
-};
-
-export const handleQuotingError = (res: express.Response, err: unknown, info: AdditionalInfo) => {
+export const handleQuotingError = (res: express.Response, err: unknown) => {
   if (err instanceof ServiceError) throw err;
 
   const message = err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';
 
   if (message.includes('InsufficientLiquidity') || message.includes('-32603')) {
-    logger.info('insufficient liquidity received', info);
     throw ServiceError.badRequest('insufficient liquidity for requested amount');
   }
 
-  logger.error('error while collecting quotes:', { error: err, info });
+  logger.error('error while collecting quotes:', { error: inspect(err) });
 
   res.status(500).json({ message });
 };

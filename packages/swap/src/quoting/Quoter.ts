@@ -340,11 +340,10 @@ export default class Quoter {
 
     logger.info('received limit orders from market makers', {
       quotes,
-      orders,
       srcAsset,
       destAsset,
       swapInputAmount: swapInputAmount.toString(),
-      requestId: request.request_id,
+      quoterRequestId: request.request_id,
       duration: performance.now() - start,
     });
 
