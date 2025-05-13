@@ -88,8 +88,8 @@ importers:
         specifier: ~1.9.7
         version: 1.9.7
       '@chainflip/solana':
-        specifier: ^2.1.8
-        version: 2.1.8(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        specifier: ^2.1.9
+        version: 2.1.9(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: ^0.8.6
         version: 0.8.6
@@ -161,8 +161,8 @@ importers:
         specifier: ~1.9.7
         version: 1.9.7
       '@chainflip/solana':
-        specifier: ^2.1.8
-        version: 2.1.8(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        specifier: ^2.1.9
+        version: 2.1.9(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: ^0.8.6
         version: 0.8.6
@@ -201,8 +201,8 @@ importers:
         specifier: ~1.9.7
         version: 1.9.7
       '@chainflip/solana':
-        specifier: ^2.1.8
-        version: 2.1.8(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        specifier: ^2.1.9
+        version: 2.1.9(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: ^0.8.6
         version: 0.8.6
@@ -262,8 +262,8 @@ importers:
         specifier: ~1.9.7
         version: 1.9.7
       '@chainflip/solana':
-        specifier: ^2.1.8
-        version: 2.1.8(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        specifier: ^2.1.9
+        version: 2.1.9(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: ^0.8.6
         version: 0.8.6
@@ -503,8 +503,8 @@ packages:
   '@chainflip/scale@1.8.0':
     resolution: {integrity: sha512-66bT2DQi0kNFZRva0phBuMWCWKamOyfROlKovxcBd6wzZVGFxVqgi73iG1nExaUPlOLJnYc8gQ/blwHidgjvrg==}
 
-  '@chainflip/solana@2.1.8':
-    resolution: {integrity: sha512-LSaulqSG43G/C1g8ZBez3LlX7kqPvDfZ0J/qqtDCUnv9DRITVu2a4JrgM7gIscx67BnMzLCtXI1Z2ZOACj2Vrw==}
+  '@chainflip/solana@2.1.9':
+    resolution: {integrity: sha512-jR02zYcDSlWFdtWQwutj6J89BYhZMzKV6yiVva7kJo9j1VwJnpTpyEUNG3J6iIZMCNkoZ8PvOogz5lL0zOaPNA==}
 
   '@chainflip/utils@0.6.0':
     resolution: {integrity: sha512-ZwyNKv3FVVJw5aOcRf/4rTxCclP+prerxPnTGBrFcBYEYSrPlyx4eI1dc7J35xmKD2yq+vQgwNjCx1h6oJuoPA==}
@@ -5944,7 +5944,7 @@ snapshots:
       '@chainflip/utils': 0.6.0
       scale-ts: 1.6.1
 
-  '@chainflip/solana@2.1.8(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+  '@chainflip/solana@2.1.9(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@chainflip/scale': 1.8.0
       '@chainflip/utils': 0.8.6
