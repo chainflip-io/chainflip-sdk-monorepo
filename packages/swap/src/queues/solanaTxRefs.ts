@@ -2,6 +2,7 @@ import {
   findVaultSwapSignature,
   findTransactionSignatures,
   type DepositInfo,
+  TransactionMatchingError,
 } from '@chainflip/solana';
 import { sleep } from '@chainflip/utils/async';
 import assert from 'assert';
@@ -103,7 +104,9 @@ const updateChannel = async (url: string, data: PendingChannelTxRef, network: So
     logger.error('failed to find transaction signatures', {
       error,
       channel: { address: channel.depositAddress, asset: channel.srcAsset },
-      deposits,
+      ...(error instanceof TransactionMatchingError
+        ? { deposits: error.deposits, transfers: error.transfers }
+        : { deposits }),
     });
 
     throw error;
