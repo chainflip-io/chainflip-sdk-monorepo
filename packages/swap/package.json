@@ -60,7 +60,7 @@
     "@chainflip/processor": "~1.9.3",
     "@chainflip/redis": "^1.0.2",
     "@chainflip/rpc": "~1.9.7",
-    "@chainflip/solana": "^2.1.7",
+    "@chainflip/solana": "^2.1.8",
     "@chainflip/utils": "^0.8.6",
     "@polkadot/api": "^15.9.2",
     "@polkadot/types": "^15.9.2",
