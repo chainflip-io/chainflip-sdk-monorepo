@@ -35,7 +35,7 @@ class RpcCache<T extends SimpleRpcMethod> extends MultiCache<RpcFetcherMap<T>> {
   }
 }
 
-const cache = new RpcCache(['cf_supported_assets', 'cf_safe_mode_statuses']);
+const cache = new RpcCache(['cf_available_pools', 'cf_safe_mode_statuses']);
 
 const networkStatus = async (): Promise<{
   assets: {
@@ -47,13 +47,15 @@ const networkStatus = async (): Promise<{
   cfBrokerCommissionBps: number;
 }> => {
   const [assets, safeModeStatuses] = await Promise.all([
-    cache.read('cf_supported_assets'),
+    cache
+      .read('cf_available_pools')
+      .then((pools) => ['Usdc' as const, ...pools.map((p) => getInternalAsset(p.base))]),
     cache.read('cf_safe_mode_statuses'),
   ]);
 
-  const enabledAssets = (safeModeStatuses.swapping.swaps_enabled ? assets : [])
-    .map((a) => getInternalAsset(a))
-    .filter((a) => !env.FULLY_DISABLED_INTERNAL_ASSETS.has(a));
+  const enabledAssets = (safeModeStatuses.swapping.swaps_enabled ? assets : []).filter(
+    (a) => !env.FULLY_DISABLED_INTERNAL_ASSETS.has(a),
+  );
 
   const depositAssets = enabledAssets
     .filter(
