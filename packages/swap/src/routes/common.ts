@@ -64,7 +64,11 @@ export const handleQuotingError = (res: express.Response, err: unknown) => {
 
   const message = err instanceof Error ? err.message : 'unknown error (possibly no liquidity)';
 
-  if (message.includes('InsufficientLiquidity') || message.includes('-32603')) {
+  if (
+    message.includes('InsufficientLiquidity') ||
+    message.includes('Swap leg failed') ||
+    message.includes('-32603')
+  ) {
     throw ServiceError.badRequest('insufficient liquidity for requested amount');
   }
 
