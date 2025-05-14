@@ -6,51 +6,29 @@ import { getLpAccounts } from './lp.js';
 import { getPoolDepth } from './rpc.js';
 import prisma, { Pool } from '../client.js';
 
+const poolCache = new AsyncCacheMap({
+  fetch: async (baseAsset: ChainflipAsset) =>
+    prisma.pool.findUniqueOrThrow({
+      where: { baseAsset_quoteAsset: { baseAsset, quoteAsset: 'Usdc' } },
+    }),
+  ttl: 60_000,
+});
+
 export const getPools = async (
   srcAsset: ChainflipAsset,
   destAsset: ChainflipAsset,
 ): Promise<Pool[]> => {
   if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
-    return [
-      await prisma.pool.findUniqueOrThrow({
-        where: {
-          baseAsset_quoteAsset: {
-            baseAsset: srcAsset === 'Usdc' ? destAsset : srcAsset,
-            quoteAsset: srcAsset === 'Usdc' ? srcAsset : destAsset,
-          },
-        },
-      }),
-    ];
+    return [await poolCache.get(srcAsset === 'Usdc' ? destAsset : srcAsset)];
   }
 
-  return Promise.all([
-    prisma.pool.findUniqueOrThrow({
-      where: {
-        baseAsset_quoteAsset: {
-          baseAsset: srcAsset,
-          quoteAsset: 'Usdc',
-        },
-      },
-    }),
-    prisma.pool.findUniqueOrThrow({
-      where: {
-        baseAsset_quoteAsset: {
-          baseAsset: destAsset,
-          quoteAsset: 'Usdc',
-        },
-      },
-    }),
-  ]);
+  return Promise.all([poolCache.get(srcAsset), poolCache.get(destAsset)]);
 };
 
 const undeployedLiquidityCache = new AsyncCacheMap({
   fetch: async (asset: ChainflipAsset) => {
     const lpAccounts = await getLpAccounts();
-    return lpAccounts.reduce((sum, account) => {
-      assert(account.role === 'liquidity_provider', 'Account should be liquidity provider');
-
-      return sum + readAssetValue(account.balances, asset);
-    }, 0n);
+    return lpAccounts.reduce((sum, account) => sum + readAssetValue(account.balances, asset), 0n);
   },
   resetExpiryOnLookup: false,
   ttl: 60_000,

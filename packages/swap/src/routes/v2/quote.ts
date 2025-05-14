@@ -4,11 +4,18 @@ import express from 'express';
 import { Query } from 'express-serve-static-core';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts.js';
 import { getFulfilledResult } from '@/shared/promises.js';
-import { quoteQuerySchema, DCABoostQuote, DcaParams, DCAQuote } from '@/shared/schemas.js';
+import {
+  quoteQuerySchema,
+  DCABoostQuote,
+  DCAQuote,
+  Quote,
+  RegularQuote,
+} from '@/shared/schemas.js';
+import type { Pool } from '../../client.js';
 import env from '../../config/env.js';
 import { getBoostSafeMode } from '../../polkadot/api.js';
 import { getUsdValue } from '../../pricing/checkPriceWarning.js';
-import Quoter from '../../quoting/Quoter.js';
+import Quoter, { RpcLimitOrder } from '../../quoting/Quoter.js';
 import { getBoostFeeBpsForAmount } from '../../utils/boost.js';
 import { assertRouteEnabled } from '../../utils/env.js';
 import getPoolQuote from '../../utils/getPoolQuote.js';
@@ -101,6 +108,15 @@ export const validateQuoteQuery = async (query: Query) => {
     throw ServiceError.badRequest(`amount is lower than estimated ingress fee (${ingressFee})`);
   }
 
+  const pools = await getPools(srcAsset, destAsset).catch(() => {
+    logger.warn('could not find pool(s)', { srcAsset, destAsset });
+    return null;
+  });
+
+  if (!pools) {
+    throw ServiceError.badRequest('Requested assets cannot be swapped');
+  }
+
   return {
     srcAsset,
     destAsset,
@@ -110,6 +126,7 @@ export const validateQuoteQuery = async (query: Query) => {
     ccmParams: queryResult.data.ccmParams,
     dcaEnabled: queryResult.data.dcaEnabled,
     isVaultSwap: queryResult.data.isVaultSwap,
+    pools,
   };
 };
 
@@ -138,35 +155,32 @@ export const generateQuotes = async ({
   destAsset,
   brokerCommissionBps,
   ccmParams,
-  boostDepositsEnabled,
-  quoter,
   isVaultSwap,
+  limitOrders,
+  pools,
+  estimatedBoostFeeBps,
+  maxBoostFeeBps,
 }: {
   dcaQuoteParams?: Awaited<ReturnType<typeof getDcaQuoteParams>>;
   srcAsset: ChainflipAsset;
   depositAmount: bigint;
   destAsset: ChainflipAsset;
-  brokerCommissionBps?: number;
-  ccmParams?: QuoteCcmParams;
-  boostDepositsEnabled: boolean;
-  quoter: Quoter;
+  brokerCommissionBps: number | undefined;
+  ccmParams: QuoteCcmParams | undefined;
   isVaultSwap: boolean;
-}) => {
+  limitOrders: RpcLimitOrder[];
+  pools: Pool[];
+  estimatedBoostFeeBps: number | undefined;
+  maxBoostFeeBps: number | undefined;
+}): Promise<Quote[]> => {
   let regularEagerLiquidityExists = false;
   let dcaEagerLiquidityExists = false;
-  const [limitOrders, { estimatedBoostFeeBps, maxBoostFeeBps }, pools] = await Promise.all([
-    quoter.getLimitOrders(srcAsset, destAsset, depositAmount),
-    env.DISABLE_BOOST_QUOTING || !boostDepositsEnabled
-      ? { estimatedBoostFeeBps: undefined, maxBoostFeeBps: undefined }
-      : getBoostFeeBpsForAmount({ amount: depositAmount, asset: srcAsset }),
-    getPools(srcAsset, destAsset),
-  ]);
 
   const dcaParams = dcaQuoteParams
-    ? ({
+    ? {
         numberOfChunks: dcaQuoteParams.numberOfChunks,
         chunkIntervalBlocks: env.DCA_CHUNK_INTERVAL_BLOCKS,
-      } as DcaParams)
+      }
     : undefined;
 
   const quoteArgs = {
@@ -250,7 +264,7 @@ export const generateQuotes = async ({
   const result = [];
   if (quote && regularEagerLiquidityExists) result.push(quote);
   if (dcaQuote && dcaEagerLiquidityExists) result.push(dcaQuote);
-  return { quotes: result, limitOrders };
+  return result;
 };
 
 const quoteRouter = (quoter: Quoter) => {
@@ -268,56 +282,77 @@ const quoteRouter = (quoter: Quoter) => {
         boostDepositsEnabled,
         dcaEnabled,
         isVaultSwap,
+        pools,
       } = await validateQuoteQuery(req.query);
 
-      let limitOrdersReceived: Awaited<ReturnType<Quoter['getLimitOrders']>> | undefined;
-      try {
-        const dcaQuoteParams =
-          env.DISABLE_DCA_QUOTING || !dcaEnabled
-            ? undefined
-            : await getDcaQuoteParams(srcAsset, depositAmount);
+      const dcaQuoteParams =
+        env.DISABLE_DCA_QUOTING || !dcaEnabled
+          ? undefined
+          : await getDcaQuoteParams(srcAsset, depositAmount);
 
-        const { quotes, limitOrders } = await generateQuotes({
+      const logInfo = {
+        srcAsset,
+        destAsset,
+        inputUsdValue: null as string | null,
+        inputAmount: new BigNumber(depositAmount.toString())
+          .shiftedBy(-assetConstants[srcAsset].decimals)
+          .toFixed(),
+        duration: '',
+        dcaQuoteParams,
+        brokerCommissionBps,
+        estimatedBoostFeeBps: null as number | null,
+        maxBoostFeeBps: null as number | null,
+        limitOrders: [] as RpcLimitOrder[],
+        success: false,
+        regularQuote: null as RegularQuote | null,
+        dcaQuote: null as DCAQuote | null,
+      };
+      try {
+        const [limitOrders, { estimatedBoostFeeBps, maxBoostFeeBps }, inputUsdValue] =
+          await Promise.all([
+            quoter.getLimitOrders(srcAsset, destAsset, depositAmount),
+            env.DISABLE_BOOST_QUOTING || !boostDepositsEnabled
+              ? { estimatedBoostFeeBps: undefined, maxBoostFeeBps: undefined }
+              : getBoostFeeBpsForAmount({ amount: depositAmount, asset: srcAsset }),
+            getUsdValue(depositAmount, srcAsset).catch(() => undefined),
+          ]);
+
+        logInfo.limitOrders = limitOrders;
+        logInfo.inputUsdValue = inputUsdValue ?? null;
+        logInfo.estimatedBoostFeeBps = estimatedBoostFeeBps ?? null;
+        logInfo.maxBoostFeeBps = maxBoostFeeBps ?? null;
+
+        const result = await generateQuotes({
           dcaQuoteParams,
           srcAsset,
           depositAmount,
           destAsset,
           brokerCommissionBps,
           ccmParams,
-          boostDepositsEnabled,
-          quoter,
           isVaultSwap,
-        });
+          estimatedBoostFeeBps,
+          maxBoostFeeBps,
+          limitOrders,
+          pools,
+        }).then(
+          (qs) => ({ status: 'fulfilled' as const, value: qs }),
+          (err) => ({ status: 'rejected' as const, reason: err as Error }),
+        );
 
-        limitOrdersReceived = limitOrders;
+        logInfo.duration = (performance.now() - start).toFixed(2);
 
-        const duration = performance.now() - start;
-
-        res.json(quotes);
-
-        logger.info('quote request completed', {
-          duration: duration.toFixed(2),
-          regularQuote: quotes.find((q) => q.type === 'REGULAR') ?? null,
-          dcaQuote: quotes.find((q) => q.type === 'DCA') ?? null,
-          srcAsset,
-          destAsset,
-          ...(quotes[0]?.lowLiquidityWarning && {
-            inputAmount: new BigNumber(depositAmount.toString())
-              .shiftedBy(-assetConstants[srcAsset].decimals)
-              .toFixed(),
-            usdValue: await getUsdValue(depositAmount, srcAsset).catch(() => undefined),
-          }),
-        });
+        if (result.status === 'fulfilled') {
+          res.json(result.value);
+          logInfo.regularQuote = result.value.find((q) => q.type === 'REGULAR') ?? null;
+          logInfo.dcaQuote = result.value.find((q) => q.type === 'DCA') ?? null;
+          logInfo.success = true;
+        } else {
+          throw result.reason;
+        }
       } catch (err) {
-        handleQuotingError(res, err, {
-          srcAsset,
-          destAsset,
-          amount: new BigNumber(depositAmount.toString())
-            .shiftedBy(-assetConstants[srcAsset].decimals)
-            .toFixed(),
-          limitOrdersReceived,
-          usdValue: await getUsdValue(depositAmount, srcAsset).catch(() => undefined),
-        });
+        handleQuotingError(res, err);
+      } finally {
+        logger.info('quote request completed', logInfo);
       }
     }),
   );

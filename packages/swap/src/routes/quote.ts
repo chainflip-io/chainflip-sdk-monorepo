@@ -5,6 +5,7 @@ import { asyncHandler, handleQuotingError } from './common.js';
 import env from '../config/env.js';
 import { getUsdValue } from '../pricing/checkPriceWarning.js';
 import Quoter from '../quoting/Quoter.js';
+import { getBoostFeeBpsForAmount } from '../utils/boost.js';
 import baseLogger from '../utils/logger.js';
 import ServiceError from '../utils/ServiceError.js';
 import { generateQuotes, validateQuoteQuery } from './v2/quote.js';
@@ -39,27 +40,34 @@ const quoteRouter = (quoter: Quoter) => {
       const {
         srcAsset,
         destAsset,
-        amount,
+        amount: depositAmount,
         brokerCommissionBps,
         ccmParams,
         boostDepositsEnabled,
         isVaultSwap,
+        pools,
       } = await validateQuoteQuery(req.query);
 
-      let limitOrdersReceived;
       try {
-        const { quotes, limitOrders } = await generateQuotes({
+        const [limitOrders, { estimatedBoostFeeBps, maxBoostFeeBps }] = await Promise.all([
+          quoter.getLimitOrders(srcAsset, destAsset, depositAmount),
+          env.DISABLE_BOOST_QUOTING || !boostDepositsEnabled
+            ? { estimatedBoostFeeBps: undefined, maxBoostFeeBps: undefined }
+            : getBoostFeeBpsForAmount({ amount: depositAmount, asset: srcAsset }),
+        ]);
+        const quotes = await generateQuotes({
           srcAsset,
-          depositAmount: amount,
+          depositAmount,
           destAsset,
           brokerCommissionBps,
           ccmParams,
-          boostDepositsEnabled,
-          quoter,
           isVaultSwap,
+          limitOrders,
+          estimatedBoostFeeBps,
+          maxBoostFeeBps,
+          pools,
         });
         const quote = quotes[0];
-        limitOrdersReceived = limitOrders;
 
         const duration = performance.now() - start;
 
@@ -71,22 +79,14 @@ const quoteRouter = (quoter: Quoter) => {
           srcAsset,
           destAsset,
           ...(quote.lowLiquidityWarning && {
-            inputAmount: new BigNumber(amount.toString())
+            inputAmount: new BigNumber(depositAmount.toString())
               .shiftedBy(-assetConstants[srcAsset].decimals)
               .toFixed(),
-            usdValue: await getUsdValue(amount, srcAsset).catch(() => undefined),
+            usdValue: await getUsdValue(depositAmount, srcAsset).catch(() => undefined),
           }),
         });
       } catch (err) {
-        handleQuotingError(res, err, {
-          srcAsset,
-          destAsset,
-          amount: new BigNumber(amount.toString())
-            .shiftedBy(-assetConstants[srcAsset].decimals)
-            .toFixed(),
-          limitOrdersReceived,
-          usdValue: await getUsdValue(amount, srcAsset).catch(() => undefined),
-        });
+        handleQuotingError(res, err);
       }
     }),
   );
