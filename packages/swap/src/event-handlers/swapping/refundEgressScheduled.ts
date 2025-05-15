@@ -1,8 +1,8 @@
 import { swappingRefundEgressScheduled as schema180 } from '@chainflip/processor/180/swapping/refundEgressScheduled';
 import { swappingRefundEgressScheduled as schema190 } from '@chainflip/processor/190/swapping/refundEgressScheduled';
 import z from 'zod';
-import type { EventHandlerArgs } from '../index.js';
 import { Prisma } from '../../client.js';
+import type { EventHandlerArgs } from '../index.js';
 
 const eventArgs = z.union([schema190, schema180]);
 
