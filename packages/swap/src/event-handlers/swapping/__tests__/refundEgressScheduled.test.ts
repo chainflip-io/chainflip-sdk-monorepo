@@ -107,8 +107,6 @@ describe(refundEgressScheduled, () => {
       },
     });
 
-    console.log(swapRequest.fees);
-
     expect(swapRequest).toMatchSnapshot({
       id: expect.any(BigInt),
       refundEgressId: expect.any(BigInt),
