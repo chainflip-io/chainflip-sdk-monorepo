@@ -977,6 +977,12 @@ describe('server', () => {
               "chain": "Ethereum",
               "type": "EGRESS",
             },
+            {
+              "amount": "4000000000000000000",
+              "asset": "ETH",
+              "chain": "Ethereum",
+              "type": "REFUND",
+            },
           ],
           "fillOrKillParams": {
             "minPrice": "0",

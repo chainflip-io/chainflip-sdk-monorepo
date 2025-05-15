@@ -164,6 +164,7 @@ describe(refundedOnChain, () => {
         fees: [
           {
             swapRequestId: expect.any(BigInt),
+            id: expect.any(BigInt),
           },
         ],
       },

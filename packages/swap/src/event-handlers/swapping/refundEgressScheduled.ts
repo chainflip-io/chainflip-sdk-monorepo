@@ -37,7 +37,6 @@ export default async function refundEgressScheduled({
     .minus(egressFee?.toString() ?? 0)
     .minus(swapRequest.fees.reduce((acc, fee) => acc.plus(fee.amount), new Prisma.Decimal(0)));
 
-  console.log(refundFee);
   await prisma.swapRequest.update({
     where: { nativeId: swapRequestId },
     data: {

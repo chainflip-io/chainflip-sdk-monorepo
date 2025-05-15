@@ -117,6 +117,12 @@ exports[`server > GET /swaps/:id > retrieves a swap in FAILED status (refund egr
       "chain": "Ethereum",
       "type": "EGRESS",
     },
+    {
+      "amount": "4000000000000000000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "REFUND",
+    },
   ],
   "fillOrKillParams": {
     "minPrice": "0",
