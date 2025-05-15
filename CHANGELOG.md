@@ -7,6 +7,13 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## 1.9.2
+
+### Added
+
+- New type of swap fee `REFUND` has been added. Returned as a part of the fees array for
+  swaps that have been refunded.
+
 ## 1.9.0
 
 ### Added
