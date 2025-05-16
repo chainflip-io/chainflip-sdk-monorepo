@@ -1086,6 +1086,12 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap with FillOrKillParams in 
       "chain": "Ethereum",
       "type": "EGRESS",
     },
+    {
+      "amount": "4000000000000000000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "REFUND",
+    },
   ],
   "fillOrKillParams": {
     "minPrice": "29387358770557187699218413430556141945466.638919302188",

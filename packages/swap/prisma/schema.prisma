@@ -247,6 +247,7 @@ enum SwapFeeType {
   EGRESS
   BROKER
   BOOST
+  REFUND
 
   @@schema("public")
 }

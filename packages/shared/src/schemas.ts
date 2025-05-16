@@ -154,7 +154,7 @@ interface Fee<T> extends UncheckedAssetAndChain {
   amount: string;
 }
 
-export type SwapFee = Fee<'NETWORK' | 'INGRESS' | 'EGRESS' | 'BROKER' | 'BOOST'>;
+export type SwapFee = Fee<'NETWORK' | 'INGRESS' | 'EGRESS' | 'BROKER' | 'BOOST' | 'REFUND'>;
 
 export type PoolFee = Fee<'LIQUIDITY'>;
 
