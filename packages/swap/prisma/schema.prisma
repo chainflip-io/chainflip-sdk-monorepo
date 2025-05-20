@@ -490,10 +490,14 @@ model Quote {
   quotedIntermediateAmount            Decimal?           @db.Decimal(30, 0)
   quotedEgressAmount                  Decimal            @db.Decimal(30, 0)
   quotedPrice                         Decimal
+  inputAssetPriceAtChannelOpening     Decimal?
+  outputAssetPriceAtChannelOpening    Decimal?
   slippageTolerancePercent            Decimal?
   executedAt                          DateTime?
   executedPrice                       Decimal?
   executedSlippagePercent             Decimal?
+  inputAssetPriceAtCompletion         Decimal?
+  outputAssetPriceAtCompletion        Decimal?
   recommendedSlippageTolerancePercent Decimal?
   refundedAt                          DateTime?
 
