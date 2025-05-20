@@ -43,18 +43,18 @@
     "@chainflip/bitcoin": "^1.2.5",
     "@chainflip/rpc": "~1.9.7",
     "@chainflip/solana": "^2.1.9",
-    "@chainflip/utils": "^0.8.6",
+    "@chainflip/utils": "^0.8.7",
     "ioredis": "^5.6.1",
-    "ws": "^8.18.1",
+    "ws": "^8.18.2",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@types/yargs": "^17.0.33",
-    "tsup": "^8.4.0"
+    "tsup": "^8.5.0"
   },
   "peerDependencies": {
-    "axios": "^1.8.4",
-    "ethers": "^6.13.3"
+    "axios": "^1.9.0",
+    "ethers": "^6.14.1"
   },
   "repository": "https://github.com/chainflip-io/chainflip-sdk-monorepo.git",
   "publishConfig": {
