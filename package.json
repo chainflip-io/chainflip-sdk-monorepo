@@ -18,11 +18,11 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^22.14.1",
+    "@types/node": "^22.15.19",
     "@types/yargs": "^17.0.33",
     "@typescript-eslint/eslint-plugin": "^7.10.0",
     "@typescript-eslint/parser": "^6.21.0",
-    "@vitest/eslint-plugin": "^1.1.43",
+    "@vitest/eslint-plugin": "^1.2.0",
     "envlocker": "^0.2.0",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -30,15 +30,15 @@
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.31.0",
     "husky": "^9.1.6",
-    "lint-staged": "^15.5.1",
+    "lint-staged": "^15.5.2",
     "prettier": "^3.5.3",
     "syncpack": "^12.3.2",
     "ts-morph": "^25.0.1",
-    "tsc-alias": "^1.8.15",
-    "tsx": "^4.19.2",
+    "tsc-alias": "^1.8.16",
+    "tsx": "^4.19.4",
     "typescript": "^5.8.3",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.1.2",
+    "vitest": "^3.1.4",
     "yargs": "^17.7.2"
   },
   "engines": {
@@ -46,6 +46,6 @@
     "pnpm": ">=10"
   },
   "dependencies": {
-    "zod": "^3.24.3"
+    "zod": "^3.25.7"
   }
 }

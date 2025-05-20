@@ -65,16 +65,16 @@
     "@chainflip/bitcoin": "^1.2.5",
     "@chainflip/rpc": "~1.9.7",
     "@chainflip/solana": "^2.1.9",
-    "@chainflip/utils": "^0.8.6",
+    "@chainflip/utils": "^0.8.7",
     "@trpc/client": "^10.45.2",
-    "axios": "^1.8.4",
+    "axios": "^1.9.0",
     "bignumber.js": "^9.3.0",
-    "ethers": "^6.13.3",
+    "ethers": "^6.14.1",
     "superjson": "^1.13.3",
-    "zod": "^3.24.3"
+    "zod": "^3.25.7"
   },
   "devDependencies": {
     "@trpc/server": "^10.45.2",
-    "tsup": "^8.4.0"
+    "tsup": "^8.5.0"
   }
 }
