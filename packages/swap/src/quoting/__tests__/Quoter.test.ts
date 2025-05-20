@@ -15,7 +15,6 @@ import { AddressInfo } from 'ws';
 import { MAX_TICK, MIN_TICK } from '@/shared/consts.js';
 import prisma, { InternalAsset } from '../../client.js';
 import env from '../../config/env.js';
-import { getAssetPrice } from '../../pricing/index.js';
 import { getLpBalances } from '../../utils/rpc.js';
 import authenticate from '../authenticate.js';
 import Quoter, { approximateIntermediateOutput, type RpcLimitOrder } from '../Quoter.js';
@@ -32,8 +31,6 @@ vi.mock('../../utils/statechain', () => ({
     Promise.reject(new Error(`unhandled getSwapRate(${JSON.stringify(args, serializeBigInt)})`)),
   ),
 }));
-
-vi.mock('../../pricing');
 
 function toAtomicUnits(amount: number, asset: InternalAsset, output?: 'string'): string;
 function toAtomicUnits(amount: number, asset: InternalAsset, output: 'bigint'): bigint;
@@ -69,24 +66,6 @@ describe(Quoter, () => {
     oldEnv = { ...env };
     server = new Server().use(authenticate).listen(0);
     quoter = new Quoter(server);
-
-    const prices: InternalAssetMap<number> = {
-      Dot: 6.5,
-      Usdt: 1,
-      Usdc: 1,
-      ArbUsdc: 1,
-      SolUsdc: 1,
-      Sol: 150,
-      Btc: 65_000,
-      Flip: 4,
-      Eth: 2_000,
-      ArbEth: 2_000,
-      HubDot: 6.5,
-      HubUsdc: 1,
-      HubUsdt: 1,
-    };
-
-    vi.mocked(getAssetPrice).mockImplementation((asset) => Promise.resolve(prices[asset]));
 
     const cachedKeys = new Map<string, crypto.KeyObject>();
 
@@ -501,8 +480,6 @@ describe('approximateIntermediateOutput', () => {
   ] as [InternalAsset, number][])(
     'correctly approximates the USD value of %s',
     async (asset, price) => {
-      vi.mocked(getAssetPrice).mockResolvedValueOnce(price);
-
       const oneInAtomicUnits = toAtomicUnits(1, asset);
 
       const actual = await approximateIntermediateOutput(asset, oneInAtomicUnits);
