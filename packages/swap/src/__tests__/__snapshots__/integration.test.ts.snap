@@ -45,7 +45,7 @@ exports[`python integration test > replies to a quote request 1`] = `
         "chain": "Ethereum",
       },
       "fee": {
-        "amount": "999999999998000",
+        "amount": "0",
         "asset": "FLIP",
         "chain": "Ethereum",
       },
@@ -143,7 +143,7 @@ exports[`python integration test > replies to a quote request with v2 endpoint 1
           "chain": "Ethereum",
         },
         "fee": {
-          "amount": "999999999998000",
+          "amount": "0",
           "asset": "FLIP",
           "chain": "Ethereum",
         },

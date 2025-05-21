@@ -1,11 +1,5 @@
 import { type ChainflipAsset, assetConstants } from '@chainflip/utils/chainflip';
-import assert from 'assert';
-import { getPoolsNetworkFeeHundredthPips } from '@/shared/consts.js';
-import { getHundredthPipAmountFromAmount, ONE_IN_HUNDREDTH_PIPS } from '@/shared/functions.js';
 import { PoolFee, SwapFee } from '@/shared/schemas.js';
-import { Pool } from '../client.js';
-import { getPools } from './pools.js';
-import env from '../config/env.js';
 
 export function buildFee(
   internalAsset: ChainflipAsset,
@@ -35,71 +29,10 @@ export function buildFee(
 export const getPoolFees = (
   srcAsset: ChainflipAsset,
   destAsset: ChainflipAsset,
-  swapInputAmount: bigint,
-  intermediateAmount: bigint | null | undefined,
-  pools: Pool[],
 ): [PoolFee] | [PoolFee, PoolFee] => {
   if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
-    return [
-      buildFee(
-        srcAsset,
-        'LIQUIDITY',
-        getHundredthPipAmountFromAmount(swapInputAmount, pools[0].liquidityFeeHundredthPips),
-      ),
-    ];
+    return [buildFee(srcAsset, 'LIQUIDITY', 0n)];
   }
 
-  assert(intermediateAmount != null, 'no intermediate amount given');
-
-  return [
-    buildFee(
-      srcAsset,
-      'LIQUIDITY',
-      getHundredthPipAmountFromAmount(swapInputAmount, pools[0].liquidityFeeHundredthPips),
-    ),
-    buildFee(
-      'Usdc',
-      'LIQUIDITY',
-      getHundredthPipAmountFromAmount(intermediateAmount, pools[1].liquidityFeeHundredthPips),
-    ),
-  ];
-};
-
-const buildNetworkFee = (usdcAmount: bigint, networkFeeHundredthPips: number) =>
-  buildFee('Usdc', 'NETWORK', getHundredthPipAmountFromAmount(usdcAmount, networkFeeHundredthPips));
-
-export const calculateIncludedSwapFees = async (
-  srcAsset: ChainflipAsset,
-  destAsset: ChainflipAsset,
-  swapInputAmount: bigint,
-  intermediateAmount: bigint | null | undefined,
-  swapOutputAmount: bigint,
-): Promise<(SwapFee | PoolFee)[]> => {
-  const networkFeeHundredthPips = getPoolsNetworkFeeHundredthPips(env.CHAINFLIP_NETWORK);
-  if (srcAsset === 'Usdc' && destAsset === 'Usdc') {
-    return [buildNetworkFee(swapInputAmount, networkFeeHundredthPips)];
-  }
-
-  const pools = await getPools(srcAsset, destAsset);
-  const lpFees = getPoolFees(srcAsset, destAsset, swapInputAmount, intermediateAmount, pools);
-
-  if (srcAsset === 'Usdc') {
-    return [buildNetworkFee(swapInputAmount, networkFeeHundredthPips), ...lpFees];
-  }
-
-  let usdcAmount;
-
-  if (destAsset === 'Usdc') {
-    usdcAmount =
-      (swapOutputAmount * BigInt(ONE_IN_HUNDREDTH_PIPS)) /
-      BigInt(ONE_IN_HUNDREDTH_PIPS - networkFeeHundredthPips);
-  } else {
-    assert(intermediateAmount != null, 'no intermediate amount given');
-
-    usdcAmount =
-      (intermediateAmount * BigInt(ONE_IN_HUNDREDTH_PIPS)) /
-      BigInt(ONE_IN_HUNDREDTH_PIPS - networkFeeHundredthPips);
-  }
-
-  return [buildNetworkFee(usdcAmount, networkFeeHundredthPips), ...lpFees];
+  return [buildFee(srcAsset, 'LIQUIDITY', 0n), buildFee('Usdc', 'LIQUIDITY', 0n)];
 };

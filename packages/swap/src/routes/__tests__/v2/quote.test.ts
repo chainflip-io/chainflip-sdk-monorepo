@@ -537,7 +537,7 @@ describe('server', () => {
             {
               baseAsset: { chain: 'Ethereum', asset: 'ETH' },
               quoteAsset: { chain: 'Ethereum', asset: 'USDC' },
-              fee: { chain: 'Ethereum', asset: 'USDC', amount: '200000' },
+              fee: { chain: 'Ethereum', asset: 'USDC', amount: '0' },
             },
           ],
           estimatedDurationsSeconds: { deposit: 30, swap: 12, egress: 102 },
@@ -673,7 +673,7 @@ describe('server', () => {
             {
               baseAsset: { chain: 'Ethereum', asset: 'ETH' },
               quoteAsset: { chain: 'Ethereum', asset: 'USDC' },
-              fee: { chain: 'Ethereum', asset: 'ETH', amount: '1999999999999950' },
+              fee: { chain: 'Ethereum', asset: 'ETH', amount: '0' },
             },
           ],
           estimatedDurationsSeconds: { deposit: 30, swap: 12, egress: 102 },
@@ -786,7 +786,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '1999999999999950',
+                amount: '0',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
@@ -903,7 +903,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '1999999999999950',
+                amount: '0',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
@@ -1030,7 +1030,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '1999999999999950',
+                amount: '0',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
@@ -1177,7 +1177,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '1999999999999950',
+                amount: '0',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
@@ -1230,7 +1230,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '1999999999999950',
+                amount: '0',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
@@ -1458,7 +1458,7 @@ describe('server', () => {
             {
               baseAsset: { chain: 'Ethereum', asset: 'ETH' },
               quoteAsset: { chain: 'Ethereum', asset: 'USDC' },
-              fee: { chain: 'Ethereum', asset: 'ETH', amount: '1999999999999950' },
+              fee: { chain: 'Ethereum', asset: 'ETH', amount: '0' },
             },
           ],
           estimatedDurationsSeconds: { deposit: 30, swap: 12, egress: 102 },
@@ -1563,7 +1563,7 @@ describe('server', () => {
             {
               baseAsset: { chain: 'Ethereum', asset: 'ETH' },
               quoteAsset: { chain: 'Ethereum', asset: 'USDC' },
-              fee: { chain: 'Ethereum', asset: 'ETH', amount: '1999999999999950' },
+              fee: { chain: 'Ethereum', asset: 'ETH', amount: '0' },
             },
           ],
           estimatedDurationsSeconds: { deposit: 30, swap: 48, egress: 102 },
@@ -1728,7 +1728,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'BTC', chain: 'Bitcoin' },
               fee: {
-                amount: '199',
+                amount: '0',
                 asset: 'BTC',
                 chain: 'Bitcoin',
               },
@@ -1737,7 +1737,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '20000',
+                amount: '0',
                 asset: 'USDC',
                 chain: 'Ethereum',
               },
@@ -1804,7 +1804,7 @@ describe('server', () => {
               {
                 baseAsset: { asset: 'BTC', chain: 'Bitcoin' },
                 fee: {
-                  amount: '199',
+                  amount: '0',
                   asset: 'BTC',
                   chain: 'Bitcoin',
                 },
@@ -1813,7 +1813,7 @@ describe('server', () => {
               {
                 baseAsset: { asset: 'ETH', chain: 'Ethereum' },
                 fee: {
-                  amount: '20000',
+                  amount: '0',
                   asset: 'USDC',
                   chain: 'Ethereum',
                 },
@@ -1875,7 +1875,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'BTC', chain: 'Bitcoin' },
               fee: {
-                amount: '199',
+                amount: '0',
                 asset: 'BTC',
                 chain: 'Bitcoin',
               },
@@ -1884,7 +1884,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '20000',
+                amount: '0',
                 asset: 'USDC',
                 chain: 'Ethereum',
               },
@@ -1958,7 +1958,7 @@ describe('server', () => {
               {
                 baseAsset: { asset: 'BTC', chain: 'Bitcoin' },
                 fee: {
-                  amount: '199',
+                  amount: '0',
                   asset: 'BTC',
                   chain: 'Bitcoin',
                 },
@@ -1967,7 +1967,7 @@ describe('server', () => {
               {
                 baseAsset: { asset: 'ETH', chain: 'Ethereum' },
                 fee: {
-                  amount: '20000',
+                  amount: '0',
                   asset: 'USDC',
                   chain: 'Ethereum',
                 },
@@ -2152,7 +2152,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '1999999999999950',
+                amount: '0',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
@@ -2280,7 +2280,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '1999999999999950',
+                amount: '0',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },
@@ -2409,7 +2409,7 @@ describe('server', () => {
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
               fee: {
-                amount: '1999999999999950',
+                amount: '0',
                 asset: 'ETH',
                 chain: 'Ethereum',
               },

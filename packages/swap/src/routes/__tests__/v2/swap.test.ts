@@ -1873,18 +1873,6 @@ describe('server', () => {
               "type": "NETWORK",
             },
             {
-              "amount": "9999899999999300",
-              "asset": "ETH",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
-            },
-            {
-              "amount": "9012338",
-              "asset": "USDC",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
-            },
-            {
               "amount": "91033720",
               "asset": "USDC",
               "chain": "Ethereum",
@@ -2014,18 +2002,6 @@ describe('server', () => {
               "asset": "USDC",
               "chain": "Ethereum",
               "type": "NETWORK",
-            },
-            {
-              "amount": "9999899999999300",
-              "asset": "ETH",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
-            },
-            {
-              "amount": "9012338",
-              "asset": "USDC",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
             },
             {
               "amount": "91033720",
@@ -2167,18 +2143,6 @@ describe('server', () => {
               "asset": "USDC",
               "chain": "Ethereum",
               "type": "NETWORK",
-            },
-            {
-              "amount": "9999899999999300",
-              "asset": "ETH",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
-            },
-            {
-              "amount": "9012338",
-              "asset": "USDC",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
             },
             {
               "amount": "91033720",
@@ -2368,7 +2332,6 @@ describe('server', () => {
       expect(rest.fees.filter((fee: any) => fee.type === 'EGRESS').length).toBe(2);
       expect(rest.fees.filter((fee: any) => fee.type === 'INGRESS').length).toBe(1);
       expect(rest.fees.filter((fee: any) => fee.type === 'NETWORK').length).toBe(1);
-      expect(rest.fees.filter((fee: any) => fee.type === 'LIQUIDITY').length).toBe(2);
       expect(rest.fees.filter((fee: any) => fee.type === 'BROKER').length).toBe(1);
     });
 

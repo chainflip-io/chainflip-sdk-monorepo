@@ -386,19 +386,9 @@ describe('server', () => {
         ],
         poolInfo: [
           {
-            baseAsset: {
-              asset: 'ETH',
-              chain: 'Ethereum',
-            },
-            fee: {
-              amount: '200000',
-              asset: 'USDC',
-              chain: 'Ethereum',
-            },
-            quoteAsset: {
-              asset: 'USDC',
-              chain: 'Ethereum',
-            },
+            baseAsset: { asset: 'ETH', chain: 'Ethereum' },
+            fee: { amount: '0', asset: 'USDC', chain: 'Ethereum' },
+            quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
           },
         ],
         recommendedSlippageTolerancePercent: 1,
@@ -528,11 +518,7 @@ describe('server', () => {
         ],
         poolInfo: [
           {
-            fee: {
-              amount: '196000',
-              asset: 'USDC',
-              chain: 'Ethereum',
-            },
+            fee: { amount: '0', asset: 'USDC', chain: 'Ethereum' },
             baseAsset: { asset: 'ETH', chain: 'Ethereum' },
             quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
           },
@@ -600,19 +586,9 @@ describe('server', () => {
         ],
         poolInfo: [
           {
-            baseAsset: {
-              asset: 'ETH',
-              chain: 'Ethereum',
-            },
-            fee: {
-              amount: '200000',
-              asset: 'USDC',
-              chain: 'Ethereum',
-            },
-            quoteAsset: {
-              asset: 'USDC',
-              chain: 'Ethereum',
-            },
+            baseAsset: { asset: 'ETH', chain: 'Ethereum' },
+            fee: { amount: '0', asset: 'USDC', chain: 'Ethereum' },
+            quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
           },
         ],
       });
@@ -849,7 +825,7 @@ describe('server', () => {
         poolInfo: [
           {
             baseAsset: { asset: 'ETH', chain: 'Ethereum' },
-            fee: { amount: '196000', asset: 'USDC', chain: 'Ethereum' },
+            fee: { amount: '0', asset: 'USDC', chain: 'Ethereum' },
             quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
           },
         ],
@@ -922,11 +898,7 @@ describe('server', () => {
         poolInfo: [
           {
             baseAsset: { asset: 'ETH', chain: 'Ethereum' },
-            fee: {
-              amount: '1999999999999950',
-              asset: 'ETH',
-              chain: 'Ethereum',
-            },
+            fee: { amount: '0', asset: 'ETH', chain: 'Ethereum' },
             quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
           },
         ],
@@ -981,20 +953,8 @@ describe('server', () => {
           },
         ],
         poolInfo: [
-          {
-            fee: {
-              amount: '999999999998000',
-              asset: 'FLIP',
-              chain: 'Ethereum',
-            },
-          },
-          {
-            fee: {
-              amount: '4000000',
-              asset: 'USDC',
-              chain: 'Ethereum',
-            },
-          },
+          { fee: { amount: '0', asset: 'FLIP', chain: 'Ethereum' } },
+          { fee: { amount: '0', asset: 'USDC', chain: 'Ethereum' } },
         ],
       });
       expect(sendSpy).toHaveBeenCalledTimes(1);

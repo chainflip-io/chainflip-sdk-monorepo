@@ -438,18 +438,6 @@ describe('solana fallback requested', () => {
             "type": "NETWORK",
           },
           {
-            "amount": "49981500000000",
-            "asset": "ETH",
-            "chain": "Ethereum",
-            "type": "LIQUIDITY",
-          },
-          {
-            "amount": "90953",
-            "asset": "USDC",
-            "chain": "Ethereum",
-            "type": "LIQUIDITY",
-          },
-          {
             "amount": "182272",
             "asset": "USDC",
             "chain": "Ethereum",

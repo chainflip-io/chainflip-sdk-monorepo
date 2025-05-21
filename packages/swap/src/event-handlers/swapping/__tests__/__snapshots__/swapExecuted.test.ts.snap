@@ -11,11 +11,6 @@ exports[`swapExecuted > updates an existing swap 1`] = `
       "type": "NETWORK",
     },
     {
-      "amount": "250000000000000000",
-      "asset": "Flip",
-      "type": "LIQUIDITY",
-    },
-    {
       "amount": "10000",
       "asset": "Usdc",
       "type": "BROKER",
@@ -49,16 +44,6 @@ exports[`swapExecuted > updates an existing swap with intermediate amount 1`] = 
       "amount": "1975480",
       "asset": "Usdc",
       "type": "NETWORK",
-    },
-    {
-      "amount": "250000000000000000",
-      "asset": "Flip",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "1973504",
-      "asset": "Usdc",
-      "type": "LIQUIDITY",
     },
   ],
   "id": Any<BigInt>,

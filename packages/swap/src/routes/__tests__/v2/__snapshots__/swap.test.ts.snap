@@ -21,12 +21,6 @@ exports[`server > GET /v2/swaps/:id > retrieves a DCA swap from an onChain origi
       "chain": "Ethereum",
       "type": "NETWORK",
     },
-    {
-      "amount": "4995000",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
   ],
   "fillOrKillParams": {
     "minPrice": "0",
@@ -228,18 +222,6 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a vault origin 1`] =
       "type": "NETWORK",
     },
     {
-      "amount": "4999949999999650",
-      "asset": "ETH",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "4506169",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
       "amount": "45516860",
       "asset": "USDC",
       "chain": "Ethereum",
@@ -295,18 +277,6 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a vault origin in CO
       "asset": "USDC",
       "chain": "Ethereum",
       "type": "NETWORK",
-    },
-    {
-      "amount": "4999949999999650",
-      "asset": "ETH",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "4506169",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
     },
     {
       "amount": "45516860",
@@ -407,18 +377,6 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from an onChain origin in
       "asset": "USDC",
       "chain": "Ethereum",
       "type": "NETWORK",
-    },
-    {
-      "amount": "4999949999999650",
-      "asset": "ETH",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "4506169",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
     },
   ],
   "fillOrKillParams": {
@@ -529,18 +487,6 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status 1`] =
       "type": "NETWORK",
     },
     {
-      "amount": "4999949999999650",
-      "asset": "ETH",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "4506169",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
       "amount": "45516860",
       "asset": "USDC",
       "chain": "Ethereum",
@@ -638,18 +584,6 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SENDING status 1`] = `
       "type": "NETWORK",
     },
     {
-      "amount": "4999949999999650",
-      "asset": "ETH",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "4506169",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
       "amount": "45516860",
       "asset": "USDC",
       "chain": "Ethereum",
@@ -742,18 +676,6 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SENT status 1`] = `
       "asset": "USDC",
       "chain": "Ethereum",
       "type": "NETWORK",
-    },
-    {
-      "amount": "4999949999999650",
-      "asset": "ETH",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "4506169",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
     },
     {
       "amount": "45516860",
@@ -916,18 +838,6 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SWAPPING status 2`] = 
       "asset": "USDC",
       "chain": "Ethereum",
       "type": "NETWORK",
-    },
-    {
-      "amount": "4999949999999650",
-      "asset": "ETH",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "4506169",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
     },
     {
       "amount": "45516860",
@@ -1177,18 +1087,6 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in FAILED sta
       "type": "NETWORK",
     },
     {
-      "amount": "9999899999999300",
-      "asset": "ETH",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "9012338",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
       "amount": "91033720",
       "asset": "USDC",
       "chain": "Ethereum",
@@ -1300,18 +1198,6 @@ exports[`server > GET /v2/swaps/:id > returns ccmParams for swaps initiated via 
       "asset": "USDC",
       "chain": "Ethereum",
       "type": "NETWORK",
-    },
-    {
-      "amount": "4999949999999650",
-      "asset": "ETH",
-      "chain": "Arbitrum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "4506169",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
     },
     {
       "amount": "45516860",
