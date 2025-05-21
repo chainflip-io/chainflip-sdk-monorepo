@@ -100,9 +100,9 @@ export default async function getPoolQuote({
   includedFees.push(buildFee(getInternalAsset(egressFee), 'EGRESS', egressFee.amount));
 
   const poolInfo = getPoolFees(srcAsset, destAsset).map(({ type, ...fee }, i) => ({
-      baseAsset: internalAssetToRpcAsset[pools[i].baseAsset],
-      quoteAsset: internalAssetToRpcAsset[pools[i].quoteAsset],
-      fee,
+    baseAsset: internalAssetToRpcAsset[pools[i].baseAsset],
+    quoteAsset: internalAssetToRpcAsset[pools[i].quoteAsset],
+    fee,
   }));
 
   const estimatedDurations = await estimateSwapDuration({
