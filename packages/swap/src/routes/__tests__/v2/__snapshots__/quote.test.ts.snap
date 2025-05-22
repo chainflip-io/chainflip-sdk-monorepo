@@ -52,56 +52,6 @@ exports[`server > GET /v2/quote > excludes the ingress fee for vault swaps 1`] =
 ]
 `;
 
-exports[`server > GET /v2/quote > on chain > properly quotes on chain swaps 1`] = `
-[
-  {
-    "depositAmount": "1000000000000",
-    "destAsset": {
-      "asset": "ETH",
-      "chain": "Ethereum",
-    },
-    "egressAmount": "384000000000000000000",
-    "estimatedDurationSeconds": 12,
-    "estimatedDurationsSeconds": {
-      "swap": 12,
-    },
-    "estimatedPrice": "0.000384",
-    "includedFees": [
-      {
-        "amount": "500000000",
-        "asset": "USDC",
-        "chain": "Ethereum",
-        "type": "NETWORK",
-      },
-    ],
-    "isOnChain": true,
-    "poolInfo": [
-      {
-        "baseAsset": {
-          "asset": "ETH",
-          "chain": "Ethereum",
-        },
-        "fee": {
-          "amount": "2000000000",
-          "asset": "USDC",
-          "chain": "Ethereum",
-        },
-        "quoteAsset": {
-          "asset": "USDC",
-          "chain": "Ethereum",
-        },
-      },
-    ],
-    "recommendedSlippageTolerancePercent": 1,
-    "srcAsset": {
-      "asset": "USDC",
-      "chain": "Ethereum",
-    },
-    "type": "REGULAR",
-  },
-]
-`;
-
 exports[`server > GET /v2/quote > on chain > properly quotes on chain swaps between stables 1`] = `
 [
   {
@@ -148,6 +98,76 @@ exports[`server > GET /v2/quote > on chain > properly quotes on chain swaps betw
       "chain": "Solana",
     },
     "type": "REGULAR",
+  },
+]
+`;
+
+exports[`server > GET /v2/quote > on chain > properly quotes with DCA 1`] = `
+[
+  {
+    "dcaParams": {
+      "chunkIntervalBlocks": 2,
+      "numberOfChunks": 33,
+    },
+    "depositAmount": "1000000",
+    "destAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "1000000000000000000",
+    "estimatedDurationSeconds": 396,
+    "estimatedDurationsSeconds": {
+      "swap": 396,
+    },
+    "estimatedPrice": "100",
+    "includedFees": [
+      {
+        "amount": "500500",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+    ],
+    "intermediateAmount": "100000000",
+    "isOnChain": true,
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "BTC",
+          "chain": "Bitcoin",
+        },
+        "fee": {
+          "amount": "2000",
+          "asset": "BTC",
+          "chain": "Bitcoin",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "200000",
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "BTC",
+      "chain": "Bitcoin",
+    },
+    "type": "DCA",
   },
 ]
 `;

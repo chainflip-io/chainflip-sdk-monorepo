@@ -141,8 +141,10 @@ export const eagerLiquidityExists = async (
     const totalLiquidity = await getTotalLiquidity(srcAsset, destAsset);
     return BigInt(totalLiquidity) > BigInt(egressAmount);
   }
-  const totalLiquidityLeg1 = await getTotalLiquidity(srcAsset, 'Usdc');
-  const totalLiquidityLeg2 = await getTotalLiquidity('Usdc', destAsset);
+  const [totalLiquidityLeg1, totalLiquidityLeg2] = await Promise.all([
+    getTotalLiquidity(srcAsset, 'Usdc'),
+    getTotalLiquidity('Usdc', destAsset),
+  ]);
   return (
     BigInt(totalLiquidityLeg1) > BigInt(intermediateAmount!) &&
     BigInt(totalLiquidityLeg2) > BigInt(egressAmount)
@@ -316,7 +318,7 @@ const quoteRouter = (quoter: Quoter) => {
         const [limitOrders, { estimatedBoostFeeBps, maxBoostFeeBps }, inputUsdValue] =
           await Promise.all([
             quoter.getLimitOrders(srcAsset, destAsset, depositAmount),
-            env.DISABLE_BOOST_QUOTING || !boostDepositsEnabled
+            env.DISABLE_BOOST_QUOTING || !boostDepositsEnabled || isOnChain
               ? { estimatedBoostFeeBps: undefined, maxBoostFeeBps: undefined }
               : getBoostFeeBpsForAmount({ amount: depositAmount, asset: srcAsset }),
             getUsdValue(depositAmount, srcAsset).catch(() => undefined),

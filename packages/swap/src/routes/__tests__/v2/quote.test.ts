@@ -64,9 +64,12 @@ vi.mock('../../../polkadot/api', () => ({
   getBoostSafeMode: vi.fn().mockResolvedValue(true),
 }));
 
+const originalEnv = structuredClone(env);
+
 describe(getDcaQuoteParams, () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    Object.assign(env, originalEnv);
     env.DCA_CHUNK_SIZE_USD = { Btc: 3000 };
     env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
     env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
@@ -161,7 +164,6 @@ const mockRpcs = ({
 
 describe('server', () => {
   let server: Server;
-  const oldEnv = structuredClone(env);
 
   beforeAll(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "Pool" CASCADE`;
@@ -189,7 +191,7 @@ describe('server', () => {
   });
 
   afterEach(() => {
-    Object.assign(env, oldEnv);
+    Object.assign(env, originalEnv);
     server.close();
     vi.clearAllMocks();
   });
@@ -2423,56 +2425,6 @@ describe('server', () => {
     });
 
     describe('on chain', () => {
-      it('properly quotes on chain swaps', async () => {
-        vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2000e18));
-
-        const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-          broker_commission: buildFee('Usdc', 0),
-          ingress_fee: buildFee('Usdc', 0),
-          egress_fee: buildFee('Eth', 0),
-          network_fee: buildFee('Usdc', 1000e6),
-          intermediary: null,
-          output: BigInt(384e18),
-        });
-
-        const params = new URLSearchParams({
-          srcChain: 'Ethereum',
-          srcAsset: 'USDC',
-          destChain: 'Ethereum',
-          destAsset: 'ETH',
-          amount: (1_000_000e6).toString(),
-          isOnChain: 'true',
-        });
-
-        const { status, body } = await request(server).get(`/v2/quote?${params.toString()}`);
-        expect(status).toBe(200);
-        expect(body).toMatchSnapshot();
-        expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
-          [
-            [
-              "cf_swap_rate_v3",
-              {
-                "asset": "USDC",
-                "chain": "Ethereum",
-              },
-              {
-                "asset": "ETH",
-                "chain": "Ethereum",
-              },
-              "0xe8d4a51000",
-              0,
-              undefined,
-              undefined,
-              [
-                "Egress",
-                "IngressDepositChannel",
-              ],
-              [],
-            ],
-          ]
-        `);
-      });
-
       it('properly quotes on chain swaps between stables', async () => {
         vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2000e18));
 
@@ -2512,6 +2464,145 @@ describe('server', () => {
               "0xe8d4a51000",
               0,
               undefined,
+              undefined,
+              [
+                "Egress",
+                "IngressDepositChannel",
+              ],
+              [],
+            ],
+          ]
+        `);
+      });
+
+      it('properly quotes with DCA', async () => {
+        env.DCA_CHUNK_SIZE_USD = { Btc: 3000 };
+        env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
+        env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
+        env.DISABLE_DCA_QUOTING = false;
+        vi.mocked(getUsdValue).mockResolvedValue('98000');
+        vi.mocked(getTotalLiquidity)
+          .mockResolvedValueOnce(BigInt(10e18))
+          .mockResolvedValueOnce(BigInt(10e18));
+
+        mockRpcResponse((url, data: any) => {
+          if (data.method === 'cf_environment') {
+            return Promise.resolve({
+              data: environment({
+                maxSwapAmount: null,
+                ingressFee: hexEncodeNumber(0x61a8),
+                egressFee: hexEncodeNumber(0x0),
+              }),
+            });
+          }
+
+          if (data.method === 'cf_boost_pools_depth') {
+            return Promise.resolve({
+              data: boostPoolsDepth(),
+            });
+          }
+
+          if (data.method === 'cf_accounts') {
+            return Promise.resolve({
+              data: {
+                id: 1,
+                jsonrpc: '2.0',
+                result: [
+                  [
+                    'cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH',
+                    'Chainflip Testnet Broker 2',
+                  ],
+                ],
+              },
+            });
+          }
+
+          if (data.method === 'cf_account_info') {
+            return Promise.resolve({
+              data: cfAccountInfo(),
+            });
+          }
+
+          if (data.method === 'cf_pool_depth') {
+            return Promise.resolve({
+              data: cfPoolDepth(),
+            });
+          }
+
+          throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+        });
+
+        const sendSpy = vi
+          .spyOn(WsClient.prototype, 'sendRequest')
+          .mockResolvedValueOnce({
+            broker_commission: buildFee('Usdc', 0),
+            ingress_fee: buildFee('Btc', 0),
+            egress_fee: buildFee('Eth', 0),
+            network_fee: buildFee('Usdc', 1001000),
+            intermediary: BigInt(100e6),
+            output: BigInt(1e18),
+          })
+          .mockResolvedValueOnce({
+            broker_commission: buildFee('Usdc', 0),
+            ingress_fee: buildFee('Btc', 0),
+            egress_fee: buildFee('Eth', 0),
+            network_fee: buildFee('Usdc', 1001000),
+            intermediary: BigInt(100e6),
+            output: BigInt(1e18),
+          });
+
+        const params = new URLSearchParams({
+          srcChain: 'Bitcoin',
+          srcAsset: 'BTC',
+          destChain: 'Ethereum',
+          destAsset: 'ETH',
+          amount: (0.01e8).toString(),
+          dcaEnabled: 'true',
+          isOnChain: 'true',
+        });
+
+        const { status, body } = await request(server).get(`/v2/quote?${params.toString()}`);
+
+        expect(status).toBe(200);
+        expect(body).toMatchSnapshot();
+        expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
+          [
+            [
+              "cf_swap_rate_v3",
+              {
+                "asset": "BTC",
+                "chain": "Bitcoin",
+              },
+              {
+                "asset": "ETH",
+                "chain": "Ethereum",
+              },
+              "0xf4240",
+              0,
+              undefined,
+              undefined,
+              [
+                "Egress",
+                "IngressDepositChannel",
+              ],
+              [],
+            ],
+            [
+              "cf_swap_rate_v3",
+              {
+                "asset": "BTC",
+                "chain": "Bitcoin",
+              },
+              {
+                "asset": "ETH",
+                "chain": "Ethereum",
+              },
+              "0xf4240",
+              0,
+              {
+                "chunk_interval": 2,
+                "number_of_chunks": 33,
+              },
               undefined,
               [
                 "Egress",
