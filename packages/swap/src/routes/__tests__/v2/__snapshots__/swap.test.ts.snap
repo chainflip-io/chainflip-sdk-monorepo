@@ -56,6 +56,52 @@ exports[`server > GET /v2/swaps/:id > retrieves a DCA swap from an onChain origi
 }
 `;
 
+exports[`server > GET /v2/swaps/:id > retrieves a refunded swap from an onChain origin 1`] = `
+{
+  "brokers": [],
+  "destAddress": "cFLBKavxvThwqLWNr7cTwtqhYD6jDqXM31d6QoTLvuK4X78ve",
+  "destAsset": "USDC",
+  "destChain": "Ethereum",
+  "estimatedDurationSeconds": 12,
+  "estimatedDurationsSeconds": {
+    "swap": 12,
+  },
+  "fees": [
+    {
+      "amount": "495747",
+      "asset": "USDC",
+      "chain": "Solana",
+      "type": "REFUND",
+    },
+  ],
+  "fillOrKillParams": {
+    "minPrice": "1.00049999999999994493",
+    "refundAddress": "cFLBKavxvThwqLWNr7cTwtqhYD6jDqXM31d6QoTLvuK4X78ve",
+    "retryDurationBlocks": 7,
+  },
+  "lastStatechainUpdateAt": 1640995200000,
+  "srcAsset": "USDC",
+  "srcChain": "Solana",
+  "state": "COMPLETED",
+  "swap": {
+    "originalInputAmount": "10000000",
+    "regular": {
+      "inputAmount": "10000000",
+      "latestSwapRescheduledAt": 46992672000,
+      "latestSwapRescheduledBlockIndex": "7832112-1110",
+      "retryCount": 1,
+      "scheduledAt": 46992660000,
+      "scheduledBlockIndex": "7832110-1146",
+    },
+    "remainingInputAmount": "10000000",
+    "swappedInputAmount": "0",
+    "swappedIntermediateAmount": "0",
+    "swappedOutputAmount": "0",
+  },
+  "swapId": "512007",
+}
+`;
+
 exports[`server > GET /v2/swaps/:id > retrieves a swap from a native swap id 1`] = `
 {
   "brokers": [],
@@ -321,43 +367,6 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a vault origin in CO
     "witnessedAt": 624000,
     "witnessedBlockIndex": "104-7",
   },
-}
-`;
-
-exports[`server > GET /v2/swaps/:id > retrieves a swap from an onChain origin FAILED 1`] = `
-{
-  "brokers": [],
-  "destAddress": "cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh",
-  "destAsset": "DOT",
-  "destChain": "Polkadot",
-  "estimatedDurationSeconds": 12,
-  "estimatedDurationsSeconds": {
-    "swap": 12,
-  },
-  "fees": [],
-  "fillOrKillParams": {
-    "minPrice": "0",
-    "refundAddress": "cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh",
-    "retryDurationBlocks": 100,
-  },
-  "lastStatechainUpdateAt": 1640995200000,
-  "srcAsset": "ETH",
-  "srcChain": "Ethereum",
-  "state": "FAILED",
-  "swap": {
-    "originalInputAmount": "4999949999999650000",
-    "regular": {
-      "inputAmount": "4999949999999650000",
-      "retryCount": 0,
-      "scheduledAt": 552000,
-      "scheduledBlockIndex": "92-399",
-    },
-    "remainingInputAmount": "4999949999999650000",
-    "swappedInputAmount": "0",
-    "swappedIntermediateAmount": "0",
-    "swappedOutputAmount": "0",
-  },
-  "swapId": "368",
 }
 `;
 
@@ -997,7 +1006,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap with FillOrKillParams in 
       "type": "EGRESS",
     },
     {
-      "amount": "4000000000000000000",
+      "amount": "3999949999999650000",
       "asset": "ETH",
       "chain": "Ethereum",
       "type": "REFUND",

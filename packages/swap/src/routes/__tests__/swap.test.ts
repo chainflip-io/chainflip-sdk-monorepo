@@ -954,7 +954,7 @@ describe('server', () => {
               "type": "EGRESS",
             },
             {
-              "amount": "4000000000000000000",
+              "amount": "3999949999999650000",
               "asset": "ETH",
               "chain": "Ethereum",
               "type": "REFUND",

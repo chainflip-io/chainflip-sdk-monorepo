@@ -77,7 +77,7 @@ describe(refundEgressScheduled, () => {
             type: 'SWAP',
             swapExecutedAt: new Date(block.timestamp - 12000),
             swapExecutedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
-            swapInputAmount: '9500000000',
+            swapInputAmount: '9000000000',
             swapOutputAmount: '10000000000',
           },
         },
