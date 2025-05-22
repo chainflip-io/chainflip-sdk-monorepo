@@ -52,18 +52,17 @@ export default async function swapRequestCompleted({
             getAssetPrice(swapRequest.destAsset),
           ])
         : [];
+
+    const quoteArgs: Prisma.QuoteUpdateArgs['data'] = {
+      swapRequestId: swapRequest.id,
+      swapRequestNativeId: swapRequest.nativeId,
+      inputAssetPriceAtCompletion: srcPrice,
+      outputAssetPriceAtCompletion: destPrice,
+      indexPriceAtCompletion: srcPrice && destPrice ? destPrice / srcPrice : undefined,
+    };
+
     if (swapRequest.refundEgressId) {
-      await prisma.quote.update({
-        where: { id: channelQuote.id },
-        data: {
-          refundedAt: new Date(block.timestamp),
-          swapRequestId: swapRequest.id,
-          swapRequestNativeId: swapRequest.nativeId,
-          inputAssetPriceAtCompletion: srcPrice,
-          outputAssetPriceAtCompletion: destPrice,
-          indexPriceAtCompletion: srcPrice && destPrice ? destPrice / srcPrice : undefined,
-        },
-      });
+      quoteArgs.refundedAt = new Date(block.timestamp);
     } else {
       const quotedPrice = channelQuote.quotedPrice.toNumber();
       const executedPrice = Number(
@@ -76,18 +75,11 @@ export default async function swapRequestCompleted({
       );
       const executedSlippagePercent = (100 * (quotedPrice - executedPrice)) / quotedPrice;
 
-      await prisma.quote.update({
-        where: { id: channelQuote.id },
-        data: {
-          executedAt: new Date(block.timestamp),
-          executedPrice,
-          executedSlippagePercent,
-          swapRequestId: swapRequest.id,
-          swapRequestNativeId: swapRequest.nativeId,
-          inputAssetPriceAtCompletion: srcPrice,
-          outputAssetPriceAtCompletion: destPrice,
-        },
-      });
+      quoteArgs.executedAt = new Date(block.timestamp);
+      quoteArgs.executedPrice = executedPrice;
+      quoteArgs.executedSlippagePercent = executedSlippagePercent;
     }
+
+    await prisma.quote.update({ where: { id: channelQuote.id }, data: quoteArgs });
   }
 }
