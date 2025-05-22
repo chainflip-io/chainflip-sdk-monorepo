@@ -32,7 +32,7 @@ exports[`server > GET /v2/quote > excludes the ingress fee for vault swaps 1`] =
           "chain": "Ethereum",
         },
         "fee": {
-          "amount": "200000",
+          "amount": "0",
           "asset": "USDC",
           "chain": "Ethereum",
         },
@@ -82,7 +82,7 @@ exports[`server > GET /v2/quote > on chain > properly quotes on chain swaps betw
           "chain": "Solana",
         },
         "fee": {
-          "amount": "1000000000",
+          "amount": "0",
           "asset": "USDC",
           "chain": "Solana",
         },
@@ -137,7 +137,7 @@ exports[`server > GET /v2/quote > on chain > properly quotes with DCA 1`] = `
           "chain": "Bitcoin",
         },
         "fee": {
-          "amount": "2000",
+          "amount": "0",
           "asset": "BTC",
           "chain": "Bitcoin",
         },
@@ -152,7 +152,7 @@ exports[`server > GET /v2/quote > on chain > properly quotes with DCA 1`] = `
           "chain": "Ethereum",
         },
         "fee": {
-          "amount": "200000",
+          "amount": "0",
           "asset": "USDC",
           "chain": "Ethereum",
         },
@@ -202,7 +202,7 @@ exports[`server > GET /v2/quote > on chain > respects the minimum network fee 1`
           "chain": "Solana",
         },
         "fee": {
-          "amount": "1000000",
+          "amount": "0",
           "asset": "USDC",
           "chain": "Solana",
         },

@@ -2468,6 +2468,7 @@ describe('server', () => {
               [
                 "Egress",
                 "IngressDepositChannel",
+                "IngressVaultSwap",
               ],
               [],
             ],
@@ -2584,6 +2585,7 @@ describe('server', () => {
               [
                 "Egress",
                 "IngressDepositChannel",
+                "IngressVaultSwap",
               ],
               [],
             ],
@@ -2607,6 +2609,7 @@ describe('server', () => {
               [
                 "Egress",
                 "IngressDepositChannel",
+                "IngressVaultSwap",
               ],
               [],
             ],
@@ -2657,6 +2660,7 @@ describe('server', () => {
               [
                 "Egress",
                 "IngressDepositChannel",
+                "IngressVaultSwap",
               ],
               [],
             ],

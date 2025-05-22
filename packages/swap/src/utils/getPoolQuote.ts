@@ -63,6 +63,7 @@ export default async function getPoolQuote({
   if (isOnChain) {
     excludeFees.push('Egress');
     excludeFees.push('IngressDepositChannel');
+    excludeFees.push('IngressVaultSwap');
   }
 
   const { egressFee, ingressFee, networkFee, egressAmount, intermediateAmount, brokerFee } =
