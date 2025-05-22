@@ -122,3 +122,7 @@ export const isAtLeastSpecVersion = async (specVersion: `${string}.${string}.${s
     (major === maxMajor && minor === maxMinor && patch >= maxPatch)
   );
 };
+
+export const noop = () => {
+  // do nothing
+};

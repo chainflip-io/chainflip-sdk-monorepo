@@ -9,8 +9,9 @@ import {
   fillOrKillParams as fillOrKillParamsSchema,
 } from '@/shared/schemas.js';
 import { validateAddress } from '@/shared/validation/addressValidation.js';
-import prisma from '../client.js';
+import prisma, { Prisma } from '../client.js';
 import env from '../config/env.js';
+import { getAssetPrice } from '../pricing/index.js';
 import { assertRouteEnabled } from '../utils/env.js';
 import { calculateExpiryTime } from '../utils/function.js';
 import isDisallowedSwap from '../utils/isDisallowedSwap.js';
@@ -110,11 +111,16 @@ export const openSwapDepositChannel = async ({
     brokerUrl = env.RPC_COMMISSION_BROKER_HTTPS_URL;
   }
 
-  const swapDepositAddress = await broker.requestSwapDepositAddress(
-    { ...input, commissionBps },
-    { url: brokerUrl },
-    env.CHAINFLIP_NETWORK,
-  );
+  const [swapDepositAddress, chainInfo, inputPrice, outputPrice] = await Promise.all([
+    broker.requestSwapDepositAddress(
+      { ...input, commissionBps },
+      { url: brokerUrl },
+      env.CHAINFLIP_NETWORK,
+    ),
+    prisma.chainTracking.findFirst({ where: { chain: input.srcChain } }),
+    getAssetPrice(srcAsset),
+    getAssetPrice(destAsset),
+  ]);
 
   logger.info('Swap deposit channel opened', swapDepositAddress);
 
@@ -135,30 +141,30 @@ export const openSwapDepositChannel = async ({
     dcaParams,
   } = input;
 
-  const chainInfo = await prisma.chainTracking.findFirst({
-    where: {
-      chain: srcChain,
-    },
-  });
   const estimatedExpiryTime = calculateExpiryTime({
     chainInfo,
     expiryBlock: srcChainExpiryBlock,
   });
-  const quoteParam = input.quote && {
-    create: {
-      channelOpenedAt: new Date(),
-      srcAsset,
-      destAsset,
-      maxBoostFeeBps,
-      numberOfChunks: dcaParams?.numberOfChunks,
-      expectedDepositAmount: input.expectedDepositAmount,
-      quotedIntermediateAmount: input.quote.intermediateAmount,
-      quotedEgressAmount: input.quote.egressAmount,
-      quotedPrice: input.quote.estimatedPrice,
-      slippageTolerancePercent: getSlippageTolerancePercent(input),
-      recommendedSlippageTolerancePercent: input.quote.recommendedSlippageTolerancePercent,
-    },
-  };
+  const quoteParam: Prisma.QuoteCreateNestedOneWithoutSwapDepositChannelInput | undefined =
+    input.quote && {
+      create: {
+        channelOpenedAt: new Date(),
+        srcAsset,
+        destAsset,
+        maxBoostFeeBps,
+        numberOfChunks: dcaParams?.numberOfChunks,
+        expectedDepositAmount: input.expectedDepositAmount,
+        quotedIntermediateAmount: input.quote.intermediateAmount,
+        quotedEgressAmount: input.quote.egressAmount,
+        quotedPrice: input.quote.estimatedPrice,
+        slippageTolerancePercent: getSlippageTolerancePercent(input),
+        recommendedSlippageTolerancePercent: input.quote.recommendedSlippageTolerancePercent,
+        inputAssetPriceAtChannelOpening: inputPrice,
+        outputAssetPriceAtChannelOpening: outputPrice,
+        indexPriceAtChannelOpening:
+          inputPrice && outputPrice ? outputPrice / inputPrice : undefined,
+      },
+    };
 
   const channel = await prisma.swapDepositChannel.upsert({
     where: {

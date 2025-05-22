@@ -5,6 +5,8 @@ import { vi, describe, expect, it, beforeEach } from 'vitest';
 import logger from '../../utils/logger.js';
 import { coinGeckoIdMap, PriceCache } from '../index.js';
 
+vi.unmock('../index.js');
+
 vi.mock('axios', async () => ({
   default: {
     create() {

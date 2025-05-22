@@ -1,7 +1,15 @@
 import { swappingSwapRequestCompleted } from '@chainflip/processor/160/swapping/swapRequestCompleted';
 import { Prisma } from '../../client.js';
+import { getAssetPrice } from '../../pricing/index.js';
 import { getSwapPrice } from '../../utils/swap.js';
 import { EventHandlerArgs } from '../index.js';
+
+const timeElapsedinMinutes = (timestamp: number | string | Date) => {
+  const currentTime = new Date();
+  const elapsedTime = new Date(timestamp);
+  const timeDiff = Math.abs(currentTime.getTime() - elapsedTime.getTime());
+  return Math.floor(timeDiff / 60_000);
+};
 
 export default async function swapRequestCompleted({
   prisma,
@@ -37,6 +45,13 @@ export default async function swapRequestCompleted({
     channelQuote?.expectedDepositAmount.toFixed(0) === swapRequest.depositAmount?.toFixed(0) &&
     !channelQuote.swapRequestId // do not overwrite data if channel is reused
   ) {
+    const [srcPrice, destPrice] =
+      timeElapsedinMinutes(block.timestamp) < 1
+        ? await Promise.all([
+            getAssetPrice(swapRequest.srcAsset),
+            getAssetPrice(swapRequest.destAsset),
+          ])
+        : [];
     if (swapRequest.refundEgressId) {
       await prisma.quote.update({
         where: { id: channelQuote.id },
@@ -44,6 +59,9 @@ export default async function swapRequestCompleted({
           refundedAt: new Date(block.timestamp),
           swapRequestId: swapRequest.id,
           swapRequestNativeId: swapRequest.nativeId,
+          inputAssetPriceAtCompletion: srcPrice,
+          outputAssetPriceAtCompletion: destPrice,
+          indexPriceAtCompletion: srcPrice && destPrice ? destPrice / srcPrice : undefined,
         },
       });
     } else {
@@ -66,6 +84,8 @@ export default async function swapRequestCompleted({
           executedSlippagePercent,
           swapRequestId: swapRequest.id,
           swapRequestNativeId: swapRequest.nativeId,
+          inputAssetPriceAtCompletion: srcPrice,
+          outputAssetPriceAtCompletion: destPrice,
         },
       });
     }
