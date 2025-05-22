@@ -809,18 +809,6 @@ describe('server', () => {
               "type": "NETWORK",
             },
             {
-              "amount": "4999949999999650",
-              "asset": "ETH",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
-            },
-            {
-              "amount": "4506169",
-              "asset": "USDC",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
-            },
-            {
               "amount": "45516860",
               "asset": "USDC",
               "chain": "Ethereum",
@@ -893,18 +881,6 @@ describe('server', () => {
               "asset": "USDC",
               "chain": "Ethereum",
               "type": "NETWORK",
-            },
-            {
-              "amount": "4999949999999650",
-              "asset": "ETH",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
-            },
-            {
-              "amount": "4506169",
-              "asset": "USDC",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
             },
             {
               "amount": "45516860",
@@ -1057,18 +1033,6 @@ describe('server', () => {
               "type": "NETWORK",
             },
             {
-              "amount": "4999949999999650",
-              "asset": "ETH",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
-            },
-            {
-              "amount": "4506169",
-              "asset": "USDC",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
-            },
-            {
               "amount": "45516860",
               "asset": "USDC",
               "chain": "Ethereum",
@@ -1143,18 +1107,6 @@ describe('server', () => {
               "asset": "USDC",
               "chain": "Ethereum",
               "type": "NETWORK",
-            },
-            {
-              "amount": "4999949999999650",
-              "asset": "ETH",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
-            },
-            {
-              "amount": "4506169",
-              "asset": "USDC",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
             },
             {
               "amount": "45516860",
@@ -1238,18 +1190,6 @@ describe('server', () => {
               "type": "NETWORK",
             },
             {
-              "amount": "4999949999999650",
-              "asset": "ETH",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
-            },
-            {
-              "amount": "4506169",
-              "asset": "USDC",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
-            },
-            {
               "amount": "45516860",
               "asset": "USDC",
               "chain": "Ethereum",
@@ -1327,18 +1267,6 @@ describe('server', () => {
               "asset": "USDC",
               "chain": "Ethereum",
               "type": "NETWORK",
-            },
-            {
-              "amount": "4999949999999650",
-              "asset": "ETH",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
-            },
-            {
-              "amount": "4506169",
-              "asset": "USDC",
-              "chain": "Ethereum",
-              "type": "LIQUIDITY",
             },
             {
               "amount": "45516860",

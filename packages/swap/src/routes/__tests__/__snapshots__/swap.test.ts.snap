@@ -37,18 +37,6 @@ exports[`server > GET /swaps/:id > retrieves a swap in FAILED status (egress ign
       "type": "NETWORK",
     },
     {
-      "amount": "4999949999999650",
-      "asset": "ETH",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
-      "amount": "4506169",
-      "asset": "USDC",
-      "chain": "Ethereum",
-      "type": "LIQUIDITY",
-    },
-    {
       "amount": "45516860",
       "asset": "USDC",
       "chain": "Ethereum",
