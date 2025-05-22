@@ -492,12 +492,14 @@ model Quote {
   quotedPrice                         Decimal
   inputAssetPriceAtChannelOpening     Decimal?
   outputAssetPriceAtChannelOpening    Decimal?
+  indexPriceAtChannelOpening          Decimal?
   slippageTolerancePercent            Decimal?
   executedAt                          DateTime?
   executedPrice                       Decimal?
   executedSlippagePercent             Decimal?
   inputAssetPriceAtCompletion         Decimal?
   outputAssetPriceAtCompletion        Decimal?
+  indexPriceAtCompletion              Decimal?
   recommendedSlippageTolerancePercent Decimal?
   refundedAt                          DateTime?
 

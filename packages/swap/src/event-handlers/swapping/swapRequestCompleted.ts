@@ -61,6 +61,7 @@ export default async function swapRequestCompleted({
           swapRequestNativeId: swapRequest.nativeId,
           inputAssetPriceAtCompletion: srcPrice,
           outputAssetPriceAtCompletion: destPrice,
+          indexPriceAtCompletion: srcPrice && destPrice ? destPrice / srcPrice : undefined,
         },
       });
     } else {

@@ -161,6 +161,8 @@ export const openSwapDepositChannel = async ({
         recommendedSlippageTolerancePercent: input.quote.recommendedSlippageTolerancePercent,
         inputAssetPriceAtChannelOpening: inputPrice,
         outputAssetPriceAtChannelOpening: outputPrice,
+        indexPriceAtChannelOpening:
+          inputPrice && outputPrice ? outputPrice / inputPrice : undefined,
       },
     };
 
