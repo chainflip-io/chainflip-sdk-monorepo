@@ -1722,7 +1722,9 @@ describe(SwapSDK, () => {
             minPrice: '10000000000000',
           },
         }),
-      ).rejects.toThrow('Cannot encode vault swap data for a deposit channel quote');
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[Error: Cannot encode vault swap data for non-vault swap quotes]`,
+      );
     });
 
     it('throws for ccm params with regular quote', async () => {
@@ -1956,6 +1958,92 @@ describe(SwapSDK, () => {
     it('returns that boost is disabled', async () => {
       sdk = mockNetworkStatus(false);
       expect(await sdk.checkBoostEnabled()).toBe(false);
+    });
+  });
+
+  describe(SwapSDK.prototype.getOnChainExtrinsicArgs, () => {
+    it('extracts the info from the quote (DCA)', () => {
+      expect(
+        sdk.getOnChainExtrinsicArgs({
+          quote: {
+            srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+            destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+            depositAmount: BigInt(1e18).toString(),
+            estimatedPrice: '1',
+            type: 'DCA',
+            isOnChain: true,
+            dcaParams: {
+              numberOfChunks: 100,
+              chunkIntervalBlocks: 5,
+            },
+          } as Quote,
+          fillOrKillParams: {
+            retryDurationBlocks: 20,
+            slippageTolerancePercent: 1,
+          },
+        }),
+      ).toMatchInlineSnapshot(`
+        [
+          "1000000000000000000",
+          "Btc",
+          "Flip",
+          20,
+          "3368795432517290788287408613574505293414400000000",
+          {
+            "chunk_interval": 5,
+            "number_of_chunks": 100,
+          },
+        ]
+      `);
+    });
+
+    it('extracts the info from the quote (regular)', () => {
+      expect(
+        sdk.getOnChainExtrinsicArgs({
+          quote: {
+            srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+            destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+            depositAmount: BigInt(1e18).toString(),
+            estimatedPrice: '1',
+            type: 'REGULAR',
+            isOnChain: true,
+          } as Quote,
+          fillOrKillParams: {
+            retryDurationBlocks: 20,
+            slippageTolerancePercent: 1,
+          },
+        }),
+      ).toMatchInlineSnapshot(`
+        [
+          "1000000000000000000",
+          "Btc",
+          "Flip",
+          20,
+          "3368795432517290788287408613574505293414400000000",
+          null,
+        ]
+      `);
+    });
+
+    it('throws if the quote is not on-chain', () => {
+      expect(() =>
+        sdk.getOnChainExtrinsicArgs({
+          quote: {
+            srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+            destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+            depositAmount: BigInt(1e18).toString(),
+            estimatedPrice: '1',
+            type: 'REGULAR',
+            isOnChain: false,
+          } as Quote,
+          fillOrKillParams: {
+            retryDurationBlocks: 20,
+            slippageTolerancePercent: 1,
+          },
+        }),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Cannot get extrinsic args for non-on-chain quotes]`,
+      );
     });
   });
 });

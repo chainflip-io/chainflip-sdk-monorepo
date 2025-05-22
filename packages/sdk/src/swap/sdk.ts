@@ -434,10 +434,9 @@ export class SwapSDK {
     fillOrKillParams,
   }: {
     quote: Quote;
-    fillOrKillParams: Omit<
-      FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage,
-      'refundAddress'
-    >;
+    fillOrKillParams:
+      | Omit<FillOrKillParamsWithMinPrice, 'refundAddress'>
+      | Omit<FillOrKillParamsWithSlippage, 'refundAddress'>;
   }): [
     amount: string,
     inputAsset: ChainflipAsset,
