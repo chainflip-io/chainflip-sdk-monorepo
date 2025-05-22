@@ -170,8 +170,8 @@ describe(parseFoKParams, () => {
 
   it('throws if neither minPrice nor slippageTolerancePercent is provided', () => {
     expect(() => {
+      // @ts-expect-error testing
       parseFoKParams(
-        // @ts-expect-error testing
         {
           refundAddress: '0x1234',
           retryDurationBlocks: 100,
