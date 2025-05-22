@@ -126,6 +126,7 @@ export const validateQuoteQuery = async (query: Query) => {
     ccmParams: queryResult.data.ccmParams,
     dcaEnabled: queryResult.data.dcaEnabled,
     isVaultSwap: queryResult.data.isVaultSwap,
+    isOnChain: queryResult.data.isOnChain,
     pools,
   };
 };
@@ -156,6 +157,7 @@ export const generateQuotes = async ({
   brokerCommissionBps,
   ccmParams,
   isVaultSwap,
+  isOnChain,
   limitOrders,
   pools,
   estimatedBoostFeeBps,
@@ -167,7 +169,8 @@ export const generateQuotes = async ({
   destAsset: ChainflipAsset;
   brokerCommissionBps: number | undefined;
   ccmParams: QuoteCcmParams | undefined;
-  isVaultSwap: boolean;
+  isVaultSwap: boolean | undefined;
+  isOnChain: boolean | undefined;
   limitOrders: RpcLimitOrder[];
   pools: Pool[];
   estimatedBoostFeeBps: number | undefined;
@@ -192,6 +195,7 @@ export const generateQuotes = async ({
     ccmParams,
     pools,
     isVaultSwap,
+    isOnChain,
   };
   const dcaQuoteArgs = { dcaParams, ...quoteArgs };
   const queryDca = dcaParams && dcaParams.numberOfChunks > 1;
@@ -282,6 +286,7 @@ const quoteRouter = (quoter: Quoter) => {
         boostDepositsEnabled,
         dcaEnabled,
         isVaultSwap,
+        isOnChain,
         pools,
       } = await validateQuoteQuery(req.query);
 
@@ -330,6 +335,7 @@ const quoteRouter = (quoter: Quoter) => {
           brokerCommissionBps,
           ccmParams,
           isVaultSwap,
+          isOnChain,
           estimatedBoostFeeBps,
           maxBoostFeeBps,
           limitOrders,

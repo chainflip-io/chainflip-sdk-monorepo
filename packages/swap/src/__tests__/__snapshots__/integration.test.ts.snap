@@ -36,7 +36,6 @@ exports[`python integration test > replies to a quote request 1`] = `
     },
   ],
   "intermediateAmount": "2000000000",
-  "isVaultSwap": false,
   "lowLiquidityWarning": false,
   "poolInfo": [
     {
@@ -134,7 +133,6 @@ exports[`python integration test > replies to a quote request with v2 endpoint 1
       },
     ],
     "intermediateAmount": "2000000000",
-    "isVaultSwap": false,
     "lowLiquidityWarning": false,
     "poolInfo": [
       {

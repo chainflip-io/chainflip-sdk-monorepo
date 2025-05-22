@@ -43,6 +43,7 @@ export interface QuoteRequest extends ChainsAndAssets {
   brokerCommissionBps?: number;
   affiliateBrokers?: AffiliateBroker[];
   isVaultSwap?: boolean;
+  isOnChain?: boolean;
   ccmParams?: {
     gasBudget: string;
     messageLengthBytes: number;

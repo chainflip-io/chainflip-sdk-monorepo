@@ -75,14 +75,8 @@ vi.mock('../../polkadot/api', () => ({
 vi.mock('../../pricing/index');
 
 const buildFee = (asset: InternalAsset, amount: bigint | number) => ({
-  bigint: {
-    amount: BigInt(amount),
-    ...internalAssetToRpcAsset[asset],
-  },
-  string: {
-    amount: hexEncodeNumber(amount),
-    ...internalAssetToRpcAsset[asset],
-  },
+  amount: BigInt(amount),
+  ...internalAssetToRpcAsset[asset],
 });
 
 const mockRpcs = ({
@@ -331,10 +325,10 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
       vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Usdc', 0).bigint,
-        egress_fee: buildFee('Eth', 0).bigint,
-        network_fee: buildFee('Usdc', 100100).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Usdc', 0),
+        egress_fee: buildFee('Eth', 0),
+        network_fee: buildFee('Usdc', 100100),
         intermediary: null,
         output: BigInt(1e18),
       });
@@ -366,22 +360,10 @@ describe('server', () => {
         estimatedPrice: '0.01',
         includedFees: [
           {
-            amount: '0',
-            asset: 'USDC',
-            chain: 'Ethereum',
-            type: 'INGRESS',
-          },
-          {
             amount: '100100',
             asset: 'USDC',
             chain: 'Ethereum',
             type: 'NETWORK',
-          },
-          {
-            amount: '0',
-            asset: 'ETH',
-            chain: 'Ethereum',
-            type: 'EGRESS',
           },
         ],
         poolInfo: [
@@ -402,9 +384,9 @@ describe('server', () => {
 
     it('rejects when the egress amount is smaller than the egress fee', async () => {
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        egress_fee: buildFee('Eth', 25000).bigint,
-        network_fee: buildFee('Usdc', 2000000).bigint,
-        ingress_fee: buildFee('Usdc', 2000000).bigint,
+        egress_fee: buildFee('Eth', 25000),
+        network_fee: buildFee('Usdc', 2000000),
+        ingress_fee: buildFee('Usdc', 2000000),
         intermediary: null,
         output: 0n,
       } as CfSwapRateV3);
@@ -428,9 +410,9 @@ describe('server', () => {
 
     it('rejects when the egress amount is smaller than the minimum egress amount', async () => {
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        egress_fee: buildFee('Eth', 25000).bigint,
-        network_fee: buildFee('Usdc', 2000000).bigint,
-        ingress_fee: buildFee('Usdc', 2000000).bigint,
+        egress_fee: buildFee('Eth', 25000),
+        network_fee: buildFee('Usdc', 2000000),
+        ingress_fee: buildFee('Usdc', 2000000),
         intermediary: null,
         output: 599n,
       } as CfSwapRateV3);
@@ -454,10 +436,10 @@ describe('server', () => {
 
     it('gets the quote from USDC with a broker commission', async () => {
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 100000).bigint,
-        egress_fee: buildFee('Eth', 25000).bigint,
-        network_fee: buildFee('Usdc', 97902).bigint,
-        ingress_fee: buildFee('Usdc', 2000000).bigint,
+        broker_commission: buildFee('Usdc', 100000),
+        egress_fee: buildFee('Eth', 25000),
+        network_fee: buildFee('Usdc', 97902),
+        ingress_fee: buildFee('Usdc', 2000000),
         intermediary: null,
         output: 999999999999975000n,
       } as CfSwapRateV3);
@@ -528,10 +510,10 @@ describe('server', () => {
 
     it('should return quote for vault swap with excluded ingress fee', async () => {
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Usdc', 0).bigint,
-        network_fee: buildFee('Usdc', 98000).bigint,
-        egress_fee: buildFee('Eth', 25000).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Usdc', 0),
+        network_fee: buildFee('Usdc', 98000),
+        egress_fee: buildFee('Eth', 25000),
         intermediary: null,
         output: 999999999999975000n,
       });
@@ -566,12 +548,6 @@ describe('server', () => {
         egressAmount: '999999999999975000',
         includedFees: [
           {
-            amount: '0', // ingress still returns 0
-            asset: 'USDC',
-            chain: 'Ethereum',
-            type: 'INGRESS',
-          },
-          {
             amount: '98000',
             asset: 'USDC',
             chain: 'Ethereum',
@@ -600,18 +576,18 @@ describe('server', () => {
       const sendSpy = vi
         .spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
-          broker_commission: buildFee('Usdc', 0).bigint,
-          ingress_fee: buildFee('Btc', 100000).bigint,
-          network_fee: buildFee('Usdc', 1999500).bigint,
-          egress_fee: buildFee('Eth', 25000).bigint,
+          broker_commission: buildFee('Usdc', 0),
+          ingress_fee: buildFee('Btc', 100000),
+          network_fee: buildFee('Usdc', 1999500),
+          egress_fee: buildFee('Eth', 25000),
           intermediary: BigInt(2000e6),
           output: 999999999999975000n,
         } as CfSwapRateV3)
         .mockResolvedValueOnce({
-          broker_commission: buildFee('Usdc', 0).bigint,
-          ingress_fee: buildFee('Btc', 100000).bigint,
-          network_fee: buildFee('Usdc', 1999500).bigint,
-          egress_fee: buildFee('Eth', 25000).bigint,
+          broker_commission: buildFee('Usdc', 0),
+          ingress_fee: buildFee('Btc', 100000),
+          network_fee: buildFee('Usdc', 1999500),
+          egress_fee: buildFee('Eth', 25000),
           intermediary: BigInt(2000e6 - 5e5),
           output: 999999949999975000n,
         } as CfSwapRateV3);
@@ -675,10 +651,10 @@ describe('server', () => {
       env.CHAINFLIP_NETWORK = 'backspin';
 
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Btc', 100000).bigint,
-        network_fee: buildFee('Usdc', 1999500).bigint,
-        egress_fee: buildFee('Eth', 25000).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Btc', 100000),
+        network_fee: buildFee('Usdc', 1999500),
+        egress_fee: buildFee('Eth', 25000),
         intermediary: BigInt(2000e6),
         output: BigInt(1e18),
       });
@@ -730,10 +706,10 @@ describe('server', () => {
       env.DISABLE_BOOST_QUOTING = true;
 
       vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Btc', 100000).bigint,
-        network_fee: buildFee('Usdc', 1999500).bigint,
-        egress_fee: buildFee('Eth', 25000).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Btc', 100000),
+        network_fee: buildFee('Usdc', 1999500),
+        egress_fee: buildFee('Eth', 25000),
         intermediary: BigInt(2000e6),
         output: 999999999999975000n,
       } as CfSwapRateV3);
@@ -769,10 +745,10 @@ describe('server', () => {
 
     it('gets the quote from USDC from the pools', async () => {
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Usdc', 2000000).bigint,
-        network_fee: buildFee('Usdc', 98000).bigint,
-        egress_fee: buildFee('Eth', 25000).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Usdc', 2000000),
+        network_fee: buildFee('Usdc', 98000),
+        egress_fee: buildFee('Eth', 25000),
         intermediary: null,
         output: 999999999999975000n,
       });
@@ -854,10 +830,10 @@ describe('server', () => {
       });
 
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Eth', 25000).bigint,
-        egress_fee: buildFee('Usdc', 0).bigint,
-        network_fee: buildFee('Usdc', 100100).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Eth', 25000),
+        egress_fee: buildFee('Usdc', 0),
+        network_fee: buildFee('Usdc', 100100),
         intermediary: null,
         output: BigInt(100e6),
       });
@@ -888,12 +864,6 @@ describe('server', () => {
             chain: 'Ethereum',
             type: 'NETWORK',
           },
-          {
-            amount: '0',
-            asset: 'USDC',
-            chain: 'Ethereum',
-            type: 'EGRESS',
-          },
         ],
         poolInfo: [
           {
@@ -910,12 +880,12 @@ describe('server', () => {
       vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(1e18));
 
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
+        broker_commission: buildFee('Usdc', 0),
         intermediary: BigInt(2000e6),
         output: 999999999999975000n,
-        egress_fee: buildFee('Eth', 25000).bigint,
-        ingress_fee: buildFee('Flip', 2000000).bigint,
-        network_fee: buildFee('Usdc', 2000000).bigint,
+        egress_fee: buildFee('Eth', 25000),
+        ingress_fee: buildFee('Flip', 2000000),
+        network_fee: buildFee('Usdc', 2000000),
       } as CfSwapRateV3);
 
       const params = new URLSearchParams({
@@ -966,12 +936,12 @@ describe('server', () => {
         .mockResolvedValueOnce(BigInt(0n));
 
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
+        broker_commission: buildFee('Usdc', 0),
         intermediary: BigInt(2000e6),
         output: 999999999999975000n,
-        egress_fee: buildFee('Eth', 25000).bigint,
-        ingress_fee: buildFee('Flip', 2000000).bigint,
-        network_fee: buildFee('Usdc', 2000000).bigint,
+        egress_fee: buildFee('Eth', 25000),
+        ingress_fee: buildFee('Flip', 2000000),
+        network_fee: buildFee('Usdc', 2000000),
       } as CfSwapRateV3);
 
       const params = new URLSearchParams({
@@ -995,12 +965,12 @@ describe('server', () => {
         .mockResolvedValueOnce(BigInt(99999999999975000n));
 
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
+        broker_commission: buildFee('Usdc', 0),
         intermediary: BigInt(2000e6),
         output: 999999999999975000n,
-        egress_fee: buildFee('Eth', 25000).bigint,
-        ingress_fee: buildFee('Flip', 2000000).bigint,
-        network_fee: buildFee('Usdc', 2000000).bigint,
+        egress_fee: buildFee('Eth', 25000),
+        ingress_fee: buildFee('Flip', 2000000),
+        network_fee: buildFee('Usdc', 2000000),
       } as CfSwapRateV3);
 
       const params = new URLSearchParams({
@@ -1024,12 +994,12 @@ describe('server', () => {
         .mockResolvedValueOnce(BigInt(999999999999975001n));
 
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
+        broker_commission: buildFee('Usdc', 0),
         intermediary: BigInt(2000e6),
         output: 999999999999975000n,
-        egress_fee: buildFee('Eth', 25000).bigint,
-        ingress_fee: buildFee('Flip', 2000000).bigint,
-        network_fee: buildFee('Usdc', 2000000).bigint,
+        egress_fee: buildFee('Eth', 25000),
+        ingress_fee: buildFee('Flip', 2000000),
+        network_fee: buildFee('Usdc', 2000000),
       } as CfSwapRateV3);
 
       const params = new URLSearchParams({
@@ -1047,10 +1017,10 @@ describe('server', () => {
     it('gets the quote with a realistic price', async () => {
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
         output: 1229437998n,
-        ingress_fee: buildFee('Eth', 169953533800000).bigint,
-        network_fee: buildFee('Usdc', 1231422).bigint,
-        egress_fee: buildFee('Usdc', 752586).bigint,
-        broker_commission: buildFee('Usdc', 0).bigint,
+        ingress_fee: buildFee('Eth', 169953533800000),
+        network_fee: buildFee('Usdc', 1231422),
+        egress_fee: buildFee('Usdc', 752586),
+        broker_commission: buildFee('Usdc', 0),
       } as CfSwapRateV3);
 
       const params = new URLSearchParams({
@@ -1070,10 +1040,10 @@ describe('server', () => {
 
     it('gets the quote with low liquidity warning', async () => {
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Flip', 2000000).bigint,
-        network_fee: buildFee('Usdc', 2994000).bigint,
-        egress_fee: buildFee('Eth', 25000).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Flip', 2000000),
+        network_fee: buildFee('Usdc', 2994000),
+        egress_fee: buildFee('Eth', 25000),
         intermediary: BigInt(2994e6),
         output: 1999999999999975000n,
       } as CfSwapRateV3);
@@ -1137,10 +1107,10 @@ describe('server', () => {
 
     it('gets the quote for deprecated params without the chain', async () => {
       vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Flip', 2000000).bigint,
-        network_fee: buildFee('Usdc', 2000000).bigint,
-        egress_fee: buildFee('Eth', 25000).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Flip', 2000000),
+        network_fee: buildFee('Usdc', 2000000),
+        egress_fee: buildFee('Eth', 25000),
         intermediary: 2000000000n,
         output: 999999999999975000n,
       });

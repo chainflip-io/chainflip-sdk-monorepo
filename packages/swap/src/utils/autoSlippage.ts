@@ -1,10 +1,6 @@
-import {
-  AssetSymbol,
-  ChainflipAsset,
-  assetConstants,
-  chainConstants,
-} from '@chainflip/utils/chainflip';
+import { ChainflipAsset, assetConstants, chainConstants } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
+import { isStableCoin } from '@/shared/guards.js';
 import { getDeployedLiquidity, getUndeployedLiquidity } from './pools.js';
 import { getRequiredBlockConfirmations } from './rpc.js';
 import env from '../config/env.js';
@@ -82,6 +78,7 @@ export const calculateRecommendedSlippage = async ({
   boostFeeBps,
   dcaChunks,
   estimatedPrice,
+  isOnChain,
 }: {
   srcAsset: ChainflipAsset;
   destAsset: ChainflipAsset;
@@ -90,13 +87,10 @@ export const calculateRecommendedSlippage = async ({
   boostFeeBps?: number;
   dcaChunks: number;
   estimatedPrice: BigNumber;
+  isOnChain: boolean | undefined;
 }): Promise<number> => {
   // do not accept significant price movements for stable assets independently of available liquidity
-  const stableAssets: AssetSymbol[] = ['USDC', 'USDT'];
-  if (
-    stableAssets.includes(assetConstants[srcAsset].symbol) &&
-    stableAssets.includes(assetConstants[destAsset].symbol)
-  ) {
+  if (isStableCoin(srcAsset) && isStableCoin(destAsset)) {
     return Math.max(
       0.5,
       new BigNumber(1)
@@ -116,7 +110,9 @@ export const calculateRecommendedSlippage = async ({
   const MAX_SLIPPAGE = srcAsset === 'Flip' || destAsset === 'Flip' ? 5 : 2.5;
 
   let recommendedSlippage = baseSlippage;
-  recommendedSlippage += await getDepositTimeAdjustment(srcAsset, Boolean(boostFeeBps));
+  recommendedSlippage += isOnChain
+    ? 0
+    : await getDepositTimeAdjustment(srcAsset, Boolean(boostFeeBps));
 
   if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
     recommendedSlippage += await getLiquidityAdjustment({

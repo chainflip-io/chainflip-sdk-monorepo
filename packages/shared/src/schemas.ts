@@ -40,10 +40,13 @@ export const quoteQuerySchema = z
       ])
       .optional(),
     dcaEnabled: booleanString.default('false'),
-    isVaultSwap: booleanString.default('false'),
+    isVaultSwap: booleanString.optional(),
+    isOnChain: booleanString.optional(),
   })
   .transform((args, ctx) => {
     const { srcAsset, destAsset } = getInternalAssets(args, false);
+
+    let hadError = false;
 
     if (srcAsset === null) {
       ctx.addIssue({
@@ -51,7 +54,7 @@ export const quoteQuerySchema = z
         code: z.ZodIssueCode.custom,
       });
 
-      return z.NEVER;
+      hadError = true;
     }
 
     if (destAsset === null) {
@@ -60,7 +63,7 @@ export const quoteQuerySchema = z
         code: z.ZodIssueCode.custom,
       });
 
-      return z.NEVER;
+      hadError = true;
     }
 
     if (args.ccmGasBudget !== undefined && args.ccmMessageLengthBytes === undefined) {
@@ -69,7 +72,7 @@ export const quoteQuerySchema = z
         code: z.ZodIssueCode.custom,
       });
 
-      return z.NEVER;
+      hadError = true;
     }
 
     if (args.ccmGasBudget === undefined && args.ccmMessageLengthBytes !== undefined) {
@@ -78,8 +81,19 @@ export const quoteQuerySchema = z
         code: z.ZodIssueCode.custom,
       });
 
-      return z.NEVER;
+      hadError = true;
     }
+
+    if (args.isOnChain !== undefined && args.isVaultSwap !== undefined) {
+      ctx.addIssue({
+        message: `isOnChain and isVaultSwap cannot be set at the same time`,
+        code: z.ZodIssueCode.custom,
+      });
+
+      hadError = true;
+    }
+
+    if (hadError) return z.NEVER;
 
     const ccmParams =
       args.ccmGasBudget !== undefined && args.ccmMessageLengthBytes !== undefined
@@ -87,13 +101,14 @@ export const quoteQuerySchema = z
         : undefined;
 
     return {
-      srcAsset,
-      destAsset,
+      srcAsset: srcAsset!,
+      destAsset: destAsset!,
       amount: args.amount,
       brokerCommissionBps: args.brokerCommissionBps,
       ccmParams,
       dcaEnabled: args.dcaEnabled,
       isVaultSwap: args.isVaultSwap,
+      isOnChain: args.isOnChain,
     };
   });
 
@@ -177,6 +192,7 @@ interface BaseQuoteDetails {
   srcAsset: AssetAndChain;
   destAsset: AssetAndChain;
   isVaultSwap: boolean;
+  isOnChain: boolean;
   ccmParams?: {
     gasBudget: string;
     messageLengthBytes: number;
