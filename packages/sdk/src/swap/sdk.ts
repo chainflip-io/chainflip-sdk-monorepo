@@ -429,7 +429,7 @@ export class SwapSDK {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  getOnChainExtrinsicArgs({
+  getOnChainSwapExtrinsicArgs({
     quote,
     fillOrKillParams,
   }: {

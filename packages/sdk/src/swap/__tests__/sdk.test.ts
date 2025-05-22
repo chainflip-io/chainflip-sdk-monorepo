@@ -1961,10 +1961,10 @@ describe(SwapSDK, () => {
     });
   });
 
-  describe(SwapSDK.prototype.getOnChainExtrinsicArgs, () => {
+  describe(SwapSDK.prototype.getOnChainSwapExtrinsicArgs, () => {
     it('extracts the info from the quote (DCA)', () => {
       expect(
-        sdk.getOnChainExtrinsicArgs({
+        sdk.getOnChainSwapExtrinsicArgs({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
             destAsset: { asset: 'FLIP', chain: 'Ethereum' },
@@ -1999,7 +1999,7 @@ describe(SwapSDK, () => {
 
     it('extracts the info from the quote (regular)', () => {
       expect(
-        sdk.getOnChainExtrinsicArgs({
+        sdk.getOnChainSwapExtrinsicArgs({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
             destAsset: { asset: 'FLIP', chain: 'Ethereum' },
@@ -2027,7 +2027,7 @@ describe(SwapSDK, () => {
 
     it('throws if the quote is not on-chain', () => {
       expect(() =>
-        sdk.getOnChainExtrinsicArgs({
+        sdk.getOnChainSwapExtrinsicArgs({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
             destAsset: { asset: 'FLIP', chain: 'Ethereum' },
