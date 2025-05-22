@@ -86,7 +86,20 @@ export const quoteQuerySchema = z
 
     if (args.isOnChain !== undefined && args.isVaultSwap !== undefined) {
       ctx.addIssue({
-        message: `isOnChain and isVaultSwap cannot be set at the same time`,
+        message: 'isOnChain and isVaultSwap cannot be set at the same time',
+        code: z.ZodIssueCode.custom,
+      });
+
+      hadError = true;
+    }
+
+    if (
+      args.isOnChain !== undefined &&
+      args.brokerCommissionBps !== undefined &&
+      args.brokerCommissionBps > 0
+    ) {
+      ctx.addIssue({
+        message: 'isOnChain cannot be set with a non-zero broker commission',
         code: z.ZodIssueCode.custom,
       });
 
