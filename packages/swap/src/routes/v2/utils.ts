@@ -383,7 +383,7 @@ export const getSwapState = async (
   } else if (
     swapRequest?.ignoredEgresses?.length ||
     egress?.broadcast?.abortedAt ||
-    swapRequest?.onChainSwapInfo?.refundAmount ||
+    (swapRequest?.onChainSwapInfo?.refundAmount && !swapRequest?.onChainSwapInfo?.outputAmount) ||
     swapRequest?.fallbackEgress?.broadcast?.succeededAt ||
     swapRequest?.fallbackEgress?.broadcast?.abortedAt
   ) {

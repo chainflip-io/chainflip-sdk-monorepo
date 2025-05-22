@@ -31,8 +31,8 @@ export default async function refundEgressScheduled({
     }),
   ]);
 
-  const refundFee = swapRequest
-    .depositAmount!.minus(aggregate._sum.swapInputAmount ?? 0)
+  const refundFee = swapRequest.swapInputAmount
+    .minus(aggregate._sum.swapInputAmount ?? 0)
     .minus(egressAmount?.toString() ?? 0)
     .minus(egressFee?.toString() ?? 0)
     .minus(swapRequest.fees.reduce((acc, fee) => acc.plus(fee.amount), new Prisma.Decimal(0)));

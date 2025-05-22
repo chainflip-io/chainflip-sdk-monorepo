@@ -15,8 +15,8 @@ export default async function refundedOnChain({ prisma, event }: EventHandlerArg
     prisma.swapRequest.findUniqueOrThrow({ where: { nativeId: swapRequestId } }),
   ]);
 
-  const refundFee = swapRequest.depositAmount
-    ?.minus(aggregate._sum.swapInputAmount ?? 0)
+  const refundFee = swapRequest.swapInputAmount
+    .minus(aggregate._sum.swapInputAmount ?? 0)
     .minus(amount.toString());
 
   await prisma.swapRequest.update({
