@@ -59,10 +59,27 @@ export const assertUnreachable = (_: never, message = 'unreachable'): never => {
   throw new Error(message);
 };
 
-export const parseFoKParams = (
+type ParsedFoKParams = {
+  refundAddress: string;
+  retryDurationBlocks: number;
+  minPriceX128: string;
+};
+
+export function parseFoKParams(
   params: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage,
   quote: Pick<Quote, 'srcAsset' | 'destAsset' | 'estimatedPrice'>,
-) => {
+): ParsedFoKParams;
+export function parseFoKParams(
+  params: Omit<FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage, 'refundAddress'>,
+  quote: Pick<Quote, 'srcAsset' | 'destAsset' | 'estimatedPrice'>,
+): Omit<ParsedFoKParams, 'refundAddress'>;
+export function parseFoKParams(
+  params:
+    | FillOrKillParamsWithMinPrice
+    | FillOrKillParamsWithSlippage
+    | Omit<FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage, 'refundAddress'>,
+  quote: Pick<Quote, 'srcAsset' | 'destAsset' | 'estimatedPrice'>,
+) {
   const srcAsset = getInternalAsset(quote.srcAsset);
   const destAsset = getInternalAsset(quote.destAsset);
 
@@ -102,7 +119,7 @@ export const parseFoKParams = (
     retryDurationBlocks: params.retryDurationBlocks,
     minPriceX128: getPriceX128FromPrice(minPrice, srcAsset, destAsset),
   };
-};
+}
 
 export const safeStringify = (obj: unknown) =>
   JSON.stringify(obj, (key, value) => (typeof value === 'bigint' ? value.toString() : value));

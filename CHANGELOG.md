@@ -7,12 +7,30 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## Unreleased
+
+### Added
+
+- `SwapSDK.prototype.getQuoteV2` has been updated to accept an `isOnChain`
+  option which will provide quotes for on-chain swaps. It will also have an
+  `isOnChain` property if it is for an on-chain swap.
+- `SwapSDK.prototype.getOnChainSwapExtrinsicArgs` has been added to convert the
+  quote and fill or kill parameters into arguments that can be passed to the
+  extrinsic that is submitted to the State Chain to schedule the on chain swap.
+
 ## 1.9.2
 
 ### Added
 
-- New type of swap fee `REFUND` has been added. Returned as a part of the fees array for
-  swaps that have been refunded.
+- New type of swap fee `REFUND` has been added. Returned as a part of the fees
+  array for swaps that have been refunded.
+
+## 1.9.1
+
+### Fixed
+
+- The `package.json` was changed to make the SDK npm package compatible with
+  more build setups and configurations.
 
 ## 1.9.0
 

@@ -25,7 +25,7 @@ import {
   getEnvironment,
 } from '@/shared/rpc/index.js';
 import { validateSwapAmount } from '@/shared/rpc/utils.js';
-import { BoostQuote, Quote } from '@/shared/schemas.js';
+import { BoostQuote, FillOrKillParamsWithMinPrice, Quote } from '@/shared/schemas.js';
 import { Required } from '@/shared/types.js';
 import type { AppRouter } from '@/swap/trpc.js';
 import { getAssetData } from './assets.js';
@@ -39,6 +39,7 @@ import {
   SwapStatusRequest,
   BoostPoolDepth,
   QuoteResponseV2,
+  FillOrKillParamsWithSlippage,
 } from './types.js';
 import {
   type SwapStatusResponseV2,
@@ -286,6 +287,7 @@ export class SwapSDK {
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
     assert(!quote.isVaultSwap, 'Cannot open a deposit channel for a vault swap quote');
+    assert(!quote.isOnChain, 'Cannot open a deposit channel for an on-chain quote');
 
     if (ccmParams) {
       assert(quote.ccmParams, 'Cannot open CCM channel for quote without CCM params');
@@ -373,7 +375,7 @@ export class SwapSDK {
   }: VaultSwapRequest): Promise<VaultSwapResponse> {
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
-    assert(quote.isVaultSwap, 'Cannot encode vault swap data for a deposit channel quote');
+    assert(quote.isVaultSwap, 'Cannot encode vault swap data for non-vault swap quotes');
 
     if (ccmParams) {
       assert(quote.ccmParams, 'Cannot encode CCM swap for quote without CCM params');
@@ -424,6 +426,42 @@ export class SwapSDK {
     );
 
     return this.trpc.encodeVaultSwapData.mutate(vaultSwapRequest);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getOnChainSwapExtrinsicArgs({
+    quote,
+    fillOrKillParams,
+  }: {
+    quote: Quote;
+    fillOrKillParams:
+      | Omit<FillOrKillParamsWithMinPrice, 'refundAddress'>
+      | Omit<FillOrKillParamsWithSlippage, 'refundAddress'>;
+  }): [
+    amount: string,
+    inputAsset: ChainflipAsset,
+    outputAsset: ChainflipAsset,
+    retryDuration: number,
+    minPrice: string,
+    dcaParams: { number_of_chunks: number; chunk_interval: number } | null,
+  ] {
+    assert(quote.isOnChain, 'Cannot get extrinsic args for non-on-chain quotes');
+
+    const { retryDurationBlocks, minPriceX128 } = parseFoKParams(fillOrKillParams, quote);
+
+    return [
+      quote.depositAmount,
+      getInternalAsset(quote.srcAsset),
+      getInternalAsset(quote.destAsset),
+      retryDurationBlocks,
+      minPriceX128,
+      quote.type === 'DCA'
+        ? {
+            number_of_chunks: quote.dcaParams.numberOfChunks,
+            chunk_interval: quote.dcaParams.chunkIntervalBlocks,
+          }
+        : null,
+    ];
   }
 
   async checkBoostEnabled(): Promise<boolean> {
