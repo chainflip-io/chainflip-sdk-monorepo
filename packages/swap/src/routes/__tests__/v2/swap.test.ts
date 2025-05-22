@@ -1404,32 +1404,81 @@ describe('server', () => {
       expect(body).toMatchSnapshot();
     });
 
-    it(`retrieves a swap from an onChain origin ${StateV2.Failed}`, async () => {
-      const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
-      const requestedEvent = createOnChainSwapRequestedEvent(accountId);
-
-      const refundedOnChain = {
-        id: requestedEvent.id,
-        indexInBlock: requestedEvent.indexInBlock,
-        callId: requestedEvent.callId,
-        name: 'Swapping.RefundedOnChain',
-        args: {
-          asset: { __kind: 'Eth' },
-          amount: '99798295526091993961',
-          accountId: bytesToHex(ss58.decode(accountId).data),
-          swapRequestId: requestedEvent.args.swapRequestId,
-        },
-      };
-
+    it(`retrieves a refunded swap from an onChain origin`, async () => {
       await processEvents(
-        [requestedEvent, swapEventMap['Swapping.SwapScheduled'], refundedOnChain],
+        [
+          {
+            id: '0007832110-001145-c2341',
+            name: 'Swapping.SwapRequested',
+            indexInBlock: 1145,
+            args: {
+              origin: {
+                value: '0x6613c51de60d54bf947d73d84c9c9d34be19c98ff2132d079ca946ad6d7bfa0b',
+                __kind: 'OnChainAccount',
+              },
+              brokerFees: [],
+              inputAsset: { __kind: 'SolUsdc' },
+              inputAmount: '10000000',
+              outputAsset: { __kind: 'Usdc' },
+              requestType: {
+                __kind: 'Regular',
+                outputAction: {
+                  __kind: 'CreditOnChain',
+                  accountId: '0x6613c51de60d54bf947d73d84c9c9d34be19c98ff2132d079ca946ad6d7bfa0b',
+                },
+              },
+              swapRequestId: '512007',
+              refundParameters: {
+                minPrice: '340452508104398913956756090708731887616',
+                retryDuration: 7,
+                refundDestination: {
+                  value: '0x6613c51de60d54bf947d73d84c9c9d34be19c98ff2132d079ca946ad6d7bfa0b',
+                  __kind: 'InternalAccount',
+                },
+              },
+            },
+          },
+          {
+            id: '0007832110-001146-c2341',
+            name: 'Swapping.SwapScheduled',
+            indexInBlock: 1146,
+            args: {
+              swapId: '740568',
+              swapType: { __kind: 'Swap' },
+              executeAt: 7832112,
+              inputAmount: '10000000',
+              swapRequestId: '512007',
+            },
+          },
+          {
+            id: '0007832112-001110-2bc40',
+            name: 'Swapping.SwapRescheduled',
+            indexInBlock: 1110,
+            args: { swapId: '740568', executeAt: 7832117 },
+          },
+          {
+            id: '0007832117-001154-cbeba',
+            name: 'Swapping.RefundedOnChain',
+            indexInBlock: 1154,
+            args: {
+              asset: { __kind: 'SolUsdc' },
+              amount: '9504253',
+              accountId: '0x6613c51de60d54bf947d73d84c9c9d34be19c98ff2132d079ca946ad6d7bfa0b',
+              swapRequestId: '512007',
+            },
+          },
+          {
+            id: '0007832117-001156-cbeba',
+            name: 'Swapping.SwapRequestCompleted',
+            indexInBlock: 1156,
+            args: { swapRequestId: '512007' },
+          },
+        ],
         [],
         '190',
       );
 
-      const { body, status } = await request(server).get(
-        `/v2/swaps/${requestedEvent.args.swapRequestId}`,
-      );
+      const { body, status } = await request(server).get('/v2/swaps/512007');
 
       expect(status).toBe(200);
       expect(body).toMatchSnapshot();
