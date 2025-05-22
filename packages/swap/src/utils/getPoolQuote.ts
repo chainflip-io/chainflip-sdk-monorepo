@@ -1,14 +1,19 @@
-import { getInternalAsset, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
-import { getPipAmountFromAmount } from '@/shared/functions.js';
+import { internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
+import { bigintMax, getPipAmountFromAmount } from '@/shared/functions.js';
+import { isStableCoin } from '@/shared/guards.js';
 import { DcaParams, Quote, SwapFeeType } from '@/shared/schemas.js';
 import { calculateRecommendedSlippage } from './autoSlippage.js';
-import { buildFee, getPoolFees } from './fees.js';
+import { getPoolFees } from './fees.js';
 import { getEgressFee, getMinimumEgressAmount } from './rpc.js';
 import ServiceError from './ServiceError.js';
 import { getSwapRateV3, QuoteLimitOrders, QuoteCcmParams } from './statechain.js';
 import { InternalAsset, Pool } from '../client.js';
 import { estimateSwapDuration, getSwapPrice } from './swap.js';
+import env from '../config/env.js';
 import { checkPriceWarning } from '../pricing/checkPriceWarning.js';
+
+const isStableCoinSwap = (srcAsset: InternalAsset, destAsset: InternalAsset) =>
+  isStableCoin(srcAsset) && isStableCoin(destAsset);
 
 export default async function getPoolQuote({
   srcAsset,
@@ -21,6 +26,7 @@ export default async function getPoolQuote({
   pools,
   dcaParams,
   isVaultSwap,
+  isOnChain,
 }: {
   srcAsset: InternalAsset;
   destAsset: InternalAsset;
@@ -31,7 +37,8 @@ export default async function getPoolQuote({
   boostFeeBps?: number;
   pools: Pool[];
   dcaParams?: DcaParams;
-  isVaultSwap: boolean;
+  isVaultSwap: boolean | undefined;
+  isOnChain: boolean | undefined;
 }) {
   const includedFees = [];
   const excludeFees: SwapFeeType[] = [];
@@ -41,12 +48,22 @@ export default async function getPoolQuote({
   // https://linear.app/chainflip/issue/PRO-1370/include-boost-fees-in-quote-from-cf-swap-rate-v2
   if (boostFeeBps) {
     const boostFee = getPipAmountFromAmount(depositAmount, boostFeeBps);
-    includedFees.push(buildFee(srcAsset, 'BOOST', boostFee));
+    includedFees.push({
+      type: 'BOOST',
+      amount: boostFee,
+      ...internalAssetToRpcAsset[srcAsset],
+    } as const);
     cfRateInputAmount -= boostFee;
   }
 
   if (isVaultSwap) {
     excludeFees.push('IngressDepositChannel');
+  }
+
+  if (isOnChain) {
+    excludeFees.push('Egress');
+    excludeFees.push('IngressDepositChannel');
+    excludeFees.push('IngressVaultSwap');
   }
 
   const { egressFee, ingressFee, networkFee, egressAmount, intermediateAmount, brokerFee } =
@@ -76,7 +93,7 @@ export default async function getPoolQuote({
     );
   }
 
-  const minimumEgressAmount = await getMinimumEgressAmount(destAsset);
+  const minimumEgressAmount = isOnChain ? 0n : await getMinimumEgressAmount(destAsset);
   if (egressAmount < minimumEgressAmount) {
     throw ServiceError.badRequest(
       `egress amount (${egressAmount}) is lower than minimum egress amount (${minimumEgressAmount})`,
@@ -90,14 +107,24 @@ export default async function getPoolQuote({
     destAmount: swapOutputAmount,
   });
 
-  includedFees.push(
-    buildFee(getInternalAsset(ingressFee), 'INGRESS', ingressFee.amount),
-    buildFee('Usdc', 'NETWORK', networkFee.amount),
-  );
-  if (brokerFee.amount > 0n) {
-    includedFees.push(buildFee('Usdc', 'BROKER', brokerFee.amount));
+  includedFees.push({ ...ingressFee, type: 'INGRESS' });
+
+  if (isOnChain && networkFee.amount > env.MINIMUM_NETWORK_FEE_USDC) {
+    const networkFeeBps = isStableCoinSwap(srcAsset, destAsset)
+      ? env.ON_CHAIN_STABLECOIN_NETWORK_FEE_BPS
+      : env.ON_CHAIN_DEFAULT_NETWORK_FEE_BPS;
+    const normalNetworkFeeBps = 10n;
+    networkFee.amount = bigintMax(
+      (networkFee.amount * networkFeeBps) / normalNetworkFeeBps,
+      env.MINIMUM_NETWORK_FEE_USDC,
+    );
   }
-  includedFees.push(buildFee(getInternalAsset(egressFee), 'EGRESS', egressFee.amount));
+
+  includedFees.push({ ...networkFee, type: 'NETWORK' });
+
+  includedFees.push({ ...brokerFee, type: 'BROKER' });
+
+  includedFees.push({ ...egressFee, type: 'EGRESS' });
 
   const poolInfo = getPoolFees(srcAsset, destAsset).map(({ type, ...fee }, i) => ({
     baseAsset: internalAssetToRpcAsset[pools[i].baseAsset],
@@ -109,6 +136,7 @@ export default async function getPoolQuote({
     srcAsset,
     destAsset,
     boosted: Boolean(boostFeeBps),
+    isExternal: !isOnChain,
   });
 
   const dcaChunks = dcaParams?.numberOfChunks ?? 1;
@@ -132,8 +160,11 @@ export default async function getPoolQuote({
       egressAmount,
       dcaChunks,
       estimatedPrice,
+      isOnChain,
     }),
-    includedFees,
+    includedFees: includedFees
+      .filter((fee) => fee.amount > 0n)
+      .map((fee) => ({ ...fee, amount: fee.amount.toString() })),
     lowLiquidityWarning,
     poolInfo,
     estimatedDurationsSeconds: estimatedDurations.durations,
@@ -144,6 +175,7 @@ export default async function getPoolQuote({
     destAsset: internalAssetToRpcAsset[destAsset],
     depositAmount: depositAmount.toString(),
     isVaultSwap,
+    isOnChain,
     ccmParams: ccmParams && {
       gasBudget: String(ccmParams.gasBudget),
       messageLengthBytes: ccmParams.messageLengthBytes,

@@ -1,3 +1,5 @@
+import { ChainflipAsset } from '@chainflip/utils/chainflip';
+
 export const isString = (value: unknown): value is string => typeof value === 'string';
 
 export const isNotNull = <T>(value: T | null): value is T => value !== null;
@@ -24,3 +26,7 @@ export function assert(
 export function assertNever(x: never, message: string): never {
   throw new Error(message);
 }
+
+export const isStableCoin = (
+  asset: ChainflipAsset,
+): asset is Extract<ChainflipAsset, `${string}Usd${string}`> => /Usd/.test(asset);

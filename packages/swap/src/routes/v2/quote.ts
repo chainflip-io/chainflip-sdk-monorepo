@@ -126,6 +126,7 @@ export const validateQuoteQuery = async (query: Query) => {
     ccmParams: queryResult.data.ccmParams,
     dcaEnabled: queryResult.data.dcaEnabled,
     isVaultSwap: queryResult.data.isVaultSwap,
+    isOnChain: queryResult.data.isOnChain,
     pools,
   };
 };
@@ -140,8 +141,10 @@ export const eagerLiquidityExists = async (
     const totalLiquidity = await getTotalLiquidity(srcAsset, destAsset);
     return BigInt(totalLiquidity) > BigInt(egressAmount);
   }
-  const totalLiquidityLeg1 = await getTotalLiquidity(srcAsset, 'Usdc');
-  const totalLiquidityLeg2 = await getTotalLiquidity('Usdc', destAsset);
+  const [totalLiquidityLeg1, totalLiquidityLeg2] = await Promise.all([
+    getTotalLiquidity(srcAsset, 'Usdc'),
+    getTotalLiquidity('Usdc', destAsset),
+  ]);
   return (
     BigInt(totalLiquidityLeg1) > BigInt(intermediateAmount!) &&
     BigInt(totalLiquidityLeg2) > BigInt(egressAmount)
@@ -156,6 +159,7 @@ export const generateQuotes = async ({
   brokerCommissionBps,
   ccmParams,
   isVaultSwap,
+  isOnChain,
   limitOrders,
   pools,
   estimatedBoostFeeBps,
@@ -167,7 +171,8 @@ export const generateQuotes = async ({
   destAsset: ChainflipAsset;
   brokerCommissionBps: number | undefined;
   ccmParams: QuoteCcmParams | undefined;
-  isVaultSwap: boolean;
+  isVaultSwap: boolean | undefined;
+  isOnChain: boolean | undefined;
   limitOrders: RpcLimitOrder[];
   pools: Pool[];
   estimatedBoostFeeBps: number | undefined;
@@ -192,6 +197,7 @@ export const generateQuotes = async ({
     ccmParams,
     pools,
     isVaultSwap,
+    isOnChain,
   };
   const dcaQuoteArgs = { dcaParams, ...quoteArgs };
   const queryDca = dcaParams && dcaParams.numberOfChunks > 1;
@@ -282,6 +288,7 @@ const quoteRouter = (quoter: Quoter) => {
         boostDepositsEnabled,
         dcaEnabled,
         isVaultSwap,
+        isOnChain,
         pools,
       } = await validateQuoteQuery(req.query);
 
@@ -311,7 +318,7 @@ const quoteRouter = (quoter: Quoter) => {
         const [limitOrders, { estimatedBoostFeeBps, maxBoostFeeBps }, inputUsdValue] =
           await Promise.all([
             quoter.getLimitOrders(srcAsset, destAsset, depositAmount),
-            env.DISABLE_BOOST_QUOTING || !boostDepositsEnabled
+            env.DISABLE_BOOST_QUOTING || !boostDepositsEnabled || isOnChain
               ? { estimatedBoostFeeBps: undefined, maxBoostFeeBps: undefined }
               : getBoostFeeBpsForAmount({ amount: depositAmount, asset: srcAsset }),
             getUsdValue(depositAmount, srcAsset).catch(() => undefined),
@@ -330,6 +337,7 @@ const quoteRouter = (quoter: Quoter) => {
           brokerCommissionBps,
           ccmParams,
           isVaultSwap,
+          isOnChain,
           estimatedBoostFeeBps,
           maxBoostFeeBps,
           limitOrders,

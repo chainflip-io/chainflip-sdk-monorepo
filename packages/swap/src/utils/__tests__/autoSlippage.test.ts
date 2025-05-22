@@ -36,6 +36,7 @@ describe(calculateRecommendedSlippage, () => {
       egressAmount: 10n,
       dcaChunks: 1,
       estimatedPrice: new BigNumber(10),
+      isOnChain: undefined,
     });
 
     expect(result).toEqual(0.5);
@@ -59,6 +60,7 @@ describe(calculateRecommendedSlippage, () => {
       egressAmount: 10n,
       dcaChunks: 11,
       estimatedPrice: new BigNumber(10),
+      isOnChain: undefined,
     });
 
     expect(result).toEqual(2.5);
@@ -80,6 +82,7 @@ describe(calculateRecommendedSlippage, () => {
       egressAmount: 550n,
       dcaChunks: 1,
       estimatedPrice: new BigNumber(550),
+      isOnChain: undefined,
     });
 
     expect(result).toEqual(1.25);
@@ -101,6 +104,7 @@ describe(calculateRecommendedSlippage, () => {
       egressAmount: 1300n,
       dcaChunks: 1,
       estimatedPrice: new BigNumber(1300),
+      isOnChain: undefined,
     });
 
     expect(result).toEqual(1.75);
@@ -122,6 +126,7 @@ describe(calculateRecommendedSlippage, () => {
       egressAmount: 800n,
       dcaChunks: 1,
       estimatedPrice: new BigNumber(800),
+      isOnChain: undefined,
     });
 
     expect(result).toEqual(1.5); // 1.48 rounded
@@ -152,6 +157,7 @@ describe(calculateRecommendedSlippage, () => {
       egressAmount: 1n,
       dcaChunks: 100,
       estimatedPrice: new BigNumber(3000),
+      isOnChain: undefined,
     });
 
     expect(result).toEqual(2.5);
@@ -183,6 +189,7 @@ describe(calculateRecommendedSlippage, () => {
       dcaChunks: 100,
       boostFeeBps: 10,
       estimatedPrice: new BigNumber(3000),
+      isOnChain: undefined,
     });
 
     expect(result).toEqual(2);
@@ -208,6 +215,7 @@ describe(calculateRecommendedSlippage, () => {
           egressAmount: 10n,
           dcaChunks: 11,
           estimatedPrice,
+          isOnChain: undefined,
         });
         expect(rate).toEqual(recommendedSlippage);
         expect(estimatedPrice.times(1 - rate / 100).toNumber()).toBeCloseTo(expected, 3);
@@ -224,6 +232,7 @@ describe(calculateRecommendedSlippage, () => {
       egressAmount: 10n,
       dcaChunks: 11,
       estimatedPrice,
+      isOnChain: undefined,
     });
     expect(rate).toEqual(1);
     expect(estimatedPrice.times(1 - rate / 100).toNumber()).toBeCloseTo(0.99, 3);

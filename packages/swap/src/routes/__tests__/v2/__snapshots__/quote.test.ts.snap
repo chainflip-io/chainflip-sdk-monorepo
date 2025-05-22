@@ -1,5 +1,227 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`server > GET /v2/quote > excludes the ingress fee for vault swaps 1`] = `
+[
+  {
+    "depositAmount": "100000000",
+    "destAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "1000000000000000000",
+    "estimatedDurationSeconds": 144,
+    "estimatedDurationsSeconds": {
+      "deposit": 30,
+      "egress": 102,
+      "swap": 12,
+    },
+    "estimatedPrice": "0.01",
+    "includedFees": [
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+    ],
+    "isVaultSwap": true,
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "type": "REGULAR",
+  },
+]
+`;
+
+exports[`server > GET /v2/quote > on chain > properly quotes on chain swaps between stables 1`] = `
+[
+  {
+    "depositAmount": "1000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "1000000000000",
+    "estimatedDurationSeconds": 12,
+    "estimatedDurationsSeconds": {
+      "swap": 12,
+    },
+    "estimatedPrice": "1",
+    "includedFees": [
+      {
+        "amount": "100000000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+    ],
+    "isOnChain": true,
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "USDC",
+          "chain": "Solana",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "USDC",
+          "chain": "Solana",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 0.5,
+    "srcAsset": {
+      "asset": "USDC",
+      "chain": "Solana",
+    },
+    "type": "REGULAR",
+  },
+]
+`;
+
+exports[`server > GET /v2/quote > on chain > properly quotes with DCA 1`] = `
+[
+  {
+    "dcaParams": {
+      "chunkIntervalBlocks": 2,
+      "numberOfChunks": 33,
+    },
+    "depositAmount": "1000000",
+    "destAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "1000000000000000000",
+    "estimatedDurationSeconds": 396,
+    "estimatedDurationsSeconds": {
+      "swap": 396,
+    },
+    "estimatedPrice": "100",
+    "includedFees": [
+      {
+        "amount": "500500",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+    ],
+    "intermediateAmount": "100000000",
+    "isOnChain": true,
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "BTC",
+          "chain": "Bitcoin",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "BTC",
+          "chain": "Bitcoin",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "BTC",
+      "chain": "Bitcoin",
+    },
+    "type": "DCA",
+  },
+]
+`;
+
+exports[`server > GET /v2/quote > on chain > respects the minimum network fee 1`] = `
+[
+  {
+    "depositAmount": "1000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "1000000000",
+    "estimatedDurationSeconds": 12,
+    "estimatedDurationsSeconds": {
+      "swap": 12,
+    },
+    "estimatedPrice": "1",
+    "includedFees": [
+      {
+        "amount": "500000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+    ],
+    "isOnChain": true,
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "USDC",
+          "chain": "Solana",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "USDC",
+          "chain": "Solana",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 0.5,
+    "srcAsset": {
+      "asset": "USDC",
+      "chain": "Solana",
+    },
+    "type": "REGULAR",
+  },
+]
+`;
+
 exports[`server > GET /v2/quote > rejects malformed requests 1`] = `
 {
   "message": "invalid request",

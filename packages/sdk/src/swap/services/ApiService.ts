@@ -28,6 +28,7 @@ export const getQuoteV2: BackendQuery<
     destChain: quoteRequest.destChain,
     destAsset: quoteRequest.destAsset,
     isVaultSwap: String(Boolean(quoteRequest.isVaultSwap)),
+    isOnChain: String(Boolean(quoteRequest.isOnChain)),
     ...(totalBrokerCommissionBps && {
       brokerCommissionBps: String(totalBrokerCommissionBps),
     }),

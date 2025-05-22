@@ -1,5 +1,5 @@
 import { CfSwapRateV3Response, CfSwapRateV3, WsClient } from '@chainflip/rpc';
-import { internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
+import { baseChainflipAssets, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { Server } from 'http';
 import request from 'supertest';
@@ -64,9 +64,12 @@ vi.mock('../../../polkadot/api', () => ({
   getBoostSafeMode: vi.fn().mockResolvedValue(true),
 }));
 
+const originalEnv = structuredClone(env);
+
 describe(getDcaQuoteParams, () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    Object.assign(env, originalEnv);
     env.DCA_CHUNK_SIZE_USD = { Btc: 3000 };
     env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
     env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
@@ -123,14 +126,8 @@ describe(getDcaQuoteParams, () => {
 });
 
 const buildFee = (asset: InternalAsset, amount: bigint | number) => ({
-  bigint: {
-    amount: BigInt(amount),
-    ...internalAssetToRpcAsset[asset],
-  },
-  string: {
-    amount: hexEncodeNumber(amount),
-    ...internalAssetToRpcAsset[asset],
-  },
+  amount: BigInt(amount),
+  ...internalAssetToRpcAsset[asset],
 });
 
 const mockRpcs = ({
@@ -167,28 +164,19 @@ const mockRpcs = ({
 
 describe('server', () => {
   let server: Server;
-  const oldEnv = structuredClone(env);
 
   beforeAll(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "Pool" CASCADE`;
     await prisma.pool.createMany({
-      data: [
-        {
-          baseAsset: 'Flip',
-          quoteAsset: 'Usdc',
-          liquidityFeeHundredthPips: 1000,
-        },
-        {
-          baseAsset: 'Eth',
-          quoteAsset: 'Usdc',
-          liquidityFeeHundredthPips: 2000,
-        },
-        {
-          baseAsset: 'Btc',
-          quoteAsset: 'Usdc',
-          liquidityFeeHundredthPips: 2000,
-        },
-      ],
+      data: baseChainflipAssets.map((baseAsset) => ({
+        baseAsset,
+        quoteAsset: 'Usdc',
+        liquidityFeeHundredthPips: 1000,
+      })),
+    });
+    await prisma.pool.updateMany({
+      where: { baseAsset: { in: ['Btc', 'Eth'] } },
+      data: { liquidityFeeHundredthPips: 2000 },
     });
   });
 
@@ -203,7 +191,7 @@ describe('server', () => {
   });
 
   afterEach(() => {
-    Object.assign(env, oldEnv);
+    Object.assign(env, originalEnv);
     server.close();
     vi.clearAllMocks();
   });
@@ -365,10 +353,10 @@ describe('server', () => {
 
     it('rejects when the egress amount is smaller than the egress fee', async () => {
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        egress_fee: buildFee('Eth', 25000).bigint,
-        network_fee: buildFee('Usdc', 2000000).bigint,
-        ingress_fee: buildFee('Usdc', 2000000).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        egress_fee: buildFee('Eth', 25000),
+        network_fee: buildFee('Usdc', 2000000),
+        ingress_fee: buildFee('Usdc', 2000000),
         intermediary: null,
         output: 0n,
       } as CfSwapRateV3);
@@ -438,10 +426,10 @@ describe('server', () => {
       });
 
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Eth', 25000).bigint,
-        egress_fee: buildFee('Usdc', 0).bigint,
-        network_fee: buildFee('Usdc', 100100).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Eth', 25000),
+        egress_fee: buildFee('Usdc', 0),
+        network_fee: buildFee('Usdc', 100100),
         intermediary: null,
         output: BigInt(100e6),
       });
@@ -505,10 +493,10 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
       vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Usdc', 0).bigint,
-        egress_fee: buildFee('Eth', 0).bigint,
-        network_fee: buildFee('Usdc', 100100).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Usdc', 0),
+        egress_fee: buildFee('Eth', 0),
+        network_fee: buildFee('Usdc', 100100),
         intermediary: null,
         output: BigInt(1e18),
       });
@@ -528,11 +516,7 @@ describe('server', () => {
         {
           egressAmount: '1000000000000000000',
           recommendedSlippageTolerancePercent: 1,
-          includedFees: [
-            { type: 'INGRESS', chain: 'Ethereum', asset: 'USDC', amount: '0' },
-            { type: 'NETWORK', chain: 'Ethereum', asset: 'USDC', amount: '100100' },
-            { type: 'EGRESS', chain: 'Ethereum', asset: 'ETH', amount: '0' },
-          ],
+          includedFees: [{ type: 'NETWORK', chain: 'Ethereum', asset: 'USDC', amount: '100100' }],
           poolInfo: [
             {
               baseAsset: { chain: 'Ethereum', asset: 'ETH' },
@@ -555,10 +539,10 @@ describe('server', () => {
       vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2e18));
 
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Usdc', 0).bigint,
-        egress_fee: buildFee('Eth', 0).bigint,
-        network_fee: buildFee('Usdc', 100100).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Usdc', 0),
+        egress_fee: buildFee('Eth', 0),
+        network_fee: buildFee('Usdc', 100100),
         intermediary: null,
         output: BigInt(1e18),
       });
@@ -574,13 +558,7 @@ describe('server', () => {
 
       const { status, body } = await request(server).get(`/v2/quote?${params.toString()}`);
       expect(status).toBe(200);
-      expect(body).toMatchObject([
-        {
-          srcAsset: { chain: 'Ethereum', asset: 'USDC' },
-          destAsset: { chain: 'Ethereum', asset: 'ETH' },
-          isVaultSwap: true,
-        },
-      ]);
+      expect(body).toMatchSnapshot();
       expect(sendSpy).toHaveBeenNthCalledWith(
         1,
         'cf_swap_rate_v3',
@@ -641,10 +619,10 @@ describe('server', () => {
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
       vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Eth', 25000).bigint,
-        egress_fee: buildFee('Usdc', 0).bigint,
-        network_fee: buildFee('Usdc', 100100).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Eth', 25000),
+        egress_fee: buildFee('Usdc', 0),
+        network_fee: buildFee('Usdc', 100100),
         intermediary: null,
         output: BigInt(100e6),
       });
@@ -667,7 +645,6 @@ describe('server', () => {
           includedFees: [
             { type: 'INGRESS', chain: 'Ethereum', asset: 'ETH', amount: '25000' },
             { type: 'NETWORK', chain: 'Ethereum', asset: 'USDC', amount: '100100' },
-            { type: 'EGRESS', chain: 'Ethereum', asset: 'USDC', amount: '0' },
           ],
           poolInfo: [
             {
@@ -733,10 +710,10 @@ describe('server', () => {
       });
 
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Eth', 25000).bigint,
-        egress_fee: buildFee('Usdc', 0).bigint,
-        network_fee: buildFee('Usdc', 100100).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Eth', 25000),
+        egress_fee: buildFee('Usdc', 0),
+        network_fee: buildFee('Usdc', 100100),
         intermediary: null,
         output: BigInt(100e6),
       });
@@ -774,12 +751,6 @@ describe('server', () => {
               asset: 'USDC',
               chain: 'Ethereum',
               type: 'NETWORK',
-            },
-            {
-              amount: '0',
-              asset: 'USDC',
-              chain: 'Ethereum',
-              type: 'EGRESS',
             },
           ],
           poolInfo: [
@@ -844,10 +815,10 @@ describe('server', () => {
       });
 
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Eth', 25000).bigint,
-        egress_fee: buildFee('Usdc', 0).bigint,
-        network_fee: buildFee('Usdc', 100100).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Eth', 25000),
+        egress_fee: buildFee('Usdc', 0),
+        network_fee: buildFee('Usdc', 100100),
         intermediary: null,
         output: BigInt(100e6),
       });
@@ -891,12 +862,6 @@ describe('server', () => {
               asset: 'USDC',
               chain: 'Ethereum',
               type: 'NETWORK',
-            },
-            {
-              amount: '0',
-              asset: 'USDC',
-              chain: 'Ethereum',
-              type: 'EGRESS',
             },
           ],
           poolInfo: [
@@ -975,10 +940,10 @@ describe('server', () => {
       });
 
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Eth', 25000).bigint,
-        egress_fee: buildFee('Usdc', 0).bigint,
-        network_fee: buildFee('Usdc', 100100).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Eth', 25000),
+        egress_fee: buildFee('Usdc', 0),
+        network_fee: buildFee('Usdc', 100100),
         intermediary: null,
         output: BigInt(100e6),
       });
@@ -1018,12 +983,6 @@ describe('server', () => {
               asset: 'USDC',
               chain: 'Ethereum',
               type: 'NETWORK',
-            },
-            {
-              amount: '0',
-              asset: 'USDC',
-              chain: 'Ethereum',
-              type: 'EGRESS',
             },
           ],
           poolInfo: [
@@ -1109,18 +1068,18 @@ describe('server', () => {
       const sendSpy = vi
         .spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
-          broker_commission: buildFee('Usdc', 0).bigint,
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 8000).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
+          broker_commission: buildFee('Usdc', 0),
+          ingress_fee: buildFee('Eth', 25000),
+          egress_fee: buildFee('Usdc', 8000),
+          network_fee: buildFee('Usdc', 100100),
           intermediary: null,
           output: BigInt(100e6),
         })
         .mockResolvedValueOnce({
-          broker_commission: buildFee('Usdc', 0).bigint,
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 8000).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
+          broker_commission: buildFee('Usdc', 0),
+          ingress_fee: buildFee('Eth', 25000),
+          egress_fee: buildFee('Usdc', 8000),
+          network_fee: buildFee('Usdc', 100100),
           intermediary: null,
           output: BigInt(100e6),
         });
@@ -1189,7 +1148,6 @@ describe('server', () => {
             chain: 'Ethereum',
           },
           type: 'REGULAR',
-          isVaultSwap: false,
         },
         {
           depositAmount: '1000000000000000000',
@@ -1246,7 +1204,6 @@ describe('server', () => {
             chain: 'Ethereum',
           },
           type: 'DCA',
-          isVaultSwap: false,
         },
       ]);
 
@@ -1334,18 +1291,18 @@ describe('server', () => {
       });
       vi.spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
-          broker_commission: buildFee('Usdc', 0).bigint,
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 8000).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
+          broker_commission: buildFee('Usdc', 0),
+          ingress_fee: buildFee('Eth', 25000),
+          egress_fee: buildFee('Usdc', 8000),
+          network_fee: buildFee('Usdc', 100100),
           intermediary: null,
           output: BigInt(100e6),
         })
         .mockResolvedValueOnce({
-          broker_commission: buildFee('Usdc', 0).bigint,
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 8000).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
+          broker_commission: buildFee('Usdc', 0),
+          ingress_fee: buildFee('Eth', 25000),
+          egress_fee: buildFee('Usdc', 8000),
+          network_fee: buildFee('Usdc', 100100),
           intermediary: null,
           output: BigInt(100e6),
         });
@@ -1419,18 +1376,18 @@ describe('server', () => {
       });
       vi.spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
-          broker_commission: buildFee('Usdc', 0).bigint,
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 8000).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
+          broker_commission: buildFee('Usdc', 0),
+          ingress_fee: buildFee('Eth', 25000),
+          egress_fee: buildFee('Usdc', 8000),
+          network_fee: buildFee('Usdc', 100100),
           intermediary: null,
           output: BigInt(100e6),
         })
         .mockResolvedValueOnce({
-          broker_commission: buildFee('Usdc', 0).bigint,
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 8000).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
+          broker_commission: buildFee('Usdc', 0),
+          ingress_fee: buildFee('Eth', 25000),
+          egress_fee: buildFee('Usdc', 8000),
+          network_fee: buildFee('Usdc', 100100),
           intermediary: null,
           output: BigInt(100e6),
         });
@@ -1468,7 +1425,6 @@ describe('server', () => {
           srcAsset: { chain: 'Ethereum', asset: 'ETH' },
           destAsset: { chain: 'Ethereum', asset: 'USDC' },
           depositAmount: '1000000000000000000',
-          isVaultSwap: false,
         },
       ]);
     });
@@ -1522,18 +1478,18 @@ describe('server', () => {
       });
       vi.spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
-          broker_commission: buildFee('Usdc', 0).bigint,
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 8000).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
+          broker_commission: buildFee('Usdc', 0),
+          ingress_fee: buildFee('Eth', 25000),
+          egress_fee: buildFee('Usdc', 8000),
+          network_fee: buildFee('Usdc', 100100),
           intermediary: null,
           output: BigInt(100e6),
         })
         .mockResolvedValueOnce({
-          broker_commission: buildFee('Usdc', 0).bigint,
-          ingress_fee: buildFee('Eth', 25000).bigint,
-          egress_fee: buildFee('Usdc', 8000).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
+          broker_commission: buildFee('Usdc', 0),
+          ingress_fee: buildFee('Eth', 25000),
+          egress_fee: buildFee('Usdc', 8000),
+          network_fee: buildFee('Usdc', 100100),
           intermediary: null,
           output: BigInt(100e6),
         });
@@ -1574,7 +1530,6 @@ describe('server', () => {
           destAsset: { chain: 'Ethereum', asset: 'USDC' },
           depositAmount: '1000000000000000000',
           dcaParams: { numberOfChunks: 4, chunkIntervalBlocks: 2 },
-          isVaultSwap: false,
         },
       ]);
     });
@@ -1637,34 +1592,34 @@ describe('server', () => {
       const sendSpy = vi
         .spyOn(WsClient.prototype, 'sendRequest')
         .mockResolvedValueOnce({
-          broker_commission: buildFee('Usdc', 1000000).bigint,
-          ingress_fee: buildFee('Btc', 250).bigint,
-          egress_fee: buildFee('Eth', 8000).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
+          broker_commission: buildFee('Usdc', 1000000),
+          ingress_fee: buildFee('Btc', 250),
+          egress_fee: buildFee('Eth', 8000),
+          network_fee: buildFee('Usdc', 100100),
           intermediary: BigInt(10e6),
           output: BigInt(0.1e18),
         })
         .mockResolvedValueOnce({
-          broker_commission: buildFee('Usdc', 1000000).bigint,
-          ingress_fee: buildFee('Btc', 250).bigint,
-          egress_fee: buildFee('Eth', 8000).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
+          broker_commission: buildFee('Usdc', 1000000),
+          ingress_fee: buildFee('Btc', 250),
+          egress_fee: buildFee('Eth', 8000),
+          network_fee: buildFee('Usdc', 100100),
           intermediary: BigInt(10e6),
           output: BigInt(0.1e18),
         })
         .mockResolvedValueOnce({
-          broker_commission: buildFee('Usdc', 1000000).bigint,
-          ingress_fee: buildFee('Btc', 250).bigint,
-          egress_fee: buildFee('Eth', 8000).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
+          broker_commission: buildFee('Usdc', 1000000),
+          ingress_fee: buildFee('Btc', 250),
+          egress_fee: buildFee('Eth', 8000),
+          network_fee: buildFee('Usdc', 100100),
           intermediary: BigInt(10e6),
           output: BigInt(0.1e18),
         })
         .mockResolvedValueOnce({
-          broker_commission: buildFee('Usdc', 1000000).bigint,
-          ingress_fee: buildFee('Btc', 250).bigint,
-          egress_fee: buildFee('Eth', 8000).bigint,
-          network_fee: buildFee('Usdc', 100100).bigint,
+          broker_commission: buildFee('Usdc', 1000000),
+          ingress_fee: buildFee('Btc', 250),
+          egress_fee: buildFee('Eth', 8000),
+          network_fee: buildFee('Usdc', 100100),
           intermediary: BigInt(10e6),
           output: BigInt(0.1e18),
         });
@@ -1750,7 +1705,6 @@ describe('server', () => {
             chain: 'Bitcoin',
           },
           type: 'REGULAR',
-          isVaultSwap: false,
           boostQuote: {
             depositAmount: '100000',
             destAsset: {
@@ -1826,7 +1780,6 @@ describe('server', () => {
               chain: 'Bitcoin',
             },
             type: 'REGULAR',
-            isVaultSwap: false,
           },
         },
         {
@@ -1900,7 +1853,6 @@ describe('server', () => {
             chain: 'Bitcoin',
           },
           type: 'DCA',
-          isVaultSwap: false,
           boostQuote: {
             dcaParams: {
               chunkIntervalBlocks: 2,
@@ -1980,7 +1932,6 @@ describe('server', () => {
               chain: 'Bitcoin',
             },
             type: 'DCA',
-            isVaultSwap: false,
           },
         },
       ]);
@@ -2092,10 +2043,10 @@ describe('server', () => {
       });
 
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Eth', 25000).bigint,
-        egress_fee: buildFee('Usdc', 0).bigint,
-        network_fee: buildFee('Usdc', 100100).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Eth', 25000),
+        egress_fee: buildFee('Usdc', 0),
+        network_fee: buildFee('Usdc', 100100),
         intermediary: null,
         output: BigInt(100e6),
       });
@@ -2141,12 +2092,6 @@ describe('server', () => {
               chain: 'Ethereum',
               type: 'NETWORK',
             },
-            {
-              amount: '0',
-              asset: 'USDC',
-              chain: 'Ethereum',
-              type: 'EGRESS',
-            },
           ],
           poolInfo: [
             {
@@ -2164,7 +2109,6 @@ describe('server', () => {
             chain: 'Ethereum',
           },
           type: 'REGULAR',
-          isVaultSwap: false,
         },
       ]);
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -2221,10 +2165,10 @@ describe('server', () => {
       });
 
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Eth', 25000).bigint,
-        egress_fee: buildFee('Usdc', 0).bigint,
-        network_fee: buildFee('Usdc', 100100).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Eth', 25000),
+        egress_fee: buildFee('Usdc', 0),
+        network_fee: buildFee('Usdc', 100100),
         intermediary: null,
         output: BigInt(100e6),
       });
@@ -2269,12 +2213,6 @@ describe('server', () => {
               chain: 'Ethereum',
               type: 'NETWORK',
             },
-            {
-              amount: '0',
-              asset: 'USDC',
-              chain: 'Ethereum',
-              type: 'EGRESS',
-            },
           ],
           poolInfo: [
             {
@@ -2292,7 +2230,6 @@ describe('server', () => {
             chain: 'Ethereum',
           },
           type: 'REGULAR',
-          isVaultSwap: false,
         },
       ]);
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -2350,10 +2287,10 @@ describe('server', () => {
       });
 
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0).bigint,
-        ingress_fee: buildFee('Eth', 25000).bigint,
-        egress_fee: buildFee('Usdc', 0).bigint,
-        network_fee: buildFee('Usdc', 100100).bigint,
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Eth', 25000),
+        egress_fee: buildFee('Usdc', 0),
+        network_fee: buildFee('Usdc', 100100),
         intermediary: null,
         output: BigInt(100e6),
       });
@@ -2398,12 +2335,6 @@ describe('server', () => {
               chain: 'Ethereum',
               type: 'NETWORK',
             },
-            {
-              amount: '0',
-              asset: 'USDC',
-              chain: 'Ethereum',
-              type: 'EGRESS',
-            },
           ],
           poolInfo: [
             {
@@ -2421,7 +2352,6 @@ describe('server', () => {
             chain: 'Ethereum',
           },
           type: 'REGULAR',
-          isVaultSwap: false,
         },
       ]);
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -2492,6 +2422,251 @@ describe('server', () => {
       expect(status).toBe(500);
       expect(body).toEqual({ message: 'Dispatch Error: did you catch me?' });
       expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
+    describe('on chain', () => {
+      it('properly quotes on chain swaps between stables', async () => {
+        vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2000e18));
+
+        const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+          broker_commission: buildFee('Usdc', 0),
+          ingress_fee: buildFee('Sol', 0),
+          egress_fee: buildFee('Eth', 0),
+          network_fee: buildFee('Usdc', 1000e6),
+          intermediary: null,
+          output: BigInt(1_000_000e6),
+        });
+
+        const params = new URLSearchParams({
+          srcChain: 'Solana',
+          srcAsset: 'USDC',
+          destChain: 'Ethereum',
+          destAsset: 'USDC',
+          amount: (1_000_000e6).toString(),
+          isOnChain: 'true',
+        });
+
+        const { status, body } = await request(server).get(`/v2/quote?${params.toString()}`);
+        expect(status).toBe(200);
+        expect(body).toMatchSnapshot();
+        expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
+          [
+            [
+              "cf_swap_rate_v3",
+              {
+                "asset": "USDC",
+                "chain": "Solana",
+              },
+              {
+                "asset": "USDC",
+                "chain": "Ethereum",
+              },
+              "0xe8d4a51000",
+              0,
+              undefined,
+              undefined,
+              [
+                "Egress",
+                "IngressDepositChannel",
+                "IngressVaultSwap",
+              ],
+              [],
+            ],
+          ]
+        `);
+      });
+
+      it('properly quotes with DCA', async () => {
+        env.DCA_CHUNK_SIZE_USD = { Btc: 3000 };
+        env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
+        env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
+        env.DISABLE_DCA_QUOTING = false;
+        vi.mocked(getUsdValue).mockResolvedValue('98000');
+        vi.mocked(getTotalLiquidity)
+          .mockResolvedValueOnce(BigInt(10e18))
+          .mockResolvedValueOnce(BigInt(10e18));
+
+        mockRpcResponse((url, data: any) => {
+          if (data.method === 'cf_environment') {
+            return Promise.resolve({
+              data: environment({
+                maxSwapAmount: null,
+                ingressFee: hexEncodeNumber(0x61a8),
+                egressFee: hexEncodeNumber(0x0),
+              }),
+            });
+          }
+
+          if (data.method === 'cf_boost_pools_depth') {
+            return Promise.resolve({
+              data: boostPoolsDepth(),
+            });
+          }
+
+          if (data.method === 'cf_accounts') {
+            return Promise.resolve({
+              data: {
+                id: 1,
+                jsonrpc: '2.0',
+                result: [
+                  [
+                    'cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH',
+                    'Chainflip Testnet Broker 2',
+                  ],
+                ],
+              },
+            });
+          }
+
+          if (data.method === 'cf_account_info') {
+            return Promise.resolve({
+              data: cfAccountInfo(),
+            });
+          }
+
+          if (data.method === 'cf_pool_depth') {
+            return Promise.resolve({
+              data: cfPoolDepth(),
+            });
+          }
+
+          throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+        });
+
+        const sendSpy = vi
+          .spyOn(WsClient.prototype, 'sendRequest')
+          .mockResolvedValueOnce({
+            broker_commission: buildFee('Usdc', 0),
+            ingress_fee: buildFee('Btc', 0),
+            egress_fee: buildFee('Eth', 0),
+            network_fee: buildFee('Usdc', 1001000),
+            intermediary: BigInt(100e6),
+            output: BigInt(1e18),
+          })
+          .mockResolvedValueOnce({
+            broker_commission: buildFee('Usdc', 0),
+            ingress_fee: buildFee('Btc', 0),
+            egress_fee: buildFee('Eth', 0),
+            network_fee: buildFee('Usdc', 1001000),
+            intermediary: BigInt(100e6),
+            output: BigInt(1e18),
+          });
+
+        const params = new URLSearchParams({
+          srcChain: 'Bitcoin',
+          srcAsset: 'BTC',
+          destChain: 'Ethereum',
+          destAsset: 'ETH',
+          amount: (0.01e8).toString(),
+          dcaEnabled: 'true',
+          isOnChain: 'true',
+        });
+
+        const { status, body } = await request(server).get(`/v2/quote?${params.toString()}`);
+
+        expect(status).toBe(200);
+        expect(body).toMatchSnapshot();
+        expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
+          [
+            [
+              "cf_swap_rate_v3",
+              {
+                "asset": "BTC",
+                "chain": "Bitcoin",
+              },
+              {
+                "asset": "ETH",
+                "chain": "Ethereum",
+              },
+              "0xf4240",
+              0,
+              undefined,
+              undefined,
+              [
+                "Egress",
+                "IngressDepositChannel",
+                "IngressVaultSwap",
+              ],
+              [],
+            ],
+            [
+              "cf_swap_rate_v3",
+              {
+                "asset": "BTC",
+                "chain": "Bitcoin",
+              },
+              {
+                "asset": "ETH",
+                "chain": "Ethereum",
+              },
+              "0xf4240",
+              0,
+              {
+                "chunk_interval": 2,
+                "number_of_chunks": 33,
+              },
+              undefined,
+              [
+                "Egress",
+                "IngressDepositChannel",
+                "IngressVaultSwap",
+              ],
+              [],
+            ],
+          ]
+        `);
+      });
+
+      it('respects the minimum network fee', async () => {
+        vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2000e18));
+
+        const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+          broker_commission: buildFee('Usdc', 0),
+          ingress_fee: buildFee('Sol', 0),
+          egress_fee: buildFee('Eth', 0),
+          network_fee: buildFee('Usdc', 500_001n),
+          intermediary: null,
+          output: BigInt(1_000e6),
+        });
+
+        const params = new URLSearchParams({
+          srcChain: 'Solana',
+          srcAsset: 'USDC',
+          destChain: 'Ethereum',
+          destAsset: 'USDC',
+          amount: (1_000e6).toString(),
+          isOnChain: 'true',
+        });
+
+        const { status, body } = await request(server).get(`/v2/quote?${params.toString()}`);
+        expect(status).toBe(200);
+        expect(body).toMatchSnapshot();
+        expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
+          [
+            [
+              "cf_swap_rate_v3",
+              {
+                "asset": "USDC",
+                "chain": "Solana",
+              },
+              {
+                "asset": "USDC",
+                "chain": "Ethereum",
+              },
+              "0x3b9aca00",
+              0,
+              undefined,
+              undefined,
+              [
+                "Egress",
+                "IngressDepositChannel",
+                "IngressVaultSwap",
+              ],
+              [],
+            ],
+          ]
+        `);
+      });
     });
   });
 });
