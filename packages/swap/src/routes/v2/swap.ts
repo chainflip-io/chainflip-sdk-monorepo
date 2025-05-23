@@ -190,6 +190,13 @@ router.get(
           swappedInputAmount: rolledSwaps.swappedInputAmount.toFixed(),
           swappedIntermediateAmount: rolledSwaps.swappedIntermediateAmount.toFixed(),
           swappedOutputAmount: rolledSwaps.swappedOutputAmount.toFixed(),
+          ...(swapRequest?.onChainSwapInfo && {
+            onChain: {
+              accountId: swapRequest.onChainSwapInfo.accountId,
+              outputAmount: swapRequest.onChainSwapInfo.outputAmount?.toFixed(),
+              refundAmount: swapRequest.onChainSwapInfo.refundAmount?.toFixed(),
+            },
+          }),
           ...(rolledSwaps?.isDca
             ? {
                 dca: {

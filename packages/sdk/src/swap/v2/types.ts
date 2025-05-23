@@ -99,6 +99,13 @@ interface SwapFields {
         remainingChunks: number;
       }
     | undefined;
+  onChain:
+    | {
+        accountId: string;
+        outputAmount: string | undefined;
+        refundAmount: string | undefined;
+      }
+    | undefined;
 }
 
 interface EgressFields {

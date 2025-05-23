@@ -46,6 +46,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a DCA swap from an onChain origi
       },
       "remainingChunks": 0,
     },
+    "onChain": {
+      "accountId": "cFL8fmgKZcchhtLagBH2GKfsuWxBqUaD5CYE1m7DFb8DBSLJ1",
+      "outputAmount": "4970072600",
+    },
     "originalInputAmount": "5000000000",
     "remainingInputAmount": "5000000",
     "swappedInputAmount": "4995000000",
@@ -84,6 +88,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a refunded swap from an onChain 
   "srcChain": "Solana",
   "state": "COMPLETED",
   "swap": {
+    "onChain": {
+      "accountId": "cFLBKavxvThwqLWNr7cTwtqhYD6jDqXM31d6QoTLvuK4X78ve",
+      "refundAmount": "9504253",
+    },
     "originalInputAmount": "10000000",
     "regular": {
       "inputAmount": "10000000",
@@ -398,6 +406,9 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from an onChain origin in
   "srcChain": "Ethereum",
   "state": "COMPLETED",
   "swap": {
+    "onChain": {
+      "accountId": "cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh",
+    },
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "executedAt": 564000,
@@ -439,6 +450,9 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from an onChain origin in
   "srcChain": "Ethereum",
   "state": "SWAPPING",
   "swap": {
+    "onChain": {
+      "accountId": "cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh",
+    },
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "inputAmount": "4999949999999650000",
