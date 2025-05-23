@@ -36,7 +36,7 @@ exports[`swapRequestCompleted > updates a fresh swap request and associated quot
     "expectedDepositAmount": "10000000000",
     "id": Any<Number>,
     "indexPriceAtChannelOpening": null,
-    "indexPriceAtCompletion": "0.00325",
+    "indexPriceAtCompletion": "307.6923076923077",
     "inputAssetPriceAtChannelOpening": null,
     "inputAssetPriceAtCompletion": "2000",
     "maxBoostFeeBps": 0,

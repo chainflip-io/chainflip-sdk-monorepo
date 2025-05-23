@@ -162,7 +162,7 @@ export const openSwapDepositChannel = async ({
         inputAssetPriceAtChannelOpening: inputPrice,
         outputAssetPriceAtChannelOpening: outputPrice,
         indexPriceAtChannelOpening:
-          inputPrice && outputPrice ? outputPrice / inputPrice : undefined,
+          inputPrice && outputPrice ? inputPrice / outputPrice : undefined,
       },
     };
 
