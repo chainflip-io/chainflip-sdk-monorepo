@@ -7,6 +7,14 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## Unreleased
+
+### Added
+
+- `SwapSDK.prototype.getStatusV2` has an additional `onChain` property within
+  the `swap` property. It contains the LP's account ID and any swap output or
+  refund amounts.
+
 ## 1.9.3
 
 ### Added
