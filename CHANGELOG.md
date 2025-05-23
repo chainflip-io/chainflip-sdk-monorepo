@@ -7,6 +7,12 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## 1.9.5
+
+### Changed
+
+- JSDocs - especially deprecation notices - are being shipped with the types.
+
 ## 1.9.4
 
 ### Added
