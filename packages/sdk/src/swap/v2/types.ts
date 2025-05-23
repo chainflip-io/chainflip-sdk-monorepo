@@ -99,10 +99,27 @@ interface SwapFields {
         remainingChunks: number;
       }
     | undefined;
+  /**
+   * Represents details of an on-chain transaction associated with the swap.
+   * - `accountId`: The account identifier of the LP for the on-chain swap.
+   * - `outputAmount`: The amount of output tokens received from the swap.
+   *    This is `undefined` if the swap has not been executed or fully refunded.
+   * - `refundAmount`: The amount of input tokens refunded due to a fully or
+   *    partially executed swap. This is `undefined` if no refund occurred.
+   */
   onChain:
     | {
+        /** The account identifier of the LP for the on-chain swap  */
         accountId: string;
+        /**
+         * The amount of output tokens received from the swap. This is
+         * `undefined` if the swap has not been executed or fully refunded.
+         */
         outputAmount: string | undefined;
+        /**
+         * The amount of input tokens refunded due to a fully or partially
+         * executed swap. This is `undefined` if no refund occurred.
+         */
         refundAmount: string | undefined;
       }
     | undefined;
