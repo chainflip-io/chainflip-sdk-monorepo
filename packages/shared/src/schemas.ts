@@ -84,7 +84,7 @@ export const quoteQuerySchema = z
       hadError = true;
     }
 
-    if (args.isOnChain !== undefined && args.isVaultSwap !== undefined) {
+    if (args.isOnChain && args.isVaultSwap) {
       ctx.addIssue({
         message: 'isOnChain and isVaultSwap cannot be set at the same time',
         code: z.ZodIssueCode.custom,
