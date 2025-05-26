@@ -201,6 +201,7 @@ model SwapRequest {
   onChainSwapInfo            OnChainSwapInfo?
 
   @@index([srcAsset, prewitnessedDepositId])
+  @@index([nativeId])
   @@schema("public")
 }
 
@@ -237,6 +238,7 @@ model Swap {
   swapRequest                     SwapRequest   @relation(fields: [swapRequestId], references: [id])
   swapRequestId                   BigInt
 
+  @@index([nativeId])
   @@schema("public")
 }
 
@@ -263,6 +265,7 @@ model SwapFee {
   amount        Decimal       @db.Decimal(30, 0)
 
   @@index([swapId])
+  @@index([swapRequestId])
   @@schema("public")
 }
 
