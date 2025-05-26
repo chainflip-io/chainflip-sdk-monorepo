@@ -93,11 +93,7 @@ export const quoteQuerySchema = z
       hadError = true;
     }
 
-    if (
-      args.isOnChain !== undefined &&
-      args.brokerCommissionBps !== undefined &&
-      args.brokerCommissionBps > 0
-    ) {
+    if (args.isOnChain && args.brokerCommissionBps !== undefined && args.brokerCommissionBps > 0) {
       ctx.addIssue({
         message: 'isOnChain cannot be set with a non-zero broker commission',
         code: z.ZodIssueCode.custom,
