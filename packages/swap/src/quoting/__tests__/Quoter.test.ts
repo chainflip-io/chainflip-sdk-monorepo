@@ -46,7 +46,7 @@ describe(Quoter, () => {
   let connectClient: (
     name: string,
     quotedAssets: InternalAsset[],
-    beta?: boolean,
+    { beta, augment }?: { beta?: boolean; augment?: number },
   ) => Promise<{
     sendQuote: (
       quote: MarketMakerRawQuote,
@@ -69,7 +69,11 @@ describe(Quoter, () => {
 
     const cachedKeys = new Map<string, crypto.KeyObject>();
 
-    connectClient = async (name: string, quotedAssets: InternalAsset[], beta = false) => {
+    connectClient = async (
+      name: string,
+      quotedAssets: InternalAsset[],
+      { beta, augment }: { beta?: boolean; augment?: number } = {},
+    ) => {
       let privateKey = cachedKeys.get(name);
       if (!privateKey) {
         const keys = await generateKeyPairAsync('ed25519');
@@ -80,6 +84,7 @@ describe(Quoter, () => {
             name,
             beta,
             publicKey: keys.publicKey.export({ format: 'pem', type: 'spki' }).toString(),
+            augment,
           },
         });
       }
@@ -293,7 +298,11 @@ describe(Quoter, () => {
       const quote1 = mm1.sendQuote({ ...request, legs: [[[0, '100']]] });
       const quote2 = mm2.sendQuote({ ...request, legs: [[[0, '200']]] });
       // no need to advance timers because setTimeout is cleared
-      expect(await limitOrders).toEqual([...quote2, ...quote1]);
+      expect(
+        (await limitOrders).sort((a, b) =>
+          a.LimitOrder.sell_amount.localeCompare(b.LimitOrder.sell_amount),
+        ),
+      ).toEqual([...quote1, ...quote2]);
     });
 
     it("respects the market makers's quoted assets", async () => {
@@ -306,7 +315,7 @@ describe(Quoter, () => {
 
     it('filters beta quotes', async () => {
       env.QUOTE_TIMEOUT = 10_000;
-      const mm = await connectClient('marketMaker', ['Sol'], true);
+      const mm = await connectClient('marketMaker', ['Sol'], { beta: true });
       const limitOrders = quoter.getLimitOrders('Sol', 'Flip', ONE_BTC);
       const request = await mm.waitForRequest();
       mm.sendQuote({ ...request, legs: [[[0, '100']]] }, 'Sol', 'Usdc');
@@ -453,6 +462,17 @@ describe(Quoter, () => {
         error: 'insufficient balance',
         request_id: request1.request_id,
       });
+    });
+
+    it('augments the ticks', async () => {
+      const { sendQuote, waitForRequest } = await connectClient('marketMaker', ['Btc'], {
+        augment: -5,
+      });
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const request = await waitForRequest();
+      const quotes = sendQuote({ ...request, legs: [[[0, '100']]] });
+      quotes[0].LimitOrder.tick = -5; // augment is -5
+      expect(await limitOrders).toStrictEqual(quotes);
     });
 
     it('disconnects duplicate sockets', async () => {

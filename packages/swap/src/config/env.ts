@@ -110,6 +110,7 @@ export default z
     SOLANA_TX_REF_QUEUE_INTERVAL: optionalNumber(1000),
     QUOTER_BALANCE_TRACKER_ACTIVE: optionalBoolean.default('true'),
     QUOTER_BALANCE_TOLERANCE_PERCENT: optionalNumber(10),
+    QUOTER_USE_AUGMENT: optionalBoolean,
     BROKER_COMMISSION_BPS: optionalNumber(0),
     RPC_COMMISSION_BROKER_HTTPS_URL: httpUrl.optional(),
     ON_CHAIN_DEFAULT_NETWORK_FEE_BPS: optionalNumber(5).transform((n) => BigInt(n)),

@@ -7,16 +7,20 @@ import * as crypto from 'crypto';
 import { promisify } from 'util';
 import { vi, describe, it, beforeEach, expect, Mock } from 'vitest';
 import prisma from '../../client.js';
+import env from '../../config/env.js';
 import authenticate from '../authenticate.js';
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 const allAssets = Object.values(internalAssetToRpcAsset);
+
+const oldEnv = structuredClone(env);
 
 describe(authenticate, () => {
   let next: Mock;
   let privateKey: crypto.KeyObject;
 
   beforeEach(async () => {
+    Object.assign(env, oldEnv);
     await prisma.$queryRaw`TRUNCATE TABLE private."MarketMaker" CASCADE`;
     next = vi.fn();
     const pair = await generateKeyPairAsync('ed25519');
@@ -146,11 +150,15 @@ describe(authenticate, () => {
     expect(next).toHaveBeenCalledWith(new Error('invalid signature'));
   });
 
-  it.each([true, false])('accepts valid v2 authentication', async (beta) => {
+  it.each([
+    { beta: true, augment: -1, useAugment: true },
+    { beta: false, augment: -1, useAugment: false },
+  ])('accepts valid v2 authentication', async ({ useAugment, ...data }) => {
+    env.QUOTER_USE_AUGMENT = useAugment;
     const timestamp = Date.now();
     const name = 'web_team_whales';
 
-    await prisma.marketMaker.update({ where: { name }, data: { beta } });
+    await prisma.marketMaker.update({ where: { name }, data });
 
     const signature = crypto
       .sign(null, Buffer.from(`${name}${timestamp}`, 'utf8'), privateKey)
@@ -176,11 +184,6 @@ describe(authenticate, () => {
     await authenticate(socket as any, next);
     expect(next).toHaveBeenCalledTimes(1);
     expect(next).toHaveBeenCalledWith();
-    expect((socket as any).data).toStrictEqual({
-      beta,
-      marketMaker: name,
-      quotedAssets,
-      clientVersion: '2',
-    });
+    expect((socket as any).data).toMatchSnapshot();
   });
 });

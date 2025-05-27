@@ -12,6 +12,7 @@ import { isNotNullish } from '@/shared/guards.js';
 import { assetAndChain } from '@/shared/parsers.js';
 import prisma from '../client.js';
 import { AccountId, type QuotingSocket } from './Quoter.js';
+import env from '../config/env.js';
 import baseLogger from '../utils/logger.js';
 
 const logger = baseLogger.child({ module: 'quoter' });
@@ -98,6 +99,7 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
       quotedAssets: auth.quoted_assets,
       clientVersion: auth.client_version,
       beta: marketMaker.beta,
+      augment: env.QUOTER_USE_AUGMENT ? marketMaker.augment : 0,
     };
 
     next();

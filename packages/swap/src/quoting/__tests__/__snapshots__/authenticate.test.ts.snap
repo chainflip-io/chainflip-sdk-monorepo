@@ -1,0 +1,49 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`authenticate > accepts valid v2 authentication 1`] = `
+{
+  "augment": -1,
+  "beta": true,
+  "clientVersion": "2",
+  "marketMaker": "web_team_whales",
+  "quotedAssets": {
+    "ArbEth": false,
+    "ArbUsdc": false,
+    "Btc": false,
+    "Dot": false,
+    "Eth": false,
+    "Flip": true,
+    "HubDot": false,
+    "HubUsdc": false,
+    "HubUsdt": false,
+    "Sol": false,
+    "SolUsdc": false,
+    "Usdc": false,
+    "Usdt": false,
+  },
+}
+`;
+
+exports[`authenticate > accepts valid v2 authentication 2`] = `
+{
+  "augment": 0,
+  "beta": false,
+  "clientVersion": "2",
+  "marketMaker": "web_team_whales",
+  "quotedAssets": {
+    "ArbEth": false,
+    "ArbUsdc": false,
+    "Btc": false,
+    "Dot": false,
+    "Eth": false,
+    "Flip": true,
+    "HubDot": false,
+    "HubUsdc": false,
+    "HubUsdt": false,
+    "Sol": false,
+    "SolUsdc": false,
+    "Usdc": false,
+    "Usdt": false,
+  },
+}
+`;
