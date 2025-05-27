@@ -1,5 +1,6 @@
 dist
-.env
+**/.env
+**/.env.keys
 .DS_Store
 .vscode/**
 node_modules
