@@ -252,18 +252,20 @@ export default class Quoter {
     if (!leg) return;
 
     const sellAsset = getInternalAsset(leg.side === 'BUY' ? leg.base_asset : leg.quote_asset);
+    const side = leg.side === 'BUY' ? 'sell' : 'buy';
 
     for (const { orders, accountId } of quotes) {
       const balance = balances.get(accountId)?.[sellAsset];
-
+      const augment =
+        (this.accountIdToSocket.get(accountId)?.data.augment ?? 0) * (side === 'buy' ? 1 : -1);
       for (const [tick, amount] of orders) {
         if (balance === undefined || isBalanceWithinTolerance(balance, amount)) {
           yield {
             LimitOrder: {
-              side: leg.side === 'BUY' ? 'sell' : 'buy',
+              side,
               base_asset: leg.base_asset,
               quote_asset: leg.quote_asset,
-              tick: tick + (this.accountIdToSocket.get(accountId)?.data.augment ?? 0),
+              tick: tick + augment,
               sell_amount: hexEncodeNumber(amount),
             },
           };
