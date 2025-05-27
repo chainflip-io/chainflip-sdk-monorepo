@@ -407,6 +407,7 @@ model MarketMaker {
   name      String  @unique
   publicKey String
   beta      Boolean @default(false)
+  augment   Int     @default(0)
 
   @@schema("private")
 }

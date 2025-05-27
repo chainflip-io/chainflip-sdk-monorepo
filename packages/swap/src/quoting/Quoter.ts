@@ -75,6 +75,7 @@ export type SocketData = {
   quotedAssets: InternalAssetMap<boolean>;
   clientVersion: ClientVersion;
   beta: boolean;
+  augment: number;
 };
 export type ReceivedEventMap = { quote_response: (message: unknown) => void };
 export type SentEventMap = {
@@ -262,7 +263,7 @@ export default class Quoter {
               side: leg.side === 'BUY' ? 'sell' : 'buy',
               base_asset: leg.base_asset,
               quote_asset: leg.quote_asset,
-              tick,
+              tick: tick + (this.accountIdToSocket.get(accountId)?.data.augment ?? 0),
               sell_amount: hexEncodeNumber(amount),
             },
           };
