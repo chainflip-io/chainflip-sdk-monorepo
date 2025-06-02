@@ -256,9 +256,9 @@ export default class Quoter {
       for (const [accountId, quote] of quotes.filter(([, q]) => !q.beta)) {
         const balance = balances.get(accountId)?.[sellAsset];
         const augment =
+          (isStableCoinSwap ? 0 : 1) *
           (this.accountIdToSocket.get(accountId)?.data.augment ?? 0) *
-          (side === 'buy' ? 1 : -1) *
-          (isStableCoinSwap ? 0 : 1);
+          (side === 'buy' ? 1 : -1);
 
         for (const [tick, amount] of quote.legs[legIndex] ?? []) {
           if (balance === undefined || isBalanceWithinTolerance(balance, amount)) {
