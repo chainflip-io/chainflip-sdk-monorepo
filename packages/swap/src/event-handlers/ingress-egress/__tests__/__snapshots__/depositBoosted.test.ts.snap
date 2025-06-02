@@ -112,7 +112,7 @@ exports[`depositBoosted > updates the values for event with 180 schema 1`] = `
   "completedBlockIndex": null,
   "dcaChunkIntervalBlocks": null,
   "dcaNumberOfChunks": null,
-  "depositAmount": null,
+  "depositAmount": "10000000",
   "depositBoostedAt": 2022-12-06T14:31:45.000Z,
   "depositBoostedBlockIndex": "120-7",
   "depositFinalisedAt": null,

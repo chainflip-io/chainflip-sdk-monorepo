@@ -134,7 +134,7 @@ exports[`server > GET /swaps/:id > retrieves a swap in FAILED status (refund egr
 exports[`server > GET /swaps/:id > retrieves boost details when channel swap was boosted 1`] = `
 {
   "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
-  "depositAmount": "4999949999999650000",
+  "depositAmount": "5000000000000000000",
   "depositBoostedAt": 552000,
   "depositBoostedBlockIndex": "92-400",
   "depositChannelBrokerCommissionBps": 0,
@@ -182,7 +182,7 @@ exports[`server > GET /swaps/:id > retrieves boost details when channel swap was
 
 exports[`server > GET /swaps/:id > retrieves boost details when vault swap was boosted 1`] = `
 {
-  "depositAmount": "4999949999999650000",
+  "depositAmount": "5000000000000000000",
   "depositBoostedAt": 552000,
   "depositBoostedBlockIndex": "92-400",
   "depositTransactionRef": "41b2d70a4ce3908f74ca8156fefc4f30cf2b48e8fe959986abf0508dceb9dcb2",
