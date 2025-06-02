@@ -1061,6 +1061,256 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap with FillOrKillParams in 
 }
 `;
 
+exports[`server > GET /v2/swaps/:id > retrieves boost details when channel swap was boosted 1`] = `
+{
+  "boost": {
+    "boostedAt": 552000,
+    "boostedBlockIndex": "92-400",
+    "effectiveBoostFeeBps": 5,
+    "maxBoostFeeBps": 7,
+  },
+  "brokers": [],
+  "deposit": {
+    "amount": "5000000000000000000",
+    "witnessedAt": 552000,
+    "witnessedBlockIndex": "92-400",
+  },
+  "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
+    "createdAt": 516000,
+    "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
+    "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
+    "id": "86-Ethereum-85",
+    "isExpired": false,
+    "openedThroughBackend": false,
+    "srcChainExpiryBlock": "265",
+  },
+  "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+  "destAsset": "DOT",
+  "destChain": "Polkadot",
+  "estimatedDurationSeconds": 138,
+  "estimatedDurationsSeconds": {
+    "deposit": 30,
+    "egress": 96,
+    "swap": 12,
+  },
+  "fees": [
+    {
+      "amount": "2500000000000000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "BOOST",
+    },
+    {
+      "amount": "50000000350000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+  ],
+  "fillOrKillParams": {
+    "minPrice": "0",
+    "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+    "retryDurationBlocks": 100,
+  },
+  "lastStatechainUpdateAt": 1640995200000,
+  "srcAsset": "ETH",
+  "srcChain": "Ethereum",
+  "srcChainRequiredBlockConfirmations": 2,
+  "state": "SWAPPING",
+  "swap": {
+    "originalInputAmount": "4999949999999650000",
+    "regular": {
+      "inputAmount": "4999949999999650000",
+      "retryCount": 0,
+      "scheduledAt": 552000,
+      "scheduledBlockIndex": "92-399",
+    },
+    "remainingInputAmount": "4999949999999650000",
+    "swappedInputAmount": "0",
+    "swappedIntermediateAmount": "0",
+    "swappedOutputAmount": "0",
+  },
+  "swapId": "368",
+}
+`;
+
+exports[`server > GET /v2/swaps/:id > retrieves boost details when vault swap was boosted 1`] = `
+{
+  "boost": {
+    "boostedAt": 552000,
+    "boostedBlockIndex": "92-400",
+    "effectiveBoostFeeBps": 5,
+    "maxBoostFeeBps": 7,
+  },
+  "brokers": [],
+  "deposit": {
+    "amount": "5000000000000000000",
+    "txRef": "41b2d70a4ce3908f74ca8156fefc4f30cf2b48e8fe959986abf0508dceb9dcb2",
+    "witnessedAt": 552000,
+    "witnessedBlockIndex": "92-400",
+  },
+  "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+  "destAsset": "DOT",
+  "destChain": "Polkadot",
+  "estimatedDurationSeconds": 138,
+  "estimatedDurationsSeconds": {
+    "deposit": 30,
+    "egress": 96,
+    "swap": 12,
+  },
+  "fees": [
+    {
+      "amount": "2500000000000000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "BOOST",
+    },
+    {
+      "amount": "50000000350000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+  ],
+  "lastStatechainUpdateAt": 1640995200000,
+  "srcAsset": "ETH",
+  "srcChain": "Ethereum",
+  "srcChainRequiredBlockConfirmations": 2,
+  "state": "SWAPPING",
+  "swap": {
+    "originalInputAmount": "4999949999999650000",
+    "regular": {
+      "inputAmount": "4999949999999650000",
+      "retryCount": 0,
+      "scheduledAt": 552000,
+      "scheduledBlockIndex": "92-399",
+    },
+    "remainingInputAmount": "4999949999999650000",
+    "swappedInputAmount": "0",
+    "swappedIntermediateAmount": "0",
+    "swappedOutputAmount": "0",
+  },
+  "swapId": "368",
+}
+`;
+
+exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in COMPLETED 1`] = `
+{
+  "brokers": [],
+  "dcaParams": {
+    "chunkIntervalBlocks": 3,
+    "numberOfChunks": 10,
+  },
+  "deposit": {
+    "amount": "10000000000000000000",
+    "witnessedAt": 552000,
+    "witnessedBlockIndex": "92-400",
+  },
+  "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
+    "createdAt": 516000,
+    "dcaParams": {
+      "chunkIntervalBlocks": 3,
+      "numberOfChunks": 10,
+    },
+    "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
+    "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
+    "id": "86-Ethereum-85",
+    "isExpired": false,
+    "openedThroughBackend": false,
+    "srcChainExpiryBlock": "265",
+  },
+  "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+  "destAsset": "DOT",
+  "destChain": "Polkadot",
+  "estimatedDurationSeconds": 138,
+  "estimatedDurationsSeconds": {
+    "deposit": 30,
+    "egress": 96,
+    "swap": 12,
+  },
+  "fees": [
+    {
+      "amount": "9112484",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "91033720",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "BROKER",
+    },
+    {
+      "amount": "50000000350000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "197450000",
+      "asset": "DOT",
+      "chain": "Polkadot",
+      "type": "EGRESS",
+    },
+  ],
+  "fillOrKillParams": {
+    "minPrice": "0",
+    "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+    "retryDurationBlocks": 100,
+  },
+  "lastStatechainUpdateAt": 1640995200000,
+  "srcAsset": "ETH",
+  "srcChain": "Ethereum",
+  "srcChainRequiredBlockConfirmations": 2,
+  "state": "COMPLETED",
+  "swap": {
+    "dca": {
+      "currentChunk": null,
+      "executedChunks": 2,
+      "lastExecutedChunk": {
+        "executedAt": 564000,
+        "executedBlockIndex": "94-594",
+        "inputAmount": "4999949999999650000",
+        "intermediateAmount": "4506169140",
+        "outputAmount": "4192904666034",
+        "retryCount": 0,
+        "scheduledAt": 552000,
+        "scheduledBlockIndex": "92-399",
+      },
+      "remainingChunks": 8,
+    },
+    "originalInputAmount": "9999899999999300000",
+    "remainingInputAmount": "0",
+    "swappedInputAmount": "9999899999999300000",
+    "swappedIntermediateAmount": "9012338280",
+    "swappedOutputAmount": "8385809332068",
+  },
+  "swapEgress": {
+    "amount": "4192707216034",
+    "scheduledAt": 564000,
+    "scheduledBlockIndex": "94-595",
+    "txRef": "104-2",
+    "witnessedAt": 624000,
+    "witnessedBlockIndex": "104-7",
+  },
+}
+`;
+
 exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in FAILED status if refund egress fails but swap completes 1`] = `
 {
   "brokers": [],
@@ -1193,6 +1443,210 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in FAILED sta
 }
 `;
 
+exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in SENDING status 1`] = `
+{
+  "brokers": [],
+  "dcaParams": {
+    "chunkIntervalBlocks": 3,
+    "numberOfChunks": 10,
+  },
+  "deposit": {
+    "amount": "10000000000000000000",
+    "witnessedAt": 552000,
+    "witnessedBlockIndex": "92-400",
+  },
+  "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
+    "createdAt": 516000,
+    "dcaParams": {
+      "chunkIntervalBlocks": 3,
+      "numberOfChunks": 10,
+    },
+    "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
+    "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
+    "id": "86-Ethereum-85",
+    "isExpired": false,
+    "openedThroughBackend": false,
+    "srcChainExpiryBlock": "265",
+  },
+  "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+  "destAsset": "DOT",
+  "destChain": "Polkadot",
+  "estimatedDurationSeconds": 138,
+  "estimatedDurationsSeconds": {
+    "deposit": 30,
+    "egress": 96,
+    "swap": 12,
+  },
+  "fees": [
+    {
+      "amount": "9112484",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "91033720",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "BROKER",
+    },
+    {
+      "amount": "50000000350000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+    {
+      "amount": "197450000",
+      "asset": "DOT",
+      "chain": "Polkadot",
+      "type": "EGRESS",
+    },
+  ],
+  "fillOrKillParams": {
+    "minPrice": "0",
+    "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+    "retryDurationBlocks": 100,
+  },
+  "lastStatechainUpdateAt": 1640995200000,
+  "srcAsset": "ETH",
+  "srcChain": "Ethereum",
+  "srcChainRequiredBlockConfirmations": 2,
+  "state": "SENDING",
+  "swap": {
+    "dca": {
+      "currentChunk": null,
+      "executedChunks": 2,
+      "lastExecutedChunk": {
+        "executedAt": 564000,
+        "executedBlockIndex": "94-594",
+        "inputAmount": "4999949999999650000",
+        "intermediateAmount": "4506169140",
+        "outputAmount": "4192904666034",
+        "retryCount": 0,
+        "scheduledAt": 552000,
+        "scheduledBlockIndex": "92-399",
+      },
+      "remainingChunks": 8,
+    },
+    "originalInputAmount": "9999899999999300000",
+    "remainingInputAmount": "0",
+    "swappedInputAmount": "9999899999999300000",
+    "swappedIntermediateAmount": "9012338280",
+    "swappedOutputAmount": "8385809332068",
+  },
+  "swapEgress": {
+    "amount": "4192707216034",
+    "scheduledAt": 564000,
+    "scheduledBlockIndex": "94-595",
+  },
+}
+`;
+
+exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in SWAPPING status 1`] = `
+{
+  "brokers": [],
+  "dcaParams": {
+    "chunkIntervalBlocks": 3,
+    "numberOfChunks": 10,
+  },
+  "deposit": {
+    "amount": "10000000000000000000",
+    "witnessedAt": 552000,
+    "witnessedBlockIndex": "92-400",
+  },
+  "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
+    "createdAt": 516000,
+    "dcaParams": {
+      "chunkIntervalBlocks": 3,
+      "numberOfChunks": 10,
+    },
+    "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
+    "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
+    "id": "86-Ethereum-85",
+    "isExpired": false,
+    "openedThroughBackend": false,
+    "srcChainExpiryBlock": "265",
+  },
+  "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+  "destAsset": "DOT",
+  "destChain": "Polkadot",
+  "estimatedDurationSeconds": 138,
+  "estimatedDurationsSeconds": {
+    "deposit": 30,
+    "egress": 96,
+    "swap": 12,
+  },
+  "fees": [
+    {
+      "amount": "9112484",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "91033720",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "BROKER",
+    },
+    {
+      "amount": "50000000350000",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "INGRESS",
+    },
+  ],
+  "fillOrKillParams": {
+    "minPrice": "0",
+    "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+    "retryDurationBlocks": 100,
+  },
+  "lastStatechainUpdateAt": 1640995200000,
+  "srcAsset": "ETH",
+  "srcChain": "Ethereum",
+  "srcChainRequiredBlockConfirmations": 2,
+  "state": "SWAPPING",
+  "swap": {
+    "dca": {
+      "currentChunk": null,
+      "executedChunks": 2,
+      "lastExecutedChunk": {
+        "executedAt": 564000,
+        "executedBlockIndex": "94-594",
+        "inputAmount": "4999949999999650000",
+        "intermediateAmount": "4506169140",
+        "outputAmount": "4192904666034",
+        "retryCount": 0,
+        "scheduledAt": 552000,
+        "scheduledBlockIndex": "92-399",
+      },
+      "remainingChunks": 8,
+    },
+    "originalInputAmount": "9999899999999300000",
+    "remainingInputAmount": "0",
+    "swappedInputAmount": "9999899999999300000",
+    "swappedIntermediateAmount": "9012338280",
+    "swappedOutputAmount": "8385809332068",
+  },
+  "swapId": "368",
+}
+`;
+
 exports[`server > GET /v2/swaps/:id > returns ccmParams for swaps initiated via smart contract 1`] = `
 {
   "brokers": [],
@@ -1263,5 +1717,56 @@ exports[`server > GET /v2/swaps/:id > returns ccmParams for swaps initiated via 
     "scheduledBlockIndex": "94-595",
   },
   "swapId": "368",
+}
+`;
+
+exports[`server > GET /v2/swaps/:id > returns the vault swap details in RECEIVING status 1`] = `
+{
+  "boost": {
+    "maxBoostFeeBps": 5,
+  },
+  "brokers": [
+    {
+      "account": "cFHsUq1uK5opJudRDczhdPVj6LGoVTqYsfj71tbHfKsTAzkJJ",
+      "commissionBps": 10,
+    },
+    {
+      "account": "cFHtoB6DrnqUVY4DwMHCVCtgCLsiHvv98oGw8k66tazF2ToFv",
+      "commissionBps": 10,
+    },
+  ],
+  "ccmParams": {
+    "gasBudget": "12345",
+    "message": "48454c4c4f",
+  },
+  "dcaParams": {
+    "chunkIntervalBlocks": 100,
+    "numberOfChunks": 5,
+  },
+  "deposit": {
+    "amount": "100",
+    "txConfirmations": 1,
+    "txRef": "0x1234",
+  },
+  "destAddress": "0xcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf",
+  "destAsset": "FLIP",
+  "destChain": "Ethereum",
+  "estimatedDurationSeconds": 144,
+  "estimatedDurationsSeconds": {
+    "deposit": 30,
+    "egress": 102,
+    "swap": 12,
+  },
+  "fees": [],
+  "fillOrKillParams": {
+    "minPrice": "0",
+    "refundAddress": "0x541f563237a309b3a61e33bdf07a8930bdba8d99",
+    "retryDurationBlocks": 3,
+  },
+  "lastStatechainUpdateAt": 1640995200000,
+  "srcAsset": "ETH",
+  "srcChain": "Ethereum",
+  "srcChainRequiredBlockConfirmations": 2,
+  "state": "RECEIVING",
 }
 `;

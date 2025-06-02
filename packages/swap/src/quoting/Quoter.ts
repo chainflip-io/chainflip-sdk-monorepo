@@ -11,6 +11,7 @@ import BigNumber from 'bignumber.js';
 import { randomUUID } from 'crypto';
 import { Subject, Subscription } from 'rxjs';
 import { Server, Socket } from 'socket.io';
+import { isStableCoin } from '@/shared/guards.js';
 import BalanceTracker from './BalanceTracker.js';
 import Leg from './Leg.js';
 import {
@@ -240,46 +241,48 @@ export default class Quoter {
   }
 
   private *formatLimitOrders(
-    quotes: {
-      orders: MarketMakerQuote['legs'][number];
-      accountId: AccountId;
-    }[],
-    leg: MarketMakerQuoteRequest<LegJson>['legs'][number] | undefined,
+    quotes: [AccountId, BetaQuote][],
+    legs: readonly [Leg] | readonly [Leg, Leg],
     balances: Map<AccountId, InternalAssetMap<bigint>>,
     requestId: string,
-    // @ts-expect-error -- not sure why it triggers
-  ): IteratorObject<RpcLimitOrder> {
-    if (!leg) return;
+    isStableCoinSwap: boolean,
+  ): Generator<RpcLimitOrder> {
+    for (let legIndex = 0; legIndex < legs.length; legIndex += 1) {
+      const leg = legs[legIndex].toJSON();
 
-    const sellAsset = getInternalAsset(leg.side === 'BUY' ? leg.base_asset : leg.quote_asset);
-    const side = leg.side === 'BUY' ? 'sell' : 'buy';
+      const sellAsset = getInternalAsset(leg.side === 'BUY' ? leg.base_asset : leg.quote_asset);
+      const side = leg.side === 'BUY' ? 'sell' : 'buy';
 
-    for (const { orders, accountId } of quotes) {
-      const balance = balances.get(accountId)?.[sellAsset];
-      const augment =
-        (this.accountIdToSocket.get(accountId)?.data.augment ?? 0) * (side === 'buy' ? 1 : -1);
-      for (const [tick, amount] of orders) {
-        if (balance === undefined || isBalanceWithinTolerance(balance, amount)) {
-          yield {
-            LimitOrder: {
-              side,
-              base_asset: leg.base_asset,
-              quote_asset: leg.quote_asset,
-              tick: tick + augment,
-              sell_amount: hexEncodeNumber(amount),
-            },
-          };
-        } else {
-          logger.warn('insufficient balance', {
-            accountId,
-            balance: balance.toString(),
-            amount: amount.toString(),
-            requestId,
-          });
-          this.accountIdToSocket.get(accountId)?.emit('quote_error', {
-            error: 'insufficient balance',
-            request_id: requestId,
-          });
+      for (const [accountId, quote] of quotes.filter(([, q]) => !q.beta)) {
+        const balance = balances.get(accountId)?.[sellAsset];
+        const augment =
+          (isStableCoinSwap ? 0 : 1) *
+          (this.accountIdToSocket.get(accountId)?.data.augment ?? 0) *
+          (side === 'buy' ? 1 : -1);
+
+        for (const [tick, amount] of quote.legs[legIndex] ?? []) {
+          if (balance === undefined || isBalanceWithinTolerance(balance, amount)) {
+            yield {
+              LimitOrder: {
+                side,
+                base_asset: leg.base_asset,
+                quote_asset: leg.quote_asset,
+                tick: tick + augment,
+                sell_amount: hexEncodeNumber(amount),
+              },
+            };
+          } else {
+            logger.warn('insufficient balance', {
+              accountId,
+              balance: balance.toString(),
+              amount: amount.toString(),
+              requestId,
+            });
+            this.accountIdToSocket.get(accountId)?.emit('quote_error', {
+              error: 'insufficient balance',
+              request_id: requestId,
+            });
+          }
         }
       }
     }
@@ -322,24 +325,13 @@ export default class Quoter {
       this.balanceTracker.getBalances(),
     ]);
 
-    const orders = [
-      ...this.formatLimitOrders(
-        quotes
-          .filter(([, q]) => !q.beta)
-          .map(([accountId, quote]) => ({ orders: quote.legs[0], accountId })),
-        legs[0].toJSON(),
-        balances,
-        request.request_id,
-      ),
-      ...this.formatLimitOrders(
-        quotes
-          .filter(([, q]) => !q.beta)
-          .map(([accountId, quote]) => ({ orders: quote.legs[1] ?? [], accountId })),
-        legs[1]?.toJSON(),
-        balances,
-        request.request_id,
-      ),
-    ];
+    const orders = this.formatLimitOrders(
+      quotes,
+      legs,
+      balances,
+      request.request_id,
+      isStableCoin(srcAsset) && isStableCoin(destAsset),
+    ).toArray();
 
     logger.info('received limit orders from market makers', {
       quotes,

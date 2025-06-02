@@ -12,7 +12,7 @@ import { solanaIngressEgressDepositBoosted as solanaSchema190 } from '@chainflip
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { ONE_IN_PIP } from '@/shared/functions.js';
-import { SwapFeeType } from '../../client.js';
+import { Prisma, SwapFeeType } from '../../client.js';
 import { getDepositTxRef } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
 
@@ -86,7 +86,7 @@ export const depositBoosted =
       };
 
       const nativeId = action.swapRequestId;
-      const data = {
+      const data: Prisma.SwapRequestUpdateInput = {
         maxBoostFeeBps,
         effectiveBoostFeeBps: Number(effectiveBoostFeeBps),
         prewitnessedDepositId,
@@ -94,6 +94,7 @@ export const depositBoosted =
         depositBoostedAt: new Date(block.timestamp),
         depositBoostedBlockIndex: `${block.height}-${event.indexInBlock}`,
         fees,
+        depositAmount: depositAmount.toString(),
       };
 
       await prisma.swapRequest.update({ where: { nativeId }, data });
