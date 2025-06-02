@@ -325,14 +325,12 @@ export default class Quoter {
       this.balanceTracker.getBalances(),
     ]);
 
-    const isStableCoinSwap = isStableCoin(srcAsset) && isStableCoin(destAsset);
-
     const orders = this.formatLimitOrders(
       quotes,
       legs,
       balances,
       request.request_id,
-      isStableCoinSwap,
+      isStableCoin(srcAsset) && isStableCoin(destAsset),
     ).toArray();
 
     logger.info('received limit orders from market makers', {
