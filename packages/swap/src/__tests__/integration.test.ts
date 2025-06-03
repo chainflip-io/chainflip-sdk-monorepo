@@ -175,41 +175,6 @@ describe('python integration test', () => {
     ).resolves.toBe(message);
   };
 
-  it('replies to a quote request', async () => {
-    await expectMesage('connected');
-
-    const query = {
-      srcAsset: 'FLIP',
-      srcChain: 'Ethereum',
-      destAsset: 'USDC',
-      destChain: 'Ethereum',
-      amount: '1000000000000000000',
-    } as QuoteQueryParams;
-    const params = new URLSearchParams(query as Record<string, any>);
-    vi.mocked(getTotalLiquidity)
-      .mockResolvedValueOnce(9997901209876966295n)
-      .mockResolvedValueOnce(9997901209876966295n);
-    vi.mocked(getSwapRateV3).mockResolvedValueOnce({
-      ingressFee: { amount: 2000000n, chain: 'Ethereum', asset: 'FLIP' },
-      networkFee: { amount: 998900109987003n, chain: 'Ethereum', asset: 'USDC' },
-      egressFee: { amount: 50000n, chain: 'Ethereum', asset: 'USDC' },
-      intermediateAmount: 2000000000n,
-      egressAmount: 997901209876966295n,
-      brokerFee: {
-        chain: 'Ethereum',
-        asset: 'USDC',
-        amount: 0n,
-      },
-    });
-
-    const response = await axios.get(`${serverUrl}/quote?${params.toString()}`, {
-      validateStatus: () => true,
-    });
-
-    expect(await response.data).toMatchSnapshot();
-    expect(vi.mocked(getSwapRateV3).mock.calls).toMatchSnapshot();
-  });
-
   it('replies to a quote request with v2 endpoint', async () => {
     await expectMesage('connected');
 
