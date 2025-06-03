@@ -8,7 +8,6 @@ import authenticate from './quoting/authenticate.js';
 import Quoter from './quoting/Quoter.js';
 import addresses from './routes/addresses.js';
 import { handleError, maintenanceMode, quoteMiddleware } from './routes/common.js';
-import quoteRouter from './routes/quote.js';
 import swap from './routes/swap.js';
 import thirdPartySwap from './routes/thirdPartySwap.js';
 import quoteRouterV2 from './routes/v2/quote.js';
@@ -50,7 +49,6 @@ app.get('/healthcheck', (req, res) => {
   res.status(200).send('OK');
 });
 
-app.use('/quote', quoteMiddleware, quoteRouter(quoter));
 app.use('/v2/quote', quoteMiddleware, quoteRouterV2(quoter));
 
 app.use('/trpc', maintenanceMode, trpcExpress.createExpressMiddleware({ router: appRouter }));
