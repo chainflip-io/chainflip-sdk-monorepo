@@ -76,7 +76,7 @@ export type SocketData = {
   quotedAssets: InternalAssetMap<boolean>;
   clientVersion: ClientVersion;
   beta: boolean;
-  augment: number;
+  mevFactor: number;
 };
 export type ReceivedEventMap = { quote_response: (message: unknown) => void };
 export type SentEventMap = {
@@ -255,9 +255,9 @@ export default class Quoter {
 
       for (const [accountId, quote] of quotes.filter(([, q]) => !q.beta)) {
         const balance = balances.get(accountId)?.[sellAsset];
-        const augment =
+        const mevFactor =
           (isStableCoinSwap ? 0 : 1) *
-          (this.accountIdToSocket.get(accountId)?.data.augment ?? 0) *
+          (this.accountIdToSocket.get(accountId)?.data.mevFactor ?? 0) *
           (side === 'buy' ? 1 : -1);
 
         for (const [tick, amount] of quote.legs[legIndex] ?? []) {
@@ -267,7 +267,7 @@ export default class Quoter {
                 side,
                 base_asset: leg.base_asset,
                 quote_asset: leg.quote_asset,
-                tick: tick + augment,
+                tick: tick + mevFactor,
                 sell_amount: hexEncodeNumber(amount),
               },
             };

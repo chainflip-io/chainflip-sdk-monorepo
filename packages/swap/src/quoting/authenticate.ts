@@ -99,7 +99,7 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
       quotedAssets: auth.quoted_assets,
       clientVersion: auth.client_version,
       beta: marketMaker.beta,
-      augment: env.QUOTER_USE_AUGMENT ? marketMaker.augment : 0,
+      mevFactor: env.QUOTER_USE_MEV_FACTOR ? marketMaker.mevFactor : 0,
     };
 
     next();

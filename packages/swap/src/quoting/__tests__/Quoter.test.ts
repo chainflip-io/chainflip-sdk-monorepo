@@ -46,7 +46,7 @@ describe(Quoter, () => {
   let connectClient: (
     name: string,
     quotedAssets: InternalAsset[],
-    { beta, augment }?: { beta?: boolean; augment?: number },
+    { beta, mevFactor }?: { beta?: boolean; mevFactor?: number },
   ) => Promise<{
     sendQuote: (
       quote: MarketMakerRawQuote,
@@ -72,7 +72,7 @@ describe(Quoter, () => {
     connectClient = async (
       name: string,
       quotedAssets: InternalAsset[],
-      { beta, augment }: { beta?: boolean; augment?: number } = {},
+      { beta, mevFactor }: { beta?: boolean; mevFactor?: number } = {},
     ) => {
       let privateKey = cachedKeys.get(name);
       if (!privateKey) {
@@ -84,7 +84,7 @@ describe(Quoter, () => {
             name,
             beta,
             publicKey: keys.publicKey.export({ format: 'pem', type: 'spki' }).toString(),
-            augment,
+            mevFactor,
           },
         });
       }
@@ -464,14 +464,14 @@ describe(Quoter, () => {
       });
     });
 
-    it('augments the ticks', async () => {
+    it('mev factors the ticks', async () => {
       const { sendQuote, waitForRequest } = await connectClient('marketMaker', ['Btc'], {
-        augment: -5,
+        mevFactor: -5,
       });
       const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
       const request = await waitForRequest();
       const quotes = sendQuote({ ...request, legs: [[[0, '100']]] });
-      quotes[0].LimitOrder.tick = -5; // augment is -5
+      quotes[0].LimitOrder.tick = -5; // mev factor 3000 is -5
       expect(await limitOrders).toStrictEqual(quotes);
     });
 

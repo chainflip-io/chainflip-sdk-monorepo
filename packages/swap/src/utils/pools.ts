@@ -5,6 +5,7 @@ import { assert } from '@/shared/guards.js';
 import { getLpAccounts } from './lp.js';
 import { getPoolDepth } from './rpc.js';
 import prisma, { Pool } from '../client.js';
+import env from '../config/env.js';
 
 const poolCache = new AsyncCacheMap({
   fetch: async (baseAsset: ChainflipAsset) =>
@@ -53,7 +54,14 @@ export const getDeployedLiquidity = async (fromAsset: ChainflipAsset, toAsset: C
     : (await deployedLiquidityCache.get(fromAsset)).quoteLiquidityAmount;
 };
 
-export const getTotalLiquidity = async (fromAsset: ChainflipAsset, toAsset: ChainflipAsset) => {
+export const getTotalLiquidity = async (
+  fromAsset: ChainflipAsset,
+  toAsset: ChainflipAsset,
+  useReplenishment: boolean,
+) => {
   const undeployedLiquidity = await getUndeployedLiquidity(toAsset);
-  return (await getDeployedLiquidity(fromAsset, toAsset)) + undeployedLiquidity;
+  const total = (await getDeployedLiquidity(fromAsset, toAsset)) + undeployedLiquidity;
+  if (!useReplenishment) return total;
+  const [numerator, denominator] = env.QUOTING_REPLENISHMENT_FACTOR[toAsset] ?? [1n, 1n];
+  return (total * numerator) / denominator;
 };

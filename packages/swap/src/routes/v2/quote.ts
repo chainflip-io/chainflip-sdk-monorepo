@@ -127,20 +127,19 @@ export const validateQuoteQuery = async (query: Query) => {
 export const eagerLiquidityExists = async (
   srcAsset: ChainflipAsset,
   destAsset: ChainflipAsset,
-  egressAmount: string,
-  intermediateAmount?: string,
+  quote: Pick<Quote, 'egressAmount' | 'intermediateAmount' | 'type'>,
 ) => {
   if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
-    const totalLiquidity = await getTotalLiquidity(srcAsset, destAsset);
-    return BigInt(totalLiquidity) > BigInt(egressAmount);
+    const totalLiquidity = await getTotalLiquidity(srcAsset, destAsset, quote.type === 'DCA');
+    return totalLiquidity > BigInt(quote.egressAmount);
   }
   const [totalLiquidityLeg1, totalLiquidityLeg2] = await Promise.all([
-    getTotalLiquidity(srcAsset, 'Usdc'),
-    getTotalLiquidity('Usdc', destAsset),
+    getTotalLiquidity(srcAsset, 'Usdc', quote.type === 'DCA'),
+    getTotalLiquidity('Usdc', destAsset, quote.type === 'DCA'),
   ]);
   return (
-    BigInt(totalLiquidityLeg1) > BigInt(intermediateAmount!) &&
-    BigInt(totalLiquidityLeg2) > BigInt(egressAmount)
+    totalLiquidityLeg1 > BigInt(quote.intermediateAmount!) &&
+    totalLiquidityLeg2 > BigInt(quote.egressAmount)
   );
 };
 
@@ -230,20 +229,10 @@ export const generateQuotes = async ({
         dcaQuoteParams.additionalSwapDurationSeconds;
       dcaBoostedQuote.estimatedDurationSeconds += dcaQuoteParams.additionalSwapDurationSeconds;
     }
-    dcaEagerLiquidityExists = await eagerLiquidityExists(
-      srcAsset,
-      destAsset,
-      dcaQuote.egressAmount,
-      dcaQuote.intermediateAmount,
-    );
+    dcaEagerLiquidityExists = await eagerLiquidityExists(srcAsset, destAsset, dcaQuote);
   }
   if (quote) {
-    regularEagerLiquidityExists = await eagerLiquidityExists(
-      srcAsset,
-      destAsset,
-      quote.egressAmount,
-      quote.intermediateAmount,
-    );
+    regularEagerLiquidityExists = await eagerLiquidityExists(srcAsset, destAsset, quote);
   }
 
   if (!regularEagerLiquidityExists && !dcaEagerLiquidityExists)

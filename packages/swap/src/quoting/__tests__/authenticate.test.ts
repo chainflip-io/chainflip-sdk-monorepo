@@ -151,10 +151,10 @@ describe(authenticate, () => {
   });
 
   it.each([
-    { beta: true, augment: -1, useAugment: true },
-    { beta: false, augment: -1, useAugment: false },
-  ])('accepts valid v2 authentication', async ({ useAugment, ...data }) => {
-    env.QUOTER_USE_AUGMENT = useAugment;
+    { beta: true, mevFactor: -1, useMevFactor: true },
+    { beta: false, mevFactor: -1, useMevFactor: false },
+  ])('accepts valid v2 authentication', async ({ useMevFactor, ...data }) => {
+    env.QUOTER_USE_MEV_FACTOR = useMevFactor;
     const timestamp = Date.now();
     const name = 'web_team_whales';
 
