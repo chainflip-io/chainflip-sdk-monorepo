@@ -5,6 +5,7 @@ import {
   InternalAssetMap,
 } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
+import { numberToFraction } from '../utils/env.js';
 
 const chainflipNetwork = z.enum(chainflipNetworks);
 
@@ -95,7 +96,10 @@ export default z
     QUOTING_REPLENISHMENT_FACTOR: internalAssetMap(
       'QUTOING_REPLENISHMENT_MULTIPLIER',
       {},
-      z.number(),
+      z.number().transform((n) => {
+        const [num, denom] = numberToFraction(n);
+        return [BigInt(num), BigInt(denom)] as const;
+      }),
     ),
     DCA_CHUNK_INTERVAL_BLOCKS: optionalNumber(2),
     FULLY_DISABLED_INTERNAL_ASSETS: internalAssetCsv('FULLY_DISABLED_INTERNAL_ASSETS'),
