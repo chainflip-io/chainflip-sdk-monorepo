@@ -4,6 +4,7 @@ import {
   chainflipNetworks,
   InternalAssetMap,
 } from '@chainflip/utils/chainflip';
+import BigNumber from 'bignumber.js';
 import { inspect } from 'util';
 import { z } from 'zod';
 
