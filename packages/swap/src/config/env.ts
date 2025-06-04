@@ -5,8 +5,12 @@ import {
   InternalAssetMap,
 } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
-import { inspect } from 'util';
 import { z } from 'zod';
+import { isNotNullish } from '@/shared/guards.js';
+
+const logWarning = (message: string, meta: Record<string, unknown>) =>
+  // eslint-disable-next-line no-console
+  console.warn({ message, ...meta });
 
 const chainflipNetwork = z.enum(chainflipNetworks);
 
@@ -40,8 +44,10 @@ const internalAssetCsv = (name: string) =>
           if (!asset) return false;
           const isValid = chainflipAssets.includes(asset as ChainflipAsset);
           if (!isValid) {
-            // eslint-disable-next-line no-console -- prevents a circular dependency
-            console.warn({ message: `unexpected value in ${name} variable: "${asset}"` });
+            logWarning('incorrect asset in internal asset csv', {
+              asset,
+              name,
+            });
           }
           return isValid;
         }),
@@ -54,16 +60,34 @@ const internalAssetMap = <Z extends z.ZodTypeAny>(
   valueSchema: Z,
 ) =>
   optionalString(JSON.stringify(defaultValue)).transform((string) => {
-    try {
-      return z.record(z.enum(chainflipAssets), valueSchema).parse(JSON.parse(string));
-    } catch (err) {
-      const error = err as Error;
-      // eslint-disable-next-line no-console
-      console.warn({
-        message: `Could not parse ${name} variable. error: "${error?.message}"`,
-      });
-      return {};
-    }
+    const assetsSchema = z.enum(chainflipAssets);
+    return Object.fromEntries(
+      Object.entries(JSON.parse(string))
+        .map(([key, value]) => {
+          const parsedKey = assetsSchema.safeParse(key);
+          if (!parsedKey.success) {
+            logWarning('invalid asset in internal asset map', {
+              name,
+              key,
+              error: parsedKey.error.message,
+            });
+            return null;
+          }
+          const parsedValue = valueSchema.safeParse(value);
+          if (!parsedValue.success) {
+            logWarning('invalid value in internal asset map', {
+              name,
+              key: parsedKey.data,
+              value,
+              error: parsedValue.error.message,
+            });
+            return null;
+          }
+
+          return [parsedKey.data, parsedValue.data] as const;
+        })
+        .filter(isNotNullish),
+    );
   });
 
 export default z
@@ -97,16 +121,13 @@ export default z
     QUOTING_REPLENISHMENT_FACTOR: internalAssetMap(
       'QUOTING_REPLENISHMENT_FACTOR',
       {},
-      z.number().transform((n) => {
-        try {
+      z
+        .number()
+        .positive()
+        .transform((n) => {
           const [numerator, denominator] = new BigNumber(n).toFraction();
           return [BigInt(numerator.toNumber()), BigInt(denominator.toNumber())] as const;
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.warn({ message: 'failed to parse to fraction', value: n, error: inspect(error) });
-          return [1n, 1n] as const;
-        }
-      }),
+        }),
     ),
     DCA_CHUNK_INTERVAL_BLOCKS: optionalNumber(2),
     FULLY_DISABLED_INTERNAL_ASSETS: internalAssetCsv('FULLY_DISABLED_INTERNAL_ASSETS'),
