@@ -2,10 +2,10 @@
 
 exports[`authenticate > accepts valid v2 authentication 1`] = `
 {
-  "augment": -1,
   "beta": true,
   "clientVersion": "2",
   "marketMaker": "web_team_whales",
+  "mevFactor": -1,
   "quotedAssets": {
     "ArbEth": false,
     "ArbUsdc": false,
@@ -26,10 +26,10 @@ exports[`authenticate > accepts valid v2 authentication 1`] = `
 
 exports[`authenticate > accepts valid v2 authentication 2`] = `
 {
-  "augment": 0,
   "beta": false,
   "clientVersion": "2",
   "marketMaker": "web_team_whales",
+  "mevFactor": 0,
   "quotedAssets": {
     "ArbEth": false,
     "ArbUsdc": false,

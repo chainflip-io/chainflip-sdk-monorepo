@@ -5,6 +5,7 @@ import {
   InternalAssetMap,
 } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
+import { numberToFraction } from '../utils/env.js';
 
 const chainflipNetwork = z.enum(chainflipNetworks);
 
@@ -92,6 +93,14 @@ export default z
       z.number(),
     ),
     QUOTING_BASE_SLIPPAGE: internalAssetMap('QUOTING_BASE_SLIPPAGE', {}, z.number()),
+    QUOTING_REPLENISHMENT_FACTOR: internalAssetMap(
+      'QUOTING_REPLENISHMENT_FACTOR',
+      {},
+      z.number().transform((n) => {
+        const [num, denom] = numberToFraction(n);
+        return [BigInt(num), BigInt(denom)] as const;
+      }),
+    ),
     DCA_CHUNK_INTERVAL_BLOCKS: optionalNumber(2),
     FULLY_DISABLED_INTERNAL_ASSETS: internalAssetCsv('FULLY_DISABLED_INTERNAL_ASSETS'),
     DISABLED_DEPOSIT_INTERNAL_ASSETS: internalAssetCsv('DISABLED_DEPOSIT_INTERNAL_ASSETS'),
@@ -110,7 +119,7 @@ export default z
     SOLANA_TX_REF_QUEUE_INTERVAL: optionalNumber(1000),
     QUOTER_BALANCE_TRACKER_ACTIVE: optionalBoolean.default('true'),
     QUOTER_BALANCE_TOLERANCE_PERCENT: optionalNumber(10),
-    QUOTER_USE_AUGMENT: optionalBoolean,
+    QUOTER_USE_MEV_FACTOR: optionalBoolean,
     BROKER_COMMISSION_BPS: optionalNumber(0),
     RPC_COMMISSION_BROKER_HTTPS_URL: httpUrl.optional(),
     ON_CHAIN_DEFAULT_NETWORK_FEE_BPS: optionalNumber(5).transform((n) => BigInt(n)),
