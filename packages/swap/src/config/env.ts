@@ -94,7 +94,7 @@ export default z
     ),
     QUOTING_BASE_SLIPPAGE: internalAssetMap('QUOTING_BASE_SLIPPAGE', {}, z.number()),
     QUOTING_REPLENISHMENT_FACTOR: internalAssetMap(
-      'QUTOING_REPLENISHMENT_MULTIPLIER',
+      'QUOTING_REPLENISHMENT_FACTOR',
       {},
       z.number().transform((n) => {
         const [num, denom] = numberToFraction(n);
