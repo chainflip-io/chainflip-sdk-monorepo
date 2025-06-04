@@ -1,6 +1,4 @@
 import { ChainflipAsset } from '@chainflip/utils/chainflip';
-import { inspect } from 'util';
-import logger from './logger.js';
 import ServiceError from './ServiceError.js';
 import env from '../config/env.js';
 
@@ -25,15 +23,5 @@ export const assertRouteEnabled = ({
     env.DISABLED_DESTINATION_INTERNAL_ASSETS.has(destAsset)
   ) {
     throw ServiceError.unavailable(`Asset ${destAsset} is disabled`);
-  }
-};
-
-export const numberToFraction = (n: number) => {
-  try {
-    const [numerator, denominator] = new BigNumber(n).toFraction();
-    return [numerator.toNumber(), denominator.toNumber()] as const;
-  } catch (error) {
-    logger.warn('failed to parse to fraction', { value: n, error: inspect(error) });
-    return [1, 1] as const;
   }
 };

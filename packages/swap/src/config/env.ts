@@ -4,8 +4,8 @@ import {
   chainflipNetworks,
   InternalAssetMap,
 } from '@chainflip/utils/chainflip';
+import { inspect } from 'util';
 import { z } from 'zod';
-import { numberToFraction } from '../utils/env.js';
 
 const chainflipNetwork = z.enum(chainflipNetworks);
 
@@ -97,8 +97,14 @@ export default z
       'QUOTING_REPLENISHMENT_FACTOR',
       {},
       z.number().transform((n) => {
-        const [num, denom] = numberToFraction(n);
-        return [BigInt(num), BigInt(denom)] as const;
+        try {
+          const [numerator, denominator] = new BigNumber(n).toFraction();
+          return [BigInt(numerator.toNumber()), BigInt(denominator.toNumber())] as const;
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.warn({ message: 'failed to parse to fraction', value: n, error: inspect(error) });
+          return [1n, 1n] as const;
+        }
       }),
     ),
     DCA_CHUNK_INTERVAL_BLOCKS: optionalNumber(2),
