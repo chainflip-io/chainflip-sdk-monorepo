@@ -344,7 +344,7 @@ describe(openSwapDepositChannel, () => {
           minPriceX128: '1',
         },
       }),
-    ).rejects.toThrow('Failed to open deposit channel, please try again later');
+    ).rejects.toThrow('deposit channel creation rejected');
     expect(vi.mocked(isDisallowedSwap).mock.calls).toMatchSnapshot();
   });
 

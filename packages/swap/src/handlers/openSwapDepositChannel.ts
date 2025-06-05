@@ -75,7 +75,7 @@ export const openSwapDepositChannel = async ({
     )
   ) {
     logger.info('Blocked address found for deposit channel', input);
-    throw ServiceError.internalError('Failed to open deposit channel, please try again later');
+    throw ServiceError.internalError('deposit channel creation rejected');
   }
 
   logger.info('Opening swap deposit channel', input);
