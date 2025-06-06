@@ -7,16 +7,11 @@ import logger from '../utils/logger.js';
 import ServiceError from '../utils/ServiceError.js';
 
 export const handleError: ErrorRequestHandler = (error, req, res, _next) => {
-  logger.customInfo('received error', {}, { error: inspect(error) });
-
   if (error instanceof ServiceError) {
+    logger.info('received error', { error: inspect(error) });
     res.status(error.code).json(error.toJSON());
   } else {
-    logger.customError(
-      'unknown error occurred',
-      { alertCode: 'UnknownError' },
-      { error: inspect(error) },
-    );
+    logger.error('unknown error occurred', { error: inspect(error) });
     res.status(500).json({ message: 'unknown error' });
   }
 };
