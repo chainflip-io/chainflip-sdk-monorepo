@@ -114,9 +114,8 @@ export default class QuoteRequest {
   private estimatedBoostFeeBps: number | undefined;
   private maxBoostFeeBps: number | undefined;
   private success = false;
-  private srcAssetIndexPrice: number | null = null;
-  private destAssetIndexPrice: number | null = null;
-  private destIndexPrice: number | null = null;
+  private srcAssetIndexPrice?: number;
+  private destAssetIndexPrice?: number;
 
   private limitOrders: RpcLimitOrder[] | null = null;
 
@@ -199,12 +198,10 @@ export default class QuoteRequest {
   }
 
   private async setIndexPrices() {
-    const [srcPrice, destPrice] = await Promise.all([
-      getAssetPrice(this.srcAsset).catch(() => null),
-      getAssetPrice(this.destAsset).catch(() => null),
+    [this.srcAssetIndexPrice, this.destAssetIndexPrice] = await Promise.all([
+      getAssetPrice(this.srcAsset).catch(() => undefined),
+      getAssetPrice(this.destAsset).catch(() => undefined),
     ]);
-    this.srcAssetIndexPrice = srcPrice ?? null;
-    this.destAssetIndexPrice = destPrice ?? null;
   }
 
   private async getPoolQuote(): Promise<RegularQuote>;
@@ -471,8 +468,8 @@ export default class QuoteRequest {
     return {
       srcAsset: this.srcAsset,
       destAsset: this.destAsset,
-      srcAssetIndexPrice: this.srcAssetIndexPrice,
-      destAssetIndexPrice: this.destAssetIndexPrice,
+      srcAssetIndexPrice: this.srcAssetIndexPrice ?? null,
+      destAssetIndexPrice: this.destAssetIndexPrice ?? null,
       inputAmount: new BigNumber(this.depositAmount.toString())
         .shiftedBy(-assetConstants[this.srcAsset].decimals)
         .toFixed(),

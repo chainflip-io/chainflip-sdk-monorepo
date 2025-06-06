@@ -11,20 +11,20 @@ vi.mock('../../pricing/checkPriceWarning', () => ({
   getUsdValue: vi.fn().mockResolvedValue(undefined),
 }));
 
-describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
-  const createRequest = (amount: bigint) =>
-    new QuoteRequest({} as any, {
-      srcAsset: 'Btc',
-      destAsset: 'Flip',
-      amount,
-      brokerCommissionBps: 0,
-      ccmParams: undefined,
-      dcaEnabled: true,
-      isOnChain: false,
-      isVaultSwap: false,
-      pools: [],
-    });
+const createRequest = (amount: bigint) =>
+  new QuoteRequest({} as any, {
+    srcAsset: 'Btc',
+    destAsset: 'Flip',
+    amount,
+    brokerCommissionBps: 0,
+    ccmParams: undefined,
+    dcaEnabled: true,
+    isOnChain: false,
+    isVaultSwap: false,
+    pools: [],
+  });
 
+describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
   beforeEach(() => {
     vi.clearAllMocks();
     Object.assign(env, originalEnv);
@@ -87,5 +87,30 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
     const request = createRequest(1n);
     await request['setDcaQuoteParams']();
     expect(request['dcaQuoteParams']).toEqual(null);
+  });
+});
+
+describe(QuoteRequest.prototype.toLogInfo, () => {
+  it('formats the log info properly', () => {
+    const req = createRequest(1_000_000n);
+
+    expect(req.toLogInfo()).toMatchInlineSnapshot(`
+      {
+        "brokerCommissionBps": 0,
+        "dcaQuote": null,
+        "dcaQuoteParams": null,
+        "destAsset": "Flip",
+        "destAssetIndexPrice": null,
+        "duration": "0.15",
+        "estimatedBoostFeeBps": undefined,
+        "inputAmount": "0.01",
+        "limitOrders": [],
+        "maxBoostFeeBps": undefined,
+        "regularQuote": null,
+        "srcAsset": "Btc",
+        "srcAssetIndexPrice": null,
+        "success": false,
+      }
+    `);
   });
 });
