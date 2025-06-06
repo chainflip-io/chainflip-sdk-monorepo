@@ -35,7 +35,7 @@ const ccmBroadcastRequested =
     });
 
     if (egresses.length === 0) {
-      logger.customInfo('no egresses found, skipping', {}, { broadcastId });
+      logger.info('no egresses found, skipping', { broadcastId });
       return;
     }
 

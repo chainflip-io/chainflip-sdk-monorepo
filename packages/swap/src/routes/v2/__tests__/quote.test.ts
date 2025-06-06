@@ -19,7 +19,6 @@ import Quoter from '../../../quoting/Quoter.js';
 import app from '../../../server.js';
 import { boostPoolsCache } from '../../../utils/boost.js';
 import { getTotalLiquidity } from '../../../utils/pools.js';
-import { getDcaQuoteParams, MAX_NUMBER_OF_CHUNKS } from '../../v2/quote.js';
 
 vi.mock('../../../utils/pools', async (importOriginal) => {
   const original = (await importOriginal()) as object;
@@ -65,65 +64,6 @@ vi.mock('../../../polkadot/api', () => ({
 }));
 
 const originalEnv = structuredClone(env);
-
-describe(getDcaQuoteParams, () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    Object.assign(env, originalEnv);
-    env.DCA_CHUNK_SIZE_USD = { Btc: 3000 };
-    env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
-    env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
-  });
-
-  it('should correctly return 9060 usd worth of btc', async () => {
-    vi.mocked(getUsdValue).mockResolvedValue('9060');
-
-    const result = await getDcaQuoteParams('Btc', 27180n);
-    expect(result).toMatchInlineSnapshot(`
-    {
-      "additionalSwapDurationSeconds": 36,
-      "chunkSize": 6795n,
-      "numberOfChunks": 4,
-    }
-    `);
-  });
-
-  it('should correctly return 9300 usd worth of btc', async () => {
-    vi.mocked(getUsdValue).mockResolvedValue('9300');
-
-    const result = await getDcaQuoteParams('Btc', 27900n);
-    expect(result).toMatchInlineSnapshot(`
-    {
-      "additionalSwapDurationSeconds": 36,
-      "chunkSize": 6975n,
-      "numberOfChunks": 4,
-    }
-    `);
-  });
-
-  it('should correctly handle 300 usd worth of btc', async () => {
-    vi.mocked(getUsdValue).mockResolvedValue('300');
-
-    const result = await getDcaQuoteParams('Btc', 900n);
-    expect(result).toEqual(null);
-  });
-
-  it('should correctly handle 30 usd worth of btc', async () => {
-    vi.mocked(getUsdValue).mockResolvedValue('30');
-
-    const result = await getDcaQuoteParams('Btc', 90n);
-    expect(result).toEqual(null);
-  });
-
-  it('should correctly handle number of chunks bigger than max', async () => {
-    const chunkSizeUsd = BigInt(env.DCA_CHUNK_SIZE_USD?.Btc ?? env.DCA_DEFAULT_CHUNK_SIZE_USD);
-    const maxUsdValue = BigInt(MAX_NUMBER_OF_CHUNKS) * chunkSizeUsd + 1n;
-    vi.mocked(getUsdValue).mockResolvedValue(maxUsdValue.toString());
-
-    const result = await getDcaQuoteParams('Btc', 1n);
-    expect(result).toEqual(null);
-  });
-});
 
 const buildFee = (asset: InternalAsset, amount: bigint | number) => ({
   amount: BigInt(amount),

@@ -33,7 +33,7 @@ const batchBroadcastRequested =
     const { broadcastId, egressIds } = schemas[chain].parse(event.args);
 
     if (egressIds.length === 0) {
-      logger.customInfo('no egress ids, skipping', {}, { broadcastId });
+      logger.info('no egress ids, skipping', { broadcastId });
       return;
     }
 
@@ -45,7 +45,7 @@ const batchBroadcastRequested =
     });
 
     if (egresses.length === 0) {
-      logger.customInfo('no egresses found, skipping', {}, { broadcastId });
+      logger.info('no egresses found, skipping', { broadcastId });
       return;
     }
 

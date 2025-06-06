@@ -30,3 +30,8 @@ export function assertNever(x: never, message: string): never {
 export const isStableCoin = (
   asset: ChainflipAsset,
 ): asset is Extract<ChainflipAsset, `${string}Usd${string}`> => /Usd/.test(asset);
+
+export const ensure = <T>(value: T | null | undefined, message: string): T => {
+  if (value == null) throw new Error(message);
+  return value;
+};
