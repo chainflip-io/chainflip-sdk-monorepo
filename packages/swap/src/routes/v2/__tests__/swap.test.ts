@@ -783,7 +783,7 @@ describe('server', () => {
       expect(rest).toMatchSnapshot();
     });
 
-    it.only.each(['0xdeadbeef', '0xDEADBEEF'])(
+    it.each(['0xdeadbeef', '0xDEADBEEF'])(
       `retrieves a swap in ${StateV2.Completed} status by tx hash`,
       async (ref) => {
         await processEvents(swapEvents.slice(0, 9));
@@ -791,8 +791,6 @@ describe('server', () => {
         await prisma.swapRequest.updateMany({ data: { depositTransactionRef: ref.toLowerCase() } });
 
         const { body, status } = await request(server).get(`/v2/swaps/${ref}`);
-
-        console.log(body);
 
         expect(status).toBe(200);
         const { swapId, ...rest } = body;
