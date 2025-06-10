@@ -104,7 +104,7 @@ export const getLatestSwapForId = async (id: string) => {
     });
   } else if (isTransactionRef(id)) {
     swapRequest = await prisma.swapRequest.findFirst({
-      where: { depositTransactionRef: id },
+      where: { depositTransactionRef: { mode: 'insensitive', equals: id } },
       include: swapRequestInclude,
       // just get the last one for now
       orderBy: { nativeId: 'desc' },
