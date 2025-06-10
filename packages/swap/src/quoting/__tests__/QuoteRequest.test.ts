@@ -92,6 +92,8 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
 
 describe(QuoteRequest.prototype.toLogInfo, () => {
   it('formats the log info properly', () => {
+    vi.spyOn(performance, 'now').mockReturnValueOnce(0).mockReturnValueOnce(0.15);
+
     const req = createRequest(1_000_000n);
 
     expect(req.toLogInfo()).toMatchInlineSnapshot(`
