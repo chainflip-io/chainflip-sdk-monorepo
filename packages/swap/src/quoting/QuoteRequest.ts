@@ -176,13 +176,13 @@ export default class QuoteRequest {
   }
 
   private async setLimitOrders() {
-    if (this.limitOrders) return this.limitOrders;
-    this.limitOrders = await this.quoter.getLimitOrders(
-      this.srcAsset,
-      this.destAsset,
-      this.depositAmount,
-    );
-    return this.limitOrders;
+    if (!this.limitOrders) {
+      this.limitOrders = await this.quoter.getLimitOrders(
+        this.srcAsset,
+        this.destAsset,
+        this.depositAmount,
+      );
+    }
   }
 
   private async setBoostQuoteParams() {
