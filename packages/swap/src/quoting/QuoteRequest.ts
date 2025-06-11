@@ -340,9 +340,7 @@ export default class QuoteRequest {
         estimatedPrice,
         isOnChain: this.isOnChain,
       }),
-      includedFees: includedFees
-        .filter((fee) => fee.amount > 0n)
-        .map((fee) => ({ ...fee, amount: fee.amount.toString() })),
+      includedFees: includedFees.map((fee) => ({ ...fee, amount: fee.amount.toString() })),
       lowLiquidityWarning,
       poolInfo,
       estimatedDurationsSeconds: estimatedDurations.durations,
