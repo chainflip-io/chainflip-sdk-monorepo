@@ -18,10 +18,22 @@ exports[`server > GET /v2/quote > excludes the ingress fee for vault swaps 1`] =
     "estimatedPrice": "0.01",
     "includedFees": [
       {
+        "amount": "0",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
         "amount": "100100",
         "asset": "USDC",
         "chain": "Ethereum",
         "type": "NETWORK",
+      },
+      {
+        "amount": "0",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "EGRESS",
       },
     ],
     "isVaultSwap": true,
@@ -68,10 +80,22 @@ exports[`server > GET /v2/quote > on chain > properly quotes on chain swaps betw
     "estimatedPrice": "1",
     "includedFees": [
       {
+        "amount": "0",
+        "asset": "SOL",
+        "chain": "Solana",
+        "type": "INGRESS",
+      },
+      {
         "amount": "100000000",
         "asset": "USDC",
         "chain": "Ethereum",
         "type": "NETWORK",
+      },
+      {
+        "amount": "0",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "EGRESS",
       },
     ],
     "isOnChain": true,
@@ -122,10 +146,22 @@ exports[`server > GET /v2/quote > on chain > properly quotes with DCA 1`] = `
     "estimatedPrice": "100",
     "includedFees": [
       {
+        "amount": "0",
+        "asset": "BTC",
+        "chain": "Bitcoin",
+        "type": "INGRESS",
+      },
+      {
         "amount": "500500",
         "asset": "USDC",
         "chain": "Ethereum",
         "type": "NETWORK",
+      },
+      {
+        "amount": "0",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "EGRESS",
       },
     ],
     "intermediateAmount": "100000000",
@@ -188,10 +224,22 @@ exports[`server > GET /v2/quote > on chain > respects the minimum network fee 1`
     "estimatedPrice": "1",
     "includedFees": [
       {
+        "amount": "0",
+        "asset": "SOL",
+        "chain": "Solana",
+        "type": "INGRESS",
+      },
+      {
         "amount": "500000",
         "asset": "USDC",
         "chain": "Ethereum",
         "type": "NETWORK",
+      },
+      {
+        "amount": "0",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "EGRESS",
       },
     ],
     "isOnChain": true,
@@ -226,4 +274,67 @@ exports[`server > GET /v2/quote > rejects malformed requests 1`] = `
 {
   "message": "invalid request",
 }
+`;
+
+exports[`server > GET /v2/quote > uses 0 as ingress fee when the protocol can't estimate it 1`] = `
+[
+  {
+    "depositAmount": "100000000",
+    "destAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "1000000000000000000",
+    "estimatedDurationSeconds": 144,
+    "estimatedDurationsSeconds": {
+      "deposit": 30,
+      "egress": 102,
+      "swap": 12,
+    },
+    "estimatedPrice": "0.01",
+    "includedFees": [
+      {
+        "amount": "0",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "0",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "type": "REGULAR",
+  },
+]
 `;
