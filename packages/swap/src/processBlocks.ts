@@ -112,17 +112,13 @@ export default async function processBlocks() {
             try {
               await eventHandler({ prisma: txClient, event, block });
             } catch (error) {
-              logger.customError(
-                `processBlock error: Error handling event ${event.name}`,
-                { alertCode: 'EventHandlerError' },
-                {
-                  error,
-                  eventName: event.name,
-                  indexInBlock: event.indexInBlock,
-                  blockHeight: block.height,
-                  specId: block.specId,
-                },
-              );
+              logger.error('processBlock error: Error handling event', {
+                error: inspect(error),
+                eventName: event.name,
+                indexInBlock: event.indexInBlock,
+                blockHeight: block.height,
+                specId: block.specId,
+              });
               throw error;
             }
           }
