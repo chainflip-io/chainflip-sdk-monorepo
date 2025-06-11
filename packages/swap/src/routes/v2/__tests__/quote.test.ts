@@ -452,27 +452,7 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchObject([
-        {
-          egressAmount: '1000000000000000000',
-          recommendedSlippageTolerancePercent: 1,
-          includedFees: [{ type: 'NETWORK', chain: 'Ethereum', asset: 'USDC', amount: '100100' }],
-          poolInfo: [
-            {
-              baseAsset: { chain: 'Ethereum', asset: 'ETH' },
-              quoteAsset: { chain: 'Ethereum', asset: 'USDC' },
-              fee: { chain: 'Ethereum', asset: 'USDC', amount: '0' },
-            },
-          ],
-          estimatedDurationsSeconds: { deposit: 30, swap: 12, egress: 102 },
-          estimatedDurationSeconds: 144,
-          estimatedPrice: '0.01',
-          type: 'REGULAR',
-          srcAsset: { chain: 'Ethereum', asset: 'USDC' },
-          destAsset: { chain: 'Ethereum', asset: 'ETH' },
-          depositAmount: '100000000',
-        },
-      ]);
+      expect(body).toMatchSnapshot();
     });
 
     it('excludes the ingress fee for vault swaps', async () => {
@@ -578,13 +558,14 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchObject([
+      expect(body).toEqual([
         {
           egressAmount: '100000000',
           recommendedSlippageTolerancePercent: 1,
           includedFees: [
             { type: 'INGRESS', chain: 'Ethereum', asset: 'ETH', amount: '25000' },
             { type: 'NETWORK', chain: 'Ethereum', asset: 'USDC', amount: '100100' },
+            { type: 'EGRESS', chain: 'Ethereum', asset: 'USDC', amount: '0' },
           ],
           poolInfo: [
             {
@@ -669,8 +650,13 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchObject([
+      expect(body).toEqual([
         {
+          depositAmount: '1000000000000000000',
+          destAsset: {
+            asset: 'USDC',
+            chain: 'Ethereum',
+          },
           egressAmount: (100e6).toString(),
           estimatedDurationSeconds: 144,
           estimatedDurationsSeconds: {
@@ -680,30 +666,23 @@ describe('server', () => {
           },
           estimatedPrice: '100.0000000000025',
           includedFees: [
-            {
-              amount: '25000',
-              asset: 'ETH',
-              chain: 'Ethereum',
-              type: 'INGRESS',
-            },
-            {
-              amount: '100100',
-              asset: 'USDC',
-              chain: 'Ethereum',
-              type: 'NETWORK',
-            },
+            { amount: '25000', asset: 'ETH', chain: 'Ethereum', type: 'INGRESS' },
+            { amount: '100100', asset: 'USDC', chain: 'Ethereum', type: 'NETWORK' },
+            { amount: '0', asset: 'USDC', chain: 'Ethereum', type: 'EGRESS' },
           ],
           poolInfo: [
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
-              fee: {
-                amount: '0',
-                asset: 'ETH',
-                chain: 'Ethereum',
-              },
+              fee: { amount: '0', asset: 'ETH', chain: 'Ethereum' },
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
+          recommendedSlippageTolerancePercent: 1,
+          srcAsset: {
+            asset: 'ETH',
+            chain: 'Ethereum',
+          },
+          type: 'REGULAR',
         },
       ]);
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -791,27 +770,14 @@ describe('server', () => {
           },
           estimatedPrice: '100.0000000000025',
           includedFees: [
-            {
-              amount: '25000',
-              asset: 'ETH',
-              chain: 'Ethereum',
-              type: 'INGRESS',
-            },
-            {
-              amount: '100100',
-              asset: 'USDC',
-              chain: 'Ethereum',
-              type: 'NETWORK',
-            },
+            { amount: '25000', asset: 'ETH', chain: 'Ethereum', type: 'INGRESS' },
+            { amount: '100100', asset: 'USDC', chain: 'Ethereum', type: 'NETWORK' },
+            { amount: '0', asset: 'USDC', chain: 'Ethereum', type: 'EGRESS' },
           ],
           poolInfo: [
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
-              fee: {
-                amount: '0',
-                asset: 'ETH',
-                chain: 'Ethereum',
-              },
+              fee: { amount: '0', asset: 'ETH', chain: 'Ethereum' },
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
@@ -912,27 +878,14 @@ describe('server', () => {
           },
           estimatedPrice: '100.0000000000025',
           includedFees: [
-            {
-              amount: '25000',
-              asset: 'ETH',
-              chain: 'Ethereum',
-              type: 'INGRESS',
-            },
-            {
-              amount: '100100',
-              asset: 'USDC',
-              chain: 'Ethereum',
-              type: 'NETWORK',
-            },
+            { amount: '25000', asset: 'ETH', chain: 'Ethereum', type: 'INGRESS' },
+            { amount: '100100', asset: 'USDC', chain: 'Ethereum', type: 'NETWORK' },
+            { amount: '0', asset: 'USDC', chain: 'Ethereum', type: 'EGRESS' },
           ],
           poolInfo: [
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
-              fee: {
-                amount: '0',
-                asset: 'ETH',
-                chain: 'Ethereum',
-              },
+              fee: { amount: '0', asset: 'ETH', chain: 'Ethereum' },
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
@@ -2020,27 +1973,14 @@ describe('server', () => {
           estimatedPrice: '100.0000000000025',
           recommendedSlippageTolerancePercent: 1,
           includedFees: [
-            {
-              amount: '25000',
-              asset: 'ETH',
-              chain: 'Ethereum',
-              type: 'INGRESS',
-            },
-            {
-              amount: '100100',
-              asset: 'USDC',
-              chain: 'Ethereum',
-              type: 'NETWORK',
-            },
+            { amount: '25000', asset: 'ETH', chain: 'Ethereum', type: 'INGRESS' },
+            { amount: '100100', asset: 'USDC', chain: 'Ethereum', type: 'NETWORK' },
+            { amount: '0', asset: 'USDC', chain: 'Ethereum', type: 'EGRESS' },
           ],
           poolInfo: [
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
-              fee: {
-                amount: '0',
-                asset: 'ETH',
-                chain: 'Ethereum',
-              },
+              fee: { amount: '0', asset: 'ETH', chain: 'Ethereum' },
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
@@ -2141,27 +2081,14 @@ describe('server', () => {
           estimatedPrice: '100.0000000000025',
           recommendedSlippageTolerancePercent: 1,
           includedFees: [
-            {
-              amount: '25000',
-              asset: 'ETH',
-              chain: 'Ethereum',
-              type: 'INGRESS',
-            },
-            {
-              amount: '100100',
-              asset: 'USDC',
-              chain: 'Ethereum',
-              type: 'NETWORK',
-            },
+            { amount: '25000', asset: 'ETH', chain: 'Ethereum', type: 'INGRESS' },
+            { amount: '100100', asset: 'USDC', chain: 'Ethereum', type: 'NETWORK' },
+            { amount: '0', asset: 'USDC', chain: 'Ethereum', type: 'EGRESS' },
           ],
           poolInfo: [
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
-              fee: {
-                amount: '0',
-                asset: 'ETH',
-                chain: 'Ethereum',
-              },
+              fee: { amount: '0', asset: 'ETH', chain: 'Ethereum' },
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],
@@ -2263,27 +2190,14 @@ describe('server', () => {
           estimatedPrice: '100.0000000000025',
           recommendedSlippageTolerancePercent: 1,
           includedFees: [
-            {
-              amount: '25000',
-              asset: 'ETH',
-              chain: 'Ethereum',
-              type: 'INGRESS',
-            },
-            {
-              amount: '100100',
-              asset: 'USDC',
-              chain: 'Ethereum',
-              type: 'NETWORK',
-            },
+            { amount: '25000', asset: 'ETH', chain: 'Ethereum', type: 'INGRESS' },
+            { amount: '100100', asset: 'USDC', chain: 'Ethereum', type: 'NETWORK' },
+            { amount: '0', asset: 'USDC', chain: 'Ethereum', type: 'EGRESS' },
           ],
           poolInfo: [
             {
               baseAsset: { asset: 'ETH', chain: 'Ethereum' },
-              fee: {
-                amount: '0',
-                asset: 'ETH',
-                chain: 'Ethereum',
-              },
+              fee: { amount: '0', asset: 'ETH', chain: 'Ethereum' },
               quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
             },
           ],

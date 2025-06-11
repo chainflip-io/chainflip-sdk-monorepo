@@ -300,7 +300,9 @@ export default class QuoteRequest {
 
     includedFees.push({ ...networkFee, type: 'NETWORK' });
 
-    includedFees.push({ ...brokerFee, type: 'BROKER' });
+    if (brokerFee.amount > 0n) {
+      includedFees.push({ ...brokerFee, type: 'BROKER' });
+    }
 
     includedFees.push({ ...egressFee, type: 'EGRESS' });
 
