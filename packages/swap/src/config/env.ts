@@ -110,8 +110,9 @@ export default z
     MAINTENANCE_MODE: optionalBoolean,
     LIQUIDITY_WARNING_THRESHOLD: optionalNumber(-5),
     COINGECKO_API_KEY: z.string().optional(),
-    DCA_DEFAULT_CHUNK_SIZE_USD: optionalNumber(3000),
-    DCA_CHUNK_SIZE_USD: internalAssetMap('DCA_CHUNK_SIZE_USD', {}, z.number()),
+    DCA_DEFAULT_SELL_CHUNK_SIZE_USD: optionalNumber(3000),
+    DCA_SELL_CHUNK_SIZE_USD: internalAssetMap('DCA_SELL_CHUNK_SIZE_USD', {}, z.number()),
+    DCA_BUY_CHUNK_SIZE_USD: internalAssetMap('DCA_BUY_CHUNK_SIZE_USD', {}, z.number()),
     DCA_CHUNK_PRICE_IMPACT_PERCENT: internalAssetMap(
       'DCA_CHUNK_PRICE_IMPACT_PERCENT',
       { Flip: 0.25 },
