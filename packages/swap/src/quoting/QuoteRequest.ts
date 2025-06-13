@@ -143,8 +143,11 @@ export default class QuoteRequest {
     if (!this.dcaEnabled) return;
 
     const usdChunkSize =
+      // if we have a chunk size for the destination asset, use that first
       env.DCA_BUY_CHUNK_SIZE_USD?.[this.destAsset] ??
+      // otherwise, if we have a chunk size for the source asset, use that next
       env.DCA_SELL_CHUNK_SIZE_USD?.[this.srcAsset] ??
+      // otherwise, use the default chunk size
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD;
 
     const usdValue = await getUsdValue(this.depositAmount, this.srcAsset).catch(() => undefined);
