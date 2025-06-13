@@ -142,18 +142,28 @@ export default class QuoteRequest {
   private async setDcaQuoteParams() {
     if (!this.dcaEnabled) return;
 
-    const usdChunkSize = env.DCA_CHUNK_SIZE_USD?.[this.srcAsset] ?? env.DCA_DEFAULT_CHUNK_SIZE_USD;
+    const usdChunkSize =
+      // if we have a chunk size for the destination asset, use that first
+      env.DCA_BUY_CHUNK_SIZE_USD?.[this.destAsset] ??
+      // otherwise, if we have a chunk size for the source asset, use that next
+      env.DCA_SELL_CHUNK_SIZE_USD?.[this.srcAsset] ??
+      // otherwise, use the default chunk size
+      env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD;
 
     const usdValue = await getUsdValue(this.depositAmount, this.srcAsset).catch(() => undefined);
+
     if (!usdValue) {
-      logger.error(
-        `could not get usd value for DCA quote calculation. asset: ${this.srcAsset} , amount: ${this.depositAmount}`,
-      );
+      logger.error('could not get usd value for DCA quote calculation', {
+        srcAsset: this.srcAsset,
+        destAsset: this.destAsset,
+        amount: this.depositAmount,
+        usdChunkSize,
+      });
       return;
     }
-    if (Number(usdValue) <= usdChunkSize) {
-      return;
-    }
+
+    if (Number(usdValue) <= usdChunkSize) return;
+
     const numberOfChunks = Math.ceil(Number(usdValue) / usdChunkSize);
 
     if (numberOfChunks > MAX_NUMBER_OF_CHUNKS) {

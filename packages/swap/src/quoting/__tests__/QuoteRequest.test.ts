@@ -28,9 +28,9 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
   beforeEach(() => {
     vi.clearAllMocks();
     Object.assign(env, originalEnv);
-    env.DCA_CHUNK_SIZE_USD = { Btc: 3000 };
+    env.DCA_SELL_CHUNK_SIZE_USD = { Btc: 3000 };
     env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
-    env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
+    env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
   });
 
   it('should correctly return 9060 usd worth of btc', async () => {
@@ -80,13 +80,31 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
   });
 
   it('should correctly handle number of chunks bigger than max', async () => {
-    const chunkSizeUsd = BigInt(env.DCA_CHUNK_SIZE_USD?.Btc ?? env.DCA_DEFAULT_CHUNK_SIZE_USD);
+    const chunkSizeUsd = BigInt(
+      env.DCA_SELL_CHUNK_SIZE_USD?.Btc ?? env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD,
+    );
     const maxUsdValue = BigInt(MAX_NUMBER_OF_CHUNKS) * chunkSizeUsd + 1n;
     vi.mocked(getUsdValue).mockResolvedValue(maxUsdValue.toString());
 
     const request = createRequest(1n);
     await request['setDcaQuoteParams']();
     expect(request['dcaQuoteParams']).toEqual(null);
+  });
+
+  it('uses the buy chunk size if it exists', async () => {
+    env.DCA_BUY_CHUNK_SIZE_USD = { Flip: 200 };
+    env.DCA_SELL_CHUNK_SIZE_USD = { Flip: 300 };
+    vi.mocked(getUsdValue).mockResolvedValue('6000');
+    const request = createRequest(15000n);
+    await request['setDcaQuoteParams']();
+    expect(request['dcaQuoteParams']).toMatchInlineSnapshot(`
+      {
+        "additionalSwapDurationSeconds": 348,
+        "chunkIntervalBlocks": 2,
+        "chunkSize": 500n,
+        "numberOfChunks": 30,
+      }
+    `);
   });
 });
 

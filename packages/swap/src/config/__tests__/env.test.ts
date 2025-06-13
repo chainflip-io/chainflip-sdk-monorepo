@@ -26,12 +26,13 @@ describe('env', () => {
       {
         "BROKER_COMMISSION_BPS": 0,
         "CHAINFLIP_NETWORK": "mainnet",
+        "DCA_BUY_CHUNK_SIZE_USD": {},
         "DCA_CHUNK_INTERVAL_BLOCKS": 2,
         "DCA_CHUNK_PRICE_IMPACT_PERCENT": {
           "Flip": 0.25,
         },
-        "DCA_CHUNK_SIZE_USD": {},
-        "DCA_DEFAULT_CHUNK_SIZE_USD": 3000,
+        "DCA_DEFAULT_SELL_CHUNK_SIZE_USD": 3000,
+        "DCA_SELL_CHUNK_SIZE_USD": {},
         "DISABLED_DEPOSIT_INTERNAL_ASSETS": Set {},
         "DISABLED_DESTINATION_INTERNAL_ASSETS": Set {},
         "DISABLE_BOOST_QUOTING": false,

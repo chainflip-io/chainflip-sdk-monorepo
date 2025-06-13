@@ -906,9 +906,9 @@ describe('server', () => {
     });
 
     it('gets the DCA quote to USDC', async () => {
-      env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
+      env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
-      env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
+      env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(500e6))
@@ -1131,9 +1131,9 @@ describe('server', () => {
     });
 
     it('throws 400 if dca quote and regular quote totalLiquidity is lower than egressAmount', async () => {
-      env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
+      env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
-      env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
+      env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(0))
@@ -1216,9 +1216,9 @@ describe('server', () => {
     });
 
     it('returns regular quote if DCA does not pass totalLiquidity check', async () => {
-      env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
+      env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
-      env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
+      env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(0))
@@ -1323,9 +1323,9 @@ describe('server', () => {
     });
 
     it('returns DCA quote if regular does not pass totalLiquidity check', async () => {
-      env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
+      env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
-      env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
+      env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(200e6))
@@ -1428,9 +1428,9 @@ describe('server', () => {
     });
 
     it('gets the DCA quote with a boost quote and broker fees', async () => {
-      env.DCA_CHUNK_SIZE_USD = { Btc: 3000 };
+      env.DCA_SELL_CHUNK_SIZE_USD = { Btc: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
-      env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
+      env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(1e18))
@@ -1886,9 +1886,9 @@ describe('server', () => {
     });
 
     it('gets no DCA quote if the flag is missing', async () => {
-      env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
+      env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
-      env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
+      env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
       vi.mocked(getUsdValue).mockResolvedValue('9800');
 
       mockRpcResponse((url, data: any) => {
@@ -1995,9 +1995,9 @@ describe('server', () => {
     });
 
     it('gets only REGULAR quote because amount is less than 3000', async () => {
-      env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
+      env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
-      env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
+      env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
       vi.mocked(getUsdValue).mockResolvedValue('2000');
 
       mockRpcResponse((url, data: any) => {
@@ -2103,9 +2103,9 @@ describe('server', () => {
     });
 
     it('gets only REGULAR quote when DCA quoting is disabled', async () => {
-      env.DCA_CHUNK_SIZE_USD = { Eth: 3000 };
+      env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
-      env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
+      env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       env.DISABLE_DCA_QUOTING = true;
 
@@ -2331,9 +2331,9 @@ describe('server', () => {
       });
 
       it('properly quotes with DCA', async () => {
-        env.DCA_CHUNK_SIZE_USD = { Btc: 3000 };
+        env.DCA_SELL_CHUNK_SIZE_USD = { Btc: 3000 };
         env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
-        env.DCA_DEFAULT_CHUNK_SIZE_USD = 2000;
+        env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
         env.DISABLE_DCA_QUOTING = false;
         vi.mocked(getUsdValue).mockResolvedValue('98000');
         vi.mocked(getTotalLiquidity)
