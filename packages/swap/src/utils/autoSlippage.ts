@@ -43,12 +43,6 @@ const getUndeployedLiquidityAdjustment = async (asset: ChainflipAsset, amount: b
   return 0;
 };
 
-const getPriceImpactAdjustment = async (asset: ChainflipAsset, dcaChunks: number) => {
-  const priceImpactPercent = env.DCA_CHUNK_PRICE_IMPACT_PERCENT?.[asset] ?? 0;
-
-  return priceImpactPercent * (dcaChunks - 1);
-};
-
 const getLiquidityAdjustment = async ({
   srcAsset,
   destAsset,
@@ -60,14 +54,12 @@ const getLiquidityAdjustment = async ({
   amount: bigint;
   dcaChunks: number;
 }) => {
-  const [deployedLiquidityAdjustment, undeployedLiquidityAdjustment, priceImpactAdjustment] =
-    await Promise.all([
-      getDeployedLiquidityAdjustment(srcAsset, destAsset, amount * BigInt(dcaChunks)),
-      getUndeployedLiquidityAdjustment(destAsset, amount * BigInt(dcaChunks)),
-      getPriceImpactAdjustment(srcAsset !== 'Usdc' ? srcAsset : destAsset, dcaChunks),
-    ]);
+  const [deployedLiquidityAdjustment, undeployedLiquidityAdjustment] = await Promise.all([
+    getDeployedLiquidityAdjustment(srcAsset, destAsset, amount * BigInt(dcaChunks)),
+    getUndeployedLiquidityAdjustment(destAsset, amount * BigInt(dcaChunks)),
+  ]);
 
-  return deployedLiquidityAdjustment + undeployedLiquidityAdjustment + priceImpactAdjustment;
+  return deployedLiquidityAdjustment + undeployedLiquidityAdjustment;
 };
 
 export const calculateRecommendedSlippage = async ({
