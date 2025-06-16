@@ -1,10 +1,9 @@
-import { swappingRefundEgressScheduled as schema180 } from '@chainflip/processor/180/swapping/refundEgressScheduled';
+import { swappingRefundEgressScheduled as schema11000 } from '@chainflip/processor/11000/swapping/refundEgressScheduled';
 import { swappingRefundEgressScheduled as schema190 } from '@chainflip/processor/190/swapping/refundEgressScheduled';
 import z from 'zod';
-import { Prisma } from '../../client.js';
 import type { EventHandlerArgs } from '../index.js';
 
-const eventArgs = z.union([schema190, schema180]);
+const eventArgs = z.union([schema11000, schema190]);
 
 export type RefundEgressScheduledArgs = z.input<typeof eventArgs>;
 
@@ -17,25 +16,9 @@ export default async function refundEgressScheduled({
     swapRequestId,
     egressId: [chain, nativeId],
     egressFee: [egressFee, egressFeeAsset],
+    refundFee,
     amount: egressAmount,
   } = eventArgs.parse(event.args);
-
-  const [aggregate, swapRequest] = await Promise.all([
-    prisma.swap.aggregate({
-      where: { swapRequest: { nativeId: swapRequestId }, swapExecutedBlockIndex: { not: null } },
-      _sum: { swapInputAmount: true },
-    }),
-    prisma.swapRequest.findUniqueOrThrow({
-      where: { nativeId: swapRequestId },
-      include: { fees: { where: { type: 'INGRESS' } } },
-    }),
-  ]);
-
-  const refundFee = swapRequest.swapInputAmount
-    .minus(aggregate._sum.swapInputAmount ?? 0)
-    .minus(egressAmount?.toString() ?? 0)
-    .minus(egressFee?.toString() ?? 0)
-    .minus(swapRequest.fees.reduce((acc, fee) => acc.plus(fee.amount), new Prisma.Decimal(0)));
 
   await prisma.swapRequest.update({
     where: { nativeId: swapRequestId },
@@ -56,12 +39,12 @@ export default async function refundEgressScheduled({
             asset: egressFeeAsset,
             amount: egressFee.toString(),
           },
-          ...(refundFee.gt(0)
+          ...(refundFee > 0n
             ? [
                 {
                   type: 'REFUND' as const,
                   asset: egressFeeAsset,
-                  amount: refundFee.toFixed(),
+                  amount: refundFee.toString(), // check .toFixed()
                 },
               ]
             : []),

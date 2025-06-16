@@ -26,7 +26,7 @@ exports[`refundEgressScheduled > calculates the refund fee 1`] = `
       "type": "EGRESS",
     },
     {
-      "amount": "99999000",
+      "amount": "123456789",
       "asset": "Eth",
       "type": "REFUND",
     },

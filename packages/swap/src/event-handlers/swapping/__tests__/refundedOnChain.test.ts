@@ -42,6 +42,7 @@ describe(refundedOnChain, () => {
           accountId: bytesToHex(
             ss58.decode('cFNwtr2mPhpUEB5AyJq38DqMKMkSdzaL9548hajN2DRTwh7Mq').data,
           ),
+          refundFee: '0x75bcd15',
           amount: '100000000',
           asset: { __kind: 'Eth' },
         }),
@@ -142,6 +143,7 @@ describe(refundedOnChain, () => {
           accountId: bytesToHex(
             ss58.decode('cFNwtr2mPhpUEB5AyJq38DqMKMkSdzaL9548hajN2DRTwh7Mq').data,
           ),
+          refundFee: '0x75bcd15',
           amount: '95000000',
           asset: { __kind: 'Eth' },
         }),
@@ -189,7 +191,7 @@ describe(refundedOnChain, () => {
         "fallbackEgressId": null,
         "fees": [
           {
-            "amount": "5000000",
+            "amount": "123456789",
             "asset": "Eth",
             "id": Any<BigInt>,
             "swapId": null,

@@ -91,6 +91,7 @@ describe(refundEgressScheduled, () => {
         args: check<RefundEgressScheduledArgs>({
           swapRequestId: '9876545',
           egressFee: ['1000', { __kind: 'Eth' }],
+          refundFee: '0x75bcd15',
           asset: { __kind: 'Eth' },
           amount: '400000000',
           egressId: [{ __kind: 'Ethereum' }, '1'] as const,

@@ -253,8 +253,8 @@ importers:
         specifier: ^1.2.5
         version: 1.2.5(typescript@5.8.3)
       '@chainflip/processor':
-        specifier: ~1.9.3
-        version: 1.9.3
+        specifier: ~1.10.0
+        version: 1.10.0
       '@chainflip/redis':
         specifier: ^1.0.2
         version: 1.0.2
@@ -515,8 +515,8 @@ packages:
   '@chainflip/bitcoin@1.2.5':
     resolution: {integrity: sha512-zgXdfvmuDXWkLCLwLerR3MSTkmMTCJ/rHIfAJ8w186dq66KZ7HSFtU13Ht/UQeoWolrKrw/3janmR0ahqDdkEA==}
 
-  '@chainflip/processor@1.9.3':
-    resolution: {integrity: sha512-diEhIh/QdRVXBGzCZ8Il6cxzWrzBl4AmCB0ZIMNE0i7NVXh5pIrT90T3JAkrC734O5vMyYZCikDnhWSFV4SXoQ==}
+  '@chainflip/processor@1.10.0':
+    resolution: {integrity: sha512-UTSaXmFGUUQSjYqhLjACc4g+VwPcFVFRvYAGWls+oN2BLj5KRlWlUNYHTnyw6ShZAovIzrjn52DucZWWWrJoMw==}
 
   '@chainflip/redis@1.0.2':
     resolution: {integrity: sha512-ahkz+xKt5pX1gx4QikphdvTpZX8fjNgi/84q1WLXaAOoUop4pWdUw/boXv7rzg2xIqIdvDFk82/zz1g0OmiySQ==}
@@ -5625,6 +5625,9 @@ packages:
   zod@3.24.4:
     resolution: {integrity: sha512-OdqJE9UDRPwWsrHjLN2F8bPxvwJBK22EHLWtanu0LSYr5YqzsaaW3RMgmjwr8Rypg5k+meEJdSPXJZXE/yqOMg==}
 
+  zod@3.25.64:
+    resolution: {integrity: sha512-hbP9FpSZf7pkS7hRVUrOjhwKJNyampPgtXKc3AN6DsWtoHsg2Sb4SQaS4Tcay380zSwd2VPo9G9180emBACp5g==}
+
   zod@3.25.7:
     resolution: {integrity: sha512-YGdT1cVRmKkOg6Sq7vY7IkxdphySKnXhaUmFI4r4FcuFVNgpCb9tZfNwXbT6BPjD5oz0nubFsoo9pIqKrDcCvg==}
 
@@ -5816,10 +5819,10 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@chainflip/processor@1.9.3':
+  '@chainflip/processor@1.10.0':
     dependencies:
       '@chainflip/utils': 0.8.6
-      zod: 3.25.7
+      zod: 3.25.64
 
   '@chainflip/redis@1.0.2':
     dependencies:
@@ -11839,5 +11842,7 @@ snapshots:
   zod@3.24.3: {}
 
   zod@3.24.4: {}
+
+  zod@3.25.64: {}
 
   zod@3.25.7: {}
