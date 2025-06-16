@@ -1,5 +1,5 @@
 import { WsClient, RpcParams } from '@chainflip/rpc';
-import { ChainflipAsset, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
+import { AssetAndChain, ChainflipAsset, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import WebSocket from 'ws';
 import { DcaParams, SwapFeeType } from '@/shared/schemas.js';
@@ -24,6 +24,19 @@ export type SwapRateArgs = {
   excludeFees?: SwapFeeType[];
 };
 
+export type SwapRateAmount = AssetAndChain & {
+  amount: bigint;
+};
+
+export type SwapRateResult = {
+  ingressFee: SwapRateAmount;
+  networkFee: SwapRateAmount;
+  brokerFee: SwapRateAmount;
+  egressFee: SwapRateAmount;
+  intermediateAmount: bigint | null;
+  egressAmount: bigint;
+};
+
 export const getSwapRateV3 = async ({
   srcAsset,
   destAsset,
@@ -33,7 +46,7 @@ export const getSwapRateV3 = async ({
   ccmParams: _ccmParams,
   excludeFees,
   brokerCommissionBps,
-}: SwapRateArgs) => {
+}: SwapRateArgs): Promise<SwapRateResult> => {
   const client = initializeClient();
   const dcaParams = _dcaParams
     ? {

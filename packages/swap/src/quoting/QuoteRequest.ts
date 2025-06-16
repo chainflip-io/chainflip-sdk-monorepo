@@ -3,7 +3,7 @@ import { assetConstants, internalAssetToRpcAsset } from '@chainflip/utils/chainf
 import BigNumber from 'bignumber.js';
 import { Query } from 'express-serve-static-core';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts.js';
-import { getPipAmountFromAmount, bigintMax } from '@/shared/functions.js';
+import { getPipAmountFromAmount, bigintMax, ONE_IN_PIP } from '@/shared/functions.js';
 import { ensure } from '@/shared/guards.js';
 import { getFulfilledResult } from '@/shared/promises.js';
 import {
@@ -37,7 +37,7 @@ import {
   validateSwapAmount,
 } from '../utils/rpc.js';
 import ServiceError from '../utils/ServiceError.js';
-import { getSwapRateV3 } from '../utils/statechain.js';
+import { getSwapRateV3, SwapRateResult } from '../utils/statechain.js';
 import { estimateSwapDuration, getSwapPrice } from '../utils/swap.js';
 
 const logger = baseLogger.child({ module: 'quoting' });
@@ -248,20 +248,24 @@ export default class QuoteRequest {
       excludeFees.push('IngressVaultSwap');
     }
 
+    let swapRateResult = await getSwapRateV3({
+      srcAsset: this.srcAsset,
+      destAsset: this.destAsset,
+      depositAmount: cfRateInputAmount,
+      limitOrders: ensure(
+        this.limitOrders,
+        'Limit orders must be fetched before calling getPoolQuote',
+      ),
+      brokerCommissionBps: this.brokerCommissionBps,
+      ccmParams: this.ccmParams,
+      dcaParams,
+      excludeFees,
+    });
+    if (dcaParams && dcaParams?.numberOfChunks > 1) {
+      swapRateResult = await this.applyDcaPriceImpact(swapRateResult);
+    }
     const { egressFee, ingressFee, networkFee, egressAmount, intermediateAmount, brokerFee } =
-      await getSwapRateV3({
-        srcAsset: this.srcAsset,
-        destAsset: this.destAsset,
-        depositAmount: cfRateInputAmount,
-        limitOrders: ensure(
-          this.limitOrders,
-          'Limit orders must be fetched before calling getPoolQuote',
-        ),
-        brokerCommissionBps: this.brokerCommissionBps,
-        ccmParams: this.ccmParams,
-        dcaParams,
-        excludeFees,
-      });
+      swapRateResult;
 
     const swapInputAmount = cfRateInputAmount - ingressFee.amount;
     const swapOutputAmount = egressAmount + egressFee.amount;
@@ -388,6 +392,61 @@ export default class QuoteRequest {
       totalLiquidityLeg1 > BigInt(quote.intermediateAmount!) &&
       totalLiquidityLeg2 > BigInt(quote.egressAmount)
     );
+  }
+
+  private async applyDcaPriceImpact(swapRateResult: SwapRateResult): Promise<SwapRateResult> {
+    const leg1BaseAsset = this.srcAsset === 'Usdc' ? this.destAsset : this.srcAsset;
+    const leg1PriceImpact100kPercent = env.DCA_100K_USD_PRICE_IMPACT_PERCENT[leg1BaseAsset] ?? 0;
+
+    const leg2BaseAsset = swapRateResult.intermediateAmount ? this.destAsset : undefined;
+    const leg2PriceImpact100kPercent =
+      (leg2BaseAsset && env.DCA_100K_USD_PRICE_IMPACT_PERCENT[leg2BaseAsset]) ?? 0;
+
+    if (!leg1PriceImpact100kPercent && !leg2PriceImpact100kPercent) {
+      return swapRateResult;
+    }
+
+    const leg1UsdValue = await getUsdValue(this.depositAmount, this.srcAsset).catch(
+      () => undefined,
+    );
+    const leg2UsdValue =
+      swapRateResult.intermediateAmount &&
+      (await getUsdValue(swapRateResult.intermediateAmount, this.destAsset).catch(() => undefined));
+    if (!leg1UsdValue || (swapRateResult.intermediateAmount && !leg2UsdValue)) {
+      logger.error('could not get usd value for applying price impact', {
+        srcAsset: this.srcAsset,
+        destAsset: this.destAsset,
+        depositAmount: this.depositAmount,
+        quote: swapRateResult,
+      });
+      return swapRateResult;
+    }
+
+    const leg1PriceImpactBps = (leg1PriceImpact100kPercent * 100 * Number(leg1UsdValue)) / 100_000;
+    const leg2PriceImpactBps = (leg2PriceImpact100kPercent * 100 * Number(leg2UsdValue)) / 100_000;
+
+    const adjustedResult = structuredClone(swapRateResult);
+    adjustedResult.networkFee.amount = getPipAmountFromAmount(
+      adjustedResult.networkFee.amount,
+      ONE_IN_PIP - leg1PriceImpactBps,
+    );
+    adjustedResult.brokerFee.amount = getPipAmountFromAmount(
+      adjustedResult.brokerFee.amount,
+      ONE_IN_PIP - leg1PriceImpactBps,
+    );
+    adjustedResult.egressFee.amount = getPipAmountFromAmount(
+      adjustedResult.egressFee.amount,
+      ONE_IN_PIP - leg1PriceImpactBps - leg2PriceImpactBps,
+    );
+    adjustedResult.intermediateAmount =
+      adjustedResult.intermediateAmount &&
+      getPipAmountFromAmount(adjustedResult.intermediateAmount, ONE_IN_PIP - leg1PriceImpactBps);
+    adjustedResult.egressAmount = getPipAmountFromAmount(
+      adjustedResult.egressAmount,
+      ONE_IN_PIP - leg1PriceImpactBps - leg2PriceImpactBps,
+    );
+
+    return adjustedResult;
   }
 
   async generateQuotes() {
