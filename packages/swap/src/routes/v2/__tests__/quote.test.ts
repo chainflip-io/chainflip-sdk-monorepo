@@ -14,6 +14,7 @@ import {
 } from '@/shared/tests/fixtures.js';
 import prisma, { InternalAsset } from '../../../client.js';
 import env from '../../../config/env.js';
+import { getInternalSwapNetworkFeeInfo } from '../../../polkadot/api.js';
 import { getUsdValue } from '../../../pricing/checkPriceWarning.js';
 import Quoter from '../../../quoting/Quoter.js';
 import app from '../../../server.js';
@@ -61,6 +62,7 @@ vi.mock('../../../pricing/checkPriceWarning', () => ({
 
 vi.mock('../../../polkadot/api', () => ({
   getBoostSafeMode: vi.fn().mockResolvedValue(true),
+  getInternalSwapNetworkFeeInfo: vi.fn(),
 }));
 
 const originalEnv = structuredClone(env);
@@ -2279,8 +2281,12 @@ describe('server', () => {
     });
 
     describe('on chain', () => {
-      it('properly quotes on chain swaps between stables', async () => {
+      it('properly quotes for regular swaps', async () => {
         vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2000e18));
+        vi.mocked(getInternalSwapNetworkFeeInfo).mockResolvedValueOnce({
+          networkFeeBps: 5n, // 0.05%
+          minimumNetworkFee: 500_000n, // 0.5 USDC
+        });
 
         const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
           broker_commission: buildFee('Usdc', 0),
@@ -2339,6 +2345,15 @@ describe('server', () => {
         vi.mocked(getTotalLiquidity)
           .mockResolvedValueOnce(BigInt(10e18))
           .mockResolvedValueOnce(BigInt(10e18));
+        vi.mocked(getInternalSwapNetworkFeeInfo)
+          .mockResolvedValueOnce({
+            networkFeeBps: 5n, // 0.05%
+            minimumNetworkFee: 500_000n, // 0.5 USDC
+          })
+          .mockResolvedValueOnce({
+            networkFeeBps: 5n, // 0.05%
+            minimumNetworkFee: 500_000n, // 0.5 USDC
+          });
 
         mockRpcResponse((url, data: any) => {
           if (data.method === 'cf_environment') {
@@ -2473,6 +2488,10 @@ describe('server', () => {
 
       it('respects the minimum network fee', async () => {
         vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2000e18));
+        vi.mocked(getInternalSwapNetworkFeeInfo).mockResolvedValueOnce({
+          networkFeeBps: 5n, // 0.05%
+          minimumNetworkFee: 500_000n, // 0.5 USDC
+        });
 
         const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
           broker_commission: buildFee('Usdc', 0),

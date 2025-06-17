@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { Query } from 'express-serve-static-core';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts.js';
 import { getPipAmountFromAmount, bigintMax } from '@/shared/functions.js';
-import { ensure, isStableCoin } from '@/shared/guards.js';
+import { ensure } from '@/shared/guards.js';
 import { getFulfilledResult } from '@/shared/promises.js';
 import {
   quoteQuerySchema,
@@ -21,7 +21,7 @@ import type Quoter from './Quoter.js';
 import { InternalAsset, Pool } from '../client.js';
 import { RpcLimitOrder } from './Quoter.js';
 import env from '../config/env.js';
-import { getBoostSafeMode } from '../polkadot/api.js';
+import { getBoostSafeMode, getInternalSwapNetworkFeeInfo } from '../polkadot/api.js';
 import { getUsdValue, checkPriceWarning } from '../pricing/checkPriceWarning.js';
 import { getAssetPrice } from '../pricing/index.js';
 import { calculateRecommendedSlippage } from '../utils/autoSlippage.js';
@@ -48,9 +48,6 @@ export const MAX_NUMBER_OF_CHUNKS = Math.ceil(
     CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS /
     env.DCA_CHUNK_INTERVAL_BLOCKS,
 );
-
-const isStableCoinSwap = (srcAsset: InternalAsset, destAsset: InternalAsset) =>
-  isStableCoin(srcAsset) && isStableCoin(destAsset);
 
 export default class QuoteRequest {
   static async create(quoter: Quoter, query: Query) {
@@ -297,15 +294,16 @@ export default class QuoteRequest {
 
     includedFees.push({ ...ingressFee, type: 'INGRESS' });
 
-    if (this.isOnChain && networkFee.amount > env.MINIMUM_NETWORK_FEE_USDC) {
-      const networkFeeBps = isStableCoinSwap(this.srcAsset, this.destAsset)
-        ? env.ON_CHAIN_STABLECOIN_NETWORK_FEE_BPS
-        : env.ON_CHAIN_DEFAULT_NETWORK_FEE_BPS;
+    // TODO(1.10): use new parameter on cf_swap_rate_v3 to handle internal swap network fees
+    if (this.isOnChain) {
+      const { networkFeeBps, minimumNetworkFee } = await getInternalSwapNetworkFeeInfo();
       const normalNetworkFeeBps = 10n;
-      networkFee.amount = bigintMax(
-        (networkFee.amount * networkFeeBps) / normalNetworkFeeBps,
-        env.MINIMUM_NETWORK_FEE_USDC,
-      );
+      if (networkFee.amount > minimumNetworkFee && networkFeeBps !== normalNetworkFeeBps) {
+        networkFee.amount = bigintMax(
+          (networkFee.amount * networkFeeBps) / normalNetworkFeeBps,
+          minimumNetworkFee,
+        );
+      }
     }
 
     includedFees.push({ ...networkFee, type: 'NETWORK' });
