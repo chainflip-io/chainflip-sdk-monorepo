@@ -151,9 +151,6 @@ export default z
     QUOTER_USE_MEV_FACTOR: optionalBoolean,
     BROKER_COMMISSION_BPS: optionalNumber(0),
     RPC_COMMISSION_BROKER_HTTPS_URL: httpUrl.optional(),
-    ON_CHAIN_DEFAULT_NETWORK_FEE_BPS: optionalNumber(5).transform((n) => BigInt(n)),
-    ON_CHAIN_STABLECOIN_NETWORK_FEE_BPS: optionalNumber(5).transform((n) => BigInt(n)),
-    MINIMUM_NETWORK_FEE_USDC: optionalNumber(0.5).transform((v) => BigInt(v * 1e6)),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);

@@ -64,7 +64,7 @@ exports[`server > GET /v2/quote > excludes the ingress fee for vault swaps 1`] =
 ]
 `;
 
-exports[`server > GET /v2/quote > on chain > properly quotes on chain swaps between stables 1`] = `
+exports[`server > GET /v2/quote > on chain > properly quotes for regular swaps 1`] = `
 [
   {
     "depositAmount": "1000000000000",
@@ -86,7 +86,7 @@ exports[`server > GET /v2/quote > on chain > properly quotes on chain swaps betw
         "type": "INGRESS",
       },
       {
-        "amount": "100000000",
+        "amount": "500000000",
         "asset": "USDC",
         "chain": "Ethereum",
         "type": "NETWORK",

@@ -31,3 +31,22 @@ export const getBoostSafeMode = async (asset: ChainflipAsset) => {
   const { chain } = assetConstants[asset];
   return flags[`ingressEgress${chain}`]?.boostDepositsEnabled ?? false;
 };
+
+export const getInternalSwapNetworkFeeInfo = memoize(
+  async (): Promise<{ networkFeeBps: bigint; minimumNetworkFee: bigint }> => {
+    const api = await getApi();
+
+    const [feePerMill, minimumNetworkFee] = await Promise.all([
+      api.query.swapping.internalSwapNetworkFee().then((codec) => z.number().parse(codec.toJSON())),
+      api.query.swapping
+        .internalSwapMinimumNetworkFee()
+        .then((codec) => z.number().parse(codec.toJSON())),
+    ]);
+
+    return {
+      networkFeeBps: BigInt(feePerMill) / 100n,
+      minimumNetworkFee: BigInt(minimumNetworkFee),
+    };
+  },
+  60_000,
+);
