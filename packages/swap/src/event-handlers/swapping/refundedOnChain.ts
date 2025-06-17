@@ -6,7 +6,7 @@ import { EventHandlerArgs } from '../index.js';
 const swappingRefundedOnChain = z.union([
   schema11000,
   schema190.transform(({ ...args }) => ({ ...args, refundFee: undefined })),
-]);
+]) as const satisfies z.ZodTypeAny;
 
 export type SwappingRefundedOnChainArgs = z.input<typeof swappingRefundedOnChain>;
 

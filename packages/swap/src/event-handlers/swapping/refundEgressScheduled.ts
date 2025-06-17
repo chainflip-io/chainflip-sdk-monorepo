@@ -4,51 +4,10 @@ import z from 'zod';
 import { Prisma } from '../../client.js';
 import type { EventHandlerArgs } from '../index.js';
 
-type RefundEgressScheduledArgsType = {
-  swapRequestId: bigint;
-  asset:
-    | 'Eth'
-    | 'Flip'
-    | 'Usdc'
-    | 'Dot'
-    | 'Btc'
-    | 'ArbEth'
-    | 'ArbUsdc'
-    | 'Usdt'
-    | 'Sol'
-    | 'SolUsdc'
-    | 'HubDot'
-    | 'HubUsdt'
-    | 'HubUsdc';
-  amount: bigint;
-  egressId: ['Ethereum' | 'Polkadot' | 'Bitcoin' | 'Arbitrum' | 'Solana' | 'Assethub', bigint];
-  egressFee: [
-    bigint,
-    (
-      | 'Eth'
-      | 'Flip'
-      | 'Usdc'
-      | 'Dot'
-      | 'Btc'
-      | 'ArbEth'
-      | 'ArbUsdc'
-      | 'Usdt'
-      | 'Sol'
-      | 'SolUsdc'
-      | 'HubDot'
-      | 'HubUsdt'
-      | 'HubUsdc'
-    ),
-  ];
-};
-
 const eventArgs = z.union([
   schema11000,
-  schema190.transform((data): RefundEgressScheduledArgsType => {
-    const { refundFee, ...rest } = data;
-    return rest as RefundEgressScheduledArgsType;
-  }),
-]) as z.ZodType<RefundEgressScheduledArgsType>;
+  schema190.transform(({ ...args }) => ({ ...args, refundFee: undefined })),
+]) as const satisfies z.ZodTypeAny;
 
 export type RefundEgressScheduledArgs = z.input<typeof eventArgs>;
 
