@@ -37,7 +37,7 @@ export default async function refundedOnChain({ prisma, event }: EventHandlerArg
       refundFeeAmount = refundFee.toFixed();
     }
   } else {
-    refundFeeAmount = Number(protocolRefundFee).toFixed();
+    refundFeeAmount = protocolRefundFee.toString();
   }
 
   await prisma.swapRequest.update({

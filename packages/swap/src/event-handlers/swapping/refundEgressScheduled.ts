@@ -48,7 +48,7 @@ export default async function refundEgressScheduled({
       refundFeeAmount = refundFee.toFixed();
     }
   } else {
-    refundFeeAmount = Number(protocolRefundFee).toFixed();
+    refundFeeAmount = protocolRefundFee.toString();
   }
 
   const fees = [
