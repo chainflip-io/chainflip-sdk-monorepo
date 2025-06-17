@@ -44,7 +44,7 @@ export const getInternalSwapNetworkFeeInfo = memoize(
     ]);
 
     return {
-      networkFeeBps: BigInt(feePerMill / 100),
+      networkFeeBps: BigInt(feePerMill) / 100n,
       minimumNetworkFee: BigInt(minimumNetworkFee),
     };
   },
