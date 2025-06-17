@@ -911,6 +911,7 @@ describe('server', () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(500e6))
@@ -1136,6 +1137,7 @@ describe('server', () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(0))
@@ -1221,6 +1223,7 @@ describe('server', () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(0))
@@ -1328,6 +1331,7 @@ describe('server', () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(200e6))
@@ -1433,6 +1437,7 @@ describe('server', () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Btc: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(1e18))
@@ -1891,6 +1896,7 @@ describe('server', () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
       vi.mocked(getUsdValue).mockResolvedValue('9800');
 
       mockRpcResponse((url, data: any) => {
@@ -2000,6 +2006,7 @@ describe('server', () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
       vi.mocked(getUsdValue).mockResolvedValue('2000');
 
       mockRpcResponse((url, data: any) => {
@@ -2108,6 +2115,7 @@ describe('server', () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       env.DISABLE_DCA_QUOTING = true;
 
@@ -2340,6 +2348,7 @@ describe('server', () => {
         env.DCA_SELL_CHUNK_SIZE_USD = { Btc: 3000 };
         env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
         env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+        env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
         env.DISABLE_DCA_QUOTING = false;
         vi.mocked(getUsdValue).mockResolvedValue('98000');
         vi.mocked(getTotalLiquidity)
