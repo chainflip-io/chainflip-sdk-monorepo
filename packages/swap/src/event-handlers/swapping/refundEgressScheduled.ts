@@ -7,7 +7,7 @@ import type { EventHandlerArgs } from '../index.js';
 const eventArgs = z.union([
   schema11000,
   schema190.transform(({ ...args }) => ({ ...args, refundFee: undefined })),
-]) as const satisfies z.ZodTypeAny;
+]) satisfies z.ZodUnion<[typeof schema11000, z.ZodEffects<typeof schema190>]>;
 
 export type RefundEgressScheduledArgs = z.input<typeof eventArgs>;
 
