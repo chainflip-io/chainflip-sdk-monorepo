@@ -62,6 +62,68 @@ exports[`refundEgressScheduled > calculates the refund fee 1`] = `
 }
 `;
 
+exports[`refundEgressScheduled > calculates the refund fee for schema 190 1`] = `
+{
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "completedAt": null,
+  "completedBlockIndex": null,
+  "dcaChunkIntervalBlocks": null,
+  "dcaNumberOfChunks": null,
+  "depositAmount": "10000000000",
+  "depositBoostedAt": null,
+  "depositBoostedBlockIndex": null,
+  "depositFinalisedAt": 2022-12-06T14:31:33.000Z,
+  "depositFinalisedBlockIndex": "20-0",
+  "depositTransactionRef": null,
+  "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+  "destAsset": "Dot",
+  "effectiveBoostFeeBps": null,
+  "egressId": null,
+  "fallbackEgressId": null,
+  "fees": [
+    {
+      "amount": "1000",
+      "asset": "Eth",
+      "type": "EGRESS",
+    },
+    {
+      "amount": "99999000",
+      "asset": "Eth",
+      "type": "REFUND",
+    },
+  ],
+  "fokMinPriceX128": null,
+  "fokRefundAddress": null,
+  "fokRetryDurationBlocks": null,
+  "id": Any<BigInt>,
+  "maxBoostFeeBps": 0,
+  "nativeId": 9876545n,
+  "originType": "VAULT",
+  "prewitnessedDepositId": null,
+  "refundEgress": {
+    "amount": "400000000",
+    "broadcastId": null,
+    "chain": "Ethereum",
+    "fallbackDestinationAddress": null,
+    "id": Any<BigInt>,
+    "nativeId": 1n,
+    "scheduledAt": 2022-12-06T14:31:45.000Z,
+    "scheduledBlockIndex": "120-0",
+  },
+  "refundEgressId": Any<BigInt>,
+  "requestType": "LEGACY_SWAP",
+  "srcAddress": null,
+  "srcAsset": "Eth",
+  "swapDepositChannelId": null,
+  "swapInputAmount": "9500000000",
+  "swapOutputAmount": null,
+  "swapRequestedAt": 2022-12-06T14:31:33.000Z,
+  "swapRequestedBlockIndex": "92-398",
+  "totalBrokerCommissionBps": 0,
+}
+`;
+
 exports[`refundEgressScheduled > creates egress for refund on an existing swap 1`] = `
 {
   "ccmGasBudget": null,

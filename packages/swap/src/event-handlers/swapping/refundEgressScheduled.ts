@@ -24,7 +24,6 @@ export default async function refundEgressScheduled({
     refundFee: protocolRefundFee,
   } = eventArgs.parse(event.args);
 
-  // TODO: add test to cover both cases
   let refundFeeAmount: string | null = null;
 
   if (!protocolRefundFee) {
