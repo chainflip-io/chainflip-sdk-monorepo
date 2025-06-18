@@ -411,7 +411,7 @@ export default class QuoteRequest {
     );
     const leg2UsdValue =
       swapRateResult.intermediateAmount &&
-      (await getUsdValue(swapRateResult.intermediateAmount, this.destAsset).catch(() => undefined));
+      (await getUsdValue(swapRateResult.intermediateAmount, 'Usdc').catch(() => undefined));
     if (!leg1UsdValue || (swapRateResult.intermediateAmount && !leg2UsdValue)) {
       logger.error('could not get usd value for applying price impact', {
         srcAsset: this.srcAsset,
