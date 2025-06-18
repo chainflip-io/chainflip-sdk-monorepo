@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       zod:
-        specifier: ^3.25.7
-        version: 3.25.7
+        specifier: ^3.25.67
+        version: 3.25.67
     devDependencies:
       '@types/node':
         specifier: ^22.15.19
@@ -182,8 +182,8 @@ importers:
         specifier: ^1.13.3
         version: 1.13.3
       zod:
-        specifier: ^3.25.7
-        version: 3.25.7
+        specifier: ^3.25.67
+        version: 3.25.67
     devDependencies:
       '@trpc/server':
         specifier: ^10.45.2
@@ -222,8 +222,8 @@ importers:
         specifier: ^8.18.2
         version: 8.18.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       zod:
-        specifier: ^3.25.7
-        version: 3.25.7
+        specifier: ^3.25.67
+        version: 3.25.67
     devDependencies:
       '@ethersproject/abi':
         specifier: ^5.8.0
@@ -253,8 +253,8 @@ importers:
         specifier: ^1.2.5
         version: 1.2.5(typescript@5.8.3)
       '@chainflip/processor':
-        specifier: ~1.9.3
-        version: 1.9.3
+        specifier: ~1.10.0
+        version: 1.10.0
       '@chainflip/redis':
         specifier: ^1.0.2
         version: 1.0.2
@@ -515,8 +515,8 @@ packages:
   '@chainflip/bitcoin@1.2.5':
     resolution: {integrity: sha512-zgXdfvmuDXWkLCLwLerR3MSTkmMTCJ/rHIfAJ8w186dq66KZ7HSFtU13Ht/UQeoWolrKrw/3janmR0ahqDdkEA==}
 
-  '@chainflip/processor@1.9.3':
-    resolution: {integrity: sha512-diEhIh/QdRVXBGzCZ8Il6cxzWrzBl4AmCB0ZIMNE0i7NVXh5pIrT90T3JAkrC734O5vMyYZCikDnhWSFV4SXoQ==}
+  '@chainflip/processor@1.10.0':
+    resolution: {integrity: sha512-UTSaXmFGUUQSjYqhLjACc4g+VwPcFVFRvYAGWls+oN2BLj5KRlWlUNYHTnyw6ShZAovIzrjn52DucZWWWrJoMw==}
 
   '@chainflip/redis@1.0.2':
     resolution: {integrity: sha512-ahkz+xKt5pX1gx4QikphdvTpZX8fjNgi/84q1WLXaAOoUop4pWdUw/boXv7rzg2xIqIdvDFk82/zz1g0OmiySQ==}
@@ -5625,8 +5625,8 @@ packages:
   zod@3.24.4:
     resolution: {integrity: sha512-OdqJE9UDRPwWsrHjLN2F8bPxvwJBK22EHLWtanu0LSYr5YqzsaaW3RMgmjwr8Rypg5k+meEJdSPXJZXE/yqOMg==}
 
-  zod@3.25.7:
-    resolution: {integrity: sha512-YGdT1cVRmKkOg6Sq7vY7IkxdphySKnXhaUmFI4r4FcuFVNgpCb9tZfNwXbT6BPjD5oz0nubFsoo9pIqKrDcCvg==}
+  zod@3.25.67:
+    resolution: {integrity: sha512-idA2YXwpCdqUSKRCACDE6ItZD9TZzy3OZMtpfLoh6oPR47lipysRrJfjzMqFxQ3uJuUPyUeWe1r9vLH33xO/Qw==}
 
 snapshots:
 
@@ -5816,17 +5816,17 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@chainflip/processor@1.9.3':
+  '@chainflip/processor@1.10.0':
     dependencies:
       '@chainflip/utils': 0.8.6
-      zod: 3.25.7
+      zod: 3.25.67
 
   '@chainflip/redis@1.0.2':
     dependencies:
       '@chainflip/utils': 0.8.6
       bignumber.js: 9.3.0
       ioredis: 5.6.1
-      zod: 3.25.7
+      zod: 3.25.67
     transitivePeerDependencies:
       - supports-color
 
@@ -11840,4 +11840,4 @@ snapshots:
 
   zod@3.24.4: {}
 
-  zod@3.25.7: {}
+  zod@3.25.67: {}
