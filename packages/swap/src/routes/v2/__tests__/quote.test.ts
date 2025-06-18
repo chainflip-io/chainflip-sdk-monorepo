@@ -911,6 +911,7 @@ describe('server', () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(500e6))
@@ -1132,10 +1133,237 @@ describe('server', () => {
       );
     });
 
+    it('applies price impact to DCA quote', async () => {
+      env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
+      env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
+      env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = { Eth: 10 }; // 10/100000*9800=0.98% price impact for swap
+      vi.mocked(getUsdValue).mockResolvedValue('9800');
+      vi.mocked(getTotalLiquidity)
+        .mockResolvedValueOnce(BigInt(500e6))
+        .mockResolvedValueOnce(BigInt(200e6));
+
+      mockRpcResponse((url, data: any) => {
+        if (data.method === 'cf_environment') {
+          return Promise.resolve({
+            data: environment({
+              maxSwapAmount: null,
+              ingressFee: hexEncodeNumber(0x61a8),
+              egressFee: hexEncodeNumber(0x0),
+            }),
+          });
+        }
+
+        if (data.method === 'cf_boost_pools_depth') {
+          return Promise.resolve({
+            data: boostPoolsDepth(),
+          });
+        }
+
+        if (data.method === 'cf_accounts') {
+          return Promise.resolve({
+            data: {
+              id: 1,
+              jsonrpc: '2.0',
+              result: [
+                ['cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH', 'Chainflip Testnet Broker 2'],
+              ],
+            },
+          });
+        }
+
+        if (data.method === 'cf_account_info') {
+          return Promise.resolve({
+            data: cfAccountInfo(),
+          });
+        }
+
+        if (data.method === 'cf_pool_depth') {
+          return Promise.resolve({
+            data: cfPoolDepth(),
+          });
+        }
+
+        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+      });
+
+      const sendSpy = vi
+        .spyOn(WsClient.prototype, 'sendRequest')
+        .mockResolvedValueOnce({
+          broker_commission: buildFee('Usdc', 0),
+          ingress_fee: buildFee('Eth', 25000),
+          egress_fee: buildFee('Usdc', 8000),
+          network_fee: buildFee('Usdc', 100100),
+          intermediary: null,
+          output: BigInt(100e6),
+        })
+        .mockResolvedValueOnce({
+          broker_commission: buildFee('Usdc', 0),
+          ingress_fee: buildFee('Eth', 25000),
+          egress_fee: buildFee('Usdc', 8000),
+          network_fee: buildFee('Usdc', 100100),
+          intermediary: null,
+          output: BigInt(100e6),
+        });
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'ETH',
+        destChain: 'Ethereum',
+        destAsset: 'USDC',
+        amount: (1e18).toString(),
+        dcaEnabled: 'true',
+      });
+
+      const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
+
+      expect(status).toBe(200);
+      expect(body).toEqual([
+        {
+          depositAmount: '1000000000000000000',
+          destAsset: {
+            asset: 'USDC',
+            chain: 'Ethereum',
+          },
+          egressAmount: (100e6).toString(),
+          estimatedDurationSeconds: 144,
+          estimatedDurationsSeconds: {
+            deposit: 30,
+            egress: 102,
+            swap: 12,
+          },
+          estimatedPrice: '100.0080000000025002',
+          recommendedSlippageTolerancePercent: 1,
+          includedFees: [
+            {
+              amount: '25000',
+              asset: 'ETH',
+              chain: 'Ethereum',
+              type: 'INGRESS',
+            },
+            {
+              amount: '100100',
+              asset: 'USDC',
+              chain: 'Ethereum',
+              type: 'NETWORK',
+            },
+            {
+              amount: '8000',
+              asset: 'USDC',
+              chain: 'Ethereum',
+              type: 'EGRESS',
+            },
+          ],
+          poolInfo: [
+            {
+              baseAsset: { asset: 'ETH', chain: 'Ethereum' },
+              fee: {
+                amount: '0',
+                asset: 'ETH',
+                chain: 'Ethereum',
+              },
+              quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
+            },
+          ],
+          srcAsset: {
+            asset: 'ETH',
+            chain: 'Ethereum',
+          },
+          type: 'REGULAR',
+        },
+        {
+          depositAmount: '1000000000000000000',
+          destAsset: {
+            asset: 'USDC',
+            chain: 'Ethereum',
+          },
+          egressAmount: '99020000',
+          estimatedDurationSeconds: 180,
+          estimatedDurationsSeconds: {
+            deposit: 30,
+            egress: 102,
+            swap: 48,
+          },
+          estimatedPrice: '99.02792100000247569803',
+          recommendedSlippageTolerancePercent: 1,
+          includedFees: [
+            {
+              amount: '25000',
+              asset: 'ETH',
+              chain: 'Ethereum',
+              type: 'INGRESS',
+            },
+            {
+              amount: '99119',
+              asset: 'USDC',
+              chain: 'Ethereum',
+              type: 'NETWORK',
+            },
+            {
+              amount: '7921',
+              asset: 'USDC',
+              chain: 'Ethereum',
+              type: 'EGRESS',
+            },
+          ],
+          poolInfo: [
+            {
+              baseAsset: { asset: 'ETH', chain: 'Ethereum' },
+              fee: {
+                amount: '0',
+                asset: 'ETH',
+                chain: 'Ethereum',
+              },
+              quoteAsset: { asset: 'USDC', chain: 'Ethereum' },
+            },
+          ],
+          dcaParams: {
+            chunkIntervalBlocks: 2,
+            numberOfChunks: 4,
+          },
+          srcAsset: {
+            asset: 'ETH',
+            chain: 'Ethereum',
+          },
+          type: 'DCA',
+        },
+      ]);
+
+      expect(sendSpy).toHaveBeenCalledTimes(2);
+      expect(sendSpy).toHaveBeenNthCalledWith(
+        1,
+        'cf_swap_rate_v3',
+        { asset: 'ETH', chain: 'Ethereum' },
+        { asset: 'USDC', chain: 'Ethereum' },
+        '0xde0b6b3a7640000', // 1e18
+        0,
+        undefined,
+        undefined,
+        [],
+        [],
+      );
+      expect(sendSpy).toHaveBeenNthCalledWith(
+        2,
+        'cf_swap_rate_v3',
+        { asset: 'ETH', chain: 'Ethereum' },
+        { asset: 'USDC', chain: 'Ethereum' },
+        '0xde0b6b3a7640000', // 1e18
+        0,
+        {
+          number_of_chunks: 4,
+          chunk_interval: 2,
+        },
+        undefined,
+        [],
+        [],
+      );
+    });
+
     it('throws 400 if dca quote and regular quote totalLiquidity is lower than egressAmount', async () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(0))
@@ -1221,6 +1449,7 @@ describe('server', () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(0))
@@ -1328,6 +1557,7 @@ describe('server', () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(200e6))
@@ -1433,6 +1663,7 @@ describe('server', () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Btc: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       vi.mocked(getTotalLiquidity)
         .mockResolvedValueOnce(BigInt(1e18))
@@ -1891,6 +2122,7 @@ describe('server', () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
       vi.mocked(getUsdValue).mockResolvedValue('9800');
 
       mockRpcResponse((url, data: any) => {
@@ -2000,6 +2232,7 @@ describe('server', () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
       vi.mocked(getUsdValue).mockResolvedValue('2000');
 
       mockRpcResponse((url, data: any) => {
@@ -2108,6 +2341,7 @@ describe('server', () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
       vi.mocked(getUsdValue).mockResolvedValue('9800');
       env.DISABLE_DCA_QUOTING = true;
 
@@ -2340,6 +2574,7 @@ describe('server', () => {
         env.DCA_SELL_CHUNK_SIZE_USD = { Btc: 3000 };
         env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
         env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+        env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
         env.DISABLE_DCA_QUOTING = false;
         vi.mocked(getUsdValue).mockResolvedValue('98000');
         vi.mocked(getTotalLiquidity)

@@ -113,9 +113,9 @@ export default z
     DCA_DEFAULT_SELL_CHUNK_SIZE_USD: optionalNumber(3000),
     DCA_SELL_CHUNK_SIZE_USD: internalAssetMap('DCA_SELL_CHUNK_SIZE_USD', {}, z.number()),
     DCA_BUY_CHUNK_SIZE_USD: internalAssetMap('DCA_BUY_CHUNK_SIZE_USD', {}, z.number()),
-    DCA_CHUNK_PRICE_IMPACT_PERCENT: internalAssetMap(
-      'DCA_CHUNK_PRICE_IMPACT_PERCENT',
-      { Flip: 0.25 },
+    DCA_100K_USD_PRICE_IMPACT_PERCENT: internalAssetMap(
+      'DCA_100K_USD_PRICE_IMPACT_PERCENT',
+      {},
       z.number(),
     ),
     QUOTING_BASE_SLIPPAGE: internalAssetMap('QUOTING_BASE_SLIPPAGE', {}, z.number()),

@@ -21,16 +21,20 @@ describe('env', () => {
       Flop: '12',
     });
     process.env.FULLY_DISABLED_INTERNAL_ASSETS = 'Ton,HubDot';
+    process.env.DCA_100K_USD_PRICE_IMPACT_PERCENT = JSON.stringify({
+      Flip: 0.1,
+    });
+
     const { default: env } = await vi.importActual('../env.js');
     expect(env).toMatchInlineSnapshot(`
       {
         "BROKER_COMMISSION_BPS": 0,
         "CHAINFLIP_NETWORK": "mainnet",
+        "DCA_100K_USD_PRICE_IMPACT_PERCENT": {
+          "Flip": 0.1,
+        },
         "DCA_BUY_CHUNK_SIZE_USD": {},
         "DCA_CHUNK_INTERVAL_BLOCKS": 2,
-        "DCA_CHUNK_PRICE_IMPACT_PERCENT": {
-          "Flip": 0.25,
-        },
         "DCA_DEFAULT_SELL_CHUNK_SIZE_USD": 3000,
         "DCA_SELL_CHUNK_SIZE_USD": {},
         "DISABLED_DEPOSIT_INTERNAL_ASSETS": Set {},
