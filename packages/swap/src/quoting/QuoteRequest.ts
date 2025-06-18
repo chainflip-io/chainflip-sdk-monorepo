@@ -262,6 +262,9 @@ export default class QuoteRequest {
       excludeFees,
     });
     if (dcaParams && dcaParams?.numberOfChunks > 1) {
+      // the dca quote assumes that all chunks of the swap will be executed at the same price
+      // this assumption is wrong for assets with limited global liquidity like the flip token
+      // therefore we want to factor in the estimated price change into the quote
       swapRateResult = await this.applyDcaPriceImpact(swapRateResult);
     }
     const { egressFee, ingressFee, networkFee, egressAmount, intermediateAmount, brokerFee } =
