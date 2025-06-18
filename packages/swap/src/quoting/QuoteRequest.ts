@@ -425,8 +425,12 @@ export default class QuoteRequest {
       return swapRateResult;
     }
 
-    const leg1PriceImpactBps = (leg1PriceImpact100kPercent * 100 * Number(leg1UsdValue)) / 100_000;
-    const leg2PriceImpactBps = (leg2PriceImpact100kPercent * 100 * Number(leg2UsdValue)) / 100_000;
+    const leg1PriceImpactBps = Math.round(
+      (leg1PriceImpact100kPercent * 100 * Number(leg1UsdValue)) / 100_000,
+    );
+    const leg2PriceImpactBps = Math.round(
+      (leg2PriceImpact100kPercent * 100 * Number(leg2UsdValue)) / 100_000,
+    );
 
     const adjustedResult = structuredClone(swapRateResult);
     adjustedResult.networkFee.amount = getPipAmountFromAmount(
