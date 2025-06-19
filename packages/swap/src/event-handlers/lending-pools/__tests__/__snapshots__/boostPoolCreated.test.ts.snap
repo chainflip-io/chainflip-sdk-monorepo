@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`lendingPoolsBoostPoolCreated > handles event by creating a boost pool entry 1`] = `
+{
+  "asset": "Btc",
+  "boostEnabled": true,
+  "depositEnabled": true,
+  "feeTierPips": 10,
+  "id": Any<Number>,
+  "withdrawEnabled": true,
+}
+`;

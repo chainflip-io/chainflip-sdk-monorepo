@@ -14,6 +14,7 @@ import { depositFinalised } from './ingress-egress/depositFinalised.js';
 import { insufficientBoostLiquidity } from './ingress-egress/insufficientBoostLiquidity.js';
 import transactionRejectedByBroker from './ingress-egress/transactionRejectedByBroker.js';
 import transferFallbackRequested from './ingress-egress/transferFallbackRequested.js';
+import { lendingPoolsBoostPoolCreated } from './lending-pools/boostPoolCreated.js';
 import newPoolCreated from './liquidity-pools/newPoolCreated.js';
 import poolFeeSet from './liquidity-pools/poolFeeSet.js';
 import liquidityDepositAddressReady from './liquidity-provider/liquidityDepositAddressReady.js';
@@ -51,6 +52,9 @@ const genericPalletEvents = <const P extends string, const E extends string>(
   ) as GenericPalletEventMap<P, E>;
 
 export const events = {
+  LendingPools: {
+    BoostPoolCreated: 'LendingPools.BoostPoolCreated',
+  },
   LiquidityPools: {
     NewPoolCreated: 'LiquidityPools.NewPoolCreated',
     PoolFeeSet: 'LiquidityPools.PoolFeeSet',
@@ -209,6 +213,12 @@ const handlers = [
         name: 'Swapping.RefundedOnChain',
         handler: refundedOnChain,
       },
+    ],
+  },
+  {
+    spec: '1.10.0' as Semver,
+    handlers: [
+      { name: events.LendingPools.BoostPoolCreated, handler: lendingPoolsBoostPoolCreated },
     ],
   },
 ];
