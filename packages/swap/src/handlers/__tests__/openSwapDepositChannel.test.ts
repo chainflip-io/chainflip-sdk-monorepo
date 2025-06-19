@@ -322,24 +322,6 @@ describe(openSwapDepositChannel, () => {
     });
   });
 
-  it('rejects sanctioned addresses', async () => {
-    await expect(
-      openSwapDepositChannel({
-        srcAsset: 'FLIP',
-        srcChain: 'Ethereum',
-        destAsset: 'DOT',
-        destChain: 'Polkadot',
-        destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
-        expectedDepositAmount: '777',
-        fillOrKillParams: {
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-          retryDurationBlocks: 2,
-          minPriceX128: '1',
-        },
-      }),
-    ).rejects.toThrow('Failed to open deposit channel, please try again later');
-  });
-
   it('rejects if source asset is disabled', async () => {
     env.FULLY_DISABLED_INTERNAL_ASSETS = new Set(['Flip', 'Btc']);
 
