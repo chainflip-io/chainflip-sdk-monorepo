@@ -42,7 +42,6 @@ describe('env', () => {
         "DISABLE_BOOST_QUOTING": false,
         "DISABLE_DCA_QUOTING": false,
         "DISABLE_QUOTING": false,
-        "ELLIPTIC_RISK_SCORE_TOLERANCE": 9,
         "FULLY_DISABLED_INTERNAL_ASSETS": Set {
           "HubDot",
         },

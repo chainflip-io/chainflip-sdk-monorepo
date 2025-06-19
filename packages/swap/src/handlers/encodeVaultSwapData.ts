@@ -6,7 +6,6 @@ import { transformKeysToCamelCase } from '@/shared/objects.js';
 import { chainflipAddress } from '@/shared/parsers.js';
 import env from '../config/env.js';
 import { assertRouteEnabled } from '../utils/env.js';
-import isDisallowedSwap from '../utils/isDisallowedSwap.js';
 import logger from '../utils/logger.js';
 import { validateSwapAmount } from '../utils/rpc.js';
 import ServiceError from '../utils/ServiceError.js';
@@ -25,17 +24,6 @@ export const encodeVaultSwapDataSchema = getParameterEncodingRequestSchema(
 
 export const encodeVaultSwapData = async (input: z.output<typeof encodeVaultSwapDataSchema>) => {
   logger.info('Fetching vault swap data', input);
-
-  if (
-    await isDisallowedSwap(
-      input.destAddress,
-      input.srcAddress,
-      input.fillOrKillParams.refund_address,
-    )
-  ) {
-    logger.info('Blocked address found for vault swap data', input);
-    throw ServiceError.internalError('Failed to get vault swap data, please try again later');
-  }
 
   const srcAsset = getInternalAsset(input.srcAsset);
   const destAsset = getInternalAsset(input.destAsset);

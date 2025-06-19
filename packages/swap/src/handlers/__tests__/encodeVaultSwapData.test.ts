@@ -2,7 +2,6 @@ import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest';
 import { z } from 'zod';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
 import env from '../../config/env.js';
-import isDisallowedSwap from '../../utils/isDisallowedSwap.js';
 import { encodeVaultSwapData, encodeVaultSwapDataSchema } from '../encodeVaultSwapData.js';
 
 vi.mock('@/shared/broker.js', async (importOriginal) => {
@@ -12,10 +11,6 @@ vi.mock('@/shared/broker.js', async (importOriginal) => {
     requestSwapParameterEncoding: vi.fn(),
   };
 });
-
-vi.mock('../../utils/isDisallowedSwap.js', () => ({
-  default: vi.fn().mockResolvedValue(false),
-}));
 
 describe(encodeVaultSwapData, () => {
   let oldEnv: typeof env;
@@ -305,8 +300,6 @@ describe(encodeVaultSwapData, () => {
   });
 
   it('rejects sanctioned addresses', async () => {
-    vi.mocked(isDisallowedSwap).mockResolvedValueOnce(true);
-
     await expect(
       encodeVaultSwapData({
         srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -327,7 +320,6 @@ describe(encodeVaultSwapData, () => {
         },
       }),
     ).rejects.toThrow('Failed to get vault swap data, please try again later');
-    expect(vi.mocked(isDisallowedSwap).mock.calls).toMatchSnapshot();
   });
 
   it('rejects if source asset is disabled', async () => {
