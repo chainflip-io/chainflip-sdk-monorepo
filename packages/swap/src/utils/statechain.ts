@@ -3,7 +3,7 @@ import { AssetAndChain, ChainflipAsset, internalAssetToRpcAsset } from '@chainfl
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import WebSocket from 'ws';
 import { DcaParams, SwapFeeType } from '@/shared/schemas.js';
-import { memoize } from './function.js';
+import { memoize, isAtLeastSpecVersion } from './function.js';
 import env from '../config/env.js';
 
 const initializeClient = memoize(() => new WsClient(env.RPC_NODE_WSS_URL, WebSocket as never));
@@ -63,17 +63,13 @@ export const getSwapRateV3 = async ({
       }
     : undefined;
 
+  const isInternal = (await isAtLeastSpecVersion('1.10')) // TODO(1.10) remove release version check
+    ? includeInternalSwapNetworkFee
+    : undefined;
+
   const additionalOrders = limitOrders?.filter((order) => order.LimitOrder.sell_amount !== '0x0');
 
-  const {
-    ingress_fee: ingressFee,
-    network_fee: networkFee,
-    egress_fee: egressFee,
-    intermediary: intermediateAmount,
-    output: egressAmount,
-    broker_commission: brokerFee,
-  } = await client.sendRequest(
-    'cf_swap_rate_v3',
+  const commonParams = [
     internalAssetToRpcAsset[srcAsset],
     internalAssetToRpcAsset[destAsset],
     hexEncodeNumber(depositAmount),
@@ -82,8 +78,20 @@ export const getSwapRateV3 = async ({
     ccmParams,
     excludeFees,
     additionalOrders,
-    includeInternalSwapNetworkFee // do not know how to pass correctly 
-  );
+  ];
+
+  const params = (await isAtLeastSpecVersion('1.10'))
+    ? [...commonParams]
+    : [...commonParams, isInternal];
+
+  const {
+    ingress_fee: ingressFee,
+    network_fee: networkFee,
+    egress_fee: egressFee,
+    intermediary: intermediateAmount,
+    output: egressAmount,
+    broker_commission: brokerFee,
+  } = await client.sendRequest('cf_swap_rate_v3', ...params);
 
   return {
     ingressFee,
