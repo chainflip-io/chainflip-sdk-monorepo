@@ -124,6 +124,8 @@ describe(QuoteRequest.prototype.toLogInfo, () => {
         "duration": "0.15",
         "estimatedBoostFeeBps": undefined,
         "inputAmount": "0.01",
+        "isInternalSwap": false,
+        "isVaultSwap": false,
         "limitOrders": [],
         "maxBoostFeeBps": undefined,
         "regularQuote": null,
