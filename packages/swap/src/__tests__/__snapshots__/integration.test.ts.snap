@@ -75,6 +75,7 @@ exports[`python integration test > replies to a quote request with v2 endpoint 2
       "depositAmount": 1000000000000000000n,
       "destAsset": "Usdc",
       "excludeFees": [],
+      "isInternal": false,
       "limitOrders": [
         {
           "LimitOrder": {
