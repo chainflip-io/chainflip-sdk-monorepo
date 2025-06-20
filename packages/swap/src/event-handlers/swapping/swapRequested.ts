@@ -1,4 +1,4 @@
-import { swappingSwapRequested as schema180 } from '@chainflip/processor/180/swapping/swapRequested';
+import { swappingSwapRequested as schema11000 } from '@chainflip/processor/11000/swapping/swapRequested';
 import { swappingSwapRequested as schema190 } from '@chainflip/processor/190/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
 import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
@@ -12,36 +12,13 @@ import { pascalCaseToScreamingSnakeCase } from '@/shared/strings.js';
 import { Prisma } from '../../client.js';
 import type { EventHandlerArgs } from '../index.js';
 
-const transformSchema = (args: z.output<typeof schema180>): z.output<typeof schema190> => ({
-  ...args,
-  requestType:
-    args.requestType.__kind === 'Regular'
-      ? {
-          ...args.requestType,
-          __kind: 'Regular',
-          outputAction: {
-            __kind: 'Egress',
-            outputAddress: args.requestType.outputAddress,
-            ccmDepositMetadata: args.requestType.ccmDepositMetadata,
-          },
-        }
-      : args.requestType,
-  refundParameters: args.refundParameters && {
-    ...args.refundParameters,
-    refundDestination: {
-      __kind: 'ExternalAddress',
-      value: args.refundParameters.refundAddress,
-    },
-  },
-});
-
-const schema = z.union([schema190, schema180.transform(transformSchema)]);
+const schema = z.union([schema11000, schema190]);
 
 type RequestType = z.output<typeof schema>['requestType'];
 type Origin = z.output<typeof schema>['origin'];
 export type SwapRequestedArgs = z.input<typeof schema>;
-export type SwapRequestedArgs180 = z.input<typeof schema180>;
 export type SwapRequestedArgs190 = z.input<typeof schema190>;
+export type SwapRequestedArgs11000 = z.input<typeof schema11000>;
 
 const getRequestInfo = (requestType: RequestType) => {
   if (requestType.__kind === 'IngressEgressFee' || requestType.__kind === 'NetworkFee') {
