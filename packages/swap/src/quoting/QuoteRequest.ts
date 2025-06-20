@@ -556,6 +556,8 @@ export default class QuoteRequest {
       success: this.success,
       regularQuote: this.quote,
       dcaQuote: this.dcaQuote,
+      isInternalSwap: this.isOnChain,
+      isVaultSwap: this.isVaultSwap,
     };
   }
 }
