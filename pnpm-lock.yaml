@@ -291,9 +291,6 @@ importers:
       dotenv:
         specifier: ^16.5.0
         version: 16.5.0
-      elliptic-sdk:
-        specifier: ^0.9.0
-        version: 0.9.0
       ethers:
         specifier: ^6.14.1
         version: 6.14.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -2648,9 +2645,6 @@ packages:
 
   electron-to-chromium@1.5.155:
     resolution: {integrity: sha512-ps5KcGGmwL8VaeJlvlDlu4fORQpv3+GIcF5I3f9tUKUlJ/wsysh6HU8P5L1XWRYeXfA0oJd4PyM8ds8zTFf6Ng==}
-
-  elliptic-sdk@0.9.0:
-    resolution: {integrity: sha512-t3QagYsytSAtqBQoXPfkiwhbDP0kPcfr7GKa4XlTrjxuypmh3WHYbn2JrYUuUcq3lsLe9UbARbBCcYhTQox3og==}
 
   elliptic@6.6.1:
     resolution: {integrity: sha512-RaddvvMatK2LJHqFJ+YA4WysVN5Ita9E35botqIYspQ4TkRAlCicdzKOjlyv/1Za5RyTNn7di//eEV0uTAfe3g==}
@@ -8491,12 +8485,6 @@ snapshots:
   effect@3.5.7: {}
 
   electron-to-chromium@1.5.155: {}
-
-  elliptic-sdk@0.9.0:
-    dependencies:
-      axios: 1.9.0
-    transitivePeerDependencies:
-      - debug
 
   elliptic@6.6.1:
     dependencies:

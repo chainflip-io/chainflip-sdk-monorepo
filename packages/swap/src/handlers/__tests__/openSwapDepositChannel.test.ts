@@ -3,15 +3,10 @@ import * as broker from '@/shared/broker.js';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
 import prisma from '../../client.js';
 import env from '../../config/env.js';
-import isDisallowedSwap from '../../utils/isDisallowedSwap.js';
 import { openSwapDepositChannel, openSwapDepositChannelSchema } from '../openSwapDepositChannel.js';
 
 vi.mock('@/shared/broker.js', () => ({
   requestSwapDepositAddress: vi.fn(),
-}));
-
-vi.mock('../../utils/isDisallowedSwap.js', () => ({
-  default: vi.fn().mockResolvedValue(false),
 }));
 
 describe(openSwapDepositChannel, () => {
@@ -325,27 +320,6 @@ describe(openSwapDepositChannel, () => {
       createdAt: expect.any(Date),
       maxBoostFeeBps: 100,
     });
-  });
-
-  it('rejects sanctioned addresses', async () => {
-    vi.mocked(isDisallowedSwap).mockResolvedValueOnce(true);
-
-    await expect(
-      openSwapDepositChannel({
-        srcAsset: 'FLIP',
-        srcChain: 'Ethereum',
-        destAsset: 'DOT',
-        destChain: 'Polkadot',
-        destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
-        expectedDepositAmount: '777',
-        fillOrKillParams: {
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-          retryDurationBlocks: 2,
-          minPriceX128: '1',
-        },
-      }),
-    ).rejects.toThrow('deposit channel creation rejected');
-    expect(vi.mocked(isDisallowedSwap).mock.calls).toMatchSnapshot();
   });
 
   it('rejects if source asset is disabled', async () => {

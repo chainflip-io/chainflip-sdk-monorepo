@@ -14,7 +14,6 @@ import env from '../config/env.js';
 import { getAssetPrice } from '../pricing/index.js';
 import { assertRouteEnabled } from '../utils/env.js';
 import { calculateExpiryTime } from '../utils/function.js';
-import isDisallowedSwap from '../utils/isDisallowedSwap.js';
 import logger from '../utils/logger.js';
 import { validateSwapAmount } from '../utils/rpc.js';
 import ServiceError from '../utils/ServiceError.js';
@@ -65,17 +64,6 @@ export const openSwapDepositChannel = async ({
     throw ServiceError.badRequest(
       `Address "${input.destAddress}" is not a valid "${input.destChain}" address`,
     );
-  }
-
-  if (
-    await isDisallowedSwap(
-      input.destAddress,
-      input.srcAddress,
-      input.fillOrKillParams.refundAddress,
-    )
-  ) {
-    logger.info('Blocked address found for deposit channel', input);
-    throw ServiceError.internalError('deposit channel creation rejected');
   }
 
   logger.info('Opening swap deposit channel', input);

@@ -139,9 +139,6 @@ export default z
     // in case we want to disable quoting as a part of maintenance mode
     DISABLE_QUOTING: optionalBoolean,
     DISABLE_BOOST_QUOTING: optionalBoolean,
-    ELLIPTIC_API_KEY: z.string().optional(),
-    ELLIPTIC_API_SECRET: z.string().optional(),
-    ELLIPTIC_RISK_SCORE_TOLERANCE: optionalNumber(9),
     STABLE_COIN_SLIPPAGE_MIN_PRICE: optionalNumber(0.995).describe(
       'The targeted minimum price for stable coin swaps when providing a slippage recommendation',
     ),

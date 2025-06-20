@@ -411,16 +411,6 @@ exports[`openSwapDepositChannel > creates channel with fill or kill params and s
 }
 `;
 
-exports[`openSwapDepositChannel > rejects sanctioned addresses 1`] = `
-[
-  [
-    "5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd",
-    undefined,
-    "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
-  ],
-]
-`;
-
 exports[`openSwapDepositChannelSchema > creates channel with a commission 2`] = `
 [
   [
