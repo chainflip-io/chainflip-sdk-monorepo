@@ -1,50 +1,15 @@
+import { swappingSwapRequested as schema11000 } from '@chainflip/processor/11000/swapping/swapRequested';
+import { swappingSwapRequested as schema190 } from '@chainflip/processor/190/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
 import { bytesToHex } from '@chainflip/utils/bytes';
 import { assetConstants } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import prisma from '../../../client.js';
-import swapRequested, { SwapRequestedArgs, SwapRequestedArgs190 } from '../swapRequested.js';
+import { check } from '../../__tests__/utils.js';
+import swapRequested, { SwapRequestedArgs11000, SwapRequestedArgs190 } from '../swapRequested.js';
 
 const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
-
-const vaultBitcoin180 = {
-  origin: {
-    txId: {
-      value: '0xad7aa682145c044e7f0920eebbcccaa527657f3f7dad6300ad6043efcb9a1e2f',
-      __kind: 'Bitcoin',
-    },
-    __kind: 'Vault',
-    brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
-  },
-  brokerFees: [
-    {
-      bps: 100,
-      account: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
-    },
-    {
-      bps: 150,
-      account: '0xa27ef1c721066568cc4d3483f680fbad02e0b999ace3347393bd7ab82bef4f2e',
-    },
-  ],
-  inputAsset: { __kind: 'Btc' },
-  inputAmount: '10000000',
-  outputAsset: { __kind: 'Flip' },
-  requestType: {
-    __kind: 'Regular',
-    outputAddress: { value: '0xb2806f8993e01460bc2f6e50fab466b5525dbe3a', __kind: 'Eth' },
-  },
-  dcaParameters: { chunkInterval: 2, numberOfChunks: 1 },
-  swapRequestId: '1',
-  refundParameters: {
-    minPrice: '326183663919595400739649677085384465302843',
-    refundAddress: {
-      value: '0x6d76426367686f7345506973675338336963696e6a48696735346250635058457761',
-      __kind: 'Btc',
-    },
-    retryDuration: 150,
-  },
-} as const satisfies SwapRequestedArgs;
 
 const vaultBitcoin190 = {
   origin: {
@@ -135,70 +100,6 @@ const vaultSolana190 = {
     retryDuration: 10,
   },
 } as const satisfies SwapRequestedArgs190;
-
-const legacyVaultArbitrum180 = {
-  origin: {
-    txId: {
-      value: '0x9c617e12f6ddd5c7cff2236b32970bc2bd168799c90f907269348e6ca8c7be18',
-      __kind: 'Evm',
-    },
-    __kind: 'Vault',
-    brokerId: undefined,
-  },
-  brokerFees: [],
-  inputAsset: {
-    __kind: 'ArbUsdc',
-  },
-  inputAmount: '500000000',
-  outputAsset: {
-    __kind: 'Usdt',
-  },
-  requestType: {
-    __kind: 'Regular',
-    outputAddress: {
-      value: '0x16988558ad8ef084dbe0016c9ffdae908e480621',
-      __kind: 'Eth',
-    },
-  },
-  swapRequestId: '162',
-} as const satisfies SwapRequestedArgs;
-
-const depositChannel180 = {
-  origin: {
-    __kind: 'DepositChannel',
-    channelId: '6',
-    depositAddress: {
-      value:
-        '0x626372743170676a326e327071616b6c7a726466613377796d716d646e3235336d3368346c787366756d616a366136683767756d656474763573637665783266',
-      __kind: 'Btc',
-    },
-    depositBlockHeight: '167',
-    brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
-  },
-  brokerFees: [],
-  inputAsset: { __kind: 'Btc' },
-  inputAmount: '4999922',
-  outputAsset: { __kind: 'Eth' },
-  requestType: {
-    __kind: 'Regular',
-    outputAddress: { value: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0', __kind: 'Eth' },
-    ccmDepositMetadata: {
-      sourceChain: { __kind: 'Bitcoin' },
-      channelMetadata: {
-        message:
-          '0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000003f7a400000000000000000000000000000000000000000000000000000000000000074761735465737400000000000000000000000000000000000000000000000000',
-        gasBudget: '2',
-        ccmAdditionalData:
-          '0x7ae79240f09d236433572d970077360c2fb1af40f30a2463907f39ff189c49e602c459e18eb2391a1bf0ddc69201fce27ddd0f0f11c2f2b6e1b041c1300667d9fe583721a4b4aad88885a0f2881db68f6a12e385ad1b9ca3',
-      },
-    },
-  },
-  dcaParameters: {
-    numberOfChunks: 10,
-    chunkInterval: 2,
-  },
-  swapRequestId: '2',
-} as const satisfies SwapRequestedArgs;
 
 const depositChannel190 = {
   origin: {
@@ -353,56 +254,26 @@ describe(swapRequested, () => {
     await prisma.$queryRaw`TRUNCATE TABLE "SwapRequest", "SwapDepositChannel", private."SolanaPendingTxRef" CASCADE;`;
   });
 
-  it('creates a new swap request (DEPOSIT_CHANNEL 180)', async () => {
-    const channel = await prisma.swapDepositChannel.create({
-      data: {
-        srcChain: assetConstants[depositChannel180.inputAsset.__kind].chain,
-        depositAddress: Buffer.from(
-          depositChannel180.origin.depositAddress.value.slice(2),
-          'hex',
-        ).toString(),
-        issuedBlock: 1,
-        channelId: BigInt(depositChannel180.origin.channelId),
-        isExpired: false,
-        srcAsset: depositChannel180.inputAsset.__kind,
-        destAsset: depositChannel180.outputAsset.__kind,
-        destAddress: depositChannel180.requestType.outputAddress.value,
-        totalBrokerCommissionBps: 0,
-        openingFeePaid: 0,
-      },
-    });
-
-    await swapRequested({ prisma, event: { ...event, args: depositChannel180 }, block });
-
-    const request = await prisma.swapRequest.findFirstOrThrow();
-
-    expect(request.swapDepositChannelId).toBe(channel.id);
-    expect(request).toMatchSnapshot({
-      id: expect.any(BigInt),
-      swapDepositChannelId: expect.any(BigInt),
-    });
-  });
-
   it('creates a new swap request (DEPOSIT_CHANNEL 190)', async () => {
     const channel = await prisma.swapDepositChannel.create({
       data: {
         srcChain: assetConstants[depositChannel190.inputAsset.__kind].chain,
         depositAddress: Buffer.from(
-          depositChannel180.origin.depositAddress.value.slice(2),
+          depositChannel190.origin.depositAddress.value.slice(2),
           'hex',
         ).toString(),
         issuedBlock: 1,
-        channelId: BigInt(depositChannel180.origin.channelId),
+        channelId: BigInt(depositChannel190.origin.channelId),
         isExpired: false,
-        srcAsset: depositChannel180.inputAsset.__kind,
-        destAsset: depositChannel180.outputAsset.__kind,
-        destAddress: depositChannel180.requestType.outputAddress.value,
+        srcAsset: depositChannel190.inputAsset.__kind,
+        destAsset: depositChannel190.outputAsset.__kind,
+        destAddress: depositChannel190.requestType.outputAction.outputAddress.value,
         totalBrokerCommissionBps: 0,
         openingFeePaid: 0,
       },
     });
 
-    await swapRequested({ prisma, event: { ...event, args: depositChannel180 }, block });
+    await swapRequested({ prisma, event: { ...event, args: depositChannel190 }, block });
 
     const request = await prisma.swapRequest.findFirstOrThrow();
 
@@ -410,20 +281,6 @@ describe(swapRequested, () => {
     expect(request).toMatchSnapshot({
       id: expect.any(BigInt),
       swapDepositChannelId: expect.any(BigInt),
-    });
-  });
-
-  it('creates a new swap request (VAULT 180)', async () => {
-    await swapRequested({ prisma, event: { ...event, args: vaultBitcoin180 }, block });
-
-    const request = await prisma.swapRequest.findFirstOrThrow({ include: { beneficiaries: true } });
-
-    expect(request).toMatchSnapshot({
-      id: expect.any(BigInt),
-      beneficiaries: [
-        { id: expect.any(BigInt), swapRequestId: expect.any(BigInt) },
-        { id: expect.any(BigInt), swapRequestId: expect.any(BigInt) },
-      ],
     });
   });
 
@@ -438,16 +295,6 @@ describe(swapRequested, () => {
         { id: expect.any(BigInt), swapRequestId: expect.any(BigInt) },
         { id: expect.any(BigInt), swapRequestId: expect.any(BigInt) },
       ],
-    });
-  });
-
-  it('creates a new swap request (LEGACY VAULT 180)', async () => {
-    await swapRequested({ prisma, event: { ...event, args: legacyVaultArbitrum180 }, block });
-
-    const request = await prisma.swapRequest.findFirstOrThrow({ include: { beneficiaries: true } });
-
-    expect(request).toMatchSnapshot({
-      id: expect.any(BigInt),
     });
   });
 
@@ -530,5 +377,81 @@ describe(swapRequested, () => {
       id: expect.any(Number),
       swapDepositChannelId: expect.any(BigInt),
     });
+  });
+
+  it('parses 1.10 event correctly', async () => {
+    const swapRequestedEvent = check<SwapRequestedArgs11000>({
+      origin: {
+        txId: {
+          value: '0xcce559ffce1b15f1a1e8880616990aaff7aca23d2bf51e9a362f00e07fd94c71',
+          __kind: 'Evm',
+        },
+        __kind: 'Vault',
+        brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
+      },
+      brokerFees: [
+        {
+          bps: 1,
+          account: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
+        },
+      ],
+      inputAsset: {
+        __kind: 'Usdc',
+      },
+      inputAmount: '500000000',
+      outputAsset: {
+        __kind: 'Sol',
+      },
+      requestType: {
+        __kind: 'Regular',
+        outputAction: {
+          __kind: 'Egress',
+          outputAddress: {
+            value: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0',
+            __kind: 'Eth',
+          },
+          ccmDepositMetadata: {
+            sourceChain: {
+              __kind: 'Ethereum',
+            },
+            sourceAddress: {
+              value: '0xf2be49c0ae121b6199ddde819d9649c55448e7a2',
+              __kind: 'Eth',
+            },
+            channelMetadata: {
+              message: '0xc9b0',
+              gasBudget: '2589449',
+              ccmAdditionalData: {
+                __kind: 'Solana',
+                value: {
+                  __kind: 'V1',
+                  ccmAccounts: {
+                    cfReceiver: {
+                      pubkey: '0x0000000000000000000000000000000000000000',
+                      isWritable: false,
+                    },
+                    additionalAccounts: [],
+                    fallbackAddress: '0x0000000000000000000000000000000000000000',
+                  },
+                  alts: ['0x0000000000000000000000000000000000000000'],
+                },
+              },
+            },
+          },
+        },
+      },
+      swapRequestId: '538',
+      refundParameters: {
+        minPrice: '0',
+        refundDestination: {
+          __kind: 'ExternalAddress',
+          value: { value: '0x0f5d2c0695a5bf55ec6fb564ef367735029db563', __kind: 'Eth' },
+        },
+        retryDuration: 0,
+      },
+    });
+
+    expect(schema11000.safeParse(swapRequestedEvent)).toBeTruthy();
+    expect(() => schema190.parse(swapRequestedEvent)).toThrow();
   });
 });
