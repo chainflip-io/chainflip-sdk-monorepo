@@ -6,6 +6,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import authenticate from './quoting/authenticate.js';
 import Quoter from './quoting/Quoter.js';
+import addresses from './routes/addresses.js';
 import { handleError, maintenanceMode, quoteMiddleware } from './routes/common.js';
 import swap from './routes/swap.js';
 import thirdPartySwap from './routes/thirdPartySwap.js';
@@ -51,6 +52,8 @@ app.get('/healthcheck', (req, res) => {
 app.use('/v2/quote', quoteMiddleware, quoteRouterV2(quoter));
 
 app.use('/trpc', maintenanceMode, trpcExpress.createExpressMiddleware({ router: appRouter }));
+
+app.use('/addresses', addresses);
 
 app.use(handleError);
 
