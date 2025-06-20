@@ -510,12 +510,6 @@ model Quote {
   @@schema("private")
 }
 
-model BlockedAddress {
-  address String @unique
-
-  @@schema("private")
-}
-
 model SolanaPendingTxRef {
   id                   Int                 @id @default(autoincrement())
   address              String?
