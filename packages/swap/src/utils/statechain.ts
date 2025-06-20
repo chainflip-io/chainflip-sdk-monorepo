@@ -76,9 +76,9 @@ export const getSwapRateV3 = async ({
     additionalOrders,
   ];
 
-  const params = (await isAtLeastSpecVersion('1.10')) // TODO(1.10) remove release version check
-    ? [...commonParams, isInternal]
-    : [...commonParams];
+  const params: RpcParams['cf_swap_rate_v3'] = (await isAtLeastSpecVersion('1.10.0')) // TODO(1.10) remove release version check
+    ? ([...commonParams, isInternal] as const)
+    : ([...commonParams] as const);
 
   const {
     ingress_fee: ingressFee,

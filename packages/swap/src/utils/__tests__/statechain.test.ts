@@ -3,7 +3,7 @@ import { internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { describe, it, expect, vi } from 'vitest';
 import { InternalAsset } from '../../client.js';
-import { isAtLeastSpecVersion } from '../function';
+import { isAtLeastSpecVersion } from '../function.js';
 import { getSwapRateV3 } from '../statechain.js';
 
 vi.mock('../function', async (importOriginal) => {

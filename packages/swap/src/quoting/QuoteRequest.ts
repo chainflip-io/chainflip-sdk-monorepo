@@ -28,7 +28,7 @@ import { calculateRecommendedSlippage } from '../utils/autoSlippage.js';
 import { getBoostFeeBpsForAmount } from '../utils/boost.js';
 import { assertRouteEnabled } from '../utils/env.js';
 import { getPoolFees } from '../utils/fees.js';
-import { isAtLeastSpecVersion } from '../utils/function';
+import { isAtLeastSpecVersion } from '../utils/function.js';
 import baseLogger from '../utils/logger.js';
 import { getPools, getTotalLiquidity } from '../utils/pools.js';
 import {
@@ -304,7 +304,7 @@ export default class QuoteRequest {
     includedFees.push({ ...ingressFee, type: 'INGRESS' });
 
     // TODO(1.10): use new parameter on cf_swap_rate_v3 to handle internal swap network fees
-    if (this.isOnChain && !(await isAtLeastSpecVersion('1.10'))) {
+    if (this.isOnChain && !(await isAtLeastSpecVersion('1.10.0'))) {
       // TODO: check the version and do network fee adjustments if v < 1.10
       const { networkFeeBps, minimumNetworkFee } = await getInternalSwapNetworkFeeInfo();
       const normalNetworkFeeBps = 10n;
