@@ -261,7 +261,7 @@ export default class QuoteRequest {
       ccmParams: this.ccmParams,
       dcaParams,
       excludeFees,
-      includeInternalSwapNetworkFee: this.isOnChain,
+      isInternal: this.isOnChain,
     });
     if (dcaParams && dcaParams?.numberOfChunks > 1) {
       // the dca quote assumes that all chunks of the swap will be executed at the same price
@@ -304,7 +304,7 @@ export default class QuoteRequest {
     includedFees.push({ ...ingressFee, type: 'INGRESS' });
 
     // TODO(1.10): use new parameter on cf_swap_rate_v3 to handle internal swap network fees
-    if (this.isOnChain && !isAtLeastSpecVersion('1.10')) {
+    if (this.isOnChain && !(await isAtLeastSpecVersion('1.10'))) {
       // TODO: check the version and do network fee adjustments if v < 1.10
       const { networkFeeBps, minimumNetworkFee } = await getInternalSwapNetworkFeeInfo();
       const normalNetworkFeeBps = 10n;

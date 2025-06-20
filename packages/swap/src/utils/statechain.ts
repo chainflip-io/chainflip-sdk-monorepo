@@ -22,7 +22,7 @@ export type SwapRateArgs = {
   dcaParams?: DcaParams;
   ccmParams?: QuoteCcmParams;
   excludeFees?: SwapFeeType[];
-  includeInternalSwapNetworkFee?: boolean;
+  isInternal?: boolean;
 };
 
 export type SwapRateAmount = AssetAndChain & {
@@ -47,7 +47,7 @@ export const getSwapRateV3 = async ({
   ccmParams: _ccmParams,
   excludeFees,
   brokerCommissionBps,
-  includeInternalSwapNetworkFee,
+  isInternal,
 }: SwapRateArgs): Promise<SwapRateResult> => {
   const client = initializeClient();
   const dcaParams = _dcaParams
@@ -63,10 +63,6 @@ export const getSwapRateV3 = async ({
       }
     : undefined;
 
-  const isInternal = (await isAtLeastSpecVersion('1.10')) // TODO(1.10) remove release version check
-    ? includeInternalSwapNetworkFee
-    : undefined;
-
   const additionalOrders = limitOrders?.filter((order) => order.LimitOrder.sell_amount !== '0x0');
 
   const commonParams = [
@@ -80,9 +76,9 @@ export const getSwapRateV3 = async ({
     additionalOrders,
   ];
 
-  const params = (await isAtLeastSpecVersion('1.10'))
-    ? [...commonParams]
-    : [...commonParams, isInternal];
+  const params = (await isAtLeastSpecVersion('1.10')) // TODO(1.10) remove release version check
+    ? [...commonParams, isInternal]
+    : [...commonParams];
 
   const {
     ingress_fee: ingressFee,
