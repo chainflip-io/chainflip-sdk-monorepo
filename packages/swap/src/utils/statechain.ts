@@ -22,6 +22,7 @@ export type SwapRateArgs = {
   dcaParams?: DcaParams;
   ccmParams?: QuoteCcmParams;
   excludeFees?: SwapFeeType[];
+  includeInternalSwapNetworkFee?: boolean;
 };
 
 export type SwapRateAmount = AssetAndChain & {
@@ -46,6 +47,7 @@ export const getSwapRateV3 = async ({
   ccmParams: _ccmParams,
   excludeFees,
   brokerCommissionBps,
+  includeInternalSwapNetworkFee,
 }: SwapRateArgs): Promise<SwapRateResult> => {
   const client = initializeClient();
   const dcaParams = _dcaParams
@@ -80,6 +82,7 @@ export const getSwapRateV3 = async ({
     ccmParams,
     excludeFees,
     additionalOrders,
+    includeInternalSwapNetworkFee // do not know how to pass correctly 
   );
 
   return {
