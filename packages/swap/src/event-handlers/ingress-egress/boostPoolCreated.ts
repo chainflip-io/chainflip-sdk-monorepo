@@ -17,6 +17,7 @@ const schemas = {
   Assethub: assethubIngressEgressBoostPoolCreated,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
+// TODO: after 1.10 is live remove handler. it is handled in lending pools
 export const boostPoolCreated =
   (chain: ChainflipChain) =>
   async ({ prisma, event }: EventHandlerArgs) => {
