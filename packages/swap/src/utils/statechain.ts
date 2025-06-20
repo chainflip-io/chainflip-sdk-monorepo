@@ -65,21 +65,6 @@ export const getSwapRateV3 = async ({
 
   const additionalOrders = limitOrders?.filter((order) => order.LimitOrder.sell_amount !== '0x0');
 
-  const commonParams = [
-    internalAssetToRpcAsset[srcAsset],
-    internalAssetToRpcAsset[destAsset],
-    hexEncodeNumber(depositAmount),
-    brokerCommissionBps ?? 0,
-    dcaParams,
-    ccmParams,
-    excludeFees,
-    additionalOrders,
-  ];
-
-  const params: RpcParams['cf_swap_rate_v3'] = (await isAtLeastSpecVersion('1.10.0')) // TODO(1.10) remove release version check
-    ? ([...commonParams, isInternal] as const)
-    : ([...commonParams] as const);
-
   const {
     ingress_fee: ingressFee,
     network_fee: networkFee,
@@ -87,7 +72,30 @@ export const getSwapRateV3 = async ({
     intermediary: intermediateAmount,
     output: egressAmount,
     broker_commission: brokerFee,
-  } = await client.sendRequest('cf_swap_rate_v3', ...params);
+  } = (await isAtLeastSpecVersion('1.10.0')) // TODO(1.10) remove release version check
+    ? await client.sendRequest(
+        'cf_swap_rate_v3',
+        internalAssetToRpcAsset[srcAsset],
+        internalAssetToRpcAsset[destAsset],
+        hexEncodeNumber(depositAmount),
+        brokerCommissionBps ?? 0,
+        dcaParams,
+        ccmParams,
+        excludeFees,
+        additionalOrders,
+        isInternal,
+      )
+    : await client.sendRequest(
+        'cf_swap_rate_v3',
+        internalAssetToRpcAsset[srcAsset],
+        internalAssetToRpcAsset[destAsset],
+        hexEncodeNumber(depositAmount),
+        brokerCommissionBps ?? 0,
+        dcaParams,
+        ccmParams,
+        excludeFees,
+        additionalOrders,
+      );
 
   return {
     ingressFee,
