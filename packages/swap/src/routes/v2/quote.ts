@@ -13,10 +13,7 @@ const quoteRouter = (quoter: Quoter) => {
       const request = await QuoteRequest.create(quoter, req.query);
 
       try {
-        const result = await request.generateQuotes().then(
-          (qs) => ({ status: 'fulfilled' as const, value: qs }),
-          (err) => ({ status: 'rejected' as const, reason: err as Error }),
-        );
+        const result = await request.tryGenerateQuotes();
 
         if (result.status === 'fulfilled') {
           res.json(result.value);
