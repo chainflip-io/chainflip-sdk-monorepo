@@ -119,6 +119,8 @@ export default class QuoteRequest {
   private quote: RegularQuote | null = null;
   private dcaQuote: DCAQuote | null = null;
 
+  private error: Error | null = null;
+
   private readonly start = performance.now();
 
   constructor(
@@ -456,7 +458,7 @@ export default class QuoteRequest {
     return adjustedResult;
   }
 
-  async generateQuotes() {
+  private async generateQuotes() {
     await Promise.all([
       this.setBoostQuoteParams(),
       this.setDcaQuoteParams(),
@@ -516,8 +518,9 @@ export default class QuoteRequest {
       regularEagerLiquidityExists = await this.eagerLiquidityExists(this.quote);
     }
 
-    if (!regularEagerLiquidityExists && !dcaEagerLiquidityExists)
-      throw ServiceError.badRequest(`Insufficient liquidity for the requested amount`);
+    if (!regularEagerLiquidityExists && !dcaEagerLiquidityExists) {
+      throw ServiceError.badRequest(`insufficient liquidity for the requested amount`);
+    }
 
     const boostInfo = this.estimatedBoostFeeBps &&
       this.maxBoostFeeBps && {
@@ -534,8 +537,20 @@ export default class QuoteRequest {
     const result = [];
     if (this.quote && regularEagerLiquidityExists) result.push(this.quote);
     if (this.dcaQuote && dcaEagerLiquidityExists) result.push(this.dcaQuote);
-    this.success = true;
     return result;
+  }
+
+  tryGenerateQuotes() {
+    return this.generateQuotes().then(
+      (qs) => {
+        this.success = true;
+        return { status: 'fulfilled' as const, value: qs };
+      },
+      (err) => {
+        this.error = err as Error;
+        return { status: 'rejected' as const, reason: err as Error };
+      },
+    );
   }
 
   toLogInfo() {
@@ -558,6 +573,7 @@ export default class QuoteRequest {
       dcaQuote: this.dcaQuote,
       isInternalSwap: this.isOnChain,
       isVaultSwap: this.isVaultSwap,
+      error: this.error,
     };
   }
 }

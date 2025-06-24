@@ -122,6 +122,7 @@ describe(QuoteRequest.prototype.toLogInfo, () => {
         "destAsset": "Flip",
         "destAssetIndexPrice": null,
         "duration": "0.15",
+        "error": null,
         "estimatedBoostFeeBps": undefined,
         "inputAmount": "0.01",
         "isInternalSwap": false,
