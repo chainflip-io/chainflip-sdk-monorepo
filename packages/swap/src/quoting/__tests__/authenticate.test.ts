@@ -6,7 +6,7 @@ import {
 import * as crypto from 'crypto';
 import { promisify } from 'util';
 import { vi, describe, it, beforeEach, expect, Mock } from 'vitest';
-import prisma from '../../client.js';
+import prisma, { Prisma } from '../../client.js';
 import env from '../../config/env.js';
 import authenticate from '../authenticate.js';
 
@@ -150,40 +150,53 @@ describe(authenticate, () => {
     expect(next).toHaveBeenCalledWith(new Error('invalid signature'));
   });
 
-  it.each([
-    { beta: true, mevFactor: -1, useMevFactor: true },
-    { beta: false, mevFactor: -1, useMevFactor: false },
-  ])('accepts valid v2 authentication', async ({ useMevFactor, ...data }) => {
-    env.QUOTER_USE_MEV_FACTOR = useMevFactor;
-    const timestamp = Date.now();
-    const name = 'web_team_whales';
+  const marketMakerDataOptions = [
+    { beta: true, useMevFactor: false },
+    { beta: false, useMevFactor: true },
+  ] as const;
 
-    await prisma.marketMaker.update({ where: { name }, data });
+  const mevFactorOptions: Prisma.MevFactorCreateManyMarketMakerInput[] = [
+    { asset: 'Flip', factor: 1, side: 'SELL' },
+    { asset: 'Flip', factor: -1, side: 'BUY' },
+  ];
 
-    const signature = crypto
-      .sign(null, Buffer.from(`${name}${timestamp}`, 'utf8'), privateKey)
-      .toString('base64');
+  it.each(marketMakerDataOptions.map((opts) => ({ ...opts, mevFactors: mevFactorOptions })))(
+    'accepts valid v2 authentication (%o)',
+    async ({ useMevFactor, mevFactors, ...data }) => {
+      env.QUOTER_USE_MEV_FACTOR = useMevFactor;
+      const timestamp = Date.now();
+      const name = 'web_team_whales';
 
-    const socket = {
-      handshake: {
-        auth: {
-          client_version: '2',
-          account_id: name,
-          timestamp,
-          signature,
-          quoted_assets: [{ chain: 'Ethereum', asset: 'FLIP' }],
+      await prisma.marketMaker.update({
+        where: { name },
+        data: { ...data, mevFactors: { createMany: { data: mevFactors } } },
+      });
+
+      const signature = crypto
+        .sign(null, Buffer.from(`${name}${timestamp}`, 'utf8'), privateKey)
+        .toString('base64');
+
+      const socket = {
+        handshake: {
+          auth: {
+            client_version: '2',
+            account_id: name,
+            timestamp,
+            signature,
+            quoted_assets: [{ chain: 'Ethereum', asset: 'FLIP' }],
+          },
         },
-      },
-    };
+      };
 
-    const quotedAssets = Object.fromEntries(
-      chainflipAssets.map((asset) => [asset, false]),
-    ) as InternalAssetMap<boolean>;
-    quotedAssets.Flip = true;
+      const quotedAssets = Object.fromEntries(
+        chainflipAssets.map((asset) => [asset, false]),
+      ) as InternalAssetMap<boolean>;
+      quotedAssets.Flip = true;
 
-    await authenticate(socket as any, next);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith();
-    expect((socket as any).data).toMatchSnapshot();
-  });
+      await authenticate(socket as any, next);
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith();
+      expect((socket as any).data).toMatchSnapshot();
+    },
+  );
 });

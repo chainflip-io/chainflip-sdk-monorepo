@@ -76,7 +76,10 @@ export type SocketData = {
   quotedAssets: InternalAssetMap<boolean>;
   clientVersion: ClientVersion;
   beta: boolean;
-  mevFactor: number;
+  mevFactors: {
+    buy: Partial<InternalAssetMap<number>>;
+    sell: Partial<InternalAssetMap<number>>;
+  };
 };
 export type ReceivedEventMap = { quote_response: (message: unknown) => void };
 export type SentEventMap = {
@@ -251,14 +254,14 @@ export default class Quoter {
       const leg = legs[legIndex].toJSON();
 
       const sellAsset = getInternalAsset(leg.side === 'BUY' ? leg.base_asset : leg.quote_asset);
+      const baseAsset = getInternalAsset(leg.base_asset);
       const side = leg.side === 'BUY' ? 'sell' : 'buy';
 
       for (const [accountId, quote] of quotes.filter(([, q]) => !q.beta)) {
         const balance = balances.get(accountId)?.[sellAsset];
         const mevFactor =
           (isStableCoinSwap ? 0 : 1) *
-          (this.accountIdToSocket.get(accountId)?.data.mevFactor ?? 0) *
-          (side === 'buy' ? 1 : -1);
+          (this.accountIdToSocket.get(accountId)?.data.mevFactors[side][baseAsset] ?? 0);
 
         for (const [tick, amount] of quote.legs[legIndex] ?? []) {
           if (balance === undefined || isBalanceWithinTolerance(balance, amount)) {
