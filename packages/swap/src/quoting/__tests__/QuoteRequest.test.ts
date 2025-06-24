@@ -20,13 +20,7 @@ vi.mock('../../utils/function', async (importOriginal) => {
   };
 });
 
-vi.mock('../../utils/statechain', async (importOriginal) => {
-  const original = (await importOriginal()) as object;
-  return {
-    ...original,
-    getSwapRateV3: vi.fn(),
-  };
-});
+vi.mock('../../utils/statechain');
 
 vi.mock('../../utils/swap', async (importOriginal) => {
   const original = (await importOriginal()) as object;
@@ -36,29 +30,11 @@ vi.mock('../../utils/swap', async (importOriginal) => {
   };
 });
 
-vi.mock('../../utils/autoSlippage', async (importOriginal) => {
-  const original = (await importOriginal()) as object;
-  return {
-    ...original,
-    calculateRecommendedSlippage: vi.fn(),
-  };
-});
+vi.mock('../../utils/autoSlippage');
 
-vi.mock('../../utils/rpc', async (importOriginal) => {
-  const original = (await importOriginal()) as object;
-  return {
-    ...original,
-    getMinimumEgressAmount: vi.fn(),
-  };
-});
+vi.mock('../../utils/rpc');
 
-vi.mock('../../polkadot/api', async (importOriginal) => {
-  const original = (await importOriginal()) as object;
-  return {
-    ...original,
-    getInternalSwapNetworkFeeInfo: vi.fn(),
-  };
-});
+vi.mock('../../polkadot/api');
 
 vi.mock('../../pricing/checkPriceWarning', () => ({
   checkPriceWarning: vi.fn(),
