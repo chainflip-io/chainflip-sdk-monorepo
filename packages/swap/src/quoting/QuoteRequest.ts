@@ -573,7 +573,7 @@ export default class QuoteRequest {
       dcaQuote: this.dcaQuote,
       isInternalSwap: this.isOnChain,
       isVaultSwap: this.isVaultSwap,
-      error: this.error,
+      error: this.error?.message ?? null,
     };
   }
 }
