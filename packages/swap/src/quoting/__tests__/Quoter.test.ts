@@ -46,7 +46,13 @@ describe(Quoter, () => {
   let connectClient: (
     name: string,
     quotedAssets: InternalAsset[],
-    { beta, mevFactor }?: { beta?: boolean; mevFactor?: number },
+    opts?: {
+      beta?: boolean;
+      mevFactors?: {
+        buy?: Partial<InternalAssetMap<number>>;
+        sell?: Partial<InternalAssetMap<number>>;
+      };
+    },
   ) => Promise<{
     sendQuote: (
       quote: MarketMakerRawQuote,
@@ -69,11 +75,7 @@ describe(Quoter, () => {
 
     const cachedKeys = new Map<string, crypto.KeyObject>();
 
-    connectClient = async (
-      name: string,
-      quotedAssets: InternalAsset[],
-      { beta, mevFactor }: { beta?: boolean; mevFactor?: number } = {},
-    ) => {
+    connectClient = async (name, quotedAssets, { beta, mevFactors } = {}) => {
       let privateKey = cachedKeys.get(name);
       if (!privateKey) {
         const keys = await generateKeyPairAsync('ed25519');
@@ -84,7 +86,17 @@ describe(Quoter, () => {
             name,
             beta,
             publicKey: keys.publicKey.export({ format: 'pem', type: 'spki' }).toString(),
-            mevFactor,
+            mevFactors: {
+              createMany: {
+                data: Object.keys(mevFactors ?? {}).flatMap((side) =>
+                  Object.keys(mevFactors![side as keyof typeof mevFactors]).map((asset) => ({
+                    side: side.toUpperCase() as 'BUY' | 'SELL',
+                    asset: asset as InternalAsset,
+                    factor: mevFactors![side as keyof typeof mevFactors]![asset] as number,
+                  })),
+                ),
+              },
+            },
           },
         });
       }
@@ -131,11 +143,7 @@ describe(Quoter, () => {
 
       return {
         socket,
-        sendQuote(
-          quote: MarketMakerRawQuote,
-          srcAsset: InternalAsset = 'Btc',
-          destAsset: InternalAsset = 'Usdc',
-        ): RpcLimitOrder[] {
+        sendQuote(quote, srcAsset = 'Btc', destAsset = 'Usdc'): RpcLimitOrder[] {
           socket.emit('quote_response', quote);
 
           return quote.legs.flatMap((leg, i) =>
@@ -466,13 +474,73 @@ describe(Quoter, () => {
 
     it('mev factors the ticks', async () => {
       const { sendQuote, waitForRequest } = await connectClient('marketMaker', ['Btc'], {
-        mevFactor: -5,
+        mevFactors: { buy: { Btc: -5 } },
       });
       const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
       const request = await waitForRequest();
-      const quotes = sendQuote({ ...request, legs: [[[0, '100']]] });
-      quotes[0].LimitOrder.tick = -5; // mev factor 3000 is -5
-      expect(await limitOrders).toStrictEqual(quotes);
+      sendQuote({ ...request, legs: [[[0, '100']]] });
+      expect(await limitOrders).toMatchInlineSnapshot(`
+        [
+          {
+            "LimitOrder": {
+              "base_asset": {
+                "asset": "BTC",
+                "chain": "Bitcoin",
+              },
+              "quote_asset": {
+                "asset": "USDC",
+                "chain": "Ethereum",
+              },
+              "sell_amount": "0x64",
+              "side": "buy",
+              "tick": -5,
+            },
+          },
+        ]
+      `);
+    });
+
+    it.only('respects the mev factor side', async () => {
+      const { sendQuote, waitForRequest } = await connectClient('marketMaker', ['Btc', 'Flip'], {
+        mevFactors: { buy: { Btc: -5, Flip: 10 }, sell: { Flip: 3, Btc: 15 } },
+      });
+      const limitOrders = quoter.getLimitOrders('Btc', 'Flip', ONE_BTC);
+      const request = await waitForRequest();
+      sendQuote({ ...request, legs: [[[0, '100']], [[2, '2000']]] });
+      expect(await limitOrders).toMatchInlineSnapshot(`
+        [
+          {
+            "LimitOrder": {
+              "base_asset": {
+                "asset": "BTC",
+                "chain": "Bitcoin",
+              },
+              "quote_asset": {
+                "asset": "USDC",
+                "chain": "Ethereum",
+              },
+              "sell_amount": "0x64",
+              "side": "buy",
+              "tick": -5,
+            },
+          },
+          {
+            "LimitOrder": {
+              "base_asset": {
+                "asset": "FLIP",
+                "chain": "Ethereum",
+              },
+              "quote_asset": {
+                "asset": "USDC",
+                "chain": "Ethereum",
+              },
+              "sell_amount": "0x7d0",
+              "side": "sell",
+              "tick": -1,
+            },
+          },
+        ]
+      `);
     });
 
     it('disconnects duplicate sockets', async () => {

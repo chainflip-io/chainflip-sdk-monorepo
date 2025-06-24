@@ -403,12 +403,31 @@ model State {
 }
 
 model MarketMaker {
-  id        Int     @id @default(autoincrement())
-  name      String  @unique
-  publicKey String
-  beta      Boolean @default(false)
-  mevFactor Int     @default(0)
+  id         Int         @id @default(autoincrement())
+  name       String      @unique
+  publicKey  String
+  beta       Boolean     @default(false)
+  mevFactors MevFactor[]
 
+  @@schema("private")
+}
+
+enum Side {
+  BUY
+  SELL
+
+  @@schema("private")
+}
+
+model MevFactor {
+  id            Int           @id @default(autoincrement())
+  marketMaker   MarketMaker   @relation(fields: [marketMakerId], references: [id])
+  marketMakerId Int
+  asset         InternalAsset
+  side          Side
+  factor        Int
+
+  @@unique([marketMakerId, asset, side])
   @@schema("private")
 }
 

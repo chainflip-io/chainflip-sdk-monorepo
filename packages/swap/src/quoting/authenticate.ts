@@ -4,6 +4,7 @@ import {
   getInternalAsset,
   InternalAssetMap,
 } from '@chainflip/utils/chainflip';
+import { toLowerCase } from '@chainflip/utils/string';
 import * as crypto from 'crypto';
 import type { Server } from 'socket.io';
 import { promisify } from 'util';
@@ -77,6 +78,7 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
 
     const marketMaker = await prisma.marketMaker.findUnique({
       where: { name: auth.account_id },
+      include: { mevFactors: true },
     });
 
     assert(marketMaker, 'market maker not found');
@@ -99,7 +101,15 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
       quotedAssets: auth.quoted_assets,
       clientVersion: auth.client_version,
       beta: marketMaker.beta,
-      mevFactor: env.QUOTER_USE_MEV_FACTOR ? marketMaker.mevFactor : 0,
+      mevFactors: marketMaker.mevFactors.reduce(
+        (acc, mev) => {
+          if (env.QUOTER_USE_MEV_FACTOR) {
+            acc[toLowerCase(mev.side)][mev.asset] = mev.factor * (mev.side === 'BUY' ? 1 : -1);
+          }
+          return acc;
+        },
+        { buy: {}, sell: {} } as QuotingSocket['data']['mevFactors'],
+      ),
     };
 
     next();

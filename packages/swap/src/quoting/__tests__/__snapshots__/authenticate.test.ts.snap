@@ -1,11 +1,18 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`authenticate > accepts valid v2 authentication 1`] = `
+exports[`authenticate > accepts valid v2 authentication ({ beta: false, useMevFactor: true, mevFactors: [ { asset: 'Flip', factor: 1, side: 'SELL' }, { asset: 'Flip', factor: -1, side: 'BUY' } ] }) 1`] = `
 {
-  "beta": true,
+  "beta": false,
   "clientVersion": "2",
   "marketMaker": "web_team_whales",
-  "mevFactor": -1,
+  "mevFactors": {
+    "buy": {
+      "Flip": -1,
+    },
+    "sell": {
+      "Flip": -1,
+    },
+  },
   "quotedAssets": {
     "ArbEth": false,
     "ArbUsdc": false,
@@ -24,12 +31,15 @@ exports[`authenticate > accepts valid v2 authentication 1`] = `
 }
 `;
 
-exports[`authenticate > accepts valid v2 authentication 2`] = `
+exports[`authenticate > accepts valid v2 authentication ({ beta: true, useMevFactor: false, mevFactors: [ { asset: 'Flip', factor: 1, side: 'SELL' }, { asset: 'Flip', factor: -1, side: 'BUY' } ] }) 1`] = `
 {
-  "beta": false,
+  "beta": true,
   "clientVersion": "2",
   "marketMaker": "web_team_whales",
-  "mevFactor": 0,
+  "mevFactors": {
+    "buy": {},
+    "sell": {},
+  },
   "quotedAssets": {
     "ArbEth": false,
     "ArbUsdc": false,
