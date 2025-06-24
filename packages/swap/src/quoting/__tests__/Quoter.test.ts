@@ -500,7 +500,7 @@ describe(Quoter, () => {
       `);
     });
 
-    it.only('respects the mev factor side', async () => {
+    it('respects the mev factor side', async () => {
       const { sendQuote, waitForRequest } = await connectClient('marketMaker', ['Btc', 'Flip'], {
         mevFactors: { buy: { Btc: -5, Flip: 10 }, sell: { Flip: 3, Btc: 15 } },
       });
