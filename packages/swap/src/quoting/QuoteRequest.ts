@@ -557,14 +557,16 @@ export default class QuoteRequest {
   }
 
   toLogInfo() {
+    const inputAmount = new BigNumber(this.depositAmount.toString()).shiftedBy(
+      -assetConstants[this.srcAsset].decimals,
+    );
     return {
       srcAsset: this.srcAsset,
       destAsset: this.destAsset,
       srcAssetIndexPrice: this.srcAssetIndexPrice ?? null,
       destAssetIndexPrice: this.destAssetIndexPrice ?? null,
-      inputAmount: new BigNumber(this.depositAmount.toString())
-        .shiftedBy(-assetConstants[this.srcAsset].decimals)
-        .toFixed(),
+      inputAmount: inputAmount.toFixed(),
+      inputValueUsd: inputAmount.times(this.srcAssetIndexPrice ?? 0).toFixed(2),
       duration: (performance.now() - this.start).toFixed(2),
       dcaQuoteParams: this.dcaQuoteParams,
       brokerCommissionBps: this.brokerCommissionBps,
