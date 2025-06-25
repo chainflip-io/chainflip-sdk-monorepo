@@ -113,6 +113,8 @@ describe(QuoteRequest.prototype.toLogInfo, () => {
     vi.spyOn(performance, 'now').mockReturnValueOnce(0).mockReturnValueOnce(0.15);
 
     const req = createRequest(1_000_000n);
+    req['srcAssetIndexPrice'] = 105123.1234;
+    req['destAssetIndexPrice'] = 0.3412341234;
 
     expect(req.toLogInfo()).toMatchInlineSnapshot(`
       {
@@ -120,18 +122,19 @@ describe(QuoteRequest.prototype.toLogInfo, () => {
         "dcaQuote": null,
         "dcaQuoteParams": null,
         "destAsset": "Flip",
-        "destAssetIndexPrice": null,
+        "destAssetIndexPrice": 0.3412341234,
         "duration": "0.15",
         "error": null,
         "estimatedBoostFeeBps": undefined,
         "inputAmount": "0.01",
+        "inputValueUsd": "1051.23",
         "isInternalSwap": false,
         "isVaultSwap": false,
         "limitOrders": [],
         "maxBoostFeeBps": undefined,
         "regularQuote": null,
         "srcAsset": "Btc",
-        "srcAssetIndexPrice": null,
+        "srcAssetIndexPrice": 105123.1234,
         "success": false,
       }
     `);
