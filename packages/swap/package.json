@@ -37,7 +37,7 @@
     "@babel/core": "^7.27.4",
     "@dotenvx/dotenvx": "^1.45.1",
     "@graphql-codegen/cli": "^5.0.7",
-    "@graphql-codegen/client-preset": "^4.8.2",
+    "@graphql-codegen/client-preset": "^4.8.3",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
@@ -57,12 +57,12 @@
     "pnpm": ">=9"
   },
   "dependencies": {
-    "@chainflip/bitcoin": "^1.2.5",
+    "@chainflip/bitcoin": "^1.2.6",
     "@chainflip/processor": "~1.10.0",
     "@chainflip/redis": "^1.0.2",
     "@chainflip/rpc": "~1.9.9",
     "@chainflip/solana": "^2.1.9",
-    "@chainflip/utils": "^0.8.10",
+    "@chainflip/utils": "^0.8.11",
     "@polkadot/api": "^15.10.2",
     "@polkadot/types": "^15.10.2",
     "@prisma/client": "^6.10.1",
