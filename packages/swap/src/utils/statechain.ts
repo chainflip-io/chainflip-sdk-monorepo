@@ -3,7 +3,7 @@ import { AssetAndChain, ChainflipAsset, internalAssetToRpcAsset } from '@chainfl
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import WebSocket from 'ws';
 import { DcaParams, SwapFeeType } from '@/shared/schemas.js';
-import { memoize } from './function.js';
+import { memoize, isAtLeastSpecVersion } from './function.js';
 import env from '../config/env.js';
 
 const initializeClient = memoize(() => new WsClient(env.RPC_NODE_WSS_URL, WebSocket as never));
@@ -22,6 +22,7 @@ export type SwapRateArgs = {
   dcaParams?: DcaParams;
   ccmParams?: QuoteCcmParams;
   excludeFees?: SwapFeeType[];
+  isInternal?: boolean;
 };
 
 export type SwapRateAmount = AssetAndChain & {
@@ -46,6 +47,7 @@ export const getSwapRateV3 = async ({
   ccmParams: _ccmParams,
   excludeFees,
   brokerCommissionBps,
+  isInternal,
 }: SwapRateArgs): Promise<SwapRateResult> => {
   const client = initializeClient();
   const dcaParams = _dcaParams
@@ -70,17 +72,30 @@ export const getSwapRateV3 = async ({
     intermediary: intermediateAmount,
     output: egressAmount,
     broker_commission: brokerFee,
-  } = await client.sendRequest(
-    'cf_swap_rate_v3',
-    internalAssetToRpcAsset[srcAsset],
-    internalAssetToRpcAsset[destAsset],
-    hexEncodeNumber(depositAmount),
-    brokerCommissionBps ?? 0,
-    dcaParams,
-    ccmParams,
-    excludeFees,
-    additionalOrders,
-  );
+  } = (await isAtLeastSpecVersion('1.10.0')) // TODO(1.10) remove release version check
+    ? await client.sendRequest(
+        'cf_swap_rate_v3',
+        internalAssetToRpcAsset[srcAsset],
+        internalAssetToRpcAsset[destAsset],
+        hexEncodeNumber(depositAmount),
+        brokerCommissionBps ?? 0,
+        dcaParams,
+        ccmParams,
+        excludeFees,
+        additionalOrders,
+        isInternal,
+      )
+    : await client.sendRequest(
+        'cf_swap_rate_v3',
+        internalAssetToRpcAsset[srcAsset],
+        internalAssetToRpcAsset[destAsset],
+        hexEncodeNumber(depositAmount),
+        brokerCommissionBps ?? 0,
+        dcaParams,
+        ccmParams,
+        excludeFees,
+        additionalOrders,
+      );
 
   return {
     ingressFee,
