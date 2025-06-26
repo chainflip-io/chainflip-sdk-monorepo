@@ -19,6 +19,7 @@ const t = initTRPC.create({ transformer: superjson });
  */
 export const { router, procedure: publicProcedure } = t;
 
+/** @deprecated we switching to ts-rest now boy */
 export const appRouter = router({
   openSwapDepositChannel: publicProcedure
     .input(openSwapDepositChannelSchema)
