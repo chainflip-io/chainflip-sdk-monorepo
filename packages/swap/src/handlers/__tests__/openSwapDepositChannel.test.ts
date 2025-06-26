@@ -66,8 +66,8 @@ describe(openSwapDepositChannel, () => {
       estimatedExpiryTime: 1699534500000,
       id: '123-Ethereum-888',
       issuedBlock: 123,
-      srcChainExpiryBlock: 1000n,
-      channelOpeningFee: 100n,
+      srcChainExpiryBlock: '1000',
+      channelOpeningFee: '100',
     });
     expect(vi.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
     expect(await prisma.swapDepositChannel.findFirst({ include: { quote: true } })).toMatchSnapshot(
@@ -115,8 +115,8 @@ describe(openSwapDepositChannel, () => {
       estimatedExpiryTime: 1699534500000,
       id: '123-Ethereum-888',
       issuedBlock: 123,
-      srcChainExpiryBlock: 1000n,
-      channelOpeningFee: 100n,
+      srcChainExpiryBlock: '1000',
+      channelOpeningFee: '100',
     });
     expect(vi.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
     expect(await prisma.swapDepositChannel.findFirst({ include: { quote: true } })).toMatchSnapshot(
@@ -172,8 +172,8 @@ describe(openSwapDepositChannel, () => {
       estimatedExpiryTime: 1699534500000,
       id: '123-Ethereum-888',
       issuedBlock: 123,
-      srcChainExpiryBlock: 1000n,
-      channelOpeningFee: 100n,
+      srcChainExpiryBlock: '1000',
+      channelOpeningFee: '100',
     });
     expect(vi.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
     expect(await prisma.swapDepositChannel.findFirst({ include: { quote: true } })).toMatchSnapshot(
@@ -224,8 +224,8 @@ describe(openSwapDepositChannel, () => {
       estimatedExpiryTime: 1699534500000,
       id: '123-Ethereum-909',
       issuedBlock: 123,
-      srcChainExpiryBlock: 1000n,
-      channelOpeningFee: 10n,
+      srcChainExpiryBlock: '1000',
+      channelOpeningFee: '10',
     });
     expect(vi.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
     expect(await prisma.swapDepositChannel.findFirst()).toMatchSnapshot({
@@ -269,8 +269,8 @@ describe(openSwapDepositChannel, () => {
       estimatedExpiryTime: 1699534500000,
       id: '123-Ethereum-909',
       issuedBlock: 123,
-      srcChainExpiryBlock: 1000n,
-      channelOpeningFee: 10n,
+      srcChainExpiryBlock: '1000',
+      channelOpeningFee: '10',
     });
     expect(vi.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
     expect(await prisma.swapDepositChannel.findFirst()).toMatchSnapshot({
@@ -311,8 +311,8 @@ describe(openSwapDepositChannel, () => {
       estimatedExpiryTime: 1699534500000,
       id: '123-Ethereum-909',
       issuedBlock: 123,
-      srcChainExpiryBlock: 1000n,
-      channelOpeningFee: 0n,
+      srcChainExpiryBlock: '1000',
+      channelOpeningFee: '0',
     });
     expect(vi.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
     expect(await prisma.swapDepositChannel.findFirst()).toMatchSnapshot({
@@ -594,13 +594,13 @@ describe('openSwapDepositChannelSchema', () => {
     expect(result).toMatchInlineSnapshot(`
       {
         "brokerCommissionBps": 100,
-        "channelOpeningFee": 100n,
+        "channelOpeningFee": "100",
         "depositAddress": "address",
         "estimatedExpiryTime": 1699534500000,
         "id": "123-Ethereum-888",
         "issuedBlock": 123,
         "maxBoostFeeBps": 0,
-        "srcChainExpiryBlock": 1000n,
+        "srcChainExpiryBlock": "1000",
       }
     `);
     expect(vi.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
