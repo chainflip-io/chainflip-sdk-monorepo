@@ -38,11 +38,11 @@ describe(openSwapDepositChannel, () => {
   it('creates channel and stores it in the database', async () => {
     mockRpcResponse({ data: environment() });
     vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
-      sourceChainExpiryBlock: BigInt('1000'),
+      sourceChainExpiryBlock: '1000',
       address: 'address',
       channelId: 888,
       issuedBlock: 123,
-      channelOpeningFee: 100n,
+      channelOpeningFee: '100',
     });
 
     const result = await openSwapDepositChannel({
@@ -81,11 +81,11 @@ describe(openSwapDepositChannel, () => {
   it('creates channel and stores channel and quote in the database', async () => {
     mockRpcResponse({ data: environment() });
     vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
-      sourceChainExpiryBlock: BigInt('1000'),
+      sourceChainExpiryBlock: '1000',
       address: 'address',
       channelId: 888,
       issuedBlock: 123,
-      channelOpeningFee: 100n,
+      channelOpeningFee: '100',
     });
 
     const result = await openSwapDepositChannel({
@@ -134,11 +134,11 @@ describe(openSwapDepositChannel, () => {
   it('creates channel with boost and dca and stores quote in the database', async () => {
     mockRpcResponse({ data: environment() });
     vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
-      sourceChainExpiryBlock: BigInt('1000'),
+      sourceChainExpiryBlock: '1000',
       address: 'address',
       channelId: 888,
       issuedBlock: 123,
-      channelOpeningFee: 100n,
+      channelOpeningFee: '100',
     });
 
     const result = await openSwapDepositChannel({
@@ -191,11 +191,11 @@ describe(openSwapDepositChannel, () => {
   it('creates channel with ccmParams and stores it in the database', async () => {
     mockRpcResponse({ data: environment() });
     vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
-      sourceChainExpiryBlock: BigInt('1000'),
+      sourceChainExpiryBlock: '1000',
       address: 'address',
       channelId: 909,
       issuedBlock: 123,
-      channelOpeningFee: 10n,
+      channelOpeningFee: '10',
     });
 
     const result = await openSwapDepositChannel({
@@ -237,11 +237,11 @@ describe(openSwapDepositChannel, () => {
   it('creates channel with fill or kill params and stores it in the database', async () => {
     mockRpcResponse({ data: environment() });
     vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
-      sourceChainExpiryBlock: BigInt('1000'),
+      sourceChainExpiryBlock: '1000',
       address: 'address',
       channelId: 909,
       issuedBlock: 123,
-      channelOpeningFee: 10n,
+      channelOpeningFee: '10',
     });
 
     const result = await openSwapDepositChannel({
@@ -282,11 +282,11 @@ describe(openSwapDepositChannel, () => {
   it('creates channel with boost fee and stores it in the database', async () => {
     mockRpcResponse({ data: environment() });
     vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
-      sourceChainExpiryBlock: BigInt('1000'),
+      sourceChainExpiryBlock: '1000',
       address: 'address',
       channelId: 909,
       issuedBlock: 123,
-      channelOpeningFee: 0n,
+      channelOpeningFee: '0',
     });
 
     const result = await openSwapDepositChannel({
@@ -384,11 +384,11 @@ describe(openSwapDepositChannel, () => {
     let channelId = 0;
     vi.mocked(broker.requestSwapDepositAddress).mockImplementation(async () =>
       Promise.resolve({
-        sourceChainExpiryBlock: BigInt('1000'),
+        sourceChainExpiryBlock: '1000',
         address: `address${++channelId}`, // eslint-disable-line no-plusplus
         channelId: 888,
         issuedBlock: 123 + channelId,
-        channelOpeningFee: 100n,
+        channelOpeningFee: '100',
       }),
     );
 
@@ -430,11 +430,11 @@ describe(openSwapDepositChannel, () => {
     let channelId = 0;
     vi.mocked(broker.requestSwapDepositAddress).mockImplementation(async () =>
       Promise.resolve({
-        sourceChainExpiryBlock: BigInt('1000'),
+        sourceChainExpiryBlock: '1000',
         address: `address${++channelId}`, // eslint-disable-line no-plusplus
         channelId: 888,
         issuedBlock: 123 + channelId,
-        channelOpeningFee: 100n,
+        channelOpeningFee: '100',
       }),
     );
 
@@ -569,11 +569,11 @@ describe('openSwapDepositChannelSchema', () => {
     env.BROKER_COMMISSION_BPS = 100;
     env.RPC_COMMISSION_BROKER_HTTPS_URL = 'https://broker-2.test';
     vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
-      sourceChainExpiryBlock: BigInt('1000'),
+      sourceChainExpiryBlock: '1000',
       address: 'address',
       channelId: 888,
       issuedBlock: 123,
-      channelOpeningFee: 100n,
+      channelOpeningFee: '100',
     });
 
     const result = await openSwapDepositChannel({
