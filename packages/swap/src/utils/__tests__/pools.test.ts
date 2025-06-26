@@ -9,14 +9,6 @@ vi.mock('../lp.js', () => ({
   getLpAccounts: vi.fn().mockResolvedValue([]),
 }));
 
-vi.mock('@/shared/consts.js', async (importOriginal) => {
-  const original = (await importOriginal()) as object;
-  return {
-    ...original,
-    getPoolsNetworkFeeHundredthPips: vi.fn().mockReturnValue(1000),
-  };
-});
-
 const oldEnv = structuredClone(env);
 
 describe(getPools, () => {

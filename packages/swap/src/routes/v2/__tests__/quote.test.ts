@@ -47,13 +47,6 @@ vi.mock('@chainflip/rpc', async (importOriginal) => {
   };
 });
 
-vi.mock('@/shared/consts.js', async (importOriginal) => {
-  const original = (await importOriginal()) as object;
-  return {
-    ...original,
-    getPoolsNetworkFeeHundredthPips: vi.fn().mockReturnValue(1000),
-  };
-});
 vi.mock('../../../pricing/index');
 vi.mock('../../../pricing/checkPriceWarning', () => ({
   checkPriceWarning: vi.fn(),

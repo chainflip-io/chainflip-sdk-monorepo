@@ -1,15 +1,5 @@
 import { ChainflipChain, ChainflipNetwork } from '@chainflip/utils/chainflip';
 
-// TODO: read this value via rpc once there is an appropriate rpc method
-const POOLS_NETWORK_FEE_HUNDREDTH_PIPS: Record<ChainflipNetwork, number> = {
-  backspin: 1000,
-  sisyphos: 1000,
-  perseverance: 1000,
-  mainnet: 1000,
-};
-export const getPoolsNetworkFeeHundredthPips = (network: ChainflipNetwork) =>
-  POOLS_NETWORK_FEE_HUNDREDTH_PIPS[network];
-
 const ETHEREUM_EVM_CHAIN_ID: Record<ChainflipNetwork, number> = {
   backspin: 10997, // backspin ethereum
   sisyphos: 11155111, // sepolia
