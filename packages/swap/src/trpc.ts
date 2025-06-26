@@ -23,10 +23,24 @@ export const { router, procedure: publicProcedure } = t;
 export const appRouter = router({
   openSwapDepositChannel: publicProcedure
     .input(openSwapDepositChannelSchema)
-    .mutation((v) => openSwapDepositChannel(v.input)),
-  encodeVaultSwapData: publicProcedure
-    .input(encodeVaultSwapDataSchema)
-    .mutation((v) => encodeVaultSwapData(v.input)),
+    .mutation(async (v) => {
+      const result = await openSwapDepositChannel(v.input);
+      return {
+        ...result,
+        channelOpeningFee: BigInt(result.channelOpeningFee),
+        srcChainExpiryBlock: BigInt(result.srcChainExpiryBlock),
+      };
+    }),
+  encodeVaultSwapData: publicProcedure.input(encodeVaultSwapDataSchema).mutation(async (v) => {
+    const data = await encodeVaultSwapData(v.input);
+    switch (data.chain) {
+      case 'Arbitrum':
+      case 'Ethereum':
+        return { ...data, value: BigInt(data.value) };
+      default:
+        return data;
+    }
+  }),
   networkStatus: publicProcedure.query(networkStatus),
 });
 
