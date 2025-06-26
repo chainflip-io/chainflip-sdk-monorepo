@@ -36,7 +36,7 @@ export const DepositChannelInfo = z.object({
   brokerCommissionBps: z.number(),
   maxBoostFeeBps: z.number(),
   issuedBlock: z.number(),
-  srcChainExpiryBlock: z.bigint().transform((n) => n.toString()),
+  srcChainExpiryBlock: z.string(),
   estimatedExpiryTime: z.number().optional(),
-  channelOpeningFee: z.bigint().transform((n) => n.toString()),
+  channelOpeningFee: z.string(),
 });

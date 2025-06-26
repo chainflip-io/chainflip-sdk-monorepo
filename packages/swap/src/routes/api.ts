@@ -16,7 +16,7 @@ export const apiRouter = s.router(apiContract, {
     body: await networkStatus(),
   }),
   openSwapDepositChannel: async ({ body }) => ({
-    status: 200,
+    status: 201,
     body: await openSwapDepositChannel(body),
   }),
 });

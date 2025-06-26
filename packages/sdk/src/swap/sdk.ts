@@ -326,9 +326,9 @@ export class SwapSDK {
         id: `${result.issuedBlock}-${quote.srcAsset.chain}-${result.channelId}`,
         depositAddress: result.address,
         brokerCommissionBps,
-        srcChainExpiryBlock: result.sourceChainExpiryBlock,
+        srcChainExpiryBlock: BigInt(result.sourceChainExpiryBlock),
         maxBoostFeeBps: depositAddressRequest.maxBoostFeeBps,
-        channelOpeningFee: result.channelOpeningFee,
+        channelOpeningFee: BigInt(result.channelOpeningFee),
       };
     } else {
       assert(
@@ -406,42 +406,46 @@ export class SwapSDK {
       affiliates,
     };
 
+    let response;
+
     if (this.options.broker) {
       assert(
         !vaultSwapRequest.brokerAccount,
         'Cannot overwrite broker account when initializing the SDK with a brokerUrl',
       );
 
-      return requestSwapParameterEncoding(
+      response = await requestSwapParameterEncoding(
         vaultSwapRequest,
         { url: this.options.broker.url },
         this.options.network,
       );
+    } else {
+      assert(
+        !vaultSwapRequest.commissionBps ||
+          vaultSwapRequest.brokerAccount ||
+          this.shouldTakeCommission(),
+        'Broker commission is supported only when setting a broker account',
+      );
+      assert(
+        !vaultSwapRequest.affiliates?.length || vaultSwapRequest.brokerAccount,
+        'Affiliate brokers are supported only when setting a broker account',
+      );
+
+      const res = await this.apiClient.encodeVaultSwapData({
+        body: { ...vaultSwapRequest, network: this.options.network },
+      });
+
+      assert(res.status === 200, 'Failed to encode vault swap data');
+
+      response = res.body;
     }
 
-    assert(
-      !vaultSwapRequest.commissionBps ||
-        vaultSwapRequest.brokerAccount ||
-        this.shouldTakeCommission(),
-      'Broker commission is supported only when setting a broker account',
-    );
-    assert(
-      !vaultSwapRequest.affiliates?.length || vaultSwapRequest.brokerAccount,
-      'Affiliate brokers are supported only when setting a broker account',
-    );
-
-    const res = await this.apiClient.encodeVaultSwapData({
-      body: { ...vaultSwapRequest, network: this.options.network },
-    });
-
-    assert(res.status === 200, 'Failed to encode vault swap data');
-
-    switch (res.body.chain) {
+    switch (response.chain) {
       case 'Ethereum':
       case 'Arbitrum':
-        return { ...res.body, value: BigInt(res.body.value) };
+        return { ...response, value: BigInt(response.value) };
       default:
-        return res.body;
+        return response;
     }
   }
 

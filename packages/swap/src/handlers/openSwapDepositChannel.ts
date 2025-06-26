@@ -131,7 +131,7 @@ export const openSwapDepositChannel = async ({
 
   const estimatedExpiryTime = calculateExpiryTime({
     chainInfo,
-    expiryBlock: srcChainExpiryBlock,
+    expiryBlock: BigInt(srcChainExpiryBlock),
   });
   const quoteParam: Prisma.QuoteCreateNestedOneWithoutSwapDepositChannelInput | undefined =
     input.quote && {
@@ -169,7 +169,7 @@ export const openSwapDepositChannel = async ({
       srcAsset,
       destAsset,
       depositAddress,
-      srcChainExpiryBlock,
+      srcChainExpiryBlock: BigInt(srcChainExpiryBlock),
       estimatedExpiryAt: estimatedExpiryTime,
       ccmGasBudget: ccmParams?.gasBudget && BigInt(ccmParams.gasBudget).toString(),
       ccmMessage: ccmParams?.message,

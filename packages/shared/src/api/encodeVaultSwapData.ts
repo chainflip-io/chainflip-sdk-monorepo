@@ -121,7 +121,7 @@ export const EncodedVaultSwapData = z.discriminatedUnion('chain', [
   }),
   z.object({
     chain: z.enum(['Ethereum', 'Arbitrum']),
-    value: z.bigint().transform((n) => n.toString()),
+    value: z.string(),
     to: hexString,
     calldata: hexString,
     sourceTokenAddress: hexString.optional(),

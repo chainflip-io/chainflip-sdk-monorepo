@@ -8,21 +8,22 @@ type CamelCaseKeys<T> = T extends (infer U)[]
     ? {
         [K in keyof T as ToCamelCase<string & K>]: CamelCaseKeys<T[K]>;
       }
-    : T;
+    : T extends bigint
+      ? string // Convert bigint to string
+      : T; // Leave other types unchanged
 
-export const transformKeysToCamelCase = <T extends Record<string, unknown>>(
-  obj: T,
-): CamelCaseKeys<T> => {
+export const formatResponse = <T>(obj: T): CamelCaseKeys<T> => {
   if (Array.isArray(obj)) {
-    return obj.map(transformKeysToCamelCase) as unknown as CamelCaseKeys<T>;
+    return obj.map(formatResponse) as unknown as CamelCaseKeys<T>;
   }
   if (obj !== null && typeof obj === 'object') {
     return Object.fromEntries(
       Object.entries(obj).map(([key, value]) => [
         toCamelCase(key),
-        transformKeysToCamelCase(value as Record<string, unknown>),
+        formatResponse(value as Record<string, unknown>),
       ]),
     ) as CamelCaseKeys<T>;
   }
-  return obj;
+  if (typeof obj === 'bigint') return obj.toString() as CamelCaseKeys<T>;
+  return obj as CamelCaseKeys<T>;
 };

@@ -57,7 +57,10 @@ app.use('/v2/quote', quoteMiddleware, quoteRouterV2(quoter));
 app.use('/trpc', maintenanceMode, trpcExpress.createExpressMiddleware({ router: appRouter }));
 
 createExpressEndpoints(apiContract, apiRouter, app, {
-  globalMiddleware: [(req, res, next) => maintenanceMode(req as Request, res, next)],
+  globalMiddleware: [
+    (req, res, next) => maintenanceMode(req as Request, res, next),
+    express.json(),
+  ],
 });
 
 app.use(handleError);
