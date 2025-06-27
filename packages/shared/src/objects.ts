@@ -39,15 +39,16 @@ type StringifyBigInt<T> = T extends (infer U)[]
 
 export const stringifyBigInts = <T>(obj: T): StringifyBigInt<T> => {
   if (Array.isArray(obj)) {
-    return obj.map(transformKeysToCamelCase) as unknown as StringifyBigInt<T>;
+    return obj.map(stringifyBigInts) as unknown as StringifyBigInt<T>;
   }
   if (obj !== null && typeof obj === 'object') {
     return Object.fromEntries(
       Object.entries(obj).map(([key, value]) => [
         toCamelCase(key),
-        transformKeysToCamelCase(value as Record<string, unknown>),
+        stringifyBigInts(value as Record<string, unknown>),
       ]),
     ) as StringifyBigInt<T>;
   }
+  if (typeof obj === 'bigint') return obj.toString() as StringifyBigInt<T>;
   return obj as StringifyBigInt<T>;
 };
