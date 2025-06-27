@@ -1,0 +1,10 @@
+name: Trigger bugbot AI review for PRs
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  trigger-bugbot:
+    uses: chainflip-io/chainflip-reusable-workflows/.github/workflows/_web_cursor_bugbot.yml@main
+    secrets: inherit
