@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 import { assetConstants, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
+import assert from 'assert';
 import BigNumber from 'bignumber.js';
 import { Query } from 'express-serve-static-core';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts.js';
@@ -381,20 +382,24 @@ export default class QuoteRequest {
     } as Quote;
   }
 
+  private async getTotalLiquidity(from: InternalAsset, to: InternalAsset): Promise<bigint> {
+    assert(from === 'Usdc' || to === 'Usdc', 'one asset must be USDC');
+    if (from === 'Usdc' && to === 'Usdc') return 0n;
+    const liquidty = await getTotalLiquidity(from, to);
+    const [numerator, denominator] = this.quoter.getReplenishmentFactor(to);
+    return (liquidty * numerator) / denominator;
+  }
+
   private async eagerLiquidityExists(
     quote: Pick<Quote, 'egressAmount' | 'intermediateAmount' | 'type'>,
   ) {
     if (this.srcAsset === 'Usdc' || this.destAsset === 'Usdc') {
-      const totalLiquidity = await getTotalLiquidity(
-        this.srcAsset,
-        this.destAsset,
-        quote.type === 'DCA',
-      );
+      const totalLiquidity = await this.getTotalLiquidity(this.srcAsset, this.destAsset);
       return totalLiquidity > BigInt(quote.egressAmount);
     }
     const [totalLiquidityLeg1, totalLiquidityLeg2] = await Promise.all([
-      getTotalLiquidity(this.srcAsset, 'Usdc', quote.type === 'DCA'),
-      getTotalLiquidity('Usdc', this.destAsset, quote.type === 'DCA'),
+      this.getTotalLiquidity(this.srcAsset, 'Usdc'),
+      this.getTotalLiquidity('Usdc', this.destAsset),
     ]);
     return (
       totalLiquidityLeg1 > BigInt(quote.intermediateAmount!) &&

@@ -77,9 +77,10 @@ export type SocketData = {
   clientVersion: ClientVersion;
   beta: boolean;
   mevFactors: {
-    buy: Partial<InternalAssetMap<number>>;
-    sell: Partial<InternalAssetMap<number>>;
+    buy: InternalAssetMap<number>;
+    sell: InternalAssetMap<number>;
   };
+  replenishmentFactors: InternalAssetMap<[number, number] | null>;
 };
 export type ReceivedEventMap = { quote_response: (message: unknown) => void };
 export type SentEventMap = {
@@ -346,5 +347,21 @@ export default class Quoter {
     });
 
     return orders;
+  }
+
+  getReplenishmentFactor(sellAsset: ChainflipAsset): [bigint, bigint] {
+    let numerator = 1;
+    let denominator = 1;
+
+    this.accountIdToSocket.values().forEach((socket) => {
+      const factor = socket.data.replenishmentFactors[sellAsset];
+      if (factor === null) return;
+
+      const [num, denom] = factor;
+      numerator *= num;
+      denominator *= denom;
+    });
+
+    return [BigInt(numerator), BigInt(denominator)];
   }
 }
