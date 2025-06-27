@@ -326,9 +326,9 @@ export class SwapSDK {
         id: `${result.issuedBlock}-${quote.srcAsset.chain}-${result.channelId}`,
         depositAddress: result.address,
         brokerCommissionBps,
-        srcChainExpiryBlock: BigInt(result.sourceChainExpiryBlock),
+        srcChainExpiryBlock: result.sourceChainExpiryBlock,
         maxBoostFeeBps: depositAddressRequest.maxBoostFeeBps,
-        channelOpeningFee: BigInt(result.channelOpeningFee),
+        channelOpeningFee: result.channelOpeningFee,
       };
     } else {
       assert(
@@ -360,7 +360,7 @@ export class SwapSDK {
       brokerCommissionBps: response.brokerCommissionBps,
       affiliateBrokers: affiliates ?? [],
       maxBoostFeeBps: Number(response.maxBoostFeeBps) || 0,
-      depositChannelExpiryBlock: response.srcChainExpiryBlock as bigint,
+      depositChannelExpiryBlock: BigInt(response.srcChainExpiryBlock),
       estimatedDepositChannelExpiryTime: response.estimatedExpiryTime,
       channelOpeningFee: BigInt(response.channelOpeningFee),
       fillOrKillParams: inputFoKParams,
@@ -406,46 +406,42 @@ export class SwapSDK {
       affiliates,
     };
 
-    let response;
-
     if (this.options.broker) {
       assert(
         !vaultSwapRequest.brokerAccount,
         'Cannot overwrite broker account when initializing the SDK with a brokerUrl',
       );
 
-      response = await requestSwapParameterEncoding(
+      return requestSwapParameterEncoding(
         vaultSwapRequest,
         { url: this.options.broker.url },
         this.options.network,
       );
-    } else {
-      assert(
-        !vaultSwapRequest.commissionBps ||
-          vaultSwapRequest.brokerAccount ||
-          this.shouldTakeCommission(),
-        'Broker commission is supported only when setting a broker account',
-      );
-      assert(
-        !vaultSwapRequest.affiliates?.length || vaultSwapRequest.brokerAccount,
-        'Affiliate brokers are supported only when setting a broker account',
-      );
-
-      const res = await this.apiClient.encodeVaultSwapData({
-        body: { ...vaultSwapRequest, network: this.options.network },
-      });
-
-      assert(res.status === 200, 'Failed to encode vault swap data');
-
-      response = res.body;
     }
 
-    switch (response.chain) {
-      case 'Ethereum':
+    assert(
+      !vaultSwapRequest.commissionBps ||
+        vaultSwapRequest.brokerAccount ||
+        this.shouldTakeCommission(),
+      'Broker commission is supported only when setting a broker account',
+    );
+    assert(
+      !vaultSwapRequest.affiliates?.length || vaultSwapRequest.brokerAccount,
+      'Affiliate brokers are supported only when setting a broker account',
+    );
+
+    const res = await this.apiClient.encodeVaultSwapData({
+      body: { ...vaultSwapRequest, network: this.options.network },
+    });
+
+    assert(res.status === 200, 'Failed to encode vault swap data');
+
+    switch (res.body.chain) {
       case 'Arbitrum':
-        return { ...response, value: BigInt(response.value) };
+      case 'Ethereum':
+        return { ...res.body, value: BigInt(res.body.value) };
       default:
-        return response;
+        return res.body;
     }
   }
 

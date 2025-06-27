@@ -2,7 +2,7 @@ import { HttpClient } from '@chainflip/rpc';
 import { getInternalAsset } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { getParameterEncodingRequestSchema } from '@/shared/broker.js';
-import { formatResponse } from '@/shared/objects.js';
+import { transformKeysToCamelCase } from '@/shared/objects.js';
 import { chainflipAddress } from '@/shared/parsers.js';
 import env from '../config/env.js';
 import { assertRouteEnabled } from '../utils/env.js';
@@ -62,5 +62,5 @@ export const encodeVaultSwapData = async (input: z.output<typeof encodeVaultSwap
 
   logger.info('Vault swap data fetched', response);
 
-  return formatResponse(response);
+  return transformKeysToCamelCase(response);
 };

@@ -14,7 +14,7 @@ import { HexString } from '@chainflip/utils/types';
 import BigNumber from 'bignumber.js';
 import { z } from 'zod';
 import { assert } from './guards.js';
-import { formatResponse } from './objects.js';
+import { transformKeysToCamelCase } from './objects.js';
 import { numericString, assetAndChain, unsignedInteger, DOT_PREFIX, hexString } from './parsers.js';
 import {
   affiliateBroker,
@@ -229,7 +229,7 @@ export async function requestSwapDepositAddress(
       return unreachable(params.srcAsset, 'unexpected chain');
   }
 
-  return formatResponse(response);
+  return transformKeysToCamelCase(response);
 }
 
 type ParameterEncodingRequest = {
@@ -269,5 +269,5 @@ export async function requestSwapParameterEncoding(
     params.dcaParams,
   );
 
-  return formatResponse(response);
+  return transformKeysToCamelCase(response);
 }
