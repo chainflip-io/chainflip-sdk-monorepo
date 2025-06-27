@@ -44,7 +44,7 @@ export const stringifyBigInts = <T>(obj: T): StringifyBigInt<T> => {
   if (obj !== null && typeof obj === 'object') {
     return Object.fromEntries(
       Object.entries(obj).map(([key, value]) => [
-        toCamelCase(key),
+        key,
         stringifyBigInts(value as Record<string, unknown>),
       ]),
     ) as StringifyBigInt<T>;

@@ -3,8 +3,13 @@ import { chainflipNetworks } from '@chainflip/utils/chainflip';
 import { priceX128ToPrice } from '@chainflip/utils/tickMath';
 import { z } from 'zod';
 import { assert } from '../guards.js';
-import { assetAndChain, hexString, numericString, unsignedInteger } from '../parsers.js';
-import { affiliateBroker, ccmParamsSchema, dcaParams as dcaParamsSchema } from '../schemas.js';
+import { assetAndChain, hexString, unsignedInteger } from '../parsers.js';
+import {
+  affiliateBroker,
+  ccmParamsSchema,
+  dcaParams as dcaParamsSchema,
+  fillOrKillParams as fillOrKillParamsSchema,
+} from '../schemas.js';
 import { validateAddress } from '../validation/addressValidation.js';
 
 const TransformedCcmParams = ccmParamsSchema.transform(
@@ -17,17 +22,13 @@ const TransformedCcmParams = ccmParamsSchema.transform(
   }),
 );
 
-const FillOrKillParams = z
-  .object({
-    retryDurationBlocks: z.number(),
-    refundAddress: z.string(),
-    minPriceX128: numericString,
-  })
-  .transform(({ retryDurationBlocks, refundAddress, minPriceX128 }) => ({
+const FillOrKillParams = fillOrKillParamsSchema.transform(
+  ({ retryDurationBlocks, refundAddress, minPriceX128 }) => ({
     retry_duration: retryDurationBlocks,
     refund_address: refundAddress!,
     min_price: `0x${BigInt(minPriceX128).toString(16)}` as const,
-  }));
+  }),
+);
 
 const TransformedDcaParams = dcaParamsSchema.transform(
   ({ numberOfChunks, chunkIntervalBlocks }) => ({

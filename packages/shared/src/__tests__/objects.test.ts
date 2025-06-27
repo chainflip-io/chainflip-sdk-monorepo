@@ -7,7 +7,7 @@ describe(stringifyBigInts, () => {
       stringifyBigInts({
         easy: 1n,
         value: null,
-        nested: {
+        nested_object: {
           value: 2n,
           array: [3n, 4n],
           number: 1,
@@ -21,7 +21,7 @@ describe(stringifyBigInts, () => {
     ).toMatchInlineSnapshot(`
       {
         "easy": "1",
-        "nested": {
+        "nested_object": {
           "array": [
             "3",
             "4",
