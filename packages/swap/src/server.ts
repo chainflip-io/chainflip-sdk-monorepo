@@ -1,11 +1,15 @@
 import * as trpcExpress from '@trpc/server/adapters/express';
+import { createExpressEndpoints } from '@ts-rest/express';
 import cors from 'cors';
 import { randomUUID } from 'crypto';
 import express from 'express';
+import { Request } from 'express-serve-static-core';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import { apiContract } from '@/shared/api/contract.js';
 import authenticate from './quoting/authenticate.js';
 import Quoter from './quoting/Quoter.js';
+import { apiRouter } from './routes/api.js';
 import { handleError, maintenanceMode, quoteMiddleware } from './routes/common.js';
 import swap from './routes/swap.js';
 import thirdPartySwap from './routes/thirdPartySwap.js';
@@ -51,6 +55,13 @@ app.get('/healthcheck', (req, res) => {
 app.use('/v2/quote', quoteMiddleware, quoteRouterV2(quoter));
 
 app.use('/trpc', maintenanceMode, trpcExpress.createExpressMiddleware({ router: appRouter }));
+
+createExpressEndpoints(apiContract, apiRouter, app, {
+  globalMiddleware: [
+    (req, res, next) => maintenanceMode(req as Request, res, next),
+    express.json(),
+  ],
+});
 
 app.use(handleError);
 

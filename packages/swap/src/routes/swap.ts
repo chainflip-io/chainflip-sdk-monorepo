@@ -1,16 +1,11 @@
 import { internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import express from 'express';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions.js';
-import { asyncHandler, maintenanceMode } from './common.js';
+import { asyncHandler } from './common.js';
 import prisma from '../client.js';
-import {
-  openSwapDepositChannel,
-  openSwapDepositChannelSchema,
-} from '../handlers/openSwapDepositChannel.js';
 import { getPendingBroadcast, getPendingDeposit } from '../ingress-egress-tracking/index.js';
 import { readField } from '../utils/function.js';
 import logger from '../utils/logger.js';
-import ServiceError from '../utils/ServiceError.js';
 import {
   estimateSwapDuration,
   failedSwapMessage,
@@ -241,25 +236,6 @@ router.get(
     };
 
     logger.info('sending response for swap request', { id, response });
-
-    res.json(response);
-  }),
-);
-
-// TODO(major): remove this handler. it's replaced by tRPC
-router.post(
-  '/',
-  maintenanceMode,
-  asyncHandler(async (req, res) => {
-    const result = openSwapDepositChannelSchema.safeParse(req.body);
-    if (!result.success) {
-      logger.info('received bad request for new swap', { body: req.body });
-      throw ServiceError.badRequest('invalid request body');
-    }
-
-    const { srcChainExpiryBlock, channelOpeningFee, ...response } = await openSwapDepositChannel(
-      result.data,
-    );
 
     res.json(response);
   }),
