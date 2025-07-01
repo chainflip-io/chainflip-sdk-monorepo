@@ -5,7 +5,6 @@ import { assert } from '@/shared/guards.js';
 import { getLpAccounts } from './lp.js';
 import { getPoolDepth } from './rpc.js';
 import prisma, { Pool } from '../client.js';
-import env from '../config/env.js';
 
 const poolCache = new AsyncCacheMap({
   fetch: async (baseAsset: ChainflipAsset) =>
