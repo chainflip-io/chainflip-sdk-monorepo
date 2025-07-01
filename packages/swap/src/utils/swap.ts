@@ -9,8 +9,24 @@ import BigNumber from 'bignumber.js';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts.js';
 import { assertUnreachable } from '@/shared/functions.js';
 import ServiceError from './ServiceError.js';
-import { FailedSwapReason, Swap } from '../client.js';
+import prisma, { FailedSwapReason, Swap } from '../client.js';
 import { getWitnessSafetyMargin } from './rpc.js';
+
+const estimateBitcoinInclusionDuration = async () => {
+  const currentBitcoinTracking = await prisma.chainTracking.findFirst({
+    where: { chain: 'Bitcoin' },
+    orderBy: { id: 'desc' },
+  });
+
+  const secondsSinceLastBlock = currentBitcoinTracking
+    ? (Date.now() - new Date(currentBitcoinTracking.blockTrackedAt).getTime()) / 1000
+    : 0;
+
+  const estimatedSecondsUntilNextBlock =
+    chainConstants.Bitcoin.blockTimeSeconds - secondsSinceLastBlock;
+
+  return Math.round(Math.max(estimatedSecondsUntilNextBlock, 60));
+};
 
 export const estimateSwapDuration = async ({
   srcAsset,
@@ -27,7 +43,10 @@ export const estimateSwapDuration = async ({
   const { chain: destChain } = internalAssetToRpcAsset[destAsset];
 
   // user transaction must be included before witnessing starts
-  const depositInclusionDuration = chainConstants[srcChain].blockTimeSeconds;
+  const depositInclusionDuration =
+    srcChain === 'Bitcoin'
+      ? await estimateBitcoinInclusionDuration()
+      : chainConstants[srcChain].blockTimeSeconds;
 
   // once transaction is included, state chain validator witness transaction after safety margin is met
   // in case of a boosted swap, the swap occurs at the moment a deposit is prewitnessed (deposit transaction included in a block)

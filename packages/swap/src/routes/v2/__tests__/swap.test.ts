@@ -509,7 +509,7 @@ describe('server', () => {
 
     beforeEach(async () => {
       const time = new Date('2022-01-01');
-      vi.useFakeTimers({ toFake: ['performance'] }).setSystemTime(time);
+      vi.useFakeTimers({ toFake: ['performance', 'Date'] }).setSystemTime(time);
       await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel", private."DepositChannel", "Swap", "FailedSwap", "IgnoredEgress", "StateChainError", "SwapRequest", "Pool", "ChainTracking" CASCADE`;
       await createChainTrackingInfo(time);
       await createPools();

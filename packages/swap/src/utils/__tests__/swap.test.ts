@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
+import prisma from '../../client.js';
 import { estimateSwapDuration } from '../swap.js';
 
 describe(estimateSwapDuration, () => {
@@ -13,6 +14,10 @@ describe(estimateSwapDuration, () => {
 
       throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
     });
+  });
+
+  beforeEach(async () => {
+    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;
   });
 
   it.each([
