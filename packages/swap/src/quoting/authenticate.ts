@@ -1,17 +1,13 @@
-import {
-  ChainflipAsset,
-  chainflipAssets,
-  getInternalAsset,
-  InternalAssetMap,
-} from '@chainflip/utils/chainflip';
+import { ChainflipAsset, getInternalAsset, InternalAssetMap } from '@chainflip/utils/chainflip';
 import { toLowerCase } from '@chainflip/utils/string';
 import * as crypto from 'crypto';
 import type { Server } from 'socket.io';
 import { promisify } from 'util';
 import { z } from 'zod';
+import { createInternalAssetMap } from '@/shared/dataStructures.js';
 import { isNotNullish } from '@/shared/guards.js';
 import { assetAndChain } from '@/shared/parsers.js';
-import prisma, { InternalAsset } from '../client.js';
+import prisma from '../client.js';
 import { AccountId, type QuotingSocket } from './Quoter.js';
 import env from '../config/env.js';
 import baseLogger from '../utils/logger.js';
@@ -32,11 +28,13 @@ function assert(condition: unknown, message: string): asserts condition {
 const mapAssets = (quotedAssets: ChainflipAsset[] | null): InternalAssetMap<boolean> => {
   assert(quotedAssets === null || quotedAssets.length !== 0, 'no assets quoted');
 
-  return Object.fromEntries(
-    chainflipAssets.map(
-      (asset) => [asset, quotedAssets === null || quotedAssets.includes(asset)] as const,
-    ),
-  ) as InternalAssetMap<boolean>;
+  const map = createInternalAssetMap(false);
+
+  quotedAssets?.forEach((asset) => {
+    if (asset !== 'Dot') map[asset] = true;
+  });
+
+  return map;
 };
 
 const authSchema = z.object({
@@ -78,7 +76,7 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
 
     const marketMaker = await prisma.marketMaker.findUnique({
       where: { name: auth.account_id },
-      include: { mevFactors: true },
+      include: { factors: true },
     });
 
     assert(marketMaker, 'market maker not found');
@@ -101,15 +99,43 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
       quotedAssets: auth.quoted_assets,
       clientVersion: auth.client_version,
       beta: marketMaker.beta,
-      mevFactors: marketMaker.mevFactors.reduce(
-        (acc, mev) => {
-          if (env.QUOTER_USE_MEV_FACTOR) {
-            acc[toLowerCase(mev.side)][mev.asset as Exclude<InternalAsset, 'Dot'>] =
-              mev.factor * (mev.side === 'BUY' ? 1 : -1);
+      mevFactors: marketMaker.factors.reduce(
+        (acc, factor) => {
+          if (factor.asset === 'Dot') return acc;
+
+          if (factor.type === 'MEV' && env.QUOTER_USE_MEV_FACTOR) {
+            if (factor.side === null) {
+              logger.error('factor side is null', { factor });
+              return acc;
+            }
+            acc[toLowerCase(factor.side)][factor.asset] =
+              factor.factor * (factor.side === 'BUY' ? 1 : -1);
           }
           return acc;
         },
-        { buy: {}, sell: {} } as QuotingSocket['data']['mevFactors'],
+        { buy: createInternalAssetMap(0), sell: createInternalAssetMap(0) },
+      ),
+      replenishmentFactors: marketMaker.factors.reduce(
+        (acc, factor) => {
+          if (factor.asset === 'Dot') return acc;
+
+          if (factor.type === 'REPLENISHMENT') {
+            if (factor.factor < 0) {
+              logger.error('replenishment factor is invalid', { factor });
+              return acc;
+            }
+            if (auth.quoted_assets[factor.asset]) {
+              acc[factor.asset] = factor.factor;
+            } else {
+              logger.warn('replenishment factor set for unquoted asset', {
+                asset: factor.asset,
+                marketMaker: marketMaker.name,
+              });
+            }
+          }
+          return acc;
+        },
+        {} as Partial<InternalAssetMap<number>>,
       ),
     };
 

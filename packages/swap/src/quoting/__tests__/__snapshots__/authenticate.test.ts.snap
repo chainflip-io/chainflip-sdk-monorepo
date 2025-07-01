@@ -31,6 +31,62 @@ exports[`authenticate > accepts valid v2 authentication ({ beta: false, useMevFa
 }
 `;
 
+exports[`authenticate > accepts valid v2 authentication ({ beta: false, useMevFactor: true, mevFactors: [ { asset: 'Flip', factor: 1, side: 'SELL', type: 'MEV' }, { asset: 'Flip', factor: -1, side: 'BUY', type: 'MEV' } ] }) 1`] = `
+{
+  "beta": false,
+  "clientVersion": "2",
+  "marketMaker": "web_team_whales",
+  "mevFactors": {
+    "buy": {
+      "ArbEth": 0,
+      "ArbUsdc": 0,
+      "Btc": 0,
+      "Dot": 0,
+      "Eth": 0,
+      "Flip": -1,
+      "HubDot": 0,
+      "HubUsdc": 0,
+      "HubUsdt": 0,
+      "Sol": 0,
+      "SolUsdc": 0,
+      "Usdc": 0,
+      "Usdt": 0,
+    },
+    "sell": {
+      "ArbEth": 0,
+      "ArbUsdc": 0,
+      "Btc": 0,
+      "Dot": 0,
+      "Eth": 0,
+      "Flip": -1,
+      "HubDot": 0,
+      "HubUsdc": 0,
+      "HubUsdt": 0,
+      "Sol": 0,
+      "SolUsdc": 0,
+      "Usdc": 0,
+      "Usdt": 0,
+    },
+  },
+  "quotedAssets": {
+    "ArbEth": false,
+    "ArbUsdc": false,
+    "Btc": false,
+    "Dot": false,
+    "Eth": false,
+    "Flip": true,
+    "HubDot": false,
+    "HubUsdc": false,
+    "HubUsdt": false,
+    "Sol": false,
+    "SolUsdc": false,
+    "Usdc": false,
+    "Usdt": false,
+  },
+  "replenishmentFactors": {},
+}
+`;
+
 exports[`authenticate > accepts valid v2 authentication ({ beta: true, useMevFactor: false, mevFactors: [ { asset: 'Flip', factor: 1, side: 'SELL' }, { asset: 'Flip', factor: -1, side: 'BUY' } ] }) 1`] = `
 {
   "beta": true,
@@ -55,5 +111,61 @@ exports[`authenticate > accepts valid v2 authentication ({ beta: true, useMevFac
     "Usdc": false,
     "Usdt": false,
   },
+}
+`;
+
+exports[`authenticate > accepts valid v2 authentication ({ beta: true, useMevFactor: false, mevFactors: [ { asset: 'Flip', factor: 1, side: 'SELL', type: 'MEV' }, { asset: 'Flip', factor: -1, side: 'BUY', type: 'MEV' } ] }) 1`] = `
+{
+  "beta": true,
+  "clientVersion": "2",
+  "marketMaker": "web_team_whales",
+  "mevFactors": {
+    "buy": {
+      "ArbEth": 0,
+      "ArbUsdc": 0,
+      "Btc": 0,
+      "Dot": 0,
+      "Eth": 0,
+      "Flip": 0,
+      "HubDot": 0,
+      "HubUsdc": 0,
+      "HubUsdt": 0,
+      "Sol": 0,
+      "SolUsdc": 0,
+      "Usdc": 0,
+      "Usdt": 0,
+    },
+    "sell": {
+      "ArbEth": 0,
+      "ArbUsdc": 0,
+      "Btc": 0,
+      "Dot": 0,
+      "Eth": 0,
+      "Flip": 0,
+      "HubDot": 0,
+      "HubUsdc": 0,
+      "HubUsdt": 0,
+      "Sol": 0,
+      "SolUsdc": 0,
+      "Usdc": 0,
+      "Usdt": 0,
+    },
+  },
+  "quotedAssets": {
+    "ArbEth": false,
+    "ArbUsdc": false,
+    "Btc": false,
+    "Dot": false,
+    "Eth": false,
+    "Flip": true,
+    "HubDot": false,
+    "HubUsdc": false,
+    "HubUsdt": false,
+    "Sol": false,
+    "SolUsdc": false,
+    "Usdc": false,
+    "Usdt": false,
+  },
+  "replenishmentFactors": {},
 }
 `;
