@@ -1544,7 +1544,7 @@ describe('server', () => {
       expect(body).toMatchSnapshot();
     });
 
-    it.only('returns a DCA quote with replenishment', async () => {
+    it('returns a DCA quote with replenishment', async () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
