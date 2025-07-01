@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`SwapSDK > getAssets > returns the assets based on the networkStatus tRPC method 1`] = `
+exports[`SwapSDK > getAssets > returns the assets based on the networkStatus API method 1`] = `
 [
   {
     "asset": "ETH",
@@ -779,7 +779,7 @@ exports[`SwapSDK > getAssets > returns the correct values for sisyphos 1`] = `
 ]
 `;
 
-exports[`SwapSDK > getAssets > returns the deposit assets based on the networkStatus tRPC method 1`] = `
+exports[`SwapSDK > getAssets > returns the deposit assets based on the networkStatus API method 1`] = `
 [
   {
     "asset": "ETH",
@@ -849,7 +849,7 @@ exports[`SwapSDK > getAssets > returns the deposit assets based on the networkSt
 ]
 `;
 
-exports[`SwapSDK > getAssets > returns the destination assets based on the networkStatus tRPC method 1`] = `
+exports[`SwapSDK > getAssets > returns the destination assets based on the networkStatus API method 1`] = `
 [
   {
     "asset": "ETH",
@@ -1034,7 +1034,7 @@ exports[`SwapSDK > getChains > returns filtered destination destination chains f
 ]
 `;
 
-exports[`SwapSDK > getChains > returns the chains based on the supportedAsset tRPC endpoint 1`] = `
+exports[`SwapSDK > getChains > returns the chains based on the supportedAsset API endpoint 1`] = `
 [
   {
     "chain": "Ethereum",
@@ -1275,7 +1275,7 @@ exports[`SwapSDK > getChains > returns the correct values for sisyphos 1`] = `
 ]
 `;
 
-exports[`SwapSDK > getChains > returns the deposit chains based on the supportedAsset tRPC endpoint 1`] = `
+exports[`SwapSDK > getChains > returns the deposit chains based on the supportedAsset API endpoint 1`] = `
 [
   {
     "chain": "Ethereum",
@@ -1296,7 +1296,7 @@ exports[`SwapSDK > getChains > returns the deposit chains based on the supported
 ]
 `;
 
-exports[`SwapSDK > getChains > returns the destination chains based on the supportedAsset tRPC endpoint 1`] = `
+exports[`SwapSDK > getChains > returns the destination chains based on the supportedAsset API endpoint 1`] = `
 [
   {
     "chain": "Ethereum",

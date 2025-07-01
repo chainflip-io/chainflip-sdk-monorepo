@@ -10,9 +10,9 @@ import {
   internalAssetToRpcAsset,
   ChainMap,
 } from '@chainflip/utils/chainflip';
-import { createTRPCProxyClient, httpLink } from '@trpc/client';
 import type { inferRouterOutputs } from '@trpc/server';
-import superjson from 'superjson';
+import { initClient } from '@ts-rest/core';
+import { apiContract } from '@/shared/api/contract.js';
 import { requestSwapDepositAddress, requestSwapParameterEncoding } from '@/shared/broker.js';
 import { MultiCache } from '@/shared/dataStructures.js';
 import { parseFoKParams } from '@/shared/functions.js';
@@ -82,7 +82,7 @@ export class SwapSDK {
 
   private readonly rpcConfig: RpcConfig;
 
-  private readonly trpc;
+  private readonly apiClient;
 
   private cache;
 
@@ -96,14 +96,9 @@ export class SwapSDK {
       backendUrl: options.backendUrl ?? BACKEND_SERVICE_URLS[network],
     };
     this.rpcConfig = options.rpcUrl ? { rpcUrl: options.rpcUrl } : { network };
-    this.trpc = createTRPCProxyClient<AppRouter>({
-      transformer: superjson,
-      links: [
-        httpLink({
-          url: new URL('/trpc', this.options.backendUrl),
-          headers: CF_SDK_VERSION_HEADERS,
-        }),
-      ],
+    this.apiClient = initClient(apiContract, {
+      baseUrl: this.options.backendUrl,
+      baseHeaders: CF_SDK_VERSION_HEADERS,
     });
     this.dcaEnabled = options.enabledFeatures?.dca ?? false;
     this.cache = new MultiCache({
@@ -112,7 +107,11 @@ export class SwapSDK {
         ttl: 60_000,
       },
       networkStatus: {
-        fetch: () => this.trpc.networkStatus.query(),
+        fetch: async () => {
+          const res = await this.apiClient.networkStatus();
+          assert(res.status === 200, 'Failed to fetch network status');
+          return res.body;
+        },
         ttl: 60_000,
       },
     });
@@ -341,11 +340,17 @@ export class SwapSDK {
         'Affiliate brokers are supported only when initializing the SDK with a brokerUrl',
       );
 
-      response = await this.trpc.openSwapDepositChannel.mutate({
-        ...depositAddressRequest,
-        quote,
-        takeCommission: this.shouldTakeCommission(),
+      const res = await this.apiClient.openSwapDepositChannel({
+        body: {
+          ...depositAddressRequest,
+          quote,
+          takeCommission: this.shouldTakeCommission(),
+        },
       });
+
+      assert(res.status === 201, 'Failed to open swap deposit channel');
+
+      response = res.body;
     }
 
     return {
@@ -355,9 +360,9 @@ export class SwapSDK {
       brokerCommissionBps: response.brokerCommissionBps,
       affiliateBrokers: affiliates ?? [],
       maxBoostFeeBps: Number(response.maxBoostFeeBps) || 0,
-      depositChannelExpiryBlock: response.srcChainExpiryBlock as bigint,
+      depositChannelExpiryBlock: BigInt(response.srcChainExpiryBlock),
       estimatedDepositChannelExpiryTime: response.estimatedExpiryTime,
-      channelOpeningFee: response.channelOpeningFee,
+      channelOpeningFee: BigInt(response.channelOpeningFee),
       fillOrKillParams: inputFoKParams,
     };
   }
@@ -425,7 +430,19 @@ export class SwapSDK {
       'Affiliate brokers are supported only when setting a broker account',
     );
 
-    return this.trpc.encodeVaultSwapData.mutate(vaultSwapRequest);
+    const res = await this.apiClient.encodeVaultSwapData({
+      body: { ...vaultSwapRequest, network: this.options.network },
+    });
+
+    assert(res.status === 200, 'Failed to encode vault swap data');
+
+    switch (res.body.chain) {
+      case 'Arbitrum':
+      case 'Ethereum':
+        return { ...res.body, value: BigInt(res.body.value) };
+      default:
+        return res.body;
+    }
   }
 
   // eslint-disable-next-line class-methods-use-this
