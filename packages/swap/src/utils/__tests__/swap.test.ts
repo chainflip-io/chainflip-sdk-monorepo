@@ -47,4 +47,42 @@ describe(estimateSwapDuration, () => {
       total: expected.deposit + expected.swap + expected.egress,
     });
   });
+
+  describe('uses the time of the last bitcoin block to estimate the bitcoin inclusion duration', async () => {
+    it('returns default duration if no chain tracking is found', async () => {
+      expect(
+        await estimateSwapDuration({ srcAsset: 'Btc', destAsset: 'Eth', boosted: true }),
+      ).toMatchObject({
+        durations: { deposit: 600 + 6, swap: 12, egress: 12 + 90 },
+      });
+    });
+
+    it.each([
+      [0, 600, true],
+      [60, 540, true],
+      [300, 300, true],
+      [600, 60, true],
+      [800, 60, true],
+      [320, 300, true], // round up to nearest minute
+      [350, 300, true], // round up to nearest minute
+    ])(
+      `estimates time when last block is %s seconds old`,
+      async (lastBlockAgeSeconds, inclusionTimeSeconds, isBoosted) => {
+        await prisma.chainTracking.create({
+          data: {
+            chain: 'Bitcoin',
+            height: 1n,
+            eventWitnessedBlock: 1,
+            blockTrackedAt: new Date(Date.now() - lastBlockAgeSeconds * 1000),
+          },
+        });
+
+        expect(
+          await estimateSwapDuration({ srcAsset: 'Btc', destAsset: 'Eth', boosted: isBoosted }),
+        ).toMatchObject({
+          durations: { deposit: inclusionTimeSeconds + 6, swap: 12, egress: 12 + 90 },
+        });
+      },
+    );
+  });
 });
