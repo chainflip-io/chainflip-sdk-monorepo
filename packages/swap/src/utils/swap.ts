@@ -22,11 +22,10 @@ const estimateBitcoinInclusionDuration = async () => {
     ? (Date.now() - new Date(currentBitcoinTracking.blockTrackedAt).getTime()) / 1000
     : 0;
 
-  const estimatedMinutesUntilNextBlock = Math.ceil(
-    (chainConstants.Bitcoin.blockTimeSeconds - secondsSinceLastBlock) / 60,
-  );
+  const estimatedMinutesUntilNextBlock =
+    (chainConstants.Bitcoin.blockTimeSeconds - secondsSinceLastBlock) / 60;
 
-  return Math.round(Math.max(estimatedMinutesUntilNextBlock, 1) * 60);
+  return Math.max(Math.ceil(estimatedMinutesUntilNextBlock), 1) * 60;
 };
 
 export const estimateSwapDuration = async ({
