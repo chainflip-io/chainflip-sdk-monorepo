@@ -10,10 +10,15 @@ import {
   internalAssetToRpcAsset,
   ChainMap,
 } from '@chainflip/utils/chainflip';
+import { HexString } from '@chainflip/utils/types';
 import type { inferRouterOutputs } from '@trpc/server';
 import { initClient } from '@ts-rest/core';
 import { apiContract } from '@/shared/api/contract.js';
-import { requestSwapDepositAddress, requestSwapParameterEncoding } from '@/shared/broker.js';
+import {
+  requestCfParametersEncoding,
+  requestSwapDepositAddress,
+  requestSwapParameterEncoding,
+} from '@/shared/broker.js';
 import { MultiCache } from '@/shared/dataStructures.js';
 import { parseFoKParams } from '@/shared/functions.js';
 import { assert } from '@/shared/guards.js';
@@ -47,6 +52,7 @@ import {
   type VaultSwapRequest,
   DepositAddressResponseV2,
   VaultSwapResponse,
+  EncodeCfParametersRequest,
 } from './v2/types.js';
 
 export type SwapSDKOptions = {
@@ -434,7 +440,9 @@ export class SwapSDK {
       body: { ...vaultSwapRequest, network: this.options.network },
     });
 
-    assert(res.status === 200, 'Failed to encode vault swap data');
+    if (res.status !== 200) {
+      throw new Error('Failed to encode vault swap data', { cause: res });
+    }
 
     switch (res.body.chain) {
       case 'Arbitrum':
@@ -443,6 +451,72 @@ export class SwapSDK {
       default:
         return res.body;
     }
+  }
+
+  async encodeCfParameters({
+    quote,
+    srcAddress,
+    destAddress,
+    fillOrKillParams: inputFoKParams,
+    affiliateBrokers: affiliates,
+    ccmParams,
+    brokerAccount,
+    brokerCommissionBps: brokerCommissionBpsParam,
+  }: EncodeCfParametersRequest): Promise<HexString> {
+    await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
+    assertQuoteValid(quote);
+
+    if (ccmParams) {
+      assert(quote.ccmParams, 'Cannot encode CCM swap for quote without CCM params');
+    } else {
+      assert(!quote.ccmParams, 'Cannot encode regular swap for quote with CCM params');
+    }
+
+    const brokerCommissionBps = await this.getCommissionBps(brokerCommissionBpsParam);
+
+    const requestParams = {
+      srcAsset: quote.srcAsset,
+      destAsset: quote.destAsset,
+      srcAddress,
+      destAddress,
+      amount: quote.depositAmount,
+      ccmParams,
+      maxBoostFeeBps: 'maxBoostFeeBps' in quote ? quote.maxBoostFeeBps : undefined,
+      fillOrKillParams: parseFoKParams(inputFoKParams, quote)!,
+      dcaParams: quote.type === 'DCA' ? quote.dcaParams : undefined,
+      brokerAccount,
+      commissionBps: brokerCommissionBps,
+      affiliates,
+      network: this.options.network,
+    };
+
+    if (this.options.broker) {
+      assert(
+        !requestParams.brokerAccount,
+        'Cannot overwrite broker account when initializing the SDK with a brokerUrl',
+      );
+
+      return requestCfParametersEncoding(requestParams, { url: this.options.broker.url });
+    }
+
+    assert(
+      !requestParams.commissionBps || requestParams.brokerAccount || this.shouldTakeCommission(),
+      'Broker commission is supported only when setting a broker account',
+    );
+    assert(
+      !requestParams.affiliates?.length || requestParams.brokerAccount,
+      'Affiliate brokers are supported only when setting a broker account',
+    );
+
+    const res = await this.apiClient.encodeCfParameters({
+      body: { ...requestParams, network: this.options.network },
+    });
+
+    if (res.status !== 200) {
+      throw new Error('Failed to encode cf parameters', { cause: res });
+    }
+
+    return res.body;
   }
 
   // eslint-disable-next-line class-methods-use-this

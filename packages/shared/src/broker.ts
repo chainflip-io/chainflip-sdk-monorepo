@@ -5,6 +5,7 @@ import {
   AssetSymbol,
   ChainflipChain,
   ChainflipNetwork,
+  chainflipNetworks,
   UncheckedAssetAndChain,
 } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
@@ -103,7 +104,7 @@ const getDepositAddressRequestSchema = (network: ChainflipNetwork) =>
       }
     });
 
-export const getParameterEncodingRequestSchema = (network: ChainflipNetwork) =>
+export const getVaultSwapParameterEncodingRequestSchema = (network: ChainflipNetwork) =>
   z
     .object({
       srcAsset: assetAndChain,
@@ -254,7 +255,7 @@ export async function requestSwapParameterEncoding(
 ) {
   const client = new HttpClient(opts.url);
 
-  const params = getParameterEncodingRequestSchema(chainflipNetwork).parse(request);
+  const params = getVaultSwapParameterEncodingRequestSchema(chainflipNetwork).parse(request);
 
   const response = await client.sendRequest(
     'broker_request_swap_parameter_encoding',
@@ -270,4 +271,67 @@ export async function requestSwapParameterEncoding(
   );
 
   return transformKeysToCamelCase(response);
+}
+
+export const cfParameterEncodingRequestSchema = z
+  .object({
+    srcAsset: assetAndChain,
+    srcAddress: z.string().optional(),
+    destAsset: assetAndChain,
+    destAddress: z.string(),
+    amount: unsignedInteger,
+    brokerCommissionBps: z.number().optional().default(0),
+    ccmParams: transformedCcmParamsSchema.optional(),
+    maxBoostFeeBps: z.number().optional(),
+    affiliates: z.array(affiliateBroker).optional(),
+    fillOrKillParams: transformedFokSchema,
+    dcaParams: transformedDcaParamsSchema.optional(),
+    network: z.enum(chainflipNetworks),
+  })
+  .superRefine(({ network, ...val }, ctx) => {
+    if (val.srcAddress && !validateAddress(val.srcAsset.chain, val.srcAddress, network)) {
+      ctx.addIssue({
+        message: `Address "${val.srcAddress}" is not a valid "${val.srcAsset.chain}" address for "${network}"`,
+        code: z.ZodIssueCode.custom,
+      });
+    }
+
+    if (!validateAddress(val.destAsset.chain, val.destAddress, network)) {
+      ctx.addIssue({
+        message: `Address "${val.destAddress}" is not a valid "${val.destAsset.chain}" address for "${network}"`,
+        code: z.ZodIssueCode.custom,
+      });
+    }
+
+    if (!validateAddress(val.srcAsset.chain, val.fillOrKillParams.refund_address, network)) {
+      ctx.addIssue({
+        message: `Address "${val.fillOrKillParams.refund_address}" is not a valid "${val.srcAsset.chain}" address for "${network}"`,
+        code: z.ZodIssueCode.custom,
+      });
+    }
+  })
+  .transform(({ network, ...rest }) => rest);
+
+export async function requestCfParametersEncoding(
+  request: z.input<typeof cfParameterEncodingRequestSchema>,
+  opts: { url: string },
+) {
+  const client = new HttpClient(opts.url);
+
+  const params = cfParameterEncodingRequestSchema.parse(request);
+
+  const response = await client.sendRequest(
+    'broker_encode_cf_parameters',
+    params.srcAsset,
+    params.destAsset,
+    params.destAddress,
+    params.brokerCommissionBps,
+    params.fillOrKillParams,
+    params.ccmParams,
+    params.maxBoostFeeBps,
+    params.affiliates,
+    params.dcaParams,
+  );
+
+  return response;
 }
