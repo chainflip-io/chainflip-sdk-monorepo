@@ -61,10 +61,11 @@ describe(estimateSwapDuration, () => {
       [0, 600, true],
       [60, 540, true],
       [300, 300, true],
-      [600, 60, true],
-      [800, 60, true],
-      [320, 300, true], // round up to nearest minute
-      [350, 300, true], // round up to nearest minute
+      [540, 60, true],
+      [600, 60, true], // always estimate at least 1 minute
+      [800, 60, true], // always estimate at least 1 minute
+      [320, 300, true], // round up to the nearest minute
+      [350, 300, true], // round up to the nearest minute
     ])(
       `estimates time when last block is %s seconds old`,
       async (lastBlockAgeSeconds, inclusionTimeSeconds, isBoosted) => {
