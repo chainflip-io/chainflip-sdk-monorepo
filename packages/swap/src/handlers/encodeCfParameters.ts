@@ -31,7 +31,7 @@ export const encodeCfParameters = async (
         input.srcAsset,
         input.destAsset,
         input.destAddress,
-        input.brokerCommissionBps,
+        input.commissionBps,
         input.fillOrKillParams,
         input.ccmParams,
         input.maxBoostFeeBps,
