@@ -272,3 +272,14 @@ export type VaultSwapResponse =
       }[];
       data: string;
     };
+
+export interface EncodeCfParametersRequest {
+  quote: Quote | BoostQuote;
+  srcAddress?: string;
+  destAddress: string;
+  fillOrKillParams: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage;
+  affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];
+  ccmParams?: CcmParams;
+  brokerAccount?: `cF${string}`;
+  brokerCommissionBps?: number;
+}

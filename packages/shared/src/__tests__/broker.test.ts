@@ -1082,3 +1082,537 @@ describe(broker.requestSwapParameterEncoding, () => {
     });
   });
 });
+
+describe(broker.requestCfParametersEncoding, () => {
+  const brokerConfig = { url: 'https://example.com' };
+
+  const mockResponse = (result: `0x${string}`) =>
+    mockRpcResponse({ data: { result, id: '1', jsonrpc: '2.0' } });
+
+  it('gets a response for swap from bitcoin', async () => {
+    const postSpy = mockResponse('0x1234');
+    const result = await broker.requestCfParametersEncoding(
+      {
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        amount: '12500000',
+        destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
+          minPriceX128: '34028236692093846346337460743176821145600000000000000000000000',
+        },
+        network: 'mainnet',
+      },
+      brokerConfig,
+    );
+    expect(postSpy.mock.calls[0][0]).toBe(brokerConfig.url);
+    const requestObject = postSpy.mock.calls[0][1][0];
+    expect(requestObject).toMatchInlineSnapshot(
+      { id: expect.any(String) },
+      `
+      {
+        "id": Any<String>,
+        "jsonrpc": "2.0",
+        "method": "broker_encode_cf_parameters",
+        "params": [
+          {
+            "asset": "BTC",
+            "chain": "Bitcoin",
+          },
+          {
+            "asset": "FLIP",
+            "chain": "Ethereum",
+          },
+          "0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C",
+          0,
+          {
+            "min_price": "0x152d02c7e14af680000000000000000000000000000000000000",
+            "refund_address": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+            "retry_duration": 500,
+          },
+          null,
+          null,
+          null,
+          null,
+        ],
+      }
+    `,
+    );
+    expect(result).toStrictEqual('0x1234');
+  });
+
+  it('gets a response for swap from ethereum', async () => {
+    const postSpy = mockResponse('0x5678');
+    const result = await broker.requestCfParametersEncoding(
+      {
+        srcAsset: { asset: 'ETH', chain: 'Ethereum' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        amount: '12500000',
+        destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
+          minPriceX128: '10000000',
+        },
+        network: 'mainnet',
+      },
+      brokerConfig,
+    );
+    expect(postSpy.mock.calls[0][0]).toBe(brokerConfig.url);
+    const requestObject = postSpy.mock.calls[0][1][0];
+    expect(requestObject).toMatchInlineSnapshot(
+      {
+        id: expect.any(String),
+      },
+      `
+      {
+        "id": Any<String>,
+        "jsonrpc": "2.0",
+        "method": "broker_encode_cf_parameters",
+        "params": [
+          {
+            "asset": "ETH",
+            "chain": "Ethereum",
+          },
+          {
+            "asset": "FLIP",
+            "chain": "Ethereum",
+          },
+          "0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C",
+          0,
+          {
+            "min_price": "0x989680",
+            "refund_address": "0xe983fD1798689eee00c0Fb77e79B8f372DF41060",
+            "retry_duration": 500,
+          },
+          null,
+          null,
+          null,
+          null,
+        ],
+      }
+    `,
+    );
+    expect(result).toStrictEqual('0x5678');
+  });
+
+  it('gets a response for swap from solana', async () => {
+    const postSpy = mockResponse('0x9012');
+    const result = await broker.requestCfParametersEncoding(
+      {
+        srcAsset: { asset: 'SOL', chain: 'Solana' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        amount: '12500000',
+        srcAddress: 'oQPnhXAbLbMuKHESaGrbXT17CyvWCpLyERSJA9HCYd7',
+        destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: 'oQPnhXAbLbMuKHESaGrbXT17CyvWCpLyERSJA9HCYd7',
+          minPriceX128: '10000000',
+        },
+        network: 'mainnet',
+      },
+      brokerConfig,
+    );
+    expect(postSpy.mock.calls[0][0]).toBe(brokerConfig.url);
+    const requestObject = postSpy.mock.calls[0][1][0];
+    expect(requestObject).toMatchInlineSnapshot(
+      {
+        id: expect.any(String),
+      },
+      `
+      {
+        "id": Any<String>,
+        "jsonrpc": "2.0",
+        "method": "broker_encode_cf_parameters",
+        "params": [
+          {
+            "asset": "SOL",
+            "chain": "Solana",
+          },
+          {
+            "asset": "FLIP",
+            "chain": "Ethereum",
+          },
+          "0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C",
+          0,
+          {
+            "min_price": "0x989680",
+            "refund_address": "oQPnhXAbLbMuKHESaGrbXT17CyvWCpLyERSJA9HCYd7",
+            "retry_duration": 500,
+          },
+          null,
+          null,
+          null,
+          null,
+        ],
+      }
+    `,
+    );
+    expect(result).toStrictEqual('0x9012');
+  });
+
+  it('rejects testnet refund addresses for swap from bitcoin', async () => {
+    await expect(
+      broker.requestCfParametersEncoding(
+        {
+          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+          amount: '12500000',
+          destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: '2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm',
+            minPriceX128: '10000000',
+          },
+          network: 'mainnet',
+        },
+        brokerConfig,
+      ),
+    ).rejects.toThrow(/2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm/);
+  });
+
+  it('rejects testnet source addresses for swap from bitcoin', async () => {
+    await expect(
+      broker.requestCfParametersEncoding(
+        {
+          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+          amount: '12500000',
+          destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
+          srcAddress: '2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
+            minPriceX128: '10000000',
+          },
+          network: 'mainnet',
+        },
+        brokerConfig,
+      ),
+    ).rejects.toThrow(/2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm/);
+  });
+
+  it('rejects testnet destination addresses for swap to bitcoin', async () => {
+    await expect(
+      broker.requestCfParametersEncoding(
+        {
+          srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+          destAsset: { asset: 'BTC', chain: 'Bitcoin' },
+          amount: '12500000',
+          destAddress: '2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm',
+          srcAddress: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
+            minPriceX128: '10000000',
+          },
+          network: 'mainnet',
+        },
+        brokerConfig,
+      ),
+    ).rejects.toThrow(/2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm/);
+  });
+
+  it('submits ccm data', async () => {
+    const postSpy = mockResponse('0x1234');
+    const result = await broker.requestCfParametersEncoding(
+      {
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'ETH', chain: 'Ethereum' },
+        amount: '12500000',
+        destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xEA30083b1DE9494d811FF45f5B95b884e1cAD873',
+          minPriceX128: '10000000',
+        },
+        ccmParams: {
+          gasBudget: '123456789',
+          message: '0xdeadc0de',
+        },
+        network: 'perseverance',
+      },
+      brokerConfig,
+    );
+    const requestObject = postSpy.mock.calls[0][1][0];
+    expect(requestObject).toMatchInlineSnapshot(
+      {
+        id: expect.any(String),
+      },
+      `
+      {
+        "id": Any<String>,
+        "jsonrpc": "2.0",
+        "method": "broker_encode_cf_parameters",
+        "params": [
+          {
+            "asset": "FLIP",
+            "chain": "Ethereum",
+          },
+          {
+            "asset": "ETH",
+            "chain": "Ethereum",
+          },
+          "0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C",
+          0,
+          {
+            "min_price": "0x989680",
+            "refund_address": "0xEA30083b1DE9494d811FF45f5B95b884e1cAD873",
+            "retry_duration": 500,
+          },
+          {
+            "gas_budget": "0x75bcd15",
+            "message": "0xdeadc0de",
+          },
+          null,
+          null,
+          null,
+        ],
+      }
+    `,
+    );
+    expect(result).toStrictEqual('0x1234');
+  });
+
+  it('submits boost fee', async () => {
+    const postSpy = mockResponse('0x5678');
+    const result = await broker.requestCfParametersEncoding(
+      {
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'ETH', chain: 'Ethereum' },
+        amount: '12500000',
+        destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xEA30083b1DE9494d811FF45f5B95b884e1cAD873',
+          minPriceX128: '10000000',
+        },
+        maxBoostFeeBps: 100,
+        network: 'perseverance',
+      },
+      brokerConfig,
+    );
+    const requestObject = postSpy.mock.calls[0][1][0];
+    expect(requestObject).toMatchInlineSnapshot(
+      {
+        id: expect.any(String),
+      },
+      `
+      {
+        "id": Any<String>,
+        "jsonrpc": "2.0",
+        "method": "broker_encode_cf_parameters",
+        "params": [
+          {
+            "asset": "FLIP",
+            "chain": "Ethereum",
+          },
+          {
+            "asset": "ETH",
+            "chain": "Ethereum",
+          },
+          "0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C",
+          0,
+          {
+            "min_price": "0x989680",
+            "refund_address": "0xEA30083b1DE9494d811FF45f5B95b884e1cAD873",
+            "retry_duration": 500,
+          },
+          null,
+          100,
+          null,
+          null,
+        ],
+      }
+    `,
+    );
+    expect(result).toStrictEqual('0x5678');
+  });
+
+  it('submits broker commission', async () => {
+    const postSpy = mockResponse('0x1234');
+    const result = await broker.requestCfParametersEncoding(
+      {
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'ETH', chain: 'Ethereum' },
+        amount: '12500000',
+        destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xEA30083b1DE9494d811FF45f5B95b884e1cAD873',
+          minPriceX128: '10000000',
+        },
+        maxBoostFeeBps: 100,
+        commissionBps: 25,
+        network: 'perseverance',
+      },
+      brokerConfig,
+    );
+    const requestObject = postSpy.mock.calls[0][1][0];
+    expect(requestObject).toMatchInlineSnapshot(
+      {
+        id: expect.any(String),
+      },
+      `
+      {
+        "id": Any<String>,
+        "jsonrpc": "2.0",
+        "method": "broker_encode_cf_parameters",
+        "params": [
+          {
+            "asset": "FLIP",
+            "chain": "Ethereum",
+          },
+          {
+            "asset": "ETH",
+            "chain": "Ethereum",
+          },
+          "0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C",
+          25,
+          {
+            "min_price": "0x989680",
+            "refund_address": "0xEA30083b1DE9494d811FF45f5B95b884e1cAD873",
+            "retry_duration": 500,
+          },
+          null,
+          100,
+          null,
+          null,
+        ],
+      }
+    `,
+    );
+    expect(result).toStrictEqual('0x1234');
+  });
+
+  it('submits affiliate brokers', async () => {
+    const postSpy = mockResponse('0x1234');
+    const result = await broker.requestCfParametersEncoding(
+      {
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'ETH', chain: 'Ethereum' },
+        amount: '12500000',
+        destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xEA30083b1DE9494d811FF45f5B95b884e1cAD873',
+          minPriceX128: '10000000',
+        },
+        maxBoostFeeBps: 100,
+        commissionBps: 30,
+        affiliates: [
+          { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
+          { account: 'cFJ4sqrg4FnrLPsGdt5w85XExGYxVLHLYLci28PnqcVVb8r8a', commissionBps: 20 },
+        ],
+        network: 'perseverance',
+      },
+      brokerConfig,
+    );
+    const requestObject = postSpy.mock.calls[0][1][0];
+    expect(requestObject).toMatchInlineSnapshot(
+      { id: expect.any(String) },
+      `
+      {
+        "id": Any<String>,
+        "jsonrpc": "2.0",
+        "method": "broker_encode_cf_parameters",
+        "params": [
+          {
+            "asset": "FLIP",
+            "chain": "Ethereum",
+          },
+          {
+            "asset": "ETH",
+            "chain": "Ethereum",
+          },
+          "0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C",
+          30,
+          {
+            "min_price": "0x989680",
+            "refund_address": "0xEA30083b1DE9494d811FF45f5B95b884e1cAD873",
+            "retry_duration": 500,
+          },
+          null,
+          100,
+          [
+            {
+              "account": "cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n",
+              "bps": 10,
+            },
+            {
+              "account": "cFJ4sqrg4FnrLPsGdt5w85XExGYxVLHLYLci28PnqcVVb8r8a",
+              "bps": 20,
+            },
+          ],
+          null,
+        ],
+      }
+    `,
+    );
+    expect(result).toStrictEqual('0x1234');
+  });
+
+  it('submits dca parameters', async () => {
+    const postSpy = mockResponse('0x1234');
+    const result = await broker.requestCfParametersEncoding(
+      {
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'ETH', chain: 'Ethereum' },
+        amount: '12500000',
+        destAddress: '0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xEA30083b1DE9494d811FF45f5B95b884e1cAD873',
+          minPriceX128: '10000000',
+        },
+        maxBoostFeeBps: 100,
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        network: 'perseverance',
+      },
+      brokerConfig,
+    );
+    const requestObject = postSpy.mock.calls[0][1][0];
+    expect(requestObject).toMatchInlineSnapshot(
+      {
+        id: expect.any(String),
+      },
+      `
+      {
+        "id": Any<String>,
+        "jsonrpc": "2.0",
+        "method": "broker_encode_cf_parameters",
+        "params": [
+          {
+            "asset": "FLIP",
+            "chain": "Ethereum",
+          },
+          {
+            "asset": "ETH",
+            "chain": "Ethereum",
+          },
+          "0xf64EE838D880191706aBb0B7b6fCE008c2db6D8C",
+          0,
+          {
+            "min_price": "0x989680",
+            "refund_address": "0xEA30083b1DE9494d811FF45f5B95b884e1cAD873",
+            "retry_duration": 500,
+          },
+          null,
+          100,
+          null,
+          {
+            "chunk_interval": 5,
+            "number_of_chunks": 100,
+          },
+        ],
+      }
+    `,
+    );
+    expect(result).toStrictEqual('0x1234');
+  });
+});
