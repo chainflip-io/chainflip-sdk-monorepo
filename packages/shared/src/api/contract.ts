@@ -19,7 +19,7 @@ export const apiContract = c.router(
     },
     encodeCfParameters: {
       method: 'POST',
-      path: '/encodeVaultSwapData',
+      path: '/encodeCfParameters',
       body: CfParameterEncodingRequestWithBroker,
       responses: {
         200: hexString,

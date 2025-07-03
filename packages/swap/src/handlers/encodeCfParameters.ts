@@ -14,7 +14,7 @@ const nodeClient = new HttpClient(env.RPC_NODE_HTTP_URL);
 export const encodeCfParameters = async (
   input: z.output<typeof CfParameterEncodingRequestWithBroker>,
 ) => {
-  logger.info('Fetching vault swap data', input);
+  logger.info('Encoding CF parameters', input);
 
   const srcAsset = getInternalAsset(input.srcAsset);
   const destAsset = getInternalAsset(input.destAsset);
