@@ -15,6 +15,7 @@ import type { inferRouterOutputs } from '@trpc/server';
 import { initClient } from '@ts-rest/core';
 import { apiContract } from '@/shared/api/contract.js';
 import {
+  CfParametersEncodingRequest,
   requestCfParametersEncoding,
   requestSwapDepositAddress,
   requestSwapParameterEncoding,
@@ -457,11 +458,11 @@ export class SwapSDK {
     quote,
     srcAddress,
     destAddress,
-    fillOrKillParams: inputFoKParams,
+    fillOrKillParams,
     affiliateBrokers: affiliates,
     ccmParams,
     brokerAccount,
-    brokerCommissionBps: brokerCommissionBpsParam,
+    brokerCommissionBps,
   }: EncodeCfParametersRequest): Promise<HexString> {
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
@@ -472,9 +473,7 @@ export class SwapSDK {
       assert(!quote.ccmParams, 'Cannot encode regular swap for quote with CCM params');
     }
 
-    const brokerCommissionBps = await this.getCommissionBps(brokerCommissionBpsParam);
-
-    const requestParams = {
+    const requestParams: CfParametersEncodingRequest = {
       srcAsset: quote.srcAsset,
       destAsset: quote.destAsset,
       srcAddress,
@@ -482,17 +481,16 @@ export class SwapSDK {
       amount: quote.depositAmount,
       ccmParams,
       maxBoostFeeBps: 'maxBoostFeeBps' in quote ? quote.maxBoostFeeBps : undefined,
-      fillOrKillParams: parseFoKParams(inputFoKParams, quote)!,
+      fillOrKillParams: parseFoKParams(fillOrKillParams, quote)!,
       dcaParams: quote.type === 'DCA' ? quote.dcaParams : undefined,
-      brokerAccount,
-      commissionBps: brokerCommissionBps,
+      commissionBps: await this.getCommissionBps(brokerCommissionBps),
       affiliates,
       network: this.options.network,
     };
 
     if (this.options.broker) {
       assert(
-        !requestParams.brokerAccount,
+        !brokerAccount,
         'Cannot overwrite broker account when initializing the SDK with a brokerUrl',
       );
 
@@ -500,16 +498,16 @@ export class SwapSDK {
     }
 
     assert(
-      !requestParams.commissionBps || requestParams.brokerAccount || this.shouldTakeCommission(),
+      !requestParams.commissionBps || brokerAccount || this.shouldTakeCommission(),
       'Broker commission is supported only when setting a broker account',
     );
     assert(
-      !requestParams.affiliates?.length || requestParams.brokerAccount,
+      !requestParams.affiliates?.length || brokerAccount,
       'Affiliate brokers are supported only when setting a broker account',
     );
 
     const res = await this.apiClient.encodeCfParameters({
-      body: { ...requestParams, network: this.options.network },
+      body: { ...requestParams, brokerAccount },
     });
 
     if (res.status !== 200) {

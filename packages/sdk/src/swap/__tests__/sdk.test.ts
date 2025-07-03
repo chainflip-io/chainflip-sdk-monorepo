@@ -2117,7 +2117,7 @@ describe(SwapSDK, () => {
               "chain": "Ethereum",
             },
             "0x717e15853fd5f2ac6123e844c3a7c75976eaec9b",
-            0,
+            15,
             {
               "min_price": "0x152d02c7e14af680000000000000000000000000000000000000",
               "refund_address": "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
@@ -2190,7 +2190,7 @@ describe(SwapSDK, () => {
               "chain": "Ethereum",
             },
             "0x717e15853fd5f2ac6123e844c3a7c75976eaec9b",
-            0,
+            15,
             {
               "min_price": "0x152d02c7e14af680000000000000000000000000000000000000",
               "refund_address": "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
@@ -2266,7 +2266,7 @@ describe(SwapSDK, () => {
               "chain": "Ethereum",
             },
             "0x717e15853fd5f2ac6123e844c3a7c75976eaec9b",
-            0,
+            15,
             {
               "min_price": "0x152d02c7e14af680000000000000000000000000000000000000",
               "refund_address": "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
@@ -2337,7 +2337,7 @@ describe(SwapSDK, () => {
               "chain": "Ethereum",
             },
             "0x717e15853fd5f2ac6123e844c3a7c75976eaec9b",
-            0,
+            15,
             {
               "min_price": "0x152d02c7e14af680000000000000000000000000000000000000",
               "refund_address": "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",

@@ -1445,7 +1445,7 @@ describe(broker.requestCfParametersEncoding, () => {
           minPriceX128: '10000000',
         },
         maxBoostFeeBps: 100,
-        brokerCommissionBps: 25,
+        commissionBps: 25,
         network: 'perseverance',
       },
       brokerConfig,
@@ -1501,7 +1501,7 @@ describe(broker.requestCfParametersEncoding, () => {
           minPriceX128: '10000000',
         },
         maxBoostFeeBps: 100,
-        brokerCommissionBps: 30,
+        commissionBps: 30,
         affiliates: [
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
           { account: 'cFJ4sqrg4FnrLPsGdt5w85XExGYxVLHLYLci28PnqcVVb8r8a', commissionBps: 20 },

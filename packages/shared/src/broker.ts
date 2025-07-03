@@ -280,7 +280,7 @@ export const cfParameterEncodingRequestSchema = z
     destAsset: assetAndChain,
     destAddress: z.string(),
     amount: unsignedInteger,
-    brokerCommissionBps: z.number().optional().default(0),
+    commissionBps: z.number().optional().default(0),
     ccmParams: transformedCcmParamsSchema.optional(),
     maxBoostFeeBps: z.number().optional(),
     affiliates: z.array(affiliateBroker).optional(),
@@ -312,8 +312,10 @@ export const cfParameterEncodingRequestSchema = z
   })
   .transform(({ network, ...rest }) => rest);
 
+export type CfParametersEncodingRequest = z.input<typeof cfParameterEncodingRequestSchema>;
+
 export async function requestCfParametersEncoding(
-  request: z.input<typeof cfParameterEncodingRequestSchema>,
+  request: CfParametersEncodingRequest,
   opts: { url: string },
 ) {
   const client = new HttpClient(opts.url);
@@ -325,7 +327,7 @@ export async function requestCfParametersEncoding(
     params.srcAsset,
     params.destAsset,
     params.destAddress,
-    params.brokerCommissionBps,
+    params.commissionBps,
     params.fillOrKillParams,
     params.ccmParams,
     params.maxBoostFeeBps,

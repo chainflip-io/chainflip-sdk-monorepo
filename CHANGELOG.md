@@ -7,6 +7,11 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## Unreleased
+
+- `SwapSDK.prototype.encodeCfParameters` has been added to simplify the effort
+  required to encode the `cfParameters` for vault swaps.
+
 ## 1.9.5
 
 ### Changed
