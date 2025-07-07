@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
+import { assetConstants } from '@chainflip/utils/chainflip';
+import { beforeEach, describe, it, expect, beforeAll } from 'vitest';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
 import prisma from '../../client.js';
 import { estimateSwapDuration } from '../swap.js';
@@ -17,7 +18,7 @@ describe(estimateSwapDuration, () => {
   });
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking", "BoostDelayChainflipBlocks" CASCADE`;
   });
 
   it.each([
@@ -86,4 +87,28 @@ describe(estimateSwapDuration, () => {
       },
     );
   });
+
+  it.each([
+    ['Btc', 'Btc', 6, { deposit: 600 + 6 + 36, swap: 12, egress: 600 + 90 }] as const,
+    ['Btc', 'Eth', 10, { deposit: 600 + 6 + 60, swap: 12, egress: 12 + 90 }] as const,
+    ['Btc', 'Dot', 20, { deposit: 600 + 6 + 120, swap: 12, egress: 6 + 90 }] as const,
+    ['Eth', 'Eth', 5, { deposit: 12 + 6 + 30, swap: 12, egress: 12 + 90 }] as const,
+    ['Eth', 'Dot', 9, { deposit: 12 + 6 + 54, swap: 12, egress: 6 + 90 }] as const,
+    ['Eth', 'Btc', 15, { deposit: 12 + 6 + 90, swap: 12, egress: 600 + 90 }] as const,
+  ])(
+    `estimates time for boosted swap from %s to %s when boost delay has been set`,
+    async (srcAsset, destAsset, numBlocks, expected) => {
+      const { chain } = assetConstants[srcAsset];
+      await prisma.boostDelayChainflipBlocks.upsert({
+        where: { chain },
+        create: { chain, numBlocks },
+        update: { numBlocks },
+      });
+
+      expect(await estimateSwapDuration({ srcAsset, destAsset, boosted: true })).toStrictEqual({
+        durations: expected,
+        total: expected.deposit + expected.swap + expected.egress,
+      });
+    },
+  );
 });
