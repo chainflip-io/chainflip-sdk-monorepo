@@ -2,6 +2,7 @@ import { assetConstants } from '@chainflip/utils/chainflip';
 import { beforeEach, describe, it, expect, beforeAll } from 'vitest';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
 import prisma from '../../client.js';
+import { boostChainflipBlocksDelayCache } from '../boost.js';
 import { estimateSwapDuration } from '../swap.js';
 
 describe(estimateSwapDuration, () => {
@@ -19,6 +20,8 @@ describe(estimateSwapDuration, () => {
 
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking", "BoostDelayChainflipBlocks" CASCADE`;
+    // eslint-disable-next-line dot-notation
+    boostChainflipBlocksDelayCache['store'].clear();
   });
 
   it.each([

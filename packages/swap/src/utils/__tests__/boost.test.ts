@@ -4,6 +4,7 @@ import { describe, it, beforeEach, expect, vi } from 'vitest';
 import { mockRpcResponse } from '@/shared/tests/fixtures.js';
 import prisma from '../../client.js';
 import {
+  boostChainflipBlocksDelayCache,
   boostPoolsCache,
   getBoostChainflipBlocksDelayForChain,
   getBoostFeeBpsForAmount,
@@ -74,6 +75,8 @@ describe(getBoostChainflipBlocksDelayForChain, () => {
     });
 
     expect(await getBoostChainflipBlocksDelayForChain(chain)).toBe(numBlocks);
+    // eslint-disable-next-line dot-notation
+    boostChainflipBlocksDelayCache['store'].clear();
 
     await prisma.boostDelayChainflipBlocks.update({
       data: {
