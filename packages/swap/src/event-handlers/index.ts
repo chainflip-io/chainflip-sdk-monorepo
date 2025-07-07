@@ -12,6 +12,7 @@ import { depositBoosted } from './ingress-egress/depositBoosted.js';
 import networkDepositFailed from './ingress-egress/depositFailed.js';
 import { depositFinalised } from './ingress-egress/depositFinalised.js';
 import { insufficientBoostLiquidity } from './ingress-egress/insufficientBoostLiquidity.js';
+import { palletConfigUpdated } from './ingress-egress/palletConfigUpdated.js';
 import transactionRejectedByBroker from './ingress-egress/transactionRejectedByBroker.js';
 import transferFallbackRequested from './ingress-egress/transferFallbackRequested.js';
 import { lendingPoolsBoostPoolCreated } from './lending-pools/boostPoolCreated.js';
@@ -86,6 +87,7 @@ export const events = {
     'TransactionRejectedByBroker',
     'DepositFailed',
     'TransferFallbackRequested',
+    'PalletConfigUpdated',
   ]),
   ...genericPalletEvents('Broadcaster', [
     'BroadcastSuccess',
@@ -219,6 +221,12 @@ const handlers = [
     spec: '1.10.0' as Semver,
     handlers: [
       { name: events.LendingPools.BoostPoolCreated, handler: lendingPoolsBoostPoolCreated },
+      ...chainflipChains.flatMap((chain) => [
+        {
+          name: events[`${chain}IngressEgress`].PalletConfigUpdated,
+          handler: palletConfigUpdated(chain),
+        },
+      ]),
     ],
   },
 ];

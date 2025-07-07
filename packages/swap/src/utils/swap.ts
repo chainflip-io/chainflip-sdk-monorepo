@@ -8,6 +8,7 @@ import {
 import BigNumber from 'bignumber.js';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts.js';
 import { assertUnreachable } from '@/shared/functions.js';
+import { getBoostChainflipBlocksDelayForChain } from './boost.js';
 import ServiceError from './ServiceError.js';
 import prisma, { FailedSwapReason, Swap } from '../client.js';
 import { getWitnessSafetyMargin } from './rpc.js';
@@ -49,9 +50,10 @@ export const estimateSwapDuration = async ({
       : chainConstants[srcChain].blockTimeSeconds;
 
   // once transaction is included, state chain validator witness transaction after safety margin is met
-  // in case of a boosted swap, the swap occurs at the moment a deposit is prewitnessed (deposit transaction included in a block)
+  // in case of a boosted swap, the swap occurs at the moment a deposit is prewitnessed (deposit transaction included in a block) and after the boost delay (if set)
   const depositWitnessDuration = boosted
-    ? 0
+    ? (await getBoostChainflipBlocksDelayForChain(srcChain)) *
+      CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS
     : chainConstants[srcChain].blockTimeSeconds *
       Number((await getWitnessSafetyMargin(srcChain)) ?? 1n);
 
