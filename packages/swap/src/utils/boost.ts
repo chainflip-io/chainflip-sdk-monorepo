@@ -1,4 +1,4 @@
-import { ChainflipAsset, ChainflipChain } from '@chainflip/utils/chainflip';
+import { ChainflipAsset } from '@chainflip/utils/chainflip';
 import { AsyncCacheMap } from '@/shared/dataStructures.js';
 import { ONE_IN_PIP, bigintMin, getPipAmountFromAmount } from '@/shared/functions.js';
 import { getBoostPoolsDepth } from './rpc.js';
@@ -43,7 +43,7 @@ export const getBoostFeeBpsForAmount = async ({
 };
 
 export const boostChainflipBlocksDelayCache = new AsyncCacheMap({
-  fetch: (chain: ChainflipChain) =>
+  fetch: (chain: Chain) =>
     prisma.boostDelayChainflipBlocks.findFirst({
       where: { chain },
     }),
