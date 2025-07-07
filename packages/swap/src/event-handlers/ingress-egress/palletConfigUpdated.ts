@@ -12,8 +12,8 @@ import { EventHandlerArgs } from '../index.js';
 const palletConfigUpdatedSchemas = {
   Solana: solanaIngressEgressPalletConfigUpdated,
   Arbitrum: arbitrumIngressEgressPalletConfigUpdated,
-  Bitcoin: bitcoinIngressEgressPalletConfigUpdated,
   Ethereum: ethereumIngressEgressPalletConfigUpdated,
+  Bitcoin: bitcoinIngressEgressPalletConfigUpdated,
   Polkadot: polkadotIngressEgressPalletConfigUpdated,
   Assethub: assethubIngressEgressPalletConfigUpdated,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
@@ -21,13 +21,17 @@ const palletConfigUpdatedSchemas = {
 export type PalletConfigUpdatedArgsMap = {
   [C in Chain]: z.input<(typeof palletConfigUpdatedSchemas)[C]>;
 };
+const enumMatches = <E extends { __kind: string }, const T extends string>(
+  e: E,
+  prefix: T,
+): e is Extract<E, { __kind: `${T}${string}` }> => e.__kind.startsWith(prefix);
 
 export const palletConfigUpdated =
   (chain: Chain) =>
   async ({ prisma, event }: EventHandlerArgs) => {
     const { update } = palletConfigUpdatedSchemas[chain].parse(event.args);
 
-    if (update.__kind.startsWith('SetBoostDelay') && 'delayBlocks' in update) {
+    if (enumMatches(update, 'SetBoostDelay')) {
       const data = {
         chain,
         numBlocks: update.delayBlocks,

@@ -3,6 +3,7 @@ import { AsyncCacheMap } from '@/shared/dataStructures.js';
 import { ONE_IN_PIP, bigintMin, getPipAmountFromAmount } from '@/shared/functions.js';
 import { getBoostPoolsDepth } from './rpc.js';
 import prisma, { Chain } from '../client.js';
+import { memoize } from './function.js';
 
 export const boostPoolsCache = new AsyncCacheMap({
   fetch: (asset: ChainflipAsset) => getBoostPoolsDepth({ asset }),
@@ -42,10 +43,13 @@ export const getBoostFeeBpsForAmount = async ({
   };
 };
 
-export const getBoostChainflipBlocksDelayForChain = async (chain: Chain): Promise<number> => {
-  const boostDelay = await prisma.boostDelayChainflipBlocks.findFirst({
-    where: { chain },
-  });
+export const getBoostChainflipBlocksDelayForChain = memoize(
+  async (chain: Chain): Promise<number> => {
+    const boostDelay = await prisma.boostDelayChainflipBlocks.findFirst({
+      where: { chain },
+    });
 
-  return boostDelay?.numBlocks ?? 0;
-};
+    return boostDelay?.numBlocks ?? 0;
+  },
+  6_000,
+);
