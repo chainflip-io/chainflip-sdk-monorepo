@@ -60,7 +60,7 @@ describe(getBoostFeeBpsForAmount, () => {
 
 describe(getBoostChainflipBlocksDelayForChain, () => {
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE "BoostDelayBlocks" CASCADE;`;
+    await prisma.$queryRaw`TRUNCATE "BoostDelayChainflipBlocks" CASCADE;`;
   });
   it('returns the boost delay blocks for a specific chain', async () => {
     const chain = 'Bitcoin';

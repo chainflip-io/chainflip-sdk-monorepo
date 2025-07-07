@@ -22,7 +22,7 @@ const setBoostDelayMock = {
 
 describe('palletConfigUpdated', () => {
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE "BoostDelayBlocks" CASCADE;`;
+    await prisma.$queryRaw`TRUNCATE "BoostDelayChainflipBlocks" CASCADE;`;
   });
   describe('SetBoostDelay', () => {
     it('should store and update the boost delay blocks', async () => {
