@@ -25,12 +25,12 @@ describe(estimateSwapDuration, () => {
   });
 
   it.each([
-    ['Btc', 'Btc', { deposit: 600 + 2 * 600 + 6, swap: 12, egress: 600 + 90 }] as const,
-    ['Btc', 'Eth', { deposit: 600 + 2 * 600 + 6, swap: 12, egress: 12 + 90 }] as const,
-    ['Btc', 'Dot', { deposit: 600 + 2 * 600 + 6, swap: 12, egress: 6 + 90 }] as const,
-    ['Eth', 'Eth', { deposit: 12 + 12 + 6, swap: 12, egress: 12 + 90 }] as const,
-    ['Eth', 'Dot', { deposit: 12 + 12 + 6, swap: 12, egress: 6 + 90 }] as const,
-    ['Eth', 'Btc', { deposit: 12 + 12 + 6, swap: 12, egress: 600 + 90 }] as const,
+    ['Btc', 'Btc', { deposit: 300 + 2 * 600 + 6, swap: 12, egress: 300 + 90 }] as const,
+    ['Btc', 'Eth', { deposit: 300 + 2 * 600 + 6, swap: 12, egress: 6 + 90 }] as const,
+    ['Btc', 'Dot', { deposit: 300 + 2 * 600 + 6, swap: 12, egress: 3 + 90 }] as const,
+    ['Eth', 'Eth', { deposit: 6 + 12 + 6, swap: 12, egress: 6 + 90 }] as const,
+    ['Eth', 'Dot', { deposit: 6 + 12 + 6, swap: 12, egress: 3 + 90 }] as const,
+    ['Eth', 'Btc', { deposit: 6 + 12 + 6, swap: 12, egress: 300 + 90 }] as const,
   ])(`estimates time for normal swap from %s to %s`, async (srcAsset, destAsset, expected) => {
     expect(await estimateSwapDuration({ srcAsset, destAsset })).toStrictEqual({
       durations: expected,
@@ -39,12 +39,12 @@ describe(estimateSwapDuration, () => {
   });
 
   it.each([
-    ['Btc', 'Btc', { deposit: 600 + 6, swap: 12, egress: 600 + 90 }] as const,
-    ['Btc', 'Eth', { deposit: 600 + 6, swap: 12, egress: 12 + 90 }] as const,
-    ['Btc', 'Dot', { deposit: 600 + 6, swap: 12, egress: 6 + 90 }] as const,
-    ['Eth', 'Eth', { deposit: 12 + 6, swap: 12, egress: 12 + 90 }] as const,
-    ['Eth', 'Dot', { deposit: 12 + 6, swap: 12, egress: 6 + 90 }] as const,
-    ['Eth', 'Btc', { deposit: 12 + 6, swap: 12, egress: 600 + 90 }] as const,
+    ['Btc', 'Btc', { deposit: 300 + 6, swap: 12, egress: 300 + 90 }] as const,
+    ['Btc', 'Eth', { deposit: 300 + 6, swap: 12, egress: 6 + 90 }] as const,
+    ['Btc', 'Dot', { deposit: 300 + 6, swap: 12, egress: 3 + 90 }] as const,
+    ['Eth', 'Eth', { deposit: 6 + 6, swap: 12, egress: 6 + 90 }] as const,
+    ['Eth', 'Dot', { deposit: 6 + 6, swap: 12, egress: 3 + 90 }] as const,
+    ['Eth', 'Btc', { deposit: 6 + 6, swap: 12, egress: 300 + 90 }] as const,
   ])(`estimates time for boosted swap from %s to %s`, async (srcAsset, destAsset, expected) => {
     expect(await estimateSwapDuration({ srcAsset, destAsset, boosted: true })).toStrictEqual({
       durations: expected,
@@ -53,12 +53,12 @@ describe(estimateSwapDuration, () => {
   });
 
   it.each([
-    ['Btc', 'Btc', 6, { deposit: 600 + 6 + 36, swap: 12, egress: 600 + 90 }] as const,
-    ['Btc', 'Eth', 10, { deposit: 600 + 6 + 60, swap: 12, egress: 12 + 90 }] as const,
-    ['Btc', 'Dot', 20, { deposit: 600 + 6 + 120, swap: 12, egress: 6 + 90 }] as const,
-    ['Eth', 'Eth', 5, { deposit: 12 + 6 + 30, swap: 12, egress: 12 + 90 }] as const,
-    ['Eth', 'Dot', 9, { deposit: 12 + 6 + 54, swap: 12, egress: 6 + 90 }] as const,
-    ['Eth', 'Btc', 15, { deposit: 12 + 6 + 90, swap: 12, egress: 600 + 90 }] as const,
+    ['Btc', 'Btc', 6, { deposit: 300 + 6 + 36, swap: 12, egress: 300 + 90 }] as const,
+    ['Btc', 'Eth', 10, { deposit: 300 + 6 + 60, swap: 12, egress: 6 + 90 }] as const,
+    ['Btc', 'Dot', 20, { deposit: 300 + 6 + 120, swap: 12, egress: 3 + 90 }] as const,
+    ['Eth', 'Eth', 5, { deposit: 6 + 6 + 30, swap: 12, egress: 6 + 90 }] as const,
+    ['Eth', 'Dot', 9, { deposit: 6 + 6 + 54, swap: 12, egress: 3 + 90 }] as const,
+    ['Eth', 'Btc', 15, { deposit: 6 + 6 + 90, swap: 12, egress: 300 + 90 }] as const,
   ])(
     `estimates time for boosted swap from %s to %s when boost delay has been set`,
     async (srcAsset, destAsset, numBlocks, expected) => {

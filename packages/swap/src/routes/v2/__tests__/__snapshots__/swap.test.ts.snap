@@ -137,10 +137,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a native swap id 1`]
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -205,10 +205,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a solana case-insens
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -262,10 +262,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a vault origin 1`] =
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -319,10 +319,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a vault origin in CO
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -496,10 +496,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status 1`] =
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -594,10 +594,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status by tx
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -692,10 +692,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status by tx
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -789,10 +789,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SENDING status 1`] = `
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -883,10 +883,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SENT status 1`] = `
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -978,10 +978,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SWAPPING status 1`] = 
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -1045,10 +1045,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SWAPPING status 2`] = 
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -1129,10 +1129,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SWAPPING status with a
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -1196,10 +1196,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap with FillOrKillParams in 
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -1290,10 +1290,10 @@ exports[`server > GET /v2/swaps/:id > retrieves boost details when channel swap 
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -1355,10 +1355,10 @@ exports[`server > GET /v2/swaps/:id > retrieves boost details when vault swap wa
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -1432,10 +1432,10 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in COMPLETED 
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -1542,10 +1542,10 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in FAILED sta
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -1674,10 +1674,10 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in SENDING st
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -1781,10 +1781,10 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in SWAPPING s
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Polkadot",
-  "estimatedDurationSeconds": 138,
+  "estimatedDurationSeconds": 129,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 96,
+    "deposit": 24,
+    "egress": 93,
     "swap": 12,
   },
   "fees": [
@@ -1859,10 +1859,10 @@ exports[`server > GET /v2/swaps/:id > returns ccmParams for swaps initiated via 
   "destAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
   "destAsset": "USDC",
   "destChain": "Arbitrum",
-  "estimatedDurationSeconds": 108.78,
+  "estimatedDurationSeconds": 108.52,
   "estimatedDurationsSeconds": {
-    "deposit": 6.52,
-    "egress": 90.26,
+    "deposit": 6.39,
+    "egress": 90.13,
     "swap": 12,
   },
   "fees": [
@@ -1947,10 +1947,10 @@ exports[`server > GET /v2/swaps/:id > returns the vault swap details in RECEIVIN
   "destAddress": "0xcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf",
   "destAsset": "FLIP",
   "destChain": "Ethereum",
-  "estimatedDurationSeconds": 144,
+  "estimatedDurationSeconds": 132,
   "estimatedDurationsSeconds": {
-    "deposit": 30,
-    "egress": 102,
+    "deposit": 24,
+    "egress": 96,
     "swap": 12,
   },
   "fees": [],
