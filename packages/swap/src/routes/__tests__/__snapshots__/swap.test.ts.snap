@@ -20,7 +20,7 @@ exports[`server > GET /swaps/:id > retrieves a swap in FAILED status (egress ign
     "message": "The amount is below the minimum egress amount.",
     "name": "ethereumIngressEgress.BelowEgressDustLimit",
   },
-  "estimatedDefaultDurationSeconds": 138,
+  "estimatedDefaultDurationSeconds": 129,
   "estimatedDepositChannelExpiryTime": 1640998260000,
   "failure": "SWAP_OUTPUT_TOO_SMALL",
   "feesPaid": [
@@ -89,7 +89,7 @@ exports[`server > GET /swaps/:id > retrieves a swap in FAILED status (refund egr
     "message": "The amount is below the minimum egress amount.",
     "name": "ethereumIngressEgress.BelowEgressDustLimit",
   },
-  "estimatedDefaultDurationSeconds": 138,
+  "estimatedDefaultDurationSeconds": 129,
   "estimatedDepositChannelExpiryTime": 1640998260000,
   "failure": "REFUND_OUTPUT_TOO_SMALL",
   "feesPaid": [
@@ -146,7 +146,7 @@ exports[`server > GET /swaps/:id > retrieves boost details when channel swap was
   "destAsset": "DOT",
   "destChain": "Polkadot",
   "effectiveBoostFeeBps": 5,
-  "estimatedDefaultDurationSeconds": 138,
+  "estimatedDefaultDurationSeconds": 129,
   "estimatedDepositChannelExpiryTime": 1640998260000,
   "feesPaid": [
     {
@@ -190,7 +190,7 @@ exports[`server > GET /swaps/:id > retrieves boost details when vault swap was b
   "destAsset": "DOT",
   "destChain": "Polkadot",
   "effectiveBoostFeeBps": 5,
-  "estimatedDefaultDurationSeconds": 138,
+  "estimatedDefaultDurationSeconds": 129,
   "feesPaid": [
     {
       "amount": "2500000000000000",

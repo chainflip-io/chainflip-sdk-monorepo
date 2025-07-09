@@ -10,24 +10,8 @@ import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts.js';
 import { assertUnreachable } from '@/shared/functions.js';
 import { getBoostChainflipBlocksDelayForChain } from './boost.js';
 import ServiceError from './ServiceError.js';
-import prisma, { FailedSwapReason, Swap } from '../client.js';
+import { FailedSwapReason, Swap } from '../client.js';
 import { getWitnessSafetyMargin } from './rpc.js';
-
-const estimateBitcoinInclusionDuration = async () => {
-  const currentBitcoinTracking = await prisma.chainTracking.findFirst({
-    where: { chain: 'Bitcoin' },
-    orderBy: { id: 'desc' },
-  });
-
-  const secondsSinceLastBlock = currentBitcoinTracking
-    ? (Date.now() - new Date(currentBitcoinTracking.blockTrackedAt).getTime()) / 1000
-    : 0;
-
-  const estimatedMinutesUntilNextBlock =
-    (chainConstants.Bitcoin.blockTimeSeconds - secondsSinceLastBlock) / 60;
-
-  return Math.max(Math.ceil(estimatedMinutesUntilNextBlock), 1) * 60;
-};
 
 export const estimateSwapDuration = async ({
   srcAsset,
@@ -44,10 +28,8 @@ export const estimateSwapDuration = async ({
   const { chain: destChain } = internalAssetToRpcAsset[destAsset];
 
   // user transaction must be included before witnessing starts
-  const depositInclusionDuration =
-    srcChain === 'Bitcoin'
-      ? await estimateBitcoinInclusionDuration()
-      : chainConstants[srcChain].blockTimeSeconds;
+  // on average, the user will submit the transaction in the middle of two blocks
+  const depositInclusionDuration = chainConstants[srcChain].blockTimeSeconds / 2;
 
   // once transaction is included, state chain validator witness transaction after safety margin is met
   // in case of a boosted swap, the swap occurs at the moment a deposit is prewitnessed (deposit transaction included in a block) and after the boost delay (if set)
@@ -67,7 +49,8 @@ export const estimateSwapDuration = async ({
   const EGRESS_BROADCAST_SIGNING_DURATION = 90;
 
   // assets are spendable by the user once the egress is included in a block
-  const egressInclusionDuration = chainConstants[destChain].blockTimeSeconds;
+  // on average, the validator will submit the  transaction in the middle of two blocks
+  const egressInclusionDuration = chainConstants[destChain].blockTimeSeconds / 2;
 
   const depositDuration =
     depositInclusionDuration + depositWitnessDuration + depositWitnessSubmissionDuration;
