@@ -4,6 +4,7 @@ import { stringifyBigInts } from '@/shared/objects.js';
 import { encodeCfParameters } from '../handlers/encodeCfParameters.js';
 import { encodeVaultSwapData } from '../handlers/encodeVaultSwapData.js';
 import networkStatus from '../handlers/networkStatus.js';
+import networkStatusV2 from '../handlers/networkStatusV2.js';
 import { openSwapDepositChannel } from '../handlers/openSwapDepositChannel.js';
 
 const s = initServer();
@@ -16,6 +17,10 @@ export const apiRouter = s.router(apiContract, {
   networkStatus: async () => ({
     status: 200,
     body: stringifyBigInts(await networkStatus()),
+  }),
+  networkStatusV2: async () => ({
+    status: 200,
+    body: await networkStatusV2(),
   }),
   openSwapDepositChannel: async ({ body }) => ({
     status: 201,

@@ -29,13 +29,16 @@ const deepMerge = <T>(target: T, source: DeepPartial<T>): T => {
   return merged;
 };
 
-const defaultSafeModeStatuses = chainflipChains.reduce(
+const defaultSafeModeStatusesOld = chainflipChains.reduce(
   (acc, chain) => {
     acc[`ingress_egress_${uncapitalize(chain)}`] = {
       boost_deposits_enabled: true,
       add_boost_funds_enabled: true,
       stop_boosting_enabled: true,
       deposits_enabled: true,
+    };
+    acc[`broadcast_${uncapitalize(chain)}`] = {
+      retry_enabled: true,
     };
     return acc;
   },
@@ -45,7 +48,39 @@ const defaultSafeModeStatuses = chainflipChains.reduce(
       withdrawals_enabled: true,
       broker_registration_enabled: true,
     },
-  } as Pick<CfSafeModeStatuses, `ingress_egress_${Uncapitalize<ChainflipChain>}` | 'swapping'>,
+  } as Pick<
+    CfSafeModeStatuses,
+    | `ingress_egress_${Uncapitalize<ChainflipChain>}`
+    | 'swapping'
+    | `broadcast_${Uncapitalize<ChainflipChain>}`
+  >,
+);
+const defaultSafeModeStatuses = chainflipChains.reduce(
+  (acc, chain) => {
+    acc[`ingress_egress_${uncapitalize(chain)}`] = {
+      deposit_channel_creation_enabled: true,
+      vault_deposit_witnessing_enabled: true,
+      deposit_channel_witnessing_enabled: true,
+      boost_deposits_enabled: true,
+    };
+    acc[`broadcast_${uncapitalize(chain)}`] = {
+      retry_enabled: true,
+      egress_witnessing_enabled: true,
+    };
+    return acc;
+  },
+  {
+    swapping: {
+      swaps_enabled: true,
+      withdrawals_enabled: true,
+      broker_registration_enabled: true,
+    },
+  } as Pick<
+    Extract<CfSafeModeStatuses, { lending_pools: any }>,
+    | `ingress_egress_${Uncapitalize<ChainflipChain>}`
+    | 'swapping'
+    | `broadcast_${Uncapitalize<ChainflipChain>}`
+  >,
 );
 
 const mockRpc = ({
@@ -53,7 +88,7 @@ const mockRpc = ({
   safeModeStatuses = {},
 }: {
   supportedAssets?: ChainflipAsset[];
-  safeModeStatuses?: DeepPartial<CfSafeModeStatuses>;
+  safeModeStatuses?: DeepPartial<typeof defaultSafeModeStatuses>;
 }) =>
   vi.mocked(HttpClient.prototype.sendRequest).mockImplementation((async (method: RpcMethod) => {
     switch (method) {
@@ -81,63 +116,64 @@ describe('networkStatus', () => {
       .default as unknown as typeof import('../../config/env.js').default;
   });
 
-  it('returns everything when possible', async () => {
-    mockRpc({});
+  it.each([defaultSafeModeStatuses, defaultSafeModeStatusesOld])(
+    'returns everything when possible',
+    async (safeModeStatuses) => {
+      mockRpc({ safeModeStatuses });
 
-    expect(await networkStatus()).toMatchInlineSnapshot(`
-      {
-        "assets": {
-          "all": [
-            "Usdc",
-            "Usdt",
-            "Flip",
-            "Eth",
-            "Dot",
-            "Btc",
-            "ArbUsdc",
-            "ArbEth",
-            "Sol",
-            "SolUsdc",
-            "HubDot",
-            "HubUsdt",
-            "HubUsdc",
+      expect(await networkStatus()).toStrictEqual({
+        assets: {
+          all: [
+            'Usdc',
+            'Usdt',
+            'Flip',
+            'Eth',
+            'Dot',
+            'Btc',
+            'ArbUsdc',
+            'ArbEth',
+            'Sol',
+            'SolUsdc',
+            'HubDot',
+            'HubUsdt',
+            'HubUsdc',
           ],
-          "deposit": [
-            "Usdc",
-            "Usdt",
-            "Flip",
-            "Eth",
-            "Dot",
-            "Btc",
-            "ArbUsdc",
-            "ArbEth",
-            "Sol",
-            "SolUsdc",
-            "HubDot",
-            "HubUsdt",
-            "HubUsdc",
+          deposit: [
+            'Usdc',
+            'Usdt',
+            'Flip',
+            'Eth',
+            'Dot',
+            'Btc',
+            'ArbUsdc',
+            'ArbEth',
+            'Sol',
+            'SolUsdc',
+            'HubDot',
+            'HubUsdt',
+            'HubUsdc',
           ],
-          "destination": [
-            "Usdc",
-            "Usdt",
-            "Flip",
-            "Eth",
-            "Dot",
-            "Btc",
-            "ArbUsdc",
-            "ArbEth",
-            "Sol",
-            "SolUsdc",
-            "HubDot",
-            "HubUsdt",
-            "HubUsdc",
+          destination: [
+            'Usdc',
+            'Usdt',
+            'Flip',
+            'Eth',
+            'Dot',
+            'Btc',
+            'ArbUsdc',
+            'ArbEth',
+            'Sol',
+            'SolUsdc',
+            'HubDot',
+            'HubUsdt',
+            'HubUsdc',
           ],
         },
-        "boostDepositsEnabled": true,
-        "cfBrokerCommissionBps": 0,
-      }
-    `);
-  });
+        boostDepositsEnabled: true,
+        cfBrokerCommissionBps: 0,
+      });
+    },
+  );
 
   it('returns no assets when swapping is not enabled', async () => {
     mockRpc({ safeModeStatuses: { swapping: { swaps_enabled: false } } });
@@ -225,26 +261,24 @@ describe('networkStatus', () => {
     `);
   });
 
-  it("checks the chain's safe mode", async () => {
+  it.each([
+    'deposit_channel_creation_enabled',
+    'deposit_channel_witnessing_enabled',
+    'vault_deposit_witnessing_enabled',
+  ] as const)("checks the chain's safe mode", async (key) => {
     env.FULLY_DISABLED_INTERNAL_ASSETS = new Set(chainflipAssets);
     env.FULLY_DISABLED_INTERNAL_ASSETS.delete('Flip');
-    mockRpc({ safeModeStatuses: { ingress_egress_ethereum: { deposits_enabled: false } } });
+    mockRpc({ safeModeStatuses: { ingress_egress_ethereum: { [key]: false } } });
 
-    expect(await networkStatus()).toMatchInlineSnapshot(`
-      {
-        "assets": {
-          "all": [
-            "Flip",
-          ],
-          "deposit": [],
-          "destination": [
-            "Flip",
-          ],
-        },
-        "boostDepositsEnabled": true,
-        "cfBrokerCommissionBps": 0,
-      }
-    `);
+    expect(await networkStatus()).toStrictEqual({
+      assets: {
+        all: ['Flip'],
+        deposit: [],
+        destination: ['Flip'],
+      },
+      boostDepositsEnabled: true,
+      cfBrokerCommissionBps: 0,
+    });
   });
 
   it('checks the if withrawals are enabled', async () => {
