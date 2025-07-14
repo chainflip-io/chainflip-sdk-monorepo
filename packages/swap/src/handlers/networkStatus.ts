@@ -58,16 +58,25 @@ const networkStatus = async (): Promise<{
   );
 
   const depositAssets = enabledAssets
-    .filter(
-      (a) =>
-        safeModeStatuses[`ingress_egress_${uncapitalize(assetConstants[a].chain)}`]
-          .deposits_enabled,
-    )
+    .filter((a) => {
+      const pallet = safeModeStatuses[`ingress_egress_${uncapitalize(assetConstants[a].chain)}`];
+      return 'deposits_enabled' in pallet
+        ? pallet.deposits_enabled
+        : pallet.deposit_channel_creation_enabled &&
+            pallet.vault_deposit_witnessing_enabled &&
+            pallet.deposit_channel_witnessing_enabled;
+    })
     .filter((a) => !env.DISABLED_DEPOSIT_INTERNAL_ASSETS.has(a));
 
   const destinationAssets = (
     safeModeStatuses.swapping.withdrawals_enabled ? enabledAssets : []
-  ).filter((a) => !env.DISABLED_DESTINATION_INTERNAL_ASSETS.has(a));
+  ).filter(
+    (a) =>
+      !env.DISABLED_DESTINATION_INTERNAL_ASSETS.has(a) &&
+      (safeModeStatuses[`broadcast_${uncapitalize(assetConstants[a].chain)}`]
+        .egress_witnessing_enabled ??
+        true),
+  );
 
   return {
     assets: {

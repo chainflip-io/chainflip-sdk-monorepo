@@ -3,6 +3,7 @@ import { apiContract } from '@/shared/api/contract.js';
 import { stringifyBigInts } from '@/shared/objects.js';
 import { encodeCfParameters } from '../handlers/encodeCfParameters.js';
 import { encodeVaultSwapData } from '../handlers/encodeVaultSwapData.js';
+import networkInfo from '../handlers/networkInfo.js';
 import networkStatus from '../handlers/networkStatus.js';
 import { openSwapDepositChannel } from '../handlers/openSwapDepositChannel.js';
 
@@ -16,6 +17,10 @@ export const apiRouter = s.router(apiContract, {
   networkStatus: async () => ({
     status: 200,
     body: stringifyBigInts(await networkStatus()),
+  }),
+  networkInfo: async () => ({
+    status: 200,
+    body: await networkInfo(),
   }),
   openSwapDepositChannel: async ({ body }) => ({
     status: 201,
