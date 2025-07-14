@@ -39,9 +39,9 @@ type DepositAddressRequest = {
   fillOrKillParams: FillOrKillParamsX128;
   dcaParams?: DcaParams;
 
-  /** @deprecated DEPRECATED(1.8) pass the chain in the srcAsset object instead */
+  /** @deprecated DEPRECATED(1.10) pass the chain in the srcAsset object instead */
   srcChain?: ChainflipChain;
-  /** @deprecated DEPRECATED(1.8) pass the chain in the destAsset object instead */
+  /** @deprecated DEPRECATED(1.10) pass the chain in the destAsset object instead */
   destChain?: ChainflipChain;
 };
 
@@ -69,7 +69,7 @@ const transformedCcmParamsSchema = ccmParamsSchema.transform(
     message,
     gas_budget: gasBudget,
     ccm_additional_data: ccmAdditionalData,
-    /** @deprecated DEPRECATED(1.8) we still need to pass cf_parameters until 1.8 is deployed to all networks */
+    /** @deprecated DEPRECATED(1.10) we still need to pass cf_parameters until 1.8 is deployed to all networks */
     cf_parameters: ccmAdditionalData,
   }),
 );

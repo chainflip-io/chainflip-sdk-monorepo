@@ -60,7 +60,7 @@ export type SwapSDKOptions = {
   backendUrl?: string;
   broker?: {
     url: string;
-    /** @deprecated DEPRECATED(1.8) set the brokerCommissionBps param of the requestDepositAddress and encodeVaultSwapData method instead */
+    /** @deprecated DEPRECATED(1.10) set the brokerCommissionBps param of the requestDepositAddress and encodeVaultSwapData method instead */
     commissionBps?: number;
   };
   rpcUrl?: string;

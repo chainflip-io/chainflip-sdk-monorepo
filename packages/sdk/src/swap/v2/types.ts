@@ -44,16 +44,16 @@ interface DepositChannelFields {
   isExpired: boolean;
   openedThroughBackend: boolean;
 
-  /** @deprecated DEPRECATED(1.8) use SwapStatusResponseV2['brokers'] instead */
+  /** @deprecated DEPRECATED(1.10) use SwapStatusResponseV2['brokers'] instead */
   brokerCommissionBps: number;
 
-  /** @deprecated DEPRECATED(1.8) use SwapStatusResponseV2['brokers'] instead */
+  /** @deprecated DEPRECATED(1.10) use SwapStatusResponseV2['brokers'] instead */
   affiliateBrokers: AffiliateBroker[];
 
-  /** @deprecated DEPRECATED(1.8) use SwapStatusResponseV2['fillOrKillParams'] instead */
+  /** @deprecated DEPRECATED(1.10) use SwapStatusResponseV2['fillOrKillParams'] instead */
   fillOrKillParams: FillOrKillParamsWithMinPrice | undefined;
 
-  /** @deprecated DEPRECATED(1.8) use SwapStatusResponseV2['dcaParams'] instead */
+  /** @deprecated DEPRECATED(1.10) use SwapStatusResponseV2['dcaParams'] instead */
   dcaParams: DcaParams | undefined;
 }
 
