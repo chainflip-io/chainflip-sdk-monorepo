@@ -103,7 +103,9 @@ export class SwapSDK {
     };
     this.rpcConfig = options.rpcUrl ? { rpcUrl: options.rpcUrl } : { network };
     this.apiClient = initClient(apiContract, {
-      baseUrl: this.options.backendUrl,
+      // remove trailing slashes. this bug has been fixed in `@ts-rest/core`
+      // but it hasn't been released yet
+      baseUrl: this.options.backendUrl.replace(/\/+$/, ''),
       baseHeaders: CF_SDK_VERSION_HEADERS,
     });
     this.dcaEnabled = options.enabledFeatures?.dca ?? false;
@@ -115,7 +117,7 @@ export class SwapSDK {
       networkInfo: {
         fetch: async () => {
           const res = await this.apiClient.networkInfo();
-          assert(res.status === 200, 'Failed to fetch network status');
+          assert(res.status === 200, 'Failed to fetch network info');
           return res.body;
         },
         ttl: 60_000,
