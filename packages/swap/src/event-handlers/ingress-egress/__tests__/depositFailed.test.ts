@@ -16,8 +16,9 @@ const ethDepositFailedMock = (version: '190' | '11000' = '190') =>
   buildDepositFailedEvent({
     reason: { __kind: 'BelowMinimumDeposit' },
     details: {
-      __kind:
-        version === '190' ? 'DepositChannelEthereum' : 'DepositFailedDepositChannelVariantEthereum',
+      __kind: (version === '190'
+        ? 'DepositChannelEthereum'
+        : 'DepositFailedDepositChannelVariantEthereum') as any,
       depositWitness: {
         asset: { __kind: 'Eth' },
         amount: '100000000000000',
@@ -33,8 +34,9 @@ const dotDepositFailedMock = (version: '190' | '11000' = '190') =>
   buildDepositFailedEvent({
     reason: { __kind: 'BelowMinimumDeposit' },
     details: {
-      __kind:
-        version === '190' ? 'DepositChannelPolkadot' : 'DepositFailedDepositChannelVariantPolkadot',
+      __kind: (version === '190'
+        ? 'DepositChannelPolkadot'
+        : 'DepositFailedDepositChannelVariantPolkadot') as any,
       depositWitness: {
         asset: { __kind: 'Dot' },
         amount: '190000000000',
@@ -48,8 +50,9 @@ const btcDepositFailedMock = (version: '190' | '11000' = '190') =>
   buildDepositFailedEvent({
     reason: { __kind: 'BelowMinimumDeposit' },
     details: {
-      __kind:
-        version === '190' ? 'DepositChannelBitcoin' : 'DepositFailedDepositChannelVariantBitcoin',
+      __kind: (version === '190'
+        ? 'DepositChannelBitcoin'
+        : 'DepositFailedDepositChannelVariantBitcoin') as any,
       depositWitness: {
         asset: { __kind: 'Btc' },
         amount: '100000000000',
@@ -82,8 +85,9 @@ const solDepositFailedMock = (version: '190' | '11000' = '190') =>
   buildDepositFailedEvent({
     reason: { __kind: 'BelowMinimumDeposit' },
     details: {
-      __kindx:
-        version === '190' ? 'DepositChannelSolana' : 'DepositFailedDepositChannelVariantSolana',
+      __kind: (version === '190'
+        ? 'DepositChannelSolana'
+        : 'DepositFailedDepositChannelVariantSolana') as any,
       depositWitness: {
         asset: { __kind: 'Sol' },
         amount: '1000000000',
@@ -96,7 +100,7 @@ const solVaultDepositFailedMock = (version: '190' | '11000' = '190') =>
   buildDepositFailedEvent({
     reason: { __kind: 'BelowMinimumDeposit' },
     details: {
-      __kindx: version === '190' ? 'VaultEthereum' : 'DepositFailedVaultVariantEthereum',
+      __kind: (version === '190' ? 'VaultSolana' : 'DepositFailedVaultVariantSolana') as any,
       vaultWitness: {
         inputAsset: { __kind: 'Sol' },
         outputAsset: { __kind: 'Eth' },

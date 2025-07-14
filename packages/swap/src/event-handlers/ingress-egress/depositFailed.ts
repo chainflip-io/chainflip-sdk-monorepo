@@ -80,39 +80,9 @@ const extractDepositAddress = (depositWitness: DepositWitness) => {
 
 const reasonMap: Record<FailureReason, FailedSwapReason> = {
   BelowMinimumDeposit: 'BelowMinimumDeposit',
-  CcmInvalidMetadata: 'InvalidMetadata',
-  CcmUnsupportedForTargetChain: 'UnsupportedForTargetChain',
   DepositWitnessRejected: 'DepositWitnessRejected',
-  InvalidBrokerFees: 'InvalidBrokerFees',
-  InvalidDcaParameters: 'InvalidDcaParameters',
-  InvalidDestinationAddress: 'InvalidDestinationAddress',
-  InvalidRefundParameters: 'InvalidRefundParameters',
   NotEnoughToPayFees: 'NotEnoughToPayFees',
   TransactionRejectedByBroker: 'TransactionRejectedByBroker',
-};
-
-type DepositChannelDetailsVariant11000 = `DepositFailedDepositChannelVariant${ChainflipChain}`;
-type VaultDetailsVariant11000 = `DepositFailedVaultVariant${ChainflipChain}`;
-type DepositChannelDetailsVariant190 = `DepositChannel${ChainflipChain}`;
-type VaultDetailsVariant190 = `Vault${ChainflipChain}`;
-
-const getPostfixedVariant = <T extends 'vault' | 'depositChannel', V extends '190' | '11000'>(
-  chain: ChainflipChain,
-  variant: T,
-  version: V = '190',
-): T extends 'vault'
-  ? V extends '190'
-    ? VaultDetailsVariant190
-    : VaultDetailsVariant11000
-  : V extends '190'
-    ? DepositChannelDetailsVariant190
-    : DepositChannelDetailsVariant11000 => {
-  if (variant === 'vault') {
-    return version === '190' ? `Vault${chain}` : `DepositFailedVaultVariant${chain}`;
-  }
-  return version === '190'
-    ? `DepositChannel${chain}`
-    : `DepositFailedDepositChannelVariant${chain}`;
 };
 
 const depositFailed =
@@ -130,18 +100,18 @@ const depositFailed =
     let pendingTxRefInfo;
 
     switch (details.__kind) {
-      case getPostfixedVariant('Arbitrum', 'depositChannel', '190'):
-      case getPostfixedVariant('Bitcoin', 'depositChannel', '190'):
-      case getPostfixedVariant('Ethereum', 'depositChannel', '190'):
-      case getPostfixedVariant('Polkadot', 'depositChannel', '190'):
-      case getPostfixedVariant('Solana', 'depositChannel', '190'):
-      case getPostfixedVariant('Assethub', 'depositChannel', '190'):
-      case getPostfixedVariant('Arbitrum', 'depositChannel', '11000'):
-      case getPostfixedVariant('Bitcoin', 'depositChannel', '11000'):
-      case getPostfixedVariant('Ethereum', 'depositChannel', '11000'):
-      case getPostfixedVariant('Polkadot', 'depositChannel', '11000'):
-      case getPostfixedVariant('Solana', 'depositChannel', '11000'):
-      case getPostfixedVariant('Assethub', 'depositChannel', '11000'): {
+      case 'DepositChannelArbitrum':
+      case 'DepositChannelBitcoin':
+      case 'DepositChannelEthereum':
+      case 'DepositChannelPolkadot':
+      case 'DepositChannelSolana':
+      case 'DepositChannelAssethub':
+      case 'DepositFailedDepositChannelVariantArbitrum':
+      case 'DepositFailedDepositChannelVariantBitcoin':
+      case 'DepositFailedDepositChannelVariantEthereum':
+      case 'DepositFailedDepositChannelVariantPolkadot':
+      case 'DepositFailedDepositChannelVariantSolana':
+      case 'DepositFailedDepositChannelVariantAssethub': {
         const depositAddress = extractDepositAddress(details.depositWitness);
 
         const channel = await prisma.depositChannel.findFirstOrThrow({
@@ -177,18 +147,18 @@ const depositFailed =
         }
         break;
       }
-      case getPostfixedVariant('Arbitrum', 'vault', '190'):
-      case getPostfixedVariant('Bitcoin', 'vault', '190'):
-      case getPostfixedVariant('Ethereum', 'vault', '190'):
-      case getPostfixedVariant('Polkadot', 'vault', '190'):
-      case getPostfixedVariant('Solana', 'vault', '190'):
-      case getPostfixedVariant('Assethub', 'vault', '190'):
-      case getPostfixedVariant('Arbitrum', 'vault', '11000'):
-      case getPostfixedVariant('Bitcoin', 'vault', '11000'):
-      case getPostfixedVariant('Ethereum', 'vault', '11000'):
-      case getPostfixedVariant('Polkadot', 'vault', '11000'):
-      case getPostfixedVariant('Solana', 'vault', '11000'):
-      case getPostfixedVariant('Assethub', 'vault', '11000'):
+      case 'VaultArbitrum':
+      case 'VaultBitcoin':
+      case 'VaultEthereum':
+      case 'VaultPolkadot':
+      case 'VaultSolana':
+      case 'VaultAssethub':
+      case 'DepositFailedVaultVariantArbitrum':
+      case 'DepositFailedVaultVariantBitcoin':
+      case 'DepositFailedVaultVariantEthereum':
+      case 'DepositFailedVaultVariantPolkadot':
+      case 'DepositFailedVaultVariantSolana':
+      case 'DepositFailedVaultVariantAssethub':
         if ('depositDetails' in details.vaultWitness) {
           txRef = getDepositTxRef(
             { chain, data: details.vaultWitness.depositDetails } as DepositDetailsData,
