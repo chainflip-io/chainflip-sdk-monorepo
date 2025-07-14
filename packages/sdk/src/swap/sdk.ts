@@ -81,7 +81,7 @@ const assertQuoteValid = (quote: Quote | BoostQuote) => {
   }
 };
 
-type AssetState = 'all' | 'deposit' | 'destination' | 'depositChannelEnabled' | 'vaultSwapEnabled';
+type AssetState = 'all' | 'deposit' | 'destination' | 'depositChannel' | 'vaultSwap';
 
 export class SwapSDK {
   private readonly options: Required<SwapSDKOptions, 'network' | 'backendUrl'>;
@@ -161,9 +161,9 @@ export class SwapSDK {
             );
           case 'destination':
             return a.egressEnabled;
-          case 'depositChannelEnabled':
+          case 'depositChannel':
             return a.depositChannelCreationEnabled && a.depositChannelDepositsEnabled;
-          case 'vaultSwapEnabled':
+          case 'vaultSwap':
             return a.vaultSwapDepositsEnabled;
           default:
             return unreachable(type, 'unexpected type');
