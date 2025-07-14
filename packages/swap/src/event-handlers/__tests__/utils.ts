@@ -510,7 +510,7 @@ const isDepositChannelKind = (
 ): value is Extract<
   DepositFailedArgs['details'],
   { __kind: `DepositChannel${string}` | `DepositFailedDepositChannelVariant${string}` }
-> => ['DepositChannel', 'DepositFailedDepositChannelVariant'].includes(value.__kind);
+> => /^DepositChannel.*|^DepositFailedDepositChannelVariant.*/.test(value.__kind);
 
 export const buildDepositFailedEvent = <T extends DepositFailedArgs>(args: T) => {
   const asset = isDepositChannelKind(args.details)

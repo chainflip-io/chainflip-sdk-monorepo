@@ -1,4 +1,4 @@
-import { ethereumIngressEgressDepositFailed } from '@chainflip/processor/180/ethereumIngressEgress/depositFailed';
+import { ethereumIngressEgressDepositFailed } from '@chainflip/processor/190/ethereumIngressEgress/depositFailed';
 import { reverseBytes } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
@@ -375,9 +375,9 @@ const swapEventMap = {
     name: 'EthereumIngressEgress.DepositFailed',
     callId: '0000000092-000399-04fea',
     args: {
-      reason: { __kind: 'InvalidDcaParameters' },
+      reason: { __kind: 'BelowMinimumDeposit' },
       details: {
-        __kind: 'DepositChannel',
+        __kind: 'DepositChannelEthereum',
         depositWitness: {
           asset: { __kind: 'Eth' },
           amount: '100000000000000',
@@ -398,7 +398,7 @@ const swapEventMap = {
     args: {
       reason: { __kind: 'InvalidRefundParameters' },
       details: {
-        __kind: 'Vault',
+        __kind: 'VaultEthereum',
         vaultWitness: {
           txId: '0xcafebabe',
           inputAsset: { __kind: 'Eth' },
@@ -1315,8 +1315,8 @@ describe('server', () => {
           "destAsset": "DOT",
           "destChain": "Polkadot",
           "error": {
-            "message": "The DCA parameters were improperly formatted",
-            "name": "InvalidDcaParameters",
+            "message": "The deposited amount was below the minimum required",
+            "name": "BelowMinimumDeposit",
           },
           "estimatedDefaultDurationSeconds": 129,
           "estimatedDepositChannelExpiryTime": 1640998260000,
