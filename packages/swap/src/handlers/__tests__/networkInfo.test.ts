@@ -104,14 +104,14 @@ const mockRpc = ({
   }) as any);
 
 describe('networkStatus', () => {
-  let networkStatusV2: typeof import('../networkStatusV2.js').default;
+  let networkStatusV2: typeof import('../networkInfo.js').default;
   let env: typeof import('../../config/env.js').default;
 
   beforeEach(async () => {
     vi.restoreAllMocks();
     vi.resetModules();
-    networkStatusV2 = (await import('../networkStatusV2.js'))
-      .default as unknown as typeof import('../networkStatusV2.js').default;
+    networkStatusV2 = (await import('../networkInfo.js'))
+      .default as unknown as typeof import('../networkInfo.js').default;
     env = (await import('../../config/env.js'))
       .default as unknown as typeof import('../../config/env.js').default;
   });

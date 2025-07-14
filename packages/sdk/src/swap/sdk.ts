@@ -112,9 +112,9 @@ export class SwapSDK {
         fetch: () => getEnvironment(this.rpcConfig),
         ttl: 60_000,
       },
-      networkStatusV2: {
+      networkInfo: {
         fetch: async () => {
-          const res = await this.apiClient.networkStatusV2();
+          const res = await this.apiClient.networkInfo();
           assert(res.status === 200, 'Failed to fetch network status');
           return res.body;
         },
@@ -146,7 +146,7 @@ export class SwapSDK {
   }
 
   private async getSupportedAssets(type: AssetState): Promise<ChainflipAsset[]> {
-    const assets = await this.cache.read('networkStatusV2');
+    const assets = await this.cache.read('networkInfo');
 
     return assets.assets
       .filter((a) => {
@@ -196,7 +196,7 @@ export class SwapSDK {
 
   private async getCommissionBps(brokerCommissionBps: number | undefined): Promise<number> {
     if (this.shouldTakeCommission()) {
-      return (await this.cache.read('networkStatusV2')).cfBrokerCommissionBps;
+      return (await this.cache.read('networkInfo')).cfBrokerCommissionBps;
     }
     return brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0;
   }
@@ -568,7 +568,7 @@ export class SwapSDK {
   }
 
   async checkBoostEnabled(): Promise<boolean> {
-    const { assets } = await this.cache.read('networkStatusV2');
+    const { assets } = await this.cache.read('networkInfo');
     return assets.find((a) => a.asset === 'Btc')?.boostDepositsEnabled ?? true;
   }
 }

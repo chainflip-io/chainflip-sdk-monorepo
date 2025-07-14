@@ -18,7 +18,7 @@ vi.mock('@ts-rest/core', async (importOriginal) => ({
     openSwapDepositChannel: vi.fn(),
     encodeVaultSwapData: vi.fn(),
     encodeCfParameters: vi.fn(),
-    networkStatusV2: vi.fn(() =>
+    networkInfo: vi.fn(() =>
       Promise.resolve({
         status: 200,
         body: {
@@ -45,7 +45,7 @@ const mockNetworkStatus = (
   SwapSDKClass = SwapSDK,
 ) => {
   const sdk = new SwapSDKClass({ network: 'sisyphos' });
-  vi.mocked(sdk['apiClient'].networkStatusV2).mockResolvedValueOnce({
+  vi.mocked(sdk['apiClient'].networkInfo).mockResolvedValueOnce({
     status: 200,
     body: {
       assets: [
@@ -127,7 +127,7 @@ describe(SwapSDK, () => {
   beforeEach(() => {
     sdk = new SwapSDK({ network: 'sisyphos' });
     vi.resetAllMocks();
-    vi.mocked(sdk['apiClient'].networkStatusV2).mockResolvedValueOnce({
+    vi.mocked(sdk['apiClient'].networkInfo).mockResolvedValueOnce({
       status: 200,
       body: {
         assets: chainflipAssets.map((asset) => ({

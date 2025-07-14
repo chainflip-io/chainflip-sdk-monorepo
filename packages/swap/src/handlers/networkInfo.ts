@@ -3,7 +3,7 @@ import { RpcMethod, RpcRequest, RpcResult } from '@chainflip/rpc/common';
 import { assetConstants, getInternalAsset } from '@chainflip/utils/chainflip';
 import { uncapitalize } from '@chainflip/utils/string';
 import z from 'zod';
-import { NetworkStatusV2 } from '@/shared/api/networkStatus.js';
+import type { NetworkInfo } from '@/shared/api/networkInfo.js';
 import { MultiCache, Fetcher } from '@/shared/dataStructures.js';
 import env from '../config/env.js';
 
@@ -39,7 +39,7 @@ class RpcCache<T extends SimpleRpcMethod> extends MultiCache<RpcFetcherMap<T>> {
 
 const cache = new RpcCache(['cf_available_pools', 'cf_safe_mode_statuses']);
 
-const networkStatusV2 = async (): Promise<z.output<typeof NetworkStatusV2>> => {
+const networkInfo = async (): Promise<z.output<typeof NetworkInfo>> => {
   const [assets, safeModeStatuses] = await Promise.all([
     cache
       .read('cf_available_pools')
@@ -88,4 +88,4 @@ const networkStatusV2 = async (): Promise<z.output<typeof NetworkStatusV2>> => {
   };
 };
 
-export default networkStatusV2;
+export default networkInfo;
