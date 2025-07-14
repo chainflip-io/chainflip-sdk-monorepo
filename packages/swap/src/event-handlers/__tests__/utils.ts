@@ -507,8 +507,10 @@ export const poolFeeSetMock = {
 
 const isDepositChannelKind = (
   value: DepositFailedArgs['details'],
-): value is Extract<DepositFailedArgs['details'], { __kind: `DepositChannel${string}` }> =>
-  value.__kind.startsWith('DepositChannel');
+): value is Extract<
+  DepositFailedArgs['details'],
+  { __kind: `DepositChannel${string}` | `DepositFailedDepositChannelVariant${string}` }
+> => /^Deposit(Channel|FailedDepositChannelVariant).*/.test(value.__kind);
 
 export const buildDepositFailedEvent = <T extends DepositFailedArgs>(args: T) => {
   const asset = isDepositChannelKind(args.details)
@@ -517,7 +519,7 @@ export const buildDepositFailedEvent = <T extends DepositFailedArgs>(args: T) =>
   const { chain } = assetConstants[asset];
 
   return {
-    block: { specId: 'test@180', timestamp: 1670337093000, height: 100, hash: '0x123' },
+    block: { specId: 'test@190', timestamp: 1670337093000, height: 100, hash: '0x123' },
     event: { args, indexInBlock: 0, name: `${chain}IngressEgress.DepositFailed` },
   };
 };

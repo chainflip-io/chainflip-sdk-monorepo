@@ -386,9 +386,9 @@ const swapEventMap = {
     name: 'EthereumIngressEgress.DepositFailed',
     callId: '0000000092-000399-04fea',
     args: check<DepositFailedArgsMap['Ethereum']>({
-      reason: { __kind: 'InvalidDcaParameters' },
+      reason: { __kind: 'BelowMinimumDeposit' },
       details: {
-        __kind: 'DepositChannel',
+        __kind: 'DepositChannelEthereum',
         depositWitness: {
           asset: { __kind: 'Eth' },
           amount: '100000000000000',
@@ -407,9 +407,9 @@ const swapEventMap = {
     name: 'EthereumIngressEgress.DepositFailed',
     callId: '0000000092-000399-04fea',
     args: check<DepositFailedArgsMap['Ethereum']>({
-      reason: { __kind: 'InvalidRefundParameters' },
+      reason: { __kind: 'NotEnoughToPayFees' },
       details: {
-        __kind: 'Vault',
+        __kind: 'VaultEthereum',
         vaultWitness: {
           txId: '0xcafebabe',
           inputAsset: { __kind: 'Eth' },
@@ -842,8 +842,8 @@ describe('server', () => {
               "failedBlockIndex": "92-1",
               "mode": "DEPOSIT_IGNORED",
               "reason": {
-                "message": "The DCA parameters were improperly formatted",
-                "name": "InvalidDcaParameters",
+                "message": "The deposited amount was below the minimum required",
+                "name": "BelowMinimumDeposit",
               },
             },
             "txRef": "0xfae1ed",
@@ -893,45 +893,6 @@ describe('server', () => {
           },
         }
       `);
-    });
-
-    it(`retrieves a swap in ${StateV2.Failed} status (invalid dca parameters)`, async () => {
-      await processEvents([
-        swapEventMap['Swapping.SwapDepositAddressReady'],
-        swapEventMap['EthereumIngressEgress.DepositFailed'],
-      ]);
-
-      const failedTxHash = '0xfae1ed';
-      const { body } = await request(server).get(`/v2/swaps/${failedTxHash}`);
-
-      expect(body.state).toBe('FAILED');
-      expect(body.deposit.failure).toMatchObject({
-        failedAt: 552000,
-        failedBlockIndex: '92-1',
-        mode: 'DEPOSIT_IGNORED',
-        reason: {
-          name: 'InvalidDcaParameters',
-          message: 'The DCA parameters were improperly formatted',
-        },
-      });
-    });
-
-    it(`retrieves a vault swap in ${StateV2.Failed} status (invalid refund parameters)`, async () => {
-      await processEvents([swapEventMap['EthereumIngressEgress.DepositFailed.Vault']]);
-
-      const failedTxHash = '0xfae1ed';
-      const { body } = await request(server).get(`/v2/swaps/${failedTxHash}`);
-
-      expect(body.state).toBe('FAILED');
-      expect(body.deposit.failure).toMatchObject({
-        failedAt: 552000,
-        failedBlockIndex: '92-1',
-        mode: 'DEPOSIT_IGNORED',
-        reason: {
-          name: 'InvalidRefundParameters',
-          message: 'The refund parameters were improperly formatted',
-        },
-      });
     });
 
     it(`retrieves a swap in ${StateV2.Failed} status (deposit failed w/ refund)`, async () => {
@@ -984,7 +945,7 @@ describe('server', () => {
             },
             blockHeight: 1234,
             details: {
-              __kind: 'DepositChannel',
+              __kind: 'DepositChannelBitcoin',
               depositWitness: {
                 asset: { __kind: 'Btc' },
                 amount: '1000000',
