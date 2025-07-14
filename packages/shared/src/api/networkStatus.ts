@@ -13,6 +13,8 @@ export const NetworkStatus = z.object({
   cfBrokerCommissionBps: z.number(),
 });
 
+export type NetworkStatus = z.output<typeof NetworkStatus>;
+
 export const NetworkStatusV2 = z.object({
   assets: z.array(
     z.object({
@@ -26,3 +28,5 @@ export const NetworkStatusV2 = z.object({
   ),
   cfBrokerCommissionBps: z.number(),
 });
+
+export type NetworkStatusV2 = z.output<typeof NetworkStatusV2>;

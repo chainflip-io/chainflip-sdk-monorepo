@@ -1,3 +1,4 @@
+import { unreachable } from '@chainflip/utils/assertion';
 import {
   assetConstants,
   getInternalAsset,
@@ -11,7 +12,6 @@ import {
   ChainMap,
 } from '@chainflip/utils/chainflip';
 import { HexString } from '@chainflip/utils/types';
-import type { inferRouterOutputs } from '@trpc/server';
 import { initClient } from '@ts-rest/core';
 import { apiContract } from '@/shared/api/contract.js';
 import {
@@ -33,7 +33,6 @@ import {
 import { validateSwapAmount } from '@/shared/rpc/utils.js';
 import { BoostQuote, FillOrKillParamsWithMinPrice, Quote } from '@/shared/schemas.js';
 import { Required } from '@/shared/types.js';
-import type { AppRouter } from '@/swap/trpc.js';
 import { getAssetData } from './assets.js';
 import { getChainData } from './chains.js';
 import { BACKEND_SERVICE_URLS, CF_SDK_VERSION_HEADERS } from './consts.js';
@@ -82,7 +81,7 @@ const assertQuoteValid = (quote: Quote | BoostQuote) => {
   }
 };
 
-type NetworkStatus = inferRouterOutputs<AppRouter>['networkStatus'];
+type AssetState = 'all' | 'deposit' | 'destination' | 'depositChannelEnabled' | 'vaultSwapEnabled';
 
 export class SwapSDK {
   private readonly options: Required<SwapSDKOptions, 'network' | 'backendUrl'>;
@@ -113,9 +112,9 @@ export class SwapSDK {
         fetch: () => getEnvironment(this.rpcConfig),
         ttl: 60_000,
       },
-      networkStatus: {
+      networkStatusV2: {
         fetch: async () => {
-          const res = await this.apiClient.networkStatus();
+          const res = await this.apiClient.networkStatusV2();
           assert(res.status === 200, 'Failed to fetch network status');
           return res.body;
         },
@@ -124,10 +123,7 @@ export class SwapSDK {
     });
   }
 
-  async getChains(
-    sourceChain?: ChainflipChain,
-    type: keyof NetworkStatus['assets'] = 'all',
-  ): Promise<ChainData[]> {
+  async getChains(sourceChain?: ChainflipChain, type: AssetState = 'all'): Promise<ChainData[]> {
     if (sourceChain && !chainflipChains.includes(sourceChain)) {
       throw new Error(`unsupported source chain "${sourceChain}"`);
     }
@@ -149,20 +145,38 @@ export class SwapSDK {
     return this.cache.read('environment');
   }
 
-  private async getSupportedAssets(type: keyof NetworkStatus['assets']): Promise<ChainflipAsset[]> {
-    const assets = await this.cache.read('networkStatus');
+  private async getSupportedAssets(type: AssetState): Promise<ChainflipAsset[]> {
+    const assets = await this.cache.read('networkStatusV2');
 
-    return assets.assets[type];
+    return assets.assets
+      .filter((a) => {
+        switch (type) {
+          case 'all':
+            return true;
+          case 'deposit':
+            return (
+              a.depositChannelCreationEnabled &&
+              a.depositChannelDepositsEnabled &&
+              a.vaultSwapDepositsEnabled
+            );
+          case 'destination':
+            return a.egressEnabled;
+          case 'depositChannelEnabled':
+            return a.depositChannelCreationEnabled && a.depositChannelDepositsEnabled;
+          case 'vaultSwapEnabled':
+            return a.vaultSwapDepositsEnabled;
+          default:
+            return unreachable(type, 'unexpected type');
+        }
+      })
+      .map((a) => a.asset);
   }
 
   private async getBoostPoolsDepth(): Promise<BoostPoolsDepth> {
     return getAllBoostPoolsDepth(this.rpcConfig);
   }
 
-  async getAssets(
-    chain?: ChainflipChain,
-    type: keyof NetworkStatus['assets'] = 'all',
-  ): Promise<AssetData[]> {
+  async getAssets(chain?: ChainflipChain, type: AssetState = 'all'): Promise<AssetData[]> {
     if (chain && !chainflipChains.includes(chain)) throw new Error(`unsupported chain "${chain}"`);
 
     const [env, supportedAssets] = await Promise.all([
@@ -182,7 +196,7 @@ export class SwapSDK {
 
   private async getCommissionBps(brokerCommissionBps: number | undefined): Promise<number> {
     if (this.shouldTakeCommission()) {
-      return (await this.cache.read('networkStatus')).cfBrokerCommissionBps;
+      return (await this.cache.read('networkStatusV2')).cfBrokerCommissionBps;
     }
     return brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0;
   }
@@ -554,7 +568,7 @@ export class SwapSDK {
   }
 
   async checkBoostEnabled(): Promise<boolean> {
-    const { boostDepositsEnabled } = await this.cache.read('networkStatus');
-    return boostDepositsEnabled;
+    const { assets } = await this.cache.read('networkStatusV2');
+    return assets.find((a) => a.asset === 'Btc')?.boostDepositsEnabled ?? true;
   }
 }
