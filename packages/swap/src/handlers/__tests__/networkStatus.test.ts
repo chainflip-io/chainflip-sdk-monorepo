@@ -281,7 +281,7 @@ describe('networkStatus', () => {
     });
   });
 
-  it('checks the if withrawals are enabled', async () => {
+  it('checks if withdrawals are enabled', async () => {
     env.FULLY_DISABLED_INTERNAL_ASSETS = new Set(chainflipAssets);
     env.FULLY_DISABLED_INTERNAL_ASSETS.delete('Flip');
     mockRpc({ safeModeStatuses: { swapping: { withdrawals_enabled: false } } });

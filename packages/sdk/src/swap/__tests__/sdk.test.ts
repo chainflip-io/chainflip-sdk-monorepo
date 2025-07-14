@@ -18,15 +18,18 @@ vi.mock('@ts-rest/core', async (importOriginal) => ({
     openSwapDepositChannel: vi.fn(),
     encodeVaultSwapData: vi.fn(),
     encodeCfParameters: vi.fn(),
-    networkStatus: vi.fn(() =>
+    networkStatusV2: vi.fn(() =>
       Promise.resolve({
         status: 200,
         body: {
-          assets: {
-            all: chainflipAssets,
-            deposit: chainflipAssets,
-            destination: chainflipAssets,
-          },
+          assets: chainflipAssets.map((asset) => ({
+            asset,
+            depositChannelCreationEnabled: true,
+            depositChannelDepositsEnabled: true,
+            egressEnabled: true,
+            boostDepositsEnabled: true,
+            vaultSwapDepositsEnabled: true,
+          })),
           boostDepositsEnabled: true,
         },
       }),
@@ -42,15 +45,59 @@ const mockNetworkStatus = (
   SwapSDKClass = SwapSDK,
 ) => {
   const sdk = new SwapSDKClass({ network: 'sisyphos' });
-  vi.mocked(sdk['apiClient'].networkStatus).mockResolvedValueOnce({
+  vi.mocked(sdk['apiClient'].networkStatusV2).mockResolvedValueOnce({
     status: 200,
     body: {
-      assets: {
-        all: ['Eth', 'Btc', 'Flip', 'Usdc', 'Sol', 'SolUsdc'],
-        deposit: ['Eth', 'Flip', 'Usdc', 'Sol', 'SolUsdc'],
-        destination: ['Eth', 'Btc', 'Flip', 'Usdc'],
-      },
-      boostDepositsEnabled,
+      assets: [
+        {
+          asset: 'Eth',
+          depositChannelCreationEnabled: true,
+          depositChannelDepositsEnabled: true,
+          egressEnabled: true,
+          boostDepositsEnabled,
+          vaultSwapDepositsEnabled: true,
+        },
+        {
+          asset: 'Btc',
+          depositChannelCreationEnabled: false,
+          depositChannelDepositsEnabled: false,
+          egressEnabled: true,
+          boostDepositsEnabled,
+          vaultSwapDepositsEnabled: false,
+        },
+        {
+          asset: 'Flip',
+          depositChannelCreationEnabled: true,
+          depositChannelDepositsEnabled: true,
+          egressEnabled: true,
+          boostDepositsEnabled,
+          vaultSwapDepositsEnabled: true,
+        },
+        {
+          asset: 'Usdc',
+          depositChannelCreationEnabled: true,
+          depositChannelDepositsEnabled: true,
+          egressEnabled: true,
+          boostDepositsEnabled,
+          vaultSwapDepositsEnabled: true,
+        },
+        {
+          asset: 'Sol',
+          depositChannelCreationEnabled: true,
+          depositChannelDepositsEnabled: true,
+          egressEnabled: false,
+          boostDepositsEnabled,
+          vaultSwapDepositsEnabled: true,
+        },
+        {
+          asset: 'SolUsdc',
+          depositChannelCreationEnabled: true,
+          depositChannelDepositsEnabled: true,
+          egressEnabled: false,
+          boostDepositsEnabled,
+          vaultSwapDepositsEnabled: true,
+        },
+      ],
       cfBrokerCommissionBps,
     },
     headers: new Headers(),
@@ -80,15 +127,17 @@ describe(SwapSDK, () => {
   beforeEach(() => {
     sdk = new SwapSDK({ network: 'sisyphos' });
     vi.resetAllMocks();
-    vi.mocked(sdk['apiClient'].networkStatus).mockResolvedValueOnce({
+    vi.mocked(sdk['apiClient'].networkStatusV2).mockResolvedValueOnce({
       status: 200,
       body: {
-        assets: {
-          all: [...chainflipAssets],
-          deposit: [...chainflipAssets],
-          destination: [...chainflipAssets],
-        },
-        boostDepositsEnabled: true,
+        assets: chainflipAssets.map((asset) => ({
+          asset,
+          depositChannelCreationEnabled: true,
+          depositChannelDepositsEnabled: true,
+          egressEnabled: true,
+          boostDepositsEnabled: true,
+          vaultSwapDepositsEnabled: true,
+        })),
         cfBrokerCommissionBps: 0,
       },
       headers: new Headers(),
