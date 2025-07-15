@@ -9,8 +9,13 @@ which it is deprecated.
 
 ## 1.10.0
 
+### Added
+
 - `SwapSDK.prototype.encodeCfParameters` has been added to simplify encoding
   the `cfParameters` for vault swaps.
+
+### Changed
+
 - `SwapSDK.prototype.getAssets` has been extended to allow filtering of
   `vaultSwap` or `depositChannel` capable assets.
 - `SwapSDK.prototype.getChains` has been extended to allow filtering of
