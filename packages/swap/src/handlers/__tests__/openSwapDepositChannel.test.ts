@@ -208,7 +208,7 @@ describe(openSwapDepositChannel, () => {
       ccmParams: {
         message: '0xdeadc0de',
         gasBudget: `0x${(125000).toString(16)}`,
-        ccmAdditionalData: undefined,
+        ccmAdditionalData: '0x',
       },
       fillOrKillParams: {
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
@@ -421,7 +421,7 @@ describe(openSwapDepositChannel, () => {
       ccmParams: {
         message: '0xdeadbeef',
         gasBudget: '0x1000',
-        ccmAdditionalData: undefined,
+        ccmAdditionalData: '0x',
       },
     } as const;
 
