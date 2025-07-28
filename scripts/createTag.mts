@@ -45,7 +45,7 @@ const args = yargs(process.argv)
 
 const currentBranch = (await execAsync('git branch --show-current')).stdout.trim();
 
-const releaseVersion = /^release\/(\d\.\d)/.exec(currentBranch)?.[1];
+const releaseVersion = /^release\/(\d+\.\d+)/.exec(currentBranch)?.[1];
 
 if (!releaseVersion) {
   console.error('please switch to a release branch');
