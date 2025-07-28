@@ -137,7 +137,7 @@ export const ccmParamsSchema = z
   .transform(({ gasBudget, message, ccmAdditionalData, cfParameters }) => ({
     gasBudget,
     message,
-    ccmAdditionalData: ccmAdditionalData ?? cfParameters,
+    ccmAdditionalData: ccmAdditionalData ?? cfParameters ?? '0x',
   }));
 
 export type CcmParams = Omit<z.input<typeof ccmParamsSchema>, 'cfParameters'> & {
