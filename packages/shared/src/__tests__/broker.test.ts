@@ -186,6 +186,8 @@ describe(broker.requestSwapDepositAddress, () => {
         {
           gas_budget: '0x75bcd15',
           message: '0xdeadc0de',
+          cf_parameters: '0x',
+          ccm_additional_data: '0x',
         },
         null,
         null,
@@ -242,6 +244,8 @@ describe(broker.requestSwapDepositAddress, () => {
         {
           gas_budget: '0x75bcd15',
           message: '0xdeadc0de',
+          cf_parameters: '0x',
+          ccm_additional_data: '0x',
         },
         100,
         null,
@@ -299,6 +303,8 @@ describe(broker.requestSwapDepositAddress, () => {
         {
           gas_budget: '0x75bcd15',
           message: '0xdeadc0de',
+          cf_parameters: '0x',
+          ccm_additional_data: '0x',
         },
         100,
         null,
@@ -360,6 +366,8 @@ describe(broker.requestSwapDepositAddress, () => {
         {
           gas_budget: '0x75bcd15',
           message: '0xdeadc0de',
+          cf_parameters: '0x',
+          ccm_additional_data: '0x',
         },
         100,
         [
@@ -835,6 +843,8 @@ describe(broker.requestSwapParameterEncoding, () => {
         {
           gas_budget: '0x75bcd15',
           message: '0xdeadc0de',
+          cf_parameters: '0x',
+          ccm_additional_data: '0x',
         },
         null,
         null,
@@ -1363,6 +1373,8 @@ describe(broker.requestCfParametersEncoding, () => {
             "retry_duration": 500,
           },
           {
+            "ccm_additional_data": "0x",
+            "cf_parameters": "0x",
             "gas_budget": "0x75bcd15",
             "message": "0xdeadc0de",
           },
