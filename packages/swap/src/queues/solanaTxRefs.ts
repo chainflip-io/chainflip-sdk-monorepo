@@ -182,7 +182,8 @@ export const start = async () => {
 
   while (!controller.signal.aborted) {
     try {
-      await sleep(env.SOLANA_TX_REF_QUEUE_INTERVAL, { signal: controller.signal });
+      const backoff = Math.min(env.SOLANA_TX_REF_QUEUE_INTERVAL * 2 ** retries, 60_000);
+      await sleep(backoff, { signal: controller.signal });
     } catch {
       break;
     }
@@ -219,24 +220,16 @@ export const start = async () => {
           error: error.toJSON(),
           pendingTxRef,
         });
-        // eslint-disable-next-line no-continue
-        continue;
-      }
+      } else {
+        logger.error('error processing solana tx ref', {
+          error: util.inspect(error),
+          pendingTxRef,
+          parsed,
+        });
 
-      logger.error('error processing solana tx ref', {
-        error: util.inspect(error),
-        pendingTxRef,
-        parsed,
-      });
-
-      if (retries < 5) {
         retries += 1;
-        logger.info('retrying request');
-        // eslint-disable-next-line no-continue
-        continue;
+        logger.info('retrying request', { retries });
       }
-
-      break;
     }
   }
 
