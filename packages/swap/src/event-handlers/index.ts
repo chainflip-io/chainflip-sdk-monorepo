@@ -196,7 +196,7 @@ const handlers = [
     spec: '1.9.0' as Semver,
     handlers: [
       {
-        name: events.Swapping.CreditedOnChain,
+        name: 'Swapping.CreditedOnChain',
         handler: creditedOnChain,
       },
     ],
