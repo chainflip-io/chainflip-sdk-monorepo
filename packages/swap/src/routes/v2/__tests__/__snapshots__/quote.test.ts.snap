@@ -86,7 +86,7 @@ exports[`server > GET /v2/quote > on chain > properly quotes for regular swaps 1
         "type": "INGRESS",
       },
       {
-        "amount": "500000000",
+        "amount": "1000000000",
         "asset": "USDC",
         "chain": "Ethereum",
         "type": "NETWORK",
@@ -152,7 +152,7 @@ exports[`server > GET /v2/quote > on chain > properly quotes with DCA 1`] = `
         "type": "INGRESS",
       },
       {
-        "amount": "500500",
+        "amount": "1001000",
         "asset": "USDC",
         "chain": "Ethereum",
         "type": "NETWORK",
@@ -230,7 +230,7 @@ exports[`server > GET /v2/quote > on chain > respects the minimum network fee 1`
         "type": "INGRESS",
       },
       {
-        "amount": "500000",
+        "amount": "500001",
         "asset": "USDC",
         "chain": "Ethereum",
         "type": "NETWORK",

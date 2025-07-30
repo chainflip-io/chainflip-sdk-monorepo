@@ -14,7 +14,6 @@ import {
 } from '@/shared/tests/fixtures.js';
 import prisma, { InternalAsset } from '../../../client.js';
 import env from '../../../config/env.js';
-import { getInternalSwapNetworkFeeInfo } from '../../../polkadot/api.js';
 import { getUsdValue } from '../../../pricing/checkPriceWarning.js';
 import Quoter from '../../../quoting/Quoter.js';
 import app from '../../../server.js';
@@ -55,7 +54,6 @@ vi.mock('../../../pricing/checkPriceWarning', () => ({
 
 vi.mock('../../../polkadot/api', () => ({
   getBoostSafeMode: vi.fn().mockResolvedValue(true),
-  getInternalSwapNetworkFeeInfo: vi.fn(),
 }));
 
 const originalEnv = structuredClone(env);
@@ -474,18 +472,30 @@ describe('server', () => {
       const { status, body } = await request(server).get(`/v2/quote?${params.toString()}`);
       expect(status).toBe(200);
       expect(body).toMatchSnapshot();
-      expect(sendSpy).toHaveBeenNthCalledWith(
-        1,
-        'cf_swap_rate_v3',
-        { asset: 'USDC', chain: 'Ethereum' },
-        { asset: 'ETH', chain: 'Ethereum' },
-        '0x5f5e100',
-        0,
-        undefined,
-        undefined,
-        ['IngressDepositChannel'],
-        [],
-      );
+      expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
+        [
+          [
+            "cf_swap_rate_v3",
+            {
+              "asset": "USDC",
+              "chain": "Ethereum",
+            },
+            {
+              "asset": "ETH",
+              "chain": "Ethereum",
+            },
+            "0x5f5e100",
+            0,
+            undefined,
+            undefined,
+            [
+              "IngressDepositChannel",
+            ],
+            [],
+            false,
+          ],
+        ]
+      `);
     });
 
     it('does not throw if totalLiquidity is higher than egressAmount', async () => {
@@ -779,20 +789,31 @@ describe('server', () => {
         },
       ]);
       expect(sendSpy).toHaveBeenCalledTimes(1);
-      expect(sendSpy).toHaveBeenCalledWith(
-        'cf_swap_rate_v3',
-        { asset: 'ETH', chain: 'Ethereum' },
-        { asset: 'USDC', chain: 'Ethereum' },
-        '0xde0b6b3a7640000', // 1e18
-        0,
-        undefined,
-        {
-          gas_budget: 12345,
-          message_length: 321,
-        },
-        [],
-        [],
-      );
+      expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
+        [
+          [
+            "cf_swap_rate_v3",
+            {
+              "asset": "ETH",
+              "chain": "Ethereum",
+            },
+            {
+              "asset": "USDC",
+              "chain": "Ethereum",
+            },
+            "0xde0b6b3a7640000",
+            0,
+            undefined,
+            {
+              "gas_budget": 12345,
+              "message_length": 321,
+            },
+            [],
+            [],
+            false,
+          ],
+        ]
+      `);
     });
 
     it('gets the quote with undefined ccm params (sdk version 1.8.2)', async () => {
@@ -887,17 +908,28 @@ describe('server', () => {
         },
       ]);
       expect(sendSpy).toHaveBeenCalledTimes(1);
-      expect(sendSpy).toHaveBeenCalledWith(
-        'cf_swap_rate_v3',
-        { asset: 'ETH', chain: 'Ethereum' },
-        { asset: 'USDC', chain: 'Ethereum' },
-        '0xde0b6b3a7640000', // 1e18
-        0,
-        undefined,
-        undefined,
-        [],
-        [],
-      );
+      expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
+        [
+          [
+            "cf_swap_rate_v3",
+            {
+              "asset": "ETH",
+              "chain": "Ethereum",
+            },
+            {
+              "asset": "USDC",
+              "chain": "Ethereum",
+            },
+            "0xde0b6b3a7640000",
+            0,
+            undefined,
+            undefined,
+            [],
+            [],
+            false,
+          ],
+        ]
+      `);
     });
 
     it('gets the DCA quote to USDC', async () => {
@@ -1097,33 +1129,49 @@ describe('server', () => {
       ]);
 
       expect(sendSpy).toHaveBeenCalledTimes(2);
-      expect(sendSpy).toHaveBeenNthCalledWith(
-        1,
-        'cf_swap_rate_v3',
-        { asset: 'ETH', chain: 'Ethereum' },
-        { asset: 'USDC', chain: 'Ethereum' },
-        '0xde0b6b3a7640000', // 1e18
-        0,
-        undefined,
-        undefined,
-        [],
-        [],
-      );
-      expect(sendSpy).toHaveBeenNthCalledWith(
-        2,
-        'cf_swap_rate_v3',
-        { asset: 'ETH', chain: 'Ethereum' },
-        { asset: 'USDC', chain: 'Ethereum' },
-        '0xde0b6b3a7640000', // 1e18
-        0,
-        {
-          number_of_chunks: 4,
-          chunk_interval: 2,
-        },
-        undefined,
-        [],
-        [],
-      );
+      expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
+        [
+          [
+            "cf_swap_rate_v3",
+            {
+              "asset": "ETH",
+              "chain": "Ethereum",
+            },
+            {
+              "asset": "USDC",
+              "chain": "Ethereum",
+            },
+            "0xde0b6b3a7640000",
+            0,
+            undefined,
+            undefined,
+            [],
+            [],
+            false,
+          ],
+          [
+            "cf_swap_rate_v3",
+            {
+              "asset": "ETH",
+              "chain": "Ethereum",
+            },
+            {
+              "asset": "USDC",
+              "chain": "Ethereum",
+            },
+            "0xde0b6b3a7640000",
+            0,
+            {
+              "chunk_interval": 2,
+              "number_of_chunks": 4,
+            },
+            undefined,
+            [],
+            [],
+            false,
+          ],
+        ]
+      `);
     });
 
     it('applies price impact to DCA quote', async () => {
@@ -1323,33 +1371,49 @@ describe('server', () => {
       ]);
 
       expect(sendSpy).toHaveBeenCalledTimes(2);
-      expect(sendSpy).toHaveBeenNthCalledWith(
-        1,
-        'cf_swap_rate_v3',
-        { asset: 'ETH', chain: 'Ethereum' },
-        { asset: 'USDC', chain: 'Ethereum' },
-        '0xde0b6b3a7640000', // 1e18
-        0,
-        undefined,
-        undefined,
-        [],
-        [],
-      );
-      expect(sendSpy).toHaveBeenNthCalledWith(
-        2,
-        'cf_swap_rate_v3',
-        { asset: 'ETH', chain: 'Ethereum' },
-        { asset: 'USDC', chain: 'Ethereum' },
-        '0xde0b6b3a7640000', // 1e18
-        0,
-        {
-          number_of_chunks: 4,
-          chunk_interval: 2,
-        },
-        undefined,
-        [],
-        [],
-      );
+      expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
+        [
+          [
+            "cf_swap_rate_v3",
+            {
+              "asset": "ETH",
+              "chain": "Ethereum",
+            },
+            {
+              "asset": "USDC",
+              "chain": "Ethereum",
+            },
+            "0xde0b6b3a7640000",
+            0,
+            undefined,
+            undefined,
+            [],
+            [],
+            false,
+          ],
+          [
+            "cf_swap_rate_v3",
+            {
+              "asset": "ETH",
+              "chain": "Ethereum",
+            },
+            {
+              "asset": "USDC",
+              "chain": "Ethereum",
+            },
+            "0xde0b6b3a7640000",
+            0,
+            {
+              "chunk_interval": 2,
+              "number_of_chunks": 4,
+            },
+            undefined,
+            [],
+            [],
+            false,
+          ],
+        ]
+      `);
     });
 
     it('throws 400 if dca quote and regular quote totalLiquidity is lower than egressAmount', async () => {
@@ -2055,60 +2119,88 @@ describe('server', () => {
         },
       ]);
       expect(sendSpy).toHaveBeenCalledTimes(4);
-      expect(sendSpy).toHaveBeenNthCalledWith(
-        1,
-        'cf_swap_rate_v3',
-        { asset: 'BTC', chain: 'Bitcoin' },
-        { asset: 'ETH', chain: 'Ethereum' },
-        '0x186a0', // 0.001e8,
-        10,
-        undefined,
-        undefined,
-        [],
-        [],
-      );
-      expect(sendSpy).toHaveBeenNthCalledWith(
-        2,
-        'cf_swap_rate_v3',
-        { asset: 'BTC', chain: 'Bitcoin' },
-        { asset: 'ETH', chain: 'Ethereum' },
-        '0x1863c', // 0.001e8 - 100 (boostFee),
-        10,
-        undefined,
-        undefined,
-        [],
-        [],
-      );
-      expect(sendSpy).toHaveBeenNthCalledWith(
-        3,
-        'cf_swap_rate_v3',
-        { asset: 'BTC', chain: 'Bitcoin' },
-        { asset: 'ETH', chain: 'Ethereum' },
-        '0x186a0',
-        10,
-        {
-          number_of_chunks: 4,
-          chunk_interval: 2,
-        },
-        undefined,
-        [],
-        [],
-      );
-      expect(sendSpy).toHaveBeenNthCalledWith(
-        4,
-        'cf_swap_rate_v3',
-        { asset: 'BTC', chain: 'Bitcoin' },
-        { asset: 'ETH', chain: 'Ethereum' },
-        '0x1863c', // 0.001e8 - 100 (boostFee),
-        10,
-        {
-          number_of_chunks: 4,
-          chunk_interval: 2,
-        },
-        undefined,
-        [],
-        [],
-      );
+      expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
+        [
+          [
+            "cf_swap_rate_v3",
+            {
+              "asset": "BTC",
+              "chain": "Bitcoin",
+            },
+            {
+              "asset": "ETH",
+              "chain": "Ethereum",
+            },
+            "0x186a0",
+            10,
+            undefined,
+            undefined,
+            [],
+            [],
+            false,
+          ],
+          [
+            "cf_swap_rate_v3",
+            {
+              "asset": "BTC",
+              "chain": "Bitcoin",
+            },
+            {
+              "asset": "ETH",
+              "chain": "Ethereum",
+            },
+            "0x1863c",
+            10,
+            undefined,
+            undefined,
+            [],
+            [],
+            false,
+          ],
+          [
+            "cf_swap_rate_v3",
+            {
+              "asset": "BTC",
+              "chain": "Bitcoin",
+            },
+            {
+              "asset": "ETH",
+              "chain": "Ethereum",
+            },
+            "0x186a0",
+            10,
+            {
+              "chunk_interval": 2,
+              "number_of_chunks": 4,
+            },
+            undefined,
+            [],
+            [],
+            false,
+          ],
+          [
+            "cf_swap_rate_v3",
+            {
+              "asset": "BTC",
+              "chain": "Bitcoin",
+            },
+            {
+              "asset": "ETH",
+              "chain": "Ethereum",
+            },
+            "0x1863c",
+            10,
+            {
+              "chunk_interval": 2,
+              "number_of_chunks": 4,
+            },
+            undefined,
+            [],
+            [],
+            false,
+          ],
+        ]
+      `);
     });
 
     it('gets no DCA quote if the flag is missing', async () => {
@@ -2510,10 +2602,6 @@ describe('server', () => {
     describe('on chain', () => {
       it('properly quotes for regular swaps', async () => {
         vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2000e18));
-        vi.mocked(getInternalSwapNetworkFeeInfo).mockResolvedValueOnce({
-          networkFeeBps: 5n, // 0.05%
-          minimumNetworkFee: 500_000n, // 0.5 USDC
-        });
 
         const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
           broker_commission: buildFee('Usdc', 0),
@@ -2558,6 +2646,7 @@ describe('server', () => {
                 "IngressVaultSwap",
               ],
               [],
+              true,
             ],
           ]
         `);
@@ -2573,15 +2662,6 @@ describe('server', () => {
         vi.mocked(getTotalLiquidity)
           .mockResolvedValueOnce(BigInt(10e18))
           .mockResolvedValueOnce(BigInt(10e18));
-        vi.mocked(getInternalSwapNetworkFeeInfo)
-          .mockResolvedValueOnce({
-            networkFeeBps: 5n, // 0.05%
-            minimumNetworkFee: 500_000n, // 0.5 USDC
-          })
-          .mockResolvedValueOnce({
-            networkFeeBps: 5n, // 0.05%
-            minimumNetworkFee: 500_000n, // 0.5 USDC
-          });
 
         mockRpcResponse((url, data: any) => {
           if (data.method === 'cf_environment') {
@@ -2685,6 +2765,7 @@ describe('server', () => {
                 "IngressVaultSwap",
               ],
               [],
+              true,
             ],
             [
               "cf_swap_rate_v3",
@@ -2709,6 +2790,7 @@ describe('server', () => {
                 "IngressVaultSwap",
               ],
               [],
+              true,
             ],
           ]
         `);
@@ -2716,10 +2798,6 @@ describe('server', () => {
 
       it('respects the minimum network fee', async () => {
         vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2000e18));
-        vi.mocked(getInternalSwapNetworkFeeInfo).mockResolvedValueOnce({
-          networkFeeBps: 5n, // 0.05%
-          minimumNetworkFee: 500_000n, // 0.5 USDC
-        });
 
         const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
           broker_commission: buildFee('Usdc', 0),
@@ -2764,6 +2842,7 @@ describe('server', () => {
                 "IngressVaultSwap",
               ],
               [],
+              true,
             ],
           ]
         `);

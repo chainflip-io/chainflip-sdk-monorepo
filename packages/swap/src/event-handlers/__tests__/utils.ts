@@ -136,7 +136,9 @@ export const swapDepositAddressReadyCcmParamsMocked = {
       channelMetadata: {
         message: '0xdeadc0de',
         gasBudget: '125000',
-        ccmAdditionalData: '0x',
+        ccmAdditionalData: {
+          __kind: 'NotRequired',
+        },
       },
       destinationAsset: { __kind: 'Eth' },
       destinationAddress: {
@@ -165,7 +167,7 @@ export const swapDepositAddressReadyCcmParamsMocked = {
 
 export const swapRequestCompletedMock = {
   block: {
-    specId: 'test@160',
+    specId: 'test@11000',
     height: 120,
     timestamp: 1670337105000,
     hash: '0x123',
@@ -295,7 +297,7 @@ export const swapEgressScheduledMock = {
 
 export const refundEgressScheduledMock = {
   block: {
-    specId: 'test@180',
+    specId: 'test@11000',
     height: 120,
     timestamp: 1670337105000,
     hash: '0x123',
@@ -307,6 +309,7 @@ export const refundEgressScheduledMock = {
       asset: { __kind: 'Eth' },
       amount: '10000000000',
       egressId: [{ __kind: 'Ethereum' }, '1'] as const,
+      refundFee: '2658298',
     }),
     id: '0000012799-000000-c1ea7',
     indexInBlock: 0,
@@ -509,7 +512,7 @@ const isDepositChannelKind = (
   value: DepositFailedArgs['details'],
 ): value is Extract<
   DepositFailedArgs['details'],
-  { __kind: `DepositChannel${string}` | `DepositFailedDepositChannelVariant${string}` }
+  { __kind: `DepositFailedDepositChannelVariant${string}` }
 > => /^Deposit(Channel|FailedDepositChannelVariant).*/.test(value.__kind);
 
 export const buildDepositFailedEvent = <T extends DepositFailedArgs>(args: T) => {
@@ -519,7 +522,7 @@ export const buildDepositFailedEvent = <T extends DepositFailedArgs>(args: T) =>
   const { chain } = assetConstants[asset];
 
   return {
-    block: { specId: 'test@190', timestamp: 1670337093000, height: 100, hash: '0x123' },
+    block: { specId: 'test@11000', timestamp: 1670337093000, height: 100, hash: '0x123' },
     event: { args, indexInBlock: 0, name: `${chain}IngressEgress.DepositFailed` },
   };
 };
@@ -555,7 +558,7 @@ export const createPools = () => {
 export const processEvents = async (
   events: (Event & { id: string })[],
   calls: (Call & { id: string })[] = [],
-  version = '180',
+  version = '11000',
 ) => {
   const eventMap = events
     .sort((a, b) => (a.id < b.id ? -1 : 1))

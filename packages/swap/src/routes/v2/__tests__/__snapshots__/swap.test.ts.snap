@@ -72,7 +72,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a refunded swap from an onChain 
   },
   "fees": [
     {
-      "amount": "495747",
+      "amount": "497747",
       "asset": "USDC",
       "chain": "Solana",
       "type": "REFUND",
@@ -1216,7 +1216,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap with FillOrKillParams in 
       "type": "EGRESS",
     },
     {
-      "amount": "3999949999999650000",
+      "amount": "2658298",
       "asset": "ETH",
       "chain": "Ethereum",
       "type": "REFUND",
@@ -1572,6 +1572,12 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in FAILED sta
       "asset": "ETH",
       "chain": "Ethereum",
       "type": "EGRESS",
+    },
+    {
+      "amount": "2658298",
+      "asset": "ETH",
+      "chain": "Ethereum",
+      "type": "REFUND",
     },
     {
       "amount": "197450000",

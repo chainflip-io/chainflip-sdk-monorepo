@@ -1,9 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import prisma, { SwapDepositChannel } from '../../../client.js';
 import { createDepositChannel } from '../../__tests__/utils.js';
-import swapRescheduled, {
-  SwapRescheduledEvent as SwapRescheduledArgs,
-} from '../swapRescheduled.js';
+import swapRescheduled, { SwapRescheduledArgs } from '../swapRescheduled.js';
 
 describe(swapRescheduled, () => {
   let btcSwapDepositChannel: SwapDepositChannel;

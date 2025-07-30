@@ -1,5 +1,4 @@
 import { swappingSwapRequested as schema11000 } from '@chainflip/processor/11000/swapping/swapRequested';
-import { swappingSwapRequested as schema190 } from '@chainflip/processor/190/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
 import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
 import { isNullish } from '@chainflip/utils/guard';
@@ -12,13 +11,11 @@ import { pascalCaseToScreamingSnakeCase } from '@/shared/strings.js';
 import { Prisma } from '../../client.js';
 import type { EventHandlerArgs } from '../index.js';
 
-const schema = z.union([schema11000, schema190]);
+const schema = schema11000;
 
 type RequestType = z.output<typeof schema>['requestType'];
 type Origin = z.output<typeof schema>['origin'];
 export type SwapRequestedArgs = z.input<typeof schema>;
-export type SwapRequestedArgs190 = z.input<typeof schema190>;
-export type SwapRequestedArgs11000 = z.input<typeof schema11000>;
 
 const getRequestInfo = (requestType: RequestType) => {
   if (requestType.__kind === 'IngressEgressFee' || requestType.__kind === 'NetworkFee') {
@@ -54,7 +51,7 @@ const getRequestInfo = (requestType: RequestType) => {
 };
 
 export const getVaultOriginTxRef = (
-  origin: Extract<z.output<typeof schema190>['origin'], { __kind: 'Vault' }>,
+  origin: Extract<z.output<typeof schema>['origin'], { __kind: 'Vault' }>,
 ) => {
   const kind = origin.txId.__kind;
 

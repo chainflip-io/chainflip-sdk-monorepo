@@ -16,12 +16,14 @@ import {
   processEvents,
 } from '../../event-handlers/__tests__/utils.js';
 import { DepositBoostedArgsMap } from '../../event-handlers/ingress-egress/depositBoosted.js';
+import { DepositFailedArgsMap } from '../../event-handlers/ingress-egress/depositFailed.js';
 import { DepositFinalisedArgsMap } from '../../event-handlers/ingress-egress/depositFinalised.js';
 import { InsufficientBoostLiquidityArgsMap } from '../../event-handlers/ingress-egress/insufficientBoostLiquidity.js';
+import { RefundEgressScheduledArgs } from '../../event-handlers/swapping/refundEgressScheduled.js';
 import { SwapDepositAddressReadyArgs } from '../../event-handlers/swapping/swapDepositAddressReady.js';
 import { SwapEgressIgnoredArgs } from '../../event-handlers/swapping/swapEgressIgnored.js';
 import { SwapEgressScheduledArgs } from '../../event-handlers/swapping/swapEgressScheduled.js';
-import { SwapRequestedArgs190 } from '../../event-handlers/swapping/swapRequested.js';
+import { SwapRequestedArgs } from '../../event-handlers/swapping/swapRequested.js';
 import { SwapScheduledArgs } from '../../event-handlers/swapping/swapScheduled.js';
 import { getPendingBroadcast } from '../../ingress-egress-tracking/index.js';
 import app from '../../server.js';
@@ -131,7 +133,7 @@ const swapEventMap = {
         },
       },
       swapRequestId: '368',
-    } satisfies SwapRequestedArgs190,
+    } satisfies SwapRequestedArgs,
   },
   'Swapping.SwapScheduled': {
     id: '0000000092-000399-77afe',
@@ -283,12 +285,13 @@ const swapEventMap = {
     extrinsicId: null,
     callId: null,
     name: 'Swapping.RefundEgressScheduled',
-    args: check<SwapEgressScheduledArgs>({
+    args: check<RefundEgressScheduledArgs>({
       asset: { __kind: 'Eth' },
       amount: '999844999999160000',
       egressId: [{ __kind: 'Ethereum' }, '71'],
       egressFee: ['105000000490000', { __kind: 'Eth' }],
       swapRequestId: '368',
+      refundFee: '2658298',
     }),
   },
   'PolkadotBroadcaster.BroadcastSuccess': {
@@ -374,10 +377,10 @@ const swapEventMap = {
     indexInBlock: 1,
     name: 'EthereumIngressEgress.DepositFailed',
     callId: '0000000092-000399-04fea',
-    args: {
+    args: check<DepositFailedArgsMap['Ethereum']>({
       reason: { __kind: 'BelowMinimumDeposit' },
       details: {
-        __kind: 'DepositChannelEthereum',
+        __kind: 'DepositFailedDepositChannelVariantEthereum',
         depositWitness: {
           asset: { __kind: 'Eth' },
           amount: '100000000000000',
@@ -388,7 +391,7 @@ const swapEventMap = {
         },
       },
       blockHeight: 1234,
-    },
+    }),
   },
   'EthereumIngressEgress.DepositFailed.Vault': {
     id: '0000000092-000399-24afe',
@@ -564,7 +567,21 @@ describe('server', () => {
       depositAddressEvent.args.channelMetadata = {
         message: '0xdeadbeef',
         gasBudget: '100000',
-        ccmAdditionalData: '0x8ea88ab41897b921ef36ddd7dfd3e9',
+        ccmAdditionalData: {
+          __kind: 'Solana',
+          value: {
+            __kind: 'V1',
+            ccmAccounts: {
+              cfReceiver: {
+                pubkey: '0x0000000000000000000000000000000000000000',
+                isWritable: false,
+              },
+              additionalAccounts: [],
+              fallbackAddress: '0x0000000000000000000000000000000000000000',
+            },
+            alts: ['0x0000000000000000000000000000000000000000'],
+          },
+        },
       };
       await processEvents([depositAddressEvent]);
 
@@ -949,7 +966,7 @@ describe('server', () => {
               "type": "EGRESS",
             },
             {
-              "amount": "3999949999999650000",
+              "amount": "2658298",
               "asset": "ETH",
               "chain": "Ethereum",
               "type": "REFUND",
@@ -1408,7 +1425,7 @@ describe('server', () => {
           __kind: 'Evm',
           value: txHash,
         },
-      } as Extract<SwapRequestedArgs190['origin'], { __kind: 'Vault' }>;
+      } as Extract<SwapRequestedArgs['origin'], { __kind: 'Vault' }>;
 
       await processEvents([requestedEvent, ...swapEvents.slice(2, 4)]);
 
@@ -1546,7 +1563,7 @@ describe('server', () => {
 
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
       (requestedEvent.args.origin as any) = check<
-        Extract<SwapRequestedArgs190['origin'], { __kind: 'Vault' }>
+        Extract<SwapRequestedArgs['origin'], { __kind: 'Vault' }>
       >({
         __kind: 'Vault',
         txId: {

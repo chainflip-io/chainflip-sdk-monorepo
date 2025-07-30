@@ -26,7 +26,7 @@ exports[`refundEgressScheduled > calculates the refund fee 1`] = `
       "type": "EGRESS",
     },
     {
-      "amount": "123456789",
+      "amount": "2658298",
       "asset": "Eth",
       "type": "REFUND",
     },
@@ -86,6 +86,11 @@ exports[`refundEgressScheduled > creates egress for refund on an existing swap 1
       "amount": "1000000000",
       "asset": "Eth",
       "type": "EGRESS",
+    },
+    {
+      "amount": "2658298",
+      "asset": "Eth",
+      "type": "REFUND",
     },
   ],
   "fokMinPriceX128": null,

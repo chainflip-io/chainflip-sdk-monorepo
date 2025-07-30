@@ -6,6 +6,8 @@ import type { EventHandlerArgs } from '../index.js';
 
 const swappingRefundEgressIgnored = z.union([schema190, schema160]);
 
+export type RefundEgressIgnoredArgs = z.input<typeof swappingRefundEgressIgnored>;
+
 const refundEgressIgnored = async ({ prisma, event, block }: EventHandlerArgs) => {
   const { swapRequestId, amount, reason } = swappingRefundEgressIgnored.parse(event.args);
 

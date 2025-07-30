@@ -1,6 +1,14 @@
 import { bytesToHex, reverseBytes } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
+import { BroadcastAbortedArgsMap } from 'packages/swap/src/event-handlers/broadcaster/broadcastAborted.js';
+import { BroadcastSuccessArgsMap } from 'packages/swap/src/event-handlers/broadcaster/broadcastSuccess.js';
+import { SwappingCreditedOnChainArgs } from 'packages/swap/src/event-handlers/swapping/creditedOnChain.js';
+import { SwappingRefundedOnChainArgs } from 'packages/swap/src/event-handlers/swapping/refundedOnChain.js';
+import { RefundEgressIgnoredArgs } from 'packages/swap/src/event-handlers/swapping/refundEgressIgnored.js';
+import { SwapRequestCompletedArgs } from 'packages/swap/src/event-handlers/swapping/swapRequestCompleted.js';
+import { SwapRescheduledArgs } from 'packages/swap/src/event-handlers/swapping/swapRescheduled.js';
+import { ChainStateUpdatedArgsMap } from 'packages/swap/src/event-handlers/tracking/chainStateUpdated.js';
 import request from 'supertest';
 import { vi, describe, it, beforeEach, afterEach, expect, beforeAll } from 'vitest';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
@@ -15,10 +23,7 @@ import {
 } from '../../../event-handlers/__tests__/utils.js';
 import { BatchBroadcastRequestedArgsMap } from '../../../event-handlers/ingress-egress/batchBroadcastRequested.js';
 import { DepositBoostedArgsMap } from '../../../event-handlers/ingress-egress/depositBoosted.js';
-import {
-  BitcoinDepositFailedArgs,
-  DepositFailedArgsMap,
-} from '../../../event-handlers/ingress-egress/depositFailed.js';
+import { DepositFailedArgsMap } from '../../../event-handlers/ingress-egress/depositFailed.js';
 import { DepositFinalisedArgsMap } from '../../../event-handlers/ingress-egress/depositFinalised.js';
 import { InsufficientBoostLiquidityArgsMap } from '../../../event-handlers/ingress-egress/insufficientBoostLiquidity.js';
 import { TransactionRejectedByBrokerArgs } from '../../../event-handlers/ingress-egress/transactionRejectedByBroker.js';
@@ -27,10 +32,7 @@ import type { SwapDepositAddressReadyArgs } from '../../../event-handlers/swappi
 import { SwapEgressIgnoredArgs } from '../../../event-handlers/swapping/swapEgressIgnored.js';
 import { SwapEgressScheduledArgs } from '../../../event-handlers/swapping/swapEgressScheduled.js';
 import { SwapExecutedArgs } from '../../../event-handlers/swapping/swapExecuted.js';
-import {
-  SwapRequestedArgs190,
-  SwapRequestedArgs,
-} from '../../../event-handlers/swapping/swapRequested.js';
+import { SwapRequestedArgs } from '../../../event-handlers/swapping/swapRequested.js';
 import { SwapScheduledArgs } from '../../../event-handlers/swapping/swapScheduled.js';
 import {
   getPendingBroadcast,
@@ -134,7 +136,7 @@ const swapEventMap = {
     extrinsicId: '0000000092-000010-77afe',
     callId: '0000000092-000010-77afe',
     name: 'Swapping.SwapRequested',
-    args: check<SwapRequestedArgs190>({
+    args: check<SwapRequestedArgs>({
       origin: {
         __kind: 'DepositChannel',
         channelId: '85',
@@ -276,7 +278,7 @@ const swapEventMap = {
     extrinsicId: null,
     callId: null,
     name: 'Swapping.SwapRequestCompleted',
-    args: { swapRequestId: '368' },
+    args: check<SwapRequestCompletedArgs>({ swapRequestId: '368' }),
   },
   'PolkadotIngressEgress.BatchBroadcastRequested': {
     id: '0000000094-000843-75b12',
@@ -315,6 +317,7 @@ const swapEventMap = {
       egressId: [{ __kind: 'Ethereum' }, '71'],
       egressFee: ['105000000490000', { __kind: 'Eth' }],
       swapRequestId: '368',
+      refundFee: '2658298',
     }),
   },
   'PolkadotBroadcaster.BroadcastSuccess': {
@@ -324,12 +327,12 @@ const swapEventMap = {
     extrinsicId: '0000000104-000002-5dbb8',
     callId: '0000000104-000002-5dbb8',
     name: 'PolkadotBroadcaster.BroadcastSuccess',
-    args: {
+    args: check<BroadcastSuccessArgsMap['Polkadot']>({
       broadcastId: 7,
       transactionRef: { blockNumber: 104, extrinsicIndex: 2 },
       transactionOutId:
         '0x7c53cc46ddfbf51ecd3aa7ee97e5dc60db89f99cb54426a2d641735c15d78908c047c33944df15f8720e20c6b5e49999680428e9ce7ae6a4bc223c26b0137f87',
-    },
+    }),
   },
   'EthereumBroadcaster.BroadcastSuccess': {
     id: '0000000104-000007-5dbb8',
@@ -338,14 +341,14 @@ const swapEventMap = {
     extrinsicId: '0000000104-000002-5dbb8',
     callId: '0000000104-000002-5dbb8',
     name: 'EthereumBroadcaster.BroadcastSuccess',
-    args: {
+    args: check<BroadcastSuccessArgsMap['Ethereum']>({
       broadcastId: 7,
       transactionRef: '0xd2398250c9fa869f0eb7659015549ed46178c95cedd444c3539f655068f6a7d9',
       transactionOutId: {
         s: '0x4b4a8a15558f559ebb0bc4e591f276a24e1ea2a1aefa708bd0c1baec232b5a9b',
         kTimesGAddress: '0x6bca5f42c73fc7bd8422ccc9c99e8d62f7aca092',
       },
-    },
+    }),
   },
   'PolkadotBroadcaster.BroadcastAborted': {
     id: '0000000104-000007-5dbb8',
@@ -354,9 +357,9 @@ const swapEventMap = {
     extrinsicId: '0000000104-000002-5dbb8',
     callId: '0000000104-000002-5dbb8',
     name: 'PolkadotBroadcaster.BroadcastAborted',
-    args: {
+    args: check<BroadcastAbortedArgsMap['Polkadot']>({
       broadcastId: 7,
-    },
+    }),
   },
   'EthereumBroadcaster.BroadcastAborted': {
     id: '0000000104-000007-5dbb8',
@@ -365,20 +368,20 @@ const swapEventMap = {
     extrinsicId: '0000000104-000002-5dbb8',
     callId: '0000000104-000002-5dbb8',
     name: 'EthereumBroadcaster.BroadcastAborted',
-    args: {
+    args: check<BroadcastAbortedArgsMap['Ethereum']>({
       broadcastId: 7,
-    },
+    }),
   },
   'Swapping.RefundEgressIgnored': {
     id: '0000000104-000594-75b12',
     indexInBlock: 1,
     name: 'Swapping.RefundEgressIgnored',
-    args: {
+    args: check<RefundEgressIgnoredArgs>({
       asset: { __kind: 'Eth' },
       amount: '999844999999160000',
       reason: { value: { error: '0x06000000', index: 32 }, __kind: 'Module' },
       swapRequestId: '368',
-    },
+    }),
   },
   'EthereumIngressEgress.DepositFailed': {
     id: '0000000092-000399-24afe',
@@ -388,7 +391,7 @@ const swapEventMap = {
     args: check<DepositFailedArgsMap['Ethereum']>({
       reason: { __kind: 'BelowMinimumDeposit' },
       details: {
-        __kind: 'DepositChannelEthereum',
+        __kind: 'DepositFailedDepositChannelVariantEthereum',
         depositWitness: {
           asset: { __kind: 'Eth' },
           amount: '100000000000000',
@@ -409,7 +412,7 @@ const swapEventMap = {
     args: check<DepositFailedArgsMap['Ethereum']>({
       reason: { __kind: 'NotEnoughToPayFees' },
       details: {
-        __kind: 'VaultEthereum',
+        __kind: 'DepositFailedVaultVariantEthereum',
         vaultWitness: {
           txId: '0xcafebabe',
           inputAsset: { __kind: 'Eth' },
@@ -605,7 +608,21 @@ describe('server', () => {
       depositAddressEvent.args.channelMetadata = {
         message: '0xdeadbeef',
         gasBudget: '100000',
-        ccmAdditionalData: '0x8ea88ab41897b921ef36ddd7dfd3e9',
+        ccmAdditionalData: {
+          __kind: 'Solana',
+          value: {
+            __kind: 'V1',
+            ccmAccounts: {
+              cfReceiver: {
+                pubkey: '0x0000000000000000000000000000000000000000',
+                isWritable: false,
+              },
+              additionalAccounts: [],
+              fallbackAddress: '0x0000000000000000000000000000000000000000',
+            },
+            alts: ['0x0000000000000000000000000000000000000000'],
+          },
+        },
       };
       await processEvents([depositAddressEvent]);
 
@@ -631,7 +648,7 @@ describe('server', () => {
           ...depositAddressEvent,
           indexInBlock: depositAddressEvent.indexInBlock + 1,
           name: 'EthereumChainTracking.ChainStateUpdated',
-          args: {
+          args: check<ChainStateUpdatedArgsMap['Ethereum']>({
             newChainState: {
               blockHeight: '221',
               trackedData: {
@@ -639,7 +656,7 @@ describe('server', () => {
                 priorityFee: '1500000000',
               },
             },
-          },
+          }),
         },
       ]);
 
@@ -902,7 +919,7 @@ describe('server', () => {
           indexInBlock: 494,
           callId: '0003614786-000245-09fd9',
           name: 'Swapping.SwapDepositAddressReady',
-          args: {
+          args: check<SwapDepositAddressReadyArgs>({
             boostFee: 0,
             channelId: '875',
             sourceAsset: { __kind: 'Btc' },
@@ -930,62 +947,61 @@ describe('server', () => {
             brokerCommissionRate: 0,
             sourceChainExpiryBlock: '3485883',
             brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
-          },
+          }),
         },
         {
           id: '0003614958-000465-1d0a6',
           indexInBlock: 465,
           callId: '0003614958-000231-1d0a6',
           name: 'BitcoinIngressEgress.DepositFailed',
-          args: {
-            reason: { __kind: 'TransactionRejectedByBroker' },
-            depositAddress: {
-              value: '0xe0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
-              __kind: 'Taproot',
-            },
-            blockHeight: 1234,
-            details: {
-              __kind: 'DepositChannelBitcoin',
-              depositWitness: {
-                asset: { __kind: 'Btc' },
-                amount: '1000000',
-                depositAddress: {
-                  __kind: 'Taproot',
-                  value: '0xe0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
-                },
-
-                depositDetails: {
+          args:
+            // TODO: invalid args are being passed here, need to take a deeper look
+            //  check<BitcoinDepositFailedArgs>({
+            {
+              reason: { __kind: 'TransactionRejectedByBroker' },
+              blockHeight: 1234,
+              details: {
+                __kind: 'DepositFailedDepositChannelVariantBitcoin',
+                depositWitness: {
                   asset: { __kind: 'Btc' },
                   amount: '1000000',
                   depositAddress: {
-                    pubkeyX: '0xe9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833',
-                    scriptPath: {
-                      salt: 875,
-                      tapleafHash:
-                        '0x4f99f5996889dd9d5332ab2be83e0ce478bb03420dbc8cea7aaaa14e5ef77f86',
-                      unlockScript: {
-                        bytes:
-                          '0x026b037520e9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833ac',
-                      },
-                      tweakedPubkeyBytes:
-                        '0x03e0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
-                    },
+                    __kind: 'Taproot',
+                    value: '0xe0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
                   },
-                  id: {
-                    txId: '0x78b3828e63d9300eedcfeaed28e7416764019a62066b945e63624ac27dc5cc9d',
-                    vout: 0,
+                  depositDetails: {
+                    asset: { __kind: 'Btc' },
+                    amount: '1000000',
+                    depositAddress: {
+                      pubkeyX: '0xe9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833',
+                      scriptPath: {
+                        salt: 875,
+                        tapleafHash:
+                          '0x4f99f5996889dd9d5332ab2be83e0ce478bb03420dbc8cea7aaaa14e5ef77f86',
+                        unlockScript: {
+                          bytes:
+                            '0x026b037520e9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833ac',
+                        },
+                        tweakedPubkeyBytes:
+                          '0x03e0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
+                      },
+                    },
+                    id: {
+                      txId: '0x78b3828e63d9300eedcfeaed28e7416764019a62066b945e63624ac27dc5cc9d',
+                      vout: 0,
+                    },
                   },
                 },
               },
             },
-          } as BitcoinDepositFailedArgs,
+          // }),
         },
         {
           id: '0003614958-001117-1d0a6',
           indexInBlock: 1117,
           callId: null,
           name: 'BitcoinIngressEgress.TransactionRejectedByBroker',
-          args: {
+          args: check<TransactionRejectedByBrokerArgs>({
             txId: {
               id: {
                 txId: '0x78b3828e63d9300eedcfeaed28e7416764019a62066b945e63624ac27dc5cc9d',
@@ -1007,18 +1023,18 @@ describe('server', () => {
               },
             },
             broadcastId: 1226,
-          } as TransactionRejectedByBrokerArgs,
+          }),
         },
         {
           id: '0003615072-001060-7ee49',
           indexInBlock: 1060,
           callId: '0003615072-000527-7ee49',
           name: 'BitcoinBroadcaster.BroadcastSuccess',
-          args: {
+          args: check<BroadcastSuccessArgsMap['Bitcoin']>({
             broadcastId: 1226,
             transactionRef: '0x7732cfb2f61551db38424b34c2bdfcb632eb204199865168f7a2334ed516c67c',
             transactionOutId: '0x7732cfb2f61551db38424b34c2bdfcb632eb204199865168f7a2334ed516c67c',
-          },
+          }),
         },
       ]);
 
@@ -1110,12 +1126,12 @@ describe('server', () => {
           id: '0000000094-000595-75b12',
           indexInBlock: 595,
           name: 'Swapping.SwapEgressIgnored',
-          args: {
+          args: check<SwapEgressIgnoredArgs>({
             asset: { __kind: 'Flip' },
             amount: '0',
             reason: { value: { error: '0x06000000', index: 32 }, __kind: 'Module' },
             swapRequestId: '368',
-          } as SwapEgressIgnoredArgs,
+          }),
         },
       ]);
 
@@ -1238,7 +1254,7 @@ describe('server', () => {
         id: '0000004123-000984-b7c4d',
         blockId: '0000015161-d719c',
         indexInBlock: 21,
-        args: {
+        args: check<SwapRequestedArgs>({
           origin: {
             value: accountId,
             __kind: 'OnChainAccount',
@@ -1271,7 +1287,7 @@ describe('server', () => {
               __kind: 'InternalAccount',
             },
           },
-        },
+        }),
       };
 
       // scheduled 1
@@ -1280,7 +1296,7 @@ describe('server', () => {
         id: '0000004123-000984-b7c4d',
         blockId: '0000015161-d719c',
         indexInBlock: 22,
-        args: {
+        args: check<SwapScheduledArgs>({
           swapId: '23',
           swapType: {
             __kind: 'Swap',
@@ -1288,7 +1304,7 @@ describe('server', () => {
           executeAt: 15163,
           inputAmount: '2500000000',
           swapRequestId: '4',
-        },
+        }),
       };
       // executed 1
       const chunkOneExecuted = {
@@ -1296,7 +1312,7 @@ describe('server', () => {
         id: '0000004123-000984-b7c4d',
         blockId: '0000015163-e6f80',
         indexInBlock: 22,
-        args: {
+        args: check<SwapExecutedArgs>({
           swapId: '23',
           brokerFee: '0',
           inputAsset: {
@@ -1309,29 +1325,29 @@ describe('server', () => {
           },
           outputAmount: '2491227710',
           swapRequestId: '4',
-        },
+        }),
       };
 
       // scheduled 2
       const chunkTwoScheduled = {
         ...chunkOneScheduled,
         id: '0000004123-000984-b7c4d',
-        args: {
+        args: check<SwapScheduledArgs>({
           ...chunkOneScheduled.args,
           swapId: '24',
           executeAt: 15165,
-        },
+        }),
       };
 
       // executed 2
       const chunkTwoExecuted = {
         ...chunkOneExecuted,
         id: '0000004123-000984-b7c4d',
-        args: {
+        args: check<SwapExecutedArgs>({
           ...chunkOneExecuted.args,
           swapId: '24',
           outputAmount: '2478844890',
-        },
+        }),
       };
 
       // credited on chain
@@ -1340,14 +1356,14 @@ describe('server', () => {
         id: '0000004123-001234-ab9d3',
         blockId: '0000015165-942fa',
         indexInBlock: 23,
-        args: {
+        args: check<SwappingCreditedOnChainArgs>({
           asset: {
             __kind: 'Usdt',
           },
           amount: '4970072600',
           accountId,
           swapRequestId: '4',
-        },
+        }),
       };
 
       // completed
@@ -1356,9 +1372,9 @@ describe('server', () => {
         id: '0000004123-001234-ab9d3',
         blockId: '0000015165-942fa',
         indexInBlock: 25,
-        args: {
+        args: check<SwapRequestCompletedArgs>({
           swapRequestId: '4',
-        },
+        }),
       };
       await processEvents(
         [
@@ -1371,7 +1387,6 @@ describe('server', () => {
           completedEvent,
         ],
         [],
-        '190',
       );
 
       const { body, status } = await request(server).get(
@@ -1388,7 +1403,7 @@ describe('server', () => {
             id: '0007832110-001145-c2341',
             name: 'Swapping.SwapRequested',
             indexInBlock: 1145,
-            args: {
+            args: check<SwapRequestedArgs>({
               origin: {
                 value: '0x6613c51de60d54bf947d73d84c9c9d34be19c98ff2132d079ca946ad6d7bfa0b',
                 __kind: 'OnChainAccount',
@@ -1413,46 +1428,46 @@ describe('server', () => {
                   __kind: 'InternalAccount',
                 },
               },
-            },
+            }),
           },
           {
             id: '0007832110-001146-c2341',
             name: 'Swapping.SwapScheduled',
             indexInBlock: 1146,
-            args: {
+            args: check<SwapScheduledArgs>({
               swapId: '740568',
               swapType: { __kind: 'Swap' },
               executeAt: 7832112,
               inputAmount: '10000000',
               swapRequestId: '512007',
-            },
+            }),
           },
           {
             id: '0007832112-001110-2bc40',
             name: 'Swapping.SwapRescheduled',
             indexInBlock: 1110,
-            args: { swapId: '740568', executeAt: 7832117 },
+            args: check<SwapRescheduledArgs>({ swapId: '740568', executeAt: 7832117 }),
           },
           {
             id: '0007832117-001154-cbeba',
             name: 'Swapping.RefundedOnChain',
             indexInBlock: 1154,
-            args: {
+            args: check<SwappingRefundedOnChainArgs>({
               asset: { __kind: 'SolUsdc' },
               amount: '9504253',
               accountId: '0x6613c51de60d54bf947d73d84c9c9d34be19c98ff2132d079ca946ad6d7bfa0b',
               swapRequestId: '512007',
-            },
+              refundFee: '497747',
+            }),
           },
           {
             id: '0007832117-001156-cbeba',
             name: 'Swapping.SwapRequestCompleted',
             indexInBlock: 1156,
-            args: { swapRequestId: '512007' },
+            args: check<SwapRequestCompletedArgs>({ swapRequestId: '512007' }),
           },
         ],
         [],
-        '190',
       );
 
       const { body, status } = await request(server).get('/v2/swaps/512007');
@@ -1465,7 +1480,7 @@ describe('server', () => {
       const txHash = '0xb2dcb9ce8d50f0ab869995fee8482bcf304ffcfe5681ca748f90e34c0ad7b241';
 
       const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
-      (requestedEvent.args as SwapRequestedArgs190) = {
+      (requestedEvent.args as SwapRequestedArgs) = {
         ...requestedEvent.args,
         origin: {
           __kind: 'Vault',
@@ -1481,7 +1496,7 @@ describe('server', () => {
             account: '0x9e8d88ae895c9b37b2dead9757a3452f7c2299704d91ddfa444d87723f94fe0c',
           },
         ],
-      } as SwapRequestedArgs190;
+      } as SwapRequestedArgs;
 
       await processEvents([
         requestedEvent,
@@ -1507,7 +1522,7 @@ describe('server', () => {
           __kind: 'Evm',
           value: txHash,
         },
-      } as Extract<SwapRequestedArgs190['origin'], { __kind: 'Vault' }>;
+      } as Extract<SwapRequestedArgs['origin'], { __kind: 'Vault' }>;
 
       await processEvents([
         requestedEvent,
@@ -1635,7 +1650,7 @@ describe('server', () => {
           __kind: 'Bitcoin',
           value: txHash,
         },
-      } as Extract<SwapRequestedArgs190['origin'], { __kind: 'Vault' }>;
+      } as Extract<SwapRequestedArgs['origin'], { __kind: 'Vault' }>;
 
       await processEvents([
         requestedEvent,
@@ -2076,7 +2091,9 @@ describe('server', () => {
                   message:
                     '0x000000000000000000000000000000000000000000000000000000000000004000000000000000000000000067ff09c184d8e9e7b90c5187ed04cbfbdba741c8000000000000000000000000000000000000000000000000000000000000000c6461676f61746973686572650000000000000000000000000000000000000000',
                   gasBudget: '200000000000000',
-                  ccmAdditionalData: '0x',
+                  ccmAdditionalData: {
+                    __kind: 'NotRequired',
+                  },
                 },
               },
             },

@@ -11,7 +11,7 @@ exports[`swapRequested > creates a new deposit channel swap request and creates 
 }
 `;
 
-exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL 190) 1`] = `
+exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL 11000) 1`] = `
 {
   "ccmGasBudget": "2",
   "ccmMessage": "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000003f7a400000000000000000000000000000000000000000000000000000000000000074761735465737400000000000000000000000000000000000000000000000000",
@@ -25,8 +25,8 @@ exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL 190) 1`] = 
   "depositFinalisedAt": null,
   "depositFinalisedBlockIndex": null,
   "depositTransactionRef": null,
-  "destAddress": "0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0",
-  "destAsset": "Eth",
+  "destAddress": "3JR4ur5KBq8DPfwajjAYUrbkLKM9",
+  "destAsset": "Sol",
   "effectiveBoostFeeBps": null,
   "egressId": null,
   "fallbackEgressId": null,
@@ -51,7 +51,7 @@ exports[`swapRequested > creates a new swap request (DEPOSIT_CHANNEL 190) 1`] = 
 }
 `;
 
-exports[`swapRequested > creates a new swap request (ON_CHAIN 190) 1`] = `
+exports[`swapRequested > creates a new swap request (ON_CHAIN 11000) 1`] = `
 {
   "ccmGasBudget": null,
   "ccmMessage": null,
@@ -98,7 +98,7 @@ exports[`swapRequested > creates a new swap request (ON_CHAIN 190) 1`] = `
 }
 `;
 
-exports[`swapRequested > creates a new swap request (VAULT 190) 1`] = `
+exports[`swapRequested > creates a new swap request (VAULT 11000) 1`] = `
 {
   "beneficiaries": [
     {

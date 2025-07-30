@@ -6,7 +6,6 @@ import broadcastAborted from './broadcaster/broadcastAborted.js';
 import broadcastSuccess from './broadcaster/broadcastSuccess.js';
 import transactionBroadcastRequest from './broadcaster/transactionBroadcastRequest.js';
 import batchBroadcastRequested from './ingress-egress/batchBroadcastRequested.js';
-import { boostPoolCreated } from './ingress-egress/boostPoolCreated.js';
 import networkCcmBroadcastRequested from './ingress-egress/ccmBroadcastRequested.js';
 import { depositBoosted } from './ingress-egress/depositBoosted.js';
 import networkDepositFailed from './ingress-egress/depositFailed.js';
@@ -81,7 +80,6 @@ export const events = {
     'BatchBroadcastRequested',
     'CcmBroadcastRequested',
     'DepositFinalised',
-    'BoostPoolCreated',
     'DepositBoosted',
     'InsufficientBoostLiquidity',
     'TransactionRejectedByBroker',
@@ -145,10 +143,6 @@ const handlers = [
       { name: events.Swapping.SwapRescheduled, handler: swapRescheduled },
       ...chainflipChains.flatMap((chain) => [
         {
-          name: events[`${chain}IngressEgress`].BoostPoolCreated,
-          handler: boostPoolCreated(chain),
-        },
-        {
           name: events[`${chain}IngressEgress`].InsufficientBoostLiquidity,
           handler: insufficientBoostLiquidity(chain),
         },
@@ -158,15 +152,12 @@ const handlers = [
   {
     spec: '1.7.0' as Semver,
     handlers: [
-      { name: events.Swapping.SwapRequested, handler: swapRequested },
       { name: events.Swapping.SwapRequestCompleted, handler: swapRequestCompleted },
       { name: events.Swapping.RefundEgressIgnored, handler: refundEgressIgnored },
-      { name: events.Swapping.RefundEgressScheduled, handler: refundEgressScheduled },
       { name: events.Swapping.SwapExecuted, handler: swapExecuted },
       { name: events.Swapping.SwapDepositAddressReady, handler: swapDepositAddressReady },
       { name: events.Swapping.SwapEgressIgnored, handler: swapEgressIgnored },
       { name: events.Swapping.SwapEgressScheduled, handler: swapEgressScheduled },
-      { name: events.Swapping.SwapScheduled, handler: swapScheduled },
       {
         name: events.LiquidityProvider.LiquidityDepositAddressReady,
         handler: liquidityDepositAddressReady,
@@ -192,11 +183,8 @@ const handlers = [
   {
     spec: '1.8.0' as Semver,
     handlers: [
+      { name: events.Swapping.SwapScheduled, handler: swapScheduled },
       ...chainflipChains.flatMap((chain) => [
-        {
-          name: events[`${chain}IngressEgress`].DepositFailed,
-          handler: networkDepositFailed(chain),
-        },
         {
           name: events[`${chain}IngressEgress`].TransferFallbackRequested,
           handler: transferFallbackRequested(chain),
@@ -208,23 +196,29 @@ const handlers = [
     spec: '1.9.0' as Semver,
     handlers: [
       {
-        name: 'Swapping.CreditedOnChain',
+        name: events.Swapping.CreditedOnChain,
         handler: creditedOnChain,
-      },
-      {
-        name: 'Swapping.RefundedOnChain',
-        handler: refundedOnChain,
       },
     ],
   },
   {
     spec: '1.10.0' as Semver,
     handlers: [
+      { name: events.Swapping.SwapRequested, handler: swapRequested },
       { name: events.LendingPools.BoostPoolCreated, handler: lendingPoolsBoostPoolCreated },
+      { name: events.Swapping.RefundEgressScheduled, handler: refundEgressScheduled },
+      {
+        name: events.Swapping.RefundedOnChain,
+        handler: refundedOnChain,
+      },
       ...chainflipChains.flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].PalletConfigUpdated,
           handler: palletConfigUpdated(chain),
+        },
+        {
+          name: events[`${chain}IngressEgress`].DepositFailed,
+          handler: networkDepositFailed(chain),
         },
       ]),
     ],

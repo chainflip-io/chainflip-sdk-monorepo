@@ -160,7 +160,9 @@ describe(swapDepositAddressReady, () => {
           channelMetadata: {
             message: '0x',
             gasBudget: '0',
-            ccmAdditionalData: '0x',
+            ccmAdditionalData: {
+              __kind: 'NotRequired',
+            },
           },
         },
       },
