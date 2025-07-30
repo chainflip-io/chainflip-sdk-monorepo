@@ -138,9 +138,8 @@ const handlers = [
     ],
   },
   {
-    spec: '1.5.0' as Semver,
+    spec: '1.4.0' as Semver,
     handlers: [
-      { name: events.Swapping.SwapRescheduled, handler: swapRescheduled },
       ...chainflipChains.flatMap((chain) => [
         {
           name: events[`${chain}IngressEgress`].InsufficientBoostLiquidity,
@@ -150,9 +149,16 @@ const handlers = [
     ],
   },
   {
+    spec: '1.5.0' as Semver,
+    handlers: [{ name: events.Swapping.SwapRescheduled, handler: swapRescheduled }],
+  },
+  {
+    spec: '1.6.0' as Semver,
+    handlers: [{ name: events.Swapping.SwapRequestCompleted, handler: swapRequestCompleted }],
+  },
+  {
     spec: '1.7.0' as Semver,
     handlers: [
-      { name: events.Swapping.SwapRequestCompleted, handler: swapRequestCompleted },
       { name: events.Swapping.RefundEgressIgnored, handler: refundEgressIgnored },
       { name: events.Swapping.SwapExecuted, handler: swapExecuted },
       { name: events.Swapping.SwapDepositAddressReady, handler: swapDepositAddressReady },

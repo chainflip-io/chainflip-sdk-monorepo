@@ -1,10 +1,9 @@
-import { swappingRefundEgressIgnored as schema160 } from '@chainflip/processor/160/swapping/refundEgressIgnored';
 import { swappingRefundEgressIgnored as schema190 } from '@chainflip/processor/190/swapping/refundEgressIgnored';
 import z from 'zod';
 import { getStateChainError } from '../common.js';
 import type { EventHandlerArgs } from '../index.js';
 
-const swappingRefundEgressIgnored = z.union([schema190, schema160]);
+const swappingRefundEgressIgnored = schema190;
 
 export type RefundEgressIgnoredArgs = z.input<typeof swappingRefundEgressIgnored>;
 
