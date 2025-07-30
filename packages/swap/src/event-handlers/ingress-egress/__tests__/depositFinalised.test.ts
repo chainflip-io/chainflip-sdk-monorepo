@@ -43,7 +43,7 @@ describe(depositFinalised, () => {
         prisma,
         block: {
           height: 10,
-          specId: 'test@180',
+          specId: 'test@190',
           timestamp: '2024-08-06T00:00:06.000Z',
           hash: '0x123',
         },
@@ -100,7 +100,7 @@ describe(depositFinalised, () => {
       });
     });
 
-    it('updates swap request for regular deposit with 180 schema', async () => {
+    it('updates swap request for regular deposit with 190 schema', async () => {
       await depositFinalised('Bitcoin')({
         prisma,
         block: {
@@ -178,7 +178,7 @@ describe(depositFinalised, () => {
         prisma,
         block: {
           height: 10,
-          specId: 'test@180',
+          specId: 'test@190',
           timestamp: '2024-08-06T00:00:06.000Z',
           hash: '0x123',
         },
@@ -255,7 +255,7 @@ describe(depositFinalised, () => {
         prisma,
         block: {
           height: 10,
-          specId: 'test@180',
+          specId: 'test@190',
           timestamp: '2024-08-06T00:00:06.000Z',
           hash: '0x123',
         },

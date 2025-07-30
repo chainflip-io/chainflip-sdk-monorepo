@@ -90,7 +90,7 @@ exports[`depositFinalised > Bitcoin > updates swap request for regular deposit 1
 }
 `;
 
-exports[`depositFinalised > Bitcoin > updates swap request for regular deposit with 180 schema 1`] = `
+exports[`depositFinalised > Bitcoin > updates swap request for regular deposit with 190 schema 1`] = `
 {
   "ccmGasBudget": null,
   "ccmMessage": null,
