@@ -23,7 +23,10 @@ import {
 } from '../../../event-handlers/__tests__/utils.js';
 import { BatchBroadcastRequestedArgsMap } from '../../../event-handlers/ingress-egress/batchBroadcastRequested.js';
 import { DepositBoostedArgsMap } from '../../../event-handlers/ingress-egress/depositBoosted.js';
-import { DepositFailedArgsMap } from '../../../event-handlers/ingress-egress/depositFailed.js';
+import {
+  BitcoinDepositFailedArgs,
+  DepositFailedArgsMap,
+} from '../../../event-handlers/ingress-egress/depositFailed.js';
 import { DepositFinalisedArgsMap } from '../../../event-handlers/ingress-egress/depositFinalised.js';
 import { InsufficientBoostLiquidityArgsMap } from '../../../event-handlers/ingress-egress/insufficientBoostLiquidity.js';
 import { TransactionRejectedByBrokerArgs } from '../../../event-handlers/ingress-egress/transactionRejectedByBroker.js';
@@ -954,47 +957,42 @@ describe('server', () => {
           indexInBlock: 465,
           callId: '0003614958-000231-1d0a6',
           name: 'BitcoinIngressEgress.DepositFailed',
-          args:
-            // TODO: invalid args are being passed here, need to take a deeper look
-            //  check<BitcoinDepositFailedArgs>({
-            {
-              reason: { __kind: 'TransactionRejectedByBroker' },
-              blockHeight: 1234,
-              details: {
-                __kind: 'DepositFailedDepositChannelVariantBitcoin',
-                depositWitness: {
-                  asset: { __kind: 'Btc' },
+          args: check<BitcoinDepositFailedArgs>({
+            reason: { __kind: 'TransactionRejectedByBroker' },
+            blockHeight: 1234,
+            details: {
+              __kind: 'DepositFailedDepositChannelVariantBitcoin',
+              depositWitness: {
+                asset: { __kind: 'Btc' },
+                amount: '1000000',
+                depositAddress: {
+                  __kind: 'Taproot',
+                  value: '0xe0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
+                },
+                depositDetails: {
                   amount: '1000000',
                   depositAddress: {
-                    __kind: 'Taproot',
-                    value: '0xe0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
-                  },
-                  depositDetails: {
-                    asset: { __kind: 'Btc' },
-                    amount: '1000000',
-                    depositAddress: {
-                      pubkeyX: '0xe9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833',
-                      scriptPath: {
-                        salt: 875,
-                        tapleafHash:
-                          '0x4f99f5996889dd9d5332ab2be83e0ce478bb03420dbc8cea7aaaa14e5ef77f86',
-                        unlockScript: {
-                          bytes:
-                            '0x026b037520e9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833ac',
-                        },
-                        tweakedPubkeyBytes:
-                          '0x03e0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
+                    pubkeyX: '0xe9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833',
+                    scriptPath: {
+                      salt: 875,
+                      tapleafHash:
+                        '0x4f99f5996889dd9d5332ab2be83e0ce478bb03420dbc8cea7aaaa14e5ef77f86',
+                      unlockScript: {
+                        bytes:
+                          '0x026b037520e9adc6fc32ca8e08f9940ffb209dcd775f5f35e20ad69b5c4e225527e9430833ac',
                       },
+                      tweakedPubkeyBytes:
+                        '0x03e0c15b4d58f9f1f5cb708addbfc8361f309918d15de0724f70420b3b1944091a',
                     },
-                    id: {
-                      txId: '0x78b3828e63d9300eedcfeaed28e7416764019a62066b945e63624ac27dc5cc9d',
-                      vout: 0,
-                    },
+                  },
+                  id: {
+                    txId: '0x78b3828e63d9300eedcfeaed28e7416764019a62066b945e63624ac27dc5cc9d',
+                    vout: 0,
                   },
                 },
               },
             },
-          // }),
+          }),
         },
         {
           id: '0003614958-001117-1d0a6',
