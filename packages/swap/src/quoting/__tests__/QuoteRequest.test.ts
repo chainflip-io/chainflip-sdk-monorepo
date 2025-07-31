@@ -1,7 +1,6 @@
 /* eslint-disable dot-notation */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import env from '../../config/env.js';
-import { getInternalSwapNetworkFeeInfo } from '../../polkadot/api.js';
 import { getUsdValue } from '../../pricing/checkPriceWarning.js';
 import { calculateRecommendedSlippage } from '../../utils/autoSlippage.js';
 import { isAtLeastSpecVersion } from '../../utils/function.js';
@@ -173,11 +172,6 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
       const req = createRequest(27180n);
       (req as any).isOnChain = true;
       (req as any).pools = [{ baseAsset: 'Btc' }, { baseAsset: 'Flip' }];
-
-      vi.mocked(getInternalSwapNetworkFeeInfo).mockResolvedValue({
-        networkFeeBps: 9999n,
-        minimumNetworkFee: 999n,
-      });
 
       const mockQuoter = {
         getLimitOrders: vi.fn().mockResolvedValue([{ id: 'mock-order' }]),

@@ -1,5 +1,4 @@
 import { swappingSwapRequested as schema11000 } from '@chainflip/processor/11000/swapping/swapRequested';
-import { swappingSwapRequested as schema190 } from '@chainflip/processor/190/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
 import { bytesToHex } from '@chainflip/utils/bytes';
 import { assetConstants } from '@chainflip/utils/chainflip';
@@ -7,11 +6,11 @@ import * as ss58 from '@chainflip/utils/ss58';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import prisma from '../../../client.js';
 import { check } from '../../__tests__/utils.js';
-import swapRequested, { SwapRequestedArgs11000, SwapRequestedArgs190 } from '../swapRequested.js';
+import swapRequested, { SwapRequestedArgs } from '../swapRequested.js';
 
 const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
 
-const vaultBitcoin190 = {
+const vaultBitcoin11000 = {
   origin: {
     txId: {
       value: '0xad7aa682145c044e7f0920eebbcccaa527657f3f7dad6300ad6043efcb9a1e2f',
@@ -53,9 +52,9 @@ const vaultBitcoin190 = {
     },
     retryDuration: 150,
   },
-} as const satisfies SwapRequestedArgs190;
+} as const satisfies SwapRequestedArgs;
 
-const vaultSolana190 = {
+const vaultSolana11000 = {
   origin: {
     txId: {
       value: ['0xf5fa1e491da884a02d57d62323ea5a9754cf2cca03cb4064bf44016c7c3bc99b', '413006'],
@@ -99,9 +98,9 @@ const vaultSolana190 = {
     },
     retryDuration: 10,
   },
-} as const satisfies SwapRequestedArgs190;
+} as const satisfies SwapRequestedArgs;
 
-const depositChannel190 = {
+const depositChannel11000 = {
   origin: {
     __kind: 'DepositChannel',
     channelId: '6',
@@ -116,20 +115,33 @@ const depositChannel190 = {
   brokerFees: [],
   inputAsset: { __kind: 'Btc' },
   inputAmount: '4999922',
-  outputAsset: { __kind: 'Eth' },
+  outputAsset: { __kind: 'Sol' },
   requestType: {
     __kind: 'Regular',
     outputAction: {
       __kind: 'Egress',
-      outputAddress: { value: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0', __kind: 'Eth' },
+      outputAddress: { value: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0', __kind: 'Sol' },
       ccmDepositMetadata: {
         sourceChain: { __kind: 'Bitcoin' },
         channelMetadata: {
           message:
             '0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000003f7a400000000000000000000000000000000000000000000000000000000000000074761735465737400000000000000000000000000000000000000000000000000',
           gasBudget: '2',
-          ccmAdditionalData:
-            '0x7ae79240f09d236433572d970077360c2fb1af40f30a2463907f39ff189c49e602c459e18eb2391a1bf0ddc69201fce27ddd0f0f11c2f2b6e1b041c1300667d9fe583721a4b4aad88885a0f2881db68f6a12e385ad1b9ca3',
+          ccmAdditionalData: {
+            __kind: 'Solana',
+            value: {
+              __kind: 'V1',
+              ccmAccounts: {
+                cfReceiver: {
+                  pubkey: '0x0000000000000000000000000000000000000000',
+                  isWritable: false,
+                },
+                additionalAccounts: [],
+                fallbackAddress: '0x0000000000000000000000000000000000000000',
+              },
+              alts: ['0x0000000000000000000000000000000000000000'],
+            },
+          },
         },
       },
     },
@@ -139,9 +151,9 @@ const depositChannel190 = {
     chunkInterval: 2,
   },
   swapRequestId: '2',
-} as const satisfies SwapRequestedArgs190;
+} as const satisfies SwapRequestedArgs;
 
-const solDepositChannel190 = {
+const solDepositChannel11000 = {
   origin: {
     __kind: 'DepositChannel',
     brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
@@ -169,9 +181,9 @@ const solDepositChannel190 = {
     },
   },
   swapRequestId: '92',
-} as const satisfies SwapRequestedArgs190;
+} as const satisfies SwapRequestedArgs;
 
-const onChain190 = {
+const onChain11000 = {
   origin: {
     __kind: 'OnChainAccount',
     value: bytesToHex(ss58.decode(accountId).data),
@@ -202,7 +214,7 @@ const onChain190 = {
     numberOfChunks: 10,
     chunkInterval: 2,
   },
-} as const satisfies SwapRequestedArgs190;
+} as const satisfies SwapRequestedArgs;
 
 const ingressEgressFee = {
   origin: { __kind: 'Internal' },
@@ -254,26 +266,26 @@ describe(swapRequested, () => {
     await prisma.$queryRaw`TRUNCATE TABLE "SwapRequest", "SwapDepositChannel", private."SolanaPendingTxRef" CASCADE;`;
   });
 
-  it('creates a new swap request (DEPOSIT_CHANNEL 190)', async () => {
+  it('creates a new swap request (DEPOSIT_CHANNEL 11000)', async () => {
     const channel = await prisma.swapDepositChannel.create({
       data: {
-        srcChain: assetConstants[depositChannel190.inputAsset.__kind].chain,
+        srcChain: assetConstants[depositChannel11000.inputAsset.__kind].chain,
         depositAddress: Buffer.from(
-          depositChannel190.origin.depositAddress.value.slice(2),
+          depositChannel11000.origin.depositAddress.value.slice(2),
           'hex',
         ).toString(),
         issuedBlock: 1,
-        channelId: BigInt(depositChannel190.origin.channelId),
+        channelId: BigInt(depositChannel11000.origin.channelId),
         isExpired: false,
-        srcAsset: depositChannel190.inputAsset.__kind,
-        destAsset: depositChannel190.outputAsset.__kind,
-        destAddress: depositChannel190.requestType.outputAction.outputAddress.value,
+        srcAsset: depositChannel11000.inputAsset.__kind,
+        destAsset: depositChannel11000.outputAsset.__kind,
+        destAddress: depositChannel11000.requestType.outputAction.outputAddress.value,
         totalBrokerCommissionBps: 0,
         openingFeePaid: 0,
       },
     });
 
-    await swapRequested({ prisma, event: { ...event, args: depositChannel190 }, block });
+    await swapRequested({ prisma, event: { ...event, args: depositChannel11000 }, block });
 
     const request = await prisma.swapRequest.findFirstOrThrow();
 
@@ -284,8 +296,8 @@ describe(swapRequested, () => {
     });
   });
 
-  it('creates a new swap request (VAULT 190)', async () => {
-    await swapRequested({ prisma, event: { ...event, args: vaultBitcoin190 }, block });
+  it('creates a new swap request (VAULT 11000)', async () => {
+    await swapRequested({ prisma, event: { ...event, args: vaultBitcoin11000 }, block });
 
     const request = await prisma.swapRequest.findFirstOrThrow({ include: { beneficiaries: true } });
 
@@ -298,8 +310,8 @@ describe(swapRequested, () => {
     });
   });
 
-  it('creates a new swap request (ON_CHAIN 190)', async () => {
-    await swapRequested({ prisma, event: { ...event, args: onChain190 }, block });
+  it('creates a new swap request (ON_CHAIN 11000)', async () => {
+    await swapRequested({ prisma, event: { ...event, args: onChain11000 }, block });
 
     const request = await prisma.swapRequest.findFirstOrThrow({
       include: { onChainSwapInfo: true },
@@ -339,7 +351,7 @@ describe(swapRequested, () => {
   });
 
   it('creates a new vault swap request and creates a pending tx ref record', async () => {
-    await swapRequested({ prisma, event: { ...event, args: vaultSolana190 }, block });
+    await swapRequested({ prisma, event: { ...event, args: vaultSolana11000 }, block });
 
     const request = await prisma.swapRequest.findFirstOrThrow({
       include: { solanaPendingTxRef: true },
@@ -355,20 +367,20 @@ describe(swapRequested, () => {
   it('creates a new deposit channel swap request and creates a pending tx ref record', async () => {
     const channel = await prisma.swapDepositChannel.create({
       data: {
-        srcChain: assetConstants[solDepositChannel190.inputAsset.__kind].chain,
-        depositAddress: base58.encode(solDepositChannel190.origin.depositAddress.value),
+        srcChain: assetConstants[solDepositChannel11000.inputAsset.__kind].chain,
+        depositAddress: base58.encode(solDepositChannel11000.origin.depositAddress.value),
         issuedBlock: 1,
-        channelId: BigInt(solDepositChannel190.origin.channelId),
+        channelId: BigInt(solDepositChannel11000.origin.channelId),
         isExpired: false,
-        srcAsset: solDepositChannel190.inputAsset.__kind,
-        destAsset: solDepositChannel190.outputAsset.__kind,
-        destAddress: solDepositChannel190.requestType.outputAction.outputAddress.value,
+        srcAsset: solDepositChannel11000.inputAsset.__kind,
+        destAsset: solDepositChannel11000.outputAsset.__kind,
+        destAddress: solDepositChannel11000.requestType.outputAction.outputAddress.value,
         totalBrokerCommissionBps: 0,
         openingFeePaid: 0,
       },
     });
 
-    await swapRequested({ prisma, event: { ...event, args: solDepositChannel190 }, block });
+    await swapRequested({ prisma, event: { ...event, args: solDepositChannel11000 }, block });
 
     const solanaPendingTxRef = await prisma.solanaPendingTxRef.findFirstOrThrow({
       where: { swapDepositChannelId: channel.id },
@@ -380,7 +392,7 @@ describe(swapRequested, () => {
   });
 
   it('parses 1.10 event correctly', async () => {
-    const swapRequestedEvent = check<SwapRequestedArgs11000>({
+    const swapRequestedEvent = check<SwapRequestedArgs>({
       origin: {
         txId: {
           value: '0xcce559ffce1b15f1a1e8880616990aaff7aca23d2bf51e9a362f00e07fd94c71',
@@ -452,6 +464,5 @@ describe(swapRequested, () => {
     });
 
     expect(schema11000.safeParse(swapRequestedEvent)).toBeTruthy();
-    expect(() => schema190.parse(swapRequestedEvent)).toThrow();
   });
 });

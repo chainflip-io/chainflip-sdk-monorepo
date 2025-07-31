@@ -1,4 +1,5 @@
 import { swappingSwapRequestCompleted } from '@chainflip/processor/160/swapping/swapRequestCompleted';
+import { z } from 'zod';
 import { Prisma } from '../../client.js';
 import { getAssetPrice } from '../../pricing/index.js';
 import { getSwapPrice } from '../../utils/swap.js';
@@ -10,6 +11,8 @@ const timeElapsedinMinutes = (timestamp: number | string | Date) => {
   const timeDiff = Math.abs(currentTime.getTime() - elapsedTime.getTime());
   return Math.floor(timeDiff / 60_000);
 };
+
+export type SwapRequestCompletedArgs = z.input<typeof swappingSwapRequestCompleted>;
 
 export default async function swapRequestCompleted({
   prisma,

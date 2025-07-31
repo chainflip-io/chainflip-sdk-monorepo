@@ -66,18 +66,30 @@ describe(getSwapRateV3, () => {
 
     await getSwapRateV3(getSwapRateV3Params);
 
-    expect(sendSpy).toHaveBeenNthCalledWith(
-      1,
-      'cf_swap_rate_v3',
-      { asset: 'USDC', chain: 'Ethereum' },
-      { asset: 'ETH', chain: 'Ethereum' },
-      '0x3e8',
-      0,
-      undefined,
-      undefined,
-      ['IngressDepositChannel'],
-      undefined,
-    );
+    expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
+      [
+        [
+          "cf_swap_rate_v3",
+          {
+            "asset": "USDC",
+            "chain": "Ethereum",
+          },
+          {
+            "asset": "ETH",
+            "chain": "Ethereum",
+          },
+          "0x3e8",
+          0,
+          undefined,
+          undefined,
+          [
+            "IngressDepositChannel",
+          ],
+          undefined,
+          undefined,
+        ],
+      ]
+    `);
   });
 
   it('calls sendRequest with ccm params', async () => {
@@ -107,21 +119,31 @@ describe(getSwapRateV3, () => {
 
     await getSwapRateV3(getSwapRateV3Params);
 
-    expect(sendSpy).toHaveBeenNthCalledWith(
-      1,
-      'cf_swap_rate_v3',
-      { asset: 'USDC', chain: 'Ethereum' },
-      { asset: 'ETH', chain: 'Ethereum' },
-      '0x3e8',
-      0,
-      undefined,
-      {
-        gas_budget: 10101,
-        message_length: 202,
-      },
-      undefined,
-      undefined,
-    );
+    expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
+      [
+        [
+          "cf_swap_rate_v3",
+          {
+            "asset": "USDC",
+            "chain": "Ethereum",
+          },
+          {
+            "asset": "ETH",
+            "chain": "Ethereum",
+          },
+          "0x3e8",
+          0,
+          undefined,
+          {
+            "gas_budget": 10101,
+            "message_length": 202,
+          },
+          undefined,
+          undefined,
+          undefined,
+        ],
+      ]
+    `);
   });
 
   it('calls sendRequest with internal swap flag for v1.10', async () => {
@@ -152,21 +174,30 @@ describe(getSwapRateV3, () => {
 
     await getSwapRateV3(getSwapRateV3Params);
 
-    expect(sendSpy).toHaveBeenNthCalledWith(
-      1,
-      'cf_swap_rate_v3',
-      { asset: 'USDC', chain: 'Ethereum' },
-      { asset: 'ETH', chain: 'Ethereum' },
-      '0x3e8',
-      0,
-      undefined,
-      {
-        gas_budget: 10101,
-        message_length: 202,
-      },
-      undefined,
-      undefined,
-      true,
-    );
+    expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
+      [
+        [
+          "cf_swap_rate_v3",
+          {
+            "asset": "USDC",
+            "chain": "Ethereum",
+          },
+          {
+            "asset": "ETH",
+            "chain": "Ethereum",
+          },
+          "0x3e8",
+          0,
+          undefined,
+          {
+            "gas_budget": 10101,
+            "message_length": 202,
+          },
+          undefined,
+          undefined,
+          true,
+        ],
+      ]
+    `);
   });
 });

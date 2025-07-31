@@ -5,12 +5,6 @@ import { bitcoinIngressEgressDepositFailed as bitcoinSchema11000 } from '@chainf
 import { ethereumIngressEgressDepositFailed as ethereumSchema11000 } from '@chainflip/processor/11000/ethereumIngressEgress/depositFailed';
 import { polkadotIngressEgressDepositFailed as polkadotSchema11000 } from '@chainflip/processor/11000/polkadotIngressEgress/depositFailed';
 import { solanaIngressEgressDepositFailed as solanaSchema11000 } from '@chainflip/processor/11000/solanaIngressEgress/depositFailed';
-import { arbitrumIngressEgressDepositFailed as arbitrumSchema190 } from '@chainflip/processor/190/arbitrumIngressEgress/depositFailed';
-import { assethubIngressEgressDepositFailed as assetHubSchema190 } from '@chainflip/processor/190/assethubIngressEgress/depositFailed';
-import { bitcoinIngressEgressDepositFailed as bitcoinSchema190 } from '@chainflip/processor/190/bitcoinIngressEgress/depositFailed';
-import { ethereumIngressEgressDepositFailed as ethereumSchema190 } from '@chainflip/processor/190/ethereumIngressEgress/depositFailed';
-import { polkadotIngressEgressDepositFailed as polkadotSchema190 } from '@chainflip/processor/190/polkadotIngressEgress/depositFailed';
-import { solanaIngressEgressDepositFailed as solanaSchema190 } from '@chainflip/processor/190/solanaIngressEgress/depositFailed';
 import * as base58 from '@chainflip/utils/base58';
 import { hexToBytes } from '@chainflip/utils/bytes';
 import { assetConstants, ChainflipChain } from '@chainflip/utils/chainflip';
@@ -25,23 +19,23 @@ import { DepositDetailsData, getDepositTxRef } from '../common.js';
 import type { EventHandlerArgs } from '../index.js';
 
 const argsMap = {
-  Arbitrum: z.union([arbitrumSchema11000, arbitrumSchema190]),
-  Bitcoin: z.union([bitcoinSchema11000, bitcoinSchema190]),
-  Ethereum: z.union([ethereumSchema11000, ethereumSchema190]),
-  Polkadot: z.union([polkadotSchema11000, polkadotSchema190]),
-  Solana: z.union([solanaSchema11000, solanaSchema190]),
-  Assethub: z.union([assetHubSchema11000, assetHubSchema190]),
+  Arbitrum: arbitrumSchema11000,
+  Bitcoin: bitcoinSchema11000,
+  Ethereum: ethereumSchema11000,
+  Polkadot: polkadotSchema11000,
+  Solana: solanaSchema11000,
+  Assethub: assetHubSchema11000,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
 export type DepositFailedArgsMap = {
   [C in Chain]: z.input<(typeof argsMap)[C]>;
 };
 export type DepositFailedArgs = z.input<(typeof argsMap)[Chain]>;
-export type BitcoinDepositFailedArgs = z.input<typeof bitcoinSchema190>;
+export type BitcoinDepositFailedArgs = z.input<typeof bitcoinSchema11000>;
 
 type DepositWitness = Extract<
   z.output<(typeof argsMap)[Chain]>['details'],
-  { __kind: 'DepositChannel' | `DepositChannel${ChainflipChain}` }
+  { __kind: `DepositFailedDepositChannelVariant${ChainflipChain}` }
 >['depositWitness'];
 
 type FailureReason = z.output<(typeof argsMap)[Chain]>['reason']['__kind'];
@@ -100,12 +94,6 @@ const depositFailed =
     let pendingTxRefInfo;
 
     switch (details.__kind) {
-      case 'DepositChannelArbitrum':
-      case 'DepositChannelBitcoin':
-      case 'DepositChannelEthereum':
-      case 'DepositChannelPolkadot':
-      case 'DepositChannelSolana':
-      case 'DepositChannelAssethub':
       case 'DepositFailedDepositChannelVariantArbitrum':
       case 'DepositFailedDepositChannelVariantBitcoin':
       case 'DepositFailedDepositChannelVariantEthereum':
@@ -147,12 +135,6 @@ const depositFailed =
         }
         break;
       }
-      case 'VaultArbitrum':
-      case 'VaultBitcoin':
-      case 'VaultEthereum':
-      case 'VaultPolkadot':
-      case 'VaultSolana':
-      case 'VaultAssethub':
       case 'DepositFailedVaultVariantArbitrum':
       case 'DepositFailedVaultVariantBitcoin':
       case 'DepositFailedVaultVariantEthereum':

@@ -1,9 +1,8 @@
-import { swappingSwapExecuted as schema160 } from '@chainflip/processor/160/swapping/swapExecuted';
 import { swappingSwapExecuted as schema190 } from '@chainflip/processor/190/swapping/swapExecuted';
 import { z } from 'zod';
 import type { EventHandlerArgs } from '../index.js';
 
-const swapExecutedArgs = z.union([schema190, schema160]);
+const swapExecutedArgs = schema190;
 
 export type SwapExecutedArgs = z.input<typeof swapExecutedArgs>;
 

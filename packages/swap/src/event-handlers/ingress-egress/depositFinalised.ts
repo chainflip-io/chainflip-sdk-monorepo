@@ -1,8 +1,3 @@
-import { arbitrumIngressEgressDepositFinalised as arbitrumSchema180 } from '@chainflip/processor/180/arbitrumIngressEgress/depositFinalised';
-import { bitcoinIngressEgressDepositFinalised as bitcoinSchema180 } from '@chainflip/processor/180/bitcoinIngressEgress/depositFinalised';
-import { ethereumIngressEgressDepositFinalised as ethereumSchema180 } from '@chainflip/processor/180/ethereumIngressEgress/depositFinalised';
-import { polkadotIngressEgressDepositFinalised as polkadotSchema180 } from '@chainflip/processor/180/polkadotIngressEgress/depositFinalised';
-import { solanaIngressEgressDepositFinalised as solanaSchema180 } from '@chainflip/processor/180/solanaIngressEgress/depositFinalised';
 import { arbitrumIngressEgressDepositFinalised as arbitrumSchema190 } from '@chainflip/processor/190/arbitrumIngressEgress/depositFinalised';
 import { assethubIngressEgressDepositFinalised as assethubSchema190 } from '@chainflip/processor/190/assethubIngressEgress/depositFinalised';
 import { bitcoinIngressEgressDepositFinalised as bitcoinSchema190 } from '@chainflip/processor/190/bitcoinIngressEgress/depositFinalised';
@@ -17,31 +12,31 @@ import logger from '../../utils/logger.js';
 import { formatForeignChainAddress, getDepositTxRef } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
 
-const arbitrumSchema = z.union([arbitrumSchema190, arbitrumSchema180]).transform((args) => ({
+const arbitrumSchema = arbitrumSchema190.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Arbitrum' as const, data: args.depositDetails },
   depositAddress:
     args.depositAddress && formatForeignChainAddress({ __kind: 'Arb', value: args.depositAddress }),
 }));
-const bitcoinSchema = z.union([bitcoinSchema190, bitcoinSchema180]).transform((args) => ({
+const bitcoinSchema = bitcoinSchema190.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Bitcoin' as const, data: args.depositDetails },
   depositAddress:
     args.depositAddress && formatForeignChainAddress({ __kind: 'Btc', value: args.depositAddress }),
 }));
-const ethereumSchema = z.union([ethereumSchema190, ethereumSchema180]).transform((args) => ({
+const ethereumSchema = ethereumSchema190.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Ethereum' as const, data: args.depositDetails },
   depositAddress:
     args.depositAddress && formatForeignChainAddress({ __kind: 'Eth', value: args.depositAddress }),
 }));
-const polkadotSchema = z.union([polkadotSchema190, polkadotSchema180]).transform((args) => ({
+const polkadotSchema = polkadotSchema190.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Polkadot' as const, data: args.depositDetails },
   depositAddress:
     args.depositAddress && formatForeignChainAddress({ __kind: 'Dot', value: args.depositAddress }),
 }));
-const solanaSchema = z.union([solanaSchema190, solanaSchema180]).transform((args) => ({
+const solanaSchema = solanaSchema190.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Solana' as const, data: undefined },
   depositAddress:

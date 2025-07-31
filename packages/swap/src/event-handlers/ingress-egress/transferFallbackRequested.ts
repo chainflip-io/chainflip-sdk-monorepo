@@ -1,10 +1,5 @@
-import { arbitrumIngressEgressTransferFallbackRequested as arbitrum180 } from '@chainflip/processor/180/arbitrumIngressEgress/transferFallbackRequested';
-import { bitcoinIngressEgressTransferFallbackRequested as bitcoin180 } from '@chainflip/processor/180/bitcoinIngressEgress/transferFallbackRequested';
-import { ethereumIngressEgressTransferFallbackRequested as ethereum180 } from '@chainflip/processor/180/ethereumIngressEgress/transferFallbackRequested';
-import { polkadotIngressEgressTransferFallbackRequested as polkadot180 } from '@chainflip/processor/180/polkadotIngressEgress/transferFallbackRequested';
-import { solanaIngressEgressTransferFallbackRequested as solana180 } from '@chainflip/processor/180/solanaIngressEgress/transferFallbackRequested';
 import { arbitrumIngressEgressTransferFallbackRequested as arbitrum190 } from '@chainflip/processor/190/arbitrumIngressEgress/transferFallbackRequested';
-import { assethubIngressEgressTransferFallbackRequested } from '@chainflip/processor/190/assethubIngressEgress/transferFallbackRequested';
+import { assethubIngressEgressTransferFallbackRequested as assethub190 } from '@chainflip/processor/190/assethubIngressEgress/transferFallbackRequested';
 import { bitcoinIngressEgressTransferFallbackRequested as bitcoin190 } from '@chainflip/processor/190/bitcoinIngressEgress/transferFallbackRequested';
 import { ethereumIngressEgressTransferFallbackRequested as ethereum190 } from '@chainflip/processor/190/ethereumIngressEgress/transferFallbackRequested';
 import { polkadotIngressEgressTransferFallbackRequested as polkadot190 } from '@chainflip/processor/190/polkadotIngressEgress/transferFallbackRequested';
@@ -16,42 +11,42 @@ import { formatForeignChainAddress } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
 
 const schemas = {
-  Arbitrum: z.union([arbitrum190, arbitrum180]).transform((args) => ({
+  Arbitrum: arbitrum190.transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Arb',
       value: args.destinationAddress,
     }),
   })),
-  Bitcoin: z.union([bitcoin190, bitcoin180]).transform((args) => ({
+  Bitcoin: bitcoin190.transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Btc',
       value: args.destinationAddress,
     }),
   })),
-  Ethereum: z.union([ethereum190, ethereum180]).transform((args) => ({
+  Ethereum: ethereum190.transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Eth',
       value: args.destinationAddress,
     }),
   })),
-  Polkadot: z.union([polkadot190, polkadot180]).transform((args) => ({
+  Polkadot: polkadot190.transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Dot',
       value: args.destinationAddress,
     }),
   })),
-  Solana: z.union([solana190, solana180]).transform((args) => ({
+  Solana: solana190.transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Sol',
       value: args.destinationAddress,
     }),
   })),
-  Assethub: assethubIngressEgressTransferFallbackRequested.transform((args) => ({
+  Assethub: assethub190.transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Hub',

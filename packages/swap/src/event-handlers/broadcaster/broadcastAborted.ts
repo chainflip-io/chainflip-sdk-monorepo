@@ -17,6 +17,10 @@ const schemas = {
   Assethub: assethubBroadcasterBroadcastAborted,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
+export type BroadcastAbortedArgsMap = {
+  [C in ChainflipChain]: z.input<(typeof schemas)[C]>;
+};
+
 async function handleEvent(
   chain: ChainflipChain,
   { prisma, block, event }: EventHandlerArgs,

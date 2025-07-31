@@ -2,7 +2,7 @@ import { swappingSwapRescheduled } from '@chainflip/processor/150/swapping/swapR
 import { z } from 'zod';
 import type { EventHandlerArgs } from '../index.js';
 
-export type SwapRescheduledEvent = z.input<typeof swappingSwapRescheduled>;
+export type SwapRescheduledArgs = z.input<typeof swappingSwapRescheduled>;
 
 export default async function swapRescheduled({
   prisma,

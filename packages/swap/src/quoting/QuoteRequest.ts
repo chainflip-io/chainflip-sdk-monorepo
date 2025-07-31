@@ -3,7 +3,7 @@ import { assetConstants, internalAssetToRpcAsset } from '@chainflip/utils/chainf
 import BigNumber from 'bignumber.js';
 import { Query } from 'express-serve-static-core';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts.js';
-import { getPipAmountFromAmount, bigintMax, ONE_IN_PIP } from '@/shared/functions.js';
+import { getPipAmountFromAmount, ONE_IN_PIP } from '@/shared/functions.js';
 import { ensure } from '@/shared/guards.js';
 import { getFulfilledResult } from '@/shared/promises.js';
 import {
@@ -21,14 +21,13 @@ import type Quoter from './Quoter.js';
 import { InternalAsset, Pool } from '../client.js';
 import { RpcLimitOrder } from './Quoter.js';
 import env from '../config/env.js';
-import { getBoostSafeMode, getInternalSwapNetworkFeeInfo } from '../polkadot/api.js';
+import { getBoostSafeMode } from '../polkadot/api.js';
 import { getUsdValue, checkPriceWarning } from '../pricing/checkPriceWarning.js';
 import { getAssetPrice } from '../pricing/index.js';
 import { calculateRecommendedSlippage } from '../utils/autoSlippage.js';
 import { getBoostFeeBpsForAmount } from '../utils/boost.js';
 import { assertRouteEnabled } from '../utils/env.js';
 import { getPoolFees } from '../utils/fees.js';
-import { isAtLeastSpecVersion } from '../utils/function.js';
 import baseLogger from '../utils/logger.js';
 import { getPools, getTotalLiquidity } from '../utils/pools.js';
 import {
@@ -304,20 +303,6 @@ export default class QuoteRequest {
     });
 
     includedFees.push({ ...ingressFee, type: 'INGRESS' });
-
-    // TODO(1.10): use new parameter on cf_swap_rate_v3 to handle internal swap network fees
-    if (this.isOnChain && !(await isAtLeastSpecVersion('1.10.0'))) {
-      // TODO: check the version and do network fee adjustments if v < 1.10
-      const { networkFeeBps, minimumNetworkFee } = await getInternalSwapNetworkFeeInfo();
-      const normalNetworkFeeBps = 10n;
-      if (networkFee.amount > minimumNetworkFee && networkFeeBps !== normalNetworkFeeBps) {
-        networkFee.amount = bigintMax(
-          (networkFee.amount * networkFeeBps) / normalNetworkFeeBps,
-          minimumNetworkFee,
-        );
-      }
-    }
-
     includedFees.push({ ...networkFee, type: 'NETWORK' });
 
     if (brokerFee.amount > 0n) {
