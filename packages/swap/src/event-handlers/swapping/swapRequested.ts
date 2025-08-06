@@ -1,4 +1,5 @@
 import { swappingSwapRequested as schema11000 } from '@chainflip/processor/11000/swapping/swapRequested';
+import { swappingSwapRequested as schema11100 } from '@chainflip/processor/11100/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
 import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
 import { isNullish } from '@chainflip/utils/guard';
@@ -9,9 +10,19 @@ import { assertUnreachable } from '@/shared/functions.js';
 import { assertNever } from '@/shared/guards.js';
 import { pascalCaseToScreamingSnakeCase } from '@/shared/strings.js';
 import { Prisma } from '../../client.js';
+import { formatForeignChainAddress } from '../common.js';
 import type { EventHandlerArgs } from '../index.js';
 
-const schema = schema11000;
+const schema = z.union([
+  schema11100,
+  schema11000.transform(({ refundParameters, ...rest }) => ({
+    ...rest,
+    refundParameters: refundParameters && {
+      ...refundParameters,
+      refundAddress: refundParameters.refundDestination,
+    },
+  })),
+]);
 
 type RequestType = z.output<typeof schema>['requestType'];
 type Origin = z.output<typeof schema>['origin'];
@@ -136,15 +147,18 @@ const extractRefundParameters = (refundParameters: z.output<typeof schema>['refu
 
   let refundAddress;
 
-  if (refundParameters.refundDestination.__kind === 'InternalAccount') {
-    refundAddress = refundParameters.refundDestination.value;
-  } else if (refundParameters.refundDestination.__kind === 'ExternalAddress') {
-    refundAddress = refundParameters.refundDestination.value.address;
+  if (refundParameters.refundAddress.__kind === 'InternalAccount') {
+    refundAddress = refundParameters.refundAddress.value;
+  } else if (refundParameters.refundAddress.__kind === 'ExternalAddress') {
+    refundAddress =
+      'address' in refundParameters.refundAddress.value
+        ? refundParameters.refundAddress.value.address
+        : formatForeignChainAddress(refundParameters.refundAddress.value);
   } else {
     return assertNever(
-      refundParameters.refundDestination,
+      refundParameters.refundAddress,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      `unexpected refund destination: ${(refundParameters.refundDestination as any).__kind}`,
+      `unexpected refund destination: ${(refundParameters.refundAddress as any).__kind}`,
     );
   }
 
