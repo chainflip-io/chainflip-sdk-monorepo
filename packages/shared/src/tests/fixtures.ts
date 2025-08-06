@@ -70,6 +70,23 @@ export const swappingEnvironment = ({
     max_swap_retry_duration_blocks: 10,
     max_swap_request_duration_blocks: 10,
     minimum_chunk_size: createChainAssetMap(0),
+    swap_retry_delay_blocks: 5,
+    network_fees: {
+      internal_swap_network_fee: {
+        rates: createChainAssetMap(50),
+        standard_rate_and_minimum: {
+          rate: 50,
+          minimum: 500_000,
+        },
+      },
+      regular_network_fee: {
+        rates: createChainAssetMap(50),
+        standard_rate_and_minimum: {
+          rate: 50,
+          minimum: 500_000,
+        },
+      },
+    },
   },
 });
 
