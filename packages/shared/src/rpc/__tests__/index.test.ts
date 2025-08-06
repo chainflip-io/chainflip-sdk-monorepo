@@ -95,6 +95,75 @@ describe('getSwappingEnvironment', () => {
           },
         },
         "networkFeeHundredthPips": 1000,
+        "networkFees": {
+          "internalSwapNetworkFee": {
+            "rates": {
+              "Arbitrum": {
+                "ETH": 50n,
+                "USDC": 50n,
+              },
+              "Assethub": {
+                "DOT": 50n,
+                "USDC": 50n,
+                "USDT": 50n,
+              },
+              "Bitcoin": {
+                "BTC": 50n,
+              },
+              "Ethereum": {
+                "ETH": 50n,
+                "FLIP": 50n,
+                "USDC": 50n,
+                "USDT": 50n,
+              },
+              "Polkadot": {
+                "DOT": 50n,
+              },
+              "Solana": {
+                "SOL": 50n,
+                "USDC": 50n,
+              },
+            },
+            "standardRateAndMinimum": {
+              "minimum": 500000n,
+              "rate": 50n,
+            },
+          },
+          "regularNetworkFee": {
+            "rates": {
+              "Arbitrum": {
+                "ETH": 50n,
+                "USDC": 50n,
+              },
+              "Assethub": {
+                "DOT": 50n,
+                "USDC": 50n,
+                "USDT": 50n,
+              },
+              "Bitcoin": {
+                "BTC": 50n,
+              },
+              "Ethereum": {
+                "ETH": 50n,
+                "FLIP": 50n,
+                "USDC": 50n,
+                "USDT": 50n,
+              },
+              "Polkadot": {
+                "DOT": 50n,
+              },
+              "Solana": {
+                "SOL": 50n,
+                "USDC": 50n,
+              },
+            },
+            "standardRateAndMinimum": {
+              "minimum": 500000n,
+              "rate": 50n,
+            },
+          },
+        },
+        "swapRetryDelayBlocks": 5,
       }
     `);
     spy.mock.calls[0][1][0].id = '1';
