@@ -85,8 +85,8 @@ importers:
         specifier: ^1.2.6
         version: 1.2.6(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~1.10.4
-        version: 1.10.4
+        specifier: ~1.11.0-beta.3
+        version: 1.11.0-beta.3
       '@chainflip/solana':
         specifier: ^2.1.9
         version: 2.1.9(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -158,8 +158,8 @@ importers:
         specifier: ^1.2.6
         version: 1.2.6(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~1.10.4
-        version: 1.10.4
+        specifier: ~1.11.0-beta.3
+        version: 1.11.0-beta.3
       '@chainflip/solana':
         specifier: ^2.1.9
         version: 2.1.9(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -195,8 +195,8 @@ importers:
         specifier: ^1.2.6
         version: 1.2.6(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~1.10.4
-        version: 1.10.4
+        specifier: ~1.11.0-beta.3
+        version: 1.11.0-beta.3
       '@chainflip/solana':
         specifier: ^2.1.9
         version: 2.1.9(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -259,8 +259,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2
       '@chainflip/rpc':
-        specifier: ~1.10.4
-        version: 1.10.4
+        specifier: ~1.11.0-beta.3
+        version: 1.11.0-beta.3
       '@chainflip/solana':
         specifier: ^2.1.9
         version: 2.1.9(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -488,8 +488,8 @@ packages:
   '@chainflip/redis@1.0.2':
     resolution: {integrity: sha512-ahkz+xKt5pX1gx4QikphdvTpZX8fjNgi/84q1WLXaAOoUop4pWdUw/boXv7rzg2xIqIdvDFk82/zz1g0OmiySQ==}
 
-  '@chainflip/rpc@1.10.4':
-    resolution: {integrity: sha512-4fPtOwhQt3mtV5OnWByp9Le46X7W3PvpoQN1Nt8MdFWNY2k1/bErqjM1qS1tj4UzAln2qTZyTJ/527yffgZ1Fg==}
+  '@chainflip/rpc@1.11.0-beta.3':
+    resolution: {integrity: sha512-MHhNaRoWa3XKvIoIVmgNhQw3C5fK8lwUMJdhah9dEQBOx59jjtScHAfI6EdeFy7SSiFdYna6PFctvmhSOu/97g==}
 
   '@chainflip/scale@1.8.0':
     resolution: {integrity: sha512-66bT2DQi0kNFZRva0phBuMWCWKamOyfROlKovxcBd6wzZVGFxVqgi73iG1nExaUPlOLJnYc8gQ/blwHidgjvrg==}
@@ -502,6 +502,9 @@ packages:
 
   '@chainflip/utils@0.8.11':
     resolution: {integrity: sha512-BAUdQqwMCo7yr46VRFRaYsBi0mVgfpvQ7/9MRzWuomY0fddv/Shx3+DtGoFP8sVUAv5N1+D1lpCrT7wv8LelFg==}
+
+  '@chainflip/utils@0.8.17':
+    resolution: {integrity: sha512-+PYWamkxlMwxbOTmxzyyZOQrop2roCYqWH6rLj/AVxm10RykQsiWiVRp5nqEHjhQMjpAoQPRJk/s3G8pJI0TQg==}
 
   '@chainflip/utils@0.8.6':
     resolution: {integrity: sha512-g15TNn6Ab/XHfyQfHqNNjzxdaGGdUSOLrY/Caq1n1x6Wm6KspRp2Oy8Jl5VXd4M9wed1RJRsR9dKS1Z1uMtLvA==}
@@ -529,6 +532,9 @@ packages:
 
   '@date-fns/utc@2.1.0':
     resolution: {integrity: sha512-176grgAgU2U303rD2/vcOmNg0kGPbhzckuH1TEP2al7n0AQipZIy9P15usd2TKQCG1g+E1jX/ZVQSzs4sUDwgA==}
+
+  '@date-fns/utc@2.1.1':
+    resolution: {integrity: sha512-SlJDfG6RPeEX8wEVv6ZB3kak4MmbtyiI2qX/5zuKdordbrhB/iaJ58GVMZgJ6P1sJaM1gMgENFYYeg1JWrCFrA==}
 
   '@dotenvx/dotenvx@1.45.1':
     resolution: {integrity: sha512-wKHPD+/NMMJVBPg3i98uD9jsURDy+Ck6RQRiWf39TlOAzC+Ge1FkmDk3sgeljYZxA3qF6E7SJmvRqC70XQuuVA==}
@@ -2004,6 +2010,9 @@ packages:
 
   bignumber.js@9.3.0:
     resolution: {integrity: sha512-EM7aMFTXbptt/wZdMlBv2t8IViwQL+h6SLHosp8Yf0dqJMTnY6iL32opnAB6kAdL0SZPuvcAzFr31o0c/R3/RA==}
+
+  bignumber.js@9.3.1:
+    resolution: {integrity: sha512-Ko0uX15oIUS7wJ3Rb30Fs6SkVbLmPBAKdlm7q9+ak9bbIeFf0MwuBsQV6z7+X768/cHsfg+WlysDWJcmthjsjQ==}
 
   binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
@@ -5678,9 +5687,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@chainflip/rpc@1.10.4':
+  '@chainflip/rpc@1.11.0-beta.3':
     dependencies:
-      '@chainflip/utils': 0.8.6
+      '@chainflip/utils': 0.8.17
       zod: 3.25.76
 
   '@chainflip/scale@1.8.0':
@@ -5713,6 +5722,12 @@ snapshots:
     dependencies:
       '@date-fns/utc': 2.1.0
       bignumber.js: 9.3.0
+      date-fns: 4.1.0
+
+  '@chainflip/utils@0.8.17':
+    dependencies:
+      '@date-fns/utc': 2.1.1
+      bignumber.js: 9.3.1
       date-fns: 4.1.0
 
   '@chainflip/utils@0.8.6':
@@ -5759,6 +5774,8 @@ snapshots:
       kuler: 2.0.0
 
   '@date-fns/utc@2.1.0': {}
+
+  '@date-fns/utc@2.1.1': {}
 
   '@dotenvx/dotenvx@1.45.1':
     dependencies:
@@ -7688,6 +7705,8 @@ snapshots:
   bech32@2.0.0: {}
 
   bignumber.js@9.3.0: {}
+
+  bignumber.js@9.3.1: {}
 
   binary-extensions@2.3.0: {}
 
