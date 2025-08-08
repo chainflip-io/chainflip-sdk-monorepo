@@ -11,6 +11,8 @@ exports[`swapRescheduled > increments the retry count 1`] = `
   "nativeId": 3n,
   "retryCount": 1,
   "srcAsset": "Btc",
+  "swapCanceledAt": null,
+  "swapCanceledBlockIndex": null,
   "swapExecutedAt": null,
   "swapExecutedBlockIndex": null,
   "swapInputAmount": "990000000",
