@@ -25,6 +25,8 @@ describe(getSwapFields, () => {
         retryCount: 0,
         latestSwapRescheduledAt: null,
         latestSwapRescheduledBlockIndex: null,
+        swapCanceledAt: null,
+        swapCanceledBlockIndex: null,
       }),
     ).toStrictEqual({
       inputAmount: '1234567890123456789012345678901234567890',
@@ -37,6 +39,8 @@ describe(getSwapFields, () => {
       retryCount: 0,
       latestSwapRescheduledAt: undefined,
       latestSwapRescheduledBlockIndex: undefined,
+      canceledAt: undefined,
+      canceledBlockIndex: undefined,
     });
   });
 });

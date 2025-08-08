@@ -253,8 +253,13 @@ importers:
         specifier: ^1.2.6
         version: 1.2.6(typescript@5.8.3)
       '@chainflip/processor':
+<<<<<<< HEAD
         specifier: ~1.11.7
         version: 1.11.7
+=======
+        specifier: ~1.11.2
+        version: 1.11.2
+>>>>>>> ca602ebe (handle cancel swaps)
       '@chainflip/redis':
         specifier: ^1.0.2
         version: 1.0.2
@@ -482,8 +487,13 @@ packages:
   '@chainflip/bitcoin@1.2.6':
     resolution: {integrity: sha512-nwv70OsKNuHMTHrHYhHKwRxfXMOjBCdm4DnQnHnA/qxTJuwiCbzoOVUkLdU9VskMn99aamtoaCz6ozI0OSaYHA==}
 
+<<<<<<< HEAD
   '@chainflip/processor@1.11.7':
     resolution: {integrity: sha512-VIMi1I0ovNncduirxKrRnhuPNnfQUBKTMuRnI2x6LNAaKg2UAG/fB/tEVTzOtMSyN9iqWpjVLpmCH4xho59lbw==}
+=======
+  '@chainflip/processor@1.11.2':
+    resolution: {integrity: sha512-e+B8xdASQgjZoFaTEdbMRFvJjqICK5lMtbwsljf4ZPU6qt9y/QI+pIFfXfgsRHa8jV+WHNiqNPDqgQdOX5UrCQ==}
+>>>>>>> ca602ebe (handle cancel swaps)
 
   '@chainflip/redis@1.0.2':
     resolution: {integrity: sha512-ahkz+xKt5pX1gx4QikphdvTpZX8fjNgi/84q1WLXaAOoUop4pWdUw/boXv7rzg2xIqIdvDFk82/zz1g0OmiySQ==}
@@ -5676,9 +5686,15 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
+<<<<<<< HEAD
   '@chainflip/processor@1.11.7':
     dependencies:
       '@chainflip/utils': 0.8.18
+=======
+  '@chainflip/processor@1.11.2':
+    dependencies:
+      '@chainflip/utils': 0.8.17
+>>>>>>> ca602ebe (handle cancel swaps)
       zod: 3.25.76
 
   '@chainflip/redis@1.0.2':

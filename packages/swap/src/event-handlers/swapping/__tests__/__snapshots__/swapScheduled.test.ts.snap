@@ -48,6 +48,8 @@ exports[`swapScheduled > creates a swap for a swap request 1`] = `
       "nativeId": 158n,
       "retryCount": 0,
       "srcAsset": "Btc",
+      "swapCanceledAt": null,
+      "swapCanceledBlockIndex": null,
       "swapExecutedAt": null,
       "swapExecutedBlockIndex": null,
       "swapInputAmount": "125000000000",

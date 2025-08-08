@@ -228,10 +228,10 @@ model Swap {
   swapOutputAmount                Decimal?      @db.Decimal(30, 0) // output of the swap before egress fee is deducted
   fees                            SwapFee[]
   destAsset                       InternalAsset
+  swapCanceledAt                  DateTime?
+  swapCanceledBlockIndex          String?
   swapExecutedAt                  DateTime?
   swapExecutedBlockIndex          String?
-  createdAt                       DateTime      @default(now())
-  updatedAt                       DateTime      @default(now()) @updatedAt
   swapScheduledAt                 DateTime
   swapScheduledBlockIndex         String
   latestSwapRescheduledAt         DateTime?
@@ -239,6 +239,8 @@ model Swap {
   retryCount                      Int           @default(0)
   swapRequest                     SwapRequest   @relation(fields: [swapRequestId], references: [id])
   swapRequestId                   BigInt
+  createdAt                       DateTime      @default(now())
+  updatedAt                       DateTime      @default(now()) @updatedAt
 
   @@index([nativeId])
   @@schema("public")
