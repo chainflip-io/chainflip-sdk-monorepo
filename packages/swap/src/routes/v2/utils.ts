@@ -155,6 +155,8 @@ export const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
   retryCount: swap.retryCount,
   latestSwapRescheduledAt: swap.latestSwapRescheduledAt?.valueOf(),
   latestSwapRescheduledBlockIndex: swap.latestSwapRescheduledBlockIndex ?? undefined,
+  canceledAt: swap.swapCanceledAt?.valueOf(),
+  canceledBlockIndex: swap.swapCanceledBlockIndex ?? undefined,
 });
 
 const getDepositFailedState = (failedSwap: FailedSwap) => ({
