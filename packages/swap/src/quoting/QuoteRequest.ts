@@ -114,7 +114,8 @@ export default class QuoteRequest {
   private srcAssetIndexPrice?: number;
   private destAssetIndexPrice?: number;
 
-  private limitOrders: RpcLimitOrder[] | null = null;
+  private limitOrders: { regular: RpcLimitOrder[] | null; dca: RpcLimitOrder[] | null } | null =
+    null;
 
   private quote: RegularQuote | null = null;
   private dcaQuote: DCAQuote | null = null;
@@ -186,11 +187,14 @@ export default class QuoteRequest {
 
   private async setLimitOrders() {
     if (!this.limitOrders) {
-      this.limitOrders = await this.quoter.getLimitOrders(
-        this.srcAsset,
-        this.destAsset,
-        this.depositAmount,
-      );
+      const [regular, dca] = await Promise.all([
+        this.quoter.getLimitOrders(this.srcAsset, this.destAsset, this.depositAmount),
+        env.QUOTER_USE_DCA_LIMIT_ORDERS
+          ? this.dcaQuoteParams &&
+            this.quoter.getLimitOrders(this.srcAsset, this.destAsset, this.dcaQuoteParams.chunkSize)
+          : null,
+      ]);
+      this.limitOrders = { regular, dca };
     }
   }
 
@@ -255,7 +259,7 @@ export default class QuoteRequest {
       destAsset: this.destAsset,
       depositAmount: cfRateInputAmount,
       limitOrders: ensure(
-        this.limitOrders,
+        this.limitOrders?.[env.QUOTER_USE_DCA_LIMIT_ORDERS && dcaParams ? 'dca' : 'regular'],
         'Limit orders must be fetched before calling getPoolQuote',
       ),
       brokerCommissionBps: this.brokerCommissionBps,
@@ -449,8 +453,7 @@ export default class QuoteRequest {
   private async generateQuotes() {
     await Promise.all([
       this.setBoostQuoteParams(),
-      this.setDcaQuoteParams(),
-      this.setLimitOrders(),
+      this.setDcaQuoteParams().then(() => this.setLimitOrders()),
       this.setIndexPrices(),
     ]);
 
@@ -557,7 +560,7 @@ export default class QuoteRequest {
       brokerCommissionBps: this.brokerCommissionBps,
       estimatedBoostFeeBps: this.estimatedBoostFeeBps,
       maxBoostFeeBps: this.maxBoostFeeBps,
-      limitOrders: this.limitOrders ?? [],
+      limitOrders: this.limitOrders,
       success: this.success,
       regularQuote: this.quote,
       dcaQuote: this.dcaQuote,
