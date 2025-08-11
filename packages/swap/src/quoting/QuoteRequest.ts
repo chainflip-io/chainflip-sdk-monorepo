@@ -114,7 +114,8 @@ export default class QuoteRequest {
   private srcAssetIndexPrice?: number;
   private destAssetIndexPrice?: number;
 
-  private limitOrders: RpcLimitOrder[] | null = null;
+  private regularLimitOrders: RpcLimitOrder[] | null = null;
+  private dcaLimitOrders: RpcLimitOrder[] | null = null;
 
   private quote: RegularQuote | null = null;
   private dcaQuote: DCAQuote | null = null;
@@ -182,11 +183,16 @@ export default class QuoteRequest {
       ),
       chunkIntervalBlocks: env.DCA_CHUNK_INTERVAL_BLOCKS,
     };
+    await this.setLimitOrders(this.dcaQuoteParams);
   }
 
-  private async setLimitOrders() {
-    if (!this.limitOrders) {
-      this.limitOrders = await this.quoter.getLimitOrders(
+  private async setLimitOrders(dcaParams?: typeof this.dcaQuoteParams) {
+    if (dcaParams) {
+      this.dcaLimitOrders ??= env.QUOTER_USE_DCA_LIMIT_ORDERS
+        ? await this.quoter.getLimitOrders(this.srcAsset, this.destAsset, dcaParams.chunkSize)
+        : [];
+    } else {
+      this.regularLimitOrders ??= await this.quoter.getLimitOrders(
         this.srcAsset,
         this.destAsset,
         this.depositAmount,
@@ -255,7 +261,9 @@ export default class QuoteRequest {
       destAsset: this.destAsset,
       depositAmount: cfRateInputAmount,
       limitOrders: ensure(
-        this.limitOrders,
+        env.QUOTER_USE_DCA_LIMIT_ORDERS && dcaParams
+          ? this.dcaLimitOrders
+          : this.regularLimitOrders,
         'Limit orders must be fetched before calling getPoolQuote',
       ),
       brokerCommissionBps: this.brokerCommissionBps,
@@ -557,7 +565,8 @@ export default class QuoteRequest {
       brokerCommissionBps: this.brokerCommissionBps,
       estimatedBoostFeeBps: this.estimatedBoostFeeBps,
       maxBoostFeeBps: this.maxBoostFeeBps,
-      limitOrders: this.limitOrders ?? [],
+      regularLimitOrders: this.regularLimitOrders,
+      dcaLimitOrders: this.dcaLimitOrders,
       success: this.success,
       regularQuote: this.quote,
       dcaQuote: this.dcaQuote,

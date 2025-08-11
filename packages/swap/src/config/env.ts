@@ -146,6 +146,7 @@ export default z
     QUOTER_BALANCE_TRACKER_ACTIVE: optionalBoolean.default('true'),
     QUOTER_BALANCE_TOLERANCE_PERCENT: optionalNumber(10),
     QUOTER_USE_MEV_FACTOR: optionalBoolean,
+    QUOTER_USE_DCA_LIMIT_ORDERS: optionalBoolean.default('true'),
     BROKER_COMMISSION_BPS: optionalNumber(0),
     RPC_COMMISSION_BROKER_HTTPS_URL: httpUrl.optional(),
   })

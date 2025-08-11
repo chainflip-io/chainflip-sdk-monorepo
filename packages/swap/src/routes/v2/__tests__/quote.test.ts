@@ -1172,6 +1172,20 @@ describe('server', () => {
           ],
         ]
       `);
+      expect(vi.mocked(Quoter.prototype.getLimitOrders).mock.calls).toMatchInlineSnapshot(`
+        [
+          [
+            "Eth",
+            "Usdc",
+            1000000000000000000n,
+          ],
+          [
+            "Eth",
+            "Usdc",
+            250000000000000000n,
+          ],
+        ]
+      `);
     });
 
     it('applies price impact to DCA quote', async () => {

@@ -54,6 +54,7 @@ describe('env', () => {
         "PROCESSOR_TRANSACTION_TIMEOUT": 10000,
         "QUOTER_BALANCE_TOLERANCE_PERCENT": 10,
         "QUOTER_BALANCE_TRACKER_ACTIVE": true,
+        "QUOTER_USE_DCA_LIMIT_ORDERS": true,
         "QUOTER_USE_MEV_FACTOR": false,
         "QUOTE_TIMEOUT": 1000,
         "QUOTING_BASE_SLIPPAGE": {},

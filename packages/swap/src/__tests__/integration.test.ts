@@ -157,7 +157,7 @@ describe('python integration test', () => {
     await promisify(server.close).bind(server)();
   });
 
-  const expectMesage = async (message: string) => {
+  const expectMessage = async (message: string) => {
     if (child.exitCode !== null) {
       throw new Error('child process exited unexpectedly');
     }
@@ -176,7 +176,7 @@ describe('python integration test', () => {
   };
 
   it('replies to a quote request with v2 endpoint', async () => {
-    await expectMesage('connected');
+    await expectMessage('connected');
 
     const query = {
       srcAsset: 'FLIP',
@@ -197,11 +197,7 @@ describe('python integration test', () => {
       egressFee: { amount: 50000n, chain: 'Ethereum', asset: 'USDC' },
       intermediateAmount: 2000000000n,
       egressAmount: 997901209876966295n,
-      brokerFee: {
-        chain: 'Ethereum',
-        asset: 'USDC',
-        amount: 0n,
-      },
+      brokerFee: { chain: 'Ethereum', asset: 'USDC', amount: 0n },
     });
 
     const response = await axios.get(`${serverUrl}/v2/quote?${params.toString()}`, {

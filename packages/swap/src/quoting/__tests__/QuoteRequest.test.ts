@@ -2,11 +2,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import env from '../../config/env.js';
 import { getUsdValue } from '../../pricing/checkPriceWarning.js';
-import { calculateRecommendedSlippage } from '../../utils/autoSlippage.js';
-import { isAtLeastSpecVersion } from '../../utils/function.js';
-import { getMinimumEgressAmount } from '../../utils/rpc.js';
-import { getSwapRateV3 } from '../../utils/statechain.js';
-import { estimateSwapDuration } from '../../utils/swap.js';
 import QuoteRequest, { MAX_NUMBER_OF_CHUNKS } from '../QuoteRequest.js';
 
 const originalEnv = structuredClone(env);
@@ -41,7 +36,7 @@ vi.mock('../../pricing/checkPriceWarning', () => ({
 }));
 
 const createRequest = (amount: bigint) =>
-  new QuoteRequest({} as any, {
+  new QuoteRequest({ getLimitOrders: vi.fn() } as any, {
     srcAsset: 'Btc',
     destAsset: 'Flip',
     amount,
@@ -75,6 +70,15 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
         "numberOfChunks": 4,
       }
     `);
+    expect(vi.mocked(request['quoter'].getLimitOrders).mock.calls).toMatchInlineSnapshot(`
+      [
+        [
+          "Btc",
+          "Flip",
+          6795n,
+        ],
+      ]
+    `);
   });
 
   it('should correctly return 9300 usd worth of btc', async () => {
@@ -90,6 +94,15 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
         "numberOfChunks": 4,
       }
     `);
+    expect(vi.mocked(request['quoter'].getLimitOrders).mock.calls).toMatchInlineSnapshot(`
+      [
+        [
+          "Btc",
+          "Flip",
+          6975n,
+        ],
+      ]
+    `);
   });
 
   it('should correctly handle 300 usd worth of btc', async () => {
@@ -98,6 +111,7 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
     const request = createRequest(900n);
     await request['setDcaQuoteParams']();
     expect(request['dcaQuoteParams']).toEqual(null);
+    expect(vi.mocked(request['quoter'].getLimitOrders).mock.calls).toMatchInlineSnapshot(`[]`);
   });
 
   it('should correctly handle 30 usd worth of btc', async () => {
@@ -106,6 +120,7 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
     const request = createRequest(90n);
     await request['setDcaQuoteParams']();
     expect(request['dcaQuoteParams']).toEqual(null);
+    expect(vi.mocked(request['quoter'].getLimitOrders).mock.calls).toMatchInlineSnapshot(`[]`);
   });
 
   it('should correctly handle number of chunks bigger than max', async () => {
@@ -118,6 +133,7 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
     const request = createRequest(1n);
     await request['setDcaQuoteParams']();
     expect(request['dcaQuoteParams']).toEqual(null);
+    expect(vi.mocked(request['quoter'].getLimitOrders).mock.calls).toMatchInlineSnapshot(`[]`);
   });
 
   it('uses the buy chunk size if it exists', async () => {
@@ -134,57 +150,15 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
         "numberOfChunks": 30,
       }
     `);
-  });
-
-  describe(QuoteRequest.prototype['getPoolQuote'], () => {
-    it('should not modify returned network fee for internal swaps in release version >= 1.10.0', async () => {
-      vi.mocked(isAtLeastSpecVersion).mockResolvedValueOnce(true);
-
-      const mockedNetworkFeeAmount = 123456;
-
-      const mockedNetworkFee = {
-        amount: BigInt(mockedNetworkFeeAmount),
-        asset: 'USDC' as const,
-        chain: 'Ethereum' as const,
-      };
-
-      vi.mocked(getSwapRateV3).mockResolvedValue({
-        egressFee: { amount: 0n, asset: 'USDC', chain: 'Ethereum' },
-        ingressFee: { amount: 0n, asset: 'FLIP', chain: 'Ethereum' },
-        networkFee: mockedNetworkFee,
-        egressAmount: 100n,
-        intermediateAmount: 100n,
-        brokerFee: { amount: 0n, asset: 'USDC', chain: 'Ethereum' },
-      });
-
-      vi.mocked(getMinimumEgressAmount).mockResolvedValue(100n);
-
-      vi.mocked(estimateSwapDuration).mockResolvedValue({
-        durations: {
-          swap: 12345,
-        },
-        total: 12345,
-      });
-
-      vi.mocked(calculateRecommendedSlippage).mockResolvedValue(0.5);
-
-      // check if getPoolQuote does not modify network fee when v1.10 and isOnChain = true
-      const req = createRequest(27180n);
-      (req as any).isOnChain = true;
-      (req as any).pools = [{ baseAsset: 'Btc' }, { baseAsset: 'Flip' }];
-
-      const mockQuoter = {
-        getLimitOrders: vi.fn().mockResolvedValue([{ id: 'mock-order' }]),
-      };
-
-      (req as any).quoter = mockQuoter;
-      await req['setLimitOrders']();
-
-      const result = await req['getPoolQuote']();
-
-      const networkFee = result.includedFees.find((fee) => fee.type === 'NETWORK');
-      expect(networkFee?.amount).toBe(mockedNetworkFeeAmount.toString());
-    });
+    expect(vi.mocked(request['quoter'].getLimitOrders).mock.calls).toMatchInlineSnapshot(`
+      [
+        [
+          "Btc",
+          "Flip",
+          500n,
+        ],
+      ]
+    `);
   });
 });
 
@@ -199,6 +173,7 @@ describe(QuoteRequest.prototype.toLogInfo, () => {
     expect(req.toLogInfo()).toMatchInlineSnapshot(`
       {
         "brokerCommissionBps": 0,
+        "dcaLimitOrders": null,
         "dcaQuote": null,
         "dcaQuoteParams": null,
         "destAsset": "Flip",
@@ -210,8 +185,8 @@ describe(QuoteRequest.prototype.toLogInfo, () => {
         "inputValueUsd": "1051.23",
         "isInternalSwap": false,
         "isVaultSwap": false,
-        "limitOrders": [],
         "maxBoostFeeBps": undefined,
+        "regularLimitOrders": null,
         "regularQuote": null,
         "srcAsset": "Btc",
         "srcAssetIndexPrice": 105123.1234,
