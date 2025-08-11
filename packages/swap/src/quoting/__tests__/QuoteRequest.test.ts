@@ -36,7 +36,7 @@ vi.mock('../../pricing/checkPriceWarning', () => ({
 }));
 
 const createRequest = (amount: bigint) =>
-  new QuoteRequest({} as any, {
+  new QuoteRequest({ getLimitOrders: vi.fn() } as any, {
     srcAsset: 'Btc',
     destAsset: 'Flip',
     amount,
@@ -70,6 +70,15 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
         "numberOfChunks": 4,
       }
     `);
+    expect(vi.mocked(request['quoter'].getLimitOrders).mock.calls).toMatchInlineSnapshot(`
+      [
+        [
+          "Btc",
+          "Flip",
+          6795n,
+        ],
+      ]
+    `);
   });
 
   it('should correctly return 9300 usd worth of btc', async () => {
@@ -85,6 +94,15 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
         "numberOfChunks": 4,
       }
     `);
+    expect(vi.mocked(request['quoter'].getLimitOrders).mock.calls).toMatchInlineSnapshot(`
+      [
+        [
+          "Btc",
+          "Flip",
+          6975n,
+        ],
+      ]
+    `);
   });
 
   it('should correctly handle 300 usd worth of btc', async () => {
@@ -93,6 +111,7 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
     const request = createRequest(900n);
     await request['setDcaQuoteParams']();
     expect(request['dcaQuoteParams']).toEqual(null);
+    expect(vi.mocked(request['quoter'].getLimitOrders).mock.calls).toMatchInlineSnapshot(`[]`);
   });
 
   it('should correctly handle 30 usd worth of btc', async () => {
@@ -101,6 +120,7 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
     const request = createRequest(90n);
     await request['setDcaQuoteParams']();
     expect(request['dcaQuoteParams']).toEqual(null);
+    expect(vi.mocked(request['quoter'].getLimitOrders).mock.calls).toMatchInlineSnapshot(`[]`);
   });
 
   it('should correctly handle number of chunks bigger than max', async () => {
@@ -113,6 +133,7 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
     const request = createRequest(1n);
     await request['setDcaQuoteParams']();
     expect(request['dcaQuoteParams']).toEqual(null);
+    expect(vi.mocked(request['quoter'].getLimitOrders).mock.calls).toMatchInlineSnapshot(`[]`);
   });
 
   it('uses the buy chunk size if it exists', async () => {
@@ -129,6 +150,15 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
         "numberOfChunks": 30,
       }
     `);
+    expect(vi.mocked(request['quoter'].getLimitOrders).mock.calls).toMatchInlineSnapshot(`
+      [
+        [
+          "Btc",
+          "Flip",
+          500n,
+        ],
+      ]
+    `);
   });
 });
 
@@ -143,6 +173,7 @@ describe(QuoteRequest.prototype.toLogInfo, () => {
     expect(req.toLogInfo()).toMatchInlineSnapshot(`
       {
         "brokerCommissionBps": 0,
+        "dcaLimitOrders": null,
         "dcaQuote": null,
         "dcaQuoteParams": null,
         "destAsset": "Flip",
@@ -154,8 +185,8 @@ describe(QuoteRequest.prototype.toLogInfo, () => {
         "inputValueUsd": "1051.23",
         "isInternalSwap": false,
         "isVaultSwap": false,
-        "limitOrders": null,
         "maxBoostFeeBps": undefined,
+        "regularLimitOrders": null,
         "regularQuote": null,
         "srcAsset": "Btc",
         "srcAssetIndexPrice": 105123.1234,
