@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`swapCanceled > handles swap cancellation 1`] = `
+{
+  "swapCanceledAt": null,
+  "swapCanceledBlockIndex": null,
+  "swapExecutedAt": null,
+}
+`;
+
+exports[`swapCanceled > handles swap cancellation 2`] = `
+{
+  "swapCanceledAt": Any<Date>,
+  "swapCanceledBlockIndex": Any<String>,
+  "swapExecutedAt": null,
+}
+`;
