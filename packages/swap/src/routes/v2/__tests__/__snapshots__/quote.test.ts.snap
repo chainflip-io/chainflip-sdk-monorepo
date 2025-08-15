@@ -1,5 +1,193 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`server > GET /v2/quote > applies price impact to DCA quote 1`] = `
+[
+  {
+    "depositAmount": "1000000000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "100000000",
+    "estimatedDurationSeconds": 132,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 96,
+      "swap": 12,
+    },
+    "estimatedPrice": "100.0080000000025002",
+    "includedFees": [
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "8000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "type": "REGULAR",
+  },
+  {
+    "dcaParams": {
+      "chunkIntervalBlocks": 2,
+      "numberOfChunks": 4,
+    },
+    "depositAmount": "1000000000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "99020000",
+    "estimatedDurationSeconds": 168,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 96,
+      "swap": 48,
+    },
+    "estimatedPrice": "99.02792100000247569803",
+    "includedFees": [
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "99119",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "7921",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "type": "DCA",
+  },
+]
+`;
+
+exports[`server > GET /v2/quote > does not throw if totalLiquidity is higher than egressAmount 1`] = `
+[
+  {
+    "depositAmount": "1000000000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "100000000",
+    "estimatedDurationSeconds": 132,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 96,
+      "swap": 12,
+    },
+    "estimatedPrice": "100.0000000000025",
+    "includedFees": [
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "0",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "type": "REGULAR",
+  },
+]
+`;
+
 exports[`server > GET /v2/quote > excludes the ingress fee for vault swaps 1`] = `
 [
   {
@@ -57,6 +245,732 @@ exports[`server > GET /v2/quote > excludes the ingress fee for vault swaps 1`] =
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
       "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "type": "REGULAR",
+  },
+]
+`;
+
+exports[`server > GET /v2/quote > gets no DCA quote if the flag is missing 1`] = `
+[
+  {
+    "depositAmount": "1000000000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "100000000",
+    "estimatedDurationSeconds": 132,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 96,
+      "swap": 12,
+    },
+    "estimatedPrice": "100.0000000000025",
+    "includedFees": [
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "0",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "type": "REGULAR",
+  },
+]
+`;
+
+exports[`server > GET /v2/quote > gets only REGULAR quote because amount is less than 3000 1`] = `
+[
+  {
+    "depositAmount": "1000000000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "100000000",
+    "estimatedDurationSeconds": 132,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 96,
+      "swap": 12,
+    },
+    "estimatedPrice": "100.0000000000025",
+    "includedFees": [
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "0",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "type": "REGULAR",
+  },
+]
+`;
+
+exports[`server > GET /v2/quote > gets only REGULAR quote when DCA quoting is disabled 1`] = `
+[
+  {
+    "depositAmount": "1000000000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "100000000",
+    "estimatedDurationSeconds": 132,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 96,
+      "swap": 12,
+    },
+    "estimatedPrice": "100.0000000000025",
+    "includedFees": [
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "0",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "type": "REGULAR",
+  },
+]
+`;
+
+exports[`server > GET /v2/quote > gets the DCA quote to USDC 1`] = `
+[
+  {
+    "depositAmount": "1000000000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "100000000",
+    "estimatedDurationSeconds": 132,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 96,
+      "swap": 12,
+    },
+    "estimatedPrice": "100.0080000000025002",
+    "includedFees": [
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "8000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "type": "REGULAR",
+  },
+  {
+    "dcaParams": {
+      "chunkIntervalBlocks": 2,
+      "numberOfChunks": 4,
+    },
+    "depositAmount": "1000000000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "100000000",
+    "estimatedDurationSeconds": 168,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 96,
+      "swap": 48,
+    },
+    "estimatedPrice": "100.0080000000025002",
+    "includedFees": [
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "8000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "type": "DCA",
+  },
+]
+`;
+
+exports[`server > GET /v2/quote > gets the DCA quote with a boost quote and broker fees 1`] = `
+[
+  {
+    "boostQuote": {
+      "depositAmount": "100000",
+      "destAsset": {
+        "asset": "ETH",
+        "chain": "Ethereum",
+      },
+      "egressAmount": "100000000000000000",
+      "estimatedBoostFeeBps": 10,
+      "estimatedDurationSeconds": 414,
+      "estimatedDurationsSeconds": {
+        "deposit": 306,
+        "egress": 96,
+        "swap": 12,
+      },
+      "estimatedPrice": "100.35122930256698444556",
+      "includedFees": [
+        {
+          "amount": "100",
+          "asset": "BTC",
+          "chain": "Bitcoin",
+          "type": "BOOST",
+        },
+        {
+          "amount": "250",
+          "asset": "BTC",
+          "chain": "Bitcoin",
+          "type": "INGRESS",
+        },
+        {
+          "amount": "100100",
+          "asset": "USDC",
+          "chain": "Ethereum",
+          "type": "NETWORK",
+        },
+        {
+          "amount": "1000000",
+          "asset": "USDC",
+          "chain": "Ethereum",
+          "type": "BROKER",
+        },
+        {
+          "amount": "8000",
+          "asset": "ETH",
+          "chain": "Ethereum",
+          "type": "EGRESS",
+        },
+      ],
+      "intermediateAmount": "10000000",
+      "maxBoostFeeBps": 30,
+      "poolInfo": [
+        {
+          "baseAsset": {
+            "asset": "BTC",
+            "chain": "Bitcoin",
+          },
+          "fee": {
+            "amount": "0",
+            "asset": "BTC",
+            "chain": "Bitcoin",
+          },
+          "quoteAsset": {
+            "asset": "USDC",
+            "chain": "Ethereum",
+          },
+        },
+        {
+          "baseAsset": {
+            "asset": "ETH",
+            "chain": "Ethereum",
+          },
+          "fee": {
+            "amount": "0",
+            "asset": "USDC",
+            "chain": "Ethereum",
+          },
+          "quoteAsset": {
+            "asset": "USDC",
+            "chain": "Ethereum",
+          },
+        },
+      ],
+      "recommendedSlippageTolerancePercent": 1.5,
+      "srcAsset": {
+        "asset": "BTC",
+        "chain": "Bitcoin",
+      },
+      "type": "REGULAR",
+    },
+    "depositAmount": "100000",
+    "destAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "100000000000000000",
+    "estimatedDurationSeconds": 1614,
+    "estimatedDurationsSeconds": {
+      "deposit": 1506,
+      "egress": 96,
+      "swap": 12,
+    },
+    "estimatedPrice": "100.25062656642406015038",
+    "includedFees": [
+      {
+        "amount": "250",
+        "asset": "BTC",
+        "chain": "Bitcoin",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "1000000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "BROKER",
+      },
+      {
+        "amount": "8000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "intermediateAmount": "10000000",
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "BTC",
+          "chain": "Bitcoin",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "BTC",
+          "chain": "Bitcoin",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 2,
+    "srcAsset": {
+      "asset": "BTC",
+      "chain": "Bitcoin",
+    },
+    "type": "REGULAR",
+  },
+  {
+    "boostQuote": {
+      "dcaParams": {
+        "chunkIntervalBlocks": 2,
+        "numberOfChunks": 4,
+      },
+      "depositAmount": "100000",
+      "destAsset": {
+        "asset": "ETH",
+        "chain": "Ethereum",
+      },
+      "egressAmount": "100000000000000000",
+      "estimatedBoostFeeBps": 10,
+      "estimatedDurationSeconds": 450,
+      "estimatedDurationsSeconds": {
+        "deposit": 306,
+        "egress": 96,
+        "swap": 48,
+      },
+      "estimatedPrice": "100.35122930256698444556",
+      "includedFees": [
+        {
+          "amount": "100",
+          "asset": "BTC",
+          "chain": "Bitcoin",
+          "type": "BOOST",
+        },
+        {
+          "amount": "250",
+          "asset": "BTC",
+          "chain": "Bitcoin",
+          "type": "INGRESS",
+        },
+        {
+          "amount": "100100",
+          "asset": "USDC",
+          "chain": "Ethereum",
+          "type": "NETWORK",
+        },
+        {
+          "amount": "1000000",
+          "asset": "USDC",
+          "chain": "Ethereum",
+          "type": "BROKER",
+        },
+        {
+          "amount": "8000",
+          "asset": "ETH",
+          "chain": "Ethereum",
+          "type": "EGRESS",
+        },
+      ],
+      "intermediateAmount": "10000000",
+      "maxBoostFeeBps": 30,
+      "poolInfo": [
+        {
+          "baseAsset": {
+            "asset": "BTC",
+            "chain": "Bitcoin",
+          },
+          "fee": {
+            "amount": "0",
+            "asset": "BTC",
+            "chain": "Bitcoin",
+          },
+          "quoteAsset": {
+            "asset": "USDC",
+            "chain": "Ethereum",
+          },
+        },
+        {
+          "baseAsset": {
+            "asset": "ETH",
+            "chain": "Ethereum",
+          },
+          "fee": {
+            "amount": "0",
+            "asset": "USDC",
+            "chain": "Ethereum",
+          },
+          "quoteAsset": {
+            "asset": "USDC",
+            "chain": "Ethereum",
+          },
+        },
+      ],
+      "recommendedSlippageTolerancePercent": 1.5,
+      "srcAsset": {
+        "asset": "BTC",
+        "chain": "Bitcoin",
+      },
+      "type": "DCA",
+    },
+    "dcaParams": {
+      "chunkIntervalBlocks": 2,
+      "numberOfChunks": 4,
+    },
+    "depositAmount": "100000",
+    "destAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "100000000000000000",
+    "estimatedDurationSeconds": 1650,
+    "estimatedDurationsSeconds": {
+      "deposit": 1506,
+      "egress": 96,
+      "swap": 48,
+    },
+    "estimatedPrice": "100.25062656642406015038",
+    "includedFees": [
+      {
+        "amount": "250",
+        "asset": "BTC",
+        "chain": "Bitcoin",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "1000000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "BROKER",
+      },
+      {
+        "amount": "8000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "intermediateAmount": "10000000",
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "BTC",
+          "chain": "Bitcoin",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "BTC",
+          "chain": "Bitcoin",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 2,
+    "srcAsset": {
+      "asset": "BTC",
+      "chain": "Bitcoin",
+    },
+    "type": "DCA",
+  },
+]
+`;
+
+exports[`server > GET /v2/quote > gets the quote to USDC 1`] = `
+[
+  {
+    "depositAmount": "1000000000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "100000000",
+    "estimatedDurationSeconds": 132,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 96,
+      "swap": 12,
+    },
+    "estimatedPrice": "100.0000000000025",
+    "includedFees": [
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "0",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "ETH",
       "chain": "Ethereum",
     },
     "type": "REGULAR",
@@ -274,6 +1188,136 @@ exports[`server > GET /v2/quote > rejects malformed requests 1`] = `
 {
   "message": "invalid request",
 }
+`;
+
+exports[`server > GET /v2/quote > returns DCA quote if regular does not pass totalLiquidity check 1`] = `
+[
+  {
+    "dcaParams": {
+      "chunkIntervalBlocks": 2,
+      "numberOfChunks": 4,
+    },
+    "depositAmount": "1000000000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "100000000",
+    "estimatedDurationSeconds": 168,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 96,
+      "swap": 48,
+    },
+    "estimatedPrice": "100.0080000000025002",
+    "includedFees": [
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "8000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "type": "DCA",
+  },
+]
+`;
+
+exports[`server > GET /v2/quote > returns regular quote if DCA does not pass totalLiquidity check 1`] = `
+[
+  {
+    "depositAmount": "1000000000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "100000000",
+    "estimatedDurationSeconds": 132,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 96,
+      "swap": 12,
+    },
+    "estimatedPrice": "100.0080000000025002",
+    "includedFees": [
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "8000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "type": "REGULAR",
+  },
+]
 `;
 
 exports[`server > GET /v2/quote > uses 0 as ingress fee when the protocol can't estimate it 1`] = `
