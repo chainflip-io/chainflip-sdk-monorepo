@@ -49,12 +49,14 @@ const transformedFokSchema = z
     refundAddress: z.string(),
     minPriceX128: numericString,
     refundCcmMetadata: ccmParamsSchema.optional(),
+    maxOraclePriceSlippage: z.number().optional(),
   })
-  .transform(({ retryDurationBlocks, refundAddress, minPriceX128, refundCcmMetadata }) => ({
+  .transform(({ retryDurationBlocks, refundAddress, minPriceX128, refundCcmMetadata, maxOraclePriceSlippage }) => ({
     retry_duration: retryDurationBlocks,
     refund_address: refundAddress!,
     min_price: `0x${BigInt(minPriceX128).toString(16)}` as const,
-      refund_ccm_metadata: refundCcmMetadata ? transformedCcmParamsSchema.parse(refundCcmMetadata) : undefined,
+    refund_ccm_metadata: refundCcmMetadata ? transformedCcmParamsSchema.parse(refundCcmMetadata) : undefined,
+    max_oracle_price_slippage: maxOraclePriceSlippage,
   }));
 
 const transformedDcaParamsSchema = dcaParamsSchema.transform(

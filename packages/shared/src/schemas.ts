@@ -104,6 +104,7 @@ export const fillOrKillParams = z.object({
   refundAddress: z.string(),
   minPriceX128: numericString,
   refundCcmMetadata: ccmParamsSchema.optional(),
+  maxOraclePriceSlippage: z.number().optional(),
 });
 
 export type FillOrKillParamsX128 = z.input<typeof fillOrKillParams>;
