@@ -247,3 +247,20 @@ export type BoostQuote = RegularBoostQuote | DCABoostQuote;
 export type FillOrKillParamsWithSlippage = Omit<FillOrKillParamsX128, 'minPriceX128'> & {
   slippageTolerancePercent: string | number;
 };
+
+export type FillOrKillParamsWithRetryBlocks =
+  | FillOrKillParamsWithMinPrice
+  | FillOrKillParamsWithSlippage;
+
+type WithRetryMinutes<T extends FillOrKillParamsWithRetryBlocks> = Omit<
+  T,
+  'retryDurationBlocks'
+> & {
+  retryDurationMinutes: number;
+};
+
+export type FillOrKillParamsWithRetryMinutes =
+  | WithRetryMinutes<FillOrKillParamsWithMinPrice>
+  | WithRetryMinutes<FillOrKillParamsWithSlippage>;
+
+export type FillOrKillParams = FillOrKillParamsWithRetryBlocks | FillOrKillParamsWithRetryMinutes;

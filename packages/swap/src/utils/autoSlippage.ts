@@ -1,4 +1,5 @@
 import { ChainflipAsset, assetConstants, chainConstants } from '@chainflip/utils/chainflip';
+import { CHAINFLIP_BLOCK_TIME_SECONDS } from '@chainflip/utils/consts';
 import BigNumber from 'bignumber.js';
 import { isStableCoin } from '@/shared/guards.js';
 import { getDeployedLiquidity, getUndeployedLiquidity } from './pools.js';
