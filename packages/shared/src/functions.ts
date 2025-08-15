@@ -8,7 +8,7 @@ import { CHAINFLIP_BLOCK_TIME_SECONDS } from '@chainflip/utils/consts';
 import BigNumber from 'bignumber.js';
 import EventEmitter, { once } from 'events';
 import { assert } from './guards.js';
-import { FillOrKillParams, Quote } from './schemas.js';
+import { FillOrKillParams, FillOrKillParamsWithoutRefundAddress, Quote } from './schemas.js';
 
 export const onceWithTimeout = async (
   eventEmitter: EventEmitter,
@@ -73,11 +73,11 @@ export function parseFoKParams(
   quote: Pick<Quote, 'srcAsset' | 'destAsset' | 'estimatedPrice'>,
 ): ParsedFoKParams;
 export function parseFoKParams(
-  params: Omit<FillOrKillParams, 'refundAddress'>,
+  params: FillOrKillParamsWithoutRefundAddress,
   quote: Pick<Quote, 'srcAsset' | 'destAsset' | 'estimatedPrice'>,
 ): Omit<ParsedFoKParams, 'refundAddress'>;
 export function parseFoKParams(
-  params: FillOrKillParams | Omit<FillOrKillParams, 'refundAddress'>,
+  params: FillOrKillParams | FillOrKillParamsWithoutRefundAddress,
   quote: Pick<Quote, 'srcAsset' | 'destAsset' | 'estimatedPrice'>,
 ) {
   const srcAsset = getInternalAsset(quote.srcAsset);
@@ -119,11 +119,12 @@ export function parseFoKParams(
       ? params.retryDurationBlocks
       : params.retryDurationMinutes * blocksPerMinute;
 
-  return {
-    refundAddress: params.refundAddress,
+  const parsed = {
     retryDurationBlocks,
     minPriceX128: getPriceX128FromPrice(minPrice, srcAsset, destAsset),
   };
+
+  return 'refundAddress' in params ? { ...parsed, refundAddress: params.refundAddress } : parsed;
 }
 
 export const safeStringify = (obj: unknown) =>

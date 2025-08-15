@@ -248,19 +248,22 @@ export type FillOrKillParamsWithSlippage = Omit<FillOrKillParamsX128, 'minPriceX
   slippageTolerancePercent: string | number;
 };
 
-export type FillOrKillParamsWithRetryBlocks =
-  | FillOrKillParamsWithMinPrice
-  | FillOrKillParamsWithSlippage;
+export type FillOrKillParamsWithoutRefundAddress =
+  | { minPrice: string; retryDurationBlocks: number }
+  | { minPrice: string; retryDurationMinutes: number }
+  | { slippageTolerancePercent: string | number; retryDurationBlocks: number }
+  | { slippageTolerancePercent: string | number; retryDurationMinutes: number };
 
-type WithRetryMinutes<T extends FillOrKillParamsWithRetryBlocks> = Omit<
-  T,
-  'retryDurationBlocks'
-> & {
-  retryDurationMinutes: number;
-};
-
-export type FillOrKillParamsWithRetryMinutes =
-  | WithRetryMinutes<FillOrKillParamsWithMinPrice>
-  | WithRetryMinutes<FillOrKillParamsWithSlippage>;
-
-export type FillOrKillParams = FillOrKillParamsWithRetryBlocks | FillOrKillParamsWithRetryMinutes;
+export type FillOrKillParams =
+  | { refundAddress: string; minPrice: string; retryDurationBlocks: number }
+  | { refundAddress: string; minPrice: string; retryDurationMinutes: number }
+  | {
+      refundAddress: string;
+      slippageTolerancePercent: string | number;
+      retryDurationBlocks: number;
+    }
+  | {
+      refundAddress: string;
+      slippageTolerancePercent: string | number;
+      retryDurationMinutes: number;
+    };
