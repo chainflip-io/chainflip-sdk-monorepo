@@ -4,7 +4,7 @@ exports[`parseFoKParams > accepts the retry duration in 0 minutes 1`] = `
 {
   "minPriceX128": "83892489958826316385497263710123985244108278726772",
   "refundAddress": "0x1234",
-  "retryDurationBlocks": 1,
+  "retryDurationBlocks": 0,
 }
 `;
 
