@@ -3,8 +3,8 @@ import {
   BoostQuote,
   CcmParams,
   DcaParams,
+  FillOrKillParams,
   FillOrKillParamsWithMinPrice,
-  FillOrKillParamsWithSlippage,
   PaidFee,
   Quote,
 } from '@/shared/schemas.js';
@@ -215,7 +215,7 @@ export interface DepositAddressRequestV2 {
   quote: Quote | BoostQuote;
   srcAddress?: string;
   destAddress: string;
-  fillOrKillParams: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage;
+  fillOrKillParams: FillOrKillParams;
   affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];
   ccmParams?: CcmParams;
   brokerCommissionBps?: number;
@@ -227,7 +227,7 @@ export interface DepositAddressResponseV2 extends Omit<QuoteRequest, 'ccmParams'
   maxBoostFeeBps?: number;
   srcAddress?: string;
   dcaParams?: DcaParams;
-  fillOrKillParams: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage;
+  fillOrKillParams: FillOrKillParams;
   depositChannelId: string;
   depositAddress: string;
   brokerCommissionBps: number;
@@ -241,7 +241,7 @@ export interface VaultSwapRequest {
   quote: Quote | BoostQuote;
   srcAddress?: string;
   destAddress: string;
-  fillOrKillParams: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage;
+  fillOrKillParams: FillOrKillParams;
   affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];
   ccmParams?: CcmParams;
   brokerAccount?: `cF${string}`;
@@ -277,7 +277,7 @@ export interface EncodeCfParametersRequest {
   quote: Quote | BoostQuote;
   srcAddress?: string;
   destAddress: string;
-  fillOrKillParams: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage;
+  fillOrKillParams: FillOrKillParams;
   affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];
   ccmParams?: CcmParams;
   brokerAccount?: `cF${string}`;

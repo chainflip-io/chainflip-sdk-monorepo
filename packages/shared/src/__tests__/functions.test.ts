@@ -89,6 +89,16 @@ describe(parseFoKParams, () => {
     });
   });
 
+  it.each([0.5, 1, 0, 10, 0.25])('accepts the retry duration in %d minutes', (minutes) => {
+    const minPrice = new BigNumber(quote.estimatedPrice)
+      .times(new BigNumber(100).minus(slippageTolerancePercent).dividedBy(100))
+      .toFixed(assetConstants[getInternalAsset(quote.destAsset)].decimals);
+
+    expect(
+      parseFoKParams({ minPrice, refundAddress: '0x1234', retryDurationMinutes: minutes }, quote),
+    ).toMatchSnapshot();
+  });
+
   it('validates the slippage tolerance range', () => {
     expect(() => {
       parseFoKParams(

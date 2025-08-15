@@ -31,7 +31,7 @@ import {
   getEnvironment,
 } from '@/shared/rpc/index.js';
 import { validateSwapAmount } from '@/shared/rpc/utils.js';
-import { BoostQuote, FillOrKillParamsWithMinPrice, Quote } from '@/shared/schemas.js';
+import { BoostQuote, FillOrKillParamsWithoutRefundAddress, Quote } from '@/shared/schemas.js';
 import { Required } from '@/shared/types.js';
 import { getAssetData } from './assets.js';
 import { getChainData } from './chains.js';
@@ -44,7 +44,6 @@ import {
   SwapStatusRequest,
   BoostPoolDepth,
   QuoteResponseV2,
-  FillOrKillParamsWithSlippage,
 } from './types.js';
 import {
   type SwapStatusResponseV2,
@@ -539,9 +538,7 @@ export class SwapSDK {
     fillOrKillParams,
   }: {
     quote: Quote;
-    fillOrKillParams:
-      | Omit<FillOrKillParamsWithMinPrice, 'refundAddress'>
-      | Omit<FillOrKillParamsWithSlippage, 'refundAddress'>;
+    fillOrKillParams: FillOrKillParamsWithoutRefundAddress;
   }): [
     amount: string,
     inputAsset: ChainflipAsset,

@@ -371,6 +371,7 @@ export default class QuoteRequest {
         gasBudget: String(this.ccmParams.gasBudget),
         messageLengthBytes: this.ccmParams.messageLengthBytes,
       },
+      recommendedRetryDurationMinutes: this.srcAsset === 'Btc' || this.destAsset === 'Btc' ? 15 : 5,
     } as Quote;
   }
 
