@@ -117,7 +117,7 @@ export function parseFoKParams(
   const retryDurationBlocks =
     'retryDurationBlocks' in params
       ? params.retryDurationBlocks
-      : params.retryDurationMinutes * blocksPerMinute;
+      : Math.max(Math.ceil(params.retryDurationMinutes * blocksPerMinute), 1);
 
   const parsed = {
     retryDurationBlocks,

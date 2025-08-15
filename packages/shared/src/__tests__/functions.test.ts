@@ -89,18 +89,14 @@ describe(parseFoKParams, () => {
     });
   });
 
-  it('accepts the retry duration in minutes', () => {
+  it.each([0.5, 1, 0, 10, 0.25])('accepts the retry duration in %d minutes', (minutes) => {
     const minPrice = new BigNumber(quote.estimatedPrice)
       .times(new BigNumber(100).minus(slippageTolerancePercent).dividedBy(100))
       .toFixed(assetConstants[getInternalAsset(quote.destAsset)].decimals);
 
     expect(
-      parseFoKParams({ minPrice, refundAddress: '0x1234', retryDurationMinutes: 10 }, quote),
-    ).toStrictEqual({
-      minPriceX128: '83892489958826316385497263710123985244108278726772',
-      refundAddress: '0x1234',
-      retryDurationBlocks: 100,
-    });
+      parseFoKParams({ minPrice, refundAddress: '0x1234', retryDurationMinutes: minutes }, quote),
+    ).toMatchSnapshot();
   });
 
   it('validates the slippage tolerance range', () => {

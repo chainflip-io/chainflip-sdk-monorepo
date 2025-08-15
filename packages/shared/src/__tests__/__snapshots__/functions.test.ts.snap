@@ -1,0 +1,41 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`parseFoKParams > accepts the retry duration in 0 minutes 1`] = `
+{
+  "minPriceX128": "83892489958826316385497263710123985244108278726772",
+  "refundAddress": "0x1234",
+  "retryDurationBlocks": 1,
+}
+`;
+
+exports[`parseFoKParams > accepts the retry duration in 0.5 minutes 1`] = `
+{
+  "minPriceX128": "83892489958826316385497263710123985244108278726772",
+  "refundAddress": "0x1234",
+  "retryDurationBlocks": 5,
+}
+`;
+
+exports[`parseFoKParams > accepts the retry duration in 0.25 minutes 1`] = `
+{
+  "minPriceX128": "83892489958826316385497263710123985244108278726772",
+  "refundAddress": "0x1234",
+  "retryDurationBlocks": 3,
+}
+`;
+
+exports[`parseFoKParams > accepts the retry duration in 1 minutes 1`] = `
+{
+  "minPriceX128": "83892489958826316385497263710123985244108278726772",
+  "refundAddress": "0x1234",
+  "retryDurationBlocks": 10,
+}
+`;
+
+exports[`parseFoKParams > accepts the retry duration in 10 minutes 1`] = `
+{
+  "minPriceX128": "83892489958826316385497263710123985244108278726772",
+  "refundAddress": "0x1234",
+  "retryDurationBlocks": 100,
+}
+`;
