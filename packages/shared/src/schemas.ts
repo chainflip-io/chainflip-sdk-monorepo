@@ -220,6 +220,7 @@ interface BaseQuoteDetails {
   };
   estimatedPrice: string;
   recommendedSlippageTolerancePercent: number;
+  recommendedRetryDurationMinutes: number;
 }
 
 type WithBoostQuote<T> = Omit<T, 'boostQuote'> & BoostedQuoteDetails;
