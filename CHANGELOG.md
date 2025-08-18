@@ -11,8 +11,8 @@ which it is deprecated.
 
 ### Added
 
-- `SwapSDK.prototype.getQuoteV2` now returns a
-  `recommendedSlippageTolerancePercent` property. This value can be passed to
+- `SwapSDK.prototype.getQuoteV2` now returns a `recommendedRetryDurationMinutes`
+  property. This value can be passed to
   `SwapSDK.prototype.requestDepositAddressV2` as `retryDurationMinutes` instead
   of a `retryDurationBlocks`. Using the recommended value should lead to fewer
   refunded swaps.
