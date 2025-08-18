@@ -4,10 +4,11 @@ import {
   getInternalAsset,
   ChainflipNetwork,
 } from '@chainflip/utils/chainflip';
+import { CHAINFLIP_BLOCK_TIME_SECONDS } from '@chainflip/utils/consts';
 import BigNumber from 'bignumber.js';
 import EventEmitter, { once } from 'events';
 import { assert } from './guards.js';
-import { FillOrKillParamsWithMinPrice, FillOrKillParamsWithSlippage, Quote } from './schemas.js';
+import { FillOrKillParams, FillOrKillParamsWithoutRefundAddress, Quote } from './schemas.js';
 
 export const onceWithTimeout = async (
   eventEmitter: EventEmitter,
@@ -65,19 +66,18 @@ type ParsedFoKParams = {
   minPriceX128: string;
 };
 
+const blocksPerMinute = 60 / CHAINFLIP_BLOCK_TIME_SECONDS;
+
 export function parseFoKParams(
-  params: FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage,
+  params: FillOrKillParams,
   quote: Pick<Quote, 'srcAsset' | 'destAsset' | 'estimatedPrice'>,
 ): ParsedFoKParams;
 export function parseFoKParams(
-  params: Omit<FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage, 'refundAddress'>,
+  params: FillOrKillParamsWithoutRefundAddress,
   quote: Pick<Quote, 'srcAsset' | 'destAsset' | 'estimatedPrice'>,
 ): Omit<ParsedFoKParams, 'refundAddress'>;
 export function parseFoKParams(
-  params:
-    | FillOrKillParamsWithMinPrice
-    | FillOrKillParamsWithSlippage
-    | Omit<FillOrKillParamsWithMinPrice | FillOrKillParamsWithSlippage, 'refundAddress'>,
+  params: FillOrKillParams | FillOrKillParamsWithoutRefundAddress,
   quote: Pick<Quote, 'srcAsset' | 'destAsset' | 'estimatedPrice'>,
 ) {
   const srcAsset = getInternalAsset(quote.srcAsset);
@@ -114,11 +114,17 @@ export function parseFoKParams(
     throw new Error('Either minPrice or slippageTolerancePercent must be provided');
   }
 
-  return {
-    refundAddress: params.refundAddress,
-    retryDurationBlocks: params.retryDurationBlocks,
+  const retryDurationBlocks =
+    'retryDurationBlocks' in params
+      ? params.retryDurationBlocks
+      : Math.max(Math.ceil(params.retryDurationMinutes * blocksPerMinute), 0);
+
+  const parsed = {
+    retryDurationBlocks,
     minPriceX128: getPriceX128FromPrice(minPrice, srcAsset, destAsset),
   };
+
+  return 'refundAddress' in params ? { ...parsed, refundAddress: params.refundAddress } : parsed;
 }
 
 export const safeStringify = (obj: unknown) =>

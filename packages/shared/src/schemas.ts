@@ -220,6 +220,7 @@ interface BaseQuoteDetails {
   };
   estimatedPrice: string;
   recommendedSlippageTolerancePercent: number;
+  recommendedRetryDurationMinutes: number;
 }
 
 type WithBoostQuote<T> = Omit<T, 'boostQuote'> & BoostedQuoteDetails;
@@ -246,3 +247,23 @@ export type BoostQuote = RegularBoostQuote | DCABoostQuote;
 export type FillOrKillParamsWithSlippage = Omit<FillOrKillParamsX128, 'minPriceX128'> & {
   slippageTolerancePercent: string | number;
 };
+
+export type FillOrKillParamsWithoutRefundAddress =
+  | { minPrice: string; retryDurationBlocks: number }
+  | { minPrice: string; retryDurationMinutes: number }
+  | { slippageTolerancePercent: string | number; retryDurationBlocks: number }
+  | { slippageTolerancePercent: string | number; retryDurationMinutes: number };
+
+export type FillOrKillParams =
+  | { refundAddress: string; minPrice: string; retryDurationBlocks: number }
+  | { refundAddress: string; minPrice: string; retryDurationMinutes: number }
+  | {
+      refundAddress: string;
+      slippageTolerancePercent: string | number;
+      retryDurationBlocks: number;
+    }
+  | {
+      refundAddress: string;
+      slippageTolerancePercent: string | number;
+      retryDurationMinutes: number;
+    };

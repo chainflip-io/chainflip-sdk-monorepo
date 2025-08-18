@@ -471,6 +471,101 @@ describe(SwapSDK, () => {
       });
     });
 
+    it('calls openSwapDepositChannel with refund parameters (retryDurationMinutes)', async () => {
+      const rpcSpy = vi.mocked(sdk['apiClient'].openSwapDepositChannel).mockResolvedValueOnce({
+        status: 201,
+        body: {
+          id: 'channel id',
+          depositAddress: 'deposit address',
+          brokerCommissionBps: 0,
+          srcChainExpiryBlock: '123',
+          estimatedExpiryTime: 1698334470000,
+          channelOpeningFee: '0',
+          issuedBlock: 1,
+          maxBoostFeeBps: 0,
+        },
+        headers: new Headers(),
+      });
+
+      const quote = {
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        depositAmount: BigInt(1e18).toString(),
+        type: 'REGULAR',
+        isVaultSwap: false,
+      } as Quote;
+      const response = await sdk.requestDepositAddressV2({
+        quote,
+        destAddress: '0xcafebabe',
+        fillOrKillParams: {
+          retryDurationMinutes: 50,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '10000000000000',
+        },
+      });
+      expect(rpcSpy.mock.lastCall).toMatchInlineSnapshot(`
+        [
+          {
+            "body": {
+              "amount": "1000000000000000000",
+              "ccmParams": undefined,
+              "dcaParams": undefined,
+              "destAddress": "0xcafebabe",
+              "destAsset": "FLIP",
+              "destChain": "Ethereum",
+              "fillOrKillParams": {
+                "minPriceX128": "34028236692093846346337460743176821145600000000000000000000000",
+                "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+                "retryDurationBlocks": 500,
+              },
+              "maxBoostFeeBps": undefined,
+              "quote": {
+                "depositAmount": "1000000000000000000",
+                "destAsset": {
+                  "asset": "FLIP",
+                  "chain": "Ethereum",
+                },
+                "isVaultSwap": false,
+                "srcAsset": {
+                  "asset": "BTC",
+                  "chain": "Bitcoin",
+                },
+                "type": "REGULAR",
+              },
+              "srcAddress": undefined,
+              "srcAsset": "BTC",
+              "srcChain": "Bitcoin",
+              "takeCommission": false,
+            },
+          },
+        ]
+      `);
+      expect(response).toStrictEqual({
+        depositChannelId: 'channel id',
+        depositAddress: 'deposit address',
+        brokerCommissionBps: 0,
+        ccmParams: undefined,
+        depositChannelExpiryBlock: 123n,
+        estimatedDepositChannelExpiryTime: 1698334470000,
+        amount: '1000000000000000000',
+        srcAddress: undefined,
+        destAddress: '0xcafebabe',
+        destAsset: 'FLIP',
+        destChain: 'Ethereum',
+        srcAsset: 'BTC',
+        srcChain: 'Bitcoin',
+        maxBoostFeeBps: 0,
+        channelOpeningFee: 0n,
+        dcaParams: undefined,
+        affiliateBrokers: [],
+        fillOrKillParams: {
+          retryDurationMinutes: 50,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '10000000000000',
+        },
+      });
+    });
+
     it('calls openSwapDepositChannel with dca parameters', async () => {
       const rpcSpy = vi.mocked(sdk['apiClient'].openSwapDepositChannel).mockResolvedValueOnce({
         status: 201,
