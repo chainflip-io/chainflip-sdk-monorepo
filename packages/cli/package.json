@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/cli",
-  "version": "1.9.0-assethub.0-ccm-refunds.1",
+  "version": "1.9.0-assethub.0-ccm-refunds-oracle-swaps",
   "description": "",
   "main": "./dist/lib.mjs",
   "types": "./dist/lib.d.mts",
