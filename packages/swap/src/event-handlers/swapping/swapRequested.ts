@@ -171,7 +171,7 @@ const extractRefundParameters = (refundParameters: z.output<typeof schema>['refu
       // I think this is part of lending. do nothing for now.
     }
   }
-  // 1.10
+  // TODO(1.11): remove this once we're live on all environments
   if ('v10' in refundParameters) {
     fokMinPriceX128 = refundParameters.v10.minPrice.toString();
     fokRetryDurationBlocks = refundParameters.v10.retryDuration;
