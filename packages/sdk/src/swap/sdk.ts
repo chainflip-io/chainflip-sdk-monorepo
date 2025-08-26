@@ -508,7 +508,6 @@ export class SwapSDK {
         !brokerAccount,
         'Cannot overwrite broker account when initializing the SDK with a brokerUrl',
       );
-
       return requestCfParametersEncoding(requestParams, { url: this.options.broker.url });
     }
 
@@ -532,6 +531,7 @@ export class SwapSDK {
     return res.body;
   }
 
+  /** @deprecated DEPRECATED(1.11) removing this method as it appears to not be used */
   // eslint-disable-next-line class-methods-use-this
   getOnChainSwapExtrinsicArgs({
     quote,

@@ -49,6 +49,7 @@ const vaultSwapRequest = {
     slippageTolerancePercent: quote.recommendedSlippageTolerancePercent,
     refundAddress: walletAddress,
     retryDurationBlocks: 100,
+    livePriceSlippageTolerancePercent: quote.recommendedLivePriceSlippageTolerancePercent,
   },
 };
 const vaultSwapData = await swapSDK.encodeVaultSwapData(vaultSwapRequest);

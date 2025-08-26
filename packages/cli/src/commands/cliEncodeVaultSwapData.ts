@@ -54,6 +54,7 @@ export default async function cliEncodeVaultSwapData(
         refundAddress: args.srcAddress,
         retryDurationBlocks: 500,
         minPriceX128: '1',
+        maxOraclePriceSlippage: 1,
       },
       commissionBps: undefined,
       ccmParams: undefined,

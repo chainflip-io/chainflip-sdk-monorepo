@@ -7,6 +7,19 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## 1.11.0
+
+### Added
+
+- `SwapSDK.prototype.getQuoteV2` now returns a `recommendedLivePriceSlippageTolerancePercent`property.
+  This value can be passed to `SwapSDK.prototype.requestDepositAddressV2` in `fillOKillParams` to override
+  the default recommended value or to disable live price protection entirely. The property ensures that
+  the swap is executed within the tolerance range of the asset's oracle price instead of the pool price.
+
+### Deprecated
+
+- `SwapSDK.prototype.getOnChainSwapExtrinsicArgs` has been deprecated since it seems to no longer be needed.
+
 ## 1.10.1
 
 ### Added

@@ -56,6 +56,7 @@ describe(openSwapDepositChannel, () => {
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
         retryDurationBlocks: 2,
         minPriceX128: '1',
+        maxOraclePriceSlippage: 50,
       },
     });
 
@@ -100,8 +101,10 @@ describe(openSwapDepositChannel, () => {
         egressAmount: '250',
         estimatedPrice: '0.375',
         recommendedSlippageTolerancePercent: 0.25,
+        recommendedLivePriceSlippageTolerancePercent: 0.5,
       },
       fillOrKillParams: {
+        maxOraclePriceSlippage: 50,
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
         retryDurationBlocks: 2,
         minPriceX128: '1',
@@ -150,6 +153,7 @@ describe(openSwapDepositChannel, () => {
       expectedDepositAmount: '1000',
       maxBoostFeeBps: 100,
       fillOrKillParams: {
+        maxOraclePriceSlippage: null,
         retryDurationBlocks: 500,
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
         minPriceX128: '1094494073153147181099038525207',
@@ -211,6 +215,7 @@ describe(openSwapDepositChannel, () => {
         ccmAdditionalData: '0x',
       },
       fillOrKillParams: {
+        maxOraclePriceSlippage: null,
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
         retryDurationBlocks: 2,
         minPriceX128: '1',
@@ -252,6 +257,7 @@ describe(openSwapDepositChannel, () => {
       destAddress: '0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754',
       expectedDepositAmount: '10101010',
       fillOrKillParams: {
+        maxOraclePriceSlippage: 100,
         retryDurationBlocks: 500,
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
         minPriceX128: '10000000000000',
@@ -298,6 +304,7 @@ describe(openSwapDepositChannel, () => {
       expectedDepositAmount: '10101010',
       maxBoostFeeBps: 100,
       fillOrKillParams: {
+        maxOraclePriceSlippage: 100,
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
         retryDurationBlocks: 2,
         minPriceX128: '1',
@@ -322,6 +329,55 @@ describe(openSwapDepositChannel, () => {
     });
   });
 
+  it('creates channel with a commission', async () => {
+    mockRpcResponse({ data: environment() });
+    env.BROKER_COMMISSION_BPS = 100;
+    env.RPC_COMMISSION_BROKER_HTTPS_URL = 'https://broker-2.test';
+    vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+      sourceChainExpiryBlock: BigInt('1000'),
+      address: 'address',
+      channelId: 888,
+      issuedBlock: 123,
+      channelOpeningFee: 100n,
+    });
+
+    const result = await openSwapDepositChannel({
+      srcAsset: 'FLIP',
+      srcChain: 'Ethereum',
+      destAsset: 'DOT',
+      destChain: 'Polkadot',
+      destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
+      expectedDepositAmount: '777',
+      fillOrKillParams: {
+        refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        retryDurationBlocks: 2,
+        minPriceX128: '1',
+        maxOraclePriceSlippage: 50,
+      },
+      takeCommission: true,
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "brokerCommissionBps": 100,
+        "channelOpeningFee": 100n,
+        "depositAddress": "address",
+        "estimatedExpiryTime": 1699534500000,
+        "id": "123-Ethereum-888",
+        "issuedBlock": 123,
+        "maxBoostFeeBps": 0,
+        "srcChainExpiryBlock": 1000n,
+      }
+    `);
+    expect(vi.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
+    expect(await prisma.swapDepositChannel.findFirst({ include: { quote: true } })).toMatchSnapshot(
+      {
+        id: expect.any(BigInt),
+        createdAt: expect.any(Date),
+      },
+    );
+  });
+
   it('rejects if source asset is disabled', async () => {
     env.FULLY_DISABLED_INTERNAL_ASSETS = new Set(['Flip', 'Btc']);
 
@@ -334,6 +390,7 @@ describe(openSwapDepositChannel, () => {
         destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
         expectedDepositAmount: '777',
         fillOrKillParams: {
+          maxOraclePriceSlippage: 100,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           retryDurationBlocks: 2,
           minPriceX128: '1',
@@ -354,6 +411,7 @@ describe(openSwapDepositChannel, () => {
         destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
         expectedDepositAmount: '777',
         fillOrKillParams: {
+          maxOraclePriceSlippage: 100,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           retryDurationBlocks: 2,
           minPriceX128: '1',
@@ -376,6 +434,7 @@ describe(openSwapDepositChannel, () => {
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
         retryDurationBlocks: 2,
         minPriceX128: '1',
+        maxOraclePriceSlippage: null,
       },
     } as const;
 
@@ -417,6 +476,7 @@ describe(openSwapDepositChannel, () => {
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
         retryDurationBlocks: 2,
         minPriceX128: '1',
+        maxOraclePriceSlippage: null,
       },
       ccmParams: {
         message: '0xdeadbeef',
@@ -564,51 +624,44 @@ describe('openSwapDepositChannelSchema', () => {
     ).not.toThrow();
   });
 
-  it('creates channel with a commission', async () => {
-    mockRpcResponse({ data: environment() });
-    env.BROKER_COMMISSION_BPS = 100;
-    env.RPC_COMMISSION_BROKER_HTTPS_URL = 'https://broker-2.test';
-    vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
-      sourceChainExpiryBlock: BigInt('1000'),
-      address: 'address',
-      channelId: 888,
-      issuedBlock: 123,
-      channelOpeningFee: 100n,
-    });
+  it('allows FoK params without maxOraclePriceSlippage', () => {
+    expect(() =>
+      openSwapDepositChannelSchema.parse({
+        ...swapBody,
+        fillOrKillParams: {
+          retryDurationBlocks: 10,
+          refundAddress: '0x1234',
+          minPriceX128: '1',
+        },
+      }),
+    ).not.toThrow();
+  });
 
-    const result = await openSwapDepositChannel({
-      srcAsset: 'FLIP',
-      srcChain: 'Ethereum',
-      destAsset: 'DOT',
-      destChain: 'Polkadot',
-      destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
-      expectedDepositAmount: '777',
-      fillOrKillParams: {
-        refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-        retryDurationBlocks: 2,
-        minPriceX128: '1',
-      },
-      takeCommission: true,
-    });
+  it('allows FoK params with maxOraclePriceSlippage', () => {
+    expect(() =>
+      openSwapDepositChannelSchema.parse({
+        ...swapBody,
+        fillOrKillParams: {
+          retryDurationBlocks: 10,
+          refundAddress: '0x1234',
+          minPriceX128: '1',
+          maxOraclePriceSlippage: 100,
+        },
+      }),
+    ).not.toThrow();
+  });
 
-    expect(result).toMatchInlineSnapshot(`
-      {
-        "brokerCommissionBps": 100,
-        "channelOpeningFee": 100n,
-        "depositAddress": "address",
-        "estimatedExpiryTime": 1699534500000,
-        "id": "123-Ethereum-888",
-        "issuedBlock": 123,
-        "maxBoostFeeBps": 0,
-        "srcChainExpiryBlock": 1000n,
-      }
-    `);
-    expect(vi.mocked(broker.requestSwapDepositAddress).mock.calls).toMatchSnapshot();
-    expect(await prisma.swapDepositChannel.findFirst({ include: { quote: true } })).toMatchSnapshot(
-      {
-        id: expect.any(BigInt),
-        createdAt: expect.any(Date),
-      },
-    );
+  it('throws if maxOraclePriceSlippage is not in basis points', () => {
+    expect(() =>
+      openSwapDepositChannelSchema.parse({
+        ...swapBody,
+        fillOrKillParams: {
+          retryDurationBlocks: 10,
+          refundAddress: '0x1234',
+          minPriceX128: '1',
+          maxOraclePriceSlippage: 0.5,
+        },
+      }),
+    ).toThrow('must be in basis points');
   });
 });

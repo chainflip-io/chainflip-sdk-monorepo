@@ -20,6 +20,7 @@ export const hexStringWithMaxByteSize = (maxByteSize: number) =>
   hexString.refine((val) => val.length / 2 <= maxByteSize + 1, {
     message: `String must be less than or equal to ${maxByteSize} bytes`,
   });
+export const basisPoints = z.number().int({ message: 'must be in basis points' });
 
 export const DOT_PREFIX = 0;
 

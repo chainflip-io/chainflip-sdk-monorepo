@@ -253,8 +253,8 @@ importers:
         specifier: ^1.2.6
         version: 1.2.6(typescript@5.8.3)
       '@chainflip/processor':
-        specifier: ~1.11.1
-        version: 1.11.1
+        specifier: ~1.11.7
+        version: 1.11.7
       '@chainflip/redis':
         specifier: ^1.0.2
         version: 1.0.2
@@ -482,8 +482,8 @@ packages:
   '@chainflip/bitcoin@1.2.6':
     resolution: {integrity: sha512-nwv70OsKNuHMTHrHYhHKwRxfXMOjBCdm4DnQnHnA/qxTJuwiCbzoOVUkLdU9VskMn99aamtoaCz6ozI0OSaYHA==}
 
-  '@chainflip/processor@1.11.1':
-    resolution: {integrity: sha512-TzdrBqYZxsUJ2HZaesKHt+I/x50Vk+Gik9iqxoNENNxhGPs5EZ8ZP85QNwSssEbVMMnPjFjj8wQuhJ/1XFeSNg==}
+  '@chainflip/processor@1.11.7':
+    resolution: {integrity: sha512-VIMi1I0ovNncduirxKrRnhuPNnfQUBKTMuRnI2x6LNAaKg2UAG/fB/tEVTzOtMSyN9iqWpjVLpmCH4xho59lbw==}
 
   '@chainflip/redis@1.0.2':
     resolution: {integrity: sha512-ahkz+xKt5pX1gx4QikphdvTpZX8fjNgi/84q1WLXaAOoUop4pWdUw/boXv7rzg2xIqIdvDFk82/zz1g0OmiySQ==}
@@ -505,6 +505,9 @@ packages:
 
   '@chainflip/utils@0.8.17':
     resolution: {integrity: sha512-+PYWamkxlMwxbOTmxzyyZOQrop2roCYqWH6rLj/AVxm10RykQsiWiVRp5nqEHjhQMjpAoQPRJk/s3G8pJI0TQg==}
+
+  '@chainflip/utils@0.8.18':
+    resolution: {integrity: sha512-qaKtasZSfCcEICR3Bo6IUabOkBsmldsKmDbGTRr0WBQlUyOA2SNwZRN9EP73ZQofWyI3luRN2tFGS54O3bYazQ==}
 
   '@chainflip/utils@0.8.6':
     resolution: {integrity: sha512-g15TNn6Ab/XHfyQfHqNNjzxdaGGdUSOLrY/Caq1n1x6Wm6KspRp2Oy8Jl5VXd4M9wed1RJRsR9dKS1Z1uMtLvA==}
@@ -5673,9 +5676,9 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@chainflip/processor@1.11.1':
+  '@chainflip/processor@1.11.7':
     dependencies:
-      '@chainflip/utils': 0.8.6
+      '@chainflip/utils': 0.8.18
       zod: 3.25.76
 
   '@chainflip/redis@1.0.2':
@@ -5725,6 +5728,12 @@ snapshots:
       date-fns: 4.1.0
 
   '@chainflip/utils@0.8.17':
+    dependencies:
+      '@date-fns/utc': 2.1.1
+      bignumber.js: 9.3.1
+      date-fns: 4.1.0
+
+  '@chainflip/utils@0.8.18':
     dependencies:
       '@date-fns/utc': 2.1.1
       bignumber.js: 9.3.1

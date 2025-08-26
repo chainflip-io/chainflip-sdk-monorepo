@@ -37,6 +37,7 @@ export const openSwapDepositChannelSchema = z
         egressAmount: z.string(),
         estimatedPrice: z.string(),
         recommendedSlippageTolerancePercent: z.number().optional(),
+        recommendedLivePriceSlippageTolerancePercent: z.number().optional(),
       })
       .optional(),
     takeCommission: z.boolean().optional(),
@@ -146,7 +147,10 @@ export const openSwapDepositChannel = async ({
         quotedEgressAmount: input.quote.egressAmount,
         quotedPrice: input.quote.estimatedPrice,
         slippageTolerancePercent: getSlippageTolerancePercent(input),
+        livePriceSlippageTolerancePercent: input.fillOrKillParams.maxOraclePriceSlippage,
         recommendedSlippageTolerancePercent: input.quote.recommendedSlippageTolerancePercent,
+        recommendedLivePriceSlippageTolerancePercent:
+          input.quote.recommendedLivePriceSlippageTolerancePercent,
         inputAssetPriceAtChannelOpening: inputPrice,
         outputAssetPriceAtChannelOpening: outputPrice,
         indexPriceAtChannelOpening:
@@ -180,6 +184,7 @@ export const openSwapDepositChannel = async ({
       fokMinPriceX128: fillOrKillParams.minPriceX128,
       fokRetryDurationBlocks: fillOrKillParams.retryDurationBlocks,
       fokRefundAddress: fillOrKillParams.refundAddress,
+      fokMaxOraclePriceSlippage: fillOrKillParams.maxOraclePriceSlippage,
       dcaChunkIntervalBlocks: dcaParams?.chunkIntervalBlocks,
       dcaNumberOfChunks: dcaParams?.numberOfChunks,
       quote: quoteParam,

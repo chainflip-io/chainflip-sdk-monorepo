@@ -60,6 +60,7 @@ describe(parseFoKParams, () => {
     srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
     destAsset: { asset: 'ETH', chain: 'Ethereum' },
     estimatedPrice: '25.02922538655223706836',
+    recommendedLivePriceSlippageTolerancePercent: 0.5,
   } as const;
 
   it('calculates the minimum price based off the quote and slippage tolerance', () => {
@@ -69,6 +70,7 @@ describe(parseFoKParams, () => {
         quote,
       ),
     ).toStrictEqual({
+      maxOraclePriceSlippage: 50,
       minPriceX128: '83892489958826316385497263710123985244108278726772',
       refundAddress: '0x1234',
       retryDurationBlocks: 100,
@@ -83,6 +85,7 @@ describe(parseFoKParams, () => {
     expect(
       parseFoKParams({ minPrice, refundAddress: '0x1234', retryDurationBlocks: 100 }, quote),
     ).toStrictEqual({
+      maxOraclePriceSlippage: 50,
       minPriceX128: '83892489958826316385497263710123985244108278726772',
       refundAddress: '0x1234',
       retryDurationBlocks: 100,
@@ -189,5 +192,94 @@ describe(parseFoKParams, () => {
         quote,
       );
     }).toThrow('Either minPrice or slippageTolerancePercent must be provided');
+  });
+
+  it('does not set maxOraclePriceSlippage if livePriceSlippageTolerancePercent is false', () => {
+    expect(
+      parseFoKParams(
+        {
+          slippageTolerancePercent: 1.5,
+          refundAddress: '0x1234',
+          retryDurationBlocks: 100,
+          livePriceSlippageTolerancePercent: false,
+        },
+        quote,
+      ),
+    ).toStrictEqual({
+      maxOraclePriceSlippage: null,
+      minPriceX128: '83892489958826316385497263710123985244108278726772',
+      refundAddress: '0x1234',
+      retryDurationBlocks: 100,
+    });
+  });
+
+  it('sets the default livePriceSlippageTolerancePercent from quote if not provided', () => {
+    expect(
+      parseFoKParams(
+        {
+          slippageTolerancePercent: 1.5,
+          refundAddress: '0x1234',
+          retryDurationBlocks: 100,
+        },
+        quote,
+      ),
+    ).toStrictEqual({
+      maxOraclePriceSlippage: 50,
+      minPriceX128: '83892489958826316385497263710123985244108278726772',
+      refundAddress: '0x1234',
+      retryDurationBlocks: 100,
+    });
+  });
+
+  it('sets the livePriceSlippageTolerancePercent correctly', () => {
+    expect(
+      parseFoKParams(
+        {
+          livePriceSlippageTolerancePercent: 6.8,
+          slippageTolerancePercent: 1.5,
+          refundAddress: '0x1234',
+          retryDurationBlocks: 100,
+        },
+        quote,
+      ),
+    ).toStrictEqual({
+      maxOraclePriceSlippage: 680,
+      minPriceX128: '83892489958826316385497263710123985244108278726772',
+      refundAddress: '0x1234',
+      retryDurationBlocks: 100,
+    });
+  });
+
+  it('handles livePriceSlippageTolerancePercent as a string', () => {
+    expect(
+      parseFoKParams(
+        {
+          livePriceSlippageTolerancePercent: '6.8',
+          slippageTolerancePercent: 1.5,
+          refundAddress: '0x1234',
+          retryDurationBlocks: 100,
+        },
+        quote,
+      ),
+    ).toStrictEqual({
+      maxOraclePriceSlippage: 680,
+      minPriceX128: '83892489958826316385497263710123985244108278726772',
+      refundAddress: '0x1234',
+      retryDurationBlocks: 100,
+    });
+  });
+
+  it('throws if livePriceSlippageTolerancePercent is invalid', () => {
+    expect(() => {
+      parseFoKParams(
+        {
+          livePriceSlippageTolerancePercent: 'invalid',
+          slippageTolerancePercent: 1.5,
+          refundAddress: '0x1234',
+          retryDurationBlocks: 100,
+        },
+        quote,
+      );
+    }).toThrow('Invalid or missing live price slippage tolerance');
   });
 });

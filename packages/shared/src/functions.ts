@@ -64,26 +64,50 @@ type ParsedFoKParams = {
   refundAddress: string;
   retryDurationBlocks: number;
   minPriceX128: string;
+  maxOraclePriceSlippage: number;
 };
 
 const blocksPerMinute = 60 / CHAINFLIP_BLOCK_TIME_SECONDS;
 
 export function parseFoKParams(
   params: FillOrKillParams,
-  quote: Pick<Quote, 'srcAsset' | 'destAsset' | 'estimatedPrice'>,
+  quote: Pick<
+    Quote,
+    'srcAsset' | 'destAsset' | 'estimatedPrice' | 'recommendedLivePriceSlippageTolerancePercent'
+  >,
 ): ParsedFoKParams;
 export function parseFoKParams(
   params: FillOrKillParamsWithoutRefundAddress,
-  quote: Pick<Quote, 'srcAsset' | 'destAsset' | 'estimatedPrice'>,
+  quote: Pick<
+    Quote,
+    'srcAsset' | 'destAsset' | 'estimatedPrice' | 'recommendedLivePriceSlippageTolerancePercent'
+  >,
 ): Omit<ParsedFoKParams, 'refundAddress'>;
 export function parseFoKParams(
   params: FillOrKillParams | FillOrKillParamsWithoutRefundAddress,
-  quote: Pick<Quote, 'srcAsset' | 'destAsset' | 'estimatedPrice'>,
+  quote: Pick<
+    Quote,
+    'srcAsset' | 'destAsset' | 'estimatedPrice' | 'recommendedLivePriceSlippageTolerancePercent'
+  >,
 ) {
   const srcAsset = getInternalAsset(quote.srcAsset);
   const destAsset = getInternalAsset(quote.destAsset);
 
   let minPrice: string;
+  let livePriceSlippageTolerancePercent: BigNumber | null;
+
+  if (params.livePriceSlippageTolerancePercent === false) {
+    livePriceSlippageTolerancePercent = null;
+  } else {
+    livePriceSlippageTolerancePercent = new BigNumber(
+      params.livePriceSlippageTolerancePercent ||
+        quote.recommendedLivePriceSlippageTolerancePercent,
+    );
+    assert(
+      livePriceSlippageTolerancePercent && !livePriceSlippageTolerancePercent.isNaN(),
+      'Invalid or missing live price slippage tolerance',
+    );
+  }
 
   if ('minPrice' in params) {
     assert(
@@ -119,15 +143,19 @@ export function parseFoKParams(
       ? params.retryDurationBlocks
       : Math.max(Math.ceil(params.retryDurationMinutes * blocksPerMinute), 0);
 
+  const maxOraclePriceSlippage =
+    livePriceSlippageTolerancePercent?.multipliedBy(100).toNumber() ?? null;
+
   const parsed = {
     retryDurationBlocks,
     minPriceX128: getPriceX128FromPrice(minPrice, srcAsset, destAsset),
+    maxOraclePriceSlippage,
   };
 
   return 'refundAddress' in params ? { ...parsed, refundAddress: params.refundAddress } : parsed;
 }
 
 export const safeStringify = (obj: unknown) =>
-  JSON.stringify(obj, (key, value) => (typeof value === 'bigint' ? value.toString() : value));
+  JSON.stringify(obj, (_key, value) => (typeof value === 'bigint' ? value.toString() : value));
 
 export const isTestnet = (network: ChainflipNetwork): boolean => network !== 'mainnet';

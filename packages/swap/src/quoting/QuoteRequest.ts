@@ -24,7 +24,10 @@ import env from '../config/env.js';
 import { getBoostSafeMode } from '../polkadot/api.js';
 import { getUsdValue, checkPriceWarning } from '../pricing/checkPriceWarning.js';
 import { getAssetPrice } from '../pricing/index.js';
-import { calculateRecommendedSlippage } from '../utils/autoSlippage.js';
+import {
+  calculateRecommendedLivePriceSlippage,
+  calculateRecommendedSlippage,
+} from '../utils/autoSlippage.js';
 import { getBoostFeeBpsForAmount } from '../utils/boost.js';
 import { assertRouteEnabled } from '../utils/env.js';
 import { getPoolFees } from '../utils/fees.js';
@@ -354,6 +357,10 @@ export default class QuoteRequest {
         dcaChunks,
         estimatedPrice,
         isOnChain: this.isOnChain,
+      }),
+      recommendedLivePriceSlippageTolerancePercent: await calculateRecommendedLivePriceSlippage({
+        srcAsset: this.srcAsset,
+        destAsset: this.destAsset,
       }),
       includedFees: includedFees.map((fee) => ({ ...fee, amount: fee.amount.toString() })),
       lowLiquidityWarning,
