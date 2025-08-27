@@ -342,6 +342,9 @@ describe(swapDepositAddressReady, () => {
       },
     });
 
-    expect(swapDepositChannel).toMatchSnapshot();
+    expect(swapDepositChannel).toMatchSnapshot({
+      id: expect.any(BigInt),
+      createdAt: expect.any(Date),
+    });
   });
 });
