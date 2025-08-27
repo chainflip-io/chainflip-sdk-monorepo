@@ -11,6 +11,36 @@ import swapDepositAddressReady from '../swapDepositAddressReady.js';
 const eventMock = swapDepositAddressReadyMocked;
 const ccmEventMock = swapDepositAddressReadyCcmParamsMocked;
 
+const eventMock11100 = {
+  ...eventMock,
+  event: {
+    ...eventMock.event,
+    args: {
+      boostFee: 0,
+      brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
+      channelId: '6',
+      sourceAsset: { __kind: 'Eth' },
+      affiliateFees: [],
+      depositAddress: { value: '0xe720e23f62efc931d465a9d16ca303d72ad6c0bc', __kind: 'Eth' },
+      destinationAsset: { __kind: 'Usdc' },
+      refundParameters: {
+        minPrice: '0',
+        refundAddress: { value: '0xc64722ad9613851b10e26ff8118a7696a0f956f2', __kind: 'Eth' },
+        retryDuration: 10,
+        maxOraclePriceSlippage: 100,
+      },
+      channelOpeningFee: '0',
+      destinationAddress: {
+        value: '0xfd69d085d07b646b582f00b5bc7029a10b8ac560',
+        __kind: 'Eth',
+      },
+      brokerCommissionRate: 0,
+      sourceChainExpiryBlock: '8114',
+    },
+  },
+  block: eventMock.block,
+};
+
 describe(swapDepositAddressReady, () => {
   beforeEach(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", private."DepositChannel", "ChainTracking", "SwapBeneficiary" CASCADE`;
@@ -297,5 +327,21 @@ describe(swapDepositAddressReady, () => {
     expect(swapDepositChannel.fokRetryDurationBlocks).toEqual(15);
     expect(swapDepositChannel.dcaNumberOfChunks).toEqual(100);
     expect(swapDepositChannel.dcaChunkIntervalBlocks).toEqual(5);
+  });
+
+  it('handles v.1.11 (maxOraclePriceSlippage)', async () => {
+    await swapDepositAddressReady({
+      prisma,
+      event: eventMock11100.event,
+      block: eventMock11100.block,
+    });
+
+    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
+      where: {
+        channelId: BigInt(eventMock11100.event.args.channelId),
+      },
+    });
+
+    expect(swapDepositChannel).toMatchSnapshot();
   });
 });

@@ -1,4 +1,5 @@
 import { swappingSwapRequested as schema11000 } from '@chainflip/processor/11000/swapping/swapRequested';
+import { swappingSwapRequested as schema11100 } from '@chainflip/processor/11100/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
 import { bytesToHex } from '@chainflip/utils/bytes';
 import { assetConstants } from '@chainflip/utils/chainflip';
@@ -151,6 +152,42 @@ const depositChannel11000 = {
     chunkInterval: 2,
   },
   swapRequestId: '2',
+} as const satisfies SwapRequestedArgs;
+
+const depositChannel11100 = {
+  origin: {
+    __kind: 'DepositChannel',
+    brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
+    channelId: '6',
+    depositAddress: { value: '0xe720e23f62efc931d465a9d16ca303d72ad6c0bc', __kind: 'Eth' },
+    depositBlockHeight: '8298',
+  },
+  brokerFees: [
+    { bps: 0, account: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125' },
+  ],
+  inputAsset: { __kind: 'Flip' },
+  inputAmount: '99999999999943986559',
+  outputAsset: { __kind: 'Usdc' },
+  requestType: {
+    __kind: 'Regular',
+    outputAction: {
+      __kind: 'Egress',
+      outputAddress: { value: '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266', __kind: 'Eth' },
+    },
+  },
+  swapRequestId: '16',
+  priceLimitsAndExpiry: {
+    minPrice: '3365362323717425440129526627',
+    maxOraclePriceSlippage: 100,
+    expiryBehaviour: {
+      __kind: 'RefundIfExpires',
+      refundAddress: {
+        value: { value: '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266', __kind: 'Eth' },
+        __kind: 'ExternalAddress',
+      },
+      retryDuration: 10,
+    },
+  },
 } as const satisfies SwapRequestedArgs;
 
 const solDepositChannel11000 = {
@@ -464,5 +501,40 @@ describe(swapRequested, () => {
     });
 
     expect(schema11000.safeParse(swapRequestedEvent)).toBeTruthy();
+  });
+
+  it('parses 1.11 event correctly', async () => {
+    const swapRequestedEvent = check<SwapRequestedArgs>(depositChannel11100);
+    expect(schema11100.safeParse(swapRequestedEvent)).toBeTruthy();
+  });
+
+  it('handles 1.11 (maxOraclePriceSlippage)', async () => {
+    const channel = await prisma.swapDepositChannel.create({
+      data: {
+        srcChain: assetConstants[depositChannel11100.inputAsset.__kind].chain,
+        depositAddress: depositChannel11100.origin.depositAddress.value,
+        issuedBlock: 1,
+        channelId: BigInt(depositChannel11100.origin.channelId),
+        isExpired: false,
+        srcAsset: depositChannel11100.inputAsset.__kind,
+        destAsset: depositChannel11100.outputAsset.__kind,
+        destAddress: depositChannel11100.requestType.outputAction.outputAddress.value,
+        totalBrokerCommissionBps: 0,
+        openingFeePaid: 0,
+      },
+    });
+
+    await swapRequested({ prisma, event: { ...event, args: depositChannel11100 }, block });
+
+    const request = await prisma.swapRequest.findFirstOrThrow();
+
+    expect(request.swapDepositChannelId).toBe(channel.id);
+    expect(request).toMatchSnapshot({
+      id: expect.any(BigInt),
+      swapDepositChannelId: expect.any(BigInt),
+    });
+    expect(request.fokMaxOraclePriceSlippage).toBe(
+      depositChannel11100.priceLimitsAndExpiry.maxOraclePriceSlippage,
+    );
   });
 });

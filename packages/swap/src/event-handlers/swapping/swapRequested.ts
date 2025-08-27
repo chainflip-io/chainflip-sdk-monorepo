@@ -14,13 +14,13 @@ import { formatForeignChainAddress } from '../common.js';
 import type { EventHandlerArgs } from '../index.js';
 
 const schema = z.union([
-  schema11100.transform(({ priceLimitsAndExpiry, ...rest }) => ({
+  schema11100.strict().transform(({ priceLimitsAndExpiry, ...rest }) => ({
     ...rest,
     refundParameters: priceLimitsAndExpiry && {
       v11: priceLimitsAndExpiry,
     },
   })),
-  schema11000.transform(({ refundParameters, ...rest }) => ({
+  schema11000.strict().transform(({ refundParameters, ...rest }) => ({
     ...rest,
     refundParameters: refundParameters && {
       v10: refundParameters,
@@ -168,7 +168,7 @@ const extractRefundParameters = (refundParameters: z.output<typeof schema>['refu
       }
       fokRetryDurationBlocks = refundParameters.v11.expiryBehaviour.retryDuration;
     } else if (refundParameters.v11.expiryBehaviour.__kind === 'NoExpiry') {
-      // I think this is part of lending. do nothing for now.
+      // I think this is part of lending. Do nothing for now.
     }
   }
   // TODO(1.11): remove this once we're live on all environments
