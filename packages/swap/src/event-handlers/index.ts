@@ -22,7 +22,7 @@ import creditedOnChain from './swapping/creditedOnChain.js';
 import refundedOnChain from './swapping/refundedOnChain.js';
 import refundEgressIgnored from './swapping/refundEgressIgnored.js';
 import refundEgressScheduled from './swapping/refundEgressScheduled.js';
-import swapCanceled from './swapping/swapCanceled.js';
+import swapAborted from './swapping/swapAborted.js';
 import swapDepositAddressReady from './swapping/swapDepositAddressReady.js';
 import swapEgressIgnored from './swapping/swapEgressIgnored.js';
 import swapEgressScheduled from './swapping/swapEgressScheduled.js';
@@ -76,7 +76,7 @@ export const events = {
     SwapRequestCompleted: 'Swapping.SwapRequestCompleted',
     CreditedOnChain: 'Swapping.CreditedOnChain',
     RefundedOnChain: 'Swapping.RefundedOnChain',
-    SwapCanceled: 'Swapping.SwapCanceled',
+    SwapAborted: 'Swapping.SwapAborted',
   },
   ...genericPalletEvents('IngressEgress', [
     'BatchBroadcastRequested',
@@ -233,7 +233,7 @@ const handlers = [
   },
   {
     spec: '1.11.0' as Semver,
-    handlers: [{ name: events.Swapping.SwapCanceled, handler: swapCanceled }],
+    handlers: [{ name: events.Swapping.SwapAborted, handler: swapAborted }],
   },
 ];
 

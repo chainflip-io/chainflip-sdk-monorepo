@@ -1,9 +1,9 @@
 import { baseChainflipAssets } from '@chainflip/utils/chainflip';
 import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
 import prisma from '../../../client.js';
-import swapCanceled from '../swapCanceled.js';
+import swapAborted from '../swapAborted.js';
 
-describe(swapCanceled, () => {
+describe(swapAborted, () => {
   beforeAll(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE public."Pool" CASCADE`;
     await prisma.pool.createMany({
@@ -47,16 +47,16 @@ describe(swapCanceled, () => {
     });
 
     expect({
-      swapCanceledAt: swap.swapCanceledAt,
-      swapCanceledBlockIndex: swap.swapCanceledBlockIndex,
+      swapAbortedAt: swap.swapAbortedAt,
+      swapAbortedBlockIndex: swap.swapAbortedBlockIndex,
       swapExecutedAt: swap.swapExecutedAt,
     }).toMatchSnapshot({
-      swapCanceledAt: null,
-      swapCanceledBlockIndex: null,
+      swapAbortedAt: null,
+      swapAbortedBlockIndex: null,
       swapExecutedAt: null,
     });
 
-    await swapCanceled({
+    await swapAborted({
       prisma,
       block: {
         hash: '0x123',
@@ -67,7 +67,7 @@ describe(swapCanceled, () => {
       event: {
         name: 'Swapping.SwapCanceled',
         indexInBlock: 42,
-        args: { swapId: '612' },
+        args: { swapId: '612', reason: { __kind: 'MinPriceViolation' } },
       },
     });
 
@@ -76,12 +76,13 @@ describe(swapCanceled, () => {
     });
 
     expect({
-      swapCanceledAt: updatedSwap.swapCanceledAt,
-      swapCanceledBlockIndex: updatedSwap.swapCanceledBlockIndex,
+      swapAbortedAt: updatedSwap.swapAbortedAt,
+      swapAbortedBlockIndex: updatedSwap.swapAbortedBlockIndex,
       swapExecutedAt: updatedSwap.swapExecutedAt,
+      swapAbortedReason: updatedSwap.swapAbortedReason,
     }).toMatchSnapshot({
-      swapCanceledAt: expect.any(Date),
-      swapCanceledBlockIndex: expect.any(String),
+      swapAbortedAt: expect.any(Date),
+      swapAbortedBlockIndex: expect.any(String),
       swapExecutedAt: null,
     });
   });
