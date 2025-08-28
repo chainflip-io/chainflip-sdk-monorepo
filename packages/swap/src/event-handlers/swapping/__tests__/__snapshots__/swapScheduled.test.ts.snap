@@ -19,6 +19,7 @@ exports[`swapScheduled > creates a swap for a swap request 1`] = `
   "effectiveBoostFeeBps": null,
   "egressId": null,
   "fallbackEgressId": null,
+  "fokMaxOraclePriceSlippage": null,
   "fokMinPriceX128": null,
   "fokRefundAddress": null,
   "fokRetryDurationBlocks": null,

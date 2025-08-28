@@ -16,7 +16,14 @@ import BigNumber from 'bignumber.js';
 import { z } from 'zod';
 import { assert } from './guards.js';
 import { transformKeysToCamelCase } from './objects.js';
-import { numericString, assetAndChain, unsignedInteger, DOT_PREFIX, hexString } from './parsers.js';
+import {
+  numericString,
+  assetAndChain,
+  unsignedInteger,
+  DOT_PREFIX,
+  hexString,
+  basisPoints,
+} from './parsers.js';
 import {
   affiliateBroker,
   AffiliateBroker,
@@ -50,11 +57,13 @@ const transformedFokSchema = z
     retryDurationBlocks: z.number(),
     refundAddress: z.string(),
     minPriceX128: numericString,
+    maxOraclePriceSlippage: basisPoints.nullish().transform((v) => v ?? null),
   })
-  .transform(({ retryDurationBlocks, refundAddress, minPriceX128 }) => ({
+  .transform(({ retryDurationBlocks, refundAddress, minPriceX128, maxOraclePriceSlippage }) => ({
     retry_duration: retryDurationBlocks,
     refund_address: refundAddress!,
     min_price: `0x${BigInt(minPriceX128).toString(16)}` as const,
+    max_oracle_price_slippage: maxOraclePriceSlippage,
   }));
 
 const transformedDcaParamsSchema = dcaParamsSchema.transform(
@@ -157,6 +166,7 @@ export const getVaultSwapParameterEncodingRequestSchema = (network: ChainflipNet
           chain: 'Bitcoin',
           min_output_amount: `0x${BigInt(minOutputAmount).toString(16)}`,
           retry_duration: data.fillOrKillParams.retry_duration,
+          max_oracle_price_slippage: data.fillOrKillParams.max_oracle_price_slippage,
         } as const;
       } else if (data.srcAsset.chain === 'Ethereum' || data.srcAsset.chain === 'Arbitrum') {
         extraParams = {

@@ -58,6 +58,7 @@ const vaultSwapRequest = {
     slippageTolerancePercent: quote.recommendedSlippageTolerancePercent,
     refundAddress: keypair.publicKey.toBase58(),
     retryDurationBlocks: 100,
+    livePriceSlippageTolerancePercent: quote.recommendedLivePriceSlippageTolerancePercent,
   },
   extraParams: {
     seed: generateSeed(),

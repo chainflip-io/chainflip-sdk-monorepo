@@ -58,11 +58,13 @@ describe(encodeVaultSwapData, () => {
         chain: 'Bitcoin',
         min_output_amount: '0xfc6f7c40458122964d0000000',
         retry_duration: 500,
+        max_oracle_price_slippage: null,
       },
       fillOrKillParams: {
         retry_duration: 500,
         refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
         min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+        max_oracle_price_slippage: null,
       },
       ccmParams: {
         gas_budget: '0x75bcd15',
@@ -83,7 +85,7 @@ describe(encodeVaultSwapData, () => {
       },
     });
 
-    expect(postSpy).toHaveBeenCalledWith('https://rpc-broker.test', [
+    expect(postSpy).toHaveBeenNthCalledWith(2, 'https://rpc-broker.test', [
       {
         id: expect.any(String),
         jsonrpc: '2.0',
@@ -101,6 +103,7 @@ describe(encodeVaultSwapData, () => {
           0, // ignores commission
           {
             chain: 'Bitcoin',
+            max_oracle_price_slippage: null,
             min_output_amount: '0xfc6f7c40458122964d0000000',
             retry_duration: 500,
           },
@@ -162,11 +165,13 @@ describe(encodeVaultSwapData, () => {
         chain: 'Bitcoin',
         min_output_amount: '0xfc6f7c40458122964d0000000',
         retry_duration: 500,
+        max_oracle_price_slippage: 50,
       },
       fillOrKillParams: {
         retry_duration: 500,
         refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
         min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+        max_oracle_price_slippage: 50,
       },
       ccmParams: {
         gas_budget: '0x75bcd15',
@@ -187,7 +192,7 @@ describe(encodeVaultSwapData, () => {
       },
     });
 
-    expect(postSpy).toHaveBeenCalledWith('http://rpc-node.test', [
+    expect(postSpy).toHaveBeenNthCalledWith(2, 'http://rpc-node.test', [
       {
         id: expect.any(String),
         jsonrpc: '2.0',
@@ -206,6 +211,7 @@ describe(encodeVaultSwapData, () => {
           15,
           {
             chain: 'Bitcoin',
+            max_oracle_price_slippage: 50,
             min_output_amount: '0xfc6f7c40458122964d0000000',
             retry_duration: 500,
           },
@@ -273,11 +279,13 @@ describe(encodeVaultSwapData, () => {
         chain: 'Bitcoin',
         min_output_amount: '0xfc6f7c40458122964d0000000',
         retry_duration: 500,
+        max_oracle_price_slippage: 50,
       },
       fillOrKillParams: {
         retry_duration: 500,
         refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
         min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+        max_oracle_price_slippage: 50,
       },
       maxBoostFeeBps: 35,
     });
@@ -317,11 +325,13 @@ describe(encodeVaultSwapData, () => {
           chain: 'Bitcoin',
           min_output_amount: '0xfc6f7c40458122964d0000000',
           retry_duration: 500,
+          max_oracle_price_slippage: 50,
         },
         fillOrKillParams: {
           retry_duration: 500,
           refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+          max_oracle_price_slippage: 50,
         },
       }),
     ).rejects.toThrow('Asset Btc is disabled');
@@ -341,11 +351,13 @@ describe(encodeVaultSwapData, () => {
           chain: 'Bitcoin',
           min_output_amount: '0xfc6f7c40458122964d0000000',
           retry_duration: 500,
+          max_oracle_price_slippage: 50,
         },
         fillOrKillParams: {
           retry_duration: 500,
           refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+          max_oracle_price_slippage: 50,
         },
       }),
     ).rejects.toThrow('Asset Dot is disabled');
@@ -373,6 +385,7 @@ describe('encodeVaultSwapDataSchema', () => {
         refundAddress: '3yKDHJgzS2GbZB9qruoadRYtq8597HZifnRju7fHpdRC',
         minPriceX128: '1',
         retryDurationBlocks: 100,
+        maxOraclePriceSlippage: 50,
       },
     };
 
@@ -390,6 +403,7 @@ describe('encodeVaultSwapDataSchema', () => {
           "from": "3yKDHJgzS2GbZB9qruoadRYtq8597HZifnRju7fHpdRC",
           "input_amount": "0x1",
           "refund_parameters": {
+            "max_oracle_price_slippage": 50,
             "min_price": "0x1",
             "refund_address": "3yKDHJgzS2GbZB9qruoadRYtq8597HZifnRju7fHpdRC",
             "retry_duration": 100,
@@ -397,6 +411,7 @@ describe('encodeVaultSwapDataSchema', () => {
           "seed": "0x000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
         },
         "fillOrKillParams": {
+          "max_oracle_price_slippage": 50,
           "min_price": "0x1",
           "refund_address": "3yKDHJgzS2GbZB9qruoadRYtq8597HZifnRju7fHpdRC",
           "retry_duration": 100,

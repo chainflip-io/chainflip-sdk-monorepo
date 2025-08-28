@@ -19,6 +19,7 @@ exports[`refundEgressIgnored > handles refundEgressIgnored event 1`] = `
   "effectiveBoostFeeBps": null,
   "egressId": null,
   "fallbackEgressId": null,
+  "fokMaxOraclePriceSlippage": null,
   "fokMinPriceX128": null,
   "fokRefundAddress": null,
   "fokRetryDurationBlocks": null,

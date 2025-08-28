@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { calculateExpiryTime } from '../../utils/function.js';
 import { EventHandlerArgs } from '../index.js';
 
-const swapDepositAddressReadyArgs = z.union([schema11100, schema11000]);
+const swapDepositAddressReadyArgs = z.union([schema11100.strict(), schema11000.strict()]);
 
 export type SwapDepositAddressReadyArgs = z.input<typeof swapDepositAddressReadyArgs>;
 
@@ -56,6 +56,12 @@ const swapDepositAddressReady = async ({
     })),
   ].filter(({ commissionBps }) => commissionBps > 0);
 
+  // TODO(1.11): refactor this so check is not needed
+  let fokMaxOraclePriceSlippage;
+  if ('maxOraclePriceSlippage' in refundParameters) {
+    fokMaxOraclePriceSlippage = refundParameters.maxOraclePriceSlippage;
+  }
+
   const data = {
     srcChain: depositAddress.chain,
     srcAsset: sourceAsset,
@@ -71,6 +77,7 @@ const swapDepositAddressReady = async ({
     fokMinPriceX128: refundParameters?.minPrice.toString(),
     fokRefundAddress: refundParameters?.refundAddress.address,
     fokRetryDurationBlocks: refundParameters?.retryDuration,
+    fokMaxOraclePriceSlippage,
     dcaNumberOfChunks: dcaParameters?.numberOfChunks,
     dcaChunkIntervalBlocks: dcaParameters?.chunkInterval,
     createdAt: new Date(block.timestamp),

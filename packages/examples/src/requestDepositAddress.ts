@@ -28,6 +28,7 @@ const channel = await swapSDK.requestDepositAddressV2({
     slippageTolerancePercent: quote.recommendedSlippageTolerancePercent,
     refundAddress: '0xcDb829647668b72D6046a1b5fA852De553261030',
     retryDurationBlocks: 100,
+    livePriceSlippageTolerancePercent: quote.recommendedLivePriceSlippageTolerancePercent,
   },
   ccmParams: {
     message: '0x010000002f010064000184ff44ab00000000f401',

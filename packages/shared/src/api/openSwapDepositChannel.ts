@@ -21,6 +21,7 @@ export const OpenSwapDepositChannelBody = z
         egressAmount: z.string(),
         estimatedPrice: z.string(),
         recommendedSlippageTolerancePercent: z.number().optional(),
+        recommendedLivePriceSlippageTolerancePercent: z.number().optional(),
       })
       .optional(),
     takeCommission: z.boolean().optional(),

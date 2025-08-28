@@ -14,12 +14,16 @@ import { formatForeignChainAddress } from '../common.js';
 import type { EventHandlerArgs } from '../index.js';
 
 const schema = z.union([
-  schema11100,
-  schema11000.transform(({ refundParameters, ...rest }) => ({
+  schema11100.strict().transform(({ priceLimitsAndExpiry, ...rest }) => ({
+    ...rest,
+    refundParameters: priceLimitsAndExpiry && {
+      v11: priceLimitsAndExpiry,
+    },
+  })),
+  schema11000.strict().transform(({ refundParameters, ...rest }) => ({
     ...rest,
     refundParameters: refundParameters && {
-      ...refundParameters,
-      refundAddress: refundParameters.refundDestination,
+      v10: refundParameters,
     },
   })),
 ]);
@@ -145,27 +149,54 @@ export const getOriginInfo = async (
 const extractRefundParameters = (refundParameters: z.output<typeof schema>['refundParameters']) => {
   if (!refundParameters) return null;
 
-  let refundAddress;
+  let fokRefundAddress;
+  let fokMinPriceX128;
+  let fokRetryDurationBlocks;
+  let fokMaxOraclePriceSlippage;
 
-  if (refundParameters.refundAddress.__kind === 'InternalAccount') {
-    refundAddress = refundParameters.refundAddress.value;
-  } else if (refundParameters.refundAddress.__kind === 'ExternalAddress') {
-    refundAddress =
-      'address' in refundParameters.refundAddress.value
-        ? refundParameters.refundAddress.value.address
-        : formatForeignChainAddress(refundParameters.refundAddress.value);
-  } else {
-    return assertNever(
-      refundParameters.refundAddress,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      `unexpected refund destination: ${(refundParameters.refundAddress as any).__kind}`,
-    );
+  // 1.11
+  if ('v11' in refundParameters) {
+    fokMinPriceX128 = refundParameters.v11.minPrice.toString();
+    fokMaxOraclePriceSlippage = refundParameters.v11.maxOraclePriceSlippage;
+    if (refundParameters.v11.expiryBehaviour.__kind === 'RefundIfExpires') {
+      if (refundParameters.v11.expiryBehaviour.refundAddress.__kind === 'InternalAccount') {
+        fokRefundAddress = refundParameters.v11.expiryBehaviour.refundAddress.value;
+      } else if (refundParameters.v11.expiryBehaviour.refundAddress.__kind === 'ExternalAddress') {
+        fokRefundAddress = formatForeignChainAddress(
+          refundParameters.v11.expiryBehaviour.refundAddress.value,
+        );
+      }
+      fokRetryDurationBlocks = refundParameters.v11.expiryBehaviour.retryDuration;
+    } else if (refundParameters.v11.expiryBehaviour.__kind === 'NoExpiry') {
+      // I think this is part of lending. Do nothing for now.
+    }
+  }
+  // TODO(1.11): remove this once we're live on all environments
+  if ('v10' in refundParameters) {
+    fokMinPriceX128 = refundParameters.v10.minPrice.toString();
+    fokRetryDurationBlocks = refundParameters.v10.retryDuration;
+
+    if (refundParameters.v10.refundDestination.__kind === 'InternalAccount') {
+      fokRefundAddress = refundParameters.v10.refundDestination.value;
+    } else if (refundParameters.v10.refundDestination.__kind === 'ExternalAddress') {
+      fokRefundAddress =
+        'address' in refundParameters.v10.refundDestination.value
+          ? refundParameters.v10.refundDestination.value.address
+          : formatForeignChainAddress(refundParameters.v10.refundDestination.value);
+    } else {
+      return assertNever(
+        refundParameters.v10.refundDestination,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        `unexpected refund destination: ${(refundParameters.v10.refundDestination as any).__kind}`,
+      );
+    }
   }
 
   return {
-    fokMinPriceX128: refundParameters.minPrice.toString(),
-    fokRefundAddress: refundAddress,
-    fokRetryDurationBlocks: refundParameters.retryDuration,
+    fokMinPriceX128,
+    fokRefundAddress,
+    fokRetryDurationBlocks,
+    fokMaxOraclePriceSlippage,
   };
 };
 

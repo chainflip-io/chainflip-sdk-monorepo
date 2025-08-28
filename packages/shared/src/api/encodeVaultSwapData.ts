@@ -23,10 +23,11 @@ const TransformedCcmParams = ccmParamsSchema.transform(
 );
 
 const FillOrKillParams = fillOrKillParamsSchema.transform(
-  ({ retryDurationBlocks, refundAddress, minPriceX128 }) => ({
+  ({ retryDurationBlocks, refundAddress, minPriceX128, maxOraclePriceSlippage }) => ({
     retry_duration: retryDurationBlocks,
     refund_address: refundAddress!,
     min_price: `0x${BigInt(minPriceX128).toString(16)}` as const,
+    max_oracle_price_slippage: maxOraclePriceSlippage,
   }),
 );
 
@@ -90,6 +91,7 @@ export const EncodeVaultSwapBody = z
         chain: 'Bitcoin',
         min_output_amount: `0x${BigInt(minOutputAmount).toString(16)}`,
         retry_duration: data.fillOrKillParams.retry_duration,
+        max_oracle_price_slippage: data.fillOrKillParams.max_oracle_price_slippage,
       } as const;
     } else if (data.srcAsset.chain === 'Ethereum' || data.srcAsset.chain === 'Arbitrum') {
       extraParams = {

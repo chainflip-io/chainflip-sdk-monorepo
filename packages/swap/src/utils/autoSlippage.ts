@@ -140,3 +140,11 @@ export const calculateRecommendedSlippage = async ({
 
   return recommendedSlippage;
 };
+
+export const calculateRecommendedLivePriceSlippage = async ({
+  srcAsset,
+  destAsset,
+}: {
+  srcAsset: ChainflipAsset;
+  destAsset: ChainflipAsset;
+}) => (isStableCoin(srcAsset) && isStableCoin(destAsset) ? 0.5 : 1);

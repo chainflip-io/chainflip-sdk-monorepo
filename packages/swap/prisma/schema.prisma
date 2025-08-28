@@ -60,37 +60,38 @@ enum InternalAsset {
 }
 
 model SwapDepositChannel {
-  id                       BigInt               @id @default(autoincrement())
-  channelId                BigInt
-  srcChain                 Chain
-  srcAsset                 InternalAsset
-  depositAddress           String
-  expectedDepositAmount    Decimal?             @db.Decimal(30, 0)
-  destAsset                InternalAsset
-  destAddress              String
-  ccmGasBudget             Decimal?             @db.Decimal(30, 0)
-  ccmMessage               String?
-  issuedBlock              Int
-  expiryBlock              Int? // TODO(mainnet): remove this column
-  srcChainExpiryBlock      BigInt?
-  totalBrokerCommissionBps Int
-  maxBoostFeeBps           Int                  @default(0)
-  isExpired                Boolean              @default(false)
-  createdAt                DateTime             @default(now())
-  failedSwaps              FailedSwap[]
-  estimatedExpiryAt        DateTime?
-  openedThroughBackend     Boolean              @default(false)
-  openingFeePaid           Decimal              @db.Decimal(30, 0)
-  beneficiaries            SwapBeneficiary[]
-  failedBoosts             FailedBoost[]
-  fokMinPriceX128          Decimal?             @db.Decimal(78, 0)
-  fokRefundAddress         String?
-  fokRetryDurationBlocks   Int?
-  dcaNumberOfChunks        Int?                 @default(1)
-  dcaChunkIntervalBlocks   Int?
-  swapRequests             SwapRequest[]
-  quote                    Quote?
-  solanaPendingTxRef       SolanaPendingTxRef[]
+  id                        BigInt               @id @default(autoincrement())
+  channelId                 BigInt
+  srcChain                  Chain
+  srcAsset                  InternalAsset
+  depositAddress            String
+  expectedDepositAmount     Decimal?             @db.Decimal(30, 0)
+  destAsset                 InternalAsset
+  destAddress               String
+  ccmGasBudget              Decimal?             @db.Decimal(30, 0)
+  ccmMessage                String?
+  issuedBlock               Int
+  expiryBlock               Int? // TODO(mainnet): remove this column
+  srcChainExpiryBlock       BigInt?
+  totalBrokerCommissionBps  Int
+  maxBoostFeeBps            Int                  @default(0)
+  isExpired                 Boolean              @default(false)
+  createdAt                 DateTime             @default(now())
+  failedSwaps               FailedSwap[]
+  estimatedExpiryAt         DateTime?
+  openedThroughBackend      Boolean              @default(false)
+  openingFeePaid            Decimal              @db.Decimal(30, 0)
+  beneficiaries             SwapBeneficiary[]
+  failedBoosts              FailedBoost[]
+  fokMinPriceX128           Decimal?             @db.Decimal(78, 0)
+  fokRefundAddress          String?
+  fokRetryDurationBlocks    Int?
+  fokMaxOraclePriceSlippage Int?
+  dcaNumberOfChunks         Int?                 @default(1)
+  dcaChunkIntervalBlocks    Int?
+  swapRequests              SwapRequest[]
+  quote                     Quote?
+  solanaPendingTxRef        SolanaPendingTxRef[]
 
   @@unique([issuedBlock, srcChain, channelId])
   @@index([depositAddress])
@@ -194,6 +195,7 @@ model SwapRequest {
   fokMinPriceX128            Decimal?             @db.Decimal(78, 0)
   fokRefundAddress           String?
   fokRetryDurationBlocks     Int?
+  fokMaxOraclePriceSlippage  Int?
   quote                      Quote?
   totalBrokerCommissionBps   Int
   beneficiaries              SwapBeneficiary[]
@@ -506,33 +508,35 @@ model StateChainError {
 }
 
 model Quote {
-  id                                  Int                @id @default(autoincrement())
-  swapDepositChannel                  SwapDepositChannel @relation(fields: [swapDepositChannelId], references: [id])
-  swapDepositChannelId                BigInt             @unique
-  channelOpenedAt                     DateTime
-  swapRequest                         SwapRequest?       @relation(fields: [swapRequestId], references: [id])
-  swapRequestId                       BigInt?            @unique
-  swapRequestNativeId                 BigInt?            @unique
-  srcAsset                            InternalAsset
-  destAsset                           InternalAsset
-  maxBoostFeeBps                      Int?
-  numberOfChunks                      Int?
-  expectedDepositAmount               Decimal            @db.Decimal(30, 0)
-  quotedIntermediateAmount            Decimal?           @db.Decimal(30, 0)
-  quotedEgressAmount                  Decimal            @db.Decimal(30, 0)
-  quotedPrice                         Decimal
-  inputAssetPriceAtChannelOpening     Decimal?
-  outputAssetPriceAtChannelOpening    Decimal?
-  indexPriceAtChannelOpening          Decimal?
-  slippageTolerancePercent            Decimal?
-  executedAt                          DateTime?
-  executedPrice                       Decimal?
-  executedSlippagePercent             Decimal?
-  inputAssetPriceAtCompletion         Decimal?
-  outputAssetPriceAtCompletion        Decimal?
-  indexPriceAtCompletion              Decimal?
-  recommendedSlippageTolerancePercent Decimal?
-  refundedAt                          DateTime?
+  id                                           Int                @id @default(autoincrement())
+  swapDepositChannel                           SwapDepositChannel @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId                         BigInt             @unique
+  channelOpenedAt                              DateTime
+  swapRequest                                  SwapRequest?       @relation(fields: [swapRequestId], references: [id])
+  swapRequestId                                BigInt?            @unique
+  swapRequestNativeId                          BigInt?            @unique
+  srcAsset                                     InternalAsset
+  destAsset                                    InternalAsset
+  maxBoostFeeBps                               Int?
+  numberOfChunks                               Int?
+  expectedDepositAmount                        Decimal            @db.Decimal(30, 0)
+  quotedIntermediateAmount                     Decimal?           @db.Decimal(30, 0)
+  quotedEgressAmount                           Decimal            @db.Decimal(30, 0)
+  quotedPrice                                  Decimal
+  inputAssetPriceAtChannelOpening              Decimal?
+  outputAssetPriceAtChannelOpening             Decimal?
+  indexPriceAtChannelOpening                   Decimal?
+  slippageTolerancePercent                     Decimal?
+  livePriceSlippageTolerancePercent            Decimal?
+  executedAt                                   DateTime?
+  executedPrice                                Decimal?
+  executedSlippagePercent                      Decimal?
+  inputAssetPriceAtCompletion                  Decimal?
+  outputAssetPriceAtCompletion                 Decimal?
+  indexPriceAtCompletion                       Decimal?
+  recommendedSlippageTolerancePercent          Decimal?
+  recommendedLivePriceSlippageTolerancePercent Decimal?
+  refundedAt                                   DateTime?
 
   @@schema("private")
 }

@@ -73,6 +73,7 @@ export default async function cliRequestSwapDepositAddress(
         retryDurationBlocks: 500,
         refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
         minPriceX128: '1',
+        maxOraclePriceSlippage: 100,
       },
     },
     {

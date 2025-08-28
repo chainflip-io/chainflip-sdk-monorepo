@@ -14,6 +14,7 @@ import {
   chainflipAddress,
   hexString,
   booleanString,
+  basisPoints,
 } from './parsers.js';
 
 export const quoteQuerySchema = z
@@ -166,6 +167,7 @@ export const fillOrKillParams = z.object({
   retryDurationBlocks: z.number(),
   refundAddress: z.string(),
   minPriceX128: numericString,
+  maxOraclePriceSlippage: basisPoints.nullish().transform((v) => v ?? null),
 });
 
 export type FillOrKillParamsX128 = z.input<typeof fillOrKillParams>;
@@ -221,6 +223,7 @@ interface BaseQuoteDetails {
   estimatedPrice: string;
   recommendedSlippageTolerancePercent: number;
   recommendedRetryDurationMinutes: number;
+  recommendedLivePriceSlippageTolerancePercent: number;
 }
 
 type WithBoostQuote<T> = Omit<T, 'boostQuote'> & BoostedQuoteDetails;
@@ -248,13 +251,24 @@ export type FillOrKillParamsWithSlippage = Omit<FillOrKillParamsX128, 'minPriceX
   slippageTolerancePercent: string | number;
 };
 
-export type FillOrKillParamsWithoutRefundAddress =
+export type FillOrKillParamsWithoutRefundAddress = {
+  livePriceSlippageTolerancePercent?: string | number | false;
+} & (
   | { minPrice: string; retryDurationBlocks: number }
   | { minPrice: string; retryDurationMinutes: number }
-  | { slippageTolerancePercent: string | number; retryDurationBlocks: number }
-  | { slippageTolerancePercent: string | number; retryDurationMinutes: number };
+  | {
+      slippageTolerancePercent: string | number;
+      retryDurationBlocks: number;
+    }
+  | {
+      slippageTolerancePercent: string | number;
+      retryDurationMinutes: number;
+    }
+);
 
-export type FillOrKillParams =
+export type FillOrKillParams = {
+  livePriceSlippageTolerancePercent?: string | number | false;
+} & (
   | { refundAddress: string; minPrice: string; retryDurationBlocks: number }
   | { refundAddress: string; minPrice: string; retryDurationMinutes: number }
   | {
@@ -266,4 +280,5 @@ export type FillOrKillParams =
       refundAddress: string;
       slippageTolerancePercent: string | number;
       retryDurationMinutes: number;
-    };
+    }
+);
