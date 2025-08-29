@@ -1444,7 +1444,11 @@ describe('server', () => {
             id: '0007832112-001110-2bc40',
             name: 'Swapping.SwapRescheduled',
             indexInBlock: 1110,
-            args: check<SwapRescheduledArgs>({ swapId: '740568', executeAt: 7832117 }),
+            args: check<SwapRescheduledArgs>({
+              swapId: '740568',
+              executeAt: 7832117,
+              reason: { __kind: 'PriceImpactLimit' },
+            }),
           },
           {
             id: '0007832117-001154-cbeba',

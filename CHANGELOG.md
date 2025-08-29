@@ -15,6 +15,8 @@ which it is deprecated.
   This value can be passed to `SwapSDK.prototype.requestDepositAddressV2` in `fillOKillParams` to override
   the default recommended value or to disable live price protection entirely. The property ensures that
   the swap is executed within the tolerance range of the asset's oracle price instead of the pool price.
+- `SwapSDK.prototype.getStatusV2` returns `abortedAt`, `abortedBlockIndex` and `abortedReason`
+  when a swap chunk is aborted and `latestSwapRescheduledReason` when a swap chunk is rescheduled
 
 ### Deprecated
 

@@ -218,27 +218,31 @@ enum SwapType {
 }
 
 model Swap {
-  id                              BigInt        @id @default(autoincrement())
+  id                              BigInt             @id @default(autoincrement())
   /// the swap id on the state chain
-  nativeId                        BigInt        @unique
+  nativeId                        BigInt             @unique
   type                            SwapType
   srcAsset                        InternalAsset
-  swapInputAmount                 Decimal       @db.Decimal(30, 0) // deposit amount after ingress fee was decucted
-  intermediateAmount              Decimal?      @db.Decimal(30, 0)
-  swapOutputAmount                Decimal?      @db.Decimal(30, 0) // output of the swap before egress fee is deducted
+  swapInputAmount                 Decimal            @db.Decimal(30, 0) // deposit amount after ingress fee was decucted
+  intermediateAmount              Decimal?           @db.Decimal(30, 0)
+  swapOutputAmount                Decimal?           @db.Decimal(30, 0) // output of the swap before egress fee is deducted
   fees                            SwapFee[]
   destAsset                       InternalAsset
+  swapAbortedAt                   DateTime?
+  swapAbortedBlockIndex           String?
+  swapAbortedReason               SwapFailureReason?
   swapExecutedAt                  DateTime?
   swapExecutedBlockIndex          String?
-  createdAt                       DateTime      @default(now())
-  updatedAt                       DateTime      @default(now()) @updatedAt
   swapScheduledAt                 DateTime
   swapScheduledBlockIndex         String
   latestSwapRescheduledAt         DateTime?
   latestSwapRescheduledBlockIndex String?
-  retryCount                      Int           @default(0)
-  swapRequest                     SwapRequest   @relation(fields: [swapRequestId], references: [id])
+  latestSwapRescheduledReason     SwapFailureReason?
+  retryCount                      Int                @default(0)
+  swapRequest                     SwapRequest        @relation(fields: [swapRequestId], references: [id])
   swapRequestId                   BigInt
+  createdAt                       DateTime           @default(now())
+  updatedAt                       DateTime           @default(now()) @updatedAt
 
   @@index([nativeId])
   @@schema("public")
@@ -553,4 +557,15 @@ model SolanaPendingTxRef {
   failedVaultSwapId    Int?
 
   @@schema("private")
+}
+
+enum SwapFailureReason {
+  PriceImpactLimit
+  MinPriceViolation
+  OraclePriceSlippageExceeded
+  OraclePriceStale
+  PredecessorSwapFailure
+  SafeModeActive
+
+  @@schema("public")
 }

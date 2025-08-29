@@ -78,4 +78,32 @@ describe(swapRescheduled, () => {
       swapRequestId: expect.any(BigInt),
     });
   });
+
+  it('sets the rescheduled reason', async () => {
+    const args: SwapRescheduledArgs = {
+      swapId: '3',
+      executeAt: 100,
+      reason: {
+        __kind: 'PriceImpactLimit',
+      },
+    };
+
+    await swapRescheduled({
+      prisma,
+      block: {
+        height: 10,
+        specId: 'test@150',
+        timestamp: '2024-08-06T00:00:06.000Z',
+        hash: '0x123',
+      },
+      event: { args, name: 'Swapping.SwapRescheduled', indexInBlock: 7 },
+    });
+
+    const swap = await prisma.swap.findUniqueOrThrow({
+      where: { nativeId: 3 },
+    });
+    expect(swap.latestSwapRescheduledReason).toBe('PriceImpactLimit');
+    expect(swap.swapAbortedReason).toBeNull();
+    expect(swap.swapAbortedAt).toBeNull();
+  });
 });
