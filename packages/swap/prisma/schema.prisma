@@ -230,13 +230,14 @@ model Swap {
   destAsset                       InternalAsset
   swapAbortedAt                   DateTime?
   swapAbortedBlockIndex           String?
-  swapAbortedReason               SwapAbortedReason?
+  swapAbortedReason               SwapFailureReason?
   swapExecutedAt                  DateTime?
   swapExecutedBlockIndex          String?
   swapScheduledAt                 DateTime
   swapScheduledBlockIndex         String
   latestSwapRescheduledAt         DateTime?
   latestSwapRescheduledBlockIndex String?
+  latestSwapRescheduledReason     SwapFailureReason?
   retryCount                      Int                @default(0)
   swapRequest                     SwapRequest        @relation(fields: [swapRequestId], references: [id])
   swapRequestId                   BigInt
@@ -558,7 +559,7 @@ model SolanaPendingTxRef {
   @@schema("private")
 }
 
-enum SwapAbortedReason {
+enum SwapFailureReason {
   PriceImpactLimit
   MinPriceViolation
   OraclePriceSlippageExceeded

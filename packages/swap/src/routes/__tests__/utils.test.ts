@@ -25,6 +25,7 @@ describe(getSwapFields, () => {
         retryCount: 0,
         latestSwapRescheduledAt: null,
         latestSwapRescheduledBlockIndex: null,
+        latestSwapRescheduledReason: null,
         swapAbortedAt: null,
         swapAbortedBlockIndex: null,
         swapAbortedReason: null,

@@ -45,6 +45,7 @@ exports[`swapScheduled > creates a swap for a swap request 1`] = `
       "intermediateAmount": null,
       "latestSwapRescheduledAt": null,
       "latestSwapRescheduledBlockIndex": null,
+      "latestSwapRescheduledReason": null,
       "nativeId": 158n,
       "retryCount": 0,
       "srcAsset": "Btc",
