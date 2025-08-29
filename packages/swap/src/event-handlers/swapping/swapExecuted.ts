@@ -35,6 +35,9 @@ export default async function swapExecuted({
       fees: { create: fees },
       swapExecutedAt: new Date(block.timestamp),
       swapExecutedBlockIndex: `${block.height}-${event.indexInBlock}`,
+      latestSwapRescheduledAt: null,
+      latestSwapRescheduledBlockIndex: null,
+      latestSwapRescheduledReason: null,
     },
   });
 }

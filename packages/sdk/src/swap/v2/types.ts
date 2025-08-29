@@ -10,6 +10,14 @@ import {
 } from '@/shared/schemas.js';
 import { ChainsAndAssets, QuoteRequest } from '../types.js';
 
+type ChunkFailureReason =
+  | 'PriceImpactLimit'
+  | 'MinPriceViolation'
+  | 'OraclePriceSlippageExceeded'
+  | 'OraclePriceStale'
+  | 'PredecessorSwapFailure'
+  | 'SafeModeActive';
+
 interface Failure {
   failedAt: number;
   failedBlockIndex: string;
@@ -77,6 +85,12 @@ type ChunkInfo = {
   executedAt: number | undefined;
   executedBlockIndex: string | undefined;
   retryCount: number;
+  rescheduledAt: number | undefined;
+  rescheduledBlockIndex: string | undefined;
+  rescheduledReason: ChunkFailureReason | undefined;
+  abortedAt: number | undefined;
+  abortedBlockIndex: string | undefined;
+  abortedReason: ChunkFailureReason | undefined;
 };
 
 type PickRequired<T> = {
