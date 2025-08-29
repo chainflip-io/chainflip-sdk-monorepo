@@ -23,6 +23,7 @@ import {
   DOT_PREFIX,
   hexString,
   basisPoints,
+  chainflipAddress,
 } from './parsers.js';
 import {
   affiliateBroker,
@@ -128,6 +129,7 @@ export const getVaultSwapParameterEncodingRequestSchema = (network: ChainflipNet
       fillOrKillParams: transformedFokSchema,
       dcaParams: transformedDcaParamsSchema.optional(),
       extraParams: z.object({ seed: hexString.optional() }).optional(),
+      brokerAccount: chainflipAddress.optional(),
     })
     .superRefine((val, ctx) => {
       if (val.srcAddress && !validateAddress(val.srcAsset.chain, val.srcAddress, network)) {

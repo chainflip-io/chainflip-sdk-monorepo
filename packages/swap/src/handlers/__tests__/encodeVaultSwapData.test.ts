@@ -53,7 +53,8 @@ describe(encodeVaultSwapData, () => {
       destAsset: { asset: 'ETH', chain: 'Ethereum' },
       destAddress: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
       amount: 175000000n,
-      commissionBps: 15,
+      commissionBps: 0,
+      brokerCommissionBps: 0,
       extraParams: {
         chain: 'Bitcoin',
         min_output_amount: '0xfc6f7c40458122964d0000000',
