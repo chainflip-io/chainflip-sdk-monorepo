@@ -65,7 +65,7 @@ describe(swapAborted, () => {
         specId: 'test@160',
       },
       event: {
-        name: 'Swapping.SwapCanceled',
+        name: 'Swapping.SwapAborted',
         indexInBlock: 42,
         args: { swapId: '612', reason: { __kind: 'MinPriceViolation' } },
       },
