@@ -1,9 +1,9 @@
 import { HttpClient } from '@chainflip/rpc';
 import { getInternalAsset } from '@chainflip/utils/chainflip';
+import assert from 'assert';
 import { z } from 'zod';
 import { getVaultSwapParameterEncodingRequestSchema } from '@/shared/broker.js';
 import { transformKeysToCamelCase } from '@/shared/objects.js';
-import { chainflipAddress } from '@/shared/parsers.js';
 import env from '../config/env.js';
 import { assertRouteEnabled } from '../utils/env.js';
 import logger from '../utils/logger.js';
@@ -17,7 +17,6 @@ export const encodeVaultSwapDataSchema = getVaultSwapParameterEncodingRequestSch
   env.CHAINFLIP_NETWORK,
 ).and(
   z.object({
-    brokerAccount: chainflipAddress.optional(),
     brokerCommissionBps: z.number().optional(), // sdk version 1.8.3 sends brokerCommissionBps instead of commissionBps
   }),
 );
@@ -30,6 +29,13 @@ export const encodeVaultSwapData = async (input: z.output<typeof encodeVaultSwap
   assertRouteEnabled({ srcAsset, destAsset });
 
   const result = await validateSwapAmount(srcAsset, BigInt(input.amount));
+
+  if (!input.brokerAccount) {
+    assert(
+      !input.commissionBps && !input.brokerCommissionBps,
+      'Cannot set commission without broker',
+    );
+  }
 
   if (!result.success) throw ServiceError.badRequest(result.reason);
 

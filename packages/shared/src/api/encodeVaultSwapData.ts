@@ -3,7 +3,7 @@ import { chainflipNetworks } from '@chainflip/utils/chainflip';
 import { priceX128ToPrice } from '@chainflip/utils/tickMath';
 import { z } from 'zod';
 import { assert } from '../guards.js';
-import { assetAndChain, hexString, unsignedInteger } from '../parsers.js';
+import { assetAndChain, chainflipAddress, hexString, unsignedInteger } from '../parsers.js';
 import {
   affiliateBroker,
   ccmParamsSchema,
@@ -53,6 +53,7 @@ export const EncodeVaultSwapBody = z
     dcaParams: TransformedDcaParams.optional(),
     extraParams: z.object({ seed: hexString.optional() }).optional(),
     network: z.enum(chainflipNetworks),
+    brokerAccount: chainflipAddress.optional(),
   })
   .superRefine(({ network, ...val }, ctx) => {
     if (val.srcAddress && !validateAddress(val.srcAsset.chain, val.srcAddress, network)) {
