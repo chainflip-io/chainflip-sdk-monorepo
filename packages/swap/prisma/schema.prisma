@@ -153,54 +153,54 @@ enum SwapRequestType {
 }
 
 model SwapRequest {
-  id                         BigInt               @id @default(autoincrement())
+  id                           BigInt               @id @default(autoincrement())
   /// the swap request id on the state chain
-  nativeId                   BigInt               @unique
-  originType                 SwapRequestOrigin
-  swapDepositChannel         SwapDepositChannel?  @relation(fields: [swapDepositChannelId], references: [id])
-  swapDepositChannelId       BigInt?
-  depositTransactionRef      String?
-  srcAsset                   InternalAsset
-  destAsset                  InternalAsset
-  depositAmount              Decimal?             @db.Decimal(30, 0)
-  swapInputAmount            Decimal              @db.Decimal(30, 0)
-  swapOutputAmount           Decimal?             @db.Decimal(30, 0)
-  requestType                SwapRequestType
-  ccmGasBudget               Decimal?             @db.Decimal(30, 0)
-  ccmMessage                 String?
-  srcAddress                 String?
-  destAddress                String?
-  swapRequestedAt            DateTime
-  swapRequestedBlockIndex    String
-  depositFinalisedAt         DateTime?
-  depositFinalisedBlockIndex String?
-  prewitnessedDepositId      BigInt?
-  maxBoostFeeBps             Int                  @default(0)
-  effectiveBoostFeeBps       Int?
-  depositBoostedAt           DateTime?
-  depositBoostedBlockIndex   String?
-  completedAt                DateTime?
-  completedBlockIndex        String?
-  egress                     Egress?              @relation("egress", fields: [egressId], references: [id])
-  egressId                   BigInt?
-  refundEgress               Egress?              @relation("refundEgress", fields: [refundEgressId], references: [id])
-  refundEgressId             BigInt?
-  fallbackEgress             Egress?              @relation("fallbackEgress", fields: [fallbackEgressId], references: [id])
-  fallbackEgressId           BigInt?
-  ignoredEgresses            IgnoredEgress[]
-  swaps                      Swap[]
-  fees                       SwapFee[]
-  dcaNumberOfChunks          Int?
-  dcaChunkIntervalBlocks     Int?
-  fokMinPriceX128            Decimal?             @db.Decimal(78, 0)
-  fokRefundAddress           String?
-  fokRetryDurationBlocks     Int?
-  fokMaxOraclePriceSlippage  Int?
-  quote                      Quote?
-  totalBrokerCommissionBps   Int
-  beneficiaries              SwapBeneficiary[]
-  solanaPendingTxRef         SolanaPendingTxRef[]
-  onChainSwapInfo            OnChainSwapInfo?
+  nativeId                     BigInt               @unique
+  originType                   SwapRequestOrigin
+  swapDepositChannel           SwapDepositChannel?  @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId         BigInt?
+  depositTransactionRef        String?
+  srcAsset                     InternalAsset
+  destAsset                    InternalAsset
+  depositAmount                Decimal?             @db.Decimal(30, 0)
+  swapInputAmount              Decimal              @db.Decimal(30, 0)
+  swapOutputAmount             Decimal?             @db.Decimal(30, 0)
+  requestType                  SwapRequestType
+  ccmGasBudget                 Decimal?             @db.Decimal(30, 0)
+  ccmMessage                   String?
+  srcAddress                   String?
+  destAddress                  String?
+  swapRequestedAt              DateTime
+  swapRequestedBlockIndex      String
+  depositFinalisedAt           DateTime?
+  depositFinalisedBlockIndex   String?
+  prewitnessedDepositId        BigInt?
+  maxBoostFeeBps               Int                  @default(0)
+  effectiveBoostFeeBps         Int?
+  depositBoostedAt             DateTime?
+  depositBoostedBlockIndex     String?
+  completedAt                  DateTime?
+  completedBlockIndex          String?
+  egress                       Egress?              @relation("egress", fields: [egressId], references: [id])
+  egressId                     BigInt?
+  refundEgress                 Egress?              @relation("refundEgress", fields: [refundEgressId], references: [id])
+  refundEgressId               BigInt?
+  fallbackEgress               Egress?              @relation("fallbackEgress", fields: [fallbackEgressId], references: [id])
+  fallbackEgressId             BigInt?
+  ignoredEgresses              IgnoredEgress[]
+  swaps                        Swap[]
+  fees                         SwapFee[]
+  dcaNumberOfChunks            Int?
+  dcaChunkIntervalBlocks       Int?
+  fokMinPriceX128              Decimal?             @db.Decimal(78, 0)
+  fokRefundAddress             String?
+  fokRetryDurationBlocks       Int?
+  fokMaxOraclePriceSlippageBps Int?
+  quote                        Quote?
+  totalBrokerCommissionBps     Int
+  beneficiaries                SwapBeneficiary[]
+  solanaPendingTxRef           SolanaPendingTxRef[]
+  onChainSwapInfo              OnChainSwapInfo?
 
   @@index([srcAsset, prewitnessedDepositId])
   @@index([nativeId])
