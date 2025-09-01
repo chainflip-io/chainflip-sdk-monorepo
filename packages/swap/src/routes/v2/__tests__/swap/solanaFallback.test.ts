@@ -366,7 +366,7 @@ describe('solana fallback requested', () => {
           "scheduledBlockIndex": "7666783-1338",
         },
         "fallbackEgressId": Any<BigInt>,
-        "fokMaxOraclePriceSlippage": null,
+        "fokMaxOraclePriceSlippageBps": null,
         "fokMinPriceX128": "9.29439471347296211638784360448e+29",
         "fokRefundAddress": "0x47a7c49be51658119740d2c9b93d1aa858c44d63",
         "fokRetryDurationBlocks": 150,

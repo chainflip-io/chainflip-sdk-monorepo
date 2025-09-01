@@ -57,9 +57,9 @@ const swapDepositAddressReady = async ({
   ].filter(({ commissionBps }) => commissionBps > 0);
 
   // TODO(1.11): refactor this so check is not needed
-  let fokMaxOraclePriceSlippage;
+  let fokMaxOraclePriceSlippageBps;
   if ('maxOraclePriceSlippage' in refundParameters) {
-    fokMaxOraclePriceSlippage = refundParameters.maxOraclePriceSlippage;
+    fokMaxOraclePriceSlippageBps = refundParameters.maxOraclePriceSlippage;
   }
 
   const data = {
@@ -77,7 +77,7 @@ const swapDepositAddressReady = async ({
     fokMinPriceX128: refundParameters?.minPrice.toString(),
     fokRefundAddress: refundParameters?.refundAddress.address,
     fokRetryDurationBlocks: refundParameters?.retryDuration,
-    fokMaxOraclePriceSlippage,
+    fokMaxOraclePriceSlippageBps,
     dcaNumberOfChunks: dcaParameters?.numberOfChunks,
     dcaChunkIntervalBlocks: dcaParameters?.chunkInterval,
     createdAt: new Date(block.timestamp),

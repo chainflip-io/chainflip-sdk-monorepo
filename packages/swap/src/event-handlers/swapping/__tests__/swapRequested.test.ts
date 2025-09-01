@@ -533,7 +533,7 @@ describe(swapRequested, () => {
       id: expect.any(BigInt),
       swapDepositChannelId: expect.any(BigInt),
     });
-    expect(request.fokMaxOraclePriceSlippage).toBe(
+    expect(request.fokMaxOraclePriceSlippageBps).toBe(
       depositChannel11100.priceLimitsAndExpiry.maxOraclePriceSlippage,
     );
   });

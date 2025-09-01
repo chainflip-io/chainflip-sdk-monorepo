@@ -36,7 +36,7 @@ exports[`swapEgressScheduled > adds an egress and fee to a swap request 1`] = `
       "type": "EGRESS",
     },
   ],
-  "fokMaxOraclePriceSlippage": null,
+  "fokMaxOraclePriceSlippageBps": null,
   "fokMinPriceX128": null,
   "fokRefundAddress": null,
   "fokRetryDurationBlocks": null,
