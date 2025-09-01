@@ -36,11 +36,9 @@ exports[`server > GET /v2/swaps/:id > retrieves a DCA swap from an onChain origi
       "currentChunk": null,
       "executedChunks": 2,
       "lastExecutedChunk": {
-        "abortedReason": null,
         "executedAt": 24738000,
         "executedBlockIndex": "4123-22",
         "inputAmount": "2497500000",
-        "latestSwapRescheduledReason": null,
         "outputAmount": "2478844890",
         "retryCount": 0,
         "scheduledAt": 24738000,
@@ -96,7 +94,6 @@ exports[`server > GET /v2/swaps/:id > retrieves a refunded swap from an onChain 
     },
     "originalInputAmount": "10000000",
     "regular": {
-      "abortedReason": null,
       "inputAmount": "10000000",
       "latestSwapRescheduledAt": 46992672000,
       "latestSwapRescheduledBlockIndex": "7832112-1110",
@@ -168,9 +165,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a native swap id 1`]
   "swap": {
     "originalInputAmount": "4999949999999650000",
     "regular": {
-      "abortedReason": null,
       "inputAmount": "4999949999999650000",
-      "latestSwapRescheduledReason": null,
       "retryCount": 0,
       "scheduledAt": 552000,
       "scheduledBlockIndex": "92-399",
@@ -238,9 +233,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a solana case-insens
   "swap": {
     "originalInputAmount": "4999949999999650000",
     "regular": {
-      "abortedReason": null,
       "inputAmount": "4999949999999650000",
-      "latestSwapRescheduledReason": null,
       "retryCount": 0,
       "scheduledAt": 552000,
       "scheduledBlockIndex": "92-399",
@@ -298,12 +291,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a vault origin 1`] =
   "swap": {
     "originalInputAmount": "4999949999999650000",
     "regular": {
-      "abortedReason": null,
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
       "inputAmount": "4999949999999650000",
       "intermediateAmount": "4506169140",
-      "latestSwapRescheduledReason": null,
       "outputAmount": "4192904666034",
       "retryCount": 0,
       "scheduledAt": 552000,
@@ -363,12 +354,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a vault origin in CO
   "swap": {
     "originalInputAmount": "4999949999999650000",
     "regular": {
-      "abortedReason": null,
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
       "inputAmount": "4999949999999650000",
       "intermediateAmount": "4506169140",
-      "latestSwapRescheduledReason": null,
       "outputAmount": "4192904666034",
       "retryCount": 0,
       "scheduledAt": 552000,
@@ -423,12 +412,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from an onChain origin in
     },
     "originalInputAmount": "4999949999999650000",
     "regular": {
-      "abortedReason": null,
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
       "inputAmount": "4999949999999650000",
       "intermediateAmount": "4506169140",
-      "latestSwapRescheduledReason": null,
       "outputAmount": "4192904666034",
       "retryCount": 0,
       "scheduledAt": 552000,
@@ -469,9 +456,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from an onChain origin in
     },
     "originalInputAmount": "4999949999999650000",
     "regular": {
-      "abortedReason": null,
       "inputAmount": "4999949999999650000",
-      "latestSwapRescheduledReason": null,
       "retryCount": 0,
       "scheduledAt": 552000,
       "scheduledBlockIndex": "92-399",
@@ -557,12 +542,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status 1`] =
   "swap": {
     "originalInputAmount": "4999949999999650000",
     "regular": {
-      "abortedReason": null,
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
       "inputAmount": "4999949999999650000",
       "intermediateAmount": "4506169140",
-      "latestSwapRescheduledReason": null,
       "outputAmount": "4192904666034",
       "retryCount": 0,
       "scheduledAt": 552000,
@@ -657,12 +640,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status by tx
   "swap": {
     "originalInputAmount": "4999949999999650000",
     "regular": {
-      "abortedReason": null,
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
       "inputAmount": "4999949999999650000",
       "intermediateAmount": "4506169140",
-      "latestSwapRescheduledReason": null,
       "outputAmount": "4192904666034",
       "retryCount": 0,
       "scheduledAt": 552000,
@@ -757,12 +738,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status by tx
   "swap": {
     "originalInputAmount": "4999949999999650000",
     "regular": {
-      "abortedReason": null,
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
       "inputAmount": "4999949999999650000",
       "intermediateAmount": "4506169140",
-      "latestSwapRescheduledReason": null,
       "outputAmount": "4192904666034",
       "retryCount": 0,
       "scheduledAt": 552000,
@@ -856,12 +835,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SENDING status 1`] = `
   "swap": {
     "originalInputAmount": "4999949999999650000",
     "regular": {
-      "abortedReason": null,
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
       "inputAmount": "4999949999999650000",
       "intermediateAmount": "4506169140",
-      "latestSwapRescheduledReason": null,
       "outputAmount": "4192904666034",
       "retryCount": 0,
       "scheduledAt": 552000,
@@ -952,12 +929,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SENT status 1`] = `
   "swap": {
     "originalInputAmount": "4999949999999650000",
     "regular": {
-      "abortedReason": null,
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
       "inputAmount": "4999949999999650000",
       "intermediateAmount": "4506169140",
-      "latestSwapRescheduledReason": null,
       "outputAmount": "4192904666034",
       "retryCount": 0,
       "scheduledAt": 552000,
@@ -1031,9 +1006,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SWAPPING status 1`] = 
   "swap": {
     "originalInputAmount": "4999949999999650000",
     "regular": {
-      "abortedReason": null,
       "inputAmount": "4999949999999650000",
-      "latestSwapRescheduledReason": null,
       "retryCount": 0,
       "scheduledAt": 552000,
       "scheduledBlockIndex": "92-399",
@@ -1112,12 +1085,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SWAPPING status 2`] = 
   "swap": {
     "originalInputAmount": "4999949999999650000",
     "regular": {
-      "abortedReason": null,
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
       "inputAmount": "4999949999999650000",
       "intermediateAmount": "4506169140",
-      "latestSwapRescheduledReason": null,
       "outputAmount": "4192904666034",
       "retryCount": 0,
       "scheduledAt": 552000,
@@ -1186,9 +1157,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SWAPPING status with a
   "swap": {
     "originalInputAmount": "4999949999999650000",
     "regular": {
-      "abortedReason": null,
       "inputAmount": "4999949999999650000",
-      "latestSwapRescheduledReason": null,
       "retryCount": 0,
       "scheduledAt": 552000,
       "scheduledBlockIndex": "92-399",
@@ -1275,9 +1244,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap with FillOrKillParams in 
   "swap": {
     "originalInputAmount": "4999949999999650000",
     "regular": {
-      "abortedReason": null,
       "inputAmount": "4999949999999650000",
-      "latestSwapRescheduledReason": null,
       "retryCount": 0,
       "scheduledAt": 552000,
       "scheduledBlockIndex": "92-399",
@@ -1357,9 +1324,7 @@ exports[`server > GET /v2/swaps/:id > retrieves boost details when channel swap 
   "swap": {
     "originalInputAmount": "4999949999999650000",
     "regular": {
-      "abortedReason": null,
       "inputAmount": "4999949999999650000",
-      "latestSwapRescheduledReason": null,
       "retryCount": 0,
       "scheduledAt": 552000,
       "scheduledBlockIndex": "92-399",
@@ -1419,9 +1384,7 @@ exports[`server > GET /v2/swaps/:id > retrieves boost details when vault swap wa
   "swap": {
     "originalInputAmount": "4999949999999650000",
     "regular": {
-      "abortedReason": null,
       "inputAmount": "4999949999999650000",
-      "latestSwapRescheduledReason": null,
       "retryCount": 0,
       "scheduledAt": 552000,
       "scheduledBlockIndex": "92-399",
@@ -1517,12 +1480,10 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in COMPLETED 
       "currentChunk": null,
       "executedChunks": 2,
       "lastExecutedChunk": {
-        "abortedReason": null,
         "executedAt": 564000,
         "executedBlockIndex": "94-594",
         "inputAmount": "4999949999999650000",
         "intermediateAmount": "4506169140",
-        "latestSwapRescheduledReason": null,
         "outputAmount": "4192904666034",
         "retryCount": 0,
         "scheduledAt": 552000,
@@ -1657,12 +1618,10 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in FAILED sta
       "currentChunk": null,
       "executedChunks": 2,
       "lastExecutedChunk": {
-        "abortedReason": null,
         "executedAt": 564000,
         "executedBlockIndex": "94-594",
         "inputAmount": "4999949999999650000",
         "intermediateAmount": "4506169140",
-        "latestSwapRescheduledReason": null,
         "outputAmount": "4192904666034",
         "retryCount": 0,
         "scheduledAt": 552000,
@@ -1769,12 +1728,10 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in SENDING st
       "currentChunk": null,
       "executedChunks": 2,
       "lastExecutedChunk": {
-        "abortedReason": null,
         "executedAt": 564000,
         "executedBlockIndex": "94-594",
         "inputAmount": "4999949999999650000",
         "intermediateAmount": "4506169140",
-        "latestSwapRescheduledReason": null,
         "outputAmount": "4192904666034",
         "retryCount": 0,
         "scheduledAt": 552000,
@@ -1872,12 +1829,10 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in SWAPPING s
       "currentChunk": null,
       "executedChunks": 2,
       "lastExecutedChunk": {
-        "abortedReason": null,
         "executedAt": 564000,
         "executedBlockIndex": "94-594",
         "inputAmount": "4999949999999650000",
         "intermediateAmount": "4506169140",
-        "latestSwapRescheduledReason": null,
         "outputAmount": "4192904666034",
         "retryCount": 0,
         "scheduledAt": 552000,
@@ -1945,12 +1900,10 @@ exports[`server > GET /v2/swaps/:id > returns ccmParams for swaps initiated via 
   "swap": {
     "originalInputAmount": "20000000000000000",
     "regular": {
-      "abortedReason": null,
       "executedAt": 564000,
       "executedBlockIndex": "94-594",
       "inputAmount": "4999949999999650000",
       "intermediateAmount": "4506169140",
-      "latestSwapRescheduledReason": null,
       "outputAmount": "4192904666034",
       "retryCount": 0,
       "scheduledAt": 552000,
