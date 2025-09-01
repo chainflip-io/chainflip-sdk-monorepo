@@ -97,6 +97,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a refunded swap from an onChain 
       "inputAmount": "10000000",
       "latestSwapRescheduledAt": 46992672000,
       "latestSwapRescheduledBlockIndex": "7832112-1110",
+      "latestSwapRescheduledReason": "PriceImpactLimit",
       "retryCount": 1,
       "scheduledAt": 46992660000,
       "scheduledBlockIndex": "7832110-1146",
