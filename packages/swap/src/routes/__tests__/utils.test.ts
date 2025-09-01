@@ -41,6 +41,7 @@ describe(getSwapFields, () => {
       retryCount: 0,
       latestSwapRescheduledAt: undefined,
       latestSwapRescheduledBlockIndex: undefined,
+      latestSwapRescheduledReason: undefined,
       abortedAt: undefined,
       abortedBlockIndex: undefined,
       abortedReason: undefined,
