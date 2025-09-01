@@ -184,7 +184,7 @@ export const openSwapDepositChannel = async ({
       fokMinPriceX128: fillOrKillParams.minPriceX128,
       fokRetryDurationBlocks: fillOrKillParams.retryDurationBlocks,
       fokRefundAddress: fillOrKillParams.refundAddress,
-      fokMaxOraclePriceSlippage: fillOrKillParams.maxOraclePriceSlippage,
+      fokMaxOraclePriceSlippageBps: fillOrKillParams.maxOraclePriceSlippage,
       dcaChunkIntervalBlocks: dcaParams?.chunkIntervalBlocks,
       dcaNumberOfChunks: dcaParams?.numberOfChunks,
       quote: quoteParam,

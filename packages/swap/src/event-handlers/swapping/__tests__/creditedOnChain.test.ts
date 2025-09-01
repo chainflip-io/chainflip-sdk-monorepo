@@ -81,7 +81,7 @@ describe(creditedOnChain, () => {
         "effectiveBoostFeeBps": null,
         "egressId": null,
         "fallbackEgressId": null,
-        "fokMaxOraclePriceSlippage": null,
+        "fokMaxOraclePriceSlippageBps": null,
         "fokMinPriceX128": null,
         "fokRefundAddress": "cFNwtr2mPhpUEB5AyJq38DqMKMkSdzaL9548hajN2DRTwh7Mq",
         "fokRetryDurationBlocks": null,

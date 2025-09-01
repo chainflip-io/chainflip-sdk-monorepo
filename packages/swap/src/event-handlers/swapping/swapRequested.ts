@@ -152,12 +152,12 @@ const extractRefundParameters = (refundParameters: z.output<typeof schema>['refu
   let fokRefundAddress;
   let fokMinPriceX128;
   let fokRetryDurationBlocks;
-  let fokMaxOraclePriceSlippage;
+  let fokMaxOraclePriceSlippageBps;
 
   // 1.11
   if ('v11' in refundParameters) {
     fokMinPriceX128 = refundParameters.v11.minPrice.toString();
-    fokMaxOraclePriceSlippage = refundParameters.v11.maxOraclePriceSlippage;
+    fokMaxOraclePriceSlippageBps = refundParameters.v11.maxOraclePriceSlippage;
     if (refundParameters.v11.expiryBehaviour.__kind === 'RefundIfExpires') {
       if (refundParameters.v11.expiryBehaviour.refundAddress.__kind === 'InternalAccount') {
         fokRefundAddress = refundParameters.v11.expiryBehaviour.refundAddress.value;
@@ -196,7 +196,7 @@ const extractRefundParameters = (refundParameters: z.output<typeof schema>['refu
     fokMinPriceX128,
     fokRefundAddress,
     fokRetryDurationBlocks,
-    fokMaxOraclePriceSlippage,
+    fokMaxOraclePriceSlippageBps,
   };
 };
 
