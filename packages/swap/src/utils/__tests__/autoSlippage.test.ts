@@ -1,9 +1,12 @@
 import BigNumber from 'bignumber.js';
 import { describe, it, beforeEach, expect, vi } from 'vitest';
 import env from '../../config/env.js';
-import { calculateRecommendedSlippage } from '../autoSlippage.js';
+import {
+  calculateRecommendedLivePriceSlippage,
+  calculateRecommendedSlippage,
+} from '../autoSlippage.js';
 import { getDeployedLiquidity, getUndeployedLiquidity } from '../pools.js';
-import { getRequiredBlockConfirmations } from '../rpc.js';
+import { getOracleAssets, getRequiredBlockConfirmations } from '../rpc.js';
 
 vi.mock('../pools', () => ({
   getDeployedLiquidity: vi.fn(),
@@ -12,6 +15,7 @@ vi.mock('../pools', () => ({
 
 vi.mock('../rpc', () => ({
   getRequiredBlockConfirmations: vi.fn(),
+  getOracleAssets: vi.fn(),
 }));
 
 describe(calculateRecommendedSlippage, () => {
@@ -233,5 +237,59 @@ describe(calculateRecommendedSlippage, () => {
     });
     expect(rate).toEqual(1);
     expect(estimatedPrice.times(1 - rate / 100).toNumber()).toBeCloseTo(0.99, 3);
+  });
+});
+
+describe(calculateRecommendedLivePriceSlippage, () => {
+  beforeEach(() => {
+    vi.mocked(getOracleAssets).mockResolvedValue(['Btc', 'Eth', 'Usdc', 'Usdt', 'Sol']);
+  });
+
+  it('should return the correct value for stable assets', async () => {
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Usdc',
+      destAsset: 'Usdt',
+    });
+    expect(result).toEqual(0.5);
+  });
+
+  it('should return the correct value for stable assets in opposite direction', async () => {
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Usdt',
+      destAsset: 'Usdc',
+    });
+    expect(result).toEqual(0.5);
+  });
+
+  it('should return 1 for non-stable assets', async () => {
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Eth',
+      destAsset: 'Usdc',
+    });
+    expect(result).toEqual(1);
+  });
+
+  it('should return 1 for non-stable assets in opposite direction', async () => {
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Usdt',
+      destAsset: 'Eth',
+    });
+    expect(result).toEqual(1);
+  });
+
+  it('should return undefined for non-oracle assets', async () => {
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Flip',
+      destAsset: 'Usdc',
+    });
+    expect(result).toEqual(undefined);
+  });
+
+  it('should return undefined for non-oracle assets in opposite direction', async () => {
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Usdc',
+      destAsset: 'Flip',
+    });
+    expect(result).toEqual(undefined);
   });
 });

@@ -1,4 +1,9 @@
-import { ChainflipChain, ChainflipNetwork } from '@chainflip/utils/chainflip';
+import {
+  ChainflipAsset,
+  ChainflipChain,
+  ChainflipNetwork,
+  type PriceAsset,
+} from '@chainflip/utils/chainflip';
 
 const ETHEREUM_EVM_CHAIN_ID: Record<ChainflipNetwork, number> = {
   backspin: 10997, // backspin ethereum
@@ -77,3 +82,12 @@ export const MIN_TICK = -887272;
 export const MAX_TICK = -MIN_TICK;
 
 export const FULL_TICK_RANGE = { start: MIN_TICK, end: MAX_TICK };
+
+export const priceAssetToChainflipAssetMap: Record<PriceAsset, ChainflipAsset> = {
+  Usd: 'Usdc',
+  Btc: 'Btc',
+  Eth: 'Eth',
+  Sol: 'Sol',
+  Usdc: 'Usdc',
+  Usdt: 'Usdt',
+};
