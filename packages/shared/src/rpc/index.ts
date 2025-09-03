@@ -47,24 +47,6 @@ const createRequest =
     return camelCaseKeys(result);
   };
 
-const createEnvSafeRequest =
-  <M extends RpcMethod>(method: M) =>
-  async (
-    urlOrNetwork: RpcConfig,
-    ...params: RpcParams[M]
-  ): Promise<CamelCaseValue<RpcResult<M>> | null> => {
-    const url =
-      'network' in urlOrNetwork
-        ? constants.PUBLIC_RPC_ENDPOINTS[urlOrNetwork.network]
-        : urlOrNetwork.rpcUrl;
-    const result = await new HttpClient(url).sendRequest(method, ...params).catch((error) => {
-      if (error instanceof Error && error.message.includes('[-32601]: Method not found'))
-        return null;
-      throw error;
-    });
-    return camelCaseKeys(result);
-  };
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AsyncFn = (...args: any[]) => Promise<any>;
 
@@ -83,9 +65,6 @@ export const getSwappingEnvironment = createRequest('cf_swapping_environment');
 export const getIngressEgressEnvironment = createRequest('cf_ingress_egress_environment');
 
 export const getEnvironment = createRequest('cf_environment');
-
-// TODO(1.11): remove env safe request
-export const getOraclePrices = createEnvSafeRequest('cf_oracle_prices');
 
 export type Environment = Awaited<ReturnType<typeof getEnvironment>>;
 

@@ -8,7 +8,6 @@ import {
   readAssetValue,
   InternalAssetMap,
 } from '@chainflip/utils/chainflip';
-import { priceAssetToChainflipAssetMap } from '@/shared/consts.js';
 import { isNotNullish } from '@/shared/guards.js';
 import {
   BoostPoolsDepth,
@@ -17,14 +16,12 @@ import {
   getPoolDepth as getPoolDepthRpc,
   getAccounts as getAccountsRpc,
   getAccountInfo as getAccountInfoRpc,
-  getOraclePrices,
 } from '@/shared/rpc/index.js';
 import { validateSwapAmount as validateAmount } from '@/shared/rpc/utils.js';
 import { memoize } from './function.js';
 import env from '../config/env.js';
 
 const cachedGetEnvironment = memoize(getEnvironment, 6_000);
-const cachedGetOraclePrices = memoize(getOraclePrices, 3600_000); // 1 hour
 
 type Result = { success: true } | { success: false; reason: string };
 
@@ -147,10 +144,4 @@ export const getLpBalances = async <T extends string>(
   );
 
   return accounts.filter(isNotNullish);
-};
-
-export const getOracleAssets = async () => {
-  const prices = await cachedGetOraclePrices(rpcConfig);
-
-  return [...new Set(prices?.map((price) => priceAssetToChainflipAssetMap[price.baseAsset]))];
 };

@@ -83,11 +83,18 @@ export const MAX_TICK = -MIN_TICK;
 
 export const FULL_TICK_RANGE = { start: MIN_TICK, end: MAX_TICK };
 
-export const priceAssetToChainflipAssetMap: Record<PriceAsset, ChainflipAsset> = {
-  Usd: 'Usdc',
+export const chainflipAssetToPriceAssetMap: Record<ChainflipAsset, PriceAsset | null> = {
   Btc: 'Btc',
   Eth: 'Eth',
   Sol: 'Sol',
   Usdc: 'Usdc',
   Usdt: 'Usdt',
+  ArbUsdc: 'Usdc',
+  ArbEth: 'Eth',
+  SolUsdc: 'Usdc',
+  Flip: null,
+  Dot: null,
+  HubDot: null,
+  HubUsdc: null,
+  HubUsdt: null,
 };

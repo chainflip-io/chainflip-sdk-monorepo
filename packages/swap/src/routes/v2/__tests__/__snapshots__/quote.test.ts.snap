@@ -53,7 +53,7 @@ exports[`server > GET /v2/quote > applies price impact to DCA quote 1`] = `
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -117,7 +117,7 @@ exports[`server > GET /v2/quote > applies price impact to DCA quote 1`] = `
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -125,6 +125,70 @@ exports[`server > GET /v2/quote > applies price impact to DCA quote 1`] = `
       "chain": "Ethereum",
     },
     "type": "DCA",
+  },
+]
+`;
+
+exports[`server > GET /v2/quote > does not return recommendedLivePriceSlippageTolerancePercent for unavailable asset pair 1`] = `
+[
+  {
+    "depositAmount": "1000000000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "100000000",
+    "estimatedDurationSeconds": 132,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 96,
+      "swap": 12,
+    },
+    "estimatedPrice": "100.0000000000025",
+    "includedFees": [
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "0",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "FLIP",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "FLIP",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedRetryDurationMinutes": 5,
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "FLIP",
+      "chain": "Ethereum",
+    },
+    "type": "REGULAR",
   },
 ]
 `;
@@ -182,7 +246,7 @@ exports[`server > GET /v2/quote > does not throw if totalLiquidity is higher tha
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -248,7 +312,7 @@ exports[`server > GET /v2/quote > excludes the ingress fee for vault swaps 1`] =
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -313,7 +377,7 @@ exports[`server > GET /v2/quote > gets no DCA quote if the flag is missing 1`] =
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -378,7 +442,7 @@ exports[`server > GET /v2/quote > gets only REGULAR quote because amount is less
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -443,7 +507,7 @@ exports[`server > GET /v2/quote > gets only REGULAR quote when DCA quoting is di
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -508,7 +572,7 @@ exports[`server > GET /v2/quote > gets the DCA quote to USDC 1`] = `
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -572,7 +636,7 @@ exports[`server > GET /v2/quote > gets the DCA quote to USDC 1`] = `
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -668,7 +732,7 @@ exports[`server > GET /v2/quote > gets the DCA quote with a boost quote and brok
           },
         },
       ],
-      "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+      "recommendedLivePriceSlippageTolerancePercent": 1,
       "recommendedRetryDurationMinutes": 15,
       "recommendedSlippageTolerancePercent": 1.5,
       "srcAsset": {
@@ -749,7 +813,7 @@ exports[`server > GET /v2/quote > gets the DCA quote with a boost quote and brok
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 1,
     "recommendedRetryDurationMinutes": 15,
     "recommendedSlippageTolerancePercent": 2,
     "srcAsset": {
@@ -844,7 +908,7 @@ exports[`server > GET /v2/quote > gets the DCA quote with a boost quote and brok
           },
         },
       ],
-      "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+      "recommendedLivePriceSlippageTolerancePercent": 1,
       "recommendedRetryDurationMinutes": 15,
       "recommendedSlippageTolerancePercent": 1.5,
       "srcAsset": {
@@ -929,7 +993,7 @@ exports[`server > GET /v2/quote > gets the DCA quote with a boost quote and brok
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 1,
     "recommendedRetryDurationMinutes": 15,
     "recommendedSlippageTolerancePercent": 2,
     "srcAsset": {
@@ -994,7 +1058,7 @@ exports[`server > GET /v2/quote > gets the quote to USDC 1`] = `
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -1058,7 +1122,7 @@ exports[`server > GET /v2/quote > on chain > properly quotes for regular swaps 1
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 0.5,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 0.5,
     "srcAsset": {
@@ -1142,7 +1206,7 @@ exports[`server > GET /v2/quote > on chain > properly quotes with DCA 1`] = `
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 1,
     "recommendedRetryDurationMinutes": 15,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -1206,7 +1270,7 @@ exports[`server > GET /v2/quote > on chain > respects the minimum network fee 1`
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 0.5,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 0.5,
     "srcAsset": {
@@ -1281,7 +1345,7 @@ exports[`server > GET /v2/quote > returns DCA quote if regular does not pass tot
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -1346,11 +1410,76 @@ exports[`server > GET /v2/quote > returns regular quote if DCA does not pass tot
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
       "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "type": "REGULAR",
+  },
+]
+`;
+
+exports[`server > GET /v2/quote > returns the correct live price slippage tolerance percent for stable asset pair 1`] = `
+[
+  {
+    "depositAmount": "1000000000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "100000000",
+    "estimatedDurationSeconds": 132,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 96,
+      "swap": 12,
+    },
+    "estimatedPrice": "0.0000000001",
+    "includedFees": [
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "0",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "USDT",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "USDT",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedLivePriceSlippageTolerancePercent": 0.5,
+    "recommendedRetryDurationMinutes": 5,
+    "recommendedSlippageTolerancePercent": 0.5,
+    "srcAsset": {
+      "asset": "USDT",
       "chain": "Ethereum",
     },
     "type": "REGULAR",
@@ -1411,7 +1540,7 @@ exports[`server > GET /v2/quote > uses 0 as ingress fee when the protocol can't 
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": Any<Number>,
+    "recommendedLivePriceSlippageTolerancePercent": 1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {

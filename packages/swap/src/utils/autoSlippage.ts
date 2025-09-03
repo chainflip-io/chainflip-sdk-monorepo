@@ -1,8 +1,15 @@
-import { ChainflipAsset, assetConstants, chainConstants } from '@chainflip/utils/chainflip';
+import {
+  ChainflipAsset,
+  PriceAsset,
+  assetConstants,
+  chainConstants,
+  priceAssets,
+} from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
+import { chainflipAssetToPriceAssetMap } from '@/shared/consts.js';
 import { isStableCoin } from '@/shared/guards.js';
 import { getDeployedLiquidity, getUndeployedLiquidity } from './pools.js';
-import { getOracleAssets, getRequiredBlockConfirmations } from './rpc.js';
+import { getRequiredBlockConfirmations } from './rpc.js';
 import env from '../config/env.js';
 
 const getDeployedLiquidityAdjustment = async (
@@ -148,9 +155,11 @@ export const calculateRecommendedLivePriceSlippage = async ({
   srcAsset: ChainflipAsset;
   destAsset: ChainflipAsset;
 }) => {
-  const oracleAssets = await getOracleAssets();
-
-  if (!oracleAssets?.includes(srcAsset) || !oracleAssets?.includes(destAsset)) return undefined;
+  if (
+    !priceAssets.includes(chainflipAssetToPriceAssetMap[srcAsset] as PriceAsset) ||
+    !priceAssets.includes(chainflipAssetToPriceAssetMap[destAsset] as PriceAsset)
+  )
+    return undefined;
 
   return isStableCoin(srcAsset) && isStableCoin(destAsset) ? 0.5 : 1;
 };
