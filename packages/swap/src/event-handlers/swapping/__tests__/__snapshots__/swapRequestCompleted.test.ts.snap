@@ -26,6 +26,7 @@ exports[`swapRequestCompleted > updates a fresh swap request and associated quot
   "id": Any<BigInt>,
   "maxBoostFeeBps": 0,
   "nativeId": 9876545n,
+  "oraclePriceDeltaBps": null,
   "originType": "VAULT",
   "prewitnessedDepositId": null,
   "quote": {
@@ -96,6 +97,7 @@ exports[`swapRequestCompleted > updates a stale swap request and associated quot
   "id": Any<BigInt>,
   "maxBoostFeeBps": 0,
   "nativeId": 9876545n,
+  "oraclePriceDeltaBps": null,
   "originType": "VAULT",
   "prewitnessedDepositId": null,
   "quote": {
@@ -166,6 +168,7 @@ exports[`swapRequestCompleted > updates swap request and associated quote 1`] = 
   "id": Any<BigInt>,
   "maxBoostFeeBps": 0,
   "nativeId": 9876545n,
+  "oraclePriceDeltaBps": null,
   "originType": "VAULT",
   "prewitnessedDepositId": null,
   "quote": {
@@ -236,6 +239,7 @@ exports[`swapRequestCompleted > updates swap request with multiple swaps 1`] = `
   "id": Any<BigInt>,
   "maxBoostFeeBps": 0,
   "nativeId": 9876545n,
+  "oraclePriceDeltaBps": "-500",
   "originType": "VAULT",
   "prewitnessedDepositId": null,
   "quote": null,
@@ -278,6 +282,7 @@ exports[`swapRequestCompleted > updates swap request with single swap 1`] = `
   "id": Any<BigInt>,
   "maxBoostFeeBps": 0,
   "nativeId": 9876545n,
+  "oraclePriceDeltaBps": null,
   "originType": "VAULT",
   "prewitnessedDepositId": null,
   "quote": null,

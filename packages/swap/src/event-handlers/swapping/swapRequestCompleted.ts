@@ -23,7 +23,9 @@ export default async function swapRequestCompleted({
   const swapRequest = await prisma.swapRequest.findFirstOrThrow({
     where: { nativeId: swapRequestId },
     include: {
-      swaps: { select: { swapOutputAmount: true } },
+      swaps: {
+        select: { swapOutputAmount: true, oraclePriceDeltaBps: true, swapExecutedAt: true },
+      },
       swapDepositChannel: { select: { quote: true } },
     },
   });
@@ -33,12 +35,21 @@ export default async function swapRequestCompleted({
     new Prisma.Decimal(0),
   );
 
+  const totalOraclePriceDeltaBps = swapRequest.swaps.reduce(
+    (acc, { oraclePriceDeltaBps }) => acc.plus(oraclePriceDeltaBps ?? 0),
+    new Prisma.Decimal(0),
+  );
+  const executedSwapCount = swapRequest.swaps.filter(({ swapExecutedAt }) => swapExecutedAt).length;
+  const avgOraclePriceDeltaBps =
+    executedSwapCount > 0 ? totalOraclePriceDeltaBps.div(executedSwapCount) : undefined;
+
   await prisma.swapRequest.update({
     where: { nativeId: swapRequestId },
     data: {
       completedAt: new Date(block.timestamp),
       completedBlockIndex: `${block.height}-${event.indexInBlock}`,
       swapOutputAmount: totalSwapOutputAmount,
+      oraclePriceDeltaBps: avgOraclePriceDeltaBps,
     },
   });
 

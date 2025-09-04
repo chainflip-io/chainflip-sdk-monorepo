@@ -192,6 +192,7 @@ model SwapRequest {
   fees                         SwapFee[]
   dcaNumberOfChunks            Int?
   dcaChunkIntervalBlocks       Int?
+  oraclePriceDeltaBps          Decimal?             @db.Decimal(30, 0)
   fokMinPriceX128              Decimal?             @db.Decimal(78, 0)
   fokRefundAddress             String?
   fokRetryDurationBlocks       Int?
@@ -241,6 +242,7 @@ model Swap {
   retryCount                      Int                @default(0)
   swapRequest                     SwapRequest        @relation(fields: [swapRequestId], references: [id])
   swapRequestId                   BigInt
+  oraclePriceDeltaBps             Decimal?           @db.Decimal(30, 0)
   createdAt                       DateTime           @default(now())
   updatedAt                       DateTime           @default(now()) @updatedAt
 

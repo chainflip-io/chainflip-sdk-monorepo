@@ -26,6 +26,18 @@ const usdcArgs: SwapExecutedArgs = {
   swapRequestId: '489',
 } as const;
 
+const oracleDeltaArgs: SwapExecutedArgs = {
+  swapId: '612',
+  brokerFee: '10000',
+  inputAsset: { __kind: 'Eth' },
+  networkFee: '2117824',
+  inputAmount: '250000000000000000000',
+  outputAsset: { __kind: 'Usdc' },
+  outputAmount: '2115705684',
+  swapRequestId: '489',
+  oracleDelta: -10000,
+} as const;
+
 const runEvent = async (args: SwapExecutedArgs) => {
   const swap = await prisma.swap.create({
     data: {
@@ -103,6 +115,17 @@ describe(swapExecuted, () => {
 
   it('updates an existing swap with intermediate amount', async () => {
     const swap = await runEvent(solArgs);
+
+    expect(swap).toMatchSnapshot({
+      id: expect.any(BigInt),
+      createdAt: expect.any(Date),
+      updatedAt: expect.any(Date),
+      swapRequestId: expect.any(BigInt),
+    });
+  });
+
+  it('updates an existing swap with oracle delta', async () => {
+    const swap = await runEvent(oracleDeltaArgs);
 
     expect(swap).toMatchSnapshot({
       id: expect.any(BigInt),
