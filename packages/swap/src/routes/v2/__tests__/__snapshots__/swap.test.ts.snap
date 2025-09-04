@@ -352,6 +352,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a vault origin in CO
   "srcChainRequiredBlockConfirmations": 2,
   "state": "COMPLETED",
   "swap": {
+    "livePriceExecutionDeltaPercentage": 1,
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "executedAt": 564000,
@@ -407,6 +408,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from an onChain origin in
   "srcChain": "Ethereum",
   "state": "COMPLETED",
   "swap": {
+    "livePriceExecutionDeltaPercentage": 1,
     "onChain": {
       "accountId": "cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh",
     },
@@ -540,6 +542,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status 1`] =
   "srcChainRequiredBlockConfirmations": 2,
   "state": "COMPLETED",
   "swap": {
+    "livePriceExecutionDeltaPercentage": 1,
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "executedAt": 564000,
@@ -638,6 +641,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status by tx
   "srcChainRequiredBlockConfirmations": 2,
   "state": "COMPLETED",
   "swap": {
+    "livePriceExecutionDeltaPercentage": 1,
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "executedAt": 564000,
@@ -736,6 +740,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status by tx
   "srcChainRequiredBlockConfirmations": 2,
   "state": "COMPLETED",
   "swap": {
+    "livePriceExecutionDeltaPercentage": 1,
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "executedAt": 564000,
@@ -833,6 +838,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SENDING status 1`] = `
   "srcChainRequiredBlockConfirmations": 2,
   "state": "SENDING",
   "swap": {
+    "livePriceExecutionDeltaPercentage": 1,
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "executedAt": 564000,
@@ -927,6 +933,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SENT status 1`] = `
   "srcChainRequiredBlockConfirmations": 2,
   "state": "SENT",
   "swap": {
+    "livePriceExecutionDeltaPercentage": 1,
     "originalInputAmount": "4999949999999650000",
     "regular": {
       "executedAt": 564000,
@@ -1491,6 +1498,7 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in COMPLETED 
       },
       "remainingChunks": 8,
     },
+    "livePriceExecutionDeltaPercentage": 1,
     "originalInputAmount": "9999899999999300000",
     "remainingInputAmount": "0",
     "swappedInputAmount": "9999899999999300000",
@@ -1739,6 +1747,7 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in SENDING st
       },
       "remainingChunks": 8,
     },
+    "livePriceExecutionDeltaPercentage": 1,
     "originalInputAmount": "9999899999999300000",
     "remainingInputAmount": "0",
     "swappedInputAmount": "9999899999999300000",

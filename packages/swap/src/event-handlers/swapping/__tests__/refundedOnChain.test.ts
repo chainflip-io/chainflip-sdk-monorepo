@@ -62,8 +62,7 @@ describe(refundedOnChain, () => {
           id: expect.any(Number),
           swapRequestId: expect.any(BigInt),
         },
-      },
-      `
+      }, `
       {
         "ccmGasBudget": null,
         "ccmMessage": null,
@@ -96,6 +95,7 @@ describe(refundedOnChain, () => {
           "refundAmount": "100000000",
           "swapRequestId": Any<BigInt>,
         },
+        "oraclePriceDeltaBps": null,
         "originType": "ON_CHAIN",
         "prewitnessedDepositId": null,
         "refundEgressId": null,
@@ -109,8 +109,7 @@ describe(refundedOnChain, () => {
         "swapRequestedBlockIndex": "1-1",
         "totalBrokerCommissionBps": 0,
       }
-    `,
-    );
+    `);
   });
   it('calculates the refund fee', async () => {
     await prisma.swapRequest.create({
@@ -170,8 +169,7 @@ describe(refundedOnChain, () => {
             id: expect.any(BigInt),
           },
         ],
-      },
-      `
+      }, `
       {
         "ccmGasBudget": null,
         "ccmMessage": null,
@@ -214,6 +212,7 @@ describe(refundedOnChain, () => {
           "refundAmount": "95000000",
           "swapRequestId": Any<BigInt>,
         },
+        "oraclePriceDeltaBps": null,
         "originType": "ON_CHAIN",
         "prewitnessedDepositId": null,
         "refundEgressId": null,
@@ -227,7 +226,6 @@ describe(refundedOnChain, () => {
         "swapRequestedBlockIndex": "1-1",
         "totalBrokerCommissionBps": 0,
       }
-    `,
-    );
+    `);
   });
 });

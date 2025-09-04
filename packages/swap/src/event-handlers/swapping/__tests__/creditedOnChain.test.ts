@@ -61,8 +61,7 @@ describe(creditedOnChain, () => {
           id: expect.any(Number),
           swapRequestId: expect.any(BigInt),
         },
-      },
-      `
+      }, `
       {
         "ccmGasBudget": null,
         "ccmMessage": null,
@@ -95,6 +94,7 @@ describe(creditedOnChain, () => {
           "refundAmount": null,
           "swapRequestId": Any<BigInt>,
         },
+        "oraclePriceDeltaBps": null,
         "originType": "ON_CHAIN",
         "prewitnessedDepositId": null,
         "refundEgressId": null,
@@ -108,7 +108,6 @@ describe(creditedOnChain, () => {
         "swapRequestedBlockIndex": "1-1",
         "totalBrokerCommissionBps": 0,
       }
-    `,
-    );
+    `);
   });
 });
