@@ -190,6 +190,9 @@ router.get(
           swappedInputAmount: rolledSwaps.swappedInputAmount.toFixed(),
           swappedIntermediateAmount: rolledSwaps.swappedIntermediateAmount.toFixed(),
           swappedOutputAmount: rolledSwaps.swappedOutputAmount.toFixed(),
+          ...(swapRequest?.oraclePriceDeltaBps && {
+            livePriceExecutionDeltaPercentage: swapRequest.oraclePriceDeltaBps.div(100).toNumber(),
+          }),
           ...(swapRequest?.onChainSwapInfo && {
             onChain: {
               accountId: swapRequest.onChainSwapInfo.accountId,
