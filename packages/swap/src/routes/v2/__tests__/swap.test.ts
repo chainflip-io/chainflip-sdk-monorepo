@@ -257,6 +257,7 @@ const swapEventMap = {
       outputAmount: '4192904666034',
       swapRequestId: '368',
       intermediateAmount: '4506169140',
+      oracleDelta: 100,
     }),
   },
   'Swapping.SwapEgressScheduled': {

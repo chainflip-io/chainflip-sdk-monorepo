@@ -10,6 +10,7 @@ exports[`swapRescheduled > increments the retry count 1`] = `
   "latestSwapRescheduledBlockIndex": "10-7",
   "latestSwapRescheduledReason": null,
   "nativeId": 3n,
+  "oraclePriceDeltaBps": null,
   "retryCount": 1,
   "srcAsset": "Btc",
   "swapAbortedAt": null,
