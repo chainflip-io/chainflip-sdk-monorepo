@@ -294,7 +294,8 @@ describe('solana fallback requested', () => {
             updatedAt: expect.any(Date),
           },
         },
-      }, `
+      },
+      `
       {
         "ccmGasBudget": "6291456",
         "ccmMessage": "0x0100000011016400013b536408000000002c01",
@@ -386,7 +387,8 @@ describe('solana fallback requested', () => {
         "swapRequestedBlockIndex": "7666752-1046",
         "totalBrokerCommissionBps": 20,
       }
-    `);
+    `,
+    );
 
     const { body } = await request(server).get('/v2/swaps/484522');
 
