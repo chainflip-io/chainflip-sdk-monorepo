@@ -280,6 +280,66 @@ describe(parseFoKParams, () => {
         },
         quote,
       );
-    }).toThrow('Invalid or missing live price slippage tolerance');
+    }).toThrow('Invalid live price slippage tolerance');
+  });
+
+  it('throws if quote does not return live price slippage but user sets it anyway', () => {
+    expect(() => {
+      parseFoKParams(
+        {
+          livePriceSlippageTolerancePercent: '1',
+          slippageTolerancePercent: 1.5,
+          refundAddress: '0x1234',
+          retryDurationBlocks: 100,
+        },
+        {
+          ...quote,
+          recommendedLivePriceSlippageTolerancePercent: undefined,
+        },
+      );
+    }).toThrow('Live price protection is not available for this asset pair');
+  });
+
+  it('does not throw if quote does not return live price slippage and user does not set it', () => {
+    expect(
+      parseFoKParams(
+        {
+          slippageTolerancePercent: 1.5,
+          refundAddress: '0x1234',
+          retryDurationBlocks: 100,
+        },
+        {
+          ...quote,
+          recommendedLivePriceSlippageTolerancePercent: undefined,
+        },
+      ),
+    ).toStrictEqual({
+      maxOraclePriceSlippage: null,
+      minPriceX128: '83892489958826316385497263710123985244108278726772',
+      refundAddress: '0x1234',
+      retryDurationBlocks: 100,
+    });
+  });
+
+  it('does not throw if quote does not return live price slippage and user sets it to undefined', () => {
+    expect(
+      parseFoKParams(
+        {
+          slippageTolerancePercent: 1.5,
+          refundAddress: '0x1234',
+          retryDurationBlocks: 100,
+          livePriceSlippageTolerancePercent: undefined,
+        },
+        {
+          ...quote,
+          recommendedLivePriceSlippageTolerancePercent: undefined,
+        },
+      ),
+    ).toStrictEqual({
+      maxOraclePriceSlippage: null,
+      minPriceX128: '83892489958826316385497263710123985244108278726772',
+      refundAddress: '0x1234',
+      retryDurationBlocks: 100,
+    });
   });
 });

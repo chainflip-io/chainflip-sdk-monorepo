@@ -91,8 +91,8 @@ importers:
         specifier: ^2.1.9
         version: 2.1.9(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.8.11
-        version: 0.8.11
+        specifier: ^0.8.19
+        version: 0.8.19
       axios:
         specifier: ^1.10.0
         version: 1.10.0
@@ -164,8 +164,8 @@ importers:
         specifier: ^2.1.9
         version: 2.1.9(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.8.11
-        version: 0.8.11
+        specifier: ^0.8.19
+        version: 0.8.19
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -201,8 +201,8 @@ importers:
         specifier: ^2.1.9
         version: 2.1.9(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.8.11
-        version: 0.8.11
+        specifier: ^0.8.19
+        version: 0.8.19
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -265,8 +265,8 @@ importers:
         specifier: ^2.1.9
         version: 2.1.9(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.8.11
-        version: 0.8.11
+        specifier: ^0.8.19
+        version: 0.8.19
       '@polkadot/api':
         specifier: ^15.10.2
         version: 15.10.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -500,14 +500,14 @@ packages:
   '@chainflip/utils@0.6.0':
     resolution: {integrity: sha512-ZwyNKv3FVVJw5aOcRf/4rTxCclP+prerxPnTGBrFcBYEYSrPlyx4eI1dc7J35xmKD2yq+vQgwNjCx1h6oJuoPA==}
 
-  '@chainflip/utils@0.8.11':
-    resolution: {integrity: sha512-BAUdQqwMCo7yr46VRFRaYsBi0mVgfpvQ7/9MRzWuomY0fddv/Shx3+DtGoFP8sVUAv5N1+D1lpCrT7wv8LelFg==}
-
   '@chainflip/utils@0.8.17':
     resolution: {integrity: sha512-+PYWamkxlMwxbOTmxzyyZOQrop2roCYqWH6rLj/AVxm10RykQsiWiVRp5nqEHjhQMjpAoQPRJk/s3G8pJI0TQg==}
 
   '@chainflip/utils@0.8.18':
     resolution: {integrity: sha512-qaKtasZSfCcEICR3Bo6IUabOkBsmldsKmDbGTRr0WBQlUyOA2SNwZRN9EP73ZQofWyI3luRN2tFGS54O3bYazQ==}
+
+  '@chainflip/utils@0.8.19':
+    resolution: {integrity: sha512-n3kyZNp35YABSVWgMUxW6bck3dgqiHiEJ1pumHj5Mx2OcAZ/2YeL7qbrPE67U2oZ+orOpfHVACb2wABDpv6rKA==}
 
   '@chainflip/utils@0.8.6':
     resolution: {integrity: sha512-g15TNn6Ab/XHfyQfHqNNjzxdaGGdUSOLrY/Caq1n1x6Wm6KspRp2Oy8Jl5VXd4M9wed1RJRsR9dKS1Z1uMtLvA==}
@@ -5721,12 +5721,6 @@ snapshots:
       bignumber.js: 9.3.0
       date-fns: 4.1.0
 
-  '@chainflip/utils@0.8.11':
-    dependencies:
-      '@date-fns/utc': 2.1.0
-      bignumber.js: 9.3.0
-      date-fns: 4.1.0
-
   '@chainflip/utils@0.8.17':
     dependencies:
       '@date-fns/utc': 2.1.1
@@ -5734,6 +5728,12 @@ snapshots:
       date-fns: 4.1.0
 
   '@chainflip/utils@0.8.18':
+    dependencies:
+      '@date-fns/utc': 2.1.1
+      bignumber.js: 9.3.1
+      date-fns: 4.1.0
+
+  '@chainflip/utils@0.8.19':
     dependencies:
       '@date-fns/utc': 2.1.1
       bignumber.js: 9.3.1
@@ -9613,7 +9613,7 @@ snapshots:
 
   json-bigint@1.0.0:
     dependencies:
-      bignumber.js: 9.3.0
+      bignumber.js: 9.3.1
 
   json-buffer@3.0.1: {}
 

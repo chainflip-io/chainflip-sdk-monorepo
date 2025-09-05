@@ -492,6 +492,7 @@ describe(SwapSDK, () => {
         depositAmount: BigInt(1e18).toString(),
         type: 'REGULAR',
         isVaultSwap: false,
+        recommendedLivePriceSlippageTolerancePercent: 1,
       } as Quote;
       const response = await sdk.requestDepositAddressV2({
         quote,
@@ -527,6 +528,7 @@ describe(SwapSDK, () => {
                   "chain": "Ethereum",
                 },
                 "isVaultSwap": false,
+                "recommendedLivePriceSlippageTolerancePercent": 1,
                 "srcAsset": {
                   "asset": "BTC",
                   "chain": "Bitcoin",
@@ -594,6 +596,7 @@ describe(SwapSDK, () => {
         },
         type: 'DCA',
         isVaultSwap: false,
+        recommendedLivePriceSlippageTolerancePercent: 1,
       } as Quote;
       const response = await sdk.requestDepositAddressV2({
         quote,
@@ -636,6 +639,7 @@ describe(SwapSDK, () => {
                   "chain": "Ethereum",
                 },
                 "isVaultSwap": false,
+                "recommendedLivePriceSlippageTolerancePercent": 1,
                 "srcAsset": {
                   "asset": "BTC",
                   "chain": "Bitcoin",
@@ -680,6 +684,234 @@ describe(SwapSDK, () => {
       });
     });
 
+    it('calls openSwapDepositChannel with max oracle slippage', async () => {
+      const rpcSpy = vi.mocked(sdk['apiClient'].openSwapDepositChannel).mockResolvedValueOnce({
+        status: 201,
+        body: {
+          id: 'channel id',
+          depositAddress: 'deposit address',
+          brokerCommissionBps: 0,
+          srcChainExpiryBlock: '123',
+          estimatedExpiryTime: 1698334470000,
+          channelOpeningFee: '0',
+          issuedBlock: 1,
+          maxBoostFeeBps: 0,
+        },
+        headers: new Headers(),
+      });
+
+      const quote = {
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        depositAmount: BigInt(1e18).toString(),
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        type: 'DCA',
+        isVaultSwap: false,
+        recommendedLivePriceSlippageTolerancePercent: 1,
+      } as Quote;
+      const response = await sdk.requestDepositAddressV2({
+        quote,
+        destAddress: '0xcafebabe',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '10000000000000',
+          livePriceSlippageTolerancePercent: 1,
+        },
+      });
+      expect(rpcSpy.mock.lastCall).toMatchInlineSnapshot(`
+        [
+          {
+            "body": {
+              "amount": "1000000000000000000",
+              "ccmParams": undefined,
+              "dcaParams": {
+                "chunkIntervalBlocks": 5,
+                "numberOfChunks": 100,
+              },
+              "destAddress": "0xcafebabe",
+              "destAsset": "FLIP",
+              "destChain": "Ethereum",
+              "fillOrKillParams": {
+                "maxOraclePriceSlippage": 100,
+                "minPriceX128": "34028236692093846346337460743176821145600000000000000000000000",
+                "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+                "retryDurationBlocks": 500,
+              },
+              "maxBoostFeeBps": undefined,
+              "quote": {
+                "dcaParams": {
+                  "chunkIntervalBlocks": 5,
+                  "numberOfChunks": 100,
+                },
+                "depositAmount": "1000000000000000000",
+                "destAsset": {
+                  "asset": "FLIP",
+                  "chain": "Ethereum",
+                },
+                "isVaultSwap": false,
+                "recommendedLivePriceSlippageTolerancePercent": 1,
+                "srcAsset": {
+                  "asset": "BTC",
+                  "chain": "Bitcoin",
+                },
+                "type": "DCA",
+              },
+              "srcAddress": undefined,
+              "srcAsset": "BTC",
+              "srcChain": "Bitcoin",
+              "takeCommission": false,
+            },
+          },
+        ]
+      `);
+      expect(response).toStrictEqual({
+        depositChannelId: 'channel id',
+        depositAddress: 'deposit address',
+        brokerCommissionBps: 0,
+        ccmParams: undefined,
+        depositChannelExpiryBlock: 123n,
+        estimatedDepositChannelExpiryTime: 1698334470000,
+        amount: '1000000000000000000',
+        srcAddress: undefined,
+        destAddress: '0xcafebabe',
+        destAsset: 'FLIP',
+        destChain: 'Ethereum',
+        srcAsset: 'BTC',
+        srcChain: 'Bitcoin',
+        maxBoostFeeBps: 0,
+        channelOpeningFee: 0n,
+        affiliateBrokers: [],
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          retryDurationBlocks: 500,
+          livePriceSlippageTolerancePercent: 1,
+        },
+      });
+    });
+
+    it('calls openSwapDepositChannel with the correct custom max oracle slippage value', async () => {
+      const rpcSpy = vi.mocked(sdk['apiClient'].openSwapDepositChannel).mockResolvedValueOnce({
+        status: 201,
+        body: {
+          id: 'channel id',
+          depositAddress: 'deposit address',
+          brokerCommissionBps: 0,
+          srcChainExpiryBlock: '123',
+          estimatedExpiryTime: 1698334470000,
+          channelOpeningFee: '0',
+          issuedBlock: 1,
+          maxBoostFeeBps: 0,
+        },
+        headers: new Headers(),
+      });
+
+      const quote = {
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        depositAmount: BigInt(1e18).toString(),
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        type: 'DCA',
+        isVaultSwap: false,
+        recommendedLivePriceSlippageTolerancePercent: 1,
+      } as Quote;
+      const response = await sdk.requestDepositAddressV2({
+        quote,
+        destAddress: '0xcafebabe',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '10000000000000',
+          livePriceSlippageTolerancePercent: 2,
+        },
+      });
+      expect(rpcSpy.mock.lastCall).toMatchInlineSnapshot(`
+        [
+          {
+            "body": {
+              "amount": "1000000000000000000",
+              "ccmParams": undefined,
+              "dcaParams": {
+                "chunkIntervalBlocks": 5,
+                "numberOfChunks": 100,
+              },
+              "destAddress": "0xcafebabe",
+              "destAsset": "FLIP",
+              "destChain": "Ethereum",
+              "fillOrKillParams": {
+                "maxOraclePriceSlippage": 200,
+                "minPriceX128": "34028236692093846346337460743176821145600000000000000000000000",
+                "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+                "retryDurationBlocks": 500,
+              },
+              "maxBoostFeeBps": undefined,
+              "quote": {
+                "dcaParams": {
+                  "chunkIntervalBlocks": 5,
+                  "numberOfChunks": 100,
+                },
+                "depositAmount": "1000000000000000000",
+                "destAsset": {
+                  "asset": "FLIP",
+                  "chain": "Ethereum",
+                },
+                "isVaultSwap": false,
+                "recommendedLivePriceSlippageTolerancePercent": 1,
+                "srcAsset": {
+                  "asset": "BTC",
+                  "chain": "Bitcoin",
+                },
+                "type": "DCA",
+              },
+              "srcAddress": undefined,
+              "srcAsset": "BTC",
+              "srcChain": "Bitcoin",
+              "takeCommission": false,
+            },
+          },
+        ]
+      `);
+      expect(response).toStrictEqual({
+        depositChannelId: 'channel id',
+        depositAddress: 'deposit address',
+        brokerCommissionBps: 0,
+        ccmParams: undefined,
+        depositChannelExpiryBlock: 123n,
+        estimatedDepositChannelExpiryTime: 1698334470000,
+        amount: '1000000000000000000',
+        srcAddress: undefined,
+        destAddress: '0xcafebabe',
+        destAsset: 'FLIP',
+        destChain: 'Ethereum',
+        srcAsset: 'BTC',
+        srcChain: 'Bitcoin',
+        maxBoostFeeBps: 0,
+        channelOpeningFee: 0n,
+        affiliateBrokers: [],
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          retryDurationBlocks: 500,
+          livePriceSlippageTolerancePercent: 2,
+        },
+      });
+    });
+
     it('calls the configured broker api', async () => {
       const postSpy = mockRpcResponse((url, data: any) => {
         if (data.method === 'broker_request_swap_deposit_address') {
@@ -710,6 +942,7 @@ describe(SwapSDK, () => {
           depositAmount: BigInt(1e18).toString(),
           type: 'REGULAR',
           isVaultSwap: false,
+          recommendedLivePriceSlippageTolerancePercent: 1,
         } as Quote,
         srcAddress: 'mrV3ee4J3jipspCNPofzB2UbaVu7qgf9Ex',
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
@@ -801,6 +1034,7 @@ describe(SwapSDK, () => {
           depositAmount: BigInt(1e18).toString(),
           type: 'REGULAR',
           isVaultSwap: false,
+          recommendedLivePriceSlippageTolerancePercent: 1,
         } as Quote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         fillOrKillParams: {
@@ -892,6 +1126,7 @@ describe(SwapSDK, () => {
           depositAmount: BigInt(1e18).toString(),
           type: 'REGULAR',
           isVaultSwap: false,
+          recommendedLivePriceSlippageTolerancePercent: 1,
         } as Quote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         fillOrKillParams: {
@@ -991,6 +1226,7 @@ describe(SwapSDK, () => {
           },
           type: 'DCA',
           isVaultSwap: false,
+          recommendedLivePriceSlippageTolerancePercent: 1,
         } as Quote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         fillOrKillParams: {
@@ -1090,6 +1326,7 @@ describe(SwapSDK, () => {
             gasBudget: '123456789',
             messageLengthBytes: 10,
           },
+          recommendedLivePriceSlippageTolerancePercent: 1,
         } as Quote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         fillOrKillParams: {
@@ -1196,6 +1433,7 @@ describe(SwapSDK, () => {
           maxBoostFeeBps: MAX_BOOST_FEE_BPS,
           type: 'REGULAR',
           isVaultSwap: false,
+          recommendedLivePriceSlippageTolerancePercent: 1,
         } as BoostQuote,
         destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
         fillOrKillParams: {
@@ -1363,6 +1601,7 @@ describe(SwapSDK, () => {
               chunkIntervalBlocks: 5,
             },
             isVaultSwap: false,
+            recommendedLivePriceSlippageTolerancePercent: 1,
           } as Quote,
           destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
           fillOrKillParams: {
@@ -1386,6 +1625,7 @@ describe(SwapSDK, () => {
             depositAmount: BigInt(1e18).toString(),
             type: 'DCA',
             isVaultSwap: false,
+            recommendedLivePriceSlippageTolerancePercent: 1,
           } as Quote,
           destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
           fillOrKillParams: {
@@ -1409,6 +1649,7 @@ describe(SwapSDK, () => {
             depositAmount: BigInt(1e18).toString(),
             type: 'REGULAR',
             isVaultSwap: true,
+            recommendedLivePriceSlippageTolerancePercent: 1,
           } as Quote,
           destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
           fillOrKillParams: {
@@ -1432,6 +1673,7 @@ describe(SwapSDK, () => {
             depositAmount: BigInt(1e18).toString(),
             type: 'REGULAR',
             isVaultSwap: false,
+            recommendedLivePriceSlippageTolerancePercent: 1,
           } as Quote,
           destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
           fillOrKillParams: {
@@ -1464,6 +1706,7 @@ describe(SwapSDK, () => {
               messageLengthBytes: 10,
             },
             isVaultSwap: false,
+            recommendedLivePriceSlippageTolerancePercent: 1,
           } as Quote,
           destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
           fillOrKillParams: {
@@ -1476,7 +1719,7 @@ describe(SwapSDK, () => {
       ).rejects.toThrow('Cannot open regular channel for quote with CCM params');
     });
 
-    it('throws if live price slippage tolerance is missing', async () => {
+    it('throws if live price slippage tolerance is set but quote does not return it', async () => {
       await expect(
         new SwapSDK({
           broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
@@ -1493,9 +1736,100 @@ describe(SwapSDK, () => {
             minPrice: '10000000000000',
             refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
             retryDurationBlocks: 500,
+            livePriceSlippageTolerancePercent: 1,
           } as FillOrKillParams,
         }),
-      ).rejects.toThrow('Invalid or missing live price slippage tolerance');
+      ).rejects.toThrow('Live price protection is not available for this asset pair');
+    });
+
+    it('does not throw if live price slippage tolerance is neither returned from quote nor set', async () => {
+      const postSpy = mockRpcResponse((url, data: any) => {
+        if (data.method === 'broker_request_swap_deposit_address') {
+          return Promise.resolve({
+            data: {
+              id: '1',
+              jsonrpc: '2.0',
+              result: {
+                address: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+                issued_block: 123,
+                channel_id: 15,
+                source_chain_expiry_block: '0x04d2',
+                channel_opening_fee: '0x0',
+              },
+            },
+          });
+        }
+
+        return defaultRpcMocks(url, data);
+      });
+      const MAX_BOOST_FEE_BPS = 100;
+
+      const result = await new SwapSDK({
+        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+      }).requestDepositAddressV2({
+        quote: {
+          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+          depositAmount: BigInt(1e18).toString(),
+          maxBoostFeeBps: MAX_BOOST_FEE_BPS,
+          type: 'REGULAR',
+          isVaultSwap: false,
+        } as BoostQuote,
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          retryDurationBlocks: 500,
+        },
+      });
+
+      expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
+        {
+          id: expect.any(String),
+          jsonrpc: '2.0',
+          method: 'broker_request_swap_deposit_address',
+          params: [
+            { asset: 'BTC', chain: 'Bitcoin' },
+            { asset: 'FLIP', chain: 'Ethereum' },
+            '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+            15,
+            null,
+            MAX_BOOST_FEE_BPS,
+            null,
+            {
+              max_oracle_price_slippage: null,
+              min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+              refund_address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+              retry_duration: 500,
+            },
+            null,
+          ],
+        },
+      ]);
+      expect(result).toStrictEqual({
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'FLIP',
+        srcAddress: undefined,
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          retryDurationBlocks: 500,
+        },
+        brokerCommissionBps: 15,
+        ccmParams: undefined,
+        amount: '1000000000000000000',
+        depositChannelId: '123-Bitcoin-15',
+        depositAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9a',
+        depositChannelExpiryBlock: 1234n,
+        estimatedDepositChannelExpiryTime: undefined,
+        maxBoostFeeBps: MAX_BOOST_FEE_BPS,
+        channelOpeningFee: 0n,
+        affiliateBrokers: [],
+        dcaParams: undefined,
+      });
     });
   });
 
@@ -1527,7 +1861,6 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           slippageTolerancePercent: '1.5',
-          livePriceSlippageTolerancePercent: 1,
         },
       });
       expect(rpcSpy.mock.lastCall).toMatchInlineSnapshot(`
@@ -1547,7 +1880,7 @@ describe(SwapSDK, () => {
               },
               "extraParams": undefined,
               "fillOrKillParams": {
-                "maxOraclePriceSlippage": 100,
+                "maxOraclePriceSlippage": null,
                 "minPriceX128": "8379453285428109662785599708007292207104000000000000",
                 "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
                 "retryDurationBlocks": 500,
@@ -1593,7 +1926,6 @@ describe(SwapSDK, () => {
         },
         type: 'DCA',
         isVaultSwap: true,
-        recommendedLivePriceSlippageTolerancePercent: 1,
       } as Quote;
       const response = await sdk.encodeVaultSwapData({
         quote,
@@ -1607,7 +1939,6 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           minPrice: '10000000000000',
-          livePriceSlippageTolerancePercent: 0.5,
         },
       });
       expect(rpcSpy.mock.lastCall).toMatchInlineSnapshot(`
@@ -1635,7 +1966,182 @@ describe(SwapSDK, () => {
               },
               "extraParams": undefined,
               "fillOrKillParams": {
-                "maxOraclePriceSlippage": 50,
+                "maxOraclePriceSlippage": null,
+                "minPriceX128": "34028236692093846346337460743176821145600000000000000000000000",
+                "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+                "retryDurationBlocks": 500,
+              },
+              "maxBoostFeeBps": undefined,
+              "network": "sisyphos",
+              "srcAddress": undefined,
+              "srcAsset": {
+                "asset": "BTC",
+                "chain": "Bitcoin",
+              },
+            },
+          },
+        ]
+      `);
+      expect(response).toStrictEqual({
+        chain: 'Bitcoin',
+        nulldataPayload:
+          '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+        depositAddress: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+      });
+    });
+
+    it('calls encodeVaultSwapData with max oracle slippage', async () => {
+      const rpcSpy = vi.mocked(sdk['apiClient'].encodeVaultSwapData).mockResolvedValueOnce({
+        status: 200,
+        body: {
+          chain: 'Bitcoin',
+          nulldataPayload:
+            '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+          depositAddress: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+        },
+        headers: new Headers(),
+      });
+
+      const quote = {
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        depositAmount: BigInt(1e18).toString(),
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        type: 'DCA',
+        isVaultSwap: true,
+        recommendedLivePriceSlippageTolerancePercent: 1,
+      } as Quote;
+      const response = await sdk.encodeVaultSwapData({
+        quote,
+        destAddress: '0xcafebabe',
+        brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+        brokerCommissionBps: 15,
+        affiliateBrokers: [
+          { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+        ],
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '10000000000000',
+        },
+      });
+      expect(rpcSpy.mock.lastCall).toMatchInlineSnapshot(`
+        [
+          {
+            "body": {
+              "affiliates": [
+                {
+                  "account": "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
+                  "commissionBps": 10,
+                },
+              ],
+              "amount": "1000000000000000000",
+              "brokerAccount": "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
+              "ccmParams": undefined,
+              "commissionBps": 15,
+              "dcaParams": {
+                "chunkIntervalBlocks": 5,
+                "numberOfChunks": 100,
+              },
+              "destAddress": "0xcafebabe",
+              "destAsset": {
+                "asset": "FLIP",
+                "chain": "Ethereum",
+              },
+              "extraParams": undefined,
+              "fillOrKillParams": {
+                "maxOraclePriceSlippage": 100,
+                "minPriceX128": "34028236692093846346337460743176821145600000000000000000000000",
+                "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+                "retryDurationBlocks": 500,
+              },
+              "maxBoostFeeBps": undefined,
+              "network": "sisyphos",
+              "srcAddress": undefined,
+              "srcAsset": {
+                "asset": "BTC",
+                "chain": "Bitcoin",
+              },
+            },
+          },
+        ]
+      `);
+      expect(response).toStrictEqual({
+        chain: 'Bitcoin',
+        nulldataPayload:
+          '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+        depositAddress: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+      });
+    });
+
+    it('calls encodeVaultSwapData with the correct custom max oracle slippage value', async () => {
+      const rpcSpy = vi.mocked(sdk['apiClient'].encodeVaultSwapData).mockResolvedValueOnce({
+        status: 200,
+        body: {
+          chain: 'Bitcoin',
+          nulldataPayload:
+            '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+          depositAddress: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+        },
+        headers: new Headers(),
+      });
+
+      const quote = {
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        depositAmount: BigInt(1e18).toString(),
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        type: 'DCA',
+        isVaultSwap: true,
+        recommendedLivePriceSlippageTolerancePercent: 1,
+      } as Quote;
+      const response = await sdk.encodeVaultSwapData({
+        quote,
+        destAddress: '0xcafebabe',
+        brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+        brokerCommissionBps: 15,
+        affiliateBrokers: [
+          { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+        ],
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '10000000000000',
+          livePriceSlippageTolerancePercent: 2,
+        },
+      });
+      expect(rpcSpy.mock.lastCall).toMatchInlineSnapshot(`
+        [
+          {
+            "body": {
+              "affiliates": [
+                {
+                  "account": "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
+                  "commissionBps": 10,
+                },
+              ],
+              "amount": "1000000000000000000",
+              "brokerAccount": "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
+              "ccmParams": undefined,
+              "commissionBps": 15,
+              "dcaParams": {
+                "chunkIntervalBlocks": 5,
+                "numberOfChunks": 100,
+              },
+              "destAddress": "0xcafebabe",
+              "destAsset": {
+                "asset": "FLIP",
+                "chain": "Ethereum",
+              },
+              "extraParams": undefined,
+              "fillOrKillParams": {
+                "maxOraclePriceSlippage": 200,
                 "minPriceX128": "34028236692093846346337460743176821145600000000000000000000000",
                 "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
                 "retryDurationBlocks": 500,
@@ -1680,7 +2186,6 @@ describe(SwapSDK, () => {
             retryDurationBlocks: 500,
             refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
             minPrice: '10000000000000',
-            livePriceSlippageTolerancePercent: 1,
           },
           brokerCommissionBps: 10,
         }),
@@ -1708,7 +2213,6 @@ describe(SwapSDK, () => {
             retryDurationBlocks: 500,
             refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
             minPrice: '10000000000000',
-            livePriceSlippageTolerancePercent: 1,
           },
           affiliateBrokers: [
             { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
@@ -1752,7 +2256,6 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '10000000000000',
-          livePriceSlippageTolerancePercent: 1,
         },
         affiliateBrokers: [
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
@@ -1773,7 +2276,7 @@ describe(SwapSDK, () => {
               chain: 'Bitcoin',
               min_output_amount: '0x125dfa371a19e6f7cb54395ca0000000000',
               retry_duration: 500,
-              max_oracle_price_slippage: 100,
+              max_oracle_price_slippage: null,
             },
             null,
             null,
@@ -1829,7 +2332,6 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '10000000000000',
-          livePriceSlippageTolerancePercent: 1,
         },
       });
 
@@ -1847,7 +2349,7 @@ describe(SwapSDK, () => {
               chain: 'Bitcoin',
               min_output_amount: '0x125dfa371a19e6f7cb54395ca0000000000',
               retry_duration: 500,
-              max_oracle_price_slippage: 100,
+              max_oracle_price_slippage: null,
             },
             null,
             null,
@@ -1906,7 +2408,6 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '10000000000000',
-          livePriceSlippageTolerancePercent: 0.5,
         },
         ccmParams: {
           gasBudget: '123456789',
@@ -1929,7 +2430,7 @@ describe(SwapSDK, () => {
               chain: 'Bitcoin',
               min_output_amount: '0x125dfa371a19e6f7cb54395ca0000000000',
               retry_duration: 500,
-              max_oracle_price_slippage: 50,
+              max_oracle_price_slippage: null,
             },
             {
               gas_budget: '0x75bcd15',
@@ -1988,7 +2489,6 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '10000000000000',
-          livePriceSlippageTolerancePercent: 1,
         },
       });
 
@@ -2006,7 +2506,7 @@ describe(SwapSDK, () => {
               chain: 'Bitcoin',
               min_output_amount: '0x125dfa371a19e6f7cb54395ca0000000000',
               retry_duration: 500,
-              max_oracle_price_slippage: 100,
+              max_oracle_price_slippage: null,
             },
             null,
             MAX_BOOST_FEE_BPS,
@@ -2046,7 +2546,6 @@ describe(SwapSDK, () => {
             retryDurationBlocks: 500,
             refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
             minPrice: '10000000000000',
-            livePriceSlippageTolerancePercent: 1,
           },
           brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
           brokerCommissionBps: 15,
@@ -2076,7 +2575,6 @@ describe(SwapSDK, () => {
             retryDurationBlocks: 500,
             refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
             minPrice: '10000000000000',
-            livePriceSlippageTolerancePercent: 1,
           },
         }),
       ).rejects.toThrow('Invalid quote type');
@@ -2099,7 +2597,6 @@ describe(SwapSDK, () => {
             retryDurationBlocks: 500,
             refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
             minPrice: '10000000000000',
-            livePriceSlippageTolerancePercent: 1,
           },
         }),
       ).rejects.toThrow('Failed to find DCA parameters from quote');
@@ -2122,7 +2619,6 @@ describe(SwapSDK, () => {
             retryDurationBlocks: 500,
             refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
             minPrice: '10000000000000',
-            livePriceSlippageTolerancePercent: 1,
           },
         }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -2147,7 +2643,6 @@ describe(SwapSDK, () => {
             retryDurationBlocks: 500,
             refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
             minPrice: '10000000000000',
-            livePriceSlippageTolerancePercent: 1,
           },
           ccmParams: {
             gasBudget: '123456789',
@@ -2179,13 +2674,12 @@ describe(SwapSDK, () => {
             retryDurationBlocks: 500,
             refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
             minPrice: '10000000000000',
-            livePriceSlippageTolerancePercent: 1,
           },
         }),
       ).rejects.toThrow('Cannot encode regular swap for quote with CCM params');
     });
 
-    it('throws if live price slippage is not provided', async () => {
+    it('throws if live price slippage tolerance is set but quote does not return it', async () => {
       await expect(
         new SwapSDK({
           broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
@@ -2202,9 +2696,10 @@ describe(SwapSDK, () => {
             retryDurationBlocks: 500,
             refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
             minPrice: '10000000000000',
+            livePriceSlippageTolerancePercent: 1,
           } as FillOrKillParams,
         }),
-      ).rejects.toThrow('Invalid or missing live price slippage tolerance');
+      ).rejects.toThrow('Live price protection is not available for this asset pair');
     });
   });
 
@@ -2231,7 +2726,6 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           slippageTolerancePercent: '1.5',
-          livePriceSlippageTolerancePercent: 1,
         },
       });
       expect(rpcSpy.mock.lastCall).toMatchInlineSnapshot(`
@@ -2250,7 +2744,7 @@ describe(SwapSDK, () => {
                 "chain": "Ethereum",
               },
               "fillOrKillParams": {
-                "maxOraclePriceSlippage": 100,
+                "maxOraclePriceSlippage": null,
                 "minPriceX128": "8379453285428109662785599708007292207104000000000000",
                 "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
                 "retryDurationBlocks": 500,
@@ -2299,7 +2793,6 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           minPrice: '10000000000000',
-          livePriceSlippageTolerancePercent: 1,
         },
       });
       expect(rpcSpy.mock.lastCall).toMatchInlineSnapshot(`
@@ -2326,7 +2819,161 @@ describe(SwapSDK, () => {
                 "chain": "Ethereum",
               },
               "fillOrKillParams": {
-                "maxOraclePriceSlippage": 100,
+                "maxOraclePriceSlippage": null,
+                "minPriceX128": "34028236692093846346337460743176821145600000000000000000000000",
+                "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+                "retryDurationBlocks": 500,
+              },
+              "maxBoostFeeBps": undefined,
+              "network": "sisyphos",
+              "srcAddress": undefined,
+              "srcAsset": {
+                "asset": "BTC",
+                "chain": "Bitcoin",
+              },
+            },
+          },
+        ]
+      `);
+      expect(response).toStrictEqual('0x1234');
+    });
+
+    it('calls encodeCfParameters with max oracle slippage', async () => {
+      const rpcSpy = vi.mocked(sdk['apiClient'].encodeCfParameters).mockResolvedValueOnce({
+        status: 200,
+        body: '0x1234',
+        headers: new Headers(),
+      });
+
+      const quote = {
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        depositAmount: BigInt(1e18).toString(),
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        type: 'DCA',
+        isVaultSwap: true,
+        recommendedLivePriceSlippageTolerancePercent: 0.5,
+      } as Quote;
+      const response = await sdk.encodeCfParameters({
+        quote,
+        destAddress: '0xcafebabe',
+        brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+        brokerCommissionBps: 15,
+        affiliateBrokers: [
+          { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+        ],
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '10000000000000',
+          livePriceSlippageTolerancePercent: 0.5,
+        },
+      });
+      expect(rpcSpy.mock.lastCall).toMatchInlineSnapshot(`
+        [
+          {
+            "body": {
+              "affiliates": [
+                {
+                  "account": "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
+                  "commissionBps": 10,
+                },
+              ],
+              "amount": "1000000000000000000",
+              "brokerAccount": "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
+              "ccmParams": undefined,
+              "commissionBps": 15,
+              "dcaParams": {
+                "chunkIntervalBlocks": 5,
+                "numberOfChunks": 100,
+              },
+              "destAddress": "0xcafebabe",
+              "destAsset": {
+                "asset": "FLIP",
+                "chain": "Ethereum",
+              },
+              "fillOrKillParams": {
+                "maxOraclePriceSlippage": 50,
+                "minPriceX128": "34028236692093846346337460743176821145600000000000000000000000",
+                "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+                "retryDurationBlocks": 500,
+              },
+              "maxBoostFeeBps": undefined,
+              "network": "sisyphos",
+              "srcAddress": undefined,
+              "srcAsset": {
+                "asset": "BTC",
+                "chain": "Bitcoin",
+              },
+            },
+          },
+        ]
+      `);
+      expect(response).toStrictEqual('0x1234');
+    });
+
+    it('calls encodeCfParameters with the correct custom max oracle slippage value', async () => {
+      const rpcSpy = vi.mocked(sdk['apiClient'].encodeCfParameters).mockResolvedValueOnce({
+        status: 200,
+        body: '0x1234',
+        headers: new Headers(),
+      });
+
+      const quote = {
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        depositAmount: BigInt(1e18).toString(),
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+        type: 'DCA',
+        isVaultSwap: true,
+        recommendedLivePriceSlippageTolerancePercent: 0.5,
+      } as Quote;
+      const response = await sdk.encodeCfParameters({
+        quote,
+        destAddress: '0xcafebabe',
+        brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+        brokerCommissionBps: 15,
+        affiliateBrokers: [
+          { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
+        ],
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          minPrice: '10000000000000',
+          livePriceSlippageTolerancePercent: 2,
+        },
+      });
+      expect(rpcSpy.mock.lastCall).toMatchInlineSnapshot(`
+        [
+          {
+            "body": {
+              "affiliates": [
+                {
+                  "account": "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
+                  "commissionBps": 10,
+                },
+              ],
+              "amount": "1000000000000000000",
+              "brokerAccount": "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
+              "ccmParams": undefined,
+              "commissionBps": 15,
+              "dcaParams": {
+                "chunkIntervalBlocks": 5,
+                "numberOfChunks": 100,
+              },
+              "destAddress": "0xcafebabe",
+              "destAsset": {
+                "asset": "FLIP",
+                "chain": "Ethereum",
+              },
+              "fillOrKillParams": {
+                "maxOraclePriceSlippage": 200,
                 "minPriceX128": "34028236692093846346337460743176821145600000000000000000000000",
                 "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
                 "retryDurationBlocks": 500,
@@ -2442,7 +3089,6 @@ describe(SwapSDK, () => {
             retryDurationBlocks: 500,
             refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
             minPrice: '10000000000000',
-            livePriceSlippageTolerancePercent: 1,
           },
           brokerCommissionBps: 10,
         }),
@@ -2470,7 +3116,6 @@ describe(SwapSDK, () => {
             retryDurationBlocks: 500,
             refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
             minPrice: '10000000000000',
-            livePriceSlippageTolerancePercent: 1,
           },
           affiliateBrokers: [
             { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
@@ -2505,7 +3150,6 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '10000000000000',
-          livePriceSlippageTolerancePercent: 1,
         },
         affiliateBrokers: [
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
@@ -2532,7 +3176,7 @@ describe(SwapSDK, () => {
             "0x717e15853fd5f2ac6123e844c3a7c75976eaec9b",
             15,
             {
-              "max_oracle_price_slippage": 100,
+              "max_oracle_price_slippage": null,
               "min_price": "0x152d02c7e14af680000000000000000000000000000000000000",
               "refund_address": "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
               "retry_duration": 500,
@@ -2583,7 +3227,6 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '10000000000000',
-          livePriceSlippageTolerancePercent: 1,
         },
       });
 
@@ -2607,7 +3250,7 @@ describe(SwapSDK, () => {
             "0x717e15853fd5f2ac6123e844c3a7c75976eaec9b",
             15,
             {
-              "max_oracle_price_slippage": 100,
+              "max_oracle_price_slippage": null,
               "min_price": "0x152d02c7e14af680000000000000000000000000000000000000",
               "refund_address": "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
               "retry_duration": 500,
@@ -2656,7 +3299,6 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '10000000000000',
-          livePriceSlippageTolerancePercent: 1,
         },
         ccmParams: {
           gasBudget: '123456789',
@@ -2685,7 +3327,7 @@ describe(SwapSDK, () => {
             "0x717e15853fd5f2ac6123e844c3a7c75976eaec9b",
             15,
             {
-              "max_oracle_price_slippage": 100,
+              "max_oracle_price_slippage": null,
               "min_price": "0x152d02c7e14af680000000000000000000000000000000000000",
               "refund_address": "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
               "retry_duration": 500,
@@ -2734,7 +3376,6 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '10000000000000',
-          livePriceSlippageTolerancePercent: 1,
         },
       });
 
@@ -2758,7 +3399,7 @@ describe(SwapSDK, () => {
             "0x717e15853fd5f2ac6123e844c3a7c75976eaec9b",
             15,
             {
-              "max_oracle_price_slippage": 100,
+              "max_oracle_price_slippage": null,
               "min_price": "0x152d02c7e14af680000000000000000000000000000000000000",
               "refund_address": "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
               "retry_duration": 500,
@@ -2797,7 +3438,6 @@ describe(SwapSDK, () => {
             retryDurationBlocks: 500,
             refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
             minPrice: '10000000000000',
-            livePriceSlippageTolerancePercent: 1,
           },
           brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
           brokerCommissionBps: 15,
@@ -2856,7 +3496,7 @@ describe(SwapSDK, () => {
       ).rejects.toThrow('Failed to find DCA parameters from quote');
     });
 
-    it('throws for missing live price protection params', async () => {
+    it('throws if live price slippage tolerance is set but quote does not return it', async () => {
       await expect(
         new SwapSDK({
           broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
@@ -2873,9 +3513,10 @@ describe(SwapSDK, () => {
             retryDurationBlocks: 500,
             refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
             minPrice: '10000000000000',
+            livePriceSlippageTolerancePercent: 1,
           } as FillOrKillParams,
         }),
-      ).rejects.toThrow('Invalid or missing live price slippage tolerance');
+      ).rejects.toThrow('Live price protection is not available for this asset pair');
     });
 
     it('throws for ccm params with regular quote', async () => {
@@ -2927,7 +3568,6 @@ describe(SwapSDK, () => {
             retryDurationBlocks: 500,
             refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
             minPrice: '10000000000000',
-            livePriceSlippageTolerancePercent: 1,
           },
         }),
       ).rejects.toThrow('Cannot encode regular swap for quote with CCM params');

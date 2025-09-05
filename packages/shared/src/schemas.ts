@@ -223,7 +223,7 @@ interface BaseQuoteDetails {
   estimatedPrice: string;
   recommendedSlippageTolerancePercent: number;
   recommendedRetryDurationMinutes: number;
-  recommendedLivePriceSlippageTolerancePercent: number;
+  recommendedLivePriceSlippageTolerancePercent: number | undefined;
 }
 
 type WithBoostQuote<T> = Omit<T, 'boostQuote'> & BoostedQuoteDetails;
