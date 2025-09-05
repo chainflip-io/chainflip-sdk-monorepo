@@ -29,6 +29,7 @@ describe(getSwapFields, () => {
         swapAbortedAt: null,
         swapAbortedBlockIndex: null,
         swapAbortedReason: null,
+        oraclePriceDeltaBps: new Prisma.Decimal('10000'),
       }),
     ).toStrictEqual({
       inputAmount: '1234567890123456789012345678901234567890',

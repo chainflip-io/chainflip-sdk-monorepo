@@ -38,6 +38,7 @@ exports[`refundEgressIgnored > handles refundEgressIgnored event 1`] = `
   ],
   "maxBoostFeeBps": 0,
   "nativeId": 377n,
+  "oraclePriceDeltaBps": null,
   "originType": "DEPOSIT_CHANNEL",
   "prewitnessedDepositId": null,
   "refundEgressId": null,

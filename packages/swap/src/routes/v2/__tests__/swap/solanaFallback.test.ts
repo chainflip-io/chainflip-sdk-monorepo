@@ -373,6 +373,7 @@ describe('solana fallback requested', () => {
         "id": Any<BigInt>,
         "maxBoostFeeBps": 0,
         "nativeId": 484522n,
+        "oraclePriceDeltaBps": null,
         "originType": "DEPOSIT_CHANNEL",
         "prewitnessedDepositId": null,
         "refundEgressId": null,

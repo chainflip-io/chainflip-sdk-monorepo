@@ -38,6 +38,7 @@ exports[`refundEgressScheduled > calculates the refund fee 1`] = `
   "id": Any<BigInt>,
   "maxBoostFeeBps": 0,
   "nativeId": 9876545n,
+  "oraclePriceDeltaBps": null,
   "originType": "VAULT",
   "prewitnessedDepositId": null,
   "refundEgress": {
@@ -101,6 +102,7 @@ exports[`refundEgressScheduled > creates egress for refund on an existing swap 1
   "id": Any<BigInt>,
   "maxBoostFeeBps": 0,
   "nativeId": 9876545n,
+  "oraclePriceDeltaBps": null,
   "originType": "VAULT",
   "prewitnessedDepositId": null,
   "refundEgress": {

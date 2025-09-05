@@ -104,6 +104,7 @@ interface SwapFields {
   swappedInputAmount: string;
   swappedIntermediateAmount: string;
   swappedOutputAmount: string;
+  livePriceExecutionDeltaPercentage: number | undefined;
   regular: ChunkInfo | undefined;
   dca:
     | {

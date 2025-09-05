@@ -43,6 +43,7 @@ exports[`swapEgressScheduled > adds an egress and fee to a swap request 1`] = `
   "id": Any<BigInt>,
   "maxBoostFeeBps": 0,
   "nativeId": 9876545n,
+  "oraclePriceDeltaBps": null,
   "originType": "VAULT",
   "prewitnessedDepositId": null,
   "refundEgressId": null,

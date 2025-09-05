@@ -1,5 +1,6 @@
 import { swappingSwapRequestCompleted } from '@chainflip/processor/160/swapping/swapRequestCompleted';
 import { z } from 'zod';
+import { isNotNullish } from '@/shared/guards.js';
 import { Prisma } from '../../client.js';
 import { getAssetPrice } from '../../pricing/index.js';
 import { getSwapPrice } from '../../utils/swap.js';
@@ -23,7 +24,9 @@ export default async function swapRequestCompleted({
   const swapRequest = await prisma.swapRequest.findFirstOrThrow({
     where: { nativeId: swapRequestId },
     include: {
-      swaps: { select: { swapOutputAmount: true } },
+      swaps: {
+        select: { swapOutputAmount: true, oraclePriceDeltaBps: true, swapExecutedAt: true },
+      },
       swapDepositChannel: { select: { quote: true } },
     },
   });
@@ -33,12 +36,25 @@ export default async function swapRequestCompleted({
     new Prisma.Decimal(0),
   );
 
+  const oracleSwaps = swapRequest.swaps.filter(({ oraclePriceDeltaBps }) =>
+    isNotNullish(oraclePriceDeltaBps),
+  );
+
+  const totalOraclePriceDeltaBps = oracleSwaps.reduce(
+    (acc, { oraclePriceDeltaBps }) => acc.plus(oraclePriceDeltaBps ?? 0),
+    new Prisma.Decimal(0),
+  );
+
+  const avgOraclePriceDeltaBps =
+    oracleSwaps.length > 0 ? totalOraclePriceDeltaBps.div(oracleSwaps.length) : undefined;
+
   await prisma.swapRequest.update({
     where: { nativeId: swapRequestId },
     data: {
       completedAt: new Date(block.timestamp),
       completedBlockIndex: `${block.height}-${event.indexInBlock}`,
       swapOutputAmount: totalSwapOutputAmount,
+      oraclePriceDeltaBps: avgOraclePriceDeltaBps,
     },
   });
 

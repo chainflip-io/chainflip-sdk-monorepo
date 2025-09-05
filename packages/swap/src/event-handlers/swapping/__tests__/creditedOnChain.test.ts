@@ -95,6 +95,7 @@ describe(creditedOnChain, () => {
           "refundAmount": null,
           "swapRequestId": Any<BigInt>,
         },
+        "oraclePriceDeltaBps": null,
         "originType": "ON_CHAIN",
         "prewitnessedDepositId": null,
         "refundEgressId": null,

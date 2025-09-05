@@ -38,6 +38,7 @@ exports[`swapEgressIgnored > adds an IgnoredEgress record for a egress ignored e
   ],
   "maxBoostFeeBps": 0,
   "nativeId": 2n,
+  "oraclePriceDeltaBps": null,
   "originType": "VAULT",
   "prewitnessedDepositId": null,
   "refundEgressId": null,
