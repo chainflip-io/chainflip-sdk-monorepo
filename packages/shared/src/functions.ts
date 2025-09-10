@@ -101,7 +101,7 @@ export function parseFoKParams(
   );
 
   if (livePriceProtectionEnabled && !livePriceProtectionAvailable) {
-    assert(false, 'Live price protection is not available for this asset pair');
+    throw new Error('Live price protection is not available for this asset pair');
   }
 
   let minPrice: string;
