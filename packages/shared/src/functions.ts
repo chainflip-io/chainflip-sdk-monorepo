@@ -7,7 +7,7 @@ import {
 import { CHAINFLIP_BLOCK_TIME_SECONDS } from '@chainflip/utils/consts';
 import BigNumber from 'bignumber.js';
 import EventEmitter, { once } from 'events';
-import { assert } from './guards.js';
+import { assert, isNotNullish } from './guards.js';
 import { FillOrKillParams, FillOrKillParamsWithoutRefundAddress, Quote } from './schemas.js';
 
 export const onceWithTimeout = async (
@@ -92,21 +92,30 @@ export function parseFoKParams(
 ) {
   const srcAsset = getInternalAsset(quote.srcAsset);
   const destAsset = getInternalAsset(quote.destAsset);
+  const livePriceProtectionDisabled = params.livePriceSlippageTolerancePercent === false;
+  const livePriceProtectionEnabled =
+    typeof params.livePriceSlippageTolerancePercent === 'string' ||
+    typeof params.livePriceSlippageTolerancePercent === 'number';
+  const livePriceProtectionAvailable = isNotNullish(
+    quote.recommendedLivePriceSlippageTolerancePercent,
+  );
+
+  if (livePriceProtectionEnabled && !livePriceProtectionAvailable) {
+    throw new Error('Live price protection is not available for this asset pair');
+  }
 
   let minPrice: string;
-  let livePriceSlippageTolerancePercent: BigNumber | null;
-
-  if (params.livePriceSlippageTolerancePercent === false) {
-    livePriceSlippageTolerancePercent = null;
-  } else {
-    livePriceSlippageTolerancePercent = new BigNumber(
-      params.livePriceSlippageTolerancePercent ||
+  let livePriceSlippageTolerancePercent = null as BigNumber | null;
+  if (!livePriceProtectionDisabled) {
+    if (params.livePriceSlippageTolerancePercent) {
+      livePriceSlippageTolerancePercent = new BigNumber(params.livePriceSlippageTolerancePercent);
+      assert(!livePriceSlippageTolerancePercent.isNaN(), 'Invalid live price slippage tolerance');
+    } else if (quote.recommendedLivePriceSlippageTolerancePercent) {
+      livePriceSlippageTolerancePercent = new BigNumber(
         quote.recommendedLivePriceSlippageTolerancePercent,
-    );
-    assert(
-      livePriceSlippageTolerancePercent && !livePriceSlippageTolerancePercent.isNaN(),
-      'Invalid or missing live price slippage tolerance',
-    );
+      );
+      assert(!livePriceSlippageTolerancePercent.isNaN(), 'Invalid live price slippage tolerance');
+    }
   }
 
   if ('minPrice' in params) {

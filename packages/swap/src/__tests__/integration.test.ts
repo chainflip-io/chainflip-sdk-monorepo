@@ -204,11 +204,7 @@ describe('python integration test', () => {
       validateStatus: () => true,
     });
 
-    expect(await response.data).toMatchSnapshot([
-      {
-        recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-      },
-    ]);
+    expect(await response.data).toMatchSnapshot();
     expect(vi.mocked(getSwapRateV3).mock.calls).toMatchSnapshot();
   });
 });

@@ -1,5 +1,12 @@
-import { ChainflipAsset, assetConstants, chainConstants } from '@chainflip/utils/chainflip';
+import {
+  ChainflipAsset,
+  PriceAsset,
+  assetConstants,
+  chainConstants,
+  priceAssets,
+} from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
+import { chainflipAssetToPriceAssetMap } from '@/shared/consts.js';
 import { isStableCoin } from '@/shared/guards.js';
 import { getDeployedLiquidity, getUndeployedLiquidity } from './pools.js';
 import { getRequiredBlockConfirmations } from './rpc.js';
@@ -147,4 +154,12 @@ export const calculateRecommendedLivePriceSlippage = async ({
 }: {
   srcAsset: ChainflipAsset;
   destAsset: ChainflipAsset;
-}) => (isStableCoin(srcAsset) && isStableCoin(destAsset) ? 0.5 : 1);
+}) => {
+  if (
+    !priceAssets.includes(chainflipAssetToPriceAssetMap[srcAsset] as PriceAsset) ||
+    !priceAssets.includes(chainflipAssetToPriceAssetMap[destAsset] as PriceAsset)
+  )
+    return undefined;
+
+  return isStableCoin(srcAsset) && isStableCoin(destAsset) ? 0.5 : 1;
+};

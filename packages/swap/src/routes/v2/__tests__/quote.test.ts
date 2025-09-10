@@ -444,11 +444,7 @@ describe('server', () => {
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
       expect(status).toBe(200);
-      expect(body).toMatchSnapshot([
-        {
-          recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-        },
-      ]);
+      expect(body).toMatchSnapshot();
     });
 
     it('excludes the ingress fee for vault swaps', async () => {
@@ -474,11 +470,7 @@ describe('server', () => {
 
       const { status, body } = await request(server).get(`/v2/quote?${params.toString()}`);
       expect(status).toBe(200);
-      expect(body).toMatchSnapshot([
-        {
-          recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-        },
-      ]);
+      expect(body).toMatchSnapshot();
       expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
         [
           [
@@ -570,11 +562,7 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchSnapshot([
-        {
-          recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-        },
-      ]);
+      expect(body).toMatchSnapshot();
     });
 
     it('gets the quote to USDC', async () => {
@@ -642,11 +630,146 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchSnapshot([
-        {
-          recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-        },
-      ]);
+      expect(body).toMatchSnapshot();
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns the correct live price slippage tolerance percent for stable asset pair', async () => {
+      mockRpcResponse((url, data: any) => {
+        if (data.method === 'cf_environment') {
+          return Promise.resolve({
+            data: environment({
+              maxSwapAmount: null,
+              ingressFee: hexEncodeNumber(0x61a8),
+              egressFee: hexEncodeNumber(0x0),
+            }),
+          });
+        }
+
+        if (data.method === 'cf_boost_pools_depth') {
+          return Promise.resolve({
+            data: boostPoolsDepth(),
+          });
+        }
+
+        if (data.method === 'cf_pool_depth') {
+          return Promise.resolve({
+            data: cfPoolDepth(),
+          });
+        }
+
+        if (data.method === 'cf_accounts') {
+          return Promise.resolve({
+            data: {
+              id: 1,
+              jsonrpc: '2.0',
+              result: [
+                ['cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH', 'Chainflip Testnet Broker 2'],
+              ],
+            },
+          });
+        }
+
+        if (data.method === 'cf_account_info') {
+          return Promise.resolve({
+            data: cfAccountInfo(),
+          });
+        }
+
+        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+      });
+
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Eth', 25000),
+        egress_fee: buildFee('Usdc', 0),
+        network_fee: buildFee('Usdc', 100100),
+        intermediary: null,
+        output: BigInt(100e6),
+      });
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'USDT',
+        destChain: 'Ethereum',
+        destAsset: 'USDC',
+        amount: (1e18).toString(),
+      });
+
+      const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
+
+      expect(status).toBe(200);
+      expect(body).toMatchSnapshot();
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not return recommendedLivePriceSlippageTolerancePercent for unavailable asset pair', async () => {
+      mockRpcResponse((url, data: any) => {
+        if (data.method === 'cf_environment') {
+          return Promise.resolve({
+            data: environment({
+              maxSwapAmount: null,
+              ingressFee: hexEncodeNumber(0x61a8),
+              egressFee: hexEncodeNumber(0x0),
+            }),
+          });
+        }
+
+        if (data.method === 'cf_boost_pools_depth') {
+          return Promise.resolve({
+            data: boostPoolsDepth(),
+          });
+        }
+
+        if (data.method === 'cf_pool_depth') {
+          return Promise.resolve({
+            data: cfPoolDepth(),
+          });
+        }
+
+        if (data.method === 'cf_accounts') {
+          return Promise.resolve({
+            data: {
+              id: 1,
+              jsonrpc: '2.0',
+              result: [
+                ['cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH', 'Chainflip Testnet Broker 2'],
+              ],
+            },
+          });
+        }
+
+        if (data.method === 'cf_account_info') {
+          return Promise.resolve({
+            data: cfAccountInfo(),
+          });
+        }
+
+        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+      });
+
+      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+        broker_commission: buildFee('Usdc', 0),
+        ingress_fee: buildFee('Eth', 25000),
+        egress_fee: buildFee('Usdc', 0),
+        network_fee: buildFee('Usdc', 100100),
+        intermediary: null,
+        output: BigInt(100e6),
+      });
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'FLIP',
+        destChain: 'Ethereum',
+        destAsset: 'USDC',
+        amount: (1e18).toString(),
+      });
+
+      const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
+
+      expect(status).toBe(200);
+      expect(body).toMatchSnapshot();
+      expect(body).not.toHaveProperty('recommendedLivePriceSlippageTolerancePercent');
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -974,14 +1097,7 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchSnapshot([
-        {
-          recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-        },
-        {
-          recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-        },
-      ]);
+      expect(body).toMatchSnapshot();
 
       expect(sendSpy).toHaveBeenCalledTimes(2);
       expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
@@ -1128,14 +1244,7 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchSnapshot([
-        {
-          recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-        },
-        {
-          recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-        },
-      ]);
+      expect(body).toMatchSnapshot();
 
       expect(sendSpy).toHaveBeenCalledTimes(2);
       expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
@@ -1350,11 +1459,7 @@ describe('server', () => {
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
       expect(status).toBe(200);
-      expect(body).toMatchSnapshot([
-        {
-          recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-        },
-      ]);
+      expect(body).toMatchSnapshot();
     });
 
     it('returns DCA quote if regular does not pass totalLiquidity check', async () => {
@@ -1435,11 +1540,7 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchSnapshot([
-        {
-          recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-        },
-      ]);
+      expect(body).toMatchSnapshot();
     });
 
     it('gets the DCA quote with a boost quote and broker fees', async () => {
@@ -1546,20 +1647,7 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchSnapshot([
-        {
-          recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-          boostQuote: {
-            recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-          },
-        },
-        {
-          recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-          boostQuote: {
-            recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-          },
-        },
-      ]);
+      expect(body).toMatchSnapshot();
       expect(sendSpy).toHaveBeenCalledTimes(4);
       expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
         [
@@ -1717,11 +1805,7 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchSnapshot([
-        {
-          recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-        },
-      ]);
+      expect(body).toMatchSnapshot();
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -1796,11 +1880,7 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchSnapshot([
-        {
-          recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-        },
-      ]);
+      expect(body).toMatchSnapshot();
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -1876,11 +1956,7 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
 
       expect(status).toBe(200);
-      expect(body).toMatchSnapshot([
-        {
-          recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-        },
-      ]);
+      expect(body).toMatchSnapshot();
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -1975,11 +2051,7 @@ describe('server', () => {
 
         const { status, body } = await request(server).get(`/v2/quote?${params.toString()}`);
         expect(status).toBe(200);
-        expect(body).toMatchSnapshot([
-          {
-            recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-          },
-        ]);
+        expect(body).toMatchSnapshot();
         expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
           [
             [
@@ -2098,11 +2170,7 @@ describe('server', () => {
         const { status, body } = await request(server).get(`/v2/quote?${params.toString()}`);
 
         expect(status).toBe(200);
-        expect(body).toMatchSnapshot([
-          {
-            recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-          },
-        ]);
+        expect(body).toMatchSnapshot();
         expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
           [
             [
@@ -2178,12 +2246,9 @@ describe('server', () => {
         });
 
         const { status, body } = await request(server).get(`/v2/quote?${params.toString()}`);
+
         expect(status).toBe(200);
-        expect(body).toMatchSnapshot([
-          {
-            recommendedLivePriceSlippageTolerancePercent: expect.any(Number),
-          },
-        ]);
+        expect(body).toMatchSnapshot();
         expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
           [
             [
