@@ -35,7 +35,7 @@ describe('env', () => {
         },
         "DCA_BUY_CHUNK_SIZE_USD": {},
         "DCA_CHUNK_INTERVAL_BLOCKS": 2,
-        "DCA_DEFAULT_SELL_CHUNK_SIZE_USD": 3000,
+        "DCA_DEFAULT_SELL_CHUNK_SIZE_USD": 10000,
         "DCA_SELL_CHUNK_SIZE_USD": {},
         "DISABLED_DEPOSIT_INTERNAL_ASSETS": Set {},
         "DISABLED_DESTINATION_INTERNAL_ASSETS": Set {},
