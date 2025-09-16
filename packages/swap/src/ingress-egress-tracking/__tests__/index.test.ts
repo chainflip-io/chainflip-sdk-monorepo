@@ -439,6 +439,7 @@ describe('ingress-egress-tracking', () => {
           "destAsset": "Eth",
           "maxBoostFeeBps": 30,
           "refundParams": {
+            "maxOraclePriceSlippage": 100,
             "minPrice": 17756447149729355758171422264767581477873599056965n,
             "refundAddress": "tb1qhjurnfz4qah4rg7ntue6x287ehdvded20rj9vh",
             "retryDuration": 100,
