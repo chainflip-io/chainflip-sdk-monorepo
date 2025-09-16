@@ -404,6 +404,7 @@ describe('ingress-egress-tracking', () => {
           refundAddress: 'tb1qhjurnfz4qah4rg7ntue6x287ehdvded20rj9vh',
           retryDuration: 100,
           minPrice: 17756447149729355758171422264767581477873599056965n,
+          maxOraclePriceSlippage: 100,
         },
         destinationAddress: '0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff',
         outputAsset: 'Eth',
