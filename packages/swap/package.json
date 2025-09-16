@@ -57,12 +57,12 @@
     "pnpm": ">=9"
   },
   "dependencies": {
-    "@chainflip/bitcoin": "^1.2.6",
+    "@chainflip/bitcoin": "^1.2.7",
     "@chainflip/processor": "~1.11.8",
     "@chainflip/redis": "^1.0.2",
-    "@chainflip/rpc": "~1.11.0-beta.3",
+    "@chainflip/rpc": "~1.11.0-beta.10",
     "@chainflip/solana": "^2.1.9",
-    "@chainflip/utils": "^0.8.19",
+    "@chainflip/utils": "^0.8.20",
     "@polkadot/api": "^15.10.2",
     "@polkadot/types": "^15.10.2",
     "@prisma/client": "^6.10.1",
