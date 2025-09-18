@@ -138,19 +138,6 @@ exports[`SwapSDK > getAssets > returns the correct values for backspin 1`] = `
     "symbol": "ETH",
   },
   {
-    "asset": "DOT",
-    "chain": "Polkadot",
-    "chainflipId": "Dot",
-    "contractAddress": undefined,
-    "decimals": 10,
-    "isMainnet": false,
-    "maximumSwapAmount": null,
-    "minimumEgressAmount": "1",
-    "minimumSwapAmount": "0",
-    "name": "Polkadot",
-    "symbol": "DOT",
-  },
-  {
     "asset": "BTC",
     "chain": "Bitcoin",
     "chainflipId": "Btc",
@@ -486,19 +473,6 @@ exports[`SwapSDK > getAssets > returns the correct values for perseverance 1`] =
     "symbol": "ETH",
   },
   {
-    "asset": "DOT",
-    "chain": "Polkadot",
-    "chainflipId": "Dot",
-    "contractAddress": undefined,
-    "decimals": 10,
-    "isMainnet": false,
-    "maximumSwapAmount": null,
-    "minimumEgressAmount": "1",
-    "minimumSwapAmount": "0",
-    "name": "Polkadot",
-    "symbol": "DOT",
-  },
-  {
     "asset": "BTC",
     "chain": "Bitcoin",
     "chainflipId": "Btc",
@@ -658,19 +632,6 @@ exports[`SwapSDK > getAssets > returns the correct values for sisyphos 1`] = `
     "minimumSwapAmount": "0",
     "name": "Ether",
     "symbol": "ETH",
-  },
-  {
-    "asset": "DOT",
-    "chain": "Polkadot",
-    "chainflipId": "Dot",
-    "contractAddress": undefined,
-    "decimals": 10,
-    "isMainnet": false,
-    "maximumSwapAmount": null,
-    "minimumEgressAmount": "1",
-    "minimumSwapAmount": "0",
-    "name": "Polkadot",
-    "symbol": "DOT",
   },
   {
     "asset": "BTC",
@@ -1074,14 +1035,6 @@ exports[`SwapSDK > getChains > returns the correct values for backspin 1`] = `
     "requiredBlockConfirmations": 2,
   },
   {
-    "chain": "Polkadot",
-    "evmChainId": undefined,
-    "isMainnet": false,
-    "maxRetryDurationBlocks": 10,
-    "name": "Polkadot",
-    "requiredBlockConfirmations": undefined,
-  },
-  {
     "chain": "Bitcoin",
     "evmChainId": undefined,
     "isMainnet": false,
@@ -1180,14 +1133,6 @@ exports[`SwapSDK > getChains > returns the correct values for perseverance 1`] =
     "requiredBlockConfirmations": 2,
   },
   {
-    "chain": "Polkadot",
-    "evmChainId": undefined,
-    "isMainnet": false,
-    "maxRetryDurationBlocks": 10,
-    "name": "Polkadot",
-    "requiredBlockConfirmations": undefined,
-  },
-  {
     "chain": "Bitcoin",
     "evmChainId": undefined,
     "isMainnet": false,
@@ -1231,14 +1176,6 @@ exports[`SwapSDK > getChains > returns the correct values for sisyphos 1`] = `
     "maxRetryDurationBlocks": 10,
     "name": "Ethereum",
     "requiredBlockConfirmations": 2,
-  },
-  {
-    "chain": "Polkadot",
-    "evmChainId": undefined,
-    "isMainnet": false,
-    "maxRetryDurationBlocks": 10,
-    "name": "Polkadot",
-    "requiredBlockConfirmations": undefined,
   },
   {
     "chain": "Bitcoin",
@@ -1319,14 +1256,6 @@ exports[`SwapSDK > getChains > returns the destination chains based on the suppo
 
 exports[`SwapSDK > getChains > returns the filtered destination chains for the chain 1`] = `
 [
-  {
-    "chain": "Polkadot",
-    "evmChainId": undefined,
-    "isMainnet": false,
-    "maxRetryDurationBlocks": 10,
-    "name": "Polkadot",
-    "requiredBlockConfirmations": undefined,
-  },
   {
     "chain": "Bitcoin",
     "evmChainId": undefined,

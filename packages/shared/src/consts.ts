@@ -98,3 +98,5 @@ export const chainflipAssetToPriceAssetMap: Record<ChainflipAsset, PriceAsset | 
   HubUsdc: null,
   HubUsdt: null,
 };
+
+export const ASSET_BLACKLIST: readonly ChainflipAsset[] = ['Dot'];

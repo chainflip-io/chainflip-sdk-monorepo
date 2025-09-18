@@ -97,6 +97,14 @@ const mockNetworkStatus = (
           boostDepositsEnabled,
           vaultSwapDepositsEnabled: true,
         },
+        {
+          asset: 'Dot',
+          depositChannelCreationEnabled: true,
+          depositChannelDepositsEnabled: true,
+          egressEnabled: true,
+          boostDepositsEnabled,
+          vaultSwapDepositsEnabled: true,
+        },
       ],
       cfBrokerCommissionBps,
     },
@@ -229,6 +237,11 @@ describe(SwapSDK, () => {
     it.each(chainflipNetworks)('returns the correct values for %s', async (network) => {
       const networkSdk = new SwapSDK({ network });
       expect(await networkSdk.getAssets()).toMatchSnapshot();
+    });
+
+    it('returns no assets for blacklisted chain', async () => {
+      sdk = mockNetworkStatus();
+      expect(await sdk.getAssets('Polkadot', 'all')).toEqual([]);
     });
   });
 
