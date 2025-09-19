@@ -20,6 +20,7 @@ import {
   requestSwapDepositAddress,
   requestSwapParameterEncoding,
 } from '@/shared/broker.js';
+import { envSafeAssetBlacklist } from '@/shared/consts.js';
 import { MultiCache } from '@/shared/dataStructures.js';
 import { parseFoKParams } from '@/shared/functions.js';
 import { assert } from '@/shared/guards.js';
@@ -93,6 +94,8 @@ export class SwapSDK {
 
   private dcaEnabled = false;
 
+  private blackListedAssets: readonly ChainflipAsset[];
+
   constructor(options: SwapSDKOptions = {}) {
     const network = options.network ?? 'perseverance';
     this.options = {
@@ -122,6 +125,7 @@ export class SwapSDK {
         ttl: 60_000,
       },
     });
+    this.blackListedAssets = envSafeAssetBlacklist(this.options.network);
   }
 
   async getChains(sourceChain?: ChainflipChain, type: AssetState = 'all'): Promise<ChainData[]> {
@@ -150,6 +154,7 @@ export class SwapSDK {
     const assets = await this.cache.read('networkInfo');
 
     return assets.assets
+      .filter((a) => !this.blackListedAssets.includes(a.asset))
       .filter((a) => {
         switch (type) {
           case 'all':
