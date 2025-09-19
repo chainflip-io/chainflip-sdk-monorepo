@@ -1,12 +1,13 @@
 import {
   ChainflipAsset,
   chainflipAssets,
+  ChainflipNetwork,
   chainflipNetworks,
   InternalAssetMap,
 } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import { z } from 'zod';
-import { ASSET_BLACKLIST } from '@/shared/consts.js';
+import { envSafeAssetBlacklist } from '@/shared/consts.js';
 import { isNotNullish } from '@/shared/guards.js';
 
 const logWarning = (message: string, meta: Record<string, unknown>) =>
@@ -133,7 +134,12 @@ export default z
     ),
     DCA_CHUNK_INTERVAL_BLOCKS: optionalNumber(2),
     FULLY_DISABLED_INTERNAL_ASSETS: internalAssetCsv('FULLY_DISABLED_INTERNAL_ASSETS').transform(
-      (set) => new Set([...set, ...ASSET_BLACKLIST]),
+      (set) =>
+        new Set([
+          ...set,
+          // eslint-disable-next-line n/no-process-env
+          ...envSafeAssetBlacklist(process.env.CHAINFLIP_NETWORK as ChainflipNetwork),
+        ]),
     ),
     DISABLED_DEPOSIT_INTERNAL_ASSETS: internalAssetCsv('DISABLED_DEPOSIT_INTERNAL_ASSETS'),
     DISABLED_DESTINATION_INTERNAL_ASSETS: internalAssetCsv('DISABLED_DESTINATION_INTERNAL_ASSETS'),

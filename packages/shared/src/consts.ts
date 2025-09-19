@@ -4,6 +4,7 @@ import {
   ChainflipNetwork,
   type PriceAsset,
 } from '@chainflip/utils/chainflip';
+import { isTestnet } from '../dist/cjs/enums.js';
 
 const ETHEREUM_EVM_CHAIN_ID: Record<ChainflipNetwork, number> = {
   backspin: 10997, // backspin ethereum
@@ -100,3 +101,5 @@ export const chainflipAssetToPriceAssetMap: Record<ChainflipAsset, PriceAsset | 
 };
 
 export const ASSET_BLACKLIST: readonly ChainflipAsset[] = ['Dot'];
+export const envSafeAssetBlacklist = (network: ChainflipNetwork) =>
+  isTestnet(network) ? ASSET_BLACKLIST : [];

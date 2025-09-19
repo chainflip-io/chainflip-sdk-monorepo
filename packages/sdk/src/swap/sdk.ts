@@ -20,9 +20,9 @@ import {
   requestSwapDepositAddress,
   requestSwapParameterEncoding,
 } from '@/shared/broker.js';
-import { ASSET_BLACKLIST } from '@/shared/consts.js';
+import { envSafeAssetBlacklist } from '@/shared/consts.js';
 import { MultiCache } from '@/shared/dataStructures.js';
-import { isTestnet, parseFoKParams } from '@/shared/functions.js';
+import { parseFoKParams } from '@/shared/functions.js';
 import { assert } from '@/shared/guards.js';
 import {
   BoostPoolsDepth,
@@ -125,7 +125,7 @@ export class SwapSDK {
         ttl: 60_000,
       },
     });
-    this.blackListedAssets = isTestnet(this.options.network) ? ASSET_BLACKLIST : [];
+    this.blackListedAssets = envSafeAssetBlacklist(this.options.network);
   }
 
   async getChains(sourceChain?: ChainflipChain, type: AssetState = 'all'): Promise<ChainData[]> {
