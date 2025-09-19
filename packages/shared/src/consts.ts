@@ -4,7 +4,7 @@ import {
   ChainflipNetwork,
   type PriceAsset,
 } from '@chainflip/utils/chainflip';
-import { isTestnet } from '../dist/cjs/enums.js';
+import { isTestnet } from '@/shared/functions.js';
 
 const ETHEREUM_EVM_CHAIN_ID: Record<ChainflipNetwork, number> = {
   backspin: 10997, // backspin ethereum
