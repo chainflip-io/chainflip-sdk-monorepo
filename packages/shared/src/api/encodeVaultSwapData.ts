@@ -1,6 +1,7 @@
 import { bytesToHex } from '@chainflip/utils/bytes';
 import { chainflipNetworks } from '@chainflip/utils/chainflip';
 import { priceX128ToPrice } from '@chainflip/utils/tickMath';
+import { BigNumber } from 'bignumber.js';
 import { z } from 'zod';
 import { assert } from '../guards.js';
 import { assetAndChain, chainflipAddress, hexString, unsignedInteger } from '../parsers.js';
