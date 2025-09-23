@@ -68,7 +68,7 @@ const transferFallbackRequested =
 
     const egresses = await prisma.broadcast
       .findUnique({ where: { nativeId_chain: { chain, nativeId: args.broadcastId } } })
-      .egresses({ include: { swapRequests: true } });
+      .egresses({ include: { swapRequests: true, refundedSwapRequests: true } });
 
     if (egresses?.length !== 1) {
       logger.warn('incorrect number of egresses found for transferFallbackRequested', {
@@ -80,16 +80,26 @@ const transferFallbackRequested =
       return;
     }
 
-    const [
-      {
-        swapRequests: [swapRequest],
-      },
-    ] = egresses;
+    let swapRequest;
+    let refunded = false;
+    if (egresses[0].swapRequests[0]) {
+      [swapRequest] = egresses[0].swapRequests;
+    } else if (egresses[0].refundedSwapRequests[0]) {
+      [swapRequest] = egresses[0].refundedSwapRequests;
+      refunded = true;
+    } else {
+      logger.warn('no swap request found for transferFallbackRequested', {
+        block: block.height,
+        indexInBlock: event.indexInBlock,
+        name: event.name,
+      });
+      return;
+    }
 
     await prisma.swapRequest.update({
       where: { id: swapRequest.id },
       data: {
-        fallbackEgress: {
+        [refunded ? 'fallbackRefundEgress' : 'fallbackEgress']: {
           create: {
             nativeId: args.egressDetails.egressId[1],
             chain: args.egressDetails.egressId[0],

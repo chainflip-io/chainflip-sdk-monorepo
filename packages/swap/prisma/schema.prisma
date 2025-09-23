@@ -187,6 +187,8 @@ model SwapRequest {
   refundEgressId               BigInt?
   fallbackEgress               Egress?              @relation("fallbackEgress", fields: [fallbackEgressId], references: [id])
   fallbackEgressId             BigInt?
+  fallbackRefundEgress         Egress?              @relation("fallbackRefundEgress", fields: [fallbackRefundEgressId], references: [id])
+  fallbackRefundEgressId       BigInt?
   ignoredEgresses              IgnoredEgress[]
   swaps                        Swap[]
   fees                         SwapFee[]
@@ -359,20 +361,21 @@ model IgnoredEgress {
 }
 
 model Egress {
-  id                            BigInt        @id @default(autoincrement())
+  id                                    BigInt        @id @default(autoincrement())
   /// the egress id on the state chain
-  nativeId                      BigInt
-  chain                         Chain
-  amount                        Decimal       @db.Decimal(30, 0)
-  scheduledAt                   DateTime
-  scheduledBlockIndex           String
-  fallbackDestinationAddress    String?
-  broadcast                     Broadcast?    @relation(fields: [broadcastId], references: [id])
-  broadcastId                   BigInt?
-  swapRequests                  SwapRequest[] @relation("egress")
-  refundedSwapRequests          SwapRequest[] @relation("refundEgress")
-  failedSwaps                   FailedSwap[]
-  fallbackRequestedSwapRequests SwapRequest[] @relation("fallbackEgress")
+  nativeId                              BigInt
+  chain                                 Chain
+  amount                                Decimal       @db.Decimal(30, 0)
+  scheduledAt                           DateTime
+  scheduledBlockIndex                   String
+  fallbackDestinationAddress            String?
+  broadcast                             Broadcast?    @relation(fields: [broadcastId], references: [id])
+  broadcastId                           BigInt?
+  swapRequests                          SwapRequest[] @relation("egress")
+  refundedSwapRequests                  SwapRequest[] @relation("refundEgress")
+  failedSwaps                           FailedSwap[]
+  fallbackRequestedSwapRequests         SwapRequest[] @relation("fallbackEgress")
+  fallbackRequestedRefundedSwapRequests SwapRequest[] @relation("fallbackRefundEgress")
 
   @@unique([nativeId, chain])
   @@schema("public")

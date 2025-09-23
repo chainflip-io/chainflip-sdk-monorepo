@@ -19,6 +19,7 @@ exports[`refundEgressScheduled > calculates the refund fee 1`] = `
   "effectiveBoostFeeBps": null,
   "egressId": null,
   "fallbackEgressId": null,
+  "fallbackRefundEgressId": null,
   "fees": [
     {
       "amount": "1000",
@@ -83,6 +84,7 @@ exports[`refundEgressScheduled > creates egress for refund on an existing swap 1
   "effectiveBoostFeeBps": null,
   "egressId": null,
   "fallbackEgressId": null,
+  "fallbackRefundEgressId": null,
   "fees": [
     {
       "amount": "1000000000",
