@@ -35,7 +35,13 @@ const FillOrKillParams = fillOrKillParamsSchema.transform(
     refund_address: refundAddress!,
     min_price: `0x${BigInt(minPriceX128).toString(16)}` as const,
     max_oracle_price_slippage: maxOraclePriceSlippage,
-    refund_ccm_metadata: refundCcmMetadata,
+    refund_ccm_metadata: refundCcmMetadata && {
+      gas_budget: refundCcmMetadata.gasBudget,
+      message: refundCcmMetadata.message,
+      ccm_additional_data: refundCcmMetadata.ccmAdditionalData,
+      /** @deprecated DEPRECATED(1.10) */
+      cf_parameters: refundCcmMetadata.cfParameters,
+    },
   }),
 );
 

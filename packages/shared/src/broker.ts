@@ -90,13 +90,7 @@ const transformedFokSchema = z
       refund_address: refundAddress!,
       min_price: `0x${BigInt(minPriceX128).toString(16)}` as const,
       max_oracle_price_slippage: maxOraclePriceSlippage,
-      refund_ccm_metadata: refundCcmMetadata && {
-        gasBudget: refundCcmMetadata.gas_budget,
-        message: refundCcmMetadata.message,
-        ccmAdditionalData: refundCcmMetadata.ccm_additional_data,
-        /** @deprecated DEPRECATED(1.10) */
-        cfParameters: refundCcmMetadata.ccm_additional_data,
-      },
+      refund_ccm_metadata: refundCcmMetadata,
     }),
   );
 
@@ -120,8 +114,7 @@ const getDepositAddressRequestSchema = (network: ChainflipNetwork) =>
           code: z.ZodIssueCode.custom,
         });
       }
-    })
-    .superRefine((val, ctx) => {
+
       if (!validateAddress(val.srcAsset.chain, val.fillOrKillParams.refund_address, network)) {
         ctx.addIssue({
           message: `Address "${val.fillOrKillParams.refund_address}" is not a valid "${val.srcAsset.chain}" address for "${network}"`,
