@@ -175,10 +175,8 @@ export const fillOrKillParams = z.object({
     .transform(
       (v) =>
         v && {
-          gas_budget: v.gasBudget,
-          message: v.message,
-          ccm_additional_data: v.ccmAdditionalData,
-          cf_parameters: v.ccmAdditionalData, // deprecated
+          ...v,
+          cfParameters: v.ccmAdditionalData, // deprecated
         },
     ),
 });

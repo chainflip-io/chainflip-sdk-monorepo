@@ -353,6 +353,8 @@ describe('ingress-egress-tracking', () => {
         maxBoostFee: 0,
         refundParams: {
           refundAddress: 'EeZzXuKNsaYHTLwbRZspvym89wuEar1V2LuoGbffonTe',
+          refundCcmMetadata: null,
+          maxOraclePriceSlippage: null,
           minPrice: 3071330626886068140327341989949900729308836351n,
           retryDuration: 100,
         },
@@ -377,8 +379,10 @@ describe('ingress-egress-tracking', () => {
           "destAsset": "Eth",
           "maxBoostFeeBps": 0,
           "refundParams": {
+            "maxOraclePriceSlippage": null,
             "minPrice": 3071330626886068140327341989949900729308836351n,
             "refundAddress": "EeZzXuKNsaYHTLwbRZspvym89wuEar1V2LuoGbffonTe",
+            "refundCcmMetadata": null,
             "retryDuration": 100,
           },
           "srcAsset": "Sol",

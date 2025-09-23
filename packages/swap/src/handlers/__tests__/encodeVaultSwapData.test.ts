@@ -64,6 +64,7 @@ describe(encodeVaultSwapData, () => {
       fillOrKillParams: {
         retry_duration: 500,
         refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        refund_ccm_metadata: null,
         min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
         max_oracle_price_slippage: null,
       },
@@ -171,6 +172,7 @@ describe(encodeVaultSwapData, () => {
       fillOrKillParams: {
         retry_duration: 500,
         refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        refund_ccm_metadata: null,
         min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
         max_oracle_price_slippage: 50,
       },
@@ -285,6 +287,7 @@ describe(encodeVaultSwapData, () => {
       fillOrKillParams: {
         retry_duration: 500,
         refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        refund_ccm_metadata: null,
         min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
         max_oracle_price_slippage: 50,
       },
@@ -331,6 +334,7 @@ describe(encodeVaultSwapData, () => {
         fillOrKillParams: {
           retry_duration: 500,
           refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refund_ccm_metadata: null,
           min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
           max_oracle_price_slippage: 50,
         },
@@ -357,6 +361,7 @@ describe(encodeVaultSwapData, () => {
         fillOrKillParams: {
           retry_duration: 500,
           refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refund_ccm_metadata: null,
           min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
           max_oracle_price_slippage: 50,
         },
@@ -407,7 +412,7 @@ describe('encodeVaultSwapDataSchema', () => {
             "max_oracle_price_slippage": 50,
             "min_price": "0x1",
             "refund_address": "3yKDHJgzS2GbZB9qruoadRYtq8597HZifnRju7fHpdRC",
-            "refund_ccm_metadata": null,
+            "refund_ccm_metadata": undefined,
             "retry_duration": 100,
           },
           "seed": "0x000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
@@ -416,7 +421,7 @@ describe('encodeVaultSwapDataSchema', () => {
           "max_oracle_price_slippage": 50,
           "min_price": "0x1",
           "refund_address": "3yKDHJgzS2GbZB9qruoadRYtq8597HZifnRju7fHpdRC",
-          "refund_ccm_metadata": null,
+          "refund_ccm_metadata": undefined,
           "retry_duration": 100,
         },
         "srcAddress": "3yKDHJgzS2GbZB9qruoadRYtq8597HZifnRju7fHpdRC",

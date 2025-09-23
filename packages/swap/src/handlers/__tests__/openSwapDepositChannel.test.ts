@@ -54,6 +54,7 @@ describe(openSwapDepositChannel, () => {
       expectedDepositAmount: '777',
       fillOrKillParams: {
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        refundCcmMetadata: null,
         retryDurationBlocks: 2,
         minPriceX128: '1',
         maxOraclePriceSlippage: 50,
@@ -106,6 +107,7 @@ describe(openSwapDepositChannel, () => {
       fillOrKillParams: {
         maxOraclePriceSlippage: 50,
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        refundCcmMetadata: null,
         retryDurationBlocks: 2,
         minPriceX128: '1',
       },
@@ -156,6 +158,7 @@ describe(openSwapDepositChannel, () => {
         maxOraclePriceSlippage: null,
         retryDurationBlocks: 500,
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        refundCcmMetadata: null,
         minPriceX128: '1094494073153147181099038525207',
       },
       dcaParams: {
@@ -217,6 +220,7 @@ describe(openSwapDepositChannel, () => {
       fillOrKillParams: {
         maxOraclePriceSlippage: null,
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        refundCcmMetadata: null,
         retryDurationBlocks: 2,
         minPriceX128: '1',
       },
@@ -260,6 +264,7 @@ describe(openSwapDepositChannel, () => {
         maxOraclePriceSlippage: 100,
         retryDurationBlocks: 500,
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        refundCcmMetadata: null,
         minPriceX128: '10000000000000',
       },
       dcaParams: {
@@ -306,6 +311,7 @@ describe(openSwapDepositChannel, () => {
       fillOrKillParams: {
         maxOraclePriceSlippage: 100,
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        refundCcmMetadata: null,
         retryDurationBlocks: 2,
         minPriceX128: '1',
       },
@@ -350,6 +356,7 @@ describe(openSwapDepositChannel, () => {
       expectedDepositAmount: '777',
       fillOrKillParams: {
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        refundCcmMetadata: null,
         retryDurationBlocks: 2,
         minPriceX128: '1',
         maxOraclePriceSlippage: 50,
@@ -392,6 +399,7 @@ describe(openSwapDepositChannel, () => {
         fillOrKillParams: {
           maxOraclePriceSlippage: 100,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refundCcmMetadata: null,
           retryDurationBlocks: 2,
           minPriceX128: '1',
         },
@@ -413,6 +421,7 @@ describe(openSwapDepositChannel, () => {
         fillOrKillParams: {
           maxOraclePriceSlippage: 100,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refundCcmMetadata: null,
           retryDurationBlocks: 2,
           minPriceX128: '1',
         },
@@ -432,6 +441,7 @@ describe(openSwapDepositChannel, () => {
       expectedDepositAmount: '777',
       fillOrKillParams: {
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        refundCcmMetadata: null,
         retryDurationBlocks: 2,
         minPriceX128: '1',
         maxOraclePriceSlippage: null,
@@ -474,6 +484,7 @@ describe(openSwapDepositChannel, () => {
       expectedDepositAmount: '777',
       fillOrKillParams: {
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+        refundCcmMetadata: null,
         retryDurationBlocks: 2,
         minPriceX128: '1',
         maxOraclePriceSlippage: null,
