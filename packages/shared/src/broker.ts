@@ -76,7 +76,7 @@ const transformedFokSchema = z
     refundAddress: z.string(),
     minPriceX128: numericString,
     maxOraclePriceSlippage: basisPoints.nullish().transform((v) => v ?? null),
-    refundCcmMetadata: transformedCcmParamsSchema.nullable().optional(),
+    refundCcmMetadata: transformedCcmParamsSchema.nullable().optional().default(null),
   })
   .transform(
     ({
