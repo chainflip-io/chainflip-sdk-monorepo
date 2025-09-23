@@ -7,8 +7,10 @@ import * as secp256k1 from 'tiny-secp256k1';
 import { SwapSDK, Chains, Assets } from '@/sdk/swap/index.js';
 import 'dotenv/config';
 
+const network = bitcoin.networks.testnet;
+
 if (!process.env.BITCOIN_WALLET_WIF) {
-  const randomKeypair = ECPairFactory(secp256k1).makeRandom();
+  const randomKeypair = ECPairFactory(secp256k1).makeRandom({ network });
   process.env.BITCOIN_WALLET_WIF = randomKeypair.toWIF();
 
   console.log('BITCOIN_WALLET_WIF not set - generating random keypair');
@@ -20,8 +22,8 @@ const swapSDK = new SwapSDK({
   enabledFeatures: { dca: true },
 });
 
-const keypair = ECPairFactory(secp256k1).fromWIF(process.env.BITCOIN_WALLET_WIF);
-const network = bitcoin.networks.testnet;
+const keypair = ECPairFactory(secp256k1).fromWIF(process.env.BITCOIN_WALLET_WIF, network);
+
 const walletAddress = bitcoin.payments.p2wpkh({
   pubkey: Buffer.from(keypair.publicKey),
   network,
@@ -57,19 +59,19 @@ console.log(vaultSwapData);
 if (vaultSwapData.chain !== 'Bitcoin') throw new Error('Invalid chain');
 
 export const rpcClient = new Client({ host: 'https://bitcoin-testnet-rpc.publicnode.com' });
-const inputUxto = {
+const inputUtxo = {
   txId: '80dd9e9264eb2ffa8a1dcaacf733355453bc6bdebc1fae9152605e21db6af0bc',
   outIndex: 2,
 };
 const inputTx = bitcoin.Transaction.fromHex(
-  await rpcClient.command('getrawtransaction', inputUxto.txId),
+  await rpcClient.command('getrawtransaction', inputUtxo.txId),
 );
 const txFeeSats = 5000;
 
 const tx = new bitcoin.Psbt({ network })
   .addInput({
     hash: inputTx.getHash(),
-    index: inputUxto.outIndex,
+    index: inputUtxo.outIndex,
     nonWitnessUtxo: inputTx.toBuffer(),
     sequence: 0xfffffffd, // enable replace-by-fee
   })
@@ -86,7 +88,7 @@ const tx = new bitcoin.Psbt({ network })
   })
   .addOutput({
     address: walletAddress,
-    value: inputTx.outs[inputUxto.outIndex].value - Number(quote.depositAmount) - txFeeSats,
+    value: inputTx.outs[inputUtxo.outIndex].value - Number(quote.depositAmount) - txFeeSats,
   })
   .signInput(0, {
     publicKey: Buffer.from(keypair.publicKey),
@@ -94,6 +96,7 @@ const tx = new bitcoin.Psbt({ network })
   })
   .finalizeAllInputs()
   .extractTransaction();
+
 await rpcClient.command('sendrawtransaction', tx.toHex());
 
 console.log(tx.getId());

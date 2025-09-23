@@ -8,7 +8,12 @@ import { CHAINFLIP_BLOCK_TIME_SECONDS } from '@chainflip/utils/consts';
 import BigNumber from 'bignumber.js';
 import EventEmitter, { once } from 'events';
 import { assert, isNotNullish } from './guards.js';
-import { FillOrKillParams, FillOrKillParamsWithoutRefundAddress, Quote } from './schemas.js';
+import {
+  CcmParams,
+  FillOrKillParams,
+  FillOrKillParamsWithoutRefundAddress,
+  Quote,
+} from './schemas.js';
 
 export const onceWithTimeout = async (
   eventEmitter: EventEmitter,
@@ -65,6 +70,7 @@ type ParsedFoKParams = {
   retryDurationBlocks: number;
   minPriceX128: string;
   maxOraclePriceSlippage: number;
+  refundCcmMetadata: CcmParams | null;
 };
 
 const blocksPerMinute = 60 / CHAINFLIP_BLOCK_TIME_SECONDS;
@@ -159,6 +165,7 @@ export function parseFoKParams(
     retryDurationBlocks,
     minPriceX128: getPriceX128FromPrice(minPrice, srcAsset, destAsset),
     maxOraclePriceSlippage,
+    refundCcmMetadata: params.refundCcmMetadata ?? null,
   };
 
   return 'refundAddress' in params ? { ...parsed, refundAddress: params.refundAddress } : parsed;
