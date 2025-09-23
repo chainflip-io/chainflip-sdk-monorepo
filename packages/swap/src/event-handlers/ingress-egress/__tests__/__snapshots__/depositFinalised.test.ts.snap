@@ -19,6 +19,7 @@ exports[`depositFinalised > Bitcoin > updates swap request for boosted deposit 1
   "effectiveBoostFeeBps": null,
   "egressId": null,
   "fallbackEgressId": null,
+  "fallbackRefundEgressId": null,
   "fokMaxOraclePriceSlippageBps": null,
   "fokMinPriceX128": null,
   "fokRefundAddress": null,
@@ -61,6 +62,7 @@ exports[`depositFinalised > Bitcoin > updates swap request for regular deposit 1
   "effectiveBoostFeeBps": null,
   "egressId": null,
   "fallbackEgressId": null,
+  "fallbackRefundEgressId": null,
   "fees": [
     {
       "amount": "4668",
@@ -113,6 +115,7 @@ exports[`depositFinalised > Bitcoin > updates swap request for regular deposit w
   "effectiveBoostFeeBps": null,
   "egressId": null,
   "fallbackEgressId": null,
+  "fallbackRefundEgressId": null,
   "fees": [
     {
       "amount": "2500",

@@ -61,8 +61,7 @@ describe(creditedOnChain, () => {
           id: expect.any(Number),
           swapRequestId: expect.any(BigInt),
         },
-      },
-      `
+      }, `
       {
         "ccmGasBudget": null,
         "ccmMessage": null,
@@ -81,6 +80,7 @@ describe(creditedOnChain, () => {
         "effectiveBoostFeeBps": null,
         "egressId": null,
         "fallbackEgressId": null,
+        "fallbackRefundEgressId": null,
         "fokMaxOraclePriceSlippageBps": null,
         "fokMinPriceX128": null,
         "fokRefundAddress": "cFNwtr2mPhpUEB5AyJq38DqMKMkSdzaL9548hajN2DRTwh7Mq",
@@ -109,7 +109,6 @@ describe(creditedOnChain, () => {
         "swapRequestedBlockIndex": "1-1",
         "totalBrokerCommissionBps": 0,
       }
-    `,
-    );
+    `);
   });
 });

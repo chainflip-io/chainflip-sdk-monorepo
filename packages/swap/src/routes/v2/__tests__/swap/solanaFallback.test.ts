@@ -294,8 +294,7 @@ describe('solana fallback requested', () => {
             updatedAt: expect.any(Date),
           },
         },
-      },
-      `
+      }, `
       {
         "ccmGasBudget": "6291456",
         "ccmMessage": "0x0100000011016400013b536408000000002c01",
@@ -366,6 +365,7 @@ describe('solana fallback requested', () => {
           "scheduledBlockIndex": "7666783-1338",
         },
         "fallbackEgressId": Any<BigInt>,
+        "fallbackRefundEgressId": null,
         "fokMaxOraclePriceSlippageBps": null,
         "fokMinPriceX128": "9.29439471347296211638784360448e+29",
         "fokRefundAddress": "0x47a7c49be51658119740d2c9b93d1aa858c44d63",
@@ -387,8 +387,7 @@ describe('solana fallback requested', () => {
         "swapRequestedBlockIndex": "7666752-1046",
         "totalBrokerCommissionBps": 20,
       }
-    `,
-    );
+    `);
 
     const { body } = await request(server).get('/v2/swaps/484522');
 
