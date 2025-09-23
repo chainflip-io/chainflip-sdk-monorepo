@@ -73,6 +73,7 @@ describe(parseFoKParams, () => {
       maxOraclePriceSlippage: 50,
       minPriceX128: '83892489958826316385497263710123985244108278726772',
       refundAddress: '0x1234',
+      refundCcmMetadata: null,
       retryDurationBlocks: 100,
     });
   });
@@ -88,6 +89,7 @@ describe(parseFoKParams, () => {
       maxOraclePriceSlippage: 50,
       minPriceX128: '83892489958826316385497263710123985244108278726772',
       refundAddress: '0x1234',
+      refundCcmMetadata: null,
       retryDurationBlocks: 100,
     });
   });
@@ -209,6 +211,7 @@ describe(parseFoKParams, () => {
       maxOraclePriceSlippage: null,
       minPriceX128: '83892489958826316385497263710123985244108278726772',
       refundAddress: '0x1234',
+      refundCcmMetadata: null,
       retryDurationBlocks: 100,
     });
   });
@@ -227,6 +230,7 @@ describe(parseFoKParams, () => {
       maxOraclePriceSlippage: 50,
       minPriceX128: '83892489958826316385497263710123985244108278726772',
       refundAddress: '0x1234',
+      refundCcmMetadata: null,
       retryDurationBlocks: 100,
     });
   });
@@ -246,6 +250,7 @@ describe(parseFoKParams, () => {
       maxOraclePriceSlippage: 680,
       minPriceX128: '83892489958826316385497263710123985244108278726772',
       refundAddress: '0x1234',
+      refundCcmMetadata: null,
       retryDurationBlocks: 100,
     });
   });
@@ -265,6 +270,7 @@ describe(parseFoKParams, () => {
       maxOraclePriceSlippage: 680,
       minPriceX128: '83892489958826316385497263710123985244108278726772',
       refundAddress: '0x1234',
+      refundCcmMetadata: null,
       retryDurationBlocks: 100,
     });
   });
@@ -317,6 +323,7 @@ describe(parseFoKParams, () => {
       maxOraclePriceSlippage: null,
       minPriceX128: '83892489958826316385497263710123985244108278726772',
       refundAddress: '0x1234',
+      refundCcmMetadata: null,
       retryDurationBlocks: 100,
     });
   });
@@ -339,6 +346,7 @@ describe(parseFoKParams, () => {
       maxOraclePriceSlippage: null,
       minPriceX128: '83892489958826316385497263710123985244108278726772',
       refundAddress: '0x1234',
+      refundCcmMetadata: null,
       retryDurationBlocks: 100,
     });
   });

@@ -53,20 +53,6 @@ type DepositAddressRequest = {
   destChain?: ChainflipChain;
 };
 
-const transformedFokSchema = z
-  .object({
-    retryDurationBlocks: z.number(),
-    refundAddress: z.string(),
-    minPriceX128: numericString,
-    maxOraclePriceSlippage: basisPoints.nullish().transform((v) => v ?? null),
-  })
-  .transform(({ retryDurationBlocks, refundAddress, minPriceX128, maxOraclePriceSlippage }) => ({
-    retry_duration: retryDurationBlocks,
-    refund_address: refundAddress!,
-    min_price: `0x${BigInt(minPriceX128).toString(16)}` as const,
-    max_oracle_price_slippage: maxOraclePriceSlippage,
-  }));
-
 const transformedDcaParamsSchema = dcaParamsSchema.transform(
   ({ numberOfChunks, chunkIntervalBlocks }) => ({
     number_of_chunks: numberOfChunks,
@@ -83,6 +69,36 @@ const transformedCcmParamsSchema = ccmParamsSchema.transform(
     cf_parameters: ccmAdditionalData,
   }),
 );
+
+const transformedFokSchema = z
+  .object({
+    retryDurationBlocks: z.number(),
+    refundAddress: z.string(),
+    minPriceX128: numericString,
+    maxOraclePriceSlippage: basisPoints.nullish().transform((v) => v ?? null),
+    refundCcmMetadata: transformedCcmParamsSchema.nullable().optional().default(null),
+  })
+  .transform(
+    ({
+      retryDurationBlocks,
+      refundAddress,
+      minPriceX128,
+      maxOraclePriceSlippage,
+      refundCcmMetadata,
+    }) => ({
+      retry_duration: retryDurationBlocks,
+      refund_address: refundAddress!,
+      min_price: `0x${BigInt(minPriceX128).toString(16)}` as const,
+      max_oracle_price_slippage: maxOraclePriceSlippage,
+      refund_ccm_metadata: refundCcmMetadata && {
+        gasBudget: refundCcmMetadata.gas_budget,
+        message: refundCcmMetadata.message,
+        ccmAdditionalData: refundCcmMetadata.ccm_additional_data,
+        /** @deprecated DEPRECATED(1.10) */
+        cfParameters: refundCcmMetadata.ccm_additional_data,
+      },
+    }),
+  );
 
 const getDepositAddressRequestSchema = (network: ChainflipNetwork) =>
   z

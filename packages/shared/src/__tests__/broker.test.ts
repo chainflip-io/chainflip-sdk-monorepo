@@ -68,6 +68,7 @@ describe(broker.requestSwapDepositAddress, () => {
         {
           retry_duration: 500,
           refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refund_ccm_metadata: null,
           min_price: '0x9184e72a000',
           max_oracle_price_slippage: 50,
         },
@@ -118,6 +119,7 @@ describe(broker.requestSwapDepositAddress, () => {
         {
           retry_duration: 500,
           refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refund_ccm_metadata: null,
           min_price: '0x9184e72a000',
           max_oracle_price_slippage: null,
         },
@@ -199,6 +201,7 @@ describe(broker.requestSwapDepositAddress, () => {
         {
           retry_duration: 500,
           refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refund_ccm_metadata: null,
           min_price: '0x9184e72a000',
           max_oracle_price_slippage: 50,
         },
@@ -258,6 +261,7 @@ describe(broker.requestSwapDepositAddress, () => {
         null,
         {
           retry_duration: 500,
+          refund_ccm_metadata: null,
           refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
           min_price: '0x9184e72a000',
           max_oracle_price_slippage: 50,
@@ -320,6 +324,7 @@ describe(broker.requestSwapDepositAddress, () => {
         {
           retry_duration: 500,
           refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refund_ccm_metadata: null,
           min_price: '0x9184e72a000',
           max_oracle_price_slippage: 50,
         },
@@ -388,6 +393,7 @@ describe(broker.requestSwapDepositAddress, () => {
         {
           retry_duration: 500,
           refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refund_ccm_metadata: null,
           min_price: '0x9184e72a000',
           max_oracle_price_slippage: 50,
         },
@@ -443,6 +449,7 @@ describe(broker.requestSwapDepositAddress, () => {
         {
           min_price: '0x9184e72a000',
           refund_address: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refund_ccm_metadata: null,
           retry_duration: 500,
           max_oracle_price_slippage: 50,
         },
@@ -665,6 +672,7 @@ describe(broker.requestSwapParameterEncoding, () => {
           refund_parameters: {
             min_price: '0x989680',
             refund_address: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
+            refund_ccm_metadata: null,
             retry_duration: 500,
             max_oracle_price_slippage: 50,
           },
@@ -723,6 +731,7 @@ describe(broker.requestSwapParameterEncoding, () => {
           refund_parameters: {
             min_price: '0x989680',
             refund_address: 'oQPnhXAbLbMuKHESaGrbXT17CyvWCpLyERSJA9HCYd7',
+            refund_ccm_metadata: null,
             retry_duration: 500,
             max_oracle_price_slippage: 50,
           },
@@ -863,6 +872,7 @@ describe(broker.requestSwapParameterEncoding, () => {
           refund_parameters: {
             min_price: '0x989680',
             refund_address: '0xEA30083b1DE9494d811FF45f5B95b884e1cAD873',
+            refund_ccm_metadata: null,
             retry_duration: 500,
             max_oracle_price_slippage: 50,
           },
@@ -922,6 +932,7 @@ describe(broker.requestSwapParameterEncoding, () => {
           refund_parameters: {
             min_price: '0x989680',
             refund_address: '0xEA30083b1DE9494d811FF45f5B95b884e1cAD873',
+            refund_ccm_metadata: null,
             retry_duration: 500,
             max_oracle_price_slippage: 50,
           },
@@ -977,6 +988,7 @@ describe(broker.requestSwapParameterEncoding, () => {
           refund_parameters: {
             min_price: '0x989680',
             refund_address: '0xEA30083b1DE9494d811FF45f5B95b884e1cAD873',
+            refund_ccm_metadata: null,
             retry_duration: 500,
             max_oracle_price_slippage: 50,
           },
@@ -1036,6 +1048,7 @@ describe(broker.requestSwapParameterEncoding, () => {
           refund_parameters: {
             min_price: '0x989680',
             refund_address: '0xEA30083b1DE9494d811FF45f5B95b884e1cAD873',
+            refund_ccm_metadata: null,
             retry_duration: 500,
             max_oracle_price_slippage: 50,
           },
@@ -1104,6 +1117,7 @@ describe(broker.requestSwapParameterEncoding, () => {
           refund_parameters: {
             min_price: '0x989680',
             refund_address: '0xEA30083b1DE9494d811FF45f5B95b884e1cAD873',
+            refund_ccm_metadata: null,
             retry_duration: 500,
             max_oracle_price_slippage: 50,
           },
@@ -1176,6 +1190,7 @@ describe(broker.requestCfParametersEncoding, () => {
             "max_oracle_price_slippage": 50,
             "min_price": "0x152d02c7e14af680000000000000000000000000000000000000",
             "refund_address": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+            "refund_ccm_metadata": null,
             "retry_duration": 500,
           },
           null,
@@ -1233,6 +1248,7 @@ describe(broker.requestCfParametersEncoding, () => {
             "max_oracle_price_slippage": 50,
             "min_price": "0x989680",
             "refund_address": "0xe983fD1798689eee00c0Fb77e79B8f372DF41060",
+            "refund_ccm_metadata": null,
             "retry_duration": 500,
           },
           null,
@@ -1291,6 +1307,7 @@ describe(broker.requestCfParametersEncoding, () => {
             "max_oracle_price_slippage": 50,
             "min_price": "0x989680",
             "refund_address": "oQPnhXAbLbMuKHESaGrbXT17CyvWCpLyERSJA9HCYd7",
+            "refund_ccm_metadata": null,
             "retry_duration": 500,
           },
           null,
@@ -1416,6 +1433,7 @@ describe(broker.requestCfParametersEncoding, () => {
             "max_oracle_price_slippage": 50,
             "min_price": "0x989680",
             "refund_address": "0xEA30083b1DE9494d811FF45f5B95b884e1cAD873",
+            "refund_ccm_metadata": null,
             "retry_duration": 500,
           },
           {
@@ -1478,6 +1496,7 @@ describe(broker.requestCfParametersEncoding, () => {
             "max_oracle_price_slippage": 50,
             "min_price": "0x989680",
             "refund_address": "0xEA30083b1DE9494d811FF45f5B95b884e1cAD873",
+            "refund_ccm_metadata": null,
             "retry_duration": 500,
           },
           null,
@@ -1536,6 +1555,7 @@ describe(broker.requestCfParametersEncoding, () => {
             "max_oracle_price_slippage": 50,
             "min_price": "0x989680",
             "refund_address": "0xEA30083b1DE9494d811FF45f5B95b884e1cAD873",
+            "refund_ccm_metadata": null,
             "retry_duration": 500,
           },
           null,
@@ -1596,6 +1616,7 @@ describe(broker.requestCfParametersEncoding, () => {
             "max_oracle_price_slippage": 50,
             "min_price": "0x989680",
             "refund_address": "0xEA30083b1DE9494d811FF45f5B95b884e1cAD873",
+            "refund_ccm_metadata": null,
             "retry_duration": 500,
           },
           null,
@@ -1666,6 +1687,7 @@ describe(broker.requestCfParametersEncoding, () => {
             "max_oracle_price_slippage": 50,
             "min_price": "0x989680",
             "refund_address": "0xEA30083b1DE9494d811FF45f5B95b884e1cAD873",
+            "refund_ccm_metadata": null,
             "retry_duration": 500,
           },
           null,

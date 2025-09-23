@@ -168,6 +168,17 @@ export const fillOrKillParams = z.object({
   refundAddress: z.string(),
   minPriceX128: numericString,
   maxOraclePriceSlippage: basisPoints.nullish().transform((v) => v ?? null),
+  refundCcmMetadata: ccmParamsSchema
+    .nullish()
+    .optional()
+    .default(null)
+    .transform(
+      (v) =>
+        v && {
+          ...v,
+          cfParameters: v.ccmAdditionalData, // deprecated
+        },
+    ),
 });
 
 export type FillOrKillParamsX128 = z.input<typeof fillOrKillParams>;
@@ -253,6 +264,7 @@ export type FillOrKillParamsWithSlippage = Omit<FillOrKillParamsX128, 'minPriceX
 
 export type FillOrKillParamsWithoutRefundAddress = {
   livePriceSlippageTolerancePercent?: string | number | false;
+  refundCcmMetadata?: CcmParams | null;
 } & (
   | { minPrice: string; retryDurationBlocks: number }
   | { minPrice: string; retryDurationMinutes: number }
@@ -268,17 +280,11 @@ export type FillOrKillParamsWithoutRefundAddress = {
 
 export type FillOrKillParams = {
   livePriceSlippageTolerancePercent?: string | number | false;
+  refundAddress: string;
+  refundCcmMetadata?: CcmParams | null;
 } & (
-  | { refundAddress: string; minPrice: string; retryDurationBlocks: number }
-  | { refundAddress: string; minPrice: string; retryDurationMinutes: number }
-  | {
-      refundAddress: string;
-      slippageTolerancePercent: string | number;
-      retryDurationBlocks: number;
-    }
-  | {
-      refundAddress: string;
-      slippageTolerancePercent: string | number;
-      retryDurationMinutes: number;
-    }
+  | { minPrice: string; retryDurationBlocks: number }
+  | { minPrice: string; retryDurationMinutes: number }
+  | { slippageTolerancePercent: string | number; retryDurationBlocks: number }
+  | { slippageTolerancePercent: string | number; retryDurationMinutes: number }
 );

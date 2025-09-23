@@ -24,11 +24,18 @@ const TransformedCcmParams = ccmParamsSchema.transform(
 );
 
 const FillOrKillParams = fillOrKillParamsSchema.transform(
-  ({ retryDurationBlocks, refundAddress, minPriceX128, maxOraclePriceSlippage }) => ({
+  ({
+    retryDurationBlocks,
+    refundAddress,
+    minPriceX128,
+    maxOraclePriceSlippage,
+    refundCcmMetadata,
+  }) => ({
     retry_duration: retryDurationBlocks,
     refund_address: refundAddress!,
     min_price: `0x${BigInt(minPriceX128).toString(16)}` as const,
     max_oracle_price_slippage: maxOraclePriceSlippage,
+    refund_ccm_metadata: refundCcmMetadata,
   }),
 );
 

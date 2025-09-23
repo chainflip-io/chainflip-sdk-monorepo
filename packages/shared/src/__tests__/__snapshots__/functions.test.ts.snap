@@ -5,6 +5,7 @@ exports[`parseFoKParams > accepts the retry duration in 0 minutes 1`] = `
   "maxOraclePriceSlippage": 50,
   "minPriceX128": "83892489958826316385497263710123985244108278726772",
   "refundAddress": "0x1234",
+  "refundCcmMetadata": null,
   "retryDurationBlocks": 0,
 }
 `;
@@ -14,6 +15,7 @@ exports[`parseFoKParams > accepts the retry duration in 0.5 minutes 1`] = `
   "maxOraclePriceSlippage": 50,
   "minPriceX128": "83892489958826316385497263710123985244108278726772",
   "refundAddress": "0x1234",
+  "refundCcmMetadata": null,
   "retryDurationBlocks": 5,
 }
 `;
@@ -23,6 +25,7 @@ exports[`parseFoKParams > accepts the retry duration in 0.25 minutes 1`] = `
   "maxOraclePriceSlippage": 50,
   "minPriceX128": "83892489958826316385497263710123985244108278726772",
   "refundAddress": "0x1234",
+  "refundCcmMetadata": null,
   "retryDurationBlocks": 3,
 }
 `;
@@ -32,6 +35,7 @@ exports[`parseFoKParams > accepts the retry duration in 1 minutes 1`] = `
   "maxOraclePriceSlippage": 50,
   "minPriceX128": "83892489958826316385497263710123985244108278726772",
   "refundAddress": "0x1234",
+  "refundCcmMetadata": null,
   "retryDurationBlocks": 10,
 }
 `;
@@ -41,6 +45,7 @@ exports[`parseFoKParams > accepts the retry duration in 10 minutes 1`] = `
   "maxOraclePriceSlippage": 50,
   "minPriceX128": "83892489958826316385497263710123985244108278726772",
   "refundAddress": "0x1234",
+  "refundCcmMetadata": null,
   "retryDurationBlocks": 100,
 }
 `;
