@@ -11,6 +11,7 @@ which it is deprecated.
 
 ### Added
 
+- `Polkadot` and `Dot` is no longer supported. `AssetHub` and `HubDot` should be used instead.
 - `SwapSDK.prototype.getQuoteV2` now returns a `recommendedLivePriceSlippageTolerancePercent`property.
   This value can be passed to `SwapSDK.prototype.requestDepositAddressV2` in `fillOKillParams` to override
   the default recommended value or to disable live price protection entirely. The property ensures that

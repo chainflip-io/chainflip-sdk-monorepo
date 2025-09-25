@@ -3616,7 +3616,6 @@ describe(SwapSDK, () => {
   describe(SwapSDK.prototype.getRequiredBlockConfirmations, () => {
     it('should return correct value for each chain', async () => {
       expect((await sdk.getRequiredBlockConfirmations()).Ethereum).toStrictEqual(2);
-      expect((await sdk.getRequiredBlockConfirmations()).Polkadot).toStrictEqual(null);
       expect((await sdk.getRequiredBlockConfirmations()).Bitcoin).toStrictEqual(3);
     });
   });

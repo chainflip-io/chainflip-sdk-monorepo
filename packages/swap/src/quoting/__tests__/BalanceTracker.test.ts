@@ -7,7 +7,9 @@ import type { AccountId } from '../Quoter.js';
 
 vi.mock('../../utils/rpc.js');
 
-const mockInternalAssetMap = (values?: InternalAssetMap<bigint>): InternalAssetMap<bigint> => ({
+const mockInternalAssetMap = (
+  values?: InternalAssetMap<bigint>,
+): InternalAssetMap<bigint> & { Dot: bigint } => ({
   ArbEth: 0n,
   ArbUsdc: 0n,
   Btc: 0n,

@@ -16,7 +16,7 @@ export interface ChainData {
 }
 
 export type AssetData = {
-  [C in ChainflipChain]: {
+  [C in Exclude<ChainflipChain, 'Polkadot'>]: {
     chainflipId: ChainflipAsset;
     asset: AssetOfChain<C>;
     chain: C;
@@ -29,7 +29,7 @@ export type AssetData = {
     maximumSwapAmount: string | null;
     minimumEgressAmount: string;
   };
-}[ChainflipChain];
+}[Exclude<ChainflipChain, 'Polkadot'>];
 
 export interface ChainsAndAssets {
   srcChain: ChainflipChain;
