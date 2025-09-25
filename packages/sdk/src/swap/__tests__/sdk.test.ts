@@ -22,14 +22,16 @@ vi.mock('@ts-rest/core', async (importOriginal) => ({
       Promise.resolve({
         status: 200,
         body: {
-          assets: chainflipAssets.map((asset) => ({
-            asset,
-            depositChannelCreationEnabled: true,
-            depositChannelDepositsEnabled: true,
-            egressEnabled: true,
-            boostDepositsEnabled: true,
-            vaultSwapDepositsEnabled: true,
-          })),
+          assets: chainflipAssets
+            .filter((asset) => asset !== 'Dot')
+            .map((asset) => ({
+              asset,
+              depositChannelCreationEnabled: true,
+              depositChannelDepositsEnabled: true,
+              egressEnabled: true,
+              boostDepositsEnabled: true,
+              vaultSwapDepositsEnabled: true,
+            })),
           boostDepositsEnabled: true,
         },
       }),
@@ -94,14 +96,6 @@ const mockNetworkStatus = (
           depositChannelCreationEnabled: true,
           depositChannelDepositsEnabled: true,
           egressEnabled: false,
-          boostDepositsEnabled,
-          vaultSwapDepositsEnabled: true,
-        },
-        {
-          asset: 'Dot',
-          depositChannelCreationEnabled: true,
-          depositChannelDepositsEnabled: true,
-          egressEnabled: true,
           boostDepositsEnabled,
           vaultSwapDepositsEnabled: true,
         },
@@ -3628,7 +3622,6 @@ describe(SwapSDK, () => {
           "Assethub": 0n,
           "Bitcoin": 0n,
           "Ethereum": 16n,
-          "Polkadot": 0n,
           "Solana": 0n,
         }
       `);
