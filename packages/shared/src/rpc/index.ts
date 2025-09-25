@@ -83,10 +83,12 @@ export const getAccounts = createRequest('cf_accounts');
 export const getAccountInfo = createRequest('cf_account_info');
 
 export const getAllBoostPoolsDepth = transform(createRequest('cf_boost_pools_depth'), (result) =>
-  result.map(({ chain, asset, ...rest }) => ({
-    asset: getInternalAsset({ chain, asset }),
-    ...rest,
-  })),
+  result
+    .filter(({ chain }) => chain !== 'Polkadot')
+    .map(({ chain, asset, ...rest }) => ({
+      asset: getInternalAsset({ chain, asset }),
+      ...rest,
+    })),
 );
 
 export type BoostPoolsDepth = Awaited<ReturnType<typeof getAllBoostPoolsDepth>>;
