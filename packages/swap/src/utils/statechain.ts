@@ -86,10 +86,10 @@ export const getSwapRateV3 = async ({
   );
 
   return {
-    ingressFee,
-    networkFee,
-    brokerFee,
-    egressFee,
+    ingressFee: ingressFee as SwapRateAmount,
+    networkFee: networkFee as SwapRateAmount,
+    brokerFee: brokerFee as SwapRateAmount,
+    egressFee: egressFee as SwapRateAmount,
     intermediateAmount,
     egressAmount,
   };

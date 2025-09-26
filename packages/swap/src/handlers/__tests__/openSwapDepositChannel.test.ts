@@ -48,9 +48,9 @@ describe(openSwapDepositChannel, () => {
     const result = await openSwapDepositChannel({
       srcAsset: 'FLIP',
       srcChain: 'Ethereum',
-      destAsset: 'DOT',
-      destChain: 'Polkadot',
-      destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
+      destAsset: 'BTC',
+      destChain: 'Bitcoin',
+      destAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
       expectedDepositAmount: '777',
       fillOrKillParams: {
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
@@ -93,9 +93,9 @@ describe(openSwapDepositChannel, () => {
     const result = await openSwapDepositChannel({
       srcAsset: 'FLIP',
       srcChain: 'Ethereum',
-      destAsset: 'DOT',
-      destChain: 'Polkadot',
-      destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
+      destAsset: 'BTC',
+      destChain: 'Bitcoin',
+      destAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
       expectedDepositAmount: '1000',
       quote: {
         intermediateAmount: '500',
@@ -149,9 +149,9 @@ describe(openSwapDepositChannel, () => {
     const result = await openSwapDepositChannel({
       srcAsset: 'FLIP',
       srcChain: 'Ethereum',
-      destAsset: 'DOT',
-      destChain: 'Polkadot',
-      destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
+      destAsset: 'BTC',
+      destChain: 'Bitcoin',
+      destAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
       expectedDepositAmount: '1000',
       maxBoostFeeBps: 100,
       fillOrKillParams: {
@@ -350,9 +350,9 @@ describe(openSwapDepositChannel, () => {
     const result = await openSwapDepositChannel({
       srcAsset: 'FLIP',
       srcChain: 'Ethereum',
-      destAsset: 'DOT',
-      destChain: 'Polkadot',
-      destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
+      destAsset: 'BTC',
+      destChain: 'Bitcoin',
+      destAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
       expectedDepositAmount: '777',
       fillOrKillParams: {
         refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
@@ -392,9 +392,9 @@ describe(openSwapDepositChannel, () => {
       openSwapDepositChannel({
         srcAsset: 'FLIP',
         srcChain: 'Ethereum',
-        destAsset: 'DOT',
-        destChain: 'Polkadot',
-        destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
+        destAsset: 'BTC',
+        destChain: 'Bitcoin',
+        destAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
         expectedDepositAmount: '777',
         fillOrKillParams: {
           maxOraclePriceSlippage: 100,
@@ -408,15 +408,15 @@ describe(openSwapDepositChannel, () => {
   });
 
   it('rejects if destination asset is disabled', async () => {
-    env.FULLY_DISABLED_INTERNAL_ASSETS = new Set(['Btc', 'Dot']);
+    env.FULLY_DISABLED_INTERNAL_ASSETS = new Set(['Btc']);
 
     await expect(
       openSwapDepositChannel({
         srcAsset: 'FLIP',
         srcChain: 'Ethereum',
-        destAsset: 'DOT',
-        destChain: 'Polkadot',
-        destAddress: '5FAGoHvkBsUMnoD3W95JoVTvT8jgeFpjhFK8W73memyGBcBd',
+        destAsset: 'BTC',
+        destChain: 'Bitcoin',
+        destAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
         expectedDepositAmount: '777',
         fillOrKillParams: {
           maxOraclePriceSlippage: 100,
@@ -426,7 +426,7 @@ describe(openSwapDepositChannel, () => {
           minPriceX128: '1',
         },
       }),
-    ).rejects.toThrow('Asset Dot is disabled');
+    ).rejects.toThrow('Asset Btc is disabled');
   });
 
   it('rejects if too many channels are open', async () => {

@@ -253,8 +253,10 @@ export default class Quoter {
     for (let legIndex = 0; legIndex < legs.length; legIndex += 1) {
       const leg = legs[legIndex].toJSON();
 
-      const sellAsset = getInternalAsset(leg.side === 'BUY' ? leg.base_asset : leg.quote_asset);
-      const baseAsset = getInternalAsset(leg.base_asset);
+      const sellAsset = getInternalAsset(
+        leg.side === 'BUY' ? leg.base_asset : leg.quote_asset,
+      ) as Exclude<ChainflipAsset, 'Dot'>;
+      const baseAsset = getInternalAsset(leg.base_asset) as Exclude<ChainflipAsset, 'Dot'>;
       const side = leg.side === 'BUY' ? 'sell' : 'buy';
 
       for (const [accountId, quote] of quotes.filter(([, q]) => !q.beta)) {

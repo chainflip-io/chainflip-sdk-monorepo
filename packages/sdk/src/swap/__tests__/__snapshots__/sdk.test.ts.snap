@@ -299,19 +299,6 @@ exports[`SwapSDK > getAssets > returns the correct values for mainnet 1`] = `
     "symbol": "ETH",
   },
   {
-    "asset": "DOT",
-    "chain": "Polkadot",
-    "chainflipId": "Dot",
-    "contractAddress": undefined,
-    "decimals": 10,
-    "isMainnet": true,
-    "maximumSwapAmount": null,
-    "minimumEgressAmount": "1",
-    "minimumSwapAmount": "0",
-    "name": "Polkadot",
-    "symbol": "DOT",
-  },
-  {
     "asset": "BTC",
     "chain": "Bitcoin",
     "chainflipId": "Btc",
@@ -1080,14 +1067,6 @@ exports[`SwapSDK > getChains > returns the correct values for mainnet 1`] = `
     "requiredBlockConfirmations": 2,
   },
   {
-    "chain": "Polkadot",
-    "evmChainId": undefined,
-    "isMainnet": true,
-    "maxRetryDurationBlocks": 10,
-    "name": "Polkadot",
-    "requiredBlockConfirmations": undefined,
-  },
-  {
     "chain": "Bitcoin",
     "evmChainId": undefined,
     "isMainnet": true,
@@ -1314,9 +1293,6 @@ exports[`SwapSDK > getSwapLimits > returns the swap limits based on the environm
       "USDC": 1152921504606846976n,
       "USDT": null,
     },
-    "Polkadot": {
-      "DOT": null,
-    },
     "Solana": {
       "SOL": null,
       "USDC": null,
@@ -1340,9 +1316,6 @@ exports[`SwapSDK > getSwapLimits > returns the swap limits based on the environm
       "FLIP": 0n,
       "USDC": 0n,
       "USDT": 0n,
-    },
-    "Polkadot": {
-      "DOT": 0n,
     },
     "Solana": {
       "SOL": 0n,

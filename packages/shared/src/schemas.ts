@@ -67,6 +67,15 @@ export const quoteQuerySchema = z
       hadError = true;
     }
 
+    if (srcAsset === 'Dot' || destAsset === 'Dot') {
+      ctx.addIssue({
+        message: 'Dot is not supported',
+        code: z.ZodIssueCode.custom,
+      });
+
+      hadError = true;
+    }
+
     if (args.ccmGasBudget !== undefined && args.ccmMessageLengthBytes === undefined) {
       ctx.addIssue({
         message: `ccmMessageLengthBytes must be set if ccmGasBudget is set`,

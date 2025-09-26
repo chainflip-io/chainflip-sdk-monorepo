@@ -29,7 +29,6 @@ const createChainAssetMap = <T>(
   overrides?: Partial<InternalAssetMap<T>>,
 ): ChainAssetMap<T> => ({
   Bitcoin: { BTC: overrides?.Btc ?? defaultValue },
-  Polkadot: { DOT: overrides?.Dot ?? defaultValue },
   Ethereum: {
     ETH: overrides?.Eth ?? defaultValue,
     FLIP: overrides?.Flip ?? defaultValue,
@@ -47,7 +46,6 @@ const createChainAssetMap = <T>(
 
 const createChainMap = <T>(defaultValue: T, overrides?: Partial<ChainMap<T>>): ChainMap<T> => ({
   Bitcoin: overrides?.Bitcoin ?? defaultValue,
-  Polkadot: overrides?.Polkadot ?? defaultValue,
   Ethereum: overrides?.Ethereum ?? defaultValue,
   Arbitrum: overrides?.Arbitrum ?? defaultValue,
   Solana: overrides?.Solana ?? defaultValue,
@@ -241,7 +239,10 @@ export const boostPoolsDepth = (
           ),
         ),
       ) as {
-        [C in ChainflipChain as `${C}-${AssetOfChain<C>}-${number}`]: BoostPool;
+        [C in Exclude<
+          ChainflipChain,
+          'Polkadot'
+        > as `${C}-${AssetOfChain<C>}-${number}`]: BoostPool;
       }),
       'Bitcoin-BTC-10': {
         chain: 'Bitcoin',

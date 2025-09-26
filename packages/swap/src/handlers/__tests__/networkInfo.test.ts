@@ -94,7 +94,7 @@ const mockRpc = ({
     switch (method) {
       case 'cf_available_pools':
         return supportedAssets
-          .filter((a) => a !== 'Usdc')
+          .filter((a) => a !== 'Usdc' && a !== 'Dot')
           .map((a) => ({ base: internalAssetToRpcAsset[a], quote: internalAssetToRpcAsset.Usdc }));
       case 'cf_safe_mode_statuses':
         return safeModeStatuses ?? defaultSafeModeStatuses;
@@ -149,14 +149,6 @@ describe('networkStatus', () => {
           },
           {
             asset: 'Eth',
-            boostDepositsEnabled: true,
-            depositChannelCreationEnabled: true,
-            depositChannelDepositsEnabled: true,
-            egressEnabled: true,
-            vaultSwapDepositsEnabled: true,
-          },
-          {
-            asset: 'Dot',
             boostDepositsEnabled: true,
             depositChannelCreationEnabled: true,
             depositChannelDepositsEnabled: true,
@@ -278,14 +270,6 @@ describe('networkStatus', () => {
             "vaultSwapDepositsEnabled": false,
           },
           {
-            "asset": "Dot",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
             "asset": "Btc",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
@@ -396,14 +380,6 @@ describe('networkStatus', () => {
             "vaultSwapDepositsEnabled": false,
           },
           {
-            "asset": "Dot",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
             "asset": "Btc",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
@@ -507,14 +483,6 @@ describe('networkStatus', () => {
           },
           {
             "asset": "Eth",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
-            "asset": "Dot",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
@@ -633,14 +601,6 @@ describe('networkStatus', () => {
             "vaultSwapDepositsEnabled": false,
           },
           {
-            "asset": "Dot",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
             "asset": "Btc",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
@@ -745,14 +705,6 @@ describe('networkStatus', () => {
           },
           {
             "asset": "Eth",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
-            "asset": "Dot",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
@@ -877,14 +829,6 @@ describe('networkStatus', () => {
           vaultSwapDepositsEnabled: false,
         },
         {
-          asset: 'Dot',
-          boostDepositsEnabled: false,
-          depositChannelCreationEnabled: false,
-          depositChannelDepositsEnabled: false,
-          egressEnabled: false,
-          vaultSwapDepositsEnabled: false,
-        },
-        {
           asset: 'Btc',
           boostDepositsEnabled: false,
           depositChannelCreationEnabled: false,
@@ -991,14 +935,6 @@ describe('networkStatus', () => {
           },
           {
             "asset": "Eth",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
-            "asset": "Dot",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
@@ -1119,14 +1055,6 @@ describe('networkStatus', () => {
             "vaultSwapDepositsEnabled": false,
           },
           {
-            "asset": "Dot",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
             "asset": "Btc",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
@@ -1233,14 +1161,6 @@ describe('networkStatus', () => {
           },
           {
             "asset": "Eth",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
-            "asset": "Dot",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,

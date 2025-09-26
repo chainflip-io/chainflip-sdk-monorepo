@@ -85,14 +85,14 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~1.11.0-beta.10
-        version: 1.11.0-beta.11
+        specifier: ~1.11.0-beta.16
+        version: 1.11.0-beta.16
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.8.20
-        version: 0.8.20
+        specifier: ^0.11.1
+        version: 0.11.1
       axios:
         specifier: ^1.10.0
         version: 1.10.0
@@ -158,14 +158,14 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~1.11.0-beta.10
-        version: 1.11.0-beta.11
+        specifier: ~1.11.0-beta.16
+        version: 1.11.0-beta.16
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.8.20
-        version: 0.8.20
+        specifier: ^0.11.1
+        version: 0.11.1
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -195,14 +195,14 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~1.11.0-beta.10
-        version: 1.11.0-beta.11
+        specifier: ~1.11.0-beta.16
+        version: 1.11.0-beta.16
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.8.20
-        version: 0.8.20
+        specifier: ^0.11.1
+        version: 0.11.1
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -259,14 +259,14 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2
       '@chainflip/rpc':
-        specifier: ~1.11.0-beta.10
-        version: 1.11.0-beta.11
+        specifier: ~1.11.0-beta.16
+        version: 1.11.0-beta.16
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.8.20
-        version: 0.8.20
+        specifier: ^0.11.1
+        version: 0.11.1
       '@polkadot/api':
         specifier: ^15.10.2
         version: 15.10.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -492,8 +492,8 @@ packages:
   '@chainflip/redis@1.0.2':
     resolution: {integrity: sha512-ahkz+xKt5pX1gx4QikphdvTpZX8fjNgi/84q1WLXaAOoUop4pWdUw/boXv7rzg2xIqIdvDFk82/zz1g0OmiySQ==}
 
-  '@chainflip/rpc@1.11.0-beta.11':
-    resolution: {integrity: sha512-eWpdx//ZMWuL40ouDg5UeZRbI41MSZiLRgDo7z7ph+GgCk3BFqVMTudQKwQgSWAk6S5yU8wYr+ON/IIrifwtKg==}
+  '@chainflip/rpc@1.11.0-beta.16':
+    resolution: {integrity: sha512-S+nVabM8qac8e8vYda2gFUmgqhhBv9bE9UiB3JQwSve5699QBzps711z/Ez+G0SP4kx4R9nnKUTsphY9mNVjRg==}
 
   '@chainflip/scale@1.11.0':
     resolution: {integrity: sha512-gLs2pARutz6JJSKth92TYQEHVWvwpavWNUARB9626t+QxlparHyL10t9XibD2X1sr+GLXWKj2q5qXOSGU8CICA==}
@@ -501,11 +501,14 @@ packages:
   '@chainflip/solana@2.2.0':
     resolution: {integrity: sha512-MQhH0b9hwO6miw2pAatDUzJJdaOhLMSiZSzbmUHJWqwvazg2X2YUUK3e4+RGKSBL8bBCFiC+FyXBSAvYztd1YQ==}
 
+  '@chainflip/utils@0.11.0':
+    resolution: {integrity: sha512-w48RBfFiGlBfLpBvmwRQmxfLb/jT4kn4CW9cqlMWRb9ta88As36CUX9Qbx/54YHPbce7BJTOXPI2LgaH32NVjA==}
+
+  '@chainflip/utils@0.11.1':
+    resolution: {integrity: sha512-bUVgEC6zkjjL8vdHFL0ZeihzID0aGX69BhFSPBLTnZUmzs8McBUtELSOWojx1wBqgCltv11i/o4Q31o50rCTfg==}
+
   '@chainflip/utils@0.8.18':
     resolution: {integrity: sha512-qaKtasZSfCcEICR3Bo6IUabOkBsmldsKmDbGTRr0WBQlUyOA2SNwZRN9EP73ZQofWyI3luRN2tFGS54O3bYazQ==}
-
-  '@chainflip/utils@0.8.20':
-    resolution: {integrity: sha512-SO9EUG8fYPuQBbNpGsqf2x+PWsGtBwKUlnAYZs5oWagANDWxi+Za8xRBN3JqMMPluFr/mvBhP19IDcdeHI3J1Q==}
 
   '@chainflip/utils@0.8.22':
     resolution: {integrity: sha512-VVerCmYtxW6rk3HCKnJzYAC60kf8Xv66Sp7ittMzpuJ9kzu+IeycY6lHv/I7GJnagy3zeuL6PNGWqdAMpuF+TQ==}
@@ -5727,9 +5730,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@chainflip/rpc@1.11.0-beta.11':
+  '@chainflip/rpc@1.11.0-beta.16':
     dependencies:
-      '@chainflip/utils': 0.8.18
+      '@chainflip/utils': 0.11.0
       zod: 3.25.76
 
   '@chainflip/scale@1.11.0':
@@ -5752,13 +5755,19 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@chainflip/utils@0.8.18':
+  '@chainflip/utils@0.11.0':
     dependencies:
       '@date-fns/utc': 2.1.1
       bignumber.js: 9.3.1
       date-fns: 4.1.0
 
-  '@chainflip/utils@0.8.20':
+  '@chainflip/utils@0.11.1':
+    dependencies:
+      '@date-fns/utc': 2.1.1
+      bignumber.js: 9.3.1
+      date-fns: 4.1.0
+
+  '@chainflip/utils@0.8.18':
     dependencies:
       '@date-fns/utc': 2.1.1
       bignumber.js: 9.3.1

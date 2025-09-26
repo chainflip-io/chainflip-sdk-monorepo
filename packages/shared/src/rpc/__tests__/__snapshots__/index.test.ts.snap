@@ -153,21 +153,6 @@ exports[`getAllBoostPoolsDepth > retrieves the boost pools depth balance > boost
     "tier": 30,
   },
   {
-    "asset": "Dot",
-    "availableAmount": 0n,
-    "tier": 5,
-  },
-  {
-    "asset": "Dot",
-    "availableAmount": 0n,
-    "tier": 10,
-  },
-  {
-    "asset": "Dot",
-    "availableAmount": 0n,
-    "tier": 30,
-  },
-  {
     "asset": "Sol",
     "availableAmount": 0n,
     "tier": 5,

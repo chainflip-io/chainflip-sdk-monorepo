@@ -17,18 +17,6 @@ describe(broker.requestSwapDepositAddress, () => {
     },
   };
 
-  const MOCKED_DOT_RESPONSE = {
-    id: '1',
-    jsonrpc: '2.0',
-    result: {
-      address: '0x0832ef1496fe1f672a0b1fdeec2ff845f8bdee0041fd801dfd5ebf9d29c76a48',
-      issued_block: 50,
-      channel_id: 200,
-      source_chain_expiry_block: 1_000_000,
-      channel_opening_fee: '0x0',
-    },
-  };
-
   const mockResponse = (data: Record<string, any> = MOCKED_ETH_RESPONSE) =>
     mockRpcResponse({ data });
 
@@ -471,52 +459,51 @@ describe(broker.requestSwapDepositAddress, () => {
   it.each([
     '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
     '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-  ])('works with polkadot dest addresses', async (destAddress) => {
-    const postSpy = mockResponse();
-    await broker.requestSwapDepositAddress(
-      {
-        srcAsset: 'ETH',
-        srcChain: 'Ethereum',
-        destAsset: 'DOT',
-        destChain: 'Polkadot',
-        destAddress,
-        fillOrKillParams: {
-          retryDurationBlocks: 500,
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-          minPriceX128: '10000000000000',
-          maxOraclePriceSlippage: 50,
+  ])('does not work with polkadot dest addresses', async (destAddress) => {
+    await expect(
+      broker.requestSwapDepositAddress(
+        {
+          srcAsset: 'ETH',
+          srcChain: 'Ethereum',
+          destAsset: 'DOT',
+          destChain: 'Polkadot',
+          destAddress,
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+            minPriceX128: '10000000000000',
+            maxOraclePriceSlippage: 50,
+          },
         },
-      },
-      brokerConfig,
-      'perseverance',
-    );
-    expect(postSpy.mock.calls[0][1][0].params[2]).toEqual(destAddress);
+        brokerConfig,
+        'perseverance',
+      ),
+    ).rejects.toThrow();
   });
 
   it.each([
     '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
     '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-  ])('works with polkadot refund addresses', async (refundAddress) => {
-    const postSpy = mockResponse(MOCKED_DOT_RESPONSE);
-    const result = await broker.requestSwapDepositAddress(
-      {
-        srcAsset: 'DOT',
-        srcChain: 'Polkadot',
-        destAsset: 'ETH',
-        destChain: 'Ethereum',
-        destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
-        fillOrKillParams: {
-          retryDurationBlocks: 500,
-          refundAddress,
-          minPriceX128: '10000000000000',
-          maxOraclePriceSlippage: 50,
+  ])('does not work with polkadot refund addresses', async (refundAddress) => {
+    await expect(
+      broker.requestSwapDepositAddress(
+        {
+          srcAsset: 'DOT',
+          srcChain: 'Polkadot',
+          destAsset: 'ETH',
+          destChain: 'Ethereum',
+          destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
+          fillOrKillParams: {
+            retryDurationBlocks: 500,
+            refundAddress,
+            minPriceX128: '10000000000000',
+            maxOraclePriceSlippage: 50,
+          },
         },
-      },
-      brokerConfig,
-      'perseverance',
-    );
-    expect(result.address).toEqual('1BkWnnE2si311t3wahraxU2jrEJRkn1iCuUDza4L7TqX7Z3');
-    expect(postSpy.mock.calls[0][1][0].params[7].refund_address).toEqual(refundAddress);
+        brokerConfig,
+        'perseverance',
+      ),
+    ).rejects.toThrow();
   });
 });
 

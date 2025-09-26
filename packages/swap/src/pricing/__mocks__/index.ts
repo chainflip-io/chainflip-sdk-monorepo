@@ -1,6 +1,6 @@
 import { ChainflipAsset, InternalAssetMap } from '@chainflip/utils/chainflip';
 
-const prices: InternalAssetMap<number> = {
+const prices: InternalAssetMap<number> & { Dot: number } = {
   Dot: 6.5,
   Usdt: 1,
   Usdc: 1,

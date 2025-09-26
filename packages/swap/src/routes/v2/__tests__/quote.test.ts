@@ -87,9 +87,9 @@ const mockRpcs = ({
       });
     }
 
-    if (data.method === 'cf_boost_pools_depth') {
+    if (data.method === 'cf_pool_depth') {
       return Promise.resolve({
-        data: boostPoolsDepth(mockedBoostPoolsDepth),
+        data: cfPoolDepth(),
       });
     }
 
@@ -281,7 +281,7 @@ describe('server', () => {
 
       expect(status).toBe(400);
       expect(body).toMatchObject({
-        message: 'Polkadot does not support vault swaps',
+        message: 'invalid request',
       });
     });
 

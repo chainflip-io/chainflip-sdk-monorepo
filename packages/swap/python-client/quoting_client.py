@@ -27,7 +27,6 @@ cf_assets = [
     ("Ethereum", ["ETH", "USDT", "USDC", "FLIP"]),
     ("Arbitrum", ["ETH", "USDC"]),
     ("Bitcoin", ["BTC"]),
-    ("Polkadot", ["DOT"]),
     ("Solana", ["SOL", "USDC"]),
 ]
 

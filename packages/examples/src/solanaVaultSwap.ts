@@ -17,7 +17,7 @@ if (!process.env.SOLANA_SECRET_KEY_BASE58) {
   const randomKeypair = Keypair.generate();
   process.env.SOLANA_SECRET_KEY_BASE58 = bs58.encode(randomKeypair.secretKey);
 
-  console.log('ETHEREUM_SECRET_KEY not set - generating random keypair');
+  console.log('SOLANA_SECRET_KEY_BASE58 not set - generating random keypair');
   console.log('generated secret key', process.env.SOLANA_SECRET_KEY_BASE58);
 }
 
@@ -27,7 +27,6 @@ const swapSDK = new SwapSDK({
 });
 
 const keypair = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SECRET_KEY_BASE58));
-const dataAccountKeypair = Keypair.generate(); // temporary account to store the swap details
 console.log('wallet address', keypair.publicKey.toBase58());
 
 const { quotes } = await swapSDK.getQuoteV2({
@@ -43,6 +42,7 @@ if (!quote) throw new Error('No quote');
 console.log('quote', quote);
 
 const generateSeed = (): `0x${string}` => {
+  console.log('generating seed');
   const bytes = crypto.getRandomValues(new Uint8Array(32));
 
   return `0x${Array.from(bytes)
@@ -64,10 +64,13 @@ const vaultSwapRequest = {
     seed: generateSeed(),
   },
 };
+
+console.log('encoding vault swap data');
 const vaultSwapData = await swapSDK.encodeVaultSwapData(vaultSwapRequest);
 console.log(vaultSwapData);
 if (vaultSwapData.chain !== 'Solana') throw new Error('Invalid chain');
 
+console.log('creating transaction');
 const transaction = new Transaction().add(
   new TransactionInstruction({
     keys: vaultSwapData.accounts.map((account) => ({
@@ -80,9 +83,10 @@ const transaction = new Transaction().add(
   }),
 );
 
+console.log('sending transaction');
 const signature = await sendAndConfirmTransaction(
   new Connection(clusterApiUrl('devnet'), 'confirmed'),
   transaction,
-  [keypair, dataAccountKeypair],
+  [keypair],
 );
 console.log(signature);

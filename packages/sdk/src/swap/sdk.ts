@@ -260,13 +260,15 @@ export class SwapSDK {
       ingressEgress: { witnessSafetyMargins },
     } = await this.getStateChainEnvironment();
 
-    return chainflipChains.reduce(
-      (acc, chain) => {
-        acc[chain] = witnessSafetyMargins[chain] ? Number(witnessSafetyMargins[chain]) + 1 : null;
-        return acc;
-      },
-      {} as ChainMap<number | null>,
-    );
+    return chainflipChains
+      .filter((chain) => chain !== 'Polkadot')
+      .reduce(
+        (acc, chain) => {
+          acc[chain] = witnessSafetyMargins[chain] ? Number(witnessSafetyMargins[chain]) + 1 : null;
+          return acc;
+        },
+        {} as ChainMap<number | null>,
+      );
   }
 
   async getChannelOpeningFees(): Promise<ChainMap<bigint>> {

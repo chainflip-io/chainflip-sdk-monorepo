@@ -45,7 +45,8 @@ export const getMinimumEgressAmount = async (asset: ChainflipAsset): Promise<big
 export const getWitnessSafetyMargin = async (chain: ChainflipChain): Promise<bigint | null> => {
   const environment = await cachedGetEnvironment(rpcConfig);
 
-  const result = environment.ingressEgress.witnessSafetyMargins[chain];
+  const result =
+    environment.ingressEgress.witnessSafetyMargins[chain as Exclude<ChainflipChain, 'Polkadot'>];
 
   return result !== null ? BigInt(result) : null;
 };
@@ -67,7 +68,8 @@ export const getRequiredBlockConfirmations = async (
 ): Promise<number | null> => {
   const environment = await cachedGetEnvironment(rpcConfig);
   const { chain } = assetConstants[asset];
-  const safetyMargin = environment.ingressEgress.witnessSafetyMargins[chain];
+  const safetyMargin =
+    environment.ingressEgress.witnessSafetyMargins[chain as Exclude<ChainflipChain, 'Polkadot'>];
 
   return safetyMargin ? Number(safetyMargin) + 1 : null;
 };

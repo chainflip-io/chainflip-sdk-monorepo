@@ -13,8 +13,11 @@ export const getChainData = (
   name: chain,
   evmChainId: getEvmChainId(chain, network),
   isMainnet: !isTestnet(network),
-  requiredBlockConfirmations: isNotNullish(env.ingressEgress.witnessSafetyMargins[chain])
-    ? Number(env.ingressEgress.witnessSafetyMargins[chain]) + 1
+  requiredBlockConfirmations: isNotNullish(
+    env.ingressEgress.witnessSafetyMargins[chain as Exclude<ChainflipChain, 'Polkadot'>],
+  )
+    ? Number(env.ingressEgress.witnessSafetyMargins[chain as Exclude<ChainflipChain, 'Polkadot'>]) +
+      1
     : undefined,
   maxRetryDurationBlocks: env.swapping.maxSwapRetryDurationBlocks,
 });

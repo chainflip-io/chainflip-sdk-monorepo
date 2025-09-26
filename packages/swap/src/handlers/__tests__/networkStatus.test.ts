@@ -94,7 +94,7 @@ const mockRpc = ({
     switch (method) {
       case 'cf_available_pools':
         return supportedAssets
-          .filter((a) => a !== 'Usdc')
+          .filter((a) => a !== 'Usdc' && a !== 'Dot')
           .map((a) => ({ base: internalAssetToRpcAsset[a], quote: internalAssetToRpcAsset.Usdc }));
       case 'cf_safe_mode_statuses':
         return deepMerge(defaultSafeModeStatuses, safeModeStatuses);
@@ -128,7 +128,6 @@ describe('networkStatus', () => {
             'Usdt',
             'Flip',
             'Eth',
-            'Dot',
             'Btc',
             'ArbUsdc',
             'ArbEth',
@@ -143,7 +142,6 @@ describe('networkStatus', () => {
             'Usdt',
             'Flip',
             'Eth',
-            'Dot',
             'Btc',
             'ArbUsdc',
             'ArbEth',
@@ -158,7 +156,6 @@ describe('networkStatus', () => {
             'Usdt',
             'Flip',
             'Eth',
-            'Dot',
             'Btc',
             'ArbUsdc',
             'ArbEth',
