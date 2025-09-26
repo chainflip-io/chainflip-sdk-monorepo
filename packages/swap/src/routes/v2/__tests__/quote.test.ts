@@ -447,7 +447,7 @@ describe('server', () => {
       expect(body).toMatchSnapshot();
     });
 
-    it.only('excludes the ingress fee for vault swaps', async () => {
+    it('excludes the ingress fee for vault swaps', async () => {
       vi.mocked(getTotalLiquidity).mockResolvedValueOnce(BigInt(2e18));
 
       const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({

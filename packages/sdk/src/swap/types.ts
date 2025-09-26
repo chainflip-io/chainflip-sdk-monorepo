@@ -17,7 +17,7 @@ export interface ChainData {
 
 export type AssetData = {
   [C in Exclude<ChainflipChain, 'Polkadot'>]: {
-    chainflipId: ChainflipAsset;
+    chainflipId: Exclude<ChainflipAsset, 'Dot'>;
     asset: AssetOfChain<C>;
     chain: C;
     contractAddress: string | undefined;
@@ -32,9 +32,9 @@ export type AssetData = {
 }[Exclude<ChainflipChain, 'Polkadot'>];
 
 export interface ChainsAndAssets {
-  srcChain: ChainflipChain;
+  srcChain: Exclude<ChainflipChain, 'Polkadot'>;
   srcAsset: AssetSymbol;
-  destChain: ChainflipChain;
+  destChain: Exclude<ChainflipChain, 'Polkadot'>;
   destAsset: AssetSymbol;
 }
 

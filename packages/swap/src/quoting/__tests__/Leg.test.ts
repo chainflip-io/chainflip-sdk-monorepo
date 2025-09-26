@@ -12,11 +12,11 @@ describe(Leg, () => {
     });
 
     it('throws if neither baseAsset nor quoteAsset is Usdc', () => {
-      expect(() => Leg.of('Dot', 'Usdt', 100n)).toThrow();
+      expect(() => Leg.of('Btc', 'Usdt', 100n)).toThrow();
     });
 
     it('returns a Leg instance', () => {
-      const leg = Leg.of('Usdc', 'Dot', 100n);
+      const leg = Leg.of('Usdc', 'Btc', 100n);
       expect(leg).toBeInstanceOf(Leg);
       expect(leg.amount).toBe(100n);
     });
@@ -24,10 +24,10 @@ describe(Leg, () => {
 
   describe(Leg.prototype.toJSON, () => {
     it('returns the leg formatted for the market maker (BUY)', () => {
-      const leg = Leg.of('Usdc', 'Dot', 100n);
+      const leg = Leg.of('Usdc', 'Btc', 100n);
 
       expect(leg.toJSON()).toEqual({
-        base_asset: { asset: 'DOT', chain: 'Polkadot' },
+        base_asset: { asset: 'BTC', chain: 'Bitcoin' },
         quote_asset: { asset: 'USDC', chain: 'Ethereum' },
         amount: '100',
         side: 'BUY',
@@ -35,10 +35,10 @@ describe(Leg, () => {
     });
 
     it('returns the leg formatted for the market maker (SELL)', () => {
-      const leg = Leg.of('Dot', 'Usdc', 100n);
+      const leg = Leg.of('Btc', 'Usdc', 100n);
 
       expect(leg.toJSON()).toEqual({
-        base_asset: { asset: 'DOT', chain: 'Polkadot' },
+        base_asset: { asset: 'BTC', chain: 'Bitcoin' },
         quote_asset: { asset: 'USDC', chain: 'Ethereum' },
         amount: '100',
         side: 'SELL',
