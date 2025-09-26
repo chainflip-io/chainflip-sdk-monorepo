@@ -17,6 +17,7 @@ import env from '../../../config/env.js';
 import { getUsdValue } from '../../../pricing/checkPriceWarning.js';
 import Quoter from '../../../quoting/Quoter.js';
 import app from '../../../server.js';
+import * as autoSlippage from '../../../utils/autoSlippage.js';
 import { boostPoolsCache } from '../../../utils/boost.js';
 import { getTotalLiquidity } from '../../../utils/pools.js';
 
@@ -702,6 +703,103 @@ describe('server', () => {
       expect(body).toMatchSnapshot();
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
+
+    it.each([
+      [1, 0.5, 0.5, 0.5],
+      [0.5, 1, 0.5, 1],
+      [0.5, 0.5, 0.5, 0.5],
+      [undefined, 1, undefined, 1],
+    ] as const)(
+      'returns the correct live price slippage tolerance percent limited to slippage tolerance percent if it exceeds it',
+      async (
+        calculatedRecommendedLivePriceSlippage,
+        calculatedRecommendedSlippage,
+        expectedRecommendedLivePriceSlippageTolerancePercent,
+        expectedRecommendedSlippageTolerancePercent,
+      ) => {
+        mockRpcResponse((url, data: any) => {
+          if (data.method === 'cf_environment') {
+            return Promise.resolve({
+              data: environment({
+                maxSwapAmount: null,
+                ingressFee: hexEncodeNumber(0x61a8),
+                egressFee: hexEncodeNumber(0x0),
+              }),
+            });
+          }
+
+          if (data.method === 'cf_boost_pools_depth') {
+            return Promise.resolve({
+              data: boostPoolsDepth(),
+            });
+          }
+
+          if (data.method === 'cf_pool_depth') {
+            return Promise.resolve({
+              data: cfPoolDepth(),
+            });
+          }
+
+          if (data.method === 'cf_accounts') {
+            return Promise.resolve({
+              data: {
+                id: 1,
+                jsonrpc: '2.0',
+                result: [
+                  [
+                    'cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH',
+                    'Chainflip Testnet Broker 2',
+                  ],
+                ],
+              },
+            });
+          }
+
+          if (data.method === 'cf_account_info') {
+            return Promise.resolve({
+              data: cfAccountInfo(),
+            });
+          }
+
+          throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+        });
+
+        const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+          broker_commission: buildFee('Usdc', 0),
+          ingress_fee: buildFee('Eth', 25000),
+          egress_fee: buildFee('Usdc', 0),
+          network_fee: buildFee('Usdc', 100100),
+          intermediary: null,
+          output: BigInt(100e6),
+        });
+
+        const params = new URLSearchParams({
+          srcChain: 'Ethereum',
+          srcAsset: 'ETH',
+          destChain: 'Ethereum',
+          destAsset: 'USDC',
+          amount: (1e18).toString(),
+        });
+
+        vi.spyOn(autoSlippage, 'calculateRecommendedLivePriceSlippage').mockResolvedValueOnce(
+          calculatedRecommendedLivePriceSlippage,
+        );
+        vi.spyOn(autoSlippage, 'calculateRecommendedSlippage').mockResolvedValueOnce(
+          calculatedRecommendedSlippage,
+        );
+
+        const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
+
+        expect(status).toBe(200);
+        expect(body[0].recommendedLivePriceSlippageTolerancePercent).toEqual(
+          expectedRecommendedLivePriceSlippageTolerancePercent,
+        );
+        expect(body[0].recommendedSlippageTolerancePercent).toEqual(
+          expectedRecommendedSlippageTolerancePercent,
+        );
+        expect(sendSpy).toHaveBeenCalledTimes(1);
+      },
+    );
 
     it('does not return recommendedLivePriceSlippageTolerancePercent for unavailable asset pair', async () => {
       mockRpcResponse((url, data: any) => {

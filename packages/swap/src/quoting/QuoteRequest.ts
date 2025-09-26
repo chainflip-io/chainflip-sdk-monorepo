@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { Query } from 'express-serve-static-core';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts.js';
 import { getPipAmountFromAmount, ONE_IN_PIP } from '@/shared/functions.js';
-import { ensure } from '@/shared/guards.js';
+import { ensure, isNotNullish } from '@/shared/guards.js';
 import { getFulfilledResult } from '@/shared/promises.js';
 import {
   quoteQuerySchema,
@@ -345,23 +345,35 @@ export default class QuoteRequest {
       String(swapOutputAmount),
     );
 
+    const recommendedSlippageTolerancePercent = await calculateRecommendedSlippage({
+      srcAsset: this.srcAsset,
+      destAsset: this.destAsset,
+      boostFeeBps,
+      intermediateAmount,
+      egressAmount,
+      dcaChunks,
+      estimatedPrice,
+      isOnChain: this.isOnChain,
+    });
+
+    const recommendedLivePriceSlippageTolerancePercent =
+      await calculateRecommendedLivePriceSlippage({
+        srcAsset: this.srcAsset,
+        destAsset: this.destAsset,
+      });
+
+    const cappedRecommendedLivePriceSlippageTolerancePercent = isNotNullish(
+      recommendedLivePriceSlippageTolerancePercent,
+    )
+      ? Math.min(recommendedLivePriceSlippageTolerancePercent, recommendedSlippageTolerancePercent)
+      : undefined;
+
     return {
       intermediateAmount: intermediateAmount?.toString(),
       egressAmount: egressAmount.toString(),
-      recommendedSlippageTolerancePercent: await calculateRecommendedSlippage({
-        srcAsset: this.srcAsset,
-        destAsset: this.destAsset,
-        boostFeeBps,
-        intermediateAmount,
-        egressAmount,
-        dcaChunks,
-        estimatedPrice,
-        isOnChain: this.isOnChain,
-      }),
-      recommendedLivePriceSlippageTolerancePercent: await calculateRecommendedLivePriceSlippage({
-        srcAsset: this.srcAsset,
-        destAsset: this.destAsset,
-      }),
+      recommendedSlippageTolerancePercent,
+      recommendedLivePriceSlippageTolerancePercent:
+        cappedRecommendedLivePriceSlippageTolerancePercent,
       includedFees: includedFees.map((fee) => ({ ...fee, amount: fee.amount.toString() })),
       lowLiquidityWarning,
       poolInfo,
