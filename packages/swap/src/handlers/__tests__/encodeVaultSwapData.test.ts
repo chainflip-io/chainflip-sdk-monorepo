@@ -366,7 +366,7 @@ describe(encodeVaultSwapData, () => {
           max_oracle_price_slippage: 50,
         },
       }),
-    ).rejects.toThrow('Asset Dot is disabled');
+    ).rejects.toThrow('Asset Btc is disabled');
   });
 });
 
