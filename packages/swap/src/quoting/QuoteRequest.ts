@@ -362,7 +362,7 @@ export default class QuoteRequest {
         destAsset: this.destAsset,
       });
 
-    const minRecommendedLivePriceSlippageTolerancePercent = isNotNullish(
+    const cappedRecommendedLivePriceSlippageTolerancePercent = isNotNullish(
       recommendedLivePriceSlippageTolerancePercent,
     )
       ? Math.min(recommendedLivePriceSlippageTolerancePercent, recommendedSlippageTolerancePercent)
@@ -372,7 +372,8 @@ export default class QuoteRequest {
       intermediateAmount: intermediateAmount?.toString(),
       egressAmount: egressAmount.toString(),
       recommendedSlippageTolerancePercent,
-      recommendedLivePriceSlippageTolerancePercent: minRecommendedLivePriceSlippageTolerancePercent,
+      recommendedLivePriceSlippageTolerancePercent:
+        cappedRecommendedLivePriceSlippageTolerancePercent,
       includedFees: includedFees.map((fee) => ({ ...fee, amount: fee.amount.toString() })),
       lowLiquidityWarning,
       poolInfo,
