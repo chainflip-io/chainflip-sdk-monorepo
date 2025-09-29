@@ -113,9 +113,16 @@ export function parseFoKParams(
   let minPrice: string;
   let livePriceSlippageTolerancePercent = null as BigNumber | null;
   if (!livePriceProtectionDisabled) {
-    if (params.livePriceSlippageTolerancePercent) {
+    if (
+      isNotNullish(params.livePriceSlippageTolerancePercent) &&
+      params.livePriceSlippageTolerancePercent !== false
+    ) {
       livePriceSlippageTolerancePercent = new BigNumber(params.livePriceSlippageTolerancePercent);
       assert(!livePriceSlippageTolerancePercent.isNaN(), 'Invalid live price slippage tolerance');
+      assert(
+        livePriceSlippageTolerancePercent.gte(0) && livePriceSlippageTolerancePercent.lte(100),
+        'Live price slippage tolerance must be between 0 and 100 inclusive',
+      );
     } else if (quote.recommendedLivePriceSlippageTolerancePercent) {
       livePriceSlippageTolerancePercent = new BigNumber(
         quote.recommendedLivePriceSlippageTolerancePercent,

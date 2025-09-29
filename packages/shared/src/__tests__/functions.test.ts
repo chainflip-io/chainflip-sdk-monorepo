@@ -350,4 +350,40 @@ describe(parseFoKParams, () => {
       retryDurationBlocks: 100,
     });
   });
+
+  it('handles user setting live price slippage tolerance to 0', () => {
+    expect(
+      parseFoKParams(
+        {
+          slippageTolerancePercent: 1.5,
+          refundAddress: '0x1234',
+          retryDurationBlocks: 100,
+          livePriceSlippageTolerancePercent: 0,
+        },
+        {
+          ...quote,
+        },
+      ),
+    ).toStrictEqual({
+      maxOraclePriceSlippage: 0,
+      minPriceX128: '83892489958826316385497263710123985244108278726772',
+      refundAddress: '0x1234',
+      refundCcmMetadata: null,
+      retryDurationBlocks: 100,
+    });
+  });
+
+  it('handles user setting live price slippage tolerance to negative number', () => {
+    expect(() => {
+      parseFoKParams(
+        {
+          livePriceSlippageTolerancePercent: -1,
+          slippageTolerancePercent: 1.5,
+          refundAddress: '0x1234',
+          retryDurationBlocks: 100,
+        },
+        quote,
+      );
+    }).toThrow('Live price slippage tolerance must be between 0 and 100 inclusive');
+  });
 });
