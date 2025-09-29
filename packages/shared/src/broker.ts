@@ -235,7 +235,6 @@ export async function requestSwapDepositAddress(
   );
 
   switch (params.srcAsset.chain) {
-    case 'Polkadot':
     case 'Assethub':
       if (isHex(response.address)) {
         response.address = ss58.encode({ data: response.address, ss58Format: DOT_PREFIX });

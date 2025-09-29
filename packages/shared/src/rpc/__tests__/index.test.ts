@@ -59,9 +59,6 @@ describe('getSwappingEnvironment', () => {
             "USDC": 5000000000000000000n,
             "USDT": null,
           },
-          "Polkadot": {
-            "DOT": null,
-          },
           "Solana": {
             "SOL": null,
             "USDC": null,
@@ -85,9 +82,6 @@ describe('getSwappingEnvironment', () => {
             "FLIP": 0n,
             "USDC": 0n,
             "USDT": 0n,
-          },
-          "Polkadot": {
-            "DOT": 0n,
           },
           "Solana": {
             "SOL": 0n,
@@ -115,9 +109,6 @@ describe('getSwappingEnvironment', () => {
                 "FLIP": 50n,
                 "USDC": 50n,
                 "USDT": 50n,
-              },
-              "Polkadot": {
-                "DOT": 50n,
               },
               "Solana": {
                 "SOL": 50n,
@@ -148,9 +139,6 @@ describe('getSwappingEnvironment', () => {
                 "FLIP": 50n,
                 "USDC": 50n,
                 "USDT": 50n,
-              },
-              "Polkadot": {
-                "DOT": 50n,
               },
               "Solana": {
                 "SOL": 50n,
@@ -187,7 +175,6 @@ describe('getIngressEgressEnvironment', () => {
           "Assethub": 0n,
           "Bitcoin": 0n,
           "Ethereum": 16n,
-          "Polkadot": 0n,
           "Solana": 0n,
         },
         "egressFees": {
@@ -208,9 +195,6 @@ describe('getIngressEgressEnvironment', () => {
             "FLIP": 0n,
             "USDC": 0n,
             "USDT": 0n,
-          },
-          "Polkadot": {
-            "DOT": 0n,
           },
           "Solana": {
             "SOL": 0n,
@@ -236,9 +220,6 @@ describe('getIngressEgressEnvironment', () => {
             "USDC": 5000000000000000000n,
             "USDT": 5000000000000000000n,
           },
-          "Polkadot": {
-            "DOT": 5000000000000000000n,
-          },
           "Solana": {
             "SOL": 5000000000000000000n,
             "USDC": 5000000000000000000n,
@@ -262,9 +243,6 @@ describe('getIngressEgressEnvironment', () => {
             "FLIP": 5000000000000000000n,
             "USDC": 5000000000000000000n,
             "USDT": 5000000000000000000n,
-          },
-          "Polkadot": {
-            "DOT": 5000000000000000000n,
           },
           "Solana": {
             "SOL": 5000000000000000000n,
@@ -290,9 +268,6 @@ describe('getIngressEgressEnvironment', () => {
             "USDC": 1n,
             "USDT": 1n,
           },
-          "Polkadot": {
-            "DOT": 1n,
-          },
           "Solana": {
             "SOL": 1n,
             "USDC": 1n,
@@ -303,7 +278,6 @@ describe('getIngressEgressEnvironment', () => {
           "Assethub": null,
           "Bitcoin": 2,
           "Ethereum": 1,
-          "Polkadot": null,
           "Solana": 1,
         },
       }

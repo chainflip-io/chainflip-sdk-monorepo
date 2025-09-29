@@ -53,15 +53,18 @@ if (vaultSwapData.sourceTokenAddress) {
     ['function approve(address spender, uint256 value) returns (bool)'],
     wallet,
   );
+  console.log('approving contract');
   const approvalTx = await sourceTokenContract.approve(vaultSwapData.to, quote.depositAmount);
   await approvalTx.wait();
 }
 
+console.log('sending transaction');
 const swapTx = await wallet.sendTransaction({
   to: vaultSwapData.to,
   data: vaultSwapData.calldata,
   value: vaultSwapData.value,
 });
+console.log('transaction sent, waiting for receipt');
 const receipt = await swapTx.wait();
 
 console.log(receipt?.hash);

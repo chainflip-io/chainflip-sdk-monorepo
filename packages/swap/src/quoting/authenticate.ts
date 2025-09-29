@@ -11,7 +11,7 @@ import { promisify } from 'util';
 import { z } from 'zod';
 import { isNotNullish } from '@/shared/guards.js';
 import { assetAndChain } from '@/shared/parsers.js';
-import prisma from '../client.js';
+import prisma, { InternalAsset } from '../client.js';
 import { AccountId, type QuotingSocket } from './Quoter.js';
 import env from '../config/env.js';
 import baseLogger from '../utils/logger.js';
@@ -104,7 +104,8 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
       mevFactors: marketMaker.mevFactors.reduce(
         (acc, mev) => {
           if (env.QUOTER_USE_MEV_FACTOR) {
-            acc[toLowerCase(mev.side)][mev.asset] = mev.factor * (mev.side === 'BUY' ? 1 : -1);
+            acc[toLowerCase(mev.side)][mev.asset as Exclude<InternalAsset, 'Dot'>] =
+              mev.factor * (mev.side === 'BUY' ? 1 : -1);
           }
           return acc;
         },

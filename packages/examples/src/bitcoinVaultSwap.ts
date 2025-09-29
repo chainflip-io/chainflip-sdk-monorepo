@@ -63,11 +63,14 @@ const inputUtxo = {
   txId: '80dd9e9264eb2ffa8a1dcaacf733355453bc6bdebc1fae9152605e21db6af0bc',
   outIndex: 2,
 };
+
+console.log('getting input transaction');
 const inputTx = bitcoin.Transaction.fromHex(
   await rpcClient.command('getrawtransaction', inputUtxo.txId),
 );
 const txFeeSats = 5000;
 
+console.log('creating transaction');
 const tx = new bitcoin.Psbt({ network })
   .addInput({
     hash: inputTx.getHash(),
@@ -97,6 +100,7 @@ const tx = new bitcoin.Psbt({ network })
   .finalizeAllInputs()
   .extractTransaction();
 
+console.log('sending transaction');
 await rpcClient.command('sendrawtransaction', tx.toHex());
 
 console.log(tx.getId());

@@ -348,7 +348,7 @@ describe(encodeVaultSwapData, () => {
     await expect(
       encodeVaultSwapData({
         srcAsset: { asset: 'ETH', chain: 'Ethereum' },
-        destAsset: { asset: 'DOT', chain: 'Polkadot' },
+        destAsset: { asset: 'BTC', chain: 'Bitcoin' },
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
         amount: 175000000n,
         commissionBps: 15,
@@ -366,7 +366,7 @@ describe(encodeVaultSwapData, () => {
           max_oracle_price_slippage: 50,
         },
       }),
-    ).rejects.toThrow('Asset Dot is disabled');
+    ).rejects.toThrow('Asset Btc is disabled');
   });
 });
 

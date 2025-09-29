@@ -63,9 +63,9 @@
   },
   "dependencies": {
     "@chainflip/bitcoin": "^1.2.7",
-    "@chainflip/rpc": "~1.11.0-beta.10",
+    "@chainflip/rpc": "~1.11.0-beta.16",
     "@chainflip/solana": "^2.2.0",
-    "@chainflip/utils": "^0.8.20",
+    "@chainflip/utils": "^0.11.1",
     "@ts-rest/core": "^3.52.1",
     "axios": "^1.10.0",
     "bignumber.js": "^9.3.0",
