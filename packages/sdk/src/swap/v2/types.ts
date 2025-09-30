@@ -85,9 +85,9 @@ type ChunkInfo = {
   executedAt: number | undefined;
   executedBlockIndex: string | undefined;
   retryCount: number;
-  rescheduledAt: number | undefined;
-  rescheduledBlockIndex: string | undefined;
-  rescheduledReason: ChunkFailureReason | undefined;
+  latestSwapRescheduledAt: number | undefined;
+  latestSwapRescheduledBlockIndex: string | undefined;
+  latestSwapRescheduledReason: ChunkFailureReason | undefined;
   abortedAt: number | undefined;
   abortedBlockIndex: string | undefined;
   abortedReason: ChunkFailureReason | undefined;
