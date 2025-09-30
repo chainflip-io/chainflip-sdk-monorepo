@@ -732,7 +732,7 @@ exports[`server > GET /v2/quote > gets the DCA quote with a boost quote and brok
           },
         },
       ],
-      "recommendedLivePriceSlippageTolerancePercent": 1,
+      "recommendedLivePriceSlippageTolerancePercent": 1.1,
       "recommendedRetryDurationMinutes": 15,
       "recommendedSlippageTolerancePercent": 1.5,
       "srcAsset": {
@@ -813,7 +813,7 @@ exports[`server > GET /v2/quote > gets the DCA quote with a boost quote and brok
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 15,
     "recommendedSlippageTolerancePercent": 2,
     "srcAsset": {
@@ -908,7 +908,7 @@ exports[`server > GET /v2/quote > gets the DCA quote with a boost quote and brok
           },
         },
       ],
-      "recommendedLivePriceSlippageTolerancePercent": 1,
+      "recommendedLivePriceSlippageTolerancePercent": 1.1,
       "recommendedRetryDurationMinutes": 15,
       "recommendedSlippageTolerancePercent": 1.5,
       "srcAsset": {
@@ -993,7 +993,7 @@ exports[`server > GET /v2/quote > gets the DCA quote with a boost quote and brok
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 15,
     "recommendedSlippageTolerancePercent": 2,
     "srcAsset": {

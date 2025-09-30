@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { Query } from 'express-serve-static-core';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts.js';
 import { getPipAmountFromAmount, ONE_IN_PIP } from '@/shared/functions.js';
-import { ensure, isNotNullish } from '@/shared/guards.js';
+import { ensure } from '@/shared/guards.js';
 import { getFulfilledResult } from '@/shared/promises.js';
 import {
   quoteQuerySchema,
@@ -360,20 +360,14 @@ export default class QuoteRequest {
       await calculateRecommendedLivePriceSlippage({
         srcAsset: this.srcAsset,
         destAsset: this.destAsset,
+        brokerCommissionBps: this.brokerCommissionBps ?? 0,
       });
-
-    const cappedRecommendedLivePriceSlippageTolerancePercent = isNotNullish(
-      recommendedLivePriceSlippageTolerancePercent,
-    )
-      ? Math.min(recommendedLivePriceSlippageTolerancePercent, recommendedSlippageTolerancePercent)
-      : undefined;
 
     return {
       intermediateAmount: intermediateAmount?.toString(),
       egressAmount: egressAmount.toString(),
       recommendedSlippageTolerancePercent,
-      recommendedLivePriceSlippageTolerancePercent:
-        cappedRecommendedLivePriceSlippageTolerancePercent,
+      recommendedLivePriceSlippageTolerancePercent,
       includedFees: includedFees.map((fee) => ({ ...fee, amount: fee.amount.toString() })),
       lowLiquidityWarning,
       poolInfo,
