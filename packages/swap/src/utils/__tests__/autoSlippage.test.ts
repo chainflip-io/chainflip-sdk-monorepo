@@ -244,6 +244,7 @@ describe(calculateRecommendedLivePriceSlippage, () => {
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Usdc',
       destAsset: 'Usdt',
+      brokerCommissionBps: 0,
     });
     expect(result).toEqual(0.5);
   });
@@ -252,6 +253,7 @@ describe(calculateRecommendedLivePriceSlippage, () => {
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Usdt',
       destAsset: 'Usdc',
+      brokerCommissionBps: 0,
     });
     expect(result).toEqual(0.5);
   });
@@ -260,6 +262,7 @@ describe(calculateRecommendedLivePriceSlippage, () => {
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Eth',
       destAsset: 'Usdc',
+      brokerCommissionBps: 0,
     });
     expect(result).toEqual(1);
   });
@@ -268,6 +271,7 @@ describe(calculateRecommendedLivePriceSlippage, () => {
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Usdt',
       destAsset: 'Eth',
+      brokerCommissionBps: 0,
     });
     expect(result).toEqual(1);
   });
@@ -276,6 +280,7 @@ describe(calculateRecommendedLivePriceSlippage, () => {
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Flip',
       destAsset: 'Usdc',
+      brokerCommissionBps: 0,
     });
     expect(result).toEqual(undefined);
   });
@@ -284,7 +289,35 @@ describe(calculateRecommendedLivePriceSlippage, () => {
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Usdc',
       destAsset: 'Flip',
+      brokerCommissionBps: 0,
     });
     expect(result).toEqual(undefined);
+  });
+
+  it('should return the correct value for stable assets with broker commission', async () => {
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Usdc',
+      destAsset: 'Usdt',
+      brokerCommissionBps: 70,
+    });
+    expect(result).toEqual(0.5 + 0.7);
+  });
+
+  it('should return the correct value for non-stable assets with broker commission', async () => {
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Eth',
+      destAsset: 'Usdc',
+      brokerCommissionBps: 70,
+    });
+    expect(result).toEqual(1 + 0.7);
+  });
+
+  it('rounds the value to 2 decimal places', async () => {
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Usdc',
+      destAsset: 'Eth',
+      brokerCommissionBps: 123,
+    });
+    expect(result).toEqual(2.23);
   });
 });

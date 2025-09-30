@@ -151,15 +151,25 @@ export const calculateRecommendedSlippage = async ({
 export const calculateRecommendedLivePriceSlippage = async ({
   srcAsset,
   destAsset,
+  brokerCommissionBps,
 }: {
   srcAsset: ChainflipAsset;
   destAsset: ChainflipAsset;
+  brokerCommissionBps: number;
 }) => {
+  const NON_STABLE_LIVE_PRICE_SLIPPAGE_BPS = 100;
+  const STABLE_LIVE_PRICE_SLIPPAGE_BPS = 50;
+
   if (
     !priceAssets.includes(chainflipAssetToPriceAssetMap[srcAsset] as PriceAsset) ||
     !priceAssets.includes(chainflipAssetToPriceAssetMap[destAsset] as PriceAsset)
   )
     return undefined;
 
-  return isStableCoin(srcAsset) && isStableCoin(destAsset) ? 0.5 : 1;
+  const slippage =
+    isStableCoin(srcAsset) && isStableCoin(destAsset)
+      ? STABLE_LIVE_PRICE_SLIPPAGE_BPS
+      : NON_STABLE_LIVE_PRICE_SLIPPAGE_BPS;
+
+  return Number(((slippage + brokerCommissionBps) / 100).toFixed(2));
 };
