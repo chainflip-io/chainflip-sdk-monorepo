@@ -100,6 +100,7 @@ export const chainflipAssetToPriceAssetMap: Record<ChainflipAsset, PriceAsset | 
   HubUsdt: null,
 };
 
+// we probably dont need this anymore, but leaving it here for now just to be safe. yeet later
 export const ASSET_BLACKLIST: readonly ChainflipAsset[] = ['Dot'];
 export const envSafeAssetBlacklist = (network: ChainflipNetwork) =>
-  isTestnet(network) ? ASSET_BLACKLIST : [];
+  isTestnet(network) ? ASSET_BLACKLIST : ASSET_BLACKLIST;
