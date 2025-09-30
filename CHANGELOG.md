@@ -18,8 +18,10 @@ which it is deprecated.
   the swap is executed within the tolerance range of the asset's oracle price instead of the pool price.
 - `SwapSDK.prototype.getStatusV2` returns `livePriceExecutionDeltaPercentage` property for the entire swap.
   This value is the average delta between the chainlink oracle price and the execution price across all chunks.
-  `SwapSDK.prototype.getStatusV2` returns `abortedAt`, `abortedBlockIndex` and `abortedReason`
-  when a swap chunk is aborted and `latestSwapRescheduledReason` when a swap chunk is rescheduled
+- `SwapSDK.prototype.getStatusV2` returns `abortedAt`, `abortedBlockIndex` and `abortedReason`
+  when a swap chunk is aborted.
+- `SwapSDK.prototype.getStatusV2` returns `latestSwapRescheduledAt`,`latestSwapRescheduledBlockIndex` and
+  `latestSwapRescheduledReason` when a swap chunk is rescheduled
 
 ### Deprecated
 

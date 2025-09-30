@@ -76,6 +76,11 @@ interface DepositFields {
   failedBlockIndex: string | undefined;
 }
 
+type RescheduledInfo = {
+  latestSwapRescheduledAt: number | undefined;
+  latestSwapRescheduledBlockIndex: string | undefined;
+  latestSwapRescheduledReason: ChunkFailureReason | undefined;
+};
 type ChunkInfo = {
   inputAmount: string;
   intermediateAmount: string | undefined;
@@ -85,13 +90,10 @@ type ChunkInfo = {
   executedAt: number | undefined;
   executedBlockIndex: string | undefined;
   retryCount: number;
-  latestSwapRescheduledAt: number | undefined;
-  latestSwapRescheduledBlockIndex: string | undefined;
-  latestSwapRescheduledReason: ChunkFailureReason | undefined;
   abortedAt: number | undefined;
   abortedBlockIndex: string | undefined;
   abortedReason: ChunkFailureReason | undefined;
-};
+} & RescheduledInfo;
 
 type PickRequired<T> = {
   [K in keyof T as undefined extends T[K] ? never : K]: T[K];
@@ -109,7 +111,7 @@ interface SwapFields {
   dca:
     | {
         lastExecutedChunk: ChunkInfo | null;
-        currentChunk: PickRequired<ChunkInfo> | null;
+        currentChunk: (PickRequired<ChunkInfo> & RescheduledInfo) | null;
         executedChunks: number;
         remainingChunks: number;
       }
