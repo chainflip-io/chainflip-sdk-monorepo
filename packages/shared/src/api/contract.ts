@@ -10,7 +10,7 @@ const c = initContract();
 
 export const apiContract = c.router(
   {
-    /** @deprecated DEPRECATED(1.9): using `networkInfo` now */
+    /** @deprecated DEPRECATED(1.10): using `networkInfo` now */
     networkStatus: {
       method: 'GET',
       path: '/networkStatus',
