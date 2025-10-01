@@ -31,6 +31,7 @@ describe('env', () => {
     const { default: env } = await vi.importActual('../env.js');
     expect(env).toMatchInlineSnapshot(`
       {
+        "APPLY_NETWORK_FEE_WORKAROUND": false,
         "BROKER_COMMISSION_BPS": 0,
         "CHAINFLIP_NETWORK": "mainnet",
         "DCA_100K_USD_PRICE_IMPACT_PERCENT": {
@@ -157,6 +158,7 @@ describe('env', () => {
 
     expect(env).toMatchInlineSnapshot(`
       {
+        "APPLY_NETWORK_FEE_WORKAROUND": false,
         "BROKER_COMMISSION_BPS": 0,
         "CHAINFLIP_NETWORK": "perseverance",
         "DCA_100K_USD_PRICE_IMPACT_PERCENT": {
