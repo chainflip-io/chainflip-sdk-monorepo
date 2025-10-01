@@ -35,7 +35,6 @@ describe(getLpBalances, () => {
             "ArbEth": 6n,
             "ArbUsdc": 7n,
             "Btc": 1n,
-            "Dot": 8n,
             "Eth": 2n,
             "Flip": 3n,
             "HubDot": 11n,

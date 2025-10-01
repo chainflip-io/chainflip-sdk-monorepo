@@ -138,7 +138,9 @@ export const getLpBalances = async <T extends string>(
       const totalBalances = await client.sendRequest('lp_total_balances', id);
 
       const internalAssetMapBalances = Object.fromEntries(
-        chainflipAssets.map((asset) => [asset, readAssetValue(totalBalances, asset)]),
+        chainflipAssets
+          .filter((a) => a !== 'Dot')
+          .map((asset) => [asset, readAssetValue(totalBalances, asset)]),
       ) as InternalAssetMap<bigint>;
 
       return [id, internalAssetMapBalances] as const;
