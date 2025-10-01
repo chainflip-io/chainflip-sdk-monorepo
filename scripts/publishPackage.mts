@@ -142,6 +142,14 @@ const openVersionPR = async () => {
 
 await openVersionPR();
 
+const tagPackage = async () => {
+  const newTag = `${packageJSON.name}/v${newVersion}`;
+  await execCommand(`git tag ${newTag}`);
+  await execCommand(`git push origin refs/tags/${newTag}`);
+};
+
+await tagPackage();
+
 if (isDryRun) {
   console.log('END DRY RUN MODE');
   const rl = createInterface({ input: process.stdin, output: process.stdout });
