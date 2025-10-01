@@ -284,15 +284,16 @@ export default class QuoteRequest {
       // therefore we want to factor in the estimated price change into the quote
       swapRateResult = await this.applyDcaPriceImpact(swapRateResult);
     }
-    const { egressFee, ingressFee, networkFee, egressAmount, intermediateAmount, brokerFee } =
-      swapRateResult;
+    const { egressFee, ingressFee, networkFee, intermediateAmount, brokerFee } = swapRateResult;
 
-    const swapInputAmount = cfRateInputAmount - ingressFee.amount;
-    let swapOutputAmount = egressAmount + egressFee.amount;
+    let { egressAmount } = swapRateResult;
 
     if (env.APPLY_NETWORK_FEE_WORKAROUND) {
-      swapOutputAmount -= getPipAmountFromAmount(swapOutputAmount, 10);
+      egressAmount -= getPipAmountFromAmount(egressAmount, this.isOnChain ? 1 : 10);
     }
+
+    const swapInputAmount = cfRateInputAmount - ingressFee.amount;
+    const swapOutputAmount = egressAmount + egressFee.amount;
 
     if (egressAmount === 0n) {
       if (networkFee.amount === 0n) {
