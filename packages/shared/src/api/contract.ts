@@ -2,7 +2,6 @@ import { initContract } from '@ts-rest/core';
 import { CfParameterEncodingRequestWithBroker } from './encodeCfParameters.js';
 import { EncodedVaultSwapData, EncodeVaultSwapBody } from './encodeVaultSwapData.js';
 import { NetworkInfo } from './networkInfo.js';
-import { NetworkStatus } from './networkStatus.js';
 import { DepositChannelInfo, OpenSwapDepositChannelBody } from './openSwapDepositChannel.js';
 import { hexString } from '../parsers.js';
 
@@ -10,15 +9,6 @@ const c = initContract();
 
 export const apiContract = c.router(
   {
-    /** @deprecated DEPRECATED(1.9): using `networkInfo` now */
-    networkStatus: {
-      method: 'GET',
-      path: '/networkStatus',
-      responses: {
-        200: NetworkStatus,
-      },
-      summary: 'Get information about the Chainflip network',
-    },
     networkInfo: {
       method: 'GET',
       path: '/networkInfo',
