@@ -236,6 +236,9 @@ export default class QuoteRequest {
     const includedFees = [];
     const excludeFees: SwapFeeType[] = [];
     let cfRateInputAmount = this.depositAmount;
+    if (env.APPLY_NETWORK_FEE_WORKAROUND) {
+      excludeFees.push('Network');
+    }
 
     // After this ticket, boost fee should be included in the response so dont have to calculate it ourselves
     // https://linear.app/chainflip/issue/PRO-1370/include-boost-fees-in-quote-from-cf-swap-rate-v2
@@ -285,7 +288,11 @@ export default class QuoteRequest {
       swapRateResult;
 
     const swapInputAmount = cfRateInputAmount - ingressFee.amount;
-    const swapOutputAmount = egressAmount + egressFee.amount;
+    let swapOutputAmount = egressAmount + egressFee.amount;
+
+    if (env.APPLY_NETWORK_FEE_WORKAROUND) {
+      swapOutputAmount -= getPipAmountFromAmount(swapOutputAmount, 10);
+    }
 
     if (egressAmount === 0n) {
       if (networkFee.amount === 0n) {
