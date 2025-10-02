@@ -344,7 +344,7 @@ describe(swapRequested, () => {
     });
   });
 
-  it.only('creates a new swap request (VAULT 11000)', async () => {
+  it('creates a new swap request (VAULT 11000)', async () => {
     await swapRequested({ prisma, event: { ...event, args: vaultBitcoin11000 }, block });
 
     const request = await prisma.swapRequest.findFirstOrThrow({ include: { beneficiaries: true } });
