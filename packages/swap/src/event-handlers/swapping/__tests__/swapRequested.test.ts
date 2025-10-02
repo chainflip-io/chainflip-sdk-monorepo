@@ -41,17 +41,6 @@ const vaultBitcoin11000 = {
   },
   dcaParameters: { chunkInterval: 2, numberOfChunks: 1 },
   swapRequestId: '1',
-  // refundParameters: {
-  //   minPrice: '326183663919595400739649677085384465302843',
-  //   refundDestination: {
-  //     __kind: 'ExternalAddress',
-  //     value: {
-  //       value: '0x6d76426367686f7345506973675338336963696e6a48696735346250635058457761',
-  //       __kind: 'Btc',
-  //     },
-  //   },
-  //   retryDuration: 150,
-  // },
   priceLimitsAndExpiry: {
     minPrice: '326183663919595400739649677085384465302843',
     expiryBehaviour: {
