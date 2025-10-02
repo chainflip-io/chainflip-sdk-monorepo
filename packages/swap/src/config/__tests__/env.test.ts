@@ -46,6 +46,7 @@ describe('env', () => {
         "DISABLE_BOOST_QUOTING": false,
         "DISABLE_DCA_QUOTING": false,
         "DISABLE_QUOTING": false,
+        "DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE": false,
         "FULLY_DISABLED_INTERNAL_ASSETS": Set {
           "HubDot",
           "Dot",
@@ -173,6 +174,7 @@ describe('env', () => {
         "DISABLE_BOOST_QUOTING": false,
         "DISABLE_DCA_QUOTING": false,
         "DISABLE_QUOTING": false,
+        "DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE": false,
         "FULLY_DISABLED_INTERNAL_ASSETS": Set {
           "HubDot",
           "Dot",

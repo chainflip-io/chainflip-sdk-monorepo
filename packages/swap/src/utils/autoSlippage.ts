@@ -157,6 +157,8 @@ export const calculateRecommendedLivePriceSlippage = async ({
   destAsset: ChainflipAsset;
   brokerCommissionBps: number;
 }) => {
+  if (env.DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE) return undefined;
+
   const NON_STABLE_LIVE_PRICE_SLIPPAGE_BPS = 100;
   const STABLE_LIVE_PRICE_SLIPPAGE_BPS = 50;
 

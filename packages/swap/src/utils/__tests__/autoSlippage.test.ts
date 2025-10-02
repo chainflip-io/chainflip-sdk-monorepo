@@ -313,11 +313,22 @@ describe(calculateRecommendedLivePriceSlippage, () => {
   });
 
   it('rounds the value to 2 decimal places', async () => {
+    env.DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE = false;
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Usdc',
       destAsset: 'Eth',
       brokerCommissionBps: 123,
     });
     expect(result).toEqual(2.23);
+  });
+
+  it('returns undefined if DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE is true', async () => {
+    env.DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE = true;
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Usdc',
+      destAsset: 'Eth',
+      brokerCommissionBps: 0,
+    });
+    expect(result).toEqual(undefined);
   });
 });
