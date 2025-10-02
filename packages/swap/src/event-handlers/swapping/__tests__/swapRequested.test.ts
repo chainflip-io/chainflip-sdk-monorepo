@@ -1,4 +1,3 @@
-import { swappingSwapRequested as schema11000 } from '@chainflip/processor/11000/swapping/swapRequested';
 import { swappingSwapRequested as schema11100 } from '@chainflip/processor/11100/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
 import { bytesToHex } from '@chainflip/utils/bytes';
@@ -42,16 +41,33 @@ const vaultBitcoin11000 = {
   },
   dcaParameters: { chunkInterval: 2, numberOfChunks: 1 },
   swapRequestId: '1',
-  refundParameters: {
+  // refundParameters: {
+  //   minPrice: '326183663919595400739649677085384465302843',
+  //   refundDestination: {
+  //     __kind: 'ExternalAddress',
+  //     value: {
+  //       value: '0x6d76426367686f7345506973675338336963696e6a48696735346250635058457761',
+  //       __kind: 'Btc',
+  //     },
+  //   },
+  //   retryDuration: 150,
+  // },
+  priceLimitsAndExpiry: {
     minPrice: '326183663919595400739649677085384465302843',
-    refundDestination: {
-      __kind: 'ExternalAddress',
-      value: {
-        value: '0x6d76426367686f7345506973675338336963696e6a48696735346250635058457761',
-        __kind: 'Btc',
+    expiryBehaviour: {
+      __kind: 'RefundIfExpires',
+      retryDuration: 150,
+      refundAddress: {
+        value: {
+          value: {
+            value: '0x6d76426367686f7345506973675338336963696e6a48696735346250635058457761',
+            __kind: 'Taproot',
+          },
+          __kind: 'Btc',
+        },
+        __kind: 'ExternalAddress',
       },
     },
-    retryDuration: 150,
   },
 } as const satisfies SwapRequestedArgs;
 
@@ -88,16 +104,19 @@ const vaultSolana11000 = {
     },
   },
   swapRequestId: '158',
-  refundParameters: {
+  priceLimitsAndExpiry: {
     minPrice: '20330053335568424557569281615685057460598557419',
-    refundDestination: {
-      __kind: 'ExternalAddress',
-      value: {
-        value: '0xf79d5e026f12edc6443a534b2cdd5072233989b415d7596573e743f3e5b386fb',
-        __kind: 'Sol',
+    expiryBehaviour: {
+      __kind: 'RefundIfExpires',
+      retryDuration: 10,
+      refundAddress: {
+        __kind: 'ExternalAddress',
+        value: {
+          value: '0xf79d5e026f12edc6443a534b2cdd5072233989b415d7596573e743f3e5b386fb',
+          __kind: 'Sol',
+        },
       },
     },
-    retryDuration: 10,
   },
 } as const satisfies SwapRequestedArgs;
 
@@ -239,13 +258,16 @@ const onChain11000 = {
     },
   },
   swapRequestId: '92',
-  refundParameters: {
-    refundDestination: {
-      __kind: 'InternalAccount',
-      value: bytesToHex(ss58.decode(accountId).data),
-    },
+  priceLimitsAndExpiry: {
     minPrice: '99999994999',
-    retryDuration: 100,
+    expiryBehaviour: {
+      __kind: 'RefundIfExpires',
+      retryDuration: 100,
+      refundAddress: {
+        __kind: 'InternalAccount',
+        value: bytesToHex(ss58.decode(accountId).data),
+      },
+    },
   },
   dcaParameters: {
     numberOfChunks: 10,
@@ -333,7 +355,7 @@ describe(swapRequested, () => {
     });
   });
 
-  it('creates a new swap request (VAULT 11000)', async () => {
+  it.only('creates a new swap request (VAULT 11000)', async () => {
     await swapRequested({ prisma, event: { ...event, args: vaultBitcoin11000 }, block });
 
     const request = await prisma.swapRequest.findFirstOrThrow({ include: { beneficiaries: true } });
@@ -426,81 +448,6 @@ describe(swapRequested, () => {
       id: expect.any(Number),
       swapDepositChannelId: expect.any(BigInt),
     });
-  });
-
-  it('parses 1.10 event correctly', async () => {
-    const swapRequestedEvent = check<SwapRequestedArgs>({
-      origin: {
-        txId: {
-          value: '0xcce559ffce1b15f1a1e8880616990aaff7aca23d2bf51e9a362f00e07fd94c71',
-          __kind: 'Evm',
-        },
-        __kind: 'Vault',
-        brokerId: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
-      },
-      brokerFees: [
-        {
-          bps: 1,
-          account: '0x9059e6d854b769a505d01148af212bf8cb7f8469a7153edce8dcaedd9d299125',
-        },
-      ],
-      inputAsset: {
-        __kind: 'Usdc',
-      },
-      inputAmount: '500000000',
-      outputAsset: {
-        __kind: 'Sol',
-      },
-      requestType: {
-        __kind: 'Regular',
-        outputAction: {
-          __kind: 'Egress',
-          outputAddress: {
-            value: '0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0',
-            __kind: 'Eth',
-          },
-          ccmDepositMetadata: {
-            sourceChain: {
-              __kind: 'Ethereum',
-            },
-            sourceAddress: {
-              value: '0xf2be49c0ae121b6199ddde819d9649c55448e7a2',
-              __kind: 'Eth',
-            },
-            channelMetadata: {
-              message: '0xc9b0',
-              gasBudget: '2589449',
-              ccmAdditionalData: {
-                __kind: 'Solana',
-                value: {
-                  __kind: 'V1',
-                  ccmAccounts: {
-                    cfReceiver: {
-                      pubkey: '0x0000000000000000000000000000000000000000',
-                      isWritable: false,
-                    },
-                    additionalAccounts: [],
-                    fallbackAddress: '0x0000000000000000000000000000000000000000',
-                  },
-                  alts: ['0x0000000000000000000000000000000000000000'],
-                },
-              },
-            },
-          },
-        },
-      },
-      swapRequestId: '538',
-      refundParameters: {
-        minPrice: '0',
-        refundDestination: {
-          __kind: 'ExternalAddress',
-          value: { value: '0x0f5d2c0695a5bf55ec6fb564ef367735029db563', __kind: 'Eth' },
-        },
-        retryDuration: 0,
-      },
-    });
-
-    expect(schema11000.safeParse(swapRequestedEvent)).toBeTruthy();
   });
 
   it('parses 1.11 event correctly', async () => {

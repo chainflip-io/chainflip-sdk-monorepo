@@ -8,7 +8,7 @@ exports[`swapRescheduled > increments the retry count 1`] = `
   "intermediateAmount": null,
   "latestSwapRescheduledAt": 2024-08-06T00:00:06.000Z,
   "latestSwapRescheduledBlockIndex": "10-7",
-  "latestSwapRescheduledReason": null,
+  "latestSwapRescheduledReason": "PriceImpactLimit",
   "nativeId": 3n,
   "oraclePriceDeltaBps": null,
   "retryCount": 1,

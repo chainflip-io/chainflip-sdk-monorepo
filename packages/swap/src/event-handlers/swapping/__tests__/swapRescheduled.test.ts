@@ -55,6 +55,9 @@ describe(swapRescheduled, () => {
     const args: SwapRescheduledArgs = {
       swapId: '3',
       executeAt: 100,
+      reason: {
+        __kind: 'PriceImpactLimit',
+      },
     };
 
     await swapRescheduled({

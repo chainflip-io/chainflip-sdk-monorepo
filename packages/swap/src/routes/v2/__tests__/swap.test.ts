@@ -485,13 +485,16 @@ const createOnChainSwapRequestedEvent = (accountId: string) => {
         accountId: decoded,
       },
     },
-    refundParameters: {
-      refundDestination: {
-        __kind: 'InternalAccount',
-        value: decoded,
-      },
+    priceLimitsAndExpiry: {
       minPrice: '99999994999',
-      retryDuration: 100,
+      expiryBehaviour: {
+        __kind: 'RefundIfExpires',
+        retryDuration: 100,
+        refundAddress: {
+          __kind: 'InternalAccount',
+          value: decoded,
+        },
+      },
     },
   };
 
@@ -1278,12 +1281,15 @@ describe('server', () => {
             numberOfChunks: 2,
           },
           swapRequestId: '4',
-          refundParameters: {
+          priceLimitsAndExpiry: {
             minPrice: '0',
-            retryDuration: 100,
-            refundDestination: {
-              value: accountId,
-              __kind: 'InternalAccount',
+            expiryBehaviour: {
+              __kind: 'RefundIfExpires',
+              retryDuration: 100,
+              refundAddress: {
+                value: accountId,
+                __kind: 'InternalAccount',
+              },
             },
           },
         }),
@@ -1419,12 +1425,15 @@ describe('server', () => {
                 },
               },
               swapRequestId: '512007',
-              refundParameters: {
+              priceLimitsAndExpiry: {
                 minPrice: '340452508104398913956756090708731887616',
-                retryDuration: 7,
-                refundDestination: {
-                  value: '0x6613c51de60d54bf947d73d84c9c9d34be19c98ff2132d079ca946ad6d7bfa0b',
-                  __kind: 'InternalAccount',
+                expiryBehaviour: {
+                  __kind: 'RefundIfExpires',
+                  retryDuration: 7,
+                  refundAddress: {
+                    value: '0x6613c51de60d54bf947d73d84c9c9d34be19c98ff2132d079ca946ad6d7bfa0b',
+                    __kind: 'InternalAccount',
+                  },
                 },
               },
             }),
