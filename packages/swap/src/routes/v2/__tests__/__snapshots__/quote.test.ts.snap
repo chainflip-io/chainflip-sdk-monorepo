@@ -733,7 +733,7 @@ exports[`server > GET /v2/quote > gets the DCA quote with a boost quote and brok
         },
       ],
       "recommendedLivePriceSlippageTolerancePercent": 1.1,
-      "recommendedRetryDurationMinutes": 15,
+      "recommendedRetryDurationMinutes": 30,
       "recommendedSlippageTolerancePercent": 1.5,
       "srcAsset": {
         "asset": "BTC",
@@ -814,7 +814,7 @@ exports[`server > GET /v2/quote > gets the DCA quote with a boost quote and brok
       },
     ],
     "recommendedLivePriceSlippageTolerancePercent": 1.1,
-    "recommendedRetryDurationMinutes": 15,
+    "recommendedRetryDurationMinutes": 30,
     "recommendedSlippageTolerancePercent": 2,
     "srcAsset": {
       "asset": "BTC",
@@ -909,7 +909,7 @@ exports[`server > GET /v2/quote > gets the DCA quote with a boost quote and brok
         },
       ],
       "recommendedLivePriceSlippageTolerancePercent": 1.1,
-      "recommendedRetryDurationMinutes": 15,
+      "recommendedRetryDurationMinutes": 30,
       "recommendedSlippageTolerancePercent": 1.5,
       "srcAsset": {
         "asset": "BTC",
@@ -994,7 +994,7 @@ exports[`server > GET /v2/quote > gets the DCA quote with a boost quote and brok
       },
     ],
     "recommendedLivePriceSlippageTolerancePercent": 1.1,
-    "recommendedRetryDurationMinutes": 15,
+    "recommendedRetryDurationMinutes": 30,
     "recommendedSlippageTolerancePercent": 2,
     "srcAsset": {
       "asset": "BTC",
@@ -1207,7 +1207,7 @@ exports[`server > GET /v2/quote > on chain > properly quotes with DCA 1`] = `
       },
     ],
     "recommendedLivePriceSlippageTolerancePercent": 1,
-    "recommendedRetryDurationMinutes": 15,
+    "recommendedRetryDurationMinutes": 30,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
       "asset": "BTC",
