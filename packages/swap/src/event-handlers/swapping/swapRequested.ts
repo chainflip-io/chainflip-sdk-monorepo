@@ -1,4 +1,3 @@
-import { swappingSwapRequested as schema11000 } from '@chainflip/processor/11000/swapping/swapRequested';
 import { swappingSwapRequested as schema11100 } from '@chainflip/processor/11100/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
 import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
@@ -13,20 +12,7 @@ import { Prisma } from '../../client.js';
 import { formatForeignChainAddress } from '../common.js';
 import type { EventHandlerArgs } from '../index.js';
 
-const schema = z.union([
-  schema11100.strict().transform(({ priceLimitsAndExpiry, ...rest }) => ({
-    ...rest,
-    refundParameters: priceLimitsAndExpiry && {
-      v11: priceLimitsAndExpiry,
-    },
-  })),
-  schema11000.strict().transform(({ refundParameters, ...rest }) => ({
-    ...rest,
-    refundParameters: refundParameters && {
-      v10: refundParameters,
-    },
-  })),
-]);
+const schema = schema11100.strict();
 
 type RequestType = z.output<typeof schema>['requestType'];
 type Origin = z.output<typeof schema>['origin'];
@@ -146,57 +132,32 @@ export const getOriginInfo = async (
   return assertNever(origin, `unexpected origin: ${(origin as any).__kind}`);
 };
 
-const extractRefundParameters = (refundParameters: z.output<typeof schema>['refundParameters']) => {
-  if (!refundParameters) return null;
+const extractRefundParameters = (
+  priceLimitsAndExpiry: z.output<typeof schema>['priceLimitsAndExpiry'],
+) => {
+  if (!priceLimitsAndExpiry) return null;
 
   let fokRefundAddress;
-  let fokMinPriceX128;
   let fokRetryDurationBlocks;
-  let fokMaxOraclePriceSlippageBps;
 
-  // 1.11
-  if ('v11' in refundParameters) {
-    fokMinPriceX128 = refundParameters.v11.minPrice.toString();
-    fokMaxOraclePriceSlippageBps = refundParameters.v11.maxOraclePriceSlippage;
-    if (refundParameters.v11.expiryBehaviour.__kind === 'RefundIfExpires') {
-      if (refundParameters.v11.expiryBehaviour.refundAddress.__kind === 'InternalAccount') {
-        fokRefundAddress = refundParameters.v11.expiryBehaviour.refundAddress.value;
-      } else if (refundParameters.v11.expiryBehaviour.refundAddress.__kind === 'ExternalAddress') {
-        fokRefundAddress = formatForeignChainAddress(
-          refundParameters.v11.expiryBehaviour.refundAddress.value,
-        );
-      }
-      fokRetryDurationBlocks = refundParameters.v11.expiryBehaviour.retryDuration;
-    } else if (refundParameters.v11.expiryBehaviour.__kind === 'NoExpiry') {
-      // I think this is part of lending. Do nothing for now.
-    }
-  }
-  // TODO(1.11): remove this once we're live on all environments
-  if ('v10' in refundParameters) {
-    fokMinPriceX128 = refundParameters.v10.minPrice.toString();
-    fokRetryDurationBlocks = refundParameters.v10.retryDuration;
-
-    if (refundParameters.v10.refundDestination.__kind === 'InternalAccount') {
-      fokRefundAddress = refundParameters.v10.refundDestination.value;
-    } else if (refundParameters.v10.refundDestination.__kind === 'ExternalAddress') {
-      fokRefundAddress =
-        'address' in refundParameters.v10.refundDestination.value
-          ? refundParameters.v10.refundDestination.value.address
-          : formatForeignChainAddress(refundParameters.v10.refundDestination.value);
-    } else {
-      return assertNever(
-        refundParameters.v10.refundDestination,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        `unexpected refund destination: ${(refundParameters.v10.refundDestination as any).__kind}`,
+  if (priceLimitsAndExpiry.expiryBehaviour.__kind === 'RefundIfExpires') {
+    if (priceLimitsAndExpiry.expiryBehaviour.refundAddress.__kind === 'InternalAccount') {
+      fokRefundAddress = priceLimitsAndExpiry.expiryBehaviour.refundAddress.value;
+    } else if (priceLimitsAndExpiry.expiryBehaviour.refundAddress.__kind === 'ExternalAddress') {
+      fokRefundAddress = formatForeignChainAddress(
+        priceLimitsAndExpiry.expiryBehaviour.refundAddress.value,
       );
     }
+    fokRetryDurationBlocks = priceLimitsAndExpiry.expiryBehaviour.retryDuration;
+  } else if (priceLimitsAndExpiry.expiryBehaviour.__kind === 'NoExpiry') {
+    // I think this is part of lending. Do nothing for now.
   }
 
   return {
-    fokMinPriceX128,
+    fokMinPriceX128: priceLimitsAndExpiry.minPrice.toString(),
     fokRefundAddress,
     fokRetryDurationBlocks,
-    fokMaxOraclePriceSlippageBps,
+    fokMaxOraclePriceSlippageBps: priceLimitsAndExpiry.maxOraclePriceSlippage,
   };
 };
 
@@ -236,7 +197,7 @@ export default async function swapRequested({
     origin,
     requestType,
     dcaParameters,
-    refundParameters,
+    priceLimitsAndExpiry,
     brokerFees,
   } = schema.parse(event.args);
 
@@ -261,7 +222,7 @@ export default async function swapRequested({
     0,
   );
 
-  const fokParams = extractRefundParameters(refundParameters);
+  const fokParams = extractRefundParameters(priceLimitsAndExpiry);
 
   const swapRequest = await prisma.swapRequest.create({
     data: {

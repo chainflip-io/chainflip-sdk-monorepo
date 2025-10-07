@@ -1,10 +1,8 @@
 import { swappingSwapRescheduled as schema11100 } from '@chainflip/processor/11100/swapping/swapRescheduled';
-import { swappingSwapRescheduled } from '@chainflip/processor/150/swapping/swapRescheduled';
 import { z } from 'zod';
-import { SwapFailureReason } from '../../client.js';
 import type { EventHandlerArgs } from '../index.js';
 
-const schema = z.union([schema11100, swappingSwapRescheduled]);
+const schema = schema11100;
 
 export type SwapRescheduledArgs = z.input<typeof schema>;
 
@@ -13,20 +11,13 @@ export default async function swapRescheduled({
   block,
   event,
 }: EventHandlerArgs): Promise<void> {
-  const { swapId, ...rest } = schema.parse(event.args);
-
-  let rescheduledReason: SwapFailureReason | undefined;
-
-  // TODO(1.11): refactor
-  if ('reason' in rest) {
-    rescheduledReason = rest.reason;
-  }
+  const { swapId, reason } = schema.parse(event.args);
 
   await prisma.swap.update({
     data: {
       latestSwapRescheduledAt: new Date(block.timestamp),
       latestSwapRescheduledBlockIndex: `${block.height}-${event.indexInBlock}`,
-      latestSwapRescheduledReason: rescheduledReason,
+      latestSwapRescheduledReason: reason,
       retryCount: {
         increment: 1,
       },

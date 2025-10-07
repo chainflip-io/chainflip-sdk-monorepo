@@ -116,16 +116,19 @@ describe('solana fallback requested', () => {
             },
           },
           swapRequestId: '484522',
-          refundParameters: {
+          priceLimitsAndExpiry: {
             minPrice: '929439471347296211638784360448',
-            refundDestination: {
-              __kind: 'ExternalAddress',
-              value: {
-                __kind: 'Eth',
-                value: '0x47a7c49be51658119740d2c9b93d1aa858c44d63',
+            expiryBehaviour: {
+              __kind: 'RefundIfExpires',
+              retryDuration: 150,
+              refundAddress: {
+                __kind: 'ExternalAddress',
+                value: {
+                  __kind: 'Eth',
+                  value: '0x47a7c49be51658119740d2c9b93d1aa858c44d63',
+                },
               },
             },
-            retryDuration: 150,
           },
         }),
       },
