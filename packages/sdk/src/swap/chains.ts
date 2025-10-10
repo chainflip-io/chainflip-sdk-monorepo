@@ -5,7 +5,7 @@ import { isNotNullish } from '@/shared/guards.js';
 import { Environment } from '@/shared/rpc/index.js';
 
 export const getChainData = (
-  chain: ChainflipChain,
+  chain: Exclude<ChainflipChain, 'Polkadot'>,
   network: ChainflipNetwork,
   env: Pick<Environment, 'ingressEgress' | 'swapping'>,
 ) => ({
