@@ -62,6 +62,7 @@ export const handleQuotingError = (res: express.Response, err: unknown) => {
   if (
     message.includes('InsufficientLiquidity') ||
     message.includes('Swap leg failed') ||
+    message.includes('Failed to calculate network fee') ||
     message.includes('-32603')
   ) {
     throw ServiceError.badRequest('insufficient liquidity for requested amount');
