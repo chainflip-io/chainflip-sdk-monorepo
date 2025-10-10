@@ -192,6 +192,7 @@ export class SwapSDK {
     ]);
 
     return supportedAssets
+      .filter((asset) => asset !== 'Dot')
       .map((asset) => getAssetData(asset, this.options.network, env))
       .filter((asset) => !chain || asset.chain === chain);
   }

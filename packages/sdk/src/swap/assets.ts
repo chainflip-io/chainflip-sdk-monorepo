@@ -43,7 +43,7 @@ const assetNames: Record<ChainflipAsset, string> = {
 };
 
 export const getAssetData = (
-  asset: ChainflipAsset,
+  asset: Exclude<ChainflipAsset, 'Dot'>,
   network: ChainflipNetwork,
   env: Pick<Environment, 'swapping' | 'ingressEgress'>,
 ) => {

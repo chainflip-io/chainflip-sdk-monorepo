@@ -66,5 +66,5 @@ export type BoostPoolDepth = {
   feeTierBps: number;
   availableAmount: bigint;
   asset: AssetSymbol;
-  chain: ChainflipChain;
+  chain: Exclude<ChainflipChain, 'Polkadot'>;
 };
