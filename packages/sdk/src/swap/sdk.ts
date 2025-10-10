@@ -142,6 +142,7 @@ export class SwapSDK {
     if (sourceChain && !supportedChains.has(sourceChain)) return [];
 
     return [...supportedChains]
+      .filter((chain) => chain !== 'Polkadot')
       .map((chain) => getChainData(chain, this.options.network, env))
       .filter((chain) => chain.chain !== sourceChain);
   }

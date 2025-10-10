@@ -7,7 +7,7 @@ import {
 import { AffiliateBroker, Quote, FillOrKillParamsWithMinPrice } from '@/shared/schemas.js';
 
 export interface ChainData {
-  chain: ChainflipChain;
+  chain: Exclude<ChainflipChain, 'Polkadot'>;
   name: string;
   evmChainId: number | undefined;
   isMainnet: boolean;
