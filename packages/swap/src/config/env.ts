@@ -158,7 +158,6 @@ export default z
     QUOTER_USE_DCA_LIMIT_ORDERS: optionalBoolean.default('true'),
     BROKER_COMMISSION_BPS: optionalNumber(0),
     RPC_COMMISSION_BROKER_HTTPS_URL: httpUrl.optional(),
-    APPLY_NETWORK_FEE_WORKAROUND: optionalBoolean,
     DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE: optionalBoolean,
   })
   // eslint-disable-next-line n/no-process-env
