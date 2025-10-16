@@ -414,11 +414,18 @@ model State {
 }
 
 model MarketMaker {
-  id         Int         @id @default(autoincrement())
-  name       String      @unique
-  publicKey  String
-  beta       Boolean     @default(false)
-  mevFactors MevFactor[]
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  publicKey String
+  beta      Boolean  @default(false)
+  factors   Factor[]
+
+  @@schema("private")
+}
+
+enum FactorType {
+  MEV
+  REPLENISHMENT
 
   @@schema("private")
 }
@@ -430,15 +437,16 @@ enum Side {
   @@schema("private")
 }
 
-model MevFactor {
+model Factor {
   id            Int           @id @default(autoincrement())
   marketMaker   MarketMaker   @relation(fields: [marketMakerId], references: [id])
   marketMakerId Int
+  type          FactorType
   asset         InternalAsset
-  side          Side
-  factor        Int
+  side          Side?
+  factor        Float
 
-  @@unique([marketMakerId, asset, side])
+  @@unique([marketMakerId, type, asset, side])
   @@schema("private")
 }
 

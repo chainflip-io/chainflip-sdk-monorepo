@@ -1,4 +1,6 @@
 /* eslint-disable max-classes-per-file */
+import { ChainflipAsset, chainflipAssets, InternalAssetMap } from '@chainflip/utils/chainflip';
+
 class Timer<T> {
   timeout?: ReturnType<typeof setTimeout>;
 
@@ -135,4 +137,18 @@ export class MultiCache<T extends FetchMap> {
     }
     return cached.value;
   }
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+const isFunction = (value: unknown): value is Function =>
+  typeof value === 'function' && value.constructor === Function;
+
+export function createInternalAssetMap<T>(value: T): InternalAssetMap<T>;
+export function createInternalAssetMap<T>(cb: (asset: ChainflipAsset) => T): InternalAssetMap<T>;
+export function createInternalAssetMap<T>(value: T | ((asset: ChainflipAsset) => T)) {
+  return Object.fromEntries(
+    chainflipAssets
+      .filter((a) => a !== 'Dot')
+      .map((asset) => [asset, isFunction(value) ? value(asset) : structuredClone(value)] as const),
+  ) as InternalAssetMap<T>;
 }

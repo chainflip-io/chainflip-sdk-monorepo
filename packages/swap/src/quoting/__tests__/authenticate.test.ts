@@ -155,9 +155,9 @@ describe(authenticate, () => {
     { beta: false, useMevFactor: true },
   ] as const;
 
-  const mevFactorOptions: Prisma.MevFactorCreateManyMarketMakerInput[] = [
-    { asset: 'Flip', factor: 1, side: 'SELL' },
-    { asset: 'Flip', factor: -1, side: 'BUY' },
+  const mevFactorOptions: Prisma.FactorCreateManyMarketMakerInput[] = [
+    { asset: 'Flip', factor: 1, side: 'SELL', type: 'MEV' },
+    { asset: 'Flip', factor: -1, side: 'BUY', type: 'MEV' },
   ];
 
   it.each(marketMakerDataOptions.map((opts) => ({ ...opts, mevFactors: mevFactorOptions })))(
@@ -169,7 +169,7 @@ describe(authenticate, () => {
 
       await prisma.marketMaker.update({
         where: { name },
-        data: { ...data, mevFactors: { createMany: { data: mevFactors } } },
+        data: { ...data, factors: { createMany: { data: mevFactors } } },
       });
 
       const signature = crypto
