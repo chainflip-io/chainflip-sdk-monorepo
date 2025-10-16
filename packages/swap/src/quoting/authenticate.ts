@@ -25,13 +25,15 @@ function assert(condition: unknown, message: string): asserts condition {
   }
 }
 
-const mapAssets = (quotedAssets: ChainflipAsset[] | null): InternalAssetMap<boolean> => {
+const mapAssets = (
+  quotedAssets: Exclude<ChainflipAsset, 'Dot'>[] | null,
+): InternalAssetMap<boolean> => {
   assert(quotedAssets === null || quotedAssets.length !== 0, 'no assets quoted');
 
   const map = createInternalAssetMap(false);
 
   quotedAssets?.forEach((asset) => {
-    if (asset !== 'Dot') map[asset] = true;
+    map[asset] = true;
   });
 
   return map;
@@ -44,7 +46,7 @@ const authSchema = z.object({
   signature: z.string(),
   quoted_assets: z
     .array(assetAndChain.transform(getInternalAsset))
-    .transform((assets) => mapAssets(assets.filter(isNotNullish))),
+    .transform((assets) => mapAssets(assets.filter(isNotNullish).filter((a) => a !== 'Dot'))),
 });
 
 const parseKey = (key: string) => {
@@ -127,7 +129,7 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
             if (auth.quoted_assets[factor.asset]) {
               acc[factor.asset] = factor.factor;
             } else {
-              logger.warn('replenishment factor set for unquoted asset', {
+              logger.warn('attempted to set replenishment factor for unquoted asset', {
                 asset: factor.asset,
                 marketMaker: marketMaker.name,
               });
