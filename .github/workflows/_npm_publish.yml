@@ -86,7 +86,7 @@ jobs:
       - name: Import SSH key 🔑
         uses: webfactory/ssh-agent@v0.9.0
         with:
-            ssh-private-key: ${{ secrets.CF_GITHUB_BOT_SSH_PRIVATE_KEY }}
+            ssh-private-key: ${{ secrets.ssh_private_key }}
       - name: Config Git 🛠
         shell: bash
         run: |
