@@ -1623,32 +1623,7 @@ describe('server', () => {
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
 
       expect(status).toBe(200);
-      expect(body).toStrictEqual([
-        {
-          egressAmount: '100000000',
-          recommendedSlippageTolerancePercent: 1,
-          includedFees: [
-            { type: 'INGRESS', chain: 'Ethereum', asset: 'ETH', amount: '25000' },
-            { type: 'NETWORK', chain: 'Ethereum', asset: 'USDC', amount: '100100' },
-            { type: 'EGRESS', chain: 'Ethereum', asset: 'USDC', amount: '8000' },
-          ],
-          poolInfo: [
-            {
-              baseAsset: { chain: 'Ethereum', asset: 'ETH' },
-              quoteAsset: { chain: 'Ethereum', asset: 'USDC' },
-              fee: { chain: 'Ethereum', asset: 'ETH', amount: '0' },
-            },
-          ],
-          estimatedDurationsSeconds: { deposit: 30, swap: 48, egress: 102 },
-          estimatedDurationSeconds: 180,
-          estimatedPrice: '100.0080000000025002',
-          type: 'DCA',
-          srcAsset: { chain: 'Ethereum', asset: 'ETH' },
-          destAsset: { chain: 'Ethereum', asset: 'USDC' },
-          depositAmount: '1000000000000000000',
-          dcaParams: { numberOfChunks: 4, chunkIntervalBlocks: 2 },
-        },
-      ]);
+      expect(body).toMatchSnapshot();
     });
 
     it('gets the DCA quote with a boost quote and broker fees', async () => {

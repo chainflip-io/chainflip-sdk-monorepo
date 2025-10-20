@@ -99,7 +99,7 @@ describe(Quoter, () => {
                   ),
                   ...Object.keys(replenishmentFactors ?? {}).map((asset) => ({
                     asset: asset as InternalAsset,
-                    factor: replenishmentFactors![asset as InternalAsset] as number,
+                    factor: replenishmentFactors![asset as Exclude<InternalAsset, 'Dot'>] as number,
                     type: 'REPLENISHMENT' as const,
                   })),
                 ],
@@ -577,11 +577,13 @@ describe(Quoter, () => {
       });
       expect(quoter.getReplenishmentFactor('Btc')).toStrictEqual([3n, 2n]);
       // ignores non-quoted assets
-      chainflipAssets.forEach((asset) => {
-        if (asset !== 'Btc') {
-          expect(quoter.getReplenishmentFactor(asset)).toStrictEqual([1n, 1n]);
-        }
-      });
+      chainflipAssets
+        .filter((a) => a !== 'Dot')
+        .forEach((asset) => {
+          if (asset !== 'Btc') {
+            expect(quoter.getReplenishmentFactor(asset)).toStrictEqual([1n, 1n]);
+          }
+        });
       await connectClient({
         name: 'marketMaker1',
         quotedAssets: ['Btc', 'Flip'],
@@ -590,11 +592,13 @@ describe(Quoter, () => {
       // 1.5 + 2.82
       expect(quoter.getReplenishmentFactor('Btc')).toStrictEqual([108n, 25n]);
       expect(quoter.getReplenishmentFactor('Flip')).toStrictEqual([10n, 1n]);
-      chainflipAssets.forEach((asset) => {
-        if (asset !== 'Btc' && asset !== 'Flip') {
-          expect(quoter.getReplenishmentFactor(asset)).toStrictEqual([1n, 1n]);
-        }
-      });
+      chainflipAssets
+        .filter((a) => a !== 'Dot')
+        .forEach((asset) => {
+          if (asset !== 'Btc' && asset !== 'Flip') {
+            expect(quoter.getReplenishmentFactor(asset)).toStrictEqual([1n, 1n]);
+          }
+        });
     });
 
     it('ignores replenishment factors < 0', async () => {

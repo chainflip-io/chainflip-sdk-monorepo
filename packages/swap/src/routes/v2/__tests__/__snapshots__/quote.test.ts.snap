@@ -1357,6 +1357,75 @@ exports[`server > GET /v2/quote > returns DCA quote if regular does not pass tot
 ]
 `;
 
+exports[`server > GET /v2/quote > returns a DCA quote with replenishment 1`] = `
+[
+  {
+    "dcaParams": {
+      "chunkIntervalBlocks": 2,
+      "numberOfChunks": 4,
+    },
+    "depositAmount": "1000000000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "100000000",
+    "estimatedDurationSeconds": 168,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 96,
+      "swap": 48,
+    },
+    "estimatedPrice": "100.0080000000025002",
+    "includedFees": [
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "8000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedRetryDurationMinutes": 5,
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "type": "DCA",
+  },
+]
+`;
+
 exports[`server > GET /v2/quote > returns regular quote if DCA does not pass totalLiquidity check 1`] = `
 [
   {
