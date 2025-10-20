@@ -369,7 +369,7 @@ export default class Quoter {
     });
   }
 
-  getReplenishmentFactor(sellAsset: ChainflipAsset): [bigint, bigint] {
+  getReplenishmentFactor(sellAsset: Exclude<ChainflipAsset, 'Dot'>): [bigint, bigint] {
     return this.replenishmentFactors[sellAsset];
   }
 }
