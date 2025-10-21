@@ -2,6 +2,7 @@ import {
   getInternalAssets,
   UncheckedAssetAndChain,
   AssetAndChain,
+  ChainflipAsset,
 } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { z } from 'zod';
@@ -120,8 +121,8 @@ export const quoteQuerySchema = z
         : undefined;
 
     return {
-      srcAsset: srcAsset!,
-      destAsset: destAsset!,
+      srcAsset: srcAsset as Exclude<ChainflipAsset, 'Dot'>,
+      destAsset: destAsset as Exclude<ChainflipAsset, 'Dot'>,
       amount: args.amount,
       brokerCommissionBps: args.brokerCommissionBps,
       ccmParams,
@@ -209,8 +210,8 @@ export type PaidFee = SwapFee | PoolFee;
 export type QuoteType = 'REGULAR' | 'DCA';
 
 export type PoolInfo = {
-  baseAsset: AssetAndChain;
-  quoteAsset: AssetAndChain;
+  baseAsset: Exclude<AssetAndChain, { chain: 'Polkadot' }>;
+  quoteAsset: Exclude<AssetAndChain, { chain: 'Polkadot' }>;
   fee: Omit<PoolFee, 'type'>;
 };
 
@@ -220,8 +221,8 @@ export type BoostedQuoteDetails = {
 };
 
 interface BaseQuoteDetails {
-  srcAsset: AssetAndChain;
-  destAsset: AssetAndChain;
+  srcAsset: Exclude<AssetAndChain, { chain: 'Polkadot' }>;
+  destAsset: Exclude<AssetAndChain, { chain: 'Polkadot' }>;
   isVaultSwap: boolean;
   isOnChain: boolean;
   ccmParams?: {

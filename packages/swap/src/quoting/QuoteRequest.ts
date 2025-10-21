@@ -78,10 +78,6 @@ export default class QuoteRequest {
       throw ServiceError.badRequest(amountResult.reason);
     }
 
-    if (parsedQuery.isVaultSwap && assetConstants[parsedQuery.srcAsset].chain === 'Polkadot') {
-      throw ServiceError.badRequest(`Polkadot does not support vault swaps`);
-    }
-
     const ingressFee = (await getIngressFee(srcAsset)) ?? 0n; // when the protocol can't estimate the fee, that means they won't charge one so we fallback to 0
 
     if (ingressFee > amount) {
@@ -100,8 +96,8 @@ export default class QuoteRequest {
     return new QuoteRequest(quoter, { pools, ...queryResult.data });
   }
 
-  private readonly srcAsset: InternalAsset;
-  private readonly destAsset: InternalAsset;
+  private readonly srcAsset: Exclude<InternalAsset, 'Dot'>;
+  private readonly destAsset: Exclude<InternalAsset, 'Dot'>;
   private readonly depositAmount: bigint;
   private readonly dcaEnabled: boolean;
   private readonly isVaultSwap: boolean;
@@ -390,8 +386,8 @@ export default class QuoteRequest {
   }
 
   private async getTotalLiquidity(
-    from: InternalAsset,
-    to: InternalAsset,
+    from: Exclude<InternalAsset, 'Dot'>,
+    to: Exclude<InternalAsset, 'Dot'>,
     type: Quote['type'],
   ): Promise<bigint> {
     assert(from === 'Usdc' || to === 'Usdc', 'one asset must be USDC');
