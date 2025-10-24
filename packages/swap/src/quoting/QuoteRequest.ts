@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 import { assetConstants, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
+import assert from 'assert';
 import BigNumber from 'bignumber.js';
 import { Query } from 'express-serve-static-core';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts.js';
@@ -77,10 +78,6 @@ export default class QuoteRequest {
       throw ServiceError.badRequest(amountResult.reason);
     }
 
-    if (parsedQuery.isVaultSwap && assetConstants[parsedQuery.srcAsset].chain === 'Polkadot') {
-      throw ServiceError.badRequest(`Polkadot does not support vault swaps`);
-    }
-
     const ingressFee = (await getIngressFee(srcAsset)) ?? 0n; // when the protocol can't estimate the fee, that means they won't charge one so we fallback to 0
 
     if (ingressFee > amount) {
@@ -99,8 +96,8 @@ export default class QuoteRequest {
     return new QuoteRequest(quoter, { pools, ...queryResult.data });
   }
 
-  private readonly srcAsset: InternalAsset;
-  private readonly destAsset: InternalAsset;
+  private readonly srcAsset: Exclude<InternalAsset, 'Dot'>;
+  private readonly destAsset: Exclude<InternalAsset, 'Dot'>;
   private readonly depositAmount: bigint;
   private readonly dcaEnabled: boolean;
   private readonly isVaultSwap: boolean;
@@ -388,20 +385,33 @@ export default class QuoteRequest {
     } as Quote;
   }
 
+  private async getTotalLiquidity(
+    from: Exclude<InternalAsset, 'Dot'>,
+    to: Exclude<InternalAsset, 'Dot'>,
+    type: Quote['type'],
+  ): Promise<bigint> {
+    assert(from === 'Usdc' || to === 'Usdc', 'one asset must be USDC');
+    if (from === 'Usdc' && to === 'Usdc') return 0n;
+    const liquidty = await getTotalLiquidity(from, to);
+    if (type === 'REGULAR') return liquidty;
+    const [numerator, denominator] = this.quoter.getReplenishmentFactor(to);
+    return (liquidty * numerator) / denominator;
+  }
+
   private async eagerLiquidityExists(
     quote: Pick<Quote, 'egressAmount' | 'intermediateAmount' | 'type'>,
   ) {
     if (this.srcAsset === 'Usdc' || this.destAsset === 'Usdc') {
-      const totalLiquidity = await getTotalLiquidity(
+      const totalLiquidity = await this.getTotalLiquidity(
         this.srcAsset,
         this.destAsset,
-        quote.type === 'DCA',
+        quote.type,
       );
       return totalLiquidity > BigInt(quote.egressAmount);
     }
     const [totalLiquidityLeg1, totalLiquidityLeg2] = await Promise.all([
-      getTotalLiquidity(this.srcAsset, 'Usdc', quote.type === 'DCA'),
-      getTotalLiquidity('Usdc', this.destAsset, quote.type === 'DCA'),
+      this.getTotalLiquidity(this.srcAsset, 'Usdc', quote.type),
+      this.getTotalLiquidity('Usdc', this.destAsset, quote.type),
     ]);
     return (
       totalLiquidityLeg1 > BigInt(quote.intermediateAmount!) &&
@@ -550,7 +560,7 @@ export default class QuoteRequest {
     return result;
   }
 
-  tryGenerateQuotes() {
+  tryGenerateQuotes(): Promise<PromiseSettledResult<Quote[]>> {
     return this.generateQuotes().then(
       (qs) => {
         this.success = true;

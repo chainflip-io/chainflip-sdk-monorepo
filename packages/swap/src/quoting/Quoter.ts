@@ -11,6 +11,7 @@ import BigNumber from 'bignumber.js';
 import { randomUUID } from 'crypto';
 import { Subject, Subscription } from 'rxjs';
 import { Server, Socket } from 'socket.io';
+import { createInternalAssetMap } from '@/shared/dataStructures.js';
 import { isStableCoin } from '@/shared/guards.js';
 import BalanceTracker from './BalanceTracker.js';
 import Leg from './Leg.js';
@@ -77,9 +78,10 @@ export type SocketData = {
   clientVersion: ClientVersion;
   beta: boolean;
   mevFactors: {
-    buy: Partial<InternalAssetMap<number>>;
-    sell: Partial<InternalAssetMap<number>>;
+    buy: InternalAssetMap<number>;
+    sell: InternalAssetMap<number>;
   };
+  replenishmentFactors: Partial<InternalAssetMap<number>>;
 };
 export type ReceivedEventMap = { quote_response: (message: unknown) => void };
 export type SentEventMap = {
@@ -100,6 +102,8 @@ export default class Quoter {
 
   private accountIdToSocket = new Map<AccountId, QuotingSocket>();
 
+  private replenishmentFactors = createInternalAssetMap([1n, 1n] as [bigint, bigint]);
+
   constructor(
     private readonly io: QuotingServer,
     private createId: () => string = randomUUID,
@@ -114,6 +118,7 @@ export default class Quoter {
       logger.info('market maker connected', { marketMaker: socket.data.marketMaker });
       this.balanceTracker.add(socket.data.marketMaker);
       this.accountIdToSocket.set(socket.data.marketMaker, socket);
+      this.updateReplenishmentFactors();
 
       const cleanup = handleExit(() => {
         socket.disconnect();
@@ -123,6 +128,7 @@ export default class Quoter {
         logger.info('market maker disconnected', { marketMaker: socket.data.marketMaker });
         this.balanceTracker.remove(socket.data.marketMaker);
         this.accountIdToSocket.delete(socket.data.marketMaker);
+        this.updateReplenishmentFactors();
         cleanup();
       });
 
@@ -348,5 +354,22 @@ export default class Quoter {
     });
 
     return orders;
+  }
+
+  private updateReplenishmentFactors() {
+    this.replenishmentFactors = createInternalAssetMap((asset) => {
+      const factor = this.accountIdToSocket
+        .values()
+        .reduce(
+          (acc, socket) => acc.plus(socket.data.replenishmentFactors[asset] ?? 0),
+          new BigNumber(0),
+        );
+      const [num, denom] = BigNumber.max(factor, 1).toFraction();
+      return [BigInt(num.toNumber()), BigInt(denom.toNumber())];
+    });
+  }
+
+  getReplenishmentFactor(sellAsset: Exclude<ChainflipAsset, 'Dot'>): [bigint, bigint] {
+    return this.replenishmentFactors[sellAsset];
   }
 }

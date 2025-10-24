@@ -1,15 +1,11 @@
-import { afterEach, describe, it, beforeAll, expect, vi } from 'vitest';
+import { describe, it, beforeAll, expect, vi } from 'vitest';
 import prisma from '../../client.js';
-import env from '../../config/env.js';
-import { getPools, getTotalLiquidity } from '../pools.js';
-import { getPoolDepth } from '../rpc.js';
+import { getPools } from '../pools.js';
 
 vi.mock('../rpc.js');
 vi.mock('../lp.js', () => ({
   getLpAccounts: vi.fn().mockResolvedValue([]),
 }));
-
-const oldEnv = structuredClone(env);
 
 describe(getPools, () => {
   beforeAll(async () => {
@@ -62,33 +58,5 @@ describe(getPools, () => {
       baseAsset: 'Flip',
       quoteAsset: 'Usdc',
     });
-  });
-});
-
-describe(getTotalLiquidity, () => {
-  afterEach(() => {
-    Object.assign(env, oldEnv);
-  });
-
-  it('returns liquidity with the replenishment factor', async () => {
-    vi.mocked(getPoolDepth).mockResolvedValueOnce({
-      baseLiquidityAmount: BigInt(100e6),
-      quoteLiquidityAmount: BigInt(100e6),
-    });
-    env.QUOTING_REPLENISHMENT_FACTOR.Usdt = [234n, 100n];
-
-    expect(await getTotalLiquidity('Usdc', 'Usdt', true)).toEqual(BigInt(234e6));
-    expect(await getTotalLiquidity('Usdt', 'Usdc', true)).toEqual(BigInt(100e6));
-  });
-
-  it('returns liquidity without the replenishment factor', async () => {
-    vi.mocked(getPoolDepth).mockResolvedValueOnce({
-      baseLiquidityAmount: BigInt(100e6),
-      quoteLiquidityAmount: BigInt(100e6),
-    });
-    env.QUOTING_REPLENISHMENT_FACTOR.Usdt = [234n, 100n];
-
-    expect(await getTotalLiquidity('Usdc', 'Usdt', false)).toEqual(BigInt(100e6));
-    expect(await getTotalLiquidity('Usdt', 'Usdc', true)).toEqual(BigInt(100e6));
   });
 });
