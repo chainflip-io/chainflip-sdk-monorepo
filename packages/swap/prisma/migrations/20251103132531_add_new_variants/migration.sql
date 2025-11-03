@@ -1,5 +1,5 @@
 -- AlterEnum
-ALTER TYPE "public"."FailedSwapReason" ADD VALUE 'Unknown';
+ALTER TYPE "public"."FailedSwapReason" ADD VALUE 'Unrefundable';
 
 -- AlterEnum
 -- This migration adds more than one value to an enum.

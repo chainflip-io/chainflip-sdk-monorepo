@@ -77,7 +77,7 @@ const reasonMap: Record<FailureReason, FailedSwapReason> = {
   DepositWitnessRejected: 'DepositWitnessRejected',
   NotEnoughToPayFees: 'NotEnoughToPayFees',
   TransactionRejectedByBroker: 'TransactionRejectedByBroker',
-  Unrefundable: 'Unknown',
+  Unrefundable: 'Unrefundable',
 };
 
 const depositFailed =

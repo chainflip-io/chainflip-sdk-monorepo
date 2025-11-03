@@ -293,7 +293,7 @@ enum FailedSwapReason {
   InvalidRefundParameters
   CcmUnsupportedForTargetChain
   CcmInvalidMetadata
-  Unknown
+  Unrefundable
 
   @@schema("public")
 }

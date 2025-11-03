@@ -177,7 +177,7 @@ export const depositFinalised =
           depositAmount: amount.toString(),
           srcAsset: asset,
           srcChain: chain,
-          reason: 'Unknown',
+          reason: 'Unrefundable',
           failedAt: new Date(block.timestamp),
           failedBlockIndex: `${block.height}-${event.indexInBlock}`,
           depositTransactionRef: txRef,
