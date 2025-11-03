@@ -293,6 +293,7 @@ enum FailedSwapReason {
   InvalidRefundParameters
   CcmUnsupportedForTargetChain
   CcmInvalidMetadata
+  Unknown
 
   @@schema("public")
 }
@@ -579,6 +580,8 @@ enum SwapFailureReason {
   OraclePriceStale
   PredecessorSwapFailure
   SafeModeActive
+  AbortedFromOrigin
+  LogicError
 
   @@schema("public")
 }

@@ -1,9 +1,9 @@
-import { arbitrumIngressEgressDepositBoosted as arbitrumSchema190 } from '@chainflip/processor/190/arbitrumIngressEgress/depositBoosted';
-import { assethubIngressEgressDepositBoosted as assethubSchema190 } from '@chainflip/processor/190/assethubIngressEgress/depositBoosted';
-import { bitcoinIngressEgressDepositBoosted as bitcoinSchema190 } from '@chainflip/processor/190/bitcoinIngressEgress/depositBoosted';
-import { ethereumIngressEgressDepositBoosted as ethereumSchema190 } from '@chainflip/processor/190/ethereumIngressEgress/depositBoosted';
-import { polkadotIngressEgressDepositBoosted as polkadotSchema190 } from '@chainflip/processor/190/polkadotIngressEgress/depositBoosted';
-import { solanaIngressEgressDepositBoosted as solanaSchema190 } from '@chainflip/processor/190/solanaIngressEgress/depositBoosted';
+import { arbitrumIngressEgressDepositBoosted as arbitrumSchema11200 } from '@chainflip/processor/11200/arbitrumIngressEgress/depositBoosted';
+import { assethubIngressEgressDepositBoosted as assethubSchema11200 } from '@chainflip/processor/11200/assethubIngressEgress/depositBoosted';
+import { bitcoinIngressEgressDepositBoosted as bitcoinSchema11200 } from '@chainflip/processor/11200/bitcoinIngressEgress/depositBoosted';
+import { ethereumIngressEgressDepositBoosted as ethereumSchema11200 } from '@chainflip/processor/11200/ethereumIngressEgress/depositBoosted';
+import { polkadotIngressEgressDepositBoosted as polkadotSchema11200 } from '@chainflip/processor/11200/polkadotIngressEgress/depositBoosted';
+import { solanaIngressEgressDepositBoosted as solanaSchema11200 } from '@chainflip/processor/11200/solanaIngressEgress/depositBoosted';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { ONE_IN_PIP } from '@/shared/functions.js';
@@ -11,27 +11,27 @@ import { Prisma, SwapFeeType } from '../../client.js';
 import { getDepositTxRef } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
 
-const arbitrumSchema = arbitrumSchema190.transform((args) => ({
+const arbitrumSchema = arbitrumSchema11200.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Arbitrum' as const, data: args.depositDetails },
 }));
-const bitcoinSchema = bitcoinSchema190.transform((args) => ({
+const bitcoinSchema = bitcoinSchema11200.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Bitcoin' as const, data: args.depositDetails },
 }));
-const ethereumSchema = ethereumSchema190.transform((args) => ({
+const ethereumSchema = ethereumSchema11200.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Ethereum' as const, data: args.depositDetails },
 }));
-const polkadotSchema = polkadotSchema190.transform((args) => ({
+const polkadotSchema = polkadotSchema11200.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Polkadot' as const, data: args.depositDetails },
 }));
-const solanaSchema = solanaSchema190.transform((args) => ({
+const solanaSchema = solanaSchema11200.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Solana' as const, data: undefined },
 }));
-const assethubSchema = assethubSchema190.transform((args) => ({
+const assethubSchema = assethubSchema11200.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Assethub' as const, data: args.depositDetails },
 }));

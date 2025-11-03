@@ -1,48 +1,48 @@
-import { arbitrumIngressEgressDepositFinalised as arbitrumSchema190 } from '@chainflip/processor/190/arbitrumIngressEgress/depositFinalised';
-import { assethubIngressEgressDepositFinalised as assethubSchema190 } from '@chainflip/processor/190/assethubIngressEgress/depositFinalised';
-import { bitcoinIngressEgressDepositFinalised as bitcoinSchema190 } from '@chainflip/processor/190/bitcoinIngressEgress/depositFinalised';
-import { ethereumIngressEgressDepositFinalised as ethereumSchema190 } from '@chainflip/processor/190/ethereumIngressEgress/depositFinalised';
-import { polkadotIngressEgressDepositFinalised as polkadotSchema190 } from '@chainflip/processor/190/polkadotIngressEgress/depositFinalised';
-import { solanaIngressEgressDepositFinalised as solanaSchema190 } from '@chainflip/processor/190/solanaIngressEgress/depositFinalised';
+import { arbitrumIngressEgressDepositFinalised as arbitrumSchema11200 } from '@chainflip/processor/11200/arbitrumIngressEgress/depositFinalised';
+import { assethubIngressEgressDepositFinalised as assethubSchema11200 } from '@chainflip/processor/11200/assethubIngressEgress/depositFinalised';
+import { bitcoinIngressEgressDepositFinalised as bitcoinSchema11200 } from '@chainflip/processor/11200/bitcoinIngressEgress/depositFinalised';
+import { ethereumIngressEgressDepositFinalised as ethereumSchema11200 } from '@chainflip/processor/11200/ethereumIngressEgress/depositFinalised';
+import { polkadotIngressEgressDepositFinalised as polkadotSchema11200 } from '@chainflip/processor/11200/polkadotIngressEgress/depositFinalised';
+import { solanaIngressEgressDepositFinalised as solanaSchema11200 } from '@chainflip/processor/11200/solanaIngressEgress/depositFinalised';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import z from 'zod';
 import { assertUnreachable } from '@/shared/functions.js';
-import { assert } from '@/shared/guards.js';
+import { assert, isNotNullish } from '@/shared/guards.js';
 import logger from '../../utils/logger.js';
 import { formatForeignChainAddress, getDepositTxRef } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
 
-const arbitrumSchema = arbitrumSchema190.transform((args) => ({
+const arbitrumSchema = arbitrumSchema11200.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Arbitrum' as const, data: args.depositDetails },
   depositAddress:
     args.depositAddress && formatForeignChainAddress({ __kind: 'Arb', value: args.depositAddress }),
 }));
-const bitcoinSchema = bitcoinSchema190.transform((args) => ({
+const bitcoinSchema = bitcoinSchema11200.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Bitcoin' as const, data: args.depositDetails },
   depositAddress:
     args.depositAddress && formatForeignChainAddress({ __kind: 'Btc', value: args.depositAddress }),
 }));
-const ethereumSchema = ethereumSchema190.transform((args) => ({
+const ethereumSchema = ethereumSchema11200.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Ethereum' as const, data: args.depositDetails },
   depositAddress:
     args.depositAddress && formatForeignChainAddress({ __kind: 'Eth', value: args.depositAddress }),
 }));
-const polkadotSchema = polkadotSchema190.transform((args) => ({
+const polkadotSchema = polkadotSchema11200.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Polkadot' as const, data: args.depositDetails },
   depositAddress:
     args.depositAddress && formatForeignChainAddress({ __kind: 'Dot', value: args.depositAddress }),
 }));
-const solanaSchema = solanaSchema190.transform((args) => ({
+const solanaSchema = solanaSchema11200.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Solana' as const, data: undefined },
   depositAddress:
     args.depositAddress && formatForeignChainAddress({ __kind: 'Sol', value: args.depositAddress }),
 }));
-const assethubSchema = assethubSchema190.transform((args) => ({
+const assethubSchema = assethubSchema11200.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Assethub' as const, data: args.depositDetails },
   depositAddress:
@@ -75,6 +75,7 @@ export const depositFinalised =
       depositDetails,
       originType,
       depositAddress,
+      channelId,
     } = depositFinalisedSchema[chain].parse(event.args);
 
     const txRef = getDepositTxRef(depositDetails, blockHeight);
@@ -117,6 +118,7 @@ export const depositFinalised =
           depositAmount: amount.toString(),
           failedAt: new Date(block.timestamp),
           failedBlockIndex: `${block.height}-${event.indexInBlock}`,
+          depositTransactionRef: txRef,
           refundEgress: egressId && {
             connectOrCreate: {
               where: {
@@ -148,6 +150,53 @@ export const depositFinalised =
             depositAddress,
             blockHeight,
           });
+        }
+      }
+    } else if (action.__kind === 'Unrefundable') {
+      const channel = isNotNullish(channelId)
+        ? await prisma.depositChannel.findFirst({
+            where: { channelId: Number(channelId), srcChain: chain },
+            orderBy: { issuedBlock: 'desc' },
+          })
+        : null;
+
+      if (channel?.isSwapping) {
+        const fs = await prisma.failedSwap.create({
+          data: {
+            depositAmount: amount.toString(),
+            srcAsset: asset,
+            srcChain: chain,
+            reason: 'Unknown',
+            failedAt: new Date(block.timestamp),
+            failedBlockIndex: `${block.height}-${event.indexInBlock}`,
+            depositTransactionRef: txRef,
+            swapDepositChannel: {
+              connect: {
+                issuedBlock_srcChain_channelId: {
+                  issuedBlock: channel.issuedBlock,
+                  srcChain: channel.srcChain,
+                  channelId: channel.channelId,
+                },
+              },
+            },
+          },
+        });
+
+        if (chain === 'Solana') {
+          if (depositAddress && blockHeight) {
+            await prisma.solanaPendingTxRef.create({
+              data: {
+                failedVaultSwapId: fs.id,
+                slot: blockHeight,
+                address: depositAddress,
+              },
+            });
+          } else {
+            logger.warn('Solana pending tx ref missing deposit address or block height', {
+              depositAddress,
+              blockHeight,
+            });
+          }
         }
       }
     } else if (action.__kind !== 'LiquidityProvision') {
