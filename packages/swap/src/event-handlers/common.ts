@@ -90,7 +90,7 @@ export type DepositDetailsData = {
       Ethereum: z.output<typeof ethereumIngressEgressDepositFinalised>;
       Polkadot: z.output<typeof polkadotIngressEgressDepositFinalised>;
       Arbitrum: z.output<typeof arbitrumIngressEgressDepositFinalised>;
-      Solana: z.output<typeof solanaIngressEgressDepositFinalised>;
+      Solana: z.output<typeof solanaIngressEgressDepositFinalised> | { depositDetails: undefined };
       Assethub: z.output<typeof assethubIngressEgressDepositFinalised>;
     }[C]['depositDetails'];
   };
