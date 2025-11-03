@@ -29,7 +29,7 @@ const polkadotSchema = polkadotSchema11200.transform((args) => ({
 }));
 const solanaSchema = solanaSchema11200.transform((args) => ({
   ...args,
-  depositDetails: { chain: 'Solana' as const, data: undefined },
+  depositDetails: { chain: 'Solana' as const, data: args.depositDetails },
 }));
 const assethubSchema = assethubSchema11200.transform((args) => ({
   ...args,

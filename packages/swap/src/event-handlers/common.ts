@@ -1,11 +1,11 @@
 import * as bitcoin from '@chainflip/bitcoin';
-import { arbitrumIngressEgressDepositFinalised } from '@chainflip/processor/190/arbitrumIngressEgress/depositFinalised';
-import { assethubIngressEgressDepositFinalised } from '@chainflip/processor/190/assethubIngressEgress/depositFinalised';
-import { bitcoinIngressEgressDepositFinalised } from '@chainflip/processor/190/bitcoinIngressEgress/depositFinalised';
-import { cfChainsAddressForeignChainAddress } from '@chainflip/processor/190/common';
-import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/190/ethereumIngressEgress/depositFinalised';
-import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/190/polkadotIngressEgress/depositFinalised';
-import { assertUndefined } from '@chainflip/utils/assertion';
+import { arbitrumIngressEgressDepositFinalised } from '@chainflip/processor/11200/arbitrumIngressEgress/depositFinalised';
+import { assethubIngressEgressDepositFinalised } from '@chainflip/processor/11200/assethubIngressEgress/depositFinalised';
+import { bitcoinIngressEgressDepositFinalised } from '@chainflip/processor/11200/bitcoinIngressEgress/depositFinalised';
+import { cfChainsAddressForeignChainAddress } from '@chainflip/processor/11200/common';
+import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/11200/ethereumIngressEgress/depositFinalised';
+import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/11200/polkadotIngressEgress/depositFinalised';
+import { solanaIngressEgressDepositFinalised } from '@chainflip/processor/11200/solanaIngressEgress/depositFinalised';
 import * as base58 from '@chainflip/utils/base58';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { POLKADOT_SS58_PREFIX } from '@chainflip/utils/consts';
@@ -90,7 +90,7 @@ export type DepositDetailsData = {
       Ethereum: z.output<typeof ethereumIngressEgressDepositFinalised>;
       Polkadot: z.output<typeof polkadotIngressEgressDepositFinalised>;
       Arbitrum: z.output<typeof arbitrumIngressEgressDepositFinalised>;
-      Solana: { depositDetails: undefined };
+      Solana: z.output<typeof solanaIngressEgressDepositFinalised>;
       Assethub: z.output<typeof assethubIngressEgressDepositFinalised>;
     }[C]['depositDetails'];
   };
@@ -120,9 +120,7 @@ export const getDepositTxRef = (
         chain: depositDetails.chain,
         data: { blockNumber: Number(blockHeight), extrinsicIndex: depositDetails.data },
       });
-
     case 'Solana':
-      assertUndefined(depositDetails.data, 'Solana deposit details should be undefined');
       return undefined;
     default:
       return assertUnreachable(depositDetails);

@@ -38,7 +38,7 @@ const polkadotSchema = polkadotSchema11200.transform((args) => ({
 }));
 const solanaSchema = solanaSchema11200.transform((args) => ({
   ...args,
-  depositDetails: { chain: 'Solana' as const, data: undefined },
+  depositDetails: { chain: 'Solana' as const, data: args.depositDetails },
   depositAddress:
     args.depositAddress && formatForeignChainAddress({ __kind: 'Sol', value: args.depositAddress }),
 }));
@@ -160,30 +160,34 @@ export const depositFinalised =
           })
         : null;
 
-      if (channel?.isSwapping) {
-        const fs = await prisma.failedSwap.create({
-          data: {
-            depositAmount: amount.toString(),
-            srcAsset: asset,
-            srcChain: chain,
-            reason: 'Unknown',
-            failedAt: new Date(block.timestamp),
-            failedBlockIndex: `${block.height}-${event.indexInBlock}`,
-            depositTransactionRef: txRef,
-            swapDepositChannel: {
-              connect: {
-                issuedBlock_srcChain_channelId: {
-                  issuedBlock: channel.issuedBlock,
-                  srcChain: channel.srcChain,
-                  channelId: channel.channelId,
-                },
+      const swapDepositChannel = channel?.isSwapping
+        ? {
+            connect: {
+              issuedBlock_srcChain_channelId: {
+                issuedBlock: channel.issuedBlock,
+                srcChain: channel.srcChain,
+                channelId: channel.channelId,
               },
             },
-          },
-        });
+          }
+        : undefined;
 
-        if (chain === 'Solana') {
-          if (depositAddress && blockHeight) {
+      const fs = await prisma.failedSwap.create({
+        data: {
+          depositAmount: amount.toString(),
+          srcAsset: asset,
+          srcChain: chain,
+          reason: 'Unknown',
+          failedAt: new Date(block.timestamp),
+          failedBlockIndex: `${block.height}-${event.indexInBlock}`,
+          depositTransactionRef: txRef,
+          swapDepositChannel,
+        },
+      });
+
+      if (depositDetails.chain === 'Solana')
+        if (chain === 'Solana' && depositAddress && blockHeight) {
+          if (originType === 'Vault') {
             await prisma.solanaPendingTxRef.create({
               data: {
                 failedVaultSwapId: fs.id,
@@ -191,14 +195,19 @@ export const depositFinalised =
                 address: depositAddress,
               },
             });
+          } else if (originType === 'DepositChannel') {
+            if (swapDepositChannel) {
+              await prisma.solanaPendingTxRef.create({ data: { swapDepositChannel } });
+            }
           } else {
-            logger.warn('Solana pending tx ref missing deposit address or block height', {
-              depositAddress,
-              blockHeight,
-            });
+            assertUnreachable(originType, 'unexpected origin type for unrefundable deposit');
           }
+        } else {
+          logger.warn('Solana pending tx ref missing deposit address or block height', {
+            depositAddress,
+            blockHeight,
+          });
         }
-      }
     } else if (action.__kind !== 'LiquidityProvision') {
       return assertUnreachable(action, 'unexpected action kind');
     }

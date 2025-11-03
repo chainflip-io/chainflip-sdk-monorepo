@@ -1,3 +1,5 @@
+import * as base58 from '@chainflip/utils/base58';
+import { bytesToHex } from '@chainflip/utils/bytes';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import prisma from '../../../client.js';
 import { check, createDepositChannel } from '../../__tests__/utils.js';
@@ -269,6 +271,10 @@ describe(depositFinalised, () => {
             ingressFee: '0',
             maxBoostFeeBps: 0,
             originType: { __kind: 'Vault' },
+            depositDetails: {
+              __kind: 'Channel',
+              value: '9nGBAS5eSSYLak3QgsmPTEsJtpquXdCCXrSGU5ffMC1X',
+            },
           }),
           indexInBlock: 7,
         },
@@ -301,6 +307,10 @@ describe(depositFinalised, () => {
           maxBoostFeeBps: 0,
           originType: { __kind: 'Vault' },
           depositAddress: '0x8275ca5db8b35bfe42ce5a53a27bf794d99cc0f33dfb97a96cb6f88e9b2a536a',
+          depositDetails: {
+            __kind: 'VaultSwapAccount',
+            value: [bytesToHex(base58.decode('9nGBAS5eSSYLak3QgsmPTEsJtpquXdCCXrSGU5ffMC1X')), 0],
+          },
         }),
         indexInBlock: 7,
       },
