@@ -1,8 +1,8 @@
-import { swappingSwapRescheduled as schema11100 } from '@chainflip/processor/11100/swapping/swapRescheduled';
+import { swappingSwapRescheduled as schema11200 } from '@chainflip/processor/11200/swapping/swapRescheduled';
 import { z } from 'zod';
 import type { EventHandlerArgs } from '../index.js';
 
-const schema = schema11100;
+const schema = schema11200.strict();
 
 export type SwapRescheduledArgs = z.input<typeof schema>;
 

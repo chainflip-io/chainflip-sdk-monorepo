@@ -104,6 +104,7 @@ export const failedSwapMessage: Record<FailedSwapReason, string> = {
   InvalidRefundParameters: 'The refund parameters were improperly formatted',
   CcmInvalidMetadata: 'The provided metadata could not be decoded',
   CcmUnsupportedForTargetChain: 'The destination chain does not support CCM',
+  Unrefundable: 'The deposit is unrefundable',
 };
 
 export enum FailureMode {

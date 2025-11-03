@@ -1,4 +1,4 @@
-import { swappingSwapRequested as schema11100 } from '@chainflip/processor/11100/swapping/swapRequested';
+import { swappingSwapRequested as schema11200 } from '@chainflip/processor/11200/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
 import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
 import { isNullish } from '@chainflip/utils/guard';
@@ -12,7 +12,7 @@ import { Prisma } from '../../client.js';
 import { formatForeignChainAddress } from '../common.js';
 import type { EventHandlerArgs } from '../index.js';
 
-const schema = schema11100.strict();
+const schema = schema11200.strict();
 
 type RequestType = z.output<typeof schema>['requestType'];
 type Origin = z.output<typeof schema>['origin'];
@@ -38,6 +38,10 @@ const getRequestInfo = (requestType: RequestType) => {
         destAddress: requestType.outputAction.accountId,
         ccmMetadata: undefined,
       };
+    }
+
+    if (requestType.outputAction.__kind === 'CreditLendingPool') {
+      return { type: 'INTERNAL' as const, destAddress: undefined, ccmMetadata: undefined };
     }
 
     return assertNever(

@@ -58,7 +58,7 @@
   },
   "dependencies": {
     "@chainflip/bitcoin": "^1.2.7",
-    "@chainflip/processor": "~1.11.8",
+    "@chainflip/processor": "~1.11.15",
     "@chainflip/redis": "^1.0.2",
     "@chainflip/rpc": "~1.11.0",
     "@chainflip/solana": "^2.2.0",

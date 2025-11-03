@@ -80,6 +80,10 @@ const solDepositFailedMock = buildDepositFailedEvent({
       asset: { __kind: 'Sol' },
       amount: '1000000000',
       depositAddress: bytesToHex(base58.decode(SOL_ADDRESS)),
+      depositDetails: {
+        __kind: 'VaultSwapAccount',
+        value: [bytesToHex(base58.decode(SOL_ADDRESS)), '1234'],
+      },
     },
   },
   blockHeight: 1234,
@@ -101,6 +105,10 @@ const solVaultDepositFailedMock = buildDepositFailedEvent({
         minPrice: '0',
         refundAddress: ETH_ADDRESS,
         retryDuration: 100,
+      },
+      depositDetails: {
+        __kind: 'VaultSwapAccount',
+        value: [bytesToHex(base58.decode(SOL_ADDRESS)), '1234'],
       },
     },
   },
