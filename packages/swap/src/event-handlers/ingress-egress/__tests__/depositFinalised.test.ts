@@ -273,7 +273,7 @@ describe(depositFinalised, () => {
             originType: { __kind: 'Vault' },
             depositDetails: {
               __kind: 'Channel',
-              value: '9nGBAS5eSSYLak3QgsmPTEsJtpquXdCCXrSGU5ffMC1X',
+              value: bytesToHex(base58.decode('9nGBAS5eSSYLak3QgsmPTEsJtpquXdCCXrSGU5ffMC1X')),
             },
           }),
           indexInBlock: 7,
