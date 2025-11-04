@@ -40,10 +40,6 @@ const getRequestInfo = (requestType: RequestType) => {
       };
     }
 
-    if (requestType.outputAction.__kind === 'CreditLendingPool') {
-      return { type: 'INTERNAL' as const, destAddress: undefined, ccmMetadata: undefined };
-    }
-
     return assertNever(
       requestType.outputAction,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
