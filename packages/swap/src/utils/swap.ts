@@ -42,7 +42,7 @@ export const estimateSwapDuration = async ({
       Number((await getWitnessSafetyMargin(srcChain)) ?? 1n);
 
   // ingress delay is the number of state chain blocks that need to pass before the state chain can witness the deposit
-  const ingressDelay = stateChainBlocksToSeconds(await getIngressDelay(srcChain));
+  const ingressDelayDuration = stateChainBlocksToSeconds(await getIngressDelay(srcChain));
 
   // validators need some time to submit the witness to the statechain
   const depositWitnessSubmissionDuration = CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS;
@@ -60,7 +60,7 @@ export const estimateSwapDuration = async ({
   const depositDuration =
     depositInclusionDuration +
     depositWitnessDuration +
-    ingressDelay +
+    ingressDelayDuration +
     depositWitnessSubmissionDuration;
   const egressDuration = EGRESS_BROADCAST_SIGNING_DURATION + egressInclusionDuration;
 
