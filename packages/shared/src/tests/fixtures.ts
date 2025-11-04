@@ -290,13 +290,15 @@ export const cfAccountInfo = () => ({
   jsonrpc: '2.0',
   result: {
     role: 'liquidity_provider',
-    balances: createChainAssetMap('0x0', {
+    asset_balances: createChainAssetMap('0x0', {
       Eth: '0x3c32edbbd8c4c54',
       Flip: '0xa2ac1bc07ee724bc6',
       Usdc: '0x79db7c',
       Usdt: '0x7c0a99',
       ArbUsdc: '0x14db3632',
     }),
+    bond: 0,
+    estimated_redeemable_balance: 0,
     refund_addresses: createChainMap(null, {
       Arbitrum: '0x7a9fc530cbeef967d212337cc5d47edf701550cc',
       Ethereum: '0x7a9fc530cbeef967d212337cc5d47edf701550cc',
