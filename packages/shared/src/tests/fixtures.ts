@@ -103,12 +103,14 @@ export const ingressEgressEnvironment = ({
   egressFee = '0x0',
   minEgressAmount = '0x1',
   channelOpeningFee,
+  boostDelay,
 }: {
   minDepositAmount?: string;
   ingressFee?: string | null;
   egressFee?: string | null;
   minEgressAmount?: string;
   channelOpeningFee?: string;
+  boostDelay?: Partial<Record<ChainflipChain, number>>;
 } = {}): RpcResponse<CfIngressEgressEnvironmentResponse> => ({
   id: 1,
   jsonrpc: '2.0',
@@ -129,6 +131,12 @@ export const ingressEgressEnvironment = ({
     ingress_delays: createChainMap(0, {
       Solana: 10,
     }),
+    boost_delays: createChainMap(
+      0,
+      boostDelay ?? {
+        Bitcoin: 0,
+      },
+    ),
   },
 });
 
@@ -173,12 +181,14 @@ export const environment = ({
   ingressFee = '0x0',
   egressFee = '0x0',
   minEgressAmount = '0x1',
+  boostDelay,
 }: {
   maxSwapAmount?: string | null;
   minDepositAmount?: string;
   ingressFee?: string | null;
   egressFee?: string | null;
   minEgressAmount?: string;
+  boostDelay?: Partial<Record<ChainflipChain, number>>;
 } = {}): RpcResponse<CfEnvironmentResponse> => ({
   id: 1,
   jsonrpc: '2.0',
@@ -188,6 +198,7 @@ export const environment = ({
       ingressFee,
       egressFee,
       minEgressAmount,
+      boostDelay,
     }).result,
     swapping: swappingEnvironment({ maxSwapAmount }).result,
     funding: fundingEnvironment().result,

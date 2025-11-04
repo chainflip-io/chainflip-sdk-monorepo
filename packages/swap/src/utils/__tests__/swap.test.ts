@@ -2,7 +2,6 @@ import { assetConstants } from '@chainflip/utils/chainflip';
 import { beforeEach, describe, it, expect, beforeAll } from 'vitest';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
 import prisma from '../../client.js';
-import { boostChainflipBlocksDelayCache } from '../boost.js';
 import { estimateSwapDuration } from '../swap.js';
 
 describe(estimateSwapDuration, () => {
@@ -19,9 +18,7 @@ describe(estimateSwapDuration, () => {
   });
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking", "BoostDelayChainflipBlocks" CASCADE`;
-    // eslint-disable-next-line dot-notation
-    boostChainflipBlocksDelayCache['store'].clear();
+    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;
   });
 
   it.each([
@@ -72,12 +69,9 @@ describe(estimateSwapDuration, () => {
   ])(
     `estimates time for boosted swap from %s to %s when boost delay has been set`,
     async (srcAsset, destAsset, numBlocks, expected) => {
-      const { chain } = assetConstants[srcAsset];
-      await prisma.boostDelayChainflipBlocks.upsert({
-        where: { chain },
-        create: { chain, numBlocks },
-        update: { numBlocks },
-      });
+      mockRpcResponse(async () => ({
+        data: environment({ boostDelay: { [assetConstants[srcAsset].chain]: numBlocks } }),
+      }));
 
       expect(await estimateSwapDuration({ srcAsset, destAsset, boosted: true })).toStrictEqual({
         durations: expected,

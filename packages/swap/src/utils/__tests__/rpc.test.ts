@@ -1,8 +1,8 @@
 import HttpClient from '@chainflip/rpc/HttpClient';
 import { ChainAssetMap } from '@chainflip/utils/chainflip';
 import { describe, it, expect, vi } from 'vitest';
-import { boostPoolsDepth, mockRpcResponse } from '@/shared/tests/fixtures.js';
-import { getBoostPoolsDepth, getLpBalances } from '../rpc.js';
+import { boostPoolsDepth, environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
+import { getBoostDelay, getBoostPoolsDepth, getLpBalances } from '../rpc.js';
 
 describe(getBoostPoolsDepth, () => {
   it('allows filtering by asset through all the boost pools and sorts the result', async () => {
@@ -48,5 +48,16 @@ describe(getLpBalances, () => {
         ],
       ]
     `);
+  });
+});
+
+describe(getBoostDelay, () => {
+  it('returns the boost delay blocks for a specific chain', async () => {
+    mockRpcResponse(async () => ({ data: environment() }));
+
+    const numBlocks = environment().result.ingress_egress.boost_delays?.Bitcoin;
+
+    expect(numBlocks).toBeDefined();
+    expect(await getBoostDelay('Bitcoin')).toBe(numBlocks);
   });
 });

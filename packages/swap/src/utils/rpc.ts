@@ -51,6 +51,11 @@ export const getWitnessSafetyMargin = async (chain: ChainflipChain): Promise<big
   return result !== null ? BigInt(result) : null;
 };
 
+export const getBoostDelay = async (chain: ChainflipChain): Promise<number> => {
+  const environment = await cachedGetEnvironment(rpcConfig);
+  return environment.ingressEgress.boostDelays?.[chain as Exclude<ChainflipChain, 'Polkadot'>] ?? 0;
+};
+
 export const getIngressDelay = async (chain: ChainflipChain): Promise<number> => {
   const environment = await cachedGetEnvironment(rpcConfig);
 
