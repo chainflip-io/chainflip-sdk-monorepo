@@ -492,14 +492,6 @@ model BoostPool {
   @@schema("public")
 }
 
-model BoostDelayChainflipBlocks {
-  id        Int   @id @default(autoincrement())
-  chain     Chain @unique
-  numBlocks Int
-
-  @@schema("public")
-}
-
 model ChainTracking {
   id                  Int      @id @default(autoincrement())
   chain               Chain    @unique

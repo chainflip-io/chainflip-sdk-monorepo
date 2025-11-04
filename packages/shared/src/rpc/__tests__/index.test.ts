@@ -170,6 +170,13 @@ describe('getIngressEgressEnvironment', () => {
 
     expect(await getIngressEgressEnvironment({ network: 'perseverance' })).toMatchInlineSnapshot(`
       {
+        "boostDelays": {
+          "Arbitrum": 0,
+          "Assethub": 0,
+          "Bitcoin": 0,
+          "Ethereum": 0,
+          "Solana": 0,
+        },
         "channelOpeningFees": {
           "Arbitrum": 0n,
           "Assethub": 0n,
