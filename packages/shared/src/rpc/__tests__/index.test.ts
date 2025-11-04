@@ -201,6 +201,13 @@ describe('getIngressEgressEnvironment', () => {
             "USDC": 0n,
           },
         },
+        "ingressDelays": {
+          "Arbitrum": 0,
+          "Assethub": 0,
+          "Bitcoin": 0,
+          "Ethereum": 0,
+          "Solana": 10,
+        },
         "ingressFees": {
           "Arbitrum": {
             "ETH": 5000000000000000000n,
