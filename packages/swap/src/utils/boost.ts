@@ -42,6 +42,7 @@ export const getBoostFeeBpsForAmount = async ({
   };
 };
 
+// TODO(debt): we might be able to remove this from the db and read from cf_env instead
 export const boostChainflipBlocksDelayCache = new AsyncCacheMap({
   fetch: (chain: Chain) =>
     prisma.boostDelayChainflipBlocks.findFirst({

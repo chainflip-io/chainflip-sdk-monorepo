@@ -38,6 +38,16 @@ describe(estimateSwapDuration, () => {
     });
   });
 
+  it.each([['Sol', 'Eth', { deposit: 0.4 + 0.8 + 60 + 6, swap: 12, egress: 96 }] as const])(
+    `estimates time for a normal swap with ingress delay from %s to %s`,
+    async (srcAsset, destAsset, expected) => {
+      expect(await estimateSwapDuration({ srcAsset, destAsset })).toStrictEqual({
+        durations: expected,
+        total: expected.deposit + expected.swap + expected.egress,
+      });
+    },
+  );
+
   it.each([
     ['Btc', 'Btc', { deposit: 300 + 6, swap: 12, egress: 300 + 90 }] as const,
     ['Btc', 'Eth', { deposit: 300 + 6, swap: 12, egress: 6 + 90 }] as const,

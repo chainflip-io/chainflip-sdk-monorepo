@@ -126,6 +126,9 @@ export const ingressEgressEnvironment = ({
     channel_opening_fees: createChainMap(channelOpeningFee ?? '0x0', {
       Ethereum: '0x10',
     }),
+    ingress_delays: createChainMap(0, {
+      Solana: 10,
+    }),
   },
 });
 

@@ -28,7 +28,10 @@ export const getPools = async (
 const undeployedLiquidityCache = new AsyncCacheMap({
   fetch: async (asset: ChainflipAsset) => {
     const lpAccounts = await getLpAccounts();
-    return lpAccounts.reduce((sum, account) => sum + readAssetValue(account.balances, asset), 0n);
+    return lpAccounts.reduce(
+      (sum, account) => sum + readAssetValue(account.assetBalances, asset),
+      0n,
+    );
   },
   resetExpiryOnLookup: false,
   ttl: 60_000,

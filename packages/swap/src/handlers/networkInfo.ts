@@ -53,20 +53,10 @@ const networkInfo = async (): Promise<z.output<typeof NetworkInfo>> => {
     const ingressEgress =
       safeModeStatuses[`ingress_egress_${uncapitalize(assetConstants[asset].chain)}`];
     const broadcast = safeModeStatuses[`broadcast_${uncapitalize(assetConstants[asset].chain)}`];
-    let vaultSwapDepositsEnabled;
-    let depositChannelDepositsEnabled;
-    let depositChannelCreationEnabled;
     const canDeposit = isEnabled && !env.DISABLED_DEPOSIT_INTERNAL_ASSETS.has(asset);
-
-    if ('deposits_enabled' in ingressEgress) {
-      vaultSwapDepositsEnabled = ingressEgress.deposits_enabled;
-      depositChannelDepositsEnabled = ingressEgress.deposits_enabled;
-      depositChannelCreationEnabled = ingressEgress.deposits_enabled;
-    } else {
-      vaultSwapDepositsEnabled = ingressEgress.vault_deposit_witnessing_enabled;
-      depositChannelDepositsEnabled = ingressEgress.deposit_channel_witnessing_enabled;
-      depositChannelCreationEnabled = ingressEgress.deposit_channel_creation_enabled;
-    }
+    const vaultSwapDepositsEnabled = ingressEgress.vault_deposit_witnessing_enabled;
+    const depositChannelDepositsEnabled = ingressEgress.deposit_channel_witnessing_enabled;
+    const depositChannelCreationEnabled = ingressEgress.deposit_channel_creation_enabled;
 
     return {
       asset,
