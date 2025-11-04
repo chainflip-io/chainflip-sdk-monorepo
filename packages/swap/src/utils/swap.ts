@@ -8,10 +8,12 @@ import {
 import BigNumber from 'bignumber.js';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts.js';
 import { assertUnreachable } from '@/shared/functions.js';
-import { getBoostChainflipBlocksDelayForChain } from './boost.js';
 import ServiceError from './ServiceError.js';
 import { FailedSwapReason, Swap } from '../client.js';
-import { getWitnessSafetyMargin } from './rpc.js';
+import { getBoostDelay, getIngressDelay, getWitnessSafetyMargin } from './rpc.js';
+
+const stateChainBlocksToSeconds = (blocks: number) =>
+  blocks * CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS;
 
 export const estimateSwapDuration = async ({
   srcAsset,
@@ -34,10 +36,12 @@ export const estimateSwapDuration = async ({
   // once transaction is included, state chain validator witness transaction after safety margin is met
   // in case of a boosted swap, the swap occurs at the moment a deposit is prewitnessed (deposit transaction included in a block) and after the boost delay (if set)
   const depositWitnessDuration = boosted
-    ? (await getBoostChainflipBlocksDelayForChain(srcChain)) *
-      CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS
+    ? stateChainBlocksToSeconds(await getBoostDelay(srcChain))
     : chainConstants[srcChain].blockTimeSeconds *
       Number((await getWitnessSafetyMargin(srcChain)) ?? 1n);
+
+  // ingress delay is the number of state chain blocks that need to pass before the state chain can witness the deposit
+  const ingressDelayDuration = stateChainBlocksToSeconds(await getIngressDelay(srcChain));
 
   // validators need some time to submit the witness to the statechain
   const depositWitnessSubmissionDuration = CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS;
@@ -53,7 +57,10 @@ export const estimateSwapDuration = async ({
   const egressInclusionDuration = chainConstants[destChain].blockTimeSeconds / 2;
 
   const depositDuration =
-    depositInclusionDuration + depositWitnessDuration + depositWitnessSubmissionDuration;
+    depositInclusionDuration +
+    depositWitnessDuration +
+    ingressDelayDuration +
+    depositWitnessSubmissionDuration;
   const egressDuration = EGRESS_BROADCAST_SIGNING_DURATION + egressInclusionDuration;
 
   const durations = {

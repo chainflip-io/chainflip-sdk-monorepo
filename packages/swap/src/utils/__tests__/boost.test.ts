@@ -2,13 +2,7 @@ import { CfBoostPoolsDepthResponse } from '@chainflip/rpc/types';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { describe, it, beforeEach, expect, vi } from 'vitest';
 import { mockRpcResponse } from '@/shared/tests/fixtures.js';
-import prisma from '../../client.js';
-import {
-  boostChainflipBlocksDelayCache,
-  boostPoolsCache,
-  getBoostChainflipBlocksDelayForChain,
-  getBoostFeeBpsForAmount,
-} from '../boost.js';
+import { boostPoolsCache, getBoostFeeBpsForAmount } from '../boost.js';
 
 vi.mock('axios');
 
@@ -56,38 +50,5 @@ describe(getBoostFeeBpsForAmount, () => {
     expect(await getBoostFeeBpsForAmount({ amount: ingressAmount, asset: 'Btc' })).toStrictEqual(
       boostBps,
     );
-  });
-});
-
-describe(getBoostChainflipBlocksDelayForChain, () => {
-  beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE "BoostDelayChainflipBlocks" CASCADE;`;
-  });
-  it('returns the boost delay blocks for a specific chain', async () => {
-    const chain = 'Bitcoin';
-    const numBlocks = 10;
-
-    await prisma.boostDelayChainflipBlocks.create({
-      data: {
-        chain,
-        numBlocks,
-      },
-    });
-
-    expect(await getBoostChainflipBlocksDelayForChain(chain)).toBe(numBlocks);
-    // eslint-disable-next-line dot-notation
-    boostChainflipBlocksDelayCache['store'].clear();
-
-    await prisma.boostDelayChainflipBlocks.update({
-      data: {
-        numBlocks: 0,
-      },
-      where: {
-        chain,
-      },
-    });
-
-    expect(await getBoostChainflipBlocksDelayForChain(chain)).toBe(0);
-    expect(await getBoostChainflipBlocksDelayForChain('Ethereum')).toBe(0);
   });
 });

@@ -29,32 +29,6 @@ const deepMerge = <T>(target: T, source: DeepPartial<T>): T => {
   return merged;
 };
 
-const defaultSafeModeStatusesOld = chainflipChains.reduce(
-  (acc, chain) => {
-    acc[`ingress_egress_${uncapitalize(chain)}`] = {
-      boost_deposits_enabled: true,
-      add_boost_funds_enabled: true,
-      stop_boosting_enabled: true,
-      deposits_enabled: true,
-    };
-    acc[`broadcast_${uncapitalize(chain)}`] = {
-      retry_enabled: true,
-    };
-    return acc;
-  },
-  {
-    swapping: {
-      swaps_enabled: true,
-      withdrawals_enabled: true,
-      broker_registration_enabled: true,
-    },
-  } as Pick<
-    CfSafeModeStatuses,
-    | `ingress_egress_${Uncapitalize<ChainflipChain>}`
-    | 'swapping'
-    | `broadcast_${Uncapitalize<ChainflipChain>}`
-  >,
-);
 const defaultSafeModeStatuses = chainflipChains.reduce(
   (acc, chain) => {
     acc[`ingress_egress_${uncapitalize(chain)}`] = {
@@ -116,7 +90,7 @@ describe('networkStatus', () => {
       .default as unknown as typeof import('../../config/env.js').default;
   });
 
-  it.each([defaultSafeModeStatuses, defaultSafeModeStatusesOld])(
+  it.each([defaultSafeModeStatuses])(
     'returns everything when possible',
     async (safeModeStatuses) => {
       mockRpc({ safeModeStatuses });

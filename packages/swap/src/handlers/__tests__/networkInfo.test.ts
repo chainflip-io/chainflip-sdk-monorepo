@@ -29,32 +29,6 @@ const deepMerge = <T>(target: T, source: DeepPartial<T>): T => {
   return merged;
 };
 
-const defaultSafeModeStatusesOld = chainflipChains.reduce(
-  (acc, chain) => {
-    acc[`ingress_egress_${uncapitalize(chain)}`] = {
-      boost_deposits_enabled: true,
-      add_boost_funds_enabled: true,
-      stop_boosting_enabled: true,
-      deposits_enabled: true,
-    };
-    acc[`broadcast_${uncapitalize(chain)}`] = {
-      retry_enabled: true,
-    };
-    return acc;
-  },
-  {
-    swapping: {
-      swaps_enabled: true,
-      withdrawals_enabled: true,
-      broker_registration_enabled: true,
-    },
-  } as Pick<
-    CfSafeModeStatuses,
-    | `ingress_egress_${Uncapitalize<ChainflipChain>}`
-    | 'swapping'
-    | `broadcast_${Uncapitalize<ChainflipChain>}`
-  >,
-);
 const defaultSafeModeStatuses = chainflipChains.reduce(
   (acc, chain) => {
     acc[`ingress_egress_${uncapitalize(chain)}`] = {
@@ -88,7 +62,7 @@ const mockRpc = ({
   safeModeStatuses,
 }: {
   supportedAssets?: ChainflipAsset[];
-  safeModeStatuses?: typeof defaultSafeModeStatuses | typeof defaultSafeModeStatusesOld;
+  safeModeStatuses?: typeof defaultSafeModeStatuses;
 }) =>
   vi.mocked(HttpClient.prototype.sendRequest).mockImplementation((async (method: RpcMethod) => {
     switch (method) {
@@ -116,7 +90,7 @@ describe('networkStatus', () => {
       .default as unknown as typeof import('../../config/env.js').default;
   });
 
-  it.each([defaultSafeModeStatuses, defaultSafeModeStatusesOld])(
+  it.each([defaultSafeModeStatuses])(
     'returns everything when possible',
     async (safeModeStatuses) => {
       mockRpc({ safeModeStatuses });
@@ -224,120 +198,6 @@ describe('networkStatus', () => {
       });
     },
   );
-
-  it('sets the correct flags with the old safe mode statuses', async () => {
-    env.FULLY_DISABLED_INTERNAL_ASSETS = new Set(chainflipAssets);
-    env.FULLY_DISABLED_INTERNAL_ASSETS.delete('Flip');
-    mockRpc({
-      safeModeStatuses: deepMerge(defaultSafeModeStatusesOld, {
-        ingress_egress_ethereum: { deposits_enabled: false },
-      }),
-    });
-
-    expect(await networkStatusV2()).toMatchInlineSnapshot(`
-      {
-        "assets": [
-          {
-            "asset": "Usdc",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
-            "asset": "Usdt",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
-            "asset": "Flip",
-            "boostDepositsEnabled": true,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": true,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
-            "asset": "Eth",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
-            "asset": "Btc",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
-            "asset": "ArbUsdc",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
-            "asset": "ArbEth",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
-            "asset": "Sol",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
-            "asset": "SolUsdc",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
-            "asset": "HubDot",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
-            "asset": "HubUsdt",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-          {
-            "asset": "HubUsdc",
-            "boostDepositsEnabled": false,
-            "depositChannelCreationEnabled": false,
-            "depositChannelDepositsEnabled": false,
-            "egressEnabled": false,
-            "vaultSwapDepositsEnabled": false,
-          },
-        ],
-        "cfBrokerCommissionBps": 0,
-      }
-    `);
-  });
 
   it('returns no assets when swapping is not enabled', async () => {
     mockRpc({

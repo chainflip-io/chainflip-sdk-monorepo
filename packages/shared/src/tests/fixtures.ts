@@ -103,12 +103,14 @@ export const ingressEgressEnvironment = ({
   egressFee = '0x0',
   minEgressAmount = '0x1',
   channelOpeningFee,
+  boostDelay,
 }: {
   minDepositAmount?: string;
   ingressFee?: string | null;
   egressFee?: string | null;
   minEgressAmount?: string;
   channelOpeningFee?: string;
+  boostDelay?: Partial<Record<ChainflipChain, number>>;
 } = {}): RpcResponse<CfIngressEgressEnvironmentResponse> => ({
   id: 1,
   jsonrpc: '2.0',
@@ -126,6 +128,15 @@ export const ingressEgressEnvironment = ({
     channel_opening_fees: createChainMap(channelOpeningFee ?? '0x0', {
       Ethereum: '0x10',
     }),
+    ingress_delays: createChainMap(0, {
+      Solana: 10,
+    }),
+    boost_delays: createChainMap(
+      0,
+      boostDelay ?? {
+        Bitcoin: 0,
+      },
+    ),
   },
 });
 
@@ -170,12 +181,14 @@ export const environment = ({
   ingressFee = '0x0',
   egressFee = '0x0',
   minEgressAmount = '0x1',
+  boostDelay,
 }: {
   maxSwapAmount?: string | null;
   minDepositAmount?: string;
   ingressFee?: string | null;
   egressFee?: string | null;
   minEgressAmount?: string;
+  boostDelay?: Partial<Record<ChainflipChain, number>>;
 } = {}): RpcResponse<CfEnvironmentResponse> => ({
   id: 1,
   jsonrpc: '2.0',
@@ -185,6 +198,7 @@ export const environment = ({
       ingressFee,
       egressFee,
       minEgressAmount,
+      boostDelay,
     }).result,
     swapping: swappingEnvironment({ maxSwapAmount }).result,
     funding: fundingEnvironment().result,
@@ -287,13 +301,15 @@ export const cfAccountInfo = () => ({
   jsonrpc: '2.0',
   result: {
     role: 'liquidity_provider',
-    balances: createChainAssetMap('0x0', {
+    asset_balances: createChainAssetMap('0x0', {
       Eth: '0x3c32edbbd8c4c54',
       Flip: '0xa2ac1bc07ee724bc6',
       Usdc: '0x79db7c',
       Usdt: '0x7c0a99',
       ArbUsdc: '0x14db3632',
     }),
+    bond: 0,
+    estimated_redeemable_balance: 0,
     refund_addresses: createChainMap(null, {
       Arbitrum: '0x7a9fc530cbeef967d212337cc5d47edf701550cc',
       Ethereum: '0x7a9fc530cbeef967d212337cc5d47edf701550cc',
