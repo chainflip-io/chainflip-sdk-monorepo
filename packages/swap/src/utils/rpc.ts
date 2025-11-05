@@ -62,7 +62,7 @@ export const getIngressDelay = async (chain: ChainflipChain): Promise<number> =>
   const result =
     environment.ingressEgress.ingressDelays?.[chain as Exclude<ChainflipChain, 'Polkadot'>];
 
-  return result !== null ? Number(result) : 0;
+  return isNotNullish(result) ? Number(result) : 0;
 };
 
 export const getIngressFee = async (asset: ChainflipAsset): Promise<bigint | null> => {
