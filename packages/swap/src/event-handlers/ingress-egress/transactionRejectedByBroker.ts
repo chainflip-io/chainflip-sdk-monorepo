@@ -93,7 +93,6 @@ const transactionRejectedByBroker =
 
     const orConditions = [
       txRef && { depositTransactionRef: txRef },
-      failedVaultSwap && { id: failedVaultSwap.id },
       solanaChannel && { swapDepositChannel: { channelId: solanaChannel.channelId } },
       failedVaultSwap && { id: failedVaultSwap.id },
     ].filter(Boolean) as Prisma.FailedSwapWhereInput[];
