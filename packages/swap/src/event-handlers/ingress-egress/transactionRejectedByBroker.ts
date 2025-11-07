@@ -98,6 +98,12 @@ const transactionRejectedByBroker =
       failedVaultSwap && { id: failedVaultSwap.id },
     ].filter(Boolean) as Prisma.FailedSwapWhereInput[];
 
+    assert(orConditions.length, 'No failedDeposit condition found to update');
+    assert(
+      orConditions.length === 1,
+      'Expected only one failed deposit udpate condition to be present',
+    );
+
     const broadcast = await prisma.broadcast.create({
       data: {
         nativeId: broadcastId,
