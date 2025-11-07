@@ -7,6 +7,8 @@ import {
   chainflipChains,
   chainflipNetworks,
   assetSymbols,
+  ChainflipChain,
+  ChainflipAsset,
 } from '@chainflip/utils/chainflip';
 
 const arrayToMap = <T extends string>(array: readonly T[]): { [K in T]: K } =>
@@ -17,9 +19,12 @@ export const InternalAssets = arrayToMap(chainflipAssets.filter((asset) => asset
 export const Chains = arrayToMap(chainflipChains.filter((chain) => chain !== 'Polkadot'));
 export const Assets = arrayToMap(assetSymbols);
 
+type Chain = Exclude<ChainflipChain, 'Polkadot'>;
+type InternalAsset = Exclude<ChainflipAsset, 'Dot'>;
+
+export type { Chain, InternalAsset };
+
 export {
-  type ChainflipAsset as InternalAsset,
-  type ChainflipChain as Chain,
   type UncheckedAssetAndChain,
   getInternalAsset,
   type ChainflipNetwork,
