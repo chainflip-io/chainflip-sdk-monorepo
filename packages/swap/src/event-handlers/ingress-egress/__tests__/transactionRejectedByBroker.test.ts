@@ -1,3 +1,5 @@
+import * as base58 from '@chainflip/utils/base58';
+import { hexToBytes } from '@chainflip/utils/bytes';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { formatTxRef } from '@/shared/common.js';
 import prisma from '../../../client.js';
@@ -5,7 +7,7 @@ import transactionRejectedByBroker from '../transactionRejectedByBroker.js';
 
 describe(transactionRejectedByBroker, () => {
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "FailedSwap" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "FailedSwap", "SwapDepositChannel", private."DepositChannel", private."SolanaPendingTxRef" CASCADE`;
   });
 
   it('adds a broadcast to a failed swap', async () => {
@@ -65,5 +67,141 @@ describe(transactionRejectedByBroker, () => {
 
     expect(failedSwaps.map(({ id: _, refundBroadcastId, ...rest }) => rest)).toMatchSnapshot();
     expect(broadcast).toMatchSnapshot();
+  });
+
+  it('adds a broadcast to a rejected solana swap channel', async () => {
+    const depositAddressHex = '0xff43ffabbdb1fb60ac34485803affa14d75331b9262da90632e2aea14fe1590a';
+    const solanaDepositAddress = base58.encode(hexToBytes(depositAddressHex));
+    const timestamp = 1680337105000;
+
+    const swapChannel = await prisma.swapDepositChannel.create({
+      data: {
+        channelId: 105n,
+        srcChain: 'Solana',
+        srcAsset: 'Sol',
+        depositAddress: solanaDepositAddress,
+        destAsset: 'Eth',
+        destAddress: '0x928369aaf229795542bbdfc35811223c6d69cab6',
+        issuedBlock: 100,
+        totalBrokerCommissionBps: 0,
+        maxBoostFeeBps: 0,
+        openingFeePaid: 0,
+      },
+    });
+
+    await prisma.depositChannel.create({
+      data: {
+        channelId: swapChannel.channelId,
+        srcChain: 'Solana',
+        depositAddress: solanaDepositAddress,
+        issuedBlock: swapChannel.issuedBlock,
+        isSwapping: true,
+      },
+    });
+
+    const failedSwap = await prisma.failedSwap.create({
+      data: {
+        depositAmount: '10000000',
+        srcAsset: 'Sol',
+        srcChain: 'Solana',
+        destChain: 'Ethereum',
+        destAddress: '0x928369aaf229795542bbdfc35811223c6d69cab6',
+        destAsset: 'Eth',
+        reason: 'TransactionRejectedByBroker',
+        failedAt: new Date(timestamp - 6000),
+        failedBlockIndex: '419-1',
+        swapDepositChannelId: swapChannel.id,
+      },
+    });
+
+    const args = {
+      txId: {
+        value: depositAddressHex,
+        __kind: 'Channel' as const,
+      },
+      broadcastId: 2929,
+    };
+
+    await transactionRejectedByBroker('Solana')({
+      block: { specId: 'test@170', height: 420, timestamp } as any,
+      event: { indexInBlock: 1, args } as any,
+      prisma,
+    });
+
+    const broadcast = await prisma.broadcast.findUniqueOrThrow({
+      where: {
+        nativeId_chain: { nativeId: args.broadcastId, chain: 'Solana' },
+      },
+    });
+
+    const updatedFailedSwap = await prisma.failedSwap.findUniqueOrThrow({
+      where: { id: failedSwap.id },
+      include: { refundBroadcast: true },
+    });
+
+    expect(updatedFailedSwap.refundBroadcastId).toBe(broadcast.id);
+    expect(updatedFailedSwap.refundBroadcast).toMatchObject({
+      id: broadcast.id,
+      nativeId: BigInt(args.broadcastId),
+      chain: 'Solana',
+    });
+  });
+
+  it('adds a broadcast to a rejected solana vault swap account', async () => {
+    const depositAddressHex = '0xa21608917ae1e13c14b6f476d9c119e619e4d429272a0a32812835ec00f509fd';
+    const slotStr = '417878605';
+    const timestamp = 1680337105000;
+
+    const failedSwap = await prisma.failedSwap.create({
+      data: {
+        depositAmount: '100000000',
+        srcAsset: 'Sol',
+        srcChain: 'Solana',
+        destChain: 'Ethereum',
+        destAddress: '0x928369aaf229795542bbdfc35811223c6d69cab6',
+        destAsset: 'Flip',
+        reason: 'TransactionRejectedByBroker',
+        failedAt: new Date(timestamp - 6000),
+        failedBlockIndex: '419-1',
+      },
+    });
+
+    await prisma.solanaPendingTxRef.create({
+      data: {
+        address: base58.encode(hexToBytes(depositAddressHex)),
+        slot: BigInt(slotStr),
+        failedVaultSwapId: failedSwap.id,
+      },
+    });
+
+    const args = {
+      txId: {
+        __kind: 'VaultSwapAccount' as const,
+        value: [depositAddressHex, slotStr],
+      },
+      broadcastId: 4001,
+    };
+
+    await transactionRejectedByBroker('Solana')({
+      block: { specId: 'test@170', height: 420, timestamp } as any,
+      event: { indexInBlock: 1, args } as any,
+      prisma,
+    });
+
+    const broadcast = await prisma.broadcast.findFirstOrThrow({
+      where: { nativeId: args.broadcastId, chain: 'Solana' },
+    });
+
+    const updatedFailedSwap = await prisma.failedSwap.findUniqueOrThrow({
+      where: { id: failedSwap.id },
+      include: { refundBroadcast: true },
+    });
+
+    expect(updatedFailedSwap.refundBroadcastId).toBe(broadcast.id);
+    expect(updatedFailedSwap.refundBroadcast).toMatchObject({
+      id: broadcast.id,
+      nativeId: BigInt(args.broadcastId),
+      chain: 'Solana',
+    });
   });
 });
