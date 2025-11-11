@@ -25,19 +25,21 @@ const io = new Server(server).use(authenticate);
 const quoter = new Quoter(io);
 
 app.use((req, res, next) => {
+  const startTime = performance.now();
   const info = {
     reqId: randomUUID(),
     method: req.method,
     url: req.url,
-    startTime: performance.now(),
+    headers: req.headers,
+    query: req.query,
+    body: req.body,
   };
   logger.info('request received', info);
 
   res.on('finish', () => {
     logger.info('request finished', {
-      ...info,
-      endTime: performance.now(),
-      duration: performance.now() - info.startTime,
+      reqId: info.reqId,
+      duration: performance.now() - startTime,
     });
   });
 
