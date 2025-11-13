@@ -419,8 +419,10 @@ describe(SwapSDK, () => {
               "ccmParams": undefined,
               "dcaParams": undefined,
               "destAddress": "0xcafebabe",
-              "destAsset": "FLIP",
-              "destChain": "Ethereum",
+              "destAsset": {
+                "asset": "FLIP",
+                "chain": "Ethereum",
+              },
               "fillOrKillParams": {
                 "maxOraclePriceSlippage": 100,
                 "minPriceX128": "34028236692093846346337460743176821145600000000000000000000000",
@@ -444,8 +446,10 @@ describe(SwapSDK, () => {
                 "type": "REGULAR",
               },
               "srcAddress": undefined,
-              "srcAsset": "BTC",
-              "srcChain": "Bitcoin",
+              "srcAsset": {
+                "asset": "BTC",
+                "chain": "Bitcoin",
+              },
               "takeCommission": false,
             },
           },
@@ -520,8 +524,10 @@ describe(SwapSDK, () => {
               "ccmParams": undefined,
               "dcaParams": undefined,
               "destAddress": "0xcafebabe",
-              "destAsset": "FLIP",
-              "destChain": "Ethereum",
+              "destAsset": {
+                "asset": "FLIP",
+                "chain": "Ethereum",
+              },
               "fillOrKillParams": {
                 "maxOraclePriceSlippage": 100,
                 "minPriceX128": "34028236692093846346337460743176821145600000000000000000000000",
@@ -545,8 +551,10 @@ describe(SwapSDK, () => {
                 "type": "REGULAR",
               },
               "srcAddress": undefined,
-              "srcAsset": "BTC",
-              "srcChain": "Bitcoin",
+              "srcAsset": {
+                "asset": "BTC",
+                "chain": "Bitcoin",
+              },
               "takeCommission": false,
             },
           },
@@ -628,8 +636,10 @@ describe(SwapSDK, () => {
                 "numberOfChunks": 100,
               },
               "destAddress": "0xcafebabe",
-              "destAsset": "FLIP",
-              "destChain": "Ethereum",
+              "destAsset": {
+                "asset": "FLIP",
+                "chain": "Ethereum",
+              },
               "fillOrKillParams": {
                 "maxOraclePriceSlippage": 100,
                 "minPriceX128": "34028236692093846346337460743176821145600000000000000000000000",
@@ -657,8 +667,10 @@ describe(SwapSDK, () => {
                 "type": "DCA",
               },
               "srcAddress": undefined,
-              "srcAsset": "BTC",
-              "srcChain": "Bitcoin",
+              "srcAsset": {
+                "asset": "BTC",
+                "chain": "Bitcoin",
+              },
               "takeCommission": false,
             },
           },
@@ -743,8 +755,10 @@ describe(SwapSDK, () => {
                 "numberOfChunks": 100,
               },
               "destAddress": "0xcafebabe",
-              "destAsset": "FLIP",
-              "destChain": "Ethereum",
+              "destAsset": {
+                "asset": "FLIP",
+                "chain": "Ethereum",
+              },
               "fillOrKillParams": {
                 "maxOraclePriceSlippage": 100,
                 "minPriceX128": "34028236692093846346337460743176821145600000000000000000000000",
@@ -772,8 +786,10 @@ describe(SwapSDK, () => {
                 "type": "DCA",
               },
               "srcAddress": undefined,
-              "srcAsset": "BTC",
-              "srcChain": "Bitcoin",
+              "srcAsset": {
+                "asset": "BTC",
+                "chain": "Bitcoin",
+              },
               "takeCommission": false,
             },
           },
@@ -858,8 +874,10 @@ describe(SwapSDK, () => {
                 "numberOfChunks": 100,
               },
               "destAddress": "0xcafebabe",
-              "destAsset": "FLIP",
-              "destChain": "Ethereum",
+              "destAsset": {
+                "asset": "FLIP",
+                "chain": "Ethereum",
+              },
               "fillOrKillParams": {
                 "maxOraclePriceSlippage": 200,
                 "minPriceX128": "34028236692093846346337460743176821145600000000000000000000000",
@@ -887,8 +905,10 @@ describe(SwapSDK, () => {
                 "type": "DCA",
               },
               "srcAddress": undefined,
-              "srcAsset": "BTC",
-              "srcChain": "Bitcoin",
+              "srcAsset": {
+                "asset": "BTC",
+                "chain": "Bitcoin",
+              },
               "takeCommission": false,
             },
           },
@@ -946,7 +966,7 @@ describe(SwapSDK, () => {
       });
 
       const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        broker: { url: 'https://chainflap.org/broker' },
       }).requestDepositAddressV2({
         quote: {
           srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -964,6 +984,7 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           livePriceSlippageTolerancePercent: 1,
         },
+        brokerCommissionBps: 15,
       });
 
       expect(postSpy).toHaveBeenNthCalledWith(2, 'https://chainflap.org/broker', [
@@ -1039,7 +1060,7 @@ describe(SwapSDK, () => {
       });
 
       const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        broker: { url: 'https://chainflap.org/broker' },
       }).requestDepositAddressV2({
         quote: {
           srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -1132,7 +1153,7 @@ describe(SwapSDK, () => {
       });
 
       const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        broker: { url: 'https://chainflap.org/broker' },
       }).requestDepositAddressV2({
         quote: {
           srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -1152,6 +1173,7 @@ describe(SwapSDK, () => {
         affiliateBrokers: [
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
         ],
+        brokerCommissionBps: 15,
       });
 
       expect(postSpy).toHaveBeenNthCalledWith(2, 'https://chainflap.org/broker', [
@@ -1229,7 +1251,7 @@ describe(SwapSDK, () => {
       });
 
       const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        broker: { url: 'https://chainflap.org/broker' },
       }).requestDepositAddressV2({
         quote: {
           srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -1250,6 +1272,7 @@ describe(SwapSDK, () => {
           minPrice: '10000000000000',
           livePriceSlippageTolerancePercent: 1,
         },
+        brokerCommissionBps: 15,
       });
 
       expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
@@ -1331,7 +1354,7 @@ describe(SwapSDK, () => {
       });
 
       const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        broker: { url: 'https://chainflap.org/broker' },
       }).requestDepositAddressV2({
         quote: {
           srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -1356,6 +1379,7 @@ describe(SwapSDK, () => {
           message: '0xdeadc0de',
           ccmAdditionalData: '0xc0ffee',
         },
+        brokerCommissionBps: 15,
       });
 
       expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
@@ -1370,7 +1394,6 @@ describe(SwapSDK, () => {
             15,
             {
               ccm_additional_data: '0xc0ffee',
-              cf_parameters: '0xc0ffee',
               gas_budget: '0x75bcd15',
               message: '0xdeadc0de',
             },
@@ -1441,7 +1464,7 @@ describe(SwapSDK, () => {
       const MAX_BOOST_FEE_BPS = 100;
 
       const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        broker: { url: 'https://chainflap.org/broker' },
       }).requestDepositAddressV2({
         quote: {
           srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -1459,6 +1482,7 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           livePriceSlippageTolerancePercent: 1,
         },
+        brokerCommissionBps: 15,
       });
 
       expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
@@ -1535,7 +1559,7 @@ describe(SwapSDK, () => {
       const MAX_BOOST_FEE_BPS = 100;
 
       const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        broker: { url: 'https://chainflap.org/broker' },
       }).requestDepositAddressV2({
         quote: {
           srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -1553,6 +1577,7 @@ describe(SwapSDK, () => {
           retryDurationBlocks: 500,
           livePriceSlippageTolerancePercent: 0.5,
         },
+        brokerCommissionBps: 15,
       });
 
       expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
@@ -1609,7 +1634,7 @@ describe(SwapSDK, () => {
     it("throws for quotes that aren't DCA or REGULAR", async () => {
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).requestDepositAddressV2({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -1636,7 +1661,7 @@ describe(SwapSDK, () => {
     it('throws for missing DCA params', async () => {
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).requestDepositAddressV2({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -1660,7 +1685,7 @@ describe(SwapSDK, () => {
     it('throws for vault swap quote', async () => {
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).requestDepositAddressV2({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -1684,7 +1709,7 @@ describe(SwapSDK, () => {
     it('throws for ccm params with regular quote', async () => {
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).requestDepositAddressV2({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -1713,7 +1738,7 @@ describe(SwapSDK, () => {
     it('throws if ccm params are missing for ccm quote', async () => {
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).requestDepositAddressV2({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -1741,7 +1766,7 @@ describe(SwapSDK, () => {
     it('throws if live price slippage tolerance is set but quote does not return it', async () => {
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).requestDepositAddressV2({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -1784,7 +1809,7 @@ describe(SwapSDK, () => {
       const MAX_BOOST_FEE_BPS = 100;
 
       const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        broker: { url: 'https://chainflap.org/broker' },
       }).requestDepositAddressV2({
         quote: {
           srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -1800,6 +1825,7 @@ describe(SwapSDK, () => {
           refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           retryDurationBlocks: 500,
         },
+        brokerCommissionBps: 15,
       });
 
       expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
@@ -2266,7 +2292,7 @@ describe(SwapSDK, () => {
       });
 
       const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        broker: { url: 'https://chainflap.org/broker' },
       }).encodeVaultSwapData({
         quote: {
           srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -2284,6 +2310,7 @@ describe(SwapSDK, () => {
         affiliateBrokers: [
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
         ],
+        brokerCommissionBps: 15,
       });
 
       expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
@@ -2338,7 +2365,7 @@ describe(SwapSDK, () => {
       });
 
       const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        broker: { url: 'https://chainflap.org/broker' },
       }).encodeVaultSwapData({
         quote: {
           srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -2357,6 +2384,7 @@ describe(SwapSDK, () => {
           refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '10000000000000',
         },
+        brokerCommissionBps: 15,
       });
 
       expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
@@ -2414,7 +2442,7 @@ describe(SwapSDK, () => {
       });
 
       const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        broker: { url: 'https://chainflap.org/broker' },
       }).encodeVaultSwapData({
         quote: {
           srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -2438,6 +2466,7 @@ describe(SwapSDK, () => {
           message: '0xdeadc0de',
           ccmAdditionalData: '0xc0ffee',
         },
+        brokerCommissionBps: 15,
       });
 
       expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
@@ -2460,7 +2489,6 @@ describe(SwapSDK, () => {
               gas_budget: '0x75bcd15',
               message: '0xdeadc0de',
               ccm_additional_data: '0xc0ffee',
-              cf_parameters: '0xc0ffee',
             },
             null,
             null,
@@ -2498,7 +2526,7 @@ describe(SwapSDK, () => {
       const MAX_BOOST_FEE_BPS = 100;
 
       const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        broker: { url: 'https://chainflap.org/broker' },
       }).encodeVaultSwapData({
         quote: {
           srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -2514,6 +2542,7 @@ describe(SwapSDK, () => {
           refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '10000000000000',
         },
+        brokerCommissionBps: 15,
       });
 
       expect(postSpy).toHaveBeenCalledWith('https://chainflap.org/broker', [
@@ -2562,7 +2591,7 @@ describe(SwapSDK, () => {
 
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).encodeVaultSwapData({
           quote,
           destAddress: '0xcafebabe',
@@ -2582,7 +2611,7 @@ describe(SwapSDK, () => {
     it("throws for quotes that aren't DCA or REGULAR", async () => {
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).encodeVaultSwapData({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -2607,7 +2636,7 @@ describe(SwapSDK, () => {
     it('throws for missing DCA params', async () => {
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).encodeVaultSwapData({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -2629,7 +2658,7 @@ describe(SwapSDK, () => {
     it('throws for deposit channel quote', async () => {
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).encodeVaultSwapData({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -2653,7 +2682,7 @@ describe(SwapSDK, () => {
     it('throws for ccm params with regular quote', async () => {
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).encodeVaultSwapData({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -2680,7 +2709,7 @@ describe(SwapSDK, () => {
     it('throws if ccm params are missing for ccm quote', async () => {
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).encodeVaultSwapData({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -2706,7 +2735,7 @@ describe(SwapSDK, () => {
     it('throws if live price slippage tolerance is set but quote does not return it', async () => {
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).encodeVaultSwapData({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -3165,7 +3194,7 @@ describe(SwapSDK, () => {
       });
 
       const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        broker: { url: 'https://chainflap.org/broker' },
       }).encodeCfParameters({
         quote: {
           srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -3183,6 +3212,7 @@ describe(SwapSDK, () => {
         affiliateBrokers: [
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
         ],
+        brokerCommissionBps: 15,
       });
 
       expect(postSpy.mock.lastCall![0]).toStrictEqual('https://chainflap.org/broker');
@@ -3239,7 +3269,7 @@ describe(SwapSDK, () => {
       });
 
       const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        broker: { url: 'https://chainflap.org/broker' },
       }).encodeCfParameters({
         quote: {
           srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -3258,6 +3288,7 @@ describe(SwapSDK, () => {
           refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '10000000000000',
         },
+        brokerCommissionBps: 15,
       });
 
       expect(postSpy.mock.lastCall![0]).toStrictEqual('https://chainflap.org/broker');
@@ -3312,7 +3343,7 @@ describe(SwapSDK, () => {
       });
 
       const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        broker: { url: 'https://chainflap.org/broker' },
       }).encodeCfParameters({
         quote: {
           srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -3336,6 +3367,7 @@ describe(SwapSDK, () => {
           message: '0xdeadc0de',
           ccmAdditionalData: '0xc0ffee',
         },
+        brokerCommissionBps: 15,
       });
 
       expect(postSpy.mock.lastCall![0]).toStrictEqual('https://chainflap.org/broker');
@@ -3366,7 +3398,6 @@ describe(SwapSDK, () => {
             },
             {
               "ccm_additional_data": "0xc0ffee",
-              "cf_parameters": "0xc0ffee",
               "gas_budget": "0x75bcd15",
               "message": "0xdeadc0de",
             },
@@ -3393,7 +3424,7 @@ describe(SwapSDK, () => {
       const MAX_BOOST_FEE_BPS = 100;
 
       const result = await new SwapSDK({
-        broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+        broker: { url: 'https://chainflap.org/broker' },
       }).encodeCfParameters({
         quote: {
           srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -3409,6 +3440,7 @@ describe(SwapSDK, () => {
           refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
           minPrice: '10000000000000',
         },
+        brokerCommissionBps: 15,
       });
 
       expect(postSpy.mock.lastCall![0]).toStrictEqual('https://chainflap.org/broker');
@@ -3463,7 +3495,7 @@ describe(SwapSDK, () => {
 
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).encodeCfParameters({
           quote,
           destAddress: '0xcafebabe',
@@ -3483,7 +3515,7 @@ describe(SwapSDK, () => {
     it("throws for quotes that aren't DCA or REGULAR", async () => {
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).encodeCfParameters({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -3509,7 +3541,7 @@ describe(SwapSDK, () => {
     it('throws for missing DCA params', async () => {
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).encodeCfParameters({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -3532,7 +3564,7 @@ describe(SwapSDK, () => {
     it('throws if live price slippage tolerance is set but quote does not return it', async () => {
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).encodeCfParameters({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -3555,7 +3587,7 @@ describe(SwapSDK, () => {
     it('throws for ccm params with regular quote', async () => {
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).encodeCfParameters({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
@@ -3583,7 +3615,7 @@ describe(SwapSDK, () => {
     it('throws if ccm params are missing for ccm quote', async () => {
       await expect(
         new SwapSDK({
-          broker: { url: 'https://chainflap.org/broker', commissionBps: 15 },
+          broker: { url: 'https://chainflap.org/broker' },
         }).encodeCfParameters({
           quote: {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
