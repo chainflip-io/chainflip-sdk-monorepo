@@ -1,4 +1,4 @@
-import { getInternalAssets } from '@chainflip/utils/chainflip';
+import { getInternalAssets, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import * as broker from '@/shared/broker.js';
 import { getPriceFromPriceX128 } from '@/shared/functions.js';
@@ -102,7 +102,12 @@ export const openSwapDepositChannel = async ({
 
   const [swapDepositAddress, chainInfo, inputPrice, outputPrice] = await Promise.all([
     broker.requestSwapDepositAddress(
-      { ...input, commissionBps },
+      {
+        ...input,
+        srcAsset: internalAssetToRpcAsset[srcAsset],
+        destAsset: internalAssetToRpcAsset[destAsset],
+        commissionBps,
+      },
       { url: brokerUrl },
       env.CHAINFLIP_NETWORK,
     ),

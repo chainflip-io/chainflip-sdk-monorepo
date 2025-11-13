@@ -164,20 +164,12 @@ router.get(
           depositChannel: {
             id: `${swapDepositChannel.issuedBlock}-${swapDepositChannel.srcChain}-${swapDepositChannel.channelId}`,
             createdAt: swapDepositChannel.createdAt.valueOf(),
-            brokerCommissionBps:
-              beneficiaries?.find(({ type }) => type === 'SUBMITTER')?.commissionBps ?? 0,
             depositAddress: swapDepositChannel.depositAddress,
             srcChainExpiryBlock: swapDepositChannel.srcChainExpiryBlock?.toString(),
             estimatedExpiryTime: swapDepositChannel.estimatedExpiryAt?.valueOf(),
             expectedDepositAmount: swapDepositChannel.expectedDepositAmount?.toFixed(),
             isExpired: swapDepositChannel.isExpired,
             openedThroughBackend: swapDepositChannel.openedThroughBackend,
-            affiliateBrokers:
-              beneficiaries
-                ?.filter(({ type }) => type === 'AFFILIATE')
-                .map(({ account, commissionBps }) => ({ account, commissionBps })) ?? [],
-            fillOrKillParams: getFillOrKillParams(swapRequest, swapDepositChannel),
-            dcaParams: getDcaParams(swapDepositChannel),
           },
         }),
       ...getDepositInfo(swapRequest, failedSwap, pendingDeposit, pendingVaultSwap),

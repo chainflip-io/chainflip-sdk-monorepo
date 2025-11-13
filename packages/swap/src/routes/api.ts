@@ -24,7 +24,15 @@ export const apiRouter = s.router(apiContract, {
   }),
   openSwapDepositChannel: async ({ body }) => ({
     status: 201,
-    body: stringifyBigInts(await openSwapDepositChannel(body)),
+    body: stringifyBigInts(
+      await openSwapDepositChannel({
+        ...body,
+        srcAsset: body.srcAsset.asset,
+        srcChain: body.srcAsset.chain,
+        destAsset: body.destAsset.asset,
+        destChain: body.destAsset.chain,
+      }),
+    ),
   }),
   encodeCfParameters: async ({ body }) => ({
     status: 200,
