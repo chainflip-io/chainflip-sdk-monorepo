@@ -170,6 +170,7 @@ router.get(
             expectedDepositAmount: swapDepositChannel.expectedDepositAmount?.toFixed(),
             isExpired: swapDepositChannel.isExpired,
             openedThroughBackend: swapDepositChannel.openedThroughBackend,
+            dcaParams: getDcaParams(swapDepositChannel),
           },
         }),
       ...getDepositInfo(swapRequest, failedSwap, pendingDeposit, pendingVaultSwap),

@@ -51,6 +51,7 @@ interface DepositChannelFields {
   expectedDepositAmount: string | undefined;
   isExpired: boolean;
   openedThroughBackend: boolean;
+  dcaParams: DcaParams | undefined;
 }
 
 interface DepositFields {
