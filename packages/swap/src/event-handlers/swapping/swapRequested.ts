@@ -156,7 +156,7 @@ const extractRefundParameters = (
     }
     fokRetryDurationBlocks = priceLimitsAndExpiry.expiryBehaviour.retryDuration;
   } else if (priceLimitsAndExpiry.expiryBehaviour.__kind === 'NoExpiry') {
-    // TODO(lending): I think this is part of lending. Do nothing for now.
+    // do nothing
   }
 
   return {
