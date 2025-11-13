@@ -2,6 +2,7 @@ import { swappingSwapRequested as schema11100 } from '@chainflip/processor/11100
 import * as base58 from '@chainflip/utils/base58';
 import { bytesToHex } from '@chainflip/utils/bytes';
 import { assetConstants } from '@chainflip/utils/chainflip';
+import { CHAINFLIP_SS58_PREFIX } from '@chainflip/utils/consts';
 import * as ss58 from '@chainflip/utils/ss58';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import prisma from '../../../client.js';
@@ -264,6 +265,32 @@ const onChain11000 = {
   },
 } as const satisfies SwapRequestedArgs;
 
+const liquidation200 = {
+  origin: { __kind: 'Internal' },
+  brokerFees: [],
+  inputAsset: { __kind: 'Eth' },
+  inputAmount: '10000000000000000000',
+  outputAsset: { __kind: 'Usdc' },
+  requestType: {
+    __kind: 'Regular',
+    outputAction: {
+      __kind: 'CreditLendingPool',
+      swapType: {
+        __kind: 'Liquidation',
+        loanId: '6',
+        borrowerId: '0x000000000000000000000000bbaf2530c7b24e83cce554b39cbf59b15febcb40',
+      },
+    },
+  },
+  dcaParameters: { chunkInterval: 1, numberOfChunks: 1 },
+  swapRequestId: '30',
+  priceLimitsAndExpiry: {
+    minPrice: '0',
+    expiryBehaviour: { __kind: 'NoExpiry' },
+    maxOraclePriceSlippage: 500,
+  },
+} as const satisfies SwapRequestedArgs;
+
 const ingressEgressFee = {
   origin: { __kind: 'Internal' },
   brokerFees: [],
@@ -472,5 +499,20 @@ describe(swapRequested, () => {
     expect(request.fokMaxOraclePriceSlippageBps).toBe(
       depositChannel11100.priceLimitsAndExpiry.maxOraclePriceSlippage,
     );
+  });
+
+  it('creates a new swap request (LIQUIDATION 200)', async () => {
+    await swapRequested({ prisma, event: { ...event, args: liquidation200 }, block });
+
+    const request = await prisma.swapRequest.findFirstOrThrow();
+
+    expect(request).toMatchSnapshot({
+      id: expect.any(BigInt),
+      srcAddress: null, // not set for liquidation swaps
+      destAddress: ss58.encode({
+        data: liquidation200.requestType.outputAction.swapType.borrowerId,
+        ss58Format: CHAINFLIP_SS58_PREFIX,
+      }),
+    });
   });
 });

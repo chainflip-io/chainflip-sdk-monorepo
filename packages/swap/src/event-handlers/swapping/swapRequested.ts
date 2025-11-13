@@ -1,4 +1,4 @@
-import { swappingSwapRequested as schema11200 } from '@chainflip/processor/11200/swapping/swapRequested';
+import { swappingSwapRequested as schema11200 } from '@chainflip/processor/200/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
 import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
 import { isNullish } from '@chainflip/utils/guard';
@@ -31,11 +31,17 @@ const getRequestInfo = (requestType: RequestType) => {
         ccmMetadata: requestType.outputAction.ccmDepositMetadata,
       };
     }
-
     if (requestType.outputAction.__kind === 'CreditOnChain') {
       return {
         type: 'ON_CHAIN' as const,
         destAddress: requestType.outputAction.accountId,
+        ccmMetadata: undefined,
+      };
+    }
+    if (requestType.outputAction.__kind === 'CreditLendingPool') {
+      return {
+        type: 'LIQUIDATION' as const,
+        destAddress: requestType.outputAction.swapType.borrowerId,
         ccmMetadata: undefined,
       };
     }
@@ -150,7 +156,7 @@ const extractRefundParameters = (
     }
     fokRetryDurationBlocks = priceLimitsAndExpiry.expiryBehaviour.retryDuration;
   } else if (priceLimitsAndExpiry.expiryBehaviour.__kind === 'NoExpiry') {
-    // I think this is part of lending. Do nothing for now.
+    // TODO(lending): I think this is part of lending. Do nothing for now.
   }
 
   return {
