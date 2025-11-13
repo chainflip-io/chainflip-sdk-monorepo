@@ -24,11 +24,9 @@ describe(broker.requestSwapDepositAddress, () => {
     const postSpy = mockResponse();
     const result = await broker.requestSwapDepositAddress(
       {
-        srcAsset: 'FLIP',
-        destAsset: 'USDC',
-        srcChain: 'Ethereum',
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'USDC', chain: 'Ethereum' },
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
-        destChain: 'Ethereum',
         fillOrKillParams: {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
@@ -76,11 +74,9 @@ describe(broker.requestSwapDepositAddress, () => {
     const postSpy = mockResponse();
     const result = await broker.requestSwapDepositAddress(
       {
-        srcAsset: 'FLIP',
-        destAsset: 'BTC',
-        srcChain: 'Ethereum',
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'BTC', chain: 'Bitcoin' },
         destAddress: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
-        destChain: 'Bitcoin',
         fillOrKillParams: {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
@@ -127,11 +123,9 @@ describe(broker.requestSwapDepositAddress, () => {
     await expect(
       broker.requestSwapDepositAddress(
         {
-          srcAsset: 'FLIP',
-          destAsset: 'BTC',
-          srcChain: 'Ethereum',
+          srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+          destAsset: { asset: 'BTC', chain: 'Bitcoin' },
           destAddress: '2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm',
-          destChain: 'Bitcoin',
           fillOrKillParams: {
             retryDurationBlocks: 500,
             refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
@@ -149,11 +143,9 @@ describe(broker.requestSwapDepositAddress, () => {
     const postSpy = mockResponse();
     const result = await broker.requestSwapDepositAddress(
       {
-        srcAsset: 'FLIP',
-        destAsset: 'USDC',
-        srcChain: 'Ethereum',
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'USDC', chain: 'Ethereum' },
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
-        destChain: 'Ethereum',
         fillOrKillParams: {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
@@ -181,7 +173,6 @@ describe(broker.requestSwapDepositAddress, () => {
         {
           gas_budget: '0x75bcd15',
           message: '0xdeadc0de',
-          cf_parameters: '0x',
           ccm_additional_data: '0x',
         },
         null,
@@ -209,11 +200,9 @@ describe(broker.requestSwapDepositAddress, () => {
     const postSpy = mockResponse();
     const result = await broker.requestSwapDepositAddress(
       {
-        srcAsset: 'FLIP',
-        destAsset: 'USDC',
-        srcChain: 'Ethereum',
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'USDC', chain: 'Ethereum' },
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
-        destChain: 'Ethereum',
         fillOrKillParams: {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
@@ -242,7 +231,6 @@ describe(broker.requestSwapDepositAddress, () => {
         {
           gas_budget: '0x75bcd15',
           message: '0xdeadc0de',
-          cf_parameters: '0x',
           ccm_additional_data: '0x',
         },
         100,
@@ -270,11 +258,9 @@ describe(broker.requestSwapDepositAddress, () => {
     const postSpy = mockResponse();
     const result = await broker.requestSwapDepositAddress(
       {
-        srcAsset: 'FLIP',
-        destAsset: 'USDC',
-        srcChain: 'Ethereum',
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'USDC', chain: 'Ethereum' },
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
-        destChain: 'Ethereum',
         fillOrKillParams: {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
@@ -304,7 +290,6 @@ describe(broker.requestSwapDepositAddress, () => {
         {
           gas_budget: '0x75bcd15',
           message: '0xdeadc0de',
-          cf_parameters: '0x',
           ccm_additional_data: '0x',
         },
         100,
@@ -332,11 +317,9 @@ describe(broker.requestSwapDepositAddress, () => {
     const postSpy = mockResponse();
     const result = await broker.requestSwapDepositAddress(
       {
-        srcAsset: 'FLIP',
-        destAsset: 'USDC',
-        srcChain: 'Ethereum',
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'USDC', chain: 'Ethereum' },
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
-        destChain: 'Ethereum',
         fillOrKillParams: {
           retryDurationBlocks: 500,
           refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
@@ -370,7 +353,6 @@ describe(broker.requestSwapDepositAddress, () => {
         {
           gas_budget: '0x75bcd15',
           message: '0xdeadc0de',
-          cf_parameters: '0x',
           ccm_additional_data: '0x',
         },
         100,
@@ -401,11 +383,9 @@ describe(broker.requestSwapDepositAddress, () => {
     const postSpy = mockResponse();
     const result = await broker.requestSwapDepositAddress(
       {
-        srcAsset: 'FLIP',
-        destAsset: 'USDC',
-        srcChain: 'Ethereum',
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'USDC', chain: 'Ethereum' },
         destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
-        destChain: 'Ethereum',
         maxBoostFeeBps: 100,
         fillOrKillParams: {
           retryDurationBlocks: 500,
@@ -463,10 +443,8 @@ describe(broker.requestSwapDepositAddress, () => {
     await expect(
       broker.requestSwapDepositAddress(
         {
-          srcAsset: 'ETH',
-          srcChain: 'Ethereum',
-          destAsset: 'DOT',
-          destChain: 'Polkadot',
+          srcAsset: { asset: 'ETH', chain: 'Ethereum' },
+          destAsset: { asset: 'DOT', chain: 'Polkadot' },
           destAddress,
           fillOrKillParams: {
             retryDurationBlocks: 500,
@@ -488,10 +466,8 @@ describe(broker.requestSwapDepositAddress, () => {
     await expect(
       broker.requestSwapDepositAddress(
         {
-          srcAsset: 'DOT',
-          srcChain: 'Polkadot',
-          destAsset: 'ETH',
-          destChain: 'Ethereum',
+          srcAsset: { asset: 'DOT', chain: 'Polkadot' },
+          destAsset: { asset: 'ETH', chain: 'Ethereum' },
           destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
           fillOrKillParams: {
             retryDurationBlocks: 500,
@@ -867,7 +843,6 @@ describe(broker.requestSwapParameterEncoding, () => {
         {
           gas_budget: '0x75bcd15',
           message: '0xdeadc0de',
-          cf_parameters: '0x',
           ccm_additional_data: '0x',
         },
         null,
@@ -1425,7 +1400,6 @@ describe(broker.requestCfParametersEncoding, () => {
           },
           {
             "ccm_additional_data": "0x",
-            "cf_parameters": "0x",
             "gas_budget": "0x75bcd15",
             "message": "0xdeadc0de",
           },
