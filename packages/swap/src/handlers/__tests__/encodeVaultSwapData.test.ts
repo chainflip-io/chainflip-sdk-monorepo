@@ -71,7 +71,6 @@ describe(encodeVaultSwapData, () => {
       ccmParams: {
         gas_budget: '0x75bcd15',
         message: '0xdeadc0de',
-        cf_parameters: '0x',
         ccm_additional_data: '0x',
       },
       maxBoostFeeBps: 35,
@@ -112,7 +111,6 @@ describe(encodeVaultSwapData, () => {
           {
             gas_budget: '0x75bcd15',
             message: '0xdeadc0de',
-            cf_parameters: '0x',
             ccm_additional_data: '0x',
           },
           35,
@@ -179,7 +177,6 @@ describe(encodeVaultSwapData, () => {
       ccmParams: {
         gas_budget: '0x75bcd15',
         message: '0xdeadc0de',
-        cf_parameters: '0x',
         ccm_additional_data: '0x',
       },
       maxBoostFeeBps: 35,
@@ -222,7 +219,6 @@ describe(encodeVaultSwapData, () => {
             gas_budget: '0x75bcd15',
             message: '0xdeadc0de',
             ccm_additional_data: '0x',
-            cf_parameters: '0x',
           },
           35,
           [
