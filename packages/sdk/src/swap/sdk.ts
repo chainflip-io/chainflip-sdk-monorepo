@@ -60,8 +60,9 @@ export type SwapSDKOptions = {
   backendUrl?: string;
   broker?: {
     url: string;
-    /** @deprecated DEPRECATED(1.10) set the brokerCommissionBps param of the requestDepositAddress and encodeVaultSwapData method instead */
-    commissionBps?: number;
+    // this property and the assertion can be removed
+    /** @deprecated DEPRECATED(1.12) set the brokerCommissionBps param of the requestDepositAddress and encodeVaultSwapData method instead */
+    commissionBps?: never;
   };
   rpcUrl?: string;
   enabledFeatures?: {
@@ -97,6 +98,7 @@ export class SwapSDK {
   private blackListedAssets: readonly ChainflipAsset[];
 
   constructor(options: SwapSDKOptions = {}) {
+    assert(options.broker?.commissionBps === undefined, 'broker.commissionBps is deprecated');
     const network = options.network ?? 'perseverance';
     this.options = {
       ...options,
@@ -206,7 +208,7 @@ export class SwapSDK {
     if (this.shouldTakeCommission()) {
       return (await this.cache.read('networkInfo')).cfBrokerCommissionBps;
     }
-    return brokerCommissionBps ?? this.options.broker?.commissionBps ?? 0;
+    return brokerCommissionBps ?? 0;
   }
 
   async getQuoteV2(
@@ -328,10 +330,8 @@ export class SwapSDK {
     const brokerCommissionBps = await this.getCommissionBps(brokerCommissionBpsParam);
 
     const depositAddressRequest = {
-      srcAsset: quote.srcAsset.asset,
-      srcChain: quote.srcAsset.chain,
-      destAsset: quote.destAsset.asset,
-      destChain: quote.destAsset.chain,
+      srcAsset: quote.srcAsset,
+      destAsset: quote.destAsset,
       srcAddress,
       destAddress,
       dcaParams: quote.type === 'DCA' ? quote.dcaParams : undefined,
@@ -386,6 +386,10 @@ export class SwapSDK {
 
     return {
       ...depositAddressRequest,
+      srcAsset: quote.srcAsset.asset,
+      destAsset: quote.destAsset.asset,
+      srcChain: quote.srcAsset.chain,
+      destChain: quote.destAsset.chain,
       depositChannelId: response.id,
       depositAddress: response.depositAddress,
       brokerCommissionBps: response.brokerCommissionBps,

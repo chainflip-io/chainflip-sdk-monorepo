@@ -1,35 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`authenticate > accepts valid v2 authentication ({ beta: false, useMevFactor: true, mevFactors: [ { asset: 'Flip', factor: 1, side: 'SELL' }, { asset: 'Flip', factor: -1, side: 'BUY' } ] }) 1`] = `
-{
-  "beta": false,
-  "clientVersion": "2",
-  "marketMaker": "web_team_whales",
-  "mevFactors": {
-    "buy": {
-      "Flip": -1,
-    },
-    "sell": {
-      "Flip": -1,
-    },
-  },
-  "quotedAssets": {
-    "ArbEth": false,
-    "ArbUsdc": false,
-    "Btc": false,
-    "Eth": false,
-    "Flip": true,
-    "HubDot": false,
-    "HubUsdc": false,
-    "HubUsdt": false,
-    "Sol": false,
-    "SolUsdc": false,
-    "Usdc": false,
-    "Usdt": false,
-  },
-}
-`;
-
 exports[`authenticate > accepts valid v2 authentication ({ beta: false, useMevFactor: true, mevFactors: [ { asset: 'Flip', factor: 1, side: 'SELL', type: 'MEV' }, { asset: 'Flip', factor: -1, side: 'BUY', type: 'MEV' } ] }) 1`] = `
 {
   "beta": false,
@@ -80,32 +50,6 @@ exports[`authenticate > accepts valid v2 authentication ({ beta: false, useMevFa
     "Usdt": false,
   },
   "replenishmentFactors": {},
-}
-`;
-
-exports[`authenticate > accepts valid v2 authentication ({ beta: true, useMevFactor: false, mevFactors: [ { asset: 'Flip', factor: 1, side: 'SELL' }, { asset: 'Flip', factor: -1, side: 'BUY' } ] }) 1`] = `
-{
-  "beta": true,
-  "clientVersion": "2",
-  "marketMaker": "web_team_whales",
-  "mevFactors": {
-    "buy": {},
-    "sell": {},
-  },
-  "quotedAssets": {
-    "ArbEth": false,
-    "ArbUsdc": false,
-    "Btc": false,
-    "Eth": false,
-    "Flip": true,
-    "HubDot": false,
-    "HubUsdc": false,
-    "HubUsdt": false,
-    "Sol": false,
-    "SolUsdc": false,
-    "Usdc": false,
-    "Usdt": false,
-  },
 }
 `;
 

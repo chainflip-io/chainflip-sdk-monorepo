@@ -142,19 +142,18 @@ export const ccmParamsSchema = z
     message: hexStringWithMaxByteSize(15_000),
     // https://github.com/chainflip-io/chainflip-backend/blob/415aa9e20ec4046c68892cd34798e5d831c5b83f/state-chain/chains/src/lib.rs#L710
     ccmAdditionalData: hexStringWithMaxByteSize(3_000).optional(),
-    /** @deprecated DEPRECATED(1.10) pass additionalData instead */
-    cfParameters: hexStringWithMaxByteSize(3_000).optional(),
+    /** @deprecated DEPRECATED(1.12) pass additionalData instead */
+    cfParameters: z
+      .never({ message: 'cfParameters is deprecated, use ccmAdditionalData instead' })
+      .optional(),
   })
-  .transform(({ gasBudget, message, ccmAdditionalData, cfParameters }) => ({
+  .transform(({ gasBudget, message, ccmAdditionalData }) => ({
     gasBudget,
     message,
-    ccmAdditionalData: ccmAdditionalData ?? cfParameters ?? '0x',
+    ccmAdditionalData: ccmAdditionalData ?? '0x',
   }));
 
-export type CcmParams = Omit<z.input<typeof ccmParamsSchema>, 'cfParameters'> & {
-  /** @deprecated DEPRECATED(1.10) pass additionalData instead */
-  cfParameters?: string;
-};
+export type CcmParams = Omit<z.input<typeof ccmParamsSchema>, 'cfParameters'>;
 
 export const affiliateBroker = z
   .object({
@@ -178,17 +177,7 @@ export const fillOrKillParams = z.object({
   refundAddress: z.string(),
   minPriceX128: numericString,
   maxOraclePriceSlippage: basisPoints.nullish().transform((v) => v ?? null),
-  refundCcmMetadata: ccmParamsSchema
-    .nullish()
-    .optional()
-    .default(null)
-    .transform(
-      (v) =>
-        v && {
-          ...v,
-          cfParameters: v.ccmAdditionalData, // deprecated
-        },
-    ),
+  refundCcmMetadata: ccmParamsSchema.nullish().optional().default(null),
 });
 
 export type FillOrKillParamsX128 = z.input<typeof fillOrKillParams>;

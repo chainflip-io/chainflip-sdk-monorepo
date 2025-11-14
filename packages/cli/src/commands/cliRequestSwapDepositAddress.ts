@@ -61,10 +61,8 @@ export default async function cliRequestSwapDepositAddress(
   }
   const result = await broker.requestSwapDepositAddress(
     {
-      srcChain: internalAssetToRpcAsset[args.srcAsset].chain,
-      srcAsset: internalAssetToRpcAsset[args.srcAsset].asset,
-      destChain: internalAssetToRpcAsset[args.destAsset].chain,
-      destAsset: internalAssetToRpcAsset[args.destAsset].asset,
+      srcAsset: internalAssetToRpcAsset[args.srcAsset],
+      destAsset: internalAssetToRpcAsset[args.destAsset],
       destAddress: args.destAddress,
       ccmParams,
       commissionBps: args.commission ?? 0,

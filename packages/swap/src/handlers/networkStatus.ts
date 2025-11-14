@@ -37,6 +37,7 @@ class RpcCache<T extends SimpleRpcMethod> extends MultiCache<RpcFetcherMap<T>> {
 
 const cache = new RpcCache(['cf_available_pools', 'cf_safe_mode_statuses']);
 
+/** @deprecated remove with trpc */
 const networkStatus = async (): Promise<{
   assets: {
     deposit: ChainflipAsset[];

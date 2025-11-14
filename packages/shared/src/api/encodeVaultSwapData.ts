@@ -18,8 +18,6 @@ const TransformedCcmParams = ccmParamsSchema.transform(
     message,
     gas_budget: gasBudget,
     ccm_additional_data: ccmAdditionalData,
-    /** @deprecated DEPRECATED(1.10) we still need to pass cf_parameters until 1.8 is deployed to all networks */
-    cf_parameters: ccmAdditionalData,
   }),
 );
 
@@ -39,8 +37,6 @@ const FillOrKillParams = fillOrKillParamsSchema.transform(
       gas_budget: refundCcmMetadata.gasBudget,
       message: refundCcmMetadata.message,
       ccm_additional_data: refundCcmMetadata.ccmAdditionalData,
-      /** @deprecated DEPRECATED(1.10) */
-      cf_parameters: refundCcmMetadata.cfParameters,
     },
   }),
 );

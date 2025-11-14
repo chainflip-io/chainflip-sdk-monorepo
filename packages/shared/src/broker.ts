@@ -1,9 +1,8 @@
 import { HttpClient } from '@chainflip/rpc';
+import { AssetAndChain } from '@chainflip/rpc/parsers';
 import { unreachable } from '@chainflip/utils/assertion';
 import { bytesToHex } from '@chainflip/utils/bytes';
 import {
-  AssetSymbol,
-  ChainflipChain,
   ChainflipNetwork,
   chainflipNetworks,
   UncheckedAssetAndChain,
@@ -37,8 +36,8 @@ import {
 import { validateAddress } from './validation/addressValidation.js';
 
 type DepositAddressRequest = {
-  srcAsset: UncheckedAssetAndChain | AssetSymbol;
-  destAsset: UncheckedAssetAndChain | AssetSymbol;
+  srcAsset: AssetAndChain;
+  destAsset: AssetAndChain;
   destAddress: string;
   commissionBps?: number;
   ccmParams?: CcmParams;
@@ -46,11 +45,6 @@ type DepositAddressRequest = {
   affiliates?: AffiliateBroker[];
   fillOrKillParams: FillOrKillParamsX128;
   dcaParams?: DcaParams;
-
-  /** @deprecated DEPRECATED(1.10) pass the chain in the srcAsset object instead */
-  srcChain?: ChainflipChain;
-  /** @deprecated DEPRECATED(1.10) pass the chain in the destAsset object instead */
-  destChain?: ChainflipChain;
 };
 
 const transformedDcaParamsSchema = dcaParamsSchema.transform(
@@ -65,8 +59,6 @@ const transformedCcmParamsSchema = ccmParamsSchema.transform(
     message,
     gas_budget: gasBudget,
     ccm_additional_data: ccmAdditionalData,
-    /** @deprecated DEPRECATED(1.10) we still need to pass cf_parameters until 1.8 is deployed to all networks */
-    cf_parameters: ccmAdditionalData,
   }),
 );
 
@@ -208,16 +200,6 @@ export async function requestSwapDepositAddress(
   chainflipNetwork: ChainflipNetwork,
 ) {
   const client = new HttpClient(opts.url);
-
-  /** @deprecated pass the chain in the srcAsset and destAsset object instead */
-  if (request.srcChain && typeof request.srcAsset === 'string') {
-    // eslint-disable-next-line no-param-reassign
-    request = { ...request, srcAsset: { asset: request.srcAsset, chain: request.srcChain } };
-  }
-  if (request.destChain && typeof request.destAsset === 'string') {
-    // eslint-disable-next-line no-param-reassign
-    request = { ...request, destAsset: { asset: request.destAsset, chain: request.destChain } };
-  }
 
   const params = getDepositAddressRequestSchema(chainflipNetwork).parse(request);
 

@@ -11,7 +11,6 @@ import authenticate from './quoting/authenticate.js';
 import Quoter from './quoting/Quoter.js';
 import { apiRouter } from './routes/api.js';
 import { handleError, maintenanceMode, quoteMiddleware } from './routes/common.js';
-import swap from './routes/swap.js';
 import thirdPartySwap from './routes/thirdPartySwap.js';
 import quoteRouterV2 from './routes/v2/quote.js';
 import swapV2 from './routes/v2/swap.js';
@@ -46,7 +45,6 @@ app.use((req, res, next) => {
   logStorage.run(info.reqId, next);
 });
 
-app.use('/swaps', lastUpdateHeader, express.json(), swap);
 app.use('/v2/swaps', lastUpdateHeader, express.json(), swapV2);
 app.use('/third-party-swap', maintenanceMode, express.json(), thirdPartySwap);
 

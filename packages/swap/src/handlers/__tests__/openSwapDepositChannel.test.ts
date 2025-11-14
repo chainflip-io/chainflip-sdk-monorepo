@@ -555,7 +555,7 @@ describe('openSwapDepositChannelSchema', () => {
         ccmParams: {
           gasBudget: '123',
           message: '0xdeadc0de',
-          cfParameters: '0xcafebabe',
+          ccmAdditionalData: '0xcafebabe',
         },
       }),
     ).not.toThrow();

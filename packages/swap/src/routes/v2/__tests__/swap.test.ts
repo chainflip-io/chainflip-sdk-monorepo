@@ -559,7 +559,6 @@ describe('server', () => {
         },
         depositChannel: {
           createdAt: 516000,
-          brokerCommissionBps: 0,
           depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
           srcChainExpiryBlock: '265',
           estimatedExpiryTime: 1640998260000,
@@ -594,7 +593,6 @@ describe('server', () => {
         },
         depositChannel: {
           createdAt: 516000,
-          brokerCommissionBps: 15,
           depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
           srcChainExpiryBlock: '265',
           estimatedExpiryTime: 1640998260000,
@@ -675,7 +673,6 @@ describe('server', () => {
         state: 'WAITING',
         depositChannel: {
           createdAt: 516000,
-          brokerCommissionBps: 0,
           depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
           srcChainExpiryBlock: '1',
           estimatedExpiryTime: 1640995092000,
@@ -712,7 +709,6 @@ describe('server', () => {
         },
         depositChannel: {
           createdAt: 516000,
-          brokerCommissionBps: 0,
           depositAddress: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2',
           srcChainExpiryBlock: '265',
           estimatedExpiryTime: 1640998260000,
@@ -873,16 +869,9 @@ describe('server', () => {
             "txRef": "0xfae1ed",
           },
           "depositChannel": {
-            "affiliateBrokers": [],
-            "brokerCommissionBps": 0,
             "createdAt": 516000,
             "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
             "estimatedExpiryTime": 1640998260000,
-            "fillOrKillParams": {
-              "minPrice": "0",
-              "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
-              "retryDurationBlocks": 100,
-            },
             "id": "86-Ethereum-85",
             "isExpired": false,
             "openedThroughBackend": false,
@@ -1067,16 +1056,9 @@ describe('server', () => {
           txRef: '9dccc57dc24a62635e946b06629a01646741e728edeacfed0e30d9638e82b378',
         },
         depositChannel: {
-          affiliateBrokers: [],
-          brokerCommissionBps: 0,
           createdAt: 21688716000,
           depositAddress: 'tb1purq4kn2cl8cltjms3twmljpkrucfjxx3ths8ynmsgg9nkx2ypydqx9e6y2',
           estimatedExpiryTime: 3732519000000,
-          fillOrKillParams: {
-            minPrice: '5.140026445278486822',
-            refundAddress: 'tb1q78pjllxzm7069fj8mw3ud0dvk4d8n2muqs7q2k',
-            retryDurationBlocks: 150,
-          },
           id: '3614786-Bitcoin-875',
           isExpired: false,
           openedThroughBackend: false,
@@ -1625,16 +1607,6 @@ describe('server', () => {
           commissionBps: 150,
         },
       ]);
-      expect(body.depositChannel.affiliateBrokers).toStrictEqual([
-        {
-          account: 'cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy',
-          commissionBps: 100,
-        },
-        {
-          account: 'cFJvHp55aSUWL88R7N5G4StdsWcCv3d3rfDx8pgAkZdG4ew7e',
-          commissionBps: 150,
-        },
-      ]);
     });
 
     it('retrieves boost details when channel swap was boosted', async () => {
@@ -1732,11 +1704,6 @@ describe('server', () => {
         refundAddress: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
         retryDurationBlocks: 15,
       });
-      expect(body.depositChannel.fillOrKillParams).toMatchObject({
-        minPrice: '29387358770557187699218413430556141945466.638919302188',
-        refundAddress: '0x541f563237a309b3a61e33bdf07a8930bdba8d99',
-        retryDurationBlocks: 15,
-      });
       expect(body.state).toBe('WAITING');
     });
 
@@ -1763,11 +1730,6 @@ describe('server', () => {
       expect(status).toBe(200);
       expect(body.state).toBe('FAILED');
       expect(body.fillOrKillParams).toMatchObject({
-        minPrice: expect.any(String),
-        refundAddress: expect.any(String),
-        retryDurationBlocks: expect.any(Number),
-      });
-      expect(body.depositChannel.fillOrKillParams).toMatchObject({
         minPrice: expect.any(String),
         refundAddress: expect.any(String),
         retryDurationBlocks: expect.any(Number),

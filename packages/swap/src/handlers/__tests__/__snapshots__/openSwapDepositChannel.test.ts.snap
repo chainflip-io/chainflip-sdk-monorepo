@@ -6,7 +6,10 @@ exports[`openSwapDepositChannel > creates channel and stores channel and quote i
     {
       "commissionBps": 0,
       "destAddress": "tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6",
-      "destAsset": "BTC",
+      "destAsset": {
+        "asset": "BTC",
+        "chain": "Bitcoin",
+      },
       "destChain": "Bitcoin",
       "expectedDepositAmount": "1000",
       "fillOrKillParams": {
@@ -23,7 +26,10 @@ exports[`openSwapDepositChannel > creates channel and stores channel and quote i
         "recommendedLivePriceSlippageTolerancePercent": 0.5,
         "recommendedSlippageTolerancePercent": 0.25,
       },
-      "srcAsset": "FLIP",
+      "srcAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
       "srcChain": "Ethereum",
     },
     {
@@ -100,7 +106,10 @@ exports[`openSwapDepositChannel > creates channel and stores it in the database 
     {
       "commissionBps": 0,
       "destAddress": "tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6",
-      "destAsset": "BTC",
+      "destAsset": {
+        "asset": "BTC",
+        "chain": "Bitcoin",
+      },
       "destChain": "Bitcoin",
       "expectedDepositAmount": "777",
       "fillOrKillParams": {
@@ -110,7 +119,10 @@ exports[`openSwapDepositChannel > creates channel and stores it in the database 
         "refundCcmMetadata": null,
         "retryDurationBlocks": 2,
       },
-      "srcAsset": "FLIP",
+      "srcAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
       "srcChain": "Ethereum",
     },
     {
@@ -159,7 +171,10 @@ exports[`openSwapDepositChannel > creates channel with a commission 2`] = `
     {
       "commissionBps": 100,
       "destAddress": "tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6",
-      "destAsset": "BTC",
+      "destAsset": {
+        "asset": "BTC",
+        "chain": "Bitcoin",
+      },
       "destChain": "Bitcoin",
       "expectedDepositAmount": "777",
       "fillOrKillParams": {
@@ -169,7 +184,10 @@ exports[`openSwapDepositChannel > creates channel with a commission 2`] = `
         "refundCcmMetadata": null,
         "retryDurationBlocks": 2,
       },
-      "srcAsset": "FLIP",
+      "srcAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
       "srcChain": "Ethereum",
     },
     {
@@ -222,7 +240,10 @@ exports[`openSwapDepositChannel > creates channel with boost and dca and stores 
         "numberOfChunks": 3,
       },
       "destAddress": "tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6",
-      "destAsset": "BTC",
+      "destAsset": {
+        "asset": "BTC",
+        "chain": "Bitcoin",
+      },
       "destChain": "Bitcoin",
       "expectedDepositAmount": "1000",
       "fillOrKillParams": {
@@ -238,7 +259,10 @@ exports[`openSwapDepositChannel > creates channel with boost and dca and stores 
         "estimatedPrice": "0.32820704083381790449",
         "intermediateAmount": "500",
       },
-      "srcAsset": "FLIP",
+      "srcAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
       "srcChain": "Ethereum",
     },
     {
@@ -315,7 +339,10 @@ exports[`openSwapDepositChannel > creates channel with boost fee and stores it i
     {
       "commissionBps": 0,
       "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
-      "destAsset": "USDC",
+      "destAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
       "destChain": "Ethereum",
       "expectedDepositAmount": "10101010",
       "fillOrKillParams": {
@@ -326,7 +353,10 @@ exports[`openSwapDepositChannel > creates channel with boost fee and stores it i
         "retryDurationBlocks": 2,
       },
       "maxBoostFeeBps": 100,
-      "srcAsset": "FLIP",
+      "srcAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
       "srcChain": "Ethereum",
     },
     {
@@ -379,7 +409,10 @@ exports[`openSwapDepositChannel > creates channel with ccmParams and stores it i
       },
       "commissionBps": 0,
       "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
-      "destAsset": "USDC",
+      "destAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
       "destChain": "Ethereum",
       "expectedDepositAmount": "10101010",
       "fillOrKillParams": {
@@ -389,7 +422,10 @@ exports[`openSwapDepositChannel > creates channel with ccmParams and stores it i
         "refundCcmMetadata": null,
         "retryDurationBlocks": 2,
       },
-      "srcAsset": "FLIP",
+      "srcAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
       "srcChain": "Ethereum",
     },
     {
@@ -441,7 +477,10 @@ exports[`openSwapDepositChannel > creates channel with fill or kill params and s
         "numberOfChunks": 3,
       },
       "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
-      "destAsset": "USDC",
+      "destAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
       "destChain": "Ethereum",
       "expectedDepositAmount": "10101010",
       "fillOrKillParams": {
@@ -451,7 +490,10 @@ exports[`openSwapDepositChannel > creates channel with fill or kill params and s
         "refundCcmMetadata": null,
         "retryDurationBlocks": 500,
       },
-      "srcAsset": "FLIP",
+      "srcAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
       "srcChain": "Ethereum",
     },
     {
