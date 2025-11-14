@@ -7,11 +7,11 @@ describe(getOpenSwapDepositChannelSchema, () => {
     srcChain: 'Bitcoin',
     destAsset: 'ETH',
     destChain: 'Ethereum',
-    destAddress: '0x123',
+    destAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
     amount: '123',
     fillOrKillParams: {
       retryDurationBlocks: 2,
-      refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+      refundAddress: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
       minPriceX128: '1',
     },
   };
@@ -77,7 +77,7 @@ describe(getOpenSwapDepositChannelSchema, () => {
       getOpenSwapDepositChannelSchema('mainnet').parse({
         srcAsset: 'BTC',
         destAsset: 'ETH',
-        destAddress: '0x123',
+        destAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
         ccmParams: {
           gasBudget: '123',
           message: '0xdeadc0de',
@@ -104,7 +104,7 @@ describe(getOpenSwapDepositChannelSchema, () => {
         ...swapBody,
         fillOrKillParams: {
           retryDurationBlocks: 10,
-          refundAddress: '0x1234',
+          refundAddress: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
           minPriceX128: '1',
         },
       }),
@@ -117,7 +117,7 @@ describe(getOpenSwapDepositChannelSchema, () => {
         ...swapBody,
         fillOrKillParams: {
           retryDurationBlocks: 10,
-          refundAddress: '0x1234',
+          refundAddress: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
           minPriceX128: '1',
         },
       }),
@@ -130,7 +130,7 @@ describe(getOpenSwapDepositChannelSchema, () => {
         ...swapBody,
         fillOrKillParams: {
           retryDurationBlocks: 10,
-          refundAddress: '0x1234',
+          refundAddress: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
           minPriceX128: '1',
           maxOraclePriceSlippage: 100,
         },
@@ -144,7 +144,7 @@ describe(getOpenSwapDepositChannelSchema, () => {
         ...swapBody,
         fillOrKillParams: {
           retryDurationBlocks: 10,
-          refundAddress: '0x1234',
+          refundAddress: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
           minPriceX128: '1',
           maxOraclePriceSlippage: 0.5,
         },

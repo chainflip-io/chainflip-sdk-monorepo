@@ -1933,7 +1933,6 @@ describe(SwapSDK, () => {
                 "retryDurationBlocks": 500,
               },
               "maxBoostFeeBps": undefined,
-              "network": "sisyphos",
               "srcAddress": undefined,
               "srcAsset": {
                 "asset": "BTC",
@@ -2020,7 +2019,6 @@ describe(SwapSDK, () => {
                 "retryDurationBlocks": 500,
               },
               "maxBoostFeeBps": undefined,
-              "network": "sisyphos",
               "srcAddress": undefined,
               "srcAsset": {
                 "asset": "BTC",
@@ -2108,7 +2106,6 @@ describe(SwapSDK, () => {
                 "retryDurationBlocks": 500,
               },
               "maxBoostFeeBps": undefined,
-              "network": "sisyphos",
               "srcAddress": undefined,
               "srcAsset": {
                 "asset": "BTC",
@@ -2197,7 +2194,6 @@ describe(SwapSDK, () => {
                 "retryDurationBlocks": 500,
               },
               "maxBoostFeeBps": undefined,
-              "network": "sisyphos",
               "srcAddress": undefined,
               "srcAsset": {
                 "asset": "BTC",
@@ -2804,7 +2800,6 @@ describe(SwapSDK, () => {
                 "retryDurationBlocks": 500,
               },
               "maxBoostFeeBps": undefined,
-              "network": "sisyphos",
               "srcAddress": undefined,
               "srcAsset": {
                 "asset": "BTC",
@@ -2880,7 +2875,6 @@ describe(SwapSDK, () => {
                 "retryDurationBlocks": 500,
               },
               "maxBoostFeeBps": undefined,
-              "network": "sisyphos",
               "srcAddress": undefined,
               "srcAsset": {
                 "asset": "BTC",
@@ -2958,7 +2952,6 @@ describe(SwapSDK, () => {
                 "retryDurationBlocks": 500,
               },
               "maxBoostFeeBps": undefined,
-              "network": "sisyphos",
               "srcAddress": undefined,
               "srcAsset": {
                 "asset": "BTC",
@@ -3036,7 +3029,6 @@ describe(SwapSDK, () => {
                 "retryDurationBlocks": 500,
               },
               "maxBoostFeeBps": undefined,
-              "network": "sisyphos",
               "srcAddress": undefined,
               "srcAsset": {
                 "asset": "BTC",
@@ -3113,7 +3105,6 @@ describe(SwapSDK, () => {
                 "retryDurationBlocks": 500,
               },
               "maxBoostFeeBps": undefined,
-              "network": "sisyphos",
               "srcAddress": undefined,
               "srcAsset": {
                 "asset": "BTC",
