@@ -2,11 +2,7 @@ import { HttpClient } from '@chainflip/rpc';
 import { AssetAndChain } from '@chainflip/rpc/parsers';
 import { unreachable } from '@chainflip/utils/assertion';
 import { bytesToHex } from '@chainflip/utils/bytes';
-import {
-  ChainflipNetwork,
-  chainflipNetworks,
-  UncheckedAssetAndChain,
-} from '@chainflip/utils/chainflip';
+import { ChainflipNetwork, UncheckedAssetAndChain } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
 import { priceX128ToPrice } from '@chainflip/utils/tickMath';
@@ -275,54 +271,58 @@ export async function requestSwapParameterEncoding(
   return transformKeysToCamelCase(response);
 }
 
-export const cfParameterEncodingRequestSchema = z
-  .object({
-    srcAsset: assetAndChain,
-    srcAddress: z.string().optional(),
-    destAsset: assetAndChain,
-    destAddress: z.string(),
-    amount: unsignedInteger,
-    commissionBps: z.number().optional().default(0),
-    ccmParams: transformedCcmParamsSchema.optional(),
-    maxBoostFeeBps: z.number().optional(),
-    affiliates: z.array(affiliateBroker).optional(),
-    fillOrKillParams: transformedFokSchema,
-    dcaParams: transformedDcaParamsSchema.optional(),
-    network: z.enum(chainflipNetworks),
-  })
-  .superRefine(({ network, ...val }, ctx) => {
-    if (val.srcAddress && !validateAddress(val.srcAsset.chain, val.srcAddress, network)) {
-      ctx.addIssue({
-        message: `Address "${val.srcAddress}" is not a valid "${val.srcAsset.chain}" address for "${network}"`,
-        code: z.ZodIssueCode.custom,
-      });
-    }
+export const getParameterEncodingRequestSchema = (network: ChainflipNetwork) =>
+  z
+    .object({
+      srcAsset: assetAndChain,
+      srcAddress: z.string().optional(),
+      destAsset: assetAndChain,
+      destAddress: z.string(),
+      amount: unsignedInteger,
+      commissionBps: z.number().optional().default(0),
+      ccmParams: transformedCcmParamsSchema.optional(),
+      maxBoostFeeBps: z.number().optional(),
+      affiliates: z.array(affiliateBroker).optional(),
+      fillOrKillParams: transformedFokSchema,
+      dcaParams: transformedDcaParamsSchema.optional(),
+      brokerAccount: chainflipAddress.optional(),
+    })
+    .superRefine(({ ...val }, ctx) => {
+      if (val.srcAddress && !validateAddress(val.srcAsset.chain, val.srcAddress, network)) {
+        ctx.addIssue({
+          message: `Address "${val.srcAddress}" is not a valid "${val.srcAsset.chain}" address for "${network}"`,
+          code: z.ZodIssueCode.custom,
+        });
+      }
 
-    if (!validateAddress(val.destAsset.chain, val.destAddress, network)) {
-      ctx.addIssue({
-        message: `Address "${val.destAddress}" is not a valid "${val.destAsset.chain}" address for "${network}"`,
-        code: z.ZodIssueCode.custom,
-      });
-    }
+      if (!validateAddress(val.destAsset.chain, val.destAddress, network)) {
+        ctx.addIssue({
+          message: `Address "${val.destAddress}" is not a valid "${val.destAsset.chain}" address for "${network}"`,
+          code: z.ZodIssueCode.custom,
+        });
+      }
 
-    if (!validateAddress(val.srcAsset.chain, val.fillOrKillParams.refund_address, network)) {
-      ctx.addIssue({
-        message: `Address "${val.fillOrKillParams.refund_address}" is not a valid "${val.srcAsset.chain}" address for "${network}"`,
-        code: z.ZodIssueCode.custom,
-      });
-    }
-  })
-  .transform(({ network, ...rest }) => rest);
+      if (!validateAddress(val.srcAsset.chain, val.fillOrKillParams.refund_address, network)) {
+        ctx.addIssue({
+          message: `Address "${val.fillOrKillParams.refund_address}" is not a valid "${val.srcAsset.chain}" address for "${network}"`,
+          code: z.ZodIssueCode.custom,
+        });
+      }
+    })
+    .transform(({ ...rest }) => rest);
 
-export type CfParametersEncodingRequest = z.input<typeof cfParameterEncodingRequestSchema>;
+export type CfParametersEncodingRequest = z.input<
+  ReturnType<typeof getParameterEncodingRequestSchema>
+>;
 
 export async function requestCfParametersEncoding(
   request: CfParametersEncodingRequest,
   opts: { url: string },
+  network: ChainflipNetwork,
 ) {
   const client = new HttpClient(opts.url);
 
-  const params = cfParameterEncodingRequestSchema.parse(request);
+  const params = getParameterEncodingRequestSchema(network).parse(request);
 
   const response = await client.sendRequest(
     'broker_encode_cf_parameters',
