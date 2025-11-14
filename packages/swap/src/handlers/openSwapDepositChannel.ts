@@ -3,7 +3,6 @@ import { z } from 'zod';
 import { getOpenSwapDepositChannelSchema } from '@/shared/api/openSwapDepositChannel.js';
 import * as broker from '@/shared/broker.js';
 import { getPriceFromPriceX128 } from '@/shared/functions.js';
-import { validateAddress } from '@/shared/validation/addressValidation.js';
 import prisma, { Prisma } from '../client.js';
 import env from '../config/env.js';
 import { getAssetPrice } from '../pricing/index.js';
@@ -30,12 +29,6 @@ export const openSwapDepositChannel = async ({
   takeCommission,
   ...input
 }: z.output<ReturnType<typeof getOpenSwapDepositChannelSchema>>) => {
-  if (!validateAddress(input.destAsset.chain, input.destAddress, env.CHAINFLIP_NETWORK)) {
-    throw ServiceError.badRequest(
-      `Address "${input.destAddress}" is not a valid "${input.destAsset.chain}" address`,
-    );
-  }
-
   logger.info('Opening swap deposit channel', input);
 
   const srcAsset = getInternalAsset(input.srcAsset);
