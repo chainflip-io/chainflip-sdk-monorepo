@@ -6,10 +6,11 @@ import express from 'express';
 import { Request } from 'express-serve-static-core';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { apiContract } from '@/shared/api/contract.js';
+import { createApiContract } from '@/shared/api/contract.js';
+import env from './config/env.js';
 import authenticate from './quoting/authenticate.js';
 import Quoter from './quoting/Quoter.js';
-import { apiRouter } from './routes/api.js';
+import { createApiRouter } from './routes/api.js';
 import { handleError, maintenanceMode, quoteMiddleware } from './routes/common.js';
 import thirdPartySwap from './routes/thirdPartySwap.js';
 import quoteRouterV2 from './routes/v2/quote.js';
@@ -56,7 +57,8 @@ app.use('/v2/quote', quoteMiddleware, quoteRouterV2(quoter));
 
 app.use('/trpc', maintenanceMode, trpcExpress.createExpressMiddleware({ router: appRouter }));
 
-createExpressEndpoints(apiContract, apiRouter, app, {
+const contract = createApiContract(env.CHAINFLIP_NETWORK);
+createExpressEndpoints(contract, createApiRouter(contract), app, {
   globalMiddleware: [
     (req, res, next) => maintenanceMode(req as Request, res, next),
     express.json(),

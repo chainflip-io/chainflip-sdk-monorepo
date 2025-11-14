@@ -1124,9 +1124,9 @@ describe(broker.requestCfParametersEncoding, () => {
           minPriceX128: '34028236692093846346337460743176821145600000000000000000000000',
           maxOraclePriceSlippage: 50,
         },
-        network: 'mainnet',
       },
       brokerConfig,
+      'mainnet',
     );
     expect(postSpy.mock.calls[0][0]).toBe(brokerConfig.url);
     const requestObject = postSpy.mock.calls[0][1][0];
@@ -1180,9 +1180,9 @@ describe(broker.requestCfParametersEncoding, () => {
           minPriceX128: '10000000',
           maxOraclePriceSlippage: 50,
         },
-        network: 'mainnet',
       },
       brokerConfig,
+      'mainnet',
     );
     expect(postSpy.mock.calls[0][0]).toBe(brokerConfig.url);
     const requestObject = postSpy.mock.calls[0][1][0];
@@ -1239,9 +1239,9 @@ describe(broker.requestCfParametersEncoding, () => {
           minPriceX128: '10000000',
           maxOraclePriceSlippage: 50,
         },
-        network: 'mainnet',
       },
       brokerConfig,
+      'mainnet',
     );
     expect(postSpy.mock.calls[0][0]).toBe(brokerConfig.url);
     const requestObject = postSpy.mock.calls[0][1][0];
@@ -1297,9 +1297,9 @@ describe(broker.requestCfParametersEncoding, () => {
             minPriceX128: '10000000',
             maxOraclePriceSlippage: 50,
           },
-          network: 'mainnet',
         },
         brokerConfig,
+        'mainnet',
       ),
     ).rejects.toThrow(/2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm/);
   });
@@ -1319,9 +1319,9 @@ describe(broker.requestCfParametersEncoding, () => {
             minPriceX128: '10000000',
             maxOraclePriceSlippage: 50,
           },
-          network: 'mainnet',
         },
         brokerConfig,
+        'mainnet',
       ),
     ).rejects.toThrow(/2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm/);
   });
@@ -1341,9 +1341,9 @@ describe(broker.requestCfParametersEncoding, () => {
             minPriceX128: '10000000',
             maxOraclePriceSlippage: 50,
           },
-          network: 'mainnet',
         },
         brokerConfig,
+        'mainnet',
       ),
     ).rejects.toThrow(/2N3oefVeg6stiTb5Kh3ozCSkaqmx91FDbsm/);
   });
@@ -1366,9 +1366,9 @@ describe(broker.requestCfParametersEncoding, () => {
           gasBudget: '123456789',
           message: '0xdeadc0de',
         },
-        network: 'perseverance',
       },
       brokerConfig,
+      'perseverance',
     );
     const requestObject = postSpy.mock.calls[0][1][0];
     expect(requestObject).toMatchInlineSnapshot(
@@ -1428,9 +1428,9 @@ describe(broker.requestCfParametersEncoding, () => {
           maxOraclePriceSlippage: 50,
         },
         maxBoostFeeBps: 100,
-        network: 'perseverance',
       },
       brokerConfig,
+      'perseverance',
     );
     const requestObject = postSpy.mock.calls[0][1][0];
     expect(requestObject).toMatchInlineSnapshot(
@@ -1487,9 +1487,9 @@ describe(broker.requestCfParametersEncoding, () => {
         },
         maxBoostFeeBps: 100,
         commissionBps: 25,
-        network: 'perseverance',
       },
       brokerConfig,
+      'perseverance',
     );
     const requestObject = postSpy.mock.calls[0][1][0];
     expect(requestObject).toMatchInlineSnapshot(
@@ -1550,9 +1550,9 @@ describe(broker.requestCfParametersEncoding, () => {
           { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
           { account: 'cFJ4sqrg4FnrLPsGdt5w85XExGYxVLHLYLci28PnqcVVb8r8a', commissionBps: 20 },
         ],
-        network: 'perseverance',
       },
       brokerConfig,
+      'perseverance',
     );
     const requestObject = postSpy.mock.calls[0][1][0];
     expect(requestObject).toMatchInlineSnapshot(
@@ -1619,9 +1619,9 @@ describe(broker.requestCfParametersEncoding, () => {
           numberOfChunks: 100,
           chunkIntervalBlocks: 5,
         },
-        network: 'perseverance',
       },
       brokerConfig,
+      'perseverance',
     );
     const requestObject = postSpy.mock.calls[0][1][0];
     expect(requestObject).toMatchInlineSnapshot(

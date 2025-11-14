@@ -1,48 +1,53 @@
+import { ChainflipNetwork } from '@chainflip/utils/chainflip';
 import { initContract } from '@ts-rest/core';
-import { CfParameterEncodingRequestWithBroker } from './encodeCfParameters.js';
-import { EncodedVaultSwapData, EncodeVaultSwapBody } from './encodeVaultSwapData.js';
+import { EncodedVaultSwapData } from './encodeVaultSwapData.js';
 import { NetworkInfo } from './networkInfo.js';
-import { DepositChannelInfo, OpenSwapDepositChannelBody } from './openSwapDepositChannel.js';
+import { DepositChannelInfo, getOpenSwapDepositChannelSchema } from './openSwapDepositChannel.js';
+import {
+  getParameterEncodingRequestSchema,
+  getVaultSwapParameterEncodingRequestSchema,
+} from '../broker.js';
 import { hexString } from '../parsers.js';
 
 const c = initContract();
 
-export const apiContract = c.router(
-  {
-    networkInfo: {
-      method: 'GET',
-      path: '/networkInfo',
-      responses: {
-        200: NetworkInfo,
+export const createApiContract = (network: ChainflipNetwork) =>
+  c.router(
+    {
+      networkInfo: {
+        method: 'GET',
+        path: '/networkInfo',
+        responses: {
+          200: NetworkInfo,
+        },
+        summary: 'Get information about the Chainflip network',
       },
-      summary: 'Get information about the Chainflip network',
-    },
-    encodeCfParameters: {
-      method: 'POST',
-      path: '/encodeCfParameters',
-      body: CfParameterEncodingRequestWithBroker,
-      responses: {
-        200: hexString,
+      encodeCfParameters: {
+        method: 'POST',
+        path: '/encodeCfParameters',
+        body: getParameterEncodingRequestSchema(network),
+        responses: {
+          200: hexString,
+        },
+      },
+      encodeVaultSwapData: {
+        method: 'POST',
+        path: '/encodeVaultSwapData',
+        body: getVaultSwapParameterEncodingRequestSchema(network),
+        responses: {
+          200: EncodedVaultSwapData,
+        },
+      },
+      openSwapDepositChannel: {
+        method: 'POST',
+        path: '/openSwapDepositChannel',
+        body: getOpenSwapDepositChannelSchema(network),
+        responses: {
+          201: DepositChannelInfo,
+        },
       },
     },
-    encodeVaultSwapData: {
-      method: 'POST',
-      path: '/encodeVaultSwapData',
-      body: EncodeVaultSwapBody,
-      responses: {
-        200: EncodedVaultSwapData,
-      },
+    {
+      pathPrefix: '/api',
     },
-    openSwapDepositChannel: {
-      method: 'POST',
-      path: '/openSwapDepositChannel',
-      body: OpenSwapDepositChannelBody,
-      responses: {
-        201: DepositChannelInfo,
-      },
-    },
-  },
-  {
-    pathPrefix: '/api',
-  },
-);
+  );
