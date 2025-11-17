@@ -13,4 +13,7 @@ export default defineConfig({
   },
   sourcemap: true,
   target: 'es2022',
+  outExtension({ format }) {
+    return format === 'esm' ? { js: '.mjs' } : { js: '.js' };
+  },
 });
