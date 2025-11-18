@@ -20,12 +20,8 @@ type Origin = z.output<typeof schema>['origin'];
 export type SwapRequestedArgs = z.input<typeof schema>;
 
 const getRequestInfo = (requestType: RequestType) => {
-  if (
-    requestType.__kind === 'IngressEgressFee' ||
-    requestType.__kind === 'NetworkFee' ||
-    requestType.outputAction.__kind === 'CreditFlipAndTransferToGateway'
-  ) {
-    return { type: 'INTERNAL' as const, destAddress: undefined, ccmMetadata: undefined };
+  if (requestType.__kind === 'IngressEgressFee' || requestType.__kind === 'NetworkFee') {
+    return { type: 'INTERNAL' as const };
   }
 
   if (requestType.__kind === 'Regular' || requestType.__kind === 'RegularNoNetworkFee') {
@@ -40,15 +36,17 @@ const getRequestInfo = (requestType: RequestType) => {
       return {
         type: 'ON_CHAIN' as const,
         destAddress: requestType.outputAction.accountId,
-        ccmMetadata: undefined,
       };
     }
     if (requestType.outputAction.__kind === 'CreditLendingPool') {
       return {
         type: 'LIQUIDATION' as const,
         destAddress: requestType.outputAction.swapType.borrowerId,
-        ccmMetadata: undefined,
       };
+    }
+
+    if (requestType.outputAction.__kind === 'CreditFlipAndTransferToGateway') {
+      return { type: 'ACCOUNT_CREATION' as const, lpAccountId: requestType.outputAction.accountId };
     }
 
     return assertNever(
@@ -86,7 +84,22 @@ export const getOriginInfo = async (
   prisma: Prisma.TransactionClient,
   srcAsset: ChainflipAsset,
   origin: Origin,
+  requestInfo: ReturnType<typeof getRequestInfo>,
 ) => {
+  if (requestInfo.type === 'ACCOUNT_CREATION') {
+    const channel = await prisma.accountCreationDepositChannel.findFirstOrThrow({
+      where: { asset: srcAsset, lpAccountId: requestInfo.lpAccountId },
+      orderBy: { id: 'desc' },
+      include: { broker: true },
+    });
+
+    return {
+      originType: 'DEPOSIT_CHANNEL' as const,
+      accountCreationDepositChannelId: channel.id,
+      brokerId: channel.broker.account,
+    };
+  }
+
   if (origin.__kind === 'DepositChannel') {
     const depositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
       where: {
@@ -103,38 +116,27 @@ export const getOriginInfo = async (
     return {
       originType: 'DEPOSIT_CHANNEL',
       swapDepositChannelId: depositChannel.id,
-      depositTransactionRef: undefined,
       brokerId: origin.brokerId,
-      accountId: undefined,
     } as const;
   }
 
   if (origin.__kind === 'Vault') {
     return {
       originType: 'VAULT',
-      swapDepositChannelId: undefined,
       depositTransactionRef: getVaultOriginTxRef(origin),
       brokerId: origin.brokerId,
-      accountId: undefined,
     } as const;
   }
 
   if (origin.__kind === 'Internal') {
     return {
       originType: 'INTERNAL',
-      swapDepositChannelId: undefined,
-      depositTransactionRef: undefined,
-      brokerId: undefined,
-      accountId: undefined,
     } as const;
   }
 
   if (origin.__kind === 'OnChainAccount') {
     return {
       originType: 'ON_CHAIN',
-      swapDepositChannelId: undefined,
-      depositTransactionRef: undefined,
-      brokerId: undefined,
       accountId: origin.value,
     } as const;
   }
@@ -212,11 +214,17 @@ export default async function swapRequested({
     brokerFees,
   } = schema.parse(event.args);
 
-  const originInfo = await getOriginInfo(prisma, inputAsset, origin);
-
-  const { originType, swapDepositChannelId, depositTransactionRef, brokerId } = originInfo;
-
   const requestInfo = getRequestInfo(requestType);
+
+  const originInfo = await getOriginInfo(prisma, inputAsset, origin, requestInfo);
+
+  const {
+    originType,
+    swapDepositChannelId,
+    depositTransactionRef,
+    brokerId,
+    accountCreationDepositChannelId,
+  } = originInfo;
 
   const { destAddress, ccmMetadata } = requestInfo;
 
@@ -241,6 +249,7 @@ export default async function swapRequested({
       originType,
       depositTransactionRef,
       swapDepositChannelId,
+      accountCreationDepositChannelId,
       srcAsset: inputAsset,
       destAsset: outputAsset,
       requestType: pascalCaseToScreamingSnakeCase(requestType.__kind),

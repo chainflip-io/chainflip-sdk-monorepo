@@ -1,5 +1,6 @@
 import { swappingAccountCreationDepositAddressReady } from '@chainflip/processor/200/swapping/accountCreationDepositAddressReady';
 import z from 'zod';
+import { formatForeignChainAddress } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
 
 export type SwappingAccountCreationDepositAddressReadyArgs = z.input<
@@ -11,17 +12,48 @@ export default async function accountCreationDepositAddressReady({
   event,
   block,
 }: EventHandlerArgs) {
-  const { channelId, depositAddress } = swappingAccountCreationDepositAddressReady.parse(
-    event.args,
-  );
+  const {
+    channelId,
+    depositAddress,
+    asset,
+    boostFee,
+    channelOpeningFee,
+    depositChainExpiryBlock,
+    refundAddress,
+    requestedBy,
+    requestedFor,
+  } = swappingAccountCreationDepositAddressReady.parse(event.args);
 
-  await prisma.depositChannel.create({
-    data: {
-      channelId,
-      issuedBlock: block.height,
-      srcChain: depositAddress.chain,
-      depositAddress: depositAddress.address,
-      isSwapping: false,
-    },
-  });
+  await Promise.all([
+    prisma.depositChannel.create({
+      data: {
+        channelId,
+        issuedBlock: block.height,
+        srcChain: depositAddress.chain,
+        depositAddress: depositAddress.address,
+        isSwapping: false,
+      },
+    }),
+    prisma.accountCreationDepositChannel.create({
+      data: {
+        asset,
+        chain: depositAddress.chain,
+        channelId,
+        issuedBlock: block.height,
+        depositAddress: depositAddress.address,
+        depositChainExpiryBlock,
+        maxBoostFeeBps: boostFee,
+        openingFeePaid: channelOpeningFee.toString(),
+        refundAddress: formatForeignChainAddress(refundAddress),
+        lpAccountId: requestedFor,
+        broker: {
+          create: {
+            account: requestedBy,
+            commissionBps: 0,
+            type: 'SUBMITTER',
+          },
+        },
+      },
+    }),
+  ]);
 }
