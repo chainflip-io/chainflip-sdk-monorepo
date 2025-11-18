@@ -2,6 +2,7 @@
 
 exports[`depositFinalised > Bitcoin > updates swap request for boosted deposit 1`] = `
 {
+  "accountCreationDepositChannelId": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,
@@ -45,6 +46,7 @@ exports[`depositFinalised > Bitcoin > updates swap request for boosted deposit 1
 
 exports[`depositFinalised > Bitcoin > updates swap request for regular deposit 1`] = `
 {
+  "accountCreationDepositChannelId": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,
@@ -98,6 +100,7 @@ exports[`depositFinalised > Bitcoin > updates swap request for regular deposit 1
 
 exports[`depositFinalised > Bitcoin > updates swap request for regular deposit with 190 schema 1`] = `
 {
+  "accountCreationDepositChannelId": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,

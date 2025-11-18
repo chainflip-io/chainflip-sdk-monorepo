@@ -2,6 +2,7 @@
 
 exports[`swapRequestCompleted > updates a fresh swap request and associated quote if swap was (partially) refunded 1`] = `
 {
+  "accountCreationDepositChannelId": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": 2022-12-06T14:31:45.000Z,
@@ -74,6 +75,7 @@ exports[`swapRequestCompleted > updates a fresh swap request and associated quot
 
 exports[`swapRequestCompleted > updates a stale swap request and associated quote if swap was (partially) refunded 1`] = `
 {
+  "accountCreationDepositChannelId": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": 2022-12-06T14:31:45.000Z,
@@ -146,6 +148,7 @@ exports[`swapRequestCompleted > updates a stale swap request and associated quot
 
 exports[`swapRequestCompleted > updates swap request and associated quote 1`] = `
 {
+  "accountCreationDepositChannelId": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": 2022-12-06T14:31:45.000Z,
@@ -218,6 +221,7 @@ exports[`swapRequestCompleted > updates swap request and associated quote 1`] = 
 
 exports[`swapRequestCompleted > updates swap request with multiple swaps 1`] = `
 {
+  "accountCreationDepositChannelId": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": 2022-12-06T14:31:45.000Z,
@@ -262,6 +266,7 @@ exports[`swapRequestCompleted > updates swap request with multiple swaps 1`] = `
 
 exports[`swapRequestCompleted > updates swap request with single swap 1`] = `
 {
+  "accountCreationDepositChannelId": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": 2022-12-06T14:31:45.000Z,

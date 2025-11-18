@@ -61,9 +61,9 @@ describe(creditedOnChain, () => {
           id: expect.any(Number),
           swapRequestId: expect.any(BigInt),
         },
-      },
-      `
+      }, `
       {
+        "accountCreationDepositChannelId": null,
         "ccmGasBudget": null,
         "ccmMessage": null,
         "completedAt": null,
@@ -110,7 +110,6 @@ describe(creditedOnChain, () => {
         "swapRequestedBlockIndex": "1-1",
         "totalBrokerCommissionBps": 0,
       }
-    `,
-    );
+    `);
   });
 });
