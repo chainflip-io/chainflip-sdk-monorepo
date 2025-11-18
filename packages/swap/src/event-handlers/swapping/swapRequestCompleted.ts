@@ -1,4 +1,5 @@
-import { swappingSwapRequestCompleted } from '@chainflip/processor/160/swapping/swapRequestCompleted';
+import { swappingSwapRequestCompleted as schema160 } from '@chainflip/processor/160/swapping/swapRequestCompleted';
+import { swappingSwapRequestCompleted as schema200 } from '@chainflip/processor/200/swapping/swapRequestCompleted';
 import { z } from 'zod';
 import { isNotNullish } from '@/shared/guards.js';
 import { Prisma } from '../../client.js';
@@ -12,6 +13,8 @@ const timeElapsedinMinutes = (timestamp: number | string | Date) => {
   const timeDiff = Math.abs(currentTime.getTime() - elapsedTime.getTime());
   return Math.floor(timeDiff / 60_000);
 };
+
+const swappingSwapRequestCompleted = z.union([schema200.strict(), schema160.strict()]);
 
 export type SwapRequestCompletedArgs = z.input<typeof swappingSwapRequestCompleted>;
 
