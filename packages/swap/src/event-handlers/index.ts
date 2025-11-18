@@ -18,6 +18,7 @@ import { lendingPoolsBoostPoolCreated } from './lending-pools/boostPoolCreated.j
 import newPoolCreated from './liquidity-pools/newPoolCreated.js';
 import poolFeeSet from './liquidity-pools/poolFeeSet.js';
 import liquidityDepositAddressReady from './liquidity-provider/liquidityDepositAddressReady.js';
+import accountCreationDepositAddressReady from './swapping/accountCreationDepositAddressReady.js';
 import creditedOnChain from './swapping/creditedOnChain.js';
 import refundedOnChain from './swapping/refundedOnChain.js';
 import refundEgressIgnored from './swapping/refundEgressIgnored.js';
@@ -234,6 +235,15 @@ const handlers = [
   {
     spec: '1.11.0' as Semver,
     handlers: [{ name: events.Swapping.SwapAborted, handler: swapAborted }],
+  },
+  {
+    spec: '2.0.0' as Semver,
+    handlers: [
+      {
+        name: 'Swapping.AccountCreationDepositAddressReady',
+        handler: accountCreationDepositAddressReady,
+      },
+    ],
   },
 ];
 
