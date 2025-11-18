@@ -253,8 +253,8 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7(typescript@5.8.3)
       '@chainflip/processor':
-        specifier: ~2.0.1
-        version: 2.0.1
+        specifier: ~2.0.3
+        version: 2.0.3
       '@chainflip/redis':
         specifier: ^1.0.2
         version: 1.0.2
@@ -486,8 +486,8 @@ packages:
   '@chainflip/bitcoin@1.2.7':
     resolution: {integrity: sha512-De/3Oe53xCvolYsYydK+/wQ1qorPsvbsRX7idA4m86sHQTxlZ4hP5LU7lb3xhOyqrl94LMd56iCRLgoFlzmsCA==}
 
-  '@chainflip/processor@2.0.1':
-    resolution: {integrity: sha512-UsNumMDRFHVeON6Za5YfG+xjEiBMZCojmy2niWrmsVHchG7P44H4lmCLp9+jLT7GMbPQfcY09Lq/Nv6uKSE5cA==}
+  '@chainflip/processor@2.0.3':
+    resolution: {integrity: sha512-7NTjAf8jgElk0b9/s/PDE6FQwUKAC5g3ygLjk/ObGevBT2G4+RN5jHa5oNUOaFYLbNub8o9/ctWTQfU/sAu0uQ==}
 
   '@chainflip/redis@1.0.2':
     resolution: {integrity: sha512-ahkz+xKt5pX1gx4QikphdvTpZX8fjNgi/84q1WLXaAOoUop4pWdUw/boXv7rzg2xIqIdvDFk82/zz1g0OmiySQ==}
@@ -5716,7 +5716,7 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@chainflip/processor@2.0.1':
+  '@chainflip/processor@2.0.3':
     dependencies:
       '@chainflip/utils': 0.8.18
       zod: 3.25.76

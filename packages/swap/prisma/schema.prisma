@@ -147,6 +147,7 @@ enum SwapRequestType {
   NETWORK_FEE
   INGRESS_EGRESS_FEE
   REGULAR
+  REGULAR_NO_NETWORK_FEE
   LEGACY_CCM
 
   @@schema("public")

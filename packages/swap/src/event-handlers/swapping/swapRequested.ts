@@ -1,4 +1,5 @@
-import { swappingSwapRequested as schema11200 } from '@chainflip/processor/200/swapping/swapRequested';
+import { swappingSwapRequested as schema11200 } from '@chainflip/processor/11200/swapping/swapRequested';
+import { swappingSwapRequested as schema200 } from '@chainflip/processor/200/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
 import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
 import { isNullish } from '@chainflip/utils/guard';
@@ -12,18 +13,22 @@ import { Prisma } from '../../client.js';
 import { formatForeignChainAddress } from '../common.js';
 import type { EventHandlerArgs } from '../index.js';
 
-const schema = schema11200.strict();
+const schema = z.union([schema200.strict(), schema11200.strict()]);
 
 type RequestType = z.output<typeof schema>['requestType'];
 type Origin = z.output<typeof schema>['origin'];
 export type SwapRequestedArgs = z.input<typeof schema>;
 
 const getRequestInfo = (requestType: RequestType) => {
-  if (requestType.__kind === 'IngressEgressFee' || requestType.__kind === 'NetworkFee') {
+  if (
+    requestType.__kind === 'IngressEgressFee' ||
+    requestType.__kind === 'NetworkFee' ||
+    requestType.outputAction.__kind === 'CreditFlipAndTransferToGateway'
+  ) {
     return { type: 'INTERNAL' as const, destAddress: undefined, ccmMetadata: undefined };
   }
 
-  if (requestType.__kind === 'Regular') {
+  if (requestType.__kind === 'Regular' || requestType.__kind === 'RegularNoNetworkFee') {
     if (requestType.outputAction.__kind === 'Egress') {
       return {
         type: 'EGRESS' as const,
