@@ -1,14 +1,8 @@
-import { getInternalAssets, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
+import { getInternalAsset, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
+import { getOpenSwapDepositChannelSchema } from '@/shared/api/openSwapDepositChannel.js';
 import * as broker from '@/shared/broker.js';
 import { getPriceFromPriceX128 } from '@/shared/functions.js';
-import { asset, chain, numericString } from '@/shared/parsers.js';
-import {
-  ccmParamsSchema,
-  dcaParams as dcaParamsSchema,
-  fillOrKillParams as fillOrKillParamsSchema,
-} from '@/shared/schemas.js';
-import { validateAddress } from '@/shared/validation/addressValidation.js';
 import prisma, { Prisma } from '../client.js';
 import env from '../config/env.js';
 import { getAssetPrice } from '../pricing/index.js';
@@ -18,37 +12,11 @@ import logger from '../utils/logger.js';
 import { validateSwapAmount } from '../utils/rpc.js';
 import ServiceError from '../utils/ServiceError.js';
 
-export const openSwapDepositChannelSchema = z
-  .object({
-    srcAsset: asset,
-    destAsset: asset,
-    srcChain: chain,
-    destChain: chain,
-    destAddress: z.string(),
-    amount: numericString,
-    ccmParams: ccmParamsSchema.optional(),
-    maxBoostFeeBps: z.number().optional(),
-    srcAddress: z.string().optional(),
-    fillOrKillParams: fillOrKillParamsSchema,
-    dcaParams: dcaParamsSchema.optional(),
-    quote: z
-      .object({
-        intermediateAmount: z.string().optional(),
-        egressAmount: z.string(),
-        estimatedPrice: z.string(),
-        recommendedSlippageTolerancePercent: z.number().optional(),
-        recommendedLivePriceSlippageTolerancePercent: z.number().optional(),
-      })
-      .optional(),
-    takeCommission: z.boolean().optional(),
-  })
-  .transform(({ amount, ...rest }) => ({
-    ...rest,
-    expectedDepositAmount: amount,
-  }));
-
-const getSlippageTolerancePercent = (input: z.output<typeof openSwapDepositChannelSchema>) => {
-  const { srcAsset, destAsset } = getInternalAssets(input);
+const getSlippageTolerancePercent = (
+  input: z.output<ReturnType<typeof getOpenSwapDepositChannelSchema>>,
+) => {
+  const srcAsset = getInternalAsset(input.srcAsset);
+  const destAsset = getInternalAsset(input.destAsset);
   const estimatedPrice = Number(input.quote?.estimatedPrice);
   const fokMinPrice = Number(
     getPriceFromPriceX128(input.fillOrKillParams.minPriceX128, srcAsset, destAsset),
@@ -60,16 +28,11 @@ const getSlippageTolerancePercent = (input: z.output<typeof openSwapDepositChann
 export const openSwapDepositChannel = async ({
   takeCommission,
   ...input
-}: z.output<typeof openSwapDepositChannelSchema>) => {
-  if (!validateAddress(input.destChain, input.destAddress, env.CHAINFLIP_NETWORK)) {
-    throw ServiceError.badRequest(
-      `Address "${input.destAddress}" is not a valid "${input.destChain}" address`,
-    );
-  }
-
+}: z.output<ReturnType<typeof getOpenSwapDepositChannelSchema>>) => {
   logger.info('Opening swap deposit channel', input);
 
-  const { srcAsset, destAsset } = getInternalAssets(input);
+  const srcAsset = getInternalAsset(input.srcAsset);
+  const destAsset = getInternalAsset(input.destAsset);
   assertRouteEnabled({ srcAsset, destAsset });
 
   const result = await validateSwapAmount(srcAsset, BigInt(input.expectedDepositAmount));
@@ -111,7 +74,7 @@ export const openSwapDepositChannel = async ({
       { url: brokerUrl },
       env.CHAINFLIP_NETWORK,
     ),
-    prisma.chainTracking.findFirst({ where: { chain: input.srcChain } }),
+    prisma.chainTracking.findFirst({ where: { chain: input.srcAsset.chain } }),
     getAssetPrice(srcAsset),
     getAssetPrice(destAsset),
   ]);
@@ -129,7 +92,7 @@ export const openSwapDepositChannel = async ({
     expectedDepositAmount,
     destAddress,
     maxBoostFeeBps,
-    srcChain,
+    srcAsset: { chain: srcChain },
     ccmParams,
     fillOrKillParams,
     dcaParams,

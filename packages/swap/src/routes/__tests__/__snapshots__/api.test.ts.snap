@@ -1,0 +1,522 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`openSwapDepositChannel > creates channel and stores channel and quote in the database 2`] = `
+[
+  [
+    {
+      "commissionBps": 0,
+      "destAddress": "tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6",
+      "destAsset": {
+        "asset": "BTC",
+        "chain": "Bitcoin",
+      },
+      "expectedDepositAmount": "1000",
+      "fillOrKillParams": {
+        "maxOraclePriceSlippage": 50,
+        "minPriceX128": "1",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "refundCcmMetadata": null,
+        "retryDurationBlocks": 2,
+      },
+      "quote": {
+        "egressAmount": "250",
+        "estimatedPrice": "0.375",
+        "intermediateAmount": "500",
+        "recommendedLivePriceSlippageTolerancePercent": 0.5,
+        "recommendedSlippageTolerancePercent": 0.25,
+      },
+      "srcAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
+    },
+    {
+      "url": "https://rpc-broker.test",
+    },
+    "perseverance",
+  ],
+]
+`;
+
+exports[`openSwapDepositChannel > creates channel and stores channel and quote in the database 3`] = `
+{
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "channelId": 888n,
+  "createdAt": Any<ClockDate>,
+  "dcaChunkIntervalBlocks": null,
+  "dcaNumberOfChunks": 1,
+  "depositAddress": "address",
+  "destAddress": "tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6",
+  "destAsset": "Btc",
+  "estimatedExpiryAt": 2023-11-09T12:55:00.000Z,
+  "expectedDepositAmount": "1000",
+  "expiryBlock": null,
+  "fokMaxOraclePriceSlippageBps": 50,
+  "fokMinPriceX128": "1",
+  "fokRefundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+  "fokRetryDurationBlocks": 2,
+  "id": Any<BigInt>,
+  "isExpired": false,
+  "issuedBlock": 123,
+  "maxBoostFeeBps": 0,
+  "openedThroughBackend": true,
+  "openingFeePaid": "100",
+  "quote": {
+    "channelOpenedAt": 2022-01-01T00:00:00.000Z,
+    "destAsset": "Btc",
+    "executedAt": null,
+    "executedPrice": null,
+    "executedSlippagePercent": null,
+    "expectedDepositAmount": "1000",
+    "id": Any<Number>,
+    "indexPriceAtChannelOpening": "0.00006153846153846154",
+    "indexPriceAtCompletion": null,
+    "inputAssetPriceAtChannelOpening": "4",
+    "inputAssetPriceAtCompletion": null,
+    "livePriceSlippageTolerancePercent": "50",
+    "maxBoostFeeBps": null,
+    "numberOfChunks": null,
+    "outputAssetPriceAtChannelOpening": "65000",
+    "outputAssetPriceAtCompletion": null,
+    "quotedEgressAmount": "250",
+    "quotedIntermediateAmount": "500",
+    "quotedPrice": "0.375",
+    "recommendedLivePriceSlippageTolerancePercent": "0.5",
+    "recommendedSlippageTolerancePercent": "0.25",
+    "refundedAt": null,
+    "slippageTolerancePercent": "0",
+    "srcAsset": "Flip",
+    "swapDepositChannelId": Any<BigInt>,
+    "swapRequestId": null,
+    "swapRequestNativeId": null,
+  },
+  "srcAsset": "Flip",
+  "srcChain": "Ethereum",
+  "srcChainExpiryBlock": 1000n,
+  "totalBrokerCommissionBps": 0,
+}
+`;
+
+exports[`openSwapDepositChannel > creates channel and stores it in the database 2`] = `
+[
+  [
+    {
+      "commissionBps": 0,
+      "destAddress": "tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6",
+      "destAsset": {
+        "asset": "BTC",
+        "chain": "Bitcoin",
+      },
+      "expectedDepositAmount": "777",
+      "fillOrKillParams": {
+        "maxOraclePriceSlippage": 50,
+        "minPriceX128": "1",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "refundCcmMetadata": null,
+        "retryDurationBlocks": 2,
+      },
+      "srcAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
+    },
+    {
+      "url": "https://rpc-broker.test",
+    },
+    "perseverance",
+  ],
+]
+`;
+
+exports[`openSwapDepositChannel > creates channel and stores it in the database 3`] = `
+{
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "channelId": 888n,
+  "createdAt": Any<ClockDate>,
+  "dcaChunkIntervalBlocks": null,
+  "dcaNumberOfChunks": 1,
+  "depositAddress": "address",
+  "destAddress": "tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6",
+  "destAsset": "Btc",
+  "estimatedExpiryAt": 2023-11-09T12:55:00.000Z,
+  "expectedDepositAmount": "777",
+  "expiryBlock": null,
+  "fokMaxOraclePriceSlippageBps": 50,
+  "fokMinPriceX128": "1",
+  "fokRefundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+  "fokRetryDurationBlocks": 2,
+  "id": Any<BigInt>,
+  "isExpired": false,
+  "issuedBlock": 123,
+  "maxBoostFeeBps": 0,
+  "openedThroughBackend": true,
+  "openingFeePaid": "100",
+  "quote": null,
+  "srcAsset": "Flip",
+  "srcChain": "Ethereum",
+  "srcChainExpiryBlock": 1000n,
+  "totalBrokerCommissionBps": 0,
+}
+`;
+
+exports[`openSwapDepositChannel > creates channel with a commission 2`] = `
+[
+  [
+    {
+      "commissionBps": 100,
+      "destAddress": "tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6",
+      "destAsset": {
+        "asset": "BTC",
+        "chain": "Bitcoin",
+      },
+      "expectedDepositAmount": "777",
+      "fillOrKillParams": {
+        "maxOraclePriceSlippage": 50,
+        "minPriceX128": "1",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "refundCcmMetadata": null,
+        "retryDurationBlocks": 2,
+      },
+      "srcAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
+    },
+    {
+      "url": "https://broker-2.test",
+    },
+    "perseverance",
+  ],
+]
+`;
+
+exports[`openSwapDepositChannel > creates channel with a commission 3`] = `
+{
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "channelId": 888n,
+  "createdAt": Any<ClockDate>,
+  "dcaChunkIntervalBlocks": null,
+  "dcaNumberOfChunks": 1,
+  "depositAddress": "address",
+  "destAddress": "tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6",
+  "destAsset": "Btc",
+  "estimatedExpiryAt": 2023-11-09T12:55:00.000Z,
+  "expectedDepositAmount": "777",
+  "expiryBlock": null,
+  "fokMaxOraclePriceSlippageBps": 50,
+  "fokMinPriceX128": "1",
+  "fokRefundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+  "fokRetryDurationBlocks": 2,
+  "id": Any<BigInt>,
+  "isExpired": false,
+  "issuedBlock": 123,
+  "maxBoostFeeBps": 0,
+  "openedThroughBackend": true,
+  "openingFeePaid": "100",
+  "quote": null,
+  "srcAsset": "Flip",
+  "srcChain": "Ethereum",
+  "srcChainExpiryBlock": 1000n,
+  "totalBrokerCommissionBps": 100,
+}
+`;
+
+exports[`openSwapDepositChannel > creates channel with boost and dca and stores quote in the database 2`] = `
+[
+  [
+    {
+      "commissionBps": 0,
+      "dcaParams": {
+        "chunkIntervalBlocks": 2,
+        "numberOfChunks": 3,
+      },
+      "destAddress": "tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6",
+      "destAsset": {
+        "asset": "BTC",
+        "chain": "Bitcoin",
+      },
+      "expectedDepositAmount": "1000",
+      "fillOrKillParams": {
+        "maxOraclePriceSlippage": null,
+        "minPriceX128": "1094494073153147181099038525207",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "refundCcmMetadata": null,
+        "retryDurationBlocks": 500,
+      },
+      "maxBoostFeeBps": 100,
+      "quote": {
+        "egressAmount": "250",
+        "estimatedPrice": "0.32820704083381790449",
+        "intermediateAmount": "500",
+      },
+      "srcAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
+    },
+    {
+      "url": "https://rpc-broker.test",
+    },
+    "perseverance",
+  ],
+]
+`;
+
+exports[`openSwapDepositChannel > creates channel with boost and dca and stores quote in the database 3`] = `
+{
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "channelId": 888n,
+  "createdAt": Any<ClockDate>,
+  "dcaChunkIntervalBlocks": 2,
+  "dcaNumberOfChunks": 3,
+  "depositAddress": "address",
+  "destAddress": "tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6",
+  "destAsset": "Btc",
+  "estimatedExpiryAt": 2023-11-09T12:55:00.000Z,
+  "expectedDepositAmount": "1000",
+  "expiryBlock": null,
+  "fokMaxOraclePriceSlippageBps": null,
+  "fokMinPriceX128": "1.094494073153147181099038525207e+30",
+  "fokRefundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+  "fokRetryDurationBlocks": 500,
+  "id": Any<BigInt>,
+  "isExpired": false,
+  "issuedBlock": 123,
+  "maxBoostFeeBps": 100,
+  "openedThroughBackend": true,
+  "openingFeePaid": "100",
+  "quote": {
+    "channelOpenedAt": 2022-01-01T00:00:00.000Z,
+    "destAsset": "Btc",
+    "executedAt": null,
+    "executedPrice": null,
+    "executedSlippagePercent": null,
+    "expectedDepositAmount": "1000",
+    "id": Any<Number>,
+    "indexPriceAtChannelOpening": "0.00006153846153846154",
+    "indexPriceAtCompletion": null,
+    "inputAssetPriceAtChannelOpening": "4",
+    "inputAssetPriceAtCompletion": null,
+    "livePriceSlippageTolerancePercent": null,
+    "maxBoostFeeBps": 100,
+    "numberOfChunks": 3,
+    "outputAssetPriceAtChannelOpening": "65000",
+    "outputAssetPriceAtCompletion": null,
+    "quotedEgressAmount": "250",
+    "quotedIntermediateAmount": "500",
+    "quotedPrice": "0.32820704083381790449",
+    "recommendedLivePriceSlippageTolerancePercent": null,
+    "recommendedSlippageTolerancePercent": null,
+    "refundedAt": null,
+    "slippageTolerancePercent": "-9699.999999477721",
+    "srcAsset": "Flip",
+    "swapDepositChannelId": Any<BigInt>,
+    "swapRequestId": null,
+    "swapRequestNativeId": null,
+  },
+  "srcAsset": "Flip",
+  "srcChain": "Ethereum",
+  "srcChainExpiryBlock": 1000n,
+  "totalBrokerCommissionBps": 0,
+}
+`;
+
+exports[`openSwapDepositChannel > creates channel with boost fee and stores it in the database 2`] = `
+[
+  [
+    {
+      "commissionBps": 0,
+      "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
+      "destAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+      "expectedDepositAmount": "10101010",
+      "fillOrKillParams": {
+        "maxOraclePriceSlippage": 100,
+        "minPriceX128": "1",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "refundCcmMetadata": null,
+        "retryDurationBlocks": 2,
+      },
+      "maxBoostFeeBps": 100,
+      "srcAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
+    },
+    {
+      "url": "https://rpc-broker.test",
+    },
+    "perseverance",
+  ],
+]
+`;
+
+exports[`openSwapDepositChannel > creates channel with boost fee and stores it in the database 3`] = `
+{
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "channelId": 909n,
+  "createdAt": Any<ClockDate>,
+  "dcaChunkIntervalBlocks": null,
+  "dcaNumberOfChunks": 1,
+  "depositAddress": "address",
+  "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
+  "destAsset": "Usdc",
+  "estimatedExpiryAt": 2023-11-09T12:55:00.000Z,
+  "expectedDepositAmount": "10101010",
+  "expiryBlock": null,
+  "fokMaxOraclePriceSlippageBps": 100,
+  "fokMinPriceX128": "1",
+  "fokRefundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+  "fokRetryDurationBlocks": 2,
+  "id": Any<BigInt>,
+  "isExpired": false,
+  "issuedBlock": 123,
+  "maxBoostFeeBps": 100,
+  "openedThroughBackend": true,
+  "openingFeePaid": "0",
+  "srcAsset": "Flip",
+  "srcChain": "Ethereum",
+  "srcChainExpiryBlock": 1000n,
+  "totalBrokerCommissionBps": 0,
+}
+`;
+
+exports[`openSwapDepositChannel > creates channel with ccmParams and stores it in the database 2`] = `
+[
+  [
+    {
+      "ccmParams": {
+        "ccmAdditionalData": "0x",
+        "gasBudget": "0x1e848",
+        "message": "0xdeadc0de",
+      },
+      "commissionBps": 0,
+      "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
+      "destAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+      "expectedDepositAmount": "10101010",
+      "fillOrKillParams": {
+        "maxOraclePriceSlippage": null,
+        "minPriceX128": "1",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "refundCcmMetadata": null,
+        "retryDurationBlocks": 2,
+      },
+      "srcAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
+    },
+    {
+      "url": "https://rpc-broker.test",
+    },
+    "perseverance",
+  ],
+]
+`;
+
+exports[`openSwapDepositChannel > creates channel with ccmParams and stores it in the database 3`] = `
+{
+  "ccmGasBudget": "125000",
+  "ccmMessage": "0xdeadc0de",
+  "channelId": 909n,
+  "createdAt": Any<ClockDate>,
+  "dcaChunkIntervalBlocks": null,
+  "dcaNumberOfChunks": 1,
+  "depositAddress": "address",
+  "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
+  "destAsset": "Usdc",
+  "estimatedExpiryAt": 2023-11-09T12:55:00.000Z,
+  "expectedDepositAmount": "10101010",
+  "expiryBlock": null,
+  "fokMaxOraclePriceSlippageBps": null,
+  "fokMinPriceX128": "1",
+  "fokRefundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+  "fokRetryDurationBlocks": 2,
+  "id": Any<BigInt>,
+  "isExpired": false,
+  "issuedBlock": 123,
+  "maxBoostFeeBps": 0,
+  "openedThroughBackend": true,
+  "openingFeePaid": "10",
+  "srcAsset": "Flip",
+  "srcChain": "Ethereum",
+  "srcChainExpiryBlock": 1000n,
+  "totalBrokerCommissionBps": 0,
+}
+`;
+
+exports[`openSwapDepositChannel > creates channel with fill or kill params and stores it in the database 2`] = `
+[
+  [
+    {
+      "commissionBps": 0,
+      "dcaParams": {
+        "chunkIntervalBlocks": 2,
+        "numberOfChunks": 3,
+      },
+      "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
+      "destAsset": {
+        "asset": "USDC",
+        "chain": "Ethereum",
+      },
+      "expectedDepositAmount": "10101010",
+      "fillOrKillParams": {
+        "maxOraclePriceSlippage": 100,
+        "minPriceX128": "10000000000000",
+        "refundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+        "refundCcmMetadata": null,
+        "retryDurationBlocks": 500,
+      },
+      "srcAsset": {
+        "asset": "FLIP",
+        "chain": "Ethereum",
+      },
+    },
+    {
+      "url": "https://rpc-broker.test",
+    },
+    "perseverance",
+  ],
+]
+`;
+
+exports[`openSwapDepositChannel > creates channel with fill or kill params and stores it in the database 3`] = `
+{
+  "ccmGasBudget": null,
+  "ccmMessage": null,
+  "channelId": 909n,
+  "createdAt": Any<ClockDate>,
+  "dcaChunkIntervalBlocks": 2,
+  "dcaNumberOfChunks": 3,
+  "depositAddress": "address",
+  "destAddress": "0xFcd3C82b154CB4717Ac98718D0Fd13EEBA3D2754",
+  "destAsset": "Usdc",
+  "estimatedExpiryAt": 2023-11-09T12:55:00.000Z,
+  "expectedDepositAmount": "10101010",
+  "expiryBlock": null,
+  "fokMaxOraclePriceSlippageBps": 100,
+  "fokMinPriceX128": "10000000000000",
+  "fokRefundAddress": "0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF",
+  "fokRetryDurationBlocks": 500,
+  "id": Any<BigInt>,
+  "isExpired": false,
+  "issuedBlock": 123,
+  "maxBoostFeeBps": 0,
+  "openedThroughBackend": true,
+  "openingFeePaid": "10",
+  "srcAsset": "Flip",
+  "srcChain": "Ethereum",
+  "srcChainExpiryBlock": 1000n,
+  "totalBrokerCommissionBps": 0,
+}
+`;

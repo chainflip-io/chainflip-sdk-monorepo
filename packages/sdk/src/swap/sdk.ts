@@ -13,7 +13,7 @@ import {
 } from '@chainflip/utils/chainflip';
 import { HexString } from '@chainflip/utils/types';
 import { initClient } from '@ts-rest/core';
-import { apiContract } from '@/shared/api/contract.js';
+import { createApiContract } from '@/shared/api/contract.js';
 import {
   CfParametersEncodingRequest,
   requestCfParametersEncoding,
@@ -106,7 +106,7 @@ export class SwapSDK {
       backendUrl: options.backendUrl ?? BACKEND_SERVICE_URLS[network],
     };
     this.rpcConfig = options.rpcUrl ? { rpcUrl: options.rpcUrl } : { network };
-    this.apiClient = initClient(apiContract, {
+    this.apiClient = initClient(createApiContract(this.options.network), {
       // remove trailing slashes. this bug has been fixed in `@ts-rest/core`
       // but it hasn't been released yet
       baseUrl: this.options.backendUrl.replace(/\/+$/, ''),
@@ -465,9 +465,7 @@ export class SwapSDK {
       'Affiliate brokers are supported only when setting a broker account',
     );
 
-    const res = await this.apiClient.encodeVaultSwapData({
-      body: { ...vaultSwapRequest, network: this.options.network },
-    });
+    const res = await this.apiClient.encodeVaultSwapData({ body: vaultSwapRequest });
 
     if (res.status !== 200) {
       throw new Error('Failed to encode vault swap data', { cause: res });
@@ -513,7 +511,6 @@ export class SwapSDK {
       dcaParams: quote.type === 'DCA' ? quote.dcaParams : undefined,
       commissionBps: await this.getCommissionBps(brokerCommissionBps),
       affiliates,
-      network: this.options.network,
     };
 
     if (this.options.broker) {
@@ -521,7 +518,11 @@ export class SwapSDK {
         !brokerAccount,
         'Cannot overwrite broker account when initializing the SDK with a brokerUrl',
       );
-      return requestCfParametersEncoding(requestParams, { url: this.options.broker.url });
+      return requestCfParametersEncoding(
+        requestParams,
+        { url: this.options.broker.url },
+        this.options.network,
+      );
     }
 
     assert(

@@ -1,7 +1,7 @@
 import { HttpClient } from '@chainflip/rpc';
 import { getInternalAsset } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { CfParameterEncodingRequestWithBroker } from '@/shared/api/encodeCfParameters.js';
+import { getParameterEncodingRequestSchema } from '@/shared/broker.js';
 import env from '../config/env.js';
 import { assertRouteEnabled } from '../utils/env.js';
 import logger from '../utils/logger.js';
@@ -12,7 +12,7 @@ const brokerClient = new HttpClient(env.RPC_BROKER_HTTPS_URL);
 const nodeClient = new HttpClient(env.RPC_NODE_HTTP_URL);
 
 export const encodeCfParameters = async (
-  input: z.output<typeof CfParameterEncodingRequestWithBroker>,
+  input: z.output<ReturnType<typeof getParameterEncodingRequestSchema>>,
 ) => {
   logger.info('Encoding CF parameters', input);
 
