@@ -59,6 +59,27 @@ enum InternalAsset {
   @@schema("public")
 }
 
+model AccountCreationDepositChannel {
+  id                      BigInt          @id @default(autoincrement())
+  channelId               BigInt
+  chain                   Chain
+  asset                   InternalAsset
+  issuedBlock             Int
+  depositChainExpiryBlock BigInt
+  depositAddress          String
+  lpAccountId             String
+  broker                  SwapBeneficiary @relation(fields: [swapBeneficiaryId], references: [id])
+  swapBeneficiaryId       BigInt
+  refundAddress           String
+  openingFeePaid          Decimal         @db.Decimal(30, 0)
+  maxBoostFeeBps          Int
+  swapRequests            SwapRequest[]
+
+  @@unique([issuedBlock, chain, channelId])
+  @@index([depositAddress])
+  @@schema("private")
+}
+
 model SwapDepositChannel {
   id                           BigInt               @id @default(autoincrement())
   channelId                    BigInt
@@ -106,14 +127,15 @@ enum BrokerType {
 }
 
 model SwapBeneficiary {
-  id            BigInt              @id @default(autoincrement())
-  account       String
-  commissionBps Int
-  type          BrokerType
-  channel       SwapDepositChannel? @relation(fields: [channelId], references: [id])
-  channelId     BigInt?
-  swapRequest   SwapRequest?        @relation(fields: [swapRequestId], references: [id])
-  swapRequestId BigInt?
+  id                             BigInt                          @id @default(autoincrement())
+  account                        String
+  commissionBps                  Int
+  type                           BrokerType
+  channel                        SwapDepositChannel?             @relation(fields: [channelId], references: [id])
+  channelId                      BigInt?
+  swapRequest                    SwapRequest?                    @relation(fields: [swapRequestId], references: [id])
+  swapRequestId                  BigInt?
+  accountCreationDepositChannels AccountCreationDepositChannel[]
 
   @@index([channelId])
   @@schema("public")
@@ -154,57 +176,59 @@ enum SwapRequestType {
 }
 
 model SwapRequest {
-  id                           BigInt               @id @default(autoincrement())
+  id                              BigInt                         @id @default(autoincrement())
   /// the swap request id on the state chain
-  nativeId                     BigInt               @unique
-  originType                   SwapRequestOrigin
-  swapDepositChannel           SwapDepositChannel?  @relation(fields: [swapDepositChannelId], references: [id])
-  swapDepositChannelId         BigInt?
-  depositTransactionRef        String?
-  srcAsset                     InternalAsset
-  destAsset                    InternalAsset
-  depositAmount                Decimal?             @db.Decimal(30, 0)
-  swapInputAmount              Decimal              @db.Decimal(30, 0)
-  swapOutputAmount             Decimal?             @db.Decimal(30, 0)
-  requestType                  SwapRequestType
-  ccmGasBudget                 Decimal?             @db.Decimal(30, 0)
-  ccmMessage                   String?
-  srcAddress                   String?
-  destAddress                  String?
-  swapRequestedAt              DateTime
-  swapRequestedBlockIndex      String
-  depositFinalisedAt           DateTime?
-  depositFinalisedBlockIndex   String?
-  prewitnessedDepositId        BigInt?
-  maxBoostFeeBps               Int                  @default(0)
-  effectiveBoostFeeBps         Int?
-  depositBoostedAt             DateTime?
-  depositBoostedBlockIndex     String?
-  completedAt                  DateTime?
-  completedBlockIndex          String?
-  egress                       Egress?              @relation("egress", fields: [egressId], references: [id])
-  egressId                     BigInt?
-  refundEgress                 Egress?              @relation("refundEgress", fields: [refundEgressId], references: [id])
-  refundEgressId               BigInt?
-  fallbackEgress               Egress?              @relation("fallbackEgress", fields: [fallbackEgressId], references: [id])
-  fallbackEgressId             BigInt?
-  fallbackRefundEgress         Egress?              @relation("fallbackRefundEgress", fields: [fallbackRefundEgressId], references: [id])
-  fallbackRefundEgressId       BigInt?
-  ignoredEgresses              IgnoredEgress[]
-  swaps                        Swap[]
-  fees                         SwapFee[]
-  dcaNumberOfChunks            Int?
-  dcaChunkIntervalBlocks       Int?
-  oraclePriceDeltaBps          Decimal?             @db.Decimal(30, 0)
-  fokMinPriceX128              Decimal?             @db.Decimal(78, 0)
-  fokRefundAddress             String?
-  fokRetryDurationBlocks       Int?
-  fokMaxOraclePriceSlippageBps Int?
-  quote                        Quote?
-  totalBrokerCommissionBps     Int
-  beneficiaries                SwapBeneficiary[]
-  solanaPendingTxRef           SolanaPendingTxRef[]
-  onChainSwapInfo              OnChainSwapInfo?
+  nativeId                        BigInt                         @unique
+  originType                      SwapRequestOrigin
+  swapDepositChannel              SwapDepositChannel?            @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId            BigInt?
+  depositTransactionRef           String?
+  srcAsset                        InternalAsset
+  destAsset                       InternalAsset
+  depositAmount                   Decimal?                       @db.Decimal(30, 0)
+  swapInputAmount                 Decimal                        @db.Decimal(30, 0)
+  swapOutputAmount                Decimal?                       @db.Decimal(30, 0)
+  requestType                     SwapRequestType
+  ccmGasBudget                    Decimal?                       @db.Decimal(30, 0)
+  ccmMessage                      String?
+  srcAddress                      String?
+  destAddress                     String?
+  swapRequestedAt                 DateTime
+  swapRequestedBlockIndex         String
+  depositFinalisedAt              DateTime?
+  depositFinalisedBlockIndex      String?
+  prewitnessedDepositId           BigInt?
+  maxBoostFeeBps                  Int                            @default(0)
+  effectiveBoostFeeBps            Int?
+  depositBoostedAt                DateTime?
+  depositBoostedBlockIndex        String?
+  completedAt                     DateTime?
+  completedBlockIndex             String?
+  egress                          Egress?                        @relation("egress", fields: [egressId], references: [id])
+  egressId                        BigInt?
+  refundEgress                    Egress?                        @relation("refundEgress", fields: [refundEgressId], references: [id])
+  refundEgressId                  BigInt?
+  fallbackEgress                  Egress?                        @relation("fallbackEgress", fields: [fallbackEgressId], references: [id])
+  fallbackEgressId                BigInt?
+  fallbackRefundEgress            Egress?                        @relation("fallbackRefundEgress", fields: [fallbackRefundEgressId], references: [id])
+  fallbackRefundEgressId          BigInt?
+  ignoredEgresses                 IgnoredEgress[]
+  swaps                           Swap[]
+  fees                            SwapFee[]
+  dcaNumberOfChunks               Int?
+  dcaChunkIntervalBlocks          Int?
+  oraclePriceDeltaBps             Decimal?                       @db.Decimal(30, 0)
+  fokMinPriceX128                 Decimal?                       @db.Decimal(78, 0)
+  fokRefundAddress                String?
+  fokRetryDurationBlocks          Int?
+  fokMaxOraclePriceSlippageBps    Int?
+  quote                           Quote?
+  totalBrokerCommissionBps        Int
+  beneficiaries                   SwapBeneficiary[]
+  solanaPendingTxRef              SolanaPendingTxRef[]
+  onChainSwapInfo                 OnChainSwapInfo?
+  accountCreationDepositChannel   AccountCreationDepositChannel? @relation(fields: [accountCreationDepositChannelId], references: [id])
+  accountCreationDepositChannelId BigInt?
 
   @@index([srcAsset, prewitnessedDepositId])
   @@index([nativeId])

@@ -2,6 +2,7 @@
 
 exports[`swapEgressScheduled > adds an egress and fee to a swap request 1`] = `
 {
+  "accountCreationDepositChannelId": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,

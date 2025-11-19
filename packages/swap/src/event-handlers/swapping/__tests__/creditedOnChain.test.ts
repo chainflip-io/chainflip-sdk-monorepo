@@ -64,6 +64,7 @@ describe(creditedOnChain, () => {
       },
       `
       {
+        "accountCreationDepositChannelId": null,
         "ccmGasBudget": null,
         "ccmMessage": null,
         "completedAt": null,

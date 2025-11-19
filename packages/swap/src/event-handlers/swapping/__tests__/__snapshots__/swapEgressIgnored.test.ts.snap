@@ -2,6 +2,7 @@
 
 exports[`swapEgressIgnored > adds an IgnoredEgress record for a egress ignored event 1`] = `
 {
+  "accountCreationDepositChannelId": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,

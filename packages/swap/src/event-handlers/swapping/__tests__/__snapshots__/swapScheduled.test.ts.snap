@@ -2,6 +2,7 @@
 
 exports[`swapScheduled > creates a swap for a swap request 1`] = `
 {
+  "accountCreationDepositChannelId": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,

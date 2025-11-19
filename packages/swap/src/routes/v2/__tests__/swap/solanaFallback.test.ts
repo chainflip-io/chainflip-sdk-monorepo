@@ -300,6 +300,7 @@ describe('solana fallback requested', () => {
       },
       `
       {
+        "accountCreationDepositChannelId": null,
         "ccmGasBudget": "6291456",
         "ccmMessage": "0x0100000011016400013b536408000000002c01",
         "completedAt": 1971-06-17T09:55:24.000Z,

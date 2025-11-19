@@ -2,6 +2,7 @@
 
 exports[`refundEgressScheduled > calculates the refund fee 1`] = `
 {
+  "accountCreationDepositChannelId": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,
@@ -67,6 +68,7 @@ exports[`refundEgressScheduled > calculates the refund fee 1`] = `
 
 exports[`refundEgressScheduled > creates egress for refund on an existing swap 1`] = `
 {
+  "accountCreationDepositChannelId": null,
   "ccmGasBudget": null,
   "ccmMessage": null,
   "completedAt": null,

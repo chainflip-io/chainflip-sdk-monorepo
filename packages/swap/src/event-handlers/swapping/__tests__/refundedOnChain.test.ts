@@ -65,6 +65,7 @@ describe(refundedOnChain, () => {
       },
       `
       {
+        "accountCreationDepositChannelId": null,
         "ccmGasBudget": null,
         "ccmMessage": null,
         "completedAt": null,
@@ -175,6 +176,7 @@ describe(refundedOnChain, () => {
       },
       `
       {
+        "accountCreationDepositChannelId": null,
         "ccmGasBudget": null,
         "ccmMessage": null,
         "completedAt": null,
