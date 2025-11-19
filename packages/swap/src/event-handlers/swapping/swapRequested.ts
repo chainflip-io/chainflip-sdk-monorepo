@@ -89,7 +89,7 @@ export const getOriginInfo = async (
   if (requestInfo.type === 'ACCOUNT_CREATION') {
     const channel = await prisma.accountCreationDepositChannel.findFirstOrThrow({
       where: { asset: srcAsset, lpAccountId: requestInfo.lpAccountId },
-      orderBy: { id: 'desc' },
+      orderBy: { issuedBlock: 'desc' },
       include: { broker: true },
     });
 
