@@ -641,6 +641,7 @@ export const getDepositChannelInfo = (
       estimatedExpiryTime: accountCreationDepositChannel.estimatedExpiryAt?.valueOf(),
       isExpired: accountCreationDepositChannel.isExpired,
       openedThroughBackend: accountCreationDepositChannel.openedThroughBackend,
+      liquidityProvider: accountCreationDepositChannel.lpAccountId,
     };
   }
 
