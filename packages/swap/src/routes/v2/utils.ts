@@ -514,7 +514,7 @@ export const getBeneficiaries = (
     {
       type: 'SUBMITTER',
       account: accountCreationDepositChannel.broker.account,
-      commissionBps: 0,
+      commissionBps: accountCreationDepositChannel.broker.commissionBps,
     },
   ]);
 

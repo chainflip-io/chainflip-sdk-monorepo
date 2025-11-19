@@ -312,7 +312,8 @@ describe(networkDepositFailed, () => {
         {
           id: expect.any(Number),
           swapDepositChannelId: expect.any(BigInt),
-        }, `
+        },
+        `
         {
           "accountCreationDepositChannelId": null,
           "address": null,
@@ -322,7 +323,8 @@ describe(networkDepositFailed, () => {
           "swapDepositChannelId": Any<BigInt>,
           "vaultSwapRequestId": null,
         }
-      `);
+      `,
+      );
     });
 
     it('handles failed sol vault deposits', async () => {
@@ -357,7 +359,8 @@ describe(networkDepositFailed, () => {
         {
           id: expect.any(Number),
           failedVaultSwapId: expect.any(Number),
-        }, `
+        },
+        `
         {
           "accountCreationDepositChannelId": null,
           "address": "HZC6KyQYbxbKGiyWbBrwhxrPPecFi2yKG9jMwFqwNEtJ",
@@ -367,7 +370,8 @@ describe(networkDepositFailed, () => {
           "swapDepositChannelId": null,
           "vaultSwapRequestId": null,
         }
-      `);
+      `,
+      );
     });
   });
 });

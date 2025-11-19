@@ -333,7 +333,8 @@ describe(depositFinalised, () => {
         refundEgress: {
           id: expect.any(BigInt),
         },
-      }, `
+      },
+      `
       {
         "accountCreationDepositChannelId": null,
         "ccmAdditionalData": null,
@@ -375,6 +376,7 @@ describe(depositFinalised, () => {
         "srcChain": "Solana",
         "swapDepositChannelId": null,
       }
-    `);
+    `,
+    );
   });
 });
