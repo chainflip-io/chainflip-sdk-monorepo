@@ -241,7 +241,9 @@ const handlers = [
     spec: '2.0.0' as Semver,
     handlers: [
       {
-        name: events.Swapping.AccountCreationDepositAddressReady,
+        // TODO: remove cast. it fixes an annoying type issue that we will have
+        // to properly fix later
+        name: events.Swapping.AccountCreationDepositAddressReady as string,
         handler: accountCreationDepositAddressReady,
       },
     ],
