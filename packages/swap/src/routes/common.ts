@@ -11,7 +11,6 @@ export const handleError: ErrorRequestHandler = (error, req, res, _next) => {
     logger.info('received error', { error: inspect(error) });
     res.status(error.code).json(error.toJSON());
   } else {
-    console.log(error);
     logger.error('unknown error occurred', { error: inspect(error) });
     res.status(500).json({ message: 'unknown error' });
   }

@@ -256,7 +256,7 @@ describe('account creation swap', () => {
     `);
   });
 
-  it('gets in completed swap info', async () => {
+  it('gets completed swap info', async () => {
     await processEvents(events, [], '200');
 
     const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
