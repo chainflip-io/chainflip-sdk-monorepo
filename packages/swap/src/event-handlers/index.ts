@@ -78,6 +78,7 @@ export const events = {
     CreditedOnChain: 'Swapping.CreditedOnChain',
     RefundedOnChain: 'Swapping.RefundedOnChain',
     SwapAborted: 'Swapping.SwapAborted',
+    AccountCreationDepositAddressReady: 'Swapping.AccountCreationDepositAddressReady',
   },
   ...genericPalletEvents('IngressEgress', [
     'BatchBroadcastRequested',
@@ -205,7 +206,7 @@ const handlers = [
     spec: '1.9.0' as Semver,
     handlers: [
       {
-        name: 'Swapping.CreditedOnChain',
+        name: events.Swapping.CreditedOnChain,
         handler: creditedOnChain,
       },
     ],
@@ -240,7 +241,7 @@ const handlers = [
     spec: '2.0.0' as Semver,
     handlers: [
       {
-        name: 'Swapping.AccountCreationDepositAddressReady',
+        name: events.Swapping.AccountCreationDepositAddressReady,
         handler: accountCreationDepositAddressReady,
       },
     ],

@@ -5,6 +5,7 @@ import {
   getBeneficiaries,
   getCcmParams,
   getDcaParams,
+  getDepositChannelInfo,
   getDepositInfo,
   getEgressStatusFields,
   getFillOrKillParams,
@@ -38,8 +39,13 @@ router.get(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    const { swapRequest, failedSwap, swapDepositChannel, pendingVaultSwap } =
-      await getLatestSwapForId(id);
+    const {
+      swapRequest,
+      failedSwap,
+      swapDepositChannel,
+      pendingVaultSwap,
+      accountCreationDepositChannel,
+    } = await getLatestSwapForId(id);
 
     const {
       state,
@@ -54,6 +60,7 @@ router.get(
       swapDepositChannel,
       failedSwap,
       pendingVaultSwap,
+      accountCreationDepositChannel && { srcAsset: accountCreationDepositChannel.asset },
       'srcAsset',
     );
     assert(internalSrcAsset, 'srcAsset must be defined');
@@ -63,12 +70,14 @@ router.get(
       swapDepositChannel,
       failedSwap,
       pendingVaultSwap,
+      accountCreationDepositChannel && { destAsset: 'Flip' as const },
       'destAsset',
     );
     const maxBoostFeeBps = readField(
       swapRequest,
       swapDepositChannel,
       pendingVaultSwap,
+      accountCreationDepositChannel,
       'maxBoostFeeBps',
     );
     const showBoost = Boolean(maxBoostFeeBps);
@@ -134,7 +143,12 @@ router.get(
       getLastChainTrackingUpdateTimestamp(),
     ]);
 
-    const beneficiaries = getBeneficiaries(swapRequest, swapDepositChannel, pendingVaultSwap);
+    const beneficiaries = getBeneficiaries(
+      swapRequest,
+      swapDepositChannel,
+      pendingVaultSwap,
+      accountCreationDepositChannel,
+    );
     const isVaultSwap = Boolean(swapRequest?.originType === 'VAULT');
     const showDepositchannel = !isVaultSwap;
 
@@ -160,18 +174,8 @@ router.get(
       brokers: beneficiaries?.map(({ account, commissionBps }) => ({ account, commissionBps })),
       fees: aggregateFees ?? [],
       ...(showDepositchannel &&
-        swapDepositChannel && {
-          depositChannel: {
-            id: `${swapDepositChannel.issuedBlock}-${swapDepositChannel.srcChain}-${swapDepositChannel.channelId}`,
-            createdAt: swapDepositChannel.createdAt.valueOf(),
-            depositAddress: swapDepositChannel.depositAddress,
-            srcChainExpiryBlock: swapDepositChannel.srcChainExpiryBlock?.toString(),
-            estimatedExpiryTime: swapDepositChannel.estimatedExpiryAt?.valueOf(),
-            expectedDepositAmount: swapDepositChannel.expectedDepositAmount?.toFixed(),
-            isExpired: swapDepositChannel.isExpired,
-            openedThroughBackend: swapDepositChannel.openedThroughBackend,
-            dcaParams: getDcaParams(swapDepositChannel),
-          },
+        (swapDepositChannel || accountCreationDepositChannel) && {
+          depositChannel: getDepositChannelInfo(swapDepositChannel, accountCreationDepositChannel),
         }),
       ...getDepositInfo(swapRequest, failedSwap, pendingDeposit, pendingVaultSwap),
       ...(rolledSwaps && {

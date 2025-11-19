@@ -49,7 +49,7 @@ export const insufficientBoostLiquidity =
       }
 
       // dont store skipped boosts for lp deposits
-      if (!depositChannel.isSwapping) {
+      if (depositChannel.type !== 'SWAP') {
         return;
       }
     }

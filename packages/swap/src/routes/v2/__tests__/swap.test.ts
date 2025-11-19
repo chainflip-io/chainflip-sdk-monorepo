@@ -1,14 +1,6 @@
 import { bytesToHex, reverseBytes } from '@chainflip/utils/bytes';
 import * as ss58 from '@chainflip/utils/ss58';
 import { Server } from 'http';
-import { BroadcastAbortedArgsMap } from 'packages/swap/src/event-handlers/broadcaster/broadcastAborted.js';
-import { BroadcastSuccessArgsMap } from 'packages/swap/src/event-handlers/broadcaster/broadcastSuccess.js';
-import { SwappingCreditedOnChainArgs } from 'packages/swap/src/event-handlers/swapping/creditedOnChain.js';
-import { SwappingRefundedOnChainArgs } from 'packages/swap/src/event-handlers/swapping/refundedOnChain.js';
-import { RefundEgressIgnoredArgs } from 'packages/swap/src/event-handlers/swapping/refundEgressIgnored.js';
-import { SwapRequestCompletedArgs } from 'packages/swap/src/event-handlers/swapping/swapRequestCompleted.js';
-import { SwapRescheduledArgs } from 'packages/swap/src/event-handlers/swapping/swapRescheduled.js';
-import { ChainStateUpdatedArgsMap } from 'packages/swap/src/event-handlers/tracking/chainStateUpdated.js';
 import request from 'supertest';
 import { vi, describe, it, beforeEach, afterEach, expect, beforeAll } from 'vitest';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
@@ -21,6 +13,8 @@ import {
   createPools,
   processEvents,
 } from '../../../event-handlers/__tests__/utils.js';
+import { BroadcastAbortedArgsMap } from '../../../event-handlers/broadcaster/broadcastAborted.js';
+import { BroadcastSuccessArgsMap } from '../../../event-handlers/broadcaster/broadcastSuccess.js';
 import { BatchBroadcastRequestedArgsMap } from '../../../event-handlers/ingress-egress/batchBroadcastRequested.js';
 import { DepositBoostedArgsMap } from '../../../event-handlers/ingress-egress/depositBoosted.js';
 import {
@@ -30,13 +24,19 @@ import {
 import { DepositFinalisedArgsMap } from '../../../event-handlers/ingress-egress/depositFinalised.js';
 import { InsufficientBoostLiquidityArgsMap } from '../../../event-handlers/ingress-egress/insufficientBoostLiquidity.js';
 import { TransactionRejectedByBrokerArgs } from '../../../event-handlers/ingress-egress/transactionRejectedByBroker.js';
+import { SwappingCreditedOnChainArgs } from '../../../event-handlers/swapping/creditedOnChain.js';
+import { SwappingRefundedOnChainArgs } from '../../../event-handlers/swapping/refundedOnChain.js';
+import { RefundEgressIgnoredArgs } from '../../../event-handlers/swapping/refundEgressIgnored.js';
 import { RefundEgressScheduledArgs } from '../../../event-handlers/swapping/refundEgressScheduled.js';
 import type { SwapDepositAddressReadyArgs } from '../../../event-handlers/swapping/swapDepositAddressReady.js';
 import { SwapEgressIgnoredArgs } from '../../../event-handlers/swapping/swapEgressIgnored.js';
 import { SwapEgressScheduledArgs } from '../../../event-handlers/swapping/swapEgressScheduled.js';
 import { SwapExecutedArgs } from '../../../event-handlers/swapping/swapExecuted.js';
+import { SwapRequestCompletedArgs } from '../../../event-handlers/swapping/swapRequestCompleted.js';
 import { SwapRequestedArgs } from '../../../event-handlers/swapping/swapRequested.js';
+import { SwapRescheduledArgs } from '../../../event-handlers/swapping/swapRescheduled.js';
 import { SwapScheduledArgs } from '../../../event-handlers/swapping/swapScheduled.js';
+import { ChainStateUpdatedArgsMap } from '../../../event-handlers/tracking/chainStateUpdated.js';
 import {
   getPendingBroadcast,
   getPendingDeposit,

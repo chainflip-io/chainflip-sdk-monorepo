@@ -160,17 +160,30 @@ export const depositFinalised =
           })
         : null;
 
-      const swapDepositChannel = channel?.isSwapping
-        ? {
-            connect: {
-              issuedBlock_srcChain_channelId: {
-                issuedBlock: channel.issuedBlock,
-                srcChain: channel.srcChain,
-                channelId: channel.channelId,
-              },
+      let swapDepositChannel;
+      let accountCreationDepositChannel;
+
+      if (channel?.type === 'ACCOUNT_CREATION') {
+        accountCreationDepositChannel = {
+          connect: {
+            issuedBlock_chain_channelId: {
+              issuedBlock: channel.issuedBlock,
+              chain: channel.srcChain,
+              channelId: channel.channelId,
             },
-          }
-        : undefined;
+          },
+        } as const;
+      } else if (channel?.type === 'SWAP') {
+        swapDepositChannel = {
+          connect: {
+            issuedBlock_srcChain_channelId: {
+              issuedBlock: channel.issuedBlock,
+              srcChain: channel.srcChain,
+              channelId: channel.channelId,
+            },
+          },
+        } as const;
+      }
 
       const fs = await prisma.failedSwap.create({
         data: {
@@ -182,6 +195,7 @@ export const depositFinalised =
           failedBlockIndex: `${block.height}-${event.indexInBlock}`,
           depositTransactionRef: txRef,
           swapDepositChannel,
+          accountCreationDepositChannel,
         },
       });
 
@@ -198,6 +212,8 @@ export const depositFinalised =
           } else if (originType === 'DepositChannel') {
             if (swapDepositChannel) {
               await prisma.solanaPendingTxRef.create({ data: { swapDepositChannel } });
+            } else if (accountCreationDepositChannel) {
+              await prisma.solanaPendingTxRef.create({ data: { accountCreationDepositChannel } });
             }
           } else {
             assertUnreachable(originType, 'unexpected origin type for unrefundable deposit');

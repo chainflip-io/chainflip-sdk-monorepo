@@ -28,10 +28,21 @@ import { isTransactionRef } from '../../utils/transactionRef.js';
 const failedSwapInclude = { refundBroadcast: true } as const;
 const beneficiaryInclude = { type: true, account: true, commissionBps: true } as const;
 
-const depositChannelInclude = {
+const accountCreationDepositChannelInclude = {
+  failedSwaps: { select: failedSwapInclude },
+  broker: { select: beneficiaryInclude },
+} as const;
+
+const swapDepositChannelInclude = {
   failedBoosts: true,
   failedSwaps: { select: failedSwapInclude },
   beneficiaries: { select: beneficiaryInclude },
+} as const;
+
+const failedSwapWithChannelsInclude = {
+  ...failedSwapInclude,
+  swapDepositChannel: { include: swapDepositChannelInclude },
+  accountCreationDepositChannel: { include: accountCreationDepositChannelInclude },
 } as const;
 
 const swapRequestInclude = {
@@ -42,7 +53,10 @@ const swapRequestInclude = {
   fees: true,
   ignoredEgresses: true,
   swapDepositChannel: {
-    include: depositChannelInclude,
+    include: swapDepositChannelInclude,
+  },
+  accountCreationDepositChannel: {
+    include: accountCreationDepositChannelInclude,
   },
   beneficiaries: { select: beneficiaryInclude },
   onChainSwapInfo: true,
@@ -56,46 +70,68 @@ export const getLatestSwapForId = async (id: string) => {
   let failedSwap;
   let swapDepositChannel;
   let pendingVaultSwap;
+  let accountCreationDepositChannel;
 
   if (channelIdRegex.test(id)) {
     const { issuedBlock, srcChain, channelId } = channelIdRegex.exec(id)!.groups!;
 
-    swapDepositChannel = await prisma.swapDepositChannel.findUnique({
-      where: {
-        issuedBlock_srcChain_channelId: {
-          issuedBlock: Number(issuedBlock),
-          srcChain: coerceChain(srcChain),
-          channelId: BigInt(channelId),
-        },
-      },
-      include: {
-        swapRequests: { include: swapRequestInclude, orderBy: { nativeId: 'desc' } },
-        failedSwaps: {
-          include: {
-            swapDepositChannel: { include: depositChannelInclude },
-            ...failedSwapInclude,
+    [swapDepositChannel, accountCreationDepositChannel] = await Promise.all([
+      prisma.swapDepositChannel.findUnique({
+        where: {
+          issuedBlock_srcChain_channelId: {
+            issuedBlock: Number(issuedBlock),
+            srcChain: coerceChain(srcChain),
+            channelId: BigInt(channelId),
           },
         },
-        failedBoosts: true,
-        beneficiaries: {
-          select: {
-            type: true,
-            account: true,
-            commissionBps: true,
+        include: {
+          swapRequests: { include: swapRequestInclude, orderBy: { nativeId: 'desc' } },
+          failedSwaps: { include: failedSwapWithChannelsInclude },
+          failedBoosts: true,
+          beneficiaries: {
+            select: {
+              type: true,
+              account: true,
+              commissionBps: true,
+            },
           },
         },
-      },
-    });
+      }),
+      prisma.accountCreationDepositChannel.findUnique({
+        where: {
+          issuedBlock_chain_channelId: {
+            issuedBlock: Number(issuedBlock),
+            chain: coerceChain(srcChain),
+            channelId: BigInt(channelId),
+          },
+        },
+        include: {
+          swapRequests: { include: swapRequestInclude, orderBy: { nativeId: 'desc' } },
+          failedSwaps: {
+            include: failedSwapWithChannelsInclude,
+          },
+          broker: {
+            select: {
+              type: true,
+              account: true,
+              commissionBps: true,
+            },
+          },
+        },
+      }),
+    ]);
 
-    if (!swapDepositChannel) {
+    const channel = accountCreationDepositChannel ?? swapDepositChannel;
+
+    if (!channel) {
       logger.info(`could not find swap request with id "${id}"`);
       throw ServiceError.notFound();
     }
 
-    swapRequest = swapDepositChannel.swapRequests.at(0);
+    swapRequest = channel.swapRequests.at(0);
     // swap request will have no swaps for failed ccm swaps: https://scan.chainflip.io/blocks/4716217
     if (!swapRequest || (swapRequest.completedAt && !swapRequest.swaps.length)) {
-      failedSwap = swapDepositChannel.failedSwaps.at(0);
+      failedSwap = channel.failedSwaps.at(0);
     }
   } else if (swapRequestIdRegex.test(id)) {
     swapRequest = await prisma.swapRequest.findUnique({
@@ -114,7 +150,7 @@ export const getLatestSwapForId = async (id: string) => {
       [failedSwap, pendingVaultSwap] = await Promise.all([
         prisma.failedSwap.findFirst({
           where: { depositTransactionRef: id },
-          include: { swapDepositChannel: { include: depositChannelInclude }, ...failedSwapInclude },
+          include: failedSwapWithChannelsInclude,
         }),
         getPendingVaultSwap(id),
       ]);
@@ -123,8 +159,15 @@ export const getLatestSwapForId = async (id: string) => {
 
   swapDepositChannel ??= swapRequest?.swapDepositChannel ?? failedSwap?.swapDepositChannel;
 
+  accountCreationDepositChannel ??=
+    swapRequest?.accountCreationDepositChannel ?? failedSwap?.accountCreationDepositChannel;
+
   ServiceError.assert(
-    swapDepositChannel || swapRequest || failedSwap || pendingVaultSwap,
+    swapDepositChannel ||
+      accountCreationDepositChannel ||
+      swapRequest ||
+      failedSwap ||
+      pendingVaultSwap,
     'notFound',
     'resource not found',
   );
@@ -134,6 +177,7 @@ export const getLatestSwapForId = async (id: string) => {
     failedSwap,
     swapDepositChannel,
     pendingVaultSwap,
+    accountCreationDepositChannel,
   };
 };
 
@@ -143,6 +187,9 @@ type SwapRequestData = NonNullable<LatestSwapData['swapRequest']>;
 type FailedSwapData = NonNullable<LatestSwapData['failedSwap']>;
 type SwapChannelData = NonNullable<LatestSwapData['swapDepositChannel']>;
 type PendingVaultSwapData = NonNullable<LatestSwapData['pendingVaultSwap']>;
+type AccountCreationDepositChannelData = NonNullable<
+  LatestSwapData['accountCreationDepositChannel']
+>;
 
 export const getSwapFields = (swap: Swap & { fees: SwapFee[] }) => ({
   inputAmount: swap.swapInputAmount.toFixed(),
@@ -446,6 +493,7 @@ export const getBeneficiaries = (
   swapRequest: SwapRequestData | null | undefined,
   swapDepositChannel: SwapChannelData | null | undefined,
   pendingVaultSwap?: PendingVaultSwapData | null | undefined,
+  accountCreationDepositChannel?: AccountCreationDepositChannelData | null | undefined,
 ) =>
   swapRequest?.beneficiaries ??
   swapDepositChannel?.beneficiaries ??
@@ -461,7 +509,14 @@ export const getBeneficiaries = (
         account: fee.account,
         commissionBps: fee.commissionBps,
       })),
-    ].filter(isTruthy));
+    ].filter(isTruthy)) ??
+  (accountCreationDepositChannel && [
+    {
+      type: 'SUBMITTER',
+      account: accountCreationDepositChannel.broker.account,
+      commissionBps: 0,
+    },
+  ]);
 
 export const getFillOrKillParams = (
   swapRequest: SwapRequestData | null | undefined,
@@ -558,3 +613,35 @@ export const getRolledSwapsInitialData = (swapRequest: SwapRequestData | undefin
   isDca: (swapRequest?.dcaNumberOfChunks ?? 1) > 1,
   fees: new Map() as FeeAggregate,
 });
+
+export const getDepositChannelInfo = (
+  swapDepositChannel: SwapChannelData | null | undefined,
+  accountCreationDepositChannel: AccountCreationDepositChannelData | null | undefined,
+) => {
+  if (swapDepositChannel) {
+    return {
+      id: `${swapDepositChannel.issuedBlock}-${swapDepositChannel.srcChain}-${swapDepositChannel.channelId}`,
+      createdAt: swapDepositChannel.createdAt.valueOf(),
+      depositAddress: swapDepositChannel.depositAddress,
+      srcChainExpiryBlock: swapDepositChannel.srcChainExpiryBlock?.toString(),
+      estimatedExpiryTime: swapDepositChannel.estimatedExpiryAt?.valueOf(),
+      expectedDepositAmount: swapDepositChannel.expectedDepositAmount?.toFixed(),
+      isExpired: swapDepositChannel.isExpired,
+      openedThroughBackend: swapDepositChannel.openedThroughBackend,
+      dcaParams: getDcaParams(swapDepositChannel),
+    };
+  }
+
+  if (accountCreationDepositChannel) {
+    return {
+      id: `${accountCreationDepositChannel.issuedBlock}-${accountCreationDepositChannel.chain}-${accountCreationDepositChannel.channelId}`,
+      createdAt: accountCreationDepositChannel.createdAt.valueOf(),
+      depositAddress: accountCreationDepositChannel.depositAddress,
+      srcChainExpiryBlock: accountCreationDepositChannel.depositChainExpiryBlock?.toString(),
+      estimatedExpiryTime: accountCreationDepositChannel.estimatedExpiryAt?.valueOf(),
+      isExpired: accountCreationDepositChannel.isExpired,
+    };
+  }
+
+  throw new Error('No deposit channel info available');
+};

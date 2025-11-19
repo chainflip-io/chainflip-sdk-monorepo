@@ -47,6 +47,7 @@ export const createBtcSwapDepositChannel = async (
       channelId: channelId ? BigInt(channelId) : 1n,
       issuedBlock: 0,
       isSwapping: true,
+      type: 'SWAP',
     },
   });
 
@@ -137,6 +138,7 @@ describe('insufficientBoostLiquidity', () => {
         channelId: 1n,
         issuedBlock: 0,
         isSwapping: false,
+        type: 'LIQUIDITY',
       },
     });
     const eventData = insufficientBoostLiquidityMock({

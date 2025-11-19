@@ -123,6 +123,7 @@ const createGenericChannel = async (channel: SwapDepositChannel) =>
       issuedBlock: channel.issuedBlock,
       srcChain: channel.srcChain,
       channelId: channel.channelId,
+      type: 'SWAP',
     },
   });
 
