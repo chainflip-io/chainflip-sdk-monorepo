@@ -84,6 +84,7 @@ model AccountCreationDepositChannel {
   openingFeePaid          Decimal              @db.Decimal(30, 0)
   maxBoostFeeBps          Int
   isExpired               Boolean
+  openedThroughBackend    Boolean
   createdAt               DateTime             @db.Timestamptz(3)
   estimatedExpiryAt       DateTime?            @db.Timestamptz(3)
   swapRequests            SwapRequest[]

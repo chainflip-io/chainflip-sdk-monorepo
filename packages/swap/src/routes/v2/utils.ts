@@ -640,6 +640,7 @@ export const getDepositChannelInfo = (
       srcChainExpiryBlock: accountCreationDepositChannel.depositChainExpiryBlock?.toString(),
       estimatedExpiryTime: accountCreationDepositChannel.estimatedExpiryAt?.valueOf(),
       isExpired: accountCreationDepositChannel.isExpired,
+      openedThroughBackend: accountCreationDepositChannel.openedThroughBackend,
     };
   }
 

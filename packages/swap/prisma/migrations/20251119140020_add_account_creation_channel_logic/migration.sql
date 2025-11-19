@@ -37,6 +37,7 @@ CREATE TABLE "public"."AccountCreationDepositChannel" (
     "openingFeePaid" DECIMAL(30,0) NOT NULL,
     "maxBoostFeeBps" INTEGER NOT NULL,
     "isExpired" BOOLEAN NOT NULL,
+    "openedThroughBackend" BOOLEAN NOT NULL,
     "createdAt" TIMESTAMPTZ(3) NOT NULL,
     "estimatedExpiryAt" TIMESTAMPTZ(3),
 

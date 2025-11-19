@@ -53,6 +53,7 @@ export default async function accountCreationDepositAddressReady({
         refundAddress: formatForeignChainAddress(refundAddress),
         lpAccountId: requestedFor,
         isExpired: false,
+        openedThroughBackend: false,
         createdAt: block.timestamp,
         estimatedExpiryAt,
         broker: {
