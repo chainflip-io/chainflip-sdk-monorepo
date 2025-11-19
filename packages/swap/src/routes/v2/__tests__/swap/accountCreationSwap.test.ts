@@ -174,7 +174,7 @@ describe('account creation swap', () => {
   });
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "SwapRequest", "FailedSwap", "Broadcast", "Egress", private."DepositChannel", "AccountCreationDepositChannel" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "SwapRequest", "FailedSwap", "Broadcast", "Egress", private."DepositChannel", "AccountCreationDepositChannel", "ChainTracking" CASCADE`;
   });
 
   const channelId = '86-Solana-85';

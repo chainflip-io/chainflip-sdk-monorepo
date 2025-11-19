@@ -159,24 +159,25 @@ describe(networkDepositFailed, () => {
         await prisma.failedSwap.findFirstOrThrow();
       expect(swapDepositChannelId).toBe(channel.id);
       expect(failedSwap).toMatchInlineSnapshot(`
-      {
-        "ccmAdditionalData": null,
-        "ccmGasBudget": null,
-        "ccmMessage": null,
-        "depositAmount": "100000000000000",
-        "depositTransactionRef": "0x1234",
-        "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
-        "destAsset": "Dot",
-        "destChain": "Ethereum",
-        "failedAt": 2022-12-06T14:31:33.000Z,
-        "failedBlockIndex": "100-0",
-        "reason": "BelowMinimumDeposit",
-        "refundBroadcastId": null,
-        "refundEgressId": null,
-        "srcAsset": "Eth",
-        "srcChain": "Ethereum",
-      }
-    `);
+        {
+          "accountCreationDepositChannelId": null,
+          "ccmAdditionalData": null,
+          "ccmGasBudget": null,
+          "ccmMessage": null,
+          "depositAmount": "100000000000000",
+          "depositTransactionRef": "0x1234",
+          "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
+          "destAsset": "Dot",
+          "destChain": "Ethereum",
+          "failedAt": 2022-12-06T14:31:33.000Z,
+          "failedBlockIndex": "100-0",
+          "reason": "BelowMinimumDeposit",
+          "refundBroadcastId": null,
+          "refundEgressId": null,
+          "srcAsset": "Eth",
+          "srcChain": "Ethereum",
+        }
+      `);
     });
 
     it('handles failed dot deposits', async () => {
@@ -200,24 +201,25 @@ describe(networkDepositFailed, () => {
         await prisma.failedSwap.findFirstOrThrow();
       expect(swapDepositChannelId).toBe(channel.id);
       expect(failedSwap).toMatchInlineSnapshot(`
-      {
-        "ccmAdditionalData": null,
-        "ccmGasBudget": null,
-        "ccmMessage": null,
-        "depositAmount": "190000000000",
-        "depositTransactionRef": "12140-2",
-        "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
-        "destAsset": "Eth",
-        "destChain": "Ethereum",
-        "failedAt": 2022-12-06T14:31:33.000Z,
-        "failedBlockIndex": "100-0",
-        "reason": "BelowMinimumDeposit",
-        "refundBroadcastId": null,
-        "refundEgressId": null,
-        "srcAsset": "Eth",
-        "srcChain": "Polkadot",
-      }
-    `);
+        {
+          "accountCreationDepositChannelId": null,
+          "ccmAdditionalData": null,
+          "ccmGasBudget": null,
+          "ccmMessage": null,
+          "depositAmount": "190000000000",
+          "depositTransactionRef": "12140-2",
+          "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+          "destAsset": "Eth",
+          "destChain": "Ethereum",
+          "failedAt": 2022-12-06T14:31:33.000Z,
+          "failedBlockIndex": "100-0",
+          "reason": "BelowMinimumDeposit",
+          "refundBroadcastId": null,
+          "refundEgressId": null,
+          "srcAsset": "Eth",
+          "srcChain": "Polkadot",
+        }
+      `);
     });
 
     it('handles failed btc deposits', async () => {
@@ -241,24 +243,25 @@ describe(networkDepositFailed, () => {
         await prisma.failedSwap.findFirstOrThrow();
       expect(swapDepositChannelId).toBe(channel.id);
       expect(failedSwap).toMatchInlineSnapshot(`
-      {
-        "ccmAdditionalData": null,
-        "ccmGasBudget": null,
-        "ccmMessage": null,
-        "depositAmount": "100000000000",
-        "depositTransactionRef": "452301",
-        "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
-        "destAsset": "Eth",
-        "destChain": "Ethereum",
-        "failedAt": 2022-12-06T14:31:33.000Z,
-        "failedBlockIndex": "100-0",
-        "reason": "BelowMinimumDeposit",
-        "refundBroadcastId": null,
-        "refundEgressId": null,
-        "srcAsset": "Eth",
-        "srcChain": "Bitcoin",
-      }
-    `);
+        {
+          "accountCreationDepositChannelId": null,
+          "ccmAdditionalData": null,
+          "ccmGasBudget": null,
+          "ccmMessage": null,
+          "depositAmount": "100000000000",
+          "depositTransactionRef": "452301",
+          "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+          "destAsset": "Eth",
+          "destChain": "Ethereum",
+          "failedAt": 2022-12-06T14:31:33.000Z,
+          "failedBlockIndex": "100-0",
+          "reason": "BelowMinimumDeposit",
+          "refundBroadcastId": null,
+          "refundEgressId": null,
+          "srcAsset": "Eth",
+          "srcChain": "Bitcoin",
+        }
+      `);
     });
 
     it('handles failed sol channel deposits', async () => {
@@ -283,24 +286,25 @@ describe(networkDepositFailed, () => {
         await prisma.failedSwap.findFirstOrThrow();
       expect(swapDepositChannelId).toBe(channel.id);
       expect(failedSwap).toMatchInlineSnapshot(`
-      {
-        "ccmAdditionalData": null,
-        "ccmGasBudget": null,
-        "ccmMessage": null,
-        "depositAmount": "1000000000",
-        "depositTransactionRef": null,
-        "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
-        "destAsset": "Eth",
-        "destChain": "Solana",
-        "failedAt": 2022-12-06T14:31:33.000Z,
-        "failedBlockIndex": "100-0",
-        "reason": "BelowMinimumDeposit",
-        "refundBroadcastId": null,
-        "refundEgressId": null,
-        "srcAsset": "Sol",
-        "srcChain": "Solana",
-      }
-    `);
+        {
+          "accountCreationDepositChannelId": null,
+          "ccmAdditionalData": null,
+          "ccmGasBudget": null,
+          "ccmMessage": null,
+          "depositAmount": "1000000000",
+          "depositTransactionRef": null,
+          "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+          "destAsset": "Eth",
+          "destChain": "Solana",
+          "failedAt": 2022-12-06T14:31:33.000Z,
+          "failedBlockIndex": "100-0",
+          "reason": "BelowMinimumDeposit",
+          "refundBroadcastId": null,
+          "refundEgressId": null,
+          "srcAsset": "Sol",
+          "srcChain": "Solana",
+        }
+      `);
       const pendingSolanaTxRef = await prisma.solanaPendingTxRef.findFirstOrThrow({
         where: { swapDepositChannelId: channel.id },
       });
@@ -308,18 +312,17 @@ describe(networkDepositFailed, () => {
         {
           id: expect.any(Number),
           swapDepositChannelId: expect.any(BigInt),
-        },
-        `
-      {
-        "address": null,
-        "failedVaultSwapId": null,
-        "id": Any<Number>,
-        "slot": null,
-        "swapDepositChannelId": Any<BigInt>,
-        "vaultSwapRequestId": null,
-      }
-    `,
-      );
+        }, `
+        {
+          "accountCreationDepositChannelId": null,
+          "address": null,
+          "failedVaultSwapId": null,
+          "id": Any<Number>,
+          "slot": null,
+          "swapDepositChannelId": Any<BigInt>,
+          "vaultSwapRequestId": null,
+        }
+      `);
     });
 
     it('handles failed sol vault deposits', async () => {
@@ -327,25 +330,26 @@ describe(networkDepositFailed, () => {
 
       const { id, ...failedSwap } = await prisma.failedSwap.findFirstOrThrow();
       expect(failedSwap).toMatchInlineSnapshot(`
-      {
-        "ccmAdditionalData": null,
-        "ccmGasBudget": null,
-        "ccmMessage": null,
-        "depositAmount": "1000000000",
-        "depositTransactionRef": null,
-        "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
-        "destAsset": "Eth",
-        "destChain": "Solana",
-        "failedAt": 2022-12-06T14:31:33.000Z,
-        "failedBlockIndex": "100-0",
-        "reason": "BelowMinimumDeposit",
-        "refundBroadcastId": null,
-        "refundEgressId": null,
-        "srcAsset": "Sol",
-        "srcChain": "Solana",
-        "swapDepositChannelId": null,
-      }
-    `);
+        {
+          "accountCreationDepositChannelId": null,
+          "ccmAdditionalData": null,
+          "ccmGasBudget": null,
+          "ccmMessage": null,
+          "depositAmount": "1000000000",
+          "depositTransactionRef": null,
+          "destAddress": "0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2",
+          "destAsset": "Eth",
+          "destChain": "Solana",
+          "failedAt": 2022-12-06T14:31:33.000Z,
+          "failedBlockIndex": "100-0",
+          "reason": "BelowMinimumDeposit",
+          "refundBroadcastId": null,
+          "refundEgressId": null,
+          "srcAsset": "Sol",
+          "srcChain": "Solana",
+          "swapDepositChannelId": null,
+        }
+      `);
       const pendingSolanaTxRef = await prisma.solanaPendingTxRef.findFirstOrThrow({
         where: { failedVaultSwapId: id },
       });
@@ -353,18 +357,17 @@ describe(networkDepositFailed, () => {
         {
           id: expect.any(Number),
           failedVaultSwapId: expect.any(Number),
-        },
-        `
-      {
-        "address": "HZC6KyQYbxbKGiyWbBrwhxrPPecFi2yKG9jMwFqwNEtJ",
-        "failedVaultSwapId": Any<Number>,
-        "id": Any<Number>,
-        "slot": 1234n,
-        "swapDepositChannelId": null,
-        "vaultSwapRequestId": null,
-      }
-    `,
-      );
+        }, `
+        {
+          "accountCreationDepositChannelId": null,
+          "address": "HZC6KyQYbxbKGiyWbBrwhxrPPecFi2yKG9jMwFqwNEtJ",
+          "failedVaultSwapId": Any<Number>,
+          "id": Any<Number>,
+          "slot": 1234n,
+          "swapDepositChannelId": null,
+          "vaultSwapRequestId": null,
+        }
+      `);
     });
   });
 });

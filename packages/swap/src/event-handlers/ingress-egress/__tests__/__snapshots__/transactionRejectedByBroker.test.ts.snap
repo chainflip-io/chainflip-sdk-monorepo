@@ -3,6 +3,7 @@
 exports[`transactionRejectedByBroker > adds a broadcast to a failed swap 1`] = `
 [
   {
+    "accountCreationDepositChannelId": null,
     "ccmAdditionalData": null,
     "ccmGasBudget": null,
     "ccmMessage": null,

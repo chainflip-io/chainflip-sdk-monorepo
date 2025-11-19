@@ -333,9 +333,9 @@ describe(depositFinalised, () => {
         refundEgress: {
           id: expect.any(BigInt),
         },
-      },
-      `
+      }, `
       {
+        "accountCreationDepositChannelId": null,
         "ccmAdditionalData": null,
         "ccmGasBudget": null,
         "ccmMessage": null,
@@ -362,6 +362,7 @@ describe(depositFinalised, () => {
         "refundEgressId": Any<BigInt>,
         "solanaPendingTxRef": [
           {
+            "accountCreationDepositChannelId": null,
             "address": "9nGBAS5eSSYLak3QgsmPTEsJtpquXdCCXrSGU5ffMC1X",
             "failedVaultSwapId": Any<Number>,
             "id": Any<Number>,
@@ -374,7 +375,6 @@ describe(depositFinalised, () => {
         "srcChain": "Solana",
         "swapDepositChannelId": null,
       }
-    `,
-    );
+    `);
   });
 });

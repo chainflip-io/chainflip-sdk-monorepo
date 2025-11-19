@@ -2,6 +2,7 @@
 
 exports[`swapRequested > creates a new deposit channel swap request and creates a pending tx ref record 1`] = `
 {
+  "accountCreationDepositChannelId": null,
   "address": null,
   "failedVaultSwapId": null,
   "id": Any<Number>,
@@ -215,6 +216,7 @@ exports[`swapRequested > creates a new swap request (VAULT 11000) 1`] = `
 exports[`swapRequested > creates a new vault swap request and creates a pending tx ref record 1`] = `
 [
   {
+    "accountCreationDepositChannelId": null,
     "address": "HZC6KyQYbxbKGiyWbBrwhxrPPecFi2yKG9jMwFqwNEtJ",
     "failedVaultSwapId": null,
     "id": Any<Number>,
