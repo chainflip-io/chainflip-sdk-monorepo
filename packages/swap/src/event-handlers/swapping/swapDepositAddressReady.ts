@@ -83,6 +83,7 @@ const swapDepositAddressReady = async ({
         depositAddress: data.depositAddress,
         channelId: data.channelId,
         isSwapping: true,
+        type: 'SWAP',
       },
     }),
     prisma.swapDepositChannel.upsert({

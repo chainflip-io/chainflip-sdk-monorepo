@@ -58,6 +58,14 @@ const chainStateUpdated =
         },
         data: { isExpired: true },
       }),
+      prisma.accountCreationDepositChannel.updateMany({
+        where: {
+          chain,
+          depositChainExpiryBlock: { lte: blockHeight },
+          isExpired: false,
+        },
+        data: { isExpired: true },
+      }),
     ]);
   };
 

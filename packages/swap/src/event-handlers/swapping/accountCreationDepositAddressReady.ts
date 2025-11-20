@@ -1,9 +1,10 @@
 import { swappingAccountCreationDepositAddressReady } from '@chainflip/processor/200/swapping/accountCreationDepositAddressReady';
 import z from 'zod';
+import { calculateExpiryTime } from '../../utils/function.js';
 import { formatForeignChainAddress } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
 
-export type SwappingAccountCreationDepositAddressReadyArgs = z.input<
+export type AccountCreationDepositAddressReadyArgs = z.input<
   typeof swappingAccountCreationDepositAddressReady
 >;
 
@@ -24,6 +25,10 @@ export default async function accountCreationDepositAddressReady({
     requestedFor,
   } = swappingAccountCreationDepositAddressReady.parse(event.args);
 
+  const estimatedExpiryAt = calculateExpiryTime({
+    chainInfo: await prisma.chainTracking.findFirst({ where: { chain: depositAddress.chain } }),
+    expiryBlock: depositChainExpiryBlock,
+  });
   await Promise.all([
     prisma.depositChannel.create({
       data: {
@@ -32,6 +37,7 @@ export default async function accountCreationDepositAddressReady({
         srcChain: depositAddress.chain,
         depositAddress: depositAddress.address,
         isSwapping: false,
+        type: 'ACCOUNT_CREATION',
       },
     }),
     prisma.accountCreationDepositChannel.create({
@@ -46,6 +52,10 @@ export default async function accountCreationDepositAddressReady({
         openingFeePaid: channelOpeningFee.toString(),
         refundAddress: formatForeignChainAddress(refundAddress),
         lpAccountId: requestedFor,
+        isExpired: false,
+        openedThroughBackend: false,
+        createdAt: block.timestamp,
+        estimatedExpiryAt,
         broker: {
           create: {
             account: requestedBy,

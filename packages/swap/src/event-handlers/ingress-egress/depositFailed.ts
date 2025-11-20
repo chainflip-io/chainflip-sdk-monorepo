@@ -87,6 +87,7 @@ const depositFailed =
     const reason = reasonMap[rest.reason.__kind];
     let txRef;
     let swapDepositChannelId;
+    let accountCreationDepositChannelId;
     let amount;
     let asset;
     let channelMetadata;
@@ -108,20 +109,28 @@ const depositFailed =
           orderBy: { issuedBlock: 'desc' },
         });
 
-        if (!channel.isSwapping) {
-          logger.info('deposit failed for non-swapping channel');
+        if (channel.type === 'ACCOUNT_CREATION') {
+          ({ id: accountCreationDepositChannelId, asset } =
+            await prisma.accountCreationDepositChannel.findFirstOrThrow({
+              where: { issuedBlock: channel.issuedBlock, channelId: channel.channelId },
+              orderBy: { issuedBlock: 'desc' },
+            }));
+        } else if (channel.type === 'SWAP') {
+          ({
+            id: swapDepositChannelId,
+            srcAsset: asset,
+            destAddress: destinationAddress,
+            destAsset: destinationAsset,
+          } = await prisma.swapDepositChannel.findFirstOrThrow({
+            where: { issuedBlock: channel.issuedBlock, channelId: channel.channelId },
+            orderBy: { issuedBlock: 'desc' },
+          }));
+        } else if (channel.type === 'LIQUIDITY') {
+          logger.info('deposit failed for liquidity channel');
           return;
+        } else {
+          return assertUnreachable(channel.type, 'unexpected deposit channel type');
         }
-
-        ({
-          id: swapDepositChannelId,
-          srcAsset: asset,
-          destAddress: destinationAddress,
-          destAsset: destinationAsset,
-        } = await prisma.swapDepositChannel.findFirstOrThrow({
-          where: { issuedBlock: channel.issuedBlock, channelId: channel.channelId },
-          orderBy: { issuedBlock: 'desc' },
-        }));
 
         if ('depositDetails' in details.depositWitness) {
           txRef = getDepositTxRef(
@@ -132,7 +141,7 @@ const depositFailed =
         amount = details.depositWitness.amount;
 
         if (!txRef && assetConstants[asset].chain === 'Solana') {
-          pendingTxRefInfo = { swapDepositChannelId };
+          pendingTxRefInfo = { swapDepositChannelId, accountCreationDepositChannelId };
         }
         break;
       }
@@ -168,6 +177,7 @@ const depositFailed =
       data: {
         reason,
         swapDepositChannelId,
+        accountCreationDepositChannelId,
         srcChain: chain,
         srcAsset: asset,
         destAddress: destinationAddress,

@@ -17,13 +17,23 @@ datasource db {
   schemas  = ["public", "private"]
 }
 
+enum DepositChannelType {
+  ACCOUNT_CREATION
+  SWAP
+  LIQUIDITY
+
+  @@schema("private")
+}
+
 model DepositChannel {
-  id             BigInt  @id @default(autoincrement())
+  id             BigInt             @id @default(autoincrement())
   channelId      BigInt
   srcChain       Chain
   issuedBlock    Int
   depositAddress String
+  /// @deprecated use `type` instead
   isSwapping     Boolean
+  type           DepositChannelType
 
   @@unique([issuedBlock, srcChain, channelId])
   @@index([depositAddress])
@@ -60,7 +70,7 @@ enum InternalAsset {
 }
 
 model AccountCreationDepositChannel {
-  id                      BigInt          @id @default(autoincrement())
+  id                      BigInt               @id @default(autoincrement())
   channelId               BigInt
   chain                   Chain
   asset                   InternalAsset
@@ -68,16 +78,22 @@ model AccountCreationDepositChannel {
   depositChainExpiryBlock BigInt
   depositAddress          String
   lpAccountId             String
-  broker                  SwapBeneficiary @relation(fields: [swapBeneficiaryId], references: [id])
+  broker                  SwapBeneficiary      @relation(fields: [swapBeneficiaryId], references: [id])
   swapBeneficiaryId       BigInt
   refundAddress           String
-  openingFeePaid          Decimal         @db.Decimal(30, 0)
+  openingFeePaid          Decimal              @db.Decimal(30, 0)
   maxBoostFeeBps          Int
+  isExpired               Boolean
+  openedThroughBackend    Boolean
+  createdAt               DateTime             @db.Timestamptz(3)
+  estimatedExpiryAt       DateTime?            @db.Timestamptz(3)
   swapRequests            SwapRequest[]
+  solanaPendingTxRefs     SolanaPendingTxRef[]
+  failedSwaps             FailedSwap[]
 
   @@unique([issuedBlock, chain, channelId])
   @@index([depositAddress])
-  @@schema("private")
+  @@schema("public")
 }
 
 model SwapDepositChannel {
@@ -324,27 +340,29 @@ enum FailedSwapReason {
 }
 
 model FailedSwap {
-  id                    Int                  @id @default(autoincrement())
-  reason                FailedSwapReason
-  destAddress           String?
-  destChain             Chain?
-  destAsset             InternalAsset?
-  depositAmount         Decimal              @db.Decimal(30, 0)
-  srcChain              Chain
-  srcAsset              InternalAsset
-  swapDepositChannel    SwapDepositChannel?  @relation(fields: [swapDepositChannelId], references: [id])
-  swapDepositChannelId  BigInt?
-  depositTransactionRef String?
-  failedAt              DateTime
-  failedBlockIndex      String
-  ccmGasBudget          Decimal?             @db.Decimal(30, 0)
-  ccmMessage            String?
-  ccmAdditionalData     String?
-  refundBroadcast       Broadcast?           @relation(fields: [refundBroadcastId], references: [id])
-  refundBroadcastId     BigInt?
-  refundEgress          Egress?              @relation(fields: [refundEgressId], references: [id])
-  refundEgressId        BigInt?
-  solanaPendingTxRef    SolanaPendingTxRef[]
+  id                              Int                            @id @default(autoincrement())
+  reason                          FailedSwapReason
+  destAddress                     String?
+  destChain                       Chain?
+  destAsset                       InternalAsset?
+  depositAmount                   Decimal                        @db.Decimal(30, 0)
+  srcChain                        Chain
+  srcAsset                        InternalAsset
+  swapDepositChannel              SwapDepositChannel?            @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId            BigInt?
+  accountCreationDepositChannel   AccountCreationDepositChannel? @relation(fields: [accountCreationDepositChannelId], references: [id])
+  accountCreationDepositChannelId BigInt?
+  depositTransactionRef           String?
+  failedAt                        DateTime
+  failedBlockIndex                String
+  ccmGasBudget                    Decimal?                       @db.Decimal(30, 0)
+  ccmMessage                      String?
+  ccmAdditionalData               String?
+  refundBroadcast                 Broadcast?                     @relation(fields: [refundBroadcastId], references: [id])
+  refundBroadcastId               BigInt?
+  refundEgress                    Egress?                        @relation(fields: [refundEgressId], references: [id])
+  refundEgressId                  BigInt?
+  solanaPendingTxRef              SolanaPendingTxRef[]
 
   @@index([swapDepositChannelId])
   @@schema("public")
@@ -577,15 +595,17 @@ model Quote {
 }
 
 model SolanaPendingTxRef {
-  id                   Int                 @id @default(autoincrement())
-  address              String?
-  slot                 BigInt?
-  swapDepositChannel   SwapDepositChannel? @relation(fields: [swapDepositChannelId], references: [id])
-  swapDepositChannelId BigInt?
-  vaultSwapRequest     SwapRequest?        @relation(fields: [vaultSwapRequestId], references: [id])
-  vaultSwapRequestId   BigInt?
-  failedVaultSwap      FailedSwap?         @relation(fields: [failedVaultSwapId], references: [id])
-  failedVaultSwapId    Int?
+  id                              Int                            @id @default(autoincrement())
+  address                         String?
+  slot                            BigInt?
+  swapDepositChannel              SwapDepositChannel?            @relation(fields: [swapDepositChannelId], references: [id])
+  swapDepositChannelId            BigInt?
+  vaultSwapRequest                SwapRequest?                   @relation(fields: [vaultSwapRequestId], references: [id])
+  vaultSwapRequestId              BigInt?
+  failedVaultSwap                 FailedSwap?                    @relation(fields: [failedVaultSwapId], references: [id])
+  failedVaultSwapId               Int?
+  accountCreationDepositChannel   AccountCreationDepositChannel? @relation(fields: [accountCreationDepositChannelId], references: [id])
+  accountCreationDepositChannelId BigInt?
 
   @@schema("private")
 }

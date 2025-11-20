@@ -18,9 +18,16 @@ import baseLogger from '../utils/logger.js';
 const logger = baseLogger.child({ module: 'solana-queue' });
 
 const pendingTxRefSchema = z.union([
-  z
-    .object({ swapDepositChannelId: z.bigint() })
-    .transform((args) => ({ type: 'CHANNEL' as const, channelId: args.swapDepositChannelId })),
+  z.object({ swapDepositChannelId: z.bigint() }).transform((args) => ({
+    type: 'CHANNEL' as const,
+    model: 'swapDepositChannel' as const,
+    channelId: args.swapDepositChannelId,
+  })),
+  z.object({ accountCreationDepositChannelId: z.bigint() }).transform((args) => ({
+    type: 'CHANNEL' as const,
+    model: 'accountCreationDepositChannel' as const,
+    channelId: args.accountCreationDepositChannelId,
+  })),
   z
     .object({ vaultSwapRequestId: z.bigint(), slot: z.bigint(), address: z.string() })
     .transform(({ vaultSwapRequestId, ...args }) => ({
@@ -66,12 +73,26 @@ type Deposit = {
 type SolanaNetwork = Parameters<typeof findTransactionSignatures>[4];
 
 const updateChannel = async (url: string, data: PendingChannelTxRef, network: SolanaNetwork) => {
-  const channel = await prisma.swapDepositChannel.findUniqueOrThrow({
-    where: { id: data.channelId },
-    include: { failedSwaps: true, swapRequests: true },
-  });
+  let channel;
+  let asset;
 
-  assert(channel.srcAsset === 'Sol' || channel.srcAsset === 'SolUsdc', 'unexpected asset');
+  if (data.model === 'swapDepositChannel') {
+    channel = await prisma.swapDepositChannel.findUniqueOrThrow({
+      where: { id: data.channelId },
+      include: { failedSwaps: true, swapRequests: true },
+    });
+    asset = channel.srcAsset;
+  } else if (data.model === 'accountCreationDepositChannel') {
+    channel = await prisma.accountCreationDepositChannel.findUniqueOrThrow({
+      where: { id: data.channelId },
+      include: { failedSwaps: true, swapRequests: true },
+    });
+    asset = channel.asset;
+  } else {
+    return assertUnreachable(data, 'unexpected channel model');
+  }
+
+  assert(asset === 'Sol' || asset === 'SolUsdc', 'unexpected asset');
 
   const deposits: Deposit[] = [
     ...channel.swapRequests.map((sr) => ({
@@ -93,17 +114,11 @@ const updateChannel = async (url: string, data: PendingChannelTxRef, network: So
   let txRefs;
 
   try {
-    txRefs = await findTransactionSignatures(
-      url,
-      channel.depositAddress,
-      channel.srcAsset,
-      deposits,
-      network,
-    );
+    txRefs = await findTransactionSignatures(url, channel.depositAddress, asset, deposits, network);
   } catch (error) {
     logger.error('failed to find transaction signatures', {
       error,
-      channel: { address: channel.depositAddress, asset: channel.srcAsset },
+      channel: { address: channel.depositAddress, asset },
       ...(error instanceof TransactionMatchingError
         ? { deposits: error.deposits, transfers: error.transfers }
         : { deposits }),

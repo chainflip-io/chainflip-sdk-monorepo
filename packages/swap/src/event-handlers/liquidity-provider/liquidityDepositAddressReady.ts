@@ -20,6 +20,7 @@ const liquidityDepositAddressReady = async ({ prisma, event, block }: EventHandl
       srcChain: depositAddress.chain,
       depositAddress: depositAddress.address,
       isSwapping: false,
+      type: 'LIQUIDITY',
     },
   });
 };

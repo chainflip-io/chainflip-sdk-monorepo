@@ -96,6 +96,7 @@ describe(transactionRejectedByBroker, () => {
         depositAddress: solanaDepositAddress,
         issuedBlock: swapChannel.issuedBlock,
         isSwapping: true,
+        type: 'SWAP',
       },
     });
 
