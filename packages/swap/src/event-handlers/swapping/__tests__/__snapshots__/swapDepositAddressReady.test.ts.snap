@@ -97,6 +97,7 @@ exports[`swapDepositAddressReady > creates a swap deposit channel entry with a b
 exports[`swapDepositAddressReady > creates a swap deposit channel entry with a broker commission 2`] = `
 {
   "account": "cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy",
+  "accountCreationDepositChannelId": null,
   "channelId": Any<BigInt>,
   "commissionBps": 25,
   "id": Any<BigInt>,
@@ -234,6 +235,7 @@ exports[`swapDepositAddressReady > inserts affiliates 1`] = `
   "beneficiaries": [
     {
       "account": "cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy",
+      "accountCreationDepositChannelId": null,
       "channelId": Any<BigInt>,
       "commissionBps": 25,
       "id": Any<BigInt>,
@@ -242,6 +244,7 @@ exports[`swapDepositAddressReady > inserts affiliates 1`] = `
     },
     {
       "account": "cFLhKgAVKDYQiyPXLH6yuvsWMXebn214VzKZEyXvEgcB9WT4T",
+      "accountCreationDepositChannelId": null,
       "channelId": Any<BigInt>,
       "commissionBps": 100,
       "id": Any<BigInt>,

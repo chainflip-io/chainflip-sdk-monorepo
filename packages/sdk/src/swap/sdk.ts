@@ -14,6 +14,7 @@ import {
 import { HexString } from '@chainflip/utils/types';
 import { initClient } from '@ts-rest/core';
 import { createApiContract } from '@/shared/api/contract.js';
+import { AccountCreationDepositChannelParams } from '@/shared/api/openAccountCreationDepositChannel.js';
 import {
   CfParametersEncodingRequest,
   requestCfParametersEncoding,
@@ -583,5 +584,29 @@ export class SwapSDK {
   async checkBoostEnabled(): Promise<boolean> {
     const { assets } = await this.cache.read('networkInfo');
     return assets.find((a) => a.asset === 'Btc')?.boostDepositsEnabled ?? true;
+  }
+
+  async requestAccountCreationDepositAddress(
+    asset: ChainflipAsset,
+    refundAddress: string,
+    signatureData: AccountCreationDepositChannelParams['signatureData'],
+    transactionMetadata: AccountCreationDepositChannelParams['transactionMetadata'],
+    boostFeeBps = 0,
+  ) {
+    const res = await this.apiClient.openAccountCreationDepositChannel({
+      body: {
+        asset: internalAssetToRpcAsset[asset],
+        refundAddress,
+        signatureData,
+        transactionMetadata,
+        boostFeeBps,
+      },
+    });
+
+    if (res.status !== 201) {
+      throw new Error('Failed to request account creation deposit channel', { cause: res });
+    }
+
+    return res.body;
   }
 }

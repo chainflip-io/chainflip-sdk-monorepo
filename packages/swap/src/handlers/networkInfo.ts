@@ -2,7 +2,7 @@ import { HttpClient } from '@chainflip/rpc';
 import { RpcMethod, RpcRequest, RpcResult } from '@chainflip/rpc/common';
 import { assetConstants, getInternalAsset } from '@chainflip/utils/chainflip';
 import { uncapitalize } from '@chainflip/utils/string';
-import z from 'zod';
+import { z } from 'zod';
 import type { NetworkInfo } from '@/shared/api/networkInfo.js';
 import { MultiCache, Fetcher } from '@/shared/dataStructures.js';
 import env from '../config/env.js';
