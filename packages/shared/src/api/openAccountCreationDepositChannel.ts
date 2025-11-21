@@ -3,6 +3,10 @@ import { z } from 'zod';
 import { assetAndChain, hexString } from '../parsers.js';
 import { validateAddress } from '../validation/addressValidation.js';
 
+export type AccountCreationDepositChannelParams = z.input<
+  ReturnType<typeof getAccountCreationDepositChannelSchema>
+>;
+
 export const getAccountCreationDepositChannelSchema = (network: ChainflipNetwork) =>
   z
     .object({
