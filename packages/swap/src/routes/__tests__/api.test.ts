@@ -944,7 +944,7 @@ describe('openAccountCreationDepositChannel', () => {
           nonce: 0,
           expiryBlock: 55000,
         },
-        boostFeeBps: 0,
+        boostFeeBps: 30,
       },
     });
 
@@ -956,7 +956,7 @@ describe('openAccountCreationDepositChannel', () => {
         "depositAddress": "0xc2774b2f1972f50ac6113e81721cc7214388434d",
         "id": "53948-Ethereum-3",
         "issuedBlock": 53948,
-        "maxBoostFeeBps": 0,
+        "maxBoostFeeBps": 30,
         "srcChainExpiryBlock": "27208",
       }
     `);
@@ -979,7 +979,7 @@ describe('openAccountCreationDepositChannel', () => {
             "asset": "ETH",
             "chain": "Ethereum",
           },
-          0,
+          30,
           "0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26",
         ],
       ]
