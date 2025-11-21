@@ -78,8 +78,6 @@ model AccountCreationDepositChannel {
   depositChainExpiryBlock BigInt
   depositAddress          String
   lpAccountId             String
-  broker                  SwapBeneficiary      @relation(fields: [swapBeneficiaryId], references: [id])
-  swapBeneficiaryId       BigInt
   refundAddress           String
   openingFeePaid          Decimal              @db.Decimal(30, 0)
   maxBoostFeeBps          Int
@@ -90,6 +88,7 @@ model AccountCreationDepositChannel {
   swapRequests            SwapRequest[]
   solanaPendingTxRefs     SolanaPendingTxRef[]
   failedSwaps             FailedSwap[]
+  swapBeneficiaries       SwapBeneficiary[]
 
   @@unique([issuedBlock, chain, channelId])
   @@index([depositAddress])
@@ -143,15 +142,16 @@ enum BrokerType {
 }
 
 model SwapBeneficiary {
-  id                             BigInt                          @id @default(autoincrement())
-  account                        String
-  commissionBps                  Int
-  type                           BrokerType
-  channel                        SwapDepositChannel?             @relation(fields: [channelId], references: [id])
-  channelId                      BigInt?
-  swapRequest                    SwapRequest?                    @relation(fields: [swapRequestId], references: [id])
-  swapRequestId                  BigInt?
-  accountCreationDepositChannels AccountCreationDepositChannel[]
+  id                              BigInt                         @id @default(autoincrement())
+  account                         String
+  commissionBps                   Int
+  type                            BrokerType
+  channel                         SwapDepositChannel?            @relation(fields: [channelId], references: [id])
+  channelId                       BigInt?
+  swapRequest                     SwapRequest?                   @relation(fields: [swapRequestId], references: [id])
+  swapRequestId                   BigInt?
+  accountCreationDepositChannel   AccountCreationDepositChannel? @relation(fields: [accountCreationDepositChannelId], references: [id])
+  accountCreationDepositChannelId BigInt?
 
   @@index([channelId])
   @@schema("public")

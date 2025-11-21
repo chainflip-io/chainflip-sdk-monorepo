@@ -8,6 +8,7 @@ import {
   getVaultSwapParameterEncodingRequestSchema,
 } from '../broker.js';
 import { hexString } from '../parsers.js';
+import { getAccountCreationDepositChannelSchema } from './openAccountCreationDepositChannel.js';
 
 const c = initContract();
 
@@ -42,6 +43,14 @@ export const createApiContract = (network: ChainflipNetwork) =>
         method: 'POST',
         path: '/openSwapDepositChannel',
         body: getOpenSwapDepositChannelSchema(network),
+        responses: {
+          201: DepositChannelInfo,
+        },
+      },
+      openAccountCreationDepositChannel: {
+        method: 'POST',
+        path: '/openAccountCreationDepositChannel',
+        body: getAccountCreationDepositChannelSchema(network),
         responses: {
           201: DepositChannelInfo,
         },

@@ -4,7 +4,7 @@ import * as base58 from '@chainflip/utils/base58';
 import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
 import { isNullish } from '@chainflip/utils/guard';
 import assert from 'assert';
-import z from 'zod';
+import { z } from 'zod';
 import { formatTxRef } from '@/shared/common.js';
 import { assertUnreachable } from '@/shared/functions.js';
 import { assertNever } from '@/shared/guards.js';
@@ -90,13 +90,13 @@ export const getOriginInfo = async (
     const channel = await prisma.accountCreationDepositChannel.findFirstOrThrow({
       where: { asset: srcAsset, lpAccountId: requestInfo.lpAccountId },
       orderBy: { issuedBlock: 'desc' },
-      include: { broker: true },
+      include: { swapBeneficiaries: true },
     });
 
     return {
       originType: 'DEPOSIT_CHANNEL' as const,
       accountCreationDepositChannelId: channel.id,
-      brokerId: channel.broker.account,
+      brokerId: channel.swapBeneficiaries[0].account,
     };
   }
 

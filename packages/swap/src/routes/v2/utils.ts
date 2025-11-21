@@ -30,7 +30,7 @@ const beneficiaryInclude = { type: true, account: true, commissionBps: true } as
 
 const accountCreationDepositChannelInclude = {
   failedSwaps: { select: failedSwapInclude },
-  broker: { select: beneficiaryInclude },
+  swapBeneficiaries: { select: beneficiaryInclude },
 } as const;
 
 const swapDepositChannelInclude = {
@@ -110,7 +110,7 @@ export const getLatestSwapForId = async (id: string) => {
           failedSwaps: {
             include: failedSwapWithChannelsInclude,
           },
-          broker: {
+          swapBeneficiaries: {
             select: {
               type: true,
               account: true,
@@ -497,6 +497,7 @@ export const getBeneficiaries = (
 ) =>
   swapRequest?.beneficiaries ??
   swapDepositChannel?.beneficiaries ??
+  accountCreationDepositChannel?.swapBeneficiaries ??
   (pendingVaultSwap &&
     [
       pendingVaultSwap.brokerFee && {
@@ -509,14 +510,7 @@ export const getBeneficiaries = (
         account: fee.account,
         commissionBps: fee.commissionBps,
       })),
-    ].filter(isTruthy)) ??
-  (accountCreationDepositChannel && [
-    {
-      type: 'SUBMITTER',
-      account: accountCreationDepositChannel.broker.account,
-      commissionBps: accountCreationDepositChannel.broker.commissionBps,
-    },
-  ]);
+    ].filter(isTruthy));
 
 export const getFillOrKillParams = (
   swapRequest: SwapRequestData | null | undefined,

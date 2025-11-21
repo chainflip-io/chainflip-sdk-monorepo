@@ -1,5 +1,5 @@
 import { swappingAccountCreationDepositAddressReady } from '@chainflip/processor/200/swapping/accountCreationDepositAddressReady';
-import z from 'zod';
+import { z } from 'zod';
 import { calculateExpiryTime } from '../../utils/function.js';
 import { formatForeignChainAddress } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
@@ -40,8 +40,15 @@ export default async function accountCreationDepositAddressReady({
         type: 'ACCOUNT_CREATION',
       },
     }),
-    prisma.accountCreationDepositChannel.create({
-      data: {
+    prisma.accountCreationDepositChannel.upsert({
+      where: {
+        issuedBlock_chain_channelId: {
+          issuedBlock: block.height,
+          channelId,
+          chain: depositAddress.chain,
+        },
+      },
+      create: {
         asset,
         chain: depositAddress.chain,
         channelId,
@@ -56,7 +63,17 @@ export default async function accountCreationDepositAddressReady({
         openedThroughBackend: false,
         createdAt: block.timestamp,
         estimatedExpiryAt,
-        broker: {
+        swapBeneficiaries: {
+          create: {
+            account: requestedBy,
+            commissionBps: 0,
+            type: 'SUBMITTER',
+          },
+        },
+      },
+      update: {
+        createdAt: block.timestamp,
+        swapBeneficiaries: {
           create: {
             account: requestedBy,
             commissionBps: 0,

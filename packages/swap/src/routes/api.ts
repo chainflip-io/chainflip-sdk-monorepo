@@ -4,6 +4,7 @@ import { stringifyBigInts } from '@/shared/objects.js';
 import { encodeCfParameters } from '../handlers/encodeCfParameters.js';
 import { encodeVaultSwapData } from '../handlers/encodeVaultSwapData.js';
 import networkInfo from '../handlers/networkInfo.js';
+import { openAccountCreationDepositChannel } from '../handlers/openAccountCreationDepositChannel.js';
 import { openSwapDepositChannel } from '../handlers/openSwapDepositChannel.js';
 
 const s = initServer();
@@ -25,5 +26,9 @@ export const createApiRouter = (apiContract: ReturnType<typeof createApiContract
     encodeCfParameters: async ({ body }) => ({
       status: 200,
       body: await encodeCfParameters(body),
+    }),
+    openAccountCreationDepositChannel: async ({ body }) => ({
+      status: 201,
+      body: await openAccountCreationDepositChannel(body),
     }),
   });

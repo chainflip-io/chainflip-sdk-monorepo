@@ -157,6 +157,7 @@ exports[`swapRequested > creates a new swap request (VAULT 11000) 1`] = `
   "beneficiaries": [
     {
       "account": "cFM8kRvLBXagj6ZXvrt7wCM4jGmHvb5842jTtXXg3mRHjrvKy",
+      "accountCreationDepositChannelId": null,
       "channelId": null,
       "commissionBps": 100,
       "id": Any<BigInt>,
@@ -165,6 +166,7 @@ exports[`swapRequested > creates a new swap request (VAULT 11000) 1`] = `
     },
     {
       "account": "cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH",
+      "accountCreationDepositChannelId": null,
       "channelId": null,
       "commissionBps": 150,
       "id": Any<BigInt>,

@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+import { HttpClient } from '@chainflip/rpc';
 import { ApiFetcherArgs, initClient } from '@ts-rest/core';
 import request from 'supertest';
 import { vi, describe, it, beforeAll, beforeEach, afterEach, expect } from 'vitest';
@@ -50,7 +50,7 @@ describe('openSwapDepositChannel', () => {
 
   beforeAll(async () => {
     vi.useFakeTimers({ toFake: ['performance', 'Date'] }).setSystemTime(new Date('2022-01-01'));
-    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking", "SwapDepositChannel", private."DepositChannel" CASCADE`;
     await prisma.chainTracking.create({
       data: {
         chain: 'Ethereum',
@@ -901,6 +901,88 @@ describe('encodeVaultSwapData', () => {
         "headers": Headers {},
         "status": 503,
       }
+    `);
+  });
+});
+
+describe('openAccountCreationDepositChannel', () => {
+  type ChannelInfo = Awaited<
+    ReturnType<
+      typeof HttpClient.prototype.sendRequest<'broker_request_account_creation_deposit_address'>
+    >
+  >;
+
+  beforeEach(async () => {
+    await prisma.$queryRaw`TRUNCATE TABLE "AccountCreationDepositChannel" CASCADE`;
+  });
+
+  it('opens account creation deposit channel', async () => {
+    const response: ChannelInfo = {
+      issued_block: 53948,
+      channel_id: 3,
+      address: '0xc2774b2f1972f50ac6113e81721cc7214388434d',
+      requested_for: 'cFHsUq1uK5opJudRDczt7w4baiRDHR6Kdezw77u2JnRnCGKcs',
+      deposit_chain_expiry_block: 27208n,
+      channel_opening_fee: 0n,
+      refund_address: '0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26',
+    };
+
+    const spy = vi.spyOn(HttpClient.prototype, 'sendRequest').mockResolvedValueOnce(response);
+
+    const result = await client.openAccountCreationDepositChannel({
+      body: {
+        asset: { asset: 'ETH', chain: 'Ethereum' },
+        refundAddress: '0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26',
+        signatureData: {
+          Ethereum: {
+            signature: '0x1234567890',
+            signer: '0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26',
+            sigType: 'Eip712',
+          },
+        },
+        transactionMetadata: {
+          nonce: 0,
+          expiryBlock: 55000,
+        },
+        boostFeeBps: 0,
+      },
+    });
+
+    expect(result.status).toBe(201);
+    expect(result.body).toMatchInlineSnapshot(`
+      {
+        "brokerCommissionBps": 0,
+        "channelOpeningFee": "0",
+        "depositAddress": "0xc2774b2f1972f50ac6113e81721cc7214388434d",
+        "id": "53948-Ethereum-3",
+        "issuedBlock": 53948,
+        "maxBoostFeeBps": 0,
+        "srcChainExpiryBlock": "27208",
+      }
+    `);
+    expect(spy.mock.calls).toMatchInlineSnapshot(`
+      [
+        [
+          "broker_request_account_creation_deposit_address",
+          {
+            "Ethereum": {
+              "sig_type": "Eip712",
+              "signature": "0x1234567890",
+              "signer": "0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26",
+            },
+          },
+          {
+            "expiry_block": 55000,
+            "nonce": 0,
+          },
+          {
+            "asset": "ETH",
+            "chain": "Ethereum",
+          },
+          0,
+          "0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26",
+        ],
+      ]
     `);
   });
 });
