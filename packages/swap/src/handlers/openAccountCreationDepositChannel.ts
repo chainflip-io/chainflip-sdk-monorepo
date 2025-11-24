@@ -5,20 +5,29 @@ import { getAccountCreationDepositChannelSchema } from '@/shared/api/openAccount
 import { DepositChannelInfo } from '@/shared/api/openSwapDepositChannel.js';
 import prisma from '../client.js';
 import env from '../config/env.js';
+import { calculateExpiryTime } from '../utils/function.js';
 
 const broker = new HttpClient(env.RPC_BROKER_HTTPS_URL);
 
 export const openAccountCreationDepositChannel = async (
   params: z.output<ReturnType<typeof getAccountCreationDepositChannelSchema>>,
 ): Promise<z.input<typeof DepositChannelInfo>> => {
-  const result = await broker.sendRequest(
-    'broker_request_account_creation_deposit_address',
-    params.signatureData,
-    params.transactionMetadata,
-    params.asset,
-    params.boostFeeBps,
-    params.refundAddress,
-  );
+  const [result, chainInfo] = await Promise.all([
+    broker.sendRequest(
+      'broker_request_account_creation_deposit_address',
+      params.signatureData,
+      params.transactionMetadata,
+      params.asset,
+      params.boostFeeBps,
+      params.refundAddress,
+    ),
+    prisma.chainTracking.findFirst({ where: { chain: params.asset.chain } }),
+  ]);
+
+  const estimatedExpiryTime = calculateExpiryTime({
+    chainInfo,
+    expiryBlock: result.deposit_chain_expiry_block,
+  });
 
   const channel = await prisma.accountCreationDepositChannel.upsert({
     where: {
@@ -42,6 +51,7 @@ export const openAccountCreationDepositChannel = async (
       lpAccountId: result.requested_for,
       openedThroughBackend: true,
       refundAddress: params.refundAddress,
+      estimatedExpiryAt: estimatedExpiryTime,
     },
     update: {
       openedThroughBackend: true,

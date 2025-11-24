@@ -54,7 +54,7 @@ describe('openSwapDepositChannel', () => {
     await prisma.chainTracking.create({
       data: {
         chain: 'Ethereum',
-        height: BigInt('125'),
+        height: 125n,
         blockTrackedAt: new Date('2023-11-09T10:00:00.000Z'),
         eventWitnessedBlock: 1,
       },
@@ -913,7 +913,15 @@ describe('openAccountCreationDepositChannel', () => {
   >;
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "AccountCreationDepositChannel" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking", "AccountCreationDepositChannel" CASCADE`;
+    await prisma.chainTracking.create({
+      data: {
+        chain: 'Ethereum',
+        height: 27000n,
+        blockTrackedAt: new Date('2023-11-09T10:00:00.000Z'),
+        eventWitnessedBlock: 1,
+      },
+    });
   });
 
   it('opens account creation deposit channel', async () => {
@@ -954,6 +962,7 @@ describe('openAccountCreationDepositChannel', () => {
         "brokerCommissionBps": 0,
         "channelOpeningFee": "0",
         "depositAddress": "0xc2774b2f1972f50ac6113e81721cc7214388434d",
+        "estimatedExpiryTime": 1699526496000,
         "id": "53948-Ethereum-3",
         "issuedBlock": 53948,
         "maxBoostFeeBps": 30,
@@ -984,5 +993,29 @@ describe('openAccountCreationDepositChannel', () => {
         ],
       ]
     `);
+    expect(await prisma.accountCreationDepositChannel.findFirst()).toMatchInlineSnapshot(
+      {
+        id: expect.any(BigInt),
+      },
+      `
+      {
+        "asset": "Eth",
+        "chain": "Ethereum",
+        "channelId": 3n,
+        "createdAt": 2022-01-01T00:00:00.000Z,
+        "depositAddress": "0xc2774b2f1972f50ac6113e81721cc7214388434d",
+        "depositChainExpiryBlock": 27208n,
+        "estimatedExpiryAt": 2023-11-09T10:41:36.000Z,
+        "id": Any<BigInt>,
+        "isExpired": false,
+        "issuedBlock": 53948,
+        "lpAccountId": "cFHsUq1uK5opJudRDczt7w4baiRDHR6Kdezw77u2JnRnCGKcs",
+        "maxBoostFeeBps": 30,
+        "openedThroughBackend": true,
+        "openingFeePaid": "0",
+        "refundAddress": "0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26",
+      }
+    `,
+    );
   });
 });
