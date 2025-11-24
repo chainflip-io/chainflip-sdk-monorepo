@@ -33,7 +33,7 @@ import {
   getEnvironment,
 } from '@/shared/rpc/index.js';
 import { validateSwapAmount } from '@/shared/rpc/utils.js';
-import { BoostQuote, FillOrKillParamsWithoutRefundAddress, Quote } from '@/shared/schemas.js';
+import { BoostQuote, Quote } from '@/shared/schemas.js';
 import { Required } from '@/shared/types.js';
 import { getAssetData } from './assets.js';
 import { getChainData } from './chains.js';
@@ -544,41 +544,6 @@ export class SwapSDK {
     }
 
     return res.body;
-  }
-
-  /** @deprecated DEPRECATED(1.11) removing this method as it appears to not be used */
-  // eslint-disable-next-line class-methods-use-this
-  getOnChainSwapExtrinsicArgs({
-    quote,
-    fillOrKillParams,
-  }: {
-    quote: Quote;
-    fillOrKillParams: FillOrKillParamsWithoutRefundAddress;
-  }): [
-    amount: string,
-    inputAsset: ChainflipAsset,
-    outputAsset: ChainflipAsset,
-    retryDuration: number,
-    minPrice: string,
-    dcaParams: { number_of_chunks: number; chunk_interval: number } | null,
-  ] {
-    assert(quote.isOnChain, 'Cannot get extrinsic args for non-on-chain quotes');
-
-    const { retryDurationBlocks, minPriceX128 } = parseFoKParams(fillOrKillParams, quote);
-
-    return [
-      quote.depositAmount,
-      getInternalAsset(quote.srcAsset),
-      getInternalAsset(quote.destAsset),
-      retryDurationBlocks,
-      minPriceX128,
-      quote.type === 'DCA'
-        ? {
-            number_of_chunks: quote.dcaParams.numberOfChunks,
-            chunk_interval: quote.dcaParams.chunkIntervalBlocks,
-          }
-        : null,
-    ];
   }
 
   async checkBoostEnabled(): Promise<boolean> {
