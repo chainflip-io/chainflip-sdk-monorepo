@@ -993,9 +993,11 @@ describe('openAccountCreationDepositChannel', () => {
         ],
       ]
     `);
-    expect(await prisma.accountCreationDepositChannel.findFirst()).toMatchInlineSnapshot({
-      id: expect.any(BigInt),
-    }, `
+    expect(await prisma.accountCreationDepositChannel.findFirst()).toMatchInlineSnapshot(
+      {
+        id: expect.any(BigInt),
+      },
+      `
       {
         "asset": "Eth",
         "chain": "Ethereum",
@@ -1013,6 +1015,7 @@ describe('openAccountCreationDepositChannel', () => {
         "openingFeePaid": "0",
         "refundAddress": "0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26",
       }
-    `);
+    `,
+    );
   });
 });
