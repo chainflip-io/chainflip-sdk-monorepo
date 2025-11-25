@@ -54,8 +54,10 @@ jobs:
       package_scope: '@chainflip-io'
       build_cmd: pnpm --filter @chainflip/cli build
       publish_cmd: pnpm --filter @chainflip/cli publish --tag ${{ needs.get-release-context.outputs.publish-tag }}
+      git_tag: "@chainflip/cli/${{ needs.get-release-context.outputs.publish-tag }}"
     secrets:
       node_auth_token: ${{ secrets.CF_NPM_JS_PACKAGES_READ_WRITE }}
+      ssh_private_key: ${{ secrets.CF_GITHUB_BOT_SSH_PRIVATE_KEY }}
 
   pre-checks-sdk:
     needs: [get-release-context]
@@ -79,5 +81,7 @@ jobs:
       package_scope: '@chainflip-io'
       build_cmd: pnpm --filter @chainflip/sdk build
       publish_cmd: pnpm --filter @chainflip/sdk publish --tag ${{ needs.get-release-context.outputs.publish-tag }}
+      git_tag: "@chainflip/sdk/${{ needs.get-release-context.outputs.publish-tag }}"
     secrets:
       node_auth_token: ${{ secrets.CF_NPM_JS_PACKAGES_READ_WRITE }}
+      ssh_private_key: ${{ secrets.CF_GITHUB_BOT_SSH_PRIVATE_KEY }}
