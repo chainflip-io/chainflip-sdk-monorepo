@@ -7,6 +7,14 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## Unreleased
+
+### Removed
+
+- The deprecated fields `brokerCommissionBps`, `affiliateBrokers`, and
+  `fillOrKillParams` have been removed from the `depositChannel` property of the
+  swap status response.
+
 ## 1.11.0
 
 ### Added
