@@ -2,7 +2,6 @@ import { swappingSwapRequested as schema11100 } from '@chainflip/processor/11100
 import * as base58 from '@chainflip/utils/base58';
 import { bytesToHex } from '@chainflip/utils/bytes';
 import { assetConstants } from '@chainflip/utils/chainflip';
-import { CHAINFLIP_SS58_PREFIX } from '@chainflip/utils/consts';
 import * as ss58 from '@chainflip/utils/ss58';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import prisma from '../../../client.js';
@@ -509,10 +508,7 @@ describe(swapRequested, () => {
     expect(request).toMatchSnapshot({
       id: expect.any(BigInt),
       srcAddress: null, // not set for liquidation swaps
-      destAddress: ss58.encode({
-        data: liquidation200.requestType.outputAction.swapType.borrowerId,
-        ss58Format: CHAINFLIP_SS58_PREFIX,
-      }),
+      destAddress: null,
     });
   });
 });
