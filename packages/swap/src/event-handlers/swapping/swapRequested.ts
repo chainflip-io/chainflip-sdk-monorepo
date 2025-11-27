@@ -41,7 +41,6 @@ const getRequestInfo = (requestType: RequestType) => {
     if (requestType.outputAction.__kind === 'CreditLendingPool') {
       return {
         type: 'LIQUIDATION' as const,
-        destAddress: requestType.outputAction.swapType.borrowerId,
       };
     }
 
