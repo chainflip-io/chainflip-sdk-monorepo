@@ -71,7 +71,7 @@ exports[`swapRequested > creates a new swap request (LIQUIDATION 200) 1`] = `
   "depositFinalisedAt": null,
   "depositFinalisedBlockIndex": null,
   "depositTransactionRef": null,
-  "destAddress": "cFHsUq1uK5opJudRDd1aZt8heubFTt5nykqjPogPbNEn2drHJ",
+  "destAddress": null,
   "destAsset": "Usdc",
   "effectiveBoostFeeBps": null,
   "egressId": null,
