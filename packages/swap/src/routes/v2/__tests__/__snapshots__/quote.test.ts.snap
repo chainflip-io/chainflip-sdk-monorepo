@@ -519,6 +519,136 @@ exports[`server > GET /v2/quote > gets only REGULAR quote when DCA quoting is di
 ]
 `;
 
+exports[`server > GET /v2/quote > gets only REGULAR quote when DCA quoting is disabled for the dest asset 1`] = `
+[
+  {
+    "depositAmount": "1000000000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "100000000",
+    "estimatedDurationSeconds": 132,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 96,
+      "swap": 12,
+    },
+    "estimatedPrice": "100.0000000000025",
+    "includedFees": [
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "0",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedRetryDurationMinutes": 5,
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "type": "REGULAR",
+  },
+]
+`;
+
+exports[`server > GET /v2/quote > gets only REGULAR quote when DCA quoting is disabled for the source asset 1`] = `
+[
+  {
+    "depositAmount": "1000000000000000000",
+    "destAsset": {
+      "asset": "USDC",
+      "chain": "Ethereum",
+    },
+    "egressAmount": "100000000",
+    "estimatedDurationSeconds": 132,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 96,
+      "swap": 12,
+    },
+    "estimatedPrice": "100.0000000000025",
+    "includedFees": [
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "100100",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "0",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedRetryDurationMinutes": 5,
+    "recommendedSlippageTolerancePercent": 1,
+    "srcAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "type": "REGULAR",
+  },
+]
+`;
+
 exports[`server > GET /v2/quote > gets the DCA quote to USDC 1`] = `
 [
   {

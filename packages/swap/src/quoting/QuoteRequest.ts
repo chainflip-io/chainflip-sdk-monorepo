@@ -140,7 +140,13 @@ export default class QuoteRequest {
   }
 
   private async setDcaQuoteParams() {
-    if (!this.dcaEnabled) return;
+    if (
+      !this.dcaEnabled ||
+      env.DCA_DISABLED_INTERNAL_ASSETS.has(this.srcAsset) ||
+      env.DCA_DISABLED_INTERNAL_ASSETS.has(this.destAsset)
+    ) {
+      return;
+    }
 
     const usdChunkSize =
       // if we have a chunk size for the destination asset, use that first

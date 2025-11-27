@@ -141,6 +141,7 @@ export default z
           ...envSafeAssetBlacklist(process.env.CHAINFLIP_NETWORK as ChainflipNetwork),
         ]),
     ),
+    DCA_DISABLED_INTERNAL_ASSETS: internalAssetCsv('DCA_DISABLED_INTERNAL_ASSETS'),
     DISABLED_DEPOSIT_INTERNAL_ASSETS: internalAssetCsv('DISABLED_DEPOSIT_INTERNAL_ASSETS'),
     DISABLED_DESTINATION_INTERNAL_ASSETS: internalAssetCsv('DISABLED_DESTINATION_INTERNAL_ASSETS'),
     MAX_CHANNELS_OPEN_PER_ADDRESS: optionalNumber(25),
