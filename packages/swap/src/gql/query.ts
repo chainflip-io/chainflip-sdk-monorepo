@@ -20,8 +20,6 @@ export const GET_BATCH = gql(/* GraphQL */ `
             args
             name
             indexInBlock
-            callId
-            extrinsicId
           }
         }
       }

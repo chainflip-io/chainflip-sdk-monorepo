@@ -24,8 +24,6 @@ const events = [
     id: '0000000086-000632-f8e73',
     blockId: '0000000086-f8e73',
     indexInBlock: 632,
-    extrinsicId: '0000000086-000159-f8e73',
-    callId: '0000000086-000159-f8e73',
     name: 'Swapping.AccountCreationDepositAddressReady',
     args: check<AccountCreationDepositAddressReadyArgs>({
       boostFee: 0,
@@ -50,8 +48,6 @@ const events = [
     id: '0000000092-000398-77afe',
     blockId: '0000000092-77afe',
     indexInBlock: 398,
-    extrinsicId: '0000000092-000010-77afe',
-    callId: '0000000092-000010-77afe',
     name: 'Swapping.SwapRequested',
     args: check<SwapRequestedArgs>({
       origin: {
@@ -84,8 +80,6 @@ const events = [
     id: '0000000092-000399-77afe',
     blockId: '0000000092-77afe',
     indexInBlock: 399,
-    extrinsicId: '0000000092-000010-77afe',
-    callId: '0000000092-000010-77afe',
     name: 'Swapping.SwapScheduled',
     args: check<SwapScheduledArgs>({
       swapId: '423',
@@ -100,8 +94,6 @@ const events = [
     id: '0000000092-000400-77afe',
     blockId: '0000000092-77afe',
     indexInBlock: 400,
-    extrinsicId: '0000000092-000010-77afe',
-    callId: '0000000092-000010-77afe',
     name: 'SolanaIngressEgress.DepositFinalised',
     args: check<DepositFinalisedArgsMap['Solana']>({
       originType: {
@@ -130,8 +122,6 @@ const events = [
     id: '0000000094-000594-75b12',
     blockId: '0000000094-75b12',
     indexInBlock: 594,
-    extrinsicId: null,
-    callId: null,
     name: 'Swapping.SwapExecuted',
     args: check<SwapExecutedArgs>({
       swapId: '423',
@@ -150,8 +140,6 @@ const events = [
     id: '0000000094-000596-75b12',
     blockId: '0000000094-75b12',
     indexInBlock: 596,
-    extrinsicId: null,
-    callId: null,
     name: 'Swapping.SwapRequestCompleted',
     args: check<SwapRequestCompletedArgs>({
       swapRequestId: '368',

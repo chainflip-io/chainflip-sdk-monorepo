@@ -602,6 +602,7 @@ export const getRolledSwapsInitialData = (swapRequest: SwapRequestData | undefin
   swappedIntermediateAmount: new Prisma.Decimal(0),
   swappedInputAmount: new Prisma.Decimal(0),
   executedChunks: 0,
+  previousChunk: null as null | NonNullable<SwapRequestData['swaps']>[number],
   currentChunk: null as null | NonNullable<SwapRequestData['swaps']>[number],
   lastExecutedChunk: null as null | NonNullable<SwapRequestData['swaps']>[number],
   isDca: (swapRequest?.dcaNumberOfChunks ?? 1) > 1,

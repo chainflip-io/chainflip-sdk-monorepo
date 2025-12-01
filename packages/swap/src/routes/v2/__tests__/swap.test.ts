@@ -104,8 +104,6 @@ const swapEventMap = {
     id: '0000000086-000632-f8e73',
     blockId: '0000000086-f8e73',
     indexInBlock: 632,
-    extrinsicId: '0000000086-000159-f8e73',
-    callId: '0000000086-000159-f8e73',
     name: 'Swapping.SwapDepositAddressReady',
     args: check<SwapDepositAddressReadyArgs>({
       boostFee: 0,
@@ -136,8 +134,6 @@ const swapEventMap = {
     id: '0000000092-000398-77afe',
     blockId: '0000000092-77afe',
     indexInBlock: 398,
-    extrinsicId: '0000000092-000010-77afe',
-    callId: '0000000092-000010-77afe',
     name: 'Swapping.SwapRequested',
     args: check<SwapRequestedArgs>({
       origin: {
@@ -168,8 +164,6 @@ const swapEventMap = {
     id: '0000000092-000399-77afe',
     blockId: '0000000092-77afe',
     indexInBlock: 399,
-    extrinsicId: '0000000092-000010-77afe',
-    callId: '0000000092-000010-77afe',
     name: 'Swapping.SwapScheduled',
     args: check<SwapScheduledArgs>({
       swapId: '423',
@@ -183,8 +177,6 @@ const swapEventMap = {
     id: '0000000092-000400-77afe',
     blockId: '0000000092-77afe',
     indexInBlock: 400,
-    extrinsicId: '0000000092-000010-77afe',
-    callId: '0000000092-000010-77afe',
     name: 'EthereumIngressEgress.DepositFinalised',
     args: check<DepositFinalisedArgsMap['Ethereum']>({
       originType: {
@@ -205,8 +197,6 @@ const swapEventMap = {
     id: '0000000092-000400-77afe',
     blockId: '0000000092-77afe',
     indexInBlock: 400,
-    extrinsicId: '0000000092-000010-77afe',
-    callId: '0000000092-000010-77afe',
     name: 'EthereumIngressEgress.DepositBoosted',
     args: check<DepositBoostedArgsMap['Ethereum']>({
       originType: {
@@ -229,8 +219,6 @@ const swapEventMap = {
     id: '0000000092-000400-77afe',
     blockId: '0000000092-77afe',
     indexInBlock: 400,
-    extrinsicId: '0000000092-000010-77afe',
-    callId: '0000000092-000010-77afe',
     name: 'EthereumIngressEgress.InsufficientBoostLiquidity',
     args: check<InsufficientBoostLiquidityArgsMap['Ethereum']>({
       prewitnessedDepositId: '27',
@@ -244,8 +232,6 @@ const swapEventMap = {
     id: '0000000094-000594-75b12',
     blockId: '0000000094-75b12',
     indexInBlock: 594,
-    extrinsicId: null,
-    callId: null,
     name: 'Swapping.SwapExecuted',
     args: check<SwapExecutedArgs>({
       swapId: '423',
@@ -264,8 +250,6 @@ const swapEventMap = {
     id: '0000000094-000595-75b12',
     blockId: '0000000094-75b12',
     indexInBlock: 595,
-    extrinsicId: null,
-    callId: null,
     name: 'Swapping.SwapEgressScheduled',
     args: check<SwapEgressScheduledArgs>({
       asset: { __kind: 'Dot' },
@@ -279,8 +263,6 @@ const swapEventMap = {
     id: '0000000094-000596-75b12',
     blockId: '0000000094-75b12',
     indexInBlock: 596,
-    extrinsicId: null,
-    callId: null,
     name: 'Swapping.SwapRequestCompleted',
     args: check<SwapRequestCompletedArgs>({ swapRequestId: '368' }),
   },
@@ -288,8 +270,6 @@ const swapEventMap = {
     id: '0000000094-000843-75b12',
     blockId: '0000000094-75b12',
     indexInBlock: 843,
-    extrinsicId: null,
-    callId: null,
     name: 'PolkadotIngressEgress.BatchBroadcastRequested',
     args: check<BatchBroadcastRequestedArgsMap['Polkadot']>({
       egressIds: [[{ __kind: 'Polkadot' }, '19']],
@@ -300,8 +280,6 @@ const swapEventMap = {
     id: '0000000094-000843-75b12',
     blockId: '0000000094-75b12',
     indexInBlock: 843,
-    extrinsicId: null,
-    callId: null,
     name: 'EthereumIngressEgress.BatchBroadcastRequested',
     args: check<BatchBroadcastRequestedArgsMap['Ethereum']>({
       egressIds: [[{ __kind: 'Ethereum' }, '71']],
@@ -312,8 +290,6 @@ const swapEventMap = {
     id: '0000000094-000594-75b12',
     blockId: '0000000094-75b12',
     indexInBlock: 594,
-    extrinsicId: null,
-    callId: null,
     name: 'Swapping.RefundEgressScheduled',
     args: check<RefundEgressScheduledArgs>({
       asset: { __kind: 'Eth' },
@@ -328,8 +304,6 @@ const swapEventMap = {
     id: '0000000104-000007-5dbb8',
     blockId: '0000000104-5dbb8',
     indexInBlock: 7,
-    extrinsicId: '0000000104-000002-5dbb8',
-    callId: '0000000104-000002-5dbb8',
     name: 'PolkadotBroadcaster.BroadcastSuccess',
     args: check<BroadcastSuccessArgsMap['Polkadot']>({
       broadcastId: 7,
@@ -342,8 +316,6 @@ const swapEventMap = {
     id: '0000000104-000007-5dbb8',
     blockId: '0000000104-5dbb8',
     indexInBlock: 7,
-    extrinsicId: '0000000104-000002-5dbb8',
-    callId: '0000000104-000002-5dbb8',
     name: 'EthereumBroadcaster.BroadcastSuccess',
     args: check<BroadcastSuccessArgsMap['Ethereum']>({
       broadcastId: 7,
@@ -358,8 +330,6 @@ const swapEventMap = {
     id: '0000000104-000007-5dbb8',
     blockId: '0000000104-5dbb8',
     indexInBlock: 7,
-    extrinsicId: '0000000104-000002-5dbb8',
-    callId: '0000000104-000002-5dbb8',
     name: 'PolkadotBroadcaster.BroadcastAborted',
     args: check<BroadcastAbortedArgsMap['Polkadot']>({
       broadcastId: 7,
@@ -369,8 +339,6 @@ const swapEventMap = {
     id: '0000000104-000007-5dbb8',
     blockId: '0000000104-5dbb8',
     indexInBlock: 7,
-    extrinsicId: '0000000104-000002-5dbb8',
-    callId: '0000000104-000002-5dbb8',
     name: 'EthereumBroadcaster.BroadcastAborted',
     args: check<BroadcastAbortedArgsMap['Ethereum']>({
       broadcastId: 7,
@@ -391,7 +359,6 @@ const swapEventMap = {
     id: '0000000092-000399-24afe',
     indexInBlock: 1,
     name: 'EthereumIngressEgress.DepositFailed',
-    callId: '0000000092-000399-04fea',
     args: check<DepositFailedArgsMap['Ethereum']>({
       reason: { __kind: 'BelowMinimumDeposit' },
       details: {
@@ -412,7 +379,6 @@ const swapEventMap = {
     id: '0000000092-000399-24afe',
     indexInBlock: 1,
     name: 'EthereumIngressEgress.DepositFailed',
-    callId: '0000000092-000399-04fea',
     args: check<DepositFailedArgsMap['Ethereum']>({
       reason: { __kind: 'NotEnoughToPayFees' },
       details: {
@@ -913,7 +879,6 @@ describe('server', () => {
         {
           id: '0003614786-000494-09fd9',
           indexInBlock: 494,
-          callId: '0003614786-000245-09fd9',
           name: 'Swapping.SwapDepositAddressReady',
           args: check<SwapDepositAddressReadyArgs>({
             boostFee: 0,
@@ -948,7 +913,6 @@ describe('server', () => {
         {
           id: '0003614958-000465-1d0a6',
           indexInBlock: 465,
-          callId: '0003614958-000231-1d0a6',
           name: 'BitcoinIngressEgress.DepositFailed',
           args: check<BitcoinDepositFailedArgs>({
             reason: { __kind: 'TransactionRejectedByBroker' },
@@ -990,7 +954,6 @@ describe('server', () => {
         {
           id: '0003614958-001117-1d0a6',
           indexInBlock: 1117,
-          callId: null,
           name: 'BitcoinIngressEgress.TransactionRejectedByBroker',
           args: check<TransactionRejectedByBrokerArgs>({
             txId: {
@@ -1019,7 +982,6 @@ describe('server', () => {
         {
           id: '0003615072-001060-7ee49',
           indexInBlock: 1060,
-          callId: '0003615072-000527-7ee49',
           name: 'BitcoinBroadcaster.BroadcastSuccess',
           args: check<BroadcastSuccessArgsMap['Bitcoin']>({
             broadcastId: 1226,
@@ -2026,8 +1988,6 @@ describe('server', () => {
         id: '0000000092-000398-77afe',
         blockId: '0000000092-77afe',
         indexInBlock: 398,
-        extrinsicId: '0000000092-000010-77afe',
-        callId: '0000000092-000010-77afe',
         name: 'Swapping.SwapRequested',
         args: check<SwapRequestedArgs>({
           origin: {
