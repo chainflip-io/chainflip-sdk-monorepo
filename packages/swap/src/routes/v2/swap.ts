@@ -110,6 +110,7 @@ router.get(
           acc.executedChunks += 1;
           acc.fees = rollupFees(curr.fees, acc.fees);
         } else {
+          acc.previousChunk = acc.currentChunk;
           acc.currentChunk = curr;
         }
         return acc;
@@ -202,7 +203,11 @@ router.get(
                 dca: {
                   lastExecutedChunk:
                     rolledSwaps.lastExecutedChunk && getSwapFields(rolledSwaps.lastExecutedChunk),
-                  currentChunk: rolledSwaps.currentChunk && getSwapFields(rolledSwaps.currentChunk),
+                  // if we have a DCA swap with two scheduled chunks, we need to show the info from
+                  // the chunk that was scheduled first
+                  currentChunk: rolledSwaps.previousChunk
+                    ? getSwapFields(rolledSwaps.previousChunk)
+                    : rolledSwaps.currentChunk && getSwapFields(rolledSwaps.currentChunk),
                   executedChunks: rolledSwaps.executedChunks,
                   remainingChunks:
                     (swapRequest?.dcaNumberOfChunks ?? 1) - rolledSwaps.executedChunks,

@@ -16,6 +16,12 @@ export type Scalars = {
   Float: { input: number; output: number; }
   /** A floating point number that requires more precision than IEEE 754 binary 64 */
   BigFloat: { input: any; output: any; }
+  /**
+   * A signed eight-byte integer. The upper big integer values are greater than the
+   * max value for a JavaScript number. Therefore all big integers will be output as
+   * strings and not numbers.
+   */
+  BigInt: { input: any; output: any; }
   /** A location in a connection that can be used for resuming pagination. */
   Cursor: { input: any; output: any; }
   /**
@@ -37,6 +43,13 @@ export type AcalaEvmExecuted = Node & {
   nodeId: Scalars['ID']['output'];
 };
 
+export type AcalaEvmExecutedAggregates = {
+  __typename?: 'AcalaEvmExecutedAggregates';
+  /** Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  distinctCount?: Maybe<AcalaEvmExecutedDistinctCountAggregates>;
+  keys?: Maybe<Array<Scalars['String']['output']>>;
+};
+
 /**
  * A condition to be used against `AcalaEvmExecuted` object types. All fields are
  * tested for equality and combined with a logical ‘and.’
@@ -46,6 +59,14 @@ export type AcalaEvmExecutedCondition = {
   contract?: InputMaybe<Scalars['String']['input']>;
   /** Checks for equality with the object’s `eventId` field. */
   eventId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AcalaEvmExecutedDistinctCountAggregates = {
+  __typename?: 'AcalaEvmExecutedDistinctCountAggregates';
+  /** Distinct count of contract across the matching connection */
+  contract?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of eventId across the matching connection */
+  eventId?: Maybe<Scalars['BigInt']['output']>;
 };
 
 export type AcalaEvmExecutedFailed = Node & {
@@ -58,6 +79,13 @@ export type AcalaEvmExecutedFailed = Node & {
   nodeId: Scalars['ID']['output'];
 };
 
+export type AcalaEvmExecutedFailedAggregates = {
+  __typename?: 'AcalaEvmExecutedFailedAggregates';
+  /** Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  distinctCount?: Maybe<AcalaEvmExecutedFailedDistinctCountAggregates>;
+  keys?: Maybe<Array<Scalars['String']['output']>>;
+};
+
 /**
  * A condition to be used against `AcalaEvmExecutedFailed` object types. All fields
  * are tested for equality and combined with a logical ‘and.’
@@ -67,6 +95,14 @@ export type AcalaEvmExecutedFailedCondition = {
   contract?: InputMaybe<Scalars['String']['input']>;
   /** Checks for equality with the object’s `eventId` field. */
   eventId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AcalaEvmExecutedFailedDistinctCountAggregates = {
+  __typename?: 'AcalaEvmExecutedFailedDistinctCountAggregates';
+  /** Distinct count of contract across the matching connection */
+  contract?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of eventId across the matching connection */
+  eventId?: Maybe<Scalars['BigInt']['output']>;
 };
 
 /** A filter to be used against `AcalaEvmExecutedFailed` object types. All fields are combined with a logical ‘and.’ */
@@ -83,6 +119,16 @@ export type AcalaEvmExecutedFailedFilter = {
   or?: InputMaybe<Array<AcalaEvmExecutedFailedFilter>>;
 };
 
+/** Grouping methods for `AcalaEvmExecutedFailed` for usage during aggregation. */
+export type AcalaEvmExecutedFailedGroupBy =
+  | 'CONTRACT';
+
+/** Conditions for `AcalaEvmExecutedFailed` aggregates. */
+export type AcalaEvmExecutedFailedHavingInput = {
+  AND?: InputMaybe<Array<AcalaEvmExecutedFailedHavingInput>>;
+  OR?: InputMaybe<Array<AcalaEvmExecutedFailedHavingInput>>;
+};
+
 export type AcalaEvmExecutedFailedLog = Node & {
   __typename?: 'AcalaEvmExecutedFailedLog';
   contract: Scalars['String']['output'];
@@ -97,6 +143,13 @@ export type AcalaEvmExecutedFailedLog = Node & {
   topic1?: Maybe<Scalars['String']['output']>;
   topic2?: Maybe<Scalars['String']['output']>;
   topic3?: Maybe<Scalars['String']['output']>;
+};
+
+export type AcalaEvmExecutedFailedLogAggregates = {
+  __typename?: 'AcalaEvmExecutedFailedLogAggregates';
+  /** Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  distinctCount?: Maybe<AcalaEvmExecutedFailedLogDistinctCountAggregates>;
+  keys?: Maybe<Array<Scalars['String']['output']>>;
 };
 
 /**
@@ -120,6 +173,26 @@ export type AcalaEvmExecutedFailedLogCondition = {
   topic2?: InputMaybe<Scalars['String']['input']>;
   /** Checks for equality with the object’s `topic3` field. */
   topic3?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AcalaEvmExecutedFailedLogDistinctCountAggregates = {
+  __typename?: 'AcalaEvmExecutedFailedLogDistinctCountAggregates';
+  /** Distinct count of contract across the matching connection */
+  contract?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of eventContract across the matching connection */
+  eventContract?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of eventId across the matching connection */
+  eventId?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of id across the matching connection */
+  id?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of topic0 across the matching connection */
+  topic0?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of topic1 across the matching connection */
+  topic1?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of topic2 across the matching connection */
+  topic2?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of topic3 across the matching connection */
+  topic3?: Maybe<Scalars['BigInt']['output']>;
 };
 
 /** A filter to be used against `AcalaEvmExecutedFailedLog` object types. All fields are combined with a logical ‘and.’ */
@@ -148,17 +221,44 @@ export type AcalaEvmExecutedFailedLogFilter = {
   topic3?: InputMaybe<StringFilter>;
 };
 
+/** Grouping methods for `AcalaEvmExecutedFailedLog` for usage during aggregation. */
+export type AcalaEvmExecutedFailedLogGroupBy =
+  | 'CONTRACT'
+  | 'EVENT_CONTRACT'
+  | 'EVENT_ID'
+  | 'TOPIC0'
+  | 'TOPIC1'
+  | 'TOPIC2'
+  | 'TOPIC3';
+
+/** Conditions for `AcalaEvmExecutedFailedLog` aggregates. */
+export type AcalaEvmExecutedFailedLogHavingInput = {
+  AND?: InputMaybe<Array<AcalaEvmExecutedFailedLogHavingInput>>;
+  OR?: InputMaybe<Array<AcalaEvmExecutedFailedLogHavingInput>>;
+};
+
 /** A connection to a list of `AcalaEvmExecutedFailedLog` values. */
 export type AcalaEvmExecutedFailedLogsConnection = {
   __typename?: 'AcalaEvmExecutedFailedLogsConnection';
+  /** Aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  aggregates?: Maybe<AcalaEvmExecutedFailedLogAggregates>;
   /** A list of edges which contains the `AcalaEvmExecutedFailedLog` and cursor to aid in pagination. */
   edges: Array<AcalaEvmExecutedFailedLogsEdge>;
+  /** Grouped aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  groupedAggregates?: Maybe<Array<AcalaEvmExecutedFailedLogAggregates>>;
   /** A list of `AcalaEvmExecutedFailedLog` objects. */
   nodes: Array<AcalaEvmExecutedFailedLog>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** The count of *all* `AcalaEvmExecutedFailedLog` you could get from the connection. */
   totalCount: Scalars['Int']['output'];
+};
+
+
+/** A connection to a list of `AcalaEvmExecutedFailedLog` values. */
+export type AcalaEvmExecutedFailedLogsConnectionGroupedAggregatesArgs = {
+  groupBy: Array<AcalaEvmExecutedFailedLogGroupBy>;
+  having?: InputMaybe<AcalaEvmExecutedFailedLogHavingInput>;
 };
 
 /** A `AcalaEvmExecutedFailedLog` edge in the connection. */
@@ -195,14 +295,25 @@ export type AcalaEvmExecutedFailedLogsOrderBy =
 /** A connection to a list of `AcalaEvmExecutedFailed` values. */
 export type AcalaEvmExecutedFailedsConnection = {
   __typename?: 'AcalaEvmExecutedFailedsConnection';
+  /** Aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  aggregates?: Maybe<AcalaEvmExecutedFailedAggregates>;
   /** A list of edges which contains the `AcalaEvmExecutedFailed` and cursor to aid in pagination. */
   edges: Array<AcalaEvmExecutedFailedsEdge>;
+  /** Grouped aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  groupedAggregates?: Maybe<Array<AcalaEvmExecutedFailedAggregates>>;
   /** A list of `AcalaEvmExecutedFailed` objects. */
   nodes: Array<AcalaEvmExecutedFailed>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** The count of *all* `AcalaEvmExecutedFailed` you could get from the connection. */
   totalCount: Scalars['Int']['output'];
+};
+
+
+/** A connection to a list of `AcalaEvmExecutedFailed` values. */
+export type AcalaEvmExecutedFailedsConnectionGroupedAggregatesArgs = {
+  groupBy: Array<AcalaEvmExecutedFailedGroupBy>;
+  having?: InputMaybe<AcalaEvmExecutedFailedHavingInput>;
 };
 
 /** A `AcalaEvmExecutedFailed` edge in the connection. */
@@ -238,6 +349,16 @@ export type AcalaEvmExecutedFilter = {
   or?: InputMaybe<Array<AcalaEvmExecutedFilter>>;
 };
 
+/** Grouping methods for `AcalaEvmExecuted` for usage during aggregation. */
+export type AcalaEvmExecutedGroupBy =
+  | 'CONTRACT';
+
+/** Conditions for `AcalaEvmExecuted` aggregates. */
+export type AcalaEvmExecutedHavingInput = {
+  AND?: InputMaybe<Array<AcalaEvmExecutedHavingInput>>;
+  OR?: InputMaybe<Array<AcalaEvmExecutedHavingInput>>;
+};
+
 export type AcalaEvmExecutedLog = Node & {
   __typename?: 'AcalaEvmExecutedLog';
   contract: Scalars['String']['output'];
@@ -252,6 +373,13 @@ export type AcalaEvmExecutedLog = Node & {
   topic1?: Maybe<Scalars['String']['output']>;
   topic2?: Maybe<Scalars['String']['output']>;
   topic3?: Maybe<Scalars['String']['output']>;
+};
+
+export type AcalaEvmExecutedLogAggregates = {
+  __typename?: 'AcalaEvmExecutedLogAggregates';
+  /** Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  distinctCount?: Maybe<AcalaEvmExecutedLogDistinctCountAggregates>;
+  keys?: Maybe<Array<Scalars['String']['output']>>;
 };
 
 /**
@@ -275,6 +403,26 @@ export type AcalaEvmExecutedLogCondition = {
   topic2?: InputMaybe<Scalars['String']['input']>;
   /** Checks for equality with the object’s `topic3` field. */
   topic3?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AcalaEvmExecutedLogDistinctCountAggregates = {
+  __typename?: 'AcalaEvmExecutedLogDistinctCountAggregates';
+  /** Distinct count of contract across the matching connection */
+  contract?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of eventContract across the matching connection */
+  eventContract?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of eventId across the matching connection */
+  eventId?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of id across the matching connection */
+  id?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of topic0 across the matching connection */
+  topic0?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of topic1 across the matching connection */
+  topic1?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of topic2 across the matching connection */
+  topic2?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of topic3 across the matching connection */
+  topic3?: Maybe<Scalars['BigInt']['output']>;
 };
 
 /** A filter to be used against `AcalaEvmExecutedLog` object types. All fields are combined with a logical ‘and.’ */
@@ -303,17 +451,44 @@ export type AcalaEvmExecutedLogFilter = {
   topic3?: InputMaybe<StringFilter>;
 };
 
+/** Grouping methods for `AcalaEvmExecutedLog` for usage during aggregation. */
+export type AcalaEvmExecutedLogGroupBy =
+  | 'CONTRACT'
+  | 'EVENT_CONTRACT'
+  | 'EVENT_ID'
+  | 'TOPIC0'
+  | 'TOPIC1'
+  | 'TOPIC2'
+  | 'TOPIC3';
+
+/** Conditions for `AcalaEvmExecutedLog` aggregates. */
+export type AcalaEvmExecutedLogHavingInput = {
+  AND?: InputMaybe<Array<AcalaEvmExecutedLogHavingInput>>;
+  OR?: InputMaybe<Array<AcalaEvmExecutedLogHavingInput>>;
+};
+
 /** A connection to a list of `AcalaEvmExecutedLog` values. */
 export type AcalaEvmExecutedLogsConnection = {
   __typename?: 'AcalaEvmExecutedLogsConnection';
+  /** Aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  aggregates?: Maybe<AcalaEvmExecutedLogAggregates>;
   /** A list of edges which contains the `AcalaEvmExecutedLog` and cursor to aid in pagination. */
   edges: Array<AcalaEvmExecutedLogsEdge>;
+  /** Grouped aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  groupedAggregates?: Maybe<Array<AcalaEvmExecutedLogAggregates>>;
   /** A list of `AcalaEvmExecutedLog` objects. */
   nodes: Array<AcalaEvmExecutedLog>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** The count of *all* `AcalaEvmExecutedLog` you could get from the connection. */
   totalCount: Scalars['Int']['output'];
+};
+
+
+/** A connection to a list of `AcalaEvmExecutedLog` values. */
+export type AcalaEvmExecutedLogsConnectionGroupedAggregatesArgs = {
+  groupBy: Array<AcalaEvmExecutedLogGroupBy>;
+  having?: InputMaybe<AcalaEvmExecutedLogHavingInput>;
 };
 
 /** A `AcalaEvmExecutedLog` edge in the connection. */
@@ -350,14 +525,25 @@ export type AcalaEvmExecutedLogsOrderBy =
 /** A connection to a list of `AcalaEvmExecuted` values. */
 export type AcalaEvmExecutedsConnection = {
   __typename?: 'AcalaEvmExecutedsConnection';
+  /** Aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  aggregates?: Maybe<AcalaEvmExecutedAggregates>;
   /** A list of edges which contains the `AcalaEvmExecuted` and cursor to aid in pagination. */
   edges: Array<AcalaEvmExecutedsEdge>;
+  /** Grouped aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  groupedAggregates?: Maybe<Array<AcalaEvmExecutedAggregates>>;
   /** A list of `AcalaEvmExecuted` objects. */
   nodes: Array<AcalaEvmExecuted>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** The count of *all* `AcalaEvmExecuted` you could get from the connection. */
   totalCount: Scalars['Int']['output'];
+};
+
+
+/** A connection to a list of `AcalaEvmExecuted` values. */
+export type AcalaEvmExecutedsConnectionGroupedAggregatesArgs = {
+  groupBy: Array<AcalaEvmExecutedGroupBy>;
+  having?: InputMaybe<AcalaEvmExecutedHavingInput>;
 };
 
 /** A `AcalaEvmExecuted` edge in the connection. */
@@ -462,6 +648,35 @@ export type BlockExtrinsicsByBlockIdArgs = {
   orderBy?: InputMaybe<Array<ExtrinsicsOrderBy>>;
 };
 
+export type BlockAggregates = {
+  __typename?: 'BlockAggregates';
+  /** Mean average aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  average?: Maybe<BlockAverageAggregates>;
+  /** Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  distinctCount?: Maybe<BlockDistinctCountAggregates>;
+  keys?: Maybe<Array<Scalars['String']['output']>>;
+  /** Maximum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  max?: Maybe<BlockMaxAggregates>;
+  /** Minimum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  min?: Maybe<BlockMinAggregates>;
+  /** Population standard deviation aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  stddevPopulation?: Maybe<BlockStddevPopulationAggregates>;
+  /** Sample standard deviation aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  stddevSample?: Maybe<BlockStddevSampleAggregates>;
+  /** Sum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  sum?: Maybe<BlockSumAggregates>;
+  /** Population variance aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  variancePopulation?: Maybe<BlockVariancePopulationAggregates>;
+  /** Sample variance aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  varianceSample?: Maybe<BlockVarianceSampleAggregates>;
+};
+
+export type BlockAverageAggregates = {
+  __typename?: 'BlockAverageAggregates';
+  /** Mean average of height across the matching connection */
+  height?: Maybe<Scalars['BigFloat']['output']>;
+};
+
 /** A condition to be used against `Block` object types. All fields are tested for equality and combined with a logical ‘and.’ */
 export type BlockCondition = {
   /** Checks for equality with the object’s `extrinsicsRoot` field. */
@@ -482,6 +697,28 @@ export type BlockCondition = {
   timestamp?: InputMaybe<Scalars['Datetime']['input']>;
   /** Checks for equality with the object’s `validator` field. */
   validator?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BlockDistinctCountAggregates = {
+  __typename?: 'BlockDistinctCountAggregates';
+  /** Distinct count of extrinsicsRoot across the matching connection */
+  extrinsicsRoot?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of hash across the matching connection */
+  hash?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of height across the matching connection */
+  height?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of id across the matching connection */
+  id?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of parentHash across the matching connection */
+  parentHash?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of specId across the matching connection */
+  specId?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of stateRoot across the matching connection */
+  stateRoot?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of timestamp across the matching connection */
+  timestamp?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of validator across the matching connection */
+  validator?: Maybe<Scalars['BigInt']['output']>;
 };
 
 /** A filter to be used against `Block` object types. All fields are combined with a logical ‘and.’ */
@@ -512,17 +749,149 @@ export type BlockFilter = {
   validator?: InputMaybe<StringFilter>;
 };
 
+/** Grouping methods for `Block` for usage during aggregation. */
+export type BlockGroupBy =
+  | 'EXTRINSICS_ROOT'
+  | 'HASH'
+  | 'HEIGHT'
+  | 'PARENT_HASH'
+  | 'SPEC_ID'
+  | 'STATE_ROOT'
+  | 'TIMESTAMP'
+  | 'TIMESTAMP_TRUNCATED_TO_DAY'
+  | 'TIMESTAMP_TRUNCATED_TO_HOUR'
+  | 'TIMESTAMP_TRUNCATED_TO_MONTH'
+  | 'TIMESTAMP_TRUNCATED_TO_WEEK'
+  | 'VALIDATOR';
+
+export type BlockHavingAverageInput = {
+  height?: InputMaybe<HavingIntFilter>;
+  timestamp?: InputMaybe<HavingDatetimeFilter>;
+};
+
+export type BlockHavingDistinctCountInput = {
+  height?: InputMaybe<HavingIntFilter>;
+  timestamp?: InputMaybe<HavingDatetimeFilter>;
+};
+
+/** Conditions for `Block` aggregates. */
+export type BlockHavingInput = {
+  AND?: InputMaybe<Array<BlockHavingInput>>;
+  OR?: InputMaybe<Array<BlockHavingInput>>;
+  average?: InputMaybe<BlockHavingAverageInput>;
+  distinctCount?: InputMaybe<BlockHavingDistinctCountInput>;
+  max?: InputMaybe<BlockHavingMaxInput>;
+  min?: InputMaybe<BlockHavingMinInput>;
+  stddevPopulation?: InputMaybe<BlockHavingStddevPopulationInput>;
+  stddevSample?: InputMaybe<BlockHavingStddevSampleInput>;
+  sum?: InputMaybe<BlockHavingSumInput>;
+  variancePopulation?: InputMaybe<BlockHavingVariancePopulationInput>;
+  varianceSample?: InputMaybe<BlockHavingVarianceSampleInput>;
+};
+
+export type BlockHavingMaxInput = {
+  height?: InputMaybe<HavingIntFilter>;
+  timestamp?: InputMaybe<HavingDatetimeFilter>;
+};
+
+export type BlockHavingMinInput = {
+  height?: InputMaybe<HavingIntFilter>;
+  timestamp?: InputMaybe<HavingDatetimeFilter>;
+};
+
+export type BlockHavingStddevPopulationInput = {
+  height?: InputMaybe<HavingIntFilter>;
+  timestamp?: InputMaybe<HavingDatetimeFilter>;
+};
+
+export type BlockHavingStddevSampleInput = {
+  height?: InputMaybe<HavingIntFilter>;
+  timestamp?: InputMaybe<HavingDatetimeFilter>;
+};
+
+export type BlockHavingSumInput = {
+  height?: InputMaybe<HavingIntFilter>;
+  timestamp?: InputMaybe<HavingDatetimeFilter>;
+};
+
+export type BlockHavingVariancePopulationInput = {
+  height?: InputMaybe<HavingIntFilter>;
+  timestamp?: InputMaybe<HavingDatetimeFilter>;
+};
+
+export type BlockHavingVarianceSampleInput = {
+  height?: InputMaybe<HavingIntFilter>;
+  timestamp?: InputMaybe<HavingDatetimeFilter>;
+};
+
+export type BlockMaxAggregates = {
+  __typename?: 'BlockMaxAggregates';
+  /** Maximum of height across the matching connection */
+  height?: Maybe<Scalars['Int']['output']>;
+  /** Maximum of timestamp across the matching connection */
+  timestamp?: Maybe<Scalars['Datetime']['output']>;
+};
+
+export type BlockMinAggregates = {
+  __typename?: 'BlockMinAggregates';
+  /** Minimum of height across the matching connection */
+  height?: Maybe<Scalars['Int']['output']>;
+  /** Minimum of timestamp across the matching connection */
+  timestamp?: Maybe<Scalars['Datetime']['output']>;
+};
+
+export type BlockStddevPopulationAggregates = {
+  __typename?: 'BlockStddevPopulationAggregates';
+  /** Population standard deviation of height across the matching connection */
+  height?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type BlockStddevSampleAggregates = {
+  __typename?: 'BlockStddevSampleAggregates';
+  /** Sample standard deviation of height across the matching connection */
+  height?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type BlockSumAggregates = {
+  __typename?: 'BlockSumAggregates';
+  /** Sum of height across the matching connection */
+  height: Scalars['BigInt']['output'];
+};
+
+export type BlockVariancePopulationAggregates = {
+  __typename?: 'BlockVariancePopulationAggregates';
+  /** Population variance of height across the matching connection */
+  height?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type BlockVarianceSampleAggregates = {
+  __typename?: 'BlockVarianceSampleAggregates';
+  /** Sample variance of height across the matching connection */
+  height?: Maybe<Scalars['BigFloat']['output']>;
+};
+
 /** A connection to a list of `Block` values. */
 export type BlocksConnection = {
   __typename?: 'BlocksConnection';
+  /** Aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  aggregates?: Maybe<BlockAggregates>;
   /** A list of edges which contains the `Block` and cursor to aid in pagination. */
   edges: Array<BlocksEdge>;
+  /** Grouped aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  groupedAggregates?: Maybe<Array<BlockAggregates>>;
   /** A list of `Block` objects. */
   nodes: Array<Block>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** The count of *all* `Block` you could get from the connection. */
   totalCount: Scalars['Int']['output'];
+};
+
+
+/** A connection to a list of `Block` values. */
+export type BlocksConnectionGroupedAggregatesArgs = {
+  groupBy: Array<BlockGroupBy>;
+  having?: InputMaybe<BlockHavingInput>;
 };
 
 /** A `Block` edge in the connection. */
@@ -536,6 +905,570 @@ export type BlocksEdge = {
 
 /** Methods to use when ordering `Block`. */
 export type BlocksOrderBy =
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_ARGS_ASC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_ARGS_DESC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_BLOCK_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_BLOCK_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_ERROR_ASC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_ERROR_DESC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_NAME_ASC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_NAME_DESC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_ORIGIN_ASC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_ORIGIN_DESC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_PARENT_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_PARENT_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_POS_ASC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_POS_DESC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_SUCCESS_ASC'
+  | 'CALLS_BY_BLOCK_ID_AVERAGE_SUCCESS_DESC'
+  | 'CALLS_BY_BLOCK_ID_COUNT_ASC'
+  | 'CALLS_BY_BLOCK_ID_COUNT_DESC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_ARGS_ASC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_ARGS_DESC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_BLOCK_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_BLOCK_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_ERROR_ASC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_ERROR_DESC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_NAME_ASC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_NAME_DESC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_ORIGIN_ASC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_ORIGIN_DESC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_PARENT_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_PARENT_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_POS_ASC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_POS_DESC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_SUCCESS_ASC'
+  | 'CALLS_BY_BLOCK_ID_DISTINCT_COUNT_SUCCESS_DESC'
+  | 'CALLS_BY_BLOCK_ID_MAX_ARGS_ASC'
+  | 'CALLS_BY_BLOCK_ID_MAX_ARGS_DESC'
+  | 'CALLS_BY_BLOCK_ID_MAX_BLOCK_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_MAX_BLOCK_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_MAX_ERROR_ASC'
+  | 'CALLS_BY_BLOCK_ID_MAX_ERROR_DESC'
+  | 'CALLS_BY_BLOCK_ID_MAX_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_MAX_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_MAX_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_MAX_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_MAX_NAME_ASC'
+  | 'CALLS_BY_BLOCK_ID_MAX_NAME_DESC'
+  | 'CALLS_BY_BLOCK_ID_MAX_ORIGIN_ASC'
+  | 'CALLS_BY_BLOCK_ID_MAX_ORIGIN_DESC'
+  | 'CALLS_BY_BLOCK_ID_MAX_PARENT_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_MAX_PARENT_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_MAX_POS_ASC'
+  | 'CALLS_BY_BLOCK_ID_MAX_POS_DESC'
+  | 'CALLS_BY_BLOCK_ID_MAX_SUCCESS_ASC'
+  | 'CALLS_BY_BLOCK_ID_MAX_SUCCESS_DESC'
+  | 'CALLS_BY_BLOCK_ID_MIN_ARGS_ASC'
+  | 'CALLS_BY_BLOCK_ID_MIN_ARGS_DESC'
+  | 'CALLS_BY_BLOCK_ID_MIN_BLOCK_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_MIN_BLOCK_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_MIN_ERROR_ASC'
+  | 'CALLS_BY_BLOCK_ID_MIN_ERROR_DESC'
+  | 'CALLS_BY_BLOCK_ID_MIN_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_MIN_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_MIN_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_MIN_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_MIN_NAME_ASC'
+  | 'CALLS_BY_BLOCK_ID_MIN_NAME_DESC'
+  | 'CALLS_BY_BLOCK_ID_MIN_ORIGIN_ASC'
+  | 'CALLS_BY_BLOCK_ID_MIN_ORIGIN_DESC'
+  | 'CALLS_BY_BLOCK_ID_MIN_PARENT_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_MIN_PARENT_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_MIN_POS_ASC'
+  | 'CALLS_BY_BLOCK_ID_MIN_POS_DESC'
+  | 'CALLS_BY_BLOCK_ID_MIN_SUCCESS_ASC'
+  | 'CALLS_BY_BLOCK_ID_MIN_SUCCESS_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_ARGS_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_ARGS_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_BLOCK_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_BLOCK_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_ERROR_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_ERROR_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_NAME_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_NAME_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_ORIGIN_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_ORIGIN_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_PARENT_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_PARENT_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_POS_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_POS_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_SUCCESS_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_POPULATION_SUCCESS_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_ARGS_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_ARGS_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_BLOCK_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_BLOCK_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_ERROR_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_ERROR_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_NAME_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_NAME_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_ORIGIN_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_ORIGIN_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_PARENT_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_PARENT_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_POS_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_POS_DESC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_SUCCESS_ASC'
+  | 'CALLS_BY_BLOCK_ID_STDDEV_SAMPLE_SUCCESS_DESC'
+  | 'CALLS_BY_BLOCK_ID_SUM_ARGS_ASC'
+  | 'CALLS_BY_BLOCK_ID_SUM_ARGS_DESC'
+  | 'CALLS_BY_BLOCK_ID_SUM_BLOCK_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_SUM_BLOCK_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_SUM_ERROR_ASC'
+  | 'CALLS_BY_BLOCK_ID_SUM_ERROR_DESC'
+  | 'CALLS_BY_BLOCK_ID_SUM_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_SUM_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_SUM_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_SUM_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_SUM_NAME_ASC'
+  | 'CALLS_BY_BLOCK_ID_SUM_NAME_DESC'
+  | 'CALLS_BY_BLOCK_ID_SUM_ORIGIN_ASC'
+  | 'CALLS_BY_BLOCK_ID_SUM_ORIGIN_DESC'
+  | 'CALLS_BY_BLOCK_ID_SUM_PARENT_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_SUM_PARENT_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_SUM_POS_ASC'
+  | 'CALLS_BY_BLOCK_ID_SUM_POS_DESC'
+  | 'CALLS_BY_BLOCK_ID_SUM_SUCCESS_ASC'
+  | 'CALLS_BY_BLOCK_ID_SUM_SUCCESS_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_ARGS_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_ARGS_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_BLOCK_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_BLOCK_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_ERROR_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_ERROR_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_NAME_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_NAME_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_ORIGIN_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_ORIGIN_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_PARENT_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_PARENT_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_POS_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_POS_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_SUCCESS_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_POPULATION_SUCCESS_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_ARGS_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_ARGS_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_BLOCK_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_BLOCK_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_ERROR_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_ERROR_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_NAME_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_NAME_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_ORIGIN_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_ORIGIN_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_PARENT_ID_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_PARENT_ID_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_POS_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_POS_DESC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_SUCCESS_ASC'
+  | 'CALLS_BY_BLOCK_ID_VARIANCE_SAMPLE_SUCCESS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_ARGS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_ARGS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_BLOCK_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_BLOCK_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_CALL_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_CALL_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_NAME_ASC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_NAME_DESC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_PHASE_ASC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_PHASE_DESC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_POS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_AVERAGE_POS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_COUNT_ASC'
+  | 'EVENTS_BY_BLOCK_ID_COUNT_DESC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_ARGS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_ARGS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_BLOCK_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_BLOCK_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_CALL_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_CALL_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_NAME_ASC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_NAME_DESC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_PHASE_ASC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_PHASE_DESC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_POS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_DISTINCT_COUNT_POS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_ARGS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_ARGS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_BLOCK_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_BLOCK_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_CALL_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_CALL_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_NAME_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_NAME_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_PHASE_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_PHASE_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_POS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MAX_POS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_ARGS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_ARGS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_BLOCK_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_BLOCK_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_CALL_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_CALL_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_NAME_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_NAME_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_PHASE_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_PHASE_DESC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_POS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_MIN_POS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_ARGS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_ARGS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_BLOCK_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_BLOCK_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_CALL_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_CALL_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_NAME_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_NAME_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_PHASE_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_PHASE_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_POS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_POPULATION_POS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_ARGS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_ARGS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_BLOCK_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_BLOCK_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_CALL_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_CALL_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_NAME_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_NAME_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_PHASE_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_PHASE_DESC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_POS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_STDDEV_SAMPLE_POS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_ARGS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_ARGS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_BLOCK_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_BLOCK_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_CALL_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_CALL_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_NAME_ASC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_NAME_DESC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_PHASE_ASC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_PHASE_DESC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_POS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_SUM_POS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_ARGS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_ARGS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_BLOCK_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_BLOCK_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_CALL_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_CALL_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_NAME_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_NAME_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_PHASE_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_PHASE_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_POS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_POPULATION_POS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_ARGS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_ARGS_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_BLOCK_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_BLOCK_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_CALL_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_CALL_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_ID_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_ID_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_NAME_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_NAME_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_PHASE_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_PHASE_DESC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_POS_ASC'
+  | 'EVENTS_BY_BLOCK_ID_VARIANCE_SAMPLE_POS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_BLOCK_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_BLOCK_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_CALL_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_CALL_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_ERROR_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_ERROR_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_FEE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_FEE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_HASH_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_HASH_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_INDEX_IN_BLOCK_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_INDEX_IN_BLOCK_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_POS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_POS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_SIGNATURE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_SIGNATURE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_SUCCESS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_SUCCESS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_TIP_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_TIP_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_VERSION_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_AVERAGE_VERSION_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_COUNT_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_COUNT_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_BLOCK_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_BLOCK_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_CALL_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_CALL_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_ERROR_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_ERROR_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_FEE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_FEE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_HASH_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_HASH_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_INDEX_IN_BLOCK_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_INDEX_IN_BLOCK_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_POS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_POS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_SIGNATURE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_SIGNATURE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_SUCCESS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_SUCCESS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_TIP_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_TIP_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_VERSION_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_DISTINCT_COUNT_VERSION_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_BLOCK_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_BLOCK_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_CALL_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_CALL_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_ERROR_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_ERROR_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_FEE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_FEE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_HASH_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_HASH_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_INDEX_IN_BLOCK_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_INDEX_IN_BLOCK_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_POS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_POS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_SIGNATURE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_SIGNATURE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_SUCCESS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_SUCCESS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_TIP_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_TIP_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_VERSION_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MAX_VERSION_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_BLOCK_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_BLOCK_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_CALL_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_CALL_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_ERROR_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_ERROR_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_FEE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_FEE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_HASH_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_HASH_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_INDEX_IN_BLOCK_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_INDEX_IN_BLOCK_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_POS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_POS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_SIGNATURE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_SIGNATURE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_SUCCESS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_SUCCESS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_TIP_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_TIP_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_VERSION_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_MIN_VERSION_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_BLOCK_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_BLOCK_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_CALL_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_CALL_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_ERROR_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_ERROR_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_FEE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_FEE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_HASH_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_HASH_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_INDEX_IN_BLOCK_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_INDEX_IN_BLOCK_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_POS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_POS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_SIGNATURE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_SIGNATURE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_SUCCESS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_SUCCESS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_TIP_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_TIP_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_VERSION_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_POPULATION_VERSION_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_BLOCK_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_BLOCK_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_CALL_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_CALL_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_ERROR_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_ERROR_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_FEE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_FEE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_HASH_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_HASH_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_INDEX_IN_BLOCK_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_INDEX_IN_BLOCK_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_POS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_POS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_SIGNATURE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_SIGNATURE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_SUCCESS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_SUCCESS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_TIP_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_TIP_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_VERSION_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_STDDEV_SAMPLE_VERSION_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_BLOCK_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_BLOCK_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_CALL_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_CALL_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_ERROR_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_ERROR_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_FEE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_FEE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_HASH_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_HASH_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_INDEX_IN_BLOCK_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_INDEX_IN_BLOCK_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_POS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_POS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_SIGNATURE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_SIGNATURE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_SUCCESS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_SUCCESS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_TIP_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_TIP_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_VERSION_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_SUM_VERSION_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_BLOCK_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_BLOCK_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_CALL_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_CALL_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_ERROR_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_ERROR_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_FEE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_FEE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_HASH_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_HASH_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_INDEX_IN_BLOCK_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_INDEX_IN_BLOCK_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_POS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_POS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_SIGNATURE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_SIGNATURE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_SUCCESS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_SUCCESS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_TIP_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_TIP_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_VERSION_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_POPULATION_VERSION_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_BLOCK_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_BLOCK_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_CALL_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_CALL_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_ERROR_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_ERROR_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_FEE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_FEE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_HASH_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_HASH_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_ID_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_ID_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_INDEX_IN_BLOCK_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_INDEX_IN_BLOCK_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_POS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_POS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_SIGNATURE_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_SIGNATURE_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_SUCCESS_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_SUCCESS_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_TIP_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_TIP_DESC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_VERSION_ASC'
+  | 'EXTRINSICS_BY_BLOCK_ID_VARIANCE_SAMPLE_VERSION_DESC'
   | 'EXTRINSICS_ROOT_ASC'
   | 'EXTRINSICS_ROOT_DESC'
   | 'HASH_ASC'
@@ -653,6 +1586,35 @@ export type CallFrontierEthereumTransactionsByCallIdArgs = {
   orderBy?: InputMaybe<Array<FrontierEthereumTransactionsOrderBy>>;
 };
 
+export type CallAggregates = {
+  __typename?: 'CallAggregates';
+  /** Mean average aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  average?: Maybe<CallAverageAggregates>;
+  /** Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  distinctCount?: Maybe<CallDistinctCountAggregates>;
+  keys?: Maybe<Array<Scalars['String']['output']>>;
+  /** Maximum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  max?: Maybe<CallMaxAggregates>;
+  /** Minimum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  min?: Maybe<CallMinAggregates>;
+  /** Population standard deviation aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  stddevPopulation?: Maybe<CallStddevPopulationAggregates>;
+  /** Sample standard deviation aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  stddevSample?: Maybe<CallStddevSampleAggregates>;
+  /** Sum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  sum?: Maybe<CallSumAggregates>;
+  /** Population variance aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  variancePopulation?: Maybe<CallVariancePopulationAggregates>;
+  /** Sample variance aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  varianceSample?: Maybe<CallVarianceSampleAggregates>;
+};
+
+export type CallAverageAggregates = {
+  __typename?: 'CallAverageAggregates';
+  /** Mean average of pos across the matching connection */
+  pos?: Maybe<Scalars['BigFloat']['output']>;
+};
+
 /** A condition to be used against `Call` object types. All fields are tested for equality and combined with a logical ‘and.’ */
 export type CallCondition = {
   /** Checks for equality with the object’s `args` field. */
@@ -675,6 +1637,30 @@ export type CallCondition = {
   pos?: InputMaybe<Scalars['Int']['input']>;
   /** Checks for equality with the object’s `success` field. */
   success?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type CallDistinctCountAggregates = {
+  __typename?: 'CallDistinctCountAggregates';
+  /** Distinct count of args across the matching connection */
+  args?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of blockId across the matching connection */
+  blockId?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of error across the matching connection */
+  error?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of extrinsicId across the matching connection */
+  extrinsicId?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of id across the matching connection */
+  id?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of name across the matching connection */
+  name?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of origin across the matching connection */
+  origin?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of parentId across the matching connection */
+  parentId?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of pos across the matching connection */
+  pos?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of success across the matching connection */
+  success?: Maybe<Scalars['BigInt']['output']>;
 };
 
 /** A filter to be used against `Call` object types. All fields are combined with a logical ‘and.’ */
@@ -707,17 +1693,133 @@ export type CallFilter = {
   success?: InputMaybe<BooleanFilter>;
 };
 
+/** Grouping methods for `Call` for usage during aggregation. */
+export type CallGroupBy =
+  | 'ARGS'
+  | 'BLOCK_ID'
+  | 'ERROR'
+  | 'EXTRINSIC_ID'
+  | 'NAME'
+  | 'ORIGIN'
+  | 'PARENT_ID'
+  | 'POS'
+  | 'SUCCESS';
+
+export type CallHavingAverageInput = {
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+export type CallHavingDistinctCountInput = {
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+/** Conditions for `Call` aggregates. */
+export type CallHavingInput = {
+  AND?: InputMaybe<Array<CallHavingInput>>;
+  OR?: InputMaybe<Array<CallHavingInput>>;
+  average?: InputMaybe<CallHavingAverageInput>;
+  distinctCount?: InputMaybe<CallHavingDistinctCountInput>;
+  max?: InputMaybe<CallHavingMaxInput>;
+  min?: InputMaybe<CallHavingMinInput>;
+  stddevPopulation?: InputMaybe<CallHavingStddevPopulationInput>;
+  stddevSample?: InputMaybe<CallHavingStddevSampleInput>;
+  sum?: InputMaybe<CallHavingSumInput>;
+  variancePopulation?: InputMaybe<CallHavingVariancePopulationInput>;
+  varianceSample?: InputMaybe<CallHavingVarianceSampleInput>;
+};
+
+export type CallHavingMaxInput = {
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+export type CallHavingMinInput = {
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+export type CallHavingStddevPopulationInput = {
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+export type CallHavingStddevSampleInput = {
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+export type CallHavingSumInput = {
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+export type CallHavingVariancePopulationInput = {
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+export type CallHavingVarianceSampleInput = {
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+export type CallMaxAggregates = {
+  __typename?: 'CallMaxAggregates';
+  /** Maximum of pos across the matching connection */
+  pos?: Maybe<Scalars['Int']['output']>;
+};
+
+export type CallMinAggregates = {
+  __typename?: 'CallMinAggregates';
+  /** Minimum of pos across the matching connection */
+  pos?: Maybe<Scalars['Int']['output']>;
+};
+
+export type CallStddevPopulationAggregates = {
+  __typename?: 'CallStddevPopulationAggregates';
+  /** Population standard deviation of pos across the matching connection */
+  pos?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type CallStddevSampleAggregates = {
+  __typename?: 'CallStddevSampleAggregates';
+  /** Sample standard deviation of pos across the matching connection */
+  pos?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type CallSumAggregates = {
+  __typename?: 'CallSumAggregates';
+  /** Sum of pos across the matching connection */
+  pos: Scalars['BigInt']['output'];
+};
+
+export type CallVariancePopulationAggregates = {
+  __typename?: 'CallVariancePopulationAggregates';
+  /** Population variance of pos across the matching connection */
+  pos?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type CallVarianceSampleAggregates = {
+  __typename?: 'CallVarianceSampleAggregates';
+  /** Sample variance of pos across the matching connection */
+  pos?: Maybe<Scalars['BigFloat']['output']>;
+};
+
 /** A connection to a list of `Call` values. */
 export type CallsConnection = {
   __typename?: 'CallsConnection';
+  /** Aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  aggregates?: Maybe<CallAggregates>;
   /** A list of edges which contains the `Call` and cursor to aid in pagination. */
   edges: Array<CallsEdge>;
+  /** Grouped aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  groupedAggregates?: Maybe<Array<CallAggregates>>;
   /** A list of `Call` objects. */
   nodes: Array<Call>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** The count of *all* `Call` you could get from the connection. */
   totalCount: Scalars['Int']['output'];
+};
+
+
+/** A connection to a list of `Call` values. */
+export type CallsConnectionGroupedAggregatesArgs = {
+  groupBy: Array<CallGroupBy>;
+  having?: InputMaybe<CallHavingInput>;
 };
 
 /** A `Call` edge in the connection. */
@@ -735,8 +1837,354 @@ export type CallsOrderBy =
   | 'ARGS_DESC'
   | 'BLOCK_ID_ASC'
   | 'BLOCK_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_ARGS_ASC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_ARGS_DESC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_BLOCK_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_BLOCK_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_ERROR_ASC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_ERROR_DESC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_NAME_ASC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_NAME_DESC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_ORIGIN_ASC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_ORIGIN_DESC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_PARENT_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_PARENT_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_POS_ASC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_POS_DESC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_SUCCESS_ASC'
+  | 'CALLS_BY_PARENT_ID_AVERAGE_SUCCESS_DESC'
+  | 'CALLS_BY_PARENT_ID_COUNT_ASC'
+  | 'CALLS_BY_PARENT_ID_COUNT_DESC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_ARGS_ASC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_ARGS_DESC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_BLOCK_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_BLOCK_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_ERROR_ASC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_ERROR_DESC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_NAME_ASC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_NAME_DESC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_ORIGIN_ASC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_ORIGIN_DESC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_PARENT_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_PARENT_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_POS_ASC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_POS_DESC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_SUCCESS_ASC'
+  | 'CALLS_BY_PARENT_ID_DISTINCT_COUNT_SUCCESS_DESC'
+  | 'CALLS_BY_PARENT_ID_MAX_ARGS_ASC'
+  | 'CALLS_BY_PARENT_ID_MAX_ARGS_DESC'
+  | 'CALLS_BY_PARENT_ID_MAX_BLOCK_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_MAX_BLOCK_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_MAX_ERROR_ASC'
+  | 'CALLS_BY_PARENT_ID_MAX_ERROR_DESC'
+  | 'CALLS_BY_PARENT_ID_MAX_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_MAX_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_MAX_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_MAX_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_MAX_NAME_ASC'
+  | 'CALLS_BY_PARENT_ID_MAX_NAME_DESC'
+  | 'CALLS_BY_PARENT_ID_MAX_ORIGIN_ASC'
+  | 'CALLS_BY_PARENT_ID_MAX_ORIGIN_DESC'
+  | 'CALLS_BY_PARENT_ID_MAX_PARENT_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_MAX_PARENT_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_MAX_POS_ASC'
+  | 'CALLS_BY_PARENT_ID_MAX_POS_DESC'
+  | 'CALLS_BY_PARENT_ID_MAX_SUCCESS_ASC'
+  | 'CALLS_BY_PARENT_ID_MAX_SUCCESS_DESC'
+  | 'CALLS_BY_PARENT_ID_MIN_ARGS_ASC'
+  | 'CALLS_BY_PARENT_ID_MIN_ARGS_DESC'
+  | 'CALLS_BY_PARENT_ID_MIN_BLOCK_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_MIN_BLOCK_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_MIN_ERROR_ASC'
+  | 'CALLS_BY_PARENT_ID_MIN_ERROR_DESC'
+  | 'CALLS_BY_PARENT_ID_MIN_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_MIN_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_MIN_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_MIN_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_MIN_NAME_ASC'
+  | 'CALLS_BY_PARENT_ID_MIN_NAME_DESC'
+  | 'CALLS_BY_PARENT_ID_MIN_ORIGIN_ASC'
+  | 'CALLS_BY_PARENT_ID_MIN_ORIGIN_DESC'
+  | 'CALLS_BY_PARENT_ID_MIN_PARENT_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_MIN_PARENT_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_MIN_POS_ASC'
+  | 'CALLS_BY_PARENT_ID_MIN_POS_DESC'
+  | 'CALLS_BY_PARENT_ID_MIN_SUCCESS_ASC'
+  | 'CALLS_BY_PARENT_ID_MIN_SUCCESS_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_ARGS_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_ARGS_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_BLOCK_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_BLOCK_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_ERROR_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_ERROR_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_NAME_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_NAME_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_ORIGIN_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_ORIGIN_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_PARENT_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_PARENT_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_POS_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_POS_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_SUCCESS_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_POPULATION_SUCCESS_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_ARGS_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_ARGS_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_BLOCK_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_BLOCK_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_ERROR_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_ERROR_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_NAME_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_NAME_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_ORIGIN_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_ORIGIN_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_PARENT_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_PARENT_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_POS_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_POS_DESC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_SUCCESS_ASC'
+  | 'CALLS_BY_PARENT_ID_STDDEV_SAMPLE_SUCCESS_DESC'
+  | 'CALLS_BY_PARENT_ID_SUM_ARGS_ASC'
+  | 'CALLS_BY_PARENT_ID_SUM_ARGS_DESC'
+  | 'CALLS_BY_PARENT_ID_SUM_BLOCK_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_SUM_BLOCK_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_SUM_ERROR_ASC'
+  | 'CALLS_BY_PARENT_ID_SUM_ERROR_DESC'
+  | 'CALLS_BY_PARENT_ID_SUM_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_SUM_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_SUM_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_SUM_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_SUM_NAME_ASC'
+  | 'CALLS_BY_PARENT_ID_SUM_NAME_DESC'
+  | 'CALLS_BY_PARENT_ID_SUM_ORIGIN_ASC'
+  | 'CALLS_BY_PARENT_ID_SUM_ORIGIN_DESC'
+  | 'CALLS_BY_PARENT_ID_SUM_PARENT_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_SUM_PARENT_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_SUM_POS_ASC'
+  | 'CALLS_BY_PARENT_ID_SUM_POS_DESC'
+  | 'CALLS_BY_PARENT_ID_SUM_SUCCESS_ASC'
+  | 'CALLS_BY_PARENT_ID_SUM_SUCCESS_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_ARGS_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_ARGS_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_BLOCK_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_BLOCK_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_ERROR_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_ERROR_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_NAME_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_NAME_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_ORIGIN_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_ORIGIN_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_PARENT_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_PARENT_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_POS_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_POS_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_SUCCESS_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_POPULATION_SUCCESS_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_ARGS_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_ARGS_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_BLOCK_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_BLOCK_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_ERROR_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_ERROR_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_NAME_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_NAME_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_ORIGIN_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_ORIGIN_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_PARENT_ID_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_PARENT_ID_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_POS_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_POS_DESC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_SUCCESS_ASC'
+  | 'CALLS_BY_PARENT_ID_VARIANCE_SAMPLE_SUCCESS_DESC'
   | 'ERROR_ASC'
   | 'ERROR_DESC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_ARGS_ASC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_ARGS_DESC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_BLOCK_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_BLOCK_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_CALL_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_CALL_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_NAME_ASC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_NAME_DESC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_PHASE_ASC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_PHASE_DESC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_POS_ASC'
+  | 'EVENTS_BY_CALL_ID_AVERAGE_POS_DESC'
+  | 'EVENTS_BY_CALL_ID_COUNT_ASC'
+  | 'EVENTS_BY_CALL_ID_COUNT_DESC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_ARGS_ASC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_ARGS_DESC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_BLOCK_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_BLOCK_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_CALL_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_CALL_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_NAME_ASC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_NAME_DESC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_PHASE_ASC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_PHASE_DESC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_POS_ASC'
+  | 'EVENTS_BY_CALL_ID_DISTINCT_COUNT_POS_DESC'
+  | 'EVENTS_BY_CALL_ID_MAX_ARGS_ASC'
+  | 'EVENTS_BY_CALL_ID_MAX_ARGS_DESC'
+  | 'EVENTS_BY_CALL_ID_MAX_BLOCK_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_MAX_BLOCK_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_MAX_CALL_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_MAX_CALL_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_MAX_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_MAX_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_MAX_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_MAX_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_MAX_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_CALL_ID_MAX_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_CALL_ID_MAX_NAME_ASC'
+  | 'EVENTS_BY_CALL_ID_MAX_NAME_DESC'
+  | 'EVENTS_BY_CALL_ID_MAX_PHASE_ASC'
+  | 'EVENTS_BY_CALL_ID_MAX_PHASE_DESC'
+  | 'EVENTS_BY_CALL_ID_MAX_POS_ASC'
+  | 'EVENTS_BY_CALL_ID_MAX_POS_DESC'
+  | 'EVENTS_BY_CALL_ID_MIN_ARGS_ASC'
+  | 'EVENTS_BY_CALL_ID_MIN_ARGS_DESC'
+  | 'EVENTS_BY_CALL_ID_MIN_BLOCK_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_MIN_BLOCK_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_MIN_CALL_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_MIN_CALL_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_MIN_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_MIN_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_MIN_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_MIN_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_MIN_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_CALL_ID_MIN_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_CALL_ID_MIN_NAME_ASC'
+  | 'EVENTS_BY_CALL_ID_MIN_NAME_DESC'
+  | 'EVENTS_BY_CALL_ID_MIN_PHASE_ASC'
+  | 'EVENTS_BY_CALL_ID_MIN_PHASE_DESC'
+  | 'EVENTS_BY_CALL_ID_MIN_POS_ASC'
+  | 'EVENTS_BY_CALL_ID_MIN_POS_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_ARGS_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_ARGS_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_BLOCK_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_BLOCK_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_CALL_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_CALL_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_NAME_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_NAME_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_PHASE_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_PHASE_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_POS_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_POPULATION_POS_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_ARGS_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_ARGS_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_BLOCK_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_BLOCK_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_CALL_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_CALL_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_NAME_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_NAME_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_PHASE_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_PHASE_DESC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_POS_ASC'
+  | 'EVENTS_BY_CALL_ID_STDDEV_SAMPLE_POS_DESC'
+  | 'EVENTS_BY_CALL_ID_SUM_ARGS_ASC'
+  | 'EVENTS_BY_CALL_ID_SUM_ARGS_DESC'
+  | 'EVENTS_BY_CALL_ID_SUM_BLOCK_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_SUM_BLOCK_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_SUM_CALL_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_SUM_CALL_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_SUM_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_SUM_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_SUM_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_SUM_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_SUM_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_CALL_ID_SUM_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_CALL_ID_SUM_NAME_ASC'
+  | 'EVENTS_BY_CALL_ID_SUM_NAME_DESC'
+  | 'EVENTS_BY_CALL_ID_SUM_PHASE_ASC'
+  | 'EVENTS_BY_CALL_ID_SUM_PHASE_DESC'
+  | 'EVENTS_BY_CALL_ID_SUM_POS_ASC'
+  | 'EVENTS_BY_CALL_ID_SUM_POS_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_ARGS_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_ARGS_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_BLOCK_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_BLOCK_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_CALL_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_CALL_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_NAME_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_NAME_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_PHASE_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_PHASE_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_POS_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_POPULATION_POS_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_ARGS_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_ARGS_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_BLOCK_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_BLOCK_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_CALL_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_CALL_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_ID_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_ID_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_NAME_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_NAME_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_PHASE_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_PHASE_DESC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_POS_ASC'
+  | 'EVENTS_BY_CALL_ID_VARIANCE_SAMPLE_POS_DESC'
   | 'EXTRINSIC_ID_ASC'
   | 'EXTRINSIC_ID_DESC'
   | 'ID_ASC'
@@ -765,6 +2213,13 @@ export type ContractsContractEmitted = Node & {
   nodeId: Scalars['ID']['output'];
 };
 
+export type ContractsContractEmittedAggregates = {
+  __typename?: 'ContractsContractEmittedAggregates';
+  /** Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  distinctCount?: Maybe<ContractsContractEmittedDistinctCountAggregates>;
+  keys?: Maybe<Array<Scalars['String']['output']>>;
+};
+
 /**
  * A condition to be used against `ContractsContractEmitted` object types. All
  * fields are tested for equality and combined with a logical ‘and.’
@@ -774,6 +2229,14 @@ export type ContractsContractEmittedCondition = {
   contract?: InputMaybe<Scalars['String']['input']>;
   /** Checks for equality with the object’s `eventId` field. */
   eventId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ContractsContractEmittedDistinctCountAggregates = {
+  __typename?: 'ContractsContractEmittedDistinctCountAggregates';
+  /** Distinct count of contract across the matching connection */
+  contract?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of eventId across the matching connection */
+  eventId?: Maybe<Scalars['BigInt']['output']>;
 };
 
 /** A filter to be used against `ContractsContractEmitted` object types. All fields are combined with a logical ‘and.’ */
@@ -790,17 +2253,38 @@ export type ContractsContractEmittedFilter = {
   or?: InputMaybe<Array<ContractsContractEmittedFilter>>;
 };
 
+/** Grouping methods for `ContractsContractEmitted` for usage during aggregation. */
+export type ContractsContractEmittedGroupBy =
+  | 'CONTRACT';
+
+/** Conditions for `ContractsContractEmitted` aggregates. */
+export type ContractsContractEmittedHavingInput = {
+  AND?: InputMaybe<Array<ContractsContractEmittedHavingInput>>;
+  OR?: InputMaybe<Array<ContractsContractEmittedHavingInput>>;
+};
+
 /** A connection to a list of `ContractsContractEmitted` values. */
 export type ContractsContractEmittedsConnection = {
   __typename?: 'ContractsContractEmittedsConnection';
+  /** Aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  aggregates?: Maybe<ContractsContractEmittedAggregates>;
   /** A list of edges which contains the `ContractsContractEmitted` and cursor to aid in pagination. */
   edges: Array<ContractsContractEmittedsEdge>;
+  /** Grouped aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  groupedAggregates?: Maybe<Array<ContractsContractEmittedAggregates>>;
   /** A list of `ContractsContractEmitted` objects. */
   nodes: Array<ContractsContractEmitted>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** The count of *all* `ContractsContractEmitted` you could get from the connection. */
   totalCount: Scalars['Int']['output'];
+};
+
+
+/** A connection to a list of `ContractsContractEmitted` values. */
+export type ContractsContractEmittedsConnectionGroupedAggregatesArgs = {
+  groupBy: Array<ContractsContractEmittedGroupBy>;
+  having?: InputMaybe<ContractsContractEmittedHavingInput>;
 };
 
 /** A `ContractsContractEmitted` edge in the connection. */
@@ -1011,6 +2495,37 @@ export type EventGearUserMessageSentsByEventIdArgs = {
   orderBy?: InputMaybe<Array<GearUserMessageSentsOrderBy>>;
 };
 
+export type EventAggregates = {
+  __typename?: 'EventAggregates';
+  /** Mean average aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  average?: Maybe<EventAverageAggregates>;
+  /** Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  distinctCount?: Maybe<EventDistinctCountAggregates>;
+  keys?: Maybe<Array<Scalars['String']['output']>>;
+  /** Maximum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  max?: Maybe<EventMaxAggregates>;
+  /** Minimum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  min?: Maybe<EventMinAggregates>;
+  /** Population standard deviation aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  stddevPopulation?: Maybe<EventStddevPopulationAggregates>;
+  /** Sample standard deviation aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  stddevSample?: Maybe<EventStddevSampleAggregates>;
+  /** Sum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  sum?: Maybe<EventSumAggregates>;
+  /** Population variance aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  variancePopulation?: Maybe<EventVariancePopulationAggregates>;
+  /** Sample variance aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  varianceSample?: Maybe<EventVarianceSampleAggregates>;
+};
+
+export type EventAverageAggregates = {
+  __typename?: 'EventAverageAggregates';
+  /** Mean average of indexInBlock across the matching connection */
+  indexInBlock?: Maybe<Scalars['BigFloat']['output']>;
+  /** Mean average of pos across the matching connection */
+  pos?: Maybe<Scalars['BigFloat']['output']>;
+};
+
 /** A condition to be used against `Event` object types. All fields are tested for equality and combined with a logical ‘and.’ */
 export type EventCondition = {
   /** Checks for equality with the object’s `args` field. */
@@ -1031,6 +2546,28 @@ export type EventCondition = {
   phase?: InputMaybe<Scalars['String']['input']>;
   /** Checks for equality with the object’s `pos` field. */
   pos?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type EventDistinctCountAggregates = {
+  __typename?: 'EventDistinctCountAggregates';
+  /** Distinct count of args across the matching connection */
+  args?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of blockId across the matching connection */
+  blockId?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of callId across the matching connection */
+  callId?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of extrinsicId across the matching connection */
+  extrinsicId?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of id across the matching connection */
+  id?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of indexInBlock across the matching connection */
+  indexInBlock?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of name across the matching connection */
+  name?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of phase across the matching connection */
+  phase?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of pos across the matching connection */
+  pos?: Maybe<Scalars['BigInt']['output']>;
 };
 
 /** A filter to be used against `Event` object types. All fields are combined with a logical ‘and.’ */
@@ -1061,17 +2598,155 @@ export type EventFilter = {
   pos?: InputMaybe<IntFilter>;
 };
 
+/** Grouping methods for `Event` for usage during aggregation. */
+export type EventGroupBy =
+  | 'ARGS'
+  | 'BLOCK_ID'
+  | 'CALL_ID'
+  | 'EXTRINSIC_ID'
+  | 'INDEX_IN_BLOCK'
+  | 'NAME'
+  | 'PHASE'
+  | 'POS';
+
+export type EventHavingAverageInput = {
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+export type EventHavingDistinctCountInput = {
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+/** Conditions for `Event` aggregates. */
+export type EventHavingInput = {
+  AND?: InputMaybe<Array<EventHavingInput>>;
+  OR?: InputMaybe<Array<EventHavingInput>>;
+  average?: InputMaybe<EventHavingAverageInput>;
+  distinctCount?: InputMaybe<EventHavingDistinctCountInput>;
+  max?: InputMaybe<EventHavingMaxInput>;
+  min?: InputMaybe<EventHavingMinInput>;
+  stddevPopulation?: InputMaybe<EventHavingStddevPopulationInput>;
+  stddevSample?: InputMaybe<EventHavingStddevSampleInput>;
+  sum?: InputMaybe<EventHavingSumInput>;
+  variancePopulation?: InputMaybe<EventHavingVariancePopulationInput>;
+  varianceSample?: InputMaybe<EventHavingVarianceSampleInput>;
+};
+
+export type EventHavingMaxInput = {
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+export type EventHavingMinInput = {
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+export type EventHavingStddevPopulationInput = {
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+export type EventHavingStddevSampleInput = {
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+export type EventHavingSumInput = {
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+export type EventHavingVariancePopulationInput = {
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+export type EventHavingVarianceSampleInput = {
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+};
+
+export type EventMaxAggregates = {
+  __typename?: 'EventMaxAggregates';
+  /** Maximum of indexInBlock across the matching connection */
+  indexInBlock?: Maybe<Scalars['Int']['output']>;
+  /** Maximum of pos across the matching connection */
+  pos?: Maybe<Scalars['Int']['output']>;
+};
+
+export type EventMinAggregates = {
+  __typename?: 'EventMinAggregates';
+  /** Minimum of indexInBlock across the matching connection */
+  indexInBlock?: Maybe<Scalars['Int']['output']>;
+  /** Minimum of pos across the matching connection */
+  pos?: Maybe<Scalars['Int']['output']>;
+};
+
+export type EventStddevPopulationAggregates = {
+  __typename?: 'EventStddevPopulationAggregates';
+  /** Population standard deviation of indexInBlock across the matching connection */
+  indexInBlock?: Maybe<Scalars['BigFloat']['output']>;
+  /** Population standard deviation of pos across the matching connection */
+  pos?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type EventStddevSampleAggregates = {
+  __typename?: 'EventStddevSampleAggregates';
+  /** Sample standard deviation of indexInBlock across the matching connection */
+  indexInBlock?: Maybe<Scalars['BigFloat']['output']>;
+  /** Sample standard deviation of pos across the matching connection */
+  pos?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type EventSumAggregates = {
+  __typename?: 'EventSumAggregates';
+  /** Sum of indexInBlock across the matching connection */
+  indexInBlock: Scalars['BigInt']['output'];
+  /** Sum of pos across the matching connection */
+  pos: Scalars['BigInt']['output'];
+};
+
+export type EventVariancePopulationAggregates = {
+  __typename?: 'EventVariancePopulationAggregates';
+  /** Population variance of indexInBlock across the matching connection */
+  indexInBlock?: Maybe<Scalars['BigFloat']['output']>;
+  /** Population variance of pos across the matching connection */
+  pos?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type EventVarianceSampleAggregates = {
+  __typename?: 'EventVarianceSampleAggregates';
+  /** Sample variance of indexInBlock across the matching connection */
+  indexInBlock?: Maybe<Scalars['BigFloat']['output']>;
+  /** Sample variance of pos across the matching connection */
+  pos?: Maybe<Scalars['BigFloat']['output']>;
+};
+
 /** A connection to a list of `Event` values. */
 export type EventsConnection = {
   __typename?: 'EventsConnection';
+  /** Aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  aggregates?: Maybe<EventAggregates>;
   /** A list of edges which contains the `Event` and cursor to aid in pagination. */
   edges: Array<EventsEdge>;
+  /** Grouped aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  groupedAggregates?: Maybe<Array<EventAggregates>>;
   /** A list of `Event` objects. */
   nodes: Array<Event>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** The count of *all* `Event` you could get from the connection. */
   totalCount: Scalars['Int']['output'];
+};
+
+
+/** A connection to a list of `Event` values. */
+export type EventsConnectionGroupedAggregatesArgs = {
+  groupBy: Array<EventGroupBy>;
+  having?: InputMaybe<EventHavingInput>;
 };
 
 /** A `Event` edge in the connection. */
@@ -1085,6 +2760,298 @@ export type EventsEdge = {
 
 /** Methods to use when ordering `Event`. */
 export type EventsOrderBy =
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_AVERAGE_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_AVERAGE_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_AVERAGE_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_AVERAGE_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_AVERAGE_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_AVERAGE_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_AVERAGE_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_AVERAGE_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_AVERAGE_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_AVERAGE_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_AVERAGE_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_AVERAGE_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_AVERAGE_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_AVERAGE_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_AVERAGE_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_AVERAGE_TOPIC3_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_COUNT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_COUNT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_TOPIC3_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MAX_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MAX_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MAX_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MAX_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MAX_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MAX_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MAX_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MAX_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MAX_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MAX_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MAX_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MAX_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MAX_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MAX_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MAX_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MAX_TOPIC3_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MIN_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MIN_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MIN_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MIN_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MIN_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MIN_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MIN_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MIN_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MIN_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MIN_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MIN_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MIN_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MIN_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MIN_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MIN_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_MIN_TOPIC3_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_TOPIC3_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_TOPIC3_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_SUM_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_SUM_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_SUM_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_SUM_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_SUM_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_SUM_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_SUM_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_SUM_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_SUM_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_SUM_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_SUM_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_SUM_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_SUM_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_SUM_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_SUM_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_SUM_TOPIC3_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_TOPIC3_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_FAILED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_TOPIC3_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_AVERAGE_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_AVERAGE_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_AVERAGE_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_AVERAGE_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_AVERAGE_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_AVERAGE_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_AVERAGE_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_AVERAGE_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_AVERAGE_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_AVERAGE_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_AVERAGE_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_AVERAGE_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_AVERAGE_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_AVERAGE_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_AVERAGE_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_AVERAGE_TOPIC3_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_COUNT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_COUNT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_DISTINCT_COUNT_TOPIC3_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MAX_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MAX_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MAX_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MAX_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MAX_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MAX_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MAX_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MAX_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MAX_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MAX_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MAX_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MAX_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MAX_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MAX_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MAX_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MAX_TOPIC3_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MIN_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MIN_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MIN_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MIN_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MIN_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MIN_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MIN_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MIN_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MIN_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MIN_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MIN_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MIN_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MIN_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MIN_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MIN_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_MIN_TOPIC3_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_POPULATION_TOPIC3_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_STDDEV_SAMPLE_TOPIC3_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_SUM_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_SUM_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_SUM_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_SUM_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_SUM_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_SUM_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_SUM_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_SUM_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_SUM_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_SUM_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_SUM_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_SUM_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_SUM_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_SUM_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_SUM_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_SUM_TOPIC3_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_POPULATION_TOPIC3_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_EVENT_CONTRACT_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_EVENT_CONTRACT_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_EVENT_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_EVENT_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_ID_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_ID_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_TOPIC0_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_TOPIC0_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_TOPIC1_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_TOPIC1_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_TOPIC2_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_TOPIC2_DESC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_TOPIC3_ASC'
+  | 'ACALA_EVM_EXECUTED_LOGS_BY_EVENT_ID_VARIANCE_SAMPLE_TOPIC3_DESC'
   | 'ARGS_ASC'
   | 'ARGS_DESC'
   | 'BLOCK_ID_ASC'
@@ -1155,6 +3122,43 @@ export type ExtrinsicEventsByExtrinsicIdArgs = {
   orderBy?: InputMaybe<Array<EventsOrderBy>>;
 };
 
+export type ExtrinsicAggregates = {
+  __typename?: 'ExtrinsicAggregates';
+  /** Mean average aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  average?: Maybe<ExtrinsicAverageAggregates>;
+  /** Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  distinctCount?: Maybe<ExtrinsicDistinctCountAggregates>;
+  keys?: Maybe<Array<Scalars['String']['output']>>;
+  /** Maximum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  max?: Maybe<ExtrinsicMaxAggregates>;
+  /** Minimum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  min?: Maybe<ExtrinsicMinAggregates>;
+  /** Population standard deviation aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  stddevPopulation?: Maybe<ExtrinsicStddevPopulationAggregates>;
+  /** Sample standard deviation aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  stddevSample?: Maybe<ExtrinsicStddevSampleAggregates>;
+  /** Sum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  sum?: Maybe<ExtrinsicSumAggregates>;
+  /** Population variance aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  variancePopulation?: Maybe<ExtrinsicVariancePopulationAggregates>;
+  /** Sample variance aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  varianceSample?: Maybe<ExtrinsicVarianceSampleAggregates>;
+};
+
+export type ExtrinsicAverageAggregates = {
+  __typename?: 'ExtrinsicAverageAggregates';
+  /** Mean average of fee across the matching connection */
+  fee?: Maybe<Scalars['BigFloat']['output']>;
+  /** Mean average of indexInBlock across the matching connection */
+  indexInBlock?: Maybe<Scalars['BigFloat']['output']>;
+  /** Mean average of pos across the matching connection */
+  pos?: Maybe<Scalars['BigFloat']['output']>;
+  /** Mean average of tip across the matching connection */
+  tip?: Maybe<Scalars['BigFloat']['output']>;
+  /** Mean average of version across the matching connection */
+  version?: Maybe<Scalars['BigFloat']['output']>;
+};
+
 /**
  * A condition to be used against `Extrinsic` object types. All fields are tested
  * for equality and combined with a logical ‘and.’
@@ -1184,6 +3188,34 @@ export type ExtrinsicCondition = {
   tip?: InputMaybe<Scalars['BigFloat']['input']>;
   /** Checks for equality with the object’s `version` field. */
   version?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ExtrinsicDistinctCountAggregates = {
+  __typename?: 'ExtrinsicDistinctCountAggregates';
+  /** Distinct count of blockId across the matching connection */
+  blockId?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of callId across the matching connection */
+  callId?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of error across the matching connection */
+  error?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of fee across the matching connection */
+  fee?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of hash across the matching connection */
+  hash?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of id across the matching connection */
+  id?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of indexInBlock across the matching connection */
+  indexInBlock?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of pos across the matching connection */
+  pos?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of signature across the matching connection */
+  signature?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of success across the matching connection */
+  success?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of tip across the matching connection */
+  tip?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of version across the matching connection */
+  version?: Maybe<Scalars['BigInt']['output']>;
 };
 
 /** A filter to be used against `Extrinsic` object types. All fields are combined with a logical ‘and.’ */
@@ -1220,17 +3252,227 @@ export type ExtrinsicFilter = {
   version?: InputMaybe<IntFilter>;
 };
 
+/** Grouping methods for `Extrinsic` for usage during aggregation. */
+export type ExtrinsicGroupBy =
+  | 'BLOCK_ID'
+  | 'CALL_ID'
+  | 'ERROR'
+  | 'FEE'
+  | 'HASH'
+  | 'INDEX_IN_BLOCK'
+  | 'POS'
+  | 'SIGNATURE'
+  | 'SUCCESS'
+  | 'TIP'
+  | 'VERSION';
+
+export type ExtrinsicHavingAverageInput = {
+  fee?: InputMaybe<HavingBigfloatFilter>;
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+  tip?: InputMaybe<HavingBigfloatFilter>;
+  version?: InputMaybe<HavingIntFilter>;
+};
+
+export type ExtrinsicHavingDistinctCountInput = {
+  fee?: InputMaybe<HavingBigfloatFilter>;
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+  tip?: InputMaybe<HavingBigfloatFilter>;
+  version?: InputMaybe<HavingIntFilter>;
+};
+
+/** Conditions for `Extrinsic` aggregates. */
+export type ExtrinsicHavingInput = {
+  AND?: InputMaybe<Array<ExtrinsicHavingInput>>;
+  OR?: InputMaybe<Array<ExtrinsicHavingInput>>;
+  average?: InputMaybe<ExtrinsicHavingAverageInput>;
+  distinctCount?: InputMaybe<ExtrinsicHavingDistinctCountInput>;
+  max?: InputMaybe<ExtrinsicHavingMaxInput>;
+  min?: InputMaybe<ExtrinsicHavingMinInput>;
+  stddevPopulation?: InputMaybe<ExtrinsicHavingStddevPopulationInput>;
+  stddevSample?: InputMaybe<ExtrinsicHavingStddevSampleInput>;
+  sum?: InputMaybe<ExtrinsicHavingSumInput>;
+  variancePopulation?: InputMaybe<ExtrinsicHavingVariancePopulationInput>;
+  varianceSample?: InputMaybe<ExtrinsicHavingVarianceSampleInput>;
+};
+
+export type ExtrinsicHavingMaxInput = {
+  fee?: InputMaybe<HavingBigfloatFilter>;
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+  tip?: InputMaybe<HavingBigfloatFilter>;
+  version?: InputMaybe<HavingIntFilter>;
+};
+
+export type ExtrinsicHavingMinInput = {
+  fee?: InputMaybe<HavingBigfloatFilter>;
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+  tip?: InputMaybe<HavingBigfloatFilter>;
+  version?: InputMaybe<HavingIntFilter>;
+};
+
+export type ExtrinsicHavingStddevPopulationInput = {
+  fee?: InputMaybe<HavingBigfloatFilter>;
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+  tip?: InputMaybe<HavingBigfloatFilter>;
+  version?: InputMaybe<HavingIntFilter>;
+};
+
+export type ExtrinsicHavingStddevSampleInput = {
+  fee?: InputMaybe<HavingBigfloatFilter>;
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+  tip?: InputMaybe<HavingBigfloatFilter>;
+  version?: InputMaybe<HavingIntFilter>;
+};
+
+export type ExtrinsicHavingSumInput = {
+  fee?: InputMaybe<HavingBigfloatFilter>;
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+  tip?: InputMaybe<HavingBigfloatFilter>;
+  version?: InputMaybe<HavingIntFilter>;
+};
+
+export type ExtrinsicHavingVariancePopulationInput = {
+  fee?: InputMaybe<HavingBigfloatFilter>;
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+  tip?: InputMaybe<HavingBigfloatFilter>;
+  version?: InputMaybe<HavingIntFilter>;
+};
+
+export type ExtrinsicHavingVarianceSampleInput = {
+  fee?: InputMaybe<HavingBigfloatFilter>;
+  indexInBlock?: InputMaybe<HavingIntFilter>;
+  pos?: InputMaybe<HavingIntFilter>;
+  tip?: InputMaybe<HavingBigfloatFilter>;
+  version?: InputMaybe<HavingIntFilter>;
+};
+
+export type ExtrinsicMaxAggregates = {
+  __typename?: 'ExtrinsicMaxAggregates';
+  /** Maximum of fee across the matching connection */
+  fee?: Maybe<Scalars['BigFloat']['output']>;
+  /** Maximum of indexInBlock across the matching connection */
+  indexInBlock?: Maybe<Scalars['Int']['output']>;
+  /** Maximum of pos across the matching connection */
+  pos?: Maybe<Scalars['Int']['output']>;
+  /** Maximum of tip across the matching connection */
+  tip?: Maybe<Scalars['BigFloat']['output']>;
+  /** Maximum of version across the matching connection */
+  version?: Maybe<Scalars['Int']['output']>;
+};
+
+export type ExtrinsicMinAggregates = {
+  __typename?: 'ExtrinsicMinAggregates';
+  /** Minimum of fee across the matching connection */
+  fee?: Maybe<Scalars['BigFloat']['output']>;
+  /** Minimum of indexInBlock across the matching connection */
+  indexInBlock?: Maybe<Scalars['Int']['output']>;
+  /** Minimum of pos across the matching connection */
+  pos?: Maybe<Scalars['Int']['output']>;
+  /** Minimum of tip across the matching connection */
+  tip?: Maybe<Scalars['BigFloat']['output']>;
+  /** Minimum of version across the matching connection */
+  version?: Maybe<Scalars['Int']['output']>;
+};
+
+export type ExtrinsicStddevPopulationAggregates = {
+  __typename?: 'ExtrinsicStddevPopulationAggregates';
+  /** Population standard deviation of fee across the matching connection */
+  fee?: Maybe<Scalars['BigFloat']['output']>;
+  /** Population standard deviation of indexInBlock across the matching connection */
+  indexInBlock?: Maybe<Scalars['BigFloat']['output']>;
+  /** Population standard deviation of pos across the matching connection */
+  pos?: Maybe<Scalars['BigFloat']['output']>;
+  /** Population standard deviation of tip across the matching connection */
+  tip?: Maybe<Scalars['BigFloat']['output']>;
+  /** Population standard deviation of version across the matching connection */
+  version?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type ExtrinsicStddevSampleAggregates = {
+  __typename?: 'ExtrinsicStddevSampleAggregates';
+  /** Sample standard deviation of fee across the matching connection */
+  fee?: Maybe<Scalars['BigFloat']['output']>;
+  /** Sample standard deviation of indexInBlock across the matching connection */
+  indexInBlock?: Maybe<Scalars['BigFloat']['output']>;
+  /** Sample standard deviation of pos across the matching connection */
+  pos?: Maybe<Scalars['BigFloat']['output']>;
+  /** Sample standard deviation of tip across the matching connection */
+  tip?: Maybe<Scalars['BigFloat']['output']>;
+  /** Sample standard deviation of version across the matching connection */
+  version?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type ExtrinsicSumAggregates = {
+  __typename?: 'ExtrinsicSumAggregates';
+  /** Sum of fee across the matching connection */
+  fee: Scalars['BigFloat']['output'];
+  /** Sum of indexInBlock across the matching connection */
+  indexInBlock: Scalars['BigInt']['output'];
+  /** Sum of pos across the matching connection */
+  pos: Scalars['BigInt']['output'];
+  /** Sum of tip across the matching connection */
+  tip: Scalars['BigFloat']['output'];
+  /** Sum of version across the matching connection */
+  version: Scalars['BigInt']['output'];
+};
+
+export type ExtrinsicVariancePopulationAggregates = {
+  __typename?: 'ExtrinsicVariancePopulationAggregates';
+  /** Population variance of fee across the matching connection */
+  fee?: Maybe<Scalars['BigFloat']['output']>;
+  /** Population variance of indexInBlock across the matching connection */
+  indexInBlock?: Maybe<Scalars['BigFloat']['output']>;
+  /** Population variance of pos across the matching connection */
+  pos?: Maybe<Scalars['BigFloat']['output']>;
+  /** Population variance of tip across the matching connection */
+  tip?: Maybe<Scalars['BigFloat']['output']>;
+  /** Population variance of version across the matching connection */
+  version?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type ExtrinsicVarianceSampleAggregates = {
+  __typename?: 'ExtrinsicVarianceSampleAggregates';
+  /** Sample variance of fee across the matching connection */
+  fee?: Maybe<Scalars['BigFloat']['output']>;
+  /** Sample variance of indexInBlock across the matching connection */
+  indexInBlock?: Maybe<Scalars['BigFloat']['output']>;
+  /** Sample variance of pos across the matching connection */
+  pos?: Maybe<Scalars['BigFloat']['output']>;
+  /** Sample variance of tip across the matching connection */
+  tip?: Maybe<Scalars['BigFloat']['output']>;
+  /** Sample variance of version across the matching connection */
+  version?: Maybe<Scalars['BigFloat']['output']>;
+};
+
 /** A connection to a list of `Extrinsic` values. */
 export type ExtrinsicsConnection = {
   __typename?: 'ExtrinsicsConnection';
+  /** Aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  aggregates?: Maybe<ExtrinsicAggregates>;
   /** A list of edges which contains the `Extrinsic` and cursor to aid in pagination. */
   edges: Array<ExtrinsicsEdge>;
+  /** Grouped aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  groupedAggregates?: Maybe<Array<ExtrinsicAggregates>>;
   /** A list of `Extrinsic` objects. */
   nodes: Array<Extrinsic>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** The count of *all* `Extrinsic` you could get from the connection. */
   totalCount: Scalars['Int']['output'];
+};
+
+
+/** A connection to a list of `Extrinsic` values. */
+export type ExtrinsicsConnectionGroupedAggregatesArgs = {
+  groupBy: Array<ExtrinsicGroupBy>;
+  having?: InputMaybe<ExtrinsicHavingInput>;
 };
 
 /** A `Extrinsic` edge in the connection. */
@@ -1246,10 +3488,356 @@ export type ExtrinsicsEdge = {
 export type ExtrinsicsOrderBy =
   | 'BLOCK_ID_ASC'
   | 'BLOCK_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_ARGS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_ARGS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_BLOCK_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_BLOCK_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_ERROR_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_ERROR_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_NAME_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_NAME_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_ORIGIN_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_ORIGIN_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_PARENT_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_PARENT_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_POS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_POS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_SUCCESS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_AVERAGE_SUCCESS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_COUNT_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_COUNT_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_ARGS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_ARGS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_BLOCK_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_BLOCK_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_ERROR_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_ERROR_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_NAME_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_NAME_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_ORIGIN_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_ORIGIN_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_PARENT_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_PARENT_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_POS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_POS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_SUCCESS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_DISTINCT_COUNT_SUCCESS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_ARGS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_ARGS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_BLOCK_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_BLOCK_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_ERROR_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_ERROR_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_NAME_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_NAME_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_ORIGIN_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_ORIGIN_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_PARENT_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_PARENT_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_POS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_POS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_SUCCESS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MAX_SUCCESS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_ARGS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_ARGS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_BLOCK_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_BLOCK_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_ERROR_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_ERROR_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_NAME_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_NAME_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_ORIGIN_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_ORIGIN_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_PARENT_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_PARENT_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_POS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_POS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_SUCCESS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_MIN_SUCCESS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_ARGS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_ARGS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_BLOCK_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_BLOCK_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_ERROR_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_ERROR_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_NAME_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_NAME_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_ORIGIN_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_ORIGIN_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_PARENT_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_PARENT_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_POS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_POS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_SUCCESS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_POPULATION_SUCCESS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_ARGS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_ARGS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_BLOCK_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_BLOCK_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_ERROR_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_ERROR_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_NAME_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_NAME_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_ORIGIN_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_ORIGIN_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_PARENT_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_PARENT_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_POS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_POS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_SUCCESS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_SUCCESS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_ARGS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_ARGS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_BLOCK_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_BLOCK_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_ERROR_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_ERROR_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_NAME_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_NAME_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_ORIGIN_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_ORIGIN_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_PARENT_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_PARENT_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_POS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_POS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_SUCCESS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_SUM_SUCCESS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_ARGS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_ARGS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_BLOCK_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_BLOCK_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_ERROR_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_ERROR_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_NAME_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_NAME_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_ORIGIN_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_ORIGIN_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_PARENT_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_PARENT_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_POS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_POS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_SUCCESS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_SUCCESS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_ARGS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_ARGS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_BLOCK_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_BLOCK_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_ERROR_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_ERROR_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_EXTRINSIC_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_EXTRINSIC_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_NAME_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_NAME_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_ORIGIN_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_ORIGIN_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_PARENT_ID_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_PARENT_ID_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_POS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_POS_DESC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_SUCCESS_ASC'
+  | 'CALLS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_SUCCESS_DESC'
   | 'CALL_ID_ASC'
   | 'CALL_ID_DESC'
   | 'ERROR_ASC'
   | 'ERROR_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_ARGS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_ARGS_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_BLOCK_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_BLOCK_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_CALL_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_CALL_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_NAME_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_NAME_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_PHASE_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_PHASE_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_POS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_AVERAGE_POS_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_COUNT_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_COUNT_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_ARGS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_ARGS_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_BLOCK_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_BLOCK_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_CALL_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_CALL_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_NAME_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_NAME_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_PHASE_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_PHASE_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_POS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_DISTINCT_COUNT_POS_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_ARGS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_ARGS_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_BLOCK_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_BLOCK_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_CALL_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_CALL_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_NAME_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_NAME_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_PHASE_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_PHASE_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_POS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MAX_POS_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_ARGS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_ARGS_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_BLOCK_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_BLOCK_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_CALL_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_CALL_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_NAME_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_NAME_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_PHASE_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_PHASE_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_POS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_MIN_POS_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_ARGS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_ARGS_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_BLOCK_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_BLOCK_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_CALL_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_CALL_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_NAME_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_NAME_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_PHASE_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_PHASE_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_POS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_POPULATION_POS_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_ARGS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_ARGS_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_BLOCK_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_BLOCK_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_CALL_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_CALL_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_NAME_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_NAME_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_PHASE_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_PHASE_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_POS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_STDDEV_SAMPLE_POS_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_ARGS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_ARGS_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_BLOCK_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_BLOCK_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_CALL_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_CALL_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_NAME_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_NAME_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_PHASE_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_PHASE_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_POS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_SUM_POS_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_ARGS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_ARGS_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_BLOCK_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_BLOCK_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_CALL_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_CALL_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_NAME_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_NAME_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_PHASE_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_PHASE_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_POS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_POPULATION_POS_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_ARGS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_ARGS_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_BLOCK_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_BLOCK_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_CALL_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_CALL_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_EXTRINSIC_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_EXTRINSIC_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_ID_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_ID_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_INDEX_IN_BLOCK_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_INDEX_IN_BLOCK_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_NAME_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_NAME_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_PHASE_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_PHASE_DESC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_POS_ASC'
+  | 'EVENTS_BY_EXTRINSIC_ID_VARIANCE_SAMPLE_POS_DESC'
   | 'FEE_ASC'
   | 'FEE_DESC'
   | 'HASH_ASC'
@@ -1283,6 +3871,13 @@ export type FrontierEthereumTransaction = Node & {
   sighash?: Maybe<Scalars['String']['output']>;
 };
 
+export type FrontierEthereumTransactionAggregates = {
+  __typename?: 'FrontierEthereumTransactionAggregates';
+  /** Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  distinctCount?: Maybe<FrontierEthereumTransactionDistinctCountAggregates>;
+  keys?: Maybe<Array<Scalars['String']['output']>>;
+};
+
 /**
  * A condition to be used against `FrontierEthereumTransaction` object types. All
  * fields are tested for equality and combined with a logical ‘and.’
@@ -1294,6 +3889,16 @@ export type FrontierEthereumTransactionCondition = {
   contract?: InputMaybe<Scalars['String']['input']>;
   /** Checks for equality with the object’s `sighash` field. */
   sighash?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type FrontierEthereumTransactionDistinctCountAggregates = {
+  __typename?: 'FrontierEthereumTransactionDistinctCountAggregates';
+  /** Distinct count of callId across the matching connection */
+  callId?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of contract across the matching connection */
+  contract?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of sighash across the matching connection */
+  sighash?: Maybe<Scalars['BigInt']['output']>;
 };
 
 /** A filter to be used against `FrontierEthereumTransaction` object types. All fields are combined with a logical ‘and.’ */
@@ -1312,17 +3917,39 @@ export type FrontierEthereumTransactionFilter = {
   sighash?: InputMaybe<StringFilter>;
 };
 
+/** Grouping methods for `FrontierEthereumTransaction` for usage during aggregation. */
+export type FrontierEthereumTransactionGroupBy =
+  | 'CONTRACT'
+  | 'SIGHASH';
+
+/** Conditions for `FrontierEthereumTransaction` aggregates. */
+export type FrontierEthereumTransactionHavingInput = {
+  AND?: InputMaybe<Array<FrontierEthereumTransactionHavingInput>>;
+  OR?: InputMaybe<Array<FrontierEthereumTransactionHavingInput>>;
+};
+
 /** A connection to a list of `FrontierEthereumTransaction` values. */
 export type FrontierEthereumTransactionsConnection = {
   __typename?: 'FrontierEthereumTransactionsConnection';
+  /** Aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  aggregates?: Maybe<FrontierEthereumTransactionAggregates>;
   /** A list of edges which contains the `FrontierEthereumTransaction` and cursor to aid in pagination. */
   edges: Array<FrontierEthereumTransactionsEdge>;
+  /** Grouped aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  groupedAggregates?: Maybe<Array<FrontierEthereumTransactionAggregates>>;
   /** A list of `FrontierEthereumTransaction` objects. */
   nodes: Array<FrontierEthereumTransaction>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** The count of *all* `FrontierEthereumTransaction` you could get from the connection. */
   totalCount: Scalars['Int']['output'];
+};
+
+
+/** A connection to a list of `FrontierEthereumTransaction` values. */
+export type FrontierEthereumTransactionsConnectionGroupedAggregatesArgs = {
+  groupBy: Array<FrontierEthereumTransactionGroupBy>;
+  having?: InputMaybe<FrontierEthereumTransactionHavingInput>;
 };
 
 /** A `FrontierEthereumTransaction` edge in the connection. */
@@ -1360,6 +3987,13 @@ export type FrontierEvmLog = Node & {
   topic3?: Maybe<Scalars['String']['output']>;
 };
 
+export type FrontierEvmLogAggregates = {
+  __typename?: 'FrontierEvmLogAggregates';
+  /** Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  distinctCount?: Maybe<FrontierEvmLogDistinctCountAggregates>;
+  keys?: Maybe<Array<Scalars['String']['output']>>;
+};
+
 /**
  * A condition to be used against `FrontierEvmLog` object types. All fields are
  * tested for equality and combined with a logical ‘and.’
@@ -1377,6 +4011,22 @@ export type FrontierEvmLogCondition = {
   topic2?: InputMaybe<Scalars['String']['input']>;
   /** Checks for equality with the object’s `topic3` field. */
   topic3?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type FrontierEvmLogDistinctCountAggregates = {
+  __typename?: 'FrontierEvmLogDistinctCountAggregates';
+  /** Distinct count of contract across the matching connection */
+  contract?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of eventId across the matching connection */
+  eventId?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of topic0 across the matching connection */
+  topic0?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of topic1 across the matching connection */
+  topic1?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of topic2 across the matching connection */
+  topic2?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of topic3 across the matching connection */
+  topic3?: Maybe<Scalars['BigInt']['output']>;
 };
 
 /** A filter to be used against `FrontierEvmLog` object types. All fields are combined with a logical ‘and.’ */
@@ -1401,17 +4051,42 @@ export type FrontierEvmLogFilter = {
   topic3?: InputMaybe<StringFilter>;
 };
 
+/** Grouping methods for `FrontierEvmLog` for usage during aggregation. */
+export type FrontierEvmLogGroupBy =
+  | 'CONTRACT'
+  | 'TOPIC0'
+  | 'TOPIC1'
+  | 'TOPIC2'
+  | 'TOPIC3';
+
+/** Conditions for `FrontierEvmLog` aggregates. */
+export type FrontierEvmLogHavingInput = {
+  AND?: InputMaybe<Array<FrontierEvmLogHavingInput>>;
+  OR?: InputMaybe<Array<FrontierEvmLogHavingInput>>;
+};
+
 /** A connection to a list of `FrontierEvmLog` values. */
 export type FrontierEvmLogsConnection = {
   __typename?: 'FrontierEvmLogsConnection';
+  /** Aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  aggregates?: Maybe<FrontierEvmLogAggregates>;
   /** A list of edges which contains the `FrontierEvmLog` and cursor to aid in pagination. */
   edges: Array<FrontierEvmLogsEdge>;
+  /** Grouped aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  groupedAggregates?: Maybe<Array<FrontierEvmLogAggregates>>;
   /** A list of `FrontierEvmLog` objects. */
   nodes: Array<FrontierEvmLog>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** The count of *all* `FrontierEvmLog` you could get from the connection. */
   totalCount: Scalars['Int']['output'];
+};
+
+
+/** A connection to a list of `FrontierEvmLog` values. */
+export type FrontierEvmLogsConnectionGroupedAggregatesArgs = {
+  groupBy: Array<FrontierEvmLogGroupBy>;
+  having?: InputMaybe<FrontierEvmLogHavingInput>;
 };
 
 /** A `FrontierEvmLog` edge in the connection. */
@@ -1451,6 +4126,13 @@ export type GearMessageEnqueued = Node & {
   program: Scalars['String']['output'];
 };
 
+export type GearMessageEnqueuedAggregates = {
+  __typename?: 'GearMessageEnqueuedAggregates';
+  /** Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  distinctCount?: Maybe<GearMessageEnqueuedDistinctCountAggregates>;
+  keys?: Maybe<Array<Scalars['String']['output']>>;
+};
+
 /**
  * A condition to be used against `GearMessageEnqueued` object types. All fields
  * are tested for equality and combined with a logical ‘and.’
@@ -1460,6 +4142,14 @@ export type GearMessageEnqueuedCondition = {
   eventId?: InputMaybe<Scalars['String']['input']>;
   /** Checks for equality with the object’s `program` field. */
   program?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type GearMessageEnqueuedDistinctCountAggregates = {
+  __typename?: 'GearMessageEnqueuedDistinctCountAggregates';
+  /** Distinct count of eventId across the matching connection */
+  eventId?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of program across the matching connection */
+  program?: Maybe<Scalars['BigInt']['output']>;
 };
 
 /** A filter to be used against `GearMessageEnqueued` object types. All fields are combined with a logical ‘and.’ */
@@ -1476,17 +4166,38 @@ export type GearMessageEnqueuedFilter = {
   program?: InputMaybe<StringFilter>;
 };
 
+/** Grouping methods for `GearMessageEnqueued` for usage during aggregation. */
+export type GearMessageEnqueuedGroupBy =
+  | 'PROGRAM';
+
+/** Conditions for `GearMessageEnqueued` aggregates. */
+export type GearMessageEnqueuedHavingInput = {
+  AND?: InputMaybe<Array<GearMessageEnqueuedHavingInput>>;
+  OR?: InputMaybe<Array<GearMessageEnqueuedHavingInput>>;
+};
+
 /** A connection to a list of `GearMessageEnqueued` values. */
 export type GearMessageEnqueuedsConnection = {
   __typename?: 'GearMessageEnqueuedsConnection';
+  /** Aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  aggregates?: Maybe<GearMessageEnqueuedAggregates>;
   /** A list of edges which contains the `GearMessageEnqueued` and cursor to aid in pagination. */
   edges: Array<GearMessageEnqueuedsEdge>;
+  /** Grouped aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  groupedAggregates?: Maybe<Array<GearMessageEnqueuedAggregates>>;
   /** A list of `GearMessageEnqueued` objects. */
   nodes: Array<GearMessageEnqueued>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** The count of *all* `GearMessageEnqueued` you could get from the connection. */
   totalCount: Scalars['Int']['output'];
+};
+
+
+/** A connection to a list of `GearMessageEnqueued` values. */
+export type GearMessageEnqueuedsConnectionGroupedAggregatesArgs = {
+  groupBy: Array<GearMessageEnqueuedGroupBy>;
+  having?: InputMaybe<GearMessageEnqueuedHavingInput>;
 };
 
 /** A `GearMessageEnqueued` edge in the connection. */
@@ -1518,6 +4229,13 @@ export type GearUserMessageSent = Node & {
   program: Scalars['String']['output'];
 };
 
+export type GearUserMessageSentAggregates = {
+  __typename?: 'GearUserMessageSentAggregates';
+  /** Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  distinctCount?: Maybe<GearUserMessageSentDistinctCountAggregates>;
+  keys?: Maybe<Array<Scalars['String']['output']>>;
+};
+
 /**
  * A condition to be used against `GearUserMessageSent` object types. All fields
  * are tested for equality and combined with a logical ‘and.’
@@ -1527,6 +4245,14 @@ export type GearUserMessageSentCondition = {
   eventId?: InputMaybe<Scalars['String']['input']>;
   /** Checks for equality with the object’s `program` field. */
   program?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type GearUserMessageSentDistinctCountAggregates = {
+  __typename?: 'GearUserMessageSentDistinctCountAggregates';
+  /** Distinct count of eventId across the matching connection */
+  eventId?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of program across the matching connection */
+  program?: Maybe<Scalars['BigInt']['output']>;
 };
 
 /** A filter to be used against `GearUserMessageSent` object types. All fields are combined with a logical ‘and.’ */
@@ -1543,17 +4269,38 @@ export type GearUserMessageSentFilter = {
   program?: InputMaybe<StringFilter>;
 };
 
+/** Grouping methods for `GearUserMessageSent` for usage during aggregation. */
+export type GearUserMessageSentGroupBy =
+  | 'PROGRAM';
+
+/** Conditions for `GearUserMessageSent` aggregates. */
+export type GearUserMessageSentHavingInput = {
+  AND?: InputMaybe<Array<GearUserMessageSentHavingInput>>;
+  OR?: InputMaybe<Array<GearUserMessageSentHavingInput>>;
+};
+
 /** A connection to a list of `GearUserMessageSent` values. */
 export type GearUserMessageSentsConnection = {
   __typename?: 'GearUserMessageSentsConnection';
+  /** Aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  aggregates?: Maybe<GearUserMessageSentAggregates>;
   /** A list of edges which contains the `GearUserMessageSent` and cursor to aid in pagination. */
   edges: Array<GearUserMessageSentsEdge>;
+  /** Grouped aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  groupedAggregates?: Maybe<Array<GearUserMessageSentAggregates>>;
   /** A list of `GearUserMessageSent` objects. */
   nodes: Array<GearUserMessageSent>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** The count of *all* `GearUserMessageSent` you could get from the connection. */
   totalCount: Scalars['Int']['output'];
+};
+
+
+/** A connection to a list of `GearUserMessageSent` values. */
+export type GearUserMessageSentsConnectionGroupedAggregatesArgs = {
+  groupBy: Array<GearUserMessageSentGroupBy>;
+  having?: InputMaybe<GearUserMessageSentHavingInput>;
 };
 
 /** A `GearUserMessageSent` edge in the connection. */
@@ -1574,6 +4321,33 @@ export type GearUserMessageSentsOrderBy =
   | 'PRIMARY_KEY_DESC'
   | 'PROGRAM_ASC'
   | 'PROGRAM_DESC';
+
+export type HavingBigfloatFilter = {
+  equalTo?: InputMaybe<Scalars['BigFloat']['input']>;
+  greaterThan?: InputMaybe<Scalars['BigFloat']['input']>;
+  greaterThanOrEqualTo?: InputMaybe<Scalars['BigFloat']['input']>;
+  lessThan?: InputMaybe<Scalars['BigFloat']['input']>;
+  lessThanOrEqualTo?: InputMaybe<Scalars['BigFloat']['input']>;
+  notEqualTo?: InputMaybe<Scalars['BigFloat']['input']>;
+};
+
+export type HavingDatetimeFilter = {
+  equalTo?: InputMaybe<Scalars['Datetime']['input']>;
+  greaterThan?: InputMaybe<Scalars['Datetime']['input']>;
+  greaterThanOrEqualTo?: InputMaybe<Scalars['Datetime']['input']>;
+  lessThan?: InputMaybe<Scalars['Datetime']['input']>;
+  lessThanOrEqualTo?: InputMaybe<Scalars['Datetime']['input']>;
+  notEqualTo?: InputMaybe<Scalars['Datetime']['input']>;
+};
+
+export type HavingIntFilter = {
+  equalTo?: InputMaybe<Scalars['Int']['input']>;
+  greaterThan?: InputMaybe<Scalars['Int']['input']>;
+  greaterThanOrEqualTo?: InputMaybe<Scalars['Int']['input']>;
+  lessThan?: InputMaybe<Scalars['Int']['input']>;
+  lessThanOrEqualTo?: InputMaybe<Scalars['Int']['input']>;
+  notEqualTo?: InputMaybe<Scalars['Int']['input']>;
+};
 
 /** A filter to be used against Int fields. All fields are combined with a logical ‘and.’ */
 export type IntFilter = {
@@ -1640,14 +4414,25 @@ export type JsonFilter = {
 /** A connection to a list of `Metadatum` values. */
 export type MetadataConnection = {
   __typename?: 'MetadataConnection';
+  /** Aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  aggregates?: Maybe<MetadatumAggregates>;
   /** A list of edges which contains the `Metadatum` and cursor to aid in pagination. */
   edges: Array<MetadataEdge>;
+  /** Grouped aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  groupedAggregates?: Maybe<Array<MetadatumAggregates>>;
   /** A list of `Metadatum` objects. */
   nodes: Array<Metadatum>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** The count of *all* `Metadatum` you could get from the connection. */
   totalCount: Scalars['Int']['output'];
+};
+
+
+/** A connection to a list of `Metadatum` values. */
+export type MetadataConnectionGroupedAggregatesArgs = {
+  groupBy: Array<MetadataGroupBy>;
+  having?: InputMaybe<MetadataHavingInput>;
 };
 
 /** A `Metadatum` edge in the connection. */
@@ -1657,6 +4442,74 @@ export type MetadataEdge = {
   cursor?: Maybe<Scalars['Cursor']['output']>;
   /** The `Metadatum` at the end of the edge. */
   node: Metadatum;
+};
+
+/** Grouping methods for `Metadatum` for usage during aggregation. */
+export type MetadataGroupBy =
+  | 'BLOCK_HASH'
+  | 'BLOCK_HEIGHT'
+  | 'HEX'
+  | 'SPEC_NAME'
+  | 'SPEC_VERSION';
+
+export type MetadataHavingAverageInput = {
+  blockHeight?: InputMaybe<HavingIntFilter>;
+  specVersion?: InputMaybe<HavingIntFilter>;
+};
+
+export type MetadataHavingDistinctCountInput = {
+  blockHeight?: InputMaybe<HavingIntFilter>;
+  specVersion?: InputMaybe<HavingIntFilter>;
+};
+
+/** Conditions for `Metadatum` aggregates. */
+export type MetadataHavingInput = {
+  AND?: InputMaybe<Array<MetadataHavingInput>>;
+  OR?: InputMaybe<Array<MetadataHavingInput>>;
+  average?: InputMaybe<MetadataHavingAverageInput>;
+  distinctCount?: InputMaybe<MetadataHavingDistinctCountInput>;
+  max?: InputMaybe<MetadataHavingMaxInput>;
+  min?: InputMaybe<MetadataHavingMinInput>;
+  stddevPopulation?: InputMaybe<MetadataHavingStddevPopulationInput>;
+  stddevSample?: InputMaybe<MetadataHavingStddevSampleInput>;
+  sum?: InputMaybe<MetadataHavingSumInput>;
+  variancePopulation?: InputMaybe<MetadataHavingVariancePopulationInput>;
+  varianceSample?: InputMaybe<MetadataHavingVarianceSampleInput>;
+};
+
+export type MetadataHavingMaxInput = {
+  blockHeight?: InputMaybe<HavingIntFilter>;
+  specVersion?: InputMaybe<HavingIntFilter>;
+};
+
+export type MetadataHavingMinInput = {
+  blockHeight?: InputMaybe<HavingIntFilter>;
+  specVersion?: InputMaybe<HavingIntFilter>;
+};
+
+export type MetadataHavingStddevPopulationInput = {
+  blockHeight?: InputMaybe<HavingIntFilter>;
+  specVersion?: InputMaybe<HavingIntFilter>;
+};
+
+export type MetadataHavingStddevSampleInput = {
+  blockHeight?: InputMaybe<HavingIntFilter>;
+  specVersion?: InputMaybe<HavingIntFilter>;
+};
+
+export type MetadataHavingSumInput = {
+  blockHeight?: InputMaybe<HavingIntFilter>;
+  specVersion?: InputMaybe<HavingIntFilter>;
+};
+
+export type MetadataHavingVariancePopulationInput = {
+  blockHeight?: InputMaybe<HavingIntFilter>;
+  specVersion?: InputMaybe<HavingIntFilter>;
+};
+
+export type MetadataHavingVarianceSampleInput = {
+  blockHeight?: InputMaybe<HavingIntFilter>;
+  specVersion?: InputMaybe<HavingIntFilter>;
 };
 
 /** Methods to use when ordering `Metadatum`. */
@@ -1689,6 +4542,37 @@ export type Metadatum = Node & {
   specVersion?: Maybe<Scalars['Int']['output']>;
 };
 
+export type MetadatumAggregates = {
+  __typename?: 'MetadatumAggregates';
+  /** Mean average aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  average?: Maybe<MetadatumAverageAggregates>;
+  /** Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  distinctCount?: Maybe<MetadatumDistinctCountAggregates>;
+  keys?: Maybe<Array<Scalars['String']['output']>>;
+  /** Maximum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  max?: Maybe<MetadatumMaxAggregates>;
+  /** Minimum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  min?: Maybe<MetadatumMinAggregates>;
+  /** Population standard deviation aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  stddevPopulation?: Maybe<MetadatumStddevPopulationAggregates>;
+  /** Sample standard deviation aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  stddevSample?: Maybe<MetadatumStddevSampleAggregates>;
+  /** Sum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  sum?: Maybe<MetadatumSumAggregates>;
+  /** Population variance aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  variancePopulation?: Maybe<MetadatumVariancePopulationAggregates>;
+  /** Sample variance aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  varianceSample?: Maybe<MetadatumVarianceSampleAggregates>;
+};
+
+export type MetadatumAverageAggregates = {
+  __typename?: 'MetadatumAverageAggregates';
+  /** Mean average of blockHeight across the matching connection */
+  blockHeight?: Maybe<Scalars['BigFloat']['output']>;
+  /** Mean average of specVersion across the matching connection */
+  specVersion?: Maybe<Scalars['BigFloat']['output']>;
+};
+
 /**
  * A condition to be used against `Metadatum` object types. All fields are tested
  * for equality and combined with a logical ‘and.’
@@ -1706,6 +4590,22 @@ export type MetadatumCondition = {
   specName?: InputMaybe<Scalars['String']['input']>;
   /** Checks for equality with the object’s `specVersion` field. */
   specVersion?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type MetadatumDistinctCountAggregates = {
+  __typename?: 'MetadatumDistinctCountAggregates';
+  /** Distinct count of blockHash across the matching connection */
+  blockHash?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of blockHeight across the matching connection */
+  blockHeight?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of hex across the matching connection */
+  hex?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of id across the matching connection */
+  id?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of specName across the matching connection */
+  specName?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of specVersion across the matching connection */
+  specVersion?: Maybe<Scalars['BigInt']['output']>;
 };
 
 /** A filter to be used against `Metadatum` object types. All fields are combined with a logical ‘and.’ */
@@ -1730,6 +4630,62 @@ export type MetadatumFilter = {
   specVersion?: InputMaybe<IntFilter>;
 };
 
+export type MetadatumMaxAggregates = {
+  __typename?: 'MetadatumMaxAggregates';
+  /** Maximum of blockHeight across the matching connection */
+  blockHeight?: Maybe<Scalars['Int']['output']>;
+  /** Maximum of specVersion across the matching connection */
+  specVersion?: Maybe<Scalars['Int']['output']>;
+};
+
+export type MetadatumMinAggregates = {
+  __typename?: 'MetadatumMinAggregates';
+  /** Minimum of blockHeight across the matching connection */
+  blockHeight?: Maybe<Scalars['Int']['output']>;
+  /** Minimum of specVersion across the matching connection */
+  specVersion?: Maybe<Scalars['Int']['output']>;
+};
+
+export type MetadatumStddevPopulationAggregates = {
+  __typename?: 'MetadatumStddevPopulationAggregates';
+  /** Population standard deviation of blockHeight across the matching connection */
+  blockHeight?: Maybe<Scalars['BigFloat']['output']>;
+  /** Population standard deviation of specVersion across the matching connection */
+  specVersion?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type MetadatumStddevSampleAggregates = {
+  __typename?: 'MetadatumStddevSampleAggregates';
+  /** Sample standard deviation of blockHeight across the matching connection */
+  blockHeight?: Maybe<Scalars['BigFloat']['output']>;
+  /** Sample standard deviation of specVersion across the matching connection */
+  specVersion?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type MetadatumSumAggregates = {
+  __typename?: 'MetadatumSumAggregates';
+  /** Sum of blockHeight across the matching connection */
+  blockHeight: Scalars['BigInt']['output'];
+  /** Sum of specVersion across the matching connection */
+  specVersion: Scalars['BigInt']['output'];
+};
+
+export type MetadatumVariancePopulationAggregates = {
+  __typename?: 'MetadatumVariancePopulationAggregates';
+  /** Population variance of blockHeight across the matching connection */
+  blockHeight?: Maybe<Scalars['BigFloat']['output']>;
+  /** Population variance of specVersion across the matching connection */
+  specVersion?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type MetadatumVarianceSampleAggregates = {
+  __typename?: 'MetadatumVarianceSampleAggregates';
+  /** Sample variance of blockHeight across the matching connection */
+  blockHeight?: Maybe<Scalars['BigFloat']['output']>;
+  /** Sample variance of specVersion across the matching connection */
+  specVersion?: Maybe<Scalars['BigFloat']['output']>;
+};
+
 export type Migration = Node & {
   __typename?: 'Migration';
   executedAt?: Maybe<Scalars['Datetime']['output']>;
@@ -1738,6 +4694,35 @@ export type Migration = Node & {
   name: Scalars['String']['output'];
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
   nodeId: Scalars['ID']['output'];
+};
+
+export type MigrationAggregates = {
+  __typename?: 'MigrationAggregates';
+  /** Mean average aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  average?: Maybe<MigrationAverageAggregates>;
+  /** Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  distinctCount?: Maybe<MigrationDistinctCountAggregates>;
+  keys?: Maybe<Array<Scalars['String']['output']>>;
+  /** Maximum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  max?: Maybe<MigrationMaxAggregates>;
+  /** Minimum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  min?: Maybe<MigrationMinAggregates>;
+  /** Population standard deviation aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  stddevPopulation?: Maybe<MigrationStddevPopulationAggregates>;
+  /** Sample standard deviation aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  stddevSample?: Maybe<MigrationStddevSampleAggregates>;
+  /** Sum aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  sum?: Maybe<MigrationSumAggregates>;
+  /** Population variance aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  variancePopulation?: Maybe<MigrationVariancePopulationAggregates>;
+  /** Sample variance aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  varianceSample?: Maybe<MigrationVarianceSampleAggregates>;
+};
+
+export type MigrationAverageAggregates = {
+  __typename?: 'MigrationAverageAggregates';
+  /** Mean average of id across the matching connection */
+  id?: Maybe<Scalars['BigFloat']['output']>;
 };
 
 /**
@@ -1753,6 +4738,18 @@ export type MigrationCondition = {
   id?: InputMaybe<Scalars['Int']['input']>;
   /** Checks for equality with the object’s `name` field. */
   name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type MigrationDistinctCountAggregates = {
+  __typename?: 'MigrationDistinctCountAggregates';
+  /** Distinct count of executedAt across the matching connection */
+  executedAt?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of hash across the matching connection */
+  hash?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of id across the matching connection */
+  id?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of name across the matching connection */
+  name?: Maybe<Scalars['BigInt']['output']>;
 };
 
 /** A filter to be used against `Migration` object types. All fields are combined with a logical ‘and.’ */
@@ -1773,17 +4770,74 @@ export type MigrationFilter = {
   or?: InputMaybe<Array<MigrationFilter>>;
 };
 
+export type MigrationMaxAggregates = {
+  __typename?: 'MigrationMaxAggregates';
+  /** Maximum of executedAt across the matching connection */
+  executedAt?: Maybe<Scalars['Datetime']['output']>;
+  /** Maximum of id across the matching connection */
+  id?: Maybe<Scalars['Int']['output']>;
+};
+
+export type MigrationMinAggregates = {
+  __typename?: 'MigrationMinAggregates';
+  /** Minimum of executedAt across the matching connection */
+  executedAt?: Maybe<Scalars['Datetime']['output']>;
+  /** Minimum of id across the matching connection */
+  id?: Maybe<Scalars['Int']['output']>;
+};
+
+export type MigrationStddevPopulationAggregates = {
+  __typename?: 'MigrationStddevPopulationAggregates';
+  /** Population standard deviation of id across the matching connection */
+  id?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type MigrationStddevSampleAggregates = {
+  __typename?: 'MigrationStddevSampleAggregates';
+  /** Sample standard deviation of id across the matching connection */
+  id?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type MigrationSumAggregates = {
+  __typename?: 'MigrationSumAggregates';
+  /** Sum of id across the matching connection */
+  id: Scalars['BigInt']['output'];
+};
+
+export type MigrationVariancePopulationAggregates = {
+  __typename?: 'MigrationVariancePopulationAggregates';
+  /** Population variance of id across the matching connection */
+  id?: Maybe<Scalars['BigFloat']['output']>;
+};
+
+export type MigrationVarianceSampleAggregates = {
+  __typename?: 'MigrationVarianceSampleAggregates';
+  /** Sample variance of id across the matching connection */
+  id?: Maybe<Scalars['BigFloat']['output']>;
+};
+
 /** A connection to a list of `Migration` values. */
 export type MigrationsConnection = {
   __typename?: 'MigrationsConnection';
+  /** Aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  aggregates?: Maybe<MigrationAggregates>;
   /** A list of edges which contains the `Migration` and cursor to aid in pagination. */
   edges: Array<MigrationsEdge>;
+  /** Grouped aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  groupedAggregates?: Maybe<Array<MigrationAggregates>>;
   /** A list of `Migration` objects. */
   nodes: Array<Migration>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** The count of *all* `Migration` you could get from the connection. */
   totalCount: Scalars['Int']['output'];
+};
+
+
+/** A connection to a list of `Migration` values. */
+export type MigrationsConnectionGroupedAggregatesArgs = {
+  groupBy: Array<MigrationsGroupBy>;
+  having?: InputMaybe<MigrationsHavingInput>;
 };
 
 /** A `Migration` edge in the connection. */
@@ -1793,6 +4847,75 @@ export type MigrationsEdge = {
   cursor?: Maybe<Scalars['Cursor']['output']>;
   /** The `Migration` at the end of the edge. */
   node: Migration;
+};
+
+/** Grouping methods for `Migration` for usage during aggregation. */
+export type MigrationsGroupBy =
+  | 'EXECUTED_AT'
+  | 'EXECUTED_AT_TRUNCATED_TO_DAY'
+  | 'EXECUTED_AT_TRUNCATED_TO_HOUR'
+  | 'EXECUTED_AT_TRUNCATED_TO_MONTH'
+  | 'EXECUTED_AT_TRUNCATED_TO_WEEK'
+  | 'HASH';
+
+export type MigrationsHavingAverageInput = {
+  executedAt?: InputMaybe<HavingDatetimeFilter>;
+  id?: InputMaybe<HavingIntFilter>;
+};
+
+export type MigrationsHavingDistinctCountInput = {
+  executedAt?: InputMaybe<HavingDatetimeFilter>;
+  id?: InputMaybe<HavingIntFilter>;
+};
+
+/** Conditions for `Migration` aggregates. */
+export type MigrationsHavingInput = {
+  AND?: InputMaybe<Array<MigrationsHavingInput>>;
+  OR?: InputMaybe<Array<MigrationsHavingInput>>;
+  average?: InputMaybe<MigrationsHavingAverageInput>;
+  distinctCount?: InputMaybe<MigrationsHavingDistinctCountInput>;
+  max?: InputMaybe<MigrationsHavingMaxInput>;
+  min?: InputMaybe<MigrationsHavingMinInput>;
+  stddevPopulation?: InputMaybe<MigrationsHavingStddevPopulationInput>;
+  stddevSample?: InputMaybe<MigrationsHavingStddevSampleInput>;
+  sum?: InputMaybe<MigrationsHavingSumInput>;
+  variancePopulation?: InputMaybe<MigrationsHavingVariancePopulationInput>;
+  varianceSample?: InputMaybe<MigrationsHavingVarianceSampleInput>;
+};
+
+export type MigrationsHavingMaxInput = {
+  executedAt?: InputMaybe<HavingDatetimeFilter>;
+  id?: InputMaybe<HavingIntFilter>;
+};
+
+export type MigrationsHavingMinInput = {
+  executedAt?: InputMaybe<HavingDatetimeFilter>;
+  id?: InputMaybe<HavingIntFilter>;
+};
+
+export type MigrationsHavingStddevPopulationInput = {
+  executedAt?: InputMaybe<HavingDatetimeFilter>;
+  id?: InputMaybe<HavingIntFilter>;
+};
+
+export type MigrationsHavingStddevSampleInput = {
+  executedAt?: InputMaybe<HavingDatetimeFilter>;
+  id?: InputMaybe<HavingIntFilter>;
+};
+
+export type MigrationsHavingSumInput = {
+  executedAt?: InputMaybe<HavingDatetimeFilter>;
+  id?: InputMaybe<HavingIntFilter>;
+};
+
+export type MigrationsHavingVariancePopulationInput = {
+  executedAt?: InputMaybe<HavingDatetimeFilter>;
+  id?: InputMaybe<HavingIntFilter>;
+};
+
+export type MigrationsHavingVarianceSampleInput = {
+  executedAt?: InputMaybe<HavingDatetimeFilter>;
+  id?: InputMaybe<HavingIntFilter>;
 };
 
 /** Methods to use when ordering `Migration`. */
@@ -2404,12 +5527,27 @@ export type Warning = {
   message?: Maybe<Scalars['String']['output']>;
 };
 
+export type WarningAggregates = {
+  __typename?: 'WarningAggregates';
+  /** Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  distinctCount?: Maybe<WarningDistinctCountAggregates>;
+  keys?: Maybe<Array<Scalars['String']['output']>>;
+};
+
 /** A condition to be used against `Warning` object types. All fields are tested for equality and combined with a logical ‘and.’ */
 export type WarningCondition = {
   /** Checks for equality with the object’s `blockId` field. */
   blockId?: InputMaybe<Scalars['String']['input']>;
   /** Checks for equality with the object’s `message` field. */
   message?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type WarningDistinctCountAggregates = {
+  __typename?: 'WarningDistinctCountAggregates';
+  /** Distinct count of blockId across the matching connection */
+  blockId?: Maybe<Scalars['BigInt']['output']>;
+  /** Distinct count of message across the matching connection */
+  message?: Maybe<Scalars['BigInt']['output']>;
 };
 
 /** A filter to be used against `Warning` object types. All fields are combined with a logical ‘and.’ */
@@ -2426,17 +5564,39 @@ export type WarningFilter = {
   or?: InputMaybe<Array<WarningFilter>>;
 };
 
+/** Grouping methods for `Warning` for usage during aggregation. */
+export type WarningGroupBy =
+  | 'BLOCK_ID'
+  | 'MESSAGE';
+
+/** Conditions for `Warning` aggregates. */
+export type WarningHavingInput = {
+  AND?: InputMaybe<Array<WarningHavingInput>>;
+  OR?: InputMaybe<Array<WarningHavingInput>>;
+};
+
 /** A connection to a list of `Warning` values. */
 export type WarningsConnection = {
   __typename?: 'WarningsConnection';
+  /** Aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  aggregates?: Maybe<WarningAggregates>;
   /** A list of edges which contains the `Warning` and cursor to aid in pagination. */
   edges: Array<WarningsEdge>;
+  /** Grouped aggregates across the matching connection (ignoring before/after/first/last/offset) */
+  groupedAggregates?: Maybe<Array<WarningAggregates>>;
   /** A list of `Warning` objects. */
   nodes: Array<Warning>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** The count of *all* `Warning` you could get from the connection. */
   totalCount: Scalars['Int']['output'];
+};
+
+
+/** A connection to a list of `Warning` values. */
+export type WarningsConnectionGroupedAggregatesArgs = {
+  groupBy: Array<WarningGroupBy>;
+  having?: InputMaybe<WarningHavingInput>;
 };
 
 /** A `Warning` edge in the connection. */
@@ -2456,18 +5616,6 @@ export type WarningsOrderBy =
   | 'MESSAGE_DESC'
   | 'NATURAL';
 
-export type FallbackQueryQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type FallbackQueryQuery = { __typename?: 'Query', events?: { __typename?: 'EventsConnection', nodes: Array<{ __typename?: 'Event', id: string, indexInBlock: number, args?: any | null, block: { __typename?: 'Block', height: number, timestamp: any, events: { __typename?: 'EventsConnection', nodes: Array<{ __typename?: 'Event', indexInBlock: number, name: string, args?: any | null }> } } }> } | null };
-
-export type BroadcastSuccessQueryQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type BroadcastSuccessQueryQuery = { __typename?: 'Query', events?: { __typename?: 'EventsConnection', nodes: Array<{ __typename?: 'Event', id: string, name: string, args?: any | null, indexInBlock: number, block: { __typename?: 'Block', height: number, timestamp: any } }> } | null };
-
 export type GetBatchQueryVariables = Exact<{
   height: Scalars['Int']['input'];
   limit: Scalars['Int']['input'];
@@ -2475,7 +5623,7 @@ export type GetBatchQueryVariables = Exact<{
 }>;
 
 
-export type GetBatchQuery = { __typename?: 'Query', blocks?: { __typename?: 'BlocksConnection', nodes: Array<{ __typename?: 'Block', height: number, hash: string, timestamp: any, specId: string, events: { __typename?: 'EventsConnection', nodes: Array<{ __typename?: 'Event', args?: any | null, name: string, indexInBlock: number, callId?: string | null, extrinsicId?: string | null }> } }> } | null };
+export type GetBatchQuery = { __typename?: 'Query', blocks?: { __typename?: 'BlocksConnection', nodes: Array<{ __typename?: 'Block', height: number, hash: string, timestamp: any, specId: string, events: { __typename?: 'EventsConnection', nodes: Array<{ __typename?: 'Event', args?: any | null, name: string, indexInBlock: number }> } }> } | null };
 
 export type GetCallQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -2492,8 +5640,6 @@ export type GetExtrinsicQueryVariables = Exact<{
 export type GetExtrinsicQuery = { __typename?: 'Query', extrinsic?: { __typename?: 'Extrinsic', signature?: any | null } | null };
 
 
-export const FallbackQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"FallbackQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"events"},"name":{"kind":"Name","value":"allEvents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"condition"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"StringValue","value":"SolanaIngressEgress.TransferFallbackRequested","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"indexInBlock"}},{"kind":"Field","name":{"kind":"Name","value":"args"}},{"kind":"Field","alias":{"kind":"Name","value":"block"},"name":{"kind":"Name","value":"blockByBlockId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","alias":{"kind":"Name","value":"events"},"name":{"kind":"Name","value":"eventsByBlockId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"startsWith"},"value":{"kind":"StringValue","value":"Solana","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"indexInBlock"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"args"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<FallbackQueryQuery, FallbackQueryQueryVariables>;
-export const BroadcastSuccessQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"BroadcastSuccessQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"events"},"name":{"kind":"Name","value":"allEvents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"greaterThan"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"equalTo"},"value":{"kind":"StringValue","value":"SolanaBroadcaster.BroadcastSuccess","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1"}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"EnumValue","value":"ID_ASC"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"args"}},{"kind":"Field","name":{"kind":"Name","value":"indexInBlock"}},{"kind":"Field","alias":{"kind":"Name","value":"block"},"name":{"kind":"Name","value":"blockByBlockId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}}]}}]}}]}}]}}]} as unknown as DocumentNode<BroadcastSuccessQueryQuery, BroadcastSuccessQueryQueryVariables>;
-export const GetBatchDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBatch"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"height"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"swapEvents"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"blocks"},"name":{"kind":"Name","value":"allBlocks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"height"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"greaterThanOrEqualTo"},"value":{"kind":"Variable","name":{"kind":"Name","value":"height"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"EnumValue","value":"HEIGHT_ASC"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"hash"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"specId"}},{"kind":"Field","alias":{"kind":"Name","value":"events"},"name":{"kind":"Name","value":"eventsByBlockId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"in"},"value":{"kind":"Variable","name":{"kind":"Name","value":"swapEvents"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"EnumValue","value":"INDEX_IN_BLOCK_ASC"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"args"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"indexInBlock"}},{"kind":"Field","name":{"kind":"Name","value":"callId"}},{"kind":"Field","name":{"kind":"Name","value":"extrinsicId"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetBatchQuery, GetBatchQueryVariables>;
+export const GetBatchDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBatch"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"height"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"swapEvents"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"blocks"},"name":{"kind":"Name","value":"allBlocks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"height"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"greaterThanOrEqualTo"},"value":{"kind":"Variable","name":{"kind":"Name","value":"height"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"EnumValue","value":"HEIGHT_ASC"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"hash"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"specId"}},{"kind":"Field","alias":{"kind":"Name","value":"events"},"name":{"kind":"Name","value":"eventsByBlockId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"in"},"value":{"kind":"Variable","name":{"kind":"Name","value":"swapEvents"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"EnumValue","value":"INDEX_IN_BLOCK_ASC"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"args"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"indexInBlock"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetBatchQuery, GetBatchQueryVariables>;
 export const GetCallDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCall"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"call"},"name":{"kind":"Name","value":"callById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"args"}}]}}]}}]} as unknown as DocumentNode<GetCallQuery, GetCallQueryVariables>;
 export const GetExtrinsicDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetExtrinsic"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"extrinsic"},"name":{"kind":"Name","value":"extrinsicById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<GetExtrinsicQuery, GetExtrinsicQueryVariables>;

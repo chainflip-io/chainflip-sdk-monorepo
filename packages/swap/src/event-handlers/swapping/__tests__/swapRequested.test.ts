@@ -327,8 +327,6 @@ const event = {
   blockId: '0000000087-3abaf',
   indexInBlock: 13,
   phase: 'ApplyExtrinsic',
-  extrinsicId: '0000000087-000003-3abaf',
-  callId: '0000000087-000003-3abaf',
   name: 'Swapping.SwapRequested',
   pos: 19,
 };
