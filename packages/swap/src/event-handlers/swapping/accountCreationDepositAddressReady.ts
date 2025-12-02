@@ -1,7 +1,6 @@
 import { swappingAccountCreationDepositAddressReady } from '@chainflip/processor/200/swapping/accountCreationDepositAddressReady';
 import { z } from 'zod';
 import { calculateExpiryTime } from '../../utils/function.js';
-import { formatForeignChainAddress } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
 
 export type AccountCreationDepositAddressReadyArgs = z.input<
@@ -57,7 +56,7 @@ export default async function accountCreationDepositAddressReady({
         depositChainExpiryBlock,
         maxBoostFeeBps: boostFee,
         openingFeePaid: channelOpeningFee.toString(),
-        refundAddress: formatForeignChainAddress(refundAddress),
+        refundAddress: refundAddress.address,
         lpAccountId: requestedFor,
         isExpired: false,
         openedThroughBackend: false,
