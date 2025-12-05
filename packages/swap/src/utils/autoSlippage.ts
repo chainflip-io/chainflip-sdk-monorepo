@@ -69,6 +69,10 @@ const getLiquidityAdjustment = async ({
   return deployedLiquidityAdjustment + undeployedLiquidityAdjustment;
 };
 
+const canUseTightSlippage = (srcAsset: ChainflipAsset, destAsset: ChainflipAsset) =>
+  (isStableCoin(srcAsset) && isStableCoin(destAsset)) ||
+  assetConstants[srcAsset].symbol === assetConstants[destAsset].symbol;
+
 export const calculateRecommendedSlippage = async ({
   srcAsset,
   destAsset,
@@ -89,7 +93,7 @@ export const calculateRecommendedSlippage = async ({
   isOnChain: boolean | undefined;
 }): Promise<number> => {
   // do not accept significant price movements for stable assets independently of available liquidity
-  if (isStableCoin(srcAsset) && isStableCoin(destAsset)) {
+  if (canUseTightSlippage(srcAsset, destAsset)) {
     return Math.max(
       0.5,
       new BigNumber(1)
@@ -168,10 +172,9 @@ export const calculateRecommendedLivePriceSlippage = async ({
   )
     return undefined;
 
-  const slippage =
-    isStableCoin(srcAsset) && isStableCoin(destAsset)
-      ? STABLE_LIVE_PRICE_SLIPPAGE_BPS
-      : NON_STABLE_LIVE_PRICE_SLIPPAGE_BPS;
+  const slippage = canUseTightSlippage(srcAsset, destAsset)
+    ? STABLE_LIVE_PRICE_SLIPPAGE_BPS
+    : NON_STABLE_LIVE_PRICE_SLIPPAGE_BPS;
 
   return Number(((slippage + brokerCommissionBps) / 100).toFixed(2));
 };
