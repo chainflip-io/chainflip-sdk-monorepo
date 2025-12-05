@@ -237,6 +237,19 @@ describe(calculateRecommendedSlippage, () => {
     expect(rate).toEqual(1);
     expect(estimatedPrice.times(1 - rate / 100).toNumber()).toBeCloseTo(0.99, 3);
   });
+
+  it('uses stablecoin slippage for the same asset cross-chain', async () => {
+    const estimatedPrice = new BigNumber(0.9);
+    const rate = await calculateRecommendedSlippage({
+      srcAsset: 'Eth',
+      destAsset: 'ArbEth',
+      egressAmount: 10n,
+      dcaChunks: 11,
+      estimatedPrice,
+      isOnChain: undefined,
+    });
+    expect(rate).toEqual(0.5);
+  });
 });
 
 describe(calculateRecommendedLivePriceSlippage, () => {
@@ -310,6 +323,15 @@ describe(calculateRecommendedLivePriceSlippage, () => {
       brokerCommissionBps: 70,
     });
     expect(result).toEqual(1 + 0.7);
+  });
+
+  it('should return the correct value for the same asset cross-chain', async () => {
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Eth',
+      destAsset: 'ArbEth',
+      brokerCommissionBps: 70,
+    });
+    expect(result).toEqual(0.5 + 0.7);
   });
 
   it('rounds the value to 2 decimal places', async () => {
