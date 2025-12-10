@@ -366,6 +366,102 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a vault origin in CO
 }
 `;
 
+exports[`server > GET /v2/swaps/:id > retrieves a swap from an Internal (Liquidation) origin in COMPLETED 1`] = `
+{
+  "brokers": [],
+  "destAsset": "DOT",
+  "destChain": "Polkadot",
+  "estimatedDurationSeconds": 12,
+  "estimatedDurationsSeconds": {
+    "swap": 12,
+  },
+  "fees": [
+    {
+      "amount": "4556242",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "45516860",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "BROKER",
+    },
+  ],
+  "fillOrKillParams": {
+    "minPrice": "0",
+  },
+  "lastStatechainUpdateAt": 1640995200000,
+  "liquidation": {
+    "accountId": "cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh",
+    "loanId": "1",
+    "outputAmount": "4192904666034",
+    "refundAmount": "0",
+  },
+  "srcAsset": "ETH",
+  "srcChain": "Ethereum",
+  "state": "COMPLETED",
+  "swap": {
+    "livePriceExecutionDeltaPercentage": 1,
+    "originalInputAmount": "4999949999999650000",
+    "regular": {
+      "executedAt": 564000,
+      "executedBlockIndex": "94-594",
+      "inputAmount": "4999949999999650000",
+      "intermediateAmount": "4506169140",
+      "outputAmount": "4192904666034",
+      "retryCount": 0,
+      "scheduledAt": 552000,
+      "scheduledBlockIndex": "92-399",
+    },
+    "remainingInputAmount": "0",
+    "swappedInputAmount": "4999949999999650000",
+    "swappedIntermediateAmount": "4506169140",
+    "swappedOutputAmount": "4192904666034",
+  },
+  "swapId": "368",
+}
+`;
+
+exports[`server > GET /v2/swaps/:id > retrieves a swap from an Internal (Liquidation) origin in SWAPPING 1`] = `
+{
+  "brokers": [],
+  "destAsset": "DOT",
+  "destChain": "Polkadot",
+  "estimatedDurationSeconds": 12,
+  "estimatedDurationsSeconds": {
+    "swap": 12,
+  },
+  "fees": [],
+  "fillOrKillParams": {
+    "minPrice": "0",
+  },
+  "lastStatechainUpdateAt": 1640995200000,
+  "liquidation": {
+    "accountId": "cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh",
+    "loanId": "1",
+  },
+  "srcAsset": "ETH",
+  "srcChain": "Ethereum",
+  "state": "SWAPPING",
+  "swap": {
+    "originalInputAmount": "4999949999999650000",
+    "regular": {
+      "inputAmount": "4999949999999650000",
+      "retryCount": 0,
+      "scheduledAt": 552000,
+      "scheduledBlockIndex": "92-399",
+    },
+    "remainingInputAmount": "4999949999999650000",
+    "swappedInputAmount": "0",
+    "swappedIntermediateAmount": "0",
+    "swappedOutputAmount": "0",
+  },
+  "swapId": "368",
+}
+`;
+
 exports[`server > GET /v2/swaps/:id > retrieves a swap from an onChain origin in COMPLETED 1`] = `
 {
   "brokers": [],

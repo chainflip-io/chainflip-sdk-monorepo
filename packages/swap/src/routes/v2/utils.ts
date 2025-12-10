@@ -60,6 +60,7 @@ const swapRequestInclude = {
   },
   beneficiaries: { select: beneficiaryInclude },
   onChainSwapInfo: true,
+  liquidationSwapInfo: true,
 } as const;
 
 const channelIdRegex = /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;

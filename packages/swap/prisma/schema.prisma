@@ -166,6 +166,24 @@ enum SwapRequestOrigin {
   @@schema("public")
 }
 
+model LiquidationSwapInfo {
+  id Int @id @default(autoincrement())
+
+  swapRequest   SwapRequest @relation(fields: [swapRequestId], references: [id])
+  swapRequestId BigInt      @unique
+  loanId        BigInt
+
+  refundAmount          Decimal?  @db.Decimal(30, 0)
+  completedAt           DateTime?
+  completedAtBlockIndex String?
+  abortedAt             DateTime?
+  abortedAtBlockIndex   String?
+
+  accountId String
+
+  @@schema("public")
+}
+
 model OnChainSwapInfo {
   id Int @id @default(autoincrement())
 
@@ -245,6 +263,7 @@ model SwapRequest {
   onChainSwapInfo                 OnChainSwapInfo?
   accountCreationDepositChannel   AccountCreationDepositChannel? @relation(fields: [accountCreationDepositChannelId], references: [id])
   accountCreationDepositChannelId BigInt?
+  liquidationSwapInfo             LiquidationSwapInfo?
 
   @@index([srcAsset, prewitnessedDepositId])
   @@index([nativeId])

@@ -41,6 +41,8 @@ const getRequestInfo = (requestType: RequestType) => {
     if (requestType.outputAction.__kind === 'CreditLendingPool') {
       return {
         type: 'LIQUIDATION' as const,
+        borrower: requestType.outputAction.swapType.borrowerId,
+        loanId: requestType.outputAction.swapType.loanId,
       };
     }
 
@@ -196,6 +198,28 @@ const buildOnChainSwapInfo = (
   };
 };
 
+export const buildLiquidationSwapInfo = (
+  origin: Awaited<ReturnType<typeof getOriginInfo>>,
+  requestInfo: ReturnType<typeof getRequestInfo>,
+) => {
+  if (requestInfo.type !== 'LIQUIDATION') return null;
+  assert(
+    origin.originType === 'INTERNAL',
+    'expected originType to be INTERNAL for liquidation swap',
+  );
+
+  const { borrower, loanId } = requestInfo;
+
+  return {
+    liquidationSwapInfo: {
+      create: {
+        accountId: borrower,
+        loanId,
+      },
+    },
+  } as const;
+};
+
 export default async function swapRequested({
   prisma,
   event,
@@ -273,6 +297,7 @@ export default async function swapRequested({
         },
       },
       ...buildOnChainSwapInfo(originInfo, requestInfo, fokParams),
+      ...buildLiquidationSwapInfo(originInfo, requestInfo),
     },
   });
 
