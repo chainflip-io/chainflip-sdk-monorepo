@@ -395,6 +395,8 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from an Internal (Liquida
   "lastStatechainUpdateAt": 1640995200000,
   "liquidation": {
     "accountId": "cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh",
+    "completedAt": 564000,
+    "completedAtBlockIndex": "94-596",
     "loanId": "1",
     "outputAmount": "4192904666034",
     "refundAmount": "0",

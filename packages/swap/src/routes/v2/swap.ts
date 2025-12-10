@@ -246,6 +246,10 @@ router.get(
           loanId: swapRequest.liquidationSwapInfo.loanId.toString(),
           outputAmount: swapRequest.swapOutputAmount?.toFixed(),
           refundAmount: swapRequest.liquidationSwapInfo.refundAmount?.toFixed(),
+          completedAt: swapRequest.liquidationSwapInfo.completedAt?.valueOf(),
+          abortedAt: swapRequest.liquidationSwapInfo.abortedAt?.valueOf(),
+          completedAtBlockIndex: swapRequest.liquidationSwapInfo.completedAtBlockIndex ?? undefined,
+          abortedAtBlockIndex: swapRequest.liquidationSwapInfo.abortedAtBlockIndex ?? undefined,
         },
       }),
     };
