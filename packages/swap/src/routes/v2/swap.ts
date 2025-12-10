@@ -240,6 +240,18 @@ router.get(
         },
       }),
       lastStatechainUpdateAt: lastStateChainUpdate?.valueOf(),
+      ...(swapRequest?.liquidationSwapInfo && {
+        liquidation: {
+          accountId: swapRequest.liquidationSwapInfo.accountId,
+          loanId: swapRequest.liquidationSwapInfo.loanId.toString(),
+          outputAmount: swapRequest.swapOutputAmount?.toFixed(),
+          refundAmount: swapRequest.liquidationSwapInfo.refundAmount?.toFixed(),
+          completedAt: swapRequest.liquidationSwapInfo.completedAt?.valueOf(),
+          abortedAt: swapRequest.liquidationSwapInfo.abortedAt?.valueOf(),
+          completedAtBlockIndex: swapRequest.liquidationSwapInfo.completedAtBlockIndex ?? undefined,
+          abortedAtBlockIndex: swapRequest.liquidationSwapInfo.abortedAtBlockIndex ?? undefined,
+        },
+      }),
     };
 
     logger.info('sending response for swap request', { id, response });

@@ -501,12 +501,19 @@ describe(swapRequested, () => {
   it('creates a new swap request (LIQUIDATION 200)', async () => {
     await swapRequested({ prisma, event: { ...event, args: liquidation200 }, block });
 
-    const request = await prisma.swapRequest.findFirstOrThrow();
+    const request = await prisma.swapRequest.findFirstOrThrow({
+      include: { liquidationSwapInfo: true },
+    });
 
     expect(request).toMatchSnapshot({
       id: expect.any(BigInt),
       srcAddress: null, // not set for liquidation swaps
       destAddress: null,
+      liquidationSwapInfo: {
+        id: expect.any(Number),
+        loanId: expect.any(BigInt),
+        swapRequestId: expect.any(BigInt),
+      },
     });
   });
 });
