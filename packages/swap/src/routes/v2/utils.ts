@@ -618,12 +618,23 @@ export const getDepositChannelInfo = (
     return {
       id: `${swapDepositChannel.issuedBlock}-${swapDepositChannel.srcChain}-${swapDepositChannel.channelId}`,
       createdAt: swapDepositChannel.createdAt.valueOf(),
+      /** @deprecated DEPRECATED(2.0): remove field */
+      brokerCommissionBps:
+        swapDepositChannel.beneficiaries.find(({ type }) => type === 'SUBMITTER')?.commissionBps ??
+        0,
       depositAddress: swapDepositChannel.depositAddress,
       srcChainExpiryBlock: swapDepositChannel.srcChainExpiryBlock?.toString(),
       estimatedExpiryTime: swapDepositChannel.estimatedExpiryAt?.valueOf(),
       expectedDepositAmount: swapDepositChannel.expectedDepositAmount?.toFixed(),
       isExpired: swapDepositChannel.isExpired,
       openedThroughBackend: swapDepositChannel.openedThroughBackend,
+      /** @deprecated DEPRECATED(2.0): remove field */
+      affiliateBrokers:
+        swapDepositChannel.beneficiaries
+          .filter(({ type }) => type === 'AFFILIATE')
+          .map(({ account, commissionBps }) => ({ account, commissionBps })) ?? [],
+      /** @deprecated DEPRECATED(2.0): remove field */
+      fillOrKillParams: getFillOrKillParams(null, swapDepositChannel),
       dcaParams: getDcaParams(swapDepositChannel),
     };
   }
