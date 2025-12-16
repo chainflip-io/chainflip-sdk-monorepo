@@ -85,14 +85,14 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~2.0.1
-        version: 2.0.1
+        specifier: ~2.0.6-wbtc-dev.0
+        version: 2.0.6
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.11.1
-        version: 0.11.1
+        specifier: ^0.11.2-wbtc-dev.0
+        version: 0.11.2
       axios:
         specifier: ^1.10.0
         version: 1.10.0
@@ -164,8 +164,8 @@ importers:
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.11.1
-        version: 0.11.1
+        specifier: ^0.11.2-wbtc-dev.0
+        version: 0.11.2
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -201,8 +201,8 @@ importers:
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.11.1
-        version: 0.11.1
+        specifier: ^0.11.2-wbtc-dev.0
+        version: 0.11.2
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -265,8 +265,8 @@ importers:
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.11.1
-        version: 0.11.1
+        specifier: ^0.11.2-wbtc-dev.0
+        version: 0.11.2
       '@polkadot/api':
         specifier: ^15.10.2
         version: 15.10.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -498,6 +498,9 @@ packages:
   '@chainflip/rpc@2.0.1':
     resolution: {integrity: sha512-riMEd3J59oU04W4Xt/Dpt+5zxdLDOxyuEk+sbIB8Yoybwx6Lv0SPVC2yN8w4sJjLkTXuEzfCHwBcvlX1J2JK0g==}
 
+  '@chainflip/rpc@2.0.6':
+    resolution: {integrity: sha512-WTCdMq1waSXreS+Nm7Ff8cH61AqEiP7N4ZKcsgNqOX05B8pjtL/fwe9o6zxHyHqwywtxw54vcLUjsqrQp1hxHQ==}
+
   '@chainflip/scale@1.11.0':
     resolution: {integrity: sha512-gLs2pARutz6JJSKth92TYQEHVWvwpavWNUARB9626t+QxlparHyL10t9XibD2X1sr+GLXWKj2q5qXOSGU8CICA==}
 
@@ -507,8 +510,8 @@ packages:
   '@chainflip/utils@0.11.0':
     resolution: {integrity: sha512-w48RBfFiGlBfLpBvmwRQmxfLb/jT4kn4CW9cqlMWRb9ta88As36CUX9Qbx/54YHPbce7BJTOXPI2LgaH32NVjA==}
 
-  '@chainflip/utils@0.11.1':
-    resolution: {integrity: sha512-bUVgEC6zkjjL8vdHFL0ZeihzID0aGX69BhFSPBLTnZUmzs8McBUtELSOWojx1wBqgCltv11i/o4Q31o50rCTfg==}
+  '@chainflip/utils@0.11.2':
+    resolution: {integrity: sha512-QOJKoRHQ8pA1fIdvVh8xa17P9mCZ6wghNaBshNRQJT7gfZpboDe3y1J+lxCoX0DNMxb/gYurMvw2/PHXXVIbnA==}
 
   '@chainflip/utils@0.8.18':
     resolution: {integrity: sha512-qaKtasZSfCcEICR3Bo6IUabOkBsmldsKmDbGTRr0WBQlUyOA2SNwZRN9EP73ZQofWyI3luRN2tFGS54O3bYazQ==}
@@ -5742,6 +5745,11 @@ snapshots:
       '@chainflip/utils': 0.11.0
       zod: 3.25.76
 
+  '@chainflip/rpc@2.0.6':
+    dependencies:
+      '@chainflip/utils': 0.11.0
+      zod: 3.25.76
+
   '@chainflip/scale@1.11.0':
     dependencies:
       '@chainflip/utils': 0.8.22
@@ -5768,7 +5776,7 @@ snapshots:
       bignumber.js: 9.3.1
       date-fns: 4.1.0
 
-  '@chainflip/utils@0.11.1':
+  '@chainflip/utils@0.11.2':
     dependencies:
       '@date-fns/utc': 2.1.1
       bignumber.js: 9.3.1
