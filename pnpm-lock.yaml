@@ -158,8 +158,8 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~2.0.1
-        version: 2.0.1
+        specifier: ~2.0.6-wbtc-dev.0
+        version: 2.0.6
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -195,8 +195,8 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~2.0.1
-        version: 2.0.1
+        specifier: ~2.0.6-wbtc-dev.0
+        version: 2.0.6
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -259,8 +259,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2
       '@chainflip/rpc':
-        specifier: ~2.0.1
-        version: 2.0.1
+        specifier: ~2.0.6-wbtc-dev.0
+        version: 2.0.6
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -494,9 +494,6 @@ packages:
 
   '@chainflip/redis@1.0.2':
     resolution: {integrity: sha512-ahkz+xKt5pX1gx4QikphdvTpZX8fjNgi/84q1WLXaAOoUop4pWdUw/boXv7rzg2xIqIdvDFk82/zz1g0OmiySQ==}
-
-  '@chainflip/rpc@2.0.1':
-    resolution: {integrity: sha512-riMEd3J59oU04W4Xt/Dpt+5zxdLDOxyuEk+sbIB8Yoybwx6Lv0SPVC2yN8w4sJjLkTXuEzfCHwBcvlX1J2JK0g==}
 
   '@chainflip/rpc@2.0.6':
     resolution: {integrity: sha512-WTCdMq1waSXreS+Nm7Ff8cH61AqEiP7N4ZKcsgNqOX05B8pjtL/fwe9o6zxHyHqwywtxw54vcLUjsqrQp1hxHQ==}
@@ -5739,11 +5736,6 @@ snapshots:
       zod: 3.25.76
     transitivePeerDependencies:
       - supports-color
-
-  '@chainflip/rpc@2.0.1':
-    dependencies:
-      '@chainflip/utils': 0.11.0
-      zod: 3.25.76
 
   '@chainflip/rpc@2.0.6':
     dependencies:
