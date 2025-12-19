@@ -104,6 +104,7 @@ export const chainflipAssetToPriceAssetMap: Record<ChainflipAsset, PriceAsset | 
   HubDot: null,
   HubUsdc: null,
   HubUsdt: null,
+  Wbtc: null
 };
 
 // we probably dont need this anymore, but leaving it here for now just to be safe. yeet later
