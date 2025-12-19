@@ -85,8 +85,8 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~2.0.6-wbtc-dev.0
-        version: 2.0.6
+        specifier: 2.0.6-wbtc-dev.1
+        version: 2.0.6-wbtc-dev.1
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -158,8 +158,8 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~2.0.6-wbtc-dev.0
-        version: 2.0.6
+        specifier: 2.0.6-wbtc-dev.1
+        version: 2.0.6-wbtc-dev.1
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -195,8 +195,8 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~2.0.6-wbtc-dev.0
-        version: 2.0.6
+        specifier: 2.0.6-wbtc-dev.1
+        version: 2.0.6-wbtc-dev.1
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -259,8 +259,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2
       '@chainflip/rpc':
-        specifier: ~2.0.6-wbtc-dev.0
-        version: 2.0.6
+        specifier: 2.0.6-wbtc-dev.1
+        version: 2.0.6-wbtc-dev.1
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -495,8 +495,8 @@ packages:
   '@chainflip/redis@1.0.2':
     resolution: {integrity: sha512-ahkz+xKt5pX1gx4QikphdvTpZX8fjNgi/84q1WLXaAOoUop4pWdUw/boXv7rzg2xIqIdvDFk82/zz1g0OmiySQ==}
 
-  '@chainflip/rpc@2.0.6':
-    resolution: {integrity: sha512-WTCdMq1waSXreS+Nm7Ff8cH61AqEiP7N4ZKcsgNqOX05B8pjtL/fwe9o6zxHyHqwywtxw54vcLUjsqrQp1hxHQ==}
+  '@chainflip/rpc@2.0.6-wbtc-dev.1':
+    resolution: {integrity: sha512-+pN2bOsWfgE3nvcgzpVKQDy1QqbsRBrNpUGPdSYB85DUT+G16xV6yl7hLdS+0TQbwP4mLTugFTJhbm8W+tE/lw==}
 
   '@chainflip/scale@1.11.0':
     resolution: {integrity: sha512-gLs2pARutz6JJSKth92TYQEHVWvwpavWNUARB9626t+QxlparHyL10t9XibD2X1sr+GLXWKj2q5qXOSGU8CICA==}
@@ -504,11 +504,11 @@ packages:
   '@chainflip/solana@2.2.0':
     resolution: {integrity: sha512-MQhH0b9hwO6miw2pAatDUzJJdaOhLMSiZSzbmUHJWqwvazg2X2YUUK3e4+RGKSBL8bBCFiC+FyXBSAvYztd1YQ==}
 
-  '@chainflip/utils@0.11.0':
-    resolution: {integrity: sha512-w48RBfFiGlBfLpBvmwRQmxfLb/jT4kn4CW9cqlMWRb9ta88As36CUX9Qbx/54YHPbce7BJTOXPI2LgaH32NVjA==}
-
   '@chainflip/utils@0.11.2':
     resolution: {integrity: sha512-QOJKoRHQ8pA1fIdvVh8xa17P9mCZ6wghNaBshNRQJT7gfZpboDe3y1J+lxCoX0DNMxb/gYurMvw2/PHXXVIbnA==}
+
+  '@chainflip/utils@0.11.2-wbtc-dev.0':
+    resolution: {integrity: sha512-SmNJqNhwnz5BVE3nAdCCMdKBywdx2H+MOgeCIS/VrBUoaCHLaYPQ15IA6HJDYncEcQiuww876FncFpcczBg1+A==}
 
   '@chainflip/utils@0.8.18':
     resolution: {integrity: sha512-qaKtasZSfCcEICR3Bo6IUabOkBsmldsKmDbGTRr0WBQlUyOA2SNwZRN9EP73ZQofWyI3luRN2tFGS54O3bYazQ==}
@@ -5737,9 +5737,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@chainflip/rpc@2.0.6':
+  '@chainflip/rpc@2.0.6-wbtc-dev.1':
     dependencies:
-      '@chainflip/utils': 0.11.0
+      '@chainflip/utils': 0.11.2-wbtc-dev.0
       zod: 3.25.76
 
   '@chainflip/scale@1.11.0':
@@ -5762,13 +5762,13 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@chainflip/utils@0.11.0':
+  '@chainflip/utils@0.11.2':
     dependencies:
       '@date-fns/utc': 2.1.1
       bignumber.js: 9.3.1
       date-fns: 4.1.0
 
-  '@chainflip/utils@0.11.2':
+  '@chainflip/utils@0.11.2-wbtc-dev.0':
     dependencies:
       '@date-fns/utc': 2.1.1
       bignumber.js: 9.3.1
