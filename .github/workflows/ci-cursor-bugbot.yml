@@ -6,5 +6,5 @@ on:
 
 jobs:
   trigger-bugbot:
-    uses: chainflip-io/chainflip-reusable-workflows/.github/workflows/_web_cursor_bugbot.yml@main
+    uses: .github/workflows/_web_cursor_bugbot.yml
     secrets: inherit
