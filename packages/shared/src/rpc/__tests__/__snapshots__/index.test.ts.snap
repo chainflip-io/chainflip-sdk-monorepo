@@ -17,6 +17,114 @@ exports[`getAllBoostPoolsDepth > retrieves the boost pools depth balance > boost
     "availableAmount": 0n,
     "tier": 30,
   },
+<<<<<<< HEAD
+=======
+  {
+    "asset": "Eth",
+    "availableAmount": 0n,
+    "tier": 5,
+  },
+  {
+    "asset": "Eth",
+    "availableAmount": 0n,
+    "tier": 10,
+  },
+  {
+    "asset": "Eth",
+    "availableAmount": 0n,
+    "tier": 30,
+  },
+  {
+    "asset": "Flip",
+    "availableAmount": 0n,
+    "tier": 5,
+  },
+  {
+    "asset": "Flip",
+    "availableAmount": 0n,
+    "tier": 10,
+  },
+  {
+    "asset": "Flip",
+    "availableAmount": 0n,
+    "tier": 30,
+  },
+  {
+    "asset": "Usdc",
+    "availableAmount": 0n,
+    "tier": 5,
+  },
+  {
+    "asset": "Usdc",
+    "availableAmount": 0n,
+    "tier": 10,
+  },
+  {
+    "asset": "Usdc",
+    "availableAmount": 0n,
+    "tier": 30,
+  },
+  {
+    "asset": "Usdt",
+    "availableAmount": 0n,
+    "tier": 5,
+  },
+  {
+    "asset": "Usdt",
+    "availableAmount": 0n,
+    "tier": 10,
+  },
+  {
+    "asset": "Usdt",
+    "availableAmount": 0n,
+    "tier": 30,
+  },
+  {
+    "asset": "Wbtc",
+    "availableAmount": 0n,
+    "tier": 5,
+  },
+  {
+    "asset": "Wbtc",
+    "availableAmount": 0n,
+    "tier": 10,
+  },
+  {
+    "asset": "Wbtc",
+    "availableAmount": 0n,
+    "tier": 30,
+  },
+  {
+    "asset": "Sol",
+    "availableAmount": 0n,
+    "tier": 5,
+  },
+  {
+    "asset": "Sol",
+    "availableAmount": 0n,
+    "tier": 10,
+  },
+  {
+    "asset": "Sol",
+    "availableAmount": 0n,
+    "tier": 30,
+  },
+  {
+    "asset": "SolUsdc",
+    "availableAmount": 0n,
+    "tier": 5,
+  },
+  {
+    "asset": "SolUsdc",
+    "availableAmount": 0n,
+    "tier": 10,
+  },
+  {
+    "asset": "SolUsdc",
+    "availableAmount": 0n,
+    "tier": 30,
+  },
+>>>>>>> 83b722ba (test: update snapshot tests)
 ]
 `;
 

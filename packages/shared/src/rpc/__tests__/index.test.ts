@@ -58,6 +58,7 @@ describe('getSwappingEnvironment', () => {
             "FLIP": null,
             "USDC": 5000000000000000000n,
             "USDT": null,
+            "WBTC": null,
           },
           "Solana": {
             "SOL": null,
@@ -82,6 +83,7 @@ describe('getSwappingEnvironment', () => {
             "FLIP": 0n,
             "USDC": 0n,
             "USDT": 0n,
+            "WBTC": 0n,
           },
           "Solana": {
             "SOL": 0n,
@@ -109,6 +111,7 @@ describe('getSwappingEnvironment', () => {
                 "FLIP": 100n,
                 "USDC": 100n,
                 "USDT": 100n,
+                "WBTC": 100n,
               },
               "Solana": {
                 "SOL": 100n,
@@ -139,6 +142,7 @@ describe('getSwappingEnvironment', () => {
                 "FLIP": 1000n,
                 "USDC": 1000n,
                 "USDT": 1000n,
+                "WBTC": 1000n,
               },
               "Solana": {
                 "SOL": 1000n,
@@ -202,6 +206,7 @@ describe('getIngressEgressEnvironment', () => {
             "FLIP": 0n,
             "USDC": 0n,
             "USDT": 0n,
+            "WBTC": 0n,
           },
           "Solana": {
             "SOL": 0n,
@@ -233,6 +238,7 @@ describe('getIngressEgressEnvironment', () => {
             "FLIP": 5000000000000000000n,
             "USDC": 5000000000000000000n,
             "USDT": 5000000000000000000n,
+            "WBTC": 5000000000000000000n,
           },
           "Solana": {
             "SOL": 5000000000000000000n,
@@ -257,6 +263,7 @@ describe('getIngressEgressEnvironment', () => {
             "FLIP": 5000000000000000000n,
             "USDC": 5000000000000000000n,
             "USDT": 5000000000000000000n,
+            "WBTC": 5000000000000000000n,
           },
           "Solana": {
             "SOL": 5000000000000000000n,
@@ -281,6 +288,7 @@ describe('getIngressEgressEnvironment', () => {
             "FLIP": 1n,
             "USDC": 1n,
             "USDT": 1n,
+            "WBTC": 1n,
           },
           "Solana": {
             "SOL": 1n,
