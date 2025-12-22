@@ -65,6 +65,7 @@ enum InternalAsset {
   HubDot
   HubUsdt
   HubUsdc
+  Wbtc
 
   @@schema("public")
 }
