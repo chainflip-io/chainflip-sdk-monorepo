@@ -4,6 +4,7 @@ const prices: InternalAssetMap<number> & { Dot: number } = {
   Dot: 6.5,
   Usdt: 1,
   Usdc: 1,
+  Wbtc: 65_000,
   ArbUsdc: 1,
   SolUsdc: 1,
   Sol: 150,
