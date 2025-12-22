@@ -31,7 +31,7 @@ export const createChainAssetMap = <T>(
     FLIP: overrides?.Flip ?? defaultValue,
     USDC: overrides?.Usdc ?? defaultValue,
     USDT: overrides?.Usdt ?? defaultValue,
-    WBTC: overrides?.Usdt ?? defaultValue,
+    WBTC: overrides?.Wbtc ?? defaultValue,
   },
   Arbitrum: { ETH: overrides?.ArbEth ?? defaultValue, USDC: overrides?.ArbUsdc ?? defaultValue },
   Solana: { SOL: overrides?.Sol ?? defaultValue, USDC: overrides?.SolUsdc ?? defaultValue },
