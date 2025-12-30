@@ -148,6 +148,11 @@ describe('python integration test', () => {
       shareReplay(),
     );
 
+    child.stdout.on('data', (data) => {
+      // eslint-disable-next-line no-console
+      console.log(`child stdout: ${data}`);
+    });
+
     child.stderr.on('data', (data) => {
       // eslint-disable-next-line no-console
       console.log(`child stderr: ${data}`);
