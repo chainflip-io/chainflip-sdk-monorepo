@@ -100,7 +100,7 @@ const events = [
         __kind: 'DepositChannel',
       },
       asset: { __kind: 'Sol' },
-      action: { __kind: 'Swap', swapRequestId: '368' },
+      action: { __kind: 'LiquidityProvision', lpAccount: bytesToHex(ss58.decode(lpId).data) },
       amount: '10000000000',
       channelId: '85',
       ingressFee: '0',
@@ -219,7 +219,7 @@ describe('account creation swap', () => {
   });
 
   it('gets in progress swap info', async () => {
-    await processEvents(events.slice(0, 2), [], '200');
+    await processEvents(events.slice(0, 4), [], '200');
 
     const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
 
@@ -228,9 +228,9 @@ describe('account creation swap', () => {
       {
         "brokers": [],
         "deposit": {
-          "amount": "17000000",
+          "amount": "10000000000",
           "witnessedAt": 552000,
-          "witnessedBlockIndex": "92-398",
+          "witnessedBlockIndex": "92-400",
         },
         "depositChannel": {
           "createdAt": 516000,
@@ -249,11 +249,31 @@ describe('account creation swap', () => {
           "egress": 96,
           "swap": 12,
         },
-        "fees": [],
+        "fees": [
+          {
+            "amount": "0",
+            "asset": "SOL",
+            "chain": "Solana",
+            "type": "INGRESS",
+          },
+        ],
         "srcAsset": "SOL",
         "srcChain": "Solana",
         "srcChainRequiredBlockConfirmations": 2,
-        "state": "WAITING",
+        "state": "SWAPPING",
+        "swap": {
+          "originalInputAmount": "17000000",
+          "regular": {
+            "inputAmount": "17000000",
+            "retryCount": 0,
+            "scheduledAt": 552000,
+            "scheduledBlockIndex": "92-399",
+          },
+          "remainingInputAmount": "17000000",
+          "swappedInputAmount": "0",
+          "swappedIntermediateAmount": "0",
+          "swappedOutputAmount": "0",
+        },
         "swapId": "368",
       }
     `);

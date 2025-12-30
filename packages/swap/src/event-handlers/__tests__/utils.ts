@@ -597,13 +597,15 @@ export const createPools = () => {
   });
 };
 
+type RegularAndReadonlyArray<T> = T[] | readonly T[];
+
 export const processEvents = async (
-  events: (Event & { id: string })[],
+  events: RegularAndReadonlyArray<Event & { id: string }>,
   calls: (Call & { id: string })[] = [],
   version = '11000',
 ) => {
   const eventMap = events
-    .sort((a, b) => (a.id < b.id ? -1 : 1))
+    .toSorted((a, b) => (a.id < b.id ? -1 : 1))
     .reduce((acc, event) => {
       const id = Number.parseInt(event.id, 10);
       assert(!Number.isNaN(id), 'event id is not a number');
