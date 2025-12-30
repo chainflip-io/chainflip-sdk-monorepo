@@ -1,6 +1,6 @@
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import axios from 'axios';
-import { spawn, ChildProcessWithoutNullStreams, exec } from 'child_process';
+import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 import * as crypto from 'crypto';
 import { on, once } from 'events';
 import { AddressInfo } from 'net';
@@ -21,7 +21,6 @@ import app from '../server.js';
 import { getTotalLiquidity } from '../utils/pools.js';
 import { getSwapRateV3 } from '../utils/statechain.js';
 
-const execAsync = promisify(exec);
 global.fetch = vi.fn().mockRejectedValue(new Error('fetch is not implemented in this environment'));
 
 vi.mock('../pricing.js');
@@ -128,12 +127,8 @@ describe('python integration test', () => {
     server = app.listen(0);
     serverUrl = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
 
-    const exeName = await Promise.any([
-      execAsync('python --version').then(() => 'python'),
-      execAsync('python3 --version').then(() => 'python3'),
-    ]);
-
-    child = spawn(exeName, [
+    child = spawn('uv', [
+      'run',
       path.join(__dirname, '..', '..', 'python-client', 'mock.py'),
       '--private-key',
       privateKey,
