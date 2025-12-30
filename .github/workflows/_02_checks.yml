@@ -54,6 +54,7 @@ jobs:
         uses: astral-sh/setup-uv@681c641aba71e4a1c380be3ab5e12ad51f415867 # 7.1.6
         with:
           enable-cache: true
+          cache-dependency-glob: 'packages/swap/python-client/*'
 
       - name: Setup Python 🐍
         if: matrix.package == 'swap'
