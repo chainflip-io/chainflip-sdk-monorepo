@@ -147,6 +147,11 @@ describe('python integration test', () => {
       map((buffer) => buffer.toString().trim()),
       shareReplay(),
     );
+
+    child.stderr.on('data', (data) => {
+      // eslint-disable-next-line no-console
+      console.log(`child stderr: ${data}`);
+    });
   });
 
   afterEach(async () => {
