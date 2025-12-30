@@ -69,6 +69,7 @@ jobs:
 
       - name: Install Python Dependencies 🐍📦
         if: matrix.package == 'swap'
+        working-directory: ./packages/swap/python-client
         run: uv sync --locked --all-extras --dev
 
       - name: Migrate database 🗃️
