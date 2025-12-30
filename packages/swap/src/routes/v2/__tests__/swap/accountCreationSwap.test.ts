@@ -162,7 +162,18 @@ describe('account creation swap', () => {
   });
 
   beforeEach(async () => {
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "Swap", "SwapRequest", "FailedSwap", "Broadcast", "Egress", private."DepositChannel", "AccountCreationDepositChannel", "ChainTracking" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE
+      "SwapDepositChannel",
+      "Swap",
+      "SwapRequest",
+      "FailedSwap",
+      "Broadcast",
+      "Egress",
+      private."DepositChannel",
+      "AccountCreationDepositChannel",
+      "ChainTracking",
+      private."SolanaPendingTxRef"
+      CASCADE`;
   });
 
   const channelId = '86-Solana-85';
@@ -246,6 +257,24 @@ describe('account creation swap', () => {
         "swapId": "368",
       }
     `);
+
+    expect(await prisma.solanaPendingTxRef.findFirstOrThrow()).toMatchInlineSnapshot(
+      {
+        accountCreationDepositChannelId: expect.any(BigInt),
+        id: expect.any(Number),
+      },
+      `
+      {
+        "accountCreationDepositChannelId": Any<BigInt>,
+        "address": null,
+        "failedVaultSwapId": null,
+        "id": Any<Number>,
+        "slot": null,
+        "swapDepositChannelId": null,
+        "vaultSwapRequestId": null,
+      }
+    `,
+    );
   });
 
   it('gets completed swap info', async () => {

@@ -308,7 +308,7 @@ export default async function swapRequested({
   ) {
     let pendingTxRefInfo;
     if (originType === 'DEPOSIT_CHANNEL') {
-      pendingTxRefInfo = { swapDepositChannelId };
+      pendingTxRefInfo = { swapDepositChannelId, accountCreationDepositChannelId };
     } else if (originType === 'VAULT') {
       assert(origin.__kind === 'Vault' && origin.txId.__kind === 'Solana');
       pendingTxRefInfo = {
