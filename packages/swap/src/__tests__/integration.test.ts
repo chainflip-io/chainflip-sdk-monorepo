@@ -52,6 +52,7 @@ describe('python integration test', () => {
   let child: ChildProcessWithoutNullStreams;
   let stdout$: Observable<string>;
   let serverUrl: string;
+  let stderr: Buffer[] = [];
 
   beforeAll(async () => {
     await prisma.$queryRaw`TRUNCATE TABLE public."Pool" CASCADE`;
@@ -144,6 +145,10 @@ describe('python integration test', () => {
       map((buffer) => buffer.toString().trim()),
       shareReplay(),
     );
+    stderr = [];
+    child.stderr.on('data', (data) => {
+      stderr.push(data);
+    });
   });
 
   afterEach(async () => {
@@ -167,7 +172,9 @@ describe('python integration test', () => {
             timeout(10000),
           ),
         ),
-        once(child, 'close').then(() => Promise.reject(Error('child process exited unexpectedly'))),
+        once(child, 'close').then(() =>
+          Promise.reject(Error(`child process exited unexpectedly: ${Buffer.concat(stderr)}`)),
+        ),
       ]),
     ).resolves.toBe(message);
   };
