@@ -80,22 +80,21 @@ export const depositFinalised =
 
     const txRef = getDepositTxRef(depositDetails, blockHeight);
 
+    const swapData = {
+      depositAmount: amount.toString(),
+      depositFinalisedAt: new Date(block.timestamp),
+      depositFinalisedBlockIndex: `${block.height}-${event.indexInBlock}`,
+      depositTransactionRef: txRef,
+      fees: {
+        create: { amount: ingressFee.toString(), type: 'INGRESS', asset },
+      },
+      maxBoostFeeBps,
+    } as const;
+
     if (action.__kind === 'Swap' || action.__kind === 'CcmTransfer') {
       const { swapRequestId } = action;
 
-      await prisma.swapRequest.update({
-        where: { nativeId: swapRequestId },
-        data: {
-          depositAmount: amount.toString(),
-          depositFinalisedAt: new Date(block.timestamp),
-          depositFinalisedBlockIndex: `${block.height}-${event.indexInBlock}`,
-          depositTransactionRef: txRef,
-          fees: {
-            create: { amount: ingressFee.toString(), type: 'INGRESS', asset },
-          },
-          maxBoostFeeBps,
-        },
-      });
+      await prisma.swapRequest.update({ where: { nativeId: swapRequestId }, data: swapData });
     } else if (action.__kind === 'BoostersCredited') {
       await prisma.swapRequest.updateMany({
         data: {
@@ -224,7 +223,45 @@ export const depositFinalised =
             blockHeight,
           });
         }
-    } else if (action.__kind !== 'LiquidityProvision') {
+    } else if (action.__kind === 'LiquidityProvision') {
+      assert(depositAddress, 'missing deposit address for liquidity provision deposit finalised');
+
+      const channel = await prisma.depositChannel.findFirstOrThrow({
+        where: { depositAddress },
+        orderBy: { issuedBlock: 'desc' },
+      });
+
+      if (channel.type !== 'ACCOUNT_CREATION') return;
+
+      const accountChannel = await prisma.accountCreationDepositChannel.findUniqueOrThrow({
+        where: {
+          issuedBlock_chain_channelId: {
+            issuedBlock: channel.issuedBlock,
+            chain: channel.srcChain,
+            channelId: channel.channelId,
+          },
+        },
+        include: { swapRequests: { where: { depositTransactionRef: null } } },
+      });
+
+      if (accountChannel.swapRequests.length !== 1) {
+        logger.warn(
+          'unexpected number of swap requests for liquidity provision deposit finalised',
+          {
+            depositAddress,
+            swapRequestCount: accountChannel.swapRequests.length,
+            blockId: block.height,
+            indexInBlock: event.indexInBlock,
+          },
+        );
+        return;
+      }
+
+      await prisma.swapRequest.update({
+        where: { id: accountChannel.swapRequests[0].id },
+        data: swapData,
+      });
+    } else {
       return assertUnreachable(action, 'unexpected action kind');
     }
   };
