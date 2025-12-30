@@ -129,6 +129,8 @@ describe('python integration test', () => {
 
     child = spawn('uv', [
       'run',
+      '--project',
+      path.join(__dirname, '..', '..', 'python-client', 'pyproject.toml'),
       path.join(__dirname, '..', '..', 'python-client', 'mock.py'),
       '--private-key',
       privateKey,
