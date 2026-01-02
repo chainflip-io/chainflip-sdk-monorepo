@@ -14,6 +14,7 @@ export const coinGeckoIdMap = {
   Eth: 'ethereum',
   Btc: 'bitcoin',
   Usdt: 'tether',
+  Wbtc: 'wrapped-bitcoin',
   ArbEth: 'ethereum',
   ArbUsdc: 'usd-coin',
   Sol: 'solana',

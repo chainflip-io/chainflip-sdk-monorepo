@@ -85,14 +85,14 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~2.0.1
-        version: 2.0.1
+        specifier: 2.0.6-wbtc-dev.2
+        version: 2.0.6-wbtc-dev.2
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.11.1
-        version: 0.11.1
+        specifier: 0.11.2-wbtc-dev.0
+        version: 0.11.2-wbtc-dev.0
       axios:
         specifier: ^1.10.0
         version: 1.10.0
@@ -158,14 +158,14 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~2.0.1
-        version: 2.0.1
+        specifier: 2.0.6-wbtc-dev.2
+        version: 2.0.6-wbtc-dev.2
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.11.1
-        version: 0.11.1
+        specifier: 0.11.2-wbtc-dev.0
+        version: 0.11.2-wbtc-dev.0
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -195,14 +195,14 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: ~2.0.1
-        version: 2.0.1
+        specifier: 2.0.6-wbtc-dev.2
+        version: 2.0.6-wbtc-dev.2
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.11.1
-        version: 0.11.1
+        specifier: 0.11.2-wbtc-dev.0
+        version: 0.11.2-wbtc-dev.0
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -256,17 +256,17 @@ importers:
         specifier: ~2.0.4
         version: 2.0.4
       '@chainflip/redis':
-        specifier: ^1.0.2
-        version: 1.0.2
+        specifier: 1.0.2-wbtc-dev.0
+        version: 1.0.2-wbtc-dev.0
       '@chainflip/rpc':
-        specifier: ~2.0.1
-        version: 2.0.1
+        specifier: 2.0.6-wbtc-dev.2
+        version: 2.0.6-wbtc-dev.2
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: ^0.11.1
-        version: 0.11.1
+        specifier: 0.11.2-wbtc-dev.0
+        version: 0.11.2-wbtc-dev.0
       '@polkadot/api':
         specifier: ^15.10.2
         version: 15.10.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -492,11 +492,11 @@ packages:
   '@chainflip/processor@2.0.4':
     resolution: {integrity: sha512-uHF1YS4WP1XBBNx+sd0z915/vud+6dESSM8sMQAQvd/W4Y4vSugikY1OwKZCubJkwHJXj9HYjNtIHRx+DgAK8Q==}
 
-  '@chainflip/redis@1.0.2':
-    resolution: {integrity: sha512-ahkz+xKt5pX1gx4QikphdvTpZX8fjNgi/84q1WLXaAOoUop4pWdUw/boXv7rzg2xIqIdvDFk82/zz1g0OmiySQ==}
+  '@chainflip/redis@1.0.2-wbtc-dev.0':
+    resolution: {integrity: sha512-1cvqo6lrrW3+2I5y2LAwprN4VG2V+HmaDjPGP9rGXVt77B3qUIaghVQDMe0OlGN2gK8jz68B3E12P238+tsadw==}
 
-  '@chainflip/rpc@2.0.1':
-    resolution: {integrity: sha512-riMEd3J59oU04W4Xt/Dpt+5zxdLDOxyuEk+sbIB8Yoybwx6Lv0SPVC2yN8w4sJjLkTXuEzfCHwBcvlX1J2JK0g==}
+  '@chainflip/rpc@2.0.6-wbtc-dev.2':
+    resolution: {integrity: sha512-FAgJ0XHi5GUq5lpALTUvnJ3rpA3FPC1CsYaQFpqZH440bpCXg5VVeQ+rM0Y1GTo17EsNYaXYq5FS+2ICUc/R7Q==}
 
   '@chainflip/scale@1.11.0':
     resolution: {integrity: sha512-gLs2pARutz6JJSKth92TYQEHVWvwpavWNUARB9626t+QxlparHyL10t9XibD2X1sr+GLXWKj2q5qXOSGU8CICA==}
@@ -504,20 +504,14 @@ packages:
   '@chainflip/solana@2.2.0':
     resolution: {integrity: sha512-MQhH0b9hwO6miw2pAatDUzJJdaOhLMSiZSzbmUHJWqwvazg2X2YUUK3e4+RGKSBL8bBCFiC+FyXBSAvYztd1YQ==}
 
-  '@chainflip/utils@0.11.0':
-    resolution: {integrity: sha512-w48RBfFiGlBfLpBvmwRQmxfLb/jT4kn4CW9cqlMWRb9ta88As36CUX9Qbx/54YHPbce7BJTOXPI2LgaH32NVjA==}
-
-  '@chainflip/utils@0.11.1':
-    resolution: {integrity: sha512-bUVgEC6zkjjL8vdHFL0ZeihzID0aGX69BhFSPBLTnZUmzs8McBUtELSOWojx1wBqgCltv11i/o4Q31o50rCTfg==}
+  '@chainflip/utils@0.11.2-wbtc-dev.0':
+    resolution: {integrity: sha512-SmNJqNhwnz5BVE3nAdCCMdKBywdx2H+MOgeCIS/VrBUoaCHLaYPQ15IA6HJDYncEcQiuww876FncFpcczBg1+A==}
 
   '@chainflip/utils@0.8.18':
     resolution: {integrity: sha512-qaKtasZSfCcEICR3Bo6IUabOkBsmldsKmDbGTRr0WBQlUyOA2SNwZRN9EP73ZQofWyI3luRN2tFGS54O3bYazQ==}
 
   '@chainflip/utils@0.8.22':
     resolution: {integrity: sha512-VVerCmYtxW6rk3HCKnJzYAC60kf8Xv66Sp7ittMzpuJ9kzu+IeycY6lHv/I7GJnagy3zeuL6PNGWqdAMpuF+TQ==}
-
-  '@chainflip/utils@0.8.6':
-    resolution: {integrity: sha512-g15TNn6Ab/XHfyQfHqNNjzxdaGGdUSOLrY/Caq1n1x6Wm6KspRp2Oy8Jl5VXd4M9wed1RJRsR9dKS1Z1uMtLvA==}
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -539,9 +533,6 @@ packages:
 
   '@dabh/diagnostics@2.0.3':
     resolution: {integrity: sha512-hrlQOIi7hAfzsMqlGSFyVucrx38O+j6wiGOf//H2ecvIEqYN4ADBSS2iLMh5UFyDunCNniUIPk/q3riFv45xRA==}
-
-  '@date-fns/utc@2.1.0':
-    resolution: {integrity: sha512-176grgAgU2U303rD2/vcOmNg0kGPbhzckuH1TEP2al7n0AQipZIy9P15usd2TKQCG1g+E1jX/ZVQSzs4sUDwgA==}
 
   '@date-fns/utc@2.1.1':
     resolution: {integrity: sha512-SlJDfG6RPeEX8wEVv6ZB3kak4MmbtyiI2qX/5zuKdordbrhB/iaJ58GVMZgJ6P1sJaM1gMgENFYYeg1JWrCFrA==}
@@ -1066,6 +1057,9 @@ packages:
 
   '@ioredis/commands@1.2.0':
     resolution: {integrity: sha512-Sx1pU8EM64o2BrqNpEO1CNLtKQwyhuXuqyfH7oGKCk+1a33d2r5saW8zNwm3j6BTExtjrv2BxTgzzkMwts6vGg==}
+
+  '@ioredis/commands@1.4.0':
+    resolution: {integrity: sha512-aFT2yemJJo+TZCmieA7qnYGQooOS7QfNmYrzGtsYd3g9j5iDP8AimYYAesf79ohjbLG12XxC4nG5DyEnC88AsQ==}
 
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -3382,6 +3376,10 @@ packages:
 
   ioredis@5.6.1:
     resolution: {integrity: sha512-UxC0Yv1Y4WRJiGQxQkP0hfdL0/5/6YvdfOOClRgJ0qppSarkhneSa6UvkMkms0AkdGimSH3Ikqm+6mkMmX7vGA==}
+    engines: {node: '>=12.22.0'}
+
+  ioredis@5.8.2:
+    resolution: {integrity: sha512-C6uC+kleiIMmjViJINWk80sOQw5lEzse1ZmvD+S/s8p8CWapftSaC+kocGTx6xrbrJ4WmYQGC08ffHLr6ToR6Q==}
     engines: {node: '>=12.22.0'}
 
   ipaddr.js@1.9.1:
@@ -5728,18 +5726,18 @@ snapshots:
       '@chainflip/utils': 0.8.18
       zod: 3.25.76
 
-  '@chainflip/redis@1.0.2':
+  '@chainflip/redis@1.0.2-wbtc-dev.0':
     dependencies:
-      '@chainflip/utils': 0.8.6
-      bignumber.js: 9.3.0
-      ioredis: 5.6.1
+      '@chainflip/utils': 0.11.2-wbtc-dev.0
+      bignumber.js: 9.3.1
+      ioredis: 5.8.2
       zod: 3.25.76
     transitivePeerDependencies:
       - supports-color
 
-  '@chainflip/rpc@2.0.1':
+  '@chainflip/rpc@2.0.6-wbtc-dev.2':
     dependencies:
-      '@chainflip/utils': 0.11.0
+      '@chainflip/utils': 0.11.2-wbtc-dev.0
       zod: 3.25.76
 
   '@chainflip/scale@1.11.0':
@@ -5762,13 +5760,7 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@chainflip/utils@0.11.0':
-    dependencies:
-      '@date-fns/utc': 2.1.1
-      bignumber.js: 9.3.1
-      date-fns: 4.1.0
-
-  '@chainflip/utils@0.11.1':
+  '@chainflip/utils@0.11.2-wbtc-dev.0':
     dependencies:
       '@date-fns/utc': 2.1.1
       bignumber.js: 9.3.1
@@ -5784,12 +5776,6 @@ snapshots:
     dependencies:
       '@date-fns/utc': 2.1.1
       bignumber.js: 9.3.1
-      date-fns: 4.1.0
-
-  '@chainflip/utils@0.8.6':
-    dependencies:
-      '@date-fns/utc': 2.1.0
-      bignumber.js: 9.3.0
       date-fns: 4.1.0
 
   '@colors/colors@1.6.0': {}
@@ -5828,8 +5814,6 @@ snapshots:
       colorspace: 1.1.4
       enabled: 2.0.0
       kuler: 2.0.0
-
-  '@date-fns/utc@2.1.0': {}
 
   '@date-fns/utc@2.1.1': {}
 
@@ -6599,6 +6583,8 @@ snapshots:
   '@humanwhocodes/object-schema@2.0.3': {}
 
   '@ioredis/commands@1.2.0': {}
+
+  '@ioredis/commands@1.4.0': {}
 
   '@isaacs/cliui@8.0.2':
     dependencies:
@@ -9442,6 +9428,20 @@ snapshots:
   ioredis@5.6.1:
     dependencies:
       '@ioredis/commands': 1.2.0
+      cluster-key-slot: 1.1.2
+      debug: 4.4.1
+      denque: 2.1.0
+      lodash.defaults: 4.2.0
+      lodash.isarguments: 3.1.0
+      redis-errors: 1.2.0
+      redis-parser: 3.0.0
+      standard-as-callback: 2.1.0
+    transitivePeerDependencies:
+      - supports-color
+
+  ioredis@5.8.2:
+    dependencies:
+      '@ioredis/commands': 1.4.0
       cluster-key-slot: 1.1.2
       debug: 4.4.1
       denque: 2.1.0
