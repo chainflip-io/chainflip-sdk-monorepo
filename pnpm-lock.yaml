@@ -85,14 +85,14 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: 2.0.6-wbtc-dev.2
-        version: 2.0.6-wbtc-dev.2
+        specifier: ../../../chainflip-product-toolkit/packages/rpc
+        version: link:../../../chainflip-product-toolkit/packages/rpc
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 0.11.2-wbtc-dev.0
-        version: 0.11.2-wbtc-dev.0
+        specifier: ../../../chainflip-product-toolkit/packages/utils
+        version: link:../../../chainflip-product-toolkit/packages/utils
       axios:
         specifier: ^1.10.0
         version: 1.10.0
@@ -158,14 +158,14 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: 2.0.6-wbtc-dev.2
-        version: 2.0.6-wbtc-dev.2
+        specifier: ../../../chainflip-product-toolkit/packages/rpc
+        version: link:../../../chainflip-product-toolkit/packages/rpc
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 0.11.2-wbtc-dev.0
-        version: 0.11.2-wbtc-dev.0
+        specifier: ../../../chainflip-product-toolkit/packages/utils
+        version: link:../../../chainflip-product-toolkit/packages/utils
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -195,14 +195,14 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: 2.0.6-wbtc-dev.2
-        version: 2.0.6-wbtc-dev.2
+        specifier: ../../..//chainflip-product-toolkit/packages/rpc
+        version: link:../../../chainflip-product-toolkit/packages/rpc
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 0.11.2-wbtc-dev.0
-        version: 0.11.2-wbtc-dev.0
+        specifier: ../../..//chainflip-product-toolkit/packages/utils
+        version: link:../../../chainflip-product-toolkit/packages/utils
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -259,14 +259,14 @@ importers:
         specifier: 1.0.2-wbtc-dev.0
         version: 1.0.2-wbtc-dev.0
       '@chainflip/rpc':
-        specifier: 2.0.6-wbtc-dev.2
-        version: 2.0.6-wbtc-dev.2
+        specifier: ../../../chainflip-product-toolkit/packages/rpc
+        version: link:../../../chainflip-product-toolkit/packages/rpc
       '@chainflip/solana':
         specifier: ^2.2.0
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 0.11.2-wbtc-dev.0
-        version: 0.11.2-wbtc-dev.0
+        specifier: ../../../chainflip-product-toolkit/packages/utils
+        version: link:../../../chainflip-product-toolkit/packages/utils
       '@polkadot/api':
         specifier: ^15.10.2
         version: 15.10.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -494,9 +494,6 @@ packages:
 
   '@chainflip/redis@1.0.2-wbtc-dev.0':
     resolution: {integrity: sha512-1cvqo6lrrW3+2I5y2LAwprN4VG2V+HmaDjPGP9rGXVt77B3qUIaghVQDMe0OlGN2gK8jz68B3E12P238+tsadw==}
-
-  '@chainflip/rpc@2.0.6-wbtc-dev.2':
-    resolution: {integrity: sha512-FAgJ0XHi5GUq5lpALTUvnJ3rpA3FPC1CsYaQFpqZH440bpCXg5VVeQ+rM0Y1GTo17EsNYaXYq5FS+2ICUc/R7Q==}
 
   '@chainflip/scale@1.11.0':
     resolution: {integrity: sha512-gLs2pARutz6JJSKth92TYQEHVWvwpavWNUARB9626t+QxlparHyL10t9XibD2X1sr+GLXWKj2q5qXOSGU8CICA==}
@@ -5734,11 +5731,6 @@ snapshots:
       zod: 3.25.76
     transitivePeerDependencies:
       - supports-color
-
-  '@chainflip/rpc@2.0.6-wbtc-dev.2':
-    dependencies:
-      '@chainflip/utils': 0.11.2-wbtc-dev.0
-      zod: 3.25.76
 
   '@chainflip/scale@1.11.0':
     dependencies:
