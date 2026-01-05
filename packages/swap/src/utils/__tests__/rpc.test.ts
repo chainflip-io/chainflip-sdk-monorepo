@@ -18,8 +18,8 @@ describe(getLpBalances, () => {
   it('returns the balances for the given accounts', async () => {
     vi.spyOn(HttpClient.prototype, 'sendRequest').mockResolvedValueOnce({
       Bitcoin: { BTC: 1n },
-      Ethereum: { ETH: 2n, FLIP: 3n, USDC: 4n, USDT: 5n, WBTC: 1n },
-      Arbitrum: { ETH: 6n, USDC: 7n },
+      Ethereum: { ETH: 2n, FLIP: 3n, USDC: 4n, USDT: 5n, WBTC: 14n },
+      Arbitrum: { ETH: 6n, USDC: 7n, USDT: 15n },
       Polkadot: { DOT: 8n },
       Solana: { SOL: 9n, USDC: 10n },
       Assethub: { DOT: 11n, USDT: 12n, USDC: 13n },
@@ -44,6 +44,8 @@ describe(getLpBalances, () => {
             "SolUsdc": 10n,
             "Usdc": 4n,
             "Usdt": 5n,
+            "WBtc": 14n,
+            "ArbUsdt": 15n,
           },
         ],
       ]

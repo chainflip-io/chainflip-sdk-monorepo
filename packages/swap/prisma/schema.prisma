@@ -60,6 +60,7 @@ enum InternalAsset {
   Usdt
   ArbEth
   ArbUsdc
+  ArbUsdt
   Sol
   SolUsdc
   HubDot

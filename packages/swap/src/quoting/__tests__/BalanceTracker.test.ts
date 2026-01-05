@@ -12,6 +12,7 @@ const mockInternalAssetMap = (
 ): InternalAssetMap<bigint> & { Dot: bigint } => ({
   ArbEth: 0n,
   ArbUsdc: 0n,
+  ArbUsdt: 0n,
   Btc: 0n,
   Dot: 0n,
   Eth: 0n,

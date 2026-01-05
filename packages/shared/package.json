@@ -20,9 +20,9 @@
   "license": "ISC",
   "dependencies": {
     "@chainflip/bitcoin": "^1.2.7",
-    "@chainflip/rpc": "2.0.6-wbtc-dev.2",
+    "@chainflip/rpc": "../../..//chainflip-product-toolkit/packages/rpc",
     "@chainflip/solana": "^2.2.0",
-    "@chainflip/utils": "0.11.2-wbtc-dev.0",
+    "@chainflip/utils": "../../..//chainflip-product-toolkit/packages/utils",
     "@ts-rest/core": "^3.52.1",
     "axios": "^1.10.0",
     "bignumber.js": "^9.3.0",
