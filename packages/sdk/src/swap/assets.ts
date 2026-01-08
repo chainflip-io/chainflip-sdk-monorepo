@@ -39,6 +39,7 @@ const assetNames: Record<ChainflipAsset, string> = {
   ArbUsdt: 'Arbitrum USDT',
   Sol: 'Solana',
   SolUsdc: 'Solana USDC',
+  SolUsdt: 'Solana USDT',
   HubDot: 'Assethub DOT',
   HubUsdc: 'Assethub USDC',
   HubUsdt: 'Assethub USDT',

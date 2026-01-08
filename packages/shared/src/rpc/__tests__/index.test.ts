@@ -64,6 +64,7 @@ describe('getSwappingEnvironment', () => {
           "Solana": {
             "SOL": null,
             "USDC": null,
+            "USDT": null,
           },
         },
         "minimumChunkSize": {
@@ -90,6 +91,7 @@ describe('getSwappingEnvironment', () => {
           "Solana": {
             "SOL": 0n,
             "USDC": 0n,
+            "USDT": 0n,
           },
         },
         "networkFeeHundredthPips": 1000,
@@ -119,6 +121,7 @@ describe('getSwappingEnvironment', () => {
               "Solana": {
                 "SOL": 100n,
                 "USDC": 100n,
+                "USDT": 100n,
               },
             },
             "standardRateAndMinimum": {
@@ -151,6 +154,7 @@ describe('getSwappingEnvironment', () => {
               "Solana": {
                 "SOL": 1000n,
                 "USDC": 1000n,
+                "USDT": 1000n,
               },
             },
             "standardRateAndMinimum": {
@@ -216,6 +220,7 @@ describe('getIngressEgressEnvironment', () => {
           "Solana": {
             "SOL": 0n,
             "USDC": 0n,
+            "USDT": 0n,
           },
         },
         "ingressDelays": {
@@ -249,6 +254,7 @@ describe('getIngressEgressEnvironment', () => {
           "Solana": {
             "SOL": 5000000000000000000n,
             "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
           },
         },
         "minimumDepositAmounts": {
@@ -275,6 +281,7 @@ describe('getIngressEgressEnvironment', () => {
           "Solana": {
             "SOL": 5000000000000000000n,
             "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
           },
         },
         "minimumEgressAmounts": {
@@ -301,6 +308,7 @@ describe('getIngressEgressEnvironment', () => {
           "Solana": {
             "SOL": 1n,
             "USDC": 1n,
+            "USDT": 1n,
           },
         },
         "witnessSafetyMargins": {

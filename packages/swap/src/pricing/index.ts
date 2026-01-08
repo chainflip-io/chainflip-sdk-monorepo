@@ -20,6 +20,7 @@ export const coinGeckoIdMap = {
   ArbUsdt: 'tether',
   Sol: 'solana',
   SolUsdc: 'usd-coin',
+  SolUsdt: 'tether',
   HubDot: 'polkadot',
   HubUsdc: 'usd-coin',
   HubUsdt: 'tether',
