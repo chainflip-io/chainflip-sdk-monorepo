@@ -33,6 +33,21 @@ exports[`getAllBoostPoolsDepth > retrieves the boost pools depth balance > boost
     "tier": 30,
   },
   {
+    "asset": "ArbUsdt",
+    "availableAmount": 0n,
+    "tier": 5,
+  },
+  {
+    "asset": "ArbUsdt",
+    "availableAmount": 0n,
+    "tier": 10,
+  },
+  {
+    "asset": "ArbUsdt",
+    "availableAmount": 0n,
+    "tier": 30,
+  },
+  {
     "asset": "HubDot",
     "availableAmount": 0n,
     "tier": 5,
@@ -194,6 +209,21 @@ exports[`getAllBoostPoolsDepth > retrieves the boost pools depth balance > boost
   },
   {
     "asset": "SolUsdc",
+    "availableAmount": 0n,
+    "tier": 30,
+  },
+  {
+    "asset": "SolUsdt",
+    "availableAmount": 0n,
+    "tier": 5,
+  },
+  {
+    "asset": "SolUsdt",
+    "availableAmount": 0n,
+    "tier": 10,
+  },
+  {
+    "asset": "SolUsdt",
     "availableAmount": 0n,
     "tier": 30,
   },

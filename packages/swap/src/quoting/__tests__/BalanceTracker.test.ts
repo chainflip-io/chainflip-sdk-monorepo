@@ -19,6 +19,7 @@ const mockInternalAssetMap = (
   Flip: 0n,
   Sol: 0n,
   SolUsdc: 0n,
+  SolUsdt: 0n,
   Usdc: 0n,
   Usdt: 0n,
   Wbtc: 0n,
