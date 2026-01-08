@@ -44,8 +44,9 @@ describe(getLpBalances, () => {
             "SolUsdc": 10n,
             "Usdc": 4n,
             "Usdt": 5n,
-            "WBtc": 14n,
+            "Wbtc": 14n,
             "ArbUsdt": 15n,
+            "SolUsdt": 16n,
           },
         ],
       ]
