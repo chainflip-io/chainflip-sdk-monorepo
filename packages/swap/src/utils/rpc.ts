@@ -88,6 +88,12 @@ export const getRequiredBlockConfirmations = async (
   return safetyMargin ? Number(safetyMargin) + 1 : null;
 };
 
+export const getNetworkFees = async () => {
+  const environment = await cachedGetEnvironment(rpcConfig);
+
+  return environment.swapping.networkFees;
+};
+
 export const getAccounts = async () => {
   const accounts = await getAccountsRpc(rpcConfig);
 

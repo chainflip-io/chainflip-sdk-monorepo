@@ -365,7 +365,7 @@ describe(calculateRecommendedLivePriceSlippage, () => {
     expect(result).toEqual(1 + 1.23 + 0.1);
   });
 
-  it('uses internal swap network fees when isInternal is true', async () => {
+  it('uses internal swap network fees when isInternal is true (stables)', async () => {
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Usdc',
       destAsset: 'ArbUsdc',
@@ -373,6 +373,16 @@ describe(calculateRecommendedLivePriceSlippage, () => {
       isInternal: true,
     });
     expect(result).toEqual(0.5 + 0.01);
+  });
+
+  it('uses internal swap network fees when isInternal is true (non-stables)', async () => {
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Eth',
+      destAsset: 'Btc',
+      brokerCommissionBps: 0,
+      isInternal: true,
+    });
+    expect(result).toEqual(1 + 0.1);
   });
 
   it('returns undefined if DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE is true', async () => {

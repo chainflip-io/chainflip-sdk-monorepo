@@ -24,7 +24,7 @@ import { vi } from 'vitest';
 
 type RpcResponse<T> = { id: number; jsonrpc: '2.0'; result: T };
 
-const createChainAssetMap = <T>(
+export const createChainAssetMap = <T>(
   defaultValue: T,
   overrides?: Partial<InternalAssetMap<T>>,
 ): ChainAssetMap<T> => ({
