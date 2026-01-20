@@ -181,6 +181,7 @@ export const calculateRecommendedLivePriceSlippage = async ({
   const sourceAssetNetworkFee = readAssetValue(networkFeeRates, srcAsset);
   const destAssetNetworkFee = readAssetValue(networkFeeRates, destAsset);
 
+  // divide by 100 to convert from hundredth bps to bps
   const networkFee = Math.max(Number(sourceAssetNetworkFee), Number(destAssetNetworkFee)) / 100;
 
   const slippage = canUseTightSlippage(srcAsset, destAsset)
