@@ -1,12 +1,13 @@
 import BigNumber from 'bignumber.js';
 import { describe, it, beforeEach, expect, vi } from 'vitest';
+import { createChainAssetMap } from '@/shared/tests/fixtures.js';
 import env from '../../config/env.js';
 import {
   calculateRecommendedLivePriceSlippage,
   calculateRecommendedSlippage,
 } from '../autoSlippage.js';
 import { getDeployedLiquidity, getUndeployedLiquidity } from '../pools.js';
-import { getRequiredBlockConfirmations } from '../rpc.js';
+import { getNetworkFees, getRequiredBlockConfirmations } from '../rpc.js';
 
 vi.mock('../pools', () => ({
   getDeployedLiquidity: vi.fn(),
@@ -15,6 +16,7 @@ vi.mock('../pools', () => ({
 
 vi.mock('../rpc', () => ({
   getRequiredBlockConfirmations: vi.fn(),
+  getNetworkFees: vi.fn(),
 }));
 
 describe(calculateRecommendedSlippage, () => {
@@ -253,13 +255,32 @@ describe(calculateRecommendedSlippage, () => {
 });
 
 describe(calculateRecommendedLivePriceSlippage, () => {
+  beforeEach(() => {
+    vi.mocked(getNetworkFees).mockResolvedValue({
+      regularNetworkFee: {
+        standardRateAndMinimum: { rate: 1000n, minimum: 500000n },
+        rates: createChainAssetMap(1000n),
+      },
+      internalSwapNetworkFee: {
+        standardRateAndMinimum: { rate: 1000n, minimum: 500000n },
+        rates: {
+          Ethereum: { ETH: 1000n, FLIP: 1000n, USDC: 100n, USDT: 100n },
+          Bitcoin: { BTC: 1000n },
+          Arbitrum: { ETH: 1000n, USDC: 100n },
+          Solana: { SOL: 1000n, USDC: 100n },
+          Assethub: { DOT: 1000n, USDT: 100n, USDC: 100n },
+        },
+      },
+    });
+  });
+
   it('should return the correct value for stable assets', async () => {
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Usdc',
       destAsset: 'Usdt',
       brokerCommissionBps: 0,
     });
-    expect(result).toEqual(0.5);
+    expect(result).toEqual(0.5 + 0.1);
   });
 
   it('should return the correct value for stable assets in opposite direction', async () => {
@@ -268,7 +289,7 @@ describe(calculateRecommendedLivePriceSlippage, () => {
       destAsset: 'Usdc',
       brokerCommissionBps: 0,
     });
-    expect(result).toEqual(0.5);
+    expect(result).toEqual(0.5 + 0.1);
   });
 
   it('should return 1 for non-stable assets', async () => {
@@ -277,7 +298,7 @@ describe(calculateRecommendedLivePriceSlippage, () => {
       destAsset: 'Usdc',
       brokerCommissionBps: 0,
     });
-    expect(result).toEqual(1);
+    expect(result).toEqual(1 + 0.1);
   });
 
   it('should return 1 for non-stable assets in opposite direction', async () => {
@@ -286,7 +307,7 @@ describe(calculateRecommendedLivePriceSlippage, () => {
       destAsset: 'Eth',
       brokerCommissionBps: 0,
     });
-    expect(result).toEqual(1);
+    expect(result).toEqual(1 + 0.1);
   });
 
   it('should return undefined for non-oracle assets', async () => {
@@ -313,7 +334,7 @@ describe(calculateRecommendedLivePriceSlippage, () => {
       destAsset: 'Usdt',
       brokerCommissionBps: 70,
     });
-    expect(result).toEqual(0.5 + 0.7);
+    expect(result).toEqual(0.5 + 0.7 + 0.1);
   });
 
   it('should return the correct value for non-stable assets with broker commission', async () => {
@@ -322,7 +343,7 @@ describe(calculateRecommendedLivePriceSlippage, () => {
       destAsset: 'Usdc',
       brokerCommissionBps: 70,
     });
-    expect(result).toEqual(1 + 0.7);
+    expect(result).toEqual(1 + 0.7 + 0.1);
   });
 
   it('should return the correct value for the same asset cross-chain', async () => {
@@ -331,7 +352,7 @@ describe(calculateRecommendedLivePriceSlippage, () => {
       destAsset: 'ArbEth',
       brokerCommissionBps: 70,
     });
-    expect(result).toEqual(0.5 + 0.7);
+    expect(result).toEqual(0.5 + 0.7 + 0.1);
   });
 
   it('rounds the value to 2 decimal places', async () => {
@@ -341,7 +362,17 @@ describe(calculateRecommendedLivePriceSlippage, () => {
       destAsset: 'Eth',
       brokerCommissionBps: 123,
     });
-    expect(result).toEqual(2.23);
+    expect(result).toEqual(1 + 1.23 + 0.1);
+  });
+
+  it('uses internal swap network fees when isInternal is true', async () => {
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Usdc',
+      destAsset: 'ArbUsdc',
+      brokerCommissionBps: 0,
+      isInternal: true,
+    });
+    expect(result).toEqual(0.5 + 0.01);
   });
 
   it('returns undefined if DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE is true', async () => {
