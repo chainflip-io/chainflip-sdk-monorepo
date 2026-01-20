@@ -175,7 +175,9 @@ export const calculateRecommendedLivePriceSlippage = async ({
 
   const networkFees = await getNetworkFees();
 
-  const networkFeeRates = networkFees[`${isInternal ? 'internalSwap' : 'regular'}NetworkFee`].rates;
+  const { rates: networkFeeRates } = isInternal
+    ? networkFees.internalSwapNetworkFee
+    : networkFees.regularNetworkFee;
   const sourceAssetNetworkFee = readAssetValue(networkFeeRates, srcAsset);
   const destAssetNetworkFee = readAssetValue(networkFeeRates, destAsset);
 
