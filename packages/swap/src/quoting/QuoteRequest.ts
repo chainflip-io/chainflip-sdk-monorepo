@@ -364,6 +364,7 @@ export default class QuoteRequest {
         srcAsset: this.srcAsset,
         destAsset: this.destAsset,
         brokerCommissionBps: this.brokerCommissionBps ?? 0,
+        isInternal: this.isOnChain,
       });
 
     return {

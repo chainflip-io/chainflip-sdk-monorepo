@@ -1,15 +1,14 @@
 import {
   ChainflipAsset,
-  PriceAsset,
   assetConstants,
   chainConstants,
-  priceAssets,
+  readAssetValue,
 } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import { chainflipAssetToPriceAssetMap } from '@/shared/consts.js';
 import { isStableCoin } from '@/shared/guards.js';
 import { getDeployedLiquidity, getUndeployedLiquidity } from './pools.js';
-import { getRequiredBlockConfirmations } from './rpc.js';
+import { getNetworkFees, getRequiredBlockConfirmations } from './rpc.js';
 import env from '../config/env.js';
 
 const getDeployedLiquidityAdjustment = async (
@@ -156,25 +155,38 @@ export const calculateRecommendedLivePriceSlippage = async ({
   srcAsset,
   destAsset,
   brokerCommissionBps,
+  isInternal,
 }: {
   srcAsset: ChainflipAsset;
   destAsset: ChainflipAsset;
   brokerCommissionBps: number;
+  isInternal?: boolean;
 }) => {
-  if (env.DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE) return undefined;
+  if (
+    env.DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE ||
+    chainflipAssetToPriceAssetMap[srcAsset] === null ||
+    chainflipAssetToPriceAssetMap[destAsset] === null
+  ) {
+    return undefined;
+  }
 
   const NON_STABLE_LIVE_PRICE_SLIPPAGE_BPS = 100;
   const STABLE_LIVE_PRICE_SLIPPAGE_BPS = 50;
 
-  if (
-    !priceAssets.includes(chainflipAssetToPriceAssetMap[srcAsset] as PriceAsset) ||
-    !priceAssets.includes(chainflipAssetToPriceAssetMap[destAsset] as PriceAsset)
-  )
-    return undefined;
+  const networkFees = await getNetworkFees();
+
+  const { rates: networkFeeRates } = isInternal
+    ? networkFees.internalSwapNetworkFee
+    : networkFees.regularNetworkFee;
+  const sourceAssetNetworkFee = readAssetValue(networkFeeRates, srcAsset);
+  const destAssetNetworkFee = readAssetValue(networkFeeRates, destAsset);
+
+  // divide by 100 to convert from hundredth bps to bps
+  const networkFee = Math.max(Number(sourceAssetNetworkFee), Number(destAssetNetworkFee)) / 100;
 
   const slippage = canUseTightSlippage(srcAsset, destAsset)
     ? STABLE_LIVE_PRICE_SLIPPAGE_BPS
     : NON_STABLE_LIVE_PRICE_SLIPPAGE_BPS;
 
-  return Number(((slippage + brokerCommissionBps) / 100).toFixed(2));
+  return Number(((slippage + brokerCommissionBps + networkFee) / 100).toFixed(2));
 };
