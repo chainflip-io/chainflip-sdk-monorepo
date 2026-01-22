@@ -493,10 +493,12 @@ export default class QuoteRequest {
   }
 
   async canUseDcaV2(): Promise<boolean> {
+    if (!env.QUOTER_DCA_V2_MAX_USD_VALUE) return false;
+    // lpp is a requirement for dca v2
+    if (env.DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE) return false;
     if (!this.dcaV2Enabled) return false;
     if (this.srcAsset !== 'Usdc' && !env.QUOTER_DCA_V2_ASSETS.has(this.srcAsset)) return false;
     if (this.destAsset !== 'Usdc' && !env.QUOTER_DCA_V2_ASSETS.has(this.destAsset)) return false;
-    if (!env.QUOTER_DCA_V2_MAX_USD_VALUE) return false;
 
     const depositValueUsd = await getUsdValue(this.depositAmount, this.srcAsset).catch(
       () => undefined,

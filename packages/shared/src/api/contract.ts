@@ -2,13 +2,13 @@ import { ChainflipNetwork } from '@chainflip/utils/chainflip';
 import { initContract } from '@ts-rest/core';
 import { EncodedVaultSwapData } from './encodeVaultSwapData.js';
 import { NetworkInfo } from './networkInfo.js';
+import { getAccountCreationDepositChannelSchema } from './openAccountCreationDepositChannel.js';
 import { DepositChannelInfo, getOpenSwapDepositChannelSchema } from './openSwapDepositChannel.js';
 import {
   getParameterEncodingRequestSchema,
   getVaultSwapParameterEncodingRequestSchema,
 } from '../broker.js';
 import { hexString } from '../parsers.js';
-import { getAccountCreationDepositChannelSchema } from './openAccountCreationDepositChannel.js';
 
 const c = initContract();
 
