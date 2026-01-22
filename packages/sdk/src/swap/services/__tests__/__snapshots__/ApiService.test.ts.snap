@@ -4,6 +4,7 @@ exports[`ApiService > getQuoteV2 > gets a quote 1`] = `
 {
   "amount": "10000",
   "dcaEnabled": false,
+  "dcaV2Enabled": false,
   "destAsset": "ETH",
   "destChain": "Ethereum",
   "isVaultSwap": true,
@@ -47,6 +48,7 @@ exports[`ApiService > getQuoteV2 > gets a quote for a vault swap 1`] = `
 {
   "amount": "10000",
   "dcaEnabled": true,
+  "dcaV2Enabled": false,
   "destAsset": "ETH",
   "destChain": "Ethereum",
   "isVaultSwap": true,
@@ -91,6 +93,7 @@ exports[`ApiService > getQuoteV2 > gets a quote with a broker commission 1`] = `
   "amount": "10000",
   "brokerCommissionBps": 15,
   "dcaEnabled": false,
+  "dcaV2Enabled": false,
   "destAsset": "ETH",
   "destChain": "Ethereum",
   "quotes": [
@@ -145,6 +148,7 @@ exports[`ApiService > getQuoteV2 > gets a quote with a broker commission and aff
   "amount": "10000",
   "brokerCommissionBps": 15,
   "dcaEnabled": false,
+  "dcaV2Enabled": false,
   "destAsset": "ETH",
   "destChain": "Ethereum",
   "quotes": [
@@ -192,6 +196,7 @@ exports[`ApiService > getQuoteV2 > gets a quote with ccm params 1`] = `
     "messageLengthBytes": 100,
   },
   "dcaEnabled": true,
+  "dcaV2Enabled": false,
   "destAsset": "ETH",
   "destChain": "Ethereum",
   "quotes": [
