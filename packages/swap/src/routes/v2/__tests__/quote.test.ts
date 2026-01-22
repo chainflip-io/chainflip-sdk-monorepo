@@ -1,5 +1,4 @@
 import { CfSwapRateV3Response, CfSwapRateV3, WsClient } from '@chainflip/rpc';
-import { sleep } from '@chainflip/utils/async';
 import { baseChainflipAssets, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import BigNumber from 'bignumber.js';
