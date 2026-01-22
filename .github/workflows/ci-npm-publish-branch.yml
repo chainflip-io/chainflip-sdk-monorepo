@@ -1,8 +1,4 @@
-name: NPM Publish Branch CI
-
-concurrency:
-  group: npm-publish-branch-ci-${{ github.ref_name }}
-  cancel-in-progress: false
+name: NPM Publish Branch Workflow
 
 on:
   workflow_dispatch:
@@ -92,7 +88,7 @@ jobs:
       package_scope: '@chainflip-io'
       build_cmd: pnpm --filter @chainflip/${{ inputs.package }} build
       publish_cmd: pnpm --filter @chainflip/${{ inputs.package }} publish --tag ${{ inputs.npm_tag }}
-      git_tag: "@chainflip/${{ inputs.package }}/v${{ needs.validate-version.outputs.version }}"
+      git_tag: '@chainflip/${{ inputs.package }}/v${{ needs.validate-version.outputs.version }}'
     secrets:
       node_auth_token: ${{ secrets.CF_NPM_JS_PACKAGES_READ_WRITE }}
       ssh_private_key: ${{ secrets.CF_GITHUB_BOT_SSH_PRIVATE_KEY }}
