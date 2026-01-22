@@ -87,7 +87,7 @@ jobs:
       package_registry: 'https://registry.npmjs.org'
       package_scope: '@chainflip-io'
       build_cmd: pnpm --filter @chainflip/${{ inputs.package }} build
-      publish_cmd: pnpm --filter @chainflip/${{ inputs.package }} publish --tag ${{ inputs.npm_tag }}
+      publish_cmd: pnpm --filter @chainflip/${{ inputs.package }} publish --tag ${{ inputs.npm_tag }} --no-git-checks
       git_tag: '@chainflip/${{ inputs.package }}/v${{ needs.validate-version.outputs.version }}'
     secrets:
       node_auth_token: ${{ secrets.CF_NPM_JS_PACKAGES_READ_WRITE }}
