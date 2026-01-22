@@ -24,7 +24,7 @@ import {
 import { envSafeAssetBlacklist } from '@/shared/consts.js';
 import { MultiCache } from '@/shared/dataStructures.js';
 import { parseFoKParams } from '@/shared/functions.js';
-import { assert } from '@/shared/guards.js';
+import { assert, isNotNullish } from '@/shared/guards.js';
 import {
   BoostPoolsDepth,
   Environment,
@@ -346,16 +346,17 @@ export class SwapSDK {
       maxBoostFeeBps: 'maxBoostFeeBps' in quote ? quote.maxBoostFeeBps : undefined,
       ccmParams,
       amount: quote.depositAmount,
+      commissionBps: brokerCommissionBps,
+      affiliates,
     };
+
+    await this.checkLivePriceProtectionRequirement(depositAddressRequest, quote);
+
     let response;
 
     if (this.options.broker) {
       const result = await requestSwapDepositAddress(
-        {
-          ...depositAddressRequest,
-          commissionBps: brokerCommissionBps,
-          affiliates,
-        },
+        depositAddressRequest,
         { url: this.options.broker.url },
         this.options.network,
       );
@@ -579,5 +580,31 @@ export class SwapSDK {
     }
 
     return res.body;
+  }
+
+  private async checkLivePriceProtectionRequirement(
+    request: Parameters<typeof requestSwapDepositAddress>[0],
+    quote: Quote | BoostQuote,
+  ): Promise<void> {
+    if (!this.dcaV2Enabled) return;
+    if (!quote.recommendedLivePriceSlippageTolerancePercent) return;
+
+    const { assets } = await this.cache.read('networkInfo');
+
+    const srcAsset = getInternalAsset(request.srcAsset);
+    const destAsset = getInternalAsset(request.destAsset);
+    if (
+      ![srcAsset, destAsset].every(
+        (asset) => assets.find((a) => a.asset === asset)?.livePriceProtectionEnabled,
+      )
+    ) {
+      return;
+    }
+
+    if (isNotNullish(request.fillOrKillParams.maxOraclePriceSlippage)) return;
+
+    throw new Error(
+      'Max oracle price slippage must be set in FillOrKillParams when live price protection is enabled for both assets in DCA V2',
+    );
   }
 }
