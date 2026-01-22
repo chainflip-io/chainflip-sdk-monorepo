@@ -45,6 +45,7 @@ describe('ApiService', () => {
         {
           ...mockRoute,
           dcaEnabled: false,
+          dcaV2Enabled: false,
           isVaultSwap: true,
         },
         {},
@@ -61,6 +62,7 @@ describe('ApiService', () => {
           ...mockRoute,
           brokerCommissionBps: 15,
           dcaEnabled: false,
+          dcaV2Enabled: false,
         },
         {},
       );
@@ -80,6 +82,7 @@ describe('ApiService', () => {
             { account: 'cFLdopvNB7LaiBbJoNdNC26e9Gc1FNJKFtvNZjAmXAAVnzCk4', commissionBps: 20 },
           ],
           dcaEnabled: false,
+          dcaV2Enabled: false,
         },
         {},
       );
@@ -95,6 +98,7 @@ describe('ApiService', () => {
           ...mockRoute,
           isVaultSwap: true,
           dcaEnabled: true,
+          dcaV2Enabled: false,
         },
         {},
       );
@@ -113,6 +117,7 @@ describe('ApiService', () => {
             messageLengthBytes: 100,
           },
           dcaEnabled: true,
+          dcaV2Enabled: false,
         },
         {},
       );
@@ -127,6 +132,7 @@ describe('ApiService', () => {
         {
           ...mockRoute,
           dcaEnabled: false,
+          dcaV2Enabled: false,
         },
         {
           signal: new AbortController().signal,
