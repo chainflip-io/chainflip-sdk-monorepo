@@ -254,7 +254,7 @@ describe(SwapSDK, () => {
       const result = await sdk.getQuoteV2(params);
       expect(getQuoteV2).toHaveBeenCalledWith(
         'https://chainflip-swap.staging/',
-        { ...params, brokerCommissionBps: 0, dcaEnabled: false },
+        { ...params, brokerCommissionBps: 0, dcaEnabled: false, dcaV2Enabled: false },
         {},
       );
       expect(result).toStrictEqual([{ quote: 1234 }]);
@@ -283,7 +283,7 @@ describe(SwapSDK, () => {
       const result = await sdk.getQuoteV2(params);
       expect(getQuoteV2).toHaveBeenCalledWith(
         'https://chainflip-swap.staging/',
-        { ...params, brokerCommissionBps: 15, dcaEnabled: false },
+        { ...params, brokerCommissionBps: 15, dcaEnabled: false, dcaV2Enabled: false },
         {},
       );
       expect(result).toStrictEqual([{ quote: 1234 }]);
@@ -320,6 +320,7 @@ describe(SwapSDK, () => {
             { account: 'cFLdopvNB7LaiBbJoNdNC26e9Gc1FNJKFtvNZjAmXAAVnzCk4', commissionBps: 20 },
           ],
           dcaEnabled: false,
+          dcaV2Enabled: false,
         },
         {},
       );
@@ -355,6 +356,7 @@ describe(SwapSDK, () => {
             messageLengthBytes: 100,
           },
           dcaEnabled: false,
+          dcaV2Enabled: false,
         },
         {},
       );
