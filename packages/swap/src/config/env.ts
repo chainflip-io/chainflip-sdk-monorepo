@@ -5,7 +5,6 @@ import {
   chainflipNetworks,
   InternalAssetMap,
 } from '@chainflip/utils/chainflip';
-import BigNumber from 'bignumber.js';
 import { z } from 'zod';
 import { envSafeAssetBlacklist } from '@/shared/consts.js';
 import { isNotNullish } from '@/shared/guards.js';
@@ -121,17 +120,13 @@ export default z
       z.number(),
     ),
     QUOTING_BASE_SLIPPAGE: internalAssetMap('QUOTING_BASE_SLIPPAGE', {}, z.number()),
-    QUOTING_REPLENISHMENT_FACTOR: internalAssetMap(
-      'QUOTING_REPLENISHMENT_FACTOR',
-      {},
-      z
-        .number()
-        .positive()
-        .transform((n) => {
-          const [numerator, denominator] = new BigNumber(n).toFraction();
-          return [BigInt(numerator.toNumber()), BigInt(denominator.toNumber())] as const;
-        }),
-    ),
+    QUOTER_DCA_V2_ASSETS: internalAssetCsv('QUOTER_DCA_V2_ASSETS'),
+    QUOTER_DCA_V2_MAX_USD_VALUE: envVar
+      .optional()
+      .transform((value) => Number(value) || undefined)
+      .describe(
+        'The upper limit in USD value for DCA v2 eligibility. If undefined, DCA v2 is disabled.',
+      ),
     DCA_CHUNK_INTERVAL_BLOCKS: optionalNumber(2),
     FULLY_DISABLED_INTERNAL_ASSETS: internalAssetCsv('FULLY_DISABLED_INTERNAL_ASSETS').transform(
       (set) =>
@@ -156,7 +151,6 @@ export default z
     QUOTER_BALANCE_TRACKER_ACTIVE: optionalBoolean.default('true'),
     QUOTER_BALANCE_TOLERANCE_PERCENT: optionalNumber(10),
     QUOTER_USE_MEV_FACTOR: optionalBoolean,
-    QUOTER_USE_DCA_LIMIT_ORDERS: optionalBoolean.default('true'),
     BROKER_COMMISSION_BPS: optionalNumber(0),
     RPC_COMMISSION_BROKER_HTTPS_URL: httpUrl.optional(),
     DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE: optionalBoolean,

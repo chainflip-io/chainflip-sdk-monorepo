@@ -1200,6 +1200,91 @@ exports[`server > GET /v2/quote > gets the quote to USDC 1`] = `
 ]
 `;
 
+exports[`server > GET /v2/quote > handles DCA v2 quoting 1`] = `
+[
+  {
+    "dcaParams": {
+      "chunkIntervalBlocks": 2,
+      "numberOfChunks": 500,
+    },
+    "depositAmount": "3125000000000000000000",
+    "destAsset": {
+      "asset": "BTC",
+      "chain": "Bitcoin",
+    },
+    "egressAmount": "10000000000",
+    "estimatedDurationSeconds": 6414,
+    "estimatedDurationsSeconds": {
+      "deposit": 24,
+      "egress": 390,
+      "swap": 6000,
+    },
+    "estimatedPrice": "0.03200002560000000026",
+    "includedFees": [
+      {
+        "amount": "25000",
+        "asset": "ETH",
+        "chain": "Ethereum",
+        "type": "INGRESS",
+      },
+      {
+        "amount": "10000000000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "NETWORK",
+      },
+      {
+        "amount": "8000",
+        "asset": "USDC",
+        "chain": "Ethereum",
+        "type": "EGRESS",
+      },
+    ],
+    "intermediateAmount": "10000000000000",
+    "poolInfo": [
+      {
+        "baseAsset": {
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "ETH",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+      {
+        "baseAsset": {
+          "asset": "BTC",
+          "chain": "Bitcoin",
+        },
+        "fee": {
+          "amount": "0",
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+        "quoteAsset": {
+          "asset": "USDC",
+          "chain": "Ethereum",
+        },
+      },
+    ],
+    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedRetryDurationMinutes": 30,
+    "recommendedSlippageTolerancePercent": 2.5,
+    "srcAsset": {
+      "asset": "ETH",
+      "chain": "Ethereum",
+    },
+    "type": "DCA",
+  },
+]
+`;
+
 exports[`server > GET /v2/quote > on chain > properly quotes for regular swaps 1`] = `
 [
   {
