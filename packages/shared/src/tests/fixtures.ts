@@ -9,14 +9,11 @@ import {
   CfSwappingEnvironmentResponse,
 } from '@chainflip/rpc/types';
 import {
-  AssetOfChain,
-  chainConstants,
   ChainflipAsset,
   chainflipAssets,
   ChainflipChain,
   InternalAssetMap,
   ChainAssetMap,
-  UncheckedAssetAndChain,
   ChainMap,
   internalAssetToRpcAsset,
 } from '@chainflip/utils/chainflip';
@@ -229,44 +226,17 @@ export const supportedAssets = ({
   result: assets.map((asset) => internalAssetToRpcAsset[asset]),
 });
 
-interface BoostPool extends UncheckedAssetAndChain {
-  tier: number;
-  available_amount: string;
-}
-
 export type MockedBoostPoolsDepth = CfBoostPoolsDepthResponse;
 
 export const boostPoolsDepth = (
   mockedBoostPoolsDepth?: CfBoostPoolsDepthResponse,
 ): RpcResponse<CfBoostPoolsDepthResponse> => ({
   jsonrpc: '2.0',
-  result:
-    mockedBoostPoolsDepth ??
-    (Object.entries({
-      ...(Object.fromEntries(
-        Object.entries(chainConstants).flatMap(([chain, { assets }]) =>
-          assets.flatMap((asset) =>
-            [5, 10, 30].map((tier) => [
-              `${chain}-${asset}-${tier.toString().padStart(2, '0')}`,
-              { chain, asset, tier, available_amount: '0x0' },
-            ]),
-          ),
-        ),
-      ) as {
-        [C in Exclude<
-          ChainflipChain,
-          'Polkadot'
-        > as `${C}-${AssetOfChain<C>}-${number}`]: BoostPool;
-      }),
-      'Bitcoin-BTC-10': {
-        chain: 'Bitcoin',
-        asset: 'BTC',
-        tier: 10,
-        available_amount: '0x186aa',
-      },
-    })
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([, pool]) => pool) as CfBoostPoolsDepthResponse),
+  result: mockedBoostPoolsDepth ?? [
+    { chain: 'Bitcoin', asset: 'BTC', tier: 5, available_amount: '0x0' },
+    { chain: 'Bitcoin', asset: 'BTC', tier: 10, available_amount: '0x186aa' },
+    { chain: 'Bitcoin', asset: 'BTC', tier: 30, available_amount: '0x0' },
+  ],
   id: 1,
 });
 

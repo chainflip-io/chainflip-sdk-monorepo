@@ -249,13 +249,15 @@ export default class Quoter {
     });
   }
 
-  private *formatLimitOrders(
+  private formatLimitOrders(
     quotes: [AccountId, BetaQuote][],
     legs: readonly [Leg] | readonly [Leg, Leg],
     balances: Map<AccountId, InternalAssetMap<bigint>>,
     requestId: string,
     isStableCoinSwap: boolean,
-  ): Generator<RpcLimitOrder> {
+  ): RpcLimitOrder[] {
+    const orders: RpcLimitOrder[] = [];
+
     for (let legIndex = 0; legIndex < legs.length; legIndex += 1) {
       const leg = legs[legIndex].toJSON();
 
@@ -264,16 +266,19 @@ export default class Quoter {
       ) as Exclude<ChainflipAsset, 'Dot'>;
       const baseAsset = getInternalAsset(leg.base_asset) as Exclude<ChainflipAsset, 'Dot'>;
       const side = leg.side === 'BUY' ? 'sell' : 'buy';
+      const assetUsesDcaV2 = env.QUOTER_DCA_V2_ASSETS.has(baseAsset);
 
-      for (const [accountId, quote] of quotes.filter(([, q]) => !q.beta)) {
-        const balance = balances.get(accountId)?.[sellAsset];
+      for (const [accountId, quote] of quotes) {
+        // eslint-disable-next-line no-continue
+        if (quote.beta) continue;
+        const balance = !assetUsesDcaV2 ? balances.get(accountId)?.[sellAsset] : undefined;
         const mevFactor =
           (isStableCoinSwap ? 0 : 1) *
           (this.accountIdToSocket.get(accountId)?.data.mevFactors[side][baseAsset] ?? 0);
 
         for (const [tick, amount] of quote.legs[legIndex] ?? []) {
           if (balance === undefined || isBalanceWithinTolerance(balance, amount)) {
-            yield {
+            orders.push({
               LimitOrder: {
                 side,
                 base_asset: leg.base_asset,
@@ -281,7 +286,7 @@ export default class Quoter {
                 tick: tick + mevFactor,
                 sell_amount: hexEncodeNumber(amount),
               },
-            };
+            });
           } else {
             logger.warn('insufficient balance', {
               accountId,
@@ -297,6 +302,8 @@ export default class Quoter {
         }
       }
     }
+
+    return orders;
   }
 
   async getLimitOrders(
@@ -342,7 +349,7 @@ export default class Quoter {
       balances,
       request.request_id,
       isStableCoin(srcAsset) && isStableCoin(destAsset),
-    ).toArray();
+    );
 
     logger.info('received limit orders from market makers', {
       quotes,

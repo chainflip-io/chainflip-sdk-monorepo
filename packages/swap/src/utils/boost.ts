@@ -16,11 +16,13 @@ export const getBoostFeeBpsForAmount = async ({
   amount: bigint;
   asset: ChainflipAsset;
 }): Promise<{ estimatedBoostFeeBps: number | undefined; maxBoostFeeBps: number }> => {
+  if (asset !== 'Btc') return { estimatedBoostFeeBps: undefined, maxBoostFeeBps: 0 };
+
   const assetBoostPoolsDepth = await boostPoolsCache.get(asset);
 
   let remainingAmount = amount;
   let feeAmount = 0n;
-  const maxBoostFeeBps = Math.max(...assetBoostPoolsDepth.map((pool) => pool.tier));
+  const maxBoostFeeBps = Math.max(0, ...assetBoostPoolsDepth.map((pool) => pool.tier));
 
   for (const poolDepth of assetBoostPoolsDepth) {
     const poolAvailableAmount = poolDepth.availableAmount;
