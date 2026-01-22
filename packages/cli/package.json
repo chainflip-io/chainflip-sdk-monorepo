@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/cli",
-  "version": "1.12.1-wbtc-dev.6",
+  "version": "1.12.1-wbtc-dev.7",
   "description": "",
   "main": "./dist/lib.mjs",
   "types": "./dist/lib.d.ts",
