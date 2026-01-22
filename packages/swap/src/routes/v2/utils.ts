@@ -532,12 +532,18 @@ export const getFillOrKillParams = (
   const fokRetryDurationBlocks =
     readField(swapRequest, swapDepositChannel, 'fokRetryDurationBlocks') ??
     pendingVaultSwap?.refundParams?.retryDuration;
+  const fokMaxOraclePriceSlippageBps = readField(
+    swapRequest,
+    swapDepositChannel,
+    'fokMaxOraclePriceSlippageBps',
+  );
 
   return srcAsset && destAsset && isNotNullish(fokMinPriceX128)
     ? {
         refundAddress: fokRefundAddress,
         minPrice: getPriceFromPriceX128(fokMinPriceX128.toFixed(), srcAsset, destAsset),
         retryDurationBlocks: fokRetryDurationBlocks,
+        maxOraclePriceSlippage: fokMaxOraclePriceSlippageBps,
       }
     : undefined;
 };
