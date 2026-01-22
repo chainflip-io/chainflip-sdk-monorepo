@@ -404,6 +404,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from an Internal (Liquida
     },
   ],
   "fillOrKillParams": {
+    "maxOraclePriceSlippage": 500,
     "minPrice": "0",
   },
   "lastStatechainUpdateAt": 1640995200000,
@@ -451,6 +452,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from an Internal (Liquida
   },
   "fees": [],
   "fillOrKillParams": {
+    "maxOraclePriceSlippage": 500,
     "minPrice": "0",
   },
   "lastStatechainUpdateAt": 1640995200000,
