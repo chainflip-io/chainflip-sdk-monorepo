@@ -60,6 +60,7 @@ const swapRequestInclude = {
   },
   beneficiaries: { select: beneficiaryInclude },
   onChainSwapInfo: true,
+  liquidationSwapInfo: true,
 } as const;
 
 const channelIdRegex = /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
@@ -531,12 +532,18 @@ export const getFillOrKillParams = (
   const fokRetryDurationBlocks =
     readField(swapRequest, swapDepositChannel, 'fokRetryDurationBlocks') ??
     pendingVaultSwap?.refundParams?.retryDuration;
+  const fokMaxOraclePriceSlippageBps = readField(
+    swapRequest,
+    swapDepositChannel,
+    'fokMaxOraclePriceSlippageBps',
+  );
 
   return srcAsset && destAsset && isNotNullish(fokMinPriceX128)
     ? {
         refundAddress: fokRefundAddress,
         minPrice: getPriceFromPriceX128(fokMinPriceX128.toFixed(), srcAsset, destAsset),
         retryDurationBlocks: fokRetryDurationBlocks,
+        maxOraclePriceSlippage: fokMaxOraclePriceSlippageBps,
       }
     : undefined;
 };
@@ -617,12 +624,23 @@ export const getDepositChannelInfo = (
     return {
       id: `${swapDepositChannel.issuedBlock}-${swapDepositChannel.srcChain}-${swapDepositChannel.channelId}`,
       createdAt: swapDepositChannel.createdAt.valueOf(),
+      /** @deprecated DEPRECATED(2.0): remove field */
+      brokerCommissionBps:
+        swapDepositChannel.beneficiaries.find(({ type }) => type === 'SUBMITTER')?.commissionBps ??
+        0,
       depositAddress: swapDepositChannel.depositAddress,
       srcChainExpiryBlock: swapDepositChannel.srcChainExpiryBlock?.toString(),
       estimatedExpiryTime: swapDepositChannel.estimatedExpiryAt?.valueOf(),
       expectedDepositAmount: swapDepositChannel.expectedDepositAmount?.toFixed(),
       isExpired: swapDepositChannel.isExpired,
       openedThroughBackend: swapDepositChannel.openedThroughBackend,
+      /** @deprecated DEPRECATED(2.0): remove field */
+      affiliateBrokers:
+        swapDepositChannel.beneficiaries
+          .filter(({ type }) => type === 'AFFILIATE')
+          .map(({ account, commissionBps }) => ({ account, commissionBps })) ?? [],
+      /** @deprecated DEPRECATED(2.0): remove field */
+      fillOrKillParams: getFillOrKillParams(null, swapDepositChannel),
       dcaParams: getDcaParams(swapDepositChannel),
     };
   }

@@ -487,12 +487,19 @@ describe('account creation swap', () => {
           "witnessedBlockIndex": "10665506-1360",
         },
         "depositChannel": {
+          "affiliateBrokers": [],
+          "brokerCommissionBps": 15,
           "createdAt": 63992880000,
           "dcaParams": {
             "chunkIntervalBlocks": 1,
             "numberOfChunks": 12,
           },
           "depositAddress": "0x4b39858b89d4bdb449ff9e293af6a5fc3177f060",
+          "fillOrKillParams": {
+            "minPrice": "2.610019575874822479",
+            "refundAddress": "0x608a6b0e501732d1af57f223bcdfe1b9d0631900",
+            "retryDurationBlocks": 50,
+          },
           "id": "10665480-Ethereum-854",
           "isExpired": false,
           "openedThroughBackend": false,

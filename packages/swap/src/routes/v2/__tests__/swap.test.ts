@@ -467,6 +467,38 @@ const createOnChainSwapRequestedEvent = (accountId: string) => {
   return requestedEvent;
 };
 
+const createLiquidationSwapRequestedEvent = (accountId: string, loanId: string) => {
+  const decoded = bytesToHex(ss58.decode(accountId).data);
+  const requestedEvent = clone(swapEventMap['Swapping.SwapRequested']);
+
+  (requestedEvent.args as any) = {
+    ...requestedEvent.args,
+    origin: {
+      __kind: 'Internal',
+    },
+    requestType: {
+      __kind: 'Regular',
+      outputAction: {
+        __kind: 'CreditLendingPool',
+        swapType: {
+          __kind: 'Liquidation',
+          loanId,
+          borrowerId: decoded,
+        },
+      },
+    },
+    priceLimitsAndExpiry: {
+      minPrice: '0',
+      expiryBehaviour: {
+        __kind: 'NoExpiry',
+      },
+      maxOraclePriceSlippage: 500,
+    },
+  };
+
+  return requestedEvent;
+};
+
 describe('server', () => {
   let server: Server;
   vi.setConfig({ testTimeout: 5000 });
@@ -486,7 +518,7 @@ describe('server', () => {
     beforeEach(async () => {
       const time = new Date('2022-01-01');
       vi.useFakeTimers({ toFake: ['performance'] }).setSystemTime(time);
-      await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel", private."DepositChannel", "Swap", "FailedSwap", "IgnoredEgress", "StateChainError", "SwapRequest", "Pool", "ChainTracking" CASCADE`;
+      await prisma.$queryRaw`TRUNCATE TABLE "Egress", "Broadcast", "Swap", "SwapDepositChannel", private."DepositChannel", "Swap", "FailedSwap", "IgnoredEgress", "StateChainError", "SwapRequest", "Pool", "ChainTracking", "LiquidationSwapInfo" CASCADE`;
       await createChainTrackingInfo(time);
       await createPools();
       oldEnv = { ...env };
@@ -835,9 +867,16 @@ describe('server', () => {
             "txRef": "0xfae1ed",
           },
           "depositChannel": {
+            "affiliateBrokers": [],
+            "brokerCommissionBps": 0,
             "createdAt": 516000,
             "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
             "estimatedExpiryTime": 1640998260000,
+            "fillOrKillParams": {
+              "minPrice": "0",
+              "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+              "retryDurationBlocks": 100,
+            },
             "id": "86-Ethereum-85",
             "isExpired": false,
             "openedThroughBackend": false,
@@ -1018,9 +1057,16 @@ describe('server', () => {
           txRef: '9dccc57dc24a62635e946b06629a01646741e728edeacfed0e30d9638e82b378',
         },
         depositChannel: {
+          affiliateBrokers: [],
+          brokerCommissionBps: 0,
           createdAt: 21688716000,
           depositAddress: 'tb1purq4kn2cl8cltjms3twmljpkrucfjxx3ths8ynmsgg9nkx2ypydqx9e6y2',
           estimatedExpiryTime: 3732519000000,
+          fillOrKillParams: {
+            minPrice: '5.140026445278486822',
+            refundAddress: 'tb1q78pjllxzm7069fj8mw3ud0dvk4d8n2muqs7q2k',
+            retryDurationBlocks: 150,
+          },
           id: '3614786-Bitcoin-875',
           isExpired: false,
           openedThroughBackend: false,
@@ -2154,6 +2200,46 @@ describe('server', () => {
 
       expect(status).toBe(200);
       expect(body.state).toBe('RECEIVING');
+      expect(body).toMatchSnapshot();
+    });
+
+    it(`retrieves a swap from an Internal (Liquidation) origin in ${StateV2.Swapping}`, async () => {
+      const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
+      const requestedEvent = createLiquidationSwapRequestedEvent(accountId, '1');
+
+      await processEvents([requestedEvent, swapEventMap['Swapping.SwapScheduled']]);
+
+      const { body, status } = await request(server).get(
+        `/v2/swaps/${requestedEvent.args.swapRequestId}`,
+      );
+      expect(status).toBe(200);
+      expect(body).toMatchSnapshot();
+    });
+
+    it(`retrieves a swap from an Internal (Liquidation) origin in ${StateV2.Completed}`, async () => {
+      const accountId = 'cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh';
+      const requestedEvent = createLiquidationSwapRequestedEvent(accountId, '1');
+
+      const swapRequestCompletedEvent = clone(swapEventMap['Swapping.SwapRequestCompleted']);
+      swapRequestCompletedEvent.args = {
+        ...swapRequestCompletedEvent.args,
+        reason: {
+          __kind: 'Executed',
+        },
+      };
+
+      await processEvents([
+        requestedEvent,
+        swapEventMap['Swapping.SwapScheduled'],
+        swapEventMap['Swapping.SwapExecuted'],
+        swapRequestCompletedEvent,
+      ]);
+
+      const { body, status } = await request(server).get(
+        `/v2/swaps/${requestedEvent.args.swapRequestId}`,
+      );
+
+      expect(status).toBe(200);
       expect(body).toMatchSnapshot();
     });
   });

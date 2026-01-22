@@ -6,10 +6,13 @@ import {
   DOT_ADDRESS,
   ETH_ADDRESS,
   swapRequestCompletedMock,
+  swapRequestCompletedMock200,
 } from '../../__tests__/utils.js';
 import swapRequestCompleted from '../swapRequestCompleted.js';
 
 const { event, block } = swapRequestCompletedMock;
+
+const { event: event200, block: block200 } = swapRequestCompletedMock200;
 
 describe(swapRequestCompleted, () => {
   beforeEach(async () => {
@@ -313,4 +316,140 @@ describe(swapRequestCompleted, () => {
       expect(swapRequest.quote?.refundedAt).toBeTruthy();
     },
   );
+
+  it('updates swap request with liquidation info - Executed', async () => {
+    await prisma.swapRequest.create({
+      data: {
+        nativeId: BigInt(event200.args.swapRequestId),
+        depositAmount: '10000000000',
+        swapInputAmount: '10000000000',
+        depositFinalisedAt: new Date(block200.timestamp - 12000),
+        depositFinalisedBlockIndex: `${block200.height - 100}-${event200.indexInBlock}`,
+        srcAsset: 'Eth',
+        destAsset: 'Dot',
+        destAddress: DOT_ADDRESS,
+        requestType: 'REGULAR',
+        originType: 'VAULT',
+        swapRequestedAt: new Date(block200.timestamp - 12000),
+        swapRequestedBlockIndex: '92-398',
+        liquidationSwapInfo: {
+          create: {
+            loanId: 500n,
+            accountId: 'account-1',
+          },
+        },
+        swaps: {
+          createMany: {
+            data: [
+              {
+                nativeId: 3,
+                srcAsset: 'Btc',
+                destAsset: 'Eth',
+                type: 'SWAP',
+                swapInputAmount: '10000000000',
+                swapOutputAmount: '2500000',
+                swapScheduledAt: new Date('2024-08-06T00:00:00.000Z'),
+                swapScheduledBlockIndex: '1-1',
+              },
+            ],
+          },
+        },
+        totalBrokerCommissionBps: 0,
+      },
+    });
+
+    await swapRequestCompleted({ block: block200, event: event200, prisma });
+
+    const swapRequest = await prisma.swapRequest.findFirstOrThrow({
+      include: {
+        quote: true,
+        liquidationSwapInfo: true,
+      },
+    });
+
+    expect(swapRequest).toMatchSnapshot({
+      id: expect.any(BigInt),
+      liquidationSwapInfo: {
+        id: expect.any(Number),
+        loanId: expect.any(BigInt),
+        swapRequestId: expect.any(BigInt),
+        completedAt: expect.any(Date),
+        completedAtBlockIndex: expect.any(String),
+      },
+    });
+  });
+
+  it('updates swap request with liquidation info - Aborted', async () => {
+    await prisma.swapRequest.create({
+      data: {
+        nativeId: BigInt(event200.args.swapRequestId),
+        depositAmount: '10000000000',
+        swapInputAmount: '10000000000',
+        depositFinalisedAt: new Date(block200.timestamp - 12000),
+        depositFinalisedBlockIndex: `${block200.height - 100}-${event200.indexInBlock}`,
+        srcAsset: 'Eth',
+        destAsset: 'Dot',
+        destAddress: DOT_ADDRESS,
+        requestType: 'REGULAR',
+        originType: 'VAULT',
+        swapRequestedAt: new Date(block200.timestamp - 12000),
+        swapRequestedBlockIndex: '92-398',
+        liquidationSwapInfo: {
+          create: {
+            loanId: 500n,
+            accountId: 'account-1',
+          },
+        },
+        swaps: {
+          createMany: {
+            data: [
+              {
+                nativeId: 3,
+                srcAsset: 'Btc',
+                destAsset: 'Eth',
+                type: 'SWAP',
+                swapInputAmount: '10000000000',
+                swapOutputAmount: '2500000',
+                swapScheduledAt: new Date('2024-08-06T00:00:00.000Z'),
+                swapScheduledBlockIndex: '1-1',
+              },
+            ],
+          },
+        },
+        totalBrokerCommissionBps: 0,
+      },
+    });
+
+    await swapRequestCompleted({
+      block: block200,
+      event: {
+        ...event200,
+        args: {
+          ...event200.args,
+          reason: {
+            __kind: 'Aborted',
+          },
+        },
+      },
+      prisma,
+    });
+
+    const swapRequest = await prisma.swapRequest.findFirstOrThrow({
+      include: {
+        quote: true,
+        liquidationSwapInfo: true,
+      },
+    });
+
+    expect(swapRequest).toMatchSnapshot({
+      id: expect.any(BigInt),
+      liquidationSwapInfo: {
+        id: expect.any(Number),
+        loanId: expect.any(BigInt),
+        swapRequestId: expect.any(BigInt),
+        abortedAt: expect.any(Date),
+        abortedAtBlockIndex: expect.any(String),
+      },
+    });
+  });
 });

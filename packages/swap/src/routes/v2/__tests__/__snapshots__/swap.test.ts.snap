@@ -120,9 +120,16 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a native swap id 1`]
     "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
     "createdAt": 516000,
     "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
     "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
     "id": "86-Ethereum-85",
     "isExpired": false,
     "openedThroughBackend": false,
@@ -181,9 +188,16 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a solana case-insens
     "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
     "createdAt": 516000,
     "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
     "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
     "id": "86-Ethereum-85",
     "isExpired": false,
     "openedThroughBackend": false,
@@ -366,6 +380,106 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a vault origin in CO
 }
 `;
 
+exports[`server > GET /v2/swaps/:id > retrieves a swap from an Internal (Liquidation) origin in COMPLETED 1`] = `
+{
+  "brokers": [],
+  "destAsset": "DOT",
+  "destChain": "Polkadot",
+  "estimatedDurationSeconds": 12,
+  "estimatedDurationsSeconds": {
+    "swap": 12,
+  },
+  "fees": [
+    {
+      "amount": "4556242",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "NETWORK",
+    },
+    {
+      "amount": "45516860",
+      "asset": "USDC",
+      "chain": "Ethereum",
+      "type": "BROKER",
+    },
+  ],
+  "fillOrKillParams": {
+    "maxOraclePriceSlippage": 500,
+    "minPrice": "0",
+  },
+  "lastStatechainUpdateAt": 1640995200000,
+  "liquidation": {
+    "accountId": "cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh",
+    "completedAt": 564000,
+    "completedAtBlockIndex": "94-596",
+    "loanId": "1",
+    "outputAmount": "4192904666034",
+    "refundAmount": "0",
+  },
+  "srcAsset": "ETH",
+  "srcChain": "Ethereum",
+  "state": "COMPLETED",
+  "swap": {
+    "livePriceExecutionDeltaPercentage": 1,
+    "originalInputAmount": "4999949999999650000",
+    "regular": {
+      "executedAt": 564000,
+      "executedBlockIndex": "94-594",
+      "inputAmount": "4999949999999650000",
+      "intermediateAmount": "4506169140",
+      "outputAmount": "4192904666034",
+      "retryCount": 0,
+      "scheduledAt": 552000,
+      "scheduledBlockIndex": "92-399",
+    },
+    "remainingInputAmount": "0",
+    "swappedInputAmount": "4999949999999650000",
+    "swappedIntermediateAmount": "4506169140",
+    "swappedOutputAmount": "4192904666034",
+  },
+  "swapId": "368",
+}
+`;
+
+exports[`server > GET /v2/swaps/:id > retrieves a swap from an Internal (Liquidation) origin in SWAPPING 1`] = `
+{
+  "brokers": [],
+  "destAsset": "DOT",
+  "destChain": "Polkadot",
+  "estimatedDurationSeconds": 12,
+  "estimatedDurationsSeconds": {
+    "swap": 12,
+  },
+  "fees": [],
+  "fillOrKillParams": {
+    "maxOraclePriceSlippage": 500,
+    "minPrice": "0",
+  },
+  "lastStatechainUpdateAt": 1640995200000,
+  "liquidation": {
+    "accountId": "cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh",
+    "loanId": "1",
+  },
+  "srcAsset": "ETH",
+  "srcChain": "Ethereum",
+  "state": "SWAPPING",
+  "swap": {
+    "originalInputAmount": "4999949999999650000",
+    "regular": {
+      "inputAmount": "4999949999999650000",
+      "retryCount": 0,
+      "scheduledAt": 552000,
+      "scheduledBlockIndex": "92-399",
+    },
+    "remainingInputAmount": "4999949999999650000",
+    "swappedInputAmount": "0",
+    "swappedIntermediateAmount": "0",
+    "swappedOutputAmount": "0",
+  },
+  "swapId": "368",
+}
+`;
+
 exports[`server > GET /v2/swaps/:id > retrieves a swap from an onChain origin in COMPLETED 1`] = `
 {
   "brokers": [],
@@ -467,9 +581,16 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status 1`] =
     "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
     "createdAt": 516000,
     "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
     "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
     "id": "86-Ethereum-85",
     "isExpired": false,
     "openedThroughBackend": false,
@@ -559,9 +680,16 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status by tx
     "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
     "createdAt": 516000,
     "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
     "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
     "id": "86-Ethereum-85",
     "isExpired": false,
     "openedThroughBackend": false,
@@ -651,9 +779,16 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status by tx
     "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
     "createdAt": 516000,
     "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
     "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
     "id": "86-Ethereum-85",
     "isExpired": false,
     "openedThroughBackend": false,
@@ -742,9 +877,16 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SENDING status 1`] = `
     "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
     "createdAt": 516000,
     "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
     "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
     "id": "86-Ethereum-85",
     "isExpired": false,
     "openedThroughBackend": false,
@@ -830,9 +972,16 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SENT status 1`] = `
     "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
     "createdAt": 516000,
     "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
     "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
     "id": "86-Ethereum-85",
     "isExpired": false,
     "openedThroughBackend": false,
@@ -919,9 +1068,16 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SWAPPING status 1`] = 
     "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
     "createdAt": 516000,
     "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
     "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
     "id": "86-Ethereum-85",
     "isExpired": false,
     "openedThroughBackend": false,
@@ -979,9 +1135,16 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SWAPPING status 2`] = 
     "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
     "createdAt": 516000,
     "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
     "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
     "id": "86-Ethereum-85",
     "isExpired": false,
     "openedThroughBackend": false,
@@ -1056,9 +1219,16 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SWAPPING status with a
     "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
     "createdAt": 516000,
     "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
     "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
     "id": "86-Ethereum-85",
     "isExpired": false,
     "openedThroughBackend": false,
@@ -1116,9 +1286,16 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap with FillOrKillParams in 
     "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
     "createdAt": 516000,
     "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
     "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "29387358770557187699218413430556141945466.638919302188",
+      "refundAddress": "0x541f563237a309b3a61e33bdf07a8930bdba8d99",
+      "retryDurationBlocks": 15,
+    },
     "id": "86-Ethereum-85",
     "isExpired": false,
     "openedThroughBackend": false,
@@ -1203,9 +1380,16 @@ exports[`server > GET /v2/swaps/:id > retrieves boost details when channel swap 
     "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
     "createdAt": 516000,
     "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
     "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
     "id": "86-Ethereum-85",
     "isExpired": false,
     "openedThroughBackend": false,
@@ -1334,6 +1518,8 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in COMPLETED 
     "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
     "createdAt": 516000,
     "dcaParams": {
       "chunkIntervalBlocks": 3,
@@ -1341,6 +1527,11 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in COMPLETED 
     },
     "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
     "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
     "id": "86-Ethereum-85",
     "isExpired": false,
     "openedThroughBackend": false,
@@ -1438,6 +1629,8 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in FAILED sta
     "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
     "createdAt": 516000,
     "dcaParams": {
       "chunkIntervalBlocks": 3,
@@ -1445,6 +1638,11 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in FAILED sta
     },
     "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
     "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "29387358770557187699218413430556141945466.638919302188",
+      "refundAddress": "0x541f563237a309b3a61e33bdf07a8930bdba8d99",
+      "retryDurationBlocks": 15,
+    },
     "id": "86-Ethereum-85",
     "isExpired": false,
     "openedThroughBackend": false,
@@ -1569,6 +1767,8 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in SENDING st
     "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
     "createdAt": 516000,
     "dcaParams": {
       "chunkIntervalBlocks": 3,
@@ -1576,6 +1776,11 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in SENDING st
     },
     "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
     "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
     "id": "86-Ethereum-85",
     "isExpired": false,
     "openedThroughBackend": false,
@@ -1670,6 +1875,8 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in SWAPPING s
     "witnessedBlockIndex": "92-400",
   },
   "depositChannel": {
+    "affiliateBrokers": [],
+    "brokerCommissionBps": 0,
     "createdAt": 516000,
     "dcaParams": {
       "chunkIntervalBlocks": 3,
@@ -1677,6 +1884,11 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in SWAPPING s
     },
     "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
     "estimatedExpiryTime": 1640998260000,
+    "fillOrKillParams": {
+      "minPrice": "0",
+      "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
+      "retryDurationBlocks": 100,
+    },
     "id": "86-Ethereum-85",
     "isExpired": false,
     "openedThroughBackend": false,

@@ -9,6 +9,8 @@ on:
         value: ${{ jobs.check-commit-message.outputs.publish_sdk }}
       publish-tag:
         value: ${{ jobs.check-commit-message.outputs.publish_tag }}
+      git-tag:
+        value: ${{ jobs.check-commit-message.outputs.git_tag }}
 
 env:
   FORCE_COLOR: 1
@@ -20,6 +22,7 @@ jobs:
       publish_cli: ${{ steps.check-commit-message.outputs.publish_cli }}
       publish_sdk: ${{ steps.check-commit-message.outputs.publish_sdk }}
       publish_tag: ${{ steps.check-version.outputs.publish_tag }}
+      git_tag: ${{ steps.check-version.outputs.git_tag }}
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
@@ -54,6 +57,7 @@ jobs:
           if [[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Stable version detected: $version"
             echo "publish_tag=latest" >> $GITHUB_OUTPUT
+            echo "git_tag=$version" >> $GITHUB_OUTPUT
           else
             echo "Pre-release version detected: $version"
             echo "publish_tag=pre-release" >> $GITHUB_OUTPUT

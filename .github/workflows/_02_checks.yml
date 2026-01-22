@@ -50,12 +50,17 @@ jobs:
             sleep 10
           done
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@681c641aba71e4a1c380be3ab5e12ad51f415867 # 7.1.6
+        with:
+          enable-cache: true
+          cache-dependency-glob: 'packages/swap/python-client/*'
+
       - name: Setup Python 🐍
         if: matrix.package == 'swap'
-        uses: actions/setup-python@5db1cf9a59fb97c40a68accab29236f0da7e94db
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # 6.1.0
         with:
-          python-version: '3.8'
-          cache: 'pip'
+          python-version-file: './packages/swap/python-client/pyproject.toml'
 
       - name: Docker Compose Action 🐳
         if: matrix.package == 'swap'
@@ -65,7 +70,8 @@ jobs:
 
       - name: Install Python Dependencies 🐍📦
         if: matrix.package == 'swap'
-        run: pip install -r packages/swap/python-client/requirements.txt
+        working-directory: ./packages/swap/python-client
+        run: uv sync --locked --all-extras --dev
 
       - name: Migrate database 🗃️
         if: matrix.package == 'swap'

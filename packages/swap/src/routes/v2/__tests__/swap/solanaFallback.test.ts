@@ -416,8 +416,15 @@ describe('solana fallback requested', () => {
           "witnessedBlockIndex": "7666752-1048",
         },
         "depositChannel": {
+          "affiliateBrokers": [],
+          "brokerCommissionBps": 20,
           "createdAt": 46000380000,
           "depositAddress": "0xd9eb2ee687ac11ee8dc858964573e065d981aac4",
+          "fillOrKillParams": {
+            "minPrice": "2.73137712",
+            "refundAddress": "0x47a7c49be51658119740d2c9b93d1aa858c44d63",
+            "retryDurationBlocks": 150,
+          },
           "id": "7666730-Ethereum-2530",
           "isExpired": false,
           "openedThroughBackend": false,
