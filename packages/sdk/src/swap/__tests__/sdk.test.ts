@@ -4244,7 +4244,7 @@ describe(SwapSDK, () => {
       ).toBe(1.85);
     });
 
-    it('returns null if LPP is not supported', async () => {
+    it('returns false if LPP is not supported', async () => {
       expect(
         await sdk.calculateLivePriceSlippageTolerancePercent(
           slippageTolerancePercent,
@@ -4254,7 +4254,7 @@ describe(SwapSDK, () => {
             destAsset: { asset: 'FLIP', chain: 'Ethereum' },
           },
         ),
-      ).toBe(null);
+      ).toBe(false);
     });
   });
 });
