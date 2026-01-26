@@ -619,7 +619,7 @@ export class SwapSDK {
     slippageTolerancePercent: number,
     brokerCommissionBps: number,
     quote: Pick<Quote | BoostQuote, 'srcAsset' | 'destAsset'>,
-  ): Promise<number | null> {
+  ): Promise<number | false> {
     const { assets } = await this.cache.read('networkInfo');
     const srcAsset = getInternalAsset(quote.srcAsset);
     const destAsset = getInternalAsset(quote.destAsset);
@@ -629,7 +629,7 @@ export class SwapSDK {
         (asset) => assets.find((a) => a.asset === asset)?.livePriceProtectionEnabled,
       )
     ) {
-      return null;
+      return false;
     }
 
     const networkFeeBps = 10;
