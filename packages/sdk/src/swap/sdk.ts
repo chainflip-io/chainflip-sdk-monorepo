@@ -611,7 +611,7 @@ export class SwapSDK {
   }
 
   async calculateLivePriceSlippageTolerancePercent(
-    baseSlippagePercent: number,
+    slippageTolerancePercent: number,
     brokerCommissionBps: number,
     quote: Pick<Quote | BoostQuote, 'srcAsset' | 'destAsset'>,
   ): Promise<number | null> {
@@ -628,6 +628,6 @@ export class SwapSDK {
     }
 
     const networkFeeBps = 10;
-    return baseSlippagePercent + networkFeeBps / 100 + brokerCommissionBps / 100;
+    return slippageTolerancePercent + networkFeeBps / 100 + brokerCommissionBps / 100;
   }
 }
