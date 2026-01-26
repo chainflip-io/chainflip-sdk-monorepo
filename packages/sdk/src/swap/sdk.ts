@@ -346,8 +346,6 @@ export class SwapSDK {
       maxBoostFeeBps: 'maxBoostFeeBps' in quote ? quote.maxBoostFeeBps : undefined,
       ccmParams,
       amount: quote.depositAmount,
-      commissionBps: brokerCommissionBps,
-      affiliates,
     };
 
     await this.checkLivePriceProtectionRequirement(depositAddressRequest, quote);
@@ -356,7 +354,11 @@ export class SwapSDK {
 
     if (this.options.broker) {
       const result = await requestSwapDepositAddress(
-        depositAddressRequest,
+        {
+          ...depositAddressRequest,
+          commissionBps: brokerCommissionBps,
+          affiliates,
+        },
         { url: this.options.broker.url },
         this.options.network,
       );
