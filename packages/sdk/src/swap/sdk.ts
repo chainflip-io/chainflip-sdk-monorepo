@@ -10,6 +10,7 @@ import {
   chainflipChains,
   internalAssetToRpcAsset,
   ChainMap,
+  AssetAndChain,
 } from '@chainflip/utils/chainflip';
 import { HexString } from '@chainflip/utils/types';
 import { initClient } from '@ts-rest/core';
@@ -117,8 +118,8 @@ export class SwapSDK {
       baseUrl: this.options.backendUrl.replace(/\/+$/, ''),
       baseHeaders: CF_SDK_VERSION_HEADERS,
     });
-    this.dcaEnabled = options.enabledFeatures?.dcaV2 ?? options.enabledFeatures?.dca ?? false;
     this.dcaV2Enabled = options.enabledFeatures?.dcaV2 ?? false;
+    this.dcaEnabled = this.dcaV2Enabled || (options.enabledFeatures?.dca ?? false);
     this.cache = new MultiCache({
       environment: {
         fetch: () => getEnvironment(this.rpcConfig),
@@ -451,6 +452,8 @@ export class SwapSDK {
       affiliates,
     };
 
+    await this.checkLivePriceProtectionRequirement(vaultSwapRequest, quote);
+
     if (this.options.broker) {
       assert(
         !vaultSwapRequest.brokerAccount,
@@ -523,6 +526,8 @@ export class SwapSDK {
       affiliates,
     };
 
+    await this.checkLivePriceProtectionRequirement(requestParams, quote);
+
     if (this.options.broker) {
       assert(
         !brokerAccount,
@@ -585,7 +590,7 @@ export class SwapSDK {
   }
 
   private async checkLivePriceProtectionRequirement(
-    request: Parameters<typeof requestSwapDepositAddress>[0],
+    request: Parameters<typeof requestSwapDepositAddress>[0] | CfParametersEncodingRequest,
     quote: Quote | BoostQuote,
   ): Promise<void> {
     if (!this.dcaV2Enabled) return;
@@ -593,8 +598,8 @@ export class SwapSDK {
 
     const { assets } = await this.cache.read('networkInfo');
 
-    const srcAsset = getInternalAsset(request.srcAsset);
-    const destAsset = getInternalAsset(request.destAsset);
+    const srcAsset = getInternalAsset(request.srcAsset as AssetAndChain);
+    const destAsset = getInternalAsset(request.destAsset as AssetAndChain);
     if (
       ![srcAsset, destAsset].every(
         (asset) => assets.find((a) => a.asset === asset)?.livePriceProtectionEnabled,
