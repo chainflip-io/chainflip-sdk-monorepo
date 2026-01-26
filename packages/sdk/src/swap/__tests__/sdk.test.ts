@@ -58,6 +58,7 @@ const mockNetworkStatus = (
           egressEnabled: true,
           boostDepositsEnabled,
           vaultSwapDepositsEnabled: true,
+          livePriceProtectionEnabled: true,
         },
         {
           asset: 'Btc',
@@ -66,6 +67,7 @@ const mockNetworkStatus = (
           egressEnabled: true,
           boostDepositsEnabled,
           vaultSwapDepositsEnabled: false,
+          livePriceProtectionEnabled: true,
         },
         {
           asset: 'Flip',
@@ -74,6 +76,7 @@ const mockNetworkStatus = (
           egressEnabled: true,
           boostDepositsEnabled,
           vaultSwapDepositsEnabled: true,
+          livePriceProtectionEnabled: false,
         },
         {
           asset: 'Usdc',
@@ -82,6 +85,7 @@ const mockNetworkStatus = (
           egressEnabled: true,
           boostDepositsEnabled,
           vaultSwapDepositsEnabled: true,
+          livePriceProtectionEnabled: true,
         },
         {
           asset: 'Sol',
@@ -90,6 +94,7 @@ const mockNetworkStatus = (
           egressEnabled: false,
           boostDepositsEnabled,
           vaultSwapDepositsEnabled: true,
+          livePriceProtectionEnabled: false,
         },
         {
           asset: 'SolUsdc',
@@ -98,6 +103,7 @@ const mockNetworkStatus = (
           egressEnabled: false,
           boostDepositsEnabled,
           vaultSwapDepositsEnabled: true,
+          livePriceProtectionEnabled: true,
         },
       ],
       cfBrokerCommissionBps,
@@ -133,6 +139,7 @@ describe(SwapSDK, () => {
           egressEnabled: true,
           boostDepositsEnabled: true,
           vaultSwapDepositsEnabled: true,
+          livePriceProtectionEnabled: true,
         })),
         cfBrokerCommissionBps: 0,
       },
