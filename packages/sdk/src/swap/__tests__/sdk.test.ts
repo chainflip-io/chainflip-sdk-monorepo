@@ -31,6 +31,7 @@ vi.mock('@ts-rest/core', async (importOriginal) => ({
               egressEnabled: true,
               boostDepositsEnabled: true,
               vaultSwapDepositsEnabled: true,
+              livePriceProtectionEnabled: /eth|usd|btc/i.test(asset),
             })),
           boostDepositsEnabled: true,
         },
@@ -139,7 +140,7 @@ describe(SwapSDK, () => {
           egressEnabled: true,
           boostDepositsEnabled: true,
           vaultSwapDepositsEnabled: true,
-          livePriceProtectionEnabled: true,
+          livePriceProtectionEnabled: /eth|usd|btc/i.test(asset),
         })),
         cfBrokerCommissionBps: 0,
       },
@@ -3814,6 +3815,37 @@ describe(SwapSDK, () => {
     it('returns that boost is disabled', async () => {
       sdk = mockNetworkStatus(false);
       expect(await sdk.checkBoostEnabled()).toBe(false);
+    });
+  });
+
+  describe(SwapSDK.prototype.calculateLivePriceSlippageTolerancePercent, () => {
+    const slippageTolerancePercent = 1;
+    const brokerCommissionBps = 75;
+
+    it('calculates the live price slippage tolerance percent correctly', async () => {
+      expect(
+        await sdk.calculateLivePriceSlippageTolerancePercent(
+          slippageTolerancePercent,
+          brokerCommissionBps,
+          {
+            srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+            destAsset: { asset: 'ETH', chain: 'Ethereum' },
+          },
+        ),
+      ).toBe(1.85);
+    });
+
+    it('returns null if LPP is not supported', async () => {
+      expect(
+        await sdk.calculateLivePriceSlippageTolerancePercent(
+          slippageTolerancePercent,
+          brokerCommissionBps,
+          {
+            srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+            destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+          },
+        ),
+      ).toBe(null);
     });
   });
 });

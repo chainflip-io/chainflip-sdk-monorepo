@@ -609,4 +609,25 @@ export class SwapSDK {
       'Max oracle price slippage must be set in FillOrKillParams when live price protection is enabled for both assets in DCA V2',
     );
   }
+
+  async calculateLivePriceSlippageTolerancePercent(
+    baseSlippagePercent: number,
+    brokerCommissionBps: number,
+    quote: Pick<Quote | BoostQuote, 'srcAsset' | 'destAsset'>,
+  ): Promise<number | null> {
+    const { assets } = await this.cache.read('networkInfo');
+    const srcAsset = getInternalAsset(quote.srcAsset);
+    const destAsset = getInternalAsset(quote.destAsset);
+
+    if (
+      ![srcAsset, destAsset].every(
+        (asset) => assets.find((a) => a.asset === asset)?.livePriceProtectionEnabled,
+      )
+    ) {
+      return null;
+    }
+
+    const networkFeeBps = 10;
+    return baseSlippagePercent + networkFeeBps / 100 + brokerCommissionBps / 100;
+  }
 }
