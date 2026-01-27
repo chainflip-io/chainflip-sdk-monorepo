@@ -88,8 +88,8 @@ jobs:
     secrets: inherit
 
   checks-cli:
-    needs: [determine-mode, pre-checks-cli]
-    if: needs.determine-mode.outputs.is_main_push == 'true'
+    needs: [determine-mode, get-release-context, pre-checks-cli]
+    if: needs.determine-mode.outputs.is_main_push == 'true' && needs.get-release-context.outputs.publish-cli == 'true'
     uses: ./.github/workflows/_02_checks.yml
     with:
       package: cli
@@ -97,7 +97,7 @@ jobs:
 
   publish-cli:
     needs: [determine-mode, get-node-version-main, get-release-context, checks-cli]
-    if: needs.determine-mode.outputs.is_main_push == 'true'
+    if: needs.determine-mode.outputs.is_main_push == 'true' && needs.get-release-context.outputs.publish-cli == 'true'
     uses: ./.github/workflows/_npm_publish.yml
     with:
       node_version: ${{ needs.get-node-version-main.outputs.node_version }}
@@ -118,8 +118,8 @@ jobs:
     secrets: inherit
 
   checks-sdk:
-    needs: [determine-mode, pre-checks-sdk]
-    if: needs.determine-mode.outputs.is_main_push == 'true'
+    needs: [determine-mode, get-release-context, pre-checks-sdk]
+    if: needs.determine-mode.outputs.is_main_push == 'true' && needs.get-release-context.outputs.publish-sdk == 'true'
     uses: ./.github/workflows/_02_checks.yml
     with:
       package: sdk
@@ -127,7 +127,7 @@ jobs:
 
   publish-sdk:
     needs: [determine-mode, get-node-version-main, get-release-context, checks-sdk]
-    if: needs.determine-mode.outputs.is_main_push == 'true'
+    if: needs.determine-mode.outputs.is_main_push == 'true' && needs.get-release-context.outputs.publish-sdk == 'true'
     uses: ./.github/workflows/_npm_publish.yml
     with:
       node_version: ${{ needs.get-node-version-main.outputs.node_version }}
