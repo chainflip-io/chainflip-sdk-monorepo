@@ -4,7 +4,9 @@ import { assetConstants, getInternalAsset } from '@chainflip/utils/chainflip';
 import { uncapitalize } from '@chainflip/utils/string';
 import { z } from 'zod';
 import type { NetworkInfo } from '@/shared/api/networkInfo.js';
+import { chainflipAssetToPriceAssetMap } from '@/shared/consts.js';
 import { MultiCache, Fetcher } from '@/shared/dataStructures.js';
+import { isNotNullish } from '@/shared/guards.js';
 import env from '../config/env.js';
 
 const httpClient = new HttpClient(env.RPC_NODE_HTTP_URL);
@@ -69,6 +71,7 @@ const networkInfo = async (): Promise<z.output<typeof NetworkInfo>> => {
       vaultSwapDepositsEnabled: canDeposit && vaultSwapDepositsEnabled,
       depositChannelDepositsEnabled: canDeposit && depositChannelDepositsEnabled,
       depositChannelCreationEnabled: canDeposit && depositChannelCreationEnabled,
+      livePriceProtectionEnabled: isNotNullish(chainflipAssetToPriceAssetMap[asset]),
     };
   });
 

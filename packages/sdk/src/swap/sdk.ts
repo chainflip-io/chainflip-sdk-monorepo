@@ -10,6 +10,7 @@ import {
   chainflipChains,
   internalAssetToRpcAsset,
   ChainMap,
+  AssetAndChain,
 } from '@chainflip/utils/chainflip';
 import { HexString } from '@chainflip/utils/types';
 import { initClient } from '@ts-rest/core';
@@ -24,7 +25,7 @@ import {
 import { envSafeAssetBlacklist } from '@/shared/consts.js';
 import { MultiCache } from '@/shared/dataStructures.js';
 import { parseFoKParams } from '@/shared/functions.js';
-import { assert } from '@/shared/guards.js';
+import { assert, isNotNullish } from '@/shared/guards.js';
 import {
   BoostPoolsDepth,
   Environment,
@@ -67,7 +68,9 @@ export type SwapSDKOptions = {
   };
   rpcUrl?: string;
   enabledFeatures?: {
+    /** @deprecated DEPRECATED(2.0): DCA will be enabled by default in version 2.2 */
     dca?: boolean;
+    dcaV2?: boolean;
   };
 };
 
@@ -96,6 +99,8 @@ export class SwapSDK {
 
   private dcaEnabled = false;
 
+  private dcaV2Enabled = false;
+
   private blackListedAssets: readonly ChainflipAsset[];
 
   constructor(options: SwapSDKOptions = {}) {
@@ -113,7 +118,8 @@ export class SwapSDK {
       baseUrl: this.options.backendUrl.replace(/\/+$/, ''),
       baseHeaders: CF_SDK_VERSION_HEADERS,
     });
-    this.dcaEnabled = options.enabledFeatures?.dca ?? false;
+    this.dcaV2Enabled = options.enabledFeatures?.dcaV2 ?? false;
+    this.dcaEnabled = this.dcaV2Enabled || (options.enabledFeatures?.dca ?? false);
     this.cache = new MultiCache({
       environment: {
         fetch: () => getEnvironment(this.rpcConfig),
@@ -226,6 +232,7 @@ export class SwapSDK {
         ...quoteRequest,
         brokerCommissionBps: submitterBrokerCommissionBps,
         dcaEnabled: this.dcaEnabled,
+        dcaV2Enabled: this.dcaV2Enabled,
       },
       options,
     );
@@ -341,6 +348,9 @@ export class SwapSDK {
       ccmParams,
       amount: quote.depositAmount,
     };
+
+    await this.checkLivePriceProtectionRequirement(depositAddressRequest, quote);
+
     let response;
 
     if (this.options.broker) {
@@ -442,6 +452,8 @@ export class SwapSDK {
       affiliates,
     };
 
+    await this.checkLivePriceProtectionRequirement(vaultSwapRequest, quote);
+
     if (this.options.broker) {
       assert(
         !vaultSwapRequest.brokerAccount,
@@ -514,6 +526,8 @@ export class SwapSDK {
       affiliates,
     };
 
+    await this.checkLivePriceProtectionRequirement(requestParams, quote);
+
     if (this.options.broker) {
       assert(
         !brokerAccount,
@@ -573,5 +587,52 @@ export class SwapSDK {
     }
 
     return res.body;
+  }
+
+  private async checkLivePriceProtectionRequirement(
+    request: Parameters<typeof requestSwapDepositAddress>[0] | CfParametersEncodingRequest,
+    quote: Quote | BoostQuote,
+  ): Promise<void> {
+    if (!this.dcaV2Enabled) return;
+    if (!quote.recommendedLivePriceSlippageTolerancePercent) return;
+
+    const { assets } = await this.cache.read('networkInfo');
+
+    const srcAsset = getInternalAsset(request.srcAsset as AssetAndChain);
+    const destAsset = getInternalAsset(request.destAsset as AssetAndChain);
+    if (
+      ![srcAsset, destAsset].every(
+        (asset) => assets.find((a) => a.asset === asset)?.livePriceProtectionEnabled,
+      )
+    ) {
+      return;
+    }
+
+    if (isNotNullish(request.fillOrKillParams.maxOraclePriceSlippage)) return;
+
+    throw new Error(
+      'Max oracle price slippage must be set in FillOrKillParams when live price protection is enabled for both assets in DCA V2',
+    );
+  }
+
+  async calculateLivePriceSlippageTolerancePercent(
+    slippageTolerancePercent: number,
+    brokerCommissionBps: number,
+    quote: Pick<Quote | BoostQuote, 'srcAsset' | 'destAsset'>,
+  ): Promise<number | false> {
+    const { assets } = await this.cache.read('networkInfo');
+    const srcAsset = getInternalAsset(quote.srcAsset);
+    const destAsset = getInternalAsset(quote.destAsset);
+
+    if (
+      ![srcAsset, destAsset].every(
+        (asset) => assets.find((a) => a.asset === asset)?.livePriceProtectionEnabled,
+      )
+    ) {
+      return false;
+    }
+
+    const networkFeeBps = 10;
+    return slippageTolerancePercent + networkFeeBps / 100 + brokerCommissionBps / 100;
   }
 }
