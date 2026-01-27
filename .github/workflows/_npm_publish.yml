@@ -38,16 +38,13 @@ on:
         required: true
         type: string
     secrets:
-      node_auth_token:
-        description: Node auth token
-        required: true
       ssh_private_key:
         description: SSH private key
         required: true
 
 permissions:
-  packages: write
   contents: write
+  id-token: write
 
 jobs:
   publish:
@@ -79,8 +76,6 @@ jobs:
         run: ${{ inputs.build_cmd }}
 
       - name: Publish npm package 📦
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.node_auth_token }}
         run: ${{ inputs.publish_cmd }}
 
       - name: Import SSH key 🔑
