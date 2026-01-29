@@ -4239,9 +4239,24 @@ describe(SwapSDK, () => {
           {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
             destAsset: { asset: 'ETH', chain: 'Ethereum' },
+            isOnChain: false,
           },
         ),
       ).toBe(1.85);
+    });
+
+    it('calculates the live price slippage tolerance percent correctly (internal)', async () => {
+      expect(
+        await sdk.calculateLivePriceSlippageTolerancePercent(
+          slippageTolerancePercent,
+          brokerCommissionBps,
+          {
+            srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+            destAsset: { asset: 'ETH', chain: 'Ethereum' },
+            isOnChain: true,
+          },
+        ),
+      ).toBe(1.8);
     });
 
     it('returns false if LPP is not supported', async () => {
@@ -4252,6 +4267,7 @@ describe(SwapSDK, () => {
           {
             srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
             destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+            isOnChain: false,
           },
         ),
       ).toBe(false);

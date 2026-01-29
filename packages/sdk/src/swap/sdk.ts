@@ -11,6 +11,7 @@ import {
   internalAssetToRpcAsset,
   ChainMap,
   AssetAndChain,
+  readAssetValue,
 } from '@chainflip/utils/chainflip';
 import { HexString } from '@chainflip/utils/types';
 import { initClient } from '@ts-rest/core';
@@ -349,7 +350,7 @@ export class SwapSDK {
       amount: quote.depositAmount,
     };
 
-    await this.checkLivePriceProtectionRequirement(depositAddressRequest, quote);
+    await this.checkLivePriceProtectionRequirement(depositAddressRequest);
 
     let response;
 
@@ -452,7 +453,7 @@ export class SwapSDK {
       affiliates,
     };
 
-    await this.checkLivePriceProtectionRequirement(vaultSwapRequest, quote);
+    await this.checkLivePriceProtectionRequirement(vaultSwapRequest);
 
     if (this.options.broker) {
       assert(
@@ -526,7 +527,7 @@ export class SwapSDK {
       affiliates,
     };
 
-    await this.checkLivePriceProtectionRequirement(requestParams, quote);
+    await this.checkLivePriceProtectionRequirement(requestParams);
 
     if (this.options.broker) {
       assert(
@@ -591,10 +592,8 @@ export class SwapSDK {
 
   private async checkLivePriceProtectionRequirement(
     request: Parameters<typeof requestSwapDepositAddress>[0] | CfParametersEncodingRequest,
-    quote: Quote | BoostQuote,
   ): Promise<void> {
     if (!this.dcaV2Enabled) return;
-    if (!quote.recommendedLivePriceSlippageTolerancePercent) return;
 
     const { assets } = await this.cache.read('networkInfo');
 
@@ -618,8 +617,9 @@ export class SwapSDK {
   async calculateLivePriceSlippageTolerancePercent(
     slippageTolerancePercent: number,
     brokerCommissionBps: number,
-    quote: Pick<Quote | BoostQuote, 'srcAsset' | 'destAsset'>,
+    quote: Pick<Quote | BoostQuote, 'srcAsset' | 'destAsset' | 'isOnChain'>,
   ): Promise<number | false> {
+    assert(slippageTolerancePercent >= 0, 'slippageTolerancePercent must be non-negative');
     const { assets } = await this.cache.read('networkInfo');
     const srcAsset = getInternalAsset(quote.srcAsset);
     const destAsset = getInternalAsset(quote.destAsset);
@@ -632,7 +632,17 @@ export class SwapSDK {
       return false;
     }
 
-    const networkFeeBps = 10;
+    const env = await this.getStateChainEnvironment();
+
+    const networkFeeRates =
+      env.swapping.networkFees[quote.isOnChain ? 'internalSwapNetworkFee' : 'regularNetworkFee']
+        .rates;
+
+    const networkFeeBps = Math.max(
+      Number(readAssetValue(networkFeeRates, srcAsset)),
+      Number(readAssetValue(networkFeeRates, destAsset)),
+    );
+
     return slippageTolerancePercent + networkFeeBps / 100 + brokerCommissionBps / 100;
   }
 }
