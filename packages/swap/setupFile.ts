@@ -59,16 +59,17 @@ const truncateAllTables = async (client: PrismaClient): Promise<void> => {
 beforeAll(async () => {
   const tempDbName = tempDbUrl.pathname.slice(1);
   const templateDbName = dbUrl.pathname.slice(1);
-  const adminClient = new PrismaClient({ datasourceUrl: dbUrl.toString() });
-  const exists = await dbExists(adminClient, tempDbName);
 
-  if (!exists) {
-    await withMutex(() =>
-      adminClient.$queryRawUnsafe(`CREATE DATABASE "${tempDbName}" TEMPLATE "${templateDbName}"`),
-    );
-  }
-
-  await adminClient.$disconnect();
+  await withMutex(async () => {
+    const adminClient = new PrismaClient({ datasourceUrl: dbUrl.toString() });
+    const exists = await dbExists(adminClient, tempDbName);
+    if (!exists) {
+      await adminClient.$queryRawUnsafe(
+        `CREATE DATABASE "${tempDbName}" TEMPLATE "${templateDbName}"`,
+      );
+    }
+    await adminClient.$disconnect();
+  });
 
   // Truncate tables to ensure clean state (works for both new and existing DBs)
   const tempClient = new PrismaClient({ datasourceUrl: tempDbUrl.toString() });
