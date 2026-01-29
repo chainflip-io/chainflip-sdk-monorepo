@@ -1,7 +1,6 @@
 /* eslint-disable n/no-process-env */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { PrismaClient } from '@prisma/swapping';
-import assert from 'assert';
 import { randomUUID } from 'crypto';
 import { Redis } from 'ioredis';
 import { beforeAll, vi } from 'vitest';
