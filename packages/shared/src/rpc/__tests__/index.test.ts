@@ -93,26 +93,26 @@ describe('getSwappingEnvironment', () => {
           "internalSwapNetworkFee": {
             "rates": {
               "Arbitrum": {
-                "ETH": 50n,
-                "USDC": 50n,
+                "ETH": 5n,
+                "USDC": 5n,
               },
               "Assethub": {
-                "DOT": 50n,
-                "USDC": 50n,
-                "USDT": 50n,
+                "DOT": 5n,
+                "USDC": 5n,
+                "USDT": 5n,
               },
               "Bitcoin": {
-                "BTC": 50n,
+                "BTC": 5n,
               },
               "Ethereum": {
-                "ETH": 50n,
-                "FLIP": 50n,
-                "USDC": 50n,
-                "USDT": 50n,
+                "ETH": 5n,
+                "FLIP": 5n,
+                "USDC": 5n,
+                "USDT": 5n,
               },
               "Solana": {
-                "SOL": 50n,
-                "USDC": 50n,
+                "SOL": 5n,
+                "USDC": 5n,
               },
             },
             "standardRateAndMinimum": {
@@ -123,26 +123,26 @@ describe('getSwappingEnvironment', () => {
           "regularNetworkFee": {
             "rates": {
               "Arbitrum": {
-                "ETH": 50n,
-                "USDC": 50n,
+                "ETH": 10n,
+                "USDC": 10n,
               },
               "Assethub": {
-                "DOT": 50n,
-                "USDC": 50n,
-                "USDT": 50n,
+                "DOT": 10n,
+                "USDC": 10n,
+                "USDT": 10n,
               },
               "Bitcoin": {
-                "BTC": 50n,
+                "BTC": 10n,
               },
               "Ethereum": {
-                "ETH": 50n,
-                "FLIP": 50n,
-                "USDC": 50n,
-                "USDT": 50n,
+                "ETH": 10n,
+                "FLIP": 10n,
+                "USDC": 10n,
+                "USDT": 10n,
               },
               "Solana": {
-                "SOL": 50n,
-                "USDC": 50n,
+                "SOL": 10n,
+                "USDC": 10n,
               },
             },
             "standardRateAndMinimum": {

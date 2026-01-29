@@ -1337,7 +1337,7 @@ exports[`server > GET /v2/quote > on chain > properly quotes for regular swaps 1
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 0.51,
+    "recommendedLivePriceSlippageTolerancePercent": 0.5,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 0.5,
     "srcAsset": {
@@ -1485,7 +1485,7 @@ exports[`server > GET /v2/quote > on chain > respects the minimum network fee 1`
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 0.51,
+    "recommendedLivePriceSlippageTolerancePercent": 0.5,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 0.5,
     "srcAsset": {
@@ -1759,7 +1759,7 @@ exports[`server > GET /v2/quote > returns the correct live price slippage tolera
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 0.51,
+    "recommendedLivePriceSlippageTolerancePercent": 0.5,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 0.5,
     "srcAsset": {
