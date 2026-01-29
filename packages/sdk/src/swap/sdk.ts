@@ -620,6 +620,7 @@ export class SwapSDK {
     quote: Pick<Quote | BoostQuote, 'srcAsset' | 'destAsset' | 'isOnChain'>,
   ): Promise<number | false> {
     assert(slippageTolerancePercent >= 0, 'slippageTolerancePercent must be non-negative');
+    assert(brokerCommissionBps >= 0, 'brokerCommissionBps must be non-negative');
     const { assets } = await this.cache.read('networkInfo');
     const srcAsset = getInternalAsset(quote.srcAsset);
     const destAsset = getInternalAsset(quote.destAsset);
