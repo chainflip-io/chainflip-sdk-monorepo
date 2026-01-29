@@ -22,18 +22,27 @@ const withMutex = async (cb: () => Promise<void>) => {
 
   let locked = false;
   const vitexMutex = 'vitex_mutex';
-  while (!locked) {
-    await redis.call('SET', vitexMutex, id, 'NX', 'PX', '30000');
-    const lockOwner = await redis.get(vitexMutex);
-    locked = lockOwner === id;
+
+  try {
+    while (!locked) {
+      await redis.call('SET', vitexMutex, id, 'NX', 'PX', '30000');
+      const lockOwner = await redis.get(vitexMutex);
+      locked = lockOwner === id;
+    }
+
+    await cb();
+
+    const unlockScript = `
+    if redis.call("get", KEYS[1]) == ARGV[1] then
+    return redis.call("del", KEYS[1])
+    else
+      return 0
+    end
+    `;
+    await redis.eval(unlockScript, 1, vitexMutex, id);
+  } finally {
+    await redis.quit();
   }
-
-  await cb();
-
-  const lockOwner = await redis.get(vitexMutex);
-  assert(lockOwner === id, 'Lock owner mismatch when releasing lock');
-  await redis.del(vitexMutex);
-  await redis.quit();
 };
 
 const dbExists = async (client: PrismaClient, dbName: string): Promise<boolean> => {
@@ -62,13 +71,16 @@ beforeAll(async () => {
 
   await withMutex(async () => {
     const adminClient = new PrismaClient({ datasourceUrl: dbUrl.toString() });
-    const exists = await dbExists(adminClient, tempDbName);
-    if (!exists) {
-      await adminClient.$queryRawUnsafe(
-        `CREATE DATABASE "${tempDbName}" TEMPLATE "${templateDbName}"`,
-      );
+    try {
+      const exists = await dbExists(adminClient, tempDbName);
+      if (!exists) {
+        await adminClient.$queryRawUnsafe(
+          `CREATE DATABASE "${tempDbName}" TEMPLATE "${templateDbName}"`,
+        );
+      }
+    } finally {
+      await adminClient.$disconnect();
     }
-    await adminClient.$disconnect();
   });
 
   // Truncate tables to ensure clean state (works for both new and existing DBs)
