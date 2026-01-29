@@ -54,7 +54,7 @@
     "supertest": "^7.1.1"
   },
   "engines": {
-    "node": "22.3.0",
+    "node": "24.13.0",
     "pnpm": ">=9"
   },
   "dependencies": {

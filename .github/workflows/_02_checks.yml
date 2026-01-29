@@ -82,7 +82,7 @@ jobs:
 
       - name: Upload coverage to Codecov ☂️
         uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
-        if: startsWith(matrix.node_version, '18')
+        if: startsWith(matrix.node_version, '24')
         with:
           flags: ${{ matrix.package }}
           fail_ci_if_error: false
