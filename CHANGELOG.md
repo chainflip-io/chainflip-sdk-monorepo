@@ -7,6 +7,29 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## Unreleased
+
+### Added
+
+- New `dcaV2` option in `SwapSDKOptions.enabledFeatures` to enable the new DCA
+  V2 quoting strategy. When enabled, DCA quotes are returned for eligible swaps
+  based on asset configuration and USD value thresholds.
+- `SwapSDK.prototype.calculateLivePriceSlippageTolerancePercent` method to
+  calculate the recommended slippage tolerance for live price protection. This
+  accounts for network fees and broker commission when computing the tolerance.
+
+### Changed
+
+- When `dcaV2` is enabled, `requestDepositAddressV2`, `requestDepositAddress`,
+  and `encodeVaultSwapData` now require `maxOraclePriceSlippage` to be set in
+  `fillOrKillParams` when live price protection is enabled for both the source
+  and destination assets.
+
+### Deprecated
+
+- The `dca` option in `SwapSDKOptions.enabledFeatures` has been deprecated. DCA
+  will be enabled by default in version 2.2.
+
 ## 2.0.1
 
 ### Removed

@@ -18,11 +18,6 @@ describe('env', () => {
 
   it('parses the env variables correctly for mainnet', async () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(noop);
-    process.env.QUOTING_REPLENISHMENT_FACTOR = JSON.stringify({
-      Usdt: 2.1,
-      Flip: true,
-      Flop: '12',
-    });
     process.env.FULLY_DISABLED_INTERNAL_ASSETS = 'Ton,HubDot';
     process.env.DCA_100K_USD_PRICE_IMPACT_PERCENT = JSON.stringify({
       Flip: 0.1,
@@ -60,16 +55,10 @@ describe('env', () => {
         "PROCESSOR_TRANSACTION_TIMEOUT": 10000,
         "QUOTER_BALANCE_TOLERANCE_PERCENT": 10,
         "QUOTER_BALANCE_TRACKER_ACTIVE": true,
-        "QUOTER_USE_DCA_LIMIT_ORDERS": true,
+        "QUOTER_DCA_V2_ASSETS": Set {},
         "QUOTER_USE_MEV_FACTOR": false,
         "QUOTE_TIMEOUT": 1000,
         "QUOTING_BASE_SLIPPAGE": {},
-        "QUOTING_REPLENISHMENT_FACTOR": {
-          "Usdt": [
-            21n,
-            10n,
-          ],
-        },
         "RPC_BROKER_HTTPS_URL": "https://broker.rpc",
         "RPC_NODE_HTTP_URL": "https://chainflip.rpc",
         "RPC_NODE_WSS_URL": "wss://chainflip.rpc",
@@ -85,53 +74,6 @@ describe('env', () => {
       [
         [
           {
-            "error": "[
-        {
-          "code": "invalid_type",
-          "expected": "number",
-          "received": "boolean",
-          "path": [],
-          "message": "Expected number, received boolean"
-        }
-      ]",
-            "key": "Flip",
-            "message": "invalid value in internal asset map",
-            "name": "QUOTING_REPLENISHMENT_FACTOR",
-            "value": true,
-          },
-        ],
-        [
-          {
-            "error": "[
-        {
-          "received": "Flop",
-          "code": "invalid_enum_value",
-          "options": [
-            "Usdc",
-            "Usdt",
-            "Flip",
-            "Eth",
-            "Dot",
-            "Btc",
-            "ArbUsdc",
-            "ArbEth",
-            "Sol",
-            "SolUsdc",
-            "HubDot",
-            "HubUsdt",
-            "HubUsdc"
-          ],
-          "path": [],
-          "message": "Invalid enum value. Expected 'Usdc' | 'Usdt' | 'Flip' | 'Eth' | 'Dot' | 'Btc' | 'ArbUsdc' | 'ArbEth' | 'Sol' | 'SolUsdc' | 'HubDot' | 'HubUsdt' | 'HubUsdc', received 'Flop'"
-        }
-      ]",
-            "key": "Flop",
-            "message": "invalid asset in internal asset map",
-            "name": "QUOTING_REPLENISHMENT_FACTOR",
-          },
-        ],
-        [
-          {
             "asset": "Ton",
             "message": "incorrect asset in internal asset csv",
             "name": "FULLY_DISABLED_INTERNAL_ASSETS",
@@ -145,11 +87,6 @@ describe('env', () => {
   it('parses the env variables correctly for testnet', async () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(noop);
     process.env.CHAINFLIP_NETWORK = 'perseverance';
-    process.env.QUOTING_REPLENISHMENT_FACTOR = JSON.stringify({
-      Usdt: 2.1,
-      Flip: true,
-      Flop: '12',
-    });
     process.env.FULLY_DISABLED_INTERNAL_ASSETS = 'Ton,HubDot';
     process.env.DCA_100K_USD_PRICE_IMPACT_PERCENT = JSON.stringify({
       Flip: 0.1,
@@ -188,16 +125,10 @@ describe('env', () => {
         "PROCESSOR_TRANSACTION_TIMEOUT": 10000,
         "QUOTER_BALANCE_TOLERANCE_PERCENT": 10,
         "QUOTER_BALANCE_TRACKER_ACTIVE": true,
-        "QUOTER_USE_DCA_LIMIT_ORDERS": true,
+        "QUOTER_DCA_V2_ASSETS": Set {},
         "QUOTER_USE_MEV_FACTOR": false,
         "QUOTE_TIMEOUT": 1000,
         "QUOTING_BASE_SLIPPAGE": {},
-        "QUOTING_REPLENISHMENT_FACTOR": {
-          "Usdt": [
-            21n,
-            10n,
-          ],
-        },
         "RPC_BROKER_HTTPS_URL": "https://broker.rpc",
         "RPC_NODE_HTTP_URL": "https://chainflip.rpc",
         "RPC_NODE_WSS_URL": "wss://chainflip.rpc",
@@ -211,53 +142,6 @@ describe('env', () => {
     expect(warnSpy.mock.calls).toMatchInlineSnapshot(
       `
       [
-        [
-          {
-            "error": "[
-        {
-          "code": "invalid_type",
-          "expected": "number",
-          "received": "boolean",
-          "path": [],
-          "message": "Expected number, received boolean"
-        }
-      ]",
-            "key": "Flip",
-            "message": "invalid value in internal asset map",
-            "name": "QUOTING_REPLENISHMENT_FACTOR",
-            "value": true,
-          },
-        ],
-        [
-          {
-            "error": "[
-        {
-          "received": "Flop",
-          "code": "invalid_enum_value",
-          "options": [
-            "Usdc",
-            "Usdt",
-            "Flip",
-            "Eth",
-            "Dot",
-            "Btc",
-            "ArbUsdc",
-            "ArbEth",
-            "Sol",
-            "SolUsdc",
-            "HubDot",
-            "HubUsdt",
-            "HubUsdc"
-          ],
-          "path": [],
-          "message": "Invalid enum value. Expected 'Usdc' | 'Usdt' | 'Flip' | 'Eth' | 'Dot' | 'Btc' | 'ArbUsdc' | 'ArbEth' | 'Sol' | 'SolUsdc' | 'HubDot' | 'HubUsdt' | 'HubUsdc', received 'Flop'"
-        }
-      ]",
-            "key": "Flop",
-            "message": "invalid asset in internal asset map",
-            "name": "QUOTING_REPLENISHMENT_FACTOR",
-          },
-        ],
         [
           {
             "asset": "Ton",

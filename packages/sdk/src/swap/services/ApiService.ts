@@ -13,6 +13,7 @@ type BackendQuery<T, U> = (baseUrl: string, args: T, options: RequestOptions) =>
 export const getQuoteV2: BackendQuery<
   QuoteRequest & {
     dcaEnabled: boolean;
+    dcaV2Enabled: boolean;
   },
   QuoteResponseV2
 > = async (baseUrl, quoteRequest, { signal }) => {
@@ -37,6 +38,7 @@ export const getQuoteV2: BackendQuery<
       ccmMessageLengthBytes: String(quoteRequest.ccmParams.messageLengthBytes),
     }),
     dcaEnabled: String(Boolean(quoteRequest.dcaEnabled)),
+    dcaV2Enabled: String(Boolean(quoteRequest.dcaV2Enabled)),
   };
 
   const { data } = await axios.get<Quote[]>('/v2/quote', {
