@@ -53,10 +53,14 @@
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": "^18 || ^20 || ^22.3.0",
+    "node": "^20 || ^22 || ^24",
     "pnpm": ">=9"
   },
-  "repository": "https://github.com/chainflip-io/chainflip-sdk-monorepo.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chainflip-io/chainflip-sdk-monorepo.git",
+    "directory": "packages/sdk"
+  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"

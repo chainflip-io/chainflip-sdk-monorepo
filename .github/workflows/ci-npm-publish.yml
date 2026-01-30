@@ -1,4 +1,4 @@
-name: NPM Publich CI 🛰️
+name: NPM Publish CI 🛰️
 
 concurrency:
   group: npm-publish-ci
@@ -11,77 +11,212 @@ on:
     paths:
       - 'packages/cli/package.json'
       - 'packages/sdk/package.json'
+  workflow_dispatch:
+    inputs:
+      npm_tag:
+        description: 'NPM dist-tag (e.g., alpha, beta, dev). Cannot be "latest".'
+        required: true
+        type: string
+      package:
+        description: 'Package to publish'
+        required: true
+        type: choice
+        options:
+          - sdk
+          - cli
 
 permissions:
-  packages: write
   contents: write
+  id-token: write
 
 jobs:
+  # ============================================================================
+  # MODE DETECTION
+  # ============================================================================
+  determine-mode:
+    runs-on: ubuntu-latest
+    outputs:
+      is_main_push: ${{ steps.check.outputs.is_main_push }}
+      is_branch_dispatch: ${{ steps.check.outputs.is_branch_dispatch }}
+    steps:
+      - name: Determine execution mode
+        id: check
+        run: |
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref_name }}" == "main" ]]; then
+            echo "is_main_push=true" >> $GITHUB_OUTPUT
+            echo "is_branch_dispatch=false" >> $GITHUB_OUTPUT
+            echo "Mode: Main branch push"
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "is_main_push=false" >> $GITHUB_OUTPUT
+            echo "is_branch_dispatch=true" >> $GITHUB_OUTPUT
+            echo "Mode: Branch workflow dispatch"
+          else
+            echo "is_main_push=false" >> $GITHUB_OUTPUT
+            echo "is_branch_dispatch=false" >> $GITHUB_OUTPUT
+            echo "Mode: Unknown (no-op)"
+          fi
+
+  # ============================================================================
+  # MAIN MODE - Auto-publish from main branch based on commit message
+  # ============================================================================
   get-release-context:
+    needs: [determine-mode]
+    if: needs.determine-mode.outputs.is_main_push == 'true'
     uses: ./.github/workflows/_utils_check_release_context.yml
-  get-node-version:
-    needs: [get-release-context]
-    if: needs.get-release-context.outputs.publish-cli == 'true' || needs.get-release-context.outputs.publish-sdk == 'true'
+
+  get-node-version-main:
+    needs: [determine-mode, get-release-context]
+    if: needs.determine-mode.outputs.is_main_push == 'true' && (needs.get-release-context.outputs.publish-cli == 'true' || needs.get-release-context.outputs.publish-sdk == 'true')
     uses: ./.github/workflows/_node_context.yml
 
-  debug:
-    needs: [get-release-context]
+  debug-main:
+    needs: [determine-mode, get-release-context]
+    if: needs.determine-mode.outputs.is_main_push == 'true'
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo "${{ needs.get-release-context.outputs.publish-cli }}"
-          echo "${{ needs.get-release-context.outputs.publish-sdk }}"
-          echo "${{ needs.get-release-context.outputs.publish-tag }}"
+          echo "publish-cli: ${{ needs.get-release-context.outputs.publish-cli }}"
+          echo "publish-sdk: ${{ needs.get-release-context.outputs.publish-sdk }}"
+          echo "publish-tag: ${{ needs.get-release-context.outputs.publish-tag }}"
+
   pre-checks-cli:
-    needs: [get-release-context]
-    if: needs.get-release-context.outputs.publish-cli == 'true'
+    needs: [determine-mode, get-release-context]
+    if: needs.determine-mode.outputs.is_main_push == 'true' && needs.get-release-context.outputs.publish-cli == 'true'
     uses: ./.github/workflows/_01_pre_checks.yml
     with:
       package: cli
     secrets: inherit
+
   checks-cli:
-    needs: [pre-checks-cli]
+    needs: [determine-mode, get-release-context, pre-checks-cli]
+    if: needs.determine-mode.outputs.is_main_push == 'true' && needs.get-release-context.outputs.publish-cli == 'true'
     uses: ./.github/workflows/_02_checks.yml
     with:
       package: cli
     secrets: inherit
+
   publish-cli:
-    needs: [get-node-version, get-release-context, checks-cli]
+    needs: [determine-mode, get-node-version-main, get-release-context, checks-cli]
+    if: needs.determine-mode.outputs.is_main_push == 'true' && needs.get-release-context.outputs.publish-cli == 'true'
     uses: ./.github/workflows/_npm_publish.yml
     with:
-      node_version: ${{ needs.get-node-version.outputs.node_version }}
+      node_version: ${{ needs.get-node-version-main.outputs.node_version }}
       package_registry: 'https://registry.npmjs.org'
       package_scope: '@chainflip-io'
       build_cmd: pnpm --filter @chainflip/cli build
-      publish_cmd: pnpm --filter @chainflip/cli publish --tag ${{ needs.get-release-context.outputs.publish-tag }}
+      publish_cmd: pnpm --filter @chainflip/cli publish --tag ${{ needs.get-release-context.outputs.publish-tag }} --provenance
       git_tag: "@chainflip/cli/${{ needs.get-release-context.outputs.git-tag }}"
     secrets:
-      node_auth_token: ${{ secrets.CF_NPM_JS_PACKAGES_READ_WRITE }}
       ssh_private_key: ${{ secrets.CF_GITHUB_BOT_SSH_PRIVATE_KEY }}
 
   pre-checks-sdk:
-    needs: [get-release-context]
-    if: needs.get-release-context.outputs.publish-sdk == 'true'
+    needs: [determine-mode, get-release-context]
+    if: needs.determine-mode.outputs.is_main_push == 'true' && needs.get-release-context.outputs.publish-sdk == 'true'
     uses: ./.github/workflows/_01_pre_checks.yml
     with:
       package: sdk
     secrets: inherit
+
   checks-sdk:
-    needs: [pre-checks-sdk]
+    needs: [determine-mode, get-release-context, pre-checks-sdk]
+    if: needs.determine-mode.outputs.is_main_push == 'true' && needs.get-release-context.outputs.publish-sdk == 'true'
     uses: ./.github/workflows/_02_checks.yml
     with:
       package: sdk
     secrets: inherit
+
   publish-sdk:
-    needs: [get-node-version, get-release-context, checks-sdk]
+    needs: [determine-mode, get-node-version-main, get-release-context, checks-sdk]
+    if: needs.determine-mode.outputs.is_main_push == 'true' && needs.get-release-context.outputs.publish-sdk == 'true'
     uses: ./.github/workflows/_npm_publish.yml
     with:
-      node_version: ${{ needs.get-node-version.outputs.node_version }}
+      node_version: ${{ needs.get-node-version-main.outputs.node_version }}
       package_registry: 'https://registry.npmjs.org'
       package_scope: '@chainflip-io'
       build_cmd: pnpm --filter @chainflip/sdk build
-      publish_cmd: pnpm --filter @chainflip/sdk publish --tag ${{ needs.get-release-context.outputs.publish-tag }}
+      publish_cmd: pnpm --filter @chainflip/sdk publish --tag ${{ needs.get-release-context.outputs.publish-tag }} --provenance
       git_tag: "@chainflip/sdk/${{ needs.get-release-context.outputs.git-tag }}"
     secrets:
-      node_auth_token: ${{ secrets.CF_NPM_JS_PACKAGES_READ_WRITE }}
+      ssh_private_key: ${{ secrets.CF_GITHUB_BOT_SSH_PRIVATE_KEY }}
+
+  # ============================================================================
+  # BRANCH MODE - Manual dispatch from feature branches
+  # ============================================================================
+  validate-inputs-branch:
+    needs: [determine-mode]
+    if: needs.determine-mode.outputs.is_branch_dispatch == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate branch is not main
+        if: github.ref_name == 'main'
+        run: |
+          echo "::error::Cannot publish from main branch using workflow_dispatch. Push to main to trigger auto-publish instead."
+          exit 1
+
+      - name: Validate npm tag is not latest
+        if: inputs.npm_tag == 'latest'
+        run: |
+          echo "::error::Cannot use 'latest' npm tag for branch publishes. Use a prerelease tag (e.g., alpha, beta, dev)."
+          exit 1
+
+  validate-version-branch:
+    needs: [determine-mode, validate-inputs-branch]
+    if: needs.determine-mode.outputs.is_branch_dispatch == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+      - name: Get package version
+        id: get-version
+        run: |
+          VERSION=$(jq -r .version ./packages/${{ inputs.package }}/package.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Package version: $VERSION"
+
+      - name: Validate version has prerelease suffix
+        run: |
+          VERSION="${{ steps.get-version.outputs.version }}"
+          # Pattern: X.Y.Z-suffix.N (e.g., 1.0.0-alpha.0, 2.1.3-beta.1)
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+-.+\.[0-9]+$ ]]; then
+            echo "::error::Package version '$VERSION' must have a prerelease suffix (e.g., 1.0.0-alpha.0, 1.0.0-beta.1)"
+            exit 1
+          fi
+          echo "Version '$VERSION' has valid prerelease suffix"
+
+  get-node-version-branch:
+    needs: [determine-mode, validate-version-branch]
+    if: needs.determine-mode.outputs.is_branch_dispatch == 'true'
+    uses: ./.github/workflows/_node_context.yml
+
+  pre-checks-branch:
+    needs: [determine-mode, validate-version-branch]
+    if: needs.determine-mode.outputs.is_branch_dispatch == 'true'
+    uses: ./.github/workflows/_01_pre_checks.yml
+    with:
+      package: ${{ inputs.package }}
+    secrets: inherit
+
+  checks-branch:
+    needs: [determine-mode, pre-checks-branch]
+    if: needs.determine-mode.outputs.is_branch_dispatch == 'true'
+    uses: ./.github/workflows/_02_checks.yml
+    with:
+      package: ${{ inputs.package }}
+    secrets: inherit
+
+  publish-branch:
+    needs: [determine-mode, get-node-version-branch, validate-version-branch, checks-branch]
+    if: needs.determine-mode.outputs.is_branch_dispatch == 'true'
+    uses: ./.github/workflows/_npm_publish.yml
+    with:
+      node_version: ${{ needs.get-node-version-branch.outputs.node_version }}
+      package_registry: 'https://registry.npmjs.org'
+      package_scope: '@chainflip-io'
+      build_cmd: pnpm --filter @chainflip/${{ inputs.package }} build
+      publish_cmd: pnpm --filter @chainflip/${{ inputs.package }} publish --tag ${{ inputs.npm_tag }} --no-git-checks --provenance
+      git_tag: '@chainflip/${{ inputs.package }}/v${{ needs.validate-version-branch.outputs.version }}'
+    secrets:
       ssh_private_key: ${{ secrets.CF_GITHUB_BOT_SSH_PRIVATE_KEY }}
