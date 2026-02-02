@@ -15,7 +15,7 @@
     "preinstall": "npx only-allow pnpm",
     "postinstall": "prisma generate",
     "start": "dotenvx run -- node dist/packages/swap/src/index.js",
-    "test:ci": "CI=1 pnpm test",
+    "test:ci": "CI=1 pnpm test --no-file-parallelism",
     "test": "vitest --retry 3",
     "eslint:check": "pnpm eslint --max-warnings 0 './**/*.ts'",
     "prettier:base": "prettier ./** --ignore-path=../../.prettierignore",
