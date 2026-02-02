@@ -68,16 +68,16 @@ export const swappingEnvironment = ({
     swap_retry_delay_blocks: 5,
     network_fees: {
       internal_swap_network_fee: {
-        rates: createChainAssetMap(5),
+        rates: createChainAssetMap(100),
         standard_rate_and_minimum: {
-          rate: 50,
+          rate: 1000,
           minimum: 500_000,
         },
       },
       regular_network_fee: {
-        rates: createChainAssetMap(10),
+        rates: createChainAssetMap(1000),
         standard_rate_and_minimum: {
-          rate: 50,
+          rate: 1000,
           minimum: 500_000,
         },
       },
