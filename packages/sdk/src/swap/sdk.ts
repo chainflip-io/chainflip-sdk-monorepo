@@ -643,6 +643,7 @@ export class SwapSDK {
       env.swapping.networkFees[quote.isOnChain ? 'internalSwapNetworkFee' : 'regularNetworkFee']
         .rates;
 
+    // divide by 100 to convert from hundredth bps to bps
     const networkFeeBps =
       Math.max(
         Number(readAssetValue(networkFeeRates, srcAsset)),

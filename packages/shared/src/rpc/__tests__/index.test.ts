@@ -93,61 +93,61 @@ describe('getSwappingEnvironment', () => {
           "internalSwapNetworkFee": {
             "rates": {
               "Arbitrum": {
-                "ETH": 5n,
-                "USDC": 5n,
+                "ETH": 100n,
+                "USDC": 100n,
               },
               "Assethub": {
-                "DOT": 5n,
-                "USDC": 5n,
-                "USDT": 5n,
+                "DOT": 100n,
+                "USDC": 100n,
+                "USDT": 100n,
               },
               "Bitcoin": {
-                "BTC": 5n,
+                "BTC": 100n,
               },
               "Ethereum": {
-                "ETH": 5n,
-                "FLIP": 5n,
-                "USDC": 5n,
-                "USDT": 5n,
+                "ETH": 100n,
+                "FLIP": 100n,
+                "USDC": 100n,
+                "USDT": 100n,
               },
               "Solana": {
-                "SOL": 5n,
-                "USDC": 5n,
+                "SOL": 100n,
+                "USDC": 100n,
               },
             },
             "standardRateAndMinimum": {
               "minimum": 500000n,
-              "rate": 50n,
+              "rate": 1000n,
             },
           },
           "regularNetworkFee": {
             "rates": {
               "Arbitrum": {
-                "ETH": 10n,
-                "USDC": 10n,
+                "ETH": 1000n,
+                "USDC": 1000n,
               },
               "Assethub": {
-                "DOT": 10n,
-                "USDC": 10n,
-                "USDT": 10n,
+                "DOT": 1000n,
+                "USDC": 1000n,
+                "USDT": 1000n,
               },
               "Bitcoin": {
-                "BTC": 10n,
+                "BTC": 1000n,
               },
               "Ethereum": {
-                "ETH": 10n,
-                "FLIP": 10n,
-                "USDC": 10n,
-                "USDT": 10n,
+                "ETH": 1000n,
+                "FLIP": 1000n,
+                "USDC": 1000n,
+                "USDT": 1000n,
               },
               "Solana": {
-                "SOL": 10n,
-                "USDC": 10n,
+                "SOL": 1000n,
+                "USDC": 1000n,
               },
             },
             "standardRateAndMinimum": {
               "minimum": 500000n,
-              "rate": 50n,
+              "rate": 1000n,
             },
           },
         },

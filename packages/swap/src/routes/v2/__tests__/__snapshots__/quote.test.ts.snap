@@ -53,7 +53,7 @@ exports[`server > GET /v2/quote > applies price impact to DCA quote 1`] = `
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -117,7 +117,7 @@ exports[`server > GET /v2/quote > applies price impact to DCA quote 1`] = `
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -246,7 +246,7 @@ exports[`server > GET /v2/quote > does not throw if totalLiquidity is higher tha
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -312,7 +312,7 @@ exports[`server > GET /v2/quote > excludes the ingress fee for vault swaps 1`] =
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -377,7 +377,7 @@ exports[`server > GET /v2/quote > gets no DCA quote if the flag is missing 1`] =
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -442,7 +442,7 @@ exports[`server > GET /v2/quote > gets only REGULAR quote because amount is less
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -507,7 +507,7 @@ exports[`server > GET /v2/quote > gets only REGULAR quote when DCA quoting is di
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -572,7 +572,7 @@ exports[`server > GET /v2/quote > gets only REGULAR quote when DCA quoting is di
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -637,7 +637,7 @@ exports[`server > GET /v2/quote > gets only REGULAR quote when DCA quoting is di
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -702,7 +702,7 @@ exports[`server > GET /v2/quote > gets the DCA quote to USDC 1`] = `
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -766,7 +766,7 @@ exports[`server > GET /v2/quote > gets the DCA quote to USDC 1`] = `
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -862,7 +862,7 @@ exports[`server > GET /v2/quote > gets the DCA quote with a boost quote and brok
           },
         },
       ],
-      "recommendedLivePriceSlippageTolerancePercent": 1.1,
+      "recommendedLivePriceSlippageTolerancePercent": 1.2,
       "recommendedRetryDurationMinutes": 30,
       "recommendedSlippageTolerancePercent": 1.5,
       "srcAsset": {
@@ -943,7 +943,7 @@ exports[`server > GET /v2/quote > gets the DCA quote with a boost quote and brok
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1.1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.2,
     "recommendedRetryDurationMinutes": 30,
     "recommendedSlippageTolerancePercent": 2,
     "srcAsset": {
@@ -1038,7 +1038,7 @@ exports[`server > GET /v2/quote > gets the DCA quote with a boost quote and brok
           },
         },
       ],
-      "recommendedLivePriceSlippageTolerancePercent": 1.1,
+      "recommendedLivePriceSlippageTolerancePercent": 1.2,
       "recommendedRetryDurationMinutes": 30,
       "recommendedSlippageTolerancePercent": 1.5,
       "srcAsset": {
@@ -1123,7 +1123,7 @@ exports[`server > GET /v2/quote > gets the DCA quote with a boost quote and brok
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1.1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.2,
     "recommendedRetryDurationMinutes": 30,
     "recommendedSlippageTolerancePercent": 2,
     "srcAsset": {
@@ -1188,7 +1188,7 @@ exports[`server > GET /v2/quote > gets the quote to USDC 1`] = `
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -1273,7 +1273,7 @@ exports[`server > GET /v2/quote > handles DCA v2 quoting 1`] = `
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 30,
     "recommendedSlippageTolerancePercent": 2.5,
     "srcAsset": {
@@ -1337,7 +1337,7 @@ exports[`server > GET /v2/quote > on chain > properly quotes for regular swaps 1
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 0.5,
+    "recommendedLivePriceSlippageTolerancePercent": 0.51,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 0.5,
     "srcAsset": {
@@ -1421,7 +1421,7 @@ exports[`server > GET /v2/quote > on chain > properly quotes with DCA 1`] = `
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.01,
     "recommendedRetryDurationMinutes": 30,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -1485,7 +1485,7 @@ exports[`server > GET /v2/quote > on chain > respects the minimum network fee 1`
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 0.5,
+    "recommendedLivePriceSlippageTolerancePercent": 0.51,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 0.5,
     "srcAsset": {
@@ -1560,7 +1560,7 @@ exports[`server > GET /v2/quote > returns DCA quote if regular does not pass tot
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -1629,7 +1629,7 @@ exports[`server > GET /v2/quote > returns a DCA quote with replenishment 1`] = `
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -1694,7 +1694,7 @@ exports[`server > GET /v2/quote > returns regular quote if DCA does not pass tot
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {
@@ -1759,7 +1759,7 @@ exports[`server > GET /v2/quote > returns the correct live price slippage tolera
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 0.5,
+    "recommendedLivePriceSlippageTolerancePercent": 0.6,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 0.5,
     "srcAsset": {
@@ -1824,7 +1824,7 @@ exports[`server > GET /v2/quote > uses 0 as ingress fee when the protocol can't 
         },
       },
     ],
-    "recommendedLivePriceSlippageTolerancePercent": 1,
+    "recommendedLivePriceSlippageTolerancePercent": 1.1,
     "recommendedRetryDurationMinutes": 5,
     "recommendedSlippageTolerancePercent": 1,
     "srcAsset": {

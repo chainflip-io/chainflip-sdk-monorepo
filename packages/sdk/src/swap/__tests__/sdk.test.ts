@@ -4256,7 +4256,7 @@ describe(SwapSDK, () => {
             isOnChain: true,
           },
         ),
-      ).toBe(1.8);
+      ).toBe(1.76);
     });
 
     it('returns false if LPP is not supported', async () => {
