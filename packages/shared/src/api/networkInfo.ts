@@ -10,6 +10,7 @@ export const NetworkInfo = z.object({
       depositChannelCreationEnabled: z.boolean(),
       egressEnabled: z.boolean(),
       boostDepositsEnabled: z.boolean(),
+      livePriceProtectionEnabled: z.boolean(),
     }),
   ),
   cfBrokerCommissionBps: z.number(),

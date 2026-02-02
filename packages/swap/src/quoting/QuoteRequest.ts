@@ -99,7 +99,9 @@ export default class QuoteRequest {
   private readonly srcAsset: Exclude<InternalAsset, 'Dot'>;
   private readonly destAsset: Exclude<InternalAsset, 'Dot'>;
   private readonly depositAmount: bigint;
+  private depositValueUsd: number | undefined;
   private readonly dcaEnabled: boolean;
+  private readonly dcaV2Enabled: boolean;
   private readonly isVaultSwap: boolean;
   private readonly isOnChain: boolean;
   private readonly pools: Pool[];
@@ -131,7 +133,12 @@ export default class QuoteRequest {
     this.srcAsset = params.srcAsset;
     this.destAsset = params.destAsset;
     this.depositAmount = params.amount;
-    this.dcaEnabled = params.dcaEnabled && !env.DISABLE_DCA_QUOTING;
+    this.dcaV2Enabled =
+      params.dcaV2Enabled &&
+      !env.DISABLE_DCA_QUOTING &&
+      env.QUOTER_DCA_V2_ASSETS.size > 0 &&
+      env.QUOTER_DCA_V2_MAX_USD_VALUE !== undefined;
+    this.dcaEnabled = this.dcaV2Enabled || (params.dcaEnabled && !env.DISABLE_DCA_QUOTING);
     this.isVaultSwap = params.isVaultSwap ?? false;
     this.isOnChain = params.isOnChain ?? false;
     this.pools = params.pools;
@@ -194,9 +201,11 @@ export default class QuoteRequest {
 
   private async setLimitOrders(dcaParams?: typeof this.dcaQuoteParams) {
     if (dcaParams) {
-      this.dcaLimitOrders ??= env.QUOTER_USE_DCA_LIMIT_ORDERS
-        ? await this.quoter.getLimitOrders(this.srcAsset, this.destAsset, dcaParams.chunkSize)
-        : [];
+      this.dcaLimitOrders ??= await this.quoter.getLimitOrders(
+        this.srcAsset,
+        this.destAsset,
+        dcaParams.chunkSize,
+      );
     } else {
       this.regularLimitOrders ??= await this.quoter.getLimitOrders(
         this.srcAsset,
@@ -267,9 +276,7 @@ export default class QuoteRequest {
       destAsset: this.destAsset,
       depositAmount: cfRateInputAmount,
       limitOrders: ensure(
-        env.QUOTER_USE_DCA_LIMIT_ORDERS && dcaParams
-          ? this.dcaLimitOrders
-          : this.regularLimitOrders,
+        dcaParams ? this.dcaLimitOrders : this.regularLimitOrders,
         'Limit orders must be fetched before calling getPoolQuote',
       ),
       brokerCommissionBps: this.brokerCommissionBps,
@@ -485,6 +492,26 @@ export default class QuoteRequest {
     return adjustedResult;
   }
 
+  async canUseDcaV2(): Promise<boolean> {
+    if (!env.QUOTER_DCA_V2_MAX_USD_VALUE) return false;
+    // lpp is a requirement for dca v2
+    if (env.DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE) return false;
+    if (!this.dcaV2Enabled) return false;
+    if (this.srcAsset !== 'Usdc' && !env.QUOTER_DCA_V2_ASSETS.has(this.srcAsset)) return false;
+    if (this.destAsset !== 'Usdc' && !env.QUOTER_DCA_V2_ASSETS.has(this.destAsset)) return false;
+
+    const depositValueUsd = await getUsdValue(this.depositAmount, this.srcAsset).catch(
+      () => undefined,
+    );
+
+    if (depositValueUsd === undefined) {
+      logger.warn('deposit value usd is undefined when checking DCA v2 eligibility');
+      return false;
+    }
+
+    return Number(depositValueUsd) <= env.QUOTER_DCA_V2_MAX_USD_VALUE;
+  }
+
   private async generateQuotes() {
     await Promise.all([
       this.setBoostQuoteParams(),
@@ -539,7 +566,9 @@ export default class QuoteRequest {
           dcaQuoteParams.additionalSwapDurationSeconds;
         dcaBoostedQuote.estimatedDurationSeconds += dcaQuoteParams.additionalSwapDurationSeconds;
       }
-      dcaEagerLiquidityExists = await this.eagerLiquidityExists(this.dcaQuote);
+
+      dcaEagerLiquidityExists =
+        (await this.canUseDcaV2()) || (await this.eagerLiquidityExists(this.dcaQuote));
     }
     if (this.quote) {
       regularEagerLiquidityExists = await this.eagerLiquidityExists(this.quote);

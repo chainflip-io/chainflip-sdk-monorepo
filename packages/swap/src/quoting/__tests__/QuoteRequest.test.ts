@@ -43,6 +43,7 @@ const createRequest = (amount: bigint) =>
     brokerCommissionBps: 0,
     ccmParams: undefined,
     dcaEnabled: true,
+    dcaV2Enabled: false,
     isOnChain: false,
     isVaultSwap: false,
     pools: [],

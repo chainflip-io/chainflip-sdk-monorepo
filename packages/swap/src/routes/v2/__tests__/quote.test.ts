@@ -1,6 +1,7 @@
 import { CfSwapRateV3Response, CfSwapRateV3, WsClient } from '@chainflip/rpc';
 import { baseChainflipAssets, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
+import BigNumber from 'bignumber.js';
 import { Server } from 'http';
 import request from 'supertest';
 import { describe, it, beforeEach, beforeAll, afterEach, expect, vi } from 'vitest';
@@ -114,6 +115,7 @@ describe('server', () => {
   });
 
   beforeEach(async () => {
+    vi.spyOn(WsClient.prototype, 'sendRequest').mockReset();
     vi.mocked(getUsdValue).mockResolvedValue(undefined);
     server = app.listen(0);
     vi.mocked(Quoter.prototype.getLimitOrders).mockResolvedValue([]);
@@ -2260,6 +2262,155 @@ describe('server', () => {
       expect(status).toBe(500);
       expect(body).toEqual({ message: 'Dispatch Error: did you catch me?' });
       expect(sendSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('handles DCA v2 quoting', async () => {
+      env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 20_000 };
+      env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
+      env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
+      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
+      env.QUOTER_DCA_V2_MAX_USD_VALUE = 10_000_000;
+      env.QUOTER_DCA_V2_ASSETS = new Set(['Eth', 'Btc']);
+      env.DISABLE_DCA_QUOTING = false;
+      const ethPrice = 3200;
+      const ethAmount = new BigNumber(env.QUOTER_DCA_V2_MAX_USD_VALUE).dividedBy(ethPrice);
+      vi.mocked(getUsdValue).mockResolvedValue(ethAmount.times(ethPrice).toFixed(2));
+      vi.mocked(getTotalLiquidity).mockResolvedValueOnce(
+        BigInt(ethAmount.shiftedBy(18).dividedBy(10).toFixed(0)),
+      );
+
+      mockRpcResponse((url, data: any) => {
+        if (data.method === 'cf_environment') {
+          return Promise.resolve({
+            data: environment({
+              maxSwapAmount: null,
+              ingressFee: hexEncodeNumber(0x61a8),
+              egressFee: hexEncodeNumber(0x0),
+            }),
+          });
+        }
+
+        if (data.method === 'cf_boost_pools_depth') {
+          return Promise.resolve({
+            data: boostPoolsDepth(),
+          });
+        }
+
+        if (data.method === 'cf_accounts') {
+          return Promise.resolve({
+            data: {
+              id: 1,
+              jsonrpc: '2.0',
+              result: [
+                ['cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH', 'Chainflip Testnet Broker 2'],
+              ],
+            },
+          });
+        }
+
+        if (data.method === 'cf_account_info') {
+          return Promise.resolve({
+            data: cfAccountInfo(),
+          });
+        }
+
+        if (data.method === 'cf_pool_depth') {
+          return Promise.resolve({
+            data: cfPoolDepth(),
+          });
+        }
+
+        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+      });
+
+      const expectedChunkCount = 500;
+      const sendSpy = vi
+        .spyOn(WsClient.prototype, 'sendRequest')
+        .mockRejectedValueOnce(Error('some rpc error'))
+        .mockResolvedValueOnce({
+          broker_commission: buildFee('Usdc', 0),
+          ingress_fee: buildFee('Eth', 25000),
+          egress_fee: buildFee('Usdc', 8000),
+          network_fee: buildFee('Usdc', 10_000e6),
+          // 20k USDC intermediary
+          intermediary: BigInt(20_000e6 * expectedChunkCount),
+          // output of 0.2 BTC
+          output: BigInt(0.2e8 * expectedChunkCount),
+        });
+
+      const params = new URLSearchParams({
+        srcChain: 'Ethereum',
+        srcAsset: 'ETH',
+        destChain: 'Bitcoin',
+        destAsset: 'BTC',
+        amount: ethAmount.shiftedBy(18).toFixed(0),
+        dcaEnabled: 'true',
+        dcaV2Enabled: 'true',
+      });
+
+      const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
+
+      expect(status).toBe(200);
+      expect(body).toMatchSnapshot();
+
+      expect(sendSpy).toHaveBeenCalledTimes(2);
+      expect(sendSpy.mock.calls).toMatchInlineSnapshot(`
+        [
+          [
+            "cf_swap_rate_v3",
+            {
+              "asset": "ETH",
+              "chain": "Ethereum",
+            },
+            {
+              "asset": "BTC",
+              "chain": "Bitcoin",
+            },
+            "0xa968163f0a57b40000",
+            0,
+            undefined,
+            undefined,
+            [],
+            [],
+            false,
+          ],
+          [
+            "cf_swap_rate_v3",
+            {
+              "asset": "ETH",
+              "chain": "Ethereum",
+            },
+            {
+              "asset": "BTC",
+              "chain": "Bitcoin",
+            },
+            "0xa968163f0a57b40000",
+            0,
+            {
+              "chunk_interval": 2,
+              "number_of_chunks": 500,
+            },
+            undefined,
+            [],
+            [],
+            false,
+          ],
+        ]
+      `);
+      expect(vi.mocked(Quoter.prototype.getLimitOrders).mock.calls).toMatchInlineSnapshot(`
+        [
+          [
+            "Eth",
+            "Btc",
+            3125000000000000000000n,
+          ],
+          [
+            "Eth",
+            "Btc",
+            6250000000000000000n,
+          ],
+        ]
+      `);
     });
 
     describe('on chain', () => {
