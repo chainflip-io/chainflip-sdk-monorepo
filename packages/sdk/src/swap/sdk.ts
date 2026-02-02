@@ -616,11 +616,15 @@ export class SwapSDK {
 
   async calculateLivePriceSlippageTolerancePercent(
     slippageTolerancePercent: number,
-    brokerCommissionBps: number,
+    brokerCommissionBpsInput: number | undefined,
     quote: Pick<Quote | BoostQuote, 'srcAsset' | 'destAsset' | 'isOnChain'>,
   ): Promise<number | false> {
     assert(slippageTolerancePercent >= 0, 'slippageTolerancePercent must be non-negative');
-    assert(brokerCommissionBps >= 0, 'brokerCommissionBps must be non-negative');
+    assert(
+      brokerCommissionBpsInput === undefined || brokerCommissionBpsInput >= 0,
+      'brokerCommissionBps must be non-negative',
+    );
+    const brokerCommissionBps = await this.getCommissionBps(brokerCommissionBpsInput);
     const { assets } = await this.cache.read('networkInfo');
     const srcAsset = getInternalAsset(quote.srcAsset);
     const destAsset = getInternalAsset(quote.destAsset);
@@ -639,10 +643,11 @@ export class SwapSDK {
       env.swapping.networkFees[quote.isOnChain ? 'internalSwapNetworkFee' : 'regularNetworkFee']
         .rates;
 
-    const networkFeeBps = Math.max(
-      Number(readAssetValue(networkFeeRates, srcAsset)),
-      Number(readAssetValue(networkFeeRates, destAsset)),
-    );
+    const networkFeeBps =
+      Math.max(
+        Number(readAssetValue(networkFeeRates, srcAsset)),
+        Number(readAssetValue(networkFeeRates, destAsset)),
+      ) / 100;
 
     return slippageTolerancePercent + networkFeeBps / 100 + brokerCommissionBps / 100;
   }
