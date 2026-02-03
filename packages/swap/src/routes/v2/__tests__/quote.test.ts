@@ -1,5 +1,9 @@
 import { CfSwapRateV3Response, CfSwapRateV3, WsClient } from '@chainflip/rpc';
-import { baseChainflipAssets, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
+import {
+  assetConstants,
+  baseChainflipAssets,
+  internalAssetToRpcAsset,
+} from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import BigNumber from 'bignumber.js';
 import { Server } from 'http';
@@ -2270,13 +2274,14 @@ describe('server', () => {
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
       env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
       env.QUOTER_DCA_V2_MAX_USD_VALUE = 10_000_000;
-      env.QUOTER_DCA_V2_ASSETS = new Set(['Eth', 'Btc']);
+      env.QUOTER_DCA_V2_DEPOSIT_ASSETS = new Set(['Eth', 'Btc']);
+      env.QUOTER_DCA_V2_DESTINATION_ASSETS = new Set(['Eth']);
       env.DISABLE_DCA_QUOTING = false;
-      const ethPrice = 3200;
-      const ethAmount = new BigNumber(env.QUOTER_DCA_V2_MAX_USD_VALUE).dividedBy(ethPrice);
-      vi.mocked(getUsdValue).mockResolvedValue(ethAmount.times(ethPrice).toFixed(2));
+      const btcPrice = 78000;
+      const btcAmount = new BigNumber(env.QUOTER_DCA_V2_MAX_USD_VALUE).dividedBy(btcPrice);
+      vi.mocked(getUsdValue).mockResolvedValue(btcAmount.times(btcPrice).toFixed(2));
       vi.mocked(getTotalLiquidity).mockResolvedValueOnce(
-        BigInt(ethAmount.shiftedBy(18).dividedBy(10).toFixed(0)),
+        BigInt(btcAmount.shiftedBy(assetConstants.Btc.decimals).dividedBy(10).toFixed(0)),
       );
 
       mockRpcResponse((url, data: any) => {
@@ -2339,11 +2344,11 @@ describe('server', () => {
         });
 
       const params = new URLSearchParams({
-        srcChain: 'Ethereum',
-        srcAsset: 'ETH',
-        destChain: 'Bitcoin',
-        destAsset: 'BTC',
-        amount: ethAmount.shiftedBy(18).toFixed(0),
+        srcChain: 'Bitcoin',
+        srcAsset: 'BTC',
+        destChain: 'Ethereum',
+        destAsset: 'ETH',
+        amount: btcAmount.shiftedBy(assetConstants.Btc.decimals).toFixed(0),
         dcaEnabled: 'true',
         dcaV2Enabled: 'true',
       });
@@ -2359,14 +2364,14 @@ describe('server', () => {
           [
             "cf_swap_rate_v3",
             {
-              "asset": "ETH",
-              "chain": "Ethereum",
-            },
-            {
               "asset": "BTC",
               "chain": "Bitcoin",
             },
-            "0xa968163f0a57b40000",
+            {
+              "asset": "ETH",
+              "chain": "Ethereum",
+            },
+            "0x2fc298035",
             0,
             undefined,
             undefined,
@@ -2377,18 +2382,18 @@ describe('server', () => {
           [
             "cf_swap_rate_v3",
             {
-              "asset": "ETH",
-              "chain": "Ethereum",
-            },
-            {
               "asset": "BTC",
               "chain": "Bitcoin",
             },
-            "0xa968163f0a57b40000",
+            {
+              "asset": "ETH",
+              "chain": "Ethereum",
+            },
+            "0x2fc298035",
             0,
             {
               "chunk_interval": 2,
-              "number_of_chunks": 500,
+              "number_of_chunks": 5000,
             },
             undefined,
             [],
@@ -2400,14 +2405,14 @@ describe('server', () => {
       expect(vi.mocked(Quoter.prototype.getLimitOrders).mock.calls).toMatchInlineSnapshot(`
         [
           [
-            "Eth",
             "Btc",
-            3125000000000000000000n,
+            "Eth",
+            12820512821n,
           ],
           [
-            "Eth",
             "Btc",
-            6250000000000000000n,
+            "Eth",
+            2564103n,
           ],
         ]
       `);

@@ -1205,21 +1205,21 @@ exports[`server > GET /v2/quote > handles DCA v2 quoting 1`] = `
   {
     "dcaParams": {
       "chunkIntervalBlocks": 2,
-      "numberOfChunks": 500,
+      "numberOfChunks": 5000,
     },
-    "depositAmount": "3125000000000000000000",
+    "depositAmount": "12820512821",
     "destAsset": {
-      "asset": "BTC",
-      "chain": "Bitcoin",
+      "asset": "ETH",
+      "chain": "Ethereum",
     },
     "egressAmount": "10000000000",
-    "estimatedDurationSeconds": 6414,
+    "estimatedDurationSeconds": 61602,
     "estimatedDurationsSeconds": {
-      "deposit": 24,
-      "egress": 390,
-      "swap": 6000,
+      "deposit": 1506,
+      "egress": 96,
+      "swap": 60000,
     },
-    "estimatedPrice": "0.03200002560000000026",
+    "estimatedPrice": "0.0000000000780002145",
     "includedFees": [
       {
         "amount": "25000",
@@ -1244,13 +1244,13 @@ exports[`server > GET /v2/quote > handles DCA v2 quoting 1`] = `
     "poolInfo": [
       {
         "baseAsset": {
-          "asset": "ETH",
-          "chain": "Ethereum",
+          "asset": "BTC",
+          "chain": "Bitcoin",
         },
         "fee": {
           "amount": "0",
-          "asset": "ETH",
-          "chain": "Ethereum",
+          "asset": "BTC",
+          "chain": "Bitcoin",
         },
         "quoteAsset": {
           "asset": "USDC",
@@ -1259,8 +1259,8 @@ exports[`server > GET /v2/quote > handles DCA v2 quoting 1`] = `
       },
       {
         "baseAsset": {
-          "asset": "BTC",
-          "chain": "Bitcoin",
+          "asset": "ETH",
+          "chain": "Ethereum",
         },
         "fee": {
           "amount": "0",
@@ -1277,8 +1277,8 @@ exports[`server > GET /v2/quote > handles DCA v2 quoting 1`] = `
     "recommendedRetryDurationMinutes": 30,
     "recommendedSlippageTolerancePercent": 2.5,
     "srcAsset": {
-      "asset": "ETH",
-      "chain": "Ethereum",
+      "asset": "BTC",
+      "chain": "Bitcoin",
     },
     "type": "DCA",
   },
