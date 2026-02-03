@@ -53,6 +53,13 @@ export const MAX_NUMBER_OF_CHUNKS = Math.ceil(
     env.DCA_CHUNK_INTERVAL_BLOCKS,
 );
 
+const isDcaV2Available = ({ srcAsset, destAsset, dcaV2Enabled }: ParsedQuoteParams) =>
+  dcaV2Enabled &&
+  !env.DISABLE_DCA_QUOTING &&
+  env.QUOTER_DCA_V2_MAX_USD_VALUE !== undefined &&
+  (srcAsset === 'Usdc' || env.QUOTER_DCA_V2_DEPOSIT_ASSETS.has(srcAsset)) &&
+  (destAsset === 'Usdc' || env.QUOTER_DCA_V2_DESTINATION_ASSETS.has(destAsset));
+
 export default class QuoteRequest {
   static async create(quoter: Quoter, query: Query) {
     const queryResult = quoteQuerySchema.safeParse(query);
@@ -99,9 +106,8 @@ export default class QuoteRequest {
   private readonly srcAsset: Exclude<InternalAsset, 'Dot'>;
   private readonly destAsset: Exclude<InternalAsset, 'Dot'>;
   private readonly depositAmount: bigint;
-  private depositValueUsd: number | undefined;
   private readonly dcaEnabled: boolean;
-  private readonly dcaV2Enabled: boolean;
+  private readonly dcaV2Available: boolean;
   private readonly isVaultSwap: boolean;
   private readonly isOnChain: boolean;
   private readonly pools: Pool[];
@@ -133,13 +139,8 @@ export default class QuoteRequest {
     this.srcAsset = params.srcAsset;
     this.destAsset = params.destAsset;
     this.depositAmount = params.amount;
-    this.dcaV2Enabled =
-      params.dcaV2Enabled &&
-      !env.DISABLE_DCA_QUOTING &&
-      env.QUOTER_DCA_V2_DEPOSIT_ASSETS.size > 0 &&
-      env.QUOTER_DCA_V2_DESTINATION_ASSETS.size > 0 &&
-      env.QUOTER_DCA_V2_MAX_USD_VALUE !== undefined;
-    this.dcaEnabled = this.dcaV2Enabled || (params.dcaEnabled && !env.DISABLE_DCA_QUOTING);
+    this.dcaV2Available = isDcaV2Available(params);
+    this.dcaEnabled = this.dcaV2Available || (params.dcaEnabled && !env.DISABLE_DCA_QUOTING);
     this.isVaultSwap = params.isVaultSwap ?? false;
     this.isOnChain = params.isOnChain ?? false;
     this.pools = params.pools;
@@ -497,13 +498,7 @@ export default class QuoteRequest {
     if (!env.QUOTER_DCA_V2_MAX_USD_VALUE) return false;
     // lpp is a requirement for dca v2
     if (env.DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE) return false;
-    if (!this.dcaV2Enabled) return false;
-    if (this.srcAsset !== 'Usdc' && !env.QUOTER_DCA_V2_DEPOSIT_ASSETS.has(this.srcAsset)) {
-      return false;
-    }
-    if (this.destAsset !== 'Usdc' && !env.QUOTER_DCA_V2_DESTINATION_ASSETS.has(this.destAsset)) {
-      return false;
-    }
+    if (!this.dcaV2Available) return false;
 
     const depositValueUsd = await getUsdValue(this.depositAmount, this.srcAsset).catch(
       () => undefined,
