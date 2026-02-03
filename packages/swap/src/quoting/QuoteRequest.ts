@@ -136,7 +136,8 @@ export default class QuoteRequest {
     this.dcaV2Enabled =
       params.dcaV2Enabled &&
       !env.DISABLE_DCA_QUOTING &&
-      env.QUOTER_DCA_V2_ASSETS.size > 0 &&
+      env.QUOTER_DCA_V2_DEPOSIT_ASSETS.size > 0 &&
+      env.QUOTER_DCA_V2_DESTINATION_ASSETS.size > 0 &&
       env.QUOTER_DCA_V2_MAX_USD_VALUE !== undefined;
     this.dcaEnabled = this.dcaV2Enabled || (params.dcaEnabled && !env.DISABLE_DCA_QUOTING);
     this.isVaultSwap = params.isVaultSwap ?? false;
@@ -497,8 +498,12 @@ export default class QuoteRequest {
     // lpp is a requirement for dca v2
     if (env.DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE) return false;
     if (!this.dcaV2Enabled) return false;
-    if (this.srcAsset !== 'Usdc' && !env.QUOTER_DCA_V2_ASSETS.has(this.srcAsset)) return false;
-    if (this.destAsset !== 'Usdc' && !env.QUOTER_DCA_V2_ASSETS.has(this.destAsset)) return false;
+    if (this.srcAsset !== 'Usdc' && !env.QUOTER_DCA_V2_DEPOSIT_ASSETS.has(this.srcAsset)) {
+      return false;
+    }
+    if (this.destAsset !== 'Usdc' && !env.QUOTER_DCA_V2_DESTINATION_ASSETS.has(this.destAsset)) {
+      return false;
+    }
 
     const depositValueUsd = await getUsdValue(this.depositAmount, this.srcAsset).catch(
       () => undefined,

@@ -266,12 +266,11 @@ export default class Quoter {
       ) as Exclude<ChainflipAsset, 'Dot'>;
       const baseAsset = getInternalAsset(leg.base_asset) as Exclude<ChainflipAsset, 'Dot'>;
       const side = leg.side === 'BUY' ? 'sell' : 'buy';
-      const assetUsesDcaV2 = env.QUOTER_DCA_V2_ASSETS.has(baseAsset);
 
       for (const [accountId, quote] of quotes) {
         // eslint-disable-next-line no-continue
         if (quote.beta) continue;
-        const balance = !assetUsesDcaV2 ? balances.get(accountId)?.[sellAsset] : undefined;
+        const balance = balances.get(accountId)?.[sellAsset];
         const mevFactor =
           (isStableCoinSwap ? 0 : 1) *
           (this.accountIdToSocket.get(accountId)?.data.mevFactors[side][baseAsset] ?? 0);

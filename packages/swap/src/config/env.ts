@@ -120,7 +120,8 @@ export default z
       z.number(),
     ),
     QUOTING_BASE_SLIPPAGE: internalAssetMap('QUOTING_BASE_SLIPPAGE', {}, z.number()),
-    QUOTER_DCA_V2_ASSETS: internalAssetCsv('QUOTER_DCA_V2_ASSETS'),
+    QUOTER_DCA_V2_DEPOSIT_ASSETS: internalAssetCsv('QUOTER_DCA_V2_DEPOSIT_ASSETS'),
+    QUOTER_DCA_V2_DESTINATION_ASSETS: internalAssetCsv('QUOTER_DCA_V2_DESTINATION_ASSETS'),
     QUOTER_DCA_V2_MAX_USD_VALUE: envVar
       .optional()
       .transform((value) => Number(value) || undefined)
