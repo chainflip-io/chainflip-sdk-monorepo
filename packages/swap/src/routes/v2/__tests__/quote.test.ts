@@ -2268,7 +2268,7 @@ describe('server', () => {
       expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 
-    it.only('handles DCA v2 quoting', async () => {
+    it('handles DCA v2 quoting', async () => {
       env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 20_000 };
       env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
       env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
