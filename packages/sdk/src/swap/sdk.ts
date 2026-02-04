@@ -350,7 +350,7 @@ export class SwapSDK {
       amount: quote.depositAmount,
     };
 
-    await this.checkLivePriceProtectionRequirement(depositAddressRequest);
+    await this.checkLivePriceProtectionRequirement(depositAddressRequest, quote);
 
     let response;
 
@@ -453,7 +453,7 @@ export class SwapSDK {
       affiliates,
     };
 
-    await this.checkLivePriceProtectionRequirement(vaultSwapRequest);
+    await this.checkLivePriceProtectionRequirement(vaultSwapRequest, quote);
 
     if (this.options.broker) {
       assert(
@@ -527,7 +527,7 @@ export class SwapSDK {
       affiliates,
     };
 
-    await this.checkLivePriceProtectionRequirement(requestParams);
+    await this.checkLivePriceProtectionRequirement(requestParams, quote);
 
     if (this.options.broker) {
       assert(
@@ -592,8 +592,9 @@ export class SwapSDK {
 
   private async checkLivePriceProtectionRequirement(
     request: Parameters<typeof requestSwapDepositAddress>[0] | CfParametersEncodingRequest,
+    quote: Quote | BoostQuote,
   ): Promise<void> {
-    if (!this.dcaV2Enabled) return;
+    if (!this.dcaV2Enabled || quote.type !== 'DCA') return;
 
     const { assets } = await this.cache.read('networkInfo');
 

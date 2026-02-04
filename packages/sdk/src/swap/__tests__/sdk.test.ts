@@ -1910,8 +1910,52 @@ describe(SwapSDK, () => {
     });
 
     describe('checkLivePriceProtectionRequirement', () => {
-      it('throws when live price protection is required but disabled', async () => {
+      it('throws when live price protection is required but disabled for DCA quote', async () => {
         const dcaSdk = new SwapSDK({ network: 'sisyphos', enabledFeatures: { dcaV2: true } });
+
+        await expect(
+          dcaSdk.requestDepositAddressV2({
+            quote: {
+              srcAsset: { asset: 'ETH', chain: 'Ethereum' },
+              destAsset: { asset: 'USDC', chain: 'Ethereum' },
+              depositAmount: BigInt(1e18).toString(),
+              type: 'DCA',
+              dcaParams: {
+                numberOfChunks: 100,
+                chunkIntervalBlocks: 5,
+              },
+              isVaultSwap: false,
+              recommendedLivePriceSlippageTolerancePercent: 1,
+            } as Quote,
+            destAddress: '0xcafebabe',
+            fillOrKillParams: {
+              retryDurationBlocks: 500,
+              refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+              minPrice: '10000000000000',
+              livePriceSlippageTolerancePercent: false,
+            },
+          }),
+        ).rejects.toThrow(
+          'Max oracle price slippage must be set in FillOrKillParams when live price protection is enabled for both assets in DCA V2',
+        );
+      });
+
+      it('does not throw for non-DCA quotes', async () => {
+        const dcaSdk = new SwapSDK({ network: 'sisyphos', enabledFeatures: { dcaV2: true } });
+        vi.mocked(dcaSdk['apiClient'].openSwapDepositChannel).mockResolvedValueOnce({
+          status: 201,
+          body: {
+            id: 'channel id',
+            depositAddress: 'deposit address',
+            brokerCommissionBps: 0,
+            srcChainExpiryBlock: '123',
+            estimatedExpiryTime: 1698334470000,
+            channelOpeningFee: '0',
+            issuedBlock: 1,
+            maxBoostFeeBps: 0,
+          },
+          headers: new Headers(),
+        });
 
         await expect(
           dcaSdk.requestDepositAddressV2({
@@ -1931,9 +1975,7 @@ describe(SwapSDK, () => {
               livePriceSlippageTolerancePercent: false,
             },
           }),
-        ).rejects.toThrow(
-          'Max oracle price slippage must be set in FillOrKillParams when live price protection is enabled for both assets in DCA V2',
-        );
+        ).resolves.toBeDefined();
       });
 
       it('does not throw when dcaV2 is disabled', async () => {
@@ -2925,8 +2967,48 @@ describe(SwapSDK, () => {
     });
 
     describe('checkLivePriceProtectionRequirement', () => {
-      it('throws when live price protection is required but disabled', async () => {
+      it('throws when live price protection is required but disabled for DCA quote', async () => {
         const dcaSdk = new SwapSDK({ network: 'sisyphos', enabledFeatures: { dcaV2: true } });
+
+        await expect(
+          dcaSdk.encodeVaultSwapData({
+            quote: {
+              srcAsset: { asset: 'ETH', chain: 'Ethereum' },
+              destAsset: { asset: 'USDC', chain: 'Ethereum' },
+              depositAmount: BigInt(1e18).toString(),
+              type: 'DCA',
+              dcaParams: {
+                numberOfChunks: 100,
+                chunkIntervalBlocks: 5,
+              },
+              isVaultSwap: true,
+              recommendedLivePriceSlippageTolerancePercent: 1,
+            } as Quote,
+            destAddress: '0xcafebabe',
+            fillOrKillParams: {
+              retryDurationBlocks: 500,
+              refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+              minPrice: '10000000000000',
+              livePriceSlippageTolerancePercent: false,
+            },
+          }),
+        ).rejects.toThrow(
+          'Max oracle price slippage must be set in FillOrKillParams when live price protection is enabled for both assets in DCA V2',
+        );
+      });
+
+      it('does not throw for non-DCA quotes', async () => {
+        const dcaSdk = new SwapSDK({ network: 'sisyphos', enabledFeatures: { dcaV2: true } });
+        vi.mocked(dcaSdk['apiClient'].encodeVaultSwapData).mockResolvedValueOnce({
+          status: 200,
+          body: {
+            chain: 'Ethereum',
+            calldata: '0x1234',
+            to: '0xabc',
+            value: '0',
+          },
+          headers: new Headers(),
+        });
 
         await expect(
           dcaSdk.encodeVaultSwapData({
@@ -2946,9 +3028,7 @@ describe(SwapSDK, () => {
               livePriceSlippageTolerancePercent: false,
             },
           }),
-        ).rejects.toThrow(
-          'Max oracle price slippage must be set in FillOrKillParams when live price protection is enabled for both assets in DCA V2',
-        );
+        ).resolves.toBeDefined();
       });
 
       it('does not throw when dcaV2 is disabled', async () => {
@@ -3934,8 +4014,43 @@ describe(SwapSDK, () => {
     });
 
     describe('checkLivePriceProtectionRequirement', () => {
-      it('throws when live price protection is required but disabled', async () => {
+      it('throws when live price protection is required but disabled for DCA quote', async () => {
         const dcaSdk = new SwapSDK({ network: 'sisyphos', enabledFeatures: { dcaV2: true } });
+
+        await expect(
+          dcaSdk.encodeCfParameters({
+            quote: {
+              srcAsset: { asset: 'ETH', chain: 'Ethereum' },
+              destAsset: { asset: 'USDC', chain: 'Ethereum' },
+              depositAmount: BigInt(1e18).toString(),
+              type: 'DCA',
+              dcaParams: {
+                numberOfChunks: 100,
+                chunkIntervalBlocks: 5,
+              },
+              isVaultSwap: true,
+              recommendedLivePriceSlippageTolerancePercent: 1,
+            } as Quote,
+            destAddress: '0xcafebabe',
+            fillOrKillParams: {
+              retryDurationBlocks: 500,
+              refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+              minPrice: '10000000000000',
+              livePriceSlippageTolerancePercent: false,
+            },
+          }),
+        ).rejects.toThrow(
+          'Max oracle price slippage must be set in FillOrKillParams when live price protection is enabled for both assets in DCA V2',
+        );
+      });
+
+      it('does not throw for non-DCA quotes', async () => {
+        const dcaSdk = new SwapSDK({ network: 'sisyphos', enabledFeatures: { dcaV2: true } });
+        vi.mocked(dcaSdk['apiClient'].encodeCfParameters).mockResolvedValueOnce({
+          status: 200,
+          body: '0x1234',
+          headers: new Headers(),
+        });
 
         await expect(
           dcaSdk.encodeCfParameters({
@@ -3955,9 +4070,7 @@ describe(SwapSDK, () => {
               livePriceSlippageTolerancePercent: false,
             },
           }),
-        ).rejects.toThrow(
-          'Max oracle price slippage must be set in FillOrKillParams when live price protection is enabled for both assets in DCA V2',
-        );
+        ).resolves.toBeDefined();
       });
 
       it('does not throw when dcaV2 is disabled', async () => {
