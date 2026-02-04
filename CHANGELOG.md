@@ -9,6 +9,8 @@ which it is deprecated.
 
 ## Unreleased
 
+## 2.0.3
+
 ### Added
 
 - New `dcaV2` option in `SwapSDKOptions.enabledFeatures` to enable the new DCA
