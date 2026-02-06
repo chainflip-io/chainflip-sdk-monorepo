@@ -22,6 +22,10 @@ export default class ServiceError extends Error {
     return new ServiceError(message, 503);
   }
 
+  static tooManyRequests(message = 'Too many requests, please try again later'): ServiceError {
+    return new ServiceError(message, 429);
+  }
+
   static assert(
     condition: unknown,
     code: Exclude<keyof typeof ServiceError, IgnoredField>,
