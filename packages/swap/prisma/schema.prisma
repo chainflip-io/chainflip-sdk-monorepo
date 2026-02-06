@@ -629,6 +629,15 @@ model SolanaPendingTxRef {
   @@schema("private")
 }
 
+model BlacklistedIp {
+  id        Int      @id @default(autoincrement())
+  ip        String   @unique
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@schema("private")
+}
+
 enum SwapFailureReason {
   PriceImpactLimit
   MinPriceViolation
