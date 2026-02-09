@@ -1,9 +1,8 @@
-import { swappingSwapAborted as schema11200 } from '@chainflip/processor/11200/swapping/swapAborted';
 import { swappingSwapAborted as schema200 } from '@chainflip/processor/200/swapping/swapAborted';
 import z from 'zod';
 import { EventHandlerArgs } from '../index.js';
 
-const schema = z.union([schema200.strict(), schema11200.strict()]);
+const schema = schema200.strict();
 
 export type SwappingSwapAbortedArgs = z.input<typeof schema>;
 

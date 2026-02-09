@@ -11,7 +11,6 @@ import { depositBoosted } from './ingress-egress/depositBoosted.js';
 import networkDepositFailed from './ingress-egress/depositFailed.js';
 import { depositFinalised } from './ingress-egress/depositFinalised.js';
 import { insufficientBoostLiquidity } from './ingress-egress/insufficientBoostLiquidity.js';
-import { palletConfigUpdated } from './ingress-egress/palletConfigUpdated.js';
 import transactionRejectedByBroker from './ingress-egress/transactionRejectedByBroker.js';
 import transferFallbackRequested from './ingress-egress/transferFallbackRequested.js';
 import { lendingPoolsBoostPoolCreated } from './lending-pools/boostPoolCreated.js';
@@ -89,7 +88,6 @@ export const events = {
     'TransactionRejectedByBroker',
     'DepositFailed',
     'TransferFallbackRequested',
-    'PalletConfigUpdated',
   ]),
   ...genericPalletEvents('Broadcaster', [
     'BroadcastSuccess',
@@ -222,10 +220,6 @@ const handlers = [
         handler: refundedOnChain,
       },
       ...chainflipChains.flatMap((chain) => [
-        {
-          name: events[`${chain}IngressEgress`].PalletConfigUpdated,
-          handler: palletConfigUpdated(chain),
-        },
         {
           name: events[`${chain}IngressEgress`].DepositFailed,
           handler: networkDepositFailed(chain),

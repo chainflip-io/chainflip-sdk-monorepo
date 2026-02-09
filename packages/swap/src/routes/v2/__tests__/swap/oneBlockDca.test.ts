@@ -414,7 +414,10 @@ const events = [
     blockId: '0010665566-95253',
     indexInBlock: 1254,
     name: 'Swapping.SwapRequestCompleted',
-    args: check<SwapRequestCompletedArgs>({ swapRequestId: '1052770' }),
+    args: check<SwapRequestCompletedArgs>({
+      swapRequestId: '1052770',
+      reason: { __kind: 'Executed' },
+    }),
   },
   {
     id: '0010665566-001256-95253',

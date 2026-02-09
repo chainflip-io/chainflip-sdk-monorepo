@@ -4,6 +4,9 @@ import { bitcoinIngressEgressTransferFallbackRequested as bitcoin190 } from '@ch
 import { ethereumIngressEgressTransferFallbackRequested as ethereum190 } from '@chainflip/processor/190/ethereumIngressEgress/transferFallbackRequested';
 import { polkadotIngressEgressTransferFallbackRequested as polkadot190 } from '@chainflip/processor/190/polkadotIngressEgress/transferFallbackRequested';
 import { solanaIngressEgressTransferFallbackRequested as solana190 } from '@chainflip/processor/190/solanaIngressEgress/transferFallbackRequested';
+import { arbitrumIngressEgressTransferFallbackRequested as arbitrum210 } from '@chainflip/processor/210/arbitrumIngressEgress/transferFallbackRequested';
+import { ethereumIngressEgressTransferFallbackRequested as ethereum210 } from '@chainflip/processor/210/ethereumIngressEgress/transferFallbackRequested';
+import { solanaIngressEgressTransferFallbackRequested as solana210 } from '@chainflip/processor/210/solanaIngressEgress/transferFallbackRequested';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import logger from '../../utils/logger.js';
@@ -11,7 +14,7 @@ import { formatForeignChainAddress } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
 
 const schemas = {
-  Arbitrum: arbitrum190.transform((args) => ({
+  Arbitrum: z.union([arbitrum210.strict(), arbitrum190.strict()]).transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Arb',
@@ -25,7 +28,7 @@ const schemas = {
       value: args.destinationAddress,
     }),
   })),
-  Ethereum: ethereum190.transform((args) => ({
+  Ethereum: z.union([ethereum210.strict(), ethereum190.strict()]).transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Eth',
@@ -39,7 +42,7 @@ const schemas = {
       value: args.destinationAddress,
     }),
   })),
-  Solana: solana190.transform((args) => ({
+  Solana: z.union([solana210.strict(), solana190.strict()]).transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Sol',

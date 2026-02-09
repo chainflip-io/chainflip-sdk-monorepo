@@ -701,7 +701,7 @@ describe('networkStatus', () => {
     'deposit_channel_creation_enabled',
     'deposit_channel_witnessing_enabled',
     'vault_deposit_witnessing_enabled',
-  ] as const)("checks the chain's safe mode (%s)", async (key) => {
+  ] as const)("checks the chain's safe mode (%s off)", async (key) => {
     env.FULLY_DISABLED_INTERNAL_ASSETS = new Set(chainflipAssets);
     env.FULLY_DISABLED_INTERNAL_ASSETS.delete('Flip');
     mockRpc({

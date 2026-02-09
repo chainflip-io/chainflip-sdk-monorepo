@@ -1,5 +1,5 @@
-import { swappingSwapRequested as schema11200 } from '@chainflip/processor/11200/swapping/swapRequested';
 import { swappingSwapRequested as schema200 } from '@chainflip/processor/200/swapping/swapRequested';
+import { swappingSwapRequested as schema210 } from '@chainflip/processor/210/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
 import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
 import { isNullish } from '@chainflip/utils/guard';
@@ -13,7 +13,7 @@ import { Prisma } from '../../client.js';
 import { formatForeignChainAddress } from '../common.js';
 import type { EventHandlerArgs } from '../index.js';
 
-const schema = z.union([schema200.strict(), schema11200.strict()]);
+const schema = z.union([schema210.strict(), schema200.strict()]);
 
 type RequestType = z.output<typeof schema>['requestType'];
 type Origin = z.output<typeof schema>['origin'];
@@ -89,7 +89,7 @@ export const getOriginInfo = async (
 ) => {
   if (requestInfo.type === 'ACCOUNT_CREATION') {
     const channel = await prisma.accountCreationDepositChannel.findFirstOrThrow({
-      where: { asset: srcAsset, lpAccountId: requestInfo.lpAccountId },
+      where: { chain: assetConstants[srcAsset].chain, lpAccountId: requestInfo.lpAccountId },
       orderBy: { issuedBlock: 'desc' },
       include: { swapBeneficiaries: true },
     });
@@ -104,7 +104,7 @@ export const getOriginInfo = async (
   if (origin.__kind === 'DepositChannel') {
     const depositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
       where: {
-        srcAsset,
+        srcChain: assetConstants[srcAsset].chain,
         depositAddress: origin.depositAddress.address,
         channelId: origin.channelId,
       },
