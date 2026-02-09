@@ -23,7 +23,7 @@ export async function setup({ provide: _provide }: TestProject) {
   try {
     await pg.connect();
     const { rows } = await pg.query<{ datname: string }>(
-      "select datname from pg_database where datname like '%_vitest_%'",
+      String.raw`select datname from pg_database where datname like '%\_vitest\_%'`,
     );
     await Promise.all(
       rows.map(({ datname }) => pg.query(`drop database "${datname}" with (force)`)),
