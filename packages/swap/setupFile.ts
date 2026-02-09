@@ -33,7 +33,7 @@ const withMutex = async (cb: () => Promise<void>) => {
 
     const unlockScript = `
     if redis.call("get", KEYS[1]) == ARGV[1] then
-    return redis.call("del", KEYS[1])
+      return redis.call("del", KEYS[1])
     else
       return 0
     end

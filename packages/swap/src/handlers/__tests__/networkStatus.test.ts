@@ -90,59 +90,12 @@ describe('networkStatus', () => {
       .default as unknown as typeof import('../../config/env.js').default;
   });
 
-  it.each([defaultSafeModeStatuses])(
-    'returns everything when possible',
-    async (safeModeStatuses) => {
+  it.each([['default', defaultSafeModeStatuses]])(
+    'returns everything when possible (%s)',
+    async (type, safeModeStatuses) => {
       mockRpc({ safeModeStatuses });
 
-      expect(await networkStatus()).toStrictEqual({
-        assets: {
-          all: [
-            'Usdc',
-            'Usdt',
-            'Flip',
-            'Eth',
-            'Btc',
-            'ArbUsdc',
-            'ArbEth',
-            'Sol',
-            'SolUsdc',
-            'HubDot',
-            'HubUsdt',
-            'HubUsdc',
-          ],
-          deposit: [
-            'Usdc',
-            'Usdt',
-            'Flip',
-            'Eth',
-            'Btc',
-            'ArbUsdc',
-            'ArbEth',
-            'Sol',
-            'SolUsdc',
-            'HubDot',
-            'HubUsdt',
-            'HubUsdc',
-          ],
-          destination: [
-            'Usdc',
-            'Usdt',
-            'Flip',
-            'Eth',
-            'Btc',
-            'ArbUsdc',
-            'ArbEth',
-            'Sol',
-            'SolUsdc',
-            'HubDot',
-            'HubUsdt',
-            'HubUsdc',
-          ],
-        },
-        boostDepositsEnabled: true,
-        cfBrokerCommissionBps: 0,
-      });
+      expect(await networkStatus()).toMatchSnapshot();
     },
   );
 
