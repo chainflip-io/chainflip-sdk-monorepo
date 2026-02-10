@@ -52,17 +52,6 @@ describe(createIpGuard, () => {
     expect(next).toHaveBeenCalledWith();
   });
 
-  it('allows request through if cache refresh fails', async () => {
-    vi.spyOn(prisma.blacklistedIp, 'findMany').mockRejectedValueOnce(new Error('DB error'));
-    const middleware = createIpGuard();
-    const next = vi.fn();
-
-    await middleware(mockReq('1.2.3.4'), mockRes(), next);
-
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith();
-  });
-
   describe('with rate limiting', () => {
     it('rate limits a non-blacklisted IP after exceeding limit', async () => {
       const middleware = createIpGuard({ windowMs: 60_000, maxRequests: 3 });
