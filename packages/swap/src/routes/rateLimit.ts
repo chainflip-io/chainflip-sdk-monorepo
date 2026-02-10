@@ -1,4 +1,4 @@
-export class SlidingWindowRateLimiter {
+export class RateLimiter {
   private state = new Map<string, { count: number; windowStart: number }>();
 
   private cleanupTimer: NodeJS.Timeout;

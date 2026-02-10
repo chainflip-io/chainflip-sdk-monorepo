@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { SlidingWindowRateLimiter } from '../rateLimit.js';
+import { RateLimiter } from '../rateLimit.js';
 
-describe(SlidingWindowRateLimiter, () => {
+describe(RateLimiter, () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -11,7 +11,7 @@ describe(SlidingWindowRateLimiter, () => {
   });
 
   it('allows requests under the limit', () => {
-    const limiter = new SlidingWindowRateLimiter({ windowMs: 60_000, maxRequests: 5 });
+    const limiter = new RateLimiter({ windowMs: 60_000, maxRequests: 5 });
 
     for (let i = 0; i < 5; i += 1) {
       expect(limiter.check('1.2.3.4')).toBe(null);
@@ -21,7 +21,7 @@ describe(SlidingWindowRateLimiter, () => {
   });
 
   it('blocks requests exceeding the limit', () => {
-    const limiter = new SlidingWindowRateLimiter({ windowMs: 60_000, maxRequests: 3 });
+    const limiter = new RateLimiter({ windowMs: 60_000, maxRequests: 3 });
 
     for (let i = 0; i < 3; i += 1) {
       expect(limiter.check('1.2.3.4')).toBe(null);
@@ -32,7 +32,7 @@ describe(SlidingWindowRateLimiter, () => {
   });
 
   it('tracks different IPs independently', () => {
-    const limiter = new SlidingWindowRateLimiter({ windowMs: 60_000, maxRequests: 2 });
+    const limiter = new RateLimiter({ windowMs: 60_000, maxRequests: 2 });
 
     expect(limiter.check('1.1.1.1')).toBe(null);
     expect(limiter.check('1.1.1.1')).toBe(null);
@@ -46,7 +46,7 @@ describe(SlidingWindowRateLimiter, () => {
   });
 
   it('restores full quota after window reset', () => {
-    const limiter = new SlidingWindowRateLimiter({ windowMs: 60_000, maxRequests: 3 });
+    const limiter = new RateLimiter({ windowMs: 60_000, maxRequests: 3 });
 
     for (let i = 0; i < 3; i += 1) {
       limiter.check('1.2.3.4');
@@ -66,7 +66,7 @@ describe(SlidingWindowRateLimiter, () => {
   });
 
   it('returns retryAfter seconds remaining in the window', () => {
-    const limiter = new SlidingWindowRateLimiter({ windowMs: 60_000, maxRequests: 2 });
+    const limiter = new RateLimiter({ windowMs: 60_000, maxRequests: 2 });
 
     limiter.check('1.2.3.4');
     limiter.check('1.2.3.4');
@@ -82,7 +82,7 @@ describe(SlidingWindowRateLimiter, () => {
   });
 
   it('cleans up stale entries', () => {
-    const limiter = new SlidingWindowRateLimiter({ windowMs: 10_000, maxRequests: 5 });
+    const limiter = new RateLimiter({ windowMs: 10_000, maxRequests: 5 });
 
     limiter.check('1.2.3.4');
     limiter.check('5.6.7.8');

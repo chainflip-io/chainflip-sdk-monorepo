@@ -12,7 +12,7 @@ import authenticate from './quoting/authenticate.js';
 import Quoter from './quoting/Quoter.js';
 import { createApiRouter } from './routes/api.js';
 import { handleError, maintenanceMode, quoteMiddleware } from './routes/common.js';
-import { createIpGuard } from './routes/ipBlacklist.js';
+import { createIpGuard } from './routes/createIpGuard.js';
 import thirdPartySwap from './routes/thirdPartySwap.js';
 import quoteRouterV2 from './routes/v2/quote.js';
 import swapV2 from './routes/v2/swap.js';

@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { isString } from '@/shared/guards.js';
 import prisma from '../client.js';
-import { SlidingWindowRateLimiter } from './rateLimit.js';
+import { RateLimiter } from './rateLimit.js';
 import { handleExit } from '../utils/function.js';
 import logger from '../utils/logger.js';
 import ServiceError from '../utils/ServiceError.js';
@@ -30,7 +30,7 @@ export const createIpGuard = (rateLimitConfig?: {
 
   refreshIps();
 
-  const limiter = rateLimitConfig && new SlidingWindowRateLimiter(rateLimitConfig);
+  const limiter = rateLimitConfig && new RateLimiter(rateLimitConfig);
 
   handleExit(() => {
     clearTimeout(timeout);

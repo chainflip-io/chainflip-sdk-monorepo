@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import prisma from '../../client.js';
-import { createIpGuard } from '../ipBlacklist.js';
+import { createIpGuard } from '../createIpGuard.js';
 
 const mockReq = (ip?: string) => ({ headers: { 'cf-connecting-ip': ip } }) as unknown as Request;
 const mockRes = () => ({ setHeader: vi.fn() }) as unknown as Response;
