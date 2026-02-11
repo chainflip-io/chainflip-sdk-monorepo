@@ -7,6 +7,7 @@ import { TransferFallbackRequestedArgsMap } from 'packages/swap/src/event-handle
 import { SwapDepositAddressReadyArgs } from 'packages/swap/src/event-handlers/swapping/swapDepositAddressReady.js';
 import { SwapEgressScheduledArgs } from 'packages/swap/src/event-handlers/swapping/swapEgressScheduled.js';
 import { SwapExecutedArgs } from 'packages/swap/src/event-handlers/swapping/swapExecuted.js';
+import { SwapRequestCompletedArgs } from 'packages/swap/src/event-handlers/swapping/swapRequestCompleted.js';
 import { SwapRequestedArgs } from 'packages/swap/src/event-handlers/swapping/swapRequested.js';
 import { SwapScheduledArgs } from 'packages/swap/src/event-handlers/swapping/swapScheduled.js';
 import request from 'supertest';
@@ -195,7 +196,10 @@ describe('solana fallback requested', () => {
         id: '0007666754-001793-cebd1',
         name: 'Swapping.SwapRequestCompleted',
         indexInBlock: 1793,
-        args: { swapRequestId: '484522' },
+        args: check<SwapRequestCompletedArgs>({
+          swapRequestId: '484522',
+          reason: { __kind: 'Executed' },
+        }),
       },
       {
         id: '0007666754-001795-cebd1',

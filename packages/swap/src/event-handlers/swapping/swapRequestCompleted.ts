@@ -1,4 +1,3 @@
-import { swappingSwapRequestCompleted as schema160 } from '@chainflip/processor/160/swapping/swapRequestCompleted';
 import { swappingSwapRequestCompleted as schema200 } from '@chainflip/processor/200/swapping/swapRequestCompleted';
 import assert from 'assert';
 import { z } from 'zod';
@@ -15,7 +14,7 @@ const timeElapsedinMinutes = (timestamp: number | string | Date) => {
   return Math.floor(timeDiff / 60_000);
 };
 
-const swappingSwapRequestCompleted = z.union([schema200.strict(), schema160.strict()]);
+const swappingSwapRequestCompleted = schema200.strict();
 
 export type SwapRequestCompletedArgs = z.input<typeof swappingSwapRequestCompleted>;
 

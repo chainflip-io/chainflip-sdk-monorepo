@@ -1,7 +1,11 @@
 import { liquidityPoolsNewPoolCreated as schema190 } from '@chainflip/processor/190/liquidityPools/newPoolCreated';
+import { liquidityPoolsNewPoolCreated as schema210 } from '@chainflip/processor/210/liquidityPools/newPoolCreated';
+import { z } from 'zod';
 import type { EventHandlerArgs } from '../index.js';
 
-const eventArgs = schema190;
+const eventArgs = z.union([schema210.strict(), schema190.strict()]);
+
+export type NewPoolCreatedArgs = z.input<typeof eventArgs>;
 
 export default async function newPoolCreated({ prisma, event }: EventHandlerArgs): Promise<void> {
   const { baseAsset, quoteAsset, feeHundredthPips } = eventArgs.parse(event.args);

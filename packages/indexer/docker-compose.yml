@@ -16,7 +16,7 @@ services:
     depends_on:
       - db
     restart: on-failure
-    image: subsquid/substrate-ingest:firesquid
+    image: ghcr.io/chainflip-io/squid-sdk/substrate-ingest:latest
     command: [
         '-e',
         'ws://host.docker.internal:9944',

@@ -1,9 +1,12 @@
-import { arbitrumIngressEgressInsufficientBoostLiquidity } from '@chainflip/processor/180/arbitrumIngressEgress/insufficientBoostLiquidity';
-import { bitcoinIngressEgressInsufficientBoostLiquidity } from '@chainflip/processor/180/bitcoinIngressEgress/insufficientBoostLiquidity';
-import { ethereumIngressEgressInsufficientBoostLiquidity } from '@chainflip/processor/180/ethereumIngressEgress/insufficientBoostLiquidity';
-import { polkadotIngressEgressInsufficientBoostLiquidity } from '@chainflip/processor/180/polkadotIngressEgress/insufficientBoostLiquidity';
-import { solanaIngressEgressInsufficientBoostLiquidity } from '@chainflip/processor/180/solanaIngressEgress/insufficientBoostLiquidity';
-import { assethubIngressEgressInsufficientBoostLiquidity } from '@chainflip/processor/190/assethubIngressEgress/insufficientBoostLiquidity';
+import { arbitrumIngressEgressInsufficientBoostLiquidity as arbitrumSchema180 } from '@chainflip/processor/180/arbitrumIngressEgress/insufficientBoostLiquidity';
+import { bitcoinIngressEgressInsufficientBoostLiquidity as bitcoinSchema180 } from '@chainflip/processor/180/bitcoinIngressEgress/insufficientBoostLiquidity';
+import { ethereumIngressEgressInsufficientBoostLiquidity as ethereumSchema180 } from '@chainflip/processor/180/ethereumIngressEgress/insufficientBoostLiquidity';
+import { polkadotIngressEgressInsufficientBoostLiquidity as polkadotSchema180 } from '@chainflip/processor/180/polkadotIngressEgress/insufficientBoostLiquidity';
+import { solanaIngressEgressInsufficientBoostLiquidity as solanaSchema180 } from '@chainflip/processor/180/solanaIngressEgress/insufficientBoostLiquidity';
+import { assethubIngressEgressInsufficientBoostLiquidity as assethubSchema190 } from '@chainflip/processor/190/assethubIngressEgress/insufficientBoostLiquidity';
+import { arbitrumIngressEgressInsufficientBoostLiquidity as arbitrumSchema210 } from '@chainflip/processor/210/arbitrumIngressEgress/insufficientBoostLiquidity';
+import { ethereumIngressEgressInsufficientBoostLiquidity as ethereumSchema210 } from '@chainflip/processor/210/ethereumIngressEgress/insufficientBoostLiquidity';
+import { solanaIngressEgressInsufficientBoostLiquidity as solanaSchema210 } from '@chainflip/processor/210/solanaIngressEgress/insufficientBoostLiquidity';
 import { assetConstants } from '@chainflip/utils/chainflip';
 import assert from 'assert';
 import z from 'zod';
@@ -11,12 +14,12 @@ import { Chain } from '../../client.js';
 import { EventHandlerArgs } from '../index.js';
 
 const schemas = {
-  Arbitrum: arbitrumIngressEgressInsufficientBoostLiquidity,
-  Bitcoin: bitcoinIngressEgressInsufficientBoostLiquidity,
-  Ethereum: ethereumIngressEgressInsufficientBoostLiquidity,
-  Polkadot: polkadotIngressEgressInsufficientBoostLiquidity,
-  Solana: solanaIngressEgressInsufficientBoostLiquidity,
-  Assethub: assethubIngressEgressInsufficientBoostLiquidity,
+  Arbitrum: z.union([arbitrumSchema210.strict(), arbitrumSchema180.strict()]),
+  Bitcoin: bitcoinSchema180,
+  Ethereum: z.union([ethereumSchema210.strict(), ethereumSchema180.strict()]),
+  Polkadot: polkadotSchema180,
+  Solana: z.union([solanaSchema210.strict(), solanaSchema180.strict()]),
+  Assethub: assethubSchema190,
 } as const satisfies Record<Chain, z.ZodTypeAny>;
 
 export type InsufficientBoostLiquidityArgsMap = {

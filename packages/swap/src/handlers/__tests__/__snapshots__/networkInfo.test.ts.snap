@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`networkStatus > checks the chain's safe mode (deposit_channel_creation_enabled) 1`] = `
+exports[`networkStatus > checks the chain's safe mode (deposit_channel_creation_enabled off) 1`] = `
 {
   "assets": [
     {
@@ -143,7 +143,7 @@ exports[`networkStatus > checks the chain's safe mode (deposit_channel_creation_
 }
 `;
 
-exports[`networkStatus > checks the chain's safe mode (deposit_channel_witnessing_enabled) 1`] = `
+exports[`networkStatus > checks the chain's safe mode (deposit_channel_witnessing_enabled off) 1`] = `
 {
   "assets": [
     {
@@ -286,7 +286,7 @@ exports[`networkStatus > checks the chain's safe mode (deposit_channel_witnessin
 }
 `;
 
-exports[`networkStatus > checks the chain's safe mode (vault_deposit_witnessing_enabled) 1`] = `
+exports[`networkStatus > checks the chain's safe mode (vault_deposit_witnessing_enabled off) 1`] = `
 {
   "assets": [
     {

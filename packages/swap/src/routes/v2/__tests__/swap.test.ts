@@ -264,7 +264,7 @@ const swapEventMap = {
     blockId: '0000000094-75b12',
     indexInBlock: 596,
     name: 'Swapping.SwapRequestCompleted',
-    args: check<SwapRequestCompletedArgs>({ swapRequestId: '368' }),
+    args: check<SwapRequestCompletedArgs>({ swapRequestId: '368', reason: { __kind: 'Executed' } }),
   },
   'PolkadotIngressEgress.BatchBroadcastRequested': {
     id: '0000000094-000843-75b12',
@@ -1369,6 +1369,7 @@ describe('server', () => {
         indexInBlock: 25,
         args: check<SwapRequestCompletedArgs>({
           swapRequestId: '4',
+          reason: { __kind: 'Executed' },
         }),
       };
       await processEvents(
@@ -1466,7 +1467,10 @@ describe('server', () => {
             id: '0007832117-001156-cbeba',
             name: 'Swapping.SwapRequestCompleted',
             indexInBlock: 1156,
-            args: check<SwapRequestCompletedArgs>({ swapRequestId: '512007' }),
+            args: check<SwapRequestCompletedArgs>({
+              swapRequestId: '512007',
+              reason: { __kind: 'Aborted' },
+            }),
           },
         ],
         [],

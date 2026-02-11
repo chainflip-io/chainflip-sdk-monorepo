@@ -253,8 +253,8 @@ importers:
         specifier: 2.1.0-beta.1
         version: 2.1.0-beta.1(typescript@5.8.3)
       '@chainflip/processor':
-        specifier: ~2.0.4
-        version: 2.0.4
+        specifier: 2.1.0-beta.6
+        version: 2.1.0-beta.6
       '@chainflip/redis':
         specifier: 2.1.0-beta.1
         version: 2.1.0-beta.1
@@ -489,8 +489,8 @@ packages:
   '@chainflip/bitcoin@2.1.0-beta.1':
     resolution: {integrity: sha512-GbMWisH1GGCnXmiZc7bX5vzyFbQb0vkQjntz09bpRCUzfg5uU4api7jjWPSgKjOh+jlXscoOEF3cbSc2l6F2zw==}
 
-  '@chainflip/processor@2.0.4':
-    resolution: {integrity: sha512-uHF1YS4WP1XBBNx+sd0z915/vud+6dESSM8sMQAQvd/W4Y4vSugikY1OwKZCubJkwHJXj9HYjNtIHRx+DgAK8Q==}
+  '@chainflip/processor@2.1.0-beta.6':
+    resolution: {integrity: sha512-as6V9oRj3jK1Op/Ca4h0RfujMGJDT463wA4iPSxtklL2YbCc458lkIwwUoso8mTFHgwvwINvqumFhgCwBaL4QQ==}
 
   '@chainflip/redis@2.1.0-beta.1':
     resolution: {integrity: sha512-OsdJFIEjRW6ui/3O9yJSc7dcusHR6/GwJjGEvPbnvnA4inb9EhO8CYEKS3uEQA6m+jdsqRxpRJCEZ3LDZp+4NQ==}
@@ -5763,9 +5763,9 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@chainflip/processor@2.0.4':
+  '@chainflip/processor@2.1.0-beta.6':
     dependencies:
-      '@chainflip/utils': 0.8.18
+      '@chainflip/utils': 2.1.0-beta.1
       zod: 3.25.76
 
   '@chainflip/redis@2.1.0-beta.1':
@@ -7433,7 +7433,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/tsconfig-utils': 8.35.0(typescript@5.8.3)
       '@typescript-eslint/types': 8.35.0
-      debug: 4.4.1
+      debug: 4.4.3
       typescript: 5.8.3
     transitivePeerDependencies:
       - supports-color
@@ -7511,7 +7511,7 @@ snapshots:
       '@typescript-eslint/tsconfig-utils': 8.35.0(typescript@5.8.3)
       '@typescript-eslint/types': 8.35.0
       '@typescript-eslint/visitor-keys': 8.35.0
-      debug: 4.4.1
+      debug: 4.4.3
       fast-glob: 3.3.3
       is-glob: 4.0.3
       minimatch: 9.0.5
@@ -10152,7 +10152,7 @@ snapshots:
 
   nock@13.5.6:
     dependencies:
-      debug: 4.4.1
+      debug: 4.4.3
       json-stringify-safe: 5.0.1
       propagate: 2.0.1
     transitivePeerDependencies:

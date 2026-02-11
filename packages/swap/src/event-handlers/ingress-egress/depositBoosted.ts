@@ -4,6 +4,9 @@ import { bitcoinIngressEgressDepositBoosted as bitcoinSchema11200 } from '@chain
 import { ethereumIngressEgressDepositBoosted as ethereumSchema11200 } from '@chainflip/processor/11200/ethereumIngressEgress/depositBoosted';
 import { polkadotIngressEgressDepositBoosted as polkadotSchema11200 } from '@chainflip/processor/11200/polkadotIngressEgress/depositBoosted';
 import { solanaIngressEgressDepositBoosted as solanaSchema11200 } from '@chainflip/processor/11200/solanaIngressEgress/depositBoosted';
+import { arbitrumIngressEgressDepositBoosted as arbitrumSchema210 } from '@chainflip/processor/210/arbitrumIngressEgress/depositBoosted';
+import { ethereumIngressEgressDepositBoosted as ethereumSchema210 } from '@chainflip/processor/210/ethereumIngressEgress/depositBoosted';
+import { solanaIngressEgressDepositBoosted as solanaSchema210 } from '@chainflip/processor/210/solanaIngressEgress/depositBoosted';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { ONE_IN_PIP } from '@/shared/functions.js';
@@ -11,26 +14,32 @@ import { Prisma, SwapFeeType } from '../../client.js';
 import { getDepositTxRef } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
 
-const arbitrumSchema = arbitrumSchema11200.transform((args) => ({
-  ...args,
-  depositDetails: { chain: 'Arbitrum' as const, data: args.depositDetails },
-}));
+const arbitrumSchema = z
+  .union([arbitrumSchema210.strict(), arbitrumSchema11200.strict()])
+  .transform((args) => ({
+    ...args,
+    depositDetails: { chain: 'Arbitrum' as const, data: args.depositDetails },
+  }));
 const bitcoinSchema = bitcoinSchema11200.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Bitcoin' as const, data: args.depositDetails },
 }));
-const ethereumSchema = ethereumSchema11200.transform((args) => ({
-  ...args,
-  depositDetails: { chain: 'Ethereum' as const, data: args.depositDetails },
-}));
+const ethereumSchema = z
+  .union([ethereumSchema210.strict(), ethereumSchema11200.strict()])
+  .transform((args) => ({
+    ...args,
+    depositDetails: { chain: 'Ethereum' as const, data: args.depositDetails },
+  }));
 const polkadotSchema = polkadotSchema11200.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Polkadot' as const, data: args.depositDetails },
 }));
-const solanaSchema = solanaSchema11200.transform((args) => ({
-  ...args,
-  depositDetails: { chain: 'Solana' as const, data: args.depositDetails },
-}));
+const solanaSchema = z
+  .union([solanaSchema210.strict(), solanaSchema11200.strict()])
+  .transform((args) => ({
+    ...args,
+    depositDetails: { chain: 'Solana' as const, data: args.depositDetails },
+  }));
 const assethubSchema = assethubSchema11200.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Assethub' as const, data: args.depositDetails },

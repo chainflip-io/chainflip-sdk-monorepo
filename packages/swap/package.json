@@ -12,6 +12,7 @@
     "dev:perseverance": "START_PROCESSOR=TRUE START_HTTP_SERVICE=TRUE ENVLOCKER_ENV_NAME=perseverance pnpm dev",
     "dev:sisyphos": "START_PROCESSOR=TRUE START_HTTP_SERVICE=TRUE ENVLOCKER_ENV_NAME=sisyphos pnpm dev",
     "dev:backspin": "START_PROCESSOR=TRUE START_HTTP_SERVICE=TRUE ENVLOCKER_ENV_NAME=backspin pnpm dev",
+    "dev:localnet": "dotenvx run -f .env.localnet -- pnpm dev",
     "preinstall": "npx only-allow pnpm",
     "postinstall": "prisma generate",
     "start": "dotenvx run -- node dist/packages/swap/src/index.js",
@@ -59,7 +60,7 @@
   },
   "dependencies": {
     "@chainflip/bitcoin": "2.1.0-beta.1",
-    "@chainflip/processor": "~2.0.4",
+    "@chainflip/processor": "2.1.0-beta.6",
     "@chainflip/redis": "2.1.0-beta.1",
     "@chainflip/rpc": "2.1.0-beta.1",
     "@chainflip/solana": "2.2.1-beta.0",
